@@ -24,6 +24,8 @@ endif
 CXXFLAGS += -Isrc/
 #add third_party
 CXXFLAGS += -Ithird_party/rapidjson/include/
+CXXFLAGS += -Ithird_party/bdwgc/include/
+LDFLAGS += third_party/bdwgc/.libs/libgc.a
 
 ifeq ($(MODE), debug)
 	CXXFLAGS += -O0 -g3 -fno-omit-frame-pointer
