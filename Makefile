@@ -25,7 +25,7 @@ CXXFLAGS += -Isrc/
 #add third_party
 CXXFLAGS += -Ithird_party/rapidjson/include/
 CXXFLAGS += -Ithird_party/bdwgc/include/
-LDFLAGS += third_party/bdwgc/.libs/libgc.a
+LDFLAGS += third_party/bdwgc/.libs/libgc.a -lpthread
 
 ifeq ($(MODE), debug)
 	CXXFLAGS += -O0 -g3 -fno-omit-frame-pointer
@@ -38,6 +38,7 @@ endif
 SRC=
 SRC += $(foreach dir, ./src , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, ./src/shell , $(wildcard $(dir)/*.cpp))
+SRC += $(foreach dir, ./src/parser , $(wildcard $(dir)/*.cpp))
 
 ifeq ($(HOST), linux)
 endif

@@ -2,6 +2,7 @@ escargot
 .project
 .cproject
 mozjs
+input.js
 *.o
 *.d
 third_party/bdwgc/.deps
