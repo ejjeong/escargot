@@ -1,8 +1,10 @@
 escargot
 .project
 .cproject
+.settings
 mozjs
 input.js
+output.js
 *.o
 *.d
 third_party/bdwgc/.deps
