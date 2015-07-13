@@ -39,6 +39,9 @@ SRC=
 SRC += $(foreach dir, ./src , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, ./src/shell , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, ./src/parser , $(wildcard $(dir)/*.cpp))
+SRC += $(foreach dir, ./src/ESValue , $(wildcard $(dir)/*.cpp))
+SRC += $(foreach dir, ./src/ESVMInstance , $(wildcard $(dir)/*.cpp))
+SRC += $(foreach dir, ./src/ExecutionContext , $(wildcard $(dir)/*.cpp))
 
 ifeq ($(HOST), linux)
 endif
