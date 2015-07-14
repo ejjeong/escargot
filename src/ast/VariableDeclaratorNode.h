@@ -9,17 +9,20 @@ namespace escargot {
 
 class VariableDeclaratorNode : public Node {
 public:
-    VariableDeclaratorNode()
+    VariableDeclaratorNode(Node* id)
             : Node(NodeType::VariableDeclarator)
     {
-        m_id = NULL;
+        m_id = id;
         m_init = NULL;
     }
     virtual void execute(ESVMInstance* ) { }
 protected:
-    PatternNode* m_id; //id: Pattern;
+    Node* m_id; //id: Pattern;
     ExpressionNode* m_init; //init: Expression | null;
 };
+
+
+typedef std::vector<Node *, gc_allocator<Node *>> VariableDeclaratorVector;
 
 }
 

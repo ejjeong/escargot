@@ -9,16 +9,27 @@ namespace escargot {
 //An assignment operator expression.
 class AssignmentExpressionNode : public ExpressionNode {
 public:
-    AssignmentExpressionNode()
+    /*
+    enum AssignmentOperator {
+        "=" | "+=" | "-=" | "*=" | "/=" | "%="
+            | "<<=" | ">>=" | ">>>="
+            | "|=" | "^=" | "&="
+    }*/
+    enum AssignmentOperator {
+        Equal, //"="
+    };
+    AssignmentExpressionNode(Node* left, Node* right, AssignmentOperator oper)
             : ExpressionNode(NodeType::AssignmentExpression)
     {
-        m_left = NULL;
-        m_right = NULL;
+        m_left = left;
+        m_right = right;
+        m_operator = oper;
     }
     virtual void execute(ESVMInstance* ) { }
 protected:
-    PatternNode* m_left; //left: Pattern;
-    ExpressionNode* m_right; //right: Expression;
+    Node* m_left; //left: Pattern;
+    Node* m_right; //right: Expression;
+    AssignmentOperator m_operator; //operator: AssignmentOperator
 };
 
 }

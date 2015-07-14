@@ -10,9 +10,10 @@ namespace escargot {
 //interface Identifier <: Node, Expression, Pattern {
 class IdentifierNode : public Node {
 public:
-    IdentifierNode()
+    IdentifierNode(const ESString& name)
             : Node(NodeType::Identifier)
     {
+        m_name = name;
     }
     virtual void execute(ESVMInstance* ) { }
 protected:

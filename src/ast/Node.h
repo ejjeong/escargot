@@ -1,6 +1,8 @@
 #ifndef Node_h
 #define Node_h
 
+#include "runtime/ESValue.h"
+
 namespace escargot {
 
 class ESVMInstance;
@@ -11,12 +13,15 @@ enum NodeType {
     Statement,
     EmptyStatement,
     BlockStatement,
+    Declaration,
+    VariableDeclaration,
     Pattern,
     Expression,
     ExpressionStatement,
     AssignmentExpression,
     VariableDeclarator,
     Identifier,
+    Literal,
 };
 
 class SourceLocation {

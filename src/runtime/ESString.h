@@ -5,24 +5,102 @@ namespace escargot {
 
 //borrow concept from coffeemix/runtime/gc_helper.h
 typedef std::basic_string<wchar_t, std::char_traits<wchar_t>, gc_allocator<wchar_t> > ESStringStd;
-class ESString : public gc_cleanup, public ESStringStd {
+class ESString : public gc_cleanup {
 public:
-    ESString() : ESStringStd() { }
-    ESString(const char* s) : ESStringStd()
+    ESString()
     {
+        m_string = NULL;
+        m_hashValue = m_isHashInited = false;
+    }
+
+    ESString(const char* s)
+    {
+        m_string = NULL;
+        m_hashValue = m_isHashInited = false;
+
         std::mbstate_t state = std::mbstate_t();
         int len = 1 + std::mbsrtowcs(NULL, &s, 0, &state);
-        resize(len);
-        std::mbsrtowcs((wchar_t *)c_str(), &s, size(), &state);
+        allocString(len);
+        std::mbsrtowcs((wchar_t *)m_string->data(), &s, m_string->size(), &state);
     }
-    ESString(const ESStringStd& s) : ESStringStd(s) { }
-    ESString substring(size_t pos = 0, size_t len = npos) const
+
+    ESString(const wchar_t* s)
     {
-        return ESString(ESStringStd::substr(pos, len));
+        m_string = new ESStringStd(s);
+        m_hashValue = m_isHashInited = false;
     }
+
+
+    ESString(const ESString& s)
+    {
+        m_hashValue = s.m_hashValue;
+        m_isHashInited = s.m_isHashInited;
+        m_string = s.m_string;
+    }
+
+    ALWAYS_INLINE friend bool operator == (const ESString& a,const ESString& b);
+
+    const wchar_t* data()
+    {
+        if(m_string) {
+            return m_string->data();
+        }
+        return NULL;
+    }
+#ifndef NDEBUG
+    void show()
+    {
+        wprintf(L"%ls\n",data());
+    }
+#endif
+
 protected:
 
+    ALWAYS_INLINE void initHash() const
+    {
+        if(m_string && !m_isHashInited) {
+            std::hash<std::wstring> hashFn;
+            m_hashValue = hashFn((std::wstring &)*m_string);
+            m_isHashInited = true;
+        }
+    }
+
+    ALWAYS_INLINE void invalidationHash() const
+    {
+        m_isHashInited = false;
+    }
+
+    void allocString(size_t stringLength)
+    {
+        m_string = new ESStringStd();
+        m_string->resize(stringLength);
+    }
+
+    mutable size_t m_hashValue;
+    mutable bool m_isHashInited;
+
+    ESStringStd* m_string;
 };
+
+ALWAYS_INLINE bool operator == (const ESString& a,const ESString& b)
+{
+    a.initHash();
+    b.initHash();
+
+    if(a.m_hashValue == b.m_hashValue) {
+        if(a.m_string && b.m_string) {
+            if(*a.m_string == *b.m_string) {
+                return true;
+            }
+            return false;
+        } else if (!a.m_string && !b.m_string){
+            return a == b;
+        }
+        return false;
+    } else {
+        return false;
+    }
+}
 
 }
 

@@ -55,7 +55,6 @@ Node* ESScriptParser::parseScript(const std::string& source)
         printf("Failed to run command\n" );
         exit(1);
     }
-    fputs(sourceString.c_str(), fp);
 
     std::string outputString;
     while (fgets(path, sizeof(path)-1, fp) != NULL) {
@@ -64,16 +63,69 @@ Node* ESScriptParser::parseScript(const std::string& source)
 
     pclose(fp);
 
-    puts(outputString.c_str());
-    rapidjson::Document jsonDocument;
-    rapidjson::MemoryStream stream(outputString.c_str(),outputString.length());
-    jsonDocument.ParseStream(stream);
+    ESString output = outputString.data();
+    //output.show();
+
+    rapidjson::GenericDocument<rapidjson::UTF16<>> jsonDocument;
+    rapidjson::GenericStringStream<rapidjson::UTF16<>> stringStream(output.data());
+    jsonDocument.ParseStream(stringStream);
 
     //READ SAMPLE
-    //std::string type = jsonDocument["type"].GetString();
-    //puts(type.c_str());
+    //std::wstring type = jsonDocument[L"type"].GetString();
+    //wprintf(L"%ls\n",type.data());
 
-    return new ::escargot::ProgramNode();
+    //TODO move these strings into elsewhere
+    ESString astTypeProgram(L"Program");
+    ESString astTypeVariableDeclaration(L"VariableDeclaration");
+    ESString astTypeExpressionStatement(L"ExpressionStatement");
+    ESString astTypeVariableDeclarator(L"VariableDeclarator");
+    ESString astTypeIdentifier(L"Identifier");
+    ESString astAssignmentExpression(L"AssignmentExpression");
+    ESString astLiteral(L"Literal");
+
+    std::function<Node *(rapidjson::GenericValue<rapidjson::UTF16<>>& value)> fn;
+    fn = [&](rapidjson::GenericValue<rapidjson::UTF16<>>& value) -> Node* {
+        Node* parsedNode = NULL;
+        ESString type(value[L"type"].GetString());
+        if(type == astTypeProgram) {
+            StatementNodeVector body;
+            rapidjson::GenericValue<rapidjson::UTF16<>>& children = value[L"body"];
+            for (rapidjson::SizeType i = 0; i < children.Size(); i++) {
+                Node* n = fn(children[i]);
+                body.push_back(n);
+            }
+            parsedNode = new ProgramNode(std::move(body));
+        } else if(type == astTypeVariableDeclaration) {
+            rapidjson::GenericValue<rapidjson::UTF16<>>& children = value[L"declarations"];
+            VariableDeclaratorVector decl;
+            for (rapidjson::SizeType i = 0; i < children.Size(); i++) {
+                decl.push_back(fn(children[i]));
+            }
+            parsedNode = new VariableDeclarationNode(std::move(decl));
+        } else if(type == astTypeVariableDeclarator) {
+            parsedNode = new VariableDeclaratorNode(fn(value[L"id"]));
+        } else if(type == astTypeIdentifier) {
+            parsedNode = new IdentifierNode(value[L"name"].GetString());
+        } else if(type == astTypeExpressionStatement) {
+            Node* node = fn(value[L"expression"]);
+            parsedNode = new ExpressionStatementNode(node);
+        } else if(type == astAssignmentExpression) {
+            parsedNode = new AssignmentExpressionNode(fn(value[L"left"]), fn(value[L"right"]), AssignmentExpressionNode::AssignmentOperator::Equal);
+        } else if(type == astLiteral) {
+            ESValue val;
+            //TODO parse esvalue
+            parsedNode = new LiteralNode(val);
+        }
+#ifndef NDEBUG
+        if(!parsedNode) {
+            type.show();
+        }
+#endif
+        RELEASE_ASSERT(parsedNode);
+        return parsedNode;
+    };
+
+    return fn(jsonDocument);
 }
 
 }

@@ -3,10 +3,13 @@
 
 #include <cstdlib>
 #include <cstdio>
+#include <iostream>
 #include <vector>
 #include <unordered_map>
 #include <string>
 #include <cstring>
+#include <cassert>
+#include <functional>
 
 #include <unistd.h>
 #include <sys/types.h>
@@ -57,8 +60,6 @@
 #endif
 
 
-#define NDEBUG 1
-
 /* ALWAYS_INLINE */
 #ifndef ALWAYS_INLINE
 #if COMPILER(GCC) && defined(NDEBUG) && !COMPILER(MINGW)
@@ -73,6 +74,17 @@
 #if !COMPILER(GCC)
 #include <codecvt>
 #endif
+
+#if defined(NDEBUG)
+#define ASSERT(assertion) ((void)0)
+#define ASSERT_NOT_REACHED() ((void)0)
+#else
+#define ASSERT(assertion) assert(assertion);
+#define ASSERT_NOT_REACHED() do { assert(false); } while (0)
+#endif
+
+#define RELEASE_ASSERT(assertion) assert(assertion);
+#define RELEASE_ASSERT_NOT_REACHED() do { assert(false); } while (0)
 
 #include "runtime/ESString.h"
 

@@ -8,9 +8,10 @@ namespace escargot {
 
 class ProgramNode : public Node {
 public:
-    ProgramNode()
+    ProgramNode(StatementNodeVector&& body)
             : Node(NodeType::Program)
     {
+        m_body = body;
     }
     virtual void execute(ESVMInstance* ) { }
 protected:

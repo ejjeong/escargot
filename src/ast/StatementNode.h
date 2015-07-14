@@ -15,7 +15,7 @@ public:
 protected:
 };
 
-typedef std::vector<Node *, gc_allocator<StatementNode *>> StatementNodeVector;
+typedef std::vector<Node *, gc_allocator<Node *>> StatementNodeVector;
 
 }
 

@@ -8,14 +8,14 @@ namespace escargot {
 //An expression statement, i.e., a statement consisting of a single expression.
 class ExpressionStatementNode : public StatementNode {
 public:
-    ExpressionStatementNode()
+    ExpressionStatementNode(Node* expression)
             : StatementNode(NodeType::ExpressionStatement)
     {
-        m_expression = NULL;
+        m_expression = expression;
     }
     virtual void execute(ESVMInstance* ) { }
 protected:
-    ExpressionNode* m_expression; //expression: Expression;
+    Node* m_expression; //expression: Expression;
 };
 
 }
