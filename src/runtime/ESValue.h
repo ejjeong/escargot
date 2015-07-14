@@ -1,5 +1,6 @@
 #ifndef ESValue_h
 #define ESValue_h
+#include <unordered_map>
 
 namespace escargot {
 
@@ -29,6 +30,13 @@ class String : public HeapObject {
 };
 
 class JSObject : public HeapObject {
+public:
+    JSObject();
+    ESValue getValue(std::wstring key);
+    void setValue(std::wstring key, ESValue val, bool throw_flag);
+
+protected:
+    std::unordered_map<std::wstring, ESValue> m_map;
 };
 
 class JSArray : public JSObject {

@@ -2,15 +2,18 @@
 #define Environment_h
 
 #include "ESValue.h"
+#include <vector>
 
 namespace escargot {
 
 class EnvironmentRecord;
+class ObjectEnvironmentRecord;
+class DeclarativeEnvironmentRecord;
 
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-lexical-environments
 class LexicalEnvironment : public gc_cleanup {
 public:
-    LexicalEnvironment(EnvironmentRecord* record,LexicalEnvironment* env)
+    LexicalEnvironment(EnvironmentRecord* record, LexicalEnvironment* env)
         : m_record(record)
         , m_outerEnvironment(env)
     {
@@ -42,13 +45,13 @@ protected:
     EnvironmentRecord() { }
 public:
     virtual ~EnvironmentRecord() { }
-    virtual bool HasBinding(const std::wstring& name) = 0;
-    virtual void CreateMutableBinding(const std::wstring& name, bool canDelete = false) = 0;
-    virtual void CreateImmutableBinding(const std::wstring& name, bool throwExecptionWhenAccessBeforeInit = false) = 0;
-    virtual void InitializeBinding(const std::wstring& name, ESValue V) = 0;
-    virtual void SetMutableBinding(const std::wstring& name, ESValue V, bool mustNotThrowTypeErrorExecption) = 0;
-    virtual ESValue GetBindingValue(const std::wstring& name, bool ignoreReferenceErrorException) = 0;
-    virtual bool DeleteBinding(const std::wstring& name) = 0;
+    virtual bool hasBinding(const std::wstring& name) = 0;
+    virtual void createMutableBinding(const std::wstring& name, bool canDelete = false) = 0;
+    virtual void createImmutableBinding(const std::wstring& name, bool throwExecptionWhenAccessBeforeInit = false) = 0;
+    virtual void initializeBinding(const std::wstring& name, ESValue V) = 0;
+    virtual void setMutableBinding(const std::wstring& name, ESValue V, bool mustNotThrowTypeErrorExecption) = 0;
+    virtual ESValue getBindingValue(const std::wstring& name, bool ignoreReferenceErrorException) = 0;
+    virtual bool deleteBinding(const std::wstring& name) = 0;
     //HasThisBinding()
     //HasSuperBinding()
     //WithBaseObject ()
@@ -61,40 +64,54 @@ protected:
 class GlobalEnvironmentRecord : public EnvironmentRecord {
 public:
     ~GlobalEnvironmentRecord() { }
-    bool HasBinding(const std::wstring& name)
+    bool hasBinding(const std::wstring& name)
     {
         return false;
     }
-    void CreateMutableBinding(const std::wstring& name, bool canDelete = false) {}
-    void CreateImmutableBinding(const std::wstring& name, bool throwExecptionWhenAccessBeforeInit = false) {}
-    void InitializeBinding(const std::wstring& name, ESValue V) {}
-    void SetMutableBinding(const std::wstring& name, ESValue V, bool mustNotThrowTypeErrorExecption) {}
-    ESValue GetBindingValue(const std::wstring& name, bool ignoreReferenceErrorException)
+    void createMutableBinding(const std::wstring& name, bool canDelete = false) {}
+    void createImmutableBinding(const std::wstring& name, bool throwExecptionWhenAccessBeforeInit = false) {}
+    void initializeBinding(const std::wstring& name, ESValue V) {}
+    void setMutableBinding(const std::wstring& name, ESValue V, bool mustNotThrowTypeErrorExecption) {}
+    ESValue getBindingValue(const std::wstring& name, bool ignoreReferenceErrorException)
     {
         return ESValue();
     }
-    bool DeleteBinding(const std::wstring& name)
+    bool deleteBinding(const std::wstring& name)
     {
         return false;
     }
+
+    ESValue getThisBinding();
+    bool hasVarDeclaration(const std::wstring& name);
+    //bool hasLexicalDeclaration(const std::wstring& name);
+    bool hasRestrictedGlobalProperty(const std::wstring& name);
+    bool canDeclareGlobalVar(const std::wstring& name);
+    bool canDeclareGlobalFunction(const std::wstring& name);
+    void createGlobalVarBinding(const std::wstring& name, bool canDelete);
+    void createGlobalFunctionBinding(const std::wstring& name, ESValue V, bool canDelete);
+
+protected:
+    ObjectEnvironmentRecord* m_objectRecord;
+    DeclarativeEnvironmentRecord* m_declarativeRecord;
+    std::vector<std::wstring> varNames;
 };
 
 class ObjectEnvironmentRecord : public EnvironmentRecord {
 public:
     ~ObjectEnvironmentRecord() { }
-    bool HasBinding(const std::wstring& name)
+    bool hasBinding(const std::wstring& name)
     {
         return false;
     }
-    void CreateMutableBinding(const std::wstring& name, bool canDelete = false) {}
-    void CreateImmutableBinding(const std::wstring& name, bool throwExecptionWhenAccessBeforeInit = false) {}
-    void InitializeBinding(const std::wstring& name, ESValue V) {}
-    void SetMutableBinding(const std::wstring& name, ESValue V, bool mustNotThrowTypeErrorExecption) {}
-    ESValue GetBindingValue(const std::wstring& name, bool ignoreReferenceErrorException)
+    void createMutableBinding(const std::wstring& name, bool canDelete = false) {}
+    void createImmutableBinding(const std::wstring& name, bool throwExecptionWhenAccessBeforeInit = false) {}
+    void initializeBinding(const std::wstring& name, ESValue V) {}
+    void setMutableBinding(const std::wstring& name, ESValue V, bool mustNotThrowTypeErrorExecption) {}
+    ESValue getBindingValue(const std::wstring& name, bool ignoreReferenceErrorException)
     {
         return ESValue();
     }
-    bool DeleteBinding(const std::wstring& name)
+    bool deleteBinding(const std::wstring& name)
     {
         return false;
     }
@@ -104,19 +121,19 @@ public:
 class DeclarativeEnvironmentRecord : public EnvironmentRecord {
 public:
     ~DeclarativeEnvironmentRecord() { }
-    bool HasBinding(const std::wstring& name)
+    bool hasBinding(const std::wstring& name)
     {
         return false;
     }
-    void CreateMutableBinding(const std::wstring& name, bool canDelete = false) {}
-    void CreateImmutableBinding(const std::wstring& name, bool throwExecptionWhenAccessBeforeInit = false) {}
-    void InitializeBinding(const std::wstring& name, ESValue V) {}
-    void SetMutableBinding(const std::wstring& name, ESValue V, bool mustNotThrowTypeErrorExecption) {}
-    ESValue GetBindingValue(const std::wstring& name, bool ignoreReferenceErrorException)
+    void createMutableBinding(const std::wstring& name, bool canDelete = false) {}
+    void createImmutableBinding(const std::wstring& name, bool throwExecptionWhenAccessBeforeInit = false) {}
+    void initializeBinding(const std::wstring& name, ESValue V) {}
+    void setMutableBinding(const std::wstring& name, ESValue V, bool mustNotThrowTypeErrorExecption) {}
+    ESValue getBindingValue(const std::wstring& name, bool ignoreReferenceErrorException)
     {
         return ESValue();
     }
-    bool DeleteBinding(const std::wstring& name)
+    bool deleteBinding(const std::wstring& name)
     {
         return false;
     }
@@ -124,19 +141,19 @@ public:
 
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-function-environment-records
 class FunctionEnvironmentRecord : public DeclarativeEnvironmentRecord {
-    bool HasBinding(const std::wstring& name)
+    bool hasBinding(const std::wstring& name)
     {
         return false;
     }
-    void CreateMutableBinding(const std::wstring& name, bool canDelete = false) {}
-    void CreateImmutableBinding(const std::wstring& name, bool throwExecptionWhenAccessBeforeInit = false) {}
-    void InitializeBinding(const std::wstring& name, ESValue V) {}
-    void SetMutableBinding(const std::wstring& name, ESValue V, bool mustNotThrowTypeErrorExecption) {}
-    ESValue GetBindingValue(const std::wstring& name, bool ignoreReferenceErrorException)
+    void createMutableBinding(const std::wstring& name, bool canDelete = false) {}
+    void createImmutableBinding(const std::wstring& name, bool throwExecptionWhenAccessBeforeInit = false) {}
+    void initializeBinding(const std::wstring& name, ESValue V) {}
+    void setMutableBinding(const std::wstring& name, ESValue V, bool mustNotThrowTypeErrorExecption) {}
+    ESValue getBindingValue(const std::wstring& name, bool ignoreReferenceErrorException)
     {
         return ESValue();
     }
-    bool DeleteBinding(const std::wstring& name)
+    bool deleteBinding(const std::wstring& name)
     {
         return false;
     }
