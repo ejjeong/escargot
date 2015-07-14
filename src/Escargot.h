@@ -18,7 +18,6 @@
 
 #include <gc_cpp.h>
 
-
 /* COMPILER() - the compiler being used to build the project */
 #define COMPILER(FEATURE) (defined COMPILER_##FEATURE  && COMPILER_##FEATURE)
 
@@ -66,5 +65,6 @@
 #endif
 #endif
 
+typedef wchar_t* ESString;
 
 #endif

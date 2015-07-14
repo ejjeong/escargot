@@ -8,7 +8,7 @@ namespace escargot {
 class ESScriptParser {
 public:
 
-    static AST* parseScript(const char* str);
+    static AST* parseScript(const std::string& cs);
     //TODO
     //static AST* parseScript(const wchar_t* str);
 };

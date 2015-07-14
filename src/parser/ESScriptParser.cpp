@@ -4,18 +4,42 @@
 
 namespace escargot {
 
-AST* ESScriptParser::parseScript(const char* source)
+AST* ESScriptParser::parseScript(const std::string& source)
 {
-    std::string sc = source;
-    auto replace = [](std::string& str, const std::string& from, const std::string& to) {
-        size_t start_pos = str.find(from);
-        if(start_pos == std::string::npos)
-            return ;
-        str.replace(start_pos, from.length(), to);
-        return ;
-    };
+    std::string sc;
+    for(unsigned i = 0 ; i < source.length() ; i ++) {
+        char c = source[i];
 
-    replace(sc, "\n", "\\\n");
+        if(c == '\n') {
+            sc.push_back('\\');
+            c = '\n';
+        } else if(c == '/') {
+            if(i + 1 < source.length() && source[i + 1] == '/') {
+                while(source[i] != '\n' && i < source.length()) {
+                    i ++;
+                }
+                continue;
+            }
+            else if(i + 1 < source.length() && source[i + 1] == '*') {
+                while(i < source.length()) {
+                    if(source[i] == '*') {
+                        if(i + 1 < source.length()) {
+                            if(source[i + 1] == '/') {
+                                i++;
+                                break;
+                            }
+                        }
+                    }
+                    i ++;
+                }
+                continue;
+            }
+
+        }
+
+        sc.push_back(c);
+    }
+
     std::string sourceString = std::string("print(JSON.stringify(Reflect.parse('") + sc + "')))";
 
     FILE *fp;
@@ -41,7 +65,7 @@ AST* ESScriptParser::parseScript(const char* source)
 
     pclose(fp);
 
-    //puts(outputString.c_str());
+    puts(outputString.c_str());
     rapidjson::Document jsonDocument;
     rapidjson::MemoryStream stream(outputString.c_str(),outputString.length());
     jsonDocument.ParseStream(stream);
