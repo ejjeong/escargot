@@ -7,8 +7,8 @@ namespace escargot {
 
 class JSBuiltinsObject;
 class GlobalObject : public JSObject {
+public:
     JSBuiltinsObject* m_builtins;
-    Context* m_nativeContext;
 };
 
 class JSGlobalObject : public GlobalObject {

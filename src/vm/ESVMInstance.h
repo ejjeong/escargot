@@ -4,6 +4,7 @@
 namespace escargot {
 
 class ExecutionContext;
+class GlobalObject;
 
 class ESVMInstance : public gc_cleanup {
 public:
@@ -14,6 +15,8 @@ public:
 protected:
     ExecutionContext* m_globalExecutionContext;
     ExecutionContext* m_currentExecutionContext;
+
+    GlobalObject* m_global;
 };
 
 }

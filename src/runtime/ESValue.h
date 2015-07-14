@@ -1,6 +1,7 @@
 #ifndef ESValue_h
 #define ESValue_h
 #include <unordered_map>
+#include "ESString.h"
 
 namespace escargot {
 
@@ -47,12 +48,36 @@ class String : public HeapObject {
 
 class JSObject : public HeapObject {
 public:
-    JSObject();
+    struct PropertyDescriptor {
+        ESValue m_value;
+        bool m_isWritable;
+        bool m_isEnumerable;
+        bool m_isConfigurable;
+    };
     ESValue* getValue(std::wstring key);
-    void setValue(std::wstring key, ESValue* val, bool throw_flag);
+    void setValue(const ESString& key, ESValue val, bool throwFlag) {}
+    void definePropertyOrThrow(ESString key, PropertyDescriptor pd) {}
+    bool hasOwnProperty(const ESString& key) {
+        return true;
+    }
+
+    //$6.1.7.2 Object Internal Methods and Internal Slots
+    bool isExtensible() {
+        return true;
+    }
+
+    PropertyDescriptor getOwnProperty(const ESString& ekey) {
+        std::wstring key = std::wstring(ESString(ekey).data());
+        std::unordered_map<std::wstring, PropertyDescriptor>::iterator it = m_map.find(key);
+        if(it != m_map.end())
+            return it->second;
+        //FIXME
+        PropertyDescriptor pd_undefined;
+        return pd_undefined;
+    }
 
 protected:
-    std::unordered_map<std::wstring, ESValue*> m_map;
+    std::unordered_map<std::wstring, PropertyDescriptor> m_map;
 };
 
 class JSArray : public JSObject {
