@@ -1,10 +1,9 @@
 #include "Escargot.h"
 #include "ESScriptParser.h"
-#include "ast/AST.h"
 
 namespace escargot {
 
-AST* ESScriptParser::parseScript(const std::string& source)
+Node* ESScriptParser::parseScript(const std::string& source)
 {
     std::string sc;
     for(unsigned i = 0 ; i < source.length() ; i ++) {
@@ -74,7 +73,7 @@ AST* ESScriptParser::parseScript(const std::string& source)
     //std::string type = jsonDocument["type"].GetString();
     //puts(type.c_str());
 
-    return new AST();
+    return new ::escargot::ProgramNode();
 }
 
 }

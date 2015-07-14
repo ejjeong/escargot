@@ -17,6 +17,11 @@
 #include <rapidjson/memorystream.h>
 
 #include <gc_cpp.h>
+#include <gc_allocator.h>
+
+#include <locale>
+#include <clocale>
+#include <cwchar>
 
 /* COMPILER() - the compiler being used to build the project */
 #define COMPILER(FEATURE) (defined COMPILER_##FEATURE  && COMPILER_##FEATURE)
@@ -65,6 +70,10 @@
 #endif
 #endif
 
-typedef wchar_t* ESString;
+#if !COMPILER(GCC)
+#include <codecvt>
+#endif
+
+#include "runtime/ESString.h"
 
 #endif

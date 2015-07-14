@@ -1,13 +1,18 @@
 #ifndef AST_h
 #define AST_h
 
-namespace escargot {
-
-class ESVMInstance;
-class AST : public gc_cleanup {
-    void execute(ESVMInstance* );
-};
-
-}
+#include "AssignmentExpressionNode.h"
+#include "Node.h"
+#include "BlockStatementNode.h"
+#include "EmptyStatementNode.h"
+#include "ExpressionNode.h"
+#include "ExpressionStatementNode.h"
+#include "FunctionNode.h"
+#include "IdentifierNode.h"
+#include "Node.h"
+#include "PatternNode.h"
+#include "ProgramNode.h"
+#include "StatementNode.h"
+#include "VariableDeclaratorNode.h"
 
 #endif

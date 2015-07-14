@@ -43,13 +43,13 @@ class JSArray : public JSObject {
 };
 
 class LexicalEnvironment;
-class AST;
+class Node;
 class JSFunction : public JSObject {
 public:
-    JSFunction(LexicalEnvironment* , AST* );
+    JSFunction(LexicalEnvironment* , Node* );
 protected:
     LexicalEnvironment* m_outerEnvironment;
-    AST* m_body;
+    Node* m_body;
     enum ThisBindingStatus {
         lexical, initialized, uninitialized
     };

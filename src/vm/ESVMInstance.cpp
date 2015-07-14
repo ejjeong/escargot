@@ -8,7 +8,9 @@ namespace escargot {
 
 ESVMInstance::ESVMInstance()
 {
-    auto a = new LexicalEnvironment(new GlobalEnvironmentRecord(), NULL);
+    std::setlocale(LC_ALL, "en_US.utf8");
+
+    LexicalEnvironment* a = new LexicalEnvironment(new GlobalEnvironmentRecord(), NULL);
     
     m_globalExecutionContext = new ExecutionContext(a, a);
     m_currentExecutionContext = m_globalExecutionContext;

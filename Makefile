@@ -3,6 +3,16 @@ MODE=
 HOST=
 ARCH=x64
 
+NPROCS:=1
+OS:=$(shell uname -s)
+
+ifeq ($(OS),Linux)
+  NPROCS:=$(shell grep -c ^processor /proc/cpuinfo)
+endif
+ifeq ($(OS),Darwin) # Assume Mac OS X
+  NPROCS:=$(shell system_profiler | awk '/Number Of CPUs/{print $4}{next;}')
+endif
+
 ifeq ($(MODE),)
 	MODE=debug
 endif
@@ -26,6 +36,12 @@ CXXFLAGS += -Isrc/
 CXXFLAGS += -Ithird_party/rapidjson/include/
 CXXFLAGS += -Ithird_party/bdwgc/include/
 LDFLAGS += third_party/bdwgc/.libs/libgc.a -lpthread
+
+ifeq ($(MODE), x64)
+	CXXFLAGS += -DESCARGOT_64
+else ifeq ($(MODE), x86)
+	CXXFLAGS += -DESCARGOT_32
+endif
 
 ifeq ($(MODE), debug)
 	CXXFLAGS += -O0 -g3 -fno-omit-frame-pointer -Wall -Werror
