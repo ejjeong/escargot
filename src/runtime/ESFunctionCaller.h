@@ -2,6 +2,7 @@
 #define ExecutionContext_h
 
 #include "ESValue.h"
+#include "ESValueInlines.h"
 
 namespace escargot {
 

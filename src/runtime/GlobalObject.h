@@ -1,6 +1,7 @@
 #ifndef GlobalObject_h
 #define GlobalObject_h
 #include "ESValue.h"
+#include "ESValueInlines.h"
 
 namespace escargot {
 

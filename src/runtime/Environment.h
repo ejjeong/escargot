@@ -2,6 +2,7 @@
 #define Environment_h
 
 #include "ESValue.h"
+#include "ESValueInlines.h"
 #include <vector>
 
 namespace escargot {
