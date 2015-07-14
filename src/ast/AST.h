@@ -1,11 +1,11 @@
-#ifndef __AST__
-#define __AST__
+#ifndef AST_h
+#define AST_h
 
 namespace escargot {
 
 class ESVMInstance;
 class AST : public gc_cleanup {
-    void execute(ESVMInstance*);
+    void execute(ESVMInstance* );
 };
 
 }

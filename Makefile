@@ -28,7 +28,7 @@ CXXFLAGS += -Ithird_party/bdwgc/include/
 LDFLAGS += third_party/bdwgc/.libs/libgc.a -lpthread
 
 ifeq ($(MODE), debug)
-	CXXFLAGS += -O0 -g3 -fno-omit-frame-pointer
+	CXXFLAGS += -O0 -g3 -fno-omit-frame-pointer -Wall -Werror
 else ifeq ($(MODE), release)
 	CXXFLAGS += -O3 -g0 -DNDEBUG
 else
@@ -39,9 +39,8 @@ SRC=
 SRC += $(foreach dir, ./src , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, ./src/shell , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, ./src/parser , $(wildcard $(dir)/*.cpp))
-SRC += $(foreach dir, ./src/ESValue , $(wildcard $(dir)/*.cpp))
-SRC += $(foreach dir, ./src/ESVMInstance , $(wildcard $(dir)/*.cpp))
-SRC += $(foreach dir, ./src/ExecutionContext , $(wildcard $(dir)/*.cpp))
+SRC += $(foreach dir, ./src/vm , $(wildcard $(dir)/*.cpp))
+SRC += $(foreach dir, ./src/runtime , $(wildcard $(dir)/*.cpp))
 
 ifeq ($(HOST), linux)
 endif

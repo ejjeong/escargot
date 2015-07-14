@@ -1,7 +1,13 @@
 #ifndef ESValue_h
 #define ESValue_h
 
+namespace escargot {
+
 class ESValue {
+    void* operator new(size_t, void* p) = delete;
+    void* operator new[](size_t, void* p) = delete;
+    void* operator new(size_t size) = delete;
+    void* operator new[](size_t size) = delete;
 };
 
 class HeapObject {
@@ -32,18 +38,21 @@ class LexicalEnvironment;
 class AST;
 class JSFunction : public JSObject {
 public:
-    JSFunction(LexicalEnvironment*, AST*);
-    LexicalEnvironment* outerEnvironment;
-    AST* body;
+    JSFunction(LexicalEnvironment* , AST* );
+protected:
+    LexicalEnvironment* m_outerEnvironment;
+    AST* m_body;
     enum ThisBindingStatus {
         lexical, initialized, uninitialized
     };
-    ThisBindingStatus thisBindingStatus;
+    ThisBindingStatus m_thisBindingStatus;
     //JSObject functionObject;
     //HomeObject
     ////JSObject newTarget
     //BindThisValue(V);
     //GetThisBinding();
 };
+
+}
 
 #endif
