@@ -1,6 +1,8 @@
 #ifndef ESVMInstance_h
 #define ESVMInstance_h
 
+#include "runtime/GlobalObject.h"
+
 namespace escargot {
 
 class ExecutionContext;
@@ -15,8 +17,7 @@ public:
 protected:
     ExecutionContext* m_globalExecutionContext;
     ExecutionContext* m_currentExecutionContext;
-
-    GlobalObject* m_global;
+    GlobalObject* m_globalObject;
 };
 
 }

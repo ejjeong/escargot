@@ -12,7 +12,6 @@ public:
             : StatementNode(NodeType::BlockStatement)
     {
     }
-    virtual void execute(ESVMInstance* ) { }
 protected:
     StatementNodeVector m_body;// body: [ Statement ];
 };

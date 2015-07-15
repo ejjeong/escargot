@@ -1,8 +1,6 @@
 #ifndef ESValueInlines_h
 #define ESValueInlines_h
 
-#include "ESValue.h"
-
 namespace escargot {
 
 const int kApiPointerSize = sizeof(void*);
@@ -10,13 +8,13 @@ const int kApiIntSize = sizeof(int);
 const int kApiInt64Size = sizeof(int64_t);
 
 // Tag information for HeapObject.
-const int kHeapObjectTag = 1;
-const int kHeapObjectTagSize = 2;
+const int kHeapObjectTag = 0;
+const int kHeapObjectTagSize = 1;
 const intptr_t kHeapObjectTagMask = (1 << kHeapObjectTagSize) - 1;
 
 // Tag information for Smi.
-const int kSmiTag = 0;
-const int kSmiTagSize = 1;
+const int kSmiTag = 1;
+const int kSmiTagSize = 2;
 const intptr_t kSmiTagMask = (1 << kSmiTagSize) - 1;
 
 template <size_t ptr_size> struct SmiTagging;
@@ -111,6 +109,7 @@ inline Smi* ESValue::toSmi() const
     }
     return new Smi();
     */
+    RELEASE_ASSERT_NOT_REACHED();
     return nullptr;
 }
 
@@ -118,11 +117,12 @@ inline HeapObject* ESValue::toHeapObject() const
 {
     if (this->isHeapObject())
         return static_cast<HeapObject*>(const_cast<ESValue*>(this));
-    /* TODO else assert? */
+
+    RELEASE_ASSERT_NOT_REACHED();
     return nullptr;
 }
 
-inline int Smi::getValue()
+inline int Smi::value()
 {
     int shift_bits = kSmiTagSize + kSmiShiftSize;
     return static_cast<int>(reinterpret_cast<intptr_t>(this) >> shift_bits);
@@ -142,11 +142,6 @@ inline Smi* Smi::fromIntptr(intptr_t value)
     //TODO DCHECK(Smi::IsValid(value));
     int smi_shift_bits = kSmiTagSize + kSmiShiftSize;
     return reinterpret_cast<Smi*>((value << smi_shift_bits) | kSmiTag);
-}
-
-inline ESValue* JSObject::getValue(std::wstring key)
-{
-    return nullptr;
 }
 
 }

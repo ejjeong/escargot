@@ -1,14 +1,18 @@
 #ifndef GlobalObject_h
 #define GlobalObject_h
+
 #include "ESValue.h"
-#include "ESValueInlines.h"
 
 namespace escargot {
 
 class JSBuiltinsObject;
 class GlobalObject : public JSObject {
 public:
-    JSBuiltinsObject* m_builtins;
+    friend class ESVMInstance;
+    GlobalObject() { }
+protected:
+    //JSBuiltinsObject* m_builtins;
+    //Context* m_nativeContext;
 };
 
 class JSGlobalObject : public GlobalObject {

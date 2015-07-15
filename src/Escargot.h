@@ -10,6 +10,7 @@
 #include <cstring>
 #include <cassert>
 #include <functional>
+#include <algorithm>
 
 #include <unistd.h>
 #include <sys/types.h>

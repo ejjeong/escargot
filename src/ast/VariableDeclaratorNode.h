@@ -15,7 +15,9 @@ public:
         m_id = id;
         m_init = NULL;
     }
-    virtual void execute(ESVMInstance* ) { }
+
+    virtual ESValue* execute(ESVMInstance* instance);
+
 protected:
     Node* m_id; //id: Pattern;
     ExpressionNode* m_init; //init: Expression | null;

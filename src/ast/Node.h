@@ -37,7 +37,10 @@ protected:
         m_sourceLocation = loc;
     }
 public:
-    virtual void execute(ESVMInstance* ) = 0;
+    virtual ESValue* execute(ESVMInstance* instance)
+    {
+        return undefined;
+    }
     const NodeType& type() { return m_nodeType; }
 protected:
     NodeType m_nodeType;

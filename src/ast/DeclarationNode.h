@@ -12,7 +12,6 @@ public:
             : StatementNode(type)
     {
     }
-    virtual void execute(ESVMInstance* ) { }
 protected:
 };
 

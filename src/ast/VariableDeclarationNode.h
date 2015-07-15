@@ -13,7 +13,14 @@ public:
     {
         m_declarations = decl;
     }
-    virtual void execute(ESVMInstance* ) { }
+
+    virtual ESValue* execute(ESVMInstance* instance)
+    {
+        for(unsigned i = 0; i < m_declarations.size() ; i ++) {
+            m_declarations[i]->execute(instance);
+        }
+        return undefined;
+    }
 protected:
     VariableDeclaratorVector m_declarations; //declarations: [ VariableDeclarator ];
     //kind: "var" | "let" | "const";

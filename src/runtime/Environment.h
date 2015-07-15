@@ -40,59 +40,48 @@ protected:
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-environment-records
 class EnvironmentRecord : public gc_cleanup {
 protected:
-    struct EnvironmentRecordValue {
-        ESValue* m_value;
-        bool m_isMutable:1;
-        bool m_canDelete:1;
-        //6-bits remain
-    };
     EnvironmentRecord() { }
 public:
     virtual ~EnvironmentRecord() { }
-    virtual bool hasBinding(const ESString& name) = 0;
-    virtual void createMutableBinding(const ESString& name, bool canDelete = false) = 0;
-    virtual void createImmutableBinding(const ESString& name, bool throwExecptionWhenAccessBeforeInit = false) = 0;
-    virtual void initializeBinding(const ESString& name, ESValue* V) = 0;
-    virtual void setMutableBinding(const ESString& name, ESValue* V, bool mustNotThrowTypeErrorExecption) = 0;
-    virtual ESValue* getBindingValue(const ESString& name, bool ignoreReferenceErrorException) = 0;
-    virtual bool deleteBinding(const ESString& name) = 0;
-    //HasThisBinding()
+
+    //return NULL == not exist
+    virtual JSObjectSlot* hasBinding(const ESString& name)
+    {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+    virtual void createMutableBinding(const ESString& name, bool canDelete = false)
+    {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+
+    virtual void createImmutableBinding(const ESString& name, bool throwExecptionWhenAccessBeforeInit = false)
+    {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+
+    virtual void initializeBinding(const ESString& name, ESValue* V)
+    {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+
+    virtual void setMutableBinding(const ESString& name, ESValue* V, bool mustNotThrowTypeErrorExecption)
+    {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+
+    virtual ESValue* getBindingValue(const ESString& name, bool ignoreReferenceErrorException)
+    {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+
+    virtual bool deleteBinding(const ESString& name)
+    {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
     //HasSuperBinding()
     //WithBaseObject ()
 
 protected:
-    std::unordered_map<std::wstring, EnvironmentRecordValue> m_values;
-};
-
-//http://www.ecma-international.org/ecma-262/6.0/index.html#sec-global-environment-records
-class GlobalEnvironmentRecord : public EnvironmentRecord {
-public:
-    ~GlobalEnvironmentRecord() { }
-    GlobalEnvironmentRecord(GlobalObject* G);
-    bool hasBinding(const ESString& name);
-    void createMutableBinding(const ESString& name, bool canDelete = false);
-    void createImmutableBinding(const ESString& name, bool throwExecptionWhenAccessBeforeInit = false) {}
-    void initializeBinding(const ESString& name, ESValue* V);
-    void setMutableBinding(const ESString& name, ESValue* V, bool mustNotThrowTypeErrorExecption) {}
-    ESValue* getBindingValue(const ESString& name, bool ignoreReferenceErrorException);
-    bool deleteBinding(const ESString& name)
-    {
-        return false;
-    }
-
-    ESValue* getThisBinding();
-    bool hasVarDeclaration(const ESString& name);
-    //bool hasLexicalDeclaration(const ESString& name);
-    bool hasRestrictedGlobalProperty(const ESString& name);
-    bool canDeclareGlobalVar(const ESString& name);
-    bool canDeclareGlobalFunction(const ESString& name);
-    void createGlobalVarBinding(const ESString& name, bool canDelete);
-    void createGlobalFunctionBinding(const ESString& name, ESValue* V, bool canDelete);
-
-protected:
-    ObjectEnvironmentRecord* m_objectRecord;
-    DeclarativeEnvironmentRecord* m_declarativeRecord;
-    std::vector<ESString> m_varNames;
 };
 
 class ObjectEnvironmentRecord : public EnvironmentRecord {
@@ -102,9 +91,15 @@ public:
     {
     }
     ~ObjectEnvironmentRecord() { }
-    bool hasBinding(const ESString& name)
+
+    //return NULL == not exist
+    virtual JSObjectSlot* hasBinding(const ESString& name)
     {
-        return false;
+        JSObjectSlot* slot = m_bindingObject->find(name);
+        if(slot) {
+            return slot;
+        }
+        return NULL;
     }
     void createMutableBinding(const ESString& name, bool canDelete = false);
     void createImmutableBinding(const ESString& name, bool throwExecptionWhenAccessBeforeInit = false) {}
@@ -112,7 +107,7 @@ public:
     void setMutableBinding(const ESString& name, ESValue* V, bool mustNotThrowTypeErrorExecption);
     ESValue* getBindingValue(const ESString& name, bool ignoreReferenceErrorException)
     {
-        return NULL;//ESValue();
+        return m_bindingObject->get(name);
     }
     bool deleteBinding(const ESString& name)
     {
@@ -129,43 +124,77 @@ protected:
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-declarative-environment-records
 class DeclarativeEnvironmentRecord : public EnvironmentRecord {
 public:
+    DeclarativeEnvironmentRecord(JSObject* innerObject = NULL)
+    {
+        m_innerObject = innerObject;
+        if(m_innerObject == NULL) {
+            m_innerObject = JSObject::create();
+        }
+    }
     ~DeclarativeEnvironmentRecord() { }
-    bool hasBinding(const ESString& name)
+
+    virtual JSObjectSlot* hasBinding(const ESString& name)
     {
-        return false;
+        JSObjectSlot* slot = m_innerObject->find(name);
+        if(slot) {
+            return slot;
+        }
+        return NULL;
     }
-    void createMutableBinding(const ESString& name, bool canDelete = false) {}
-    void createImmutableBinding(const ESString& name, bool throwExecptionWhenAccessBeforeInit = false) {}
-    void initializeBinding(const ESString& name, ESValue* V) {}
-    void setMutableBinding(const ESString& name, ESValue* V, bool mustNotThrowTypeErrorExecption) {}
-    ESValue* getBindingValue(const ESString& name, bool ignoreReferenceErrorException)
+    virtual void createMutableBinding(const ESString& name, bool canDelete = false)
     {
-        return NULL;//ESValue();
+        //TODO canDelete
+        m_innerObject->set(name, undefined);
     }
-    bool deleteBinding(const ESString& name)
+
+    virtual void setMutableBinding(const ESString& name, ESValue* V, bool mustNotThrowTypeErrorExecption)
     {
-        return false;
+        //TODO mustNotThrowTypeErrorExecption
+        m_innerObject->set(name, V);
     }
+
+    virtual ESValue* getBindingValue(const ESString& name, bool ignoreReferenceErrorException)
+    {
+        //TODO ignoreReferenceErrorException
+        return m_innerObject->get(name);
+    }
+protected:
+    JSObject* m_innerObject;
 };
+
+//http://www.ecma-international.org/ecma-262/6.0/index.html#sec-global-environment-records
+class GlobalEnvironmentRecord : public EnvironmentRecord {
+public:
+    GlobalEnvironmentRecord(JSObject* globalObject)
+    {
+        m_objectRecord = new ObjectEnvironmentRecord(globalObject);
+        m_declarativeRecord = new DeclarativeEnvironmentRecord();
+    }
+    ~GlobalEnvironmentRecord() { }
+
+    virtual JSObjectSlot* hasBinding(const ESString& name);
+    void createMutableBinding(const ESString& name, bool canDelete = false);
+    void initializeBinding(const ESString& name, ESValue* V);
+
+    ESValue* getThisBinding();
+    bool hasVarDeclaration(const ESString& name);
+    //bool hasLexicalDeclaration(const ESString& name);
+    bool hasRestrictedGlobalProperty(const ESString& name);
+    bool canDeclareGlobalVar(const ESString& name);
+    bool canDeclareGlobalFunction(const ESString& name);
+    void createGlobalVarBinding(const ESString& name, bool canDelete);
+    void createGlobalFunctionBinding(const ESString& name, ESValue* V, bool canDelete);
+    ESValue* getBindingValue(const ESString& name, bool ignoreReferenceErrorException);
+protected:
+    ObjectEnvironmentRecord* m_objectRecord;
+    DeclarativeEnvironmentRecord* m_declarativeRecord;
+    std::vector<ESString, gc_allocator<ESString>> m_varNames;
+};
+
+
 
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-function-environment-records
 class FunctionEnvironmentRecord : public DeclarativeEnvironmentRecord {
-    bool hasBinding(const ESString& name)
-    {
-        return false;
-    }
-    void createMutableBinding(const ESString& name, bool canDelete = false) {}
-    void createImmutableBinding(const ESString& name, bool throwExecptionWhenAccessBeforeInit = false) {}
-    void initializeBinding(const ESString& name, ESValue* V) {}
-    void setMutableBinding(const ESString& name, ESValue* V, bool mustNotThrowTypeErrorExecption) {}
-    ESValue* getBindingValue(const ESString& name, bool ignoreReferenceErrorException)
-    {
-        return NULL;//ESValue();
-    }
-    bool deleteBinding(const ESString& name)
-    {
-        return false;
-    }
 protected:
     ESValue* m_thisValue;
 };

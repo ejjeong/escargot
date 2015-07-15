@@ -112,9 +112,13 @@ Node* ESScriptParser::parseScript(const std::string& source)
         } else if(type == astAssignmentExpression) {
             parsedNode = new AssignmentExpressionNode(fn(value[L"left"]), fn(value[L"right"]), AssignmentExpressionNode::AssignmentOperator::Equal);
         } else if(type == astLiteral) {
-            ESValue val;
-            //TODO parse esvalue
-            parsedNode = new LiteralNode(val);
+            //TODO parse esvalue better
+            if(value[L"value"].IsInt()) {
+                parsedNode = new LiteralNode(Smi::fromInt(value[L"value"].GetInt()));
+            } else {
+                RELEASE_ASSERT_NOT_REACHED();
+            }
+
         }
 #ifndef NDEBUG
         if(!parsedNode) {

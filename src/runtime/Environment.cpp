@@ -5,13 +5,9 @@
 
 namespace escargot {
 
-GlobalEnvironmentRecord::GlobalEnvironmentRecord(GlobalObject* G) {
-    m_objectRecord = new ObjectEnvironmentRecord(G);
-    m_declarativeRecord = new DeclarativeEnvironmentRecord();
-}
-
 //$8.1.1.4.12
-bool GlobalEnvironmentRecord::hasVarDeclaration(const ESString& name) {
+bool GlobalEnvironmentRecord::hasVarDeclaration(const ESString& name)
+{
     if( std::find(m_varNames.begin(), m_varNames.end(), name) != m_varNames.end() )
         return true;
     return false;
@@ -31,12 +27,11 @@ bool GlobalEnvironmentRecord::canDeclareGlobalVar(const ESString& name) {
 //$8.1.1.4.16
 bool GlobalEnvironmentRecord::canDeclareGlobalFunction(const ESString& name) {
     JSObject* globalObj = m_objectRecord->bindingObject();
-    JSObject::PropertyDescriptor pd = globalObj->getOwnProperty(name);
-    /*
-    if (pd == JSObject::m_undefined)
+    JSObjectSlot* pd = globalObj->find(name);
+    if(pd == NULL)
         return globalObj->isExtensible();
-    */
-    if (pd.m_isConfigurable == true)
+
+    if (pd->isConfigurable() == true)
         return true;
 
     // IsDataDescriptor && ..
@@ -62,19 +57,8 @@ void GlobalEnvironmentRecord::createGlobalVarBinding(const ESString& name, bool 
 //$8.1.1.4.18
 void GlobalEnvironmentRecord::createGlobalFunctionBinding(const ESString& name, ESValue* V, bool canDelete) {
     JSObject* globalObj = m_objectRecord->bindingObject();
-//    JSObject::PropertyDescriptor existingProp = globalObj->getOwnProperty(name);
-    // ReturnIfAbrupt(hasProperty)
-    JSObject::PropertyDescriptor desc;
-//    if (existingProp == undefined || existingProp.m_isConfigurable) {
-//        desc.m_value = V;
-//        desc.m_isWritable = true;
-//        desc.m_isEnumerable = true;
-//        desc.m_isConfigurable = canDelete;
-//    } else {
-        desc.m_value = V;
-//    }
-    globalObj->definePropertyOrThrow(name, desc);
-    globalObj->setValue(name, V, false);
+    globalObj->definePropertyOrThrow(name, true, true, canDelete);
+    globalObj->set(name, V, false);
     if( std::find(m_varNames.begin(), m_varNames.end(), name) == m_varNames.end() )
         m_varNames.push_back(name);
 }
@@ -87,9 +71,10 @@ ESValue* GlobalEnvironmentRecord::getThisBinding() {
 }
 
 //$8.1.1.4.1
-bool GlobalEnvironmentRecord::hasBinding(const ESString& name) {
-    if( m_declarativeRecord->hasBinding(name) )
-        return true;
+JSObjectSlot* GlobalEnvironmentRecord::hasBinding(const ESString& name) {
+    JSObjectSlot* ret = m_declarativeRecord->hasBinding(name);
+    if(ret)
+        return ret;
     return m_objectRecord->hasBinding(name);
 }
 
@@ -105,7 +90,7 @@ void GlobalEnvironmentRecord::initializeBinding(const ESString& name, ESValue* V
     if( m_declarativeRecord->hasBinding(name) )
         m_declarativeRecord->initializeBinding(name, V);
     else {
-        assert(m_objectRecord->hasBinding(name));
+        ASSERT(m_objectRecord->hasBinding(name));
         m_objectRecord->initializeBinding(name, V);
     }
 }
@@ -121,12 +106,7 @@ ESValue* GlobalEnvironmentRecord::getBindingValue(const ESString& name, bool ign
 
 //$8.1.1.2.2
 void ObjectEnvironmentRecord::createMutableBinding(const ESString& name, bool canDelete) {
-    JSObject::PropertyDescriptor pd;
-    //pd.value = undefined;
-    pd.m_isWritable = true;
-    pd.m_isEnumerable = true;
-    pd.m_isConfigurable = canDelete;
-    m_bindingObject->definePropertyOrThrow(name, pd);
+    m_bindingObject->definePropertyOrThrow(name, true, true, canDelete);
 }
 
 //$8.1.1.2.4
@@ -136,6 +116,6 @@ void ObjectEnvironmentRecord::initializeBinding(const ESString& name, ESValue* V
 
 //$8.1.1.2.5
 void ObjectEnvironmentRecord::setMutableBinding(const ESString& name, ESValue* V, bool S) {
-    m_bindingObject->setValue(name, V, S);
+    m_bindingObject->set(name, V, S);
 }
 }

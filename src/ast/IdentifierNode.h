@@ -15,7 +15,14 @@ public:
     {
         m_name = name;
     }
-    virtual void execute(ESVMInstance* ) { }
+
+    ESValue* execute(ESVMInstance* instance);
+
+    const ESString& name()
+    {
+        return m_name;
+    }
+
 protected:
     ESString m_name;
 };

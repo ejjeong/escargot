@@ -19,7 +19,7 @@ public:
         m_hashValue = m_isHashInited = false;
 
         std::mbstate_t state = std::mbstate_t();
-        int len = 1 + std::mbsrtowcs(NULL, &s, 0, &state);
+        int len = std::mbsrtowcs(NULL, &s, 0, &state);
         allocString(len);
         std::mbsrtowcs((wchar_t *)m_string->data(), &s, m_string->size(), &state);
     }
@@ -40,15 +40,22 @@ public:
 
     ALWAYS_INLINE friend bool operator == (const ESString& a,const ESString& b);
 
-    const wchar_t* data()
+    const wchar_t* data() const
     {
         if(m_string) {
             return m_string->data();
         }
         return NULL;
     }
+
+    size_t hashValue() const
+    {
+        initHash();
+        return m_hashValue;
+    }
+
 #ifndef NDEBUG
-    void show()
+    void show() const
     {
         wprintf(L"%ls\n",data());
     }
@@ -68,12 +75,15 @@ protected:
     ALWAYS_INLINE void invalidationHash() const
     {
         m_isHashInited = false;
+        m_hashValue = 0;
     }
 
     void allocString(size_t stringLength)
     {
         m_string = new ESStringStd();
         m_string->resize(stringLength);
+
+        invalidationHash();
     }
 
     mutable size_t m_hashValue;
@@ -102,6 +112,18 @@ ALWAYS_INLINE bool operator == (const ESString& a,const ESString& b)
     }
 }
 
+
+}
+
+namespace std
+{
+template<> struct hash<::escargot::ESString>
+{
+    size_t operator()(escargot::ESString const &x) const
+    {
+        return x.hashValue();
+    }
+};
 }
 
 #endif

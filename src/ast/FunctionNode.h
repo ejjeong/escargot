@@ -17,7 +17,6 @@ public:
         m_isGenerator = false;
         m_isExpression = false;
     }
-    virtual void execute(ESVMInstance* ) { }
 protected:
     ESString m_id; //id: Identifier | null;
     PatternNodeVector m_params; //params: [ Pattern ];

@@ -3,7 +3,7 @@
 
 namespace escargot {
 
-ESValue ESFunctionCaller::call(ESValue callee, ESValue receiver, ESValue* arguments, size_t argumentCount, ESVMInstance* ESVMInstance)
+ESValue* ESFunctionCaller::call(ESValue callee, ESValue receiver, ESValue* arguments, size_t argumentCount, ESVMInstance* ESVMInstance)
 {
     //assert(callee == JSFunction)
     //assert(receiver == JSObject)
@@ -17,7 +17,7 @@ ESValue ESFunctionCaller::call(ESValue callee, ESValue receiver, ESValue* argume
     ESVMInstance->currentExecutionCtx = currentCtx;
     */
 
-    return ESValue();
+    return undefined;
 }
 
 }

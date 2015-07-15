@@ -12,7 +12,6 @@ public:
             : StatementNode(NodeType::EmptyStatement)
     {
     }
-    virtual void execute(ESVMInstance* ) { }
 protected:
 };
 

@@ -18,6 +18,7 @@ public:
     enum AssignmentOperator {
         Equal, //"="
     };
+
     AssignmentExpressionNode(Node* left, Node* right, AssignmentOperator oper)
             : ExpressionNode(NodeType::AssignmentExpression)
     {
@@ -25,7 +26,21 @@ public:
         m_right = right;
         m_operator = oper;
     }
-    virtual void execute(ESVMInstance* ) { }
+
+    virtual ESValue* execute(ESVMInstance* instance)
+    {
+
+        if(m_operator == Equal) {
+            //http://www.ecma-international.org/ecma-262/5.1/#sec-11.13.1
+            //TODO
+            ESValue* rval = m_right->execute(instance);
+            ESValue* lref = m_left->execute(instance);
+            JSObjectSlot* slot = lref->toHeapObject()->toJSObjectSlot();
+            slot->setValue(rval);
+        }
+
+        return undefined;
+    }
 protected:
     Node* m_left; //left: Pattern;
     Node* m_right; //right: Expression;

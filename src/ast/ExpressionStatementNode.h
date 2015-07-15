@@ -13,7 +13,12 @@ public:
     {
         m_expression = expression;
     }
-    virtual void execute(ESVMInstance* ) { }
+
+    ESValue* execute(ESVMInstance* instance)
+    {
+        m_expression->execute(instance);
+        return undefined;
+    }
 protected:
     Node* m_expression; //expression: Expression;
 };

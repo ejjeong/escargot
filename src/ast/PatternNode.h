@@ -11,7 +11,6 @@ public:
             : Node(type)
     {
     }
-    virtual void execute(ESVMInstance* ) { }
 protected:
 };
 

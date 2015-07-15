@@ -8,14 +8,18 @@ namespace escargot {
 //interface Literal <: Node, Expression {
 class LiteralNode : public Node {
 public:
-    LiteralNode(const ESValue& value)
+    LiteralNode(ESValue* value)
             : Node(NodeType::Literal)
     {
         m_value = value;
     }
-    virtual void execute(ESVMInstance* ) { }
+
+    virtual ESValue* execute(ESVMInstance* instance)
+    {
+        return m_value;
+    }
 protected:
-    ESValue m_value;
+    ESValue* m_value;
 };
 
 }
