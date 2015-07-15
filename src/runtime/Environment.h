@@ -41,7 +41,7 @@ protected:
 class EnvironmentRecord : public gc_cleanup {
 protected:
     struct EnvironmentRecordValue {
-        ESValue m_value;
+        ESValue* m_value;
         bool m_isMutable:1;
         bool m_canDelete:1;
         //6-bits remain
@@ -52,9 +52,9 @@ public:
     virtual bool hasBinding(const ESString& name) = 0;
     virtual void createMutableBinding(const ESString& name, bool canDelete = false) = 0;
     virtual void createImmutableBinding(const ESString& name, bool throwExecptionWhenAccessBeforeInit = false) = 0;
-    virtual void initializeBinding(const ESString& name, ESValue V) = 0;
-    virtual void setMutableBinding(const ESString& name, ESValue V, bool mustNotThrowTypeErrorExecption) = 0;
-    virtual ESValue getBindingValue(const ESString& name, bool ignoreReferenceErrorException) = 0;
+    virtual void initializeBinding(const ESString& name, ESValue* V) = 0;
+    virtual void setMutableBinding(const ESString& name, ESValue* V, bool mustNotThrowTypeErrorExecption) = 0;
+    virtual ESValue* getBindingValue(const ESString& name, bool ignoreReferenceErrorException) = 0;
     virtual bool deleteBinding(const ESString& name) = 0;
     //HasThisBinding()
     //HasSuperBinding()
@@ -72,9 +72,9 @@ public:
     bool hasBinding(const ESString& name);
     void createMutableBinding(const ESString& name, bool canDelete = false);
     void createImmutableBinding(const ESString& name, bool throwExecptionWhenAccessBeforeInit = false) {}
-    void initializeBinding(const ESString& name, ESValue V);
-    void setMutableBinding(const ESString& name, ESValue V, bool mustNotThrowTypeErrorExecption) {}
-    ESValue getBindingValue(const ESString& name, bool ignoreReferenceErrorException);
+    void initializeBinding(const ESString& name, ESValue* V);
+    void setMutableBinding(const ESString& name, ESValue* V, bool mustNotThrowTypeErrorExecption) {}
+    ESValue* getBindingValue(const ESString& name, bool ignoreReferenceErrorException);
     bool deleteBinding(const ESString& name)
     {
         return false;
@@ -87,7 +87,7 @@ public:
     bool canDeclareGlobalVar(const ESString& name);
     bool canDeclareGlobalFunction(const ESString& name);
     void createGlobalVarBinding(const ESString& name, bool canDelete);
-    void createGlobalFunctionBinding(const ESString& name, ESValue V, bool canDelete);
+    void createGlobalFunctionBinding(const ESString& name, ESValue* V, bool canDelete);
 
 protected:
     ObjectEnvironmentRecord* m_objectRecord;
@@ -108,11 +108,11 @@ public:
     }
     void createMutableBinding(const ESString& name, bool canDelete = false);
     void createImmutableBinding(const ESString& name, bool throwExecptionWhenAccessBeforeInit = false) {}
-    void initializeBinding(const ESString& name, ESValue V);
-    void setMutableBinding(const ESString& name, ESValue V, bool mustNotThrowTypeErrorExecption);
-    ESValue getBindingValue(const ESString& name, bool ignoreReferenceErrorException)
+    void initializeBinding(const ESString& name, ESValue* V);
+    void setMutableBinding(const ESString& name, ESValue* V, bool mustNotThrowTypeErrorExecption);
+    ESValue* getBindingValue(const ESString& name, bool ignoreReferenceErrorException)
     {
-        return ESValue();
+        return NULL;//ESValue();
     }
     bool deleteBinding(const ESString& name)
     {
@@ -136,11 +136,11 @@ public:
     }
     void createMutableBinding(const ESString& name, bool canDelete = false) {}
     void createImmutableBinding(const ESString& name, bool throwExecptionWhenAccessBeforeInit = false) {}
-    void initializeBinding(const ESString& name, ESValue V) {}
-    void setMutableBinding(const ESString& name, ESValue V, bool mustNotThrowTypeErrorExecption) {}
-    ESValue getBindingValue(const ESString& name, bool ignoreReferenceErrorException)
+    void initializeBinding(const ESString& name, ESValue* V) {}
+    void setMutableBinding(const ESString& name, ESValue* V, bool mustNotThrowTypeErrorExecption) {}
+    ESValue* getBindingValue(const ESString& name, bool ignoreReferenceErrorException)
     {
-        return ESValue();
+        return NULL;//ESValue();
     }
     bool deleteBinding(const ESString& name)
     {
@@ -156,18 +156,18 @@ class FunctionEnvironmentRecord : public DeclarativeEnvironmentRecord {
     }
     void createMutableBinding(const ESString& name, bool canDelete = false) {}
     void createImmutableBinding(const ESString& name, bool throwExecptionWhenAccessBeforeInit = false) {}
-    void initializeBinding(const ESString& name, ESValue V) {}
-    void setMutableBinding(const ESString& name, ESValue V, bool mustNotThrowTypeErrorExecption) {}
-    ESValue getBindingValue(const ESString& name, bool ignoreReferenceErrorException)
+    void initializeBinding(const ESString& name, ESValue* V) {}
+    void setMutableBinding(const ESString& name, ESValue* V, bool mustNotThrowTypeErrorExecption) {}
+    ESValue* getBindingValue(const ESString& name, bool ignoreReferenceErrorException)
     {
-        return ESValue();
+        return NULL;//ESValue();
     }
     bool deleteBinding(const ESString& name)
     {
         return false;
     }
 protected:
-    ESValue m_thisValue;
+    ESValue* m_thisValue;
 };
 
 /*

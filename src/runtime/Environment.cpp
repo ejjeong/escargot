@@ -60,7 +60,7 @@ void GlobalEnvironmentRecord::createGlobalVarBinding(const ESString& name, bool 
 }
 
 //$8.1.1.4.18
-void GlobalEnvironmentRecord::createGlobalFunctionBinding(const ESString& name, ESValue V, bool canDelete) {
+void GlobalEnvironmentRecord::createGlobalFunctionBinding(const ESString& name, ESValue* V, bool canDelete) {
     JSObject* globalObj = m_objectRecord->bindingObject();
 //    JSObject::PropertyDescriptor existingProp = globalObj->getOwnProperty(name);
     // ReturnIfAbrupt(hasProperty)
@@ -101,7 +101,7 @@ void GlobalEnvironmentRecord::createMutableBinding(const ESString& name, bool ca
 }
 
 //$8.1.1.4.4
-void GlobalEnvironmentRecord::initializeBinding(const ESString& name, ESValue V) {
+void GlobalEnvironmentRecord::initializeBinding(const ESString& name, ESValue* V) {
     if( m_declarativeRecord->hasBinding(name) )
         m_declarativeRecord->initializeBinding(name, V);
     else {
@@ -111,7 +111,7 @@ void GlobalEnvironmentRecord::initializeBinding(const ESString& name, ESValue V)
 }
 
 //$8.1.1.4.6
-ESValue GlobalEnvironmentRecord::getBindingValue(const ESString& name, bool ignoreReferenceErrorException) {
+ESValue* GlobalEnvironmentRecord::getBindingValue(const ESString& name, bool ignoreReferenceErrorException) {
     if( m_declarativeRecord->hasBinding(name) )
         return m_declarativeRecord->getBindingValue(name, ignoreReferenceErrorException);
     else {
@@ -130,12 +130,12 @@ void ObjectEnvironmentRecord::createMutableBinding(const ESString& name, bool ca
 }
 
 //$8.1.1.2.4
-void ObjectEnvironmentRecord::initializeBinding(const ESString& name, ESValue V) {
+void ObjectEnvironmentRecord::initializeBinding(const ESString& name, ESValue* V) {
     return setMutableBinding(name, V, false);
 }
 
 //$8.1.1.2.5
-void ObjectEnvironmentRecord::setMutableBinding(const ESString& name, ESValue V, bool S) {
+void ObjectEnvironmentRecord::setMutableBinding(const ESString& name, ESValue* V, bool S) {
     m_bindingObject->setValue(name, V, S);
 }
 }

@@ -49,13 +49,13 @@ class String : public HeapObject {
 class JSObject : public HeapObject {
 public:
     struct PropertyDescriptor {
-        ESValue m_value;
+        ESValue* m_value;
         bool m_isWritable;
         bool m_isEnumerable;
         bool m_isConfigurable;
     };
     ESValue* getValue(std::wstring key);
-    void setValue(const ESString& key, ESValue val, bool throwFlag) {}
+    void setValue(const ESString& key, ESValue* val, bool throwFlag) {}
     void definePropertyOrThrow(ESString key, PropertyDescriptor pd) {}
     bool hasOwnProperty(const ESString& key) {
         return true;
