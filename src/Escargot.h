@@ -72,6 +72,48 @@
 #endif
 #endif
 
+/* NEVER_INLINE */
+#ifndef NEVER_INLINE
+#if COMPILER(GCC)
+#define NEVER_INLINE __attribute__((__noinline__))
+#else
+#define NEVER_INLINE
+#endif
+#endif
+
+
+/* UNLIKELY */
+#ifndef UNLIKELY
+#if COMPILER(GCC)
+#define UNLIKELY(x) __builtin_expect((x), 0)
+#else
+#define UNLIKELY(x) (x)
+#endif
+#endif
+
+
+/* LIKELY */
+#ifndef LIKELY
+#if COMPILER(GCC)
+#define LIKELY(x) __builtin_expect((x), 1)
+#else
+#define LIKELY(x) (x)
+#endif
+#endif
+
+
+/* NO_RETURN */
+#ifndef NO_RETURN
+#if COMPILER(GCC)
+#define NO_RETURN __attribute((__noreturn__))
+#elif COMPILER(MSVC)
+#define NO_RETURN __declspec(noreturn)
+#else
+#define NO_RETURN
+#endif
+#endif
+
+
 #if !COMPILER(GCC)
 #include <codecvt>
 #endif

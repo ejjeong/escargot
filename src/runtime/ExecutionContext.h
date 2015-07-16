@@ -10,11 +10,16 @@ class LexicalEnvironment;
 class ExecutionContext : public gc_cleanup {
 public:
     ExecutionContext(LexicalEnvironment* lexEnv, LexicalEnvironment* varEnv);
-    LexicalEnvironment* variableEnvironment();
+    ALWAYS_INLINE LexicalEnvironment* environment()
+    {
+        //TODO
+        return m_variableEnvironment;
+    }
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
     JSObjectSlot* resolveBinding(const ESString& name);
-    //ResolveBinding(name, [env])
+
+    //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-execution-contexts
     //GetThisEnvironment()
 
 private:

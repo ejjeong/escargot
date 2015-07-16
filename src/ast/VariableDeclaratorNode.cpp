@@ -11,7 +11,13 @@ ESValue* VariableDeclaratorNode::execute(ESVMInstance* instance)
 {
     //TODO implement hoisting(process init AST later)
     ASSERT(m_id->type() == NodeType::Identifier);
-    instance->currentExecutionContext()->variableEnvironment()->record()->createMutableBinding(((IdentifierNode *)m_id)->name());
+
+    if(UNLIKELY(instance->currentExecutionContext()->environment()->record()->isGlobalEnvironmentRecord())) {
+        instance->currentExecutionContext()->environment()->record()->toGlobalEnvironmentRecord()->createGlobalVarBinding(((IdentifierNode *)m_id)->name(), false);
+    } else {
+        instance->currentExecutionContext()->environment()->record()->createMutableBinding(((IdentifierNode *)m_id)->name());
+    }
+
     return undefined;
 }
 

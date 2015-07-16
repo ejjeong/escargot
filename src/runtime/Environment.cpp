@@ -65,9 +65,7 @@ void GlobalEnvironmentRecord::createGlobalFunctionBinding(const ESString& name, 
 
 //$8.1.1.4.11
 ESValue* GlobalEnvironmentRecord::getThisBinding() {
-//    JSObject* globalObj = m_objectRecord->bindingObject();
-//    return new ESValue(sizeof(globalObj), globalObj);
-    return NULL;
+    return m_objectRecord->bindingObject();
 }
 
 //$8.1.1.4.1

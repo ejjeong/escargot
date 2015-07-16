@@ -22,6 +22,12 @@ void ESVMInstance::evaluate(const std::string& source)
 {
     Node* node = ESScriptParser::parseScript(source.c_str());
     node->execute(this);
+
+    /*
+    //test/basic_ctx1.js
+    ESValue* v = m_globalObject->get("a");
+    ASSERT(v->toSmi()->value() == 1);
+    */
 }
 
 }

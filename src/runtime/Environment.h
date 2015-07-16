@@ -9,8 +9,9 @@
 namespace escargot {
 
 class EnvironmentRecord;
-class ObjectEnvironmentRecord;
 class DeclarativeEnvironmentRecord;
+class GlobalEnvironmentRecord;
+class ObjectEnvironmentRecord;
 class JSObject;
 class GlobalObject;
 
@@ -78,8 +79,30 @@ public:
     {
         RELEASE_ASSERT_NOT_REACHED();
     }
+
     //HasSuperBinding()
     //WithBaseObject ()
+
+    virtual bool isGlobalEnvironmentRecord()
+    {
+        return false;
+    }
+
+    virtual bool isObjectEnvironmentRecord()
+    {
+        return false;
+    }
+
+    virtual bool isDeclarativeEnvironmentRecord()
+    {
+        return false;
+    }
+
+    GlobalEnvironmentRecord* toGlobalEnvironmentRecord()
+    {
+        ASSERT(isGlobalEnvironmentRecord());
+        return reinterpret_cast<GlobalEnvironmentRecord*>(this);
+    }
 
 protected:
 };
@@ -115,6 +138,11 @@ public:
     }
     ALWAYS_INLINE JSObject* bindingObject() {
         return m_bindingObject;
+    }
+
+    virtual bool isObjectEnvironmentRecord()
+    {
+        return true;
     }
 
 protected:
@@ -158,6 +186,11 @@ public:
         //TODO ignoreReferenceErrorException
         return m_innerObject->get(name);
     }
+
+    virtual bool isDeclarativeEnvironmentRecord()
+    {
+        return true;
+    }
 protected:
     JSObject* m_innerObject;
 };
@@ -185,6 +218,12 @@ public:
     void createGlobalVarBinding(const ESString& name, bool canDelete);
     void createGlobalFunctionBinding(const ESString& name, ESValue* V, bool canDelete);
     ESValue* getBindingValue(const ESString& name, bool ignoreReferenceErrorException);
+
+    virtual bool isGlobalEnvironmentRecord()
+    {
+        return true;
+    }
+
 protected:
     ObjectEnvironmentRecord* m_objectRecord;
     DeclarativeEnvironmentRecord* m_declarativeRecord;

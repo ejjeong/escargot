@@ -11,15 +11,10 @@ ExecutionContext::ExecutionContext(LexicalEnvironment* lexEnv, LexicalEnvironmen
     m_function = NULL;
 }
 
-LexicalEnvironment* ExecutionContext::variableEnvironment()
-{
-    return m_variableEnvironment;
-}
-
 JSObjectSlot* ExecutionContext::resolveBinding(const ESString& name)
 {
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
-    LexicalEnvironment* env = variableEnvironment();
+    LexicalEnvironment* env = environment();
 
     while(env) {
         JSObjectSlot* slot = env->record()->hasBinding(name);

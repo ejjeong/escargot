@@ -276,7 +276,11 @@ public:
             //TODO
         }
     }
+
     bool hasOwnProperty(const ESString& key) {
+        auto iter = m_map.find(key);
+        if(iter == m_map.end())
+            return false;
         return true;
     }
 
