@@ -37,6 +37,9 @@ class Number;
 class String;
 class JSObject;
 class JSObjectSlot;
+class JSArray;
+class JSFunction;
+class FunctionDeclarationNode;
 
 class HeapObject : public ESValue, public gc_cleanup {
 public:
@@ -48,6 +51,9 @@ public:
         String = 1 << 4,
         JSObject = 1 << 5,
         JSObjectSlot = 1 << 6,
+        JSFunction = 1 << 7,
+        JSArray = 1 << 8,
+        TypeMask = 0xff
     };
 
 protected:
@@ -60,7 +66,7 @@ public:
 
     ALWAYS_INLINE Type type()
     {
-        return (Type)(m_data & 0xf);
+        return (Type)(m_data & TypeMask);
     }
 
     ALWAYS_INLINE bool isUndefined()
@@ -154,8 +160,34 @@ public:
         return reinterpret_cast<::escargot::JSObjectSlot *>(this);
     }
 
+    ALWAYS_INLINE bool isJSArray()
+    {
+        return m_data & Type::JSArray;
+    }
+
+    ALWAYS_INLINE ::escargot::JSArray* toJSArray()
+    {
+#ifndef NDEBUG
+        ASSERT(isJSArray());
+#endif
+        return reinterpret_cast<::escargot::JSArray *>(this);
+    }
+
+    ALWAYS_INLINE bool isJSFunction()
+    {
+        return m_data & Type::JSFunction;
+    }
+
+    ALWAYS_INLINE ::escargot::JSFunction* toJSFunction()
+    {
+#ifndef NDEBUG
+        ASSERT(isJSFunction());
+#endif
+        return reinterpret_cast<::escargot::JSFunction *>(this);
+    }
+
 protected:
-    // 0x*******@
+    // 0x******@@
     // * -> Data
     // @ -> tag
     int m_data;
@@ -261,8 +293,8 @@ protected:
 
 class JSObject : public HeapObject {
 protected:
-    JSObject()
-        : HeapObject(HeapObject::Type::JSObject)
+    JSObject(HeapObject::Type type = HeapObject::Type::JSObject)
+        : HeapObject(type)
     {
     }
 public:
@@ -361,11 +393,24 @@ class JSArray : public JSObject {
 class LexicalEnvironment;
 class Node;
 class JSFunction : public JSObject {
+protected:
+    JSFunction(LexicalEnvironment* outerEnvironment, FunctionDeclarationNode* functionAST)
+        : JSObject((Type)(Type::JSObject | Type::JSFunction))
+    {
+        m_outerEnvironment = outerEnvironment;
+        m_functionAST = functionAST;
+    }
 public:
-    JSFunction(LexicalEnvironment* , Node* );
+    static JSFunction* create(LexicalEnvironment* outerEnvironment, FunctionDeclarationNode* functionAST)
+    {
+        return new JSFunction(outerEnvironment, functionAST);
+    }
+
+    FunctionDeclarationNode* functionAST() { return m_functionAST; }
+    LexicalEnvironment* outerEnvironment() { return m_outerEnvironment; }
 protected:
     LexicalEnvironment* m_outerEnvironment;
-    Node* m_body;
+    FunctionDeclarationNode* m_functionAST;
     enum ThisBindingStatus {
         lexical, initialized, uninitialized
     };

@@ -1,6 +1,6 @@
 var a;
 a = 1;
-
+print(a);
 /*
  * ProgramAST
  * [VariableDe...AST "a", AssignmentAST "a" 1]

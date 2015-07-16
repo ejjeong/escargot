@@ -9,7 +9,7 @@ class JSObjectSlot;
 class LexicalEnvironment;
 class ExecutionContext : public gc_cleanup {
 public:
-    ExecutionContext(LexicalEnvironment* lexEnv, LexicalEnvironment* varEnv);
+    ExecutionContext(LexicalEnvironment* varEnv);
     ALWAYS_INLINE LexicalEnvironment* environment()
     {
         //TODO

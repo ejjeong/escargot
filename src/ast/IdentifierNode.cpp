@@ -12,8 +12,6 @@ ESValue* IdentifierNode::execute(ESVMInstance* instance)
     JSObjectSlot* slot = instance->currentExecutionContext()->resolveBinding(name());
     if(slot)
         return slot;
-
-    throw "ReferenceError";
     return undefined;
 }
 

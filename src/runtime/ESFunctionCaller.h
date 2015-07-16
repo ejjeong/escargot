@@ -1,5 +1,5 @@
-#ifndef ExecutionContext_h
-#define ExecutionContext_h
+#ifndef ESFunctionCaller_h
+#define ESFunctionCaller_h
 
 #include "ESValue.h"
 
@@ -8,7 +8,8 @@ namespace escargot {
 class ESVMInstance;
 
 class ESFunctionCaller {
-    static ESValue* call(ESValue callee, ESValue receiver, ESValue* arguments, size_t argumentCount, ESVMInstance* ESVMInstance);
+public:
+    static ESValue* call(ESValue* callee, ESValue* receiver, ESValue* arguments[], size_t argumentCount, ESVMInstance* ESVMInstance);
 };
 
 }

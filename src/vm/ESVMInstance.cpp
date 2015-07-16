@@ -14,14 +14,20 @@ ESVMInstance::ESVMInstance()
     m_globalObject = new GlobalObject();
     LexicalEnvironment* a = new LexicalEnvironment(new GlobalEnvironmentRecord(m_globalObject), NULL);
 
-    m_globalExecutionContext = new ExecutionContext(a, a);
+    m_globalExecutionContext = new ExecutionContext(a);
     m_currentExecutionContext = m_globalExecutionContext;
 }
 
 void ESVMInstance::evaluate(const std::string& source)
 {
-    Node* node = ESScriptParser::parseScript(source.c_str());
-    node->execute(this);
+    try {
+        Node* node = ESScriptParser::parseScript(source.c_str());
+        node->execute(this);
+    } catch(const char* e) {
+        ESString str = e;
+        wprintf(L"%ls\n", str.data());
+    }
+
 
     /*
     //test/basic_ctx1.js

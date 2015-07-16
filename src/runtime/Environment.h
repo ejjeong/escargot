@@ -18,9 +18,9 @@ class GlobalObject;
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-lexical-environments
 class LexicalEnvironment : public gc_cleanup {
 public:
-    LexicalEnvironment(EnvironmentRecord* record, LexicalEnvironment* env)
+    LexicalEnvironment(EnvironmentRecord* record, LexicalEnvironment* outerEnv)
         : m_record(record)
-        , m_outerEnvironment(env)
+        , m_outerEnvironment(outerEnv)
     {
 
     }
@@ -33,6 +33,10 @@ public:
     {
         return m_outerEnvironment;
     }
+
+    //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-newfunctionenvironment
+    static LexicalEnvironment* newFunctionEnvironment(JSFunction* function, ESValue* newTarget);
+
 protected:
     EnvironmentRecord* m_record;
     LexicalEnvironment* m_outerEnvironment;
@@ -103,6 +107,14 @@ public:
         ASSERT(isGlobalEnvironmentRecord());
         return reinterpret_cast<GlobalEnvironmentRecord*>(this);
     }
+
+    DeclarativeEnvironmentRecord* toDeclarativeEnvironmentRecord()
+    {
+        ASSERT(isDeclarativeEnvironmentRecord());
+        return reinterpret_cast<DeclarativeEnvironmentRecord*>(this);
+    }
+
+    void createMutableBindingForAST(const ESString& name,bool canDelete);
 
 protected:
 };
@@ -191,6 +203,9 @@ public:
     {
         return true;
     }
+
+    JSObject* innerObject() { return m_innerObject; }
+
 protected:
     JSObject* m_innerObject;
 };
@@ -208,6 +223,7 @@ public:
     virtual JSObjectSlot* hasBinding(const ESString& name);
     void createMutableBinding(const ESString& name, bool canDelete = false);
     void initializeBinding(const ESString& name, ESValue* V);
+    void setMutableBinding(const ESString& name, ESValue* V, bool mustNotThrowTypeErrorExecption);
 
     ESValue* getThisBinding();
     bool hasVarDeclaration(const ESString& name);
@@ -234,8 +250,11 @@ protected:
 
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-function-environment-records
 class FunctionEnvironmentRecord : public DeclarativeEnvironmentRecord {
+    friend class LexicalEnvironment;
+public:
 protected:
     ESValue* m_thisValue;
+    JSFunction* m_functionObject;
 };
 
 /*
@@ -244,6 +263,7 @@ class ModuleEnvironmentRecord : public DeclarativeEnvironmentRecord {
 protected:
 };
 */
+
 
 }
 #endif

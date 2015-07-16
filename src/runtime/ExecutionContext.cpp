@@ -4,9 +4,9 @@
 
 namespace escargot {
 
-ExecutionContext::ExecutionContext(LexicalEnvironment* lexEnv, LexicalEnvironment* varEnv)
+ExecutionContext::ExecutionContext(LexicalEnvironment* varEnv)
 {
-    m_lexicalEnvironment = lexEnv;
+    m_lexicalEnvironment = varEnv;
     m_variableEnvironment = varEnv;
     m_function = NULL;
 }

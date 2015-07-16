@@ -1,7 +1,10 @@
 var b = 1;
 function foo() {
-  var a = 1;
+  var a;
+  a = 1;
   b = 2;
+  print(a);
+  print(b);
 }
 foo();
 

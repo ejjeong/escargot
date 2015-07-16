@@ -80,8 +80,11 @@ Node* ESScriptParser::parseScript(const std::string& source)
     ESString astTypeExpressionStatement(L"ExpressionStatement");
     ESString astTypeVariableDeclarator(L"VariableDeclarator");
     ESString astTypeIdentifier(L"Identifier");
-    ESString astAssignmentExpression(L"AssignmentExpression");
-    ESString astLiteral(L"Literal");
+    ESString astTypeAssignmentExpression(L"AssignmentExpression");
+    ESString astTypeLiteral(L"Literal");
+    ESString astTypeFunctionDeclaration(L"FunctionDeclaration");
+    ESString astTypeBlockStatement(L"BlockStatement");
+    ESString astTypeCallExpression(L"CallExpression");
 
     StatementNodeVector body;
     std::function<Node *(rapidjson::GenericValue<rapidjson::UTF16<>>& value)> fn;
@@ -124,16 +127,46 @@ Node* ESScriptParser::parseScript(const std::string& source)
         } else if(type == astTypeExpressionStatement) {
             Node* node = fn(value[L"expression"]);
             parsedNode = new ExpressionStatementNode(node);
-        } else if(type == astAssignmentExpression) {
+        } else if(type == astTypeAssignmentExpression) {
             parsedNode = new AssignmentExpressionNode(fn(value[L"left"]), fn(value[L"right"]), AssignmentExpressionNode::AssignmentOperator::Equal);
-        } else if(type == astLiteral) {
+        } else if(type == astTypeLiteral) {
             //TODO parse esvalue better
             if(value[L"value"].IsInt()) {
                 parsedNode = new LiteralNode(Smi::fromInt(value[L"value"].GetInt()));
+            } else if(value[L"value"].IsString()) {
+                parsedNode = new LiteralNode(String::create(value[L"value"].GetString()));
             } else {
                 RELEASE_ASSERT_NOT_REACHED();
             }
 
+        } else if(type == astTypeFunctionDeclaration) {
+            ESString id = value[L"id"][L"name"].GetString();
+            //TODO parse params;
+            ESStringVector params;
+
+            rapidjson::GenericValue<rapidjson::UTF16<>>& children = value[L"params"];
+            for (rapidjson::SizeType i = 0; i < children.Size(); i++) {
+                params.push_back(children[i][L"name"].GetString());
+            }
+
+            Node* body = fn(value[L"body"]);
+            parsedNode = new FunctionDeclarationNode(id, std::move(params), body, value[L"generator"].GetBool(), value[L"generator"].GetBool());
+        } else if(type == astTypeBlockStatement) {
+            StatementNodeVector body;
+            rapidjson::GenericValue<rapidjson::UTF16<>>& children = value[L"body"];
+            for (rapidjson::SizeType i = 0; i < children.Size(); i++) {
+                Node* n = fn(children[i]);
+                body.push_back(n);
+            }
+            parsedNode = new BlockStatementNode(std::move(body));
+        } else if(type == astTypeCallExpression) {
+            Node* callee = fn(value[L"callee"]);
+            ArgumentVector arguments;
+            rapidjson::GenericValue<rapidjson::UTF16<>>& children = value[L"arguments"];
+            for (rapidjson::SizeType i = 0; i < children.Size(); i++) {
+                arguments.push_back(fn(children[i]));
+            }
+            parsedNode = new CallExpressionNode(callee, std::move(arguments));
         }
 #ifndef NDEBUG
         if(!parsedNode) {

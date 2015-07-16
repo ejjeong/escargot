@@ -9,7 +9,7 @@ class JSBuiltinsObject;
 class GlobalObject : public JSObject {
 public:
     friend class ESVMInstance;
-    GlobalObject() { }
+    GlobalObject();
 protected:
     //JSBuiltinsObject* m_builtins;
     //Context* m_nativeContext;

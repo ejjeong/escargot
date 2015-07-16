@@ -9,6 +9,7 @@ class ExecutionContext;
 class GlobalObject;
 
 class ESVMInstance : public gc_cleanup {
+    friend class ESFunctionCaller;
 public:
     ESVMInstance();
     void evaluate(const std::string& source);

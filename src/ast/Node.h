@@ -15,13 +15,16 @@ enum NodeType {
     BlockStatement,
     Declaration,
     VariableDeclaration,
+    FunctionDeclaration,
     Pattern,
     Expression,
     ExpressionStatement,
     AssignmentExpression,
+    CallExpression,
     VariableDeclarator,
     Identifier,
     Literal,
+    NativeFunction
 };
 
 class SourceLocation {
@@ -39,8 +42,15 @@ protected:
 public:
     virtual ESValue* execute(ESVMInstance* instance)
     {
+        RELEASE_ASSERT_NOT_REACHED();
         return undefined;
     }
+
+    virtual ~Node()
+    {
+
+    }
+
     const NodeType& type() { return m_nodeType; }
 protected:
     NodeType m_nodeType;

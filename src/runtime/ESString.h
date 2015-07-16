@@ -13,6 +13,15 @@ public:
         m_hashValue = m_isHashInited = false;
     }
 
+    explicit ESString(int number)
+    {
+        //FIXME
+        std::wstring ws = std::to_wstring(number);
+        allocString(ws.size());
+        wcscpy((wchar_t *)m_string->data(), ws.data());
+        m_hashValue = m_isHashInited = false;
+    }
+
     ESString(const char* s)
     {
         m_string = NULL;
@@ -112,6 +121,7 @@ ALWAYS_INLINE bool operator == (const ESString& a,const ESString& b)
     }
 }
 
+typedef std::vector<ESString,gc_allocator<ESString>> ESStringVector;
 
 }
 

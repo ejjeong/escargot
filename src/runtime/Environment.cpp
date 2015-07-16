@@ -5,6 +5,35 @@
 
 namespace escargot {
 
+//http://www.ecma-international.org/ecma-262/6.0/index.html#sec-newfunctionenvironment
+//$8.1.2.4
+LexicalEnvironment* LexicalEnvironment::newFunctionEnvironment(JSFunction* function, ESValue* newTarget)
+{
+    ASSERT(newTarget->isHeapObject());
+    ASSERT(newTarget->toHeapObject()->isUndefined() || newTarget->toHeapObject()->isJSObject());
+    FunctionEnvironmentRecord* envRec = new FunctionEnvironmentRecord();
+    envRec->m_functionObject = function;
+
+    LexicalEnvironment* env = new LexicalEnvironment(envRec, function->outerEnvironment());
+    //TODO
+    //If F’s [[ThisMode]] internal slot is lexical, set envRec.[[thisBindingStatus]] to "lexical".
+    //[[ThisMode]] internal slot is lexical, set envRec.[[thisBindingStatus]] to "lexical".
+    //Let home be the value of F’s [[HomeObject]] internal slot.
+    //Set envRec.[[HomeObject]] to home.
+    //Set envRec.[[NewTarget]] to newTarget.
+
+    return env;
+}
+
+void EnvironmentRecord::createMutableBindingForAST(const ESString& name,bool canDelete)
+{
+    if(UNLIKELY(isGlobalEnvironmentRecord())) {
+        toGlobalEnvironmentRecord()->createGlobalVarBinding(name, canDelete);
+    } else {
+        createMutableBinding(name, canDelete);
+    }
+}
+
 //$8.1.1.4.12
 bool GlobalEnvironmentRecord::hasVarDeclaration(const ESString& name)
 {
@@ -99,6 +128,16 @@ ESValue* GlobalEnvironmentRecord::getBindingValue(const ESString& name, bool ign
         return m_declarativeRecord->getBindingValue(name, ignoreReferenceErrorException);
     else {
         return m_objectRecord->getBindingValue(name, ignoreReferenceErrorException);
+    }
+}
+
+//$8.1.1.4.5
+//http://www.ecma-international.org/ecma-262/6.0/index.html#sec-global-environment-records-setmutablebinding-n-v-s
+void GlobalEnvironmentRecord::setMutableBinding(const ESString& name, ESValue* V, bool S) {
+    if( m_declarativeRecord->hasBinding(name)) {
+        m_declarativeRecord->setMutableBinding(name, V, S);
+    } else {
+        m_objectRecord->setMutableBinding(name, V, S);
     }
 }
 
