@@ -6,6 +6,7 @@
 #include "BlockStatementNode.h"
 #include "EmptyStatementNode.h"
 #include "ExpressionNode.h"
+#include "SequenceExpressionNode.h"
 #include "ExpressionStatementNode.h"
 #include "FunctionNode.h"
 #include "IdentifierNode.h"

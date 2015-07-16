@@ -83,25 +83,40 @@ Node* ESScriptParser::parseScript(const std::string& source)
     ESString astAssignmentExpression(L"AssignmentExpression");
     ESString astLiteral(L"Literal");
 
+    StatementNodeVector body;
     std::function<Node *(rapidjson::GenericValue<rapidjson::UTF16<>>& value)> fn;
     fn = [&](rapidjson::GenericValue<rapidjson::UTF16<>>& value) -> Node* {
         Node* parsedNode = NULL;
         ESString type(value[L"type"].GetString());
         if(type == astTypeProgram) {
-            StatementNodeVector body;
             rapidjson::GenericValue<rapidjson::UTF16<>>& children = value[L"body"];
             for (rapidjson::SizeType i = 0; i < children.Size(); i++) {
                 Node* n = fn(children[i]);
-                body.push_back(n);
+                if (n != NULL) {
+                	body.push_back(n);
+                  }
             }
             parsedNode = new ProgramNode(std::move(body));
         } else if(type == astTypeVariableDeclaration) {
             rapidjson::GenericValue<rapidjson::UTF16<>>& children = value[L"declarations"];
             VariableDeclaratorVector decl;
+            ExpressionNodeVector assi;
             for (rapidjson::SizeType i = 0; i < children.Size(); i++) {
                 decl.push_back(fn(children[i]));
-            }
-            parsedNode = new VariableDeclarationNode(std::move(decl));
+                if (children[i][L"init"].GetType() != rapidjson::Type::kNullType) {
+                		assi.push_back(new AssignmentExpressionNode(fn(children[i][L"id"]), fn(children[i][L"init"]), AssignmentExpressionNode::AssignmentOperator::Equal));
+                  }
+             }
+
+            body.insert(body.begin(), new VariableDeclarationNode(std::move(decl)));
+
+            if (assi.size() > 1) {
+            		parsedNode = new ExpressionStatementNode(new SequenceExpressionNode(std::move(assi)));
+            } else if (assi.size() == 1) {
+            		parsedNode = new ExpressionStatementNode(assi[0]);
+            } else {
+            		return NULL;
+              }
         } else if(type == astTypeVariableDeclarator) {
             parsedNode = new VariableDeclaratorNode(fn(value[L"id"]));
         } else if(type == astTypeIdentifier) {
