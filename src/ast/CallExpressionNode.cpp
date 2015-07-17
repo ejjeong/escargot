@@ -18,10 +18,7 @@ ESValue* CallExpressionNode::execute(ESVMInstance* instance)
 
     std::vector<ESValue*, gc_allocator<ESValue*>> arguments;
     for(unsigned i = 0; i < m_arguments.size() ; i ++) {
-        ESValue* result = m_arguments[i]->execute(instance);
-        if(result->isHeapObject() && result->toHeapObject()->isJSObjectSlot()) {
-            result = result->toHeapObject()->toJSObjectSlot()->value();
-        }
+        ESValue* result = m_arguments[i]->execute(instance)->ensureValue();
         arguments.push_back(result);
     }
 

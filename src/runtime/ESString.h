@@ -22,6 +22,16 @@ public:
         m_hashValue = m_isHashInited = false;
     }
 
+    explicit ESString(double number)
+    {
+        //FIXME
+        wchar_t buf[512];
+        std::swprintf(buf, 511, L"%g", number);
+        allocString(wcslen(buf));
+        wcscpy((wchar_t *)m_string->data(), buf);
+        m_hashValue = m_isHashInited = false;
+    }
+
     ESString(const char* s)
     {
         m_string = NULL;

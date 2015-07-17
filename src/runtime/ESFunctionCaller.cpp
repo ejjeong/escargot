@@ -24,6 +24,7 @@ ESValue* ESFunctionCaller::call(ESValue* callee, ESValue* receiver, ESValue* arg
             argumentsObject->set(ESString((int)i), arguments[i]);
         }
         innerObject->set(L"arguments", argumentsObject);
+        innerObject->set(L"length", Smi::fromInt(argumentCount));
 
         const ESStringVector& params = fn->functionAST()->params();
 

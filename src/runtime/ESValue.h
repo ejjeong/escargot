@@ -20,6 +20,8 @@ public:
     bool isHeapObject() const;
     Smi* toSmi() const;
     HeapObject* toHeapObject() const;
+    ESString toESString();
+    ALWAYS_INLINE ESValue* ensureValue();
 };
 
 class Smi : public ESValue {

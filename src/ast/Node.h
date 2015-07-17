@@ -10,6 +10,7 @@ class ESVMInstance;
 enum NodeType {
     Program,
     Function,
+    Property,
     Statement,
     EmptyStatement,
     BlockStatement,
@@ -20,11 +21,13 @@ enum NodeType {
     Expression,
     ExpressionStatement,
     AssignmentExpression,
+    ObjectExpression,
+    MemberExpression,
     CallExpression,
     VariableDeclarator,
     Identifier,
     Literal,
-    NativeFunction
+    NativeFunction,
 };
 
 class SourceLocation {

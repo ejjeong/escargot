@@ -144,6 +144,14 @@ inline Smi* Smi::fromIntptr(intptr_t value)
     return reinterpret_cast<Smi*>((value << smi_shift_bits) | kSmiTag);
 }
 
+ALWAYS_INLINE ESValue* ESValue::ensureValue()
+{
+    if(isHeapObject() && toHeapObject()->isJSObjectSlot()) {
+        return toHeapObject()->toJSObjectSlot()->value();
+    }
+    return this;
+}
+
 }
 
 #endif

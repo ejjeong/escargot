@@ -85,6 +85,9 @@ Node* ESScriptParser::parseScript(const std::string& source)
     ESString astTypeFunctionDeclaration(L"FunctionDeclaration");
     ESString astTypeBlockStatement(L"BlockStatement");
     ESString astTypeCallExpression(L"CallExpression");
+    ESString astTypeObjectExpression(L"ObjectExpression");
+    ESString astTypeMemberExpression(L"MemberExpression");
+    ESString astTypeProperty(L"Property");
 
     StatementNodeVector body;
     std::function<Node *(rapidjson::GenericValue<rapidjson::UTF16<>>& value)> fn;
@@ -177,6 +180,25 @@ Node* ESScriptParser::parseScript(const std::string& source)
                 arguments.push_back(fn(children[i]));
             }
             parsedNode = new CallExpressionNode(callee, std::move(arguments));
+        } else if(type == astTypeObjectExpression) {
+            PropertiesNodeVector propertiesVector;
+            rapidjson::GenericValue<rapidjson::UTF16<>>& children = value[L"properties"];
+            for (rapidjson::SizeType i = 0; i < children.Size(); i++) {
+                Node* n = fn(children[i]);
+                ASSERT(n->type() == NodeType::Property);
+                propertiesVector.push_back((PropertyNode *)n);
+            }
+            parsedNode = new ObjectExpressionNode(std::move(propertiesVector));
+        } else if(type == astTypeProperty) {
+            PropertyNode::Kind kind = PropertyNode::Kind::Init;
+            if(std::wstring(L"get") == value[L"kind"].GetString()) {
+                kind = PropertyNode::Kind::Get;
+            } else if(std::wstring(L"set") == value[L"kind"].GetString()) {
+                kind = PropertyNode::Kind::Set;
+            }
+            parsedNode = new PropertyNode(fn(value[L"key"]), fn(value[L"value"]), kind);
+        } else if(type == astTypeMemberExpression) {
+            parsedNode = new MemberExpressionNode(fn(value[L"object"]), fn(value[L"property"]));
         }
 #ifndef NDEBUG
         if(!parsedNode) {
