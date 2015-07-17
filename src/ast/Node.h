@@ -20,6 +20,7 @@ enum NodeType {
     Pattern,
     Expression,
     ExpressionStatement,
+    ArrayExpression,
     AssignmentExpression,
     ObjectExpression,
     MemberExpression,

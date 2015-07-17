@@ -84,6 +84,7 @@ Node* ESScriptParser::parseScript(const std::string& source)
     ESString astTypeLiteral(L"Literal");
     ESString astTypeFunctionDeclaration(L"FunctionDeclaration");
     ESString astTypeBlockStatement(L"BlockStatement");
+    ESString astTypeArrayExpression(L"ArrayExpression");
     ESString astTypeCallExpression(L"CallExpression");
     ESString astTypeObjectExpression(L"ObjectExpression");
     ESString astTypeMemberExpression(L"MemberExpression");
@@ -166,6 +167,13 @@ Node* ESScriptParser::parseScript(const std::string& source)
             Node* func_body = fn(value[L"body"]);
             current_body->insert(current_body->begin(), new FunctionDeclarationNode(id, std::move(params), func_body, value[L"generator"].GetBool(), value[L"generator"].GetBool()));
             return NULL;
+        } else if(type == astTypeArrayExpression) {
+            ExpressionNodeVector elems;
+            rapidjson::GenericValue<rapidjson::UTF16<>>& children = value[L"elements"];
+            for (rapidjson::SizeType i = 0; i < children.Size(); i++) {
+                elems.push_back(fn(children[i]));
+            }
+            parsedNode = new ArrayExpressionNode(std::move(elems));
         } else if(type == astTypeBlockStatement) {
             StatementNodeVector block_body;
             StatementNodeVector* outer_body = current_body;

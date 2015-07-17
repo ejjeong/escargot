@@ -1,6 +1,7 @@
 #ifndef AST_h
 #define AST_h
 
+#include "ArrayExpressionNode.h"
 #include "AssignmentExpressionNode.h"
 #include "Node.h"
 #include "BlockStatementNode.h"

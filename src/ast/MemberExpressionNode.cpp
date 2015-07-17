@@ -18,7 +18,11 @@ ESValue* MemberExpressionNode::execute(ESVMInstance* instance)
         instance->currentExecutionContext()->setLastJSObjectMetInMemberExpressionNode(obj->toHeapObject()->toJSObject(),
                 property);
 
-        return obj->toHeapObject()->toJSObject()->find(property->toESString());
+        JSObjectSlot* res = obj->toHeapObject()->toJSObject()->find(property->toESString());
+        if (res == NULL)
+            return undefined;
+        else
+            return res;
     } else {
         throw "TypeError";
     }

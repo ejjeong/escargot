@@ -424,6 +424,15 @@ protected:
 };
 
 class JSArray : public JSObject {
+protected:
+    JSArray(HeapObject::Type type = HeapObject::Type::JSArray)
+        : JSObject((Type)(Type::JSObject | Type::JSArray))
+    {
+    }
+public:
+    static JSArray* create() {
+        return new JSArray();
+    }
 };
 
 class LexicalEnvironment;
