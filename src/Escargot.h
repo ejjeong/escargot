@@ -11,6 +11,7 @@
 #include <cassert>
 #include <functional>
 #include <algorithm>
+#include <cmath>
 
 #include <unistd.h>
 #include <sys/types.h>

@@ -107,19 +107,20 @@ Node* ESScriptParser::parseScript(const std::string& source)
             for (rapidjson::SizeType i = 0; i < children.Size(); i++) {
                 decl.push_back(fn(children[i]));
                 if (children[i][L"init"].GetType() != rapidjson::Type::kNullType) {
-                		assi.push_back(new AssignmentExpressionNode(fn(children[i][L"id"]), fn(children[i][L"init"]), AssignmentExpressionNode::AssignmentOperator::Equal));
-                  }
-             }
+                    assi.push_back(new AssignmentExpressionNode(fn(children[i][L"id"]),
+                            fn(children[i][L"init"]), AssignmentExpressionNode::AssignmentOperator::Equal));
+                }
+            }
 
             body.insert(body.begin(), new VariableDeclarationNode(std::move(decl)));
 
             if (assi.size() > 1) {
-            		parsedNode = new ExpressionStatementNode(new SequenceExpressionNode(std::move(assi)));
+                parsedNode = new ExpressionStatementNode(new SequenceExpressionNode(std::move(assi)));
             } else if (assi.size() == 1) {
-            		parsedNode = new ExpressionStatementNode(assi[0]);
+                parsedNode = new ExpressionStatementNode(assi[0]);
             } else {
-            		return NULL;
-              }
+                return NULL;
+            }
         } else if(type == astTypeVariableDeclarator) {
             parsedNode = new VariableDeclaratorNode(fn(value[L"id"]));
         } else if(type == astTypeIdentifier) {
@@ -131,10 +132,19 @@ Node* ESScriptParser::parseScript(const std::string& source)
             parsedNode = new AssignmentExpressionNode(fn(value[L"left"]), fn(value[L"right"]), AssignmentExpressionNode::AssignmentOperator::Equal);
         } else if(type == astTypeLiteral) {
             //TODO parse esvalue better
-            if(value[L"value"].IsInt()) {
-                parsedNode = new LiteralNode(Smi::fromInt(value[L"value"].GetInt()));
+            if(value[L"value"].IsNumber()) {
+                double number = value[L"value"].GetDouble();
+                if(std::abs(number) < 0xC0000000 && value[L"value"].IsInt()) { //(1100)(0000)...(0000)
+                    parsedNode = new LiteralNode(Smi::fromInt(value[L"value"].GetInt()));
+                } else {
+                    parsedNode = new LiteralNode(Number::create(number));
+                }
             } else if(value[L"value"].IsString()) {
                 parsedNode = new LiteralNode(String::create(value[L"value"].GetString()));
+            } else if(value[L"value"].IsBool()) {
+                parsedNode = new LiteralNode(Boolean::create(value[L"value"].GetBool()));
+            } else if(value[L"value"].IsNull()) {
+                parsedNode = new LiteralNode(null);
             } else {
                 RELEASE_ASSERT_NOT_REACHED();
             }

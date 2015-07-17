@@ -21,19 +21,26 @@ GlobalObject::GlobalObject()
             if(ho->isUndefined()) {
                 wprintf(L"undefined\n");
             } else if(ho->isBoolean()) {
-                wprintf(L"boolean(TODO)\n");
+                escargot::Boolean* b = ho->toBoolean();
+                if(b->get()) {
+                    wprintf(L"true\n");
+                } else {
+                    wprintf(L"false\n");
+                }
+                wprintf(L"\n");
             } else if(ho->isNull()) {
                 wprintf(L"null\n");
             } else if(ho->isNumber()) {
-                wprintf(L"number(TODO)\n");
+                escargot::Number* n = ho->toNumber();
+                wprintf(L"%lg\n", n->get());
             } else if(ho->isString()) {
                 wprintf(L"%ls\n",ho->toString()->string().data());
-            } else if(ho->isJSObject()) {
-                wprintf(L"[Object object]\n");
             } else if(ho->isJSFunction()) {
                 wprintf(L"[Function function]\n");
             } else if(ho->isJSArray()) {
                 wprintf(L"[Array array]\n");
+            } else if(ho->isJSObject()) {
+                wprintf(L"[Object object]\n");
             } else {
                 RELEASE_ASSERT_NOT_REACHED();
             }

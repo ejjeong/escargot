@@ -227,9 +227,53 @@ extern Null* null;
 
 
 class Boolean : public HeapObject {
+protected:
+    const int DataMask = 0x80000000;
+    Boolean(bool b)
+        : HeapObject(HeapObject::Type::Boolean)
+    {
+        set(b);
+    }
+public:
+    static Boolean* create(bool b)
+    {
+        return new Boolean(b);
+    }
+
+    ALWAYS_INLINE void set(bool b)
+    {
+        m_data = (m_data & TypeMask) | (b << 31);
+    }
+
+    ALWAYS_INLINE bool get()
+    {
+        return m_data & DataMask;
+    }
 };
 
 class Number : public HeapObject {
+    Number(double value)
+        : HeapObject(HeapObject::Type::Number)
+    {
+        set(value);
+    }
+public:
+    static Number* create(double value)
+    {
+        return new Number(value);
+    }
+
+    ALWAYS_INLINE void set(double b)
+    {
+        m_value = b;
+    }
+
+    ALWAYS_INLINE double get()
+    {
+        return m_value;
+    }
+protected:
+    double m_value;
 };
 
 class String : public HeapObject {
