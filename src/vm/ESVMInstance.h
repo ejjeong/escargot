@@ -15,6 +15,7 @@ public:
     void evaluate(const std::string& source);
 
     ALWAYS_INLINE ExecutionContext* currentExecutionContext() { return m_currentExecutionContext; }
+    GlobalObject* globalObject() { return m_globalObject; }
 protected:
     ExecutionContext* m_globalExecutionContext;
     ExecutionContext* m_currentExecutionContext;

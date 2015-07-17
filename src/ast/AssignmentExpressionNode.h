@@ -3,6 +3,7 @@
 
 #include "ExpressionNode.h"
 #include "PatternNode.h"
+#include "IdentifierNode.h"
 
 namespace escargot {
 
@@ -27,20 +28,7 @@ public:
         m_operator = oper;
     }
 
-    virtual ESValue* execute(ESVMInstance* instance)
-    {
-
-        if(m_operator == Equal) {
-            //http://www.ecma-international.org/ecma-262/5.1/#sec-11.13.1
-            //TODO
-            ESValue* rval = m_right->execute(instance);
-            ESValue* lref = m_left->execute(instance);
-            JSObjectSlot* slot = lref->toHeapObject()->toJSObjectSlot();
-            slot->setValue(rval);
-        }
-
-        return undefined;
-    }
+    virtual ESValue* execute(ESVMInstance* instance);
 protected:
     Node* m_left; //left: Pattern;
     Node* m_right; //right: Expression;
