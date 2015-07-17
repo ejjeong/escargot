@@ -46,7 +46,6 @@ bool GlobalEnvironmentRecord::hasVarDeclaration(const ESString& name)
 bool GlobalEnvironmentRecord::canDeclareGlobalVar(const ESString& name) {
     JSObject* globalObj = m_objectRecord->bindingObject();
     bool hasProperty = globalObj->hasOwnProperty(name);
-    // ReturnIfAbrupt(hasProperty)
     if (hasProperty)
         return true;
     else
@@ -72,12 +71,10 @@ bool GlobalEnvironmentRecord::canDeclareGlobalFunction(const ESString& name) {
 void GlobalEnvironmentRecord::createGlobalVarBinding(const ESString& name, bool canDelete) {
     JSObject* globalObj = m_objectRecord->bindingObject();
     bool hasProperty = globalObj->hasOwnProperty(name);
-    // ReturnIfAbrupt(hasProperty)
     bool extensible = globalObj->isExtensible();
-    // ReturnIfAbrupt(extensible)
     if (!hasProperty && extensible) {
         m_objectRecord->createMutableBinding(name, canDelete);
-//        m_objectRecord->initializeBinding(name, undefined);
+        m_objectRecord->initializeBinding(name, undefined);
     }
     if( std::find(m_varNames.begin(), m_varNames.end(), name) == m_varNames.end() )
         m_varNames.push_back(name);

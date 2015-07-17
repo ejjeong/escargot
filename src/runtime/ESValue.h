@@ -366,16 +366,6 @@ public:
     bool isExtensible() {
         return true;
     }
-    /*
-    PropertyDescriptor getOwnProperty(const ESString& ekey) {
-        std::wstring key = std::wstring(ESString(ekey).data());
-        std::unordered_map<std::wstring, PropertyDescriptor>::iterator it = m_map.find(key);
-        if(it != m_map.end())
-            return it->second;
-        //FIXME
-        PropertyDescriptor pd_undefined;
-        return pd_undefined;
-    }*/
 
     static JSObject* create()
     {
