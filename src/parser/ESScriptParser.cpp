@@ -89,7 +89,8 @@ Node* ESScriptParser::parseScript(const std::string& source)
     ESString astTypeMemberExpression(L"MemberExpression");
     ESString astTypeProperty(L"Property");
 
-    StatementNodeVector body;
+    StatementNodeVector program_body;
+    StatementNodeVector* current_body = &program_body;
     std::function<Node *(rapidjson::GenericValue<rapidjson::UTF16<>>& value)> fn;
     fn = [&](rapidjson::GenericValue<rapidjson::UTF16<>>& value) -> Node* {
         Node* parsedNode = NULL;
@@ -99,10 +100,10 @@ Node* ESScriptParser::parseScript(const std::string& source)
             for (rapidjson::SizeType i = 0; i < children.Size(); i++) {
                 Node* n = fn(children[i]);
                 if (n != NULL) {
-                	body.push_back(n);
+                	program_body.push_back(n);
                   }
             }
-            parsedNode = new ProgramNode(std::move(body));
+            parsedNode = new ProgramNode(std::move(program_body));
         } else if(type == astTypeVariableDeclaration) {
             rapidjson::GenericValue<rapidjson::UTF16<>>& children = value[L"declarations"];
             VariableDeclaratorVector decl;
@@ -115,7 +116,7 @@ Node* ESScriptParser::parseScript(const std::string& source)
                 }
             }
 
-            body.insert(body.begin(), new VariableDeclarationNode(std::move(decl)));
+            current_body->insert(current_body->begin(), new VariableDeclarationNode(std::move(decl)));
 
             if (assi.size() > 1) {
                 parsedNode = new ExpressionStatementNode(new SequenceExpressionNode(std::move(assi)));
@@ -160,18 +161,24 @@ Node* ESScriptParser::parseScript(const std::string& source)
             rapidjson::GenericValue<rapidjson::UTF16<>>& children = value[L"params"];
             for (rapidjson::SizeType i = 0; i < children.Size(); i++) {
                 params.push_back(children[i][L"name"].GetString());
-            }
+              }
 
-            Node* body = fn(value[L"body"]);
-            parsedNode = new FunctionDeclarationNode(id, std::move(params), body, value[L"generator"].GetBool(), value[L"generator"].GetBool());
+            Node* func_body = fn(value[L"body"]);
+            current_body->insert(current_body->begin(), new FunctionDeclarationNode(id, std::move(params), func_body, value[L"generator"].GetBool(), value[L"generator"].GetBool()));
+            return NULL;
         } else if(type == astTypeBlockStatement) {
-            StatementNodeVector body;
+            StatementNodeVector block_body;
+            StatementNodeVector* outer_body = current_body;
+            current_body = &block_body;
             rapidjson::GenericValue<rapidjson::UTF16<>>& children = value[L"body"];
             for (rapidjson::SizeType i = 0; i < children.Size(); i++) {
                 Node* n = fn(children[i]);
-                body.push_back(n);
-            }
-            parsedNode = new BlockStatementNode(std::move(body));
+                if (n != NULL) {
+                	block_body.push_back(n);
+                	}
+            	}
+            current_body = outer_body;
+            parsedNode = new BlockStatementNode(std::move(block_body));
         } else if(type == astTypeCallExpression) {
             Node* callee = fn(value[L"callee"]);
             ArgumentVector arguments;
