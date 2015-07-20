@@ -51,6 +51,22 @@ GlobalObject::GlobalObject()
     auto printFunction = JSFunction::create(NULL, node);
 
     set(L"print", printFunction);
+    set(L"Array", installArray());
+}
+
+ESValue* GlobalObject::installArray() {
+    m_arrayPrototype = JSArray::create(0);
+    //FIXME : implement array push
+    m_arrayPrototype->set(L"push", JSFunction::create(NULL, NULL));
+
+    //$22.1.1
+    FunctionDeclarationNode* constructor = new FunctionDeclarationNode(L"Array", ESStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
+        return JSArray::create(0);
+    }), false, false);
+
+    auto function = JSFunction::create(NULL, constructor);
+    function->set(L"prototype", arrayPrototype());
+    return function;
 }
 
 }

@@ -22,8 +22,7 @@ ESValue* CallExpressionNode::execute(ESVMInstance* instance)
         arguments.push_back(result);
     }
 
-    ESFunctionCaller::call(fn, undefined, &arguments[0], arguments.size(), instance);
-    return undefined;
+    return ESFunctionCaller::call(fn, undefined, &arguments[0], arguments.size(), instance);
 }
 
 }

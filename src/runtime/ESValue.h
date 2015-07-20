@@ -406,7 +406,6 @@ public:
         } else {
             iter->second->setValue(val);
         }
-
     }
 
     bool hasKey(const ESString& key)
@@ -431,9 +430,54 @@ protected:
     {
     }
 public:
-    static JSArray* create() {
-        return new JSArray();
+    static JSArray* create()
+    {
+        return JSArray::create(0);
     }
+
+    // $9.4.2.2
+    static JSArray* create(int length, JSObject* proto = NULL)
+    {
+        //TODO
+        JSArray* arr = new JSArray();
+        arr->setLength(length);
+        /*
+        if(proto == NULL)
+            proto = global->arrayPrototype();
+        */
+        return arr;
+    }
+
+    //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
+    void set(const ESString& key, ESValue* val, bool shouldThrowException = false)
+    {
+        /*
+        if (key.isSmi()) {
+            setLength(key.toSmi()->value()+1);
+        }
+        */
+        JSObject::set(key, val, shouldThrowException);
+    }
+
+    void setLength(ESValue* len)
+    {
+        set(ESString("length"), len, false);
+        m_length = len;
+    }
+
+    void setLength(int len)
+    {
+        auto length = Smi::fromInt(len);
+        set(ESString("length"), length, false);
+        m_length = length;
+    }
+
+    ESValue* length()
+    {
+        return m_length;
+    }
+protected:
+    ESValue* m_length;
 };
 
 class LexicalEnvironment;

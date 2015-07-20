@@ -13,6 +13,7 @@ public:
         m_elements = elements;
     }
 
+    //$ 12.2.5.3
     virtual ESValue* execute(ESVMInstance* instance)
     {
         JSArray* arr = JSArray::create();
@@ -20,7 +21,8 @@ public:
             ESValue* result = m_elements[i]->execute(instance)->ensureValue();
             arr->set(ESString((int) i), result);
         }
-        //TODO
+        int len = m_elements.size();
+        arr->setLength(len);
         return arr;
     }
 protected:

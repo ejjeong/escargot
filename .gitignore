@@ -7,6 +7,7 @@ input.js
 output.js
 *.o
 *.d
+tags
 third_party/bdwgc/.deps
 third_party/bdwgc/.libs
 third_party/bdwgc/Makefile
