@@ -24,7 +24,6 @@ public:
     ALWAYS_INLINE void resetLastJSObjectMetInMemberExpressionNode()
     {
         m_lastJSObjectMetInMemberExpressionNode = NULL;
-        m_lastUsedNameInMemberExpressionNode = undefined;
     }
 
     ALWAYS_INLINE JSObject* lastJSObjectMetInMemberExpressionNode()
@@ -32,15 +31,15 @@ public:
         return m_lastJSObjectMetInMemberExpressionNode;
     }
 
-    ALWAYS_INLINE ESValue* resetLastUsedNameInMemberExpressionNode()
+    ALWAYS_INLINE const ESString& lastLastUsedPropertyNameInMemberExpressionNode()
     {
-        return m_lastUsedNameInMemberExpressionNode;
+        return m_lastUsedPropertyNameInMemberExpressionNode;
     }
 
-    ALWAYS_INLINE void setLastJSObjectMetInMemberExpressionNode(JSObject* obj, ESValue* name)
+    ALWAYS_INLINE void setLastJSObjectMetInMemberExpressionNode(JSObject* obj, const ESString& name)
     {
         m_lastJSObjectMetInMemberExpressionNode = obj;
-        m_lastUsedNameInMemberExpressionNode = name;
+        m_lastUsedPropertyNameInMemberExpressionNode = name;
     }
 
 
@@ -49,7 +48,7 @@ private:
     LexicalEnvironment* m_lexicalEnvironment;
     LexicalEnvironment* m_variableEnvironment;
     JSObject* m_lastJSObjectMetInMemberExpressionNode;
-    ESValue* m_lastUsedNameInMemberExpressionNode;
+    ESString m_lastUsedPropertyNameInMemberExpressionNode;
 };
 
 }

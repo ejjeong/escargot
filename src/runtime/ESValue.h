@@ -6,6 +6,17 @@ namespace escargot {
 
 class Smi;
 class HeapObject;
+class Undefined;
+class Null;
+class Boolean;
+class Number;
+class String;
+class JSObject;
+class JSObjectSlot;
+class JSArray;
+class JSFunction;
+class FunctionDeclarationNode;
+class ESVMInstance;
 
 class ESValue {
     //static void* operator new(size_t, void* p) = delete;
@@ -21,7 +32,7 @@ public:
     Smi* toSmi() const;
     HeapObject* toHeapObject() const;
     ESString toESString();
-    ALWAYS_INLINE ESValue* ensureValue();
+    ESValue* ensureValue();
 };
 
 class Smi : public ESValue {
@@ -30,18 +41,6 @@ public:
     static inline Smi* fromInt(int value);
     static inline Smi* fromIntptr(intptr_t value);
 };
-
-
-class Undefined;
-class Null;
-class Boolean;
-class Number;
-class String;
-class JSObject;
-class JSObjectSlot;
-class JSArray;
-class JSFunction;
-class FunctionDeclarationNode;
 
 class HeapObject : public ESValue, public gc_cleanup {
 public:

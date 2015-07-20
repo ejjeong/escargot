@@ -1,6 +1,10 @@
 #include "Escargot.h"
 #include "ESValue.h"
 
+#include "vm/ESVMInstance.h"
+#include "runtime/ExecutionContext.h"
+#include "runtime/Environment.h"
+
 namespace escargot {
 
 static Undefined s_undefined;

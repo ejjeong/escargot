@@ -1,6 +1,7 @@
 #include "Escargot.h"
 #include "AssignmentExpressionNode.h"
 
+#include "IdentifierNode.h"
 #include "vm/ESVMInstance.h"
 #include "runtime/ExecutionContext.h"
 #include "runtime/Environment.h"
@@ -23,15 +24,12 @@ ESValue* AssignmentExpressionNode::execute(ESVMInstance* instance)
             if(obj == NULL && m_left->type() == NodeType::Identifier) {
                 IdentifierNode* n = (IdentifierNode *)m_left;
                 instance->globalObject()->set(n->name(), rval);
-            } else if(false) {
-                //TODO
+            } else if(obj) {
+                obj->set(instance->currentExecutionContext()->lastLastUsedPropertyNameInMemberExpressionNode(), rval);
             } else {
                 throw "ReferenceError";
             }
 
-            //let lastObject =  last object did meet(w/MemberExpression)
-            //if(lastObject == null) { add to global object }
-            // else { lastObject->set(..) }
         } else {
             JSObjectSlot* slot = lref->toHeapObject()->toJSObjectSlot();
             slot->setValue(rval);

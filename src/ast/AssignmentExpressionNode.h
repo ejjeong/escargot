@@ -3,7 +3,6 @@
 
 #include "ExpressionNode.h"
 #include "PatternNode.h"
-#include "IdentifierNode.h"
 
 namespace escargot {
 

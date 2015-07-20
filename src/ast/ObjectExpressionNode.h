@@ -3,6 +3,7 @@
 
 #include "ExpressionNode.h"
 #include "PropertyNode.h"
+#include "IdentifierNode.h"
 
 namespace escargot {
 
@@ -21,10 +22,14 @@ public:
         JSObject* obj = JSObject::create();
         for(unsigned i = 0; i < m_properties.size() ; i ++) {
             PropertyNode* p = m_properties[i];
-            ESValue* key = p->key()->execute(instance)->ensureValue();
+            ESString key;
+            if(p->key()->type() == NodeType::Identifier) {
+                key = ((IdentifierNode* )p->key())->name();
+            } else {
+                key = p->key()->execute(instance)->ensureValue()->toESString();
+            }
             ESValue* value = p->value()->execute(instance)->ensureValue();
-
-            obj->set(key->toESString(), value);
+            obj->set(key, value);
         }
         return obj;
     }
