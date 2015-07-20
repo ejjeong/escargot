@@ -1,25 +1,18 @@
 #ifndef FunctionDeclarationNode_h
 #define FunctionDeclarationNode_h
 
-#include "DeclarationNode.h"
+#include "FunctionNode.h"
 
 namespace escargot {
 
-class FunctionDeclarationNode : public DeclarationNode {
+class FunctionDeclarationNode : public FunctionNode {
 public:
     FunctionDeclarationNode(const ESString& id, ESStringVector&& params, Node* body,bool isGenerator, bool isExpression)
-            : DeclarationNode(FunctionDeclaration)
+            : FunctionNode(NodeType::FunctionDeclaration, id, std::move(params), body, isGenerator, isExpression)
     {
-        m_id = id;
-        m_params = params;
-        m_body = body;
-        m_isGenerator = isGenerator;
-        m_isExpression = isExpression;
     }
 
     virtual ESValue* execute(ESVMInstance* instance);
-    ALWAYS_INLINE const ESStringVector& params() { return m_params; }
-    ALWAYS_INLINE Node* body() { return m_body; }
 protected:
     ESString m_id; //id: Identifier;
     ESStringVector m_params; //params: [ Pattern ];

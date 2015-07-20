@@ -11,6 +11,7 @@
 #include "SequenceExpressionNode.h"
 #include "ExpressionStatementNode.h"
 #include "FunctionDeclarationNode.h"
+#include "FunctionExpressionNode.h"
 #include "FunctionNode.h"
 #include "IdentifierNode.h"
 #include "LiteralNode.h"

@@ -10,7 +10,6 @@ namespace escargot {
 
 ESValue* AssignmentExpressionNode::execute(ESVMInstance* instance)
 {
-
     if(m_operator == Equal) {
         //http://www.ecma-international.org/ecma-262/5.1/#sec-11.13.1
         //TODO

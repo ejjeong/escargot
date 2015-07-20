@@ -10,6 +10,7 @@ class ESVMInstance;
 enum NodeType {
     Program,
     Function,
+    FunctionExpression,
     Property,
     Statement,
     EmptyStatement,

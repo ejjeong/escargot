@@ -15,7 +15,7 @@ class JSObject;
 class JSObjectSlot;
 class JSArray;
 class JSFunction;
-class FunctionDeclarationNode;
+class FunctionNode;
 class ESVMInstance;
 
 class ESValue {
@@ -438,23 +438,23 @@ class LexicalEnvironment;
 class Node;
 class JSFunction : public JSObject {
 protected:
-    JSFunction(LexicalEnvironment* outerEnvironment, FunctionDeclarationNode* functionAST)
+    JSFunction(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST)
         : JSObject((Type)(Type::JSObject | Type::JSFunction))
     {
         m_outerEnvironment = outerEnvironment;
         m_functionAST = functionAST;
     }
 public:
-    static JSFunction* create(LexicalEnvironment* outerEnvironment, FunctionDeclarationNode* functionAST)
+    static JSFunction* create(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST)
     {
         return new JSFunction(outerEnvironment, functionAST);
     }
 
-    FunctionDeclarationNode* functionAST() { return m_functionAST; }
+    FunctionNode* functionAST() { return m_functionAST; }
     LexicalEnvironment* outerEnvironment() { return m_outerEnvironment; }
 protected:
     LexicalEnvironment* m_outerEnvironment;
-    FunctionDeclarationNode* m_functionAST;
+    FunctionNode* m_functionAST;
     enum ThisBindingStatus {
         lexical, initialized, uninitialized
     };

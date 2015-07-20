@@ -10,21 +10,26 @@ namespace escargot {
 
 class FunctionNode : public Node {
 public:
-    FunctionNode()
-            : Node(NodeType::Function)
+    FunctionNode(NodeType type ,const ESString& id, ESStringVector&& params, Node* body,bool isGenerator, bool isExpression)
+            : Node(type)
     {
-        m_body = NULL;
-        m_isGenerator = false;
-        m_isExpression = false;
+        m_id = id;
+        m_params = params;
+        m_body = body;
+        m_isGenerator = isGenerator;
+        m_isExpression = isExpression;
     }
+
+    ALWAYS_INLINE const ESStringVector& params() { return m_params; }
+    ALWAYS_INLINE Node* body() { return m_body; }
 protected:
-    ESString m_id; //id: Identifier | null;
-    PatternNodeVector m_params; //params: [ Pattern ];
-    ExpressionNodeVector m_defaults; //defaults: [ Expression ];
+    ESString m_id; //id: Identifier;
+    ESStringVector m_params; //params: [ Pattern ];
+    //defaults: [ Expression ];
     //rest: Identifier | null;
-    Node* m_body;//body: BlockStatement | Expression;
-    bool m_isGenerator;//generator: boolean;
-    bool m_isExpression;//expression: boolean;
+    Node* m_body; //body: BlockStatement | Expression;
+    bool m_isGenerator; //generator: boolean;
+    bool m_isExpression; //expression: boolean;
 };
 
 }
