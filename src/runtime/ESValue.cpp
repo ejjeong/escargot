@@ -38,4 +38,32 @@ ESString ESValue::toESString()
     return ret;
 }
 
+// http://www.ecma-international.org/ecma-262/5.1/#sec-9.1
+ESValue* ESValue::toPrimitive()
+{
+    ESValue* ret = this;
+    if(isSmi()) {
+    } else {
+        HeapObject* o = toHeapObject();
+        if (o->isJSObject()) {
+            // TODO
+#ifndef NDEBUG
+            ASSERT(true);
+#endif
+        }
+    }
+    return ret;
+}
+
+// http://www.ecma-international.org/ecma-262/5.1/#sec-9.3
+ESValue* ESValue::toNumber()
+{
+    // TODO
+    ESValue* ret = this;
+    if(isSmi()) {
+    } else {
+    }
+    return ret;
+}
+
 }

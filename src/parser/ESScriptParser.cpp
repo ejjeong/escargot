@@ -90,6 +90,9 @@ Node* ESScriptParser::parseScript(const std::string& source)
     ESString astTypeObjectExpression(L"ObjectExpression");
     ESString astTypeMemberExpression(L"MemberExpression");
     ESString astTypeProperty(L"Property");
+    ESString astTypeBinaryExpression(L"BinaryExpression");
+    ESString astTypeUpdateExpression(L"UpdateExpression");
+    ESString astTypeIfStatement(L"IfStatement");
 
     StatementNodeVector program_body;
     StatementNodeVector* current_body = &program_body;
@@ -225,6 +228,12 @@ Node* ESScriptParser::parseScript(const std::string& source)
             parsedNode = new PropertyNode(fn(value[L"key"]), fn(value[L"value"]), kind);
         } else if(type == astTypeMemberExpression) {
             parsedNode = new MemberExpressionNode(fn(value[L"object"]), fn(value[L"property"]));
+        } else if(type == astTypeBinaryExpression) {
+            parsedNode = new BinaryExpressionNode(fn(value[L"left"]), fn(value[L"right"]), value[L"operator"].GetString());
+        } else if(type == astTypeUpdateExpression) {
+            parsedNode = new UpdateExpressionNode(fn(value[L"argument"]), value[L"operator"].GetString(), value[L"prefix"].GetBool());
+        } else if(type == astTypeIfStatement) {
+            parsedNode = new IfStatementNode(fn(value[L"test"]), fn(value[L"consequent"]), value[L"alternate"].IsNull()? NULL : fn(value[L"alternate"]));
         }
 #ifndef NDEBUG
         if(!parsedNode) {

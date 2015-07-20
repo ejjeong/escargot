@@ -32,6 +32,8 @@ public:
     Smi* toSmi() const;
     HeapObject* toHeapObject() const;
     ESString toESString();
+    ESValue* toPrimitive();
+    ESValue* toNumber();
     ESValue* ensureValue();
 };
 
