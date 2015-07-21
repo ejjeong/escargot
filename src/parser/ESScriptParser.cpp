@@ -230,7 +230,7 @@ Node* ESScriptParser::parseScript(const std::string& source)
             }
             parsedNode = new PropertyNode(fn(value[L"key"]), fn(value[L"value"]), kind);
         } else if(type == astTypeMemberExpression) {
-            parsedNode = new MemberExpressionNode(fn(value[L"object"]), fn(value[L"property"]));
+            parsedNode = new MemberExpressionNode(fn(value[L"object"]), fn(value[L"property"]), value[L"computed"].GetBool());
         } else if(type == astTypeBinaryExpression) {
             parsedNode = new BinaryExpressionNode(fn(value[L"left"]), fn(value[L"right"]), value[L"operator"].GetString());
         } else if(type == astTypeUpdateExpression) {

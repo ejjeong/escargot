@@ -459,27 +459,32 @@ public:
         return arr;
     }
 
-    //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
     void set(const ESString& key, ESValue* val, bool shouldThrowException = false)
     {
-        /*
-        if (key.isSmi()) {
-            setLength(key.toSmi()->value()+1);
+        if (key == ESString(L"length"))
+            setLength(val);
+        else {
+            JSObject::set(key, val, shouldThrowException);
+            //if (key.isSmi()) {
+            //    setLength(key.toSmi()->value()+1);
+            //}
         }
-        */
-        JSObject::set(key, val, shouldThrowException);
     }
 
     void setLength(ESValue* len)
     {
-        set(ESString("length"), len, false);
+        ASSERT(len->isSmi());
+        JSObject::set(ESString(L"length"), len, false);
+        if (len < m_length) {
+            //TODO : delete elements
+        }
         m_length = len;
     }
 
     void setLength(int len)
     {
         auto length = Smi::fromInt(len);
-        set(ESString("length"), length, false);
+        JSObject::set(ESString(L"length"), length, false);
         m_length = length;
     }
 

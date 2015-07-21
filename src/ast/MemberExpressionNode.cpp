@@ -15,7 +15,7 @@ ESValue* MemberExpressionNode::execute(ESVMInstance* instance)
     //TODO string,number-> stringObject, numberObject;
     if(obj->isHeapObject() && obj->toHeapObject()->isJSObject()) {
         ESString propertyName;
-        if(m_property->type() == NodeType::Identifier) {
+        if(!m_computed && m_property->type() == NodeType::Identifier) {
             propertyName = ((IdentifierNode*)m_property)->name();
         } else {
             propertyName = m_property->execute(instance)->ensureValue()->toESString();
