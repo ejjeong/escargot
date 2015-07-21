@@ -14,13 +14,6 @@ public:
 
     virtual ESValue* execute(ESVMInstance* instance);
 protected:
-    ESString m_id; //id: Identifier;
-    ESStringVector m_params; //params: [ Pattern ];
-    //defaults: [ Expression ];
-    //rest: Identifier | null;
-    Node* m_body; //body: BlockStatement | Expression;
-    bool m_isGenerator; //generator: boolean;
-    bool m_isExpression; //expression: boolean;
 };
 
 }
