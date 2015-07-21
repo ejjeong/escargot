@@ -30,8 +30,24 @@ ESString ESValue::toESString()
             ret = ESString(o->toNumber()->get());
         } else if(o->isString()) {
             ret = o->toString()->string();
+        } else if(o->isJSFunction()) {
+            ret = L"[Function function]";
+        } else if(o->isJSArray()) {
+            ret = L"[Array array]";
+        } else if(o->isJSObject()) {
+            ret = L"{";
+            bool isFirst = true;
+            o->toJSObject()->enumeration([&ret, &isFirst](const ESString& key, JSObjectSlot* slot) {
+                if(!isFirst)
+                    ret.append(L",");
+                ret.append(key);
+                ret.append(L":");
+                ret.append(slot->value()->toESString());
+                isFirst = false;
+            });
+            ret.append(L"}");
         } else {
-            //TODO array, function, object..
+            RELEASE_ASSERT_NOT_REACHED();
         }
     }
 

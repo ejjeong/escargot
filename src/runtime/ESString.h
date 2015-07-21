@@ -73,6 +73,19 @@ public:
         return m_hashValue;
     }
 
+    void append(const ESString& src)
+    {
+        if(!m_string) {
+            m_string = src.m_string;
+            m_isHashInited = src.m_isHashInited;
+            m_hashValue = src.m_hashValue;
+        } else {
+            m_string->append(src.m_string->begin(), src.m_string->end());
+            m_isHashInited = false;
+            m_hashValue = 0;
+        }
+    }
+
 #ifndef NDEBUG
     void show() const
     {

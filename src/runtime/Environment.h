@@ -84,7 +84,20 @@ public:
         RELEASE_ASSERT_NOT_REACHED();
     }
 
-    //HasSuperBinding()
+    virtual bool hasSuperBinding()
+    {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+
+    virtual JSObject* getThisBinding()
+    {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+
+    virtual bool hasThisBinding()
+    {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
     //WithBaseObject ()
 
     virtual bool isGlobalEnvironmentRecord()
@@ -157,6 +170,11 @@ public:
         return true;
     }
 
+    virtual bool hasThisBinding()
+    {
+        return false;
+    }
+
 protected:
     JSObject* m_bindingObject;
 };
@@ -204,6 +222,11 @@ public:
         return true;
     }
 
+    virtual bool hasThisBinding()
+    {
+        return false;
+    }
+
     JSObject* innerObject() { return m_innerObject; }
 
 protected:
@@ -225,7 +248,7 @@ public:
     void initializeBinding(const ESString& name, ESValue* V);
     void setMutableBinding(const ESString& name, ESValue* V, bool mustNotThrowTypeErrorExecption);
 
-    ESValue* getThisBinding();
+    JSObject* getThisBinding();
     bool hasVarDeclaration(const ESString& name);
     //bool hasLexicalDeclaration(const ESString& name);
     bool hasRestrictedGlobalProperty(const ESString& name);
@@ -236,6 +259,11 @@ public:
     ESValue* getBindingValue(const ESString& name, bool ignoreReferenceErrorException);
 
     virtual bool isGlobalEnvironmentRecord()
+    {
+        return true;
+    }
+
+    virtual bool hasThisBinding()
     {
         return true;
     }
@@ -252,9 +280,45 @@ protected:
 class FunctionEnvironmentRecord : public DeclarativeEnvironmentRecord {
     friend class LexicalEnvironment;
 public:
+    FunctionEnvironmentRecord()
+    {
+        m_thisBindingStatus = Uninitialized;
+        m_thisValue = undefined;
+        m_newTarget = undefined;
+    }
+    enum ThisBindingStatus {
+        Lexical, Initialized, Uninitialized
+    };
+    virtual bool hasThisBinding()
+    {
+        //we dont use arrow function now. so binding status is alwalys not lexical.
+        return true;
+    }
+
+    //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-bindthisvalue
+    void bindThisValue(JSObject* V)
+    {
+        ASSERT(m_thisBindingStatus != Initialized);
+        if(m_thisBindingStatus == Lexical)
+            throw "ReferenceError";
+        m_thisValue = V;
+        m_thisBindingStatus = Initialized;
+    }
+
+    JSObject* getThisBinding()
+    {
+        ASSERT(m_thisBindingStatus != Lexical);
+        if(m_thisBindingStatus == Uninitialized)
+            throw "ReferenceError";
+
+        return m_thisValue->toHeapObject()->toJSObject();
+    }
+
 protected:
     ESValue* m_thisValue;
     JSFunction* m_functionObject;
+    ESValue* m_newTarget; //TODO
+    ThisBindingStatus m_thisBindingStatus;
 };
 
 /*

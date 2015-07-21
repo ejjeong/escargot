@@ -13,6 +13,7 @@ LexicalEnvironment* LexicalEnvironment::newFunctionEnvironment(JSFunction* funct
     ASSERT(newTarget->toHeapObject()->isUndefined() || newTarget->toHeapObject()->isJSObject());
     FunctionEnvironmentRecord* envRec = new FunctionEnvironmentRecord();
     envRec->m_functionObject = function;
+    envRec->m_newTarget = newTarget;
 
     LexicalEnvironment* env = new LexicalEnvironment(envRec, function->outerEnvironment());
     //TODO
@@ -90,7 +91,7 @@ void GlobalEnvironmentRecord::createGlobalFunctionBinding(const ESString& name, 
 }
 
 //$8.1.1.4.11
-ESValue* GlobalEnvironmentRecord::getThisBinding() {
+JSObject* GlobalEnvironmentRecord::getThisBinding() {
     return m_objectRecord->bindingObject();
 }
 

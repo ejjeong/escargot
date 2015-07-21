@@ -13,39 +13,8 @@ GlobalObject::GlobalObject()
     FunctionDeclarationNode* node = new FunctionDeclarationNode(L"print", ESStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
         JSObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(L"arguments", false)->toHeapObject()->toJSObject();
         ESValue* val = value->get(L"0");
-
-        if(val->isSmi()) {
-            wprintf(L"%d\n", val->toSmi()->value());
-        } else {
-            HeapObject* ho = val->toHeapObject();
-            if(ho->isUndefined()) {
-                wprintf(L"undefined\n");
-            } else if(ho->isBoolean()) {
-                escargot::Boolean* b = ho->toBoolean();
-                if(b->get()) {
-                    wprintf(L"true\n");
-                } else {
-                    wprintf(L"false\n");
-                }
-                wprintf(L"\n");
-            } else if(ho->isNull()) {
-                wprintf(L"null\n");
-            } else if(ho->isNumber()) {
-                escargot::Number* n = ho->toNumber();
-                wprintf(L"%lg\n", n->get());
-            } else if(ho->isString()) {
-                wprintf(L"%ls\n",ho->toString()->string().data());
-            } else if(ho->isJSFunction()) {
-                wprintf(L"[Function function]\n");
-            } else if(ho->isJSArray()) {
-                wprintf(L"[Array array]\n");
-            } else if(ho->isJSObject()) {
-                wprintf(L"[Object object]\n");
-            } else {
-                RELEASE_ASSERT_NOT_REACHED();
-            }
-        }
-
+        ESString str = val->toESString();
+        wprintf(L"%ls\n", str.data());
         return undefined;
     }), false, false);
     auto printFunction = JSFunction::create(NULL, node);

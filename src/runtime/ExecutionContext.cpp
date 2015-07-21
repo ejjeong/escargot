@@ -27,4 +27,24 @@ JSObjectSlot* ExecutionContext::resolveBinding(const ESString& name)
     return NULL;
 }
 
+//http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvethisbinding
+JSObject* ExecutionContext::resolveThisBinding()
+{
+    return getThisEnvironment()->record()->getThisBinding();
+}
+
+//http://www.ecma-international.org/ecma-262/6.0/index.html#sec-getthisenvironment
+LexicalEnvironment* ExecutionContext::getThisEnvironment()
+{
+    LexicalEnvironment* lex = environment();
+    while(true) {
+        bool exists = lex->record()->hasThisBinding();
+        if(exists)
+            break;
+        lex = lex->outerEnvironment();
+    }
+    return lex;
+
+}
+
 }

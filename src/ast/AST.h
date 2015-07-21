@@ -25,6 +25,7 @@
 #include "PatternNode.h"
 #include "ProgramNode.h"
 #include "StatementNode.h"
+#include "ThisExpressionNode.h"
 #include "VariableDeclarationNode.h"
 #include "VariableDeclaratorNode.h"
 

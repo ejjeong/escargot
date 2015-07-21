@@ -18,8 +18,11 @@ public:
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
     JSObjectSlot* resolveBinding(const ESString& name);
 
-    //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-execution-contexts
-    //GetThisEnvironment()
+    //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvethisbinding
+    JSObject* resolveThisBinding();
+
+    //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-getthisenvironment
+    LexicalEnvironment* getThisEnvironment();
 
     ALWAYS_INLINE void resetLastJSObjectMetInMemberExpressionNode()
     {

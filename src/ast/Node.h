@@ -21,6 +21,7 @@ enum NodeType {
     FunctionDeclaration,
     Pattern,
     Expression,
+    ThisExpression,
     ExpressionStatement,
     ArrayExpression,
     AssignmentExpression,

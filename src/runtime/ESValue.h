@@ -417,6 +417,17 @@ public:
         return true;
     }
 
+    //FUNCTION FOR DEBUG.
+    template <typename Functor>
+    void enumeration(Functor t)
+    {
+        auto iter = m_map.begin();
+        while(iter != m_map.end()) {
+            t((*iter).first,(*iter).second);
+            iter++;
+        }
+    }
+
 protected:
     std::unordered_map<ESString, escargot::JSObjectSlot *,
             std::hash<ESString>,std::equal_to<ESString>,
@@ -501,10 +512,6 @@ public:
 protected:
     LexicalEnvironment* m_outerEnvironment;
     FunctionNode* m_functionAST;
-    enum ThisBindingStatus {
-        lexical, initialized, uninitialized
-    };
-    ThisBindingStatus m_thisBindingStatus;
     //JSObject functionObject;
     //HomeObject
     ////JSObject newTarget

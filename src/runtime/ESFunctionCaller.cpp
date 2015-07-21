@@ -16,8 +16,9 @@ ESValue* ESFunctionCaller::call(ESValue* callee, ESValue* receiver, ESValue* arg
         ExecutionContext* currentContext = ESVMInstance->currentExecutionContext();
         JSFunction* fn = callee->toHeapObject()->toJSFunction();
 
-        //TODO process receiver
+        //TODO if receiver is not JSObject-> Boxing
         ESVMInstance->m_currentExecutionContext = new ExecutionContext(LexicalEnvironment::newFunctionEnvironment(fn, receiver));
+        ((FunctionEnvironmentRecord *)ESVMInstance->m_currentExecutionContext->environment()->record())->bindThisValue(receiver->toHeapObject()->toJSObject());
         DeclarativeEnvironmentRecord* functionRecord = ESVMInstance->m_currentExecutionContext->environment()->record()->toDeclarativeEnvironmentRecord();
         JSObject* innerObject = functionRecord->innerObject();
         JSObject* argumentsObject = JSObject::create();
