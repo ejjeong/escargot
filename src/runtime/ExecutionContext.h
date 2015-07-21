@@ -45,6 +45,17 @@ public:
         m_lastUsedPropertyNameInMemberExpressionNode = name;
     }
 
+    void doReturn(ESValue* returnValue)
+    {
+        m_returnValue = returnValue;
+        std::longjmp(m_returnPosition,1);
+    }
+
+    std::jmp_buf& returnPosition() { return m_returnPosition; }
+    ESValue* returnValue()
+    {
+        return m_returnValue;
+    }
 
 private:
     JSFunction* m_function;
@@ -52,6 +63,8 @@ private:
     LexicalEnvironment* m_variableEnvironment;
     JSObject* m_lastJSObjectMetInMemberExpressionNode;
     ESString m_lastUsedPropertyNameInMemberExpressionNode;
+    ESValue* m_returnValue;
+    std::jmp_buf m_returnPosition;
 };
 
 }

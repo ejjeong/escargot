@@ -24,6 +24,7 @@
 #include "ObjectExpressionNode.h"
 #include "PatternNode.h"
 #include "ProgramNode.h"
+#include "ReturnStatmentNode.h"
 #include "StatementNode.h"
 #include "ThisExpressionNode.h"
 #include "VariableDeclarationNode.h"

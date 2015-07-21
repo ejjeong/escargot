@@ -12,6 +12,10 @@
 #include <functional>
 #include <algorithm>
 #include <cmath>
+#include <csetjmp>
+#include <locale>
+#include <clocale>
+#include <cwchar>
 
 #include <unistd.h>
 #include <sys/types.h>
@@ -23,10 +27,6 @@
 
 #include <gc_cpp.h>
 #include <gc_allocator.h>
-
-#include <locale>
-#include <clocale>
-#include <cwchar>
 
 /* COMPILER() - the compiler being used to build the project */
 #define COMPILER(FEATURE) (defined COMPILER_##FEATURE  && COMPILER_##FEATURE)

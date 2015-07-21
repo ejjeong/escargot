@@ -37,16 +37,15 @@ ESValue* ESFunctionCaller::call(ESValue* callee, ESValue* receiver, ESValue* arg
             }
         }
 
-        result = fn->functionAST()->body()->execute(ESVMInstance);
+        int r = setjmp(ESVMInstance->m_currentExecutionContext->returnPosition());
+        if(r != 1) {
+            fn->functionAST()->body()->execute(ESVMInstance);
+        }
+        result = ESVMInstance->m_currentExecutionContext->returnValue();
         ESVMInstance->m_currentExecutionContext = currentContext;
     } else {
         throw "TypeError";
     }
-    //assert(callee == JSFunction)
-    //assert(receiver == JSObject)
-    /*
-
-    */
 
     return result;
 }

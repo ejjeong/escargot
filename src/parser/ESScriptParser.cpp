@@ -82,6 +82,8 @@ Node* ESScriptParser::parseScript(const std::string& source)
     ESString astTypeIdentifier(L"Identifier");
     ESString astTypeAssignmentExpression(L"AssignmentExpression");
     ESString astTypeThisExpression(L"ThisExpression");
+    ESString astTypeReturnStatement(L"ReturnStatement");
+    ESString astTypeEmptyStatement(L"EmptyStatement");
     ESString astTypeLiteral(L"Literal");
     ESString astTypeFunctionDeclaration(L"FunctionDeclaration");
     ESString astTypeFunctionExpression(L"FunctionExpression");
@@ -237,6 +239,10 @@ Node* ESScriptParser::parseScript(const std::string& source)
             parsedNode = new IfStatementNode(fn(value[L"test"]), fn(value[L"consequent"]), value[L"alternate"].IsNull()? NULL : fn(value[L"alternate"]));
         } else if(type == astTypeThisExpression) {
             parsedNode = new ThisExpressionNode();
+        } else if(type == astTypeReturnStatement) {
+            parsedNode = new ReturnStatmentNode(fn(value[L"argument"]));
+        } else if(type == astTypeEmptyStatement) {
+            parsedNode = new EmptyStatementNode();
         }
 #ifndef NDEBUG
         if(!parsedNode) {

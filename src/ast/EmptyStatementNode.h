@@ -12,6 +12,11 @@ public:
             : StatementNode(NodeType::EmptyStatement)
     {
     }
+
+    virtual ESValue* execute(ESVMInstance* instance)
+    {
+        return undefined;
+    }
 protected:
 };
 
