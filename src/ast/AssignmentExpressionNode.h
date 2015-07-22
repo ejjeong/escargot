@@ -1,6 +1,7 @@
 #ifndef AssignmentExpressionNode_h
 #define AssignmentExpressionNode_h
 
+#include "BinaryExpressionNode.h"
 #include "ExpressionNode.h"
 #include "PatternNode.h"
 
@@ -16,15 +17,27 @@ public:
             | "|=" | "^=" | "&="
     }*/
     enum AssignmentOperator {
-        Equal, //"="
+        SimpleAssignment, //"="
+        CompoundAssignment
     };
 
-    AssignmentExpressionNode(Node* left, Node* right, AssignmentOperator oper)
+    AssignmentExpressionNode(Node* left, Node* right, const ESString& oper)
             : ExpressionNode(NodeType::AssignmentExpression)
     {
         m_left = left;
         m_right = right;
-        m_operator = oper;
+
+        if (oper == L"=")
+            m_operator = SimpleAssignment;
+        else {
+            m_operator = CompoundAssignment;
+            if (oper == L"<<=")
+                m_compoundOperator = BinaryExpressionNode::BinaryExpressionOperator::LeftShift;
+            else if (oper == L"+=")
+                m_compoundOperator = BinaryExpressionNode::BinaryExpressionOperator::Plus;
+            else //TODO
+                RELEASE_ASSERT_NOT_REACHED();
+        }
     }
 
     virtual ESValue* execute(ESVMInstance* instance);
@@ -32,6 +45,7 @@ protected:
     Node* m_left; //left: Pattern;
     Node* m_right; //right: Expression;
     AssignmentOperator m_operator; //operator: AssignmentOperator
+    BinaryExpressionNode::BinaryExpressionOperator m_compoundOperator;
 };
 
 }

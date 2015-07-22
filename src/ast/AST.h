@@ -18,6 +18,7 @@
 #include "IdentifierNode.h"
 #include "IfStatementNode.h"
 #include "ForStatementNode.h"
+#include "WhileStatementNode.h"
 #include "LiteralNode.h"
 #include "MemberExpressionNode.h"
 #include "NativeFunctionNode.h"

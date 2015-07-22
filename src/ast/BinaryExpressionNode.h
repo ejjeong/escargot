@@ -8,12 +8,35 @@ namespace escargot {
 class BinaryExpressionNode : public ExpressionNode {
 public:
     enum BinaryExpressionOperator {
-        PLUS,  //"+"
-        MINUS,  //"-"
-        EQUALTO, //"=="
-        LESSTHAN, //"<"
-        GREATERTHAN, //">"
-        BITWISEAND, //"&"
+        // TODO
+
+        // http://www.ecma-international.org/ecma-262/5.1/#sec-11.6
+        // Additive Operators
+        Plus,  //"+"
+        Minus,  //"-"
+
+        // http://www.ecma-international.org/ecma-262/5.1/#sec-11.7
+        // Bitwise Shift Operators
+        LeftShift, //"<<"
+        SignedRightShift, //">>"
+        UnsignedRightShift, //">>>"
+
+        // http://www.ecma-international.org/ecma-262/5.1/#sec-11.8
+        // Relational Operators
+        Lessthan, //"<"
+        GreaterThan, //">"
+        // TODO
+
+        // http://www.ecma-international.org/ecma-262/5.1/#sec-11.9
+        // Equality operators
+        Equals, //"=="
+        NotEquals, //"!="
+        // TODO
+
+        // http://www.ecma-international.org/ecma-262/5.1/#sec-11.10
+        // Binary Bitwise operators
+        BitwiseAnd, //"&"
+        // TODO
     };
 
     BinaryExpressionNode(Node *left, Node* right, const ESString& oper)
@@ -22,25 +45,39 @@ public:
         m_left = (ExpressionNode*)left;
         m_right = (ExpressionNode*)right;
 
+        // Additive Operators
         if (oper == L"+")
-            m_operator = PLUS;
+            m_operator = Plus;
         else if (oper == L"-")
-            m_operator = MINUS;
+            m_operator = Minus;
+
+        // Relational Operators
         else if (oper == L"<")
-            m_operator = LESSTHAN;
+            m_operator = Lessthan;
+
+        // Equality Operators
+        else if (oper == L"!=")
+            m_operator = NotEquals;
+
+        // Binary Bitwise Operator
         else if (oper == L"&")
-            m_operator = BITWISEAND;
+            m_operator = BitwiseAnd;
+
+        // TODO
         else
             RELEASE_ASSERT_NOT_REACHED();
     }
 
     virtual ESValue* execute(ESVMInstance* instance)
     {
-        ESValue *lval = m_left->execute(instance)->ensureValue();
-        ESValue *rval = m_right->execute(instance)->ensureValue();
-        ESValue *ret;
-        switch(m_operator) {
-            case PLUS:
+        ESValue* lval = m_left->execute(instance)->ensureValue();
+        ESValue* rval = m_right->execute(instance)->ensureValue();
+        return execute(instance, lval, rval, m_operator);
+    }
+    static ESValue* execute(ESVMInstance* instance, ESValue* lval, ESValue* rval, BinaryExpressionOperator oper) {
+        ESValue* ret;
+        switch(oper) {
+            case Plus:
                 /* http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.1 */
                 lval = lval->toPrimitive();
                 rval = rval->toPrimitive();
@@ -57,7 +94,7 @@ public:
                     }
                 }
                 break;
-            case LESSTHAN:
+            case Lessthan:
                 /* http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.1
                  * http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5 */
                 lval = lval->toPrimitive();
@@ -82,7 +119,7 @@ public:
                         ret = esFalse;
                 }
                 break;
-            case BITWISEAND:
+            case BitwiseAnd:
                 lval = lval->toInt32();
                 rval = rval->toInt32();
 
@@ -93,6 +130,20 @@ public:
                     // TODO
                 }
                 break;
+            case LeftShift:
+            {
+                lval = lval->toInt32();
+                rval = rval->toInt32();
+                long long int rnum = rval->isSmi()? rval->toSmi()->value() : rval->toHeapObject()->toNumber()->get();
+                long long int lnum = lval->isSmi()? lval->toSmi()->value() : lval->toHeapObject()->toNumber()->get();
+                int shiftCount = rnum & 0x1F;
+                lnum <<= shiftCount;
+                if (lnum >= 40000000)
+                    ret = Number::create(lnum);
+                else
+                    ret = Smi::fromInt(lnum);
+                break;
+            }
             default:
                 // TODO
                 RELEASE_ASSERT_NOT_REACHED();

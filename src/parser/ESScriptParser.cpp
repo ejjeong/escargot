@@ -97,6 +97,7 @@ Node* ESScriptParser::parseScript(const std::string& source)
     ESString astTypeUpdateExpression(L"UpdateExpression");
     ESString astTypeIfStatement(L"IfStatement");
     ESString astTypeForStatement(L"ForStatement");
+    ESString astTypeWhileStatement(L"WhileStatement");
 
     StatementNodeVector program_body;
     StatementNodeVector* current_body = &program_body;
@@ -121,7 +122,7 @@ Node* ESScriptParser::parseScript(const std::string& source)
                 decl.push_back(fn(children[i]));
                 if (children[i][L"init"].GetType() != rapidjson::Type::kNullType) {
                     assi.push_back(new AssignmentExpressionNode(fn(children[i][L"id"]),
-                            fn(children[i][L"init"]), AssignmentExpressionNode::AssignmentOperator::Equal));
+                            fn(children[i][L"init"]), L"="));
                 }
             }
 
@@ -142,7 +143,7 @@ Node* ESScriptParser::parseScript(const std::string& source)
             Node* node = fn(value[L"expression"]);
             parsedNode = new ExpressionStatementNode(node);
         } else if(type == astTypeAssignmentExpression) {
-            parsedNode = new AssignmentExpressionNode(fn(value[L"left"]), fn(value[L"right"]), AssignmentExpressionNode::AssignmentOperator::Equal);
+            parsedNode = new AssignmentExpressionNode(fn(value[L"left"]), fn(value[L"right"]), value[L"operator"].GetString());
         } else if(type == astTypeLiteral) {
             //TODO parse esvalue better
             if(value[L"value"].IsNumber()) {
@@ -240,6 +241,8 @@ Node* ESScriptParser::parseScript(const std::string& source)
             parsedNode = new IfStatementNode(fn(value[L"test"]), fn(value[L"consequent"]), value[L"alternate"].IsNull()? NULL : fn(value[L"alternate"]));
         } else if(type == astTypeForStatement) {
             parsedNode = new ForStatementNode(fn(value[L"init"]), fn(value[L"test"]), fn(value[L"update"]), fn(value[L"body"]));
+        } else if(type == astTypeWhileStatement) {
+            parsedNode = new WhileStatementNode(fn(value[L"test"]), fn(value[L"body"]));
         } else if(type == astTypeThisExpression) {
             parsedNode = new ThisExpressionNode();
         } else if(type == astTypeReturnStatement) {
