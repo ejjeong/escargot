@@ -2,6 +2,7 @@
 #define ArrayExpressionNode_h
 
 #include "ExpressionNode.h"
+#include "vm/ESVMInstance.h"
 
 namespace escargot {
 
@@ -14,17 +15,7 @@ public:
     }
 
     //$ 12.2.5.3
-    virtual ESValue* execute(ESVMInstance* instance)
-    {
-        JSArray* arr = JSArray::create();
-        for(unsigned i = 0; i < m_elements.size() ; i++) {
-            ESValue* result = m_elements[i]->execute(instance)->ensureValue();
-            arr->set(ESString((int) i), result);
-        }
-        int len = m_elements.size();
-        arr->setLength(len);
-        return arr;
-    }
+    virtual ESValue* execute(ESVMInstance* instance);
 protected:
     ExpressionNodeVector m_elements;
 };

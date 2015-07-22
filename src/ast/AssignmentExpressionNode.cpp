@@ -31,7 +31,12 @@ ESValue* AssignmentExpressionNode::execute(ESVMInstance* instance)
                 IdentifierNode* n = (IdentifierNode *)m_left;
                 instance->globalObject()->set(n->name(), rval);
             } else if(obj) {
-                obj->set(instance->currentExecutionContext()->lastLastUsedPropertyNameInMemberExpressionNode(), rval);
+                ESValue* propertyVal = instance->currentExecutionContext()->lastLastUsedPropertyValueInMemberExpressionNode();
+                if(obj->isJSArray() && propertyVal != NULL) {
+                    obj->toJSArray()->set(propertyVal, rval);
+                } else {
+                    obj->set(instance->currentExecutionContext()->lastLastUsedPropertyNameInMemberExpressionNode(), rval);
+                }
             } else {
                 throw ReferenceError();
             }

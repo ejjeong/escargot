@@ -24,13 +24,30 @@ GlobalObject::GlobalObject()
 }
 
 ESValue* GlobalObject::installArray() {
-    m_arrayPrototype = JSArray::create(0);
-    //FIXME : implement array push
-    m_arrayPrototype->set(L"push", JSFunction::create(NULL, NULL));
+    m_arrayPrototype = JSArray::create(0, NULL); //FIXME: %ObjectPrototype%
+
+    //$22.1.3.17 Array.prototype.push(item)
+    FunctionDeclarationNode* arrayPush = new FunctionDeclarationNode(L"push", ESStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
+        JSObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(L"arguments", false)->toHeapObject()->toJSObject();
+        auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->toJSArray();
+        int i = 0;
+        while(true) {
+            ESValue* val = value->get(ESString(i));
+            if (val == esUndefined) break;
+            thisVal->set( thisVal->length(), val );
+            i++;
+        }
+        instance->currentExecutionContext()->doReturn(thisVal->length());
+
+        return esUndefined;
+    }), false, false);
+    m_arrayPrototype->set(L"push", JSFunction::create(NULL, arrayPush));
 
     //$22.1.1
     FunctionDeclarationNode* constructor = new FunctionDeclarationNode(L"Array", ESStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
-        return JSArray::create(0);
+        auto r = JSArray::create(0, instance->globalObject()->arrayPrototype());
+        instance->currentExecutionContext()->doReturn(r);
+        return esUndefined;
     }), false, false);
 
     auto function = JSFunction::create(NULL, constructor);

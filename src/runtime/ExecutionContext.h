@@ -60,10 +60,16 @@ public:
         return m_lastUsedPropertyNameInMemberExpressionNode;
     }
 
-    ALWAYS_INLINE void setLastJSObjectMetInMemberExpressionNode(JSObject* obj, const ESString& name)
+    ALWAYS_INLINE ESValue* lastLastUsedPropertyValueInMemberExpressionNode()
+    {
+        return m_lastUsedPropertyValueInMemberExpressionNode;
+    }
+
+    ALWAYS_INLINE void setLastJSObjectMetInMemberExpressionNode(JSObject* obj, const ESString& name, ESValue* value)
     {
         m_lastJSObjectMetInMemberExpressionNode = obj;
         m_lastUsedPropertyNameInMemberExpressionNode = name;
+        m_lastUsedPropertyValueInMemberExpressionNode = value;
     }
 
     void doReturn(ESValue* returnValue)
@@ -84,6 +90,7 @@ private:
     LexicalEnvironment* m_variableEnvironment;
     JSObject* m_lastJSObjectMetInMemberExpressionNode;
     ESString m_lastUsedPropertyNameInMemberExpressionNode;
+    ESValue* m_lastUsedPropertyValueInMemberExpressionNode;
     ESValue* m_returnValue;
     std::jmp_buf m_returnPosition;
 };

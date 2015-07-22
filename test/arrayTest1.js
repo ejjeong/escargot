@@ -6,3 +6,7 @@ print(arr[1]);
 print(arr.length);
 print(arr[2]);
 print(arr[c]);
+arr[3]=4;
+arr[4]=4;
+print(arr[3]);
+print(arr.length);

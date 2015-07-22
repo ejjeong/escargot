@@ -15,14 +15,18 @@ ESValue* MemberExpressionNode::execute(ESVMInstance* instance)
     //TODO string,number-> stringObject, numberObject;
     if(obj->isHeapObject() && obj->toHeapObject()->isJSObject()) {
         ESString propertyName;
+        ESValue* propertyVal = NULL;
         if(!m_computed && m_property->type() == NodeType::Identifier) {
             propertyName = ((IdentifierNode*)m_property)->name();
         } else {
-            propertyName = m_property->execute(instance)->ensureValue()->toESString();
+            ESValue* tmpVal = m_property->execute(instance)->ensureValue();
+            if(m_computed && obj->toHeapObject()->isJSArray() && tmpVal->isSmi())
+                propertyVal = tmpVal;
+            propertyName = tmpVal->toESString();
         }
 
         instance->currentExecutionContext()->setLastJSObjectMetInMemberExpressionNode(obj->toHeapObject()->toJSObject(),
-                propertyName);
+                propertyName, propertyVal);
 
         JSObjectSlot* res = obj->toHeapObject()->toJSObject()->find(propertyName);
         if (res == NULL)

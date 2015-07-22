@@ -467,6 +467,10 @@ public:
         }
     }
 
+    void set(ESValue* key, ESValue* val, bool shouldThrowException = false) {
+        set(key->toESString(), val, shouldThrowException);
+    }
+
     bool hasKey(const ESString& key)
     {
         auto iter = m_map.find(key);
@@ -517,6 +521,7 @@ public:
         /*
         if(proto == NULL)
             proto = global->arrayPrototype();
+        setPrototype(proto);
         */
         return arr;
     }
@@ -527,17 +532,23 @@ public:
             setLength(val);
         else {
             JSObject::set(key, val, shouldThrowException);
-            //if (key.isSmi()) {
-            //    setLength(key.toSmi()->value()+1);
-            //}
         }
+    }
+
+    void set(ESValue* key, ESValue* val, bool shouldThrowException = false) {
+        if (key->isSmi()) {
+            int i = key->toSmi()->value()+1;
+            if (i > length()->toSmi()->value())
+                setLength(i);
+        }
+        set(key->toESString(), val, shouldThrowException);
     }
 
     void setLength(ESValue* len)
     {
         ASSERT(len->isSmi());
         JSObject::set(ESString(L"length"), len, false);
-        if (len < m_length) {
+        if (len->toSmi() < m_length->toSmi()) {
             //TODO : delete elements
         }
         m_length = len;
