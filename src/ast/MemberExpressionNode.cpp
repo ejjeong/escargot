@@ -26,12 +26,12 @@ ESValue* MemberExpressionNode::execute(ESVMInstance* instance)
 
         JSObjectSlot* res = obj->toHeapObject()->toJSObject()->find(propertyName);
         if (res == NULL)
-            return undefined;
+            return esUndefined;
         else
             return res;
     } else {
         throw "TypeError";
     }
-    return undefined;
+    return esUndefined;
 }
 }

@@ -11,7 +11,7 @@ namespace escargot {
 
 ESValue* ESFunctionCaller::call(ESValue* callee, ESValue* receiver, ESValue* arguments[], size_t argumentCount, ESVMInstance* ESVMInstance)
 {
-    ESValue* result = undefined;
+    ESValue* result = esUndefined;
     if(callee->isHeapObject() && callee->toHeapObject()->isJSFunction()) {
         ExecutionContext* currentContext = ESVMInstance->currentExecutionContext();
         JSFunction* fn = callee->toHeapObject()->toJSFunction();

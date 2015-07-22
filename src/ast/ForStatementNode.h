@@ -25,7 +25,7 @@ public:
             m_update->execute(instance)->ensureValue();
             test = m_test->execute(instance)->ensureValue();
         }
-        return undefined;
+        return esUndefined;
     }
 
 protected:

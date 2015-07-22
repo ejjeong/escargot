@@ -17,7 +17,7 @@ public:
     ESValue* execute(ESVMInstance* instance)
     {
         m_expression->execute(instance);
-        return undefined;
+        return esUndefined;
     }
 protected:
     Node* m_expression; //expression: Expression;

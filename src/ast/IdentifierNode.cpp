@@ -13,7 +13,7 @@ ESValue* IdentifierNode::execute(ESVMInstance* instance)
     if(slot)
         return slot;
     throw ReferenceError(m_name);
-    return undefined;
+    return esUndefined;
 }
 
 }

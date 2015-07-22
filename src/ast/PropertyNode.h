@@ -22,7 +22,7 @@ public:
 
     virtual ESValue* execute(ESVMInstance* instance)
     {
-        return undefined;
+        return esUndefined;
     }
 
     Node* key()

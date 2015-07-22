@@ -19,7 +19,7 @@ public:
         for(unsigned i = 0; i < m_body.size() ; i ++) {
             m_body[i]->execute(instance);
         }
-        return undefined;
+        return esUndefined;
     }
 
 protected:

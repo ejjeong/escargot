@@ -11,7 +11,7 @@ ESValue* FunctionDeclarationNode::execute(ESVMInstance* instance)
     JSFunction* function = JSFunction::create(instance->currentExecutionContext()->environment(), this);
     instance->currentExecutionContext()->environment()->record()->createMutableBindingForAST(m_id, false);
     instance->currentExecutionContext()->environment()->record()->setMutableBinding(m_id, function, false);
-    return undefined;
+    return esUndefined;
 }
 
 }

@@ -8,10 +8,16 @@
 namespace escargot {
 
 static Undefined s_undefined;
-Undefined* undefined = &s_undefined;
+Undefined* esUndefined = &s_undefined;
 
 static Null s_null;
-Null* null = &s_null;
+Null* esNull = &s_null;
+
+static Boolean s_true(true);
+Boolean* esTrue = &s_true;
+
+static Boolean s_false(false);
+Boolean* esFalse = &s_false;
 
 
 ESString ESValue::toESString()

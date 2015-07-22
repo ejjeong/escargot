@@ -76,7 +76,7 @@ void GlobalEnvironmentRecord::createGlobalVarBinding(const ESString& name, bool 
     bool extensible = globalObj->isExtensible();
     if (!hasProperty && extensible) {
         m_objectRecord->createMutableBinding(name, canDelete);
-        m_objectRecord->initializeBinding(name, undefined);
+        m_objectRecord->initializeBinding(name, esUndefined);
     }
     if( std::find(m_varNames.begin(), m_varNames.end(), name) == m_varNames.end() )
         m_varNames.push_back(name);

@@ -65,12 +65,21 @@ public:
 
                 // TODO http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5
                 // string, NaN, zero, infinity, ...
-                if (lval->isSmi() && rval->isSmi())
-                    ret = Boolean::create(lval->toSmi()->value() < rval->toSmi()->value());
+                if (lval->isSmi() && rval->isSmi()) {
+                    bool b = lval->toSmi()->value() < rval->toSmi()->value();
+                    if(b)
+                        ret = esTrue;
+                    else
+                        ret = esFalse;
+                }
                 else {
                     double lnum = lval->isSmi()? lval->toSmi()->value() : lval->toHeapObject()->toNumber()->get();
                     double rnum = rval->isSmi()? rval->toSmi()->value() : rval->toHeapObject()->toNumber()->get();
-                    ret = Boolean::create(lnum < rnum);
+                    bool b = lnum < rnum;
+                    if(b)
+                        ret = esTrue;
+                    else
+                        ret = esFalse;
                 }
                 break;
             case BITWISEAND:

@@ -200,7 +200,7 @@ public:
     virtual void createMutableBinding(const ESString& name, bool canDelete = false)
     {
         //TODO canDelete
-        m_innerObject->set(name, undefined);
+        m_innerObject->set(name, esUndefined);
     }
 
     virtual void setMutableBinding(const ESString& name, ESValue* V, bool mustNotThrowTypeErrorExecption)
@@ -281,8 +281,8 @@ public:
     FunctionEnvironmentRecord()
     {
         m_thisBindingStatus = Uninitialized;
-        m_thisValue = undefined;
-        m_newTarget = undefined;
+        m_thisValue = esUndefined;
+        m_newTarget = esUndefined;
     }
     enum ThisBindingStatus {
         Lexical, Initialized, Uninitialized

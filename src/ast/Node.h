@@ -54,7 +54,7 @@ public:
     virtual ESValue* execute(ESVMInstance* instance)
     {
         RELEASE_ASSERT_NOT_REACHED();
-        return undefined;
+        return esUndefined;
     }
 
     virtual ~Node()

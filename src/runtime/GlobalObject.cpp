@@ -15,7 +15,7 @@ GlobalObject::GlobalObject()
         ESValue* val = value->get(L"0");
         ESString str = val->toESString();
         wprintf(L"%ls\n", str.data());
-        return undefined;
+        return esUndefined;
     }), false, false);
     auto printFunction = JSFunction::create(NULL, node);
 

@@ -12,7 +12,7 @@ ESValue* CallExpressionNode::execute(ESVMInstance* instance)
 {
     instance->currentExecutionContext()->resetLastJSObjectMetInMemberExpressionNode();
     ESValue* slot = m_callee->execute(instance);
-    ESValue* fn = undefined;
+    ESValue* fn = esUndefined;
     if(slot->isHeapObject() && slot->toHeapObject()->isJSObjectSlot()) {
         fn = slot->toHeapObject()->toJSObjectSlot()->value();
     }

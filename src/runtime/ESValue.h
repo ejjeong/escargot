@@ -211,7 +211,7 @@ public:
     }
 };
 
-extern Undefined* undefined;
+extern Undefined* esUndefined;
 
 class Null : public HeapObject {
 protected:
@@ -227,18 +227,18 @@ public:
     }
 };
 
-extern Null* null;
+extern Null* esNull;
 
 
 class Boolean : public HeapObject {
 protected:
     const int DataMask = 0x80000000;
+public:
     Boolean(bool b)
         : HeapObject(HeapObject::Type::Boolean)
     {
         set(b);
     }
-public:
     static Boolean* create(bool b)
     {
         return new Boolean(b);
@@ -254,6 +254,9 @@ public:
         return m_data & DataMask;
     }
 };
+
+extern Boolean* esTrue;
+extern Boolean* esFalse;
 
 class Number : public HeapObject {
     Number(double value)
@@ -360,7 +363,7 @@ public:
             if(m_getter) {
                 return m_getter(m_data.m_object);
             }
-            return undefined;
+            return esUndefined;
         }
     }
 
@@ -405,7 +408,7 @@ public:
     {
         auto iter = m_map.find(key);
         if(iter == m_map.end()) {
-            escargot::JSObjectSlot* v = escargot::JSObjectSlot::create(undefined, isWritable, isEnumerable, isConfigurable);
+            escargot::JSObjectSlot* v = escargot::JSObjectSlot::create(esUndefined, isWritable, isEnumerable, isConfigurable);
             m_map.insert(std::make_pair(key, v));
         } else {
             //TODO
@@ -435,7 +438,7 @@ public:
         //TODO Assert: IsPropertyKey(P) is true.
         auto iter = m_map.find(key);
         if(iter == m_map.end()) {
-            return undefined;
+            return esUndefined;
         }
         return iter->second->value();
     }

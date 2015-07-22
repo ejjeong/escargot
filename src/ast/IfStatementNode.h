@@ -22,7 +22,7 @@ public:
             m_consequente->execute(instance);
         else if (m_alternate)
             m_alternate->execute(instance);
-        return undefined;
+        return esUndefined;
     }
 
 protected:

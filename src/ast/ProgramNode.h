@@ -20,7 +20,7 @@ public:
             m_body[i]->execute(instance);
         }
 
-        return undefined;
+        return esUndefined;
     }
 protected:
     StatementNodeVector m_body; //body: [ Statement ];

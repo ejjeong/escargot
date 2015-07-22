@@ -13,7 +13,7 @@ ESValue* VariableDeclaratorNode::execute(ESVMInstance* instance)
     ASSERT(m_id->type() == NodeType::Identifier);
 
     instance->currentExecutionContext()->environment()->record()->createMutableBindingForAST(((IdentifierNode *)m_id)->name(), false);
-    return undefined;
+    return esUndefined;
 }
 
 }

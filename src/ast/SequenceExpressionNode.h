@@ -16,10 +16,10 @@ public:
 
     ESValue* execute(ESVMInstance* instance)
     {
-    		 for (unsigned i = 0; i < m_expressions.size(); i++) {
-    			 m_expressions[i]->execute(instance);
-    		 }
-        return undefined;
+        for (unsigned i = 0; i < m_expressions.size(); i++) {
+             m_expressions[i]->execute(instance);
+        }
+        return esUndefined;
     }
 protected:
     ExpressionNodeVector m_expressions; //expression: Expression;

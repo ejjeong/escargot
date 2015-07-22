@@ -10,7 +10,7 @@ ExecutionContext::ExecutionContext(LexicalEnvironment* varEnv)
     m_variableEnvironment = varEnv;
     m_function = NULL;
     resetLastJSObjectMetInMemberExpressionNode();
-    m_returnValue = undefined;
+    m_returnValue = esUndefined;
 }
 
 JSObjectSlot* ExecutionContext::resolveBinding(const ESString& name)
