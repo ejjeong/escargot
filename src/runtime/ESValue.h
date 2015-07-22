@@ -331,6 +331,16 @@ public:
         return m_isConfigurable;
     }
 
+    bool isEnumerable()
+    {
+        return m_isEnumerable;
+    }
+
+    bool isWritable()
+    {
+        return m_isWritable;
+    }
+
 protected:
     ESValue* m_value;
     bool m_isWritable:1;
@@ -423,7 +433,9 @@ public:
     {
         auto iter = m_map.begin();
         while(iter != m_map.end()) {
-            t((*iter).first,(*iter).second);
+            if(iter->second->isEnumerable()) {
+                t((*iter).first,(*iter).second);
+            }
             iter++;
         }
     }
@@ -439,6 +451,7 @@ protected:
     JSArray(HeapObject::Type type = HeapObject::Type::JSArray)
         : JSObject((Type)(Type::JSObject | Type::JSArray))
     {
+        m_length = Smi::fromInt(0);
     }
 public:
     static JSArray* create()

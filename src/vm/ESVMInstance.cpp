@@ -11,11 +11,14 @@ ESVMInstance::ESVMInstance()
 {
     std::setlocale(LC_ALL, "en_US.utf8");
 
+    strings::initStaticStrings();
+
     m_globalObject = new GlobalObject();
     LexicalEnvironment* a = new LexicalEnvironment(new GlobalEnvironmentRecord(m_globalObject), NULL);
 
     m_globalExecutionContext = new ExecutionContext(a);
     m_currentExecutionContext = m_globalExecutionContext;
+
 }
 
 void ESVMInstance::evaluate(const std::string& source)

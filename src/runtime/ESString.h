@@ -81,8 +81,16 @@ public:
             m_hashValue = src.m_hashValue;
         } else {
             m_string->append(src.m_string->begin(), src.m_string->end());
-            m_isHashInited = false;
-            m_hashValue = 0;
+            invalidationHash();
+        }
+    }
+
+    ALWAYS_INLINE void initHash() const
+    {
+        if(m_string && !m_isHashInited) {
+            std::hash<std::wstring> hashFn;
+            m_hashValue = hashFn((std::wstring &)*m_string);
+            m_isHashInited = true;
         }
     }
 
@@ -94,15 +102,6 @@ public:
 #endif
 
 protected:
-
-    ALWAYS_INLINE void initHash() const
-    {
-        if(m_string && !m_isHashInited) {
-            std::hash<std::wstring> hashFn;
-            m_hashValue = hashFn((std::wstring &)*m_string);
-            m_isHashInited = true;
-        }
-    }
 
     ALWAYS_INLINE void invalidationHash() const
     {

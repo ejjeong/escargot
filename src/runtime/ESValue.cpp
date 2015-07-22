@@ -23,9 +23,9 @@ ESString ESValue::toESString()
     } else {
         HeapObject* o = toHeapObject();
         if(o->isUndefined()) {
-            ret = L"undefined";
+            ret = strings::undefined;
         } else if(o->isNull()) {
-            ret = L"null";
+            ret = strings::null;
         } else if(o->isNumber()) {
             ret = ESString(o->toNumber()->get());
         } else if(o->isString()) {
