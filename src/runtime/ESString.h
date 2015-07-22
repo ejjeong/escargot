@@ -5,6 +5,12 @@ namespace escargot {
 
 //borrow concept from coffeemix/runtime/gc_helper.h
 typedef std::basic_string<wchar_t, std::char_traits<wchar_t>, gc_allocator<wchar_t> > ESStringStd;
+class ESStringData : public gc_cleanup, public ESStringStd {
+public:
+    ESStringData() { }
+    ESStringData(const wchar_t* str)
+        : ESStringStd(str) { }
+};
 class ESString : public gc_cleanup {
 public:
     ESString()
@@ -45,7 +51,7 @@ public:
 
     ESString(const wchar_t* s)
     {
-        m_string = new ESStringStd(s);
+        m_string = new ESStringData(s);
         m_hashValue = m_isHashInited = false;
     }
 
@@ -111,7 +117,7 @@ protected:
 
     void allocString(size_t stringLength)
     {
-        m_string = new ESStringStd();
+        m_string = new ESStringData();
         m_string->resize(stringLength);
 
         invalidationHash();
@@ -120,7 +126,7 @@ protected:
     mutable size_t m_hashValue;
     mutable bool m_isHashInited;
 
-    ESStringStd* m_string;
+    ESStringData* m_string;
 };
 
 ALWAYS_INLINE bool operator == (const ESString& a,const ESString& b)

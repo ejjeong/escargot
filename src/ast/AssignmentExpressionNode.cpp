@@ -15,7 +15,12 @@ ESValue* AssignmentExpressionNode::execute(ESVMInstance* instance)
         //TODO
         ESValue* rval = m_right->execute(instance)->ensureValue();
         instance->currentExecutionContext()->resetLastJSObjectMetInMemberExpressionNode();
-        ESValue* lref = m_left->execute(instance);
+        ESValue* lref = undefined;
+        try {
+            lref = m_left->execute(instance);
+        } catch(ReferenceError& err) {
+        }
+
 
         //TODO
         if(lref == undefined) {
@@ -26,7 +31,7 @@ ESValue* AssignmentExpressionNode::execute(ESVMInstance* instance)
             } else if(obj) {
                 obj->set(instance->currentExecutionContext()->lastLastUsedPropertyNameInMemberExpressionNode(), rval);
             } else {
-                throw "ReferenceError";
+                throw ReferenceError();
             }
 
         } else {

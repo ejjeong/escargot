@@ -303,28 +303,65 @@ protected:
 };
 
 class JSObjectSlot : public HeapObject {
-    JSObjectSlot(ESValue* value,bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true)
+    JSObjectSlot(::escargot::ESValue* value,
+            bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
         : HeapObject(HeapObject::Type::JSObjectSlot)
     {
-        m_value = value;
+        m_data.m_value = value;
         m_isWritable = isWritable;
         m_isEnumerable = isEnumerable;
         m_isConfigurable = isConfigurable;
+        m_isDataProperty = true;
+    }
+
+    JSObjectSlot(::escargot::JSObject* object,
+            std::function<ESValue* (::escargot::JSObject* obj)> getter = nullptr,
+            std::function<ESValue* (::escargot::JSObject* obj, ESValue* value)> setter = nullptr,
+            bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
+        : HeapObject(HeapObject::Type::JSObjectSlot)
+    {
+        m_data.m_object = object;
+        m_isWritable = isWritable;
+        m_isEnumerable = isEnumerable;
+        m_isConfigurable = isConfigurable;
+        m_isDataProperty = false;
     }
 public:
-    static JSObjectSlot* create(ESValue* value,bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true)
+    static JSObjectSlot* create(ESValue* value,bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
     {
         return new JSObjectSlot(value, isWritable, isEnumerable, isConfigurable);
     }
 
+    static JSObjectSlot* create(::escargot::JSObject* object,
+            std::function<ESValue* (::escargot::JSObject* obj)> getter = nullptr,
+            std::function<ESValue* (::escargot::JSObject* obj, ESValue* value)> setter = nullptr,
+            bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
+    {
+        return new JSObjectSlot(object, getter, setter, isWritable, isEnumerable, isConfigurable);
+    }
+
     void setValue(ESValue* value)
     {
-        m_value = value;
+        if(m_isDataProperty) {
+            m_data.m_value = value;
+        } else {
+            if(m_setter) {
+                m_setter(m_data.m_object, value);
+            }
+        }
+
     }
 
     ESValue* value()
     {
-        return m_value;
+        if(m_isDataProperty) {
+            return m_data.m_value;
+        } else {
+            if(m_getter) {
+                return m_getter(m_data.m_object);
+            }
+            return undefined;
+        }
     }
 
     bool isConfigurable()
@@ -343,7 +380,15 @@ public:
     }
 
 protected:
-    ESValue* m_value;
+    union {
+        ESValue* m_value;
+        ::escargot::JSObject* m_object;
+    } m_data;
+
+    std::function<ESValue* (::escargot::JSObject* obj)> m_getter;
+    std::function<ESValue* (::escargot::JSObject* obj, ESValue* value)> m_setter;
+    //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-property-attributes
+    bool m_isDataProperty:1;
     bool m_isWritable:1;
     bool m_isEnumerable:1;
     bool m_isConfigurable:1;

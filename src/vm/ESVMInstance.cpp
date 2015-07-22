@@ -26,9 +26,10 @@ void ESVMInstance::evaluate(const std::string& source)
     try {
         Node* node = ESScriptParser::parseScript(source.c_str());
         node->execute(this);
-    } catch(const char* e) {
-        ESString str = e;
-        wprintf(L"%ls\n", str.data());
+    } catch(ReferenceError& err) {
+        wprintf(L"ReferenceError - %ls\n", err.identifier().data());
+    } catch(TypeError& err) {
+        wprintf(L"TypeError\n");
     }
 
 

@@ -2,6 +2,7 @@
 #include "Environment.h"
 #include "GlobalObject.h"
 #include "ESValue.h"
+#include "ExecutionContext.h"
 
 namespace escargot {
 
@@ -153,4 +154,24 @@ void ObjectEnvironmentRecord::initializeBinding(const ESString& name, ESValue* V
 void ObjectEnvironmentRecord::setMutableBinding(const ESString& name, ESValue* V, bool S) {
     m_bindingObject->set(name, V, S);
 }
+
+//http://www.ecma-international.org/ecma-262/6.0/index.html#sec-bindthisvalue
+void FunctionEnvironmentRecord::bindThisValue(JSObject* V)
+{
+    ASSERT(m_thisBindingStatus != Initialized);
+    if(m_thisBindingStatus == Lexical)
+        throw ReferenceError();
+    m_thisValue = V;
+    m_thisBindingStatus = Initialized;
+}
+
+JSObject* FunctionEnvironmentRecord::getThisBinding()
+{
+    ASSERT(m_thisBindingStatus != Lexical);
+    if(m_thisBindingStatus == Uninitialized)
+        throw ReferenceError();
+
+    return m_thisValue->toHeapObject()->toJSObject();
+}
+
 }

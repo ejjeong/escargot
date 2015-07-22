@@ -5,6 +5,27 @@
 
 namespace escargot {
 
+class ReferenceError {
+public:
+    ReferenceError()
+    {
+        m_identifier = L"";
+    }
+    ReferenceError(const ESString& identifier)
+    {
+        m_identifier = identifier;
+    }
+
+    const ESString& identifier() { return m_identifier; }
+
+protected:
+    ESString m_identifier;
+};
+
+class TypeError {
+
+};
+
 class LexicalEnvironment;
 class ExecutionContext : public gc_cleanup {
 public:

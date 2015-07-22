@@ -3,8 +3,6 @@
 
 #include "ESValue.h"
 #include "ESValueInlines.h"
-#include <vector>
-#include <algorithm>
 
 namespace escargot {
 
@@ -296,23 +294,8 @@ public:
     }
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-bindthisvalue
-    void bindThisValue(JSObject* V)
-    {
-        ASSERT(m_thisBindingStatus != Initialized);
-        if(m_thisBindingStatus == Lexical)
-            throw "ReferenceError";
-        m_thisValue = V;
-        m_thisBindingStatus = Initialized;
-    }
-
-    JSObject* getThisBinding()
-    {
-        ASSERT(m_thisBindingStatus != Lexical);
-        if(m_thisBindingStatus == Uninitialized)
-            throw "ReferenceError";
-
-        return m_thisValue->toHeapObject()->toJSObject();
-    }
+    void bindThisValue(JSObject* V);
+    JSObject* getThisBinding();
 
 protected:
     ESValue* m_thisValue;
