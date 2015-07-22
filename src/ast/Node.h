@@ -17,6 +17,7 @@ enum NodeType {
     BlockStatement,
     ReturnStatement,
     IfStatement,
+    ForStatement,
     Declaration,
     VariableDeclaration,
     FunctionDeclaration,

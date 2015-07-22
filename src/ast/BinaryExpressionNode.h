@@ -73,6 +73,17 @@ public:
                     ret = Boolean::create(lnum < rnum);
                 }
                 break;
+            case BITWISEAND:
+                lval = lval->toInt32();
+                rval = rval->toInt32();
+
+                /* http://www.ecma-international.org/ecma-262/5.1/#sec-11.10 */
+                if (lval->isSmi() && rval->isSmi()) {
+                    ret = Smi::fromInt(lval->toSmi()->value() & rval->toSmi()->value());
+                } else {
+                    // TODO
+                }
+                break;
             default:
                 // TODO
                 RELEASE_ASSERT_NOT_REACHED();

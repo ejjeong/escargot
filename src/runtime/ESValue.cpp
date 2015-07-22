@@ -82,4 +82,32 @@ ESValue* ESValue::toNumber()
     return ret;
 }
 
+// http://www.ecma-international.org/ecma-262/5.1/#sec-9.5
+ESValue* ESValue::toInt32()
+{
+    // TODO
+    ESValue* ret = this->toNumber();
+    if(isSmi()) {
+    } else {
+        HeapObject* o = this->toHeapObject();
+        if (o->isNumber()) {
+            double d = o->toNumber()->get();
+            long long int posInt = d<0?-1:1 * std::floor(std::abs(d));
+            long long int int32bit = posInt % 0x100000000;
+            int res;
+            if (int32bit >= 0x80000000)
+                res = int32bit - 0x100000000;
+            else
+                res = int32bit;
+            if (res >= 0x40000000)
+                ret = Number::create(res);
+            else
+                ret = Smi::fromInt(res);
+        } else { // TODO
+            RELEASE_ASSERT_NOT_REACHED();
+        }
+    }
+    return ret;
+}
+
 }

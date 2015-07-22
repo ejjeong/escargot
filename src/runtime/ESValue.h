@@ -34,6 +34,7 @@ public:
     ESString toESString();
     ESValue* toPrimitive();
     ESValue* toNumber();
+    ESValue* toInt32();
     ESValue* ensureValue();
 };
 

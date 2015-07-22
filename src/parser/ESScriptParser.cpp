@@ -96,6 +96,7 @@ Node* ESScriptParser::parseScript(const std::string& source)
     ESString astTypeBinaryExpression(L"BinaryExpression");
     ESString astTypeUpdateExpression(L"UpdateExpression");
     ESString astTypeIfStatement(L"IfStatement");
+    ESString astTypeForStatement(L"ForStatement");
 
     StatementNodeVector program_body;
     StatementNodeVector* current_body = &program_body;
@@ -237,6 +238,8 @@ Node* ESScriptParser::parseScript(const std::string& source)
             parsedNode = new UpdateExpressionNode(fn(value[L"argument"]), value[L"operator"].GetString(), value[L"prefix"].GetBool());
         } else if(type == astTypeIfStatement) {
             parsedNode = new IfStatementNode(fn(value[L"test"]), fn(value[L"consequent"]), value[L"alternate"].IsNull()? NULL : fn(value[L"alternate"]));
+        } else if(type == astTypeForStatement) {
+            parsedNode = new ForStatementNode(fn(value[L"init"]), fn(value[L"test"]), fn(value[L"update"]), fn(value[L"body"]));
         } else if(type == astTypeThisExpression) {
             parsedNode = new ThisExpressionNode();
         } else if(type == astTypeReturnStatement) {

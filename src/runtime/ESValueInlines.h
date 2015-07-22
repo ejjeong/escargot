@@ -9,12 +9,12 @@ const int kApiInt64Size = sizeof(int64_t);
 
 // Tag information for HeapObject.
 const int kHeapObjectTag = 0;
-const int kHeapObjectTagSize = 1;
+const int kHeapObjectTagSize = 2;
 const intptr_t kHeapObjectTagMask = (1 << kHeapObjectTagSize) - 1;
 
 // Tag information for Smi.
 const int kSmiTag = 1;
-const int kSmiTagSize = 2;
+const int kSmiTagSize = 1;
 const intptr_t kSmiTagMask = (1 << kSmiTagSize) - 1;
 
 template <size_t ptr_size> struct SmiTagging;
