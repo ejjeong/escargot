@@ -48,12 +48,12 @@ ESString ESValue::toESString()
         } else if(o->isJSObject()) {
             ret = L"{";
             bool isFirst = true;
-            o->toJSObject()->enumeration([&ret, &isFirst](const ESString& key, JSProperty& slot) {
+            o->toJSObject()->enumeration([&ret, &isFirst](const ESString& key, JSSlot* slot) {
                 if(!isFirst)
                     ret.append(L",");
                 ret.append(key);
                 ret.append(L":");
-                ret.append(slot.value()->toESString());
+                ret.append(slot->value()->toESString());
                 isFirst = false;
             });
             ret.append(L"}");

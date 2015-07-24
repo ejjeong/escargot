@@ -31,19 +31,25 @@ ESValue* AssignmentExpressionNode::execute(ESVMInstance* instance)
                 IdentifierNode* n = (IdentifierNode *)m_left;
                 instance->globalObject()->set(n->name(), rval);
             } else if(obj) {
-                ESValue* propertyVal = instance->currentExecutionContext()->lastLastUsedPropertyValueInMemberExpressionNode();
+                ESValue* propertyVal = instance->currentExecutionContext()->lastUsedPropertyValueInMemberExpressionNode();
                 if(obj->isJSArray() && propertyVal != NULL) {
                     obj->toJSArray()->set(propertyVal, rval);
                 } else {
-                    obj->set(instance->currentExecutionContext()->lastLastUsedPropertyNameInMemberExpressionNode(), rval);
+                    obj->set(instance->currentExecutionContext()->lastUsedPropertyNameInMemberExpressionNode(), rval);
                 }
             } else {
                 throw ReferenceError();
             }
 
-        } else {
+        } else if(lref->toHeapObject() && lref->toHeapObject()->isJSSlot()) {
             JSSlot* slot = lref->toHeapObject()->toJSSlot();
             slot->setValue(rval);
+        } else {
+            ASSERT(instance->currentExecutionContext()->lastJSObjectMetInMemberExpressionNode());
+            ASSERT(!instance->currentExecutionContext()->
+                    lastJSObjectMetInMemberExpressionNode()->hasKey(instance->currentExecutionContext()->lastUsedPropertyNameInMemberExpressionNode()));
+            instance->currentExecutionContext()->
+                    lastJSObjectMetInMemberExpressionNode()->set(instance->currentExecutionContext()->lastUsedPropertyNameInMemberExpressionNode(), rval);
         }
         ret = rval;
         break;

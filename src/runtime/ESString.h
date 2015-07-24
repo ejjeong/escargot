@@ -24,13 +24,13 @@ public:
     ESString()
     {
         m_string = NULL;
-        m_hashValue = m_isHashInited = false;
+        m_hashData.m_hashValue = m_hashData.m_isHashInited = false;
     }
 
     explicit ESString(int number)
     {
         m_string = new ESStringData(std::move(std::to_wstring(number)));
-        m_hashValue = m_isHashInited = false;
+        m_hashData.m_hashValue = m_hashData.m_isHashInited = false;
     }
 
     explicit ESString(double number)
@@ -40,13 +40,13 @@ public:
         std::swprintf(buf, 511, L"%g", number);
         allocString(wcslen(buf));
         wcscpy((wchar_t *)m_string->data(), buf);
-        m_hashValue = m_isHashInited = false;
+        m_hashData.m_hashValue = m_hashData.m_isHashInited = false;
     }
 
     ESString(const char* s)
     {
         m_string = NULL;
-        m_hashValue = m_isHashInited = false;
+        m_hashData.m_hashValue = m_hashData.m_isHashInited = false;
 
         std::mbstate_t state = std::mbstate_t();
         int len = std::mbsrtowcs(NULL, &s, 0, &state);
@@ -57,14 +57,13 @@ public:
     ESString(const wchar_t* s)
     {
         m_string = new ESStringData(s);
-        m_hashValue = m_isHashInited = false;
+        m_hashData.m_hashValue = m_hashData.m_isHashInited = false;
     }
 
 
     ESString(const ESString& s)
     {
-        m_hashValue = s.m_hashValue;
-        m_isHashInited = s.m_isHashInited;
+        m_hashData = s.m_hashData;
         m_string = s.m_string;
     }
 
@@ -81,15 +80,14 @@ public:
     size_t hashValue() const
     {
         initHash();
-        return m_hashValue;
+        return m_hashData.m_hashValue;
     }
 
     void append(const ESString& src)
     {
         if(!m_string) {
             m_string = src.m_string;
-            m_isHashInited = src.m_isHashInited;
-            m_hashValue = src.m_hashValue;
+            m_hashData = src.m_hashData;
         } else if(src.m_string) {
             m_string->append(src.m_string->begin(), src.m_string->end());
             invalidationHash();
@@ -98,10 +96,10 @@ public:
 
     ALWAYS_INLINE void initHash() const
     {
-        if(m_string && !m_isHashInited) {
+        if(m_string && !m_hashData.m_isHashInited) {
             std::hash<std::wstring> hashFn;
-            m_hashValue = hashFn((std::wstring &)*m_string);
-            m_isHashInited = true;
+            m_hashData.m_hashValue = hashFn((std::wstring &)*m_string);
+            m_hashData.m_isHashInited = true;
         }
     }
 
@@ -116,8 +114,8 @@ protected:
 
     ALWAYS_INLINE void invalidationHash() const
     {
-        m_isHashInited = false;
-        m_hashValue = 0;
+        m_hashData.m_isHashInited = false;
+        m_hashData.m_hashValue = 0;
     }
 
     void allocString(size_t stringLength)
@@ -128,8 +126,12 @@ protected:
         invalidationHash();
     }
 
-    mutable size_t m_hashValue;
-    mutable bool m_isHashInited;
+#pragma pack(push, 1)
+    mutable struct {
+        bool m_isHashInited:1;
+        size_t m_hashValue:31;
+    } m_hashData;
+#pragma pack(pop)
 
     ESStringData* m_string;
 };
@@ -139,7 +141,7 @@ ALWAYS_INLINE bool operator == (const ESString& a,const ESString& b)
     a.initHash();
     b.initHash();
 
-    if(a.m_hashValue == b.m_hashValue) {
+    if(a.m_hashData.m_hashValue == b.m_hashData.m_hashValue) {
         if(a.m_string && b.m_string) {
             if(*a.m_string == *b.m_string) {
                 return true;

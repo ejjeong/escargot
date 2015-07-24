@@ -54,3 +54,7 @@ foo2.prototype.foo2 = function() { print("asdf") };
 var insfoo = new foo2;
 insfoo.foo();
 insfoo.foo2();
+insfoo.asdf = 1;
+insfoo.foo = 1;
+print(insfoo.foo);
+print(foo.prototype.foo);

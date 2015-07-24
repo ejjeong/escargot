@@ -55,12 +55,12 @@ public:
         return m_lastJSObjectMetInMemberExpressionNode;
     }
 
-    ALWAYS_INLINE const ESString& lastLastUsedPropertyNameInMemberExpressionNode()
+    ALWAYS_INLINE const ESString& lastUsedPropertyNameInMemberExpressionNode()
     {
         return m_lastUsedPropertyNameInMemberExpressionNode;
     }
 
-    ALWAYS_INLINE ESValue* lastLastUsedPropertyValueInMemberExpressionNode()
+    ALWAYS_INLINE ESValue* lastUsedPropertyValueInMemberExpressionNode()
     {
         return m_lastUsedPropertyValueInMemberExpressionNode;
     }

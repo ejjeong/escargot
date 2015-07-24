@@ -29,7 +29,20 @@ ESValue* MemberExpressionNode::execute(ESVMInstance* instance)
         instance->currentExecutionContext()->setLastJSObjectMetInMemberExpressionNode(obj->toHeapObject()->toJSObject(),
                 propertyName, propertyVal);
 
-        return JSSlot::create(obj, propertyName);
+        JSSlot* slot = obj->find(propertyName);
+        if(slot) {
+            return slot;
+        } else {
+            ESValue* prototype = obj->__proto__();
+            while(prototype && prototype->isHeapObject() && prototype->toHeapObject()->isJSObject()) {
+                ::escargot::JSObject* obj = prototype->toHeapObject()->toJSObject();
+                JSSlot* s = obj->find(propertyName);
+                if(s)
+                    return s->value();
+                prototype = obj->__proto__();
+            }
+        }
+        return esUndefined;
     } else {
         throw TypeError();
     }
