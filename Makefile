@@ -35,7 +35,7 @@ CXXFLAGS += -Isrc/
 #add third_party
 CXXFLAGS += -Ithird_party/rapidjson/include/
 CXXFLAGS += -Ithird_party/bdwgc/include/
-LDFLAGS += third_party/bdwgc/.libs/libgc.a -lpthread
+LDFLAGS += -lpthread
 
 ifeq ($(ARCH), x64)
 	CXXFLAGS += -DESCARGOT_64
@@ -45,8 +45,10 @@ endif
 
 ifeq ($(MODE), debug)
 	CXXFLAGS += -O0 -g3 -fno-omit-frame-pointer -Wall -Werror
+	GCLIBS = third_party/bdwgc/out/debug/.libs/libgc.a third_party/bdwgc/out/debug/.libs/libgccpp.a
 else ifeq ($(MODE), release)
 	CXXFLAGS += -O3 -g0 -DNDEBUG
+	GCLIBS = third_party/bdwgc/out/release/.libs/libgc.a third_party/bdwgc/out/release/.libs/libgccpp.a
 else
 	$(error mode error)
 endif
@@ -67,8 +69,8 @@ OBJS :=  $(SRC:%.cpp= %.o)
 # pull in dependency info for *existing* .o files
 -include $(OBJS:.o=.d)
 
-$(MAKECMDGOALS): $(OBJS)
-	$(CXX) -o $(MAKECMDGOALS) $(OBJS) $(OBJS_C) $(LDFLAGS)
+$(MAKECMDGOALS): $(OBJS) $(GCLIBS)
+	$(CXX) -o $(MAKECMDGOALS) $(OBJS) $(GCLIBS) $(LDFLAGS)
 	cp third_party/mozjs/prebuilt/$(HOST)/$(ARCH)/mozjs ./mozjs
 
 %.o: %.cpp
@@ -82,6 +84,9 @@ $(MAKECMDGOALS): $(OBJS)
 clean:
 	$(shell find ./src/ -name "*.o" -exec rm {} \;)
 	$(shell find ./src/ -name "*.d" -exec rm {} \;)
+
+strip: $(MAKECMDGOALS)
+	strip $<
 
 .PHONY: $(MAKECMDGOALS) clean
 .DEFAULT_GOAL := escargot
