@@ -400,14 +400,20 @@ protected:
     bool m_isConfigurable:1;
 };
 
+
 typedef std::unordered_map<ESString, ::escargot::JSSlot *,
                 std::hash<ESString>,std::equal_to<ESString>,
                 gc_allocator<std::pair<const ESString, ::escargot::JSSlot *> > > JSObjectMapStd;
 
+/*
+typedef std::map<ESString, ::escargot::JSSlot *,
+            std::less<ESString>,
+            gc_allocator<std::pair<const ESString, ::escargot::JSSlot *> > > JSObjectMapStd;
+*/
 class JSObjectMap : public JSObjectMapStd {
 public:
     JSObjectMap(size_t siz)
-        : JSObjectMapStd(siz) { }
+        : JSObjectMapStd() { }
 
 };
 
@@ -470,7 +476,7 @@ public:
         return ret;
     }
 
-    escargot::JSSlot* find(const ESString& key)
+    ALWAYS_INLINE escargot::JSSlot* find(const ESString& key)
     {
         auto iter = m_map.find(key);
         if(iter == m_map.end()) {

@@ -3,8 +3,17 @@
 
 namespace escargot {
 
+unsigned long getLongTickCount()
+{
+    struct timespec timespec;
+    clock_gettime(CLOCK_MONOTONIC,&timespec);
+    return (unsigned long)(timespec.tv_sec * 1000000L + timespec.tv_nsec/1000);
+}
+
+
 Node* ESScriptParser::parseScript(const std::string& source)
 {
+    //unsigned long start = getLongTickCount();
     std::string sc;
     for(unsigned i = 0 ; i < source.length() ; i ++) {
         char c = source[i];
@@ -65,6 +74,10 @@ Node* ESScriptParser::parseScript(const std::string& source)
 
     ESString output = outputString.data();
     //output.show();
+
+    //unsigned long end = getLongTickCount();
+
+    //fwprintf(stderr, L"calling mozjs takes %g ms\n", (end - start)/1000.f);
 
     rapidjson::GenericDocument<rapidjson::UTF16<>> jsonDocument;
     rapidjson::GenericStringStream<rapidjson::UTF16<>> stringStream(output.data());

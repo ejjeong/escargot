@@ -37,9 +37,9 @@ CXXFLAGS += -Ithird_party/rapidjson/include/
 CXXFLAGS += -Ithird_party/bdwgc/include/
 LDFLAGS += third_party/bdwgc/.libs/libgc.a -lpthread
 
-ifeq ($(MODE), x64)
+ifeq ($(ARCH), x64)
 	CXXFLAGS += -DESCARGOT_64
-else ifeq ($(MODE), x86)
+else ifeq ($(ARCH), x86)
 	CXXFLAGS += -DESCARGOT_32
 endif
 

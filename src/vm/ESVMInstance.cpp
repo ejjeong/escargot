@@ -10,7 +10,7 @@ namespace escargot {
 ESVMInstance::ESVMInstance()
 {
     std::setlocale(LC_ALL, "en_US.utf8");
-
+    emptyStringData.initHash();
     strings::initStaticStrings();
 
     m_globalObject = new GlobalObject();

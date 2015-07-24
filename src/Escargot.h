@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <iostream>
 #include <vector>
+#include <map>
 #include <unordered_map>
 #include <string>
 #include <cstring>
@@ -19,6 +20,7 @@
 
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/time.h>
 #include <signal.h>
 
 #include <rapidjson/document.h>

@@ -2,4 +2,7 @@
 
 namespace escargot {
 
+ESStringData emptyStringData(L"");
+
+
 }
