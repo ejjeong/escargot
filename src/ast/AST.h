@@ -22,6 +22,7 @@
 #include "LiteralNode.h"
 #include "MemberExpressionNode.h"
 #include "NativeFunctionNode.h"
+#include "NewExpressionNode.h"
 #include "Node.h"
 #include "ObjectExpressionNode.h"
 #include "PatternNode.h"

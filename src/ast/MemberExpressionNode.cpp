@@ -11,9 +11,10 @@ namespace escargot {
 
 ESValue* MemberExpressionNode::execute(ESVMInstance* instance)
 {
-    ESValue* obj = m_object->execute(instance)->ensureValue();
+    ESValue* value = m_object->execute(instance)->ensureValue();
     //TODO string,number-> stringObject, numberObject;
-    if(obj->isHeapObject() && obj->toHeapObject()->isJSObject()) {
+    if(value->isHeapObject() && value->toHeapObject()->isJSObject()) {
+        JSObject* obj = value->toHeapObject()->toJSObject();
         ESString propertyName;
         ESValue* propertyVal = NULL;
         if(!m_computed && m_property->type() == NodeType::Identifier) {
@@ -28,13 +29,9 @@ ESValue* MemberExpressionNode::execute(ESVMInstance* instance)
         instance->currentExecutionContext()->setLastJSObjectMetInMemberExpressionNode(obj->toHeapObject()->toJSObject(),
                 propertyName, propertyVal);
 
-        JSObjectSlot* res = obj->toHeapObject()->toJSObject()->find(propertyName);
-        if (res == NULL)
-            return esUndefined;
-        else
-            return res;
+        return JSSlot::create(obj, propertyName);
     } else {
-        throw "TypeError";
+        throw TypeError();
     }
     return esUndefined;
 }

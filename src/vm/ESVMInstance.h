@@ -8,7 +8,7 @@ namespace escargot {
 class ExecutionContext;
 class GlobalObject;
 
-class ESVMInstance : public gc_cleanup {
+class ESVMInstance : public gc {
     friend class ESFunctionCaller;
 public:
     ESVMInstance();

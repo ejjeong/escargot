@@ -17,22 +17,7 @@ public:
         m_properties = properties;
     }
 
-    virtual ESValue* execute(ESVMInstance* instance)
-    {
-        JSObject* obj = JSObject::create();
-        for(unsigned i = 0; i < m_properties.size() ; i ++) {
-            PropertyNode* p = m_properties[i];
-            ESString key;
-            if(p->key()->type() == NodeType::Identifier) {
-                key = ((IdentifierNode* )p->key())->name();
-            } else {
-                key = p->key()->execute(instance)->ensureValue()->toESString();
-            }
-            ESValue* value = p->value()->execute(instance)->ensureValue();
-            obj->set(key, value);
-        }
-        return obj;
-    }
+    virtual ESValue* execute(ESVMInstance* instance);
 protected:
     PropertiesNodeVector m_properties;
 };

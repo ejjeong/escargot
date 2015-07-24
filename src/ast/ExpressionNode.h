@@ -6,6 +6,8 @@
 
 namespace escargot {
 
+typedef std::vector<Node *, gc_allocator<Node *>> ArgumentVector;
+
 //Any expression node. Since the left-hand side of an assignment may be any expression in general, an expression can also be a pattern.
 //interface Expression <: Node, Pattern { }
 class ExpressionNode : public Node {

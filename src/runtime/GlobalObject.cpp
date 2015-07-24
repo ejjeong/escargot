@@ -19,11 +19,50 @@ GlobalObject::GlobalObject()
     }), false, false);
     auto printFunction = JSFunction::create(NULL, node);
 
+    installFunction();
+    installObject();
+    installArray();
+
     set(L"print", printFunction);
-    set(L"Array", installArray());
 }
 
-ESValue* GlobalObject::installArray() {
+void GlobalObject::installFunction()
+{
+    m_function = JSFunction::create(NULL, new FunctionDeclarationNode(strings::Function, ESStringVector(), new EmptyStatementNode(), false, false));
+    m_function->set(strings::constructor, m_function);
+    m_function->set(strings::name, String::create(strings::Function));
+    m_function->setConstructor(m_function);
+    ::escargot::JSFunction* emptyFunction = JSFunction::create(NULL,new FunctionDeclarationNode(strings::Empty, ESStringVector(), new EmptyStatementNode(), false, false));
+
+    m_functionPrototype = emptyFunction;
+    m_functionPrototype->setConstructor(m_function);
+
+    m_function->defineAccessorProperty(strings::prototype, [](JSObject* self) -> ESValue* {
+        return self->toJSFunction()->protoType();
+    },nullptr, true, false, false);
+    m_function->set__proto__(emptyFunction);
+    m_function->setProtoType(emptyFunction);
+
+    set(strings::Function, m_function);
+}
+
+void GlobalObject::installObject()
+{
+    ::escargot::JSFunction* emptyFunction = m_functionPrototype;
+    m_object = ::escargot::JSFunction::create(NULL,new FunctionDeclarationNode(strings::Object, ESStringVector(), new EmptyStatementNode(), false, false));
+    m_object->set(strings::name, String::create(strings::Object));
+    m_object->setConstructor(m_function);
+    m_object->set__proto__(emptyFunction);
+
+    m_objectPrototype = JSObject::create();
+    m_objectPrototype->setConstructor(m_object);
+    m_object->set(strings::prototype, m_objectPrototype);
+
+    set(strings::Object, m_object);
+}
+
+void GlobalObject::installArray()
+{
     m_arrayPrototype = JSArray::create(0, NULL); //FIXME: %ObjectPrototype%
 
     //$22.1.3.17 Array.prototype.push(item)
@@ -44,15 +83,18 @@ ESValue* GlobalObject::installArray() {
     m_arrayPrototype->set(L"push", JSFunction::create(NULL, arrayPush));
 
     //$22.1.1
-    FunctionDeclarationNode* constructor = new FunctionDeclarationNode(L"Array", ESStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
+    FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings::Array, ESStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
         auto r = JSArray::create(0, instance->globalObject()->arrayPrototype());
         instance->currentExecutionContext()->doReturn(r);
         return esUndefined;
     }), false, false);
 
     auto function = JSFunction::create(NULL, constructor);
-    function->set(L"prototype", arrayPrototype());
-    return function;
+    function->set(strings::prototype, arrayPrototype());
+
+    set(strings::Array, function);
+
 }
+
 
 }

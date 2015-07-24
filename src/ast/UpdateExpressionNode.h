@@ -38,7 +38,7 @@ public:
                 argval = argval->toNumber();
                 if (!m_prefix)
                     ret = argval;
-                JSObjectSlot* slot = argref->toHeapObject()->toJSObjectSlot();
+                JSSlot* slot = argref->toHeapObject()->toJSSlot();
                 if (argval->isSmi()) {
                     slot->setValue(Smi::fromInt(argval->toSmi()->value() + 1));
                 } else {

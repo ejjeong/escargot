@@ -14,7 +14,7 @@ class JSObject;
 class GlobalObject;
 
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-lexical-environments
-class LexicalEnvironment : public gc_cleanup {
+class LexicalEnvironment : public gc {
 public:
     LexicalEnvironment(EnvironmentRecord* record, LexicalEnvironment* outerEnv)
         : m_record(record)
@@ -41,14 +41,16 @@ protected:
 };
 
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-environment-records
-class EnvironmentRecord : public gc_cleanup {
+class EnvironmentRecord : public gc {
 protected:
-    EnvironmentRecord() { }
+    EnvironmentRecord()
+    {
+    }
 public:
     virtual ~EnvironmentRecord() { }
 
     //return NULL == not exist
-    virtual JSObjectSlot* hasBinding(const ESString& name)
+    virtual JSSlot* hasBinding(const ESString& name)
     {
         RELEASE_ASSERT_NOT_REACHED();
     }
@@ -139,9 +141,9 @@ public:
     ~ObjectEnvironmentRecord() { }
 
     //return NULL == not exist
-    virtual JSObjectSlot* hasBinding(const ESString& name)
+    virtual JSSlot* hasBinding(const ESString& name)
     {
-        JSObjectSlot* slot = m_bindingObject->find(name);
+        JSSlot* slot = m_bindingObject->find(name);
         if(slot) {
             return slot;
         }
@@ -189,9 +191,9 @@ public:
     }
     ~DeclarativeEnvironmentRecord() { }
 
-    virtual JSObjectSlot* hasBinding(const ESString& name)
+    virtual JSSlot* hasBinding(const ESString& name)
     {
-        JSObjectSlot* slot = m_innerObject->find(name);
+        JSSlot* slot = m_innerObject->find(name);
         if(slot) {
             return slot;
         }
@@ -241,7 +243,7 @@ public:
     }
     ~GlobalEnvironmentRecord() { }
 
-    virtual JSObjectSlot* hasBinding(const ESString& name);
+    virtual JSSlot* hasBinding(const ESString& name);
     void createMutableBinding(const ESString& name, bool canDelete = false);
     void initializeBinding(const ESString& name, ESValue* V);
     void setMutableBinding(const ESString& name, ESValue* V, bool mustNotThrowTypeErrorExecption);

@@ -11,12 +11,18 @@ class Null;
 class Boolean;
 class Number;
 class String;
+class JSProperty;
 class JSObject;
-class JSObjectSlot;
+class JSSlot;
 class JSArray;
 class JSFunction;
 class FunctionNode;
 class ESVMInstance;
+
+extern Undefined* esUndefined;
+extern Null* esNull;
+extern Boolean* esTrue;
+extern Boolean* esFalse;
 
 class ESValue {
     //static void* operator new(size_t, void* p) = delete;
@@ -45,7 +51,7 @@ public:
     static inline Smi* fromIntptr(intptr_t value);
 };
 
-class HeapObject : public ESValue, public gc_cleanup {
+class HeapObject : public ESValue, public gc {
 public:
     enum Type {
         Undefined = 1,
@@ -54,7 +60,7 @@ public:
         Number = 1 << 3,
         String = 1 << 4,
         JSObject = 1 << 5,
-        JSObjectSlot = 1 << 6,
+        JSSlot = 1 << 6,
         JSFunction = 1 << 7,
         JSArray = 1 << 8,
         TypeMask = 0xff
@@ -151,17 +157,17 @@ public:
         return reinterpret_cast<::escargot::JSObject *>(this);
     }
 
-    ALWAYS_INLINE bool isJSObjectSlot()
+    ALWAYS_INLINE bool isJSSlot()
     {
-        return m_data & Type::JSObjectSlot;
+        return m_data & Type::JSSlot;
     }
 
-    ALWAYS_INLINE ::escargot::JSObjectSlot* toJSObjectSlot()
+    ALWAYS_INLINE ::escargot::JSSlot* toJSSlot()
     {
 #ifndef NDEBUG
-        ASSERT(isJSObjectSlot());
+        ASSERT(isJSSlot());
 #endif
-        return reinterpret_cast<::escargot::JSObjectSlot *>(this);
+        return reinterpret_cast<::escargot::JSSlot *>(this);
     }
 
     ALWAYS_INLINE bool isJSArray()
@@ -211,8 +217,6 @@ public:
     }
 };
 
-extern Undefined* esUndefined;
-
 class Null : public HeapObject {
 protected:
 public:
@@ -226,8 +230,6 @@ public:
         return new Null();
     }
 };
-
-extern Null* esNull;
 
 
 class Boolean : public HeapObject {
@@ -254,9 +256,6 @@ public:
         return m_data & DataMask;
     }
 };
-
-extern Boolean* esTrue;
-extern Boolean* esFalse;
 
 class Number : public HeapObject {
     Number(double value)
@@ -305,10 +304,10 @@ protected:
     ESString m_string;
 };
 
-class JSObjectSlot : public HeapObject {
-    JSObjectSlot(::escargot::ESValue* value,
+class JSProperty {
+public:
+    JSProperty(::escargot::ESValue* value,
             bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
-        : HeapObject(HeapObject::Type::JSObjectSlot)
     {
         m_data.m_value = value;
         m_isWritable = isWritable;
@@ -317,30 +316,18 @@ class JSObjectSlot : public HeapObject {
         m_isDataProperty = true;
     }
 
-    JSObjectSlot(::escargot::JSObject* object,
+    JSProperty(::escargot::JSObject* object,
             std::function<ESValue* (::escargot::JSObject* obj)> getter = nullptr,
-            std::function<ESValue* (::escargot::JSObject* obj, ESValue* value)> setter = nullptr,
+            std::function<void (::escargot::JSObject* obj, ESValue* value)> setter = nullptr,
             bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
-        : HeapObject(HeapObject::Type::JSObjectSlot)
     {
         m_data.m_object = object;
         m_isWritable = isWritable;
         m_isEnumerable = isEnumerable;
         m_isConfigurable = isConfigurable;
         m_isDataProperty = false;
-    }
-public:
-    static JSObjectSlot* create(ESValue* value,bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
-    {
-        return new JSObjectSlot(value, isWritable, isEnumerable, isConfigurable);
-    }
-
-    static JSObjectSlot* create(::escargot::JSObject* object,
-            std::function<ESValue* (::escargot::JSObject* obj)> getter = nullptr,
-            std::function<ESValue* (::escargot::JSObject* obj, ESValue* value)> setter = nullptr,
-            bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
-    {
-        return new JSObjectSlot(object, getter, setter, isWritable, isEnumerable, isConfigurable);
+        m_getter = getter;
+        m_setter = setter;
     }
 
     void setValue(ESValue* value)
@@ -389,7 +376,7 @@ protected:
     } m_data;
 
     std::function<ESValue* (::escargot::JSObject* obj)> m_getter;
-    std::function<ESValue* (::escargot::JSObject* obj, ESValue* value)> m_setter;
+    std::function<void (::escargot::JSObject* obj, ESValue* value)> m_setter;
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-property-attributes
     bool m_isDataProperty:1;
     bool m_isWritable:1;
@@ -397,19 +384,64 @@ protected:
     bool m_isConfigurable:1;
 };
 
+class JSSlot : public HeapObject {
+    JSSlot(::escargot::JSObject* obj,const ESString& propertyName)
+        : HeapObject(HeapObject::Type::JSSlot)
+    {
+        m_object = obj;
+        m_propertyName = propertyName;
+    }
+
+public:
+    static JSSlot* create(::escargot::JSObject* obj,const ESString& propertyName)
+    {
+        return new JSSlot(obj, propertyName);
+    }
+
+    ALWAYS_INLINE void setValue(ESValue* value);
+    ALWAYS_INLINE ESValue* value();
+
+    ALWAYS_INLINE bool isConfigurable();
+    ALWAYS_INLINE bool isEnumerable();
+    ALWAYS_INLINE bool isWritable();
+
+protected:
+    ::escargot::JSObject* m_object;
+    ESString m_propertyName;
+};
+
+typedef std::unordered_map<ESString, ::escargot::JSProperty,
+                std::hash<ESString>,std::equal_to<ESString>,
+                gc_allocator<std::pair<const ESString, ::escargot::JSProperty> > > JSObjectMapStd;
+
+class JSObjectMap : public JSObjectMapStd {
+
+};
+
 class JSObject : public HeapObject {
+    friend class JSSlot;
 protected:
     JSObject(HeapObject::Type type = HeapObject::Type::JSObject)
         : HeapObject(type)
     {
+        m___proto__ = esNull;
+
+        //FIXME set proper flags(is...)
+        definePropertyOrThrow(strings::constructor, true, false, false);
+
+        defineAccessorProperty(strings::__proto__, [](JSObject* self) -> ESValue* {
+            return self->__proto__();
+        },[](::escargot::JSObject* self, ESValue* value){
+            if(value->isHeapObject() && value->toHeapObject()->isJSObject())
+                self->set__proto__(value->toHeapObject()->toJSObject());
+        }, true, false, false);
     }
 public:
     void definePropertyOrThrow(const ESString& key, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true)
     {
         auto iter = m_map.find(key);
         if(iter == m_map.end()) {
-            escargot::JSObjectSlot* v = escargot::JSObjectSlot::create(esUndefined, isWritable, isEnumerable, isConfigurable);
-            m_map.insert(std::make_pair(key, v));
+            m_map.insert(std::make_pair(key, JSProperty(esUndefined, isWritable, isEnumerable, isConfigurable)));
         } else {
             //TODO
         }
@@ -435,21 +467,22 @@ public:
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-get-o-p
     ESValue* get(const ESString& key)
     {
+        ESValue* ret = esUndefined;
         //TODO Assert: IsPropertyKey(P) is true.
         auto iter = m_map.find(key);
-        if(iter == m_map.end()) {
-            return esUndefined;
+        if(iter != m_map.end()) {
+            ret = iter->second.value();
         }
-        return iter->second->value();
+        return ret;
     }
 
-    escargot::JSObjectSlot* find(const ESString& key)
+    escargot::JSSlot* find(const ESString& key)
     {
         auto iter = m_map.find(key);
         if(iter == m_map.end()) {
             return NULL;
         }
-        return iter->second;
+        return JSSlot::create(this, key);
     }
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
@@ -460,15 +493,28 @@ public:
         //TODO shouldThrowException
         auto iter = m_map.find(key);
         if(iter == m_map.end()) {
-            escargot::JSObjectSlot* v = escargot::JSObjectSlot::create(val);
-            m_map.insert(std::make_pair(key, v));
+            //TODO set flags
+            m_map.insert(std::make_pair(key, escargot::JSProperty(val, true, true, true)));
         } else {
-            iter->second->setValue(val);
+            iter->second.setValue(val);
         }
     }
 
-    void set(ESValue* key, ESValue* val, bool shouldThrowException = false) {
+    void set(ESValue* key, ESValue* val, bool shouldThrowException = false)
+    {
         set(key->toESString(), val, shouldThrowException);
+    }
+
+    void defineAccessorProperty(const ESString& key,std::function<ESValue* (::escargot::JSObject* obj)> getter = nullptr,
+            std::function<void (::escargot::JSObject* obj, ESValue* value)> setter = nullptr,
+            bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
+    {
+        auto iter = m_map.find(key);
+        if(iter != m_map.end()) {
+            m_map.erase(iter);
+        }
+        m_map.insert(std::make_pair(key, escargot::JSProperty(this, getter, setter, isWritable, isEnumerable, isConfigurable)));
+
     }
 
     bool hasKey(const ESString& key)
@@ -486,17 +532,36 @@ public:
     {
         auto iter = m_map.begin();
         while(iter != m_map.end()) {
-            if(iter->second->isEnumerable()) {
+            if(iter->second.isEnumerable()) {
                 t((*iter).first,(*iter).second);
             }
             iter++;
         }
     }
 
+    ALWAYS_INLINE ESValue* __proto__()
+    {
+        return m___proto__;
+    }
+
+    ALWAYS_INLINE void set__proto__(ESValue* obj)
+    {
+        m___proto__ = obj;
+    }
+
+    ALWAYS_INLINE ESValue* constructor()
+    {
+        return get(strings::constructor);
+    }
+
+    ALWAYS_INLINE void setConstructor(ESValue* obj)
+    {
+        set(strings::constructor, obj);
+    }
+
 protected:
-    std::unordered_map<ESString, escargot::JSObjectSlot *,
-            std::hash<ESString>,std::equal_to<ESString>,
-            gc_allocator<std::pair<const ESString, escargot::JSObjectSlot *> > > m_map;
+    JSObjectMap m_map;
+    ESValue* m___proto__;
 };
 
 class JSArray : public JSObject {
@@ -565,6 +630,7 @@ public:
     {
         return m_length;
     }
+
 protected:
     ESValue* m_length;
 };
@@ -578,6 +644,14 @@ protected:
     {
         m_outerEnvironment = outerEnvironment;
         m_functionAST = functionAST;
+        m_protoType = esUndefined;
+
+        defineAccessorProperty(strings::prototype, [](JSObject* self) -> ESValue* {
+            return self->toJSFunction()->protoType();
+        },[](::escargot::JSObject* self, ESValue* value){
+            if(value->isHeapObject() && value->toHeapObject()->isJSObject())
+                self->toJSFunction()->setProtoType(value->toHeapObject()->toJSObject());
+        }, true, false, false);
     }
 public:
     static JSFunction* create(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST)
@@ -585,17 +659,73 @@ public:
         return new JSFunction(outerEnvironment, functionAST);
     }
 
+    ALWAYS_INLINE ESValue* protoType()
+    {
+        return m_protoType;
+    }
+
+    ALWAYS_INLINE void setProtoType(ESValue* obj)
+    {
+        m_protoType = obj;
+    }
+
     FunctionNode* functionAST() { return m_functionAST; }
     LexicalEnvironment* outerEnvironment() { return m_outerEnvironment; }
 protected:
     LexicalEnvironment* m_outerEnvironment;
     FunctionNode* m_functionAST;
+    ESValue* m_protoType;
     //JSObject functionObject;
     //HomeObject
     ////JSObject newTarget
     //BindThisValue(V);
     //GetThisBinding();
 };
+
+
+void JSSlot::setValue(ESValue* value)
+{
+    m_object->set(m_propertyName, value);
+}
+
+ESValue* JSSlot::value()
+{
+    auto iter = m_object->m_map.find(m_propertyName);
+    if(iter == m_object->m_map.end()) {
+        ESValue* prototype = m_object->__proto__();
+        while(prototype && prototype->isHeapObject() && prototype->toHeapObject()->isJSObject()) {
+            ::escargot::JSObject* obj = prototype->toHeapObject()->toJSObject();
+            iter = obj->m_map.find(m_propertyName);
+            if(iter != obj->m_map.end())
+                return iter->second.value();
+            prototype = obj->__proto__();
+        }
+        return esUndefined;
+    } else {
+        return iter->second.value();
+    }
+}
+
+bool JSSlot::isConfigurable()
+{
+    auto iter = m_object->m_map.find(m_propertyName);
+    ASSERT(iter != m_object->m_map.end());
+    return iter->second.isConfigurable();
+}
+
+bool JSSlot::isEnumerable()
+{
+    auto iter = m_object->m_map.find(m_propertyName);
+    ASSERT(iter != m_object->m_map.end());
+    return iter->second.isEnumerable();
+}
+
+bool JSSlot::isWritable()
+{
+    auto iter = m_object->m_map.find(m_propertyName);
+    ASSERT(iter != m_object->m_map.end());
+    return iter->second.isWritable();
+}
 
 }
 

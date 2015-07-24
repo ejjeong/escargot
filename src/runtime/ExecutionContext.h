@@ -27,7 +27,7 @@ class TypeError {
 };
 
 class LexicalEnvironment;
-class ExecutionContext : public gc_cleanup {
+class ExecutionContext : public gc {
 public:
     ExecutionContext(LexicalEnvironment* varEnv);
     ALWAYS_INLINE LexicalEnvironment* environment()
@@ -37,7 +37,7 @@ public:
     }
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
-    JSObjectSlot* resolveBinding(const ESString& name);
+    JSSlot* resolveBinding(const ESString& name);
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvethisbinding
     JSObject* resolveThisBinding();

@@ -17,6 +17,7 @@ extern ESString Number;
 extern ESString Object;
 extern ESString Array;
 extern ESString Function;
+extern ESString Empty;
 
 void initStaticStrings();
 

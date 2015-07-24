@@ -3,15 +3,23 @@
 
 namespace escargot {
 
-//borrow concept from coffeemix/runtime/gc_helper.h
-typedef std::basic_string<wchar_t, std::char_traits<wchar_t>, gc_allocator<wchar_t> > ESStringStd;
+typedef std::wstring ESStringStd;
 class ESStringData : public gc_cleanup, public ESStringStd {
 public:
     ESStringData() { }
     ESStringData(const wchar_t* str)
         : ESStringStd(str) { }
+    ESStringData(ESStringStd&& src)
+    {
+        ESStringStd::operator =(src);
+    }
+
+    ESStringData(const ESStringData& src) = delete;
+    void operator = (const ESStringData& src) = delete;
 };
-class ESString : public gc_cleanup {
+
+
+class ESString : public gc {
 public:
     ESString()
     {
@@ -21,10 +29,7 @@ public:
 
     explicit ESString(int number)
     {
-        //FIXME
-        std::wstring ws = std::to_wstring(number);
-        allocString(ws.size());
-        wcscpy((wchar_t *)m_string->data(), ws.data());
+        m_string = new ESStringData(std::move(std::to_wstring(number)));
         m_hashValue = m_isHashInited = false;
     }
 
@@ -85,7 +90,7 @@ public:
             m_string = src.m_string;
             m_isHashInited = src.m_isHashInited;
             m_hashValue = src.m_hashValue;
-        } else {
+        } else if(src.m_string) {
             m_string->append(src.m_string->begin(), src.m_string->end());
             invalidationHash();
         }

@@ -31,6 +31,7 @@ enum NodeType {
     BinaryExpression,
     UpdateExpression,
     ObjectExpression,
+    NewExpression,
     MemberExpression,
     CallExpression,
     VariableDeclarator,
@@ -44,7 +45,7 @@ public:
     //TODO
 };
 
-class Node : public gc_cleanup {
+class Node : public gc {
 protected:
     Node(NodeType type, SourceLocation loc = SourceLocation())
     {

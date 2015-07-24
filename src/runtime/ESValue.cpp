@@ -4,6 +4,7 @@
 #include "vm/ESVMInstance.h"
 #include "runtime/ExecutionContext.h"
 #include "runtime/Environment.h"
+#include "ast/AST.h"
 
 namespace escargot {
 
@@ -37,18 +38,22 @@ ESString ESValue::toESString()
         } else if(o->isString()) {
             ret = o->toString()->string();
         } else if(o->isJSFunction()) {
-            ret = L"[Function function]";
+            //ret = L"[Function function]";
+            ret = L"function ";
+            JSFunction* fn = o->toJSFunction();
+            ret.append(fn->functionAST()->id());
+            ret.append(L"() {}");
         } else if(o->isJSArray()) {
             ret = L"[Array array]";
         } else if(o->isJSObject()) {
             ret = L"{";
             bool isFirst = true;
-            o->toJSObject()->enumeration([&ret, &isFirst](const ESString& key, JSObjectSlot* slot) {
+            o->toJSObject()->enumeration([&ret, &isFirst](const ESString& key, JSProperty& slot) {
                 if(!isFirst)
                     ret.append(L",");
                 ret.append(key);
                 ret.append(L":");
-                ret.append(slot->value()->toESString());
+                ret.append(slot.value()->toESString());
                 isFirst = false;
             });
             ret.append(L"}");

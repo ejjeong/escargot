@@ -146,8 +146,8 @@ inline Smi* Smi::fromIntptr(intptr_t value)
 
 ALWAYS_INLINE ESValue* ESValue::ensureValue()
 {
-    if(isHeapObject() && toHeapObject()->isJSObjectSlot()) {
-        return toHeapObject()->toJSObjectSlot()->value();
+    if(isHeapObject() && toHeapObject()->isJSSlot()) {
+        return toHeapObject()->toJSSlot()->value();
     }
     return this;
 }

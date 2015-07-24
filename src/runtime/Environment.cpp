@@ -57,7 +57,7 @@ bool GlobalEnvironmentRecord::canDeclareGlobalVar(const ESString& name) {
 //$8.1.1.4.16
 bool GlobalEnvironmentRecord::canDeclareGlobalFunction(const ESString& name) {
     JSObject* globalObj = m_objectRecord->bindingObject();
-    JSObjectSlot* pd = globalObj->find(name);
+    JSSlot* pd = globalObj->find(name);
     if(pd == NULL)
         return globalObj->isExtensible();
 
@@ -97,8 +97,8 @@ JSObject* GlobalEnvironmentRecord::getThisBinding() {
 }
 
 //$8.1.1.4.1
-JSObjectSlot* GlobalEnvironmentRecord::hasBinding(const ESString& name) {
-    JSObjectSlot* ret = m_declarativeRecord->hasBinding(name);
+JSSlot* GlobalEnvironmentRecord::hasBinding(const ESString& name) {
+    JSSlot* ret = m_declarativeRecord->hasBinding(name);
     if(ret)
         return ret;
     return m_objectRecord->hasBinding(name);

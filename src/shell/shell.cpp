@@ -33,13 +33,12 @@ int main(int argc, char* argv[])
     ASSERT(obj->get(L"asdf")->toSmi()->value() == 2);
     ASSERT(obj->get("obj")->toHeapObject()->isJSObject());
 
-    obj->set("obj",escargot::undefined);
+    obj->set("obj",escargot::esUndefined);
     GC_gcollect();
     escargot::ESValue* val = obj->get("obj");
     ASSERT(val->isHeapObject());
     ASSERT(obj->get("obj")->toHeapObject()->isUndefined());
-    */
-
+     */
     escargot::ESVMInstance* ES = new escargot::ESVMInstance();
     if(argc == 1) {
         while (true) {

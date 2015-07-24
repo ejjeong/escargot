@@ -44,7 +44,7 @@ ESValue* ESFunctionCaller::call(ESValue* callee, ESValue* receiver, ESValue* arg
         result = ESVMInstance->m_currentExecutionContext->returnValue();
         ESVMInstance->m_currentExecutionContext = currentContext;
     } else {
-        throw "TypeError";
+        throw TypeError();
     }
 
     return result;

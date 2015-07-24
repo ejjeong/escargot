@@ -9,7 +9,7 @@ namespace escargot {
 ESValue* IdentifierNode::execute(ESVMInstance* instance)
 {
     //TODO throw Ref..Error
-    JSObjectSlot* slot = instance->currentExecutionContext()->resolveBinding(name());
+    JSSlot* slot = instance->currentExecutionContext()->resolveBinding(name());
     if(slot)
         return slot;
     throw ReferenceError(m_name);

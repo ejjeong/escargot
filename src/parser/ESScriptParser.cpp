@@ -92,6 +92,7 @@ Node* ESScriptParser::parseScript(const std::string& source)
     ESString astTypeCallExpression(L"CallExpression");
     ESString astTypeObjectExpression(L"ObjectExpression");
     ESString astTypeMemberExpression(L"MemberExpression");
+    ESString astTypeNewExpression(L"NewExpression");
     ESString astTypeProperty(L"Property");
     ESString astTypeBinaryExpression(L"BinaryExpression");
     ESString astTypeUpdateExpression(L"UpdateExpression");
@@ -179,6 +180,9 @@ Node* ESScriptParser::parseScript(const std::string& source)
             ESString id;
             ESStringVector params;
 
+            if(!value[L"id"].IsNull())
+                id = value[L"id"][L"name"].GetString();
+
             rapidjson::GenericValue<rapidjson::UTF16<>>& children = value[L"params"];
             for (rapidjson::SizeType i = 0; i < children.Size(); i++) {
                 params.push_back(children[i][L"name"].GetString());
@@ -214,6 +218,14 @@ Node* ESScriptParser::parseScript(const std::string& source)
                 arguments.push_back(fn(children[i]));
             }
             parsedNode = new CallExpressionNode(callee, std::move(arguments));
+        } else if(type == astTypeNewExpression) {
+            Node* callee = fn(value[L"callee"]);
+            ArgumentVector arguments;
+            rapidjson::GenericValue<rapidjson::UTF16<>>& children = value[L"arguments"];
+            for (rapidjson::SizeType i = 0; i < children.Size(); i++) {
+                arguments.push_back(fn(children[i]));
+            }
+            parsedNode = new NewExpressionNode(callee, std::move(arguments));
         } else if(type == astTypeObjectExpression) {
             PropertiesNodeVector propertiesVector;
             rapidjson::GenericValue<rapidjson::UTF16<>>& children = value[L"properties"];

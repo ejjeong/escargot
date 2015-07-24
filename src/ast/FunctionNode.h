@@ -22,6 +22,7 @@ public:
 
     ALWAYS_INLINE const ESStringVector& params() { return m_params; }
     ALWAYS_INLINE Node* body() { return m_body; }
+    ALWAYS_INLINE const ESString& id() { return m_id; }
 protected:
     ESString m_id; //id: Identifier;
     ESStringVector m_params; //params: [ Pattern ];

@@ -42,7 +42,7 @@ ESValue* AssignmentExpressionNode::execute(ESVMInstance* instance)
             }
 
         } else {
-            JSObjectSlot* slot = lref->toHeapObject()->toJSObjectSlot();
+            JSSlot* slot = lref->toHeapObject()->toJSSlot();
             slot->setValue(rval);
         }
         ret = rval;
@@ -57,7 +57,7 @@ ESValue* AssignmentExpressionNode::execute(ESVMInstance* instance)
 
         // TODO 6. Throw a SyntaxError
 
-        JSObjectSlot* slot = lref->toHeapObject()->toJSObjectSlot();
+        JSSlot* slot = lref->toHeapObject()->toJSSlot();
         slot->setValue(r);
         ret = r;
         break;

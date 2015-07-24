@@ -1,5 +1,5 @@
 #include "Escargot.h"
-#include "CallExpressionNode.h"
+#include "NewExpressionNode.h"
 
 #include "vm/ESVMInstance.h"
 #include "runtime/ExecutionContext.h"
@@ -8,13 +8,15 @@
 
 namespace escargot {
 
-ESValue* CallExpressionNode::execute(ESVMInstance* instance)
+ESValue* NewExpressionNode::execute(ESVMInstance* instance)
 {
-    instance->currentExecutionContext()->resetLastJSObjectMetInMemberExpressionNode();
     ESValue* fn = m_callee->execute(instance)->ensureValue();
-    ESValue* receiver = instance->currentExecutionContext()->lastJSObjectMetInMemberExpressionNode();
-    if(receiver == NULL)
-        receiver = instance->globalObject();
+    if(!fn->isHeapObject() || !fn->toHeapObject()->isJSFunction())
+        throw TypeError();
+    JSFunction* function = fn->toHeapObject()->toJSFunction();
+    JSObject* receiver = JSObject::create();
+    receiver->setConstructor(fn);
+    receiver->set__proto__(function->protoType());
 
     std::vector<ESValue*, gc_allocator<ESValue*>> arguments;
     for(unsigned i = 0; i < m_arguments.size() ; i ++) {
@@ -22,8 +24,8 @@ ESValue* CallExpressionNode::execute(ESVMInstance* instance)
         arguments.push_back(result);
     }
 
-    return ESFunctionCaller::call(fn, receiver, &arguments[0], arguments.size(), instance);
-}
+    ESFunctionCaller::call(fn, receiver, &arguments[0], arguments.size(), instance);
 
+    return receiver;
 }
-
+}

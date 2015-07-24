@@ -6,8 +6,6 @@
 
 namespace escargot {
 
-typedef std::vector<Node *, gc_allocator<Node *>> ArgumentVector;
-
 class CallExpressionNode : public ExpressionNode {
 public:
     CallExpressionNode(Node* callee, ArgumentVector&& arguments)

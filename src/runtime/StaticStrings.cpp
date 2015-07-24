@@ -16,6 +16,7 @@ ESString Number;
 ESString Object;
 ESString Array;
 ESString Function;
+ESString Empty;
 
 void initStaticStrings()
 {
@@ -42,6 +43,8 @@ void initStaticStrings()
     Array.initHash();
     Function = L"Function";
     Function.initHash();
+    Empty = L"Empty";
+    Empty.initHash();
 }
 
 }
