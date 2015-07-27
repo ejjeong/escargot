@@ -413,7 +413,7 @@ typedef std::map<ESString, ::escargot::JSSlot *,
 class JSObjectMap : public JSObjectMapStd {
 public:
     JSObjectMap(size_t siz)
-        : JSObjectMapStd() { }
+        : JSObjectMapStd(siz) { }
 
 };
 

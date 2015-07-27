@@ -2,11 +2,15 @@
 #define ESVMInstance_h
 
 #include "runtime/GlobalObject.h"
+#include "runtime/ESAtomicString.h"
 
 namespace escargot {
 
 class ExecutionContext;
 class GlobalObject;
+
+typedef std::unordered_map<std::wstring, ESAtomicStringData *,
+        std::hash<std::wstring>,std::equal_to<std::wstring> > AtomicStringMap;
 
 class ESVMInstance : public gc {
     friend class ESFunctionCaller;
@@ -20,6 +24,10 @@ protected:
     ExecutionContext* m_globalExecutionContext;
     ExecutionContext* m_currentExecutionContext;
     GlobalObject* m_globalObject;
+
+    friend class ESAtomicString;
+    friend class ESAtomicStringData;
+    AtomicStringMap m_atomicStringMap;
 };
 
 }

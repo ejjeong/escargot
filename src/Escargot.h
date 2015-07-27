@@ -7,6 +7,8 @@
 #include <vector>
 #include <map>
 #include <unordered_map>
+#include <unordered_set>
+#include <memory>
 #include <string>
 #include <cstring>
 #include <cassert>
@@ -133,6 +135,7 @@
 #define RELEASE_ASSERT_NOT_REACHED() do { assert(false); } while (0)
 
 #include "runtime/ESString.h"
+#include "runtime/ESAtomicString.h"
 #include "runtime/StaticStrings.h"
 
 #endif

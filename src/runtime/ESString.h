@@ -6,14 +6,19 @@ namespace escargot {
 typedef std::wstring ESStringStd;
 class ESStringData : public gc_cleanup, public ESStringStd {
 public:
-    ESStringData() { };
+    ESStringData()
+    {
+        initHash();
+    }
     ESStringData(const wchar_t* str)
         : ESStringStd(str)
     {
+        initHash();
     }
     ESStringData(ESStringStd&& src)
     {
         ESStringStd::operator =(src);
+        initHash();
     }
 
     ESStringData(const ESStringData& src) = delete;
@@ -26,8 +31,8 @@ public:
 
     ALWAYS_INLINE void initHash()
     {
-        std::hash<std::wstring> hashFn;
-        m_hashData = hashFn((std::wstring &)*this);
+        std::hash<ESStringStd> hashFn;
+        m_hashData = hashFn((ESStringStd &)*this);
     }
 protected:
     size_t m_hashData;
@@ -43,10 +48,14 @@ public:
         m_string = &emptyStringData;
     }
 
+    ALWAYS_INLINE ESString(ESStringData* data)
+    {
+        m_string = data;
+    }
+
     explicit ESString(int number)
     {
         m_string = new ESStringData(std::move(std::to_wstring(number)));
-        m_string->initHash();
     }
 
     explicit ESString(double number)
@@ -73,7 +82,6 @@ public:
     ALWAYS_INLINE ESString(const wchar_t* s)
     {
         m_string = new ESStringData(s);
-        m_string->initHash();
     }
 
 
@@ -100,6 +108,7 @@ public:
             m_string = src.m_string;
         } else if(src.m_string != &emptyStringData) {
             m_string->append(src.m_string->begin(), src.m_string->end());
+            m_string->initHash();
         }
     }
 
@@ -129,7 +138,7 @@ ALWAYS_INLINE bool operator == (const ESString& a, const ESString& b)
     return false;
 }
 
-typedef std::vector<ESString,gc_allocator<ESString>> ESStringVector;
+typedef std::vector<ESString,gc_allocator<ESString> > ESStringVector;
 
 }
 
@@ -158,6 +167,7 @@ template<> struct less<::escargot::ESString>
         return *a.string() < *b.string();
     }
 };
+
 }
 
 #endif
