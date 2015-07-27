@@ -10,11 +10,12 @@ class Undefined;
 class Null;
 class Boolean;
 class Number;
-class String;
+class JSString;
 class JSObject;
 class JSSlot;
-class JSArray;
 class JSFunction;
+class JSArray;
+class JSStringObject;
 class FunctionNode;
 class ESVMInstance;
 
@@ -28,10 +29,11 @@ class ESValue {
     //static void* operator new[](size_t, void* p) = delete;
     //static void* operator new(size_t size) = delete;
     //static void* operator new[](size_t size) = delete;
+
 protected:
     ESValue() { }
-public:
 
+public:
     bool isSmi() const;
     bool isHeapObject() const;
     bool equalsTo(ESValue* val);
@@ -41,6 +43,8 @@ public:
     ESValue* toPrimitive();
     ESValue* toNumber();
     ESValue* toInt32();
+    ESValue* toInteger();
+    JSString* toString();
     ALWAYS_INLINE ESValue* ensureValue();
 };
 
@@ -58,13 +62,14 @@ public:
         Null = 1 << 1,
         Boolean = 1 << 2,
         Number = 1 << 3,
-        String = 1 << 4,
+        JSString = 1 << 4,
         JSObject = 1 << 5,
         JSSlot = 1 << 6,
         JSFunction = 1 << 7,
         JSArray = 1 << 8,
-				 JSError = 1 << 9,
-        TypeMask = 0xff
+        JSStringObject = 1 << 9,
+        JSError = 1 << 10,
+        TypeMask = 0xfff
     };
 
 protected:
@@ -132,17 +137,17 @@ public:
         return reinterpret_cast<::escargot::Number*>(this);
     }
 
-    ALWAYS_INLINE bool isString()
+    ALWAYS_INLINE bool isJSString()
     {
-        return m_data & Type::String;
+        return m_data & Type::JSString;
     }
 
-    ALWAYS_INLINE ::escargot::String* toString()
+    ALWAYS_INLINE ::escargot::JSString* toJSString()
     {
 #ifndef NDEBUG
-        ASSERT(isString());
+        ASSERT(isJSString());
 #endif
-        return reinterpret_cast<::escargot::String *>(this);
+        return reinterpret_cast<::escargot::JSString *>(this);
     }
 
     ALWAYS_INLINE bool isJSObject()
@@ -176,6 +181,19 @@ public:
         return reinterpret_cast<::escargot::JSSlot *>(this);
     }
 
+    ALWAYS_INLINE bool isJSFunction()
+    {
+        return m_data & Type::JSFunction;
+    }
+
+    ALWAYS_INLINE ::escargot::JSFunction* toJSFunction()
+    {
+#ifndef NDEBUG
+        ASSERT(isJSFunction());
+#endif
+        return reinterpret_cast<::escargot::JSFunction *>(this);
+    }
+
     ALWAYS_INLINE bool isJSArray()
     {
         return m_data & Type::JSArray;
@@ -189,17 +207,17 @@ public:
         return reinterpret_cast<::escargot::JSArray *>(this);
     }
 
-    ALWAYS_INLINE bool isJSFunction()
+    ALWAYS_INLINE bool isJSStringObject()
     {
-        return m_data & Type::JSFunction;
+        return m_data & Type::JSStringObject;
     }
 
-    ALWAYS_INLINE ::escargot::JSFunction* toJSFunction()
+    ALWAYS_INLINE ::escargot::JSStringObject* toJSStringObject()
     {
 #ifndef NDEBUG
-        ASSERT(isJSFunction());
+        ASSERT(isJSStringObject());
 #endif
-        return reinterpret_cast<::escargot::JSFunction *>(this);
+        return reinterpret_cast<::escargot::JSStringObject *>(this);
     }
 
 protected:
@@ -288,17 +306,17 @@ protected:
     double m_value;
 };
 
-class String : public HeapObject {
+class JSString : public HeapObject {
 protected:
-    String(const ESString& src)
-        : HeapObject(HeapObject::Type::String)
+    JSString(const ESString& src)
+        : HeapObject(HeapObject::Type::JSString)
     {
         m_string = src;
     }
 public:
-    static String* create(const ESString& src)
+    static JSString* create(const ESString& src)
     {
-        return new String(src);
+        return new JSString(src);
     }
 
     const ESString& string()
@@ -306,10 +324,14 @@ public:
         return m_string;
     }
 
+    ESValue* length()
+    {
+        return Smi::fromInt(m_string.length());
+    }
+
 protected:
     ESString m_string;
 };
-
 
 class JSSlot : public HeapObject {
     JSSlot(::escargot::ESValue* value,
@@ -566,6 +588,9 @@ public:
         set(strings->constructor, obj);
     }
 
+    enum PrimitiveTypeHint { NoPreference, PreferString, PreferNumber };
+    ESValue* defaultValue(ESVMInstance* instance, PrimitiveTypeHint hint = NoPreference);
+
 protected:
     JSObjectMap m_map;
     ESValue* m___proto__;
@@ -703,6 +728,28 @@ protected:
     //GetThisBinding();
 };
 
+class JSStringObject : public JSObject {
+protected:
+    JSStringObject(const ESString& str)
+        : JSObject((Type)(Type::JSObject | Type::JSStringObject))
+    {
+        m_stringData = JSString::create(str);
+    }
+
+public:
+    static JSStringObject* create(const ESString& str)
+    {
+        return new JSStringObject(str);
+    }
+
+    ALWAYS_INLINE ::escargot::JSString* getStringData()
+    {
+        return m_stringData;
+    }
+
+private:
+    ::escargot::JSString* m_stringData;
+};
 
 }
 

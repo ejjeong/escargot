@@ -102,6 +102,11 @@ public:
         return m_string;
     }
 
+    ALWAYS_INLINE int length() const
+    {
+        return m_string->length();
+    }
+
     void append(const ESString& src)
     {
         if(m_string == &emptyStringData) {

@@ -13,6 +13,7 @@ GlobalObject::GlobalObject()
     installFunction();
     installObject();
     installArray();
+    installString();
     installError();
 
     FunctionDeclarationNode* node = new FunctionDeclarationNode(ESAtomicString(L"print"), ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
@@ -69,7 +70,7 @@ void GlobalObject::installFunction()
 {
     m_function = JSFunction::create(NULL, new FunctionDeclarationNode(strings->Function, ESAtomicStringVector(), new EmptyStatementNode(), false, false));
     m_function->set(strings->constructor, m_function);
-    m_function->set(strings->name, String::create(strings->Function));
+    m_function->set(strings->name, JSString::create(strings->Function));
     m_function->setConstructor(m_function);
     ::escargot::JSFunction* emptyFunction = JSFunction::create(NULL,new FunctionDeclarationNode(strings->Empty, ESAtomicStringVector(), new EmptyStatementNode(), false, false));
 
@@ -89,7 +90,7 @@ void GlobalObject::installObject()
 {
     ::escargot::JSFunction* emptyFunction = m_functionPrototype;
     m_object = ::escargot::JSFunction::create(NULL,new FunctionDeclarationNode(strings->Object, ESAtomicStringVector(), new EmptyStatementNode(), false, false));
-    m_object->set(strings->name, String::create(strings->Object));
+    m_object->set(strings->name, JSString::create(strings->Object));
     m_object->setConstructor(m_function);
     m_object->set__proto__(emptyFunction);
 
@@ -105,13 +106,13 @@ void GlobalObject::installError()
 	  // Initialization for reference error
     ::escargot::JSFunction* emptyFunction = m_functionPrototype;
     m_referenceError = ::escargot::JSFunction::create(NULL,new FunctionDeclarationNode(strings->ReferenceError, ESAtomicStringVector(), new EmptyStatementNode(), false, false));
-    m_referenceError->set(strings->name, String::create(strings->ReferenceError));
+    m_referenceError->set(strings->name, JSString::create(strings->ReferenceError));
     m_referenceError->setConstructor(m_function);
     m_referenceError->set__proto__(emptyFunction);
 
     m_referenceErrorPrototype = JSObject::create();
     m_referenceErrorPrototype->setConstructor(m_referenceError);
-    m_referenceErrorPrototype->set(strings->name, String::create(strings->ReferenceError));
+    m_referenceErrorPrototype->set(strings->name, JSString::create(strings->ReferenceError));
 
     m_referenceError->set(strings->prototype, m_referenceErrorPrototype);
 
@@ -211,6 +212,76 @@ void GlobalObject::installArray()
 
     set(strings->Array, m_array);
 
+}
+
+void GlobalObject::installString()
+{
+    m_string = JSFunction::create(NULL, new FunctionDeclarationNode(strings->String, ESAtomicStringVector(), new EmptyStatementNode(), false, false));
+    //m_string->set(strings->constructor, m_function); TODO do i need this?
+    m_string->set(strings->name, JSString::create(strings->String));
+    m_string->setConstructor(m_function);
+
+    m_stringPrototype = JSObject::create();
+    m_stringPrototype->setConstructor(m_string);
+
+    m_string->defineAccessorProperty(strings->prototype, [](JSObject* self) -> ESValue* {
+        return self->toJSFunction()->protoType();
+    }, nullptr, true, false, false);
+    m_string->set__proto__(m_functionPrototype); // empty Function
+    m_string->setProtoType(m_stringPrototype);
+
+    set(strings->String, m_string);
+
+    //$21.1.3.8 String.prototype.indexOf(searchString[, position])
+    FunctionDeclarationNode* stringIndexOf = new FunctionDeclarationNode(L"indexOf", ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
+        JSObject* arguments = instance->currentExecutionContext()->environment()->record()->getBindingValue(L"arguments", false)->toHeapObject()->toJSObject();
+        JSObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+        if (thisObject->isUndefined() || thisObject->isNull())
+            throw TypeError();
+        const ESString& str = thisObject->toJSStringObject()->getStringData()->string();
+        const ESString& searchStr = arguments->get(strings->numbers[0])->toHeapObject()->toJSString()->string(); // TODO converesion w&w/o test
+        ESValue* val = arguments->get(strings->numbers[1]);
+
+        int result;
+        if (val == esUndefined) {
+            result = str.string()->find(*searchStr.string());
+        } else {
+            ESValue* numPos = val->toNumber();
+            int pos = numPos->toInteger()->isSmi() ? numPos->toInteger()->toSmi()->value() : numPos->toInteger()->toHeapObject()->toNumber()->get();
+            int len = str.string()->length();
+            int start = std::min(std::max(pos, 0), len);
+            result = str.string()->find(*searchStr.string(), start);
+        }
+        instance->currentExecutionContext()->doReturn(Smi::fromInt(result));
+        return esUndefined;
+    }), false, false);
+    m_stringPrototype->set(L"indexOf", JSFunction::create(NULL, stringIndexOf));
+
+    //$21.1.3.19 String.prototype.substring(start, end)
+    FunctionDeclarationNode* stringSubstring = new FunctionDeclarationNode(L"substring", ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
+        return esUndefined;
+    }), false, false);
+    m_stringPrototype->set(L"substring", JSFunction::create(NULL, stringSubstring));
+
+    //$21.1.3.23 String.prototype.toString
+    FunctionDeclarationNode* stringToString = new FunctionDeclarationNode(L"toString", ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
+        JSObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+        ESValue* primitiveString = thisObject->get(L"__PrimitiveValue__");
+        instance->currentExecutionContext()->doReturn(primitiveString);
+        return esUndefined;
+    }), false, false);
+    m_stringPrototype->set(L"toString", JSFunction::create(NULL, stringToString));
+
+    //$21.1.3.26 String.prototype.valueOf
+    FunctionDeclarationNode* stringValueOf = new FunctionDeclarationNode(L"valueOf", ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
+         return esUndefined;
+    }), false, false);
+    m_stringPrototype->set(L"valueOf", JSFunction::create(NULL, stringValueOf));
+
+    //$21.1.4.1 String.length
+    m_stringPrototype->defineAccessorProperty(strings->length, [](JSObject* self) -> ESValue* {
+        return self->toJSString()->length();
+    }, nullptr, false, false, false);
 }
 
 }

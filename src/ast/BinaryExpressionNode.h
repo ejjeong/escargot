@@ -81,8 +81,8 @@ public:
                 /* http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.1 */
                 lval = lval->toPrimitive();
                 rval = rval->toPrimitive();
-                if ((lval->isHeapObject() && lval->toHeapObject()->isString())
-                    || (rval->isHeapObject() && rval->toHeapObject()->isString())) {
+                if ((lval->isHeapObject() && lval->toHeapObject()->isJSString())
+                    || (rval->isHeapObject() && rval->toHeapObject()->isJSString())) {
                     // TODO
                 } else {
                     if (lval->isSmi() && rval->isSmi())

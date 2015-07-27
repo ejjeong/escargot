@@ -13,6 +13,13 @@ ESValue* MemberExpressionNode::execute(ESVMInstance* instance)
 {
     ESValue* value = m_object->execute(instance)->ensureValue();
     //TODO string,number-> stringObject, numberObject;
+    if(value->isHeapObject() && value->toHeapObject()->isJSString()) {
+        JSStringObject* stringObject = JSStringObject::create(value->toHeapObject()->toJSString()->string());
+        stringObject->set__proto__(instance->globalObject()->stringPrototype());
+        stringObject->setConstructor(instance->globalObject()->string());
+        value = stringObject;
+    }
+
     if(value->isHeapObject() && value->toHeapObject()->isJSObject()) {
         JSObject* obj = value->toHeapObject()->toJSObject();
         ESAtomicString propertyName;

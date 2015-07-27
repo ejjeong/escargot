@@ -1,6 +1,8 @@
 #ifndef ESValueInlines_h
 #define ESValueInlines_h
 
+#include "ESFunctionCaller.h"
+
 namespace escargot {
 
 const int kApiPointerSize = sizeof(void*);
