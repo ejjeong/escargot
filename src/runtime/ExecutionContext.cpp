@@ -13,7 +13,7 @@ ExecutionContext::ExecutionContext(LexicalEnvironment* varEnv)
     m_returnValue = esUndefined;
 }
 
-JSSlot* ExecutionContext::resolveBinding(const ESString& name)
+JSSlot* ExecutionContext::resolveBinding(const ESAtomicString& name)
 {
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
     LexicalEnvironment* env = environment();

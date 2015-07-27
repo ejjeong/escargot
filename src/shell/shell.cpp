@@ -40,6 +40,7 @@ int main(int argc, char* argv[])
     ASSERT(obj->get("obj")->toHeapObject()->isUndefined());
      */
     escargot::ESVMInstance* ES = new escargot::ESVMInstance();
+    ES->enter();
     if(argc == 1) {
         while (true) {
             char buf[512];
@@ -61,6 +62,7 @@ int main(int argc, char* argv[])
             }
         }
     }
+    ES->exit();
 
     return 0;
 }

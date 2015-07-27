@@ -16,11 +16,11 @@ ESValue* ObjectExpressionNode::execute(ESVMInstance* instance)
 
     for(unsigned i = 0; i < m_properties.size() ; i ++) {
         PropertyNode* p = m_properties[i];
-        ESString key;
+        ESAtomicString key;
         if(p->key()->type() == NodeType::Identifier) {
             key = ((IdentifierNode* )p->key())->name();
         } else {
-            key = p->key()->execute(instance)->ensureValue()->toESString();
+            key = ESAtomicString(p->key()->execute(instance)->ensureValue()->toESString().data());
         }
         ESValue* value = p->value()->execute(instance)->ensureValue();
         obj->set(key, value);

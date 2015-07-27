@@ -7,18 +7,22 @@
 
 namespace escargot {
 
+__thread ESVMInstance* currentInstance;
+
 ESVMInstance::ESVMInstance()
 {
     std::setlocale(LC_ALL, "en_US.utf8");
     emptyStringData.initHash();
-    strings::initStaticStrings();
+    m_strings.initStaticStrings(this);
 
+    enter();
     m_globalObject = new GlobalObject();
     LexicalEnvironment* a = new LexicalEnvironment(new GlobalEnvironmentRecord(m_globalObject), NULL);
 
     m_globalExecutionContext = new ExecutionContext(a);
     m_currentExecutionContext = m_globalExecutionContext;
 
+    exit();
 }
 
 void ESVMInstance::evaluate(const std::string& source)
@@ -38,6 +42,19 @@ void ESVMInstance::evaluate(const std::string& source)
     ESValue* v = m_globalObject->get("a");
     ASSERT(v->toSmi()->value() == 1);
     */
+}
+
+void ESVMInstance::enter()
+{
+    ASSERT(!escargot::currentInstance);
+    escargot::currentInstance = this;
+    escargot::strings = &m_strings;
+}
+
+void ESVMInstance::exit()
+{
+    escargot::currentInstance = NULL;
+    escargot::strings = NULL;
 }
 
 }

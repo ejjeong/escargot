@@ -152,7 +152,7 @@ Node* ESScriptParser::parseScript(const std::string& source)
         } else if(type == astTypeVariableDeclarator) {
             parsedNode = new VariableDeclaratorNode(fn(value[L"id"]));
         } else if(type == astTypeIdentifier) {
-            parsedNode = new IdentifierNode(value[L"name"].GetString());
+            parsedNode = new IdentifierNode(std::wstring(value[L"name"].GetString()));
         } else if(type == astTypeExpressionStatement) {
             Node* node = fn(value[L"expression"]);
             parsedNode = new ExpressionStatementNode(node);
@@ -178,28 +178,28 @@ Node* ESScriptParser::parseScript(const std::string& source)
             }
 
         } else if(type == astTypeFunctionDeclaration) {
-            ESString id = value[L"id"][L"name"].GetString();
-            ESStringVector params;
+            ESAtomicString id = ESAtomicString(value[L"id"][L"name"].GetString());
+            ESAtomicStringVector params;
 
             rapidjson::GenericValue<rapidjson::UTF16<>>& children = value[L"params"];
             for (rapidjson::SizeType i = 0; i < children.Size(); i++) {
-                params.push_back(children[i][L"name"].GetString());
-              }
+                params.push_back(std::wstring(children[i][L"name"].GetString()));
+            }
 
             Node* func_body = fn(value[L"body"]);
             current_body->insert(current_body->begin(), new FunctionDeclarationNode(id, std::move(params), func_body, value[L"generator"].GetBool(), value[L"generator"].GetBool()));
             return NULL;
         }  else if(type == astTypeFunctionExpression) {
-            ESString id;
-            ESStringVector params;
+            ESAtomicString id;
+            ESAtomicStringVector params;
 
             if(!value[L"id"].IsNull())
-                id = value[L"id"][L"name"].GetString();
+                id = ESAtomicString(value[L"id"][L"name"].GetString());
 
             rapidjson::GenericValue<rapidjson::UTF16<>>& children = value[L"params"];
             for (rapidjson::SizeType i = 0; i < children.Size(); i++) {
-                params.push_back(children[i][L"name"].GetString());
-              }
+                params.push_back(ESAtomicString(children[i][L"name"].GetString()));
+            }
 
             Node* func_body = fn(value[L"body"]);
             parsedNode = new FunctionExpressionNode(id, std::move(params), func_body, value[L"generator"].GetBool(), value[L"generator"].GetBool());

@@ -37,7 +37,7 @@ public:
     }
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
-    JSSlot* resolveBinding(const ESString& name);
+    JSSlot* resolveBinding(const ESAtomicString& name);
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvethisbinding
     JSObject* resolveThisBinding();
@@ -55,7 +55,7 @@ public:
         return m_lastJSObjectMetInMemberExpressionNode;
     }
 
-    ALWAYS_INLINE const ESString& lastUsedPropertyNameInMemberExpressionNode()
+    ALWAYS_INLINE const ESAtomicString& lastUsedPropertyNameInMemberExpressionNode()
     {
         return m_lastUsedPropertyNameInMemberExpressionNode;
     }
@@ -65,7 +65,7 @@ public:
         return m_lastUsedPropertyValueInMemberExpressionNode;
     }
 
-    ALWAYS_INLINE void setLastJSObjectMetInMemberExpressionNode(JSObject* obj, const ESString& name, ESValue* value)
+    ALWAYS_INLINE void setLastJSObjectMetInMemberExpressionNode(JSObject* obj, const ESAtomicString& name, ESValue* value)
     {
         m_lastJSObjectMetInMemberExpressionNode = obj;
         m_lastUsedPropertyNameInMemberExpressionNode = name;
@@ -89,7 +89,7 @@ private:
     LexicalEnvironment* m_lexicalEnvironment;
     LexicalEnvironment* m_variableEnvironment;
     JSObject* m_lastJSObjectMetInMemberExpressionNode;
-    ESString m_lastUsedPropertyNameInMemberExpressionNode;
+    ESAtomicString m_lastUsedPropertyNameInMemberExpressionNode;
     ESValue* m_lastUsedPropertyValueInMemberExpressionNode;
     ESValue* m_returnValue;
     std::jmp_buf m_returnPosition;

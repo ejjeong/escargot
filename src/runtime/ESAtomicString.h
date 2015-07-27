@@ -10,19 +10,7 @@ class ESVMInstance;
 class ESAtomicStringData : public gc_cleanup, public ESStringStd {
     friend class ESAtomicString;
 protected:
-    ESAtomicStringData(ESVMInstance* instance)
-    {
-        m_instance = instance;
-        initHash();
-    }
-    ESAtomicStringData(ESVMInstance* instance, const wchar_t* str)
-        : ESStringStd(str)
-    {
-        m_instance = instance;
-        initHash();
-    }
-
-    ~ESAtomicStringData();
+    ESAtomicStringData(ESVMInstance* instance, const wchar_t* str);
 
     ESAtomicStringData(const ESAtomicStringData& src) = delete;
     void operator = (const ESAtomicStringData& src) = delete;
@@ -33,6 +21,8 @@ protected:
         m_hashData = hashFn((ESStringStd &)*this);
     }
 public:
+    ESAtomicStringData();
+    ~ESAtomicStringData();
     ALWAYS_INLINE size_t hashValue() const
     {
         return m_hashData;
@@ -43,15 +33,27 @@ protected:
     ESVMInstance* m_instance;
 };
 
+extern ESAtomicStringData emptyAtomicString;
+
 class ESAtomicString {
     friend class ESAtomicStringData;
 protected:
-    ESAtomicString(ESAtomicStringData* string)
+    ALWAYS_INLINE ESAtomicString(ESAtomicStringData* string)
     {
         m_string = string;
     }
 public:
-    static ESAtomicString create(ESVMInstance* instance, const std::wstring& src);
+    ALWAYS_INLINE ESAtomicString()
+    {
+        m_string = &emptyAtomicString;
+    }
+    ALWAYS_INLINE ESAtomicString(const ESAtomicString& src)
+    {
+        m_string = src.m_string;
+    }
+    ESAtomicString(const std::wstring& src);
+    ESAtomicString(const wchar_t* src);
+    ESAtomicString(ESVMInstance* instance, const std::wstring& src);
     ALWAYS_INLINE const wchar_t* data() const
     {
         return m_string->data();
@@ -61,9 +63,23 @@ public:
     {
         return m_string;
     }
+
+    operator ESString() const
+    {
+        return ESString(m_string->data());
+    }
+
+    ALWAYS_INLINE friend bool operator == (const ESAtomicString& a,const ESAtomicString& b);
 protected:
     ESAtomicStringData* m_string;
 };
+
+ALWAYS_INLINE bool operator == (const ESAtomicString& a,const ESAtomicString& b)
+{
+    return a.string() == b.string();
+}
+
+typedef std::vector<ESAtomicString, gc_allocator<ESAtomicString> > ESAtomicStringVector;
 
 }
 

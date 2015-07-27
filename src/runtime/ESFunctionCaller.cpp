@@ -23,12 +23,12 @@ ESValue* ESFunctionCaller::call(ESValue* callee, ESValue* receiver, ESValue* arg
         JSObject* innerObject = functionRecord->innerObject();
         JSObject* argumentsObject = JSObject::create();
         for(unsigned i = 0; i < argumentCount ; i ++) {
-            argumentsObject->set(ESString((int)i), arguments[i]);
+            argumentsObject->set(ESAtomicString(ESString((int)i).data()), arguments[i]);
         }
-        innerObject->set(L"arguments", argumentsObject);
-        innerObject->set(L"length", Smi::fromInt(argumentCount));
+        innerObject->set(strings->arguments, argumentsObject);
+        innerObject->set(strings->length, Smi::fromInt(argumentCount));
 
-        const ESStringVector& params = fn->functionAST()->params();
+        const ESAtomicStringVector& params = fn->functionAST()->params();
 
         for(unsigned i = 0; i < params.size() ; i ++) {
             functionRecord->createMutableBinding(params[i],false);

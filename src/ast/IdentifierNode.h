@@ -10,7 +10,7 @@ namespace escargot {
 //interface Identifier <: Node, Expression, Pattern {
 class IdentifierNode : public Node {
 public:
-    IdentifierNode(const ESString& name)
+    IdentifierNode(const ESAtomicString& name)
             : Node(NodeType::Identifier)
     {
         m_name = name;
@@ -18,13 +18,13 @@ public:
 
     ESValue* execute(ESVMInstance* instance);
 
-    const ESString& name()
+    const ESAtomicString& name()
     {
         return m_name;
     }
 
 protected:
-    ESString m_name;
+    ESAtomicString m_name;
 };
 
 }

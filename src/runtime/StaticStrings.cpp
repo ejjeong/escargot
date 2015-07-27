@@ -1,40 +1,31 @@
 #include "Escargot.h"
+#include "vm/ESVMInstance.h"
 
 namespace escargot {
 
-namespace strings {
-
-ESString null;
-ESString undefined;
-ESString prototype;
-ESString constructor;
-ESString name;
-ESString __proto__;
-
-ESString String;
-ESString Number;
-ESString Object;
-ESString Array;
-ESString Function;
-ESString Empty;
-
-void initStaticStrings()
+void Strings::initStaticStrings(ESVMInstance* instance)
 {
-    null = L"null";
-    undefined = L"undefined";
-    prototype = L"prototype";
-    constructor = L"constructor";
-    name = L"name";
-    __proto__ = L"__proto__";
+    null = ESAtomicString(instance, L"null");
+    undefined = ESAtomicString(instance, L"undefined");
+    prototype = ESAtomicString(instance, L"prototype");
+    constructor = ESAtomicString(instance, L"constructor");
+    name = ESAtomicString(instance, L"name");
+    arguments = ESAtomicString(instance, L"arguments");
+    length = ESAtomicString(instance, L"length");
+    __proto__ = ESAtomicString(instance, L"__proto__");
 
-    String = L"String";
-    Number = L"Number";
-    Object = L"Object";
-    Array = L"Array";
-    Function = L"Function";
-    Empty = L"Empty";
+    for(unsigned i = 0; i < ESCARGOT_STRINGS_NUMBERS_MAX ; i ++) {
+        numbers[i] = ESAtomicString(instance, ESString((int)i).data());
+    }
+
+    String = ESAtomicString(instance, L"String");
+    Number = ESAtomicString(instance, L"Number");
+    Object = ESAtomicString(instance, L"Object");
+    Array = ESAtomicString(instance, L"Array");
+    Function = ESAtomicString(instance, L"Function");
+    Empty = ESAtomicString(instance, L"Empty");
 }
 
-}
+Strings* strings;
 
 }

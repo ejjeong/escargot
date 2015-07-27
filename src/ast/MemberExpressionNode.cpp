@@ -15,7 +15,7 @@ ESValue* MemberExpressionNode::execute(ESVMInstance* instance)
     //TODO string,number-> stringObject, numberObject;
     if(value->isHeapObject() && value->toHeapObject()->isJSObject()) {
         JSObject* obj = value->toHeapObject()->toJSObject();
-        ESString propertyName;
+        ESAtomicString propertyName;
         ESValue* propertyVal = NULL;
         if(!m_computed && m_property->type() == NodeType::Identifier) {
             propertyName = ((IdentifierNode*)m_property)->name();
@@ -23,7 +23,7 @@ ESValue* MemberExpressionNode::execute(ESVMInstance* instance)
             ESValue* tmpVal = m_property->execute(instance)->ensureValue();
             if(m_computed && obj->toHeapObject()->isJSArray() && tmpVal->isSmi())
                 propertyVal = tmpVal;
-            propertyName = tmpVal->toESString();
+            propertyName = ESAtomicString(tmpVal->toESString().data());
         }
 
         instance->currentExecutionContext()->setLastJSObjectMetInMemberExpressionNode(obj->toHeapObject()->toJSObject(),

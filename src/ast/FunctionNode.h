@@ -10,7 +10,7 @@ namespace escargot {
 
 class FunctionNode : public Node {
 public:
-    FunctionNode(NodeType type ,const ESString& id, ESStringVector&& params, Node* body,bool isGenerator, bool isExpression)
+    FunctionNode(NodeType type ,const ESAtomicString& id, ESAtomicStringVector&& params, Node* body,bool isGenerator, bool isExpression)
             : Node(type)
     {
         m_id = id;
@@ -20,12 +20,12 @@ public:
         m_isExpression = isExpression;
     }
 
-    ALWAYS_INLINE const ESStringVector& params() { return m_params; }
+    ALWAYS_INLINE const ESAtomicStringVector& params() { return m_params; }
     ALWAYS_INLINE Node* body() { return m_body; }
-    ALWAYS_INLINE const ESString& id() { return m_id; }
+    ALWAYS_INLINE const ESAtomicString& id() { return m_id; }
 protected:
-    ESString m_id; //id: Identifier;
-    ESStringVector m_params; //params: [ Pattern ];
+    ESAtomicString m_id; //id: Identifier;
+    ESAtomicStringVector m_params; //params: [ Pattern ];
     //defaults: [ Expression ];
     //rest: Identifier | null;
     Node* m_body; //body: BlockStatement | Expression;

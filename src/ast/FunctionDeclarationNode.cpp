@@ -15,7 +15,7 @@ ESValue* FunctionDeclarationNode::execute(ESVMInstance* instance)
     prototype->setConstructor(function);
     prototype->set__proto__(instance->globalObject()->object());
     function->setProtoType(prototype);
-    function->set(strings::name, String::create(m_id));
+    function->set(strings->name, String::create(m_id.data()));
     /////////////////////////////////////////////
     instance->currentExecutionContext()->environment()->record()->createMutableBindingForAST(m_id, false);
     instance->currentExecutionContext()->environment()->record()->setMutableBinding(m_id, function, false);

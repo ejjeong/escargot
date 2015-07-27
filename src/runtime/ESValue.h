@@ -401,9 +401,9 @@ protected:
 };
 
 
-typedef std::unordered_map<ESString, ::escargot::JSSlot *,
-                std::hash<ESString>,std::equal_to<ESString>,
-                gc_allocator<std::pair<const ESString, ::escargot::JSSlot *> > > JSObjectMapStd;
+typedef std::unordered_map<ESAtomicString, ::escargot::JSSlot *,
+                std::hash<ESAtomicString>,std::equal_to<ESAtomicString>,
+                gc_allocator<std::pair<const ESAtomicString, ::escargot::JSSlot *> > > JSObjectMapStd;
 
 /*
 typedef std::map<ESString, ::escargot::JSSlot *,
@@ -427,9 +427,9 @@ protected:
         m___proto__ = esNull;
 
         //FIXME set proper flags(is...)
-        definePropertyOrThrow(strings::constructor, true, false, false);
+        definePropertyOrThrow(strings->constructor, true, false, false);
 
-        defineAccessorProperty(strings::__proto__, [](JSObject* self) -> ESValue* {
+        defineAccessorProperty(strings->__proto__, [](JSObject* self) -> ESValue* {
             return self->__proto__();
         },[](::escargot::JSObject* self, ESValue* value){
             if(value->isHeapObject() && value->toHeapObject()->isJSObject())
@@ -437,7 +437,7 @@ protected:
         }, true, false, false);
     }
 public:
-    void definePropertyOrThrow(const ESString& key, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true)
+    void definePropertyOrThrow(const ESAtomicString& key, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true)
     {
         auto iter = m_map.find(key);
         if(iter == m_map.end()) {
@@ -447,7 +447,7 @@ public:
         }
     }
 
-    bool hasOwnProperty(const ESString& key) {
+    bool hasOwnProperty(const ESAtomicString& key) {
         auto iter = m_map.find(key);
         if(iter == m_map.end())
             return false;
@@ -465,7 +465,7 @@ public:
     }
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-get-o-p
-    ESValue* get(const ESString& key)
+    ESValue* get(const ESAtomicString& key)
     {
         ESValue* ret = esUndefined;
         //TODO Assert: IsPropertyKey(P) is true.
@@ -476,7 +476,7 @@ public:
         return ret;
     }
 
-    ALWAYS_INLINE escargot::JSSlot* find(const ESString& key)
+    ALWAYS_INLINE escargot::JSSlot* find(const ESAtomicString& key)
     {
         auto iter = m_map.find(key);
         if(iter == m_map.end()) {
@@ -486,7 +486,7 @@ public:
     }
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
-    void set(const ESString& key, ESValue* val, bool shouldThrowException = false)
+    void set(const ESAtomicString& key, ESValue* val, bool shouldThrowException = false)
     {
         //TODO Assert: IsPropertyKey(P) is true.
         //TODO Assert: Type(Throw) is Boolean.
@@ -502,10 +502,10 @@ public:
 
     void set(ESValue* key, ESValue* val, bool shouldThrowException = false)
     {
-        set(key->toESString(), val, shouldThrowException);
+        set(ESAtomicString(key->toESString().data()), val, shouldThrowException);
     }
 
-    void defineAccessorProperty(const ESString& key,std::function<ESValue* (::escargot::JSObject* obj)> getter = nullptr,
+    void defineAccessorProperty(const ESAtomicString& key,std::function<ESValue* (::escargot::JSObject* obj)> getter = nullptr,
             std::function<void (::escargot::JSObject* obj, ESValue* value)> setter = nullptr,
             bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
     {
@@ -517,7 +517,7 @@ public:
 
     }
 
-    bool hasKey(const ESString& key)
+    bool hasKey(const ESAtomicString& key)
     {
         auto iter = m_map.find(key);
         if(iter == m_map.end()) {
@@ -551,12 +551,12 @@ public:
 
     ALWAYS_INLINE ESValue* constructor()
     {
-        return get(strings::constructor);
+        return get(strings->constructor);
     }
 
     ALWAYS_INLINE void setConstructor(ESValue* obj)
     {
-        set(strings::constructor, obj);
+        set(strings->constructor, obj);
     }
 
 protected:
@@ -591,9 +591,9 @@ public:
         return arr;
     }
 
-    void set(const ESString& key, ESValue* val, bool shouldThrowException = false)
+    void set(const ESAtomicString& key, ESValue* val, bool shouldThrowException = false)
     {
-        if (key == ESString(L"length"))
+        if (key == strings->length)
             setLength(val);
         else {
             JSObject::set(key, val, shouldThrowException);
@@ -606,13 +606,13 @@ public:
             if (i > length()->toSmi()->value())
                 setLength(i);
         }
-        set(key->toESString(), val, shouldThrowException);
+        set(ESAtomicString(key->toESString().data()), val, shouldThrowException);
     }
 
     void setLength(ESValue* len)
     {
         ASSERT(len->isSmi());
-        JSObject::set(ESString(L"length"), len, false);
+        JSObject::set(strings->length, len, false);
         if (len->toSmi() < m_length->toSmi()) {
             //TODO : delete elements
         }
@@ -622,7 +622,7 @@ public:
     void setLength(int len)
     {
         auto length = Smi::fromInt(len);
-        JSObject::set(ESString(L"length"), length, false);
+        JSObject::set(strings->length, length, false);
         m_length = length;
     }
 
@@ -646,7 +646,7 @@ protected:
         m_functionAST = functionAST;
         m_protoType = esUndefined;
 
-        defineAccessorProperty(strings::prototype, [](JSObject* self) -> ESValue* {
+        defineAccessorProperty(strings->prototype, [](JSObject* self) -> ESValue* {
             return self->toJSFunction()->protoType();
         },[](::escargot::JSObject* self, ESValue* value){
             if(value->isHeapObject() && value->toHeapObject()->isJSObject())

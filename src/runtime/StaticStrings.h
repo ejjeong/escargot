@@ -3,25 +3,31 @@
 
 namespace escargot {
 
-namespace strings {
+class ESVMInstance;
 
-extern ESString null;
-extern ESString undefined;
-extern ESString prototype;
-extern ESString constructor;
-extern ESString name;
-extern ESString __proto__;
+class Strings {
+public:
+ESAtomicString null;
+ESAtomicString undefined;
+ESAtomicString prototype;
+ESAtomicString constructor;
+ESAtomicString name;
+ESAtomicString arguments;
+ESAtomicString length;
+ESAtomicString __proto__;
+#define ESCARGOT_STRINGS_NUMBERS_MAX 128
+ESAtomicString numbers[ESCARGOT_STRINGS_NUMBERS_MAX];
 
-extern ESString String;
-extern ESString Number;
-extern ESString Object;
-extern ESString Array;
-extern ESString Function;
-extern ESString Empty;
+ESAtomicString String;
+ESAtomicString Number;
+ESAtomicString Object;
+ESAtomicString Array;
+ESAtomicString Function;
+ESAtomicString Empty;
+void initStaticStrings(ESVMInstance* instance);
+};
 
-void initStaticStrings();
-
-}
+extern Strings* strings;
 
 }
 

@@ -7,7 +7,7 @@ namespace escargot {
 
 class FunctionExpressionNode : public FunctionNode {
 public:
-    FunctionExpressionNode(const ESString& id, ESStringVector&& params, Node* body,bool isGenerator, bool isExpression)
+    FunctionExpressionNode(const ESAtomicString& id, ESAtomicStringVector&& params, Node* body,bool isGenerator, bool isExpression)
             : FunctionNode(NodeType::FunctionExpression, id, std::move(params), body, isGenerator, isExpression)
     {
         m_isGenerator = false;
