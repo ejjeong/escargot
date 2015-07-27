@@ -38,7 +38,7 @@ ESValue* MemberExpressionNode::execute(ESVMInstance* instance)
                 ::escargot::JSObject* obj = prototype->toHeapObject()->toJSObject();
                 JSSlot* s = obj->find(propertyName);
                 if(s)
-                    return s->value();
+                    return s;
                 prototype = obj->__proto__();
             }
         }

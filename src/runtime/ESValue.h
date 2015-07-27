@@ -40,7 +40,7 @@ public:
     ESValue* toPrimitive();
     ESValue* toNumber();
     ESValue* toInt32();
-    ESValue* ensureValue();
+    ALWAYS_INLINE ESValue* ensureValue();
 };
 
 class Smi : public ESValue {

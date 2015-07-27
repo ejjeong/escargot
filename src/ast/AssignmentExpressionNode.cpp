@@ -42,14 +42,15 @@ ESValue* AssignmentExpressionNode::execute(ESVMInstance* instance)
             }
 
         } else if(lref->toHeapObject() && lref->toHeapObject()->isJSSlot()) {
-            JSSlot* slot = lref->toHeapObject()->toJSSlot();
-            slot->setValue(rval);
-        } else {
-            ASSERT(instance->currentExecutionContext()->lastJSObjectMetInMemberExpressionNode());
-            ASSERT(!instance->currentExecutionContext()->
-                    lastJSObjectMetInMemberExpressionNode()->hasKey(instance->currentExecutionContext()->lastUsedPropertyNameInMemberExpressionNode()));
-            instance->currentExecutionContext()->
+            if(instance->currentExecutionContext()->lastJSObjectMetInMemberExpressionNode()) {
+                instance->currentExecutionContext()->
                     lastJSObjectMetInMemberExpressionNode()->set(instance->currentExecutionContext()->lastUsedPropertyNameInMemberExpressionNode(), rval);
+            } else {
+                JSSlot* slot = lref->toHeapObject()->toJSSlot();
+                slot->setValue(rval);
+            }
+        } else {
+            throw ReferenceError();
         }
         ret = rval;
         break;
