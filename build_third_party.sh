@@ -8,12 +8,14 @@ make distclean
 mkdir -p out/release
 mkdir -p out/debug
 
+CONFFLAGS=" --enable-cplusplus " # --enable-large-config "
+
 cd out/release
-../../configure --enable-cplusplus --disable-gc-debug
+../../configure $CONFFLAGS --disable-gc-debug
 make -j
 cd ../..
 
 cd out/debug
-../../configure --enable-cplusplus
+../../configure $CONFFLAGS
 make -j
 cd ../..
