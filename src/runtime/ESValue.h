@@ -34,6 +34,7 @@ public:
 
     bool isSmi() const;
     bool isHeapObject() const;
+    bool equalsTo(ESValue* val);
     Smi* toSmi() const;
     HeapObject* toHeapObject() const;
     ESString toESString();
@@ -569,6 +570,12 @@ protected:
     JSArray(HeapObject::Type type = HeapObject::Type::JSArray)
         : JSObject((Type)(Type::JSObject | Type::JSArray))
     {
+        defineAccessorProperty(strings->length, [](JSObject* self) -> ESValue* {
+            return self->toJSArray()->length();
+        },[](::escargot::JSObject* self, ESValue* value) {
+            ESValue* len = value->toInt32();
+            self->toJSArray()->setLength(len);
+        }, true, false, false);
         m_length = Smi::fromInt(0);
     }
 public:
@@ -592,11 +599,7 @@ public:
 
     void set(const ESAtomicString& key, ESValue* val, bool shouldThrowException = false)
     {
-        if (key == strings->length)
-            setLength(val);
-        else {
-            JSObject::set(key, val, shouldThrowException);
-        }
+        JSObject::set(key, val, shouldThrowException);
     }
 
     void set(ESValue* key, ESValue* val, bool shouldThrowException = false) {
@@ -605,13 +608,12 @@ public:
             if (i > length()->toSmi()->value())
                 setLength(i);
         }
-        set(ESAtomicString(key->toESString().data()), val, shouldThrowException);
+        JSObject::set(ESAtomicString(key->toESString().data()), val, shouldThrowException);
     }
 
     void setLength(ESValue* len)
     {
         ASSERT(len->isSmi());
-        JSObject::set(strings->length, len, false);
         if (len->toSmi() < m_length->toSmi()) {
             //TODO : delete elements
         }
@@ -620,9 +622,8 @@ public:
 
     void setLength(int len)
     {
-        auto length = Smi::fromInt(len);
-        JSObject::set(strings->length, length, false);
-        m_length = length;
+        ESValue* length = Smi::fromInt(len);
+        setLength(length);
     }
 
     ESValue* length()

@@ -86,6 +86,46 @@ void GlobalObject::installArray()
         return esUndefined;
     }), false, false);
 
+    //$22.1.3.11 Array.prototype.indexOf()
+    FunctionDeclarationNode* arrayIndexOf = new FunctionDeclarationNode(L"indexOf", ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
+        JSObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(L"arguments", false)->toHeapObject()->toJSObject();
+        auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->toJSArray();
+        int len = thisVal->length()->toSmi()->value();
+        int ret = 0;
+        if (len == 0) ret = -1;
+        else {
+            ESValue* fromIndex = value->get(L"1");
+            int n = 0, k = 0;
+            if (fromIndex != esUndefined) {
+                n = fromIndex->toSmi()->value();
+                if (n >= len) {
+                    ret = -1;
+                } else if (n >= 0) {
+                    k = n;
+                } else {
+                    k = len - n * (-1);
+                    if(k < 0) k = 0;
+                }
+            }
+            if (ret != -1) {
+                ret = -1;
+                ESValue* searchElement = value->get(L"0");
+                while (k < len) {
+                    ESValue* kPresent = thisVal->get(ESString(k).data());
+                    if (searchElement->equalsTo(kPresent)) {
+                        ret = k;
+                        break;
+                    }
+                    k++;
+                }
+            }
+        }
+        instance->currentExecutionContext()->doReturn(Smi::fromInt(ret));
+        return esUndefined;
+    }), false, false);
+    m_arrayPrototype->set(L"indexOf", JSFunction::create(NULL, arrayIndexOf));
+
+
     //$22.1.3.17 Array.prototype.push(item)
     FunctionDeclarationNode* arrayPush = new FunctionDeclarationNode(L"push", ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
         JSObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(L"arguments", false)->toHeapObject()->toJSObject();

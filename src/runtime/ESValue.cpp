@@ -20,6 +20,34 @@ Boolean* esTrue = &s_true;
 static Boolean s_false(false);
 Boolean* esFalse = &s_false;
 
+bool ESValue::equalsTo(ESValue* val)
+{
+    if(isSmi()) {
+        if(!val->isSmi()) return false;
+        if(toSmi() == val->toSmi()) return true;
+        return false;
+    } else {
+        HeapObject* o = toHeapObject();
+        if (!val->isHeapObject()) return false;
+        HeapObject* comp = val->toHeapObject();
+        if (o->type() != comp->type())
+            return false;
+        if (o->isNumber() && o->toNumber()->get() == comp->toNumber()->get())
+            return true;
+        if (o->isBoolean() && o->toBoolean()->get() == comp->toBoolean()->get())
+            return true;
+        if (o->isString() && o->toString()->string() == comp->toString()->string())
+            return true;
+        //TODO
+        if (o->isJSFunction())
+            return false;
+        if (o->isJSArray())
+            return false;
+        if (o->isJSObject())
+            return false;
+        return false;
+    }
+}
 
 ESString ESValue::toESString()
 {
@@ -44,7 +72,15 @@ ESString ESValue::toESString()
             ret.append(fn->functionAST()->id());
             ret.append(L"() {}");
         } else if(o->isJSArray()) {
-            ret = L"[Array array]";
+            bool isFirst = true;
+            for (int i=0; i<o->toJSArray()->length()->toSmi()->value(); i++) {
+                ESString key = ESString(i);
+                if(!isFirst)
+                    ret.append(L",");
+                ESValue* slot = o->toJSObject()->get(ESAtomicString(key.data()));
+                ret.append(slot->toESString());
+                isFirst = false;
+            }
         } else if(o->isJSObject()) {
             ret = L"{";
             bool isFirst = true;
