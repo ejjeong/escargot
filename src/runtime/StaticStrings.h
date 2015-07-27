@@ -28,7 +28,6 @@ void initStaticStrings(ESVMInstance* instance);
 };
 
 extern Strings* strings;
-
 }
 
 #endif

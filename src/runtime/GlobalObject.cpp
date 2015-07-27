@@ -63,7 +63,28 @@ void GlobalObject::installObject()
 
 void GlobalObject::installArray()
 {
-    m_arrayPrototype = JSArray::create(0, NULL); //FIXME: %ObjectPrototype%
+    m_arrayPrototype = JSArray::create(0, m_objectPrototype);
+
+    //$22.1.1 Array Constructor
+    FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings->Array, ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
+        JSObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(L"arguments", false)->toHeapObject()->toJSObject();
+        int len = instance->currentExecutionContext()->environment()->record()->getBindingValue(strings->length, false)->toSmi()->value();
+        int size = 0;
+        if (len > 1) size = len;
+        JSObject* proto = instance->globalObject()->arrayPrototype();
+        escargot::JSArray* array = JSArray::create(size, proto);
+        ESValue* val = value->get(strings->numbers[0]);
+        if (len == 1 && val != esUndefined && val->isSmi()) { //numberOfArgs = 1
+            array->setLength( val->toSmi()->value() );
+        } else if (len >= 1) {      // numberOfArgs>=2 or (numberOfArgs==1 && val is not Number)
+            for (int idx = 0; idx < len; idx++) {
+                array->set(Smi::fromInt(idx), val);
+                val = value->get(ESAtomicString(ESString(idx + 1).data()));
+            }
+        }
+        instance->currentExecutionContext()->doReturn(array);
+        return esUndefined;
+    }), false, false);
 
     //$22.1.3.17 Array.prototype.push(item)
     FunctionDeclarationNode* arrayPush = new FunctionDeclarationNode(L"push", ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
@@ -82,19 +103,15 @@ void GlobalObject::installArray()
     }), false, false);
     m_arrayPrototype->set(L"push", JSFunction::create(NULL, arrayPush));
 
-    //$22.1.1
-    FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings->Array, ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
-        auto r = JSArray::create(0, instance->globalObject()->arrayPrototype());
-        instance->currentExecutionContext()->doReturn(r);
-        return esUndefined;
-    }), false, false);
+    m_array = JSFunction::create(NULL, constructor);
+    m_arrayPrototype->setConstructor(m_array);
+    m_arrayPrototype->set(strings->length, Smi::fromInt(0));
+    m_array->set(strings->prototype, m_arrayPrototype);
+    m_array->set(strings->length, Smi::fromInt(1));
+    m_array->setConstructor(m_function);
 
-    auto function = JSFunction::create(NULL, constructor);
-    function->set(strings->prototype, arrayPrototype());
-
-    set(strings->Array, function);
+    set(strings->Array, m_array);
 
 }
-
 
 }

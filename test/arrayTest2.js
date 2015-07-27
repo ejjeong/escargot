@@ -6,3 +6,14 @@ var a = Array();
 print(a.length);
 print(a);
 
+var a2 = Array(1);
+print(a2.length);
+
+var a3 = Array("2");
+print(a3[0]);
+
+var a4 = Array(4, 5, 6);
+print(a4.length);
+print(a4[0]);
+print(a4[1]);
+print(a4[2]);

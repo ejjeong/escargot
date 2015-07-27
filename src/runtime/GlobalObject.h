@@ -49,7 +49,7 @@ protected:
     escargot::JSFunction* m_function;
     escargot::JSFunction* m_functionPrototype;
     escargot::JSFunction* m_array;
-    escargot::JSObject* m_arrayPrototype;
+    escargot::JSArray* m_arrayPrototype;
     //JSBuiltinsObject* m_builtins;
     //Context* m_nativeContext;
 };

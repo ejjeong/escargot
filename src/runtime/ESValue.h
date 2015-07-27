@@ -583,11 +583,10 @@ public:
         //TODO
         JSArray* arr = new JSArray();
         arr->setLength(length);
-        /*
-        if(proto == NULL)
-            proto = global->arrayPrototype();
-        setPrototype(proto);
-        */
+        //if(proto == NULL)
+        //    proto = global->arrayPrototype();
+        if(proto != NULL)
+            arr->set__proto__(proto);
         return arr;
     }
 
