@@ -36,6 +36,8 @@ void ESVMInstance::evaluate(const std::string& source)
         wprintf(L"ReferenceError - %ls\n", err.identifier().data());
     } catch(TypeError& err) {
         wprintf(L"TypeError\n");
+    } catch(JSObject* err) {
+        wprintf(L"Error Object is thrown\n");
     }
 
 
