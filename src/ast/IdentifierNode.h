@@ -14,6 +14,9 @@ public:
             : Node(NodeType::Identifier)
     {
         m_name = name;
+        m_cachedExecutionContext = NULL;
+        m_identifierCacheInvalidationCheckCount = 0;
+        m_cachedSlot = NULL;
     }
 
     ESValue* execute(ESVMInstance* instance);
@@ -25,6 +28,9 @@ public:
 
 protected:
     ESAtomicString m_name;
+    ExecutionContext* m_cachedExecutionContext;
+    size_t m_identifierCacheInvalidationCheckCount;
+    JSSlot* m_cachedSlot;
 };
 
 }

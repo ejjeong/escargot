@@ -11,6 +11,8 @@ __thread ESVMInstance* currentInstance;
 
 ESVMInstance::ESVMInstance()
 {
+    m_identifierCacheInvalidationCheckCount = 0;
+
     std::setlocale(LC_ALL, "en_US.utf8");
     emptyStringData.initHash();
     m_strings.initStaticStrings(this);

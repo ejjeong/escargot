@@ -41,6 +41,16 @@ public:
         f();
         m_currentExecutionContext = ctx;
     }
+
+    size_t identifierCacheInvalidationCheckCount()
+    {
+        return m_identifierCacheInvalidationCheckCount;
+    }
+
+    void invalidateIdentifierCacheCheckCount()
+    {
+        m_identifierCacheInvalidationCheckCount ++;
+    }
 protected:
     ExecutionContext* m_globalExecutionContext;
     ExecutionContext* m_currentExecutionContext;
@@ -51,6 +61,7 @@ protected:
     AtomicStringMap m_atomicStringMap;
 
     Strings m_strings;
+    size_t m_identifierCacheInvalidationCheckCount;
 };
 
 }

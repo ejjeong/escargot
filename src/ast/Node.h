@@ -6,6 +6,8 @@
 namespace escargot {
 
 class ESVMInstance;
+class ExecutionContext;
+class JSSlot;
 
 enum NodeType {
     Program,
@@ -53,6 +55,7 @@ protected:
     {
         m_nodeType = type;
         m_sourceLocation = loc;
+        m_needsActivation = false;
     }
 public:
     virtual ESValue* execute(ESVMInstance* instance)
@@ -67,9 +70,11 @@ public:
     }
 
     const NodeType& type() { return m_nodeType; }
+    bool needsActivation() { return m_needsActivation; } //parent AST has eval, with, catch
 protected:
     NodeType m_nodeType;
     SourceLocation m_sourceLocation;
+    bool m_needsActivation;
 };
 
 }
