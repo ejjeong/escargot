@@ -10,6 +10,10 @@ namespace escargot {
 
 GlobalObject::GlobalObject()
 {
+    installFunction();
+    installObject();
+    installArray();
+
     FunctionDeclarationNode* node = new FunctionDeclarationNode(ESAtomicString(L"print"), ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
         JSObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(strings->arguments, false)->toHeapObject()->toJSObject();
         ESValue* val = value->get(strings->numbers[0]);
@@ -18,12 +22,46 @@ GlobalObject::GlobalObject()
         return esUndefined;
     }), false, false);
     auto printFunction = JSFunction::create(NULL, node);
-
-    installFunction();
-    installObject();
-    installArray();
-
     set(L"print", printFunction);
+
+    node = new FunctionDeclarationNode(ESAtomicString(L"gc"), ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
+        GC_gcollect();
+        return esUndefined;
+    }), false, false);
+    auto gcFunction = JSFunction::create(NULL, node);
+    set(L"gc", gcFunction);
+
+    node = new FunctionDeclarationNode(ESAtomicString(L"load"), ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
+        JSObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(strings->arguments, false)->toHeapObject()->toJSObject();
+        ESValue* val = value->get(strings->numbers[0]);
+        ESString str = val->toESString();
+        const wchar_t* pt = str.data();
+        std::string path;
+        char buffer [MB_CUR_MAX];
+        while(*pt) {
+            int length = std::wctomb(buffer,*pt);
+            if (length<1)
+                break;
+            path.append(buffer);
+            pt++;
+        }
+        FILE *fp = fopen(path.c_str(),"r");
+        if(fp) {
+            std::string str;
+            char buf[512];
+            while(fgets(buf, sizeof buf, fp) != NULL) {
+                str += buf;
+            }
+            fclose(fp);
+            instance->runOnGlobalContext([instance, &str](){
+                instance->evaluate(str);
+            });
+
+        }
+        return esUndefined;
+    }), false, false);
+    auto loadFunction = JSFunction::create(NULL, node);
+    set(L"load", loadFunction);
 }
 
 void GlobalObject::installFunction()

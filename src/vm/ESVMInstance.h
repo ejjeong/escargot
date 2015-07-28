@@ -32,6 +32,15 @@ public:
     }
 
     ALWAYS_INLINE Strings& strings() { return m_strings; }
+
+    template <typename F>
+    void runOnGlobalContext(const F& f)
+    {
+        ExecutionContext* ctx = m_currentExecutionContext;
+        m_currentExecutionContext = m_globalExecutionContext;
+        f();
+        m_currentExecutionContext = ctx;
+    }
 protected:
     ExecutionContext* m_globalExecutionContext;
     ExecutionContext* m_currentExecutionContext;
