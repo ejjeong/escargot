@@ -12,7 +12,12 @@ ESValue* IdentifierNode::execute(ESVMInstance* instance)
     JSSlot* slot = instance->currentExecutionContext()->resolveBinding(name());
     if(slot)
         return slot;
-    throw ReferenceError(m_name);
+
+    ESString err_msg = m_name;
+    err_msg.append(ESString(L" is not defined"));
+    instance->globalObject()->error()->set(ESAtomicString(L"name"), String::create(ESString(L"ReferenceError")));
+    instance->globalObject()->error()->set(ESAtomicString(L"message"), String::create(err_msg));
+    throw instance->globalObject()->error();
     return esUndefined;
 }
 

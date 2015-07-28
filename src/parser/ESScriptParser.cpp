@@ -112,6 +112,8 @@ Node* ESScriptParser::parseScript(const std::string& source)
     ESString astTypeIfStatement(L"IfStatement");
     ESString astTypeForStatement(L"ForStatement");
     ESString astTypeWhileStatement(L"WhileStatement");
+    ESString astTypeTryStatement(L"TryStatement");
+    ESString astTypeCatchClause(L"CatchClause");
 
     StatementNodeVector program_body;
     StatementNodeVector* current_body = &program_body;
@@ -274,7 +276,24 @@ Node* ESScriptParser::parseScript(const std::string& source)
             parsedNode = new ReturnStatmentNode(fn(value[L"argument"]));
         } else if(type == astTypeEmptyStatement) {
             parsedNode = new EmptyStatementNode();
-        }
+        } else if (type == astTypeTryStatement) {
+        	   CatchClauseNodeVector guardedHandlers;
+        	   rapidjson::GenericValue<rapidjson::UTF16<>>& children = value[L"guardedHandlers"];
+        	   for (rapidjson::SizeType i = 0; i < children.Size(); i++) {
+						  	guardedHandlers.push_back(fn(children[i]));
+        	   }
+        	   if (value[L"finalizer"].IsNull()) {
+        	  	 parsedNode = new TryStatementNode(fn(value[L"block"]), fn(value[L"handler"]), std::move(guardedHandlers), NULL);
+        	   } else {
+        	  	 parsedNode = new TryStatementNode(fn(value[L"block"]), fn(value[L"handler"]), std::move(guardedHandlers), fn(value[L"finalizer"]));
+        	   }
+        } else if (type == astTypeCatchClause) {
+        	if (value[L"guard"].IsNull()) {
+        		parsedNode = new CatchClauseNode(fn(value[L"param"]), NULL, fn(value[L"body"]));
+        	} else {
+        		parsedNode = new CatchClauseNode(fn(value[L"param"]), fn(value[L"guard"]), fn(value[L"body"]));
+        	}
+         }
 #ifndef NDEBUG
         if(!parsedNode) {
             type.show();

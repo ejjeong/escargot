@@ -38,6 +38,8 @@ enum NodeType {
     Identifier,
     Literal,
     NativeFunction,
+		TryStatement,
+		CatchClause,
 };
 
 class SourceLocation {

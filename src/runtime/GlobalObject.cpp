@@ -13,6 +13,7 @@ GlobalObject::GlobalObject()
     installFunction();
     installObject();
     installArray();
+    installError();
 
     FunctionDeclarationNode* node = new FunctionDeclarationNode(ESAtomicString(L"print"), ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
         JSObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(strings->arguments, false)->toHeapObject()->toJSObject();
@@ -97,6 +98,21 @@ void GlobalObject::installObject()
     m_object->set(strings->prototype, m_objectPrototype);
 
     set(strings->Object, m_object);
+}
+
+void GlobalObject::installError()
+{
+    ::escargot::JSFunction* emptyFunction = m_functionPrototype;
+    m_error = ::escargot::JSFunction::create(NULL,new FunctionDeclarationNode(strings->Error, ESAtomicStringVector(), new EmptyStatementNode(), false, false));
+    m_error->set(strings->name, String::create(strings->Error));
+    m_error->setConstructor(m_function);
+    m_error->set__proto__(emptyFunction);
+
+    m_errorPrototype = JSObject::create();
+    m_errorPrototype->setConstructor(m_error);
+    m_error->set(strings->prototype, m_errorPrototype);
+
+    set(strings->Error, m_error);
 }
 
 void GlobalObject::installArray()

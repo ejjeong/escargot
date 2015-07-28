@@ -44,7 +44,7 @@ else ifeq ($(ARCH), x86)
 endif
 
 ifeq ($(MODE), debug)
-	CXXFLAGS += -O0 -g3 -fno-omit-frame-pointer -Wall -Werror
+	CXXFLAGS += -O0 -g3 -fno-omit-frame-pointer -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable
 	GCLIBS = third_party/bdwgc/out/debug/.libs/libgc.a third_party/bdwgc/out/debug/.libs/libgccpp.a
 else ifeq ($(MODE), release)
 	CXXFLAGS += -O3 -g0 -DNDEBUG

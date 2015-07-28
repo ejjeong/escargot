@@ -21,6 +21,7 @@ ESAtomicString numbers[ESCARGOT_STRINGS_NUMBERS_MAX];
 ESAtomicString String;
 ESAtomicString Number;
 ESAtomicString Object;
+ESAtomicString Error;
 ESAtomicString Array;
 ESAtomicString Function;
 ESAtomicString Empty;
@@ -28,6 +29,7 @@ void initStaticStrings(ESVMInstance* instance);
 };
 
 extern Strings* strings;
+
 }
 
 #endif

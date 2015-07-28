@@ -21,6 +21,7 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     String = ESAtomicString(instance, L"String");
     Number = ESAtomicString(instance, L"Number");
     Object = ESAtomicString(instance, L"Object");
+    Error = ESAtomicString(instance, L"Error");
     Array = ESAtomicString(instance, L"Array");
     Function = ESAtomicString(instance, L"Function");
     Empty = ESAtomicString(instance, L"Empty");

@@ -21,6 +21,16 @@ public:
         return m_objectPrototype;
     }
 
+    ALWAYS_INLINE escargot::JSFunction* error()
+    {
+        return m_error;
+    }
+
+    ALWAYS_INLINE JSObject* errorPrototype()
+    {
+        return m_errorPrototype;
+    }
+
     ALWAYS_INLINE escargot::JSFunction* function()
     {
         return m_function;
@@ -43,11 +53,14 @@ public:
 protected:
     void installObject();
     void installFunction();
+    void installError();
     void installArray();
     escargot::JSFunction* m_object;
     escargot::JSObject* m_objectPrototype;
     escargot::JSFunction* m_function;
     escargot::JSFunction* m_functionPrototype;
+    escargot::JSFunction* m_error;
+    escargot::JSObject* m_errorPrototype;
     escargot::JSFunction* m_array;
     escargot::JSArray* m_arrayPrototype;
     //JSBuiltinsObject* m_builtins;

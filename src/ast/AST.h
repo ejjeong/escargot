@@ -32,5 +32,7 @@
 #include "ThisExpressionNode.h"
 #include "VariableDeclarationNode.h"
 #include "VariableDeclaratorNode.h"
+#include "CatchClauseNode.h"
+#include "TryStatementNode.h"
 
 #endif
