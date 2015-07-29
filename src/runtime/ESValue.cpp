@@ -20,6 +20,17 @@ Boolean* esTrue = &s_true;
 static Boolean s_false(false);
 Boolean* esFalse = &s_false;
 
+static Number s_nan(std::numeric_limits<double>::quiet_NaN());
+Number* esNaN = &s_nan;
+
+static Number s_infinity(std::numeric_limits<double>::infinity());
+Number* esInfinity = &s_infinity;
+static Number s_ninfinity(-std::numeric_limits<double>::infinity());
+Number* esNegInfinity = &s_ninfinity;
+
+static Number s_nzero(-0.0);
+Number* esMinusZero = &s_nzero;
+
 bool ESValue::equalsTo(ESValue* val)
 {
     if(isSmi()) {
@@ -62,7 +73,10 @@ ESString ESValue::toESString()
         } else if(o->isNull()) {
             ret = strings->null;
         } else if(o->isNumber()) {
-            ret = ESString(o->toNumber()->get());
+            if (o == esNaN) ret = L"NaN";
+            else if (o == esInfinity) ret = L"Infinity";
+            else if (o == esNegInfinity) ret = L"-Infinity";
+            else ret = ESString(o->toNumber()->get());
         } else if(o->isPString()) {
             ret = o->toPString()->string();
         } else if(o->isJSFunction()) {
@@ -101,7 +115,7 @@ ESString ESValue::toESString()
           ret.append(L"}");
         } else {
             RELEASE_ASSERT_NOT_REACHED();
-         }
+        }
     }
 
     return ret;

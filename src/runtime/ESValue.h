@@ -24,6 +24,11 @@ extern Null* esNull;
 extern Boolean* esTrue;
 extern Boolean* esFalse;
 
+extern Number* esNaN;
+extern Number* esInfinity;
+extern Number* esNegInfinity;
+extern Number* esMinusZero;
+
 class ESValue {
     //static void* operator new(size_t, void* p) = delete;
     //static void* operator new[](size_t, void* p) = delete;
@@ -285,12 +290,12 @@ public:
 };
 
 class Number : public HeapObject {
+public:
     Number(double value)
         : HeapObject(HeapObject::Type::Number)
     {
         set(value);
     }
-public:
     static Number* create(double value)
     {
         return new Number(value);
@@ -305,6 +310,26 @@ public:
     {
         return m_value;
     }
+
+    ALWAYS_INLINE bool isZero()
+    {
+        if (m_value == 0 || m_value == -0)
+            return true;
+        return false;
+    }
+
+    ALWAYS_INLINE bool isInfinity()
+    {
+        if (this == esInfinity || this == esNegInfinity)
+            return true;
+        return false;
+    }
+
+    ALWAYS_INLINE bool isNegative()
+    {
+        return std::signbit(m_value);
+    }
+
 protected:
     double m_value;
 };

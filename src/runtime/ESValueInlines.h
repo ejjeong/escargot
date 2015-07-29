@@ -178,6 +178,18 @@ inline ESValue* ESValue::toNumber()
     ESValue* ret = this;
     if(LIKELY(isSmi())) {
     } else {
+        HeapObject* o = toHeapObject();
+        if (o->isUndefined()) {
+            return esNaN;
+        } else if (o->isNull()) {
+            return Smi::fromInt(0);
+        } else if (o->isBoolean()) {
+            return Smi::fromInt(o->toBoolean()->get());
+        } else if (o->isJSString()) {
+            //TODO
+        } else if (o->isJSObject()) {
+            return this->toPrimitive()->toNumber();
+        }
         ASSERT(false); // TODO
     }
     return ret;

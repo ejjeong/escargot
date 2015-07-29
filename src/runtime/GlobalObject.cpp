@@ -16,6 +16,14 @@ GlobalObject::GlobalObject()
     installString();
     installError();
 
+    // Value Properties of the Global Object
+    definePropertyOrThrow(L"Infinity", false, false, false);
+    definePropertyOrThrow(L"NaN", false, false, false);
+    definePropertyOrThrow(strings->undefined, false, false, false);
+    set(L"Infinity", esInfinity);
+    set(L"NaN", esNaN);
+    set(strings->undefined, esUndefined);
+
     FunctionDeclarationNode* node = new FunctionDeclarationNode(ESAtomicString(L"print"), ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
         JSObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(strings->arguments, false)->toHeapObject()->toJSObject();
         ESValue* val = value->get(strings->numbers[0]);

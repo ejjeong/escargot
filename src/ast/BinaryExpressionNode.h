@@ -9,6 +9,12 @@ class BinaryExpressionNode : public ExpressionNode {
 public:
     enum BinaryExpressionOperator {
         // TODO
+        //
+        // http://www.ecma-international.org/ecma-262/5.1/#sec-11.5
+        // Multiplicative Operators
+        Mult,  //"*"
+        Div,   //"/"
+        Mod,   //"%"
 
         // http://www.ecma-international.org/ecma-262/5.1/#sec-11.6
         // Additive Operators
@@ -50,6 +56,12 @@ public:
             m_operator = Plus;
         else if (oper == L"-")
             m_operator = Minus;
+
+        // Multiplicative Operators
+        else if (oper == L"*")
+            m_operator = Mult;
+        else if (oper == L"/")
+            m_operator = Div;
 
         // Relational Operators
         else if (oper == L"<")
@@ -94,6 +106,51 @@ public:
                         ret = Number::create(lnum + rnum);
                     }
                 }
+                break;
+            case Div: {
+                lval = lval->toNumber();
+                rval = rval->toNumber();
+                // http://www.ecma-international.org/ecma-262/5.1/#sec-11.5.2
+                bool islNeg = lval->isSmi()? lval->toSmi()->value() < 0 : lval->toHeapObject()->toNumber()->isNegative();
+                bool isrNeg = rval->isSmi()? rval->toSmi()->value() < 0 : rval->toHeapObject()->toNumber()->isNegative();
+                bool islZero = lval->isSmi()? lval->toSmi()->value() == 0 : lval->toHeapObject()->toNumber()->isZero();
+                bool isrZero = rval->isSmi()? rval->toSmi()->value() == 0 : rval->toHeapObject()->toNumber()->isZero();
+                bool isNeg = (islNeg != isrNeg);
+                if (lval == esNaN || rval == esNaN) ret = esNaN;
+                else if (lval == esInfinity || lval == esNegInfinity) {
+                    if (rval == esInfinity || rval == esNegInfinity)
+                        ret = esNaN;
+                    else { // if rval is zero or nonzero finite value
+                        if (isNeg) ret = esNegInfinity;
+                        else       ret = esInfinity;
+                    }
+                } else if (rval == esInfinity || rval == esNegInfinity) {
+                    if (isNeg) ret = esMinusZero;
+                    else       ret = Smi::fromInt(0);
+                } else if (islZero) {
+                    if (isrZero) ret = esNaN;
+                    else {
+                        if (isNeg) ret = esMinusZero;
+                        else       ret = Smi::fromInt(0);
+                    }
+                } else if (isrZero) {
+                    if (isNeg) ret = esNegInfinity;
+                    else       ret = esInfinity;
+                } else {
+                    double lnum = lval->isSmi()? lval->toSmi()->value() : lval->toHeapObject()->toNumber()->get();
+                    double rnum = rval->isSmi()? rval->toSmi()->value() : rval->toHeapObject()->toNumber()->get();
+                    double result = lnum / rnum;
+
+                    if (result == std::numeric_limits<double>::infinity())
+                        ret = esInfinity;
+                    else if (result == -std::numeric_limits<double>::infinity())
+                        ret = esNegInfinity;
+                    else if (result == -0.0)
+                        ret = esMinusZero;
+                    else
+                        ret = Number::create(result);
+                }
+                      }
                 break;
             case Lessthan:
                 /* http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.1

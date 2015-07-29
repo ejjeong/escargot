@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <cmath>
 #include <csetjmp>
+#include <limits>
 #include <locale>
 #include <clocale>
 #include <cwchar>
