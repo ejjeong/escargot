@@ -182,7 +182,7 @@ Node* ESScriptParser::parseScript(const std::string& source)
                     parsedNode = new LiteralNode(Number::create(number));
                 }
             } else if(value[L"value"].IsString()) {
-                parsedNode = new LiteralNode(JSString::create(value[L"value"].GetString()));
+                parsedNode = new LiteralNode(PString::create(value[L"value"].GetString()));
             } else if(value[L"value"].IsBool()) {
                 parsedNode = new LiteralNode(Boolean::create(value[L"value"].GetBool()));
             } else if(value[L"value"].IsNull()) {

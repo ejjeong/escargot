@@ -74,6 +74,7 @@ public:
         ESValue* rval = m_right->execute(instance)->ensureValue();
         return execute(instance, lval, rval, m_operator);
     }
+
     static ESValue* execute(ESVMInstance* instance, ESValue* lval, ESValue* rval, BinaryExpressionOperator oper) {
         ESValue* ret;
         switch(oper) {
@@ -81,8 +82,8 @@ public:
                 /* http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.1 */
                 lval = lval->toPrimitive();
                 rval = rval->toPrimitive();
-                if ((lval->isHeapObject() && lval->toHeapObject()->isJSString())
-                    || (rval->isHeapObject() && rval->toHeapObject()->isJSString())) {
+                if ((lval->isHeapObject() && lval->toHeapObject()->isPString())
+                    || (rval->isHeapObject() && rval->toHeapObject()->isPString())) {
                     // TODO
                 } else {
                     if (lval->isSmi() && rval->isSmi())

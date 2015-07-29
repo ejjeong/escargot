@@ -223,9 +223,9 @@ inline ESValue* ESValue::toInteger()
     return ret;
 }
 
-inline JSString* ESValue::toString()
+inline PString* ESValue::toString()
 {
-    return JSString::create(toESString());
+    return PString::create(toESString());
 }
 
 inline ESValue* ESValue::ensureValue()

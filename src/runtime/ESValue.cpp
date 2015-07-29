@@ -36,7 +36,7 @@ bool ESValue::equalsTo(ESValue* val)
             return true;
         if (o->isBoolean() && o->toBoolean()->get() == comp->toBoolean()->get())
             return true;
-        if (o->isJSString() && o->toJSString()->string() == comp->toJSString()->string())
+        if (o->isPString() && o->toPString()->string() == comp->toPString()->string())
             return true;
         //TODO
         if (o->isJSFunction())
@@ -63,8 +63,8 @@ ESString ESValue::toESString()
             ret = strings->null;
         } else if(o->isNumber()) {
             ret = ESString(o->toNumber()->get());
-        } else if(o->isJSString()) {
-            ret = o->toJSString()->string();
+        } else if(o->isPString()) {
+            ret = o->toPString()->string();
         } else if(o->isJSFunction()) {
             //ret = L"[Function function]";
             ret = L"function ";
@@ -80,8 +80,8 @@ ESString ESValue::toESString()
                 ret.append(slot->toESString());
                 isFirst = false;
             }
-        } else if(o->isJSStringObject()) {
-            ret.append(o->toJSStringObject()->getStringData()->string());
+        } else if(o->isJSString()) {
+            ret.append(o->toJSString()->getStringData()->string());
         } else if(o->isJSError()) {
         	    JSObject* jso = o->toJSObject();
         	    ESValue* name = jso->get(L"name", true);

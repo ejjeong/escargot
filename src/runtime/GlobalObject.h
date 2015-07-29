@@ -56,7 +56,7 @@ public:
         return m_string;
     }
 
-    ALWAYS_INLINE escargot::JSStringObject* stringPrototype()
+    ALWAYS_INLINE escargot::JSString* stringPrototype()
     {
         return m_stringPrototype;
     }
@@ -76,7 +76,7 @@ protected:
     escargot::JSFunction* m_array;
     escargot::JSArray* m_arrayPrototype;
     escargot::JSFunction* m_string;
-    escargot::JSStringObject* m_stringPrototype;
+    escargot::JSString* m_stringPrototype;
     //JSBuiltinsObject* m_builtins;
     //Context* m_nativeContext;
 };

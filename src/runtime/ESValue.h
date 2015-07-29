@@ -10,12 +10,12 @@ class Undefined;
 class Null;
 class Boolean;
 class Number;
-class JSString;
+class PString;
 class JSObject;
 class JSSlot;
 class JSFunction;
 class JSArray;
-class JSStringObject;
+class JSString;
 class FunctionNode;
 class ESVMInstance;
 
@@ -46,7 +46,7 @@ public:
     ESValue* toNumber();
     ESValue* toInt32();
     ESValue* toInteger();
-    JSString* toString();
+    PString* toString();
     ESValue* ensureValue();
 };
 
@@ -64,12 +64,12 @@ public:
         Null = 1 << 1,
         Boolean = 1 << 2,
         Number = 1 << 3,
-        JSString = 1 << 4,
+        PString = 1 << 4,
         JSObject = 1 << 5,
         JSSlot = 1 << 6,
         JSFunction = 1 << 7,
         JSArray = 1 << 8,
-        JSStringObject = 1 << 9,
+        JSString = 1 << 9,
         JSError = 1 << 10,
         TypeMask = 0xfff
     };
@@ -139,17 +139,17 @@ public:
         return reinterpret_cast<::escargot::Number*>(this);
     }
 
-    ALWAYS_INLINE bool isJSString() const
+    ALWAYS_INLINE bool isPString() const
     {
-        return m_data & Type::JSString;
+        return m_data & Type::PString;
     }
 
-    ALWAYS_INLINE ::escargot::JSString* toJSString()
+    ALWAYS_INLINE ::escargot::PString* toPString()
     {
 #ifndef NDEBUG
-        ASSERT(isJSString());
+        ASSERT(isPString());
 #endif
-        return reinterpret_cast<::escargot::JSString *>(this);
+        return reinterpret_cast<::escargot::PString *>(this);
     }
 
     ALWAYS_INLINE bool isJSObject() const
@@ -205,17 +205,17 @@ public:
         return reinterpret_cast<::escargot::JSArray *>(this);
     }
 
-    ALWAYS_INLINE bool isJSStringObject() const
+    ALWAYS_INLINE bool isJSString() const
     {
-        return m_data & Type::JSStringObject;
+        return m_data & Type::JSString;
     }
 
-    ALWAYS_INLINE ::escargot::JSStringObject* toJSStringObject()
+    ALWAYS_INLINE ::escargot::JSString* toJSString()
     {
 #ifndef NDEBUG
-        ASSERT(isJSStringObject());
+        ASSERT(isJSString());
 #endif
-        return reinterpret_cast<::escargot::JSStringObject *>(this);
+        return reinterpret_cast<::escargot::JSString *>(this);
     }
 
     ALWAYS_INLINE bool isJSError() const
@@ -309,17 +309,17 @@ protected:
     double m_value;
 };
 
-class JSString : public HeapObject {
+class PString : public HeapObject {
 protected:
-    JSString(const ESString& src)
-        : HeapObject(HeapObject::Type::JSString)
+    PString(const ESString& src)
+        : HeapObject(HeapObject::Type::PString)
     {
         m_string = src;
     }
 public:
-    static JSString* create(const ESString& src)
+    static PString* create(const ESString& src)
     {
-        return new JSString(src);
+        return new PString(src);
     }
 
     const ESString& string()
@@ -827,32 +827,32 @@ protected:
     //GetThisBinding();
 };
 
-class JSStringObject : public JSObject {
+class JSString : public JSObject {
 protected:
-    JSStringObject(const ESString& str)
-        : JSObject((Type)(Type::JSObject | Type::JSStringObject))
+    JSString(const ESString& str)
+        : JSObject((Type)(Type::JSObject | Type::JSString))
     {
-        m_stringData = JSString::create(str);
+        m_stringData = PString::create(str);
 
         //$21.1.4.1 String.length
         defineAccessorProperty(strings->length, [](JSObject* self) -> ESValue* {
-            return self->toJSStringObject()->m_stringData->length();
+            return self->toJSString()->m_stringData->length();
         }, NULL, true, false, false);
     }
 
 public:
-    static JSStringObject* create(const ESString& str)
+    static JSString* create(const ESString& str)
     {
-        return new JSStringObject(str);
+        return new JSString(str);
     }
 
-    ALWAYS_INLINE ::escargot::JSString* getStringData()
+    ALWAYS_INLINE ::escargot::PString* getStringData()
     {
         return m_stringData;
     }
 
 private:
-    ::escargot::JSString* m_stringData;
+    ::escargot::PString* m_stringData;
 };
 
 }

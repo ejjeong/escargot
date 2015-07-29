@@ -20,7 +20,7 @@ public:
     ESValue* execute(ESVMInstance* instance)
     {
        ESValue* arg = m_argument->execute(instance);
-       if (arg->isHeapObject() && arg->toHeapObject()->isJSString()) {
+       if (arg->isHeapObject() && arg->toHeapObject()->isPString()) {
            ESString str = arg->toESString();
            int jmp = 1;
         }
