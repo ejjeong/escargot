@@ -22,7 +22,11 @@ ESValue* ESFunctionCaller::call(ESValue* callee, ESValue* receiver, ESValue* arg
         DeclarativeEnvironmentRecord* functionRecord = ESVMInstance->m_currentExecutionContext->environment()->record()->toDeclarativeEnvironmentRecord();
         JSObject* innerObject = functionRecord->innerObject();
         JSObject* argumentsObject = JSObject::create();
-        for(unsigned i = 0; i < argumentCount ; i ++) {
+        unsigned i = 0;
+        for(; i < argumentCount && i < ESCARGOT_STRINGS_NUMBERS_MAX ; i ++) {
+            argumentsObject->set(strings->numbers[i], arguments[i]);
+        }
+        for( ; i < argumentCount ; i ++) {
             argumentsObject->set(ESAtomicString(ESString((int)i).data()), arguments[i]);
         }
         innerObject->set(strings->arguments, argumentsObject);

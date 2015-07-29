@@ -16,13 +16,13 @@ ESValue* CallExpressionNode::execute(ESVMInstance* instance)
     if(receiver == NULL)
         receiver = instance->globalObject();
 
-    std::vector<ESValue*, gc_allocator<ESValue*>> arguments;
+    ESValue** arguments = (ESValue**)alloca(sizeof(ESValue* ) * m_arguments.size());
     for(unsigned i = 0; i < m_arguments.size() ; i ++) {
         ESValue* result = m_arguments[i]->execute(instance)->ensureValue();
-        arguments.push_back(result);
+        arguments[i] = result;
     }
 
-    return ESFunctionCaller::call(fn, receiver, &arguments[0], arguments.size(), instance);
+    return ESFunctionCaller::call(fn, receiver, arguments, m_arguments.size(), instance);
 }
 
 }
