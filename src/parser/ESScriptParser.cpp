@@ -52,10 +52,19 @@ Node* ESScriptParser::parseScript(const std::string& source)
 
     FILE *fp;
 
-    fp = fopen("/tmp/input.js", "w");
+    char fname[] = "/tmp/escargot_XXXXXX\0";
+    const char* ptr = mkdtemp(fname);
+    char prefix[4096];
+    strcpy(prefix,ptr);
+    strcat(prefix,"/input.js");
+
+    fp = fopen(prefix, "w");
     fputs(sourceString.c_str(), fp);
     fflush(fp);
     fclose(fp);
+
+    remove(prefix);
+    rmdir(ptr);
 
     char path[1035];
 
