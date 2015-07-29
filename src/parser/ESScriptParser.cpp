@@ -126,6 +126,7 @@ Node* ESScriptParser::parseScript(const std::string& source)
     ESString astTypeWhileStatement(L"WhileStatement");
     ESString astTypeTryStatement(L"TryStatement");
     ESString astTypeCatchClause(L"CatchClause");
+    ESString astTypeThrowStatement(L"ThrowStatement");
 
     StatementNodeVector programBody;
     std::function<Node *(rapidjson::GenericValue<rapidjson::UTF16<>>& value, StatementNodeVector* currentBody, bool shouldGenerateNewBody)> fn;
@@ -307,6 +308,8 @@ Node* ESScriptParser::parseScript(const std::string& source)
             } else {
                 parsedNode = new CatchClauseNode(fn(value[L"param"], currentBody, false), fn(value[L"guard"], currentBody, false), fn(value[L"body"], currentBody, false));
             }
+        } else if (type == astTypeThrowStatement) {
+            parsedNode = new ThrowStatementNode(fn(value[L"argument"], currentBody, false));
          }
 #ifndef NDEBUG
         if(!parsedNode) {

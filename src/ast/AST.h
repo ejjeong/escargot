@@ -34,5 +34,6 @@
 #include "VariableDeclaratorNode.h"
 #include "CatchClauseNode.h"
 #include "TryStatementNode.h"
+#include "ThrowStatementNode.h"
 
 #endif
