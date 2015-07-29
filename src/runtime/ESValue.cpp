@@ -84,7 +84,7 @@ ESString ESValue::toESString()
             ret.append(o->toJSStringObject()->getStringData()->string());
         } else if(o->isJSError()) {
         	    JSObject* jso = o->toJSObject();
-        	    ESValue* name = jso->get(L"name");
+        	    ESValue* name = jso->get(L"name", true);
         	    ESValue* msg = jso->get(L"message");
         	    wprintf(L"%ls: %ls\n", name->toESString().data(), msg->toESString().data());
         } else if(o->isJSObject()) {

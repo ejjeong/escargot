@@ -502,8 +502,23 @@ public:
     }
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-get-o-p
-    ESValue* get(const ESAtomicString& key)
+    ESValue* get(const ESAtomicString& key, bool searchPrototype = false)
     {
+    	if (searchPrototype) {
+    	    JSObject* target = this;
+    	    while(true) {
+               ESValue* s = target->get(key);
+               if (s != esUndefined)
+                   return s;
+               ESValue* proto = target->__proto__();
+               if (proto && proto->isHeapObject() && proto->toHeapObject()->isJSObject()) {
+                   target = proto->toHeapObject()->toJSObject();
+               } else {
+                   break;
+                 }
+            }
+    		return esUndefined;
+    	} else {
         ESValue* ret = esUndefined;
         //TODO Assert: IsPropertyKey(P) is true.
         auto iter = m_map.find(key);
@@ -511,6 +526,7 @@ public:
             ret = iter->second->value();
         }
         return ret;
+    	}
     }
 
     ALWAYS_INLINE escargot::JSSlot* find(const ESAtomicString& key)
