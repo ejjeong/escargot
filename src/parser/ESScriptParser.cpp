@@ -127,34 +127,33 @@ Node* ESScriptParser::parseScript(const std::string& source)
     ESString astTypeTryStatement(L"TryStatement");
     ESString astTypeCatchClause(L"CatchClause");
 
-    StatementNodeVector program_body;
-    StatementNodeVector* current_body = &program_body;
-    std::function<Node *(rapidjson::GenericValue<rapidjson::UTF16<>>& value)> fn;
-    fn = [&](rapidjson::GenericValue<rapidjson::UTF16<>>& value) -> Node* {
+    StatementNodeVector programBody;
+    std::function<Node *(rapidjson::GenericValue<rapidjson::UTF16<>>& value, StatementNodeVector* currentBody, bool shouldGenerateNewBody)> fn;
+    fn = [&](rapidjson::GenericValue<rapidjson::UTF16<>>& value, StatementNodeVector* currentBody, bool shouldGenerateNewBody) -> Node* {
         Node* parsedNode = NULL;
         ESString type(value[L"type"].GetString());
         if(type == astTypeProgram) {
             rapidjson::GenericValue<rapidjson::UTF16<>>& children = value[L"body"];
             for (rapidjson::SizeType i = 0; i < children.Size(); i++) {
-                Node* n = fn(children[i]);
+                Node* n = fn(children[i], currentBody, false);
                 if (n != NULL) {
-                	program_body.push_back(n);
+                    programBody.push_back(n);
                   }
             }
-            parsedNode = new ProgramNode(std::move(program_body));
+            parsedNode = new ProgramNode(std::move(programBody));
         } else if(type == astTypeVariableDeclaration) {
             rapidjson::GenericValue<rapidjson::UTF16<>>& children = value[L"declarations"];
             VariableDeclaratorVector decl;
             ExpressionNodeVector assi;
             for (rapidjson::SizeType i = 0; i < children.Size(); i++) {
-                decl.push_back(fn(children[i]));
+                decl.push_back(fn(children[i], currentBody, false));
                 if (children[i][L"init"].GetType() != rapidjson::Type::kNullType) {
-                    assi.push_back(new AssignmentExpressionNode(fn(children[i][L"id"]),
-                            fn(children[i][L"init"]), L"="));
+                    assi.push_back(new AssignmentExpressionNode(fn(children[i][L"id"], currentBody, false),
+                            fn(children[i][L"init"], currentBody, false), L"="));
                 }
             }
 
-            current_body->insert(current_body->begin(), new VariableDeclarationNode(std::move(decl)));
+            currentBody->insert(currentBody->begin(), new VariableDeclarationNode(std::move(decl)));
 
             if (assi.size() > 1) {
                 parsedNode = new ExpressionStatementNode(new SequenceExpressionNode(std::move(assi)));
@@ -164,14 +163,14 @@ Node* ESScriptParser::parseScript(const std::string& source)
                 return NULL;
             }
         } else if(type == astTypeVariableDeclarator) {
-            parsedNode = new VariableDeclaratorNode(fn(value[L"id"]));
+            parsedNode = new VariableDeclaratorNode(fn(value[L"id"], currentBody, false));
         } else if(type == astTypeIdentifier) {
             parsedNode = new IdentifierNode(std::wstring(value[L"name"].GetString()));
         } else if(type == astTypeExpressionStatement) {
-            Node* node = fn(value[L"expression"]);
+            Node* node = fn(value[L"expression"], currentBody, false);
             parsedNode = new ExpressionStatementNode(node);
         } else if(type == astTypeAssignmentExpression) {
-            parsedNode = new AssignmentExpressionNode(fn(value[L"left"]), fn(value[L"right"]), value[L"operator"].GetString());
+            parsedNode = new AssignmentExpressionNode(fn(value[L"left"], currentBody, false), fn(value[L"right"], currentBody, false), value[L"operator"].GetString());
         } else if(type == astTypeLiteral) {
             //TODO parse esvalue better
             if(value[L"value"].IsNumber()) {
@@ -200,8 +199,8 @@ Node* ESScriptParser::parseScript(const std::string& source)
                 params.push_back(std::wstring(children[i][L"name"].GetString()));
             }
 
-            Node* func_body = fn(value[L"body"]);
-            current_body->insert(current_body->begin(), new FunctionDeclarationNode(id, std::move(params), func_body, value[L"generator"].GetBool(), value[L"generator"].GetBool()));
+            Node* func_body = fn(value[L"body"], currentBody, true);
+            currentBody->insert(currentBody->begin(), new FunctionDeclarationNode(id, std::move(params), func_body, value[L"generator"].GetBool(), value[L"generator"].GetBool()));
             return NULL;
         }  else if(type == astTypeFunctionExpression) {
             ESAtomicString id;
@@ -215,49 +214,52 @@ Node* ESScriptParser::parseScript(const std::string& source)
                 params.push_back(ESAtomicString(children[i][L"name"].GetString()));
             }
 
-            Node* func_body = fn(value[L"body"]);
+            Node* func_body = fn(value[L"body"], currentBody, true);
             parsedNode = new FunctionExpressionNode(id, std::move(params), func_body, value[L"generator"].GetBool(), value[L"generator"].GetBool());
         } else if(type == astTypeArrayExpression) {
             ExpressionNodeVector elems;
             rapidjson::GenericValue<rapidjson::UTF16<>>& children = value[L"elements"];
             for (rapidjson::SizeType i = 0; i < children.Size(); i++) {
-                elems.push_back(fn(children[i]));
+                elems.push_back(fn(children[i], currentBody, false));
             }
             parsedNode = new ArrayExpressionNode(std::move(elems));
         } else if(type == astTypeBlockStatement) {
-            StatementNodeVector block_body;
-            StatementNodeVector* outer_body = current_body;
-            current_body = &block_body;
+            StatementNodeVector blockBody;
+            StatementNodeVector* old = currentBody;
+
+            if(shouldGenerateNewBody)
+                currentBody = &blockBody;
             rapidjson::GenericValue<rapidjson::UTF16<>>& children = value[L"body"];
             for (rapidjson::SizeType i = 0; i < children.Size(); i++) {
-                Node* n = fn(children[i]);
+                Node* n = fn(children[i], currentBody, false);
                 if (n != NULL) {
-                	block_body.push_back(n);
-                	}
-            	}
-            current_body = outer_body;
-            parsedNode = new BlockStatementNode(std::move(block_body));
+                    blockBody.push_back(n);
+                }
+            }
+            if(shouldGenerateNewBody)
+                currentBody = old;
+            parsedNode = new BlockStatementNode(std::move(blockBody));
         } else if(type == astTypeCallExpression) {
-            Node* callee = fn(value[L"callee"]);
+            Node* callee = fn(value[L"callee"], currentBody, false);
             ArgumentVector arguments;
             rapidjson::GenericValue<rapidjson::UTF16<>>& children = value[L"arguments"];
             for (rapidjson::SizeType i = 0; i < children.Size(); i++) {
-                arguments.push_back(fn(children[i]));
+                arguments.push_back(fn(children[i], currentBody, false));
             }
             parsedNode = new CallExpressionNode(callee, std::move(arguments));
         } else if(type == astTypeNewExpression) {
-            Node* callee = fn(value[L"callee"]);
+            Node* callee = fn(value[L"callee"], currentBody, false);
             ArgumentVector arguments;
             rapidjson::GenericValue<rapidjson::UTF16<>>& children = value[L"arguments"];
             for (rapidjson::SizeType i = 0; i < children.Size(); i++) {
-                arguments.push_back(fn(children[i]));
+                arguments.push_back(fn(children[i], currentBody, false));
             }
             parsedNode = new NewExpressionNode(callee, std::move(arguments));
         } else if(type == astTypeObjectExpression) {
             PropertiesNodeVector propertiesVector;
             rapidjson::GenericValue<rapidjson::UTF16<>>& children = value[L"properties"];
             for (rapidjson::SizeType i = 0; i < children.Size(); i++) {
-                Node* n = fn(children[i]);
+                Node* n = fn(children[i], currentBody, false);
                 ASSERT(n->type() == NodeType::Property);
                 propertiesVector.push_back((PropertyNode *)n);
             }
@@ -269,42 +271,42 @@ Node* ESScriptParser::parseScript(const std::string& source)
             } else if(std::wstring(L"set") == value[L"kind"].GetString()) {
                 kind = PropertyNode::Kind::Set;
             }
-            parsedNode = new PropertyNode(fn(value[L"key"]), fn(value[L"value"]), kind);
+            parsedNode = new PropertyNode(fn(value[L"key"], currentBody, false), fn(value[L"value"], currentBody, false), kind);
         } else if(type == astTypeMemberExpression) {
-            parsedNode = new MemberExpressionNode(fn(value[L"object"]), fn(value[L"property"]), value[L"computed"].GetBool());
+            parsedNode = new MemberExpressionNode(fn(value[L"object"], currentBody, false), fn(value[L"property"], currentBody, false), value[L"computed"].GetBool());
         } else if(type == astTypeBinaryExpression) {
-            parsedNode = new BinaryExpressionNode(fn(value[L"left"]), fn(value[L"right"]), value[L"operator"].GetString());
+            parsedNode = new BinaryExpressionNode(fn(value[L"left"], currentBody, false), fn(value[L"right"], currentBody, false), value[L"operator"].GetString());
         } else if(type == astTypeUpdateExpression) {
-            parsedNode = new UpdateExpressionNode(fn(value[L"argument"]), value[L"operator"].GetString(), value[L"prefix"].GetBool());
+            parsedNode = new UpdateExpressionNode(fn(value[L"argument"], currentBody, false), value[L"operator"].GetString(), value[L"prefix"].GetBool());
         } else if(type == astTypeIfStatement) {
-            parsedNode = new IfStatementNode(fn(value[L"test"]), fn(value[L"consequent"]), value[L"alternate"].IsNull()? NULL : fn(value[L"alternate"]));
+            parsedNode = new IfStatementNode(fn(value[L"test"], currentBody, false), fn(value[L"consequent"], currentBody, false), value[L"alternate"].IsNull()? NULL : fn(value[L"alternate"], currentBody, false));
         } else if(type == astTypeForStatement) {
-            parsedNode = new ForStatementNode(fn(value[L"init"]), fn(value[L"test"]), fn(value[L"update"]), fn(value[L"body"]));
+            parsedNode = new ForStatementNode(fn(value[L"init"], currentBody, false), fn(value[L"test"], currentBody, false), fn(value[L"update"], currentBody, false), fn(value[L"body"], currentBody, false));
         } else if(type == astTypeWhileStatement) {
-            parsedNode = new WhileStatementNode(fn(value[L"test"]), fn(value[L"body"]));
+            parsedNode = new WhileStatementNode(fn(value[L"test"], currentBody, false), fn(value[L"body"], currentBody, false));
         } else if(type == astTypeThisExpression) {
             parsedNode = new ThisExpressionNode();
         } else if(type == astTypeReturnStatement) {
-            parsedNode = new ReturnStatmentNode(fn(value[L"argument"]));
+            parsedNode = new ReturnStatmentNode(fn(value[L"argument"], currentBody, false));
         } else if(type == astTypeEmptyStatement) {
             parsedNode = new EmptyStatementNode();
         } else if (type == astTypeTryStatement) {
-        	   CatchClauseNodeVector guardedHandlers;
-        	   rapidjson::GenericValue<rapidjson::UTF16<>>& children = value[L"guardedHandlers"];
-        	   for (rapidjson::SizeType i = 0; i < children.Size(); i++) {
-						  	guardedHandlers.push_back(fn(children[i]));
-        	   }
-        	   if (value[L"finalizer"].IsNull()) {
-        	  	 parsedNode = new TryStatementNode(fn(value[L"block"]), fn(value[L"handler"]), std::move(guardedHandlers), NULL);
-        	   } else {
-        	  	 parsedNode = new TryStatementNode(fn(value[L"block"]), fn(value[L"handler"]), std::move(guardedHandlers), fn(value[L"finalizer"]));
-        	   }
+           CatchClauseNodeVector guardedHandlers;
+           rapidjson::GenericValue<rapidjson::UTF16<>>& children = value[L"guardedHandlers"];
+           for (rapidjson::SizeType i = 0; i < children.Size(); i++) {
+                guardedHandlers.push_back(fn(children[i], currentBody, false));
+           }
+           if (value[L"finalizer"].IsNull()) {
+               parsedNode = new TryStatementNode(fn(value[L"block"], currentBody, false), fn(value[L"handler"], currentBody, false), std::move(guardedHandlers), NULL);
+           } else {
+               parsedNode = new TryStatementNode(fn(value[L"block"], currentBody, false), fn(value[L"handler"], currentBody, false), std::move(guardedHandlers), fn(value[L"finalizer"], currentBody, false));
+           }
         } else if (type == astTypeCatchClause) {
-        	if (value[L"guard"].IsNull()) {
-        		parsedNode = new CatchClauseNode(fn(value[L"param"]), NULL, fn(value[L"body"]));
-        	} else {
-        		parsedNode = new CatchClauseNode(fn(value[L"param"]), fn(value[L"guard"]), fn(value[L"body"]));
-        	}
+            if (value[L"guard"].IsNull()) {
+                parsedNode = new CatchClauseNode(fn(value[L"param"], currentBody, false), NULL, fn(value[L"body"], currentBody, false));
+            } else {
+                parsedNode = new CatchClauseNode(fn(value[L"param"], currentBody, false), fn(value[L"guard"], currentBody, false), fn(value[L"body"], currentBody, false));
+            }
          }
 #ifndef NDEBUG
         if(!parsedNode) {
@@ -315,7 +317,7 @@ Node* ESScriptParser::parseScript(const std::string& source)
         return parsedNode;
     };
 
-    return fn(jsonDocument);
+    return fn(jsonDocument, &programBody, false);
 }
 
 }

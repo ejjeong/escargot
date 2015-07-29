@@ -22,8 +22,8 @@ ESValue* AssignmentExpressionNode::execute(ESVMInstance* instance)
         try {
             lref = m_left->execute(instance);
         } catch(ReferenceError& err) {
-        } catch(JSFunction* err) {
-            if(instance->globalObject()->referenceError() == err && instance->globalObject()->referenceError()->get(strings->name)->toESString() == L"ReferenceError") {
+        } catch(JSObject* err) {
+            if(err->constructor() == instance->globalObject()->referenceError()) {
 
             } else {
                 throw err;
