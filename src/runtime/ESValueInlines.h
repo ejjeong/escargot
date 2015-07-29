@@ -97,6 +97,11 @@ inline bool ESValue::isHeapObject() const
     return HAS_OBJECT_TAG(this);
 }
 
+inline bool ESValue::isJSSlot() const
+{
+    return (HAS_OBJECT_TAG(this)) && ((reinterpret_cast<const HeapObject*>(this))->type() & HeapObject::Type::JSSlot);
+}
+
 inline Smi* ESValue::toSmi() const
 {
     if (this->isSmi())
@@ -117,12 +122,16 @@ inline Smi* ESValue::toSmi() const
 
 inline HeapObject* ESValue::toHeapObject() const
 {
-    if (this->isHeapObject())
-        return static_cast<HeapObject*>(const_cast<ESValue*>(this));
-
-    RELEASE_ASSERT_NOT_REACHED();
-    return nullptr;
+    ASSERT(isHeapObject());
+    return static_cast<HeapObject*>(const_cast<ESValue*>(this));
 }
+
+inline JSSlot* ESValue::toJSSlot()
+{
+    ASSERT(isJSSlot());
+    return reinterpret_cast<JSSlot*>(this);
+}
+
 
 inline int Smi::value()
 {
@@ -146,11 +155,10 @@ inline Smi* Smi::fromIntptr(intptr_t value)
     return reinterpret_cast<Smi*>((value << smi_shift_bits) | kSmiTag);
 }
 
-ALWAYS_INLINE ESValue* ESValue::ensureValue()
+inline ESValue* ESValue::ensureValue()
 {
-    if(isHeapObject() && toHeapObject()->isJSSlot()) {
-        ESValue* val = toHeapObject()->toJSSlot()->value();
-        return val;
+    if(isJSSlot()) {
+        return toJSSlot()->value();
     }
     return this;
 }

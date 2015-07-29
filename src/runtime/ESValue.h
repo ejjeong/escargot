@@ -36,16 +36,18 @@ protected:
 public:
     bool isSmi() const;
     bool isHeapObject() const;
+    bool isJSSlot() const;
     bool equalsTo(ESValue* val);
     Smi* toSmi() const;
     HeapObject* toHeapObject() const;
+    JSSlot* toJSSlot();
     ESString toESString();
     ESValue* toPrimitive();
     ESValue* toNumber();
     ESValue* toInt32();
     ESValue* toInteger();
     JSString* toString();
-    ALWAYS_INLINE ESValue* ensureValue();
+    ESValue* ensureValue();
 };
 
 class Smi : public ESValue {
@@ -80,12 +82,12 @@ protected:
 
 public:
 
-    ALWAYS_INLINE Type type()
+    ALWAYS_INLINE Type type() const
     {
         return (Type)(m_data & TypeMask);
     }
 
-    ALWAYS_INLINE bool isUndefined()
+    ALWAYS_INLINE bool isUndefined() const
     {
         return m_data & Type::Undefined;
     }
@@ -98,7 +100,7 @@ public:
         return reinterpret_cast<::escargot::Undefined *>(this);
     }
 
-    ALWAYS_INLINE bool isNull()
+    ALWAYS_INLINE bool isNull()  const
     {
         return m_data & Type::Null;
     }
@@ -111,7 +113,7 @@ public:
         return reinterpret_cast<::escargot::Null *>(this);
     }
 
-    ALWAYS_INLINE bool isBoolean()
+    ALWAYS_INLINE bool isBoolean() const
     {
         return m_data & Type::Boolean;
     }
@@ -124,7 +126,7 @@ public:
         return reinterpret_cast<::escargot::Boolean *>(this);
     }
 
-    ALWAYS_INLINE bool isNumber()
+    ALWAYS_INLINE bool isNumber() const
     {
         return m_data & Type::Number;
     }
@@ -137,7 +139,7 @@ public:
         return reinterpret_cast<::escargot::Number*>(this);
     }
 
-    ALWAYS_INLINE bool isJSString()
+    ALWAYS_INLINE bool isJSString() const
     {
         return m_data & Type::JSString;
     }
@@ -150,15 +152,10 @@ public:
         return reinterpret_cast<::escargot::JSString *>(this);
     }
 
-    ALWAYS_INLINE bool isJSObject()
+    ALWAYS_INLINE bool isJSObject() const
     {
         return m_data & Type::JSObject;
     }
-
-    ALWAYS_INLINE bool isJSError()
-		{
-				return m_data & Type::JSError;
-		}
 
     ALWAYS_INLINE ::escargot::JSObject* toJSObject()
     {
@@ -167,8 +164,8 @@ public:
 #endif
         return reinterpret_cast<::escargot::JSObject *>(this);
     }
-
-    ALWAYS_INLINE bool isJSSlot()
+    /*
+    ALWAYS_INLINE bool isJSSlot() const
     {
         return m_data & Type::JSSlot;
     }
@@ -180,6 +177,7 @@ public:
 #endif
         return reinterpret_cast<::escargot::JSSlot *>(this);
     }
+    */
 
     ALWAYS_INLINE bool isJSFunction()
     {
@@ -194,7 +192,7 @@ public:
         return reinterpret_cast<::escargot::JSFunction *>(this);
     }
 
-    ALWAYS_INLINE bool isJSArray()
+    ALWAYS_INLINE bool isJSArray() const
     {
         return m_data & Type::JSArray;
     }
@@ -207,7 +205,7 @@ public:
         return reinterpret_cast<::escargot::JSArray *>(this);
     }
 
-    ALWAYS_INLINE bool isJSStringObject()
+    ALWAYS_INLINE bool isJSStringObject() const
     {
         return m_data & Type::JSStringObject;
     }
@@ -218,6 +216,11 @@ public:
         ASSERT(isJSStringObject());
 #endif
         return reinterpret_cast<::escargot::JSStringObject *>(this);
+    }
+
+    ALWAYS_INLINE bool isJSError() const
+    {
+        return m_data & Type::JSError;
     }
 
 protected:
@@ -375,9 +378,9 @@ public:
         return new JSSlot(object, getter, setter, isWritable, isEnumerable, isConfigurable);
     }
 
-    void setValue(ESValue* value)
+    ALWAYS_INLINE void setValue(ESValue* value)
     {
-        if(m_isDataProperty) {
+        if(LIKELY(m_isDataProperty)) {
             m_data.m_value = value;
         } else {
             if(m_setter) {
@@ -387,9 +390,9 @@ public:
 
     }
 
-    ESValue* value()
+    ALWAYS_INLINE ESValue* value()
     {
-        if(m_isDataProperty) {
+        if(LIKELY(m_isDataProperty)) {
             return m_data.m_value;
         } else {
             if(m_getter) {
@@ -399,17 +402,17 @@ public:
         }
     }
 
-    bool isConfigurable()
+    ALWAYS_INLINE bool isConfigurable()
     {
         return m_isConfigurable;
     }
 
-    bool isEnumerable()
+    ALWAYS_INLINE bool isEnumerable()
     {
         return m_isEnumerable;
     }
 
-    bool isWritable()
+    ALWAYS_INLINE bool isWritable()
     {
         return m_isWritable;
     }
@@ -622,17 +625,17 @@ protected:
 
 class JSError : public JSObject {
 protected:
-	JSError(HeapObject::Type type = HeapObject::Type::JSError)
-	        : JSObject((Type)(Type::JSObject | Type::JSError))
-	{
+    JSError(HeapObject::Type type = HeapObject::Type::JSError)
+           : JSObject((Type)(Type::JSObject | Type::JSError))
+    {
 
-	}
+    }
 
 public:
-	static JSError* create()
-	{
-			return new JSError();
-	}
+    static JSError* create()
+    {
+        return new JSError();
+    }
 };
 
 class JSArray : public JSObject {
