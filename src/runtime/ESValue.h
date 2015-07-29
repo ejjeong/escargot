@@ -830,6 +830,11 @@ protected:
         : JSObject((Type)(Type::JSObject | Type::JSStringObject))
     {
         m_stringData = JSString::create(str);
+
+        //$21.1.4.1 String.length
+        defineAccessorProperty(strings->length, [](JSObject* self) -> ESValue* {
+            return self->toJSStringObject()->m_stringData->length();
+        }, NULL, true, false, false);
     }
 
 public:

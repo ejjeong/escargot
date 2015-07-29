@@ -220,7 +220,7 @@ void GlobalObject::installString()
     m_string->set(strings->name, JSString::create(strings->String));
     m_string->setConstructor(m_function);
 
-    m_stringPrototype = JSObject::create();
+    m_stringPrototype = JSStringObject::create(L"");
     m_stringPrototype->setConstructor(m_string);
 
     m_string->defineAccessorProperty(strings->prototype, [](JSObject* self) -> ESValue* {
@@ -258,29 +258,25 @@ void GlobalObject::installString()
 
     //$21.1.3.19 String.prototype.substring(start, end)
     FunctionDeclarationNode* stringSubstring = new FunctionDeclarationNode(L"substring", ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
+        JSObject* arguments = instance->currentExecutionContext()->environment()->record()->getBindingValue(L"arguments", false)->toHeapObject()->toJSObject();
+        JSObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+        if (thisObject->isUndefined() || thisObject->isNull())
+            throw TypeError();
+
+        const ESString& str = thisObject->toJSStringObject()->getStringData()->string();
+        int len = str.length();
+        int intStart = arguments->get(strings->numbers[0])->toSmi()->value();
+        ESValue* end = arguments->get(strings->numbers[1]);
+        int intEnd = (end == esUndefined) ? len : end->toInteger()->toSmi()->value();
+        int finalStart = std::min(std::max(intStart, 0), len);
+        int finalEnd = std::min(std::max(intEnd, 0), len);
+        int from = std::min(finalStart, finalEnd);
+        int to = std::max(finalStart, finalEnd);
+        ESString ret(str.string()->substr(from, to-from).c_str());
+        instance->currentExecutionContext()->doReturn(JSString::create(ret));
         return esUndefined;
     }), false, false);
     m_stringPrototype->set(L"substring", JSFunction::create(NULL, stringSubstring));
-
-    //$21.1.3.23 String.prototype.toString
-    FunctionDeclarationNode* stringToString = new FunctionDeclarationNode(L"toString", ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
-        JSObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
-        ESValue* primitiveString = thisObject->get(L"__PrimitiveValue__");
-        instance->currentExecutionContext()->doReturn(primitiveString);
-        return esUndefined;
-    }), false, false);
-    m_stringPrototype->set(L"toString", JSFunction::create(NULL, stringToString));
-
-    //$21.1.3.26 String.prototype.valueOf
-    FunctionDeclarationNode* stringValueOf = new FunctionDeclarationNode(L"valueOf", ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
-         return esUndefined;
-    }), false, false);
-    m_stringPrototype->set(L"valueOf", JSFunction::create(NULL, stringValueOf));
-
-    //$21.1.4.1 String.length
-    m_stringPrototype->defineAccessorProperty(strings->length, [](JSObject* self) -> ESValue* {
-        return self->toJSString()->length();
-    }, nullptr, false, false, false);
 }
 
 }
