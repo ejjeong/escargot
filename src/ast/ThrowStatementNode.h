@@ -1,35 +1,22 @@
 #ifndef ThrowStatementNode_h
 #define ThrowStatementNode_h
 
-//#include "Node.h"
-//#include "ExpressionNode.h"
-//#include "IdentifierNode.h"
-//#include "BlockStatementNode.h"
+#include "StatementNode.h"
 
 namespace escargot {
 
 //interface ThrowStatement <: Statement {
-class ThrowStatementNode : public Node {
+class ThrowStatementNode : public StatementNode {
 public:
     ThrowStatementNode(Node *argument)
-            : Node(NodeType::ThrowStatement)
+            : StatementNode(NodeType::ThrowStatement)
     {
-        m_argument = (ExpressionNode*) argument;
+        m_argument = argument;
     }
 
-    ESValue* execute(ESVMInstance* instance)
-    {
-       ESValue* arg = m_argument->execute(instance);
-       if (arg->isHeapObject() && arg->toHeapObject()->isPString()) {
-           ESString str = arg->toESString();
-           int jmp = 1;
-        }
-       wprintf(L"%ls\n", arg->toESString().data());
-       return esUndefined;
-    }
-
+    ESValue* execute(ESVMInstance* instance);
 protected:
-    ExpressionNode* m_argument;
+    Node* m_argument;
 };
 
 }
