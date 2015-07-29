@@ -36,6 +36,12 @@ public:
         return m_variableEnvironment;
     }
 
+    ALWAYS_INLINE void setEnvironment(LexicalEnvironment* env)
+		{
+				//TODO
+				m_variableEnvironment = env;
+		}
+
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
     JSSlot* resolveBinding(const ESAtomicString& name);
 

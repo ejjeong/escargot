@@ -81,21 +81,26 @@ ESString ESValue::toESString()
                 ret.append(slot->toESString());
                 isFirst = false;
             }
+        } else if(o->isJSError()) {
+        	    JSObject* jso = o->toJSObject();
+        	    ESValue* name = jso->get(L"name");
+        	    ESValue* msg = jso->get(L"message");
+        	    wprintf(L"%ls: %ls\n", name->toESString().data(), msg->toESString().data());
         } else if(o->isJSObject()) {
-            ret = L"{";
-            bool isFirst = true;
-            o->toJSObject()->enumeration([&ret, &isFirst](const ESString& key, JSSlot* slot) {
-                if(!isFirst)
-                    ret.append(L",");
-                ret.append(key);
-                ret.append(L":");
-                ret.append(slot->value()->toESString());
-                isFirst = false;
-            });
-            ret.append(L"}");
+          ret = L"{";
+          bool isFirst = true;
+          o->toJSObject()->enumeration([&ret, &isFirst](const ESString& key, JSSlot* slot) {
+              if(!isFirst)
+                  ret.append(L",");
+              ret.append(key);
+              ret.append(L":");
+              ret.append(slot->value()->toESString());
+              isFirst = false;
+          });
+          ret.append(L"}");
         } else {
             RELEASE_ASSERT_NOT_REACHED();
-        }
+         }
     }
 
     return ret;

@@ -21,7 +21,7 @@ ESAtomicString numbers[ESCARGOT_STRINGS_NUMBERS_MAX];
 ESAtomicString String;
 ESAtomicString Number;
 ESAtomicString Object;
-ESAtomicString Error;
+ESAtomicString ReferenceError;
 ESAtomicString Array;
 ESAtomicString Function;
 ESAtomicString Empty;

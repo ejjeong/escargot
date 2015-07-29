@@ -102,17 +102,22 @@ void GlobalObject::installObject()
 
 void GlobalObject::installError()
 {
+	  // Initialization for reference error
     ::escargot::JSFunction* emptyFunction = m_functionPrototype;
-    m_error = ::escargot::JSFunction::create(NULL,new FunctionDeclarationNode(strings->Error, ESAtomicStringVector(), new EmptyStatementNode(), false, false));
-    m_error->set(strings->name, String::create(strings->Error));
-    m_error->setConstructor(m_function);
-    m_error->set__proto__(emptyFunction);
+    m_referenceError = ::escargot::JSFunction::create(NULL,new FunctionDeclarationNode(strings->ReferenceError, ESAtomicStringVector(), new EmptyStatementNode(), false, false));
+    m_referenceError->set(strings->name, String::create(strings->ReferenceError));
+    m_referenceError->setConstructor(m_function);
+    m_referenceError->set__proto__(emptyFunction);
 
-    m_errorPrototype = JSObject::create();
-    m_errorPrototype->setConstructor(m_error);
-    m_error->set(strings->prototype, m_errorPrototype);
+    m_referenceErrorPrototype = JSObject::create();
+    m_referenceErrorPrototype->setConstructor(m_referenceError);
+    m_referenceErrorPrototype->set(strings->name, String::create(strings->ReferenceError));
 
-    set(strings->Error, m_error);
+    m_referenceError->set(strings->prototype, m_referenceErrorPrototype);
+
+    set(strings->ReferenceError, m_referenceError);
+
+    // We need initializations of other type of error objects
 }
 
 void GlobalObject::installArray()

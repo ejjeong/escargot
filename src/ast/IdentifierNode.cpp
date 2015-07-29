@@ -3,6 +3,7 @@
 #include "vm/ESVMInstance.h"
 #include "runtime/ExecutionContext.h"
 #include "runtime/Environment.h"
+#include "runtime/ESFunctionCaller.h"
 
 namespace escargot {
 
@@ -20,11 +21,21 @@ ESValue* IdentifierNode::execute(ESVMInstance* instance)
         return slot;
     }
 
+    ESValue* fn = instance->globalObject()->referenceError();
+    JSError* receiver = JSError::create();
+    receiver->setConstructor(fn);
+    receiver->set__proto__(fn->toHeapObject()->toJSFunction());
+
+    std::vector<ESValue*, gc_allocator<ESValue*>> arguments;
     ESString err_msg = m_name;
     err_msg.append(ESString(L" is not defined"));
-    instance->globalObject()->error()->set(ESAtomicString(L"name"), String::create(ESString(L"ReferenceError")));
-    instance->globalObject()->error()->set(ESAtomicString(L"message"), String::create(err_msg));
-    throw instance->globalObject()->error();
+    //arguments.push_back(String::create(err_msg));
+
+    ESFunctionCaller::call(fn, receiver, &arguments[0], arguments.size(), instance);
+    receiver->set(ESAtomicString(L"message"), String::create(err_msg));
+
+    throw receiver;
+    return esUndefined;
 }
 
 }

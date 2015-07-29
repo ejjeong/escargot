@@ -21,14 +21,14 @@ public:
         return m_objectPrototype;
     }
 
-    ALWAYS_INLINE escargot::JSFunction* error()
+    ALWAYS_INLINE escargot::JSFunction* referenceError()
     {
-        return m_error;
+        return m_referenceError;
     }
 
-    ALWAYS_INLINE JSObject* errorPrototype()
+    ALWAYS_INLINE JSObject* referenceErrorPrototype()
     {
-        return m_errorPrototype;
+        return m_referenceErrorPrototype;
     }
 
     ALWAYS_INLINE escargot::JSFunction* function()
@@ -59,8 +59,8 @@ protected:
     escargot::JSObject* m_objectPrototype;
     escargot::JSFunction* m_function;
     escargot::JSFunction* m_functionPrototype;
-    escargot::JSFunction* m_error;
-    escargot::JSObject* m_errorPrototype;
+    escargot::JSFunction* m_referenceError;
+    escargot::JSObject* m_referenceErrorPrototype;
     escargot::JSFunction* m_array;
     escargot::JSArray* m_arrayPrototype;
     //JSBuiltinsObject* m_builtins;

@@ -63,6 +63,7 @@ public:
         JSSlot = 1 << 6,
         JSFunction = 1 << 7,
         JSArray = 1 << 8,
+				 JSError = 1 << 9,
         TypeMask = 0xff
     };
 
@@ -148,6 +149,11 @@ public:
     {
         return m_data & Type::JSObject;
     }
+
+    ALWAYS_INLINE bool isJSError()
+		{
+				return m_data & Type::JSError;
+		}
 
     ALWAYS_INLINE ::escargot::JSObject* toJSObject()
     {
@@ -563,6 +569,21 @@ public:
 protected:
     JSObjectMap m_map;
     ESValue* m___proto__;
+};
+
+class JSError : public JSObject {
+protected:
+	JSError(HeapObject::Type type = HeapObject::Type::JSError)
+	        : JSObject((Type)(Type::JSObject | Type::JSError))
+	{
+
+	}
+
+public:
+	static JSError* create()
+	{
+			return new JSError();
+	}
 };
 
 class JSArray : public JSObject {
