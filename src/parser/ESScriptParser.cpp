@@ -63,12 +63,12 @@ Node* ESScriptParser::parseScript(const std::string& source)
     fflush(fp);
     fclose(fp);
 
-    remove(prefix);
-    rmdir(ptr);
-
     char path[1035];
+    char filePath[1035];
+    strcpy(filePath,"./mozjs ");
+    strcat(filePath, prefix);
 
-    fp = popen("./mozjs /tmp/input.js", "r");
+    fp = popen(filePath, "r");
     if (fp == NULL) {
         printf("Failed to run command\n" );
         exit(1);
@@ -80,6 +80,9 @@ Node* ESScriptParser::parseScript(const std::string& source)
     }
 
     pclose(fp);
+
+    remove(prefix);
+    rmdir(ptr);
 
     ESString output = outputString.data();
     //output.show();
