@@ -36,7 +36,12 @@ ESValue* MemberExpressionNode::execute(ESVMInstance* instance)
         instance->currentExecutionContext()->setLastJSObjectMetInMemberExpressionNode(obj->toHeapObject()->toJSObject(),
                 propertyName, propertyVal);
 
-        JSSlot* slot = obj->find(propertyName);
+        JSSlot* slot;
+        if (obj->isJSArray() && propertyVal != NULL)
+            slot = obj->toJSArray()->find(propertyVal);
+        else
+            slot = obj->find(propertyName);
+
         if(slot) {
             return slot;
         } else {

@@ -171,7 +171,7 @@ void GlobalObject::installArray()
                 ret = -1;
                 ESValue* searchElement = value->get(L"0");
                 while (k < len) {
-                    ESValue* kPresent = thisVal->get(ESString(k).data());
+                    ESValue* kPresent = thisVal->get(k);
                     if (searchElement->equalsTo(kPresent)) {
                         ret = k;
                         break;
@@ -189,12 +189,11 @@ void GlobalObject::installArray()
     //$22.1.3.17 Array.prototype.push(item)
     FunctionDeclarationNode* arrayPush = new FunctionDeclarationNode(L"push", ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
         JSObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(L"arguments", false)->toHeapObject()->toJSObject();
+        int len = instance->currentExecutionContext()->environment()->record()->getBindingValue(strings->length, false)->toSmi()->value();
         auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->toJSArray();
-        int i = 0;
-        while(true) {
+        for (int i = 0; i < len; i++) {
             ESValue* val = value->get(ESAtomicString(ESString(i).data()));
-            if (val == esUndefined) break;
-            thisVal->set( thisVal->length(), val );
+            thisVal->push(val);
             i++;
         }
         instance->currentExecutionContext()->doReturn(thisVal->length());

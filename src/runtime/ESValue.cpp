@@ -74,10 +74,9 @@ ESString ESValue::toESString()
         } else if(o->isJSArray()) {
             bool isFirst = true;
             for (int i=0; i<o->toJSArray()->length()->toSmi()->value(); i++) {
-                ESString key = ESString(i);
                 if(!isFirst)
                     ret.append(L", ");
-                ESValue* slot = o->toJSObject()->get(ESAtomicString(key.data()));
+                ESValue* slot = o->toJSArray()->get(i);
                 ret.append(slot->toESString());
                 isFirst = false;
             }

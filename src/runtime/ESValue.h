@@ -434,6 +434,8 @@ typedef std::unordered_map<ESAtomicString, ::escargot::JSSlot *,
                 std::hash<ESAtomicString>,std::equal_to<ESAtomicString>,
                 gc_allocator<std::pair<const ESAtomicString, ::escargot::JSSlot *> > > JSObjectMapStd;
 
+typedef std::vector<::escargot::JSSlot *, gc_allocator<::escargot::JSSlot *> > JSVectorStd;
+
 /*
 typedef std::map<ESString, ::escargot::JSSlot *,
             std::less<ESString>,
@@ -444,6 +446,12 @@ public:
     JSObjectMap(size_t siz)
         : JSObjectMapStd(siz) { }
 
+};
+
+class JSVector : public JSVectorStd {
+public:
+    JSVector(size_t siz)
+        : JSVectorStd(siz) { }
 };
 
 class JSObject : public HeapObject {
@@ -615,6 +623,8 @@ class JSArray : public JSObject {
 protected:
     JSArray(HeapObject::Type type = HeapObject::Type::JSArray)
         : JSObject((Type)(Type::JSObject | Type::JSArray))
+        , m_vector(16)
+        , m_fastmode(true)
     {
         defineAccessorProperty(strings->length, [](JSObject* self) -> ESValue* {
             return self->toJSArray()->length();
@@ -645,16 +655,84 @@ public:
 
     void set(const ESAtomicString& key, ESValue* val, bool shouldThrowException = false)
     {
+        if (m_fastmode) convertToSlowMode();
+        m_fastmode = false;
         JSObject::set(key, val, shouldThrowException);
     }
 
-    void set(ESValue* key, ESValue* val, bool shouldThrowException = false) {
+    void set(ESValue* key, ESValue* val, bool shouldThrowException = false)
+    {
+        int i;
         if (key->isSmi()) {
-            int i = key->toSmi()->value()+1;
-            if (i > length()->toSmi()->value())
-                setLength(i);
+            i = key->toSmi()->value();
+            int len = length()->toSmi()->value();
+            if (i == len && m_fastmode) {
+                m_vector.resize(len+1);
+                setLength(len+1);
+            }
+            else if (i >= len) {
+                if (m_fastmode) convertToSlowMode();
+                setLength(i+1);
+            }
+        } else {
+            if (m_fastmode)
+                convertToSlowMode();
         }
-        JSObject::set(ESAtomicString(key->toESString().data()), val, shouldThrowException);
+        if (m_fastmode) {
+            m_vector[i] = escargot::JSSlot::create(val, true, true, true);
+        } else {
+            JSObject::set(ESAtomicString(key->toESString().data()), val, shouldThrowException);
+        }
+    }
+
+    ESValue* get(int key)
+    {
+        if (m_fastmode)
+            return m_vector[key]->value();
+        return JSObject::get(ESAtomicString(ESString(key).data()));
+    }
+
+    ESValue* get(ESValue* key)
+    {
+        if (m_fastmode && key->isSmi())
+            return m_vector[key->toSmi()->value()]->value();
+        return JSObject::get(ESAtomicString(key->toESString().data()));
+    }
+
+    escargot::JSSlot* find(int key)
+    {
+        if (m_fastmode)
+            return m_vector[key];
+        return JSObject::find(ESAtomicString(ESString(key).data()));
+    }
+
+    escargot::JSSlot* find(ESValue* key)
+    {
+        if (m_fastmode && key->isSmi())
+            return m_vector[key->toSmi()->value()];
+        return JSObject::find(ESAtomicString(key->toESString().data()));
+    }
+
+    void push(ESValue* val)
+    {
+        if (m_fastmode) {
+            m_vector.push_back(escargot::JSSlot::create(val, true, true, true));
+            int len = length()->toSmi()->value();
+            setLength(len + 1);
+        } else {
+            set(m_length, val);
+        }
+    }
+
+    void convertToSlowMode()
+    {
+        m_fastmode = false;
+        int len = length()->toSmi()->value();
+        if (len == 0) return;
+        for (int i = 0; i < len; i++) {
+            m_map.insert(std::make_pair(ESAtomicString(ESString(i).data()), m_vector[i]));
+        }
+        m_vector.clear();
     }
 
     void setLength(ESValue* len)
@@ -679,6 +757,8 @@ public:
 
 protected:
     ESValue* m_length;
+    JSVector m_vector;
+    bool m_fastmode;
 };
 
 class LexicalEnvironment;
