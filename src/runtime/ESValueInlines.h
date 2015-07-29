@@ -155,6 +155,79 @@ inline Smi* Smi::fromIntptr(intptr_t value)
     return reinterpret_cast<Smi*>((value << smi_shift_bits) | kSmiTag);
 }
 
+// http://www.ecma-international.org/ecma-262/5.1/#sec-9.1
+inline ESValue* ESValue::toPrimitive()
+{
+    ESValue* ret = this;
+    if(LIKELY(isSmi())) {
+    } else {
+        HeapObject* o = toHeapObject();
+        if (o->isJSObject()) {
+            ASSERT(false); // TODO
+        } else {
+            ASSERT(false); // TODO
+        }
+    }
+    return ret;
+}
+
+// http://www.ecma-international.org/ecma-262/5.1/#sec-9.3
+inline ESValue* ESValue::toNumber()
+{
+    // TODO
+    ESValue* ret = this;
+    if(LIKELY(isSmi())) {
+    } else {
+        ASSERT(false); // TODO
+    }
+    return ret;
+}
+
+// http://www.ecma-international.org/ecma-262/5.1/#sec-9.5
+inline ESValue* ESValue::toInt32()
+{
+    // TODO
+    ESValue* ret = this->toNumber();
+    if(LIKELY(isSmi())) {
+    } else {
+        HeapObject* o = this->toHeapObject();
+        if (o->isNumber()) {
+            double d = o->toNumber()->get();
+            long long int posInt = d<0?-1:1 * std::floor(std::abs(d));
+            long long int int32bit = posInt % 0x100000000;
+            int res;
+            if (int32bit >= 0x80000000)
+                res = int32bit - 0x100000000;
+            else
+                res = int32bit;
+            if (res >= 0x40000000)
+                ret = Number::create(res);
+            else
+                ret = Smi::fromInt(res);
+        } else {
+            ASSERT(false); // TODO
+        }
+    }
+    return ret;
+}
+
+// http://www.ecma-international.org/ecma-262/5.1/#sec-9.4
+inline ESValue* ESValue::toInteger()
+{
+    // TODO
+    ESValue* ret = this->toNumber();
+    if(LIKELY(isSmi())) {
+    } else {
+        ASSERT(false); // TODO
+    }
+    return ret;
+}
+
+inline JSString* ESValue::toString()
+{
+    return JSString::create(toESString());
+}
+
 inline ESValue* ESValue::ensureValue()
 {
     if(isJSSlot()) {
