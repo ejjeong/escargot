@@ -63,7 +63,10 @@ ESValue* ESFunctionCaller::call(ESValue* callee, ESValue* receiver, ESValue* arg
                     break;
                 }
             }
-            FunctionEnvironmentRecord envRec(true, fn->functionAST()->innerIdentifiers().size());
+
+            FunctionEnvironmentRecord envRec(true,
+                    (std::pair<ESAtomicString, JSSlot>*)alloca(sizeof(std::pair<ESAtomicString, JSSlot>) * fn->functionAST()->innerIdentifiers().size()),
+                    fn->functionAST()->innerIdentifiers().size());
 
             envRec.m_functionObject = fn;
             envRec.m_newTarget = receiver;

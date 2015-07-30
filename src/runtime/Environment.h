@@ -182,11 +182,11 @@ protected:
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-declarative-environment-records
 class DeclarativeEnvironmentRecord : public EnvironmentRecord {
 public:
-    DeclarativeEnvironmentRecord(bool shouldUseVector = false, size_t vectorSize = 0)
+    DeclarativeEnvironmentRecord(bool shouldUseVector = false,std::pair<ESAtomicString, JSSlot>* vectorBuffer = NULL, size_t vectorSize = 0)
     {
         if(shouldUseVector) {
             m_innerObject = NULL;
-            m_vectorData = (std::pair<ESAtomicString, JSSlot> *)malloc(sizeof (std::pair<ESAtomicString, JSSlot>) * vectorSize);
+            m_vectorData = vectorBuffer;
             m_usedCount = 0;
 #ifndef NDEBUG
             m_vectorSize = vectorSize;
@@ -197,9 +197,6 @@ public:
     }
     ~DeclarativeEnvironmentRecord()
     {
-        if(!m_innerObject) {
-            free(m_vectorData);
-        }
     }
 
     virtual JSSlot* hasBinding(const ESAtomicString& name)
@@ -334,8 +331,8 @@ class FunctionEnvironmentRecord : public DeclarativeEnvironmentRecord {
     friend class LexicalEnvironment;
     friend class ESFunctionCaller;
 public:
-    FunctionEnvironmentRecord(bool shouldUseVector = false, size_t vectorSize = 0)
-        : DeclarativeEnvironmentRecord(shouldUseVector, vectorSize)
+    FunctionEnvironmentRecord(bool shouldUseVector = false,std::pair<ESAtomicString, JSSlot>* vectorBuffer = NULL, size_t vectorSize = 0)
+        : DeclarativeEnvironmentRecord(shouldUseVector, vectorBuffer, vectorSize)
     {
         m_thisBindingStatus = Uninitialized;
         m_thisValue = esUndefined;
