@@ -49,6 +49,7 @@ GlobalObject::GlobalObject()
         const wchar_t* pt = str.data();
         std::string path;
         char buffer [MB_CUR_MAX];
+        memset(buffer, 0, MB_CUR_MAX);
         while(*pt) {
             int length = std::wctomb(buffer,*pt);
             if (length<1)
@@ -67,8 +68,6 @@ GlobalObject::GlobalObject()
             instance->runOnGlobalContext([instance, &str](){
                 instance->evaluate(str);
             });
-        } else {
-            throw esUndefined;
         }
         return esUndefined;
     }), false, false);
