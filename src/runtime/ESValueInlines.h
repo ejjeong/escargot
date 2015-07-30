@@ -186,21 +186,24 @@ inline ESValue* ESValue::toNumber()
     if(LIKELY(isSmi())) {
     } else {
         HeapObject* o = toHeapObject();
-        if (o->isUndefined()) {
+        if (o->isPNumber()) {
+            return this;
+        } else if (o->isUndefined()) {
             return esNaN;
         } else if (o->isNull()) {
             return Smi::fromInt(0);
         } else if (o->isPBoolean()) {
             return Smi::fromInt(o->toPBoolean()->get());
         } else if (o->isJSString()) {
-            //TODO
+            ASSERT(false); //TODO
         } else if (o->isJSObject()) {
             if (o->isJSDate()) {
                 return PNumber::create(o->toJSDate()->getTimeAsMilisec());
               }
             return this->toPrimitive()->toNumber();
+        } else {
+            ASSERT(false); // TODO
         }
-        ASSERT(false); // TODO
     }
     return ret;
 }
