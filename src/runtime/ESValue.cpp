@@ -97,10 +97,9 @@ ESString ESValue::toESString()
         } else if(o->isJSString()) {
             ret.append(o->toJSString()->getStringData()->string());
         } else if(o->isJSError()) {
-        	    JSObject* jso = o->toJSObject();
-        	    ESValue* name = jso->get(L"name", true);
-        	    ESValue* msg = jso->get(L"message");
-        	    wprintf(L"%ls: %ls\n", name->toESString().data(), msg->toESString().data());
+        	    ret.append(o->toJSObject()->get(L"name", true)->toESString().data());
+        	    ret.append(L": ");
+        	    ret.append(o->toJSObject()->get(L"message")->toESString().data());
         } else if(o->isJSObject()) {
           ret = L"{";
           bool isFirst = true;
