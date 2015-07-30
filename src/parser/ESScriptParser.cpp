@@ -21,6 +21,15 @@ Node* ESScriptParser::parseScript(const std::string& source)
         if(c == '\n') {
             sc.push_back('\\');
             c = '\n';
+        } else if(c == '\\') {
+            sc.push_back('\\');
+            c = '\\';
+        } else if(c == '\"') {
+            sc.push_back('\\');
+            c = '\"';
+        } else if(c == '\'') {
+            sc.push_back('\\');
+            c = '\'';
         } else if(c == '/') {
             if(i + 1 < source.length() && source[i + 1] == '/') {
                 while(source[i] != '\n' && i < source.length()) {
