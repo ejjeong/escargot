@@ -767,7 +767,6 @@ public:
             i = key->toSmi()->value();
             int len = length()->toSmi()->value();
             if (i == len && m_fastmode) {
-                m_vector.resize(len+1);
                 setLength(len+1);
             }
             else if (i >= len) {
@@ -838,8 +837,10 @@ public:
     void setLength(ESValue* len)
     {
         ASSERT(len->isSmi());
-        if (len->toSmi() < m_length->toSmi()) {
+        if (len->toSmi()->value() < m_length->toSmi()->value()) {
             //TODO : delete elements
+        } else if (m_fastmode && len->toSmi()->value() > m_length->toSmi()->value()) {
+            m_vector.resize(len->toSmi()->value());
         }
         m_length = len;
     }
