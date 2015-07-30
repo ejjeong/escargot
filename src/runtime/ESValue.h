@@ -45,6 +45,7 @@ public:
     bool isSmi() const;
     bool isHeapObject() const;
     bool isJSSlot() const;
+    bool abstractEqualsTo(ESValue* val);
     bool equalsTo(ESValue* val);
     Smi* toSmi() const;
     HeapObject* toHeapObject() const;

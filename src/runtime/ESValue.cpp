@@ -31,6 +31,24 @@ PNumber* esNegInfinity = &s_ninfinity;
 static PNumber s_nzero(-0.0);
 PNumber* esMinusZero = &s_nzero;
 
+// http://www.ecma-international.org/ecma-262/6.0/index.html#sec-abstract-equality-comparison
+bool ESValue::abstractEqualsTo(ESValue* val)
+{
+    if (isSmi() && val->isSmi()) {
+        return equalsTo(val);
+    } else if (isHeapObject() && val->isHeapObject()) {
+        HeapObject* o = toHeapObject();
+        if (val->isHeapObject()) {
+            HeapObject* comp = val->toHeapObject();
+            if (o->type() == comp->type())
+                return equalsTo(val);
+        }
+    }
+    //TODO
+    ASSERT(false);
+    return false;
+}
+
 bool ESValue::equalsTo(ESValue* val)
 {
     if(isSmi()) {
@@ -41,8 +59,8 @@ bool ESValue::equalsTo(ESValue* val)
         HeapObject* o = toHeapObject();
         if (!val->isHeapObject()) return false;
         HeapObject* comp = val->toHeapObject();
-        if (o->type() != comp->type())
-            return false;
+        if (o->type() != comp->type()) return false;
+        //Strict Equality Comparison: === 
         if (o->isPNumber() && o->toPNumber()->get() == comp->toPNumber()->get())
             return true;
         if (o->isPBoolean() && o->toPBoolean()->get() == comp->toPBoolean()->get())

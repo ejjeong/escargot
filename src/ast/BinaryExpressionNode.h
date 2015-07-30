@@ -76,6 +76,8 @@ public:
             m_operator = GreaterThanOrEqual;
 
         // Equality Operators
+        else if (oper == L"==")
+            m_operator = Equals;
         else if (oper == L"!=")
             m_operator = NotEquals;
 
@@ -243,6 +245,18 @@ public:
                     ret = Smi::fromInt(lnum);
                 break;
             }
+            case Equals:
+                if (lval->abstractEqualsTo(rval))
+                    ret = PBoolean::create(true);
+                else
+                    ret = PBoolean::create(false);
+                break;
+            case NotEquals:
+                if (lval->abstractEqualsTo(rval))
+                    ret = PBoolean::create(false);
+                else
+                    ret = PBoolean::create(true);
+                break;
             default:
                 // TODO
                 RELEASE_ASSERT_NOT_REACHED();
