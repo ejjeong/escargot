@@ -42,8 +42,8 @@ public:
                 if (argval->isSmi()) {
                     slot->setValue(Smi::fromInt(argval->toSmi()->value() + 1));
                 } else {
-                    double argnum = argval->toHeapObject()->toNumber()->get();
-                    slot->setValue(Number::create(argnum + 1));
+                    double argnum = argval->toHeapObject()->toPNumber()->get();
+                    slot->setValue(PNumber::create(argnum + 1));
                 }
                 if (m_prefix)
                     ret = argref->ensureValue();

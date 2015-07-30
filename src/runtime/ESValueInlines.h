@@ -107,8 +107,8 @@ inline Smi* ESValue::toSmi() const
     if (this->isSmi())
         return static_cast<Smi*>(const_cast<ESValue*>(this));
     /* TODO
-    else if (object->IsHeapNumber()) {
-        double value = Handle<HeapNumber>::cast(object)->value();
+    else if (object->IsHeapPNumber()) {
+        double value = Handle<HeapPNumber>::cast(object)->value();
         int int_value = FastD2I(value);
         if (value == FastI2D(int_value) && Smi::IsValid(int_value)) {
             return handle(Smi::fromInt(int_value), isolate);
@@ -203,8 +203,8 @@ inline ESValue* ESValue::toInt32()
     if(LIKELY(isSmi())) {
     } else {
         HeapObject* o = this->toHeapObject();
-        if (o->isNumber()) {
-            double d = o->toNumber()->get();
+        if (o->isPNumber()) {
+            double d = o->toPNumber()->get();
             long long int posInt = d<0?-1:1 * std::floor(std::abs(d));
             long long int int32bit = posInt % 0x100000000;
             int res;
@@ -213,7 +213,7 @@ inline ESValue* ESValue::toInt32()
             else
                 res = int32bit;
             if (res >= 0x40000000)
-                ret = Number::create(res);
+                ret = PNumber::create(res);
             else
                 ret = Smi::fromInt(res);
         } else {

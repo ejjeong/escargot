@@ -11,7 +11,7 @@ class HeapObject;
 class Undefined;
 class Null;
 class PBoolean;
-class Number;
+class PNumber;
 class PString;
 class JSObject;
 class JSSlot;
@@ -26,10 +26,10 @@ extern Null* esNull;
 extern PBoolean* esTrue;
 extern PBoolean* esFalse;
 
-extern Number* esNaN;
-extern Number* esInfinity;
-extern Number* esNegInfinity;
-extern Number* esMinusZero;
+extern PNumber* esNaN;
+extern PNumber* esInfinity;
+extern PNumber* esNegInfinity;
+extern PNumber* esMinusZero;
 
 class ESValue {
     //static void* operator new(size_t, void* p) = delete;
@@ -72,7 +72,7 @@ public:
         Undefined = 1,
         Null = 1 << 1,
         PBoolean = 1 << 2,
-        Number = 1 << 3,
+        PNumber = 1 << 3,
         PString = 1 << 4,
         JSObject = 1 << 5,
         JSSlot = 1 << 6,
@@ -136,17 +136,17 @@ public:
         return reinterpret_cast<::escargot::PBoolean *>(this);
     }
 
-    ALWAYS_INLINE bool isNumber() const
+    ALWAYS_INLINE bool isPNumber() const
     {
-        return m_data & Type::Number;
+        return m_data & Type::PNumber;
     }
 
-    ALWAYS_INLINE ::escargot::Number* toNumber()
+    ALWAYS_INLINE ::escargot::PNumber* toPNumber()
     {
 #ifndef NDEBUG
-        ASSERT(isNumber());
+        ASSERT(isPNumber());
 #endif
-        return reinterpret_cast<::escargot::Number*>(this);
+        return reinterpret_cast<::escargot::PNumber*>(this);
     }
 
     ALWAYS_INLINE bool isPString() const
@@ -294,16 +294,16 @@ public:
     }
 };
 
-class Number : public HeapObject {
+class PNumber : public HeapObject {
 public:
-    Number(double value)
-        : HeapObject(HeapObject::Type::Number)
+    PNumber(double value)
+        : HeapObject(HeapObject::Type::PNumber)
     {
         set(value);
     }
-    static Number* create(double value)
+    static PNumber* create(double value)
     {
-        return new Number(value);
+        return new PNumber(value);
     }
 
     ALWAYS_INLINE void set(double b)

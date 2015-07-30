@@ -20,16 +20,16 @@ PBoolean* esTrue = &s_true;
 static PBoolean s_false(false);
 PBoolean* esFalse = &s_false;
 
-static Number s_nan(std::numeric_limits<double>::quiet_NaN());
-Number* esNaN = &s_nan;
+static PNumber s_nan(std::numeric_limits<double>::quiet_NaN());
+PNumber* esNaN = &s_nan;
 
-static Number s_infinity(std::numeric_limits<double>::infinity());
-Number* esInfinity = &s_infinity;
-static Number s_ninfinity(-std::numeric_limits<double>::infinity());
-Number* esNegInfinity = &s_ninfinity;
+static PNumber s_infinity(std::numeric_limits<double>::infinity());
+PNumber* esInfinity = &s_infinity;
+static PNumber s_ninfinity(-std::numeric_limits<double>::infinity());
+PNumber* esNegInfinity = &s_ninfinity;
 
-static Number s_nzero(-0.0);
-Number* esMinusZero = &s_nzero;
+static PNumber s_nzero(-0.0);
+PNumber* esMinusZero = &s_nzero;
 
 bool ESValue::equalsTo(ESValue* val)
 {
@@ -43,7 +43,7 @@ bool ESValue::equalsTo(ESValue* val)
         HeapObject* comp = val->toHeapObject();
         if (o->type() != comp->type())
             return false;
-        if (o->isNumber() && o->toNumber()->get() == comp->toNumber()->get())
+        if (o->isPNumber() && o->toPNumber()->get() == comp->toPNumber()->get())
             return true;
         if (o->isPBoolean() && o->toPBoolean()->get() == comp->toPBoolean()->get())
             return true;
@@ -72,11 +72,11 @@ ESString ESValue::toESString()
             ret = strings->undefined;
         } else if(o->isNull()) {
             ret = strings->null;
-        } else if(o->isNumber()) {
+        } else if(o->isPNumber()) {
             if (o == esNaN) ret = L"NaN";
             else if (o == esInfinity) ret = L"Infinity";
             else if (o == esNegInfinity) ret = L"-Infinity";
-            else ret = ESString(o->toNumber()->get());
+            else ret = ESString(o->toPNumber()->get());
         } else if(o->isPString()) {
             ret = o->toPString()->string();
         } else if(o->isJSFunction()) {
