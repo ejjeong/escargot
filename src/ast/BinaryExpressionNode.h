@@ -29,8 +29,10 @@ public:
 
         // http://www.ecma-international.org/ecma-262/5.1/#sec-11.8
         // Relational Operators
-        Lessthan, //"<"
+        LessThan, //"<"
         GreaterThan, //">"
+        LessThanOrEqual, //"<="
+        GreaterThanOrEqual, //">="
         // TODO
 
         // http://www.ecma-international.org/ecma-262/5.1/#sec-11.9
@@ -65,7 +67,13 @@ public:
 
         // Relational Operators
         else if (oper == L"<")
-            m_operator = Lessthan;
+            m_operator = LessThan;
+        else if (oper == L">")
+            m_operator = GreaterThan;
+        else if (oper == L"<=")
+            m_operator = LessThanOrEqual;
+        else if (oper == L">=")
+            m_operator = GreaterThanOrEqual;
 
         // Equality Operators
         else if (oper == L"!=")
@@ -169,7 +177,10 @@ public:
                 }
                       }
                 break;
-            case Lessthan:
+            case LessThan:
+            case LessThanOrEqual:
+            case GreaterThan:
+            case GreaterThanOrEqual:
                 /* http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.1
                  * http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5 */
                 lval = lval->toPrimitive();
@@ -178,20 +189,26 @@ public:
                 // TODO http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5
                 // string, NaN, zero, infinity, ...
                 if (lval->isSmi() && rval->isSmi()) {
-                    bool b = lval->toSmi()->value() < rval->toSmi()->value();
-                    if(b)
-                        ret = esTrue;
-                    else
-                        ret = esFalse;
+                    int lnum = lval->toSmi()->value();
+                    int rnum = rval->toSmi()->value();
+                    bool b;
+                    if (oper == LessThan)                b = lnum < rnum;
+                    else if (oper == LessThanOrEqual)    b = lnum <= rnum;
+                    else if (oper == GreaterThan)        b = lnum > rnum;
+                    else if (oper == GreaterThanOrEqual) b = lnum >= rnum;
+                    else RELEASE_ASSERT_NOT_REACHED();
+                    ret = b ? esTrue:esFalse;
                 }
                 else {
                     double lnum = lval->isSmi()? lval->toSmi()->value() : lval->toHeapObject()->toNumber()->get();
                     double rnum = rval->isSmi()? rval->toSmi()->value() : rval->toHeapObject()->toNumber()->get();
-                    bool b = lnum < rnum;
-                    if(b)
-                        ret = esTrue;
-                    else
-                        ret = esFalse;
+                    bool b;
+                    if (oper == LessThan)                b = lnum < rnum;
+                    else if (oper == LessThanOrEqual)    b = lnum <= rnum;
+                    else if (oper == GreaterThan)        b = lnum > rnum;
+                    else if (oper == GreaterThanOrEqual) b = lnum >= rnum;
+                    else RELEASE_ASSERT_NOT_REACHED();
+                    ret = b ? esTrue:esFalse;
                 }
                 break;
             case BitwiseAnd:
