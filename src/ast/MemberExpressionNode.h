@@ -8,6 +8,7 @@ namespace escargot {
 
 class MemberExpressionNode : public ExpressionNode {
 public:
+    friend class ESScriptParser;
     MemberExpressionNode(Node* object, Node* property, bool computed)
             : ExpressionNode(NodeType::MemberExpression)
     {

@@ -7,6 +7,7 @@ namespace escargot {
 
 class NewExpressionNode : public ExpressionNode {
 public:
+    friend class ESScriptParser;
     NewExpressionNode(Node* callee, ArgumentVector&& arguments)
             : ExpressionNode(NodeType::NewExpression)
     {

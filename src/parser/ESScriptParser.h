@@ -5,10 +5,12 @@
 
 namespace escargot {
 
+class ESVMInstance;
+
 class ESScriptParser {
 public:
 
-    static Node* parseScript(const std::string& cs);
+    static Node* parseScript(ESVMInstance* instance, const std::string& cs);
     //TODO
     //static Node* parseScript(const wchar_t* str);
 };

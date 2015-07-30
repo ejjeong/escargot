@@ -8,6 +8,7 @@ namespace escargot {
 
 class PropertyNode : public Node {
 public:
+    friend class ESScriptParser;
     enum Kind {
         Init, Get, Set
     };

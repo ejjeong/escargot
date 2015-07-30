@@ -1,5 +1,7 @@
 #include "Escargot.h"
 #include "ESScriptParser.h"
+#include "vm/ESVMInstance.h"
+#include "runtime/ESValue.h"
 
 namespace escargot {
 
@@ -11,7 +13,7 @@ unsigned long getLongTickCount()
 }
 
 
-Node* ESScriptParser::parseScript(const std::string& source)
+Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& source)
 {
     //unsigned long start = getLongTickCount();
     std::string sc;
@@ -319,7 +321,7 @@ Node* ESScriptParser::parseScript(const std::string& source)
             }
         } else if (type == astTypeThrowStatement) {
             parsedNode = new ThrowStatementNode(fn(value[L"argument"], currentBody, false));
-         }
+        }
 #ifndef NDEBUG
         if(!parsedNode) {
             type.show();
@@ -329,7 +331,181 @@ Node* ESScriptParser::parseScript(const std::string& source)
         return parsedNode;
     };
 
-    return fn(jsonDocument, &programBody, false);
+    //parse
+    Node* node = fn(jsonDocument, &programBody, false);
+
+    std::function<void (Node* currentNode, ESAtomicStringVector& identifierInCurrentContext, bool& needsActivation)> postAnalysisFunction =
+            [&postAnalysisFunction, instance](Node* currentNode, ESAtomicStringVector& identifierInCurrentContext, bool& needsActivation) {
+        if(!currentNode)
+            return;
+        NodeType type = currentNode->type();
+        if(type == NodeType::Program) {
+            StatementNodeVector& v = ((ProgramNode *)currentNode)->m_body;
+            for(unsigned i = 0; i < v.size() ; i ++) {
+                postAnalysisFunction(v[i], identifierInCurrentContext, needsActivation);
+            }
+        } else if(type == NodeType::VariableDeclaration) {
+            VariableDeclaratorVector& v = ((VariableDeclarationNode *)currentNode)->m_declarations;
+            for(unsigned i = 0; i < v.size() ; i ++) {
+                postAnalysisFunction(v[i], identifierInCurrentContext, needsActivation);
+            }
+        } else if(type == NodeType::VariableDeclarator) {
+            //
+            //wprintf(L"add Identifier %ls(var)\n", ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name().data());
+            if(identifierInCurrentContext.end() == std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),
+                    ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name())) {
+                identifierInCurrentContext.push_back(((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name());
+            }
+        } else if(type == NodeType::FunctionDeclaration) {
+            //TODO
+            //wprintf(L"add Identifier %ls(fn)\n", ((FunctionDeclarationNode *)currentNode)->id().data());
+            if(identifierInCurrentContext.end() == std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),
+                    ((FunctionDeclarationNode *)currentNode)->id())) {
+                identifierInCurrentContext.push_back(((FunctionDeclarationNode *)currentNode)->id());
+            }
+            //wprintf(L"process function body-------------------\n");
+            ESAtomicStringVector newIdentifierVector;
+            bool newNeedsActivation = false;
+            ESAtomicStringVector& vec = ((FunctionExpressionNode *)currentNode)->m_params;
+            for(unsigned i = 0; i < vec.size() ; i ++) {
+                if(newIdentifierVector.end() == std::find(newIdentifierVector.begin(),newIdentifierVector.end(),
+                        vec[i])) {
+                    newIdentifierVector.push_back(vec[i]);
+                }
+            }
+            postAnalysisFunction(((FunctionDeclarationNode *)currentNode)->m_body, newIdentifierVector, newNeedsActivation);
+            ((FunctionDeclarationNode *)currentNode)->setNeedsActivation(newNeedsActivation);
+            ((FunctionDeclarationNode *)currentNode)->setInnerIdentifiers(std::move(newIdentifierVector));
+            //wprintf(L"end of process function body-------------------\n");
+        } else if(type == NodeType::FunctionExpression) {
+            //wprintf(L"process function body-------------------\n");
+            ESAtomicStringVector newIdentifierVector;
+            bool newNeedsActivation = false;
+            ESAtomicStringVector& vec = ((FunctionExpressionNode *)currentNode)->m_params;
+            for(unsigned i = 0; i < vec.size() ; i ++) {
+                if(newIdentifierVector.end() == std::find(newIdentifierVector.begin(),newIdentifierVector.end(),
+                        vec[i])) {
+                    newIdentifierVector.push_back(vec[i]);
+                }
+            }
+            postAnalysisFunction(((FunctionExpressionNode *)currentNode)->m_body, newIdentifierVector, newNeedsActivation);
+            ((FunctionExpressionNode *)currentNode)->setNeedsActivation(newNeedsActivation);
+            ((FunctionExpressionNode *)currentNode)->setInnerIdentifiers(std::move(newIdentifierVector));
+            //wprintf(L"end of process function body-------------------\n");
+        } else if(type == NodeType::Identifier) {
+            //use case
+            ESAtomicString name = ((IdentifierNode *)currentNode)->name();
+            if(identifierInCurrentContext.end() == std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),
+                    name)) {
+                if(!instance->globalObject()->hasKey(name)) {
+                    //wprintf(L"this function  needs capture! -> %ls\n", ((IdentifierNode *)currentNode)->name().data());
+                    needsActivation = true;
+                }
+            }
+            //wprintf(L"use Identifier %ls\n", ((IdentifierNode *)currentNode)->name().data());
+        } else if(type == NodeType::ExpressionStatement) {
+            postAnalysisFunction(((ExpressionStatementNode *)currentNode)->m_expression, identifierInCurrentContext, needsActivation);
+        } else if(type == NodeType::AssignmentExpression) {
+            postAnalysisFunction(((AssignmentExpressionNode *)currentNode)->m_right, identifierInCurrentContext, needsActivation);
+            postAnalysisFunction(((AssignmentExpressionNode *)currentNode)->m_left, identifierInCurrentContext, needsActivation);
+        } else if(type == NodeType::Literal) {
+            //DO NOTHING
+        }else if(type == NodeType::ArrayExpression) {
+            ExpressionNodeVector& v = ((ArrayExpressionNode *)currentNode)->m_elements;
+            for(unsigned i = 0; i < v.size() ; i ++) {
+                postAnalysisFunction(v[i], identifierInCurrentContext, needsActivation);
+            }
+        } else if(type == NodeType::BlockStatement) {
+            StatementNodeVector& v = ((BlockStatementNode *)currentNode)->m_body;
+            for(unsigned i = 0; i < v.size() ; i ++) {
+                postAnalysisFunction(v[i], identifierInCurrentContext, needsActivation);
+            }
+        } else if(type == NodeType::CallExpression) {
+
+            Node * callee = ((CallExpressionNode *)currentNode)->m_callee;
+            if(callee) {
+                if(callee->type() == NodeType::Identifier) {
+                    if(((IdentifierNode *)callee)->name() == ESAtomicString(L"eval")) {
+                        needsActivation = true;
+                    }
+                }
+            }
+
+            postAnalysisFunction(callee, identifierInCurrentContext, needsActivation);
+            ArgumentVector& v = ((CallExpressionNode *)currentNode)->m_arguments;
+            for(unsigned i = 0; i < v.size() ; i ++) {
+                postAnalysisFunction(v[i], identifierInCurrentContext, needsActivation);
+            }
+        } else if(type == NodeType::SequenceExpression) {
+            ExpressionNodeVector& v = ((SequenceExpressionNode *)currentNode)->m_expressions;
+            for(unsigned i = 0; i < v.size() ; i ++) {
+                postAnalysisFunction(v[i], identifierInCurrentContext, needsActivation);
+            }
+        } else if(type == NodeType::NewExpression) {
+            postAnalysisFunction(((NewExpressionNode *)currentNode)->m_callee, identifierInCurrentContext, needsActivation);
+            ArgumentVector& v = ((NewExpressionNode *)currentNode)->m_arguments;
+            for(unsigned i = 0; i < v.size() ; i ++) {
+                postAnalysisFunction(v[i], identifierInCurrentContext, needsActivation);
+            }
+        } else if(type == NodeType::ObjectExpression) {
+            PropertiesNodeVector& v = ((ObjectExpressionNode *)currentNode)->m_properties;
+            for(unsigned i = 0; i < v.size() ; i ++) {
+                PropertyNode* p = v[i];
+                postAnalysisFunction(p->value(), identifierInCurrentContext, needsActivation);
+                if(p->key()->type() == NodeType::Identifier) {
+
+                } else {
+                    postAnalysisFunction(p->key(), identifierInCurrentContext, needsActivation);
+                }
+            }
+        } else if(type == NodeType::Property) {
+            postAnalysisFunction(((PropertyNode *)currentNode)->m_key, identifierInCurrentContext, needsActivation);
+            postAnalysisFunction(((PropertyNode *)currentNode)->m_value, identifierInCurrentContext, needsActivation);
+        } else if(type == NodeType::MemberExpression) {
+            postAnalysisFunction(((MemberExpressionNode *)currentNode)->m_object, identifierInCurrentContext, needsActivation);
+            postAnalysisFunction(((MemberExpressionNode *)currentNode)->m_property, identifierInCurrentContext, needsActivation);
+        } else if(type == NodeType::BinaryExpression) {
+            postAnalysisFunction(((BinaryExpressionNode *)currentNode)->m_right, identifierInCurrentContext, needsActivation);
+            postAnalysisFunction(((BinaryExpressionNode *)currentNode)->m_left, identifierInCurrentContext, needsActivation);
+        } else if(type == NodeType::UpdateExpression) {
+            postAnalysisFunction(((UpdateExpressionNode *)currentNode)->m_argument, identifierInCurrentContext, needsActivation);
+        } else if(type == NodeType::IfStatement) {
+            postAnalysisFunction(((IfStatementNode *)currentNode)->m_test, identifierInCurrentContext, needsActivation);
+            postAnalysisFunction(((IfStatementNode *)currentNode)->m_consequente, identifierInCurrentContext, needsActivation);
+            postAnalysisFunction(((IfStatementNode *)currentNode)->m_alternate, identifierInCurrentContext, needsActivation);
+        } else if(type == NodeType::ForStatement) {
+            postAnalysisFunction(((ForStatementNode *)currentNode)->m_init, identifierInCurrentContext, needsActivation);
+            postAnalysisFunction(((ForStatementNode *)currentNode)->m_body, identifierInCurrentContext, needsActivation);
+            postAnalysisFunction(((ForStatementNode *)currentNode)->m_test, identifierInCurrentContext, needsActivation);
+            postAnalysisFunction(((ForStatementNode *)currentNode)->m_update, identifierInCurrentContext, needsActivation);
+        } else if(type == NodeType::WhileStatement) {
+            postAnalysisFunction(((WhileStatementNode *)currentNode)->m_test, identifierInCurrentContext, needsActivation);
+            postAnalysisFunction(((WhileStatementNode *)currentNode)->m_body, identifierInCurrentContext, needsActivation);
+        } else if(type == NodeType::ThisExpression) {
+
+        } else if(type == NodeType::ReturnStatement) {
+            postAnalysisFunction(((ReturnStatmentNode *)currentNode)->m_argument, identifierInCurrentContext, needsActivation);
+        } else if(type == NodeType::EmptyStatement) {
+        } else if (type == NodeType::TryStatement) {
+            postAnalysisFunction(((TryStatementNode *)currentNode)->m_block, identifierInCurrentContext, needsActivation);
+            postAnalysisFunction(((TryStatementNode *)currentNode)->m_handler, identifierInCurrentContext, needsActivation);
+            postAnalysisFunction(((TryStatementNode *)currentNode)->m_finalizer, identifierInCurrentContext, needsActivation);
+        } else if (type == NodeType::CatchClause) {
+            needsActivation = true;
+            postAnalysisFunction(((CatchClauseNode *)currentNode)->m_param, identifierInCurrentContext, needsActivation);
+            postAnalysisFunction(((CatchClauseNode *)currentNode)->m_guard, identifierInCurrentContext, needsActivation);
+            postAnalysisFunction(((CatchClauseNode *)currentNode)->m_body, identifierInCurrentContext, needsActivation);
+        } else if (type == NodeType::ThrowStatement) {
+            postAnalysisFunction(((ThrowStatementNode *)currentNode)->m_argument, identifierInCurrentContext, needsActivation);
+        } else {
+            RELEASE_ASSERT_NOT_REACHED();
+        }
+    };
+
+    ESAtomicStringVector identifierInCurrentContext;
+    bool needsActivation = false;
+    postAnalysisFunction(node, identifierInCurrentContext, needsActivation);
+    return node;
 }
 
 }

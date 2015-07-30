@@ -7,6 +7,7 @@ namespace escargot {
 
 class ReturnStatmentNode : public StatementNode {
 public:
+    friend class ESScriptParser;
     ReturnStatmentNode(Node* argument)
             : StatementNode(NodeType::ReturnStatement)
     {

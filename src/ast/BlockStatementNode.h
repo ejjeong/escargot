@@ -8,6 +8,7 @@ namespace escargot {
 //A block statement, i.e., a sequence of statements surrounded by braces.
 class BlockStatementNode : public StatementNode {
 public:
+    friend class ESScriptParser;
     BlockStatementNode(StatementNodeVector&& body)
             : StatementNode(NodeType::BlockStatement)
     {

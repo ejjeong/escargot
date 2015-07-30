@@ -8,6 +8,7 @@ namespace escargot {
 //An expression statement, i.e., a statement consisting of a single expression.
 class ExpressionStatementNode : public StatementNode {
 public:
+    friend class ESScriptParser;
     ExpressionStatementNode(Node* expression)
             : StatementNode(NodeType::ExpressionStatement)
     {

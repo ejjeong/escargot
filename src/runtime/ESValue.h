@@ -414,6 +414,18 @@ class JSSlot : public HeapObject {
         m_setter = setter;
     }
 
+    friend class DeclarativeEnvironmentRecord;
+    //DO NOT USE THIS FUNCITON
+    void init(::escargot::ESValue* value,
+            bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
+    {
+        HeapObject::m_data = Type::JSSlot;
+        m_data.m_value = value;
+        m_isWritable = isWritable;
+        m_isEnumerable = isEnumerable;
+        m_isConfigurable = isConfigurable;
+        m_isDataProperty = true;
+    }
 public:
     static JSSlot* create(::escargot::ESValue* value,
             bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
@@ -466,6 +478,26 @@ public:
     ALWAYS_INLINE bool isWritable()
     {
         return m_isWritable;
+    }
+
+    ALWAYS_INLINE void setConfigurable(bool b)
+    {
+        m_isConfigurable = b;
+    }
+
+    ALWAYS_INLINE void setEnumerable(bool b)
+    {
+        m_isEnumerable = b;
+    }
+
+    ALWAYS_INLINE void setWritable(bool b)
+    {
+        m_isWritable = b;
+    }
+
+    ALWAYS_INLINE void setAsDataProperty()
+    {
+        m_isDataProperty = true;
     }
 
 protected:
@@ -558,29 +590,29 @@ public:
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-get-o-p
     ESValue* get(const ESAtomicString& key, bool searchPrototype = false)
     {
-    	if (searchPrototype) {
-    	    JSObject* target = this;
-    	    while(true) {
-               ESValue* s = target->get(key);
-               if (s != esUndefined)
-                   return s;
-               ESValue* proto = target->__proto__();
-               if (proto && proto->isHeapObject() && proto->toHeapObject()->isJSObject()) {
-                   target = proto->toHeapObject()->toJSObject();
-               } else {
+        if (UNLIKELY(searchPrototype)) {
+            JSObject* target = this;
+            while(true) {
+                ESValue* s = target->get(key);
+                if (s != esUndefined)
+                    return s;
+                ESValue* proto = target->__proto__();
+                if (proto && proto->isHeapObject() && proto->toHeapObject()->isJSObject()) {
+                    target = proto->toHeapObject()->toJSObject();
+                } else {
                    break;
-                 }
+                }
             }
-    		return esUndefined;
-    	} else {
-        ESValue* ret = esUndefined;
-        //TODO Assert: IsPropertyKey(P) is true.
-        auto iter = m_map.find(key);
-        if(iter != m_map.end()) {
-            ret = iter->second->value();
+            return esUndefined;
+        } else {
+            ESValue* ret = esUndefined;
+            //TODO Assert: IsPropertyKey(P) is true.
+            auto iter = m_map.find(key);
+            if(iter != m_map.end()) {
+                ret = iter->second->value();
+            }
+            return ret;
         }
-        return ret;
-    	}
     }
 
     ALWAYS_INLINE escargot::JSSlot* find(const ESAtomicString& key)

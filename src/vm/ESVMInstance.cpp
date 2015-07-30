@@ -30,14 +30,14 @@ ESVMInstance::ESVMInstance()
 void ESVMInstance::evaluate(const std::string& source)
 {
     try {
-        Node* node = ESScriptParser::parseScript(source.c_str());
+        Node* node = ESScriptParser::parseScript(this, source.c_str());
         node->execute(this);
     } catch(ReferenceError& err) {
         wprintf(L"ReferenceError - %ls\n", err.identifier().data());
     } catch(TypeError& err) {
         wprintf(L"TypeError\n");
     } catch(ESValue* err) {
-        wprintf(L"Uncaught %ls", err->toESString().data());
+        wprintf(L"Uncaught %ls\n", err->toESString().data());
     }
 
 

@@ -7,6 +7,7 @@ namespace escargot {
 
 class UpdateExpressionNode : public ExpressionNode {
 public:
+    friend class ESScriptParser;
     enum UpdateExpressionOperator {
         INCREMENT, //"++"
         DECREMENT, //"--"

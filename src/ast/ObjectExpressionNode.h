@@ -11,6 +11,7 @@ typedef std::vector<PropertyNode *, gc_allocator<PropertyNode *>> PropertiesNode
 
 class ObjectExpressionNode : public ExpressionNode {
 public:
+    friend class ESScriptParser;
     ObjectExpressionNode(PropertiesNodeVector&& properties)
             : ExpressionNode(NodeType::ObjectExpression)
     {

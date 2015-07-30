@@ -8,6 +8,7 @@ namespace escargot {
 
 class VariableDeclarationNode : public DeclarationNode {
 public:
+    friend class ESScriptParser;
     VariableDeclarationNode(VariableDeclaratorVector&& decl)
             : DeclarationNode(VariableDeclaration)
     {

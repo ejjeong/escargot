@@ -10,6 +10,7 @@ namespace escargot {
 //interface Identifier <: Node, Expression, Pattern {
 class IdentifierNode : public Node {
 public:
+    friend class ESScriptParser;
     IdentifierNode(const ESAtomicString& name)
             : Node(NodeType::Identifier)
     {
@@ -17,6 +18,8 @@ public:
         m_cachedExecutionContext = NULL;
         m_identifierCacheInvalidationCheckCount = 0;
         m_cachedSlot = NULL;
+        m_canUseFastAccess = false;
+        m_fastAccessIndex = SIZE_MAX;
     }
 
     ESValue* execute(ESVMInstance* instance);
@@ -28,9 +31,13 @@ public:
 
 protected:
     ESAtomicString m_name;
+
     ExecutionContext* m_cachedExecutionContext;
     size_t m_identifierCacheInvalidationCheckCount;
     JSSlot* m_cachedSlot;
+
+    bool m_canUseFastAccess;
+    size_t m_fastAccessIndex;
 };
 
 }

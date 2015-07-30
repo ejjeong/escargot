@@ -3,6 +3,7 @@
 #include "GlobalObject.h"
 #include "ESValue.h"
 #include "ExecutionContext.h"
+#include "ast/FunctionNode.h"
 
 namespace escargot {
 
@@ -13,6 +14,7 @@ LexicalEnvironment* LexicalEnvironment::newFunctionEnvironment(JSFunction* funct
     ASSERT(newTarget->isHeapObject());
     ASSERT(newTarget->toHeapObject()->isUndefined() || newTarget->toHeapObject()->isJSObject());
     FunctionEnvironmentRecord* envRec = new FunctionEnvironmentRecord();
+
     envRec->m_functionObject = function;
     envRec->m_newTarget = newTarget;
 

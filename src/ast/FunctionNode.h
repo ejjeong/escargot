@@ -18,19 +18,33 @@ public:
         m_body = body;
         m_isGenerator = isGenerator;
         m_isExpression = isExpression;
+        m_needsActivation = true;
     }
 
     ALWAYS_INLINE const ESAtomicStringVector& params() { return m_params; }
     ALWAYS_INLINE Node* body() { return m_body; }
     ALWAYS_INLINE const ESAtomicString& id() { return m_id; }
+
+    ALWAYS_INLINE bool needsActivation() { return m_needsActivation; } //child & parent AST has eval, with, catch
+    ALWAYS_INLINE void setNeedsActivation(bool b) { m_needsActivation = b; }
+
+    void setInnerIdentifiers(ESAtomicStringVector&& vec)
+    {
+        m_innerIdentifiers = vec;
+    }
+
+    ESAtomicStringVector& innerIdentifiers() { return m_innerIdentifiers; }
 protected:
     ESAtomicString m_id; //id: Identifier;
     ESAtomicStringVector m_params; //params: [ Pattern ];
+    ESAtomicStringVector m_innerIdentifiers;
     //defaults: [ Expression ];
     //rest: Identifier | null;
     Node* m_body; //body: BlockStatement | Expression;
     bool m_isGenerator; //generator: boolean;
     bool m_isExpression; //expression: boolean;
+
+    bool m_needsActivation;
 };
 
 }

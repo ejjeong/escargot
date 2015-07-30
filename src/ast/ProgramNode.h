@@ -8,6 +8,7 @@ namespace escargot {
 
 class ProgramNode : public Node {
 public:
+    friend class ESScriptParser;
     ProgramNode(StatementNodeVector&& body)
             : Node(NodeType::Program)
     {

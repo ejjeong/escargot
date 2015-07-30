@@ -9,6 +9,7 @@ namespace escargot {
 
 class TryStatementNode : public StatementNode {
 public:
+    friend class ESScriptParser;
     TryStatementNode(Node *block, Node *handler, CatchClauseNodeVector&& guardedHandlers,  Node *finalizer);
 
     ESValue* execute(ESVMInstance* instance);

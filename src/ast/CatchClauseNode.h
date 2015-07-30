@@ -11,6 +11,7 @@ namespace escargot {
 //interface CatchClause <: Node {
 class CatchClauseNode : public Node {
 public:
+    friend class ESScriptParser;
     CatchClauseNode(Node *param, Node *guard, Node *body)
             : Node(NodeType::CatchClause)
     {
@@ -21,12 +22,12 @@ public:
 
     ESValue* execute(ESVMInstance* instance)
     {
-    	m_body->execute(instance);
-    	return esUndefined;
+        m_body->execute(instance);
+        return esUndefined;
     }
 
     IdentifierNode* param() {
-    	return m_param;
+        return m_param;
     }
 
 protected:

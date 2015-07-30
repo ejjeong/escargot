@@ -7,6 +7,7 @@ namespace escargot {
 
 class ForStatementNode : public StatementNode {
 public:
+    friend class ESScriptParser;
     ForStatementNode(Node *init, Node *test, Node *update, Node *body)
             : StatementNode(NodeType::ForStatement)
     {

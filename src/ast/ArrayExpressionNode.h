@@ -8,6 +8,7 @@ namespace escargot {
 
 class ArrayExpressionNode : public ExpressionNode {
 public:
+    friend class ESScriptParser;
     ArrayExpressionNode(ExpressionNodeVector&& elements)
         : ExpressionNode(NodeType::ArrayExpression)
     {

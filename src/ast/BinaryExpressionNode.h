@@ -7,6 +7,7 @@ namespace escargot {
 
 class BinaryExpressionNode : public ExpressionNode {
 public:
+    friend class ESScriptParser;
     enum BinaryExpressionOperator {
         // TODO
         //

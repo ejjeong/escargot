@@ -182,39 +182,89 @@ protected:
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-declarative-environment-records
 class DeclarativeEnvironmentRecord : public EnvironmentRecord {
 public:
-    DeclarativeEnvironmentRecord(JSObject* innerObject = NULL)
+    DeclarativeEnvironmentRecord(bool shouldUseVector = false, size_t vectorSize = 0)
     {
-        m_innerObject = innerObject;
-        if(m_innerObject == NULL) {
+        if(shouldUseVector) {
+            m_innerObject = NULL;
+            m_vectorData = (std::pair<ESAtomicString, JSSlot> *)malloc(sizeof (std::pair<ESAtomicString, JSSlot>) * vectorSize);
+            m_usedCount = 0;
+#ifndef NDEBUG
+            m_vectorSize = vectorSize;
+#endif
+        } else {
             m_innerObject = JSObject::create();
         }
     }
-    ~DeclarativeEnvironmentRecord() { }
+    ~DeclarativeEnvironmentRecord()
+    {
+        if(!m_innerObject) {
+            free(m_vectorData);
+        }
+    }
 
     virtual JSSlot* hasBinding(const ESAtomicString& name)
     {
-        JSSlot* slot = m_innerObject->find(name);
-        if(slot) {
-            return slot;
+        if(UNLIKELY(m_innerObject != NULL)) {
+            JSSlot* slot = m_innerObject->find(name);
+            if(slot) {
+                return slot;
+            }
+            return NULL;
+        } else {
+            for(unsigned i = 0; i < m_usedCount ; i ++) {
+                if(m_vectorData[i].first == name) {
+                    return &m_vectorData[i].second;
+                }
+            }
+            return NULL;
         }
-        return NULL;
     }
     virtual void createMutableBinding(const ESAtomicString& name, bool canDelete = false)
     {
         //TODO canDelete
-        m_innerObject->set(name, esUndefined);
+        if(UNLIKELY(m_innerObject != NULL)) {
+            m_innerObject->set(name, esUndefined);
+        } else {
+            if(!hasBinding(name)) {
+#ifndef NDEBUG
+                ASSERT(m_usedCount != m_vectorSize);
+#endif
+                m_vectorData[m_usedCount].first = name;
+                m_vectorData[m_usedCount].second.init(esUndefined, false, false, false);
+                m_usedCount++;
+            }
+        }
     }
 
     virtual void setMutableBinding(const ESAtomicString& name, ESValue* V, bool mustNotThrowTypeErrorExecption)
     {
         //TODO mustNotThrowTypeErrorExecption
-        m_innerObject->set(name, V);
+        if(UNLIKELY(m_innerObject != NULL)) {
+            m_innerObject->set(name, V);
+        } else {
+            for(unsigned i = 0; i < m_usedCount ; i ++) {
+                if(m_vectorData[i].first == name) {
+                    m_vectorData[i].second.setValue(V);
+                    return;
+                }
+            }
+            RELEASE_ASSERT_NOT_REACHED();
+        }
     }
 
     virtual ESValue* getBindingValue(const ESAtomicString& name, bool ignoreReferenceErrorException)
     {
         //TODO ignoreReferenceErrorException
-        return m_innerObject->get(name);
+        if(UNLIKELY(m_innerObject != NULL)) {
+            return m_innerObject->get(name);
+        } else {
+            for(unsigned i = 0; i < m_usedCount ; i ++) {
+                if(m_vectorData[i].first == name) {
+                    return &m_vectorData[i].second;
+                }
+            }
+            RELEASE_ASSERT_NOT_REACHED();
+        }
     }
 
     virtual bool isDeclarativeEnvironmentRecord()
@@ -227,9 +277,12 @@ public:
         return false;
     }
 
-    JSObject* innerObject() { return m_innerObject; }
-
 protected:
+    std::pair<ESAtomicString, JSSlot>* m_vectorData;
+    size_t m_usedCount;
+#ifndef NDEBUG
+    size_t m_vectorSize;
+#endif
     JSObject* m_innerObject;
 };
 
@@ -279,8 +332,10 @@ protected:
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-function-environment-records
 class FunctionEnvironmentRecord : public DeclarativeEnvironmentRecord {
     friend class LexicalEnvironment;
+    friend class ESFunctionCaller;
 public:
-    FunctionEnvironmentRecord()
+    FunctionEnvironmentRecord(bool shouldUseVector = false, size_t vectorSize = 0)
+        : DeclarativeEnvironmentRecord(shouldUseVector, vectorSize)
     {
         m_thisBindingStatus = Uninitialized;
         m_thisValue = esUndefined;

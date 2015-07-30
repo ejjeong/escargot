@@ -10,6 +10,7 @@ namespace escargot {
 //An assignment operator expression.
 class AssignmentExpressionNode : public ExpressionNode {
 public:
+    friend class ESScriptParser;
     /*
     enum AssignmentOperator {
         "=" | "+=" | "-=" | "*=" | "/=" | "%="

@@ -8,6 +8,7 @@ namespace escargot {
 //interface ThrowStatement <: Statement {
 class ThrowStatementNode : public StatementNode {
 public:
+    friend class ESScriptParser;
     ThrowStatementNode(Node *argument)
             : StatementNode(NodeType::ThrowStatement)
     {
