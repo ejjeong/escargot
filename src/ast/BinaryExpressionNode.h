@@ -104,7 +104,19 @@ public:
                 rval = rval->toPrimitive();
                 if ((lval->isHeapObject() && lval->toHeapObject()->isPString())
                     || (rval->isHeapObject() && rval->toHeapObject()->isPString())) {
-                    ret = PString::create(ESString((*lval->toHeapObject()->toPString()->string().string() + *rval->toHeapObject()->toPString()->string().string()).c_str()));
+                    ESString lstr;
+                    ESString rstr;
+                    if (lval->isHeapObject() && lval->toHeapObject()->isPString())
+                        lstr = lval->toHeapObject()->toPString()->string();
+                    else
+                        lstr = lval->toString()->string();
+
+                    if (rval->isHeapObject() && rval->toHeapObject()->isPString())
+                        rstr = rval->toHeapObject()->toPString()->string();
+                    else
+                        rstr = rval->toString()->string();
+
+                    ret = PString::create((*lstr.string() + *rstr.string()).c_str());
                 } else {
                     if (lval->isSmi() && rval->isSmi())
                         ret = Smi::fromInt(lval->toSmi()->value() + rval->toSmi()->value());

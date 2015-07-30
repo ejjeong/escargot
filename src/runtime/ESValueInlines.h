@@ -162,11 +162,9 @@ inline ESValue* ESValue::toPrimitive(PrimitiveTypeHint hint)
     if(LIKELY(isSmi())) {
     } else {
         HeapObject* o = toHeapObject();
-        if (o->isPString()) {
-            ret = o->toPString();
-        } else {
+        // Primitive type: the result equals the input argument (no conversion).
+        if (!o->isPrimitive())
             ASSERT(false); // TODO
-        }
     }
     return ret;
 }

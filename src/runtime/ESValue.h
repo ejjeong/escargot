@@ -69,18 +69,19 @@ public:
 class HeapObject : public ESValue, public gc {
 public:
     enum Type {
-        Undefined = 1,
-        Null = 1 << 1,
-        PBoolean = 1 << 2,
-        PNumber = 1 << 3,
-        PString = 1 << 4,
-        JSObject = 1 << 5,
-        JSSlot = 1 << 6,
-        JSFunction = 1 << 7,
-        JSArray = 1 << 8,
-        JSString = 1 << 9,
-        JSError = 1 << 10,
-        JSDate = 1 << 11,
+        Primitive = 1 << 0,
+        Undefined = 1 << 1,
+        Null = 1 << 2,
+        PBoolean = 1 << 3,
+        PNumber = 1 << 4,
+        PString = 1 << 5,
+        JSObject = 1 << 6,
+        JSSlot = 1 << 7,
+        JSFunction = 1 << 8,
+        JSArray = 1 << 9,
+        JSString = 1 << 10,
+        JSError = 1 << 11,
+        JSDate = 1 << 12,
         TypeMask = 0xfff
     };
 
@@ -95,6 +96,11 @@ public:
     ALWAYS_INLINE Type type() const
     {
         return (Type)(m_data & TypeMask);
+    }
+
+    ALWAYS_INLINE bool isPrimitive() const
+    {
+        return m_data & Type::Primitive;
     }
 
     ALWAYS_INLINE bool isUndefined() const
@@ -244,7 +250,7 @@ class Undefined : public HeapObject {
 protected:
 public:
     Undefined()
-        : HeapObject(HeapObject::Type::Undefined)
+        : HeapObject((Type)(Type::Primitive | Type::Undefined))
     {
 
     }
@@ -258,7 +264,7 @@ class Null : public HeapObject {
 protected:
 public:
     Null()
-        : HeapObject(HeapObject::Type::Null)
+        : HeapObject((Type)(Type::Primitive | Type::Null))
     {
 
     }
@@ -274,7 +280,7 @@ protected:
     const int DataMask = 0x80000000;
 public:
     PBoolean(bool b)
-        : HeapObject(HeapObject::Type::PBoolean)
+        : HeapObject((Type)(Type::Primitive | Type::PBoolean))
     {
         set(b);
     }
@@ -297,7 +303,7 @@ public:
 class PNumber : public HeapObject {
 public:
     PNumber(double value)
-        : HeapObject(HeapObject::Type::PNumber)
+        : HeapObject((Type)(Type::Primitive | Type::PNumber))
     {
         set(value);
     }
@@ -342,7 +348,7 @@ protected:
 class PString : public HeapObject {
 protected:
     PString(const ESString& src)
-        : HeapObject(HeapObject::Type::PString)
+        : HeapObject((Type)(Type::Primitive | Type::PString))
     {
         m_string = src;
     }
