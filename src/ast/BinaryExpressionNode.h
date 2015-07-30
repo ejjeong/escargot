@@ -107,6 +107,23 @@ public:
                     }
                 }
                 break;
+             case Minus:
+                /* http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.2 */
+                lval = lval->toPrimitive();
+                rval = rval->toPrimitive();
+                if ((lval->isHeapObject() && lval->toHeapObject()->isPString())
+                    || (rval->isHeapObject() && rval->toHeapObject()->isPString())) {
+                    // TODO
+                } else {
+                    if (lval->isSmi() && rval->isSmi())
+                        ret = Smi::fromInt(lval->toSmi()->value() - rval->toSmi()->value());
+                    else {
+                        double lnum = lval->isSmi()? lval->toSmi()->value() : lval->toHeapObject()->toNumber()->get();
+                        double rnum = rval->isSmi()? rval->toSmi()->value() : rval->toHeapObject()->toNumber()->get();
+                        ret = Number::create(lnum - rnum);
+                    }
+                }
+                            break;
             case Div: {
                 lval = lval->toNumber();
                 rval = rval->toNumber();
