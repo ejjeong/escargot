@@ -1,6 +1,8 @@
 #ifndef ESValue_h
 #define ESValue_h
 #include "ESString.h"
+#include <sys/time.h>
+#include <time.h>
 
 namespace escargot {
 
@@ -76,6 +78,7 @@ public:
         JSArray = 1 << 8,
         JSString = 1 << 9,
         JSError = 1 << 10,
+        JSDate = 1 << 11,
         TypeMask = 0xfff
     };
 
@@ -661,6 +664,42 @@ public:
     {
         return new JSError();
     }
+};
+
+class JSDate : public JSObject {
+protected:
+    JSDate(HeapObject::Type type = HeapObject::Type::JSDate)
+           : JSObject((Type)(Type::JSObject | Type::JSDate))
+    {}
+
+    void PrintDateTime() {
+         char buffer[30];
+        time_t curtime = m_tv.tv_sec;
+        strftime(buffer,30,"%m-%d-%Y  %T.",localtime(&curtime));
+        printf("%s%ld\n",buffer,m_tv.tv_usec);
+    }
+
+public:
+    static JSDate* create()
+    {
+        return new JSDate();
+    }
+
+    static JSDate* create(JSObject* proto)
+    {
+        //TODO
+        JSDate* date = new JSDate();
+        if(proto != NULL)
+            date->set__proto__(proto);
+        return date;
+    }
+
+    void setTimeValue() {
+        gettimeofday(&m_tv, NULL);
+    }
+
+private:
+    timeval m_tv;
 };
 
 class JSArray : public JSObject {

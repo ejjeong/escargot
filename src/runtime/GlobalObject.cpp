@@ -15,6 +15,7 @@ GlobalObject::GlobalObject()
     installArray();
     installString();
     installError();
+    installDate();
 
     // Value Properties of the Global Object
     definePropertyOrThrow(L"Infinity", false, false, false);
@@ -118,9 +119,8 @@ void GlobalObject::installError()
     m_referenceError->setConstructor(m_function);
     m_referenceError->set__proto__(emptyFunction);
 
-    m_referenceErrorPrototype = JSObject::create();
+    m_referenceErrorPrototype = JSError::create();
     m_referenceErrorPrototype->setConstructor(m_referenceError);
-    m_referenceErrorPrototype->set(strings->name, PString::create(strings->ReferenceError));
 
     m_referenceError->set(strings->prototype, m_referenceErrorPrototype);
 
@@ -285,6 +285,33 @@ void GlobalObject::installString()
         return esUndefined;
     }), false, false);
     m_stringPrototype->set(L"substring", JSFunction::create(NULL, stringSubstring));
+}
+
+void GlobalObject::installDate()
+{
+    m_datePrototype = JSDate::create();
+
+    //$20.3.2 The Date Constructor
+    FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings->Date, ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
+        JSObject* proto = instance->globalObject()->arrayPrototype();
+        escargot::JSDate* date = JSDate::create(proto);
+        date->setTimeValue();
+        instance->currentExecutionContext()->doReturn(date);
+        return esUndefined;
+    }), false, false);
+
+      // Initialization for reference error
+    ::escargot::JSFunction* emptyFunction = m_functionPrototype;
+    m_date = ::escargot::JSFunction::create(NULL, constructor);
+    m_date->set(strings->name, PString::create(strings->Date));
+    m_date->setConstructor(m_function);
+    m_date->set__proto__(emptyFunction);
+
+    m_datePrototype->setConstructor(m_date);
+
+    m_date->set(strings->prototype, m_datePrototype);
+
+    set(strings->Date, m_date);
 }
 
 }

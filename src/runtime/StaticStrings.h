@@ -25,6 +25,7 @@ ESAtomicString ReferenceError;
 ESAtomicString Array;
 ESAtomicString Function;
 ESAtomicString Empty;
+ESAtomicString Date;
 void initStaticStrings(ESVMInstance* instance);
 };
 

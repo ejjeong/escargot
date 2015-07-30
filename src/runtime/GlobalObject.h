@@ -61,12 +61,23 @@ public:
         return m_stringPrototype;
     }
 
+    ALWAYS_INLINE escargot::JSFunction* date()
+    {
+        return m_date;
+    }
+
+    ALWAYS_INLINE escargot::JSDate* datePrototype()
+    {
+        return m_datePrototype;
+    }
+
 protected:
     void installObject();
     void installFunction();
     void installError();
     void installArray();
     void installString();
+    void installDate();
     escargot::JSFunction* m_object;
     escargot::JSObject* m_objectPrototype;
     escargot::JSFunction* m_function;
@@ -77,6 +88,8 @@ protected:
     escargot::JSArray* m_arrayPrototype;
     escargot::JSFunction* m_string;
     escargot::JSString* m_stringPrototype;
+    escargot::JSFunction* m_date;
+    escargot::JSDate* m_datePrototype;
     //JSBuiltinsObject* m_builtins;
     //Context* m_nativeContext;
 };

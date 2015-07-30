@@ -87,13 +87,15 @@ ESString ESValue::toESString()
             ret.append(L"() {}");
         } else if(o->isJSArray()) {
             bool isFirst = true;
+            ret.append(L"[");
             for (int i=0; i<o->toJSArray()->length()->toSmi()->value(); i++) {
                 if(!isFirst)
                     ret.append(L", ");
                 ESValue* slot = o->toJSArray()->get(i);
                 ret.append(slot->toESString());
                 isFirst = false;
-            }
+              }
+            ret.append(L"]");
         } else if(o->isJSString()) {
             ret.append(o->toJSString()->getStringData()->string());
         } else if(o->isJSError()) {

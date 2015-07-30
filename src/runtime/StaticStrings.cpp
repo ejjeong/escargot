@@ -25,6 +25,7 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     Array = ESAtomicString(instance, L"Array");
     Function = ESAtomicString(instance, L"Function");
     Empty = ESAtomicString(instance, L"Empty");
+    Date = ESAtomicString(instance, L"Date");
 }
 
 Strings* strings;
