@@ -101,13 +101,13 @@ ESString ESValue::toESString()
         	    ret.append(L": ");
         	    ret.append(o->toJSObject()->get(L"message")->toESString().data());
         } else if(o->isJSObject()) {
-          ret = L"{";
+          ret = L"Object {";
           bool isFirst = true;
           o->toJSObject()->enumeration([&ret, &isFirst](const ESString& key, JSSlot* slot) {
               if(!isFirst)
                   ret.append(L", ");
               ret.append(key);
-              ret.append(L":");
+              ret.append(L": ");
               ret.append(slot->value()->toESString());
               isFirst = false;
           });
