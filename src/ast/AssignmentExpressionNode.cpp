@@ -45,7 +45,7 @@ ESValue* AssignmentExpressionNode::execute(ESVMInstance* instance)
                     obj->set(instance->currentExecutionContext()->lastUsedPropertyNameInMemberExpressionNode(), rval);
                 }
             } else {
-                throw ReferenceError();
+                throw ReferenceError(L"1");
             }
 
         } else if(lref->toHeapObject() && lref->toHeapObject()->isJSSlot()) {
@@ -57,7 +57,7 @@ ESValue* AssignmentExpressionNode::execute(ESVMInstance* instance)
                 slot->setValue(rval);
             }
         } else {
-            throw ReferenceError();
+            throw ReferenceError(L"2");
         }
         ret = rval;
         break;

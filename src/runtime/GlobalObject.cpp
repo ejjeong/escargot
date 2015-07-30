@@ -67,12 +67,14 @@ GlobalObject::GlobalObject()
             instance->runOnGlobalContext([instance, &str](){
                 instance->evaluate(str);
             });
-
+        } else {
+            throw esUndefined;
         }
         return esUndefined;
     }), false, false);
     auto loadFunction = JSFunction::create(NULL, node);
     set(L"load", loadFunction);
+    set(L"run", loadFunction);
 }
 
 void GlobalObject::installFunction()

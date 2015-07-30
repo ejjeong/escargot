@@ -160,7 +160,7 @@ void FunctionEnvironmentRecord::bindThisValue(JSObject* V)
 {
     ASSERT(m_thisBindingStatus != Initialized);
     if(m_thisBindingStatus == Lexical)
-        throw ReferenceError();
+        throw ReferenceError(L"3");
     m_thisValue = V;
     m_thisBindingStatus = Initialized;
 }
@@ -169,7 +169,7 @@ JSObject* FunctionEnvironmentRecord::getThisBinding()
 {
     ASSERT(m_thisBindingStatus != Lexical);
     if(m_thisBindingStatus == Uninitialized)
-        throw ReferenceError();
+        throw ReferenceError(L"4");
 
     return m_thisValue->toHeapObject()->toJSObject();
 }

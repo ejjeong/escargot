@@ -83,7 +83,7 @@ public:
         JSString = 1 << 10,
         JSError = 1 << 11,
         JSDate = 1 << 12,
-        TypeMask = 0xfff
+        TypeMask = 0xffff
     };
 
 protected:
