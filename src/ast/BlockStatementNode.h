@@ -17,7 +17,8 @@ public:
 
     virtual ESValue* execute(ESVMInstance* instance)
     {
-        for(unsigned i = 0; i < m_body.size() ; i ++) {
+        size_t siz = m_body.size();
+        for(unsigned i = 0; i < siz ; i ++) {
             m_body[i]->execute(instance);
         }
         return esUndefined;
