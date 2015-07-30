@@ -104,7 +104,7 @@ public:
                 rval = rval->toPrimitive();
                 if ((lval->isHeapObject() && lval->toHeapObject()->isPString())
                     || (rval->isHeapObject() && rval->toHeapObject()->isPString())) {
-                    // TODO
+                    ret = PString::create(ESString((*lval->toHeapObject()->toPString()->string().string() + *rval->toHeapObject()->toPString()->string().string()).c_str()));
                 } else {
                     if (lval->isSmi() && rval->isSmi())
                         ret = Smi::fromInt(lval->toSmi()->value() + rval->toSmi()->value());

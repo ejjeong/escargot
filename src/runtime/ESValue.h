@@ -49,7 +49,9 @@ public:
     HeapObject* toHeapObject() const;
     JSSlot* toJSSlot();
     ESString toESString();
-    ESValue* toPrimitive();
+
+    enum PrimitiveTypeHint { PreferString, PreferNumber };
+    ESValue* toPrimitive(PrimitiveTypeHint hint = PreferNumber);
     ESValue* toNumber();
     ESValue* toInt32();
     ESValue* toInteger();
@@ -643,8 +645,7 @@ public:
         set(strings->constructor, obj);
     }
 
-    enum PrimitiveTypeHint { NoPreference, PreferString, PreferNumber };
-    ESValue* defaultValue(ESVMInstance* instance, PrimitiveTypeHint hint = NoPreference);
+    ESValue* defaultValue(ESVMInstance* instance, PrimitiveTypeHint hint = PreferNumber);
 
 protected:
     JSObjectMap m_map;

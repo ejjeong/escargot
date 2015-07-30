@@ -156,14 +156,14 @@ inline Smi* Smi::fromIntptr(intptr_t value)
 }
 
 // http://www.ecma-international.org/ecma-262/5.1/#sec-9.1
-inline ESValue* ESValue::toPrimitive()
+inline ESValue* ESValue::toPrimitive(PrimitiveTypeHint hint)
 {
     ESValue* ret = this;
     if(LIKELY(isSmi())) {
     } else {
         HeapObject* o = toHeapObject();
-        if (o->isJSObject()) {
-            ASSERT(false); // TODO
+        if (o->isPString()) {
+            ret = o->toPString();
         } else {
             ASSERT(false); // TODO
         }
