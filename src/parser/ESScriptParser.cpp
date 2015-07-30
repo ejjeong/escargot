@@ -98,10 +98,6 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
     ESString output = outputString.data();
     //output.show();
 
-    //unsigned long end = getLongTickCount();
-
-    //fwprintf(stderr, L"calling mozjs takes %g ms\n", (end - start)/1000.f);
-
     rapidjson::GenericDocument<rapidjson::UTF16<>> jsonDocument;
     rapidjson::GenericStringStream<rapidjson::UTF16<>> stringStream(output.data());
     jsonDocument.ParseStream(stringStream);
@@ -505,6 +501,9 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
     ESAtomicStringVector identifierInCurrentContext;
     bool needsActivation = false;
     postAnalysisFunction(node, identifierInCurrentContext, needsActivation);
+
+    //unsigned long end = getLongTickCount();
+    //fwprintf(stderr, L"parse script takes %g ms\n", (end - start)/1000.f);
     return node;
 }
 

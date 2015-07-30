@@ -931,6 +931,8 @@ public:
 
     FunctionNode* functionAST() { return m_functionAST; }
     LexicalEnvironment* outerEnvironment() { return m_outerEnvironment; }
+
+    static ESValue* call(ESValue* callee, ESValue* receiver, ESValue* arguments[], size_t argumentCount, ESVMInstance* ESVMInstance);
 protected:
     LexicalEnvironment* m_outerEnvironment;
     FunctionNode* m_functionAST;

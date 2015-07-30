@@ -136,8 +136,8 @@ void GlobalObject::installArray()
 
     //$22.1.1 Array Constructor
     FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings->Array, ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
-        JSObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(L"arguments", false)->toHeapObject()->toJSObject();
-        int len = instance->currentExecutionContext()->environment()->record()->getBindingValue(strings->length, false)->toSmi()->value();
+        JSObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(strings->arguments, false)->toHeapObject()->toJSObject();
+        int len = value->get(strings->length)->toSmi()->value();
         int size = 0;
         if (len > 1) size = len;
         JSObject* proto = instance->globalObject()->arrayPrototype();
@@ -198,7 +198,7 @@ void GlobalObject::installArray()
     //$22.1.3.17 Array.prototype.push(item)
     FunctionDeclarationNode* arrayPush = new FunctionDeclarationNode(L"push", ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
         JSObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(L"arguments", false)->toHeapObject()->toJSObject();
-        int len = instance->currentExecutionContext()->environment()->record()->getBindingValue(strings->length, false)->toSmi()->value();
+        int len = value->get(strings->length)->toSmi()->value();
         auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->toJSArray();
         for (int i = 0; i < len; i++) {
             ESValue* val = value->get(ESAtomicString(ESString(i).data()));

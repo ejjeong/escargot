@@ -3,7 +3,6 @@
 #include "vm/ESVMInstance.h"
 #include "runtime/ExecutionContext.h"
 #include "runtime/Environment.h"
-#include "runtime/ESFunctionCaller.h"
 
 namespace escargot {
 
@@ -31,7 +30,7 @@ ESValue* IdentifierNode::execute(ESVMInstance* instance)
     err_msg.append(ESString(L" is not defined"));
     //arguments.push_back(String::create(err_msg));
 
-    ESFunctionCaller::call(fn, receiver, &arguments[0], arguments.size(), instance);
+    JSFunction::call(fn, receiver, &arguments[0], arguments.size(), instance);
     receiver->set(ESAtomicString(L"message"), PString::create(err_msg));
 
     throw (ESValue*) receiver;

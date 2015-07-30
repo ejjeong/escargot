@@ -4,7 +4,6 @@
 #include "vm/ESVMInstance.h"
 #include "runtime/ExecutionContext.h"
 #include "runtime/Environment.h"
-#include "runtime/ESFunctionCaller.h"
 
 namespace escargot {
 
@@ -30,7 +29,7 @@ ESValue* NewExpressionNode::execute(ESVMInstance* instance)
         arguments.push_back(result);
     }
 
-    ESFunctionCaller::call(fn, receiver, &arguments[0], arguments.size(), instance);
+    JSFunction::call(fn, receiver, &arguments[0], arguments.size(), instance);
 
     return receiver;
 }

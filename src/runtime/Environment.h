@@ -329,7 +329,7 @@ protected:
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-function-environment-records
 class FunctionEnvironmentRecord : public DeclarativeEnvironmentRecord {
     friend class LexicalEnvironment;
-    friend class ESFunctionCaller;
+    friend class JSFunction;
 public:
     FunctionEnvironmentRecord(bool shouldUseVector = false,std::pair<ESAtomicString, JSSlot>* vectorBuffer = NULL, size_t vectorSize = 0)
         : DeclarativeEnvironmentRecord(shouldUseVector, vectorBuffer, vectorSize)

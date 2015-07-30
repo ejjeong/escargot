@@ -1,8 +1,6 @@
 #ifndef ESValueInlines_h
 #define ESValueInlines_h
 
-#include "ESFunctionCaller.h"
-
 namespace escargot {
 
 const int kApiPointerSize = sizeof(void*);
@@ -104,8 +102,8 @@ inline bool ESValue::isJSSlot() const
 
 inline Smi* ESValue::toSmi() const
 {
-    if (this->isSmi())
-        return static_cast<Smi*>(const_cast<ESValue*>(this));
+    ASSERT(isSmi());
+    return static_cast<Smi*>(const_cast<ESValue*>(this));
     /* TODO
     else if (object->IsHeapPNumber()) {
         double value = Handle<HeapPNumber>::cast(object)->value();
@@ -116,8 +114,6 @@ inline Smi* ESValue::toSmi() const
     }
     return new Smi();
     */
-    RELEASE_ASSERT_NOT_REACHED();
-    return nullptr;
 }
 
 inline HeapObject* ESValue::toHeapObject() const
