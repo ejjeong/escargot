@@ -19,6 +19,7 @@ public:
         m_isGenerator = isGenerator;
         m_isExpression = isExpression;
         m_needsActivation = true;
+        m_outerFunctionNode = NULL;
     }
 
     ALWAYS_INLINE const ESAtomicStringVector& params() { return m_params; }
@@ -34,6 +35,10 @@ public:
     }
 
     ESAtomicStringVector& innerIdentifiers() { return m_innerIdentifiers; }
+
+    void setOuterFunctionNode(FunctionNode* o) { m_outerFunctionNode = o; }
+    FunctionNode* outerFunctionNode() { return m_outerFunctionNode; }
+
 protected:
     ESAtomicString m_id; //id: Identifier;
     ESAtomicStringVector m_params; //params: [ Pattern ];
@@ -45,6 +50,7 @@ protected:
     bool m_isExpression; //expression: boolean;
 
     bool m_needsActivation;
+    FunctionNode* m_outerFunctionNode;
 };
 
 }
