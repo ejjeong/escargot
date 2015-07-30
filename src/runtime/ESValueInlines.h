@@ -183,8 +183,8 @@ inline ESValue* ESValue::toNumber()
             return esNaN;
         } else if (o->isNull()) {
             return Smi::fromInt(0);
-        } else if (o->isBoolean()) {
-            return Smi::fromInt(o->toBoolean()->get());
+        } else if (o->isPBoolean()) {
+            return Smi::fromInt(o->toPBoolean()->get());
         } else if (o->isJSString()) {
             //TODO
         } else if (o->isJSObject()) {

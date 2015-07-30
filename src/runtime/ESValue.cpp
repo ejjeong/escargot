@@ -14,11 +14,11 @@ Undefined* esUndefined = &s_undefined;
 static Null s_null;
 Null* esNull = &s_null;
 
-static Boolean s_true(true);
-Boolean* esTrue = &s_true;
+static PBoolean s_true(true);
+PBoolean* esTrue = &s_true;
 
-static Boolean s_false(false);
-Boolean* esFalse = &s_false;
+static PBoolean s_false(false);
+PBoolean* esFalse = &s_false;
 
 static Number s_nan(std::numeric_limits<double>::quiet_NaN());
 Number* esNaN = &s_nan;
@@ -45,7 +45,7 @@ bool ESValue::equalsTo(ESValue* val)
             return false;
         if (o->isNumber() && o->toNumber()->get() == comp->toNumber()->get())
             return true;
-        if (o->isBoolean() && o->toBoolean()->get() == comp->toBoolean()->get())
+        if (o->isPBoolean() && o->toPBoolean()->get() == comp->toPBoolean()->get())
             return true;
         if (o->isPString() && o->toPString()->string() == comp->toPString()->string())
             return true;
