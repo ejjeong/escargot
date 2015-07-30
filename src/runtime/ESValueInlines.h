@@ -162,9 +162,15 @@ inline ESValue* ESValue::toPrimitive(PrimitiveTypeHint hint)
     if(LIKELY(isSmi())) {
     } else {
         HeapObject* o = toHeapObject();
-        // Primitive type: the result equals the input argument (no conversion).
-        if (!o->isPrimitive())
+
+        if (o->isJSObject()) {
+            if (o->isJSDate()) {
+                return  PNumber::create(o->toJSDate()->getTimeAsMilisec());
+             }
             ASSERT(false); // TODO
+        } else {
+            ASSERT(false); // TODO
+         }
     }
     return ret;
 }
@@ -186,6 +192,9 @@ inline ESValue* ESValue::toNumber()
         } else if (o->isJSString()) {
             //TODO
         } else if (o->isJSObject()) {
+            if (o->isJSDate()) {
+                return PNumber::create(o->toJSDate()->getTimeAsMilisec());
+              }
             return this->toPrimitive()->toNumber();
         }
         ASSERT(false); // TODO

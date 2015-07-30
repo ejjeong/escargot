@@ -14,7 +14,13 @@ ESValue* NewExpressionNode::execute(ESVMInstance* instance)
     if(!fn->isHeapObject() || !fn->toHeapObject()->isJSFunction())
         throw TypeError();
     JSFunction* function = fn->toHeapObject()->toJSFunction();
-    JSObject* receiver = JSObject::create();
+    JSObject* receiver;
+    if (function == instance->globalObject()->date()) {
+        receiver = JSDate::create();
+        receiver->toJSDate()->setTimeValue();
+    } else {
+        receiver = JSObject::create();
+    }
     receiver->setConstructor(fn);
     receiver->set__proto__(function->protoType());
 
@@ -28,4 +34,5 @@ ESValue* NewExpressionNode::execute(ESVMInstance* instance)
 
     return receiver;
 }
+
 }

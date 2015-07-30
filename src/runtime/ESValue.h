@@ -18,6 +18,7 @@ class JSSlot;
 class JSFunction;
 class JSArray;
 class JSString;
+class JSDate;
 class FunctionNode;
 class ESVMInstance;
 
@@ -237,6 +238,19 @@ public:
     ALWAYS_INLINE bool isJSError() const
     {
         return m_data & Type::JSError;
+    }
+
+    ALWAYS_INLINE bool isJSDate() const
+    {
+        return m_data & Type::JSDate;
+    }
+
+    ALWAYS_INLINE ::escargot::JSDate* toJSDate()
+    {
+#ifndef NDEBUG
+        ASSERT(isJSDate());
+#endif
+        return reinterpret_cast<::escargot::JSDate *>(this);
     }
 
 protected:
@@ -676,15 +690,7 @@ public:
 class JSDate : public JSObject {
 protected:
     JSDate(HeapObject::Type type = HeapObject::Type::JSDate)
-           : JSObject((Type)(Type::JSObject | Type::JSDate))
-    {}
-
-    void PrintDateTime() {
-         char buffer[30];
-        time_t curtime = m_tv.tv_sec;
-        strftime(buffer,30,"%m-%d-%Y  %T.",localtime(&curtime));
-        printf("%s%ld\n",buffer,m_tv.tv_usec);
-    }
+           : JSObject((Type)(Type::JSObject | Type::JSDate)) {}
 
 public:
     static JSDate* create()
@@ -705,8 +711,12 @@ public:
         gettimeofday(&m_tv, NULL);
     }
 
+    double getTimeAsMilisec() {
+        return m_tv.tv_sec*1000 + floor(m_tv.tv_usec/1000);
+    }
+
 private:
-    timeval m_tv;
+    struct timeval m_tv;
 };
 
 class JSArray : public JSObject {
