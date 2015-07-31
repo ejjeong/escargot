@@ -17,10 +17,7 @@ LexicalEnvironment* LexicalEnvironment::newFunctionEnvironment(ESFunctionObject*
     envRec->m_functionObject = function;
     envRec->m_newTarget = newTarget;
 
-    LexicalEnvironment* env  = nullptr;
-    RELEASE_ASSERT_NOT_REACHED();
-    //TODO
-    //LexicalEnvironment* env = new LexicalEnvironment(envRec, function->outerEnvironment());
+    LexicalEnvironment* env = new LexicalEnvironment(envRec, function->outerEnvironment());
     //TODO
     //If F’s [[ThisMode]] internal slot is lexical, set envRec.[[thisBindingStatus]] to "lexical".
     //[[ThisMode]] internal slot is lexical, set envRec.[[thisBindingStatus]] to "lexical".

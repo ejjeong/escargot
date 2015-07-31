@@ -404,7 +404,6 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
                 iter = std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),name);
             }
             if(identifierInCurrentContext.end() == iter) {
-                /* TODO
                 if(!instance->globalObject()->hasKey(name)) {
                     if(nearFunctionNode && nearFunctionNode->outerFunctionNode()) {
                         //wprintf(L"this function  needs capture! -> %ls\n", ((IdentifierNode *)currentNode)->name().data());
@@ -416,7 +415,6 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
                     size_t idx = std::distance(identifierInCurrentContext.begin(), iter);
                     ((IdentifierNode *)currentNode)->setFastAccessIndex(idx);
                 }
-                */
             }
             //wprintf(L"use Identifier %ls\n", ((IdentifierNode *)currentNode)->name().data());
         } else if(type == NodeType::ExpressionStatement) {
