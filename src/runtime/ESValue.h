@@ -6,8 +6,6 @@
 
 namespace escargot {
 
-class Smi;
-class HeapObject;
 class ESUndefined;
 class ESNull;
 class ESBoolean;
@@ -201,7 +199,6 @@ public:
     /*
     enum PrimitiveTypeHint { PreferString, PreferNumber };
     ESValue toPrimitive(PrimitiveTypeHint hint = PreferNumber);
-    ESValue toNumber();
     ESValue toInt32();
     ESValue toInteger();
     ESString toString();
@@ -679,9 +676,8 @@ protected:
 };
 
 class ESErrorObject : public ESObject {
-    /*
 protected:
-    ESErrorObject(HeapObject::Type type = HeapObject::Type::ESErrorObject)
+    ESErrorObject(ESPointer::Type type = ESPointer::Type::ESErrorObject)
            : ESObject((Type)(Type::ESObject | Type::ESErrorObject))
     {
 
@@ -696,7 +692,7 @@ public:
 
 class ESDateObject : public ESObject {
 protected:
-    ESDateObject(HeapObject::Type type = HeapObject::Type::ESDateObject)
+    ESDateObject(ESPointer::Type type = ESPointer::Type::ESDateObject)
            : ESObject((Type)(Type::ESObject | Type::ESDateObject)) {}
 
 public:
@@ -724,13 +720,12 @@ public:
 
 private:
     struct timeval m_tv;
-    */
 };
 
 class ESArrayObject : public ESObject {
 /*
 protected:
-    ESArrayObject(HeapObject::Type type = HeapObject::Type::ESArrayObject)
+    ESArrayObject(ESPointer::Type type = ESPointer::Type::ESArrayObject)
         : ESObject((Type)(Type::ESObject | Type::ESArrayObject))
         , m_vector(16)
         , m_fastmode(true)
@@ -875,20 +870,19 @@ protected:
 class LexicalEnvironment;
 class Node;
 class ESFunctionObject : public ESObject {
-/*
 protected:
     ESFunctionObject(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST)
         : ESObject((Type)(Type::ESObject | Type::ESFunctionObject))
     {
         m_outerEnvironment = outerEnvironment;
         m_functionAST = functionAST;
-        m_protoType = esUndefined;
+        m_protoType = ESValue();
 
-        defineAccessorProperty(strings->prototype, [](ESObject* self) -> ESValue* {
-            return self->toESFunctionObject()->protoType();
-        },[](::escargot::ESObject* self, ESValue* value){
-            if(value->isHeapObject() && value->toHeapObject()->isESObject())
-                self->toESFunctionObject()->setProtoType(value->toHeapObject()->toESObject());
+        defineAccessorProperty(strings->prototype, [](ESObject* self) -> ESValue {
+            return self->asESFunctionObject()->protoType();
+        },[](::escargot::ESObject* self, ESValue value){
+            if(value.isESPointer() && value.asESPointer()->isESObject())
+                self->asESFunctionObject()->setProtoType(value.asESPointer()->asESObject());
         }, true, false, false);
     }
 public:
@@ -897,12 +891,12 @@ public:
         return new ESFunctionObject(outerEnvironment, functionAST);
     }
 
-    ALWAYS_INLINE ESValue* protoType()
+    ALWAYS_INLINE ESValue protoType()
     {
         return m_protoType;
     }
 
-    ALWAYS_INLINE void setProtoType(ESValue* obj)
+    ALWAYS_INLINE void setProtoType(ESValue obj)
     {
         m_protoType = obj;
     }
@@ -910,21 +904,19 @@ public:
     FunctionNode* functionAST() { return m_functionAST; }
     LexicalEnvironment* outerEnvironment() { return m_outerEnvironment; }
 
-    static ESValue* call(ESValue* callee, ESValue* receiver, ESValue* arguments[], size_t argumentCount, ESVMInstance* ESVMInstance);
+    static ESValue call(ESValue callee, ESValue receiver, ESValue arguments[], size_t argumentCount, ESVMInstance* ESVMInstance);
 protected:
     LexicalEnvironment* m_outerEnvironment;
     FunctionNode* m_functionAST;
-    ESValue* m_protoType;
+    ESValue m_protoType;
     //ESObject functionObject;
     //HomeObject
     ////ESObject newTarget
     //BindThisValue(V);
     //GetThisBinding();
-     */
 };
 
 class ESStringObject : public ESObject {
-/*
 protected:
     ESStringObject(const InternalString& str)
         : ESObject((Type)(Type::ESObject | Type::ESStringObject))
@@ -932,8 +924,8 @@ protected:
         m_stringData = ESString::create(str);
 
         //$21.1.4.1 String.length
-        defineAccessorProperty(strings->length, [](ESObject* self) -> ESValue* {
-            return self->toESStringObject()->m_stringData->length();
+        defineAccessorProperty(strings->length, [](ESObject* self) -> ESValue {
+            return self->asESStringObject()->m_stringData->length();
         }, NULL, true, false, false);
     }
 
@@ -950,7 +942,6 @@ public:
 
 private:
     ::escargot::ESString* m_stringData;
-    */
 };
 
 }
