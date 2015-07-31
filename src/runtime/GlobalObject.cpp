@@ -290,12 +290,12 @@ void GlobalObject::installString()
 
 void GlobalObject::installDate()
 {
-    m_datePrototype = JSDate::create();
+    m_datePrototype = ESDateObject::create();
 
     //$20.3.2 The Date Constructor
     FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings->Date, ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
         JSObject* proto = instance->globalObject()->arrayPrototype();
-        escargot::JSDate* date = JSDate::create(proto);
+        escargot::ESDateObject* date = ESDateObject::create(proto);
         date->setTimeValue();
         instance->currentExecutionContext()->doReturn(date);
         return esUndefined;

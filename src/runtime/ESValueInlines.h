@@ -161,8 +161,8 @@ inline ESValue* ESValue::toPrimitive(PrimitiveTypeHint hint)
         // Primitive type: the result equals the input argument (no conversion).
         if (!o->isPrimitive()) {
             if (o->isJSObject()) {
-                if (o->isJSDate()) {
-                    return ESNumber::create(o->toJSDate()->getTimeAsMilisec());
+                if (o->isESDateObject()) {
+                    return ESNumber::create(o->toESDateObject()->getTimeAsMilisec());
                 } else {
                     ASSERT(false); // TODO
                 }
@@ -193,8 +193,8 @@ inline ESValue* ESValue::toNumber()
         } else if (o->isJSString()) {
             ASSERT(false); //TODO
         } else if (o->isJSObject()) {
-            if (o->isJSDate()) {
-                return ESNumber::create(o->toJSDate()->getTimeAsMilisec());
+            if (o->isESDateObject()) {
+                return ESNumber::create(o->toESDateObject()->getTimeAsMilisec());
               }
             return this->toPrimitive()->toNumber();
         } else {

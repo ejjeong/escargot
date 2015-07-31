@@ -18,7 +18,7 @@ class JSSlot;
 class JSFunction;
 class ESArrayObject;
 class JSString;
-class JSDate;
+class ESDateObject;
 class FunctionNode;
 class ESVMInstance;
 
@@ -83,7 +83,7 @@ public:
         ESArrayObject = 1 << 9,
         JSString = 1 << 10,
         JSError = 1 << 11,
-        JSDate = 1 << 12,
+        ESDateObject = 1 << 12,
         TypeMask = 0xffff
     };
 
@@ -241,17 +241,17 @@ public:
         return m_data & Type::JSError;
     }
 
-    ALWAYS_INLINE bool isJSDate() const
+    ALWAYS_INLINE bool isESDateObject() const
     {
-        return m_data & Type::JSDate;
+        return m_data & Type::ESDateObject;
     }
 
-    ALWAYS_INLINE ::escargot::JSDate* toJSDate()
+    ALWAYS_INLINE ::escargot::ESDateObject* toESDateObject()
     {
 #ifndef NDEBUG
-        ASSERT(isJSDate());
+        ASSERT(isESDateObject());
 #endif
-        return reinterpret_cast<::escargot::JSDate *>(this);
+        return reinterpret_cast<::escargot::ESDateObject *>(this);
     }
 
 protected:
@@ -720,21 +720,21 @@ public:
     }
 };
 
-class JSDate : public JSObject {
+class ESDateObject : public JSObject {
 protected:
-    JSDate(HeapObject::Type type = HeapObject::Type::JSDate)
-           : JSObject((Type)(Type::JSObject | Type::JSDate)) {}
+    ESDateObject(HeapObject::Type type = HeapObject::Type::ESDateObject)
+           : JSObject((Type)(Type::JSObject | Type::ESDateObject)) {}
 
 public:
-    static JSDate* create()
+    static ESDateObject* create()
     {
-        return new JSDate();
+        return new ESDateObject();
     }
 
-    static JSDate* create(JSObject* proto)
+    static ESDateObject* create(JSObject* proto)
     {
         //TODO
-        JSDate* date = new JSDate();
+        ESDateObject* date = new ESDateObject();
         if(proto != NULL)
             date->set__proto__(proto);
         return date;

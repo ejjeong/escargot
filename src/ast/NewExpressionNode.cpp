@@ -15,8 +15,8 @@ ESValue* NewExpressionNode::execute(ESVMInstance* instance)
     JSFunction* function = fn->toHeapObject()->toJSFunction();
     JSObject* receiver;
     if (function == instance->globalObject()->date()) {
-        receiver = JSDate::create();
-        receiver->toJSDate()->setTimeValue();
+        receiver = ESDateObject::create();
+        receiver->toESDateObject()->setTimeValue();
     } else {
         receiver = JSObject::create();
     }

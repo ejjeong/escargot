@@ -66,7 +66,7 @@ public:
         return m_date;
     }
 
-    ALWAYS_INLINE escargot::JSDate* datePrototype()
+    ALWAYS_INLINE escargot::ESDateObject* datePrototype()
     {
         return m_datePrototype;
     }
@@ -89,7 +89,7 @@ protected:
     escargot::JSFunction* m_string;
     escargot::JSString* m_stringPrototype;
     escargot::JSFunction* m_date;
-    escargot::JSDate* m_datePrototype;
+    escargot::ESDateObject* m_datePrototype;
     //JSBuiltinsObject* m_builtins;
     //Context* m_nativeContext;
 };
