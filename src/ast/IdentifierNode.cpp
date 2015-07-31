@@ -21,7 +21,7 @@ ESValue* IdentifierNode::execute(ESVMInstance* instance)
     }
 
     ESValue* fn = instance->globalObject()->referenceError();
-    JSError* receiver = JSError::create();
+    ESErrorObject* receiver = ESErrorObject::create();
     receiver->setConstructor(fn);
     receiver->set__proto__(fn->toHeapObject()->toESFunctionObject());
 

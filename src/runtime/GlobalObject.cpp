@@ -120,7 +120,7 @@ void GlobalObject::installError()
     m_referenceError->setConstructor(m_function);
     m_referenceError->set__proto__(emptyFunction);
 
-    m_referenceErrorPrototype = JSError::create();
+    m_referenceErrorPrototype = ESErrorObject::create();
     m_referenceErrorPrototype->setConstructor(m_referenceError);
 
     m_referenceError->set(strings->prototype, m_referenceErrorPrototype);

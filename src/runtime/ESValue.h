@@ -82,7 +82,7 @@ public:
         ESFunctionObject = 1 << 8,
         ESArrayObject = 1 << 9,
         JSString = 1 << 10,
-        JSError = 1 << 11,
+        ESErrorObject = 1 << 11,
         ESDateObject = 1 << 12,
         TypeMask = 0xffff
     };
@@ -236,9 +236,9 @@ public:
         return reinterpret_cast<::escargot::JSString *>(this);
     }
 
-    ALWAYS_INLINE bool isJSError() const
+    ALWAYS_INLINE bool isESErrorObject() const
     {
-        return m_data & Type::JSError;
+        return m_data & Type::ESErrorObject;
     }
 
     ALWAYS_INLINE bool isESDateObject() const
@@ -705,18 +705,18 @@ protected:
     ESValue* m___proto__;
 };
 
-class JSError : public JSObject {
+class ESErrorObject : public JSObject {
 protected:
-    JSError(HeapObject::Type type = HeapObject::Type::JSError)
-           : JSObject((Type)(Type::JSObject | Type::JSError))
+    ESErrorObject(HeapObject::Type type = HeapObject::Type::ESErrorObject)
+           : JSObject((Type)(Type::JSObject | Type::ESErrorObject))
     {
 
     }
 
 public:
-    static JSError* create()
+    static ESErrorObject* create()
     {
-        return new JSError();
+        return new ESErrorObject();
     }
 };
 

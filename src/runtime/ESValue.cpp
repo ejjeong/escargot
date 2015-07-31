@@ -116,7 +116,7 @@ ESString ESValue::toESString()
             ret.append(L"]");
         } else if(o->isJSString()) {
             ret.append(o->toJSString()->getStringData()->string());
-        } else if(o->isJSError()) {
+        } else if(o->isESErrorObject()) {
         	    ret.append(o->toJSObject()->get(L"name", true)->toESString().data());
         	    ret.append(L": ");
         	    ret.append(o->toJSObject()->get(L"message")->toESString().data());
