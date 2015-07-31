@@ -229,7 +229,7 @@ void GlobalObject::installString()
     m_string->set(strings->name, PString::create(strings->String));
     m_string->setConstructor(m_function);
 
-    m_stringPrototype = JSString::create(L"");
+    m_stringPrototype = ESStringObject::create(L"");
     m_stringPrototype->setConstructor(m_string);
 
     m_string->defineAccessorProperty(strings->prototype, [](JSObject* self) -> ESValue* {
@@ -246,7 +246,7 @@ void GlobalObject::installString()
         JSObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
         if (thisObject->isESUndefined() || thisObject->isESNull())
             throw TypeError();
-        const InternalString& str = thisObject->toJSString()->getStringData()->string();
+        const InternalString& str = thisObject->toESStringObject()->getStringData()->string();
         const InternalString& searchStr = arguments->get(strings->numbers[0])->toHeapObject()->toPString()->string(); // TODO converesion w&w/o test
         ESValue* val = arguments->get(strings->numbers[1]);
 
@@ -272,7 +272,7 @@ void GlobalObject::installString()
         if (thisObject->isESUndefined() || thisObject->isESNull())
             throw TypeError();
 
-        const InternalString& str = thisObject->toJSString()->getStringData()->string();
+        const InternalString& str = thisObject->toESStringObject()->getStringData()->string();
         int len = str.length();
         int intStart = arguments->get(strings->numbers[0])->toSmi()->value();
         ESValue* end = arguments->get(strings->numbers[1]);

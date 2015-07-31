@@ -14,7 +14,7 @@ ESValue* MemberExpressionNode::execute(ESVMInstance* instance)
     ESValue* value = m_object->execute(instance)->ensureValue();
     //TODO string,number-> stringObject, numberObject;
     if(value->isHeapObject() && value->toHeapObject()->isPString()) {
-        JSString* stringObject = JSString::create(value->toHeapObject()->toPString()->string());
+        ESStringObject* stringObject = ESStringObject::create(value->toHeapObject()->toPString()->string());
         stringObject->set__proto__(instance->globalObject()->stringPrototype());
         stringObject->setConstructor(instance->globalObject()->string());
         value = stringObject;

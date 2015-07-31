@@ -114,8 +114,8 @@ InternalString ESValue::toInternalString()
                 isFirst = false;
               }
             ret.append(L"]");
-        } else if(o->isJSString()) {
-            ret.append(o->toJSString()->getStringData()->string());
+        } else if(o->isESStringObject()) {
+            ret.append(o->toESStringObject()->getStringData()->string());
         } else if(o->isESErrorObject()) {
         	    ret.append(o->toJSObject()->get(L"name", true)->toInternalString().data());
         	    ret.append(L": ");

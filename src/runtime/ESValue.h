@@ -17,7 +17,7 @@ class JSObject;
 class JSSlot;
 class ESFunctionObject;
 class ESArrayObject;
-class JSString;
+class ESStringObject;
 class ESDateObject;
 class FunctionNode;
 class ESVMInstance;
@@ -81,7 +81,7 @@ public:
         JSSlot = 1 << 7,
         ESFunctionObject = 1 << 8,
         ESArrayObject = 1 << 9,
-        JSString = 1 << 10,
+        ESStringObject = 1 << 10,
         ESErrorObject = 1 << 11,
         ESDateObject = 1 << 12,
         TypeMask = 0xffff
@@ -223,17 +223,17 @@ public:
         return reinterpret_cast<::escargot::ESArrayObject *>(this);
     }
 
-    ALWAYS_INLINE bool isJSString() const
+    ALWAYS_INLINE bool isESStringObject() const
     {
-        return m_data & Type::JSString;
+        return m_data & Type::ESStringObject;
     }
 
-    ALWAYS_INLINE ::escargot::JSString* toJSString()
+    ALWAYS_INLINE ::escargot::ESStringObject* toESStringObject()
     {
 #ifndef NDEBUG
-        ASSERT(isJSString());
+        ASSERT(isESStringObject());
 #endif
-        return reinterpret_cast<::escargot::JSString *>(this);
+        return reinterpret_cast<::escargot::ESStringObject *>(this);
     }
 
     ALWAYS_INLINE bool isESErrorObject() const
@@ -944,23 +944,23 @@ protected:
     //GetThisBinding();
 };
 
-class JSString : public JSObject {
+class ESStringObject : public JSObject {
 protected:
-    JSString(const InternalString& str)
-        : JSObject((Type)(Type::JSObject | Type::JSString))
+    ESStringObject(const InternalString& str)
+        : JSObject((Type)(Type::JSObject | Type::ESStringObject))
     {
         m_stringData = PString::create(str);
 
         //$21.1.4.1 String.length
         defineAccessorProperty(strings->length, [](JSObject* self) -> ESValue* {
-            return self->toJSString()->m_stringData->length();
+            return self->toESStringObject()->m_stringData->length();
         }, NULL, true, false, false);
     }
 
 public:
-    static JSString* create(const InternalString& str)
+    static ESStringObject* create(const InternalString& str)
     {
-        return new JSString(str);
+        return new ESStringObject(str);
     }
 
     ALWAYS_INLINE ::escargot::PString* getStringData()

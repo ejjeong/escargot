@@ -190,7 +190,7 @@ inline ESValue* ESValue::toNumber()
             return Smi::fromInt(0);
         } else if (o->isESBoolean()) {
             return Smi::fromInt(o->toESBoolean()->get());
-        } else if (o->isJSString()) {
+        } else if (o->isESStringObject()) {
             ASSERT(false); //TODO
         } else if (o->isJSObject()) {
             if (o->isESDateObject()) {

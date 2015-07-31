@@ -56,7 +56,7 @@ public:
         return m_string;
     }
 
-    ALWAYS_INLINE escargot::JSString* stringPrototype()
+    ALWAYS_INLINE escargot::ESStringObject* stringPrototype()
     {
         return m_stringPrototype;
     }
@@ -87,7 +87,7 @@ protected:
     escargot::ESFunctionObject* m_array;
     escargot::ESArrayObject* m_arrayPrototype;
     escargot::ESFunctionObject* m_string;
-    escargot::JSString* m_stringPrototype;
+    escargot::ESStringObject* m_stringPrototype;
     escargot::ESFunctionObject* m_date;
     escargot::ESDateObject* m_datePrototype;
     //JSBuiltinsObject* m_builtins;
