@@ -60,6 +60,14 @@ public:
         else if (oper == L"-")
             m_operator = Minus;
 
+        // Bitwise Shift Operators
+        else if (oper == L"<<")
+            m_operator = LeftShift;
+        else if (oper == L">>")
+            m_operator = SignedRightShift;
+        else if (oper == L">>>")
+            m_operator = UnsignedRightShift;
+
         // Multiplicative Operators
         else if (oper == L"*")
             m_operator = Mult;
@@ -233,13 +241,23 @@ public:
                 }
                 break;
             case LeftShift:
+            case SignedRightShift:
+            case UnsignedRightShift:
             {
                 lval = lval->toInt32();
                 rval = rval->toInt32();
                 long long int rnum = rval->isSmi()? rval->toSmi()->value() : rval->toHeapObject()->toPNumber()->get();
                 long long int lnum = lval->isSmi()? lval->toSmi()->value() : lval->toHeapObject()->toPNumber()->get();
-                int shiftCount = rnum & 0x1F;
-                lnum <<= shiftCount;
+                unsigned int shiftCount = ((unsigned int)rnum) & 0x1F;
+                if(oper == LeftShift)
+                    lnum <<= shiftCount;
+                else if(oper == SignedRightShift)
+                    lnum >>= shiftCount;
+                else if(oper == UnsignedRightShift)
+                    lnum = ((unsigned int)lnum) >> shiftCount;
+                else
+                    RELEASE_ASSERT_NOT_REACHED();
+
                 if (lnum >= 40000000)
                     ret = PNumber::create(lnum);
                 else
