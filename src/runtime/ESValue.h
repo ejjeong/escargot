@@ -723,20 +723,19 @@ private:
 };
 
 class ESArrayObject : public ESObject {
-/*
 protected:
     ESArrayObject(ESPointer::Type type = ESPointer::Type::ESArrayObject)
         : ESObject((Type)(Type::ESObject | Type::ESArrayObject))
         , m_vector(16)
         , m_fastmode(true)
     {
-        defineAccessorProperty(strings->length, [](ESObject* self) -> ESValue* {
-            return self->toESArrayObject()->length();
-        },[](::escargot::ESObject* self, ESValue* value) {
-            ESValue* len = value->toInt32();
-            self->toESArrayObject()->setLength(len);
+        defineAccessorProperty(strings->length, [](ESObject* self) -> ESValue {
+            return self->asESArrayObject()->length();
+        },[](::escargot::ESObject* self, ESValue value) {
+            ESValue len = ESValue(value.asInt32());
+            self->asESArrayObject()->setLength(len);
         }, true, false, false);
-        m_length = Smi::fromInt(0);
+        m_length = ESValue(0);
     }
 public:
     static ESArrayObject* create()
@@ -757,19 +756,19 @@ public:
         return arr;
     }
 
-    void set(const InternalAtomicString& key, ESValue* val, bool shouldThrowException = false)
+    void set(const InternalAtomicString& key, ESValue val, bool shouldThrowException = false)
     {
         if (m_fastmode) convertToSlowMode();
         m_fastmode = false;
         ESObject::set(key, val, shouldThrowException);
     }
 
-    void set(ESValue* key, ESValue* val, bool shouldThrowException = false)
+    void set(ESValue key, ESValue val, bool shouldThrowException = false)
     {
         int i;
-        if (key->isSmi()) {
-            i = key->toSmi()->value();
-            int len = length()->toSmi()->value();
+        if (key.isInt32()) {
+            i = key.asInt32();
+            int len = length().asInt32();
             if (i == len && m_fastmode) {
                 setLength(len+1);
             }
@@ -784,22 +783,22 @@ public:
         if (m_fastmode) {
             m_vector[i] = escargot::ESSlot::create(val, true, true, true);
         } else {
-            ESObject::set(InternalAtomicString(key->toInternalString().data()), val, shouldThrowException);
+            ESObject::set(InternalAtomicString(key.toInternalString().data()), val, shouldThrowException);
         }
     }
 
-    ESValue* get(int key)
+    ESValue get(int key)
     {
         if (m_fastmode)
             return m_vector[key]->value();
         return ESObject::get(InternalAtomicString(InternalString(key).data()));
     }
 
-    ESValue* get(ESValue* key)
+    ESValue get(ESValue key)
     {
-        if (m_fastmode && key->isSmi())
-            return m_vector[key->toSmi()->value()]->value();
-        return ESObject::get(InternalAtomicString(key->toInternalString().data()));
+        if (m_fastmode && key.isInt32())
+            return m_vector[key.asInt32()]->value();
+        return ESObject::get(InternalAtomicString(key.toInternalString().data()));
     }
 
     escargot::ESSlot* find(int key)
@@ -809,18 +808,18 @@ public:
         return ESObject::find(InternalAtomicString(InternalString(key).data()));
     }
 
-    escargot::ESSlot* find(ESValue* key)
+    escargot::ESSlot* find(ESValue key)
     {
-        if (m_fastmode && key->isSmi())
-            return m_vector[key->toSmi()->value()];
-        return ESObject::find(InternalAtomicString(key->toInternalString().data()));
+        if (m_fastmode && key.isInt32())
+            return m_vector[key.asInt32()];
+        return ESObject::find(InternalAtomicString(key.toInternalString().data()));
     }
 
-    void push(ESValue* val)
+    void push(ESValue val)
     {
         if (m_fastmode) {
             m_vector.push_back(escargot::ESSlot::create(val, true, true, true));
-            int len = length()->toSmi()->value();
+            int len = length().asInt32();
             setLength(len + 1);
         } else {
             set(m_length, val);
@@ -830,7 +829,7 @@ public:
     void convertToSlowMode()
     {
         m_fastmode = false;
-        int len = length()->toSmi()->value();
+        int len = length().asInt32();
         if (len == 0) return;
         for (int i = 0; i < len; i++) {
             m_map.insert(std::make_pair(InternalAtomicString(InternalString(i).data()), m_vector[i]));
@@ -838,33 +837,32 @@ public:
         m_vector.clear();
     }
 
-    void setLength(ESValue* len)
+    void setLength(ESValue len)
     {
-        ASSERT(len->isSmi());
-        if (len->toSmi()->value() < m_length->toSmi()->value()) {
+        ASSERT(len.isInt32());
+        if (len.asInt32() < m_length.asInt32()) {
             //TODO : delete elements
-        } else if (m_fastmode && len->toSmi()->value() > m_length->toSmi()->value()) {
-            m_vector.resize(len->toSmi()->value());
+        } else if (m_fastmode && len.asInt32() > m_length.asInt32()) {
+            m_vector.resize(len.asInt32());
         }
         m_length = len;
     }
 
     void setLength(int len)
     {
-        ESValue* length = Smi::fromInt(len);
+        ESValue length = ESValue(len);
         setLength(length);
     }
 
-    ESValue* length()
+    ESValue length()
     {
         return m_length;
     }
 
 protected:
-    ESValue* m_length;
+    ESValue m_length;
     JSVector m_vector;
     bool m_fastmode;
-    */
 };
 
 class LexicalEnvironment;
