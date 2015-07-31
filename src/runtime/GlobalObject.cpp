@@ -80,7 +80,7 @@ void GlobalObject::installFunction()
 {
     m_function = ESFunctionObject::create(NULL, new FunctionDeclarationNode(strings->Function, InternalAtomicStringVector(), new EmptyStatementNode(), false, false));
     m_function->set(strings->constructor, m_function);
-    m_function->set(strings->name, PString::create(strings->Function));
+    m_function->set(strings->name, ESString::create(strings->Function));
     m_function->setConstructor(m_function);
     ::escargot::ESFunctionObject* emptyFunction = ESFunctionObject::create(NULL,new FunctionDeclarationNode(strings->Empty, InternalAtomicStringVector(), new EmptyStatementNode(), false, false));
 
@@ -100,7 +100,7 @@ void GlobalObject::installObject()
 {
     ::escargot::ESFunctionObject* emptyFunction = m_functionPrototype;
     m_object = ::escargot::ESFunctionObject::create(NULL,new FunctionDeclarationNode(strings->Object, InternalAtomicStringVector(), new EmptyStatementNode(), false, false));
-    m_object->set(strings->name, PString::create(strings->Object));
+    m_object->set(strings->name, ESString::create(strings->Object));
     m_object->setConstructor(m_function);
     m_object->set__proto__(emptyFunction);
 
@@ -116,7 +116,7 @@ void GlobalObject::installError()
 	  // Initialization for reference error
     ::escargot::ESFunctionObject* emptyFunction = m_functionPrototype;
     m_referenceError = ::escargot::ESFunctionObject::create(NULL,new FunctionDeclarationNode(strings->ReferenceError, InternalAtomicStringVector(), new EmptyStatementNode(), false, false));
-    m_referenceError->set(strings->name, PString::create(strings->ReferenceError));
+    m_referenceError->set(strings->name, ESString::create(strings->ReferenceError));
     m_referenceError->setConstructor(m_function);
     m_referenceError->set__proto__(emptyFunction);
 
@@ -226,7 +226,7 @@ void GlobalObject::installString()
 {
     m_string = ESFunctionObject::create(NULL, new FunctionDeclarationNode(strings->String, InternalAtomicStringVector(), new EmptyStatementNode(), false, false));
     //m_string->set(strings->constructor, m_function); TODO do i need this?
-    m_string->set(strings->name, PString::create(strings->String));
+    m_string->set(strings->name, ESString::create(strings->String));
     m_string->setConstructor(m_function);
 
     m_stringPrototype = ESStringObject::create(L"");
@@ -247,7 +247,7 @@ void GlobalObject::installString()
         if (thisObject->isESUndefined() || thisObject->isESNull())
             throw TypeError();
         const InternalString& str = thisObject->toESStringObject()->getStringData()->string();
-        const InternalString& searchStr = arguments->get(strings->numbers[0])->toHeapObject()->toPString()->string(); // TODO converesion w&w/o test
+        const InternalString& searchStr = arguments->get(strings->numbers[0])->toHeapObject()->toESString()->string(); // TODO converesion w&w/o test
         ESValue* val = arguments->get(strings->numbers[1]);
 
         int result;
@@ -282,7 +282,7 @@ void GlobalObject::installString()
         int from = std::min(finalStart, finalEnd);
         int to = std::max(finalStart, finalEnd);
         InternalString ret(str.string()->substr(from, to-from).c_str());
-        instance->currentExecutionContext()->doReturn(PString::create(ret));
+        instance->currentExecutionContext()->doReturn(ESString::create(ret));
         return esUndefined;
     }), false, false);
     m_stringPrototype->set(L"substring", ESFunctionObject::create(NULL, stringSubstring));
@@ -304,7 +304,7 @@ void GlobalObject::installDate()
       // Initialization for reference error
     ::escargot::ESFunctionObject* emptyFunction = m_functionPrototype;
     m_date = ::escargot::ESFunctionObject::create(NULL, constructor);
-    m_date->set(strings->name, PString::create(strings->Date));
+    m_date->set(strings->name, ESString::create(strings->Date));
     m_date->setConstructor(m_function);
     m_date->set__proto__(emptyFunction);
 

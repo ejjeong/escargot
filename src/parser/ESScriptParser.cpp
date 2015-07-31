@@ -189,7 +189,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
                     parsedNode = new LiteralNode(ESNumber::create(number));
                 }
             } else if(value[L"value"].IsString()) {
-                parsedNode = new LiteralNode(PString::create(value[L"value"].GetString()));
+                parsedNode = new LiteralNode(ESString::create(value[L"value"].GetString()));
             } else if(value[L"value"].IsBool()) {
                 parsedNode = new LiteralNode(ESBoolean::create(value[L"value"].GetBool()));
             } else if(value[L"value"].IsNull()) {

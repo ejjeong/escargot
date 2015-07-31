@@ -15,7 +15,7 @@ ESValue* FunctionExpressionNode::execute(ESVMInstance* instance)
     prototype->setConstructor(function);
     prototype->set__proto__(instance->globalObject()->object());
     function->setProtoType(prototype);
-    function->set(strings->name, PString::create(m_id.data()));
+    function->set(strings->name, ESString::create(m_id.data()));
     /////////////////////////////////////////////////////////////////////
 
     return function;

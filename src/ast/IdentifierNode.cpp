@@ -31,7 +31,7 @@ ESValue* IdentifierNode::execute(ESVMInstance* instance)
     //arguments.push_back(String::create(err_msg));
 
     ESFunctionObject::call(fn, receiver, &arguments[0], arguments.size(), instance);
-    receiver->set(InternalAtomicString(L"message"), PString::create(err_msg));
+    receiver->set(InternalAtomicString(L"message"), ESString::create(err_msg));
 
     throw (ESValue*) receiver;
     return esUndefined;

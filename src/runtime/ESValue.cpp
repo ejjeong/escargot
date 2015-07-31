@@ -65,7 +65,7 @@ bool ESValue::equalsTo(ESValue* val)
             return true;
         if (o->isESBoolean() && o->toESBoolean()->get() == comp->toESBoolean()->get())
             return true;
-        if (o->isPString() && o->toPString()->string() == comp->toPString()->string())
+        if (o->isESString() && o->toESString()->string() == comp->toESString()->string())
             return true;
         //TODO
         if (o->isESFunctionObject())
@@ -95,8 +95,8 @@ InternalString ESValue::toInternalString()
             else if (o == esInfinity) ret = L"Infinity";
             else if (o == esNegInfinity) ret = L"-Infinity";
             else ret = InternalString(o->toESNumber()->get());
-        } else if(o->isPString()) {
-            ret = o->toPString()->string();
+        } else if(o->isESString()) {
+            ret = o->toESString()->string();
         } else if(o->isESFunctionObject()) {
             //ret = L"[Function function]";
             ret = L"function ";

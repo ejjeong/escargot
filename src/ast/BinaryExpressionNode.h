@@ -113,21 +113,21 @@ public:
                 /* http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.1 */
                 lval = lval->toPrimitive();
                 rval = rval->toPrimitive();
-                if ((lval->isHeapObject() && lval->toHeapObject()->isPString())
-                    || (rval->isHeapObject() && rval->toHeapObject()->isPString())) {
+                if ((lval->isHeapObject() && lval->toHeapObject()->isESString())
+                    || (rval->isHeapObject() && rval->toHeapObject()->isESString())) {
                     InternalString lstr;
                     InternalString rstr;
-                    if (lval->isHeapObject() && lval->toHeapObject()->isPString())
-                        lstr = lval->toHeapObject()->toPString()->string();
+                    if (lval->isHeapObject() && lval->toHeapObject()->isESString())
+                        lstr = lval->toHeapObject()->toESString()->string();
                     else
                         lstr = lval->toString()->string();
 
-                    if (rval->isHeapObject() && rval->toHeapObject()->isPString())
-                        rstr = rval->toHeapObject()->toPString()->string();
+                    if (rval->isHeapObject() && rval->toHeapObject()->isESString())
+                        rstr = rval->toHeapObject()->toESString()->string();
                     else
                         rstr = rval->toString()->string();
 
-                    ret = PString::create((*lstr.string() + *rstr.string()).c_str());
+                    ret = ESString::create((*lstr.string() + *rstr.string()).c_str());
                 } else {
                     if (lval->isSmi() && rval->isSmi())
                         ret = Smi::fromInt(lval->toSmi()->value() + rval->toSmi()->value());

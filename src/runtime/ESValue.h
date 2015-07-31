@@ -12,7 +12,7 @@ class ESUndefined;
 class ESNull;
 class ESBoolean;
 class ESNumber;
-class PString;
+class ESString;
 class ESObject;
 class ESSlot;
 class ESFunctionObject;
@@ -57,7 +57,7 @@ public:
     ESValue* toNumber();
     ESValue* toInt32();
     ESValue* toInteger();
-    PString* toString();
+    ESString* toString();
     ESValue* ensureValue();
 };
 
@@ -76,7 +76,7 @@ public:
         ESNull = 1 << 2,
         ESBoolean = 1 << 3,
         ESNumber = 1 << 4,
-        PString = 1 << 5,
+        ESString = 1 << 5,
         ESObject = 1 << 6,
         ESSlot = 1 << 7,
         ESFunctionObject = 1 << 8,
@@ -157,17 +157,17 @@ public:
         return reinterpret_cast<::escargot::ESNumber*>(this);
     }
 
-    ALWAYS_INLINE bool isPString() const
+    ALWAYS_INLINE bool isESString() const
     {
-        return m_data & Type::PString;
+        return m_data & Type::ESString;
     }
 
-    ALWAYS_INLINE ::escargot::PString* toPString()
+    ALWAYS_INLINE ::escargot::ESString* toESString()
     {
 #ifndef NDEBUG
-        ASSERT(isPString());
+        ASSERT(isESString());
 #endif
-        return reinterpret_cast<::escargot::PString *>(this);
+        return reinterpret_cast<::escargot::ESString *>(this);
     }
 
     ALWAYS_INLINE bool isESObject() const
@@ -360,17 +360,17 @@ protected:
     double m_value;
 };
 
-class PString : public HeapObject {
+class ESString : public HeapObject {
 protected:
-    PString(const InternalString& src)
-        : HeapObject((Type)(Type::Primitive | Type::PString))
+    ESString(const InternalString& src)
+        : HeapObject((Type)(Type::Primitive | Type::ESString))
     {
         m_string = src;
     }
 public:
-    static PString* create(const InternalString& src)
+    static ESString* create(const InternalString& src)
     {
-        return new PString(src);
+        return new ESString(src);
     }
 
     const InternalString& string()
@@ -949,7 +949,7 @@ protected:
     ESStringObject(const InternalString& str)
         : ESObject((Type)(Type::ESObject | Type::ESStringObject))
     {
-        m_stringData = PString::create(str);
+        m_stringData = ESString::create(str);
 
         //$21.1.4.1 String.length
         defineAccessorProperty(strings->length, [](ESObject* self) -> ESValue* {
@@ -963,13 +963,13 @@ public:
         return new ESStringObject(str);
     }
 
-    ALWAYS_INLINE ::escargot::PString* getStringData()
+    ALWAYS_INLINE ::escargot::ESString* getStringData()
     {
         return m_stringData;
     }
 
 private:
-    ::escargot::PString* m_stringData;
+    ::escargot::ESString* m_stringData;
 };
 
 }
