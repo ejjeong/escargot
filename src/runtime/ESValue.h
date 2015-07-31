@@ -209,102 +209,34 @@ public:
     ESValue ensureValue();
 };
 
-/*
-class HeapObject : public ESValue, public gc {
+
+class ESPointer : public gc {
 public:
     enum Type {
-        Primitive = 1 << 0,
-        ESUndefined = 1 << 1,
-        ESNull = 1 << 2,
-        ESBoolean = 1 << 3,
-        ESNumber = 1 << 4,
-        ESString = 1 << 5,
-        ESObject = 1 << 6,
-        ESSlot = 1 << 7,
-        ESFunctionObject = 1 << 8,
-        ESArrayObject = 1 << 9,
-        ESStringObject = 1 << 10,
-        ESErrorObject = 1 << 11,
-        ESDateObject = 1 << 12,
+        ESString = 1 << 0,
+        ESObject = 1 << 1,
+        ESSlot = 1 << 2,
+        ESFunctionObject = 1 << 3,
+        ESArrayObject = 1 << 4,
+        ESStringObject = 1 << 5,
+        ESErrorObject = 1 << 6,
+        ESDateObject = 1 << 7,
         TypeMask = 0xffff
     };
 
 protected:
-    HeapObject(Type type)
+    ESPointer(Type type)
     {
-        m_data = m_data | type;
+        m_type = type;
     }
 
 public:
-
-    ALWAYS_INLINE Type type() const
-    {
-        return (Type)(m_data & TypeMask);
-    }
-
-    ALWAYS_INLINE bool isPrimitive() const
-    {
-        return m_data & Type::Primitive;
-    }
-
-    ALWAYS_INLINE bool isESUndefined() const
-    {
-        return m_data & Type::ESUndefined;
-    }
-
-    ALWAYS_INLINE ::escargot::ESUndefined* toESUndefined()
-    {
-#ifndef NDEBUG
-        ASSERT(isESUndefined());
-#endif
-        return reinterpret_cast<::escargot::ESUndefined *>(this);
-    }
-
-    ALWAYS_INLINE bool isESNull()  const
-    {
-        return m_data & Type::ESNull;
-    }
-
-    ALWAYS_INLINE ::escargot::ESNull* toESNull()
-    {
-#ifndef NDEBUG
-        ASSERT(isESNull());
-#endif
-        return reinterpret_cast<::escargot::ESNull *>(this);
-    }
-
-    ALWAYS_INLINE bool isESBoolean() const
-    {
-        return m_data & Type::ESBoolean;
-    }
-
-    ALWAYS_INLINE ::escargot::ESBoolean* toESBoolean()
-    {
-#ifndef NDEBUG
-        ASSERT(isESBoolean());
-#endif
-        return reinterpret_cast<::escargot::ESBoolean *>(this);
-    }
-
-    ALWAYS_INLINE bool isESNumber() const
-    {
-        return m_data & Type::ESNumber;
-    }
-
-    ALWAYS_INLINE ::escargot::ESNumber* toESNumber()
-    {
-#ifndef NDEBUG
-        ASSERT(isESNumber());
-#endif
-        return reinterpret_cast<::escargot::ESNumber*>(this);
-    }
-
     ALWAYS_INLINE bool isESString() const
     {
-        return m_data & Type::ESString;
+        return m_type & Type::ESString;
     }
 
-    ALWAYS_INLINE ::escargot::ESString* toESString()
+    ALWAYS_INLINE ::escargot::ESString* asESString()
     {
 #ifndef NDEBUG
         ASSERT(isESString());
@@ -314,10 +246,10 @@ public:
 
     ALWAYS_INLINE bool isESObject() const
     {
-        return m_data & Type::ESObject;
+        return m_type & Type::ESObject;
     }
 
-    ALWAYS_INLINE ::escargot::ESObject* toESObject()
+    ALWAYS_INLINE ::escargot::ESObject* asESObject()
     {
 #ifndef NDEBUG
         ASSERT(isESObject());
@@ -326,10 +258,10 @@ public:
     }
     ALWAYS_INLINE bool isESSlot() const
     {
-        return m_data & Type::ESSlot;
+        return m_type & Type::ESSlot;
     }
 
-    ALWAYS_INLINE ::escargot::ESSlot* toESSlot()
+    ALWAYS_INLINE ::escargot::ESSlot* asESSlot()
     {
 #ifndef NDEBUG
         ASSERT(isESSlot());
@@ -339,10 +271,10 @@ public:
 
     ALWAYS_INLINE bool isESFunctionObject()
     {
-        return m_data & Type::ESFunctionObject;
+        return m_type & Type::ESFunctionObject;
     }
 
-    ALWAYS_INLINE ::escargot::ESFunctionObject* toESFunctionObject()
+    ALWAYS_INLINE ::escargot::ESFunctionObject* asESFunctionObject()
     {
 #ifndef NDEBUG
         ASSERT(isESFunctionObject());
@@ -352,10 +284,10 @@ public:
 
     ALWAYS_INLINE bool isESArrayObject() const
     {
-        return m_data & Type::ESArrayObject;
+        return m_type & Type::ESArrayObject;
     }
 
-    ALWAYS_INLINE ::escargot::ESArrayObject* toESArrayObject()
+    ALWAYS_INLINE ::escargot::ESArrayObject* asESArrayObject()
     {
 #ifndef NDEBUG
         ASSERT(isESArrayObject());
@@ -365,10 +297,10 @@ public:
 
     ALWAYS_INLINE bool isESStringObject() const
     {
-        return m_data & Type::ESStringObject;
+        return m_type & Type::ESStringObject;
     }
 
-    ALWAYS_INLINE ::escargot::ESStringObject* toESStringObject()
+    ALWAYS_INLINE ::escargot::ESStringObject* asESStringObject()
     {
 #ifndef NDEBUG
         ASSERT(isESStringObject());
@@ -378,15 +310,15 @@ public:
 
     ALWAYS_INLINE bool isESErrorObject() const
     {
-        return m_data & Type::ESErrorObject;
+        return m_type & Type::ESErrorObject;
     }
 
     ALWAYS_INLINE bool isESDateObject() const
     {
-        return m_data & Type::ESDateObject;
+        return m_type & Type::ESDateObject;
     }
 
-    ALWAYS_INLINE ::escargot::ESDateObject* toESDateObject()
+    ALWAYS_INLINE ::escargot::ESDateObject* asESDateObject()
     {
 #ifndef NDEBUG
         ASSERT(isESDateObject());
@@ -398,131 +330,16 @@ protected:
     // 0x******@@
     // * -> Data
     // @ -> tag
-    int m_data;
-};
-    */
-
-class ESUndefined : public ESValue {
-    /*
-protected:
-public:
-    ESUndefined()
-        : HeapObject((Type)(Type::Primitive | Type::ESUndefined))
-    {
-
-    }
-    static ESUndefined* create()
-    {
-        return new ESUndefined();
-    }
-    */
+    int m_type;
 };
 
-class ESNull : public ESValue {
-    /*
-protected:
-public:
-    ESNull()
-        : HeapObject((Type)(Type::Primitive | Type::ESNull))
-    {
-
-    }
-    static ESNull* create()
-    {
-        return new ESNull();
-    }
-    */
-};
-
-class ESBoolean : public ESValue {
-    /*
-protected:
-    const int DataMask = 0x80000000;
-public:
-    ESBoolean(bool b)
-        : HeapObject((Type)(Type::Primitive | Type::ESBoolean))
-    {
-        set(b);
-    }
-    static ESBoolean* create(bool b)
-    {
-        return new ESBoolean(b);
-    }
-
-    ALWAYS_INLINE void set(bool b)
-    {
-        m_data = (m_data & TypeMask) | (b << 31);
-    }
-
-    ALWAYS_INLINE bool get()
-    {
-        return m_data & DataMask;
-    }
-    */
-};
-
-class ESNumber : public ESValue {
-    /*
-public:
-    ESNumber(double value)
-        : HeapObject((Type)(Type::Primitive | Type::ESNumber))
-    {
-        set(value);
-    }
-    static ESNumber* create(double value)
-    {
-        return new ESNumber(value);
-    }
-
-    ALWAYS_INLINE void set(double b)
-    {
-        m_value = b;
-    }
-
-    ALWAYS_INLINE double get()
-    {
-        return m_value;
-    }
-
-    ALWAYS_INLINE bool isZero()
-    {
-        if (m_value == 0 || m_value == -0)
-            return true;
-        return false;
-    }
-
-    ALWAYS_INLINE bool isInfinity()
-    {
-        if (this == esInfinity || this == esNegInfinity)
-            return true;
-        return false;
-    }
-
-    ALWAYS_INLINE bool isNegative()
-    {
-        return std::signbit(m_value);
-    }
-
-protected:
-    double m_value;
-    */
-};
-
-class ESPointer : public ESValue {
-
-};
 
 class ESString : public ESPointer {
 protected:
-    /*
-    ESString(const InternalString& src)
-        : HeapObject((Type)(Type::Primitive | Type::ESString))
-    {
-        m_string = src;
-    }
-    */
     ESString(const InternalString& str)
+        : ESPointer(Type::ESString)
     {
+        m_string = str;
     }
 public:
     static ESString* create(const InternalString& src)
@@ -530,27 +347,24 @@ public:
         return new ESString(src);
     }
 
-    /*
     const InternalString& string()
     {
         return m_string;
     }
 
-    ESValue* length()
+    ESValue length()
     {
-        return Smi::fromInt(m_string.length());
+        return ESValue(m_string.length());
     }
 
 protected:
     InternalString m_string;
-    */
 };
 
 class ESSlot : public ESPointer {
-    /*
-    ESSlot(::escargot::ESValue* value,
+    ESSlot(const ::escargot::ESValue& value,
             bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
-        : HeapObject(Type::ESSlot)
+        : ESPointer(Type::ESSlot)
     {
         m_data.m_value = value;
         m_isWritable = isWritable;
@@ -560,10 +374,10 @@ class ESSlot : public ESPointer {
     }
 
     ESSlot(::escargot::ESObject* object,
-            std::function<ESValue* (::escargot::ESObject* obj)> getter = nullptr,
-            std::function<void (::escargot::ESObject* obj, ESValue* value)> setter = nullptr,
+            std::function<ESValue (::escargot::ESObject* obj)> getter = nullptr,
+            std::function<void (::escargot::ESObject* obj, const ESValue& value)> setter = nullptr,
             bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
-        : HeapObject(Type::ESSlot)
+        : ESPointer(Type::ESSlot)
     {
         m_data.m_object = object;
         m_isWritable = isWritable;
@@ -576,10 +390,10 @@ class ESSlot : public ESPointer {
 
     friend class DeclarativeEnvironmentRecord;
     //DO NOT USE THIS FUNCITON
-    void init(::escargot::ESValue* value,
+    void init(const ::escargot::ESValue& value,
             bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
     {
-        HeapObject::m_data = Type::ESSlot;
+        m_type = Type::ESSlot;
         m_data.m_value = value;
         m_isWritable = isWritable;
         m_isEnumerable = isEnumerable;
@@ -587,21 +401,21 @@ class ESSlot : public ESPointer {
         m_isDataProperty = true;
     }
 public:
-    static ESSlot* create(::escargot::ESValue* value,
+    static ESSlot* create(const ::escargot::ESValue& value,
             bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
     {
         return new ESSlot(value, isWritable, isEnumerable, isConfigurable);
     }
 
     static ESSlot* create(::escargot::ESObject* object,
-            std::function<ESValue* (::escargot::ESObject* obj)> getter = nullptr,
-            std::function<void (::escargot::ESObject* obj, ESValue* value)> setter = nullptr,
+            std::function<ESValue (::escargot::ESObject* obj)> getter = nullptr,
+            std::function<void (::escargot::ESObject* obj, const ESValue& value)> setter = nullptr,
             bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
     {
         return new ESSlot(object, getter, setter, isWritable, isEnumerable, isConfigurable);
     }
 
-    ALWAYS_INLINE void setValue(ESValue* value)
+    ALWAYS_INLINE void setValue(const ::escargot::ESValue& value)
     {
         if(LIKELY(m_isDataProperty)) {
             m_data.m_value = value;
@@ -613,7 +427,7 @@ public:
 
     }
 
-    ALWAYS_INLINE ESValue* value()
+    ALWAYS_INLINE ESValue value()
     {
         if(LIKELY(m_isDataProperty)) {
             return m_data.m_value;
@@ -621,7 +435,7 @@ public:
             if(m_getter) {
                 return m_getter(m_data.m_object);
             }
-            return esUndefined;
+            return ESValue();
         }
     }
 
@@ -661,27 +475,26 @@ public:
     }
 
 protected:
-    union {
-        ESValue* m_value;
+    struct {
+        ESValue m_value;
         ::escargot::ESObject* m_object;
     } m_data;
 
-    std::function<ESValue* (::escargot::ESObject* obj)> m_getter;
-    std::function<void (::escargot::ESObject* obj, ESValue* value)> m_setter;
+    std::function<ESValue (::escargot::ESObject* obj)> m_getter;
+    std::function<void (::escargot::ESObject* obj, const ESValue& value)> m_setter;
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-property-attributes
     bool m_isDataProperty:1;
     bool m_isWritable:1;
     bool m_isEnumerable:1;
     bool m_isConfigurable:1;
-    */
 };
 
 
-typedef std::unordered_map<InternalAtomicString, ::escargot::ESSlot ,
+typedef std::unordered_map<InternalAtomicString, ::escargot::ESSlot* ,
                 std::hash<InternalAtomicString>,std::equal_to<InternalAtomicString>,
-                gc_allocator<std::pair<const InternalAtomicString, ::escargot::ESSlot > > > ESObjectMapStd;
+                gc_allocator<std::pair<const InternalAtomicString, ::escargot::ESSlot* > > > ESObjectMapStd;
 
-typedef std::vector<::escargot::ESSlot , gc_allocator<::escargot::ESSlot > > JSVectorStd;
+typedef std::vector<::escargot::ESSlot* , gc_allocator<::escargot::ESSlot* > > JSVectorStd;
 
 /*
 typedef std::map<InternalString, ::escargot::ESSlot *,
@@ -702,23 +515,22 @@ public:
 };
 
 class ESObject : public ESPointer {
-    /*
     friend class ESSlot;
 protected:
-    ESObject(HeapObject::Type type = HeapObject::Type::ESObject)
-        : HeapObject(type)
+    ESObject(ESPointer::Type type = ESPointer::Type::ESObject)
+        : ESPointer(type)
         , m_map(16)
     {
-        m___proto__ = esESNull;
-
         //FIXME set proper flags(is...)
         definePropertyOrThrow(strings->constructor, true, false, false);
 
-        defineAccessorProperty(strings->__proto__, [](ESObject* self) -> ESValue* {
+        defineAccessorProperty(strings->__proto__, [](ESObject* self) -> ESValue {
             return self->__proto__();
-        },[](::escargot::ESObject* self, ESValue* value){
-            if(value->isHeapObject() && value->toHeapObject()->isESObject())
+        },[](::escargot::ESObject* self, ESValue value){
+            /*
+            if(value && value->toHeapObject()->isESObject())
                 self->set__proto__(value->toHeapObject()->toESObject());
+                */
         }, true, false, false);
     }
 public:
@@ -726,7 +538,7 @@ public:
     {
         auto iter = m_map.find(key);
         if(iter == m_map.end()) {
-            m_map.insert(std::make_pair(key, ESSlot::create(esUndefined, isWritable, isEnumerable, isConfigurable)));
+            m_map.insert(std::make_pair(key, ESSlot::create(ESValue(), isWritable, isEnumerable, isConfigurable)));
         } else {
             //TODO
         }
@@ -750,13 +562,14 @@ public:
     }
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-get-o-p
-    ESValue* get(const InternalAtomicString& key, bool searchPrototype = false)
+    ESValue get(const InternalAtomicString& key, bool searchPrototype = false)
     {
         if (UNLIKELY(searchPrototype)) {
+            /*
             ESObject* target = this;
             while(true) {
                 ESValue* s = target->get(key);
-                if (s != esUndefined)
+                if (!s->isUndefined())
                     return s;
                 ESValue* proto = target->__proto__();
                 if (proto && proto->isHeapObject() && proto->toHeapObject()->isESObject()) {
@@ -765,9 +578,10 @@ public:
                    break;
                 }
             }
-            return esUndefined;
+            */
+            return ESValue();
         } else {
-            ESValue* ret = esUndefined;
+            ESValue ret;
             //TODO Assert: IsPropertyKey(P) is true.
             auto iter = m_map.find(key);
             if(iter != m_map.end()) {
@@ -787,7 +601,7 @@ public:
     }
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
-    void set(const InternalAtomicString& key, ESValue* val, bool shouldThrowException = false)
+    void set(const InternalAtomicString& key, const ESValue& val, bool shouldThrowException = false)
     {
         //TODO Assert: IsPropertyKey(P) is true.
         //TODO Assert: Type(Throw) is ESBoolean.
@@ -801,13 +615,13 @@ public:
         }
     }
 
-    void set(ESValue* key, ESValue* val, bool shouldThrowException = false)
+    void set(ESValue* key, const ESValue& val, bool shouldThrowException = false)
     {
         set(InternalAtomicString(key->toInternalString().data()), val, shouldThrowException);
     }
 
-    void defineAccessorProperty(const InternalAtomicString& key,std::function<ESValue* (::escargot::ESObject* obj)> getter = nullptr,
-            std::function<void (::escargot::ESObject* obj, ESValue* value)> setter = nullptr,
+    void defineAccessorProperty(const InternalAtomicString& key,std::function<ESValue (::escargot::ESObject* obj)> getter = nullptr,
+            std::function<void (::escargot::ESObject* obj, const ESValue& value)> setter = nullptr,
             bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
     {
         auto iter = m_map.find(key);
@@ -840,32 +654,31 @@ public:
         }
     }
 
-    ALWAYS_INLINE ESValue* __proto__()
+    ALWAYS_INLINE ESValue __proto__()
     {
         return m___proto__;
     }
 
-    ALWAYS_INLINE void set__proto__(ESValue* obj)
+    ALWAYS_INLINE void set__proto__(const ESValue& obj)
     {
         m___proto__ = obj;
     }
 
-    ALWAYS_INLINE ESValue* constructor()
+    ALWAYS_INLINE ESValue constructor()
     {
         return get(strings->constructor);
     }
 
-    ALWAYS_INLINE void setConstructor(ESValue* obj)
+    ALWAYS_INLINE void setConstructor(const ESValue& obj)
     {
         set(strings->constructor, obj);
     }
 
-    ESValue* defaultValue(ESVMInstance* instance, PrimitiveTypeHint hint = PreferNumber);
+    //ESValue* defaultValue(ESVMInstance* instance, PrimitiveTypeHint hint = PreferNumber);
 
 protected:
     ESObjectMap m_map;
-    ESValue* m___proto__;
-    */
+    ESValue m___proto__;
 };
 
 class ESErrorObject : public ESObject {
@@ -882,11 +695,9 @@ public:
     {
         return new ESErrorObject();
     }
-    */
 };
 
 class ESDateObject : public ESObject {
-    /*
 protected:
     ESDateObject(HeapObject::Type type = HeapObject::Type::ESDateObject)
            : ESObject((Type)(Type::ESObject | Type::ESDateObject)) {}
@@ -920,7 +731,7 @@ private:
 };
 
 class ESArrayObject : public ESObject {
-    /*
+/*
 protected:
     ESArrayObject(HeapObject::Type type = HeapObject::Type::ESArrayObject)
         : ESObject((Type)(Type::ESObject | Type::ESArrayObject))
@@ -1067,7 +878,7 @@ protected:
 class LexicalEnvironment;
 class Node;
 class ESFunctionObject : public ESObject {
-    /*
+/*
 protected:
     ESFunctionObject(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST)
         : ESObject((Type)(Type::ESObject | Type::ESFunctionObject))
@@ -1112,11 +923,11 @@ protected:
     ////ESObject newTarget
     //BindThisValue(V);
     //GetThisBinding();
-    */
+     */
 };
 
 class ESStringObject : public ESObject {
-    /*
+/*
 protected:
     ESStringObject(const InternalString& str)
         : ESObject((Type)(Type::ESObject | Type::ESStringObject))

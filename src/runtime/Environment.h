@@ -230,7 +230,7 @@ public:
         return NULL;
 #endif
     }
-    void createMutableBindingForNonActivationMode(size_t index, const InternalAtomicString& name,ESValue* val = esUndefined)
+    void createMutableBindingForNonActivationMode(size_t index, const InternalAtomicString& name,const ESValue& val = ESValue())
     {
 #if 0
         ASSERT(!m_innerObject);
@@ -363,8 +363,6 @@ public:
         : DeclarativeEnvironmentRecord(shouldUseVector, vectorBuffer, vectorSize)
     {
         m_thisBindingStatus = Uninitialized;
-        m_thisValue = esUndefined;
-        m_newTarget = esUndefined;
     }
     enum ThisBindingStatus {
         Lexical, Initialized, Uninitialized
@@ -380,9 +378,9 @@ public:
     ESObject* getThisBinding();
 
 protected:
-    ESValue* m_thisValue;
+    ESValue m_thisValue;
     ESFunctionObject* m_functionObject;
-    ESValue* m_newTarget; //TODO
+    ESValue m_newTarget; //TODO
     ThisBindingStatus m_thisBindingStatus;
 };
 
