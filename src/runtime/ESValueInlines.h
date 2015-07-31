@@ -101,10 +101,13 @@ inline bool ESValue::isHeapObject() const
 
 inline bool ESValue::isESSlot() const
 {
-    /*
-    return (HAS_OBJECT_TAG(this)) && ((reinterpret_cast<const HeapObject*>(this))->type() & HeapObject::Type::ESSlot);
-    */
-    return false;
+    return (isESPointer()) && (asESPointer()->type() == ESPointer::Type::ESSlot);
+}
+
+inline ESSlot* ESValue::asESSlot()
+{
+    ASSERT(isESSlot());
+    return asESPointer()->asESSlot();
 }
 
 /*
@@ -259,12 +262,10 @@ inline ESString* ESValue::toString()
 
 inline ESValue ESValue::ensureValue()
 {
-    /*
     if(isESSlot()) {
-        return toESSlot()->value();
+        return asESSlot()->value();
     }
-    return this;
-    */
+
     return *this;
 }
 
@@ -466,6 +467,12 @@ inline int32_t ESValue::asInt32() const
     return u.asBits.payload;
 }
 
+inline bool ESValue::asBoolean() const
+{
+    ASSERT(isBoolean());
+    return tag() == ESValue::ESTrueTag::ESTrue;
+}
+
 inline double ESValue::asDouble() const
 {
     ASSERT(isDouble());
@@ -485,6 +492,16 @@ inline bool ESValue::isESPointer() const
 inline bool ESValue::isUndefined() const
 {
     return tag() == ESUndefinedTag::ESUndefined;
+}
+
+inline bool ESValue::isNull() const
+{
+    return tag() == ESNullTag::ESNull;
+}
+
+inline bool ESValue::isBoolean() const
+{
+    return tag() == ESValue::ESFalseTag::ESFalse || tag() == ESValue::ESTrueTag::ESTrue;
 }
 
 ALWAYS_INLINE JSCell* ESValue::asESPointer() const
@@ -570,6 +587,12 @@ inline int32_t ESValue::asInt32() const
     return static_cast<int32_t>(u.asInt64);
 }
 
+inline bool ESValue::asBoolean() const
+{
+    ASSERT(isBoolean());
+    return u.asInt64 == ValueTrue;
+}
+
 inline double ESValue::asDouble() const
 {
     ASSERT(isDouble());
@@ -589,6 +612,16 @@ inline bool ESValue::isESPointer() const
 inline bool ESValue::isUndefined() const
 {
     return u.asInt64 == ValueUndefined;
+}
+
+inline bool ESValue::isNull() const
+{
+    return u.asInt64 == ValueNull;
+}
+
+inline bool ESValue::isBoolean() const
+{
+    return u.asInt64 == ValueTrue || u.asInt64 == ValueFalse;
 }
 
 ALWAYS_INLINE ESPointer* ESValue::asESPointer() const

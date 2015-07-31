@@ -8,19 +8,7 @@
 
 namespace escargot {
 
-#if 0
-static ESUndefined s_undefined;
-ESUndefined* esUndefined = &s_undefined;
-
-static ESNull s_null;
-ESNull* esESNull = &s_null;
-
-static ESBoolean s_true(true);
-ESBoolean* esTrue = &s_true;
-
-static ESBoolean s_false(false);
-ESBoolean* esFalse = &s_false;
-
+/*
 static ESNumber s_nan(std::numeric_limits<double>::quiet_NaN());
 ESNumber* esNaN = &s_nan;
 
@@ -31,27 +19,34 @@ ESNumber* esNegInfinity = &s_ninfinity;
 
 static ESNumber s_nzero(-0.0);
 ESNumber* esMinusZero = &s_nzero;
+*/
 
 // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-abstract-equality-comparison
-bool ESValue::abstractEqualsTo(ESValue* val)
+bool ESValue::abstractEqualsTo(const ESValue& val)
 {
-    if (isSmi() && val->isSmi()) {
-        return equalsTo(val);
-    } else if (isHeapObject() && val->isHeapObject()) {
-        HeapObject* o = toHeapObject();
-        if (val->isHeapObject()) {
-            HeapObject* comp = val->toHeapObject();
-            if (o->type() == comp->type())
-                return equalsTo(val);
-        }
+    if (isInt32() && val.isInt32()) {
+        return asInt32() == val.asInt32();
+    } else if (isNumber() && val.isNumber()) {
+        return asNumber() == val.asNumber();
+    } else if (isUndefined() && val.isUndefined()) {
+        return true;
+    } else if (isNull() && val.isNull()) {
+        return true;
+    } else if (isESPointer() && val.isESPointer()) {
+        ESPointer* o = asESPointer();
+        ESPointer* comp = val.asESPointer();
+        if (o->type() == comp->type())
+            return equalsTo(val);
+        return false;
+    } else {
+        return false;
     }
-    //TODO
-    ASSERT(false);
-    return false;
 }
 
-bool ESValue::equalsTo(ESValue* val)
+bool ESValue::equalsTo(const ESValue& val)
 {
+    RELEASE_ASSERT_NOT_REACHED();
+    /*
     if(isSmi()) {
         if(!val->isSmi()) return false;
         if(toSmi() == val->toSmi()) return true;
@@ -76,60 +71,66 @@ bool ESValue::equalsTo(ESValue* val)
         if (o->isESObject())
             return false;
         return false;
-    }
+    }*/
 }
 
 InternalString ESValue::toInternalString()
 {
     InternalString ret;
 
-    if(isSmi()) {
-        ret = InternalString(toSmi()->value());
+    if(isInt32()) {
+        ret = InternalString(asInt32());
+    } else if(isNumber()) {
+        double d = asNumber();
+        if (d == std::numeric_limits<double>::quiet_NaN()) ret = L"NaN";
+        else if (d == std::numeric_limits<double>::infinity()) ret = L"Infinity";
+        else if (d== -std::numeric_limits<double>::infinity()) ret = L"-Infinity";
+        else ret = InternalString(d);
+    } else if(isUndefined()) {
+        ret = strings->undefined;
+    } else if(isNull()) {
+        ret = strings->null;
+    } else if(isBoolean()) {
+        if(asBoolean())
+            ret = L"true";
+        else
+            ret = L"false";
     } else {
-        HeapObject* o = toHeapObject();
-        if(o->isESUndefined()) {
-            ret = strings->undefined;
-        } else if(o->isESNull()) {
-            ret = strings->null;
-        } else if(o->isESNumber()) {
-            if (o == esNaN) ret = L"NaN";
-            else if (o == esInfinity) ret = L"Infinity";
-            else if (o == esNegInfinity) ret = L"-Infinity";
-            else ret = InternalString(o->toESNumber()->get());
-        } else if(o->isESString()) {
-            ret = o->toESString()->string();
+        ESPointer* o = asESPointer();
+        if(o->isESString()) {
+            ret = o->asESString()->string();
         } else if(o->isESFunctionObject()) {
             //ret = L"[Function function]";
             ret = L"function ";
-            ESFunctionObject* fn = o->toESFunctionObject();
+            ESFunctionObject* fn = o->asESFunctionObject();
             ret.append(fn->functionAST()->id());
             ret.append(L"() {}");
         } else if(o->isESArrayObject()) {
             bool isFirst = true;
             ret.append(L"[");
-            for (int i=0; i<o->toESArrayObject()->length()->toSmi()->value(); i++) {
+            for (int i = 0 ; i < o->asESArrayObject()->length().asInt32() ; i++) {
                 if(!isFirst)
                     ret.append(L", ");
-                ESValue* slot = o->toESArrayObject()->get(i);
-                ret.append(slot->toInternalString());
+                ESValue slot = o->asESArrayObject()->get(i);
+                ret.append(slot.toInternalString());
                 isFirst = false;
               }
             ret.append(L"]");
         } else if(o->isESStringObject()) {
-            ret.append(o->toESStringObject()->getStringData()->string());
+            ret.append(o->asESStringObject()->getStringData()->string());
         } else if(o->isESErrorObject()) {
-        	    ret.append(o->toESObject()->get(L"name", true)->toInternalString().data());
-        	    ret.append(L": ");
-        	    ret.append(o->toESObject()->get(L"message")->toInternalString().data());
+            ret.append(o->asESObject()->get(L"name", true).toInternalString().data());
+            ret.append(L": ");
+            ret.append(o->asESObject()->get(L"message").toInternalString().data());
         } else if(o->isESObject()) {
           ret = L"Object {";
           bool isFirst = true;
-          o->toESObject()->enumeration([&ret, &isFirst](const InternalString& key, ESSlot* slot) {
+          o->asESObject()->enumeration([&ret, &isFirst](const InternalString& key, ESSlot* slot) {
               if(!isFirst)
                   ret.append(L", ");
               ret.append(key);
               ret.append(L": ");
-              ret.append(slot->value()->toInternalString());
+              ret.append(slot->value().toInternalString());
               isFirst = false;
           });
           ret.append(L"}");
@@ -141,12 +142,12 @@ InternalString ESValue::toInternalString()
     return ret;
 }
 
-ESValue* ESObject::defaultValue(ESVMInstance* instance, PrimitiveTypeHint hint)
+ESValue ESObject::defaultValue(ESVMInstance* instance, ESValue::PrimitiveTypeHint hint)
 {
-    if (hint == PreferString) {
-        ESValue* underScoreProto = get(strings->__proto__);
-        ESValue* toStringMethod = underScoreProto->toHeapObject()->toESObject()->get(L"toString");
-        std::vector<ESValue*, gc_allocator<ESValue*>> arguments;
+    if (hint == ESValue::PreferString) {
+        ESValue underScoreProto = get(strings->__proto__);
+        ESValue toStringMethod = underScoreProto.asESPointer()->asESObject()->get(L"toString");
+        std::vector<ESValue> arguments;
         return ESFunctionObject::call(toStringMethod, this, &arguments[0], arguments.size(), instance);
     } else {
         //TODO
@@ -155,16 +156,16 @@ ESValue* ESObject::defaultValue(ESVMInstance* instance, PrimitiveTypeHint hint)
 }
 
 
-ESValue* functionCallerInnerProcess(ESFunctionObject* fn, ESValue* callee, ESValue* receiver, ESValue* arguments[], size_t argumentCount, bool needsArgumentsObject, ESVMInstance* ESVMInstance)
+ESValue functionCallerInnerProcess(ESFunctionObject* fn, ESValue receiver, ESValue arguments[], size_t argumentCount, bool needsArgumentsObject, ESVMInstance* ESVMInstance)
 {
     ESVMInstance->invalidateIdentifierCacheCheckCount();
-    ((FunctionEnvironmentRecord *)ESVMInstance->currentExecutionContext()->environment()->record())->bindThisValue(receiver->toHeapObject()->toESObject());
+    ((FunctionEnvironmentRecord *)ESVMInstance->currentExecutionContext()->environment()->record())->bindThisValue(receiver.asESPointer()->asESObject());
     DeclarativeEnvironmentRecord* functionRecord = ESVMInstance->currentExecutionContext()->environment()->record()->toDeclarativeEnvironmentRecord();
 
     if(needsArgumentsObject) {
         ESObject* argumentsObject = ESObject::create();
         unsigned i = 0;
-        argumentsObject->set(strings->length, Smi::fromInt(argumentCount));
+        argumentsObject->set(strings->length, ESValue(argumentCount));
         for(; i < argumentCount && i < ESCARGOT_STRINGS_NUMBERS_MAX ; i ++) {
             argumentsObject->set(strings->numbers[i], arguments[i]);
         }
@@ -217,15 +218,15 @@ ESValue* functionCallerInnerProcess(ESFunctionObject* fn, ESValue* callee, ESVal
 }
 
 
-ESValue* ESFunctionObject::call(ESValue* callee, ESValue* receiver, ESValue* arguments[], size_t argumentCount, ESVMInstance* ESVMInstance)
+ESValue ESFunctionObject::call(ESValue callee, ESValue receiver, ESValue arguments[], size_t argumentCount, ESVMInstance* ESVMInstance)
 {
-    ESValue* result = esUndefined;
-    if(callee->isHeapObject() && callee->toHeapObject()->isESFunctionObject()) {
+    ESValue result;
+    if(callee.isESPointer() && callee.asESPointer()->isESFunctionObject()) {
         ExecutionContext* currentContext = ESVMInstance->currentExecutionContext();
-        ESFunctionObject* fn = callee->toHeapObject()->toESFunctionObject();
+        ESFunctionObject* fn = callee.asESPointer()->asESFunctionObject();
         if(fn->functionAST()->needsActivation()) {
             ESVMInstance->m_currentExecutionContext = new ExecutionContext(LexicalEnvironment::newFunctionEnvironment(fn, receiver), true, arguments, argumentCount);
-            result = functionCallerInnerProcess(fn, callee, receiver, arguments, argumentCount, true, ESVMInstance);
+            result = functionCallerInnerProcess(fn, receiver, arguments, argumentCount, true, ESVMInstance);
             ESVMInstance->m_currentExecutionContext = currentContext;
         } else {
             FunctionEnvironmentRecord envRec(true,
@@ -238,7 +239,7 @@ ESValue* ESFunctionObject::call(ESValue* callee, ESValue* receiver, ESValue* arg
             LexicalEnvironment env(&envRec, fn->outerEnvironment());
             ExecutionContext ec(&env, false, arguments, argumentCount);
             ESVMInstance->m_currentExecutionContext = &ec;
-            result = functionCallerInnerProcess(fn, callee, receiver, arguments, argumentCount, fn->functionAST()->needsArgumentsObject(), ESVMInstance);
+            result = functionCallerInnerProcess(fn, receiver, arguments, argumentCount, fn->functionAST()->needsArgumentsObject(), ESVMInstance);
             ESVMInstance->m_currentExecutionContext = currentContext;
         }
     } else {
@@ -248,24 +249,6 @@ ESValue* ESFunctionObject::call(ESValue* callee, ESValue* receiver, ESValue* arg
     return result;
 }
 
-#endif
 
-InternalString ESValue::toInternalString()
-{
-    InternalString ret;
-
-    if(p->isInt32())
-        return InternalString(p->asInt32());
-    else if(p->isESBoolean())
-        return p->asESBoolean()?L"true":L"false";
-    else if(p->isNull())
-        return strings->null;
-    else if(p->isUndefined())
-        return strings->undefined;
-    else if(p->isESPointer())
-        RELEASE_ASSERT_NOT_REACHED();
-
-    return ret;
-}
 
 }

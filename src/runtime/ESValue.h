@@ -183,7 +183,8 @@ private:
 
 public:
     bool isESSlot() const;
-    bool abstractEqualsTo(ESValue* val);
+    ESSlot* asESSlot();
+    bool abstractEqualsTo(const ESValue& val);
     bool equalsTo(const ESValue& val);
     InternalString toInternalString();
 
@@ -219,6 +220,11 @@ protected:
     }
 
 public:
+    ALWAYS_INLINE int type()
+    {
+        return m_type;
+    }
+
     ALWAYS_INLINE bool isESString() const
     {
         return m_type & Type::ESString;
@@ -354,7 +360,7 @@ class ESSlot : public ESPointer {
             bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
         : ESPointer(Type::ESSlot)
     {
-        m_data.m_value = value;
+        m_data = ESValue(value);
         m_isWritable = isWritable;
         m_isEnumerable = isEnumerable;
         m_isConfigurable = isConfigurable;
@@ -367,7 +373,7 @@ class ESSlot : public ESPointer {
             bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
         : ESPointer(Type::ESSlot)
     {
-        m_data.m_object = object;
+        m_data = ESValue((ESPointer *)object);
         m_isWritable = isWritable;
         m_isEnumerable = isEnumerable;
         m_isConfigurable = isConfigurable;
@@ -382,7 +388,7 @@ class ESSlot : public ESPointer {
             bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
     {
         m_type = Type::ESSlot;
-        m_data.m_value = value;
+        m_data = ESValue(value);
         m_isWritable = isWritable;
         m_isEnumerable = isEnumerable;
         m_isConfigurable = isConfigurable;
@@ -406,10 +412,10 @@ public:
     ALWAYS_INLINE void setValue(const ::escargot::ESValue& value)
     {
         if(LIKELY(m_isDataProperty)) {
-            m_data.m_value = value;
+            m_data = value;
         } else {
             if(m_setter) {
-                m_setter(m_data.m_object, value);
+                m_setter(m_data.asESPointer()->asESObject(), value);
             }
         }
 
@@ -418,10 +424,10 @@ public:
     ALWAYS_INLINE ESValue value()
     {
         if(LIKELY(m_isDataProperty)) {
-            return m_data.m_value;
+            return m_data;
         } else {
             if(m_getter) {
-                return m_getter(m_data.m_object);
+                return m_getter(m_data.asESPointer()->asESObject());
             }
             return ESValue();
         }
@@ -463,10 +469,7 @@ public:
     }
 
 protected:
-    struct {
-        ESValue m_value;
-        ::escargot::ESObject* m_object;
-    } m_data;
+    ESValue m_data;
 
     std::function<ESValue (::escargot::ESObject* obj)> m_getter;
     std::function<void (::escargot::ESObject* obj, const ESValue& value)> m_setter;
@@ -659,7 +662,7 @@ public:
         set(strings->constructor, obj);
     }
 
-    //ESValue* defaultValue(ESVMInstance* instance, PrimitiveTypeHint hint = PreferNumber);
+    ESValue defaultValue(ESVMInstance* instance, ESValue::PrimitiveTypeHint hint = ESValue::PreferNumber);
 
 protected:
     ESObjectMap m_map;

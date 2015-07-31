@@ -8,7 +8,6 @@ namespace escargot {
 
 ESValue FunctionDeclarationNode::execute(ESVMInstance* instance)
 {
-    /*
     ESFunctionObject* function = ESFunctionObject::create(instance->currentExecutionContext()->environment(), this);
     //FIXME these lines duplicate with FunctionExpressionNode::execute
     function->set__proto__(instance->globalObject()->functionPrototype());
@@ -20,8 +19,6 @@ ESValue FunctionDeclarationNode::execute(ESVMInstance* instance)
     /////////////////////////////////////////////
     instance->currentExecutionContext()->environment()->record()->createMutableBindingForAST(m_id, false);
     instance->currentExecutionContext()->environment()->record()->setMutableBinding(m_id, function, false);
-    return esUndefined;
-    */
     return ESValue();
 }
 

@@ -8,7 +8,6 @@ namespace escargot {
 
 ESValue FunctionExpressionNode::execute(ESVMInstance* instance)
 {
-    /*
     ESFunctionObject* function = ESFunctionObject::create(instance->currentExecutionContext()->environment(), this);
     //FIXME these lines duplicate with FunctionDeclarationNode::execute
     function->set__proto__(instance->globalObject()->functionPrototype());
@@ -20,8 +19,6 @@ ESValue FunctionExpressionNode::execute(ESVMInstance* instance)
     /////////////////////////////////////////////////////////////////////
 
     return function;
-    */
-    return ESValue();
 }
 
 }
