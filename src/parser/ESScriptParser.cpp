@@ -186,7 +186,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
                 if(std::abs(number) < 0xC0000000 && value[L"value"].IsInt()) { //(1100)(0000)...(0000)
                     parsedNode = new LiteralNode(Smi::fromInt(value[L"value"].GetInt()));
                 } else {
-                    parsedNode = new LiteralNode(PNumber::create(number));
+                    parsedNode = new LiteralNode(ESNumber::create(number));
                 }
             } else if(value[L"value"].IsString()) {
                 parsedNode = new LiteralNode(PString::create(value[L"value"].GetString()));

@@ -20,16 +20,16 @@ ESBoolean* esTrue = &s_true;
 static ESBoolean s_false(false);
 ESBoolean* esFalse = &s_false;
 
-static PNumber s_nan(std::numeric_limits<double>::quiet_NaN());
-PNumber* esNaN = &s_nan;
+static ESNumber s_nan(std::numeric_limits<double>::quiet_NaN());
+ESNumber* esNaN = &s_nan;
 
-static PNumber s_infinity(std::numeric_limits<double>::infinity());
-PNumber* esInfinity = &s_infinity;
-static PNumber s_ninfinity(-std::numeric_limits<double>::infinity());
-PNumber* esNegInfinity = &s_ninfinity;
+static ESNumber s_infinity(std::numeric_limits<double>::infinity());
+ESNumber* esInfinity = &s_infinity;
+static ESNumber s_ninfinity(-std::numeric_limits<double>::infinity());
+ESNumber* esNegInfinity = &s_ninfinity;
 
-static PNumber s_nzero(-0.0);
-PNumber* esMinusZero = &s_nzero;
+static ESNumber s_nzero(-0.0);
+ESNumber* esMinusZero = &s_nzero;
 
 // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-abstract-equality-comparison
 bool ESValue::abstractEqualsTo(ESValue* val)
@@ -61,7 +61,7 @@ bool ESValue::equalsTo(ESValue* val)
         HeapObject* comp = val->toHeapObject();
         if (o->type() != comp->type()) return false;
         //Strict Equality Comparison: === 
-        if (o->isPNumber() && o->toPNumber()->get() == comp->toPNumber()->get())
+        if (o->isESNumber() && o->toESNumber()->get() == comp->toESNumber()->get())
             return true;
         if (o->isESBoolean() && o->toESBoolean()->get() == comp->toESBoolean()->get())
             return true;
@@ -90,11 +90,11 @@ ESString ESValue::toESString()
             ret = strings->undefined;
         } else if(o->isESNull()) {
             ret = strings->null;
-        } else if(o->isPNumber()) {
+        } else if(o->isESNumber()) {
             if (o == esNaN) ret = L"NaN";
             else if (o == esInfinity) ret = L"Infinity";
             else if (o == esNegInfinity) ret = L"-Infinity";
-            else ret = ESString(o->toPNumber()->get());
+            else ret = ESString(o->toESNumber()->get());
         } else if(o->isPString()) {
             ret = o->toPString()->string();
         } else if(o->isJSFunction()) {

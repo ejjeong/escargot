@@ -11,7 +11,7 @@ class HeapObject;
 class ESUndefined;
 class ESNull;
 class ESBoolean;
-class PNumber;
+class ESNumber;
 class PString;
 class JSObject;
 class JSSlot;
@@ -27,10 +27,10 @@ extern ESNull* esESNull;
 extern ESBoolean* esTrue;
 extern ESBoolean* esFalse;
 
-extern PNumber* esNaN;
-extern PNumber* esInfinity;
-extern PNumber* esNegInfinity;
-extern PNumber* esMinusZero;
+extern ESNumber* esNaN;
+extern ESNumber* esInfinity;
+extern ESNumber* esNegInfinity;
+extern ESNumber* esMinusZero;
 
 class ESValue {
     //static void* operator new(size_t, void* p) = delete;
@@ -75,7 +75,7 @@ public:
         ESUndefined = 1 << 1,
         ESNull = 1 << 2,
         ESBoolean = 1 << 3,
-        PNumber = 1 << 4,
+        ESNumber = 1 << 4,
         PString = 1 << 5,
         JSObject = 1 << 6,
         JSSlot = 1 << 7,
@@ -144,17 +144,17 @@ public:
         return reinterpret_cast<::escargot::ESBoolean *>(this);
     }
 
-    ALWAYS_INLINE bool isPNumber() const
+    ALWAYS_INLINE bool isESNumber() const
     {
-        return m_data & Type::PNumber;
+        return m_data & Type::ESNumber;
     }
 
-    ALWAYS_INLINE ::escargot::PNumber* toPNumber()
+    ALWAYS_INLINE ::escargot::ESNumber* toESNumber()
     {
 #ifndef NDEBUG
-        ASSERT(isPNumber());
+        ASSERT(isESNumber());
 #endif
-        return reinterpret_cast<::escargot::PNumber*>(this);
+        return reinterpret_cast<::escargot::ESNumber*>(this);
     }
 
     ALWAYS_INLINE bool isPString() const
@@ -315,16 +315,16 @@ public:
     }
 };
 
-class PNumber : public HeapObject {
+class ESNumber : public HeapObject {
 public:
-    PNumber(double value)
-        : HeapObject((Type)(Type::Primitive | Type::PNumber))
+    ESNumber(double value)
+        : HeapObject((Type)(Type::Primitive | Type::ESNumber))
     {
         set(value);
     }
-    static PNumber* create(double value)
+    static ESNumber* create(double value)
     {
-        return new PNumber(value);
+        return new ESNumber(value);
     }
 
     ALWAYS_INLINE void set(double b)

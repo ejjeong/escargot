@@ -105,8 +105,8 @@ inline Smi* ESValue::toSmi() const
     ASSERT(isSmi());
     return static_cast<Smi*>(const_cast<ESValue*>(this));
     /* TODO
-    else if (object->IsHeapPNumber()) {
-        double value = Handle<HeapPNumber>::cast(object)->value();
+    else if (object->IsHeapESNumber()) {
+        double value = Handle<HeapESNumber>::cast(object)->value();
         int int_value = FastD2I(value);
         if (value == FastI2D(int_value) && Smi::IsValid(int_value)) {
             return handle(Smi::fromInt(int_value), isolate);
@@ -162,7 +162,7 @@ inline ESValue* ESValue::toPrimitive(PrimitiveTypeHint hint)
         if (!o->isPrimitive()) {
             if (o->isJSObject()) {
                 if (o->isJSDate()) {
-                    return PNumber::create(o->toJSDate()->getTimeAsMilisec());
+                    return ESNumber::create(o->toJSDate()->getTimeAsMilisec());
                 } else {
                     ASSERT(false); // TODO
                 }
@@ -182,7 +182,7 @@ inline ESValue* ESValue::toNumber()
     if(LIKELY(isSmi())) {
     } else {
         HeapObject* o = toHeapObject();
-        if (o->isPNumber()) {
+        if (o->isESNumber()) {
             return this;
         } else if (o->isESUndefined()) {
             return esNaN;
@@ -194,7 +194,7 @@ inline ESValue* ESValue::toNumber()
             ASSERT(false); //TODO
         } else if (o->isJSObject()) {
             if (o->isJSDate()) {
-                return PNumber::create(o->toJSDate()->getTimeAsMilisec());
+                return ESNumber::create(o->toJSDate()->getTimeAsMilisec());
               }
             return this->toPrimitive()->toNumber();
         } else {
@@ -212,8 +212,8 @@ inline ESValue* ESValue::toInt32()
     if(LIKELY(isSmi())) {
     } else {
         HeapObject* o = this->toHeapObject();
-        if (o->isPNumber()) {
-            double d = o->toPNumber()->get();
+        if (o->isESNumber()) {
+            double d = o->toESNumber()->get();
             long long int posInt = d<0?-1:1 * std::floor(std::abs(d));
             long long int int32bit = posInt % 0x100000000;
             int res;
@@ -222,7 +222,7 @@ inline ESValue* ESValue::toInt32()
             else
                 res = int32bit;
             if (res >= 0x40000000)
-                ret = PNumber::create(res);
+                ret = ESNumber::create(res);
             else
                 ret = Smi::fromInt(res);
         } else {

@@ -145,7 +145,7 @@ void GlobalObject::installArray()
         ESValue* val = value->get(strings->numbers[0]);
         if (len == 1 && val != esUndefined && val->isSmi()) { //numberOfArgs = 1
             array->setLength( val->toSmi()->value() );
-        } else if (len >= 1) {      // numberOfArgs>=2 or (numberOfArgs==1 && val is not PNumber)
+        } else if (len >= 1) {      // numberOfArgs>=2 or (numberOfArgs==1 && val is not ESNumber)
             for (int idx = 0; idx < len; idx++) {
                 array->set(Smi::fromInt(idx), val);
                 val = value->get(ESAtomicString(ESString(idx + 1).data()));
@@ -255,7 +255,7 @@ void GlobalObject::installString()
             result = str.string()->find(*searchStr.string());
         } else {
             ESValue* numPos = val->toNumber();
-            int pos = numPos->toInteger()->isSmi() ? numPos->toInteger()->toSmi()->value() : numPos->toInteger()->toHeapObject()->toPNumber()->get();
+            int pos = numPos->toInteger()->isSmi() ? numPos->toInteger()->toSmi()->value() : numPos->toInteger()->toHeapObject()->toESNumber()->get();
             int len = str.string()->length();
             int start = std::min(std::max(pos, 0), len);
             result = str.string()->find(*searchStr.string(), start);

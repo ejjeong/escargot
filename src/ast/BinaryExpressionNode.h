@@ -132,9 +132,9 @@ public:
                     if (lval->isSmi() && rval->isSmi())
                         ret = Smi::fromInt(lval->toSmi()->value() + rval->toSmi()->value());
                     else {
-                        double lnum = lval->isSmi()? lval->toSmi()->value() : lval->toHeapObject()->toPNumber()->get();
-                        double rnum = rval->isSmi()? rval->toSmi()->value() : rval->toHeapObject()->toPNumber()->get();
-                        ret = PNumber::create(lnum + rnum);
+                        double lnum = lval->isSmi()? lval->toSmi()->value() : lval->toHeapObject()->toESNumber()->get();
+                        double rnum = rval->isSmi()? rval->toSmi()->value() : rval->toHeapObject()->toESNumber()->get();
+                        ret = ESNumber::create(lnum + rnum);
                         }
                     }
                 break;
@@ -145,19 +145,19 @@ public:
                 if (lval->isSmi() && rval->isSmi())
                     ret = Smi::fromInt(lval->toSmi()->value() - rval->toSmi()->value());
                 else {
-                    double lnum = lval->isSmi()? lval->toSmi()->value() : lval->toHeapObject()->toPNumber()->get();
-                    double rnum = rval->isSmi()? rval->toSmi()->value() : rval->toHeapObject()->toPNumber()->get();
-                    ret = PNumber::create(lnum - rnum);
+                    double lnum = lval->isSmi()? lval->toSmi()->value() : lval->toHeapObject()->toESNumber()->get();
+                    double rnum = rval->isSmi()? rval->toSmi()->value() : rval->toHeapObject()->toESNumber()->get();
+                    ret = ESNumber::create(lnum - rnum);
                   }
                 break;
             case Div: {
                 lval = lval->toNumber();
                 rval = rval->toNumber();
                 // http://www.ecma-international.org/ecma-262/5.1/#sec-11.5.2
-                bool islNeg = lval->isSmi()? lval->toSmi()->value() < 0 : lval->toHeapObject()->toPNumber()->isNegative();
-                bool isrNeg = rval->isSmi()? rval->toSmi()->value() < 0 : rval->toHeapObject()->toPNumber()->isNegative();
-                bool islZero = lval->isSmi()? lval->toSmi()->value() == 0 : lval->toHeapObject()->toPNumber()->isZero();
-                bool isrZero = rval->isSmi()? rval->toSmi()->value() == 0 : rval->toHeapObject()->toPNumber()->isZero();
+                bool islNeg = lval->isSmi()? lval->toSmi()->value() < 0 : lval->toHeapObject()->toESNumber()->isNegative();
+                bool isrNeg = rval->isSmi()? rval->toSmi()->value() < 0 : rval->toHeapObject()->toESNumber()->isNegative();
+                bool islZero = lval->isSmi()? lval->toSmi()->value() == 0 : lval->toHeapObject()->toESNumber()->isZero();
+                bool isrZero = rval->isSmi()? rval->toSmi()->value() == 0 : rval->toHeapObject()->toESNumber()->isZero();
                 bool isNeg = (islNeg != isrNeg);
                 if (lval == esNaN || rval == esNaN) ret = esNaN;
                 else if (lval == esInfinity || lval == esNegInfinity) {
@@ -180,8 +180,8 @@ public:
                     if (isNeg) ret = esNegInfinity;
                     else       ret = esInfinity;
                 } else {
-                    double lnum = lval->isSmi()? lval->toSmi()->value() : lval->toHeapObject()->toPNumber()->get();
-                    double rnum = rval->isSmi()? rval->toSmi()->value() : rval->toHeapObject()->toPNumber()->get();
+                    double lnum = lval->isSmi()? lval->toSmi()->value() : lval->toHeapObject()->toESNumber()->get();
+                    double rnum = rval->isSmi()? rval->toSmi()->value() : rval->toHeapObject()->toESNumber()->get();
                     double result = lnum / rnum;
 
                     if (result == std::numeric_limits<double>::infinity())
@@ -191,7 +191,7 @@ public:
                     else if (result == -0.0)
                         ret = esMinusZero;
                     else
-                        ret = PNumber::create(result);
+                        ret = ESNumber::create(result);
                 }
                       }
                 break;
@@ -218,8 +218,8 @@ public:
                     ret = b ? esTrue:esFalse;
                 }
                 else {
-                    double lnum = lval->isSmi()? lval->toSmi()->value() : lval->toHeapObject()->toPNumber()->get();
-                    double rnum = rval->isSmi()? rval->toSmi()->value() : rval->toHeapObject()->toPNumber()->get();
+                    double lnum = lval->isSmi()? lval->toSmi()->value() : lval->toHeapObject()->toESNumber()->get();
+                    double rnum = rval->isSmi()? rval->toSmi()->value() : rval->toHeapObject()->toESNumber()->get();
                     bool b;
                     if (oper == LessThan)                b = lnum < rnum;
                     else if (oper == LessThanOrEqual)    b = lnum <= rnum;
@@ -246,8 +246,8 @@ public:
             {
                 lval = lval->toInt32();
                 rval = rval->toInt32();
-                long long int rnum = rval->isSmi()? rval->toSmi()->value() : rval->toHeapObject()->toPNumber()->get();
-                long long int lnum = lval->isSmi()? lval->toSmi()->value() : lval->toHeapObject()->toPNumber()->get();
+                long long int rnum = rval->isSmi()? rval->toSmi()->value() : rval->toHeapObject()->toESNumber()->get();
+                long long int lnum = lval->isSmi()? lval->toSmi()->value() : lval->toHeapObject()->toESNumber()->get();
                 unsigned int shiftCount = ((unsigned int)rnum) & 0x1F;
                 if(oper == LeftShift)
                     lnum <<= shiftCount;
@@ -259,7 +259,7 @@ public:
                     RELEASE_ASSERT_NOT_REACHED();
 
                 if (lnum >= 40000000)
-                    ret = PNumber::create(lnum);
+                    ret = ESNumber::create(lnum);
                 else
                     ret = Smi::fromInt(lnum);
                 break;
