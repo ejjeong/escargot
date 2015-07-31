@@ -179,11 +179,8 @@ private:
 
 public:
     bool isESSlot() const;
-    /*
     bool abstractEqualsTo(ESValue* val);
-    bool equalsTo(ESValue* val);
-    ESSlot* toESSlot();
-    */
+    bool equalsTo(const ESValue& val);
     InternalString toInternalString();
 
     /*

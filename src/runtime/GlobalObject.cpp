@@ -136,43 +136,42 @@ void GlobalObject::installError()
 
 void GlobalObject::installArray()
 {
-    /*
     m_arrayPrototype = ESArrayObject::create(0, m_objectPrototype);
 
     //$22.1.1 Array Constructor
-    FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings->Array, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
+    FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings->Array, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         int len = instance->currentExecutionContext()->argumentCount();
         int size = 0;
         if (len > 1) size = len;
         ESObject* proto = instance->globalObject()->arrayPrototype();
         escargot::ESArrayObject* array = ESArrayObject::create(size, proto);
         if(len) {
-            ESValue* val = instance->currentExecutionContext()->arguments()[0];
-            if (len == 1 && val != esUndefined && val->isSmi()) { //numberOfArgs = 1
-                array->setLength( val->toSmi()->value() );
+            ESValue& val = instance->currentExecutionContext()->arguments()[0];
+            if (len == 1 && !val.isUndefined() && val.isInt32()) { //numberOfArgs = 1
+                array->setLength( val.asInt32() );
             } else if (len >= 1) {      // numberOfArgs>=2 or (numberOfArgs==1 && val is not ESNumber)
                 for (int idx = 0; idx < len; idx++) {
-                    array->set(Smi::fromInt(idx), val);
+                    array->set(ESValue(idx), val);
                     val = instance->currentExecutionContext()->arguments()[idx + 1];
                 }
             }
         } else {
         }
         instance->currentExecutionContext()->doReturn(array);
-        return esUndefined;
+        return ESValue();
     }), false, false);
 
     //$22.1.3.11 Array.prototype.indexOf()
-    FunctionDeclarationNode* arrayIndexOf = new FunctionDeclarationNode(L"indexOf", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
-        auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->toESArrayObject();
-        int len = thisVal->length()->toSmi()->value();
+    FunctionDeclarationNode* arrayIndexOf = new FunctionDeclarationNode(L"indexOf", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESArrayObject();
+        int len = thisVal->length().asInt32();
         int ret = 0;
         if (len == 0) ret = -1;
         else {
-            ESValue* fromIndex = instance->currentExecutionContext()->arguments()[1];
+            ESValue& fromIndex = instance->currentExecutionContext()->arguments()[1];
             int n = 0, k = 0;
-            if (fromIndex != esUndefined) {
-                n = fromIndex->toSmi()->value();
+            if (!fromIndex.isUndefined()) {
+                n = fromIndex.asInt32();
                 if (n >= len) {
                     ret = -1;
                 } else if (n >= 0) {
@@ -184,53 +183,53 @@ void GlobalObject::installArray()
             }
             if (ret != -1) {
                 ret = -1;
-                ESValue* searchElement = instance->currentExecutionContext()->arguments()[0];
+                ESValue& searchElement = instance->currentExecutionContext()->arguments()[0];
                 while (k < len) {
-                    ESValue* kPresent = thisVal->get(k);
-                    if (searchElement->equalsTo(kPresent)) {
+                    ESValue kPresent = thisVal->get(k);
+                    RELEASE_ASSERT_NOT_REACHED();
+                    /*
+                    if (searchElement.equalsTo(kPresent)) {
                         ret = k;
                         break;
                     }
                     k++;
+                    */
                 }
             }
         }
-        instance->currentExecutionContext()->doReturn(Smi::fromInt(ret));
-        return esUndefined;
+        instance->currentExecutionContext()->doReturn(ESValue(ret));
+        return ESValue();
     }), false, false);
     m_arrayPrototype->set(L"indexOf", ESFunctionObject::create(NULL, arrayIndexOf));
 
 
     //$22.1.3.17 Array.prototype.push(item)
-    FunctionDeclarationNode* arrayPush = new FunctionDeclarationNode(L"push", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
+    FunctionDeclarationNode* arrayPush = new FunctionDeclarationNode(L"push", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         int len = instance->currentExecutionContext()->argumentCount();
-        auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->toESArrayObject();
+        auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESArrayObject();
         for (int i = 0; i < len; i++) {
-            ESValue* val = instance->currentExecutionContext()->arguments()[i];
+            ESValue& val = instance->currentExecutionContext()->arguments()[i];
             thisVal->push(val);
             i++;
         }
         instance->currentExecutionContext()->doReturn(thisVal->length());
 
-        return esUndefined;
+        return ESValue();
     }), false, false);
     m_arrayPrototype->set(L"push", ESFunctionObject::create(NULL, arrayPush));
 
     m_array = ESFunctionObject::create(NULL, constructor);
     m_arrayPrototype->setConstructor(m_array);
-    m_arrayPrototype->set(strings->length, Smi::fromInt(0));
+    m_arrayPrototype->set(strings->length, ESValue(0));
     m_array->set(strings->prototype, m_arrayPrototype);
-    m_array->set(strings->length, Smi::fromInt(1));
+    m_array->set(strings->length, ESValue(1));
     m_array->setConstructor(m_function);
 
     set(strings->Array, m_array);
-    */
-
 }
 
 void GlobalObject::installString()
 {
-    /*
     m_string = ESFunctionObject::create(NULL, new FunctionDeclarationNode(strings->String, InternalAtomicStringVector(), new EmptyStatementNode(), false, false));
     //m_string->set(strings->constructor, m_function); TODO do i need this?
     m_string->set(strings->name, ESString::create(strings->String));
@@ -239,8 +238,8 @@ void GlobalObject::installString()
     m_stringPrototype = ESStringObject::create(L"");
     m_stringPrototype->setConstructor(m_string);
 
-    m_string->defineAccessorProperty(strings->prototype, [](ESObject* self) -> ESValue* {
-        return self->toESFunctionObject()->protoType();
+    m_string->defineAccessorProperty(strings->prototype, [](ESObject* self) -> ESValue {
+        return self->asESFunctionObject()->protoType();
     }, nullptr, true, false, false);
     m_string->set__proto__(m_functionPrototype); // empty Function
     m_string->setProtoType(m_stringPrototype);
@@ -248,53 +247,53 @@ void GlobalObject::installString()
     set(strings->String, m_string);
 
     //$21.1.3.8 String.prototype.indexOf(searchString[, position])
-    FunctionDeclarationNode* stringIndexOf = new FunctionDeclarationNode(L"indexOf", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
+    FunctionDeclarationNode* stringIndexOf = new FunctionDeclarationNode(L"indexOf", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
-        if (thisObject->isESUndefined() || thisObject->isESNull())
-            throw TypeError();
-        const InternalString& str = thisObject->toESStringObject()->getStringData()->string();
-        const InternalString& searchStr = instance->currentExecutionContext()->arguments()[0]->toHeapObject()->toESString()->string(); // TODO converesion w&w/o test
+        //if (thisObject->isESUndefined() || thisObject->isESNull())
+        //    throw TypeError();
+        const InternalString& str = thisObject->asESStringObject()->getStringData()->string();
+        const InternalString& searchStr = instance->currentExecutionContext()->arguments()[0].toInternalString(); // TODO converesion w&w/o test
 
-        ESValue* val = esUndefined;
+        ESValue val;
         if(instance->currentExecutionContext()->argumentCount() > 1)
             val = instance->currentExecutionContext()->arguments()[1];
 
         int result;
-        if (val == esUndefined) {
+        if (val.isUndefined()) {
             result = str.string()->find(*searchStr.string());
         } else {
-            ESValue* numPos = val->toNumber();
-            int pos = numPos->toInteger()->isSmi() ? numPos->toInteger()->toSmi()->value() : numPos->toInteger()->toHeapObject()->toESNumber()->get();
+            double numPos = val.toNumber();
+            int pos = numPos;
             int len = str.string()->length();
             int start = std::min(std::max(pos, 0), len);
             result = str.string()->find(*searchStr.string(), start);
         }
-        instance->currentExecutionContext()->doReturn(Smi::fromInt(result));
-        return esUndefined;
+        instance->currentExecutionContext()->doReturn(ESValue(result));
+        return ESValue();
     }), false, false);
     m_stringPrototype->set(L"indexOf", ESFunctionObject::create(NULL, stringIndexOf));
 
     //$21.1.3.19 String.prototype.substring(start, end)
-    FunctionDeclarationNode* stringSubstring = new FunctionDeclarationNode(L"substring", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
+    FunctionDeclarationNode* stringSubstring = new FunctionDeclarationNode(L"substring", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
-        if (thisObject->isESUndefined() || thisObject->isESNull())
-            throw TypeError();
+        //if (thisObject->isESUndefined() || thisObject->isESNull())
+        //    throw TypeError();
 
-        const InternalString& str = thisObject->toESStringObject()->getStringData()->string();
+        const InternalString& str = thisObject->asESStringObject()->getStringData()->string();
         int len = str.length();
-        int intStart = instance->currentExecutionContext()->arguments()[0]->toSmi()->value();
-        ESValue* end = instance->currentExecutionContext()->arguments()[1];
-        int intEnd = (end == esUndefined) ? len : end->toInteger()->toSmi()->value();
+        int intStart = instance->currentExecutionContext()->arguments()[0].asInt32();
+        ESValue& end = instance->currentExecutionContext()->arguments()[1];
+        //int intEnd = (end.isUndefined()) ? len : end->toInteger().asInt32();
+        int intEnd = (end.isUndefined()) ? len : end.asInt32();
         int finalStart = std::min(std::max(intStart, 0), len);
         int finalEnd = std::min(std::max(intEnd, 0), len);
         int from = std::min(finalStart, finalEnd);
         int to = std::max(finalStart, finalEnd);
         InternalString ret(str.string()->substr(from, to-from).c_str());
         instance->currentExecutionContext()->doReturn(ESString::create(ret));
-        return esUndefined;
+        return ESValue();
     }), false, false);
     m_stringPrototype->set(L"substring", ESFunctionObject::create(NULL, stringSubstring));
-    */
 }
 
 void GlobalObject::installDate()
