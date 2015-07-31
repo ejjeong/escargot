@@ -244,7 +244,7 @@ void GlobalObject::installString()
     FunctionDeclarationNode* stringIndexOf = new FunctionDeclarationNode(L"indexOf", ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
         JSObject* arguments = instance->currentExecutionContext()->environment()->record()->getBindingValue(L"arguments", false)->toHeapObject()->toJSObject();
         JSObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
-        if (thisObject->isUndefined() || thisObject->isESNull())
+        if (thisObject->isESUndefined() || thisObject->isESNull())
             throw TypeError();
         const ESString& str = thisObject->toJSString()->getStringData()->string();
         const ESString& searchStr = arguments->get(strings->numbers[0])->toHeapObject()->toPString()->string(); // TODO converesion w&w/o test
@@ -269,7 +269,7 @@ void GlobalObject::installString()
     FunctionDeclarationNode* stringSubstring = new FunctionDeclarationNode(L"substring", ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
         JSObject* arguments = instance->currentExecutionContext()->environment()->record()->getBindingValue(L"arguments", false)->toHeapObject()->toJSObject();
         JSObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
-        if (thisObject->isUndefined() || thisObject->isESNull())
+        if (thisObject->isESUndefined() || thisObject->isESNull())
             throw TypeError();
 
         const ESString& str = thisObject->toJSString()->getStringData()->string();

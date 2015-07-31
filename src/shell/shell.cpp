@@ -10,7 +10,7 @@ int main(int argc, char* argv[])
     escargot::ESValue* u= escargot::undefined;
     escargot::ESValue* n = escargot::null;
 
-    escargot::Undefined* uu = u->toHeapObject()->toUndefined();
+    escargot::ESUndefined* uu = u->toHeapObject()->toESUndefined();
     escargot::ESNull* nn = n->toHeapObject()->toESNull();
 
     ASSERT(uu == escargot::undefined);
@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
     GC_gcollect();
     escargot::ESValue* val = obj->get("obj");
     ASSERT(val->isHeapObject());
-    ASSERT(obj->get("obj")->toHeapObject()->isUndefined());
+    ASSERT(obj->get("obj")->toHeapObject()->isESUndefined());
      */
     escargot::ESVMInstance* ES = new escargot::ESVMInstance();
     ES->enter();

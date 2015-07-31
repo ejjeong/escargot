@@ -12,7 +12,7 @@ namespace escargot {
 LexicalEnvironment* LexicalEnvironment::newFunctionEnvironment(JSFunction* function, ESValue* newTarget)
 {
     ASSERT(newTarget->isHeapObject());
-    ASSERT(newTarget->toHeapObject()->isUndefined() || newTarget->toHeapObject()->isJSObject());
+    ASSERT(newTarget->toHeapObject()->isESUndefined() || newTarget->toHeapObject()->isJSObject());
     FunctionEnvironmentRecord* envRec = new FunctionEnvironmentRecord();
 
     envRec->m_functionObject = function;

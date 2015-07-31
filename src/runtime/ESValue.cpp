@@ -8,8 +8,8 @@
 
 namespace escargot {
 
-static Undefined s_undefined;
-Undefined* esUndefined = &s_undefined;
+static ESUndefined s_undefined;
+ESUndefined* esUndefined = &s_undefined;
 
 static ESNull s_null;
 ESNull* esESNull = &s_null;
@@ -86,7 +86,7 @@ ESString ESValue::toESString()
         ret = ESString(toSmi()->value());
     } else {
         HeapObject* o = toHeapObject();
-        if(o->isUndefined()) {
+        if(o->isESUndefined()) {
             ret = strings->undefined;
         } else if(o->isESNull()) {
             ret = strings->null;

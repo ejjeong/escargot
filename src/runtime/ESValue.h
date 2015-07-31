@@ -8,7 +8,7 @@ namespace escargot {
 
 class Smi;
 class HeapObject;
-class Undefined;
+class ESUndefined;
 class ESNull;
 class PBoolean;
 class PNumber;
@@ -22,7 +22,7 @@ class JSDate;
 class FunctionNode;
 class ESVMInstance;
 
-extern Undefined* esUndefined;
+extern ESUndefined* esUndefined;
 extern ESNull* esESNull;
 extern PBoolean* esTrue;
 extern PBoolean* esFalse;
@@ -72,7 +72,7 @@ class HeapObject : public ESValue, public gc {
 public:
     enum Type {
         Primitive = 1 << 0,
-        Undefined = 1 << 1,
+        ESUndefined = 1 << 1,
         ESNull = 1 << 2,
         PBoolean = 1 << 3,
         PNumber = 1 << 4,
@@ -105,17 +105,17 @@ public:
         return m_data & Type::Primitive;
     }
 
-    ALWAYS_INLINE bool isUndefined() const
+    ALWAYS_INLINE bool isESUndefined() const
     {
-        return m_data & Type::Undefined;
+        return m_data & Type::ESUndefined;
     }
 
-    ALWAYS_INLINE ::escargot::Undefined* toUndefined()
+    ALWAYS_INLINE ::escargot::ESUndefined* toESUndefined()
     {
 #ifndef NDEBUG
-        ASSERT(isUndefined());
+        ASSERT(isESUndefined());
 #endif
-        return reinterpret_cast<::escargot::Undefined *>(this);
+        return reinterpret_cast<::escargot::ESUndefined *>(this);
     }
 
     ALWAYS_INLINE bool isESNull()  const
@@ -261,17 +261,17 @@ protected:
     int m_data;
 };
 
-class Undefined : public HeapObject {
+class ESUndefined : public HeapObject {
 protected:
 public:
-    Undefined()
-        : HeapObject((Type)(Type::Primitive | Type::Undefined))
+    ESUndefined()
+        : HeapObject((Type)(Type::Primitive | Type::ESUndefined))
     {
 
     }
-    static Undefined* create()
+    static ESUndefined* create()
     {
-        return new Undefined();
+        return new ESUndefined();
     }
 };
 

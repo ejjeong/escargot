@@ -184,7 +184,7 @@ inline ESValue* ESValue::toNumber()
         HeapObject* o = toHeapObject();
         if (o->isPNumber()) {
             return this;
-        } else if (o->isUndefined()) {
+        } else if (o->isESUndefined()) {
             return esNaN;
         } else if (o->isESNull()) {
             return Smi::fromInt(0);
