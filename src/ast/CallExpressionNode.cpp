@@ -9,9 +9,9 @@ namespace escargot {
 
 ESValue* CallExpressionNode::execute(ESVMInstance* instance)
 {
-    instance->currentExecutionContext()->resetLastJSObjectMetInMemberExpressionNode();
+    instance->currentExecutionContext()->resetLastESObjectMetInMemberExpressionNode();
     ESValue* fn = m_callee->execute(instance)->ensureValue();
-    ESValue* receiver = instance->currentExecutionContext()->lastJSObjectMetInMemberExpressionNode();
+    ESValue* receiver = instance->currentExecutionContext()->lastESObjectMetInMemberExpressionNode();
     if(receiver == NULL)
         receiver = instance->globalObject();
 

@@ -6,7 +6,7 @@
 namespace escargot {
 
 class JSBuiltinsObject;
-class GlobalObject : public JSObject {
+class GlobalObject : public ESObject {
 public:
     friend class ESVMInstance;
     GlobalObject();
@@ -16,7 +16,7 @@ public:
         return m_object;
     }
 
-    ALWAYS_INLINE JSObject* objectPrototype()
+    ALWAYS_INLINE ESObject* objectPrototype()
     {
         return m_objectPrototype;
     }
@@ -26,7 +26,7 @@ public:
         return m_referenceError;
     }
 
-    ALWAYS_INLINE JSObject* referenceErrorPrototype()
+    ALWAYS_INLINE ESObject* referenceErrorPrototype()
     {
         return m_referenceErrorPrototype;
     }
@@ -46,7 +46,7 @@ public:
         return m_array;
     }
 
-    ALWAYS_INLINE JSObject* arrayPrototype()
+    ALWAYS_INLINE ESObject* arrayPrototype()
     {
         return m_arrayPrototype;
     }
@@ -79,11 +79,11 @@ protected:
     void installString();
     void installDate();
     escargot::ESFunctionObject* m_object;
-    escargot::JSObject* m_objectPrototype;
+    escargot::ESObject* m_objectPrototype;
     escargot::ESFunctionObject* m_function;
     escargot::ESFunctionObject* m_functionPrototype;
     escargot::ESFunctionObject* m_referenceError;
-    escargot::JSObject* m_referenceErrorPrototype;
+    escargot::ESObject* m_referenceErrorPrototype;
     escargot::ESFunctionObject* m_array;
     escargot::ESArrayObject* m_arrayPrototype;
     escargot::ESFunctionObject* m_string;

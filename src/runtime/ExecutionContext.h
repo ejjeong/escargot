@@ -43,22 +43,22 @@ public:
     }
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
-    JSSlot* resolveBinding(const InternalAtomicString& name);
+    ESSlot* resolveBinding(const InternalAtomicString& name);
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvethisbinding
-    JSObject* resolveThisBinding();
+    ESObject* resolveThisBinding();
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-getthisenvironment
     LexicalEnvironment* getThisEnvironment();
 
-    ALWAYS_INLINE void resetLastJSObjectMetInMemberExpressionNode()
+    ALWAYS_INLINE void resetLastESObjectMetInMemberExpressionNode()
     {
-        m_lastJSObjectMetInMemberExpressionNode = NULL;
+        m_lastESObjectMetInMemberExpressionNode = NULL;
     }
 
-    ALWAYS_INLINE JSObject* lastJSObjectMetInMemberExpressionNode()
+    ALWAYS_INLINE ESObject* lastESObjectMetInMemberExpressionNode()
     {
-        return m_lastJSObjectMetInMemberExpressionNode;
+        return m_lastESObjectMetInMemberExpressionNode;
     }
 
     ALWAYS_INLINE const InternalAtomicString& lastUsedPropertyNameInMemberExpressionNode()
@@ -71,9 +71,9 @@ public:
         return m_lastUsedPropertyValueInMemberExpressionNode;
     }
 
-    ALWAYS_INLINE void setLastJSObjectMetInMemberExpressionNode(JSObject* obj, const InternalAtomicString& name, ESValue* value)
+    ALWAYS_INLINE void setLastESObjectMetInMemberExpressionNode(ESObject* obj, const InternalAtomicString& name, ESValue* value)
     {
-        m_lastJSObjectMetInMemberExpressionNode = obj;
+        m_lastESObjectMetInMemberExpressionNode = obj;
         m_lastUsedPropertyNameInMemberExpressionNode = name;
         m_lastUsedPropertyValueInMemberExpressionNode = value;
     }
@@ -94,7 +94,7 @@ private:
     ESFunctionObject* m_function;
     LexicalEnvironment* m_lexicalEnvironment;
     LexicalEnvironment* m_variableEnvironment;
-    JSObject* m_lastJSObjectMetInMemberExpressionNode;
+    ESObject* m_lastESObjectMetInMemberExpressionNode;
     InternalAtomicString m_lastUsedPropertyNameInMemberExpressionNode;
     ESValue* m_lastUsedPropertyValueInMemberExpressionNode;
     ESValue* m_returnValue;

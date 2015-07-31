@@ -13,12 +13,12 @@ ESValue* NewExpressionNode::execute(ESVMInstance* instance)
     if(!fn->isHeapObject() || !fn->toHeapObject()->isESFunctionObject())
         throw TypeError();
     ESFunctionObject* function = fn->toHeapObject()->toESFunctionObject();
-    JSObject* receiver;
+    ESObject* receiver;
     if (function == instance->globalObject()->date()) {
         receiver = ESDateObject::create();
         receiver->toESDateObject()->setTimeValue();
     } else {
-        receiver = JSObject::create();
+        receiver = ESObject::create();
     }
     receiver->setConstructor(fn);
     receiver->set__proto__(function->protoType());

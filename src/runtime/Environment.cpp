@@ -12,7 +12,7 @@ namespace escargot {
 LexicalEnvironment* LexicalEnvironment::newFunctionEnvironment(ESFunctionObject* function, ESValue* newTarget)
 {
     ASSERT(newTarget->isHeapObject());
-    ASSERT(newTarget->toHeapObject()->isESUndefined() || newTarget->toHeapObject()->isJSObject());
+    ASSERT(newTarget->toHeapObject()->isESUndefined() || newTarget->toHeapObject()->isESObject());
     FunctionEnvironmentRecord* envRec = new FunctionEnvironmentRecord();
 
     envRec->m_functionObject = function;
@@ -48,7 +48,7 @@ bool GlobalEnvironmentRecord::hasVarDeclaration(const InternalAtomicString& name
 
 //$8.1.1.4.15
 bool GlobalEnvironmentRecord::canDeclareGlobalVar(const InternalAtomicString& name) {
-    JSObject* globalObj = m_objectRecord->bindingObject();
+    ESObject* globalObj = m_objectRecord->bindingObject();
     bool hasProperty = globalObj->hasOwnProperty(name);
     if (hasProperty)
         return true;
@@ -58,8 +58,8 @@ bool GlobalEnvironmentRecord::canDeclareGlobalVar(const InternalAtomicString& na
 
 //$8.1.1.4.16
 bool GlobalEnvironmentRecord::canDeclareGlobalFunction(const InternalAtomicString& name) {
-    JSObject* globalObj = m_objectRecord->bindingObject();
-    JSSlot* pd = globalObj->find(name);
+    ESObject* globalObj = m_objectRecord->bindingObject();
+    ESSlot* pd = globalObj->find(name);
     if(pd == NULL)
         return globalObj->isExtensible();
 
@@ -73,7 +73,7 @@ bool GlobalEnvironmentRecord::canDeclareGlobalFunction(const InternalAtomicStrin
 
 //$8.1.1.4.17
 void GlobalEnvironmentRecord::createGlobalVarBinding(const InternalAtomicString& name, bool canDelete) {
-    JSObject* globalObj = m_objectRecord->bindingObject();
+    ESObject* globalObj = m_objectRecord->bindingObject();
     bool hasProperty = globalObj->hasOwnProperty(name);
     bool extensible = globalObj->isExtensible();
     if (!hasProperty && extensible) {
@@ -86,7 +86,7 @@ void GlobalEnvironmentRecord::createGlobalVarBinding(const InternalAtomicString&
 
 //$8.1.1.4.18
 void GlobalEnvironmentRecord::createGlobalFunctionBinding(const InternalAtomicString& name, ESValue* V, bool canDelete) {
-    JSObject* globalObj = m_objectRecord->bindingObject();
+    ESObject* globalObj = m_objectRecord->bindingObject();
     globalObj->definePropertyOrThrow(name, true, true, canDelete);
     globalObj->set(name, V, false);
     if( std::find(m_varNames.begin(), m_varNames.end(), name) == m_varNames.end() )
@@ -94,13 +94,13 @@ void GlobalEnvironmentRecord::createGlobalFunctionBinding(const InternalAtomicSt
 }
 
 //$8.1.1.4.11
-JSObject* GlobalEnvironmentRecord::getThisBinding() {
+ESObject* GlobalEnvironmentRecord::getThisBinding() {
     return m_objectRecord->bindingObject();
 }
 
 //$8.1.1.4.1
-JSSlot* GlobalEnvironmentRecord::hasBinding(const InternalAtomicString& name) {
-    JSSlot* ret = m_declarativeRecord->hasBinding(name);
+ESSlot* GlobalEnvironmentRecord::hasBinding(const InternalAtomicString& name) {
+    ESSlot* ret = m_declarativeRecord->hasBinding(name);
     if(ret)
         return ret;
     return m_objectRecord->hasBinding(name);
@@ -158,7 +158,7 @@ void ObjectEnvironmentRecord::setMutableBinding(const InternalAtomicString& name
 }
 
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-bindthisvalue
-void FunctionEnvironmentRecord::bindThisValue(JSObject* V)
+void FunctionEnvironmentRecord::bindThisValue(ESObject* V)
 {
     ASSERT(m_thisBindingStatus != Initialized);
     if(m_thisBindingStatus == Lexical)
@@ -167,13 +167,13 @@ void FunctionEnvironmentRecord::bindThisValue(JSObject* V)
     m_thisBindingStatus = Initialized;
 }
 
-JSObject* FunctionEnvironmentRecord::getThisBinding()
+ESObject* FunctionEnvironmentRecord::getThisBinding()
 {
     ASSERT(m_thisBindingStatus != Lexical);
     if(m_thisBindingStatus == Uninitialized)
         throw ReferenceError(L"4");
 
-    return m_thisValue->toHeapObject()->toJSObject();
+    return m_thisValue->toHeapObject()->toESObject();
 }
 
 }

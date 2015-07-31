@@ -20,8 +20,8 @@ ESValue* MemberExpressionNode::execute(ESVMInstance* instance)
         value = stringObject;
     }
 
-    if(value->isHeapObject() && value->toHeapObject()->isJSObject()) {
-        JSObject* obj = value->toHeapObject()->toJSObject();
+    if(value->isHeapObject() && value->toHeapObject()->isESObject()) {
+        ESObject* obj = value->toHeapObject()->toESObject();
         InternalAtomicString propertyName;
         ESValue* propertyVal = NULL;
         if(!m_computed && m_property->type() == NodeType::Identifier) {
@@ -33,10 +33,10 @@ ESValue* MemberExpressionNode::execute(ESVMInstance* instance)
             propertyName = InternalAtomicString(tmpVal->toInternalString().data());
         }
 
-        instance->currentExecutionContext()->setLastJSObjectMetInMemberExpressionNode(obj->toHeapObject()->toJSObject(),
+        instance->currentExecutionContext()->setLastESObjectMetInMemberExpressionNode(obj->toHeapObject()->toESObject(),
                 propertyName, propertyVal);
 
-        JSSlot* slot;
+        ESSlot* slot;
         if (obj->isESArrayObject() && propertyVal != NULL)
             slot = obj->toESArrayObject()->find(propertyVal);
         else
@@ -46,9 +46,9 @@ ESValue* MemberExpressionNode::execute(ESVMInstance* instance)
             return slot;
         } else {
             ESValue* prototype = obj->__proto__();
-            while(prototype && prototype->isHeapObject() && prototype->toHeapObject()->isJSObject()) {
-                ::escargot::JSObject* obj = prototype->toHeapObject()->toJSObject();
-                JSSlot* s = obj->find(propertyName);
+            while(prototype && prototype->isHeapObject() && prototype->toHeapObject()->isESObject()) {
+                ::escargot::ESObject* obj = prototype->toHeapObject()->toESObject();
+                ESSlot* s = obj->find(propertyName);
                 if(s)
                     return s;
                 prototype = obj->__proto__();

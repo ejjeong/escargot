@@ -12,7 +12,7 @@ ESValue* IdentifierNode::execute(ESVMInstance* instance)
         return m_cachedSlot;
     }
 
-    JSSlot* slot = instance->currentExecutionContext()->resolveBinding(name());
+    ESSlot* slot = instance->currentExecutionContext()->resolveBinding(name());
     if(LIKELY(slot != NULL)) {
         m_cachedExecutionContext = instance->currentExecutionContext();
         m_cachedSlot = slot;

@@ -72,7 +72,7 @@ bool ESValue::equalsTo(ESValue* val)
             return false;
         if (o->isESArrayObject())
             return false;
-        if (o->isJSObject())
+        if (o->isESObject())
             return false;
         return false;
     }
@@ -117,13 +117,13 @@ InternalString ESValue::toInternalString()
         } else if(o->isESStringObject()) {
             ret.append(o->toESStringObject()->getStringData()->string());
         } else if(o->isESErrorObject()) {
-        	    ret.append(o->toJSObject()->get(L"name", true)->toInternalString().data());
+        	    ret.append(o->toESObject()->get(L"name", true)->toInternalString().data());
         	    ret.append(L": ");
-        	    ret.append(o->toJSObject()->get(L"message")->toInternalString().data());
-        } else if(o->isJSObject()) {
+        	    ret.append(o->toESObject()->get(L"message")->toInternalString().data());
+        } else if(o->isESObject()) {
           ret = L"Object {";
           bool isFirst = true;
-          o->toJSObject()->enumeration([&ret, &isFirst](const InternalString& key, JSSlot* slot) {
+          o->toESObject()->enumeration([&ret, &isFirst](const InternalString& key, ESSlot* slot) {
               if(!isFirst)
                   ret.append(L", ");
               ret.append(key);
@@ -140,11 +140,11 @@ InternalString ESValue::toInternalString()
     return ret;
 }
 
-ESValue* JSObject::defaultValue(ESVMInstance* instance, PrimitiveTypeHint hint)
+ESValue* ESObject::defaultValue(ESVMInstance* instance, PrimitiveTypeHint hint)
 {
     if (hint == PreferString) {
         ESValue* underScoreProto = get(strings->__proto__);
-        ESValue* toStringMethod = underScoreProto->toHeapObject()->toJSObject()->get(L"toString");
+        ESValue* toStringMethod = underScoreProto->toHeapObject()->toESObject()->get(L"toString");
         std::vector<ESValue*, gc_allocator<ESValue*>> arguments;
         return ESFunctionObject::call(toStringMethod, this, &arguments[0], arguments.size(), instance);
     } else {
@@ -155,10 +155,10 @@ ESValue* JSObject::defaultValue(ESVMInstance* instance, PrimitiveTypeHint hint)
 
 ESValue* functionCallerInnerProcess(ESFunctionObject* fn, ESValue* callee, ESValue* receiver, ESValue* arguments[], size_t argumentCount, bool needsArgumentsObject, ESVMInstance* ESVMInstance)
 {
-    ((FunctionEnvironmentRecord *)ESVMInstance->currentExecutionContext()->environment()->record())->bindThisValue(receiver->toHeapObject()->toJSObject());
+    ((FunctionEnvironmentRecord *)ESVMInstance->currentExecutionContext()->environment()->record())->bindThisValue(receiver->toHeapObject()->toESObject());
     DeclarativeEnvironmentRecord* functionRecord = ESVMInstance->currentExecutionContext()->environment()->record()->toDeclarativeEnvironmentRecord();
     if(needsArgumentsObject) {
-        JSObject* argumentsObject = JSObject::create();
+        ESObject* argumentsObject = ESObject::create();
         unsigned i = 0;
         argumentsObject->set(strings->length, Smi::fromInt(argumentCount));
         for(; i < argumentCount && i < ESCARGOT_STRINGS_NUMBERS_MAX ; i ++) {
@@ -210,7 +210,7 @@ ESValue* ESFunctionObject::call(ESValue* callee, ESValue* receiver, ESValue* arg
             }
 
             FunctionEnvironmentRecord envRec(true,
-                    (std::pair<InternalAtomicString, ::escargot::JSSlot>*)alloca(sizeof(std::pair<InternalAtomicString, ::escargot::JSSlot>) * fn->functionAST()->innerIdentifiers().size()),
+                    (std::pair<InternalAtomicString, ::escargot::ESSlot>*)alloca(sizeof(std::pair<InternalAtomicString, ::escargot::ESSlot>) * fn->functionAST()->innerIdentifiers().size()),
                     fn->functionAST()->innerIdentifiers().size());
 
             envRec.m_functionObject = fn;

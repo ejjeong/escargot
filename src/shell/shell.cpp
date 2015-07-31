@@ -19,19 +19,19 @@ int main(int argc, char* argv[])
     escargot::Smi* s = escargot::Smi::fromInt(2);
     ASSERT(s->toSmi()->value() == 2);
 */
-    //JSObject & gc_allocator test
+    //ESObject & gc_allocator test
     /*
-    escargot::JSObject* obj = escargot::JSObject::create();
+    escargot::ESObject* obj = escargot::ESObject::create();
     obj->set("asdf",escargot::Smi::fromInt(2));
 
-    ASSERT(obj->toHeapObject()->isJSObject());
-    escargot::JSObject* o = escargot::JSObject::create();
+    ASSERT(obj->toHeapObject()->isESObject());
+    escargot::ESObject* o = escargot::ESObject::create();
     obj->set("obj",o);
     o = NULL;
 
     GC_gcollect();
     ASSERT(obj->get(L"asdf")->toSmi()->value() == 2);
-    ASSERT(obj->get("obj")->toHeapObject()->isJSObject());
+    ASSERT(obj->get("obj")->toHeapObject()->isESObject());
 
     obj->set("obj",escargot::esUndefined);
     GC_gcollect();

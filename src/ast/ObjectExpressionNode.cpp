@@ -10,7 +10,7 @@ namespace escargot {
 
 ESValue* ObjectExpressionNode::execute(ESVMInstance* instance)
 {
-    JSObject* obj = JSObject::create();
+    ESObject* obj = ESObject::create();
     obj->setConstructor(instance->globalObject()->object());
     obj->set__proto__(instance->globalObject()->objectPrototype());
 

@@ -10,7 +10,7 @@ class EnvironmentRecord;
 class DeclarativeEnvironmentRecord;
 class GlobalEnvironmentRecord;
 class ObjectEnvironmentRecord;
-class JSObject;
+class ESObject;
 class GlobalObject;
 
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-lexical-environments
@@ -50,7 +50,7 @@ public:
     virtual ~EnvironmentRecord() { }
 
     //return NULL == not exist
-    virtual JSSlot* hasBinding(const InternalAtomicString& name)
+    virtual ESSlot* hasBinding(const InternalAtomicString& name)
     {
         RELEASE_ASSERT_NOT_REACHED();
     }
@@ -89,7 +89,7 @@ public:
         RELEASE_ASSERT_NOT_REACHED();
     }
 
-    virtual JSObject* getThisBinding()
+    virtual ESObject* getThisBinding()
     {
         RELEASE_ASSERT_NOT_REACHED();
     }
@@ -134,16 +134,16 @@ protected:
 
 class ObjectEnvironmentRecord : public EnvironmentRecord {
 public:
-    ObjectEnvironmentRecord(JSObject* O)
+    ObjectEnvironmentRecord(ESObject* O)
         : m_bindingObject(O)
     {
     }
     ~ObjectEnvironmentRecord() { }
 
     //return NULL == not exist
-    virtual JSSlot* hasBinding(const InternalAtomicString& name)
+    virtual ESSlot* hasBinding(const InternalAtomicString& name)
     {
-        JSSlot* slot = m_bindingObject->find(name);
+        ESSlot* slot = m_bindingObject->find(name);
         if(slot) {
             return slot;
         }
@@ -161,7 +161,7 @@ public:
     {
         return false;
     }
-    ALWAYS_INLINE JSObject* bindingObject() {
+    ALWAYS_INLINE ESObject* bindingObject() {
         return m_bindingObject;
     }
 
@@ -176,13 +176,13 @@ public:
     }
 
 protected:
-    JSObject* m_bindingObject;
+    ESObject* m_bindingObject;
 };
 
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-declarative-environment-records
 class DeclarativeEnvironmentRecord : public EnvironmentRecord {
 public:
-    DeclarativeEnvironmentRecord(bool shouldUseVector = false,std::pair<InternalAtomicString, JSSlot>* vectorBuffer = NULL, size_t vectorSize = 0)
+    DeclarativeEnvironmentRecord(bool shouldUseVector = false,std::pair<InternalAtomicString, ESSlot>* vectorBuffer = NULL, size_t vectorSize = 0)
     {
         if(shouldUseVector) {
             m_innerObject = NULL;
@@ -192,17 +192,17 @@ public:
             m_vectorSize = vectorSize;
 #endif
         } else {
-            m_innerObject = JSObject::create();
+            m_innerObject = ESObject::create();
         }
     }
     ~DeclarativeEnvironmentRecord()
     {
     }
 
-    virtual JSSlot* hasBinding(const InternalAtomicString& name)
+    virtual ESSlot* hasBinding(const InternalAtomicString& name)
     {
         if(UNLIKELY(m_innerObject != NULL)) {
-            JSSlot* slot = m_innerObject->find(name);
+            ESSlot* slot = m_innerObject->find(name);
             if(slot) {
                 return slot;
             }
@@ -275,30 +275,30 @@ public:
     }
 
 protected:
-    std::pair<InternalAtomicString, JSSlot>* m_vectorData;
+    std::pair<InternalAtomicString, ESSlot>* m_vectorData;
     size_t m_usedCount;
 #ifndef NDEBUG
     size_t m_vectorSize;
 #endif
-    JSObject* m_innerObject;
+    ESObject* m_innerObject;
 };
 
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-global-environment-records
 class GlobalEnvironmentRecord : public EnvironmentRecord {
 public:
-    GlobalEnvironmentRecord(JSObject* globalObject)
+    GlobalEnvironmentRecord(ESObject* globalObject)
     {
         m_objectRecord = new ObjectEnvironmentRecord(globalObject);
         m_declarativeRecord = new DeclarativeEnvironmentRecord();
     }
     ~GlobalEnvironmentRecord() { }
 
-    virtual JSSlot* hasBinding(const InternalAtomicString& name);
+    virtual ESSlot* hasBinding(const InternalAtomicString& name);
     void createMutableBinding(const InternalAtomicString& name, bool canDelete = false);
     void initializeBinding(const InternalAtomicString& name, ESValue* V);
     void setMutableBinding(const InternalAtomicString& name, ESValue* V, bool mustNotThrowTypeErrorExecption);
 
-    JSObject* getThisBinding();
+    ESObject* getThisBinding();
     bool hasVarDeclaration(const InternalAtomicString& name);
     //bool hasLexicalDeclaration(const InternalString& name);
     bool hasRestrictedGlobalProperty(const InternalAtomicString& name);
@@ -331,7 +331,7 @@ class FunctionEnvironmentRecord : public DeclarativeEnvironmentRecord {
     friend class LexicalEnvironment;
     friend class ESFunctionObject;
 public:
-    FunctionEnvironmentRecord(bool shouldUseVector = false,std::pair<InternalAtomicString, JSSlot>* vectorBuffer = NULL, size_t vectorSize = 0)
+    FunctionEnvironmentRecord(bool shouldUseVector = false,std::pair<InternalAtomicString, ESSlot>* vectorBuffer = NULL, size_t vectorSize = 0)
         : DeclarativeEnvironmentRecord(shouldUseVector, vectorBuffer, vectorSize)
     {
         m_thisBindingStatus = Uninitialized;
@@ -348,8 +348,8 @@ public:
     }
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-bindthisvalue
-    void bindThisValue(JSObject* V);
-    JSObject* getThisBinding();
+    void bindThisValue(ESObject* V);
+    ESObject* getThisBinding();
 
 protected:
     ESValue* m_thisValue;

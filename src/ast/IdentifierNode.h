@@ -34,7 +34,7 @@ protected:
 
     ExecutionContext* m_cachedExecutionContext;
     size_t m_identifierCacheInvalidationCheckCount;
-    JSSlot* m_cachedSlot;
+    ESSlot* m_cachedSlot;
 
     bool m_canUseFastAccess;
     size_t m_fastAccessIndex;

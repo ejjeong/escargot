@@ -95,9 +95,9 @@ inline bool ESValue::isHeapObject() const
     return HAS_OBJECT_TAG(this);
 }
 
-inline bool ESValue::isJSSlot() const
+inline bool ESValue::isESSlot() const
 {
-    return (HAS_OBJECT_TAG(this)) && ((reinterpret_cast<const HeapObject*>(this))->type() & HeapObject::Type::JSSlot);
+    return (HAS_OBJECT_TAG(this)) && ((reinterpret_cast<const HeapObject*>(this))->type() & HeapObject::Type::ESSlot);
 }
 
 inline Smi* ESValue::toSmi() const
@@ -122,10 +122,10 @@ inline HeapObject* ESValue::toHeapObject() const
     return static_cast<HeapObject*>(const_cast<ESValue*>(this));
 }
 
-inline JSSlot* ESValue::toJSSlot()
+inline ESSlot* ESValue::toESSlot()
 {
-    ASSERT(isJSSlot());
-    return reinterpret_cast<JSSlot*>(this);
+    ASSERT(isESSlot());
+    return reinterpret_cast<ESSlot*>(this);
 }
 
 
@@ -160,7 +160,7 @@ inline ESValue* ESValue::toPrimitive(PrimitiveTypeHint hint)
         HeapObject* o = toHeapObject();
         // Primitive type: the result equals the input argument (no conversion).
         if (!o->isPrimitive()) {
-            if (o->isJSObject()) {
+            if (o->isESObject()) {
                 if (o->isESDateObject()) {
                     return ESNumber::create(o->toESDateObject()->getTimeAsMilisec());
                 } else {
@@ -192,7 +192,7 @@ inline ESValue* ESValue::toNumber()
             return Smi::fromInt(o->toESBoolean()->get());
         } else if (o->isESStringObject()) {
             ASSERT(false); //TODO
-        } else if (o->isJSObject()) {
+        } else if (o->isESObject()) {
             if (o->isESDateObject()) {
                 return ESNumber::create(o->toESDateObject()->getTimeAsMilisec());
               }
@@ -251,8 +251,8 @@ inline PString* ESValue::toString()
 
 inline ESValue* ESValue::ensureValue()
 {
-    if(isJSSlot()) {
-        return toJSSlot()->value();
+    if(isESSlot()) {
+        return toESSlot()->value();
     }
     return this;
 }

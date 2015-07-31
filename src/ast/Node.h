@@ -7,7 +7,7 @@ namespace escargot {
 
 class ESVMInstance;
 class ExecutionContext;
-class JSSlot;
+class ESSlot;
 class ESScriptParser;
 
 enum NodeType {

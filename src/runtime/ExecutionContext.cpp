@@ -9,17 +9,17 @@ ExecutionContext::ExecutionContext(LexicalEnvironment* varEnv)
     m_lexicalEnvironment = varEnv;
     m_variableEnvironment = varEnv;
     m_function = NULL;
-    resetLastJSObjectMetInMemberExpressionNode();
+    resetLastESObjectMetInMemberExpressionNode();
     m_returnValue = esUndefined;
 }
 
-JSSlot* ExecutionContext::resolveBinding(const InternalAtomicString& name)
+ESSlot* ExecutionContext::resolveBinding(const InternalAtomicString& name)
 {
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
     LexicalEnvironment* env = environment();
 
     while(env) {
-        JSSlot* slot = env->record()->hasBinding(name);
+        ESSlot* slot = env->record()->hasBinding(name);
         if(slot)
             return slot;
         env = env->outerEnvironment();
@@ -29,7 +29,7 @@ JSSlot* ExecutionContext::resolveBinding(const InternalAtomicString& name)
 }
 
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvethisbinding
-JSObject* ExecutionContext::resolveThisBinding()
+ESObject* ExecutionContext::resolveThisBinding()
 {
     return getThisEnvironment()->record()->getThisBinding();
 }

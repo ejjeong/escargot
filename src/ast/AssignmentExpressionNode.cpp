@@ -17,14 +17,14 @@ ESValue* AssignmentExpressionNode::execute(ESVMInstance* instance)
         //http://www.ecma-international.org/ecma-262/5.1/#sec-11.13.1
         //TODO
         ESValue* rval = m_right->execute(instance)->ensureValue();
-        instance->currentExecutionContext()->resetLastJSObjectMetInMemberExpressionNode();
+        instance->currentExecutionContext()->resetLastESObjectMetInMemberExpressionNode();
         ESValue* lref = esUndefined;
         try {
             lref = m_left->execute(instance);
         } catch(ReferenceError& err) {
         } catch(ESValue* err) {
-            if(err->isHeapObject() && err->toHeapObject()->isJSObject() &&
-                    (err->toHeapObject()->toJSObject()->constructor() == instance->globalObject()->referenceError())) {
+            if(err->isHeapObject() && err->toHeapObject()->isESObject() &&
+                    (err->toHeapObject()->toESObject()->constructor() == instance->globalObject()->referenceError())) {
 
             } else {
                 throw err;
@@ -33,7 +33,7 @@ ESValue* AssignmentExpressionNode::execute(ESVMInstance* instance)
 
         //TODO
         if(lref == esUndefined) {
-            JSObject* obj = instance->currentExecutionContext()->lastJSObjectMetInMemberExpressionNode();
+            ESObject* obj = instance->currentExecutionContext()->lastESObjectMetInMemberExpressionNode();
             if(obj == NULL && m_left->type() == NodeType::Identifier) {
                 IdentifierNode* n = (IdentifierNode *)m_left;
                 instance->globalObject()->set(n->name(), rval);
@@ -48,12 +48,12 @@ ESValue* AssignmentExpressionNode::execute(ESVMInstance* instance)
                 throw ReferenceError(L"1");
             }
 
-        } else if(lref->toHeapObject() && lref->toHeapObject()->isJSSlot()) {
-            if(instance->currentExecutionContext()->lastJSObjectMetInMemberExpressionNode()) {
+        } else if(lref->toHeapObject() && lref->toHeapObject()->isESSlot()) {
+            if(instance->currentExecutionContext()->lastESObjectMetInMemberExpressionNode()) {
                 instance->currentExecutionContext()->
-                    lastJSObjectMetInMemberExpressionNode()->set(instance->currentExecutionContext()->lastUsedPropertyNameInMemberExpressionNode(), rval);
+                    lastESObjectMetInMemberExpressionNode()->set(instance->currentExecutionContext()->lastUsedPropertyNameInMemberExpressionNode(), rval);
             } else {
-                JSSlot* slot = lref->toHeapObject()->toJSSlot();
+                ESSlot* slot = lref->toHeapObject()->toESSlot();
                 slot->setValue(rval);
             }
         } else {
@@ -71,7 +71,7 @@ ESValue* AssignmentExpressionNode::execute(ESVMInstance* instance)
 
         // TODO 6. Throw a SyntaxError
 
-        JSSlot* slot = lref->toHeapObject()->toJSSlot();
+        ESSlot* slot = lref->toHeapObject()->toESSlot();
         slot->setValue(r);
         ret = r;
         break;

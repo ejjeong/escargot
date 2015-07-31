@@ -26,7 +26,7 @@ GlobalObject::GlobalObject()
     set(strings->undefined, esUndefined);
 
     FunctionDeclarationNode* node = new FunctionDeclarationNode(InternalAtomicString(L"print"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
-        JSObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(strings->arguments, false)->toHeapObject()->toJSObject();
+        ESObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(strings->arguments, false)->toHeapObject()->toESObject();
         ESValue* val = value->get(strings->numbers[0]);
         InternalString str = val->toInternalString();
         wprintf(L"%ls\n", str.data());
@@ -43,7 +43,7 @@ GlobalObject::GlobalObject()
     set(L"gc", gcFunction);
 
     node = new FunctionDeclarationNode(InternalAtomicString(L"load"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
-        JSObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(strings->arguments, false)->toHeapObject()->toJSObject();
+        ESObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(strings->arguments, false)->toHeapObject()->toESObject();
         ESValue* val = value->get(strings->numbers[0]);
         InternalString str = val->toInternalString();
         const wchar_t* pt = str.data();
@@ -87,7 +87,7 @@ void GlobalObject::installFunction()
     m_functionPrototype = emptyFunction;
     m_functionPrototype->setConstructor(m_function);
 
-    m_function->defineAccessorProperty(strings->prototype, [](JSObject* self) -> ESValue* {
+    m_function->defineAccessorProperty(strings->prototype, [](ESObject* self) -> ESValue* {
         return self->toESFunctionObject()->protoType();
     },nullptr, true, false, false);
     m_function->set__proto__(emptyFunction);
@@ -104,7 +104,7 @@ void GlobalObject::installObject()
     m_object->setConstructor(m_function);
     m_object->set__proto__(emptyFunction);
 
-    m_objectPrototype = JSObject::create();
+    m_objectPrototype = ESObject::create();
     m_objectPrototype->setConstructor(m_object);
     m_object->set(strings->prototype, m_objectPrototype);
 
@@ -136,11 +136,11 @@ void GlobalObject::installArray()
 
     //$22.1.1 Array Constructor
     FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings->Array, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
-        JSObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(strings->arguments, false)->toHeapObject()->toJSObject();
+        ESObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(strings->arguments, false)->toHeapObject()->toESObject();
         int len = value->get(strings->length)->toSmi()->value();
         int size = 0;
         if (len > 1) size = len;
-        JSObject* proto = instance->globalObject()->arrayPrototype();
+        ESObject* proto = instance->globalObject()->arrayPrototype();
         escargot::ESArrayObject* array = ESArrayObject::create(size, proto);
         ESValue* val = value->get(strings->numbers[0]);
         if (len == 1 && val != esUndefined && val->isSmi()) { //numberOfArgs = 1
@@ -157,7 +157,7 @@ void GlobalObject::installArray()
 
     //$22.1.3.11 Array.prototype.indexOf()
     FunctionDeclarationNode* arrayIndexOf = new FunctionDeclarationNode(L"indexOf", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
-        JSObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(L"arguments", false)->toHeapObject()->toJSObject();
+        ESObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(L"arguments", false)->toHeapObject()->toESObject();
         auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->toESArrayObject();
         int len = thisVal->length()->toSmi()->value();
         int ret = 0;
@@ -197,7 +197,7 @@ void GlobalObject::installArray()
 
     //$22.1.3.17 Array.prototype.push(item)
     FunctionDeclarationNode* arrayPush = new FunctionDeclarationNode(L"push", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
-        JSObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(L"arguments", false)->toHeapObject()->toJSObject();
+        ESObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(L"arguments", false)->toHeapObject()->toESObject();
         int len = value->get(strings->length)->toSmi()->value();
         auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->toESArrayObject();
         for (int i = 0; i < len; i++) {
@@ -232,7 +232,7 @@ void GlobalObject::installString()
     m_stringPrototype = ESStringObject::create(L"");
     m_stringPrototype->setConstructor(m_string);
 
-    m_string->defineAccessorProperty(strings->prototype, [](JSObject* self) -> ESValue* {
+    m_string->defineAccessorProperty(strings->prototype, [](ESObject* self) -> ESValue* {
         return self->toESFunctionObject()->protoType();
     }, nullptr, true, false, false);
     m_string->set__proto__(m_functionPrototype); // empty Function
@@ -242,8 +242,8 @@ void GlobalObject::installString()
 
     //$21.1.3.8 String.prototype.indexOf(searchString[, position])
     FunctionDeclarationNode* stringIndexOf = new FunctionDeclarationNode(L"indexOf", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
-        JSObject* arguments = instance->currentExecutionContext()->environment()->record()->getBindingValue(L"arguments", false)->toHeapObject()->toJSObject();
-        JSObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+        ESObject* arguments = instance->currentExecutionContext()->environment()->record()->getBindingValue(L"arguments", false)->toHeapObject()->toESObject();
+        ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
         if (thisObject->isESUndefined() || thisObject->isESNull())
             throw TypeError();
         const InternalString& str = thisObject->toESStringObject()->getStringData()->string();
@@ -267,8 +267,8 @@ void GlobalObject::installString()
 
     //$21.1.3.19 String.prototype.substring(start, end)
     FunctionDeclarationNode* stringSubstring = new FunctionDeclarationNode(L"substring", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
-        JSObject* arguments = instance->currentExecutionContext()->environment()->record()->getBindingValue(L"arguments", false)->toHeapObject()->toJSObject();
-        JSObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+        ESObject* arguments = instance->currentExecutionContext()->environment()->record()->getBindingValue(L"arguments", false)->toHeapObject()->toESObject();
+        ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
         if (thisObject->isESUndefined() || thisObject->isESNull())
             throw TypeError();
 
@@ -294,7 +294,7 @@ void GlobalObject::installDate()
 
     //$20.3.2 The Date Constructor
     FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings->Date, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
-        JSObject* proto = instance->globalObject()->arrayPrototype();
+        ESObject* proto = instance->globalObject()->arrayPrototype();
         escargot::ESDateObject* date = ESDateObject::create(proto);
         date->setTimeValue();
         instance->currentExecutionContext()->doReturn(date);
