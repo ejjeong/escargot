@@ -376,7 +376,6 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
                     newIdentifierVector.push_back(vec[i]);
                 }
             }
-            ((FunctionDeclarationNode *)currentNode)->setNeedsActivation(false);
             ((FunctionDeclarationNode *)currentNode)->setOuterFunctionNode(nearFunctionNode);
             postAnalysisFunction(((FunctionDeclarationNode *)currentNode)->m_body, newIdentifierVector, ((FunctionDeclarationNode *)currentNode));
             ((FunctionDeclarationNode *)currentNode)->setInnerIdentifiers(std::move(newIdentifierVector));
@@ -391,7 +390,6 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
                     newIdentifierVector.push_back(vec[i]);
                 }
             }
-            ((FunctionExpressionNode *)currentNode)->setNeedsActivation(false);
             ((FunctionExpressionNode *)currentNode)->setOuterFunctionNode(nearFunctionNode);
             postAnalysisFunction(((FunctionExpressionNode *)currentNode)->m_body, newIdentifierVector, ((FunctionExpressionNode *)currentNode));
             ((FunctionExpressionNode *)currentNode)->setInnerIdentifiers(std::move(newIdentifierVector));
@@ -402,6 +400,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             auto iter = std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),name);
             if(name == strings->arguments && iter == identifierInCurrentContext.end() && nearFunctionNode) {
                 identifierInCurrentContext.push_back(strings->arguments);
+                nearFunctionNode->markNeedsArgumentsObject();
                 iter = std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),name);
             }
             if(identifierInCurrentContext.end() == iter) {

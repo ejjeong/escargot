@@ -26,10 +26,11 @@ GlobalObject::GlobalObject()
     set(strings->undefined, esUndefined);
 
     FunctionDeclarationNode* node = new FunctionDeclarationNode(InternalAtomicString(L"print"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
-        ESObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(strings->arguments, false)->toHeapObject()->toESObject();
-        ESValue* val = value->get(strings->numbers[0]);
-        InternalString str = val->toInternalString();
-        wprintf(L"%ls\n", str.data());
+        if(instance->currentExecutionContext()->argumentCount()) {
+            ESValue* val = instance->currentExecutionContext()->arguments()[0];
+            InternalString str = val->toInternalString();
+            wprintf(L"%ls\n", str.data());
+        }
         return esUndefined;
     }), false, false);
     auto printFunction = ESFunctionObject::create(NULL, node);
@@ -43,31 +44,32 @@ GlobalObject::GlobalObject()
     set(L"gc", gcFunction);
 
     node = new FunctionDeclarationNode(InternalAtomicString(L"load"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
-        ESObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(strings->arguments, false)->toHeapObject()->toESObject();
-        ESValue* val = value->get(strings->numbers[0]);
-        InternalString str = val->toInternalString();
-        const wchar_t* pt = str.data();
-        std::string path;
-        char buffer [MB_CUR_MAX];
-        memset(buffer, 0, MB_CUR_MAX);
-        while(*pt) {
-            int length = std::wctomb(buffer,*pt);
-            if (length<1)
-                break;
-            path.append(buffer);
-            pt++;
-        }
-        FILE *fp = fopen(path.c_str(),"r");
-        if(fp) {
-            std::string str;
-            char buf[512];
-            while(fgets(buf, sizeof buf, fp) != NULL) {
-                str += buf;
+        if(instance->currentExecutionContext()->argumentCount()) {
+            ESValue* val = instance->currentExecutionContext()->arguments()[0];
+            InternalString str = val->toInternalString();
+            const wchar_t* pt = str.data();
+            std::string path;
+            char buffer [MB_CUR_MAX];
+            memset(buffer, 0, MB_CUR_MAX);
+            while(*pt) {
+                int length = std::wctomb(buffer,*pt);
+                if (length<1)
+                    break;
+                path.append(buffer);
+                pt++;
             }
-            fclose(fp);
-            instance->runOnGlobalContext([instance, &str](){
-                instance->evaluate(str);
-            });
+            FILE *fp = fopen(path.c_str(),"r");
+            if(fp) {
+                std::string str;
+                char buf[512];
+                while(fgets(buf, sizeof buf, fp) != NULL) {
+                    str += buf;
+                }
+                fclose(fp);
+                instance->runOnGlobalContext([instance, &str](){
+                    instance->evaluate(str);
+                });
+            }
         }
         return esUndefined;
     }), false, false);
@@ -136,20 +138,22 @@ void GlobalObject::installArray()
 
     //$22.1.1 Array Constructor
     FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings->Array, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
-        ESObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(strings->arguments, false)->toHeapObject()->toESObject();
-        int len = value->get(strings->length)->toSmi()->value();
+        int len = instance->currentExecutionContext()->argumentCount();
         int size = 0;
         if (len > 1) size = len;
         ESObject* proto = instance->globalObject()->arrayPrototype();
         escargot::ESArrayObject* array = ESArrayObject::create(size, proto);
-        ESValue* val = value->get(strings->numbers[0]);
-        if (len == 1 && val != esUndefined && val->isSmi()) { //numberOfArgs = 1
-            array->setLength( val->toSmi()->value() );
-        } else if (len >= 1) {      // numberOfArgs>=2 or (numberOfArgs==1 && val is not ESNumber)
-            for (int idx = 0; idx < len; idx++) {
-                array->set(Smi::fromInt(idx), val);
-                val = value->get(InternalAtomicString(InternalString(idx + 1).data()));
+        if(len) {
+            ESValue* val = instance->currentExecutionContext()->arguments()[0];
+            if (len == 1 && val != esUndefined && val->isSmi()) { //numberOfArgs = 1
+                array->setLength( val->toSmi()->value() );
+            } else if (len >= 1) {      // numberOfArgs>=2 or (numberOfArgs==1 && val is not ESNumber)
+                for (int idx = 0; idx < len; idx++) {
+                    array->set(Smi::fromInt(idx), val);
+                    val = instance->currentExecutionContext()->arguments()[idx + 1];
+                }
             }
+        } else {
         }
         instance->currentExecutionContext()->doReturn(array);
         return esUndefined;
@@ -157,13 +161,12 @@ void GlobalObject::installArray()
 
     //$22.1.3.11 Array.prototype.indexOf()
     FunctionDeclarationNode* arrayIndexOf = new FunctionDeclarationNode(L"indexOf", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
-        ESObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(L"arguments", false)->toHeapObject()->toESObject();
         auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->toESArrayObject();
         int len = thisVal->length()->toSmi()->value();
         int ret = 0;
         if (len == 0) ret = -1;
         else {
-            ESValue* fromIndex = value->get(L"1");
+            ESValue* fromIndex = instance->currentExecutionContext()->arguments()[1];
             int n = 0, k = 0;
             if (fromIndex != esUndefined) {
                 n = fromIndex->toSmi()->value();
@@ -178,7 +181,7 @@ void GlobalObject::installArray()
             }
             if (ret != -1) {
                 ret = -1;
-                ESValue* searchElement = value->get(L"0");
+                ESValue* searchElement = instance->currentExecutionContext()->arguments()[0];
                 while (k < len) {
                     ESValue* kPresent = thisVal->get(k);
                     if (searchElement->equalsTo(kPresent)) {
@@ -197,11 +200,10 @@ void GlobalObject::installArray()
 
     //$22.1.3.17 Array.prototype.push(item)
     FunctionDeclarationNode* arrayPush = new FunctionDeclarationNode(L"push", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
-        ESObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(L"arguments", false)->toHeapObject()->toESObject();
-        int len = value->get(strings->length)->toSmi()->value();
+        int len = instance->currentExecutionContext()->argumentCount();
         auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->toESArrayObject();
         for (int i = 0; i < len; i++) {
-            ESValue* val = value->get(InternalAtomicString(InternalString(i).data()));
+            ESValue* val = instance->currentExecutionContext()->arguments()[i];
             thisVal->push(val);
             i++;
         }
@@ -242,13 +244,15 @@ void GlobalObject::installString()
 
     //$21.1.3.8 String.prototype.indexOf(searchString[, position])
     FunctionDeclarationNode* stringIndexOf = new FunctionDeclarationNode(L"indexOf", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
-        ESObject* arguments = instance->currentExecutionContext()->environment()->record()->getBindingValue(L"arguments", false)->toHeapObject()->toESObject();
         ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
         if (thisObject->isESUndefined() || thisObject->isESNull())
             throw TypeError();
         const InternalString& str = thisObject->toESStringObject()->getStringData()->string();
-        const InternalString& searchStr = arguments->get(strings->numbers[0])->toHeapObject()->toESString()->string(); // TODO converesion w&w/o test
-        ESValue* val = arguments->get(strings->numbers[1]);
+        const InternalString& searchStr = instance->currentExecutionContext()->arguments()[0]->toHeapObject()->toESString()->string(); // TODO converesion w&w/o test
+
+        ESValue* val = esUndefined;
+        if(instance->currentExecutionContext()->argumentCount() > 1)
+            val = instance->currentExecutionContext()->arguments()[1];
 
         int result;
         if (val == esUndefined) {
@@ -267,15 +271,14 @@ void GlobalObject::installString()
 
     //$21.1.3.19 String.prototype.substring(start, end)
     FunctionDeclarationNode* stringSubstring = new FunctionDeclarationNode(L"substring", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
-        ESObject* arguments = instance->currentExecutionContext()->environment()->record()->getBindingValue(L"arguments", false)->toHeapObject()->toESObject();
         ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
         if (thisObject->isESUndefined() || thisObject->isESNull())
             throw TypeError();
 
         const InternalString& str = thisObject->toESStringObject()->getStringData()->string();
         int len = str.length();
-        int intStart = arguments->get(strings->numbers[0])->toSmi()->value();
-        ESValue* end = arguments->get(strings->numbers[1]);
+        int intStart = instance->currentExecutionContext()->arguments()[0]->toSmi()->value();
+        ESValue* end = instance->currentExecutionContext()->arguments()[1];
         int intEnd = (end == esUndefined) ? len : end->toInteger()->toSmi()->value();
         int finalStart = std::min(std::max(intStart, 0), len);
         int finalEnd = std::min(std::max(intEnd, 0), len);

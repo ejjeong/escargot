@@ -180,7 +180,7 @@ ESValue* functionCallerInnerProcess(ESFunctionObject* fn, ESValue* callee, ESVal
             }
             ASSERT(functionRecord->hasBinding(strings->arguments));
         } else {
-            functionRecord->createMutableBinding(strings->arguments,false);
+            functionRecord->createMutableBinding(strings->arguments, false);
             functionRecord->setMutableBinding(strings->arguments, argumentsObject, true);
         }
     }
@@ -188,7 +188,7 @@ ESValue* functionCallerInnerProcess(ESFunctionObject* fn, ESValue* callee, ESVal
     if(fn->functionAST()->needsActivation()) {
         const InternalAtomicStringVector& params = fn->functionAST()->params();
         for(unsigned i = 0; i < params.size() ; i ++) {
-            functionRecord->createMutableBinding(params[i],false);
+            functionRecord->createMutableBinding(params[i], false);
             if(i < argumentCount) {
                 functionRecord->setMutableBinding(params[i], arguments[i], true);
             }
@@ -223,19 +223,10 @@ ESValue* ESFunctionObject::call(ESValue* callee, ESValue* receiver, ESValue* arg
         ExecutionContext* currentContext = ESVMInstance->currentExecutionContext();
         ESFunctionObject* fn = callee->toHeapObject()->toESFunctionObject();
         if(fn->functionAST()->needsActivation()) {
-            ESVMInstance->m_currentExecutionContext = new ExecutionContext(LexicalEnvironment::newFunctionEnvironment(fn, receiver), true);
+            ESVMInstance->m_currentExecutionContext = new ExecutionContext(LexicalEnvironment::newFunctionEnvironment(fn, receiver), true, arguments, argumentCount);
             result = functionCallerInnerProcess(fn, callee, receiver, arguments, argumentCount, true, ESVMInstance);
             ESVMInstance->m_currentExecutionContext = currentContext;
         } else {
-            bool needsArgumentsObject = false;
-            InternalAtomicStringVector& v = fn->functionAST()->innerIdentifiers();
-            for(unsigned i = 0; i < v.size() ; i ++) {
-                if(v[i] == strings->arguments) {
-                    needsArgumentsObject = true;
-                    break;
-                }
-            }
-
             FunctionEnvironmentRecord envRec(true,
                     (std::pair<InternalAtomicString, ::escargot::ESSlot>*)alloca(sizeof(std::pair<InternalAtomicString, ::escargot::ESSlot>) * fn->functionAST()->innerIdentifiers().size()),
                     fn->functionAST()->innerIdentifiers().size());
@@ -244,9 +235,9 @@ ESValue* ESFunctionObject::call(ESValue* callee, ESValue* receiver, ESValue* arg
             envRec.m_newTarget = receiver;
 
             LexicalEnvironment env(&envRec, fn->outerEnvironment());
-            ExecutionContext ec(&env, false);
+            ExecutionContext ec(&env, false, arguments, argumentCount);
             ESVMInstance->m_currentExecutionContext = &ec;
-            result = functionCallerInnerProcess(fn, callee, receiver, arguments, argumentCount, needsArgumentsObject, ESVMInstance);
+            result = functionCallerInnerProcess(fn, callee, receiver, arguments, argumentCount, fn->functionAST()->needsArgumentsObject(), ESVMInstance);
             ESVMInstance->m_currentExecutionContext = currentContext;
         }
     } else {

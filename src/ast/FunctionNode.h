@@ -18,8 +18,9 @@ public:
         m_body = body;
         m_isGenerator = isGenerator;
         m_isExpression = isExpression;
-        m_needsActivation = true;
+        m_needsActivation = false;
         m_outerFunctionNode = NULL;
+        m_needsArgumentsObject = false;
     }
 
     ALWAYS_INLINE const InternalAtomicStringVector& params() { return m_params; }
@@ -28,6 +29,8 @@ public:
 
     ALWAYS_INLINE bool needsActivation() { return m_needsActivation; } //child & parent AST has eval, with, catch
     ALWAYS_INLINE void setNeedsActivation(bool b) { m_needsActivation = b; }
+    ALWAYS_INLINE bool needsArgumentsObject() { return m_needsArgumentsObject; }
+    ALWAYS_INLINE void markNeedsArgumentsObject() { m_needsArgumentsObject = true; }
 
     void setInnerIdentifiers(InternalAtomicStringVector&& vec)
     {
@@ -50,6 +53,7 @@ protected:
     bool m_isExpression; //expression: boolean;
 
     bool m_needsActivation;
+    bool m_needsArgumentsObject;
     FunctionNode* m_outerFunctionNode;
 };
 
