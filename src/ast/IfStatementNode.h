@@ -19,7 +19,7 @@ public:
     virtual ESValue* execute(ESVMInstance* instance)
     {
         ESValue *test = m_test->execute(instance)->ensureValue();
-        if (test->isSmi()? test->toSmi()->value() : test->toHeapObject()->toPBoolean()->get())
+        if (test->isSmi()? test->toSmi()->value() : test->toHeapObject()->toESBoolean()->get())
             m_consequente->execute(instance);
         else if (m_alternate)
             m_alternate->execute(instance);

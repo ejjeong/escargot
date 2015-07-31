@@ -191,7 +191,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             } else if(value[L"value"].IsString()) {
                 parsedNode = new LiteralNode(PString::create(value[L"value"].GetString()));
             } else if(value[L"value"].IsBool()) {
-                parsedNode = new LiteralNode(PBoolean::create(value[L"value"].GetBool()));
+                parsedNode = new LiteralNode(ESBoolean::create(value[L"value"].GetBool()));
             } else if(value[L"value"].IsNull()) {
                 parsedNode = new LiteralNode(esESNull);
             } else {

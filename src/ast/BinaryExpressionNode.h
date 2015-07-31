@@ -266,15 +266,15 @@ public:
             }
             case Equals:
                 if (lval->abstractEqualsTo(rval))
-                    ret = PBoolean::create(true);
+                    ret = ESBoolean::create(true);
                 else
-                    ret = PBoolean::create(false);
+                    ret = ESBoolean::create(false);
                 break;
             case NotEquals:
                 if (lval->abstractEqualsTo(rval))
-                    ret = PBoolean::create(false);
+                    ret = ESBoolean::create(false);
                 else
-                    ret = PBoolean::create(true);
+                    ret = ESBoolean::create(true);
                 break;
             default:
                 // TODO

@@ -10,7 +10,7 @@ class Smi;
 class HeapObject;
 class ESUndefined;
 class ESNull;
-class PBoolean;
+class ESBoolean;
 class PNumber;
 class PString;
 class JSObject;
@@ -24,8 +24,8 @@ class ESVMInstance;
 
 extern ESUndefined* esUndefined;
 extern ESNull* esESNull;
-extern PBoolean* esTrue;
-extern PBoolean* esFalse;
+extern ESBoolean* esTrue;
+extern ESBoolean* esFalse;
 
 extern PNumber* esNaN;
 extern PNumber* esInfinity;
@@ -74,7 +74,7 @@ public:
         Primitive = 1 << 0,
         ESUndefined = 1 << 1,
         ESNull = 1 << 2,
-        PBoolean = 1 << 3,
+        ESBoolean = 1 << 3,
         PNumber = 1 << 4,
         PString = 1 << 5,
         JSObject = 1 << 6,
@@ -131,17 +131,17 @@ public:
         return reinterpret_cast<::escargot::ESNull *>(this);
     }
 
-    ALWAYS_INLINE bool isPBoolean() const
+    ALWAYS_INLINE bool isESBoolean() const
     {
-        return m_data & Type::PBoolean;
+        return m_data & Type::ESBoolean;
     }
 
-    ALWAYS_INLINE ::escargot::PBoolean* toPBoolean()
+    ALWAYS_INLINE ::escargot::ESBoolean* toESBoolean()
     {
 #ifndef NDEBUG
-        ASSERT(isPBoolean());
+        ASSERT(isESBoolean());
 #endif
-        return reinterpret_cast<::escargot::PBoolean *>(this);
+        return reinterpret_cast<::escargot::ESBoolean *>(this);
     }
 
     ALWAYS_INLINE bool isPNumber() const
@@ -290,18 +290,18 @@ public:
 };
 
 
-class PBoolean : public HeapObject {
+class ESBoolean : public HeapObject {
 protected:
     const int DataMask = 0x80000000;
 public:
-    PBoolean(bool b)
-        : HeapObject((Type)(Type::Primitive | Type::PBoolean))
+    ESBoolean(bool b)
+        : HeapObject((Type)(Type::Primitive | Type::ESBoolean))
     {
         set(b);
     }
-    static PBoolean* create(bool b)
+    static ESBoolean* create(bool b)
     {
-        return new PBoolean(b);
+        return new ESBoolean(b);
     }
 
     ALWAYS_INLINE void set(bool b)
@@ -628,7 +628,7 @@ public:
     void set(const ESAtomicString& key, ESValue* val, bool shouldThrowException = false)
     {
         //TODO Assert: IsPropertyKey(P) is true.
-        //TODO Assert: Type(Throw) is PBoolean.
+        //TODO Assert: Type(Throw) is ESBoolean.
         //TODO shouldThrowException
         auto iter = m_map.find(key);
         if(iter == m_map.end()) {
