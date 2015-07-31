@@ -527,10 +527,9 @@ protected:
         defineAccessorProperty(strings->__proto__, [](ESObject* self) -> ESValue {
             return self->__proto__();
         },[](::escargot::ESObject* self, ESValue value){
-            /*
-            if(value && value->toHeapObject()->isESObject())
-                self->set__proto__(value->toHeapObject()->toESObject());
-                */
+            if(value.isESPointer() && value.asESPointer()->isESObject()) {
+                self->set__proto__(value.asESPointer()->asESObject());
+            }
         }, true, false, false);
     }
 public:
@@ -565,20 +564,18 @@ public:
     ESValue get(const InternalAtomicString& key, bool searchPrototype = false)
     {
         if (UNLIKELY(searchPrototype)) {
-            /*
             ESObject* target = this;
             while(true) {
-                ESValue* s = target->get(key);
-                if (!s->isUndefined())
+                ESValue s = target->get(key);
+                if (!s.isUndefined())
                     return s;
-                ESValue* proto = target->__proto__();
-                if (proto && proto->isHeapObject() && proto->toHeapObject()->isESObject()) {
-                    target = proto->toHeapObject()->toESObject();
+                ESValue proto = target->__proto__();
+                if (proto.isESPointer() && proto.asESPointer()->isESObject()) {
+                    target = proto.asESPointer()->asESObject();
                 } else {
                    break;
                 }
             }
-            */
             return ESValue();
         } else {
             ESValue ret;
