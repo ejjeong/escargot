@@ -70,6 +70,7 @@ public:
     }
 
     ALWAYS_INLINE friend bool operator == (const InternalAtomicString& a,const InternalAtomicString& b);
+    ALWAYS_INLINE friend bool operator != (const InternalAtomicString& a,const InternalAtomicString& b);
 protected:
     InternalAtomicStringData* m_string;
 };
@@ -77,6 +78,11 @@ protected:
 ALWAYS_INLINE bool operator == (const InternalAtomicString& a,const InternalAtomicString& b)
 {
     return a.string() == b.string();
+}
+
+ALWAYS_INLINE bool operator != (const InternalAtomicString& a,const InternalAtomicString& b)
+{
+    return a.string() != b.string();
 }
 
 typedef std::vector<InternalAtomicString, gc_allocator<InternalAtomicString> > InternalAtomicStringVector;

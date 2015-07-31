@@ -50,6 +50,9 @@ public:
     void invalidateIdentifierCacheCheckCount()
     {
         m_identifierCacheInvalidationCheckCount ++;
+        if(UNLIKELY(m_identifierCacheInvalidationCheckCount == SIZE_MAX)) {
+            m_identifierCacheInvalidationCheckCount = 0;
+        }
     }
 protected:
     ExecutionContext* m_globalExecutionContext;

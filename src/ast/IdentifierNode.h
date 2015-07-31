@@ -15,8 +15,7 @@ public:
             : Node(NodeType::Identifier)
     {
         m_name = name;
-        m_cachedExecutionContext = NULL;
-        m_identifierCacheInvalidationCheckCount = 0;
+        m_identifierCacheInvalidationCheckCount = SIZE_MAX;
         m_cachedSlot = NULL;
         m_canUseFastAccess = false;
         m_fastAccessIndex = SIZE_MAX;
@@ -29,10 +28,15 @@ public:
         return m_name;
     }
 
+    void setFastAccessIndex(size_t idx)
+    {
+        m_canUseFastAccess = true;
+        m_fastAccessIndex = idx;
+    }
+
 protected:
     InternalAtomicString m_name;
 
-    ExecutionContext* m_cachedExecutionContext;
     size_t m_identifierCacheInvalidationCheckCount;
     ESSlot* m_cachedSlot;
 

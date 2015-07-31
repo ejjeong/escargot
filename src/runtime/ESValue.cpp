@@ -148,15 +148,18 @@ ESValue* ESObject::defaultValue(ESVMInstance* instance, PrimitiveTypeHint hint)
         std::vector<ESValue*, gc_allocator<ESValue*>> arguments;
         return ESFunctionObject::call(toStringMethod, this, &arguments[0], arguments.size(), instance);
     } else {
-        ASSERT(false); // TODO
+        //TODO
+        RELEASE_ASSERT_NOT_REACHED();
     }
 }
 
 
 ESValue* functionCallerInnerProcess(ESFunctionObject* fn, ESValue* callee, ESValue* receiver, ESValue* arguments[], size_t argumentCount, bool needsArgumentsObject, ESVMInstance* ESVMInstance)
 {
+    ESVMInstance->invalidateIdentifierCacheCheckCount();
     ((FunctionEnvironmentRecord *)ESVMInstance->currentExecutionContext()->environment()->record())->bindThisValue(receiver->toHeapObject()->toESObject());
     DeclarativeEnvironmentRecord* functionRecord = ESVMInstance->currentExecutionContext()->environment()->record()->toDeclarativeEnvironmentRecord();
+
     if(needsArgumentsObject) {
         ESObject* argumentsObject = ESObject::create();
         unsigned i = 0;
@@ -168,16 +171,40 @@ ESValue* functionCallerInnerProcess(ESFunctionObject* fn, ESValue* callee, ESVal
             argumentsObject->set(InternalAtomicString(InternalString((int)i).data()), arguments[i]);
         }
 
-        functionRecord->createMutableBinding(strings->arguments,false);
-        functionRecord->setMutableBinding(strings->arguments, argumentsObject, true);
+        if(!fn->functionAST()->needsActivation()) {
+            for(size_t i = 0 ; i < fn->functionAST()->innerIdentifiers().size() ; i++ ) {
+                if(fn->functionAST()->innerIdentifiers()[i] == strings->arguments) {
+                    functionRecord->createMutableBindingForNonActivationMode(i, strings->name, argumentsObject);
+                    break;
+                }
+            }
+            ASSERT(functionRecord->hasBinding(strings->arguments));
+        } else {
+            functionRecord->createMutableBinding(strings->arguments,false);
+            functionRecord->setMutableBinding(strings->arguments, argumentsObject, true);
+        }
     }
 
-    const InternalAtomicStringVector& params = fn->functionAST()->params();
+    if(fn->functionAST()->needsActivation()) {
+        const InternalAtomicStringVector& params = fn->functionAST()->params();
+        for(unsigned i = 0; i < params.size() ; i ++) {
+            functionRecord->createMutableBinding(params[i],false);
+            if(i < argumentCount) {
+                functionRecord->setMutableBinding(params[i], arguments[i], true);
+            }
+        }
+    } else {
+        for(size_t i = 0 ; i < fn->functionAST()->innerIdentifiers().size() ; i++ ) {
+            if(fn->functionAST()->innerIdentifiers()[i] != strings->arguments) {
+                functionRecord->createMutableBindingForNonActivationMode(i, fn->functionAST()->innerIdentifiers()[i]);
+            }
+        }
 
-    for(unsigned i = 0; i < params.size() ; i ++) {
-        functionRecord->createMutableBinding(params[i],false);
-        if(i < argumentCount) {
-            functionRecord->setMutableBinding(params[i], arguments[i], true);
+        const InternalAtomicStringVector& params = fn->functionAST()->params();
+        for(unsigned i = 0; i < params.size() ; i ++) {
+            if(i < argumentCount) {
+                functionRecord->setMutableBinding(params[i], arguments[i], true);
+            }
         }
     }
 
@@ -196,7 +223,7 @@ ESValue* ESFunctionObject::call(ESValue* callee, ESValue* receiver, ESValue* arg
         ExecutionContext* currentContext = ESVMInstance->currentExecutionContext();
         ESFunctionObject* fn = callee->toHeapObject()->toESFunctionObject();
         if(fn->functionAST()->needsActivation()) {
-            ESVMInstance->m_currentExecutionContext = new ExecutionContext(LexicalEnvironment::newFunctionEnvironment(fn, receiver));
+            ESVMInstance->m_currentExecutionContext = new ExecutionContext(LexicalEnvironment::newFunctionEnvironment(fn, receiver), true);
             result = functionCallerInnerProcess(fn, callee, receiver, arguments, argumentCount, true, ESVMInstance);
             ESVMInstance->m_currentExecutionContext = currentContext;
         } else {
@@ -217,7 +244,7 @@ ESValue* ESFunctionObject::call(ESValue* callee, ESValue* receiver, ESValue* arg
             envRec.m_newTarget = receiver;
 
             LexicalEnvironment env(&envRec, fn->outerEnvironment());
-            ExecutionContext ec(&env);
+            ExecutionContext ec(&env, false);
             ESVMInstance->m_currentExecutionContext = &ec;
             result = functionCallerInnerProcess(fn, callee, receiver, arguments, argumentCount, needsArgumentsObject, ESVMInstance);
             ESVMInstance->m_currentExecutionContext = currentContext;

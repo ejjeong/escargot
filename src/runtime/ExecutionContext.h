@@ -29,7 +29,7 @@ class TypeError {
 class LexicalEnvironment;
 class ExecutionContext : public gc {
 public:
-    ExecutionContext(LexicalEnvironment* varEnv);
+    ExecutionContext(LexicalEnvironment* varEnv, bool needsActivation);
     ALWAYS_INLINE LexicalEnvironment* environment()
     {
         //TODO
@@ -90,8 +90,11 @@ public:
         return m_returnValue;
     }
 
+    ALWAYS_INLINE bool needsActivation() { return m_needsActivation; } //child & parent AST has eval, with, catch
+
 private:
     ESFunctionObject* m_function;
+    bool m_needsActivation;
     LexicalEnvironment* m_lexicalEnvironment;
     LexicalEnvironment* m_variableEnvironment;
     ESObject* m_lastESObjectMetInMemberExpressionNode;

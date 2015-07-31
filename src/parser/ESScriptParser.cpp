@@ -399,13 +399,22 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
         } else if(type == NodeType::Identifier) {
             //use case
             InternalAtomicString name = ((IdentifierNode *)currentNode)->name();
-            if(identifierInCurrentContext.end() == std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),
-                    name)) {
+            auto iter = std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),name);
+            if(name == strings->arguments && iter == identifierInCurrentContext.end() && nearFunctionNode) {
+                identifierInCurrentContext.push_back(strings->arguments);
+                iter = std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),name);
+            }
+            if(identifierInCurrentContext.end() == iter) {
                 if(!instance->globalObject()->hasKey(name)) {
                     if(nearFunctionNode && nearFunctionNode->outerFunctionNode()) {
                         //wprintf(L"this function  needs capture! -> %ls\n", ((IdentifierNode *)currentNode)->name().data());
                         markNeedsActivation(nearFunctionNode->outerFunctionNode());
                     }
+                }
+            } else {
+                if(nearFunctionNode) {
+                    size_t idx = std::distance(identifierInCurrentContext.begin(), iter);
+                    ((IdentifierNode *)currentNode)->setFastAccessIndex(idx);
                 }
             }
             //wprintf(L"use Identifier %ls\n", ((IdentifierNode *)currentNode)->name().data());

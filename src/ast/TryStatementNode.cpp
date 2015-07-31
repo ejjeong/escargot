@@ -20,6 +20,7 @@ ESValue* TryStatementNode::execute(ESVMInstance* instance)
 	try {
 		m_block->execute(instance);
 	} catch(ESValue* err) {
+	    instance->invalidateIdentifierCacheCheckCount();
 		LexicalEnvironment* oldEnv = instance->currentExecutionContext()->environment();
 		LexicalEnvironment* catchEnv = new LexicalEnvironment(new DeclarativeEnvironmentRecord(), oldEnv);
 		instance->currentExecutionContext()->setEnvironment(catchEnv);

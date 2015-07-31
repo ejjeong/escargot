@@ -4,13 +4,14 @@
 
 namespace escargot {
 
-ExecutionContext::ExecutionContext(LexicalEnvironment* varEnv)
+ExecutionContext::ExecutionContext(LexicalEnvironment* varEnv, bool needsActivation)
 {
     m_lexicalEnvironment = varEnv;
     m_variableEnvironment = varEnv;
     m_function = NULL;
     resetLastESObjectMetInMemberExpressionNode();
     m_returnValue = esUndefined;
+    m_needsActivation = needsActivation;
 }
 
 ESSlot* ExecutionContext::resolveBinding(const InternalAtomicString& name)

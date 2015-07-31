@@ -216,21 +216,19 @@ public:
             return NULL;
         }
     }
+    void createMutableBindingForNonActivationMode(size_t index, const InternalAtomicString& name,ESValue* val = esUndefined)
+    {
+        ASSERT(!m_innerObject);
+        m_vectorData[index].first = name;
+        m_vectorData[index].second.init(val, false, false, false);
+        m_usedCount++;
+    }
+
     virtual void createMutableBinding(const InternalAtomicString& name, bool canDelete = false)
     {
         //TODO canDelete
-        if(UNLIKELY(m_innerObject != NULL)) {
-            m_innerObject->set(name, esUndefined);
-        } else {
-            if(!hasBinding(name)) {
-#ifndef NDEBUG
-                ASSERT(m_usedCount != m_vectorSize);
-#endif
-                m_vectorData[m_usedCount].first = name;
-                m_vectorData[m_usedCount].second.init(esUndefined, false, false, false);
-                m_usedCount++;
-            }
-        }
+        ASSERT(m_innerObject);
+        m_innerObject->set(name, esUndefined);
     }
 
     virtual void setMutableBinding(const InternalAtomicString& name, ESValue* V, bool mustNotThrowTypeErrorExecption)
@@ -247,6 +245,11 @@ public:
             }
             RELEASE_ASSERT_NOT_REACHED();
         }
+    }
+
+    ESSlot* getBindingValueForNonActivationMode(size_t idx)
+    {
+        return &m_vectorData[idx].second;
     }
 
     virtual ESValue* getBindingValue(const InternalAtomicString& name, bool ignoreReferenceErrorException)
