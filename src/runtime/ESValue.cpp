@@ -250,4 +250,11 @@ ESValue* ESFunctionObject::call(ESValue* callee, ESValue* receiver, ESValue* arg
 
 #endif
 
+InternalString ESValue::toInternalString()
+{
+    InternalString ret;
+    // TODO
+    return ret;
+}
+
 }

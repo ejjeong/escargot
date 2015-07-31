@@ -5,9 +5,9 @@
 #include "ExecutionContext.h"
 #include "ast/FunctionNode.h"
 
-#if 0
 namespace escargot {
 
+#if 0
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-newfunctionenvironment
 //$8.1.2.4
 LexicalEnvironment* LexicalEnvironment::newFunctionEnvironment(ESFunctionObject* function, ESValue* newTarget)
@@ -29,36 +29,48 @@ LexicalEnvironment* LexicalEnvironment::newFunctionEnvironment(ESFunctionObject*
 
     return env;
 }
+#endif
 
 void EnvironmentRecord::createMutableBindingForAST(const InternalAtomicString& name,bool canDelete)
 {
+#if 0
     if(UNLIKELY(isGlobalEnvironmentRecord())) {
         toGlobalEnvironmentRecord()->createGlobalVarBinding(name, canDelete);
     } else {
         createMutableBinding(name, canDelete);
     }
+#endif
 }
 
 //$8.1.1.4.12
 bool GlobalEnvironmentRecord::hasVarDeclaration(const InternalAtomicString& name)
 {
+#if 0
     if( std::find(m_varNames.begin(), m_varNames.end(), name) != m_varNames.end() )
         return true;
     return false;
+#else
+    return false;
+#endif
 }
 
 //$8.1.1.4.15
 bool GlobalEnvironmentRecord::canDeclareGlobalVar(const InternalAtomicString& name) {
+#if 0
     ESObject* globalObj = m_objectRecord->bindingObject();
     bool hasProperty = globalObj->hasOwnProperty(name);
     if (hasProperty)
         return true;
     else
         return globalObj->isExtensible();
+#else
+    return false;
+#endif
 }
 
 //$8.1.1.4.16
 bool GlobalEnvironmentRecord::canDeclareGlobalFunction(const InternalAtomicString& name) {
+#if 0
     ESObject* globalObj = m_objectRecord->bindingObject();
     ESSlot* pd = globalObj->find(name);
     if(pd == NULL)
@@ -70,10 +82,14 @@ bool GlobalEnvironmentRecord::canDeclareGlobalFunction(const InternalAtomicStrin
     // IsDataDescriptor && ..
     
     return false;
+#else
+    return false;
+#endif
 }
 
 //$8.1.1.4.17
 void GlobalEnvironmentRecord::createGlobalVarBinding(const InternalAtomicString& name, bool canDelete) {
+#if 0
     ESObject* globalObj = m_objectRecord->bindingObject();
     bool hasProperty = globalObj->hasOwnProperty(name);
     bool extensible = globalObj->isExtensible();
@@ -83,81 +99,109 @@ void GlobalEnvironmentRecord::createGlobalVarBinding(const InternalAtomicString&
     }
     if( std::find(m_varNames.begin(), m_varNames.end(), name) == m_varNames.end() )
         m_varNames.push_back(name);
+#endif
 }
 
 //$8.1.1.4.18
 void GlobalEnvironmentRecord::createGlobalFunctionBinding(const InternalAtomicString& name, ESValue* V, bool canDelete) {
+#if 0
     ESObject* globalObj = m_objectRecord->bindingObject();
     globalObj->definePropertyOrThrow(name, true, true, canDelete);
     globalObj->set(name, V, false);
     if( std::find(m_varNames.begin(), m_varNames.end(), name) == m_varNames.end() )
         m_varNames.push_back(name);
+#endif
 }
 
 //$8.1.1.4.11
 ESObject* GlobalEnvironmentRecord::getThisBinding() {
+#if 0
     return m_objectRecord->bindingObject();
+#else
+    return NULL;
+#endif
 }
 
 //$8.1.1.4.1
 ESSlot* GlobalEnvironmentRecord::hasBinding(const InternalAtomicString& name) {
+#if 0
     ESSlot* ret = m_declarativeRecord->hasBinding(name);
     if(ret)
         return ret;
     return m_objectRecord->hasBinding(name);
+#else
+    return NULL;
+#endif
 }
 
 //$8.1.1.4.2
 void GlobalEnvironmentRecord::createMutableBinding(const InternalAtomicString& name, bool canDelete) {
+#if 0
     if( m_declarativeRecord->hasBinding(name) )
         throw "TypeError";
     m_declarativeRecord->createMutableBinding(name, canDelete);
+#endif
 }
 
 //$8.1.1.4.4
 void GlobalEnvironmentRecord::initializeBinding(const InternalAtomicString& name, ESValue* V) {
+#if 0
     if( m_declarativeRecord->hasBinding(name) )
         m_declarativeRecord->initializeBinding(name, V);
     else {
         ASSERT(m_objectRecord->hasBinding(name));
         m_objectRecord->initializeBinding(name, V);
     }
+#endif
 }
 
 //$8.1.1.4.6
 ESValue* GlobalEnvironmentRecord::getBindingValue(const InternalAtomicString& name, bool ignoreReferenceErrorException) {
+#if 0
     if( m_declarativeRecord->hasBinding(name) )
         return m_declarativeRecord->getBindingValue(name, ignoreReferenceErrorException);
     else {
         return m_objectRecord->getBindingValue(name, ignoreReferenceErrorException);
     }
+#else
+    return NULL;
+#endif
 }
 
 //$8.1.1.4.5
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-global-environment-records-setmutablebinding-n-v-s
 void GlobalEnvironmentRecord::setMutableBinding(const InternalAtomicString& name, ESValue* V, bool S) {
+#if 0
     if( m_declarativeRecord->hasBinding(name)) {
         m_declarativeRecord->setMutableBinding(name, V, S);
     } else {
         m_objectRecord->setMutableBinding(name, V, S);
     }
+#endif
 }
 
 //$8.1.1.2.2
 void ObjectEnvironmentRecord::createMutableBinding(const InternalAtomicString& name, bool canDelete) {
+#if 0
     m_bindingObject->definePropertyOrThrow(name, true, true, canDelete);
+#endif
 }
 
 //$8.1.1.2.4
 void ObjectEnvironmentRecord::initializeBinding(const InternalAtomicString& name, ESValue* V) {
+#if 0
     return setMutableBinding(name, V, false);
+#endif
 }
 
 //$8.1.1.2.5
 void ObjectEnvironmentRecord::setMutableBinding(const InternalAtomicString& name, ESValue* V, bool S) {
+#if 0
     m_bindingObject->set(name, V, S);
+#endif
 }
 
+#if 0
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-bindthisvalue
 void FunctionEnvironmentRecord::bindThisValue(ESObject* V)
 {
@@ -176,6 +220,6 @@ ESObject* FunctionEnvironmentRecord::getThisBinding()
 
     return m_thisValue->toHeapObject()->toESObject();
 }
+#endif
 
 }
-#endif

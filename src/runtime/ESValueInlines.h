@@ -359,6 +359,12 @@ inline ESValue::ESValue(unsigned long long i)
     *this = ESValue(static_cast<uint32_t>(i));
 }
 
+inline double ESValue::asNumber() const
+{
+    ASSERT(isNumber());
+    return isInt32() ? asInt32() : asDouble();
+}
+
 ALWAYS_INLINE double ESValue::toNumber() const
 {
     if (isInt32())
