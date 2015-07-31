@@ -39,8 +39,8 @@ ESValue* AssignmentExpressionNode::execute(ESVMInstance* instance)
                 instance->globalObject()->set(n->name(), rval);
             } else if(obj) {
                 ESValue* propertyVal = instance->currentExecutionContext()->lastUsedPropertyValueInMemberExpressionNode();
-                if(obj->isJSArray() && propertyVal != NULL) {
-                    obj->toJSArray()->set(propertyVal, rval);
+                if(obj->isESArrayObject() && propertyVal != NULL) {
+                    obj->toESArrayObject()->set(propertyVal, rval);
                 } else {
                     obj->set(instance->currentExecutionContext()->lastUsedPropertyNameInMemberExpressionNode(), rval);
                 }

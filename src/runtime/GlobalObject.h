@@ -85,7 +85,7 @@ protected:
     escargot::JSFunction* m_referenceError;
     escargot::JSObject* m_referenceErrorPrototype;
     escargot::JSFunction* m_array;
-    escargot::JSArray* m_arrayPrototype;
+    escargot::ESArrayObject* m_arrayPrototype;
     escargot::JSFunction* m_string;
     escargot::JSString* m_stringPrototype;
     escargot::JSFunction* m_date;

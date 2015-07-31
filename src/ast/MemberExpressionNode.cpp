@@ -28,7 +28,7 @@ ESValue* MemberExpressionNode::execute(ESVMInstance* instance)
             propertyName = ((IdentifierNode*)m_property)->name();
         } else {
             ESValue* tmpVal = m_property->execute(instance)->ensureValue();
-            if(m_computed && obj->toHeapObject()->isJSArray() && tmpVal->isSmi())
+            if(m_computed && obj->toHeapObject()->isESArrayObject() && tmpVal->isSmi())
                 propertyVal = tmpVal;
             propertyName = ESAtomicString(tmpVal->toESString().data());
         }
@@ -37,8 +37,8 @@ ESValue* MemberExpressionNode::execute(ESVMInstance* instance)
                 propertyName, propertyVal);
 
         JSSlot* slot;
-        if (obj->isJSArray() && propertyVal != NULL)
-            slot = obj->toJSArray()->find(propertyVal);
+        if (obj->isESArrayObject() && propertyVal != NULL)
+            slot = obj->toESArrayObject()->find(propertyVal);
         else
             slot = obj->find(propertyName);
 

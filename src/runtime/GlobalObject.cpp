@@ -132,7 +132,7 @@ void GlobalObject::installError()
 
 void GlobalObject::installArray()
 {
-    m_arrayPrototype = JSArray::create(0, m_objectPrototype);
+    m_arrayPrototype = ESArrayObject::create(0, m_objectPrototype);
 
     //$22.1.1 Array Constructor
     FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings->Array, ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
@@ -141,7 +141,7 @@ void GlobalObject::installArray()
         int size = 0;
         if (len > 1) size = len;
         JSObject* proto = instance->globalObject()->arrayPrototype();
-        escargot::JSArray* array = JSArray::create(size, proto);
+        escargot::ESArrayObject* array = ESArrayObject::create(size, proto);
         ESValue* val = value->get(strings->numbers[0]);
         if (len == 1 && val != esUndefined && val->isSmi()) { //numberOfArgs = 1
             array->setLength( val->toSmi()->value() );
@@ -158,7 +158,7 @@ void GlobalObject::installArray()
     //$22.1.3.11 Array.prototype.indexOf()
     FunctionDeclarationNode* arrayIndexOf = new FunctionDeclarationNode(L"indexOf", ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
         JSObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(L"arguments", false)->toHeapObject()->toJSObject();
-        auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->toJSArray();
+        auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->toESArrayObject();
         int len = thisVal->length()->toSmi()->value();
         int ret = 0;
         if (len == 0) ret = -1;
@@ -199,7 +199,7 @@ void GlobalObject::installArray()
     FunctionDeclarationNode* arrayPush = new FunctionDeclarationNode(L"push", ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
         JSObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(L"arguments", false)->toHeapObject()->toJSObject();
         int len = value->get(strings->length)->toSmi()->value();
-        auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->toJSArray();
+        auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->toESArrayObject();
         for (int i = 0; i < len; i++) {
             ESValue* val = value->get(ESAtomicString(ESString(i).data()));
             thisVal->push(val);

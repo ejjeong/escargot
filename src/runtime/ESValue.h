@@ -16,7 +16,7 @@ class PString;
 class JSObject;
 class JSSlot;
 class JSFunction;
-class JSArray;
+class ESArrayObject;
 class JSString;
 class JSDate;
 class FunctionNode;
@@ -80,7 +80,7 @@ public:
         JSObject = 1 << 6,
         JSSlot = 1 << 7,
         JSFunction = 1 << 8,
-        JSArray = 1 << 9,
+        ESArrayObject = 1 << 9,
         JSString = 1 << 10,
         JSError = 1 << 11,
         JSDate = 1 << 12,
@@ -210,17 +210,17 @@ public:
         return reinterpret_cast<::escargot::JSFunction *>(this);
     }
 
-    ALWAYS_INLINE bool isJSArray() const
+    ALWAYS_INLINE bool isESArrayObject() const
     {
-        return m_data & Type::JSArray;
+        return m_data & Type::ESArrayObject;
     }
 
-    ALWAYS_INLINE ::escargot::JSArray* toJSArray()
+    ALWAYS_INLINE ::escargot::ESArrayObject* toESArrayObject()
     {
 #ifndef NDEBUG
-        ASSERT(isJSArray());
+        ASSERT(isESArrayObject());
 #endif
-        return reinterpret_cast<::escargot::JSArray *>(this);
+        return reinterpret_cast<::escargot::ESArrayObject *>(this);
     }
 
     ALWAYS_INLINE bool isJSString() const
@@ -752,32 +752,32 @@ private:
     struct timeval m_tv;
 };
 
-class JSArray : public JSObject {
+class ESArrayObject : public JSObject {
 protected:
-    JSArray(HeapObject::Type type = HeapObject::Type::JSArray)
-        : JSObject((Type)(Type::JSObject | Type::JSArray))
+    ESArrayObject(HeapObject::Type type = HeapObject::Type::ESArrayObject)
+        : JSObject((Type)(Type::JSObject | Type::ESArrayObject))
         , m_vector(16)
         , m_fastmode(true)
     {
         defineAccessorProperty(strings->length, [](JSObject* self) -> ESValue* {
-            return self->toJSArray()->length();
+            return self->toESArrayObject()->length();
         },[](::escargot::JSObject* self, ESValue* value) {
             ESValue* len = value->toInt32();
-            self->toJSArray()->setLength(len);
+            self->toESArrayObject()->setLength(len);
         }, true, false, false);
         m_length = Smi::fromInt(0);
     }
 public:
-    static JSArray* create()
+    static ESArrayObject* create()
     {
-        return JSArray::create(0);
+        return ESArrayObject::create(0);
     }
 
     // $9.4.2.2
-    static JSArray* create(int length, JSObject* proto = NULL)
+    static ESArrayObject* create(int length, JSObject* proto = NULL)
     {
         //TODO
-        JSArray* arr = new JSArray();
+        ESArrayObject* arr = new ESArrayObject();
         arr->setLength(length);
         //if(proto == NULL)
         //    proto = global->arrayPrototype();

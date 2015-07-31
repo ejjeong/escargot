@@ -70,7 +70,7 @@ bool ESValue::equalsTo(ESValue* val)
         //TODO
         if (o->isJSFunction())
             return false;
-        if (o->isJSArray())
+        if (o->isESArrayObject())
             return false;
         if (o->isJSObject())
             return false;
@@ -103,13 +103,13 @@ ESString ESValue::toESString()
             JSFunction* fn = o->toJSFunction();
             ret.append(fn->functionAST()->id());
             ret.append(L"() {}");
-        } else if(o->isJSArray()) {
+        } else if(o->isESArrayObject()) {
             bool isFirst = true;
             ret.append(L"[");
-            for (int i=0; i<o->toJSArray()->length()->toSmi()->value(); i++) {
+            for (int i=0; i<o->toESArrayObject()->length()->toSmi()->value(); i++) {
                 if(!isFirst)
                     ret.append(L", ");
-                ESValue* slot = o->toJSArray()->get(i);
+                ESValue* slot = o->toESArrayObject()->get(i);
                 ret.append(slot->toESString());
                 isFirst = false;
               }
