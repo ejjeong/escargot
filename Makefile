@@ -31,7 +31,7 @@ ifeq ($(HOST), linux)
 else
 endif
 
-CXXFLAGS += -Isrc/
+CXXFLAGS += -fno-rtti -fno-math-errno -Isrc/
 #add third_party
 CXXFLAGS += -Ithird_party/rapidjson/include/
 CXXFLAGS += -Ithird_party/bdwgc/include/
@@ -47,7 +47,7 @@ ifeq ($(MODE), debug)
 	CXXFLAGS += -O0 -g3 -fno-omit-frame-pointer -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable
 	GCLIBS = third_party/bdwgc/out/debug/.libs/libgc.a third_party/bdwgc/out/debug/.libs/libgccpp.a
 else ifeq ($(MODE), release)
-	CXXFLAGS += -O3 -g0 -DNDEBUG
+	CXXFLAGS += -O3 -g0 -DNDEBUG -fomit-frame-pointer
 	GCLIBS = third_party/bdwgc/out/release/.libs/libgc.a third_party/bdwgc/out/release/.libs/libgccpp.a
 else
 	$(error mode error)
