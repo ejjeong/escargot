@@ -186,7 +186,7 @@ inline ESValue* ESValue::toNumber()
             return this;
         } else if (o->isUndefined()) {
             return esNaN;
-        } else if (o->isNull()) {
+        } else if (o->isESNull()) {
             return Smi::fromInt(0);
         } else if (o->isPBoolean()) {
             return Smi::fromInt(o->toPBoolean()->get());

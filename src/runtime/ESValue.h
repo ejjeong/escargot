@@ -9,7 +9,7 @@ namespace escargot {
 class Smi;
 class HeapObject;
 class Undefined;
-class Null;
+class ESNull;
 class PBoolean;
 class PNumber;
 class PString;
@@ -23,7 +23,7 @@ class FunctionNode;
 class ESVMInstance;
 
 extern Undefined* esUndefined;
-extern Null* esNull;
+extern ESNull* esESNull;
 extern PBoolean* esTrue;
 extern PBoolean* esFalse;
 
@@ -73,7 +73,7 @@ public:
     enum Type {
         Primitive = 1 << 0,
         Undefined = 1 << 1,
-        Null = 1 << 2,
+        ESNull = 1 << 2,
         PBoolean = 1 << 3,
         PNumber = 1 << 4,
         PString = 1 << 5,
@@ -118,17 +118,17 @@ public:
         return reinterpret_cast<::escargot::Undefined *>(this);
     }
 
-    ALWAYS_INLINE bool isNull()  const
+    ALWAYS_INLINE bool isESNull()  const
     {
-        return m_data & Type::Null;
+        return m_data & Type::ESNull;
     }
 
-    ALWAYS_INLINE ::escargot::Null* toNull()
+    ALWAYS_INLINE ::escargot::ESNull* toESNull()
     {
 #ifndef NDEBUG
-        ASSERT(isNull());
+        ASSERT(isESNull());
 #endif
-        return reinterpret_cast<::escargot::Null *>(this);
+        return reinterpret_cast<::escargot::ESNull *>(this);
     }
 
     ALWAYS_INLINE bool isPBoolean() const
@@ -275,17 +275,17 @@ public:
     }
 };
 
-class Null : public HeapObject {
+class ESNull : public HeapObject {
 protected:
 public:
-    Null()
-        : HeapObject((Type)(Type::Primitive | Type::Null))
+    ESNull()
+        : HeapObject((Type)(Type::Primitive | Type::ESNull))
     {
 
     }
-    static Null* create()
+    static ESNull* create()
     {
-        return new Null();
+        return new ESNull();
     }
 };
 
@@ -547,7 +547,7 @@ protected:
         : HeapObject(type)
         , m_map(16)
     {
-        m___proto__ = esNull;
+        m___proto__ = esESNull;
 
         //FIXME set proper flags(is...)
         definePropertyOrThrow(strings->constructor, true, false, false);

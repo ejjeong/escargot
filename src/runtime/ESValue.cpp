@@ -11,8 +11,8 @@ namespace escargot {
 static Undefined s_undefined;
 Undefined* esUndefined = &s_undefined;
 
-static Null s_null;
-Null* esNull = &s_null;
+static ESNull s_null;
+ESNull* esESNull = &s_null;
 
 static PBoolean s_true(true);
 PBoolean* esTrue = &s_true;
@@ -88,7 +88,7 @@ ESString ESValue::toESString()
         HeapObject* o = toHeapObject();
         if(o->isUndefined()) {
             ret = strings->undefined;
-        } else if(o->isNull()) {
+        } else if(o->isESNull()) {
             ret = strings->null;
         } else if(o->isPNumber()) {
             if (o == esNaN) ret = L"NaN";

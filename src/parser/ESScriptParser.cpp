@@ -193,7 +193,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             } else if(value[L"value"].IsBool()) {
                 parsedNode = new LiteralNode(PBoolean::create(value[L"value"].GetBool()));
             } else if(value[L"value"].IsNull()) {
-                parsedNode = new LiteralNode(esNull);
+                parsedNode = new LiteralNode(esESNull);
             } else {
                 RELEASE_ASSERT_NOT_REACHED();
             }

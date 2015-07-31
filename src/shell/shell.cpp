@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
     escargot::ESValue* n = escargot::null;
 
     escargot::Undefined* uu = u->toHeapObject()->toUndefined();
-    escargot::Null* nn = n->toHeapObject()->toNull();
+    escargot::ESNull* nn = n->toHeapObject()->toESNull();
 
     ASSERT(uu == escargot::undefined);
     ASSERT(nn == escargot::null);
