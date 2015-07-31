@@ -29,7 +29,7 @@ class TypeError {
 class LexicalEnvironment;
 class ExecutionContext : public gc {
 public:
-    ExecutionContext(LexicalEnvironment* varEnv, bool needsActivation, ESValue** arguments = NULL, size_t argumentsCount = 0);
+    ExecutionContext(LexicalEnvironment* varEnv, bool needsActivation, ESValue* arguments = NULL, size_t argumentsCount = 0);
     ALWAYS_INLINE LexicalEnvironment* environment()
     {
         //TODO
@@ -66,45 +66,45 @@ public:
         return m_lastUsedPropertyNameInMemberExpressionNode;
     }
 
-    ALWAYS_INLINE ESValue* lastUsedPropertyValueInMemberExpressionNode()
+    ALWAYS_INLINE ESValue lastUsedPropertyValueInMemberExpressionNode()
     {
         return m_lastUsedPropertyValueInMemberExpressionNode;
     }
 
-    ALWAYS_INLINE void setLastESObjectMetInMemberExpressionNode(ESObject* obj, const InternalAtomicString& name, ESValue* value)
+    ALWAYS_INLINE void setLastESObjectMetInMemberExpressionNode(ESObject* obj, const InternalAtomicString& name, const ESValue& value)
     {
         m_lastESObjectMetInMemberExpressionNode = obj;
         m_lastUsedPropertyNameInMemberExpressionNode = name;
         m_lastUsedPropertyValueInMemberExpressionNode = value;
     }
 
-    void doReturn(ESValue* returnValue)
+    void doReturn(const ESValue& returnValue)
     {
         m_returnValue = returnValue;
         std::longjmp(m_returnPosition,1);
     }
 
     std::jmp_buf& returnPosition() { return m_returnPosition; }
-    ESValue* returnValue()
+    ESValue returnValue()
     {
         return m_returnValue;
     }
 
     ALWAYS_INLINE bool needsActivation() { return m_needsActivation; } //child & parent AST has eval, with, catch
-    ESValue** arguments() { return m_arguments; }
+    ESValue* arguments() { return m_arguments; }
     size_t argumentCount() { return m_argumentCount; }
 
 private:
     ESFunctionObject* m_function;
     bool m_needsActivation;
-    ESValue** m_arguments;
+    ESValue* m_arguments;
     size_t m_argumentCount;
     LexicalEnvironment* m_lexicalEnvironment;
     LexicalEnvironment* m_variableEnvironment;
     ESObject* m_lastESObjectMetInMemberExpressionNode;
     InternalAtomicString m_lastUsedPropertyNameInMemberExpressionNode;
-    ESValue* m_lastUsedPropertyValueInMemberExpressionNode;
-    ESValue* m_returnValue;
+    ESValue m_lastUsedPropertyValueInMemberExpressionNode;
+    ESValue m_returnValue;
     std::jmp_buf m_returnPosition;
 };
 

@@ -11,7 +11,6 @@ namespace escargot {
 
 GlobalObject::GlobalObject()
 {
-#if 0
     installFunction();
     installObject();
     installArray();
@@ -23,32 +22,32 @@ GlobalObject::GlobalObject()
     definePropertyOrThrow(L"Infinity", false, false, false);
     definePropertyOrThrow(L"NaN", false, false, false);
     definePropertyOrThrow(strings->undefined, false, false, false);
-    set(L"Infinity", esInfinity);
-    set(L"NaN", esNaN);
-    set(strings->undefined, esUndefined);
+    set(L"Infinity", ESValue(std::numeric_limits<double>::infinity()));
+    set(L"NaN", ESValue(std::numeric_limits<double>::quiet_NaN()));
+    set(strings->undefined, ESValue());
 
-    FunctionDeclarationNode* node = new FunctionDeclarationNode(InternalAtomicString(L"print"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
+    FunctionDeclarationNode* node = new FunctionDeclarationNode(InternalAtomicString(L"print"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         if(instance->currentExecutionContext()->argumentCount()) {
-            ESValue* val = instance->currentExecutionContext()->arguments()[0];
-            InternalString str = val->toInternalString();
+            ESValue& val = instance->currentExecutionContext()->arguments()[0];
+            InternalString str = val.toInternalString();
             wprintf(L"%ls\n", str.data());
         }
-        return esUndefined;
+        return ESValue();
     }), false, false);
     auto printFunction = ESFunctionObject::create(NULL, node);
     set(L"print", printFunction);
 
-    node = new FunctionDeclarationNode(InternalAtomicString(L"gc"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
+    node = new FunctionDeclarationNode(InternalAtomicString(L"gc"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         GC_gcollect();
-        return esUndefined;
+        return ESValue();
     }), false, false);
     auto gcFunction = ESFunctionObject::create(NULL, node);
     set(L"gc", gcFunction);
 
-    node = new FunctionDeclarationNode(InternalAtomicString(L"load"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
+    node = new FunctionDeclarationNode(InternalAtomicString(L"load"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         if(instance->currentExecutionContext()->argumentCount()) {
-            ESValue* val = instance->currentExecutionContext()->arguments()[0];
-            InternalString str = val->toInternalString();
+            ESValue& val = instance->currentExecutionContext()->arguments()[0];
+            InternalString str = val.toInternalString();
             const wchar_t* pt = str.data();
             std::string path;
             char buffer [MB_CUR_MAX];
@@ -73,15 +72,13 @@ GlobalObject::GlobalObject()
                 });
             }
         }
-        return esUndefined;
+        return ESValue();
     }), false, false);
     auto loadFunction = ESFunctionObject::create(NULL, node);
     set(L"load", loadFunction);
     set(L"run", loadFunction);
-#endif
 }
 
-#if 0
 
 void GlobalObject::installFunction()
 {
@@ -94,8 +91,8 @@ void GlobalObject::installFunction()
     m_functionPrototype = emptyFunction;
     m_functionPrototype->setConstructor(m_function);
 
-    m_function->defineAccessorProperty(strings->prototype, [](ESObject* self) -> ESValue* {
-        return self->toESFunctionObject()->protoType();
+    m_function->defineAccessorProperty(strings->prototype, [](ESObject* self) -> ESValue {
+        return self->asESFunctionObject()->protoType();
     },nullptr, true, false, false);
     m_function->set__proto__(emptyFunction);
     m_function->setProtoType(emptyFunction);
@@ -139,6 +136,7 @@ void GlobalObject::installError()
 
 void GlobalObject::installArray()
 {
+    /*
     m_arrayPrototype = ESArrayObject::create(0, m_objectPrototype);
 
     //$22.1.1 Array Constructor
@@ -226,11 +224,13 @@ void GlobalObject::installArray()
     m_array->setConstructor(m_function);
 
     set(strings->Array, m_array);
+    */
 
 }
 
 void GlobalObject::installString()
 {
+    /*
     m_string = ESFunctionObject::create(NULL, new FunctionDeclarationNode(strings->String, InternalAtomicStringVector(), new EmptyStatementNode(), false, false));
     //m_string->set(strings->constructor, m_function); TODO do i need this?
     m_string->set(strings->name, ESString::create(strings->String));
@@ -294,6 +294,7 @@ void GlobalObject::installString()
         return esUndefined;
     }), false, false);
     m_stringPrototype->set(L"substring", ESFunctionObject::create(NULL, stringSubstring));
+    */
 }
 
 void GlobalObject::installDate()
@@ -301,12 +302,12 @@ void GlobalObject::installDate()
     m_datePrototype = ESDateObject::create();
 
     //$20.3.2 The Date Constructor
-    FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings->Date, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
+    FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings->Date, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         ESObject* proto = instance->globalObject()->arrayPrototype();
         escargot::ESDateObject* date = ESDateObject::create(proto);
         date->setTimeValue();
         instance->currentExecutionContext()->doReturn(date);
-        return esUndefined;
+        return ESValue();
     }), false, false);
 
       // Initialization for reference error
@@ -323,6 +324,5 @@ void GlobalObject::installDate()
     set(strings->Date, m_date);
 }
 
-#endif
 
 }

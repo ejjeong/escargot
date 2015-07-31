@@ -21,16 +21,6 @@ class FunctionNode;
 class ESVMInstance;
 class ESPointer;
 
-extern ESUndefined* esUndefined;
-extern ESNull* esESNull;
-extern ESBoolean* esTrue;
-extern ESBoolean* esFalse;
-
-extern ESNumber* esNaN;
-extern ESNumber* esInfinity;
-extern ESNumber* esNegInfinity;
-extern ESNumber* esMinusZero;
-
 union ValueDescriptor {
     int64_t asInt64;
 #if ESCARGOT_32
