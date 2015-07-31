@@ -145,6 +145,9 @@ public:
     InternalString toWTFString() const;
     ESObject toObject() const;
 
+    bool isESPointer() const;
+    ESPointer* asESPointer() const;
+
     static ptrdiff_t offsetOfPayload() { return OBJECT_OFFSETOF(ESValue, u.asBits.payload); }
     static ptrdiff_t offsetOfTag() { return OBJECT_OFFSETOF(ESValue, u.asBits.tag); }
 

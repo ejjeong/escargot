@@ -359,6 +359,17 @@ inline ESValue::ESValue(unsigned long long i)
     *this = ESValue(static_cast<uint32_t>(i));
 }
 
+ALWAYS_INLINE double ESValue::toNumber() const
+{
+    if (isInt32())
+        return asInt32();
+    if (isDouble())
+        return asDouble();
+
+    ASSERT(false); // TODO
+    //return toNumberSlowCase(exec);
+}
+
 //==============================================================================
 //===32-bit architecture========================================================
 //==============================================================================
@@ -425,6 +436,44 @@ inline ESValue::ESValue(int i)
     u.asBits.payload = i;
 }
 
+inline bool ESValue::isInt32() const
+{
+    return tag() == Int32Tag;
+}
+
+inline bool ESValue::isDouble() const
+{
+    return tag() < LowestTag;
+}
+
+inline int32_t ESValue::asInt32() const
+{
+    ASSERT(isInt32());
+    return u.asBits.payload;
+}
+
+inline double ESValue::asDouble() const
+{
+    ASSERT(isDouble());
+    return u.asDouble;
+}
+
+inline bool ESValue::isNumber() const
+{
+    return isInt32() || isDouble();
+}
+
+inline bool ESValue::isESPointer() const
+{
+    return tag() == CellTag;
+}
+
+ALWAYS_INLINE JSCell* ESValue::asESPointer() const
+{
+    ASSERT(isESPointer());
+    return reinterpret_cast<ESPointer*>(u.asBits.payload);
+}
+
 //==============================================================================
 //===64-bit architecture========================================================
 //==============================================================================
@@ -485,6 +534,45 @@ inline ESValue::ESValue(int i)
 {
     u.asInt64 = TagTypeNumber | static_cast<uint32_t>(i);
 }
+
+inline bool ESValue::isInt32() const
+{
+    return (u.asInt64 & TagTypeNumber) == TagTypeNumber;
+}
+
+inline bool ESValue::isDouble() const
+{
+    return isNumber() && !isInt32();
+}
+
+inline int32_t ESValue::asInt32() const
+{
+    ASSERT(isInt32());
+    return static_cast<int32_t>(u.asInt64);
+}
+
+inline double ESValue::asDouble() const
+{
+    ASSERT(isDouble());
+    return reinterpretInt64ToDouble(u.asInt64 - DoubleEncodeOffset);
+}
+
+inline bool ESValue::isNumber() const
+{
+    return u.asInt64 & TagTypeNumber;
+}
+
+inline bool ESValue::isESPointer() const
+{
+    return !(u.asInt64 & TagMask);
+}
+
+ALWAYS_INLINE ESPointer* ESValue::asESPointer() const
+{
+    ASSERT(isESPointer());
+    return u.ptr;
+}
+
 
 #endif
 
