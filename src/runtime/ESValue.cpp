@@ -253,7 +253,18 @@ ESValue* ESFunctionObject::call(ESValue* callee, ESValue* receiver, ESValue* arg
 InternalString ESValue::toInternalString()
 {
     InternalString ret;
-    // TODO
+
+    if(p->isInt32())
+        return InternalString(p->asInt32());
+    else if(p->isESBoolean())
+        return p->asESBoolean()?L"true":L"false";
+    else if(p->isNull())
+        return strings->null;
+    else if(p->isUndefined())
+        return strings->undefined;
+    else if(p->isESPointer())
+        RELEASE_ASSERT_NOT_REACHED();
+
     return ret;
 }
 

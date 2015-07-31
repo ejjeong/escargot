@@ -127,6 +127,10 @@ public:
     bool isCustomGetterSetter() const;
     bool isObject() const;
 
+    // Basic conversions.
+    enum PrimitiveTypeHint { PreferString, PreferNumber };
+    ESValue toPrimitive(PrimitiveTypeHint = PreferNumber) const;
+
     double toNumber() const;
     ESString asString() const;
     ESString toString() const;

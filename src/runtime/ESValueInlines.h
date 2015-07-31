@@ -365,6 +365,12 @@ inline double ESValue::asNumber() const
     return isInt32() ? asInt32() : asDouble();
 }
 
+inline ESValue ESValue::toPrimitive(PrimitiveTypeHint preferredType) const
+{
+    ASSERT(false); // TODO
+    return ESValue();
+}
+
 ALWAYS_INLINE double ESValue::toNumber() const
 {
     if (isInt32())
