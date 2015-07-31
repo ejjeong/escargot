@@ -2,7 +2,7 @@
 #define ESVMInstance_h
 
 #include "runtime/GlobalObject.h"
-#include "runtime/ESAtomicString.h"
+#include "runtime/InternalAtomicString.h"
 
 namespace escargot {
 
@@ -12,8 +12,8 @@ class ESVMInstance;
 
 extern __thread ESVMInstance* currentInstance;
 
-typedef std::unordered_map<std::wstring, ESAtomicStringData *,
-        std::hash<std::wstring>,std::equal_to<std::wstring> > AtomicStringMap;
+typedef std::unordered_map<std::wstring, InternalAtomicStringData *,
+        std::hash<std::wstring>,std::equal_to<std::wstring> > InternalAtomicStringMap;
 
 class ESVMInstance : public gc {
     friend class ESFunctionObject;
@@ -56,9 +56,9 @@ protected:
     ExecutionContext* m_currentExecutionContext;
     GlobalObject* m_globalObject;
 
-    friend class ESAtomicString;
-    friend class ESAtomicStringData;
-    AtomicStringMap m_atomicStringMap;
+    friend class InternalAtomicString;
+    friend class InternalAtomicStringData;
+    InternalAtomicStringMap m_atomicStringMap;
 
     Strings m_strings;
     size_t m_identifierCacheInvalidationCheckCount;

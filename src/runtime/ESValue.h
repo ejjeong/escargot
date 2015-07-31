@@ -1,6 +1,6 @@
 #ifndef ESValue_h
 #define ESValue_h
-#include "ESString.h"
+#include "InternalString.h"
 #include <sys/time.h>
 #include <time.h>
 
@@ -50,7 +50,7 @@ public:
     Smi* toSmi() const;
     HeapObject* toHeapObject() const;
     JSSlot* toJSSlot();
-    ESString toESString();
+    InternalString toInternalString();
 
     enum PrimitiveTypeHint { PreferString, PreferNumber };
     ESValue* toPrimitive(PrimitiveTypeHint hint = PreferNumber);
@@ -362,18 +362,18 @@ protected:
 
 class PString : public HeapObject {
 protected:
-    PString(const ESString& src)
+    PString(const InternalString& src)
         : HeapObject((Type)(Type::Primitive | Type::PString))
     {
         m_string = src;
     }
 public:
-    static PString* create(const ESString& src)
+    static PString* create(const InternalString& src)
     {
         return new PString(src);
     }
 
-    const ESString& string()
+    const InternalString& string()
     {
         return m_string;
     }
@@ -384,7 +384,7 @@ public:
     }
 
 protected:
-    ESString m_string;
+    InternalString m_string;
 };
 
 class JSSlot : public HeapObject {
@@ -516,16 +516,16 @@ protected:
 };
 
 
-typedef std::unordered_map<ESAtomicString, ::escargot::JSSlot *,
-                std::hash<ESAtomicString>,std::equal_to<ESAtomicString>,
-                gc_allocator<std::pair<const ESAtomicString, ::escargot::JSSlot *> > > JSObjectMapStd;
+typedef std::unordered_map<InternalAtomicString, ::escargot::JSSlot *,
+                std::hash<InternalAtomicString>,std::equal_to<InternalAtomicString>,
+                gc_allocator<std::pair<const InternalAtomicString, ::escargot::JSSlot *> > > JSObjectMapStd;
 
 typedef std::vector<::escargot::JSSlot *, gc_allocator<::escargot::JSSlot *> > JSVectorStd;
 
 /*
-typedef std::map<ESString, ::escargot::JSSlot *,
-            std::less<ESString>,
-            gc_allocator<std::pair<const ESString, ::escargot::JSSlot *> > > JSObjectMapStd;
+typedef std::map<InternalString, ::escargot::JSSlot *,
+            std::less<InternalString>,
+            gc_allocator<std::pair<const InternalString, ::escargot::JSSlot *> > > JSObjectMapStd;
 */
 class JSObjectMap : public JSObjectMapStd {
 public:
@@ -560,7 +560,7 @@ protected:
         }, true, false, false);
     }
 public:
-    void definePropertyOrThrow(const ESAtomicString& key, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true)
+    void definePropertyOrThrow(const InternalAtomicString& key, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true)
     {
         auto iter = m_map.find(key);
         if(iter == m_map.end()) {
@@ -570,7 +570,7 @@ public:
         }
     }
 
-    bool hasOwnProperty(const ESAtomicString& key) {
+    bool hasOwnProperty(const InternalAtomicString& key) {
         auto iter = m_map.find(key);
         if(iter == m_map.end())
             return false;
@@ -588,7 +588,7 @@ public:
     }
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-get-o-p
-    ESValue* get(const ESAtomicString& key, bool searchPrototype = false)
+    ESValue* get(const InternalAtomicString& key, bool searchPrototype = false)
     {
         if (UNLIKELY(searchPrototype)) {
             JSObject* target = this;
@@ -615,7 +615,7 @@ public:
         }
     }
 
-    ALWAYS_INLINE escargot::JSSlot* find(const ESAtomicString& key)
+    ALWAYS_INLINE escargot::JSSlot* find(const InternalAtomicString& key)
     {
         auto iter = m_map.find(key);
         if(iter == m_map.end()) {
@@ -625,7 +625,7 @@ public:
     }
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
-    void set(const ESAtomicString& key, ESValue* val, bool shouldThrowException = false)
+    void set(const InternalAtomicString& key, ESValue* val, bool shouldThrowException = false)
     {
         //TODO Assert: IsPropertyKey(P) is true.
         //TODO Assert: Type(Throw) is ESBoolean.
@@ -641,10 +641,10 @@ public:
 
     void set(ESValue* key, ESValue* val, bool shouldThrowException = false)
     {
-        set(ESAtomicString(key->toESString().data()), val, shouldThrowException);
+        set(InternalAtomicString(key->toInternalString().data()), val, shouldThrowException);
     }
 
-    void defineAccessorProperty(const ESAtomicString& key,std::function<ESValue* (::escargot::JSObject* obj)> getter = nullptr,
+    void defineAccessorProperty(const InternalAtomicString& key,std::function<ESValue* (::escargot::JSObject* obj)> getter = nullptr,
             std::function<void (::escargot::JSObject* obj, ESValue* value)> setter = nullptr,
             bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
     {
@@ -656,7 +656,7 @@ public:
 
     }
 
-    bool hasKey(const ESAtomicString& key)
+    bool hasKey(const InternalAtomicString& key)
     {
         auto iter = m_map.find(key);
         if(iter == m_map.end()) {
@@ -786,7 +786,7 @@ public:
         return arr;
     }
 
-    void set(const ESAtomicString& key, ESValue* val, bool shouldThrowException = false)
+    void set(const InternalAtomicString& key, ESValue* val, bool shouldThrowException = false)
     {
         if (m_fastmode) convertToSlowMode();
         m_fastmode = false;
@@ -813,7 +813,7 @@ public:
         if (m_fastmode) {
             m_vector[i] = escargot::JSSlot::create(val, true, true, true);
         } else {
-            JSObject::set(ESAtomicString(key->toESString().data()), val, shouldThrowException);
+            JSObject::set(InternalAtomicString(key->toInternalString().data()), val, shouldThrowException);
         }
     }
 
@@ -821,28 +821,28 @@ public:
     {
         if (m_fastmode)
             return m_vector[key]->value();
-        return JSObject::get(ESAtomicString(ESString(key).data()));
+        return JSObject::get(InternalAtomicString(InternalString(key).data()));
     }
 
     ESValue* get(ESValue* key)
     {
         if (m_fastmode && key->isSmi())
             return m_vector[key->toSmi()->value()]->value();
-        return JSObject::get(ESAtomicString(key->toESString().data()));
+        return JSObject::get(InternalAtomicString(key->toInternalString().data()));
     }
 
     escargot::JSSlot* find(int key)
     {
         if (m_fastmode)
             return m_vector[key];
-        return JSObject::find(ESAtomicString(ESString(key).data()));
+        return JSObject::find(InternalAtomicString(InternalString(key).data()));
     }
 
     escargot::JSSlot* find(ESValue* key)
     {
         if (m_fastmode && key->isSmi())
             return m_vector[key->toSmi()->value()];
-        return JSObject::find(ESAtomicString(key->toESString().data()));
+        return JSObject::find(InternalAtomicString(key->toInternalString().data()));
     }
 
     void push(ESValue* val)
@@ -862,7 +862,7 @@ public:
         int len = length()->toSmi()->value();
         if (len == 0) return;
         for (int i = 0; i < len; i++) {
-            m_map.insert(std::make_pair(ESAtomicString(ESString(i).data()), m_vector[i]));
+            m_map.insert(std::make_pair(InternalAtomicString(InternalString(i).data()), m_vector[i]));
         }
         m_vector.clear();
     }
@@ -946,7 +946,7 @@ protected:
 
 class JSString : public JSObject {
 protected:
-    JSString(const ESString& str)
+    JSString(const InternalString& str)
         : JSObject((Type)(Type::JSObject | Type::JSString))
     {
         m_stringData = PString::create(str);
@@ -958,7 +958,7 @@ protected:
     }
 
 public:
-    static JSString* create(const ESString& str)
+    static JSString* create(const InternalString& str)
     {
         return new JSString(str);
     }

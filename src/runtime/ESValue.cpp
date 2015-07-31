@@ -78,12 +78,12 @@ bool ESValue::equalsTo(ESValue* val)
     }
 }
 
-ESString ESValue::toESString()
+InternalString ESValue::toInternalString()
 {
-    ESString ret;
+    InternalString ret;
 
     if(isSmi()) {
-        ret = ESString(toSmi()->value());
+        ret = InternalString(toSmi()->value());
     } else {
         HeapObject* o = toHeapObject();
         if(o->isESUndefined()) {
@@ -94,7 +94,7 @@ ESString ESValue::toESString()
             if (o == esNaN) ret = L"NaN";
             else if (o == esInfinity) ret = L"Infinity";
             else if (o == esNegInfinity) ret = L"-Infinity";
-            else ret = ESString(o->toESNumber()->get());
+            else ret = InternalString(o->toESNumber()->get());
         } else if(o->isPString()) {
             ret = o->toPString()->string();
         } else if(o->isESFunctionObject()) {
@@ -110,25 +110,25 @@ ESString ESValue::toESString()
                 if(!isFirst)
                     ret.append(L", ");
                 ESValue* slot = o->toESArrayObject()->get(i);
-                ret.append(slot->toESString());
+                ret.append(slot->toInternalString());
                 isFirst = false;
               }
             ret.append(L"]");
         } else if(o->isJSString()) {
             ret.append(o->toJSString()->getStringData()->string());
         } else if(o->isESErrorObject()) {
-        	    ret.append(o->toJSObject()->get(L"name", true)->toESString().data());
+        	    ret.append(o->toJSObject()->get(L"name", true)->toInternalString().data());
         	    ret.append(L": ");
-        	    ret.append(o->toJSObject()->get(L"message")->toESString().data());
+        	    ret.append(o->toJSObject()->get(L"message")->toInternalString().data());
         } else if(o->isJSObject()) {
           ret = L"Object {";
           bool isFirst = true;
-          o->toJSObject()->enumeration([&ret, &isFirst](const ESString& key, JSSlot* slot) {
+          o->toJSObject()->enumeration([&ret, &isFirst](const InternalString& key, JSSlot* slot) {
               if(!isFirst)
                   ret.append(L", ");
               ret.append(key);
               ret.append(L": ");
-              ret.append(slot->value()->toESString());
+              ret.append(slot->value()->toInternalString());
               isFirst = false;
           });
           ret.append(L"}");
@@ -165,14 +165,14 @@ ESValue* functionCallerInnerProcess(ESFunctionObject* fn, ESValue* callee, ESVal
             argumentsObject->set(strings->numbers[i], arguments[i]);
         }
         for( ; i < argumentCount ; i ++) {
-            argumentsObject->set(ESAtomicString(ESString((int)i).data()), arguments[i]);
+            argumentsObject->set(InternalAtomicString(InternalString((int)i).data()), arguments[i]);
         }
 
         functionRecord->createMutableBinding(strings->arguments,false);
         functionRecord->setMutableBinding(strings->arguments, argumentsObject, true);
     }
 
-    const ESAtomicStringVector& params = fn->functionAST()->params();
+    const InternalAtomicStringVector& params = fn->functionAST()->params();
 
     for(unsigned i = 0; i < params.size() ; i ++) {
         functionRecord->createMutableBinding(params[i],false);
@@ -201,7 +201,7 @@ ESValue* ESFunctionObject::call(ESValue* callee, ESValue* receiver, ESValue* arg
             ESVMInstance->m_currentExecutionContext = currentContext;
         } else {
             bool needsArgumentsObject = false;
-            ESAtomicStringVector& v = fn->functionAST()->innerIdentifiers();
+            InternalAtomicStringVector& v = fn->functionAST()->innerIdentifiers();
             for(unsigned i = 0; i < v.size() ; i ++) {
                 if(v[i] == strings->arguments) {
                     needsArgumentsObject = true;
@@ -210,7 +210,7 @@ ESValue* ESFunctionObject::call(ESValue* callee, ESValue* receiver, ESValue* arg
             }
 
             FunctionEnvironmentRecord envRec(true,
-                    (std::pair<ESAtomicString, ::escargot::JSSlot>*)alloca(sizeof(std::pair<ESAtomicString, ::escargot::JSSlot>) * fn->functionAST()->innerIdentifiers().size()),
+                    (std::pair<InternalAtomicString, ::escargot::JSSlot>*)alloca(sizeof(std::pair<InternalAtomicString, ::escargot::JSSlot>) * fn->functionAST()->innerIdentifiers().size()),
                     fn->functionAST()->innerIdentifiers().size());
 
             envRec.m_functionObject = fn;

@@ -11,15 +11,15 @@ public:
     {
         m_identifier = L"";
     }
-    ReferenceError(const ESString& identifier)
+    ReferenceError(const InternalString& identifier)
     {
         m_identifier = identifier;
     }
 
-    const ESString& identifier() { return m_identifier; }
+    const InternalString& identifier() { return m_identifier; }
 
 protected:
-    ESString m_identifier;
+    InternalString m_identifier;
 };
 
 class TypeError {
@@ -43,7 +43,7 @@ public:
     }
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
-    JSSlot* resolveBinding(const ESAtomicString& name);
+    JSSlot* resolveBinding(const InternalAtomicString& name);
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvethisbinding
     JSObject* resolveThisBinding();
@@ -61,7 +61,7 @@ public:
         return m_lastJSObjectMetInMemberExpressionNode;
     }
 
-    ALWAYS_INLINE const ESAtomicString& lastUsedPropertyNameInMemberExpressionNode()
+    ALWAYS_INLINE const InternalAtomicString& lastUsedPropertyNameInMemberExpressionNode()
     {
         return m_lastUsedPropertyNameInMemberExpressionNode;
     }
@@ -71,7 +71,7 @@ public:
         return m_lastUsedPropertyValueInMemberExpressionNode;
     }
 
-    ALWAYS_INLINE void setLastJSObjectMetInMemberExpressionNode(JSObject* obj, const ESAtomicString& name, ESValue* value)
+    ALWAYS_INLINE void setLastJSObjectMetInMemberExpressionNode(JSObject* obj, const InternalAtomicString& name, ESValue* value)
     {
         m_lastJSObjectMetInMemberExpressionNode = obj;
         m_lastUsedPropertyNameInMemberExpressionNode = name;
@@ -95,7 +95,7 @@ private:
     LexicalEnvironment* m_lexicalEnvironment;
     LexicalEnvironment* m_variableEnvironment;
     JSObject* m_lastJSObjectMetInMemberExpressionNode;
-    ESAtomicString m_lastUsedPropertyNameInMemberExpressionNode;
+    InternalAtomicString m_lastUsedPropertyNameInMemberExpressionNode;
     ESValue* m_lastUsedPropertyValueInMemberExpressionNode;
     ESValue* m_returnValue;
     std::jmp_buf m_returnPosition;

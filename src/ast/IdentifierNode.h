@@ -11,7 +11,7 @@ namespace escargot {
 class IdentifierNode : public Node {
 public:
     friend class ESScriptParser;
-    IdentifierNode(const ESAtomicString& name)
+    IdentifierNode(const InternalAtomicString& name)
             : Node(NodeType::Identifier)
     {
         m_name = name;
@@ -24,13 +24,13 @@ public:
 
     ESValue* execute(ESVMInstance* instance);
 
-    const ESAtomicString& name()
+    const InternalAtomicString& name()
     {
         return m_name;
     }
 
 protected:
-    ESAtomicString m_name;
+    InternalAtomicString m_name;
 
     ExecutionContext* m_cachedExecutionContext;
     size_t m_identifierCacheInvalidationCheckCount;

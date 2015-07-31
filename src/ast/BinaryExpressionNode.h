@@ -48,7 +48,7 @@ public:
         // TODO
     };
 
-    BinaryExpressionNode(Node *left, Node* right, const ESString& oper)
+    BinaryExpressionNode(Node *left, Node* right, const InternalString& oper)
             : ExpressionNode(NodeType::BinaryExpression)
     {
         m_left = (ExpressionNode*)left;
@@ -115,8 +115,8 @@ public:
                 rval = rval->toPrimitive();
                 if ((lval->isHeapObject() && lval->toHeapObject()->isPString())
                     || (rval->isHeapObject() && rval->toHeapObject()->isPString())) {
-                    ESString lstr;
-                    ESString rstr;
+                    InternalString lstr;
+                    InternalString rstr;
                     if (lval->isHeapObject() && lval->toHeapObject()->isPString())
                         lstr = lval->toHeapObject()->toPString()->string();
                     else

@@ -25,27 +25,27 @@ GlobalObject::GlobalObject()
     set(L"NaN", esNaN);
     set(strings->undefined, esUndefined);
 
-    FunctionDeclarationNode* node = new FunctionDeclarationNode(ESAtomicString(L"print"), ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
+    FunctionDeclarationNode* node = new FunctionDeclarationNode(InternalAtomicString(L"print"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
         JSObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(strings->arguments, false)->toHeapObject()->toJSObject();
         ESValue* val = value->get(strings->numbers[0]);
-        ESString str = val->toESString();
+        InternalString str = val->toInternalString();
         wprintf(L"%ls\n", str.data());
         return esUndefined;
     }), false, false);
     auto printFunction = ESFunctionObject::create(NULL, node);
     set(L"print", printFunction);
 
-    node = new FunctionDeclarationNode(ESAtomicString(L"gc"), ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
+    node = new FunctionDeclarationNode(InternalAtomicString(L"gc"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
         GC_gcollect();
         return esUndefined;
     }), false, false);
     auto gcFunction = ESFunctionObject::create(NULL, node);
     set(L"gc", gcFunction);
 
-    node = new FunctionDeclarationNode(ESAtomicString(L"load"), ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
+    node = new FunctionDeclarationNode(InternalAtomicString(L"load"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
         JSObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(strings->arguments, false)->toHeapObject()->toJSObject();
         ESValue* val = value->get(strings->numbers[0]);
-        ESString str = val->toESString();
+        InternalString str = val->toInternalString();
         const wchar_t* pt = str.data();
         std::string path;
         char buffer [MB_CUR_MAX];
@@ -78,11 +78,11 @@ GlobalObject::GlobalObject()
 
 void GlobalObject::installFunction()
 {
-    m_function = ESFunctionObject::create(NULL, new FunctionDeclarationNode(strings->Function, ESAtomicStringVector(), new EmptyStatementNode(), false, false));
+    m_function = ESFunctionObject::create(NULL, new FunctionDeclarationNode(strings->Function, InternalAtomicStringVector(), new EmptyStatementNode(), false, false));
     m_function->set(strings->constructor, m_function);
     m_function->set(strings->name, PString::create(strings->Function));
     m_function->setConstructor(m_function);
-    ::escargot::ESFunctionObject* emptyFunction = ESFunctionObject::create(NULL,new FunctionDeclarationNode(strings->Empty, ESAtomicStringVector(), new EmptyStatementNode(), false, false));
+    ::escargot::ESFunctionObject* emptyFunction = ESFunctionObject::create(NULL,new FunctionDeclarationNode(strings->Empty, InternalAtomicStringVector(), new EmptyStatementNode(), false, false));
 
     m_functionPrototype = emptyFunction;
     m_functionPrototype->setConstructor(m_function);
@@ -99,7 +99,7 @@ void GlobalObject::installFunction()
 void GlobalObject::installObject()
 {
     ::escargot::ESFunctionObject* emptyFunction = m_functionPrototype;
-    m_object = ::escargot::ESFunctionObject::create(NULL,new FunctionDeclarationNode(strings->Object, ESAtomicStringVector(), new EmptyStatementNode(), false, false));
+    m_object = ::escargot::ESFunctionObject::create(NULL,new FunctionDeclarationNode(strings->Object, InternalAtomicStringVector(), new EmptyStatementNode(), false, false));
     m_object->set(strings->name, PString::create(strings->Object));
     m_object->setConstructor(m_function);
     m_object->set__proto__(emptyFunction);
@@ -115,7 +115,7 @@ void GlobalObject::installError()
 {
 	  // Initialization for reference error
     ::escargot::ESFunctionObject* emptyFunction = m_functionPrototype;
-    m_referenceError = ::escargot::ESFunctionObject::create(NULL,new FunctionDeclarationNode(strings->ReferenceError, ESAtomicStringVector(), new EmptyStatementNode(), false, false));
+    m_referenceError = ::escargot::ESFunctionObject::create(NULL,new FunctionDeclarationNode(strings->ReferenceError, InternalAtomicStringVector(), new EmptyStatementNode(), false, false));
     m_referenceError->set(strings->name, PString::create(strings->ReferenceError));
     m_referenceError->setConstructor(m_function);
     m_referenceError->set__proto__(emptyFunction);
@@ -135,7 +135,7 @@ void GlobalObject::installArray()
     m_arrayPrototype = ESArrayObject::create(0, m_objectPrototype);
 
     //$22.1.1 Array Constructor
-    FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings->Array, ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
+    FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings->Array, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
         JSObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(strings->arguments, false)->toHeapObject()->toJSObject();
         int len = value->get(strings->length)->toSmi()->value();
         int size = 0;
@@ -148,7 +148,7 @@ void GlobalObject::installArray()
         } else if (len >= 1) {      // numberOfArgs>=2 or (numberOfArgs==1 && val is not ESNumber)
             for (int idx = 0; idx < len; idx++) {
                 array->set(Smi::fromInt(idx), val);
-                val = value->get(ESAtomicString(ESString(idx + 1).data()));
+                val = value->get(InternalAtomicString(InternalString(idx + 1).data()));
             }
         }
         instance->currentExecutionContext()->doReturn(array);
@@ -156,7 +156,7 @@ void GlobalObject::installArray()
     }), false, false);
 
     //$22.1.3.11 Array.prototype.indexOf()
-    FunctionDeclarationNode* arrayIndexOf = new FunctionDeclarationNode(L"indexOf", ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
+    FunctionDeclarationNode* arrayIndexOf = new FunctionDeclarationNode(L"indexOf", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
         JSObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(L"arguments", false)->toHeapObject()->toJSObject();
         auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->toESArrayObject();
         int len = thisVal->length()->toSmi()->value();
@@ -196,12 +196,12 @@ void GlobalObject::installArray()
 
 
     //$22.1.3.17 Array.prototype.push(item)
-    FunctionDeclarationNode* arrayPush = new FunctionDeclarationNode(L"push", ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
+    FunctionDeclarationNode* arrayPush = new FunctionDeclarationNode(L"push", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
         JSObject* value = instance->currentExecutionContext()->environment()->record()->getBindingValue(L"arguments", false)->toHeapObject()->toJSObject();
         int len = value->get(strings->length)->toSmi()->value();
         auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->toESArrayObject();
         for (int i = 0; i < len; i++) {
-            ESValue* val = value->get(ESAtomicString(ESString(i).data()));
+            ESValue* val = value->get(InternalAtomicString(InternalString(i).data()));
             thisVal->push(val);
             i++;
         }
@@ -224,7 +224,7 @@ void GlobalObject::installArray()
 
 void GlobalObject::installString()
 {
-    m_string = ESFunctionObject::create(NULL, new FunctionDeclarationNode(strings->String, ESAtomicStringVector(), new EmptyStatementNode(), false, false));
+    m_string = ESFunctionObject::create(NULL, new FunctionDeclarationNode(strings->String, InternalAtomicStringVector(), new EmptyStatementNode(), false, false));
     //m_string->set(strings->constructor, m_function); TODO do i need this?
     m_string->set(strings->name, PString::create(strings->String));
     m_string->setConstructor(m_function);
@@ -241,13 +241,13 @@ void GlobalObject::installString()
     set(strings->String, m_string);
 
     //$21.1.3.8 String.prototype.indexOf(searchString[, position])
-    FunctionDeclarationNode* stringIndexOf = new FunctionDeclarationNode(L"indexOf", ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
+    FunctionDeclarationNode* stringIndexOf = new FunctionDeclarationNode(L"indexOf", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
         JSObject* arguments = instance->currentExecutionContext()->environment()->record()->getBindingValue(L"arguments", false)->toHeapObject()->toJSObject();
         JSObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
         if (thisObject->isESUndefined() || thisObject->isESNull())
             throw TypeError();
-        const ESString& str = thisObject->toJSString()->getStringData()->string();
-        const ESString& searchStr = arguments->get(strings->numbers[0])->toHeapObject()->toPString()->string(); // TODO converesion w&w/o test
+        const InternalString& str = thisObject->toJSString()->getStringData()->string();
+        const InternalString& searchStr = arguments->get(strings->numbers[0])->toHeapObject()->toPString()->string(); // TODO converesion w&w/o test
         ESValue* val = arguments->get(strings->numbers[1]);
 
         int result;
@@ -266,13 +266,13 @@ void GlobalObject::installString()
     m_stringPrototype->set(L"indexOf", ESFunctionObject::create(NULL, stringIndexOf));
 
     //$21.1.3.19 String.prototype.substring(start, end)
-    FunctionDeclarationNode* stringSubstring = new FunctionDeclarationNode(L"substring", ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
+    FunctionDeclarationNode* stringSubstring = new FunctionDeclarationNode(L"substring", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
         JSObject* arguments = instance->currentExecutionContext()->environment()->record()->getBindingValue(L"arguments", false)->toHeapObject()->toJSObject();
         JSObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
         if (thisObject->isESUndefined() || thisObject->isESNull())
             throw TypeError();
 
-        const ESString& str = thisObject->toJSString()->getStringData()->string();
+        const InternalString& str = thisObject->toJSString()->getStringData()->string();
         int len = str.length();
         int intStart = arguments->get(strings->numbers[0])->toSmi()->value();
         ESValue* end = arguments->get(strings->numbers[1]);
@@ -281,7 +281,7 @@ void GlobalObject::installString()
         int finalEnd = std::min(std::max(intEnd, 0), len);
         int from = std::min(finalStart, finalEnd);
         int to = std::max(finalStart, finalEnd);
-        ESString ret(str.string()->substr(from, to-from).c_str());
+        InternalString ret(str.string()->substr(from, to-from).c_str());
         instance->currentExecutionContext()->doReturn(PString::create(ret));
         return esUndefined;
     }), false, false);
@@ -293,7 +293,7 @@ void GlobalObject::installDate()
     m_datePrototype = ESDateObject::create();
 
     //$20.3.2 The Date Constructor
-    FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings->Date, ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
+    FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings->Date, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
         JSObject* proto = instance->globalObject()->arrayPrototype();
         escargot::ESDateObject* date = ESDateObject::create(proto);
         date->setTimeValue();

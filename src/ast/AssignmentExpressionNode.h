@@ -22,7 +22,7 @@ public:
         CompoundAssignment
     };
 
-    AssignmentExpressionNode(Node* left, Node* right, const ESString& oper)
+    AssignmentExpressionNode(Node* left, Node* right, const InternalString& oper)
             : ExpressionNode(NodeType::AssignmentExpression)
     {
         m_left = left;

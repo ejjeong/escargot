@@ -246,7 +246,7 @@ inline ESValue* ESValue::toInteger()
 
 inline PString* ESValue::toString()
 {
-    return PString::create(toESString());
+    return PString::create(toInternalString());
 }
 
 inline ESValue* ESValue::ensureValue()

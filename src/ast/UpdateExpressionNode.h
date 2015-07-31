@@ -13,7 +13,7 @@ public:
         DECREMENT, //"--"
     };
 
-    UpdateExpressionNode(Node *argument, const ESString& oper, bool prefix)
+    UpdateExpressionNode(Node *argument, const InternalString& oper, bool prefix)
             : ExpressionNode(NodeType::UpdateExpression)
     {
         m_argument = (ExpressionNode*)argument;

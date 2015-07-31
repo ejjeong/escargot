@@ -95,7 +95,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
     remove(prefix);
     rmdir(ptr);
 
-    ESString output = outputString.data();
+    InternalString output = outputString.data();
     //output.show();
 
     rapidjson::GenericDocument<rapidjson::UTF16<>> jsonDocument;
@@ -107,39 +107,39 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
     //wprintf(L"%ls\n",type.data());
 
     //TODO move these strings into elsewhere
-    ESString astTypeProgram(L"Program");
-    ESString astTypeVariableDeclaration(L"VariableDeclaration");
-    ESString astTypeExpressionStatement(L"ExpressionStatement");
-    ESString astTypeVariableDeclarator(L"VariableDeclarator");
-    ESString astTypeIdentifier(L"Identifier");
-    ESString astTypeAssignmentExpression(L"AssignmentExpression");
-    ESString astTypeThisExpression(L"ThisExpression");
-    ESString astTypeReturnStatement(L"ReturnStatement");
-    ESString astTypeEmptyStatement(L"EmptyStatement");
-    ESString astTypeLiteral(L"Literal");
-    ESString astTypeFunctionDeclaration(L"FunctionDeclaration");
-    ESString astTypeFunctionExpression(L"FunctionExpression");
-    ESString astTypeBlockStatement(L"BlockStatement");
-    ESString astTypeArrayExpression(L"ArrayExpression");
-    ESString astTypeCallExpression(L"CallExpression");
-    ESString astTypeObjectExpression(L"ObjectExpression");
-    ESString astTypeMemberExpression(L"MemberExpression");
-    ESString astTypeNewExpression(L"NewExpression");
-    ESString astTypeProperty(L"Property");
-    ESString astTypeBinaryExpression(L"BinaryExpression");
-    ESString astTypeUpdateExpression(L"UpdateExpression");
-    ESString astTypeIfStatement(L"IfStatement");
-    ESString astTypeForStatement(L"ForStatement");
-    ESString astTypeWhileStatement(L"WhileStatement");
-    ESString astTypeTryStatement(L"TryStatement");
-    ESString astTypeCatchClause(L"CatchClause");
-    ESString astTypeThrowStatement(L"ThrowStatement");
+    InternalString astTypeProgram(L"Program");
+    InternalString astTypeVariableDeclaration(L"VariableDeclaration");
+    InternalString astTypeExpressionStatement(L"ExpressionStatement");
+    InternalString astTypeVariableDeclarator(L"VariableDeclarator");
+    InternalString astTypeIdentifier(L"Identifier");
+    InternalString astTypeAssignmentExpression(L"AssignmentExpression");
+    InternalString astTypeThisExpression(L"ThisExpression");
+    InternalString astTypeReturnStatement(L"ReturnStatement");
+    InternalString astTypeEmptyStatement(L"EmptyStatement");
+    InternalString astTypeLiteral(L"Literal");
+    InternalString astTypeFunctionDeclaration(L"FunctionDeclaration");
+    InternalString astTypeFunctionExpression(L"FunctionExpression");
+    InternalString astTypeBlockStatement(L"BlockStatement");
+    InternalString astTypeArrayExpression(L"ArrayExpression");
+    InternalString astTypeCallExpression(L"CallExpression");
+    InternalString astTypeObjectExpression(L"ObjectExpression");
+    InternalString astTypeMemberExpression(L"MemberExpression");
+    InternalString astTypeNewExpression(L"NewExpression");
+    InternalString astTypeProperty(L"Property");
+    InternalString astTypeBinaryExpression(L"BinaryExpression");
+    InternalString astTypeUpdateExpression(L"UpdateExpression");
+    InternalString astTypeIfStatement(L"IfStatement");
+    InternalString astTypeForStatement(L"ForStatement");
+    InternalString astTypeWhileStatement(L"WhileStatement");
+    InternalString astTypeTryStatement(L"TryStatement");
+    InternalString astTypeCatchClause(L"CatchClause");
+    InternalString astTypeThrowStatement(L"ThrowStatement");
 
     StatementNodeVector programBody;
     std::function<Node *(rapidjson::GenericValue<rapidjson::UTF16<>>& value, StatementNodeVector* currentBody, bool shouldGenerateNewBody)> fn;
     fn = [&](rapidjson::GenericValue<rapidjson::UTF16<>>& value, StatementNodeVector* currentBody, bool shouldGenerateNewBody) -> Node* {
         Node* parsedNode = NULL;
-        ESString type(value[L"type"].GetString());
+        InternalString type(value[L"type"].GetString());
         if(type == astTypeProgram) {
             rapidjson::GenericValue<rapidjson::UTF16<>>& children = value[L"body"];
             for (rapidjson::SizeType i = 0; i < children.Size(); i++) {
@@ -199,8 +199,8 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             }
 
         } else if(type == astTypeFunctionDeclaration) {
-            ESAtomicString id = ESAtomicString(value[L"id"][L"name"].GetString());
-            ESAtomicStringVector params;
+            InternalAtomicString id = InternalAtomicString(value[L"id"][L"name"].GetString());
+            InternalAtomicStringVector params;
 
             rapidjson::GenericValue<rapidjson::UTF16<>>& children = value[L"params"];
             for (rapidjson::SizeType i = 0; i < children.Size(); i++) {
@@ -211,15 +211,15 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             currentBody->insert(currentBody->begin(), new FunctionDeclarationNode(id, std::move(params), func_body, value[L"generator"].GetBool(), value[L"generator"].GetBool()));
             return NULL;
         }  else if(type == astTypeFunctionExpression) {
-            ESAtomicString id;
-            ESAtomicStringVector params;
+            InternalAtomicString id;
+            InternalAtomicStringVector params;
 
             if(!value[L"id"].IsNull())
-                id = ESAtomicString(value[L"id"][L"name"].GetString());
+                id = InternalAtomicString(value[L"id"][L"name"].GetString());
 
             rapidjson::GenericValue<rapidjson::UTF16<>>& children = value[L"params"];
             for (rapidjson::SizeType i = 0; i < children.Size(); i++) {
-                params.push_back(ESAtomicString(children[i][L"name"].GetString()));
+                params.push_back(InternalAtomicString(children[i][L"name"].GetString()));
             }
 
             Node* func_body = fn(value[L"body"], currentBody, true);
@@ -338,8 +338,8 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
         }
     };
 
-    std::function<void (Node* currentNode, ESAtomicStringVector& identifierInCurrentContext, FunctionNode* nearFunctionNode)> postAnalysisFunction =
-            [&postAnalysisFunction, instance, &markNeedsActivation](Node* currentNode, ESAtomicStringVector& identifierInCurrentContext, FunctionNode* nearFunctionNode) {
+    std::function<void (Node* currentNode, InternalAtomicStringVector& identifierInCurrentContext, FunctionNode* nearFunctionNode)> postAnalysisFunction =
+            [&postAnalysisFunction, instance, &markNeedsActivation](Node* currentNode, InternalAtomicStringVector& identifierInCurrentContext, FunctionNode* nearFunctionNode) {
         if(!currentNode)
             return;
         NodeType type = currentNode->type();
@@ -368,8 +368,8 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
                 identifierInCurrentContext.push_back(((FunctionDeclarationNode *)currentNode)->id());
             }
             //wprintf(L"process function body-------------------\n");
-            ESAtomicStringVector newIdentifierVector;
-            ESAtomicStringVector& vec = ((FunctionExpressionNode *)currentNode)->m_params;
+            InternalAtomicStringVector newIdentifierVector;
+            InternalAtomicStringVector& vec = ((FunctionExpressionNode *)currentNode)->m_params;
             for(unsigned i = 0; i < vec.size() ; i ++) {
                 if(newIdentifierVector.end() == std::find(newIdentifierVector.begin(),newIdentifierVector.end(),
                         vec[i])) {
@@ -383,8 +383,8 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             //wprintf(L"end of process function body-------------------\n");
         } else if(type == NodeType::FunctionExpression) {
             //wprintf(L"process function body-------------------\n");
-            ESAtomicStringVector newIdentifierVector;
-            ESAtomicStringVector& vec = ((FunctionExpressionNode *)currentNode)->m_params;
+            InternalAtomicStringVector newIdentifierVector;
+            InternalAtomicStringVector& vec = ((FunctionExpressionNode *)currentNode)->m_params;
             for(unsigned i = 0; i < vec.size() ; i ++) {
                 if(newIdentifierVector.end() == std::find(newIdentifierVector.begin(),newIdentifierVector.end(),
                         vec[i])) {
@@ -398,7 +398,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             //wprintf(L"end of process function body-------------------\n");
         } else if(type == NodeType::Identifier) {
             //use case
-            ESAtomicString name = ((IdentifierNode *)currentNode)->name();
+            InternalAtomicString name = ((IdentifierNode *)currentNode)->name();
             if(identifierInCurrentContext.end() == std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),
                     name)) {
                 if(!instance->globalObject()->hasKey(name)) {
@@ -431,7 +431,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             Node * callee = ((CallExpressionNode *)currentNode)->m_callee;
             if(callee) {
                 if(callee->type() == NodeType::Identifier) {
-                    if(((IdentifierNode *)callee)->name() == ESAtomicString(L"eval")) {
+                    if(((IdentifierNode *)callee)->name() == InternalAtomicString(L"eval")) {
                         markNeedsActivation(nearFunctionNode);
                     }
                 }
@@ -508,7 +508,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
         }
     };
 
-    ESAtomicStringVector identifierInCurrentContext;
+    InternalAtomicStringVector identifierInCurrentContext;
     postAnalysisFunction(node, identifierInCurrentContext, NULL);
 
     //unsigned long end = getLongTickCount();

@@ -26,12 +26,12 @@ ESValue* IdentifierNode::execute(ESVMInstance* instance)
     receiver->set__proto__(fn->toHeapObject()->toESFunctionObject());
 
     std::vector<ESValue*, gc_allocator<ESValue*>> arguments;
-    ESString err_msg = m_name;
-    err_msg.append(ESString(L" is not defined"));
+    InternalString err_msg = m_name;
+    err_msg.append(InternalString(L" is not defined"));
     //arguments.push_back(String::create(err_msg));
 
     ESFunctionObject::call(fn, receiver, &arguments[0], arguments.size(), instance);
-    receiver->set(ESAtomicString(L"message"), PString::create(err_msg));
+    receiver->set(InternalAtomicString(L"message"), PString::create(err_msg));
 
     throw (ESValue*) receiver;
     return esUndefined;

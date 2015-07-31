@@ -135,8 +135,8 @@
 #define RELEASE_ASSERT(assertion) assert(assertion);
 #define RELEASE_ASSERT_NOT_REACHED() do { assert(false); } while (0)
 
-#include "runtime/ESString.h"
-#include "runtime/ESAtomicString.h"
+#include "runtime/InternalString.h"
+#include "runtime/InternalAtomicString.h"
 #include "runtime/StaticStrings.h"
 
 #endif

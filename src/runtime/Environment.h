@@ -50,36 +50,36 @@ public:
     virtual ~EnvironmentRecord() { }
 
     //return NULL == not exist
-    virtual JSSlot* hasBinding(const ESAtomicString& name)
+    virtual JSSlot* hasBinding(const InternalAtomicString& name)
     {
         RELEASE_ASSERT_NOT_REACHED();
     }
-    virtual void createMutableBinding(const ESAtomicString& name, bool canDelete = false)
-    {
-        RELEASE_ASSERT_NOT_REACHED();
-    }
-
-    virtual void createImmutableBinding(const ESAtomicString& name, bool throwExecptionWhenAccessBeforeInit = false)
+    virtual void createMutableBinding(const InternalAtomicString& name, bool canDelete = false)
     {
         RELEASE_ASSERT_NOT_REACHED();
     }
 
-    virtual void initializeBinding(const ESAtomicString& name, ESValue* V)
+    virtual void createImmutableBinding(const InternalAtomicString& name, bool throwExecptionWhenAccessBeforeInit = false)
     {
         RELEASE_ASSERT_NOT_REACHED();
     }
 
-    virtual void setMutableBinding(const ESAtomicString& name, ESValue* V, bool mustNotThrowTypeErrorExecption)
+    virtual void initializeBinding(const InternalAtomicString& name, ESValue* V)
     {
         RELEASE_ASSERT_NOT_REACHED();
     }
 
-    virtual ESValue* getBindingValue(const ESAtomicString& name, bool ignoreReferenceErrorException)
+    virtual void setMutableBinding(const InternalAtomicString& name, ESValue* V, bool mustNotThrowTypeErrorExecption)
     {
         RELEASE_ASSERT_NOT_REACHED();
     }
 
-    virtual bool deleteBinding(const ESAtomicString& name)
+    virtual ESValue* getBindingValue(const InternalAtomicString& name, bool ignoreReferenceErrorException)
+    {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+
+    virtual bool deleteBinding(const InternalAtomicString& name)
     {
         RELEASE_ASSERT_NOT_REACHED();
     }
@@ -127,7 +127,7 @@ public:
         return reinterpret_cast<DeclarativeEnvironmentRecord*>(this);
     }
 
-    void createMutableBindingForAST(const ESAtomicString& name,bool canDelete);
+    void createMutableBindingForAST(const InternalAtomicString& name,bool canDelete);
 
 protected:
 };
@@ -141,7 +141,7 @@ public:
     ~ObjectEnvironmentRecord() { }
 
     //return NULL == not exist
-    virtual JSSlot* hasBinding(const ESAtomicString& name)
+    virtual JSSlot* hasBinding(const InternalAtomicString& name)
     {
         JSSlot* slot = m_bindingObject->find(name);
         if(slot) {
@@ -149,15 +149,15 @@ public:
         }
         return NULL;
     }
-    void createMutableBinding(const ESAtomicString& name, bool canDelete = false);
-    void createImmutableBinding(const ESAtomicString& name, bool throwExecptionWhenAccessBeforeInit = false) {}
-    void initializeBinding(const ESAtomicString& name, ESValue* V);
-    void setMutableBinding(const ESAtomicString& name, ESValue* V, bool mustNotThrowTypeErrorExecption);
-    ESValue* getBindingValue(const ESAtomicString& name, bool ignoreReferenceErrorException)
+    void createMutableBinding(const InternalAtomicString& name, bool canDelete = false);
+    void createImmutableBinding(const InternalAtomicString& name, bool throwExecptionWhenAccessBeforeInit = false) {}
+    void initializeBinding(const InternalAtomicString& name, ESValue* V);
+    void setMutableBinding(const InternalAtomicString& name, ESValue* V, bool mustNotThrowTypeErrorExecption);
+    ESValue* getBindingValue(const InternalAtomicString& name, bool ignoreReferenceErrorException)
     {
         return m_bindingObject->get(name);
     }
-    bool deleteBinding(const ESAtomicString& name)
+    bool deleteBinding(const InternalAtomicString& name)
     {
         return false;
     }
@@ -182,7 +182,7 @@ protected:
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-declarative-environment-records
 class DeclarativeEnvironmentRecord : public EnvironmentRecord {
 public:
-    DeclarativeEnvironmentRecord(bool shouldUseVector = false,std::pair<ESAtomicString, JSSlot>* vectorBuffer = NULL, size_t vectorSize = 0)
+    DeclarativeEnvironmentRecord(bool shouldUseVector = false,std::pair<InternalAtomicString, JSSlot>* vectorBuffer = NULL, size_t vectorSize = 0)
     {
         if(shouldUseVector) {
             m_innerObject = NULL;
@@ -199,7 +199,7 @@ public:
     {
     }
 
-    virtual JSSlot* hasBinding(const ESAtomicString& name)
+    virtual JSSlot* hasBinding(const InternalAtomicString& name)
     {
         if(UNLIKELY(m_innerObject != NULL)) {
             JSSlot* slot = m_innerObject->find(name);
@@ -216,7 +216,7 @@ public:
             return NULL;
         }
     }
-    virtual void createMutableBinding(const ESAtomicString& name, bool canDelete = false)
+    virtual void createMutableBinding(const InternalAtomicString& name, bool canDelete = false)
     {
         //TODO canDelete
         if(UNLIKELY(m_innerObject != NULL)) {
@@ -233,7 +233,7 @@ public:
         }
     }
 
-    virtual void setMutableBinding(const ESAtomicString& name, ESValue* V, bool mustNotThrowTypeErrorExecption)
+    virtual void setMutableBinding(const InternalAtomicString& name, ESValue* V, bool mustNotThrowTypeErrorExecption)
     {
         //TODO mustNotThrowTypeErrorExecption
         if(UNLIKELY(m_innerObject != NULL)) {
@@ -249,7 +249,7 @@ public:
         }
     }
 
-    virtual ESValue* getBindingValue(const ESAtomicString& name, bool ignoreReferenceErrorException)
+    virtual ESValue* getBindingValue(const InternalAtomicString& name, bool ignoreReferenceErrorException)
     {
         //TODO ignoreReferenceErrorException
         if(UNLIKELY(m_innerObject != NULL)) {
@@ -275,7 +275,7 @@ public:
     }
 
 protected:
-    std::pair<ESAtomicString, JSSlot>* m_vectorData;
+    std::pair<InternalAtomicString, JSSlot>* m_vectorData;
     size_t m_usedCount;
 #ifndef NDEBUG
     size_t m_vectorSize;
@@ -293,20 +293,20 @@ public:
     }
     ~GlobalEnvironmentRecord() { }
 
-    virtual JSSlot* hasBinding(const ESAtomicString& name);
-    void createMutableBinding(const ESAtomicString& name, bool canDelete = false);
-    void initializeBinding(const ESAtomicString& name, ESValue* V);
-    void setMutableBinding(const ESAtomicString& name, ESValue* V, bool mustNotThrowTypeErrorExecption);
+    virtual JSSlot* hasBinding(const InternalAtomicString& name);
+    void createMutableBinding(const InternalAtomicString& name, bool canDelete = false);
+    void initializeBinding(const InternalAtomicString& name, ESValue* V);
+    void setMutableBinding(const InternalAtomicString& name, ESValue* V, bool mustNotThrowTypeErrorExecption);
 
     JSObject* getThisBinding();
-    bool hasVarDeclaration(const ESAtomicString& name);
-    //bool hasLexicalDeclaration(const ESString& name);
-    bool hasRestrictedGlobalProperty(const ESAtomicString& name);
-    bool canDeclareGlobalVar(const ESAtomicString& name);
-    bool canDeclareGlobalFunction(const ESAtomicString& name);
-    void createGlobalVarBinding(const ESAtomicString& name, bool canDelete);
-    void createGlobalFunctionBinding(const ESAtomicString& name, ESValue* V, bool canDelete);
-    ESValue* getBindingValue(const ESAtomicString& name, bool ignoreReferenceErrorException);
+    bool hasVarDeclaration(const InternalAtomicString& name);
+    //bool hasLexicalDeclaration(const InternalString& name);
+    bool hasRestrictedGlobalProperty(const InternalAtomicString& name);
+    bool canDeclareGlobalVar(const InternalAtomicString& name);
+    bool canDeclareGlobalFunction(const InternalAtomicString& name);
+    void createGlobalVarBinding(const InternalAtomicString& name, bool canDelete);
+    void createGlobalFunctionBinding(const InternalAtomicString& name, ESValue* V, bool canDelete);
+    ESValue* getBindingValue(const InternalAtomicString& name, bool ignoreReferenceErrorException);
 
     virtual bool isGlobalEnvironmentRecord()
     {
@@ -321,7 +321,7 @@ public:
 protected:
     ObjectEnvironmentRecord* m_objectRecord;
     DeclarativeEnvironmentRecord* m_declarativeRecord;
-    std::vector<ESAtomicString, gc_allocator<ESAtomicString> > m_varNames;
+    std::vector<InternalAtomicString, gc_allocator<InternalAtomicString> > m_varNames;
 };
 
 
@@ -331,7 +331,7 @@ class FunctionEnvironmentRecord : public DeclarativeEnvironmentRecord {
     friend class LexicalEnvironment;
     friend class ESFunctionObject;
 public:
-    FunctionEnvironmentRecord(bool shouldUseVector = false,std::pair<ESAtomicString, JSSlot>* vectorBuffer = NULL, size_t vectorSize = 0)
+    FunctionEnvironmentRecord(bool shouldUseVector = false,std::pair<InternalAtomicString, JSSlot>* vectorBuffer = NULL, size_t vectorSize = 0)
         : DeclarativeEnvironmentRecord(shouldUseVector, vectorBuffer, vectorSize)
     {
         m_thisBindingStatus = Uninitialized;

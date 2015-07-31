@@ -7,25 +7,25 @@ class ESVMInstance;
 
 class Strings {
 public:
-ESAtomicString null;
-ESAtomicString undefined;
-ESAtomicString prototype;
-ESAtomicString constructor;
-ESAtomicString name;
-ESAtomicString arguments;
-ESAtomicString length;
-ESAtomicString __proto__;
+InternalAtomicString null;
+InternalAtomicString undefined;
+InternalAtomicString prototype;
+InternalAtomicString constructor;
+InternalAtomicString name;
+InternalAtomicString arguments;
+InternalAtomicString length;
+InternalAtomicString __proto__;
 #define ESCARGOT_STRINGS_NUMBERS_MAX 128
-ESAtomicString numbers[ESCARGOT_STRINGS_NUMBERS_MAX];
+InternalAtomicString numbers[ESCARGOT_STRINGS_NUMBERS_MAX];
 
-ESAtomicString String;
-ESAtomicString Number;
-ESAtomicString Object;
-ESAtomicString ReferenceError;
-ESAtomicString Array;
-ESAtomicString Function;
-ESAtomicString Empty;
-ESAtomicString Date;
+InternalAtomicString String;
+InternalAtomicString Number;
+InternalAtomicString Object;
+InternalAtomicString ReferenceError;
+InternalAtomicString Array;
+InternalAtomicString Function;
+InternalAtomicString Empty;
+InternalAtomicString Date;
 void initStaticStrings(ESVMInstance* instance);
 };
 

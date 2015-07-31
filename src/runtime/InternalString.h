@@ -1,28 +1,28 @@
-#ifndef ESString_h
-#define ESString_h
+#ifndef InternalString_h
+#define InternalString_h
 
 namespace escargot {
 
-typedef std::wstring ESStringStd;
-class ESStringData : public gc_cleanup, public ESStringStd {
+typedef std::wstring InternalStringStd;
+class InternalStringData : public gc_cleanup, public InternalStringStd {
 public:
-    ESStringData()
+    InternalStringData()
     {
         initHash();
     }
-    ESStringData(const wchar_t* str)
-        : ESStringStd(str)
+    InternalStringData(const wchar_t* str)
+        : InternalStringStd(str)
     {
         initHash();
     }
-    ESStringData(ESStringStd&& src)
+    InternalStringData(InternalStringStd&& src)
     {
-        ESStringStd::operator =(src);
+        InternalStringStd::operator =(src);
         initHash();
     }
 
-    ESStringData(const ESStringData& src) = delete;
-    void operator = (const ESStringData& src) = delete;
+    InternalStringData(const InternalStringData& src) = delete;
+    void operator = (const InternalStringData& src) = delete;
 
     ALWAYS_INLINE size_t hashValue() const
     {
@@ -31,34 +31,34 @@ public:
 
     ALWAYS_INLINE void initHash()
     {
-        std::hash<ESStringStd> hashFn;
-        m_hashData = hashFn((ESStringStd &)*this);
+        std::hash<InternalStringStd> hashFn;
+        m_hashData = hashFn((InternalStringStd &)*this);
     }
 protected:
     size_t m_hashData;
 };
 
 
-extern ESStringData emptyStringData;
+extern InternalStringData emptyStringData;
 
-class ESString : public gc {
+class InternalString : public gc {
 public:
-    ALWAYS_INLINE ESString()
+    ALWAYS_INLINE InternalString()
     {
         m_string = &emptyStringData;
     }
 
-    ALWAYS_INLINE ESString(ESStringData* data)
+    ALWAYS_INLINE InternalString(InternalStringData* data)
     {
         m_string = data;
     }
 
-    explicit ESString(int number)
+    explicit InternalString(int number)
     {
-        m_string = new ESStringData(std::move(std::to_wstring(number)));
+        m_string = new InternalStringData(std::move(std::to_wstring(number)));
     }
 
-    explicit ESString(double number)
+    explicit InternalString(double number)
     {
         //FIXME
         wchar_t buf[512];
@@ -68,7 +68,7 @@ public:
         m_string->initHash();
     }
 
-    ESString(const char* s)
+    InternalString(const char* s)
     {
         m_string = NULL;
 
@@ -79,25 +79,25 @@ public:
         m_string->initHash();
     }
 
-    ALWAYS_INLINE ESString(const wchar_t* s)
+    ALWAYS_INLINE InternalString(const wchar_t* s)
     {
-        m_string = new ESStringData(s);
+        m_string = new InternalStringData(s);
     }
 
 
-    ALWAYS_INLINE ESString(const ESString& s)
+    ALWAYS_INLINE InternalString(const InternalString& s)
     {
         m_string = s.m_string;
     }
 
-    ALWAYS_INLINE friend bool operator == (const ESString& a,const ESString& b);
+    ALWAYS_INLINE friend bool operator == (const InternalString& a,const InternalString& b);
 
     ALWAYS_INLINE const wchar_t* data() const
     {
         return m_string->data();
     }
 
-    ALWAYS_INLINE const ESStringData* string() const
+    ALWAYS_INLINE const InternalStringData* string() const
     {
         return m_string;
     }
@@ -107,7 +107,7 @@ public:
         return m_string->length();
     }
 
-    void append(const ESString& src)
+    void append(const InternalString& src)
     {
         if(m_string == &emptyStringData) {
             m_string = src.m_string;
@@ -128,14 +128,14 @@ protected:
 
     void allocString(size_t stringLength)
     {
-        m_string = new ESStringData();
+        m_string = new InternalStringData();
         m_string->resize(stringLength);
     }
 
-    ESStringData* m_string;
+    InternalStringData* m_string;
 };
 
-ALWAYS_INLINE bool operator == (const ESString& a, const ESString& b)
+ALWAYS_INLINE bool operator == (const InternalString& a, const InternalString& b)
 {
     if(a.m_string->hashValue() == b.m_string->hashValue()) {
         return *a.m_string == *b.m_string;
@@ -143,31 +143,31 @@ ALWAYS_INLINE bool operator == (const ESString& a, const ESString& b)
     return false;
 }
 
-typedef std::vector<ESString,gc_allocator<ESString> > ESStringVector;
+typedef std::vector<InternalString,gc_allocator<InternalString> > InternalStringVector;
 
 }
 
 namespace std
 {
-template<> struct hash<::escargot::ESString>
+template<> struct hash<::escargot::InternalString>
 {
-    size_t operator()(escargot::ESString const &x) const
+    size_t operator()(escargot::InternalString const &x) const
     {
         return x.string()->hashValue();
     }
 };
 
-template<> struct equal_to<::escargot::ESString>
+template<> struct equal_to<::escargot::InternalString>
 {
-    bool operator()(escargot::ESString const &a, escargot::ESString const &b) const
+    bool operator()(escargot::InternalString const &a, escargot::InternalString const &b) const
     {
         return *a.string() == *b.string();
     }
 };
 
-template<> struct less<::escargot::ESString>
+template<> struct less<::escargot::InternalString>
 {
-    bool operator()(escargot::ESString const &a, escargot::ESString const &b) const
+    bool operator()(escargot::InternalString const &a, escargot::InternalString const &b) const
     {
         return *a.string() < *b.string();
     }
