@@ -9,32 +9,27 @@ namespace escargot {
 
 ESValue NewExpressionNode::execute(ESVMInstance* instance)
 {
-    /*
-    ESValue* fn = m_callee->execute(instance)->ensureValue();
-    if(!fn->isHeapObject() || !fn->toHeapObject()->isESFunctionObject())
+    ESValue fn = m_callee->execute(instance).ensureValue();
+    if(!fn.isESPointer() || !fn.asESPointer()->isESFunctionObject())
         throw TypeError();
-    ESFunctionObject* function = fn->toHeapObject()->toESFunctionObject();
+    ESFunctionObject* function = fn.asESPointer()->asESFunctionObject();
     ESObject* receiver;
     if (function == instance->globalObject()->date()) {
         receiver = ESDateObject::create();
-        receiver->toESDateObject()->setTimeValue();
+        receiver->asESDateObject()->setTimeValue();
     } else {
         receiver = ESObject::create();
     }
     receiver->setConstructor(fn);
     receiver->set__proto__(function->protoType());
 
-    std::vector<ESValue*, gc_allocator<ESValue*>> arguments;
+    std::vector<ESValue, gc_allocator<ESValue>> arguments;
     for(unsigned i = 0; i < m_arguments.size() ; i ++) {
-        ESValue* result = m_arguments[i]->execute(instance)->ensureValue();
-        arguments.push_back(result);
+        arguments.push_back(m_arguments[i]->execute(instance).ensureValue());
     }
 
     ESFunctionObject::call(fn, receiver, &arguments[0], arguments.size(), instance);
-
     return receiver;
-    */
-    return ESValue();
 }
 
 }

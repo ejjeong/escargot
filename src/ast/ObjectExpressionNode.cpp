@@ -10,7 +10,6 @@ namespace escargot {
 
 ESValue ObjectExpressionNode::execute(ESVMInstance* instance)
 {
-    /*
     ESObject* obj = ESObject::create();
     obj->setConstructor(instance->globalObject()->object());
     obj->set__proto__(instance->globalObject()->objectPrototype());
@@ -21,14 +20,12 @@ ESValue ObjectExpressionNode::execute(ESVMInstance* instance)
         if(p->key()->type() == NodeType::Identifier) {
             key = ((IdentifierNode* )p->key())->name();
         } else {
-            key = InternalAtomicString(p->key()->execute(instance)->ensureValue()->toInternalString().data());
+            key = InternalAtomicString(p->key()->execute(instance).ensureValue().toInternalString().data());
         }
-        ESValue* value = p->value()->execute(instance)->ensureValue();
+        ESValue value = p->value()->execute(instance).ensureValue();
         obj->set(key, value);
     }
     return obj;
-    */
-    return ESValue();
 }
 
 }

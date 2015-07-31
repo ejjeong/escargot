@@ -11,56 +11,53 @@ namespace escargot {
 
 ESValue MemberExpressionNode::execute(ESVMInstance* instance)
 {
-    /*
-    ESValue* value = m_object->execute(instance)->ensureValue();
+    ESValue value = m_object->execute(instance).ensureValue();
     //TODO string,number-> stringObject, numberObject;
-    if(value->isHeapObject() && value->toHeapObject()->isESString()) {
-        ESStringObject* stringObject = ESStringObject::create(value->toHeapObject()->toESString()->string());
+    if(value.isESPointer() && value.asESPointer()->isESString()) {
+        ESStringObject* stringObject = ESStringObject::create(value.asESPointer()->asESString()->string());
         stringObject->set__proto__(instance->globalObject()->stringPrototype());
         stringObject->setConstructor(instance->globalObject()->string());
         value = stringObject;
     }
 
-    if(value->isHeapObject() && value->toHeapObject()->isESObject()) {
-        ESObject* obj = value->toHeapObject()->toESObject();
+    if(value.isESPointer() && value.asESPointer()->isESObject()) {
+        ESObject* obj = value.asESPointer()->asESObject();
         InternalAtomicString propertyName;
-        ESValue* propertyVal = NULL;
+        ESValue propertyVal;
         if(!m_computed && m_property->type() == NodeType::Identifier) {
             propertyName = ((IdentifierNode*)m_property)->name();
         } else {
-            ESValue* tmpVal = m_property->execute(instance)->ensureValue();
-            if(m_computed && obj->toHeapObject()->isESArrayObject() && tmpVal->isSmi())
+            ESValue tmpVal = m_property->execute(instance).ensureValue();
+            if(m_computed && obj->isESArrayObject() && tmpVal.isInt32())
                 propertyVal = tmpVal;
-            propertyName = InternalAtomicString(tmpVal->toInternalString().data());
+            propertyName = InternalAtomicString(tmpVal.toInternalString().data());
         }
 
-        instance->currentExecutionContext()->setLastESObjectMetInMemberExpressionNode(obj->toHeapObject()->toESObject(),
+        instance->currentExecutionContext()->setLastESObjectMetInMemberExpressionNode(obj,
                 propertyName, propertyVal);
 
         ESSlot* slot;
-        if (obj->isESArrayObject() && propertyVal != NULL)
-            slot = obj->toESArrayObject()->find(propertyVal);
+        if (obj->isESArrayObject() && propertyVal.isUndefined())
+            slot = obj->asESArrayObject()->find(propertyVal);
         else
             slot = obj->find(propertyName);
 
         if(slot) {
             return slot;
         } else {
-            ESValue* prototype = obj->__proto__();
-            while(prototype && prototype->isHeapObject() && prototype->toHeapObject()->isESObject()) {
-                ::escargot::ESObject* obj = prototype->toHeapObject()->toESObject();
+            ESValue prototype = obj->__proto__();
+            while(prototype.isESPointer() && prototype.asESPointer()->isESObject()) {
+                ::escargot::ESObject* obj = prototype.asESPointer()->asESObject();
                 ESSlot* s = obj->find(propertyName);
                 if(s)
                     return s;
                 prototype = obj->__proto__();
             }
         }
-        return esUndefined;
     } else {
         throw TypeError();
     }
-    return esUndefined;
-    */
     return ESValue();
 }
+
 }

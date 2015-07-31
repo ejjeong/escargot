@@ -8,10 +8,7 @@ namespace escargot {
 
 ESValue ThisExpressionNode::execute(ESVMInstance* instance)
 {
-    /*
     return instance->currentExecutionContext()->resolveThisBinding();
-    */
-    return ESValue();
 }
 
 }
