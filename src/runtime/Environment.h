@@ -33,7 +33,7 @@ public:
     }
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-newfunctionenvironment
-    static LexicalEnvironment* newFunctionEnvironment(JSFunction* function, ESValue* newTarget);
+    static LexicalEnvironment* newFunctionEnvironment(ESFunctionObject* function, ESValue* newTarget);
 
 protected:
     EnvironmentRecord* m_record;
@@ -329,7 +329,7 @@ protected:
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-function-environment-records
 class FunctionEnvironmentRecord : public DeclarativeEnvironmentRecord {
     friend class LexicalEnvironment;
-    friend class JSFunction;
+    friend class ESFunctionObject;
 public:
     FunctionEnvironmentRecord(bool shouldUseVector = false,std::pair<ESAtomicString, JSSlot>* vectorBuffer = NULL, size_t vectorSize = 0)
         : DeclarativeEnvironmentRecord(shouldUseVector, vectorBuffer, vectorSize)
@@ -353,7 +353,7 @@ public:
 
 protected:
     ESValue* m_thisValue;
-    JSFunction* m_functionObject;
+    ESFunctionObject* m_functionObject;
     ESValue* m_newTarget; //TODO
     ThisBindingStatus m_thisBindingStatus;
 };

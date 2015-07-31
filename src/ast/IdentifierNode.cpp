@@ -23,14 +23,14 @@ ESValue* IdentifierNode::execute(ESVMInstance* instance)
     ESValue* fn = instance->globalObject()->referenceError();
     JSError* receiver = JSError::create();
     receiver->setConstructor(fn);
-    receiver->set__proto__(fn->toHeapObject()->toJSFunction());
+    receiver->set__proto__(fn->toHeapObject()->toESFunctionObject());
 
     std::vector<ESValue*, gc_allocator<ESValue*>> arguments;
     ESString err_msg = m_name;
     err_msg.append(ESString(L" is not defined"));
     //arguments.push_back(String::create(err_msg));
 
-    JSFunction::call(fn, receiver, &arguments[0], arguments.size(), instance);
+    ESFunctionObject::call(fn, receiver, &arguments[0], arguments.size(), instance);
     receiver->set(ESAtomicString(L"message"), PString::create(err_msg));
 
     throw (ESValue*) receiver;

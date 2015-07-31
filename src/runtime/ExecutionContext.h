@@ -91,7 +91,7 @@ public:
     }
 
 private:
-    JSFunction* m_function;
+    ESFunctionObject* m_function;
     LexicalEnvironment* m_lexicalEnvironment;
     LexicalEnvironment* m_variableEnvironment;
     JSObject* m_lastJSObjectMetInMemberExpressionNode;

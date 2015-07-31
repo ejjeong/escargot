@@ -11,7 +11,7 @@ public:
     friend class ESVMInstance;
     GlobalObject();
 
-    ALWAYS_INLINE escargot::JSFunction* object()
+    ALWAYS_INLINE escargot::ESFunctionObject* object()
     {
         return m_object;
     }
@@ -21,7 +21,7 @@ public:
         return m_objectPrototype;
     }
 
-    ALWAYS_INLINE escargot::JSFunction* referenceError()
+    ALWAYS_INLINE escargot::ESFunctionObject* referenceError()
     {
         return m_referenceError;
     }
@@ -31,17 +31,17 @@ public:
         return m_referenceErrorPrototype;
     }
 
-    ALWAYS_INLINE escargot::JSFunction* function()
+    ALWAYS_INLINE escargot::ESFunctionObject* function()
     {
         return m_function;
     }
 
-    ALWAYS_INLINE escargot::JSFunction* functionPrototype()
+    ALWAYS_INLINE escargot::ESFunctionObject* functionPrototype()
     {
         return m_functionPrototype;
     }
 
-    ALWAYS_INLINE escargot::JSFunction* array()
+    ALWAYS_INLINE escargot::ESFunctionObject* array()
     {
         return m_array;
     }
@@ -51,7 +51,7 @@ public:
         return m_arrayPrototype;
     }
 
-    ALWAYS_INLINE escargot::JSFunction* string()
+    ALWAYS_INLINE escargot::ESFunctionObject* string()
     {
         return m_string;
     }
@@ -61,7 +61,7 @@ public:
         return m_stringPrototype;
     }
 
-    ALWAYS_INLINE escargot::JSFunction* date()
+    ALWAYS_INLINE escargot::ESFunctionObject* date()
     {
         return m_date;
     }
@@ -78,17 +78,17 @@ protected:
     void installArray();
     void installString();
     void installDate();
-    escargot::JSFunction* m_object;
+    escargot::ESFunctionObject* m_object;
     escargot::JSObject* m_objectPrototype;
-    escargot::JSFunction* m_function;
-    escargot::JSFunction* m_functionPrototype;
-    escargot::JSFunction* m_referenceError;
+    escargot::ESFunctionObject* m_function;
+    escargot::ESFunctionObject* m_functionPrototype;
+    escargot::ESFunctionObject* m_referenceError;
     escargot::JSObject* m_referenceErrorPrototype;
-    escargot::JSFunction* m_array;
+    escargot::ESFunctionObject* m_array;
     escargot::ESArrayObject* m_arrayPrototype;
-    escargot::JSFunction* m_string;
+    escargot::ESFunctionObject* m_string;
     escargot::JSString* m_stringPrototype;
-    escargot::JSFunction* m_date;
+    escargot::ESFunctionObject* m_date;
     escargot::ESDateObject* m_datePrototype;
     //JSBuiltinsObject* m_builtins;
     //Context* m_nativeContext;

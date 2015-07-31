@@ -32,14 +32,14 @@ GlobalObject::GlobalObject()
         wprintf(L"%ls\n", str.data());
         return esUndefined;
     }), false, false);
-    auto printFunction = JSFunction::create(NULL, node);
+    auto printFunction = ESFunctionObject::create(NULL, node);
     set(L"print", printFunction);
 
     node = new FunctionDeclarationNode(ESAtomicString(L"gc"), ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
         GC_gcollect();
         return esUndefined;
     }), false, false);
-    auto gcFunction = JSFunction::create(NULL, node);
+    auto gcFunction = ESFunctionObject::create(NULL, node);
     set(L"gc", gcFunction);
 
     node = new FunctionDeclarationNode(ESAtomicString(L"load"), ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
@@ -71,24 +71,24 @@ GlobalObject::GlobalObject()
         }
         return esUndefined;
     }), false, false);
-    auto loadFunction = JSFunction::create(NULL, node);
+    auto loadFunction = ESFunctionObject::create(NULL, node);
     set(L"load", loadFunction);
     set(L"run", loadFunction);
 }
 
 void GlobalObject::installFunction()
 {
-    m_function = JSFunction::create(NULL, new FunctionDeclarationNode(strings->Function, ESAtomicStringVector(), new EmptyStatementNode(), false, false));
+    m_function = ESFunctionObject::create(NULL, new FunctionDeclarationNode(strings->Function, ESAtomicStringVector(), new EmptyStatementNode(), false, false));
     m_function->set(strings->constructor, m_function);
     m_function->set(strings->name, PString::create(strings->Function));
     m_function->setConstructor(m_function);
-    ::escargot::JSFunction* emptyFunction = JSFunction::create(NULL,new FunctionDeclarationNode(strings->Empty, ESAtomicStringVector(), new EmptyStatementNode(), false, false));
+    ::escargot::ESFunctionObject* emptyFunction = ESFunctionObject::create(NULL,new FunctionDeclarationNode(strings->Empty, ESAtomicStringVector(), new EmptyStatementNode(), false, false));
 
     m_functionPrototype = emptyFunction;
     m_functionPrototype->setConstructor(m_function);
 
     m_function->defineAccessorProperty(strings->prototype, [](JSObject* self) -> ESValue* {
-        return self->toJSFunction()->protoType();
+        return self->toESFunctionObject()->protoType();
     },nullptr, true, false, false);
     m_function->set__proto__(emptyFunction);
     m_function->setProtoType(emptyFunction);
@@ -98,8 +98,8 @@ void GlobalObject::installFunction()
 
 void GlobalObject::installObject()
 {
-    ::escargot::JSFunction* emptyFunction = m_functionPrototype;
-    m_object = ::escargot::JSFunction::create(NULL,new FunctionDeclarationNode(strings->Object, ESAtomicStringVector(), new EmptyStatementNode(), false, false));
+    ::escargot::ESFunctionObject* emptyFunction = m_functionPrototype;
+    m_object = ::escargot::ESFunctionObject::create(NULL,new FunctionDeclarationNode(strings->Object, ESAtomicStringVector(), new EmptyStatementNode(), false, false));
     m_object->set(strings->name, PString::create(strings->Object));
     m_object->setConstructor(m_function);
     m_object->set__proto__(emptyFunction);
@@ -114,8 +114,8 @@ void GlobalObject::installObject()
 void GlobalObject::installError()
 {
 	  // Initialization for reference error
-    ::escargot::JSFunction* emptyFunction = m_functionPrototype;
-    m_referenceError = ::escargot::JSFunction::create(NULL,new FunctionDeclarationNode(strings->ReferenceError, ESAtomicStringVector(), new EmptyStatementNode(), false, false));
+    ::escargot::ESFunctionObject* emptyFunction = m_functionPrototype;
+    m_referenceError = ::escargot::ESFunctionObject::create(NULL,new FunctionDeclarationNode(strings->ReferenceError, ESAtomicStringVector(), new EmptyStatementNode(), false, false));
     m_referenceError->set(strings->name, PString::create(strings->ReferenceError));
     m_referenceError->setConstructor(m_function);
     m_referenceError->set__proto__(emptyFunction);
@@ -192,7 +192,7 @@ void GlobalObject::installArray()
         instance->currentExecutionContext()->doReturn(Smi::fromInt(ret));
         return esUndefined;
     }), false, false);
-    m_arrayPrototype->set(L"indexOf", JSFunction::create(NULL, arrayIndexOf));
+    m_arrayPrototype->set(L"indexOf", ESFunctionObject::create(NULL, arrayIndexOf));
 
 
     //$22.1.3.17 Array.prototype.push(item)
@@ -209,9 +209,9 @@ void GlobalObject::installArray()
 
         return esUndefined;
     }), false, false);
-    m_arrayPrototype->set(L"push", JSFunction::create(NULL, arrayPush));
+    m_arrayPrototype->set(L"push", ESFunctionObject::create(NULL, arrayPush));
 
-    m_array = JSFunction::create(NULL, constructor);
+    m_array = ESFunctionObject::create(NULL, constructor);
     m_arrayPrototype->setConstructor(m_array);
     m_arrayPrototype->set(strings->length, Smi::fromInt(0));
     m_array->set(strings->prototype, m_arrayPrototype);
@@ -224,7 +224,7 @@ void GlobalObject::installArray()
 
 void GlobalObject::installString()
 {
-    m_string = JSFunction::create(NULL, new FunctionDeclarationNode(strings->String, ESAtomicStringVector(), new EmptyStatementNode(), false, false));
+    m_string = ESFunctionObject::create(NULL, new FunctionDeclarationNode(strings->String, ESAtomicStringVector(), new EmptyStatementNode(), false, false));
     //m_string->set(strings->constructor, m_function); TODO do i need this?
     m_string->set(strings->name, PString::create(strings->String));
     m_string->setConstructor(m_function);
@@ -233,7 +233,7 @@ void GlobalObject::installString()
     m_stringPrototype->setConstructor(m_string);
 
     m_string->defineAccessorProperty(strings->prototype, [](JSObject* self) -> ESValue* {
-        return self->toJSFunction()->protoType();
+        return self->toESFunctionObject()->protoType();
     }, nullptr, true, false, false);
     m_string->set__proto__(m_functionPrototype); // empty Function
     m_string->setProtoType(m_stringPrototype);
@@ -263,7 +263,7 @@ void GlobalObject::installString()
         instance->currentExecutionContext()->doReturn(Smi::fromInt(result));
         return esUndefined;
     }), false, false);
-    m_stringPrototype->set(L"indexOf", JSFunction::create(NULL, stringIndexOf));
+    m_stringPrototype->set(L"indexOf", ESFunctionObject::create(NULL, stringIndexOf));
 
     //$21.1.3.19 String.prototype.substring(start, end)
     FunctionDeclarationNode* stringSubstring = new FunctionDeclarationNode(L"substring", ESAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue * {
@@ -285,7 +285,7 @@ void GlobalObject::installString()
         instance->currentExecutionContext()->doReturn(PString::create(ret));
         return esUndefined;
     }), false, false);
-    m_stringPrototype->set(L"substring", JSFunction::create(NULL, stringSubstring));
+    m_stringPrototype->set(L"substring", ESFunctionObject::create(NULL, stringSubstring));
 }
 
 void GlobalObject::installDate()
@@ -302,8 +302,8 @@ void GlobalObject::installDate()
     }), false, false);
 
       // Initialization for reference error
-    ::escargot::JSFunction* emptyFunction = m_functionPrototype;
-    m_date = ::escargot::JSFunction::create(NULL, constructor);
+    ::escargot::ESFunctionObject* emptyFunction = m_functionPrototype;
+    m_date = ::escargot::ESFunctionObject::create(NULL, constructor);
     m_date->set(strings->name, PString::create(strings->Date));
     m_date->setConstructor(m_function);
     m_date->set__proto__(emptyFunction);

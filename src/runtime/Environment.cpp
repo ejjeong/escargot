@@ -9,7 +9,7 @@ namespace escargot {
 
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-newfunctionenvironment
 //$8.1.2.4
-LexicalEnvironment* LexicalEnvironment::newFunctionEnvironment(JSFunction* function, ESValue* newTarget)
+LexicalEnvironment* LexicalEnvironment::newFunctionEnvironment(ESFunctionObject* function, ESValue* newTarget)
 {
     ASSERT(newTarget->isHeapObject());
     ASSERT(newTarget->toHeapObject()->isESUndefined() || newTarget->toHeapObject()->isJSObject());

@@ -15,7 +15,7 @@ class ESNumber;
 class PString;
 class JSObject;
 class JSSlot;
-class JSFunction;
+class ESFunctionObject;
 class ESArrayObject;
 class JSString;
 class ESDateObject;
@@ -79,7 +79,7 @@ public:
         PString = 1 << 5,
         JSObject = 1 << 6,
         JSSlot = 1 << 7,
-        JSFunction = 1 << 8,
+        ESFunctionObject = 1 << 8,
         ESArrayObject = 1 << 9,
         JSString = 1 << 10,
         JSError = 1 << 11,
@@ -197,17 +197,17 @@ public:
     }
     */
 
-    ALWAYS_INLINE bool isJSFunction()
+    ALWAYS_INLINE bool isESFunctionObject()
     {
-        return m_data & Type::JSFunction;
+        return m_data & Type::ESFunctionObject;
     }
 
-    ALWAYS_INLINE ::escargot::JSFunction* toJSFunction()
+    ALWAYS_INLINE ::escargot::ESFunctionObject* toESFunctionObject()
     {
 #ifndef NDEBUG
-        ASSERT(isJSFunction());
+        ASSERT(isESFunctionObject());
 #endif
-        return reinterpret_cast<::escargot::JSFunction *>(this);
+        return reinterpret_cast<::escargot::ESFunctionObject *>(this);
     }
 
     ALWAYS_INLINE bool isESArrayObject() const
@@ -897,26 +897,26 @@ protected:
 
 class LexicalEnvironment;
 class Node;
-class JSFunction : public JSObject {
+class ESFunctionObject : public JSObject {
 protected:
-    JSFunction(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST)
-        : JSObject((Type)(Type::JSObject | Type::JSFunction))
+    ESFunctionObject(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST)
+        : JSObject((Type)(Type::JSObject | Type::ESFunctionObject))
     {
         m_outerEnvironment = outerEnvironment;
         m_functionAST = functionAST;
         m_protoType = esUndefined;
 
         defineAccessorProperty(strings->prototype, [](JSObject* self) -> ESValue* {
-            return self->toJSFunction()->protoType();
+            return self->toESFunctionObject()->protoType();
         },[](::escargot::JSObject* self, ESValue* value){
             if(value->isHeapObject() && value->toHeapObject()->isJSObject())
-                self->toJSFunction()->setProtoType(value->toHeapObject()->toJSObject());
+                self->toESFunctionObject()->setProtoType(value->toHeapObject()->toJSObject());
         }, true, false, false);
     }
 public:
-    static JSFunction* create(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST)
+    static ESFunctionObject* create(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST)
     {
-        return new JSFunction(outerEnvironment, functionAST);
+        return new ESFunctionObject(outerEnvironment, functionAST);
     }
 
     ALWAYS_INLINE ESValue* protoType()

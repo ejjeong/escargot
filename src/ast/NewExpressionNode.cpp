@@ -10,9 +10,9 @@ namespace escargot {
 ESValue* NewExpressionNode::execute(ESVMInstance* instance)
 {
     ESValue* fn = m_callee->execute(instance)->ensureValue();
-    if(!fn->isHeapObject() || !fn->toHeapObject()->isJSFunction())
+    if(!fn->isHeapObject() || !fn->toHeapObject()->isESFunctionObject())
         throw TypeError();
-    JSFunction* function = fn->toHeapObject()->toJSFunction();
+    ESFunctionObject* function = fn->toHeapObject()->toESFunctionObject();
     JSObject* receiver;
     if (function == instance->globalObject()->date()) {
         receiver = ESDateObject::create();
@@ -29,7 +29,7 @@ ESValue* NewExpressionNode::execute(ESVMInstance* instance)
         arguments.push_back(result);
     }
 
-    JSFunction::call(fn, receiver, &arguments[0], arguments.size(), instance);
+    ESFunctionObject::call(fn, receiver, &arguments[0], arguments.size(), instance);
 
     return receiver;
 }

@@ -68,7 +68,7 @@ bool ESValue::equalsTo(ESValue* val)
         if (o->isPString() && o->toPString()->string() == comp->toPString()->string())
             return true;
         //TODO
-        if (o->isJSFunction())
+        if (o->isESFunctionObject())
             return false;
         if (o->isESArrayObject())
             return false;
@@ -97,10 +97,10 @@ ESString ESValue::toESString()
             else ret = ESString(o->toESNumber()->get());
         } else if(o->isPString()) {
             ret = o->toPString()->string();
-        } else if(o->isJSFunction()) {
+        } else if(o->isESFunctionObject()) {
             //ret = L"[Function function]";
             ret = L"function ";
-            JSFunction* fn = o->toJSFunction();
+            ESFunctionObject* fn = o->toESFunctionObject();
             ret.append(fn->functionAST()->id());
             ret.append(L"() {}");
         } else if(o->isESArrayObject()) {
@@ -146,14 +146,14 @@ ESValue* JSObject::defaultValue(ESVMInstance* instance, PrimitiveTypeHint hint)
         ESValue* underScoreProto = get(strings->__proto__);
         ESValue* toStringMethod = underScoreProto->toHeapObject()->toJSObject()->get(L"toString");
         std::vector<ESValue*, gc_allocator<ESValue*>> arguments;
-        return JSFunction::call(toStringMethod, this, &arguments[0], arguments.size(), instance);
+        return ESFunctionObject::call(toStringMethod, this, &arguments[0], arguments.size(), instance);
     } else {
         ASSERT(false); // TODO
     }
 }
 
 
-ESValue* functionCallerInnerProcess(JSFunction* fn, ESValue* callee, ESValue* receiver, ESValue* arguments[], size_t argumentCount, bool needsArgumentsObject, ESVMInstance* ESVMInstance)
+ESValue* functionCallerInnerProcess(ESFunctionObject* fn, ESValue* callee, ESValue* receiver, ESValue* arguments[], size_t argumentCount, bool needsArgumentsObject, ESVMInstance* ESVMInstance)
 {
     ((FunctionEnvironmentRecord *)ESVMInstance->currentExecutionContext()->environment()->record())->bindThisValue(receiver->toHeapObject()->toJSObject());
     DeclarativeEnvironmentRecord* functionRecord = ESVMInstance->currentExecutionContext()->environment()->record()->toDeclarativeEnvironmentRecord();
@@ -189,12 +189,12 @@ ESValue* functionCallerInnerProcess(JSFunction* fn, ESValue* callee, ESValue* re
 }
 
 
-ESValue* JSFunction::call(ESValue* callee, ESValue* receiver, ESValue* arguments[], size_t argumentCount, ESVMInstance* ESVMInstance)
+ESValue* ESFunctionObject::call(ESValue* callee, ESValue* receiver, ESValue* arguments[], size_t argumentCount, ESVMInstance* ESVMInstance)
 {
     ESValue* result = esUndefined;
-    if(callee->isHeapObject() && callee->toHeapObject()->isJSFunction()) {
+    if(callee->isHeapObject() && callee->toHeapObject()->isESFunctionObject()) {
         ExecutionContext* currentContext = ESVMInstance->currentExecutionContext();
-        JSFunction* fn = callee->toHeapObject()->toJSFunction();
+        ESFunctionObject* fn = callee->toHeapObject()->toESFunctionObject();
         if(fn->functionAST()->needsActivation()) {
             ESVMInstance->m_currentExecutionContext = new ExecutionContext(LexicalEnvironment::newFunctionEnvironment(fn, receiver));
             result = functionCallerInnerProcess(fn, callee, receiver, arguments, argumentCount, true, ESVMInstance);

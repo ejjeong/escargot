@@ -8,7 +8,7 @@ namespace escargot {
 
 ESValue* FunctionDeclarationNode::execute(ESVMInstance* instance)
 {
-    JSFunction* function = JSFunction::create(instance->currentExecutionContext()->environment(), this);
+    ESFunctionObject* function = ESFunctionObject::create(instance->currentExecutionContext()->environment(), this);
     //FIXME these lines duplicate with FunctionExpressionNode::execute
     function->set__proto__(instance->globalObject()->functionPrototype());
     JSObject* prototype = JSObject::create();

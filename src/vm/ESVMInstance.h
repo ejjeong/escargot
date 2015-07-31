@@ -16,7 +16,7 @@ typedef std::unordered_map<std::wstring, ESAtomicStringData *,
         std::hash<std::wstring>,std::equal_to<std::wstring> > AtomicStringMap;
 
 class ESVMInstance : public gc {
-    friend class JSFunction;
+    friend class ESFunctionObject;
 public:
     ESVMInstance();
     void evaluate(const std::string& source);
