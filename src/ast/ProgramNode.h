@@ -15,13 +15,13 @@ public:
         m_body = body;
     }
 
-    virtual ESValue* execute(ESVMInstance* instance)
+    virtual ESValue execute(ESVMInstance* instance)
     {
         for(unsigned i = 0; i < m_body.size() ; i ++) {
             m_body[i]->execute(instance);
         }
 
-        return esUndefined;
+        return ESValue();
     }
 protected:
     StatementNodeVector m_body; //body: [ Statement ];

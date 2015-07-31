@@ -8,8 +8,9 @@
 
 namespace escargot {
 
-ESValue* AssignmentExpressionNode::execute(ESVMInstance* instance)
+ESValue AssignmentExpressionNode::execute(ESVMInstance* instance)
 {
+    /*
     ESValue* ret;
     switch(m_operator) {
     case SimpleAssignment:
@@ -82,6 +83,8 @@ ESValue* AssignmentExpressionNode::execute(ESVMInstance* instance)
     }
 
     return ret;
+    */
+    return ESValue();
 }
 
 }

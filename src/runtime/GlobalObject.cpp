@@ -8,8 +8,10 @@
 
 namespace escargot {
 
+
 GlobalObject::GlobalObject()
 {
+#if 0
     installFunction();
     installObject();
     installArray();
@@ -76,7 +78,10 @@ GlobalObject::GlobalObject()
     auto loadFunction = ESFunctionObject::create(NULL, node);
     set(L"load", loadFunction);
     set(L"run", loadFunction);
+#endif
 }
+
+#if 0
 
 void GlobalObject::installFunction()
 {
@@ -317,5 +322,7 @@ void GlobalObject::installDate()
 
     set(strings->Date, m_date);
 }
+
+#endif
 
 }

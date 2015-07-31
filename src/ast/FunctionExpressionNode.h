@@ -15,7 +15,7 @@ public:
         m_isExpression = false;
     }
 
-    virtual ESValue* execute(ESVMInstance* instance);
+    virtual ESValue execute(ESVMInstance* instance);
 protected:
     ExpressionNodeVector m_defaults; //defaults: [ Expression ];
     //rest: Identifier | null;

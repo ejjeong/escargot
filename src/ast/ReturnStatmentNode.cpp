@@ -7,11 +7,14 @@
 
 namespace escargot {
 
-ESValue* ReturnStatmentNode::execute(ESVMInstance* instance)
+ESValue ReturnStatmentNode::execute(ESVMInstance* instance)
 {
+    /*
     ESValue* v = m_argument->execute(instance)->ensureValue();
     instance->currentExecutionContext()->doReturn(v);
     RELEASE_ASSERT_NOT_REACHED();
+    */
+    return ESValue();
 }
 
 }

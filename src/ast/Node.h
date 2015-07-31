@@ -60,10 +60,10 @@ protected:
         m_sourceLocation = loc;
     }
 public:
-    virtual ESValue* execute(ESVMInstance* instance)
+    virtual ESValue execute(ESVMInstance* instance)
     {
         RELEASE_ASSERT_NOT_REACHED();
-        return esUndefined;
+        return ESValue();
     }
 
     virtual ~Node()

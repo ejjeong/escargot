@@ -17,7 +17,7 @@ public:
         m_computed = computed;
     }
 
-    virtual ESValue* execute(ESVMInstance* instance);
+    virtual ESValue execute(ESVMInstance* instance);
 protected:
     Node* m_object; //object: Expression;
     Node* m_property; //property: Identifier | Expression;

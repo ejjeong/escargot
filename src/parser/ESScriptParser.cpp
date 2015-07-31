@@ -184,16 +184,16 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             if(value[L"value"].IsNumber()) {
                 double number = value[L"value"].GetDouble();
                 if(std::abs(number) < 0xC0000000 && value[L"value"].IsInt()) { //(1100)(0000)...(0000)
-                    parsedNode = new LiteralNode(Smi::fromInt(value[L"value"].GetInt()));
+                    parsedNode = new LiteralNode(ESValue(value[L"value"].GetInt()));
                 } else {
-                    parsedNode = new LiteralNode(ESNumber::create(number));
+                    parsedNode = new LiteralNode(ESValue(number));
                 }
             } else if(value[L"value"].IsString()) {
-                parsedNode = new LiteralNode(ESString::create(value[L"value"].GetString()));
+                parsedNode = new LiteralNode(ESValue(ESString::create(value[L"value"].GetString())));
             } else if(value[L"value"].IsBool()) {
-                parsedNode = new LiteralNode(ESBoolean::create(value[L"value"].GetBool()));
+                parsedNode = new LiteralNode(ESValue(value[L"value"].GetBool()));
             } else if(value[L"value"].IsNull()) {
-                parsedNode = new LiteralNode(esESNull);
+                parsedNode = new LiteralNode(ESValue(ESValue::ESNullTag::ESNull));
             } else {
                 RELEASE_ASSERT_NOT_REACHED();
             }
@@ -404,6 +404,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
                 iter = std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),name);
             }
             if(identifierInCurrentContext.end() == iter) {
+                /* TODO
                 if(!instance->globalObject()->hasKey(name)) {
                     if(nearFunctionNode && nearFunctionNode->outerFunctionNode()) {
                         //wprintf(L"this function  needs capture! -> %ls\n", ((IdentifierNode *)currentNode)->name().data());
@@ -415,6 +416,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
                     size_t idx = std::distance(identifierInCurrentContext.begin(), iter);
                     ((IdentifierNode *)currentNode)->setFastAccessIndex(idx);
                 }
+                */
             }
             //wprintf(L"use Identifier %ls\n", ((IdentifierNode *)currentNode)->name().data());
         } else if(type == NodeType::ExpressionStatement) {

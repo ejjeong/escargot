@@ -7,8 +7,9 @@
 
 namespace escargot {
 
-ESValue* CallExpressionNode::execute(ESVMInstance* instance)
+ESValue CallExpressionNode::execute(ESVMInstance* instance)
 {
+    /*
     instance->currentExecutionContext()->resetLastESObjectMetInMemberExpressionNode();
     ESValue* fn = m_callee->execute(instance)->ensureValue();
     ESValue* receiver = instance->currentExecutionContext()->lastESObjectMetInMemberExpressionNode();
@@ -22,6 +23,8 @@ ESValue* CallExpressionNode::execute(ESVMInstance* instance)
     }
 
     return ESFunctionObject::call(fn, receiver, arguments, m_arguments.size(), instance);
+    */
+    return ESValue();
 }
 
 }

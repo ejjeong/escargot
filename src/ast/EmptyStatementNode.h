@@ -13,9 +13,9 @@ public:
     {
     }
 
-    virtual ESValue* execute(ESVMInstance* instance)
+    virtual ESValue execute(ESVMInstance* instance)
     {
-        return esUndefined;
+        return ESValue();
     }
 protected:
 };

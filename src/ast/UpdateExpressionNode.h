@@ -28,8 +28,9 @@ public:
         m_prefix = prefix;
     }
 
-    virtual ESValue* execute(ESVMInstance* instance)
+    virtual ESValue execute(ESVMInstance* instance)
     {
+        /*
         ESValue *argref = m_argument->execute(instance);
         ESValue *argval = argref->ensureValue();
         ESValue *ret;
@@ -57,6 +58,8 @@ public:
                 break;
         }
         return ret;
+        */
+        return ESValue();
     }
 protected:
     ExpressionNode* m_argument;

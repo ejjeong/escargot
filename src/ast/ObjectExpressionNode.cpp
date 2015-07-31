@@ -8,8 +8,9 @@
 
 namespace escargot {
 
-ESValue* ObjectExpressionNode::execute(ESVMInstance* instance)
+ESValue ObjectExpressionNode::execute(ESVMInstance* instance)
 {
+    /*
     ESObject* obj = ESObject::create();
     obj->setConstructor(instance->globalObject()->object());
     obj->set__proto__(instance->globalObject()->objectPrototype());
@@ -26,6 +27,8 @@ ESValue* ObjectExpressionNode::execute(ESVMInstance* instance)
         obj->set(key, value);
     }
     return obj;
+    */
+    return ESValue();
 }
 
 }

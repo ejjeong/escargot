@@ -15,10 +15,10 @@ public:
         m_expression = expression;
     }
 
-    ESValue* execute(ESVMInstance* instance)
+    ESValue execute(ESVMInstance* instance)
     {
         m_expression->execute(instance);
-        return esUndefined;
+        return ESValue();
     }
 protected:
     Node* m_expression; //expression: Expression;

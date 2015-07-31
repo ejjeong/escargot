@@ -41,7 +41,7 @@ public:
         }
     }
 
-    virtual ESValue* execute(ESVMInstance* instance);
+    virtual ESValue execute(ESVMInstance* instance);
 protected:
     Node* m_left; //left: Pattern;
     Node* m_right; //right: Expression;

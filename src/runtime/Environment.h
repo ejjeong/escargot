@@ -143,11 +143,15 @@ public:
     //return NULL == not exist
     virtual ESSlot* hasBinding(const InternalAtomicString& name)
     {
+#if 0
         ESSlot* slot = m_bindingObject->find(name);
         if(slot) {
             return slot;
         }
         return NULL;
+#else
+        return NULL;
+#endif
     }
     void createMutableBinding(const InternalAtomicString& name, bool canDelete = false);
     void createImmutableBinding(const InternalAtomicString& name, bool throwExecptionWhenAccessBeforeInit = false) {}
@@ -155,7 +159,11 @@ public:
     void setMutableBinding(const InternalAtomicString& name, ESValue* V, bool mustNotThrowTypeErrorExecption);
     ESValue* getBindingValue(const InternalAtomicString& name, bool ignoreReferenceErrorException)
     {
+#if 0
         return m_bindingObject->get(name);
+#else
+        return NULL;
+#endif
     }
     bool deleteBinding(const InternalAtomicString& name)
     {
@@ -184,6 +192,7 @@ class DeclarativeEnvironmentRecord : public EnvironmentRecord {
 public:
     DeclarativeEnvironmentRecord(bool shouldUseVector = false,std::pair<InternalAtomicString, ESSlot>* vectorBuffer = NULL, size_t vectorSize = 0)
     {
+#if 0
         if(shouldUseVector) {
             m_innerObject = NULL;
             m_vectorData = vectorBuffer;
@@ -194,6 +203,7 @@ public:
         } else {
             m_innerObject = ESObject::create();
         }
+#endif
     }
     ~DeclarativeEnvironmentRecord()
     {
@@ -201,6 +211,7 @@ public:
 
     virtual ESSlot* hasBinding(const InternalAtomicString& name)
     {
+#if 0
         if(UNLIKELY(m_innerObject != NULL)) {
             ESSlot* slot = m_innerObject->find(name);
             if(slot) {
@@ -215,24 +226,33 @@ public:
             }
             return NULL;
         }
+#else
+        return NULL;
+#endif
     }
     void createMutableBindingForNonActivationMode(size_t index, const InternalAtomicString& name,ESValue* val = esUndefined)
     {
+#if 0
         ASSERT(!m_innerObject);
         m_vectorData[index].first = name;
         m_vectorData[index].second.init(val, false, false, false);
         m_usedCount++;
+#endif
     }
 
     virtual void createMutableBinding(const InternalAtomicString& name, bool canDelete = false)
     {
+#if 0
         //TODO canDelete
         ASSERT(m_innerObject);
         m_innerObject->set(name, esUndefined);
+
+#endif
     }
 
     virtual void setMutableBinding(const InternalAtomicString& name, ESValue* V, bool mustNotThrowTypeErrorExecption)
     {
+#if 0
         //TODO mustNotThrowTypeErrorExecption
         if(UNLIKELY(m_innerObject != NULL)) {
             m_innerObject->set(name, V);
@@ -245,6 +265,7 @@ public:
             }
             RELEASE_ASSERT_NOT_REACHED();
         }
+#endif
     }
 
     ESSlot* getBindingValueForNonActivationMode(size_t idx)
@@ -254,6 +275,7 @@ public:
 
     virtual ESValue* getBindingValue(const InternalAtomicString& name, bool ignoreReferenceErrorException)
     {
+#if 0
         //TODO ignoreReferenceErrorException
         if(UNLIKELY(m_innerObject != NULL)) {
             return m_innerObject->get(name);
@@ -265,6 +287,9 @@ public:
             }
             RELEASE_ASSERT_NOT_REACHED();
         }
+#else
+        return NULL;
+#endif
     }
 
     virtual bool isDeclarativeEnvironmentRecord()

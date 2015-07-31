@@ -8,6 +8,7 @@
 
 namespace escargot {
 
+#if 0
 static ESUndefined s_undefined;
 ESUndefined* esUndefined = &s_undefined;
 
@@ -246,5 +247,7 @@ ESValue* ESFunctionObject::call(ESValue* callee, ESValue* receiver, ESValue* arg
 
     return result;
 }
+
+#endif
 
 }

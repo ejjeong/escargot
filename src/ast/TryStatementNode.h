@@ -12,7 +12,7 @@ public:
     friend class ESScriptParser;
     TryStatementNode(Node *block, Node *handler, CatchClauseNodeVector&& guardedHandlers,  Node *finalizer);
 
-    ESValue* execute(ESVMInstance* instance);
+    ESValue execute(ESVMInstance* instance);
 
 protected:
     BlockStatementNode *m_block;

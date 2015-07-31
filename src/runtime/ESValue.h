@@ -21,6 +21,7 @@ class ESStringObject;
 class ESDateObject;
 class FunctionNode;
 class ESVMInstance;
+class ESPointer;
 
 extern ESUndefined* esUndefined;
 extern ESNull* esESNull;
@@ -32,42 +33,180 @@ extern ESNumber* esInfinity;
 extern ESNumber* esNegInfinity;
 extern ESNumber* esMinusZero;
 
+union ValueDescriptor {
+    int64_t asInt64;
+#if ESCARGOT_32
+    double asDouble;
+#elif ESCARGOT_64
+    ESPointer* ptr;
+#endif
+    struct {
+        int32_t payload;
+        int32_t tag;
+    } asBits;
+};
+
+#define OBJECT_OFFSETOF(class, field) (reinterpret_cast<ptrdiff_t>(&(reinterpret_cast<class*>(0x4000)->field)) - 0x4000)
+
+#define TagOffset (OBJECT_OFFSETOF(EncodedValueDescriptor, asBits.tag))
+#define PayloadOffset (OBJECT_OFFSETOF(EncodedValueDescriptor, asBits.payload))
+
+#if ESCARGOT_64
+#define CellPayloadOffset 0
+#else
+#define CellPayloadOffset PayloadOffset
+#endif
+
+
 class ESValue {
     //static void* operator new(size_t, void* p) = delete;
     //static void* operator new[](size_t, void* p) = delete;
     //static void* operator new(size_t size) = delete;
     //static void* operator new[](size_t size) = delete;
 
-protected:
-    ESValue() { }
+public:
+#if ESCARGOT_32
+    enum { Int32Tag =        0xffffffff };
+    enum { BooleanTag =      0xfffffffe };
+    enum { NullTag =         0xfffffffd };
+    enum { UndefinedTag =    0xfffffffc };
+    enum { PointerTag =      0xfffffffb };
+    enum { EmptyValueTag =   0xfffffffa };
+    enum { DeletedValueTag = 0xfffffff9 };
+
+    enum { LowestTag =  DeletedValueTag };
+#endif
+
+    enum ESNullTag { ESNull };
+    enum ESUndefinedTag { ESUndefined };
+    enum ESTrueTag { ESTrue };
+    enum ESFalseTag { ESFalse };
+    enum EncodeAsDoubleTag { EncodeAsDouble };
+
+    ESValue();
+    ESValue(ESNullTag);
+    ESValue(ESUndefinedTag);
+    ESValue(ESTrueTag);
+    ESValue(ESFalseTag);
+    ESValue(ESPointer* ptr);
+    ESValue(const ESPointer* ptr);
+
+    // Numbers
+    ESValue(EncodeAsDoubleTag, double);
+    explicit ESValue(double);
+    explicit ESValue(char);
+    explicit ESValue(unsigned char);
+    explicit ESValue(short);
+    explicit ESValue(unsigned short);
+    explicit ESValue(int);
+    explicit ESValue(unsigned);
+    explicit ESValue(long);
+    explicit ESValue(unsigned long);
+    explicit ESValue(long long);
+    explicit ESValue(unsigned long long);
+
+    bool operator==(const ESValue& other) const;
+    bool operator!=(const ESValue& other) const;
+
+    bool isInt32() const;
+    bool isUInt32() const;
+    bool isDouble() const;
+    bool isTrue() const;
+    bool isFalse() const;
+
+    int32_t asInt32() const;
+    uint32_t asUInt32() const;
+    int64_t asMachineInt() const;
+    double asDouble() const;
+    bool asBoolean() const;
+    double asNumber() const;
+
+    int32_t asInt32ForArithmetic() const; // Boolean becomes an int, but otherwise like asInt32().
+
+    // Querying the type.
+    bool isEmpty() const;
+    bool isFunction() const;
+    bool isUndefined() const;
+    bool isNull() const;
+    bool isUndefinedOrNull() const;
+    bool isBoolean() const;
+    bool isMachineInt() const;
+    bool isNumber() const;
+    bool isString() const;
+    bool isSymbol() const;
+    bool isPrimitive() const;
+    bool isGetterSetter() const;
+    bool isCustomGetterSetter() const;
+    bool isObject() const;
+
+    double toNumber() const;
+    ESString asString() const;
+    ESString toString() const;
+    InternalString toWTFString() const;
+    ESObject toObject() const;
+
+    static ptrdiff_t offsetOfPayload() { return OBJECT_OFFSETOF(ESValue, u.asBits.payload); }
+    static ptrdiff_t offsetOfTag() { return OBJECT_OFFSETOF(ESValue, u.asBits.tag); }
+
+#if ESCARGOT_32
+    uint32_t tag() const;
+    int32_t payload() const;
+#elif ESCARGOT_64
+    // These values are #defines since using static const integers here is a ~1% regression!
+
+    // This value is 2^48, used to encode doubles such that the encoded value will begin
+    // with a 16-bit pattern within the range 0x0001..0xFFFE.
+    #define DoubleEncodeOffset 0x1000000000000ll
+    // If all bits in the mask are set, this indicates an integer number,
+    // if any but not all are set this value is a double precision number.
+    #define TagTypeNumber 0xffff000000000000ll
+
+    // All non-numeric (bool, null, undefined) immediates have bit 2 set.
+    #define TagBitTypeOther 0x2ll
+    #define TagBitBool      0x4ll
+    #define TagBitUndefined 0x8ll
+    // Combined integer value for non-numeric immediates.
+    #define ValueFalse     (TagBitTypeOther | TagBitBool | false)
+    #define ValueTrue      (TagBitTypeOther | TagBitBool | true)
+    #define ValueUndefined (TagBitTypeOther | TagBitUndefined)
+    #define ValueNull      (TagBitTypeOther)
+
+    // TagMask is used to check for all types of immediate values (either number or 'other').
+    #define TagMask (TagTypeNumber | TagBitTypeOther)
+
+    // These special values are never visible to JavaScript code; Empty is used to represent
+    // Array holes, and for uninitialized ESValues. Deleted is used in hash table code.
+    // These values would map to cell types in the ESValue encoding, but not valid GC cell
+    // pointer should have either of these values (Empty is null, deleted is at an invalid
+    // alignment for a GC cell, and in the zero page).
+    #define ValueEmpty   0x0ll
+    #define ValueDeleted 0x4ll
+#endif
+
+private:
+    ValueDescriptor u;
 
 public:
-    bool isSmi() const;
-    bool isHeapObject() const;
     bool isESSlot() const;
+    /*
     bool abstractEqualsTo(ESValue* val);
     bool equalsTo(ESValue* val);
-    Smi* toSmi() const;
-    HeapObject* toHeapObject() const;
     ESSlot* toESSlot();
+    */
     InternalString toInternalString();
 
+    /*
     enum PrimitiveTypeHint { PreferString, PreferNumber };
-    ESValue* toPrimitive(PrimitiveTypeHint hint = PreferNumber);
-    ESValue* toNumber();
-    ESValue* toInt32();
-    ESValue* toInteger();
-    ESString* toString();
-    ESValue* ensureValue();
+    ESValue toPrimitive(PrimitiveTypeHint hint = PreferNumber);
+    ESValue toNumber();
+    ESValue toInt32();
+    ESValue toInteger();
+    ESString toString();
+    */
+    ESValue ensureValue();
 };
 
-class Smi : public ESValue {
-public:
-    int value();
-    static inline Smi* fromInt(int value);
-    static inline Smi* fromIntptr(intptr_t value);
-};
-
+/*
 class HeapObject : public ESValue, public gc {
 public:
     enum Type {
@@ -182,7 +321,6 @@ public:
 #endif
         return reinterpret_cast<::escargot::ESObject *>(this);
     }
-    /*
     ALWAYS_INLINE bool isESSlot() const
     {
         return m_data & Type::ESSlot;
@@ -195,7 +333,6 @@ public:
 #endif
         return reinterpret_cast<::escargot::ESSlot *>(this);
     }
-    */
 
     ALWAYS_INLINE bool isESFunctionObject()
     {
@@ -260,8 +397,10 @@ protected:
     // @ -> tag
     int m_data;
 };
+    */
 
-class ESUndefined : public HeapObject {
+class ESUndefined : public ESValue {
+    /*
 protected:
 public:
     ESUndefined()
@@ -273,9 +412,11 @@ public:
     {
         return new ESUndefined();
     }
+    */
 };
 
-class ESNull : public HeapObject {
+class ESNull : public ESValue {
+    /*
 protected:
 public:
     ESNull()
@@ -287,10 +428,11 @@ public:
     {
         return new ESNull();
     }
+    */
 };
 
-
-class ESBoolean : public HeapObject {
+class ESBoolean : public ESValue {
+    /*
 protected:
     const int DataMask = 0x80000000;
 public:
@@ -313,9 +455,11 @@ public:
     {
         return m_data & DataMask;
     }
+    */
 };
 
-class ESNumber : public HeapObject {
+class ESNumber : public ESValue {
+    /*
 public:
     ESNumber(double value)
         : HeapObject((Type)(Type::Primitive | Type::ESNumber))
@@ -358,14 +502,24 @@ public:
 
 protected:
     double m_value;
+    */
 };
 
-class ESString : public HeapObject {
+class ESPointer : public ESValue {
+
+};
+
+class ESString : public ESPointer {
 protected:
+    /*
     ESString(const InternalString& src)
         : HeapObject((Type)(Type::Primitive | Type::ESString))
     {
         m_string = src;
+    }
+    */
+    ESString(const InternalString& str)
+    {
     }
 public:
     static ESString* create(const InternalString& src)
@@ -373,6 +527,7 @@ public:
         return new ESString(src);
     }
 
+    /*
     const InternalString& string()
     {
         return m_string;
@@ -385,9 +540,11 @@ public:
 
 protected:
     InternalString m_string;
+    */
 };
 
-class ESSlot : public HeapObject {
+class ESSlot : public ESPointer {
+    /*
     ESSlot(::escargot::ESValue* value,
             bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
         : HeapObject(Type::ESSlot)
@@ -513,14 +670,15 @@ protected:
     bool m_isWritable:1;
     bool m_isEnumerable:1;
     bool m_isConfigurable:1;
+    */
 };
 
 
-typedef std::unordered_map<InternalAtomicString, ::escargot::ESSlot *,
+typedef std::unordered_map<InternalAtomicString, ::escargot::ESSlot ,
                 std::hash<InternalAtomicString>,std::equal_to<InternalAtomicString>,
-                gc_allocator<std::pair<const InternalAtomicString, ::escargot::ESSlot *> > > ESObjectMapStd;
+                gc_allocator<std::pair<const InternalAtomicString, ::escargot::ESSlot > > > ESObjectMapStd;
 
-typedef std::vector<::escargot::ESSlot *, gc_allocator<::escargot::ESSlot *> > JSVectorStd;
+typedef std::vector<::escargot::ESSlot , gc_allocator<::escargot::ESSlot > > JSVectorStd;
 
 /*
 typedef std::map<InternalString, ::escargot::ESSlot *,
@@ -540,7 +698,8 @@ public:
         : JSVectorStd(siz) { }
 };
 
-class ESObject : public HeapObject {
+class ESObject : public ESPointer {
+    /*
     friend class ESSlot;
 protected:
     ESObject(HeapObject::Type type = HeapObject::Type::ESObject)
@@ -703,9 +862,11 @@ public:
 protected:
     ESObjectMap m_map;
     ESValue* m___proto__;
+    */
 };
 
 class ESErrorObject : public ESObject {
+    /*
 protected:
     ESErrorObject(HeapObject::Type type = HeapObject::Type::ESErrorObject)
            : ESObject((Type)(Type::ESObject | Type::ESErrorObject))
@@ -718,9 +879,11 @@ public:
     {
         return new ESErrorObject();
     }
+    */
 };
 
 class ESDateObject : public ESObject {
+    /*
 protected:
     ESDateObject(HeapObject::Type type = HeapObject::Type::ESDateObject)
            : ESObject((Type)(Type::ESObject | Type::ESDateObject)) {}
@@ -750,9 +913,11 @@ public:
 
 private:
     struct timeval m_tv;
+    */
 };
 
 class ESArrayObject : public ESObject {
+    /*
 protected:
     ESArrayObject(HeapObject::Type type = HeapObject::Type::ESArrayObject)
         : ESObject((Type)(Type::ESObject | Type::ESArrayObject))
@@ -893,11 +1058,13 @@ protected:
     ESValue* m_length;
     JSVector m_vector;
     bool m_fastmode;
+    */
 };
 
 class LexicalEnvironment;
 class Node;
 class ESFunctionObject : public ESObject {
+    /*
 protected:
     ESFunctionObject(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST)
         : ESObject((Type)(Type::ESObject | Type::ESFunctionObject))
@@ -942,9 +1109,11 @@ protected:
     ////ESObject newTarget
     //BindThisValue(V);
     //GetThisBinding();
+    */
 };
 
 class ESStringObject : public ESObject {
+    /*
 protected:
     ESStringObject(const InternalString& str)
         : ESObject((Type)(Type::ESObject | Type::ESStringObject))
@@ -970,6 +1139,7 @@ public:
 
 private:
     ::escargot::ESString* m_stringData;
+    */
 };
 
 }

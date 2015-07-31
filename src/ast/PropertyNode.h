@@ -21,9 +21,9 @@ public:
         m_kind = kind;
     }
 
-    virtual ESValue* execute(ESVMInstance* instance)
+    virtual ESValue execute(ESVMInstance* instance)
     {
-        return esUndefined;
+        return ESValue();
     }
 
     Node* key()

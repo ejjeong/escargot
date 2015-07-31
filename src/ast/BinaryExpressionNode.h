@@ -99,18 +99,19 @@ public:
             RELEASE_ASSERT_NOT_REACHED();
     }
 
-    virtual ESValue* execute(ESVMInstance* instance)
+    virtual ESValue execute(ESVMInstance* instance)
     {
-        ESValue* lval = m_left->execute(instance)->ensureValue();
-        ESValue* rval = m_right->execute(instance)->ensureValue();
+        ESValue lval = m_left->execute(instance).ensureValue();
+        ESValue rval = m_right->execute(instance).ensureValue();
         return execute(instance, lval, rval, m_operator);
     }
 
-    static ESValue* execute(ESVMInstance* instance, ESValue* lval, ESValue* rval, BinaryExpressionOperator oper) {
-        ESValue* ret;
+    static ESValue execute(ESVMInstance* instance, ESValue lval, ESValue rval, BinaryExpressionOperator oper) {
+        ESValue ret;
         switch(oper) {
             case Plus:
-                /* http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.1 */
+                /*
+                // http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.1
                 lval = lval->toPrimitive();
                 rval = rval->toPrimitive();
                 if ((lval->isHeapObject() && lval->toHeapObject()->isESString())
@@ -137,20 +138,17 @@ public:
                         ret = ESNumber::create(lnum + rnum);
                         }
                     }
+                    */
                 break;
              case Minus:
-                /* http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.2 */
-                lval = lval->toNumber();
-                rval = rval->toNumber();
-                if (lval->isSmi() && rval->isSmi())
-                    ret = Smi::fromInt(lval->toSmi()->value() - rval->toSmi()->value());
-                else {
-                    double lnum = lval->isSmi()? lval->toSmi()->value() : lval->toHeapObject()->toESNumber()->get();
-                    double rnum = rval->isSmi()? rval->toSmi()->value() : rval->toHeapObject()->toESNumber()->get();
-                    ret = ESNumber::create(lnum - rnum);
-                  }
+                // http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.2
+                if (lval.isInt32() && rval.isInt32() && !((lval.asInt32() | rval.asInt32()) & 0xc0000000)) // no overflow
+                    ret = ESValue(lval.asInt32() - rval.asInt32());
+                else
+                    ret = ESValue(lval.toNumber() - rval.toNumber());
                 break;
             case Div: {
+                          /*
                 lval = lval->toNumber();
                 rval = rval->toNumber();
                 // http://www.ecma-international.org/ecma-262/5.1/#sec-11.5.2
@@ -193,14 +191,51 @@ public:
                     else
                         ret = ESNumber::create(result);
                 }
-                      }
+                      */
+                }
                 break;
             case LessThan:
+                /*
             case LessThanOrEqual:
             case GreaterThan:
             case GreaterThanOrEqual:
-                /* http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.1
-                 * http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5 */
+            */
+            {
+                if (lval.isInt32() && rval.isInt32())
+                    ret = ESValue(lval.asInt32() < rval.asInt32());
+
+                if (lval.isNumber() && rval.isNumber())
+                    ret = ESValue(lval.asNumber() < rval.asNumber());
+
+                ASSERT(false);
+                /*
+                if (isJSString(v1) && isJSString(v2))
+                    return !(asString(v2)->value(callFrame) < asString(v1)->value(callFrame));
+
+                double n1;
+                double n2;
+                ESValue p1;
+                ESValue p2;
+                bool wasNotString1;
+                bool wasNotString2;
+                if (leftFirst) {
+                    wasNotString1 = lval.getPrimitiveNumber(callFrame, n1, p1);
+                    wasNotString2 = rval.getPrimitiveNumber(callFrame, n2, p2);
+                } else {
+                    wasNotString2 = rval.getPrimitiveNumber(callFrame, n2, p2);
+                    wasNotString1 = lval.getPrimitiveNumber(callFrame, n1, p1);
+                }
+
+                if (wasNotString1 | wasNotString2)
+                    return n1 < n2;
+                return asString(p1)->value(callFrame) < asString(p2)->value(callFrame);
+                */
+            }
+            break;
+
+                      /*
+                // http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.1
+                // http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5
                 lval = lval->toPrimitive();
                 rval = rval->toPrimitive();
 
@@ -228,22 +263,26 @@ public:
                     else RELEASE_ASSERT_NOT_REACHED();
                     ret = b ? esTrue:esFalse;
                 }
+                */
                 break;
             case BitwiseAnd:
+                /*
                 lval = lval->toInt32();
                 rval = rval->toInt32();
 
-                /* http://www.ecma-international.org/ecma-262/5.1/#sec-11.10 */
+                // http://www.ecma-international.org/ecma-262/5.1/#sec-11.10
                 if (lval->isSmi() && rval->isSmi()) {
                     ret = Smi::fromInt(lval->toSmi()->value() & rval->toSmi()->value());
                 } else {
                     // TODO
                 }
+                */
                 break;
             case LeftShift:
             case SignedRightShift:
             case UnsignedRightShift:
             {
+                /*
                 lval = lval->toInt32();
                 rval = rval->toInt32();
                 long long int rnum = rval->isSmi()? rval->toSmi()->value() : rval->toHeapObject()->toESNumber()->get();
@@ -262,9 +301,11 @@ public:
                     ret = ESNumber::create(lnum);
                 else
                     ret = Smi::fromInt(lnum);
+                    */
                 break;
             }
             case Equals:
+            /*
                 if (lval->abstractEqualsTo(rval))
                     ret = ESBoolean::create(true);
                 else
@@ -275,6 +316,7 @@ public:
                     ret = ESBoolean::create(false);
                 else
                     ret = ESBoolean::create(true);
+                    */
                 break;
             default:
                 // TODO

@@ -15,8 +15,9 @@ TryStatementNode::TryStatementNode(Node *block, Node *handler, CatchClauseNodeVe
         m_finalizer = (BlockStatementNode*) finalizer;
     }
 
-ESValue* TryStatementNode::execute(ESVMInstance* instance)
+ESValue TryStatementNode::execute(ESVMInstance* instance)
 {
+    /*
 	try {
 		m_block->execute(instance);
 	} catch(ESValue* err) {
@@ -28,6 +29,8 @@ ESValue* TryStatementNode::execute(ESVMInstance* instance)
 		m_handler->execute(instance);
 	}
 	return esUndefined;
+    */
+    return ESValue();
 }
 
 }

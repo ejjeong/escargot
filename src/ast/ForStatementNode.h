@@ -17,8 +17,9 @@ public:
         m_body = (StatementNode*) body;
     }
 
-    virtual ESValue* execute(ESVMInstance* instance)
+    virtual ESValue execute(ESVMInstance* instance)
     {
+        /*
         m_init->execute(instance)->ensureValue();
         ESValue *test = m_test->execute(instance)->ensureValue();
         while (test->isSmi()? test->toSmi()->value() : test->toHeapObject()->toESBoolean()->get()) {
@@ -27,6 +28,8 @@ public:
             test = m_test->execute(instance)->ensureValue();
         }
         return esUndefined;
+        */
+        return ESValue();
     }
 
 protected:

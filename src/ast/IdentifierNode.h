@@ -21,7 +21,7 @@ public:
         m_fastAccessIndex = SIZE_MAX;
     }
 
-    ESValue* execute(ESVMInstance* instance);
+    ESValue execute(ESVMInstance* instance);
 
     const InternalAtomicString& name()
     {

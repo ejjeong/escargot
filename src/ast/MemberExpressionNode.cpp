@@ -9,8 +9,9 @@
 
 namespace escargot {
 
-ESValue* MemberExpressionNode::execute(ESVMInstance* instance)
+ESValue MemberExpressionNode::execute(ESVMInstance* instance)
 {
+    /*
     ESValue* value = m_object->execute(instance)->ensureValue();
     //TODO string,number-> stringObject, numberObject;
     if(value->isHeapObject() && value->toHeapObject()->isESString()) {
@@ -59,5 +60,7 @@ ESValue* MemberExpressionNode::execute(ESVMInstance* instance)
         throw TypeError();
     }
     return esUndefined;
+    */
+    return ESValue();
 }
 }

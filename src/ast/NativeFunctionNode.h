@@ -5,7 +5,7 @@
 
 namespace escargot {
 
-typedef std::function<ESValue* (ESVMInstance*)> NativeFunctionNodeFunctionType;
+typedef std::function<ESValue (ESVMInstance*)> NativeFunctionNodeFunctionType;
 
 class NativeFunctionNode : public Node {
 public:
@@ -15,7 +15,7 @@ public:
         m_nativeFunction = fn;
     }
 
-    ESValue* execute(ESVMInstance* instance)
+    ESValue execute(ESVMInstance* instance)
     {
         return m_nativeFunction(instance);
     }

@@ -7,8 +7,9 @@
 
 namespace escargot {
 
-ESValue* NewExpressionNode::execute(ESVMInstance* instance)
+ESValue NewExpressionNode::execute(ESVMInstance* instance)
 {
+    /*
     ESValue* fn = m_callee->execute(instance)->ensureValue();
     if(!fn->isHeapObject() || !fn->toHeapObject()->isESFunctionObject())
         throw TypeError();
@@ -32,6 +33,8 @@ ESValue* NewExpressionNode::execute(ESVMInstance* instance)
     ESFunctionObject::call(fn, receiver, &arguments[0], arguments.size(), instance);
 
     return receiver;
+    */
+    return ESValue();
 }
 
 }

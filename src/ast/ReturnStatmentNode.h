@@ -14,7 +14,7 @@ public:
         m_argument = argument;
     }
 
-    virtual ESValue* execute(ESVMInstance* instance);
+    virtual ESValue execute(ESVMInstance* instance);
 protected:
     Node* m_argument;
 };

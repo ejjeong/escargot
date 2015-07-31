@@ -7,13 +7,16 @@
 
 namespace escargot {
 
-ESValue* VariableDeclaratorNode::execute(ESVMInstance* instance)
+ESValue VariableDeclaratorNode::execute(ESVMInstance* instance)
 {
+    /*
     ASSERT(m_id->type() == NodeType::Identifier);
     if(instance->currentExecutionContext()->needsActivation()) {
         instance->currentExecutionContext()->environment()->record()->createMutableBindingForAST(((IdentifierNode *)m_id)->name(), false);
     }
     return esUndefined;
+    */
+    return ESValue();
 }
 
 }

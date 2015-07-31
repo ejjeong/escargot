@@ -2,7 +2,6 @@
 #define ArrayExpressionNode_h
 
 #include "ExpressionNode.h"
-#include "vm/ESVMInstance.h"
 
 namespace escargot {
 
@@ -16,7 +15,7 @@ public:
     }
 
     //$ 12.2.5.3
-    virtual ESValue* execute(ESVMInstance* instance);
+    virtual ESValue execute(ESVMInstance* instance);
 protected:
     ExpressionNodeVector m_elements;
 };

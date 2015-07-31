@@ -38,9 +38,9 @@ CXXFLAGS += -Ithird_party/bdwgc/include/
 LDFLAGS += -lpthread
 
 ifeq ($(ARCH), x64)
-	CXXFLAGS += -DESCARGOT_64
+	CXXFLAGS += -DESCARGOT_64=1
 else ifeq ($(ARCH), x86)
-	CXXFLAGS += -DESCARGOT_32
+	CXXFLAGS += -DESCARGOT_32=1
 endif
 
 ifeq ($(MODE), debug)

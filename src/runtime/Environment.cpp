@@ -5,6 +5,7 @@
 #include "ExecutionContext.h"
 #include "ast/FunctionNode.h"
 
+#if 0
 namespace escargot {
 
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-newfunctionenvironment
@@ -177,3 +178,4 @@ ESObject* FunctionEnvironmentRecord::getThisBinding()
 }
 
 }
+#endif

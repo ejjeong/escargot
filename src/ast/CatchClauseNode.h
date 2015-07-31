@@ -20,10 +20,10 @@ public:
         m_body = (BlockStatementNode*) body;
     }
 
-    ESValue* execute(ESVMInstance* instance)
+    ESValue execute(ESVMInstance* instance)
     {
         m_body->execute(instance);
-        return esUndefined;
+        return ESValue();
     }
 
     IdentifierNode* param() {

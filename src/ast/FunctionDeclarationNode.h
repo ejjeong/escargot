@@ -13,7 +13,7 @@ public:
     {
     }
 
-    virtual ESValue* execute(ESVMInstance* instance);
+    virtual ESValue execute(ESVMInstance* instance);
 protected:
 };
 

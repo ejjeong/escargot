@@ -3,6 +3,7 @@
 
 namespace escargot {
 
+/*
 const int kApiPointerSize = sizeof(void*);
 const int kApiIntSize = sizeof(int);
 const int kApiInt64Size = sizeof(int64_t);
@@ -84,7 +85,9 @@ const int kSmiValueSize = PlatformSmiTagging::kSmiValueSize;
 #define HAS_OBJECT_TAG(value) \
     ((reinterpret_cast<intptr_t>(value) & kHeapObjectTagMask) == kHeapObjectTag)
 
+*/
 
+/*
 inline bool ESValue::isSmi() const
 {
     return HAS_SMI_TAG(this);
@@ -94,26 +97,30 @@ inline bool ESValue::isHeapObject() const
 {
     return HAS_OBJECT_TAG(this);
 }
+*/
 
 inline bool ESValue::isESSlot() const
 {
+    /*
     return (HAS_OBJECT_TAG(this)) && ((reinterpret_cast<const HeapObject*>(this))->type() & HeapObject::Type::ESSlot);
+    */
+    return false;
 }
 
+/*
 inline Smi* ESValue::toSmi() const
 {
     ASSERT(isSmi());
     return static_cast<Smi*>(const_cast<ESValue*>(this));
-    /* TODO
-    else if (object->IsHeapESNumber()) {
-        double value = Handle<HeapESNumber>::cast(object)->value();
-        int int_value = FastD2I(value);
-        if (value == FastI2D(int_value) && Smi::IsValid(int_value)) {
-            return handle(Smi::fromInt(int_value), isolate);
-        }
-    }
-    return new Smi();
-    */
+    // TODO
+    // else if (object->IsHeapESNumber()) {
+    //     double value = Handle<HeapESNumber>::cast(object)->value();
+    //     int int_value = FastD2I(value);
+    //     if (value == FastI2D(int_value) && Smi::IsValid(int_value)) {
+    //         return handle(Smi::fromInt(int_value), isolate);
+    //     }
+    // }
+    // return new Smi();
 }
 
 inline HeapObject* ESValue::toHeapObject() const
@@ -248,14 +255,238 @@ inline ESString* ESValue::toString()
 {
     return ESString::create(toInternalString());
 }
+*/
 
-inline ESValue* ESValue::ensureValue()
+inline ESValue ESValue::ensureValue()
 {
+    /*
     if(isESSlot()) {
         return toESSlot()->value();
     }
     return this;
+    */
+    return *this;
 }
+
+//==============================================================================
+//===common architecture========================================================
+//==============================================================================
+
+template<typename ToType, typename FromType>
+inline ToType bitwise_cast(FromType from)
+{
+    ASSERT(sizeof(FromType) == sizeof(ToType));
+    union {
+        FromType from;
+        ToType to;
+    } u;
+    u.from = from;
+    return u.to;
+}
+
+inline ESValue::ESValue(double d)
+{
+    const int32_t asInt32 = static_cast<int32_t>(d);
+    if (asInt32 != d || (!asInt32 && std::signbit(d))) { // true for -0.0
+        *this = ESValue(EncodeAsDouble, d);
+        return;
+    }
+    *this = ESValue(static_cast<int32_t>(d));
+}
+
+inline ESValue::ESValue(char i)
+{
+    *this = ESValue(static_cast<int32_t>(i));
+}
+
+inline ESValue::ESValue(unsigned char i)
+{
+    *this = ESValue(static_cast<int32_t>(i));
+}
+
+inline ESValue::ESValue(short i)
+{
+    *this = ESValue(static_cast<int32_t>(i));
+}
+
+inline ESValue::ESValue(unsigned short i)
+{
+    *this = ESValue(static_cast<int32_t>(i));
+}
+
+inline ESValue::ESValue(unsigned i)
+{
+    if (static_cast<int32_t>(i) < 0) {
+        *this = ESValue(EncodeAsDouble, static_cast<double>(i));
+        return;
+    }
+    *this = ESValue(static_cast<int32_t>(i));
+}
+
+inline ESValue::ESValue(long i)
+{
+    if (static_cast<int32_t>(i) != i) {
+        *this = ESValue(EncodeAsDouble, static_cast<double>(i));
+        return;
+    }
+    *this = ESValue(static_cast<int32_t>(i));
+}
+
+inline ESValue::ESValue(unsigned long i)
+{
+    if (static_cast<uint32_t>(i) != i) {
+        *this = ESValue(EncodeAsDouble, static_cast<double>(i));
+        return;
+    }
+    *this = ESValue(static_cast<uint32_t>(i));
+}
+
+inline ESValue::ESValue(long long i)
+{
+    if (static_cast<int32_t>(i) != i) {
+        *this = ESValue(EncodeAsDouble, static_cast<double>(i));
+        return;
+    }
+    *this = ESValue(static_cast<int32_t>(i));
+}
+
+inline ESValue::ESValue(unsigned long long i)
+{
+    if (static_cast<uint32_t>(i) != i) {
+        *this = ESValue(EncodeAsDouble, static_cast<double>(i));
+        return;
+    }
+    *this = ESValue(static_cast<uint32_t>(i));
+}
+
+//==============================================================================
+//===32-bit architecture========================================================
+//==============================================================================
+
+#if ESCARGOT_32
+
+inline ESValue::ESValue()
+{
+    //u.asBits.tag = EmptyValueTag;
+    u.asBits.tag = UndefinedTag;
+    u.asBits.payload = 0;
+}
+
+inline ESValue::ESValue(ESNullTag)
+{
+    u.asBits.tag = NullTag;
+    u.asBits.payload = 0;
+}
+
+inline ESValue::ESValue(ESUndefinedTag)
+{
+    u.asBits.tag = UndefinedTag;
+    u.asBits.payload = 0;
+}
+
+inline ESValue::ESValue(ESTrueTag)
+{
+    u.asBits.tag = BooleanTag;
+    u.asBits.payload = 1;
+}
+
+inline ESValue::ESValue(ESFalseTag)
+{
+    u.asBits.tag = BooleanTag;
+    u.asBits.payload = 0;
+}
+
+inline ESValue::ESValue(ESPointer* ptr)
+{
+    if (ptr)
+        u.asBits.tag = CellTag;
+    else
+        u.asBits.tag = EmptyValueTag;
+    u.asBits.payload = reinterpret_cast<int32_t>(ptr);
+}
+
+inline ESValue::ESValue(const ESPointer* ptr)
+{
+    if (ptr)
+        u.asBits.tag = CellTag;
+    else
+        u.asBits.tag = EmptyValueTag;
+    u.asBits.payload = reinterpret_cast<int32_t>(const_cast<ESPointer*>(ptr));
+}
+
+ALWAYS_INLINE ESValue::ESValue(EncodeAsDoubleTag, double d)
+{
+    u.asDouble = d;
+}
+
+inline ESValue::ESValue(int i)
+{
+    u.asBits.tag = Int32Tag;
+    u.asBits.payload = i;
+}
+
+//==============================================================================
+//===64-bit architecture========================================================
+//==============================================================================
+
+#else
+
+inline ESValue::ESValue()
+{
+    //u.asInt64 = ValueEmpty;
+    u.asInt64 = ValueUndefined;
+}
+
+inline ESValue::ESValue(ESNullTag)
+{
+    u.asInt64 = ValueNull;
+}
+
+inline ESValue::ESValue(ESUndefinedTag)
+{
+    u.asInt64 = ValueUndefined;
+}
+
+inline ESValue::ESValue(ESTrueTag)
+{
+    u.asInt64 = ValueTrue;
+}
+
+inline ESValue::ESValue(ESFalseTag)
+{
+    u.asInt64 = ValueFalse;
+}
+
+inline ESValue::ESValue(ESPointer* ptr)
+{
+    u.ptr = ptr;
+}
+
+inline ESValue::ESValue(const ESPointer* ptr)
+{
+    u.ptr = const_cast<ESPointer*>(ptr);
+}
+
+inline int64_t reinterpretDoubleToInt64(double value)
+{
+    return bitwise_cast<int64_t>(value);
+}
+inline double reinterpretInt64ToDouble(int64_t value)
+{
+    return bitwise_cast<double>(value);
+}
+
+ALWAYS_INLINE ESValue::ESValue(EncodeAsDoubleTag, double d)
+{
+    u.asInt64 = reinterpretDoubleToInt64(d) + DoubleEncodeOffset;
+}
+
+inline ESValue::ESValue(int i)
+{
+    u.asInt64 = TagTypeNumber | static_cast<uint32_t>(i);
+}
+
+#endif
 
 }
 

@@ -15,7 +15,7 @@ public:
         m_argument = argument;
     }
 
-    ESValue* execute(ESVMInstance* instance);
+    ESValue execute(ESVMInstance* instance);
 protected:
     Node* m_argument;
 };

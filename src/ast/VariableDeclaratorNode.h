@@ -17,7 +17,7 @@ public:
         m_init = NULL;
     }
 
-    virtual ESValue* execute(ESVMInstance* instance);
+    virtual ESValue execute(ESVMInstance* instance);
 
 protected:
     Node* m_id; //id: Pattern;

@@ -16,7 +16,7 @@ public:
         m_arguments = arguments;
     }
 
-    virtual ESValue* execute(ESVMInstance* instance);
+    virtual ESValue execute(ESVMInstance* instance);
 protected:
     Node* m_callee;//callee: Expression;
     ArgumentVector m_arguments; //arguments: [ Expression ];

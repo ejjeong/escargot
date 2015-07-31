@@ -18,7 +18,7 @@ public:
         m_properties = properties;
     }
 
-    virtual ESValue* execute(ESVMInstance* instance);
+    virtual ESValue execute(ESVMInstance* instance);
 protected:
     PropertiesNodeVector m_properties;
 };
