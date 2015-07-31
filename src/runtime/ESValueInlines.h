@@ -376,6 +376,8 @@ ALWAYS_INLINE double ESValue::toNumber() const
     //return toNumberSlowCase(exec);
 }
 
+
+
 //==============================================================================
 //===32-bit architecture========================================================
 //==============================================================================
@@ -472,6 +474,11 @@ inline bool ESValue::isNumber() const
 inline bool ESValue::isESPointer() const
 {
     return tag() == CellTag;
+}
+
+inline bool ESValue::isUndefined() const
+{
+    return tag() == ESUndefinedTag::ESUndefined;
 }
 
 ALWAYS_INLINE JSCell* ESValue::asESPointer() const
@@ -571,6 +578,11 @@ inline bool ESValue::isNumber() const
 inline bool ESValue::isESPointer() const
 {
     return !(u.asInt64 & TagMask);
+}
+
+inline bool ESValue::isUndefined() const
+{
+    return u.asInt64 == ValueUndefined;
 }
 
 ALWAYS_INLINE ESPointer* ESValue::asESPointer() const
