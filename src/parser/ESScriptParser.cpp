@@ -22,7 +22,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
 
         if(c == '\n') {
             sc.push_back('\\');
-            c = '\n';
+            c = 'n';
         } else if(c == '\\') {
             sc.push_back('\\');
             c = '\\';
