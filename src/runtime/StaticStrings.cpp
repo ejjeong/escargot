@@ -26,6 +26,7 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     Function = InternalAtomicString(instance, L"Function");
     Empty = InternalAtomicString(instance, L"Empty");
     Date = InternalAtomicString(instance, L"Date");
+    getTime = InternalAtomicString(instance, L"getTime");
 }
 
 Strings* strings;

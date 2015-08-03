@@ -26,6 +26,7 @@ InternalAtomicString Array;
 InternalAtomicString Function;
 InternalAtomicString Empty;
 InternalAtomicString Date;
+InternalAtomicString getTime;
 void initStaticStrings(ESVMInstance* instance);
 };
 

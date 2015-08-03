@@ -313,13 +313,22 @@ void GlobalObject::installDate()
     m_date = ::escargot::ESFunctionObject::create(NULL, constructor);
     m_date->set(strings->name, ESString::create(strings->Date));
     m_date->setConstructor(m_function);
-    m_date->set__proto__(emptyFunction);
 
     m_datePrototype->setConstructor(m_date);
 
     m_date->set(strings->prototype, m_datePrototype);
 
     set(strings->Date, m_date);
+
+    //$20.3.4.10 Date.prototype.getTime()
+    FunctionDeclarationNode* getTimeNode = new FunctionDeclarationNode(strings->getTime, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+
+        ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+        double ret = thisObject->asESDateObject()->getTimeAsMilisec();
+        instance->currentExecutionContext()->doReturn(ESValue(ret));
+        return ESValue();
+    }), false, false);
+    m_datePrototype->set(strings->getTime, ::escargot::ESFunctionObject::create(NULL, getTimeNode));
 }
 
 
