@@ -703,7 +703,13 @@ inline double ESValue::asDouble() const
 
 inline bool ESValue::isNumber() const
 {
-    return u.asInt64 & DoubleEncodeOffset;
+    ASSERT(sizeof (short) == 2);
+    unsigned short* firstByte = (unsigned short *)&u.asInt64;
+    #ifdef ESCARGOT_LITTLE_ENDIAN
+        return firstByte[3];
+    #else
+        return firstByte[0];
+    #endif
 }
 
 inline bool ESValue::isESString() const
