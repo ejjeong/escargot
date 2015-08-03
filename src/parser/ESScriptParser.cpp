@@ -181,13 +181,12 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             parsedNode = new AssignmentExpressionNode(fn(value[L"left"], currentBody, false), fn(value[L"right"], currentBody, false), value[L"operator"].GetString());
         } else if(type == astTypeLiteral) {
             //TODO parse esvalue better
-            if(value[L"value"].IsNumber()) {
+            if(value[L"value"].IsInt()) {
+                int number = value[L"value"].GetInt();
+                parsedNode = new LiteralNode(ESValue(number));
+            } else if(value[L"value"].IsNumber()) {
                 double number = value[L"value"].GetDouble();
-                if(std::abs(number) < 0xC0000000 && value[L"value"].IsInt()) { //(1100)(0000)...(0000)
-                    parsedNode = new LiteralNode(ESValue(value[L"value"].GetInt()));
-                } else {
-                    parsedNode = new LiteralNode(ESValue(number));
-                }
+                parsedNode = new LiteralNode(ESValue(number));
             } else if(value[L"value"].IsString()) {
                 parsedNode = new LiteralNode(ESValue(ESString::create(value[L"value"].GetString())));
             } else if(value[L"value"].IsBool()) {
