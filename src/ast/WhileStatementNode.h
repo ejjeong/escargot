@@ -2,6 +2,7 @@
 #define WhileStatementNode_h
 
 #include "StatementNode.h"
+#include "ExpressionNode.h"
 
 namespace escargot {
 
@@ -15,15 +16,7 @@ public:
         m_body = (StatementNode*) body;
     }
 
-    virtual ESValue execute(ESVMInstance* instance)
-    {
-        ESValue test = m_test->execute(instance).ensureValue();
-        while (test.toBoolean()) {
-            m_body->execute(instance);
-            test = m_test->execute(instance).ensureValue();
-        }
-        return ESValue();
-    }
+    virtual ESValue execute(ESVMInstance* instance);
 
 protected:
     ExpressionNode *m_test;

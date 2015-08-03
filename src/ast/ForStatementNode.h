@@ -2,6 +2,7 @@
 #define ForStatementNode_h
 
 #include "StatementNode.h"
+#include "ExpressionNode.h"
 
 namespace escargot {
 
@@ -17,17 +18,7 @@ public:
         m_body = (StatementNode*) body;
     }
 
-    virtual ESValue execute(ESVMInstance* instance)
-    {
-        m_init->execute(instance).ensureValue();
-        ESValue test = m_test->execute(instance).ensureValue();
-        while (test.toBoolean()) {
-            m_body->execute(instance);
-            m_update->execute(instance);
-            test = m_test->execute(instance).ensureValue();
-        }
-        return ESValue();
-    }
+    virtual ESValue execute(ESVMInstance* instance);
 
 protected:
     ExpressionNode *m_init;

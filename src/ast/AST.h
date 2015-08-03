@@ -7,6 +7,7 @@
 #include "BinaryExpressionNode.h"
 #include "UpdateExpressionNode.h"
 #include "BlockStatementNode.h"
+#include "BreakStatementNode.h"
 #include "CallExpressionNode.h"
 #include "CatchClauseNode.h"
 #include "ConditionalExpressionNode.h"

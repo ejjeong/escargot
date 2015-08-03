@@ -114,6 +114,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
     InternalString astTypeIdentifier(L"Identifier");
     InternalString astTypeAssignmentExpression(L"AssignmentExpression");
     InternalString astTypeThisExpression(L"ThisExpression");
+    InternalString astTypeBreakStatement(L"BreakStatement");
     InternalString astTypeReturnStatement(L"ReturnStatement");
     InternalString astTypeEmptyStatement(L"EmptyStatement");
     InternalString astTypeLiteral(L"Literal");
@@ -305,6 +306,8 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             parsedNode = new WhileStatementNode(fn(value[L"test"], currentBody, false), fn(value[L"body"], currentBody, false));
         } else if(type == astTypeThisExpression) {
             parsedNode = new ThisExpressionNode();
+        } else if(type == astTypeBreakStatement) {
+            parsedNode = new BreakStatmentNode();
         } else if(type == astTypeReturnStatement) {
             parsedNode = new ReturnStatmentNode(fn(value[L"argument"], currentBody, false));
         } else if(type == astTypeEmptyStatement) {
@@ -516,6 +519,8 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             postAnalysisFunction(((WhileStatementNode *)currentNode)->m_test, identifierInCurrentContext, nearFunctionNode);
             postAnalysisFunction(((WhileStatementNode *)currentNode)->m_body, identifierInCurrentContext, nearFunctionNode);
         } else if(type == NodeType::ThisExpression) {
+
+        } else if(type == NodeType::BreakStatement) {
 
         } else if(type == NodeType::ReturnStatement) {
             postAnalysisFunction(((ReturnStatmentNode *)currentNode)->m_argument, identifierInCurrentContext, nearFunctionNode);

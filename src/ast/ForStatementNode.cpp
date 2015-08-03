@@ -1,0 +1,25 @@
+#include "Escargot.h"
+#include "ForStatementNode.h"
+
+#include "vm/ESVMInstance.h"
+#include "runtime/ExecutionContext.h"
+#include "runtime/Environment.h"
+
+namespace escargot {
+
+ESValue ForStatementNode::execute(ESVMInstance* instance)
+{
+    m_init->execute(instance).ensureValue();
+    ESValue test = m_test->execute(instance).ensureValue();
+    instance->currentExecutionContext()->breakPosition([&](){
+                while (test.toBoolean()) {
+                    m_body->execute(instance);
+                    m_update->execute(instance);
+                    test = m_test->execute(instance).ensureValue();
+                }
+
+            });
+    return ESValue();
+}
+
+}

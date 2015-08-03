@@ -26,6 +26,10 @@ class TypeError {
 
 };
 
+struct jmpbuf_wrapper {
+    std::jmp_buf m_buffer;
+};
+
 class LexicalEnvironment;
 class ExecutionContext : public gc {
 public:
@@ -85,6 +89,22 @@ public:
     }
 
     std::jmp_buf& returnPosition() { return m_returnPosition; }
+
+    void doBreak()
+    {
+        longjmp(m_breakPositions.back().m_buffer, 1);
+    }
+
+    template <typename T>
+    void breakPosition(const T& fn) {
+        jmpbuf_wrapper newone;
+        int r = setjmp(newone.m_buffer);
+        m_breakPositions.push_back(newone);
+        if (r != 1)
+            fn();
+        m_breakPositions.pop_back();
+    }
+
     ESValue returnValue()
     {
         return m_returnValue;
@@ -106,6 +126,7 @@ private:
     ESValue m_lastUsedPropertyValueInMemberExpressionNode;
     ESValue m_returnValue;
     std::jmp_buf m_returnPosition;
+    std::vector<jmpbuf_wrapper> m_breakPositions;
 };
 
 }

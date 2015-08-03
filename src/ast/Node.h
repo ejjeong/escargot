@@ -18,6 +18,7 @@ enum NodeType {
     Statement,
     EmptyStatement,
     BlockStatement,
+    BreakStatement,
     ReturnStatement,
     IfStatement,
     ForStatement,
