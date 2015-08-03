@@ -48,10 +48,6 @@ public:
         BitwiseXor, //"^"
         BitwiseOr,  //"|"
 
-        // http://www.ecma-international.org/ecma-262/5.1/#sec-11.11
-        // Binary Logical Operators
-        LogicalAnd, //"&&"
-        LogicalOr,  //"||"
         // TODO
     };
 
@@ -106,12 +102,6 @@ public:
             m_operator = BitwiseXor;
         else if (oper == L"|")
             m_operator = BitwiseOr;
-
-        // Binary Logical Operator
-        else if (oper == L"&&")
-            m_operator = LogicalAnd;
-        else if (oper == L"||")
-            m_operator = LogicalOr;
 
         // TODO
         else
@@ -320,14 +310,6 @@ public:
                 ret = ESValue(r);
                 break;
             }
-            case LogicalAnd:
-                if (lval.toBoolean() == false) ret = lval;
-                else ret = rval;
-                break;
-            case LogicalOr:
-                if (lval.toBoolean() == true) ret = lval;
-                else ret = rval;
-                break;
             case LeftShift:
             case SignedRightShift:
             case UnsignedRightShift:

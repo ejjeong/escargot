@@ -22,6 +22,7 @@
 #include "ForStatementNode.h"
 #include "WhileStatementNode.h"
 #include "LiteralNode.h"
+#include "LogicalExpressionNode.h"
 #include "MemberExpressionNode.h"
 #include "NativeFunctionNode.h"
 #include "NewExpressionNode.h"

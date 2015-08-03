@@ -50,6 +50,20 @@ public:
                 break;
             }
             case DECREMENT:
+            {
+                if (!m_prefix)
+                    ret = argval;
+                ESSlot* slot = argref.asESPointer()->asESSlot();
+                if (argval.isInt32()) {
+                    slot->setValue(ESValue(argval.asInt32() - 1));
+                } else {
+                    double argnum = argval.toNumber();
+                    slot->setValue(ESValue(argnum - 1));
+                }
+                if (m_prefix)
+                    ret = argref.ensureValue();
+                break;
+            }
             default:
                 // TODO
                 RELEASE_ASSERT_NOT_REACHED();

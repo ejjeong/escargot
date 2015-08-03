@@ -446,6 +446,10 @@ inline int32_t ESValue::toInt32() const
         return asInt32();
     if (isDouble())
         return asDouble();
+    if (isBoolean()) {
+        if (asBoolean()) return 1;
+        else return 0;
+    }
     RELEASE_ASSERT_NOT_REACHED();
     // TODO
     /*

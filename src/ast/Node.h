@@ -33,6 +33,7 @@ enum NodeType {
     UnaryExpression,
     AssignmentExpression,
     BinaryExpression,
+    LogicalExpression,
     UpdateExpression,
     ObjectExpression,
     SequenceExpression,

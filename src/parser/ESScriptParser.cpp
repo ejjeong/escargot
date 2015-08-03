@@ -127,6 +127,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
     InternalString astTypeNewExpression(L"NewExpression");
     InternalString astTypeProperty(L"Property");
     InternalString astTypeBinaryExpression(L"BinaryExpression");
+    InternalString astTypeLogicalExpression(L"LogicalExpression");
     InternalString astTypeUpdateExpression(L"UpdateExpression");
     InternalString astTypeUnaryExpression(L"UnaryExpression");
     InternalString astTypeIfStatement(L"IfStatement");
@@ -290,6 +291,8 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             parsedNode = new MemberExpressionNode(fn(value[L"object"], currentBody, false), fn(value[L"property"], currentBody, false), value[L"computed"].GetBool());
         } else if(type == astTypeBinaryExpression) {
             parsedNode = new BinaryExpressionNode(fn(value[L"left"], currentBody, false), fn(value[L"right"], currentBody, false), value[L"operator"].GetString());
+        } else if(type == astTypeLogicalExpression) {
+            parsedNode = new LogicalExpressionNode(fn(value[L"left"], currentBody, false), fn(value[L"right"], currentBody, false), value[L"operator"].GetString());
         } else if(type == astTypeUpdateExpression) {
             parsedNode = new UpdateExpressionNode(fn(value[L"argument"], currentBody, false), value[L"operator"].GetString(), value[L"prefix"].GetBool());
         } else if(type == astTypeUnaryExpression) {
@@ -493,6 +496,9 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
         } else if(type == NodeType::BinaryExpression) {
             postAnalysisFunction(((BinaryExpressionNode *)currentNode)->m_right, identifierInCurrentContext, nearFunctionNode);
             postAnalysisFunction(((BinaryExpressionNode *)currentNode)->m_left, identifierInCurrentContext, nearFunctionNode);
+        } else if(type == NodeType::LogicalExpression) {
+            postAnalysisFunction(((LogicalExpressionNode *)currentNode)->m_right, identifierInCurrentContext, nearFunctionNode);
+            postAnalysisFunction(((LogicalExpressionNode *)currentNode)->m_left, identifierInCurrentContext, nearFunctionNode);
         } else if(type == NodeType::UpdateExpression) {
             postAnalysisFunction(((UpdateExpressionNode *)currentNode)->m_argument, identifierInCurrentContext, nearFunctionNode);
         } else if(type == NodeType::UnaryExpression) {
