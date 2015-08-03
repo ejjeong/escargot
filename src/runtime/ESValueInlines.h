@@ -378,7 +378,23 @@ inline double ESValue::toNumber() const
         return asInt32();
     if (isDouble())
         return asDouble();
-
+    if (isUndefined())
+        return std::numeric_limits<double>::quiet_NaN();
+    if (isNull())
+        return 0;
+    if (isBoolean())
+        return asBoolean() ?  1 : 0;
+    if (isESPointer()) {
+        ESPointer* o = asESPointer();
+        if (o->isESString())
+            return std::numeric_limits<double>::quiet_NaN();
+        else if (o->isESStringObject())
+            RELEASE_ASSERT_NOT_REACHED(); //TODO
+        else if (o->isESObject())
+            return toPrimitive().toNumber();
+        else if (o->isESDateObject())
+            return o->asESDateObject()->getTimeAsMilisec();
+    }
     RELEASE_ASSERT_NOT_REACHED();
     //return toNumberSlowCase(exec);
 }

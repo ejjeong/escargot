@@ -37,7 +37,7 @@ ESValue MemberExpressionNode::execute(ESVMInstance* instance)
                 propertyName, propertyVal);
 
         ESSlot* slot;
-        if (obj->isESArrayObject() && propertyVal.isUndefined())
+        if (obj->isESArrayObject() && propertyVal.isInt32())
             slot = obj->asESArrayObject()->find(propertyVal);
         else
             slot = obj->find(propertyName);

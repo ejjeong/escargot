@@ -45,33 +45,27 @@ bool ESValue::abstractEqualsTo(const ESValue& val)
 
 bool ESValue::equalsTo(const ESValue& val)
 {
-    RELEASE_ASSERT_NOT_REACHED();
-    /*
-    if(isSmi()) {
-        if(!val->isSmi()) return false;
-        if(toSmi() == val->toSmi()) return true;
-        return false;
-    } else {
-        HeapObject* o = toHeapObject();
-        if (!val->isHeapObject()) return false;
-        HeapObject* comp = val->toHeapObject();
-        if (o->type() != comp->type()) return false;
-        //Strict Equality Comparison: === 
-        if (o->isESNumber() && o->toESNumber()->get() == comp->toESNumber()->get())
+    if(isNumber()) {
+        return asNumber() == val.toNumber();
+    }
+    if(isBoolean())
+        return asBoolean() == val.toBoolean();
+
+    if(isESPointer()) {
+        ESPointer* o = asESPointer();
+        if (!val.isESPointer())
+            return false;
+        ESPointer* o2 = val.asESPointer();
+        if (o->type() != o2->type())
+            return false;
+        //Strict Equality Comparison: ===
+        if(o->isESString() && o->asESString()->string() == o2->asESString()->string())
             return true;
-        if (o->isESBoolean() && o->toESBoolean()->get() == comp->toESBoolean()->get())
-            return true;
-        if (o->isESString() && o->toESString()->string() == comp->toESString()->string())
+        if(o->isESStringObject() && o->asESStringObject()->getStringData()->string() == o2->asESStringObject()->getStringData()->string())
             return true;
         //TODO
-        if (o->isESFunctionObject())
-            return false;
-        if (o->isESArrayObject())
-            return false;
-        if (o->isESObject())
-            return false;
-        return false;
-    }*/
+    }
+    RELEASE_ASSERT_NOT_REACHED();
 }
 
 InternalString ESValue::toInternalString() const

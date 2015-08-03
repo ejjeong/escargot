@@ -168,17 +168,19 @@ void GlobalObject::installArray()
         int ret = 0;
         if (len == 0) ret = -1;
         else {
-            ESValue& fromIndex = instance->currentExecutionContext()->arguments()[1];
             int n = 0, k = 0;
-            if (!fromIndex.isUndefined()) {
-                n = fromIndex.asInt32();
-                if (n >= len) {
-                    ret = -1;
-                } else if (n >= 0) {
-                    k = n;
-                } else {
-                    k = len - n * (-1);
-                    if(k < 0) k = 0;
+            if(instance->currentExecutionContext()->argumentCount() >= 2) {
+                const ESValue& fromIndex = instance->currentExecutionContext()->arguments()[1];
+                if (!fromIndex.isUndefined()) {
+                    n = fromIndex.asInt32();
+                    if (n >= len) {
+                        ret = -1;
+                    } else if (n >= 0) {
+                        k = n;
+                    } else {
+                        k = len - n * (-1);
+                        if(k < 0) k = 0;
+                    }
                 }
             }
             if (ret != -1) {
@@ -186,14 +188,11 @@ void GlobalObject::installArray()
                 ESValue& searchElement = instance->currentExecutionContext()->arguments()[0];
                 while (k < len) {
                     ESValue kPresent = thisVal->get(k);
-                    RELEASE_ASSERT_NOT_REACHED();
-                    /*
                     if (searchElement.equalsTo(kPresent)) {
                         ret = k;
                         break;
                     }
                     k++;
-                    */
                 }
             }
         }
