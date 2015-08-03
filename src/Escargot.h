@@ -21,6 +21,7 @@
 #include <clocale>
 #include <cwchar>
 
+#include <time.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/time.h>

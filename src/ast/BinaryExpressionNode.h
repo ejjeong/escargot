@@ -207,11 +207,11 @@ public:
             {
                 if (lval.isInt32() && rval.isInt32())
                     ret = ESValue(lval.asInt32() < rval.asInt32());
-
-                if (lval.isNumber() && rval.isNumber())
+                else if (lval.isNumber() && rval.isNumber())
                     ret = ESValue(lval.asNumber() < rval.asNumber());
-
-                ASSERT(false);
+                else {
+                    RELEASE_ASSERT_NOT_REACHED();
+                }
                 /*
                 if (isJSString(v1) && isJSString(v2))
                     return !(asString(v2)->value(callFrame) < asString(v1)->value(callFrame));
@@ -282,11 +282,8 @@ public:
             case SignedRightShift:
             case UnsignedRightShift:
             {
-                /*
-                lval = lval->toInt32();
-                rval = rval->toInt32();
-                long long int rnum = rval->isSmi()? rval->toSmi()->value() : rval->toHeapObject()->toESNumber()->get();
-                long long int lnum = lval->isSmi()? lval->toSmi()->value() : lval->toHeapObject()->toESNumber()->get();
+                long long int rnum = rval.toInt32();
+                long long int lnum = lval.toInt32();
                 unsigned int shiftCount = ((unsigned int)rnum) & 0x1F;
                 if(oper == LeftShift)
                     lnum <<= shiftCount;
@@ -297,26 +294,14 @@ public:
                 else
                     RELEASE_ASSERT_NOT_REACHED();
 
-                if (lnum >= 40000000)
-                    ret = ESNumber::create(lnum);
-                else
-                    ret = Smi::fromInt(lnum);
-                    */
+                ret = ESValue(lnum);
                 break;
             }
             case Equals:
-            /*
-                if (lval->abstractEqualsTo(rval))
-                    ret = ESBoolean::create(true);
-                else
-                    ret = ESBoolean::create(false);
+                ret = ESValue(lval.abstractEqualsTo(rval));
                 break;
             case NotEquals:
-                if (lval->abstractEqualsTo(rval))
-                    ret = ESBoolean::create(false);
-                else
-                    ret = ESBoolean::create(true);
-                    */
+                ret = ESValue(!lval.abstractEqualsTo(rval));
                 break;
             default:
                 // TODO

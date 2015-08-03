@@ -1,8 +1,7 @@
 #ifndef ESValue_h
 #define ESValue_h
+
 #include "InternalString.h"
-#include <sys/time.h>
-#include <time.h>
 
 namespace escargot {
 

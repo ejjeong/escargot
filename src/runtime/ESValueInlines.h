@@ -423,7 +423,9 @@ inline int32_t ESValue::toInt32() const
 {
     if (isInt32())
         return asInt32();
-    ASSERT(false);
+    if (isDouble())
+        return asDouble();
+    RELEASE_ASSERT_NOT_REACHED();
     // TODO
     /*
     ESValue* ret = this->toNumber();
@@ -672,7 +674,7 @@ inline double ESValue::asDouble() const
 
 inline bool ESValue::isNumber() const
 {
-    return u.asInt64 & TagTypeNumber;
+    return u.asInt64 & DoubleEncodeOffset;
 }
 
 inline bool ESValue::isString() const
