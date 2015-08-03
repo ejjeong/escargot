@@ -37,6 +37,7 @@ enum NodeType {
     SequenceExpression,
     NewExpression,
     MemberExpression,
+    ConditionalExpression,
     CallExpression,
     VariableDeclarator,
     Identifier,

@@ -8,6 +8,8 @@
 #include "UpdateExpressionNode.h"
 #include "BlockStatementNode.h"
 #include "CallExpressionNode.h"
+#include "CatchClauseNode.h"
+#include "ConditionalExpressionNode.h"
 #include "EmptyStatementNode.h"
 #include "ExpressionNode.h"
 #include "SequenceExpressionNode.h"
@@ -32,7 +34,6 @@
 #include "ThisExpressionNode.h"
 #include "VariableDeclarationNode.h"
 #include "VariableDeclaratorNode.h"
-#include "CatchClauseNode.h"
 #include "TryStatementNode.h"
 #include "ThrowStatementNode.h"
 

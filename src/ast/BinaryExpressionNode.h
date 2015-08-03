@@ -145,6 +145,45 @@ public:
                 else
                     ret = ESValue(lval.toNumber() - rval.toNumber());
                 break;
+             case Mult: {
+                 // http://www.ecma-international.org/ecma-262/5.1/#sec-11.5.1
+                 double lvalue = lval.toNumber();
+                 double rvalue = rval.toNumber();
+                 bool islNeg = lvalue < 0;
+                 bool isrNeg = rvalue < 0;
+                 bool islZero = lvalue == 0 || lvalue == -0.0;
+                 bool isrZero = rvalue == 0 || rvalue == -0.0;
+                 bool isNeg = (islNeg != isrNeg);
+
+                 if (lvalue == std::numeric_limits<double>::quiet_NaN() || rvalue == std::numeric_limits<double>::quiet_NaN())
+                     ret = ESValue(std::numeric_limits<double>::quiet_NaN());
+                 else if ((lvalue == std::numeric_limits<double>::infinity() || lvalue == -std::numeric_limits<double>::infinity()) && isrZero) {
+                     ret = ESValue(std::numeric_limits<double>::quiet_NaN());
+                 } else if ((rvalue == std::numeric_limits<double>::infinity() || rvalue == -std::numeric_limits<double>::infinity()) && islZero) {
+                     ret = ESValue(-std::numeric_limits<double>::quiet_NaN());
+                 } else if (
+                         (lvalue == std::numeric_limits<double>::infinity() || lvalue == -std::numeric_limits<double>::infinity()) &&
+                         (rvalue == std::numeric_limits<double>::infinity() || rvalue == -std::numeric_limits<double>::infinity())) {
+                     if(islNeg && isrNeg)
+                         ret = ESValue(std::numeric_limits<double>::infinity());
+                     else if(islNeg || isrNeg)
+                         ret = ESValue(-std::numeric_limits<double>::infinity());
+                     else
+                         ret = ESValue(std::numeric_limits<double>::infinity());
+                 } else if (
+                         (lvalue == std::numeric_limits<double>::infinity() || lvalue == -std::numeric_limits<double>::infinity()) ||
+                         (rvalue == std::numeric_limits<double>::infinity() || rvalue == -std::numeric_limits<double>::infinity())) {
+                     if(islNeg && isrNeg)
+                          ret = ESValue(std::numeric_limits<double>::infinity());
+                      else if(islNeg || isrNeg)
+                          ret = ESValue(-std::numeric_limits<double>::infinity());
+                      else
+                          ret = ESValue(std::numeric_limits<double>::infinity());
+                 } else {
+                     ret = ESValue(lvalue * rvalue);
+                 }
+                 }
+                 break;
             case Div: {
                 double lvalue = lval.toNumber();
                 double rvalue = rval.toNumber();
@@ -259,6 +298,7 @@ public:
                 break;
             default:
                 // TODO
+                wprintf(L"unsupport operator is->%d\n",(int)oper);
                 RELEASE_ASSERT_NOT_REACHED();
                 break;
         }

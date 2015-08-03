@@ -134,6 +134,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
     InternalString astTypeTryStatement(L"TryStatement");
     InternalString astTypeCatchClause(L"CatchClause");
     InternalString astTypeThrowStatement(L"ThrowStatement");
+    InternalString astConditionalExpression(L"ConditionalExpression");
 
     StatementNodeVector programBody;
     std::function<Node *(rapidjson::GenericValue<rapidjson::UTF16<>>& value, StatementNodeVector* currentBody, bool shouldGenerateNewBody)> fn;
@@ -274,6 +275,8 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
                 propertiesVector.push_back((PropertyNode *)n);
             }
             parsedNode = new ObjectExpressionNode(std::move(propertiesVector));
+        } else if(type == astConditionalExpression) {
+            parsedNode = new ConditionalExpressionNode(fn(value[L"test"], currentBody, false), fn(value[L"consequent"], currentBody, false), fn(value[L"alternate"], currentBody, false));
         } else if(type == astTypeProperty) {
             PropertyNode::Kind kind = PropertyNode::Kind::Init;
             if(std::wstring(L"get") == value[L"kind"].GetString()) {
@@ -474,6 +477,10 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
                     postAnalysisFunction(p->key(), identifierInCurrentContext, nearFunctionNode);
                 }
             }
+        } else if(type == NodeType::ConditionalExpression) {
+            postAnalysisFunction(((ConditionalExpressionNode *)currentNode)->m_test, identifierInCurrentContext, nearFunctionNode);
+            postAnalysisFunction(((ConditionalExpressionNode *)currentNode)->m_consequente, identifierInCurrentContext, nearFunctionNode);
+            postAnalysisFunction(((ConditionalExpressionNode *)currentNode)->m_alternate, identifierInCurrentContext, nearFunctionNode);
         } else if(type == NodeType::Property) {
             postAnalysisFunction(((PropertyNode *)currentNode)->m_key, identifierInCurrentContext, nearFunctionNode);
             postAnalysisFunction(((PropertyNode *)currentNode)->m_value, identifierInCurrentContext, nearFunctionNode);
