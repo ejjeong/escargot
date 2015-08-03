@@ -38,8 +38,8 @@ ESValue AssignmentExpressionNode::execute(ESVMInstance* instance)
                 IdentifierNode* n = (IdentifierNode *)m_left;
                 instance->globalObject()->set(n->name(), rval);
             } else if(obj) {
-                ESValue propertyVal = instance->currentExecutionContext()->lastUsedPropertyValueInMemberExpressionNode();
                 if(obj->isESArrayObject()) {
+                    ESValue propertyVal = instance->currentExecutionContext()->lastUsedPropertyValueInMemberExpressionNode();
                     obj->asESArrayObject()->set(propertyVal, rval);
                 } else {
                     obj->set(instance->currentExecutionContext()->lastUsedPropertyNameInMemberExpressionNode(), rval);
@@ -52,7 +52,7 @@ ESValue AssignmentExpressionNode::execute(ESVMInstance* instance)
             ESObject* obj = instance->currentExecutionContext()->lastESObjectMetInMemberExpressionNode();
             if(obj) {
                 if(obj->isESArrayObject()) {
-                    obj->asESArrayObject()->set(instance->currentExecutionContext()->lastUsedPropertyNameInMemberExpressionNode(), rval);
+                    obj->asESArrayObject()->set(instance->currentExecutionContext()->lastUsedPropertyValueInMemberExpressionNode(), rval);
                 } else {
                     obj->set(instance->currentExecutionContext()->lastUsedPropertyNameInMemberExpressionNode(), rval);
                 }

@@ -607,9 +607,9 @@ public:
         }
     }
 
-    void set(ESValue* key, const ESValue& val, bool shouldThrowException = false)
+    void set(ESValue key, const ESValue& val, bool shouldThrowException = false)
     {
-        set(InternalAtomicString(key->toInternalString().data()), val, shouldThrowException);
+        set(InternalAtomicString(key.toInternalString().data()), val, shouldThrowException);
     }
 
     void defineAccessorProperty(const InternalAtomicString& key,std::function<ESValue (::escargot::ESObject* obj)> getter = nullptr,
@@ -746,7 +746,10 @@ public:
     {
         //TODO
         ESArrayObject* arr = new ESArrayObject();
-        arr->setLength(length);
+        if (length == -1)
+            arr->convertToSlowMode();
+        else
+            arr->setLength(length);
         //if(proto == NULL)
         //    proto = global->arrayPrototype();
         if(proto != NULL)
@@ -757,7 +760,6 @@ public:
     void set(const InternalAtomicString& key, ESValue val, bool shouldThrowException = false)
     {
         if (m_fastmode) convertToSlowMode();
-        m_fastmode = false;
         ESObject::set(key, val, shouldThrowException);
     }
 
@@ -782,6 +784,23 @@ public:
             m_vector[i] = escargot::ESSlot::create(val, true, true, true);
         } else {
             ESObject::set(InternalAtomicString(key.toInternalString().data()), val, shouldThrowException);
+        }
+    }
+
+    void set(int i, ESValue val, bool shouldThrowException = false)
+    {
+        int len = length().asInt32();
+        if (i == len && m_fastmode) {
+            setLength(len+1);
+        }
+        else if (i >= len) {
+            if (m_fastmode) convertToSlowMode();
+            setLength(i+1);
+        }
+        if (m_fastmode) {
+            m_vector[i] = escargot::ESSlot::create(val, true, true, true);
+        } else {
+            ESObject::set(ESValue(i), val, shouldThrowException);
         }
     }
 
@@ -826,6 +845,7 @@ public:
 
     void convertToSlowMode()
     {
+        //wprintf(L"CONVERT TO SLOW MODE!!!");
         m_fastmode = false;
         int len = length().asInt32();
         if (len == 0) return;

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-tests=("bitops-bitwise-and" "bitops-bits-in-byte" "bitops-3bit-bits-in-byte")
+tests=("bitops-bitwise-and" "bitops-bits-in-byte" "bitops-3bit-bits-in-byte" "bitops-nsieve-bits" "controlflow-recursive" "math-cordic" "math-partial-sums" "math-spectral-norm" "access-binary-trees" "access-fannkuch" "access-nbody" "access-nsieve")
 if [[ $1 == duk* ]]; then
   cmd="/home/june0cho/webTF/duktape-sunspider/duk"
   tc="duktape"
@@ -62,13 +62,18 @@ for t in "${tests[@]}"; do
   finalcmd="sleep 0.5; $cmd $filename &"
   summem=""
   echo '===================' >> $resfile
-  for j in {1..10}; do
-    MAXV='Error'
-    measure $finalcmd 2> /dev/null
-    summem=$summem$MAXV"\\n"
-    sleep 0.5s;
-  done
-  echo $(echo -e $summem | awk '{s+=$1} END {printf("Avg. MaxPSS: %.4f", s/10)}')
+  if [[ $2 == time ]]; then
+    echo 'No Measure Memory'
+  else
+    for j in {1..10}; do
+      MAXV='Error'
+      measure $finalcmd 2> /dev/null
+      summem=$summem$MAXV"\\n"
+      sleep 0.5s;
+    done
+    echo $(echo -e $summem | awk '{s+=$1} END {printf("Avg. MaxPSS: %.4f", s/10)}')
+  fi
+
   if [[ $tc == escargot || $tc == duk* ]]; then
     cat $tmpfile | grep $t | sed -e 's/://g' | sed -e 's/,//g' | awk '{s+=$2;} END {printf("Avg. Time: %.4f\n", s/10)}'
   fi

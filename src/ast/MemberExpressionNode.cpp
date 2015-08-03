@@ -28,9 +28,10 @@ ESValue MemberExpressionNode::execute(ESVMInstance* instance)
             propertyName = ((IdentifierNode*)m_property)->name();
         } else {
             ESValue tmpVal = m_property->execute(instance).ensureValue();
-            if(m_computed && obj->isESArrayObject() && tmpVal.isInt32())
+            if(m_computed && obj->isESArrayObject())
                 propertyVal = tmpVal;
-            propertyName = InternalAtomicString(tmpVal.toInternalString().data());
+            else
+                propertyName = InternalAtomicString(tmpVal.toInternalString().data());
         }
 
         instance->currentExecutionContext()->setLastESObjectMetInMemberExpressionNode(obj,
