@@ -136,6 +136,24 @@
 #define RELEASE_ASSERT(assertion) assert(assertion);
 #define RELEASE_ASSERT_NOT_REACHED() do { assert(false); } while (0)
 
+#if defined(__BYTE_ORDER) && __BYTE_ORDER == __BIG_ENDIAN || \
+    defined(__BIG_ENDIAN__) || \
+    defined(__ARMEB__) || \
+    defined(__THUMBEB__) || \
+    defined(__AARCH64EB__) || \
+    defined(_MIBSEB) || defined(__MIBSEB) || defined(__MIBSEB__)
+#define ESCARGOT_BIG_ENDIAN
+#elif defined(__BYTE_ORDER) && __BYTE_ORDER == __LITTLE_ENDIAN || \
+    defined(__LITTLE_ENDIAN__) || \
+    defined(__ARMEL__) || \
+    defined(__THUMBEL__) || \
+    defined(__AARCH64EL__) || \
+    defined(_MIPSEL) || defined(__MIPSEL) || defined(__MIPSEL__)
+#define ESCARGOT_LITTLE_ENDIAN
+#else
+#error "I don't know what architecture this is!"
+#endif
+
 #include "runtime/InternalString.h"
 #include "runtime/InternalAtomicString.h"
 #include "runtime/StaticStrings.h"

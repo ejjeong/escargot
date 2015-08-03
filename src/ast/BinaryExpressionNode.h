@@ -137,7 +137,7 @@ public:
                 break;
              case Minus:
                 // http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.2
-                if (lval.isInt32() && rval.isInt32() && !((lval.asInt32() | rval.asInt32()) & 0xc0000000)) // no overflow
+                if (lval.isInt32() && rval.isInt32()) // no overflow
                     ret = ESValue(lval.asInt32() - rval.asInt32());
                 else
                     ret = ESValue(lval.toNumber() - rval.toNumber());

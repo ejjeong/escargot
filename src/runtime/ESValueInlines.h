@@ -381,7 +381,7 @@ inline ESValue ESValue::toPrimitive(PrimitiveTypeHint preferredType) const
 
 inline double ESValue::toNumber() const
 {
-    if (isInt32())
+    if (LIKELY(isInt32()))
         return asInt32();
     if (isDouble())
         return asDouble();
@@ -426,7 +426,7 @@ inline bool ESValue::toBoolean() const
 // http://www.ecma-international.org/ecma-262/5.1/#sec-9.5
 inline int32_t ESValue::toInt32() const
 {
-    if (isInt32())
+    if (LIKELY(isInt32()))
         return asInt32();
     if (isDouble())
         return asDouble();
@@ -460,7 +460,8 @@ inline int32_t ESValue::toInt32() const
 
 inline bool ESValue::isPrimitive() const
 {
-    return isUndefined() || isNull() || isNumber() || isESString();
+    return (!isESPointer()) || isESString();
+    //return isUndefined() || isNull() || isNumber() || isESString();
 }
 
 //==============================================================================
@@ -651,7 +652,14 @@ inline ESValue::ESValue(int i)
 
 inline bool ESValue::isInt32() const
 {
-    return (u.asInt64 & TagTypeNumber) == TagTypeNumber;
+    //return (u.asInt64 & TagTypeNumber) == TagTypeNumber;
+    ASSERT(sizeof (short) == 2);
+    unsigned short* firstByte = (unsigned short *)&u.asInt64;
+#ifdef ESCARGOT_LITTLE_ENDIAN
+    return firstByte[3] == 0xffff;
+#else
+    return firstByte[0] == 0xffff;
+#endif
 }
 
 inline bool ESValue::isDouble() const
