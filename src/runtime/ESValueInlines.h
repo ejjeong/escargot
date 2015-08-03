@@ -260,6 +260,22 @@ inline ESString* ESValue::toString()
 }
 */
 
+// The fast double-to-(unsigned-)int conversion routine does not guarantee
+// rounding towards zero.
+// The result is unspecified if x is infinite or NaN, or if the rounded
+// integer value is outside the range of type int.
+inline int FastD2I(double x) {
+  return static_cast<int32_t>(x);
+}
+
+
+inline double FastI2D(int x) {
+  // There is no rounding involved in converting an integer to a
+  // double, so this code should compile to a few instructions without
+  // any FPU pipeline stalls.
+  return static_cast<double>(x);
+}
+
 inline ESValue ESValue::ensureValue()
 {
     if(isESSlot()) {
@@ -382,16 +398,16 @@ inline ESValue ESValue::toPrimitive(PrimitiveTypeHint preferredType) const
 inline double ESValue::toNumber() const
 {
     if (LIKELY(isInt32()))
-        return asInt32();
-    if (isDouble())
+        return FastI2D(asInt32());
+    else if (isDouble())
         return asDouble();
-    if (isUndefined())
+    else if (isUndefined())
         return std::numeric_limits<double>::quiet_NaN();
-    if (isNull())
+    else if (isNull())
         return 0;
-    if (isBoolean())
+    else if (isBoolean())
         return asBoolean() ?  1 : 0;
-    if (isESPointer()) {
+    else if (isESPointer()) {
         ESPointer* o = asESPointer();
         if (o->isESString())
             return std::numeric_limits<double>::quiet_NaN();
