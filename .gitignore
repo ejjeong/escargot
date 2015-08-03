@@ -7,6 +7,7 @@ input.js
 output.js
 *.o
 *.d
+*.js
 tags
 third_party/bdwgc/.deps
 third_party/bdwgc/.libs
@@ -39,3 +40,5 @@ third_party/bdwgc/tests/.deps/
 third_party/bdwgc/m4
 third_party/bdwgc/missing
 third_party/bdwgc/test-driver
+third_party/bdwgc/out/
+test/out/
