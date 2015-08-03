@@ -30,6 +30,7 @@ enum NodeType {
     ThisExpression,
     ExpressionStatement,
     ArrayExpression,
+    UnaryExpression,
     AssignmentExpression,
     BinaryExpression,
     UpdateExpression,

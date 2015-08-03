@@ -32,6 +32,7 @@
 #include "ReturnStatmentNode.h"
 #include "StatementNode.h"
 #include "ThisExpressionNode.h"
+#include "UnaryExpressionNode.h"
 #include "VariableDeclarationNode.h"
 #include "VariableDeclaratorNode.h"
 #include "TryStatementNode.h"

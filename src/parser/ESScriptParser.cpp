@@ -128,6 +128,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
     InternalString astTypeProperty(L"Property");
     InternalString astTypeBinaryExpression(L"BinaryExpression");
     InternalString astTypeUpdateExpression(L"UpdateExpression");
+    InternalString astTypeUnaryExpression(L"UnaryExpression");
     InternalString astTypeIfStatement(L"IfStatement");
     InternalString astTypeForStatement(L"ForStatement");
     InternalString astTypeWhileStatement(L"WhileStatement");
@@ -291,6 +292,8 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             parsedNode = new BinaryExpressionNode(fn(value[L"left"], currentBody, false), fn(value[L"right"], currentBody, false), value[L"operator"].GetString());
         } else if(type == astTypeUpdateExpression) {
             parsedNode = new UpdateExpressionNode(fn(value[L"argument"], currentBody, false), value[L"operator"].GetString(), value[L"prefix"].GetBool());
+        } else if(type == astTypeUnaryExpression) {
+            parsedNode = new UnaryExpressionNode(fn(value[L"argument"], currentBody, false), value[L"operator"].GetString());
         } else if(type == astTypeIfStatement) {
             parsedNode = new IfStatementNode(fn(value[L"test"], currentBody, false), fn(value[L"consequent"], currentBody, false), value[L"alternate"].IsNull()? NULL : fn(value[L"alternate"], currentBody, false));
         } else if(type == astTypeForStatement) {
@@ -492,6 +495,8 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             postAnalysisFunction(((BinaryExpressionNode *)currentNode)->m_left, identifierInCurrentContext, nearFunctionNode);
         } else if(type == NodeType::UpdateExpression) {
             postAnalysisFunction(((UpdateExpressionNode *)currentNode)->m_argument, identifierInCurrentContext, nearFunctionNode);
+        } else if(type == NodeType::UnaryExpression) {
+            postAnalysisFunction(((UnaryExpressionNode *)currentNode)->m_argument, identifierInCurrentContext, nearFunctionNode);
         } else if(type == NodeType::IfStatement) {
             postAnalysisFunction(((IfStatementNode *)currentNode)->m_test, identifierInCurrentContext, nearFunctionNode);
             postAnalysisFunction(((IfStatementNode *)currentNode)->m_consequente, identifierInCurrentContext, nearFunctionNode);

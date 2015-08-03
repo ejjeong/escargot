@@ -49,9 +49,13 @@ ESValue AssignmentExpressionNode::execute(ESVMInstance* instance)
             }
 
         } else if(lref.asESPointer() && lref.asESPointer()->isESSlot()) {
-            if(instance->currentExecutionContext()->lastESObjectMetInMemberExpressionNode()) {
-                instance->currentExecutionContext()->
-                    lastESObjectMetInMemberExpressionNode()->set(instance->currentExecutionContext()->lastUsedPropertyNameInMemberExpressionNode(), rval);
+            ESObject* obj = instance->currentExecutionContext()->lastESObjectMetInMemberExpressionNode();
+            if(obj) {
+                if(obj->isESArrayObject()) {
+                    obj->asESArrayObject()->set(instance->currentExecutionContext()->lastUsedPropertyNameInMemberExpressionNode(), rval);
+                } else {
+                    obj->set(instance->currentExecutionContext()->lastUsedPropertyNameInMemberExpressionNode(), rval);
+                }
             } else {
                 ESSlot* slot = lref.asESPointer()->asESSlot();
                 slot->setValue(rval);

@@ -36,6 +36,12 @@ public:
                 m_compoundOperator = BinaryExpressionNode::BinaryExpressionOperator::LeftShift;
             else if (oper == L"+=")
                 m_compoundOperator = BinaryExpressionNode::BinaryExpressionOperator::Plus;
+            else if (oper == L"-=")
+                m_compoundOperator = BinaryExpressionNode::BinaryExpressionOperator::Minus;
+            else if (oper == L"*=")
+                m_compoundOperator = BinaryExpressionNode::BinaryExpressionOperator::Mult;
+            else if (oper == L"/=")
+                m_compoundOperator = BinaryExpressionNode::BinaryExpressionOperator::Div;
             else //TODO
                 RELEASE_ASSERT_NOT_REACHED();
         }
