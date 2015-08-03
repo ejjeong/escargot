@@ -30,25 +30,23 @@ public:
 
     virtual ESValue execute(ESVMInstance* instance)
     {
-        /*
-        ESValue *argref = m_argument->execute(instance);
-        ESValue *argval = argref->ensureValue();
-        ESValue *ret;
+        ESValue argref = m_argument->execute(instance);
+        ESValue argval = argref.ensureValue();
+        ESValue ret;
         switch(m_operator) {
             case INCREMENT:
             {
-                argval = argval->toNumber();
                 if (!m_prefix)
                     ret = argval;
-                ESSlot* slot = argref->toHeapObject()->toESSlot();
-                if (argval->isSmi()) {
-                    slot->setValue(Smi::fromInt(argval->toSmi()->value() + 1));
+                ESSlot* slot = argref.asESPointer()->asESSlot();
+                if (argval.isInt32()) {
+                    slot->setValue(ESValue(argval.asInt32() + 1));
                 } else {
-                    double argnum = argval->toHeapObject()->toESNumber()->get();
-                    slot->setValue(ESNumber::create(argnum + 1));
+                    double argnum = argval.toNumber();
+                    slot->setValue(ESValue(argnum + 1));
                 }
                 if (m_prefix)
-                    ret = argref->ensureValue();
+                    ret = argref.ensureValue();
                 break;
             }
             case DECREMENT:
@@ -58,8 +56,6 @@ public:
                 break;
         }
         return ret;
-        */
-        return ESValue();
     }
 protected:
     ExpressionNode* m_argument;
