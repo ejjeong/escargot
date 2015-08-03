@@ -132,7 +132,10 @@ public:
                     }
                     ret = ESString::create((*lstr.string() + *rstr.string()).c_str());
                 } else {
-                    ret = ESValue(lval.toNumber() + rval.toNumber());
+                    if(lval.isInt32() && rval.isInt32())
+                        ret = ESValue(lval.asInt32() + rval.asInt32());
+                    else
+                        ret = ESValue(lval.toNumber() + rval.toNumber());
                 }
                 break;
              case Minus:
@@ -199,14 +202,24 @@ public:
 
                 // TODO http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5
                 // string, NaN, zero, infinity, ...
-                double lnum = lval.toNumber();
-                double rnum = rval.toNumber();
                 bool b;
-                if (oper == LessThan)                b = lnum < rnum;
-                else if (oper == LessThanOrEqual)    b = lnum <= rnum;
-                else if (oper == GreaterThan)        b = lnum > rnum;
-                else if (oper == GreaterThanOrEqual) b = lnum >= rnum;
-                else RELEASE_ASSERT_NOT_REACHED();
+                if(lval.isInt32() && rval.isInt32()) {
+                    int lnum = lval.asInt32();
+                    int rnum = rval.asInt32();
+                    if (oper == LessThan)                b = lnum < rnum;
+                    else if (oper == LessThanOrEqual)    b = lnum <= rnum;
+                    else if (oper == GreaterThan)        b = lnum > rnum;
+                    else if (oper == GreaterThanOrEqual) b = lnum >= rnum;
+                    else RELEASE_ASSERT_NOT_REACHED();
+                } else {
+                    double lnum = lval.toNumber();
+                    double rnum = rval.toNumber();
+                    if (oper == LessThan)                b = lnum < rnum;
+                    else if (oper == LessThanOrEqual)    b = lnum <= rnum;
+                    else if (oper == GreaterThan)        b = lnum > rnum;
+                    else if (oper == GreaterThanOrEqual) b = lnum >= rnum;
+                    else RELEASE_ASSERT_NOT_REACHED();
+                }
                 ret = ESValue(b);
                 break;
             }
