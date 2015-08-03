@@ -45,6 +45,13 @@ public:
         // http://www.ecma-international.org/ecma-262/5.1/#sec-11.10
         // Binary Bitwise operators
         BitwiseAnd, //"&"
+        BitwiseXor, //"^"
+        BitwiseOr,  //"|"
+
+        // http://www.ecma-international.org/ecma-262/5.1/#sec-11.11
+        // Binary Logical Operators
+        LogicalAnd, //"&&"
+        LogicalOr,  //"||"
         // TODO
     };
 
@@ -73,6 +80,8 @@ public:
             m_operator = Mult;
         else if (oper == L"/")
             m_operator = Div;
+        else if (oper == L"%")
+            m_operator = Mod;
 
         // Relational Operators
         else if (oper == L"<")
@@ -93,6 +102,16 @@ public:
         // Binary Bitwise Operator
         else if (oper == L"&")
             m_operator = BitwiseAnd;
+        else if (oper == L"^")
+            m_operator = BitwiseXor;
+        else if (oper == L"|")
+            m_operator = BitwiseOr;
+
+        // Binary Logical Operator
+        else if (oper == L"&&")
+            m_operator = LogicalAnd;
+        else if (oper == L"||")
+            m_operator = LogicalOr;
 
         // TODO
         else
@@ -227,8 +246,31 @@ public:
                     else
                         ret = ESValue(result);
                 }
+              }
+                break;
+            case Mod: {
+                double lvalue = lval.toNumber();
+                double rvalue = rval.toNumber();
+                // http://www.ecma-international.org/ecma-262/5.1/#sec-11.5.3
+                if (lvalue == std::numeric_limits<double>::quiet_NaN() || rvalue == std::numeric_limits<double>::quiet_NaN())
+                    ret = ESValue(std::numeric_limits<double>::quiet_NaN());
+                else if (lvalue == std::numeric_limits<double>::infinity() || lvalue == -std::numeric_limits<double>::infinity() || rvalue == 0 || rvalue == -0.0) {
+                    ret = ESValue(std::numeric_limits<double>::quiet_NaN());
+                } else {
+                    bool isNeg = lvalue < 0;
+                    bool lisZero = lvalue == 0 || lvalue == -0.0;
+                    bool risZero = rvalue == 0 || rvalue == -0.0;
+                    if (!lisZero && (rvalue == std::numeric_limits<double>::infinity() || rvalue == -std::numeric_limits<double>::infinity()))
+                        ret = ESValue(lvalue);
+                    else if (lisZero && !risZero)
+                        ret = ESValue(lvalue);
+                    else {
+                        int d = lvalue / rvalue;
+                        ret = ESValue(lvalue - (d * rvalue));
+                    }
                 }
                 break;
+            }
             case LessThan:
             case LessThanOrEqual:
             case GreaterThan:
@@ -263,14 +305,29 @@ public:
                 break;
             }
             case BitwiseAnd:
+            case BitwiseXor:
+            case BitwiseOr:
             {
                 int32_t lnum = lval.toInt32();
                 int32_t rnum = rval.toInt32();
 
                 // http://www.ecma-international.org/ecma-262/5.1/#sec-11.10
-                ret = ESValue(lnum & rnum);
+                int32_t r;
+                if (oper == BitwiseAnd)         r = lnum & rnum;
+                else if (oper == BitwiseXor)    r = lnum ^ rnum;
+                else if (oper == BitwiseOr)     r = lnum | rnum;
+                else RELEASE_ASSERT_NOT_REACHED();
+                ret = ESValue(r);
                 break;
             }
+            case LogicalAnd:
+                if (lval.toBoolean() == false) ret = lval;
+                else ret = rval;
+                break;
+            case LogicalOr:
+                if (lval.toBoolean() == true) ret = lval;
+                else ret = rval;
+                break;
             case LeftShift:
             case SignedRightShift:
             case UnsignedRightShift:
