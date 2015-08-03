@@ -2,7 +2,7 @@
 
 tests=("bitops-bitwise-and" "bitops-bits-in-byte" "bitops-3bit-bits-in-byte")
 if [[ $1 == duk* ]]; then
-  cmd="~/webTF/duktape-1.2.2/duk"
+  cmd="/home/june0cho/webTF/duktape-sunspider/duk"
   tc="duktape"
 elif [[ $1 == v8* ]]; then
   cmd="~/webTF/201504llvm/v8/out/x64.release/d8"
@@ -39,11 +39,19 @@ function measure(){
   echo $MAXV
 }
 
+tmpfile=$(pwd)
+tmpfile=$tmpfile$(echo "/test/out/time.out")
+echo '' > $tmpfile
 if [[ $tc == escargot ]]; then
-  tmpfile=$(echo "test/out/time.out")
   for j in {1..10}; do
     ./run-Sunspider.sh >> $tmpfile
   done
+elif [[ $tc == duk* ]]; then
+  cd /home/june0cho/webTF/duktape-sunspider/
+  for j in {1..10}; do
+    ./run.sh >> $tmpfile
+  done
+  cd -
 fi
 
 for t in "${tests[@]}"; do
@@ -61,7 +69,7 @@ for t in "${tests[@]}"; do
     sleep 0.5s;
   done
   echo $(echo -e $summem | awk '{s+=$1} END {printf("Avg. MaxPSS: %.4f", s/10)}')
-  if [[ $tc == escargot ]]; then
+  if [[ $tc == escargot || $tc == duk* ]]; then
     cat $tmpfile | grep $t | sed -e 's/://g' | sed -e 's/,//g' | awk '{s+=$2;} END {printf("Avg. Time: %.4f\n", s/10)}'
   fi
 done
