@@ -64,6 +64,7 @@ bool ESValue::equalsTo(const ESValue& val)
         if(o->isESStringObject() && o->asESStringObject()->getStringData()->string() == o2->asESStringObject()->getStringData()->string())
             return true;
         //TODO
+        return false;
     }
     RELEASE_ASSERT_NOT_REACHED();
 }
