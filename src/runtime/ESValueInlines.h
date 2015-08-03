@@ -636,6 +636,12 @@ inline bool ESValue::isNumber() const
     return u.asInt64 & TagTypeNumber;
 }
 
+inline bool ESValue::isString() const
+{
+    //CHECK should we consider isESStringObject in this point?
+    return isESPointer() && asESPointer()->isESString();
+}
+
 inline bool ESValue::isESPointer() const
 {
     return !(u.asInt64 & TagMask);
