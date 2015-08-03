@@ -368,6 +368,8 @@ inline double ESValue::asNumber() const
 
 inline ESValue ESValue::toPrimitive(PrimitiveTypeHint preferredType) const
 {
+    if (isPrimitive())
+        return *this;
     RELEASE_ASSERT_NOT_REACHED();
     return ESValue();
 }
@@ -416,6 +418,43 @@ inline bool ESValue::toBoolean() const
     RELEASE_ASSERT_NOT_REACHED();
 }
 
+// http://www.ecma-international.org/ecma-262/5.1/#sec-9.5
+inline int32_t ESValue::toInt32() const
+{
+    if (isInt32())
+        return asInt32();
+    ASSERT(false);
+    // TODO
+    /*
+    ESValue* ret = this->toNumber();
+    if(LIKELY(isSmi())) {
+    } else {
+        HeapObject* o = this->toHeapObject();
+        if (o->isESNumber()) {
+            double d = o->toESNumber()->get();
+            long long int posInt = d<0?-1:1 * std::floor(std::abs(d));
+            long long int int32bit = posInt % 0x100000000;
+            int res;
+            if (int32bit >= 0x80000000)
+                res = int32bit - 0x100000000;
+            else
+                res = int32bit;
+            if (res >= 0x40000000)
+                ret = ESNumber::create(res);
+            else
+                ret = Smi::fromInt(res);
+        } else {
+            ASSERT(false); // TODO
+        }
+    }
+    return ret;
+    */
+}
+
+inline bool ESValue::isPrimitive() const
+{
+    return isUndefined() || isNull() || isNumber() || isString();
+}
 
 //==============================================================================
 //===32-bit architecture========================================================

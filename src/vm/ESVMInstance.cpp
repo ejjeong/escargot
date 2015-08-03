@@ -36,8 +36,8 @@ void ESVMInstance::evaluate(const std::string& source)
         wprintf(L"ReferenceError - %ls\n", err.identifier().data());
     } catch(TypeError& err) {
         wprintf(L"TypeError\n");
-    } catch(ESValue* err) {
-        wprintf(L"Uncaught %ls\n", err->toInternalString().data());
+    } catch(const ESValue& err) {
+        wprintf(L"Uncaught %ls\n", err.toInternalString().data());
     }
 
 

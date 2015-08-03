@@ -36,7 +36,7 @@ ESValue IdentifierNode::execute(ESVMInstance* instance)
         ESFunctionObject::call(fn, receiver, &arguments[0], arguments.size(), instance);
         receiver->set(InternalAtomicString(L"message"), ESString::create(err_msg));
 
-        throw (ESValue*) receiver;
+        throw ESValue(receiver);
     }
 }
 

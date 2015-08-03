@@ -110,10 +110,14 @@ public:
         ESValue ret;
         switch(oper) {
             case Plus:
-                /*
                 // http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.1
-                lval = lval->toPrimitive();
-                rval = rval->toPrimitive();
+                lval = lval.toPrimitive();
+                rval = rval.toPrimitive();
+                if (lval.isString() || rval.isString()) {
+                } else {
+                    ret = ESValue(lval.toNumber() + rval.toNumber());
+                }
+                /*
                 if ((lval->isHeapObject() && lval->toHeapObject()->isESString())
                     || (rval->isHeapObject() && rval->toHeapObject()->isESString())) {
                     InternalString lstr;
@@ -266,18 +270,14 @@ public:
                 */
                 break;
             case BitwiseAnd:
-                /*
-                lval = lval->toInt32();
-                rval = rval->toInt32();
+            {
+                int32_t lnum = lval.toInt32();
+                int32_t rnum = rval.toInt32();
 
                 // http://www.ecma-international.org/ecma-262/5.1/#sec-11.10
-                if (lval->isSmi() && rval->isSmi()) {
-                    ret = Smi::fromInt(lval->toSmi()->value() & rval->toSmi()->value());
-                } else {
-                    // TODO
-                }
-                */
+                ret = ESValue(lnum & rnum);
                 break;
+            }
             case LeftShift:
             case SignedRightShift:
             case UnsignedRightShift:
