@@ -9,7 +9,9 @@ class UnaryExpressionNode : public ExpressionNode {
 public:
     enum Operator {
         Plus,
-        Minus
+        Minus,
+        BitwiseNot,
+        LogicalNot,
     };
     friend class ESScriptParser;
     UnaryExpressionNode(Node* argument, const InternalString& oper)
@@ -20,6 +22,10 @@ public:
             m_operator = Plus;
         } else if(oper == L"-") {
             m_operator = Minus;
+        } else if(oper == L"~") {
+            m_operator = BitwiseNot;
+        } else if(oper == L"!") {
+            m_operator = LogicalNot;
         } else {
             RELEASE_ASSERT_NOT_REACHED();
         }
@@ -34,6 +40,12 @@ public:
         } else if(m_operator == Minus) {
             //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-unary-minus-operator
             return ESValue(-m_argument->execute(instance).ensureValue().toNumber());
+        } else if(m_operator == BitwiseNot) {
+            //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-bitwise-not-operator
+            return ESValue(~m_argument->execute(instance).ensureValue().toInt32());
+        } else if(m_operator == LogicalNot) {
+            //www.ecma-international.org/ecma-262/6.0/index.html#sec-unary-minus-operator
+            return ESValue(!m_argument->execute(instance).ensureValue().toBoolean());
         } else {
             RELEASE_ASSERT_NOT_REACHED();
         }

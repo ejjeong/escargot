@@ -444,38 +444,28 @@ inline int32_t ESValue::toInt32() const
 {
     if (LIKELY(isInt32()))
         return asInt32();
-    if (isDouble())
-        return asDouble();
-    if (isBoolean()) {
-        if (asBoolean()) return 1;
-        else return 0;
-    }
-    RELEASE_ASSERT_NOT_REACHED();
-    // TODO
-    /*
-    ESValue* ret = this->toNumber();
-    if(LIKELY(isSmi())) {
-    } else {
-        HeapObject* o = this->toHeapObject();
-        if (o->isESNumber()) {
-            double d = o->toESNumber()->get();
-            long long int posInt = d<0?-1:1 * std::floor(std::abs(d));
+    else if (isDouble()) {
+        double d = asDouble();
+        if(UNLIKELY(d == std::numeric_limits<double>::quiet_NaN())) {
+            return 0;
+        } else if(UNLIKELY(d == -std::numeric_limits<double>::quiet_NaN())) {
+            return 0;
+        } else {
+            long long int posInt = d < 0 ? -1 : 1 * std::floor(std::abs(d));
             long long int int32bit = posInt % 0x100000000;
             int res;
             if (int32bit >= 0x80000000)
                 res = int32bit - 0x100000000;
             else
                 res = int32bit;
-            if (res >= 0x40000000)
-                ret = ESNumber::create(res);
-            else
-                ret = Smi::fromInt(res);
-        } else {
-            ASSERT(false); // TODO
+            return res;
         }
+    } else if (isBoolean()) {
+        if (asBoolean()) return 1;
+        else return 0;
     }
-    return ret;
-    */
+    //TODO
+    RELEASE_ASSERT_NOT_REACHED();
 }
 
 inline bool ESValue::isPrimitive() const

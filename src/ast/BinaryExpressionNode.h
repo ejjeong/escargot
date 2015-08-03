@@ -141,8 +141,18 @@ public:
                     }
                     ret = ESString::create((*lstr.string() + *rstr.string()).c_str());
                 } else {
-                    if(lval.isInt32() && rval.isInt32())
-                        ret = ESValue(lval.asInt32() + rval.asInt32());
+                    if(lval.isInt32() && rval.isInt32()) {
+                        int a = lval.asInt32(),b = rval.asInt32();
+                        if (UNLIKELY(a > 0 && b > std::numeric_limits<int32_t>::max() - a)) {
+                            //overflow
+                            ret = ESValue((double)lval.asInt32() + (double)rval.asInt32());
+                        } else if (UNLIKELY(a < 0 && b < std::numeric_limits<int32_t>::min() - a)) {
+                            //underflow
+                            ret = ESValue((double)lval.asInt32() + (double)rval.asInt32());
+                        } else {
+                            ret = ESValue(lval.asInt32() + rval.asInt32());
+                        }
+                    }
                     else
                         ret = ESValue(lval.toNumber() + rval.toNumber());
                 }
@@ -314,8 +324,8 @@ public:
             case SignedRightShift:
             case UnsignedRightShift:
             {
-                long long int rnum = rval.toInt32();
-                long long int lnum = lval.toInt32();
+                int32_t rnum = rval.toInt32();
+                int32_t lnum = lval.toInt32();
                 unsigned int shiftCount = ((unsigned int)rnum) & 0x1F;
                 if(oper == LeftShift)
                     lnum <<= shiftCount;
