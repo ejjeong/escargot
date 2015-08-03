@@ -74,7 +74,7 @@ bool ESValue::equalsTo(const ESValue& val)
     }*/
 }
 
-InternalString ESValue::toInternalString()
+InternalString ESValue::toInternalString() const
 {
     InternalString ret;
 

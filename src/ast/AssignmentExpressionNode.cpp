@@ -62,22 +62,20 @@ ESValue AssignmentExpressionNode::execute(ESVMInstance* instance)
         ret = rval;
         break;
     }
-    /*
     case CompoundAssignment:
     {
-        ESValue* lref = m_left->execute(instance);
-        ESValue* lval = lref->ensureValue();
-        ESValue* rval = m_right->execute(instance)->ensureValue();
-        ESValue* r = BinaryExpressionNode::execute(instance, lval, rval, m_compoundOperator);
+        ESValue lref = m_left->execute(instance);
+        ESValue lval = lref.ensureValue();
+        ESValue rval = m_right->execute(instance).ensureValue();
+        ESValue r = BinaryExpressionNode::execute(instance, lval, rval, m_compoundOperator);
 
         // TODO 6. Throw a SyntaxError
 
-        ESSlot* slot = lref->toHeapObject()->toESSlot();
+        ESSlot* slot = lref.asESPointer()->asESSlot();
         slot->setValue(r);
         ret = r;
         break;
     }
-    */
     default:
         RELEASE_ASSERT_NOT_REACHED();
         break;

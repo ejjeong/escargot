@@ -17,14 +17,11 @@ public:
 
     virtual ESValue execute(ESVMInstance* instance)
     {
-        /*
-        ESValue *test = m_test->execute(instance)->ensureValue();
-        while (test->isSmi()? test->toSmi()->value() : test->toHeapObject()->toESBoolean()->get()) {
+        ESValue test = m_test->execute(instance).ensureValue();
+        while (test.toBoolean()) {
             m_body->execute(instance);
-            test = m_test->execute(instance)->ensureValue();
+            test = m_test->execute(instance).ensureValue();
         }
-        return esUndefined;
-        */
         return ESValue();
     }
 

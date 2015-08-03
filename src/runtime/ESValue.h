@@ -116,7 +116,10 @@ public:
     bool isFunction() const;
     bool isUndefined() const;
     bool isNull() const;
-    bool isUndefinedOrNull() const;
+    bool isUndefinedOrNull() const
+    {
+        return isUndefined() || isNull();
+    }
     bool isBoolean() const;
     bool isMachineInt() const;
     bool isNumber() const;
@@ -131,10 +134,12 @@ public:
     enum PrimitiveTypeHint { PreferString, PreferNumber };
     ESValue toPrimitive(PrimitiveTypeHint = PreferNumber) const;
 
+
+    bool toBoolean() const;
     double toNumber() const;
     ESString asString() const;
     ESString toString() const;
-    InternalString toWTFString() const;
+    InternalString toInternalString() const;
     ESObject toObject() const;
 
     bool isESPointer() const;
@@ -186,7 +191,6 @@ public:
     ESSlot* asESSlot();
     bool abstractEqualsTo(const ESValue& val);
     bool equalsTo(const ESValue& val);
-    InternalString toInternalString();
 
     /*
     enum PrimitiveTypeHint { PreferString, PreferNumber };

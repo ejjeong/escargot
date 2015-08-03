@@ -368,21 +368,37 @@ inline double ESValue::asNumber() const
 
 inline ESValue ESValue::toPrimitive(PrimitiveTypeHint preferredType) const
 {
-    ASSERT(false); // TODO
+    RELEASE_ASSERT_NOT_REACHED();
     return ESValue();
 }
 
-ALWAYS_INLINE double ESValue::toNumber() const
+inline double ESValue::toNumber() const
 {
     if (isInt32())
         return asInt32();
     if (isDouble())
         return asDouble();
 
-    ASSERT(false); // TODO
+    RELEASE_ASSERT_NOT_REACHED();
     //return toNumberSlowCase(exec);
 }
 
+inline bool ESValue::toBoolean() const
+{
+    if (isInt32())
+        return asInt32();
+    if (isDouble())
+        return asDouble();
+    if (isUndefinedOrNull())
+        return false;
+    if (isESPointer())
+        return true;
+    if (isBoolean())
+        return asBoolean();
+
+    //TODO
+    RELEASE_ASSERT_NOT_REACHED();
+}
 
 
 //==============================================================================
