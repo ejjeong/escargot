@@ -27,6 +27,14 @@ InternalAtomicString Function;
 InternalAtomicString Empty;
 InternalAtomicString Date;
 InternalAtomicString getTime;
+InternalAtomicString Math;
+InternalAtomicString cos;
+InternalAtomicString sin;
+InternalAtomicString max;
+InternalAtomicString floor;
+InternalAtomicString pow;
+InternalAtomicString sqrt;
+
 void initStaticStrings(ESVMInstance* instance);
 };
 

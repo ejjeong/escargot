@@ -17,6 +17,7 @@ GlobalObject::GlobalObject()
     installString();
     installError();
     installDate();
+    installMath();
 
     // Value Properties of the Global Object
     definePropertyOrThrow(L"Infinity", false, false, false);
@@ -301,7 +302,7 @@ void GlobalObject::installDate()
 
     //$20.3.2 The Date Constructor
     FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings->Date, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
-        ESObject* proto = instance->globalObject()->arrayPrototype();
+        ESObject* proto = instance->globalObject()->datePrototype();
         escargot::ESDateObject* date = ESDateObject::create(proto);
         date->setTimeValue();
         instance->currentExecutionContext()->doReturn(date);
@@ -309,7 +310,6 @@ void GlobalObject::installDate()
     }), false, false);
 
       // Initialization for reference error
-    ::escargot::ESFunctionObject* emptyFunction = m_functionPrototype;
     m_date = ::escargot::ESFunctionObject::create(NULL, constructor);
     m_date->set(strings->name, ESString::create(strings->Date));
     m_date->setConstructor(m_function);
@@ -329,6 +329,151 @@ void GlobalObject::installDate()
         return ESValue();
     }), false, false);
     m_datePrototype->set(strings->getTime, ::escargot::ESFunctionObject::create(NULL, getTimeNode));
+}
+
+void GlobalObject::installMath()
+{
+    // create math object
+    FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings->Date, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+
+        return ESValue();
+    }), false, false);
+    m_math = ::escargot::ESFunctionObject::create(NULL, constructor);
+
+    // create mathPrototype object
+    m_mathPrototype = ESDateObject::create();
+
+    // initialize math object
+    m_math->set(strings->name, ESString::create(strings->Math));
+    m_math->setConstructor(m_function);
+    m_math->set(strings->prototype, m_mathPrototype);
+
+    // initialize math object: $20.2.2.12 Math.cos()
+    FunctionDeclarationNode* cosNode = new FunctionDeclarationNode(strings->cos, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        size_t arg_size = instance->currentExecutionContext()->argumentCount();
+        if (arg_size == 0) {
+            double value = std::numeric_limits<double>::quiet_NaN();
+            instance->currentExecutionContext()->doReturn(ESValue(value));
+        } else {
+            ESValue arg = instance->currentExecutionContext()->arguments()[0];
+            double value = cos(arg.toNumber());
+            if (value == (int) value) {
+                instance->currentExecutionContext()->doReturn(ESValue((int) value));
+            } else {
+                instance->currentExecutionContext()->doReturn(ESValue(value));
+              }
+         }
+        return ESValue();
+    }), false, false);
+    m_math->set(strings->cos, ::escargot::ESFunctionObject::create(NULL, cosNode));
+
+    // initialize math object: $20.2.2.16 Math.floor()
+    FunctionDeclarationNode* floorNode = new FunctionDeclarationNode(strings->floor, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        size_t arg_size = instance->currentExecutionContext()->argumentCount();
+        if (arg_size == 0) {
+            double value = std::numeric_limits<double>::quiet_NaN();
+            instance->currentExecutionContext()->doReturn(ESValue(value));
+        } else {
+            ESValue arg = instance->currentExecutionContext()->arguments()[0];
+            if (arg.isInt32()) {
+                instance->currentExecutionContext()->doReturn(arg);
+            } else if (arg.isDouble()) {
+                int value = floor(arg.asDouble());
+                instance->currentExecutionContext()->doReturn(ESValue(value));
+             }
+        }
+
+       return ESValue();
+    }), false, false);
+    m_math->set(strings->floor, ::escargot::ESFunctionObject::create(NULL, floorNode));
+
+    // initialize math object: $20.2.2.24 Math.max()
+    FunctionDeclarationNode* maxNode = new FunctionDeclarationNode(strings->max, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        size_t arg_size = instance->currentExecutionContext()->argumentCount();
+        if (arg_size == 0) {
+            double n_inf = -1 * std::numeric_limits<double>::infinity();
+            instance->currentExecutionContext()->doReturn(ESValue(n_inf));
+        } else{
+            double max_value = instance->currentExecutionContext()->arguments()[0].toNumber();
+            for (unsigned i = 1; i < arg_size; i++) {
+                double value = instance->currentExecutionContext()->arguments()[i].toNumber();
+                if (value > max_value)
+                    max_value = value;
+             }
+           if (max_value == (int) max_value) {
+               instance->currentExecutionContext()->doReturn(ESValue(max_value));
+           } else {
+               instance->currentExecutionContext()->doReturn(ESValue((int) max_value));
+            }
+         }
+        return ESValue();
+    }), false, false);
+    m_math->set(strings->max, ::escargot::ESFunctionObject::create(NULL, maxNode));
+
+    // initialize math object: $20.2.2.26 Math.pow()
+    FunctionDeclarationNode* powNode = new FunctionDeclarationNode(strings->pow, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        size_t arg_size = instance->currentExecutionContext()->argumentCount();
+        if (arg_size < 2) {
+            double value = std::numeric_limits<double>::quiet_NaN();
+            instance->currentExecutionContext()->doReturn(ESValue(value));
+        } else {
+            ESValue arg1 = instance->currentExecutionContext()->arguments()[0];
+            ESValue arg2 = instance->currentExecutionContext()->arguments()[1];
+            double value = pow(arg1.toNumber(), arg2.toNumber());
+            if (value == (int) value) {
+                instance->currentExecutionContext()->doReturn(ESValue((int) value));
+            } else {
+                instance->currentExecutionContext()->doReturn(ESValue(value));
+              }
+         }
+
+        return ESValue();
+    }), false, false);
+    m_math->set(strings->pow, ::escargot::ESFunctionObject::create(NULL, powNode));
+
+    // initialize math object: $20.2.2.30 Math.sin()
+    FunctionDeclarationNode* sinNode = new FunctionDeclarationNode(strings->sin, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        size_t arg_size = instance->currentExecutionContext()->argumentCount();
+        if (arg_size == 0) {
+            double value = std::numeric_limits<double>::quiet_NaN();
+            instance->currentExecutionContext()->doReturn(ESValue(value));
+        } else {
+            ESValue arg = instance->currentExecutionContext()->arguments()[0];
+            double value = sin(arg.toNumber());
+            if (value == (int) value) {
+                instance->currentExecutionContext()->doReturn(ESValue((int) value));
+            } else {
+                instance->currentExecutionContext()->doReturn(ESValue(value));
+              }
+         }
+        return ESValue();
+    }), false, false);
+    m_math->set(strings->sin, ::escargot::ESFunctionObject::create(NULL, sinNode));
+
+    // initialize math object: $20.2.2.32 Math.sqrt()
+    FunctionDeclarationNode* sqrtNode = new FunctionDeclarationNode(strings->sqrt, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        size_t arg_size = instance->currentExecutionContext()->argumentCount();
+        if (arg_size == 0) {
+            double value = std::numeric_limits<double>::quiet_NaN();
+            instance->currentExecutionContext()->doReturn(ESValue(value));
+        } else {
+            ESValue arg = instance->currentExecutionContext()->arguments()[0];
+            double value = sqrt(arg.toNumber());
+            if (value == (int) value) {
+                instance->currentExecutionContext()->doReturn(ESValue((int) value));
+            } else {
+                instance->currentExecutionContext()->doReturn(ESValue(value));
+              }
+         }
+        return ESValue();
+    }), false, false);
+    m_math->set(strings->sqrt, ::escargot::ESFunctionObject::create(NULL, sqrtNode));
+
+    // initialize mathPrototype object
+    m_mathPrototype->setConstructor(m_math);
+
+    // add math to global object
+    set(strings->Math, m_math);
 }
 
 

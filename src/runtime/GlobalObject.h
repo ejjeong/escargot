@@ -71,6 +71,16 @@ public:
         return m_datePrototype;
     }
 
+    ALWAYS_INLINE escargot::ESFunctionObject* math()
+    {
+        return m_math;
+    }
+
+    ALWAYS_INLINE escargot::ESDateObject* mathPrototype()
+    {
+        return m_mathPrototype;
+    }
+
 protected:
     void installObject();
     void installFunction();
@@ -78,6 +88,7 @@ protected:
     void installArray();
     void installString();
     void installDate();
+    void installMath();
     escargot::ESFunctionObject* m_object;
     escargot::ESObject* m_objectPrototype;
     escargot::ESFunctionObject* m_function;
@@ -90,6 +101,8 @@ protected:
     escargot::ESStringObject* m_stringPrototype;
     escargot::ESFunctionObject* m_date;
     escargot::ESDateObject* m_datePrototype;
+    escargot::ESFunctionObject* m_math;
+    escargot::ESDateObject* m_mathPrototype;
     //JSBuiltinsObject* m_builtins;
     //Context* m_nativeContext;
 };

@@ -40,7 +40,6 @@ void ESVMInstance::evaluate(const std::string& source)
         wprintf(L"Uncaught %ls\n", err.toInternalString().data());
     }
 
-
     /*
     //test/basic_ctx1.js
     ESValue* v = m_globalObject->get("a");

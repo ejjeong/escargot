@@ -705,11 +705,11 @@ inline bool ESValue::isNumber() const
 {
     ASSERT(sizeof (short) == 2);
     unsigned short* firstByte = (unsigned short *)&u.asInt64;
-    #ifdef ESCARGOT_LITTLE_ENDIAN
-        return firstByte[3];
-    #else
-        return firstByte[0];
-    #endif
+#ifdef ESCARGOT_LITTLE_ENDIAN
+    return firstByte[3];
+#else
+    return firstByte[0];
+#endif
 }
 
 inline bool ESValue::isESString() const
