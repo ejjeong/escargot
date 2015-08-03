@@ -113,36 +113,27 @@ public:
                 // http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.1
                 lval = lval.toPrimitive();
                 rval = rval.toPrimitive();
-                if (lval.isString() || rval.isString()) {
+                if (lval.isESString() || rval.isESString()) {
+                    InternalString lstr;
+                    InternalString rstr;
+                    if (lval.isESString())
+                        lstr = lval.asESString()->string();
+                    else {
+                        //TODO use toESString
+                        //lstr = lval.toESString().string();
+                        lstr = lval.toInternalString();
+                    }
+                    if (rval.isESString())
+                        rstr = rval.asESString()->string();
+                    else {
+                        //TODO use toESString
+                        //rstr = rval.toESString().string();
+                        rstr = rval.toInternalString();
+                    }
+                    ret = ESString::create((*lstr.string() + *rstr.string()).c_str());
                 } else {
                     ret = ESValue(lval.toNumber() + rval.toNumber());
                 }
-                /*
-                if ((lval->isHeapObject() && lval->toHeapObject()->isESString())
-                    || (rval->isHeapObject() && rval->toHeapObject()->isESString())) {
-                    InternalString lstr;
-                    InternalString rstr;
-                    if (lval->isHeapObject() && lval->toHeapObject()->isESString())
-                        lstr = lval->toHeapObject()->toESString()->string();
-                    else
-                        lstr = lval->toString()->string();
-
-                    if (rval->isHeapObject() && rval->toHeapObject()->isESString())
-                        rstr = rval->toHeapObject()->toESString()->string();
-                    else
-                        rstr = rval->toString()->string();
-
-                    ret = ESString::create((*lstr.string() + *rstr.string()).c_str());
-                } else {
-                    if (lval->isSmi() && rval->isSmi())
-                        ret = Smi::fromInt(lval->toSmi()->value() + rval->toSmi()->value());
-                    else {
-                        double lnum = lval->isSmi()? lval->toSmi()->value() : lval->toHeapObject()->toESNumber()->get();
-                        double rnum = rval->isSmi()? rval->toSmi()->value() : rval->toHeapObject()->toESNumber()->get();
-                        ret = ESNumber::create(lnum + rnum);
-                        }
-                    }
-                    */
                 break;
              case Minus:
                 // http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.2
@@ -152,123 +143,73 @@ public:
                     ret = ESValue(lval.toNumber() - rval.toNumber());
                 break;
             case Div: {
-                          /*
-                lval = lval->toNumber();
-                rval = rval->toNumber();
+                double lvalue = lval.toNumber();
+                double rvalue = rval.toNumber();
                 // http://www.ecma-international.org/ecma-262/5.1/#sec-11.5.2
-                bool islNeg = lval->isSmi()? lval->toSmi()->value() < 0 : lval->toHeapObject()->toESNumber()->isNegative();
-                bool isrNeg = rval->isSmi()? rval->toSmi()->value() < 0 : rval->toHeapObject()->toESNumber()->isNegative();
-                bool islZero = lval->isSmi()? lval->toSmi()->value() == 0 : lval->toHeapObject()->toESNumber()->isZero();
-                bool isrZero = rval->isSmi()? rval->toSmi()->value() == 0 : rval->toHeapObject()->toESNumber()->isZero();
+                bool islNeg = lvalue < 0;
+                bool isrNeg = rvalue < 0;
+                bool islZero = lvalue == 0 || lvalue == -0.0;
+                bool isrZero = rvalue == 0 || rvalue == -0.0;
                 bool isNeg = (islNeg != isrNeg);
-                if (lval == esNaN || rval == esNaN) ret = esNaN;
-                else if (lval == esInfinity || lval == esNegInfinity) {
-                    if (rval == esInfinity || rval == esNegInfinity)
-                        ret = esNaN;
+                if (lvalue == std::numeric_limits<double>::quiet_NaN() || rvalue == std::numeric_limits<double>::quiet_NaN()) ret = ESValue(std::numeric_limits<double>::quiet_NaN());
+                else if (lvalue == std::numeric_limits<double>::infinity() || lvalue == -std::numeric_limits<double>::infinity()) {
+                    if (rvalue == std::numeric_limits<double>::infinity() || rvalue == -std::numeric_limits<double>::infinity())
+                        ret = ESValue(std::numeric_limits<double>::quiet_NaN());
                     else { // if rval is zero or nonzero finite value
-                        if (isNeg) ret = esNegInfinity;
-                        else       ret = esInfinity;
+                        if (isNeg) ret = ESValue(-std::numeric_limits<double>::infinity());
+                        else       ret = ESValue(std::numeric_limits<double>::infinity());
                     }
-                } else if (rval == esInfinity || rval == esNegInfinity) {
-                    if (isNeg) ret = esMinusZero;
-                    else       ret = Smi::fromInt(0);
+                } else if (rvalue == std::numeric_limits<double>::infinity() || rvalue == -std::numeric_limits<double>::infinity()) {
+                    if (isNeg) ret = ESValue(-0.0);
+                    else       ret = ESValue(0);
                 } else if (islZero) {
-                    if (isrZero) ret = esNaN;
+                    if (isrZero) ret = ESValue(std::numeric_limits<double>::quiet_NaN());
                     else {
-                        if (isNeg) ret = esMinusZero;
-                        else       ret = Smi::fromInt(0);
+                        if (isNeg) ret = ESValue(-0.0);
+                        else       ret = ESValue(0);
                     }
                 } else if (isrZero) {
-                    if (isNeg) ret = esNegInfinity;
-                    else       ret = esInfinity;
+                    if (isNeg) ret = ESValue(-std::numeric_limits<double>::infinity());
+                    else       ret = ESValue(std::numeric_limits<double>::infinity());
                 } else {
-                    double lnum = lval->isSmi()? lval->toSmi()->value() : lval->toHeapObject()->toESNumber()->get();
-                    double rnum = rval->isSmi()? rval->toSmi()->value() : rval->toHeapObject()->toESNumber()->get();
+                    double lnum = lvalue;
+                    double rnum = rvalue;
                     double result = lnum / rnum;
 
                     if (result == std::numeric_limits<double>::infinity())
-                        ret = esInfinity;
+                        ret = ESValue(std::numeric_limits<double>::infinity());
                     else if (result == -std::numeric_limits<double>::infinity())
-                        ret = esNegInfinity;
+                        ret = ESValue(-std::numeric_limits<double>::infinity());
                     else if (result == -0.0)
-                        ret = esMinusZero;
+                        ret = ESValue(-0.0);
                     else
-                        ret = ESNumber::create(result);
+                        ret = ESValue(result);
                 }
-                      */
                 }
                 break;
             case LessThan:
-                /*
             case LessThanOrEqual:
             case GreaterThan:
             case GreaterThanOrEqual:
-            */
             {
-                if (lval.isInt32() && rval.isInt32())
-                    ret = ESValue(lval.asInt32() < rval.asInt32());
-                else if (lval.isNumber() && rval.isNumber())
-                    ret = ESValue(lval.asNumber() < rval.asNumber());
-                else {
-                    RELEASE_ASSERT_NOT_REACHED();
-                }
-                /*
-                if (isJSString(v1) && isJSString(v2))
-                    return !(asString(v2)->value(callFrame) < asString(v1)->value(callFrame));
-
-                double n1;
-                double n2;
-                ESValue p1;
-                ESValue p2;
-                bool wasNotString1;
-                bool wasNotString2;
-                if (leftFirst) {
-                    wasNotString1 = lval.getPrimitiveNumber(callFrame, n1, p1);
-                    wasNotString2 = rval.getPrimitiveNumber(callFrame, n2, p2);
-                } else {
-                    wasNotString2 = rval.getPrimitiveNumber(callFrame, n2, p2);
-                    wasNotString1 = lval.getPrimitiveNumber(callFrame, n1, p1);
-                }
-
-                if (wasNotString1 | wasNotString2)
-                    return n1 < n2;
-                return asString(p1)->value(callFrame) < asString(p2)->value(callFrame);
-                */
-            }
-            break;
-
-                      /*
-                // http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.1
-                // http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5
-                lval = lval->toPrimitive();
-                rval = rval->toPrimitive();
+                /* http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.1
+                 * http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5 */
+                lval = lval.toPrimitive();
+                rval = rval.toPrimitive();
 
                 // TODO http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5
                 // string, NaN, zero, infinity, ...
-                if (lval->isSmi() && rval->isSmi()) {
-                    int lnum = lval->toSmi()->value();
-                    int rnum = rval->toSmi()->value();
-                    bool b;
-                    if (oper == LessThan)                b = lnum < rnum;
-                    else if (oper == LessThanOrEqual)    b = lnum <= rnum;
-                    else if (oper == GreaterThan)        b = lnum > rnum;
-                    else if (oper == GreaterThanOrEqual) b = lnum >= rnum;
-                    else RELEASE_ASSERT_NOT_REACHED();
-                    ret = b ? esTrue:esFalse;
-                }
-                else {
-                    double lnum = lval->isSmi()? lval->toSmi()->value() : lval->toHeapObject()->toESNumber()->get();
-                    double rnum = rval->isSmi()? rval->toSmi()->value() : rval->toHeapObject()->toESNumber()->get();
-                    bool b;
-                    if (oper == LessThan)                b = lnum < rnum;
-                    else if (oper == LessThanOrEqual)    b = lnum <= rnum;
-                    else if (oper == GreaterThan)        b = lnum > rnum;
-                    else if (oper == GreaterThanOrEqual) b = lnum >= rnum;
-                    else RELEASE_ASSERT_NOT_REACHED();
-                    ret = b ? esTrue:esFalse;
-                }
-                */
+                double lnum = lval.toNumber();
+                double rnum = rval.toNumber();
+                bool b;
+                if (oper == LessThan)                b = lnum < rnum;
+                else if (oper == LessThanOrEqual)    b = lnum <= rnum;
+                else if (oper == GreaterThan)        b = lnum > rnum;
+                else if (oper == GreaterThanOrEqual) b = lnum >= rnum;
+                else RELEASE_ASSERT_NOT_REACHED();
+                ret = ESValue(b);
                 break;
+            }
             case BitwiseAnd:
             {
                 int32_t lnum = lval.toInt32();

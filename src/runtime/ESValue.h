@@ -122,7 +122,7 @@ public:
     bool isBoolean() const;
     bool isMachineInt() const;
     bool isNumber() const;
-    bool isString() const;
+    bool isESString() const;
     bool isSymbol() const;
     bool isPrimitive() const;
     bool isGetterSetter() const;
@@ -137,8 +137,8 @@ public:
     bool toBoolean() const;
     double toNumber() const;
     int32_t toInt32() const;
-    ESString asString() const;
-    ESString toString() const;
+    ESString* asESString() const;
+    ESString toESString() const;
     InternalString toInternalString() const;
     ESObject toObject() const;
 

@@ -370,6 +370,11 @@ inline ESValue ESValue::toPrimitive(PrimitiveTypeHint preferredType) const
 {
     if (isPrimitive())
         return *this;
+    if (isESPointer()) {
+        if(asESPointer()->isESDateObject()) {
+            return ESValue(asESPointer()->asESDateObject()->getTimeAsMilisec());
+        }
+    }
     RELEASE_ASSERT_NOT_REACHED();
     return ESValue();
 }
@@ -455,7 +460,7 @@ inline int32_t ESValue::toInt32() const
 
 inline bool ESValue::isPrimitive() const
 {
-    return isUndefined() || isNull() || isNumber() || isString();
+    return isUndefined() || isNull() || isNumber() || isESString();
 }
 
 //==============================================================================
@@ -677,10 +682,16 @@ inline bool ESValue::isNumber() const
     return u.asInt64 & DoubleEncodeOffset;
 }
 
-inline bool ESValue::isString() const
+inline bool ESValue::isESString() const
 {
     //CHECK should we consider isESStringObject in this point?
     return isESPointer() && asESPointer()->isESString();
+}
+
+inline ESString* ESValue::asESString() const
+{
+    ASSERT(isESString());
+    return asESPointer()->asESString();
 }
 
 inline bool ESValue::isESPointer() const
