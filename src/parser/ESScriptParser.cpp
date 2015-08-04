@@ -304,9 +304,9 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             Node* init_node = NULL;
             rapidjson::GenericValue<rapidjson::UTF16<>>& init_children = value[L"init"];
             if (!init_children.IsNull()) {
-                init_node = fn(value[L"init"], currentBody, false);
+                init_node = fn(init_children, currentBody, false);
              }
-            parsedNode = new ForStatementNode(NULL, fn(value[L"test"], currentBody, false), fn(value[L"update"], currentBody, false), fn(value[L"body"], currentBody, false));
+            parsedNode = new ForStatementNode(init_node, fn(value[L"test"], currentBody, false), fn(value[L"update"], currentBody, false), fn(value[L"body"], currentBody, false));
         } else if(type == astTypeWhileStatement) {
             parsedNode = new WhileStatementNode(fn(value[L"test"], currentBody, false), fn(value[L"body"], currentBody, false));
         } else if(type == astTypeThisExpression) {
@@ -314,7 +314,12 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
         } else if(type == astTypeBreakStatement) {
             parsedNode = new BreakStatmentNode();
         } else if(type == astTypeReturnStatement) {
-            parsedNode = new ReturnStatmentNode(fn(value[L"argument"], currentBody, false));
+            Node* arg_node = NULL;
+            rapidjson::GenericValue<rapidjson::UTF16<>>& arg_children = value[L"argument"];
+            if (!arg_children.IsNull()) {
+                arg_node = fn(arg_children, currentBody, false);
+             }
+            parsedNode = new ReturnStatmentNode(arg_node);
         } else if(type == astTypeEmptyStatement) {
             parsedNode = new EmptyStatementNode();
         } else if (type == astTypeTryStatement) {
