@@ -27,12 +27,12 @@ ESValue NewExpressionNode::execute(ESVMInstance* instance)
     receiver->setConstructor(fn);
     receiver->set__proto__(function->protoType());
 
-    std::vector<ESValue, gc_allocator<ESValue>> arguments;
+    ESValue* arguments = (ESValue*)alloca(sizeof(ESValue) * m_arguments.size());
     for(unsigned i = 0; i < m_arguments.size() ; i ++) {
-        arguments.push_back(m_arguments[i]->execute(instance));
+        arguments[i] = m_arguments[i]->execute(instance);
     }
 
-    ESFunctionObject::call(fn, receiver, &arguments[0], arguments.size(), instance, true);
+    ESFunctionObject::call(fn, receiver, arguments, m_arguments.size(), instance, true);
     return receiver;
 }
 
