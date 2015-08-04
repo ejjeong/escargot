@@ -373,12 +373,19 @@ protected:
     InternalString m_string;
 };
 
+
+struct ESAccessorData : public gc {
+public:
+    ESValue m_data;
+    std::function<ESValue (::escargot::ESObject* obj)> m_getter;
+    std::function<void (::escargot::ESObject* obj, const ESValue& value)> m_setter;
+};
+
 class ESSlot : public ESPointer {
 public:
     ESSlot()
         : ESPointer(Type::ESSlot)
     {
-        m_data = ESValue();
         m_isWritable = true;
         m_isEnumerable = true;
         m_isConfigurable = true;
@@ -402,13 +409,16 @@ public:
             bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
         : ESPointer(Type::ESSlot)
     {
-        m_data = ESValue((ESPointer *)object);
+        ESAccessorData* data = new ESAccessorData;
+        data->m_data = ESValue((ESPointer *)object);
+        data->m_getter = getter;
+        data->m_setter = setter;
+        m_data = ESValue((ESPointer *)data);
+
         m_isWritable = isWritable;
         m_isEnumerable = isEnumerable;
         m_isConfigurable = isConfigurable;
         m_isDataProperty = false;
-        m_getter = getter;
-        m_setter = setter;
     }
 
     friend class DeclarativeEnvironmentRecord;
@@ -429,8 +439,8 @@ public:
         if(LIKELY(m_isDataProperty)) {
             m_data = value;
         } else {
-            if(m_setter) {
-                m_setter(m_data.asESPointer()->asESObject(), value);
+            if(((ESAccessorData *)m_data.asESPointer())->m_setter) {
+                ((ESAccessorData *)m_data.asESPointer())->m_setter(((ESAccessorData *)m_data.asESPointer())->m_data.asESPointer()->asESObject(), value);
             }
         }
 
@@ -441,8 +451,8 @@ public:
         if(LIKELY(m_isDataProperty)) {
             return m_data;
         } else {
-            if(m_getter) {
-                return m_getter(m_data.asESPointer()->asESObject());
+            if(((ESAccessorData *)m_data.asESPointer())->m_getter) {
+                return ((ESAccessorData *)m_data.asESPointer())->m_getter(((ESAccessorData *)m_data.asESPointer())->m_data.asESPointer()->asESObject());
             }
             return ESValue();
         }
@@ -486,13 +496,13 @@ public:
 protected:
     ESValue m_data;
 
-    std::function<ESValue (::escargot::ESObject* obj)> m_getter;
-    std::function<void (::escargot::ESObject* obj, const ESValue& value)> m_setter;
-    //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-property-attributes
+#pragma pack(push, 1)
     bool m_isDataProperty:1;
+    //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-property-attributes
     bool m_isWritable:1;
     bool m_isEnumerable:1;
     bool m_isConfigurable:1;
+#pragma pack(pop)
 };
 
 
@@ -875,7 +885,7 @@ public:
     void push(ESValue val)
     {
         if (m_fastmode) {
-            m_vector.push_back(escargot::ESSlot(val, true, true, true));
+            m_vector.push_back(std::move(escargot::ESSlot(val, true, true, true)));
             int len = length().asInt32();
             setLength(len + 1);
         } else {

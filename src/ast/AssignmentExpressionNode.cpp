@@ -10,8 +10,6 @@ namespace escargot {
 
 ESValue AssignmentExpressionNode::execute(ESVMInstance* instance)
 {
-    ESValue ret;
-    ESSlot* slot = NULL;
     ESValue rvalue;
     switch(m_operator) {
     case SimpleAssignment:
@@ -23,9 +21,7 @@ ESValue AssignmentExpressionNode::execute(ESVMInstance* instance)
     }
     case CompoundAssignment:
     {
-        ESValue lval = m_left->execute(instance);
-        rvalue = m_right->execute(instance);
-        rvalue = BinaryExpressionNode::execute(instance, lval, rvalue, m_compoundOperator);
+        rvalue = BinaryExpressionNode::execute(instance, m_left->execute(instance), m_right->execute(instance), m_compoundOperator);
         writeValue(instance, m_left, rvalue);
         break;
     }
