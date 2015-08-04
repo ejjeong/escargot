@@ -6,20 +6,25 @@
 
 namespace escargot {
 
-ALWAYS_INLINE ESSlot* identifierNodeProcess(ESVMInstance* instance, IdentifierNode* self)
+ESValue IdentifierNode::execute(ESVMInstance* instance)
 {
-    if (LIKELY(self->m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
-        return self->m_cachedSlot;
+    return executeForWrite(instance)->value();
+}
+
+ESSlot* IdentifierNode::executeForWrite(ESVMInstance* instance)
+{
+    if (LIKELY(m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
+        return m_cachedSlot;
     } else {
         ESSlot* slot;
-        if(LIKELY(self->m_canUseFastAccess && !instance->currentExecutionContext()->needsActivation())) {
-            slot = instance->currentExecutionContext()->environment()->record()->toDeclarativeEnvironmentRecord()->getBindingValueForNonActivationMode(self->m_fastAccessIndex);
+        if(LIKELY(m_canUseFastAccess && !instance->currentExecutionContext()->needsActivation())) {
+            slot = instance->currentExecutionContext()->environment()->record()->toDeclarativeEnvironmentRecord()->getBindingValueForNonActivationMode(m_fastAccessIndex);
         }
         else
-            slot = instance->currentExecutionContext()->resolveBinding(self->name());
+            slot = instance->currentExecutionContext()->resolveBinding(name());
         if(LIKELY(slot != NULL)) {
-            self->m_cachedSlot = slot;
-            self->m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
+            m_cachedSlot = slot;
+            m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
             return slot;
         }
 
@@ -29,7 +34,7 @@ ALWAYS_INLINE ESSlot* identifierNodeProcess(ESVMInstance* instance, IdentifierNo
         receiver->set__proto__(fn);
 
         std::vector<ESValue> arguments;
-        InternalString err_msg = self->name();
+        InternalString err_msg = m_name;
         err_msg.append(InternalString(L" is not defined"));
         //arguments.push_back(String::create(err_msg));
 
@@ -38,16 +43,6 @@ ALWAYS_INLINE ESSlot* identifierNodeProcess(ESVMInstance* instance, IdentifierNo
 
         throw ESValue(receiver);
     }
-}
-
-ESValue IdentifierNode::execute(ESVMInstance* instance)
-{
-    return identifierNodeProcess(instance, this)->value();
-}
-
-ESSlot* IdentifierNode::executeForWrite(ESVMInstance* instance)
-{
-    return identifierNodeProcess(instance, this);
 }
 
 }
