@@ -88,5 +88,10 @@ clean:
 strip: $(MAKECMDGOALS)
 	strip $<
 
+run-sunspider:
+	cp mozjs test/SunSpider/; \
+	cd test/SunSpider/; \
+	./sunspider --shell=../../escargot --suite=sunspider-1.0.2
+
 .PHONY: $(MAKECMDGOALS) clean
 .DEFAULT_GOAL := escargot
