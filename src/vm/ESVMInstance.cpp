@@ -60,4 +60,19 @@ void ESVMInstance::exit()
     escargot::strings = NULL;
 }
 
+//$7.1.13 ToObject()
+ESObject* ESVMInstance::ToObject(ESValue argument) {
+    if (argument.isNumber()) {
+        ESFunctionObject* function = this->globalObject()->number();
+        ESObject* receiver = ESNumberObject::create(argument);
+        receiver->setConstructor(function);
+        receiver->set__proto__(function->protoType());
+        std::vector<ESValue, gc_allocator<ESValue>> arguments;
+        arguments.push_back(argument);
+        ESFunctionObject::call((ESValue) function, receiver, &arguments[0], arguments.size(), this);
+        return receiver;
+    }
+   return ESObject::create();
+}
+
 }

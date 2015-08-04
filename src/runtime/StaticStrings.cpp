@@ -34,6 +34,7 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     floor = InternalAtomicString(instance, L"floor");
     pow = InternalAtomicString(instance, L"pow");
     sqrt = InternalAtomicString(instance, L"sqrt");
+    toString = InternalAtomicString(instance, L"toString");
 }
 
 Strings* strings;

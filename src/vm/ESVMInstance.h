@@ -54,6 +54,19 @@ public:
             m_identifierCacheInvalidationCheckCount = 0;
         }
     }
+
+    //$7.1.13 ToObject()
+    ESObject* ToObject(ESValue argument);
+
+    ESValue thisNumberValue(ESValue value) {
+        if (value.isNumber()) {
+            return value;
+        } else if (value.isObject() && value.toObject().isESNumberObject()) {
+            return value.toObject().asESNumberObject()->numberData();
+        } else {
+          throw L"TypeError";
+         }
+    }
 protected:
     ExecutionContext* m_globalExecutionContext;
     ExecutionContext* m_currentExecutionContext;

@@ -34,6 +34,7 @@ InternalAtomicString max;
 InternalAtomicString floor;
 InternalAtomicString pow;
 InternalAtomicString sqrt;
+InternalAtomicString toString;
 
 void initStaticStrings(ESVMInstance* instance);
 };

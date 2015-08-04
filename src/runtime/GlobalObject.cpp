@@ -18,6 +18,7 @@ GlobalObject::GlobalObject()
     installError();
     installDate();
     installMath();
+    installNumber();
 
     // Value Properties of the Global Object
     definePropertyOrThrow(L"Infinity", false, false, false);
@@ -322,7 +323,6 @@ void GlobalObject::installDate()
 
     //$20.3.4.10 Date.prototype.getTime()
     FunctionDeclarationNode* getTimeNode = new FunctionDeclarationNode(strings->getTime, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
-
         ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
         double ret = thisObject->asESDateObject()->getTimeAsMilisec();
         instance->currentExecutionContext()->doReturn(ESValue(ret));
@@ -334,14 +334,14 @@ void GlobalObject::installDate()
 void GlobalObject::installMath()
 {
     // create math object
-    FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings->Date, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+    FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings->Math, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
 
         return ESValue();
     }), false, false);
     m_math = ::escargot::ESFunctionObject::create(NULL, constructor);
 
     // create mathPrototype object
-    m_mathPrototype = ESDateObject::create();
+    m_mathPrototype = ESObject::create();
 
     // initialize math object
     m_math->set(strings->name, ESString::create(strings->Math));
@@ -476,5 +476,37 @@ void GlobalObject::installMath()
     set(strings->Math, m_math);
 }
 
+void GlobalObject::installNumber()
+{
+    // create number object: $20.1.1 The Number Constructor
+    FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings->Number, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+
+        return ESValue();
+    }), false, false);
+    m_number = ::escargot::ESFunctionObject::create(NULL, constructor);
+
+    // create numberPrototype object
+    m_numberPrototype = ESNumberObject::create(ESValue(0.0));
+
+    // initialize number object
+    m_number->set(strings->name, ESString::create(strings->Number));
+    m_number->setConstructor(m_function);
+    m_number->set(strings->prototype, m_numberPrototype);
+
+    // initialize numberPrototype object
+    m_numberPrototype->setConstructor(m_number);
+
+
+    // initialize numberPrototype object: $20.1.3.6 Number.prototype.toString()
+    FunctionDeclarationNode* toStringNode = new FunctionDeclarationNode(strings->toString, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        escargot::ESNumberObject* thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESNumberObject();
+        instance->currentExecutionContext()->doReturn(ESString::create(thisVal->numberData().toInternalString()));
+        return ESValue();
+    }), false, false);
+    m_numberPrototype->set(strings->toString, ::escargot::ESFunctionObject::create(NULL, toStringNode));
+
+    // add number to global object
+    set(strings->Number, m_number);
+}
 
 }

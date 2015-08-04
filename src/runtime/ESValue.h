@@ -8,7 +8,7 @@ namespace escargot {
 class ESUndefined;
 class ESNull;
 class ESBoolean;
-class ESNumber;
+class ESNumberObject;
 class ESString;
 class ESObject;
 class ESSlot;
@@ -214,6 +214,7 @@ public:
         ESStringObject = 1 << 5,
         ESErrorObject = 1 << 6,
         ESDateObject = 1 << 7,
+        ESNumberObject = 1 << 8,
         TypeMask = 0xffff
     };
 
@@ -304,6 +305,19 @@ public:
         ASSERT(isESStringObject());
 #endif
         return reinterpret_cast<::escargot::ESStringObject *>(this);
+    }
+
+    ALWAYS_INLINE bool isESNumberObject() const
+    {
+        return m_type & Type::ESNumberObject;
+    }
+
+    ALWAYS_INLINE ::escargot::ESNumberObject* asESNumberObject()
+    {
+#ifndef NDEBUG
+        ASSERT(isESNumberObject());
+#endif
+        return reinterpret_cast<::escargot::ESNumberObject *>(this);
     }
 
     ALWAYS_INLINE bool isESErrorObject() const
@@ -958,6 +972,28 @@ public:
 
 private:
     ::escargot::ESString* m_stringData;
+};
+
+class ESNumberObject : public ESObject {
+protected:
+    ESNumberObject(ESValue value)
+        : ESObject((Type)(Type::ESObject | Type::ESNumberObject))
+    {
+        m_primitiveValue = value;
+    }
+
+public:
+    static ESNumberObject* create(ESValue value)
+    {
+        return new ESNumberObject(value);
+    }
+
+    ESValue numberData() {
+        return m_primitiveValue;
+    }
+
+private:
+    ESValue m_primitiveValue;
 };
 
 }

@@ -18,6 +18,8 @@ ESValue MemberExpressionNode::execute(ESVMInstance* instance)
         stringObject->set__proto__(instance->globalObject()->stringPrototype());
         stringObject->setConstructor(instance->globalObject()->string());
         value = stringObject;
+    } else if (value.isPrimitive()) {
+        value = instance->ToObject(value);
     }
 
     if(value.isESPointer() && value.asESPointer()->isESObject()) {
