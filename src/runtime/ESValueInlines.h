@@ -276,15 +276,6 @@ inline double FastI2D(int x) {
   return static_cast<double>(x);
 }
 
-inline ESValue ESValue::ensureValue()
-{
-    if(isESSlot()) {
-        return asESSlot()->value();
-    }
-
-    return *this;
-}
-
 //==============================================================================
 //===common architecture========================================================
 //==============================================================================

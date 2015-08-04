@@ -200,7 +200,6 @@ public:
     ESValue toInteger();
     ESString toString();
     */
-    ESValue ensureValue();
 };
 
 
