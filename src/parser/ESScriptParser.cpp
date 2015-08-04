@@ -301,7 +301,12 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
         } else if(type == astTypeIfStatement) {
             parsedNode = new IfStatementNode(fn(value[L"test"], currentBody, false), fn(value[L"consequent"], currentBody, false), value[L"alternate"].IsNull()? NULL : fn(value[L"alternate"], currentBody, false));
         } else if(type == astTypeForStatement) {
-            parsedNode = new ForStatementNode(fn(value[L"init"], currentBody, false), fn(value[L"test"], currentBody, false), fn(value[L"update"], currentBody, false), fn(value[L"body"], currentBody, false));
+            Node* init_node = NULL;
+            rapidjson::GenericValue<rapidjson::UTF16<>>& init_children = value[L"init"];
+            if (!init_children.IsNull()) {
+                init_node = fn(value[L"init"], currentBody, false);
+             }
+            parsedNode = new ForStatementNode(NULL, fn(value[L"test"], currentBody, false), fn(value[L"update"], currentBody, false), fn(value[L"body"], currentBody, false));
         } else if(type == astTypeWhileStatement) {
             parsedNode = new WhileStatementNode(fn(value[L"test"], currentBody, false), fn(value[L"body"], currentBody, false));
         } else if(type == astTypeThisExpression) {

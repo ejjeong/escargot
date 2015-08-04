@@ -9,7 +9,8 @@ namespace escargot {
 
 ESValue ForStatementNode::execute(ESVMInstance* instance)
 {
-    m_init->execute(instance);
+    if (m_init)
+        m_init->execute(instance);
     ESValue test = m_test->execute(instance);
     instance->currentExecutionContext()->breakPosition([&](){
         while (test.toBoolean()) {
