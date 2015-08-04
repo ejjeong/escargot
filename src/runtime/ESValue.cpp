@@ -22,12 +22,13 @@ ESNumber* esMinusZero = &s_nzero;
 */
 
 // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-abstract-equality-comparison
+double absTolerance = 1.0e-8;
 bool ESValue::abstractEqualsTo(const ESValue& val)
 {
     if (isInt32() && val.isInt32()) {
         return asInt32() == val.asInt32();
     } else if (isNumber() && val.isNumber()) {
-        return asNumber() == val.asNumber();
+        return fabs(asNumber() == val.asNumber()) < absTolerance;
     } else if (isUndefined() && val.isUndefined()) {
         return true;
     } else if (isNull() && val.isNull()) {
