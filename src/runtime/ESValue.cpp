@@ -222,14 +222,14 @@ ESValue functionCallerInnerProcess(ESFunctionObject* fn, ESValue receiver, ESVal
 }
 
 
-ESValue ESFunctionObject::call(ESValue callee, ESValue receiver, ESValue arguments[], size_t argumentCount, ESVMInstance* ESVMInstance)
+ESValue ESFunctionObject::call(ESValue callee, ESValue receiver, ESValue arguments[], size_t argumentCount, ESVMInstance* ESVMInstance, bool isNewExpression)
 {
     ESValue result;
     if(callee.isESPointer() && callee.asESPointer()->isESFunctionObject()) {
         ExecutionContext* currentContext = ESVMInstance->currentExecutionContext();
         ESFunctionObject* fn = callee.asESPointer()->asESFunctionObject();
         if(fn->functionAST()->needsActivation()) {
-            ESVMInstance->m_currentExecutionContext = new ExecutionContext(LexicalEnvironment::newFunctionEnvironment(fn, receiver), true, arguments, argumentCount);
+            ESVMInstance->m_currentExecutionContext = new ExecutionContext(LexicalEnvironment::newFunctionEnvironment(fn, receiver), true, isNewExpression, arguments, argumentCount);
             result = functionCallerInnerProcess(fn, receiver, arguments, argumentCount, true, ESVMInstance);
             ESVMInstance->m_currentExecutionContext = currentContext;
         } else {
@@ -241,7 +241,7 @@ ESValue ESFunctionObject::call(ESValue callee, ESValue receiver, ESValue argumen
             envRec.m_newTarget = receiver;
 
             LexicalEnvironment env(&envRec, fn->outerEnvironment());
-            ExecutionContext ec(&env, false, arguments, argumentCount);
+            ExecutionContext ec(&env, false, isNewExpression, arguments, argumentCount);
             ESVMInstance->m_currentExecutionContext = &ec;
             result = functionCallerInnerProcess(fn, receiver, arguments, argumentCount, fn->functionAST()->needsArgumentsObject(), ESVMInstance);
             ESVMInstance->m_currentExecutionContext = currentContext;

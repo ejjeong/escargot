@@ -145,15 +145,23 @@ void GlobalObject::installArray()
         int len = instance->currentExecutionContext()->argumentCount();
         int size = 0;
         if (len > 1) size = len;
-        ESObject* proto = instance->globalObject()->arrayPrototype();
-        escargot::ESArrayObject* array = ESArrayObject::create(size, proto);
-        if(len) {
+        else if(len == 1) {
             ESValue& val = instance->currentExecutionContext()->arguments()[0];
-            if (len == 1 && !val.isUndefined() && val.isInt32()) { //numberOfArgs = 1
-                array->setLength( val.asInt32() );
-            } else if (len >= 1) {      // numberOfArgs>=2 or (numberOfArgs==1 && val is not ESNumber)
+            if(val.isInt32()) {
+                size = val.toNumber();
+            }
+        }
+        ESObject* proto = instance->globalObject()->arrayPrototype();
+        escargot::ESArrayObject* array;
+        if(instance->currentExecutionContext()->isNewExpression() && instance->currentExecutionContext()->resolveThisBinding()->isESArrayObject()) {
+            array = instance->currentExecutionContext()->resolveThisBinding()->asESArrayObject();
+        } else
+            array = ESArrayObject::create(size, proto);
+        if(len > 1) {
+            ESValue& val = instance->currentExecutionContext()->arguments()[0];
+            if(!val.isInt32()) {
                 for (int idx = 0; idx < len; idx++) {
-                    array->set(ESValue(idx), val);
+                    array->set(idx, val);
                     val = instance->currentExecutionContext()->arguments()[idx + 1];
                 }
             }

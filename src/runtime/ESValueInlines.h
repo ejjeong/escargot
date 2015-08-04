@@ -311,6 +311,15 @@ inline ESValue::ESValue(double d)
     *this = ESValue(static_cast<int32_t>(d));
 }
 
+inline ESValue::ESValue(bool b)
+{
+    if(b) {
+        *this = ESValue(ESValue::ESTrueTag::ESTrue);
+    } else {
+        *this = ESValue(ESValue::ESFalseTag::ESFalse);
+    }
+}
+
 inline ESValue::ESValue(char i)
 {
     *this = ESValue(static_cast<int32_t>(i));

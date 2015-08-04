@@ -22,6 +22,7 @@ public:
     }
 
     ESValue execute(ESVMInstance* instance);
+    ESSlot* executeForWrite(ESVMInstance* instance);
 
     const InternalAtomicString& name()
     {

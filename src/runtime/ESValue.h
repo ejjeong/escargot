@@ -81,6 +81,7 @@ public:
     // Numbers
     ESValue(EncodeAsDoubleTag, double);
     explicit ESValue(double);
+    explicit ESValue(bool);
     explicit ESValue(char);
     explicit ESValue(unsigned char);
     explicit ESValue(short);
@@ -374,6 +375,17 @@ protected:
 };
 
 class ESSlot : public ESPointer {
+public:
+    ESSlot()
+        : ESPointer(Type::ESSlot)
+    {
+        m_data = ESValue();
+        m_isWritable = true;
+        m_isEnumerable = true;
+        m_isConfigurable = true;
+        m_isDataProperty = true;
+    }
+
     ESSlot(const ::escargot::ESValue& value,
             bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
         : ESPointer(Type::ESSlot)
@@ -411,20 +423,6 @@ class ESSlot : public ESPointer {
         m_isEnumerable = isEnumerable;
         m_isConfigurable = isConfigurable;
         m_isDataProperty = true;
-    }
-public:
-    static ESSlot* create(const ::escargot::ESValue& value,
-            bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
-    {
-        return new ESSlot(value, isWritable, isEnumerable, isConfigurable);
-    }
-
-    static ESSlot* create(::escargot::ESObject* object,
-            std::function<ESValue (::escargot::ESObject* obj)> getter = nullptr,
-            std::function<void (::escargot::ESObject* obj, const ESValue& value)> setter = nullptr,
-            bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
-    {
-        return new ESSlot(object, getter, setter, isWritable, isEnumerable, isConfigurable);
     }
 
     ALWAYS_INLINE void setValue(const ::escargot::ESValue& value)
@@ -499,11 +497,11 @@ protected:
 };
 
 
-typedef std::unordered_map<InternalAtomicString, ::escargot::ESSlot* ,
+typedef std::unordered_map<InternalAtomicString, ::escargot::ESSlot,
                 std::hash<InternalAtomicString>,std::equal_to<InternalAtomicString>,
-                gc_allocator<std::pair<const InternalAtomicString, ::escargot::ESSlot* > > > ESObjectMapStd;
+                gc_allocator<std::pair<const InternalAtomicString, ::escargot::ESSlot> > > ESObjectMapStd;
 
-typedef std::vector<::escargot::ESSlot* , gc_allocator<::escargot::ESSlot* > > JSVectorStd;
+typedef std::vector<::escargot::ESSlot, gc_allocator<::escargot::ESSlot> > JSVectorStd;
 
 /*
 typedef std::map<InternalString, ::escargot::ESSlot *,
@@ -542,14 +540,20 @@ protected:
         }, true, false, false);
     }
 public:
-    void definePropertyOrThrow(const InternalAtomicString& key, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true)
+
+    //DO NOT USE THIS FUNCTION
+    //NOTE rooted ESSlot has short life time.
+    escargot::ESSlot* definePropertyOrThrow(const InternalAtomicString& key, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true)
     {
         auto iter = m_map.find(key);
+
         if(iter == m_map.end()) {
-            m_map.insert(std::make_pair(key, ESSlot::create(ESValue(), isWritable, isEnumerable, isConfigurable)));
+            m_map.insert(std::make_pair(key, ::escargot::ESSlot(ESValue(), isWritable, isEnumerable, isConfigurable)));
+            iter = m_map.find(key);
         } else {
-            //TODO
         }
+
+        return &iter->second;
     }
 
     bool hasOwnProperty(const InternalAtomicString& key) {
@@ -591,19 +595,21 @@ public:
             //TODO Assert: IsPropertyKey(P) is true.
             auto iter = m_map.find(key);
             if(iter != m_map.end()) {
-                ret = iter->second->value();
+                ret = iter->second.value();
             }
             return ret;
         }
     }
 
+    //DO NOT USE THIS FUNCTION
+    //NOTE rooted ESSlot has short life time.
     ALWAYS_INLINE escargot::ESSlot* find(const InternalAtomicString& key)
     {
         auto iter = m_map.find(key);
         if(iter == m_map.end()) {
             return NULL;
         }
-        return iter->second;
+        return &iter->second;
     }
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
@@ -615,9 +621,9 @@ public:
         auto iter = m_map.find(key);
         if(iter == m_map.end()) {
             //TODO set flags
-            m_map.insert(std::make_pair(key, escargot::ESSlot::create(val, true, true, true)));
+            m_map.insert(std::make_pair(key, escargot::ESSlot(val, true, true, true)));
         } else {
-            iter->second->setValue(val);
+            iter->second.setValue(val);
         }
     }
 
@@ -634,7 +640,7 @@ public:
         if(iter != m_map.end()) {
             m_map.erase(iter);
         }
-        m_map.insert(std::make_pair(key, escargot::ESSlot::create(this, getter, setter, isWritable, isEnumerable, isConfigurable)));
+        m_map.insert(std::make_pair(key, escargot::ESSlot(this, getter, setter, isWritable, isEnumerable, isConfigurable)));
 
     }
 
@@ -653,8 +659,8 @@ public:
     {
         auto iter = m_map.begin();
         while(iter != m_map.end()) {
-            if(iter->second->isEnumerable()) {
-                t((*iter).first,(*iter).second);
+            if(iter->second.isEnumerable()) {
+                t((*iter).first,&(*iter).second);
             }
             iter++;
         }
@@ -777,7 +783,8 @@ public:
         ESObject::set(key, val, shouldThrowException);
     }
 
-    void set(ESValue key, ESValue val, bool shouldThrowException = false)
+    //DO NOT USE RETURN VALUE OF THIS FUNCTION
+    escargot::ESSlot* definePropertyOrThrow(ESValue key, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true)
     {
         int i;
         if (key.isInt32()) {
@@ -795,9 +802,9 @@ public:
                 convertToSlowMode();
         }
         if (m_fastmode) {
-            m_vector[i] = escargot::ESSlot::create(val, true, true, true);
+            return &m_vector[i];
         } else {
-            ESObject::set(InternalAtomicString(key.toInternalString().data()), val, shouldThrowException);
+            return ESObject::definePropertyOrThrow(key.toInternalString().data(), isWritable, isEnumerable, isConfigurable);
         }
     }
 
@@ -812,7 +819,7 @@ public:
             setLength(i+1);
         }
         if (m_fastmode) {
-            m_vector[i] = escargot::ESSlot::create(val, true, true, true);
+            m_vector[i] = escargot::ESSlot(val, true, true, true);
         } else {
             ESObject::set(ESValue(i), val, shouldThrowException);
         }
@@ -820,40 +827,60 @@ public:
 
     ESValue get(int key)
     {
-        if (m_fastmode)
-            return m_vector[key]->value();
+        if (m_fastmode) {
+            if(key >= 0 && key < (int)m_length.asInt32())
+                return m_vector[key].value();
+            else
+                return ESValue();
+        }
         return ESObject::get(InternalAtomicString(InternalString(key).data()));
     }
 
     ESValue get(ESValue key)
     {
-        if (m_fastmode && key.isInt32())
-            return m_vector[key.asInt32()]->value();
+        if (m_fastmode && key.isInt32()) {
+            int idx = key.asInt32();
+            if(LIKELY(idx >= 0 && idx < (int)m_length.asInt32()))
+                return m_vector[idx].value();
+            else
+                return ESValue();
+        }
         return ESObject::get(InternalAtomicString(key.toInternalString().data()));
     }
 
+    //DO NOT USE THIS FUNCTION
     escargot::ESSlot* find(int key)
     {
-        if (m_fastmode)
-            return m_vector[key];
+        if (m_fastmode) {
+            if(LIKELY(key >= 0 && key < (int)m_length.asInt32()))
+                return &m_vector[key];
+            else
+                return NULL;
+        }
         return ESObject::find(InternalAtomicString(InternalString(key).data()));
     }
 
+    //DO NOT USE THIS FUNCTION
     escargot::ESSlot* find(ESValue key)
     {
-        if (m_fastmode && key.isInt32())
-            return m_vector[key.asInt32()];
+        if (m_fastmode && key.isInt32()) {
+            int idx = key.asInt32();
+            if(LIKELY(idx >= 0 && idx < (int)m_length.asInt32()))
+                return &m_vector[idx];
+            else
+                return NULL;
+        }
         return ESObject::find(InternalAtomicString(key.toInternalString().data()));
     }
 
     void push(ESValue val)
     {
         if (m_fastmode) {
-            m_vector.push_back(escargot::ESSlot::create(val, true, true, true));
+            m_vector.push_back(escargot::ESSlot(val, true, true, true));
             int len = length().asInt32();
             setLength(len + 1);
         } else {
-            set(m_length, val);
+            set(m_length.asInt32(), val);
         }
     }
 
@@ -934,7 +961,7 @@ public:
     FunctionNode* functionAST() { return m_functionAST; }
     LexicalEnvironment* outerEnvironment() { return m_outerEnvironment; }
 
-    static ESValue call(ESValue callee, ESValue receiver, ESValue arguments[], size_t argumentCount, ESVMInstance* ESVMInstance);
+    static ESValue call(ESValue callee, ESValue receiver, ESValue arguments[], size_t argumentCount, ESVMInstance* ESVMInstance, bool isNewExpression = false);
 protected:
     LexicalEnvironment* m_outerEnvironment;
     FunctionNode* m_functionAST;

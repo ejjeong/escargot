@@ -34,8 +34,8 @@ public:
 
     virtual ESValue execute(ESVMInstance* instance)
     {
-        ESValue lval = m_left->execute(instance).ensureValue();
-        ESValue rval = m_right->execute(instance).ensureValue();
+        ESValue lval = m_left->execute(instance);
+        ESValue rval = m_right->execute(instance);
         return execute(instance, lval, rval, m_operator);
     }
 

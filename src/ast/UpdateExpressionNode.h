@@ -30,38 +30,31 @@ public:
 
     virtual ESValue execute(ESVMInstance* instance)
     {
-        ESValue argref = m_argument->execute(instance);
-        ESValue argval = argref.ensureValue();
+        ESValue argval = m_argument->execute(instance);
         ESValue ret;
+        if (!m_prefix)
+            ret = argval;
         switch(m_operator) {
             case INCREMENT:
             {
-                if (!m_prefix)
-                    ret = argval;
-                ESSlot* slot = argref.asESPointer()->asESSlot();
                 if (argval.isInt32()) {
-                    slot->setValue(ESValue(argval.asInt32() + 1));
+                    //FIXME check overflow
+                    argval = ESValue(argval.asInt32() + 1);
                 } else {
                     double argnum = argval.toNumber();
-                    slot->setValue(ESValue(argnum + 1));
+                    argval = ESValue(argnum + 1);
                 }
-                if (m_prefix)
-                    ret = argref.ensureValue();
                 break;
             }
             case DECREMENT:
             {
-                if (!m_prefix)
-                    ret = argval;
-                ESSlot* slot = argref.asESPointer()->asESSlot();
                 if (argval.isInt32()) {
-                    slot->setValue(ESValue(argval.asInt32() - 1));
+                    //FIXME check overflow
+                    argval = ESValue(argval.asInt32() - 1);
                 } else {
                     double argnum = argval.toNumber();
-                    slot->setValue(ESValue(argnum - 1));
+                    argval = ESValue(argnum - 1);
                 }
-                if (m_prefix)
-                    ret = argref.ensureValue();
                 break;
             }
             default:
@@ -69,6 +62,10 @@ public:
                 RELEASE_ASSERT_NOT_REACHED();
                 break;
         }
+
+        AssignmentExpressionNode::writeValue(instance, m_argument, argval);
+        if (m_prefix)
+            ret = argval;
         return ret;
     }
 protected:

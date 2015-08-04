@@ -18,7 +18,7 @@ public:
 
     virtual ESValue execute(ESVMInstance* instance)
     {
-        ESValue test = m_test->execute(instance).ensureValue();
+        ESValue test = m_test->execute(instance);
         if (test.toBoolean())
             return m_consequente->execute(instance);
         else

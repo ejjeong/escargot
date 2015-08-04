@@ -9,7 +9,7 @@ namespace escargot {
 
 ESValue NewExpressionNode::execute(ESVMInstance* instance)
 {
-    ESValue fn = m_callee->execute(instance).ensureValue();
+    ESValue fn = m_callee->execute(instance);
     if(!fn.isESPointer() || !fn.asESPointer()->isESFunctionObject())
         throw TypeError();
     ESFunctionObject* function = fn.asESPointer()->asESFunctionObject();
@@ -29,10 +29,10 @@ ESValue NewExpressionNode::execute(ESVMInstance* instance)
 
     std::vector<ESValue, gc_allocator<ESValue>> arguments;
     for(unsigned i = 0; i < m_arguments.size() ; i ++) {
-        arguments.push_back(m_arguments[i]->execute(instance).ensureValue());
+        arguments.push_back(m_arguments[i]->execute(instance));
     }
 
-    ESFunctionObject::call(fn, receiver, &arguments[0], arguments.size(), instance);
+    ESFunctionObject::call(fn, receiver, &arguments[0], arguments.size(), instance, true);
     return receiver;
 }
 

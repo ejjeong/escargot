@@ -36,16 +36,16 @@ public:
 
         if(m_operator == Plus) {
             //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-unary-plus-operator
-            return ESValue(m_argument->execute(instance).ensureValue().toNumber());
+            return ESValue(m_argument->execute(instance).toNumber());
         } else if(m_operator == Minus) {
             //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-unary-minus-operator
-            return ESValue(-m_argument->execute(instance).ensureValue().toNumber());
+            return ESValue(-m_argument->execute(instance).toNumber());
         } else if(m_operator == BitwiseNot) {
             //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-bitwise-not-operator
-            return ESValue(~m_argument->execute(instance).ensureValue().toInt32());
+            return ESValue(~m_argument->execute(instance).toInt32());
         } else if(m_operator == LogicalNot) {
             //www.ecma-international.org/ecma-262/6.0/index.html#sec-unary-minus-operator
-            return ESValue(!m_argument->execute(instance).ensureValue().toBoolean());
+            return ESValue(!m_argument->execute(instance).toBoolean());
         } else {
             RELEASE_ASSERT_NOT_REACHED();
         }

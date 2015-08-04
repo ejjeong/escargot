@@ -9,11 +9,11 @@ namespace escargot {
 
 ESValue WhileStatementNode::execute(ESVMInstance* instance)
 {
-    ESValue test = m_test->execute(instance).ensureValue();
+    ESValue test = m_test->execute(instance);
     instance->currentExecutionContext()->breakPosition([&](){
             while (test.toBoolean()) {
                 m_body->execute(instance);
-                test = m_test->execute(instance).ensureValue();
+                test = m_test->execute(instance);
             }
             });
     return ESValue();

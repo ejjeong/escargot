@@ -21,7 +21,7 @@ ESVMInstance::ESVMInstance()
     m_globalObject = new GlobalObject();
     LexicalEnvironment* a = new LexicalEnvironment(new GlobalEnvironmentRecord(m_globalObject), NULL);
 
-    m_globalExecutionContext = new ExecutionContext(a, true);
+    m_globalExecutionContext = new ExecutionContext(a, true, false);
     m_currentExecutionContext = m_globalExecutionContext;
 
     exit();

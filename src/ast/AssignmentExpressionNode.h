@@ -58,6 +58,7 @@ public:
     }
 
     virtual ESValue execute(ESVMInstance* instance);
+    static void writeValue(ESVMInstance* instance, Node* leftHandNode, const ESValue& rvalue);
 protected:
     Node* m_left; //left: Pattern;
     Node* m_right; //right: Expression;

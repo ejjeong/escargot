@@ -8,6 +8,11 @@ namespace escargot {
 
 ESValue IdentifierNode::execute(ESVMInstance* instance)
 {
+    return executeForWrite(instance)->value();
+}
+
+ESSlot* IdentifierNode::executeForWrite(ESVMInstance* instance)
+{
     if (LIKELY(m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
         return m_cachedSlot;
     } else {

@@ -11,7 +11,7 @@ namespace escargot {
 
 ESValue MemberExpressionNode::execute(ESVMInstance* instance)
 {
-    ESValue value = m_object->execute(instance).ensureValue();
+    ESValue value = m_object->execute(instance);
     //TODO string,number-> stringObject, numberObject;
     if(value.isESPointer() && value.asESPointer()->isESString()) {
         ESStringObject* stringObject = ESStringObject::create(value.asESPointer()->asESString()->string());
@@ -29,7 +29,7 @@ ESValue MemberExpressionNode::execute(ESVMInstance* instance)
         if(!m_computed && m_property->type() == NodeType::Identifier) {
             propertyName = ((IdentifierNode*)m_property)->name();
         } else {
-            ESValue tmpVal = m_property->execute(instance).ensureValue();
+            ESValue tmpVal = m_property->execute(instance);
             if(m_computed && obj->isESArrayObject())
                 propertyVal = tmpVal;
             else
@@ -46,14 +46,15 @@ ESValue MemberExpressionNode::execute(ESVMInstance* instance)
             slot = obj->find(propertyName);
 
         if(slot) {
-            return slot;
+            return slot->value();
         } else {
+            //FIXME this code duplicated with ESObject::get
             ESValue prototype = obj->__proto__();
             while(prototype.isESPointer() && prototype.asESPointer()->isESObject()) {
                 ::escargot::ESObject* obj = prototype.asESPointer()->asESObject();
                 ESSlot* s = obj->find(propertyName);
                 if(s)
-                    return s;
+                    return s->value();
                 prototype = obj->__proto__();
             }
         }
