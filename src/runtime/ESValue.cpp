@@ -27,20 +27,39 @@ bool ESValue::abstractEqualsTo(const ESValue& val)
     if (isInt32() && val.isInt32()) {
         return asInt32() == val.asInt32();
     } else if (isNumber() && val.isNumber()) {
-        return asNumber() == val.asNumber();
+        double a = asNumber();
+        double b = val.asNumber();
+        if (std::isnan(a) || std::isnan(b)) return false;
+        else if (a == b) return true;
+        else return false;
     } else if (isUndefined() && val.isUndefined()) {
         return true;
     } else if (isNull() && val.isNull()) {
         return true;
+    } else if (isBoolean() && val.isBoolean()) {
+        return asBoolean() == val.asBoolean();
     } else if (isESPointer() && val.isESPointer()) {
         ESPointer* o = asESPointer();
         ESPointer* comp = val.asESPointer();
         if (o->type() == comp->type())
             return equalsTo(val);
-        return false;
     } else {
-        return false;
+        if (isNull() && val.isUndefined()) return true;
+        else if (isUndefined() && val.isNull()) return true;
+        else if (isNumber() && (val.isESString() || val.isBoolean())) {
+            return asNumber() == val.toNumber();
+        }
+        else if ((isESString() || isBoolean()) && val.isNumber()) {
+            return val.asNumber() == toNumber();
+        }
+        else if ((isESString() || isNumber()) && val.isObject()) {
+            return abstractEqualsTo(val.toPrimitive());
+        }
+        else if (isObject() && (val.isESString() || val.isNumber())) {
+            return toPrimitive().abstractEqualsTo(val);
+        }
     }
+    return false;
 }
 
 bool ESValue::equalsTo(const ESValue& val)
@@ -82,7 +101,7 @@ InternalString ESValue::toInternalString() const
         ret = InternalString(asInt32());
     } else if(isNumber()) {
         double d = asNumber();
-        if (d == std::numeric_limits<double>::quiet_NaN()) ret = L"NaN";
+        if (std::isnan(d)) ret = L"NaN";
         else if (d == std::numeric_limits<double>::infinity()) ret = L"Infinity";
         else if (d== -std::numeric_limits<double>::infinity()) ret = L"-Infinity";
         else ret = InternalString(d);

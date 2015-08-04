@@ -40,7 +40,8 @@ public:
         // Equality operators
         Equals, //"=="
         NotEquals, //"!="
-        // TODO
+        StrictEquals, //"==="
+        NotStrictEquals, //"!=="
 
         // http://www.ecma-international.org/ecma-262/5.1/#sec-11.10
         // Binary Bitwise operators
@@ -94,6 +95,10 @@ public:
             m_operator = Equals;
         else if (oper == L"!=")
             m_operator = NotEquals;
+        else if (oper == L"===")
+            m_operator = StrictEquals;
+        else if (oper == L"!==")
+            m_operator = NotStrictEquals;
 
         // Binary Bitwise Operator
         else if (oper == L"&")
@@ -142,7 +147,7 @@ public:
                     ret = ESString::create((*lstr.string() + *rstr.string()).c_str());
                 } else {
                     if(lval.isInt32() && rval.isInt32()) {
-                        int a = lval.asInt32(),b = rval.asInt32();
+                        int a = lval.asInt32(), b = rval.asInt32();
                         if (UNLIKELY(a > 0 && b > std::numeric_limits<int32_t>::max() - a)) {
                             //overflow
                             ret = ESValue((double)lval.asInt32() + (double)rval.asInt32());
@@ -159,8 +164,18 @@ public:
                 break;
              case Minus:
                 // http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.2
-                if (lval.isInt32() && rval.isInt32()) // no overflow
-                    ret = ESValue(lval.asInt32() - rval.asInt32());
+                if (lval.isInt32() && rval.isInt32()) {
+                    int a = lval.asInt32(), b = rval.asInt32();
+                    if (UNLIKELY((a > 0 && b < 0 && b < a - std::numeric_limits<int32_t>::max()))) {
+                        //overflow
+                        ret = ESValue((double)lval.asInt32() - (double)rval.asInt32());
+                    } else if (UNLIKELY(a < 0 && b > 0 && b > a - std::numeric_limits<int32_t>::min())) {
+                        //underflow
+                        ret = ESValue((double)lval.asInt32() - (double)rval.asInt32());
+                    } else {
+                        ret = ESValue(lval.asInt32() - rval.asInt32());
+                    }
+                }
                 else
                     ret = ESValue(lval.toNumber() - rval.toNumber());
                 break;
@@ -168,6 +183,8 @@ public:
                  // http://www.ecma-international.org/ecma-262/5.1/#sec-11.5.1
                  double lvalue = lval.toNumber();
                  double rvalue = rval.toNumber();
+                 ret = ESValue(lvalue*rvalue);
+                 /*
                  bool islNeg = lvalue < 0;
                  bool isrNeg = rvalue < 0;
                  bool islZero = lvalue == 0 || lvalue == -0.0;
@@ -201,12 +218,15 @@ public:
                  } else {
                      ret = ESValue(lvalue * rvalue);
                  }
+                 */
                  }
                  break;
             case Div: {
                 double lvalue = lval.toNumber();
                 double rvalue = rval.toNumber();
+                ret = ESValue(lvalue/rvalue);
                 // http://www.ecma-international.org/ecma-262/5.1/#sec-11.5.2
+                /*
                 bool islNeg = lvalue < 0;
                 bool isrNeg = rvalue < 0;
                 bool islZero = lvalue == 0 || lvalue == -0.0;
@@ -246,27 +266,32 @@ public:
                     else
                         ret = ESValue(result);
                 }
+                */
               }
                 break;
             case Mod: {
-                double lvalue = lval.toNumber();
-                double rvalue = rval.toNumber();
-                // http://www.ecma-international.org/ecma-262/5.1/#sec-11.5.3
-                if (lvalue == std::numeric_limits<double>::quiet_NaN() || rvalue == std::numeric_limits<double>::quiet_NaN())
-                    ret = ESValue(std::numeric_limits<double>::quiet_NaN());
-                else if (lvalue == std::numeric_limits<double>::infinity() || lvalue == -std::numeric_limits<double>::infinity() || rvalue == 0 || rvalue == -0.0) {
-                    ret = ESValue(std::numeric_limits<double>::quiet_NaN());
+                if (lval.isInt32() && rval.isInt32()) {
+                    ret = ESValue(lval.asInt32() % rval.asInt32());
                 } else {
-                    bool isNeg = lvalue < 0;
-                    bool lisZero = lvalue == 0 || lvalue == -0.0;
-                    bool risZero = rvalue == 0 || rvalue == -0.0;
-                    if (!lisZero && (rvalue == std::numeric_limits<double>::infinity() || rvalue == -std::numeric_limits<double>::infinity()))
-                        ret = ESValue(lvalue);
-                    else if (lisZero && !risZero)
-                        ret = ESValue(lvalue);
-                    else {
-                        int d = lvalue / rvalue;
-                        ret = ESValue(lvalue - (d * rvalue));
+                    double lvalue = lval.toNumber();
+                    double rvalue = rval.toNumber();
+                    // http://www.ecma-international.org/ecma-262/5.1/#sec-11.5.3
+                    if (std::isnan(lvalue) || std::isnan(rvalue))
+                        ret = ESValue(std::numeric_limits<double>::quiet_NaN());
+                    else if (lvalue == std::numeric_limits<double>::infinity() || lvalue == -std::numeric_limits<double>::infinity() || rvalue == 0 || rvalue == -0.0) {
+                        ret = ESValue(std::numeric_limits<double>::quiet_NaN());
+                    } else {
+                        bool isNeg = lvalue < 0;
+                        bool lisZero = lvalue == 0 || lvalue == -0.0;
+                        bool risZero = rvalue == 0 || rvalue == -0.0;
+                        if (!lisZero && (rvalue == std::numeric_limits<double>::infinity() || rvalue == -std::numeric_limits<double>::infinity()))
+                            ret = ESValue(lvalue);
+                        else if (lisZero && !risZero)
+                            ret = ESValue(lvalue);
+                        else {
+                            int d = lvalue / rvalue;
+                            ret = ESValue(lvalue - (d * rvalue));
+                        }
                     }
                 }
                 break;
@@ -354,6 +379,24 @@ public:
             case NotEquals:
             {
                 bool b = !lval.abstractEqualsTo(rval);
+                if(b)
+                    ret = ESValue(ESValue::ESTrueTag::ESTrue);
+                else
+                    ret = ESValue(ESValue::ESFalseTag::ESFalse);
+                break;
+            }
+            case StrictEquals:
+            {
+                bool b = lval.equalsTo(rval);
+                if(b)
+                    ret = ESValue(ESValue::ESTrueTag::ESTrue);
+                else
+                    ret = ESValue(ESValue::ESFalseTag::ESFalse);
+                break;
+            }
+            case NotStrictEquals:
+            {
+                bool b = !lval.equalsTo(rval);
                 if(b)
                     ret = ESValue(ESValue::ESTrueTag::ESTrue);
                 else

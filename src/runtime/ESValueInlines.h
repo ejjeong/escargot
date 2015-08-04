@@ -468,6 +468,11 @@ inline int32_t ESValue::toInt32() const
     RELEASE_ASSERT_NOT_REACHED();
 }
 
+inline bool ESValue::isObject() const
+{
+    return isESPointer() && asESPointer()->isESStringObject();
+}
+
 inline bool ESValue::isPrimitive() const
 {
     return (!isESPointer()) || isESString();

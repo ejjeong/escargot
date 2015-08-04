@@ -44,10 +44,10 @@ else ifeq ($(ARCH), x86)
 endif
 
 ifeq ($(MODE), debug)
-	CXXFLAGS += -O0 -g3 -fno-omit-frame-pointer -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable
+	CXXFLAGS += -O0 -g3 -frounding-math -fsignaling-nans -fno-omit-frame-pointer -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable
 	GCLIBS = third_party/bdwgc/out/debug/.libs/libgc.a third_party/bdwgc/out/debug/.libs/libgccpp.a
 else ifeq ($(MODE), release)
-	CXXFLAGS += -O3 -g0 -DNDEBUG -fomit-frame-pointer
+	CXXFLAGS += -O3 -g0 -DNDEBUG -fomit-frame-pointer -frounding-math -fsignaling-nans
 	GCLIBS = third_party/bdwgc/out/release/.libs/libgc.a third_party/bdwgc/out/release/.libs/libgccpp.a
 else
 	$(error mode error)
