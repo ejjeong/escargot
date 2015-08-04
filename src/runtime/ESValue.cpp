@@ -28,7 +28,7 @@ bool ESValue::abstractEqualsTo(const ESValue& val)
     if (isInt32() && val.isInt32()) {
         return asInt32() == val.asInt32();
     } else if (isNumber() && val.isNumber()) {
-        return fabs(asNumber() == val.asNumber()) < absTolerance;
+        return fabs(asNumber() - val.asNumber()) < absTolerance;
     } else if (isUndefined() && val.isUndefined()) {
         return true;
     } else if (isNull() && val.isNull()) {
