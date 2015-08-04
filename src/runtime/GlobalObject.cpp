@@ -348,6 +348,28 @@ void GlobalObject::installMath()
     m_math->setConstructor(m_function);
     m_math->set(strings->prototype, m_mathPrototype);
 
+    // initialize math object: $20.2.1.6 Math.PI
+    m_math->set(strings->PI, ESValue(3.1415926535897932));
+
+    // initialize math object: $20.2.2.1 Math.abs()
+    FunctionDeclarationNode* absNode = new FunctionDeclarationNode(strings->abs, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        size_t arg_size = instance->currentExecutionContext()->argumentCount();
+        if (arg_size == 0) {
+            double value = std::numeric_limits<double>::quiet_NaN();
+            instance->currentExecutionContext()->doReturn(ESValue(value));
+        } else {
+            ESValue arg = instance->currentExecutionContext()->arguments()[0];
+            double value = abs(arg.toNumber());
+            if (value == (int) value) {
+                instance->currentExecutionContext()->doReturn(ESValue((int) value));
+            } else {
+                instance->currentExecutionContext()->doReturn(ESValue(value));
+              }
+         }
+        return ESValue();
+    }), false, false);
+    m_math->set(strings->abs, ::escargot::ESFunctionObject::create(NULL, absNode));
+
     // initialize math object: $20.2.2.12 Math.cos()
     FunctionDeclarationNode* cosNode = new FunctionDeclarationNode(strings->cos, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
@@ -430,6 +452,26 @@ void GlobalObject::installMath()
         return ESValue();
     }), false, false);
     m_math->set(strings->pow, ::escargot::ESFunctionObject::create(NULL, powNode));
+
+    // initialize math object: $20.2.2.28 Math.round()
+    FunctionDeclarationNode* roundNode = new FunctionDeclarationNode(strings->round, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        size_t arg_size = instance->currentExecutionContext()->argumentCount();
+        if (arg_size == 0) {
+            double value = std::numeric_limits<double>::quiet_NaN();
+            instance->currentExecutionContext()->doReturn(ESValue(value));
+        } else {
+            ESValue arg = instance->currentExecutionContext()->arguments()[0];
+            double value = round(arg.toNumber());
+            if (value == (int) value) {
+                instance->currentExecutionContext()->doReturn(ESValue((int) value));
+            } else {
+                instance->currentExecutionContext()->doReturn(ESValue(value));
+              }
+         }
+
+        return ESValue();
+    }), false, false);
+    m_math->set(strings->round, ::escargot::ESFunctionObject::create(NULL, roundNode));
 
     // initialize math object: $20.2.2.30 Math.sin()
     FunctionDeclarationNode* sinNode = new FunctionDeclarationNode(strings->sin, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {

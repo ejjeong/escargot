@@ -28,11 +28,14 @@ InternalAtomicString Empty;
 InternalAtomicString Date;
 InternalAtomicString getTime;
 InternalAtomicString Math;
+InternalAtomicString PI;
+InternalAtomicString abs;
 InternalAtomicString cos;
-InternalAtomicString sin;
 InternalAtomicString max;
 InternalAtomicString floor;
 InternalAtomicString pow;
+InternalAtomicString round;
+InternalAtomicString sin;
 InternalAtomicString sqrt;
 InternalAtomicString toString;
 

@@ -28,11 +28,14 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     Date = InternalAtomicString(instance, L"Date");
     getTime = InternalAtomicString(instance, L"getTime");
     Math = InternalAtomicString(instance, L"Math");
+    PI = InternalAtomicString(instance, L"PI");
+    abs = InternalAtomicString(instance, L"abs");
     cos = InternalAtomicString(instance, L"cos");
-    sin = InternalAtomicString(instance, L"sin");
     max = InternalAtomicString(instance, L"max");
     floor = InternalAtomicString(instance, L"floor");
     pow = InternalAtomicString(instance, L"pow");
+    round = InternalAtomicString(instance, L"round");
+    sin = InternalAtomicString(instance, L"sin");
     sqrt = InternalAtomicString(instance, L"sqrt");
     toString = InternalAtomicString(instance, L"toString");
 }
