@@ -11,6 +11,7 @@ namespace escargot {
 class IdentifierNode : public Node {
 public:
     friend class ESScriptParser;
+    friend ESSlot* identifierNodeProcess(ESVMInstance* instance, IdentifierNode* self);
     IdentifierNode(const InternalAtomicString& name)
             : Node(NodeType::Identifier)
     {
@@ -24,7 +25,7 @@ public:
     ESValue execute(ESVMInstance* instance);
     ESSlot* executeForWrite(ESVMInstance* instance);
 
-    const InternalAtomicString& name()
+    ALWAYS_INLINE const InternalAtomicString& name()
     {
         return m_name;
     }

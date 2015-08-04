@@ -155,6 +155,7 @@ void GlobalObject::installArray()
         escargot::ESArrayObject* array;
         if(instance->currentExecutionContext()->isNewExpression() && instance->currentExecutionContext()->resolveThisBinding()->isESArrayObject()) {
             array = instance->currentExecutionContext()->resolveThisBinding()->asESArrayObject();
+            array->setLength(size);
         } else
             array = ESArrayObject::create(size, proto);
         if(len > 1) {

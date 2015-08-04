@@ -35,17 +35,15 @@ ESValue AssignmentExpressionNode::execute(ESVMInstance* instance)
 
 void AssignmentExpressionNode::writeValue(ESVMInstance* instance, Node* leftHandNode, const ESValue& rvalue)
 {
-    ESSlot* slot = NULL;
-
     if(leftHandNode->type() == NodeType::Identifier) {
         IdentifierNode* idNode = (IdentifierNode *)leftHandNode;
         try {
-            slot = idNode->executeForWrite(instance);
+            idNode->executeForWrite(instance)->setValue(rvalue);
         } catch(ESValue& err) {
             if(err.isESPointer() && err.asESPointer()->isESObject() &&
                     (err.asESPointer()->asESObject()->constructor().asESPointer() == instance->globalObject()->referenceError())) {
                 //TODO set proper flags
-                slot = instance->globalObject()->definePropertyOrThrow(idNode->name());
+                instance->globalObject()->set(idNode->name(), rvalue);
             } else {
                 throw err;
             }
@@ -59,23 +57,11 @@ void AssignmentExpressionNode::writeValue(ESVMInstance* instance, Node* leftHand
             throw ESValue(ESString::create(L"could not assign to left hand node lastESObjectMetInMemberExpressionNode==NULL"));
         }
         if(obj->isESArrayObject()) {
-            ESValue propertyVal = instance->currentExecutionContext()->lastUsedPropertyValueInMemberExpressionNode();
-            slot = obj->asESArrayObject()->find(propertyVal);
-            if(!slot) {
-                slot = obj->asESArrayObject()->definePropertyOrThrow(propertyVal);
-            }
+            obj->asESArrayObject()->set(instance->currentExecutionContext()->lastUsedPropertyValueInMemberExpressionNode(), rvalue);
         } else {
-            slot = obj->find(instance->currentExecutionContext()->lastUsedPropertyNameInMemberExpressionNode());
-            if(!slot) {
-                slot = obj->definePropertyOrThrow(instance->currentExecutionContext()->lastUsedPropertyNameInMemberExpressionNode());
-            }
+            obj->set(instance->currentExecutionContext()->lastUsedPropertyNameInMemberExpressionNode(), rvalue);
         }
     }
-
-    if(slot) {
-        slot->setValue(rvalue);
-    } else
-        RELEASE_ASSERT_NOT_REACHED();
 }
 
 }

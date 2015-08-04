@@ -557,8 +557,7 @@ public:
         auto iter = m_map.find(key);
 
         if(iter == m_map.end()) {
-            m_map.insert(std::make_pair(key, ::escargot::ESSlot(ESValue(), isWritable, isEnumerable, isConfigurable)));
-            iter = m_map.find(key);
+            return &m_map.insert(std::make_pair(key, ::escargot::ESSlot(ESValue(), isWritable, isEnumerable, isConfigurable))).first->second;
         } else {
         }
 
@@ -600,13 +599,12 @@ public:
             }
             return ESValue();
         } else {
-            ESValue ret;
             //TODO Assert: IsPropertyKey(P) is true.
             auto iter = m_map.find(key);
             if(iter != m_map.end()) {
-                ret = iter->second.value();
+                return iter->second.value();
             }
-            return ret;
+            return ESValue();
         }
     }
 
@@ -650,7 +648,6 @@ public:
             m_map.erase(iter);
         }
         m_map.insert(std::make_pair(key, escargot::ESSlot(this, getter, setter, isWritable, isEnumerable, isConfigurable)));
-
     }
 
     bool hasKey(const InternalAtomicString& key)
@@ -814,6 +811,30 @@ public:
             return &m_vector[i];
         } else {
             return ESObject::definePropertyOrThrow(key.toInternalString().data(), isWritable, isEnumerable, isConfigurable);
+        }
+    }
+
+    void set(ESValue key, const ESValue& val, bool shouldThrowException = false)
+    {
+        int i;
+        if (key.isInt32()) {
+            i = key.asInt32();
+            int len = length().asInt32();
+            if (i == len && m_fastmode) {
+                setLength(len+1);
+            }
+            else if (i >= len) {
+                if (m_fastmode) convertToSlowMode();
+                setLength(i+1);
+            }
+        } else {
+            if (m_fastmode)
+                convertToSlowMode();
+        }
+        if (m_fastmode) {
+            m_vector[i] = escargot::ESSlot(val, true, true, true);
+        } else {
+            ESObject::set(InternalAtomicString(key.toInternalString().data()), val, shouldThrowException);
         }
     }
 
