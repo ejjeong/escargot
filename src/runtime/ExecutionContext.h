@@ -99,9 +99,10 @@ public:
     void breakPosition(const T& fn) {
         jmpbuf_wrapper newone;
         int r = setjmp(newone.m_buffer);
-        m_breakPositions.push_back(newone);
-        if (r != 1)
+        if (r != 1) {
+            m_breakPositions.push_back(newone);
             fn();
+        }
         m_breakPositions.pop_back();
     }
 
