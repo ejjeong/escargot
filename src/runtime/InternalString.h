@@ -62,7 +62,7 @@ public:
     {
         //FIXME
         wchar_t buf[512];
-        std::swprintf(buf, 511, L"%.26g", number);
+        std::swprintf(buf, 511, L"%.15lg", number);
         allocString(wcslen(buf));
         wcscpy((wchar_t *)m_string->data(), buf);
         m_string->initHash();
@@ -70,8 +70,6 @@ public:
 
     InternalString(const char* s)
     {
-        m_string = NULL;
-
         std::mbstate_t state = std::mbstate_t();
         int len = std::mbsrtowcs(NULL, &s, 0, &state);
         allocString(len);

@@ -301,7 +301,10 @@ public:
                     else if (oper == GreaterThanOrEqual) b = lnum >= rnum;
                     else RELEASE_ASSERT_NOT_REACHED();
                 }
-                ret = ESValue(b);
+                if(b)
+                    ret = ESValue(ESValue::ESTrueTag::ESTrue);
+                else
+                    ret = ESValue(ESValue::ESFalseTag::ESFalse);
                 break;
             }
             case BitwiseAnd:
@@ -340,11 +343,23 @@ public:
                 break;
             }
             case Equals:
-                ret = ESValue(lval.abstractEqualsTo(rval));
+            {
+                bool b = lval.abstractEqualsTo(rval);
+                if(b)
+                    ret = ESValue(ESValue::ESTrueTag::ESTrue);
+                else
+                    ret = ESValue(ESValue::ESFalseTag::ESFalse);
                 break;
+            }
             case NotEquals:
-                ret = ESValue(!lval.abstractEqualsTo(rval));
+            {
+                bool b = !lval.abstractEqualsTo(rval);
+                if(b)
+                    ret = ESValue(ESValue::ESTrueTag::ESTrue);
+                else
+                    ret = ESValue(ESValue::ESFalseTag::ESFalse);
                 break;
+            }
             default:
                 // TODO
                 wprintf(L"unsupport operator is->%d\n",(int)oper);
