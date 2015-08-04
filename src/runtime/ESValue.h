@@ -138,7 +138,7 @@ public:
     double toNumber() const;
     int32_t toInt32() const;
     ESString* asESString() const;
-    ESString toESString() const;
+    ESString* toESString() const;
     InternalString toInternalString() const;
     ESObject toObject() const;
 
@@ -956,7 +956,7 @@ protected:
         //$21.1.4.1 String.length
         defineAccessorProperty(strings->length, [](ESObject* self) -> ESValue {
             return self->asESStringObject()->m_stringData->length();
-        }, NULL, true, false, false);
+        }, NULL, false, true, false);
     }
 
 public:
@@ -965,9 +965,19 @@ public:
         return new ESStringObject(str);
     }
 
+    static ESStringObject* create()
+    {
+        return new ESStringObject("");
+    }
+
     ALWAYS_INLINE ::escargot::ESString* getStringData()
     {
         return m_stringData;
+    }
+
+    void setString(::escargot::ESString* str)
+    {
+        m_stringData = str;
     }
 
 private:

@@ -231,8 +231,24 @@ void GlobalObject::installArray()
 
 void GlobalObject::installString()
 {
-    m_string = ESFunctionObject::create(NULL, new FunctionDeclarationNode(strings->String, InternalAtomicStringVector(), new EmptyStatementNode(), false, false));
-    //m_string->set(strings->constructor, m_function); TODO do i need this?
+    FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings->String, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+        if (thisObject->isESStringObject()) {
+            // called as constructor
+            escargot::ESStringObject* stringObject = thisObject->asESStringObject();
+            ESValue value = instance->currentExecutionContext()->arguments()[0];
+            stringObject->setString(value.toESString());
+            instance->currentExecutionContext()->doReturn(stringObject);
+        } else {
+            // called as function
+            ESValue value = instance->currentExecutionContext()->arguments()[0];
+            instance->currentExecutionContext()->doReturn(ESValue(ESString::create(value.toESString()->string())));
+        }
+        return ESValue();
+    }), false, false);
+
+
+    m_string = ESFunctionObject::create(NULL, constructor);
     m_string->set(strings->name, ESString::create(strings->String));
     m_string->setConstructor(m_function);
 

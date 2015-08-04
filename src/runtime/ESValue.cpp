@@ -69,6 +69,11 @@ bool ESValue::equalsTo(const ESValue& val)
     RELEASE_ASSERT_NOT_REACHED();
 }
 
+ESString* ESValue::toESString() const
+{
+    return ESString::create(toInternalString());
+}
+
 InternalString ESValue::toInternalString() const
 {
     InternalString ret;
@@ -111,24 +116,28 @@ InternalString ESValue::toInternalString() const
                 isFirst = false;
               }
             ret.append(L"]");
-        } else if(o->isESStringObject()) {
-            ret.append(o->asESStringObject()->getStringData()->string());
         } else if(o->isESErrorObject()) {
             ret.append(o->asESObject()->get(L"name", true).toInternalString().data());
             ret.append(L": ");
             ret.append(o->asESObject()->get(L"message").toInternalString().data());
         } else if(o->isESObject()) {
-          ret = L"Object {";
-          bool isFirst = true;
-          o->asESObject()->enumeration([&ret, &isFirst](const InternalString& key, ESSlot* slot) {
-              if(!isFirst)
-                  ret.append(L", ");
-              ret.append(key);
-              ret.append(L": ");
-              ret.append(slot->value().toInternalString());
-              isFirst = false;
-          });
-          ret.append(L"}");
+            ret.append(o->asESObject()->constructor().asESPointer()->asESObject()->get(L"name", true).toInternalString().data());
+            ret.append(L" {");
+            bool isFirst = true;
+            o->asESObject()->enumeration([&ret, &isFirst](const InternalString& key, ESSlot* slot) {
+                    if(!isFirst)
+                    ret.append(L", ");
+                    ret.append(key);
+                    ret.append(L": ");
+                    ret.append(slot->value().toInternalString());
+                    isFirst = false;
+                    });
+            if(o->isESStringObject()) {
+                ret.append(L", [[PrimitiveValue]]: \"");
+                ret.append(o->asESStringObject()->getStringData()->string());
+                ret.append(L"\"");
+            }
+            ret.append(L"}");
         } else {
             RELEASE_ASSERT_NOT_REACHED();
         }

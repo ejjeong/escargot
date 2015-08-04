@@ -19,6 +19,8 @@ ESValue NewExpressionNode::execute(ESVMInstance* instance)
         receiver->asESDateObject()->setTimeValue();
     } else if (function == instance->globalObject()->array()) {
         receiver = ESArrayObject::create();
+    } else if (function == instance->globalObject()->string()) {
+        receiver = ESStringObject::create();
     } else {
         receiver = ESObject::create();
     }
