@@ -27,6 +27,7 @@
 #include <sys/time.h>
 #include <signal.h>
 
+#define RAPIDJSON_PARSE_DEFAULT_FLAGS kParseFullPrecisionFlag
 #include <rapidjson/document.h>
 #include <rapidjson/filereadstream.h>
 #include <rapidjson/memorystream.h>

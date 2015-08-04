@@ -19,6 +19,7 @@ ESValue AssignmentExpressionNode::execute(ESVMInstance* instance)
         ESValue rval = m_right->execute(instance).ensureValue();
         instance->currentExecutionContext()->resetLastESObjectMetInMemberExpressionNode();
         ESValue lref;
+
         try {
             lref = m_left->execute(instance);
         } catch(ReferenceError& err) {
