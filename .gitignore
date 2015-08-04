@@ -42,3 +42,4 @@ third_party/bdwgc/missing
 third_party/bdwgc/test-driver
 third_party/bdwgc/out/
 test/out/
+memps

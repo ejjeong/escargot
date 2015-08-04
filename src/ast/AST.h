@@ -11,6 +11,7 @@
 #include "CallExpressionNode.h"
 #include "CatchClauseNode.h"
 #include "ConditionalExpressionNode.h"
+#include "ContinueStatementNode.h"
 #include "EmptyStatementNode.h"
 #include "ExpressionNode.h"
 #include "SequenceExpressionNode.h"

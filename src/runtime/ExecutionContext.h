@@ -74,8 +74,23 @@ public:
         longjmp(m_breakPositions.back().m_buffer, 1);
     }
 
+    void doContinue()
+    {
+        longjmp(m_continuePositions.back().m_buffer, 1);
+    }
+
+    void pushContinuePosition(jmpbuf_wrapper& pos)
+    {
+        m_continuePositions.push_back(pos);
+    }
+
+    void popContinuePosition()
+    {
+        m_continuePositions.pop_back();
+    }
+
     template <typename T>
-    void breakPosition(const T& fn) {
+    void setJumpPositionAndExecute(const T& fn) {
         jmpbuf_wrapper newone;
         int r = setjmp(newone.m_buffer);
         if (r != 1) {
@@ -109,6 +124,7 @@ private:
     ESValue m_returnValue;
     std::jmp_buf m_returnPosition;
     std::vector<jmpbuf_wrapper> m_breakPositions;
+    std::vector<jmpbuf_wrapper> m_continuePositions;
 };
 
 }

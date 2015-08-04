@@ -115,6 +115,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
     InternalString astTypeAssignmentExpression(L"AssignmentExpression");
     InternalString astTypeThisExpression(L"ThisExpression");
     InternalString astTypeBreakStatement(L"BreakStatement");
+    InternalString astTypeContinueStatement(L"ContinueStatement");
     InternalString astTypeReturnStatement(L"ReturnStatement");
     InternalString astTypeEmptyStatement(L"EmptyStatement");
     InternalString astTypeLiteral(L"Literal");
@@ -312,7 +313,9 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
         } else if(type == astTypeThisExpression) {
             parsedNode = new ThisExpressionNode();
         } else if(type == astTypeBreakStatement) {
-            parsedNode = new BreakStatmentNode();
+            parsedNode = new BreakStatementNode();
+        } else if(type == astTypeContinueStatement) {
+            parsedNode = new ContinueStatementNode();
         } else if(type == astTypeReturnStatement) {
             Node* arg_node = NULL;
             rapidjson::GenericValue<rapidjson::UTF16<>>& arg_children = value[L"argument"];
@@ -531,6 +534,8 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
         } else if(type == NodeType::ThisExpression) {
 
         } else if(type == NodeType::BreakStatement) {
+
+        } else if(type == NodeType::ContinueStatement) {
 
         } else if(type == NodeType::ReturnStatement) {
             postAnalysisFunction(((ReturnStatmentNode *)currentNode)->m_argument, identifierInCurrentContext, nearFunctionNode);

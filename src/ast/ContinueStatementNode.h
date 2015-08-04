@@ -1,14 +1,14 @@
-#ifndef BreakStatmentNode_h
-#define BreakStatmentNode_h
+#ifndef ContinueStatmentNode_h
+#define ContinueStatmentNode_h
 
 #include "StatementNode.h"
 
 namespace escargot {
 
-class BreakStatementNode : public StatementNode {
+class ContinueStatementNode : public StatementNode {
 public:
     friend class ESScriptParser;
-    BreakStatementNode()
+    ContinueStatementNode()
             : StatementNode(NodeType::ReturnStatement)
     {
     }

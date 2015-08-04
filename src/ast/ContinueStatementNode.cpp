@@ -1,5 +1,5 @@
 #include "Escargot.h"
-#include "BreakStatementNode.h"
+#include "ContinueStatementNode.h"
 
 #include "vm/ESVMInstance.h"
 #include "runtime/ExecutionContext.h"
@@ -7,9 +7,9 @@
 
 namespace escargot {
 
-ESValue BreakStatementNode::execute(ESVMInstance* instance)
+ESValue ContinueStatementNode::execute(ESVMInstance* instance)
 {
-    instance->currentExecutionContext()->doBreak();
+    instance->currentExecutionContext()->doContinue();
     RELEASE_ASSERT_NOT_REACHED();
     return ESValue();
 }
