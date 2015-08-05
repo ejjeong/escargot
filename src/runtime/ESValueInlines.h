@@ -441,6 +441,18 @@ inline bool ESValue::toBoolean() const
     RELEASE_ASSERT_NOT_REACHED();
 }
 
+// http://www.ecma-international.org/ecma-262/5.1/#sec-9.4
+inline double ESValue::toInteger() const
+{
+    if (isInt32())
+        return asInt32();
+    double d = toNumber();
+    if (d == std::numeric_limits<double>::quiet_NaN())
+        return 0;
+    // TODO check +0, -0, +inf, -inf
+    return d < 0 ? -1 : 1 * std::floor(std::abs(d));
+}
+
 // http://www.ecma-international.org/ecma-262/5.1/#sec-9.5
 inline int32_t ESValue::toInt32() const
 {

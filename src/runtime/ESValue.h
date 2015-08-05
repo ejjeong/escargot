@@ -137,6 +137,7 @@ public:
 
     bool toBoolean() const;
     double toNumber() const;
+    double toInteger() const;
     int32_t toInt32() const;
     ESString* asESString() const;
     ESString* toESString() const;

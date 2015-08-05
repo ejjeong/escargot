@@ -68,6 +68,11 @@ public:
         m_string->initHash();
     }
 
+    explicit InternalString(wchar_t c)
+    {
+        m_string = new InternalStringData(InternalStringStd({c}));
+    }
+
     InternalString(const char* s)
     {
         std::mbstate_t state = std::mbstate_t();
@@ -81,7 +86,6 @@ public:
     {
         m_string = new(PointerFreeGC) InternalStringData(s);
     }
-
 
     ALWAYS_INLINE InternalString(const InternalString& s)
     {
@@ -108,7 +112,7 @@ public:
     void append(const InternalString& src)
     {
         if(m_string == &emptyStringData) {
-            m_string = src.m_string;
+            m_string = new InternalStringData(src.m_string->data());
         } else if(src.m_string != &emptyStringData) {
             m_string->append(src.m_string->begin(), src.m_string->end());
             m_string->initHash();

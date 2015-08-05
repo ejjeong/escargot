@@ -272,6 +272,54 @@ void GlobalObject::installString()
 
     set(strings->String, m_string);
 
+    //$21.1.2.1 String.fromCharCode(...codeUnits)
+    FunctionDeclarationNode* stringFromCharCode = new FunctionDeclarationNode(L"fromCharCode", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        int length = instance->currentExecutionContext()->argumentCount();
+        wchar_t* elements = (wchar_t*)alloca(sizeof(wchar_t) * (length+1));
+        int i;
+        for (i=0; i<length; i++)
+            elements[i] = instance->currentExecutionContext()->arguments()[i].toInteger();
+        elements[i] = L'\0';
+        instance->currentExecutionContext()->doReturn(ESString::create(InternalString(elements)));
+        return ESValue();
+    }), false, false);
+    m_string->set(L"fromCharCode", ESFunctionObject::create(NULL, stringFromCharCode));
+
+    //$21.1.3.1 String.prototype.charAt(pos)
+    FunctionDeclarationNode* stringCharAt = new FunctionDeclarationNode(L"charAt", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+        const InternalString& str = thisObject->asESStringObject()->getStringData()->string();
+        int position = instance->currentExecutionContext()->arguments()[0].toInteger();
+        instance->currentExecutionContext()->doReturn(ESString::create(InternalString((*str.string())[position])));
+        return ESValue();
+    }), false, false);
+    m_stringPrototype->set(L"charAt", ESFunctionObject::create(NULL, stringCharAt));
+
+    //$21.1.3.2 String.prototype.charCodeAt(pos)
+    FunctionDeclarationNode* stringCharCodeAt = new FunctionDeclarationNode(L"charCodeAt", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+        const InternalString& str = thisObject->asESStringObject()->getStringData()->string();
+        int position = instance->currentExecutionContext()->arguments()[0].toInteger();
+        instance->currentExecutionContext()->doReturn(ESString::create(InternalString((int)((*str.string())[position]))));
+        return ESValue();
+    }), false, false);
+    m_stringPrototype->set(L"charCodeAt", ESFunctionObject::create(NULL, stringCharCodeAt));
+
+    //$21.1.3.4 String.prototype.concat(...args)
+    FunctionDeclarationNode* stringConcat = new FunctionDeclarationNode(L"concat", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+        const InternalString& str = thisObject->asESStringObject()->getStringData()->string();
+        InternalString ret;
+        ret.append(str);
+        int argCount = instance->currentExecutionContext()->argumentCount();
+        for (int i=0; i<argCount; i++) {
+            ret.append(instance->currentExecutionContext()->arguments()[i].toESString()->string());
+        }
+        instance->currentExecutionContext()->doReturn(ESString::create(ret));
+        return ESValue();
+    }), false, false);
+    m_stringPrototype->set(L"concat", ESFunctionObject::create(NULL, stringConcat));
+
     //$21.1.3.8 String.prototype.indexOf(searchString[, position])
     FunctionDeclarationNode* stringIndexOf = new FunctionDeclarationNode(L"indexOf", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
@@ -299,6 +347,31 @@ void GlobalObject::installString()
     }), false, false);
     m_stringPrototype->set(L"indexOf", ESFunctionObject::create(NULL, stringIndexOf));
 
+    //$21.1.3.16 String.prototype.slice(start, end)
+    FunctionDeclarationNode* stringSlice = new FunctionDeclarationNode(L"slice", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+        const InternalString& str = ESValue(thisObject).toESString()->string();
+        int argCount = instance->currentExecutionContext()->argumentCount();
+        int len = str.length();
+        int intStart = instance->currentExecutionContext()->arguments()[0].toInteger();
+        ESValue& end = instance->currentExecutionContext()->arguments()[1];
+        int intEnd = (end.isUndefined() || argCount < 2) ? len : end.toInteger();
+        int from = (intStart < 0) ? std::max(len+intStart, 0) : std::min(intStart, len);
+        int to = (intEnd < 0) ? std::max(len+intEnd, 0) : std::min(intEnd, len);
+        int span = std::max(to-from, 0);
+        escargot::ESString* ret = ESString::create(InternalString(str.string()->substr(from, from+span-1).c_str()));
+        instance->currentExecutionContext()->doReturn(ESValue(ret));
+        return ESValue();
+    }), false, false);
+    m_stringPrototype->set(L"slice", ESFunctionObject::create(NULL, stringSlice));
+
+    //$21.1.3.17 String.prototype.split(separator, limit)
+    FunctionDeclarationNode* stringSplit = new FunctionDeclarationNode(L"split", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+        return ESValue();
+    }), false, false);
+    m_stringPrototype->set(L"split", ESFunctionObject::create(NULL, stringSplit));
+
     //$21.1.3.19 String.prototype.substring(start, end)
     FunctionDeclarationNode* stringSubstring = new FunctionDeclarationNode(L"substring", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
@@ -306,11 +379,11 @@ void GlobalObject::installString()
         //    throw TypeError();
 
         const InternalString& str = thisObject->asESStringObject()->getStringData()->string();
+        int argCount = instance->currentExecutionContext()->argumentCount();
         int len = str.length();
-        int intStart = instance->currentExecutionContext()->arguments()[0].asInt32();
+        int intStart = instance->currentExecutionContext()->arguments()[0].toInteger();
         ESValue& end = instance->currentExecutionContext()->arguments()[1];
-        //int intEnd = (end.isUndefined()) ? len : end->toInteger().asInt32();
-        int intEnd = (end.isUndefined()) ? len : end.asInt32();
+        int intEnd = (end.isUndefined() || argCount < 2) ? len : end.toInteger();
         int finalStart = std::min(std::max(intStart, 0), len);
         int finalEnd = std::min(std::max(intEnd, 0), len);
         int from = std::min(finalStart, finalEnd);

@@ -91,6 +91,8 @@ bool ESValue::equalsTo(const ESValue& val)
 
 ESString* ESValue::toESString() const
 {
+    if (isESPointer() && asESPointer()->isESStringObject())
+        return asESPointer()->asESStringObject()->getStringData();
     return ESString::create(toInternalString());
 }
 
