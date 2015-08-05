@@ -376,7 +376,6 @@ protected:
 
 struct ESAccessorData : public gc {
 public:
-    ESValue m_data;
     std::function<ESValue (::escargot::ESObject* obj)> m_getter;
     std::function<void (::escargot::ESObject* obj, const ESValue& value)> m_setter;
 };
@@ -410,11 +409,21 @@ public:
         : ESPointer(Type::ESSlot)
     {
         ESAccessorData* data = new ESAccessorData;
-        data->m_data = ESValue((ESPointer *)object);
         data->m_getter = getter;
         data->m_setter = setter;
         m_data = ESValue((ESPointer *)data);
 
+        m_isWritable = isWritable;
+        m_isEnumerable = isEnumerable;
+        m_isConfigurable = isConfigurable;
+        m_isDataProperty = false;
+    }
+
+    ESSlot(::escargot::ESObject* object,ESAccessorData* data,
+            bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
+        : ESPointer(Type::ESSlot)
+    {
+        m_data = ESValue((ESPointer *)data);
         m_isWritable = isWritable;
         m_isEnumerable = isEnumerable;
         m_isConfigurable = isConfigurable;
@@ -434,25 +443,27 @@ public:
         m_isDataProperty = true;
     }
 
-    ALWAYS_INLINE void setValue(const ::escargot::ESValue& value)
+    ALWAYS_INLINE void setValue(const ::escargot::ESValue& value, ::escargot::ESObject* object = NULL)
     {
         if(LIKELY(m_isDataProperty)) {
             m_data = value;
         } else {
+            ASSERT(object);
             if(((ESAccessorData *)m_data.asESPointer())->m_setter) {
-                ((ESAccessorData *)m_data.asESPointer())->m_setter(((ESAccessorData *)m_data.asESPointer())->m_data.asESPointer()->asESObject(), value);
+                ((ESAccessorData *)m_data.asESPointer())->m_setter(object, value);
             }
         }
 
     }
 
-    ALWAYS_INLINE ESValue value()
+    ALWAYS_INLINE ESValue value(::escargot::ESObject* object = NULL)
     {
         if(LIKELY(m_isDataProperty)) {
             return m_data;
         } else {
+            ASSERT(object);
             if(((ESAccessorData *)m_data.asESPointer())->m_getter) {
-                return ((ESAccessorData *)m_data.asESPointer())->m_getter(((ESAccessorData *)m_data.asESPointer())->m_data.asESPointer()->asESObject());
+                return ((ESAccessorData *)m_data.asESPointer())->m_getter(object);
             }
             return ESValue();
         }
@@ -533,21 +544,7 @@ public:
 class ESObject : public ESPointer {
     friend class ESSlot;
 protected:
-    ESObject(ESPointer::Type type = ESPointer::Type::ESObject)
-        : ESPointer(type)
-        , m_map(16)
-    {
-        //FIXME set proper flags(is...)
-        definePropertyOrThrow(strings->constructor, true, false, false);
-
-        defineAccessorProperty(strings->__proto__, [](ESObject* self) -> ESValue {
-            return self->__proto__();
-        },[](::escargot::ESObject* self, ESValue value){
-            if(value.isESPointer() && value.asESPointer()->isESObject()) {
-                self->set__proto__(value.asESPointer()->asESObject());
-            }
-        }, true, false, false);
-    }
+    ESObject(ESPointer::Type type = ESPointer::Type::ESObject);
 public:
 
     //DO NOT USE THIS FUNCTION
@@ -602,7 +599,7 @@ public:
             //TODO Assert: IsPropertyKey(P) is true.
             auto iter = m_map.find(key);
             if(iter != m_map.end()) {
-                return iter->second.value();
+                return iter->second.value(this);
             }
             return ESValue();
         }
@@ -630,7 +627,7 @@ public:
             //TODO set flags
             m_map.insert(std::make_pair(key, escargot::ESSlot(val, true, true, true)));
         } else {
-            iter->second.setValue(val);
+            iter->second.setValue(val, this);
         }
     }
 
@@ -648,6 +645,16 @@ public:
             m_map.erase(iter);
         }
         m_map.insert(std::make_pair(key, escargot::ESSlot(this, getter, setter, isWritable, isEnumerable, isConfigurable)));
+    }
+
+    void defineAccessorProperty(const InternalAtomicString& key,ESAccessorData* data,
+            bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
+    {
+        auto iter = m_map.find(key);
+        if(iter != m_map.end()) {
+            m_map.erase(iter);
+        }
+        m_map.insert(std::make_pair(key, escargot::ESSlot(this, data, isWritable, isEnumerable, isConfigurable)));
     }
 
     bool hasKey(const InternalAtomicString& key)
@@ -782,19 +789,7 @@ private:
 
 class ESArrayObject : public ESObject {
 protected:
-    ESArrayObject(ESPointer::Type type = ESPointer::Type::ESArrayObject)
-        : ESObject((Type)(Type::ESObject | Type::ESArrayObject))
-        , m_vector(16)
-        , m_fastmode(true)
-    {
-        defineAccessorProperty(strings->length, [](ESObject* self) -> ESValue {
-            return self->asESArrayObject()->length();
-        },[](::escargot::ESObject* self, ESValue value) {
-            ESValue len = ESValue(value.asInt32());
-            self->asESArrayObject()->setLength(len);
-        }, true, false, false);
-        m_length = ESValue(0);
-    }
+    ESArrayObject();
 public:
     static ESArrayObject* create()
     {
@@ -893,7 +888,7 @@ public:
     {
         if (m_fastmode) {
             if(key >= 0 && key < (int)m_length.asInt32())
-                return m_vector[key].value();
+                return m_vector[key].value(this);
             else
                 return ESValue();
         }
@@ -905,7 +900,7 @@ public:
         if (m_fastmode && key.isInt32()) {
             int idx = key.asInt32();
             if(LIKELY(idx >= 0 && idx < (int)m_length.asInt32()))
-                return m_vector[idx].value();
+                return m_vector[idx].value(this);
             else
                 return ESValue();
         }

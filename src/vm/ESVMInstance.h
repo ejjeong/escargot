@@ -67,6 +67,12 @@ public:
           throw L"TypeError";
          }
     }
+
+    ESAccessorData* object__proto__AccessorData() { return &m_object__proto__AccessorData; }
+    ESAccessorData* functionPrototypeAccessorData() { return &m_functionPrototypeAccessorData; }
+    ESAccessorData* arrayLengthAccessorData() { return &m_arrayLengthAccessorData; }
+    ESAccessorData* stringLengthAccessorData() { return &m_stringLengthAccessorData; }
+
 protected:
     ExecutionContext* m_globalExecutionContext;
     ExecutionContext* m_currentExecutionContext;
@@ -78,6 +84,11 @@ protected:
 
     Strings m_strings;
     size_t m_identifierCacheInvalidationCheckCount;
+
+    ESAccessorData m_object__proto__AccessorData;
+    ESAccessorData m_functionPrototypeAccessorData;
+    ESAccessorData m_arrayLengthAccessorData;
+    ESAccessorData m_stringLengthAccessorData;
 };
 
 }

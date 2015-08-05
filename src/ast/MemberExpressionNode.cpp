@@ -46,7 +46,7 @@ ESValue MemberExpressionNode::execute(ESVMInstance* instance)
             slot = obj->find(propertyName);
 
         if(slot) {
-            return slot->value();
+            return slot->value(obj);
         } else {
             //FIXME this code duplicated with ESObject::get
             ESValue prototype = obj->__proto__();

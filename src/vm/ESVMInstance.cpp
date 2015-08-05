@@ -23,8 +23,27 @@ ESVMInstance::ESVMInstance()
 
     m_globalExecutionContext = new ExecutionContext(a, true, false);
     m_currentExecutionContext = m_globalExecutionContext;
-
     exit();
+
+    m_object__proto__AccessorData.m_getter = [](ESObject* obj) -> ESValue {
+        return obj->__proto__();
+    };
+
+    m_object__proto__AccessorData.m_setter = [](::escargot::ESObject* self, ESValue value){
+        if(value.isESPointer() && value.asESPointer()->isESObject()) {
+            self->set__proto__(value.asESPointer()->asESObject());
+        }
+    };
+
+    m_arrayLengthAccessorData.m_getter = [](ESObject* self) -> ESValue {
+        return self->asESArrayObject()->length();
+    };
+
+    m_arrayLengthAccessorData.m_setter = [](::escargot::ESObject* self, ESValue value) {
+        ESValue len = ESValue(value.asInt32());
+        self->asESArrayObject()->setLength(len);
+    };
+
 }
 
 void ESVMInstance::evaluate(const std::string& source)

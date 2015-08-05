@@ -55,7 +55,7 @@ public:
 
     explicit InternalString(int number)
     {
-        m_string = new InternalStringData(std::move(std::to_wstring(number)));
+        m_string = new(PointerFreeGC) InternalStringData(std::move(std::to_wstring(number)));
     }
 
     explicit InternalString(double number)
@@ -79,7 +79,7 @@ public:
 
     ALWAYS_INLINE InternalString(const wchar_t* s)
     {
-        m_string = new InternalStringData(s);
+        m_string = new(PointerFreeGC) InternalStringData(s);
     }
 
 
@@ -126,7 +126,7 @@ protected:
 
     void allocString(size_t stringLength)
     {
-        m_string = new InternalStringData();
+        m_string = new(PointerFreeGC) InternalStringData();
         m_string->resize(stringLength);
     }
 

@@ -8,7 +8,7 @@ make distclean
 mkdir -p out/release
 mkdir -p out/debug
 
-CONFFLAGS=" --enable-cplusplus " # --enable-large-config "
+CONFFLAGS=" " # --enable-large-config --enable-cplusplus"
 
 cd out/release
 ../../configure $CONFFLAGS --disable-gc-debug

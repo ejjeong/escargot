@@ -190,6 +190,23 @@ InternalString ESValue::toInternalString() const
     return ret;
 }
 
+ESObject::ESObject(ESPointer::Type type)
+    : ESPointer(type)
+    , m_map(16)
+{
+    //FIXME set proper flags(is...)
+    definePropertyOrThrow(strings->constructor, true, false, false);
+    defineAccessorProperty(strings->__proto__, ESVMInstance::currentInstance()->object__proto__AccessorData(), true, false, false);
+}
+
+ESArrayObject::ESArrayObject()
+    : ESObject((Type)(Type::ESObject | Type::ESArrayObject))
+    , m_vector(16)
+    , m_fastmode(true)
+{
+    defineAccessorProperty(strings->length, ESVMInstance::currentInstance()->arrayLengthAccessorData(), true, false, false);
+    m_length = ESValue(0);
+}
 
 ESValue functionCallerInnerProcess(ESFunctionObject* fn, ESValue receiver, ESValue arguments[], size_t argumentCount, bool needsArgumentsObject, ESVMInstance* ESVMInstance)
 {
