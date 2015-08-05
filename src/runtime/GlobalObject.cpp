@@ -539,6 +539,22 @@ void GlobalObject::installDate()
     }), false, false);
     m_datePrototype->set(strings->getTimezoneOffset, ::escargot::ESFunctionObject::create(NULL, getTimezoneOffsetNode));
 
+    //$20.3.4.27 Date.prototype.setTime()
+    FunctionDeclarationNode* setTimeNode = new FunctionDeclarationNode(strings->setTime, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+       ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+
+       size_t arg_size = instance->currentExecutionContext()->argumentCount();
+       if (arg_size > 0 && instance->currentExecutionContext()->arguments()[0].isNumber()) {
+           ESValue arg = instance->currentExecutionContext()->arguments()[0];
+           thisObject->asESDateObject()->setTime(arg.toNumber());
+           instance->currentExecutionContext()->doReturn(ESValue());
+       } else {
+           double value = std::numeric_limits<double>::quiet_NaN();
+           instance->currentExecutionContext()->doReturn(ESValue(value));
+        }
+       return ESValue();
+    }), false, false);
+    m_datePrototype->set(strings->setTime, ::escargot::ESFunctionObject::create(NULL, setTimeNode));
 }
 
 void GlobalObject::installMath()

@@ -35,6 +35,7 @@ InternalAtomicString getMonth;
 InternalAtomicString getSeconds;
 InternalAtomicString getTime;
 InternalAtomicString getTimezoneOffset;
+InternalAtomicString setTime;
 InternalAtomicString Math;
 InternalAtomicString PI;
 InternalAtomicString abs;

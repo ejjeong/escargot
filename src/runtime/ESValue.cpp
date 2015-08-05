@@ -387,4 +387,10 @@ int ESDateObject::getTimezoneOffset() {
     return -540;
 }
 
+void ESDateObject::setTime(double t) {
+    time_t raw_t = (time_t) floor(t);
+    m_tv.tv_sec = raw_t/1000;
+    m_tv.tv_usec =  (raw_t % 10000) * 1000;
+}
+
 }

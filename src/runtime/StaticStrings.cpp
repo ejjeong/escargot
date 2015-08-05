@@ -35,6 +35,7 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     getSeconds = InternalAtomicString(instance, L"getSeconds");
     getTime = InternalAtomicString(instance, L"getTime");
     getTimezoneOffset = InternalAtomicString(instance, L"getTimezoneOffset");
+    setTime = InternalAtomicString(instance, L"setTime");
     Math = InternalAtomicString(instance, L"Math");
     PI = InternalAtomicString(instance, L"PI");
     abs = InternalAtomicString(instance, L"abs");

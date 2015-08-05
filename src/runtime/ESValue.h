@@ -785,6 +785,7 @@ public:
     int getMonth();
     int getSeconds();
     int getTimezoneOffset();
+    void setTime(double t);
 
     ESValue valueOf()
     {
