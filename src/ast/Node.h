@@ -23,6 +23,7 @@ enum NodeType {
     ReturnStatement,
     IfStatement,
     ForStatement,
+    ForInStatement,
     WhileStatement,
     Declaration,
     VariableDeclaration,

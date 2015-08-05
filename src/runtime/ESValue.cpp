@@ -89,11 +89,32 @@ bool ESValue::equalsTo(const ESValue& val)
 }
 
 
-ESString* ESValue::toESString() const
+ESString* ESValue::toString() const
 {
     if (isESPointer() && asESPointer()->isESStringObject())
         return asESPointer()->asESStringObject()->getStringData();
     return ESString::create(toInternalString());
+}
+
+
+ESObject* ESValue::toObject() const
+{
+    if (isNumber()) {
+        ESFunctionObject* function = ESVMInstance::currentInstance()->globalObject()->number();
+        ESObject* receiver = ESNumberObject::create(ESValue(toNumber()));
+        receiver->setConstructor(function);
+        receiver->set__proto__(function->protoType());
+        /*
+        std::vector<ESValue, gc_allocator<ESValue>> arguments;
+        arguments.push_back(this);
+        ESFunctionObject::call((ESValue) function, receiver, &arguments[0], arguments.size(), this);
+        */
+        return receiver;
+    } else if (isESPointer() && asESPointer()->isESObject()) {
+        return asESPointer()->asESObject();
+    } else {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
 }
 
 
@@ -171,13 +192,13 @@ InternalString ESValue::toInternalString() const
             ret.append(L" {");
             bool isFirst = true;
             o->asESObject()->enumeration([&ret, &isFirst](const InternalString& key, ESSlot* slot) {
-                    if(!isFirst)
+                if(!isFirst)
                     ret.append(L", ");
                     ret.append(key);
                     ret.append(L": ");
                     ret.append(slot->value().toInternalString());
                     isFirst = false;
-                    });
+                });
             if(o->isESStringObject()) {
                 ret.append(L", [[PrimitiveValue]]: \"");
                 ret.append(o->asESStringObject()->getStringData()->string());

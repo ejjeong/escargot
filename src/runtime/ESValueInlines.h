@@ -388,7 +388,7 @@ inline ESValue ESValue::toPrimitive(PrimitiveTypeHint preferredType) const
         return *this;
     if (isESPointer() && asESPointer()->isESObject()) {
         if (preferredType == PrimitiveTypeHint::PreferString || !asESPointer()->asESObject()->hasValueOf()) {
-            return ESValue(toESString());
+            return ESValue(toString());
         } else { // preferNumber
             return ESValue(asESPointer()->asESObject()->valueOf());
         }

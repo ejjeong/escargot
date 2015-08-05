@@ -55,19 +55,6 @@ public:
         }
     }
 
-    //$7.1.13 ToObject()
-    ESObject* ToObject(ESValue argument);
-
-    ESValue thisNumberValue(ESValue value) {
-        if (value.isNumber()) {
-            return value;
-        } else if (value.isObject() && value.toObject().isESNumberObject()) {
-            return value.toObject().asESNumberObject()->numberData();
-        } else {
-          throw L"TypeError";
-         }
-    }
-
     ESAccessorData* object__proto__AccessorData() { return &m_object__proto__AccessorData; }
     ESAccessorData* functionPrototypeAccessorData() { return &m_functionPrototypeAccessorData; }
     ESAccessorData* arrayLengthAccessorData() { return &m_arrayLengthAccessorData; }

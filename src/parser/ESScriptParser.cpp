@@ -138,6 +138,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
     InternalString astTypeUnaryExpression(L"UnaryExpression");
     InternalString astTypeIfStatement(L"IfStatement");
     InternalString astTypeForStatement(L"ForStatement");
+    InternalString astTypeForInStatement(L"ForInStatement");
     InternalString astTypeWhileStatement(L"WhileStatement");
     InternalString astTypeTryStatement(L"TryStatement");
     InternalString astTypeCatchClause(L"CatchClause");
@@ -307,11 +308,12 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             parsedNode = new IfStatementNode(fn(value[L"test"], currentBody, false), fn(value[L"consequent"], currentBody, false), value[L"alternate"].IsNull()? NULL : fn(value[L"alternate"], currentBody, false));
         } else if(type == astTypeForStatement) {
             Node* init_node = NULL;
-            rapidjson::GenericValue<rapidjson::UTF16<>>& init_children = value[L"init"];
-            if (!init_children.IsNull()) {
+            auto& init_children = value[L"init"];
+            if (!init_children.IsNull())
                 init_node = fn(init_children, currentBody, false);
-             }
             parsedNode = new ForStatementNode(init_node, fn(value[L"test"], currentBody, false), fn(value[L"update"], currentBody, false), fn(value[L"body"], currentBody, false));
+        } else if(type == astTypeForInStatement) {
+            parsedNode = new ForInStatementNode(fn(value[L"left"], currentBody, false), fn(value[L"right"], currentBody, false), fn(value[L"body"], currentBody, false), value[L"each"].GetBool());
         } else if(type == astTypeWhileStatement) {
             parsedNode = new WhileStatementNode(fn(value[L"test"], currentBody, false), fn(value[L"body"], currentBody, false));
         } else if(type == astTypeThisExpression) {
@@ -532,6 +534,10 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             postAnalysisFunction(((ForStatementNode *)currentNode)->m_body, identifierInCurrentContext, nearFunctionNode);
             postAnalysisFunction(((ForStatementNode *)currentNode)->m_test, identifierInCurrentContext, nearFunctionNode);
             postAnalysisFunction(((ForStatementNode *)currentNode)->m_update, identifierInCurrentContext, nearFunctionNode);
+        } else if(type == NodeType::ForInStatement) {
+            postAnalysisFunction(((ForInStatementNode *)currentNode)->m_left, identifierInCurrentContext, nearFunctionNode);
+            postAnalysisFunction(((ForInStatementNode *)currentNode)->m_right, identifierInCurrentContext, nearFunctionNode);
+            postAnalysisFunction(((ForInStatementNode *)currentNode)->m_body, identifierInCurrentContext, nearFunctionNode);
         } else if(type == NodeType::WhileStatement) {
             postAnalysisFunction(((WhileStatementNode *)currentNode)->m_test, identifierInCurrentContext, nearFunctionNode);
             postAnalysisFunction(((WhileStatementNode *)currentNode)->m_body, identifierInCurrentContext, nearFunctionNode);

@@ -130,19 +130,17 @@ public:
     bool isCustomGetterSetter() const;
     bool isObject() const;
 
-    // Basic conversions.
     enum PrimitiveTypeHint { PreferString, PreferNumber };
-    ESValue toPrimitive(PrimitiveTypeHint = PreferNumber) const;
+    ESValue toPrimitive(PrimitiveTypeHint = PreferNumber) const; //$7.1.1 ToPrimitive
+    bool toBoolean() const; //$7.1.2 ToBoolean
+    double toNumber() const; //$7.1.3 ToNumber
+    double toInteger() const; //$7.1.4 ToInteger
+    int32_t toInt32() const; //$7.1.5 ToInt32
+    ESString* toString() const; //$7.1.12 ToString
+    ESObject* toObject() const; //$7.1.13 ToObject
 
-
-    bool toBoolean() const;
-    double toNumber() const;
-    double toInteger() const;
-    int32_t toInt32() const;
-    ESString* asESString() const;
-    ESString* toESString() const;
     InternalString toInternalString() const;
-    ESObject toObject() const;
+    ESString* asESString() const;
 
     bool isESPointer() const;
     ESPointer* asESPointer() const;

@@ -21,6 +21,7 @@
 #include "FunctionNode.h"
 #include "IdentifierNode.h"
 #include "IfStatementNode.h"
+#include "ForInStatementNode.h"
 #include "ForStatementNode.h"
 #include "WhileStatementNode.h"
 #include "LiteralNode.h"

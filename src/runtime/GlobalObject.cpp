@@ -248,12 +248,12 @@ void GlobalObject::installString()
             // called as constructor
             escargot::ESStringObject* stringObject = thisObject->asESStringObject();
             ESValue value = instance->currentExecutionContext()->arguments()[0];
-            stringObject->setString(value.toESString());
+            stringObject->setString(value.toString());
             instance->currentExecutionContext()->doReturn(stringObject);
         } else {
             // called as function
             ESValue value = instance->currentExecutionContext()->arguments()[0];
-            instance->currentExecutionContext()->doReturn(ESValue(ESString::create(value.toESString()->string())));
+            instance->currentExecutionContext()->doReturn(ESValue(ESString::create(value.toString()->string())));
         }
         return ESValue();
     }), false, false);
@@ -315,7 +315,7 @@ void GlobalObject::installString()
         ret.append(str);
         int argCount = instance->currentExecutionContext()->argumentCount();
         for (int i=0; i<argCount; i++) {
-            ret.append(instance->currentExecutionContext()->arguments()[i].toESString()->string());
+            ret.append(instance->currentExecutionContext()->arguments()[i].toString()->string());
         }
         instance->currentExecutionContext()->doReturn(ESString::create(ret));
         return ESValue();
@@ -352,7 +352,7 @@ void GlobalObject::installString()
     //$21.1.3.16 String.prototype.slice(start, end)
     FunctionDeclarationNode* stringSlice = new FunctionDeclarationNode(L"slice", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
-        const InternalString& str = ESValue(thisObject).toESString()->string();
+        const InternalString& str = ESValue(thisObject).toString()->string();
         int argCount = instance->currentExecutionContext()->argumentCount();
         int len = str.length();
         int intStart = instance->currentExecutionContext()->arguments()[0].toInteger();
