@@ -386,9 +386,11 @@ inline ESValue ESValue::toPrimitive(PrimitiveTypeHint preferredType) const
 {
     if (isPrimitive())
         return *this;
-    if (isESPointer()) {
-        if(asESPointer()->isESDateObject()) {
-            return ESValue(asESPointer()->asESDateObject()->getTimeAsMilisec());
+    if (isESPointer() && asESPointer()->isESObject()) {
+        if (preferredType == PrimitiveTypeHint::PreferString || !asESPointer()->asESObject()->hasValueOf()) {
+            return ESValue(toESString());
+        } else { // preferNumber
+            return ESValue(asESPointer()->asESObject()->valueOf());
         }
     }
     RELEASE_ASSERT_NOT_REACHED();

@@ -692,7 +692,15 @@ public:
         set(strings->constructor, obj);
     }
 
-    ESValue defaultValue(ESVMInstance* instance, ESValue::PrimitiveTypeHint hint = ESValue::PreferNumber);
+    bool hasValueOf()
+    {
+        if(isESArrayObject())
+            return false;
+        else
+            return true;
+    }
+
+    ESValue valueOf();
 
 protected:
     ESObjectMap m_map;
@@ -740,6 +748,11 @@ public:
 
     double getTimeAsMilisec() {
         return m_tv.tv_sec*1000 + floor(m_tv.tv_usec/1000);
+    }
+
+    ESValue valueOf()
+    {
+        return ESValue(getTimeAsMilisec());
     }
 
 private:

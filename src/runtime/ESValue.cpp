@@ -88,9 +88,34 @@ bool ESValue::equalsTo(const ESValue& val)
     RELEASE_ASSERT_NOT_REACHED();
 }
 
+
 ESString* ESValue::toESString() const
 {
     return ESString::create(toInternalString());
+}
+
+
+ESValue ESObject::valueOf()
+{
+    if(isESDateObject())
+        return asESDateObject()->valueOf();
+    else if(isESArrayObject())
+        // Array.prototype do not have valueOf() function
+        RELEASE_ASSERT_NOT_REACHED();
+    else
+        RELEASE_ASSERT_NOT_REACHED();
+
+    /*
+    if (hint == ESValue::PreferString) {
+        ESValue underScoreProto = get(strings->__proto__);
+        ESValue toStringMethod = underScoreProto.asESPointer()->asESObject()->get(L"toString");
+        std::vector<ESValue> arguments;
+        return ESFunctionObject::call(toStringMethod, this, &arguments[0], arguments.size(), ESVMInstance::currentInstance());
+    } else {
+        //TODO
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+    */
 }
 
 InternalString ESValue::toInternalString() const
@@ -163,19 +188,6 @@ InternalString ESValue::toInternalString() const
     }
 
     return ret;
-}
-
-ESValue ESObject::defaultValue(ESVMInstance* instance, ESValue::PrimitiveTypeHint hint)
-{
-    if (hint == ESValue::PreferString) {
-        ESValue underScoreProto = get(strings->__proto__);
-        ESValue toStringMethod = underScoreProto.asESPointer()->asESObject()->get(L"toString");
-        std::vector<ESValue> arguments;
-        return ESFunctionObject::call(toStringMethod, this, &arguments[0], arguments.size(), instance);
-    } else {
-        //TODO
-        RELEASE_ASSERT_NOT_REACHED();
-    }
 }
 
 
