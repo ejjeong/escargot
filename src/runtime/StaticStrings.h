@@ -34,6 +34,7 @@ InternalAtomicString cos;
 InternalAtomicString max;
 InternalAtomicString floor;
 InternalAtomicString pow;
+InternalAtomicString random;
 InternalAtomicString round;
 InternalAtomicString sin;
 InternalAtomicString sqrt;

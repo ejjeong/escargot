@@ -34,6 +34,7 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     max = InternalAtomicString(instance, L"max");
     floor = InternalAtomicString(instance, L"floor");
     pow = InternalAtomicString(instance, L"pow");
+    random = InternalAtomicString(instance, L"random");
     round = InternalAtomicString(instance, L"round");
     sin = InternalAtomicString(instance, L"sin");
     sqrt = InternalAtomicString(instance, L"sqrt");
