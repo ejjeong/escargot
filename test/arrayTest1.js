@@ -14,3 +14,5 @@ arr.push(7);
 print(arr.length);
 print(arr[5]);
 print(arr);
+print(arr.join("|"));
+print(arr.join(''));

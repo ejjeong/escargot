@@ -214,6 +214,30 @@ void GlobalObject::installArray()
     }), false, false);
     m_arrayPrototype->set(L"indexOf", ESFunctionObject::create(NULL, arrayIndexOf));
 
+    //$22.1.3.12 Array.prototype.join(separator)
+    FunctionDeclarationNode* arrayJoin = new FunctionDeclarationNode(L"join", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESArrayObject();
+        InternalString ret;
+        int arrlen = thisVal->length().asInt32();
+        if (arrlen >= 0) {
+            InternalString separator;
+            if (arglen == 0) {
+                separator = L",";
+            } else {
+                separator = instance->currentExecutionContext()->arguments()[0].toInternalString();
+            }
+            for (int i = 0; i < arrlen; i++) {
+                ESValue elemi = thisVal->get(i);
+                if (i != 0) ret.append(separator);
+                if (!elemi.isUndefinedOrNull())
+                    ret.append(elemi.toInternalString());
+            }
+        }
+        instance->currentExecutionContext()->doReturn(ESString::create(ret));
+        return ESValue();
+    }), false, false);
+    m_arrayPrototype->set(L"join", ESFunctionObject::create(NULL, arrayJoin));
 
     //$22.1.3.17 Array.prototype.push(item)
     FunctionDeclarationNode* arrayPush = new FunctionDeclarationNode(L"push", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
