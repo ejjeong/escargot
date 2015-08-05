@@ -57,7 +57,11 @@ void AssignmentExpressionNode::writeValue(ESVMInstance* instance, Node* leftHand
             throw ESValue(ESString::create(L"could not assign to left hand node lastESObjectMetInMemberExpressionNode==NULL"));
         }
         if(obj->isESArrayObject()) {
-            obj->asESArrayObject()->set(instance->currentExecutionContext()->lastUsedPropertyValueInMemberExpressionNode(), rvalue);
+            ESValue tmp = instance->currentExecutionContext()->lastUsedPropertyValueInMemberExpressionNode();
+            if (!tmp.isUndefined())
+                obj->asESArrayObject()->set(instance->currentExecutionContext()->lastUsedPropertyValueInMemberExpressionNode(), rvalue);
+            else
+                obj->asESArrayObject()->set(instance->currentExecutionContext()->lastUsedPropertyNameInMemberExpressionNode(), rvalue);
         } else {
             obj->set(instance->currentExecutionContext()->lastUsedPropertyNameInMemberExpressionNode(), rvalue);
         }
