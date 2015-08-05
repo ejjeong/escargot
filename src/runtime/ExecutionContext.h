@@ -5,27 +5,6 @@
 
 namespace escargot {
 
-class ReferenceError {
-public:
-    ReferenceError()
-    {
-        m_identifier = L"";
-    }
-    ReferenceError(const InternalString& identifier)
-    {
-        m_identifier = identifier;
-    }
-
-    const InternalString& identifier() { return m_identifier; }
-
-protected:
-    InternalString m_identifier;
-};
-
-class TypeError {
-
-};
-
 struct jmpbuf_wrapper {
     std::jmp_buf m_buffer;
 };

@@ -722,6 +722,27 @@ public:
     }
 };
 
+class ReferenceError : public ESErrorObject {
+public:
+    ReferenceError()
+    {
+        m_identifier = L"";
+    }
+    ReferenceError(const InternalString& identifier)
+    {
+        m_identifier = identifier;
+    }
+
+    const InternalString& identifier() { return m_identifier; }
+
+protected:
+    InternalString m_identifier;
+};
+
+class TypeError : public ESErrorObject {
+
+};
+
 class ESDateObject : public ESObject {
 protected:
     ESDateObject(ESPointer::Type type = ESPointer::Type::ESDateObject)
