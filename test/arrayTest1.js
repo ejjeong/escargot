@@ -8,7 +8,7 @@ print(arr[c]);
 arr[3] = 5;
 arr[4] = 5;
 print(arr.indexOf(5));
-//print(arr[3]-1);
+print(arr[3]-1);
 print(arr.length);
 arr.push(7);
 print(arr.length);

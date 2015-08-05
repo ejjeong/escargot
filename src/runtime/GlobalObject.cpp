@@ -149,6 +149,8 @@ void GlobalObject::installArray()
             ESValue& val = instance->currentExecutionContext()->arguments()[0];
             if(val.isInt32()) {
                 size = val.toNumber();
+            } else {
+                size = 1;
             }
         }
         ESObject* proto = instance->globalObject()->arrayPrototype();
@@ -158,9 +160,9 @@ void GlobalObject::installArray()
             array->setLength(size);
         } else
             array = ESArrayObject::create(size, proto);
-        if(len > 1) {
+        if(len >= 1) {
             ESValue& val = instance->currentExecutionContext()->arguments()[0];
-            if(!val.isInt32()) {
+            if(len > 1 || !val.isInt32()) {
                 for (int idx = 0; idx < len; idx++) {
                     array->set(idx, val);
                     val = instance->currentExecutionContext()->arguments()[idx + 1];
