@@ -26,7 +26,15 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     Function = InternalAtomicString(instance, L"Function");
     Empty = InternalAtomicString(instance, L"Empty");
     Date = InternalAtomicString(instance, L"Date");
+    getDate = InternalAtomicString(instance, L"getDate");
+    getDay = InternalAtomicString(instance, L"getDay");
+    getFullYear = InternalAtomicString(instance, L"getFullYear");
+    getHours = InternalAtomicString(instance, L"getHours");
+    getMinutes = InternalAtomicString(instance, L"getMinutes");
+    getMonth = InternalAtomicString(instance, L"getMonth");
+    getSeconds = InternalAtomicString(instance, L"getSeconds");
     getTime = InternalAtomicString(instance, L"getTime");
+    getTimezoneOffset = InternalAtomicString(instance, L"getTimezoneOffset");
     Math = InternalAtomicString(instance, L"Math");
     PI = InternalAtomicString(instance, L"PI");
     abs = InternalAtomicString(instance, L"abs");

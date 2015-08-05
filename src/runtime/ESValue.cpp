@@ -324,6 +324,67 @@ ESValue ESFunctionObject::call(ESValue callee, ESValue receiver, ESValue argumen
     return result;
 }
 
+void ESDateObject::parseStringToDate(struct tm* timeinfo, const InternalString istr) {
+    int len = istr.length();
+    const wchar_t* wc = istr.data();
+    char buffer[len];
 
+    wcstombs(buffer, wc, sizeof(buffer));
+    if (isalpha(wc[0])) {
+        strptime(buffer, "%B %d %Y %H:%M:%S %z", timeinfo);
+    } else if (isdigit(wc[0])) {
+        strptime(buffer, "%m/%d/%Y %H:%M:%S", timeinfo);
+    }
+}
+
+void ESDateObject::setTimeValue(ESValue str) {
+    if (str.isUndefined()) {
+        gettimeofday(&m_tv, NULL);
+    } else {
+        time_t rawtime;
+        struct tm* timeinfo = localtime(&rawtime);;
+        const InternalString& istr = str.asESString()->string();
+        parseStringToDate(timeinfo, istr);
+
+        m_tv.tv_sec = mktime(timeinfo);
+    }
+}
+
+int ESDateObject::getDate() {
+    return localtime(&(m_tv.tv_sec))->tm_mday;
+}
+
+int ESDateObject::getDay() {
+    return localtime(&(m_tv.tv_sec))->tm_wday;
+}
+
+int ESDateObject::getFullYear() {
+    return localtime(&(m_tv.tv_sec))->tm_year + 1900;
+}
+
+int ESDateObject::getHours() {
+    return localtime(&(m_tv.tv_sec))->tm_hour;
+}
+
+int ESDateObject::getMinutes() {
+    return localtime(&(m_tv.tv_sec))->tm_min;
+}
+
+int ESDateObject::getMonth() {
+    return localtime(&(m_tv.tv_sec))->tm_mon;
+}
+
+int ESDateObject::getSeconds() {
+    return localtime(&(m_tv.tv_sec))->tm_sec;
+}
+
+int ESDateObject::getTimezoneOffset() {
+//    return localtime(&(m_tv.tv_sec))->tm_gmtoff;
+//    const time_t a = m_tv.tv_sec;
+//    struct tm* b = gmtime(&a);
+//    time_t c = mktime(b);
+//    int d = c - a;
+    return -540;
+}
 
 }

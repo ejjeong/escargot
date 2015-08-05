@@ -428,9 +428,18 @@ void GlobalObject::installDate()
     //$20.3.2 The Date Constructor
     FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings->Date, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         ESObject* proto = instance->globalObject()->datePrototype();
-        escargot::ESDateObject* date = ESDateObject::create(proto);
-        date->setTimeValue();
-        instance->currentExecutionContext()->doReturn(date);
+        if (instance->currentExecutionContext()->isNewExpression()) {
+            escargot::ESDateObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESDateObject();
+
+            size_t arg_size = instance->currentExecutionContext()->argumentCount();
+            if (arg_size == 0) {
+                thisObject->setTimeValue(ESValue());
+            } else {
+                ESValue arg = instance->currentExecutionContext()->arguments()[0];
+                thisObject->setTimeValue(arg);
+             }
+         }
+        instance->currentExecutionContext()->doReturn(ESString::create(L"FixMe: We have to return string with date and time data"));
         return ESValue();
     }), false, false);
 
@@ -445,6 +454,73 @@ void GlobalObject::installDate()
 
     set(strings->Date, m_date);
 
+    //$20.3.4.2 Date.prototype.getDate()
+    FunctionDeclarationNode* getDateNode = new FunctionDeclarationNode(strings->getDate, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+       ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+       int ret = thisObject->asESDateObject()->getDate();
+       instance->currentExecutionContext()->doReturn(ESValue(ret));
+       return ESValue();
+    }), false, false);
+    m_datePrototype->set(strings->getDate, ::escargot::ESFunctionObject::create(NULL, getDateNode));
+
+    //$20.3.4.3 Date.prototype.getDay()
+    FunctionDeclarationNode* getDayNode = new FunctionDeclarationNode(strings->getDay, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+       ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+       int ret = thisObject->asESDateObject()->getDay();
+       instance->currentExecutionContext()->doReturn(ESValue(ret));
+       return ESValue();
+    }), false, false);
+    m_datePrototype->set(strings->getDay, ::escargot::ESFunctionObject::create(NULL, getDayNode));
+
+    //$20.3.4.4 Date.prototype.getFullYear()
+    FunctionDeclarationNode* getFullYearNode = new FunctionDeclarationNode(strings->getFullYear, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+       ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+       int ret = thisObject->asESDateObject()->getFullYear();
+       instance->currentExecutionContext()->doReturn(ESValue(ret));
+       return ESValue();
+    }), false, false);
+    m_datePrototype->set(strings->getFullYear, ::escargot::ESFunctionObject::create(NULL, getFullYearNode));
+
+
+    //$20.3.4.5 Date.prototype.getHours()
+    FunctionDeclarationNode* getHoursNode = new FunctionDeclarationNode(strings->getHours, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+       ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+       int ret = thisObject->asESDateObject()->getHours();
+       instance->currentExecutionContext()->doReturn(ESValue(ret));
+       return ESValue();
+    }), false, false);
+    m_datePrototype->set(strings->getHours, ::escargot::ESFunctionObject::create(NULL, getHoursNode));
+
+
+    //$20.3.4.7 Date.prototype.getMinutes()
+    FunctionDeclarationNode* getMinutesNode = new FunctionDeclarationNode(strings->getMinutes, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+       ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+       int ret = thisObject->asESDateObject()->getMinutes();
+       instance->currentExecutionContext()->doReturn(ESValue(ret));
+       return ESValue();
+    }), false, false);
+    m_datePrototype->set(strings->getMinutes, ::escargot::ESFunctionObject::create(NULL, getMinutesNode));
+
+
+    //$20.3.4.8 Date.prototype.getMonth()
+    FunctionDeclarationNode* getMonthNode = new FunctionDeclarationNode(strings->getMonth, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+       ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+       int ret = thisObject->asESDateObject()->getMonth();
+       instance->currentExecutionContext()->doReturn(ESValue(ret));
+       return ESValue();
+    }), false, false);
+    m_datePrototype->set(strings->getMonth, ::escargot::ESFunctionObject::create(NULL, getMonthNode));
+
+
+    //$20.3.4.9 Date.prototype.getSeconds()
+    FunctionDeclarationNode* getSecondsNode = new FunctionDeclarationNode(strings->getSeconds, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+       ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+       int ret = thisObject->asESDateObject()->getSeconds();
+       instance->currentExecutionContext()->doReturn(ESValue(ret));
+       return ESValue();
+    }), false, false);
+    m_datePrototype->set(strings->getSeconds, ::escargot::ESFunctionObject::create(NULL, getSecondsNode));
+
     //$20.3.4.10 Date.prototype.getTime()
     FunctionDeclarationNode* getTimeNode = new FunctionDeclarationNode(strings->getTime, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
@@ -453,6 +529,16 @@ void GlobalObject::installDate()
         return ESValue();
     }), false, false);
     m_datePrototype->set(strings->getTime, ::escargot::ESFunctionObject::create(NULL, getTimeNode));
+
+    //$20.3.4.11 Date.prototype.getTimezoneOffset()
+    FunctionDeclarationNode* getTimezoneOffsetNode = new FunctionDeclarationNode(strings->getTimezoneOffset, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+       ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+       int ret = thisObject->asESDateObject()->getTimezoneOffset();
+       instance->currentExecutionContext()->doReturn(ESValue(ret));
+       return ESValue();
+    }), false, false);
+    m_datePrototype->set(strings->getTimezoneOffset, ::escargot::ESFunctionObject::create(NULL, getTimezoneOffsetNode));
+
 }
 
 void GlobalObject::installMath()

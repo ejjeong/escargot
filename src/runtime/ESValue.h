@@ -769,13 +769,22 @@ public:
         return date;
     }
 
-    void setTimeValue() {
-        gettimeofday(&m_tv, NULL);
-    }
+    void parseStringToDate(struct tm* timeinfo, const InternalString istr);
+
+    void setTimeValue(ESValue str);
 
     double getTimeAsMilisec() {
         return m_tv.tv_sec*1000 + floor(m_tv.tv_usec/1000);
     }
+
+    int getDate();
+    int getDay();
+    int getFullYear();
+    int getHours();
+    int getMinutes();
+    int getMonth();
+    int getSeconds();
+    int getTimezoneOffset();
 
     ESValue valueOf()
     {
