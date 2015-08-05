@@ -59,7 +59,11 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
         sc.push_back(c);
     }
 
+#ifndef NDEBUG
+    std::string sourceString = std::string("print(JSON.stringify(Reflect.parse('") + sc + "'), null, 4))";
+#else
     std::string sourceString = std::string("print(JSON.stringify(Reflect.parse('") + sc + "')))";
+#endif
 
     FILE *fp;
 
