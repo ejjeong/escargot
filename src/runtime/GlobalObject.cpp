@@ -254,6 +254,57 @@ void GlobalObject::installArray()
     }), false, false);
     m_arrayPrototype->set(L"push", ESFunctionObject::create(NULL, arrayPush));
 
+    //$22.1.3.25 Array.prototype.splice(start, deleteCount, ...items)
+    FunctionDeclarationNode* arraySplice = new FunctionDeclarationNode(L"splice", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESArrayObject();
+        int arrlen = thisVal->length().asInt32();
+        escargot::ESArrayObject* ret = ESArrayObject::create(0, instance->globalObject()->arrayPrototype());
+        if (!thisVal->constructor().isUndefinedOrNull())
+            ret->setConstructor(thisVal->constructor());
+        if (arglen == 0) {
+        } else if (arglen >= 1) {
+            int start = instance->currentExecutionContext()->arguments()[0].toNumber();
+            int deleteCnt = 0, insertCnt = 0;
+            int k;
+            if (start < 0)
+                start = arrlen+start > 0 ? arrlen+start : 0;
+            else
+                start = start > arrlen ? arrlen : start;
+            if (arglen == 1) {
+                deleteCnt = arrlen - start;
+            } else {
+                insertCnt = arglen - 2;
+                int dc = instance->currentExecutionContext()->arguments()[1].toNumber();
+                if (dc < 0) dc = 0;
+                deleteCnt = dc > (arrlen-start) ? arrlen-start : dc;
+            }
+            for (k = 0; k < deleteCnt; k++) {
+                int from = start + k;
+                ret->set(k, thisVal->get(from));
+            }
+            int argIdx = 2;
+            int leftInsert = insertCnt;
+            for (k = start; k < start + deleteCnt; k++) {
+                if (leftInsert > 0) {
+                    thisVal->set(k, instance->currentExecutionContext()->arguments()[argIdx]);
+                    leftInsert--; argIdx++;
+                } else {
+                    thisVal->eraseValues(k, start + deleteCnt - k);
+                    break;
+                }
+            }
+            while (leftInsert > 0) {
+                thisVal->insertValue(k, instance->currentExecutionContext()->arguments()[argIdx]);
+                leftInsert--; argIdx++; k++;
+            }
+        }
+        instance->currentExecutionContext()->doReturn(ret);
+
+        return ESValue();
+    }), false, false);
+    m_arrayPrototype->set(L"splice", ESFunctionObject::create(NULL, arraySplice));
+
     m_array = ESFunctionObject::create(NULL, constructor);
     m_arrayPrototype->setConstructor(m_array);
     m_arrayPrototype->set(strings->length, ESValue(0));

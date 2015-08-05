@@ -952,6 +952,28 @@ public:
         }
     }
 
+    void insertValue(int idx, ESValue val)
+    {
+        if (m_fastmode) {
+            m_vector.insert(m_vector.begin()+idx, val);
+            setLength(length().asInt32() + 1);
+        } else {
+            // TODO
+            RELEASE_ASSERT_NOT_REACHED();
+        }
+    }
+
+    void eraseValues(int idx, int cnt)
+    {
+        if (m_fastmode) {
+            m_vector.erase(m_vector.begin()+idx, m_vector.begin()+idx+cnt);
+            setLength(length().asInt32() - cnt);
+        } else {
+            // TODO
+            RELEASE_ASSERT_NOT_REACHED();
+        }
+    }
+
     void convertToSlowMode()
     {
         //wprintf(L"CONVERT TO SLOW MODE!!!");
