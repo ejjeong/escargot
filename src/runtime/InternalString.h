@@ -8,17 +8,17 @@ class InternalStringData : public gc_cleanup, public InternalStringStd {
 public:
     InternalStringData()
     {
-        initHash();
+        m_isHashInited =  false;
     }
     InternalStringData(const wchar_t* str)
         : InternalStringStd(str)
     {
-        initHash();
+        m_isHashInited =  false;
     }
     InternalStringData(InternalStringStd&& src)
     {
         InternalStringStd::operator =(src);
-        initHash();
+        m_isHashInited =  false;
     }
 
     InternalStringData(const InternalStringData& src) = delete;
@@ -26,16 +26,21 @@ public:
 
     ALWAYS_INLINE size_t hashValue() const
     {
+        initHash();
         return m_hashData;
     }
 
-    ALWAYS_INLINE void initHash()
+    ALWAYS_INLINE void initHash() const
     {
-        std::hash<InternalStringStd> hashFn;
-        m_hashData = hashFn((InternalStringStd &)*this);
+        if(!m_isHashInited) {
+            m_isHashInited = true;
+            std::hash<InternalStringStd> hashFn;
+            m_hashData = hashFn((InternalStringStd &)*this);
+        }
     }
 protected:
-    size_t m_hashData;
+    mutable size_t m_hashData;
+    mutable bool m_isHashInited;
 };
 
 
@@ -70,7 +75,6 @@ public:
         //std::swprintf(buf, 511, L"%.17lg", number);
         allocString(wcslen(buf));
         wcscpy((wchar_t *)m_string->data(), buf);
-        m_string->initHash();
     }
 
     explicit InternalString(wchar_t c)
@@ -84,7 +88,6 @@ public:
         int len = std::mbsrtowcs(NULL, &s, 0, &state);
         allocString(len);
         std::mbsrtowcs((wchar_t *)m_string->data(), &s, m_string->size(), &state);
-        m_string->initHash();
     }
 
     ALWAYS_INLINE InternalString(const wchar_t* s)
@@ -121,7 +124,6 @@ public:
             m_string = new InternalStringData(src.m_string->data());
         } else if(src.m_string != &emptyStringData) {
             m_string->append(src.m_string->begin(), src.m_string->end());
-            m_string->initHash();
         }
     }
 
