@@ -15,7 +15,22 @@ public:
         m_isExpression = false;
     }
 
-    virtual ESValue execute(ESVMInstance* instance);
+    virtual ESValue execute(ESVMInstance* instance)
+    {
+        ESFunctionObject* function = ESFunctionObject::create(instance->currentExecutionContext()->environment(), this);
+        //FIXME these lines duplicate with FunctionDeclarationNode::execute
+        function->set__proto__(instance->globalObject()->functionPrototype());
+        ESObject* prototype = ESObject::create();
+        prototype->setConstructor(function);
+        prototype->set__proto__(instance->globalObject()->object());
+        function->setProtoType(prototype);
+        function->set(strings->name, ESString::create(m_id.data()));
+        /////////////////////////////////////////////////////////////////////
+
+        return function;
+    }
+
+
 protected:
     ExpressionNodeVector m_defaults; //defaults: [ Expression ];
     //rest: Identifier | null;

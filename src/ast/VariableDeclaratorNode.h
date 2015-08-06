@@ -4,6 +4,7 @@
 #include "Node.h"
 #include "PatternNode.h"
 #include "ExpressionNode.h"
+#include "IdentifierNode.h"
 
 namespace escargot {
 
@@ -17,7 +18,15 @@ public:
         m_init = NULL;
     }
 
-    virtual ESValue execute(ESVMInstance* instance);
+    virtual ESValue execute(ESVMInstance* instance)
+    {
+        ASSERT(m_id->type() == NodeType::Identifier);
+        if(instance->currentExecutionContext()->needsActivation()) {
+            instance->currentExecutionContext()->environment()->record()->createMutableBindingForAST(((IdentifierNode *)m_id)->name(),
+                    ((IdentifierNode *)m_id)->nonAtomicName(), false);
+        }
+        return ESValue();
+    }
 
 protected:
     Node* m_id; //id: Pattern;

@@ -31,7 +31,7 @@ public:
         }
     }
 
-    virtual ESValue execute(ESVMInstance* instance)
+    ESValue execute(ESVMInstance* instance)
     {
 
         if(m_operator == Plus) {

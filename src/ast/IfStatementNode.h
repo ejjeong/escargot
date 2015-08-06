@@ -16,7 +16,7 @@ public:
         m_alternate = (StatementNode*) alternate;
     }
 
-    virtual ESValue execute(ESVMInstance* instance)
+    ESValue execute(ESVMInstance* instance)
     {
         ESValue test = m_test->execute(instance);
         if (test.toBoolean())

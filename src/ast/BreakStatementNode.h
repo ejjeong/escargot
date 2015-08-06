@@ -9,11 +9,16 @@ class BreakStatementNode : public StatementNode {
 public:
     friend class ESScriptParser;
     BreakStatementNode()
-            : StatementNode(NodeType::ReturnStatement)
+            : StatementNode(NodeType::BreakStatement)
     {
     }
 
-    virtual ESValue execute(ESVMInstance* instance);
+        ESValue execute(ESVMInstance* instance)
+    {
+        instance->currentExecutionContext()->doBreak();
+        RELEASE_ASSERT_NOT_REACHED();
+        return ESValue();
+    }
 };
 
 }

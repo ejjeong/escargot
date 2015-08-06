@@ -14,7 +14,13 @@ public:
         m_argument = argument;
     }
 
-    virtual ESValue execute(ESVMInstance* instance);
+    ESValue execute(ESVMInstance* instance)
+    {
+        instance->currentExecutionContext()->doReturn(m_argument ? m_argument->execute(instance) : ESValue());
+        RELEASE_ASSERT_NOT_REACHED();
+        return ESValue();
+    }
+
 protected:
     Node* m_argument;
 };

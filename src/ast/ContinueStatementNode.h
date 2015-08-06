@@ -9,11 +9,16 @@ class ContinueStatementNode : public StatementNode {
 public:
     friend class ESScriptParser;
     ContinueStatementNode()
-            : StatementNode(NodeType::ReturnStatement)
+            : StatementNode(NodeType::ContinueStatement)
     {
     }
 
-    virtual ESValue execute(ESVMInstance* instance);
+    virtual ESValue execute(ESVMInstance* instance)
+    {
+        instance->currentExecutionContext()->doContinue();
+        RELEASE_ASSERT_NOT_REACHED();
+        return ESValue();
+    }
 };
 
 }

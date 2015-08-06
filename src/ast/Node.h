@@ -2,6 +2,9 @@
 #define Node_h
 
 #include "runtime/ESValue.h"
+#include "vm/ESVMInstance.h"
+#include "runtime/ExecutionContext.h"
+#include "runtime/Environment.h"
 
 namespace escargot {
 

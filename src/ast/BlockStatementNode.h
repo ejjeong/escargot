@@ -15,7 +15,7 @@ public:
         m_body = body;
     }
 
-    virtual ESValue execute(ESVMInstance* instance)
+    ESValue execute(ESVMInstance* instance)
     {
         size_t siz = m_body.size();
         for(unsigned i = 0; i < siz ; ++ i) {

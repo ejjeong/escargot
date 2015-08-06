@@ -20,6 +20,7 @@ public:
         m_expression->execute(instance);
         return ESValue();
     }
+
 protected:
     Node* m_expression; //expression: Expression;
 };
