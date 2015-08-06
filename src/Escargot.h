@@ -31,6 +31,7 @@
 #include <rapidjson/document.h>
 #include <rapidjson/filereadstream.h>
 #include <rapidjson/memorystream.h>
+#include <rapidjson/internal/dtoa.h>
 
 #include <gc_cpp.h>
 #include <gc_allocator.h>

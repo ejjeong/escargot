@@ -60,9 +60,14 @@ public:
 
     explicit InternalString(double number)
     {
-        //FIXME
         wchar_t buf[512];
-        std::swprintf(buf, 511, L"%.15lg", number);
+        char chbuf[50];
+        char* end = rapidjson::internal::dtoa(number, chbuf);
+        int i = 0;
+        for (char* p = chbuf; p != end; ++p)
+            buf[i++] = (wchar_t) *p;
+        buf[i] = L'\0';
+        //std::swprintf(buf, 511, L"%.17lg", number);
         allocString(wcslen(buf));
         wcscpy((wchar_t *)m_string->data(), buf);
         m_string->initHash();
@@ -113,7 +118,7 @@ public:
     void append(const InternalString& src)
     {
         if(m_string == &emptyStringData) {
-            m_string = src.m_string;
+            m_string = new InternalStringData(src.m_string->data());
         } else if(src.m_string != &emptyStringData) {
             m_string->append(src.m_string->begin(), src.m_string->end());
             m_string->initHash();

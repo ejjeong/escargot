@@ -182,15 +182,13 @@ InternalString ESValue::toInternalString() const
             ret.append(L"() {}");
         } else if(o->isESArrayObject()) {
             bool isFirst = true;
-            ret.append(L"[");
             for (int i = 0 ; i < o->asESArrayObject()->length().asInt32() ; i++) {
                 if(!isFirst)
-                    ret.append(L", ");
+                    ret.append(L",");
                 ESValue slot = o->asESArrayObject()->get(i);
                 ret.append(slot.toInternalString());
                 isFirst = false;
               }
-            ret.append(L"]");
         } else if(o->isESErrorObject()) {
             ret.append(o->asESObject()->get(L"name", true).toInternalString().data());
             ret.append(L": ");
