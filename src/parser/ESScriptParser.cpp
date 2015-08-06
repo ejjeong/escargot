@@ -317,7 +317,14 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
                 init_node = fn(init_children, currentBody, false);
             parsedNode = new ForStatementNode(init_node, fn(value[L"test"], currentBody, false), fn(value[L"update"], currentBody, false), fn(value[L"body"], currentBody, false));
         } else if(type == astTypeForInStatement) {
-            parsedNode = new ForInStatementNode(fn(value[L"left"], currentBody, false), fn(value[L"right"], currentBody, false), fn(value[L"body"], currentBody, false), value[L"each"].GetBool());
+            rapidjson::GenericValue<rapidjson::UTF16<>>& left = value[L"left"];
+            InternalString left_type(left[L"type"].GetString());
+            Node* left_node = fn(left, currentBody, false);
+            if (left_type == astTypeVariableDeclaration) {
+                rapidjson::GenericValue<rapidjson::UTF16<>>& left_children = left[L"declarations"];
+                left_node = fn(left_children[0][L"id"], currentBody, false);
+              }
+            parsedNode = new ForInStatementNode(left_node, fn(value[L"right"], currentBody, false), fn(value[L"body"], currentBody, false), value[L"each"].GetBool());
         } else if(type == astTypeWhileStatement) {
             parsedNode = new WhileStatementNode(fn(value[L"test"], currentBody, false), fn(value[L"body"], currentBody, false));
         } else if(type == astTypeThisExpression) {
