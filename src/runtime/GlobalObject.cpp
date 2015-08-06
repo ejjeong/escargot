@@ -294,9 +294,19 @@ void GlobalObject::installArray()
                     break;
                 }
             }
-            while (leftInsert > 0) {
-                thisVal->insertValue(k, instance->currentExecutionContext()->arguments()[argIdx]);
-                leftInsert--; argIdx++; k++;
+            if (thisVal->isFastmode()) {
+                while (leftInsert > 0) {
+                    thisVal->insertValue(k, instance->currentExecutionContext()->arguments()[argIdx]);
+                    leftInsert--; argIdx++; k++;
+                }
+            } else if (leftInsert > 0) {
+                // Move leftInsert steps to right
+                for (int i = arrlen - 1; i >= k; i--) {
+                    thisVal->set(i + leftInsert, thisVal->get(i));
+                }
+                for (int i = k; i < k + leftInsert; i++, argIdx++) {
+                    thisVal->set(i, instance->currentExecutionContext()->arguments()[argIdx]);
+                }
             }
         }
         instance->currentExecutionContext()->doReturn(ret);

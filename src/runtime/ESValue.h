@@ -639,7 +639,7 @@ public:
 
     void set(ESValue key, const ESValue& val, bool shouldThrowException = false)
     {
-        set(InternalAtomicString(&val), val, shouldThrowException);
+        set(InternalAtomicString(&key), val, shouldThrowException);
     }
 
     void defineAccessorProperty(const InternalAtomicString& key,std::function<ESValue (::escargot::ESObject* obj)> getter = nullptr,
@@ -828,7 +828,7 @@ public:
         return arr;
     }
 
-    void set(const InternalAtomicString& key, ESValue val, bool shouldThrowException = false)
+    void set(const InternalAtomicString& key, const ESValue& val, bool shouldThrowException = false)
     {
         if (m_fastmode) convertToSlowMode();
         ESObject::set(key, val, shouldThrowException);
@@ -883,7 +883,7 @@ public:
         }
     }
 
-    void set(int i, ESValue val, bool shouldThrowException = false)
+    void set(int i, const ESValue& val, bool shouldThrowException = false)
     {
         int len = length().asInt32();
         if (i == len && m_fastmode) {
@@ -948,7 +948,7 @@ public:
         return ESObject::find(InternalAtomicString(key.toInternalString().data()));
     }
 
-    void push(ESValue val)
+    void push(const ESValue& val)
     {
         if (m_fastmode) {
             m_vector.push_back(std::move(escargot::ESSlot(val, true, true, true)));
@@ -959,7 +959,7 @@ public:
         }
     }
 
-    void insertValue(int idx, ESValue val)
+    void insertValue(int idx, const ESValue& val)
     {
         if (m_fastmode) {
             m_vector.insert(m_vector.begin()+idx, val);
@@ -974,16 +974,17 @@ public:
     {
         if (m_fastmode) {
             m_vector.erase(m_vector.begin()+idx, m_vector.begin()+idx+cnt);
-            setLength(length().asInt32() - cnt);
         } else {
-            // TODO
-            RELEASE_ASSERT_NOT_REACHED();
+            for (int k = 0, i = idx; i < length().asInt32() && k < cnt; i++, k++) {
+                set(i, get(i+cnt));
+            }
         }
+        setLength(length().asInt32() - cnt);
     }
 
     void convertToSlowMode()
     {
-        //wprintf(L"CONVERT TO SLOW MODE!!!");
+        //wprintf(L"CONVERT TO SLOW MODE!!!  ");
         m_fastmode = false;
         int len = length().asInt32();
         if (len == 0) return;
@@ -1008,6 +1009,11 @@ public:
     {
         ESValue length = ESValue(len);
         setLength(length);
+    }
+
+    bool isFastmode()
+    {
+        return m_fastmode;
     }
 
     ESValue length()

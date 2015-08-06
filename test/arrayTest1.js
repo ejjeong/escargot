@@ -16,6 +16,7 @@ print(arr[5]);
 print(arr);
 print(arr.join("|"));
 print(arr.join(''));
+
 print(arr.splice());
 print(arr);
 print(arr.splice(5));
@@ -23,4 +24,16 @@ print(arr);
 print(arr.splice(3, 1, "abc", "def"));
 print(arr);
 print(arr.splice(3, 4, "abc", "def"));
+print(arr);
+
+print('--------------')
+
+arr.abc = 4;
+print(arr.splice());
+print(arr);
+print(arr.splice(3));
+print(arr);
+print(arr.splice(2, 1));
+print(arr);
+print(arr.splice(3, 4, "ab", "def"));
 print(arr);
