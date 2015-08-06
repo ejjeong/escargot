@@ -344,7 +344,6 @@ protected:
     int m_type;
 };
 
-
 class ESString : public ESPointer {
 protected:
     ESString(const InternalString& str)
@@ -520,7 +519,7 @@ typedef std::unordered_map<InternalAtomicString, ::escargot::ESSlot,
                 std::hash<InternalAtomicString>,std::equal_to<InternalAtomicString>,
                 gc_allocator<std::pair<const InternalAtomicString, ::escargot::ESSlot> > > ESObjectMapStd;
 
-typedef std::vector<::escargot::ESSlot, gc_allocator<::escargot::ESSlot> > JSVectorStd;
+typedef std::vector<::escargot::ESSlot, gc_allocator<::escargot::ESSlot> > ESVectorStd;
 
 /*
 typedef std::map<InternalString, ::escargot::ESSlot *,
@@ -534,10 +533,10 @@ public:
 
 };
 
-class JSVector : public JSVectorStd {
+class ESVector : public ESVectorStd {
 public:
-    JSVector(size_t siz)
-        : JSVectorStd(siz) { }
+    ESVector(size_t siz)
+        : ESVectorStd(siz) { }
 };
 
 class ESObject : public ESPointer {
@@ -632,7 +631,7 @@ public:
 
     void set(ESValue key, const ESValue& val, bool shouldThrowException = false)
     {
-        set(InternalAtomicString(key.toInternalString().data()), val, shouldThrowException);
+        set(InternalAtomicString(&val), val, shouldThrowException);
     }
 
     void defineAccessorProperty(const InternalAtomicString& key,std::function<ESValue (::escargot::ESObject* obj)> getter = nullptr,
@@ -1010,7 +1009,7 @@ public:
 
 protected:
     ESValue m_length;
-    JSVector m_vector;
+    ESVector m_vector;
     bool m_fastmode;
 };
 

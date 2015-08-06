@@ -15,6 +15,7 @@ public:
             : Node(NodeType::Identifier)
     {
         m_name = name;
+        m_nonAtomicName = name;
         m_identifierCacheInvalidationCheckCount = SIZE_MAX;
         m_cachedSlot = NULL;
         m_canUseFastAccess = false;
@@ -29,6 +30,11 @@ public:
         return m_name;
     }
 
+    const InternalString& nonAtomicName()
+    {
+        return m_nonAtomicName;
+    }
+
     void setFastAccessIndex(size_t idx)
     {
         m_canUseFastAccess = true;
@@ -37,6 +43,7 @@ public:
 
 protected:
     InternalAtomicString m_name;
+    InternalString m_nonAtomicName;
 
     size_t m_identifierCacheInvalidationCheckCount;
     ESSlot* m_cachedSlot;

@@ -44,21 +44,33 @@ public:
         return m_lastESObjectMetInMemberExpressionNode;
     }
 
-    ALWAYS_INLINE const InternalAtomicString& lastUsedPropertyNameInMemberExpressionNode()
-    {
-        return m_lastUsedPropertyNameInMemberExpressionNode;
-    }
-
     ALWAYS_INLINE ESValue lastUsedPropertyValueInMemberExpressionNode()
     {
         return m_lastUsedPropertyValueInMemberExpressionNode;
     }
 
-    ALWAYS_INLINE void setLastESObjectMetInMemberExpressionNode(ESObject* obj, const InternalAtomicString& name, const ESValue& value)
+    ALWAYS_INLINE InternalAtomicString lastUsedPropertyValueInMemberExpressionPropertyName()
+    {
+        return m_lastUsedPropertyValueInMemberExpressionPropertyName;
+    }
+
+    ALWAYS_INLINE void setLastESObjectMetInMemberExpressionNode(ESObject* obj, const ESValue& value)
     {
         m_lastESObjectMetInMemberExpressionNode = obj;
-        m_lastUsedPropertyNameInMemberExpressionNode = name;
         m_lastUsedPropertyValueInMemberExpressionNode = value;
+        m_isLastUsedPropertyValueInMemberExpressionNodeSetted = true;
+    }
+
+    ALWAYS_INLINE void setLastESObjectMetInMemberExpressionNode(ESObject* obj, const InternalAtomicString& value)
+    {
+        m_lastESObjectMetInMemberExpressionNode = obj;
+        m_lastUsedPropertyValueInMemberExpressionPropertyName = value;
+        m_isLastUsedPropertyValueInMemberExpressionNodeSetted = false;
+    }
+
+    ALWAYS_INLINE bool isLastUsedPropertyValueInMemberExpressionNodeSetted()
+    {
+        return m_isLastUsedPropertyValueInMemberExpressionNodeSetted;
     }
 
     void doReturn(const ESValue& returnValue)
@@ -112,17 +124,24 @@ public:
 
 private:
     ESFunctionObject* m_function;
+
     bool m_needsActivation;
     bool m_isNewExpression;
+
     ESValue* m_arguments;
     size_t m_argumentCount;
+
     LexicalEnvironment* m_lexicalEnvironment;
     LexicalEnvironment* m_variableEnvironment;
+
     ESObject* m_lastESObjectMetInMemberExpressionNode;
-    InternalAtomicString m_lastUsedPropertyNameInMemberExpressionNode;
+    bool m_isLastUsedPropertyValueInMemberExpressionNodeSetted;
     ESValue m_lastUsedPropertyValueInMemberExpressionNode;
+    InternalAtomicString m_lastUsedPropertyValueInMemberExpressionPropertyName;
+
     ESValue m_returnValue;
     std::jmp_buf m_returnPosition;
+
     std::vector<jmpbuf_wrapper> m_breakPositions;
     std::vector<jmpbuf_wrapper> m_continuePositions;
 };

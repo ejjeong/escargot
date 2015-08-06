@@ -146,7 +146,10 @@ InternalString ESValue::toInternalString() const
     InternalString ret;
 
     if(isInt32()) {
-        ret = InternalString(asInt32());
+        int val = asInt32();
+        if(val >= 0 && val < ESCARGOT_STRINGS_NUMBERS_MAX)
+            ret = strings->nonAtomicNumbers[val];
+        else ret = InternalString(val);
     } else if(isNumber()) {
         double d = asNumber();
         if (std::isnan(d)) ret = L"NaN";

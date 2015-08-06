@@ -15,8 +15,10 @@ InternalAtomicString name;
 InternalAtomicString arguments;
 InternalAtomicString length;
 InternalAtomicString __proto__;
-#define ESCARGOT_STRINGS_NUMBERS_MAX 128
+
+#define ESCARGOT_STRINGS_NUMBERS_MAX 1024
 InternalAtomicString numbers[ESCARGOT_STRINGS_NUMBERS_MAX];
+InternalString nonAtomicNumbers[ESCARGOT_STRINGS_NUMBERS_MAX];
 
 InternalAtomicString String;
 InternalAtomicString Number;

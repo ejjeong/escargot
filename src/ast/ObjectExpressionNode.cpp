@@ -20,7 +20,8 @@ ESValue ObjectExpressionNode::execute(ESVMInstance* instance)
         if(p->key()->type() == NodeType::Identifier) {
             key = ((IdentifierNode* )p->key())->name();
         } else {
-            key = InternalAtomicString(p->key()->execute(instance).toInternalString().data());
+            ESValue ret = p->key()->execute(instance);
+            key = InternalAtomicString(&ret);
         }
         ESValue value = p->value()->execute(instance);
         obj->set(key, value);

@@ -16,6 +16,7 @@ void Strings::initStaticStrings(ESVMInstance* instance)
 
     for(unsigned i = 0; i < ESCARGOT_STRINGS_NUMBERS_MAX ; i ++) {
         numbers[i] = InternalAtomicString(instance, InternalString((int)i).data());
+        nonAtomicNumbers[i] = InternalString((int)i);
     }
 
     String = InternalAtomicString(instance, L"String");

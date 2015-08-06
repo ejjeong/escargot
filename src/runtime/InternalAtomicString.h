@@ -6,8 +6,9 @@
 namespace escargot {
 
 class ESVMInstance;
+class ESValue;
 
-class InternalAtomicStringData : public gc_cleanup, public InternalStringStd {
+class InternalAtomicStringData : public gc_cleanup, public std::wstring {
     friend class InternalAtomicString;
 protected:
     InternalAtomicStringData(ESVMInstance* instance, const wchar_t* str);
@@ -17,8 +18,8 @@ protected:
 
     ALWAYS_INLINE void initHash()
     {
-        std::hash<InternalStringStd> hashFn;
-        m_hashData = hashFn((InternalStringStd &)*this);
+        std::hash<std::wstring> hashFn;
+        m_hashData = hashFn((std::wstring &)*this);
     }
 public:
     InternalAtomicStringData();
@@ -42,6 +43,8 @@ protected:
     {
         m_string = string;
     }
+
+    void init(ESVMInstance* instance, const std::wstring& src);
 public:
     ALWAYS_INLINE InternalAtomicString()
     {
@@ -51,9 +54,12 @@ public:
     {
         m_string = src.m_string;
     }
+
     InternalAtomicString(const std::wstring& src);
     InternalAtomicString(const wchar_t* src);
     InternalAtomicString(ESVMInstance* instance, const std::wstring& src);
+    InternalAtomicString(const ESValue* src);
+
     ALWAYS_INLINE const wchar_t* data() const
     {
         return m_string->data();
