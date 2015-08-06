@@ -387,7 +387,7 @@ void GlobalObject::installString()
         ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
         const InternalString& str = thisObject->asESStringObject()->getStringData()->string();
         int position = instance->currentExecutionContext()->arguments()[0].toInteger();
-        instance->currentExecutionContext()->doReturn(ESString::create(InternalString((int)((*str.string())[position]))));
+        instance->currentExecutionContext()->doReturn(ESValue((*str.string())[position]));
         return ESValue();
     }), false, false);
     m_stringPrototype->set(L"charCodeAt", ESFunctionObject::create(NULL, stringCharCodeAt));
