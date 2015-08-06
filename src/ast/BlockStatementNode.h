@@ -17,11 +17,14 @@ public:
 
     ESValue execute(ESVMInstance* instance)
     {
+        ESValue ret;
         size_t siz = m_body.size();
         for(unsigned i = 0; i < siz ; ++ i) {
-            m_body[i]->execute(instance);
+            ESValue s = m_body[i]->execute(instance);
+            if (!s.isEmpty())
+                ret = s;
         }
-        return ESValue();
+        return ret;
     }
 
 protected:

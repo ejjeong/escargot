@@ -79,6 +79,23 @@ GlobalObject::GlobalObject()
     auto loadFunction = ESFunctionObject::create(NULL, node);
     set(L"load", loadFunction);
     set(L"run", loadFunction);
+
+    // Function Properties of the Global Object
+    definePropertyOrThrow(L"eval", false, false, false);
+    node = new FunctionDeclarationNode(InternalAtomicString(L"eval"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        ESValue argument = instance->currentExecutionContext()->arguments()[0];
+        if(!argument.isESString())
+            instance->currentExecutionContext()->doReturn(argument);
+        std::string scriptStr = argument.asESString()->string().toStdString();
+        bool isDirectCall = true; // TODO
+        ESValue ret = instance->runOnEvalContext([instance, &scriptStr](){
+            ESValue ret = instance->evaluate(scriptStr);
+            return ret;
+        }, isDirectCall);
+        instance->currentExecutionContext()->doReturn(ret);
+        return ESValue();
+    }), false, false);
+    set(L"eval", ESFunctionObject::create(NULL, node));
 }
 
 
@@ -471,7 +488,7 @@ void GlobalObject::installString()
         escargot::ESString* str = ESValue(thisObject).toString();
 
         // 6
-        escargot::ESArrayObject* arr = ESArrayObject::create();
+        escargot::ESArrayObject* arr = ESArrayObject::create(0, instance->globalObject()->arrayPrototype());
 
         // 7
         int lengthA = 0;

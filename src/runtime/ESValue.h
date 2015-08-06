@@ -66,6 +66,7 @@ public:
 
     enum ESNullTag { ESNull };
     enum ESUndefinedTag { ESUndefined };
+    enum ESEmptyValueTag { ESEmptyValue };
     enum ESTrueTag { ESTrue };
     enum ESFalseTag { ESFalse };
     enum EncodeAsDoubleTag { EncodeAsDouble };
@@ -73,6 +74,7 @@ public:
     ESValue();
     ESValue(ESNullTag);
     ESValue(ESUndefinedTag);
+    ESValue(ESEmptyValueTag);
     ESValue(ESTrueTag);
     ESValue(ESFalseTag);
     ESValue(ESPointer* ptr);

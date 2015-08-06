@@ -19,7 +19,7 @@ class ESVMInstance : public gc {
     friend class ESFunctionObject;
 public:
     ESVMInstance();
-    void evaluate(const std::string& source);
+    ESValue evaluate(const std::string& source);
 
     ALWAYS_INLINE ExecutionContext* currentExecutionContext() { return m_currentExecutionContext; }
     GlobalObject* globalObject() { return m_globalObject; }
@@ -41,6 +41,9 @@ public:
         f();
         m_currentExecutionContext = ctx;
     }
+
+    template <typename F>
+    ESValue runOnEvalContext(const F& f, bool isDirectCall);
 
     size_t identifierCacheInvalidationCheckCount()
     {
@@ -77,6 +80,31 @@ protected:
     ESAccessorData m_arrayLengthAccessorData;
     ESAccessorData m_stringLengthAccessorData;
 };
+
+}
+
+#include "runtime/ExecutionContext.h"
+
+namespace escargot {
+
+template <typename F>
+ESValue ESVMInstance::runOnEvalContext(const F& f, bool isDirectCall)
+{
+    ExecutionContext* ctx = m_currentExecutionContext;
+    ESValue ret;
+    if (!ctx || !isDirectCall) {
+        m_currentExecutionContext = m_globalExecutionContext;
+        ret = f();
+    } else {
+        ExecutionContext* caller = ctx->callerContext();
+        ExecutionContext ec(caller->environment(), caller->needsActivation(), false, caller);
+        m_currentExecutionContext = &ec;
+        //m_currentExecutionContext = m_currentExecutionContext->callerContext();
+        ret = f();
+    }
+    m_currentExecutionContext = ctx;
+    return ret;
+}
 
 }
 

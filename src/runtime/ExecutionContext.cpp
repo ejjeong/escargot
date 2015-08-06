@@ -4,7 +4,7 @@
 
 namespace escargot {
 
-ExecutionContext::ExecutionContext(LexicalEnvironment* varEnv, bool needsActivation, bool isNewExpression, ESValue* arguments, size_t argumentsCount)
+ExecutionContext::ExecutionContext(LexicalEnvironment* varEnv, bool needsActivation, bool isNewExpression, ExecutionContext* callerContext, ESValue* arguments, size_t argumentsCount)
 {
     m_lexicalEnvironment = varEnv;
     m_variableEnvironment = varEnv;
@@ -12,6 +12,7 @@ ExecutionContext::ExecutionContext(LexicalEnvironment* varEnv, bool needsActivat
     resetLastESObjectMetInMemberExpressionNode();
     m_needsActivation = needsActivation;
     m_isNewExpression = isNewExpression;
+    m_callerContext = callerContext;
     m_arguments = arguments;
     m_argumentCount = argumentsCount;
 }

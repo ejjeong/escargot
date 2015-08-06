@@ -525,6 +525,12 @@ inline ESValue::ESValue(ESUndefinedTag)
     u.asBits.payload = 0;
 }
 
+inline ESValue::ESValue(ESEmptyValueTag)
+{
+    u.asBits.tag = EmptyValueTag;
+    u.asBits.payload = 0;
+}
+
 inline ESValue::ESValue(ESTrueTag)
 {
     u.asBits.tag = BooleanTag;
@@ -604,6 +610,11 @@ inline double ESValue::asDouble() const
     return u.asDouble;
 }
 
+inline bool ESValue::isEmpty() const
+{
+    return tag() == EmptyValueTag;
+}
+
 inline bool ESValue::isNumber() const
 {
     return isInt32() || isDouble();
@@ -655,6 +666,11 @@ inline ESValue::ESValue(ESNullTag)
 inline ESValue::ESValue(ESUndefinedTag)
 {
     u.asInt64 = ValueUndefined;
+}
+
+inline ESValue::ESValue(ESEmptyValueTag)
+{
+    u.asInt64 = ValueEmpty;
 }
 
 inline ESValue::ESValue(ESTrueTag)
@@ -739,6 +755,11 @@ inline double ESValue::asDouble() const
 {
     ASSERT(isDouble());
     return reinterpretInt64ToDouble(u.asInt64 - DoubleEncodeOffset);
+}
+
+inline bool ESValue::isEmpty() const
+{
+    return u.asInt64 == ValueEmpty;
 }
 
 inline bool ESValue::isNumber() const

@@ -21,7 +21,7 @@ ESVMInstance::ESVMInstance()
     m_globalObject = new GlobalObject();
     LexicalEnvironment* a = new LexicalEnvironment(new GlobalEnvironmentRecord(m_globalObject), NULL);
 
-    m_globalExecutionContext = new ExecutionContext(a, true, false);
+    m_globalExecutionContext = new ExecutionContext(a, true, false, NULL);
     m_currentExecutionContext = m_globalExecutionContext;
     exit();
 
@@ -46,11 +46,12 @@ ESVMInstance::ESVMInstance()
 
 }
 
-void ESVMInstance::evaluate(const std::string& source)
+ESValue ESVMInstance::evaluate(const std::string& source)
 {
+    ESValue ret;
     try {
         Node* node = ESScriptParser::parseScript(this, source.c_str());
-        node->execute(this);
+        ret = node->execute(this);
     } catch(ReferenceError& err) {
         wprintf(L"ReferenceError: %ls\n", err.message().data());
     } catch(TypeError& err) {
@@ -64,6 +65,7 @@ void ESVMInstance::evaluate(const std::string& source)
     ESValue* v = m_globalObject->get("a");
     ASSERT(v->toSmi()->value() == 1);
     */
+    return ret;
 }
 
 void ESVMInstance::enter()

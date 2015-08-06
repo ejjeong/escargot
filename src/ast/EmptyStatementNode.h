@@ -15,7 +15,7 @@ public:
 
     ESValue execute(ESVMInstance* instance)
     {
-        return ESValue();
+        return ESValue(escargot::ESValue::ESEmptyValueTag::ESEmptyValue);
     }
 protected:
 };

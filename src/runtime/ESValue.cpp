@@ -308,7 +308,7 @@ ESValue ESFunctionObject::call(ESValue callee, ESValue receiver, ESValue argumen
         ExecutionContext* currentContext = ESVMInstance->currentExecutionContext();
         ESFunctionObject* fn = callee.asESPointer()->asESFunctionObject();
         if(fn->functionAST()->needsActivation()) {
-            ESVMInstance->m_currentExecutionContext = new ExecutionContext(LexicalEnvironment::newFunctionEnvironment(fn, receiver), true, isNewExpression, arguments, argumentCount);
+            ESVMInstance->m_currentExecutionContext = new ExecutionContext(LexicalEnvironment::newFunctionEnvironment(fn, receiver), true, isNewExpression, currentContext, arguments, argumentCount);
             result = functionCallerInnerProcess(fn, receiver, arguments, argumentCount, true, ESVMInstance);
             ESVMInstance->m_currentExecutionContext = currentContext;
         } else {
@@ -320,7 +320,7 @@ ESValue ESFunctionObject::call(ESValue callee, ESValue receiver, ESValue argumen
             envRec.m_newTarget = receiver;
 
             LexicalEnvironment env(&envRec, fn->outerEnvironment());
-            ExecutionContext ec(&env, false, isNewExpression, arguments, argumentCount);
+            ExecutionContext ec(&env, false, isNewExpression, currentContext, arguments, argumentCount);
             ESVMInstance->m_currentExecutionContext = &ec;
             result = functionCallerInnerProcess(fn, receiver, arguments, argumentCount, fn->functionAST()->needsArgumentsObject(), ESVMInstance);
             ESVMInstance->m_currentExecutionContext = currentContext;

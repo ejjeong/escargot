@@ -17,8 +17,7 @@ public:
 
     ESValue execute(ESVMInstance* instance)
     {
-        m_expression->execute(instance);
-        return ESValue();
+        return m_expression->execute(instance);
     }
 
 protected:

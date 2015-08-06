@@ -125,6 +125,22 @@ public:
         }
     }
 
+    std::string toStdString() const
+    {
+        const wchar_t* pt = data();
+        std::string ret;
+        char buffer [MB_CUR_MAX];
+        memset(buffer, 0, MB_CUR_MAX);
+        while(*pt) {
+            int length = std::wctomb(buffer,*pt);
+            if (length<1)
+                break;
+            ret.append(buffer);
+            pt++;
+        }
+        return ret;
+    }
+
 #ifndef NDEBUG
     void show() const
     {

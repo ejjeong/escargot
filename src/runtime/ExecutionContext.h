@@ -12,7 +12,7 @@ struct jmpbuf_wrapper {
 class LexicalEnvironment;
 class ExecutionContext : public gc {
 public:
-    ExecutionContext(LexicalEnvironment* varEnv, bool needsActivation, bool isNewExpression, ESValue* arguments = NULL, size_t argumentsCount = 0);
+    ExecutionContext(LexicalEnvironment* varEnv, bool needsActivation, bool isNewExpression, ExecutionContext* callerContext, ESValue* arguments = NULL, size_t argumentsCount = 0);
     ALWAYS_INLINE LexicalEnvironment* environment()
     {
         //TODO
@@ -120,6 +120,7 @@ public:
 
     ALWAYS_INLINE bool needsActivation() { return m_needsActivation; } //child & parent AST has eval, with, catch
     ALWAYS_INLINE bool isNewExpression() { return m_isNewExpression; }
+    ExecutionContext* callerContext() { return m_callerContext; }
     ESValue* arguments() { return m_arguments; }
     size_t argumentCount() { return m_argumentCount; }
 
@@ -128,6 +129,8 @@ private:
 
     bool m_needsActivation;
     bool m_isNewExpression;
+
+    ExecutionContext* m_callerContext;
 
     ESValue* m_arguments;
     size_t m_argumentCount;
