@@ -71,7 +71,7 @@ OBJS :=  $(SRC:%.cpp= %.o)
 
 $(MAKECMDGOALS): $(OBJS) $(GCLIBS)
 	$(CXX) -o $(MAKECMDGOALS) $(OBJS) $(GCLIBS) $(LDFLAGS)
-	cp third_party/mozjs/prebuilt/$(HOST)/$(ARCH)/mozjs ./mozjs
+	cp third_party/mozjs/build/shell/js24 ./mozjs
 
 %.o: %.cpp
 	$(CXX) -c $(CXXFLAGS) $*.cpp -o $*.o

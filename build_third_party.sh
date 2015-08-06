@@ -1,6 +1,8 @@
 #!/bin/bash
-sudo apt-get install libatomic-ops-dev
 
+###########################################################
+# GC build
+###########################################################
 cd third_party/bdwgc/
 ./autogen.sh
 make distclean
@@ -19,3 +21,16 @@ cd out/debug
 ../../configure $CONFFLAGS
 make -j
 cd ../..
+
+cd ../..
+
+###########################################################
+# SpiderMonkey build
+###########################################################
+rm -rf third_party/mozjs/build
+mkdir -p third_party/mozjs/build
+cd third_party/mozjs/build
+../js/src/configure
+make -j 24
+cd ../../..
+
