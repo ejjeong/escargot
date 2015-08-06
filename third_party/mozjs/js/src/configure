@@ -8381,6 +8381,13 @@ fi
 
 
 
+# default configuration for faster compilation (yichoi)
+ENABLE_METHODJIT=
+ENABLE_ION=
+ENABLE_MONOIC=
+ENABLE_POLYIC=
+ENABLE_METHODJIT_TYPED_ARRAY=
+ENABLE_YARR_JIT=
 
 if test "$ENABLE_METHODJIT"; then
     cat >> confdefs.pytmp <<\EOF
