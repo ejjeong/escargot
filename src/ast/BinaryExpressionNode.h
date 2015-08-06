@@ -144,7 +144,7 @@ public:
                         //rstr = rval.toESString().string();
                         rstr = rval.toInternalString();
                     }
-                    ret = ESString::create((*lstr.string() + *rstr.string()).c_str());
+                    ret = ESString::create(InternalString(std::move(*lstr.string() + *rstr.string())));
                 } else {
                     if(lval.isInt32() && rval.isInt32()) {
                         int a = lval.asInt32(), b = rval.asInt32();

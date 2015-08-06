@@ -95,6 +95,11 @@ public:
         m_string = new(PointerFreeGC) InternalStringData(s);
     }
 
+    ALWAYS_INLINE InternalString(InternalStringStd&& s)
+    {
+        m_string = new(PointerFreeGC) InternalStringData(std::move(s));
+    }
+
 
     ALWAYS_INLINE InternalString(const InternalString& s)
     {
