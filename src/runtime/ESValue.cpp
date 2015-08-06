@@ -99,22 +99,27 @@ ESString* ESValue::toString() const
 
 ESObject* ESValue::toObject() const
 {
+    ESFunctionObject* function;
+    ESObject* receiver;
     if (isNumber()) {
-        ESFunctionObject* function = ESVMInstance::currentInstance()->globalObject()->number();
-        ESObject* receiver = ESNumberObject::create(ESValue(toNumber()));
-        receiver->setConstructor(function);
-        receiver->set__proto__(function->protoType());
-        /*
-        std::vector<ESValue, gc_allocator<ESValue>> arguments;
-        arguments.push_back(this);
-        ESFunctionObject::call((ESValue) function, receiver, &arguments[0], arguments.size(), this);
-        */
-        return receiver;
+        function = ESVMInstance::currentInstance()->globalObject()->number();
+        receiver = ESNumberObject::create(ESValue(toNumber()));
+    } else if (isESString()) {
+        function = ESVMInstance::currentInstance()->globalObject()->string();
+        receiver = ESStringObject::create(asESPointer()->asESString()->string());
     } else if (isESPointer() && asESPointer()->isESObject()) {
         return asESPointer()->asESObject();
     } else {
         RELEASE_ASSERT_NOT_REACHED();
     }
+    receiver->setConstructor(function);
+    receiver->set__proto__(function->protoType());
+    /*
+    std::vector<ESValue, gc_allocator<ESValue>> arguments;
+    arguments.push_back(this);
+    ESFunctionObject::call((ESValue) function, receiver, &arguments[0], arguments.size(), this);
+    */
+    return receiver;
 }
 
 

@@ -13,12 +13,7 @@ ESValue MemberExpressionNode::execute(ESVMInstance* instance)
 {
     ESValue value = m_object->execute(instance);
     //TODO string,number-> stringObject, numberObject;
-    if(value.isESPointer() && value.asESPointer()->isESString()) {
-        ESStringObject* stringObject = ESStringObject::create(value.asESPointer()->asESString()->string());
-        stringObject->set__proto__(instance->globalObject()->stringPrototype());
-        stringObject->setConstructor(instance->globalObject()->string());
-        value = stringObject;
-    } else if (value.isPrimitive()) {
+    if (value.isPrimitive()) {
         value = value.toObject();
     }
 
