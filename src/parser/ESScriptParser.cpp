@@ -36,7 +36,9 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             if(i + 1 < source.length() && source[i + 1] == '/') {
                 while(source[i] != '\n' && i < source.length()) {
                     i ++;
-                }
+                  }
+                sc.push_back('\\');
+                sc.push_back('n');
                 continue;
             }
             else if(i + 1 < source.length() && source[i + 1] == '*') {
@@ -58,6 +60,8 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
 
         sc.push_back(c);
     }
+
+//    wprintf(L"sc = %s\n", sc.c_str());
 
 #ifndef NDEBUG
     std::string sourceString = std::string("print(JSON.stringify(Reflect.parse('") + sc + "'), null, 4))";
