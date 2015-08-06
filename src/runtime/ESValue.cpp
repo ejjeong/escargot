@@ -326,7 +326,7 @@ ESValue ESFunctionObject::call(ESValue callee, ESValue receiver, ESValue argumen
             ESVMInstance->m_currentExecutionContext = currentContext;
         }
     } else {
-        throw TypeError();
+        throw TypeError(L"Callee is not a function object");
     }
 
     return result;

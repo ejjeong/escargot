@@ -58,7 +58,7 @@ ESValue MemberExpressionNode::execute(ESVMInstance* instance)
             }
         }
     } else {
-        throw TypeError();
+        throw TypeError(L"MemberExpression: object doesn't have object type");
     }
     return ESValue();
 }

@@ -444,7 +444,95 @@ void GlobalObject::installString()
 
     //$21.1.3.17 String.prototype.split(separator, limit)
     FunctionDeclarationNode* stringSplit = new FunctionDeclarationNode(L"split", InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        // 1, 2
+        ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+
+        // 3
+        int argCount = instance->currentExecutionContext()->argumentCount();
+        ESValue separator = argCount>0 ? instance->currentExecutionContext()->arguments()[0] : ESValue();
+        /*
+        if(!separator.isUndefinedOrNull()) {
+            ESValue splitter = separator.toObject()
+            RELEASE_ASSERT_NOT_REACHED(); // TODO
+        }
+        */
+
+        // 4, 5
+        escargot::ESString* str = ESValue(thisObject).toString();
+
+        // 6
+        escargot::ESArrayObject* arr = ESArrayObject::create();
+
+        // 7
+        int lengthA = 0;
+
+        // 8, 9
+        double lim = argCount>1 ? instance->currentExecutionContext()->arguments()[1].toLength() : std::pow(2, 53)-1;
+
+        // 10
+        int s = str->length();
+
+        // 11
+        int p = 0;
+
+        // 12, 13
+        const InternalString& R = separator.toString()->string();
+
+        // 14
+        if(lim == 0)
+            return arr;
+
+        // 15
+        if(separator.isUndefined()) {
+            arr->set(0, str);
+            instance->currentExecutionContext()->doReturn(ESValue(arr));
+        }
+
+        // 16
+        if(s == 0)
+            RELEASE_ASSERT_NOT_REACHED(); // TODO
+
+        // 17
+        int q = p;
+
+        // 18
+        auto splitMatch = [] (const InternalString& S, int q, const InternalString& R) -> ESValue {
+            int s = S.length();
+            int r = R.length();
+            if (q+r > s)
+                return ESValue(false);
+            for (int i=0; i<r; i++)
+                if (S.data()[q+i] != R.data()[i])
+                    return ESValue(false);
+            return ESValue(q+r);
+        };
+        while(q != s) {
+            ESValue e = splitMatch(str->string(), q, R);
+            if(e == ESValue(ESValue::ESFalseTag::ESFalse))
+                q++;
+            else {
+                if(e.asInt32() == p)
+                    q++;
+                else {
+                    escargot::ESString* T = str->substring(p, q);
+                    arr->set(lengthA, ESValue(T));
+                    lengthA++;
+                    if ((double)lengthA == lim)
+                        instance->currentExecutionContext()->doReturn(ESValue(arr));
+                    p = e.asInt32();
+                    q = p;
+                }
+            }
+        }
+
+        // 19
+        escargot::ESString* T = str->substring(p, s);
+
+        // 20
+        arr->set(lengthA, ESValue(T));
+
+        // 21, 22
+        instance->currentExecutionContext()->doReturn(ESValue(arr));
         return ESValue();
     }), false, false);
     m_stringPrototype->set(L"split", ESFunctionObject::create(NULL, stringSplit));
@@ -455,9 +543,9 @@ void GlobalObject::installString()
         //if (thisObject->isESUndefined() || thisObject->isESNull())
         //    throw TypeError();
 
-        const InternalString& str = thisObject->asESStringObject()->getStringData()->string();
+        escargot::ESString* str = thisObject->asESStringObject()->getStringData();
         int argCount = instance->currentExecutionContext()->argumentCount();
-        int len = str.length();
+        int len = str->length();
         int intStart = instance->currentExecutionContext()->arguments()[0].toInteger();
         ESValue& end = instance->currentExecutionContext()->arguments()[1];
         int intEnd = (end.isUndefined() || argCount < 2) ? len : end.toInteger();
@@ -465,8 +553,7 @@ void GlobalObject::installString()
         int finalEnd = std::min(std::max(intEnd, 0), len);
         int from = std::min(finalStart, finalEnd);
         int to = std::max(finalStart, finalEnd);
-        InternalString ret(str.string()->substr(from, to-from).c_str());
-        instance->currentExecutionContext()->doReturn(ESString::create(ret));
+        instance->currentExecutionContext()->doReturn(str->substring(from, to));
         return ESValue();
     }), false, false);
     m_stringPrototype->set(L"substring", ESFunctionObject::create(NULL, stringSubstring));

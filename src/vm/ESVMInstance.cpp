@@ -52,9 +52,9 @@ void ESVMInstance::evaluate(const std::string& source)
         Node* node = ESScriptParser::parseScript(this, source.c_str());
         node->execute(this);
     } catch(ReferenceError& err) {
-        wprintf(L"ReferenceError - %ls\n", err.identifier().data());
+        wprintf(L"ReferenceError: %ls\n", err.message().data());
     } catch(TypeError& err) {
-        wprintf(L"TypeError\n");
+        wprintf(L"TypeError: %ls\n", err.message().data());
     } catch(const ESValue& err) {
         wprintf(L"Uncaught %ls\n", err.toInternalString().data());
     }

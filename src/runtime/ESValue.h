@@ -138,6 +138,7 @@ public:
     int32_t toInt32() const; //$7.1.5 ToInt32
     ESString* toString() const; //$7.1.12 ToString
     ESObject* toObject() const; //$7.1.13 ToObject
+    double toLength() const; //$7.1.15 ToLength
 
     InternalString toInternalString() const;
     ESString* asESString() const;
@@ -362,9 +363,16 @@ public:
         return m_string;
     }
 
-    ESValue length()
+    int length()
     {
-        return ESValue(m_string.length());
+        return m_string.length();
+    }
+
+    ESString* substring(int from, int to) const
+    {
+        ASSERT(0 <= from && from <= to && to <= m_string.length());
+        InternalString ret(m_string.string()->substr(from, to-from).c_str());
+        return ESString::create(ret);
     }
 
 protected:
@@ -714,10 +722,10 @@ protected:
 
 class ESErrorObject : public ESObject {
 protected:
-    ESErrorObject(ESPointer::Type type = ESPointer::Type::ESErrorObject)
+    ESErrorObject(const InternalString& message = InternalString(&emptyStringData))
            : ESObject((Type)(Type::ESObject | Type::ESErrorObject))
     {
-
+        m_message = message;
     }
 
 public:
@@ -725,27 +733,27 @@ public:
     {
         return new ESErrorObject();
     }
+
+    const InternalString& message() { return m_message; }
+
+protected:
+    InternalString m_message;
 };
 
 class ReferenceError : public ESErrorObject {
 public:
-    ReferenceError()
+    ReferenceError(const InternalString& message = InternalString(&emptyStringData))
+        : ESErrorObject(message)
     {
-        m_identifier = L"";
     }
-    ReferenceError(const InternalString& identifier)
-    {
-        m_identifier = identifier;
-    }
-
-    const InternalString& identifier() { return m_identifier; }
-
-protected:
-    InternalString m_identifier;
 };
 
 class TypeError : public ESErrorObject {
-
+public:
+    TypeError(const InternalString& message = InternalString(&emptyStringData))
+        : ESErrorObject(message)
+    {
+    }
 };
 
 class ESDateObject : public ESObject {
@@ -1071,7 +1079,7 @@ protected:
 
         //$21.1.4.1 String.length
         defineAccessorProperty(strings->length, [](ESObject* self) -> ESValue {
-            return self->asESStringObject()->m_stringData->length();
+            return ESValue(self->asESStringObject()->m_stringData->length());
         }, NULL, false, true, false);
     }
 

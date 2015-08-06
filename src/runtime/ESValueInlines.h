@@ -487,6 +487,11 @@ inline bool ESValue::isObject() const
     return isESPointer() && asESPointer()->isESStringObject();
 }
 
+inline double ESValue::toLength() const
+{
+    return toInteger(); // TODO
+}
+
 inline bool ESValue::isPrimitive() const
 {
     return (!isESPointer()) || isESString();
@@ -557,6 +562,16 @@ inline ESValue::ESValue(int i)
 {
     u.asBits.tag = Int32Tag;
     u.asBits.payload = i;
+}
+
+inline bool ESValue::operator==(const ESValue& other) const
+{
+    return u.ptr == other.u.ptr;
+}
+
+inline bool ESValue::operator!=(const ESValue& other) const
+{
+    return u.ptr != other.u.ptr;
 }
 
 inline bool ESValue::isInt32() const
@@ -677,6 +692,16 @@ ALWAYS_INLINE ESValue::ESValue(EncodeAsDoubleTag, double d)
 inline ESValue::ESValue(int i)
 {
     u.asInt64 = TagTypeNumber | static_cast<uint32_t>(i);
+}
+
+inline bool ESValue::operator==(const ESValue& other) const
+{
+    return u.asInt64 == other.u.asInt64;
+}
+
+inline bool ESValue::operator!=(const ESValue& other) const
+{
+    return u.asInt64 != other.u.asInt64;
 }
 
 inline bool ESValue::isInt32() const
