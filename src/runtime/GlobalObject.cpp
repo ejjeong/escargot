@@ -138,7 +138,7 @@ void GlobalObject::installError()
 
 void GlobalObject::installArray()
 {
-    m_arrayPrototype = ESArrayObject::create(-1, m_objectPrototype);
+    m_arrayPrototype = ESArrayObject::create(0, m_objectPrototype);
 
     //$22.1.1 Array Constructor
     FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings->Array, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {

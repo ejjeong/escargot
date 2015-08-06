@@ -830,7 +830,6 @@ public:
 
     void set(const InternalAtomicString& key, const ESValue& val, bool shouldThrowException = false)
     {
-        if (m_fastmode) convertToSlowMode();
         ESObject::set(key, val, shouldThrowException);
     }
 
@@ -845,18 +844,13 @@ public:
                 setLength(len+1);
             }
             else if (i >= len) {
-                if (m_fastmode) convertToSlowMode();
+                if (shouldConvertToSlowMode(i)) convertToSlowMode();
                 setLength(i+1);
             }
-        } else {
             if (m_fastmode)
-                convertToSlowMode();
+                return &m_vector[i];
         }
-        if (m_fastmode) {
-            return &m_vector[i];
-        } else {
-            return ESObject::definePropertyOrThrow(key.toInternalString().data(), isWritable, isEnumerable, isConfigurable);
-        }
+        return ESObject::definePropertyOrThrow(key.toInternalString().data(), isWritable, isEnumerable, isConfigurable);
     }
 
     void set(ESValue key, const ESValue& val, bool shouldThrowException = false)
@@ -869,18 +863,15 @@ public:
                 setLength(len+1);
             }
             else if (i >= len) {
-                if (m_fastmode) convertToSlowMode();
+                if (shouldConvertToSlowMode(i)) convertToSlowMode();
                 setLength(i+1);
             }
-        } else {
-            if (m_fastmode)
-                convertToSlowMode();
+            if (m_fastmode) {
+                m_vector[i] = escargot::ESSlot(val, true, true, true);
+                return;
+            }
         }
-        if (m_fastmode) {
-            m_vector[i] = escargot::ESSlot(val, true, true, true);
-        } else {
-            ESObject::set(InternalAtomicString(key.toInternalString().data()), val, shouldThrowException);
-        }
+        ESObject::set(InternalAtomicString(key.toInternalString().data()), val, shouldThrowException);
     }
 
     void set(int i, const ESValue& val, bool shouldThrowException = false)
@@ -890,7 +881,7 @@ public:
             setLength(len+1);
         }
         else if (i >= len) {
-            if (m_fastmode) convertToSlowMode();
+            if (shouldConvertToSlowMode(i)) convertToSlowMode();
             setLength(i+1);
         }
         if (m_fastmode) {
@@ -950,13 +941,7 @@ public:
 
     void push(const ESValue& val)
     {
-        if (m_fastmode) {
-            m_vector.push_back(std::move(escargot::ESSlot(val, true, true, true)));
-            int len = length().asInt32();
-            setLength(len + 1);
-        } else {
-            set(m_length.asInt32(), val);
-        }
+        set(m_length.asInt32(), val);
     }
 
     void insertValue(int idx, const ESValue& val)
@@ -980,6 +965,12 @@ public:
             }
         }
         setLength(length().asInt32() - cnt);
+    }
+
+    bool shouldConvertToSlowMode(int i) {
+        if (m_fastmode && i > MAX_FASTMODE_SIZE)
+            return true;
+        return false;
     }
 
     void convertToSlowMode()
@@ -1025,6 +1016,7 @@ protected:
     ESValue m_length;
     ESVector m_vector;
     bool m_fastmode;
+    static const int MAX_FASTMODE_SIZE = 65536;
 };
 
 class LexicalEnvironment;
