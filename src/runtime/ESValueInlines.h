@@ -477,7 +477,9 @@ inline int32_t ESValue::toInt32() const
     } else if (isBoolean()) {
         if (asBoolean()) return 1;
         else return 0;
-    }
+    } else if (isUndefined()) {
+        return 0;
+     }
     //TODO
     RELEASE_ASSERT_NOT_REACHED();
 }
