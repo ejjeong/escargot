@@ -709,7 +709,7 @@ void GlobalObject::installMath()
 {
     // create math object
     FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings->Math, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
-
+        std::srand(std::time(0));
         return ESValue();
     }), false, false);
     m_math = ::escargot::ESFunctionObject::create(NULL, constructor);
@@ -829,7 +829,6 @@ void GlobalObject::installMath()
 
     // initialize math object: $20.2.2.27 Math.random()
     FunctionDeclarationNode* randomNode = new FunctionDeclarationNode(strings->random, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
-        std::srand(std::time(0));
         double rand = (double) std::rand()/RAND_MAX;
         instance->currentExecutionContext()->doReturn(ESValue(rand));
         return ESValue();
