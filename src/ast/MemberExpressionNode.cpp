@@ -13,7 +13,7 @@ ESValue MemberExpressionNode::execute(ESVMInstance* instance)
 {
     ESValue value = m_object->execute(instance);
     //TODO string,number-> stringObject, numberObject;
-    if (value.isPrimitive()) {
+    if (!m_computed && value.isPrimitive()) {
         value = value.toObject();
     }
 
@@ -57,6 +57,9 @@ ESValue MemberExpressionNode::execute(ESVMInstance* instance)
                 prototype = obj->__proto__();
             }
         }
+    } else if (value.isESString()) {
+        int prop_val = m_property->execute(instance).asInt32();
+        return value.asESString()->substring(prop_val, prop_val+1);
     } else {
         throw TypeError(L"MemberExpression: object doesn't have object type");
     }
