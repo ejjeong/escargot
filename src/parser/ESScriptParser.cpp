@@ -434,14 +434,15 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
         } else if(type == NodeType::Identifier) {
             //use case
             InternalAtomicString name = ((IdentifierNode *)currentNode)->name();
+            InternalString nonAtomicName = ((IdentifierNode *)currentNode)->nonAtomicName();
             auto iter = std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),name);
-            if(name == strings->arguments && iter == identifierInCurrentContext.end() && nearFunctionNode) {
-                identifierInCurrentContext.push_back(strings->arguments);
+            if(name == strings->atomicArguments && iter == identifierInCurrentContext.end() && nearFunctionNode) {
+                identifierInCurrentContext.push_back(strings->atomicArguments);
                 nearFunctionNode->markNeedsArgumentsObject();
                 iter = std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),name);
             }
             if(identifierInCurrentContext.end() == iter) {
-                if(!instance->globalObject()->hasKey(name)) {
+                if(!instance->globalObject()->hasKey(nonAtomicName)) {
                     if(nearFunctionNode && nearFunctionNode->outerFunctionNode()) {
                         //wprintf(L"this function  needs capture! -> %ls\n", ((IdentifierNode *)currentNode)->name().data());
                         markNeedsActivation(nearFunctionNode->outerFunctionNode());

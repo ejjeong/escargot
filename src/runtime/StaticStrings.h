@@ -7,49 +7,52 @@ class ESVMInstance;
 
 class Strings {
 public:
-InternalAtomicString null;
-InternalAtomicString undefined;
-InternalAtomicString prototype;
-InternalAtomicString constructor;
-InternalAtomicString name;
-InternalAtomicString arguments;
-InternalAtomicString length;
-InternalAtomicString __proto__;
+InternalString null;
+InternalString undefined;
+InternalString prototype;
+InternalString constructor;
+InternalString name;
+InternalString arguments;
+InternalString length;
+InternalString __proto__;
 
-#define ESCARGOT_STRINGS_NUMBERS_MAX 1024
+InternalAtomicString atomicName;
+InternalAtomicString atomicArguments;
+
+#define ESCARGOT_STRINGS_NUMBERS_MAX 128
 InternalAtomicString numbers[ESCARGOT_STRINGS_NUMBERS_MAX];
 InternalString nonAtomicNumbers[ESCARGOT_STRINGS_NUMBERS_MAX];
 
-InternalAtomicString String;
-InternalAtomicString Number;
-InternalAtomicString Object;
-InternalAtomicString ReferenceError;
-InternalAtomicString Array;
-InternalAtomicString Function;
-InternalAtomicString Empty;
-InternalAtomicString Date;
-InternalAtomicString getDate;
-InternalAtomicString getDay;
-InternalAtomicString getFullYear;
-InternalAtomicString getHours;
-InternalAtomicString getMinutes;
-InternalAtomicString getMonth;
-InternalAtomicString getSeconds;
-InternalAtomicString getTime;
-InternalAtomicString getTimezoneOffset;
-InternalAtomicString setTime;
-InternalAtomicString Math;
-InternalAtomicString PI;
-InternalAtomicString abs;
-InternalAtomicString cos;
-InternalAtomicString max;
-InternalAtomicString floor;
-InternalAtomicString pow;
-InternalAtomicString random;
-InternalAtomicString round;
-InternalAtomicString sin;
-InternalAtomicString sqrt;
-InternalAtomicString toString;
+InternalString String;
+InternalString Number;
+InternalString Object;
+InternalString ReferenceError;
+InternalString Array;
+InternalString Function;
+InternalString Empty;
+InternalString Date;
+InternalString getDate;
+InternalString getDay;
+InternalString getFullYear;
+InternalString getHours;
+InternalString getMinutes;
+InternalString getMonth;
+InternalString getSeconds;
+InternalString getTime;
+InternalString getTimezoneOffset;
+InternalString setTime;
+InternalString Math;
+InternalString PI;
+InternalString abs;
+InternalString cos;
+InternalString max;
+InternalString floor;
+InternalString pow;
+InternalString random;
+InternalString round;
+InternalString sin;
+InternalString sqrt;
+InternalString toString;
 
 void initStaticStrings(ESVMInstance* instance);
 };

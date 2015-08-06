@@ -15,8 +15,8 @@ ESValue ForInStatementNode::execute(ESVMInstance* instance)
         return ESValue();
 
     ESObject* obj = exprValue.toObject();
-    std::vector<InternalAtomicString> propertyNames;
-    obj->enumeration([&propertyNames](const InternalAtomicString& key, ESSlot* slot) {
+    std::vector<InternalString> propertyNames;
+    obj->enumeration([&propertyNames](const InternalString& key, ESSlot* slot) {
         propertyNames.push_back(key);
     });
     instance->currentExecutionContext()->setJumpPositionAndExecute([&](){

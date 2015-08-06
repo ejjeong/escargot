@@ -4,6 +4,7 @@
 #include "ESValue.h"
 #include "ExecutionContext.h"
 #include "ast/FunctionNode.h"
+#include "vm/ESVMInstance.h"
 
 namespace escargot {
 
@@ -28,12 +29,13 @@ LexicalEnvironment* LexicalEnvironment::newFunctionEnvironment(ESFunctionObject*
     return env;
 }
 
-void EnvironmentRecord::createMutableBindingForAST(const InternalAtomicString& name,bool canDelete)
+void EnvironmentRecord::createMutableBindingForAST(const InternalAtomicString& atomicName,const InternalString& name,bool canDelete)
 {
     if(UNLIKELY(isGlobalEnvironmentRecord())) {
-        toGlobalEnvironmentRecord()->createGlobalVarBinding(name, canDelete);
+        toGlobalEnvironmentRecord()->createGlobalVarBinding(atomicName, name, canDelete);
+        ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
     } else {
-        createMutableBinding(name, canDelete);
+        createMutableBinding(atomicName, name, canDelete);
     }
 }
 
@@ -48,17 +50,22 @@ bool GlobalEnvironmentRecord::hasVarDeclaration(const InternalAtomicString& name
 //$8.1.1.4.15
 bool GlobalEnvironmentRecord::canDeclareGlobalVar(const InternalAtomicString& name)
 {
+    RELEASE_ASSERT_NOT_REACHED();
+    /*
     ESObject* globalObj = m_objectRecord->bindingObject();
     bool hasProperty = globalObj->hasOwnProperty(name);
     if (hasProperty)
         return true;
     else
         return globalObj->isExtensible();
+        */
 }
 
 //$8.1.1.4.16
 bool GlobalEnvironmentRecord::canDeclareGlobalFunction(const InternalAtomicString& name)
 {
+    RELEASE_ASSERT_NOT_REACHED();
+    /*
     ESObject* globalObj = m_objectRecord->bindingObject();
     ESSlot* pd = globalObj->find(name);
     if(pd == NULL)
@@ -68,29 +75,30 @@ bool GlobalEnvironmentRecord::canDeclareGlobalFunction(const InternalAtomicStrin
         return true;
 
     // IsDataDescriptor && ..
+     */
     
     return false;
 }
 
 //$8.1.1.4.17
-void GlobalEnvironmentRecord::createGlobalVarBinding(const InternalAtomicString& name, bool canDelete)
+void GlobalEnvironmentRecord::createGlobalVarBinding(const InternalAtomicString& name,const InternalString& nonAtomicName, bool canDelete)
 {
     ESObject* globalObj = m_objectRecord->bindingObject();
-    bool hasProperty = globalObj->hasOwnProperty(name);
+    bool hasProperty = globalObj->hasOwnProperty(nonAtomicName);
     bool extensible = globalObj->isExtensible();
     if (!hasProperty && extensible) {
-        m_objectRecord->createMutableBinding(name, canDelete);
-        m_objectRecord->initializeBinding(name, ESValue());
+        m_objectRecord->createMutableBinding(name, nonAtomicName, canDelete);
+        m_objectRecord->initializeBinding(name, nonAtomicName, ESValue());
     }
     if( std::find(m_varNames.begin(), m_varNames.end(), name) == m_varNames.end() )
         m_varNames.push_back(name);
 }
 
 //$8.1.1.4.18
-void GlobalEnvironmentRecord::createGlobalFunctionBinding(const InternalAtomicString& name, const ESValue& V, bool canDelete) {
+void GlobalEnvironmentRecord::createGlobalFunctionBinding(const InternalAtomicString& name,const InternalString& nonAtomicName, const ESValue& V, bool canDelete) {
     ESObject* globalObj = m_objectRecord->bindingObject();
-    globalObj->definePropertyOrThrow(name, true, true, canDelete);
-    globalObj->set(name, V, false);
+    globalObj->definePropertyOrThrow(nonAtomicName, true, true, canDelete);
+    globalObj->set(nonAtomicName, V, false);
     if( std::find(m_varNames.begin(), m_varNames.end(), name) == m_varNames.end() )
         m_varNames.push_back(name);
 }
@@ -101,65 +109,69 @@ ESObject* GlobalEnvironmentRecord::getThisBinding() {
 }
 
 //$8.1.1.4.1
-ESSlot* GlobalEnvironmentRecord::hasBinding(const InternalAtomicString& name) {
-    ESSlot* ret = m_declarativeRecord->hasBinding(name);
+ESSlot* GlobalEnvironmentRecord::hasBinding(const InternalAtomicString& atomicName, const InternalString& name) {
+    ESSlot* ret = m_declarativeRecord->hasBinding(atomicName, name);
     if(ret)
         return ret;
-    return m_objectRecord->hasBinding(name);
+    return m_objectRecord->hasBinding(atomicName, name);
 }
 
 //$8.1.1.4.2
-void GlobalEnvironmentRecord::createMutableBinding(const InternalAtomicString& name, bool canDelete) {
-    if( m_declarativeRecord->hasBinding(name) )
+void GlobalEnvironmentRecord::createMutableBinding(const InternalAtomicString& name,const InternalString& nonAtomicName, bool canDelete) {
+    if( m_declarativeRecord->hasBinding(name, nonAtomicName) )
         throw "TypeError";
-    m_declarativeRecord->createMutableBinding(name, canDelete);
+    m_declarativeRecord->createMutableBinding(name, nonAtomicName, canDelete);
 }
 
 //$8.1.1.4.4
-void GlobalEnvironmentRecord::initializeBinding(const InternalAtomicString& name, const ESValue& V) {
-    if( m_declarativeRecord->hasBinding(name) )
-        m_declarativeRecord->initializeBinding(name, V);
+void GlobalEnvironmentRecord::initializeBinding(const InternalAtomicString& name,const InternalString& nonAtomicName, const ESValue& V) {
+    //FIXME
+    if( m_declarativeRecord->hasBinding(name, nonAtomicName) )
+        m_declarativeRecord->initializeBinding(name, nonAtomicName, V);
     else {
-        ASSERT(m_objectRecord->hasBinding(name));
-        m_objectRecord->initializeBinding(name, V);
+        ASSERT(m_objectRecord->hasBinding(name, nonAtomicName));
+        m_objectRecord->initializeBinding(name, nonAtomicName, V);
     }
 }
 
 //$8.1.1.4.6
+/*
 ESValue GlobalEnvironmentRecord::getBindingValue(const InternalAtomicString& name, bool ignoreReferenceErrorException) {
-    if( m_declarativeRecord->hasBinding(name) )
-        return m_declarativeRecord->getBindingValue(name, ignoreReferenceErrorException);
-    else {
-        return m_objectRecord->getBindingValue(name, ignoreReferenceErrorException);
-    }
-}
+    //FIXME
+    //if( m_declarativeRecord->hasBinding(name) )
+    //    return m_declarativeRecord->getBindingValue(name, ignoreReferenceErrorException);
+    //else {
+    //    return m_objectRecord->getBindingValue(name, ignoreReferenceErrorException);
+    //}
+    return m_objectRecord->getBindingValue(name, ignoreReferenceErrorException);
+}*/
 
 //$8.1.1.4.5
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-global-environment-records-setmutablebinding-n-v-s
-void GlobalEnvironmentRecord::setMutableBinding(const InternalAtomicString& name, const ESValue& V, bool S) {
-    if( m_declarativeRecord->hasBinding(name)) {
-        m_declarativeRecord->setMutableBinding(name, V, S);
+void GlobalEnvironmentRecord::setMutableBinding(const InternalAtomicString& name, const InternalString& nonAtomicName, const ESValue& V, bool S) {
+    if( m_declarativeRecord->hasBinding(name, nonAtomicName)) {
+        m_declarativeRecord->setMutableBinding(name, nonAtomicName, V, S);
     } else {
-        m_objectRecord->setMutableBinding(name, V, S);
+        m_objectRecord->setMutableBinding(name, nonAtomicName, V, S);
     }
 }
 
 //$8.1.1.2.2
-void ObjectEnvironmentRecord::createMutableBinding(const InternalAtomicString& name, bool canDelete)
+void ObjectEnvironmentRecord::createMutableBinding(const InternalAtomicString& name,const InternalString& nonAtomicName, bool canDelete)
 {
-    m_bindingObject->definePropertyOrThrow(name, true, true, canDelete);
+    m_bindingObject->definePropertyOrThrow(nonAtomicName, true, true, canDelete);
 }
 
 //$8.1.1.2.4
-void ObjectEnvironmentRecord::initializeBinding(const InternalAtomicString& name, const ESValue& V)
+void ObjectEnvironmentRecord::initializeBinding(const InternalAtomicString& name,const InternalString& nonAtomicName, const ESValue& V)
 {
-    return setMutableBinding(name, V, false);
+    return setMutableBinding(name, nonAtomicName, V, false);
 }
 
 //$8.1.1.2.5
-void ObjectEnvironmentRecord::setMutableBinding(const InternalAtomicString& name, const ESValue& V, bool S)
+void ObjectEnvironmentRecord::setMutableBinding(const InternalAtomicString& name,const InternalString& nonAtomicName, const ESValue& V, bool S)
 {
-    m_bindingObject->set(name, V, S);
+    m_bindingObject->set(name.data(), V, S);
 }
 
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-bindthisvalue

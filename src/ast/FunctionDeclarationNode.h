@@ -13,6 +13,11 @@ public:
     {
     }
 
+    FunctionDeclarationNode(const InternalString& id, InternalAtomicStringVector&& params, Node* body, bool isGenerator, bool isExpression)
+            : FunctionNode(NodeType::FunctionDeclaration, id.data(), std::move(params), body, isGenerator, isExpression)
+    {
+    }
+
     virtual ESValue execute(ESVMInstance* instance);
 protected:
 };

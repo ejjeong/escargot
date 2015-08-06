@@ -13,6 +13,17 @@ class ObjectEnvironmentRecord;
 class ESObject;
 class GlobalObject;
 
+typedef std::unordered_map<InternalAtomicString, ::escargot::ESSlot,
+            std::hash<InternalAtomicString>,std::equal_to<InternalAtomicString>,
+            gc_allocator<std::pair<const InternalAtomicString, ::escargot::ESSlot> > > ESIdentifierMapStd;
+
+class ESIdentifierMap : public ESIdentifierMapStd, public gc {
+public:
+    ESIdentifierMap(size_t siz = 0)
+        : ESIdentifierMapStd(siz) { }
+
+};
+
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-lexical-environments
 class LexicalEnvironment : public gc {
 public:
@@ -50,11 +61,11 @@ public:
     virtual ~EnvironmentRecord() { }
 
     //return NULL == not exist
-    virtual ESSlot* hasBinding(const InternalAtomicString& name)
+    virtual ESSlot* hasBinding(const InternalAtomicString& atomicName, const InternalString& name)
     {
         RELEASE_ASSERT_NOT_REACHED();
     }
-    virtual void createMutableBinding(const InternalAtomicString& name, bool canDelete = false)
+    virtual void createMutableBinding(const InternalAtomicString& name, const InternalString& nonAtomicName, bool canDelete = false)
     {
         RELEASE_ASSERT_NOT_REACHED();
     }
@@ -64,20 +75,20 @@ public:
         RELEASE_ASSERT_NOT_REACHED();
     }
 
-    virtual void initializeBinding(const InternalAtomicString& name, const ESValue& V)
+    virtual void initializeBinding(const InternalAtomicString& name, const InternalString& nonAtomicName, const ESValue& V)
     {
         RELEASE_ASSERT_NOT_REACHED();
     }
 
-    virtual void setMutableBinding(const InternalAtomicString& name, const ESValue& V, bool mustNotThrowTypeErrorExecption)
+    virtual void setMutableBinding(const InternalAtomicString& name, const InternalString& nonAtomicName, const ESValue& V, bool mustNotThrowTypeErrorExecption)
     {
         RELEASE_ASSERT_NOT_REACHED();
     }
 
-    virtual ESValue getBindingValue(const InternalAtomicString& name, bool ignoreReferenceErrorException)
+    /*virtual ESValue getBindingValue(const InternalAtomicString& name, bool ignoreReferenceErrorException)
     {
         RELEASE_ASSERT_NOT_REACHED();
-    }
+    }*/
 
     virtual bool deleteBinding(const InternalAtomicString& name)
     {
@@ -127,7 +138,7 @@ public:
         return reinterpret_cast<DeclarativeEnvironmentRecord*>(this);
     }
 
-    void createMutableBindingForAST(const InternalAtomicString& name,bool canDelete);
+    void createMutableBindingForAST(const InternalAtomicString& atomicName,const InternalString& name,bool canDelete);
 
 protected:
 };
@@ -141,7 +152,7 @@ public:
     ~ObjectEnvironmentRecord() { }
 
     //return NULL == not exist
-    virtual ESSlot* hasBinding(const InternalAtomicString& name)
+    virtual ESSlot* hasBinding(const InternalAtomicString& atomicName, const InternalString& name)
     {
         ESSlot* slot = m_bindingObject->find(name);
         if(slot) {
@@ -149,14 +160,16 @@ public:
         }
         return NULL;
     }
-    void createMutableBinding(const InternalAtomicString& name, bool canDelete = false);
+    void createMutableBinding(const InternalAtomicString& name,const InternalString& nonAtomicName, bool canDelete = false);
     void createImmutableBinding(const InternalAtomicString& name, bool throwExecptionWhenAccessBeforeInit = false) {}
-    void initializeBinding(const InternalAtomicString& name, const ESValue& V);
-    void setMutableBinding(const InternalAtomicString& name, const ESValue& V, bool mustNotThrowTypeErrorExecption);
+    void initializeBinding(const InternalAtomicString& name,const InternalString& nonAtomicName,  const ESValue& V);
+    void setMutableBinding(const InternalAtomicString& name,const InternalString& nonAtomicName, const ESValue& V, bool mustNotThrowTypeErrorExecption);
+    /*
     ESValue getBindingValue(const InternalAtomicString& name, bool ignoreReferenceErrorException)
     {
         return m_bindingObject->get(name);
     }
+    */
     bool deleteBinding(const InternalAtomicString& name)
     {
         return false;
@@ -185,31 +198,33 @@ public:
     DeclarativeEnvironmentRecord(bool shouldUseVector = false,std::pair<InternalAtomicString, ESSlot>* vectorBuffer = NULL, size_t vectorSize = 0)
     {
         if(shouldUseVector) {
-            m_innerObject = NULL;
+            m_needsActivation = false;
+            m_mapData = NULL;
             m_vectorData = vectorBuffer;
             m_usedCount = 0;
 #ifndef NDEBUG
             m_vectorSize = vectorSize;
 #endif
         } else {
-            m_innerObject = ESObject::create();
+            m_needsActivation = true;
+            m_mapData = new ESIdentifierMap(16);
         }
     }
     ~DeclarativeEnvironmentRecord()
     {
     }
 
-    virtual ESSlot* hasBinding(const InternalAtomicString& name)
+    virtual ESSlot* hasBinding(const InternalAtomicString& atomicName, const InternalString& name)
     {
-        if(UNLIKELY(m_innerObject != NULL)) {
-            ESSlot* slot = m_innerObject->find(name);
-            if(slot) {
-                return slot;
+        if(UNLIKELY(m_needsActivation)) {
+            auto iter = m_mapData->find(atomicName);
+            if(iter != m_mapData->end()) {
+                return &iter->second;
             }
             return NULL;
         } else {
             for(unsigned i = 0; i < m_usedCount ; i ++) {
-                if(m_vectorData[i].first == name) {
+                if(m_vectorData[i].first == atomicName) {
                     return &m_vectorData[i].second;
                 }
             }
@@ -218,24 +233,26 @@ public:
     }
     void createMutableBindingForNonActivationMode(size_t index, const InternalAtomicString& name,const ESValue& val = ESValue())
     {
-        ASSERT(!m_innerObject);
+        ASSERT(!m_needsActivation);
         m_vectorData[index].first = name;
         m_vectorData[index].second.init(val, false, false, false);
         m_usedCount++;
     }
 
-    virtual void createMutableBinding(const InternalAtomicString& name, bool canDelete = false)
+    virtual void createMutableBinding(const InternalAtomicString& name,const InternalString& nonAtomicName, bool canDelete = false)
     {
         //TODO canDelete
-        ASSERT(m_innerObject);
-        m_innerObject->set(name, ESValue());
+        ASSERT(m_needsActivation);
+        m_mapData->insert(std::make_pair(name, ESSlot()));
     }
 
-    virtual void setMutableBinding(const InternalAtomicString& name, const ESValue& V, bool mustNotThrowTypeErrorExecption)
+    virtual void setMutableBinding(const InternalAtomicString& name, const InternalString& nonAtomicName, const ESValue& V, bool mustNotThrowTypeErrorExecption)
     {
         //TODO mustNotThrowTypeErrorExecption
-        if(UNLIKELY(m_innerObject != NULL)) {
-            m_innerObject->set(name, V);
+        if(UNLIKELY(m_needsActivation)) {
+            auto iter = m_mapData->find(name);
+            ASSERT(iter != m_mapData->end());
+            iter->second.setValue(V);
         } else {
             for(unsigned i = 0; i < m_usedCount ; i ++) {
                 if(m_vectorData[i].first == name) {
@@ -252,11 +269,14 @@ public:
         return &m_vectorData[idx].second;
     }
 
+    /*
     virtual ESValue getBindingValue(const InternalAtomicString& name, bool ignoreReferenceErrorException)
     {
         //TODO ignoreReferenceErrorException
-        if(UNLIKELY(m_innerObject != NULL)) {
-            return m_innerObject->get(name);
+        if(UNLIKELY(m_needsActivation)) {
+            auto iter = m_mapData->find(name);
+            ASSERT(iter != m_mapData->end());
+            return iter->second.value();
         } else {
             for(unsigned i = 0; i < m_usedCount ; i ++) {
                 if(m_vectorData[i].first == name) {
@@ -265,7 +285,7 @@ public:
             }
             RELEASE_ASSERT_NOT_REACHED();
         }
-    }
+    }*/
 
     virtual bool isDeclarativeEnvironmentRecord()
     {
@@ -278,12 +298,14 @@ public:
     }
 
 protected:
+    bool m_needsActivation;
+
     std::pair<InternalAtomicString, ESSlot>* m_vectorData;
     size_t m_usedCount;
 #ifndef NDEBUG
     size_t m_vectorSize;
 #endif
-    ESObject* m_innerObject;
+    ESIdentifierMap* m_mapData;
 };
 
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-global-environment-records
@@ -296,10 +318,10 @@ public:
     }
     ~GlobalEnvironmentRecord() { }
 
-    virtual ESSlot* hasBinding(const InternalAtomicString& name);
-    void createMutableBinding(const InternalAtomicString& name, bool canDelete = false);
-    void initializeBinding(const InternalAtomicString& name, const ESValue& V);
-    void setMutableBinding(const InternalAtomicString& name, const ESValue& V, bool mustNotThrowTypeErrorExecption);
+    virtual ESSlot* hasBinding(const InternalAtomicString& atomicName, const InternalString& name);
+    void createMutableBinding(const InternalAtomicString& name,const InternalString& nonAtomicName, bool canDelete = false);
+    void initializeBinding(const InternalAtomicString& name,const InternalString& nonAtomicName,  const ESValue& V);
+    void setMutableBinding(const InternalAtomicString& name, const InternalString& nonAtomicName, const ESValue& V, bool mustNotThrowTypeErrorExecption);
 
     ESObject* getThisBinding();
     bool hasVarDeclaration(const InternalAtomicString& name);
@@ -307,9 +329,9 @@ public:
     bool hasRestrictedGlobalProperty(const InternalAtomicString& name);
     bool canDeclareGlobalVar(const InternalAtomicString& name);
     bool canDeclareGlobalFunction(const InternalAtomicString& name);
-    void createGlobalVarBinding(const InternalAtomicString& name, bool canDelete);
-    void createGlobalFunctionBinding(const InternalAtomicString& name, const ESValue& V, bool canDelete);
-    ESValue getBindingValue(const InternalAtomicString& name, bool ignoreReferenceErrorException);
+    void createGlobalVarBinding(const InternalAtomicString& name,const InternalString& nonAtomicName, bool canDelete);
+    void createGlobalFunctionBinding(const InternalAtomicString& name,const InternalString& nonAtomicName, const ESValue& V, bool canDelete);
+    //ESValue getBindingValue(const InternalAtomicString& name, bool ignoreReferenceErrorException);
 
     virtual bool isGlobalEnvironmentRecord()
     {

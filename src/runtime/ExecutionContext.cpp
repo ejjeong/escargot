@@ -16,13 +16,13 @@ ExecutionContext::ExecutionContext(LexicalEnvironment* varEnv, bool needsActivat
     m_argumentCount = argumentsCount;
 }
 
-ESSlot* ExecutionContext::resolveBinding(const InternalAtomicString& name)
+ESSlot* ExecutionContext::resolveBinding(const InternalAtomicString& atomicName, const InternalString& name)
 {
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
     LexicalEnvironment* env = environment();
 
     while(env) {
-        ESSlot* slot = env->record()->hasBinding(name);
+        ESSlot* slot = env->record()->hasBinding(atomicName, name);
         if(slot)
             return slot;
         env = env->outerEnvironment();

@@ -17,8 +17,8 @@ ESValue FunctionDeclarationNode::execute(ESVMInstance* instance)
     function->setProtoType(prototype);
     function->set(strings->name, ESString::create(m_id.data()));
     /////////////////////////////////////////////
-    instance->currentExecutionContext()->environment()->record()->createMutableBindingForAST(m_id, false);
-    instance->currentExecutionContext()->environment()->record()->setMutableBinding(m_id, function, false);
+    instance->currentExecutionContext()->environment()->record()->createMutableBindingForAST(m_id, nonAtomicId(), false);
+    instance->currentExecutionContext()->environment()->record()->setMutableBinding(m_id, nonAtomicId(), function, false);
     return ESValue();
 }
 

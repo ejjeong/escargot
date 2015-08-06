@@ -24,7 +24,9 @@ ESValue TryStatementNode::execute(ESVMInstance* instance)
         LexicalEnvironment* oldEnv = instance->currentExecutionContext()->environment();
         LexicalEnvironment* catchEnv = new LexicalEnvironment(new DeclarativeEnvironmentRecord(), oldEnv);
         instance->currentExecutionContext()->setEnvironment(catchEnv);
-        instance->currentExecutionContext()->environment()->record()->setMutableBinding(m_handler->param()->name(), err, false);
+        instance->currentExecutionContext()->environment()->record()->setMutableBinding(m_handler->param()->name(),
+                m_handler->param()->nonAtomicName()
+                , err, false);
         m_handler->execute(instance);
     }
     return ESValue();

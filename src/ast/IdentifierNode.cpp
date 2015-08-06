@@ -8,7 +8,7 @@ namespace escargot {
 
 ESValue IdentifierNode::execute(ESVMInstance* instance)
 {
-    return executeForWrite(instance)->value();
+    return executeForWrite(instance)->readDataProperty();
 }
 
 ESSlot* IdentifierNode::executeForWrite(ESVMInstance* instance)
@@ -17,11 +17,14 @@ ESSlot* IdentifierNode::executeForWrite(ESVMInstance* instance)
         return m_cachedSlot;
     } else {
         ESSlot* slot;
-        if(LIKELY(m_canUseFastAccess && !instance->currentExecutionContext()->needsActivation())) {
-            slot = instance->currentExecutionContext()->environment()->record()->toDeclarativeEnvironmentRecord()->getBindingValueForNonActivationMode(m_fastAccessIndex);
+        ExecutionContext* ec = instance->currentExecutionContext();
+
+        if(LIKELY(m_canUseFastAccess && !ec->needsActivation())) {
+            slot = ec->environment()->record()->toDeclarativeEnvironmentRecord()->getBindingValueForNonActivationMode(m_fastAccessIndex);
         }
         else
-            slot = instance->currentExecutionContext()->resolveBinding(name());
+            slot = ec->resolveBinding(name(), nonAtomicName());
+
         if(LIKELY(slot != NULL)) {
             m_cachedSlot = slot;
             m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
@@ -34,12 +37,12 @@ ESSlot* IdentifierNode::executeForWrite(ESVMInstance* instance)
         receiver->set__proto__(fn);
 
         std::vector<ESValue> arguments;
-        InternalString err_msg = m_name;
+        InternalString err_msg = name().data();
         err_msg.append(InternalString(L" is not defined"));
         //arguments.push_back(String::create(err_msg));
 
         ESFunctionObject::call(fn, receiver, &arguments[0], arguments.size(), instance);
-        receiver->set(InternalAtomicString(L"message"), ESString::create(err_msg));
+        receiver->set(InternalString(L"message"), ESString::create(err_msg));
 
         throw ESValue(receiver);
     }

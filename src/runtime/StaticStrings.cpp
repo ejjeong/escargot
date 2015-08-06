@@ -5,50 +5,52 @@ namespace escargot {
 
 void Strings::initStaticStrings(ESVMInstance* instance)
 {
-    null = InternalAtomicString(instance, L"null");
-    undefined = InternalAtomicString(instance, L"undefined");
-    prototype = InternalAtomicString(instance, L"prototype");
-    constructor = InternalAtomicString(instance, L"constructor");
-    name = InternalAtomicString(instance, L"name");
-    arguments = InternalAtomicString(instance, L"arguments");
-    length = InternalAtomicString(instance, L"length");
-    __proto__ = InternalAtomicString(instance, L"__proto__");
+    null = L"null";
+    undefined =  L"undefined";
+    prototype =  L"prototype";
+    constructor =  L"constructor";
+    name =  L"name";
+    length =  L"length";
+    atomicName =  InternalAtomicString(instance, L"name");
+    arguments =  L"arguments";
+    atomicArguments =  InternalAtomicString(instance, L"arguments");
+    __proto__ =  L"__proto__";
 
     for(unsigned i = 0; i < ESCARGOT_STRINGS_NUMBERS_MAX ; i ++) {
         numbers[i] = InternalAtomicString(instance, InternalString((int)i).data());
         nonAtomicNumbers[i] = InternalString((int)i);
     }
 
-    String = InternalAtomicString(instance, L"String");
-    Number = InternalAtomicString(instance, L"Number");
-    Object = InternalAtomicString(instance, L"Object");
-    ReferenceError = InternalAtomicString(instance, L"ReferenceError");
-    Array = InternalAtomicString(instance, L"Array");
-    Function = InternalAtomicString(instance, L"Function");
-    Empty = InternalAtomicString(instance, L"Empty");
-    Date = InternalAtomicString(instance, L"Date");
-    getDate = InternalAtomicString(instance, L"getDate");
-    getDay = InternalAtomicString(instance, L"getDay");
-    getFullYear = InternalAtomicString(instance, L"getFullYear");
-    getHours = InternalAtomicString(instance, L"getHours");
-    getMinutes = InternalAtomicString(instance, L"getMinutes");
-    getMonth = InternalAtomicString(instance, L"getMonth");
-    getSeconds = InternalAtomicString(instance, L"getSeconds");
-    getTime = InternalAtomicString(instance, L"getTime");
-    getTimezoneOffset = InternalAtomicString(instance, L"getTimezoneOffset");
-    setTime = InternalAtomicString(instance, L"setTime");
-    Math = InternalAtomicString(instance, L"Math");
-    PI = InternalAtomicString(instance, L"PI");
-    abs = InternalAtomicString(instance, L"abs");
-    cos = InternalAtomicString(instance, L"cos");
-    max = InternalAtomicString(instance, L"max");
-    floor = InternalAtomicString(instance, L"floor");
-    pow = InternalAtomicString(instance, L"pow");
-    random = InternalAtomicString(instance, L"random");
-    round = InternalAtomicString(instance, L"round");
-    sin = InternalAtomicString(instance, L"sin");
-    sqrt = InternalAtomicString(instance, L"sqrt");
-    toString = InternalAtomicString(instance, L"toString");
+    String =  L"String";
+    Number =  L"Number";
+    Object =  L"Object";
+    ReferenceError =  L"ReferenceError";
+    Array =  L"Array";
+    Function =  L"Function";
+    Empty =  L"Empty";
+    Date =  L"Date";
+    getDate =  L"getDate";
+    getDay =  L"getDay";
+    getFullYear =  L"getFullYear";
+    getHours =  L"getHours";
+    getMinutes =  L"getMinutes";
+    getMonth =  L"getMonth";
+    getSeconds =  L"getSeconds";
+    getTime =  L"getTime";
+    getTimezoneOffset =  L"getTimezoneOffset";
+    setTime =  L"setTime";
+    Math =  L"Math";
+    PI =  L"PI";
+    abs =  L"abs";
+    cos =  L"cos";
+    max =  L"max";
+    floor =  L"floor";
+    pow =  L"pow";
+    random =  L"random";
+    round =  L"round";
+    sin =  L"sin";
+    sqrt =  L"sqrt";
+    toString =  L"toString";
 }
 
 Strings* strings;

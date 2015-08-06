@@ -26,7 +26,7 @@ public:
     }
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
-    ESSlot* resolveBinding(const InternalAtomicString& name);
+    ESSlot* resolveBinding(const InternalAtomicString& atomicName, const InternalString& name);
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvethisbinding
     ESObject* resolveThisBinding();
@@ -49,9 +49,9 @@ public:
         return m_lastUsedPropertyValueInMemberExpressionNode;
     }
 
-    ALWAYS_INLINE InternalAtomicString lastUsedPropertyValueInMemberExpressionPropertyName()
+    ALWAYS_INLINE ESSlot* lastUsedPropertySlotInMemberExpressionNode()
     {
-        return m_lastUsedPropertyValueInMemberExpressionPropertyName;
+        return m_lastUsedPropertySlotInMemberExpressionNode;
     }
 
     ALWAYS_INLINE void setLastESObjectMetInMemberExpressionNode(ESObject* obj, const ESValue& value)
@@ -61,12 +61,13 @@ public:
         m_isLastUsedPropertyValueInMemberExpressionNodeSetted = true;
     }
 
-    ALWAYS_INLINE void setLastESObjectMetInMemberExpressionNode(ESObject* obj, const InternalAtomicString& value)
+    ALWAYS_INLINE void setLastESObjectMetInMemberExpressionNode(ESObject* obj, ESSlot* slot)
     {
         m_lastESObjectMetInMemberExpressionNode = obj;
-        m_lastUsedPropertyValueInMemberExpressionPropertyName = value;
+        m_lastUsedPropertySlotInMemberExpressionNode = slot;
         m_isLastUsedPropertyValueInMemberExpressionNodeSetted = false;
     }
+
 
     ALWAYS_INLINE bool isLastUsedPropertyValueInMemberExpressionNodeSetted()
     {
@@ -137,7 +138,7 @@ private:
     ESObject* m_lastESObjectMetInMemberExpressionNode;
     bool m_isLastUsedPropertyValueInMemberExpressionNodeSetted;
     ESValue m_lastUsedPropertyValueInMemberExpressionNode;
-    InternalAtomicString m_lastUsedPropertyValueInMemberExpressionPropertyName;
+    ESSlot* m_lastUsedPropertySlotInMemberExpressionNode;
 
     ESValue m_returnValue;
     std::jmp_buf m_returnPosition;

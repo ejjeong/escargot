@@ -87,6 +87,7 @@ public:
         m_string = new(PointerFreeGC) InternalStringData(s);
     }
 
+
     ALWAYS_INLINE InternalString(const InternalString& s)
     {
         m_string = s.m_string;
@@ -112,7 +113,7 @@ public:
     void append(const InternalString& src)
     {
         if(m_string == &emptyStringData) {
-            m_string = new InternalStringData(src.m_string->data());
+            m_string = src.m_string;
         } else if(src.m_string != &emptyStringData) {
             m_string->append(src.m_string->begin(), src.m_string->end());
             m_string->initHash();

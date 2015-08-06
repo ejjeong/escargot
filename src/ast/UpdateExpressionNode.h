@@ -34,36 +34,27 @@ public:
         ESValue ret;
         if (!m_prefix)
             ret = argval;
-        switch(m_operator) {
-            case INCREMENT:
-            {
-                if (argval.isInt32()) {
-                    //FIXME check overflow
-                    argval = ESValue(argval.asInt32() + 1);
-                } else {
-                    double argnum = argval.toNumber();
-                    argval = ESValue(argnum + 1);
-                }
-                break;
+
+        if(LIKELY(m_operator == INCREMENT)) {
+            if (argval.isInt32()) {
+                //FIXME check overflow
+                argval = ESValue(argval.asInt32() + 1);
+            } else {
+                double argnum = argval.toNumber();
+                argval = ESValue(argnum + 1);
             }
-            case DECREMENT:
-            {
-                if (argval.isInt32()) {
-                    //FIXME check overflow
-                    argval = ESValue(argval.asInt32() - 1);
-                } else {
-                    double argnum = argval.toNumber();
-                    argval = ESValue(argnum - 1);
-                }
-                break;
+        } else {
+            if (argval.isInt32()) {
+                //FIXME check overflow
+                argval = ESValue(argval.asInt32() - 1);
+            } else {
+                double argnum = argval.toNumber();
+                argval = ESValue(argnum - 1);
             }
-            default:
-                // TODO
-                RELEASE_ASSERT_NOT_REACHED();
-                break;
         }
 
         AssignmentExpressionNode::writeValue(instance, m_argument, argval);
+
         if (m_prefix)
             ret = argval;
         return ret;

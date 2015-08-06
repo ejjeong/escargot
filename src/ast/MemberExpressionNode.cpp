@@ -20,33 +20,35 @@ ESValue MemberExpressionNode::execute(ESVMInstance* instance)
     if(value.isESPointer() && value.asESPointer()->isESObject()) {
         ESObject* obj = value.asESPointer()->asESObject();
         ESSlot* slot;
-        InternalAtomicString computedPropertyName;
-        ESValue tmpVal;
-        bool isPropertyNameComputed = false;
+        InternalString computedPropertyName;
+        ESValue computedPropertyValue;
         if(!m_computed && m_property->type() == NodeType::Identifier) {
-            InternalAtomicString name = ((IdentifierNode*)m_property)->name();
-            instance->currentExecutionContext()->setLastESObjectMetInMemberExpressionNode(obj, name);
+            InternalString name = ((IdentifierNode *)m_property)->nonAtomicName();
             slot = obj->find(name);
             computedPropertyName = name;
-            isPropertyNameComputed = true;
+            computedPropertyValue = ESValue(((IdentifierNode *)m_property)->esName());
         } else {
-            tmpVal = m_property->execute(instance);
-            instance->currentExecutionContext()->setLastESObjectMetInMemberExpressionNode(obj, tmpVal);
+            computedPropertyValue = m_property->execute(instance);
             if(obj->isESArrayObject()) {
-                slot = obj->asESArrayObject()->find(tmpVal);
+                if(computedPropertyValue.isInt32())
+                    slot = obj->asESArrayObject()->findOnlyIndex(computedPropertyValue.asInt32());
+                if(!slot) {
+                    computedPropertyName = computedPropertyValue.toInternalString();
+                    slot = obj->find(computedPropertyName);
+                }
             } else {
-                isPropertyNameComputed = true;
-                computedPropertyName = InternalAtomicString(&tmpVal);
+                computedPropertyName = computedPropertyValue.toInternalString();
                 slot = obj->find(computedPropertyName);
             }
         }
 
+        ExecutionContext* ec = instance->currentExecutionContext();
         if(slot) {
+            ec->setLastESObjectMetInMemberExpressionNode(obj, slot);
             return slot->value(obj);
         } else {
-            if(!isPropertyNameComputed) {
-                computedPropertyName = InternalAtomicString(&tmpVal);
-            }
+            //computedPropertyName.show();
+            ec->setLastESObjectMetInMemberExpressionNode(obj, computedPropertyValue);
             //FIXME this code duplicated with ESObject::get
             ESValue prototype = obj->__proto__();
             while(prototype.isESPointer() && prototype.asESPointer()->isESObject()) {

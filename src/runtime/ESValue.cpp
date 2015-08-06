@@ -178,7 +178,7 @@ InternalString ESValue::toInternalString() const
             //ret = L"[Function function]";
             ret = L"function ";
             ESFunctionObject* fn = o->asESFunctionObject();
-            ret.append(fn->functionAST()->id());
+            ret.append(fn->functionAST()->id().data());
             ret.append(L"() {}");
         } else if(o->isESArrayObject()) {
             bool isFirst = true;
@@ -250,45 +250,47 @@ ESValue functionCallerInnerProcess(ESFunctionObject* fn, ESValue receiver, ESVal
         unsigned i = 0;
         argumentsObject->set(strings->length, ESValue(argumentCount));
         for(; i < argumentCount && i < ESCARGOT_STRINGS_NUMBERS_MAX ; i ++) {
-            argumentsObject->set(strings->numbers[i], arguments[i]);
+            argumentsObject->set(strings->nonAtomicNumbers[i], arguments[i]);
         }
         for( ; i < argumentCount ; i ++) {
-            argumentsObject->set(InternalAtomicString(InternalString((int)i).data()), arguments[i]);
+            argumentsObject->set(InternalString((int)i).data(), arguments[i]);
         }
 
         if(!fn->functionAST()->needsActivation()) {
             for(size_t i = 0 ; i < fn->functionAST()->innerIdentifiers().size() ; i++ ) {
-                if(fn->functionAST()->innerIdentifiers()[i] == strings->arguments) {
-                    functionRecord->createMutableBindingForNonActivationMode(i, strings->name, argumentsObject);
+                if(fn->functionAST()->innerIdentifiers()[i] == strings->atomicArguments) {
+                    functionRecord->createMutableBindingForNonActivationMode(i, strings->atomicName, argumentsObject);
                     break;
                 }
             }
-            ASSERT(functionRecord->hasBinding(strings->arguments));
+            ASSERT(functionRecord->hasBinding(strings->atomicArguments, L"arguments"));
         } else {
-            functionRecord->createMutableBinding(strings->arguments, false);
-            functionRecord->setMutableBinding(strings->arguments, argumentsObject, true);
+            functionRecord->createMutableBinding(strings->atomicArguments, strings->arguments, false);
+            functionRecord->setMutableBinding(strings->atomicArguments, strings->arguments, argumentsObject, true);
         }
     }
 
     if(fn->functionAST()->needsActivation()) {
         const InternalAtomicStringVector& params = fn->functionAST()->params();
+        const InternalStringVector& nonAtomicParams = fn->functionAST()->nonAtomicParams();
         for(unsigned i = 0; i < params.size() ; i ++) {
-            functionRecord->createMutableBinding(params[i], false);
+            functionRecord->createMutableBinding(params[i], nonAtomicParams[i], false);
             if(i < argumentCount) {
-                functionRecord->setMutableBinding(params[i], arguments[i], true);
+                functionRecord->setMutableBinding(params[i], nonAtomicParams[i], arguments[i], true);
             }
         }
     } else {
         for(size_t i = 0 ; i < fn->functionAST()->innerIdentifiers().size() ; i++ ) {
-            if(fn->functionAST()->innerIdentifiers()[i] != strings->arguments) {
+            if(fn->functionAST()->innerIdentifiers()[i] != strings->atomicArguments) {
                 functionRecord->createMutableBindingForNonActivationMode(i, fn->functionAST()->innerIdentifiers()[i]);
             }
         }
 
         const InternalAtomicStringVector& params = fn->functionAST()->params();
+        const InternalStringVector& nonAtomicParams = fn->functionAST()->nonAtomicParams();
         for(unsigned i = 0; i < params.size() ; i ++) {
             if(i < argumentCount) {
-                functionRecord->setMutableBinding(params[i], arguments[i], true);
+                functionRecord->setMutableBinding(params[i], nonAtomicParams[i], arguments[i], true);
             }
         }
     }

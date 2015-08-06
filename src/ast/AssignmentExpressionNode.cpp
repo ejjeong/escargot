@@ -38,37 +38,36 @@ void AssignmentExpressionNode::writeValue(ESVMInstance* instance, Node* leftHand
     if(leftHandNode->type() == NodeType::Identifier) {
         IdentifierNode* idNode = (IdentifierNode *)leftHandNode;
         try {
-            idNode->executeForWrite(instance)->setValue(rvalue);
+            idNode->executeForWrite(instance)->setDataProperty(rvalue);
         } catch(ESValue& err) {
             if(err.isESPointer() && err.asESPointer()->isESObject() &&
                     (err.asESPointer()->asESObject()->constructor().asESPointer() == instance->globalObject()->referenceError())) {
                 //TODO set proper flags
-                instance->globalObject()->set(idNode->name(), rvalue);
+                instance->globalObject()->set(idNode->nonAtomicName(), rvalue);
             } else {
                 throw err;
             }
         }
 
     } else {
-        instance->currentExecutionContext()->resetLastESObjectMetInMemberExpressionNode();
+        ExecutionContext* ec = instance->currentExecutionContext();
+        ec->resetLastESObjectMetInMemberExpressionNode();
         leftHandNode->execute(instance);
-        ESObject* obj = instance->currentExecutionContext()->lastESObjectMetInMemberExpressionNode();
+        ESObject* obj = ec->lastESObjectMetInMemberExpressionNode();
         if(UNLIKELY(!obj)) {
             throw ESValue(ESString::create(L"could not assign to left hand node lastESObjectMetInMemberExpressionNode==NULL"));
         }
-        if(obj->isESArrayObject()) {
-            if(instance->currentExecutionContext()->isLastUsedPropertyValueInMemberExpressionNodeSetted())
-                obj->asESArrayObject()->set(instance->currentExecutionContext()->lastUsedPropertyValueInMemberExpressionNode(), rvalue);
-            else
-                obj->asESArrayObject()->set(instance->currentExecutionContext()->lastUsedPropertyValueInMemberExpressionPropertyName()
-                        , rvalue);
+
+        if(ec->isLastUsedPropertyValueInMemberExpressionNodeSetted()) {
+            if(obj->isESArrayObject()) {
+                obj->asESArrayObject()->set(ec->lastUsedPropertyValueInMemberExpressionNode(), rvalue);
+            } else {
+                obj->set(ec->lastUsedPropertyValueInMemberExpressionNode(), rvalue);
+            }
         } else {
-            if(instance->currentExecutionContext()->isLastUsedPropertyValueInMemberExpressionNodeSetted())
-                obj->set(instance->currentExecutionContext()->lastUsedPropertyValueInMemberExpressionNode(), rvalue);
-            else
-                obj->set(instance->currentExecutionContext()->lastUsedPropertyValueInMemberExpressionPropertyName()
-                        , rvalue);
+            ec->lastUsedPropertySlotInMemberExpressionNode()->setValue(rvalue, obj);
         }
+
     }
 }
 
