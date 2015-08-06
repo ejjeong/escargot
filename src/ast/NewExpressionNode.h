@@ -15,7 +15,7 @@ public:
         m_arguments = arguments;
     }
 
-    virtual ESValue execute(ESVMInstance* instance)
+    ESValue execute(ESVMInstance* instance)
     {
         ESValue fn = m_callee->execute(instance);
         if(!fn.isESPointer() || !fn.asESPointer()->isESFunctionObject())

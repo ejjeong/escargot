@@ -16,7 +16,7 @@ public:
         m_arguments = arguments;
     }
 
-    virtual ESValue execute(ESVMInstance* instance)
+    ESValue execute(ESVMInstance* instance)
     {
         instance->currentExecutionContext()->resetLastESObjectMetInMemberExpressionNode();
         ESValue fn = m_callee->execute(instance);

@@ -18,7 +18,7 @@ public:
         m_body = (StatementNode*) body;
     }
 
-    virtual ESValue execute(ESVMInstance* instance)
+    ESValue execute(ESVMInstance* instance)
     {
         if (m_init)
             m_init->execute(instance);

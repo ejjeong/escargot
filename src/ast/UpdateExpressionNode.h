@@ -28,7 +28,7 @@ public:
         m_prefix = prefix;
     }
 
-    virtual ESValue execute(ESVMInstance* instance)
+    ESValue execute(ESVMInstance* instance)
     {
         ESValue argval = m_argument->execute(instance);
         ESValue ret;

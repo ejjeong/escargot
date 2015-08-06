@@ -16,7 +16,7 @@ public:
         m_body = (StatementNode*) body;
     }
 
-    virtual ESValue execute(ESVMInstance* instance)
+    ESValue execute(ESVMInstance* instance)
     {
         ESValue test = m_test->execute(instance);
         instance->currentExecutionContext()->setJumpPositionAndExecute([&](){

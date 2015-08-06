@@ -13,7 +13,7 @@ public:
     {
     }
 
-    virtual ESValue execute(ESVMInstance* instance)
+    ESValue execute(ESVMInstance* instance)
     {
         instance->currentExecutionContext()->doContinue();
         RELEASE_ASSERT_NOT_REACHED();

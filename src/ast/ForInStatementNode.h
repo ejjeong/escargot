@@ -19,7 +19,7 @@ public:
         m_each = each;
     }
 
-    virtual ESValue execute(ESVMInstance* instance)
+    ESValue execute(ESVMInstance* instance)
     {
         ESValue exprValue = m_right->execute(instance);
         if (exprValue.isNull() || exprValue.isUndefined())

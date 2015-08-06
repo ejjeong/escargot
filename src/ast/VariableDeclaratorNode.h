@@ -18,7 +18,7 @@ public:
         m_init = NULL;
     }
 
-    virtual ESValue execute(ESVMInstance* instance)
+    ESValue execute(ESVMInstance* instance)
     {
         ASSERT(m_id->type() == NodeType::Identifier);
         if(instance->currentExecutionContext()->needsActivation()) {

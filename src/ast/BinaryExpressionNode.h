@@ -113,14 +113,14 @@ public:
             RELEASE_ASSERT_NOT_REACHED();
     }
 
-    virtual ESValue execute(ESVMInstance* instance)
+    ESValue execute(ESVMInstance* instance)
     {
         ESValue lval = m_left->execute(instance);
         ESValue rval = m_right->execute(instance);
         return execute(instance, lval, rval, m_operator);
     }
 
-    static ESValue execute(ESVMInstance* instance, ESValue lval, ESValue rval, BinaryExpressionOperator oper) {
+    ALWAYS_INLINE static ESValue execute(ESVMInstance* instance, ESValue lval, ESValue rval, BinaryExpressionOperator oper) {
         ESValue ret;
         switch(oper) {
             case Plus:
