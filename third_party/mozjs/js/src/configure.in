@@ -132,12 +132,7 @@ if test -z "$PERL" -o "$PERL" = ":"; then
     AC_MSG_ERROR([perl not found in \$PATH])
 fi
 
-MOZ_ARG_ENABLE_BOOL(shared-js,
-[  --disable-shared-js
-                          Do not create a shared library.],
-    DISABLE_SHARED_JS=0,
-    DISABLE_SHARED_JS=1)
-
+DISABLE_SHARED_JS=1
 if test "$DISABLE_SHARED_JS" = "1" ; then
   AC_DEFINE(STATIC_EXPORTABLE_JS_API)
 else
