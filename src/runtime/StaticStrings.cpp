@@ -11,6 +11,7 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     constructor =  L"constructor";
     name =  L"name";
     length =  L"length";
+    atomicLength = InternalAtomicString(instance, L"length");
     atomicName =  InternalAtomicString(instance, L"name");
     arguments =  L"arguments";
     atomicArguments =  InternalAtomicString(instance, L"arguments");

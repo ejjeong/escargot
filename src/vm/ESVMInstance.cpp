@@ -35,6 +35,15 @@ ESVMInstance::ESVMInstance()
         }
     };
 
+    m_functionPrototypeAccessorData.m_getter = [](ESObject* self) -> ESValue {
+        return self->asESFunctionObject()->protoType();
+    };
+
+    m_functionPrototypeAccessorData.m_setter = [](::escargot::ESObject* self, ESValue value){
+        if(value.isESPointer() && value.asESPointer()->isESObject())
+            self->asESFunctionObject()->setProtoType(value.asESPointer()->asESObject());
+    };
+
     m_arrayLengthAccessorData.m_getter = [](ESObject* self) -> ESValue {
         return self->asESArrayObject()->length();
     };
@@ -43,6 +52,11 @@ ESVMInstance::ESVMInstance()
         ESValue len = ESValue(value.asInt32());
         self->asESArrayObject()->setLength(len);
     };
+
+    m_stringObjectLengthAccessorData.m_getter = [](ESObject* self) -> ESValue {
+        return ESValue(self->asESStringObject()->getStringData()->length());
+    };
+
 
 }
 

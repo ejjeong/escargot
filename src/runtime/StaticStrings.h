@@ -14,6 +14,7 @@ InternalString constructor;
 InternalString name;
 InternalString arguments;
 InternalString length;
+InternalAtomicString atomicLength;
 InternalString __proto__;
 
 InternalAtomicString atomicName;

@@ -61,7 +61,7 @@ public:
     ESAccessorData* object__proto__AccessorData() { return &m_object__proto__AccessorData; }
     ESAccessorData* functionPrototypeAccessorData() { return &m_functionPrototypeAccessorData; }
     ESAccessorData* arrayLengthAccessorData() { return &m_arrayLengthAccessorData; }
-    ESAccessorData* stringLengthAccessorData() { return &m_stringLengthAccessorData; }
+    ESAccessorData* stringObjectLengthAccessorData() { return &m_stringObjectLengthAccessorData; }
 
 protected:
     ExecutionContext* m_globalExecutionContext;
@@ -78,7 +78,7 @@ protected:
     ESAccessorData m_object__proto__AccessorData;
     ESAccessorData m_functionPrototypeAccessorData;
     ESAccessorData m_arrayLengthAccessorData;
-    ESAccessorData m_stringLengthAccessorData;
+    ESAccessorData m_stringObjectLengthAccessorData;
 };
 
 }

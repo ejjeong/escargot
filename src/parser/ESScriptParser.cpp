@@ -224,7 +224,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             }
 
             Node* func_body = fn(value[L"body"], currentBody, true);
-            currentBody->insert(currentBody->begin(), new FunctionDeclarationNode(id, std::move(params), func_body, value[L"generator"].GetBool(), value[L"generator"].GetBool()));
+            currentBody->insert(currentBody->begin(), new FunctionDeclarationNode(id, std::move(params), func_body, value[L"generator"].GetBool(), value[L"generator"].GetBool(), false));
             return NULL;
         }  else if(type == astTypeFunctionExpression) {
             InternalAtomicString id;

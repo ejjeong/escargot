@@ -10,7 +10,8 @@ namespace escargot {
 
 class FunctionNode : public Node {
 public:
-    FunctionNode(NodeType type ,const InternalAtomicString& id, InternalAtomicStringVector&& params, Node* body,bool isGenerator, bool isExpression)
+    FunctionNode(NodeType type ,const InternalAtomicString& id, InternalAtomicStringVector&& params,
+            Node* body,bool isGenerator, bool isExpression, bool isBuiltInFunction = false)
             : Node(type)
     {
         m_id = id;
@@ -25,6 +26,7 @@ public:
         m_needsActivation = false;
         m_outerFunctionNode = NULL;
         m_needsArgumentsObject = false;
+        m_isBuiltInFunction = isBuiltInFunction;
     }
 
     ALWAYS_INLINE const InternalAtomicStringVector& params() { return m_params; }
@@ -37,6 +39,7 @@ public:
     ALWAYS_INLINE void setNeedsActivation(bool b) { m_needsActivation = b; }
     ALWAYS_INLINE bool needsArgumentsObject() { return m_needsArgumentsObject; }
     ALWAYS_INLINE void markNeedsArgumentsObject() { m_needsArgumentsObject = true; }
+    ALWAYS_INLINE bool isBuiltInFunction() { return m_isBuiltInFunction; }
 
     void setInnerIdentifiers(InternalAtomicStringVector&& vec)
     {
@@ -63,6 +66,8 @@ protected:
     bool m_needsActivation;
     bool m_needsArgumentsObject;
     FunctionNode* m_outerFunctionNode;
+
+    bool m_isBuiltInFunction;
 };
 
 }

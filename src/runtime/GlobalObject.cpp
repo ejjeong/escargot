@@ -584,6 +584,10 @@ void GlobalObject::installString()
         return ESValue();
     }), false, false);
     m_stringPrototype->set(L"substring", ESFunctionObject::create(NULL, stringSubstring));
+
+    m_stringObjectProxy = ESStringObject::create();
+    m_stringObjectProxy->setConstructor(m_string);
+    m_stringObjectProxy->set__proto__(m_string->protoType());
 }
 
 void GlobalObject::installDate()

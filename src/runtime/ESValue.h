@@ -504,6 +504,11 @@ public:
         return m_isWritable;
     }
 
+    ALWAYS_INLINE bool isDataProperty()
+    {
+        return m_isDataProperty;
+    }
+
     ALWAYS_INLINE void setConfigurable(bool b)
     {
         m_isConfigurable = b;
@@ -522,6 +527,12 @@ public:
     ALWAYS_INLINE void setAsDataProperty()
     {
         m_isDataProperty = true;
+    }
+
+    ALWAYS_INLINE ESAccessorData* accessorData()
+    {
+        ASSERT(!m_isDataProperty);
+        return (ESAccessorData *)m_data.asESPointer();
     }
 
 protected:
@@ -634,6 +645,23 @@ public:
             return NULL;
         }
         return &iter->second;
+    }
+
+    ALWAYS_INLINE escargot::ESSlot* findUntilPrototype(const InternalString& key)
+    {
+        ESObject* target = this;
+        while(true) {
+            auto s = target->find(key);
+            if (s)
+                return s;
+            ESValue proto = target->__proto__();
+            if (proto.isESPointer() && proto.asESPointer()->isESObject()) {
+                target = proto.asESPointer()->asESObject();
+            } else {
+               break;
+            }
+        }
+        return NULL;
     }
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
@@ -1035,20 +1063,7 @@ class LexicalEnvironment;
 class Node;
 class ESFunctionObject : public ESObject {
 protected:
-    ESFunctionObject(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST)
-        : ESObject((Type)(Type::ESObject | Type::ESFunctionObject))
-    {
-        m_outerEnvironment = outerEnvironment;
-        m_functionAST = functionAST;
-        m_protoType = ESValue();
-
-        defineAccessorProperty(strings->prototype, [](ESObject* self) -> ESValue {
-            return self->asESFunctionObject()->protoType();
-        },[](::escargot::ESObject* self, ESValue value){
-            if(value.isESPointer() && value.asESPointer()->isESObject())
-                self->asESFunctionObject()->setProtoType(value.asESPointer()->asESObject());
-        }, true, false, false);
-    }
+    ESFunctionObject(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST);
 public:
     static ESFunctionObject* create(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST)
     {
@@ -1082,17 +1097,7 @@ protected:
 
 class ESStringObject : public ESObject {
 protected:
-    ESStringObject(const InternalString& str)
-        : ESObject((Type)(Type::ESObject | Type::ESStringObject))
-    {
-        m_stringData = ESString::create(str);
-
-        //$21.1.4.1 String.length
-        defineAccessorProperty(strings->length, [](ESObject* self) -> ESValue {
-            return ESValue(self->asESStringObject()->m_stringData->length());
-        }, NULL, false, true, false);
-    }
-
+    ESStringObject(const InternalString& str);
 public:
     static ESStringObject* create(const InternalString& str)
     {
@@ -1109,7 +1114,7 @@ public:
         return m_stringData;
     }
 
-    void setString(::escargot::ESString* str)
+    ALWAYS_INLINE void setString(::escargot::ESString* str)
     {
         m_stringData = str;
     }
@@ -1120,21 +1125,19 @@ private:
 
 class ESNumberObject : public ESObject {
 protected:
-    ESNumberObject(ESValue value)
+    ESNumberObject(const ESValue& value)
         : ESObject((Type)(Type::ESObject | Type::ESNumberObject))
     {
         m_primitiveValue = value;
     }
 
 public:
-    static ESNumberObject* create(ESValue value)
+    static ESNumberObject* create(const ESValue& value)
     {
         return new ESNumberObject(value);
     }
 
-    ESValue numberData() {
-        return m_primitiveValue;
-    }
+    ALWAYS_INLINE ESValue numberData() { return m_primitiveValue; }
 
 private:
     ESValue m_primitiveValue;

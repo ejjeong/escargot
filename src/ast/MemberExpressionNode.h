@@ -22,8 +22,28 @@ public:
     {
         ESValue value = m_object->execute(instance);
         //TODO string,number-> stringObject, numberObject;
-        if (!m_computed && value.isPrimitive()) {
-            value = value.toObject();
+        bool isESStringValue = value.isESString();
+        NodeType propertyNodeType = m_property->type();
+
+        if(UNLIKELY(!m_computed)) {
+            if(UNLIKELY(isESStringValue && propertyNodeType == NodeType::Identifier)) {
+                instance->globalObject()->stringObjectProxy()->setString(value.asESString());
+                ESSlot* slot = instance->globalObject()->stringObjectProxy()->findUntilPrototype(((IdentifierNode *)m_property)->nonAtomicName());
+                if(slot->isDataProperty()) {
+                    ESValue ret = slot->value(instance->globalObject()->stringObjectProxy());
+                    if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->functionAST()->isBuiltInFunction()) {
+                        instance->currentExecutionContext()->setLastESObjectMetInMemberExpressionNode(instance->globalObject()->stringObjectProxy(), slot);
+                        return ret;
+                    }
+                } else {
+                    if(slot->accessorData() == instance->stringObjectLengthAccessorData()) {
+                        return slot->value(instance->globalObject()->stringObjectProxy());
+                    }
+                }
+            }
+            if (value.isPrimitive()) {
+                value = value.toObject();
+            }
         }
 
         if(value.isESPointer() && value.asESPointer()->isESObject()) {
@@ -31,6 +51,8 @@ public:
             ESSlot* slot;
             InternalString computedPropertyName;
             ESValue computedPropertyValue;
+            ExecutionContext* ec = instance->currentExecutionContext();
+
             if(!m_computed && m_property->type() == NodeType::Identifier) {
                 computedPropertyName = ((IdentifierNode *)m_property)->nonAtomicName();
                 slot = obj->find(computedPropertyName);
@@ -50,7 +72,6 @@ public:
                 }
             }
 
-            ExecutionContext* ec = instance->currentExecutionContext();
             if(LIKELY(slot != NULL)) {
                 ec->setLastESObjectMetInMemberExpressionNode(obj, slot);
                 return slot->value(obj);

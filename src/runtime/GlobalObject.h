@@ -61,6 +61,11 @@ public:
         return m_stringPrototype;
     }
 
+    ALWAYS_INLINE escargot::ESStringObject* stringObjectProxy()
+    {
+        return m_stringObjectProxy;
+    }
+
     ALWAYS_INLINE escargot::ESFunctionObject* date()
     {
         return m_date;
@@ -110,6 +115,7 @@ protected:
     escargot::ESArrayObject* m_arrayPrototype;
     escargot::ESFunctionObject* m_string;
     escargot::ESStringObject* m_stringPrototype;
+    escargot::ESStringObject* m_stringObjectProxy;
     escargot::ESFunctionObject* m_date;
     escargot::ESDateObject* m_datePrototype;
     escargot::ESFunctionObject* m_math;

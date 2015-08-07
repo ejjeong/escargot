@@ -237,6 +237,23 @@ ESArrayObject::ESArrayObject()
     m_length = ESValue(0);
 }
 
+ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST)
+    : ESObject((Type)(Type::ESObject | Type::ESFunctionObject))
+{
+    m_outerEnvironment = outerEnvironment;
+    m_functionAST = functionAST;
+    m_protoType = ESValue();
+    defineAccessorProperty(strings->prototype, [](ESObject* self) -> ESValue {
+        return self->asESFunctionObject()->protoType();
+    },[](::escargot::ESObject* self, ESValue value){
+        if(value.isESPointer() && value.asESPointer()->isESObject())
+            self->asESFunctionObject()->setProtoType(value.asESPointer()->asESObject());
+    }, true, false, false);
+
+    //FIXME bug
+    //defineAccessorProperty(strings->prototype, ESVMInstance::currentInstance()->functionPrototypeAccessorData(), true, false, false);
+}
+
 ESValue functionCallerInnerProcess(ESFunctionObject* fn, ESValue receiver, ESValue arguments[], size_t argumentCount, bool needsArgumentsObject, ESVMInstance* ESVMInstance)
 {
     ESVMInstance->invalidateIdentifierCacheCheckCount();
@@ -399,6 +416,15 @@ void ESDateObject::setTime(double t) {
     time_t raw_t = (time_t) floor(t);
     m_tv.tv_sec = raw_t/1000;
     m_tv.tv_usec =  (raw_t % 10000) * 1000;
+}
+
+ESStringObject::ESStringObject(const InternalString& str)
+    : ESObject((Type)(Type::ESObject | Type::ESStringObject))
+{
+    m_stringData = ESString::create(str);
+
+    //$21.1.4.1 String.length
+    defineAccessorProperty(strings->length, ESVMInstance::currentInstance()->stringObjectLengthAccessorData(), false, true, false);
 }
 
 }
