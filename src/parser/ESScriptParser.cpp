@@ -3,7 +3,13 @@
 #include "vm/ESVMInstance.h"
 #include "runtime/ESValue.h"
 
+#include "jsapi.h"
+
 namespace escargot {
+
+::JSContext* ESScriptParser::s_cx;
+::JSRuntime* ESScriptParser::s_rt;
+void* ESScriptParser::s_global;
 
 unsigned long getLongTickCount()
 {
@@ -12,6 +18,62 @@ unsigned long getLongTickCount()
     return (unsigned long)(timespec.tv_sec * 1000000L + timespec.tv_nsec/1000);
 }
 
+static JSClass global_class = {
+    "global",
+    JSCLASS_GLOBAL_FLAGS,
+    // [SpiderMonkey 38] Following Stubs are removed. Remove those lines.
+    JS_PropertyStub,
+    JS_DeletePropertyStub,
+    JS_PropertyStub,
+    JS_StrictPropertyStub,
+    JS_EnumerateStub,
+    JS_ResolveStub,
+    JS_ConvertStub
+};
+
+void ESScriptParser::enter()
+{
+    s_rt = JS_NewRuntime(8L * 1024 * 1024, JS_USE_HELPER_THREADS);
+    if (!s_rt)
+        ::exit(0);
+
+    s_cx = JS_NewContext(s_rt, 8192);
+    if (!s_cx)
+        ::exit(0);
+
+    s_global = new JS::RootedObject(s_cx, JS_NewGlobalObject(s_cx, &global_class, nullptr));
+    if (!s_global)
+        ::exit(0);
+
+    {
+        JSAutoCompartment ac(s_cx, *((JS::RootedObject*)s_global));
+        JS_InitStandardClasses(s_cx, *((JS::RootedObject*)s_global));
+        JS_InitReflect(s_cx, *((JS::RootedObject*)s_global));
+    }
+}
+
+void ESScriptParser::exit()
+{
+    JS_DestroyContext(s_cx);
+    JS_DestroyRuntime(s_rt);
+    JS_ShutDown();
+}
+
+std::string ESScriptParser::parseExternal(std::string& sourceString)
+{
+    JS::RootedValue rval(s_cx);
+    {
+        JSAutoCompartment ac(s_cx, *((JS::RootedObject*)s_global));
+        const char *script = sourceString.c_str();
+        const char *filename = "noname";
+        int lineno = 1;
+        bool ok = JS_EvaluateScript(s_cx, *((JS::RootedObject*)s_global), script, strlen(script), filename, lineno, rval.address());
+        if (!ok)
+            return "!ok";
+    }
+    JSString *str = rval.toString();
+    return JS_EncodeString(s_cx, str);
+}
 
 Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& source)
 {
@@ -64,46 +126,12 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
 //    wprintf(L"sc = %s\n", sc.c_str());
 
 #ifndef NDEBUG
-    std::string sourceString = std::string("print(JSON.stringify(Reflect.parse('") + sc + "'), null, 4))";
+    std::string sourceString = std::string("JSON.stringify(Reflect.parse('") + sc + "'), null, 4)";
 #else
-    std::string sourceString = std::string("print(JSON.stringify(Reflect.parse('") + sc + "')))";
+    std::string sourceString = std::string("JSON.stringify(Reflect.parse('") + sc + "'))";
 #endif
 
-    FILE *fp;
-
-    char fname[] = "/tmp/escargot_XXXXXX\0";
-    const char* ptr = mkdtemp(fname);
-    char prefix[4096];
-    strcpy(prefix,ptr);
-    strcat(prefix,"/input.js");
-
-    fp = fopen(prefix, "w");
-    fputs(sourceString.c_str(), fp);
-    fflush(fp);
-    fclose(fp);
-
-    char path[1035];
-    char filePath[1035];
-    strcpy(filePath,"./mozjs ");
-    strcat(filePath, prefix);
-
-    fp = popen(filePath, "r");
-    if (fp == NULL) {
-        printf("Failed to run command\n" );
-        exit(1);
-    }
-
-    std::string outputString;
-    while (fgets(path, sizeof(path)-1, fp) != NULL) {
-        outputString += path;
-    }
-
-    pclose(fp);
-
-    remove(prefix);
-    rmdir(ptr);
-
-    InternalString output = outputString.data();
+    InternalString output = parseExternal(sourceString).data();
     //output.show();
 
     rapidjson::GenericDocument<rapidjson::UTF16<>> jsonDocument;

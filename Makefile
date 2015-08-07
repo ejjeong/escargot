@@ -36,6 +36,8 @@ CXXFLAGS += -fno-rtti -fno-math-errno -Isrc/
 CXXFLAGS += -Ithird_party/rapidjson/include/
 CXXFLAGS += -Ithird_party/bdwgc/include/
 CXXFLAGS += -Ithird_party/slre/
+CXXFLAGS += -Ithird_party/mozjs/build/dist/include
+LDFLAGS += -Lthird_party/mozjs/build/dist/lib -lmozjs-24 -lz -ldl -Wl,-rpath,'$$ORIGIN/third_party/mozjs/build/dist/lib/'
 LDFLAGS += -lpthread
 
 ifeq ($(ARCH), x64)
@@ -45,7 +47,7 @@ else ifeq ($(ARCH), x86)
 endif
 
 ifeq ($(MODE), debug)
-	CXXFLAGS += -O0 -g3 -frounding-math -fsignaling-nans -fno-omit-frame-pointer -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable
+	CXXFLAGS += -O0 -g3 -frounding-math -fsignaling-nans -fno-omit-frame-pointer -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable -Wno-invalid-offsetof
 	GCLIBS = third_party/bdwgc/out/debug/.libs/libgc.a #third_party/bdwgc/out/debug/.libs/libgccpp.a
 else ifeq ($(MODE), release)
 	CXXFLAGS += -O3 -g3 -DNDEBUG -fomit-frame-pointer -frounding-math -fsignaling-nans

@@ -87,12 +87,14 @@ void ESVMInstance::enter()
     ASSERT(!escargot::currentInstance);
     escargot::currentInstance = this;
     escargot::strings = &m_strings;
+    ESScriptParser::enter();
 }
 
 void ESVMInstance::exit()
 {
     escargot::currentInstance = NULL;
     escargot::strings = NULL;
+    ESScriptParser::exit();
 }
 
 }
