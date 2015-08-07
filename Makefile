@@ -35,6 +35,7 @@ CXXFLAGS += -fno-rtti -fno-math-errno -Isrc/
 #add third_party
 CXXFLAGS += -Ithird_party/rapidjson/include/
 CXXFLAGS += -Ithird_party/bdwgc/include/
+CXXFLAGS += -Ithird_party/slre/
 LDFLAGS += -lpthread
 
 ifeq ($(ARCH), x64)
@@ -60,11 +61,13 @@ SRC += $(foreach dir, ./src/shell , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, ./src/parser , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, ./src/vm , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, ./src/runtime , $(wildcard $(dir)/*.cpp))
+SRC_C = $(foreach dir, ./third_party/slre , $(wildcard $(dir)/*.c))
 
 ifeq ($(HOST), linux)
 endif
 
 OBJS :=  $(SRC:%.cpp= %.o)
+OBJS +=  $(SRC_C:%.c= %.o)
 
 # pull in dependency info for *existing* .o files
 -include $(OBJS:.o=.d)
