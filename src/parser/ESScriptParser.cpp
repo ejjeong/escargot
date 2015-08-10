@@ -42,6 +42,8 @@ InternalString astTypeForStatement(L"ForStatement");
 InternalString astTypeForInStatement(L"ForInStatement");
 InternalString astTypeWhileStatement(L"WhileStatement");
 InternalString astTypeDoWhileStatement(L"DoWhileStatement");
+InternalString astTypeSwitchStatement(L"SwitchStatement");
+InternalString astTypeSwitchCase(L"SwitchCase");
 InternalString astTypeTryStatement(L"TryStatement");
 InternalString astTypeCatchClause(L"CatchClause");
 InternalString astTypeThrowStatement(L"ThrowStatement");
@@ -403,6 +405,41 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             parsedNode = new WhileStatementNode(fn(getObjectFromMozJS(s_cx, obj, "test"), currentBody, false), fn(getObjectFromMozJS(s_cx, obj, "body"), currentBody, false));
         } else if(type == astTypeDoWhileStatement) {
             parsedNode = new DoWhileStatementNode(fn(getObjectFromMozJS(s_cx, obj, "test"), currentBody, false), fn(getObjectFromMozJS(s_cx, obj, "body"), currentBody, false));
+        } else if(type == astTypeSwitchStatement) {
+            StatementNodeVector vA;
+            StatementNodeVector vB;
+            SwitchCaseNode* defaultNode;
+            JSObject* cases = getObjectFromMozJS(s_cx, obj, "cases");
+            uint32_t siz = getArrayLengthFromMozJS(s_cx, cases);
+
+            bool metDefaultNode = false;
+            for (uint32_t i = 0; i < siz; i++) {
+                SwitchCaseNode* n = (SwitchCaseNode*) fn(getArrayElementFromMozJS(s_cx, cases, i), currentBody, false);
+                if (n->isDefaultNode()) {
+                    defaultNode = n;
+                    metDefaultNode = true;
+                    continue;
+                }
+                if (!metDefaultNode)
+                    vA.push_back(n);
+                else
+                    vB.push_back(n);
+            }
+            parsedNode = new SwitchStatementNode(fn(getObjectFromMozJS(s_cx, obj, "discriminant"), currentBody, false),
+                    std::move(vA), defaultNode, std::move(vB), getBooleanFromMozJS(s_cx, obj, "lexical"));
+        } else if(type == astTypeSwitchCase) {
+            StatementNodeVector v;
+            JSObject* consequent = getObjectFromMozJS(s_cx, obj, "consequent");
+            uint32_t siz = getArrayLengthFromMozJS(s_cx, consequent);
+            for (uint32_t i = 0; i < siz; i++) {
+                Node* n = fn(getArrayElementFromMozJS(s_cx, consequent, i), currentBody, false);
+                v.push_back(n);
+            }
+            JSObject* test = getObjectFromMozJS(s_cx, obj, "test");
+            if (!test) // default statement
+                parsedNode = new SwitchCaseNode(nullptr, std::move(v));
+            else
+                parsedNode = new SwitchCaseNode(fn(test, currentBody, false), std::move(v));
         } else if(type == astTypeThisExpression) {
             parsedNode = new ThisExpressionNode();
         } else if(type == astTypeBreakStatement) {
@@ -637,6 +674,20 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
         } else if(type == NodeType::DoWhileStatement) {
             postAnalysisFunction(((DoWhileStatementNode *)currentNode)->m_test, identifierInCurrentContext, nearFunctionNode);
             postAnalysisFunction(((DoWhileStatementNode *)currentNode)->m_body, identifierInCurrentContext, nearFunctionNode);
+        } else if(type == NodeType::SwitchStatement) {
+            postAnalysisFunction(((SwitchStatementNode *)currentNode)->m_discriminant, identifierInCurrentContext, nearFunctionNode);
+            StatementNodeVector& vA =((SwitchStatementNode *)currentNode)->m_casesA;
+            for(unsigned i = 0; i < vA.size() ; i ++)
+                postAnalysisFunction(vA[i], identifierInCurrentContext, nearFunctionNode);
+            postAnalysisFunction(((SwitchStatementNode *)currentNode)->m_default, identifierInCurrentContext, nearFunctionNode);
+            StatementNodeVector& vB = ((SwitchStatementNode *)currentNode)->m_casesB;
+            for(unsigned i = 0; i < vB.size() ; i ++)
+                postAnalysisFunction(vB[i], identifierInCurrentContext, nearFunctionNode);
+        } else if(type == NodeType::SwitchCase) {
+            postAnalysisFunction(((SwitchCaseNode *)currentNode)->m_test, identifierInCurrentContext, nearFunctionNode);
+            StatementNodeVector& v = ((SwitchCaseNode *)currentNode)->m_consequent;
+            for(unsigned i = 0; i < v.size() ; i ++)
+                postAnalysisFunction(v[i], identifierInCurrentContext, nearFunctionNode);
         } else if(type == NodeType::ThisExpression) {
 
         } else if(type == NodeType::BreakStatement) {

@@ -36,6 +36,8 @@
 #include "ProgramNode.h"
 #include "ReturnStatmentNode.h"
 #include "StatementNode.h"
+#include "SwitchStatementNode.h"
+#include "SwitchCaseNode.h"
 #include "ThisExpressionNode.h"
 #include "UnaryExpressionNode.h"
 #include "VariableDeclarationNode.h"
