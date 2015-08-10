@@ -88,7 +88,6 @@ void ESScriptParser::enter()
 
     {
         JSAutoCompartment ac(s_cx, *((JS::RootedObject*)s_global));
-        JS_InitStandardClasses(s_cx, *((JS::RootedObject*)s_global));
         JS_InitReflect(s_cx, *((JS::RootedObject*)s_global));
         jsval r;
         JS_GetProperty(s_cx, *((JS::RootedObject*)s_global), "Reflect", &r);

@@ -27,7 +27,7 @@ function measure(){
   #echo $PID
   (while [ "$PID" ]; do
     [ -f "/proc/$PID/smaps" ] || { exit 1;};
-    ./memps -p $PID 2> /dev/null
+    ./test/memps -p $PID 2> /dev/null
     echo \"=========\"; sleep 0.0001;
   done ) >> $outfile &
   sleep 1s;
