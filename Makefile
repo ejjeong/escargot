@@ -36,12 +36,13 @@ CXXFLAGS += -fdata-sections -ffunction-sections
 #add third_party
 CXXFLAGS += -Ithird_party/rapidjson/include/
 CXXFLAGS += -Ithird_party/bdwgc/include/
-CXXFLAGS += -Ithird_party/slre/
 CXXFLAGS += -Ithird_party/mozjs/build/dist/include
+CXXFLAGS += -Ithird_party/re2/
 
 #LDFLAGS += -Lthird_party/mozjs/build/dist/lib -lmozjs-24 -lz -ldl -Wl,-rpath,'$$ORIGIN/third_party/mozjs/build/dist/lib/'
 LDFLAGS += -lpthread -lz -ldl
 LDFLAGS += -Wl,--gc-sections
+LDFLAGS += ./third_party/re2/obj/libre2.a -lpthread
 
 ifeq ($(ARCH), x64)
 	CXXFLAGS += -DESCARGOT_64=1
@@ -70,7 +71,6 @@ SRC += $(foreach dir, ./src/shell , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, ./src/parser , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, ./src/vm , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, ./src/runtime , $(wildcard $(dir)/*.cpp))
-SRC_C = $(foreach dir, ./third_party/slre , $(wildcard $(dir)/*.c))
 
 ifeq ($(HOST), linux)
 endif
