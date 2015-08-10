@@ -130,21 +130,21 @@ public:
                 if (lval.isESString() || rval.isESString()) {
                     InternalString lstr;
                     InternalString rstr;
-                    if (lval.isESString())
-                        lstr = lval.asESString()->string();
-                    else {
-                        //TODO use toESString
-                        //lstr = lval.toESString().string();
-                        lstr = lval.toInternalString();
-                    }
-                    if (rval.isESString())
-                        rstr = rval.asESString()->string();
-                    else {
-                        //TODO use toESString
-                        //rstr = rval.toESString().string();
-                        rstr = rval.toInternalString();
-                    }
-                    ret = ESString::create(InternalString(std::move(*lstr.string() + *rstr.string())));
+
+                    //TODO use toESString
+                    //lstr = lval.toESString().string();
+                    lstr = lval.toInternalString();
+                    //TODO use toESString
+                    //rstr = rval.toESString().string();
+                    rstr = rval.toInternalString();
+
+                    InternalString result;
+                    result.allocString(lstr.length() + rstr.length());
+                    InternalStringData* data = const_cast<InternalStringData*>(result.string());
+                    data->append(*lstr.string());
+                    data->append(*rstr.string());
+
+                    ret = ESString::create(result);
                 } else {
                     if(lval.isInt32() && rval.isInt32()) {
                         int a = lval.asInt32(), b = rval.asInt32();

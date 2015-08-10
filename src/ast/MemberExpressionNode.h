@@ -62,7 +62,7 @@ public:
                 if(obj->isESArrayObject()) {
                     if(computedPropertyValue.isInt32())
                         slot = obj->asESArrayObject()->findOnlyIndex(computedPropertyValue.asInt32());
-                    if(!slot) {
+                    if(UNLIKELY(!slot)) {
                         computedPropertyName = computedPropertyValue.toInternalString();
                         slot = obj->find(computedPropertyName);
                     }

@@ -425,7 +425,7 @@ void GlobalObject::installString()
         const InternalString& str = thisObject->asESStringObject()->getStringData()->string();
         int position = instance->currentExecutionContext()->arguments()[0].toInteger();
         ESValue ret;
-        if (position < 0 || position >= str.length())
+        if (position < 0 || position >= (int)str.length())
             ret = ESValue(std::numeric_limits<double>::quiet_NaN());
         else
             ret = ESValue((*str.string())[position]);

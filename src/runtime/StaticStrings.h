@@ -54,6 +54,8 @@ InternalString round;
 InternalString sin;
 InternalString sqrt;
 InternalString toString;
+InternalString stringTrue;
+InternalString stringFalse;
 InternalString boolean;
 InternalString number;
 InternalString string;

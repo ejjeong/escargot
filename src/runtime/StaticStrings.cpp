@@ -57,6 +57,8 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     string = L"string";
     object = L"object";
     function = L"function";
+    stringTrue = L"true";
+    stringFalse = L"false";
 }
 
 Strings* strings;

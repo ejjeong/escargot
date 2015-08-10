@@ -372,7 +372,7 @@ public:
 
     ESString* substring(int from, int to) const
     {
-        ASSERT(0 <= from && from <= to && to <= m_string.length());
+        ASSERT(0 <= from && from <= to && to <= (int)m_string.length());
         InternalString ret(m_string.string()->substr(from, to-from).c_str());
         return ESString::create(ret);
     }

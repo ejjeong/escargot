@@ -167,9 +167,9 @@ InternalString ESValue::toInternalString() const
         ret = strings->null;
     } else if(isBoolean()) {
         if(asBoolean())
-            ret = L"true";
+            ret = strings->stringTrue;
         else
-            ret = L"false";
+            ret = strings->stringFalse;
     } else {
         ESPointer* o = asESPointer();
         if(o->isESString()) {

@@ -8,17 +8,17 @@ class InternalStringData : public gc_cleanup, public InternalStringStd {
 public:
     InternalStringData()
     {
-        m_isHashInited =  false;
+        m_hashData.m_isHashInited =  false;
     }
     InternalStringData(const wchar_t* str)
         : InternalStringStd(str)
     {
-        m_isHashInited =  false;
+        m_hashData.m_isHashInited =  false;
     }
     InternalStringData(InternalStringStd&& src)
     {
         InternalStringStd::operator =(src);
-        m_isHashInited =  false;
+        m_hashData.m_isHashInited =  false;
     }
 
     InternalStringData(const InternalStringData& src) = delete;
@@ -27,20 +27,31 @@ public:
     ALWAYS_INLINE size_t hashValue() const
     {
         initHash();
-        return m_hashData;
+        return m_hashData.m_hashData;
     }
 
     ALWAYS_INLINE void initHash() const
     {
-        if(!m_isHashInited) {
-            m_isHashInited = true;
+        if(!m_hashData.m_isHashInited) {
+            m_hashData.m_isHashInited = true;
             std::hash<InternalStringStd> hashFn;
-            m_hashData = hashFn((InternalStringStd &)*this);
+            m_hashData.m_hashData = hashFn((InternalStringStd &)*this);
         }
     }
 protected:
-    mutable size_t m_hashData;
-    mutable bool m_isHashInited;
+#pragma pack(push, 1)
+#ifdef ESCARGOT_64
+    mutable struct {
+        size_t m_hashData:63;
+        bool m_isHashInited:1;
+    } m_hashData;
+#else
+    mutable struct {
+        size_t m_hashData:31;
+        bool m_isHashInited:1;
+    } m_hashData;
+#endif
+#pragma pack(pop)
 };
 
 
@@ -73,8 +84,9 @@ public:
             buf[i++] = (wchar_t) *p;
         buf[i] = L'\0';
         //std::swprintf(buf, 511, L"%.17lg", number);
-        allocString(wcslen(buf));
-        wcscpy((wchar_t *)m_string->data(), buf);
+        size_t tl = wcslen(buf);
+        allocString(tl);
+        m_string->append(&buf[0], &buf[tl]);
     }
 
     explicit InternalString(wchar_t c)
@@ -86,7 +98,8 @@ public:
     {
         std::mbstate_t state = std::mbstate_t();
         int len = std::mbsrtowcs(NULL, &s, 0, &state);
-        allocString(len);
+        allocString(0);
+        m_string->resize(len);
         std::mbsrtowcs((wchar_t *)m_string->data(), &s, m_string->size(), &state);
     }
 
@@ -118,7 +131,7 @@ public:
         return m_string;
     }
 
-    ALWAYS_INLINE int length() const
+    ALWAYS_INLINE unsigned length() const
     {
         return m_string->length();
     }
@@ -155,14 +168,12 @@ public:
     }
 #endif
 
-protected:
-
     void allocString(size_t stringLength)
     {
         m_string = new(PointerFreeGC) InternalStringData();
-        m_string->resize(stringLength);
+        m_string->reserve(stringLength);
     }
-
+protected:
     InternalStringData* m_string;
 };
 
