@@ -1,6 +1,6 @@
 #!/bin/bash
 
-tests=("bitops-bitwise-and" "bitops-bits-in-byte" "bitops-3bit-bits-in-byte" "bitops-nsieve-bits" "controlflow-recursive" "math-cordic" "math-partial-sums" "math-spectral-norm" "access-binary-trees" "access-fannkuch" "access-nbody" "access-nsieve")
+tests=("3d-cube", "3d-morph", "3d-raytrace", "access-binary-trees", "access-fannkuch", "access-nbody", "access-nsieve", "bitops-3bit-bits-in-byte", "bitops-bits-in-byte", "bitops-bitwise-and", "bitops-nsieve-bits", "controlflow-recursive", "crypto-md5", "crypto-sha1", "date-format-tofte", "math-cordic", "math-partial-sums", "math-spectral-norm", "string-base64", "string-fasta")
 if [[ $1 == duk* ]]; then
   cmd="/home/june0cho/webTF/duktape-sunspider/duk"
   tc="duktape"
@@ -15,7 +15,7 @@ echo $cmd
 #testpath="./"
 testpath="./test/SunSpider/tests/sunspider-1.0.2/"
 
-mkdir test/out
+mkdir -p test/out
 rm test/out/*.out
 num=$(echo "0731")
 resfile=$(echo 'test/out/'$tc'_x86_mem_'$num'.res')

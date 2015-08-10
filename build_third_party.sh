@@ -1,5 +1,12 @@
 #!/bin/bash
 
+if [ ! -f /proc/cpuinfo ]; then
+	echo "Is this Linux? Cannot find or read /proc/cpuinfo"
+	exit 1
+fi
+NUMPROC=$(grep 'processor' /proc/cpuinfo | wc -l)
+
+
 ###########################################################
 # GC build
 ###########################################################
@@ -10,16 +17,16 @@ make distclean
 mkdir -p out/release
 mkdir -p out/debug
 
-CONFFLAGS=" " # --enable-large-config --enable-cplusplus"
+GCCONFFLAGS=" " # --enable-large-config --enable-cplusplus"
 
 cd out/release
-../../configure $CONFFLAGS --disable-gc-debug
-make -j
+../../configure $GCCONFFLAGS --disable-gc-debug
+make -j$NUMPROC
 cd ../..
 
 cd out/debug
-../../configure $CONFFLAGS
-make -j
+../../configure $GCCONFFLAGS
+make -j$NUMPROC
 cd ../..
 
 cd ../..
@@ -29,8 +36,10 @@ cd ../..
 ###########################################################
 rm -rf third_party/mozjs/build
 mkdir -p third_party/mozjs/build
-cd third_party/mozjs/build
-../js/src/configure
-make -j 24
-cd ../../..
 
+MOZJSFLAGS=" --disable-shared-js --disable-tests --disable-ion --disable-yarr-jit " # to make build faster
+
+cd third_party/mozjs/build
+../js/src/configure $MOZJSFLAGS
+make -j$NUMPROC
+cd ../../..

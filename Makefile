@@ -32,13 +32,16 @@ else
 endif
 
 CXXFLAGS += -fno-rtti -fno-math-errno -Isrc/
+CXXFLAGS += -fdata-sections -ffunction-sections
 #add third_party
 CXXFLAGS += -Ithird_party/rapidjson/include/
 CXXFLAGS += -Ithird_party/bdwgc/include/
 CXXFLAGS += -Ithird_party/slre/
 CXXFLAGS += -Ithird_party/mozjs/build/dist/include
-LDFLAGS += -Lthird_party/mozjs/build/dist/lib -lmozjs-24 -lz -ldl -Wl,-rpath,'$$ORIGIN/third_party/mozjs/build/dist/lib/'
-LDFLAGS += -lpthread
+
+#LDFLAGS += -Lthird_party/mozjs/build/dist/lib -lmozjs-24 -lz -ldl -Wl,-rpath,'$$ORIGIN/third_party/mozjs/build/dist/lib/'
+LDFLAGS += -lpthread -lz -ldl
+LDFLAGS += -Wl,--gc-sections
 
 ifeq ($(ARCH), x64)
 	CXXFLAGS += -DESCARGOT_64=1
@@ -49,12 +52,16 @@ endif
 ifeq ($(MODE), debug)
 	CXXFLAGS += -O0 -g3 -frounding-math -fsignaling-nans -fno-omit-frame-pointer -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable -Wno-invalid-offsetof
 	GCLIBS = third_party/bdwgc/out/debug/.libs/libgc.a #third_party/bdwgc/out/debug/.libs/libgccpp.a
+	MOZJSLIBS = third_party/mozjs/build/libjs_static.a
 else ifeq ($(MODE), release)
 	CXXFLAGS += -O3 -g3 -DNDEBUG -fomit-frame-pointer -frounding-math -fsignaling-nans
 	GCLIBS = third_party/bdwgc/out/release/.libs/libgc.a #third_party/bdwgc/out/release/.libs/libgccpp.a
+	MOZJSLIBS = third_party/mozjs/build/libjs_static.a
 else
 	$(error mode error)
 endif
+
+THIRD_PARTY_LIBS= $(GCLIBS) $(MOZJSLIBS)
 
 SRC=
 SRC += $(foreach dir, ./src , $(wildcard $(dir)/*.cpp))
@@ -74,8 +81,8 @@ OBJS +=  $(SRC_C:%.c= %.o)
 # pull in dependency info for *existing* .o files
 -include $(OBJS:.o=.d)
 
-$(MAKECMDGOALS): $(OBJS) $(GCLIBS)
-	$(CXX) -o $(MAKECMDGOALS) $(OBJS) $(GCLIBS) $(LDFLAGS)
+$(MAKECMDGOALS): $(OBJS) $(THIRD_PARTY_LIBS)
+	$(CXX) -o $(MAKECMDGOALS) $(OBJS) $(THIRD_PARTY_LIBS) $(LDFLAGS)
 	cp third_party/mozjs/build/shell/js24 ./mozjs
 
 %.o: %.cpp
