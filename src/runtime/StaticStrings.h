@@ -53,6 +53,7 @@ InternalString random;
 InternalString round;
 InternalString sin;
 InternalString sqrt;
+InternalString log;
 InternalString toString;
 InternalString stringTrue;
 InternalString stringFalse;

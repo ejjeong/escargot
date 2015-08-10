@@ -922,6 +922,34 @@ void GlobalObject::installMath()
     }), false, false);
     m_math->set(strings->floor, ::escargot::ESFunctionObject::create(NULL, floorNode));
 
+    // initialize math object: $20.2.2.20 Math.log()
+    FunctionDeclarationNode* logNode = new FunctionDeclarationNode(strings->log, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        size_t arg_size = instance->currentExecutionContext()->argumentCount();
+        if (arg_size == 0) {
+            double value = std::numeric_limits<double>::quiet_NaN();
+            instance->currentExecutionContext()->doReturn(ESValue(value));
+        } else {
+            ESValue arg = instance->currentExecutionContext()->arguments()[0];
+            double value = arg.toNumber();
+            double ret;
+            if(isnan(value))
+                ret = std::numeric_limits<double>::quiet_NaN();
+            else if(value < 0)
+                ret = std::numeric_limits<double>::quiet_NaN();
+            else if(value == 0.0 && value == -0.0)
+                ret = -std::numeric_limits<double>::infinity();
+            else if(value == 1)
+                ret = 0;
+            else if(isinf(value))
+                ret = std::numeric_limits<double>::infinity();
+            else
+                ret = log(value);
+            instance->currentExecutionContext()->doReturn(ESValue(ret));
+        }
+        return ESValue();
+    }), false, false);
+    m_math->set(strings->log, ::escargot::ESFunctionObject::create(NULL, logNode));
+
     // initialize math object: $20.2.2.24 Math.max()
     FunctionDeclarationNode* maxNode = new FunctionDeclarationNode(strings->max, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         size_t arg_size = instance->currentExecutionContext()->argumentCount();

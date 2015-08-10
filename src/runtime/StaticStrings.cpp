@@ -51,6 +51,7 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     round =  L"round";
     sin =  L"sin";
     sqrt =  L"sqrt";
+    log =  L"log";
     toString =  L"toString";
     boolean = L"boolean";
     number = L"number";
