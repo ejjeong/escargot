@@ -48,7 +48,7 @@ public:
 
         if(value.isESPointer() && value.asESPointer()->isESObject()) {
             ESObject* obj = value.asESPointer()->asESObject();
-            ESSlot* slot;
+            ESSlot* slot = NULL;
             InternalString computedPropertyName;
             ESValue computedPropertyValue;
             ExecutionContext* ec = instance->currentExecutionContext();
