@@ -211,6 +211,34 @@ void GlobalObject::installArray()
         return ESValue();
     }), false, false);
 
+    //$22.1.3.1 Array.prototype.concat(...arguments)
+    FunctionDeclarationNode* arrayConcat = new FunctionDeclarationNode(InternalString(L"concat"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESArrayObject();
+        int arrlen = thisVal->length().asInt32();
+        escargot::ESArrayObject* ret = ESArrayObject::create(arrlen, instance->globalObject()->arrayPrototype());
+        if (!thisVal->constructor().isUndefinedOrNull())
+            ret->setConstructor(thisVal->constructor());
+        int idx = 0;
+        for (idx = 0; idx < arrlen; idx++)
+            ret->set(idx, thisVal->get(idx));
+        for (int i = 0; i < arglen; i++) {
+            ESValue& argi = instance->currentExecutionContext()->arguments()[i];
+            if (argi.isESPointer() && argi.asESPointer()->isESArrayObject()) {
+                escargot::ESArrayObject* arr = argi.asESPointer()->asESArrayObject();
+                int len = arr->length().asInt32();
+                int st = idx;
+                for (; idx < st + len; idx++)
+                    ret->set(idx, arr->get(idx - st));
+            } else {
+                ret->set(idx++, argi);
+            }
+        }
+        instance->currentExecutionContext()->doReturn(ESValue(ret));
+        return ESValue();
+    }), false, false);
+    m_arrayPrototype->set(L"concat", ESFunctionObject::create(NULL, arrayConcat));
+
     //$22.1.3.11 Array.prototype.indexOf()
     FunctionDeclarationNode* arrayIndexOf = new FunctionDeclarationNode(InternalString(L"indexOf"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESArrayObject();

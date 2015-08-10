@@ -39,4 +39,5 @@ print(arr.splice(3, 4, "ab", "def"));
 print(arr);
 
 print(arr.slice(2, 3));
-print(arr);
+print(arr.concat("aaa"));
+print(arr.concat(["aaa", 3, 2]));
