@@ -24,6 +24,7 @@
 #include "ForInStatementNode.h"
 #include "ForStatementNode.h"
 #include "WhileStatementNode.h"
+#include "DoWhileStatementNode.h"
 #include "LiteralNode.h"
 #include "LogicalExpressionNode.h"
 #include "MemberExpressionNode.h"

@@ -172,6 +172,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
     InternalString astTypeForStatement(L"ForStatement");
     InternalString astTypeForInStatement(L"ForInStatement");
     InternalString astTypeWhileStatement(L"WhileStatement");
+    InternalString astTypeDoWhileStatement(L"DoWhileStatement");
     InternalString astTypeTryStatement(L"TryStatement");
     InternalString astTypeCatchClause(L"CatchClause");
     InternalString astTypeThrowStatement(L"ThrowStatement");
@@ -355,6 +356,8 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             parsedNode = new ForInStatementNode(left_node, fn(value[L"right"], currentBody, false), fn(value[L"body"], currentBody, false), value[L"each"].GetBool());
         } else if(type == astTypeWhileStatement) {
             parsedNode = new WhileStatementNode(fn(value[L"test"], currentBody, false), fn(value[L"body"], currentBody, false));
+        } else if(type == astTypeDoWhileStatement) {
+            parsedNode = new DoWhileStatementNode(fn(value[L"test"], currentBody, false), fn(value[L"body"], currentBody, false));
         } else if(type == astTypeThisExpression) {
             parsedNode = new ThisExpressionNode();
         } else if(type == astTypeBreakStatement) {
@@ -581,6 +584,9 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
         } else if(type == NodeType::WhileStatement) {
             postAnalysisFunction(((WhileStatementNode *)currentNode)->m_test, identifierInCurrentContext, nearFunctionNode);
             postAnalysisFunction(((WhileStatementNode *)currentNode)->m_body, identifierInCurrentContext, nearFunctionNode);
+        } else if(type == NodeType::DoWhileStatement) {
+            postAnalysisFunction(((DoWhileStatementNode *)currentNode)->m_test, identifierInCurrentContext, nearFunctionNode);
+            postAnalysisFunction(((DoWhileStatementNode *)currentNode)->m_body, identifierInCurrentContext, nearFunctionNode);
         } else if(type == NodeType::ThisExpression) {
 
         } else if(type == NodeType::BreakStatement) {

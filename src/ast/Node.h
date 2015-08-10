@@ -28,6 +28,7 @@ enum NodeType {
     ForStatement,
     ForInStatement,
     WhileStatement,
+    DoWhileStatement,
     Declaration,
     VariableDeclaration,
     FunctionDeclaration,
