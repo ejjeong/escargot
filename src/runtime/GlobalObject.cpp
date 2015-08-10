@@ -96,6 +96,22 @@ GlobalObject::GlobalObject()
         return ESValue();
     }), false, false);
     set(L"eval", ESFunctionObject::create(NULL, node));
+
+    definePropertyOrThrow(L"isNaN", false, false, false);
+    node = new FunctionDeclarationNode(InternalAtomicString(L"isNaN"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        ESValue ret;
+        int len = instance->currentExecutionContext()->argumentCount();
+        if (len < 1) ret = ESValue(ESValue::ESFalseTag::ESFalse);
+        else {
+            ESValue& argument = instance->currentExecutionContext()->arguments()[0];
+            double num = argument.toNumber();
+            if(std::isnan(num)) ret = ESValue(ESValue::ESTrueTag::ESTrue);
+            else    ret = ESValue(ESValue::ESFalseTag::ESFalse);
+        }
+        instance->currentExecutionContext()->doReturn(ret);
+        return ESValue();
+    }), false, false);
+    set(L"isNaN", ESFunctionObject::create(NULL, node));
 }
 
 
@@ -404,7 +420,12 @@ void GlobalObject::installString()
         ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
         const InternalString& str = thisObject->asESStringObject()->getStringData()->string();
         int position = instance->currentExecutionContext()->arguments()[0].toInteger();
-        instance->currentExecutionContext()->doReturn(ESValue((*str.string())[position]));
+        ESValue ret;
+        if (position < 0 || position >= str.length())
+            ret = ESValue(std::numeric_limits<double>::quiet_NaN());
+        else
+            ret = ESValue((*str.string())[position]);
+        instance->currentExecutionContext()->doReturn(ret);
         return ESValue();
     }), false, false);
     m_stringPrototype->set(L"charCodeAt", ESFunctionObject::create(NULL, stringCharCodeAt));
