@@ -236,8 +236,6 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             //TODO parse esvalue better
             jsval v;
             JS_GetProperty(s_cx, obj, "value", &v);
-
-
             if(JSVAL_IS_INT(v)) {
                 int number = JSVAL_TO_INT(v);
                 parsedNode = new LiteralNode(ESValue(number));
@@ -257,7 +255,9 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             } else if(JSVAL_IS_NULL(v)) {
                 parsedNode = new LiteralNode(ESValue(ESValue::ESNullTag::ESNull));
             } else {
-                RELEASE_ASSERT_NOT_REACHED();
+                JSString* ss = JS_ValueToString(s_cx, v);
+                InternalString is(JS_EncodeString(s_cx, ss));
+                parsedNode = new LiteralNode(ESValue(ESString::create(is)));
             }
 
         } else if(type == astTypeFunctionDeclaration) {
