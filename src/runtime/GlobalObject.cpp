@@ -129,6 +129,11 @@ void GlobalObject::installFunction()
 
     m_functionPrototype = emptyFunction;
     m_functionPrototype->setConstructor(m_function);
+    m_functionPrototype->set(strings->toString, ESFunctionObject::create(NULL, new FunctionDeclarationNode(InternalString(strings->toString), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        //FIXME
+        instance->currentExecutionContext()->doReturn(ESString::create(L"[Function function]"));
+        return ESValue();
+    }), false, false)));
 
     m_function->defineAccessorProperty(strings->prototype, [](ESObject* self) -> ESValue {
         return self->asESFunctionObject()->protoType();
@@ -149,6 +154,12 @@ void GlobalObject::installObject()
 
     m_objectPrototype = ESObject::create();
     m_objectPrototype->setConstructor(m_object);
+    m_objectPrototype->set(strings->toString, ESFunctionObject::create(NULL, new FunctionDeclarationNode(InternalString(strings->toString), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        //FIXME
+        instance->currentExecutionContext()->doReturn(ESString::create(L"[Object object]"));
+        return ESValue();
+    }), false, false)));
+
     m_object->set(strings->prototype, m_objectPrototype);
 
     set(strings->Object, m_object);
@@ -165,6 +176,12 @@ void GlobalObject::installError()
 
     m_referenceErrorPrototype = ESErrorObject::create();
     m_referenceErrorPrototype->setConstructor(m_referenceError);
+    m_referenceErrorPrototype->set(strings->toString, ESFunctionObject::create(NULL, new FunctionDeclarationNode(InternalString(strings->toString), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        //FIXME this is wrong
+        ESValue v(instance->currentExecutionContext()->resolveThisBinding());
+        instance->currentExecutionContext()->doReturn(ESString::create(v.toInternalString()));
+        RELEASE_ASSERT_NOT_REACHED();
+    }), false, false)));
 
     m_referenceError->set(strings->prototype, m_referenceErrorPrototype);
 
@@ -406,6 +423,13 @@ void GlobalObject::installArray()
         return ESValue();
     }), false, false);
     m_arrayPrototype->set(L"splice", ESFunctionObject::create(NULL, arraySplice));
+    m_arrayPrototype->set(strings->toString, ESFunctionObject::create(NULL, new FunctionDeclarationNode(InternalString(strings->toString), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        InternalString is;
+        //FIXME this is wrong
+        ESValue v(instance->currentExecutionContext()->resolveThisBinding());
+        instance->currentExecutionContext()->doReturn(ESString::create(v.toInternalString()));
+        RELEASE_ASSERT_NOT_REACHED();
+    }), false, false)));
 
     m_array = ESFunctionObject::create(NULL, constructor);
     m_arrayPrototype->setConstructor(m_array);
@@ -442,6 +466,13 @@ void GlobalObject::installString()
 
     m_stringPrototype = ESStringObject::create(L"");
     m_stringPrototype->setConstructor(m_string);
+    m_stringPrototype->set(strings->toString, ESFunctionObject::create(NULL, new FunctionDeclarationNode(InternalString(strings->toString), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        InternalString is;
+        //FIXME this is wrong
+        ESValue v(instance->currentExecutionContext()->resolveThisBinding());
+        instance->currentExecutionContext()->doReturn(instance->currentExecutionContext()->resolveThisBinding()->asESStringObject()->getStringData());
+        RELEASE_ASSERT_NOT_REACHED();
+    }), false, false)));
 
     m_string->defineAccessorProperty(strings->prototype, [](ESObject* self) -> ESValue {
         return self->asESFunctionObject()->protoType();
@@ -698,6 +729,13 @@ void GlobalObject::installDate()
     m_date->setConstructor(m_function);
 
     m_datePrototype->setConstructor(m_date);
+    m_datePrototype->set(strings->toString, ESFunctionObject::create(NULL, new FunctionDeclarationNode(InternalString(strings->toString), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        InternalString is;
+        //FIXME this is wrong
+        ESValue v(instance->currentExecutionContext()->resolveThisBinding());
+        instance->currentExecutionContext()->doReturn(ESString::create(v.toInternalString()));
+        RELEASE_ASSERT_NOT_REACHED();
+    }), false, false)));
 
     m_date->set(strings->prototype, m_datePrototype);
 

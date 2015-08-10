@@ -195,13 +195,6 @@ public:
     bool abstractEqualsTo(const ESValue& val);
     bool equalsTo(const ESValue& val);
 
-    /*
-    enum PrimitiveTypeHint { PreferString, PreferNumber };
-    ESValue toPrimitive(PrimitiveTypeHint hint = PreferNumber);
-    ESValue toInt32();
-    ESValue toInteger();
-    ESString toString();
-    */
 };
 
 

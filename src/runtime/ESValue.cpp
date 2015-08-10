@@ -91,9 +91,15 @@ bool ESValue::equalsTo(const ESValue& val)
 
 ESString* ESValue::toString() const
 {
-    if (isESPointer() && asESPointer()->isESStringObject())
-        return asESPointer()->asESStringObject()->getStringData();
-    return ESString::create(toInternalString());
+    if(isPrimitive()) {
+        return ESString::create(toInternalString());
+    } else {
+        ASSERT(asESPointer()->isESObject());
+        ESObject* obj = asESPointer()->asESObject();
+        ESValue ret = ESFunctionObject::call(obj->get(strings->toString, true), obj, NULL, 0, ESVMInstance::currentInstance(), false);
+        ASSERT(ret.isESString());
+        return ret.asESString();
+    }
 }
 
 
@@ -254,9 +260,10 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, Functio
     //defineAccessorProperty(strings->prototype, ESVMInstance::currentInstance()->functionPrototypeAccessorData(), true, false, false);
 }
 
-ESValue functionCallerInnerProcess(ESFunctionObject* fn, ESValue receiver, ESValue arguments[], size_t argumentCount, bool needsArgumentsObject, ESVMInstance* ESVMInstance)
+ALWAYS_INLINE void functionCallerInnerProcess(ESFunctionObject* fn, ESValue receiver, ESValue arguments[], size_t argumentCount, bool needsArgumentsObject, ESVMInstance* ESVMInstance)
 {
-    ESVMInstance->invalidateIdentifierCacheCheckCount();
+    //ESVMInstance->invalidateIdentifierCacheCheckCount();
+
     ((FunctionEnvironmentRecord *)ESVMInstance->currentExecutionContext()->environment()->record())->bindThisValue(receiver.asESPointer()->asESObject());
     DeclarativeEnvironmentRecord* functionRecord = ESVMInstance->currentExecutionContext()->environment()->record()->toDeclarativeEnvironmentRecord();
 
@@ -310,11 +317,6 @@ ESValue functionCallerInnerProcess(ESFunctionObject* fn, ESValue receiver, ESVal
         }
     }
 
-    int r = setjmp(ESVMInstance->currentExecutionContext()->returnPosition());
-    if(r != 1) {
-        fn->functionAST()->body()->execute(ESVMInstance);
-    }
-    return ESVMInstance->currentExecutionContext()->returnValue();
 }
 
 
@@ -326,7 +328,12 @@ ESValue ESFunctionObject::call(ESValue callee, ESValue receiver, ESValue argumen
         ESFunctionObject* fn = callee.asESPointer()->asESFunctionObject();
         if(fn->functionAST()->needsActivation()) {
             ESVMInstance->m_currentExecutionContext = new ExecutionContext(LexicalEnvironment::newFunctionEnvironment(fn, receiver), true, isNewExpression, currentContext, arguments, argumentCount);
-            result = functionCallerInnerProcess(fn, receiver, arguments, argumentCount, true, ESVMInstance);
+            functionCallerInnerProcess(fn, receiver, arguments, argumentCount, true, ESVMInstance);
+            int r = setjmp(ESVMInstance->currentExecutionContext()->returnPosition());
+            if(r != 1) {
+                fn->functionAST()->body()->execute(ESVMInstance);
+            }
+            result = ESVMInstance->currentExecutionContext()->returnValue();
             ESVMInstance->m_currentExecutionContext = currentContext;
         } else {
             FunctionEnvironmentRecord envRec(true,
@@ -339,7 +346,12 @@ ESValue ESFunctionObject::call(ESValue callee, ESValue receiver, ESValue argumen
             LexicalEnvironment env(&envRec, fn->outerEnvironment());
             ExecutionContext ec(&env, false, isNewExpression, currentContext, arguments, argumentCount);
             ESVMInstance->m_currentExecutionContext = &ec;
-            result = functionCallerInnerProcess(fn, receiver, arguments, argumentCount, fn->functionAST()->needsArgumentsObject(), ESVMInstance);
+            functionCallerInnerProcess(fn, receiver, arguments, argumentCount, fn->functionAST()->needsArgumentsObject(), ESVMInstance);
+            int r = setjmp(ESVMInstance->currentExecutionContext()->returnPosition());
+            if(r != 1) {
+                fn->functionAST()->body()->execute(ESVMInstance);
+            }
+            result = ESVMInstance->currentExecutionContext()->returnValue();
             ESVMInstance->m_currentExecutionContext = currentContext;
         }
     } else {

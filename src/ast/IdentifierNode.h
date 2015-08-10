@@ -21,6 +21,7 @@ public:
         m_cachedSlot = NULL;
         m_canUseFastAccess = false;
         m_fastAccessIndex = SIZE_MAX;
+        m_cacheCheckExecutionContext = NULL;
     }
 
     ESValue execute(ESVMInstance* instance)
@@ -30,20 +31,23 @@ public:
 
     ALWAYS_INLINE ESSlot* executeForWrite(ESVMInstance* instance)
     {
-        if (LIKELY(m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
+        ExecutionContext* ec = instance->currentExecutionContext();
+        if (LIKELY(ec == m_cacheCheckExecutionContext && m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
             return m_cachedSlot;
         } else {
             ESSlot* slot;
-            ExecutionContext* ec = instance->currentExecutionContext();
 
             if(LIKELY(m_canUseFastAccess && !ec->needsActivation())) {
                 slot = ec->environment()->record()->toDeclarativeEnvironmentRecord()->getBindingValueForNonActivationMode(m_fastAccessIndex);
             }
-            else
+            else {
+                //nonAtomicName().show();
                 slot = ec->resolveBinding(name(), nonAtomicName());
+            }
 
             if(LIKELY(slot != NULL)) {
                 m_cachedSlot = slot;
+                m_cacheCheckExecutionContext = ec;
                 m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
                 return slot;
             }
@@ -92,6 +96,7 @@ protected:
     ESString* m_esName;
 
     size_t m_identifierCacheInvalidationCheckCount;
+    ExecutionContext* m_cacheCheckExecutionContext;
     ESSlot* m_cachedSlot;
 
     bool m_canUseFastAccess;
