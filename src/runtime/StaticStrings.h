@@ -54,6 +54,11 @@ InternalString round;
 InternalString sin;
 InternalString sqrt;
 InternalString toString;
+InternalString boolean;
+InternalString number;
+InternalString string;
+InternalString object;
+InternalString function;
 
 void initStaticStrings(ESVMInstance* instance);
 };

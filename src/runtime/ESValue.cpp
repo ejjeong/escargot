@@ -234,7 +234,7 @@ ESArrayObject::ESArrayObject()
     , m_fastmode(true)
 {
     defineAccessorProperty(strings->length, ESVMInstance::currentInstance()->arrayLengthAccessorData(), true, false, false);
-    m_length = ESValue(0);
+    m_length = 0;
 }
 
 ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST)

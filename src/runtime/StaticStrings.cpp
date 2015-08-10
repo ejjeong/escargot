@@ -52,6 +52,11 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     sin =  L"sin";
     sqrt =  L"sqrt";
     toString =  L"toString";
+    boolean = L"boolean";
+    number = L"number";
+    string = L"string";
+    object = L"object";
+    function = L"function";
 }
 
 Strings* strings;

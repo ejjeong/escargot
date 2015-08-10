@@ -73,12 +73,12 @@ static JSClass global_class = {
 
 void ESScriptParser::enter()
 {
-    const unsigned mem = 8L * 1024 * 1024;
+    const unsigned mem = 4L * 1024 * 1024;
     s_rt = JS_NewRuntime(mem, JS_NO_HELPER_THREADS);
     if (!s_rt)
         ::exit(0);
 
-    s_cx = JS_NewContext(s_rt, mem);
+    s_cx = JS_NewContext(s_rt, 8192);
     if (!s_cx)
         ::exit(0);
 
@@ -174,12 +174,15 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
 {
     //unsigned long start = getLongTickCount();
 
+    //unsigned long start1 = getLongTickCount();
     JSAutoCompartment ac(s_cx, *((JS::RootedObject*)s_global));
     jsval ret;
     JSString * jsSrcStr = JS_InternString(s_cx, source.c_str());
     jsval srcStr = STRING_TO_JSVAL(jsSrcStr);
     jsval argv[1] = {srcStr};
     JS_CallFunction(s_cx, *((JS::RootedObject*)s_global), s_reflectParseFunction, 1, argv ,&ret);
+    //unsigned long end1 = getLongTickCount();
+    //fwprintf(stdout, L"parse script takes1 %g ms\n", (end1 - start1)/1000.f);
 
     StatementNodeVector programBody;
     std::function<Node *(::JSObject *, StatementNodeVector* currentBody, bool shouldGenerateNewBody)> fn;
@@ -717,7 +720,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
     postAnalysisFunction(node, identifierInCurrentContext, NULL);
 
     //unsigned long end = getLongTickCount();
-    //fwprintf(stderr, L"parse script takes %g ms\n", (end - start)/1000.f);
+    //fwprintf(stdout, L"parse script takes %g ms\n", (end - start)/1000.f);
     return node;
 }
 

@@ -12,6 +12,7 @@ public:
         Minus,
         BitwiseNot,
         LogicalNot,
+        TypeOf,
     };
     friend class ESScriptParser;
     UnaryExpressionNode(Node* argument, const InternalString& oper)
@@ -26,6 +27,8 @@ public:
             m_operator = BitwiseNot;
         } else if(oper == L"!") {
             m_operator = LogicalNot;
+        } else if(oper == L"typeof") {
+            m_operator = TypeOf;
         } else {
             RELEASE_ASSERT_NOT_REACHED();
         }
@@ -46,6 +49,29 @@ public:
         } else if(m_operator == LogicalNot) {
             //www.ecma-international.org/ecma-262/6.0/index.html#sec-unary-minus-operator
             return ESValue(!m_argument->execute(instance).toBoolean());
+        } else if(m_operator == TypeOf) {
+            //www.ecma-international.org/ecma-262/6.0/index.html#sec-unary-minus-operator
+            ESValue v = m_argument->execute(instance);
+            if(v.isUndefined())
+                return ESString::create(strings->undefined);
+            else if(v.isNull())
+                return ESString::create(strings->null);
+            else if(v.isBoolean())
+                return ESString::create(strings->boolean);
+            else if(v.isNumber())
+                return ESString::create(strings->number);
+            else if(v.isESString())
+                return ESString::create(strings->string);
+            else if(v.isESPointer()) {
+                ESPointer* p = v.asESPointer();
+                if(p->isESFunctionObject()) {
+                    return ESString::create(strings->function);
+                } else {
+                    return ESString::create(strings->object);
+                }
+            }
+            else
+                RELEASE_ASSERT_NOT_REACHED();
         } else {
             RELEASE_ASSERT_NOT_REACHED();
         }

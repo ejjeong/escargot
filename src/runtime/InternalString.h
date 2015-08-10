@@ -46,7 +46,7 @@ protected:
 
 extern InternalStringData emptyStringData;
 
-class InternalString : public gc {
+class InternalString {
 public:
     ALWAYS_INLINE InternalString()
     {

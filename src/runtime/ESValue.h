@@ -936,7 +936,7 @@ public:
     ESValue get(int key)
     {
         if (m_fastmode) {
-            if(key >= 0 && key < (int)m_length.asInt32())
+            if(key >= 0 && key < m_length)
                 return m_vector[key].readDataProperty();
             else
                 return ESValue();
@@ -948,7 +948,7 @@ public:
     {
         if (m_fastmode && key.isInt32()) {
             int idx = key.asInt32();
-            if(LIKELY(idx >= 0 && idx < (int)m_length.asInt32()))
+            if(LIKELY(idx >= 0 && idx < m_length))
                 return m_vector[idx].readDataProperty();
             else
                 return ESValue();
@@ -959,9 +959,8 @@ public:
     //DO NOT USE THIS FUNCTION
     escargot::ESSlot* findOnlyIndex(int key)
     {
-        if (m_fastmode) {
-            if(LIKELY(key >= 0 && key < (int)m_length.asInt32()))
-                return &m_vector[key];
+        if (LIKELY(m_fastmode && key >= 0 && key < m_length)) {
+            return &m_vector[key];
         }
         return NULL;
     }
@@ -971,7 +970,7 @@ public:
     {
         if (m_fastmode && key.isInt32()) {
             int idx = key.asInt32();
-            if(LIKELY(idx >= 0 && idx < (int)m_length.asInt32()))
+            if(LIKELY(idx >= 0 && idx < m_length))
                 return &m_vector[idx];
             else
                 return NULL;
@@ -981,7 +980,7 @@ public:
 
     void push(const ESValue& val)
     {
-        set(m_length.asInt32(), val);
+        set(m_length, val);
     }
 
     void insertValue(int idx, const ESValue& val)
@@ -1028,12 +1027,13 @@ public:
     void setLength(ESValue len)
     {
         ASSERT(len.isInt32());
-        if (len.asInt32() < m_length.asInt32()) {
+        int32_t newLength = len.asInt32();
+        if (len.asInt32() < m_length) {
             //TODO : delete elements
-        } else if (m_fastmode && len.asInt32() > m_length.asInt32()) {
-            m_vector.resize(len.asInt32());
+        } else if (m_fastmode && newLength > m_length) {
+            m_vector.resize(newLength);
         }
-        m_length = len;
+        m_length = newLength;
     }
 
     void setLength(int len)
@@ -1049,11 +1049,11 @@ public:
 
     ESValue length()
     {
-        return m_length;
+        return ESValue(m_length);
     }
 
 protected:
-    ESValue m_length;
+    int32_t m_length;
     ESVector m_vector;
     bool m_fastmode;
     static const int MAX_FASTMODE_SIZE = 65536;
