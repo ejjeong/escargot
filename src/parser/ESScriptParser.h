@@ -5,6 +5,8 @@
 
 class JSContext;
 class JSRuntime;
+class JSObject;
+class JSFunction;
 
 namespace escargot {
 
@@ -23,6 +25,8 @@ private:
     static std::string parseExternal(std::string& sourceString);
     static ::JSContext* s_cx;
     static ::JSRuntime* s_rt;
+    static ::JSObject* s_reflectObject;
+    static ::JSFunction* s_reflectParseFunction;
     static void* s_global;
 };
 

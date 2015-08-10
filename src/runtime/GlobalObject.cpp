@@ -63,8 +63,12 @@ GlobalObject::GlobalObject()
             }
             FILE *fp = fopen(path.c_str(),"r");
             if(fp) {
+                fseek(fp, 0L, SEEK_END);
+                size_t sz = ftell(fp);
+                fseek(fp, 0L, SEEK_SET);
                 std::string str;
-                char buf[512];
+                str.reserve(sz+2);
+                static char buf[4096];
                 while(fgets(buf, sizeof buf, fp) != NULL) {
                     str += buf;
                 }
