@@ -291,6 +291,33 @@ void GlobalObject::installArray()
     }), false, false);
     m_arrayPrototype->set(L"push", ESFunctionObject::create(NULL, arrayPush));
 
+    //$22.1.3.22 Array.prototype.slice(start, end)
+    FunctionDeclarationNode* arraySlice = new FunctionDeclarationNode(InternalString(L"slice"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        escargot::ESArrayObject* thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESArrayObject();
+        int arrlen = thisVal->length().asInt32();
+        int start, end;
+        if (arglen < 1) start = 0;
+        else            start = instance->currentExecutionContext()->arguments()[0].toInteger();
+        if (start < 0)  start = (arrlen + start > 0) ? arrlen + start : 0;
+        else            start = (start < arrlen) ? start : arrlen;
+        if (arglen >= 2) end = instance->currentExecutionContext()->arguments()[1].toInteger();
+        else             end = arrlen;
+        if (end < 0)    end = (arrlen + end > 0) ? arrlen + end : 0;
+        else            end = (end < arrlen) ? end : arrlen;
+        int count = (end - start > 0) ? end - start : 0;
+        escargot::ESArrayObject* ret = ESArrayObject::create(count, instance->globalObject()->arrayPrototype());
+        if (!thisVal->constructor().isUndefinedOrNull())
+            ret->setConstructor(thisVal->constructor());
+        for (int i = start; i < end; i++) {
+            ret->set(i-start, thisVal->get(i));
+        }
+        instance->currentExecutionContext()->doReturn(ret);
+
+        return ESValue();
+    }), false, false);
+    m_arrayPrototype->set(L"slice", ESFunctionObject::create(NULL, arraySlice));
+
     //$22.1.3.25 Array.prototype.splice(start, deleteCount, ...items)
     FunctionDeclarationNode* arraySplice = new FunctionDeclarationNode(InternalString(L"splice"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         int arglen = instance->currentExecutionContext()->argumentCount();

@@ -37,3 +37,6 @@ print(arr.splice(2, 1));
 print(arr);
 print(arr.splice(3, 4, "ab", "def"));
 print(arr);
+
+print(arr.slice(2, 3));
+print(arr);
