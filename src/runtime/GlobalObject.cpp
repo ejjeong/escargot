@@ -229,7 +229,7 @@ void GlobalObject::installArray()
     }), false, false);
 
     //$22.1.3.1 Array.prototype.concat(...arguments)
-    FunctionDeclarationNode* arrayConcat = new FunctionDeclarationNode(InternalString(L"concat"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+    FunctionDeclarationNode* arrayConcat = new FunctionDeclarationNode(strings->concat, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         int arglen = instance->currentExecutionContext()->argumentCount();
         auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESArrayObject();
         int arrlen = thisVal->length().asInt32();
@@ -254,10 +254,10 @@ void GlobalObject::installArray()
         instance->currentExecutionContext()->doReturn(ESValue(ret));
         return ESValue();
     }), false, false);
-    m_arrayPrototype->set(L"concat", ESFunctionObject::create(NULL, arrayConcat));
+    m_arrayPrototype->set(strings->concat, ESFunctionObject::create(NULL, arrayConcat));
 
     //$22.1.3.11 Array.prototype.indexOf()
-    FunctionDeclarationNode* arrayIndexOf = new FunctionDeclarationNode(InternalString(L"indexOf"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+    FunctionDeclarationNode* arrayIndexOf = new FunctionDeclarationNode(strings->indexOf, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESArrayObject();
         int len = thisVal->length().asInt32();
         int ret = 0;
@@ -294,7 +294,7 @@ void GlobalObject::installArray()
         instance->currentExecutionContext()->doReturn(ESValue(ret));
         return ESValue();
     }), false, false);
-    m_arrayPrototype->set(L"indexOf", ESFunctionObject::create(NULL, arrayIndexOf));
+    m_arrayPrototype->set(strings->indexOf, ESFunctionObject::create(NULL, arrayIndexOf));
 
     //$22.1.3.12 Array.prototype.join(separator)
     FunctionDeclarationNode* arrayJoin = new FunctionDeclarationNode(InternalString(L"join"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
@@ -322,7 +322,7 @@ void GlobalObject::installArray()
     m_arrayPrototype->set(L"join", ESFunctionObject::create(NULL, arrayJoin));
 
     //$22.1.3.17 Array.prototype.push(item)
-    FunctionDeclarationNode* arrayPush = new FunctionDeclarationNode(InternalString(L"push"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+    FunctionDeclarationNode* arrayPush = new FunctionDeclarationNode(strings->push, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         int len = instance->currentExecutionContext()->argumentCount();
         auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESArrayObject();
         for (int i = 0; i < len; i++) {
@@ -334,10 +334,10 @@ void GlobalObject::installArray()
 
         return ESValue();
     }), false, false);
-    m_arrayPrototype->set(L"push", ESFunctionObject::create(NULL, arrayPush));
+    m_arrayPrototype->set(strings->push, ESFunctionObject::create(NULL, arrayPush));
 
     //$22.1.3.22 Array.prototype.slice(start, end)
-    FunctionDeclarationNode* arraySlice = new FunctionDeclarationNode(InternalString(L"slice"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+    FunctionDeclarationNode* arraySlice = new FunctionDeclarationNode(strings->slice, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         int arglen = instance->currentExecutionContext()->argumentCount();
         escargot::ESArrayObject* thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESArrayObject();
         int arrlen = thisVal->length().asInt32();
@@ -361,10 +361,10 @@ void GlobalObject::installArray()
 
         return ESValue();
     }), false, false);
-    m_arrayPrototype->set(L"slice", ESFunctionObject::create(NULL, arraySlice));
+    m_arrayPrototype->set(strings->slice, ESFunctionObject::create(NULL, arraySlice));
 
     //$22.1.3.25 Array.prototype.splice(start, deleteCount, ...items)
-    FunctionDeclarationNode* arraySplice = new FunctionDeclarationNode(InternalString(L"splice"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+    FunctionDeclarationNode* arraySplice = new FunctionDeclarationNode(strings->splice, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         int arglen = instance->currentExecutionContext()->argumentCount();
         auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESArrayObject();
         int arrlen = thisVal->length().asInt32();
@@ -422,7 +422,7 @@ void GlobalObject::installArray()
 
         return ESValue();
     }), false, false);
-    m_arrayPrototype->set(L"splice", ESFunctionObject::create(NULL, arraySplice));
+    m_arrayPrototype->set(strings->splice, ESFunctionObject::create(NULL, arraySplice));
     m_arrayPrototype->set(strings->toString, ESFunctionObject::create(NULL, new FunctionDeclarationNode(InternalString(strings->toString), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         InternalString is;
         //FIXME this is wrong
@@ -521,7 +521,7 @@ void GlobalObject::installString()
     m_stringPrototype->set(L"charCodeAt", ESFunctionObject::create(NULL, stringCharCodeAt));
 
     //$21.1.3.4 String.prototype.concat(...args)
-    FunctionDeclarationNode* stringConcat = new FunctionDeclarationNode(InternalString(L"concat"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+    FunctionDeclarationNode* stringConcat = new FunctionDeclarationNode(strings->concat, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
         const InternalString& str = thisObject->asESStringObject()->getStringData()->string();
         InternalString ret;
@@ -533,10 +533,10 @@ void GlobalObject::installString()
         instance->currentExecutionContext()->doReturn(ESString::create(ret));
         return ESValue();
     }), false, false);
-    m_stringPrototype->set(L"concat", ESFunctionObject::create(NULL, stringConcat));
+    m_stringPrototype->set(strings->concat, ESFunctionObject::create(NULL, stringConcat));
 
     //$21.1.3.8 String.prototype.indexOf(searchString[, position])
-    FunctionDeclarationNode* stringIndexOf = new FunctionDeclarationNode(InternalString(L"indexOf"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+    FunctionDeclarationNode* stringIndexOf = new FunctionDeclarationNode(strings->indexOf, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
         //if (thisObject->isESUndefined() || thisObject->isESNull())
         //    throw TypeError();
@@ -560,10 +560,10 @@ void GlobalObject::installString()
         instance->currentExecutionContext()->doReturn(ESValue(result));
         return ESValue();
     }), false, false);
-    m_stringPrototype->set(L"indexOf", ESFunctionObject::create(NULL, stringIndexOf));
+    m_stringPrototype->set(strings->indexOf, ESFunctionObject::create(NULL, stringIndexOf));
 
     //$21.1.3.16 String.prototype.slice(start, end)
-    FunctionDeclarationNode* stringSlice = new FunctionDeclarationNode(InternalString(L"slice"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+    FunctionDeclarationNode* stringSlice = new FunctionDeclarationNode(strings->slice, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
         const InternalString& str = ESValue(thisObject).toString()->string();
         int argCount = instance->currentExecutionContext()->argumentCount();
@@ -578,7 +578,7 @@ void GlobalObject::installString()
         instance->currentExecutionContext()->doReturn(ESValue(ret));
         return ESValue();
     }), false, false);
-    m_stringPrototype->set(L"slice", ESFunctionObject::create(NULL, stringSlice));
+    m_stringPrototype->set(strings->slice, ESFunctionObject::create(NULL, stringSlice));
 
     //$21.1.3.17 String.prototype.split(separator, limit)
     FunctionDeclarationNode* stringSplit = new FunctionDeclarationNode(InternalString(L"split"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
@@ -882,6 +882,26 @@ void GlobalObject::installMath()
         return ESValue();
     }), false, false);
     m_math->set(strings->abs, ::escargot::ESFunctionObject::create(NULL, absNode));
+
+    // initialize math object: $20.2.2.16 Math.ceil()
+    FunctionDeclarationNode* ceilNode = new FunctionDeclarationNode(strings->ceil, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        size_t arg_size = instance->currentExecutionContext()->argumentCount();
+        if (arg_size == 0) {
+            double value = std::numeric_limits<double>::quiet_NaN();
+            instance->currentExecutionContext()->doReturn(ESValue(value));
+        } else {
+            ESValue arg = instance->currentExecutionContext()->arguments()[0];
+            if (arg.isInt32()) {
+                instance->currentExecutionContext()->doReturn(arg);
+            } else if (arg.isDouble()) {
+                int value = ceil(arg.asDouble());
+                instance->currentExecutionContext()->doReturn(ESValue(value));
+             }
+        }
+
+       return ESValue();
+    }), false, false);
+    m_math->set(strings->ceil, ::escargot::ESFunctionObject::create(NULL, ceilNode));
 
     // initialize math object: $20.2.2.12 Math.cos()
     FunctionDeclarationNode* cosNode = new FunctionDeclarationNode(strings->cos, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {

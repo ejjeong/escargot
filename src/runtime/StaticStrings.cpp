@@ -27,6 +27,12 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     Object =  L"Object";
     ReferenceError =  L"ReferenceError";
     Array =  L"Array";
+    concat = L"concat";
+    indexOf = L"indexOf";
+    join = L"join";
+    push = L"push";
+    slice = L"slice";
+    splice = L"splice";
     Function =  L"Function";
     Empty =  L"Empty";
     Date =  L"Date";
@@ -44,6 +50,7 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     PI =  L"PI";
     abs =  L"abs";
     cos =  L"cos";
+    ceil = L"ceil";
     max =  L"max";
     floor =  L"floor";
     pow =  L"pow";
