@@ -613,43 +613,57 @@ void GlobalObject::installString()
     }), false, false);
     m_stringPrototype->set(L"match", ESFunctionObject::create(NULL, stringMatch));
 
-//    //$21.1.3.14 String.prototype.replace(searchValue, replaceValue)
-//    FunctionDeclarationNode* stringMatch = new FunctionDeclarationNode(InternalString(L"match"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
-//        ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
-//        ESObject* ret = ESObject::create();
-//
-//        int argCount = instance->currentExecutionContext()->argumentCount();
-//        const wchar_t* regexp = instance->currentExecutionContext()->arguments()[0].toInternalString().data();
-//        int regexp_len = instance->currentExecutionContext()->arguments()[0].toInternalString().length();
-//        char* regexp_buffer = (char*) malloc(regexp_len);
-//        wcstombs(regexp_buffer, regexp, regexp_len);
-//        wprintf(L"regexp = %ls\n", regexp);
-//
-//        const wchar_t* this_data = thisObject->asESStringObject()->getStringData()->string().data();
-//        int this_len = thisObject->asESString()->string().length();
-//        char* this_buffer = (char*) malloc(this_len);
-//        wcstombs(this_buffer, this_data, this_len);
-//        wprintf(L"%s", this_data);
-//
-//        slre_match(regexp_buffer, this_buffer, this_len, NULL, 0, 0);
-//
-//        size_t new_size = mbstowcs(NULL, this_buffer, sizeof(this_buffer));
-//        std::wstring rr;
-//        rr.resize(new_size);
-//        wchar_t* result_buffer = (wchar_t*)rr.c_str();
-//        mbstowcs(result_buffer, this_buffer, sizeof(this_buffer));
-//        InternalString sss(std::move(rr));
-//
-//        thisObject->asESStringObject()->setString(ESString::create(sss));
-//
-//        instance->currentExecutionContext()->doReturn(ESValue());
-//
-//        free(regexp_buffer);
-//        free(this_buffer);
-//
-//        return ESValue();
-//    }), false, false);
-//    m_stringPrototype->set(L"match", ESFunctionObject::create(NULL, stringMatch));
+    //$21.1.3.14 String.prototype.replace(searchValue, replaceValue)
+    FunctionDeclarationNode* stringReplace = new FunctionDeclarationNode(InternalString(L"replace"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+        escargot::ESArrayObject* ret = ESArrayObject::create(0, instance->globalObject()->arrayPrototype());
+
+        int argCount = instance->currentExecutionContext()->argumentCount();
+        const wchar_t* regexp = instance->currentExecutionContext()->arguments()[0].toInternalString().data();
+        int regexp_len = instance->currentExecutionContext()->arguments()[0].toInternalString().length();
+        char regexp_buffer[regexp_len + 1];
+        regexp_buffer[regexp_len] = 0;
+        wcstombs(regexp_buffer, regexp, regexp_len);
+        std::string option = "";
+        regexp_buffer[0] = '(';
+        for (int i = regexp_len; i >= 0; i--) {
+            if (regexp_buffer[i] == '/') {
+                regexp_buffer[i] = ')';
+                for (int j = i + 1 ; j < regexp_len; j++) {
+                    option += regexp_buffer[j];
+                    regexp_buffer[j] = 0;
+                  }
+                break;
+             }
+         }
+
+        const wchar_t* replace = instance->currentExecutionContext()->arguments()[1].toInternalString().data();
+        int replace_len = instance->currentExecutionContext()->arguments()[1].toInternalString().length();
+        char replace_buffer[replace_len + 1];
+        replace_buffer[replace_len] = 0;
+        wcstombs(replace_buffer, replace, replace_len);
+
+
+        const wchar_t* this_data = thisObject->asESStringObject()->getStringData()->string().data();
+        int this_len = thisObject->asESStringObject()->getStringData()->string().length();
+        char new_this_buffer[this_len+1];
+        new_this_buffer[this_len] = 0;
+        wcstombs(new_this_buffer, this_data, this_len);
+
+        std::string new_this = std::string(new_this_buffer);
+
+        if (option == "g") {
+            re2::RE2::GlobalReplace(&new_this, regexp_buffer, replace_buffer);
+        } else {
+            re2::RE2::Replace(&new_this, regexp_buffer, replace_buffer);
+         }
+
+        InternalString int_str(new_this.data());
+        instance->currentExecutionContext()->doReturn(ESString::create(int_str));
+
+        return ESValue();
+    }), false, false);
+    m_stringPrototype->set(L"replace", ESFunctionObject::create(NULL, stringReplace));
 
     //$21.1.3.16 String.prototype.slice(start, end)
     FunctionDeclarationNode* stringSlice = new FunctionDeclarationNode(strings->slice, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
