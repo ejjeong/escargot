@@ -4,9 +4,14 @@
 namespace escargot {
 
 class ESVMInstance;
+class ESString;
 
 class Strings {
 public:
+#define ESCARGOT_ASCII_TABLE_MAX 128
+InternalString asciiTable[ESCARGOT_ASCII_TABLE_MAX];
+ESString *esAsciiTable[ESCARGOT_ASCII_TABLE_MAX];
+
 InternalString null;
 InternalString undefined;
 InternalString prototype;

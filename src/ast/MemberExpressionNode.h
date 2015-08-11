@@ -89,7 +89,17 @@ public:
                 }
             }
         } else if (value.isESString()) {
-            int prop_val = m_property->execute(instance).asInt32();
+            int prop_val = m_property->execute(instance).toInt32();
+            if(LIKELY(0 <= prop_val && prop_val < value.asESString()->length())) {
+                wchar_t c = value.asESString()->string().data()[prop_val];
+                if(LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
+                    return strings->esAsciiTable[c];
+                } else {
+                    return ESString::create(InternalString(c));
+                }
+            } else {
+                return ESValue();
+            }
             return value.asESString()->substring(prop_val, prop_val+1);
         } else {
             throw TypeError(L"MemberExpression: object doesn't have object type");

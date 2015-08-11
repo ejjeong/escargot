@@ -5,6 +5,10 @@ namespace escargot {
 
 void Strings::initStaticStrings(ESVMInstance* instance)
 {
+    for(unsigned i = 0; i < ESCARGOT_ASCII_TABLE_MAX ; i ++) {
+        asciiTable[i] = InternalString((wchar_t)i);
+        esAsciiTable[i] = ESString::create(asciiTable[i]);
+    }
     null = L"null";
     undefined =  L"undefined";
     prototype =  L"prototype";
