@@ -214,6 +214,25 @@ void GlobalObject::installObject()
 
     m_object->set(strings->prototype, m_objectPrototype);
 
+    //$19.1.3.2 Object.prototype.hasOwnProperty(V)
+    FunctionDeclarationNode* node = new FunctionDeclarationNode(InternalString(L"hasOwnProperty"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        ESValue ret;
+        int len = instance->currentExecutionContext()->argumentCount();
+        if (len < 1) {
+            ret = ESValue(ESValue::ESFalseTag::ESFalse);
+            instance->currentExecutionContext()->doReturn(ret);
+        }
+        ::escargot::ESString* key = instance->currentExecutionContext()->arguments()[0].toPrimitive(ESValue::PrimitiveTypeHint::PreferString).toString();
+        auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESObject();
+        if (thisVal->hasOwnProperty(key->string()))
+            ret = ESValue(ESValue::ESTrueTag::ESTrue);
+        else
+            ret = ESValue(ESValue::ESFalseTag::ESFalse);
+        instance->currentExecutionContext()->doReturn(ret);
+        return ESValue();
+    }), false, false);
+    m_objectPrototype->set(L"hasOwnProperty", ESFunctionObject::create(NULL, node));
+
     set(strings->Object, m_object);
 }
 
@@ -349,7 +368,7 @@ void GlobalObject::installArray()
     m_arrayPrototype->set(strings->indexOf, ESFunctionObject::create(NULL, arrayIndexOf));
 
     //$22.1.3.12 Array.prototype.join(separator)
-    FunctionDeclarationNode* arrayJoin = new FunctionDeclarationNode(InternalString(L"join"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+    FunctionDeclarationNode* arrayJoin = new FunctionDeclarationNode(strings->join, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         int arglen = instance->currentExecutionContext()->argumentCount();
         auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESArrayObject();
         InternalString ret;
@@ -371,7 +390,7 @@ void GlobalObject::installArray()
         instance->currentExecutionContext()->doReturn(ESString::create(ret));
         return ESValue();
     }), false, false);
-    m_arrayPrototype->set(L"join", ESFunctionObject::create(NULL, arrayJoin));
+    m_arrayPrototype->set(strings->join, ESFunctionObject::create(NULL, arrayJoin));
 
     //$22.1.3.17 Array.prototype.push(item)
     FunctionDeclarationNode* arrayPush = new FunctionDeclarationNode(strings->push, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
