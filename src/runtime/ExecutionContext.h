@@ -120,6 +120,8 @@ public:
 
     ALWAYS_INLINE bool needsActivation() { return m_needsActivation; } //child & parent AST has eval, with, catch
     ALWAYS_INLINE bool isNewExpression() { return m_isNewExpression; }
+    ALWAYS_INLINE bool inWriteMode() { return m_inWriteMode; }
+    ALWAYS_INLINE void setWriteMode(bool b) { m_inWriteMode = b; }
     ExecutionContext* callerContext() { return m_callerContext; }
     ESValue* arguments() { return m_arguments; }
     size_t argumentCount() { return m_argumentCount; }
@@ -129,6 +131,7 @@ private:
 
     bool m_needsActivation;
     bool m_isNewExpression;
+    bool m_inWriteMode;
 
     ExecutionContext* m_callerContext;
 

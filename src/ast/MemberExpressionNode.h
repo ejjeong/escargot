@@ -52,31 +52,38 @@ public:
             InternalString computedPropertyName;
             ESValue computedPropertyValue(ESValue::ESForceUninitialized);
             ExecutionContext* ec = instance->currentExecutionContext();
+            bool shouldSearchPrototype = true;
 
             if(!m_computed && m_property->type() == NodeType::Identifier) {
                 computedPropertyName = ((IdentifierNode *)m_property)->nonAtomicName();
                 slot = obj->find(computedPropertyName);
                 computedPropertyValue = ESValue(((IdentifierNode *)m_property)->esName());
+                if(ec->inWriteMode()) {
+                    shouldSearchPrototype = false;
+                }
             } else {
                 computedPropertyValue = m_property->execute(instance);
                 if(obj->isESArrayObject()) {
                     if(computedPropertyValue.isInt32())
-                        slot = obj->asESArrayObject()->findOnlyIndex(computedPropertyValue.asInt32());
-                    if(UNLIKELY(!slot)) {
+                        slot = obj->asESArrayObject()->find(computedPropertyValue);
+                    if(!slot && !ec->inWriteMode()) {
                         computedPropertyName = computedPropertyValue.toInternalString();
-                        slot = obj->find(computedPropertyName);
                     }
                 } else {
                     computedPropertyName = computedPropertyValue.toInternalString();
                     slot = obj->find(computedPropertyName);
+                }
+
+                //CHECKTHIS
+                if(ec->inWriteMode() && m_property->type() == NodeType::Identifier) {
+                    shouldSearchPrototype = false;
                 }
             }
 
             if(LIKELY(slot != NULL)) {
                 ec->setLastESObjectMetInMemberExpressionNode(obj, slot);
                 return slot->value(obj);
-            } else {
-                //computedPropertyName.show();
+            } else if(shouldSearchPrototype) {
                 ec->setLastESObjectMetInMemberExpressionNode(obj, computedPropertyValue);
                 //FIXME this code duplicated with ESObject::get
                 ESValue prototype = obj->__proto__();
@@ -87,6 +94,9 @@ public:
                         return s->value(obj);
                     prototype = new_obj->__proto__();
                 }
+            } else {
+                ec->setLastESObjectMetInMemberExpressionNode(obj, computedPropertyValue);
+                return ESValue();
             }
         } else if (value.isESString()) {
             int prop_val = m_property->execute(instance).toInt32();

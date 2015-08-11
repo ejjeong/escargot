@@ -15,6 +15,7 @@ ExecutionContext::ExecutionContext(LexicalEnvironment* varEnv, bool needsActivat
     m_callerContext = callerContext;
     m_arguments = arguments;
     m_argumentCount = argumentsCount;
+    m_inWriteMode = false;
 }
 
 ESSlot* ExecutionContext::resolveBinding(const InternalAtomicString& atomicName, const InternalString& name)

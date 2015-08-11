@@ -102,7 +102,10 @@ public:
         } else {
             ExecutionContext* ec = instance->currentExecutionContext();
             //ec->resetLastESObjectMetInMemberExpressionNode();
+            ec->setWriteMode(true);
             leftHandNode->execute(instance);
+            ec->setWriteMode(false);
+
             ESObject* obj = ec->lastESObjectMetInMemberExpressionNode();
             if(UNLIKELY(!obj)) {
                 throw ESValue(ESString::create(L"could not assign to left hand node lastESObjectMetInMemberExpressionNode==NULL"));
