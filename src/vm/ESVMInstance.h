@@ -15,10 +15,11 @@ extern __thread ESVMInstance* currentInstance;
 typedef std::unordered_map<std::wstring, InternalAtomicStringData *,
         std::hash<std::wstring>,std::equal_to<std::wstring> > InternalAtomicStringMap;
 
-class ESVMInstance : public gc {
+class ESVMInstance : public gc_cleanup {
     friend class ESFunctionObject;
 public:
     ESVMInstance();
+    ~ESVMInstance();
     ESValue evaluate(const std::string& source);
 
     ALWAYS_INLINE ExecutionContext* currentExecutionContext() { return m_currentExecutionContext; }

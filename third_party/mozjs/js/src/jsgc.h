@@ -968,7 +968,7 @@ struct SliceBudget {
     }
 };
 
-static const size_t MARK_STACK_LENGTH = 32768;
+static const size_t MARK_STACK_LENGTH = 128;
 
 struct GrayRoot {
     void *thing;
