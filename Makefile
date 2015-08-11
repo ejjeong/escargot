@@ -83,7 +83,6 @@ OBJS +=  $(SRC_C:%.c= %.o)
 
 $(MAKECMDGOALS): $(OBJS) $(THIRD_PARTY_LIBS)
 	$(CXX) -o $(MAKECMDGOALS) $(OBJS) $(THIRD_PARTY_LIBS) $(LDFLAGS)
-	cp third_party/mozjs/build/shell/js24 ./mozjs
 
 %.o: %.cpp
 	$(CXX) -c $(CXXFLAGS) $*.cpp -o $*.o
@@ -101,7 +100,6 @@ strip: $(MAKECMDGOALS)
 	strip $<
 
 run-sunspider:
-	cp mozjs test/SunSpider/; \
 	cd test/SunSpider/; \
 	./sunspider --shell=../../escargot --suite=sunspider-1.0.2
 
