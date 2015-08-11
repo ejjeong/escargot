@@ -6,6 +6,7 @@
 
 namespace escargot {
 
+class FunctionNode;
 class EnvironmentRecord;
 class DeclarativeEnvironmentRecord;
 class GlobalEnvironmentRecord;
@@ -195,16 +196,18 @@ protected:
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-declarative-environment-records
 class DeclarativeEnvironmentRecord : public EnvironmentRecord {
 public:
-    DeclarativeEnvironmentRecord(bool shouldUseVector = false,std::pair<InternalAtomicString, ESSlot>* vectorBuffer = NULL, size_t vectorSize = 0)
+    DeclarativeEnvironmentRecord(bool shouldUseVector = false,ESSlot* vectorBuffer = NULL, FunctionNode* functionNode = NULL, InternalAtomicStringVector* innerIdentifiers = NULL)
     {
         if(shouldUseVector) {
             m_needsActivation = false;
             m_mapData = NULL;
             m_vectorData = vectorBuffer;
-            m_usedCount = 0;
-#ifndef NDEBUG
-            m_vectorSize = vectorSize;
-#endif
+            m_functionNode = functionNode;
+            m_innerIdentifiers = innerIdentifiers;
+            size_t siz = m_innerIdentifiers->size();
+            for(unsigned i = 0; i < siz ; i ++) {
+                m_vectorData[i].setAsDataProperty();
+            }
         } else {
             m_needsActivation = true;
             m_mapData = new ESIdentifierMap(16);
@@ -223,20 +226,13 @@ public:
             }
             return NULL;
         } else {
-            for(unsigned i = 0; i < m_usedCount ; i ++) {
-                if(m_vectorData[i].first == atomicName) {
-                    return &m_vectorData[i].second;
+            for(unsigned i = 0; i < m_innerIdentifiers->size() ; i ++) {
+                if((*m_innerIdentifiers)[i] == atomicName) {
+                    return &m_vectorData[i];
                 }
             }
             return NULL;
         }
-    }
-    void createMutableBindingForNonActivationMode(size_t index, const InternalAtomicString& name,const ESValue& val = ESValue())
-    {
-        ASSERT(!m_needsActivation);
-        m_vectorData[index].first = name;
-        m_vectorData[index].second.init(val, false, false, false);
-        m_usedCount++;
     }
 
     virtual void createMutableBinding(const InternalAtomicString& name,const InternalString& nonAtomicName, bool canDelete = false)
@@ -254,10 +250,10 @@ public:
             ASSERT(iter != m_mapData->end());
             iter->second.setValue(V);
         } else {
-            for(unsigned i = 0; i < m_usedCount ; i ++) {
-                if(m_vectorData[i].first == name) {
-                    m_vectorData[i].second.setValue(V);
-                    return;
+            for(unsigned i = 0; i < m_innerIdentifiers->size() ; i ++) {
+                if((*m_innerIdentifiers)[i] == name) {
+                    m_vectorData[i].setDataProperty(V);
+                    return ;
                 }
             }
             RELEASE_ASSERT_NOT_REACHED();
@@ -266,7 +262,7 @@ public:
 
     ESSlot* getBindingValueForNonActivationMode(size_t idx)
     {
-        return &m_vectorData[idx].second;
+        return &m_vectorData[idx];
     }
 
     /*
@@ -300,11 +296,9 @@ public:
 protected:
     bool m_needsActivation;
 
-    std::pair<InternalAtomicString, ESSlot>* m_vectorData;
-    size_t m_usedCount;
-#ifndef NDEBUG
-    size_t m_vectorSize;
-#endif
+    ESSlot* m_vectorData;
+    FunctionNode* m_functionNode;
+    InternalAtomicStringVector* m_innerIdentifiers;
     ESIdentifierMap* m_mapData;
 };
 
@@ -356,8 +350,8 @@ class FunctionEnvironmentRecord : public DeclarativeEnvironmentRecord {
     friend class LexicalEnvironment;
     friend class ESFunctionObject;
 public:
-    FunctionEnvironmentRecord(bool shouldUseVector = false,std::pair<InternalAtomicString, ESSlot>* vectorBuffer = NULL, size_t vectorSize = 0)
-        : DeclarativeEnvironmentRecord(shouldUseVector, vectorBuffer, vectorSize)
+    FunctionEnvironmentRecord(bool shouldUseVector = false,ESSlot* vectorBuffer = NULL, FunctionNode* functionNode = NULL, InternalAtomicStringVector* innerIdentifiers = NULL)
+        : DeclarativeEnvironmentRecord(shouldUseVector, vectorBuffer, functionNode, innerIdentifiers)
     {
         m_thisBindingStatus = Uninitialized;
     }

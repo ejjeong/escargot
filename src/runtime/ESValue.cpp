@@ -260,7 +260,26 @@ ALWAYS_INLINE void functionCallerInnerProcess(ESFunctionObject* fn, ESValue rece
     ((FunctionEnvironmentRecord *)ESVMInstance->currentExecutionContext()->environment()->record())->bindThisValue(receiver.asESPointer()->asESObject());
     DeclarativeEnvironmentRecord* functionRecord = ESVMInstance->currentExecutionContext()->environment()->record()->toDeclarativeEnvironmentRecord();
 
-    if(needsArgumentsObject) {
+    if(UNLIKELY(fn->functionAST()->needsActivation())) {
+        const InternalAtomicStringVector& params = fn->functionAST()->params();
+        const InternalStringVector& nonAtomicParams = fn->functionAST()->nonAtomicParams();
+        for(unsigned i = 0; i < params.size() ; i ++) {
+            functionRecord->createMutableBinding(params[i], nonAtomicParams[i], false);
+            if(i < argumentCount) {
+                functionRecord->setMutableBinding(params[i], nonAtomicParams[i], arguments[i], true);
+            }
+        }
+    } else {
+        const InternalAtomicStringVector& params = fn->functionAST()->params();
+        const InternalStringVector& nonAtomicParams = fn->functionAST()->nonAtomicParams();
+        for(unsigned i = 0; i < params.size() ; i ++) {
+            if(i < argumentCount) {
+                functionRecord->setMutableBinding(params[i], nonAtomicParams[i], arguments[i], true);
+            }
+        }
+    }
+
+    if(UNLIKELY(needsArgumentsObject)) {
         ESObject* argumentsObject = ESObject::create();
         unsigned i = 0;
         argumentsObject->set(strings->length, ESValue(argumentCount));
@@ -274,7 +293,7 @@ ALWAYS_INLINE void functionCallerInnerProcess(ESFunctionObject* fn, ESValue rece
         if(!fn->functionAST()->needsActivation()) {
             for(size_t i = 0 ; i < fn->functionAST()->innerIdentifiers().size() ; i++ ) {
                 if(fn->functionAST()->innerIdentifiers()[i] == strings->atomicArguments) {
-                    functionRecord->createMutableBindingForNonActivationMode(i, strings->atomicName, argumentsObject);
+                    functionRecord->getBindingValueForNonActivationMode(i)->setDataProperty(argumentsObject);
                     break;
                 }
             }
@@ -282,31 +301,6 @@ ALWAYS_INLINE void functionCallerInnerProcess(ESFunctionObject* fn, ESValue rece
         } else {
             functionRecord->createMutableBinding(strings->atomicArguments, strings->arguments, false);
             functionRecord->setMutableBinding(strings->atomicArguments, strings->arguments, argumentsObject, true);
-        }
-    }
-
-    if(fn->functionAST()->needsActivation()) {
-        const InternalAtomicStringVector& params = fn->functionAST()->params();
-        const InternalStringVector& nonAtomicParams = fn->functionAST()->nonAtomicParams();
-        for(unsigned i = 0; i < params.size() ; i ++) {
-            functionRecord->createMutableBinding(params[i], nonAtomicParams[i], false);
-            if(i < argumentCount) {
-                functionRecord->setMutableBinding(params[i], nonAtomicParams[i], arguments[i], true);
-            }
-        }
-    } else {
-        for(size_t i = 0 ; i < fn->functionAST()->innerIdentifiers().size() ; i++ ) {
-            if(fn->functionAST()->innerIdentifiers()[i] != strings->atomicArguments) {
-                functionRecord->createMutableBindingForNonActivationMode(i, fn->functionAST()->innerIdentifiers()[i]);
-            }
-        }
-
-        const InternalAtomicStringVector& params = fn->functionAST()->params();
-        const InternalStringVector& nonAtomicParams = fn->functionAST()->nonAtomicParams();
-        for(unsigned i = 0; i < params.size() ; i ++) {
-            if(i < argumentCount) {
-                functionRecord->setMutableBinding(params[i], nonAtomicParams[i], arguments[i], true);
-            }
         }
     }
 
@@ -330,8 +324,9 @@ ESValue ESFunctionObject::call(ESValue callee, ESValue receiver, ESValue argumen
             ESVMInstance->m_currentExecutionContext = currentContext;
         } else {
             FunctionEnvironmentRecord envRec(true,
-                    (std::pair<InternalAtomicString, ::escargot::ESSlot>*)alloca(sizeof(std::pair<InternalAtomicString, ::escargot::ESSlot>) * fn->functionAST()->innerIdentifiers().size()),
-                    fn->functionAST()->innerIdentifiers().size());
+                    (::escargot::ESSlot *)alloca(sizeof(::escargot::ESSlot) * fn->functionAST()->innerIdentifiers().size()),
+                    fn->functionAST(),
+                    &fn->functionAST()->innerIdentifiers());
 
             envRec.m_functionObject = fn;
             envRec.m_newTarget = receiver;

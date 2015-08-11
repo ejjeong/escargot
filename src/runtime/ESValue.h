@@ -522,6 +522,7 @@ public:
     ALWAYS_INLINE void setAsDataProperty()
     {
         m_isDataProperty = true;
+        m_data = ESValue();
     }
 
     ALWAYS_INLINE ESAccessorData* accessorData() const
