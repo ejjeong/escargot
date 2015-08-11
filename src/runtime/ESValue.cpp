@@ -133,6 +133,8 @@ ESValue ESObject::valueOf()
 {
     if(isESDateObject())
         return asESDateObject()->valueOf();
+    else if (isESStringObject())
+        return asESStringObject()->valueOf();
     else if(isESArrayObject())
         // Array.prototype do not have valueOf() function
         RELEASE_ASSERT_NOT_REACHED();

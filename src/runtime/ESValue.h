@@ -1114,6 +1114,11 @@ public:
         m_stringData = str;
     }
 
+    ESValue valueOf()
+    {
+        return ESString::create(InternalString(m_stringData->string().data()));
+    }
+
 private:
     ::escargot::ESString* m_stringData;
 };
