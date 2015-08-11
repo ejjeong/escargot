@@ -502,23 +502,25 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
         }
     };
 
-    std::function<void (Node* currentNode, InternalAtomicStringVector& identifierInCurrentContext, FunctionNode* nearFunctionNode)> postAnalysisFunction =
-            [&postAnalysisFunction, instance, &markNeedsActivation](Node* currentNode, InternalAtomicStringVector& identifierInCurrentContext, FunctionNode* nearFunctionNode) {
+    std::function<void (Node* currentNode, std::vector<InternalAtomicStringVector *>& identifierStack,
+            FunctionNode* nearFunctionNode)> postAnalysisFunction =
+            [&postAnalysisFunction, instance, &markNeedsActivation](Node* currentNode, std::vector<InternalAtomicStringVector *>& identifierStack,
+                    FunctionNode* nearFunctionNode) {
         if(!currentNode)
             return;
         NodeType type = currentNode->type();
+        InternalAtomicStringVector& identifierInCurrentContext = *identifierStack.back();
         if(type == NodeType::Program) {
             StatementNodeVector& v = ((ProgramNode *)currentNode)->m_body;
             for(unsigned i = 0; i < v.size() ; i ++) {
-                postAnalysisFunction(v[i], identifierInCurrentContext, nearFunctionNode);
+                postAnalysisFunction(v[i], identifierStack, nearFunctionNode);
             }
         } else if(type == NodeType::VariableDeclaration) {
             VariableDeclaratorVector& v = ((VariableDeclarationNode *)currentNode)->m_declarations;
             for(unsigned i = 0; i < v.size() ; i ++) {
-                postAnalysisFunction(v[i], identifierInCurrentContext, nearFunctionNode);
+                postAnalysisFunction(v[i], identifierStack, nearFunctionNode);
             }
         } else if(type == NodeType::VariableDeclarator) {
-            //
             //wprintf(L"add Identifier %ls(var)\n", ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name().data());
             if(identifierInCurrentContext.end() == std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),
                     ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name())) {
@@ -541,7 +543,9 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
                 }
             }
             ((FunctionDeclarationNode *)currentNode)->setOuterFunctionNode(nearFunctionNode);
-            postAnalysisFunction(((FunctionDeclarationNode *)currentNode)->m_body, newIdentifierVector, ((FunctionDeclarationNode *)currentNode));
+            identifierStack.push_back(&newIdentifierVector);
+            postAnalysisFunction(((FunctionDeclarationNode *)currentNode)->m_body, identifierStack, ((FunctionDeclarationNode *)currentNode));
+            identifierStack.pop_back();
             ((FunctionDeclarationNode *)currentNode)->setInnerIdentifiers(std::move(newIdentifierVector));
             //wprintf(L"end of process function body-------------------\n");
         } else if(type == NodeType::FunctionExpression) {
@@ -555,7 +559,9 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
                 }
             }
             ((FunctionExpressionNode *)currentNode)->setOuterFunctionNode(nearFunctionNode);
-            postAnalysisFunction(((FunctionExpressionNode *)currentNode)->m_body, newIdentifierVector, ((FunctionExpressionNode *)currentNode));
+            identifierStack.push_back(&newIdentifierVector);
+            postAnalysisFunction(((FunctionExpressionNode *)currentNode)->m_body, identifierStack, ((FunctionExpressionNode *)currentNode));
+            identifierStack.pop_back();
             ((FunctionExpressionNode *)currentNode)->setInnerIdentifiers(std::move(newIdentifierVector));
             //wprintf(L"end of process function body-------------------\n");
         } else if(type == NodeType::Identifier) {
@@ -569,12 +575,36 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
                 iter = std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),name);
             }
             if(identifierInCurrentContext.end() == iter) {
-                if(!instance->globalObject()->hasKey(nonAtomicName)) {
-                    if(nearFunctionNode && nearFunctionNode->outerFunctionNode()) {
-                        //wprintf(L"this function  needs capture! -> %ls\n", ((IdentifierNode *)currentNode)->name().data());
-                        markNeedsActivation(nearFunctionNode->outerFunctionNode());
+                //search top...
+                unsigned up = 0;
+                for(int i = identifierStack.size() - 2 ; i >= 0 ; i --) {
+                    up++;
+                    InternalAtomicStringVector* vector = identifierStack[i];
+                    auto iter2 = std::find(vector->begin(),vector->end(),name);
+                    if(iter2 != vector->end()) {
+                        FunctionNode* fn = nearFunctionNode;
+                        for(unsigned j = 0; j < up ; j ++) {
+                            fn = fn->outerFunctionNode();
+                        }
+                        if(fn) {
+                            //wprintf(L"outer function of this function  needs capture! -> because fn...%ls iden..%ls\n",
+                            //        fn->id().data(),
+                            //        ((IdentifierNode *)currentNode)->name().data());
+                            markNeedsActivation(fn);
+                        } else {
+                            //fn == global case
+                        }
+                        break;
                     }
                 }
+
+                /*
+                if(!instance->globalObject()->hasKey(nonAtomicName)) {
+                    if(nearFunctionNode && nearFunctionNode->outerFunctionNode()) {
+                        wprintf(L"outer function of this function  needs capture! -> because %ls\n", ((IdentifierNode *)currentNode)->name().data());
+                        markNeedsActivation(nearFunctionNode->outerFunctionNode());
+                    }
+                }*/
             } else {
                 if(nearFunctionNode) {
                     size_t idx = std::distance(identifierInCurrentContext.begin(), iter);
@@ -583,21 +613,21 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             }
             //wprintf(L"use Identifier %ls\n", ((IdentifierNode *)currentNode)->name().data());
         } else if(type == NodeType::ExpressionStatement) {
-            postAnalysisFunction(((ExpressionStatementNode *)currentNode)->m_expression, identifierInCurrentContext, nearFunctionNode);
+            postAnalysisFunction(((ExpressionStatementNode *)currentNode)->m_expression, identifierStack, nearFunctionNode);
         } else if(type == NodeType::AssignmentExpression) {
-            postAnalysisFunction(((AssignmentExpressionNode *)currentNode)->m_right, identifierInCurrentContext, nearFunctionNode);
-            postAnalysisFunction(((AssignmentExpressionNode *)currentNode)->m_left, identifierInCurrentContext, nearFunctionNode);
+            postAnalysisFunction(((AssignmentExpressionNode *)currentNode)->m_right, identifierStack, nearFunctionNode);
+            postAnalysisFunction(((AssignmentExpressionNode *)currentNode)->m_left, identifierStack, nearFunctionNode);
         } else if(type == NodeType::Literal) {
             //DO NOTHING
         }else if(type == NodeType::ArrayExpression) {
             ExpressionNodeVector& v = ((ArrayExpressionNode *)currentNode)->m_elements;
             for(unsigned i = 0; i < v.size() ; i ++) {
-                postAnalysisFunction(v[i], identifierInCurrentContext, nearFunctionNode);
+                postAnalysisFunction(v[i], identifierStack, nearFunctionNode);
             }
         } else if(type == NodeType::BlockStatement) {
             StatementNodeVector& v = ((BlockStatementNode *)currentNode)->m_body;
             for(unsigned i = 0; i < v.size() ; i ++) {
-                postAnalysisFunction(v[i], identifierInCurrentContext, nearFunctionNode);
+                postAnalysisFunction(v[i], identifierStack, nearFunctionNode);
             }
         } else if(type == NodeType::CallExpression) {
 
@@ -610,86 +640,86 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
                 }
             }
 
-            postAnalysisFunction(callee, identifierInCurrentContext, nearFunctionNode);
+            postAnalysisFunction(callee, identifierStack, nearFunctionNode);
             ArgumentVector& v = ((CallExpressionNode *)currentNode)->m_arguments;
             for(unsigned i = 0; i < v.size() ; i ++) {
-                postAnalysisFunction(v[i], identifierInCurrentContext, nearFunctionNode);
+                postAnalysisFunction(v[i], identifierStack, nearFunctionNode);
             }
         } else if(type == NodeType::SequenceExpression) {
             ExpressionNodeVector& v = ((SequenceExpressionNode *)currentNode)->m_expressions;
             for(unsigned i = 0; i < v.size() ; i ++) {
-                postAnalysisFunction(v[i], identifierInCurrentContext, nearFunctionNode);
+                postAnalysisFunction(v[i], identifierStack, nearFunctionNode);
             }
         } else if(type == NodeType::NewExpression) {
-            postAnalysisFunction(((NewExpressionNode *)currentNode)->m_callee, identifierInCurrentContext, nearFunctionNode);
+            postAnalysisFunction(((NewExpressionNode *)currentNode)->m_callee, identifierStack, nearFunctionNode);
             ArgumentVector& v = ((NewExpressionNode *)currentNode)->m_arguments;
             for(unsigned i = 0; i < v.size() ; i ++) {
-                postAnalysisFunction(v[i], identifierInCurrentContext, nearFunctionNode);
+                postAnalysisFunction(v[i], identifierStack, nearFunctionNode);
             }
         } else if(type == NodeType::ObjectExpression) {
             PropertiesNodeVector& v = ((ObjectExpressionNode *)currentNode)->m_properties;
             for(unsigned i = 0; i < v.size() ; i ++) {
                 PropertyNode* p = v[i];
-                postAnalysisFunction(p->value(), identifierInCurrentContext, nearFunctionNode);
+                postAnalysisFunction(p->value(), identifierStack, nearFunctionNode);
                 if(p->key()->type() == NodeType::Identifier) {
 
                 } else {
-                    postAnalysisFunction(p->key(), identifierInCurrentContext, nearFunctionNode);
+                    postAnalysisFunction(p->key(), identifierStack, nearFunctionNode);
                 }
             }
         } else if(type == NodeType::ConditionalExpression) {
-            postAnalysisFunction(((ConditionalExpressionNode *)currentNode)->m_test, identifierInCurrentContext, nearFunctionNode);
-            postAnalysisFunction(((ConditionalExpressionNode *)currentNode)->m_consequente, identifierInCurrentContext, nearFunctionNode);
-            postAnalysisFunction(((ConditionalExpressionNode *)currentNode)->m_alternate, identifierInCurrentContext, nearFunctionNode);
+            postAnalysisFunction(((ConditionalExpressionNode *)currentNode)->m_test, identifierStack, nearFunctionNode);
+            postAnalysisFunction(((ConditionalExpressionNode *)currentNode)->m_consequente, identifierStack, nearFunctionNode);
+            postAnalysisFunction(((ConditionalExpressionNode *)currentNode)->m_alternate, identifierStack, nearFunctionNode);
         } else if(type == NodeType::Property) {
-            postAnalysisFunction(((PropertyNode *)currentNode)->m_key, identifierInCurrentContext, nearFunctionNode);
-            postAnalysisFunction(((PropertyNode *)currentNode)->m_value, identifierInCurrentContext, nearFunctionNode);
+            postAnalysisFunction(((PropertyNode *)currentNode)->m_key, identifierStack, nearFunctionNode);
+            postAnalysisFunction(((PropertyNode *)currentNode)->m_value, identifierStack, nearFunctionNode);
         } else if(type == NodeType::MemberExpression) {
-            postAnalysisFunction(((MemberExpressionNode *)currentNode)->m_object, identifierInCurrentContext, nearFunctionNode);
-            postAnalysisFunction(((MemberExpressionNode *)currentNode)->m_property, identifierInCurrentContext, nearFunctionNode);
+            postAnalysisFunction(((MemberExpressionNode *)currentNode)->m_object, identifierStack, nearFunctionNode);
+            postAnalysisFunction(((MemberExpressionNode *)currentNode)->m_property, identifierStack, nearFunctionNode);
         } else if(type == NodeType::BinaryExpression) {
-            postAnalysisFunction(((BinaryExpressionNode *)currentNode)->m_right, identifierInCurrentContext, nearFunctionNode);
-            postAnalysisFunction(((BinaryExpressionNode *)currentNode)->m_left, identifierInCurrentContext, nearFunctionNode);
+            postAnalysisFunction(((BinaryExpressionNode *)currentNode)->m_right, identifierStack, nearFunctionNode);
+            postAnalysisFunction(((BinaryExpressionNode *)currentNode)->m_left, identifierStack, nearFunctionNode);
         } else if(type == NodeType::LogicalExpression) {
-            postAnalysisFunction(((LogicalExpressionNode *)currentNode)->m_right, identifierInCurrentContext, nearFunctionNode);
-            postAnalysisFunction(((LogicalExpressionNode *)currentNode)->m_left, identifierInCurrentContext, nearFunctionNode);
+            postAnalysisFunction(((LogicalExpressionNode *)currentNode)->m_right, identifierStack, nearFunctionNode);
+            postAnalysisFunction(((LogicalExpressionNode *)currentNode)->m_left, identifierStack, nearFunctionNode);
         } else if(type == NodeType::UpdateExpression) {
-            postAnalysisFunction(((UpdateExpressionNode *)currentNode)->m_argument, identifierInCurrentContext, nearFunctionNode);
+            postAnalysisFunction(((UpdateExpressionNode *)currentNode)->m_argument, identifierStack, nearFunctionNode);
         } else if(type == NodeType::UnaryExpression) {
-            postAnalysisFunction(((UnaryExpressionNode *)currentNode)->m_argument, identifierInCurrentContext, nearFunctionNode);
+            postAnalysisFunction(((UnaryExpressionNode *)currentNode)->m_argument, identifierStack, nearFunctionNode);
         } else if(type == NodeType::IfStatement) {
-            postAnalysisFunction(((IfStatementNode *)currentNode)->m_test, identifierInCurrentContext, nearFunctionNode);
-            postAnalysisFunction(((IfStatementNode *)currentNode)->m_consequente, identifierInCurrentContext, nearFunctionNode);
-            postAnalysisFunction(((IfStatementNode *)currentNode)->m_alternate, identifierInCurrentContext, nearFunctionNode);
+            postAnalysisFunction(((IfStatementNode *)currentNode)->m_test, identifierStack, nearFunctionNode);
+            postAnalysisFunction(((IfStatementNode *)currentNode)->m_consequente, identifierStack, nearFunctionNode);
+            postAnalysisFunction(((IfStatementNode *)currentNode)->m_alternate, identifierStack, nearFunctionNode);
         } else if(type == NodeType::ForStatement) {
-            postAnalysisFunction(((ForStatementNode *)currentNode)->m_init, identifierInCurrentContext, nearFunctionNode);
-            postAnalysisFunction(((ForStatementNode *)currentNode)->m_body, identifierInCurrentContext, nearFunctionNode);
-            postAnalysisFunction(((ForStatementNode *)currentNode)->m_test, identifierInCurrentContext, nearFunctionNode);
-            postAnalysisFunction(((ForStatementNode *)currentNode)->m_update, identifierInCurrentContext, nearFunctionNode);
+            postAnalysisFunction(((ForStatementNode *)currentNode)->m_init, identifierStack, nearFunctionNode);
+            postAnalysisFunction(((ForStatementNode *)currentNode)->m_body, identifierStack, nearFunctionNode);
+            postAnalysisFunction(((ForStatementNode *)currentNode)->m_test, identifierStack, nearFunctionNode);
+            postAnalysisFunction(((ForStatementNode *)currentNode)->m_update, identifierStack, nearFunctionNode);
         } else if(type == NodeType::ForInStatement) {
-            postAnalysisFunction(((ForInStatementNode *)currentNode)->m_left, identifierInCurrentContext, nearFunctionNode);
-            postAnalysisFunction(((ForInStatementNode *)currentNode)->m_right, identifierInCurrentContext, nearFunctionNode);
-            postAnalysisFunction(((ForInStatementNode *)currentNode)->m_body, identifierInCurrentContext, nearFunctionNode);
+            postAnalysisFunction(((ForInStatementNode *)currentNode)->m_left, identifierStack, nearFunctionNode);
+            postAnalysisFunction(((ForInStatementNode *)currentNode)->m_right, identifierStack, nearFunctionNode);
+            postAnalysisFunction(((ForInStatementNode *)currentNode)->m_body, identifierStack, nearFunctionNode);
         } else if(type == NodeType::WhileStatement) {
-            postAnalysisFunction(((WhileStatementNode *)currentNode)->m_test, identifierInCurrentContext, nearFunctionNode);
-            postAnalysisFunction(((WhileStatementNode *)currentNode)->m_body, identifierInCurrentContext, nearFunctionNode);
+            postAnalysisFunction(((WhileStatementNode *)currentNode)->m_test, identifierStack, nearFunctionNode);
+            postAnalysisFunction(((WhileStatementNode *)currentNode)->m_body, identifierStack, nearFunctionNode);
         } else if(type == NodeType::DoWhileStatement) {
-            postAnalysisFunction(((DoWhileStatementNode *)currentNode)->m_test, identifierInCurrentContext, nearFunctionNode);
-            postAnalysisFunction(((DoWhileStatementNode *)currentNode)->m_body, identifierInCurrentContext, nearFunctionNode);
+            postAnalysisFunction(((DoWhileStatementNode *)currentNode)->m_test, identifierStack, nearFunctionNode);
+            postAnalysisFunction(((DoWhileStatementNode *)currentNode)->m_body, identifierStack, nearFunctionNode);
         } else if(type == NodeType::SwitchStatement) {
-            postAnalysisFunction(((SwitchStatementNode *)currentNode)->m_discriminant, identifierInCurrentContext, nearFunctionNode);
+            postAnalysisFunction(((SwitchStatementNode *)currentNode)->m_discriminant, identifierStack, nearFunctionNode);
             StatementNodeVector& vA =((SwitchStatementNode *)currentNode)->m_casesA;
             for(unsigned i = 0; i < vA.size() ; i ++)
-                postAnalysisFunction(vA[i], identifierInCurrentContext, nearFunctionNode);
-            postAnalysisFunction(((SwitchStatementNode *)currentNode)->m_default, identifierInCurrentContext, nearFunctionNode);
+                postAnalysisFunction(vA[i], identifierStack, nearFunctionNode);
+            postAnalysisFunction(((SwitchStatementNode *)currentNode)->m_default, identifierStack, nearFunctionNode);
             StatementNodeVector& vB = ((SwitchStatementNode *)currentNode)->m_casesB;
             for(unsigned i = 0; i < vB.size() ; i ++)
-                postAnalysisFunction(vB[i], identifierInCurrentContext, nearFunctionNode);
+                postAnalysisFunction(vB[i], identifierStack, nearFunctionNode);
         } else if(type == NodeType::SwitchCase) {
-            postAnalysisFunction(((SwitchCaseNode *)currentNode)->m_test, identifierInCurrentContext, nearFunctionNode);
+            postAnalysisFunction(((SwitchCaseNode *)currentNode)->m_test, identifierStack, nearFunctionNode);
             StatementNodeVector& v = ((SwitchCaseNode *)currentNode)->m_consequent;
             for(unsigned i = 0; i < v.size() ; i ++)
-                postAnalysisFunction(v[i], identifierInCurrentContext, nearFunctionNode);
+                postAnalysisFunction(v[i], identifierStack, nearFunctionNode);
         } else if(type == NodeType::ThisExpression) {
 
         } else if(type == NodeType::BreakStatement) {
@@ -697,26 +727,28 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
         } else if(type == NodeType::ContinueStatement) {
 
         } else if(type == NodeType::ReturnStatement) {
-            postAnalysisFunction(((ReturnStatmentNode *)currentNode)->m_argument, identifierInCurrentContext, nearFunctionNode);
+            postAnalysisFunction(((ReturnStatmentNode *)currentNode)->m_argument, identifierStack, nearFunctionNode);
         } else if(type == NodeType::EmptyStatement) {
         } else if (type == NodeType::TryStatement) {
-            postAnalysisFunction(((TryStatementNode *)currentNode)->m_block, identifierInCurrentContext, nearFunctionNode);
-            postAnalysisFunction(((TryStatementNode *)currentNode)->m_handler, identifierInCurrentContext, nearFunctionNode);
-            postAnalysisFunction(((TryStatementNode *)currentNode)->m_finalizer, identifierInCurrentContext, nearFunctionNode);
+            postAnalysisFunction(((TryStatementNode *)currentNode)->m_block, identifierStack, nearFunctionNode);
+            postAnalysisFunction(((TryStatementNode *)currentNode)->m_handler, identifierStack, nearFunctionNode);
+            postAnalysisFunction(((TryStatementNode *)currentNode)->m_finalizer, identifierStack, nearFunctionNode);
         } else if (type == NodeType::CatchClause) {
             markNeedsActivation(nearFunctionNode);
-            postAnalysisFunction(((CatchClauseNode *)currentNode)->m_param, identifierInCurrentContext, nearFunctionNode);
-            postAnalysisFunction(((CatchClauseNode *)currentNode)->m_guard, identifierInCurrentContext, nearFunctionNode);
-            postAnalysisFunction(((CatchClauseNode *)currentNode)->m_body, identifierInCurrentContext, nearFunctionNode);
+            postAnalysisFunction(((CatchClauseNode *)currentNode)->m_param, identifierStack, nearFunctionNode);
+            postAnalysisFunction(((CatchClauseNode *)currentNode)->m_guard, identifierStack, nearFunctionNode);
+            postAnalysisFunction(((CatchClauseNode *)currentNode)->m_body, identifierStack, nearFunctionNode);
         } else if (type == NodeType::ThrowStatement) {
-            postAnalysisFunction(((ThrowStatementNode *)currentNode)->m_argument, identifierInCurrentContext, nearFunctionNode);
+            postAnalysisFunction(((ThrowStatementNode *)currentNode)->m_argument, identifierStack, nearFunctionNode);
         } else {
             RELEASE_ASSERT_NOT_REACHED();
         }
     };
 
     InternalAtomicStringVector identifierInCurrentContext;
-    postAnalysisFunction(node, identifierInCurrentContext, NULL);
+    std::vector<InternalAtomicStringVector *> stack;
+    stack.push_back(&identifierInCurrentContext);
+    postAnalysisFunction(node, stack, NULL);
 
     //unsigned long end = getLongTickCount();
     //fwprintf(stdout, L"parse script takes %g ms\n", (end - start)/1000.f);
