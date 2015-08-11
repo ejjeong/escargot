@@ -21,6 +21,7 @@ GlobalObject::GlobalObject()
     installDate();
     installMath();
     installNumber();
+    installRegExp();
 
     // Value Properties of the Global Object
     definePropertyOrThrow(L"Infinity", false, false, false);
@@ -726,8 +727,17 @@ void GlobalObject::installString()
         escargot::ESArrayObject* ret = ESArrayObject::create(0, instance->globalObject()->arrayPrototype());
 
         int argCount = instance->currentExecutionContext()->argumentCount();
-        const wchar_t* regexp = instance->currentExecutionContext()->arguments()[0].toInternalString().data();
-        int regexp_len = instance->currentExecutionContext()->arguments()[0].toInternalString().length();
+        ESPointer* esptr = instance->currentExecutionContext()->arguments()[0].asESPointer();
+        InternalString regexp_int_str;
+        if (esptr->isESRegExpObject()) {
+            regexp_int_str = instance->currentExecutionContext()->arguments()[0].asESPointer()->asESRegExpObject()->regExpData().asESString()->string();
+        } else if (esptr->isESString()) {
+            regexp_int_str = instance->currentExecutionContext()->arguments()[0].toInternalString();
+        } else {
+            wprintf(L"Wrong first parameter for String.prototype.replace\n");
+         }
+        const wchar_t* regexp = regexp_int_str.data();
+        int regexp_len = regexp_int_str.length();
         char regexp_buffer[regexp_len + 3];
         std::string option = "";
         if (regexp[0] == L'/') {
@@ -1343,6 +1353,38 @@ void GlobalObject::installNumber()
 
     // add number to global object
     set(strings->Number, m_number);
+}
+
+void GlobalObject::installRegExp()
+{
+    // create regexp object: $21.2.3 The RegExp Constructor
+    FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings->RegExp, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+
+        return ESValue();
+    }), false, false);
+    m_regexp = ::escargot::ESFunctionObject::create(NULL, constructor);
+
+    // create regexpPrototype object
+    InternalString int_str("");
+    m_regexpPrototype = ESRegExpObject::create(ESString::create(int_str), m_objectPrototype);
+
+    // initialize regexp object
+    m_regexp->set(strings->name, ESString::create(strings->RegExp));
+    m_regexp->setConstructor(m_function);
+    m_regexp->set(strings->prototype, m_regexpPrototype);
+
+    // initialize regexpPrototype object
+    m_regexpPrototype->setConstructor(m_regexp);
+
+    // initialize math object: $20.2.1.6 Math.PI
+    m_regexpPrototype->set(strings->source, m_regexpPrototype->regExpData());
+
+    m_regexpPrototype->defineAccessorProperty(strings->source, [](ESObject* self) -> ESValue {
+       return self->asESRegExpObject()->regExpData();
+        }, nullptr, true, false, false);
+
+    // add regexp to global object
+    set(strings->RegExp, m_regexp);
 }
 
 }

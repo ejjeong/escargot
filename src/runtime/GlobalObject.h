@@ -31,6 +31,16 @@ public:
         return m_referenceErrorPrototype;
     }
 
+    ALWAYS_INLINE escargot::ESFunctionObject* regexpError()
+    {
+        return m_regexp;
+    }
+
+    ALWAYS_INLINE escargot::ESRegExpObject* regexpPrototype()
+    {
+        return m_regexpPrototype;
+    }
+
     ALWAYS_INLINE escargot::ESFunctionObject* function()
     {
         return m_function;
@@ -105,6 +115,7 @@ protected:
     void installDate();
     void installMath();
     void installNumber();
+    void installRegExp();
     escargot::ESFunctionObject* m_object;
     escargot::ESObject* m_objectPrototype;
     escargot::ESFunctionObject* m_function;
@@ -122,6 +133,8 @@ protected:
     escargot::ESObject* m_mathPrototype;
     escargot::ESFunctionObject* m_number;
     escargot::ESNumberObject* m_numberPrototype;
+    escargot::ESFunctionObject* m_regexp;
+    escargot::ESRegExpObject* m_regexpPrototype;
     //JSBuiltinsObject* m_builtins;
     //Context* m_nativeContext;
 };

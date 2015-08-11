@@ -19,6 +19,7 @@ class ESDateObject;
 class FunctionNode;
 class ESVMInstance;
 class ESPointer;
+class ESRegExpObject;
 
 union ValueDescriptor {
     int64_t asInt64;
@@ -212,6 +213,7 @@ public:
         ESErrorObject = 1 << 6,
         ESDateObject = 1 << 7,
         ESNumberObject = 1 << 8,
+        ESRegExpObject = 1 << 9,
         TypeMask = 0xffff
     };
 
@@ -315,6 +317,19 @@ public:
         ASSERT(isESNumberObject());
 #endif
         return reinterpret_cast<::escargot::ESNumberObject *>(this);
+    }
+
+    ALWAYS_INLINE bool isESRegExpObject() const
+    {
+        return m_type & Type::ESRegExpObject;
+    }
+
+    ALWAYS_INLINE ::escargot::ESRegExpObject* asESRegExpObject()
+    {
+#ifndef NDEBUG
+        ASSERT(isESRegExpObject());
+#endif
+        return reinterpret_cast<::escargot::ESRegExpObject *>(this);
     }
 
     ALWAYS_INLINE bool isESErrorObject() const
@@ -1175,6 +1190,26 @@ public:
 
 private:
     ESValue m_primitiveValue;
+};
+
+class ESRegExpObject : public ESObject {
+protected:
+    ESRegExpObject(const escargot::ESString* value);
+
+public:
+    static ESRegExpObject* create(const escargot::ESString* value, ESObject* proto = NULL)
+    {
+        ESRegExpObject* ret = new ESRegExpObject(value);
+        if (proto != NULL)
+            ret->set__proto__(proto);
+
+        return ret;
+    }
+
+    ALWAYS_INLINE ESValue regExpData() { return m_primitiveValue; }
+
+private:
+    const escargot::ESString* m_primitiveValue;
 };
 
 }

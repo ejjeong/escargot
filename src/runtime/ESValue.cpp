@@ -245,6 +245,12 @@ ESArrayObject::ESArrayObject()
     m_length = 0;
 }
 
+ESRegExpObject::ESRegExpObject(const escargot::ESString* value)
+    : ESObject((Type)(Type::ESObject | Type::ESRegExpObject))
+{
+    m_primitiveValue = value;
+}
+
 ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST)
     : ESObject((Type)(Type::ESObject | Type::ESFunctionObject))
 {

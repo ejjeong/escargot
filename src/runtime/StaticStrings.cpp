@@ -72,6 +72,8 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     function = L"function";
     stringTrue = L"true";
     stringFalse = L"false";
+    RegExp = L"RegExp";
+    source = L"source";
 }
 
 Strings* strings;

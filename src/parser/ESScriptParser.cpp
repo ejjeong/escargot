@@ -306,7 +306,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             } else {
                 JSString* ss = JS_ValueToString(s_cx, v);
                 InternalString is(JS_EncodeString(s_cx, ss));
-                parsedNode = new LiteralNode(ESValue(ESString::create(is)));
+                parsedNode = new LiteralNode(ESRegExpObject::create(ESString::create(is), escargot::ESVMInstance::currentInstance()->globalObject()->regexpPrototype()));
             }
 
         } else if(type == astTypeFunctionDeclaration) {

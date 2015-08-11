@@ -81,11 +81,11 @@ public:
                 //FIXME this code duplicated with ESObject::get
                 ESValue prototype = obj->__proto__();
                 while(prototype.isESPointer() && prototype.asESPointer()->isESObject()) {
-                    ::escargot::ESObject* obj = prototype.asESPointer()->asESObject();
-                    ESSlot* s = obj->find(computedPropertyName);
+                    ::escargot::ESObject* new_obj = prototype.asESPointer()->asESObject();
+                    ESSlot* s = new_obj->find(computedPropertyName);
                     if(s)
-                        return s->value();
-                    prototype = obj->__proto__();
+                        return s->value(obj);
+                    prototype = new_obj->__proto__();
                 }
             }
         } else if (value.isESString()) {
