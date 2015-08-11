@@ -426,6 +426,8 @@ inline double ESValue::toNumber() const
 
 inline bool ESValue::toBoolean() const
 {
+    if (LIKELY(isBoolean()))
+        return asBoolean();
     if (isInt32())
         return asInt32();
     if (isDouble())
@@ -434,9 +436,6 @@ inline bool ESValue::toBoolean() const
         return false;
     if (isESPointer())
         return true;
-    if (isBoolean())
-        return asBoolean();
-
     //TODO
     RELEASE_ASSERT_NOT_REACHED();
 }

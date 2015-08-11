@@ -41,3 +41,12 @@ print(arr);
 print(arr.slice(2, 3));
 print(arr.concat("aaa"));
 print(arr.concat(["aaa", 3, 2]));
+
+arr = [1, "a" , {}, 0];
+arr.sort();
+print(arr);
+arr = [4,3,2,1];
+arr.sort(function(a, b) {
+	return a < b;
+});
+print(arr);

@@ -33,6 +33,7 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     push = L"push";
     slice = L"slice";
     splice = L"splice";
+    sort = L"sort";
     Function =  L"Function";
     Empty =  L"Empty";
     Date =  L"Date";

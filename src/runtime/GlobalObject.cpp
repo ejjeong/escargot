@@ -364,6 +364,27 @@ void GlobalObject::installArray()
     }), false, false);
     m_arrayPrototype->set(strings->slice, ESFunctionObject::create(NULL, arraySlice));
 
+    //$22.1.3.25 Array.prototype.sort(comparefn)
+    //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-array.prototype.sort
+    FunctionDeclarationNode* arraySort = new FunctionDeclarationNode(strings->sort, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        escargot::ESArrayObject* thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESArrayObject();
+        if(arglen == 0) {
+            thisVal->sort();
+        } else {
+            ESValue arg0 = instance->currentExecutionContext()->arguments()[0];
+            thisVal->sort([&arg0, &instance, &thisVal](const ::escargot::ESSlot& a, const ::escargot::ESSlot& b) -> bool {
+                ESValue arg[2] = { ESValue(a.readDataProperty()) , ESValue(b.readDataProperty()) };
+                return !ESFunctionObject::call(arg0, thisVal,
+                        arg, 2, instance).toBoolean();
+            });
+        }
+
+        instance->currentExecutionContext()->doReturn(thisVal);
+        return ESValue();
+    }), false, false);
+    m_arrayPrototype->set(strings->sort, ESFunctionObject::create(NULL, arraySort));
+
     //$22.1.3.25 Array.prototype.splice(start, deleteCount, ...items)
     FunctionDeclarationNode* arraySplice = new FunctionDeclarationNode(strings->splice, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         int arglen = instance->currentExecutionContext()->argumentCount();

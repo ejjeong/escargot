@@ -35,6 +35,7 @@ InternalString join;
 InternalString push;
 InternalString slice;
 InternalString splice;
+InternalString sort;
 InternalString Function;
 InternalString Empty;
 InternalString Date;

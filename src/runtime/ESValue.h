@@ -459,7 +459,7 @@ public:
 
     }
 
-    ALWAYS_INLINE ESValue value(::escargot::ESObject* object = NULL)
+    ALWAYS_INLINE ESValue value(::escargot::ESObject* object = NULL) const
     {
         if(LIKELY(m_isDataProperty)) {
             return m_data;
@@ -472,7 +472,7 @@ public:
         }
     }
 
-    ALWAYS_INLINE const ESValue& readDataProperty()
+    ALWAYS_INLINE const ESValue& readDataProperty() const
     {
         ASSERT(m_isDataProperty);
         return m_data;
@@ -484,22 +484,22 @@ public:
         m_data = value;
     }
 
-    ALWAYS_INLINE bool isConfigurable()
+    ALWAYS_INLINE bool isConfigurable() const
     {
         return m_isConfigurable;
     }
 
-    ALWAYS_INLINE bool isEnumerable()
+    ALWAYS_INLINE bool isEnumerable() const
     {
         return m_isEnumerable;
     }
 
-    ALWAYS_INLINE bool isWritable()
+    ALWAYS_INLINE bool isWritable() const
     {
         return m_isWritable;
     }
 
-    ALWAYS_INLINE bool isDataProperty()
+    ALWAYS_INLINE bool isDataProperty() const
     {
         return m_isDataProperty;
     }
@@ -524,7 +524,7 @@ public:
         m_isDataProperty = true;
     }
 
-    ALWAYS_INLINE ESAccessorData* accessorData()
+    ALWAYS_INLINE ESAccessorData* accessorData() const
     {
         ASSERT(!m_isDataProperty);
         return (ESAccessorData *)m_data.asESPointer();
@@ -1046,6 +1046,28 @@ public:
     {
         return ESValue(m_length);
     }
+
+    void sort()
+    {
+        RELEASE_ASSERT(isFastmode());
+        //TODO non fast mode sort
+
+        std::sort(m_vector.begin(), m_vector.end(),[](const ::escargot::ESSlot& a, const ::escargot::ESSlot& b) -> bool {
+            ::escargot::ESString* vala = a.readDataProperty().toString();
+            ::escargot::ESString* valb = b.readDataProperty().toString();
+            return vala->string() < valb->string();
+        });
+    }
+
+    template <typename Comp>
+    void sort(const Comp& c)
+    {
+        RELEASE_ASSERT(isFastmode());
+        //TODO non fast mode sort
+
+        std::sort(m_vector.begin(), m_vector.end(),c);
+    }
+
 
 protected:
     int32_t m_length;
