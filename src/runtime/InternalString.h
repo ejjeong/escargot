@@ -16,8 +16,8 @@ public:
         m_hashData.m_isHashInited =  false;
     }
     InternalStringData(InternalStringStd&& src)
+        : InternalStringStd(std::move(src))
     {
-        InternalStringStd::operator =(src);
         m_hashData.m_isHashInited =  false;
     }
 

@@ -579,12 +579,13 @@ void GlobalObject::installString()
     //$21.1.2.1 String.fromCharCode(...codeUnits)
     FunctionDeclarationNode* stringFromCharCode = new FunctionDeclarationNode(InternalString(L"fromCharCode"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         int length = instance->currentExecutionContext()->argumentCount();
-        wchar_t* elements = (wchar_t*)alloca(sizeof(wchar_t) * (length+1));
-        int i;
-        for (i=0; i<length; i++)
-            elements[i] = instance->currentExecutionContext()->arguments()[i].toInteger();
-        elements[i] = L'\0';
-        instance->currentExecutionContext()->doReturn(ESString::create(InternalString(elements)));
+
+        std::wstring elements;
+        elements.reserve(length);
+        for(int i = 0; i < length ; i ++) {
+            elements.append({(wchar_t)instance->currentExecutionContext()->arguments()[i].toInteger()});
+        }
+        instance->currentExecutionContext()->doReturn(ESString::create(InternalString(std::move(elements))));
         return ESValue();
     }), false, false);
     m_string->set(L"fromCharCode", ESFunctionObject::create(NULL, stringFromCharCode));

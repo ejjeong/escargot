@@ -31,7 +31,7 @@ public:
     ESValue execute(ESVMInstance* instance)
     {
         ESValue argval = m_argument->execute(instance);
-        ESValue ret;
+        ESValue ret(ESValue::ESForceUninitialized);
         if (!m_prefix)
             ret = argval;
 
