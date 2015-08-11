@@ -664,8 +664,17 @@ void GlobalObject::installString()
         escargot::ESArrayObject* ret = ESArrayObject::create(0, instance->globalObject()->arrayPrototype());
 
         int argCount = instance->currentExecutionContext()->argumentCount();
-        const wchar_t* regexp = instance->currentExecutionContext()->arguments()[0].toInternalString().data();
-        int regexp_len = instance->currentExecutionContext()->arguments()[0].toInternalString().length();
+        ESPointer* esptr = instance->currentExecutionContext()->arguments()[0].asESPointer();
+        InternalString regexp_int_str;
+        if (esptr->isESRegExpObject()) {
+            regexp_int_str = instance->currentExecutionContext()->arguments()[0].asESPointer()->asESRegExpObject()->regExpData()->string();
+        } else if (esptr->isESString()) {
+            regexp_int_str = instance->currentExecutionContext()->arguments()[0].toInternalString();
+        } else {
+            wprintf(L"Wrong first parameter for String.prototype.match()\n");
+         }
+        const wchar_t* regexp = regexp_int_str.data();
+        int regexp_len = regexp_int_str.length();
         char regexp_buffer[regexp_len + 3];
         std::string option = "";
         if (regexp[0] == L'/') {
@@ -706,16 +715,22 @@ void GlobalObject::installString()
         re2::RE2 re(regexp_buffer, ops);
 
         int index = 0;
+        bool is_global = false;
+        if (option.find('g') != std::string::npos)
+            is_global = true;
         while (re2::RE2::FindAndConsume(&input, re, &matched)) {
             InternalString int_str(matched.data());
             ret->set(index, ESString::create(int_str));
 
-            if (option.find('g') != std::string::npos)
-                break;
             index++;
+            if (!is_global)
+                break;
          }
 
-        instance->currentExecutionContext()->doReturn(ret);
+        if (index == 0)
+            instance->currentExecutionContext()->doReturn(ESValue(ESValue::ESNull));
+        else
+            instance->currentExecutionContext()->doReturn(ret);
 
         return ESValue();
     }), false, false);
@@ -730,11 +745,11 @@ void GlobalObject::installString()
         ESPointer* esptr = instance->currentExecutionContext()->arguments()[0].asESPointer();
         InternalString regexp_int_str;
         if (esptr->isESRegExpObject()) {
-            regexp_int_str = instance->currentExecutionContext()->arguments()[0].asESPointer()->asESRegExpObject()->regExpData().asESString()->string();
+            regexp_int_str = instance->currentExecutionContext()->arguments()[0].asESPointer()->asESRegExpObject()->regExpData()->string();
         } else if (esptr->isESString()) {
             regexp_int_str = instance->currentExecutionContext()->arguments()[0].toInternalString();
         } else {
-            wprintf(L"Wrong first parameter for String.prototype.replace\n");
+            wprintf(L"Wrong first parameter for String.prototype.replace()\n");
          }
         const wchar_t* regexp = regexp_int_str.data();
         int regexp_len = regexp_int_str.length();
@@ -1380,7 +1395,14 @@ void GlobalObject::installRegExp()
     m_regexpPrototype->set(strings->source, m_regexpPrototype->regExpData());
 
     m_regexpPrototype->defineAccessorProperty(strings->source, [](ESObject* self) -> ESValue {
-       return self->asESRegExpObject()->regExpData();
+       escargot::ESString* regexp = self->asESRegExpObject()->regExpData();
+       const InternalString& str = regexp->string();
+       unsigned start = str.string()->find('/');
+       unsigned end = str.string()->find_last_of('/');
+        std::wstring out(&str.data()[start+1],&str.data()[end]);
+        InternalString ret(std::move(out));
+//        ret.show();
+        return ESString::create(ret);
         }, nullptr, true, false, false);
 
     // add regexp to global object

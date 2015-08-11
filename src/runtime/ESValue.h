@@ -1194,10 +1194,10 @@ private:
 
 class ESRegExpObject : public ESObject {
 protected:
-    ESRegExpObject(const escargot::ESString* value);
+    ESRegExpObject(escargot::ESString* value);
 
 public:
-    static ESRegExpObject* create(const escargot::ESString* value, ESObject* proto = NULL)
+    static ESRegExpObject* create(escargot::ESString* value, ESObject* proto = NULL)
     {
         ESRegExpObject* ret = new ESRegExpObject(value);
         if (proto != NULL)
@@ -1206,10 +1206,10 @@ public:
         return ret;
     }
 
-    ALWAYS_INLINE ESValue regExpData() { return m_primitiveValue; }
+    ALWAYS_INLINE escargot::ESString* regExpData() { return m_primitiveValue; }
 
 private:
-    const escargot::ESString* m_primitiveValue;
+    escargot::ESString* m_primitiveValue;
 };
 
 }
