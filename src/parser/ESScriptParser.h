@@ -21,6 +21,9 @@ public:
     static void enter();
     static void exit();
     static void gc();
+#ifdef ESCARGOT_PROFILE
+    static void dumpStats();
+#endif
 
 private:
     static std::string parseExternal(std::string& sourceString);

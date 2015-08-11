@@ -5,6 +5,13 @@
 
 #include "jsapi.h"
 
+#ifdef ESCARGOT_PROFILE
+#include <sys/time.h>
+#include <sys/resource.h>
+#include <unistd.h>
+#include <stdio.h>
+#endif
+
 namespace escargot {
 
 ::JSContext* ESScriptParser::s_cx;
@@ -108,6 +115,39 @@ void ESScriptParser::gc()
 {
     JS_GC(s_rt);
 }
+
+#ifdef ESCARGOT_PROFILE
+void ESScriptParser::dumpStats()
+{
+    unsigned stat;
+
+    stat = JS_GetGCParameter(s_rt, JSGC_TOTAL_CHUNKS);
+    wprintf(L"[MOZJS] JSGC_TOTAL_CHUNKS: %d\n", stat);
+    stat = JS_GetGCParameter(s_rt, JSGC_UNUSED_CHUNKS);
+    wprintf(L"[MOZJS] JSGC_UNUSED_CHUNKS: %d\n", stat);
+
+    stat = GC_get_heap_size();
+    wprintf(L"[BOEHM] heap_size: %d\n", stat);
+    stat = GC_get_unmapped_bytes();
+    wprintf(L"[BOEHM] unmapped_bytes: %d\n", stat);
+    stat = GC_get_total_bytes();
+    wprintf(L"[BOEHM] total_bytes: %d\n", stat);
+    stat = GC_get_memory_use();
+    wprintf(L"[BOEHM] memory_use: %d\n", stat);
+    stat = GC_get_gc_no();
+    wprintf(L"[BOEHM] gc_no: %d\n", stat);
+
+    struct rusage ru;
+    getrusage(RUSAGE_SELF, &ru);
+    stat = ru.ru_maxrss;
+    wprintf(L"[LINUX] rss: %d\n", stat);
+    if(stat > 5000) {
+        while(true) {
+            ;
+        }
+    }
+}
+#endif
 
 std::string ESScriptParser::parseExternal(std::string& sourceString)
 {

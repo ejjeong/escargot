@@ -17,7 +17,7 @@ make distclean
 mkdir -p out/release
 mkdir -p out/debug
 
-GCCONFFLAGS=" " # --enable-large-config --enable-cplusplus"
+GCCONFFLAGS=" --disable-parallel-mark " # --enable-large-config --enable-cplusplus"
 
 cd out/release
 ../../configure $GCCONFFLAGS --disable-gc-debug

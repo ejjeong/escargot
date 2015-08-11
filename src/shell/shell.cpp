@@ -1,4 +1,5 @@
 #include "Escargot.h"
+#include "parser/ESScriptParser.h"
 #include "vm/ESVMInstance.h"
 #include "runtime/ESValue.h"
 
@@ -62,6 +63,9 @@ int main(int argc, char* argv[])
             }
         }
     }
+#ifdef ESCARGOT_PROFILE
+    escargot::ESScriptParser::dumpStats();
+#endif
     ES->exit();
     return 0;
 }
