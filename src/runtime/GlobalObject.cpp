@@ -664,20 +664,29 @@ void GlobalObject::installString()
         int argCount = instance->currentExecutionContext()->argumentCount();
         const wchar_t* regexp = instance->currentExecutionContext()->arguments()[0].toInternalString().data();
         int regexp_len = instance->currentExecutionContext()->arguments()[0].toInternalString().length();
-        char regexp_buffer[regexp_len + 1];
-        regexp_buffer[regexp_len] = 0;
-        wcstombs(regexp_buffer, regexp, regexp_len);
+        char regexp_buffer[regexp_len + 3];
         std::string option = "";
-        regexp_buffer[0] = '(';
-        for (int i = regexp_len; i >= 0; i--) {
-            if (regexp_buffer[i] == '/') {
-                regexp_buffer[i] = ')';
-                for (int j = i + 1 ; j < regexp_len; j++) {
-                    option += regexp_buffer[j];
-                    regexp_buffer[j] = 0;
-                  }
-                break;
+        if (regexp[0] == L'/') {
+            regexp_buffer[regexp_len-2] = 0;
+            regexp_buffer[regexp_len-1] = 0;
+            regexp_buffer[regexp_len] = 0;
+            wcstombs(regexp_buffer, regexp, regexp_len);
+            regexp_buffer[0] = '(';
+            for (int i = regexp_len; i >= 0; i--) {
+                if (regexp_buffer[i] == '/') {
+                    regexp_buffer[i] = ')';
+                    for (int j = i + 1 ; j < regexp_len; j++) {
+                        option += regexp_buffer[j];
+                        regexp_buffer[j] = 0;
+                      }
+                    break;
+                 }
              }
+        } else {
+            regexp_buffer[0] = '(';
+            wcstombs(regexp_buffer+1, regexp, regexp_len);
+            regexp_buffer[regexp_len+1] = ')';
+            regexp_buffer[regexp_len+2] = 0;
          }
 
         const wchar_t* this_data = thisObject->asESStringObject()->getStringData()->string().data();
@@ -688,14 +697,18 @@ void GlobalObject::installString()
 
         std::string matched;
         re2::StringPiece input(this_buffer);
-        re2::RE2 re(regexp_buffer);
+
+        re2::RE2::Options ops;
+        if (option.find('i') != std::string::npos)
+                    ops.set_case_sensitive(false);
+        re2::RE2 re(regexp_buffer, ops);
 
         int index = 0;
         while (re2::RE2::FindAndConsume(&input, re, &matched)) {
             InternalString int_str(matched.data());
             ret->set(index, ESString::create(int_str));
 
-            if (option != "g")
+            if (option.find('g') != std::string::npos)
                 break;
             index++;
          }
@@ -754,10 +767,16 @@ void GlobalObject::installString()
 
         std::string new_this = std::string(new_this_buffer);
 
-        if (option == "g") {
-            re2::RE2::GlobalReplace(&new_this, regexp_buffer, replace_buffer);
+        re2::RE2::Options ops;
+        if (option.find('i') != std::string::npos)
+                    ops.set_case_sensitive(false);
+        re2::RE2 re(regexp_buffer, ops);
+
+
+        if (option.find('g') != std::string::npos) {
+            re2::RE2::GlobalReplace(&new_this, re, replace_buffer);
         } else {
-            re2::RE2::Replace(&new_this, regexp_buffer, replace_buffer);
+            re2::RE2::Replace(&new_this, re, replace_buffer);
          }
 
         InternalString int_str(new_this.data());

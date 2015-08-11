@@ -1,16 +1,25 @@
 var str = "Hello Wolld";
+
 var matched = str.match(/.ll./g);
 print(matched.length);
 for (var i = 0; i < matched.length; i++) {
 	print(matched[i]);
 }
 
+matched = str.match("ll");
+print(matched.length);
+print(matched[0]);
+
 var replaced = str.replace(/.ll./g, "abc");
 print("r1");
 print(replaced);
 
-var replaced = str.replace("o", "abc");
+replaced = str.replace("o", "abc");
 print("r1-1");
+print(replaced);
+
+var replaced = str.replace(/he/i, "abc");
+print("r1-2");
 print(replaced);
 
 // regexp-dna
@@ -123,4 +132,3 @@ print(replaced);
 replaced = str.replace(/^[a-zA-Z0-9\-\._]+@[a-zA-Z0-9\-_]+(\.?[a-zA-Z0-9\-_]*)\.[a-zA-Z]{2,3}$/, "abc");
 print("r27");
 print(replaced);
-
