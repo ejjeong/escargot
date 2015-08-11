@@ -464,7 +464,7 @@ inline int32_t ESValue::toInt32() const
         } else if(UNLIKELY(d == -std::numeric_limits<double>::quiet_NaN())) {
             return 0;
         } else {
-            long long int posInt = d < 0 ? -1 : 1 * std::floor(std::abs(d));
+            long long int posInt = (d < 0 ? -1 : 1) * std::floor(std::abs(d));
             long long int int32bit = posInt % 0x100000000;
             int res;
             if (int32bit >= 0x80000000)

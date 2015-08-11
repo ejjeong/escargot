@@ -102,6 +102,25 @@ GlobalObject::GlobalObject()
     }), false, false);
     set(L"eval", ESFunctionObject::create(NULL, node));
 
+    // $18.2.2
+    definePropertyOrThrow(L"isFinite", false, false, false);
+    node = new FunctionDeclarationNode(InternalAtomicString(L"isFinite"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        ESValue ret;
+        int len = instance->currentExecutionContext()->argumentCount();
+        if (len < 1) ret = ESValue(ESValue::ESFalseTag::ESFalse);
+        else {
+            ESValue& argument = instance->currentExecutionContext()->arguments()[0];
+            double num = argument.toNumber();
+            if(std::isnan(num) || num == std::numeric_limits<double>::infinity() || num == -std::numeric_limits<double>::infinity())
+                ret = ESValue(ESValue::ESFalseTag::ESFalse);
+            else
+                ret = ESValue(ESValue::ESTrueTag::ESTrue);
+        }
+        instance->currentExecutionContext()->doReturn(ret);
+        return ESValue();
+    }), false, false);
+    set(L"isFinite", ESFunctionObject::create(NULL, node));
+    // $18.2.3
     definePropertyOrThrow(L"isNaN", false, false, false);
     node = new FunctionDeclarationNode(InternalAtomicString(L"isNaN"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         ESValue ret;
@@ -117,6 +136,38 @@ GlobalObject::GlobalObject()
         return ESValue();
     }), false, false);
     set(L"isNaN", ESFunctionObject::create(NULL, node));
+    // $18.2.5 parseInt(string, radix)
+    definePropertyOrThrow(L"parseInt", false, false, false);
+    node = new FunctionDeclarationNode(InternalAtomicString(L"parseInt"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        ESValue ret;
+        int len = instance->currentExecutionContext()->argumentCount();
+        if (len < 1) {
+            ret = ESValue(std::numeric_limits<double>::quiet_NaN());
+        }
+        else {
+            int radix = 10;
+            if (len >= 2) radix = instance->currentExecutionContext()->arguments()[1].toInt32();
+            if (radix == 0) radix = 10;
+            if (radix < 2 || radix > 36) {
+                ret = ESValue(std::numeric_limits<double>::quiet_NaN());
+                instance->currentExecutionContext()->doReturn(ret);
+            }
+            else {
+                ESValue &input = instance->currentExecutionContext()->arguments()[0];
+                if (radix == 10 && input.isNumber()) {
+                    ret = ESValue(input.toInt32());
+                    instance->currentExecutionContext()->doReturn(ret);
+                }
+                if (radix == 16) {
+                    //TODO : stripPrefix = true
+                }
+                //TODO
+            }
+        }
+        instance->currentExecutionContext()->doReturn(ret);
+        return ESValue();
+    }), false, false);
+    set(L"parseInt", ESFunctionObject::create(NULL, node));
 }
 
 
