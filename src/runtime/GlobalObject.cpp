@@ -1,6 +1,7 @@
 #include "Escargot.h"
 #include "GlobalObject.h"
 #include "ast/AST.h"
+#include "parser/ESScriptParser.h"
 #include "vm/ESVMInstance.h"
 #include "runtime/ExecutionContext.h"
 #include "runtime/Environment.h"
@@ -42,6 +43,7 @@ GlobalObject::GlobalObject()
 
     node = new FunctionDeclarationNode(InternalAtomicString(L"gc"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         GC_gcollect();
+        escargot::ESScriptParser::gc();
         return ESValue();
     }), false, false);
     auto gcFunction = ESFunctionObject::create(NULL, node);

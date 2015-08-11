@@ -20,6 +20,7 @@ public:
 
     static void enter();
     static void exit();
+    static void gc();
 
 private:
     static std::string parseExternal(std::string& sourceString);

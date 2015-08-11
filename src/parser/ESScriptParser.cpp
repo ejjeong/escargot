@@ -104,6 +104,11 @@ void ESScriptParser::exit()
     JS_ShutDown();
 }
 
+void ESScriptParser::gc()
+{
+    JS_GC(s_rt);
+}
+
 std::string ESScriptParser::parseExternal(std::string& sourceString)
 {
     JS::RootedValue rval(s_cx);
