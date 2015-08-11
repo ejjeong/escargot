@@ -973,6 +973,17 @@ public:
         return ESObject::find(key.toInternalString());
     }
 
+    template <typename Functor>
+    void enumeration(Functor t)
+    {
+        if (m_fastmode) {
+            for (int i = 0; i < m_length; i++) {
+                //FIXME: check if index i exists or not
+                t(ESValue(i), &m_vector[i]);
+            }
+        }
+    }
+
     void push(const ESValue& val)
     {
         set(m_length, val);
