@@ -658,6 +658,10 @@ inline ESValue::ESValue()
     u.asInt64 = ValueUndefined;
 }
 
+inline ESValue::ESValue(ESForceUninitializedTag)
+{
+}
+
 inline ESValue::ESValue(ESNullTag)
 {
     u.asInt64 = ValueNull;

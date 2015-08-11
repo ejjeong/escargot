@@ -121,7 +121,7 @@ public:
     }
 
     ALWAYS_INLINE static ESValue execute(ESVMInstance* instance, ESValue lval, ESValue rval, BinaryExpressionOperator oper) {
-        ESValue ret;
+        ESValue ret(ESValue::ESForceUninitialized);
         switch(oper) {
             case Plus:
                 // http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.1

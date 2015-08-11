@@ -70,8 +70,10 @@ public:
     enum ESTrueTag { ESTrue };
     enum ESFalseTag { ESFalse };
     enum EncodeAsDoubleTag { EncodeAsDouble };
+    enum ESForceUninitializedTag { ESForceUninitialized };
 
     ESValue();
+    ESValue(ESForceUninitializedTag);
     ESValue(ESNullTag);
     ESValue(ESUndefinedTag);
     ESValue(ESEmptyValueTag);

@@ -50,7 +50,7 @@ public:
             ESObject* obj = value.asESPointer()->asESObject();
             ESSlot* slot = NULL;
             InternalString computedPropertyName;
-            ESValue computedPropertyValue;
+            ESValue computedPropertyValue(ESValue::ESForceUninitialized);
             ExecutionContext* ec = instance->currentExecutionContext();
 
             if(!m_computed && m_property->type() == NodeType::Identifier) {

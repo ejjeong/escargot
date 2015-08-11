@@ -60,7 +60,7 @@ public:
 
     ESValue execute(ESVMInstance* instance)
     {
-        ESValue rvalue;
+        ESValue rvalue(ESValue::ESForceUninitialized);
         switch(m_operator) {
         case SimpleAssignment:
         {

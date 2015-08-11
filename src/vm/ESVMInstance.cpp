@@ -11,19 +11,16 @@ __thread ESVMInstance* currentInstance;
 
 ESVMInstance::ESVMInstance()
 {
+    GC_set_on_collection_event([](GC_EventType type){
+        if(type == GC_EVENT_RECLAIM_END && ESVMInstance::currentInstance())
+            ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
+    });
+
     m_identifierCacheInvalidationCheckCount = 0;
 
     std::setlocale(LC_ALL, "en_US.utf8");
     emptyStringData.initHash();
     m_strings.initStaticStrings(this);
-
-    enter();
-    m_globalObject = new GlobalObject();
-    LexicalEnvironment* a = new LexicalEnvironment(new GlobalEnvironmentRecord(m_globalObject), NULL);
-
-    m_globalExecutionContext = new ExecutionContext(a, true, false, NULL);
-    m_currentExecutionContext = m_globalExecutionContext;
-    exit();
 
     m_object__proto__AccessorData.m_getter = [](ESObject* obj) -> ESValue {
         return obj->__proto__();
@@ -57,6 +54,13 @@ ESVMInstance::ESVMInstance()
         return ESValue(self->asESStringObject()->getStringData()->length());
     };
 
+    enter();
+    m_globalObject = new GlobalObject();
+    LexicalEnvironment* a = new LexicalEnvironment(new GlobalEnvironmentRecord(m_globalObject), NULL);
+
+    m_globalExecutionContext = new ExecutionContext(a, true, false, NULL);
+    m_currentExecutionContext = m_globalExecutionContext;
+    exit();
 
 }
 

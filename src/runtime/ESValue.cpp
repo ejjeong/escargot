@@ -203,12 +203,12 @@ InternalString ESValue::toInternalString() const
             ret.append(o->asESObject()->constructor().asESPointer()->asESObject()->get(L"name", true).toInternalString().data());
             ret.append(L" {");
             bool isFirst = true;
-            o->asESObject()->enumeration([&ret, &isFirst](const InternalString& key, ESSlot* slot) {
+            o->asESObject()->enumeration([&ret, &isFirst, o](const InternalString& key, ESSlot* slot) {
                 if(!isFirst)
                     ret.append(L", ");
                     ret.append(key);
                     ret.append(L": ");
-                    ret.append(slot->value().toInternalString());
+                    ret.append(slot->value(o->asESObject()).toInternalString());
                     isFirst = false;
                 });
             if(o->isESStringObject()) {
@@ -248,16 +248,7 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, Functio
 {
     m_outerEnvironment = outerEnvironment;
     m_functionAST = functionAST;
-    m_protoType = ESValue();
-    defineAccessorProperty(strings->prototype, [](ESObject* self) -> ESValue {
-        return self->asESFunctionObject()->protoType();
-    },[](::escargot::ESObject* self, ESValue value){
-        if(value.isESPointer() && value.asESPointer()->isESObject())
-            self->asESFunctionObject()->setProtoType(value.asESPointer()->asESObject());
-    }, true, false, false);
-
-    //FIXME bug
-    //defineAccessorProperty(strings->prototype, ESVMInstance::currentInstance()->functionPrototypeAccessorData(), true, false, false);
+    defineAccessorProperty(strings->prototype, ESVMInstance::currentInstance()->functionPrototypeAccessorData(), true, false, false);
 }
 
 ALWAYS_INLINE void functionCallerInnerProcess(ESFunctionObject* fn, ESValue receiver, ESValue arguments[], size_t argumentCount, bool needsArgumentsObject, ESVMInstance* ESVMInstance)
