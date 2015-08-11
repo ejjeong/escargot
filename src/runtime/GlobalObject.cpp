@@ -714,20 +714,29 @@ void GlobalObject::installString()
         int argCount = instance->currentExecutionContext()->argumentCount();
         const wchar_t* regexp = instance->currentExecutionContext()->arguments()[0].toInternalString().data();
         int regexp_len = instance->currentExecutionContext()->arguments()[0].toInternalString().length();
-        char regexp_buffer[regexp_len + 1];
-        regexp_buffer[regexp_len] = 0;
-        wcstombs(regexp_buffer, regexp, regexp_len);
+        char regexp_buffer[regexp_len + 3];
         std::string option = "";
-        regexp_buffer[0] = '(';
-        for (int i = regexp_len; i >= 0; i--) {
-            if (regexp_buffer[i] == '/') {
-                regexp_buffer[i] = ')';
-                for (int j = i + 1 ; j < regexp_len; j++) {
-                    option += regexp_buffer[j];
-                    regexp_buffer[j] = 0;
-                  }
-                break;
+        if (regexp[0] == L'/') {
+            regexp_buffer[regexp_len-2] = 0;
+            regexp_buffer[regexp_len-1] = 0;
+            regexp_buffer[regexp_len] = 0;
+            wcstombs(regexp_buffer, regexp, regexp_len);
+            regexp_buffer[0] = '(';
+            for (int i = regexp_len; i >= 0; i--) {
+                if (regexp_buffer[i] == '/') {
+                    regexp_buffer[i] = ')';
+                    for (int j = i + 1 ; j < regexp_len; j++) {
+                        option += regexp_buffer[j];
+                        regexp_buffer[j] = 0;
+                      }
+                    break;
+                 }
              }
+        } else {
+            regexp_buffer[0] = '(';
+            wcstombs(regexp_buffer+1, regexp, regexp_len);
+            regexp_buffer[regexp_len+1] = ')';
+            regexp_buffer[regexp_len+2] = 0;
          }
 
         const wchar_t* replace = instance->currentExecutionContext()->arguments()[1].toInternalString().data();
