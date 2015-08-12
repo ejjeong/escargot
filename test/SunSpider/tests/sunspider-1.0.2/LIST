@@ -20,4 +20,5 @@ math-spectral-norm
 regexp-dna
 string-base64
 string-fasta
+string-tagcloud
 string-validate-input
