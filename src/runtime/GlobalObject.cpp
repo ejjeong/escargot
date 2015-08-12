@@ -23,6 +23,8 @@ GlobalObject::GlobalObject()
     installNumber();
     installRegExp();
 
+    m_functionPrototype->set__proto__(m_objectPrototype);
+
     // Value Properties of the Global Object
     definePropertyOrThrow(L"Infinity", false, false, false);
     definePropertyOrThrow(L"NaN", false, false, false);
@@ -183,6 +185,7 @@ void GlobalObject::installFunction()
     ::escargot::ESFunctionObject* emptyFunction = ESFunctionObject::create(NULL,new FunctionDeclarationNode(strings->Empty, InternalAtomicStringVector(), new EmptyStatementNode(), false, false));
 
     m_functionPrototype = emptyFunction;
+    ESFunctionObject::setGlobalFunctionPrototype(m_functionPrototype);
     m_functionPrototype->setConstructor(m_function);
     m_functionPrototype->set(strings->toString, ESFunctionObject::create(NULL, new FunctionDeclarationNode(InternalString(strings->toString), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         //FIXME
@@ -195,6 +198,23 @@ void GlobalObject::installFunction()
     },nullptr, true, false, false);
     m_function->set__proto__(emptyFunction);
     m_function->setProtoType(emptyFunction);
+
+    //$19.2.3.1 Function.prototype.apply(thisArg, argArray)
+    FunctionDeclarationNode* node = new FunctionDeclarationNode(InternalString(L"apply"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESFunctionObject();
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        ESValue& thisArg = instance->currentExecutionContext()->arguments()[0];
+        escargot::ESArrayObject* argArray = instance->currentExecutionContext()->arguments()[1].asESPointer()->asESArrayObject();
+        int arrlen = argArray->length().toInt32();
+        ESValue* arguments = (ESValue*)alloca(sizeof(ESValue) * arrlen);
+        for (int i = 0; i < arrlen; i++) {
+            arguments[i] = argArray->get(i);
+        }
+        ESValue ret = ESFunctionObject::call(thisVal, thisArg, arguments, arrlen, instance, false);
+        instance->currentExecutionContext()->doReturn(ret);
+        return ESValue();
+    }), false, false);
+    m_functionPrototype->set(L"apply", ESFunctionObject::create(NULL, node));
 
     set(strings->Function, m_function);
 }

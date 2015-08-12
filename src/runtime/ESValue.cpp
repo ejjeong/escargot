@@ -258,6 +258,7 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, Functio
     m_functionAST = functionAST;
     defineAccessorProperty(strings->prototype, ESVMInstance::currentInstance()->functionPrototypeAccessorData(), true, false, false);
 }
+ESFunctionObject* ESFunctionObject::globalFunctionPrototype;
 
 ALWAYS_INLINE void functionCallerInnerProcess(ESFunctionObject* fn, ESValue receiver, ESValue arguments[], size_t argumentCount, bool needsArgumentsObject, ESVMInstance* ESVMInstance)
 {

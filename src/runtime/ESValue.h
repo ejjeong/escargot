@@ -1109,9 +1109,14 @@ class ESFunctionObject : public ESObject {
 protected:
     ESFunctionObject(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST);
 public:
-    static ESFunctionObject* create(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST)
+    static ESFunctionObject* create(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST, ESObject* proto = NULL)
     {
-        return new ESFunctionObject(outerEnvironment, functionAST);
+        ESFunctionObject* ret = new ESFunctionObject(outerEnvironment, functionAST);
+        if (proto != NULL)
+            ret->set__proto__(proto);
+        else
+            ret->set__proto__(ESFunctionObject::globalFunctionPrototype);
+        return ret;
     }
 
     ALWAYS_INLINE ESValue protoType()
@@ -1128,10 +1133,15 @@ public:
     LexicalEnvironment* outerEnvironment() { return m_outerEnvironment; }
 
     static ESValue call(ESValue callee, ESValue receiver, ESValue arguments[], size_t argumentCount, ESVMInstance* ESVMInstance, bool isNewExpression = false);
+
+    static void setGlobalFunctionPrototype(ESFunctionObject* proto) {
+        ESFunctionObject::globalFunctionPrototype = proto;
+    }
 protected:
     LexicalEnvironment* m_outerEnvironment;
     FunctionNode* m_functionAST;
     ESValue m_protoType;
+    static ESFunctionObject* globalFunctionPrototype;
     //ESObject functionObject;
     //HomeObject
     ////ESObject newTarget
