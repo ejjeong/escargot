@@ -27,7 +27,7 @@ public:
         prototype->setConstructor(function);
         prototype->set__proto__(instance->globalObject()->object());
         function->setProtoType(prototype);
-        function->set(strings->name, ESString::create(m_id.data()));
+        function->set(strings->name, ESString::create(InternalString(m_id.data())));
         /////////////////////////////////////////////
         instance->currentExecutionContext()->environment()->record()->createMutableBindingForAST(m_id, nonAtomicId(), false);
         instance->currentExecutionContext()->environment()->record()->setMutableBinding(m_id, nonAtomicId(), function, false);

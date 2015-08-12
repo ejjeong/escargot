@@ -57,6 +57,36 @@ protected:
 
 extern InternalStringData emptyStringData;
 
+ALWAYS_INLINE const char * utf16ToUtf8(const wchar_t *t)
+{
+    unsigned strLength = 0;
+    const wchar_t* pt = t;
+    char buffer [MB_CUR_MAX];
+    while(*pt) {
+        int length = std::wctomb(buffer,*pt);
+        if (length<1)
+            break;
+        strLength += length;
+        pt++;
+    }
+
+    char* result = (char *)GC_malloc_atomic(strLength + 1);
+    pt = t;
+    unsigned currentPosition = 0;
+
+    while(*pt) {
+        int length = std::wctomb(buffer,*pt);
+        if (length<1)
+            break;
+        memcpy(&result[currentPosition],buffer,length);
+        currentPosition += length;
+        pt++;
+    }
+    result[strLength] = 0;
+
+    return result;
+}
+
 class InternalString {
 public:
     ALWAYS_INLINE InternalString()
@@ -132,32 +162,7 @@ public:
 
     ALWAYS_INLINE const char* utf8Data() const
     {
-        unsigned strLength = 0;
-        const wchar_t* pt = data();
-        char buffer [MB_CUR_MAX];
-        while(*pt) {
-            int length = std::wctomb(buffer,*pt);
-            if (length<1)
-                break;
-            strLength += length;
-            pt++;
-        }
-
-        char* result = (char *)GC_malloc_atomic(strLength + 1);
-        pt = data();
-        unsigned currentPosition = 0;
-
-        while(*pt) {
-            int length = std::wctomb(buffer,*pt);
-            if (length<1)
-                break;
-            memcpy(&result[currentPosition],buffer,length);
-            currentPosition += length;
-            pt++;
-        }
-        result[strLength] = 0;
-
-        return result;
+        return utf16ToUtf8(data());
     }
 
 

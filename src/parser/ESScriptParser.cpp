@@ -297,7 +297,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             } else if(JSVAL_IS_STRING(v)) {
                 JSString* ss = JSVAL_TO_STRING(v);
                 InternalString is(JS_EncodeString(s_cx, ss));
-                parsedNode = new LiteralNode(ESValue(ESString::create(is)));
+                parsedNode = new LiteralNode(ESValue(ESString::create(is, true)));
             } else if(JSVAL_IS_BOOLEAN(v)) {
                 JSBool b = JSVAL_TO_BOOLEAN(v);
                 if(b)

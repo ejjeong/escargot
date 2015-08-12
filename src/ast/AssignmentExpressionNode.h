@@ -71,8 +71,20 @@ public:
         }
         case CompoundAssignment:
         {
-            rvalue = BinaryExpressionNode::execute(instance, m_left->execute(instance), m_right->execute(instance), m_compoundOperator);
-            writeValue(instance, m_left, rvalue);
+            if(m_compoundOperator == BinaryExpressionNode::Plus && m_left->type() == NodeType::Identifier) {
+                ESValue lresult = m_left->execute(instance);
+                ESValue rresult = m_right->execute(instance);
+                if(lresult.isESString() && !lresult.asESString()->isStaticString()) {
+                    const_cast<InternalStringStd &>(lresult.asESString()->string()).append(rresult.toString()->string());
+                    rvalue = lresult;
+                } else {
+                    rvalue = BinaryExpressionNode::execute(instance, m_left->execute(instance), m_right->execute(instance), m_compoundOperator);
+                    writeValue(instance, m_left, rvalue);
+                }
+            } else {
+                rvalue = BinaryExpressionNode::execute(instance, m_left->execute(instance), m_right->execute(instance), m_compoundOperator);
+                writeValue(instance, m_left, rvalue);
+            }
             break;
         }
         default:
@@ -108,7 +120,7 @@ public:
 
             ESObject* obj = ec->lastESObjectMetInMemberExpressionNode();
             if(UNLIKELY(!obj)) {
-                throw ESValue(ESString::create(L"could not assign to left hand node lastESObjectMetInMemberExpressionNode==NULL"));
+                throw ESValue(ESString::create(InternalString(L"could not assign to left hand node lastESObjectMetInMemberExpressionNode==NULL")));
             }
 
             if(ec->isLastUsedPropertyValueInMemberExpressionNodeSetted()) {

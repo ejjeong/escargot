@@ -374,31 +374,60 @@ protected:
 
 class ESString : public ESPointer {
 protected:
-    ESString(const InternalString& str)
+    ESString(const InternalStringStd& str, bool isStaticString)
+        : ESPointer(Type::ESString)
+    {
+        m_string.reserve(str.length() * 2);
+        m_string.append(str);
+        m_isStaticString = isStaticString;
+    }
+
+    ESString(const InternalStringStd&& str, bool isStaticString)
         : ESPointer(Type::ESString)
     {
         m_string = str;
-    }
-public:
-    static ESString* create(const InternalString& src)
-    {
-        return new ESString(src);
+        m_isStaticString = isStaticString;
     }
 
-    const InternalString& string()
+public:
+    static ESString* create(const InternalStringStd&& src, bool isStaticString = false)
+    {
+        return new ESString(std::move(src), isStaticString);
+    }
+    static ESString* create(const InternalStringStd& src, bool isStaticString = false)
+    {
+        return new ESString(src, isStaticString);
+    }
+
+    static ESString* create(const InternalString& src, bool isStaticString = false)
+    {
+        return new ESString(*src.string(), isStaticString);
+    }
+
+    const InternalStringStd& string()
     {
         return m_string;
     }
 
-    int length()
+    InternalString toInternalString()
+    {
+        return InternalString(m_string.data());
+    }
+
+    int length() const
     {
         return m_string.length();
+    }
+
+    bool isStaticString() const
+    {
+        return m_isStaticString;
     }
 
     ESString* substring(int from, int to) const
     {
         ASSERT(0 <= from && from <= to && to <= (int)m_string.length());
-        InternalString ret(m_string.string()->substr(from, to-from).c_str());
+        InternalStringStd ret(std::move(m_string.substr(from, to-from)));
         return ESString::create(ret);
     }
 
@@ -406,7 +435,8 @@ public:
 
 
 protected:
-    InternalString m_string;
+    InternalStringStd m_string;
+    bool m_isStaticString;
 };
 
 
@@ -1189,16 +1219,16 @@ protected:
 
 class ESStringObject : public ESObject {
 protected:
-    ESStringObject(const InternalString& str);
+    ESStringObject(const InternalStringStd& str);
 public:
-    static ESStringObject* create(const InternalString& str)
+    static ESStringObject* create(const InternalStringStd& str)
     {
         return new ESStringObject(str);
     }
 
     static ESStringObject* create()
     {
-        return new ESStringObject("");
+        return new ESStringObject(L"");
     }
 
     ALWAYS_INLINE ::escargot::ESString* getStringData()

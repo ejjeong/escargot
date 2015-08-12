@@ -128,23 +128,22 @@ public:
                 lval = lval.toPrimitive();
                 rval = rval.toPrimitive();
                 if (lval.isESString() || rval.isESString()) {
-                    InternalString lstr;
-                    InternalString rstr;
+                    ESString* lstr;
+                    ESString* rstr;
 
                     //TODO use toESString
                     //lstr = lval.toESString().string();
-                    lstr = lval.toInternalString();
+                    lstr = lval.toString();
                     //TODO use toESString
                     //rstr = rval.toESString().string();
-                    rstr = rval.toInternalString();
+                    rstr = rval.toString();
 
-                    InternalString result;
-                    result.allocString(lstr.length() + rstr.length());
-                    InternalStringData* data = const_cast<InternalStringData*>(result.string());
-                    data->append(*lstr.string());
-                    data->append(*rstr.string());
+                    InternalStringStd result;
+                    result.reserve(lstr->length() + rstr->length());
+                    result.append(lstr->string());
+                    result.append(rstr->string());
 
-                    ret = ESString::create(result);
+                    ret = ESString::create(std::move(result));
                 } else {
                     if(lval.isInt32() && rval.isInt32()) {
                         int a = lval.asInt32(), b = rval.asInt32();
@@ -310,20 +309,16 @@ public:
                 // string, NaN, zero, infinity, ...
                 bool b;
                 if (lval.isESString() || rval.isESString()) {
-                    InternalString lstr;
-                    InternalString rstr;
+                    ESString* lstr;
+                    ESString* rstr;
 
-                    //TODO use toESString
-                    //lstr = lval.toESString().string();
-                    lstr = lval.toInternalString();
-                    //TODO use toESString
-                    //rstr = rval.toESString().string();
-                    rstr = rval.toInternalString();
+                    lstr = lval.toString();
+                    rstr = rval.toString();
 
-                    if (oper == LessThan)                b = lstr < rstr;
-                    else if (oper == LessThanOrEqual)    b = lstr <= rstr;
-                    else if (oper == GreaterThan)        b = lstr > rstr;
-                    else if (oper == GreaterThanOrEqual) b = lstr >= rstr;
+                    if (oper == LessThan)                b = lstr->string() < rstr->string();
+                    else if (oper == LessThanOrEqual)    b = lstr->string() <= rstr->string();
+                    else if (oper == GreaterThan)        b = lstr->string() > rstr->string();
+                    else if (oper == GreaterThanOrEqual) b = lstr->string() >= rstr->string();
                     else RELEASE_ASSERT_NOT_REACHED();
 
                 } else {
