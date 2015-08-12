@@ -692,44 +692,15 @@ void GlobalObject::installString()
     //$21.1.3.11 String.prototype.match(regexp)
     FunctionDeclarationNode* stringMatch = new FunctionDeclarationNode(InternalString(L"match"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+        ASSERT(thisObject->isESStringObject());
         escargot::ESArrayObject* ret = ESArrayObject::create(0, instance->globalObject()->arrayPrototype());
 
         int argCount = instance->currentExecutionContext()->argumentCount();
         if(argCount > 0) {
             ESPointer* esptr = instance->currentExecutionContext()->arguments()[0].asESPointer();
-            const char* source;
-            ESRegExpObject::Option option = ESRegExpObject::Option::None;
-            if (esptr->isESRegExpObject()) {
-                source = esptr->asESRegExpObject()->utf8Source();
-                option = esptr->asESRegExpObject()->option();
-            } else if (esptr->isESString()) {
-                source = esptr->asESString()->string().utf8Data();
-            } else {
-                //TODO
-                RELEASE_ASSERT_NOT_REACHED();
-            }
-
-            const char* targetString = thisObject->asESStringObject()->getStringData()->string().utf8Data();
-            int index = 0;
-
-            ESRegExpObject::prepareForRE2(source, option, [&](const char* RE2Source, const re2::RE2::Options& ops, const bool& isGlobal){
-                re2::RE2 re(RE2Source, ops);
-                re2::StringPiece input(targetString);
-                std::string matched;
-                while (re2::RE2::FindAndConsume(&input, re, &matched)) {
-                    InternalString int_str(matched.data());
-                    ret->set(index, ESString::create(int_str));
-                    index++;
-                    if (!isGlobal)
-                        break;
-                }
-            });
-
-            GC_free((char *)targetString);
-
-            if (index == 0)
+            ret = thisObject->asESStringObject()->getStringData()->match(esptr);
+            if (ret->length().asInt32() == 0)
                 instance->currentExecutionContext()->doReturn(ESValue(ESValue::ESNull));
-
         }
         instance->currentExecutionContext()->doReturn(ret);
         return ESValue();
@@ -739,6 +710,7 @@ void GlobalObject::installString()
     //$21.1.3.14 String.prototype.replace(searchValue, replaceValue)
     FunctionDeclarationNode* stringReplace = new FunctionDeclarationNode(InternalString(L"replace"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+        ASSERT(thisObject->isESStringObject());
         escargot::ESArrayObject* ret = ESArrayObject::create(0, instance->globalObject()->arrayPrototype());
 
         int argCount = instance->currentExecutionContext()->argumentCount();
@@ -759,21 +731,44 @@ void GlobalObject::installString()
                 RELEASE_ASSERT_NOT_REACHED();
             }
 
-            InternalString replaceStringInternal = instance->currentExecutionContext()->arguments()[1].toInternalString();
-            const char* replaceString = replaceStringInternal.utf8Data();
-
-            ESRegExpObject::prepareForRE2(source, option, [&](const char* RE2Source, const re2::RE2::Options& ops, const bool& isGlobal){
-                re2::RE2 re(RE2Source, ops);
-
-                if (isGlobal) {
-                    re2::RE2::GlobalReplace(&new_this, re, replaceString);
-                } else {
-                    re2::RE2::Replace(&new_this, re, replaceString);
+            ESValue replaceValue = instance->currentExecutionContext()->arguments()[1];
+            if (replaceValue.isESPointer() && replaceValue.asESPointer()->isESFunctionObject()) {
+                escargot::ESString* origStr = thisObject->asESStringObject()->getStringData();
+                std::vector<int> matchedOffsets;
+                escargot::ESArrayObject* ret = origStr->match(esptr, &matchedOffsets);
+                int32_t matchCount = ret->length().asInt32();
+                ESValue callee = replaceValue.asESPointer()->asESFunctionObject();
+                new_this = origStr->string().toStdString();
+                int replacePos = 0;
+                int lastOffset = 0;
+                for(int32_t i = 0; i < matchCount ; i ++) {
+                    ESValue* arguments = (ESValue*)alloca(sizeof(ESValue) * (3));
+                    arguments[0] = ret->get(i);
+                    arguments[1] = ESValue(matchedOffsets[i]);
+                    // TODO captures
+                    arguments[2] = ESValue(origStr);
+                    escargot::ESString* res = ESFunctionObject::call(callee, instance->globalObject(), arguments, 3, instance).toString();
+                    int origStringPieceLength = ret->get(i).asESPointer()->asESString()->length();
+                    replacePos += (matchedOffsets[i] - lastOffset);
+                    lastOffset = matchedOffsets[i];
+                    new_this.replace(replacePos, origStringPieceLength, res->string().toStdString());
+                    replacePos += (res->string().length() - origStringPieceLength);
                 }
-            });
+            } else {
+                InternalString replaceStringInternal = replaceValue.toInternalString();
+                const char* replaceString = replaceStringInternal.utf8Data();
 
-            GC_free((char *)replaceString);
+                ESRegExpObject::prepareForRE2(source, option, [&](const char* RE2Source, const re2::RE2::Options& ops, const bool& isGlobal){
+                    re2::RE2 re(RE2Source, ops);
 
+                    if (isGlobal) {
+                        re2::RE2::GlobalReplace(&new_this, re, replaceString);
+                    } else {
+                        re2::RE2::Replace(&new_this, re, replaceString);
+                    }
+                });
+                GC_free((char *)replaceString);
+            }
         }
         InternalString int_str(new_this.data());
         GC_free((char *)targetString);

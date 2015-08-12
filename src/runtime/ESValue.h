@@ -402,6 +402,9 @@ public:
         return ESString::create(ret);
     }
 
+    escargot::ESArrayObject* match(ESPointer* esptr, std::vector<int>* offsets = nullptr) const;
+
+
 protected:
     InternalString m_string;
 };

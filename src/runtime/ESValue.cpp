@@ -235,6 +235,47 @@ InternalString ESValue::toInternalString() const
     return ret;
 }
 
+ESArrayObject* ESString::match(ESPointer* esptr, std::vector<int>* offsets) const
+{
+    escargot::ESArrayObject* ret = ESArrayObject::create(0, ESVMInstance::currentInstance()->globalObject()->arrayPrototype());
+
+    const char* source;
+    ESRegExpObject::Option option = ESRegExpObject::Option::None;
+    if (esptr->isESRegExpObject()) {
+        source = esptr->asESRegExpObject()->utf8Source();
+        option = esptr->asESRegExpObject()->option();
+    } else if (esptr->isESString()) {
+        source = esptr->asESString()->string().utf8Data();
+    } else {
+        //TODO
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+
+    const char* targetString = m_string.utf8Data();
+    int index = 0;
+
+    ESRegExpObject::prepareForRE2(source, option, [&](const char* RE2Source, const re2::RE2::Options& ops, const bool& isGlobal){
+        re2::RE2 re(RE2Source, ops);
+        re2::StringPiece input(targetString);
+        re2::StringPiece matched;
+        const char* inputDataStart = input.data();
+        while (re2::RE2::FindAndConsume(&input, re, &matched)) {
+            if (offsets)
+                offsets->push_back(matched.data() - inputDataStart);
+            std::string std_matched(matched.data(), 0, matched.length());
+            InternalString int_str(std_matched.data());
+            ret->set(index, ESString::create(int_str));
+            index++;
+            if (!isGlobal)
+                break;
+        }
+    });
+
+    GC_free((char *)targetString);
+
+    return ret;
+}
+
 ESObject::ESObject(ESPointer::Type type)
     : ESPointer(type)
     , m_map(16)
