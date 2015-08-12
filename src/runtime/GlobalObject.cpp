@@ -467,8 +467,16 @@ void GlobalObject::installArray()
             ESValue arg0 = instance->currentExecutionContext()->arguments()[0];
             thisVal->sort([&arg0, &instance, &thisVal](const ::escargot::ESSlot& a, const ::escargot::ESSlot& b) -> bool {
                 ESValue arg[2] = { ESValue(a.readDataProperty()) , ESValue(b.readDataProperty()) };
-                return !ESFunctionObject::call(arg0, thisVal,
-                        arg, 2, instance).toBoolean();
+                ESValue ret = ESFunctionObject::call(arg0, thisVal,
+                        arg, 2, instance);
+
+                double v = ret.toNumber();
+                if(v == 0)
+                    return false;
+                else if(v < 0)
+                    return true;
+                else
+                    return false;
             });
         }
 
