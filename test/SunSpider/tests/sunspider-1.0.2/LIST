@@ -20,3 +20,4 @@ math-spectral-norm
 regexp-dna
 string-base64
 string-fasta
+string-validate-input

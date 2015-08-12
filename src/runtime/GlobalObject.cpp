@@ -1390,27 +1390,30 @@ void GlobalObject::installRegExp()
 {
     // create regexp object: $21.2.3 The RegExp Constructor
     FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings->RegExp, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
-        /*
         escargot::ESRegExpObject* thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESRegExpObject();
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
-        std::wstring wstr(L"/");
         if (arg_size > 0) {
-            escargot::ESString* regexp = instance->currentExecutionContext()->arguments()[0].asESString();
-            wstr += std::wstring(regexp->string().string()->data());
+            thisVal->setSource(instance->currentExecutionContext()->arguments()[0].toInternalString());
         }
 
-        wstr += std::wstring(L"/");
-
         if (arg_size > 1) {
-            escargot::ESString* options = instance->currentExecutionContext()->arguments()[1].asESString();
-            wstr += std::wstring(options->string().string()->data());
-         }
-
-        InternalString int_str(std::move(wstr));
-        escargot::ESString* data = escargot::ESString::create(int_str);
-
-        thisVal->setRegExpData(data);
-*/
+            InternalString is = instance->currentExecutionContext()->arguments()[1].toInternalString();
+            const std::wstring& str = static_cast<const std::wstring&>(*is.string());
+            ESRegExpObject::Option option = ESRegExpObject::Option::None;
+            if(str.find('g') != std::wstring::npos) {
+                option = (ESRegExpObject::Option) (option | ESRegExpObject::Option::Global);
+            }
+            if(str.find('i') != std::wstring::npos) {
+                option = (ESRegExpObject::Option) (option | ESRegExpObject::Option::IgnoreCase);
+            }
+            if(str.find('m') != std::wstring::npos) {
+                option = (ESRegExpObject::Option) (option | ESRegExpObject::Option::MultiLine);
+            }
+            if(str.find('y') != std::wstring::npos) {
+                option = (ESRegExpObject::Option) (option | ESRegExpObject::Option::Sticky);
+            }
+            thisVal->setOption(option);
+        }
         return ESValue();
     }), false, false);
     m_regexp = ::escargot::ESFunctionObject::create(NULL, constructor);
@@ -1436,7 +1439,26 @@ void GlobalObject::installRegExp()
     FunctionDeclarationNode* testNode = new FunctionDeclarationNode(strings->test, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
         ::escargot::ESRegExpObject* regexp = thisObject->asESRegExpObject();
-        return ESValue();
+        int argCount = instance->currentExecutionContext()->argumentCount();
+        if(argCount > 0) {
+            InternalString sourceStr = instance->currentExecutionContext()->arguments()[0].toInternalString();
+            const char* source = sourceStr.utf8Data();
+            ESRegExpObject::Option option = regexp->option();
+
+            bool ret = false;
+            ESRegExpObject::prepareForRE2(regexp->utf8Source(), option, [&](const char* RE2Source, const re2::RE2::Options& ops, const bool& isGlobal){
+                re2::RE2 re(RE2Source, ops);
+                re2::StringPiece input(source);
+                std::string matched;
+                if (re2::RE2::FindAndConsume(&input, re, &matched)) {
+                    ret = true;
+                }
+            });
+
+            GC_free((char *)source);
+            instance->currentExecutionContext()->doReturn(ESValue(ret));
+        }
+        return ESValue(false);
     }), false, false);
     m_regexpPrototype->set(strings->test, ::escargot::ESFunctionObject::create(NULL, testNode));
 

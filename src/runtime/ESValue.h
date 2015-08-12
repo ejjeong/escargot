@@ -1247,11 +1247,16 @@ public:
         return ret;
     }
 
-    //ALWAYS_INLINE escargot::ESString* regExpData() { return m_primitiveValue; }
-    //ALWAYS_INLINE void setRegExpData(escargot::ESString* value) { m_primitiveValue = value; }
     ALWAYS_INLINE Option option() { return m_option; }
     ALWAYS_INLINE const InternalString& source() { return m_source; }
     ALWAYS_INLINE const char* utf8Source() { return m_sourceStringAsUtf8; }
+
+    ALWAYS_INLINE void setSource(const InternalString& src)
+    {
+        m_source = src;
+        m_sourceStringAsUtf8 = src.utf8Data();
+    }
+    ALWAYS_INLINE void setOption(const Option& option) { m_option = option; }
 
     template <typename Func>
     static void prepareForRE2(const char* source,const ESRegExpObject::Option& option, const Func& fn)
