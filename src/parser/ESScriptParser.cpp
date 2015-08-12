@@ -472,7 +472,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
         } else if(type == astTypeSwitchStatement) {
             StatementNodeVector vA;
             StatementNodeVector vB;
-            SwitchCaseNode* defaultNode;
+            SwitchCaseNode* defaultNode = NULL;
             JSObject* cases = getObjectFromMozJS(s_cx, obj, "cases");
             uint32_t siz = getArrayLengthFromMozJS(s_cx, cases);
 
