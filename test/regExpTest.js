@@ -132,3 +132,7 @@ print(replaced);
 replaced = str.replace(/^[a-zA-Z0-9\-\._]+@[a-zA-Z0-9\-_]+(\.?[a-zA-Z0-9\-_]*)\.[a-zA-Z]{2,3}$/, "abc");
 print("r27");
 print(replaced);
+
+var pattern = /^[a-zA-Z0-9\-\._]+@[a-zA-Z0-9\-_]+(\.?[a-zA-Z0-9\-_]*)\.[a-zA-Z]{2,3}$/;
+print(pattern.test("sh8281.kim@samsung.com"));
+print(pattern.test("sh8281.kim(at)samsung.com"));
