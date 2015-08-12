@@ -1107,15 +1107,11 @@ class LexicalEnvironment;
 class Node;
 class ESFunctionObject : public ESObject {
 protected:
-    ESFunctionObject(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST);
+    ESFunctionObject(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST, ESObject* proto);
 public:
     static ESFunctionObject* create(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST, ESObject* proto = NULL)
     {
-        ESFunctionObject* ret = new ESFunctionObject(outerEnvironment, functionAST);
-        if (proto != NULL)
-            ret->set__proto__(proto);
-        else
-            ret->set__proto__(ESFunctionObject::globalFunctionPrototype);
+        ESFunctionObject* ret = new ESFunctionObject(outerEnvironment, functionAST, proto);
         return ret;
     }
 
@@ -1133,15 +1129,10 @@ public:
     LexicalEnvironment* outerEnvironment() { return m_outerEnvironment; }
 
     static ESValue call(ESValue callee, ESValue receiver, ESValue arguments[], size_t argumentCount, ESVMInstance* ESVMInstance, bool isNewExpression = false);
-
-    static void setGlobalFunctionPrototype(ESFunctionObject* proto) {
-        ESFunctionObject::globalFunctionPrototype = proto;
-    }
 protected:
     LexicalEnvironment* m_outerEnvironment;
     FunctionNode* m_functionAST;
     ESValue m_protoType;
-    static ESFunctionObject* globalFunctionPrototype;
     //ESObject functionObject;
     //HomeObject
     ////ESObject newTarget

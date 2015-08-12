@@ -64,6 +64,9 @@ public:
     ESAccessorData* arrayLengthAccessorData() { return &m_arrayLengthAccessorData; }
     ESAccessorData* stringObjectLengthAccessorData() { return &m_stringObjectLengthAccessorData; }
 
+    ESFunctionObject* globalFunctionPrototype() { return m_globalFunctionPrototype; }
+    void setGlobalFunctionPrototype(ESFunctionObject* o) { m_globalFunctionPrototype = o; }
+
 protected:
     ExecutionContext* m_globalExecutionContext;
     ExecutionContext* m_currentExecutionContext;
@@ -80,6 +83,8 @@ protected:
     ESAccessorData m_functionPrototypeAccessorData;
     ESAccessorData m_arrayLengthAccessorData;
     ESAccessorData m_stringObjectLengthAccessorData;
+
+    ESFunctionObject* m_globalFunctionPrototype;
 };
 
 }

@@ -185,7 +185,7 @@ void GlobalObject::installFunction()
     ::escargot::ESFunctionObject* emptyFunction = ESFunctionObject::create(NULL,new FunctionDeclarationNode(strings->Empty, InternalAtomicStringVector(), new EmptyStatementNode(), false, false));
 
     m_functionPrototype = emptyFunction;
-    ESFunctionObject::setGlobalFunctionPrototype(m_functionPrototype);
+    ESVMInstance::currentInstance()->setGlobalFunctionPrototype(m_functionPrototype);
     m_functionPrototype->setConstructor(m_function);
     m_functionPrototype->set(strings->toString, ESFunctionObject::create(NULL, new FunctionDeclarationNode(InternalString(strings->toString), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         //FIXME

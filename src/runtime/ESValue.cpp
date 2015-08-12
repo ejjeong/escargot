@@ -251,14 +251,18 @@ ESRegExpObject::ESRegExpObject(escargot::ESString* value)
     m_primitiveValue = value;
 }
 
-ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST)
+ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST, ESObject* proto)
     : ESObject((Type)(Type::ESObject | Type::ESFunctionObject))
 {
     m_outerEnvironment = outerEnvironment;
     m_functionAST = functionAST;
     defineAccessorProperty(strings->prototype, ESVMInstance::currentInstance()->functionPrototypeAccessorData(), true, false, false);
+
+    if (proto != NULL)
+        set__proto__(proto);
+    else
+        set__proto__(ESVMInstance::currentInstance()->globalFunctionPrototype());
 }
-ESFunctionObject* ESFunctionObject::globalFunctionPrototype;
 
 ALWAYS_INLINE void functionCallerInnerProcess(ESFunctionObject* fn, ESValue receiver, ESValue arguments[], size_t argumentCount, bool needsArgumentsObject, ESVMInstance* ESVMInstance)
 {
