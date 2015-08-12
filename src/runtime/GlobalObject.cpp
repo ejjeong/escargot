@@ -905,6 +905,33 @@ void GlobalObject::installString()
     }), false, false);
     m_stringPrototype->set(L"substring", ESFunctionObject::create(NULL, stringSubstring));
 
+    //$21.1.3.22 String.prototype.toLowerCase()
+    FunctionDeclarationNode* stringToLowerCase = new FunctionDeclarationNode(InternalString(L"toLowerCase"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+        escargot::ESString* str = thisObject->asESStringObject()->getStringData();
+        int strlen = str->string().length();
+        wchar_t *newstr = new wchar_t[strlen+1];
+        wcscpy(newstr, str->string().data());
+        for (int i = 0 ; i<strlen; i++)
+            newstr[i] = (wchar_t) tolower(newstr[i]);
+        instance->currentExecutionContext()->doReturn(ESString::create(InternalString(newstr)));
+        return ESValue();
+    }), false, false);
+    m_stringPrototype->set(L"toLowerCase", ESFunctionObject::create(NULL, stringToLowerCase));
+    //$21.1.3.24 String.prototype.toUpperCase()
+    FunctionDeclarationNode* stringToUpperCase = new FunctionDeclarationNode(InternalString(L"toUpperCase"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+        escargot::ESString* str = thisObject->asESStringObject()->getStringData();
+        int strlen = str->string().length();
+        wchar_t *newstr = new wchar_t[strlen+1];
+        wcscpy(newstr, str->string().data());
+        for (int i = 0 ; i<strlen; i++)
+            newstr[i] = (wchar_t) toupper(newstr[i]);
+        instance->currentExecutionContext()->doReturn(ESString::create(InternalString(newstr)));
+        return ESValue();
+    }), false, false);
+    m_stringPrototype->set(L"toUpperCase", ESFunctionObject::create(NULL, stringToUpperCase));
+
     m_stringObjectProxy = ESStringObject::create();
     m_stringObjectProxy->setConstructor(m_string);
     m_stringObjectProxy->set__proto__(m_string->protoType());
