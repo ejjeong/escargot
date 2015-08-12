@@ -80,6 +80,8 @@ ESValue ESVMInstance::evaluate(const std::string& source)
         wprintf(L"ReferenceError: %ls\n", err.message().data());
     } catch(TypeError& err) {
         wprintf(L"TypeError: %ls\n", err.message().data());
+    } catch(SyntaxError& err) {
+        wprintf(L"SyntaxError: %ls\n", err.message().data());
     } catch(const ESValue& err) {
         wprintf(L"Uncaught %ls\n", err.toInternalString().data());
     }

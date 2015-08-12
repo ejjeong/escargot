@@ -210,23 +210,7 @@ InternalString ESValue::toInternalString() const
             ret.append(L": ");
             ret.append(o->asESObject()->get(L"message").toInternalString().data());
         } else if(o->isESObject()) {
-            ret.append(o->asESObject()->constructor().asESPointer()->asESObject()->get(L"name", true).toInternalString().data());
-            ret.append(L" {");
-            bool isFirst = true;
-            o->asESObject()->enumeration([&ret, &isFirst, o](const InternalString& key, ESSlot* slot) {
-                if(!isFirst)
-                    ret.append(L", ");
-                    ret.append(key);
-                    ret.append(L": ");
-                    ret.append(slot->value(o->asESObject()).toInternalString());
-                    isFirst = false;
-                });
-            if(o->isESStringObject()) {
-                ret.append(L", [[PrimitiveValue]]: \"");
-                ret.append(o->asESStringObject()->getStringData()->string());
-                ret.append(L"\"");
-            }
-            ret.append(L"}");
+            ret.append("[Object object]");
         } else {
             RELEASE_ASSERT_NOT_REACHED();
         }

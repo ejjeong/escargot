@@ -35,7 +35,56 @@ GlobalObject::GlobalObject()
     FunctionDeclarationNode* node = new FunctionDeclarationNode(InternalAtomicString(L"print"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         if(instance->currentExecutionContext()->argumentCount()) {
             ESValue& val = instance->currentExecutionContext()->arguments()[0];
-            InternalString str = val.toInternalString();
+            InternalString str;
+
+            auto toString = [&str](ESValue v) {
+                if(v.isInt32()) {
+                    str.append(v.toInternalString());
+                } else if(v.isNumber()) {
+                    str.append(v.toInternalString());
+                } else if(v.isUndefined()) {
+                    str.append(v.toInternalString());
+                } else if(v.isNull()) {
+                    str.append(v.toInternalString());
+                } else if(v.isBoolean()) {
+                    str.append(v.toInternalString());
+                } else {
+                    ESPointer* o = v.asESPointer();
+                    if(o->isESString()) {
+                        str.append(o->asESString()->string());
+                    } else if(o->isESFunctionObject()) {
+                        str.append(v.toInternalString());
+                    } else if(o->isESArrayObject()) {
+                        str.append("[");
+                        str.append(v.toInternalString());
+                        str.append("]");
+                    } else if(o->isESErrorObject()) {
+                        str.append(v.toInternalString());
+                    } else if(o->isESObject()) {
+                        str.append(o->asESObject()->constructor().asESPointer()->asESObject()->get(L"name", true).toInternalString().data());
+                        str.append(L" {");
+                        bool isFirst = true;
+                        o->asESObject()->enumeration([&str, &isFirst, o](const InternalString& key, ::escargot::ESSlot* slot) {
+                            if(!isFirst)
+                                str.append(L", ");
+                                str.append(key);
+                                str.append(L": ");
+                                str.append(slot->value(o->asESObject()).toInternalString());
+                                isFirst = false;
+                            });
+                        if(o->isESStringObject()) {
+                            str.append(L", [[PrimitiveValue]]: \"");
+                            str.append(o->asESStringObject()->getStringData()->string());
+                            str.append(L"\"");
+                        }
+                        str.append(L"}");
+                    } else {
+                        RELEASE_ASSERT_NOT_REACHED();
+                    }
+                }
+            };
+            toString(val);
+
             wprintf(L"%ls\n", str.data());
         }
         return ESValue();
@@ -55,18 +104,7 @@ GlobalObject::GlobalObject()
         if(instance->currentExecutionContext()->argumentCount()) {
             ESValue& val = instance->currentExecutionContext()->arguments()[0];
             InternalString str = val.toInternalString();
-            const wchar_t* pt = str.data();
-            std::string path;
-            char buffer [MB_CUR_MAX];
-            memset(buffer, 0, MB_CUR_MAX);
-            while(*pt) {
-                int length = std::wctomb(buffer,*pt);
-                if (length<1)
-                    break;
-                path.append(buffer);
-                pt++;
-            }
-            FILE *fp = fopen(path.c_str(),"r");
+            FILE *fp = fopen(str.utf8Data(),"r");
             if(fp) {
                 fseek(fp, 0L, SEEK_END);
                 size_t sz = ftell(fp);

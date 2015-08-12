@@ -827,6 +827,14 @@ public:
     }
 };
 
+class SyntaxError : public ESErrorObject {
+public:
+    SyntaxError(const InternalString& message = InternalString(&emptyStringData))
+        : ESErrorObject(message)
+    {
+    }
+};
+
 class ESDateObject : public ESObject {
 protected:
     ESDateObject(ESPointer::Type type = ESPointer::Type::ESDateObject)
