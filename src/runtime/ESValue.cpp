@@ -110,6 +110,14 @@ ESObject* ESValue::toObject() const
     if (isNumber()) {
         function = ESVMInstance::currentInstance()->globalObject()->number();
         receiver = ESNumberObject::create(ESValue(toNumber()));
+    } else if (isBoolean()) {
+        function = ESVMInstance::currentInstance()->globalObject()->boolean();
+        ESValue ret;
+        if (toBoolean())
+            ret = ESValue(ESValue::ESTrueTag::ESTrue);
+        else
+            ret = ESValue(ESValue::ESFalseTag::ESFalse);
+        receiver = ESBooleanObject::create(ret);
     } else if (isESString()) {
         function = ESVMInstance::currentInstance()->globalObject()->string();
         receiver = ESStringObject::create(asESPointer()->asESString()->string());

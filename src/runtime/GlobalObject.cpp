@@ -21,6 +21,7 @@ GlobalObject::GlobalObject()
     installDate();
     installMath();
     installNumber();
+    installBoolean();
     installRegExp();
 
     m_functionPrototype->set__proto__(m_objectPrototype);
@@ -1388,6 +1389,63 @@ void GlobalObject::installNumber()
 
     // add number to global object
     set(strings->Number, m_number);
+}
+
+void GlobalObject::installBoolean()
+{
+    // create number object: $19.3.1 The Boolean Constructor
+    FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings->Boolean, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        bool val = false;
+        if (arglen >= 1) {
+            val = instance->currentExecutionContext()->arguments()[0].toBoolean();
+        }
+        ESValue ret;
+        if (val)
+            ret = ESValue(ESValue::ESTrueTag::ESTrue);
+        else
+            ret = ESValue(ESValue::ESFalseTag::ESFalse);
+
+        if(instance->currentExecutionContext()->isNewExpression() && instance->currentExecutionContext()->resolveThisBinding()->isESBooleanObject()) {
+            ::escargot::ESBooleanObject* o = instance->currentExecutionContext()->resolveThisBinding()->asESBooleanObject();
+            o->setBooleanData(ret);
+            instance->currentExecutionContext()->doReturn(o);
+        } else // If NewTarget is undefined, return b
+            instance->currentExecutionContext()->doReturn(ret);
+        return ESValue();
+    }), false, false);
+    m_boolean = ::escargot::ESFunctionObject::create(NULL, constructor);
+
+    // create booleanPrototype object
+    m_booleanPrototype = ESBooleanObject::create(ESValue(ESValue::ESFalseTag::ESFalse));
+
+    // initialize boolean object
+    m_boolean->set(strings->name, ESString::create(strings->Boolean));
+    m_boolean->setConstructor(m_function);
+    m_boolean->set(strings->prototype, m_booleanPrototype);
+
+    // initialize booleanPrototype object
+    m_booleanPrototype->setConstructor(m_boolean);
+    m_booleanPrototype->set__proto__(m_objectPrototype);
+
+    // initialize booleanPrototype object: $19.3.3.2 Boolean.prototype.toString()
+    FunctionDeclarationNode* toStringNode = new FunctionDeclarationNode(strings->toString, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        escargot::ESBooleanObject* thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESBooleanObject();
+        instance->currentExecutionContext()->doReturn(ESString::create(thisVal->booleanData().toInternalString()));
+        return ESValue();
+    }), false, false);
+    m_booleanPrototype->set(strings->toString, ::escargot::ESFunctionObject::create(NULL, toStringNode));
+
+    // initialize booleanPrototype object: $19.3.3.3 Boolean.prototype.valueOf()
+    FunctionDeclarationNode* valueOfNode = new FunctionDeclarationNode(strings->valueOf, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        escargot::ESBooleanObject* thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESBooleanObject();
+        instance->currentExecutionContext()->doReturn(thisVal->booleanData());
+        return ESValue();
+    }), false, false);
+    m_booleanPrototype->set(strings->valueOf, ::escargot::ESFunctionObject::create(NULL, valueOfNode));
+
+    // add number to global object
+    set(strings->Boolean, m_boolean);
 }
 
 void GlobalObject::installRegExp()

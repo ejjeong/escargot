@@ -33,6 +33,8 @@ InternalString String;
 InternalString Number;
 InternalString Object;
 InternalString ReferenceError;
+InternalString Boolean;
+InternalString valueOf;
 InternalString Array;
 InternalString concat;
 InternalString indexOf;

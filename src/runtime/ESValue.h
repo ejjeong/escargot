@@ -8,6 +8,7 @@ namespace escargot {
 class ESUndefined;
 class ESNull;
 class ESBoolean;
+class ESBooleanObject;
 class ESNumberObject;
 class ESString;
 class ESObject;
@@ -214,6 +215,7 @@ public:
         ESDateObject = 1 << 7,
         ESNumberObject = 1 << 8,
         ESRegExpObject = 1 << 9,
+        ESBooleanObject = 1 << 10,
         TypeMask = 0xffff
     };
 
@@ -317,6 +319,19 @@ public:
         ASSERT(isESNumberObject());
 #endif
         return reinterpret_cast<::escargot::ESNumberObject *>(this);
+    }
+
+    ALWAYS_INLINE bool isESBooleanObject() const
+    {
+        return m_type & Type::ESBooleanObject;
+    }
+
+    ALWAYS_INLINE ::escargot::ESBooleanObject* asESBooleanObject()
+    {
+#ifndef NDEBUG
+        ASSERT(isESBooleanObject());
+#endif
+        return reinterpret_cast<::escargot::ESBooleanObject *>(this);
     }
 
     ALWAYS_INLINE bool isESRegExpObject() const
@@ -1188,6 +1203,27 @@ public:
     }
 
     ALWAYS_INLINE ESValue numberData() { return m_primitiveValue; }
+
+private:
+    ESValue m_primitiveValue;
+};
+
+class ESBooleanObject : public ESObject {
+protected:
+    ESBooleanObject(const ESValue& value)
+        : ESObject((Type)(Type::ESObject | Type::ESBooleanObject))
+    {
+        m_primitiveValue = value;
+    }
+
+public:
+    static ESBooleanObject* create(const ESValue& value)
+    {
+        return new ESBooleanObject(value);
+    }
+
+    void setBooleanData(const ESValue& value) { m_primitiveValue = value; }
+    ALWAYS_INLINE ESValue booleanData() { return m_primitiveValue; }
 
 private:
     ESValue m_primitiveValue;

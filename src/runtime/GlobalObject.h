@@ -106,6 +106,16 @@ public:
         return m_numberPrototype;
     }
 
+    ALWAYS_INLINE escargot::ESFunctionObject* boolean()
+    {
+        return m_boolean;
+    }
+
+    ALWAYS_INLINE escargot::ESObject* booleanPrototype()
+    {
+        return m_booleanPrototype;
+    }
+
 protected:
     void installObject();
     void installFunction();
@@ -115,6 +125,7 @@ protected:
     void installDate();
     void installMath();
     void installNumber();
+    void installBoolean();
     void installRegExp();
     escargot::ESFunctionObject* m_object;
     escargot::ESObject* m_objectPrototype;
@@ -133,6 +144,8 @@ protected:
     escargot::ESObject* m_mathPrototype;
     escargot::ESFunctionObject* m_number;
     escargot::ESNumberObject* m_numberPrototype;
+    escargot::ESFunctionObject* m_boolean;
+    escargot::ESBooleanObject* m_booleanPrototype;
     escargot::ESFunctionObject* m_regexp;
     escargot::ESRegExpObject* m_regexpPrototype;
     //JSBuiltinsObject* m_builtins;

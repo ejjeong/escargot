@@ -28,6 +28,7 @@ void Strings::initStaticStrings(ESVMInstance* instance)
 
     String =  L"String";
     Number =  L"Number";
+    Boolean =  L"Boolean";
     Object =  L"Object";
     ReferenceError =  L"ReferenceError";
     Array =  L"Array";
@@ -74,6 +75,7 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     stringFalse = L"false";
     RegExp = L"RegExp";
     source = L"source";
+    valueOf = L"valueOf";
 }
 
 Strings* strings;
