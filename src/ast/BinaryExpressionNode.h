@@ -309,23 +309,43 @@ public:
                 // TODO http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5
                 // string, NaN, zero, infinity, ...
                 bool b;
-                if(lval.isInt32() && rval.isInt32()) {
-                    int lnum = lval.asInt32();
-                    int rnum = rval.asInt32();
-                    if (oper == LessThan)                b = lnum < rnum;
-                    else if (oper == LessThanOrEqual)    b = lnum <= rnum;
-                    else if (oper == GreaterThan)        b = lnum > rnum;
-                    else if (oper == GreaterThanOrEqual) b = lnum >= rnum;
+                if (lval.isESString() || rval.isESString()) {
+                    InternalString lstr;
+                    InternalString rstr;
+
+                    //TODO use toESString
+                    //lstr = lval.toESString().string();
+                    lstr = lval.toInternalString();
+                    //TODO use toESString
+                    //rstr = rval.toESString().string();
+                    rstr = rval.toInternalString();
+
+                    if (oper == LessThan)                b = lstr < rstr;
+                    else if (oper == LessThanOrEqual)    b = lstr <= rstr;
+                    else if (oper == GreaterThan)        b = lstr > rstr;
+                    else if (oper == GreaterThanOrEqual) b = lstr >= rstr;
                     else RELEASE_ASSERT_NOT_REACHED();
+
                 } else {
-                    double lnum = lval.toNumber();
-                    double rnum = rval.toNumber();
-                    if (oper == LessThan)                b = lnum < rnum;
-                    else if (oper == LessThanOrEqual)    b = lnum <= rnum;
-                    else if (oper == GreaterThan)        b = lnum > rnum;
-                    else if (oper == GreaterThanOrEqual) b = lnum >= rnum;
-                    else RELEASE_ASSERT_NOT_REACHED();
+                    if(lval.isInt32() && rval.isInt32()) {
+                        int lnum = lval.asInt32();
+                        int rnum = rval.asInt32();
+                        if (oper == LessThan)                b = lnum < rnum;
+                        else if (oper == LessThanOrEqual)    b = lnum <= rnum;
+                        else if (oper == GreaterThan)        b = lnum > rnum;
+                        else if (oper == GreaterThanOrEqual) b = lnum >= rnum;
+                        else RELEASE_ASSERT_NOT_REACHED();
+                    } else {
+                        double lnum = lval.toNumber();
+                        double rnum = rval.toNumber();
+                        if (oper == LessThan)                b = lnum < rnum;
+                        else if (oper == LessThanOrEqual)    b = lnum <= rnum;
+                        else if (oper == GreaterThan)        b = lnum > rnum;
+                        else if (oper == GreaterThanOrEqual) b = lnum >= rnum;
+                        else RELEASE_ASSERT_NOT_REACHED();
+                    }
                 }
+
                 if(b)
                     ret = ESValue(ESValue::ESTrueTag::ESTrue);
                 else

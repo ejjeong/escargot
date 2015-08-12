@@ -122,6 +122,8 @@ public:
     ALWAYS_INLINE friend bool operator == (const InternalString& a,const InternalString& b);
     ALWAYS_INLINE friend bool operator < (const InternalString& a,const InternalString& b);
     ALWAYS_INLINE friend bool operator > (const InternalString& a,const InternalString& b);
+    ALWAYS_INLINE friend bool operator <= (const InternalString& a,const InternalString& b);
+    ALWAYS_INLINE friend bool operator >= (const InternalString& a,const InternalString& b);
 
     ALWAYS_INLINE const wchar_t* data() const
     {
@@ -227,6 +229,16 @@ ALWAYS_INLINE bool operator < (const InternalString& a, const InternalString& b)
 ALWAYS_INLINE bool operator > (const InternalString& a, const InternalString& b)
 {
     return *a.m_string > *b.m_string;
+}
+
+ALWAYS_INLINE bool operator <= (const InternalString& a, const InternalString& b)
+{
+    return *a.m_string <= *b.m_string;
+}
+
+ALWAYS_INLINE bool operator >= (const InternalString& a, const InternalString& b)
+{
+    return *a.m_string >= *b.m_string;
 }
 
 typedef std::vector<InternalString,gc_allocator<InternalString> > InternalStringVector;
