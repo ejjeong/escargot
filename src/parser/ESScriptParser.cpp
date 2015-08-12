@@ -304,9 +304,26 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             } else if(JSVAL_IS_NULL(v)) {
                 parsedNode = new LiteralNode(ESValue(ESValue::ESNullTag::ESNull));
             } else {
-                JSString* ss = JS_ValueToString(s_cx, v);
-                InternalString is(JS_EncodeString(s_cx, ss));
-                parsedNode = new LiteralNode(ESRegExpObject::create(ESString::create(is), escargot::ESVMInstance::currentInstance()->globalObject()->regexpPrototype()));
+                JSObject* obj;
+                JSBool ret = JS_ValueToObject(s_cx, v, &obj);
+                ASSERT(ret);
+                ASSERT(JS_ObjectIsRegExp(s_cx, obj));
+                InternalString source(JS_EncodeString(s_cx, JS_GetRegExpSource(s_cx, obj)));
+                unsigned flag = JS_GetRegExpFlags(s_cx, obj);
+                int f = 0;
+                if(flag & JSREG_FOLD) {
+                    f = f | ESRegExpObject::IgnoreCase;
+                }
+                if(flag & JSREG_GLOB) {
+                    f = f | ESRegExpObject::Global;
+                }
+                if(flag & JSREG_MULTILINE) {
+                    f = f | ESRegExpObject::MultiLine;
+                }
+                if(flag & JSREG_STICKY) {
+                    f = f | ESRegExpObject::Sticky;
+                }
+                parsedNode = new LiteralNode(ESRegExpObject::create(source, (ESRegExpObject::Option)f, escargot::ESVMInstance::currentInstance()->globalObject()->regexpPrototype()));
             }
 
         } else if(type == astTypeFunctionDeclaration) {

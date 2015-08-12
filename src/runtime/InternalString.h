@@ -128,6 +128,38 @@ public:
         return m_string->data();
     }
 
+    ALWAYS_INLINE const char* utf8Data() const
+    {
+        unsigned strLength = 0;
+        const wchar_t* pt = data();
+        char buffer [MB_CUR_MAX];
+        while(*pt) {
+            int length = std::wctomb(buffer,*pt);
+            if (length<1)
+                break;
+            strLength += length;
+            pt++;
+        }
+
+        char* result = (char *)GC_malloc_atomic(strLength + 1);
+        pt = data();
+        unsigned currentPosition = 0;
+
+        while(*pt) {
+            int length = std::wctomb(buffer,*pt);
+            if (length<1)
+                break;
+            memcpy(&result[currentPosition],buffer,length);
+            currentPosition += length;
+            pt++;
+        }
+        result[strLength] = 0;
+
+        return result;
+    }
+
+
+
     ALWAYS_INLINE const InternalStringData* string() const
     {
         return m_string;

@@ -79,6 +79,7 @@ InternalString object;
 InternalString function;
 InternalString RegExp;
 InternalString source;
+InternalString test;
 
 void initStaticStrings(ESVMInstance* instance);
 };

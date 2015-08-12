@@ -76,6 +76,7 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     RegExp = L"RegExp";
     source = L"source";
     valueOf = L"valueOf";
+    test = L"test";
 }
 
 Strings* strings;

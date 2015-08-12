@@ -5,8 +5,6 @@
 #include "vm/ESVMInstance.h"
 #include "runtime/ExecutionContext.h"
 #include "runtime/Environment.h"
-#include "re2/re2.h"
-
 
 namespace escargot {
 
@@ -685,74 +683,43 @@ void GlobalObject::installString()
         escargot::ESArrayObject* ret = ESArrayObject::create(0, instance->globalObject()->arrayPrototype());
 
         int argCount = instance->currentExecutionContext()->argumentCount();
-        ESPointer* esptr = instance->currentExecutionContext()->arguments()[0].asESPointer();
-        InternalString regexp_int_str;
-        if (esptr->isESRegExpObject()) {
-            regexp_int_str = instance->currentExecutionContext()->arguments()[0].asESPointer()->asESRegExpObject()->regExpData()->string();
-        } else if (esptr->isESString()) {
-            regexp_int_str = instance->currentExecutionContext()->arguments()[0].toInternalString();
-        } else {
-            wprintf(L"Wrong first parameter for String.prototype.match()\n");
-         }
-        const wchar_t* regexp = regexp_int_str.data();
-        int regexp_len = regexp_int_str.length();
-        char regexp_buffer[regexp_len + 3];
-        std::string option = "";
-        if (regexp[0] == L'/') {
-            regexp_buffer[regexp_len-2] = 0;
-            regexp_buffer[regexp_len-1] = 0;
-            regexp_buffer[regexp_len] = 0;
-            wcstombs(regexp_buffer, regexp, regexp_len);
-            regexp_buffer[0] = '(';
-            for (int i = regexp_len; i >= 0; i--) {
-                if (regexp_buffer[i] == '/') {
-                    regexp_buffer[i] = ')';
-                    for (int j = i + 1 ; j < regexp_len; j++) {
-                        option += regexp_buffer[j];
-                        regexp_buffer[j] = 0;
-                      }
-                    break;
-                 }
-             }
-        } else {
-            regexp_buffer[0] = '(';
-            wcstombs(regexp_buffer+1, regexp, regexp_len);
-            regexp_buffer[regexp_len+1] = ')';
-            regexp_buffer[regexp_len+2] = 0;
-         }
+        if(argCount > 0) {
+            ESPointer* esptr = instance->currentExecutionContext()->arguments()[0].asESPointer();
+            const char* source;
+            ESRegExpObject::Option option = ESRegExpObject::Option::None;
+            if (esptr->isESRegExpObject()) {
+                source = esptr->asESRegExpObject()->utf8Source();
+                option = esptr->asESRegExpObject()->option();
+            } else if (esptr->isESString()) {
+                source = esptr->asESString()->string().utf8Data();
+            } else {
+                //TODO
+                RELEASE_ASSERT_NOT_REACHED();
+            }
 
-        const wchar_t* this_data = thisObject->asESStringObject()->getStringData()->string().data();
-        int this_len = thisObject->asESStringObject()->getStringData()->string().length();
-        char this_buffer[this_len+1];
-        this_buffer[this_len] = 0;
-        wcstombs(this_buffer, this_data, this_len);
+            const char* targetString = thisObject->asESStringObject()->getStringData()->string().utf8Data();
+            int index = 0;
 
-        std::string matched;
-        re2::StringPiece input(this_buffer);
+            ESRegExpObject::prepareForRE2(source, option, [&](const char* RE2Source, const re2::RE2::Options& ops, const bool& isGlobal){
+                re2::RE2 re(RE2Source, ops);
+                re2::StringPiece input(targetString);
+                std::string matched;
+                while (re2::RE2::FindAndConsume(&input, re, &matched)) {
+                    InternalString int_str(matched.data());
+                    ret->set(index, ESString::create(int_str));
+                    index++;
+                    if (!isGlobal)
+                        break;
+                }
+            });
 
-        re2::RE2::Options ops;
-        if (option.find('i') != std::string::npos)
-                    ops.set_case_sensitive(false);
-        re2::RE2 re(regexp_buffer, ops);
+            GC_free((char *)targetString);
 
-        int index = 0;
-        bool is_global = false;
-        if (option.find('g') != std::string::npos)
-            is_global = true;
-        while (re2::RE2::FindAndConsume(&input, re, &matched)) {
-            InternalString int_str(matched.data());
-            ret->set(index, ESString::create(int_str));
+            if (index == 0)
+                instance->currentExecutionContext()->doReturn(ESValue(ESValue::ESNull));
 
-            index++;
-            if (!is_global)
-                break;
-         }
-
-        if (index == 0)
-            instance->currentExecutionContext()->doReturn(ESValue(ESValue::ESNull));
-        else
-            instance->currentExecutionContext()->doReturn(ret);
-
+        }
+        instance->currentExecutionContext()->doReturn(ret);
         return ESValue();
     }), false, false);
     m_stringPrototype->set(L"match", ESFunctionObject::create(NULL, stringMatch));
@@ -763,70 +730,41 @@ void GlobalObject::installString()
         escargot::ESArrayObject* ret = ESArrayObject::create(0, instance->globalObject()->arrayPrototype());
 
         int argCount = instance->currentExecutionContext()->argumentCount();
-        ESPointer* esptr = instance->currentExecutionContext()->arguments()[0].asESPointer();
-        InternalString regexp_int_str;
-        if (esptr->isESRegExpObject()) {
-            regexp_int_str = instance->currentExecutionContext()->arguments()[0].asESPointer()->asESRegExpObject()->regExpData()->string();
-        } else if (esptr->isESString()) {
-            regexp_int_str = instance->currentExecutionContext()->arguments()[0].toInternalString();
-        } else {
-            wprintf(L"Wrong first parameter for String.prototype.replace()\n");
-         }
-        const wchar_t* regexp = regexp_int_str.data();
-        int regexp_len = regexp_int_str.length();
-        char regexp_buffer[regexp_len + 3];
-        std::string option = "";
-        if (regexp[0] == L'/') {
-            regexp_buffer[regexp_len-2] = 0;
-            regexp_buffer[regexp_len-1] = 0;
-            regexp_buffer[regexp_len] = 0;
-            wcstombs(regexp_buffer, regexp, regexp_len);
-            regexp_buffer[0] = '(';
-            for (int i = regexp_len; i >= 0; i--) {
-                if (regexp_buffer[i] == '/') {
-                    regexp_buffer[i] = ')';
-                    for (int j = i + 1 ; j < regexp_len; j++) {
-                        option += regexp_buffer[j];
-                        regexp_buffer[j] = 0;
-                      }
-                    break;
-                 }
-             }
-        } else {
-            regexp_buffer[0] = '(';
-            wcstombs(regexp_buffer+1, regexp, regexp_len);
-            regexp_buffer[regexp_len+1] = ')';
-            regexp_buffer[regexp_len+2] = 0;
-         }
 
-        const wchar_t* replace = instance->currentExecutionContext()->arguments()[1].toInternalString().data();
-        int replace_len = instance->currentExecutionContext()->arguments()[1].toInternalString().length();
-        char replace_buffer[replace_len + 1];
-        replace_buffer[replace_len] = 0;
-        wcstombs(replace_buffer, replace, replace_len);
+        const char* targetString = thisObject->asESStringObject()->getStringData()->string().utf8Data();
+        std::string new_this = std::string(targetString);
+        if(argCount > 1) {
+            ESPointer* esptr = instance->currentExecutionContext()->arguments()[0].asESPointer();
+            const char* source;
+            ESRegExpObject::Option option = ESRegExpObject::Option::None;
+            if (esptr->isESRegExpObject()) {
+                source = esptr->asESRegExpObject()->utf8Source();
+                option = esptr->asESRegExpObject()->option();
+            } else if (esptr->isESString()) {
+                source = esptr->asESString()->string().utf8Data();
+            } else {
+                //TODO
+                RELEASE_ASSERT_NOT_REACHED();
+            }
 
+            InternalString replaceStringInternal = instance->currentExecutionContext()->arguments()[1].toInternalString();
+            const char* replaceString = replaceStringInternal.utf8Data();
 
-        const wchar_t* this_data = thisObject->asESStringObject()->getStringData()->string().data();
-        int this_len = thisObject->asESStringObject()->getStringData()->string().length();
-        char new_this_buffer[this_len+1];
-        new_this_buffer[this_len] = 0;
-        wcstombs(new_this_buffer, this_data, this_len);
+            ESRegExpObject::prepareForRE2(source, option, [&](const char* RE2Source, const re2::RE2::Options& ops, const bool& isGlobal){
+                re2::RE2 re(RE2Source, ops);
 
-        std::string new_this = std::string(new_this_buffer);
+                if (isGlobal) {
+                    re2::RE2::GlobalReplace(&new_this, re, replaceString);
+                } else {
+                    re2::RE2::Replace(&new_this, re, replaceString);
+                }
+            });
 
-        re2::RE2::Options ops;
-        if (option.find('i') != std::string::npos)
-                    ops.set_case_sensitive(false);
-        re2::RE2 re(regexp_buffer, ops);
+            GC_free((char *)replaceString);
 
-
-        if (option.find('g') != std::string::npos) {
-            re2::RE2::GlobalReplace(&new_this, re, replace_buffer);
-        } else {
-            re2::RE2::Replace(&new_this, re, replace_buffer);
-         }
-
+        }
         InternalString int_str(new_this.data());
+        GC_free((char *)targetString);
         instance->currentExecutionContext()->doReturn(ESString::create(int_str));
 
         return ESValue();
@@ -1452,6 +1390,7 @@ void GlobalObject::installRegExp()
 {
     // create regexp object: $21.2.3 The RegExp Constructor
     FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings->RegExp, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        /*
         escargot::ESRegExpObject* thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESRegExpObject();
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
         std::wstring wstr(L"/");
@@ -1471,14 +1410,13 @@ void GlobalObject::installRegExp()
         escargot::ESString* data = escargot::ESString::create(int_str);
 
         thisVal->setRegExpData(data);
-
+*/
         return ESValue();
     }), false, false);
     m_regexp = ::escargot::ESFunctionObject::create(NULL, constructor);
 
     // create regexpPrototype object
-    InternalString int_str("");
-    m_regexpPrototype = ESRegExpObject::create(ESString::create(int_str), m_objectPrototype);
+    m_regexpPrototype = ESRegExpObject::create(InternalString(),ESRegExpObject::Option::None, m_objectPrototype);
 
     // initialize regexp object
     m_regexp->set(strings->name, ESString::create(strings->RegExp));
@@ -1488,19 +1426,19 @@ void GlobalObject::installRegExp()
     // initialize regexpPrototype object
     m_regexpPrototype->setConstructor(m_regexp);
 
-    // initialize math object: $20.2.1.6 Math.PI
-    m_regexpPrototype->set(strings->source, m_regexpPrototype->regExpData());
-
     m_regexpPrototype->defineAccessorProperty(strings->source, [](ESObject* self) -> ESValue {
-       escargot::ESString* regexp = self->asESRegExpObject()->regExpData();
-       const InternalString& str = regexp->string();
-       unsigned start = str.string()->find('/');
-       unsigned end = str.string()->find_last_of('/');
-        std::wstring out(&str.data()[start+1],&str.data()[end]);
-        InternalString ret(std::move(out));
-//        ret.show();
-        return ESString::create(ret);
-        }, nullptr, true, false, false);
+        return ESString::create(self->asESRegExpObject()->source());
+    }, nullptr, true, false, false);
+
+
+    // 21.2.5.13 RegExp.prototype.test( S )
+    // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-regexp.prototype.test
+    FunctionDeclarationNode* testNode = new FunctionDeclarationNode(strings->test, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+        ::escargot::ESRegExpObject* regexp = thisObject->asESRegExpObject();
+        return ESValue();
+    }), false, false);
+    m_regexpPrototype->set(strings->test, ::escargot::ESFunctionObject::create(NULL, testNode));
 
     // add regexp to global object
     set(strings->RegExp, m_regexp);

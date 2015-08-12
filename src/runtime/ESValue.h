@@ -1230,24 +1230,55 @@ private:
 };
 
 class ESRegExpObject : public ESObject {
-protected:
-    ESRegExpObject(escargot::ESString* value);
-
 public:
-    static ESRegExpObject* create(escargot::ESString* value, ESObject* proto = NULL)
+    enum Option {
+        None = 0,
+        Global = 1,
+        IgnoreCase = 1 << 1,
+        MultiLine = 1 << 2,
+        Sticky = 1 << 3,
+    };
+    static ESRegExpObject* create(const InternalString& source, const Option& option, ESObject* proto = NULL)
     {
-        ESRegExpObject* ret = new ESRegExpObject(value);
+        ESRegExpObject* ret = new ESRegExpObject(source, option);
         if (proto != NULL)
             ret->set__proto__(proto);
 
         return ret;
     }
 
-    ALWAYS_INLINE escargot::ESString* regExpData() { return m_primitiveValue; }
-    ALWAYS_INLINE void setRegExpData(escargot::ESString* value) { m_primitiveValue = value; }
+    //ALWAYS_INLINE escargot::ESString* regExpData() { return m_primitiveValue; }
+    //ALWAYS_INLINE void setRegExpData(escargot::ESString* value) { m_primitiveValue = value; }
+    ALWAYS_INLINE Option option() { return m_option; }
+    ALWAYS_INLINE const InternalString& source() { return m_source; }
+    ALWAYS_INLINE const char* utf8Source() { return m_sourceStringAsUtf8; }
 
+    template <typename Func>
+    static void prepareForRE2(const char* source,const ESRegExpObject::Option& option, const Func& fn)
+    {
+        re2::RE2::Options ops;
+
+        if(option & ESRegExpObject::Option::IgnoreCase)
+            ops.set_case_sensitive(false);
+        if(option & ESRegExpObject::Option::MultiLine)
+            ops.set_one_line(false);
+        //if(option & ESRegExpObject::Option::Sticky)
+        //    ops.set_
+        bool isGlobal = option & ESRegExpObject::Option::Global;
+
+        char* sourceForRE2 = (char *)malloc(strlen(source) + 3);
+        strcpy(sourceForRE2, "(");
+        strcat(sourceForRE2, source);
+        strcat(sourceForRE2, ")");
+        fn(sourceForRE2, ops, isGlobal);
+        free(sourceForRE2);
+    }
 private:
-    escargot::ESString* m_primitiveValue;
+    ESRegExpObject(const InternalString& source, const Option& option);
+
+    InternalString m_source;
+    const char* m_sourceStringAsUtf8;
+    Option m_option;
 };
 
 }

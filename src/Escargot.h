@@ -33,6 +33,8 @@
 #include <rapidjson/memorystream.h>
 #include <rapidjson/internal/dtoa.h>
 
+#include <re2/re2.h>
+
 #include <gc_cpp.h>
 #include <gc_allocator.h>
 

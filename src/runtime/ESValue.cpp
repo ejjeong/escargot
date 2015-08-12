@@ -253,10 +253,12 @@ ESArrayObject::ESArrayObject()
     m_length = 0;
 }
 
-ESRegExpObject::ESRegExpObject(escargot::ESString* value)
+ESRegExpObject::ESRegExpObject(const InternalString& source, const Option& option)
     : ESObject((Type)(Type::ESObject | Type::ESRegExpObject))
 {
-    m_primitiveValue = value;
+    m_source = source;
+    m_option = option;
+    m_sourceStringAsUtf8 = source.utf8Data();
 }
 
 ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST, ESObject* proto)

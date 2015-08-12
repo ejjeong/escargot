@@ -29,7 +29,7 @@ public:
         } else if (function == instance->globalObject()->string()) {
             receiver = ESStringObject::create();
         } else if (function == instance->globalObject()->regexp()) {
-            receiver = ESRegExpObject::create(NULL);
+            receiver = ESRegExpObject::create(InternalString(),ESRegExpObject::Option::None);
         } else if (function == instance->globalObject()->boolean()) {
             receiver = ESBooleanObject::create(ESValue(ESValue::ESFalseTag::ESFalse));
         } else {
