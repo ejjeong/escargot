@@ -28,6 +28,8 @@ public:
             receiver = ESArrayObject::create();
         } else if (function == instance->globalObject()->string()) {
             receiver = ESStringObject::create();
+        } else if (function == instance->globalObject()->regexp()) {
+            receiver = ESRegExpObject::create(NULL);
         } else {
             receiver = ESObject::create();
         }

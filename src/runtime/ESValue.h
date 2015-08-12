@@ -1207,6 +1207,7 @@ public:
     }
 
     ALWAYS_INLINE escargot::ESString* regExpData() { return m_primitiveValue; }
+    ALWAYS_INLINE void setRegExpData(escargot::ESString* value) { m_primitiveValue = value; }
 
 private:
     escargot::ESString* m_primitiveValue;

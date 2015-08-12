@@ -31,7 +31,7 @@ public:
         return m_referenceErrorPrototype;
     }
 
-    ALWAYS_INLINE escargot::ESFunctionObject* regexpError()
+    ALWAYS_INLINE escargot::ESFunctionObject* regexp()
     {
         return m_regexp;
     }

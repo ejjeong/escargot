@@ -1374,6 +1374,25 @@ void GlobalObject::installRegExp()
 {
     // create regexp object: $21.2.3 The RegExp Constructor
     FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings->RegExp, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        escargot::ESRegExpObject* thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESRegExpObject();
+        size_t arg_size = instance->currentExecutionContext()->argumentCount();
+        std::wstring wstr(L"/");
+        if (arg_size > 0) {
+            escargot::ESString* regexp = instance->currentExecutionContext()->arguments()[0].asESString();
+            wstr += std::wstring(regexp->string().string()->data());
+        }
+
+        wstr += std::wstring(L"/");
+
+        if (arg_size > 1) {
+            escargot::ESString* options = instance->currentExecutionContext()->arguments()[1].asESString();
+            wstr += std::wstring(options->string().string()->data());
+         }
+
+        InternalString int_str(std::move(wstr));
+        escargot::ESString* data = escargot::ESString::create(int_str);
+
+        thisVal->setRegExpData(data);
 
         return ESValue();
     }), false, false);
