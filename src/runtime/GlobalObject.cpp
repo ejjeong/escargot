@@ -767,7 +767,12 @@ void GlobalObject::installString()
         int argCount = instance->currentExecutionContext()->argumentCount();
 
         const char* targetString = utf16ToUtf8(thisObject->asESStringObject()->getStringData()->string().data());
-        std::string new_this = std::string(targetString);
+        int origin_len = thisObject->asESStringObject()->getStringData()->length();
+        wprintf(L"origin_len = %d\n", origin_len);
+        wprintf(L"target_len = %d\n", sizeof(targetString));
+        std::string new_this = std::string(targetString, origin_len);
+        wprintf(L"this_len = %d\n", new_this.length());
+        wprintf(L"this_size = %d\n", new_this.size());
         if(argCount > 1) {
             ESPointer* esptr = instance->currentExecutionContext()->arguments()[0].asESPointer();
             const char* source;
@@ -816,6 +821,8 @@ void GlobalObject::installString()
                 ESRegExpObject::prepareForRE2(source, option, [&](const char* RE2Source, const re2::RE2::Options& ops, const bool& isGlobal){
                     re2::RE2 re(RE2Source, ops);
 
+                    wprintf(L"this_len = %d\n", new_this.length());
+
                     if (isGlobal) {
                         re2::RE2::GlobalReplace(&new_this, re, replaceString);
                     } else {
@@ -825,6 +832,7 @@ void GlobalObject::installString()
                 GC_free((char *)replaceString);
             }
         }
+         wprintf(L"df = %d\n", new_this.length());
         InternalString int_str(new_this.data());
         GC_free((char *)targetString);
         instance->currentExecutionContext()->doReturn(ESString::create(int_str));

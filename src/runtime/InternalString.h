@@ -82,6 +82,27 @@ ALWAYS_INLINE const char * utf16ToUtf8(const wchar_t *t)
         currentPosition += length;
         pt++;
     }
+    /*
+        unsigned strLength = m_string->length();
+        const wchar_t* pt = data();
+        char buffer [MB_CUR_MAX];
+
+        char* result = (char *)GC_malloc_atomic(strLength + 1);
+        pt = data();
+        unsigned currentPosition = 0;
+
+        unsigned index = 0;
+        for (unsigned i = 0; i< strLength; i++) {
+            int length = std::wctomb(buffer,*pt);
+            if (length<1) {
+                length = 1;
+                *buffer = 0;
+              }
+            memcpy(&result[currentPosition],buffer,length);
+            currentPosition += length;
+            pt++;
+        }
+        */
     result[strLength] = 0;
 
     return result;
@@ -188,17 +209,34 @@ public:
 
     std::string toStdString() const
     {
+        wprintf(L"start\n");
+        unsigned strLength = m_string->length();
         const wchar_t* pt = data();
         std::string ret;
         char buffer [MB_CUR_MAX];
         memset(buffer, 0, MB_CUR_MAX);
-        while(*pt) {
+
+        for (unsigned i = 0; i < strLength; i++) {
             int length = std::wctomb(buffer,*pt);
-            if (length<1)
-                break;
-            ret.append(buffer);
+            if (length<1) {
+                buffer[0] = '\0';
+            } else {
+                ret.append(buffer);
+              }
+            wprintf(L"ret.len = %d\n",ret.length());
             pt++;
-        }
+         }
+//
+//        while(true) {
+//            int length = std::wctomb(buffer,*pt);
+//            if (length<1) {
+//                *buffer = 0;
+//             }
+//            ret.append(buffer);
+//            if (ret.length() >= strLength)
+//                break;
+//            pt++;
+//        }
         return ret;
     }
 
