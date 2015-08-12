@@ -835,6 +835,14 @@ public:
     }
 };
 
+class RangeError : public ESErrorObject {
+public:
+    RangeError(const InternalString& message = InternalString(&emptyStringData))
+        : ESErrorObject(message)
+    {
+    }
+};
+
 class ESDateObject : public ESObject {
 protected:
     ESDateObject(ESPointer::Type type = ESPointer::Type::ESDateObject)
@@ -1214,22 +1222,22 @@ private:
 
 class ESNumberObject : public ESObject {
 protected:
-    ESNumberObject(const ESValue& value)
+    ESNumberObject(double value)
         : ESObject((Type)(Type::ESObject | Type::ESNumberObject))
     {
         m_primitiveValue = value;
     }
 
 public:
-    static ESNumberObject* create(const ESValue& value)
+    static ESNumberObject* create(double value)
     {
         return new ESNumberObject(value);
     }
 
-    ALWAYS_INLINE ESValue numberData() { return m_primitiveValue; }
+    ALWAYS_INLINE double numberData() { return m_primitiveValue; }
 
 private:
-    ESValue m_primitiveValue;
+    double m_primitiveValue;
 };
 
 class ESBooleanObject : public ESObject {

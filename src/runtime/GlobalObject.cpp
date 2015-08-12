@@ -1378,6 +1378,45 @@ void GlobalObject::installMath()
     set(strings->Math, m_math);
 }
 
+static int itoa(int value, char *sp, int radix)
+{
+    char tmp[16];// be careful with the length of the buffer
+    char *tp = tmp;
+    int i;
+    unsigned v;
+
+    int sign = (radix == 10 && value < 0);
+    if (sign)
+        v = -value;
+    else
+        v = (unsigned)value;
+
+    while (v || tp == tmp)
+    {
+        i = v % radix;
+        v /= radix; // v/=radix uses less CPU clocks than v=v/radix does
+        if (i < 10)
+          *tp++ = i+'0';
+        else
+          *tp++ = i + 'a' - 10;
+    }
+
+    int len = tp - tmp;
+
+    if (sign)
+    {
+        *sp++ = '-';
+        len++;
+    }
+
+    while (tp > tmp) {
+        *sp++ = *--tp;
+    }
+    *sp++ = 0;
+
+    return len;
+}
+
 void GlobalObject::installNumber()
 {
     // create number object: $20.1.1 The Number Constructor
@@ -1388,7 +1427,7 @@ void GlobalObject::installNumber()
     m_number = ::escargot::ESFunctionObject::create(NULL, constructor);
 
     // create numberPrototype object
-    m_numberPrototype = ESNumberObject::create(ESValue(0.0));
+    m_numberPrototype = ESNumberObject::create(0.0);
 
     // initialize number object
     m_number->set(strings->name, ESString::create(strings->Number));
@@ -1402,7 +1441,20 @@ void GlobalObject::installNumber()
     // initialize numberPrototype object: $20.1.3.6 Number.prototype.toString()
     FunctionDeclarationNode* toStringNode = new FunctionDeclarationNode(strings->toString, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         escargot::ESNumberObject* thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESNumberObject();
-        instance->currentExecutionContext()->doReturn(ESString::create(thisVal->numberData().toInternalString()));
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        double radix = 10;
+        if (arglen >= 1) {
+            radix = instance->currentExecutionContext()->arguments()[0].toInteger();
+            if (radix < 2 || radix > 36)
+                throw RangeError(L"String.prototype.toString() radix is not in valid range");
+        }
+        if (radix == 10)
+            instance->currentExecutionContext()->doReturn(ESValue(thisVal->numberData()).toString());
+        else {
+            char buffer[16];
+            int len = itoa((int)thisVal->numberData(), buffer, radix);
+            instance->currentExecutionContext()->doReturn(ESString::create(InternalString(buffer)));
+        }
         return ESValue();
     }), false, false);
     m_numberPrototype->set(strings->toString, ::escargot::ESFunctionObject::create(NULL, toStringNode));

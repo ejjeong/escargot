@@ -109,7 +109,7 @@ ESObject* ESValue::toObject() const
     ESObject* receiver;
     if (isNumber()) {
         function = ESVMInstance::currentInstance()->globalObject()->number();
-        receiver = ESNumberObject::create(ESValue(toNumber()));
+        receiver = ESNumberObject::create(toNumber());
     } else if (isBoolean()) {
         function = ESVMInstance::currentInstance()->globalObject()->boolean();
         ESValue ret;

@@ -21,4 +21,5 @@ regexp-dna
 string-base64
 string-fasta
 string-tagcloud
+string-unpack-code
 string-validate-input
