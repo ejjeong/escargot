@@ -57,6 +57,30 @@ protected:
 
 extern InternalStringData emptyStringData;
 
+ALWAYS_INLINE NullableString* toNullableString(std::wstring m_string)
+{
+    unsigned strLength = m_string.length();
+    const wchar_t* pt = m_string.data();
+    char buffer [MB_CUR_MAX];
+    memset(buffer, 0, MB_CUR_MAX);
+
+    char* string = new char[strLength*2];
+
+    int idx = 0;
+    for (unsigned i = 0; i < strLength; i++) {
+        int length = std::wctomb(buffer,*pt);
+        if (length<1) {
+            string[idx++] = '\0';
+        } else {
+            memcpy(string+idx, buffer, length);
+            idx += length;
+        }
+        wprintf(L"ret.len = %d\n", idx);
+        pt++;
+    }
+    return new NullableString(string, idx);
+}
+
 ALWAYS_INLINE const char * utf16ToUtf8(const wchar_t *t)
 {
     unsigned strLength = 0;
@@ -154,6 +178,14 @@ public:
         std::mbsrtowcs((wchar_t *)m_string->data(), &s, m_string->size(), &state);
     }
 
+    InternalString(const char* s, int length)
+    {
+        std::mbstate_t state = std::mbstate_t();
+        allocString(0);
+        m_string->resize(length);
+        std::mbsrtowcs((wchar_t *)m_string->data(), &s, length, &state);
+    }
+
     ALWAYS_INLINE InternalString(const wchar_t* s)
     {
         m_string = new(PointerFreeGC) InternalStringData(s);
@@ -220,6 +252,7 @@ public:
             int length = std::wctomb(buffer,*pt);
             if (length<1) {
                 buffer[0] = '\0';
+                ret.push_back('\0');
             } else {
                 ret.append(buffer);
               }

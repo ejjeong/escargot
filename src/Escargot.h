@@ -228,6 +228,7 @@ inline bool operator!=(const pointer_free_allocator<GC_T1>&, const pointer_free_
 #error "I don't know what architecture this is!"
 #endif
 
+#include "runtime/NullableString.h"
 #include "runtime/InternalString.h"
 #include "runtime/InternalAtomicString.h"
 #include "runtime/StaticStrings.h"

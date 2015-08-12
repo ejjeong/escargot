@@ -766,11 +766,14 @@ void GlobalObject::installString()
 
         int argCount = instance->currentExecutionContext()->argumentCount();
 
-        const char* targetString = utf16ToUtf8(thisObject->asESStringObject()->getStringData()->string().data());
+        NullableString* nullstr = toNullableString(thisObject->asESStringObject()->getStringData()->string());
+        const char* targetString = nullstr->string();
+        int targetLen = nullstr->length();
+//        const char* targetString = utf16ToUtf8(thisObject->asESStringObject()->getStringData()->string().data());
         int origin_len = thisObject->asESStringObject()->getStringData()->length();
         wprintf(L"origin_len = %d\n", origin_len);
-        wprintf(L"target_len = %d\n", sizeof(targetString));
-        std::string new_this = std::string(targetString, origin_len);
+        wprintf(L"target_len = %d\n", targetLen);
+        std::string new_this = std::string(targetString, targetLen);
         wprintf(L"this_len = %d\n", new_this.length());
         wprintf(L"this_size = %d\n", new_this.size());
         if(argCount > 1) {
@@ -794,8 +797,14 @@ void GlobalObject::installString()
                 escargot::ESArrayObject* ret = origStr->match(esptr, &matchedOffsets);
                 int32_t matchCount = ret->length().asInt32();
                 ESValue callee = replaceValue.asESPointer()->asESFunctionObject();
-                char * buf = (char *)utf16ToUtf8(origStr->string().data());
-                new_this = buf;
+
+                NullableString* buf = toNullableString(origStr->string());
+                new_this = std::string(buf->string(), buf->length());
+
+
+
+//                char * buf = (char *)utf16ToUtf8(origStr->string().data());
+//                new_this = buf;
                 GC_free(buf);
                 int replacePos = 0;
                 int lastOffset = 0;
@@ -809,9 +818,11 @@ void GlobalObject::installString()
                     int origStringPieceLength = ret->get(i).asESPointer()->asESString()->length();
                     replacePos += (matchedOffsets[i] - lastOffset);
                     lastOffset = matchedOffsets[i];
-                    char* buf = (char *)utf16ToUtf8(res->string().data());
+//                    char* buf = (char *)utf16ToUtf8(res->string().data());
+                    NullableString* nullbuf = toNullableString(res->string());
+                    char* buf = nullbuf->string();
                     new_this.replace(replacePos, origStringPieceLength, std::string(buf));
-                    GC_free(buf);
+                    //GC_free(buf);
                     replacePos += (res->string().length() - origStringPieceLength);
                 }
             } else {
@@ -833,8 +844,12 @@ void GlobalObject::installString()
             }
         }
          wprintf(L"df = %d\n", new_this.length());
-        InternalString int_str(new_this.data());
-        GC_free((char *)targetString);
+        InternalString int_str(new_this.data(), new_this.length());
+        wprintf(L"utf16 resultString.length = %d\n", int_str.length());
+        for (unsigned i = 0; i < int_str.length(); i++) {
+            wprintf(L"%d, ", int_str.data()[i]);
+        }
+        //GC_free((char *)targetString);
         instance->currentExecutionContext()->doReturn(ESString::create(int_str));
 
         return ESValue();
