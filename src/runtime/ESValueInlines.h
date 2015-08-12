@@ -434,6 +434,8 @@ inline bool ESValue::toBoolean() const
         return asDouble();
     if (isUndefinedOrNull())
         return false;
+    if (isESString())
+        return asESString()->length();
     if (isESPointer())
         return true;
     //TODO
