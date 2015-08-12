@@ -1007,6 +1007,19 @@ public:
         return ESObject::find(key.toInternalString());
     }
 
+    bool hasOwnProperty(const InternalString& key) {
+        if (!m_fastmode)
+            return ESObject::hasOwnProperty(key);
+
+        wchar_t *end;
+        long key_int = wcstol(key.data(), &end, 10);
+        if (end != key.data() + key.length())
+            return ESObject::hasOwnProperty(key);
+        if (key_int < m_length)
+            return true;
+        return false;
+    }
+
     template <typename Functor>
     void enumeration(Functor t)
     {

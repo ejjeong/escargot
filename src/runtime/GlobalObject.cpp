@@ -245,8 +245,10 @@ void GlobalObject::installObject()
             instance->currentExecutionContext()->doReturn(ret);
         }
         ::escargot::ESString* key = instance->currentExecutionContext()->arguments()[0].toPrimitive(ESValue::PrimitiveTypeHint::PreferString).toString();
-        auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESObject();
-        if (thisVal->hasOwnProperty(key->string()))
+        auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+        if (thisVal->isESArrayObject() && thisVal->asESArrayObject()->hasOwnProperty(key->string()))
+            ret = ESValue(ESValue::ESTrueTag::ESTrue);
+        else if (thisVal->asESObject()->hasOwnProperty(key->string()))
             ret = ESValue(ESValue::ESTrueTag::ESTrue);
         else
             ret = ESValue(ESValue::ESFalseTag::ESFalse);
