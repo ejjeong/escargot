@@ -614,8 +614,20 @@ void GlobalObject::installString()
     FunctionDeclarationNode* stringCharAt = new FunctionDeclarationNode(InternalString(L"charAt"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
         const InternalString& str = thisObject->asESStringObject()->getStringData()->string();
-        int position = instance->currentExecutionContext()->arguments()[0].toInteger();
-        instance->currentExecutionContext()->doReturn(ESString::create(InternalString((*str.string())[position])));
+        if(instance->currentExecutionContext()->argumentCount() > 0) {
+            int position = instance->currentExecutionContext()->arguments()[0].toInteger();
+            if(LIKELY(0 <= position && position < (int)str.length())) {
+                wchar_t c = (*str.string())[position];
+                if(LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
+                    instance->currentExecutionContext()->doReturn(strings->esAsciiTable[c]);
+                } else {
+                    instance->currentExecutionContext()->doReturn(ESString::create(InternalString(c)));
+                }
+            } else {
+                instance->currentExecutionContext()->doReturn(strings->emptyESString);
+            }
+        }
+        instance->currentExecutionContext()->doReturn(strings->emptyESString);
         return ESValue();
     }), false, false);
     m_stringPrototype->set(L"charAt", ESFunctionObject::create(NULL, stringCharAt));

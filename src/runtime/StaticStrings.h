@@ -8,6 +8,9 @@ class ESString;
 
 class Strings {
 public:
+
+ESString *emptyESString;
+
 #define ESCARGOT_ASCII_TABLE_MAX 128
 InternalString asciiTable[ESCARGOT_ASCII_TABLE_MAX];
 ESString *esAsciiTable[ESCARGOT_ASCII_TABLE_MAX];
