@@ -295,7 +295,7 @@ ESArrayObject* ESString::match(ESPointer* esptr, std::vector<int>* offsets) cons
         RELEASE_ASSERT_NOT_REACHED();
     }
 
-    const char* targetString = utf16ToUtf8(m_string.data());
+    const char* targetString = utf16ToUtf8(m_string->data());
     int index = 0;
 
     ESRegExpObject::prepareForRE2(source, option, [&](const char* RE2Source, const re2::RE2::Options& ops, const bool& isGlobal){

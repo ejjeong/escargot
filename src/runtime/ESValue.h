@@ -377,15 +377,17 @@ protected:
     ESString(const InternalStringStd& str, bool isStaticString)
         : ESPointer(Type::ESString)
     {
-        m_string.reserve(str.length() * 2);
-        m_string.append(str);
+        m_string = new(PointerFreeGC) InternalStringStd;
+        m_string->reserve(str.length() * 2);
+        m_string->append(str);
         m_isStaticString = isStaticString;
     }
 
     ESString(const InternalStringStd&& str, bool isStaticString)
         : ESPointer(Type::ESString)
     {
-        m_string = str;
+        m_string = new(PointerFreeGC) InternalStringStd;
+        *m_string = str;
         m_isStaticString = isStaticString;
     }
 
@@ -406,17 +408,17 @@ public:
 
     const InternalStringStd& string()
     {
-        return m_string;
+        return *m_string;
     }
 
     InternalString toInternalString()
     {
-        return InternalString(m_string.data());
+        return InternalString(m_string->data());
     }
 
     int length() const
     {
-        return m_string.length();
+        return m_string->length();
     }
 
     bool isStaticString() const
@@ -426,8 +428,8 @@ public:
 
     ESString* substring(int from, int to) const
     {
-        ASSERT(0 <= from && from <= to && to <= (int)m_string.length());
-        InternalStringStd ret(std::move(m_string.substr(from, to-from)));
+        ASSERT(0 <= from && from <= to && to <= (int)m_string->length());
+        InternalStringStd ret(std::move(m_string->substr(from, to-from)));
         return ESString::create(ret);
     }
 
@@ -435,7 +437,7 @@ public:
 
 
 protected:
-    InternalStringStd m_string;
+    InternalStringStd* m_string;
     bool m_isStaticString;
 };
 
