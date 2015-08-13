@@ -72,7 +72,8 @@ ALWAYS_INLINE NullableString toNullableUtf8(std::wstring m_string)
         if (length<1) {
             string[idx++] = '\0';
         } else {
-            memcpy(string+idx, buffer, length);
+            strncpy(string+idx, buffer, length);
+//            memcpy(string+idx, buffer, length);
             idx += length;
         }
         pt++;
@@ -292,32 +293,37 @@ protected:
 ALWAYS_INLINE InternalString utf8ToUtf16(const char *s, int length)
 {
     wchar_t* wstr = (wchar_t *)GC_malloc_atomic(length * 4 + 1);
-    wprintf(L"before change to utf16\n");
+    /*
+    wprintf(L"[before change to utf16]\n");
     for (int i = 0; i < length; i++) {
-        wprintf(L"%d, ", s[i]);
+        wprintf(L"%x, ", s[i]);
     }
+    */
     std::mbstate_t state = std::mbstate_t();
     wchar_t buffer [MB_CUR_MAX];
     memset(buffer, 0, MB_CUR_MAX);
-    int idx = 0;
     char* pt8 = (char*) s;
-    wprintf(L"start length:%d\n", length);
+    //wprintf(L"start length:%d\n", length);
     int wlen = 0;
+    int idx = 0;
     for (int i = 0; i < length; i+=wlen) {
         wlen = std::mbtowc(buffer, pt8, MB_CUR_MAX);
         if (wlen < 1) {
             wlen = 1;
             wstr[idx++] = '\0';
         } else {
-            memcpy(wstr+idx, buffer, wlen);
+            wcsncpy(wstr+idx, buffer, 1);
+     //       memcpy(wstr+idx, buffer, wlen);
             idx++;
         }
         pt8 += wlen;
     }
-    wprintf(L"After change to utf16\n");
+    /*
+    wprintf(L"[After change to utf16]\n");
     for (int i = 0; i < idx; i++) {
         wprintf(L"%d, ", wstr[i]);
     }
+    */
     return InternalString(std::wstring(wstr, idx));
 }
 

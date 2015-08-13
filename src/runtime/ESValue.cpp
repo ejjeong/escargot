@@ -297,20 +297,24 @@ ESArrayObject* ESString::match(ESPointer* esptr, std::vector<int>* offsets) cons
     }
 
     //const char* targetString = utf16ToUtf8(m_string.data());
+    /*
     for (int i = 0; i < this->length(); i++) {
         wprintf(L"%x, ", m_string.data()[i]);
     }
     wprintf(L"\n");
+    */
 
 //    const char* targetString = m_string.utf8Data();
 //    std::string targetString = m_string.toStdString();
     NullableString targetString = toNullableUtf8(m_string);
     int len = targetString.length();
+    /*
     wprintf(L"targetString.length = %d\n", targetString.length());
     for (int i = 0; i < len; i++) {
         wprintf(L"%x, ", targetString.string()[i]);
     }
     wprintf(L"\n");
+    */
 
     int index = 0;
 
