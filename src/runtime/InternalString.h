@@ -293,12 +293,10 @@ protected:
 ALWAYS_INLINE InternalString utf8ToUtf16(const char *s, int length)
 {
     wchar_t* wstr = (wchar_t *)GC_malloc_atomic(length * 4 + 1);
-    /*
-    wprintf(L"[before change to utf16]\n");
+    wprintf(L"\n    [before change to utf16]\n");
     for (int i = 0; i < length; i++) {
-        wprintf(L"%x, ", s[i]);
+        wprintf(L"%x, ",(int) s[i]);
     }
-    */
     std::mbstate_t state = std::mbstate_t();
     wchar_t buffer [MB_CUR_MAX];
     memset(buffer, 0, MB_CUR_MAX);
@@ -318,12 +316,14 @@ ALWAYS_INLINE InternalString utf8ToUtf16(const char *s, int length)
         }
         pt8 += wlen;
     }
-    /*
-    wprintf(L"[After change to utf16]\n");
+    wprintf(L"\n   [After change to utf16]\n");
+    for (int i = 0; i < idx; i++) {
+        wprintf(L"%x, ",(int) wstr[i]);
+    }
+    wprintf(L"\n");
     for (int i = 0; i < idx; i++) {
         wprintf(L"%d, ", wstr[i]);
     }
-    */
     return InternalString(std::wstring(wstr, idx));
 }
 
