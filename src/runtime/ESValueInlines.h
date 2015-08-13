@@ -411,8 +411,13 @@ inline double ESValue::toNumber() const
         return asBoolean() ?  1 : 0;
     else if (isESPointer()) {
         ESPointer* o = asESPointer();
-        if (o->isESString())
-            return std::numeric_limits<double>::quiet_NaN();
+        if (o->isESString()) {
+            try{
+                return std::stod(o->asESString()->string());
+            }catch(...) {
+                return std::numeric_limits<double>::quiet_NaN();
+            }
+        }
         else if (o->isESStringObject())
             RELEASE_ASSERT_NOT_REACHED(); //TODO
         else if (o->isESObject())

@@ -4,6 +4,7 @@
 #include "vm/ESVMInstance.h"
 #include "runtime/ExecutionContext.h"
 #include "runtime/Environment.h"
+#include "runtime/NullableString.h"
 #include "ast/AST.h"
 
 namespace escargot {
@@ -279,7 +280,7 @@ InternalString ESValue::toInternalString() const
     return ret;
 }
 
-ESArrayObject* ESString::match(ESPointer* esptr, std::vector<int>* offsets) const
+ESArrayObject* ESString::match(ESPointer* esptr, std::vector<int>* offsets, std::vector<int>* offsetLength) const
 {
     escargot::ESArrayObject* ret = ESArrayObject::create(0, ESVMInstance::currentInstance()->globalObject()->arrayPrototype());
 
@@ -295,19 +296,21 @@ ESArrayObject* ESString::match(ESPointer* esptr, std::vector<int>* offsets) cons
         RELEASE_ASSERT_NOT_REACHED();
     }
 
-    const char* targetString = utf16ToUtf8(m_string->data());
+    NullableString targetString = toNullableUtf8(m_string);
     int index = 0;
 
     ESRegExpObject::prepareForRE2(source, option, [&](const char* RE2Source, const re2::RE2::Options& ops, const bool& isGlobal){
         re2::RE2 re(RE2Source, ops);
-        re2::StringPiece input(targetString);
+        re2::StringPiece input(targetString.string(), targetString.length());
         re2::StringPiece matched;
         const char* inputDataStart = input.data();
         while (re2::RE2::FindAndConsume(&input, re, &matched)) {
             if (offsets)
                 offsets->push_back(matched.data() - inputDataStart);
-            std::string std_matched(matched.data(), 0, matched.length());
-            InternalString int_str(std_matched.data());
+            if(offsetLength)
+                offsetLength->push_back(matched.length());
+
+            InternalString int_str = utf8ToUtf16(matched.data(), matched.length());
             ret->set(index, ESString::create(int_str));
             index++;
             if (!isGlobal)
@@ -315,7 +318,7 @@ ESArrayObject* ESString::match(ESPointer* esptr, std::vector<int>* offsets) cons
         }
     });
 
-    GC_free((char *)targetString);
+//    GC_free(targetString);
 
     return ret;
 }

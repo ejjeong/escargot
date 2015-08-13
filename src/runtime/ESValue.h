@@ -433,7 +433,7 @@ public:
         return ESString::create(ret);
     }
 
-    escargot::ESArrayObject* match(ESPointer* esptr, std::vector<int>* offsets = nullptr) const;
+    escargot::ESArrayObject* match(ESPointer* esptr, std::vector<int>* offsets = nullptr, std::vector<int>* offsetsLength = nullptr) const;
 
 
 protected:

@@ -32,7 +32,14 @@ GlobalObject::GlobalObject()
     set(L"NaN", ESValue(std::numeric_limits<double>::quiet_NaN()));
     set(strings->undefined, ESValue());
 
-    FunctionDeclarationNode* node = new FunctionDeclarationNode(InternalAtomicString(L"print"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+    FunctionDeclarationNode* node = new FunctionDeclarationNode(InternalAtomicString(L"dbgBreak"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        wprintf(L"dbgBreak\n");
+        return ESValue();
+    }), false, false);
+    auto brkFunction = ESFunctionObject::create(NULL, node);
+    set(L"dbgBreak", brkFunction);
+
+    node = new FunctionDeclarationNode(InternalAtomicString(L"print"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         if(instance->currentExecutionContext()->argumentCount()) {
             ESValue& val = instance->currentExecutionContext()->arguments()[0];
             InternalString str;
@@ -86,6 +93,7 @@ GlobalObject::GlobalObject()
             toString(val);
 
             wprintf(L"%ls\n", str.data());
+            fflush(stdout);
         }
         return ESValue();
     }), false, false);
@@ -652,9 +660,12 @@ void GlobalObject::installString()
         int length = instance->currentExecutionContext()->argumentCount();
 
         std::wstring elements;
-        elements.reserve(length);
+//        elements.reserve(length);
+        elements.resize(length);
+        wchar_t* data = const_cast<wchar_t *>(elements.data());
         for(int i = 0; i < length ; i ++) {
-            elements.append({(wchar_t)instance->currentExecutionContext()->arguments()[i].toInteger()});
+            data[i] = {(wchar_t)instance->currentExecutionContext()->arguments()[i].toInteger()};
+//            elements.append({(wchar_t)instance->currentExecutionContext()->arguments()[i].toInteger()});
         }
         instance->currentExecutionContext()->doReturn(ESString::create(InternalString(std::move(elements))));
         return ESValue();
@@ -766,8 +777,12 @@ void GlobalObject::installString()
 
         int argCount = instance->currentExecutionContext()->argumentCount();
 
-        const char* targetString = utf16ToUtf8(thisObject->asESStringObject()->getStringData()->string().data());
-        std::string new_this = std::string(targetString);
+        NullableString nullstr = toNullableUtf8(thisObject->asESStringObject()->getStringData()->string());
+        const char* targetString = nullstr.string();
+        int targetLen = nullstr.length();
+//        const char* targetString = utf16ToUtf8(thisObject->asESStringObject()->getStringData()->string().data());
+        int origin_len = thisObject->asESStringObject()->getStringData()->length();
+        std::string new_this = std::string(targetString, targetLen);
         if(argCount > 1) {
             ESPointer* esptr = instance->currentExecutionContext()->arguments()[0].asESPointer();
             const char* source;
@@ -786,28 +801,30 @@ void GlobalObject::installString()
             if (replaceValue.isESPointer() && replaceValue.asESPointer()->isESFunctionObject()) {
                 escargot::ESString* origStr = thisObject->asESStringObject()->getStringData();
                 std::vector<int> matchedOffsets;
-                escargot::ESArrayObject* ret = origStr->match(esptr, &matchedOffsets);
+                std::vector<int> matchedOffsetsLength;
+                escargot::ESArrayObject* ret = origStr->match(esptr, &matchedOffsets, &matchedOffsetsLength);
                 int32_t matchCount = ret->length().asInt32();
                 ESValue callee = replaceValue.asESPointer()->asESFunctionObject();
-                char * buf = (char *)utf16ToUtf8(origStr->string().data());
-                new_this = buf;
-                GC_free(buf);
-                int replacePos = 0;
-                int lastOffset = 0;
+
+                NullableString buf = toNullableUtf8(origStr->string());
+                new_this = std::string(buf.string(), buf.length());
+
+                //int replacePos = 0;
+                //int lastOffset = 0;
+                int offsetCauseByReplace = 0;
                 for(int32_t i = 0; i < matchCount ; i ++) {
-                    ESValue* arguments = (ESValue*)alloca(sizeof(ESValue) * (3));
+                    ESValue arguments[3];
                     arguments[0] = ret->get(i);
+                    //FIXME matchedOffsets[i[ is wrong. because, utf8.....
                     arguments[1] = ESValue(matchedOffsets[i]);
                     // TODO captures
                     arguments[2] = ESValue(origStr);
                     escargot::ESString* res = ESFunctionObject::call(callee, instance->globalObject(), arguments, 3, instance).toString();
-                    int origStringPieceLength = ret->get(i).asESPointer()->asESString()->length();
-                    replacePos += (matchedOffsets[i] - lastOffset);
-                    lastOffset = matchedOffsets[i];
-                    char* buf = (char *)utf16ToUtf8(res->string().data());
-                    new_this.replace(replacePos, origStringPieceLength, std::string(buf));
-                    GC_free(buf);
-                    replacePos += (res->string().length() - origStringPieceLength);
+                    NullableString nullbuf = toNullableUtf8(res->string());
+
+                    new_this.replace(matchedOffsets[i] + offsetCauseByReplace,
+                            matchedOffsetsLength[i], std::string(nullbuf.string(), nullbuf.length()));
+                    offsetCauseByReplace += nullbuf.length() - matchedOffsetsLength[i];
                 }
             } else {
                 InternalString replaceStringInternal = replaceValue.toInternalString();
@@ -815,6 +832,8 @@ void GlobalObject::installString()
 
                 ESRegExpObject::prepareForRE2(source, option, [&](const char* RE2Source, const re2::RE2::Options& ops, const bool& isGlobal){
                     re2::RE2 re(RE2Source, ops);
+
+                    //wprintf(L"this_len = %d\n", new_this.length());
 
                     if (isGlobal) {
                         re2::RE2::GlobalReplace(&new_this, re, replaceString);
@@ -825,9 +844,16 @@ void GlobalObject::installString()
                 GC_free((char *)replaceString);
             }
         }
-        InternalString int_str(new_this.data());
-        GC_free((char *)targetString);
-        instance->currentExecutionContext()->doReturn(ESString::create(int_str));
+        InternalString resultString = utf8ToUtf16(new_this.data(), new_this.length());
+//        InternalString int_str(new_this.data(), new_this.length());
+        //wprintf(L"utf16 resultString.length = %d\n", resultString.length());
+        /*
+        for (unsigned i = 0; i < resultString.length(); i++) {
+            wprintf(L"%d, ", resultString.data()[i]);
+        }
+        */
+//        GC_free((char *)targetString);
+        instance->currentExecutionContext()->doReturn(ESString::create(resultString));
 
         return ESValue();
     }), false, false);
