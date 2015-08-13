@@ -280,7 +280,7 @@ InternalString ESValue::toInternalString() const
     return ret;
 }
 
-ESArrayObject* ESString::match(ESPointer* esptr, std::vector<int>* offsets) const
+ESArrayObject* ESString::match(ESPointer* esptr, std::vector<int>* offsets, std::vector<int>* offsetLength) const
 {
     escargot::ESArrayObject* ret = ESArrayObject::create(0, ESVMInstance::currentInstance()->globalObject()->arrayPrototype());
 
@@ -326,8 +326,10 @@ ESArrayObject* ESString::match(ESPointer* esptr, std::vector<int>* offsets) cons
         while (re2::RE2::FindAndConsume(&input, re, &matched)) {
             if (offsets)
                 offsets->push_back(matched.data() - inputDataStart);
-            std::string std_matched(matched.data(), matched.length());
-            InternalString int_str(std_matched.data(), matched.length());
+            if(offsetLength)
+                offsetLength->push_back(matched.length());
+
+            InternalString int_str = utf8ToUtf16(matched.data(), matched.length());
             ret->set(index, ESString::create(int_str));
             index++;
             if (!isGlobal)

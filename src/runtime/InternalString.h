@@ -57,6 +57,48 @@ protected:
 
 extern InternalStringData emptyStringData;
 
+//http://egloos.zum.com/profrog/v/1177107
+ALWAYS_INLINE size_t utf8ToUtf16(char* UTF8, wchar_t& uc)
+{
+    size_t tRequiredSize = 0;
+
+    uc = 0x0000;
+
+    // ASCII byte
+    if( 0 == (UTF8[0] & 0x80) )
+    {
+       uc = UTF8[0];
+       tRequiredSize = 1;
+    }
+    else // Start byte for 2byte
+    if( 0xC0 == (UTF8[0] & 0xE0) &&
+           0x80 == (UTF8[1] & 0xC0) )
+    {
+       uc += (UTF8[0] & 0x1F) << 6;
+       uc += (UTF8[1] & 0x3F) << 0;
+       tRequiredSize = 2;
+    }
+    else // Start byte for 3byte
+    if( 0xE0 == (UTF8[0] & 0xE0) &&
+           0x80 == (UTF8[1] & 0xC0) &&
+           0x80 == (UTF8[2] & 0xC0) )
+    {
+       uc += (UTF8[0] & 0x1F) << 12;
+       uc += (UTF8[1] & 0x3F) << 6;
+       uc += (UTF8[2] & 0x3F) << 0;
+       tRequiredSize = 3;
+    }
+    else
+    {
+        // Invalid case
+        tRequiredSize = 1;
+        //RELEASE_ASSERT_NOT_REACHED();
+    }
+
+    return tRequiredSize;
+}
+
+
 ALWAYS_INLINE NullableString toNullableUtf8(std::wstring m_string)
 {
     unsigned strLength = m_string.length();
@@ -178,15 +220,6 @@ public:
         std::mbsrtowcs((wchar_t *)m_string->data(), &s, m_string->size(), &state);
     }
 
-    InternalString(const char* s, int length)
-    {
-        std::mbstate_t state = std::mbstate_t();
-        allocString(0);
-        m_string->resize(length);
-
-        std::mbsrtowcs((wchar_t *)m_string->data(), &s, length, &state);
-    }
-
     ALWAYS_INLINE InternalString(const wchar_t* s)
     {
         m_string = new(PointerFreeGC) InternalStringData(s);
@@ -292,37 +325,18 @@ protected:
 
 ALWAYS_INLINE InternalString utf8ToUtf16(const char *s, int length)
 {
-    wchar_t* wstr = (wchar_t *)GC_malloc_atomic(length * 4 + 1);
-    wprintf(L"\n    [before change to utf16]\n");
-    for (int i = 0; i < length; i++) {
-        wprintf(L"%x, ",(int) s[i]);
-    }
-    std::mbstate_t state = std::mbstate_t();
-    wchar_t buffer [MB_CUR_MAX];
-    memset(buffer, 0, MB_CUR_MAX);
+    wchar_t* wstr = (wchar_t *)GC_malloc_atomic(length * 6 + 1);
     char* pt8 = (char*) s;
     //wprintf(L"start length:%d\n", length);
     int wlen = 0;
     int idx = 0;
-    for (int i = 0; i < length; i+=wlen) {
-        wlen = std::mbtowc(buffer, pt8, MB_CUR_MAX);
-        if (wlen < 1) {
-            wlen = 1;
-            wstr[idx++] = '\0';
-        } else {
-            wcsncpy(wstr+idx, buffer, 1);
-     //       memcpy(wstr+idx, buffer, wlen);
-            idx++;
-        }
+    int decodeLength = 0;
+    while (decodeLength < length) {
+        wchar_t wc;
+        wlen = utf8ToUtf16(pt8,wc);
+        wstr[idx++] = wc;
         pt8 += wlen;
-    }
-    wprintf(L"\n   [After change to utf16]\n");
-    for (int i = 0; i < idx; i++) {
-        wprintf(L"%x, ",(int) wstr[i]);
-    }
-    wprintf(L"\n");
-    for (int i = 0; i < idx; i++) {
-        wprintf(L"%d, ", wstr[i]);
+        decodeLength += wlen;
     }
     return InternalString(std::wstring(wstr, idx));
 }

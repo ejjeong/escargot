@@ -793,29 +793,44 @@ void GlobalObject::installString()
             if (replaceValue.isESPointer() && replaceValue.asESPointer()->isESFunctionObject()) {
                 escargot::ESString* origStr = thisObject->asESStringObject()->getStringData();
                 std::vector<int> matchedOffsets;
-                escargot::ESArrayObject* ret = origStr->match(esptr, &matchedOffsets);
+                std::vector<int> matchedOffsetsLength;
+                escargot::ESArrayObject* ret = origStr->match(esptr, &matchedOffsets, &matchedOffsetsLength);
                 int32_t matchCount = ret->length().asInt32();
                 ESValue callee = replaceValue.asESPointer()->asESFunctionObject();
 
                 NullableString buf = toNullableUtf8(origStr->string());
                 new_this = std::string(buf.string(), buf.length());
 
-                int replacePos = 0;
-                int lastOffset = 0;
+                //int replacePos = 0;
+                //int lastOffset = 0;
+                int offsetCauseByReplace = 0;
                 for(int32_t i = 0; i < matchCount ; i ++) {
-                    ESValue* arguments = (ESValue*)alloca(sizeof(ESValue) * (3));
+                    ESValue arguments[3];
                     arguments[0] = ret->get(i);
+                    //FIXME matchedOffsets[i[ is wrong. because, utf8.....
                     arguments[1] = ESValue(matchedOffsets[i]);
                     // TODO captures
                     arguments[2] = ESValue(origStr);
                     escargot::ESString* res = ESFunctionObject::call(callee, instance->globalObject(), arguments, 3, instance).toString();
+                    NullableString nullbuf = toNullableUtf8(res->string());
+
+                    new_this.replace(matchedOffsets[i] + offsetCauseByReplace,
+                            matchedOffsetsLength[i], std::string(nullbuf.string(), nullbuf.length()));
+                    offsetCauseByReplace += nullbuf.length() - matchedOffsetsLength[i];
+                    /*
                     int origStringPieceLength = ret->get(i).asESPointer()->asESString()->length();
                     replacePos += (matchedOffsets[i] - lastOffset);
                     lastOffset = matchedOffsets[i];
-                    NullableString nullbuf = toNullableUtf8(res->string());
                     char* buf = nullbuf.string();
-                    new_this.replace(replacePos, origStringPieceLength, std::string(buf, nullbuf.length()));
+                    for(int i = 0; i < nullbuf.length() ; i ++) {
+                        int dd = buf[i];
+                        wprintf(L"%d ",(int)dd);
+                    }
+                    wprintf(L"\n");
                     replacePos += (res->string().length() - origStringPieceLength);
+                    fflush(stdout);
+                    new_this.replace(replacePos, origStringPieceLength, std::string(buf, nullbuf.length()));
+                    */
                 }
             } else {
                 InternalString replaceStringInternal = replaceValue.toInternalString();
