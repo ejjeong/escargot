@@ -296,7 +296,7 @@ ESArrayObject* ESString::match(ESPointer* esptr, std::vector<int>* offsets, std:
         RELEASE_ASSERT_NOT_REACHED();
     }
 
-    NullableString targetString = toNullableUtf8(m_string);
+    NullableString targetString = toNullableUtf8(*m_string);
     int index = 0;
 
     ESRegExpObject::prepareForRE2(source, option, [&](const char* RE2Source, const re2::RE2::Options& ops, const bool& isGlobal){

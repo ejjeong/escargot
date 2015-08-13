@@ -99,7 +99,7 @@ ALWAYS_INLINE size_t utf8ToUtf16(char* UTF8, wchar_t& uc)
 }
 
 
-ALWAYS_INLINE NullableString toNullableUtf8(std::wstring m_string)
+ALWAYS_INLINE NullableString toNullableUtf8(const std::wstring& m_string)
 {
     unsigned strLength = m_string.length();
     const wchar_t* pt = m_string.data();
