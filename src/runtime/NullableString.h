@@ -3,12 +3,15 @@
 
 namespace escargot {
 
-class NullableString : public gc_cleanup {
+class NullableString {
 public:
     NullableString(char* str, int len)
         :m_string(str),
          m_length(len)
     {
+    }
+    ~NullableString() {
+        delete [] m_string;
     }
     char* string() {
         return m_string;

@@ -304,11 +304,11 @@ ESArrayObject* ESString::match(ESPointer* esptr, std::vector<int>* offsets) cons
 
 //    const char* targetString = m_string.utf8Data();
 //    std::string targetString = m_string.toStdString();
-    NullableString* targetString = toNullableString(m_string);
-    int len = targetString->length();
-    wprintf(L"targetString.length = %d\n", targetString->length());
+    NullableString targetString = toNullableUtf8(m_string);
+    int len = targetString.length();
+    wprintf(L"targetString.length = %d\n", targetString.length());
     for (int i = 0; i < len; i++) {
-        wprintf(L"%x, ", targetString->string()[i]);
+        wprintf(L"%x, ", targetString.string()[i]);
     }
     wprintf(L"\n");
 
@@ -316,7 +316,7 @@ ESArrayObject* ESString::match(ESPointer* esptr, std::vector<int>* offsets) cons
 
     ESRegExpObject::prepareForRE2(source, option, [&](const char* RE2Source, const re2::RE2::Options& ops, const bool& isGlobal){
         re2::RE2 re(RE2Source, ops);
-        re2::StringPiece input(targetString->string(), targetString->length());
+        re2::StringPiece input(targetString.string(), targetString.length());
         re2::StringPiece matched;
         const char* inputDataStart = input.data();
         while (re2::RE2::FindAndConsume(&input, re, &matched)) {

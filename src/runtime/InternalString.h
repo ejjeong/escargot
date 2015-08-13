@@ -57,14 +57,14 @@ protected:
 
 extern InternalStringData emptyStringData;
 
-ALWAYS_INLINE NullableString* toNullableString(std::wstring m_string)
+ALWAYS_INLINE NullableString toNullableUtf8(std::wstring m_string)
 {
     unsigned strLength = m_string.length();
     const wchar_t* pt = m_string.data();
     char buffer [MB_CUR_MAX];
     memset(buffer, 0, MB_CUR_MAX);
 
-    char* string = new char[strLength*MB_CUR_MAX];
+    char* string = new char[strLength * MB_CUR_MAX + 1];
 
     int idx = 0;
     for (unsigned i = 0; i < strLength; i++) {
@@ -77,40 +77,7 @@ ALWAYS_INLINE NullableString* toNullableString(std::wstring m_string)
         }
         pt++;
     }
-    return new NullableString(string, idx);
-}
-
-ALWAYS_INLINE InternalStringStd utf8ToUtf16(const char *s, int length)
-{
-    wchar_t* wstr = new wchar_t[length+1];
-    wprintf(L"before change to utf16\n");
-    for (int i = 0; i < length; i++) {
-        wprintf(L"%d, ", s[i]);
-    }
-    std::mbstate_t state = std::mbstate_t();
-    wchar_t buffer [MB_CUR_MAX];
-    memset(buffer, 0, MB_CUR_MAX);
-    int idx = 0;
-    char* pt8 = (char*) s;
-    wprintf(L"start length:%d\n", length);
-    int wlen = 0;
-    for (int i = 0; i < length; i+=wlen) {
-        wlen = std::mbtowc(buffer, pt8, MB_CUR_MAX);
-        if (wlen < 1) {
-            wlen = 1;
-            wstr[idx++] = '\0';
-        } else {
-            memcpy(wstr+idx, buffer, length);
-            idx++;
-        }
-        pt8 += wlen;
-    }
-    //        std::mbsrtowcs((wchar_t *)m_string->data(), &s, length, &state);
-    wprintf(L"After change to utf16\n");
-    for (int i = 0; i < idx; i++) {
-        wprintf(L"%d, ", wstr[i]);
-    }
-    return std::wstring(wstr, idx);
+    return NullableString(string, idx);
 }
 
 ALWAYS_INLINE const char * utf16ToUtf8(const wchar_t *t)
@@ -321,6 +288,38 @@ public:
 protected:
     InternalStringData* m_string;
 };
+
+ALWAYS_INLINE InternalString utf8ToUtf16(const char *s, int length)
+{
+    wchar_t* wstr = (wchar_t *)GC_malloc_atomic(length * 4 + 1);
+    wprintf(L"before change to utf16\n");
+    for (int i = 0; i < length; i++) {
+        wprintf(L"%d, ", s[i]);
+    }
+    std::mbstate_t state = std::mbstate_t();
+    wchar_t buffer [MB_CUR_MAX];
+    memset(buffer, 0, MB_CUR_MAX);
+    int idx = 0;
+    char* pt8 = (char*) s;
+    wprintf(L"start length:%d\n", length);
+    int wlen = 0;
+    for (int i = 0; i < length; i+=wlen) {
+        wlen = std::mbtowc(buffer, pt8, MB_CUR_MAX);
+        if (wlen < 1) {
+            wlen = 1;
+            wstr[idx++] = '\0';
+        } else {
+            memcpy(wstr+idx, buffer, wlen);
+            idx++;
+        }
+        pt8 += wlen;
+    }
+    wprintf(L"After change to utf16\n");
+    for (int i = 0; i < idx; i++) {
+        wprintf(L"%d, ", wstr[i]);
+    }
+    return InternalString(std::wstring(wstr, idx));
+}
 
 ALWAYS_INLINE bool operator == (const InternalString& a, const InternalString& b)
 {
