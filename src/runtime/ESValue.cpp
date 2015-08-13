@@ -298,7 +298,7 @@ ESArrayObject* ESString::match(ESPointer* esptr, std::vector<int>* offsets) cons
 
     //const char* targetString = utf16ToUtf8(m_string.data());
     for (int i = 0; i < this->length(); i++) {
-        wprintf(L"%d, ", m_string.data()[i]);
+        wprintf(L"%x, ", m_string.data()[i]);
     }
     wprintf(L"\n");
 

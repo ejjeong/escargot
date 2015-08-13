@@ -821,8 +821,8 @@ void GlobalObject::installString()
 //                    char* buf = (char *)utf16ToUtf8(res->string().data());
                     NullableString* nullbuf = toNullableString(res->string());
                     char* buf = nullbuf->string();
-                    new_this.replace(replacePos, origStringPieceLength, std::string(buf));
-                    //GC_free(buf);
+                    new_this.replace(replacePos, origStringPieceLength, std::string(buf, nullbuf->length()));
+//                    GC_free(buf);
                     replacePos += (res->string().length() - origStringPieceLength);
                 }
             } else {
@@ -843,14 +843,15 @@ void GlobalObject::installString()
                 GC_free((char *)replaceString);
             }
         }
-         wprintf(L"df = %d\n", new_this.length());
-        InternalString int_str(new_this.data(), new_this.length());
-        wprintf(L"utf16 resultString.length = %d\n", int_str.length());
-        for (unsigned i = 0; i < int_str.length(); i++) {
-            wprintf(L"%d, ", int_str.data()[i]);
+        wprintf(L"df = %d\n", new_this.length());
+        InternalStringStd resultString = utf8ToUtf16(new_this.data(), new_this.length());
+//        InternalString int_str(new_this.data(), new_this.length());
+        wprintf(L"utf16 resultString.length = %d\n", resultString.length());
+        for (unsigned i = 0; i < resultString.length(); i++) {
+            wprintf(L"%d, ", resultString[i]);
         }
-        //GC_free((char *)targetString);
-        instance->currentExecutionContext()->doReturn(ESString::create(int_str));
+//        GC_free((char *)targetString);
+        instance->currentExecutionContext()->doReturn(ESString::create(resultString));
 
         return ESValue();
     }), false, false);
