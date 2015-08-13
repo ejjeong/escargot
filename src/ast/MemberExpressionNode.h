@@ -18,6 +18,40 @@ public:
         m_computed = computed;
     }
 
+    ESSlot* executeForWrite(ESVMInstance* instance)
+    {
+        ESValue value = m_object->execute(instance);
+        ExecutionContext* ec = instance->currentExecutionContext();
+        ESSlot* slot;
+
+        if(UNLIKELY(value.isPrimitive())) {
+            value = value.toObject();
+        }
+
+        ASSERT(value.isESPointer() && value.asESPointer()->isESObject());
+
+        ESObject* obj  = value.asESPointer()->asESObject();
+        ec->setLastESObjectMetInMemberExpressionNode(obj);
+
+        if(!m_computed && m_property->type() == NodeType::Identifier) {
+            if(obj->isESArrayObject()) {
+                slot = obj->asESArrayObject()->definePropertyOrThrow(((IdentifierNode *)m_property)->esName());
+            } else {
+                slot = obj->definePropertyOrThrow(((IdentifierNode *)m_property)->nonAtomicName(), true, true, true);
+            }
+        } else {
+            ESValue computedPropertyValue = m_property->execute(instance);
+            if(obj->isESArrayObject()) {
+                slot = obj->asESArrayObject()->definePropertyOrThrow(computedPropertyValue);
+            } else {
+                //MARK if type of computedPropertyValue is ESString, we must copy content of ESString into InternalString. it's bad
+                InternalString computedPropertyName = computedPropertyValue.toInternalString();
+                slot = obj->definePropertyOrThrow(computedPropertyName, true, true, true);
+            }
+
+        }
+        return slot;
+    }
     ESValue execute(ESVMInstance* instance)
     {
         ESValue value = m_object->execute(instance);
@@ -32,7 +66,7 @@ public:
                 if(slot->isDataProperty()) {
                     ESValue ret = slot->value(instance->globalObject()->stringObjectProxy());
                     if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->functionAST()->isBuiltInFunction()) {
-                        instance->currentExecutionContext()->setLastESObjectMetInMemberExpressionNode(instance->globalObject()->stringObjectProxy(), slot);
+                        instance->currentExecutionContext()->setLastESObjectMetInMemberExpressionNode(instance->globalObject()->stringObjectProxy());
                         return ret;
                     }
                 } else {
@@ -50,23 +84,17 @@ public:
             ESObject* obj = value.asESPointer()->asESObject();
             ESSlot* slot = NULL;
             InternalString computedPropertyName;
-            ESValue computedPropertyValue(ESValue::ESForceUninitialized);
             ExecutionContext* ec = instance->currentExecutionContext();
-            bool shouldSearchPrototype = true;
 
             if(!m_computed && m_property->type() == NodeType::Identifier) {
                 computedPropertyName = ((IdentifierNode *)m_property)->nonAtomicName();
                 slot = obj->find(computedPropertyName);
-                computedPropertyValue = ESValue(((IdentifierNode *)m_property)->esName());
-                if(ec->inWriteMode()) {
-                    shouldSearchPrototype = false;
-                }
             } else {
-                computedPropertyValue = m_property->execute(instance);
+                ESValue computedPropertyValue = m_property->execute(instance);
                 if(obj->isESArrayObject()) {
                     if(computedPropertyValue.isInt32())
                         slot = obj->asESArrayObject()->find(computedPropertyValue);
-                    if(!slot && !ec->inWriteMode()) {
+                    if(!slot) {
                         computedPropertyName = computedPropertyValue.toInternalString();
                     }
                 } else {
@@ -74,17 +102,13 @@ public:
                     slot = obj->find(computedPropertyName);
                 }
 
-                //CHECKTHIS
-                if(ec->inWriteMode() && m_property->type() == NodeType::Identifier) {
-                    shouldSearchPrototype = false;
-                }
             }
 
             if(LIKELY(slot != NULL)) {
-                ec->setLastESObjectMetInMemberExpressionNode(obj, slot);
+                ec->setLastESObjectMetInMemberExpressionNode(obj);
                 return slot->value(obj);
-            } else if(shouldSearchPrototype) {
-                ec->setLastESObjectMetInMemberExpressionNode(obj, computedPropertyValue);
+            } else {
+                ec->setLastESObjectMetInMemberExpressionNode(obj);
                 //FIXME this code duplicated with ESObject::get
                 ESValue prototype = obj->__proto__();
                 while(prototype.isESPointer() && prototype.asESPointer()->isESObject()) {
@@ -94,8 +118,7 @@ public:
                         return s->value(obj);
                     prototype = new_obj->__proto__();
                 }
-            } else {
-                ec->setLastESObjectMetInMemberExpressionNode(obj, computedPropertyValue);
+
                 return ESValue();
             }
         } else if (value.isESString()) {

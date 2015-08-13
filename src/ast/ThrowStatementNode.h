@@ -17,7 +17,6 @@ public:
 
     ESValue execute(ESVMInstance* instance)
     {
-        instance->currentExecutionContext()->setWriteMode(false);
         ESValue arg = m_argument->execute(instance);
         throw arg;
         RELEASE_ASSERT_NOT_REACHED();

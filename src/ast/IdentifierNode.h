@@ -26,14 +26,9 @@ public:
 
     ESValue execute(ESVMInstance* instance)
     {
-        return executeForWrite(instance)->readDataProperty();
-    }
-
-    ALWAYS_INLINE ESSlot* executeForWrite(ESVMInstance* instance)
-    {
         ExecutionContext* ec = instance->currentExecutionContext();
         if (LIKELY(ec == m_cacheCheckExecutionContext && m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
-            return m_cachedSlot;
+            return m_cachedSlot->readDataProperty();
         } else {
             ESSlot* slot;
 
@@ -41,7 +36,6 @@ public:
                 slot = ec->environment()->record()->toDeclarativeEnvironmentRecord()->getBindingValueForNonActivationMode(m_fastAccessIndex);
             }
             else {
-                //nonAtomicName().show();
                 slot = ec->resolveBinding(name(), nonAtomicName());
             }
 
@@ -49,7 +43,7 @@ public:
                 m_cachedSlot = slot;
                 m_cacheCheckExecutionContext = ec;
                 m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
-                return slot;
+                return slot->readDataProperty();
             }
 
             ESFunctionObject* fn = instance->globalObject()->referenceError();
@@ -66,6 +60,34 @@ public:
             receiver->set(InternalString(L"message"), ESString::create(err_msg));
 
             throw ESValue(receiver);
+        }
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+
+    ESSlot* executeForWrite(ESVMInstance* instance)
+    {
+        ExecutionContext* ec = instance->currentExecutionContext();
+        if (LIKELY(ec == m_cacheCheckExecutionContext && m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
+            return m_cachedSlot;
+        } else {
+            ESSlot* slot;
+
+            if(LIKELY(m_canUseFastAccess && !ec->needsActivation())) {
+                slot = ec->environment()->record()->toDeclarativeEnvironmentRecord()->getBindingValueForNonActivationMode(m_fastAccessIndex);
+            }
+            else {
+                slot = ec->resolveBinding(name(), nonAtomicName());
+            }
+
+            if(LIKELY(slot != NULL)) {
+                m_cachedSlot = slot;
+                m_cacheCheckExecutionContext = ec;
+                m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
+                return slot;
+            } else {
+                //CHECKTHIS true, true, false is right?
+                return instance->globalObject()->definePropertyOrThrow(m_nonAtomicName,true, true, false);
+            }
         }
     }
 

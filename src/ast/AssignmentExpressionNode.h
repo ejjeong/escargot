@@ -61,80 +61,35 @@ public:
     ESValue execute(ESVMInstance* instance)
     {
         ESValue rvalue(ESValue::ESForceUninitialized);
-        switch(m_operator) {
-        case SimpleAssignment:
-        {
+        ESSlot* slot;
+        ExecutionContext* ec = instance->currentExecutionContext();
+        ec->resetLastESObjectMetInMemberExpressionNode();
+
+        if(LIKELY(m_operator == SimpleAssignment)) {
             //http://www.ecma-international.org/ecma-262/5.1/#sec-11.13.1
             rvalue = m_right->execute(instance);
-            writeValue(instance, m_left, rvalue);
-            break;
-        }
-        case CompoundAssignment:
-        {
-            if(m_compoundOperator == BinaryExpressionNode::Plus && m_left->type() == NodeType::Identifier) {
-                ESValue lresult = m_left->execute(instance);
+            slot = m_left->executeForWrite(instance);
+        } else { //CompoundAssignment
+            ASSERT(m_operator == CompoundAssignment);
+            if(UNLIKELY(m_compoundOperator == BinaryExpressionNode::Plus && m_left->type() == NodeType::Identifier)) {
+                slot = m_left->executeForWrite(instance);
+                ESValue lresult = slot->value(ec->lastESObjectMetInMemberExpressionNode());
                 ESValue rresult = m_right->execute(instance);
                 if(lresult.isESString() && !lresult.asESString()->isStaticString()) {
                     const_cast<InternalStringStd &>(lresult.asESString()->string()).append(rresult.toString()->string());
-                    rvalue = lresult;
+                    return lresult;
                 } else {
-                    rvalue = BinaryExpressionNode::execute(instance, m_left->execute(instance), m_right->execute(instance), m_compoundOperator);
-                    writeValue(instance, m_left, rvalue);
+                    rvalue = BinaryExpressionNode::execute(instance, slot->value(ec->lastESObjectMetInMemberExpressionNode()), rresult, m_compoundOperator);
                 }
-            } else {
-                rvalue = BinaryExpressionNode::execute(instance, m_left->execute(instance), m_right->execute(instance), m_compoundOperator);
-                writeValue(instance, m_left, rvalue);
             }
-            break;
-        }
-        default:
-            RELEASE_ASSERT_NOT_REACHED();
-            break;
+            slot = m_left->executeForWrite(instance);
+            rvalue = BinaryExpressionNode::execute(instance, slot->value(ec->lastESObjectMetInMemberExpressionNode()), m_right->execute(instance), m_compoundOperator);
         }
 
+        slot->setValue(rvalue, ec->lastESObjectMetInMemberExpressionNode());
         return rvalue;
     }
 
-    ALWAYS_INLINE static void writeValue(ESVMInstance* instance, Node* leftHandNode, const ESValue& rvalue)
-    {
-        if(leftHandNode->type() == NodeType::Identifier) {
-            IdentifierNode* idNode = (IdentifierNode *)leftHandNode;
-            try {
-                idNode->executeForWrite(instance)->setDataProperty(rvalue);
-            } catch(ESValue& err) {
-                if(err.isESPointer() && err.asESPointer()->isESObject() &&
-                        (err.asESPointer()->asESObject()->constructor().asESPointer() == instance->globalObject()->referenceError())) {
-                    //TODO set proper flags
-                    instance->globalObject()->set(idNode->nonAtomicName(), rvalue);
-                } else {
-                    throw err;
-                }
-            }
-
-        } else {
-            ExecutionContext* ec = instance->currentExecutionContext();
-            //ec->resetLastESObjectMetInMemberExpressionNode();
-            ec->setWriteMode(true);
-            leftHandNode->execute(instance);
-            ec->setWriteMode(false);
-
-            ESObject* obj = ec->lastESObjectMetInMemberExpressionNode();
-            if(UNLIKELY(!obj)) {
-                throw ESValue(ESString::create(InternalString(L"could not assign to left hand node lastESObjectMetInMemberExpressionNode==NULL")));
-            }
-
-            if(ec->isLastUsedPropertyValueInMemberExpressionNodeSetted()) {
-                if(obj->isESArrayObject()) {
-                    obj->asESArrayObject()->set(ec->lastUsedPropertyValueInMemberExpressionNode(), rvalue);
-                } else {
-                    obj->set(ec->lastUsedPropertyValueInMemberExpressionNode(), rvalue);
-                }
-            } else {
-                ec->lastUsedPropertySlotInMemberExpressionNode()->setValue(rvalue, obj);
-            }
-
-        }
-    }
 protected:
     Node* m_left; //left: Pattern;
     Node* m_right; //right: Expression;

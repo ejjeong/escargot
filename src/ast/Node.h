@@ -78,6 +78,11 @@ public:
         return ESValue();
     }
 
+    virtual ESSlot* executeForWrite(ESVMInstance* instance)
+    {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+
     virtual ~Node()
     {
 

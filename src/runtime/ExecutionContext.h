@@ -44,34 +44,9 @@ public:
         return m_lastESObjectMetInMemberExpressionNode;
     }
 
-    ALWAYS_INLINE ESValue lastUsedPropertyValueInMemberExpressionNode()
-    {
-        return m_lastUsedPropertyValueInMemberExpressionNode;
-    }
-
-    ALWAYS_INLINE ESSlot* lastUsedPropertySlotInMemberExpressionNode()
-    {
-        return m_lastUsedPropertySlotInMemberExpressionNode;
-    }
-
-    ALWAYS_INLINE void setLastESObjectMetInMemberExpressionNode(ESObject* obj, const ESValue& value)
+    ALWAYS_INLINE void setLastESObjectMetInMemberExpressionNode(ESObject* obj)
     {
         m_lastESObjectMetInMemberExpressionNode = obj;
-        m_lastUsedPropertyValueInMemberExpressionNode = value;
-        m_isLastUsedPropertyValueInMemberExpressionNodeSetted = true;
-    }
-
-    ALWAYS_INLINE void setLastESObjectMetInMemberExpressionNode(ESObject* obj, ESSlot* slot)
-    {
-        m_lastESObjectMetInMemberExpressionNode = obj;
-        m_lastUsedPropertySlotInMemberExpressionNode = slot;
-        m_isLastUsedPropertyValueInMemberExpressionNodeSetted = false;
-    }
-
-
-    ALWAYS_INLINE bool isLastUsedPropertyValueInMemberExpressionNodeSetted()
-    {
-        return m_isLastUsedPropertyValueInMemberExpressionNodeSetted;
     }
 
     void doReturn(const ESValue& returnValue)
@@ -120,8 +95,6 @@ public:
 
     ALWAYS_INLINE bool needsActivation() { return m_needsActivation; } //child & parent AST has eval, with, catch
     ALWAYS_INLINE bool isNewExpression() { return m_isNewExpression; }
-    ALWAYS_INLINE bool inWriteMode() { return m_inWriteMode; }
-    ALWAYS_INLINE void setWriteMode(bool b) { m_inWriteMode = b; }
     ExecutionContext* callerContext() { return m_callerContext; }
     ESValue* arguments() { return m_arguments; }
     size_t argumentCount() { return m_argumentCount; }
@@ -131,7 +104,6 @@ private:
 
     bool m_needsActivation;
     bool m_isNewExpression;
-    bool m_inWriteMode;
 
     ExecutionContext* m_callerContext;
 
@@ -142,9 +114,6 @@ private:
     LexicalEnvironment* m_variableEnvironment;
 
     ESObject* m_lastESObjectMetInMemberExpressionNode;
-    bool m_isLastUsedPropertyValueInMemberExpressionNodeSetted;
-    ESValue m_lastUsedPropertyValueInMemberExpressionNode;
-    ESSlot* m_lastUsedPropertySlotInMemberExpressionNode;
 
     ESValue m_returnValue;
     std::jmp_buf m_returnPosition;

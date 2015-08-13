@@ -25,6 +25,9 @@ public:
         if (exprValue.isNull() || exprValue.isUndefined())
             return ESValue();
 
+        ExecutionContext* ec = instance->currentExecutionContext();
+        ec->resetLastESObjectMetInMemberExpressionNode();
+
         std::vector<ESValue> propertyVals;
         if (exprValue.isESPointer() && exprValue.asESPointer()->isESArrayObject()) {
             ESArrayObject* arr = exprValue.asESPointer()->asESArrayObject();
@@ -37,20 +40,24 @@ public:
         obj->enumeration([&propertyNames](const InternalString& key, ESSlot* slot) {
             propertyNames.push_back(key);
         });
-        instance->currentExecutionContext()->setJumpPositionAndExecute([&](){
+        ec->setJumpPositionAndExecute([&](){
             jmpbuf_wrapper cont;
             int r = setjmp(cont.m_buffer);
             if (r != 1) {
-                instance->currentExecutionContext()->pushContinuePosition(cont);
+                ec->pushContinuePosition(cont);
             }
             for (unsigned int i=0; i<propertyVals.size(); i++) {
-                AssignmentExpressionNode::writeValue(instance, m_left, propertyVals[i]);
+                ec->resetLastESObjectMetInMemberExpressionNode();
+                ESSlot* slot = m_left->executeForWrite(instance);
+                slot->setValue(propertyVals[i], ec->lastESObjectMetInMemberExpressionNode());
                 m_body->execute(instance);
             }
             for (unsigned int i=0; i<propertyNames.size(); i++) {
                 if (obj->hasKey(propertyNames[i])) {
                     ESString* name = ESString::create(propertyNames[i]);
-                    AssignmentExpressionNode::writeValue(instance, m_left, name);
+                    ec->resetLastESObjectMetInMemberExpressionNode();
+                    ESSlot* slot = m_left->executeForWrite(instance);
+                    slot->setValue(name, ec->lastESObjectMetInMemberExpressionNode());
                     m_body->execute(instance);
                 }
             }

@@ -30,7 +30,10 @@ public:
 
     ESValue execute(ESVMInstance* instance)
     {
-        ESValue argval = m_argument->execute(instance);
+        ExecutionContext* ec = instance->currentExecutionContext();
+        ec->resetLastESObjectMetInMemberExpressionNode();
+        ESSlot* slot = m_argument->executeForWrite(instance);
+        ESValue argval = slot->value(ec->lastESObjectMetInMemberExpressionNode());
         ESValue ret(ESValue::ESForceUninitialized);
         if (!m_prefix)
             ret = argval;
@@ -53,7 +56,7 @@ public:
             }
         }
 
-        AssignmentExpressionNode::writeValue(instance, m_argument, argval);
+        slot->setValue(argval, ec->lastESObjectMetInMemberExpressionNode());
 
         if (m_prefix)
             ret = argval;
