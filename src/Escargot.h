@@ -32,6 +32,7 @@
 #include <rapidjson/filereadstream.h>
 #include <rapidjson/memorystream.h>
 #include <rapidjson/internal/dtoa.h>
+#include <rapidjson/internal/strtod.h>
 
 #include <re2/re2.h>
 

@@ -32,7 +32,14 @@ GlobalObject::GlobalObject()
     set(L"NaN", ESValue(std::numeric_limits<double>::quiet_NaN()));
     set(strings->undefined, ESValue());
 
-    FunctionDeclarationNode* node = new FunctionDeclarationNode(InternalAtomicString(L"print"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+    FunctionDeclarationNode* node = new FunctionDeclarationNode(InternalAtomicString(L"dbgBreak"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        wprintf(L"dbgBreak\n");
+        return ESValue();
+    }), false, false);
+    auto brkFunction = ESFunctionObject::create(NULL, node);
+    set(L"dbgBreak", brkFunction);
+
+    node = new FunctionDeclarationNode(InternalAtomicString(L"print"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         if(instance->currentExecutionContext()->argumentCount()) {
             ESValue& val = instance->currentExecutionContext()->arguments()[0];
             InternalString str;
@@ -86,6 +93,7 @@ GlobalObject::GlobalObject()
             toString(val);
 
             wprintf(L"%ls\n", str.data());
+            fflush(stdout);
         }
         return ESValue();
     }), false, false);

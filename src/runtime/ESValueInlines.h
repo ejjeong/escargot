@@ -412,10 +412,11 @@ inline double ESValue::toNumber() const
     else if (isESPointer()) {
         ESPointer* o = asESPointer();
         if (o->isESString()) {
-            long str = wcstol(o->asESString()->string().data(), NULL, 10);
-            return str;
-            //FIXME: error
-            //return std::numeric_limits<double>::quiet_NaN();
+            try{
+                return std::stod(o->asESString()->string());
+            }catch(...) {
+                return std::numeric_limits<double>::quiet_NaN();
+            }
         }
         else if (o->isESStringObject())
             RELEASE_ASSERT_NOT_REACHED(); //TODO
