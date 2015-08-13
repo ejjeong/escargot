@@ -94,6 +94,27 @@ protected:
     SourceLocation m_sourceLocation;
 };
 
+class ESSlotWriterForAST {
+public:
+    ALWAYS_INLINE static void prepareExecuteForWriteASTNode(ExecutionContext* ec)
+    {
+        ec->resetLastESObjectMetInMemberExpressionNode();
+    }
+
+    ALWAYS_INLINE static ESValue readValue(ESSlot* slot, ExecutionContext* ec)
+    {
+        return slot->value(ec->lastESObjectMetInMemberExpressionNode());
+    }
+
+    ALWAYS_INLINE static void setValue(ESSlot* slot, ExecutionContext* ec, ESValue v)
+    {
+        if(v.isESString()) {
+            v = ESString::create(v.asESString()->string());
+        }
+        slot->setValue(v, ec->lastESObjectMetInMemberExpressionNode());
+    }
+};
+
 }
 
 #endif

@@ -31,9 +31,9 @@ public:
     ESValue execute(ESVMInstance* instance)
     {
         ExecutionContext* ec = instance->currentExecutionContext();
-        ec->resetLastESObjectMetInMemberExpressionNode();
+        ESSlotWriterForAST::prepareExecuteForWriteASTNode(ec);
         ESSlot* slot = m_argument->executeForWrite(instance);
-        ESValue argval = slot->value(ec->lastESObjectMetInMemberExpressionNode());
+        ESValue argval = ESSlotWriterForAST::readValue(slot, ec);
         ESValue ret(ESValue::ESForceUninitialized);
         if (!m_prefix)
             ret = argval;
@@ -56,7 +56,7 @@ public:
             }
         }
 
-        slot->setValue(argval, ec->lastESObjectMetInMemberExpressionNode());
+        ESSlotWriterForAST::setValue(slot, ec, argval);
 
         if (m_prefix)
             ret = argval;

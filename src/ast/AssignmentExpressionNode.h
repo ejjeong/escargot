@@ -63,7 +63,7 @@ public:
         ESValue rvalue(ESValue::ESForceUninitialized);
         ESSlot* slot;
         ExecutionContext* ec = instance->currentExecutionContext();
-        ec->resetLastESObjectMetInMemberExpressionNode();
+        ESSlotWriterForAST::prepareExecuteForWriteASTNode(ec);
 
         if(LIKELY(m_operator == SimpleAssignment)) {
             //http://www.ecma-international.org/ecma-262/5.1/#sec-11.13.1
@@ -73,9 +73,9 @@ public:
             ASSERT(m_operator == CompoundAssignment);
             if(UNLIKELY(m_compoundOperator == BinaryExpressionNode::Plus && m_left->type() == NodeType::Identifier)) {
                 slot = m_left->executeForWrite(instance);
-                ESValue lresult = slot->value(ec->lastESObjectMetInMemberExpressionNode());
+                ESValue lresult = ESSlotWriterForAST::readValue(slot, ec);
                 ESValue rresult = m_right->execute(instance);
-                if(lresult.isESString() && !lresult.asESString()->isStaticString()) {
+                if(lresult.isESString()) {
                     const_cast<InternalStringStd &>(lresult.asESString()->string()).append(rresult.toString()->string());
                     return lresult;
                 } else {
@@ -86,7 +86,7 @@ public:
             rvalue = BinaryExpressionNode::execute(instance, slot->value(ec->lastESObjectMetInMemberExpressionNode()), m_right->execute(instance), m_compoundOperator);
         }
 
-        slot->setValue(rvalue, ec->lastESObjectMetInMemberExpressionNode());
+        ESSlotWriterForAST::setValue(slot, ec, rvalue);
         return rvalue;
     }
 

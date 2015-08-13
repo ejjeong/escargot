@@ -47,17 +47,17 @@ public:
                 ec->pushContinuePosition(cont);
             }
             for (unsigned int i=0; i<propertyVals.size(); i++) {
-                ec->resetLastESObjectMetInMemberExpressionNode();
+                ESSlotWriterForAST::prepareExecuteForWriteASTNode(ec);
                 ESSlot* slot = m_left->executeForWrite(instance);
-                slot->setValue(propertyVals[i], ec->lastESObjectMetInMemberExpressionNode());
+                ESSlotWriterForAST::setValue(slot, ec, propertyVals[i]);
                 m_body->execute(instance);
             }
             for (unsigned int i=0; i<propertyNames.size(); i++) {
                 if (obj->hasKey(propertyNames[i])) {
                     ESString* name = ESString::create(propertyNames[i]);
-                    ec->resetLastESObjectMetInMemberExpressionNode();
+                    ESSlotWriterForAST::prepareExecuteForWriteASTNode(ec);
                     ESSlot* slot = m_left->executeForWrite(instance);
-                    slot->setValue(name, ec->lastESObjectMetInMemberExpressionNode());
+                    ESSlotWriterForAST::setValue(slot, ec, name);
                     m_body->execute(instance);
                 }
             }
