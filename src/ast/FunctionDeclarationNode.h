@@ -13,8 +13,8 @@ public:
     {
     }
 
-    FunctionDeclarationNode(const InternalString& id, InternalAtomicStringVector&& params, Node* body, bool isGenerator, bool isExpression, bool isBuiltInFunction = true)
-            : FunctionNode(NodeType::FunctionDeclaration, id.data(), std::move(params), body, isGenerator, isExpression, isBuiltInFunction)
+    FunctionDeclarationNode(ESString* id, InternalAtomicStringVector&& params, Node* body, bool isGenerator, bool isExpression, bool isBuiltInFunction = true)
+            : FunctionNode(NodeType::FunctionDeclaration, id->data(), std::move(params), body, isGenerator, isExpression, isBuiltInFunction)
     {
     }
 
@@ -27,7 +27,7 @@ public:
         prototype->setConstructor(function);
         prototype->set__proto__(instance->globalObject()->object());
         function->setProtoType(prototype);
-        function->set(strings->name, ESString::create(InternalString(m_id.data())));
+        function->set(strings->name, ESString::create(m_id.data()));
         /////////////////////////////////////////////
         instance->currentExecutionContext()->environment()->record()->createMutableBindingForAST(m_id, nonAtomicId(), false);
         instance->currentExecutionContext()->environment()->record()->setMutableBinding(m_id, nonAtomicId(), function, false);

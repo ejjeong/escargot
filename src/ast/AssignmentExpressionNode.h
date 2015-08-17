@@ -23,35 +23,35 @@ public:
         CompoundAssignment
     };
 
-    AssignmentExpressionNode(Node* left, Node* right, const InternalString& oper)
+    AssignmentExpressionNode(Node* left, Node* right, ESString* oper)
             : ExpressionNode(NodeType::AssignmentExpression)
     {
         m_left = left;
         m_right = right;
 
-        if (oper == L"=")
+        if (*oper == L"=")
             m_operator = SimpleAssignment;
         else {
             m_operator = CompoundAssignment;
-            if (oper == L"<<=")
+            if (*oper == L"<<=")
                 m_compoundOperator = BinaryExpressionNode::BinaryExpressionOperator::LeftShift;
-            else if (oper == L">>=")
+            else if (*oper == L">>=")
                 m_compoundOperator = BinaryExpressionNode::BinaryExpressionOperator::SignedRightShift;
-            else if (oper == L">>>=")
+            else if (*oper == L">>>=")
                 m_compoundOperator = BinaryExpressionNode::BinaryExpressionOperator::UnsignedRightShift;
-            else if (oper == L"+=")
+            else if (*oper == L"+=")
                 m_compoundOperator = BinaryExpressionNode::BinaryExpressionOperator::Plus;
-            else if (oper == L"-=")
+            else if (*oper == L"-=")
                 m_compoundOperator = BinaryExpressionNode::BinaryExpressionOperator::Minus;
-            else if (oper == L"*=")
+            else if (*oper == L"*=")
                 m_compoundOperator = BinaryExpressionNode::BinaryExpressionOperator::Mult;
-            else if (oper == L"/=")
+            else if (*oper == L"/=")
                 m_compoundOperator = BinaryExpressionNode::BinaryExpressionOperator::Div;
-            else if (oper == L"&=")
+            else if (*oper == L"&=")
                 m_compoundOperator = BinaryExpressionNode::BinaryExpressionOperator::BitwiseAnd;
-            else if (oper == L"|=")
+            else if (*oper == L"|=")
                 m_compoundOperator = BinaryExpressionNode::BinaryExpressionOperator::BitwiseOr;
-            else if (oper == L"^=")
+            else if (*oper == L"^=")
                 m_compoundOperator = BinaryExpressionNode::BinaryExpressionOperator::BitwiseXor;
             else //TODO
                 RELEASE_ASSERT_NOT_REACHED();
@@ -71,17 +71,6 @@ public:
             slot = m_left->executeForWrite(instance);
         } else { //CompoundAssignment
             ASSERT(m_operator == CompoundAssignment);
-            if(UNLIKELY(m_compoundOperator == BinaryExpressionNode::Plus && m_left->type() == NodeType::Identifier)) {
-                slot = m_left->executeForWrite(instance);
-                ESValue lresult = ESSlotWriterForAST::readValue(slot, ec);
-                ESValue rresult = m_right->execute(instance);
-                if(lresult.isESString()) {
-                    const_cast<InternalStringStd &>(lresult.asESString()->string()).append(rresult.toString()->string());
-                    return lresult;
-                } else {
-                    rvalue = BinaryExpressionNode::execute(instance, slot->value(ec->lastESObjectMetInMemberExpressionNode()), rresult, m_compoundOperator);
-                }
-            }
             slot = m_left->executeForWrite(instance);
             rvalue = BinaryExpressionNode::execute(instance, slot->value(ec->lastESObjectMetInMemberExpressionNode()), m_right->execute(instance), m_compoundOperator);
         }

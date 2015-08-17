@@ -15,16 +15,16 @@ public:
         LogicalOr,  //"||"
     };
 
-    LogicalExpressionNode(Node *left, Node* right, const InternalString& oper)
+    LogicalExpressionNode(Node *left, Node* right, ESString* oper)
             : ExpressionNode(NodeType::LogicalExpression)
     {
         m_left = (ExpressionNode*)left;
         m_right = (ExpressionNode*)right;
 
         // Binary Logical Operator
-        if (oper == L"&&")
+        if (*oper == L"&&")
             m_operator = LogicalAnd;
-        else if (oper == L"||")
+        else if (*oper == L"||")
             m_operator = LogicalOr;
 
         // TODO

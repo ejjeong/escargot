@@ -15,8 +15,7 @@ public:
             : Node(NodeType::Identifier)
     {
         m_name = name;
-        m_nonAtomicName = name.data();
-        m_esName = ESString::create(m_nonAtomicName);
+        m_nonAtomicName = ESString::create(name.data());
         m_identifierCacheInvalidationCheckCount = SIZE_MAX;
         m_cachedSlot = NULL;
         m_canUseFastAccess = false;
@@ -52,12 +51,13 @@ public:
             receiver->set__proto__(fn);
 
             std::vector<ESValue> arguments;
-            InternalString err_msg = name().data();
-            err_msg.append(InternalString(L" is not defined"));
+            ESStringDataStd err_msg;
+            err_msg.append(nonAtomicName()->data());
+            err_msg.append(L" is not defined");
             //arguments.push_back(String::create(err_msg));
 
             ESFunctionObject::call(fn, receiver, &arguments[0], arguments.size(), instance);
-            receiver->set(InternalString(L"message"), ESString::create(err_msg));
+            receiver->set(ESString::create(L"message"), ESString::create(std::move(err_msg)));
 
             throw ESValue(receiver);
         }
@@ -96,14 +96,9 @@ public:
         return m_name;
     }
 
-    const InternalString& nonAtomicName()
+    ESString* nonAtomicName()
     {
         return m_nonAtomicName;
-    }
-
-    ESString* esName()
-    {
-        return m_esName;
     }
 
     void setFastAccessIndex(size_t idx)
@@ -114,8 +109,7 @@ public:
 
 protected:
     InternalAtomicString m_name;
-    InternalString m_nonAtomicName;
-    ESString* m_esName;
+    ESString* m_nonAtomicName;
 
     size_t m_identifierCacheInvalidationCheckCount;
     ExecutionContext* m_cacheCheckExecutionContext;

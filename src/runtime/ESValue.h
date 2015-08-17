@@ -146,7 +146,6 @@ public:
     ESObject* toObject() const; //$7.1.13 ToObject
     double toLength() const; //$7.1.15 ToLength
 
-    InternalString toInternalString() const;
     ESString* asESString() const;
 
     bool isESPointer() const;
@@ -372,48 +371,194 @@ protected:
     int m_type;
 };
 
-class ESString : public ESPointer {
+typedef std::wstring ESStringDataStd;
+class ESStringData : public ESStringDataStd, public gc_cleanup {
+    friend class ESString;
 protected:
-    ESString(const InternalStringStd& str, bool isStaticString)
-        : ESPointer(Type::ESString)
+    ESStringData()
     {
-        m_string = new(PointerFreeGC) InternalStringStd;
-        m_string->reserve(str.length() * 2);
-        m_string->append(str);
-        m_isStaticString = isStaticString;
+        m_hashData.m_isHashInited =  false;
+    }
+    ESStringData(const wchar_t* str)
+        : std::wstring(str)
+    {
+        m_hashData.m_isHashInited =  false;
+    }
+    ESStringData(ESStringDataStd&& src)
+        : ESStringDataStd(std::move(src))
+    {
+        m_hashData.m_isHashInited =  false;
     }
 
-    ESString(const InternalStringStd&& str, bool isStaticString)
-        : ESPointer(Type::ESString)
+    explicit ESStringData(int number)
+        : ESStringDataStd(std::move(std::to_wstring(number)))
     {
-        m_string = new(PointerFreeGC) InternalStringStd;
-        *m_string = str;
-        m_isStaticString = isStaticString;
+        m_hashData.m_isHashInited =  false;
     }
+
+    explicit ESStringData(double number)
+    {
+        m_hashData.m_isHashInited =  false;
+        wchar_t buf[512];
+        char chbuf[50];
+        char* end = rapidjson::internal::dtoa(number, chbuf);
+        int i = 0;
+        for (char* p = chbuf; p != end; ++p)
+            buf[i++] = (wchar_t) *p;
+        buf[i] = L'\0';
+        //std::swprintf(buf, 511, L"%.17lg", number);
+        size_t tl = wcslen(buf);
+        reserve(tl);
+        append(&buf[0], &buf[tl]);
+    }
+
+    explicit ESStringData(wchar_t c)
+        : ESStringDataStd({c})
+    {
+        m_hashData.m_isHashInited =  false;
+    }
+
+    ESStringData(const char* s)
+    {
+        m_hashData.m_isHashInited =  false;
+        std::mbstate_t state = std::mbstate_t();
+        int len = std::mbsrtowcs(NULL, &s, 0, &state);
+        resize(len);
+        std::mbsrtowcs((wchar_t *)data(), &s, size(), &state);
+    }
+
+    ESStringData(const ESStringData& s) = delete;
+    void operator =(const ESStringData& s) = delete;
 
 public:
-    static ESString* create(const InternalStringStd&& src, bool isStaticString = false)
+    ALWAYS_INLINE const wchar_t* data() const
     {
-        return new ESString(std::move(src), isStaticString);
-    }
-    static ESString* create(const InternalStringStd& src, bool isStaticString = false)
-    {
-        return new ESString(src, isStaticString);
+        return ESStringDataStd::data();
     }
 
-    static ESString* create(const InternalString& src, bool isStaticString = false)
+    ALWAYS_INLINE size_t hashValue() const
     {
-        return new ESString(*src.string(), isStaticString);
+        initHash();
+        return m_hashData.m_hashData;
     }
 
-    const InternalStringStd& string()
+    ALWAYS_INLINE void initHash() const
     {
-        return *m_string;
+        if(!m_hashData.m_isHashInited) {
+            m_hashData.m_isHashInited = true;
+            std::hash<ESStringDataStd> hashFn;
+            m_hashData.m_hashData = hashFn((ESStringDataStd &)*this);
+        }
     }
 
-    InternalString toInternalString()
+protected:
+#pragma pack(push, 1)
+#ifdef ESCARGOT_64
+    mutable struct {
+        size_t m_hashData:63;
+        bool m_isHashInited:1;
+    } m_hashData;
+#else
+    mutable struct {
+        size_t m_hashData:31;
+        bool m_isHashInited:1;
+    } m_hashData;
+#endif
+#pragma pack(pop)
+};
+
+
+class ESString : public ESPointer {
+    friend class ESScriptParser;
+protected:
+    ESString(ESStringData* data)
+        : ESPointer(Type::ESString)
     {
-        return InternalString(m_string->data());
+        m_string = data;
+    }
+    ESString(const wchar_t* str)
+        : ESPointer(Type::ESString)
+    {
+        m_string = new(PointerFreeGC) ESStringData(str);
+    }
+
+    ESString(ESStringDataStd&& src)
+        : ESPointer(Type::ESString)
+    {
+        m_string = new(PointerFreeGC) ESStringData(std::move(src));
+    }
+
+    ESString(int number)
+        : ESPointer(Type::ESString)
+    {
+        m_string = new(PointerFreeGC) ESStringData(number);
+    }
+
+    ESString(double number)
+        : ESPointer(Type::ESString)
+    {
+        m_string = new(PointerFreeGC) ESStringData(number);
+    }
+
+    ESString(wchar_t number)
+        : ESPointer(Type::ESString)
+    {
+        m_string = new(PointerFreeGC) ESStringData(number);
+    }
+
+    ESString(const char* str)
+        : ESPointer(Type::ESString)
+    {
+        m_string = new(PointerFreeGC) ESStringData(str);
+    }
+public:
+    static ESString* create(const wchar_t* str)
+    {
+        return new ESString(str);
+    }
+    static ESString* create(ESStringDataStd&& src)
+    {
+        return new ESString(std::move(src));
+    }
+
+    static ESString* create(int number)
+    {
+        return new ESString(number);
+    }
+
+    static ESString* create(double number)
+    {
+        return new ESString(number);
+    }
+
+    static ESString* create(wchar_t c)
+    {
+        return new ESString(c);
+    }
+
+    static ESString* create(const char* str)
+    {
+        return new ESString(str);
+    }
+
+    ALWAYS_INLINE const wchar_t* data() const
+    {
+        return m_string->data();
+    }
+
+    ALWAYS_INLINE const char* utf8Data() const
+    {
+        return utf16ToUtf8(data());
+    }
+
+    const ESStringDataStd& string() const
+    {
+        return static_cast<const ESStringDataStd&>(*m_string);
+    }
+
+    const ESStringData* stringData() const
+    {
+        return m_string;
     }
 
     int length() const
@@ -421,26 +566,109 @@ public:
         return m_string->length();
     }
 
-    bool isStaticString() const
-    {
-        return m_isStaticString;
-    }
-
     ESString* substring(int from, int to) const
     {
         ASSERT(0 <= from && from <= to && to <= (int)m_string->length());
-        InternalStringStd ret(std::move(m_string->substr(from, to-from)));
-        return ESString::create(ret);
+        ESStringDataStd ret(std::move(m_string->substr(from, to-from)));
+        return ESString::create(std::move(ret));
     }
 
     escargot::ESArrayObject* match(ESPointer* esptr, std::vector<int>* offsets = nullptr, std::vector<int>* offsetsLength = nullptr) const;
 
+    ALWAYS_INLINE ESString* clone() const
+    {
+        return ESString::create(data());
+    }
 
+    ESString(const ESString& s) = delete;
+    void operator =(const ESString& s) = delete;
+
+    ALWAYS_INLINE friend bool operator == (const ESString& a,const wchar_t* b);
+    ALWAYS_INLINE friend bool operator != (const ESString& a,const wchar_t* b);
+    ALWAYS_INLINE friend bool operator == (const ESString& a,const ESString& b);
+    ALWAYS_INLINE friend bool operator < (const ESString& a,const ESString& b);
+    ALWAYS_INLINE friend bool operator > (const ESString& a,const ESString& b);
+    ALWAYS_INLINE friend bool operator <= (const ESString& a,const ESString& b);
+    ALWAYS_INLINE friend bool operator >= (const ESString& a,const ESString& b);
+
+#ifndef NDEBUG
+    void show() const
+    {
+        wprintf(L"%ls\n",data());
+    }
+#endif
 protected:
-    InternalStringStd* m_string;
-    bool m_isStaticString;
+    ESStringData* m_string;
 };
 
+ALWAYS_INLINE bool operator == (const ESString& a,const wchar_t* b)
+{
+    return a.string() == b;
+}
+
+ALWAYS_INLINE bool operator != (const ESString& a,const wchar_t* b)
+{
+    return a.string() != b;
+}
+
+ALWAYS_INLINE bool operator == (const ESString& a,const ESString& b)
+{
+    if(a.length() == b.length()) {
+        if(a.stringData()->hashValue() == b.stringData()->hashValue()) {
+            return a.string() == b.string();
+        }
+    }
+    return false;
+}
+
+ALWAYS_INLINE bool operator < (const ESString& a,const ESString& b)
+{
+    return a.string() < b.string();
+}
+
+ALWAYS_INLINE bool operator > (const ESString& a,const ESString& b)
+{
+    return a.string() > b.string();
+}
+
+ALWAYS_INLINE bool operator <= (const ESString& a,const ESString& b)
+{
+    return a.string() <= b.string();
+}
+
+ALWAYS_INLINE bool operator >= (const ESString& a,const ESString& b)
+{
+    return a.string() >= b.string();
+}
+
+typedef std::vector<ESString *,gc_allocator<ESString *> > ESStringVector;
+}
+
+namespace std
+{
+template<> struct hash<escargot::ESString *>
+{
+    size_t operator()(escargot::ESString * const &x) const
+    {
+        return x->stringData()->hashValue();
+    }
+};
+
+template<> struct equal_to<escargot::ESString *>
+{
+    bool operator()(escargot::ESString * const &a, escargot::ESString * const &b) const
+    {
+        return a->string() == b->string();
+    }
+};
+
+}
+
+
+#include "runtime/InternalAtomicString.h"
+#include "runtime/StaticStrings.h"
+
+namespace escargot {
 
 struct ESAccessorData : public gc {
 public:
@@ -609,9 +837,9 @@ protected:
 };
 
 
-typedef std::unordered_map<InternalString, ::escargot::ESSlot,
-                std::hash<InternalString>,std::equal_to<InternalString>,
-                gc_allocator<std::pair<const InternalString, ::escargot::ESSlot> > > ESObjectMapStd;
+typedef std::unordered_map<ESString*, ::escargot::ESSlot,
+                std::hash<ESString*>,std::equal_to<ESString*>,
+                gc_allocator<std::pair<const ESString*, ::escargot::ESSlot> > > ESObjectMapStd;
 
 typedef std::vector<::escargot::ESSlot, gc_allocator<::escargot::ESSlot> > ESVectorStd;
 
@@ -641,7 +869,7 @@ public:
 
     //DO NOT USE THIS FUNCTION
     //NOTE rooted ESSlot has short life time.
-    escargot::ESSlot* definePropertyOrThrow(const InternalString& key, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true)
+    escargot::ESSlot* definePropertyOrThrow(escargot::ESString* key, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true)
     {
         auto iter = m_map.find(key);
 
@@ -653,7 +881,7 @@ public:
         return &iter->second;
     }
 
-    bool hasOwnProperty(const InternalString& key) {
+    bool hasOwnProperty(escargot::ESString* key) {
         auto iter = m_map.find(key);
         if(iter == m_map.end())
             return false;
@@ -671,7 +899,7 @@ public:
     }
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-get-o-p
-    ESValue get(const InternalString& key, bool searchPrototype = false)
+    ESValue get(escargot::ESString* key, bool searchPrototype = false)
     {
         if (UNLIKELY(searchPrototype)) {
             ESObject* target = this;
@@ -699,7 +927,7 @@ public:
 
     //DO NOT USE THIS FUNCTION
     //NOTE rooted ESSlot has short life time.
-    ALWAYS_INLINE escargot::ESSlot* find(const InternalString& key)
+    ALWAYS_INLINE escargot::ESSlot* find(escargot::ESString* key)
     {
         auto iter = m_map.find(key);
         if(iter == m_map.end()) {
@@ -708,7 +936,7 @@ public:
         return &iter->second;
     }
 
-    ALWAYS_INLINE escargot::ESSlot* findUntilPrototype(const InternalString& key)
+    ALWAYS_INLINE escargot::ESSlot* findUntilPrototype(escargot::ESString* key)
     {
         ESObject* target = this;
         while(true) {
@@ -726,7 +954,7 @@ public:
     }
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
-    void set(const InternalString& key, const ESValue& val, bool shouldThrowException = false)
+    void set(escargot::ESString* key, const ESValue& val, bool shouldThrowException = false)
     {
         //TODO Assert: IsPropertyKey(P) is true.
         //TODO Assert: Type(Throw) is ESBoolean.
@@ -740,12 +968,7 @@ public:
         }
     }
 
-    void set(ESValue key, const ESValue& val, bool shouldThrowException = false)
-    {
-        set(key.toInternalString(), val, shouldThrowException);
-    }
-
-    void defineAccessorProperty(const InternalString& key,std::function<ESValue (::escargot::ESObject* obj)> getter = nullptr,
+    void defineAccessorProperty(escargot::ESString* key,std::function<ESValue (::escargot::ESObject* obj)> getter = nullptr,
             std::function<void (::escargot::ESObject* obj, const ESValue& value)> setter = nullptr,
             bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
     {
@@ -756,7 +979,7 @@ public:
         m_map.insert(std::make_pair(key, escargot::ESSlot(this, getter, setter, isWritable, isEnumerable, isConfigurable)));
     }
 
-    void defineAccessorProperty(const InternalString& key,ESAccessorData* data,
+    void defineAccessorProperty(escargot::ESString* key,ESAccessorData* data,
             bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
     {
         auto iter = m_map.find(key);
@@ -766,7 +989,7 @@ public:
         m_map.insert(std::make_pair(key, escargot::ESSlot(this, data, isWritable, isEnumerable, isConfigurable)));
     }
 
-    bool hasKey(const InternalString& key)
+    bool hasKey(escargot::ESString* key)
     {
         auto iter = m_map.find(key);
         if(iter == m_map.end()) {
@@ -825,27 +1048,27 @@ protected:
 
 class ESErrorObject : public ESObject {
 protected:
-    ESErrorObject(const InternalString& message = InternalString(&emptyStringData))
+    ESErrorObject(escargot::ESString* message)
            : ESObject((Type)(Type::ESObject | Type::ESErrorObject))
     {
         m_message = message;
     }
 
 public:
-    static ESErrorObject* create()
+    static ESErrorObject* create(escargot::ESString* message = strings->emptyESString)
     {
-        return new ESErrorObject();
+        return new ESErrorObject(message);
     }
 
-    const InternalString& message() { return m_message; }
+    escargot::ESString* message() { return m_message; }
 
 protected:
-    InternalString m_message;
+    escargot::ESString* m_message;
 };
 
 class ReferenceError : public ESErrorObject {
 public:
-    ReferenceError(const InternalString& message = InternalString(&emptyStringData))
+    ReferenceError(escargot::ESString* message = strings->emptyESString)
         : ESErrorObject(message)
     {
     }
@@ -853,7 +1076,7 @@ public:
 
 class TypeError : public ESErrorObject {
 public:
-    TypeError(const InternalString& message = InternalString(&emptyStringData))
+    TypeError(escargot::ESString* message = strings->emptyESString)
         : ESErrorObject(message)
     {
     }
@@ -861,7 +1084,7 @@ public:
 
 class SyntaxError : public ESErrorObject {
 public:
-    SyntaxError(const InternalString& message = InternalString(&emptyStringData))
+    SyntaxError(escargot::ESString* message = strings->emptyESString)
         : ESErrorObject(message)
     {
     }
@@ -869,7 +1092,7 @@ public:
 
 class RangeError : public ESErrorObject {
 public:
-    RangeError(const InternalString& message = InternalString(&emptyStringData))
+    RangeError(escargot::ESString* message = strings->emptyESString)
         : ESErrorObject(message)
     {
     }
@@ -895,7 +1118,7 @@ public:
         return date;
     }
 
-    void parseStringToDate(struct tm* timeinfo, const InternalString istr);
+    void parseStringToDate(struct tm* timeinfo, escargot::ESString* istr);
 
     void setTimeValue(ESValue str);
 
@@ -947,7 +1170,7 @@ public:
         return arr;
     }
 
-    void set(const InternalString& key, ESValue val, bool shouldThrowException = false)
+    void set(escargot::ESString* key, ESValue val, bool shouldThrowException = false)
     {
         ESObject::set(key, val, shouldThrowException);
     }
@@ -969,7 +1192,7 @@ public:
             if (m_fastmode)
                 return &m_vector[i];
         }
-        return ESObject::definePropertyOrThrow(key.toInternalString().data(), isWritable, isEnumerable, isConfigurable);
+        return ESObject::definePropertyOrThrow(key.toString(), isWritable, isEnumerable, isConfigurable);
     }
 
     void set(ESValue key, const ESValue& val, bool shouldThrowException = false)
@@ -990,7 +1213,7 @@ public:
                 return;
             }
         }
-        ESObject::set(key, val, shouldThrowException);
+        ESObject::set(key.toString(), val, shouldThrowException);
     }
 
     void set(int i, const ESValue& val, bool shouldThrowException = false)
@@ -1006,7 +1229,7 @@ public:
         if (m_fastmode) {
             m_vector[i].setDataProperty(val);
         } else {
-            ESObject::set(ESValue(i), val, shouldThrowException);
+            ESObject::set(ESValue(i).toString(), val, shouldThrowException);
         }
     }
 
@@ -1018,7 +1241,7 @@ public:
             else
                 return ESValue();
         }
-        return ESObject::get(ESValue(key).toInternalString());
+        return ESObject::get(ESValue(key).toString());
     }
 
     ESValue get(ESValue key)
@@ -1030,7 +1253,7 @@ public:
             else
                 return ESValue();
         }
-        return ESObject::get(key.toInternalString());
+        return ESObject::get(key.toString());
     }
 
     //DO NOT USE THIS FUNCTION
@@ -1052,16 +1275,16 @@ public:
             else
                 return NULL;
         }
-        return ESObject::find(key.toInternalString());
+        return ESObject::find(key.toString());
     }
 
-    bool hasOwnProperty(const InternalString& key) {
+    bool hasOwnProperty(escargot::ESString* key) {
         if (!m_fastmode)
             return ESObject::hasOwnProperty(key);
 
         wchar_t *end;
-        long key_int = wcstol(key.data(), &end, 10);
-        if (end != key.data() + key.length())
+        long key_int = wcstol(key->data(), &end, 10);
+        if (end != key->data() + key->length())
             return ESObject::hasOwnProperty(key);
         if (key_int < m_length)
             return true;
@@ -1120,7 +1343,7 @@ public:
         int len = length().asInt32();
         if (len == 0) return;
         for (int i = 0; i < len; i++) {
-            m_map.insert(std::make_pair(ESValue(i).toInternalString(), m_vector[i]));
+            m_map.insert(std::make_pair(ESValue(i).toString(), m_vector[i]));
         }
         m_vector.clear();
     }
@@ -1221,16 +1444,16 @@ protected:
 
 class ESStringObject : public ESObject {
 protected:
-    ESStringObject(const InternalStringStd& str);
+    ESStringObject(escargot::ESString* str);
 public:
-    static ESStringObject* create(const InternalStringStd& str)
+    static ESStringObject* create(escargot::ESString* str)
     {
         return new ESStringObject(str);
     }
 
     static ESStringObject* create()
     {
-        return new ESStringObject(L"");
+        return new ESStringObject(strings->emptyESString);
     }
 
     ALWAYS_INLINE ::escargot::ESString* getStringData()
@@ -1245,7 +1468,7 @@ public:
 
     ESValue valueOf()
     {
-        return ESString::create(InternalString(m_stringData->string().data()));
+        return ESValue(m_stringData);
     }
 
 private:
@@ -1302,7 +1525,7 @@ public:
         MultiLine = 1 << 2,
         Sticky = 1 << 3,
     };
-    static ESRegExpObject* create(const InternalString& source, const Option& option, ESObject* proto = NULL)
+    static ESRegExpObject* create(escargot::ESString* source, const Option& option, ESObject* proto = NULL)
     {
         ESRegExpObject* ret = new ESRegExpObject(source, option);
         if (proto != NULL)
@@ -1312,13 +1535,13 @@ public:
     }
 
     ALWAYS_INLINE Option option() { return m_option; }
-    ALWAYS_INLINE const InternalString& source() { return m_source; }
+    ALWAYS_INLINE const escargot::ESString* source() { return m_source; }
     ALWAYS_INLINE const char* utf8Source() { return m_sourceStringAsUtf8; }
 
-    ALWAYS_INLINE void setSource(const InternalString& src)
+    ALWAYS_INLINE void setSource(escargot::ESString* src)
     {
         m_source = src;
-        m_sourceStringAsUtf8 = src.utf8Data();
+        m_sourceStringAsUtf8 = src->utf8Data();
     }
     ALWAYS_INLINE void setOption(const Option& option) { m_option = option; }
 
@@ -1343,9 +1566,9 @@ public:
         free(sourceForRE2);
     }
 private:
-    ESRegExpObject(const InternalString& source, const Option& option);
+    ESRegExpObject(escargot::ESString* source, const Option& option);
 
-    InternalString m_source;
+    escargot::ESString* m_source;
     const char* m_sourceStringAsUtf8;
     Option m_option;
 };

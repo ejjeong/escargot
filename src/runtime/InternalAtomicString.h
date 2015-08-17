@@ -1,8 +1,6 @@
 #ifndef InternalAtomicString_h
 #define InternalAtomicString_h
 
-#include "InternalString.h"
-
 namespace escargot {
 
 class ESVMInstance;
@@ -69,13 +67,6 @@ public:
     {
         return m_string;
     }
-
-    /*
-    operator InternalString() const
-    {
-        return InternalString(m_string->data());
-    }
-    */
 
     ALWAYS_INLINE friend bool operator == (const InternalAtomicString& a,const InternalAtomicString& b);
     ALWAYS_INLINE friend bool operator != (const InternalAtomicString& a,const InternalAtomicString& b);

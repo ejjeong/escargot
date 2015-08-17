@@ -19,7 +19,6 @@ ESVMInstance::ESVMInstance()
     m_identifierCacheInvalidationCheckCount = 0;
 
     std::setlocale(LC_ALL, "en_US.utf8");
-    emptyStringData.initHash();
     m_strings.initStaticStrings(this);
 
     m_object__proto__AccessorData.m_getter = [](ESObject* obj) -> ESValue {
@@ -63,6 +62,8 @@ ESVMInstance::ESVMInstance()
     exit();
 
     escargot::ESScriptParser::enter();
+
+    GC_gcollect();
 }
 
 ESVMInstance::~ESVMInstance()
@@ -77,13 +78,13 @@ ESValue ESVMInstance::evaluate(const std::string& source)
         Node* node = ESScriptParser::parseScript(this, source);
         ret = node->execute(this);
     } catch(ReferenceError& err) {
-        wprintf(L"ReferenceError: %ls\n", err.message().data());
+        wprintf(L"ReferenceError: %ls\n", err.message()->data());
     } catch(TypeError& err) {
-        wprintf(L"TypeError: %ls\n", err.message().data());
+        wprintf(L"TypeError: %ls\n", err.message()->data());
     } catch(SyntaxError& err) {
-        wprintf(L"SyntaxError: %ls\n", err.message().data());
+        wprintf(L"SyntaxError: %ls\n", err.message()->data());
     } catch(const ESValue& err) {
-        wprintf(L"Uncaught %ls\n", err.toInternalString().data());
+        wprintf(L"Uncaught %ls\n", err.toString()->data());
     }
 
     return ret;

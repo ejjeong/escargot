@@ -211,6 +211,14 @@ inline bool operator!=(const pointer_free_allocator<GC_T1>&, const pointer_free_
 #define RELEASE_ASSERT(assertion) assert(assertion);
 #define RELEASE_ASSERT_NOT_REACHED() do { assert(false); } while (0)
 
+#if !defined(WARN_UNUSED_RETURN) && COMPILER(GCC)
+#define WARN_UNUSED_RETURN __attribute__((__warn_unused_result__))
+#endif
+
+#if !defined(WARN_UNUSED_RETURN)
+#define WARN_UNUSED_RETURN
+#endif
+
 #if defined(__BYTE_ORDER) && __BYTE_ORDER == __BIG_ENDIAN || \
     defined(__BIG_ENDIAN__) || \
     defined(__ARMEB__) || \
@@ -229,9 +237,14 @@ inline bool operator!=(const pointer_free_allocator<GC_T1>&, const pointer_free_
 #error "I don't know what architecture this is!"
 #endif
 
-#include "runtime/NullableString.h"
-#include "runtime/InternalString.h"
+#include "util/RefCounted.h"
+#include "util/RefPtr.h"
+#include "util/OwnPtr.h"
+
 #include "runtime/InternalAtomicString.h"
+#include "runtime/NullableString.h"
+#include "runtime/ESValue.h"
+//#include "runtime/InternalString.h"
 #include "runtime/StaticStrings.h"
 
 #endif

@@ -36,8 +36,8 @@ public:
             });
         }
         ESObject* obj = exprValue.toObject();
-        std::vector<InternalString> propertyNames;
-        obj->enumeration([&propertyNames](const InternalString& key, ESSlot* slot) {
+        std::vector<ESString*> propertyNames;
+        obj->enumeration([&propertyNames](ESString* key, ESSlot* slot) {
             propertyNames.push_back(key);
         });
         ec->setJumpPositionAndExecute([&](){
@@ -54,7 +54,7 @@ public:
             }
             for (unsigned int i=0; i<propertyNames.size(); i++) {
                 if (obj->hasKey(propertyNames[i])) {
-                    ESString* name = ESString::create(propertyNames[i]);
+                    ESString* name = propertyNames[i];
                     ESSlotWriterForAST::prepareExecuteForWriteASTNode(ec);
                     ESSlot* slot = m_left->executeForWrite(instance);
                     ESSlotWriterForAST::setValue(slot, ec, name);

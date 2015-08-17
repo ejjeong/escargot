@@ -47,7 +47,7 @@ InternalAtomicString::InternalAtomicString(const ESValue* src)
             *this = strings->numbers[val];
         }
     }
-    init(ESVMInstance::currentInstance(), src->toInternalString().data());
+    init(ESVMInstance::currentInstance(), src->toString()->data());
 }
 
 InternalAtomicString::InternalAtomicString(ESVMInstance* instance, const std::wstring& src)

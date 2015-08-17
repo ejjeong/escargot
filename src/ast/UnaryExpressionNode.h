@@ -15,19 +15,19 @@ public:
         TypeOf,
     };
     friend class ESScriptParser;
-    UnaryExpressionNode(Node* argument, const InternalString& oper)
+    UnaryExpressionNode(Node* argument, ESString* oper)
         : ExpressionNode(NodeType::UnaryExpression)
     {
         m_argument = argument;
-        if(oper == L"+") {
+        if(*oper == L"+") {
             m_operator = Plus;
-        } else if(oper == L"-") {
+        } else if(*oper == L"-") {
             m_operator = Minus;
-        } else if(oper == L"~") {
+        } else if(*oper == L"~") {
             m_operator = BitwiseNot;
-        } else if(oper == L"!") {
+        } else if(*oper == L"!") {
             m_operator = LogicalNot;
-        } else if(oper == L"typeof") {
+        } else if(*oper == L"typeof") {
             m_operator = TypeOf;
         } else {
             RELEASE_ASSERT_NOT_REACHED();
@@ -53,21 +53,21 @@ public:
             //www.ecma-international.org/ecma-262/6.0/index.html#sec-unary-minus-operator
             ESValue v = m_argument->execute(instance);
             if(v.isUndefined())
-                return ESString::create(strings->undefined);
+                return strings->undefined;
             else if(v.isNull())
-                return ESString::create(strings->null);
+                return strings->null;
             else if(v.isBoolean())
-                return ESString::create(strings->boolean);
+                return strings->boolean;
             else if(v.isNumber())
-                return ESString::create(strings->number);
+                return strings->number;
             else if(v.isESString())
-                return ESString::create(strings->string);
+                return strings->string;
             else if(v.isESPointer()) {
                 ESPointer* p = v.asESPointer();
                 if(p->isESFunctionObject()) {
-                    return ESString::create(strings->function);
+                    return strings->function;
                 } else {
-                    return ESString::create(strings->object);
+                    return strings->object;
                 }
             }
             else

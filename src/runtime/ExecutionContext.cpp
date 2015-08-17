@@ -17,7 +17,7 @@ ExecutionContext::ExecutionContext(LexicalEnvironment* varEnv, bool needsActivat
     m_argumentCount = argumentsCount;
 }
 
-ESSlot* ExecutionContext::resolveBinding(const InternalAtomicString& atomicName, const InternalString& name)
+ESSlot* ExecutionContext::resolveBinding(const InternalAtomicString& atomicName, escargot::ESString* name)
 {
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
     LexicalEnvironment* env = environment();

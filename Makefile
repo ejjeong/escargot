@@ -71,6 +71,7 @@ SRC += $(foreach dir, ./src/shell , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, ./src/parser , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, ./src/vm , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, ./src/runtime , $(wildcard $(dir)/*.cpp))
+SRC += $(foreach dir, ./src/util , $(wildcard $(dir)/*.cpp))
 
 ifeq ($(HOST), linux)
 endif

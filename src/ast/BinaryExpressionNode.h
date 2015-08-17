@@ -52,60 +52,60 @@ public:
         // TODO
     };
 
-    BinaryExpressionNode(Node *left, Node* right, const InternalString& oper)
+    BinaryExpressionNode(Node *left, Node* right, ESString* oper)
             : ExpressionNode(NodeType::BinaryExpression)
     {
         m_left = (ExpressionNode*)left;
         m_right = (ExpressionNode*)right;
 
         // Additive Operators
-        if (oper == L"+")
+        if (*oper == L"+")
             m_operator = Plus;
-        else if (oper == L"-")
+        else if (*oper == L"-")
             m_operator = Minus;
 
         // Bitwise Shift Operators
-        else if (oper == L"<<")
+        else if (*oper == L"<<")
             m_operator = LeftShift;
-        else if (oper == L">>")
+        else if (*oper == L">>")
             m_operator = SignedRightShift;
-        else if (oper == L">>>")
+        else if (*oper == L">>>")
             m_operator = UnsignedRightShift;
 
         // Multiplicative Operators
-        else if (oper == L"*")
+        else if (*oper == L"*")
             m_operator = Mult;
-        else if (oper == L"/")
+        else if (*oper == L"/")
             m_operator = Div;
-        else if (oper == L"%")
+        else if (*oper == L"%")
             m_operator = Mod;
 
         // Relational Operators
-        else if (oper == L"<")
+        else if (*oper == L"<")
             m_operator = LessThan;
-        else if (oper == L">")
+        else if (*oper == L">")
             m_operator = GreaterThan;
-        else if (oper == L"<=")
+        else if (*oper == L"<=")
             m_operator = LessThanOrEqual;
-        else if (oper == L">=")
+        else if (*oper == L">=")
             m_operator = GreaterThanOrEqual;
 
         // Equality Operators
-        else if (oper == L"==")
+        else if (*oper == L"==")
             m_operator = Equals;
-        else if (oper == L"!=")
+        else if (*oper == L"!=")
             m_operator = NotEquals;
-        else if (oper == L"===")
+        else if (*oper == L"===")
             m_operator = StrictEquals;
-        else if (oper == L"!==")
+        else if (*oper == L"!==")
             m_operator = NotStrictEquals;
 
         // Binary Bitwise Operator
-        else if (oper == L"&")
+        else if (*oper == L"&")
             m_operator = BitwiseAnd;
-        else if (oper == L"^")
+        else if (*oper == L"^")
             m_operator = BitwiseXor;
-        else if (oper == L"|")
+        else if (*oper == L"|")
             m_operator = BitwiseOr;
 
         // TODO
@@ -138,7 +138,7 @@ public:
                     //rstr = rval.toESString().string();
                     rstr = rval.toString();
 
-                    InternalStringStd result;
+                    ESStringDataStd result;
                     result.reserve(lstr->length() + rstr->length());
                     result.append(lstr->string());
                     result.append(rstr->string());

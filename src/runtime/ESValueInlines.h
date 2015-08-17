@@ -502,8 +502,7 @@ inline double ESValue::toLength() const
 
 inline bool ESValue::isPrimitive() const
 {
-    return (!isESPointer()) || isESString();
-    //return isUndefined() || isNull() || isNumber() || isESString();
+    return isUndefined() || isNull() || isNumber() || isESString();
 }
 
 //==============================================================================

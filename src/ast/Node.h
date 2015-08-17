@@ -108,9 +108,6 @@ public:
 
     ALWAYS_INLINE static void setValue(ESSlot* slot, ExecutionContext* ec, ESValue v)
     {
-        if(v.isESString()) {
-            v = ESString::create(v.asESString()->string());
-        }
         slot->setValue(v, ec->lastESObjectMetInMemberExpressionNode());
     }
 };

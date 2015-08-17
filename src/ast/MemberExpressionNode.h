@@ -35,7 +35,7 @@ public:
 
         if(!m_computed && m_property->type() == NodeType::Identifier) {
             if(obj->isESArrayObject()) {
-                slot = obj->asESArrayObject()->definePropertyOrThrow(((IdentifierNode *)m_property)->esName());
+                slot = obj->asESArrayObject()->definePropertyOrThrow(((IdentifierNode *)m_property)->nonAtomicName());
             } else {
                 slot = obj->definePropertyOrThrow(((IdentifierNode *)m_property)->nonAtomicName(), true, true, true);
             }
@@ -44,8 +44,7 @@ public:
             if(obj->isESArrayObject()) {
                 slot = obj->asESArrayObject()->definePropertyOrThrow(computedPropertyValue);
             } else {
-                //MARK if type of computedPropertyValue is ESString, we must copy content of ESString into InternalString. it's bad
-                InternalString computedPropertyName = computedPropertyValue.toInternalString();
+                ESString* computedPropertyName = computedPropertyValue.toString();
                 slot = obj->definePropertyOrThrow(computedPropertyName, true, true, true);
             }
 
@@ -83,7 +82,7 @@ public:
         if(value.isESPointer() && value.asESPointer()->isESObject()) {
             ESObject* obj = value.asESPointer()->asESObject();
             ESSlot* slot = NULL;
-            InternalString computedPropertyName;
+            ESString* computedPropertyName;
             ExecutionContext* ec = instance->currentExecutionContext();
 
             if(!m_computed && m_property->type() == NodeType::Identifier) {
@@ -95,10 +94,10 @@ public:
                     if(computedPropertyValue.isInt32())
                         slot = obj->asESArrayObject()->find(computedPropertyValue);
                     if(!slot) {
-                        computedPropertyName = computedPropertyValue.toInternalString();
+                        computedPropertyName = computedPropertyValue.toString();
                     }
                 } else {
-                    computedPropertyName = computedPropertyValue.toInternalString();
+                    computedPropertyName = computedPropertyValue.toString();
                     slot = obj->find(computedPropertyName);
                 }
 
@@ -126,16 +125,16 @@ public:
             if(LIKELY(0 <= prop_val && prop_val < value.asESString()->length())) {
                 wchar_t c = value.asESString()->string().data()[prop_val];
                 if(LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
-                    return strings->esAsciiTable[c];
+                    return strings->asciiTable[c];
                 } else {
-                    return ESString::create(InternalString(c));
+                    return ESString::create(c);
                 }
             } else {
                 return ESValue();
             }
             return value.asESString()->substring(prop_val, prop_val+1);
         } else {
-            throw TypeError(L"MemberExpression: object doesn't have object type");
+            throw TypeError(ESString::create(L"MemberExpression: object doesn't have object type"));
         }
         return ESValue();
     }

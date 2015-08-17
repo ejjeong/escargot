@@ -131,7 +131,6 @@ protected:
     escargot::ESObject* m_objectPrototype;
     escargot::ESFunctionObject* m_function;
     escargot::ESFunctionObject* m_functionPrototype;
-    escargot::ESFunctionObject* m_referenceError;
     escargot::ESObject* m_referenceErrorPrototype;
     escargot::ESFunctionObject* m_array;
     escargot::ESArrayObject* m_arrayPrototype;
@@ -148,6 +147,9 @@ protected:
     escargot::ESBooleanObject* m_booleanPrototype;
     escargot::ESFunctionObject* m_regexp;
     escargot::ESRegExpObject* m_regexpPrototype;
+    escargot::ESFunctionObject* m_error;
+    escargot::ESObject* m_errorPrototype;
+    escargot::ESFunctionObject* m_referenceError;
     //JSBuiltinsObject* m_builtins;
     //Context* m_nativeContext;
 };

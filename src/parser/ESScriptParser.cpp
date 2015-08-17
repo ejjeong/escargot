@@ -19,42 +19,42 @@ namespace escargot {
 ::JSObject* ESScriptParser::s_reflectObject;
 ::JSFunction* ESScriptParser::s_reflectParseFunction;
 
-InternalString astTypeProgram(L"Program");
-InternalString astTypeVariableDeclaration(L"VariableDeclaration");
-InternalString astTypeExpressionStatement(L"ExpressionStatement");
-InternalString astTypeVariableDeclarator(L"VariableDeclarator");
-InternalString astTypeIdentifier(L"Identifier");
-InternalString astTypeAssignmentExpression(L"AssignmentExpression");
-InternalString astTypeThisExpression(L"ThisExpression");
-InternalString astTypeBreakStatement(L"BreakStatement");
-InternalString astTypeContinueStatement(L"ContinueStatement");
-InternalString astTypeReturnStatement(L"ReturnStatement");
-InternalString astTypeEmptyStatement(L"EmptyStatement");
-InternalString astTypeLiteral(L"Literal");
-InternalString astTypeFunctionDeclaration(L"FunctionDeclaration");
-InternalString astTypeFunctionExpression(L"FunctionExpression");
-InternalString astTypeBlockStatement(L"BlockStatement");
-InternalString astTypeArrayExpression(L"ArrayExpression");
-InternalString astTypeCallExpression(L"CallExpression");
-InternalString astTypeObjectExpression(L"ObjectExpression");
-InternalString astTypeMemberExpression(L"MemberExpression");
-InternalString astTypeNewExpression(L"NewExpression");
-InternalString astTypeProperty(L"Property");
-InternalString astTypeBinaryExpression(L"BinaryExpression");
-InternalString astTypeLogicalExpression(L"LogicalExpression");
-InternalString astTypeUpdateExpression(L"UpdateExpression");
-InternalString astTypeUnaryExpression(L"UnaryExpression");
-InternalString astTypeIfStatement(L"IfStatement");
-InternalString astTypeForStatement(L"ForStatement");
-InternalString astTypeForInStatement(L"ForInStatement");
-InternalString astTypeWhileStatement(L"WhileStatement");
-InternalString astTypeDoWhileStatement(L"DoWhileStatement");
-InternalString astTypeSwitchStatement(L"SwitchStatement");
-InternalString astTypeSwitchCase(L"SwitchCase");
-InternalString astTypeTryStatement(L"TryStatement");
-InternalString astTypeCatchClause(L"CatchClause");
-InternalString astTypeThrowStatement(L"ThrowStatement");
-InternalString astConditionalExpression(L"ConditionalExpression");
+ESString*  astTypeProgram = ESString::create(L"Program");
+ESString*  astTypeVariableDeclaration = ESString::create(L"VariableDeclaration");
+ESString*  astTypeExpressionStatement = ESString::create(L"ExpressionStatement");
+ESString*  astTypeVariableDeclarator = ESString::create(L"VariableDeclarator");
+ESString*  astTypeIdentifier = ESString::create(L"Identifier");
+ESString*  astTypeAssignmentExpression = ESString::create(L"AssignmentExpression");
+ESString*  astTypeThisExpression = ESString::create(L"ThisExpression");
+ESString*  astTypeBreakStatement = ESString::create(L"BreakStatement");
+ESString*  astTypeContinueStatement = ESString::create(L"ContinueStatement");
+ESString*  astTypeReturnStatement = ESString::create(L"ReturnStatement");
+ESString*  astTypeEmptyStatement = ESString::create(L"EmptyStatement");
+ESString*  astTypeLiteral = ESString::create(L"Literal");
+ESString*  astTypeFunctionDeclaration = ESString::create(L"FunctionDeclaration");
+ESString*  astTypeFunctionExpression = ESString::create(L"FunctionExpression");
+ESString*  astTypeBlockStatement = ESString::create(L"BlockStatement");
+ESString*  astTypeArrayExpression = ESString::create(L"ArrayExpression");
+ESString*  astTypeCallExpression = ESString::create(L"CallExpression");
+ESString*  astTypeObjectExpression = ESString::create(L"ObjectExpression");
+ESString*  astTypeMemberExpression = ESString::create(L"MemberExpression");
+ESString*  astTypeNewExpression = ESString::create(L"NewExpression");
+ESString*  astTypeProperty = ESString::create(L"Property");
+ESString*  astTypeBinaryExpression = ESString::create(L"BinaryExpression");
+ESString*  astTypeLogicalExpression = ESString::create(L"LogicalExpression");
+ESString*  astTypeUpdateExpression = ESString::create(L"UpdateExpression");
+ESString*  astTypeUnaryExpression = ESString::create(L"UnaryExpression");
+ESString*  astTypeIfStatement = ESString::create(L"IfStatement");
+ESString*  astTypeForStatement = ESString::create(L"ForStatement");
+ESString*  astTypeForInStatement = ESString::create(L"ForInStatement");
+ESString*  astTypeWhileStatement = ESString::create(L"WhileStatement");
+ESString*  astTypeDoWhileStatement = ESString::create(L"DoWhileStatement");
+ESString*  astTypeSwitchStatement = ESString::create(L"SwitchStatement");
+ESString*  astTypeSwitchCase = ESString::create(L"SwitchCase");
+ESString*  astTypeTryStatement = ESString::create(L"TryStatement");
+ESString*  astTypeCatchClause = ESString::create(L"CatchClause");
+ESString*  astTypeThrowStatement = ESString::create(L"ThrowStatement");
+ESString*  astConditionalExpression = ESString::create(L"ConditionalExpression");
 
 void* ESScriptParser::s_global;
 
@@ -235,9 +235,9 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
     std::function<Node *(::JSObject *, StatementNodeVector* currentBody, bool shouldGenerateNewBody)> fn;
     fn = [&](::JSObject * obj, StatementNodeVector* currentBody, bool shouldGenerateNewBody) -> Node* {
         Node* parsedNode = NULL;
-        InternalString type(getStringFromMozJS(s_cx, obj, "type"));
+        ESString type(getStringFromMozJS(s_cx, obj, "type"));
 
-        if(type == astTypeProgram) {
+        if(type == *astTypeProgram) {
             JSObject* childObj = getObjectFromMozJS(s_cx, obj, "body");
             uint32_t siz = getArrayLengthFromMozJS(s_cx, childObj);
             for (uint32_t i = 0; i < siz; i++) {
@@ -247,7 +247,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
                 }
             }
             parsedNode = new ProgramNode(std::move(programBody));
-        } else if(type == astTypeVariableDeclaration) {
+        } else if(type == *astTypeVariableDeclaration) {
             //rapidjson::GenericValue<rapidjson::UTF16<>>& children = value[L"declarations"];
             JSObject* children = getObjectFromMozJS(s_cx, obj, "declarations");
             VariableDeclaratorVector decl;
@@ -260,7 +260,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
                 JS_GetProperty(s_cx, obj, "init", &v);
                 if (getObjectFromMozJS(s_cx, c, "init")) {
                     assi.push_back(new AssignmentExpressionNode(fn(getObjectFromMozJS(s_cx, c, "id"), currentBody, false),
-                            fn(getObjectFromMozJS(s_cx, c, "init"), currentBody, false), L"="));
+                            fn(getObjectFromMozJS(s_cx, c, "init"), currentBody, false), ESString::create(L"=")));
                 }
             }
 
@@ -273,18 +273,18 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             } else {
                 return NULL;
             }
-        } else if(type == astTypeVariableDeclarator) {
+        } else if(type == *astTypeVariableDeclarator) {
             parsedNode = new VariableDeclaratorNode(fn(getObjectFromMozJS(s_cx, obj, "id"), currentBody, false));
-        } else if(type == astTypeIdentifier) {
-            InternalString is(getStringFromMozJS(s_cx, obj, "name"));
+        } else if(type == *astTypeIdentifier) {
+            ESString is(getStringFromMozJS(s_cx, obj, "name"));
             parsedNode = new IdentifierNode(std::wstring(is.data()));
-        } else if(type == astTypeExpressionStatement) {
+        } else if(type == *astTypeExpressionStatement) {
             Node* node = fn(getObjectFromMozJS(s_cx, obj, "expression"), currentBody, false);
             parsedNode = new ExpressionStatementNode(node);
-        } else if(type == astTypeAssignmentExpression) {
+        } else if(type == *astTypeAssignmentExpression) {
             parsedNode = new AssignmentExpressionNode(fn(getObjectFromMozJS(s_cx, obj, "left"), currentBody, false),
-                    fn(getObjectFromMozJS(s_cx, obj, "right"), currentBody, false), InternalString(getStringFromMozJS(s_cx, obj, "operator")));
-        } else if(type == astTypeLiteral) {
+                    fn(getObjectFromMozJS(s_cx, obj, "right"), currentBody, false), ESString::create(getStringFromMozJS(s_cx, obj, "operator")));
+        } else if(type == *astTypeLiteral) {
             //TODO parse esvalue better
             jsval v;
             JS_GetProperty(s_cx, obj, "value", &v);
@@ -296,8 +296,8 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
                 parsedNode = new LiteralNode(ESValue(number));
             } else if(JSVAL_IS_STRING(v)) {
                 JSString* ss = JSVAL_TO_STRING(v);
-                InternalString is(JS_EncodeString(s_cx, ss));
-                parsedNode = new LiteralNode(ESValue(ESString::create(is, true)));
+                ESString* is = ESString::create(JS_EncodeString(s_cx, ss));
+                parsedNode = new LiteralNode(ESValue(is));
             } else if(JSVAL_IS_BOOLEAN(v)) {
                 JSBool b = JSVAL_TO_BOOLEAN(v);
                 if(b)
@@ -311,7 +311,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
                 JSBool ret = JS_ValueToObject(s_cx, v, &obj);
                 ASSERT(ret);
                 ASSERT(JS_ObjectIsRegExp(s_cx, obj));
-                InternalString source(JS_EncodeString(s_cx, JS_GetRegExpSource(s_cx, obj)));
+                ESString* source = ESString::create(JS_EncodeString(s_cx, JS_GetRegExpSource(s_cx, obj)));
                 unsigned flag = JS_GetRegExpFlags(s_cx, obj);
                 int f = 0;
                 if(flag & JSREG_FOLD) {
@@ -329,9 +329,9 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
                 parsedNode = new LiteralNode(ESRegExpObject::create(source, (ESRegExpObject::Option)f, escargot::ESVMInstance::currentInstance()->globalObject()->regexpPrototype()));
             }
 
-        } else if(type == astTypeFunctionDeclaration) {
+        } else if(type == *astTypeFunctionDeclaration) {
             JSObject* idObj = getObjectFromMozJS(s_cx, obj, "id");
-            InternalString is(getStringFromMozJS(s_cx, idObj, "name"));
+            ESString is(getStringFromMozJS(s_cx, idObj, "name"));
             InternalAtomicString id = InternalAtomicString(is.data());
             InternalAtomicStringVector params;
 
@@ -339,7 +339,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             JSObject* children = getObjectFromMozJS(s_cx, obj, "params");
             uint32_t siz = getArrayLengthFromMozJS(s_cx, children);
             for (uint32_t i = 0; i < siz; i++) {
-                InternalString is(getStringFromMozJS(s_cx, getArrayElementFromMozJS(s_cx, children, i), "name"));
+                ESString is(getStringFromMozJS(s_cx, getArrayElementFromMozJS(s_cx, children, i), "name"));
                 params.push_back(is.data());
             }
 
@@ -347,24 +347,26 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             currentBody->insert(currentBody->begin(), new FunctionDeclarationNode(id, std::move(params), func_body, getBooleanFromMozJS(s_cx, obj, "generator")
                     , getBooleanFromMozJS(s_cx, obj, "expression"), false));
             return NULL;
-        }  else if(type == astTypeFunctionExpression) {
+        }  else if(type == *astTypeFunctionExpression) {
             InternalAtomicString id;
             InternalAtomicStringVector params;
 
-            if(getObjectFromMozJS(s_cx, obj, "id"))
-                id = InternalAtomicString(InternalString(getStringFromMozJS(s_cx, getObjectFromMozJS(s_cx, obj, "id"), "name")).data());
+            if(getObjectFromMozJS(s_cx, obj, "id")) {
+                ESString is(getStringFromMozJS(s_cx, getObjectFromMozJS(s_cx, obj, "id"), "name"));
+                id = InternalAtomicString(is.data());
+            }
 
             JSObject* children = getObjectFromMozJS(s_cx, obj, "params");
             uint32_t siz = getArrayLengthFromMozJS(s_cx, children);
             for (uint32_t i = 0; i < siz; i++) {
-                InternalString is(getStringFromMozJS(s_cx, getArrayElementFromMozJS(s_cx, children, i), "name"));
+                ESString is(getStringFromMozJS(s_cx, getArrayElementFromMozJS(s_cx, children, i), "name"));
                 params.push_back(is.data());
             }
 
             Node* func_body = fn(getObjectFromMozJS(s_cx, obj, "body"), currentBody, true);
             parsedNode = new FunctionExpressionNode(id, std::move(params), func_body, getBooleanFromMozJS(s_cx, obj, "generator")
                     , getBooleanFromMozJS(s_cx, obj, "expression"));
-        } else if(type == astTypeArrayExpression) {
+        } else if(type == *astTypeArrayExpression) {
             ExpressionNodeVector elems;
             JSObject* children = getObjectFromMozJS(s_cx, obj, "elements");
             uint32_t siz = getArrayLengthFromMozJS(s_cx, children);
@@ -372,7 +374,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
                 elems.push_back(fn(getArrayElementFromMozJS(s_cx, children, i), currentBody, false));
             }
             parsedNode = new ArrayExpressionNode(std::move(elems));
-        } else if(type == astTypeBlockStatement) {
+        } else if(type == *astTypeBlockStatement) {
             StatementNodeVector blockBody;
             StatementNodeVector* old = currentBody;
 
@@ -389,7 +391,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             if(shouldGenerateNewBody)
                 currentBody = old;
             parsedNode = new BlockStatementNode(std::move(blockBody));
-        } else if(type == astTypeCallExpression) {
+        } else if(type == *astTypeCallExpression) {
             Node* callee = fn(getObjectFromMozJS(s_cx, obj, "callee"), currentBody, false);
             ArgumentVector arguments;
 
@@ -399,7 +401,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
                 arguments.push_back(fn(getArrayElementFromMozJS(s_cx, children, i), currentBody, false));
             }
             parsedNode = new CallExpressionNode(callee, std::move(arguments));
-        } else if(type == astTypeNewExpression) {
+        } else if(type == *astTypeNewExpression) {
             Node* callee = fn(getObjectFromMozJS(s_cx, obj, "callee"), currentBody, false);
             ArgumentVector arguments;
             JSObject* children = getObjectFromMozJS(s_cx, obj, "arguments");
@@ -408,7 +410,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
                 arguments.push_back(fn(getArrayElementFromMozJS(s_cx, children, i), currentBody, false));
             }
             parsedNode = new NewExpressionNode(callee, std::move(arguments));
-        } else if(type == astTypeObjectExpression) {
+        } else if(type == *astTypeObjectExpression) {
             PropertiesNodeVector propertiesVector;
             JSObject* children = getObjectFromMozJS(s_cx, obj, "properties");
             uint32_t siz = getArrayLengthFromMozJS(s_cx, children);
@@ -418,61 +420,61 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
                 propertiesVector.push_back((PropertyNode *)n);
             }
             parsedNode = new ObjectExpressionNode(std::move(propertiesVector));
-        } else if(type == astConditionalExpression) {
+        } else if(type == *astConditionalExpression) {
             parsedNode = new ConditionalExpressionNode(fn(getObjectFromMozJS(s_cx, obj, "test"), currentBody, false),
                     fn(getObjectFromMozJS(s_cx, obj, "consequent"), currentBody, false), fn(getObjectFromMozJS(s_cx, obj, "alternate"), currentBody, false));
-        } else if(type == astTypeProperty) {
+        } else if(type == *astTypeProperty) {
             PropertyNode::Kind kind = PropertyNode::Kind::Init;
-            InternalString get(L"get");
-            InternalString set(L"set");
-            InternalString kinds(getStringFromMozJS(s_cx, obj, "kind"));
+            ESString get(L"get");
+            ESString set(L"set");
+            ESString kinds(getStringFromMozJS(s_cx, obj, "kind"));
             if(get == kinds) {
                 kind = PropertyNode::Kind::Get;
             } else if(set == kinds) {
                 kind = PropertyNode::Kind::Set;
             }
             parsedNode = new PropertyNode(fn(getObjectFromMozJS(s_cx, obj, "key"), currentBody, false), fn(getObjectFromMozJS(s_cx, obj, "value"), currentBody, false), kind);
-        } else if(type == astTypeMemberExpression) {
+        } else if(type == *astTypeMemberExpression) {
             parsedNode = new MemberExpressionNode(fn(getObjectFromMozJS(s_cx, obj, "object"), currentBody, false),
                     fn(getObjectFromMozJS(s_cx, obj, "property"), currentBody, false), getBooleanFromMozJS(s_cx, obj, "computed"));
-        } else if(type == astTypeBinaryExpression) {
+        } else if(type == *astTypeBinaryExpression) {
             parsedNode = new BinaryExpressionNode(fn(getObjectFromMozJS(s_cx, obj, "left"), currentBody, false),
-                    fn(getObjectFromMozJS(s_cx, obj, "right"), currentBody, false), InternalString(getStringFromMozJS(s_cx, obj, "operator")));
-        } else if(type == astTypeLogicalExpression) {
+                    fn(getObjectFromMozJS(s_cx, obj, "right"), currentBody, false), ESString::create(getStringFromMozJS(s_cx, obj, "operator")));
+        } else if(type == *astTypeLogicalExpression) {
             parsedNode = new LogicalExpressionNode(fn(getObjectFromMozJS(s_cx, obj, "left"), currentBody, false),
-                    fn(getObjectFromMozJS(s_cx, obj, "right"), currentBody, false), InternalString(getStringFromMozJS(s_cx, obj, "operator")));
-        } else if(type == astTypeUpdateExpression) {
-            parsedNode = new UpdateExpressionNode(fn(getObjectFromMozJS(s_cx, obj, "argument"), currentBody, false), InternalString(getStringFromMozJS(s_cx, obj, "operator")),
+                    fn(getObjectFromMozJS(s_cx, obj, "right"), currentBody, false), ESString::create(getStringFromMozJS(s_cx, obj, "operator")));
+        } else if(type == *astTypeUpdateExpression) {
+            parsedNode = new UpdateExpressionNode(fn(getObjectFromMozJS(s_cx, obj, "argument"), currentBody, false), ESString::create(getStringFromMozJS(s_cx, obj, "operator")),
                     getBooleanFromMozJS(s_cx, obj, "prefix"));
-        } else if(type == astTypeUnaryExpression) {
-            parsedNode = new UnaryExpressionNode(fn(getObjectFromMozJS(s_cx, obj, "argument"), currentBody, false), InternalString(getStringFromMozJS(s_cx, obj, "operator")));
-        } else if(type == astTypeIfStatement) {
+        } else if(type == *astTypeUnaryExpression) {
+            parsedNode = new UnaryExpressionNode(fn(getObjectFromMozJS(s_cx, obj, "argument"), currentBody, false), ESString::create(getStringFromMozJS(s_cx, obj, "operator")));
+        } else if(type == *astTypeIfStatement) {
             Node* a = NULL;
             if(getObjectFromMozJS(s_cx, obj, "alternate"))
                 a = fn(getObjectFromMozJS(s_cx, obj, "alternate"), currentBody, false);
             parsedNode = new IfStatementNode(fn(getObjectFromMozJS(s_cx, obj, "test"),currentBody, false), fn(getObjectFromMozJS(s_cx, obj, "consequent"), currentBody, false), a);
-        } else if(type == astTypeForStatement) {
+        } else if(type == *astTypeForStatement) {
             Node* init_node = NULL;
             if (getObjectFromMozJS(s_cx, obj, "init"))
                 init_node = fn(getObjectFromMozJS(s_cx, obj, "init"), currentBody, false);
             parsedNode = new ForStatementNode(init_node, fn(getObjectFromMozJS(s_cx, obj, "test"), currentBody, false),
                     fn(getObjectFromMozJS(s_cx, obj, "update"), currentBody, false), fn(getObjectFromMozJS(s_cx, obj, "body"), currentBody, false));
-        } else if(type == astTypeForInStatement) {
+        } else if(type == *astTypeForInStatement) {
             JSObject* left = getObjectFromMozJS(s_cx, obj, "left");
-            InternalString left_type(getStringFromMozJS(s_cx, left, "type"));
+            ESString left_type(getStringFromMozJS(s_cx, left, "type"));
             Node* left_node = fn(left, currentBody, false);
-            if (left_type == astTypeVariableDeclaration) {
+            if (left_type == *astTypeVariableDeclaration) {
                 JSObject* left_children = getObjectFromMozJS(s_cx, left, "declarations");
                 JSObject* zero = getArrayElementFromMozJS(s_cx, left_children, 0);
                 left_node = fn(getObjectFromMozJS(s_cx, zero, "id"), currentBody, false);
             }
             parsedNode = new ForInStatementNode(left_node, fn(getObjectFromMozJS(s_cx, obj, "right"), currentBody, false),
                     fn(getObjectFromMozJS(s_cx, obj, "body"), currentBody, false), getBooleanFromMozJS(s_cx, obj, "each"));
-        } else if(type == astTypeWhileStatement) {
+        } else if(type == *astTypeWhileStatement) {
             parsedNode = new WhileStatementNode(fn(getObjectFromMozJS(s_cx, obj, "test"), currentBody, false), fn(getObjectFromMozJS(s_cx, obj, "body"), currentBody, false));
-        } else if(type == astTypeDoWhileStatement) {
+        } else if(type == *astTypeDoWhileStatement) {
             parsedNode = new DoWhileStatementNode(fn(getObjectFromMozJS(s_cx, obj, "test"), currentBody, false), fn(getObjectFromMozJS(s_cx, obj, "body"), currentBody, false));
-        } else if(type == astTypeSwitchStatement) {
+        } else if(type == *astTypeSwitchStatement) {
             StatementNodeVector vA;
             StatementNodeVector vB;
             SwitchCaseNode* defaultNode = NULL;
@@ -494,7 +496,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             }
             parsedNode = new SwitchStatementNode(fn(getObjectFromMozJS(s_cx, obj, "discriminant"), currentBody, false),
                     std::move(vA), defaultNode, std::move(vB), getBooleanFromMozJS(s_cx, obj, "lexical"));
-        } else if(type == astTypeSwitchCase) {
+        } else if(type == *astTypeSwitchCase) {
             StatementNodeVector v;
             JSObject* consequent = getObjectFromMozJS(s_cx, obj, "consequent");
             uint32_t siz = getArrayLengthFromMozJS(s_cx, consequent);
@@ -507,21 +509,21 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
                 parsedNode = new SwitchCaseNode(nullptr, std::move(v));
             else
                 parsedNode = new SwitchCaseNode(fn(test, currentBody, false), std::move(v));
-        } else if(type == astTypeThisExpression) {
+        } else if(type == *astTypeThisExpression) {
             parsedNode = new ThisExpressionNode();
-        } else if(type == astTypeBreakStatement) {
+        } else if(type == *astTypeBreakStatement) {
             parsedNode = new BreakStatementNode();
-        } else if(type == astTypeContinueStatement) {
+        } else if(type == *astTypeContinueStatement) {
             parsedNode = new ContinueStatementNode();
-        } else if(type == astTypeReturnStatement) {
+        } else if(type == *astTypeReturnStatement) {
             Node* arg_node = NULL;
             if (getObjectFromMozJS(s_cx, obj, "argument")) {
                 arg_node = fn(getObjectFromMozJS(s_cx, obj, "argument"), currentBody, false);
              }
             parsedNode = new ReturnStatmentNode(arg_node);
-        } else if(type == astTypeEmptyStatement) {
+        } else if(type == *astTypeEmptyStatement) {
             parsedNode = new EmptyStatementNode();
-        } else if (type == astTypeTryStatement) {
+        } else if (type == *astTypeTryStatement) {
            CatchClauseNodeVector guardedHandlers;
            JSObject* children = getObjectFromMozJS(s_cx, obj, "guardedHandlers");
            uint32_t siz = getArrayLengthFromMozJS(s_cx, children);
@@ -537,13 +539,13 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
                parsedNode = new TryStatementNode(fn(getObjectFromMozJS(s_cx, obj, "block"), currentBody, false),
                        fn(getObjectFromMozJS(s_cx, obj, "handler"), currentBody, false), std::move(guardedHandlers), fn(getObjectFromMozJS(s_cx, obj, "finalizer"), currentBody, false));
            }
-        } else if (type == astTypeCatchClause) {
+        } else if (type == *astTypeCatchClause) {
            if (!getObjectFromMozJS(s_cx, obj, "guard")) {
                 parsedNode = new CatchClauseNode(fn(getObjectFromMozJS(s_cx, obj, "param"), currentBody, false), NULL, fn(getObjectFromMozJS(s_cx, obj, "body"), currentBody, false));
             } else {
                 parsedNode = new CatchClauseNode(fn(getObjectFromMozJS(s_cx, obj, "param"), currentBody, false), fn(getObjectFromMozJS(s_cx, obj, "guard"), currentBody, false), fn(getObjectFromMozJS(s_cx, obj, "body"), currentBody, false));
             }
-        } else if (type == astTypeThrowStatement) {
+        } else if (type == *astTypeThrowStatement) {
             parsedNode = new ThrowStatementNode(fn(getObjectFromMozJS(s_cx, obj, "argument"), currentBody, false));
         }
 
@@ -632,7 +634,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
         } else if(type == NodeType::Identifier) {
             //use case
             InternalAtomicString name = ((IdentifierNode *)currentNode)->name();
-            InternalString nonAtomicName = ((IdentifierNode *)currentNode)->nonAtomicName();
+            //ESString* nonAtomicName = ((IdentifierNode *)currentNode)->nonAtomicName();
             auto iter = std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),name);
             if(name == strings->atomicArguments && iter == identifierInCurrentContext.end() && nearFunctionNode) {
                 identifierInCurrentContext.push_back(strings->atomicArguments);

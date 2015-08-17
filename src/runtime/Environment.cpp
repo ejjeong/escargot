@@ -29,7 +29,7 @@ LexicalEnvironment* LexicalEnvironment::newFunctionEnvironment(ESFunctionObject*
     return env;
 }
 
-void EnvironmentRecord::createMutableBindingForAST(const InternalAtomicString& atomicName,const InternalString& name,bool canDelete)
+void EnvironmentRecord::createMutableBindingForAST(const InternalAtomicString& atomicName,ESString * name,bool canDelete)
 {
     if(UNLIKELY(isGlobalEnvironmentRecord())) {
         toGlobalEnvironmentRecord()->createGlobalVarBinding(atomicName, name, canDelete);
@@ -81,7 +81,7 @@ bool GlobalEnvironmentRecord::canDeclareGlobalFunction(const InternalAtomicStrin
 }
 
 //$8.1.1.4.17
-void GlobalEnvironmentRecord::createGlobalVarBinding(const InternalAtomicString& name,const InternalString& nonAtomicName, bool canDelete)
+void GlobalEnvironmentRecord::createGlobalVarBinding(const InternalAtomicString& name,ESString * nonAtomicName, bool canDelete)
 {
     ESObject* globalObj = m_objectRecord->bindingObject();
     bool hasProperty = globalObj->hasOwnProperty(nonAtomicName);
@@ -95,7 +95,7 @@ void GlobalEnvironmentRecord::createGlobalVarBinding(const InternalAtomicString&
 }
 
 //$8.1.1.4.18
-void GlobalEnvironmentRecord::createGlobalFunctionBinding(const InternalAtomicString& name,const InternalString& nonAtomicName, const ESValue& V, bool canDelete) {
+void GlobalEnvironmentRecord::createGlobalFunctionBinding(const InternalAtomicString& name,ESString * nonAtomicName, const ESValue& V, bool canDelete) {
     ESObject* globalObj = m_objectRecord->bindingObject();
     globalObj->definePropertyOrThrow(nonAtomicName, true, true, canDelete);
     globalObj->set(nonAtomicName, V, false);
@@ -109,7 +109,7 @@ ESObject* GlobalEnvironmentRecord::getThisBinding() {
 }
 
 //$8.1.1.4.1
-ESSlot* GlobalEnvironmentRecord::hasBinding(const InternalAtomicString& atomicName, const InternalString& name) {
+ESSlot* GlobalEnvironmentRecord::hasBinding(const InternalAtomicString& atomicName, ESString * name) {
     ESSlot* ret = m_declarativeRecord->hasBinding(atomicName, name);
     if(ret)
         return ret;
@@ -117,14 +117,14 @@ ESSlot* GlobalEnvironmentRecord::hasBinding(const InternalAtomicString& atomicNa
 }
 
 //$8.1.1.4.2
-void GlobalEnvironmentRecord::createMutableBinding(const InternalAtomicString& name,const InternalString& nonAtomicName, bool canDelete) {
+void GlobalEnvironmentRecord::createMutableBinding(const InternalAtomicString& name,ESString * nonAtomicName, bool canDelete) {
     if( m_declarativeRecord->hasBinding(name, nonAtomicName) )
         throw "TypeError";
     m_declarativeRecord->createMutableBinding(name, nonAtomicName, canDelete);
 }
 
 //$8.1.1.4.4
-void GlobalEnvironmentRecord::initializeBinding(const InternalAtomicString& name,const InternalString& nonAtomicName, const ESValue& V) {
+void GlobalEnvironmentRecord::initializeBinding(const InternalAtomicString& name,ESString * nonAtomicName, const ESValue& V) {
     //FIXME
     if( m_declarativeRecord->hasBinding(name, nonAtomicName) )
         m_declarativeRecord->initializeBinding(name, nonAtomicName, V);
@@ -148,7 +148,7 @@ ESValue GlobalEnvironmentRecord::getBindingValue(const InternalAtomicString& nam
 
 //$8.1.1.4.5
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-global-environment-records-setmutablebinding-n-v-s
-void GlobalEnvironmentRecord::setMutableBinding(const InternalAtomicString& name, const InternalString& nonAtomicName, const ESValue& V, bool S) {
+void GlobalEnvironmentRecord::setMutableBinding(const InternalAtomicString& name, ESString * nonAtomicName, const ESValue& V, bool S) {
     if( m_declarativeRecord->hasBinding(name, nonAtomicName)) {
         m_declarativeRecord->setMutableBinding(name, nonAtomicName, V, S);
     } else {
@@ -157,21 +157,21 @@ void GlobalEnvironmentRecord::setMutableBinding(const InternalAtomicString& name
 }
 
 //$8.1.1.2.2
-void ObjectEnvironmentRecord::createMutableBinding(const InternalAtomicString& name,const InternalString& nonAtomicName, bool canDelete)
+void ObjectEnvironmentRecord::createMutableBinding(const InternalAtomicString& name,ESString * nonAtomicName, bool canDelete)
 {
     m_bindingObject->definePropertyOrThrow(nonAtomicName, true, true, canDelete);
 }
 
 //$8.1.1.2.4
-void ObjectEnvironmentRecord::initializeBinding(const InternalAtomicString& name,const InternalString& nonAtomicName, const ESValue& V)
+void ObjectEnvironmentRecord::initializeBinding(const InternalAtomicString& name,ESString * nonAtomicName, const ESValue& V)
 {
     return setMutableBinding(name, nonAtomicName, V, false);
 }
 
 //$8.1.1.2.5
-void ObjectEnvironmentRecord::setMutableBinding(const InternalAtomicString& name,const InternalString& nonAtomicName, const ESValue& V, bool S)
+void ObjectEnvironmentRecord::setMutableBinding(const InternalAtomicString& name,ESString * nonAtomicName, const ESValue& V, bool S)
 {
-    m_bindingObject->set(name.data(), V, S);
+    m_bindingObject->set(nonAtomicName, V, S);
 }
 
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-bindthisvalue
@@ -179,7 +179,7 @@ void FunctionEnvironmentRecord::bindThisValue(const ESValue& V)
 {
     ASSERT(m_thisBindingStatus != Initialized);
     if(m_thisBindingStatus == Lexical)
-        throw ReferenceError(L"");
+        throw ReferenceError(ESString::create(L""));
     m_thisValue = V;
     m_thisBindingStatus = Initialized;
 }
@@ -188,7 +188,7 @@ ESObject* FunctionEnvironmentRecord::getThisBinding()
 {
     ASSERT(m_thisBindingStatus != Lexical);
     if(m_thisBindingStatus == Uninitialized)
-        throw ReferenceError(L"");
+        throw ReferenceError(ESString::create(L""));
 
     return m_thisValue.asESPointer()->asESObject();
 }

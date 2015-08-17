@@ -93,67 +93,25 @@ bool ESValue::equalsTo(const ESValue& val)
 ESString* ESValue::toString() const
 {
     if(isPrimitive()) {
-        InternalStringStd ret;
         if(isInt32()) {
-            ret = std::move(std::to_wstring(asInt32()));
+            return ESString::create(asInt32());
         } else if(isNumber()) {
             double d = asNumber();
-            if (std::isnan(d)) ret = L"NaN";
-            else if (d == std::numeric_limits<double>::infinity()) ret = L"Infinity";
-            else if (d== -std::numeric_limits<double>::infinity()) ret = L"-Infinity";
-            else {
-                wchar_t buf[512];
-                char chbuf[50];
-                char* end = rapidjson::internal::dtoa(toNumber(), chbuf);
-                int i = 0;
-                for (char* p = chbuf; p != end; ++p)
-                    buf[i++] = (wchar_t) *p;
-                buf[i] = L'\0';
-                //std::swprintf(buf, 511, L"%.17lg", number);
-                size_t tl = wcslen(buf);
-                ret.reserve(tl);
-                ret.append(buf);
-            }
+            return ESString::create(d);
         } else if(isUndefined()) {
-            ret = strings->undefined.data();
+            return strings->undefined;
         } else if(isNull()) {
-            ret = strings->null.data();
+            return strings->null;
         } else if(isBoolean()) {
             if(asBoolean())
-                ret = strings->stringTrue.data();
+                return strings->stringTrue;
             else
-                ret = strings->stringFalse.data();
+                return strings->stringFalse;
         } else {
-            ESPointer* o = asESPointer();
-            if(o->isESString()) {
-                return o->asESString();
-            } else if(o->isESFunctionObject()) {
-                //ret = L"[Function function]";
-                ret = L"function ";
-                ESFunctionObject* fn = o->asESFunctionObject();
-                ret.append(fn->functionAST()->id().data());
-                ret.append(L"() {}");
-            } else if(o->isESArrayObject()) {
-                bool isFirst = true;
-                for (int i = 0 ; i < o->asESArrayObject()->length().asInt32() ; i++) {
-                    if(!isFirst)
-                        ret.append(L",");
-                    ESValue slot = o->asESArrayObject()->get(i);
-                    ret.append(slot.toInternalString().data());
-                    isFirst = false;
-                  }
-            } else if(o->isESErrorObject()) {
-                ret.append(o->asESObject()->get(L"name", true).toInternalString().data());
-                ret.append(L": ");
-                ret.append(o->asESObject()->get(L"message").toInternalString().data());
-            } else if(o->isESObject()) {
-                ret.append(L"[Object object]");
-            } else {
-                RELEASE_ASSERT_NOT_REACHED();
-            }
+            ASSERT(isESString());
+            return asESString();
         }
-
-        return ESString::create(std::move(ret));
+        RELEASE_ASSERT_NOT_REACHED();
     } else {
         ASSERT(asESPointer()->isESObject());
         ESObject* obj = asESPointer()->asESObject();
@@ -181,7 +139,7 @@ ESObject* ESValue::toObject() const
         receiver = ESBooleanObject::create(ret);
     } else if (isESString()) {
         function = ESVMInstance::currentInstance()->globalObject()->string();
-        receiver = ESStringObject::create(asESPointer()->asESString()->string());
+        receiver = ESStringObject::create(asESPointer()->asESString());
     } else if (isESPointer() && asESPointer()->isESObject()) {
         return asESPointer()->asESObject();
     } else {
@@ -189,11 +147,6 @@ ESObject* ESValue::toObject() const
     }
     receiver->setConstructor(function);
     receiver->set__proto__(function->protoType());
-    /*
-    std::vector<ESValue, gc_allocator<ESValue>> arguments;
-    arguments.push_back(this);
-    ESFunctionObject::call((ESValue) function, receiver, &arguments[0], arguments.size(), this);
-    */
     return receiver;
 }
 
@@ -221,63 +174,6 @@ ESValue ESObject::valueOf()
         RELEASE_ASSERT_NOT_REACHED();
     }
     */
-}
-
-InternalString ESValue::toInternalString() const
-{
-    InternalString ret;
-
-    if(isInt32()) {
-        int val = asInt32();
-        if(val >= 0 && val < ESCARGOT_STRINGS_NUMBERS_MAX)
-            ret = strings->nonAtomicNumbers[val];
-        else ret = InternalString(val);
-    } else if(isNumber()) {
-        double d = asNumber();
-        if (std::isnan(d)) ret = L"NaN";
-        else if (d == std::numeric_limits<double>::infinity()) ret = L"Infinity";
-        else if (d== -std::numeric_limits<double>::infinity()) ret = L"-Infinity";
-        else ret = InternalString(d);
-    } else if(isUndefined()) {
-        ret = strings->undefined;
-    } else if(isNull()) {
-        ret = strings->null;
-    } else if(isBoolean()) {
-        if(asBoolean())
-            ret = strings->stringTrue;
-        else
-            ret = strings->stringFalse;
-    } else {
-        ESPointer* o = asESPointer();
-        if(o->isESString()) {
-            ret = o->asESString()->string().data();
-        } else if(o->isESFunctionObject()) {
-            //ret = L"[Function function]";
-            ret = L"function ";
-            ESFunctionObject* fn = o->asESFunctionObject();
-            ret.append(fn->functionAST()->id().data());
-            ret.append(L"() {}");
-        } else if(o->isESArrayObject()) {
-            bool isFirst = true;
-            for (int i = 0 ; i < o->asESArrayObject()->length().asInt32() ; i++) {
-                if(!isFirst)
-                    ret.append(L",");
-                ESValue slot = o->asESArrayObject()->get(i);
-                ret.append(slot.toInternalString());
-                isFirst = false;
-              }
-        } else if(o->isESErrorObject()) {
-            ret.append(o->asESObject()->get(L"name", true).toInternalString().data());
-            ret.append(L": ");
-            ret.append(o->asESObject()->get(L"message").toInternalString().data());
-        } else if(o->isESObject()) {
-            ret.append("[Object object]");
-        } else {
-            RELEASE_ASSERT_NOT_REACHED();
-        }
-    }
-
-    return ret;
 }
 
 ESArrayObject* ESString::match(ESPointer* esptr, std::vector<int>* offsets, std::vector<int>* offsetLength) const
@@ -310,8 +206,8 @@ ESArrayObject* ESString::match(ESPointer* esptr, std::vector<int>* offsets, std:
             if(offsetLength)
                 offsetLength->push_back(matched.length());
 
-            InternalString int_str = utf8ToUtf16(matched.data(), matched.length());
-            ret->set(index, ESString::create(int_str));
+            ESString* int_str = utf8ToUtf16(matched.data(), matched.length());
+            ret->set(index, int_str);
             index++;
             if (!isGlobal)
                 break;
@@ -341,12 +237,12 @@ ESArrayObject::ESArrayObject()
     m_length = 0;
 }
 
-ESRegExpObject::ESRegExpObject(const InternalString& source, const Option& option)
+ESRegExpObject::ESRegExpObject(escargot::ESString* source, const Option& option)
     : ESObject((Type)(Type::ESObject | Type::ESRegExpObject))
 {
     m_source = source;
     m_option = option;
-    m_sourceStringAsUtf8 = source.utf8Data();
+    m_sourceStringAsUtf8 = source->utf8Data();
 }
 
 ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST, ESObject* proto)
@@ -371,7 +267,7 @@ ALWAYS_INLINE void functionCallerInnerProcess(ESFunctionObject* fn, ESValue rece
 
     if(UNLIKELY(fn->functionAST()->needsActivation())) {
         const InternalAtomicStringVector& params = fn->functionAST()->params();
-        const InternalStringVector& nonAtomicParams = fn->functionAST()->nonAtomicParams();
+        const ESStringVector& nonAtomicParams = fn->functionAST()->nonAtomicParams();
         for(unsigned i = 0; i < params.size() ; i ++) {
             functionRecord->createMutableBinding(params[i], nonAtomicParams[i], false);
             if(i < argumentCount) {
@@ -380,7 +276,7 @@ ALWAYS_INLINE void functionCallerInnerProcess(ESFunctionObject* fn, ESValue rece
         }
     } else {
         const InternalAtomicStringVector& params = fn->functionAST()->params();
-        const InternalStringVector& nonAtomicParams = fn->functionAST()->nonAtomicParams();
+        const ESStringVector& nonAtomicParams = fn->functionAST()->nonAtomicParams();
         for(unsigned i = 0; i < params.size() ; i ++) {
             if(i < argumentCount) {
                 functionRecord->setMutableBinding(params[i], nonAtomicParams[i], arguments[i], true);
@@ -396,7 +292,7 @@ ALWAYS_INLINE void functionCallerInnerProcess(ESFunctionObject* fn, ESValue rece
             argumentsObject->set(strings->nonAtomicNumbers[i], arguments[i]);
         }
         for( ; i < argumentCount ; i ++) {
-            argumentsObject->set(InternalString((int)i).data(), arguments[i]);
+            argumentsObject->set(ESString::create((int)i), arguments[i]);
         }
 
         if(!fn->functionAST()->needsActivation()) {
@@ -406,7 +302,7 @@ ALWAYS_INLINE void functionCallerInnerProcess(ESFunctionObject* fn, ESValue rece
                     break;
                 }
             }
-            ASSERT(functionRecord->hasBinding(strings->atomicArguments, L"arguments"));
+            ASSERT(functionRecord->hasBinding(strings->atomicArguments, strings->arguments));
         } else {
             functionRecord->createMutableBinding(strings->atomicArguments, strings->arguments, false);
             functionRecord->setMutableBinding(strings->atomicArguments, strings->arguments, argumentsObject, true);
@@ -452,15 +348,15 @@ ESValue ESFunctionObject::call(ESValue callee, ESValue receiver, ESValue argumen
             ESVMInstance->m_currentExecutionContext = currentContext;
         }
     } else {
-        throw TypeError(L"Callee is not a function object");
+        throw TypeError(ESString::create(L"Callee is not a function object"));
     }
 
     return result;
 }
 
-void ESDateObject::parseStringToDate(struct tm* timeinfo, const InternalString istr) {
-    int len = istr.length();
-    const wchar_t* wc = istr.data();
+void ESDateObject::parseStringToDate(struct tm* timeinfo, escargot::ESString* istr) {
+    int len = istr->length();
+    const wchar_t* wc = istr->data();
     char buffer[len];
 
     wcstombs(buffer, wc, sizeof(buffer));
@@ -477,7 +373,7 @@ void ESDateObject::setTimeValue(ESValue str) {
     } else {
         time_t rawtime;
         struct tm* timeinfo = localtime(&rawtime);;
-        InternalString istr = str.asESString()->string().data();
+        escargot::ESString* istr = str.toString();
         parseStringToDate(timeinfo, istr);
 
         m_tv.tv_sec = mktime(timeinfo);
@@ -527,10 +423,10 @@ void ESDateObject::setTime(double t) {
     m_tv.tv_usec =  (raw_t % 10000) * 1000;
 }
 
-ESStringObject::ESStringObject(const InternalStringStd& str)
+ESStringObject::ESStringObject(escargot::ESString* str)
     : ESObject((Type)(Type::ESObject | Type::ESStringObject))
 {
-    m_stringData = ESString::create(str);
+    m_stringData = str;
 
     //$21.1.4.1 String.length
     defineAccessorProperty(strings->length, ESVMInstance::currentInstance()->stringObjectLengthAccessorData(), false, true, false);

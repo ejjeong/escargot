@@ -13,14 +13,14 @@ public:
         DECREMENT, //"--"
     };
 
-    UpdateExpressionNode(Node *argument, const InternalString& oper, bool prefix)
+    UpdateExpressionNode(Node *argument, ESString* oper, bool prefix)
             : ExpressionNode(NodeType::UpdateExpression)
     {
         m_argument = (ExpressionNode*)argument;
 
-        if (oper == L"++")
+        if (*oper == L"++")
             m_operator = INCREMENT;
-        else if (oper == L"--")
+        else if (*oper == L"--")
             m_operator = DECREMENT;
         else
             RELEASE_ASSERT_NOT_REACHED();
