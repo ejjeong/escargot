@@ -2,11 +2,14 @@
 
 tests=("3d-cube" "3d-morph" "3d-raytrace" "access-binary-trees" "access-fannkuch" "access-nbody" "access-nsieve" "bitops-3bit-bits-in-byte" "bitops-bits-in-byte" "bitops-bitwise-and" "bitops-nsieve-bits" "controlflow-recursive" "crypto-aes" "crypto-md5" "crypto-sha1" "date-format-tofte" "date-format-xparb" "math-cordic" "math-partial-sums" "math-spectral-norm" "regexp-dna" "string-base64" "string-fasta" "string-tagcloud" "string-unpack-code" "string-validate-input")
 if [[ $1 == duk* ]]; then
-  cmd="./test/SunSpider/duk"
+  cmd="./test/bin/duk"
   tc="duktape"
 elif [[ $1 == v8* ]]; then
-  cmd="./test/SunSpider/d8"
+  cmd="./test/bin/d8"
   tc="v8"
+elif [[ $1 == jsc ]]; then
+  cmd="./test/bin/jsc"
+  tc="jsc"
 else
   cmd="./escargot"
   tc="escargot"
@@ -27,7 +30,7 @@ function measure(){
   #echo $PID
   (while [ "$PID" ]; do
     [ -f "/proc/$PID/smaps" ] || { exit 1;};
-    ./test/memps -p $PID 2> /dev/null
+    ./test/bin/memps -p $PID 2> /dev/null
     echo \"=========\"; sleep 0.0001;
   done ) >> $outfile &
   sleep 1s;
@@ -74,7 +77,7 @@ for t in "${tests[@]}"; do
     echo $(echo -e $summem | awk '{s+=$1} END {printf("Avg. MaxPSS: %.4f", s/10)}')
   fi
 
-  if [[ $tc == escargot || $tc == duk* || $tc == v8 ]]; then
+  if [[ $tc == escargot || $tc == duk* || $tc == v8 || $tc == jsc ]]; then
     cat $tmpfile | grep $t | sed -e 's/://g' | sed -e 's/,//g' | awk '{s+=$2;} END {printf("Avg. Time: %.4f\n", s/10)}'
   fi
 done
