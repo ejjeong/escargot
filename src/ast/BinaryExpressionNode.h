@@ -138,12 +138,11 @@ public:
                     //rstr = rval.toESString().string();
                     rstr = rval.toString();
 
-                    ESStringDataStd result;
-                    result.reserve(lstr->length() + rstr->length());
-                    result.append(lstr->string());
-                    result.append(rstr->string());
+                    ESChainString* chain = ESChainString::create();
+                    chain->append(lstr);
+                    chain->append(rstr);
 
-                    ret = ESString::create(std::move(result));
+                    ret = chain;
                 } else {
                     if(lval.isInt32() && rval.isInt32()) {
                         int a = lval.asInt32(), b = rval.asInt32();

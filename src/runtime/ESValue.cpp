@@ -39,6 +39,8 @@ bool ESValue::abstractEqualsTo(const ESValue& val)
         return true;
     } else if (isBoolean() && val.isBoolean()) {
         return asBoolean() == val.asBoolean();
+    } else if (isESString() && val.isESString()) {
+        return *asESString() == *val.asESString();
     } else if (isESPointer() && val.isESPointer()) {
         ESPointer* o = asESPointer();
         ESPointer* comp = val.asESPointer();

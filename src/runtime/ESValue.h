@@ -11,6 +11,7 @@ class ESBoolean;
 class ESBooleanObject;
 class ESNumberObject;
 class ESString;
+class ESChainString;
 class ESObject;
 class ESSlot;
 class ESFunctionObject;
@@ -205,16 +206,17 @@ class ESPointer : public gc {
 public:
     enum Type {
         ESString = 1 << 0,
-        ESObject = 1 << 1,
-        ESSlot = 1 << 2,
-        ESFunctionObject = 1 << 3,
-        ESArrayObject = 1 << 4,
-        ESStringObject = 1 << 5,
-        ESErrorObject = 1 << 6,
-        ESDateObject = 1 << 7,
-        ESNumberObject = 1 << 8,
-        ESRegExpObject = 1 << 9,
-        ESBooleanObject = 1 << 10,
+        ESChainString = 1 << 1,
+        ESObject = 1 << 2,
+        ESSlot = 1 << 3,
+        ESFunctionObject = 1 << 4,
+        ESArrayObject = 1 << 5,
+        ESStringObject = 1 << 6,
+        ESErrorObject = 1 << 7,
+        ESDateObject = 1 << 8,
+        ESNumberObject = 1 << 9,
+        ESRegExpObject = 1 << 10,
+        ESBooleanObject = 1 << 11,
         TypeMask = 0xffff
     };
 
@@ -241,6 +243,19 @@ public:
         ASSERT(isESString());
 #endif
         return reinterpret_cast<::escargot::ESString *>(this);
+    }
+
+    ALWAYS_INLINE bool isESChainString() const
+    {
+        return m_type & Type::ESChainString;
+    }
+
+    ALWAYS_INLINE ::escargot::ESChainString* asESChainString()
+    {
+#ifndef NDEBUG
+        ASSERT(isESChainString());
+#endif
+        return reinterpret_cast<::escargot::ESChainString *>(this);
     }
 
     ALWAYS_INLINE bool isESObject() const
@@ -374,6 +389,7 @@ protected:
 typedef std::wstring ESStringDataStd;
 class ESStringData : public ESStringDataStd, public gc_cleanup {
     friend class ESString;
+    friend class ESChainString;
 protected:
     ESStringData()
     {
@@ -541,44 +557,26 @@ public:
         return new ESString(str);
     }
 
-    ALWAYS_INLINE const wchar_t* data() const
-    {
-        return m_string->data();
-    }
-
     ALWAYS_INLINE const char* utf8Data() const
     {
         return utf16ToUtf8(data());
     }
 
-    const ESStringDataStd& string() const
-    {
-        return static_cast<const ESStringDataStd&>(*m_string);
-    }
-
-    const ESStringData* stringData() const
-    {
-        return m_string;
-    }
-
-    int length() const
-    {
-        return m_string->length();
-    }
+    ALWAYS_INLINE const wchar_t* data() const;
+    ALWAYS_INLINE const ESStringDataStd& string() const;
+    ALWAYS_INLINE const ESStringData* stringData() const;
+    ALWAYS_INLINE int length() const;
 
     ESString* substring(int from, int to) const
     {
         ASSERT(0 <= from && from <= to && to <= (int)m_string->length());
+        //NOTE to build normal string(for chain-string), we should call data();
+        data();
         ESStringDataStd ret(std::move(m_string->substr(from, to-from)));
         return ESString::create(std::move(ret));
     }
 
     escargot::ESArrayObject* match(ESPointer* esptr, std::vector<int>* offsets = nullptr, std::vector<int>* offsetsLength = nullptr) const;
-
-    ALWAYS_INLINE ESString* clone() const
-    {
-        return ESString::create(data());
-    }
 
     ESString(const ESString& s) = delete;
     void operator =(const ESString& s) = delete;
@@ -642,6 +640,119 @@ ALWAYS_INLINE bool operator >= (const ESString& a,const ESString& b)
 }
 
 typedef std::vector<ESString *,gc_allocator<ESString *> > ESStringVector;
+
+class ESChainString : public ESString {
+    static const unsigned ESChainStringMaxSize = 128;
+protected:
+    ESChainString()
+        : ESString((ESStringData *)nullptr)
+    {
+        m_type = m_type | ESPointer::ESChainString;
+        m_chainSize = 0;
+    }
+public:
+    static ESChainString* create()
+    {
+        return new ESChainString();
+    }
+    void convertIntoNormalString()
+    {
+#ifndef NDEBUG
+        ASSERT(m_type & ESPointer::ESChainString);
+        if(m_string) {
+            ASSERT(m_chainSize == 0);
+        }
+#endif
+        ESStringDataStd result;
+        size_t siz = 0;
+        for(unsigned i = 0; i < m_chainSize ; i ++) {
+            siz += m_chain[i]->length();
+        }
+        result.reserve(siz);
+        for(unsigned i = 0; i < m_chainSize ; i ++) {
+            result.append(static_cast<const ESStringDataStd &>(*m_chain[i]));
+            m_chain[i] = NULL;
+        }
+
+        m_string = new(PointerFreeGC) ESStringData(std::move(result));
+        m_chainSize = 0;
+    }
+
+    void append(ESString* str)
+    {
+        if(m_string) {
+            ASSERT(m_chainSize == 0);
+            m_chain[m_chainSize++] = const_cast<ESStringData *>(str->stringData());
+            m_string = NULL;
+        }
+
+        if(str->isESChainString()) {
+            ESChainString* cs = str->asESChainString();
+            if(cs->m_string)
+                m_chain[m_chainSize++] = const_cast<ESStringData *>(str->stringData());
+            else {
+                if(m_chainSize + cs->m_chainSize >= ESChainStringMaxSize) {
+                    convertIntoNormalString();
+                    m_chainSize = 1;
+                    m_chain[0] = m_string;
+                    m_string = NULL;
+                }
+                for(unsigned i = 0; i < cs->m_chainSize ; i ++) {
+                    m_chain[i + m_chainSize] = cs->m_chain[i];
+                }
+                m_chainSize += cs->m_chainSize;
+            }
+        } else {
+            m_chain[m_chainSize++] = const_cast<ESStringData *>(str->stringData());
+        }
+
+        ASSERT(m_chainSize <= ESChainStringMaxSize - 1);
+        if(m_chainSize >= ESChainStringMaxSize - 1) {
+            convertIntoNormalString();
+        }
+    }
+
+protected:
+    ESStringData* m_chain[ESChainStringMaxSize];
+    unsigned m_chainSize;
+};
+
+
+
+ALWAYS_INLINE const wchar_t* ESString::data() const
+{
+    if(UNLIKELY(m_string == NULL)) {
+        const_cast<ESString *>(this)->asESChainString()->convertIntoNormalString();
+    }
+    return m_string->data();
+}
+
+ALWAYS_INLINE const ESStringDataStd& ESString::string() const
+{
+    if(UNLIKELY(m_string == NULL)) {
+        const_cast<ESString *>(this)->asESChainString()->convertIntoNormalString();
+    }
+    return static_cast<const ESStringDataStd&>(*m_string);
+}
+
+ALWAYS_INLINE const ESStringData* ESString::stringData() const
+{
+    if(UNLIKELY(m_string == NULL)) {
+        escargot::ESChainString* chain = (escargot::ESChainString *)this;
+        const_cast<ESString *>(this)->asESChainString()->convertIntoNormalString();
+    }
+    return m_string;
+}
+
+ALWAYS_INLINE int ESString::length() const
+{
+    if(UNLIKELY(m_string == NULL)) {
+        escargot::ESChainString* chain = (escargot::ESChainString *)this;
+        chain->convertIntoNormalString();
+    }
+    return m_string->length();
+}
+
 }
 
 namespace std
