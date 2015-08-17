@@ -203,9 +203,11 @@ inline bool operator!=(const pointer_free_allocator<GC_T1>&, const pointer_free_
 #if defined(NDEBUG)
 #define ASSERT(assertion) ((void)0)
 #define ASSERT_NOT_REACHED() ((void)0)
+#define ASSERT_STATIC(assertion, reason)
 #else
 #define ASSERT(assertion) assert(assertion);
 #define ASSERT_NOT_REACHED() do { assert(false); } while (0)
+#define ASSERT_STATIC(assertion, reason) static_assert(assertion, reason)
 #endif
 
 #define RELEASE_ASSERT(assertion) assert(assertion);

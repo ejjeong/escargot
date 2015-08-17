@@ -825,8 +825,6 @@ public:
     }
 
 protected:
-    ESValue m_data;
-
 #pragma pack(push, 1)
     bool m_isDataProperty:1;
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-property-attributes
@@ -834,8 +832,15 @@ protected:
     bool m_isEnumerable:1;
     bool m_isConfigurable:1;
 #pragma pack(pop)
+
+    ESValue m_data;
 };
 
+#ifdef ESCARGOT_64
+ASSERT_STATIC(sizeof(ESSlot) == 2 * sizeof(void*), "sizeof(ESSlot) should be 16 bytes");
+#else
+ASSERT_STATIC(false, "sizeof(ESSlot) should be re-considered");
+#endif
 
 typedef std::unordered_map<ESString*, ::escargot::ESSlot,
                 std::hash<ESString*>,std::equal_to<ESString*>,
