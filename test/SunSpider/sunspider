@@ -204,7 +204,7 @@ dumpToFile($output, $resultsFile);
 dumpToFile(File::Spec->rel2abs($resultsFile), "$resultDirectory/baseline-filename.txt") if $setBaseline;
 
 #system("$jsShellPath", "-f", $prefixFile, "-f", $resultsFile, "-f", "resources/sunspider-analyze-results.js");
-system("../duk", $prefixFile, $resultsFile, "resources/sunspider-analyze-results.js");
+system("../bin/duk", $prefixFile, $resultsFile, "resources/sunspider-analyze-results.js");
 
 print("\nResults are located at $resultsFile\n");
 
