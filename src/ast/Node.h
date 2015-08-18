@@ -78,7 +78,7 @@ public:
         return ESValue();
     }
 
-    virtual ESSlot* executeForWrite(ESVMInstance* instance)
+    virtual ESSlotAccessor executeForWrite(ESVMInstance* instance)
     {
         RELEASE_ASSERT_NOT_REACHED();
     }
@@ -101,14 +101,14 @@ public:
         ec->resetLastESObjectMetInMemberExpressionNode();
     }
 
-    ALWAYS_INLINE static ESValue readValue(ESSlot* slot, ExecutionContext* ec)
+    ALWAYS_INLINE static ESValue readValue(ESSlotAccessor slot, ExecutionContext* ec)
     {
-        return slot->value(ec->lastESObjectMetInMemberExpressionNode());
+        return slot.value(ec->lastESObjectMetInMemberExpressionNode());
     }
 
-    ALWAYS_INLINE static void setValue(ESSlot* slot, ExecutionContext* ec, ESValue v)
+    ALWAYS_INLINE static void setValue(ESSlotAccessor slot, ExecutionContext* ec, ESValue v)
     {
-        slot->setValue(v, ec->lastESObjectMetInMemberExpressionNode());
+        slot.setValue(v, ec->lastESObjectMetInMemberExpressionNode());
     }
 };
 

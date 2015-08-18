@@ -32,7 +32,7 @@ public:
     {
         ExecutionContext* ec = instance->currentExecutionContext();
         ESSlotWriterForAST::prepareExecuteForWriteASTNode(ec);
-        ESSlot* slot = m_argument->executeForWrite(instance);
+        ESSlotAccessor slot = m_argument->executeForWrite(instance);
         ESValue argval = ESSlotWriterForAST::readValue(slot, ec);
         ESValue ret(ESValue::ESForceUninitialized);
         if (!m_prefix)

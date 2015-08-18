@@ -499,6 +499,23 @@ inline bool ESValue::isPrimitive() const
     return isUndefined() || isNull() || isNumber() || isESString() || isBoolean();
 }
 
+inline void ESSlot::setValue(const ::escargot::ESValue& value, ::escargot::ESObject* object)
+{
+    ESSlotAccessor accessor(const_cast<ESSlot*>(this));
+    return accessor.setValue(value, object);
+}
+
+inline ESValue ESSlot::value(::escargot::ESObject* object) const
+{
+    ESSlotAccessor accessor(const_cast<ESSlot*>(this));
+    return accessor.value(object);
+}
+
+inline void ESSlot::setDataProperty(const ::escargot::ESValue& value) {
+    ESSlotAccessor accessor(const_cast<ESSlot*>(this));
+    return accessor.setDataProperty(value);
+}
+
 //==============================================================================
 //===32-bit architecture========================================================
 //==============================================================================

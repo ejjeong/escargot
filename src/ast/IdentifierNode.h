@@ -17,7 +17,6 @@ public:
         m_name = name;
         m_nonAtomicName = ESString::create(name.data());
         m_identifierCacheInvalidationCheckCount = SIZE_MAX;
-        m_cachedSlot = NULL;
         m_canUseFastAccess = false;
         m_fastAccessIndex = SIZE_MAX;
         m_cacheCheckExecutionContext = NULL;
@@ -27,7 +26,7 @@ public:
     {
         ExecutionContext* ec = instance->currentExecutionContext();
         if (LIKELY(ec == m_cacheCheckExecutionContext && m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
-            return m_cachedSlot->readDataProperty();
+            return m_cachedSlot.readDataProperty();
         } else {
             ESSlot* slot;
 
@@ -39,10 +38,10 @@ public:
             }
 
             if(LIKELY(slot != NULL)) {
-                m_cachedSlot = slot;
+                m_cachedSlot = ESSlotAccessor(slot);
                 m_cacheCheckExecutionContext = ec;
                 m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
-                return slot->readDataProperty();
+                return m_cachedSlot.readDataProperty();
             }
 
             ESErrorObject* receiver = ESErrorObject::create();
@@ -62,7 +61,7 @@ public:
         RELEASE_ASSERT_NOT_REACHED();
     }
 
-    ESSlot* executeForWrite(ESVMInstance* instance)
+    ESSlotAccessor executeForWrite(ESVMInstance* instance)
     {
         ExecutionContext* ec = instance->currentExecutionContext();
         if (LIKELY(ec == m_cacheCheckExecutionContext && m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
@@ -78,10 +77,10 @@ public:
             }
 
             if(LIKELY(slot != NULL)) {
-                m_cachedSlot = slot;
+                m_cachedSlot = ESSlotAccessor(slot);
                 m_cacheCheckExecutionContext = ec;
                 m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
-                return slot;
+                return ESSlotAccessor(slot);
             } else {
                 //CHECKTHIS true, true, false is right?
                 return instance->globalObject()->definePropertyOrThrow(m_nonAtomicName,true, true, false);
@@ -111,7 +110,7 @@ protected:
 
     size_t m_identifierCacheInvalidationCheckCount;
     ExecutionContext* m_cacheCheckExecutionContext;
-    ESSlot* m_cachedSlot;
+    ESSlotAccessor m_cachedSlot;
 
     bool m_canUseFastAccess;
     size_t m_fastAccessIndex;

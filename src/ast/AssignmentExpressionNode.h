@@ -61,7 +61,7 @@ public:
     ESValue execute(ESVMInstance* instance)
     {
         ESValue rvalue(ESValue::ESForceUninitialized);
-        ESSlot* slot;
+        ESSlotAccessor slot;
         ExecutionContext* ec = instance->currentExecutionContext();
         ESSlotWriterForAST::prepareExecuteForWriteASTNode(ec);
 
@@ -72,7 +72,7 @@ public:
         } else { //CompoundAssignment
             ASSERT(m_operator == CompoundAssignment);
             slot = m_left->executeForWrite(instance);
-            rvalue = BinaryExpressionNode::execute(instance, slot->value(ec->lastESObjectMetInMemberExpressionNode()), m_right->execute(instance), m_compoundOperator);
+            rvalue = BinaryExpressionNode::execute(instance, slot.value(ec->lastESObjectMetInMemberExpressionNode()), m_right->execute(instance), m_compoundOperator);
         }
 
         ESSlotWriterForAST::setValue(slot, ec, rvalue);

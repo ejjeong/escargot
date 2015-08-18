@@ -868,43 +868,11 @@ public:
         m_isDataProperty = true;
     }
 
-    ALWAYS_INLINE void setValue(const ::escargot::ESValue& value, ::escargot::ESObject* object = NULL)
-    {
-        if(LIKELY(m_isDataProperty)) {
-            m_data = value;
-        } else {
-            ASSERT(object);
-            if(((ESAccessorData *)m_data.asESPointer())->m_setter) {
-                ((ESAccessorData *)m_data.asESPointer())->m_setter(object, value);
-            }
-        }
+    ALWAYS_INLINE void setValue(const ::escargot::ESValue& value, ::escargot::ESObject* object = NULL);
 
-    }
+    ALWAYS_INLINE ESValue value(::escargot::ESObject* object = NULL) const;
 
-    ALWAYS_INLINE ESValue value(::escargot::ESObject* object = NULL) const
-    {
-        if(LIKELY(m_isDataProperty)) {
-            return m_data;
-        } else {
-            ASSERT(object);
-            if(((ESAccessorData *)m_data.asESPointer())->m_getter) {
-                return ((ESAccessorData *)m_data.asESPointer())->m_getter(object);
-            }
-            return ESValue();
-        }
-    }
-
-    ALWAYS_INLINE const ESValue& readDataProperty() const
-    {
-        ASSERT(m_isDataProperty);
-        return m_data;
-    }
-
-    ALWAYS_INLINE void setDataProperty(const ::escargot::ESValue& value)
-    {
-        ASSERT(m_isDataProperty);
-        m_data = value;
-    }
+    ALWAYS_INLINE void setDataProperty(const ::escargot::ESValue& value);
 
     ALWAYS_INLINE bool isConfigurable() const
     {
@@ -953,6 +921,11 @@ public:
         return (ESAccessorData *)m_data.asESPointer();
     }
 
+    ALWAYS_INLINE ESValue* data()
+    {
+        return &m_data;
+    }
+
 protected:
 #pragma pack(push, 1)
     bool m_isDataProperty:1;
@@ -971,11 +944,84 @@ ASSERT_STATIC(sizeof(ESSlot) == 2 * sizeof(void*), "sizeof(ESSlot) should be 16 
 ASSERT_STATIC(false, "sizeof(ESSlot) should be re-considered");
 #endif
 
+class ESSlotAccessor {
+public:
+    ESSlotAccessor()
+    {
+        m_data = nullptr;
+    }
+
+    explicit ESSlotAccessor(ESValue* data)
+    {
+        m_data = data;
+        m_isDataProperty = true;
+    }
+
+    explicit ESSlotAccessor(ESSlot* slot)
+    {
+        if (slot) {
+            m_data = slot->data();
+            m_isDataProperty = slot->isDataProperty();
+        } else {
+            m_data = nullptr;
+        }
+    }
+
+    bool hasData() const
+    {
+        return !!m_data;
+    }
+
+    ALWAYS_INLINE void setValue(const ::escargot::ESValue& value, ::escargot::ESObject* object = NULL)
+    {
+        ASSERT(m_data);
+        if(LIKELY(m_isDataProperty)) {
+            *m_data = value;
+        } else {
+            ASSERT(object);
+            if(((ESAccessorData *)m_data->asESPointer())->m_setter) {
+                ((ESAccessorData *)m_data->asESPointer())->m_setter(object, value);
+            }
+        }
+    }
+
+    ALWAYS_INLINE ESValue value(::escargot::ESObject* object = NULL) const
+    {
+        ASSERT(m_data);
+        if(LIKELY(m_isDataProperty)) {
+            return *m_data;
+        } else {
+            ASSERT(object);
+            if(((ESAccessorData *)m_data->asESPointer())->m_getter) {
+                return ((ESAccessorData *)m_data->asESPointer())->m_getter(object);
+            }
+            return ESValue();
+        }
+    }
+
+    ALWAYS_INLINE const ESValue& readDataProperty() const
+    {
+        ASSERT(m_data);
+        ASSERT(m_isDataProperty);
+        return *m_data;
+    }
+
+    ALWAYS_INLINE void setDataProperty(const ::escargot::ESValue& value)
+    {
+        ASSERT(m_isDataProperty);
+        *m_data = value;
+    }
+
+public:
+    ESValue* m_data;
+    bool m_isDataProperty;
+};
+
 typedef std::unordered_map<ESString*, ::escargot::ESSlot,
                 std::hash<ESString*>,std::equal_to<ESString*>,
                 gc_allocator<std::pair<const ESString*, ::escargot::ESSlot> > > ESObjectMapStd;
 
-typedef std::vector<::escargot::ESSlot, gc_allocator<::escargot::ESSlot> > ESVectorStd;
+typedef std::vector<::escargot::ESValue, gc_allocator<::escargot::ESValue> > ESVectorStd;
 
 /*
 typedef std::map<InternalString, ::escargot::ESSlot *,
@@ -1003,16 +1049,16 @@ public:
 
     //DO NOT USE THIS FUNCTION
     //NOTE rooted ESSlot has short life time.
-    escargot::ESSlot* definePropertyOrThrow(escargot::ESString* key, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true)
+    escargot::ESSlotAccessor definePropertyOrThrow(escargot::ESString* key, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true)
     {
         auto iter = m_map.find(key);
 
         if(iter == m_map.end()) {
-            return &m_map.insert(std::make_pair(key, ::escargot::ESSlot(ESValue(), isWritable, isEnumerable, isConfigurable))).first->second;
+            return ESSlotAccessor(&m_map.insert(std::make_pair(key, ::escargot::ESSlot(ESValue(), isWritable, isEnumerable, isConfigurable))).first->second);
         } else {
         }
 
-        return &iter->second;
+        return ESSlotAccessor(&iter->second);
     }
 
     bool hasOwnProperty(escargot::ESString* key) {
@@ -1305,7 +1351,7 @@ public:
     }
 
     //DO NOT USE RETURN VALUE OF THIS FUNCTION
-    escargot::ESSlot* definePropertyOrThrow(ESValue key, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true)
+    escargot::ESSlotAccessor definePropertyOrThrow(ESValue key, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true)
     {
         int i;
         if (key.isInt32()) {
@@ -1319,7 +1365,7 @@ public:
                 setLength(i+1);
             }
             if (m_fastmode)
-                return &m_vector[i];
+                return ESSlotAccessor(&m_vector[i]);
         }
         return ESObject::definePropertyOrThrow(key.toString(), isWritable, isEnumerable, isConfigurable);
     }
@@ -1338,7 +1384,7 @@ public:
                 setLength(i+1);
             }
             if (m_fastmode) {
-                m_vector[i].setDataProperty(val);
+                m_vector[i] = val;
                 return;
             }
         }
@@ -1356,7 +1402,7 @@ public:
             setLength(i+1);
         }
         if (m_fastmode) {
-            m_vector[i].setDataProperty(val);
+            m_vector[i] = val;
         } else {
             ESObject::set(ESValue(i).toString(), val, shouldThrowException);
         }
@@ -1366,7 +1412,7 @@ public:
     {
         if (m_fastmode) {
             if(key >= 0 && key < m_length)
-                return m_vector[key].readDataProperty();
+                return m_vector[key];
             else
                 return ESValue();
         }
@@ -1378,7 +1424,7 @@ public:
         if (m_fastmode && key.isInt32()) {
             int idx = key.asInt32();
             if(LIKELY(idx >= 0 && idx < m_length))
-                return m_vector[idx].readDataProperty();
+                return m_vector[idx];
             else
                 return ESValue();
         }
@@ -1386,25 +1432,25 @@ public:
     }
 
     //DO NOT USE THIS FUNCTION
-    escargot::ESSlot* findOnlyIndex(int key)
+    escargot::ESSlotAccessor findOnlyIndex(int key)
     {
         if (LIKELY(m_fastmode && key >= 0 && key < m_length)) {
-            return &m_vector[key];
+            return ESSlotAccessor(&m_vector[key]);
         }
-        return NULL;
+        return ESSlotAccessor();
     }
 
     //DO NOT USE THIS FUNCTION
-    escargot::ESSlot* find(ESValue key)
+    escargot::ESSlotAccessor find(ESValue key)
     {
         if (m_fastmode && key.isInt32()) {
             int idx = key.asInt32();
             if(LIKELY(idx >= 0 && idx < m_length))
-                return &m_vector[idx];
+                return ESSlotAccessor(&m_vector[idx]);
             else
-                return NULL;
+                return ESSlotAccessor();
         }
-        return ESObject::find(key.toString());
+        return ESSlotAccessor(ESObject::find(key.toString()));
     }
 
     bool hasOwnProperty(escargot::ESString* key) {
@@ -1516,9 +1562,9 @@ public:
         RELEASE_ASSERT(isFastmode());
         //TODO non fast mode sort
 
-        std::sort(m_vector.begin(), m_vector.end(),[](const ::escargot::ESSlot& a, const ::escargot::ESSlot& b) -> bool {
-            ::escargot::ESString* vala = a.readDataProperty().toString();
-            ::escargot::ESString* valb = b.readDataProperty().toString();
+        std::sort(m_vector.begin(), m_vector.end(), [](const ::escargot::ESValue& a, const ::escargot::ESValue& b) -> bool {
+            ::escargot::ESString* vala = a.toString();
+            ::escargot::ESString* valb = b.toString();
             return vala->string() < valb->string();
         });
     }

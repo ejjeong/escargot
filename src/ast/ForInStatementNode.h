@@ -31,7 +31,7 @@ public:
         std::vector<ESValue> propertyVals;
         if (exprValue.isESPointer() && exprValue.asESPointer()->isESArrayObject()) {
             ESArrayObject* arr = exprValue.asESPointer()->asESArrayObject();
-            arr->enumeration([&propertyVals](const ESValue& key, ESSlot* slot) {
+            arr->enumeration([&propertyVals](const ESValue& key, ESValue* val) {
                 propertyVals.push_back(key);
             });
         }
@@ -48,7 +48,7 @@ public:
             }
             for (unsigned int i=0; i<propertyVals.size(); i++) {
                 ESSlotWriterForAST::prepareExecuteForWriteASTNode(ec);
-                ESSlot* slot = m_left->executeForWrite(instance);
+                ESSlotAccessor slot = m_left->executeForWrite(instance);
                 ESSlotWriterForAST::setValue(slot, ec, propertyVals[i]);
                 m_body->execute(instance);
             }
@@ -56,7 +56,7 @@ public:
                 if (obj->hasKey(propertyNames[i])) {
                     ESString* name = propertyNames[i];
                     ESSlotWriterForAST::prepareExecuteForWriteASTNode(ec);
-                    ESSlot* slot = m_left->executeForWrite(instance);
+                    ESSlotAccessor slot = m_left->executeForWrite(instance);
                     ESSlotWriterForAST::setValue(slot, ec, name);
                     m_body->execute(instance);
                 }

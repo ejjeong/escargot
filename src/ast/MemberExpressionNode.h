@@ -18,11 +18,11 @@ public:
         m_computed = computed;
     }
 
-    ESSlot* executeForWrite(ESVMInstance* instance)
+    ESSlotAccessor executeForWrite(ESVMInstance* instance)
     {
         ESValue value = m_object->execute(instance);
         ExecutionContext* ec = instance->currentExecutionContext();
-        ESSlot* slot;
+        ESSlotAccessor slot;
 
         if(UNLIKELY(value.isPrimitive())) {
             value = value.toObject();
@@ -81,31 +81,31 @@ public:
 
         if(value.isESPointer() && value.asESPointer()->isESObject()) {
             ESObject* obj = value.asESPointer()->asESObject();
-            ESSlot* slot = NULL;
+            ESSlotAccessor slot;
             ESString* computedPropertyName;
             ExecutionContext* ec = instance->currentExecutionContext();
 
             if(!m_computed && m_property->type() == NodeType::Identifier) {
                 computedPropertyName = ((IdentifierNode *)m_property)->nonAtomicName();
-                slot = obj->find(computedPropertyName);
+                slot = ESSlotAccessor(obj->find(computedPropertyName));
             } else {
                 ESValue computedPropertyValue = m_property->execute(instance);
                 if(obj->isESArrayObject()) {
                     if(computedPropertyValue.isInt32())
                         slot = obj->asESArrayObject()->find(computedPropertyValue);
-                    if(!slot) {
+                    if(!slot.hasData()) {
                         computedPropertyName = computedPropertyValue.toString();
                     }
                 } else {
                     computedPropertyName = computedPropertyValue.toString();
-                    slot = obj->find(computedPropertyName);
+                    slot = ESSlotAccessor(obj->find(computedPropertyName));
                 }
 
             }
 
-            if(LIKELY(slot != NULL)) {
+            if(LIKELY(slot.hasData())) {
                 ec->setLastESObjectMetInMemberExpressionNode(obj);
-                return slot->value(obj);
+                return slot.value(obj);
             } else {
                 ec->setLastESObjectMetInMemberExpressionNode(obj);
                 //FIXME this code duplicated with ESObject::get
