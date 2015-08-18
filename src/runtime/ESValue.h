@@ -194,8 +194,6 @@ private:
     ValueDescriptor u;
 
 public:
-    bool isESSlot() const;
-    ESSlot* asESSlot();
     bool abstractEqualsTo(const ESValue& val);
     bool equalsTo(const ESValue& val);
 
@@ -208,15 +206,14 @@ public:
         ESString = 1 << 0,
         ESChainString = 1 << 1,
         ESObject = 1 << 2,
-        ESSlot = 1 << 3,
-        ESFunctionObject = 1 << 4,
-        ESArrayObject = 1 << 5,
-        ESStringObject = 1 << 6,
-        ESErrorObject = 1 << 7,
-        ESDateObject = 1 << 8,
-        ESNumberObject = 1 << 9,
-        ESRegExpObject = 1 << 10,
-        ESBooleanObject = 1 << 11,
+        ESFunctionObject = 1 << 3,
+        ESArrayObject = 1 << 4,
+        ESStringObject = 1 << 5,
+        ESErrorObject = 1 << 6,
+        ESDateObject = 1 << 7,
+        ESNumberObject = 1 << 8,
+        ESRegExpObject = 1 << 9,
+        ESBooleanObject = 1 << 10,
         TypeMask = 0xffff
     };
 
@@ -269,18 +266,6 @@ public:
         ASSERT(isESObject());
 #endif
         return reinterpret_cast<::escargot::ESObject *>(this);
-    }
-    ALWAYS_INLINE bool isESSlot() const
-    {
-        return m_type & Type::ESSlot;
-    }
-
-    ALWAYS_INLINE ::escargot::ESSlot* asESSlot()
-    {
-#ifndef NDEBUG
-        ASSERT(isESSlot());
-#endif
-        return reinterpret_cast<::escargot::ESSlot *>(this);
     }
 
     ALWAYS_INLINE bool isESFunctionObject()
@@ -787,10 +772,9 @@ public:
     std::function<void (::escargot::ESObject* obj, const ESValue& value)> m_setter;
 };
 
-class ESSlot : public ESPointer {
+class ESSlot {
 public:
     ESSlot()
-        : ESPointer(Type::ESSlot)
     {
         m_isWritable = true;
         m_isEnumerable = true;
@@ -800,7 +784,6 @@ public:
 
     ESSlot(const ::escargot::ESValue& value,
             bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
-        : ESPointer(Type::ESSlot)
     {
         m_data = ESValue(value);
         m_isWritable = isWritable;
@@ -813,7 +796,6 @@ public:
             std::function<ESValue (::escargot::ESObject* obj)> getter = nullptr,
             std::function<void (::escargot::ESObject* obj, const ESValue& value)> setter = nullptr,
             bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
-        : ESPointer(Type::ESSlot)
     {
         ESAccessorData* data = new ESAccessorData;
         data->m_getter = getter;
@@ -828,7 +810,6 @@ public:
 
     ESSlot(::escargot::ESObject* object,ESAccessorData* data,
             bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
-        : ESPointer(Type::ESSlot)
     {
         m_data = ESValue((ESPointer *)data);
         m_isWritable = isWritable;
@@ -842,7 +823,6 @@ public:
     void init(const ::escargot::ESValue& value,
             bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
     {
-        m_type = Type::ESSlot;
         m_data = ESValue(value);
         m_isWritable = isWritable;
         m_isEnumerable = isEnumerable;

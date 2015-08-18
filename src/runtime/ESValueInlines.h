@@ -99,17 +99,6 @@ inline bool ESValue::isHeapObject() const
 }
 */
 
-inline bool ESValue::isESSlot() const
-{
-    return (isESPointer()) && (asESPointer()->type() == ESPointer::Type::ESSlot);
-}
-
-inline ESSlot* ESValue::asESSlot()
-{
-    ASSERT(isESSlot());
-    return asESPointer()->asESSlot();
-}
-
 /*
 inline Smi* ESValue::toSmi() const
 {
