@@ -15,13 +15,12 @@ else
   tc="escargot"
 fi
 echo $cmd
-#testpath="./"
 testpath="./test/SunSpider/tests/sunspider-1.0.2/"
 
 mkdir -p test/out
-rm test/out/*.out
-num=$(echo "0731")
-resfile=$(echo 'test/out/'$tc'_x86_mem_'$num'.res')
+rm test/out/*.out -f
+num=$(date +%y%m%d_%H_%M_%S)
+memresfile=$(echo 'test/out/'$tc'_x86_mem_'$num'.res')
 
 function measure(){
   $finalcmd=$1
@@ -34,40 +33,35 @@ function measure(){
     echo \"=========\"; sleep 0.0001;
   done ) >> $outfile &
   sleep 1s;
-  echo $t >> $resfile
+  echo $t >> $memresfile
   MAXV=`cat $outfile | grep 'PSS:' | sed -e 's/,//g' | awk '{ if(max < $2) max=$2} END { print max}'`
   MAXR=`cat $outfile | grep 'RSS:' | sed -e 's/,//g' | awk '{ if(max < $2) max=$2} END { print max}'`
-  echo 'MaxPSS:'$MAXV', MaxRSS:'$MAXR >> $resfile
+  echo 'MaxPSS:'$MAXV', MaxRSS:'$MAXR >> $memresfile
   rm $outfile
   echo $MAXV
 }
 
-tmpfile=$(pwd)
-tmpfile=$tmpfile$(echo "/test/out/time.out")
-echo '' > $tmpfile
-if [[ $tc == escargot ]]; then
-  for j in {1..10}; do
-    ./run-Sunspider.sh >> $tmpfile
-  done
-elif [[ $tc == duk* ]]; then
-  cd /home/june0cho/webTF/duktape-sunspider/
-  for j in {1..10}; do
-    ./run.sh >> $tmpfile
-  done
+timeresfile=$(echo 'test/out/'$tc'_x86_time_'$num'.res')
+echo '' > $timeresfile
+if [[ $2 == mem* ]]; then
+  echo 'No Measure Time'
+else
+  cd test/SunSpider
+  ./sunspider --shell=../../$cmd --suite=sunspider-1.0.2 | tee ../../$timeresfile
   cd -
 fi
 
-for t in "${tests[@]}"; do
-  sleep 1s;
-  filename=$(echo $testpath$t'.js')
-  outfile=$(echo "test/out/"$t".out")
-  echo '-----'$t
-  finalcmd="sleep 0.5; $cmd $filename &"
-  summem=""
-  echo '===================' >> $resfile
-  if [[ $2 == time ]]; then
-    echo 'No Measure Memory'
-  else
+if [[ $2 == time ]]; then
+  echo 'No Measure Memory'
+else
+  for t in "${tests[@]}"; do
+    sleep 1s;
+    filename=$(echo $testpath$t'.js')
+    outfile=$(echo "test/out/"$t".out")
+    echo '-----'$t
+    finalcmd="sleep 0.5; $cmd $filename &"
+    summem=""
+    echo '===================' >> $memresfile
     for j in {1..10}; do
       MAXV='Error'
       measure $finalcmd 2> /dev/null
@@ -75,12 +69,8 @@ for t in "${tests[@]}"; do
       sleep 0.5s;
     done
     echo $(echo -e $summem | awk '{s+=$1} END {printf("Avg. MaxPSS: %.4f", s/10)}')
-  fi
-
-  if [[ $tc == escargot || $tc == duk* || $tc == v8 || $tc == jsc ]]; then
-    cat $tmpfile | grep $t | sed -e 's/://g' | sed -e 's/,//g' | awk '{s+=$2;} END {printf("Avg. Time: %.4f\n", s/10)}'
-  fi
-done
+  done
+fi
 
 echo '-------------------------------------------------finish exe'
 
