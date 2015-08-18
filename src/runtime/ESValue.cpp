@@ -144,6 +144,8 @@ ESObject* ESValue::toObject() const
         receiver = ESStringObject::create(asESPointer()->asESString());
     } else if (isESPointer() && asESPointer()->isESObject()) {
         return asESPointer()->asESObject();
+    } else if(isNull()){
+        throw ESValue(TypeError::create(ESString::create(u"cannot convert null into object")));
     } else {
         RELEASE_ASSERT_NOT_REACHED();
     }
@@ -168,7 +170,7 @@ ESValue ESObject::valueOf()
     /*
     if (hint == ESValue::PreferString) {
         ESValue underScoreProto = get(strings->__proto__);
-        ESValue toStringMethod = underScoreProto.asESPointer()->asESObject()->get(L"toString");
+        ESValue toStringMethod = underScoreProto.asESPointer()->asESObject()->get(u"toString");
         std::vector<ESValue> arguments;
         return ESFunctionObject::call(toStringMethod, this, &arguments[0], arguments.size(), ESVMInstance::currentInstance());
     } else {
@@ -181,9 +183,9 @@ ESValue ESObject::valueOf()
 ESArrayObject* ESString::match(ESPointer* esptr, std::vector<int>* offsets, std::vector<int>* offsetLength) const
 {
     escargot::ESArrayObject* ret = ESArrayObject::create(0, ESVMInstance::currentInstance()->globalObject()->arrayPrototype());
-
-    const char* source;
     ESRegExpObject::Option option = ESRegExpObject::Option::None;
+#ifdef REGEX_RE2
+    const char* source;
     if (esptr->isESRegExpObject()) {
         source = esptr->asESRegExpObject()->utf8Source();
         option = esptr->asESRegExpObject()->option();
@@ -208,16 +210,15 @@ ESArrayObject* ESString::match(ESPointer* esptr, std::vector<int>* offsets, std:
             if(offsetLength)
                 offsetLength->push_back(matched.length());
 
-            ESString* int_str = utf8ToUtf16(matched.data(), matched.length());
+            ESString* int_str = ESString::create(std::move(utf8ToUtf16(matched.data(), matched.length())));
             ret->set(index, int_str);
             index++;
             if (!isGlobal)
                 break;
         }
     });
-
 //    GC_free(targetString);
-
+#endif
     return ret;
 }
 
@@ -244,7 +245,9 @@ ESRegExpObject::ESRegExpObject(escargot::ESString* source, const Option& option)
 {
     m_source = source;
     m_option = option;
+#ifdef REGEX_RE2
     m_sourceStringAsUtf8 = source->utf8Data();
+#endif
 }
 
 ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST, ESObject* proto)
@@ -350,7 +353,7 @@ ESValue ESFunctionObject::call(ESValue callee, ESValue receiver, ESValue argumen
             ESVMInstance->m_currentExecutionContext = currentContext;
         }
     } else {
-        throw TypeError(ESString::create(L"Callee is not a function object"));
+        throw TypeError(ESString::create(u"Callee is not a function object"));
     }
 
     return result;
@@ -358,15 +361,13 @@ ESValue ESFunctionObject::call(ESValue callee, ESValue receiver, ESValue argumen
 
 void ESDateObject::parseStringToDate(struct tm* timeinfo, escargot::ESString* istr) {
     int len = istr->length();
-    const wchar_t* wc = istr->data();
-    char buffer[len];
-
-    wcstombs(buffer, wc, sizeof(buffer));
-    if (isalpha(wc[0])) {
+    char* buffer = (char*)istr->utf8Data();
+    if (isalpha(buffer[0])) {
         strptime(buffer, "%B %d %Y %H:%M:%S %z", timeinfo);
-    } else if (isdigit(wc[0])) {
+    } else if (isdigit(buffer[0])) {
         strptime(buffer, "%m/%d/%Y %H:%M:%S", timeinfo);
     }
+    GC_free(buffer);
 }
 
 void ESDateObject::setTimeValue(ESValue str) {
@@ -432,6 +433,15 @@ ESStringObject::ESStringObject(escargot::ESString* str)
 
     //$21.1.4.1 String.length
     defineAccessorProperty(strings->length, ESVMInstance::currentInstance()->stringObjectLengthAccessorData(), false, true, false);
+}
+
+ESErrorObject::ESErrorObject(escargot::ESString* message)
+       : ESObject((Type)(Type::ESObject | Type::ESErrorObject))
+{
+    m_message = message;
+    escargot::ESFunctionObject* fn = ESVMInstance::currentInstance()->globalObject()->error();
+    setConstructor(fn);
+    set__proto__(fn);
 }
 
 }

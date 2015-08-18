@@ -402,7 +402,12 @@ inline double ESValue::toNumber() const
         ESPointer* o = asESPointer();
         if (o->isESString()) {
             try{
-                return std::stod(o->asESString()->string());
+                double val;
+                o->asESString()->wcharData([&val](const wchar_t* buf){
+                    //FIXME remove string copy
+                    val = std::stod(std::wstring(buf));
+                });
+                return val;
             }catch(...) {
                 return std::numeric_limits<double>::quiet_NaN();
             }
@@ -491,7 +496,7 @@ inline double ESValue::toLength() const
 
 inline bool ESValue::isPrimitive() const
 {
-    return isUndefined() || isNull() || isNumber() || isESString();
+    return isUndefined() || isNull() || isNumber() || isESString() || isBoolean();
 }
 
 //==============================================================================

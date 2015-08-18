@@ -22,9 +22,9 @@ public:
         m_right = (ExpressionNode*)right;
 
         // Binary Logical Operator
-        if (*oper == L"&&")
+        if (*oper == u"&&")
             m_operator = LogicalAnd;
-        else if (*oper == L"||")
+        else if (*oper == u"||")
             m_operator = LogicalOr;
 
         // TODO
@@ -52,7 +52,7 @@ public:
                 break;
             default:
                 // TODO
-                wprintf(L"unsupport operator is->%d\n",(int)oper);
+                printf("unsupport operator is->%d\n",(int)oper);
                 RELEASE_ASSERT_NOT_REACHED();
                 break;
         }

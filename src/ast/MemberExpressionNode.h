@@ -123,7 +123,7 @@ public:
         } else if (value.isESString()) {
             int prop_val = m_property->execute(instance).toInt32();
             if(LIKELY(0 <= prop_val && prop_val < value.asESString()->length())) {
-                wchar_t c = value.asESString()->string().data()[prop_val];
+                char16_t c = value.asESString()->string().data()[prop_val];
                 if(LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
                     return strings->asciiTable[c];
                 } else {
@@ -134,7 +134,7 @@ public:
             }
             return value.asESString()->substring(prop_val, prop_val+1);
         } else {
-            throw TypeError(ESString::create(L"MemberExpression: object doesn't have object type"));
+            throw TypeError(ESString::create(u"MemberExpression: object doesn't have object type"));
         }
         return ESValue();
     }

@@ -19,15 +19,15 @@ public:
         : ExpressionNode(NodeType::UnaryExpression)
     {
         m_argument = argument;
-        if(*oper == L"+") {
+        if(*oper == u"+") {
             m_operator = Plus;
-        } else if(*oper == L"-") {
+        } else if(*oper == u"-") {
             m_operator = Minus;
-        } else if(*oper == L"~") {
+        } else if(*oper == u"~") {
             m_operator = BitwiseNot;
-        } else if(*oper == L"!") {
+        } else if(*oper == u"!") {
             m_operator = LogicalNot;
-        } else if(*oper == L"typeof") {
+        } else if(*oper == u"typeof") {
             m_operator = TypeOf;
         } else {
             RELEASE_ASSERT_NOT_REACHED();

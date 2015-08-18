@@ -21,6 +21,16 @@ public:
         return m_objectPrototype;
     }
 
+    ALWAYS_INLINE escargot::ESFunctionObject* error()
+    {
+        return m_error;
+    }
+
+    ALWAYS_INLINE ESObject* errorPrototype()
+    {
+        return m_errorPrototype;
+    }
+
     ALWAYS_INLINE escargot::ESFunctionObject* referenceError()
     {
         return m_referenceError;
@@ -117,6 +127,7 @@ public:
     }
 
 protected:
+    void initGlobalObject();
     void installObject();
     void installFunction();
     void installError();

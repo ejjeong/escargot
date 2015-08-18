@@ -19,42 +19,42 @@ namespace escargot {
 ::JSObject* ESScriptParser::s_reflectObject;
 ::JSFunction* ESScriptParser::s_reflectParseFunction;
 
-ESString*  astTypeProgram = ESString::create(L"Program");
-ESString*  astTypeVariableDeclaration = ESString::create(L"VariableDeclaration");
-ESString*  astTypeExpressionStatement = ESString::create(L"ExpressionStatement");
-ESString*  astTypeVariableDeclarator = ESString::create(L"VariableDeclarator");
-ESString*  astTypeIdentifier = ESString::create(L"Identifier");
-ESString*  astTypeAssignmentExpression = ESString::create(L"AssignmentExpression");
-ESString*  astTypeThisExpression = ESString::create(L"ThisExpression");
-ESString*  astTypeBreakStatement = ESString::create(L"BreakStatement");
-ESString*  astTypeContinueStatement = ESString::create(L"ContinueStatement");
-ESString*  astTypeReturnStatement = ESString::create(L"ReturnStatement");
-ESString*  astTypeEmptyStatement = ESString::create(L"EmptyStatement");
-ESString*  astTypeLiteral = ESString::create(L"Literal");
-ESString*  astTypeFunctionDeclaration = ESString::create(L"FunctionDeclaration");
-ESString*  astTypeFunctionExpression = ESString::create(L"FunctionExpression");
-ESString*  astTypeBlockStatement = ESString::create(L"BlockStatement");
-ESString*  astTypeArrayExpression = ESString::create(L"ArrayExpression");
-ESString*  astTypeCallExpression = ESString::create(L"CallExpression");
-ESString*  astTypeObjectExpression = ESString::create(L"ObjectExpression");
-ESString*  astTypeMemberExpression = ESString::create(L"MemberExpression");
-ESString*  astTypeNewExpression = ESString::create(L"NewExpression");
-ESString*  astTypeProperty = ESString::create(L"Property");
-ESString*  astTypeBinaryExpression = ESString::create(L"BinaryExpression");
-ESString*  astTypeLogicalExpression = ESString::create(L"LogicalExpression");
-ESString*  astTypeUpdateExpression = ESString::create(L"UpdateExpression");
-ESString*  astTypeUnaryExpression = ESString::create(L"UnaryExpression");
-ESString*  astTypeIfStatement = ESString::create(L"IfStatement");
-ESString*  astTypeForStatement = ESString::create(L"ForStatement");
-ESString*  astTypeForInStatement = ESString::create(L"ForInStatement");
-ESString*  astTypeWhileStatement = ESString::create(L"WhileStatement");
-ESString*  astTypeDoWhileStatement = ESString::create(L"DoWhileStatement");
-ESString*  astTypeSwitchStatement = ESString::create(L"SwitchStatement");
-ESString*  astTypeSwitchCase = ESString::create(L"SwitchCase");
-ESString*  astTypeTryStatement = ESString::create(L"TryStatement");
-ESString*  astTypeCatchClause = ESString::create(L"CatchClause");
-ESString*  astTypeThrowStatement = ESString::create(L"ThrowStatement");
-ESString*  astConditionalExpression = ESString::create(L"ConditionalExpression");
+ESString*  astTypeProgram = ESString::create(u"Program");
+ESString*  astTypeVariableDeclaration = ESString::create(u"VariableDeclaration");
+ESString*  astTypeExpressionStatement = ESString::create(u"ExpressionStatement");
+ESString*  astTypeVariableDeclarator = ESString::create(u"VariableDeclarator");
+ESString*  astTypeIdentifier = ESString::create(u"Identifier");
+ESString*  astTypeAssignmentExpression = ESString::create(u"AssignmentExpression");
+ESString*  astTypeThisExpression = ESString::create(u"ThisExpression");
+ESString*  astTypeBreakStatement = ESString::create(u"BreakStatement");
+ESString*  astTypeContinueStatement = ESString::create(u"ContinueStatement");
+ESString*  astTypeReturnStatement = ESString::create(u"ReturnStatement");
+ESString*  astTypeEmptyStatement = ESString::create(u"EmptyStatement");
+ESString*  astTypeLiteral = ESString::create(u"Literal");
+ESString*  astTypeFunctionDeclaration = ESString::create(u"FunctionDeclaration");
+ESString*  astTypeFunctionExpression = ESString::create(u"FunctionExpression");
+ESString*  astTypeBlockStatement = ESString::create(u"BlockStatement");
+ESString*  astTypeArrayExpression = ESString::create(u"ArrayExpression");
+ESString*  astTypeCallExpression = ESString::create(u"CallExpression");
+ESString*  astTypeObjectExpression = ESString::create(u"ObjectExpression");
+ESString*  astTypeMemberExpression = ESString::create(u"MemberExpression");
+ESString*  astTypeNewExpression = ESString::create(u"NewExpression");
+ESString*  astTypeProperty = ESString::create(u"Property");
+ESString*  astTypeBinaryExpression = ESString::create(u"BinaryExpression");
+ESString*  astTypeLogicalExpression = ESString::create(u"LogicalExpression");
+ESString*  astTypeUpdateExpression = ESString::create(u"UpdateExpression");
+ESString*  astTypeUnaryExpression = ESString::create(u"UnaryExpression");
+ESString*  astTypeIfStatement = ESString::create(u"IfStatement");
+ESString*  astTypeForStatement = ESString::create(u"ForStatement");
+ESString*  astTypeForInStatement = ESString::create(u"ForInStatement");
+ESString*  astTypeWhileStatement = ESString::create(u"WhileStatement");
+ESString*  astTypeDoWhileStatement = ESString::create(u"DoWhileStatement");
+ESString*  astTypeSwitchStatement = ESString::create(u"SwitchStatement");
+ESString*  astTypeSwitchCase = ESString::create(u"SwitchCase");
+ESString*  astTypeTryStatement = ESString::create(u"TryStatement");
+ESString*  astTypeCatchClause = ESString::create(u"CatchClause");
+ESString*  astTypeThrowStatement = ESString::create(u"ThrowStatement");
+ESString*  astConditionalExpression = ESString::create(u"ConditionalExpression");
 
 void* ESScriptParser::s_global;
 
@@ -262,7 +262,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
                 JS_GetProperty(s_cx, obj, "init", &v);
                 if (getObjectFromMozJS(s_cx, c, "init")) {
                     assi.push_back(new AssignmentExpressionNode(fn(getObjectFromMozJS(s_cx, c, "id"), currentBody, false),
-                            fn(getObjectFromMozJS(s_cx, c, "init"), currentBody, false), ESString::create(L"=")));
+                            fn(getObjectFromMozJS(s_cx, c, "init"), currentBody, false), ESString::create(u"=")));
                 }
             }
 
@@ -279,7 +279,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             parsedNode = new VariableDeclaratorNode(fn(getObjectFromMozJS(s_cx, obj, "id"), currentBody, false));
         } else if(type == *astTypeIdentifier) {
             ESString is(getStringFromMozJS(s_cx, obj, "name"));
-            parsedNode = new IdentifierNode(std::wstring(is.data()));
+            parsedNode = new IdentifierNode(u16string(is.data()));
         } else if(type == *astTypeExpressionStatement) {
             Node* node = fn(getObjectFromMozJS(s_cx, obj, "expression"), currentBody, false);
             parsedNode = new ExpressionStatementNode(node);
@@ -427,8 +427,8 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
                     fn(getObjectFromMozJS(s_cx, obj, "consequent"), currentBody, false), fn(getObjectFromMozJS(s_cx, obj, "alternate"), currentBody, false));
         } else if(type == *astTypeProperty) {
             PropertyNode::Kind kind = PropertyNode::Kind::Init;
-            ESString get(L"get");
-            ESString set(L"set");
+            ESString get(u"get");
+            ESString set(u"set");
             ESString kinds(getStringFromMozJS(s_cx, obj, "kind"));
             if(get == kinds) {
                 kind = PropertyNode::Kind::Get;
@@ -703,7 +703,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
             Node * callee = ((CallExpressionNode *)currentNode)->m_callee;
             if(callee) {
                 if(callee->type() == NodeType::Identifier) {
-                    if(((IdentifierNode *)callee)->name() == InternalAtomicString(L"eval")) {
+                    if(((IdentifierNode *)callee)->name() == InternalAtomicString(u"eval")) {
                         markNeedsActivation(nearFunctionNode);
                     }
                 }

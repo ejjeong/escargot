@@ -4,15 +4,47 @@
 namespace escargot {
 class ESString;
 
-ALWAYS_INLINE const char * utf16ToUtf8(const wchar_t *t)
+ALWAYS_INLINE size_t utf16ToUtf8(char16_t uc, char* UTF8)
+{
+    size_t tRequiredSize = 0;
+
+    if(uc <= 0x7f) {
+        if(NULL != UTF8) {
+            UTF8[0] = (char) uc;
+            UTF8[1] = (char) '\0';
+        }
+        tRequiredSize = 1;
+    }
+    else if(uc <= 0x7ff) {
+        if(NULL != UTF8) {
+            UTF8[0] = (char) (0xc0 + uc / (0x01 << 6));
+            UTF8[1] = (char) (0x80 + uc % (0x01 << 6));
+            UTF8[2] = (char) '\0';
+        }
+        tRequiredSize = 2;
+    }
+    else if(uc <= 0xffff) {
+        if(NULL != UTF8) {
+            UTF8[0] = (char) (0xe0 + uc / (0x01 << 12));
+            UTF8[1] = (char) (0x80 + uc / (0x01 << 6) % (0x01 << 6));
+            UTF8[2] = (char) (0x80 + uc % (0x01 << 6));
+            UTF8[3] = (char) '\0';
+        }
+        tRequiredSize = 3;
+    } else {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+
+    return tRequiredSize;
+}
+
+ALWAYS_INLINE const char * utf16ToUtf8(const char16_t *t)
 {
     unsigned strLength = 0;
-    const wchar_t* pt = t;
+    const char16_t* pt = t;
     char buffer [MB_CUR_MAX];
     while(*pt) {
-        int length = std::wctomb(buffer,*pt);
-        if (length<1)
-            break;
+        int length = utf16ToUtf8(*pt, buffer);
         strLength += length;
         pt++;
     }
@@ -22,9 +54,7 @@ ALWAYS_INLINE const char * utf16ToUtf8(const wchar_t *t)
     unsigned currentPosition = 0;
 
     while(*pt) {
-        int length = std::wctomb(buffer,*pt);
-        if (length<1)
-            break;
+        int length = utf16ToUtf8(*pt, buffer);
         memcpy(&result[currentPosition],buffer,length);
         currentPosition += length;
         pt++;
@@ -34,10 +64,10 @@ ALWAYS_INLINE const char * utf16ToUtf8(const wchar_t *t)
     return result;
 }
 
-ALWAYS_INLINE NullableString toNullableUtf8(const std::wstring& m_string)
+ALWAYS_INLINE NullableString toNullableUtf8(const u16string& m_string)
 {
     unsigned strLength = m_string.length();
-    const wchar_t* pt = m_string.data();
+    const char16_t* pt = m_string.data();
     char buffer [MB_CUR_MAX];
     memset(buffer, 0, MB_CUR_MAX);
 
@@ -45,7 +75,7 @@ ALWAYS_INLINE NullableString toNullableUtf8(const std::wstring& m_string)
 
     int idx = 0;
     for (unsigned i = 0; i < strLength; i++) {
-        int length = std::wctomb(buffer,*pt);
+        int length = std::wctomb(buffer,(wchar_t)*pt);
         if (length<1) {
             string[idx++] = '\0';
         } else {
@@ -58,7 +88,7 @@ ALWAYS_INLINE NullableString toNullableUtf8(const std::wstring& m_string)
 }
 
 //http://egloos.zum.com/profrog/v/1177107
-ALWAYS_INLINE size_t utf8ToUtf16(char* UTF8, wchar_t& uc)
+ALWAYS_INLINE size_t utf8ToUtf16(char* UTF8, char16_t& uc)
 {
     size_t tRequiredSize = 0;
 
@@ -98,7 +128,7 @@ ALWAYS_INLINE size_t utf8ToUtf16(char* UTF8, wchar_t& uc)
     return tRequiredSize;
 }
 
-ESString* utf8ToUtf16(const char *s, int length);
+u16string utf8ToUtf16(const char *s, int length);
 
 }
 

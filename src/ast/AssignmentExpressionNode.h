@@ -29,29 +29,29 @@ public:
         m_left = left;
         m_right = right;
 
-        if (*oper == L"=")
+        if (*oper == u"=")
             m_operator = SimpleAssignment;
         else {
             m_operator = CompoundAssignment;
-            if (*oper == L"<<=")
+            if (*oper == u"<<=")
                 m_compoundOperator = BinaryExpressionNode::BinaryExpressionOperator::LeftShift;
-            else if (*oper == L">>=")
+            else if (*oper == u">>=")
                 m_compoundOperator = BinaryExpressionNode::BinaryExpressionOperator::SignedRightShift;
-            else if (*oper == L">>>=")
+            else if (*oper == u">>>=")
                 m_compoundOperator = BinaryExpressionNode::BinaryExpressionOperator::UnsignedRightShift;
-            else if (*oper == L"+=")
+            else if (*oper == u"+=")
                 m_compoundOperator = BinaryExpressionNode::BinaryExpressionOperator::Plus;
-            else if (*oper == L"-=")
+            else if (*oper == u"-=")
                 m_compoundOperator = BinaryExpressionNode::BinaryExpressionOperator::Minus;
-            else if (*oper == L"*=")
+            else if (*oper == u"*=")
                 m_compoundOperator = BinaryExpressionNode::BinaryExpressionOperator::Mult;
-            else if (*oper == L"/=")
+            else if (*oper == u"/=")
                 m_compoundOperator = BinaryExpressionNode::BinaryExpressionOperator::Div;
-            else if (*oper == L"&=")
+            else if (*oper == u"&=")
                 m_compoundOperator = BinaryExpressionNode::BinaryExpressionOperator::BitwiseAnd;
-            else if (*oper == L"|=")
+            else if (*oper == u"|=")
                 m_compoundOperator = BinaryExpressionNode::BinaryExpressionOperator::BitwiseOr;
-            else if (*oper == L"^=")
+            else if (*oper == u"^=")
                 m_compoundOperator = BinaryExpressionNode::BinaryExpressionOperator::BitwiseXor;
             else //TODO
                 RELEASE_ASSERT_NOT_REACHED();

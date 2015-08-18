@@ -19,7 +19,7 @@ public:
     {
         ESValue fn = m_callee->execute(instance);
         if(!fn.isESPointer() || !fn.asESPointer()->isESFunctionObject())
-            throw TypeError(ESString::create(L"NewExpression: constructor is not an function object"));
+            throw TypeError(ESString::create(u"NewExpression: constructor is not an function object"));
         ESFunctionObject* function = fn.asESPointer()->asESFunctionObject();
         ESObject* receiver;
         if (function == instance->globalObject()->date()) {

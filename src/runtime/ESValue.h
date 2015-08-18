@@ -371,8 +371,7 @@ protected:
     int m_type;
 };
 
-typedef std::wstring ESStringDataStd;
-class ESStringData : public ESStringDataStd, public gc_cleanup {
+class ESStringData : public u16string, public gc_cleanup {
     friend class ESString;
     friend class ESChainString;
 protected:
@@ -380,61 +379,62 @@ protected:
     {
         m_hashData.m_isHashInited =  false;
     }
-    ESStringData(const wchar_t* str)
-        : std::wstring(str)
+    ESStringData(const char16_t* str)
+        : u16string(str)
     {
         m_hashData.m_isHashInited =  false;
     }
-    ESStringData(ESStringDataStd&& src)
-        : ESStringDataStd(std::move(src))
+    ESStringData(u16string&& src)
+        : u16string(std::move(src))
     {
         m_hashData.m_isHashInited =  false;
     }
 
     explicit ESStringData(int number)
-        : ESStringDataStd(std::move(std::to_wstring(number)))
+        : ESStringData((double)number)
     {
-        m_hashData.m_isHashInited =  false;
     }
 
     explicit ESStringData(double number)
     {
         m_hashData.m_isHashInited =  false;
-        wchar_t buf[512];
+        char16_t buf[512];
         char chbuf[50];
         char* end = rapidjson::internal::dtoa(number, chbuf);
         int i = 0;
-        for (char* p = chbuf; p != end; ++p)
-            buf[i++] = (wchar_t) *p;
-        buf[i] = L'\0';
-        //std::swprintf(buf, 511, L"%.17lg", number);
-        size_t tl = wcslen(buf);
-        reserve(tl);
-        append(&buf[0], &buf[tl]);
+        for (char* p = chbuf; p != end; ++p) {
+            buf[i++] = (char16_t) *p;
+        }
+
+        if(i >= 3 && buf[i-1] == '0' && buf[i-2] == '.') {
+            i -= 2;
+        }
+
+        buf[i] = u'\0';
+
+        reserve(i);
+        append(&buf[0], &buf[i]);
     }
 
-    explicit ESStringData(wchar_t c)
-        : ESStringDataStd({c})
+    explicit ESStringData(char16_t c)
+        : u16string({c})
     {
         m_hashData.m_isHashInited =  false;
     }
 
     ESStringData(const char* s)
+        : u16string(std::move(utf8ToUtf16(s, strlen(s))))
     {
         m_hashData.m_isHashInited =  false;
-        std::mbstate_t state = std::mbstate_t();
-        int len = std::mbsrtowcs(NULL, &s, 0, &state);
-        resize(len);
-        std::mbsrtowcs((wchar_t *)data(), &s, size(), &state);
     }
 
     ESStringData(const ESStringData& s) = delete;
     void operator =(const ESStringData& s) = delete;
 
 public:
-    ALWAYS_INLINE const wchar_t* data() const
+    ALWAYS_INLINE const char16_t* data() const
     {
-        return ESStringDataStd::data();
+        return u16string::data();
     }
 
     ALWAYS_INLINE size_t hashValue() const
@@ -447,8 +447,8 @@ public:
     {
         if(!m_hashData.m_isHashInited) {
             m_hashData.m_isHashInited = true;
-            std::hash<ESStringDataStd> hashFn;
-            m_hashData.m_hashData = hashFn((ESStringDataStd &)*this);
+            std::hash<u16string> hashFn;
+            m_hashData.m_hashData = hashFn((u16string &)*this);
         }
     }
 
@@ -477,13 +477,13 @@ protected:
     {
         m_string = data;
     }
-    ESString(const wchar_t* str)
+    ESString(const char16_t* str)
         : ESPointer(Type::ESString)
     {
         m_string = new(PointerFreeGC) ESStringData(str);
     }
 
-    ESString(ESStringDataStd&& src)
+    ESString(u16string&& src)
         : ESPointer(Type::ESString)
     {
         m_string = new(PointerFreeGC) ESStringData(std::move(src));
@@ -501,7 +501,7 @@ protected:
         m_string = new(PointerFreeGC) ESStringData(number);
     }
 
-    ESString(wchar_t number)
+    ESString(char16_t number)
         : ESPointer(Type::ESString)
     {
         m_string = new(PointerFreeGC) ESStringData(number);
@@ -513,11 +513,11 @@ protected:
         m_string = new(PointerFreeGC) ESStringData(str);
     }
 public:
-    static ESString* create(const wchar_t* str)
+    static ESString* create(const char16_t* str)
     {
         return new ESString(str);
     }
-    static ESString* create(ESStringDataStd&& src)
+    static ESString* create(u16string&& src)
     {
         return new ESString(std::move(src));
     }
@@ -532,7 +532,7 @@ public:
         return new ESString(number);
     }
 
-    static ESString* create(wchar_t c)
+    static ESString* create(char16_t c)
     {
         return new ESString(c);
     }
@@ -547,8 +547,20 @@ public:
         return utf16ToUtf8(data());
     }
 
-    ALWAYS_INLINE const wchar_t* data() const;
-    ALWAYS_INLINE const ESStringDataStd& string() const;
+    template <typename Func>
+    void wcharData(const Func& fn)
+    {
+        wchar_t* buf = (wchar_t *)alloca(sizeof(wchar_t) * (length()+1));
+        for(unsigned i = 0 ; i < (unsigned)length() ; i ++) {
+            buf[i] = data()[i];
+        }
+        buf[length()] = 0;
+
+        fn(buf);
+    }
+
+    ALWAYS_INLINE const char16_t* data() const;
+    ALWAYS_INLINE const u16string& string() const;
     ALWAYS_INLINE const ESStringData* stringData() const;
     ALWAYS_INLINE int length() const;
 
@@ -557,7 +569,7 @@ public:
         ASSERT(0 <= from && from <= to && to <= (int)m_string->length());
         //NOTE to build normal string(for chain-string), we should call data();
         data();
-        ESStringDataStd ret(std::move(m_string->substr(from, to-from)));
+        u16string ret(std::move(m_string->substr(from, to-from)));
         return ESString::create(std::move(ret));
     }
 
@@ -566,8 +578,8 @@ public:
     ESString(const ESString& s) = delete;
     void operator =(const ESString& s) = delete;
 
-    ALWAYS_INLINE friend bool operator == (const ESString& a,const wchar_t* b);
-    ALWAYS_INLINE friend bool operator != (const ESString& a,const wchar_t* b);
+    ALWAYS_INLINE friend bool operator == (const ESString& a,const char16_t* b);
+    ALWAYS_INLINE friend bool operator != (const ESString& a,const char16_t* b);
     ALWAYS_INLINE friend bool operator == (const ESString& a,const ESString& b);
     ALWAYS_INLINE friend bool operator < (const ESString& a,const ESString& b);
     ALWAYS_INLINE friend bool operator > (const ESString& a,const ESString& b);
@@ -577,19 +589,19 @@ public:
 #ifndef NDEBUG
     void show() const
     {
-        wprintf(L"%ls\n",data());
+        printf("%s\n",utf8Data());
     }
 #endif
 protected:
     ESStringData* m_string;
 };
 
-ALWAYS_INLINE bool operator == (const ESString& a,const wchar_t* b)
+ALWAYS_INLINE bool operator == (const ESString& a,const char16_t* b)
 {
     return a.string() == b;
 }
 
-ALWAYS_INLINE bool operator != (const ESString& a,const wchar_t* b)
+ALWAYS_INLINE bool operator != (const ESString& a,const char16_t* b)
 {
     return a.string() != b;
 }
@@ -648,14 +660,14 @@ public:
             ASSERT(m_chainSize == 0);
         }
 #endif
-        ESStringDataStd result;
+        u16string result;
         size_t siz = 0;
         for(unsigned i = 0; i < m_chainSize ; i ++) {
             siz += m_chain[i]->length();
         }
         result.reserve(siz);
         for(unsigned i = 0; i < m_chainSize ; i ++) {
-            result.append(static_cast<const ESStringDataStd &>(*m_chain[i]));
+            result.append(static_cast<const u16string &>(*m_chain[i]));
             m_chain[i] = NULL;
         }
 
@@ -704,7 +716,7 @@ protected:
 
 
 
-ALWAYS_INLINE const wchar_t* ESString::data() const
+ALWAYS_INLINE const char16_t* ESString::data() const
 {
     if(UNLIKELY(m_string == NULL)) {
         const_cast<ESString *>(this)->asESChainString()->convertIntoNormalString();
@@ -712,12 +724,12 @@ ALWAYS_INLINE const wchar_t* ESString::data() const
     return m_string->data();
 }
 
-ALWAYS_INLINE const ESStringDataStd& ESString::string() const
+ALWAYS_INLINE const u16string& ESString::string() const
 {
     if(UNLIKELY(m_string == NULL)) {
         const_cast<ESString *>(this)->asESChainString()->convertIntoNormalString();
     }
-    return static_cast<const ESStringDataStd&>(*m_string);
+    return static_cast<const u16string&>(*m_string);
 }
 
 ALWAYS_INLINE const ESStringData* ESString::stringData() const
@@ -1144,12 +1156,7 @@ protected:
 
 class ESErrorObject : public ESObject {
 protected:
-    ESErrorObject(escargot::ESString* message)
-           : ESObject((Type)(Type::ESObject | Type::ESErrorObject))
-    {
-        m_message = message;
-    }
-
+    ESErrorObject(escargot::ESString* message);
 public:
     static ESErrorObject* create(escargot::ESString* message = strings->emptyESString)
     {
@@ -1379,8 +1386,14 @@ public:
             return ESObject::hasOwnProperty(key);
 
         wchar_t *end;
-        long key_int = wcstol(key->data(), &end, 10);
-        if (end != key->data() + key->length())
+        const wchar_t *bufAddress;
+        long key_int;
+        key->wcharData([&](const wchar_t* buf){
+            bufAddress = buf;
+            key_int = wcstol(buf, &end, 10);
+        });
+
+        if (end != bufAddress + key->length())
             return ESObject::hasOwnProperty(key);
         if (key_int < m_length)
             return true;
@@ -1632,15 +1645,19 @@ public:
 
     ALWAYS_INLINE Option option() { return m_option; }
     ALWAYS_INLINE const escargot::ESString* source() { return m_source; }
+#ifdef REGEX_RE2
     ALWAYS_INLINE const char* utf8Source() { return m_sourceStringAsUtf8; }
-
+#endif
     ALWAYS_INLINE void setSource(escargot::ESString* src)
     {
         m_source = src;
+#ifdef REGEX_RE2
         m_sourceStringAsUtf8 = src->utf8Data();
+#endif
     }
     ALWAYS_INLINE void setOption(const Option& option) { m_option = option; }
 
+#ifdef REGEX_RE2
     template <typename Func>
     static void prepareForRE2(const char* source,const ESRegExpObject::Option& option, const Func& fn)
     {
@@ -1661,11 +1678,14 @@ public:
         fn(sourceForRE2, ops, isGlobal);
         free(sourceForRE2);
     }
+#endif
 private:
     ESRegExpObject(escargot::ESString* source, const Option& option);
 
     escargot::ESString* m_source;
+#ifdef REGEX_RE2
     const char* m_sourceStringAsUtf8;
+#endif
     Option m_option;
 };
 

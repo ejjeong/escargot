@@ -59,53 +59,53 @@ public:
         m_right = (ExpressionNode*)right;
 
         // Additive Operators
-        if (*oper == L"+")
+        if (*oper == u"+")
             m_operator = Plus;
-        else if (*oper == L"-")
+        else if (*oper == u"-")
             m_operator = Minus;
 
         // Bitwise Shift Operators
-        else if (*oper == L"<<")
+        else if (*oper == u"<<")
             m_operator = LeftShift;
-        else if (*oper == L">>")
+        else if (*oper == u">>")
             m_operator = SignedRightShift;
-        else if (*oper == L">>>")
+        else if (*oper == u">>>")
             m_operator = UnsignedRightShift;
 
         // Multiplicative Operators
-        else if (*oper == L"*")
+        else if (*oper == u"*")
             m_operator = Mult;
-        else if (*oper == L"/")
+        else if (*oper == u"/")
             m_operator = Div;
-        else if (*oper == L"%")
+        else if (*oper == u"%")
             m_operator = Mod;
 
         // Relational Operators
-        else if (*oper == L"<")
+        else if (*oper == u"<")
             m_operator = LessThan;
-        else if (*oper == L">")
+        else if (*oper == u">")
             m_operator = GreaterThan;
-        else if (*oper == L"<=")
+        else if (*oper == u"<=")
             m_operator = LessThanOrEqual;
-        else if (*oper == L">=")
+        else if (*oper == u">=")
             m_operator = GreaterThanOrEqual;
 
         // Equality Operators
-        else if (*oper == L"==")
+        else if (*oper == u"==")
             m_operator = Equals;
-        else if (*oper == L"!=")
+        else if (*oper == u"!=")
             m_operator = NotEquals;
-        else if (*oper == L"===")
+        else if (*oper == u"===")
             m_operator = StrictEquals;
-        else if (*oper == L"!==")
+        else if (*oper == u"!==")
             m_operator = NotStrictEquals;
 
         // Binary Bitwise Operator
-        else if (*oper == L"&")
+        else if (*oper == u"&")
             m_operator = BitwiseAnd;
-        else if (*oper == L"^")
+        else if (*oper == u"^")
             m_operator = BitwiseXor;
-        else if (*oper == L"|")
+        else if (*oper == u"|")
             m_operator = BitwiseOr;
 
         // TODO
@@ -419,7 +419,7 @@ public:
             }
             default:
                 // TODO
-                wprintf(L"unsupport operator is->%d\n",(int)oper);
+                printf("unsupport operator is->%d\n",(int)oper);
                 RELEASE_ASSERT_NOT_REACHED();
                 break;
         }

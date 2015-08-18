@@ -6,18 +6,18 @@ namespace escargot {
 class ESVMInstance;
 class ESValue;
 
-class InternalAtomicStringData : public gc_cleanup, public std::wstring {
+class InternalAtomicStringData : public gc_cleanup, public u16string {
     friend class InternalAtomicString;
 protected:
-    InternalAtomicStringData(ESVMInstance* instance, const wchar_t* str);
+    InternalAtomicStringData(ESVMInstance* instance, const char16_t* str);
 
     InternalAtomicStringData(const InternalAtomicStringData& src) = delete;
     void operator = (const InternalAtomicStringData& src) = delete;
 
     ALWAYS_INLINE void initHash()
     {
-        std::hash<std::wstring> hashFn;
-        m_hashData = hashFn((std::wstring &)*this);
+        std::hash<u16string> hashFn;
+        m_hashData = hashFn((u16string &)*this);
     }
 public:
     InternalAtomicStringData();
@@ -42,7 +42,7 @@ protected:
         m_string = string;
     }
 
-    void init(ESVMInstance* instance, const std::wstring& src);
+    void init(ESVMInstance* instance, const u16string& src);
 public:
     ALWAYS_INLINE InternalAtomicString()
     {
@@ -53,12 +53,12 @@ public:
         m_string = src.m_string;
     }
 
-    InternalAtomicString(const std::wstring& src);
-    InternalAtomicString(const wchar_t* src);
-    InternalAtomicString(ESVMInstance* instance, const std::wstring& src);
+    InternalAtomicString(const u16string& src);
+    InternalAtomicString(const char16_t* src);
+    InternalAtomicString(ESVMInstance* instance, const u16string& src);
     InternalAtomicString(const ESValue* src);
 
-    ALWAYS_INLINE const wchar_t* data() const
+    ALWAYS_INLINE const char16_t* data() const
     {
         return m_string->data();
     }

@@ -34,7 +34,11 @@
 #include <rapidjson/internal/dtoa.h>
 #include <rapidjson/internal/strtod.h>
 
+#define REGEX_RE2
+
+#ifdef REGEX_RE2
 #include <re2/re2.h>
+#endif
 
 #include <gc_cpp.h>
 #include <gc_allocator.h>
@@ -242,6 +246,10 @@ inline bool operator!=(const pointer_free_allocator<GC_T1>&, const pointer_free_
 #include "util/RefCounted.h"
 #include "util/RefPtr.h"
 #include "util/OwnPtr.h"
+
+namespace escargot {
+typedef std::basic_string<char16_t> u16string;
+}
 
 #include "runtime/InternalAtomicString.h"
 #include "runtime/NullableString.h"

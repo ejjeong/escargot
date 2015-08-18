@@ -12,8 +12,8 @@ InternalAtomicStringData::InternalAtomicStringData()
     m_instance = NULL;
     initHash();
 }
-InternalAtomicStringData::InternalAtomicStringData(ESVMInstance* instance, const wchar_t* str)
-    : std::wstring(str)
+InternalAtomicStringData::InternalAtomicStringData(ESVMInstance* instance, const char16_t* str)
+    : u16string(str)
 {
     m_instance = instance;
     initHash();
@@ -28,13 +28,13 @@ InternalAtomicStringData::~InternalAtomicStringData()
     }
 }
 
-InternalAtomicString::InternalAtomicString(const std::wstring& src)
+InternalAtomicString::InternalAtomicString(const u16string& src)
     : InternalAtomicString(ESVMInstance::currentInstance(), src)
 {
 }
 
-InternalAtomicString::InternalAtomicString(const wchar_t* src)
-    : InternalAtomicString(ESVMInstance::currentInstance(), std::wstring(src))
+InternalAtomicString::InternalAtomicString(const char16_t* src)
+    : InternalAtomicString(ESVMInstance::currentInstance(), u16string(src))
 {
 }
 
@@ -50,12 +50,12 @@ InternalAtomicString::InternalAtomicString(const ESValue* src)
     init(ESVMInstance::currentInstance(), src->toString()->data());
 }
 
-InternalAtomicString::InternalAtomicString(ESVMInstance* instance, const std::wstring& src)
+InternalAtomicString::InternalAtomicString(ESVMInstance* instance, const u16string& src)
 {
     init(instance, src);
 }
 
-void InternalAtomicString::init(ESVMInstance* instance, const std::wstring& src)
+void InternalAtomicString::init(ESVMInstance* instance, const u16string& src)
 {
     ASSERT(instance);
     auto iter = instance->m_atomicStringMap.find(src);

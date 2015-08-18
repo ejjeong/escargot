@@ -18,9 +18,9 @@ public:
     {
         m_argument = (ExpressionNode*)argument;
 
-        if (*oper == L"++")
+        if (*oper == u"++")
             m_operator = INCREMENT;
-        else if (*oper == L"--")
+        else if (*oper == u"--")
             m_operator = DECREMENT;
         else
             RELEASE_ASSERT_NOT_REACHED();

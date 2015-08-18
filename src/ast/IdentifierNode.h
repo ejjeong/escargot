@@ -45,19 +45,17 @@ public:
                 return slot->readDataProperty();
             }
 
-            ESFunctionObject* fn = instance->globalObject()->referenceError();
             ESErrorObject* receiver = ESErrorObject::create();
-            receiver->setConstructor(fn);
-            receiver->set__proto__(fn);
 
             std::vector<ESValue> arguments;
-            ESStringDataStd err_msg;
+            u16string err_msg;
             err_msg.append(nonAtomicName()->data());
-            err_msg.append(L" is not defined");
+            err_msg.append(u" is not defined");
             //arguments.push_back(String::create(err_msg));
 
-            ESFunctionObject::call(fn, receiver, &arguments[0], arguments.size(), instance);
-            receiver->set(ESString::create(L"message"), ESString::create(std::move(err_msg)));
+            //TODO call constructor
+            //ESFunctionObject::call(fn, receiver, &arguments[0], arguments.size(), instance);
+            receiver->set(ESString::create(u"message"), ESString::create(std::move(err_msg)));
 
             throw ESValue(receiver);
         }

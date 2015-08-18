@@ -179,7 +179,7 @@ void FunctionEnvironmentRecord::bindThisValue(const ESValue& V)
 {
     ASSERT(m_thisBindingStatus != Initialized);
     if(m_thisBindingStatus == Lexical)
-        throw ReferenceError(ESString::create(L""));
+        throw ReferenceError(ESString::create(u""));
     m_thisValue = V;
     m_thisBindingStatus = Initialized;
 }
@@ -188,7 +188,7 @@ ESObject* FunctionEnvironmentRecord::getThisBinding()
 {
     ASSERT(m_thisBindingStatus != Lexical);
     if(m_thisBindingStatus == Uninitialized)
-        throw ReferenceError(ESString::create(L""));
+        throw ReferenceError(ESString::create(u""));
 
     return m_thisValue.asESPointer()->asESObject();
 }

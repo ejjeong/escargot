@@ -55,6 +55,8 @@ ESVMInstance::ESVMInstance()
 
     enter();
     m_globalObject = new GlobalObject();
+    m_globalObject->initGlobalObject();
+
     LexicalEnvironment* a = new LexicalEnvironment(new GlobalEnvironmentRecord(m_globalObject), NULL);
 
     m_globalExecutionContext = new ExecutionContext(a, true, false, NULL);
@@ -78,13 +80,17 @@ ESValue ESVMInstance::evaluate(const std::string& source)
         Node* node = ESScriptParser::parseScript(this, source);
         ret = node->execute(this);
     } catch(ReferenceError& err) {
-        wprintf(L"ReferenceError: %ls\n", err.message()->data());
+        printf("ReferenceError: %s\n", err.message()->utf8Data());
     } catch(TypeError& err) {
-        wprintf(L"TypeError: %ls\n", err.message()->data());
+        printf("TypeError: %s\n", err.message()->utf8Data());
     } catch(SyntaxError& err) {
-        wprintf(L"SyntaxError: %ls\n", err.message()->data());
+        printf("SyntaxError: %s\n", err.message()->utf8Data());
     } catch(const ESValue& err) {
-        wprintf(L"Uncaught %ls\n", err.toString()->data());
+        try{
+            printf("Uncaught %s\n", err.toString()->utf8Data());
+        } catch(...) {
+            printf("an error occur in catch-block\n");
+        }
     }
 
     return ret;

@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
     if(argc == 1) {
         while (true) {
             char buf[512];
-            wprintf(L"shell> ");
+            printf("shell> ");
             fgets(buf, sizeof buf, stdin);
             ES->evaluate(buf);
         }
