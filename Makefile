@@ -36,8 +36,15 @@ CXXFLAGS += -fdata-sections -ffunction-sections
 #add third_party
 CXXFLAGS += -Ithird_party/rapidjson/include/
 CXXFLAGS += -Ithird_party/bdwgc/include/
-CXXFLAGS += -Ithird_party/mozjs/build/dist/include
 CXXFLAGS += -Ithird_party/re2/
+
+CXXFLAGS += -Ithird_party/yarr/
+SRC_YARR += third_party/yarr/OSAllocatorPosix.cpp
+SRC_YARR += third_party/yarr/PageBlock.cpp
+SRC_YARR += third_party/yarr/YarrCanonicalizeUCS2.cpp
+SRC_YARR += third_party/yarr/YarrInterpreter.cpp
+SRC_YARR += third_party/yarr/YarrPattern.cpp
+SRC_YARR += third_party/yarr/YarrSyntaxChecker.cpp
 
 #LDFLAGS += -Lthird_party/mozjs/build/dist/lib -lmozjs-24 -lz -ldl -Wl,-rpath,'$$ORIGIN/third_party/mozjs/build/dist/lib/'
 LDFLAGS += -lpthread -lz -ldl
@@ -53,11 +60,13 @@ endif
 ifeq ($(MODE), debug)
 	CXXFLAGS += -O0 -g3 -frounding-math -fsignaling-nans -fno-omit-frame-pointer -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable -Wno-invalid-offsetof
 	GCLIBS = third_party/bdwgc/out/debug/.libs/libgc.a #third_party/bdwgc/out/debug/.libs/libgccpp.a
-	MOZJSLIBS = third_party/mozjs/build/libjs_static.a
+	MOZJSLIBS = third_party/mozjs/build/debug/libjs_static.a
+	CXXFLAGS += -Ithird_party/mozjs/build/debug/dist/include
 else ifeq ($(MODE), release)
 	CXXFLAGS += -O3 -g3 -DNDEBUG -fomit-frame-pointer -frounding-math -fsignaling-nans
 	GCLIBS = third_party/bdwgc/out/release/.libs/libgc.a #third_party/bdwgc/out/release/.libs/libgccpp.a
-	MOZJSLIBS = third_party/mozjs/build/libjs_static.a
+	MOZJSLIBS = third_party/mozjs/build/release/libjs_static.a
+	CXXFLAGS += -Ithird_party/mozjs/build/release/dist/include
 else
 	$(error mode error)
 endif
@@ -72,6 +81,8 @@ SRC += $(foreach dir, ./src/parser , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, ./src/vm , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, ./src/runtime , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, ./src/util , $(wildcard $(dir)/*.cpp))
+
+SRC += $(SRC_YARR) 
 
 ifeq ($(HOST), linux)
 endif
@@ -96,6 +107,9 @@ $(MAKECMDGOALS): $(OBJS) $(THIRD_PARTY_LIBS)
 clean:
 	$(shell find ./src/ -name "*.o" -exec rm {} \;)
 	$(shell find ./src/ -name "*.d" -exec rm {} \;)
+	$(shell find ./third_party/yarr/ -name "*.o" -exec rm {} \;)
+	$(shell find ./third_party/yarr/ -name "*.d" -exec rm {} \;)
+
 
 strip: $(MAKECMDGOALS)
 	strip $<

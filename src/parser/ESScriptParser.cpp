@@ -101,6 +101,27 @@ void ESScriptParser::enter()
         s_reflectObject = JSVAL_TO_OBJECT(r);
         JS_GetProperty(s_cx, s_reflectObject, "parse", &r);
         s_reflectParseFunction = JS_ValueToFunction(s_cx, r);
+
+/*
+        JSObject* reg = JS_NewRegExpObject(s_cx, *((JS::RootedObject*)s_global), (char *)".ll.", 4, 0);
+        ASSERT(reg);
+        size_t idx = 0;
+        jsval rval;
+
+        jschar str[256];
+        size_t d;
+        JS_DecodeBytes(s_cx, "asdfolloasdf", 13, str, &d);
+        //JS_SetRegExpInput(JSContext *cx, JSObject *objArg, JSString *input, JSBool multiline)
+        //JS_ExecuteRegExp(s_cx, *((JS::RootedObject*)s_global), reg, str, d, &idx, false, &rval);
+        JS_ExecuteRegExpNoStatics(s_cx, reg, str, d, &idx, false, &rval);
+
+        JSObject* result = JSVAL_TO_OBJECT(rval);
+        JS_GetElement(s_cx, result, 0, &rval);
+        ASSERT(JSVAL_IS_STRING(rval));
+        JSString* str22 = JSVAL_TO_STRING(rval);
+        printf("asdf %s",JS_EncodeString(s_cx, str22));
+        printf("asdf %s",JS_EncodeString(s_cx, str22));
+        */
     }
 }
 

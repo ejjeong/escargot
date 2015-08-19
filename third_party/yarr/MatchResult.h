@@ -1,7 +1,7 @@
-/*
- * Copyright (C) 2009, 2013 Apple Inc. All rights reserved.
- * Copyright (C) 2009 Torch Mobile, Inc.
- * Copyright (C) 2010 Company 100 Inc.
+/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
+ * vim: set ts=8 sts=4 et sw=4 tw=99:
+ *
+ * Copyright (C) 2012 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -25,18 +25,54 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
  */
 
-#ifndef WTF_OwnPtrCommon_h
-#define WTF_OwnPtrCommon_h
+#ifndef yarr_MatchResult_h
+#define yarr_MatchResult_h
 
-namespace WTF {
+#include "wtfbridge.h"
 
-    template <typename T> inline void deleteOwnedPtr(T* ptr)
+typedef uint64_t EncodedMatchResult;
+
+struct MatchResult {
+    MatchResult(int start, int end)
+        : start(start)
+        , end(end)
     {
-        typedef char known[sizeof(T) ? 1 : -1];
-        if (sizeof(known))
-            delete ptr;
     }
 
-} // namespace WTF
+#if !WTF_CPU_X86_64 || WTF_PLATFORM_WIN
+    explicit MatchResult(EncodedMatchResult encoded)
+    {
+        union u {
+            uint64_t encoded;
+            struct s {
+                int start;
+                int end;
+            } split;
+        } value;
+        value.encoded = encoded;
+        start = value.split.start;
+        end = value.split.end;
+    }
+#endif
 
-#endif // WTF_OwnPtrCommon_h
+    static MatchResult failed()
+    {
+        return MatchResult(int(WTF::notFound), 0);
+    }
+
+    operator bool()
+    {
+        return start != int(WTF::notFound);
+    }
+
+    bool empty()
+    {
+        return start == end;
+    }
+
+    // strings are limited to a length of 2^28. So this is safe
+    int start;
+    int end;
+};
+
+#endif /* yarr_MatchResult_h */

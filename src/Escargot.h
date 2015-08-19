@@ -243,10 +243,6 @@ inline bool operator!=(const pointer_free_allocator<GC_T1>&, const pointer_free_
 #error "I don't know what architecture this is!"
 #endif
 
-#include "util/RefCounted.h"
-#include "util/RefPtr.h"
-#include "util/OwnPtr.h"
-
 namespace escargot {
 typedef std::basic_string<char16_t> u16string;
 }
