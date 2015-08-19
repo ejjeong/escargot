@@ -131,18 +131,22 @@ public:
                     ESString* lstr;
                     ESString* rstr;
 
-                    //TODO use toESString
-                    //lstr = lval.toESString().string();
                     lstr = lval.toString();
-                    //TODO use toESString
-                    //rstr = rval.toESString().string();
                     rstr = rval.toString();
+                    if(UNLIKELY(lstr->length() + rstr->length() >= (int)ESChainString::ESChainStringCreateMinLimit)) {
+                        ESChainString* chain = ESChainString::create();
+                        chain->append(lstr);
+                        chain->append(rstr);
+                        ret = chain;
+                    } else {
+                        u16string str;
+                        str.reserve(lstr->length() + rstr->length());
+                        str.append(lstr->string());
+                        str.append(rstr->string());
+                        ret = ESString::create(std::move(str));
+                    }
 
-                    ESChainString* chain = ESChainString::create();
-                    chain->append(lstr);
-                    chain->append(rstr);
 
-                    ret = chain;
                 } else {
                     if(lval.isInt32() && rval.isInt32()) {
                         int a = lval.asInt32(), b = rval.asInt32();

@@ -94,26 +94,22 @@ bool ESValue::equalsTo(const ESValue& val)
 
 ESString* ESValue::toString() const
 {
-    if(isPrimitive()) {
-        if(isInt32()) {
-            return ESString::create(asInt32());
-        } else if(isNumber()) {
-            double d = asNumber();
-            return ESString::create(d);
-        } else if(isUndefined()) {
-            return strings->undefined;
-        } else if(isNull()) {
-            return strings->null;
-        } else if(isBoolean()) {
-            if(asBoolean())
-                return strings->stringTrue;
-            else
-                return strings->stringFalse;
-        } else {
-            ASSERT(isESString());
-            return asESString();
-        }
-        RELEASE_ASSERT_NOT_REACHED();
+    if(isESString()) {
+        return asESString();
+    } else if(isInt32()) {
+        return ESString::create(asInt32());
+    } else if(isNumber()) {
+        double d = asNumber();
+        return ESString::create(d);
+    } else if(isUndefined()) {
+        return strings->undefined;
+    } else if(isNull()) {
+        return strings->null;
+    } else if(isBoolean()) {
+        if(asBoolean())
+            return strings->stringTrue;
+        else
+            return strings->stringFalse;
     } else {
         ASSERT(asESPointer()->isESObject());
         ESObject* obj = asESPointer()->asESObject();

@@ -566,9 +566,10 @@ public:
 
     ESString* substring(int from, int to) const
     {
-        ASSERT(0 <= from && from <= to && to <= (int)m_string->length());
         //NOTE to build normal string(for chain-string), we should call data();
         data();
+
+        ASSERT(0 <= from && from <= to && to <= (int)m_string->length());
         u16string ret(std::move(m_string->substr(from, to-from)));
         return ESString::create(std::move(ret));
     }
@@ -639,7 +640,6 @@ ALWAYS_INLINE bool operator >= (const ESString& a,const ESString& b)
 typedef std::vector<ESString *,gc_allocator<ESString *> > ESStringVector;
 
 class ESChainString : public ESString {
-    static const unsigned ESChainStringMaxSize = 128;
 protected:
     ESChainString()
         : ESString((ESStringData *)nullptr)
@@ -648,6 +648,8 @@ protected:
         m_chainSize = 0;
     }
 public:
+    static const unsigned ESChainStringCreateMinLimit = 256;
+    static const unsigned ESChainStringMaxSize = 32;
     static ESChainString* create()
     {
         return new ESChainString();
@@ -709,6 +711,16 @@ public:
         }
     }
 
+    int contentLength()
+    {
+        int siz = 0;
+        for(unsigned i = 0; i < m_chainSize ; i ++) {
+            siz += m_chain[i]->length();
+        }
+
+        return siz;
+    }
+
 protected:
     ESStringData* m_chain[ESChainStringMaxSize];
     unsigned m_chainSize;
@@ -745,7 +757,7 @@ ALWAYS_INLINE int ESString::length() const
 {
     if(UNLIKELY(m_string == NULL)) {
         escargot::ESChainString* chain = (escargot::ESChainString *)this;
-        chain->convertIntoNormalString();
+        return chain->contentLength();
     }
     return m_string->length();
 }
