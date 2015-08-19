@@ -6,6 +6,11 @@
 #include "runtime/ExecutionContext.h"
 #include "runtime/Environment.h"
 
+#ifdef REGEX_YARR
+#include "Yarr.h"
+#endif
+
+
 namespace escargot {
 
 GlobalObject::GlobalObject()
@@ -791,7 +796,21 @@ void GlobalObject::installString()
         int argCount = instance->currentExecutionContext()->argumentCount();
         if(argCount > 0) {
             ESPointer* esptr = instance->currentExecutionContext()->arguments()[0].asESPointer();
+#ifdef REGEX_RE2
             ret = thisObject->asESStringObject()->getStringData()->match(esptr);
+#endif
+#ifdef REGEX_YARR
+            ESString::RegexMatchResult result;
+            thisObject->asESStringObject()->getStringData()->match(esptr, result);
+
+            const char16_t* str = thisObject->asESStringObject()->getStringData()->data();
+            int idx = 0;
+            for(unsigned i = 0; i < result.m_matchResults.size() ; i ++) {
+                for(unsigned j = 0; j < result.m_matchResults[i].size() ; j ++) {
+                    ret->set(idx++,ESString::create(std::move(u16string(str + result.m_matchResults[i][j].m_start,str + result.m_matchResults[i][j].m_end))));
+                }
+            }
+#endif
             if (ret->length().asInt32() == 0)
                 instance->currentExecutionContext()->doReturn(ESValue(ESValue::ESNull));
         }
@@ -876,6 +895,130 @@ void GlobalObject::installString()
         }
         escargot::ESString* resultString = ESString::create(std::move(utf8ToUtf16(new_this.data(), new_this.length())));
         instance->currentExecutionContext()->doReturn(resultString);
+#endif
+
+#ifdef REGEX_YARR
+        if(argCount > 1) {
+            ESPointer* esptr = instance->currentExecutionContext()->arguments()[0].asESPointer();
+
+            ESValue replaceValue = instance->currentExecutionContext()->arguments()[1];
+            const u16string* regexSource;
+            ESRegExpObject::Option option = ESRegExpObject::Option::None;
+            if (esptr->isESRegExpObject()) {
+                regexSource = &esptr->asESRegExpObject()->source()->string();
+                option = esptr->asESRegExpObject()->option();
+            } else if (esptr->isESString()) {
+                regexSource = &esptr->asESString()->string();
+            } else {
+                //TODO
+                RELEASE_ASSERT_NOT_REACHED();
+            }
+            JSC::Yarr::ErrorCode yarrError;
+            JSC::Yarr::YarrPattern yarrPattern(*regexSource, option & ESRegExpObject::Option::IgnoreCase, option & ESRegExpObject::Option::MultiLine, &yarrError);
+            if (yarrError) {
+                return ret;
+            }
+            escargot::ESString* origStr = thisObject->asESStringObject()->getStringData();
+            ESString::RegexMatchResult result;
+            const u16string& orgString = origStr->string();
+            origStr->match(esptr, result);
+            if(result.m_matchResults.size()  == 0) {
+                instance->currentExecutionContext()->doReturn(origStr);
+            }
+
+            if (replaceValue.isESPointer() && replaceValue.asESPointer()->isESFunctionObject()) {
+                int32_t matchCount = result.m_matchResults.size();
+                ESValue callee = replaceValue.asESPointer()->asESFunctionObject();
+
+                u16string newThis;
+                newThis.append(orgString.begin(), orgString.begin() + result.m_matchResults[0][0].m_start);
+
+                for(int32_t i = 0; i < matchCount ; i ++) {
+                    int subLen = result.m_matchResults[i].size();
+                    ESValue* arguments = (ESValue *)alloca((subLen+2)*sizeof (ESValue));
+                    for(unsigned j = 0; j < (unsigned)subLen ; j ++) {
+                        arguments[j] = ESString::create(std::move(u16string(
+                                origStr->data() + result.m_matchResults[i][j].m_start
+                                , origStr->data() + result.m_matchResults[i][j].m_end
+                                )));
+                    }
+                    arguments[subLen] = ESValue((int)result.m_matchResults[i][0].m_start);
+                    arguments[subLen + 1] = origStr;
+                    escargot::ESString* res = ESFunctionObject::call(callee, instance->globalObject(), arguments, subLen + 2, instance).toString();
+
+                    newThis.append(res->string());
+                    if(i < matchCount - 1) {
+                        newThis.append(orgString.begin() + result.m_matchResults[i][0].m_end, orgString.begin() + result.m_matchResults[i + 1][0].m_start);
+                    }
+
+                }
+                newThis.append(orgString.begin() + result.m_matchResults[matchCount - 1][0].m_end, orgString.end());
+                escargot::ESString* resultString = ESString::create(std::move(newThis));
+                instance->currentExecutionContext()->doReturn(resultString);
+            } else {
+                escargot::ESString* replaceString = replaceValue.toString();
+                u16string newThis;
+                if(replaceString->string().find('$') == u16string::npos) {
+                    //flat replace
+                    int32_t matchCount = result.m_matchResults.size();
+                    newThis.append(orgString.begin(), orgString.begin() + result.m_matchResults[0][0].m_start);
+                    for(int32_t i = 0; i < matchCount ; i ++) {
+                        escargot::ESString* res = replaceString;
+                        newThis.append(res->string());
+                        if(i < matchCount - 1) {
+                            newThis.append(orgString.begin() + result.m_matchResults[i][0].m_end, orgString.begin() + result.m_matchResults[i + 1][0].m_start);
+                        }
+                    }
+                    newThis.append(orgString.begin() + result.m_matchResults[matchCount - 1][0].m_end, orgString.end());
+                } else {
+                    //dollar replace
+                    int32_t matchCount = result.m_matchResults.size();
+
+                    const u16string& dollarString = replaceString->string();
+                    newThis.append(orgString.begin(), orgString.begin() + result.m_matchResults[0][0].m_start);
+                    for(int32_t i = 0; i < matchCount ; i ++) {
+                        u16string replaceString;
+                        for(unsigned j = 0; j < dollarString.size() ; j ++) {
+                            if(dollarString[j] == '$' && (j + 1) < dollarString.size()) {
+                                char16_t c = dollarString[j + 1];
+                                if(c == '$') {
+                                    replaceString.push_back(dollarString[j]);
+                                } else if(c == '&') {
+                                    replaceString.append(origStr->string().begin() + result.m_matchResults[i][0].m_start,
+                                            origStr->string().begin() + result.m_matchResults[i][0].m_end);
+                                } else if(c == '`') {
+                                    //TODO
+                                    RELEASE_ASSERT_NOT_REACHED();
+                                } else if(c == '`') {
+                                    //TODO
+                                    RELEASE_ASSERT_NOT_REACHED();
+                                } else if('0' <= c && c <= '9') {
+                                    //TODO support morethan 2-digits
+                                    size_t idx = c - '0';
+                                    if(idx < result.m_matchResults[i].size()) {
+                                        replaceString.append(origStr->string().begin() + result.m_matchResults[i][idx].m_start,
+                                            origStr->string().begin() + result.m_matchResults[i][idx].m_end);
+                                    } else {
+                                        replaceString.push_back('$');
+                                        replaceString.push_back(c);
+                                    }
+                                }
+                                j ++;
+                            } else {
+                                replaceString.push_back(dollarString[j]);
+                            }
+                        }
+                        newThis.append(replaceString);
+                        if(i < matchCount - 1) {
+                            newThis.append(orgString.begin() + result.m_matchResults[i][0].m_end, orgString.begin() + result.m_matchResults[i + 1][0].m_start);
+                        }
+                    }
+                    newThis.append(orgString.begin() + result.m_matchResults[matchCount - 1][0].m_end, orgString.end());
+                }
+                escargot::ESString* resultString = ESString::create(std::move(newThis));
+                instance->currentExecutionContext()->doReturn(resultString);
+            }
+        }
 #endif
         return ESValue();
     }), false, false);
@@ -1627,24 +1770,19 @@ void GlobalObject::installRegExp()
         ::escargot::ESRegExpObject* regexp = thisObject->asESRegExpObject();
         int argCount = instance->currentExecutionContext()->argumentCount();
         if(argCount > 0) {
-#ifdef REGEX_RE2
             escargot::ESString* sourceStr = instance->currentExecutionContext()->arguments()[0].toString();
-            const char* source = sourceStr->utf8Data();
-            ESRegExpObject::Option option = regexp->option();
-
-            bool ret = false;
-            ESRegExpObject::prepareForRE2(regexp->utf8Source(), option, [&](const char* RE2Source, const re2::RE2::Options& ops, const bool& isGlobal){
-                re2::RE2 re(RE2Source, ops);
-                re2::StringPiece input(source);
-                std::string matched;
-                if (re2::RE2::FindAndConsume(&input, re, &matched)) {
-                    ret = true;
-                }
-            });
-
-            GC_free((char *)source);
-            instance->currentExecutionContext()->doReturn(ESValue(ret));
+#ifdef REGEX_RE2
+            escargot::ESArrayObject* ret = sourceStr->match(esptr);
 #endif
+#ifdef REGEX_YARR
+            ESString::RegexMatchResult result;
+            sourceStr->match(thisObject, result);
+#endif
+            if(result.m_matchResults.size()) {
+                instance->currentExecutionContext()->doReturn(ESValue(true));
+            } else {
+                instance->currentExecutionContext()->doReturn(ESValue(false));
+            }
         }
         return ESValue(false);
     }), false, false);

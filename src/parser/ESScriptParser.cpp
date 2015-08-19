@@ -101,7 +101,6 @@ void ESScriptParser::enter()
         s_reflectObject = JSVAL_TO_OBJECT(r);
         JS_GetProperty(s_cx, s_reflectObject, "parse", &r);
         s_reflectParseFunction = JS_ValueToFunction(s_cx, r);
-
 /*
         JSObject* reg = JS_NewRegExpObject(s_cx, *((JS::RootedObject*)s_global), (char *)".ll.", 4, 0);
         ASSERT(reg);
@@ -122,6 +121,7 @@ void ESScriptParser::enter()
         printf("asdf %s",JS_EncodeString(s_cx, str22));
         printf("asdf %s",JS_EncodeString(s_cx, str22));
         */
+
     }
 }
 
@@ -239,8 +239,6 @@ ALWAYS_INLINE bool hasElementInMozJS(JSContext* ctx, JSObject* obj, const char* 
 
 Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& source)
 {
-    //unsigned long start = getLongTickCount();
-
     //unsigned long start1 = getLongTickCount();
     JSAutoCompartment ac(s_cx, *((JS::RootedObject*)s_global));
     jsval ret;

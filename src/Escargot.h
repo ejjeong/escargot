@@ -34,7 +34,8 @@
 #include <rapidjson/internal/dtoa.h>
 #include <rapidjson/internal/strtod.h>
 
-#define REGEX_RE2
+//#define REGEX_RE2
+#define REGEX_YARR
 
 #ifdef REGEX_RE2
 #include <re2/re2.h>
@@ -212,6 +213,11 @@ inline bool operator!=(const pointer_free_allocator<GC_T1>&, const pointer_free_
 #define ASSERT(assertion) assert(assertion);
 #define ASSERT_NOT_REACHED() do { assert(false); } while (0)
 #define ASSERT_STATIC(assertion, reason) static_assert(assertion, reason)
+#endif
+
+/* COMPILE_ASSERT */
+#ifndef COMPILE_ASSERT
+#define COMPILE_ASSERT(exp, name) static_assert((exp), #name)
 #endif
 
 #define RELEASE_ASSERT(assertion) assert(assertion);

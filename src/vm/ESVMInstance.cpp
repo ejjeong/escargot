@@ -5,6 +5,10 @@
 #include "runtime/GlobalObject.h"
 #include "parser/ESScriptParser.h"
 
+#ifdef REGEX_YARR
+#include "BumpPointerAllocator.h"
+#endif
+
 namespace escargot {
 
 __thread ESVMInstance* currentInstance;
@@ -20,6 +24,10 @@ ESVMInstance::ESVMInstance()
 
     std::setlocale(LC_ALL, "en_US.utf8");
     m_strings.initStaticStrings(this);
+
+#ifdef REGEX_YARR
+    m_bumpPointerAllocator = new WTF::BumpPointerAllocator();
+#endif
 
     m_object__proto__AccessorData.m_getter = [](ESObject* obj) -> ESValue {
         return obj->__proto__();

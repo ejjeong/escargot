@@ -6,6 +6,7 @@
 
 int main(int argc, char* argv[])
 {
+    //GC_disable();
 /*
     //ESValue test
     escargot::ESValue* u= escargot::undefined;

@@ -574,7 +574,20 @@ public:
         return ESString::create(std::move(ret));
     }
 
+#ifdef REGEX_RE2
     escargot::ESArrayObject* match(ESPointer* esptr, std::vector<int>* offsets = nullptr, std::vector<int>* offsetsLength = nullptr) const;
+#endif
+#ifdef REGEX_YARR
+    struct RegexMatchResult {
+        struct RegexMatchResultPiece {
+            unsigned m_start,m_end;
+        };
+        COMPILE_ASSERT((sizeof (RegexMatchResultPiece)) == (sizeof (unsigned) * 2),sizeof_RegexMatchResultPiece_wrong);
+        int m_subPatternNum;
+        std::vector< std::vector< RegexMatchResultPiece > > m_matchResults;
+    };
+    void match(ESPointer* esptr, RegexMatchResult& result) const;
+#endif
 
     ESString(const ESString& s) = delete;
     void operator =(const ESString& s) = delete;
@@ -1697,6 +1710,9 @@ private:
     escargot::ESString* m_source;
 #ifdef REGEX_RE2
     const char* m_sourceStringAsUtf8;
+#endif
+#ifdef REGEX_YARR
+    //TODO cache Yarr::ByteCode Object
 #endif
     Option m_option;
 };
