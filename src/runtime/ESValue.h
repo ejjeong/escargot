@@ -652,6 +652,7 @@ ALWAYS_INLINE bool operator >= (const ESString& a,const ESString& b)
 }
 
 typedef std::vector<ESString *,gc_allocator<ESString *> > ESStringVector;
+typedef std::vector<ESStringData *,gc_allocator<ESStringData *> > ESChainStringVector;
 
 class ESChainString : public ESString {
 protected:
@@ -660,10 +661,12 @@ protected:
     {
         m_type = m_type | ESPointer::ESChainString;
         m_chainSize = 0;
+        m_contentLength = 0;
     }
 public:
     static const unsigned ESChainStringCreateMinLimit = 256;
-    static const unsigned ESChainStringMaxSize = 32;
+    static const unsigned ESChainStringDefaultSize = 8;
+    static const unsigned ESChainStringMaximumSize = 128;
     static ESChainString* create()
     {
         return new ESChainString();
@@ -677,11 +680,7 @@ public:
         }
 #endif
         u16string result;
-        size_t siz = 0;
-        for(unsigned i = 0; i < m_chainSize ; i ++) {
-            siz += m_chain[i]->length();
-        }
-        result.reserve(siz);
+        result.reserve(m_contentLength);
         for(unsigned i = 0; i < m_chainSize ; i ++) {
             result.append(static_cast<const u16string &>(*m_chain[i]));
             m_chain[i] = NULL;
@@ -689,55 +688,68 @@ public:
 
         m_string = new(GC) ESStringData(std::move(result));
         m_chainSize = 0;
+        m_contentLength = 0;
     }
 
     void append(ESString* str)
     {
         if(m_string) {
             ASSERT(m_chainSize == 0);
-            m_chain[m_chainSize++] = const_cast<ESStringData *>(str->stringData());
+            m_chain[m_chainSize++] = m_string;
+            m_contentLength = m_string->length();
             m_string = NULL;
         }
 
         if(str->isESChainString()) {
             ESChainString* cs = str->asESChainString();
-            if(cs->m_string)
+            if(cs->m_string) {
+                if(m_chainSize + 1 >= m_chain.size()) {
+                    size_t newSize  = m_chain.size() * 2;
+                    if(newSize < ESChainStringDefaultSize)
+                        newSize = ESChainStringDefaultSize;
+                    m_chain.resize(newSize);
+                }
                 m_chain[m_chainSize++] = const_cast<ESStringData *>(str->stringData());
+                m_contentLength += str->length();
+            }
             else {
-                if(m_chainSize + cs->m_chainSize >= ESChainStringMaxSize) {
-                    convertIntoNormalString();
-                    m_chainSize = 1;
-                    m_chain[0] = m_string;
-                    m_string = NULL;
+                if(m_chainSize + cs->m_chainSize >= m_chain.size()) {
+                    size_t newSize  = (m_chain.size() + cs->m_chainSize) * 1.25f;
+                    if(newSize < ESChainStringDefaultSize)
+                        newSize = ESChainStringDefaultSize;
+                    m_chain.resize(newSize);
                 }
                 for(unsigned i = 0; i < cs->m_chainSize ; i ++) {
                     m_chain[i + m_chainSize] = cs->m_chain[i];
                 }
                 m_chainSize += cs->m_chainSize;
+                m_contentLength += cs->m_contentLength;
             }
         } else {
+            if(m_chainSize + 1 >= m_chain.size()) {
+                size_t newSize  = m_chain.size() * 2;
+                if(newSize < ESChainStringDefaultSize)
+                    newSize = ESChainStringDefaultSize;
+                m_chain.resize(newSize);
+            }
             m_chain[m_chainSize++] = const_cast<ESStringData *>(str->stringData());
+            m_contentLength += str->length();
         }
 
-        ASSERT(m_chainSize <= ESChainStringMaxSize - 1);
-        if(m_chainSize >= ESChainStringMaxSize - 1) {
+        if(m_chainSize > ESChainStringMaximumSize) {
             convertIntoNormalString();
         }
     }
 
     int contentLength()
     {
-        int siz = 0;
-        for(unsigned i = 0; i < m_chainSize ; i ++) {
-            siz += m_chain[i]->length();
-        }
-
-        return siz;
+        return m_contentLength;
     }
 
 protected:
-    ESStringData* m_chain[ESChainStringMaxSize];
+    ESChainStringVector m_chain;
     unsigned m_chainSize;
+    unsigned m_contentLength;
 };
 
 
