@@ -36,7 +36,6 @@ CXXFLAGS += -fdata-sections -ffunction-sections
 #add third_party
 CXXFLAGS += -Ithird_party/rapidjson/include/
 CXXFLAGS += -Ithird_party/bdwgc/include/
-CXXFLAGS += -Ithird_party/re2/
 
 CXXFLAGS += -Ithird_party/yarr/
 SRC_YARR += third_party/yarr/OSAllocatorPosix.cpp
@@ -49,7 +48,6 @@ SRC_YARR += third_party/yarr/YarrSyntaxChecker.cpp
 #LDFLAGS += -Lthird_party/mozjs/build/dist/lib -lmozjs-24 -lz -ldl -Wl,-rpath,'$$ORIGIN/third_party/mozjs/build/dist/lib/'
 LDFLAGS += -lpthread -lz -ldl
 LDFLAGS += -Wl,--gc-sections
-LDFLAGS += ./third_party/re2/obj/libre2.a -lpthread
 
 ifeq ($(ARCH), x64)
 	CXXFLAGS += -DESCARGOT_64=1

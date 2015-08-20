@@ -3,6 +3,12 @@
 
 #include "InternalString.h"
 
+namespace JSC {
+namespace Yarr {
+    class BytecodePattern;
+}
+}
+
 namespace escargot {
 
 class ESUndefined;
@@ -574,10 +580,6 @@ public:
         return ESString::create(std::move(ret));
     }
 
-#ifdef REGEX_RE2
-    escargot::ESArrayObject* match(ESPointer* esptr, std::vector<int>* offsets = nullptr, std::vector<int>* offsetsLength = nullptr) const;
-#endif
-#ifdef REGEX_YARR
     struct RegexMatchResult {
         struct RegexMatchResultPiece {
             unsigned m_start,m_end;
@@ -586,8 +588,7 @@ public:
         int m_subPatternNum;
         std::vector< std::vector< RegexMatchResultPiece > > m_matchResults;
     };
-    void match(ESPointer* esptr, RegexMatchResult& result) const;
-#endif
+    bool match(ESPointer* esptr, RegexMatchResult& result, bool testOnly = false) const;
 
     ESString(const ESString& s) = delete;
     void operator =(const ESString& s) = delete;
@@ -1651,6 +1652,7 @@ private:
 };
 
 class ESRegExpObject : public ESObject {
+    friend class ESString;
 public:
     enum Option {
         None = 0,
@@ -1670,50 +1672,23 @@ public:
 
     ALWAYS_INLINE Option option() { return m_option; }
     ALWAYS_INLINE const escargot::ESString* source() { return m_source; }
-#ifdef REGEX_RE2
-    ALWAYS_INLINE const char* utf8Source() { return m_sourceStringAsUtf8; }
-#endif
-    ALWAYS_INLINE void setSource(escargot::ESString* src)
+    void setSource(escargot::ESString* src);
+    void setOption(const Option& option);
+
+    JSC::Yarr::BytecodePattern* bytecodePattern()
     {
-        m_source = src;
-#ifdef REGEX_RE2
-        m_sourceStringAsUtf8 = src->utf8Data();
-#endif
+        return m_bytecodePattern;
     }
-    ALWAYS_INLINE void setOption(const Option& option) { m_option = option; }
 
-#ifdef REGEX_RE2
-    template <typename Func>
-    static void prepareForRE2(const char* source,const ESRegExpObject::Option& option, const Func& fn)
-    {
-        re2::RE2::Options ops;
-
-        if(option & ESRegExpObject::Option::IgnoreCase)
-            ops.set_case_sensitive(false);
-        if(option & ESRegExpObject::Option::MultiLine)
-            ops.set_one_line(false);
-        //if(option & ESRegExpObject::Option::Sticky)
-        //    ops.set_
-        bool isGlobal = option & ESRegExpObject::Option::Global;
-
-        char* sourceForRE2 = (char *)malloc(strlen(source) + 3);
-        strcpy(sourceForRE2, "(");
-        strcat(sourceForRE2, source);
-        strcat(sourceForRE2, ")");
-        fn(sourceForRE2, ops, isGlobal);
-        free(sourceForRE2);
-    }
-#endif
 private:
+    void setBytecodePattern(JSC::Yarr::BytecodePattern* pattern)
+    {
+        m_bytecodePattern = pattern;
+    }
     ESRegExpObject(escargot::ESString* source, const Option& option);
 
     escargot::ESString* m_source;
-#ifdef REGEX_RE2
-    const char* m_sourceStringAsUtf8;
-#endif
-#ifdef REGEX_YARR
-    //TODO cache Yarr::ByteCode Object
-#endif
+    JSC::Yarr::BytecodePattern* m_bytecodePattern;
     Option m_option;
 };
 

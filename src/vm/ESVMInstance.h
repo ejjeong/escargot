@@ -4,11 +4,9 @@
 #include "runtime/GlobalObject.h"
 #include "runtime/InternalAtomicString.h"
 
-#ifdef REGEX_YARR
 namespace WTF {
 class BumpPointerAllocator;
 }
-#endif
 
 namespace escargot {
 
@@ -73,9 +71,7 @@ public:
     ESFunctionObject* globalFunctionPrototype() { return m_globalFunctionPrototype; }
     void setGlobalFunctionPrototype(ESFunctionObject* o) { m_globalFunctionPrototype = o; }
 
-#ifdef REGEX_YARR
     WTF::BumpPointerAllocator* bumpPointerAllocator() { return m_bumpPointerAllocator; };
-#endif
 
 protected:
     ExecutionContext* m_globalExecutionContext;
@@ -96,9 +92,7 @@ protected:
 
     ESFunctionObject* m_globalFunctionPrototype;
 
-#ifdef REGEX_YARR
     WTF::BumpPointerAllocator* m_bumpPointerAllocator;
-#endif
 };
 
 }

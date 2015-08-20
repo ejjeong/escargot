@@ -6,10 +6,7 @@
 #include "runtime/ExecutionContext.h"
 #include "runtime/Environment.h"
 
-#ifdef REGEX_YARR
 #include "Yarr.h"
-#endif
-
 
 namespace escargot {
 
@@ -796,10 +793,6 @@ void GlobalObject::installString()
         int argCount = instance->currentExecutionContext()->argumentCount();
         if(argCount > 0) {
             ESPointer* esptr = instance->currentExecutionContext()->arguments()[0].asESPointer();
-#ifdef REGEX_RE2
-            ret = thisObject->asESStringObject()->getStringData()->match(esptr);
-#endif
-#ifdef REGEX_YARR
             ESString::RegexMatchResult result;
             thisObject->asESStringObject()->getStringData()->match(esptr, result);
 
@@ -810,7 +803,6 @@ void GlobalObject::installString()
                     ret->set(idx++,ESString::create(std::move(u16string(str + result.m_matchResults[i][j].m_start,str + result.m_matchResults[i][j].m_end))));
                 }
             }
-#endif
             if (ret->length().asInt32() == 0)
                 instance->currentExecutionContext()->doReturn(ESValue(ESValue::ESNull));
         }
@@ -825,99 +817,10 @@ void GlobalObject::installString()
         ASSERT(thisObject->isESStringObject());
         escargot::ESArrayObject* ret = ESArrayObject::create(0, instance->globalObject()->arrayPrototype());
         int argCount = instance->currentExecutionContext()->argumentCount();
-#ifdef REGEX_RE2
-        NullableString nullstr = toNullableUtf8(thisObject->asESStringObject()->getStringData()->string());
-        const char* targetString = nullstr.string();
-        int targetLen = nullstr.length();
-//        const char* targetString = utf16ToUtf8(thisObject->asESStringObject()->getStringData()->string().data());
-        int origin_len = thisObject->asESStringObject()->getStringData()->length();
-        std::string new_this = std::string(targetString, targetLen);
-        if(argCount > 1) {
-            ESPointer* esptr = instance->currentExecutionContext()->arguments()[0].asESPointer();
-            const char* source;
-            ESRegExpObject::Option option = ESRegExpObject::Option::None;
-            if (esptr->isESRegExpObject()) {
-                source = esptr->asESRegExpObject()->utf8Source();
-                option = esptr->asESRegExpObject()->option();
-            } else if (esptr->isESString()) {
-                source = utf16ToUtf8(esptr->asESString()->string().data());
-            } else {
-                //TODO
-                RELEASE_ASSERT_NOT_REACHED();
-            }
-
-            ESValue replaceValue = instance->currentExecutionContext()->arguments()[1];
-            if (replaceValue.isESPointer() && replaceValue.asESPointer()->isESFunctionObject()) {
-                escargot::ESString* origStr = thisObject->asESStringObject()->getStringData();
-                std::vector<int> matchedOffsets;
-                std::vector<int> matchedOffsetsLength;
-                escargot::ESArrayObject* ret = origStr->match(esptr, &matchedOffsets, &matchedOffsetsLength);
-                int32_t matchCount = ret->length().asInt32();
-                ESValue callee = replaceValue.asESPointer()->asESFunctionObject();
-
-                NullableString buf = toNullableUtf8(origStr->string());
-                new_this = std::string(buf.string(), buf.length());
-
-                //int replacePos = 0;
-                //int lastOffset = 0;
-                int offsetCauseByReplace = 0;
-                for(int32_t i = 0; i < matchCount ; i ++) {
-                    ESValue arguments[3];
-                    arguments[0] = ret->get(i);
-                    //FIXME matchedOffsets[i[ is wrong. because, utf8.....
-                    arguments[1] = ESValue(matchedOffsets[i]);
-                    // TODO captures
-                    arguments[2] = ESValue(origStr);
-                    escargot::ESString* res = ESFunctionObject::call(callee, instance->globalObject(), arguments, 3, instance).toString();
-                    NullableString nullbuf = toNullableUtf8(res->string());
-
-                    new_this.replace(matchedOffsets[i] + offsetCauseByReplace,
-                            matchedOffsetsLength[i], std::string(nullbuf.string(), nullbuf.length()));
-                    offsetCauseByReplace += nullbuf.length() - matchedOffsetsLength[i];
-                }
-            } else {
-                escargot::ESString* replaceStringInternal = replaceValue.toString();
-                const char* replaceString = replaceStringInternal->utf8Data();
-
-                ESRegExpObject::prepareForRE2(source, option, [&](const char* RE2Source, const re2::RE2::Options& ops, const bool& isGlobal){
-                    re2::RE2 re(RE2Source, ops);
-
-                    //wprintf(u"this_len = %d\n", new_this.length());
-
-                    if (isGlobal) {
-                        re2::RE2::GlobalReplace(&new_this, re, replaceString);
-                    } else {
-                        re2::RE2::Replace(&new_this, re, replaceString);
-                    }
-                });
-                GC_free((char *)replaceString);
-            }
-        }
-        escargot::ESString* resultString = ESString::create(std::move(utf8ToUtf16(new_this.data(), new_this.length())));
-        instance->currentExecutionContext()->doReturn(resultString);
-#endif
-
-#ifdef REGEX_YARR
         if(argCount > 1) {
             ESPointer* esptr = instance->currentExecutionContext()->arguments()[0].asESPointer();
 
             ESValue replaceValue = instance->currentExecutionContext()->arguments()[1];
-            const u16string* regexSource;
-            ESRegExpObject::Option option = ESRegExpObject::Option::None;
-            if (esptr->isESRegExpObject()) {
-                regexSource = &esptr->asESRegExpObject()->source()->string();
-                option = esptr->asESRegExpObject()->option();
-            } else if (esptr->isESString()) {
-                regexSource = &esptr->asESString()->string();
-            } else {
-                //TODO
-                RELEASE_ASSERT_NOT_REACHED();
-            }
-            JSC::Yarr::ErrorCode yarrError;
-            JSC::Yarr::YarrPattern yarrPattern(*regexSource, option & ESRegExpObject::Option::IgnoreCase, option & ESRegExpObject::Option::MultiLine, &yarrError);
-            if (yarrError) {
-                return ret;
-            }
             escargot::ESString* origStr = thisObject->asESStringObject()->getStringData();
             ESString::RegexMatchResult result;
             const u16string& orgString = origStr->string();
@@ -977,14 +880,13 @@ void GlobalObject::installString()
                     const u16string& dollarString = replaceString->string();
                     newThis.append(orgString.begin(), orgString.begin() + result.m_matchResults[0][0].m_start);
                     for(int32_t i = 0; i < matchCount ; i ++) {
-                        u16string replaceString;
                         for(unsigned j = 0; j < dollarString.size() ; j ++) {
                             if(dollarString[j] == '$' && (j + 1) < dollarString.size()) {
                                 char16_t c = dollarString[j + 1];
                                 if(c == '$') {
-                                    replaceString.push_back(dollarString[j]);
+                                    newThis.push_back(dollarString[j]);
                                 } else if(c == '&') {
-                                    replaceString.append(origStr->string().begin() + result.m_matchResults[i][0].m_start,
+                                    newThis.append(origStr->string().begin() + result.m_matchResults[i][0].m_start,
                                             origStr->string().begin() + result.m_matchResults[i][0].m_end);
                                 } else if(c == '`') {
                                     //TODO
@@ -996,19 +898,18 @@ void GlobalObject::installString()
                                     //TODO support morethan 2-digits
                                     size_t idx = c - '0';
                                     if(idx < result.m_matchResults[i].size()) {
-                                        replaceString.append(origStr->string().begin() + result.m_matchResults[i][idx].m_start,
+                                        newThis.append(origStr->string().begin() + result.m_matchResults[i][idx].m_start,
                                             origStr->string().begin() + result.m_matchResults[i][idx].m_end);
                                     } else {
-                                        replaceString.push_back('$');
-                                        replaceString.push_back(c);
+                                        newThis.push_back('$');
+                                        newThis.push_back(c);
                                     }
                                 }
                                 j ++;
                             } else {
-                                replaceString.push_back(dollarString[j]);
+                                newThis.push_back(dollarString[j]);
                             }
                         }
-                        newThis.append(replaceString);
                         if(i < matchCount - 1) {
                             newThis.append(orgString.begin() + result.m_matchResults[i][0].m_end, orgString.begin() + result.m_matchResults[i + 1][0].m_start);
                         }
@@ -1019,7 +920,6 @@ void GlobalObject::installString()
                 instance->currentExecutionContext()->doReturn(resultString);
             }
         }
-#endif
         return ESValue();
     }), false, false);
     m_stringPrototype->set(ESString::create(u"replace"), ESFunctionObject::create(NULL, stringReplace));
@@ -1771,13 +1671,9 @@ void GlobalObject::installRegExp()
         int argCount = instance->currentExecutionContext()->argumentCount();
         if(argCount > 0) {
             escargot::ESString* sourceStr = instance->currentExecutionContext()->arguments()[0].toString();
-#ifdef REGEX_RE2
-            escargot::ESArrayObject* ret = sourceStr->match(esptr);
-#endif
-#ifdef REGEX_YARR
             ESString::RegexMatchResult result;
-            sourceStr->match(thisObject, result);
-#endif
+            bool testResult = sourceStr->match(thisObject, result, true);
+            instance->currentExecutionContext()->doReturn(ESValue(testResult));
             if(result.m_matchResults.size()) {
                 instance->currentExecutionContext()->doReturn(ESValue(true));
             } else {

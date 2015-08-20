@@ -34,13 +34,6 @@
 #include <rapidjson/internal/dtoa.h>
 #include <rapidjson/internal/strtod.h>
 
-//#define REGEX_RE2
-#define REGEX_YARR
-
-#ifdef REGEX_RE2
-#include <re2/re2.h>
-#endif
-
 #include <gc_cpp.h>
 #include <gc_allocator.h>
 

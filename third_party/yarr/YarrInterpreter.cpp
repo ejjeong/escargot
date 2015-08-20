@@ -1500,7 +1500,7 @@ public:
         emitDisjunction(m_pattern.m_body);
         regexEnd();
 
-        return adoptPtr(new BytecodePattern(m_bodyDisjunction.release(), m_allParenthesesInfo, Ref<YarrPattern>(m_pattern), allocator));
+        return adoptPtr(new(PointerFreeGC) BytecodePattern(m_bodyDisjunction.release(), m_allParenthesesInfo, Ref<YarrPattern>(m_pattern), allocator));
     }
 
     void checkInput(unsigned count)

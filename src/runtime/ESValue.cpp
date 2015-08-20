@@ -7,9 +7,7 @@
 #include "runtime/NullableString.h"
 #include "ast/AST.h"
 
-#ifdef REGEX_YARR
 #include "Yarr.h"
-#endif
 
 namespace escargot {
 
@@ -182,62 +180,19 @@ ESValue ESObject::valueOf()
     */
 }
 
-#ifdef REGEX_RE2
-ESArrayObject* ESString::match(ESPointer* esptr, std::vector<int>* offsets, std::vector<int>* offsetLength) const
-{
-    //NOTE to build normal string(for chain-string), we should call data();
-    data();
-
-    escargot::ESArrayObject* ret = ESArrayObject::create(0, ESVMInstance::currentInstance()->globalObject()->arrayPrototype());
-    ESRegExpObject::Option option = ESRegExpObject::Option::None;
-    const char* source;
-    if (esptr->isESRegExpObject()) {
-        source = esptr->asESRegExpObject()->utf8Source();
-        option = esptr->asESRegExpObject()->option();
-    } else if (esptr->isESString()) {
-        source = utf16ToUtf8(esptr->asESString()->string().data());
-    } else {
-        //TODO
-        RELEASE_ASSERT_NOT_REACHED();
-    }
-
-    NullableString targetString = toNullableUtf8(*m_string);
-    int index = 0;
-
-    ESRegExpObject::prepareForRE2(source, option, [&](const char* RE2Source, const re2::RE2::Options& ops, const bool& isGlobal){
-        re2::RE2 re(RE2Source, ops);
-        re2::StringPiece input(targetString.string(), targetString.length());
-        re2::StringPiece matched;
-        const char* inputDataStart = input.data();
-        while (re2::RE2::FindAndConsume(&input, re, &matched)) {
-            if (offsets)
-                offsets->push_back(matched.data() - inputDataStart);
-            if(offsetLength)
-                offsetLength->push_back(matched.length());
-
-            ESString* int_str = ESString::create(std::move(utf8ToUtf16(matched.data(), matched.length())));
-            ret->set(index, int_str);
-            index++;
-            if (!isGlobal)
-                break;
-        }
-    });
-    return ret;
-}
-
-#endif
-
-#ifdef REGEX_YARR
-void ESString::match(ESPointer* esptr, RegexMatchResult& matchResult) const
+bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testOnly) const
 {
     //NOTE to build normal string(for chain-string), we should call data();
     data();
 
     ESRegExpObject::Option option = ESRegExpObject::Option::None;
     const u16string* regexSource;
+    JSC::Yarr::BytecodePattern* byteCode = NULL;
     if (esptr->isESRegExpObject()) {
+        escargot::ESRegExpObject* o = esptr->asESRegExpObject();
         regexSource = &esptr->asESRegExpObject()->source()->string();
         option = esptr->asESRegExpObject()->option();
+        byteCode = esptr->asESRegExpObject()->bytecodePattern();
     } else if (esptr->isESString()) {
         regexSource = &esptr->asESString()->string();
     } else {
@@ -245,17 +200,23 @@ void ESString::match(ESPointer* esptr, RegexMatchResult& matchResult) const
         RELEASE_ASSERT_NOT_REACHED();
     }
 
-    JSC::Yarr::ErrorCode yarrError;
     bool isGlobal = option & ESRegExpObject::Option::Global;
-    JSC::Yarr::YarrPattern yarrPattern(*regexSource, option & ESRegExpObject::Option::IgnoreCase, option & ESRegExpObject::Option::MultiLine, &yarrError);
-    if (yarrError) {
-        matchResult.m_subPatternNum = 0;
-        return ;
+    if(!byteCode) {
+        JSC::Yarr::ErrorCode yarrError;
+        JSC::Yarr::YarrPattern yarrPattern(*regexSource, option & ESRegExpObject::Option::IgnoreCase, option & ESRegExpObject::Option::MultiLine, &yarrError);
+        if (yarrError) {
+            matchResult.m_subPatternNum = 0;
+            return false;
+        }
+        WTF::BumpPointerAllocator *bumpAlloc = ESVMInstance::currentInstance()->bumpPointerAllocator();
+        JSC::Yarr::OwnPtr<JSC::Yarr::BytecodePattern> ownedBytecode = JSC::Yarr::byteCompileEscargot(yarrPattern, bumpAlloc);
+        byteCode = ownedBytecode.leakPtr();
+        if(esptr->isESRegExpObject()) {
+            esptr->asESRegExpObject()->setBytecodePattern(byteCode);
+        }
     }
-    WTF::BumpPointerAllocator *bumpAlloc = ESVMInstance::currentInstance()->bumpPointerAllocator();
-    JSC::Yarr::OwnPtr<JSC::Yarr::BytecodePattern> bytecode = JSC::Yarr::byteCompileEscargot(yarrPattern, bumpAlloc);
 
-    matchResult.m_subPatternNum = bytecode->m_body->m_numSubpatterns;
+    matchResult.m_subPatternNum = byteCode->m_body->m_numSubpatterns;
     const char16_t *chars = m_string->data();
     size_t length = m_string->length();
     if(length) {
@@ -265,15 +226,18 @@ void ESString::match(ESPointer* esptr, RegexMatchResult& matchResult) const
         size_t displacement = 0;
 
         unsigned result = 0;
-        unsigned* outputBuf = (unsigned int*)alloca(sizeof (unsigned) * 2 * (bytecode->m_body->m_numSubpatterns + 1));
+        unsigned* outputBuf = (unsigned int*)alloca(sizeof (unsigned) * 2 * (byteCode->m_body->m_numSubpatterns + 1));
         outputBuf[1] = 0;
         int retIndex = 0;
         do {
             start = outputBuf[1];
-            result = JSC::Yarr::interpret(NULL, bytecode.get(), chars, length, start, outputBuf);
+            result = JSC::Yarr::interpret(NULL, byteCode, chars, length, start, outputBuf);
             if(result != JSC::Yarr::offsetNoMatch) {
+                if(UNLIKELY(testOnly)) {
+                    return true;
+                }
                 std::vector<ESString::RegexMatchResult::RegexMatchResultPiece> piece;
-                for(unsigned i = 0; i < bytecode->m_body->m_numSubpatterns + 1 ; i ++) {
+                for(unsigned i = 0; i < byteCode->m_body->m_numSubpatterns + 1 ; i ++) {
                     ESString::RegexMatchResult::RegexMatchResultPiece p;
                     p.m_start = outputBuf[i*2];
                     p.m_end = outputBuf[i*2 + 1];
@@ -285,10 +249,8 @@ void ESString::match(ESPointer* esptr, RegexMatchResult& matchResult) const
             }
         } while(result != JSC::Yarr::offsetNoMatch);
     }
-    //unsigned long start = getLongTickCount();
+    return matchResult.m_matchResults.size();
 }
-
-#endif
 
 ESObject::ESObject(ESPointer::Type type)
     : ESPointer(type)
@@ -313,9 +275,19 @@ ESRegExpObject::ESRegExpObject(escargot::ESString* source, const Option& option)
 {
     m_source = source;
     m_option = option;
-#ifdef REGEX_RE2
-    m_sourceStringAsUtf8 = source->utf8Data();
-#endif
+    m_bytecodePattern = NULL;
+
+}
+
+void ESRegExpObject::setSource(escargot::ESString* src)
+{
+    m_bytecodePattern = NULL;
+    m_source = src;
+}
+void ESRegExpObject::setOption(const Option& option)
+{
+    m_bytecodePattern = NULL;
+    m_option = option;
 }
 
 ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST, ESObject* proto)
