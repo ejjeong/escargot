@@ -17,7 +17,8 @@ class ESVMInstance;
 extern __thread ESVMInstance* currentInstance;
 
 typedef std::unordered_map<u16string, InternalAtomicStringData *,
-        std::hash<u16string>,std::equal_to<u16string> > InternalAtomicStringMap;
+        std::hash<u16string>, std::equal_to<u16string>,
+        gc_allocator<std::pair<const u16string, InternalAtomicStringData *>> > InternalAtomicStringMap;
 
 class ESVMInstance : public gc_cleanup {
     friend class ESFunctionObject;

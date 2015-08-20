@@ -16,8 +16,8 @@ protected:
 
     ALWAYS_INLINE void initHash()
     {
-        std::hash<u16string> hashFn;
-        m_hashData = hashFn((u16string &)*this);
+        std::hash<std::u16string> hashFn;
+        m_hashData = hashFn((std::u16string &)*this);
     }
 public:
     InternalAtomicStringData();
@@ -103,6 +103,27 @@ template<> struct equal_to<::escargot::InternalAtomicString>
     bool operator()(escargot::InternalAtomicString const &a, escargot::InternalAtomicString const &b) const
     {
         return a.string() == b.string();
+    }
+};
+
+}
+
+namespace std
+{
+template<> struct hash<escargot::u16string>
+{
+    size_t operator()(escargot::u16string const &x) const
+    {
+        std::hash<std::basic_string<char16_t> > hashFn;
+        return hashFn((const std::basic_string<char16_t> &)x);
+    }
+};
+
+template<> struct equal_to<escargot::u16string>
+{
+    bool operator()(escargot::u16string const &a, escargot::u16string const &b) const
+    {
+        return a == b;
     }
 };
 

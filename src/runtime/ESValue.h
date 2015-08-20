@@ -377,7 +377,7 @@ protected:
     int m_type;
 };
 
-class ESStringData : public u16string, public gc_cleanup {
+class ESStringData : public u16string, public gc {
     friend class ESString;
     friend class ESChainString;
 protected:
@@ -453,8 +453,8 @@ public:
     {
         if(!m_hashData.m_isHashInited) {
             m_hashData.m_isHashInited = true;
-            std::hash<u16string> hashFn;
-            m_hashData.m_hashData = hashFn((u16string &)*this);
+            std::hash<std::basic_string<char16_t> > hashFn;
+            m_hashData.m_hashData = hashFn((std::basic_string<char16_t> &)*this);
         }
     }
 
@@ -486,37 +486,37 @@ protected:
     ESString(const char16_t* str)
         : ESPointer(Type::ESString)
     {
-        m_string = new(PointerFreeGC) ESStringData(str);
+        m_string = new(GC) ESStringData(str);
     }
 
     ESString(u16string&& src)
         : ESPointer(Type::ESString)
     {
-        m_string = new(PointerFreeGC) ESStringData(std::move(src));
+        m_string = new(GC) ESStringData(std::move(src));
     }
 
     ESString(int number)
         : ESPointer(Type::ESString)
     {
-        m_string = new(PointerFreeGC) ESStringData(number);
+        m_string = new(GC) ESStringData(number);
     }
 
     ESString(double number)
         : ESPointer(Type::ESString)
     {
-        m_string = new(PointerFreeGC) ESStringData(number);
+        m_string = new(GC) ESStringData(number);
     }
 
     ESString(char16_t number)
         : ESPointer(Type::ESString)
     {
-        m_string = new(PointerFreeGC) ESStringData(number);
+        m_string = new(GC) ESStringData(number);
     }
 
     ESString(const char* str)
         : ESPointer(Type::ESString)
     {
-        m_string = new(PointerFreeGC) ESStringData(str);
+        m_string = new(GC) ESStringData(str);
     }
 public:
     static ESString* create(const char16_t* str)
@@ -687,7 +687,7 @@ public:
             m_chain[i] = NULL;
         }
 
-        m_string = new(PointerFreeGC) ESStringData(std::move(result));
+        m_string = new(GC) ESStringData(std::move(result));
         m_chainSize = 0;
     }
 

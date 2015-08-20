@@ -67,7 +67,9 @@ public:
   // GC_n is permitted to be 0.  The C++ standard says nothing about what
   // the return value is when GC_n == 0.
   GC_Tp* allocate(size_type GC_n, const void* = 0) {
-    return new(PointerFreeGC) GC_Tp[GC_n];
+    GC_type_traits<GC_Tp> traits;
+    return static_cast<GC_Tp *>
+            (GC_malloc_atomic(GC_n * sizeof(GC_Tp)));
   }
 
   // __p is not permitted to be a null pointer.
@@ -243,7 +245,7 @@ inline bool operator!=(const pointer_free_allocator<GC_T1>&, const pointer_free_
 #endif
 
 namespace escargot {
-typedef std::basic_string<char16_t> u16string;
+typedef std::basic_string<char16_t, std::char_traits<char16_t>, pointer_free_allocator<char16_t> > u16string;
 }
 
 #include "runtime/InternalAtomicString.h"

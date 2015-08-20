@@ -40,13 +40,6 @@ InternalAtomicString::InternalAtomicString(const char16_t* src)
 
 InternalAtomicString::InternalAtomicString(const ESValue* src)
 {
-    //wprintf(L"%ls\n", src->toInternalString().data());
-    if(src->isInt32()) {
-        int val = src->asInt32();
-        if(val >= 0 && val < ESCARGOT_STRINGS_NUMBERS_MAX) {
-            *this = strings->numbers[val];
-        }
-    }
     init(ESVMInstance::currentInstance(), src->toString()->data());
 }
 
@@ -61,7 +54,7 @@ void InternalAtomicString::init(ESVMInstance* instance, const u16string& src)
     auto iter = instance->m_atomicStringMap.find(src);
     if(iter == instance->m_atomicStringMap.end()) {
         InternalAtomicStringData* newData = new InternalAtomicStringData(instance, src.data());
-        instance->m_atomicStringMap[src] = newData;
+        instance->m_atomicStringMap.insert(std::make_pair(src, newData));
         m_string = newData;
     } else {
         m_string = iter->second;

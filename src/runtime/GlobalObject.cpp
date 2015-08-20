@@ -834,6 +834,7 @@ void GlobalObject::installString()
                 ESValue callee = replaceValue.asESPointer()->asESFunctionObject();
 
                 u16string newThis;
+                newThis.reserve(orgString.size());
                 newThis.append(orgString.begin(), orgString.begin() + result.m_matchResults[0][0].m_start);
 
                 for(int32_t i = 0; i < matchCount ; i ++) {
@@ -861,6 +862,7 @@ void GlobalObject::installString()
             } else {
                 escargot::ESString* replaceString = replaceValue.toString();
                 u16string newThis;
+                newThis.reserve(orgString.size());
                 if(replaceString->string().find('$') == u16string::npos) {
                     //flat replace
                     int32_t matchCount = result.m_matchResults.size();
