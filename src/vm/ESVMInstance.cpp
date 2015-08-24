@@ -78,7 +78,7 @@ ESVMInstance::~ESVMInstance()
     escargot::ESScriptParser::exit();
 }
 
-ESValue ESVMInstance::evaluate(const std::string& source)
+ESValue ESVMInstance::evaluate(u16string& source)
 {
     ESValue ret;
     try {

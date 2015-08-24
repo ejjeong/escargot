@@ -131,7 +131,8 @@ void GlobalObject::initGlobalObject()
                 }
                 fclose(fp);
                 instance->runOnGlobalContext([instance, &str](){
-                    instance->evaluate(str);
+                    escargot::ESStringData source(str.c_str());
+                    instance->evaluate(source);
                 });
             }
         }
@@ -147,14 +148,11 @@ void GlobalObject::initGlobalObject()
         ESValue argument = instance->currentExecutionContext()->arguments()[0];
         if(!argument.isESString())
             instance->currentExecutionContext()->doReturn(argument);
-        char* str = (char *)utf16ToUtf8(argument.asESString()->string().data());
-        std::string scriptStr = str;
         bool isDirectCall = true; // TODO
-        ESValue ret = instance->runOnEvalContext([instance, &scriptStr](){
-            ESValue ret = instance->evaluate(scriptStr);
+        ESValue ret = instance->runOnEvalContext([instance, &argument](){
+            ESValue ret = instance->evaluate(const_cast<u16string &>(argument.asESString()->string()));
             return ret;
         }, isDirectCall);
-        GC_free(str);
         instance->currentExecutionContext()->doReturn(ret);
         return ESValue();
     }), false, false);

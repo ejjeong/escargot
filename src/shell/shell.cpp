@@ -48,7 +48,8 @@ int main(int argc, char* argv[])
             char buf[512];
             printf("shell> ");
             fgets(buf, sizeof buf, stdin);
-            ES->evaluate(buf);
+            escargot::ESStringData source(buf);
+            ES->evaluate(source);
         }
     } else {
         for(int i = 1; i < argc; i ++) {
@@ -60,7 +61,8 @@ int main(int argc, char* argv[])
                     str += buf;
                 }
                 fclose(fp);
-                ES->evaluate(str);
+                escargot::ESStringData source(str.c_str());
+                ES->evaluate(source);
             }
         }
     }

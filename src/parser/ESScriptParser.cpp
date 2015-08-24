@@ -5,6 +5,8 @@
 
 #include "jsapi.h"
 
+#include "esprima.h"
+
 #ifdef ESCARGOT_PROFILE
 #include <sys/time.h>
 #include <sys/resource.h>
@@ -237,17 +239,19 @@ ALWAYS_INLINE bool hasElementInMozJS(JSContext* ctx, JSObject* obj, const char* 
     return result;
 }
 
-Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& source)
+Node* ESScriptParser::parseScript(ESVMInstance* instance, escargot::u16string& source)
 {
     //unsigned long start1 = getLongTickCount();
+    //unsigned long end1 = getLongTickCount();
+    //fwprintf(stdout, L"parse script takes1 %g ms\n", (end1 - start1)/1000.f);
+    /*
     JSAutoCompartment ac(s_cx, *((JS::RootedObject*)s_global));
     jsval ret;
     JSString * jsSrcStr = JS_InternString(s_cx, source.c_str());
     jsval srcStr = STRING_TO_JSVAL(jsSrcStr);
     jsval argv[1] = {srcStr};
     JSBool ret2 = JS_CallFunction(s_cx, *((JS::RootedObject*)s_global), s_reflectParseFunction, 1, argv ,&ret);
-    //unsigned long end1 = getLongTickCount();
-    //fwprintf(stdout, L"parse script takes1 %g ms\n", (end1 - start1)/1000.f);
+
     if(!ret2) {
         throw SyntaxError();
     }
@@ -581,7 +585,9 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const std::string& sou
 
     //parse
     Node* node = fn(JSVAL_TO_OBJECT(ret), &programBody, false);
+*/
 
+    Node* node = esprima::parse(source);
     auto markNeedsActivation = [](FunctionNode* nearFunctionNode){
         FunctionNode* node = nearFunctionNode;
         while(node) {

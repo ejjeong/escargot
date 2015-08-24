@@ -13,6 +13,7 @@ public:
         BitwiseNot,
         LogicalNot,
         TypeOf,
+        Delete
     };
     friend class ESScriptParser;
     UnaryExpressionNode(Node* argument, ESString* oper)
@@ -76,6 +77,13 @@ public:
             RELEASE_ASSERT_NOT_REACHED();
         }
     }
+
+    Operator readOperator()
+    {
+        return m_operator;
+    }
+
+    Node* argument() { return m_argument; }
 protected:
     Operator m_operator;
     Node* m_argument;

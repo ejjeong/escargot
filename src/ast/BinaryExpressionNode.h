@@ -117,6 +117,7 @@ public:
     {
         ESValue lval = m_left->execute(instance);
         ESValue rval = m_right->execute(instance);
+        double d = lval.toNumber();
         return execute(instance, lval, rval, m_operator);
     }
 

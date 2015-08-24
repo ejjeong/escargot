@@ -378,9 +378,7 @@ protected:
 };
 
 class ESStringData : public u16string, public gc {
-    friend class ESString;
-    friend class ESChainString;
-protected:
+public:
     ESStringData()
     {
         m_hashData.m_isHashInited =  false;
@@ -437,7 +435,6 @@ protected:
     ESStringData(const ESStringData& s) = delete;
     void operator =(const ESStringData& s) = delete;
 
-public:
     ALWAYS_INLINE const char16_t* data() const
     {
         return u16string::data();
@@ -773,7 +770,6 @@ ALWAYS_INLINE const u16string& ESString::string() const
 ALWAYS_INLINE const ESStringData* ESString::stringData() const
 {
     if(UNLIKELY(m_string == NULL)) {
-        escargot::ESChainString* chain = (escargot::ESChainString *)this;
         const_cast<ESString *>(this)->asESChainString()->convertIntoNormalString();
     }
     return m_string;

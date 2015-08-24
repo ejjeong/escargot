@@ -20,6 +20,8 @@ public:
         return m_expression->execute(instance);
     }
 
+    Node* expression() { return m_expression; }
+
 protected:
     Node* m_expression; //expression: Expression;
 };

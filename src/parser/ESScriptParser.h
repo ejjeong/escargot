@@ -14,7 +14,7 @@ class ESVMInstance;
 
 class ESScriptParser {
 public:
-    static Node* parseScript(ESVMInstance* instance, const std::string& cs);
+    static Node* parseScript(ESVMInstance* instance, escargot::u16string& cs);
     //TODO
     //static Node* parseScript(const wchar_t* str);
 

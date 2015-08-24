@@ -25,7 +25,7 @@ class ESVMInstance : public gc_cleanup {
 public:
     ESVMInstance();
     ~ESVMInstance();
-    ESValue evaluate(const std::string& source);
+    ESValue evaluate(u16string& source);
 
     ALWAYS_INLINE ExecutionContext* currentExecutionContext() { return m_currentExecutionContext; }
     GlobalObject* globalObject() { return m_globalObject; }

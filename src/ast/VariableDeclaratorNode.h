@@ -11,11 +11,11 @@ namespace escargot {
 class VariableDeclaratorNode : public Node {
 public:
     friend class ESScriptParser;
-    VariableDeclaratorNode(Node* id)
+    VariableDeclaratorNode(Node* id,ExpressionNode* init=NULL)
             : Node(NodeType::VariableDeclarator)
     {
         m_id = id;
-        m_init = NULL;
+        m_init = init;
     }
 
     ESValue execute(ESVMInstance* instance)
@@ -26,6 +26,13 @@ public:
                     ((IdentifierNode *)m_id)->nonAtomicName(), false);
         }
         return ESValue();
+    }
+
+    Node* id() { return m_id; }
+    ExpressionNode* init() { return m_init; }
+    void clearInit()
+    {
+        m_init = NULL;
     }
 
 protected:

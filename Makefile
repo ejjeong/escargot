@@ -45,6 +45,9 @@ SRC_YARR += third_party/yarr/YarrInterpreter.cpp
 SRC_YARR += third_party/yarr/YarrPattern.cpp
 SRC_YARR += third_party/yarr/YarrSyntaxChecker.cpp
 
+SRC_ESPRIMA_CPP += $(foreach dir, ./third_party/esprima_cpp , $(wildcard $(dir)/*.cpp))
+CXXFLAGS += -Ithird_party/esprima_cpp/
+
 #LDFLAGS += -Lthird_party/mozjs/build/dist/lib -lmozjs-24 -lz -ldl -Wl,-rpath,'$$ORIGIN/third_party/mozjs/build/dist/lib/'
 LDFLAGS += -lpthread -lz -ldl
 LDFLAGS += -Wl,--gc-sections
@@ -81,6 +84,7 @@ SRC += $(foreach dir, ./src/runtime , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, ./src/util , $(wildcard $(dir)/*.cpp))
 
 SRC += $(SRC_YARR) 
+SRC += $(SRC_ESPRIMA_CPP)
 
 ifeq ($(HOST), linux)
 endif
@@ -107,6 +111,10 @@ clean:
 	$(shell find ./src/ -name "*.d" -exec rm {} \;)
 	$(shell find ./third_party/yarr/ -name "*.o" -exec rm {} \;)
 	$(shell find ./third_party/yarr/ -name "*.d" -exec rm {} \;)
+	$(shell find ./third_party/mozjs_parser/ -name "*.o" -exec rm {} \;)
+	$(shell find ./third_party/mozjs_parser/ -name "*.d" -exec rm {} \;)
+	$(shell find ./third_party/esprima_cpp/ -name "*.o" -exec rm {} \;)
+	$(shell find ./third_party/esprima_cpp/ -name "*.d" -exec rm {} \;)
 
 
 strip: $(MAKECMDGOALS)

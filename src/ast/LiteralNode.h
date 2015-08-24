@@ -18,6 +18,8 @@ public:
     {
         return m_value;
     }
+
+    ESValue value() { return m_value; }
 protected:
     ESValue m_value;
 };
