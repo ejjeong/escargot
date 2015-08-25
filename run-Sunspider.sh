@@ -1,3 +1,7 @@
 #!/bin/bash
-cd test/SunSpider/
-./run.sh
+for ((i=0;i<10;i++)); do
+	cd test/SunSpider/
+	./run.sh
+	cd ../../
+done
+

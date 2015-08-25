@@ -26,7 +26,6 @@ public:
 #endif
 
 private:
-    static std::string parseExternal(std::string& sourceString);
     static ::JSContext* s_cx;
     static ::JSRuntime* s_rt;
     static ::JSObject* s_reflectObject;

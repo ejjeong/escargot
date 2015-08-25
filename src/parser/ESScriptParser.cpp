@@ -105,15 +105,15 @@ void ESScriptParser::dumpStats()
 }
 #endif
 
-std::string ESScriptParser::parseExternal(std::string& sourceString)
-{
-    RELEASE_ASSERT_NOT_REACHED();
-}
-
-
 Node* ESScriptParser::parseScript(ESVMInstance* instance, escargot::u16string& source)
 {
-    Node* node = esprima::parse(source);
+    Node* node;
+    try {
+        node = esprima::parse(source);
+    } catch(...) {
+        throw SyntaxError();
+    }
+
     auto markNeedsActivation = [](FunctionNode* nearFunctionNode){
         FunctionNode* node = nearFunctionNode;
         while(node) {

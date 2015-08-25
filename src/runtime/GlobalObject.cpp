@@ -1042,18 +1042,23 @@ void GlobalObject::installString()
         ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
         //if (thisObject->isESUndefined() || thisObject->isESNull())
         //    throw TypeError();
-
-        escargot::ESString* str = thisObject->asESStringObject()->getStringData();
         int argCount = instance->currentExecutionContext()->argumentCount();
-        int len = str->length();
-        int intStart = instance->currentExecutionContext()->arguments()[0].toInteger();
-        ESValue& end = instance->currentExecutionContext()->arguments()[1];
-        int intEnd = (end.isUndefined() || argCount < 2) ? len : end.toInteger();
-        int finalStart = std::min(std::max(intStart, 0), len);
-        int finalEnd = std::min(std::max(intEnd, 0), len);
-        int from = std::min(finalStart, finalEnd);
-        int to = std::max(finalStart, finalEnd);
-        instance->currentExecutionContext()->doReturn(str->substring(from, to));
+        escargot::ESString* str = thisObject->asESStringObject()->getStringData();
+        if(argCount == 0) {
+            instance->currentExecutionContext()->doReturn(str);
+        } else {
+            int len = str->length();
+            int intStart = instance->currentExecutionContext()->arguments()[0].toInteger();
+            ESValue& end = instance->currentExecutionContext()->arguments()[1];
+            int intEnd = (argCount < 2 || end.isUndefined()) ? len : end.toInteger();
+            int finalStart = std::min(std::max(intStart, 0), len);
+            int finalEnd = std::min(std::max(intEnd, 0), len);
+            int from = std::min(finalStart, finalEnd);
+            int to = std::max(finalStart, finalEnd);
+            instance->currentExecutionContext()->doReturn(str->substring(from, to));
+        }
+
+
         return ESValue();
     }), false, false);
     m_stringPrototype->set(ESString::create(u"substring"), ESFunctionObject::create(NULL, stringSubstring));

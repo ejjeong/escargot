@@ -8,6 +8,7 @@ class ESString;
 
 class Strings {
 public:
+InternalAtomicString emptyAtomicString;
 ESString* emptyESString;
 
 #define ESCARGOT_ASCII_TABLE_MAX 128

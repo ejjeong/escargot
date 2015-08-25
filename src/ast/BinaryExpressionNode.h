@@ -49,6 +49,10 @@ public:
         BitwiseXor, //"^"
         BitwiseOr,  //"|"
 
+        // http://www.ecma-international.org/ecma-262/5.1/#sec-11.11
+        // Binary Logical Operators
+        LogicalAnd, //"&&"
+        LogicalOr,  //"||"
         // TODO
     };
 
@@ -108,6 +112,10 @@ public:
         else if (*oper == u"|")
             m_operator = BitwiseOr;
 
+        else if (*oper == u"||")
+            m_operator = LogicalOr;
+        else if (*oper == u"&&")
+            m_operator = LogicalAnd;
         // TODO
         else
             RELEASE_ASSERT_NOT_REACHED();
@@ -117,7 +125,6 @@ public:
     {
         ESValue lval = m_left->execute(instance);
         ESValue rval = m_right->execute(instance);
-        double d = lval.toNumber();
         return execute(instance, lval, rval, m_operator);
     }
 
@@ -422,6 +429,14 @@ public:
                     ret = ESValue(ESValue::ESFalseTag::ESFalse);
                 break;
             }
+            case LogicalAnd:
+                if (lval.toBoolean() == false) ret = lval;
+                else ret = rval;
+                break;
+            case LogicalOr:
+                if (lval.toBoolean() == true) ret = lval;
+                else ret = rval;
+                break;
             default:
                 // TODO
                 printf("unsupport operator is->%d\n",(int)oper);

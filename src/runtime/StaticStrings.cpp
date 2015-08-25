@@ -6,6 +6,7 @@ namespace escargot {
 void Strings::initStaticStrings(ESVMInstance* instance)
 {
     emptyESString = ESString::create(u"");
+    emptyAtomicString = InternalAtomicString(instance, u"");
     for(unsigned i = 0; i < ESCARGOT_ASCII_TABLE_MAX ; i ++) {
         asciiTable[i] = ESString::create((char16_t)i);
     }
