@@ -48,8 +48,7 @@ SRC_YARR += third_party/yarr/YarrSyntaxChecker.cpp
 SRC_ESPRIMA_CPP += $(foreach dir, ./third_party/esprima_cpp , $(wildcard $(dir)/*.cpp))
 CXXFLAGS += -Ithird_party/esprima_cpp/
 
-#LDFLAGS += -Lthird_party/mozjs/build/dist/lib -lmozjs-24 -lz -ldl -Wl,-rpath,'$$ORIGIN/third_party/mozjs/build/dist/lib/'
-LDFLAGS += -lpthread -lz -ldl
+LDFLAGS += -lpthread
 LDFLAGS += -Wl,--gc-sections
 
 ifeq ($(ARCH), x64)
@@ -61,18 +60,14 @@ endif
 ifeq ($(MODE), debug)
 	CXXFLAGS += -O0 -g3 -frounding-math -fsignaling-nans -fno-omit-frame-pointer -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable -Wno-invalid-offsetof
 	GCLIBS = third_party/bdwgc/out/debug/.libs/libgc.a #third_party/bdwgc/out/debug/.libs/libgccpp.a
-	MOZJSLIBS = third_party/mozjs/build/debug/libjs_static.a
-	CXXFLAGS += -Ithird_party/mozjs/build/debug/dist/include
 else ifeq ($(MODE), release)
 	CXXFLAGS += -O3 -g3 -DNDEBUG -fomit-frame-pointer -frounding-math -fsignaling-nans
 	GCLIBS = third_party/bdwgc/out/release/.libs/libgc.a #third_party/bdwgc/out/release/.libs/libgccpp.a
-	MOZJSLIBS = third_party/mozjs/build/release/libjs_static.a
-	CXXFLAGS += -Ithird_party/mozjs/build/release/dist/include
 else
 	$(error mode error)
 endif
 
-THIRD_PARTY_LIBS= $(GCLIBS) $(MOZJSLIBS)
+THIRD_PARTY_LIBS= $(GCLIBS)
 
 SRC=
 SRC += $(foreach dir, ./src , $(wildcard $(dir)/*.cpp))

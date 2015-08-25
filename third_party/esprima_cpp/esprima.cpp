@@ -1856,7 +1856,7 @@ escargot::VariableDeclaratorNode* parseVariableDeclaration(ParseContext* ctx) {
     // ECMA-262 12.2.1
     //if (strict && isRestrictedWord(id.name)) {
     //TODO: not alawys idenifier node!
-    ASSERT(id->type() == escargot::NodeType::Identifier)
+    ASSERT(id->type() == escargot::NodeType::Identifier);
     if (ctx->m_strict && isRestrictedWord(((escargot::IdentifierNode *)id)->nonAtomicName()->string())) {
         //tolerateError(Messages.StrictVarName);
         tolerateError(u"Messages.StrictVarName");

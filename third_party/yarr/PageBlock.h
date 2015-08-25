@@ -30,8 +30,7 @@
 #ifndef yarr_PageBlock_h
 #define yarr_PageBlock_h
 
-#include "mozilla/StandardInteger.h"
-
+#include <stdint.h>
 #include <stddef.h>
 
 namespace WTF {
