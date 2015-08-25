@@ -49,6 +49,7 @@ SRC_ESPRIMA_CPP += $(foreach dir, ./third_party/esprima_cpp , $(wildcard $(dir)/
 CXXFLAGS += -Ithird_party/esprima_cpp/
 
 LDFLAGS += -lpthread
+# -ltcmalloc_minimal
 LDFLAGS += -Wl,--gc-sections
 
 ifeq ($(ARCH), x64)
