@@ -107,7 +107,7 @@ template<> struct equal_to<::escargot::InternalAtomicString>
 };
 
 }
-/*
+
 namespace std
 {
 template<> struct hash<escargot::u16string>
@@ -128,5 +128,5 @@ template<> struct equal_to<escargot::u16string>
 };
 
 }
-*/
+
 #endif

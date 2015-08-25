@@ -243,7 +243,7 @@ inline bool operator!=(const pointer_free_allocator<GC_T1>&, const pointer_free_
 #endif
 
 namespace escargot {
-typedef std::basic_string<char16_t, std::char_traits<char16_t> > u16string;
+typedef std::basic_string<char16_t, std::char_traits<char16_t>, pointer_free_allocator<char16_t> > u16string;
 }
 
 #include "runtime/InternalAtomicString.h"
