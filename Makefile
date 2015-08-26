@@ -48,7 +48,7 @@ SRC_YARR += third_party/yarr/YarrSyntaxChecker.cpp
 SRC_ESPRIMA_CPP += $(foreach dir, ./third_party/esprima_cpp , $(wildcard $(dir)/*.cpp))
 CXXFLAGS += -Ithird_party/esprima_cpp/
 
-LDFLAGS += -lpthread
+LDFLAGS += -lpthread 
 # -ltcmalloc_minimal
 LDFLAGS += -Wl,--gc-sections
 
@@ -107,8 +107,6 @@ clean:
 	$(shell find ./src/ -name "*.d" -exec rm {} \;)
 	$(shell find ./third_party/yarr/ -name "*.o" -exec rm {} \;)
 	$(shell find ./third_party/yarr/ -name "*.d" -exec rm {} \;)
-	$(shell find ./third_party/mozjs_parser/ -name "*.o" -exec rm {} \;)
-	$(shell find ./third_party/mozjs_parser/ -name "*.d" -exec rm {} \;)
 	$(shell find ./third_party/esprima_cpp/ -name "*.o" -exec rm {} \;)
 	$(shell find ./third_party/esprima_cpp/ -name "*.d" -exec rm {} \;)
 
