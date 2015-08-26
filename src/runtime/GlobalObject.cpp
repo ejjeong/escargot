@@ -108,7 +108,6 @@ void GlobalObject::initGlobalObject()
 
     node = new FunctionDeclarationNode(InternalAtomicString(u"gc"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         GC_gcollect();
-        escargot::ESScriptParser::gc();
         return ESValue();
     }), false, false);
     auto gcFunction = ESFunctionObject::create(NULL, node);

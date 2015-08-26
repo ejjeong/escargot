@@ -14,60 +14,11 @@
 
 namespace escargot {
 
-ESString*  astTypeProgram = ESString::create(u"Program");
-ESString*  astTypeVariableDeclaration = ESString::create(u"VariableDeclaration");
-ESString*  astTypeExpressionStatement = ESString::create(u"ExpressionStatement");
-ESString*  astTypeVariableDeclarator = ESString::create(u"VariableDeclarator");
-ESString*  astTypeIdentifier = ESString::create(u"Identifier");
-ESString*  astTypeAssignmentExpression = ESString::create(u"AssignmentExpression");
-ESString*  astTypeThisExpression = ESString::create(u"ThisExpression");
-ESString*  astTypeBreakStatement = ESString::create(u"BreakStatement");
-ESString*  astTypeContinueStatement = ESString::create(u"ContinueStatement");
-ESString*  astTypeReturnStatement = ESString::create(u"ReturnStatement");
-ESString*  astTypeEmptyStatement = ESString::create(u"EmptyStatement");
-ESString*  astTypeLiteral = ESString::create(u"Literal");
-ESString*  astTypeFunctionDeclaration = ESString::create(u"FunctionDeclaration");
-ESString*  astTypeFunctionExpression = ESString::create(u"FunctionExpression");
-ESString*  astTypeBlockStatement = ESString::create(u"BlockStatement");
-ESString*  astTypeArrayExpression = ESString::create(u"ArrayExpression");
-ESString*  astTypeCallExpression = ESString::create(u"CallExpression");
-ESString*  astTypeObjectExpression = ESString::create(u"ObjectExpression");
-ESString*  astTypeMemberExpression = ESString::create(u"MemberExpression");
-ESString*  astTypeNewExpression = ESString::create(u"NewExpression");
-ESString*  astTypeProperty = ESString::create(u"Property");
-ESString*  astTypeBinaryExpression = ESString::create(u"BinaryExpression");
-ESString*  astTypeLogicalExpression = ESString::create(u"LogicalExpression");
-ESString*  astTypeUpdateExpression = ESString::create(u"UpdateExpression");
-ESString*  astTypeUnaryExpression = ESString::create(u"UnaryExpression");
-ESString*  astTypeIfStatement = ESString::create(u"IfStatement");
-ESString*  astTypeForStatement = ESString::create(u"ForStatement");
-ESString*  astTypeForInStatement = ESString::create(u"ForInStatement");
-ESString*  astTypeWhileStatement = ESString::create(u"WhileStatement");
-ESString*  astTypeDoWhileStatement = ESString::create(u"DoWhileStatement");
-ESString*  astTypeSwitchStatement = ESString::create(u"SwitchStatement");
-ESString*  astTypeSwitchCase = ESString::create(u"SwitchCase");
-ESString*  astTypeTryStatement = ESString::create(u"TryStatement");
-ESString*  astTypeCatchClause = ESString::create(u"CatchClause");
-ESString*  astTypeThrowStatement = ESString::create(u"ThrowStatement");
-ESString*  astConditionalExpression = ESString::create(u"ConditionalExpression");
-
 unsigned long getLongTickCount()
 {
     struct timespec timespec;
     clock_gettime(CLOCK_MONOTONIC,&timespec);
     return (unsigned long)(timespec.tv_sec * 1000000L + timespec.tv_nsec/1000);
-}
-
-void ESScriptParser::enter()
-{
-}
-
-void ESScriptParser::exit()
-{
-}
-
-void ESScriptParser::gc()
-{
 }
 
 #ifdef ESCARGOT_PROFILE
@@ -105,7 +56,7 @@ void ESScriptParser::dumpStats()
 }
 #endif
 
-Node* ESScriptParser::parseScript(ESVMInstance* instance, escargot::u16string& source)
+Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16string& source)
 {
     Node* node;
     try {

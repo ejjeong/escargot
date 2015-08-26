@@ -74,6 +74,8 @@ public:
 
     WTF::BumpPointerAllocator* bumpPointerAllocator() { return m_bumpPointerAllocator; };
 
+    int timezoneOffset();
+    const tm* computeLocalTime(const timespec& ts);
 protected:
     ExecutionContext* m_globalExecutionContext;
     ExecutionContext* m_currentExecutionContext;
@@ -94,6 +96,10 @@ protected:
     ESFunctionObject* m_globalFunctionPrototype;
 
     WTF::BumpPointerAllocator* m_bumpPointerAllocator;
+
+    timespec m_cachedTimeOrigin;
+    tm* m_cachedTime;
+    tm m_time;
 };
 
 }

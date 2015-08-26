@@ -1306,7 +1306,7 @@ public:
     void setTimeValue(ESValue str);
 
     double getTimeAsMilisec() {
-        return m_tv.tv_sec*1000 + floor(m_tv.tv_usec/1000);
+        return m_time.tv_sec*1000 + floor(m_time.tv_nsec/1000000);
     }
 
     int getDate();
@@ -1325,7 +1325,7 @@ public:
     }
 
 private:
-    struct timeval m_tv;
+    struct timespec m_time;
 };
 
 class ESArrayObject : public ESObject {

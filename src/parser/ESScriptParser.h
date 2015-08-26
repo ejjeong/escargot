@@ -14,13 +14,9 @@ class ESVMInstance;
 
 class ESScriptParser {
 public:
-    static Node* parseScript(ESVMInstance* instance, escargot::u16string& cs);
+    static Node* parseScript(ESVMInstance* instance, const escargot::u16string& cs);
     //TODO
     //static Node* parseScript(const wchar_t* str);
-
-    static void enter();
-    static void exit();
-    static void gc();
 #ifdef ESCARGOT_PROFILE
     static void dumpStats();
 #endif

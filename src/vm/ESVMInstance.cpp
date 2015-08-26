@@ -13,6 +13,9 @@ __thread ESVMInstance* currentInstance;
 
 ESVMInstance::ESVMInstance()
 {
+    clock_gettime(CLOCK_REALTIME,&m_cachedTimeOrigin);
+    m_cachedTime = localtime(&m_cachedTimeOrigin.tv_sec);
+
     GC_set_on_collection_event([](GC_EventType type){
         if(type == GC_EVENT_RECLAIM_END && ESVMInstance::currentInstance())
             ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
@@ -68,14 +71,11 @@ ESVMInstance::ESVMInstance()
     m_currentExecutionContext = m_globalExecutionContext;
     exit();
 
-    escargot::ESScriptParser::enter();
-
     GC_gcollect();
 }
 
 ESVMInstance::~ESVMInstance()
 {
-    escargot::ESScriptParser::exit();
 }
 
 ESValue ESVMInstance::evaluate(u16string& source)
@@ -112,6 +112,37 @@ void ESVMInstance::exit()
 {
     escargot::currentInstance = NULL;
     escargot::strings = NULL;
+}
+
+int ESVMInstance::timezoneOffset()
+{
+    return -m_cachedTime->tm_gmtoff/60;
+}
+
+const tm* ESVMInstance::computeLocalTime(const timespec& ts)
+{
+    time_t diff = ts.tv_sec - m_cachedTimeOrigin.tv_sec;
+    if(diff < 0)
+        return localtime(&ts.tv_sec);
+    m_time = *m_cachedTime;
+    m_time.tm_hour += diff / 3600;
+    diff = diff % 3600;
+    m_time.tm_min += diff / 60;
+    diff = diff % 60;
+    m_time.tm_sec += diff;
+    if(m_time.tm_sec > 60) {
+        m_time.tm_sec = m_time.tm_sec % 60;
+        m_time.tm_min++;
+    }
+    if(m_time.tm_min > 60) {
+        m_time.tm_min = m_time.tm_min % 60;
+        m_time.tm_hour++;
+    }
+    if(m_time.tm_hour > 24) {
+        //slow case
+        return localtime(&ts.tv_sec);
+    }
+    return &m_time;
 }
 
 }

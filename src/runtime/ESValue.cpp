@@ -411,60 +411,77 @@ void ESDateObject::parseStringToDate(struct tm* timeinfo, escargot::ESString* is
     GC_free(buffer);
 }
 
+const double hoursPerDay = 24.0;
+const double minutesPerHour = 60.0;
+const double secondsPerHour = 60.0 * 60.0;
+const double secondsPerMinute = 60.0;
+const double msPerSecond = 1000.0;
+const double msPerMinute = 60.0 * 1000.0;
+const double msPerHour = 60.0 * 60.0 * 1000.0;
+const double msPerDay = 24.0 * 60.0 * 60.0 * 1000.0;
+const double msPerMonth = 2592000000.0;
+
+static inline double ymdhmsToSeconds(long year, int mon, int day, int hour, int minute, double second)
+{
+    double days = (day - 32075)
+        + floor(1461 * (year + 4800.0 + (mon - 14) / 12) / 4)
+        + 367 * (mon - 2 - (mon - 14) / 12 * 12) / 12
+        - floor(3 * ((year + 4900.0 + (mon - 14) / 12) / 100) / 4)
+        - 2440588;
+    return ((days * hoursPerDay + hour) * minutesPerHour + minute) * secondsPerMinute + second;
+}
+
+
 void ESDateObject::setTimeValue(ESValue str) {
     if (str.isUndefined()) {
-        gettimeofday(&m_tv, NULL);
+        clock_gettime(CLOCK_REALTIME,&m_time);
     } else {
-        time_t rawtime;
-        struct tm* timeinfo = localtime(&rawtime);;
         escargot::ESString* istr = str.toString();
-        parseStringToDate(timeinfo, istr);
-
-        m_tv.tv_sec = mktime(timeinfo);
+        struct tm timeinfo;
+        parseStringToDate(&timeinfo, istr);
+        timeinfo.tm_isdst = true;
+        m_time.tv_sec = ymdhmsToSeconds(timeinfo.tm_year+1900, timeinfo.tm_mon + 1, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);;
+        //m_time.tv_sec = mktime(&timeinfo);
     }
 }
 
 int ESDateObject::getDate() {
-    return localtime(&(m_tv.tv_sec))->tm_mday;
+    return ESVMInstance::currentInstance()->computeLocalTime(m_time)->tm_mday;
 }
 
 int ESDateObject::getDay() {
-    return localtime(&(m_tv.tv_sec))->tm_wday;
+    return ESVMInstance::currentInstance()->computeLocalTime(m_time)->tm_wday;
 }
 
 int ESDateObject::getFullYear() {
-    return localtime(&(m_tv.tv_sec))->tm_year + 1900;
+    return ESVMInstance::currentInstance()->computeLocalTime(m_time)->tm_year + 1900;
 }
 
 int ESDateObject::getHours() {
-    return localtime(&(m_tv.tv_sec))->tm_hour;
+    return ESVMInstance::currentInstance()->computeLocalTime(m_time)->tm_hour;
 }
 
 int ESDateObject::getMinutes() {
-    return localtime(&(m_tv.tv_sec))->tm_min;
+    return ESVMInstance::currentInstance()->computeLocalTime(m_time)->tm_min;
 }
 
 int ESDateObject::getMonth() {
-    return localtime(&(m_tv.tv_sec))->tm_mon;
+    return ESVMInstance::currentInstance()->computeLocalTime(m_time)->tm_mon;
 }
 
 int ESDateObject::getSeconds() {
-    return localtime(&(m_tv.tv_sec))->tm_sec;
+    return ESVMInstance::currentInstance()->computeLocalTime(m_time)->tm_sec;
 }
 
 int ESDateObject::getTimezoneOffset() {
-//    return localtime(&(m_tv.tv_sec))->tm_gmtoff;
-//    const time_t a = m_tv.tv_sec;
-//    struct tm* b = gmtime(&a);
-//    time_t c = mktime(b);
-//    int d = c - a;
-    return -540;
+    return ESVMInstance::currentInstance()->timezoneOffset();
+
 }
 
 void ESDateObject::setTime(double t) {
     time_t raw_t = (time_t) floor(t);
-    m_tv.tv_sec = raw_t/1000;
-    m_tv.tv_usec =  (raw_t % 10000) * 1000;
+    m_time.tv_sec = raw_t / 1000;
+    m_time.tv_nsec = (raw_t % 10000) * 1000000;
 }
 
 ESStringObject::ESStringObject(escargot::ESString* str)
