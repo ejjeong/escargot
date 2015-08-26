@@ -1679,6 +1679,10 @@ public:
     }
 
     ALWAYS_INLINE double numberData() { return m_primitiveValue; }
+    ALWAYS_INLINE void setNumberData(double d)
+    {
+        m_primitiveValue = d;
+    }
 
 private:
     double m_primitiveValue;

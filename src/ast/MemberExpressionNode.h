@@ -54,12 +54,10 @@ public:
     ESValue execute(ESVMInstance* instance)
     {
         ESValue value = m_object->execute(instance);
-        //TODO string,number-> stringObject, numberObject;
-        bool isESStringValue = value.isESString();
-        NodeType propertyNodeType = m_property->type();
 
         if(UNLIKELY(!m_computed)) {
-            if(UNLIKELY(isESStringValue && propertyNodeType == NodeType::Identifier)) {
+            NodeType propertyNodeType = m_property->type();
+            if(UNLIKELY(value.isESString() && propertyNodeType == NodeType::Identifier)) {
                 instance->globalObject()->stringObjectProxy()->setString(value.asESString());
                 ESSlot* slot = instance->globalObject()->stringObjectProxy()->findUntilPrototype(((IdentifierNode *)m_property)->nonAtomicName());
                 if(slot->isDataProperty()) {
@@ -73,7 +71,18 @@ public:
                         return slot->value(instance->globalObject()->stringObjectProxy());
                     }
                 }
+            } else if(UNLIKELY(value.isNumber() && propertyNodeType == NodeType::Identifier)) {
+                instance->globalObject()->numberObjectProxy()->setNumberData(value.asNumber());
+                ESSlot* slot = instance->globalObject()->numberObjectProxy()->findUntilPrototype(((IdentifierNode *)m_property)->nonAtomicName());
+                if(slot->isDataProperty()) {
+                    ESValue ret = slot->value(instance->globalObject()->numberObjectProxy());
+                    if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->functionAST()->isBuiltInFunction()) {
+                        instance->currentExecutionContext()->setLastESObjectMetInMemberExpressionNode(instance->globalObject()->numberObjectProxy());
+                        return ret;
+                    }
+                }
             }
+
             if (value.isPrimitive()) {
                 value = value.toObject();
             }

@@ -237,6 +237,7 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
                     return true;
                 }
                 std::vector<ESString::RegexMatchResult::RegexMatchResultPiece> piece;
+                piece.reserve(byteCode->m_body->m_numSubpatterns + 1);
                 for(unsigned i = 0; i < byteCode->m_body->m_numSubpatterns + 1 ; i ++) {
                     ESString::RegexMatchResult::RegexMatchResultPiece p;
                     p.m_start = outputBuf[i*2];

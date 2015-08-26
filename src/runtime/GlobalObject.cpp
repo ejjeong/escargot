@@ -1561,6 +1561,10 @@ void GlobalObject::installNumber()
 
     // add number to global object
     set(strings->Number, m_number);
+
+    m_numberObjectProxy = ESNumberObject::create(0);
+    m_numberObjectProxy->setConstructor(m_number);
+    m_numberObjectProxy->set__proto__(m_numberPrototype);
 }
 
 void GlobalObject::installBoolean()
