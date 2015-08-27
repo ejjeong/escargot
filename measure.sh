@@ -69,7 +69,10 @@ else
       sleep 0.5s;
     done
     echo $(echo -e $summem | awk '{s+=$1} END {printf("Avg. MaxPSS: %.4f", s/10)}')
+    echo $t $(echo -e $summem | awk '{s+=$1} END {printf(": %.4f", s/10)}') >> tmp
   done
+  cat tmp
+  rm tmp
 fi
 
 echo '-------------------------------------------------finish exe'
