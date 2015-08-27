@@ -7,9 +7,12 @@ if [[ $1 == duk* ]]; then
 elif [[ $1 == v8* ]]; then
   cmd="./test/bin/d8"
   tc="v8"
-elif [[ $1 == jsc ]]; then
-  cmd="./test/bin/jsc"
-  tc="jsc"
+elif [[ $1 == jsc.jit ]]; then
+  cmd="./test/bin/jsc.jit"
+  tc="jsc.jit"
+elif [[ $1 == jsc.interp* ]]; then
+  cmd="./test/bin/jsc.interp"
+  tc="jsc.interp"
 else
   cmd="./escargot"
   tc="escargot"
