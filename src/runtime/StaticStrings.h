@@ -77,6 +77,7 @@ ESString*  stringTrue;
 ESString*  stringFalse;
 ESString*  boolean;
 ESString*  number;
+ESString*  toFixed;
 ESString*  string;
 ESString*  object;
 ESString*  function;

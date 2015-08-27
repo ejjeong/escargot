@@ -1536,6 +1536,21 @@ void GlobalObject::installNumber()
     // initialize numberPrototype object
     m_numberPrototype->setConstructor(m_number);
 
+    // initialize numberPrototype object: $20.1.3.3 Number.prototype.toFixed(fractionDigits)
+    FunctionDeclarationNode* toFixedNode = new FunctionDeclarationNode(strings->toFixed, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        escargot::ESNumberObject* thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESNumberObject();
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        if (arglen == 0) {
+            instance->currentExecutionContext()->doReturn(ESValue(round(thisVal->numberData())).toString());
+        } else if (arglen == 1) {
+             int digit = instance->currentExecutionContext()->arguments()[0].toInteger();
+             int shift = pow(10, digit);
+             instance->currentExecutionContext()->doReturn(ESValue(round(thisVal->numberData()*shift)/shift).toString());
+         }
+
+        return ESValue();
+    }), false, false);
+    m_numberPrototype->set(strings->toFixed, ::escargot::ESFunctionObject::create(NULL, toFixedNode));
 
     // initialize numberPrototype object: $20.1.3.6 Number.prototype.toString()
     FunctionDeclarationNode* toStringNode = new FunctionDeclarationNode(strings->toString, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {

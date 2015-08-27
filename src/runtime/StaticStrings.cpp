@@ -70,6 +70,7 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     toString =  ESString::create(u"toString");
     boolean = ESString::create(u"boolean");
     number = ESString::create(u"number");
+    toFixed =  ESString::create(u"toFixed");
     string = ESString::create(u"string");
     object = ESString::create(u"object");
     function = ESString::create(u"function");
