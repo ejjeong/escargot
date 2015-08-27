@@ -19,14 +19,12 @@ public:
 
     ESValue execute(ESVMInstance* instance)
     {
-        ExecutionContext* ec = instance->currentExecutionContext();
-        return *ec->environment()->record()->toDeclarativeEnvironmentRecord()->getBindingValueForNonActivationMode(m_fastAccessIndex);
+        return *instance->currentExecutionContext()->environment()->record()->toDeclarativeEnvironmentRecord()->getBindingValueForNonActivationMode(m_fastAccessIndex);
     }
 
     ESSlotAccessor executeForWrite(ESVMInstance* instance)
     {
-        ExecutionContext* ec = instance->currentExecutionContext();
-        return ESSlotAccessor(ec->environment()->record()->toDeclarativeEnvironmentRecord()->getBindingValueForNonActivationMode(m_fastAccessIndex));
+        return ESSlotAccessor(instance->currentExecutionContext()->environment()->record()->toDeclarativeEnvironmentRecord()->getBindingValueForNonActivationMode(m_fastAccessIndex));
     }
 
 
