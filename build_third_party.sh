@@ -30,22 +30,3 @@ make -j$NUMPROC
 cd ../..
 
 cd ../..
-
-###########################################################
-# SpiderMonkey build
-###########################################################
-rm -rf third_party/mozjs/build
-mkdir -p third_party/mozjs/build/debug
-mkdir -p third_party/mozjs/build/release
-
-MOZJSFLAGS="--disable-shared-js --disable-tests --disable-ion --disable-yarr-jit " # to make build faster
-
-cd third_party/mozjs/build/debug
-../../js/src/configure $MOZJSFLAGS --enable-debug --enable-debug-symbols --disable-optimize
-make -j$NUMPROC
-cd ../../../..
-
-cd third_party/mozjs/build/release
-../../js/src/configure $MOZJSFLAGS
-make -j$NUMPROC
-cd ../../../..
