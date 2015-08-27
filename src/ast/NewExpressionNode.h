@@ -25,7 +25,7 @@ public:
         if (function == instance->globalObject()->date()) {
             receiver = ESDateObject::create();
         } else if (function == instance->globalObject()->array()) {
-            receiver = ESArrayObject::create();
+            receiver = ESArrayObject::create(0);
         } else if (function == instance->globalObject()->string()) {
             receiver = ESStringObject::create();
         } else if (function == instance->globalObject()->regexp()) {

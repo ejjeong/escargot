@@ -25,12 +25,10 @@ public:
     ESValue execute(ESVMInstance* instance)
     {
         ExecutionContext* ec = instance->currentExecutionContext();
+        ASSERT(!(m_canUseFastAccess && !ec->needsActivation()));
         if (LIKELY(ec == m_cacheCheckExecutionContext && m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
             return m_cachedSlot.readDataProperty();
         } else {
-            if(LIKELY(m_canUseFastAccess && !ec->needsActivation())) {
-                return *ec->environment()->record()->toDeclarativeEnvironmentRecord()->getBindingValueForNonActivationMode(m_fastAccessIndex);
-            }
             ESSlotAccessor slot = ec->resolveBinding(name(), nonAtomicName());
 
             if(LIKELY(slot.hasData())) {
@@ -95,6 +93,16 @@ public:
     {
         m_canUseFastAccess = true;
         m_fastAccessIndex = idx;
+    }
+
+    bool canUseFastAccess()
+    {
+        return m_canUseFastAccess;
+    }
+
+    size_t fastAccessIndex()
+    {
+        return m_fastAccessIndex;
     }
 
 protected:

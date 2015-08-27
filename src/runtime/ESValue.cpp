@@ -266,11 +266,15 @@ ESObject::ESObject(ESPointer::Type type)
     //defineAccessorProperty(strings->__proto__, ESVMInstance::currentInstance()->object__proto__AccessorData(), true, false, false);
 }
 
-ESArrayObject::ESArrayObject()
+ESArrayObject::ESArrayObject(int length)
     : ESObject((Type)(Type::ESObject | Type::ESArrayObject))
-    , m_vector(16)
     , m_fastmode(true)
 {
+    if (length == -1)
+        convertToSlowMode();
+    else {
+        setLength(length);
+    }
     defineAccessorProperty(strings->length, ESVMInstance::currentInstance()->arrayLengthAccessorData(), true, false, false);
     m_length = 0;
 }

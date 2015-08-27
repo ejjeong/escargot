@@ -1097,12 +1097,12 @@ public:
 
 class ESVector : public ESVectorStd {
 public:
-    ESVector(size_t siz)
-        : ESVectorStd(siz) { }
+    ESVector()
+        : ESVectorStd() { }
 };
 
 class ESHiddenClass : public gc {
-    static const unsigned ESHiddenClassSizeLimit = 24;
+    static const unsigned ESHiddenClassSizeLimit = 128;
     friend class ESVMInstance;
     friend class ESObject;
 public:
@@ -1157,7 +1157,7 @@ public:
         } else {
             std::pair<ESHiddenClass *, size_t> ret = m_hiddenClass->defineProperty(this, key, true, isWritable, isEnumerable, isConfigurable);
             m_hiddenClass = ret.first;
-            if(m_hiddenClass->m_data.size() > ESHiddenClass::ESHiddenClassSizeLimit) {
+            if(UNLIKELY(m_hiddenClass->m_data.size() > ESHiddenClass::ESHiddenClassSizeLimit)) {
                 convertIntoMapMode();
                 return definePropertyOrThrow(key, isWritable, isEnumerable, isConfigurable);
             }
@@ -1655,7 +1655,7 @@ private:
 
 class ESArrayObject : public ESObject {
 protected:
-    ESArrayObject();
+    ESArrayObject(int length);
 public:
     static ESArrayObject* create()
     {
@@ -1666,11 +1666,7 @@ public:
     static ESArrayObject* create(int length, ESObject* proto = NULL)
     {
         //TODO
-        ESArrayObject* arr = new ESArrayObject();
-        if (length == -1)
-            arr->convertToSlowMode();
-        else
-            arr->setLength(length);
+        ESArrayObject* arr = new ESArrayObject(length);
         //if(proto == NULL)
         //    proto = global->arrayPrototype();
         if(proto != NULL)
@@ -1911,7 +1907,6 @@ public:
 
         std::sort(m_vector.begin(), m_vector.end(),c);
     }
-
 
 protected:
     int32_t m_length;

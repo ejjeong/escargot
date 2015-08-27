@@ -52,6 +52,7 @@ enum NodeType {
     CallExpression,
     VariableDeclarator,
     Identifier,
+    IdentifierFastCase,
     Literal,
     NativeFunction,
     TryStatement,

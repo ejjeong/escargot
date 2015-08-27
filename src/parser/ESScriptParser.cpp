@@ -321,6 +321,215 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16str
     stack.push_back(&identifierInCurrentContext);
     postAnalysisFunction(node, stack, NULL);
 
+    std::function<void (Node** node, FunctionNode* nearFunction)> nodeReplacer = [](Node** node, FunctionNode* nearFunction) {
+        if(*node) {
+            if((*node)->type() == NodeType::Identifier) {
+                IdentifierNode* n = (IdentifierNode *)*node;
+                if(nearFunction && !nearFunction->needsActivation() && n->canUseFastAccess()) {
+                    *node = new IdentifierFastCaseNode(n->fastAccessIndex());
+                }
+            }
+        }
+    };
+
+    std::function<void (Node* currentNode, FunctionNode* nearFunction)> postProcessingFunction =
+            [&postProcessingFunction, &nodeReplacer](Node* currentNode, FunctionNode* nearFunction) {
+        if(!currentNode)
+            return;
+        NodeType type = currentNode->type();
+        if(type == NodeType::Program) {
+            StatementNodeVector& v = ((ProgramNode *)currentNode)->m_body;
+            for(unsigned i = 0; i < v.size() ; i ++) {
+                postProcessingFunction(v[i], nearFunction);
+            }
+        } else if(type == NodeType::VariableDeclaration) {
+            VariableDeclaratorVector& v = ((VariableDeclarationNode *)currentNode)->m_declarations;
+            for(unsigned i = 0; i < v.size() ; i ++) {
+                postProcessingFunction(v[i], nearFunction);
+            }
+        } else if(type == NodeType::VariableDeclarator) {
+        } else if(type == NodeType::FunctionDeclaration) {
+            postProcessingFunction(((FunctionDeclarationNode *)currentNode)->m_body, (FunctionDeclarationNode *)currentNode);
+        } else if(type == NodeType::FunctionExpression) {
+            postProcessingFunction(((FunctionExpressionNode *)currentNode)->m_body, (FunctionExpressionNode *)currentNode);
+        } else if(type == NodeType::Identifier) {
+        } else if(type == NodeType::ExpressionStatement) {
+            nodeReplacer(&((ExpressionStatementNode *)currentNode)->m_expression, nearFunction);
+            postProcessingFunction(((ExpressionStatementNode *)currentNode)->m_expression, nearFunction);
+        } else if(type == NodeType::AssignmentExpression) {
+            nodeReplacer(&((AssignmentExpressionNode *)currentNode)->m_right, nearFunction);
+            nodeReplacer(&((AssignmentExpressionNode *)currentNode)->m_left, nearFunction);
+            postProcessingFunction(((AssignmentExpressionNode *)currentNode)->m_right, nearFunction);
+            postProcessingFunction(((AssignmentExpressionNode *)currentNode)->m_left, nearFunction);
+        } else if(type == NodeType::Literal) {
+            //DO NOTHING
+        }else if(type == NodeType::ArrayExpression) {
+            ExpressionNodeVector& v = ((ArrayExpressionNode *)currentNode)->m_elements;
+            for(unsigned i = 0; i < v.size() ; i ++) {
+                nodeReplacer(&v[i], nearFunction);
+                postProcessingFunction(v[i], nearFunction);
+            }
+        } else if(type == NodeType::BlockStatement) {
+            StatementNodeVector& v = ((BlockStatementNode *)currentNode)->m_body;
+            for(unsigned i = 0; i < v.size() ; i ++) {
+                nodeReplacer(&v[i], nearFunction);
+                postProcessingFunction(v[i], nearFunction);
+            }
+        } else if(type == NodeType::CallExpression) {
+            Node * callee = ((CallExpressionNode *)currentNode)->m_callee;
+            nodeReplacer(&((CallExpressionNode *)currentNode)->m_callee, nearFunction);
+            postProcessingFunction(callee, nearFunction);
+            ArgumentVector& v = ((CallExpressionNode *)currentNode)->m_arguments;
+            for(unsigned i = 0; i < v.size() ; i ++) {
+                nodeReplacer(&v[i], nearFunction);
+                postProcessingFunction(v[i], nearFunction);
+            }
+        } else if(type == NodeType::SequenceExpression) {
+            ExpressionNodeVector& v = ((SequenceExpressionNode *)currentNode)->m_expressions;
+            for(unsigned i = 0; i < v.size() ; i ++) {
+                nodeReplacer(&v[i], nearFunction);
+                postProcessingFunction(v[i], nearFunction);
+            }
+        } else if(type == NodeType::NewExpression) {
+            postProcessingFunction(((NewExpressionNode *)currentNode)->m_callee, nearFunction);
+            ArgumentVector& v = ((NewExpressionNode *)currentNode)->m_arguments;
+            for(unsigned i = 0; i < v.size() ; i ++) {
+                nodeReplacer(&v[i], nearFunction);
+                postProcessingFunction(v[i], nearFunction);
+            }
+        } else if(type == NodeType::ObjectExpression) {
+            PropertiesNodeVector& v = ((ObjectExpressionNode *)currentNode)->m_properties;
+            for(unsigned i = 0; i < v.size() ; i ++) {
+                PropertyNode* p = v[i];
+                postProcessingFunction(p->value(), nearFunction);
+                if(p->key()->type() == NodeType::Identifier) {
+
+                } else {
+                    nodeReplacer(&p->m_key, nearFunction);
+                    postProcessingFunction(p->key(), nearFunction);
+                }
+            }
+        } else if(type == NodeType::ConditionalExpression) {
+            nodeReplacer((Node **)&((ConditionalExpressionNode *)currentNode)->m_test, nearFunction);
+            nodeReplacer((Node **)&((ConditionalExpressionNode *)currentNode)->m_consequente, nearFunction);
+            nodeReplacer((Node **)&((ConditionalExpressionNode *)currentNode)->m_alternate, nearFunction);
+            postProcessingFunction(((ConditionalExpressionNode *)currentNode)->m_test, nearFunction);
+            postProcessingFunction(((ConditionalExpressionNode *)currentNode)->m_consequente, nearFunction);
+            postProcessingFunction(((ConditionalExpressionNode *)currentNode)->m_alternate, nearFunction);
+        } else if(type == NodeType::Property) {
+            postProcessingFunction(((PropertyNode *)currentNode)->m_key, nearFunction);
+            postProcessingFunction(((PropertyNode *)currentNode)->m_value, nearFunction);
+        } else if(type == NodeType::MemberExpression) {
+            nodeReplacer(&((MemberExpressionNode *)currentNode)->m_object, nearFunction);
+            if(((MemberExpressionNode *)currentNode)->m_computed)
+                nodeReplacer(&((MemberExpressionNode *)currentNode)->m_property, nearFunction);
+            postProcessingFunction(((MemberExpressionNode *)currentNode)->m_object, nearFunction);
+            postProcessingFunction(((MemberExpressionNode *)currentNode)->m_property, nearFunction);
+        } else if(type == NodeType::BinaryExpression) {
+            nodeReplacer((Node **)&((BinaryExpressionNode *)currentNode)->m_right, nearFunction);
+            nodeReplacer((Node **)&((BinaryExpressionNode *)currentNode)->m_left, nearFunction);
+            postProcessingFunction(((BinaryExpressionNode *)currentNode)->m_right, nearFunction);
+            postProcessingFunction(((BinaryExpressionNode *)currentNode)->m_left, nearFunction);
+        } else if(type == NodeType::LogicalExpression) {
+            nodeReplacer((Node **)&((LogicalExpressionNode *)currentNode)->m_right, nearFunction);
+            nodeReplacer((Node **)&((LogicalExpressionNode *)currentNode)->m_left, nearFunction);
+            postProcessingFunction(((LogicalExpressionNode *)currentNode)->m_right, nearFunction);
+            postProcessingFunction(((LogicalExpressionNode *)currentNode)->m_left, nearFunction);
+        } else if(type == NodeType::UpdateExpression) {
+            nodeReplacer((Node **)&((UpdateExpressionNode *)currentNode)->m_argument, nearFunction);
+            postProcessingFunction(((UpdateExpressionNode *)currentNode)->m_argument, nearFunction);
+        } else if(type == NodeType::UnaryExpression) {
+            nodeReplacer(&((UnaryExpressionNode *)currentNode)->m_argument, nearFunction);
+            postProcessingFunction(((UnaryExpressionNode *)currentNode)->m_argument, nearFunction);
+        } else if(type == NodeType::IfStatement) {
+            nodeReplacer((Node **)&((IfStatementNode *)currentNode)->m_test, nearFunction);
+            nodeReplacer((Node **)&((IfStatementNode *)currentNode)->m_consequente, nearFunction);
+            nodeReplacer((Node **)&((IfStatementNode *)currentNode)->m_alternate, nearFunction);
+            postProcessingFunction(((IfStatementNode *)currentNode)->m_test, nearFunction);
+            postProcessingFunction(((IfStatementNode *)currentNode)->m_consequente, nearFunction);
+            postProcessingFunction(((IfStatementNode *)currentNode)->m_alternate, nearFunction);
+        } else if(type == NodeType::ForStatement) {
+            nodeReplacer((Node **)&((ForStatementNode *)currentNode)->m_init, nearFunction);
+            nodeReplacer((Node **)&((ForStatementNode *)currentNode)->m_body, nearFunction);
+            nodeReplacer((Node **)&((ForStatementNode *)currentNode)->m_test, nearFunction);
+            nodeReplacer((Node **)&((ForStatementNode *)currentNode)->m_update, nearFunction);
+            postProcessingFunction(((ForStatementNode *)currentNode)->m_init, nearFunction);
+            postProcessingFunction(((ForStatementNode *)currentNode)->m_body, nearFunction);
+            postProcessingFunction(((ForStatementNode *)currentNode)->m_test, nearFunction);
+            postProcessingFunction(((ForStatementNode *)currentNode)->m_update, nearFunction);
+        } else if(type == NodeType::ForInStatement) {
+            nodeReplacer((Node **)&((ForInStatementNode *)currentNode)->m_left, nearFunction);
+            nodeReplacer((Node **)&((ForInStatementNode *)currentNode)->m_right, nearFunction);
+            nodeReplacer((Node **)&((ForInStatementNode *)currentNode)->m_body, nearFunction);
+            postProcessingFunction(((ForInStatementNode *)currentNode)->m_left, nearFunction);
+            postProcessingFunction(((ForInStatementNode *)currentNode)->m_right, nearFunction);
+            postProcessingFunction(((ForInStatementNode *)currentNode)->m_body, nearFunction);
+        } else if(type == NodeType::WhileStatement) {
+            nodeReplacer((Node **)&((WhileStatementNode *)currentNode)->m_test, nearFunction);
+            nodeReplacer((Node **)&((WhileStatementNode *)currentNode)->m_body, nearFunction);
+            postProcessingFunction(((WhileStatementNode *)currentNode)->m_test, nearFunction);
+            postProcessingFunction(((WhileStatementNode *)currentNode)->m_body, nearFunction);
+        } else if(type == NodeType::DoWhileStatement) {
+            nodeReplacer((Node **)&((DoWhileStatementNode *)currentNode)->m_test, nearFunction);
+            nodeReplacer((Node **)&((DoWhileStatementNode *)currentNode)->m_body, nearFunction);
+            postProcessingFunction(((DoWhileStatementNode *)currentNode)->m_test, nearFunction);
+            postProcessingFunction(((DoWhileStatementNode *)currentNode)->m_body, nearFunction);
+        } else if(type == NodeType::SwitchStatement) {
+            nodeReplacer((Node **)&((SwitchStatementNode *)currentNode)->m_discriminant, nearFunction);
+            postProcessingFunction(((SwitchStatementNode *)currentNode)->m_discriminant, nearFunction);
+            StatementNodeVector& vA =((SwitchStatementNode *)currentNode)->m_casesA;
+            for(unsigned i = 0; i < vA.size() ; i ++) {
+                nodeReplacer((Node **)&vA[i], nearFunction);
+                postProcessingFunction(vA[i], nearFunction);
+            }
+            nodeReplacer((Node **)&((SwitchStatementNode *)currentNode)->m_default, nearFunction);
+            postProcessingFunction(((SwitchStatementNode *)currentNode)->m_default, nearFunction);
+            StatementNodeVector& vB = ((SwitchStatementNode *)currentNode)->m_casesB;
+            for(unsigned i = 0; i < vB.size() ; i ++) {
+                nodeReplacer((Node **)&vB[i], nearFunction);
+                postProcessingFunction(vB[i], nearFunction);
+            }
+        } else if(type == NodeType::SwitchCase) {
+            nodeReplacer((Node **)&((SwitchCaseNode *)currentNode)->m_test, nearFunction);
+            postProcessingFunction(((SwitchCaseNode *)currentNode)->m_test, nearFunction);
+            StatementNodeVector& v = ((SwitchCaseNode *)currentNode)->m_consequent;
+            for(unsigned i = 0; i < v.size() ; i ++) {
+                nodeReplacer((Node **)&v[i], nearFunction);
+                postProcessingFunction(v[i], nearFunction);
+            }
+        } else if(type == NodeType::ThisExpression) {
+
+        } else if(type == NodeType::BreakStatement) {
+
+        } else if(type == NodeType::ContinueStatement) {
+
+        } else if(type == NodeType::ReturnStatement) {
+            nodeReplacer((Node **)&((ReturnStatmentNode *)currentNode)->m_argument, nearFunction);
+            postProcessingFunction(((ReturnStatmentNode *)currentNode)->m_argument, nearFunction);
+        } else if(type == NodeType::EmptyStatement) {
+        } else if (type == NodeType::TryStatement) {
+            nodeReplacer((Node **)&((TryStatementNode *)currentNode)->m_block, nearFunction);
+            nodeReplacer((Node **)&((TryStatementNode *)currentNode)->m_handler, nearFunction);
+            nodeReplacer((Node **)&((TryStatementNode *)currentNode)->m_finalizer, nearFunction);
+            postProcessingFunction(((TryStatementNode *)currentNode)->m_block, nearFunction);
+            postProcessingFunction(((TryStatementNode *)currentNode)->m_handler, nearFunction);
+            postProcessingFunction(((TryStatementNode *)currentNode)->m_finalizer, nearFunction);
+        } else if (type == NodeType::CatchClause) {
+            postProcessingFunction(((CatchClauseNode *)currentNode)->m_param, nearFunction);
+            postProcessingFunction(((CatchClauseNode *)currentNode)->m_guard, nearFunction);
+            postProcessingFunction(((CatchClauseNode *)currentNode)->m_body, nearFunction);
+        } else if (type == NodeType::ThrowStatement) {
+            nodeReplacer((Node **)&((ThrowStatementNode *)currentNode)->m_argument, nearFunction);
+            postProcessingFunction(((ThrowStatementNode *)currentNode)->m_argument, nearFunction);
+        } else if(type == NodeType::IdentifierFastCase) {
+
+        } else {
+            RELEASE_ASSERT_NOT_REACHED();
+        }
+    };
+
+    postProcessingFunction(node, NULL);
+
     return node;
 }
 
