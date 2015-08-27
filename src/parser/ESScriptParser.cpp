@@ -158,9 +158,9 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16str
                             fn = fn->outerFunctionNode();
                         }
                         if(fn) {
-                            //wprintf(L"outer function of this function  needs capture! -> because fn...%ls iden..%ls\n",
-                            //        fn->id().data(),
-                            //        ((IdentifierNode *)currentNode)->name().data());
+                            //printf("outer function of this function  needs capture! -> because fn...%s iden..%s\n",
+                            //        fn->nonAtomicId()->utf8Data(),
+                            //        ((IdentifierNode *)currentNode)->nonAtomicName()->utf8Data());
                             markNeedsActivation(fn);
                         } else {
                             //fn == global case

@@ -28,6 +28,9 @@ void GlobalObject::initGlobalObject()
     installBoolean();
     installRegExp();
 
+
+    convertIntoMapMode();
+
     m_functionPrototype->set__proto__(m_objectPrototype);
 
     // Value Properties of the Global Object
@@ -77,12 +80,12 @@ void GlobalObject::initGlobalObject()
                         str.append(o->asESObject()->constructor().asESPointer()->asESObject()->get(strings->name, true).toString()->utf8Data());
                         str.append(" {");
                         bool isFirst = true;
-                        o->asESObject()->enumeration([&str, &isFirst, o](escargot::ESString* key, ::escargot::ESSlot* slot) {
+                        o->asESObject()->enumeration([&str, &isFirst, o](escargot::ESString* key, const ::escargot::ESSlotAccessor& slot) {
                             if(!isFirst)
                                 str.append(", ");
                                 str.append(key->utf8Data());
                                 str.append(": ");
-                                str.append(slot->value(o->asESObject()).toString()->utf8Data());
+                                str.append(slot.value(o->asESObject()).toString()->utf8Data());
                                 isFirst = false;
                             });
                         if(o->isESStringObject()) {

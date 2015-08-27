@@ -16,6 +16,8 @@ public:
         m_object = object;
         m_property = property;
         m_computed = computed;
+        m_cachedHiddenClass = nullptr;
+        m_cachedPropertyValue = nullptr;
     }
 
     ESSlotAccessor executeForWrite(ESVMInstance* instance)
@@ -59,23 +61,23 @@ public:
             NodeType propertyNodeType = m_property->type();
             if(UNLIKELY(value.isESString() && propertyNodeType == NodeType::Identifier)) {
                 instance->globalObject()->stringObjectProxy()->setString(value.asESString());
-                ESSlot* slot = instance->globalObject()->stringObjectProxy()->findUntilPrototype(((IdentifierNode *)m_property)->nonAtomicName());
-                if(slot->isDataProperty()) {
-                    ESValue ret = slot->value(instance->globalObject()->stringObjectProxy());
+                ESSlotAccessor slot = instance->globalObject()->stringObjectProxy()->find(((IdentifierNode *)m_property)->nonAtomicName(), true);
+                if(slot.isDataProperty()) {
+                    ESValue ret = slot.readDataProperty();
                     if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->functionAST()->isBuiltInFunction()) {
                         instance->currentExecutionContext()->setLastESObjectMetInMemberExpressionNode(instance->globalObject()->stringObjectProxy());
                         return ret;
                     }
                 } else {
-                    if(slot->accessorData() == instance->stringObjectLengthAccessorData()) {
-                        return slot->value(instance->globalObject()->stringObjectProxy());
+                    if(slot.accessorData() == instance->stringObjectLengthAccessorData()) {
+                        return slot.value(instance->globalObject()->stringObjectProxy());
                     }
                 }
             } else if(UNLIKELY(value.isNumber() && propertyNodeType == NodeType::Identifier)) {
                 instance->globalObject()->numberObjectProxy()->setNumberData(value.asNumber());
-                ESSlot* slot = instance->globalObject()->numberObjectProxy()->findUntilPrototype(((IdentifierNode *)m_property)->nonAtomicName());
-                if(slot->isDataProperty()) {
-                    ESValue ret = slot->value(instance->globalObject()->numberObjectProxy());
+                ESSlotAccessor slot = instance->globalObject()->numberObjectProxy()->find(((IdentifierNode *)m_property)->nonAtomicName(), true);
+                if(slot.isDataProperty()) {
+                    ESValue ret = slot.value(instance->globalObject()->numberObjectProxy());
                     if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->functionAST()->isBuiltInFunction()) {
                         instance->currentExecutionContext()->setLastESObjectMetInMemberExpressionNode(instance->globalObject()->numberObjectProxy());
                         return ret;
@@ -90,45 +92,61 @@ public:
 
         if(value.isESPointer() && value.asESPointer()->isESObject()) {
             ESObject* obj = value.asESPointer()->asESObject();
-            ESSlotAccessor slot;
-            ESString* computedPropertyName;
             ExecutionContext* ec = instance->currentExecutionContext();
+            ec->setLastESObjectMetInMemberExpressionNode(obj);
 
             if(!m_computed && m_property->type() == NodeType::Identifier) {
-                computedPropertyName = ((IdentifierNode *)m_property)->nonAtomicName();
-                slot = ESSlotAccessor(obj->find(computedPropertyName));
-            } else {
-                ESValue computedPropertyValue = m_property->execute(instance);
-                if(obj->isESArrayObject()) {
-                    if(computedPropertyValue.isInt32())
-                        slot = obj->asESArrayObject()->find(computedPropertyValue);
-                    if(!slot.hasData()) {
-                        computedPropertyName = computedPropertyValue.toString();
+                ESString* val = ((IdentifierNode *)m_property)->nonAtomicName();
+                if(obj->isHiddenClassMode()) {
+                    if(m_cachedHiddenClass == obj->hiddenClass()) {
+                        return obj->readHiddenClass(m_cachedIndex).value(obj);
+                    } else {
+                        size_t idx = obj->hiddenClass()->findProperty(val);
+                        if(idx != SIZE_MAX) {
+                            m_cachedHiddenClass = obj->hiddenClass();
+                            m_cachedIndex = idx;
+                            return obj->readHiddenClass(idx).value(obj);
+                        } else {
+                            m_cachedHiddenClass = nullptr;
+                            ESSlotAccessor ac = obj->findOnlyPrototype(val);
+                            if(ac.hasData())
+                                return obj->findOnlyPrototype(val).value(obj);
+                            return ESValue();
+                        }
                     }
                 } else {
-                    computedPropertyName = computedPropertyValue.toString();
-                    slot = ESSlotAccessor(obj->find(computedPropertyName));
+                    return obj->get(val, true);
                 }
-
-            }
-
-            if(LIKELY(slot.hasData())) {
-                ec->setLastESObjectMetInMemberExpressionNode(obj);
-                return slot.value(obj);
             } else {
-                ec->setLastESObjectMetInMemberExpressionNode(obj);
-                //FIXME this code duplicated with ESObject::get
-                ESValue prototype = obj->__proto__();
-                while(prototype.isESPointer() && prototype.asESPointer()->isESObject()) {
-                    ::escargot::ESObject* new_obj = prototype.asESPointer()->asESObject();
-                    ESSlot* s = new_obj->find(computedPropertyName);
-                    if(s)
-                        return s->value(obj);
-                    prototype = new_obj->__proto__();
+                if(obj->isESArrayObject()) {
+                    return obj->asESArrayObject()->get(m_property->execute(instance));
+                } else {
+                    ESString* val = m_property->execute(instance).toString();
+                    if(obj->isHiddenClassMode()) {
+                        if(m_cachedHiddenClass == obj->hiddenClass() && (val == m_cachedPropertyValue || *val == *m_cachedPropertyValue)) {
+                            return obj->readHiddenClass(m_cachedIndex).value(obj);
+                        } else {
+                            size_t idx = obj->hiddenClass()->findProperty(val);
+                            if(idx != SIZE_MAX) {
+                                m_cachedHiddenClass = obj->hiddenClass();
+                                m_cachedPropertyValue = val;
+                                m_cachedIndex = idx;
+                                return obj->readHiddenClass(idx).value(obj);
+                            } else {
+                                m_cachedHiddenClass = nullptr;
+                                ESSlotAccessor ac = obj->findOnlyPrototype(val);
+                                if(ac.hasData())
+                                    return obj->findOnlyPrototype(val).value(obj);
+                                return ESValue();
+                            }
+                        }
+                    } else {
+                        return obj->get(val, true);
+                    }
                 }
-
-                return ESValue();
             }
+
+            RELEASE_ASSERT_NOT_REACHED();
         } else if (value.isESString()) {
             int prop_val = m_property->execute(instance).toInt32();
             if(LIKELY(0 <= prop_val && prop_val < value.asESString()->length())) {
@@ -148,6 +166,10 @@ public:
         return ESValue();
     }
 protected:
+    ESHiddenClass* m_cachedHiddenClass;
+    ESString* m_cachedPropertyValue;
+    size_t m_cachedIndex;
+
     Node* m_object; //object: Expression;
     Node* m_property; //property: Identifier | Expression;
     bool m_computed;

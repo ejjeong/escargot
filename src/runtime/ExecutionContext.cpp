@@ -17,19 +17,19 @@ ExecutionContext::ExecutionContext(LexicalEnvironment* varEnv, bool needsActivat
     m_argumentCount = argumentsCount;
 }
 
-ESSlot* ExecutionContext::resolveBinding(const InternalAtomicString& atomicName, escargot::ESString* name)
+ESSlotAccessor ExecutionContext::resolveBinding(const InternalAtomicString& atomicName, escargot::ESString* name)
 {
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
     LexicalEnvironment* env = environment();
 
     while(env) {
-        ESSlot* slot = env->record()->hasBinding(atomicName, name);
-        if(slot)
+        ESSlotAccessor slot = env->record()->hasBinding(atomicName, name);
+        if(slot.hasData())
             return slot;
         env = env->outerEnvironment();
     }
 
-    return NULL;
+    return ESSlotAccessor();
 }
 
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvethisbinding

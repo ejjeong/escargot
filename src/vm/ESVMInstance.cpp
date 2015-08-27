@@ -29,6 +29,7 @@ ESVMInstance::ESVMInstance()
     //TODO call destructor
     m_bumpPointerAllocator = new(GC) WTF::BumpPointerAllocator();
 
+
     m_object__proto__AccessorData.m_getter = [](ESObject* obj) -> ESValue {
         return obj->__proto__();
     };
@@ -38,6 +39,18 @@ ESVMInstance::ESVMInstance()
             self->set__proto__(value.asESPointer()->asESObject());
         }
     };
+
+    //FIXME set proper flags(is...)
+    m_initialHiddenClassForObject.m_data.push_back(std::make_pair(
+            m_strings.constructor,
+            ESHiddenClassPropertyInfo(true, true, false, false)
+            ));
+
+    //FIXME set proper flags(is...)
+    m_initialHiddenClassForObject.m_data.push_back(std::make_pair(
+            m_strings.__proto__,
+            ESHiddenClassPropertyInfo(false, true, false, false)
+            ));
 
     m_functionPrototypeAccessorData.m_getter = [](ESObject* self) -> ESValue {
         return self->asESFunctionObject()->protoType();

@@ -255,11 +255,15 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
 
 ESObject::ESObject(ESPointer::Type type)
     : ESPointer(type)
-    , m_map(16)
+    , m_map(NULL)
 {
-    //FIXME set proper flags(is...)
-    definePropertyOrThrow(strings->constructor, true, false, false);
-    defineAccessorProperty(strings->__proto__, ESVMInstance::currentInstance()->object__proto__AccessorData(), true, false, false);
+    m_hiddenClassData.reserve(6);
+    m_hiddenClass = ESVMInstance::currentInstance()->initialHiddenClassForObject();
+
+    m_hiddenClassData.push_back(ESValue(ESValue::ESUndefined));
+    m_hiddenClassData.push_back(ESValue((ESPointer *)ESVMInstance::currentInstance()->object__proto__AccessorData()));
+    //definePropertyOrThrow(strings->constructor, true, false, false);
+    //defineAccessorProperty(strings->__proto__, ESVMInstance::currentInstance()->object__proto__AccessorData(), true, false, false);
 }
 
 ESArrayObject::ESArrayObject()
@@ -296,6 +300,9 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, Functio
 {
     m_outerEnvironment = outerEnvironment;
     m_functionAST = functionAST;
+    m_hiddenClass = ESVMInstance::currentInstance()->initialHiddenClassForFunction();
+    m_hiddenClassData.push_back(ESValue((ESPointer *)ESVMInstance::currentInstance()->functionPrototypeAccessorData()));
+
     defineAccessorProperty(strings->prototype, ESVMInstance::currentInstance()->functionPrototypeAccessorData(), true, false, false);
 
     if (proto != NULL)
@@ -344,11 +351,11 @@ ALWAYS_INLINE void functionCallerInnerProcess(ESFunctionObject* fn, ESValue rece
         if(!fn->functionAST()->needsActivation()) {
             for(size_t i = 0 ; i < fn->functionAST()->innerIdentifiers().size() ; i++ ) {
                 if(fn->functionAST()->innerIdentifiers()[i] == strings->atomicArguments) {
-                    functionRecord->getBindingValueForNonActivationMode(i)->setDataProperty(argumentsObject);
+                    *functionRecord->getBindingValueForNonActivationMode(i) = argumentsObject;
                     break;
                 }
             }
-            ASSERT(functionRecord->hasBinding(strings->atomicArguments, strings->arguments));
+            ASSERT(functionRecord->hasBinding(strings->atomicArguments, strings->arguments).hasData());
         } else {
             functionRecord->createMutableBinding(strings->atomicArguments, strings->arguments, false);
             functionRecord->setMutableBinding(strings->atomicArguments, strings->arguments, argumentsObject, true);
@@ -375,7 +382,7 @@ ESValue ESFunctionObject::call(ESValue callee, ESValue receiver, ESValue argumen
             ESVMInstance->m_currentExecutionContext = currentContext;
         } else {
             FunctionEnvironmentRecord envRec(true,
-                    (::escargot::ESSlot *)alloca(sizeof(::escargot::ESSlot) * fn->functionAST()->innerIdentifiers().size()),
+                    (::escargot::ESValue *)alloca(sizeof(::escargot::ESValue) * fn->functionAST()->innerIdentifiers().size()),
                     fn->functionAST(),
                     &fn->functionAST()->innerIdentifiers());
 

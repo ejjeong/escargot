@@ -31,13 +31,13 @@ public:
         std::vector<ESValue> propertyVals;
         if (exprValue.isESPointer() && exprValue.asESPointer()->isESArrayObject()) {
             ESArrayObject* arr = exprValue.asESPointer()->asESArrayObject();
-            arr->enumeration([&propertyVals](const ESValue& key, ESValue* val) {
+            arr->enumeration([&propertyVals](const ESValue& key, const ::escargot::ESSlotAccessor& val) {
                 propertyVals.push_back(key);
             });
         }
         ESObject* obj = exprValue.toObject();
         std::vector<ESString*> propertyNames;
-        obj->enumeration([&propertyNames](ESString* key, ESSlot* slot) {
+        obj->enumeration([&propertyNames](ESString* key, const ::escargot::ESSlotAccessor& slot) {
             propertyNames.push_back(key);
         });
         ec->setJumpPositionAndExecute([&](){
@@ -53,7 +53,7 @@ public:
                 m_body->execute(instance);
             }
             for (unsigned int i=0; i<propertyNames.size(); i++) {
-                if (obj->hasKey(propertyNames[i])) {
+                if (obj->hasOwnProperty(propertyNames[i])) {
                     ESString* name = propertyNames[i];
                     ESSlotWriterForAST::prepareExecuteForWriteASTNode(ec);
                     ESSlotAccessor slot = m_left->executeForWrite(instance);

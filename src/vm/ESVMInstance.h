@@ -28,11 +28,11 @@ public:
     ESValue evaluate(u16string& source);
 
     ALWAYS_INLINE ExecutionContext* currentExecutionContext() { return m_currentExecutionContext; }
-    GlobalObject* globalObject() { return m_globalObject; }
+    ALWAYS_INLINE GlobalObject* globalObject() { return m_globalObject; }
 
     void enter();
     void exit();
-    static ESVMInstance* currentInstance()
+    ALWAYS_INLINE static ESVMInstance* currentInstance()
     {
         return escargot::currentInstance;
     }
@@ -51,12 +51,12 @@ public:
     template <typename F>
     ESValue runOnEvalContext(const F& f, bool isDirectCall);
 
-    size_t identifierCacheInvalidationCheckCount()
+    ALWAYS_INLINE size_t identifierCacheInvalidationCheckCount()
     {
         return m_identifierCacheInvalidationCheckCount;
     }
 
-    void invalidateIdentifierCacheCheckCount()
+    ALWAYS_INLINE void invalidateIdentifierCacheCheckCount()
     {
         m_identifierCacheInvalidationCheckCount ++;
         if(UNLIKELY(m_identifierCacheInvalidationCheckCount == SIZE_MAX)) {
@@ -64,18 +64,28 @@ public:
         }
     }
 
-    ESAccessorData* object__proto__AccessorData() { return &m_object__proto__AccessorData; }
-    ESAccessorData* functionPrototypeAccessorData() { return &m_functionPrototypeAccessorData; }
-    ESAccessorData* arrayLengthAccessorData() { return &m_arrayLengthAccessorData; }
-    ESAccessorData* stringObjectLengthAccessorData() { return &m_stringObjectLengthAccessorData; }
+    ALWAYS_INLINE ESAccessorData* object__proto__AccessorData() { return &m_object__proto__AccessorData; }
+    ALWAYS_INLINE ESAccessorData* functionPrototypeAccessorData() { return &m_functionPrototypeAccessorData; }
+    ALWAYS_INLINE ESAccessorData* arrayLengthAccessorData() { return &m_arrayLengthAccessorData; }
+    ALWAYS_INLINE ESAccessorData* stringObjectLengthAccessorData() { return &m_stringObjectLengthAccessorData; }
 
-    ESFunctionObject* globalFunctionPrototype() { return m_globalFunctionPrototype; }
-    void setGlobalFunctionPrototype(ESFunctionObject* o) { m_globalFunctionPrototype = o; }
+    ALWAYS_INLINE ESFunctionObject* globalFunctionPrototype() { return m_globalFunctionPrototype; }
+    ALWAYS_INLINE void setGlobalFunctionPrototype(ESFunctionObject* o) { m_globalFunctionPrototype = o; }
 
-    WTF::BumpPointerAllocator* bumpPointerAllocator() { return m_bumpPointerAllocator; };
+    ALWAYS_INLINE WTF::BumpPointerAllocator* bumpPointerAllocator() { return m_bumpPointerAllocator; };
 
     int timezoneOffset();
     const tm* computeLocalTime(const timespec& ts);
+
+    ALWAYS_INLINE ESHiddenClass* initialHiddenClassForObject()
+    {
+        return &m_initialHiddenClassForObject;
+    }
+
+    ALWAYS_INLINE ESHiddenClass* initialHiddenClassForFunction()
+    {
+        return &m_initialHiddenClassForFunction;
+    }
 protected:
     ExecutionContext* m_globalExecutionContext;
     ExecutionContext* m_currentExecutionContext;
@@ -87,6 +97,9 @@ protected:
 
     Strings m_strings;
     size_t m_identifierCacheInvalidationCheckCount;
+
+    ESHiddenClass m_initialHiddenClassForObject;
+    ESHiddenClass m_initialHiddenClassForFunction;
 
     ESAccessorData m_object__proto__AccessorData;
     ESAccessorData m_functionPrototypeAccessorData;

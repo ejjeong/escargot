@@ -28,16 +28,12 @@ public:
         if (LIKELY(ec == m_cacheCheckExecutionContext && m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
             return m_cachedSlot.readDataProperty();
         } else {
-            ESSlot* slot;
-
             if(LIKELY(m_canUseFastAccess && !ec->needsActivation())) {
-                slot = ec->environment()->record()->toDeclarativeEnvironmentRecord()->getBindingValueForNonActivationMode(m_fastAccessIndex);
+                return *ec->environment()->record()->toDeclarativeEnvironmentRecord()->getBindingValueForNonActivationMode(m_fastAccessIndex);
             }
-            else {
-                slot = ec->resolveBinding(name(), nonAtomicName());
-            }
+            ESSlotAccessor slot = ec->resolveBinding(name(), nonAtomicName());
 
-            if(LIKELY(slot != NULL)) {
+            if(LIKELY(slot.hasData())) {
                 m_cachedSlot = ESSlotAccessor(slot);
                 m_cacheCheckExecutionContext = ec;
                 m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
@@ -67,22 +63,19 @@ public:
         if (LIKELY(ec == m_cacheCheckExecutionContext && m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
             return m_cachedSlot;
         } else {
-            ESSlot* slot;
-
             if(LIKELY(m_canUseFastAccess && !ec->needsActivation())) {
-                slot = ec->environment()->record()->toDeclarativeEnvironmentRecord()->getBindingValueForNonActivationMode(m_fastAccessIndex);
+                return ESSlotAccessor(ec->environment()->record()->toDeclarativeEnvironmentRecord()->getBindingValueForNonActivationMode(m_fastAccessIndex));
             }
-            else {
-                slot = ec->resolveBinding(name(), nonAtomicName());
-            }
+            ESSlotAccessor slot = ec->resolveBinding(name(), nonAtomicName());
 
-            if(LIKELY(slot != NULL)) {
+            if(LIKELY(slot.hasData())) {
                 m_cachedSlot = ESSlotAccessor(slot);
                 m_cacheCheckExecutionContext = ec;
                 m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
                 return ESSlotAccessor(slot);
             } else {
                 //CHECKTHIS true, true, false is right?
+                instance->invalidateIdentifierCacheCheckCount();
                 return instance->globalObject()->definePropertyOrThrow(m_nonAtomicName,true, true, false);
             }
         }

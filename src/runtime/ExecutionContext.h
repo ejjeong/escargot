@@ -26,7 +26,7 @@ public:
     }
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
-    ESSlot* resolveBinding(const InternalAtomicString& atomicName, ESString* name);
+    ESSlotAccessor resolveBinding(const InternalAtomicString& atomicName, ESString* name);
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvethisbinding
     ESObject* resolveThisBinding();
