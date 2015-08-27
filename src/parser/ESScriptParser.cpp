@@ -251,11 +251,14 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16str
         } else if(type == NodeType::BinaryExpression) {
             postAnalysisFunction(((BinaryExpressionNode *)currentNode)->m_right, identifierStack, nearFunctionNode);
             postAnalysisFunction(((BinaryExpressionNode *)currentNode)->m_left, identifierStack, nearFunctionNode);
+        } else if(type >= NodeType::BinaryExpressionBitwiseAnd && type <= NodeType::BinaryExpressionUnsignedRightShift) {
+            postAnalysisFunction(((BinaryExpressionBitwiseAndNode *)currentNode)->m_right, identifierStack, nearFunctionNode);
+            postAnalysisFunction(((BinaryExpressionBitwiseAndNode *)currentNode)->m_left, identifierStack, nearFunctionNode);
         } else if(type == NodeType::LogicalExpression) {
             postAnalysisFunction(((LogicalExpressionNode *)currentNode)->m_right, identifierStack, nearFunctionNode);
             postAnalysisFunction(((LogicalExpressionNode *)currentNode)->m_left, identifierStack, nearFunctionNode);
-        } else if(type == NodeType::UpdateExpression) {
-            postAnalysisFunction(((UpdateExpressionNode *)currentNode)->m_argument, identifierStack, nearFunctionNode);
+        }else if(type >= NodeType::UpdateExpressionDecrementPostfix && type <= UpdateExpressionIncrementPrefix) {
+            postAnalysisFunction(((UpdateExpressionDecrementPostfixNode *)currentNode)->m_argument, identifierStack, nearFunctionNode);
         } else if(type == NodeType::UnaryExpression) {
             postAnalysisFunction(((UnaryExpressionNode *)currentNode)->m_argument, identifierStack, nearFunctionNode);
         } else if(type == NodeType::IfStatement) {
@@ -430,14 +433,19 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16str
             nodeReplacer((Node **)&((BinaryExpressionNode *)currentNode)->m_left, nearFunction);
             postProcessingFunction(((BinaryExpressionNode *)currentNode)->m_right, nearFunction);
             postProcessingFunction(((BinaryExpressionNode *)currentNode)->m_left, nearFunction);
+        } else if(type >= NodeType::BinaryExpressionBitwiseAnd && type <= NodeType::BinaryExpressionUnsignedRightShift) {
+            nodeReplacer((Node **)&((BinaryExpressionBitwiseAndNode *)currentNode)->m_right, nearFunction);
+            nodeReplacer((Node **)&((BinaryExpressionBitwiseAndNode *)currentNode)->m_left, nearFunction);
+            postProcessingFunction(((BinaryExpressionBitwiseAndNode *)currentNode)->m_right, nearFunction);
+            postProcessingFunction(((BinaryExpressionBitwiseAndNode *)currentNode)->m_left, nearFunction);
         } else if(type == NodeType::LogicalExpression) {
             nodeReplacer((Node **)&((LogicalExpressionNode *)currentNode)->m_right, nearFunction);
             nodeReplacer((Node **)&((LogicalExpressionNode *)currentNode)->m_left, nearFunction);
             postProcessingFunction(((LogicalExpressionNode *)currentNode)->m_right, nearFunction);
             postProcessingFunction(((LogicalExpressionNode *)currentNode)->m_left, nearFunction);
-        } else if(type == NodeType::UpdateExpression) {
-            nodeReplacer((Node **)&((UpdateExpressionNode *)currentNode)->m_argument, nearFunction);
-            postProcessingFunction(((UpdateExpressionNode *)currentNode)->m_argument, nearFunction);
+        } else if(type >= NodeType::UpdateExpressionDecrementPostfix && type <= UpdateExpressionIncrementPrefix) {
+            nodeReplacer((Node **)&((UpdateExpressionDecrementPostfixNode *)currentNode)->m_argument, nearFunction);
+            postProcessingFunction(((UpdateExpressionDecrementPostfixNode *)currentNode)->m_argument, nearFunction);
         } else if(type == NodeType::UnaryExpression) {
             nodeReplacer(&((UnaryExpressionNode *)currentNode)->m_argument, nearFunction);
             postProcessingFunction(((UnaryExpressionNode *)currentNode)->m_argument, nearFunction);

@@ -4139,7 +4139,10 @@ escargot::Node* parsePostfixExpression(ParseContext* ctx) {
 
             RefPtr<ParseStatus> token = lex(ctx);
             //expr = new WrappingNode(startToken).finishPostfixExpression(token.value, expr);
-            expr = new escargot::UpdateExpressionNode(expr, escargot::ESString::create(token->m_value.data()), false);
+            if(token->m_value == u"++")
+                expr = new escargot::UpdateExpressionIncrementPostfixNode(expr);
+            else
+                expr = new escargot::UpdateExpressionDecrementPostfixNode(expr);
         }
     }
 
@@ -4171,7 +4174,10 @@ escargot::Node* parseUnaryExpression(ParseContext* ctx) {
         }
         //expr = new WrappingNode(startToken).finishUnaryExpression(token.value, expr);
         //expr = new escargot::UnaryExpressionNode(expr, escargot::ESString::create(token->m_value.data()));
-        expr = new escargot::UpdateExpressionNode(expr, escargot::ESString::create(token->m_value.data()), true);
+        if(token->m_value == u"++")
+            expr = new escargot::UpdateExpressionIncrementPrefixNode(expr);
+        else
+            expr = new escargot::UpdateExpressionDecrementPrefixNode(expr);
         ctx->m_isAssignmentTarget = ctx->m_isBindingElement = false;
     } else if (match(ctx, '+') || match(ctx, '-') || match(ctx, '~') || match(ctx, '!')) {
         //startToken = ctx->m_lookahead;
@@ -4293,6 +4299,67 @@ int binaryPrecedence(ParseContext* ctx, RefPtr<ParseStatus> token, bool allowIn)
 // ECMA-262 12.11 Binary Bitwise Operators
 // ECMA-262 12.12 Binary Logical Operators
 
+escargot::Node* finishBinaryExpression(escargot::Node* left, escargot::Node* right, const std::u16string oper)
+{
+    // Additive Operators
+    if (oper == u"+")
+        return new escargot::BinaryExpressionPlusNode(left, right);
+    else if (oper == u"-")
+        return new escargot::BinaryExpressionMinusNode(left, right);
+
+    // Bitwise Shift Operators
+    else if (oper == u"<<")
+        return new escargot::BinaryExpressionLeftShiftNode(left, right);
+    else if (oper == u">>")
+        return new escargot::BinaryExpressionSignedRightShiftNode(left, right);
+    else if (oper == u">>>")
+        return new escargot::BinaryExpressionUnsignedRightShiftNode(left, right);
+
+    // Multiplicative Operators
+    else if (oper == u"*")
+        return new escargot::BinaryExpressionMultiplyNode(left, right);
+    else if (oper == u"/")
+        return new escargot::BinaryExpressionDivisionNode(left, right);
+    else if (oper == u"%")
+        return new escargot::BinaryExpressionModNode(left, right);
+
+    // Relational Operators
+    else if (oper == u"<")
+        return new escargot::BinaryExpressionLessThanNode(left, right);
+    else if (oper == u">")
+        return new escargot::BinaryExpressionGreaterThanNode(left, right);
+    else if (oper == u"<=")
+        return new escargot::BinaryExpressionLessThanOrEqualNode(left, right);
+    else if (oper == u">=")
+        return new escargot::BinaryExpressionGreaterThanOrEqualNode(left, right);
+
+    // Equality Operators
+    else if (oper == u"==")
+        return new escargot::BinaryExpressionEqualNode(left, right);
+    else if (oper == u"!=")
+        return new escargot::BinaryExpressionNotEqualNode(left, right);
+    else if (oper == u"===")
+        return new escargot::BinaryExpressionStrictEqualNode(left, right);
+    else if (oper == u"!==")
+        return new escargot::BinaryExpressionNotStrictEqualNode(left, right);
+
+    // Binary Bitwise Operator
+    else if (oper == u"&")
+        return new escargot::BinaryExpressionBitwiseAndNode(left, right);
+    else if (oper == u"^")
+        return new escargot::BinaryExpressionBitwiseXorNode(left, right);
+    else if (oper == u"|")
+        return new escargot::BinaryExpressionBitwiseOrNode(left, right);
+
+    else if (oper == u"||")
+        return new escargot::BinaryExpressionLogicalOrNode(left, right);
+    else if (oper == u"&&")
+        return new escargot::BinaryExpressionLogicalAndNode(left, right);
+    // TODO
+    else
+        RELEASE_ASSERT_NOT_REACHED();
+}
+
 escargot::Node* parseBinaryExpression(ParseContext* ctx) {
     //var marker, markers, expr, token, prec, stack, right, operator, left, i;
 
@@ -4338,7 +4405,7 @@ escargot::Node* parseBinaryExpression(ParseContext* ctx) {
             //left = stack.pop();
             markers.pop_back();
             //expr = new WrappingNode(markers[markers.length - 1]).finishBinaryExpression(operator, left, right);
-            escargot::Node* expr = new escargot::BinaryExpressionNode(left, right, escargot::ESString::create(operator_.data()));
+            escargot::Node* expr = finishBinaryExpression(left, right, operator_);
             stack.push_back(expr);
         }
 
@@ -4359,9 +4426,7 @@ escargot::Node* parseBinaryExpression(ParseContext* ctx) {
     while (i > 1) {
         //expr = new WrappingNode(markers.pop()).finishBinaryExpression(, );
         markers.pop_back();
-        expr = new escargot::BinaryExpressionNode((escargot::Node *)stack[i - 2], expr, escargot::ESString::create(
-                ((ParseStatus *)stack[i - 1])->m_value.data()
-                ));
+        expr = finishBinaryExpression((escargot::Node *)stack[i - 2], expr, ((ParseStatus *)stack[i - 1])->m_value);
         i -= 2;
     }
 

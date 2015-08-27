@@ -110,6 +110,7 @@ protected:
 
     WTF::BumpPointerAllocator* m_bumpPointerAllocator;
 
+
     timespec m_cachedTimeOrigin;
     tm* m_cachedTime;
     tm m_time;
