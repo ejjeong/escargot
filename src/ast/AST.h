@@ -3,6 +3,7 @@
 
 #include "ArrayExpressionNode.h"
 #include "AssignmentExpressionNode.h"
+#include "AssignmentExpressionSimpleNode.h"
 #include "Node.h"
 #include "BinaryExpressionNode.h"
 #include "BinaryExpressionBitwiseAndNode.h"

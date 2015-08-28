@@ -65,15 +65,9 @@ public:
         ExecutionContext* ec = instance->currentExecutionContext();
         ESSlotWriterForAST::prepareExecuteForWriteASTNode(ec);
 
-        if(LIKELY(m_operator == SimpleAssignment)) {
-            //http://www.ecma-international.org/ecma-262/5.1/#sec-11.13.1
-            rvalue = m_right->execute(instance);
-            slot = m_left->executeForWrite(instance);
-        } else { //CompoundAssignment
-            ASSERT(m_operator == CompoundAssignment);
-            slot = m_left->executeForWrite(instance);
-            rvalue = BinaryExpressionNode::execute(instance, slot.value(ec->lastESObjectMetInMemberExpressionNode()), m_right->execute(instance), m_compoundOperator);
-        }
+        ASSERT(m_operator == CompoundAssignment);
+        slot = m_left->executeForWrite(instance);
+        rvalue = BinaryExpressionNode::execute(instance, slot.value(ec->lastESObjectMetInMemberExpressionNode()), m_right->execute(instance), m_compoundOperator);
 
         ESSlotWriterForAST::setValue(slot, ec, rvalue);
         return rvalue;

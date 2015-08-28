@@ -1875,7 +1875,7 @@ escargot::VariableDeclaratorVector parseVariableDeclarationList(ParseContext* ct
             escargot::Node* id = node->id();
             escargot::Node* init = node->init();
             node->clearInit();
-            list.push_back(new escargot::AssignmentExpressionNode(id, init, escargot::ESString::create(u"=")));
+            list.push_back(new escargot::AssignmentExpressionSimpleNode(id, init));
         }
 
 
@@ -3113,7 +3113,7 @@ escargot::Node* parsePatternWithDefault(ParseContext* ctx, std::vector<RefPtr<Pa
         right = isolateCoverGrammar(ctx, parseAssignmentExpression);
         ctx->m_allowYield = previousAllowYield;
         //pattern = new WrappingNode(startToken).finishAssignmentPattern(pattern, right);
-        pattern = new escargot::AssignmentExpressionNode(pattern, right, escargot::ESString::create(u"="));
+        pattern = new escargot::AssignmentExpressionSimpleNode(pattern, right);
     }
     return pattern;
 }
@@ -3243,7 +3243,7 @@ escargot::PropertyNode* parsePropertyPattern(ParseContext* ctx, std::vector<RefP
             lex(ctx);
             init = parseAssignmentExpression(ctx);
             //AssignmentExpressionNode(Node* left, Node* right, ESString* oper)
-            escargot::Node* value = new escargot::AssignmentExpressionNode(key, init, escargot::ESString::create('='));
+            escargot::Node* value = new escargot::AssignmentExpressionSimpleNode(key, init);
             return new escargot::PropertyNode(key, value , escargot::PropertyNode::Kind::Init);
             /*return node.finishProperty(
                 'init', key, false,
@@ -3509,7 +3509,7 @@ escargot::Node* parseObjectProperty(ParseContext* ctx, bool& hasProto) {
             escargot::Node* value = isolateCoverGrammar(ctx, parseAssignmentExpression);
             //return node.finishProperty('init', key, computed,
             //    new WrappingNode(token).finishAssignmentPattern(key, value), false, true);
-            return new escargot::PropertyNode(key, new escargot::AssignmentExpressionNode(key, value, escargot::ESString::create('=')), escargot::PropertyNode::Kind::Init);
+            return new escargot::PropertyNode(key, new escargot::AssignmentExpressionSimpleNode(key, value), escargot::PropertyNode::Kind::Init);
         }
         //return node.finishProperty('init', key, computed, key, false, true);
         return new escargot::PropertyNode(key, key, escargot::PropertyNode::Kind::Init);
@@ -4556,7 +4556,11 @@ escargot::Node* parseAssignmentExpression(ParseContext* ctx) {
         token = lex(ctx);
         right = isolateCoverGrammar(ctx, parseAssignmentExpression);
         //expr = new WrappingNode(startToken).finishAssignmentExpression(token.value, expr, right);
-        expr = new escargot::AssignmentExpressionNode(expr, right,escargot::ESString::create(token->m_value.data()));
+        if(token->m_value == u"=") {
+            expr = new escargot::AssignmentExpressionSimpleNode(expr, right);
+        } else {
+            expr = new escargot::AssignmentExpressionNode(expr, right,escargot::ESString::create(token->m_value.data()));
+        }
         ctx->m_firstCoverInitializedNameError = NULL;
     }
 

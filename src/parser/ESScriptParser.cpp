@@ -188,6 +188,9 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16str
         } else if(type == NodeType::AssignmentExpression) {
             postAnalysisFunction(((AssignmentExpressionNode *)currentNode)->m_right, identifierStack, nearFunctionNode);
             postAnalysisFunction(((AssignmentExpressionNode *)currentNode)->m_left, identifierStack, nearFunctionNode);
+        } else if(type == NodeType::AssignmentExpressionSimple) {
+            postAnalysisFunction(((AssignmentExpressionSimpleNode *)currentNode)->m_right, identifierStack, nearFunctionNode);
+            postAnalysisFunction(((AssignmentExpressionSimpleNode *)currentNode)->m_left, identifierStack, nearFunctionNode);
         } else if(type == NodeType::Literal) {
             //DO NOTHING
         }else if(type == NodeType::ArrayExpression) {
@@ -364,6 +367,11 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16str
             nodeReplacer(&((AssignmentExpressionNode *)currentNode)->m_left, nearFunction);
             postProcessingFunction(((AssignmentExpressionNode *)currentNode)->m_right, nearFunction);
             postProcessingFunction(((AssignmentExpressionNode *)currentNode)->m_left, nearFunction);
+        } else if(type == NodeType::AssignmentExpressionSimple) {
+            nodeReplacer(&((AssignmentExpressionSimpleNode*)currentNode)->m_right, nearFunction);
+            nodeReplacer(&((AssignmentExpressionSimpleNode *)currentNode)->m_left, nearFunction);
+            postProcessingFunction(((AssignmentExpressionSimpleNode *)currentNode)->m_right, nearFunction);
+            postProcessingFunction(((AssignmentExpressionSimpleNode *)currentNode)->m_left, nearFunction);
         } else if(type == NodeType::Literal) {
             //DO NOTHING
         }else if(type == NodeType::ArrayExpression) {
