@@ -4184,18 +4184,36 @@ escargot::Node* parseUnaryExpression(ParseContext* ctx) {
         token = lex(ctx);
         expr = inheritCoverGrammar(ctx, parseUnaryExpression);
         //expr = new WrappingNode(startToken).finishUnaryExpression(token.value, expr);
-        expr = new escargot::UnaryExpressionNode(expr, escargot::ESString::create(token->m_value.data()));
+        if(token->m_value == u"+") {
+            expr = new escargot::UnaryExpressionPlusNode(expr);
+        } else if(token->m_value == u"-") {
+            expr = new escargot::UnaryExpressionMinusNode(expr);
+        } else if(token->m_value == u"~") {
+            expr = new escargot::UnaryExpressionBitwiseNotNode(expr);
+        } else if(token->m_value == u"!") {
+            expr = new escargot::UnaryExpressionLogicalNotNode(expr);
+        } else {
+            RELEASE_ASSERT_NOT_REACHED();
+        }
         ctx->m_isAssignmentTarget = ctx->m_isBindingElement = false;
     } else if (matchKeyword(ctx, u"delete") || matchKeyword(ctx, u"void") || matchKeyword(ctx, u"typeof")) {
         //startToken = ctx->m_lookahead;
         token = lex(ctx);
         expr = inheritCoverGrammar(ctx, parseUnaryExpression);
         //expr = new WrappingNode(startToken).finishUnaryExpression(token.value, expr);
-        expr = new escargot::UnaryExpressionNode(expr, escargot::ESString::create(token->m_value.data()));
-        if (ctx->m_strict && ((escargot::UnaryExpressionNode *)expr)->readOperator() == escargot::UnaryExpressionNode::Operator::Delete
+        if(token->m_value == u"delete") {
+            RELEASE_ASSERT_NOT_REACHED();
+        } else if(token->m_value == u"void") {
+            RELEASE_ASSERT_NOT_REACHED();
+        } else if(token->m_value == u"typeof") {
+            expr = new escargot::UnaryExpressionTypeOfNode(expr);
+        }
+
+        //TODO
+        /*if (ctx->m_strict && ((escargot::UnaryExpressionNode *)expr)->readOperator() == escargot::UnaryExpressionNode::Operator::Delete
                 && ((escargot::UnaryExpressionNode *)expr)->argument()->type() == escargot::NodeType::Identifier) {
             tolerateError(u"Messages.StrictDelete");
-        }
+        }*/
         ctx->m_isAssignmentTarget = ctx->m_isBindingElement = false;
     } else {
         expr = parsePostfixExpression(ctx);

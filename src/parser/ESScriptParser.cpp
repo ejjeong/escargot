@@ -257,10 +257,10 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16str
         } else if(type == NodeType::LogicalExpression) {
             postAnalysisFunction(((LogicalExpressionNode *)currentNode)->m_right, identifierStack, nearFunctionNode);
             postAnalysisFunction(((LogicalExpressionNode *)currentNode)->m_left, identifierStack, nearFunctionNode);
-        }else if(type >= NodeType::UpdateExpressionDecrementPostfix && type <= UpdateExpressionIncrementPrefix) {
+        } else if(type >= NodeType::UpdateExpressionDecrementPostfix && type <= UpdateExpressionIncrementPrefix) {
             postAnalysisFunction(((UpdateExpressionDecrementPostfixNode *)currentNode)->m_argument, identifierStack, nearFunctionNode);
-        } else if(type == NodeType::UnaryExpression) {
-            postAnalysisFunction(((UnaryExpressionNode *)currentNode)->m_argument, identifierStack, nearFunctionNode);
+        } else if(type >= NodeType::UnaryExpressionBitwiseNot && type <= NodeType::UnaryExpressionTypeOf) {
+            postAnalysisFunction(((UnaryExpressionBitwiseNotNode *)currentNode)->m_argument, identifierStack, nearFunctionNode);
         } else if(type == NodeType::IfStatement) {
             postAnalysisFunction(((IfStatementNode *)currentNode)->m_test, identifierStack, nearFunctionNode);
             postAnalysisFunction(((IfStatementNode *)currentNode)->m_consequente, identifierStack, nearFunctionNode);
@@ -446,9 +446,9 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16str
         } else if(type >= NodeType::UpdateExpressionDecrementPostfix && type <= UpdateExpressionIncrementPrefix) {
             nodeReplacer((Node **)&((UpdateExpressionDecrementPostfixNode *)currentNode)->m_argument, nearFunction);
             postProcessingFunction(((UpdateExpressionDecrementPostfixNode *)currentNode)->m_argument, nearFunction);
-        } else if(type == NodeType::UnaryExpression) {
-            nodeReplacer(&((UnaryExpressionNode *)currentNode)->m_argument, nearFunction);
-            postProcessingFunction(((UnaryExpressionNode *)currentNode)->m_argument, nearFunction);
+        } else if(type >= NodeType::UnaryExpressionBitwiseNot && type <= NodeType::UnaryExpressionTypeOf) {
+            nodeReplacer(&((UnaryExpressionBitwiseNotNode *)currentNode)->m_argument, nearFunction);
+            postProcessingFunction(((UnaryExpressionBitwiseNotNode *)currentNode)->m_argument, nearFunction);
         } else if(type == NodeType::IfStatement) {
             nodeReplacer((Node **)&((IfStatementNode *)currentNode)->m_test, nearFunction);
             nodeReplacer((Node **)&((IfStatementNode *)currentNode)->m_consequente, nearFunction);
