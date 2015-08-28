@@ -1069,6 +1069,11 @@ struct ESHiddenClassPropertyInfo {
 #pragma pack(pop)
 };
 
+inline char assembleHidenClassPropertyInfoFlags(bool isData, bool isWritable, bool isEnumerable, bool isConfigurable)
+{
+    return isData | ((int)isWritable << 1) | ((int)isEnumerable << 2) | ((int)isConfigurable << 3);
+}
+
 typedef std::unordered_map<ESString*, ::escargot::ESSlot,
                 std::hash<ESString*>,std::equal_to<ESString*>,
                 gc_allocator<std::pair<const ESString*, ::escargot::ESSlot> > > ESObjectMapStd;
@@ -1076,9 +1081,9 @@ typedef std::unordered_map<ESString*, ::escargot::ESSlot,
 typedef std::vector<std::pair<::escargot::ESString*, ::escargot::ESHiddenClassPropertyInfo>,
         gc_allocator<std::pair<::escargot::ESString*, ::escargot::ESHiddenClassPropertyInfo> > > ESHiddenClassDataStd;
 
-typedef std::unordered_map<ESString*, std::pair<::escargot::ESHiddenClass *, ::escargot::ESHiddenClass *>,
+typedef std::unordered_map<ESString*, ::escargot::ESHiddenClass **,
                 std::hash<ESString*>,std::equal_to<ESString*>,
-                gc_allocator<std::pair<const ESString*, std::pair<::escargot::ESHiddenClass *, ::escargot::ESHiddenClass *> > > > ESHiddenClassTransitionDataStd;
+                gc_allocator<std::pair<const ESString*, std::pair<::escargot::ESHiddenClass *, ::escargot::ESHiddenClass **> > > > ESHiddenClassTransitionDataStd;
 
 typedef std::vector<::escargot::ESValue, gc_allocator<::escargot::ESValue> > ESObjectVectorStd;
 typedef std::vector<::escargot::ESValue, gc_allocator<::escargot::ESValue> > ESVectorStd;
@@ -1487,40 +1492,22 @@ ALWAYS_INLINE std::pair<ESHiddenClass *, size_t> ESHiddenClass::defineProperty(E
         ESHiddenClass* cls;
         auto iter = m_transitionData.find(name);
         if(iter == m_transitionData.end()) {
-            if(isData) {
-                cls = new ESHiddenClass;
-                cls->m_data = m_data;
-                cls->m_data.push_back(std::make_pair(name, ESHiddenClassPropertyInfo(isData, isWritable, isEnumerable, isConfigurable)));
-                m_transitionData.insert(std::make_pair(name, std::make_pair(cls, nullptr)));
-                //printf("%d %s\n",(int)m_data.size(), name->utf8Data());
-            } else {
-                cls = new ESHiddenClass;
-                cls->m_data = m_data;
-                cls->m_data.push_back(std::make_pair(name, ESHiddenClassPropertyInfo(isData, isWritable, isEnumerable, isConfigurable)));
-                m_transitionData.insert(std::make_pair(name, std::make_pair(nullptr, cls)));
-                //printf("%d %s\n",(int)m_data.size(), name->utf8Data());
-            }
+            ESHiddenClass** vec = new(GC) ESHiddenClass*[16];
+            memset(vec, 0, sizeof (ESHiddenClass *) * 16);
+            cls = new ESHiddenClass;
+            cls->m_data = m_data;
+            cls->m_data.push_back(std::make_pair(name, ESHiddenClassPropertyInfo(isData, isWritable, isEnumerable, isConfigurable)));
+            vec[(size_t)assembleHidenClassPropertyInfoFlags(isData, isWritable, isEnumerable, isConfigurable)] = cls;
+            m_transitionData.insert(std::make_pair(name, vec));
         } else {
-            if(isData) {
-                if(iter->second.first) {
-                    cls = iter->second.first;
-                } else {
-                    cls = new ESHiddenClass;
-                    cls->m_data = m_data;
-                    cls->m_data.push_back(std::make_pair(name, ESHiddenClassPropertyInfo(isData, isWritable, isEnumerable, isConfigurable)));
-                    iter->second.first = cls;
-                    //printf("%d %s\n",(int)m_data.size(), name->utf8Data());
-                }
+            char flag = assembleHidenClassPropertyInfoFlags(isData, isWritable, isEnumerable, isConfigurable);
+            if(iter->second[(size_t)flag]) {
+                cls = iter->second[(size_t)flag];
             } else {
-                if(iter->second.second) {
-                    cls = iter->second.second;
-                } else {
-                    cls = new ESHiddenClass;
-                    cls->m_data = m_data;
-                    cls->m_data.push_back(std::make_pair(name, ESHiddenClassPropertyInfo(isData, isWritable, isEnumerable, isConfigurable)));
-                    iter->second.second = cls;
-                    //printf("%d %s\n",(int)m_data.size(), name->utf8Data());
-                }
+                cls = new ESHiddenClass;
+                cls->m_data = m_data;
+                cls->m_data.push_back(std::make_pair(name, ESHiddenClassPropertyInfo(isData, isWritable, isEnumerable, isConfigurable)));
+                iter->second[(size_t)flag] = cls;
             }
         }
         obj->m_hiddenClassData.resize(cls->m_data.size());
