@@ -17,7 +17,7 @@ class ESBoolean;
 class ESBooleanObject;
 class ESNumberObject;
 class ESString;
-class ESChainString;
+class ESRopeString;
 class ESObject;
 class ESSlot;
 class ESHiddenClass;
@@ -211,7 +211,7 @@ class ESPointer : public gc {
 public:
     enum Type {
         ESString = 1 << 0,
-        ESChainString = 1 << 1,
+        ESRopeString = 1 << 1,
         ESObject = 1 << 2,
         ESFunctionObject = 1 << 3,
         ESArrayObject = 1 << 4,
@@ -249,17 +249,17 @@ public:
         return reinterpret_cast<::escargot::ESString *>(this);
     }
 
-    ALWAYS_INLINE bool isESChainString() const
+    ALWAYS_INLINE bool isESRopeString() const
     {
-        return m_type & Type::ESChainString;
+        return m_type & Type::ESRopeString;
     }
 
-    ALWAYS_INLINE ::escargot::ESChainString* asESChainString()
+    ALWAYS_INLINE ::escargot::ESRopeString* asESRopeString()
     {
 #ifndef NDEBUG
-        ASSERT(isESChainString());
+        ASSERT(isESRopeString());
 #endif
-        return reinterpret_cast<::escargot::ESChainString *>(this);
+        return reinterpret_cast<::escargot::ESRopeString *>(this);
     }
 
     ALWAYS_INLINE bool isESObject() const
@@ -650,112 +650,76 @@ ALWAYS_INLINE bool operator >= (const ESString& a,const ESString& b)
 }
 
 typedef std::vector<ESString *,gc_allocator<ESString *> > ESStringVector;
-typedef std::vector<ESStringData *,gc_allocator<ESStringData *> > ESChainStringVector;
 
-class ESChainString : public ESString {
+class ESRopeString : public ESString {
 protected:
-    ESChainString()
+    ESRopeString()
         : ESString((ESStringData *)nullptr)
     {
-        m_type = m_type | ESPointer::ESChainString;
-        m_chainSize = 0;
+        m_type = m_type | ESPointer::ESRopeString;
         m_contentLength = 0;
     }
 public:
-    static const unsigned ESChainStringCreateMinLimit = 256;
-    static const unsigned ESChainStringDefaultSize = 8;
-    static const unsigned ESChainStringMaximumSize = 128;
-    static ESChainString* create()
+    static const unsigned ESRopeStringCreateMinLimit = 256;
+    static ESRopeString* create()
     {
-        return new ESChainString();
+        return new ESRopeString();
+    }
+    static ESRopeString* createAndConcat(ESString* lstr, ESString* rstr)
+    {
+        ESRopeString* rope = ESRopeString::create();
+        rope->m_contentLength = lstr->length() + rstr->length();
+        rope->m_left = lstr;
+        rope->m_right = rstr;
+        return rope;
     }
     void convertIntoNormalString()
     {
 #ifndef NDEBUG
-        ASSERT(m_type & ESPointer::ESChainString);
+        ASSERT(m_type & ESPointer::ESRopeString);
         if(m_string) {
-            ASSERT(m_chainSize == 0);
+            ASSERT(m_contentLength == 0);
         }
 #endif
         u16string result;
-        result.reserve(m_contentLength);
-        for(unsigned i = 0; i < m_chainSize ; i ++) {
-            result.append(static_cast<const u16string &>(*m_chain[i]));
-            m_chain[i] = NULL;
+        //TODO: should reduce unnecessary append operations in std::string::resize
+        result.resize(m_contentLength);
+        std::vector<ESString *> queue;
+        queue.push_back(m_left);
+        queue.push_back(m_right);
+        int pos = m_contentLength;
+        while (!queue.empty()) {
+            ESString* cur = queue.back();
+            queue.pop_back();
+            if (cur->isESRopeString()) {
+                ESRopeString* rs = cur->asESRopeString();
+                queue.push_back(rs->m_left);
+                queue.push_back(rs->m_right);
+            } else {
+                pos -= cur->length();
+                memcpy((void*)(result.data() + pos), cur->data(), cur->length() * sizeof(char16_t));
+            }
         }
 
         m_string = new(GC) ESStringData(std::move(result));
-        m_chainSize = 0;
         m_contentLength = 0;
     }
-
-    void append(ESString* str)
-    {
-        if(m_string) {
-            ASSERT(m_chainSize == 0);
-            m_chain[m_chainSize++] = m_string;
-            m_contentLength = m_string->length();
-            m_string = NULL;
-        }
-
-        if(str->isESChainString()) {
-            ESChainString* cs = str->asESChainString();
-            if(cs->m_string) {
-                if(m_chainSize + 1 >= m_chain.size()) {
-                    size_t newSize  = m_chain.size() * 2;
-                    if(newSize < ESChainStringDefaultSize)
-                        newSize = ESChainStringDefaultSize;
-                    m_chain.resize(newSize);
-                }
-                m_chain[m_chainSize++] = const_cast<ESStringData *>(str->stringData());
-                m_contentLength += str->length();
-            }
-            else {
-                if(m_chainSize + cs->m_chainSize >= m_chain.size()) {
-                    size_t newSize  = (m_chain.size() + cs->m_chainSize) * 1.25f;
-                    if(newSize < ESChainStringDefaultSize)
-                        newSize = ESChainStringDefaultSize;
-                    m_chain.resize(newSize);
-                }
-                for(unsigned i = 0; i < cs->m_chainSize ; i ++) {
-                    m_chain[i + m_chainSize] = cs->m_chain[i];
-                }
-                m_chainSize += cs->m_chainSize;
-                m_contentLength += cs->m_contentLength;
-            }
-        } else {
-            if(m_chainSize + 1 >= m_chain.size()) {
-                size_t newSize  = m_chain.size() * 2;
-                if(newSize < ESChainStringDefaultSize)
-                    newSize = ESChainStringDefaultSize;
-                m_chain.resize(newSize);
-            }
-            m_chain[m_chainSize++] = const_cast<ESStringData *>(str->stringData());
-            m_contentLength += str->length();
-        }
-
-        if(m_chainSize > ESChainStringMaximumSize) {
-            convertIntoNormalString();
-        }
-    }
-
+public:
     int contentLength()
     {
         return m_contentLength;
     }
 
 protected:
-    ESChainStringVector m_chain;
-    unsigned m_chainSize;
+    ESString* m_left;
+    ESString* m_right;
     unsigned m_contentLength;
 };
-
-
 
 ALWAYS_INLINE const char16_t* ESString::data() const
 {
     if(UNLIKELY(m_string == NULL)) {
-        const_cast<ESString *>(this)->asESChainString()->convertIntoNormalString();
+        const_cast<ESString *>(this)->asESRopeString()->convertIntoNormalString();
     }
     return m_string->data();
 }
@@ -763,7 +727,7 @@ ALWAYS_INLINE const char16_t* ESString::data() const
 ALWAYS_INLINE const u16string& ESString::string() const
 {
     if(UNLIKELY(m_string == NULL)) {
-        const_cast<ESString *>(this)->asESChainString()->convertIntoNormalString();
+        const_cast<ESString *>(this)->asESRopeString()->convertIntoNormalString();
     }
     return static_cast<const u16string&>(*m_string);
 }
@@ -771,7 +735,7 @@ ALWAYS_INLINE const u16string& ESString::string() const
 ALWAYS_INLINE const ESStringData* ESString::stringData() const
 {
     if(UNLIKELY(m_string == NULL)) {
-        const_cast<ESString *>(this)->asESChainString()->convertIntoNormalString();
+        const_cast<ESString *>(this)->asESRopeString()->convertIntoNormalString();
     }
     return m_string;
 }
@@ -779,8 +743,8 @@ ALWAYS_INLINE const ESStringData* ESString::stringData() const
 ALWAYS_INLINE int ESString::length() const
 {
     if(UNLIKELY(m_string == NULL)) {
-        escargot::ESChainString* chain = (escargot::ESChainString *)this;
-        return chain->contentLength();
+        escargot::ESRopeString* rope = (escargot::ESRopeString *)this;
+        return rope->contentLength();
     }
     return m_string->length();
 }

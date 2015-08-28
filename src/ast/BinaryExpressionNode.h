@@ -141,10 +141,8 @@ public:
 
                     lstr = lval.toString();
                     rstr = rval.toString();
-                    if(UNLIKELY(lstr->length() + rstr->length() >= (int)ESChainString::ESChainStringCreateMinLimit)) {
-                        ESChainString* chain = ESChainString::create();
-                        chain->append(lstr);
-                        chain->append(rstr);
+                    if(UNLIKELY(lstr->length() + rstr->length() >= (int)ESRopeString::ESRopeStringCreateMinLimit)) {
+                        ESRopeString* chain = ESRopeString::createAndConcat(lstr, rstr);
                         ret = chain;
                     } else {
                         u16string str;
