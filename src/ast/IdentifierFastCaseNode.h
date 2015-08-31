@@ -11,11 +11,20 @@ namespace escargot {
 class IdentifierFastCaseNode : public Node {
 public:
     friend class ESScriptParser;
+#ifdef NDEBUG
     IdentifierFastCaseNode(size_t fastAccessIndex)
             : Node(NodeType::IdentifierFastCase)
     {
         m_fastAccessIndex = fastAccessIndex;
     }
+#else
+    IdentifierFastCaseNode(size_t fastAccessIndex, InternalAtomicString name)
+            : Node(NodeType::IdentifierFastCase)
+    {
+        m_fastAccessIndex = fastAccessIndex;
+        m_name = name;
+    }
+#endif
 
     ESValue execute(ESVMInstance* instance)
     {
@@ -30,6 +39,9 @@ public:
 
 protected:
     size_t m_fastAccessIndex;
+#ifndef NDEBUG
+    InternalAtomicString m_name;
+#endif
 };
 
 }

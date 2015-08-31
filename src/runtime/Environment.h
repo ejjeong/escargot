@@ -14,9 +14,9 @@ class ObjectEnvironmentRecord;
 class ESObject;
 class GlobalObject;
 
-typedef std::unordered_map<InternalAtomicString, ::escargot::ESSlot,
+typedef std::unordered_map<InternalAtomicString, ::escargot::ESValue,
             std::hash<InternalAtomicString>,std::equal_to<InternalAtomicString>,
-            gc_allocator<std::pair<const InternalAtomicString, ::escargot::ESSlot> > > ESIdentifierMapStd;
+            gc_allocator<std::pair<const InternalAtomicString, ::escargot::ESValue> > > ESIdentifierMapStd;
 
 class ESIdentifierMap : public ESIdentifierMapStd, public gc {
 public:
@@ -259,7 +259,7 @@ public:
     {
         //TODO canDelete
         ASSERT(m_needsActivation);
-        m_mapData->insert(std::make_pair(name, ESSlot()));
+        m_mapData->insert(std::make_pair(name, ESValue()));
     }
 
     virtual void setMutableBinding(const InternalAtomicString& name, ESString* nonAtomicName, const ESValue& V, bool mustNotThrowTypeErrorExecption)
@@ -268,7 +268,7 @@ public:
         if(UNLIKELY(m_needsActivation)) {
             auto iter = m_mapData->find(name);
             ASSERT(iter != m_mapData->end());
-            iter->second.setValue(V);
+            iter->second = V;
         } else {
             for(unsigned i = 0; i < m_innerIdentifiers->size() ; i ++) {
                 if((*m_innerIdentifiers)[i] == name) {

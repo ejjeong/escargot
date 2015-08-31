@@ -24,7 +24,6 @@ public:
     {
         ESValue value = m_object->execute(instance);
         ExecutionContext* ec = instance->currentExecutionContext();
-        ESSlotAccessor slot;
 
         if(UNLIKELY(value.isPrimitive())) {
             value = value.toObject();
@@ -36,22 +35,10 @@ public:
         ec->setLastESObjectMetInMemberExpressionNode(obj);
 
         if(!m_computed && m_property->type() == NodeType::Identifier) {
-            if(obj->isESArrayObject()) {
-                slot = obj->asESArrayObject()->definePropertyOrThrow(((IdentifierNode *)m_property)->nonAtomicName());
-            } else {
-                slot = obj->definePropertyOrThrow(((IdentifierNode *)m_property)->nonAtomicName(), true, true, true);
-            }
+            return obj->definePropertyOrThrow(((IdentifierNode *)m_property)->nonAtomicName(), true, true, true);
         } else {
-            ESValue computedPropertyValue = m_property->execute(instance);
-            if(obj->isESArrayObject()) {
-                slot = obj->asESArrayObject()->definePropertyOrThrow(computedPropertyValue);
-            } else {
-                ESString* computedPropertyName = computedPropertyValue.toString();
-                slot = obj->definePropertyOrThrow(computedPropertyName, true, true, true);
-            }
-
+            return obj->definePropertyOrThrow(m_property->execute(instance));
         }
-        return slot;
     }
     ESValue execute(ESVMInstance* instance)
     {
@@ -59,6 +46,7 @@ public:
 
         if(UNLIKELY(!m_computed)) {
             NodeType propertyNodeType = m_property->type();
+
             if(UNLIKELY(value.isESString() && propertyNodeType == NodeType::Identifier)) {
                 instance->globalObject()->stringObjectProxy()->setString(value.asESString());
                 ESSlotAccessor slot = instance->globalObject()->stringObjectProxy()->find(((IdentifierNode *)m_property)->nonAtomicName(), true);
@@ -97,7 +85,10 @@ public:
 
             if(!m_computed && m_property->type() == NodeType::Identifier) {
                 ESString* val = ((IdentifierNode *)m_property)->nonAtomicName();
-                if(obj->isHiddenClassMode()) {
+                /*
+                return obj->get(ESValue(val), true);
+                */
+                if(obj->isHiddenClassMode() && !obj->isESArrayObject()) {
                     if(m_cachedHiddenClass == obj->hiddenClass()) {
                         return obj->readHiddenClass(m_cachedIndex).value(obj);
                     } else {
@@ -118,31 +109,28 @@ public:
                     return obj->get(val, true);
                 }
             } else {
-                if(obj->isESArrayObject()) {
-                    return obj->asESArrayObject()->get(m_property->execute(instance));
-                } else {
+                //return obj->get(m_property->execute(instance), true);
+                if(obj->isHiddenClassMode() && !obj->isESArrayObject()) {
                     ESString* val = m_property->execute(instance).toString();
-                    if(obj->isHiddenClassMode()) {
-                        if(m_cachedHiddenClass == obj->hiddenClass() && (val == m_cachedPropertyValue || *val == *m_cachedPropertyValue)) {
-                            return obj->readHiddenClass(m_cachedIndex).value(obj);
-                        } else {
-                            size_t idx = obj->hiddenClass()->findProperty(val);
-                            if(idx != SIZE_MAX) {
-                                m_cachedHiddenClass = obj->hiddenClass();
-                                m_cachedPropertyValue = val;
-                                m_cachedIndex = idx;
-                                return obj->readHiddenClass(idx).value(obj);
-                            } else {
-                                m_cachedHiddenClass = nullptr;
-                                ESSlotAccessor ac = obj->findOnlyPrototype(val);
-                                if(ac.hasData())
-                                    return obj->findOnlyPrototype(val).value(obj);
-                                return ESValue();
-                            }
-                        }
+                    if(m_cachedHiddenClass == obj->hiddenClass() && (val == m_cachedPropertyValue || *val == *m_cachedPropertyValue)) {
+                        return obj->readHiddenClass(m_cachedIndex).value(obj);
                     } else {
-                        return obj->get(val, true);
+                        size_t idx = obj->hiddenClass()->findProperty(val);
+                        if(idx != SIZE_MAX) {
+                            m_cachedHiddenClass = obj->hiddenClass();
+                            m_cachedPropertyValue = val;
+                            m_cachedIndex = idx;
+                            return obj->readHiddenClass(idx).value(obj);
+                        } else {
+                            m_cachedHiddenClass = nullptr;
+                            ESSlotAccessor ac = obj->findOnlyPrototype(val);
+                            if(ac.hasData())
+                                return obj->findOnlyPrototype(val).value(obj);
+                            return ESValue();
+                        }
                     }
+                } else {
+                    return obj->get(m_property->execute(instance), true);
                 }
             }
 

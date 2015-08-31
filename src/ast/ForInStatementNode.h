@@ -28,17 +28,10 @@ public:
         ExecutionContext* ec = instance->currentExecutionContext();
         ec->resetLastESObjectMetInMemberExpressionNode();
 
-        std::vector<ESValue> propertyVals;
-        if (exprValue.isESPointer() && exprValue.asESPointer()->isESArrayObject()) {
-            ESArrayObject* arr = exprValue.asESPointer()->asESArrayObject();
-            arr->enumeration([&propertyVals](const ESValue& key, const ::escargot::ESSlotAccessor& val) {
-                propertyVals.push_back(key);
-            });
-        }
+        std::vector<ESValue, gc_allocator<ESValue> > propertyVals;
         ESObject* obj = exprValue.toObject();
-        std::vector<ESString*> propertyNames;
-        obj->enumeration([&propertyNames](ESString* key, const ::escargot::ESSlotAccessor& slot) {
-            propertyNames.push_back(key);
+        obj->enumeration([&propertyVals](ESValue key, const ::escargot::ESSlotAccessor& slot) {
+            propertyVals.push_back(key);
         });
         ec->setJumpPositionAndExecute([&](){
             jmpbuf_wrapper cont;
@@ -47,14 +40,8 @@ public:
                 ec->pushContinuePosition(cont);
             }
             for (unsigned int i=0; i<propertyVals.size(); i++) {
-                ESSlotWriterForAST::prepareExecuteForWriteASTNode(ec);
-                ESSlotAccessor slot = m_left->executeForWrite(instance);
-                ESSlotWriterForAST::setValue(slot, ec, propertyVals[i]);
-                m_body->execute(instance);
-            }
-            for (unsigned int i=0; i<propertyNames.size(); i++) {
-                if (obj->hasOwnProperty(propertyNames[i])) {
-                    ESString* name = propertyNames[i];
+                if (obj->hasOwnProperty(propertyVals[i])) {
+                    ESValue name = propertyVals[i];
                     ESSlotWriterForAST::prepareExecuteForWriteASTNode(ec);
                     ESSlotAccessor slot = m_left->executeForWrite(instance);
                     ESSlotWriterForAST::setValue(slot, ec, name);

@@ -28,7 +28,6 @@ public:
         //http://www.ecma-international.org/ecma-262/5.1/#sec-11.13.1
         ESValue rvalue = m_right->execute(instance);
         ESSlotAccessor slot = m_left->executeForWrite(instance);
-
         ESSlotWriterForAST::setValue(slot, ec, rvalue);
         return rvalue;
     }

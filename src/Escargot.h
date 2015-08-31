@@ -107,6 +107,7 @@ inline bool operator!=(const pointer_free_allocator<GC_T1>&, const pointer_free_
   return false;
 }
 
+
 /* COMPILER() - the compiler being used to build the project */
 #define COMPILER(FEATURE) (defined COMPILER_##FEATURE  && COMPILER_##FEATURE)
 

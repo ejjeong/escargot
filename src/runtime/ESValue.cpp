@@ -115,7 +115,7 @@ ESString* ESValue::toString() const
     } else {
         ASSERT(asESPointer()->isESObject());
         ESObject* obj = asESPointer()->asESObject();
-        ESValue ret = ESFunctionObject::call(obj->get(strings->toString, true), obj, NULL, 0, ESVMInstance::currentInstance(), false);
+        ESValue ret = ESFunctionObject::call(obj->get(ESValue(strings->toString), true), obj, NULL, 0, ESVMInstance::currentInstance(), false);
         ASSERT(ret.isESString());
         return ret.asESString();
     }
@@ -165,7 +165,7 @@ ESValue ESObject::valueOf()
         // Array.prototype do not have valueOf() function
         RELEASE_ASSERT_NOT_REACHED();
     else
-        RELEASE_ASSERT_NOT_REACHED();
+        return ESValue(this).toString();
 
     /*
     if (hint == ESValue::PreferString) {
@@ -257,13 +257,18 @@ ESObject::ESObject(ESPointer::Type type)
     : ESPointer(type)
     , m_map(NULL)
 {
+    //m_map = new(GC) ESObjectMap(16);
+    //m_hiddenClass = nullptr;
     m_hiddenClassData.reserve(6);
     m_hiddenClass = ESVMInstance::currentInstance()->initialHiddenClassForObject();
 
-    m_hiddenClassData.push_back(ESValue(ESValue::ESUndefined));
-    m_hiddenClassData.push_back(ESValue((ESPointer *)ESVMInstance::currentInstance()->object__proto__AccessorData()));
     //definePropertyOrThrow(strings->constructor, true, false, false);
     //defineAccessorProperty(strings->__proto__, ESVMInstance::currentInstance()->object__proto__AccessorData(), true, false, false);
+
+    m_hiddenClassData.push_back(ESValue(ESValue::ESUndefined));
+    m_hiddenClassData.push_back(ESValue((ESPointer *)ESVMInstance::currentInstance()->object__proto__AccessorData()));
+
+    //convertIntoMapMode();
 }
 
 ESArrayObject::ESArrayObject(int length)
@@ -304,8 +309,6 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, Functio
 {
     m_outerEnvironment = outerEnvironment;
     m_functionAST = functionAST;
-    m_hiddenClass = ESVMInstance::currentInstance()->initialHiddenClassForFunction();
-    m_hiddenClassData.push_back(ESValue((ESPointer *)ESVMInstance::currentInstance()->functionPrototypeAccessorData()));
 
     defineAccessorProperty(strings->prototype, ESVMInstance::currentInstance()->functionPrototypeAccessorData(), true, false, false);
 
@@ -397,6 +400,7 @@ ESValue ESFunctionObject::call(ESValue callee, ESValue receiver, ESValue argumen
             ExecutionContext ec(&env, false, isNewExpression, currentContext, arguments, argumentCount);
             ESVMInstance->m_currentExecutionContext = &ec;
             functionCallerInnerProcess(fn, receiver, arguments, argumentCount, fn->functionAST()->needsArgumentsObject(), ESVMInstance);
+            ESVMInstance->invalidateIdentifierCacheCheckCount();
             int r = setjmp(ESVMInstance->currentExecutionContext()->returnPosition());
             if(r != 1) {
                 fn->functionAST()->body()->execute(ESVMInstance);

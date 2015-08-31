@@ -41,16 +41,18 @@ ESVMInstance::ESVMInstance()
     };
 
     //FIXME set proper flags(is...)
-    m_initialHiddenClassForObject.m_data.push_back(std::make_pair(
+    m_initialHiddenClassForObject.m_propertyInfo.insert(std::make_pair(
             m_strings.constructor,
-            ESHiddenClassPropertyInfo(true, true, false, false)
+            0
             ));
+    m_initialHiddenClassForObject.m_propertyFlagInfo.push_back(ESHiddenClassPropertyInfo(true, true, false, false));
 
     //FIXME set proper flags(is...)
-    m_initialHiddenClassForObject.m_data.push_back(std::make_pair(
+    m_initialHiddenClassForObject.m_propertyInfo.insert(std::make_pair(
             m_strings.__proto__,
-            ESHiddenClassPropertyInfo(false, true, false, false)
+            1
             ));
+    m_initialHiddenClassForObject.m_propertyFlagInfo.push_back(ESHiddenClassPropertyInfo(false, true, false, false));
 
     m_functionPrototypeAccessorData.m_getter = [](ESObject* self) -> ESValue {
         return self->asESFunctionObject()->protoType();
@@ -62,7 +64,7 @@ ESVMInstance::ESVMInstance()
     };
 
     m_arrayLengthAccessorData.m_getter = [](ESObject* self) -> ESValue {
-        return self->asESArrayObject()->length();
+        return ESValue(self->asESArrayObject()->length());
     };
 
     m_arrayLengthAccessorData.m_setter = [](::escargot::ESObject* self, ESValue value) {

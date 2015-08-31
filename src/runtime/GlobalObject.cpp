@@ -17,6 +17,8 @@ GlobalObject::GlobalObject()
 
 void GlobalObject::initGlobalObject()
 {
+    convertIntoMapMode();
+
     installFunction();
     installObject();
     installArray();
@@ -28,8 +30,6 @@ void GlobalObject::initGlobalObject()
     installBoolean();
     installRegExp();
 
-
-    convertIntoMapMode();
 
     m_functionPrototype->set__proto__(m_objectPrototype);
 
@@ -53,7 +53,7 @@ void GlobalObject::initGlobalObject()
             ESValue& val = instance->currentExecutionContext()->arguments()[0];
             std::string str;
 
-            auto toString = [&str](ESValue v) {
+            std::function<void (ESValue v)> toString = [&str, &toString](ESValue v) {
                 if(v.isInt32()) {
                     str.append(v.toString()->utf8Data());
                 } else if(v.isNumber()) {
@@ -72,20 +72,30 @@ void GlobalObject::initGlobalObject()
                         str.append(v.toString()->utf8Data());
                     } else if(o->isESArrayObject()) {
                         str.append("[");
-                        str.append(v.toString()->utf8Data());
+                        bool isFirst = true;
+                        o->asESObject()->enumeration([&str, &isFirst, o, &toString](escargot::ESValue key, const ::escargot::ESSlotAccessor& slot) {
+                            if(!isFirst)
+                                str.append(", ");
+                                str.append(key.toString()->utf8Data());
+                                str.append(": ");
+                                //str.append(slot.value(o->asESObject()).toString()->utf8Data());
+                                toString(slot.value(o->asESObject()));
+                                isFirst = false;
+                            });
                         str.append("]");
                     } else if(o->isESErrorObject()) {
                         str.append(v.toString()->utf8Data());
                     } else if(o->isESObject()) {
-                        str.append(o->asESObject()->constructor().asESPointer()->asESObject()->get(strings->name, true).toString()->utf8Data());
+                        str.append(o->asESObject()->constructor().asESPointer()->asESObject()->get(ESValue(strings->name), true).toString()->utf8Data());
                         str.append(" {");
                         bool isFirst = true;
-                        o->asESObject()->enumeration([&str, &isFirst, o](escargot::ESString* key, const ::escargot::ESSlotAccessor& slot) {
+                        o->asESObject()->enumeration([&str, &isFirst, o, &toString](escargot::ESValue key, const ::escargot::ESSlotAccessor& slot) {
                             if(!isFirst)
                                 str.append(", ");
-                                str.append(key->utf8Data());
+                                str.append(key.toString()->utf8Data());
                                 str.append(": ");
-                                str.append(slot.value(o->asESObject()).toString()->utf8Data());
+                                //str.append(slot.value(o->asESObject()).toString()->utf8Data());
+                                toString(slot.value(o->asESObject()));
                                 isFirst = false;
                             });
                         if(o->isESStringObject()) {
@@ -263,7 +273,7 @@ void GlobalObject::installFunction()
         int arglen = instance->currentExecutionContext()->argumentCount();
         ESValue& thisArg = instance->currentExecutionContext()->arguments()[0];
         escargot::ESArrayObject* argArray = instance->currentExecutionContext()->arguments()[1].asESPointer()->asESArrayObject();
-        int arrlen = argArray->length().toInt32();
+        int arrlen = argArray->length();
         ESValue* arguments = (ESValue*)alloca(sizeof(ESValue) * arrlen);
         for (int i = 0; i < arrlen; i++) {
             arguments[i] = argArray->get(i);
@@ -306,12 +316,7 @@ void GlobalObject::installObject()
         ::escargot::ESString* key = instance->currentExecutionContext()->arguments()[0].toPrimitive(ESValue::PrimitiveTypeHint::PreferString).toString();
         auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding();
         escargot::ESString* keyString = key;
-        if (thisVal->isESArrayObject() && thisVal->asESArrayObject()->hasOwnProperty(keyString))
-            ret = ESValue(ESValue::ESTrueTag::ESTrue);
-        else if (thisVal->asESObject()->hasOwnProperty(keyString))
-            ret = ESValue(ESValue::ESTrueTag::ESTrue);
-        else
-            ret = ESValue(ESValue::ESFalseTag::ESFalse);
+        ret = ESValue(thisVal->asESObject()->hasOwnProperty(keyString));
         instance->currentExecutionContext()->doReturn(ret);
         return ESValue();
     }), false, false);
@@ -333,9 +338,9 @@ void GlobalObject::installError()
         ESValue v(instance->currentExecutionContext()->resolveThisBinding());
         ESPointer* o = v.asESPointer();
         u16string ret;
-        ret.append(o->asESObject()->get(ESString::create(u"name"), true).toString()->data());
+        ret.append(o->asESObject()->get(ESValue(ESString::create(u"name")), true).toString()->data());
         ret.append(u": ");
-        ret.append(o->asESObject()->get(ESString::create(u"message")).toString()->data());
+        ret.append(o->asESObject()->get(ESValue(ESString::create(u"message"))).toString()->data());
 
         instance->currentExecutionContext()->doReturn(ESString::create(std::move(ret)));
         RELEASE_ASSERT_NOT_REACHED();
@@ -398,7 +403,7 @@ void GlobalObject::installArray()
     FunctionDeclarationNode* arrayConcat = new FunctionDeclarationNode(strings->concat, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         int arglen = instance->currentExecutionContext()->argumentCount();
         auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESArrayObject();
-        int arrlen = thisVal->length().asInt32();
+        int arrlen = thisVal->length();
         escargot::ESArrayObject* ret = ESArrayObject::create(arrlen, instance->globalObject()->arrayPrototype());
         if (!thisVal->constructor().isUndefinedOrNull())
             ret->setConstructor(thisVal->constructor());
@@ -409,7 +414,7 @@ void GlobalObject::installArray()
             ESValue& argi = instance->currentExecutionContext()->arguments()[i];
             if (argi.isESPointer() && argi.asESPointer()->isESArrayObject()) {
                 escargot::ESArrayObject* arr = argi.asESPointer()->asESArrayObject();
-                int len = arr->length().asInt32();
+                int len = arr->length();
                 int st = idx;
                 for (; idx < st + len; idx++)
                     ret->set(idx, arr->get(idx - st));
@@ -420,12 +425,12 @@ void GlobalObject::installArray()
         instance->currentExecutionContext()->doReturn(ESValue(ret));
         return ESValue();
     }), false, false);
-    m_arrayPrototype->set(strings->concat, ESFunctionObject::create(NULL, arrayConcat));
+    m_arrayPrototype->ESObject::set(strings->concat, ESFunctionObject::create(NULL, arrayConcat));
 
     //$22.1.3.11 Array.prototype.indexOf()
     FunctionDeclarationNode* arrayIndexOf = new FunctionDeclarationNode(strings->indexOf, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESArrayObject();
-        int len = thisVal->length().asInt32();
+        int len = thisVal->length();
         int ret = 0;
         if (len == 0) ret = -1;
         else {
@@ -460,14 +465,14 @@ void GlobalObject::installArray()
         instance->currentExecutionContext()->doReturn(ESValue(ret));
         return ESValue();
     }), false, false);
-    m_arrayPrototype->set(strings->indexOf, ESFunctionObject::create(NULL, arrayIndexOf));
+    m_arrayPrototype->ESObject::set(strings->indexOf, ESFunctionObject::create(NULL, arrayIndexOf));
 
     //$22.1.3.12 Array.prototype.join(separator)
     FunctionDeclarationNode* arrayJoin = new FunctionDeclarationNode(strings->join, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         int arglen = instance->currentExecutionContext()->argumentCount();
         auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESArrayObject();
         u16string ret;
-        int arrlen = thisVal->length().asInt32();
+        int arrlen = thisVal->length();
         if (arrlen >= 0) {
             escargot::ESString* separator;
             if (arglen == 0) {
@@ -485,7 +490,7 @@ void GlobalObject::installArray()
         instance->currentExecutionContext()->doReturn(ESString::create(std::move(ret)));
         return ESValue();
     }), false, false);
-    m_arrayPrototype->set(strings->join, ESFunctionObject::create(NULL, arrayJoin));
+    m_arrayPrototype->ESObject::set(strings->join, ESFunctionObject::create(NULL, arrayJoin));
 
     //$22.1.3.17 Array.prototype.push(item)
     FunctionDeclarationNode* arrayPush = new FunctionDeclarationNode(strings->push, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
@@ -496,17 +501,17 @@ void GlobalObject::installArray()
             thisVal->push(val);
             i++;
         }
-        instance->currentExecutionContext()->doReturn(thisVal->length());
+        instance->currentExecutionContext()->doReturn(ESValue(thisVal->length()));
 
         return ESValue();
     }), false, false);
-    m_arrayPrototype->set(strings->push, ESFunctionObject::create(NULL, arrayPush));
+    m_arrayPrototype->ESObject::set(strings->push, ESFunctionObject::create(NULL, arrayPush));
 
     //$22.1.3.22 Array.prototype.slice(start, end)
     FunctionDeclarationNode* arraySlice = new FunctionDeclarationNode(strings->slice, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         int arglen = instance->currentExecutionContext()->argumentCount();
         escargot::ESArrayObject* thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESArrayObject();
-        int arrlen = thisVal->length().asInt32();
+        int arrlen = thisVal->length();
         int start, end;
         if (arglen < 1) start = 0;
         else            start = instance->currentExecutionContext()->arguments()[0].toInteger();
@@ -527,7 +532,7 @@ void GlobalObject::installArray()
 
         return ESValue();
     }), false, false);
-    m_arrayPrototype->set(strings->slice, ESFunctionObject::create(NULL, arraySlice));
+    m_arrayPrototype->ESObject::set(strings->slice, ESFunctionObject::create(NULL, arraySlice));
 
     //$22.1.3.25 Array.prototype.sort(comparefn)
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-array.prototype.sort
@@ -556,13 +561,13 @@ void GlobalObject::installArray()
         instance->currentExecutionContext()->doReturn(thisVal);
         return ESValue();
     }), false, false);
-    m_arrayPrototype->set(strings->sort, ESFunctionObject::create(NULL, arraySort));
+    m_arrayPrototype->ESObject::set(strings->sort, ESFunctionObject::create(NULL, arraySort));
 
     //$22.1.3.25 Array.prototype.splice(start, deleteCount, ...items)
     FunctionDeclarationNode* arraySplice = new FunctionDeclarationNode(strings->splice, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         int arglen = instance->currentExecutionContext()->argumentCount();
         auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESArrayObject();
-        int arrlen = thisVal->length().asInt32();
+        int arrlen = thisVal->length();
         escargot::ESArrayObject* ret = ESArrayObject::create(0, instance->globalObject()->arrayPrototype());
         if (!thisVal->constructor().isUndefinedOrNull())
             ret->setConstructor(thisVal->constructor());
@@ -617,13 +622,13 @@ void GlobalObject::installArray()
 
         return ESValue();
     }), false, false);
-    m_arrayPrototype->set(strings->splice, ESFunctionObject::create(NULL, arraySplice));
-    m_arrayPrototype->set(strings->toString, ESFunctionObject::create(NULL, new FunctionDeclarationNode(strings->toString, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+    m_arrayPrototype->ESObject::set(strings->splice, ESFunctionObject::create(NULL, arraySplice));
+    m_arrayPrototype->ESObject::set(strings->toString, ESFunctionObject::create(NULL, new FunctionDeclarationNode(strings->toString, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         //FIXME this is wrong
         u16string ret;
         escargot::ESArrayObject* fn = instance->currentExecutionContext()->resolveThisBinding()->asESArrayObject();
         bool isFirst = true;
-        for (int i = 0 ; i < fn->length().asInt32() ; i++) {
+        for (int i = 0 ; i < fn->length() ; i++) {
             if(!isFirst)
                 ret.append(u",");
             ESValue slot = fn->get(i);
@@ -636,7 +641,7 @@ void GlobalObject::installArray()
 
     m_array = ESFunctionObject::create(NULL, constructor);
     m_arrayPrototype->setConstructor(m_array);
-    m_arrayPrototype->set(strings->length, ESValue(0));
+    m_arrayPrototype->ESObject::set(strings->length, ESValue(0));
     m_array->set(strings->prototype, m_arrayPrototype);
     m_array->set(strings->length, ESValue(1));
     m_array->setConstructor(m_function);
@@ -802,7 +807,7 @@ void GlobalObject::installString()
                     ret->set(idx++,ESString::create(std::move(u16string(str + result.m_matchResults[i][j].m_start,str + result.m_matchResults[i][j].m_end))));
                 }
             }
-            if (ret->length().asInt32() == 0)
+            if (ret->length() == 0)
                 instance->currentExecutionContext()->doReturn(ESValue(ESValue::ESNull));
         }
         instance->currentExecutionContext()->doReturn(ret);

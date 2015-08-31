@@ -332,7 +332,11 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16str
             if((*node)->type() == NodeType::Identifier) {
                 IdentifierNode* n = (IdentifierNode *)*node;
                 if(nearFunction && !nearFunction->needsActivation() && n->canUseFastAccess()) {
+#ifdef NDEBUG
                     *node = new IdentifierFastCaseNode(n->fastAccessIndex());
+#else
+                    *node = new IdentifierFastCaseNode(n->fastAccessIndex(), n->name());
+#endif
                 }
             }
         }
