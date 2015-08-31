@@ -180,10 +180,47 @@ ESValue ESObject::valueOf()
     */
 }
 
+ESString* ESString::substring(int from, int to) const
+{
+    ASSERT(0 <= from && from <= to && to <= (int)length());
+    if(UNLIKELY(m_string == NULL)) {
+        escargot::ESRopeString* rope = (escargot::ESRopeString *)this;
+        int len_left = rope->m_left->length();
+        if (to <= len_left) {
+            u16string ret(std::move(rope->m_left->stringData()->substr(from, to-from)));
+            return ESString::create(std::move(ret));
+        } else if (len_left <= from) {
+            u16string ret(std::move(rope->m_right->stringData()->substr(from - len_left, to-from)));
+            return ESString::create(std::move(ret));
+        } else {
+            ESString* lstr = nullptr;
+            if (from == 0)
+                lstr = rope->m_left;
+            else {
+                u16string left(std::move(rope->m_left->stringData()->substr(from, len_left - from)));
+                lstr = ESString::create(std::move(left));
+            }
+            ESString* rstr = nullptr;
+            if (to == length())
+                rstr = rope->m_right;
+            else {
+                u16string right(std::move(rope->m_right->stringData()->substr(0, to - len_left)));
+                rstr = ESString::create(std::move(right));
+            }
+            return ESRopeString::createAndConcat(lstr, rstr);
+        }
+        ensureNormalString();
+    }
+
+    u16string ret(std::move(m_string->substr(from, to-from)));
+    return ESString::create(std::move(ret));
+}
+
+
 bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testOnly) const
 {
-    //NOTE to build normal string(for chain-string), we should call data();
-    data();
+    //NOTE to build normal string(for rope-string), we should call ensureNormalString();
+    ensureNormalString();
 
     ESRegExpObject::Option option = ESRegExpObject::Option::None;
     const u16string* regexSource;

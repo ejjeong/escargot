@@ -565,20 +565,13 @@ public:
         fn(buf);
     }
 
+    ALWAYS_INLINE void ensureNormalString() const;
     ALWAYS_INLINE const char16_t* data() const;
     ALWAYS_INLINE const u16string& string() const;
     ALWAYS_INLINE const ESStringData* stringData() const;
     ALWAYS_INLINE int length() const;
 
-    ESString* substring(int from, int to) const
-    {
-        //NOTE to build normal string(for chain-string), we should call data();
-        data();
-
-        ASSERT(0 <= from && from <= to && to <= (int)m_string->length());
-        u16string ret(std::move(m_string->substr(from, to-from)));
-        return ESString::create(std::move(ret));
-    }
+    ESString* substring(int from, int to) const;
 
     struct RegexMatchResult {
         struct RegexMatchResultPiece {
@@ -654,6 +647,7 @@ ALWAYS_INLINE bool operator >= (const ESString& a,const ESString& b)
 typedef std::vector<ESString *,gc_allocator<ESString *> > ESStringVector;
 
 class ESRopeString : public ESString {
+    friend class ESString;
 protected:
     ESRopeString()
         : ESString((ESStringData *)nullptr)
@@ -675,8 +669,7 @@ public:
         rope->m_right = rstr;
         return rope;
     }
-    void convertIntoNormalString()
-    {
+    ESStringData* stringData() {
 #ifndef NDEBUG
         ASSERT(m_type & ESPointer::ESRopeString);
         if(m_string) {
@@ -702,8 +695,11 @@ public:
                 memcpy((void*)(result.data() + pos), cur->data(), cur->length() * sizeof(char16_t));
             }
         }
-
-        m_string = new(GC) ESStringData(std::move(result));
+        return new(GC) ESStringData(std::move(result));
+    }
+    void convertIntoNormalString()
+    {
+        m_string = stringData();
         m_left = nullptr;
         m_right = nullptr;
         m_contentLength = 0;
@@ -740,10 +736,17 @@ ALWAYS_INLINE ESString* ESString::concatTwoStrings(ESString* lstr, ESString* rst
     }
 }
 
-ALWAYS_INLINE const char16_t* ESString::data() const
+ALWAYS_INLINE void ESString::ensureNormalString() const
 {
     if(UNLIKELY(m_string == NULL)) {
         const_cast<ESString *>(this)->asESRopeString()->convertIntoNormalString();
+    }
+}
+
+ALWAYS_INLINE const char16_t* ESString::data() const
+{
+    if(UNLIKELY(m_string == NULL)) {
+        ensureNormalString();
     }
     return m_string->data();
 }
@@ -751,7 +754,7 @@ ALWAYS_INLINE const char16_t* ESString::data() const
 ALWAYS_INLINE const u16string& ESString::string() const
 {
     if(UNLIKELY(m_string == NULL)) {
-        const_cast<ESString *>(this)->asESRopeString()->convertIntoNormalString();
+        ensureNormalString();
     }
     return static_cast<const u16string&>(*m_string);
 }
@@ -759,7 +762,7 @@ ALWAYS_INLINE const u16string& ESString::string() const
 ALWAYS_INLINE const ESStringData* ESString::stringData() const
 {
     if(UNLIKELY(m_string == NULL)) {
-        const_cast<ESString *>(this)->asESRopeString()->convertIntoNormalString();
+        return const_cast<ESString *>(this)->asESRopeString()->stringData();
     }
     return m_string;
 }
