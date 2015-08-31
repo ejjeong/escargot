@@ -546,6 +546,8 @@ public:
         return new ESString(str);
     }
 
+    static ESString* concatTwoStrings(ESString* lstr, ESString* rstr);
+
     ALWAYS_INLINE const char* utf8Data() const
     {
         return utf16ToUtf8(data());
@@ -691,7 +693,7 @@ public:
         while (!queue.empty()) {
             ESString* cur = queue.back();
             queue.pop_back();
-            if (cur->isESRopeString()) {
+            if (cur && cur->isESRopeString() && cur->asESRopeString()->m_contentLength != 0) {
                 ESRopeString* rs = cur->asESRopeString();
                 queue.push_back(rs->m_left);
                 queue.push_back(rs->m_right);
@@ -702,6 +704,8 @@ public:
         }
 
         m_string = new(GC) ESStringData(std::move(result));
+        m_left = nullptr;
+        m_right = nullptr;
         m_contentLength = 0;
     }
 public:
@@ -715,6 +719,26 @@ protected:
     ESString* m_right;
     unsigned m_contentLength;
 };
+
+ALWAYS_INLINE ESString* ESString::concatTwoStrings(ESString* lstr, ESString* rstr)
+{
+    int llen = lstr->length();
+    int rlen = rstr->length();
+    if (llen == 0)
+        return rstr;
+    if (rlen == 0)
+        return lstr;
+
+    if (UNLIKELY(llen + rlen >= (int)ESRopeString::ESRopeStringCreateMinLimit)) {
+        return ESRopeString::createAndConcat(lstr, rstr);
+    } else {
+        u16string str;
+        str.reserve(llen + rlen);
+        str.append(lstr->string());
+        str.append(rstr->string());
+        return ESString::create(std::move(str));
+    }
+}
 
 ALWAYS_INLINE const char16_t* ESString::data() const
 {

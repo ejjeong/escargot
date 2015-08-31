@@ -745,14 +745,13 @@ void GlobalObject::installString()
     //$21.1.3.4 String.prototype.concat(...args)
     FunctionDeclarationNode* stringConcat = new FunctionDeclarationNode(strings->concat, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
-        const u16string& str = thisObject->asESStringObject()->getStringData()->string();
-        u16string ret;
-        ret.append(str);
+        escargot::ESString* ret = thisObject->asESStringObject()->getStringData();
         int argCount = instance->currentExecutionContext()->argumentCount();
         for (int i=0; i<argCount; i++) {
-            ret.append(instance->currentExecutionContext()->arguments()[i].toString()->string().data());
+            escargot::ESString* arg = instance->currentExecutionContext()->arguments()[i].toString();
+            ret = ESString::concatTwoStrings(ret, arg);
         }
-        instance->currentExecutionContext()->doReturn(ESString::create(std::move(ret)));
+        instance->currentExecutionContext()->doReturn(ret);
         return ESValue();
     }), false, false);
     m_stringPrototype->set(strings->concat, ESFunctionObject::create(NULL, stringConcat));

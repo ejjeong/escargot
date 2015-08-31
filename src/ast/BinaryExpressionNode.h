@@ -141,18 +141,7 @@ public:
 
                     lstr = lval.toString();
                     rstr = rval.toString();
-                    if(UNLIKELY(lstr->length() + rstr->length() >= (int)ESRopeString::ESRopeStringCreateMinLimit)) {
-                        ESRopeString* chain = ESRopeString::createAndConcat(lstr, rstr);
-                        ret = chain;
-                    } else {
-                        u16string str;
-                        str.reserve(lstr->length() + rstr->length());
-                        str.append(lstr->string());
-                        str.append(rstr->string());
-                        ret = ESString::create(std::move(str));
-                    }
-
-
+                    ret = ESString::concatTwoStrings(lstr, rstr);
                 } else {
                     if(lval.isInt32() && rval.isInt32()) {
                         int a = lval.asInt32(), b = rval.asInt32();
