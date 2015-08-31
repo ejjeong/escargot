@@ -77,6 +77,7 @@ enum NodeType {
     SequenceExpression,
     NewExpression,
     MemberExpression,
+    MemberExpressionNonComputedCase,
     ConditionalExpression,
     CallExpression,
     VariableDeclarator,

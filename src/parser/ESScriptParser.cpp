@@ -251,6 +251,8 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16str
         } else if(type == NodeType::MemberExpression) {
             postAnalysisFunction(((MemberExpressionNode *)currentNode)->m_object, identifierStack, nearFunctionNode);
             postAnalysisFunction(((MemberExpressionNode *)currentNode)->m_property, identifierStack, nearFunctionNode);
+        } else if(type == NodeType::MemberExpressionNonComputedCase) {
+            postAnalysisFunction(((MemberExpressionNodeNonComputedCase *)currentNode)->m_object, identifierStack, nearFunctionNode);
         } else if(type == NodeType::BinaryExpression) {
             postAnalysisFunction(((BinaryExpressionNode *)currentNode)->m_right, identifierStack, nearFunctionNode);
             postAnalysisFunction(((BinaryExpressionNode *)currentNode)->m_left, identifierStack, nearFunctionNode);
@@ -436,10 +438,12 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16str
             postProcessingFunction(((PropertyNode *)currentNode)->m_value, nearFunction);
         } else if(type == NodeType::MemberExpression) {
             nodeReplacer(&((MemberExpressionNode *)currentNode)->m_object, nearFunction);
-            if(((MemberExpressionNode *)currentNode)->m_computed)
-                nodeReplacer(&((MemberExpressionNode *)currentNode)->m_property, nearFunction);
+            nodeReplacer(&((MemberExpressionNode *)currentNode)->m_property, nearFunction);
             postProcessingFunction(((MemberExpressionNode *)currentNode)->m_object, nearFunction);
             postProcessingFunction(((MemberExpressionNode *)currentNode)->m_property, nearFunction);
+        } else if(type == NodeType::MemberExpressionNonComputedCase) {
+            nodeReplacer(&((MemberExpressionNodeNonComputedCase *)currentNode)->m_object, nearFunction);
+            postProcessingFunction(((MemberExpressionNodeNonComputedCase *)currentNode)->m_object, nearFunction);
         } else if(type == NodeType::BinaryExpression) {
             nodeReplacer((Node **)&((BinaryExpressionNode *)currentNode)->m_right, nearFunction);
             nodeReplacer((Node **)&((BinaryExpressionNode *)currentNode)->m_left, nearFunction);

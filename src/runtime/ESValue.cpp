@@ -381,6 +381,7 @@ ESValue ESFunctionObject::call(ESValue callee, ESValue receiver, ESValue argumen
         if(fn->functionAST()->needsActivation()) {
             ESVMInstance->m_currentExecutionContext = new ExecutionContext(LexicalEnvironment::newFunctionEnvironment(fn, receiver), true, isNewExpression, currentContext, arguments, argumentCount);
             functionCallerInnerProcess(fn, receiver, arguments, argumentCount, true, ESVMInstance);
+            //ESVMInstance->invalidateIdentifierCacheCheckCount();
             int r = setjmp(ESVMInstance->currentExecutionContext()->returnPosition());
             if(r != 1) {
                 fn->functionAST()->body()->execute(ESVMInstance);
@@ -400,7 +401,7 @@ ESValue ESFunctionObject::call(ESValue callee, ESValue receiver, ESValue argumen
             ExecutionContext ec(&env, false, isNewExpression, currentContext, arguments, argumentCount);
             ESVMInstance->m_currentExecutionContext = &ec;
             functionCallerInnerProcess(fn, receiver, arguments, argumentCount, fn->functionAST()->needsArgumentsObject(), ESVMInstance);
-            ESVMInstance->invalidateIdentifierCacheCheckCount();
+            //ESVMInstance->invalidateIdentifierCacheCheckCount();
             int r = setjmp(ESVMInstance->currentExecutionContext()->returnPosition());
             if(r != 1) {
                 fn->functionAST()->body()->execute(ESVMInstance);

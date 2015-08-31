@@ -67,14 +67,14 @@ public:
             ESSlotAccessor slot = ec->resolveBinding(name(), nonAtomicName());
 
             if(LIKELY(slot.hasData())) {
-                m_cachedSlot = ESSlotAccessor(slot);
+                m_cachedSlot = slot;
                 m_cacheCheckExecutionContext = ec;
                 m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
-                return ESSlotAccessor(slot);
+                return slot;
             } else {
                 //CHECKTHIS true, true, false is right?
                 instance->invalidateIdentifierCacheCheckCount();
-                return instance->globalObject()->definePropertyOrThrow(m_nonAtomicName,true, true, false);
+                return instance->globalObject()->definePropertyOrThrow(m_nonAtomicName, true, true, false);
             }
         }
     }
