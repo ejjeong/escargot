@@ -373,14 +373,14 @@ inline double ESValue::asNumber() const
 
 inline ESValue ESValue::toPrimitive(PrimitiveTypeHint preferredType) const
 {
-    if (isPrimitive())
-        return *this;
-    if (isESPointer() && asESPointer()->isESObject()) {
+    if (UNLIKELY(isESPointer() && asESPointer()->isESObject())) {
         if (preferredType == PrimitiveTypeHint::PreferString || !asESPointer()->asESObject()->hasValueOf()) {
             return ESValue(toString());
         } else { // preferNumber
             return ESValue(asESPointer()->asESObject()->valueOf());
         }
+    } else {
+        return *this;
     }
     RELEASE_ASSERT_NOT_REACHED();
     return ESValue();
@@ -486,7 +486,7 @@ inline int32_t ESValue::toInt32() const
 
 inline bool ESValue::isObject() const
 {
-    return isESPointer() && asESPointer()->isESStringObject();
+    return isESPointer() && asESPointer()->isESObject();
 }
 
 inline double ESValue::toLength() const

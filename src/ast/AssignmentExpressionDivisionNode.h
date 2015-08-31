@@ -1,5 +1,5 @@
-#ifndef AssignmentExpressionSimpleNode_h
-#define AssignmentExpressionSimpleNode_h
+#ifndef AssignmentExpressionDivisionNode_h
+#define AssignmentExpressionDivisionNode_h
 
 #include "ExpressionNode.h"
 #include "PatternNode.h"
@@ -8,12 +8,12 @@
 namespace escargot {
 
 //An assignment operator expression.
-class AssignmentExpressionSimpleNode : public ExpressionNode {
+class AssignmentExpressionDivisionNode : public ExpressionNode {
 public:
     friend class ESScriptParser;
 
-    AssignmentExpressionSimpleNode(Node* left, Node* right)
-            : ExpressionNode(NodeType::AssignmentExpressionSimple)
+    AssignmentExpressionDivisionNode(Node* left, Node* right)
+            : ExpressionNode(NodeType::AssignmentExpressionDivision)
     {
         m_left = left;
         m_right = right;
@@ -21,12 +21,12 @@ public:
 
     ESValue execute(ESVMInstance* instance)
     {
+        ESSlotAccessor slot;
         ExecutionContext* ec = instance->currentExecutionContext();
         ESSlotWriterForAST::prepareExecuteForWriteASTNode(ec);
 
-        //http://www.ecma-international.org/ecma-262/5.1/#sec-11.13.1
-        ESValue rvalue = m_right->execute(instance);
-        ESSlotAccessor slot = m_left->executeForWrite(instance);
+        slot = m_left->executeForWrite(instance);
+        ESValue rvalue(slot.value(ec->lastESObjectMetInMemberExpressionNode()).toNumber() / m_right->execute(instance).toNumber());
         ESSlotWriterForAST::setValue(slot, ec, rvalue);
         return rvalue;
     }

@@ -185,9 +185,9 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16str
             //wprintf(L"use Identifier %ls\n", ((IdentifierNode *)currentNode)->name().data());
         } else if(type == NodeType::ExpressionStatement) {
             postAnalysisFunction(((ExpressionStatementNode *)currentNode)->m_expression, identifierStack, nearFunctionNode);
-        } else if(type == NodeType::AssignmentExpression) {
-            postAnalysisFunction(((AssignmentExpressionNode *)currentNode)->m_right, identifierStack, nearFunctionNode);
-            postAnalysisFunction(((AssignmentExpressionNode *)currentNode)->m_left, identifierStack, nearFunctionNode);
+        } else if(type >= NodeType::AssignmentExpressionBitwiseAnd && type <= NodeType::AssignmentExpressionUnsignedRightShift) {
+            postAnalysisFunction(((AssignmentExpressionBitwiseAndNode *)currentNode)->m_right, identifierStack, nearFunctionNode);
+            postAnalysisFunction(((AssignmentExpressionBitwiseAndNode *)currentNode)->m_left, identifierStack, nearFunctionNode);
         } else if(type == NodeType::AssignmentExpressionSimple) {
             postAnalysisFunction(((AssignmentExpressionSimpleNode *)currentNode)->m_right, identifierStack, nearFunctionNode);
             postAnalysisFunction(((AssignmentExpressionSimpleNode *)currentNode)->m_left, identifierStack, nearFunctionNode);
@@ -253,9 +253,6 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16str
             postAnalysisFunction(((MemberExpressionNode *)currentNode)->m_property, identifierStack, nearFunctionNode);
         } else if(type == NodeType::MemberExpressionNonComputedCase) {
             postAnalysisFunction(((MemberExpressionNodeNonComputedCase *)currentNode)->m_object, identifierStack, nearFunctionNode);
-        } else if(type == NodeType::BinaryExpression) {
-            postAnalysisFunction(((BinaryExpressionNode *)currentNode)->m_right, identifierStack, nearFunctionNode);
-            postAnalysisFunction(((BinaryExpressionNode *)currentNode)->m_left, identifierStack, nearFunctionNode);
         } else if(type >= NodeType::BinaryExpressionBitwiseAnd && type <= NodeType::BinaryExpressionUnsignedRightShift) {
             postAnalysisFunction(((BinaryExpressionBitwiseAndNode *)currentNode)->m_right, identifierStack, nearFunctionNode);
             postAnalysisFunction(((BinaryExpressionBitwiseAndNode *)currentNode)->m_left, identifierStack, nearFunctionNode);
@@ -368,11 +365,11 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16str
         } else if(type == NodeType::ExpressionStatement) {
             nodeReplacer(&((ExpressionStatementNode *)currentNode)->m_expression, nearFunction);
             postProcessingFunction(((ExpressionStatementNode *)currentNode)->m_expression, nearFunction);
-        } else if(type == NodeType::AssignmentExpression) {
-            nodeReplacer(&((AssignmentExpressionNode *)currentNode)->m_right, nearFunction);
-            nodeReplacer(&((AssignmentExpressionNode *)currentNode)->m_left, nearFunction);
-            postProcessingFunction(((AssignmentExpressionNode *)currentNode)->m_right, nearFunction);
-            postProcessingFunction(((AssignmentExpressionNode *)currentNode)->m_left, nearFunction);
+        } else if(type >= NodeType::AssignmentExpressionBitwiseAnd && type <= NodeType::AssignmentExpressionUnsignedRightShift) {
+            nodeReplacer(&((AssignmentExpressionBitwiseAndNode *)currentNode)->m_right, nearFunction);
+            nodeReplacer(&((AssignmentExpressionBitwiseAndNode *)currentNode)->m_left, nearFunction);
+            postProcessingFunction(((AssignmentExpressionBitwiseAndNode *)currentNode)->m_right, nearFunction);
+            postProcessingFunction(((AssignmentExpressionBitwiseAndNode *)currentNode)->m_left, nearFunction);
         } else if(type == NodeType::AssignmentExpressionSimple) {
             nodeReplacer(&((AssignmentExpressionSimpleNode*)currentNode)->m_right, nearFunction);
             nodeReplacer(&((AssignmentExpressionSimpleNode *)currentNode)->m_left, nearFunction);
@@ -380,7 +377,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16str
             postProcessingFunction(((AssignmentExpressionSimpleNode *)currentNode)->m_left, nearFunction);
         } else if(type == NodeType::Literal) {
             //DO NOTHING
-        }else if(type == NodeType::ArrayExpression) {
+        } else if(type == NodeType::ArrayExpression) {
             ExpressionNodeVector& v = ((ArrayExpressionNode *)currentNode)->m_elements;
             for(unsigned i = 0; i < v.size() ; i ++) {
                 nodeReplacer(&v[i], nearFunction);
@@ -444,11 +441,6 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16str
         } else if(type == NodeType::MemberExpressionNonComputedCase) {
             nodeReplacer(&((MemberExpressionNodeNonComputedCase *)currentNode)->m_object, nearFunction);
             postProcessingFunction(((MemberExpressionNodeNonComputedCase *)currentNode)->m_object, nearFunction);
-        } else if(type == NodeType::BinaryExpression) {
-            nodeReplacer((Node **)&((BinaryExpressionNode *)currentNode)->m_right, nearFunction);
-            nodeReplacer((Node **)&((BinaryExpressionNode *)currentNode)->m_left, nearFunction);
-            postProcessingFunction(((BinaryExpressionNode *)currentNode)->m_right, nearFunction);
-            postProcessingFunction(((BinaryExpressionNode *)currentNode)->m_left, nearFunction);
         } else if(type >= NodeType::BinaryExpressionBitwiseAnd && type <= NodeType::BinaryExpressionUnsignedRightShift) {
             nodeReplacer((Node **)&((BinaryExpressionBitwiseAndNode *)currentNode)->m_right, nearFunction);
             nodeReplacer((Node **)&((BinaryExpressionBitwiseAndNode *)currentNode)->m_left, nearFunction);

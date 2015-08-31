@@ -4559,7 +4559,29 @@ escargot::Node* parseAssignmentExpression(ParseContext* ctx) {
         if(token->m_value == u"=") {
             expr = new escargot::AssignmentExpressionSimpleNode(expr, right);
         } else {
-            expr = new escargot::AssignmentExpressionNode(expr, right,escargot::ESString::create(token->m_value.data()));
+            if(token->m_value == u"+=") {
+                expr = new escargot::AssignmentExpressionPlusNode(expr, right);
+            } else if(token->m_value == u"-=") {
+                expr = new escargot::AssignmentExpressionMinusNode(expr, right);
+            } else if(token->m_value == u"*=") {
+                expr = new escargot::AssignmentExpressionMultiplyNode(expr, right);
+            } else if(token->m_value == u"/=") {
+                expr = new escargot::AssignmentExpressionDivisionNode(expr, right);
+            } else if(token->m_value == u"<<=") {
+                expr = new escargot::AssignmentExpressionLeftShiftNode(expr, right);
+            } else if(token->m_value == u">>=") {
+                expr = new escargot::AssignmentExpressionSignedRightShiftNode(expr, right);
+            } else if(token->m_value == u">>>=") {
+                expr = new escargot::AssignmentExpressionUnsignedShiftNode(expr, right);
+            } else if(token->m_value == u"^=") {
+                expr = new escargot::AssignmentExpressionBitwiseXorNode(expr, right);
+            } else if(token->m_value == u"&=") {
+                expr = new escargot::AssignmentExpressionBitwiseAndNode(expr, right);
+            } else if(token->m_value == u"|=") {
+                expr = new escargot::AssignmentExpressionBitwiseOrNode(expr, right);
+            } else {
+                RELEASE_ASSERT_NOT_REACHED();
+            }
         }
         ctx->m_firstCoverInitializedNameError = NULL;
     }
