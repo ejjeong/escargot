@@ -1,12 +1,14 @@
 #!/bin/bash
 
 tests=("3d-cube" "3d-morph" "3d-raytrace" "access-binary-trees" "access-fannkuch" "access-nbody" "access-nsieve" "bitops-3bit-bits-in-byte" "bitops-bits-in-byte" "bitops-bitwise-and" "bitops-nsieve-bits" "controlflow-recursive" "crypto-aes" "crypto-md5" "crypto-sha1" "date-format-tofte" "date-format-xparb" "math-cordic" "math-partial-sums" "math-spectral-norm" "regexp-dna" "string-base64" "string-fasta" "string-tagcloud" "string-unpack-code" "string-validate-input")
+cp test/SunSpider/resources/sunspider-standalone-driver.orig.js test/SunSpider/resources/sunspider-standalone-driver.js
 if [[ $1 == duk* ]]; then
   cmd="./test/bin/duk"
   tc="duktape"
 elif [[ $1 == v8* ]]; then
   cmd="./test/bin/d8"
   tc="v8"
+  cp test/SunSpider/resources/sunspider-standalone-driver-v8.js test/SunSpider/resources/sunspider-standalone-driver.js
 elif [[ $1 == jsc.jit ]]; then
   cmd="./test/bin/jsc.jit"
   tc="jsc.jit"
@@ -57,6 +59,7 @@ fi
 if [[ $2 == time ]]; then
   echo 'No Measure Memory'
 else
+  echo '' > tmp
   for t in "${tests[@]}"; do
     sleep 1s;
     filename=$(echo $testpath$t'.js')
@@ -78,5 +81,8 @@ else
   rm tmp
 fi
 
-echo '-------------------------------------------------finish exe'
+if [[ $1 == v8* ]]; then
+  cp test/SunSpider/resources/sunspider-standalone-driver.orig.js test/SunSpider/resources/sunspider-standalone-driver.js
+fi
 
+echo '-------------------------------------------------finish exe'
