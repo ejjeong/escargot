@@ -870,6 +870,24 @@ void GlobalObject::installString()
                 if(replaceString->string().find('$') == u16string::npos) {
                     //flat replace
                     int32_t matchCount = result.m_matchResults.size();
+                    if (replaceString->length() > ESRopeString::ESRopeStringCreateMinLimit) {
+                        //create Rope string
+                        u16string append(orgString, 0, result.m_matchResults[0][0].m_start);
+                        escargot::ESString* newStr = ESString::create(std::move(append));
+                        escargot::ESString* appendStr = nullptr;
+                        for(int32_t i = 0; i < matchCount ; i ++) {
+                            newStr = escargot::ESString::concatTwoStrings(newStr, replaceString);
+                            if(i < matchCount - 1) {
+                                u16string append2(orgString, result.m_matchResults[i][0].m_end, result.m_matchResults[i + 1][0].m_start - result.m_matchResults[i][0].m_end);
+                                appendStr = ESString::create(std::move(append2));
+                                newStr = escargot::ESString::concatTwoStrings(newStr, appendStr);
+                            }
+                        }
+                        u16string append2(orgString, result.m_matchResults[matchCount - 1][0].m_end);
+                        appendStr = ESString::create(std::move(append2));
+                        newStr = escargot::ESString::concatTwoStrings(newStr, appendStr);
+                        instance->currentExecutionContext()->doReturn(newStr);
+                    }
                     newThis.append(orgString.begin(), orgString.begin() + result.m_matchResults[0][0].m_start);
                     for(int32_t i = 0; i < matchCount ; i ++) {
                         escargot::ESString* res = replaceString;

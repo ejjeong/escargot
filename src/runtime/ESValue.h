@@ -719,9 +719,9 @@ protected:
 ALWAYS_INLINE ESString* ESString::concatTwoStrings(ESString* lstr, ESString* rstr)
 {
     int llen = lstr->length();
-    int rlen = rstr->length();
     if (llen == 0)
         return rstr;
+    int rlen = rstr->length();
     if (rlen == 0)
         return lstr;
 
