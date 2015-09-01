@@ -68,8 +68,7 @@ ESVMInstance::ESVMInstance()
     };
 
     m_arrayLengthAccessorData.m_setter = [](::escargot::ESObject* self, ESValue value) {
-        ESValue len = ESValue(value.asInt32());
-        self->asESArrayObject()->setLength(len);
+        self->asESArrayObject()->setLength(value.toInt32());
     };
 
     m_stringObjectLengthAccessorData.m_getter = [](ESObject* self) -> ESValue {

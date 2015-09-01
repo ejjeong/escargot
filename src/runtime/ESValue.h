@@ -1488,22 +1488,14 @@ public:
         }
     }
 
-    void setLength(ESValue len)
+    void setLength(int32_t newLength)
     {
-        ASSERT(len.isInt32());
-        int32_t newLength = len.asInt32();
-        if (len.asInt32() < m_length) {
+        if (newLength < m_length) {
             //TODO : delete elements
         } else if (m_fastmode && newLength > m_length) {
             m_vector.resize(newLength);
         }
         m_length = newLength;
-    }
-
-    void setLength(int len)
-    {
-        ESValue length = ESValue(len);
-        setLength(length);
     }
 
     bool isFastmode()

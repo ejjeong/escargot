@@ -6,7 +6,7 @@
 
 namespace escargot {
 
-class ForInStatementNode : public StatementNode {
+class ForInStatementNode : public StatementNode , public ControlFlowNode {
 public:
     friend class ESScriptParser;
     ForInStatementNode(Node *left, Node *right, Node *body, bool each)

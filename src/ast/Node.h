@@ -26,8 +26,10 @@ enum NodeType {
     ReturnStatement,
     IfStatement,
     ForStatement,
+    ForStatementSimpleCase,
     ForInStatement,
     WhileStatement,
+    WhileStatementSimpleCase,
     DoWhileStatement,
     SwitchStatement,
     SwitchCase,
@@ -133,6 +135,20 @@ public:
 protected:
     NodeType m_nodeType;
     SourceLocation m_sourceLocation;
+};
+
+class ControlFlowNode {
+public:
+    ControlFlowNode()
+    {
+        m_isSlowCase = false;
+    }
+    void markAsSlowCase()
+    {
+        m_isSlowCase = true;
+    }
+protected:
+    bool m_isSlowCase;
 };
 
 class ESSlotWriterForAST {

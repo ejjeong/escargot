@@ -7,7 +7,7 @@
 
 namespace escargot {
 
-class SwitchStatementNode : public StatementNode {
+class SwitchStatementNode : public StatementNode, public ControlFlowNode {
 public:
     friend class ESScriptParser;
     SwitchStatementNode(Node* discriminant, StatementNodeVector&& casesA, Node* deflt, StatementNodeVector&& casesB, bool lexical)
