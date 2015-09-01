@@ -14,7 +14,7 @@ public:
 protected:
 };
 
-typedef std::vector<Node *, gc_allocator<PatternNode *>> PatternNodeVector;
+typedef std::vector<Node *, gc_allocator<Node *>> PatternNodeVector;
 
 }
 

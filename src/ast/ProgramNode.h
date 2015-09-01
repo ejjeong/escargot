@@ -14,13 +14,14 @@ public:
     {
         m_body = body;
         m_bodySize = m_body.size();
+        m_rootedBody = m_body.data();
     }
 
     ESValue execute(ESVMInstance* instance)
     {
         ESValue ret;
         for(unsigned i = 0; i < m_bodySize ; i ++) {
-            ESValue s = m_body[i]->execute(instance);
+            ESValue s = m_rootedBody[i]->execute(instance);
             if (!s.isEmpty())
                 ret = s;
         }
@@ -28,6 +29,7 @@ public:
     }
 protected:
     StatementNodeVector m_body; //body: [ Statement ];
+    Node** m_rootedBody;
     size_t m_bodySize;
 };
 

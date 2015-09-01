@@ -17,8 +17,7 @@ public:
     ESValue execute(ESVMInstance* instance)
     {
         int32_t lnum = m_left->execute(instance).toInt32();
-        int32_t rnum = m_right->execute(instance).toInt32();
-        lnum >>= ((unsigned int)rnum) & 0x1F;
+        lnum >>= ((unsigned int)m_right->execute(instance).toInt32()) & 0x1F;
         return ESValue(lnum);
     }
 protected:

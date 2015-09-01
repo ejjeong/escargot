@@ -12,7 +12,10 @@ struct jmpbuf_wrapper {
 class LexicalEnvironment;
 class ExecutionContext : public gc {
 public:
-    ExecutionContext(LexicalEnvironment* varEnv, bool needsActivation, bool isNewExpression, ExecutionContext* callerContext, ESValue* arguments = NULL, size_t argumentsCount = 0);
+    ExecutionContext(LexicalEnvironment* varEnv, bool needsActivation, bool isNewExpression,
+            ExecutionContext* callerContext, ESValue* arguments = NULL, size_t argumentsCount = 0,
+            ESValue* cachedDeclarativeEnvironmentRecord = NULL
+            );
     ALWAYS_INLINE LexicalEnvironment* environment()
     {
         //TODO
@@ -101,6 +104,11 @@ public:
     ESValue* arguments() { return m_arguments; }
     size_t argumentCount() { return m_argumentCount; }
 
+    ESValue* cachedDeclarativeEnvironmentRecordESValue()
+    {
+        return m_cachedDeclarativeEnvironmentRecord;
+    }
+
 private:
     ESFunctionObject* m_function;
 
@@ -114,6 +122,9 @@ private:
 
     LexicalEnvironment* m_lexicalEnvironment;
     LexicalEnvironment* m_variableEnvironment;
+
+    ESValue* m_cachedDeclarativeEnvironmentRecord;
+    //instance->currentExecutionContext()->environment()->record()->toDeclarativeEnvironmentRecord()
 
     ESObject* m_lastESObjectMetInMemberExpressionNode;
 

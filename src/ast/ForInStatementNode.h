@@ -20,24 +20,50 @@ public:
 
     ESValue execute(ESVMInstance* instance)
     {
-        ESValue exprValue = m_right->execute(instance);
-        if (exprValue.isNull() || exprValue.isUndefined())
+        if(m_isSlowCase) {
+            ESValue exprValue = m_right->execute(instance);
+            if (exprValue.isNull() || exprValue.isUndefined())
+                return ESValue();
+
+            ExecutionContext* ec = instance->currentExecutionContext();
+            ec->resetLastESObjectMetInMemberExpressionNode();
+
+            std::vector<ESValue, gc_allocator<ESValue> > propertyVals;
+            ESObject* obj = exprValue.toObject();
+            obj->enumeration([&propertyVals](ESValue key, const ::escargot::ESSlotAccessor& slot) {
+                propertyVals.push_back(key);
+            });
+            ec->setJumpPositionAndExecute([&](){
+                jmpbuf_wrapper cont;
+                int r = setjmp(cont.m_buffer);
+                if (r != 1) {
+                    ec->pushContinuePosition(cont);
+                }
+                for (unsigned int i=0; i<propertyVals.size(); i++) {
+                    if (obj->hasOwnProperty(propertyVals[i])) {
+                        ESValue name = propertyVals[i];
+                        ESSlotWriterForAST::prepareExecuteForWriteASTNode(ec);
+                        ESSlotAccessor slot = m_left->executeForWrite(instance);
+                        ESSlotWriterForAST::setValue(slot, ec, name);
+                        m_body->execute(instance);
+                    }
+                }
+                instance->currentExecutionContext()->popContinuePosition();
+            });
             return ESValue();
+        } else {
+            ESValue exprValue = m_right->execute(instance);
+            if (exprValue.isNull() || exprValue.isUndefined())
+                return ESValue();
 
-        ExecutionContext* ec = instance->currentExecutionContext();
-        ec->resetLastESObjectMetInMemberExpressionNode();
+            ExecutionContext* ec = instance->currentExecutionContext();
+            ec->resetLastESObjectMetInMemberExpressionNode();
 
-        std::vector<ESValue, gc_allocator<ESValue> > propertyVals;
-        ESObject* obj = exprValue.toObject();
-        obj->enumeration([&propertyVals](ESValue key, const ::escargot::ESSlotAccessor& slot) {
-            propertyVals.push_back(key);
-        });
-        ec->setJumpPositionAndExecute([&](){
-            jmpbuf_wrapper cont;
-            int r = setjmp(cont.m_buffer);
-            if (r != 1) {
-                ec->pushContinuePosition(cont);
-            }
+            std::vector<ESValue, gc_allocator<ESValue> > propertyVals;
+            ESObject* obj = exprValue.toObject();
+            obj->enumeration([&propertyVals](ESValue key, const ::escargot::ESSlotAccessor& slot) {
+                propertyVals.push_back(key);
+            });
             for (unsigned int i=0; i<propertyVals.size(); i++) {
                 if (obj->hasOwnProperty(propertyVals[i])) {
                     ESValue name = propertyVals[i];
@@ -47,9 +73,9 @@ public:
                     m_body->execute(instance);
                 }
             }
-            instance->currentExecutionContext()->popContinuePosition();
-        });
-        return ESValue();
+            return ESValue();
+        }
+
     }
 
 protected:

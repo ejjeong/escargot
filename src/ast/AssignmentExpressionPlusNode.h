@@ -44,12 +44,7 @@ public:
                 ret = ESValue(lval.asInt32() + rval.asInt32());
             }
         } else if (lval.isESString() || rval.isESString()) {
-            ESString* lstr;
-            ESString* rstr;
-
-            lstr = lval.toString();
-            rstr = rval.toString();
-            ret = ESString::concatTwoStrings(lstr, rstr);
+            ret = ESString::concatTwoStrings(lval.toString(), rval.toString());
         } else {
             ret = ESValue(lval.toNumber() + rval.toNumber());
         }

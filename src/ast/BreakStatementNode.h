@@ -13,7 +13,7 @@ public:
     {
     }
 
-        ESValue execute(ESVMInstance* instance)
+    ESValue execute(ESVMInstance* instance)
     {
         instance->currentExecutionContext()->doBreak();
         RELEASE_ASSERT_NOT_REACHED();

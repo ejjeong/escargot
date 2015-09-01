@@ -36,10 +36,8 @@ public:
             });
             return ESValue();
         } else {
-            ESValue test = m_test->execute(instance);
-            while (test.toBoolean()) {
+            while (m_test->execute(instance).toBoolean()) {
                 m_body->execute(instance);
-                test = m_test->execute(instance);
             }
             return ESValue();
         }

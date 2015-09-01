@@ -44,11 +44,9 @@ public:
         } else {
             if (m_init)
                 m_init->execute(instance);
-            ESValue test = m_test->execute(instance);
-            while(test.toBoolean()) {
+            while(m_test->execute(instance).toBoolean()) {
                 m_body->execute(instance);
                 m_update->execute(instance);
-                test = m_test->execute(instance);
             }
             return ESValue();
         }

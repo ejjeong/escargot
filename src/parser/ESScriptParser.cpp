@@ -113,10 +113,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16str
             InternalAtomicStringVector newIdentifierVector;
             InternalAtomicStringVector& vec = ((FunctionExpressionNode *)currentNode)->m_params;
             for(unsigned i = 0; i < vec.size() ; i ++) {
-                if(newIdentifierVector.end() == std::find(newIdentifierVector.begin(),newIdentifierVector.end(),
-                        vec[i])) {
-                    newIdentifierVector.push_back(vec[i]);
-                }
+                newIdentifierVector.push_back(vec[i]);
             }
             ((FunctionDeclarationNode *)currentNode)->setOuterFunctionNode(nearFunctionNode);
             identifierStack.push_back(&newIdentifierVector);
@@ -129,10 +126,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16str
             InternalAtomicStringVector newIdentifierVector;
             InternalAtomicStringVector& vec = ((FunctionExpressionNode *)currentNode)->m_params;
             for(unsigned i = 0; i < vec.size() ; i ++) {
-                if(newIdentifierVector.end() == std::find(newIdentifierVector.begin(),newIdentifierVector.end(),
-                        vec[i])) {
-                    newIdentifierVector.push_back(vec[i]);
-                }
+                newIdentifierVector.push_back(vec[i]);
             }
             ((FunctionExpressionNode *)currentNode)->setOuterFunctionNode(nearFunctionNode);
             identifierStack.push_back(&newIdentifierVector);
@@ -144,7 +138,16 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16str
             //use case
             InternalAtomicString name = ((IdentifierNode *)currentNode)->name();
             //ESString* nonAtomicName = ((IdentifierNode *)currentNode)->nonAtomicName();
-            auto iter = std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),name);
+            auto iter = identifierInCurrentContext.end();
+            auto riter = identifierInCurrentContext.rbegin();//std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),name);
+            while(riter != identifierInCurrentContext.rend()) {
+                if(*riter == name) {
+                    size_t idx = identifierInCurrentContext.size() - 1 - (riter - identifierInCurrentContext.rbegin());
+                    iter = identifierInCurrentContext.begin() + idx;
+                    break;
+                }
+                riter ++;
+            }
             if(name == strings->atomicArguments && iter == identifierInCurrentContext.end() && nearFunctionNode) {
                 identifierInCurrentContext.push_back(strings->atomicArguments);
                 nearFunctionNode->markNeedsArgumentsObject();

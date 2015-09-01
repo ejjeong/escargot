@@ -312,6 +312,7 @@ ESArrayObject::ESArrayObject(int length)
     : ESObject((Type)(Type::ESObject | Type::ESArrayObject))
     , m_fastmode(true)
 {
+    m_length = 0;
     if (length == -1)
         convertToSlowMode();
     else {
@@ -320,7 +321,6 @@ ESArrayObject::ESArrayObject(int length)
 
     m_hiddenClass = ESVMInstance::currentInstance()->initialHiddenClassForArrayObject();
     m_hiddenClassData.push_back(ESValue((ESPointer *)ESVMInstance::currentInstance()->arrayLengthAccessorData()));
-    m_length = 0;
 }
 
 ESRegExpObject::ESRegExpObject(escargot::ESString* source, const Option& option)
@@ -383,7 +383,8 @@ ALWAYS_INLINE void functionCallerInnerProcess(ESFunctionObject* fn, ESValue rece
         const ESStringVector& nonAtomicParams = fn->functionAST()->nonAtomicParams();
         for(unsigned i = 0; i < params.size() ; i ++) {
             if(i < argumentCount) {
-                functionRecord->setMutableBinding(params[i], nonAtomicParams[i], arguments[i], true);
+                ESVMInstance->currentExecutionContext()->cachedDeclarativeEnvironmentRecordESValue()[i] = arguments[i];
+                //functionRecord->setMutableBinding(params[i], nonAtomicParams[i], arguments[i], true);
             }
         }
     }
@@ -433,8 +434,9 @@ ESValue ESFunctionObject::call(ESValue callee, ESValue receiver, ESValue argumen
             result = ESVMInstance->currentExecutionContext()->returnValue();
             ESVMInstance->m_currentExecutionContext = currentContext;
         } else {
+            ESValue* storage = (::escargot::ESValue *)alloca(sizeof(::escargot::ESValue) * fn->functionAST()->innerIdentifiers().size());
             FunctionEnvironmentRecord envRec(true,
-                    (::escargot::ESValue *)alloca(sizeof(::escargot::ESValue) * fn->functionAST()->innerIdentifiers().size()),
+                    storage,
                     fn->functionAST(),
                     &fn->functionAST()->innerIdentifiers());
 
@@ -442,7 +444,7 @@ ESValue ESFunctionObject::call(ESValue callee, ESValue receiver, ESValue argumen
             envRec.m_newTarget = receiver;
 
             LexicalEnvironment env(&envRec, fn->outerEnvironment());
-            ExecutionContext ec(&env, false, isNewExpression, currentContext, arguments, argumentCount);
+            ExecutionContext ec(&env, false, isNewExpression, currentContext, arguments, argumentCount, storage);
             ESVMInstance->m_currentExecutionContext = &ec;
             functionCallerInnerProcess(fn, receiver, arguments, argumentCount, fn->functionAST()->needsArgumentsObject(), ESVMInstance);
             //ESVMInstance->invalidateIdentifierCacheCheckCount();

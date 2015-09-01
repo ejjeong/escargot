@@ -14,17 +14,19 @@ public:
     {
         m_expressions = expressions;
         m_expressionsSize = m_expressions.size();
+        m_rootedExpressions = m_expressions.data();
     }
 
     ESValue execute(ESVMInstance* instance)
     {
         for (unsigned i = 0; i < m_expressionsSize; i++) {
-             m_expressions[i]->execute(instance);
+            m_rootedExpressions[i]->execute(instance);
         }
         return ESValue();
     }
 protected:
     ExpressionNodeVector m_expressions; //expression: Expression;
+    Node** m_rootedExpressions;
     size_t m_expressionsSize;
 };
 

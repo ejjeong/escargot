@@ -4,7 +4,8 @@
 
 namespace escargot {
 
-ExecutionContext::ExecutionContext(LexicalEnvironment* varEnv, bool needsActivation, bool isNewExpression, ExecutionContext* callerContext, ESValue* arguments, size_t argumentsCount)
+ExecutionContext::ExecutionContext(LexicalEnvironment* varEnv, bool needsActivation, bool isNewExpression,
+        ExecutionContext* callerContext, ESValue* arguments, size_t argumentsCount, ESValue* cachedDeclarativeEnvironmentRecord)
 {
     m_lexicalEnvironment = varEnv;
     m_variableEnvironment = varEnv;
@@ -15,6 +16,7 @@ ExecutionContext::ExecutionContext(LexicalEnvironment* varEnv, bool needsActivat
     m_callerContext = callerContext;
     m_arguments = arguments;
     m_argumentCount = argumentsCount;
+    m_cachedDeclarativeEnvironmentRecord = cachedDeclarativeEnvironmentRecord;
 }
 
 ESSlotAccessor ExecutionContext::resolveBinding(const InternalAtomicString& atomicName, escargot::ESString* name)

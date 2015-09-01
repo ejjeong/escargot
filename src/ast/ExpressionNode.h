@@ -19,7 +19,7 @@ public:
 protected:
 };
 
-typedef std::vector<Node *, gc_allocator<ExpressionNode *>> ExpressionNodeVector;
+typedef std::vector<Node *, gc_allocator<Node *>> ExpressionNodeVector;
 
 }
 

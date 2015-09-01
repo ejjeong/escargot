@@ -18,8 +18,7 @@ public:
 
     ESValue execute(ESVMInstance* instance)
     {
-        ESValue test = m_test->execute(instance);
-        if (test.toBoolean())
+        if (m_test->execute(instance).toBoolean())
             m_consequente->execute(instance);
         else if (m_alternate)
             m_alternate->execute(instance);

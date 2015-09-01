@@ -18,7 +18,7 @@ public:
     {
         int32_t lnum = m_left->execute(instance).toInt32();
         int32_t rnum = m_right->execute(instance).toInt32();
-        unsigned int shiftCount = ((unsigned int)rnum) & 0x1F;
+        unsigned int shiftCount = ((unsigned int)m_right->execute(instance).toInt32()) & 0x1F;
         lnum = ((unsigned int)lnum) >> shiftCount;
 
         return ESValue(lnum);
