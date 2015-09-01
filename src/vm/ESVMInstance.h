@@ -87,6 +87,11 @@ public:
     {
         return &m_initialHiddenClassForFunction;
     }
+
+    ALWAYS_INLINE ESHiddenClass* initialHiddenClassForArrayObject()
+    {
+        return &m_initialHiddenClassForArrayObject;
+    }
 protected:
     ExecutionContext* m_globalExecutionContext;
     ExecutionContext* m_currentExecutionContext;
@@ -101,6 +106,7 @@ protected:
 
     ESHiddenClass m_initialHiddenClassForObject;
     ESHiddenClass m_initialHiddenClassForFunction;
+    ESHiddenClass m_initialHiddenClassForArrayObject;
 
     ESAccessorData m_object__proto__AccessorData;
     ESAccessorData m_functionPrototypeAccessorData;

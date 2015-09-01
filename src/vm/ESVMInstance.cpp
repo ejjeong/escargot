@@ -54,6 +54,56 @@ ESVMInstance::ESVMInstance()
             ));
     m_initialHiddenClassForObject.m_propertyFlagInfo.push_back(ESHiddenClassPropertyInfo(false, true, false, false));
 
+    //FIXME set proper flags(is...)
+    m_initialHiddenClassForFunction.m_propertyInfo.insert(std::make_pair(
+            m_strings.constructor,
+            0
+            ));
+    m_initialHiddenClassForFunction.m_propertyFlagInfo.push_back(ESHiddenClassPropertyInfo(true, true, false, false));
+
+    //FIXME set proper flags(is...)
+    m_initialHiddenClassForFunction.m_propertyInfo.insert(std::make_pair(
+            m_strings.__proto__,
+            1
+            ));
+    m_initialHiddenClassForFunction.m_propertyFlagInfo.push_back(ESHiddenClassPropertyInfo(false, true, false, false));
+
+    //FIXME set proper flags(is...)
+    m_initialHiddenClassForFunction.m_propertyInfo.insert(std::make_pair(
+            m_strings.prototype,
+            2
+            ));
+    m_initialHiddenClassForFunction.m_propertyFlagInfo.push_back(ESHiddenClassPropertyInfo(false, true, false, false));
+
+    //FIXME set proper flags(is...)
+    m_initialHiddenClassForFunction.m_propertyInfo.insert(std::make_pair(
+            m_strings.name,
+            3
+            ));
+    m_initialHiddenClassForFunction.m_propertyFlagInfo.push_back(ESHiddenClassPropertyInfo(true, true, false, false));
+
+
+    //FIXME set proper flags(is...)
+    m_initialHiddenClassForArrayObject.m_propertyInfo.insert(std::make_pair(
+            m_strings.constructor,
+            0
+            ));
+    m_initialHiddenClassForArrayObject.m_propertyFlagInfo.push_back(ESHiddenClassPropertyInfo(true, true, false, false));
+
+    //FIXME set proper flags(is...)
+    m_initialHiddenClassForArrayObject.m_propertyInfo.insert(std::make_pair(
+            m_strings.__proto__,
+            1
+            ));
+    m_initialHiddenClassForArrayObject.m_propertyFlagInfo.push_back(ESHiddenClassPropertyInfo(false, true, false, false));
+
+    //FIXME set proper flags(is...)
+    m_initialHiddenClassForArrayObject.m_propertyInfo.insert(std::make_pair(
+            m_strings.length,
+            2
+            ));
+    m_initialHiddenClassForArrayObject.m_propertyFlagInfo.push_back(ESHiddenClassPropertyInfo(false, true, false, false));
+
     m_functionPrototypeAccessorData.m_getter = [](ESObject* self) -> ESValue {
         return self->asESFunctionObject()->protoType();
     };

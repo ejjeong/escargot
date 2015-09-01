@@ -317,7 +317,9 @@ ESArrayObject::ESArrayObject(int length)
     else {
         setLength(length);
     }
-    defineAccessorProperty(strings->length, ESVMInstance::currentInstance()->arrayLengthAccessorData(), true, false, false);
+
+    m_hiddenClass = ESVMInstance::currentInstance()->initialHiddenClassForArrayObject();
+    m_hiddenClassData.push_back(ESValue((ESPointer *)ESVMInstance::currentInstance()->arrayLengthAccessorData()));
     m_length = 0;
 }
 
@@ -347,7 +349,12 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, Functio
     m_outerEnvironment = outerEnvironment;
     m_functionAST = functionAST;
 
-    defineAccessorProperty(strings->prototype, ESVMInstance::currentInstance()->functionPrototypeAccessorData(), true, false, false);
+    //defineAccessorProperty(strings->prototype, ESVMInstance::currentInstance()->functionPrototypeAccessorData(), true, false, false);
+    //definePropertyOrThrow(strings->name);
+
+    m_hiddenClass = ESVMInstance::currentInstance()->initialHiddenClassForFunction();
+    m_hiddenClassData.push_back(ESValue((ESPointer *)ESVMInstance::currentInstance()->functionPrototypeAccessorData()));
+    m_hiddenClassData.push_back(ESValue(ESValue::ESUndefined));
 
     if (proto != NULL)
         set__proto__(proto);
