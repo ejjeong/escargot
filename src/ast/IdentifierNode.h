@@ -19,21 +19,19 @@ public:
         m_identifierCacheInvalidationCheckCount = SIZE_MAX;
         m_canUseFastAccess = false;
         m_fastAccessIndex = SIZE_MAX;
-        m_cacheCheckExecutionContext = NULL;
     }
 
     ESValue execute(ESVMInstance* instance)
     {
-        ExecutionContext* ec = instance->currentExecutionContext();
-        ASSERT(!(m_canUseFastAccess && !ec->needsActivation()));
-        if (LIKELY(ec == m_cacheCheckExecutionContext && m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
+        ASSERT(!(m_canUseFastAccess && !instance->currentExecutionContext()->needsActivation()));
+        if (LIKELY(m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
             return m_cachedSlot.readDataProperty();
         } else {
+            ExecutionContext* ec = instance->currentExecutionContext();
             ESSlotAccessor slot = ec->resolveBinding(name(), nonAtomicName());
 
             if(LIKELY(slot.hasData())) {
                 m_cachedSlot = ESSlotAccessor(slot);
-                m_cacheCheckExecutionContext = ec;
                 m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
                 return m_cachedSlot.readDataProperty();
             }
@@ -57,18 +55,15 @@ public:
 
     ESSlotAccessor executeForWrite(ESVMInstance* instance)
     {
-        ExecutionContext* ec = instance->currentExecutionContext();
-        if (LIKELY(ec == m_cacheCheckExecutionContext && m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
+        ASSERT(!(m_canUseFastAccess && !instance->currentExecutionContext()->needsActivation()));
+        if (LIKELY(m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
             return m_cachedSlot;
         } else {
-            if(LIKELY(m_canUseFastAccess && !ec->needsActivation())) {
-                return ESSlotAccessor(ec->environment()->record()->toDeclarativeEnvironmentRecord()->getBindingValueForNonActivationMode(m_fastAccessIndex));
-            }
+            ExecutionContext* ec = instance->currentExecutionContext();
             ESSlotAccessor slot = ec->resolveBinding(name(), nonAtomicName());
 
             if(LIKELY(slot.hasData())) {
                 m_cachedSlot = slot;
-                m_cacheCheckExecutionContext = ec;
                 m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
                 return slot;
             } else {
@@ -110,7 +105,6 @@ protected:
     ESString* m_nonAtomicName;
 
     size_t m_identifierCacheInvalidationCheckCount;
-    ExecutionContext* m_cacheCheckExecutionContext;
     ESSlotAccessor m_cachedSlot;
 
     bool m_canUseFastAccess;

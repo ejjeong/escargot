@@ -255,13 +255,7 @@ public:
         }
     }
 
-    virtual void createMutableBinding(const InternalAtomicString& name,ESString* nonAtomicName, bool canDelete = false)
-    {
-        //TODO canDelete
-        ASSERT(m_needsActivation);
-        m_mapData->insert(std::make_pair(name, ESValue()));
-    }
-
+    virtual void createMutableBinding(const InternalAtomicString& name,ESString* nonAtomicName, bool canDelete = false);
     virtual void setMutableBinding(const InternalAtomicString& name, ESString* nonAtomicName, const ESValue& V, bool mustNotThrowTypeErrorExecption)
     {
         //TODO mustNotThrowTypeErrorExecption

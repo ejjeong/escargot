@@ -39,6 +39,14 @@ void EnvironmentRecord::createMutableBindingForAST(const InternalAtomicString& a
     }
 }
 
+void DeclarativeEnvironmentRecord::createMutableBinding(const InternalAtomicString& name,ESString* nonAtomicName, bool canDelete)
+{
+    //TODO canDelete
+    ASSERT(m_needsActivation);
+    m_mapData->insert(std::make_pair(name, ESValue()));
+    ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
+}
+
 //$8.1.1.4.12
 bool GlobalEnvironmentRecord::hasVarDeclaration(const InternalAtomicString& name)
 {

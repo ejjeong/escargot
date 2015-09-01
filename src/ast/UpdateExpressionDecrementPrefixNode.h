@@ -23,7 +23,7 @@ public:
         ESValue argval = ESSlotWriterForAST::readValue(slot, ec);
         ESValue ret(ESValue::ESForceUninitialized);
 
-        if (argval.isInt32()) {
+        if (LIKELY(argval.isInt32())) {
             //FIXME check overflow
             argval = ESValue(argval.asInt32() - 1);
         } else {

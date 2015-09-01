@@ -411,11 +411,11 @@ ALWAYS_INLINE void functionCallerInnerProcess(ESFunctionObject* fn, ESValue rece
 
 ESValue ESFunctionObject::call(ESValue callee, ESValue receiver, ESValue arguments[], size_t argumentCount, ESVMInstance* ESVMInstance, bool isNewExpression)
 {
-    ESValue result;
-    if(callee.isESPointer() && callee.asESPointer()->isESFunctionObject()) {
+    ESValue result(ESValue::ESForceUninitialized);
+    if(LIKELY(callee.isESPointer() && callee.asESPointer()->isESFunctionObject())) {
         ExecutionContext* currentContext = ESVMInstance->currentExecutionContext();
         ESFunctionObject* fn = callee.asESPointer()->asESFunctionObject();
-        if(fn->functionAST()->needsActivation()) {
+        if(UNLIKELY(fn->functionAST()->needsActivation())) {
             ESVMInstance->m_currentExecutionContext = new ExecutionContext(LexicalEnvironment::newFunctionEnvironment(fn, receiver), true, isNewExpression, currentContext, arguments, argumentCount);
             functionCallerInnerProcess(fn, receiver, arguments, argumentCount, true, ESVMInstance);
             //ESVMInstance->invalidateIdentifierCacheCheckCount();

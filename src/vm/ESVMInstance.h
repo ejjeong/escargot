@@ -44,6 +44,7 @@ public:
     {
         ExecutionContext* ctx = m_currentExecutionContext;
         m_currentExecutionContext = m_globalExecutionContext;
+        invalidateIdentifierCacheCheckCount();
         f();
         m_currentExecutionContext = ctx;
     }
@@ -137,6 +138,7 @@ ESValue ESVMInstance::runOnEvalContext(const F& f, bool isDirectCall)
         ret = f();
     }
     m_currentExecutionContext = ctx;
+    invalidateIdentifierCacheCheckCount();
     return ret;
 }
 
