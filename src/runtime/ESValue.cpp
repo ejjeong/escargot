@@ -253,19 +253,15 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
         }
     }
 
-    matchResult.m_subPatternNum = byteCode->m_body->m_numSubpatterns;
-    const char16_t *chars = m_string->data();
+    unsigned subPatternNum = byteCode->m_body->m_numSubpatterns;
+    matchResult.m_subPatternNum = (int) subPatternNum;
     size_t length = m_string->length();
     if(length) {
-        size_t lastIndex = 0;
-        size_t origLength = length;
         size_t start = 0;
-        size_t displacement = 0;
-
         unsigned result = 0;
-        unsigned* outputBuf = (unsigned int*)alloca(sizeof (unsigned) * 2 * (byteCode->m_body->m_numSubpatterns + 1));
+        const char16_t *chars = m_string->data();
+        unsigned* outputBuf = (unsigned int*)alloca(sizeof (unsigned) * 2 * (subPatternNum + 1));
         outputBuf[1] = 0;
-        int retIndex = 0;
         do {
             start = outputBuf[1];
             result = JSC::Yarr::interpret(NULL, byteCode, chars, length, start, outputBuf);
@@ -274,8 +270,8 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
                     return true;
                 }
                 std::vector<ESString::RegexMatchResult::RegexMatchResultPiece> piece;
-                piece.reserve(byteCode->m_body->m_numSubpatterns + 1);
-                for(unsigned i = 0; i < byteCode->m_body->m_numSubpatterns + 1 ; i ++) {
+                piece.reserve(subPatternNum + 1);
+                for(unsigned i = 0; i < subPatternNum + 1 ; i ++) {
                     ESString::RegexMatchResult::RegexMatchResultPiece p;
                     p.m_start = outputBuf[i*2];
                     p.m_end = outputBuf[i*2 + 1];
@@ -284,6 +280,8 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
                 matchResult.m_matchResults.push_back(std::move(piece));
                 if(!isGlobal)
                     break;
+            } else {
+                break;
             }
         } while(result != JSC::Yarr::offsetNoMatch);
     }

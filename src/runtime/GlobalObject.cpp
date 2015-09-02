@@ -823,16 +823,15 @@ void GlobalObject::installString()
         int argCount = instance->currentExecutionContext()->argumentCount();
         if(argCount > 1) {
             ESPointer* esptr = instance->currentExecutionContext()->arguments()[0].asESPointer();
-
-            ESValue replaceValue = instance->currentExecutionContext()->arguments()[1];
             escargot::ESString* origStr = thisObject->asESStringObject()->getStringData();
             ESString::RegexMatchResult result;
-            const u16string& orgString = origStr->string();
             origStr->match(esptr, result);
-            if(result.m_matchResults.size()  == 0) {
+            if(result.m_matchResults.size() == 0) {
                 instance->currentExecutionContext()->doReturn(origStr);
             }
 
+            ESValue replaceValue = instance->currentExecutionContext()->arguments()[1];
+            const u16string& orgString = origStr->string();
             if (replaceValue.isESPointer() && replaceValue.asESPointer()->isESFunctionObject()) {
                 int32_t matchCount = result.m_matchResults.size();
                 ESValue callee = replaceValue.asESPointer()->asESFunctionObject();
