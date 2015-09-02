@@ -11,12 +11,16 @@ elif [[ $1 == v8* ]]; then
   if [[ $2 == time ]]; then
       cp test/SunSpider/resources/sunspider-standalone-driver-v8.js test/SunSpider/resources/sunspider-standalone-driver.js
   fi
-elif [[ $1 == jsc.jit ]]; then
-  cmd="./test/bin/jsc.jit"
-  tc="jsc.jit"
 elif [[ $1 == jsc.interp* ]]; then
   cmd="./test/bin/jsc.interp"
   tc="jsc.interp"
+elif [[ $1 == jsc.base* ]]; then
+  cmd="./test/bin/jsc.jit"
+  tc="jsc.baselineJIT"
+  args="--useDFGJIT=false"
+elif [[ $1 == jsc.jit || $1 == jsc.dfg* ]]; then
+  cmd="./test/bin/jsc.jit"
+  tc="jsc.jit"
 else
   cmd="./escargot"
   tc="escargot"
@@ -65,7 +69,7 @@ if [[ $2 == mem* ]]; then
   echo 'No Measure Time'
 else
   cd test/SunSpider
-  ./sunspider --shell=../../$cmd --suite=sunspider-1.0.2 | tee ../../$timeresfile
+  ./sunspider --shell=../../$cmd --suite=sunspider-1.0.2 --args="$args" | tee ../../$timeresfile
   cd -
 fi
 
