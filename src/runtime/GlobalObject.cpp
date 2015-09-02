@@ -870,7 +870,7 @@ void GlobalObject::installString()
                 if(replaceString->string().find('$') == u16string::npos) {
                     //flat replace
                     int32_t matchCount = result.m_matchResults.size();
-                    if (replaceString->length() > ESRopeString::ESRopeStringCreateMinLimit) {
+                    if ((unsigned)replaceString->length() > ESRopeString::ESRopeStringCreateMinLimit) {
                         //create Rope string
                         u16string append(orgString, 0, result.m_matchResults[0][0].m_start);
                         escargot::ESString* newStr = ESString::create(std::move(append));
