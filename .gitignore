@@ -8,6 +8,7 @@ output.js
 *.o
 *.d
 *.js
+*.pyc
 tags
 third_party/bdwgc/.deps
 third_party/bdwgc/.libs
@@ -42,4 +43,5 @@ third_party/bdwgc/missing
 third_party/bdwgc/test-driver
 third_party/bdwgc/out/
 test/out/
+test/SunSpider/resources/sunspider-standalone-driver.js
 memps

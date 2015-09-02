@@ -8,7 +8,9 @@ if [[ $1 == duk* ]]; then
 elif [[ $1 == v8* ]]; then
   cmd="./test/bin/d8"
   tc="v8"
-  cp test/SunSpider/resources/sunspider-standalone-driver-v8.js test/SunSpider/resources/sunspider-standalone-driver.js
+  if [[ $2 == time ]]; then
+      cp test/SunSpider/resources/sunspider-standalone-driver-v8.js test/SunSpider/resources/sunspider-standalone-driver.js
+  fi
 elif [[ $1 == jsc.jit ]]; then
   cmd="./test/bin/jsc.jit"
   tc="jsc.jit"
@@ -46,6 +48,17 @@ function measure(){
   echo $MAXV
 }
 
+if [[ $2 == test262 ]]; then
+  echo 'run test262 with option: ' $3
+  run=$(echo 'python tools/packaging/test262.py --command ../../'$cmd' '$3)
+  echo $run
+  cd test/test262
+  eval $run
+ # python tools/packaging/test262.py --command ../../$cmd $3
+  cd ../..
+  exit 1;
+fi
+
 timeresfile=$(echo 'test/out/'$tc'_x86_time_'$num'.res')
 echo '' > $timeresfile
 if [[ $2 == mem* ]]; then
@@ -68,14 +81,14 @@ else
     finalcmd="sleep 0.5; $cmd $filename &"
     summem=""
     echo '===================' >> $memresfile
-    for j in {1..10}; do
+    for j in {1..5}; do
       MAXV='Error'
       measure $finalcmd 2> /dev/null
       summem=$summem$MAXV"\\n"
       sleep 0.5s;
     done
-    echo $(echo -e $summem | awk '{s+=$1} END {printf("Avg. MaxPSS: %.4f", s/10)}')
-    echo $t $(echo -e $summem | awk '{s+=$1} END {printf(": %.4f", s/10)}') >> tmp
+    echo $(echo -e $summem | awk '{s+=$1} END {printf("Avg. MaxPSS: %.4f", s/5)}')
+    echo $t $(echo -e $summem | awk '{s+=$1} END {printf(": %.4f", s/5)}') >> tmp
   done
   cat tmp
   rm tmp
