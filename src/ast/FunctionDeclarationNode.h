@@ -29,7 +29,9 @@ public:
         function->setProtoType(prototype);
         function->set(strings->name, m_nonAtomicId);
         /////////////////////////////////////////////
-        instance->currentExecutionContext()->environment()->record()->createMutableBindingForAST(m_id, nonAtomicId(), false);
+        if(instance->currentExecutionContext()->needsActivation()) {
+            instance->currentExecutionContext()->environment()->record()->createMutableBindingForAST(m_id, nonAtomicId(), false);
+        }
         instance->currentExecutionContext()->environment()->record()->setMutableBinding(m_id, nonAtomicId(), function, false);
         return ESValue();
     }

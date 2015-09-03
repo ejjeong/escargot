@@ -104,12 +104,12 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16str
             }
         } else if(type == NodeType::FunctionDeclaration) {
             //TODO
-            //wprintf(L"add Identifier %ls(fn)\n", ((FunctionDeclarationNode *)currentNode)->id().data());
+            //printf("add Identifier %s(fn)\n", ((FunctionDeclarationNode *)currentNode)->nonAtomicId()->utf8Data());
             if(identifierInCurrentContext.end() == std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),
                     ((FunctionDeclarationNode *)currentNode)->id())) {
                 identifierInCurrentContext.push_back(((FunctionDeclarationNode *)currentNode)->id());
             }
-            //wprintf(L"process function body-------------------\n");
+            //printf("process function body-------------------\n");
             InternalAtomicStringVector newIdentifierVector;
             InternalAtomicStringVector& vec = ((FunctionExpressionNode *)currentNode)->m_params;
             for(unsigned i = 0; i < vec.size() ; i ++) {
@@ -122,7 +122,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16str
             ((FunctionDeclarationNode *)currentNode)->setInnerIdentifiers(std::move(newIdentifierVector));
             //wprintf(L"end of process function body-------------------\n");
         } else if(type == NodeType::FunctionExpression) {
-            //wprintf(L"process function body-------------------\n");
+            //printf("process function body-------------------\n");
             InternalAtomicStringVector newIdentifierVector;
             InternalAtomicStringVector& vec = ((FunctionExpressionNode *)currentNode)->m_params;
             for(unsigned i = 0; i < vec.size() ; i ++) {
@@ -133,7 +133,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16str
             postAnalysisFunction(((FunctionExpressionNode *)currentNode)->m_body, identifierStack, ((FunctionExpressionNode *)currentNode));
             identifierStack.pop_back();
             ((FunctionExpressionNode *)currentNode)->setInnerIdentifiers(std::move(newIdentifierVector));
-            //wprintf(L"end of process function body-------------------\n");
+            //printf("end of process function body-------------------\n");
         } else if(type == NodeType::Identifier) {
             //use case
             InternalAtomicString name = ((IdentifierNode *)currentNode)->name();
@@ -169,28 +169,31 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16str
                             //printf("outer function of this function  needs capture! -> because fn...%s iden..%s\n",
                             //        fn->nonAtomicId()->utf8Data(),
                             //        ((IdentifierNode *)currentNode)->nonAtomicName()->utf8Data());
+                            size_t idx2 = std::distance(vector->begin(), iter2);
                             markNeedsActivation(fn);
+                            ((IdentifierNode *)currentNode)->setFastAccessIndex(up, idx2);
                         } else {
                             //fn == global case
                         }
                         break;
                     }
                 }
-
-                /*
-                if(!instance->globalObject()->hasKey(nonAtomicName)) {
-                    if(nearFunctionNode && nearFunctionNode->outerFunctionNode()) {
-                        wprintf(L"outer function of this function  needs capture! -> because %ls\n", ((IdentifierNode *)currentNode)->name().data());
-                        markNeedsActivation(nearFunctionNode->outerFunctionNode());
-                    }
-                }*/
             } else {
                 if(nearFunctionNode) {
                     size_t idx = std::distance(identifierInCurrentContext.begin(), iter);
-                    ((IdentifierNode *)currentNode)->setFastAccessIndex(idx);
+                    ((IdentifierNode *)currentNode)->setFastAccessIndex(0, idx);
                 }
             }
-            //wprintf(L"use Identifier %ls\n", ((IdentifierNode *)currentNode)->name().data());
+            /*
+            if(((IdentifierNode *)currentNode)->canUseFastAccess())
+                printf("use Identifier %s %d %d\n"
+                        , ((IdentifierNode *)currentNode)->nonAtomicName()->utf8Data()
+                        , (int)((IdentifierNode *)currentNode)->fastAccessUpIndex()
+                        , (int)((IdentifierNode *)currentNode)->fastAccessIndex()
+                        );
+            else
+                printf("use Identifier %s\n", ((IdentifierNode *)currentNode)->nonAtomicName()->utf8Data());
+            */
         } else if(type == NodeType::ExpressionStatement) {
             postAnalysisFunction(((ExpressionStatementNode *)currentNode)->m_expression, identifierStack, nearFunctionNode);
         } else if(type >= NodeType::AssignmentExpressionBitwiseAnd && type <= NodeType::AssignmentExpressionUnsignedRightShift) {
@@ -348,11 +351,17 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16str
         if(*node) {
             if((*node)->type() == NodeType::Identifier) {
                 IdentifierNode* n = (IdentifierNode *)*node;
-                if(nearFunction && !nearFunction->needsActivation() && n->canUseFastAccess()) {
+                if(nearFunction && !nearFunction->needsActivation() && n->canUseFastAccess() && n->fastAccessUpIndex() == 0) {
 #ifdef NDEBUG
                     *node = new IdentifierFastCaseNode(n->fastAccessIndex());
 #else
                     *node = new IdentifierFastCaseNode(n->fastAccessIndex(), n->name());
+#endif
+                } else if(nearFunction && n->canUseFastAccess()) {
+#ifdef NDEBUG
+                    *node = new IdentifierFastCaseWithActivationNode(n->fastAccessIndex(), n->fastAccessUpIndex());
+#else
+                    *node = new IdentifierFastCaseWithActivationNode(n->fastAccessIndex(), n->fastAccessUpIndex(), n->name());
 #endif
                 }
             }
@@ -556,6 +565,8 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16str
             nodeReplacer((Node **)&((ThrowStatementNode *)currentNode)->m_argument, nearFunction);
             postProcessingFunction(((ThrowStatementNode *)currentNode)->m_argument, nearFunction);
         } else if(type == NodeType::IdentifierFastCase) {
+
+        } else if(type == NodeType::IdentifierFastCaseWithActivation) {
 
         } else {
             RELEASE_ASSERT_NOT_REACHED();

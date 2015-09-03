@@ -150,16 +150,20 @@ ESValue ESVMInstance::evaluate(u16string& source)
         ret = node->execute(this);
     } catch(ReferenceError& err) {
         printf("ReferenceError: %s\n", err.message()->utf8Data());
+        fflush(stdout);
     } catch(TypeError& err) {
         printf("TypeError: %s\n", err.message()->utf8Data());
+        fflush(stdout);
     } catch(SyntaxError& err) {
         printf("SyntaxError: %s\n", err.message()->utf8Data());
+        fflush(stdout);
     } catch(const ESValue& err) {
         try{
             printf("Uncaught %s\n", err.toString()->utf8Data());
         } catch(...) {
             printf("an error occur in catch-block\n");
         }
+        fflush(stdout);
     }
 
     return ret;

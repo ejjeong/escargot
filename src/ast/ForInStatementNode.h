@@ -28,11 +28,19 @@ public:
             ExecutionContext* ec = instance->currentExecutionContext();
             ec->resetLastESObjectMetInMemberExpressionNode();
 
-            std::vector<ESValue, gc_allocator<ESValue> > propertyVals;
+            std::vector<ESValue> propertyVals;
             ESObject* obj = exprValue.toObject();
+            propertyVals.reserve(obj->keyCount());
             obj->enumeration([&propertyVals](ESValue key, const ::escargot::ESSlotAccessor& slot) {
                 propertyVals.push_back(key);
             });
+            /*
+            std::sort(propertyVals.begin(), propertyVals.end(), [](const ::escargot::ESValue& a, const ::escargot::ESValue& b) -> bool {
+                ::escargot::ESString* vala = a.toString();
+                ::escargot::ESString* valb = b.toString();
+                return vala->string() < valb->string();
+            });*/
+
             ec->setJumpPositionAndExecute([&](){
                 jmpbuf_wrapper cont;
                 int r = setjmp(cont.m_buffer);
@@ -59,11 +67,21 @@ public:
             ExecutionContext* ec = instance->currentExecutionContext();
             ec->resetLastESObjectMetInMemberExpressionNode();
 
-            std::vector<ESValue, gc_allocator<ESValue> > propertyVals;
+            std::vector<ESValue> propertyVals;
             ESObject* obj = exprValue.toObject();
+            propertyVals.reserve(obj->keyCount());
             obj->enumeration([&propertyVals](ESValue key, const ::escargot::ESSlotAccessor& slot) {
                 propertyVals.push_back(key);
             });
+
+            /*
+            std::sort(propertyVals.begin(), propertyVals.end(), [](const ::escargot::ESValue& a, const ::escargot::ESValue& b) -> bool {
+                ::escargot::ESString* vala = a.toString();
+                ::escargot::ESString* valb = b.toString();
+                return vala->string() < valb->string();
+            });
+            */
+
             for (unsigned int i=0; i<propertyVals.size(); i++) {
                 if (obj->hasOwnProperty(propertyVals[i])) {
                     ESValue name = propertyVals[i];

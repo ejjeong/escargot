@@ -93,6 +93,7 @@ enum NodeType {
     VariableDeclarator,
     Identifier,
     IdentifierFastCase,
+    IdentifierFastCaseWithActivation,
     Literal,
     NativeFunction,
     TryStatement,

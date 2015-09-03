@@ -54,6 +54,7 @@
 #include "FunctionNode.h"
 #include "IdentifierNode.h"
 #include "IdentifierFastCaseNode.h"
+#include "IdentifierFastCaseWithActivationNode.h"
 #include "IfStatementNode.h"
 #include "ForInStatementNode.h"
 #include "ForStatementNode.h"

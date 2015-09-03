@@ -43,7 +43,7 @@ public:
             arguments[i] = m_arguments[i]->execute(instance);
         }
 
-        ESFunctionObject::call(fn, receiver, arguments, m_arguments.size(), instance, true);
+        ESFunctionObject::call(fn, receiver, arguments, m_arguments.size(), true);
         return receiver;
     }
 

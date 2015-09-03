@@ -18,6 +18,9 @@ typedef std::unordered_map<InternalAtomicString, ::escargot::ESValue,
             std::hash<InternalAtomicString>,std::equal_to<InternalAtomicString>,
             gc_allocator<std::pair<const InternalAtomicString, ::escargot::ESValue> > > ESIdentifierMapStd;
 
+typedef std::vector<std::pair<InternalAtomicString, ::escargot::ESValue>,
+        gc_allocator<std::pair<InternalAtomicString, ::escargot::ESValue> > > ESIdentifierVectorStd;
+
 class ESIdentifierMap : public ESIdentifierMapStd, public gc {
 public:
     ESIdentifierMap(size_t siz = 0)
@@ -216,23 +219,28 @@ protected:
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-declarative-environment-records
 class DeclarativeEnvironmentRecord : public EnvironmentRecord {
 public:
-    DeclarativeEnvironmentRecord(bool shouldUseVector = false,ESValue* vectorBuffer = NULL, FunctionNode* functionNode = NULL, InternalAtomicStringVector* innerIdentifiers = NULL)
+    DeclarativeEnvironmentRecord(ESValue* vectorBuffer, InternalAtomicStringVector* innerIdentifiers)
     {
-        if(shouldUseVector) {
-            m_needsActivation = false;
-            m_mapData = NULL;
-            m_vectorData = vectorBuffer;
-            m_functionNode = functionNode;
-            m_innerIdentifiers = innerIdentifiers;
-            size_t siz = m_innerIdentifiers->size();
-            for(unsigned i = 0; i < siz ; i ++) {
-                m_vectorData[i] = ESValue();
-            }
-        } else {
-            m_needsActivation = true;
-            m_mapData = new ESIdentifierMap(16);
+        m_needsActivation = false;
+        m_vectorData = vectorBuffer;
+        m_innerIdentifiers = innerIdentifiers;
+        size_t siz = m_innerIdentifiers->size();
+        for(unsigned i = 0; i < siz ; i ++) {
+            m_vectorData[i] = ESValue();
         }
     }
+
+    DeclarativeEnvironmentRecord(const InternalAtomicStringVector& innerIdentifiers = InternalAtomicStringVector())
+    {
+        m_vectorData = NULL;
+        m_innerIdentifiers = NULL;
+        m_needsActivation = true;
+        m_activationData.reserve(innerIdentifiers.size());
+        for(unsigned i = 0; i < innerIdentifiers.size() ; i ++) {
+            m_activationData.push_back(std::make_pair(innerIdentifiers[i], ESValue()));
+        }
+    }
+
     ~DeclarativeEnvironmentRecord()
     {
     }
@@ -240,10 +248,13 @@ public:
     virtual ESSlotAccessor hasBinding(const InternalAtomicString& atomicName, ESString* name)
     {
         if(UNLIKELY(m_needsActivation)) {
-            auto iter = m_mapData->find(atomicName);
-            if(iter != m_mapData->end()) {
-                return ESSlotAccessor(&iter->second);
+            size_t siz = m_activationData.size();
+            for(unsigned i = 0; i < siz ; i ++) {
+                if(m_activationData[i].first == atomicName) {
+                    return ESSlotAccessor(&m_activationData[i].second);
+                }
             }
+
             return ESSlotAccessor();
         } else {
             for(unsigned i = 0; i < m_innerIdentifiers->size() ; i ++) {
@@ -260,9 +271,12 @@ public:
     {
         //TODO mustNotThrowTypeErrorExecption
         if(UNLIKELY(m_needsActivation)) {
-            auto iter = m_mapData->find(name);
-            ASSERT(iter != m_mapData->end());
-            iter->second = V;
+            size_t siz = m_activationData.size();
+            for(unsigned i = 0; i < siz ; i ++) {
+                if(m_activationData[i].first == name) {
+                    m_activationData[i].second = V;
+                }
+            }
         } else {
             for(unsigned i = 0; i < m_innerIdentifiers->size() ; i ++) {
                 if((*m_innerIdentifiers)[i] == name) {
@@ -274,9 +288,14 @@ public:
         }
     }
 
-    ESValue* getBindingValueForNonActivationMode(size_t idx)
+    ESValue* bindingValueForNonActivationMode(size_t idx)
     {
         return &m_vectorData[idx];
+    }
+
+    ESValue* bindingValueForActivationMode(size_t idx)
+    {
+        return &m_activationData[idx].second;
     }
 
     /*
@@ -311,9 +330,9 @@ protected:
     bool m_needsActivation;
 
     ESValue* m_vectorData;
-    FunctionNode* m_functionNode;
     InternalAtomicStringVector* m_innerIdentifiers;
-    ESIdentifierMap* m_mapData;
+
+    ESIdentifierVectorStd m_activationData;
 };
 
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-global-environment-records
@@ -364,8 +383,13 @@ class FunctionEnvironmentRecord : public DeclarativeEnvironmentRecord {
     friend class LexicalEnvironment;
     friend class ESFunctionObject;
 public:
-    FunctionEnvironmentRecord(bool shouldUseVector = false,ESValue* vectorBuffer = NULL, FunctionNode* functionNode = NULL, InternalAtomicStringVector* innerIdentifiers = NULL)
-        : DeclarativeEnvironmentRecord(shouldUseVector, vectorBuffer, functionNode, innerIdentifiers)
+    FunctionEnvironmentRecord(ESValue* vectorBuffer, InternalAtomicStringVector* innerIdentifiers)
+        : DeclarativeEnvironmentRecord(vectorBuffer, innerIdentifiers)
+    {
+        m_thisBindingStatus = Uninitialized;
+    }
+    FunctionEnvironmentRecord(const InternalAtomicStringVector& innerIdentifiers = InternalAtomicStringVector())
+        : DeclarativeEnvironmentRecord(innerIdentifiers)
     {
         m_thisBindingStatus = Uninitialized;
     }
@@ -384,8 +408,8 @@ public:
 
 protected:
     ESValue m_thisValue;
-    ESFunctionObject* m_functionObject;
-    ESValue m_newTarget; //TODO
+    //ESFunctionObject* m_functionObject; //TODO
+    //ESValue m_newTarget; //TODO
     ThisBindingStatus m_thisBindingStatus;
 };
 

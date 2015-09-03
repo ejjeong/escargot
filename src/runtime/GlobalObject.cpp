@@ -86,7 +86,8 @@ void GlobalObject::initGlobalObject()
                     } else if(o->isESErrorObject()) {
                         str.append(v.toString()->utf8Data());
                     } else if(o->isESObject()) {
-                        str.append(o->asESObject()->constructor().asESPointer()->asESObject()->get(ESValue(strings->name), true).toString()->utf8Data());
+                        if(o->asESObject()->constructor().isESPointer() && o->asESObject()->constructor().asESPointer()->isESObject())
+                            str.append(o->asESObject()->constructor().asESPointer()->asESObject()->get(ESValue(strings->name), true).toString()->utf8Data());
                         str.append(" {");
                         bool isFirst = true;
                         o->asESObject()->enumeration([&str, &isFirst, o, &toString](escargot::ESValue key, const ::escargot::ESSlotAccessor& slot) {
@@ -278,7 +279,7 @@ void GlobalObject::installFunction()
         for (int i = 0; i < arrlen; i++) {
             arguments[i] = argArray->get(i);
         }
-        ESValue ret = ESFunctionObject::call(thisVal, thisArg, arguments, arrlen, instance, false);
+        ESValue ret = ESFunctionObject::call(thisVal, thisArg, arguments, arrlen, false);
         instance->currentExecutionContext()->doReturn(ret);
         return ESValue();
     }), false, false);

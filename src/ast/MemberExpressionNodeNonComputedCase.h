@@ -90,7 +90,7 @@ public:
         ExecutionContext* ec = instance->currentExecutionContext();
         ec->setLastESObjectMetInMemberExpressionNode(obj);
 
-        if(obj->isHiddenClassMode() && !obj->isESArrayObject()) {
+        if(obj->isHiddenClassMode()) {
             if(m_cachedHiddenClass == obj->hiddenClass()) {
                 return obj->readHiddenClass(m_cachedIndex).value(obj);
             } else {
@@ -100,7 +100,6 @@ public:
                     m_cachedIndex = idx;
                     return obj->readHiddenClass(idx).value(obj);
                 } else {
-                    m_cachedHiddenClass = nullptr;
                     ESSlotAccessor ac = obj->findOnlyPrototype(m_propertyValue.asESString());
                     if(ac.hasData())
                         return ac.value(obj);

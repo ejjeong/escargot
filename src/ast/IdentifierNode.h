@@ -16,7 +16,7 @@ public:
     {
         m_name = name;
         m_nonAtomicName = ESString::create(name.data());
-        m_identifierCacheInvalidationCheckCount = SIZE_MAX;
+        m_identifierCacheInvalidationCheckCount = std::numeric_limits<unsigned>::max();
         m_canUseFastAccess = false;
         m_fastAccessIndex = SIZE_MAX;
     }
@@ -29,7 +29,7 @@ public:
         } else {
             ExecutionContext* ec = instance->currentExecutionContext();
             ESSlotAccessor slot = ec->resolveBinding(name(), nonAtomicName());
-
+            //printf("%s\n", nonAtomicName()->utf8Data());
             if(LIKELY(slot.hasData())) {
                 m_cachedSlot = ESSlotAccessor(slot);
                 m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
@@ -84,10 +84,11 @@ public:
         return m_nonAtomicName;
     }
 
-    void setFastAccessIndex(size_t idx)
+    void setFastAccessIndex(size_t upIndex, size_t index)
     {
         m_canUseFastAccess = true;
-        m_fastAccessIndex = idx;
+        m_fastAccessIndex = index;
+        m_fastAccessUpIndex = upIndex;
     }
 
     bool canUseFastAccess()
@@ -100,15 +101,21 @@ public:
         return m_fastAccessIndex;
     }
 
+    size_t fastAccessUpIndex()
+    {
+        return m_fastAccessUpIndex;
+    }
+
 protected:
     InternalAtomicString m_name;
     ESString* m_nonAtomicName;
 
-    size_t m_identifierCacheInvalidationCheckCount;
+    unsigned m_identifierCacheInvalidationCheckCount;
     ESSlotAccessor m_cachedSlot;
 
     bool m_canUseFastAccess;
     size_t m_fastAccessIndex;
+    size_t m_fastAccessUpIndex;
 };
 
 }

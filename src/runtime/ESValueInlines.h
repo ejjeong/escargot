@@ -371,6 +371,36 @@ inline double ESValue::asNumber() const
     return isInt32() ? asInt32() : asDouble();
 }
 
+inline ESString* ESValue::toString() const
+{
+    if(isESString()) {
+        return asESString();
+    } else if(isInt32()) {
+        int num = asInt32();
+        if(num >= 0 && num < ESCARGOT_STRINGS_NUMBERS_MAX)
+            return strings->nonAtomicNumbers[num];
+        return ESString::create(num);
+    } else if(isNumber()) {
+        double d = asNumber();
+        return ESString::create(d);
+    } else if(isUndefined()) {
+        return strings->undefined;
+    } else if(isNull()) {
+        return strings->null;
+    } else if(isBoolean()) {
+        if(asBoolean())
+            return strings->stringTrue;
+        else
+            return strings->stringFalse;
+    } else {
+        ASSERT(asESPointer()->isESObject());
+        ESObject* obj = asESPointer()->asESObject();
+        ESValue ret = ESFunctionObject::call(obj->get(ESValue(strings->toString), true), obj, NULL, 0, false);
+        ASSERT(ret.isESString());
+        return ret.asESString();
+    }
+}
+
 inline ESValue ESValue::toPrimitive(PrimitiveTypeHint preferredType) const
 {
     if (UNLIKELY(isESPointer() && asESPointer()->isESObject())) {
@@ -401,16 +431,14 @@ inline double ESValue::toNumber() const
     else if (isESPointer()) {
         ESPointer* o = asESPointer();
         if (o->isESString()) {
-            try{
-                double val;
-                o->asESString()->wcharData([&val](const wchar_t* buf){
-                    //FIXME remove string copy
-                    val = std::stod(std::wstring(buf));
-                });
-                return val;
-            }catch(...) {
-                return std::numeric_limits<double>::quiet_NaN();
-            }
+            double val;
+            o->asESString()->wcharData([&val](const wchar_t* buf, unsigned size){
+                wchar_t* end;
+                val = wcstod(buf, &end);
+                if(end != buf + size)
+                    val = std::numeric_limits<double>::quiet_NaN();
+            });
+            return val;
         }
         else if (o->isESStringObject())
             RELEASE_ASSERT_NOT_REACHED(); //TODO
@@ -969,8 +997,9 @@ ALWAYS_INLINE bool ESObject::hasOwnProperty(escargot::ESValue key)
             const wchar_t *bufAddress;
             long key_int;
             escargot::ESString* str = key.toString();
-            str->wcharData([&](const wchar_t* buf){
+            str->wcharData([&](const wchar_t* buf, unsigned size){
                 bufAddress = buf;
+                //TODO process 16, 8 radix
                 key_int = wcstol(buf, &end, 10);
             });
             //FIXME what if key is negative?
@@ -1136,6 +1165,19 @@ ALWAYS_INLINE void ESObject::set(escargot::ESValue key, const ESValue& val, bool
                 d->m_setter(this, val);
         }
     }
+}
+
+ALWAYS_INLINE size_t ESObject::keyCount()
+{
+    size_t siz = 0;
+    if (isESArrayObject() && asESArrayObject()->isFastmode()) {
+        siz += asESArrayObject()->length();
+    }
+    if(m_map)
+        siz += m_map->size();
+    else
+        siz += m_hiddenClassData.size();
+    return siz;
 }
 
 template <typename Functor>

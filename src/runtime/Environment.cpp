@@ -13,10 +13,10 @@ namespace escargot {
 LexicalEnvironment* LexicalEnvironment::newFunctionEnvironment(ESFunctionObject* function, const ESValue& newTarget)
 {
     ASSERT(newTarget.isUndefined() || (newTarget.isESPointer() && newTarget.asESPointer()->isESObject()));
-    FunctionEnvironmentRecord* envRec = new FunctionEnvironmentRecord();
+    FunctionEnvironmentRecord* envRec = new FunctionEnvironmentRecord(function->functionAST()->innerIdentifiers());
 
-    envRec->m_functionObject = function;
-    envRec->m_newTarget = newTarget;
+    //envRec->m_functionObject = function;
+    //envRec->m_newTarget = newTarget;
 
     LexicalEnvironment* env = new LexicalEnvironment(envRec, function->outerEnvironment());
     //TODO
@@ -43,7 +43,13 @@ void DeclarativeEnvironmentRecord::createMutableBinding(const InternalAtomicStri
 {
     //TODO canDelete
     ASSERT(m_needsActivation);
-    m_mapData->insert(std::make_pair(name, ESValue()));
+    size_t siz = m_activationData.size();
+    for(unsigned i = 0; i < siz ; i ++) {
+        if(m_activationData[i].first == name) {
+            return ;
+        }
+    }
+    m_activationData.push_back(std::make_pair(name, ESValue()));
     ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
 }
 

@@ -94,33 +94,6 @@ bool ESValue::equalsTo(const ESValue& val)
 }
 
 
-ESString* ESValue::toString() const
-{
-    if(isESString()) {
-        return asESString();
-    } else if(isInt32()) {
-        return ESString::create(asInt32());
-    } else if(isNumber()) {
-        double d = asNumber();
-        return ESString::create(d);
-    } else if(isUndefined()) {
-        return strings->undefined;
-    } else if(isNull()) {
-        return strings->null;
-    } else if(isBoolean()) {
-        if(asBoolean())
-            return strings->stringTrue;
-        else
-            return strings->stringFalse;
-    } else {
-        ASSERT(asESPointer()->isESObject());
-        ESObject* obj = asESPointer()->asESObject();
-        ESValue ret = ESFunctionObject::call(obj->get(ESValue(strings->toString), true), obj, NULL, 0, ESVMInstance::currentInstance(), false);
-        ASSERT(ret.isESString());
-        return ret.asESString();
-    }
-}
-
 
 ESObject* ESValue::toObject() const
 {
@@ -185,6 +158,18 @@ ESString* ESString::substring(int from, int to) const
     ASSERT(0 <= from && from <= to && to <= (int)length());
     if(UNLIKELY(m_string == NULL)) {
         escargot::ESRopeString* rope = (escargot::ESRopeString *)this;
+        if(to - from == 1) {
+            int len_left = rope->m_left->length();
+            char16_t c;
+            if (to <= len_left) {
+                c = rope->m_left->stringData()->c_str()[from];
+            } else {
+                c = rope->m_left->stringData()->c_str()[from - len_left];
+            }
+            if(c < ESCARGOT_ASCII_TABLE_MAX) {
+                return strings->asciiTable[c];
+            }
+        }
         int len_left = rope->m_left->length();
         if (to <= len_left) {
             u16string ret(std::move(rope->m_left->stringData()->substr(from, to-from)));
@@ -211,7 +196,11 @@ ESString* ESString::substring(int from, int to) const
         }
         ensureNormalString();
     }
-
+    if(to - from == 1) {
+        if(string()[from] < ESCARGOT_ASCII_TABLE_MAX) {
+            return strings->asciiTable[string()[from]];
+        }
+    }
     u16string ret(std::move(m_string->substr(from, to-from)));
     return ESString::create(std::move(ret));
 }
@@ -308,6 +297,7 @@ ESObject::ESObject(ESPointer::Type type)
 
 ESArrayObject::ESArrayObject(int length)
     : ESObject((Type)(Type::ESObject | Type::ESArrayObject))
+    , m_vector(0)
     , m_fastmode(true)
 {
     m_length = 0;
@@ -371,9 +361,8 @@ ALWAYS_INLINE void functionCallerInnerProcess(ESFunctionObject* fn, ESValue rece
         const InternalAtomicStringVector& params = fn->functionAST()->params();
         const ESStringVector& nonAtomicParams = fn->functionAST()->nonAtomicParams();
         for(unsigned i = 0; i < params.size() ; i ++) {
-            functionRecord->createMutableBinding(params[i], nonAtomicParams[i], false);
             if(i < argumentCount) {
-                functionRecord->setMutableBinding(params[i], nonAtomicParams[i], arguments[i], true);
+                *functionRecord->bindingValueForActivationMode(i) = arguments[i];
             }
         }
     } else {
@@ -401,7 +390,7 @@ ALWAYS_INLINE void functionCallerInnerProcess(ESFunctionObject* fn, ESValue rece
         if(!fn->functionAST()->needsActivation()) {
             for(size_t i = 0 ; i < fn->functionAST()->innerIdentifiers().size() ; i++ ) {
                 if(fn->functionAST()->innerIdentifiers()[i] == strings->atomicArguments) {
-                    *functionRecord->getBindingValueForNonActivationMode(i) = argumentsObject;
+                    *functionRecord->bindingValueForNonActivationMode(i) = argumentsObject;
                     break;
                 }
             }
@@ -415,8 +404,9 @@ ALWAYS_INLINE void functionCallerInnerProcess(ESFunctionObject* fn, ESValue rece
 }
 
 
-ESValue ESFunctionObject::call(ESValue callee, ESValue receiver, ESValue arguments[], size_t argumentCount, ESVMInstance* ESVMInstance, bool isNewExpression)
+ESValue ESFunctionObject::call(ESValue callee, ESValue receiver, ESValue arguments[], size_t argumentCount, bool isNewExpression)
 {
+    ESVMInstance* ESVMInstance = ESVMInstance::currentInstance();
     ESValue result(ESValue::ESForceUninitialized);
     if(LIKELY(callee.isESPointer() && callee.asESPointer()->isESFunctionObject())) {
         ExecutionContext* currentContext = ESVMInstance->currentExecutionContext();
@@ -433,13 +423,12 @@ ESValue ESFunctionObject::call(ESValue callee, ESValue receiver, ESValue argumen
             ESVMInstance->m_currentExecutionContext = currentContext;
         } else {
             ESValue* storage = (::escargot::ESValue *)alloca(sizeof(::escargot::ESValue) * fn->functionAST()->innerIdentifiers().size());
-            FunctionEnvironmentRecord envRec(true,
+            FunctionEnvironmentRecord envRec(
                     storage,
-                    fn->functionAST(),
                     &fn->functionAST()->innerIdentifiers());
 
-            envRec.m_functionObject = fn;
-            envRec.m_newTarget = receiver;
+            //envRec.m_functionObject = fn;
+            //envRec.m_newTarget = receiver;
 
             LexicalEnvironment env(&envRec, fn->outerEnvironment());
             ExecutionContext ec(&env, false, isNewExpression, currentContext, arguments, argumentCount, storage);

@@ -145,19 +145,19 @@ public:
     bool isObject() const;
 
     enum PrimitiveTypeHint { PreferString, PreferNumber };
-    ESValue toPrimitive(PrimitiveTypeHint = PreferNumber) const; //$7.1.1 ToPrimitive
-    bool toBoolean() const; //$7.1.2 ToBoolean
-    double toNumber() const; //$7.1.3 ToNumber
-    double toInteger() const; //$7.1.4 ToInteger
-    int32_t toInt32() const; //$7.1.5 ToInt32
-    ESString* toString() const; //$7.1.12 ToString
+    inline ESValue toPrimitive(PrimitiveTypeHint = PreferNumber) const; //$7.1.1 ToPrimitive
+    inline bool toBoolean() const; //$7.1.2 ToBoolean
+    inline double toNumber() const; //$7.1.3 ToNumber
+    inline double toInteger() const; //$7.1.4 ToInteger
+    inline int32_t toInt32() const; //$7.1.5 ToInt32
+    inline ESString* toString() const; //$7.1.12 ToString
     ESObject* toObject() const; //$7.1.13 ToObject
-    double toLength() const; //$7.1.15 ToLength
+    inline double toLength() const; //$7.1.15 ToLength
 
-    ESString* asESString() const;
+    inline ESString* asESString() const;
 
-    bool isESPointer() const;
-    ESPointer* asESPointer() const;
+    inline bool isESPointer() const;
+    inline ESPointer* asESPointer() const;
 
     static ptrdiff_t offsetOfPayload() { return OBJECT_OFFSETOF(ESValue, u.asBits.payload); }
     static ptrdiff_t offsetOfTag() { return OBJECT_OFFSETOF(ESValue, u.asBits.tag); }
@@ -562,7 +562,7 @@ public:
         }
         buf[length()] = 0;
 
-        fn(buf);
+        fn(buf, length());
     }
 
     ALWAYS_INLINE void ensureNormalString() const;
@@ -1000,27 +1000,27 @@ public:
     ALWAYS_INLINE void setValue(const ::escargot::ESValue& value, ::escargot::ESObject* object = NULL)
     {
         ASSERT(m_data);
-        if(LIKELY(m_isDataProperty)) {
-            *m_data = value;
-        } else {
+        if(UNLIKELY(!m_isDataProperty)) {
             ASSERT(object);
             if(((ESAccessorData *)m_data)->m_setter) {
                 ((ESAccessorData *)m_data)->m_setter(object, value);
             }
+        } else {
+            *m_data = value;
         }
     }
 
     ALWAYS_INLINE ESValue value(::escargot::ESObject* object = NULL) const
     {
         ASSERT(m_data);
-        if(LIKELY(m_isDataProperty)) {
-            return *m_data;
-        } else {
+        if(UNLIKELY(!m_isDataProperty)) {
             ASSERT(object);
             if(((ESAccessorData *)m_data)->m_getter) {
                 return ((ESAccessorData *)m_data)->m_getter(object);
             }
             return ESValue();
+        } else {
+            return *m_data;
         }
     }
 
@@ -1095,8 +1095,8 @@ public:
 
 class ESVector : public ESVectorStd {
 public:
-    ESVector()
-        : ESVectorStd() { }
+    ESVector(size_t siz)
+        : ESVectorStd(siz) { }
 };
 
 class ESHiddenClass : public gc {
@@ -1289,6 +1289,7 @@ public:
         }
     }
 
+    ALWAYS_INLINE size_t keyCount();
 protected:
     ESObjectMap* m_map;
     ESHiddenClass* m_hiddenClass;
@@ -1561,7 +1562,7 @@ public:
     FunctionNode* functionAST() { return m_functionAST; }
     LexicalEnvironment* outerEnvironment() { return m_outerEnvironment; }
 
-    static ESValue call(ESValue callee, ESValue receiver, ESValue arguments[], size_t argumentCount, ESVMInstance* ESVMInstance, bool isNewExpression = false);
+    static ESValue call(ESValue callee, ESValue receiver, ESValue arguments[], size_t argumentCount, bool isNewExpression = false);
 protected:
     LexicalEnvironment* m_outerEnvironment;
     FunctionNode* m_functionAST;

@@ -26,7 +26,7 @@ public:
         ESValue value = m_object->execute(instance);
         ExecutionContext* ec = instance->currentExecutionContext();
 
-        if(UNLIKELY(value.isPrimitive())) {
+        if(UNLIKELY(!value.isObject())) {
             value = value.toObject();
         }
 

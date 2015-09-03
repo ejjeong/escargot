@@ -52,7 +52,7 @@ public:
     template <typename F>
     ESValue runOnEvalContext(const F& f, bool isDirectCall);
 
-    ALWAYS_INLINE size_t identifierCacheInvalidationCheckCount()
+    ALWAYS_INLINE const unsigned& identifierCacheInvalidationCheckCount()
     {
         return m_identifierCacheInvalidationCheckCount;
     }
@@ -60,7 +60,7 @@ public:
     ALWAYS_INLINE void invalidateIdentifierCacheCheckCount()
     {
         m_identifierCacheInvalidationCheckCount ++;
-        if(UNLIKELY(m_identifierCacheInvalidationCheckCount == SIZE_MAX)) {
+        if(UNLIKELY(m_identifierCacheInvalidationCheckCount == std::numeric_limits<unsigned>::max())) {
             m_identifierCacheInvalidationCheckCount = 0;
         }
     }
@@ -102,7 +102,7 @@ protected:
     InternalAtomicStringMap m_atomicStringMap;
 
     Strings m_strings;
-    size_t m_identifierCacheInvalidationCheckCount;
+    unsigned m_identifierCacheInvalidationCheckCount;
 
     ESHiddenClass m_initialHiddenClassForObject;
     ESHiddenClass m_initialHiddenClassForFunction;
