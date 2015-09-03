@@ -371,7 +371,6 @@ ALWAYS_INLINE void functionCallerInnerProcess(ESFunctionObject* fn, ESValue rece
         for(unsigned i = 0; i < params.size() ; i ++) {
             if(i < argumentCount) {
                 ESVMInstance->currentExecutionContext()->cachedDeclarativeEnvironmentRecordESValue()[i] = arguments[i];
-                //functionRecord->setMutableBinding(params[i], nonAtomicParams[i], arguments[i], true);
             }
         }
     }
@@ -415,11 +414,16 @@ ESValue ESFunctionObject::call(ESValue callee, ESValue receiver, ESValue argumen
             ESVMInstance->m_currentExecutionContext = new ExecutionContext(LexicalEnvironment::newFunctionEnvironment(fn, receiver), true, isNewExpression, currentContext, arguments, argumentCount);
             functionCallerInnerProcess(fn, receiver, arguments, argumentCount, true, ESVMInstance);
             //ESVMInstance->invalidateIdentifierCacheCheckCount();
-            int r = setjmp(ESVMInstance->currentExecutionContext()->returnPosition());
-            if(r != 1) {
-                fn->functionAST()->body()->execute(ESVMInstance);
+            if(fn->functionAST()->needsReturn()) {
+                int r = setjmp(ESVMInstance->currentExecutionContext()->returnPosition());
+                if(r != 1) {
+                    fn->functionAST()->body()->execute(ESVMInstance);
+                }
+                result = ESVMInstance->currentExecutionContext()->returnValue();
+            } else {
+                result = fn->functionAST()->body()->execute(ESVMInstance);
             }
-            result = ESVMInstance->currentExecutionContext()->returnValue();
+
             ESVMInstance->m_currentExecutionContext = currentContext;
         } else {
             ESValue* storage = (::escargot::ESValue *)alloca(sizeof(::escargot::ESValue) * fn->functionAST()->innerIdentifiers().size());
@@ -435,11 +439,16 @@ ESValue ESFunctionObject::call(ESValue callee, ESValue receiver, ESValue argumen
             ESVMInstance->m_currentExecutionContext = &ec;
             functionCallerInnerProcess(fn, receiver, arguments, argumentCount, fn->functionAST()->needsArgumentsObject(), ESVMInstance);
             //ESVMInstance->invalidateIdentifierCacheCheckCount();
-            int r = setjmp(ESVMInstance->currentExecutionContext()->returnPosition());
-            if(r != 1) {
-                fn->functionAST()->body()->execute(ESVMInstance);
+            if(fn->functionAST()->needsReturn()) {
+                int r = setjmp(ESVMInstance->currentExecutionContext()->returnPosition());
+                if(r != 1) {
+                    fn->functionAST()->body()->execute(ESVMInstance);
+                }
+                result = ESVMInstance->currentExecutionContext()->returnValue();
+            } else {
+                result = fn->functionAST()->body()->execute(ESVMInstance);
             }
-            result = ESVMInstance->currentExecutionContext()->returnValue();
+
             ESVMInstance->m_currentExecutionContext = currentContext;
         }
     } else {
@@ -484,42 +493,56 @@ static inline double ymdhmsToSeconds(long year, int mon, int day, int hour, int 
 void ESDateObject::setTimeValue(ESValue str) {
     if (str.isUndefined()) {
         clock_gettime(CLOCK_REALTIME,&m_time);
+        m_isCacheDirty = true;
     } else {
         escargot::ESString* istr = str.toString();
-        struct tm timeinfo;
-        parseStringToDate(&timeinfo, istr);
-        timeinfo.tm_isdst = true;
-        m_time.tv_sec = ymdhmsToSeconds(timeinfo.tm_year+1900, timeinfo.tm_mon + 1, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);;
-        //m_time.tv_sec = mktime(&timeinfo);
+        parseStringToDate(&m_cachedTM, istr);
+        m_cachedTM.tm_isdst = true;
+        m_time.tv_sec = ymdhmsToSeconds(m_cachedTM.tm_year+1900, m_cachedTM.tm_mon + 1, m_cachedTM.tm_mday, m_cachedTM.tm_hour, m_cachedTM.tm_min, m_cachedTM.tm_sec);
+    }
+}
+
+void ESDateObject::resolveCache()
+{
+    if(m_isCacheDirty) {
+        memcpy(&m_cachedTM, ESVMInstance::currentInstance()->computeLocalTime(m_time), sizeof (tm));
+        m_isCacheDirty = false;
     }
 }
 
 int ESDateObject::getDate() {
-    return ESVMInstance::currentInstance()->computeLocalTime(m_time)->tm_mday;
+    resolveCache();
+    return m_cachedTM.tm_mday;
 }
 
 int ESDateObject::getDay() {
-    return ESVMInstance::currentInstance()->computeLocalTime(m_time)->tm_wday;
+    resolveCache();
+    return m_cachedTM.tm_wday;
 }
 
 int ESDateObject::getFullYear() {
-    return ESVMInstance::currentInstance()->computeLocalTime(m_time)->tm_year + 1900;
+    resolveCache();
+    return m_cachedTM.tm_year + 1900;
 }
 
 int ESDateObject::getHours() {
-    return ESVMInstance::currentInstance()->computeLocalTime(m_time)->tm_hour;
+    resolveCache();
+    return m_cachedTM.tm_hour;
 }
 
 int ESDateObject::getMinutes() {
-    return ESVMInstance::currentInstance()->computeLocalTime(m_time)->tm_min;
+    resolveCache();
+    return m_cachedTM.tm_min;
 }
 
 int ESDateObject::getMonth() {
-    return ESVMInstance::currentInstance()->computeLocalTime(m_time)->tm_mon;
+    resolveCache();
+    return m_cachedTM.tm_mon;
 }
 
 int ESDateObject::getSeconds() {
-    return ESVMInstance::currentInstance()->computeLocalTime(m_time)->tm_sec;
+    resolveCache();
+    return m_cachedTM.tm_sec;
 }
 
 int ESDateObject::getTimezoneOffset() {
@@ -531,6 +554,8 @@ void ESDateObject::setTime(double t) {
     time_t raw_t = (time_t) floor(t);
     m_time.tv_sec = raw_t / 1000;
     m_time.tv_nsec = (raw_t % 10000) * 1000000;
+
+    m_isCacheDirty = true;
 }
 
 ESStringObject::ESStringObject(escargot::ESString* str)

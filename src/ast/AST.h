@@ -3,6 +3,7 @@
 
 #include "ArrayExpressionNode.h"
 #include "AssignmentExpressionSimpleNode.h"
+#include "AssignmentExpressionSimpleLeftIdentifierFastCaseNode.h"
 #include "AssignmentExpressionBitwiseAndNode.h"
 #include "AssignmentExpressionBitwiseOrNode.h"
 #include "AssignmentExpressionBitwiseXorNode.h"

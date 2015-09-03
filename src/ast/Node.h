@@ -56,6 +56,7 @@ enum NodeType {
     AssignmentExpressionSignedRightShift,
     AssignmentExpressionUnsignedRightShift,
     AssignmentExpressionSimple,
+    AssignmentExpressionSimpleLeftIdentifierFastCase,
     BinaryExpression,
     BinaryExpressionBitwiseAnd,
     BinaryExpressionBitwiseOr,

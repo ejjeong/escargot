@@ -27,6 +27,7 @@ public:
         m_outerFunctionNode = NULL;
         m_needsArgumentsObject = false;
         m_isBuiltInFunction = isBuiltInFunction;
+        m_needsReturn = false;
     }
 
     ALWAYS_INLINE const InternalAtomicStringVector& params() { return m_params; }
@@ -39,6 +40,8 @@ public:
     ALWAYS_INLINE void setNeedsActivation(bool b) { m_needsActivation = b; }
     ALWAYS_INLINE bool needsArgumentsObject() { return m_needsArgumentsObject; }
     ALWAYS_INLINE void markNeedsArgumentsObject() { m_needsArgumentsObject = true; }
+    ALWAYS_INLINE bool needsReturn() { return m_needsReturn; }
+    ALWAYS_INLINE void markNeedsReturn() { m_needsReturn = true; }
     ALWAYS_INLINE bool isBuiltInFunction() { return m_isBuiltInFunction; }
 
     void setInnerIdentifiers(InternalAtomicStringVector&& vec)
@@ -65,6 +68,7 @@ protected:
 
     bool m_needsActivation;
     bool m_needsArgumentsObject;
+    bool m_needsReturn;
     FunctionNode* m_outerFunctionNode;
 
     bool m_isBuiltInFunction;

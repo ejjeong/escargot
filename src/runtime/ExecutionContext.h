@@ -58,6 +58,11 @@ public:
         std::longjmp(m_returnPosition,1);
     }
 
+    void setReturnValue(const ESValue& returnValue)
+    {
+        m_returnValue = returnValue;
+    }
+
     std::jmp_buf& returnPosition() { return m_returnPosition; }
 
     void doBreak()

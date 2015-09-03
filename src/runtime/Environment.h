@@ -386,12 +386,16 @@ public:
     FunctionEnvironmentRecord(ESValue* vectorBuffer, InternalAtomicStringVector* innerIdentifiers)
         : DeclarativeEnvironmentRecord(vectorBuffer, innerIdentifiers)
     {
+#ifndef NDEBUG
         m_thisBindingStatus = Uninitialized;
+#endif
     }
     FunctionEnvironmentRecord(const InternalAtomicStringVector& innerIdentifiers = InternalAtomicStringVector())
         : DeclarativeEnvironmentRecord(innerIdentifiers)
     {
+#ifndef NDEBUG
         m_thisBindingStatus = Uninitialized;
+#endif
     }
     enum ThisBindingStatus {
         Lexical, Initialized, Uninitialized
@@ -410,7 +414,9 @@ protected:
     ESValue m_thisValue;
     //ESFunctionObject* m_functionObject; //TODO
     //ESValue m_newTarget; //TODO
+#ifndef NDEBUG
     ThisBindingStatus m_thisBindingStatus;
+#endif
 };
 
 /*

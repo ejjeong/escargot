@@ -317,7 +317,7 @@ struct ParseStatus : public RefCounted<ParseStatus> {
         m_valueNumber = 0;
 
         m_type = t;
-        m_value = data;
+        m_value = std::move(data);
         m_lineNumber = a;
         m_lineStart = b;
         m_start = c;
@@ -333,7 +333,7 @@ struct ParseStatus : public RefCounted<ParseStatus> {
         m_valueNumber = 0;
 
         m_type = t;
-        m_value = data;
+        m_value = std::move(data);
         m_octal = octal;
         m_lineNumber = a;
         m_lineStart = b;
@@ -344,6 +344,18 @@ struct ParseStatus : public RefCounted<ParseStatus> {
         m_prec = -1;
     }
 
+};
+
+struct Curly {
+    char m_curly[4];
+    Curly() { }
+    Curly(const char curly[4])
+    {
+        m_curly[0] = curly[0];
+        m_curly[1] = curly[1];
+        m_curly[2] = curly[2];
+        m_curly[3] = curly[3];
+    }
 };
 
 struct ParseContext {
@@ -369,7 +381,7 @@ struct ParseContext {
     bool m_inIteration;
     bool m_inSwitch;
     int m_lastCommentStart;
-    std::vector<std::u16string> m_curlyStack;
+    std::vector<Curly> m_curlyStack;
     bool m_strict;
     bool m_scanning;
     bool m_hasLineTerminator;
@@ -819,7 +831,9 @@ PassRefPtr<ParseStatus> scanPunctuator(ParseContext* ctx) {
 */
     // Check for most common single-character punctuators.
     char16_t str = ctx->m_source[ctx->m_index];
-    std::u16string resultStr = {str};
+    std::u16string resultStr;
+    resultStr.reserve(4);
+    resultStr += str;
     switch (str) {
     case '(':
         /*
@@ -834,7 +848,7 @@ PassRefPtr<ParseStatus> scanPunctuator(ParseContext* ctx) {
         if (extra.tokenize) {
             extra.openCurlyToken = extra.tokens.length;
         }*/
-        ctx->m_curlyStack.push_back(u"{");
+        ctx->m_curlyStack.push_back(Curly("{\0\0"));
         ++ctx->m_index;
         break;
 
@@ -872,33 +886,32 @@ PassRefPtr<ParseStatus> scanPunctuator(ParseContext* ctx) {
         if (resultStr == u">>>=") {
             ctx->m_index += 4;
         } else {
-
             // 3-character punctuators.
-            std::u16string str = resultStr.substr(0, 3);
-            if (str == u"===" || str == u"!==" || str == u">>>" ||
-                str == u"<<=" || str == u">>=") {
+
+            if (resultStr.compare(0,3,u"===") == 0 || resultStr.compare(0,3,u"!==") == 0 || resultStr.compare(0,3,u">>>") == 0 ||
+                    resultStr.compare(0,3,u"<<=") == 0 || resultStr.compare(0,3,u">>=") == 0) {
                 ctx->m_index += 3;
-                resultStr = str;
+                resultStr.pop_back();
             } else {
-
                 // 2-character punctuators.
-                std::u16string str = resultStr.substr(0, 2);
-                if (str == u"&&" || str == u"||" || str == u"==" || str == u"!=" ||
-                    str == u"+=" || str == u"-=" || str == u"*=" || str == u"/=" ||
-                    str == u"++" || str == u"--" || str == u"<<" || str == u">>" ||
-                    str == u"&=" || str == u"|=" || str == u"^=" || str == u"%=" ||
-                    str == u"<=" || str == u">=" || str == u"=>") {
+                if (resultStr.compare(0,2,u"&&") == 0 || resultStr.compare(0,2,u"||") == 0 || resultStr.compare(0,2,u"==") == 0 || resultStr.compare(0,2,u"!=") == 0 ||
+                    resultStr.compare(0,2,u"+=") == 0 || resultStr.compare(0,2,u"-=") == 0 || resultStr.compare(0,2,u"*=") == 0 || resultStr.compare(0,2,u"/=") == 0 ||
+                    resultStr.compare(0,2,u"++") == 0 || resultStr.compare(0,2,u"--") == 0 || resultStr.compare(0,2,u"<<") == 0 || resultStr.compare(0,2,u">>") == 0 ||
+                    resultStr.compare(0,2,u"&=") == 0 || resultStr.compare(0,2,u"|=") == 0 || resultStr.compare(0,2,u"^=") == 0 || resultStr.compare(0,2,u"%=") == 0 ||
+                    resultStr.compare(0,2,u"<=") == 0 || resultStr.compare(0,2,u">=") == 0 || resultStr.compare(0,2,u"=>") == 0 ) {
                     ctx->m_index += 2;
-                    resultStr = str;
+                    resultStr.pop_back();
+                    resultStr.pop_back();
                 } else {
-
                     // 1-character punctuators.
-                    str = ctx->m_source[ctx->m_index];
+                    char16_t str = ctx->m_source[ctx->m_index];
                     //if ('<>=!+-*%&|^/'.indexOf(str) >= 0) {
-                    if (str == u"<" || str == u">" || str == u"=" || str == u"!" || str == u"+" || str == u"-"
-                            || str == u"*" || str == u"%" || str == u"&" || str == u"|" || str == u"^" || str == u"/") {
+                    if (str == u'<' || str == u'>' || str == u'=' || str == u'!' || str == u'+' || str == u'-'
+                            || str == u'*' || str == u'%' || str == u'&' || str == u'|' || str == u'^' || str == u'/') {
                         ++ctx->m_index;
-                        resultStr = str;
+                        resultStr.pop_back();
+                        resultStr.pop_back();
+                        resultStr.pop_back();
                     }
                 }
             }
@@ -910,7 +923,7 @@ PassRefPtr<ParseStatus> scanPunctuator(ParseContext* ctx) {
     }
 
     token->m_end = ctx->m_index;
-    token->m_value = resultStr.data();
+    token->m_value = std::move(resultStr);
     return adoptRef(token);
 }
 
@@ -922,6 +935,11 @@ PassRefPtr<ParseStatus> scanStringLiteral(ParseContext* ctx) {
     OctalToDecimalResult octToDec;
     bool octal = false;
 
+    const size_t smallBufferMax = 128;
+    char16_t smallBuffer[smallBufferMax + 1];
+    size_t smallBufferUsage = 0;
+    bool strInited = false;
+
     quote = ctx->m_source[ctx->m_index];
     ASSERT((quote == '\'' || quote == '"'));
 
@@ -929,6 +947,11 @@ PassRefPtr<ParseStatus> scanStringLiteral(ParseContext* ctx) {
     ++ctx->m_index;
 
     while (ctx->m_index < ctx->m_length) {
+        if(smallBufferUsage >= smallBufferMax && !strInited) {
+            str.assign(&smallBuffer[0], &smallBuffer[smallBufferUsage]);
+            strInited = true;
+        }
+
         ch = ctx->m_source[ctx->m_index++];
 
         if (ch == quote) {
@@ -942,50 +965,89 @@ PassRefPtr<ParseStatus> scanStringLiteral(ParseContext* ctx) {
                 case 'x':
                     if (ctx->m_source[ctx->m_index] == '{') {
                         ++ctx->m_index;
-                        str += scanUnicodeCodePointEscape(ctx);
+                        if(smallBufferUsage < smallBufferMax) {
+                            ASSERT(!strInited);
+                            smallBuffer[smallBufferUsage++] = scanUnicodeCodePointEscape(ctx);
+                        } else
+                            str += scanUnicodeCodePointEscape(ctx);
                     } else {
                         unescaped = scanHexEscape(ctx, ch);
                         if (!unescaped) {
                             throwUnexpectedToken();
                         }
-                        str += unescaped;
+                        if(smallBufferUsage < smallBufferMax) {
+                            ASSERT(!strInited);
+                            smallBuffer[smallBufferUsage++] = unescaped;
+                        } else
+                            str += unescaped;
                     }
                     break;
                 case 'n':
-                    str += '\n';
+                    if(smallBufferUsage < smallBufferMax) {
+                        ASSERT(!strInited);
+                        smallBuffer[smallBufferUsage++] = '\n';
+                    } else
+                        str += '\n';
                     break;
                 case 'r':
-                    str += '\r';
+                    if(smallBufferUsage < smallBufferMax) {
+                        ASSERT(!strInited);
+                        smallBuffer[smallBufferUsage++] = '\r';
+                    } else
+                        str += '\r';
                     break;
                 case 't':
-                    str += '\t';
+                    if(smallBufferUsage < smallBufferMax) {
+                        ASSERT(!strInited);
+                        smallBuffer[smallBufferUsage++] = '\t';
+                    } else
+                        str += '\t';
                     break;
                 case 'b':
-                    str += '\b';
+                    if(smallBufferUsage < smallBufferMax) {
+                        ASSERT(!strInited);
+                        smallBuffer[smallBufferUsage++] = '\b';
+                    } else
+                        str += '\b';
                     break;
                 case 'f':
-                    str += '\f';
+                    if(smallBufferUsage < smallBufferMax) {
+                        ASSERT(!strInited);
+                        smallBuffer[smallBufferUsage++] = '\f';
+                    } else
+                        str += '\f';
                     break;
                 case 'v':
-                    str += '\x0B';
+                    if(smallBufferUsage < smallBufferMax) {
+                        ASSERT(!strInited);
+                        smallBuffer[smallBufferUsage++] = '\x0B';
+                    } else
+                        str += '\x0B';
                     break;
                 case '8':
                 case '9':
-                    str += ch;
+                    //str += ch;
                     tolerateUnexpectedToken();
                     break;
 
                 default:
                     if (isOctalDigit(ch)) {
-                        //ALWAYS_INLINE double octalToDecimal(char16_t* source, size_t& currentIndex, const size_t& sourceLength, bool& result)
                         bool r;
                         size_t c = 0;
                         size_t l = 1;
                         octToDec = octalToDecimal(ctx, ch);
                         octal = octToDec.octal || octal;
-                        str.push_back(octToDec.code);
+                        if(smallBufferUsage < smallBufferMax) {
+                            ASSERT(!strInited);
+                            smallBuffer[smallBufferUsage++] = octToDec.code;
+                        } else
+                            str += octToDec.code;
                     } else {
-                        str += ch;
+                        if(smallBufferUsage < smallBufferMax) {
+                            ASSERT(!strInited);
+                            smallBuffer[smallBufferUsage++] = ch;
+                        } else
+                            str += ch;
                     }
                     break;
                 }
@@ -999,10 +1061,17 @@ PassRefPtr<ParseStatus> scanStringLiteral(ParseContext* ctx) {
         } else if (isLineTerminator(ch)) {
             break;
         } else {
-            str += ch;
+            if(smallBufferUsage < smallBufferMax) {
+                ASSERT(!strInited);
+                smallBuffer[smallBufferUsage++] = ch;
+            } else
+                str += ch;
         }
     }
 
+    if(!strInited) {
+        str.assign(&smallBuffer[0], &smallBuffer[smallBufferUsage]);
+    }
     if (quote != '\0') {
         throwUnexpectedToken();
     }
@@ -1042,7 +1111,7 @@ PassRefPtr<ParseStatus> scanTemplate(ParseContext* ctx) {
             break;
         } else if (ch == '$') {
             if (ctx->m_source[ctx->m_index] == '{') {
-                ctx->m_curlyStack.push_back(u"${");
+                ctx->m_curlyStack.push_back(Curly("${\0"));
                 ++ctx->m_index;
                 terminated = true;
                 break;
@@ -1470,7 +1539,7 @@ ALWAYS_INLINE PassRefPtr<ParseStatus> advance(ParseContext* ctx)
 */
     // Template literals start with ` (U+0060) for template head
     // or } (U+007D) for template middle or template tail.
-    if (cp == 0x60 || (cp == 0x7D && ctx->m_curlyStack[ctx->m_curlyStack.size() - 1] == u"${")) {
+    if (cp == 0x60 || (cp == 0x7D && strcmp(ctx->m_curlyStack[ctx->m_curlyStack.size() - 1].m_curly, "${") == 0)) {
         return scanTemplate(ctx);
     }
 
@@ -1544,6 +1613,14 @@ ALWAYS_INLINE void expect(ParseContext* ctx, const std::u16string& value) {
     }
 }
 
+ALWAYS_INLINE void expect(ParseContext* ctx, const char16_t* value) {
+    RefPtr<ParseStatus> token = lex(ctx);
+    //CHECKTHIS. compare value!
+    if (token->m_type != Token::PunctuatorToken || token->m_value != value) {
+        throwUnexpectedToken();
+    }
+}
+
 ALWAYS_INLINE void expect(ParseContext* ctx, const char16_t& value) {
     RefPtr<ParseStatus> token = lex(ctx);
     //CHECKTHIS. compare value!
@@ -1589,6 +1666,13 @@ void expectKeyword(ParseContext* ctx, const std::u16string& keyword) {
     }
 }
 
+void expectKeyword(ParseContext* ctx, const char16_t* keyword) {
+    RefPtr<ParseStatus> token = lex(ctx);
+    if (token->m_type != Token::KeywordToken || token->m_value != keyword) {
+        throwUnexpectedToken();
+    }
+}
+
 // Return true if the next token matches the specified punctuator.
 
 ALWAYS_INLINE bool match(ParseContext* ctx, const std::u16string& value) {
@@ -1605,10 +1689,18 @@ bool matchKeyword(ParseContext* ctx, const std::u16string& keyword) {
     return ctx->m_lookahead->m_type == Token::KeywordToken && ctx->m_lookahead->m_value == keyword;
 }
 
+bool matchKeyword(ParseContext* ctx, const char16_t* keyword) {
+    return ctx->m_lookahead->m_type == Token::KeywordToken && ctx->m_lookahead->m_value == keyword;
+}
+
 // Return true if the next token matches the specified contextual keyword
 // (where an identifier is sometimes a keyword depending on the context)
 
 bool matchContextualKeyword(ParseContext* ctx, const std::u16string& keyword) {
+    return ctx->m_lookahead->m_type == Token::IdentifierToken && ctx->m_lookahead->m_value == keyword;
+}
+
+bool matchContextualKeyword(ParseContext* ctx, const char16_t* keyword) {
     return ctx->m_lookahead->m_type == Token::IdentifierToken && ctx->m_lookahead->m_value == keyword;
 }
 

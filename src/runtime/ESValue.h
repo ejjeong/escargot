@@ -1348,7 +1348,9 @@ public:
 class ESDateObject : public ESObject {
 protected:
     ESDateObject(ESPointer::Type type = ESPointer::Type::ESDateObject)
-           : ESObject((Type)(Type::ESObject | Type::ESDateObject)) {}
+           : ESObject((Type)(Type::ESObject | Type::ESDateObject)) {
+        m_isCacheDirty = true;
+    }
 
 public:
     static ESDateObject* create()
@@ -1389,7 +1391,10 @@ public:
     }
 
 private:
+    void resolveCache();
     struct timespec m_time;
+    struct tm m_cachedTM;
+    bool m_isCacheDirty;
 };
 
 class ESArrayObject : public ESObject {

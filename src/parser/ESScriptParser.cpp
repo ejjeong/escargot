@@ -324,6 +324,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16str
         } else if(type == NodeType::ContinueStatement) {
             controlFlowNodeStack[controlFlowNodeStack.size() - 1]->markAsSlowCase();
         } else if(type == NodeType::ReturnStatement) {
+            nearFunctionNode->markNeedsReturn();
             postAnalysisFunction(((ReturnStatmentNode *)currentNode)->m_argument, identifierStack, nearFunctionNode);
         } else if(type == NodeType::EmptyStatement) {
         } else if (type == NodeType::TryStatement) {
@@ -368,6 +369,14 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16str
                     *node = new IdentifierFastCaseWithActivationNode(n->fastAccessIndex(), n->fastAccessUpIndex(), n->name());
 #endif
                 }
+            } else if((*node)->type() == NodeType::AssignmentExpressionSimple) {
+                AssignmentExpressionSimpleNode* n = (AssignmentExpressionSimpleNode *)*node;
+                if(n->m_left->type() == NodeType::Identifier) {
+                    IdentifierNode* n2 = (IdentifierNode *)n->m_left;
+                    if(nearFunction && !nearFunction->needsActivation() && n2->canUseFastAccess() && n2->fastAccessUpIndex() == 0) {
+                        *node = new AssignmentExpressionSimpleLeftIdentifierFastCaseNode(n2->fastAccessIndex(), n->m_right);
+                    }
+                }
             }
         }
     };
@@ -406,6 +415,9 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16str
             nodeReplacer(&((AssignmentExpressionSimpleNode *)currentNode)->m_left, nearFunction);
             postProcessingFunction(((AssignmentExpressionSimpleNode *)currentNode)->m_right, nearFunction);
             postProcessingFunction(((AssignmentExpressionSimpleNode *)currentNode)->m_left, nearFunction);
+        } else if(type == NodeType::AssignmentExpressionSimpleLeftIdentifierFastCase) {
+            nodeReplacer(&((AssignmentExpressionSimpleLeftIdentifierFastCaseNode*)currentNode)->m_right, nearFunction);
+            postProcessingFunction(((AssignmentExpressionSimpleLeftIdentifierFastCaseNode *)currentNode)->m_right, nearFunction);
         } else if(type == NodeType::Literal) {
             //DO NOTHING
         } else if(type == NodeType::ArrayExpression) {
@@ -553,6 +565,7 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16str
         } else if(type == NodeType::ReturnStatement) {
             nodeReplacer((Node **)&((ReturnStatmentNode *)currentNode)->m_argument, nearFunction);
             postProcessingFunction(((ReturnStatmentNode *)currentNode)->m_argument, nearFunction);
+            nearFunction->needsReturn();
         } else if(type == NodeType::EmptyStatement) {
         } else if (type == NodeType::TryStatement) {
             nodeReplacer((Node **)&((TryStatementNode *)currentNode)->m_block, nearFunction);

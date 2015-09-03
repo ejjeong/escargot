@@ -190,19 +190,22 @@ void ObjectEnvironmentRecord::setMutableBinding(const InternalAtomicString& name
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-bindthisvalue
 void FunctionEnvironmentRecord::bindThisValue(const ESValue& V)
 {
+#ifndef NDEBUG
     ASSERT(m_thisBindingStatus != Initialized);
     if(m_thisBindingStatus == Lexical)
         throw ReferenceError(ESString::create(u""));
-    m_thisValue = V;
     m_thisBindingStatus = Initialized;
+#endif
+    m_thisValue = V;
 }
 
 ESObject* FunctionEnvironmentRecord::getThisBinding()
 {
+#ifndef NDEBUG
     ASSERT(m_thisBindingStatus != Lexical);
     if(m_thisBindingStatus == Uninitialized)
         throw ReferenceError(ESString::create(u""));
-
+#endif
     return m_thisValue.asESPointer()->asESObject();
 }
 

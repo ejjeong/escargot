@@ -159,15 +159,15 @@ void GlobalObject::initGlobalObject()
     definePropertyOrThrow(ESString::create(u"eval"), false, false, false);
     node = new FunctionDeclarationNode(InternalAtomicString(u"eval"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         ESValue argument = instance->currentExecutionContext()->arguments()[0];
-        if(!argument.isESString())
-            instance->currentExecutionContext()->doReturn(argument);
+        if(!argument.isESString()) {
+            return argument;
+        }
         bool isDirectCall = true; // TODO
         ESValue ret = instance->runOnEvalContext([instance, &argument](){
             ESValue ret = instance->evaluate(const_cast<u16string &>(argument.asESString()->string()));
             return ret;
         }, isDirectCall);
-        instance->currentExecutionContext()->doReturn(ret);
-        return ESValue();
+        return ret;
     }), false, false);
     set(ESString::create(u"eval"), ESFunctionObject::create(NULL, node));
 
@@ -185,8 +185,7 @@ void GlobalObject::initGlobalObject()
             else
                 ret = ESValue(ESValue::ESTrueTag::ESTrue);
         }
-        instance->currentExecutionContext()->doReturn(ret);
-        return ESValue();
+        return ret;
     }), false, false);
     set(ESString::create(u"isFinite"), ESFunctionObject::create(NULL, node));
     // $18.2.3
@@ -201,8 +200,7 @@ void GlobalObject::initGlobalObject()
             if(std::isnan(num)) ret = ESValue(ESValue::ESTrueTag::ESTrue);
             else    ret = ESValue(ESValue::ESFalseTag::ESFalse);
         }
-        instance->currentExecutionContext()->doReturn(ret);
-        return ESValue();
+        return ret;
     }), false, false);
     set(ESString::create(u"isNaN"), ESFunctionObject::create(NULL, node));
     // $18.2.5 parseInt(string, radix)
@@ -219,13 +217,13 @@ void GlobalObject::initGlobalObject()
             if (radix == 0) radix = 10;
             if (radix < 2 || radix > 36) {
                 ret = ESValue(std::numeric_limits<double>::quiet_NaN());
-                instance->currentExecutionContext()->doReturn(ret);
+                return ret;
             }
             else {
                 ESValue &input = instance->currentExecutionContext()->arguments()[0];
                 if (radix == 10 && input.isNumber()) {
                     ret = ESValue(input.toInt32());
-                    instance->currentExecutionContext()->doReturn(ret);
+                    return ret;
                 }
                 if (radix == 16) {
                     //TODO : stripPrefix = true
@@ -233,8 +231,7 @@ void GlobalObject::initGlobalObject()
                 //TODO
             }
         }
-        instance->currentExecutionContext()->doReturn(ret);
-        return ESValue();
+        return ret;
     }), false, false);
     set(ESString::create(u"parseInt"), ESFunctionObject::create(NULL, node));
 }
@@ -258,8 +255,7 @@ void GlobalObject::installFunction()
         escargot::ESFunctionObject* fn = instance->currentExecutionContext()->resolveThisBinding()->asESFunctionObject();
         ret.append(fn->functionAST()->id().data());
         ret.append(u"() {}");
-        instance->currentExecutionContext()->doReturn(ESString::create(std::move(ret)));
-        return ESValue();
+        return ESString::create(std::move(ret));
     }), false, false)));
 
     m_function->defineAccessorProperty(strings->prototype, [](ESObject* self) -> ESValue {
@@ -280,8 +276,7 @@ void GlobalObject::installFunction()
             arguments[i] = argArray->get(i);
         }
         ESValue ret = ESFunctionObject::call(thisVal, thisArg, arguments, arrlen, false);
-        instance->currentExecutionContext()->doReturn(ret);
-        return ESValue();
+        return ret;
     }), false, false);
     m_functionPrototype->set(ESString::create(u"apply"), ESFunctionObject::create(NULL, node));
 
@@ -300,8 +295,7 @@ void GlobalObject::installObject()
     m_objectPrototype->setConstructor(m_object);
     m_objectPrototype->set(strings->toString, ESFunctionObject::create(NULL, new FunctionDeclarationNode(strings->toString, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         //FIXME
-        instance->currentExecutionContext()->doReturn(ESString::create(u"[Object object]"));
-        return ESValue();
+        return ESString::create(u"[Object object]");
     }), false, false)));
 
     m_object->set(strings->prototype, m_objectPrototype);
@@ -312,14 +306,13 @@ void GlobalObject::installObject()
         int len = instance->currentExecutionContext()->argumentCount();
         if (len < 1) {
             ret = ESValue(ESValue::ESFalseTag::ESFalse);
-            instance->currentExecutionContext()->doReturn(ret);
+            return ret;
         }
         ::escargot::ESString* key = instance->currentExecutionContext()->arguments()[0].toPrimitive(ESValue::PrimitiveTypeHint::PreferString).toString();
         auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding();
         escargot::ESString* keyString = key;
         ret = ESValue(thisVal->asESObject()->hasOwnProperty(keyString));
-        instance->currentExecutionContext()->doReturn(ret);
-        return ESValue();
+        return ret;
     }), false, false);
     m_objectPrototype->set(ESString::create(u"hasOwnProperty"), ESFunctionObject::create(NULL, node));
 
@@ -343,7 +336,7 @@ void GlobalObject::installError()
         ret.append(u": ");
         ret.append(o->asESObject()->get(ESValue(ESString::create(u"message"))).toString()->data());
 
-        instance->currentExecutionContext()->doReturn(ESString::create(std::move(ret)));
+        return ESString::create(std::move(ret));
         RELEASE_ASSERT_NOT_REACHED();
     }), false, false)));
 
@@ -396,8 +389,7 @@ void GlobalObject::installArray()
             }
         } else {
         }
-        instance->currentExecutionContext()->doReturn(array);
-        return ESValue();
+        return array;
     }), false, false);
 
     //$22.1.3.1 Array.prototype.concat(...arguments)
@@ -423,8 +415,7 @@ void GlobalObject::installArray()
                 ret->set(idx++, argi);
             }
         }
-        instance->currentExecutionContext()->doReturn(ESValue(ret));
-        return ESValue();
+        return ret;
     }), false, false);
     m_arrayPrototype->ESObject::set(strings->concat, ESFunctionObject::create(NULL, arrayConcat));
 
@@ -463,8 +454,7 @@ void GlobalObject::installArray()
                 }
             }
         }
-        instance->currentExecutionContext()->doReturn(ESValue(ret));
-        return ESValue();
+        return ESValue(ret);
     }), false, false);
     m_arrayPrototype->ESObject::set(strings->indexOf, ESFunctionObject::create(NULL, arrayIndexOf));
 
@@ -488,8 +478,7 @@ void GlobalObject::installArray()
                     ret.append(elemi.toString()->data());
             }
         }
-        instance->currentExecutionContext()->doReturn(ESString::create(std::move(ret)));
-        return ESValue();
+        return ESString::create(std::move(ret));
     }), false, false);
     m_arrayPrototype->ESObject::set(strings->join, ESFunctionObject::create(NULL, arrayJoin));
 
@@ -502,9 +491,7 @@ void GlobalObject::installArray()
             thisVal->push(val);
             i++;
         }
-        instance->currentExecutionContext()->doReturn(ESValue(thisVal->length()));
-
-        return ESValue();
+        return ESValue(thisVal->length());
     }), false, false);
     m_arrayPrototype->ESObject::set(strings->push, ESFunctionObject::create(NULL, arrayPush));
 
@@ -529,9 +516,7 @@ void GlobalObject::installArray()
         for (int i = start; i < end; i++) {
             ret->set(i-start, thisVal->get(i));
         }
-        instance->currentExecutionContext()->doReturn(ret);
-
-        return ESValue();
+        return ret;
     }), false, false);
     m_arrayPrototype->ESObject::set(strings->slice, ESFunctionObject::create(NULL, arraySlice));
 
@@ -559,8 +544,7 @@ void GlobalObject::installArray()
             });
         }
 
-        instance->currentExecutionContext()->doReturn(thisVal);
-        return ESValue();
+        return thisVal;
     }), false, false);
     m_arrayPrototype->ESObject::set(strings->sort, ESFunctionObject::create(NULL, arraySort));
 
@@ -619,9 +603,7 @@ void GlobalObject::installArray()
                 }
             }
         }
-        instance->currentExecutionContext()->doReturn(ret);
-
-        return ESValue();
+        return ret;
     }), false, false);
     m_arrayPrototype->ESObject::set(strings->splice, ESFunctionObject::create(NULL, arraySplice));
     m_arrayPrototype->ESObject::set(strings->toString, ESFunctionObject::create(NULL, new FunctionDeclarationNode(strings->toString, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
@@ -636,8 +618,7 @@ void GlobalObject::installArray()
             ret.append(slot.toString()->data());
             isFirst = false;
         }
-        instance->currentExecutionContext()->doReturn(ESString::create(std::move(ret)));
-        RELEASE_ASSERT_NOT_REACHED();
+        return ESString::create(std::move(ret));
     }), false, false)));
 
     m_array = ESFunctionObject::create(NULL, constructor);
@@ -659,11 +640,11 @@ void GlobalObject::installString()
             escargot::ESStringObject* stringObject = thisObject->asESStringObject();
             ESValue value = instance->currentExecutionContext()->arguments()[0];
             stringObject->setString(value.toString());
-            instance->currentExecutionContext()->doReturn(stringObject);
+            return stringObject;
         } else {
             // called as function
             ESValue value = instance->currentExecutionContext()->arguments()[0];
-            instance->currentExecutionContext()->doReturn(ESValue(value.toString()));
+            return value.toString();
         }
         return ESValue();
     }), false, false);
@@ -678,8 +659,7 @@ void GlobalObject::installString()
     m_stringPrototype->set(strings->toString, ESFunctionObject::create(NULL, new FunctionDeclarationNode(strings->toString, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         //FIXME this is wrong
         ESValue v(instance->currentExecutionContext()->resolveThisBinding());
-        instance->currentExecutionContext()->doReturn(instance->currentExecutionContext()->resolveThisBinding()->asESStringObject()->getStringData());
-        RELEASE_ASSERT_NOT_REACHED();
+        return instance->currentExecutionContext()->resolveThisBinding()->asESStringObject()->getStringData();
     }), false, false)));
 
     m_string->defineAccessorProperty(strings->prototype, [](ESObject* self) -> ESValue {
@@ -696,8 +676,8 @@ void GlobalObject::installString()
         if(length == 1) {
             char16_t c = (char16_t)instance->currentExecutionContext()->arguments()[0].toInteger();
             if(c < ESCARGOT_ASCII_TABLE_MAX)
-                instance->currentExecutionContext()->doReturn(strings->asciiTable[c]);
-            instance->currentExecutionContext()->doReturn(ESString::create(c));
+                return strings->asciiTable[c];
+            return ESString::create(c);
         } else {
             u16string elements;
             elements.resize(length);
@@ -705,7 +685,7 @@ void GlobalObject::installString()
             for(int i = 0; i < length ; i ++) {
                 data[i] = {(char16_t)instance->currentExecutionContext()->arguments()[i].toInteger()};
             }
-            instance->currentExecutionContext()->doReturn(ESString::create(std::move(elements)));
+            return ESString::create(std::move(elements));
         }
         return ESValue();
     }), false, false);
@@ -720,16 +700,15 @@ void GlobalObject::installString()
             if(LIKELY(0 <= position && position < (int)str.length())) {
                 char16_t c = str[position];
                 if(LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
-                    instance->currentExecutionContext()->doReturn(strings->asciiTable[c]);
+                    return strings->asciiTable[c];
                 } else {
-                    instance->currentExecutionContext()->doReturn(ESString::create(c));
+                    return ESString::create(c);
                 }
             } else {
-                instance->currentExecutionContext()->doReturn(strings->emptyESString);
+                return strings->emptyESString;
             }
         }
-        instance->currentExecutionContext()->doReturn(strings->emptyESString);
-        return ESValue();
+        return ESValue(strings->emptyESString);
     }), false, false);
     m_stringPrototype->set(ESString::create(u"charAt"), ESFunctionObject::create(NULL, stringCharAt));
 
@@ -743,8 +722,7 @@ void GlobalObject::installString()
             ret = ESValue(std::numeric_limits<double>::quiet_NaN());
         else
             ret = ESValue(str[position]);
-        instance->currentExecutionContext()->doReturn(ret);
-        return ESValue();
+        return ret;
     }), false, false);
     m_stringPrototype->set(ESString::create(u"charCodeAt"), ESFunctionObject::create(NULL, stringCharCodeAt));
 
@@ -757,8 +735,7 @@ void GlobalObject::installString()
             escargot::ESString* arg = instance->currentExecutionContext()->arguments()[i].toString();
             ret = ESString::concatTwoStrings(ret, arg);
         }
-        instance->currentExecutionContext()->doReturn(ret);
-        return ESValue();
+        return ret;
     }), false, false);
     m_stringPrototype->set(strings->concat, ESFunctionObject::create(NULL, stringConcat));
 
@@ -784,8 +761,7 @@ void GlobalObject::installString()
             int start = std::min(std::max(pos, 0), len);
             result = str.find(searchStr->string(), start);
         }
-        instance->currentExecutionContext()->doReturn(ESValue(result));
-        return ESValue();
+        return ESValue(result);
     }), false, false);
     m_stringPrototype->set(strings->indexOf, ESFunctionObject::create(NULL, stringIndexOf));
 
@@ -809,10 +785,9 @@ void GlobalObject::installString()
                 }
             }
             if (ret->length() == 0)
-                instance->currentExecutionContext()->doReturn(ESValue(ESValue::ESNull));
+                return ESValue(ESValue::ESNull);
         }
-        instance->currentExecutionContext()->doReturn(ret);
-        return ESValue();
+        return ret;
     }), false, false);
     m_stringPrototype->set(ESString::create(u"match"), ESFunctionObject::create(NULL, stringMatch));
 
@@ -828,7 +803,7 @@ void GlobalObject::installString()
             ESString::RegexMatchResult result;
             origStr->match(esptr, result);
             if(result.m_matchResults.size() == 0) {
-                instance->currentExecutionContext()->doReturn(origStr);
+                return origStr;
             }
 
             ESValue replaceValue = instance->currentExecutionContext()->arguments()[1];
@@ -862,7 +837,7 @@ void GlobalObject::installString()
                 }
                 newThis.append(orgString.begin() + result.m_matchResults[matchCount - 1][0].m_end, orgString.end());
                 escargot::ESString* resultString = ESString::create(std::move(newThis));
-                instance->currentExecutionContext()->doReturn(resultString);
+                return resultString;
             } else {
                 escargot::ESString* replaceString = replaceValue.toString();
                 u16string newThis;
@@ -886,7 +861,7 @@ void GlobalObject::installString()
                         u16string append2(orgString, result.m_matchResults[matchCount - 1][0].m_end);
                         appendStr = ESString::create(std::move(append2));
                         newStr = escargot::ESString::concatTwoStrings(newStr, appendStr);
-                        instance->currentExecutionContext()->doReturn(newStr);
+                        return newStr;
                     }
                     newThis.append(orgString.begin(), orgString.begin() + result.m_matchResults[0][0].m_start);
                     for(int32_t i = 0; i < matchCount ; i ++) {
@@ -941,7 +916,7 @@ void GlobalObject::installString()
                     newThis.append(orgString.begin() + result.m_matchResults[matchCount - 1][0].m_end, orgString.end());
                 }
                 escargot::ESString* resultString = ESString::create(std::move(newThis));
-                instance->currentExecutionContext()->doReturn(resultString);
+                return resultString;
             }
         }
         return ESValue();
@@ -961,8 +936,7 @@ void GlobalObject::installString()
         int to = (intEnd < 0) ? std::max(len+intEnd, 0) : std::min(intEnd, len);
         int span = std::max(to-from, 0);
         escargot::ESString* ret = ESString::create(str.substr(from, from+span-1));
-        instance->currentExecutionContext()->doReturn(ESValue(ret));
-        return ESValue();
+        return ret;
     }), false, false);
     m_stringPrototype->set(strings->slice, ESFunctionObject::create(NULL, stringSlice));
 
@@ -1009,7 +983,7 @@ void GlobalObject::installString()
         // 15
         if(separator.isUndefined()) {
             arr->set(0, str);
-            instance->currentExecutionContext()->doReturn(ESValue(arr));
+            return arr;
         }
 
         // 16
@@ -1042,7 +1016,7 @@ void GlobalObject::installString()
                     arr->set(lengthA, ESValue(T));
                     lengthA++;
                     if ((double)lengthA == lim)
-                        instance->currentExecutionContext()->doReturn(ESValue(arr));
+                        return arr;
                     p = e.asInt32();
                     q = p;
                 }
@@ -1056,7 +1030,7 @@ void GlobalObject::installString()
         arr->set(lengthA, ESValue(T));
 
         // 21, 22
-        instance->currentExecutionContext()->doReturn(ESValue(arr));
+        return arr;
         return ESValue();
     }), false, false);
     m_stringPrototype->set(ESString::create(u"split"), ESFunctionObject::create(NULL, stringSplit));
@@ -1069,7 +1043,7 @@ void GlobalObject::installString()
         int argCount = instance->currentExecutionContext()->argumentCount();
         escargot::ESString* str = thisObject->asESStringObject()->getStringData();
         if(argCount == 0) {
-            instance->currentExecutionContext()->doReturn(str);
+            return str;
         } else {
             int len = str->length();
             int intStart = instance->currentExecutionContext()->arguments()[0].toInteger();
@@ -1079,7 +1053,7 @@ void GlobalObject::installString()
             int finalEnd = std::min(std::max(intEnd, 0), len);
             int from = std::min(finalStart, finalEnd);
             int to = std::max(finalStart, finalEnd);
-            instance->currentExecutionContext()->doReturn(str->substring(from, to));
+            return str->substring(from, to);
         }
 
 
@@ -1095,8 +1069,7 @@ void GlobalObject::installString()
         u16string newstr(str->string());
         //TODO use ICU for this operation
         std::transform(newstr.begin(), newstr.end(), newstr.begin(), ::tolower);
-        instance->currentExecutionContext()->doReturn(ESString::create(std::move(newstr)));
-        return ESValue();
+        return ESString::create(std::move(newstr));
     }), false, false);
     m_stringPrototype->set(ESString::create(u"toLowerCase"), ESFunctionObject::create(NULL, stringToLowerCase));
     //$21.1.3.24 String.prototype.toUpperCase()
@@ -1107,8 +1080,7 @@ void GlobalObject::installString()
         u16string newstr(str->string());
         //TODO use ICU for this operation
         std::transform(newstr.begin(), newstr.end(), newstr.begin(), ::toupper);
-        instance->currentExecutionContext()->doReturn(ESString::create(std::move(newstr)));
-        return ESValue();
+        return ESString::create(std::move(newstr));
     }), false, false);
     m_stringPrototype->set(ESString::create(u"toUpperCase"), ESFunctionObject::create(NULL, stringToUpperCase));
 
@@ -1135,8 +1107,7 @@ void GlobalObject::installDate()
                 thisObject->setTimeValue(arg);
              }
          }
-        instance->currentExecutionContext()->doReturn(ESString::create(u"FixMe: We have to return string with date and time data"));
-        return ESValue();
+        return ESString::create(u"FixMe: We have to return string with date and time data");
     }), false, false);
 
       // Initialization for reference error
@@ -1148,8 +1119,7 @@ void GlobalObject::installDate()
     m_datePrototype->set(strings->toString, ESFunctionObject::create(NULL, new FunctionDeclarationNode(strings->toString, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         //FIXME this is wrong
         ESValue v(instance->currentExecutionContext()->resolveThisBinding());
-        instance->currentExecutionContext()->doReturn(v.toString());
-        RELEASE_ASSERT_NOT_REACHED();
+        return v.toString();
     }), false, false)));
 
     m_date->set(strings->prototype, m_datePrototype);
@@ -1160,8 +1130,7 @@ void GlobalObject::installDate()
     FunctionDeclarationNode* getDateNode = new FunctionDeclarationNode(strings->getDate, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
        ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
        int ret = thisObject->asESDateObject()->getDate();
-       instance->currentExecutionContext()->doReturn(ESValue(ret));
-       return ESValue();
+       return ESValue(ret);
     }), false, false);
     m_datePrototype->set(strings->getDate, ::escargot::ESFunctionObject::create(NULL, getDateNode));
 
@@ -1169,8 +1138,7 @@ void GlobalObject::installDate()
     FunctionDeclarationNode* getDayNode = new FunctionDeclarationNode(strings->getDay, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
        ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
        int ret = thisObject->asESDateObject()->getDay();
-       instance->currentExecutionContext()->doReturn(ESValue(ret));
-       return ESValue();
+       return ESValue(ret);
     }), false, false);
     m_datePrototype->set(strings->getDay, ::escargot::ESFunctionObject::create(NULL, getDayNode));
 
@@ -1178,8 +1146,7 @@ void GlobalObject::installDate()
     FunctionDeclarationNode* getFullYearNode = new FunctionDeclarationNode(strings->getFullYear, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
        ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
        int ret = thisObject->asESDateObject()->getFullYear();
-       instance->currentExecutionContext()->doReturn(ESValue(ret));
-       return ESValue();
+       return ESValue(ret);
     }), false, false);
     m_datePrototype->set(strings->getFullYear, ::escargot::ESFunctionObject::create(NULL, getFullYearNode));
 
@@ -1188,8 +1155,7 @@ void GlobalObject::installDate()
     FunctionDeclarationNode* getHoursNode = new FunctionDeclarationNode(strings->getHours, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
        ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
        int ret = thisObject->asESDateObject()->getHours();
-       instance->currentExecutionContext()->doReturn(ESValue(ret));
-       return ESValue();
+       return ESValue(ret);
     }), false, false);
     m_datePrototype->set(strings->getHours, ::escargot::ESFunctionObject::create(NULL, getHoursNode));
 
@@ -1198,8 +1164,7 @@ void GlobalObject::installDate()
     FunctionDeclarationNode* getMinutesNode = new FunctionDeclarationNode(strings->getMinutes, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
        ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
        int ret = thisObject->asESDateObject()->getMinutes();
-       instance->currentExecutionContext()->doReturn(ESValue(ret));
-       return ESValue();
+       return ESValue(ret);
     }), false, false);
     m_datePrototype->set(strings->getMinutes, ::escargot::ESFunctionObject::create(NULL, getMinutesNode));
 
@@ -1208,8 +1173,7 @@ void GlobalObject::installDate()
     FunctionDeclarationNode* getMonthNode = new FunctionDeclarationNode(strings->getMonth, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
        ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
        int ret = thisObject->asESDateObject()->getMonth();
-       instance->currentExecutionContext()->doReturn(ESValue(ret));
-       return ESValue();
+       return ESValue(ret);
     }), false, false);
     m_datePrototype->set(strings->getMonth, ::escargot::ESFunctionObject::create(NULL, getMonthNode));
 
@@ -1218,8 +1182,7 @@ void GlobalObject::installDate()
     FunctionDeclarationNode* getSecondsNode = new FunctionDeclarationNode(strings->getSeconds, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
        ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
        int ret = thisObject->asESDateObject()->getSeconds();
-       instance->currentExecutionContext()->doReturn(ESValue(ret));
-       return ESValue();
+       return ESValue(ret);
     }), false, false);
     m_datePrototype->set(strings->getSeconds, ::escargot::ESFunctionObject::create(NULL, getSecondsNode));
 
@@ -1227,8 +1190,7 @@ void GlobalObject::installDate()
     FunctionDeclarationNode* getTimeNode = new FunctionDeclarationNode(strings->getTime, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
         double ret = thisObject->asESDateObject()->getTimeAsMilisec();
-        instance->currentExecutionContext()->doReturn(ESValue(ret));
-        return ESValue();
+        return ESValue(ret);
     }), false, false);
     m_datePrototype->set(strings->getTime, ::escargot::ESFunctionObject::create(NULL, getTimeNode));
 
@@ -1236,8 +1198,7 @@ void GlobalObject::installDate()
     FunctionDeclarationNode* getTimezoneOffsetNode = new FunctionDeclarationNode(strings->getTimezoneOffset, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
        ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
        int ret = thisObject->asESDateObject()->getTimezoneOffset();
-       instance->currentExecutionContext()->doReturn(ESValue(ret));
-       return ESValue();
+       return ESValue(ret);
     }), false, false);
     m_datePrototype->set(strings->getTimezoneOffset, ::escargot::ESFunctionObject::create(NULL, getTimezoneOffsetNode));
 
@@ -1249,10 +1210,10 @@ void GlobalObject::installDate()
        if (arg_size > 0 && instance->currentExecutionContext()->arguments()[0].isNumber()) {
            ESValue arg = instance->currentExecutionContext()->arguments()[0];
            thisObject->asESDateObject()->setTime(arg.toNumber());
-           instance->currentExecutionContext()->doReturn(ESValue());
+           return ESValue();
        } else {
            double value = std::numeric_limits<double>::quiet_NaN();
-           instance->currentExecutionContext()->doReturn(ESValue(value));
+           return ESValue(value);
         }
        return ESValue();
     }), false, false);
@@ -1284,15 +1245,11 @@ void GlobalObject::installMath()
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
         if (arg_size == 0) {
             double value = std::numeric_limits<double>::quiet_NaN();
-            instance->currentExecutionContext()->doReturn(ESValue(value));
+            return ESValue(value);
         } else {
             ESValue arg = instance->currentExecutionContext()->arguments()[0];
             double value = abs(arg.toNumber());
-            if (value == (int) value) {
-                instance->currentExecutionContext()->doReturn(ESValue((int) value));
-            } else {
-                instance->currentExecutionContext()->doReturn(ESValue(value));
-              }
+            return ESValue(value);
          }
         return ESValue();
     }), false, false);
@@ -1303,14 +1260,14 @@ void GlobalObject::installMath()
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
         if (arg_size == 0) {
             double value = std::numeric_limits<double>::quiet_NaN();
-            instance->currentExecutionContext()->doReturn(ESValue(value));
+            return ESValue(value);
         } else {
             ESValue arg = instance->currentExecutionContext()->arguments()[0];
             if (arg.isInt32()) {
-                instance->currentExecutionContext()->doReturn(arg);
+                return arg;
             } else if (arg.isDouble()) {
                 int value = ceil(arg.asDouble());
-                instance->currentExecutionContext()->doReturn(ESValue(value));
+                return ESValue(value);
              }
         }
 
@@ -1323,15 +1280,11 @@ void GlobalObject::installMath()
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
         if (arg_size == 0) {
             double value = std::numeric_limits<double>::quiet_NaN();
-            instance->currentExecutionContext()->doReturn(ESValue(value));
+            return ESValue(value);
         } else {
             ESValue arg = instance->currentExecutionContext()->arguments()[0];
             double value = cos(arg.toNumber());
-            if (value == (int) value) {
-                instance->currentExecutionContext()->doReturn(ESValue((int) value));
-            } else {
-                instance->currentExecutionContext()->doReturn(ESValue(value));
-              }
+            return ESValue(value);
          }
         return ESValue();
     }), false, false);
@@ -1342,14 +1295,14 @@ void GlobalObject::installMath()
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
         if (arg_size == 0) {
             double value = std::numeric_limits<double>::quiet_NaN();
-            instance->currentExecutionContext()->doReturn(ESValue(value));
+            return ESValue(value);
         } else {
             ESValue arg = instance->currentExecutionContext()->arguments()[0];
             if (arg.isInt32()) {
-                instance->currentExecutionContext()->doReturn(arg);
+                return ESValue(arg);
             } else if (arg.isDouble()) {
                 int value = floor(arg.asDouble());
-                instance->currentExecutionContext()->doReturn(ESValue(value));
+                return ESValue(value);
              }
         }
 
@@ -1362,7 +1315,7 @@ void GlobalObject::installMath()
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
         if (arg_size == 0) {
             double value = std::numeric_limits<double>::quiet_NaN();
-            instance->currentExecutionContext()->doReturn(ESValue(value));
+            return ESValue(value);
         } else {
             ESValue arg = instance->currentExecutionContext()->arguments()[0];
             double value = arg.toNumber();
@@ -1379,7 +1332,7 @@ void GlobalObject::installMath()
                 ret = std::numeric_limits<double>::infinity();
             else
                 ret = log(value);
-            instance->currentExecutionContext()->doReturn(ESValue(ret));
+            return ESValue(ret);
         }
         return ESValue();
     }), false, false);
@@ -1390,7 +1343,7 @@ void GlobalObject::installMath()
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
         if (arg_size == 0) {
             double n_inf = -1 * std::numeric_limits<double>::infinity();
-            instance->currentExecutionContext()->doReturn(ESValue(n_inf));
+            return ESValue(n_inf);
         } else{
             double max_value = instance->currentExecutionContext()->arguments()[0].toNumber();
             for (unsigned i = 1; i < arg_size; i++) {
@@ -1398,11 +1351,7 @@ void GlobalObject::installMath()
                 if (value > max_value)
                     max_value = value;
              }
-           if (max_value == (int) max_value) {
-               instance->currentExecutionContext()->doReturn(ESValue(max_value));
-           } else {
-               instance->currentExecutionContext()->doReturn(ESValue((int) max_value));
-            }
+            return ESValue(max_value);
          }
         return ESValue();
     }), false, false);
@@ -1413,16 +1362,12 @@ void GlobalObject::installMath()
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
         if (arg_size < 2) {
             double value = std::numeric_limits<double>::quiet_NaN();
-            instance->currentExecutionContext()->doReturn(ESValue(value));
+            return ESValue(value);
         } else {
             ESValue arg1 = instance->currentExecutionContext()->arguments()[0];
             ESValue arg2 = instance->currentExecutionContext()->arguments()[1];
             double value = pow(arg1.toNumber(), arg2.toNumber());
-            if (value == (int) value) {
-                instance->currentExecutionContext()->doReturn(ESValue((int) value));
-            } else {
-                instance->currentExecutionContext()->doReturn(ESValue(value));
-              }
+            return ESValue(value);
          }
 
         return ESValue();
@@ -1432,8 +1377,7 @@ void GlobalObject::installMath()
     // initialize math object: $20.2.2.27 Math.random()
     FunctionDeclarationNode* randomNode = new FunctionDeclarationNode(strings->random, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         double rand = (double) std::rand()/RAND_MAX;
-        instance->currentExecutionContext()->doReturn(ESValue(rand));
-        return ESValue();
+        return ESValue(rand);
     }), false, false);
     m_math->set(strings->random, ::escargot::ESFunctionObject::create(NULL, randomNode));
 
@@ -1442,15 +1386,11 @@ void GlobalObject::installMath()
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
         if (arg_size == 0) {
             double value = std::numeric_limits<double>::quiet_NaN();
-            instance->currentExecutionContext()->doReturn(ESValue(value));
+            return ESValue(value);
         } else {
             ESValue arg = instance->currentExecutionContext()->arguments()[0];
             double value = round(arg.toNumber());
-            if (value == (int) value) {
-                instance->currentExecutionContext()->doReturn(ESValue((int) value));
-            } else {
-                instance->currentExecutionContext()->doReturn(ESValue(value));
-              }
+            return ESValue(value);
          }
 
         return ESValue();
@@ -1462,15 +1402,11 @@ void GlobalObject::installMath()
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
         if (arg_size == 0) {
             double value = std::numeric_limits<double>::quiet_NaN();
-            instance->currentExecutionContext()->doReturn(ESValue(value));
+            return ESValue(value);
         } else {
             ESValue arg = instance->currentExecutionContext()->arguments()[0];
             double value = sin(arg.toNumber());
-            if (value == (int) value) {
-                instance->currentExecutionContext()->doReturn(ESValue((int) value));
-            } else {
-                instance->currentExecutionContext()->doReturn(ESValue(value));
-              }
+            return ESValue(value);
          }
         return ESValue();
     }), false, false);
@@ -1481,15 +1417,11 @@ void GlobalObject::installMath()
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
         if (arg_size == 0) {
             double value = std::numeric_limits<double>::quiet_NaN();
-            instance->currentExecutionContext()->doReturn(ESValue(value));
+            return ESValue(value);
         } else {
             ESValue arg = instance->currentExecutionContext()->arguments()[0];
             double value = sqrt(arg.toNumber());
-            if (value == (int) value) {
-                instance->currentExecutionContext()->doReturn(ESValue((int) value));
-            } else {
-                instance->currentExecutionContext()->doReturn(ESValue(value));
-              }
+            return ESValue(value);
          }
         return ESValue();
     }), false, false);
@@ -1566,12 +1498,12 @@ void GlobalObject::installNumber()
         escargot::ESNumberObject* thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESNumberObject();
         int arglen = instance->currentExecutionContext()->argumentCount();
         if (arglen == 0) {
-            instance->currentExecutionContext()->doReturn(ESValue(round(thisVal->numberData())).toString());
+            return ESValue(round(thisVal->numberData())).toString();
         } else if (arglen == 1) {
              int digit = instance->currentExecutionContext()->arguments()[0].toInteger();
              int shift = pow(10, digit);
-             instance->currentExecutionContext()->doReturn(ESValue(round(thisVal->numberData()*shift)/shift).toString());
-         }
+             return ESValue(round(thisVal->numberData()*shift)/shift).toString();
+        }
 
         return ESValue();
     }), false, false);
@@ -1588,11 +1520,11 @@ void GlobalObject::installNumber()
                 throw RangeError(ESString::create(u"String.prototype.toString() radix is not in valid range"));
         }
         if (radix == 10)
-            instance->currentExecutionContext()->doReturn(ESValue(thisVal->numberData()).toString());
+            return (ESValue(thisVal->numberData()).toString());
         else {
             char buffer[256];
             int len = itoa((int)thisVal->numberData(), buffer, radix);
-            instance->currentExecutionContext()->doReturn(ESString::create(buffer));
+            return (ESString::create(buffer));
         }
         return ESValue();
     }), false, false);
@@ -1624,9 +1556,9 @@ void GlobalObject::installBoolean()
         if(instance->currentExecutionContext()->isNewExpression() && instance->currentExecutionContext()->resolveThisBinding()->isESBooleanObject()) {
             ::escargot::ESBooleanObject* o = instance->currentExecutionContext()->resolveThisBinding()->asESBooleanObject();
             o->setBooleanData(ret);
-            instance->currentExecutionContext()->doReturn(o);
+            return (o);
         } else // If NewTarget is undefined, return b
-            instance->currentExecutionContext()->doReturn(ret);
+            return (ret);
         return ESValue();
     }), false, false);
     m_boolean = ::escargot::ESFunctionObject::create(NULL, constructor);
@@ -1646,15 +1578,14 @@ void GlobalObject::installBoolean()
     // initialize booleanPrototype object: $19.3.3.2 Boolean.prototype.toString()
     FunctionDeclarationNode* toStringNode = new FunctionDeclarationNode(strings->toString, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         escargot::ESBooleanObject* thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESBooleanObject();
-        instance->currentExecutionContext()->doReturn(thisVal->booleanData().toString());
-        return ESValue();
+        return (thisVal->booleanData().toString());
     }), false, false);
     m_booleanPrototype->set(strings->toString, ::escargot::ESFunctionObject::create(NULL, toStringNode));
 
     // initialize booleanPrototype object: $19.3.3.3 Boolean.prototype.valueOf()
     FunctionDeclarationNode* valueOfNode = new FunctionDeclarationNode(strings->valueOf, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         escargot::ESBooleanObject* thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESBooleanObject();
-        instance->currentExecutionContext()->doReturn(thisVal->booleanData());
+        return (thisVal->booleanData());
         return ESValue();
     }), false, false);
     m_booleanPrototype->set(strings->valueOf, ::escargot::ESFunctionObject::create(NULL, valueOfNode));
@@ -1721,11 +1652,11 @@ void GlobalObject::installRegExp()
             escargot::ESString* sourceStr = instance->currentExecutionContext()->arguments()[0].toString();
             ESString::RegexMatchResult result;
             bool testResult = sourceStr->match(thisObject, result, true);
-            instance->currentExecutionContext()->doReturn(ESValue(testResult));
+            return (ESValue(testResult));
             if(result.m_matchResults.size()) {
-                instance->currentExecutionContext()->doReturn(ESValue(true));
+                return (ESValue(true));
             } else {
-                instance->currentExecutionContext()->doReturn(ESValue(false));
+                return (ESValue(false));
             }
         }
         return ESValue(false);
