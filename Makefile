@@ -1,6 +1,7 @@
 MAKECMDGOALS=escargot
 MODE=
 HOST=
+OPT=
 ARCH=x64
 
 NPROCS:=1
@@ -117,6 +118,10 @@ strip: $(MAKECMDGOALS)
 run-sunspider:
 	cd test/SunSpider/; \
 	./sunspider --shell=../../escargot --suite=sunspider-1.0.2
+
+run-test262:
+	cd test/test262/; \
+	python tools/packaging/test262.py --command ../../escargot $(OPT)
 
 .PHONY: $(MAKECMDGOALS) clean
 .DEFAULT_GOAL := escargot
