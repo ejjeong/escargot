@@ -4133,7 +4133,7 @@ escargot::Node* parseLeftHandSideExpressionAllowCall(ParseContext* ctx) {
             ctx->m_isAssignmentTarget = true;
             property = parseNonComputedMember(ctx);
             //expr = new WrappingNode(startToken).finishMemberExpression('.', expr, property);
-            expr = new escargot::MemberExpressionNodeNonComputedCase(expr, property, false);
+            expr = new escargot::MemberExpressionNonComputedCaseNode(expr, property, false);
         } else if (match(ctx, '(')) {
             ctx->m_isBindingElement = false;
             ctx->m_isAssignmentTarget = false;
@@ -4196,7 +4196,7 @@ escargot::Node* parseLeftHandSideExpression(ParseContext* ctx) {
             ctx->m_isAssignmentTarget = true;
             property = parseNonComputedMember(ctx);
             //expr = new WrappingNode(startToken).finishMemberExpression('.', expr, property);
-            expr = new escargot::MemberExpressionNodeNonComputedCase(expr, property, false);
+            expr = new escargot::MemberExpressionNonComputedCaseNode(expr, property, false);
         } else if (ctx->m_lookahead->m_type == Token::TemplateToken && ctx->m_lookahead->m_head) {
             quasi = parseTemplateLiteral(ctx);
             RELEASE_ASSERT_NOT_REACHED();

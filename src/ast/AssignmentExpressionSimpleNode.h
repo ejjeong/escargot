@@ -21,6 +21,7 @@ public:
 
     ESValue execute(ESVMInstance* instance)
     {
+        ASSERT(m_left->type() != NodeType::IdentifierFastCase);
         ExecutionContext* ec = instance->currentExecutionContext();
         ESSlotWriterForAST::prepareExecuteForWriteASTNode(ec);
 

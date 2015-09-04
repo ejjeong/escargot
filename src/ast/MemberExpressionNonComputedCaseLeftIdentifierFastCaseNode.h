@@ -1,5 +1,5 @@
-#ifndef MemberExpressionNode_h
-#define MemberExpressionNode_h
+#ifndef MemberExpressionNodeNonComputedCaseLeftIdentifierFastCase_h
+#define MemberExpressionNodeNonComputedCaseLeftIdentifierFastCase_h
 
 #include "ExpressionNode.h"
 #include "PropertyNode.h"
@@ -7,27 +7,24 @@
 
 namespace escargot {
 
-class MemberExpressionNode : public ExpressionNode {
+class MemberExpressionNonComputedCaseLeftIdentifierFastCaseNode : public ExpressionNode {
 public:
     friend class ESScriptParser;
-    MemberExpressionNode(Node* object, Node* property, bool computed)
-            : ExpressionNode(NodeType::MemberExpression)
+    MemberExpressionNonComputedCaseLeftIdentifierFastCaseNode(size_t idx, ESValue value, bool computed)
+            : ExpressionNode(NodeType::MemberExpressionNonComputedCaseLeftIdentifierFastCase)
     {
-        ASSERT(computed);
-        m_object = object;
-        m_property = property;
+        ASSERT(!computed);
+        m_index = idx;
+        m_propertyValue = value;
         m_cachedHiddenClass = nullptr;
-        m_cachedPropertyValue = nullptr;
-
     }
 
     ESSlotAccessor executeForWrite(ESVMInstance* instance)
     {
-        ASSERT(m_object->type() != NodeType::IdentifierFastCase);
-        ESValue value = m_object->execute(instance);
+        ESValue value = instance->currentExecutionContext()->cachedDeclarativeEnvironmentRecordESValue()[m_index];
         ExecutionContext* ec = instance->currentExecutionContext();
 
-        if(UNLIKELY(!value.isObject())) {
+        if(UNLIKELY(value.isPrimitive())) {
             value = value.toObject();
         }
 
@@ -36,18 +33,16 @@ public:
         ESObject* obj  = value.asESPointer()->asESObject();
         ec->setLastESObjectMetInMemberExpressionNode(obj);
 
-        return obj->definePropertyOrThrow(m_property->execute(instance));
+        return obj->definePropertyOrThrow(m_propertyValue , true, true, true);
     }
 
     ESValue execute(ESVMInstance* instance)
     {
-        ASSERT(m_object->type() != NodeType::IdentifierFastCase);
-        ESValue value = m_object->execute(instance);
-        ESValue propertyValue = m_property->execute(instance);
+        ESValue value = instance->currentExecutionContext()->cachedDeclarativeEnvironmentRecordESValue()[m_index];
 
         if(UNLIKELY(value.isESString())) {
-            if(propertyValue.isInt32()) {
-               int prop_val = propertyValue.toInt32();
+            if(m_propertyValue.isInt32()) {
+               int prop_val = m_propertyValue.toInt32();
                if(LIKELY(0 <= prop_val && prop_val < value.asESString()->length())) {
                    char16_t c = value.asESString()->string().data()[prop_val];
                    if(LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
@@ -61,7 +56,7 @@ public:
                return value.asESString()->substring(prop_val, prop_val+1);
             } else {
                 instance->globalObject()->stringObjectProxy()->setString(value.asESString());
-                ESSlotAccessor slot = instance->globalObject()->stringObjectProxy()->find(propertyValue, true);
+                ESSlotAccessor slot = instance->globalObject()->stringObjectProxy()->find(m_propertyValue, true);
                 if(slot.isDataProperty()) {
                     ESValue ret = slot.readDataProperty();
                     if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->functionAST()->isBuiltInFunction()) {
@@ -76,7 +71,7 @@ public:
             }
         } else if(UNLIKELY(value.isNumber())) {
             instance->globalObject()->numberObjectProxy()->setNumberData(value.asNumber());
-            ESSlotAccessor slot = instance->globalObject()->numberObjectProxy()->find(propertyValue, true);
+            ESSlotAccessor slot = instance->globalObject()->numberObjectProxy()->find(m_propertyValue, true);
             if(slot.isDataProperty()) {
                 ESValue ret = slot.value(instance->globalObject()->numberObjectProxy());
                 if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->functionAST()->isBuiltInFunction()) {
@@ -94,37 +89,33 @@ public:
         ExecutionContext* ec = instance->currentExecutionContext();
         ec->setLastESObjectMetInMemberExpressionNode(obj);
 
-        if(obj->isHiddenClassMode() && !obj->isESArrayObject()) {
-            ESString* val = propertyValue.toString();
-            if(m_cachedHiddenClass == obj->hiddenClass() && (val == m_cachedPropertyValue || *val == *m_cachedPropertyValue)) {
+        if(obj->isHiddenClassMode()) {
+            if(m_cachedHiddenClass == obj->hiddenClass()) {
                 return obj->readHiddenClass(m_cachedIndex).value(obj);
             } else {
-                size_t idx = obj->hiddenClass()->findProperty(val);
+                size_t idx = obj->hiddenClass()->findProperty(m_propertyValue.asESString());
                 if(idx != SIZE_MAX) {
                     m_cachedHiddenClass = obj->hiddenClass();
-                    m_cachedPropertyValue = val;
                     m_cachedIndex = idx;
                     return obj->readHiddenClass(idx).value(obj);
                 } else {
-                    m_cachedHiddenClass = nullptr;
-                    ESSlotAccessor ac = obj->findOnlyPrototype(val);
+                    ESSlotAccessor ac = obj->findOnlyPrototype(m_propertyValue.asESString());
                     if(ac.hasData())
-                        return obj->findOnlyPrototype(val).value(obj);
+                        return ac.value(obj);
                     return ESValue();
                 }
             }
         } else {
-            return obj->get(propertyValue, true);
+            return obj->get(m_propertyValue, true);
         }
         RELEASE_ASSERT_NOT_REACHED();
     }
 protected:
     ESHiddenClass* m_cachedHiddenClass;
-    ESString* m_cachedPropertyValue;
+    ESValue m_propertyValue;
     size_t m_cachedIndex;
 
-    Node* m_object; //object: Expression;
-    Node* m_property; //property: Identifier | Expression;
+    size_t m_index;
 };
 
 }

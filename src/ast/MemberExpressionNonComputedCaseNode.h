@@ -1,5 +1,5 @@
-#ifndef MemberExpressionNodeNonComputedCase_h
-#define MemberExpressionNodeNonComputedCase_h
+#ifndef MemberExpressionNonComputedCaseNode_h
+#define MemberExpressionNonComputedCaseNode_h
 
 #include "ExpressionNode.h"
 #include "PropertyNode.h"
@@ -7,10 +7,10 @@
 
 namespace escargot {
 
-class MemberExpressionNodeNonComputedCase : public ExpressionNode {
+class MemberExpressionNonComputedCaseNode : public ExpressionNode {
 public:
     friend class ESScriptParser;
-    MemberExpressionNodeNonComputedCase(Node* object, Node* property, bool computed)
+    MemberExpressionNonComputedCaseNode(Node* object, Node* property, bool computed)
             : ExpressionNode(NodeType::MemberExpressionNonComputedCase)
     {
         ASSERT(!computed);
@@ -22,6 +22,7 @@ public:
 
     ESSlotAccessor executeForWrite(ESVMInstance* instance)
     {
+        ASSERT(m_object->type() != NodeType::IdentifierFastCase);
         ESValue value = m_object->execute(instance);
         ExecutionContext* ec = instance->currentExecutionContext();
 
@@ -39,6 +40,7 @@ public:
 
     ESValue execute(ESVMInstance* instance)
     {
+        ASSERT(m_object->type() != NodeType::IdentifierFastCase);
         ESValue value = m_object->execute(instance);
 
         if(UNLIKELY(value.isESString())) {

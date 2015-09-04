@@ -1,5 +1,5 @@
-#ifndef MemberExpressionNode_h
-#define MemberExpressionNode_h
+#ifndef MemberExpressionLeftIdentifierFastCaseNode_h
+#define MemberExpressionLeftIdentifierFastCaseNode_h
 
 #include "ExpressionNode.h"
 #include "PropertyNode.h"
@@ -7,14 +7,14 @@
 
 namespace escargot {
 
-class MemberExpressionNode : public ExpressionNode {
+class MemberExpressionLeftIdentifierFastCaseNode : public ExpressionNode {
 public:
     friend class ESScriptParser;
-    MemberExpressionNode(Node* object, Node* property, bool computed)
-            : ExpressionNode(NodeType::MemberExpression)
+    MemberExpressionLeftIdentifierFastCaseNode(size_t idx, Node* property, bool computed)
+            : ExpressionNode(NodeType::MemberExpressionLeftIdentifierFastCase)
     {
         ASSERT(computed);
-        m_object = object;
+        m_index = idx;
         m_property = property;
         m_cachedHiddenClass = nullptr;
         m_cachedPropertyValue = nullptr;
@@ -23,8 +23,7 @@ public:
 
     ESSlotAccessor executeForWrite(ESVMInstance* instance)
     {
-        ASSERT(m_object->type() != NodeType::IdentifierFastCase);
-        ESValue value = m_object->execute(instance);
+        ESValue value = instance->currentExecutionContext()->cachedDeclarativeEnvironmentRecordESValue()[m_index];
         ExecutionContext* ec = instance->currentExecutionContext();
 
         if(UNLIKELY(!value.isObject())) {
@@ -41,8 +40,7 @@ public:
 
     ESValue execute(ESVMInstance* instance)
     {
-        ASSERT(m_object->type() != NodeType::IdentifierFastCase);
-        ESValue value = m_object->execute(instance);
+        ESValue value = instance->currentExecutionContext()->cachedDeclarativeEnvironmentRecordESValue()[m_index];
         ESValue propertyValue = m_property->execute(instance);
 
         if(UNLIKELY(value.isESString())) {
@@ -119,11 +117,11 @@ public:
         RELEASE_ASSERT_NOT_REACHED();
     }
 protected:
+    size_t m_index;
     ESHiddenClass* m_cachedHiddenClass;
     ESString* m_cachedPropertyValue;
     size_t m_cachedIndex;
 
-    Node* m_object; //object: Expression;
     Node* m_property; //property: Identifier | Expression;
 };
 
