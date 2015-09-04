@@ -105,6 +105,9 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
                     ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name())) {
                 identifierInCurrentContext.push_back(((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name());
             }
+            auto iter = std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),
+                    ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name());
+            ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->setFastAccessIndex(0, std::distance(identifierInCurrentContext.begin(), iter));
         } else if(type == NodeType::FunctionDeclaration) {
             //TODO
             //printf("add Identifier %s(fn)\n", ((FunctionDeclarationNode *)currentNode)->nonAtomicId()->utf8Data());
@@ -392,6 +395,12 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
                         *node = new MemberExpressionNonComputedCaseLeftIdentifierFastCaseNode(n2->fastAccessIndex(), n->m_propertyValue, false);
                     }
                 }
+            } else if((*node)->type() == NodeType::VariableDeclarator) {
+                VariableDeclaratorNode* n = (VariableDeclaratorNode *)*node;
+                IdentifierNode* n2 = (IdentifierNode *)n->id();
+                if(n2->canUseFastAccess()) {
+                    *node = new EmptyNode();
+                }
             }
         }
     };
@@ -588,6 +597,7 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
             postProcessingFunction(((ReturnStatmentNode *)currentNode)->m_argument, nearFunction);
             nearFunction->needsReturn();
         } else if(type == NodeType::EmptyStatement) {
+        } else if(type == NodeType::Empty) {
         } else if (type == NodeType::TryStatement) {
             nodeReplacer((Node **)&((TryStatementNode *)currentNode)->m_block, nearFunction);
             nodeReplacer((Node **)&((TryStatementNode *)currentNode)->m_handler, nearFunction);

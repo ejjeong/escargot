@@ -19,6 +19,7 @@ enum NodeType {
     FunctionExpression,
     Property,
     Statement,
+    Empty,
     EmptyStatement,
     BlockStatement,
     BreakStatement,

@@ -21,20 +21,18 @@ public:
     ESValue executeExpression(ESVMInstance* instance)
     {
         ASSERT(m_id->type() == NodeType::Identifier);
-        //ASSERT(!((IdentifierNode *)m_id)->canUseFastAccess());
-        if(instance->currentExecutionContext()->needsActivation())
-            instance->currentExecutionContext()->environment()->record()->createMutableBindingForAST(((IdentifierNode *)m_id)->name(),
-                    ((IdentifierNode *)m_id)->nonAtomicName(), false);
+        ASSERT(!((IdentifierNode *)m_id)->canUseFastAccess());
+        instance->currentExecutionContext()->environment()->record()->createMutableBindingForAST(((IdentifierNode *)m_id)->name(),
+                ((IdentifierNode *)m_id)->nonAtomicName(), false);
         return ESValue();
     }
 
     void executeStatement(ESVMInstance* instance)
     {
         ASSERT(m_id->type() == NodeType::Identifier);
-        //ASSERT(!((IdentifierNode *)m_id)->canUseFastAccess());
-        if(instance->currentExecutionContext()->needsActivation())
-            instance->currentExecutionContext()->environment()->record()->createMutableBindingForAST(((IdentifierNode *)m_id)->name(),
-                    ((IdentifierNode *)m_id)->nonAtomicName(), false);
+        ASSERT(!((IdentifierNode *)m_id)->canUseFastAccess());
+        instance->currentExecutionContext()->environment()->record()->createMutableBindingForAST(((IdentifierNode *)m_id)->name(),
+                ((IdentifierNode *)m_id)->nonAtomicName(), false);
     }
 
     Node* id() { return m_id; }

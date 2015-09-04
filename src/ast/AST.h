@@ -46,6 +46,7 @@
 #include "CatchClauseNode.h"
 #include "ConditionalExpressionNode.h"
 #include "ContinueStatementNode.h"
+#include "EmptyNode.h"
 #include "EmptyStatementNode.h"
 #include "ExpressionNode.h"
 #include "SequenceExpressionNode.h"
