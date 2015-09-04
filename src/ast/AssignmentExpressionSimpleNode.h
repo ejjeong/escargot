@@ -19,14 +19,14 @@ public:
         m_right = right;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
         ASSERT(m_left->type() != NodeType::IdentifierFastCase);
         ExecutionContext* ec = instance->currentExecutionContext();
         ESSlotWriterForAST::prepareExecuteForWriteASTNode(ec);
 
         //http://www.ecma-international.org/ecma-262/5.1/#sec-11.13.1
-        ESValue rvalue = m_right->execute(instance);
+        ESValue rvalue = m_right->executeExpression(instance);
         ESSlotAccessor slot = m_left->executeForWrite(instance);
         ESSlotWriterForAST::setValue(slot, ec, rvalue);
         return rvalue;

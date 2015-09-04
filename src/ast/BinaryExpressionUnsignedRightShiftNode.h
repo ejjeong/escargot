@@ -14,11 +14,10 @@ public:
         m_right = (ExpressionNode*)right;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
-        int32_t lnum = m_left->execute(instance).toInt32();
-        int32_t rnum = m_right->execute(instance).toInt32();
-        unsigned int shiftCount = ((unsigned int)m_right->execute(instance).toInt32()) & 0x1F;
+        int32_t lnum = m_left->executeExpression(instance).toInt32();
+        unsigned int shiftCount = ((unsigned int)m_right->executeExpression(instance).toInt32()) & 0x1F;
         lnum = ((unsigned int)lnum) >> shiftCount;
 
         return ESValue(lnum);

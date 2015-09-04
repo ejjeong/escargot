@@ -19,9 +19,9 @@ public:
         m_right = right;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
-        m_rvalue = m_right->execute(instance);
+        m_rvalue = m_right->executeExpression(instance);
         instance->currentExecutionContext()->cachedDeclarativeEnvironmentRecordESValue()[m_index] = m_rvalue;
         return m_rvalue;
     }

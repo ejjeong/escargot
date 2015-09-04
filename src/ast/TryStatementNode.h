@@ -20,10 +20,10 @@ public:
       }
 
 
-    ESValue execute(ESVMInstance* instance)
+    void executeStatement(ESVMInstance* instance)
     {
         try {
-            m_block->execute(instance);
+            m_block->executeStatement(instance);
         } catch(const ESValue& err) {
             instance->invalidateIdentifierCacheCheckCount();
             LexicalEnvironment* oldEnv = instance->currentExecutionContext()->environment();
@@ -32,9 +32,8 @@ public:
             instance->currentExecutionContext()->environment()->record()->setMutableBinding(m_handler->param()->name(),
                     m_handler->param()->nonAtomicName()
                     , err, false);
-            m_handler->execute(instance);
+            m_handler->executeStatement(instance);
         }
-        return ESValue();
     }
 
 protected:

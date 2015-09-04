@@ -21,7 +21,7 @@ public:
         m_fastAccessIndex = SIZE_MAX;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
         ASSERT(!(m_canUseFastAccess && !instance->currentExecutionContext()->needsActivation()));
         if (LIKELY(m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {

@@ -15,7 +15,7 @@ public:
         m_isExpression = false;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
         ESFunctionObject* function = ESFunctionObject::create(instance->currentExecutionContext()->environment(), this);
         //FIXME these lines duplicate with FunctionDeclarationNode::execute

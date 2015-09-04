@@ -10,7 +10,7 @@ public:
     ThisExpressionNode()
             : ExpressionNode(NodeType::ThisExpression) { }
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
         return instance->currentExecutionContext()->resolveThisBinding();
     }

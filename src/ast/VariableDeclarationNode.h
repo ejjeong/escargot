@@ -15,10 +15,17 @@ public:
         m_declarations = decl;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    void executeStatement(ESVMInstance* instance)
     {
         for(unsigned i = 0; i < m_declarations.size() ; i ++) {
-            m_declarations[i]->execute(instance);
+            m_declarations[i]->executeExpression(instance);
+        }
+    }
+
+    ESValue executeExpression(ESVMInstance* instance)
+    {
+        for(unsigned i = 0; i < m_declarations.size() ; i ++) {
+            m_declarations[i]->executeExpression(instance);
         }
         return ESValue();
     }

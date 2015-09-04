@@ -16,17 +16,17 @@ public:
         m_arguments = arguments;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
         instance->currentExecutionContext()->resetLastESObjectMetInMemberExpressionNode();
-        ESValue fn = m_callee->execute(instance);
+        ESValue fn = m_callee->executeExpression(instance);
         ESObject* receiver = instance->currentExecutionContext()->lastESObjectMetInMemberExpressionNode();
         if(receiver == NULL)
             receiver = instance->globalObject();
 
         ESValue* arguments = (ESValue*)alloca(sizeof(ESValue) * m_arguments.size());
         for(unsigned i = 0; i < m_arguments.size() ; i ++) {
-            arguments[i] = m_arguments[i]->execute(instance);
+            arguments[i] = m_arguments[i]->executeExpression(instance);
         }
 
         return ESFunctionObject::call(fn, receiver, arguments, m_arguments.size(), instance);

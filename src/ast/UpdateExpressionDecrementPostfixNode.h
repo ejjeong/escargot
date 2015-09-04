@@ -15,7 +15,7 @@ public:
         m_argument = (ExpressionNode*)argument;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
         ExecutionContext* ec = instance->currentExecutionContext();
         ESSlotWriterForAST::prepareExecuteForWriteASTNode(ec);

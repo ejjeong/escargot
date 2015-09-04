@@ -15,12 +15,10 @@ public:
         m_argument = argument;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    void executeStatement(ESVMInstance* instance)
     {
-        ESValue arg = m_argument->execute(instance);
-        throw arg;
+        throw m_argument->executeExpression(instance);
         RELEASE_ASSERT_NOT_REACHED();
-        return ESValue();
     }
 
 protected:

@@ -6,6 +6,7 @@
 
 int main(int argc, char* argv[])
 {
+    //GC_malloc(32);
     //GC_disable();
 /*
     //ESValue test
@@ -49,7 +50,7 @@ int main(int argc, char* argv[])
             printf("shell> ");
             fgets(buf, sizeof buf, stdin);
             escargot::ESStringData source(buf);
-            ES->evaluate(source);
+            ES->printValue(ES->evaluate(source));
         }
     } else {
         for(int i = 1; i < argc; i ++) {

@@ -20,10 +20,9 @@ public:
         m_body = (BlockStatementNode*) body;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    void executeStatement(ESVMInstance* instance)
     {
-        m_body->execute(instance);
-        return ESValue();
+        m_body->executeStatement(instance);
     }
 
     IdentifierNode* param() {
@@ -31,7 +30,7 @@ public:
     }
 
 protected:
-    IdentifierNode *m_param;
+    IdentifierNode* m_param;
     ExpressionNode* m_guard;
     BlockStatementNode* m_body;
 };

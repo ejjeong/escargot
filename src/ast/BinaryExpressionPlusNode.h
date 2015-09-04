@@ -14,11 +14,11 @@ public:
         m_right = (ExpressionNode*)right;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
         ESValue ret(ESValue::ESForceUninitialized);
-        ESValue lval = m_left->execute(instance).toPrimitive();
-        ESValue rval = m_right->execute(instance).toPrimitive();
+        ESValue lval = m_left->executeExpression(instance).toPrimitive();
+        ESValue rval = m_right->executeExpression(instance).toPrimitive();
         // http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.1
 
         if(lval.isInt32() && rval.isInt32()) {

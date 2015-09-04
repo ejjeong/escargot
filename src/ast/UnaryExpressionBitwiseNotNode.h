@@ -14,9 +14,9 @@ public:
         m_argument = argument;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
-        return ESValue(~m_argument->execute(instance).toInt32());
+        return ESValue(~m_argument->executeExpression(instance).toInt32());
     }
 protected:
     Node* m_argument;

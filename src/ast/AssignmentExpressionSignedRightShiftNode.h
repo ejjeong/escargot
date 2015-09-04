@@ -19,7 +19,7 @@ public:
         m_right = right;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
         ESSlotAccessor slot;
         ExecutionContext* ec = instance->currentExecutionContext();
@@ -27,7 +27,7 @@ public:
 
         slot = m_left->executeForWrite(instance);
         int32_t lnum = slot.value(ec->lastESObjectMetInMemberExpressionNode()).toInt32();
-        int32_t rnum = m_right->execute(instance).toInt32();
+        int32_t rnum = m_right->executeExpression(instance).toInt32();
         unsigned int shiftCount = ((unsigned int)rnum) & 0x1F;
         lnum >>= shiftCount;
         ESValue rvalue(lnum);

@@ -18,12 +18,12 @@ public:
         m_each = each;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    void executeStatement(ESVMInstance* instance)
     {
         if(m_isSlowCase) {
-            ESValue exprValue = m_right->execute(instance);
+            ESValue exprValue = m_right->executeExpression(instance);
             if (exprValue.isNull() || exprValue.isUndefined())
-                return ESValue();
+                return ;
 
             ExecutionContext* ec = instance->currentExecutionContext();
             ec->resetLastESObjectMetInMemberExpressionNode();
@@ -53,16 +53,15 @@ public:
                         ESSlotWriterForAST::prepareExecuteForWriteASTNode(ec);
                         ESSlotAccessor slot = m_left->executeForWrite(instance);
                         ESSlotWriterForAST::setValue(slot, ec, name);
-                        m_body->execute(instance);
+                        m_body->executeStatement(instance);
                     }
                 }
                 instance->currentExecutionContext()->popContinuePosition();
             });
-            return ESValue();
         } else {
-            ESValue exprValue = m_right->execute(instance);
+            ESValue exprValue = m_right->executeExpression(instance);
             if (exprValue.isNull() || exprValue.isUndefined())
-                return ESValue();
+                return ;
 
             ExecutionContext* ec = instance->currentExecutionContext();
             ec->resetLastESObjectMetInMemberExpressionNode();
@@ -88,10 +87,9 @@ public:
                     ESSlotWriterForAST::prepareExecuteForWriteASTNode(ec);
                     ESSlotAccessor slot = m_left->executeForWrite(instance);
                     ESSlotWriterForAST::setValue(slot, ec, name);
-                    m_body->execute(instance);
+                    m_body->executeStatement(instance);
                 }
             }
-            return ESValue();
         }
 
     }

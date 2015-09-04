@@ -56,11 +56,14 @@ void ESScriptParser::dumpStats()
 }
 #endif
 
-Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16string& source)
+ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16string& source)
 {
     Node* node;
     try {
+        //unsigned long start = getLongTickCount();
         node = esprima::parse(source);
+        //unsigned long end = getLongTickCount();
+        //printf("%lf\n",(end-start)/1000.0);
     } catch(...) {
         throw SyntaxError();
     }
@@ -350,10 +353,6 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16str
 
     std::function<void (Node** node, FunctionNode* nearFunction)> nodeReplacer = [](Node** node, FunctionNode* nearFunction) {
         if(*node) {
-            if((*node)->type() == NodeType::ExpressionStatement) {
-                ExpressionStatementNode* n = (ExpressionStatementNode *)*node;
-                *node = n->m_expression;
-            }
             if((*node)->type() == NodeType::Identifier) {
                 IdentifierNode* n = (IdentifierNode *)*node;
                 if(nearFunction && !nearFunction->needsActivation() && n->canUseFastAccess() && n->fastAccessUpIndex() == 0) {
@@ -614,7 +613,8 @@ Node* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16str
 
     postProcessingFunction(node, NULL);
 
-    return node;
+    ASSERT(node->type() == Program);
+    return (ProgramNode *)node;
 }
 
 }

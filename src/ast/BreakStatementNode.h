@@ -13,11 +13,9 @@ public:
     {
     }
 
-    ESValue execute(ESVMInstance* instance)
+    void executeStatement(ESVMInstance* instance)
     {
         instance->currentExecutionContext()->doBreak();
-        RELEASE_ASSERT_NOT_REACHED();
-        return ESValue();
     }
 };
 

@@ -15,9 +15,9 @@ public:
         m_arguments = arguments;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
-        ESValue fn = m_callee->execute(instance);
+        ESValue fn = m_callee->executeExpression(instance);
         if(!fn.isESPointer() || !fn.asESPointer()->isESFunctionObject())
             throw TypeError(ESString::create(u"NewExpression: constructor is not an function object"));
         ESFunctionObject* function = fn.asESPointer()->asESFunctionObject();
@@ -40,7 +40,7 @@ public:
 
         ESValue* arguments = (ESValue*)alloca(sizeof(ESValue) * m_arguments.size());
         for(unsigned i = 0; i < m_arguments.size() ; i ++) {
-            arguments[i] = m_arguments[i]->execute(instance);
+            arguments[i] = m_arguments[i]->executeExpression(instance);
         }
 
         ESFunctionObject::call(fn, receiver, arguments, m_arguments.size(), true);

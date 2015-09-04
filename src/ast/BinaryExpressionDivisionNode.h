@@ -16,9 +16,9 @@ public:
         m_right = (ExpressionNode*)right;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
-        return ESValue(m_left->execute(instance).toNumber() / m_right->execute(instance).toNumber());
+        return ESValue(m_left->executeExpression(instance).toNumber() / m_right->executeExpression(instance).toNumber());
     }
 
 protected:

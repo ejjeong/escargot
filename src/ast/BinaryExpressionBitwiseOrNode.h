@@ -16,10 +16,10 @@ public:
         m_right = (ExpressionNode*)right;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
-        int32_t lnum = m_left->execute(instance).toInt32();
-        int32_t rnum = m_right->execute(instance).toInt32();
+        int32_t lnum = m_left->executeExpression(instance).toInt32();
+        int32_t rnum = m_right->executeExpression(instance).toInt32();
         // http://www.ecma-international.org/ecma-262/5.1/#sec-11.10
         return ESValue(lnum | rnum);
     }

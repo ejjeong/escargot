@@ -417,13 +417,12 @@ ESValue ESFunctionObject::call(ESValue callee, ESValue receiver, ESValue argumen
             if(fn->functionAST()->needsReturn()) {
                 int r = setjmp(ESVMInstance->currentExecutionContext()->returnPosition());
                 if(r != 1) {
-                    fn->functionAST()->body()->execute(ESVMInstance);
+                    fn->functionAST()->body()->executeStatement(ESVMInstance);
                 }
-                result = ESVMInstance->currentExecutionContext()->returnValue();
             } else {
-                result = fn->functionAST()->body()->execute(ESVMInstance);
+                fn->functionAST()->body()->executeStatement(ESVMInstance);
             }
-
+            result = ESVMInstance->currentExecutionContext()->returnValue();
             ESVMInstance->m_currentExecutionContext = currentContext;
         } else {
             ESValue* storage = (::escargot::ESValue *)alloca(sizeof(::escargot::ESValue) * fn->functionAST()->innerIdentifiers().size());
@@ -442,13 +441,12 @@ ESValue ESFunctionObject::call(ESValue callee, ESValue receiver, ESValue argumen
             if(fn->functionAST()->needsReturn()) {
                 int r = setjmp(ESVMInstance->currentExecutionContext()->returnPosition());
                 if(r != 1) {
-                    fn->functionAST()->body()->execute(ESVMInstance);
+                    fn->functionAST()->body()->executeStatement(ESVMInstance);
                 }
-                result = ESVMInstance->currentExecutionContext()->returnValue();
             } else {
-                result = fn->functionAST()->body()->execute(ESVMInstance);
+                fn->functionAST()->body()->executeStatement(ESVMInstance);
             }
-
+            result = ESVMInstance->currentExecutionContext()->returnValue();
             ESVMInstance->m_currentExecutionContext = currentContext;
         }
     } else {

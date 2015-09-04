@@ -50,70 +50,7 @@ void GlobalObject::initGlobalObject()
 
     node = new FunctionDeclarationNode(InternalAtomicString(u"print"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         if(instance->currentExecutionContext()->argumentCount()) {
-            ESValue& val = instance->currentExecutionContext()->arguments()[0];
-            std::string str;
-
-            std::function<void (ESValue v)> toString = [&str, &toString](ESValue v) {
-                if(v.isInt32()) {
-                    str.append(v.toString()->utf8Data());
-                } else if(v.isNumber()) {
-                    str.append(v.toString()->utf8Data());
-                } else if(v.isUndefined()) {
-                    str.append(v.toString()->utf8Data());
-                } else if(v.isNull()) {
-                    str.append(v.toString()->utf8Data());
-                } else if(v.isBoolean()) {
-                    str.append(v.toString()->utf8Data());
-                } else {
-                    ESPointer* o = v.asESPointer();
-                    if(o->isESString()) {
-                        str.append(o->asESString()->utf8Data());
-                    } else if(o->isESFunctionObject()) {
-                        str.append(v.toString()->utf8Data());
-                    } else if(o->isESArrayObject()) {
-                        str.append("[");
-                        bool isFirst = true;
-                        o->asESObject()->enumeration([&str, &isFirst, o, &toString](escargot::ESValue key, const ::escargot::ESSlotAccessor& slot) {
-                            if(!isFirst)
-                                str.append(", ");
-                                str.append(key.toString()->utf8Data());
-                                str.append(": ");
-                                //str.append(slot.value(o->asESObject()).toString()->utf8Data());
-                                toString(slot.value(o->asESObject()));
-                                isFirst = false;
-                            });
-                        str.append("]");
-                    } else if(o->isESErrorObject()) {
-                        str.append(v.toString()->utf8Data());
-                    } else if(o->isESObject()) {
-                        if(o->asESObject()->constructor().isESPointer() && o->asESObject()->constructor().asESPointer()->isESObject())
-                            str.append(o->asESObject()->constructor().asESPointer()->asESObject()->get(ESValue(strings->name), true).toString()->utf8Data());
-                        str.append(" {");
-                        bool isFirst = true;
-                        o->asESObject()->enumeration([&str, &isFirst, o, &toString](escargot::ESValue key, const ::escargot::ESSlotAccessor& slot) {
-                            if(!isFirst)
-                                str.append(", ");
-                                str.append(key.toString()->utf8Data());
-                                str.append(": ");
-                                //str.append(slot.value(o->asESObject()).toString()->utf8Data());
-                                toString(slot.value(o->asESObject()));
-                                isFirst = false;
-                            });
-                        if(o->isESStringObject()) {
-                            str.append(", [[PrimitiveValue]]: \"");
-                            str.append(o->asESStringObject()->getStringData()->utf8Data());
-                            str.append("\"");
-                        }
-                        str.append("}");
-                    } else {
-                        RELEASE_ASSERT_NOT_REACHED();
-                    }
-                }
-            };
-            toString(val);
-
-            printf("%s\n", str.data());
-            fflush(stdout);
+            ESVMInstance::printValue(instance->currentExecutionContext()->arguments()[0]);
         }
         return ESValue();
     }), false, false);

@@ -22,6 +22,7 @@ typedef std::unordered_map<u16string, InternalAtomicStringData *,
 
 class ESVMInstance : public gc_cleanup {
     friend class ESFunctionObject;
+    friend class ExpressionStatementNode;
 public:
     ESVMInstance();
     ~ESVMInstance();
@@ -92,6 +93,9 @@ public:
     {
         return &m_initialHiddenClassForArrayObject;
     }
+
+    //Function for debug
+    static void printValue(ESValue val);
 protected:
     ExecutionContext* m_globalExecutionContext;
     ExecutionContext* m_currentExecutionContext;
@@ -114,6 +118,8 @@ protected:
     ESAccessorData m_stringObjectLengthAccessorData;
 
     ESFunctionObject* m_globalFunctionPrototype;
+
+    ESValue m_evalReturnValue;
 
     WTF::BumpPointerAllocator* m_bumpPointerAllocator;
 

@@ -16,13 +16,12 @@ public:
         m_alternate = (StatementNode*) alternate;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    void executeStatement(ESVMInstance* instance)
     {
-        if (m_test->execute(instance).toBoolean())
-            m_consequente->execute(instance);
+        if (m_test->executeExpression(instance).toBoolean())
+            m_consequente->executeStatement(instance);
         else if (m_alternate)
-            m_alternate->execute(instance);
-        return ESValue();
+            m_alternate->executeStatement(instance);
     }
 
 protected:

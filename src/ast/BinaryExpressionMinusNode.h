@@ -14,10 +14,10 @@ public:
         m_right = (ExpressionNode*)right;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
-        ESValue lval = m_left->execute(instance);
-        ESValue rval = m_right->execute(instance);
+        ESValue lval = m_left->executeExpression(instance);
+        ESValue rval = m_right->executeExpression(instance);
         // http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.2
         ESValue ret(ESValue::ESForceUninitialized);
         if (lval.isInt32() && rval.isInt32()) {

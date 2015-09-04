@@ -18,7 +18,7 @@ public:
     {
     }
 
-    ESValue execute(ESVMInstance* instance)
+    void executeStatement(ESVMInstance* instance)
     {
         ESFunctionObject* function = ESFunctionObject::create(instance->currentExecutionContext()->environment(), this);
         //FIXME these lines duplicate with FunctionExpressionNode::execute
@@ -33,7 +33,6 @@ public:
             instance->currentExecutionContext()->environment()->record()->createMutableBindingForAST(m_id, nonAtomicId(), false);
         }
         instance->currentExecutionContext()->environment()->record()->setMutableBinding(m_id, nonAtomicId(), function, false);
-        return ESValue();
     }
 
 protected:

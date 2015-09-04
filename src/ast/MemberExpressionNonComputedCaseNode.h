@@ -23,7 +23,7 @@ public:
     ESSlotAccessor executeForWrite(ESVMInstance* instance)
     {
         ASSERT(m_object->type() != NodeType::IdentifierFastCase);
-        ESValue value = m_object->execute(instance);
+        ESValue value = m_object->executeExpression(instance);
         ExecutionContext* ec = instance->currentExecutionContext();
 
         if(UNLIKELY(value.isPrimitive())) {
@@ -38,10 +38,10 @@ public:
         return obj->definePropertyOrThrow(m_propertyValue , true, true, true);
     }
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
         ASSERT(m_object->type() != NodeType::IdentifierFastCase);
-        ESValue value = m_object->execute(instance);
+        ESValue value = m_object->executeExpression(instance);
 
         if(UNLIKELY(value.isESString())) {
             if(m_propertyValue.isInt32()) {

@@ -12,23 +12,23 @@ public:
             : ExpressionNode(NodeType::ConditionalExpression)
     {
         m_test = (ExpressionNode*) test;
-        m_consequente = (StatementNode*) consequente;
-        m_alternate = (StatementNode*) alternate;
+        m_consequente = (ExpressionNode*) consequente;
+        m_alternate = (ExpressionNode*) alternate;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
-        ESValue test = m_test->execute(instance);
+        ESValue test = m_test->executeExpression(instance);
         if (test.toBoolean())
-            return m_consequente->execute(instance);
+            return m_consequente->executeExpression(instance);
         else
-            return m_alternate->execute(instance);
+            return m_alternate->executeExpression(instance);
     }
 
 protected:
     ExpressionNode* m_test;
-    StatementNode* m_consequente;
-    StatementNode* m_alternate;
+    ExpressionNode* m_consequente;
+    ExpressionNode* m_alternate;
 };
 
 }

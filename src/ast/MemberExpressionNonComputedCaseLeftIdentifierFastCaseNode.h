@@ -36,7 +36,7 @@ public:
         return obj->definePropertyOrThrow(m_propertyValue , true, true, true);
     }
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
         ESValue value = instance->currentExecutionContext()->cachedDeclarativeEnvironmentRecordESValue()[m_index];
 

@@ -28,7 +28,7 @@ public:
     }
 #endif
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
         LexicalEnvironment* env = instance->currentExecutionContext()->environment();
         for(unsigned i = 0; i < m_fastAccessUpIndex; i ++) {

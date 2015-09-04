@@ -14,10 +14,10 @@ public:
         m_argument = argument;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
         //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-unary-plus-operator
-        return ESValue(m_argument->execute(instance).toNumber());
+        return ESValue(m_argument->executeExpression(instance).toNumber());
     }
 
 protected:

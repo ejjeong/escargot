@@ -16,9 +16,9 @@ public:
         m_right = (ExpressionNode*)right;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
-        return ESValue(m_left->execute(instance).abstractEqualsTo(m_right->execute(instance)));
+        return ESValue(m_left->executeExpression(instance).abstractEqualsTo(m_right->executeExpression(instance)));
     }
 
 protected:

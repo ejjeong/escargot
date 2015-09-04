@@ -19,7 +19,7 @@ public:
         m_right = right;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
         ESSlotAccessor slot;
         ExecutionContext* ec = instance->currentExecutionContext();
@@ -27,7 +27,7 @@ public:
 
         slot = m_left->executeForWrite(instance);
         ESValue lval = slot.value(ec->lastESObjectMetInMemberExpressionNode());
-        ESValue rval = m_right->execute(instance);
+        ESValue rval = m_right->executeExpression(instance);
         ESValue ret(ESValue::ESForceUninitialized);
         // http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.1
         lval = lval.toPrimitive();

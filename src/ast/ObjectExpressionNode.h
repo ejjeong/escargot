@@ -18,7 +18,7 @@ public:
         m_properties = properties;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
         ESObject* obj = ESObject::create();
         obj->setConstructor(instance->globalObject()->object());
@@ -26,15 +26,13 @@ public:
 
         for(unsigned i = 0; i < m_properties.size() ; i ++) {
             PropertyNode* p = m_properties[i];
-            ESString* key;
+            ESValue key;
             if(p->key()->type() == NodeType::Identifier) {
                 key = ((IdentifierNode* )p->key())->nonAtomicName();
             } else {
-                ESValue ret = p->key()->execute(instance);
-                key = ret.toString();
+                key = p->key()->executeExpression(instance);
             }
-            ESValue value = p->value()->execute(instance);
-            obj->set(key, value);
+            obj->set(key, p->value()->executeExpression(instance));
         }
         return obj;
     }

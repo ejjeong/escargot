@@ -14,7 +14,7 @@ public:
         m_value = value;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
         return m_value;
     }

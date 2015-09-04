@@ -117,10 +117,14 @@ protected:
         m_sourceLocation = loc;
     }
 public:
-    virtual ESValue execute(ESVMInstance* instance)
+    virtual void executeStatement(ESVMInstance* instance)
     {
         RELEASE_ASSERT_NOT_REACHED();
-        return ESValue();
+    }
+
+    virtual ESValue executeExpression(ESVMInstance* instance)
+    {
+        RELEASE_ASSERT_NOT_REACHED();
     }
 
     virtual ESSlotAccessor executeForWrite(ESVMInstance* instance)

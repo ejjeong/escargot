@@ -17,11 +17,10 @@ public:
         m_consequent = consequent;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    void executeStatement(ESVMInstance* instance)
     {
         for (unsigned i = 0; i < m_consequent.size(); i++)
-            m_consequent[i]->execute(instance);
-        return ESValue();
+            m_consequent[i]->executeStatement(instance);
     }
 
     bool isDefaultNode()

@@ -17,15 +17,11 @@ public:
         m_rootedBody = m_body.data();
     }
 
-    ESValue execute(ESVMInstance* instance)
+    void execute(ESVMInstance* instance)
     {
-        ESValue ret;
         for(unsigned i = 0; i < m_bodySize ; i ++) {
-            ESValue s = m_rootedBody[i]->execute(instance);
-            if (!s.isEmpty())
-                ret = s;
+            m_rootedBody[i]->executeStatement(instance);
         }
-        return ret;
     }
 protected:
     StatementNodeVector m_body; //body: [ Statement ];

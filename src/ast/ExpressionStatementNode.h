@@ -15,9 +15,9 @@ public:
         m_expression = expression;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    void executeStatement(ESVMInstance* instance)
     {
-        return m_expression->execute(instance);
+        instance->m_evalReturnValue = m_expression->executeExpression(instance);
     }
 
     Node* expression() { return m_expression; }

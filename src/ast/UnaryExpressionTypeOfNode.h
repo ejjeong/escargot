@@ -14,10 +14,10 @@ public:
         m_argument = argument;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
         //www.ecma-international.org/ecma-262/6.0/index.html#sec-unary-minus-operator
-        ESValue v = m_argument->execute(instance);
+        ESValue v = m_argument->executeExpression(instance);
         if(v.isUndefined())
             return strings->undefined;
         else if(v.isNull())

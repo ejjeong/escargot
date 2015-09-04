@@ -32,10 +32,10 @@ public:
             RELEASE_ASSERT_NOT_REACHED();
     }
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
-        ESValue lval = m_left->execute(instance);
-        ESValue rval = m_right->execute(instance);
+        ESValue lval = m_left->executeExpression(instance);
+        ESValue rval = m_right->executeExpression(instance);
         return execute(instance, lval, rval, m_operator);
     }
 

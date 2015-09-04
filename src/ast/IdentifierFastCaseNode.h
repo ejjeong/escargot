@@ -26,7 +26,7 @@ public:
     }
 #endif
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
         return instance->currentExecutionContext()->cachedDeclarativeEnvironmentRecordESValue()[m_fastAccessIndex];
     }

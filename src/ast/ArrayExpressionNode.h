@@ -15,12 +15,12 @@ public:
     }
 
     //$ 12.2.5.3
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
         unsigned len = m_elements.size();
         ESArrayObject* arr = ESArrayObject::create(len, instance->globalObject()->arrayPrototype());
         for(unsigned i = 0; i < len ; i++) {
-            ESValue result = m_elements[i]->execute(instance);
+            ESValue result = m_elements[i]->executeExpression(instance);
             arr->set(i, result);
         }
         return arr;

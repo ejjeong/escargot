@@ -15,9 +15,9 @@ public:
         m_nativeFunction = fn;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    void executeStatement(ESVMInstance* instance)
     {
-        return m_nativeFunction(instance);
+        instance->currentExecutionContext()->setReturnValue(m_nativeFunction(instance));
     }
 protected:
     NativeFunctionNodeFunctionType m_nativeFunction;

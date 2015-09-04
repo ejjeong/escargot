@@ -14,14 +14,14 @@ public:
         m_right = (ExpressionNode*)right;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
-        ESValue lval = m_left->execute(instance);
+        ESValue lval = m_left->executeExpression(instance);
 
         if (lval.toBoolean() == true)
             return lval;
         else
-            return m_right->execute(instance);
+            return m_right->executeExpression(instance);
     }
 
 protected:

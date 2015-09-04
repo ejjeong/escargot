@@ -14,10 +14,10 @@ public:
         m_right = (ExpressionNode*)right;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
-        int32_t lnum = m_left->execute(instance).toInt32();
-        lnum >>= ((unsigned int)m_right->execute(instance).toInt32()) & 0x1F;
+        int32_t lnum = m_left->executeExpression(instance).toInt32();
+        lnum >>= ((unsigned int)m_right->executeExpression(instance).toInt32()) & 0x1F;
         return ESValue(lnum);
     }
 protected:

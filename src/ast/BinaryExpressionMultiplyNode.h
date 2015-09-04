@@ -14,10 +14,10 @@ public:
         m_right = (ExpressionNode*)right;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
         // http://www.ecma-international.org/ecma-262/5.1/#sec-11.5.1
-        return ESValue(m_left->execute(instance).toNumber() * m_right->execute(instance).toNumber());
+        return ESValue(m_left->executeExpression(instance).toNumber() * m_right->executeExpression(instance).toNumber());
     }
 
 protected:

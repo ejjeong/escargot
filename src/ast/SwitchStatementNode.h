@@ -20,22 +20,22 @@ public:
         m_lexical = lexical;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    void executeStatement(ESVMInstance* instance)
     {
-        ESValue input = m_discriminant->execute(instance);
+        ESValue input = m_discriminant->executeExpression(instance);
         instance->currentExecutionContext()->setJumpPositionAndExecute([&](){
             bool found = false;
             unsigned i;
             for (i = 0; i < m_casesA.size(); i++) {
                 SwitchCaseNode* caseNode = (SwitchCaseNode*) m_casesA[i];
                 if (!found) {
-                    ESValue clauseSelector = caseNode->m_test->execute(instance);
+                    ESValue clauseSelector = caseNode->m_test->executeExpression(instance);
                     if (input.equalsTo(clauseSelector)) {
                         found = true;
                     }
                 }
                 if (found)
-                    caseNode->execute(instance);
+                    caseNode->executeStatement(instance);
             }
             bool foundInB = false;
             if (!found) {
@@ -43,22 +43,21 @@ public:
                     if (foundInB)
                         break;
                     SwitchCaseNode* caseNode = (SwitchCaseNode*) m_casesB[i];
-                    ESValue clauseSelector = caseNode->m_test->execute(instance);
+                    ESValue clauseSelector = caseNode->m_test->executeExpression(instance);
                     if (input.equalsTo(clauseSelector)) {
                         foundInB = true;
-                        caseNode->execute(instance);
+                        caseNode->executeStatement(instance);
                     }
                 }
             }
             if (!foundInB && m_default)
-                m_default->execute(instance);
+                m_default->executeStatement(instance);
 
             for (; i < m_casesB.size(); i++) {
                 SwitchCaseNode* caseNode = (SwitchCaseNode*) m_casesB[i];
-                caseNode->execute(instance);
+                caseNode->executeStatement(instance);
             }
         });
-        return ESValue();
     }
 
 protected:

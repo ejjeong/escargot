@@ -15,10 +15,10 @@ public:
 
     }
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
-        ESValue lval = m_left->execute(instance);
-        ESValue rval = m_right->execute(instance);
+        ESValue lval = m_left->executeExpression(instance);
+        ESValue rval = m_right->executeExpression(instance);
         ESValue ret(ESValue::ESForceUninitialized);
         if (lval.isInt32() && rval.isInt32()) {
             ret = ESValue(lval.asInt32() % rval.asInt32());

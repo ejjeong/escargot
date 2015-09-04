@@ -16,10 +16,10 @@ public:
         m_body = (StatementNode*) body;
     }
 
-    ESValue execute(ESVMInstance* instance)
+    void executeStatement(ESVMInstance* instance)
     {
         if(UNLIKELY(m_isSlowCase)) {
-            ESValue test = m_test->execute(instance);
+            ESValue test = m_test->executeExpression(instance);
             instance->currentExecutionContext()->setJumpPositionAndExecute([&](){
                     jmpbuf_wrapper cont;
                     bool start = false;
@@ -28,21 +28,19 @@ public:
                         instance->currentExecutionContext()->pushContinuePosition(cont);
                         start = true;
                     } else {
-                        test = m_test->execute(instance);
+                        test = m_test->executeExpression(instance);
                     }
                     while (start || test.toBoolean()) {
                         start = false;
-                        m_body->execute(instance);
-                        test = m_test->execute(instance);
+                        m_body->executeStatement(instance);
+                        test = m_test->executeExpression(instance);
                     }
                     instance->currentExecutionContext()->popContinuePosition();
             });
-            return ESValue();
         } else {
             do {
-                m_body->execute(instance);
-            } while(m_test->execute(instance).toBoolean());
-            return ESValue();
+                m_body->executeStatement(instance);
+            } while(m_test->executeExpression(instance).toBoolean());
         }
     }
 

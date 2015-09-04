@@ -35,13 +35,13 @@ public:
         ESObject* obj  = value.asESPointer()->asESObject();
         ec->setLastESObjectMetInMemberExpressionNode(obj);
 
-        return obj->definePropertyOrThrow(m_property->execute(instance));
+        return obj->definePropertyOrThrow(m_property->executeExpression(instance));
     }
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
         ESValue value = instance->currentExecutionContext()->cachedDeclarativeEnvironmentRecordESValue()[m_index];
-        ESValue propertyValue = m_property->execute(instance);
+        ESValue propertyValue = m_property->executeExpression(instance);
 
         if(UNLIKELY(value.isESString())) {
             if(propertyValue.isInt32()) {

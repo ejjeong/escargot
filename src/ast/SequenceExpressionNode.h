@@ -17,12 +17,13 @@ public:
         m_rootedExpressions = m_expressions.data();
     }
 
-    ESValue execute(ESVMInstance* instance)
+    ESValue executeExpression(ESVMInstance* instance)
     {
+        ESValue ret;
         for (unsigned i = 0; i < m_expressionsSize; i++) {
-            m_rootedExpressions[i]->execute(instance);
+            ret = m_rootedExpressions[i]->executeExpression(instance);
         }
-        return ESValue();
+        return ret;
     }
 protected:
     ExpressionNodeVector m_expressions; //expression: Expression;

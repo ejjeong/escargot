@@ -268,6 +268,11 @@ ALWAYS_INLINE bool isKeyword(const std::u16string& id)
      }
 }
 
+struct ParseStatus;
+
+ParseStatus* psMalloc();
+void psFree(void* p);
+
 struct ParseStatus : public RefCounted<ParseStatus> {
     Token m_type;
     std::u16string m_value;
@@ -287,6 +292,10 @@ struct ParseStatus : public RefCounted<ParseStatus> {
 
     std::u16string m_regexBody;
     std::u16string m_regexFlag;
+
+    ~ParseStatus()
+    {
+    }
 
     ParseStatus()
     {
@@ -344,7 +353,50 @@ struct ParseStatus : public RefCounted<ParseStatus> {
         m_prec = -1;
     }
 
+    void* operator new(size_t, void* p) { return p; }
+    void* operator new[](size_t, void* p) { return p; }
+    void* operator new(size_t size)
+    {
+        return psMalloc();
+    }
+    void operator delete(void* p)
+    {
+        return psFree(p);
+    }
+    void* operator new[](size_t size)
+    {
+        RELEASE_ASSERT_NOT_REACHED();
+        return malloc(size);
+    }
+    void operator delete[](void* p)
+    {
+        RELEASE_ASSERT_NOT_REACHED();
+        return free(p);
+    }
 };
+
+bool isPSMallocInited = false;
+#define PS_POOL_SIZE 32
+ParseStatus* psPool[PS_POOL_SIZE];
+size_t psPoolUsage = 0;
+
+ParseStatus* psMalloc()
+{
+    if(psPoolUsage == 0) {
+        return new (malloc(sizeof (ParseStatus)))ParseStatus;
+    }
+    ParseStatus* ps = psPool[psPoolUsage - 1];
+    psPoolUsage--;
+    return ps;
+}
+
+void psFree(void* p)
+{
+    if(psPoolUsage < PS_POOL_SIZE) {
+        psPool[psPoolUsage++] = (ParseStatus *)p;
+    } else
+        free(p);
+}
 
 struct Curly {
     char m_curly[4];
