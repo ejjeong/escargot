@@ -63,7 +63,7 @@ ifeq ($(MODE), debug)
 	CXXFLAGS += -O0 -g3 -frounding-math -fsignaling-nans -fno-omit-frame-pointer -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable -Wno-invalid-offsetof
 	GCLIBS = third_party/bdwgc/out/debug/.libs/libgc.a #third_party/bdwgc/out/debug/.libs/libgccpp.a
 else ifeq ($(MODE), release)
-	CXXFLAGS += -O3 -g3 -DNDEBUG -fomit-frame-pointer -frounding-math -fsignaling-nans
+	CXXFLAGS += -O3 -g3 -DNDEBUG -fomit-frame-pointer -frounding-math -fsignaling-nans -funroll-loops
 	GCLIBS = third_party/bdwgc/out/release/.libs/libgc.a #third_party/bdwgc/out/release/.libs/libgccpp.a
 else
 	$(error mode error)

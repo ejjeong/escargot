@@ -30,6 +30,24 @@ protected:
     size_t m_bodySize;
 };
 
+
+template <size_t count>
+class BlockStatementPredefinedNode : public BlockStatementNode {
+public:
+    friend class ESScriptParser;
+    BlockStatementPredefinedNode(StatementNodeVector&& body)
+            : BlockStatementNode(std::move(body))
+    {
+        ASSERT(m_body.size() == count);
+    }
+
+    void executeStatement(ESVMInstance* instance)
+    {
+        for(unsigned i = 0; i < count ; i ++)
+            m_rootedBody[i]->executeStatement(instance);
+    }
+};
+
 }
 
 #endif

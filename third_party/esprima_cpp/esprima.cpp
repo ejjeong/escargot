@@ -1938,14 +1938,48 @@ escargot::StatementNodeVector parseStatementList(ParseContext* ctx) {
 
 escargot::Node* parseBlock(ParseContext* ctx) {
     //var block, node = new Node();
-    escargot::StatementNodeVector block;
+    escargot::StatementNodeVector body;
     expect(ctx, '{');
 
-    block = parseStatementList(ctx);
+    body = parseStatementList(ctx);
 
     expect(ctx, '}');
-
-    return new escargot::BlockStatementNode(std::move(block));
+    switch(body.size()) {
+    case 1:
+        return new escargot::BlockStatementPredefinedNode<1>(std::move(body));
+    case 2:
+        return new escargot::BlockStatementPredefinedNode<2>(std::move(body));
+    case 3:
+        return new escargot::BlockStatementPredefinedNode<3>(std::move(body));
+    case 4:
+        return new escargot::BlockStatementPredefinedNode<4>(std::move(body));
+    case 5:
+        return new escargot::BlockStatementPredefinedNode<5>(std::move(body));
+    case 6:
+        return new escargot::BlockStatementPredefinedNode<6>(std::move(body));
+    case 7:
+        return new escargot::BlockStatementPredefinedNode<7>(std::move(body));
+    case 8:
+        return new escargot::BlockStatementPredefinedNode<8>(std::move(body));
+    case 9:
+        return new escargot::BlockStatementPredefinedNode<9>(std::move(body));
+    case 10:
+        return new escargot::BlockStatementPredefinedNode<10>(std::move(body));
+    case 11:
+        return new escargot::BlockStatementPredefinedNode<11>(std::move(body));
+    case 12:
+        return new escargot::BlockStatementPredefinedNode<12>(std::move(body));
+    case 13:
+        return new escargot::BlockStatementPredefinedNode<13>(std::move(body));
+    case 14:
+        return new escargot::BlockStatementPredefinedNode<14>(std::move(body));
+    case 15:
+        return new escargot::BlockStatementPredefinedNode<15>(std::move(body));
+    case 16:
+        return new escargot::BlockStatementPredefinedNode<16>(std::move(body));
+    default:
+        return new escargot::BlockStatementNode(std::move(body));
+    }
 }
 
 // ECMA-262 13.3.2 Variable Statement
@@ -2928,8 +2962,42 @@ escargot::Node* parseFunctionSourceElements(ParseContext* ctx) {
     ctx->m_parenthesizedCount = oldParenthesisCount;
 
     ctx->m_currentBody = prevBody;
-    //return node.finishBlockStatement(body);
-    return new escargot::BlockStatementNode(std::move(body));
+    switch(body.size()) {
+    case 1:
+        return new escargot::BlockStatementPredefinedNode<1>(std::move(body));
+    case 2:
+        return new escargot::BlockStatementPredefinedNode<2>(std::move(body));
+    case 3:
+        return new escargot::BlockStatementPredefinedNode<3>(std::move(body));
+    case 4:
+        return new escargot::BlockStatementPredefinedNode<4>(std::move(body));
+    case 5:
+        return new escargot::BlockStatementPredefinedNode<5>(std::move(body));
+    case 6:
+        return new escargot::BlockStatementPredefinedNode<6>(std::move(body));
+    case 7:
+        return new escargot::BlockStatementPredefinedNode<7>(std::move(body));
+    case 8:
+        return new escargot::BlockStatementPredefinedNode<8>(std::move(body));
+    case 9:
+        return new escargot::BlockStatementPredefinedNode<9>(std::move(body));
+    case 10:
+        return new escargot::BlockStatementPredefinedNode<10>(std::move(body));
+    case 11:
+        return new escargot::BlockStatementPredefinedNode<11>(std::move(body));
+    case 12:
+        return new escargot::BlockStatementPredefinedNode<12>(std::move(body));
+    case 13:
+        return new escargot::BlockStatementPredefinedNode<13>(std::move(body));
+    case 14:
+        return new escargot::BlockStatementPredefinedNode<14>(std::move(body));
+    case 15:
+        return new escargot::BlockStatementPredefinedNode<15>(std::move(body));
+    case 16:
+        return new escargot::BlockStatementPredefinedNode<16>(std::move(body));
+    default:
+        return new escargot::BlockStatementNode(std::move(body));
+    }
 }
 
 /*
