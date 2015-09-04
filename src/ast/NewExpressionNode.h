@@ -43,7 +43,7 @@ public:
             arguments[i] = m_arguments[i]->executeExpression(instance);
         }
 
-        ESFunctionObject::call(fn, receiver, arguments, m_arguments.size(), true);
+        ESFunctionObject::call(instance, fn, receiver, arguments, m_arguments.size(), true);
         return receiver;
     }
 

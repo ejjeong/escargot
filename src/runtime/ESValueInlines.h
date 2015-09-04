@@ -395,7 +395,7 @@ inline ESString* ESValue::toString() const
     } else {
         ASSERT(asESPointer()->isESObject());
         ESObject* obj = asESPointer()->asESObject();
-        ESValue ret = ESFunctionObject::call(obj->get(ESValue(strings->toString), true), obj, NULL, 0, false);
+        ESValue ret = ESFunctionObject::call(ESVMInstance::currentInstance(), obj->get(ESValue(strings->toString), true), obj, NULL, 0, false);
         ASSERT(ret.isESString());
         return ret.asESString();
     }

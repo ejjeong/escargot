@@ -403,27 +403,26 @@ ALWAYS_INLINE void functionCallerInnerProcess(ESFunctionObject* fn, ESValue rece
 }
 
 
-ESValue ESFunctionObject::call(ESValue callee, ESValue receiver, ESValue arguments[], size_t argumentCount, bool isNewExpression)
+ESValue ESFunctionObject::call(ESVMInstance* instance, ESValue callee, ESValue receiver, ESValue arguments[], size_t argumentCount, bool isNewExpression)
 {
-    ESVMInstance* ESVMInstance = ESVMInstance::currentInstance();
     ESValue result(ESValue::ESForceUninitialized);
     if(LIKELY(callee.isESPointer() && callee.asESPointer()->isESFunctionObject())) {
-        ExecutionContext* currentContext = ESVMInstance->currentExecutionContext();
+        ExecutionContext* currentContext = instance->currentExecutionContext();
         ESFunctionObject* fn = callee.asESPointer()->asESFunctionObject();
         if(UNLIKELY(fn->functionAST()->needsActivation())) {
-            ESVMInstance->m_currentExecutionContext = new ExecutionContext(LexicalEnvironment::newFunctionEnvironment(fn, receiver), true, isNewExpression, currentContext, arguments, argumentCount);
-            functionCallerInnerProcess(fn, receiver, arguments, argumentCount, true, ESVMInstance);
+            instance->m_currentExecutionContext = new ExecutionContext(LexicalEnvironment::newFunctionEnvironment(fn, receiver), true, isNewExpression, currentContext, arguments, argumentCount);
+            functionCallerInnerProcess(fn, receiver, arguments, argumentCount, true, instance);
             //ESVMInstance->invalidateIdentifierCacheCheckCount();
             if(fn->functionAST()->needsReturn()) {
-                int r = setjmp(ESVMInstance->currentExecutionContext()->returnPosition());
+                int r = setjmp(instance->currentExecutionContext()->returnPosition());
                 if(r != 1) {
-                    fn->functionAST()->body()->executeStatement(ESVMInstance);
+                    fn->functionAST()->body()->executeStatement(instance);
                 }
             } else {
-                fn->functionAST()->body()->executeStatement(ESVMInstance);
+                fn->functionAST()->body()->executeStatement(instance);
             }
-            result = ESVMInstance->currentExecutionContext()->returnValue();
-            ESVMInstance->m_currentExecutionContext = currentContext;
+            result = instance->currentExecutionContext()->returnValue();
+            instance->m_currentExecutionContext = currentContext;
         } else {
             ESValue* storage = (::escargot::ESValue *)alloca(sizeof(::escargot::ESValue) * fn->functionAST()->innerIdentifiers().size());
             FunctionEnvironmentRecord envRec(
@@ -435,19 +434,19 @@ ESValue ESFunctionObject::call(ESValue callee, ESValue receiver, ESValue argumen
 
             LexicalEnvironment env(&envRec, fn->outerEnvironment());
             ExecutionContext ec(&env, false, isNewExpression, currentContext, arguments, argumentCount, storage);
-            ESVMInstance->m_currentExecutionContext = &ec;
-            functionCallerInnerProcess(fn, receiver, arguments, argumentCount, fn->functionAST()->needsArgumentsObject(), ESVMInstance);
+            instance->m_currentExecutionContext = &ec;
+            functionCallerInnerProcess(fn, receiver, arguments, argumentCount, fn->functionAST()->needsArgumentsObject(), instance);
             //ESVMInstance->invalidateIdentifierCacheCheckCount();
             if(fn->functionAST()->needsReturn()) {
-                int r = setjmp(ESVMInstance->currentExecutionContext()->returnPosition());
+                int r = setjmp(instance->currentExecutionContext()->returnPosition());
                 if(r != 1) {
-                    fn->functionAST()->body()->executeStatement(ESVMInstance);
+                    fn->functionAST()->body()->executeStatement(instance);
                 }
             } else {
-                fn->functionAST()->body()->executeStatement(ESVMInstance);
+                fn->functionAST()->body()->executeStatement(instance);
             }
-            result = ESVMInstance->currentExecutionContext()->returnValue();
-            ESVMInstance->m_currentExecutionContext = currentContext;
+            result = instance->currentExecutionContext()->returnValue();
+            instance->m_currentExecutionContext = currentContext;
         }
     } else {
         throw TypeError(ESString::create(u"Callee is not a function object"));

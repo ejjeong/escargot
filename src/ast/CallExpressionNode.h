@@ -29,7 +29,7 @@ public:
             arguments[i] = m_arguments[i]->executeExpression(instance);
         }
 
-        return ESFunctionObject::call(fn, receiver, arguments, m_arguments.size(), instance);
+        return ESFunctionObject::call(instance, fn, receiver, arguments, m_arguments.size(), instance);
     }
 
 protected:

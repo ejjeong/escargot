@@ -212,7 +212,7 @@ void GlobalObject::installFunction()
         for (int i = 0; i < arrlen; i++) {
             arguments[i] = argArray->get(i);
         }
-        ESValue ret = ESFunctionObject::call(thisVal, thisArg, arguments, arrlen, false);
+        ESValue ret = ESFunctionObject::call(instance, thisVal, thisArg, arguments, arrlen, false);
         return ret;
     }), false, false);
     m_functionPrototype->set(ESString::create(u"apply"), ESFunctionObject::create(NULL, node));
@@ -468,7 +468,7 @@ void GlobalObject::installArray()
             ESValue arg0 = instance->currentExecutionContext()->arguments()[0];
             thisVal->sort([&arg0, &instance, &thisVal](const ::escargot::ESValue& a, const ::escargot::ESValue& b) -> bool {
                 ESValue arg[2] = { a, b };
-                ESValue ret = ESFunctionObject::call(arg0, thisVal,
+                ESValue ret = ESFunctionObject::call(instance, arg0, thisVal,
                         arg, 2, instance);
 
                 double v = ret.toNumber();
@@ -764,7 +764,7 @@ void GlobalObject::installString()
                     }
                     arguments[subLen] = ESValue((int)result.m_matchResults[i][0].m_start);
                     arguments[subLen + 1] = origStr;
-                    escargot::ESString* res = ESFunctionObject::call(callee, instance->globalObject(), arguments, subLen + 2, instance).toString();
+                    escargot::ESString* res = ESFunctionObject::call(instance, callee, instance->globalObject(), arguments, subLen + 2, instance).toString();
 
                     newThis.append(res->string());
                     if(i < matchCount - 1) {

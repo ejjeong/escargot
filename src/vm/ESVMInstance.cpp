@@ -147,7 +147,6 @@ ESValue ESVMInstance::evaluate(u16string& source)
     try {
         m_evalReturnValue = ESValue();
         ProgramNode* node = ESScriptParser::parseScript(this, source);
-        //ret = node->execute(this);
         node->execute(this);
     } catch(ReferenceError& err) {
         printf("ReferenceError: %s\n", err.message()->utf8Data());
