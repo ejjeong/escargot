@@ -17,7 +17,7 @@ public:
 
     void executeStatement(ESVMInstance* instance)
     {
-        instance->m_evalReturnValue = m_expression->executeExpression(instance);
+        instance->m_lastExpressionStatementValue = m_expression->executeExpression(instance);
     }
 
     Node* expression() { return m_expression; }

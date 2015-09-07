@@ -145,18 +145,9 @@ ESVMInstance::~ESVMInstance()
 ESValue ESVMInstance::evaluate(u16string& source)
 {
     try {
-        m_evalReturnValue = ESValue();
+        m_lastExpressionStatementValue = ESValue();
         ProgramNode* node = ESScriptParser::parseScript(this, source);
         node->execute(this);
-    } catch(ReferenceError& err) {
-        printf("ReferenceError: %s\n", err.message()->utf8Data());
-        fflush(stdout);
-    } catch(TypeError& err) {
-        printf("TypeError: %s\n", err.message()->utf8Data());
-        fflush(stdout);
-    } catch(SyntaxError& err) {
-        printf("SyntaxError: %s\n", err.message()->utf8Data());
-        fflush(stdout);
     } catch(const ESValue& err) {
         try{
             printf("Uncaught %s\n", err.toString()->utf8Data());
@@ -166,7 +157,7 @@ ESValue ESVMInstance::evaluate(u16string& source)
         fflush(stdout);
     }
 
-    return m_evalReturnValue;
+    return m_lastExpressionStatementValue;
 }
 
 void ESVMInstance::enter()
@@ -211,7 +202,9 @@ void ESVMInstance::printValue(ESValue val)
         } else {
             ESPointer* o = v.asESPointer();
             if(o->isESString()) {
+                str.append("\"");
                 str.append(o->asESString()->utf8Data());
+                str.append("\"");
             } else if(o->isESFunctionObject()) {
                 str.append(v.toString()->utf8Data());
             } else if(o->isESArrayObject()) {

@@ -32,6 +32,8 @@ public:
             receiver = ESRegExpObject::create(strings->emptyESString,ESRegExpObject::Option::None);
         } else if (function == instance->globalObject()->boolean()) {
             receiver = ESBooleanObject::create(ESValue(ESValue::ESFalseTag::ESFalse));
+        } else if (function == instance->globalObject()->error()) {
+            receiver = ESErrorObject::create();
         } else {
             receiver = ESObject::create();
         }

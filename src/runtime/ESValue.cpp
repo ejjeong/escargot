@@ -90,6 +90,10 @@ bool ESValue::equalsTo(const ESValue& val)
         //TODO
         return false;
     }
+
+    if(isUndefined())
+        return val.isUndefined();
+
     RELEASE_ASSERT_NOT_REACHED();
 }
 
@@ -567,10 +571,20 @@ ESStringObject::ESStringObject(escargot::ESString* str)
 ESErrorObject::ESErrorObject(escargot::ESString* message)
        : ESObject((Type)(Type::ESObject | Type::ESErrorObject))
 {
-    m_message = message;
+    set(strings->message, message);
+    set(strings->name, strings->Error);
     escargot::ESFunctionObject* fn = ESVMInstance::currentInstance()->globalObject()->error();
     setConstructor(fn);
-    set__proto__(fn);
+    set__proto__(ESVMInstance::currentInstance()->globalObject()->errorPrototype());
 }
+
+ReferenceError::ReferenceError(escargot::ESString* message)
+    : ESErrorObject(message)
+{
+    set(strings->name, strings->ReferenceError);
+    setConstructor(ESVMInstance::currentInstance()->globalObject()->referenceError());
+    set__proto__(ESVMInstance::currentInstance()->globalObject()->referenceErrorPrototype());
+}
+
 
 }

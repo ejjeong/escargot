@@ -119,7 +119,7 @@ protected:
 
     ESFunctionObject* m_globalFunctionPrototype;
 
-    ESValue m_evalReturnValue;
+    ESValue m_lastExpressionStatementValue;
 
     WTF::BumpPointerAllocator* m_bumpPointerAllocator;
 

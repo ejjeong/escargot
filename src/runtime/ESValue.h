@@ -24,6 +24,7 @@ class ESHiddenClass;
 class ESFunctionObject;
 class ESArrayObject;
 class ESStringObject;
+class ESErrorObject;
 class ESDateObject;
 class FunctionNode;
 class ESVMInstance;
@@ -356,6 +357,14 @@ public:
     ALWAYS_INLINE bool isESErrorObject() const
     {
         return m_type & Type::ESErrorObject;
+    }
+
+    ALWAYS_INLINE ::escargot::ESErrorObject* asESErrorObject()
+    {
+#ifndef NDEBUG
+        ASSERT(isESErrorObject());
+#endif
+        return reinterpret_cast<::escargot::ESErrorObject *>(this);
     }
 
     ALWAYS_INLINE bool isESDateObject() const
@@ -951,6 +960,7 @@ public:
     ESSlotAccessor()
     {
         m_data = nullptr;
+        m_isDataProperty = false;
     }
 
     explicit ESSlotAccessor(ESValue* data)
@@ -1306,18 +1316,16 @@ public:
     {
         return new ESErrorObject(message);
     }
-
-    escargot::ESString* message() { return m_message; }
-
 protected:
-    escargot::ESString* m_message;
 };
 
 class ReferenceError : public ESErrorObject {
+protected:
+    ReferenceError(escargot::ESString* message = strings->emptyESString);
 public:
-    ReferenceError(escargot::ESString* message = strings->emptyESString)
-        : ESErrorObject(message)
+    static ReferenceError* create(escargot::ESString* message = strings->emptyESString)
     {
+        return new ReferenceError(message);
     }
 };
 

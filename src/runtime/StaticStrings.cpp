@@ -29,10 +29,13 @@ void Strings::initStaticStrings(ESVMInstance* instance)
 
     String =  ESString::create(u"String");
     Number =  ESString::create(u"Number");
+    NaN =  ESString::create(u"NaN");
+    Infinity =  ESString::create(u"Infinity");
     Boolean =  ESString::create(u"Boolean");
     Object =  ESString::create(u"Object");
     Array =  ESString::create(u"Array");
     Error =  ESString::create(u"Error");
+    message =  ESString::create(u"message");
     ReferenceError =  ESString::create(u"ReferenceError");
     concat = ESString::create(u"concat");
     indexOf = ESString::create(u"indexOf");
@@ -56,6 +59,7 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     setTime =  ESString::create(u"setTime");
     Math =  ESString::create(u"Math");
     PI =  ESString::create(u"PI");
+    E =  ESString::create(u"E");
     abs =  ESString::create(u"abs");
     cos =  ESString::create(u"cos");
     ceil = ESString::create(u"ceil");
@@ -71,6 +75,7 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     boolean = ESString::create(u"boolean");
     number = ESString::create(u"number");
     toFixed =  ESString::create(u"toFixed");
+    toPrecision =  ESString::create(u"toPrecision");
     string = ESString::create(u"string");
     object = ESString::create(u"object");
     function = ESString::create(u"function");

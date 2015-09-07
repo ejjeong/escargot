@@ -36,7 +36,7 @@ public:
                 return m_cachedSlot.readDataProperty();
             }
 
-            ESErrorObject* receiver = ESErrorObject::create();
+            ReferenceError* receiver = ReferenceError::create();
 
             std::vector<ESValue> arguments;
             u16string err_msg;
@@ -46,7 +46,7 @@ public:
 
             //TODO call constructor
             //ESFunctionObject::call(fn, receiver, &arguments[0], arguments.size(), instance);
-            receiver->set(ESString::create(u"message"), ESString::create(std::move(err_msg)));
+            receiver->set(strings->message, ESString::create(std::move(err_msg)));
 
             throw ESValue(receiver);
         }

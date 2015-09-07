@@ -258,7 +258,22 @@ void GlobalObject::installObject()
 
 void GlobalObject::installError()
 {
-    m_error = ::escargot::ESFunctionObject::create(NULL,new FunctionDeclarationNode(strings->Error, InternalAtomicStringVector(), new EmptyStatementNode(), false, false));
+    m_error = ::escargot::ESFunctionObject::create(NULL,new FunctionDeclarationNode(strings->Error, InternalAtomicStringVector(),
+            new NativeFunctionNode([](ESVMInstance* instance) -> ESValue {
+        if(instance->currentExecutionContext()->isNewExpression()) {
+            if(instance->currentExecutionContext()->argumentCount()) {
+                instance->currentExecutionContext()->resolveThisBinding()->asESErrorObject()->set(strings->message, instance->currentExecutionContext()->arguments()[0].toString());
+            }
+            return ESValue();
+        } else {
+            escargot::ESErrorObject* obj = ESErrorObject::create();
+            if(instance->currentExecutionContext()->argumentCount()) {
+                obj->set(strings->message, instance->currentExecutionContext()->arguments()[0].toString());
+            }
+            return obj;
+        }
+    })
+    , false, false));
     m_error->set(strings->name, strings->Error);
     m_error->setConstructor(m_function);
     m_error->set__proto__(m_objectPrototype);
@@ -1176,6 +1191,8 @@ void GlobalObject::installMath()
 
     // initialize math object: $20.2.1.6 Math.PI
     m_math->set(strings->PI, ESValue(3.1415926535897932));
+    // TODO(add reference)
+    m_math->set(strings->E, ESValue(2.718281828459045));
 
     // initialize math object: $20.2.2.1 Math.abs()
     FunctionDeclarationNode* absNode = new FunctionDeclarationNode(strings->abs, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
@@ -1445,6 +1462,44 @@ void GlobalObject::installNumber()
         return ESValue();
     }), false, false);
     m_numberPrototype->set(strings->toFixed, ::escargot::ESFunctionObject::create(NULL, toFixedNode));
+
+    FunctionDeclarationNode* toPrecisionNode = new FunctionDeclarationNode(strings->toPrecision, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        escargot::ESNumberObject* thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESNumberObject();
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        if (arglen == 0 || instance->currentExecutionContext()->arguments()[0].isUndefined()) {
+            return ESValue(thisVal->numberData()).toString();
+        } else if (arglen == 1) {
+            double x = thisVal->numberData();
+            int p = instance->currentExecutionContext()->arguments()[0].toInteger();
+            if(isnan(x)) {
+                return strings->NaN;
+            }
+            u16string s;
+            if(x < 0) {
+                s = u"-";
+                x = -x;
+            }
+            if(isinf(x)) {
+                s += u"Infinity";
+                return escargot::ESString::create(std::move(s));
+            }
+
+            if(p < 1 && p > 21) {
+                throw RangeError();
+            }
+
+            x = thisVal->numberData();
+            std::basic_ostringstream<char> stream;
+            stream << "%." << p << "lf";
+            std::string fstr = stream.str();
+            char buf[512];
+            sprintf(buf, fstr.c_str(), x);
+            return ESValue(ESString::create(buf));
+        }
+
+        return ESValue();
+    }), false, false);
+    m_numberPrototype->set(strings->toPrecision, ::escargot::ESFunctionObject::create(NULL, toPrecisionNode));
 
     // initialize numberPrototype object: $20.1.3.6 Number.prototype.toString()
     FunctionDeclarationNode* toStringNode = new FunctionDeclarationNode(strings->toString, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {

@@ -105,9 +105,11 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
                     ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name())) {
                 identifierInCurrentContext.push_back(((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name());
             }
-            auto iter = std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),
-                    ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name());
-            ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->setFastAccessIndex(0, std::distance(identifierInCurrentContext.begin(), iter));
+            if(nearFunctionNode) {
+                auto iter = std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),
+                        ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name());
+                ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->setFastAccessIndex(0, std::distance(identifierInCurrentContext.begin(), iter));
+            }
         } else if(type == NodeType::FunctionDeclaration) {
             //TODO
             //printf("add Identifier %s(fn)\n", ((FunctionDeclarationNode *)currentNode)->nonAtomicId()->utf8Data());

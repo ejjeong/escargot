@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 #include <cstring>
+#include <sstream>
 #include <cassert>
 #include <functional>
 #include <algorithm>
