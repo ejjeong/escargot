@@ -187,11 +187,15 @@ void GlobalObject::installFunction()
     m_functionPrototype->setConstructor(m_function);
     m_functionPrototype->set(strings->toString, ESFunctionObject::create(NULL, new FunctionDeclarationNode(strings->toString, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         //FIXME
+        if(instance->currentExecutionContext()->resolveThisBinding()->isESFunctionObject()) {
+            u16string ret;
+            ret = u"function ";
+            escargot::ESFunctionObject* fn = instance->currentExecutionContext()->resolveThisBinding()->asESFunctionObject();
+            ret.append(fn->functionAST()->id().data());
+            ret.append(u"() {}");
+            return ESString::create(std::move(ret));
+        }
         u16string ret;
-        ret = u"function ";
-        escargot::ESFunctionObject* fn = instance->currentExecutionContext()->resolveThisBinding()->asESFunctionObject();
-        ret.append(fn->functionAST()->id().data());
-        ret.append(u"() {}");
         return ESString::create(std::move(ret));
     }), false, false)));
 
@@ -216,6 +220,19 @@ void GlobalObject::installFunction()
         return ret;
     }), false, false);
     m_functionPrototype->set(ESString::create(u"apply"), ESFunctionObject::create(NULL, node));
+
+    //19.2.3.3 Function.prototype.call (thisArg , ...args)
+    node = new FunctionDeclarationNode(ESString::create(u"call"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESFunctionObject();
+        int arglen = instance->currentExecutionContext()->argumentCount()-1;
+        ESValue& thisArg = instance->currentExecutionContext()->arguments()[0];
+        ESValue* arguments = (ESValue*)alloca(sizeof(ESValue) * arglen);
+        for (int i = 0; i < arglen; i++) {
+            arguments[i] = instance->currentExecutionContext()->arguments()[i + 1];
+        }
+        return ESFunctionObject::call(instance, thisVal, thisArg, arguments, arglen, false);
+    }), false, false);
+    m_functionPrototype->set(ESString::create(u"call"), ESFunctionObject::create(NULL, node));
 
     set(strings->Function, m_function);
 }
@@ -253,13 +270,56 @@ void GlobalObject::installObject()
     }), false, false);
     m_objectPrototype->set(ESString::create(u"hasOwnProperty"), ESFunctionObject::create(NULL, node));
 
+    //$19.1.2.4 Object.defineProperty ( O, P, Attributes )
+    //http://www.ecma-international.org/ecma-262/6.0/#sec-object.defineproperty
+    node = new FunctionDeclarationNode(ESString::create(u"defineProperty"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        if(instance->currentExecutionContext()->argumentCount() >= 3) {
+            if(instance->currentExecutionContext()->arguments()[0].isObject()) {
+                ESObject* obj = instance->currentExecutionContext()->arguments()[0].asESPointer()->asESObject();
+                //TODO toPropertyKey
+                ESValue key = instance->currentExecutionContext()->arguments()[1].toString();
+
+                if(!instance->currentExecutionContext()->arguments()[2].isObject())
+                    throw ESValue(TypeError::create());
+                ESObject* desc = instance->currentExecutionContext()->arguments()[2].toObject();
+                bool isEnumerable = true;
+                bool isConfigurable = true;
+                bool isWritable = true;
+                //TODO get set
+                ESValue v = desc->get(ESString::create(u"enumerable"), true);
+                if(!v.isUndefined()) {
+                    isEnumerable = v.toBoolean();
+                }
+
+                v = desc->get(ESString::create(u"configurable"), true);
+                if(!v.isUndefined()) {
+                    isConfigurable = v.toBoolean();
+                }
+
+                v = desc->get(ESString::create(u"writable"), true);
+                if(!v.isUndefined()) {
+                    isWritable = v.toBoolean();
+                }
+
+                v = desc->get(ESString::create(u"value"), true);
+
+                obj->definePropertyOrThrow(key, isWritable, isEnumerable, isConfigurable).setValue(v, obj);
+            } else {
+                throw ESValue(TypeError::create());
+            }
+        } else {
+            throw ESValue(TypeError::create());
+        }
+        return ESValue();
+    }), false, false);
+    m_objectPrototype->set(ESString::create(u"defineProperty"), ESFunctionObject::create(NULL, node));
+
     set(strings->Object, m_object);
 }
 
 void GlobalObject::installError()
 {
-    m_error = ::escargot::ESFunctionObject::create(NULL,new FunctionDeclarationNode(strings->Error, InternalAtomicStringVector(),
-            new NativeFunctionNode([](ESVMInstance* instance) -> ESValue {
+    NativeFunctionNode* errorFn = new NativeFunctionNode([](ESVMInstance* instance) -> ESValue {
         if(instance->currentExecutionContext()->isNewExpression()) {
             if(instance->currentExecutionContext()->argumentCount()) {
                 instance->currentExecutionContext()->resolveThisBinding()->asESErrorObject()->set(strings->message, instance->currentExecutionContext()->arguments()[0].toString());
@@ -272,8 +332,9 @@ void GlobalObject::installError()
             }
             return obj;
         }
-    })
-    , false, false));
+    });
+    m_error = ::escargot::ESFunctionObject::create(NULL,new FunctionDeclarationNode(strings->Error, InternalAtomicStringVector(),
+            errorFn, false, false));
     m_error->set(strings->name, strings->Error);
     m_error->setConstructor(m_function);
     m_error->set__proto__(m_objectPrototype);
@@ -292,7 +353,8 @@ void GlobalObject::installError()
         RELEASE_ASSERT_NOT_REACHED();
     }), false, false)));
 
-    m_referenceError = ::escargot::ESFunctionObject::create(NULL,new FunctionDeclarationNode(strings->ReferenceError, InternalAtomicStringVector(), new EmptyStatementNode(), false, false));
+    /////////////////////////////
+    m_referenceError = ::escargot::ESFunctionObject::create(NULL,new FunctionDeclarationNode(strings->ReferenceError, InternalAtomicStringVector(), errorFn, false, false));
     m_referenceError->set(strings->name, strings->ReferenceError);
     m_referenceError->setConstructor(m_function);
     m_referenceError->set__proto__(m_errorPrototype);
@@ -304,7 +366,45 @@ void GlobalObject::installError()
 
     set(strings->ReferenceError, m_referenceError);
 
-    // We need initializations of other type of error objects
+    /////////////////////////////
+    m_typeError = ::escargot::ESFunctionObject::create(NULL,new FunctionDeclarationNode(strings->TypeError, InternalAtomicStringVector(), errorFn, false, false));
+    m_typeError->set(strings->name, strings->TypeError);
+    m_typeError->setConstructor(m_function);
+    m_typeError->set__proto__(m_errorPrototype);
+
+    m_typeErrorPrototype = ESErrorObject::create();
+    m_typeErrorPrototype->setConstructor(m_typeError);
+
+    m_typeError->set(strings->prototype, m_typeErrorPrototype);
+
+    set(strings->TypeError, m_typeError);
+
+    /////////////////////////////
+    m_rangeError = ::escargot::ESFunctionObject::create(NULL,new FunctionDeclarationNode(strings->RangeError, InternalAtomicStringVector(), errorFn, false, false));
+    m_rangeError->set(strings->name, strings->RangeError);
+    m_rangeError->setConstructor(m_function);
+    m_rangeError->set__proto__(m_errorPrototype);
+
+    m_rangeErrorPrototype = ESErrorObject::create();
+    m_rangeErrorPrototype->setConstructor(m_rangeError);
+
+    m_rangeError->set(strings->prototype, m_rangeErrorPrototype);
+
+    set(strings->RangeError, m_rangeError);
+
+    /////////////////////////////
+    m_syntaxError = ::escargot::ESFunctionObject::create(NULL,new FunctionDeclarationNode(strings->SyntaxError, InternalAtomicStringVector(), errorFn, false, false));
+    m_syntaxError->set(strings->name, strings->SyntaxError);
+    m_syntaxError->setConstructor(m_function);
+    m_syntaxError->set__proto__(m_errorPrototype);
+
+    m_syntaxErrorPrototype = ESErrorObject::create();
+    m_syntaxErrorPrototype->setConstructor(m_syntaxError);
+
+    m_syntaxError->set(strings->prototype, m_syntaxErrorPrototype);
+
+    set(strings->SyntaxError, m_syntaxError);
+
 }
 
 void GlobalObject::installArray()
@@ -433,6 +533,13 @@ void GlobalObject::installArray()
         return ESString::create(std::move(ret));
     }), false, false);
     m_arrayPrototype->ESObject::set(strings->join, ESFunctionObject::create(NULL, arrayJoin));
+
+    //$22.1.3.16 Array.prototype.pop ( )
+    FunctionDeclarationNode* arrayPop = new FunctionDeclarationNode(strings->pop, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESArrayObject();
+        return thisVal->pop();
+    }), false, false);
+    m_arrayPrototype->ESObject::set(strings->pop, ESFunctionObject::create(NULL, arrayPop));
 
     //$22.1.3.17 Array.prototype.push(item)
     FunctionDeclarationNode* arrayPush = new FunctionDeclarationNode(strings->push, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
@@ -1485,7 +1592,7 @@ void GlobalObject::installNumber()
             }
 
             if(p < 1 && p > 21) {
-                throw RangeError();
+                throw ESValue(RangeError::create());
             }
 
             x = thisVal->numberData();
@@ -1509,7 +1616,7 @@ void GlobalObject::installNumber()
         if (arglen >= 1) {
             radix = instance->currentExecutionContext()->arguments()[0].toInteger();
             if (radix < 2 || radix > 36)
-                throw RangeError(ESString::create(u"String.prototype.toString() radix is not in valid range"));
+                throw ESValue(RangeError::create(ESString::create(u"String.prototype.toString() radix is not in valid range")));
         }
         if (radix == 10)
             return (ESValue(thisVal->numberData()).toString());

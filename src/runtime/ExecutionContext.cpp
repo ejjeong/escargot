@@ -7,6 +7,7 @@ namespace escargot {
 ExecutionContext::ExecutionContext(LexicalEnvironment* varEnv, bool needsActivation, bool isNewExpression,
         ExecutionContext* callerContext, ESValue* arguments, size_t argumentsCount, ESValue* cachedDeclarativeEnvironmentRecord)
 {
+    ASSERT(varEnv);
     m_lexicalEnvironment = varEnv;
     m_variableEnvironment = varEnv;
     m_function = NULL;

@@ -25,6 +25,7 @@ public:
     ALWAYS_INLINE void setEnvironment(LexicalEnvironment* env)
     {
         //TODO
+        ASSERT(env);
         m_variableEnvironment = env;
     }
 

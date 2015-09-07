@@ -80,6 +80,8 @@ bool ESValue::equalsTo(const ESValue& val)
         if (!val.isESPointer())
             return false;
         ESPointer* o2 = val.asESPointer();
+        if(o == o2)
+            return true;
         if (o->type() != o2->type())
             return false;
         //Strict Equality Comparison: ===
@@ -453,7 +455,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, ESValue callee, ESValue r
             instance->m_currentExecutionContext = currentContext;
         }
     } else {
-        throw TypeError(ESString::create(u"Callee is not a function object"));
+        throw ESValue(TypeError::create(ESString::create(u"Callee is not a function object")));
     }
 
     return result;
@@ -584,6 +586,30 @@ ReferenceError::ReferenceError(escargot::ESString* message)
     set(strings->name, strings->ReferenceError);
     setConstructor(ESVMInstance::currentInstance()->globalObject()->referenceError());
     set__proto__(ESVMInstance::currentInstance()->globalObject()->referenceErrorPrototype());
+}
+
+TypeError::TypeError(escargot::ESString* message)
+    : ESErrorObject(message)
+{
+    set(strings->name, strings->TypeError);
+    setConstructor(ESVMInstance::currentInstance()->globalObject()->typeError());
+    set__proto__(ESVMInstance::currentInstance()->globalObject()->typeErrorPrototype());
+}
+
+RangeError::RangeError(escargot::ESString* message)
+    : ESErrorObject(message)
+{
+    set(strings->name, strings->RangeError);
+    setConstructor(ESVMInstance::currentInstance()->globalObject()->rangeError());
+    set__proto__(ESVMInstance::currentInstance()->globalObject()->rangeErrorPrototype());
+}
+
+SyntaxError::SyntaxError(escargot::ESString* message)
+    : ESErrorObject(message)
+{
+    set(strings->name, strings->SyntaxError);
+    setConstructor(ESVMInstance::currentInstance()->globalObject()->syntaxError());
+    set__proto__(ESVMInstance::currentInstance()->globalObject()->syntaxErrorPrototype());
 }
 
 

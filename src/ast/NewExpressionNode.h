@@ -19,7 +19,7 @@ public:
     {
         ESValue fn = m_callee->executeExpression(instance);
         if(!fn.isESPointer() || !fn.asESPointer()->isESFunctionObject())
-            throw TypeError(ESString::create(u"NewExpression: constructor is not an function object"));
+            throw ESValue(TypeError::create(ESString::create(u"NewExpression: constructor is not an function object")));
         ESFunctionObject* function = fn.asESPointer()->asESFunctionObject();
         ESObject* receiver;
         if (function == instance->globalObject()->date()) {
@@ -34,6 +34,14 @@ public:
             receiver = ESBooleanObject::create(ESValue(ESValue::ESFalseTag::ESFalse));
         } else if (function == instance->globalObject()->error()) {
             receiver = ESErrorObject::create();
+        } else if (function == instance->globalObject()->referenceError()) {
+            receiver = ReferenceError::create();
+        } else if (function == instance->globalObject()->typeError()) {
+            receiver = TypeError::create();
+        } else if (function == instance->globalObject()->syntaxError()) {
+            receiver = SyntaxError::create();
+        } else if (function == instance->globalObject()->rangeError()) {
+            receiver = RangeError::create();
         } else {
             receiver = ESObject::create();
         }

@@ -65,7 +65,7 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
         //unsigned long end = getLongTickCount();
         //printf("%lf\n",(end-start)/1000.0);
     } catch(...) {
-        throw SyntaxError();
+        throw ESValue(SyntaxError::create());
     }
 
     auto markNeedsActivation = [](FunctionNode* nearFunctionNode){
@@ -361,24 +361,30 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
             if((*node)->type() == NodeType::Identifier) {
                 IdentifierNode* n = (IdentifierNode *)*node;
                 if(nearFunction && !nearFunction->needsActivation() && n->canUseFastAccess() && n->fastAccessUpIndex() == 0) {
+                    SourceLocation loc = n->m_sourceLocation;
 #ifdef NDEBUG
                     *node = new IdentifierFastCaseNode(n->fastAccessIndex());
 #else
                     *node = new IdentifierFastCaseNode(n->fastAccessIndex(), n->name());
 #endif
+                    (*node)->m_sourceLocation = loc;
                 } else if(nearFunction && n->canUseFastAccess()) {
+                    SourceLocation loc = n->m_sourceLocation;
 #ifdef NDEBUG
                     *node = new IdentifierFastCaseWithActivationNode(n->fastAccessIndex(), n->fastAccessUpIndex());
 #else
                     *node = new IdentifierFastCaseWithActivationNode(n->fastAccessIndex(), n->fastAccessUpIndex(), n->name());
 #endif
+                    (*node)->m_sourceLocation = loc;
                 }
             } else if((*node)->type() == NodeType::AssignmentExpressionSimple) {
                 AssignmentExpressionSimpleNode* n = (AssignmentExpressionSimpleNode *)*node;
                 if(n->m_left->type() == NodeType::Identifier) {
                     IdentifierNode* n2 = (IdentifierNode *)n->m_left;
                     if(nearFunction && !nearFunction->needsActivation() && n2->canUseFastAccess() && n2->fastAccessUpIndex() == 0) {
+                        SourceLocation loc = n2->m_sourceLocation;
                         *node = new AssignmentExpressionSimpleLeftIdentifierFastCaseNode(n2->fastAccessIndex(), n->m_right);
+                        (*node)->m_sourceLocation = loc;
                     }
                 }
             } else if((*node)->type() == NodeType::MemberExpression) {
@@ -386,7 +392,9 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
                 if(n->m_object->type() == NodeType::Identifier) {
                     IdentifierNode* n2 = (IdentifierNode *)n->m_object;
                     if(nearFunction && !nearFunction->needsActivation() && n2->canUseFastAccess() && n2->fastAccessUpIndex() == 0) {
+                        SourceLocation loc = n2->m_sourceLocation;
                         *node = new MemberExpressionLeftIdentifierFastCaseNode(n2->fastAccessIndex(), n->m_property, true);
+                        (*node)->m_sourceLocation = loc;
                     }
                 }
             } else if((*node)->type() == NodeType::MemberExpressionNonComputedCase) {
@@ -394,14 +402,18 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
                 if(n->m_object->type() == NodeType::Identifier) {
                     IdentifierNode* n2 = (IdentifierNode *)n->m_object;
                     if(nearFunction && !nearFunction->needsActivation() && n2->canUseFastAccess() && n2->fastAccessUpIndex() == 0) {
+                        SourceLocation loc = n2->m_sourceLocation;
                         *node = new MemberExpressionNonComputedCaseLeftIdentifierFastCaseNode(n2->fastAccessIndex(), n->m_propertyValue, false);
+                        (*node)->m_sourceLocation = loc;
                     }
                 }
             } else if((*node)->type() == NodeType::VariableDeclarator) {
                 VariableDeclaratorNode* n = (VariableDeclaratorNode *)*node;
                 IdentifierNode* n2 = (IdentifierNode *)n->id();
                 if(n2->canUseFastAccess()) {
+                    SourceLocation loc = n2->m_sourceLocation;
                     *node = new EmptyNode();
+                    (*node)->m_sourceLocation = loc;
                 }
             }
         }
@@ -476,6 +488,7 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
                 postProcessingFunction(v[i], nearFunction);
             }
         } else if(type == NodeType::NewExpression) {
+            nodeReplacer(&((NewExpressionNode *)currentNode)->m_callee, nearFunction);
             postProcessingFunction(((NewExpressionNode *)currentNode)->m_callee, nearFunction);
             ArgumentVector& v = ((NewExpressionNode *)currentNode)->m_arguments;
             for(unsigned i = 0; i < v.size() ; i ++) {
@@ -602,12 +615,13 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
         } else if(type == NodeType::Empty) {
         } else if (type == NodeType::TryStatement) {
             nodeReplacer((Node **)&((TryStatementNode *)currentNode)->m_block, nearFunction);
-            nodeReplacer((Node **)&((TryStatementNode *)currentNode)->m_handler, nearFunction);
+            //nodeReplacer((Node **)&((TryStatementNode *)currentNode)->m_handler, nearFunction);
             nodeReplacer((Node **)&((TryStatementNode *)currentNode)->m_finalizer, nearFunction);
             postProcessingFunction(((TryStatementNode *)currentNode)->m_block, nearFunction);
-            postProcessingFunction(((TryStatementNode *)currentNode)->m_handler, nearFunction);
+            //postProcessingFunction(((TryStatementNode *)currentNode)->m_handler, nearFunction);
             postProcessingFunction(((TryStatementNode *)currentNode)->m_finalizer, nearFunction);
         } else if (type == NodeType::CatchClause) {
+            RELEASE_ASSERT_NOT_REACHED();
             postProcessingFunction(((CatchClauseNode *)currentNode)->m_param, nearFunction);
             postProcessingFunction(((CatchClauseNode *)currentNode)->m_guard, nearFunction);
             postProcessingFunction(((CatchClauseNode *)currentNode)->m_body, nearFunction);

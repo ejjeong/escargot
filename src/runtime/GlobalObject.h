@@ -41,6 +41,36 @@ public:
         return m_referenceErrorPrototype;
     }
 
+    ALWAYS_INLINE escargot::ESFunctionObject* typeError()
+    {
+        return m_typeError;
+    }
+
+    ALWAYS_INLINE ESObject* typeErrorPrototype()
+    {
+        return m_typeErrorPrototype;
+    }
+
+    ALWAYS_INLINE escargot::ESFunctionObject* rangeError()
+    {
+        return m_rangeError;
+    }
+
+    ALWAYS_INLINE ESObject* rangeErrorPrototype()
+    {
+        return m_rangeErrorPrototype;
+    }
+
+    ALWAYS_INLINE escargot::ESFunctionObject* syntaxError()
+    {
+        return m_syntaxError;
+    }
+
+    ALWAYS_INLINE ESObject* syntaxErrorPrototype()
+    {
+        return m_syntaxErrorPrototype;
+    }
+
     ALWAYS_INLINE escargot::ESFunctionObject* regexp()
     {
         return m_regexp;
@@ -147,7 +177,6 @@ protected:
     escargot::ESObject* m_objectPrototype;
     escargot::ESFunctionObject* m_function;
     escargot::ESFunctionObject* m_functionPrototype;
-    escargot::ESObject* m_referenceErrorPrototype;
     escargot::ESFunctionObject* m_array;
     escargot::ESArrayObject* m_arrayPrototype;
     escargot::ESFunctionObject* m_string;
@@ -167,6 +196,13 @@ protected:
     escargot::ESFunctionObject* m_error;
     escargot::ESObject* m_errorPrototype;
     escargot::ESFunctionObject* m_referenceError;
+    escargot::ESObject* m_referenceErrorPrototype;
+    escargot::ESFunctionObject* m_typeError;
+    escargot::ESObject* m_typeErrorPrototype;
+    escargot::ESFunctionObject* m_rangeError;
+    escargot::ESObject* m_rangeErrorPrototype;
+    escargot::ESFunctionObject* m_syntaxError;
+    escargot::ESObject* m_syntaxErrorPrototype;
     //JSBuiltinsObject* m_builtins;
     //Context* m_nativeContext;
 };

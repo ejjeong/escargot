@@ -107,15 +107,17 @@ enum NodeType {
 
 class SourceLocation {
 public:
+    size_t m_lineNumber;
+    size_t m_lineStart;
     //TODO
 };
 
 class Node : public gc {
+    friend class ESScriptParser;
 protected:
-    Node(NodeType type, SourceLocation loc = SourceLocation())
+    Node(NodeType type)
     {
         m_nodeType = type;
-        m_sourceLocation = loc;
     }
 public:
     virtual void executeStatement(ESVMInstance* instance)
@@ -136,6 +138,12 @@ public:
     virtual ~Node()
     {
 
+    }
+
+    ALWAYS_INLINE void setSourceLocation(size_t lineNum, size_t lineStart)
+    {
+        m_sourceLocation.m_lineNumber = lineNum;
+        m_sourceLocation.m_lineStart = lineStart;
     }
 
     ALWAYS_INLINE const NodeType& type() { return m_nodeType; }

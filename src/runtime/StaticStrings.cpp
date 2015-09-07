@@ -37,10 +37,14 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     Error =  ESString::create(u"Error");
     message =  ESString::create(u"message");
     ReferenceError =  ESString::create(u"ReferenceError");
+    TypeError =  ESString::create(u"TypeError");
+    RangeError =  ESString::create(u"RangeError");
+    SyntaxError =  ESString::create(u"SyntaxError");
     concat = ESString::create(u"concat");
     indexOf = ESString::create(u"indexOf");
     join = ESString::create(u"join");
     push = ESString::create(u"push");
+    pop = ESString::create(u"pop");
     slice = ESString::create(u"slice");
     splice = ESString::create(u"splice");
     sort = ESString::create(u"sort");

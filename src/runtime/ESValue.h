@@ -1330,26 +1330,33 @@ public:
 };
 
 class TypeError : public ESErrorObject {
+protected:
+    TypeError(escargot::ESString* message = strings->emptyESString);
 public:
-    TypeError(escargot::ESString* message = strings->emptyESString)
-        : ESErrorObject(message)
+    static TypeError* create(escargot::ESString* message = strings->emptyESString)
     {
+        return new TypeError(message);
     }
 };
 
 class SyntaxError : public ESErrorObject {
+protected:
+    SyntaxError(escargot::ESString* message = strings->emptyESString);
 public:
-    SyntaxError(escargot::ESString* message = strings->emptyESString)
-        : ESErrorObject(message)
+
+    static SyntaxError* create(escargot::ESString* message = strings->emptyESString)
     {
+        return new SyntaxError(message);
     }
 };
 
 class RangeError : public ESErrorObject {
+protected:
+    RangeError(escargot::ESString* message = strings->emptyESString);
 public:
-    RangeError(escargot::ESString* message = strings->emptyESString)
-        : ESErrorObject(message)
+    static RangeError* create(escargot::ESString* message = strings->emptyESString)
     {
+        return new RangeError(message);
     }
 };
 
@@ -1441,6 +1448,17 @@ public:
     void push(const ESValue& val)
     {
         set(m_length, val);
+    }
+
+    ESValue pop()
+    {
+        //TODO implement non-fastmode
+        ASSERT(isFastmode());
+        if(m_length == 0)
+            return ESValue();
+        ESValue ret = m_vector[m_vector.size() - 1];
+        setLength(length() - 1);
+        return ret;
     }
 
     void insertValue(int idx, const ESValue& val)
