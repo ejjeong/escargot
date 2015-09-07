@@ -202,9 +202,7 @@ void ESVMInstance::printValue(ESValue val)
         } else {
             ESPointer* o = v.asESPointer();
             if(o->isESString()) {
-                str.append("\"");
                 str.append(o->asESString()->utf8Data());
-                str.append("\"");
             } else if(o->isESFunctionObject()) {
                 str.append(v.toString()->utf8Data());
             } else if(o->isESArrayObject()) {
