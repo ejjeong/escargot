@@ -45,3 +45,5 @@ third_party/bdwgc/out/
 test/out/
 test/SunSpider/resources/sunspider-standalone-driver.js
 memps
+escargot.asm
+escargot.elf

@@ -123,5 +123,10 @@ run-test262:
 	cd test/test262/; \
 	python tools/packaging/test262.py --command ../../escargot $(OPT)
 
+asm: $(MAKECMDGOALS)
+	objdump -d        $< | c++filt > $<.asm
+	readelf -a --wide $< | c++filt > $<.elf
+	vi -O $<.asm $<.elf
+
 .PHONY: $(MAKECMDGOALS) clean
 .DEFAULT_GOAL := escargot
