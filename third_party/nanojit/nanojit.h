@@ -7,7 +7,11 @@
 #ifndef __nanojit_h__
 #define __nanojit_h__
 
+#ifdef ESCARGOT
+#include "EscargotNanoJITBridge.h"
+#else
 #include "avmplus.h"
+#endif
 #include "njcpudetect.h"
 
 #ifdef FEATURE_NANOJIT

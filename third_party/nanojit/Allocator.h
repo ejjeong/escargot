@@ -87,12 +87,14 @@ namespace nanojit
     };
 }
 
+#ifndef ESCARGOT // C++11
 // function for computing type alignment
 template <typename T>
 inline size_t alignof() {
     struct Wrapper { char c; T t; private: Wrapper() {} };
     return sizeof(Wrapper) - sizeof(T);
 }
+#endif
 
 /** global new overload enabling this pattern:  new (allocator, align) T(...) */
 inline void* operator new(size_t size, nanojit::Allocator &a, size_t align) {

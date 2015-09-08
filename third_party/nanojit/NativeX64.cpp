@@ -8,7 +8,9 @@
 
 // uncomment this to enable _vprof/_nvprof macros
 //#define DOPROF
+#ifndef ESCARGOT
 #include "../vprof/vprof.h"
+#endif
 
 #if defined FEATURE_NANOJIT && defined NANOJIT_X64
 

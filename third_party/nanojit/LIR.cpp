@@ -8,7 +8,9 @@
 
 namespace nanojit
 {
+#ifndef ESCARGOT
     using namespace avmplus;
+#endif
     #ifdef FEATURE_NANOJIT
         
     const uint8_t repKinds[] = {
@@ -1737,7 +1739,9 @@ namespace nanojit
         return ins;
     }
 
+#ifndef ESCARGOT
     using namespace avmplus;
+#endif
 
     StackFilter::StackFilter(LirFilter *in, Allocator& alloc, LIns* sp)
         : LirFilter(in), sp(sp), stk(alloc), top(0)

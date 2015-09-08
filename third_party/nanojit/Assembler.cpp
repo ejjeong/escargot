@@ -587,7 +587,11 @@ typedef void* (*decode_instructions_ftype) (void* start, void* end,
         float4_t* p = _immF4Pool.get(q);
         if (!p)
         {
+#ifdef ESCARGOT
+            p = new (_dataAlloc, alignof(float4_t)) float4_t;
+#else
             p = new (_dataAlloc, alignof<float4_t>()) float4_t;
+#endif
 
             *p = q;
             _immF4Pool.put(q, p);

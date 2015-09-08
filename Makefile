@@ -44,6 +44,8 @@ SRC_YARR += third_party/yarr/YarrSyntaxChecker.cpp
 SRC_ESPRIMA_CPP += $(foreach dir, ./third_party/esprima_cpp , $(wildcard $(dir)/*.cpp))
 CXXFLAGS += -Ithird_party/esprima_cpp/
 
+include third_party/nanojit/Build.mk
+
 LDFLAGS += -lpthread 
 # -ltcmalloc_minimal
 LDFLAGS += -Wl,--gc-sections
@@ -71,14 +73,15 @@ SRC=
 SRC += $(foreach dir, ./src , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, ./src/ast , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, ./src/bytecode , $(wildcard $(dir)/*.cpp))
-SRC += $(foreach dir, ./src/shell , $(wildcard $(dir)/*.cpp))
+SRC += $(foreach dir, ./src/jit , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, ./src/parser , $(wildcard $(dir)/*.cpp))
-SRC += $(foreach dir, ./src/vm , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, ./src/runtime , $(wildcard $(dir)/*.cpp))
-SRC += $(foreach dir, ./src/util , $(wildcard $(dir)/*.cpp))
+SRC += $(foreach dir, ./src/shell , $(wildcard $(dir)/*.cpp))
+SRC += $(foreach dir, ./src/vm , $(wildcard $(dir)/*.cpp))
 
 SRC += $(SRC_YARR) 
 SRC += $(SRC_ESPRIMA_CPP)
+SRC += $(SRC_NANOJIT)
 
 ifeq ($(HOST), linux)
 endif
@@ -107,6 +110,8 @@ clean:
 	$(shell find ./third_party/yarr/ -name "*.d" -exec rm {} \;)
 	$(shell find ./third_party/esprima_cpp/ -name "*.o" -exec rm {} \;)
 	$(shell find ./third_party/esprima_cpp/ -name "*.d" -exec rm {} \;)
+	$(shell find ./third_party/nanojit/ -name "*.o" -exec rm {} \;)
+	$(shell find ./third_party/nanojit/ -name "*.d" -exec rm {} \;)
 
 interpreter.debug: $(MAKECMDGOALS)
 

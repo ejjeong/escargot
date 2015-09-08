@@ -7,7 +7,9 @@
 #include "nanojit.h"
 
 //#define DOPROF
+#ifndef ESCARGOT
 #include "../vprof/vprof.h"
+#endif
 
 #ifdef FEATURE_NANOJIT
 
