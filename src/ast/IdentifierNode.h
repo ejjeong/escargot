@@ -69,7 +69,7 @@ public:
             } else {
                 //CHECKTHIS true, true, false is right?
                 instance->invalidateIdentifierCacheCheckCount();
-                return instance->globalObject()->definePropertyOrThrow(m_nonAtomicName, true, true, false);
+                return instance->globalObject()->definePropertyOrThrow(m_nonAtomicName, true, true, true);
             }
         }
     }

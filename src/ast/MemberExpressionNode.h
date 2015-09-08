@@ -10,6 +10,7 @@ namespace escargot {
 class MemberExpressionNode : public ExpressionNode {
 public:
     friend class ESScriptParser;
+    friend class UnaryExpressionDeleteNode;
     MemberExpressionNode(Node* object, Node* property, bool computed)
             : ExpressionNode(NodeType::MemberExpression)
     {
@@ -36,7 +37,14 @@ public:
         ESObject* obj  = value.asESPointer()->asESObject();
         ec->setLastESObjectMetInMemberExpressionNode(obj);
 
-        return obj->definePropertyOrThrow(m_property->executeExpression(instance));
+        ESValue key = m_property->executeExpression(instance);
+        ESSlotAccessor slot = obj->findOwnProperty(key);
+        if(slot.hasData()) {
+            return slot;
+        } else {
+            slot = obj->definePropertyOrThrow(key, true, true, true);
+            return slot;
+        }
     }
 
     ESValue executeExpression(ESVMInstance* instance)

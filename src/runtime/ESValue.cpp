@@ -105,7 +105,9 @@ ESObject* ESValue::toObject() const
 {
     ESFunctionObject* function;
     ESObject* receiver;
-    if (isNumber()) {
+    if (isESPointer() && asESPointer()->isESObject()) {
+       return asESPointer()->asESObject();
+    } else if (isNumber()) {
         function = ESVMInstance::currentInstance()->globalObject()->number();
         receiver = ESNumberObject::create(toNumber());
     } else if (isBoolean()) {
@@ -119,8 +121,6 @@ ESObject* ESValue::toObject() const
     } else if (isESString()) {
         function = ESVMInstance::currentInstance()->globalObject()->string();
         receiver = ESStringObject::create(asESPointer()->asESString());
-    } else if (isESPointer() && asESPointer()->isESObject()) {
-        return asESPointer()->asESObject();
     } else if(isNull()){
         throw ESValue(TypeError::create(ESString::create(u"cannot convert null into object")));
     } else if(isUndefined()){

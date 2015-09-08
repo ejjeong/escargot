@@ -1153,6 +1153,7 @@ public:
             std::function<void (::escargot::ESObject* obj, const ESValue& value)> setter = nullptr,
             bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
     {
+        //TODO consider array
         if(UNLIKELY(m_map != NULL)){
             auto iter = m_map->find(key);
             if(iter != m_map->end()) {
@@ -1172,6 +1173,7 @@ public:
     void defineAccessorProperty(escargot::ESString* key,ESAccessorData* data,
             bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
     {
+        //TODO consider array
         if(UNLIKELY(m_map != NULL)){
             auto iter = m_map->find(key);
             if(iter != m_map->end()) {
@@ -1184,6 +1186,9 @@ public:
             m_hiddenClassData[ret] = ESValue((ESPointer *)data);
         }
     }
+
+    inline escargot::ESSlotAccessor findOwnProperty(const ESValue& val);
+    inline void deletePropety(const ESValue& key);
 
     ALWAYS_INLINE bool hasOwnProperty(escargot::ESValue key);
     //$6.1.7.2 Object Internal Methods and Internal Slots

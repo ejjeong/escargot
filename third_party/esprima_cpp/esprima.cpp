@@ -4564,7 +4564,8 @@ escargot::Node* parseUnaryExpression(ParseContext* ctx) {
         expr = inheritCoverGrammar(ctx, parseUnaryExpression);
         //expr = new WrappingNode(startToken).finishUnaryExpression(token.value, expr);
         if(token->m_value == u"delete") {
-            RELEASE_ASSERT_NOT_REACHED();
+            expr = new escargot::UnaryExpressionDeleteNode(expr);
+            expr->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
         } else if(token->m_value == u"void") {
             RELEASE_ASSERT_NOT_REACHED();
         } else if(token->m_value == u"typeof") {
@@ -4732,11 +4733,13 @@ escargot::Node* finishBinaryExpression(ParseContext* ctx, escargot::Node* left, 
         nd = new escargot::BinaryExpressionBitwiseXorNode(left, right);
     else if (oper == u"|")
         nd = new escargot::BinaryExpressionBitwiseOrNode(left, right);
-
     else if (oper == u"||")
         nd = new escargot::BinaryExpressionLogicalOrNode(left, right);
     else if (oper == u"&&")
         nd = new escargot::BinaryExpressionLogicalAndNode(left, right);
+
+    else if (oper == u"in")
+        nd = new escargot::BinaryExpressionInNode(left, right);
     // TODO
     else
         RELEASE_ASSERT_NOT_REACHED();
@@ -4935,6 +4938,8 @@ escargot::Node* parseAssignmentExpression(ParseContext* ctx) {
                 expr = new escargot::AssignmentExpressionMultiplyNode(expr, right);
             } else if(token->m_value == u"/=") {
                 expr = new escargot::AssignmentExpressionDivisionNode(expr, right);
+            } else if(token->m_value == u"%=") {
+                expr = new escargot::AssignmentExpressionModNode(expr, right);
             } else if(token->m_value == u"<<=") {
                 expr = new escargot::AssignmentExpressionLeftShiftNode(expr, right);
             } else if(token->m_value == u">>=") {

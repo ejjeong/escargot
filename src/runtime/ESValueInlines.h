@@ -963,14 +963,22 @@ inline escargot::ESSlotAccessor ESObject::definePropertyOrThrow(escargot::ESValu
     if(UNLIKELY(m_map != NULL)){
         escargot::ESString* str = key.toString();
         auto iter = m_map->find(str);
-
-        if(iter == m_map->end()) {
-            return ESSlotAccessor(&m_map->insert(std::make_pair(str, ::escargot::ESSlot(ESValue(), isWritable, isEnumerable, isConfigurable))).first->second);
+        if(iter != m_map->end()) {
+            m_map->erase(iter);
         }
-
-        return ESSlotAccessor(&iter->second);
+        return ESSlotAccessor(&m_map->insert(std::make_pair(str, ::escargot::ESSlot(ESValue(), isWritable, isEnumerable, isConfigurable))).first->second);
     } else {
         size_t ret = m_hiddenClass->defineProperty(this, key.toString(), true, isWritable, isEnumerable, isConfigurable);
+        if((ret != SIZE_MAX) && (
+                (isWritable != m_hiddenClass->m_propertyFlagInfo[ret].m_isWritable)
+                || (isConfigurable != m_hiddenClass->m_propertyFlagInfo[ret].m_isConfigurable)
+                || (isEnumerable != m_hiddenClass->m_propertyFlagInfo[ret].m_isEnumerable)
+                || (true != m_hiddenClass->m_propertyFlagInfo[ret].m_isDataProperty))
+                ) {
+            convertIntoMapMode();
+            return definePropertyOrThrow(key, isWritable, isEnumerable, isConfigurable);
+        }
+
         if(UNLIKELY(m_hiddenClass->m_propertyInfo.size() > ESHiddenClass::ESHiddenClassSizeLimit)) {
             convertIntoMapMode();
             return definePropertyOrThrow(key, isWritable, isEnumerable, isConfigurable);
@@ -980,6 +988,70 @@ inline escargot::ESSlotAccessor ESObject::definePropertyOrThrow(escargot::ESValu
         } else {
             return escargot::ESSlotAccessor((ESAccessorData *)m_hiddenClassData[ret].asESPointer());
         }
+    }
+}
+
+inline escargot::ESSlotAccessor ESObject::findOwnProperty(const ESValue& key)
+{
+    if(isESArrayObject()) {
+        int i;
+        if (key.isInt32()) {
+            i = key.asInt32();
+            int len = asESArrayObject()->length();
+            if (i == len && asESArrayObject()->isFastmode()) {
+                asESArrayObject()->setLength(len+1);
+            }
+            else if (i >= len) {
+                if (asESArrayObject()->shouldConvertToSlowMode(i))
+                    asESArrayObject()->convertToSlowMode();
+                asESArrayObject()->setLength(i+1);
+            }
+            if (asESArrayObject()->isFastmode())
+                return ESSlotAccessor(&asESArrayObject()->m_vector[i]);
+        }
+    }
+
+    if(UNLIKELY(m_map != NULL)){
+        escargot::ESString* str = key.toString();
+        auto iter = m_map->find(str);
+        if(iter == m_map->end()) {
+            return ESSlotAccessor();
+        }
+        return ESSlotAccessor(&iter->second);
+    } else {
+        size_t ret = m_hiddenClass->findProperty(key.toString());
+        if(ret == SIZE_MAX)
+            return ESSlotAccessor();
+        if(m_hiddenClass->m_propertyFlagInfo[ret].m_isDataProperty) {
+            return escargot::ESSlotAccessor(&m_hiddenClassData[ret]);
+        } else {
+            return escargot::ESSlotAccessor((ESAccessorData *)m_hiddenClassData[ret].asESPointer());
+        }
+    }
+}
+
+inline void ESObject::deletePropety(const ESValue& key)
+{
+    if(isESArrayObject()) {
+        int i;
+        if (key.isInt32()) {
+            i = key.toInt32();
+            if(i < asESArrayObject()->length()) {
+                asESArrayObject()->m_vector[i] = ESValue(ESValue::ESEmptyValue);
+            }
+        }
+    }
+
+    if(m_hiddenClass) {
+        //TODO
+        convertIntoMapMode();
+    }
+
+    ASSERT(m_map);
+    escargot::ESString* str = key.toString();
+    auto iter = m_map->find(str);
+    if(iter != m_map->end() && iter->second.isConfigurable()) {
+        m_map->erase(iter);
     }
 }
 
@@ -1186,6 +1258,8 @@ ALWAYS_INLINE void ESObject::enumeration(Functor t)
     if (isESArrayObject() && asESArrayObject()->isFastmode()) {
         for (int i = 0; i < asESArrayObject()->length(); i++) {
             //FIXME: check if index i exists or not
+            if(asESArrayObject()->m_vector[i].isEmpty())
+                continue;
             t(ESValue(i), ESSlotAccessor(&asESArrayObject()->m_vector[i]));
         }
     }

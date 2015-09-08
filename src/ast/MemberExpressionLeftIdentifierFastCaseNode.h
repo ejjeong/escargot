@@ -10,6 +10,7 @@ namespace escargot {
 class MemberExpressionLeftIdentifierFastCaseNode : public ExpressionNode {
 public:
     friend class ESScriptParser;
+    friend class UnaryExpressionDeleteNode;
     MemberExpressionLeftIdentifierFastCaseNode(size_t idx, Node* property, bool computed)
             : ExpressionNode(NodeType::MemberExpressionLeftIdentifierFastCase)
     {
@@ -35,7 +36,13 @@ public:
         ESObject* obj  = value.asESPointer()->asESObject();
         ec->setLastESObjectMetInMemberExpressionNode(obj);
 
-        return obj->definePropertyOrThrow(m_property->executeExpression(instance));
+        ESValue key = m_property->executeExpression(instance);
+        ESSlotAccessor slot = obj->findOwnProperty(key);
+        if(slot.hasData()) {
+            return slot;
+        } else {
+            return obj->definePropertyOrThrow(key, true, true, true);
+        }
     }
 
     ESValue executeExpression(ESVMInstance* instance)
