@@ -221,11 +221,28 @@ void GlobalObject::installFunction()
         auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESFunctionObject();
         int arglen = instance->currentExecutionContext()->argumentCount();
         ESValue& thisArg = instance->currentExecutionContext()->arguments()[0];
-        escargot::ESArrayObject* argArray = instance->currentExecutionContext()->arguments()[1].asESPointer()->asESArrayObject();
-        int arrlen = argArray->length();
-        ESValue* arguments = (ESValue*)alloca(sizeof(ESValue) * arrlen);
-        for (int i = 0; i < arrlen; i++) {
-            arguments[i] = argArray->get(i);
+        int arrlen = 0;
+        ESValue* arguments = NULL;
+        if(instance->currentExecutionContext()->argumentCount() > 1) {
+            if(instance->currentExecutionContext()->arguments()[1].isESPointer()) {
+                if(instance->currentExecutionContext()->arguments()[1].asESPointer()->isESArrayObject()) {
+                    escargot::ESArrayObject* argArray = instance->currentExecutionContext()->arguments()[1].asESPointer()->asESArrayObject();
+                    arrlen = argArray->length();
+                    arguments = (ESValue*)alloca(sizeof(ESValue) * arrlen);
+                    for (int i = 0; i < arrlen; i++) {
+                        arguments[i] = argArray->get(i);
+                    }
+                }
+                else if(instance->currentExecutionContext()->arguments()[1].asESPointer()->isESObject()) {
+                    escargot::ESObject* obj = instance->currentExecutionContext()->arguments()[1].asESPointer()->asESObject();
+                    arrlen = obj->get(strings->length).toInteger();
+                    arguments = (ESValue*)alloca(sizeof(ESValue) * arrlen);
+                    for (int i = 0; i < arrlen; i++) {
+                        arguments[i] = obj->get(ESValue(i));
+                    }
+                }
+            }
+
         }
         ESValue ret = ESFunctionObject::call(instance, thisVal, thisArg, arguments, arrlen, false);
         return ret;

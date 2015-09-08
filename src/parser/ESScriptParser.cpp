@@ -499,6 +499,7 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
             PropertiesNodeVector& v = ((ObjectExpressionNode *)currentNode)->m_properties;
             for(unsigned i = 0; i < v.size() ; i ++) {
                 PropertyNode* p = v[i];
+                nodeReplacer(&p->m_value, nearFunction);
                 postProcessingFunction(p->value(), nearFunction);
                 if(p->key()->type() == NodeType::Identifier) {
 
