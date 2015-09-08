@@ -1,3 +1,6 @@
+print("=== now ===");
+print(Date.now());
+
 //var date = new Date();
 //var a = Date();
 //print(a);

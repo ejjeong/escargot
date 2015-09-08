@@ -1246,6 +1246,15 @@ void GlobalObject::installDate()
 
     set(strings->Date, m_date);
 
+    //$20.3.3.1 Date.now()
+    FunctionDeclarationNode* nowNode = new FunctionDeclarationNode(ESString::create(u"now"), InternalAtomicStringVector(), new NativeFunctionNode([&](ESVMInstance* instance)->ESValue {
+        struct timespec nowTime;
+        clock_gettime(CLOCK_REALTIME,&nowTime);
+        double ret = nowTime.tv_sec*1000 + floor(nowTime.tv_nsec/1000000);
+        return ESValue(ret);
+    }), false, false);
+    m_date->set(ESString::create(u"now"), ESFunctionObject::create(NULL, nowNode));
+
     //$20.3.4.2 Date.prototype.getDate()
     FunctionDeclarationNode* getDateNode = new FunctionDeclarationNode(strings->getDate, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
        ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
