@@ -4737,9 +4737,10 @@ escargot::Node* finishBinaryExpression(ParseContext* ctx, escargot::Node* left, 
         nd = new escargot::BinaryExpressionLogicalOrNode(left, right);
     else if (oper == u"&&")
         nd = new escargot::BinaryExpressionLogicalAndNode(left, right);
-
     else if (oper == u"in")
         nd = new escargot::BinaryExpressionInNode(left, right);
+    else if (oper == u"instanceof")
+        nd = new escargot::BinaryExpressionInstanceOfNode(left, right);
     // TODO
     else
         RELEASE_ASSERT_NOT_REACHED();

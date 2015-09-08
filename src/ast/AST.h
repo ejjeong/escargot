@@ -24,6 +24,7 @@
 #include "BinaryExpressionGreaterThanNode.h"
 #include "BinaryExpressionGreaterThanOrEqualNode.h"
 #include "BinaryExpressionInNode.h"
+#include "BinaryExpressionInstanceOfNode.h"
 #include "BinaryExpressionLeftShiftNode.h"
 #include "BinaryExpressionLessThanNode.h"
 #include "BinaryExpressionLessThanOrEqualNode.h"

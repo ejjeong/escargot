@@ -69,6 +69,7 @@ enum NodeType {
     BinaryExpressionGreaterThan,
     BinaryExpressionGreaterThanOrEqual,
     BinaryExpressionIn,
+    BinaryExpressionInstanceOf,
     BinaryExpressionLeftShift,
     BinaryExpressionLessThan,
     BinaryExpressionLessThanOrEqual,
