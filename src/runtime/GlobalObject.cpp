@@ -157,15 +157,26 @@ void GlobalObject::initGlobalObject()
                 return ret;
             }
             else {
-                ESValue &input = instance->currentExecutionContext()->arguments()[0];
-                if (radix == 10 && input.isNumber()) {
-                    ret = ESValue(input.toInt32());
-                    return ret;
+                ESValue input = instance->currentExecutionContext()->arguments()[0];
+                escargot::ESString* str = input.toString();
+                //TODO remove leading space
+                //TODO Let sign be 1.
+                //TODO If S is not empty and the first code unit of S is 0x002D (HYPHEN-MINUS), let sign be −1.
+                //TODO If S is not empty and the first code unit of S is 0x002B (PLUS SIGN) or 0x002D (HYPHEN-MINUS), remove the first code unit from S.
+                bool stripPrefix = true;
+                if (radix == 10) {
+                } else if (radix == 16) {
+                    stripPrefix = true;
+                } else {
+                    stripPrefix = false;
                 }
-                if (radix == 16) {
-                    //TODO : stripPrefix = true
-                }
-                //TODO
+
+                //TODO stripPrefix
+                long int ll;
+                str->wcharData([&ll, &radix](wchar_t* data, size_t len){
+                    ll = wcstol(data, NULL, radix);
+                });
+                return ESValue((double)ll);
             }
         }
         return ret;
@@ -339,8 +350,9 @@ void GlobalObject::installError()
     m_error->setConstructor(m_function);
     m_error->set__proto__(m_objectPrototype);
     m_errorPrototype = escargot::ESObject::create();
+    m_error->setProtoType(m_errorPrototype);
     m_errorPrototype->setConstructor(m_error);
-    m_errorPrototype->set(strings->toString, ESFunctionObject::create(NULL, new FunctionDeclarationNode(strings->toString, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+    escargot::Node* toStringNode = new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         //FIXME this is wrong
         ESValue v(instance->currentExecutionContext()->resolveThisBinding());
         ESPointer* o = v.asESPointer();
@@ -351,7 +363,12 @@ void GlobalObject::installError()
 
         return ESString::create(std::move(ret));
         RELEASE_ASSERT_NOT_REACHED();
-    }), false, false)));
+    });
+    m_errorPrototype->set(strings->toString, ESFunctionObject::create(NULL, new FunctionDeclarationNode(strings->toString, InternalAtomicStringVector(), toStringNode, false, false)));
+
+    m_error->set(strings->toString, ESFunctionObject::create(NULL, new FunctionDeclarationNode(strings->toString, InternalAtomicStringVector(), toStringNode, false, false)));
+
+    set(strings->Error, m_error);
 
     /////////////////////////////
     m_referenceError = ::escargot::ESFunctionObject::create(NULL,new FunctionDeclarationNode(strings->ReferenceError, InternalAtomicStringVector(), errorFn, false, false));
@@ -1143,6 +1160,33 @@ void GlobalObject::installString()
     }), false, false);
     m_stringPrototype->set(ESString::create(u"toUpperCase"), ESFunctionObject::create(NULL, stringToUpperCase));
 
+    //$B.2.3.1 String.prototype.substr (start, length)
+    FunctionDeclarationNode* stringSubstr = new FunctionDeclarationNode(ESString::create(u"substr"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+        escargot::ESString* str = thisObject->asESStringObject()->getStringData();
+        if(instance->currentExecutionContext()->argumentCount() < 1) {
+            return str;
+        }
+        double intStart = instance->currentExecutionContext()->arguments()[0].toInteger();
+        double end;
+        if(instance->currentExecutionContext()->argumentCount() > 1) {
+            if(instance->currentExecutionContext()->arguments()[1].isUndefined()) {
+                end = std::numeric_limits<double>::infinity();
+            } else
+                end = instance->currentExecutionContext()->arguments()[1].toInteger();
+        } else {
+            end = std::numeric_limits<double>::infinity();
+        }
+        double size = str->length();
+        if(intStart < 0)
+            intStart = std::max(size + intStart,0.0);
+        double resultLength = std::min(std::max(end,0.0), size - intStart);
+        if(resultLength <= 0)
+            return strings->emptyESString;
+        return str->substring(intStart, intStart + resultLength);
+    }), false, false);
+    m_stringPrototype->set(ESString::create(u"substr"), ESFunctionObject::create(NULL, stringSubstr));
+
     m_stringObjectProxy = ESStringObject::create();
     m_stringObjectProxy->setConstructor(m_string);
     m_stringObjectProxy->set__proto__(m_string->protoType());
@@ -1300,6 +1344,9 @@ void GlobalObject::installMath()
     m_math->set(strings->PI, ESValue(3.1415926535897932));
     // TODO(add reference)
     m_math->set(strings->E, ESValue(2.718281828459045));
+    // TODO(add reference)
+    m_math->set(escargot::ESString::create(u"LN2"), ESValue(0.6931471805599453));
+    m_math->set(escargot::ESString::create(u"LN10"), ESValue(2.302585092994046));
 
     // initialize math object: $20.2.2.1 Math.abs()
     FunctionDeclarationNode* absNode = new FunctionDeclarationNode(strings->abs, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
@@ -1417,6 +1464,24 @@ void GlobalObject::installMath()
         return ESValue();
     }), false, false);
     m_math->set(strings->max, ::escargot::ESFunctionObject::create(NULL, maxNode));
+
+    // initialize math object: $20.2.2.25 Math.min()
+    FunctionDeclarationNode* minNode = new FunctionDeclarationNode(strings->min, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        size_t arg_size = instance->currentExecutionContext()->argumentCount();
+        if (arg_size == 0) {
+            return ESValue(std::numeric_limits<double>::infinity());
+        } else{
+            double min_value = instance->currentExecutionContext()->arguments()[0].toNumber();
+            for (unsigned i = 1; i < arg_size; i++) {
+                double value = instance->currentExecutionContext()->arguments()[i].toNumber();
+                if (value < min_value)
+                    min_value = value;
+             }
+            return ESValue(min_value);
+         }
+        return ESValue();
+    }), false, false);
+    m_math->set(strings->min, ::escargot::ESFunctionObject::create(NULL, minNode));
 
     // initialize math object: $20.2.2.26 Math.pow()
     FunctionDeclarationNode* powNode = new FunctionDeclarationNode(strings->pow, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {

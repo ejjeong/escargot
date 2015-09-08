@@ -73,6 +73,7 @@ ESString* abs;
 ESString* cos;
 ESString* ceil;
 ESString* max;
+ESString* min;
 ESString* floor;
 ESString* pow;
 ESString* random;

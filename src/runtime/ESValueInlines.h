@@ -507,7 +507,7 @@ inline int32_t ESValue::toInt32() const
         else return 0;
     } else if (isUndefined()) {
         return 0;
-     }
+    }
     //TODO
     RELEASE_ASSERT_NOT_REACHED();
 }

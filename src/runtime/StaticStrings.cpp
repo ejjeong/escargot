@@ -68,6 +68,7 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     cos =  ESString::create(u"cos");
     ceil = ESString::create(u"ceil");
     max =  ESString::create(u"max");
+    min =  ESString::create(u"min");
     floor =  ESString::create(u"floor");
     pow =  ESString::create(u"pow");
     random =  ESString::create(u"random");
