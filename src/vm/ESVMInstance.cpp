@@ -1,5 +1,6 @@
 #include "Escargot.h"
 #include "ESVMInstance.h"
+#include "jit/JIT.h"
 #include "runtime/Environment.h"
 #include "runtime/ExecutionContext.h"
 #include "runtime/GlobalObject.h"
@@ -161,6 +162,7 @@ ESVMInstance::~ESVMInstance()
 
 ESValue ESVMInstance::evaluate(u16string& source)
 {
+    nanoJITTest();
     try {
         m_lastExpressionStatementValue = ESValue();
         CodeBlock* block = ESScriptParser::parseScript(this, source);
