@@ -94,6 +94,9 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     source = ESString::create(u"source");
     valueOf = ESString::create(u"valueOf");
     test = ESString::create(u"test");
+    exec = ESString::create(u"exec");
+    input = ESString::create(u"input");
+    index = ESString::create(u"index");
 }
 
 Strings* strings;

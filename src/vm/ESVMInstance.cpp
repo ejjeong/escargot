@@ -211,8 +211,8 @@ void ESVMInstance::printValue(ESValue val)
                 o->asESObject()->enumeration([&str, &isFirst, o, &toString](escargot::ESValue key, const ::escargot::ESSlotAccessor& slot) {
                     if(!isFirst)
                         str.append(", ");
-                    //str.append(key.toString()->utf8Data());
-                    //str.append(": ");
+                    str.append(key.toString()->utf8Data());
+                    str.append(": ");
                     str.append(slot.value(o->asESObject()).toString()->utf8Data());
                     //toString(slot.value(o->asESObject()));
                     isFirst = false;

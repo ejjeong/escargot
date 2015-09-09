@@ -212,7 +212,7 @@ ESString* ESString::substring(int from, int to) const
 }
 
 
-bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testOnly) const
+bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testOnly, size_t startIndex) const
 {
     //NOTE to build normal string(for rope-string), we should call ensureNormalString();
     ensureNormalString();
@@ -252,13 +252,16 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
     matchResult.m_subPatternNum = (int) subPatternNum;
     size_t length = m_string->length();
     if(length) {
-        size_t start = 0;
+        size_t start = startIndex;
         unsigned result = 0;
         const char16_t *chars = m_string->data();
         unsigned* outputBuf = (unsigned int*)alloca(sizeof (unsigned) * 2 * (subPatternNum + 1));
-        outputBuf[1] = 0;
+        outputBuf[1] = start;
         do {
             start = outputBuf[1];
+            memset(outputBuf,-1,sizeof (unsigned) * 2 * (subPatternNum + 1));
+            if(start >= length)
+                break;
             result = JSC::Yarr::interpret(NULL, byteCode, chars, length, start, outputBuf);
             if(result != JSC::Yarr::offsetNoMatch) {
                 if(UNLIKELY(testOnly)) {
@@ -266,6 +269,7 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
                 }
                 std::vector<ESString::RegexMatchResult::RegexMatchResultPiece> piece;
                 piece.reserve(subPatternNum + 1);
+
                 for(unsigned i = 0; i < subPatternNum + 1 ; i ++) {
                     ESString::RegexMatchResult::RegexMatchResultPiece p;
                     p.m_start = outputBuf[i*2];
@@ -275,6 +279,12 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
                 matchResult.m_matchResults.push_back(std::move(piece));
                 if(!isGlobal)
                     break;
+                if(start == outputBuf[1]) {
+                    outputBuf[1]++;
+                    if(outputBuf[1] > length) {
+                        break;
+                    }
+                }
             } else {
                 break;
             }
@@ -323,7 +333,8 @@ ESRegExpObject::ESRegExpObject(escargot::ESString* source, const Option& option)
     m_source = source;
     m_option = option;
     m_bytecodePattern = NULL;
-
+    m_lastIndex = 0;
+    m_lastExecutedString = NULL;
 }
 
 void ESRegExpObject::setSource(escargot::ESString* src)

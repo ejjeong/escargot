@@ -912,7 +912,10 @@ void GlobalObject::installString()
             int idx = 0;
             for(unsigned i = 0; i < result.m_matchResults.size() ; i ++) {
                 for(unsigned j = 0; j < result.m_matchResults[i].size() ; j ++) {
-                    ret->set(idx++,ESString::create(std::move(u16string(str + result.m_matchResults[i][j].m_start,str + result.m_matchResults[i][j].m_end))));
+                    if(std::numeric_limits<unsigned>::max() == result.m_matchResults[i][j].m_start)
+                        ret->set(idx++,ESValue(strings->emptyESString));
+                    else
+                        ret->set(idx++,ESString::create(std::move(u16string(str + result.m_matchResults[i][j].m_start,str + result.m_matchResults[i][j].m_end))));
                 }
             }
             if (ret->length() == 0)
@@ -951,6 +954,8 @@ void GlobalObject::installString()
                     int subLen = result.m_matchResults[i].size();
                     ESValue* arguments = (ESValue *)alloca((subLen+2)*sizeof (ESValue));
                     for(unsigned j = 0; j < (unsigned)subLen ; j ++) {
+                        if(result.m_matchResults[i][j].m_start == std::numeric_limits<unsigned>::max())
+                            RELEASE_ASSERT_NOT_REACHED(); //implement this case
                         arguments[j] = ESString::create(std::move(u16string(
                                 origStr->data() + result.m_matchResults[i][j].m_start
                                 , origStr->data() + result.m_matchResults[i][j].m_end
@@ -1085,84 +1090,179 @@ void GlobalObject::installString()
             RELEASE_ASSERT_NOT_REACHED(); // TODO
         }
         */
+        if(separator.isESPointer() && separator.asESPointer()->isESRegExpObject()) {
+            // 4, 5
+            escargot::ESString* str = ESValue(thisObject).toString();
 
-        // 4, 5
-        escargot::ESString* str = ESValue(thisObject).toString();
+            // 6
+            escargot::ESArrayObject* arr = ESArrayObject::create(0, instance->globalObject()->arrayPrototype());
 
-        // 6
-        escargot::ESArrayObject* arr = ESArrayObject::create(0, instance->globalObject()->arrayPrototype());
+            // 7
+            int lengthA = 0;
 
-        // 7
-        int lengthA = 0;
+            // 8, 9
+            double lim = argCount>1 ? instance->currentExecutionContext()->arguments()[1].toLength() : std::pow(2, 53)-1;
 
-        // 8, 9
-        double lim = argCount>1 ? instance->currentExecutionContext()->arguments()[1].toLength() : std::pow(2, 53)-1;
+            // 10
+            int s = str->length();
 
-        // 10
-        int s = str->length();
+            // 11
+            int p = 0;
 
-        // 11
-        int p = 0;
+            // 12, 13
+            escargot::ESRegExpObject* R = separator.asESPointer()->asESRegExpObject();
 
-        // 12, 13
-        const u16string& R = separator.toString()->string();
+            // 14
+            if(lim == 0)
+                return arr;
 
-        // 14
-        if(lim == 0)
-            return arr;
+            // 15
+            if(separator.isUndefined()) {
+                arr->set(0, str);
+                return arr;
+            }
 
-        // 15
-        if(separator.isUndefined()) {
-            arr->set(0, str);
-            return arr;
-        }
-
-        // 16
-        if(s == 0)
-            RELEASE_ASSERT_NOT_REACHED(); // TODO
-
-        // 17
-        int q = p;
-
-        // 18
-        auto splitMatch = [] (const u16string& S, int q, const u16string& R) -> ESValue {
-            int s = S.length();
-            int r = R.length();
-            if (q+r > s)
-                return ESValue(false);
-            for (int i=0; i<r; i++)
-                if (S.data()[q+i] != R.data()[i])
+            // 16
+            auto splitMatch = [] (escargot::ESString* S, int q, escargot::ESRegExpObject* R) -> ESValue {
+                escargot::ESString::RegexMatchResult result;
+                auto prev = R->option();
+                R->setOption((escargot::ESRegExpObject::Option)(prev & ~escargot::ESRegExpObject::Option::Global));
+                bool ret = S->match(R, result, false, (size_t)q);
+                R->setOption(prev);
+                if(!ret)
                     return ESValue(false);
-            return ESValue(q+r);
-        };
-        while(q != s) {
-            ESValue e = splitMatch(str->string(), q, R);
-            if(e == ESValue(ESValue::ESFalseTag::ESFalse))
-                q++;
-            else {
-                if(e.asInt32() == p)
-                    q++;
+                return ESValue(result.m_matchResults[0][0].m_end);
+            };
+            // 16
+            if(s == 0) {
+                ESValue z = splitMatch(str, 0, R);
+                if(z != ESValue(false))
+                    return arr;
+                arr->set(0, str);
+                return arr;
+            }
+
+            // 17
+            int q = p;
+
+            // 18
+            while(q != s) {
+                escargot::ESString::RegexMatchResult result;
+                ESValue e = splitMatch(str, q, R);
+                auto prev = R->option();
+                R->setOption((escargot::ESRegExpObject::Option)(prev & ~escargot::ESRegExpObject::Option::Global));
+                bool ret = str->match(R, result, false, (size_t)q);
+                R->setOption(prev);
+                if(e == ESValue(ESValue::ESFalseTag::ESFalse)) {
+                    if ((double)lengthA == lim)
+                        return arr;
+                    escargot::ESString* T = str->substring(q, str->length());
+                    arr->set(lengthA, ESValue(T));
+                    return arr;
+                }
                 else {
-                    escargot::ESString* T = str->substring(p, q);
+                    escargot::ESString* T = str->substring(p, result.m_matchResults[0][0].m_start);
                     arr->set(lengthA, ESValue(T));
                     lengthA++;
                     if ((double)lengthA == lim)
                         return arr;
-                    p = e.asInt32();
-                    q = p;
+                    p = result.m_matchResults[0][0].m_end;
+                    q = result.m_matchResults[0][0].m_end;
                 }
             }
+
+            // 19
+            escargot::ESString* T = str->substring(p, s);
+
+            // 20
+            arr->set(lengthA, ESValue(T));
+
+            // 21, 22
+            return arr;
+        } else {
+            // 4, 5
+            escargot::ESString* str = ESValue(thisObject).toString();
+
+            // 6
+            escargot::ESArrayObject* arr = ESArrayObject::create(0, instance->globalObject()->arrayPrototype());
+
+            // 7
+            int lengthA = 0;
+
+            // 8, 9
+            double lim = argCount>1 ? instance->currentExecutionContext()->arguments()[1].toLength() : std::pow(2, 53)-1;
+
+            // 10
+            int s = str->length();
+
+            // 11
+            int p = 0;
+
+            // 12, 13
+            const u16string& R = separator.toString()->string();
+
+            // 14
+            if(lim == 0)
+                return arr;
+
+            // 15
+            if(separator.isUndefined()) {
+                arr->set(0, str);
+                return arr;
+            }
+
+            // 16
+            auto splitMatch = [] (const u16string& S, int q, const u16string& R) -> ESValue {
+                int s = S.length();
+                int r = R.length();
+                if (q+r > s)
+                    return ESValue(false);
+                for (int i=0; i<r; i++)
+                    if (S.data()[q+i] != R.data()[i])
+                        return ESValue(false);
+                return ESValue(q+r);
+            };
+            // 16
+            if(s == 0) {
+                ESValue z = splitMatch(str->string(), 0, R);
+                if(z != ESValue(false))
+                    return arr;
+                arr->set(0, str);
+                return arr;
+            }
+
+            // 17
+            int q = p;
+
+            // 18
+            while(q != s) {
+                ESValue e = splitMatch(str->string(), q, R);
+                if(e == ESValue(ESValue::ESFalseTag::ESFalse))
+                    q++;
+                else {
+                    if(e.asInt32() == p)
+                        q++;
+                    else {
+                        escargot::ESString* T = str->substring(p, q);
+                        arr->set(lengthA, ESValue(T));
+                        lengthA++;
+                        if ((double)lengthA == lim)
+                            return arr;
+                        p = e.asInt32();
+                        q = p;
+                    }
+                }
+            }
+
+            // 19
+            escargot::ESString* T = str->substring(p, s);
+
+            // 20
+            arr->set(lengthA, ESValue(T));
+
+            // 21, 22
+            return arr;
         }
-
-        // 19
-        escargot::ESString* T = str->substring(p, s);
-
-        // 20
-        arr->set(lengthA, ESValue(T));
-
-        // 21, 22
-        return arr;
-        return ESValue();
     }), false, false);
     m_stringPrototype->set(ESString::create(u"split"), ESFunctionObject::create(NULL, stringSplit));
 
@@ -1884,8 +1984,25 @@ void GlobalObject::installRegExp()
         return self->asESRegExpObject()->source();
     }, nullptr, true, false, false);
 
+    m_regexpPrototype->defineAccessorProperty(escargot::ESString::create(u"lastIndex"), [](ESObject* self) -> ESValue {
+        return ESValue(self->asESRegExpObject()->lastIndex());
+    }, nullptr, true, false, false);
+
+    m_regexpPrototype->defineAccessorProperty(escargot::ESString::create(u"ignoreCase"), [](ESObject* self) -> ESValue {
+        return ESValue((bool)(self->asESRegExpObject()->option() & ESRegExpObject::Option::IgnoreCase));
+    }, nullptr, true, false, false);
+
+    m_regexpPrototype->defineAccessorProperty(escargot::ESString::create(u"global"), [](ESObject* self) -> ESValue {
+        return ESValue((bool)(self->asESRegExpObject()->option() & ESRegExpObject::Option::Global));
+    }, nullptr, true, false, false);
+
+    m_regexpPrototype->defineAccessorProperty(escargot::ESString::create(u"multiline"), [](ESObject* self) -> ESValue {
+        return ESValue((bool)(self->asESRegExpObject()->option() & ESRegExpObject::Option::MultiLine));
+    }, nullptr, true, false, false);
+
 
     // 21.2.5.13 RegExp.prototype.test( S )
+
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-regexp.prototype.test
     FunctionDeclarationNode* testNode = new FunctionDeclarationNode(strings->test, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
@@ -1896,15 +2013,64 @@ void GlobalObject::installRegExp()
             ESString::RegexMatchResult result;
             bool testResult = sourceStr->match(thisObject, result, true);
             return (ESValue(testResult));
-            if(result.m_matchResults.size()) {
-                return (ESValue(true));
-            } else {
-                return (ESValue(false));
-            }
         }
         return ESValue(false);
     }), false, false);
     m_regexpPrototype->set(strings->test, ::escargot::ESFunctionObject::create(NULL, testNode));
+
+    // 21.2.5.2 RegExp.prototype.exec( string )
+    // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-regexp.prototype.test
+    FunctionDeclarationNode* execNode = new FunctionDeclarationNode(strings->exec, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+        if(!thisObject->isESRegExpObject())
+            throw TypeError::create();
+        ::escargot::ESRegExpObject* regexp = thisObject->asESRegExpObject();
+        int argCount = instance->currentExecutionContext()->argumentCount();
+        if(argCount > 0) {
+            escargot::ESString* sourceStr = instance->currentExecutionContext()->arguments()[0].toString();
+            if(sourceStr == regexp->m_lastExecutedString || (regexp->m_lastExecutedString && sourceStr->string() == regexp->m_lastExecutedString->string())) {
+
+            } else {
+                regexp->m_lastIndex = 0;
+            }
+            regexp->m_lastExecutedString = sourceStr;
+            ESString::RegexMatchResult result;
+            bool isGlobal = regexp->option() & ESRegExpObject::Option::Global;
+            regexp->setOption((ESRegExpObject::Option)(regexp->option() & ~ESRegExpObject::Option::Global));
+            bool testResult = sourceStr->match(thisObject, result, false, regexp->m_lastIndex);
+            if(isGlobal) {
+                regexp->setOption((ESRegExpObject::Option)(regexp->option() | ESRegExpObject::Option::Global));
+            }
+
+            if(!testResult) {
+                regexp->m_lastIndex = 0;
+                return ESValue(ESValue::ESNull);
+            }
+
+            if(isGlobal) {
+                //update lastIndex
+                regexp->m_lastIndex = result.m_matchResults[0][0].m_end;
+            }
+            ::escargot::ESArrayObject* arr = ::escargot::ESArrayObject::create();
+            ((ESObject *)arr)->set(ESValue(strings->input), ESValue(sourceStr));
+            ((ESObject *)arr)->set(ESValue(strings->index), ESValue(result.m_matchResults[0][0].m_start));
+            const char16_t* str = sourceStr->string().data();
+
+            int idx = 0;
+            for(unsigned i = 0; i < result.m_matchResults.size() ; i ++) {
+                for(unsigned j = 0; j < result.m_matchResults[i].size() ; j ++) {
+                    if(result.m_matchResults[i][j].m_start == std::numeric_limits<unsigned>::max())
+                        arr->set(idx++,ESValue(strings->emptyESString));
+                    else
+                        arr->set(idx++,ESString::create(std::move(u16string(str + result.m_matchResults[i][j].m_start,str + result.m_matchResults[i][j].m_end))));
+                }
+            }
+            return arr;
+        } else {
+            return ESValue(ESValue::ESNull);
+        }
+    }), false, false);
+    m_regexpPrototype->set(strings->exec, ::escargot::ESFunctionObject::create(NULL, execNode));
 
     // add regexp to global object
     set(strings->RegExp, m_regexp);

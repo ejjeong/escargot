@@ -98,6 +98,9 @@ ESString* function;
 ESString* RegExp;
 ESString* source;
 ESString* test;
+ESString* exec;
+ESString* input;
+ESString* index;
 
 void initStaticStrings(ESVMInstance* instance);
 };

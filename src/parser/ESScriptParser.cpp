@@ -77,11 +77,11 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
     };
 
     std::vector<ControlFlowNode *> controlFlowNodeStack;
-
+    bool shouldWorkAroundIdentifier = true;
     std::function<void (Node* currentNode,
             std::vector<InternalAtomicStringVector *>& identifierStack,
             FunctionNode* nearFunctionNode)>
-    postAnalysisFunction = [&postAnalysisFunction, instance, &markNeedsActivation, &controlFlowNodeStack]
+    postAnalysisFunction = [&postAnalysisFunction, instance, &markNeedsActivation, &controlFlowNodeStack, &shouldWorkAroundIdentifier]
              (Node* currentNode,
              std::vector<InternalAtomicStringVector *>& identifierStack,
              FunctionNode* nearFunctionNode) {
@@ -141,6 +141,9 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
             ((FunctionExpressionNode *)currentNode)->setInnerIdentifiers(std::move(newIdentifierVector));
             //printf("end of process function body-------------------\n");
         } else if(type == NodeType::Identifier) {
+            if(!shouldWorkAroundIdentifier) {
+                return ;
+            }
             //use case
             InternalAtomicString name = ((IdentifierNode *)currentNode)->name();
             //ESString* nonAtomicName = ((IdentifierNode *)currentNode)->nonAtomicName();
@@ -336,13 +339,15 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
         } else if(type == NodeType::EmptyStatement) {
         } else if (type == NodeType::TryStatement) {
             postAnalysisFunction(((TryStatementNode *)currentNode)->m_block, identifierStack, nearFunctionNode);
+            bool prevShouldWorkAroundIdentifier = shouldWorkAroundIdentifier;
+            shouldWorkAroundIdentifier = false;
             postAnalysisFunction(((TryStatementNode *)currentNode)->m_handler, identifierStack, nearFunctionNode);
+            shouldWorkAroundIdentifier = prevShouldWorkAroundIdentifier;
             postAnalysisFunction(((TryStatementNode *)currentNode)->m_finalizer, identifierStack, nearFunctionNode);
         } else if (type == NodeType::CatchClause) {
-            markNeedsActivation(nearFunctionNode);
-            //postAnalysisFunction(((CatchClauseNode *)currentNode)->m_param, identifierStack, nearFunctionNode);
-            //postAnalysisFunction(((CatchClauseNode *)currentNode)->m_guard, identifierStack, nearFunctionNode);
-            //postAnalysisFunction(((CatchClauseNode *)currentNode)->m_body, identifierStack, nearFunctionNode);
+            postAnalysisFunction(((CatchClauseNode *)currentNode)->m_param, identifierStack, nearFunctionNode);
+            postAnalysisFunction(((CatchClauseNode *)currentNode)->m_guard, identifierStack, nearFunctionNode);
+            postAnalysisFunction(((CatchClauseNode *)currentNode)->m_body, identifierStack, nearFunctionNode);
         } else if (type == NodeType::ThrowStatement) {
             postAnalysisFunction(((ThrowStatementNode *)currentNode)->m_argument, identifierStack, nearFunctionNode);
         } else {

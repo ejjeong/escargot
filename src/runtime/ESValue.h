@@ -590,7 +590,7 @@ public:
         int m_subPatternNum;
         std::vector< std::vector< RegexMatchResultPiece > > m_matchResults;
     };
-    bool match(ESPointer* esptr, RegexMatchResult& result, bool testOnly = false) const;
+    bool match(ESPointer* esptr, RegexMatchResult& result, bool testOnly = false, size_t startIndex = 0) const;
 
     ESString(const ESString& s) = delete;
     void operator =(const ESString& s) = delete;
@@ -1690,6 +1690,7 @@ private:
 
 class ESRegExpObject : public ESObject {
     friend class ESString;
+    friend class GlobalObject;
 public:
     enum Option {
         None = 0,
@@ -1709,6 +1710,7 @@ public:
 
     ALWAYS_INLINE Option option() { return m_option; }
     ALWAYS_INLINE const escargot::ESString* source() { return m_source; }
+    ALWAYS_INLINE unsigned lastIndex() { return m_lastIndex; }
     void setSource(escargot::ESString* src);
     void setOption(const Option& option);
 
@@ -1727,6 +1729,9 @@ private:
     escargot::ESString* m_source;
     JSC::Yarr::BytecodePattern* m_bytecodePattern;
     Option m_option;
+
+    unsigned m_lastIndex;
+    escargot::ESString* m_lastExecutedString;
 };
 
 }
