@@ -34,11 +34,11 @@ void GlobalObject::initGlobalObject()
     m_functionPrototype->set__proto__(m_objectPrototype);
 
     // Value Properties of the Global Object
-    definePropertyOrThrow(ESString::create(u"Infinity"), false, false, false);
-    definePropertyOrThrow(ESString::create(u"NaN"), false, false, false);
+    definePropertyOrThrow(strings->Infinity, false, false, false);
+    definePropertyOrThrow(strings->NaN, false, false, false);
     definePropertyOrThrow(strings->undefined, false, false, false);
-    set(ESString::create(u"Infinity"), ESValue(std::numeric_limits<double>::infinity()));
-    set(ESString::create(u"NaN"), ESValue(std::numeric_limits<double>::quiet_NaN()));
+    set(strings->Infinity, ESValue(std::numeric_limits<double>::infinity()));
+    set(strings->NaN, ESValue(std::numeric_limits<double>::quiet_NaN()));
     set(strings->undefined, ESValue());
 
     FunctionDeclarationNode* node = new FunctionDeclarationNode(InternalAtomicString(u"dbgBreak"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
@@ -1657,6 +1657,21 @@ void GlobalObject::installNumber()
     m_number->set(strings->name, strings->Number);
     m_number->setConstructor(m_function);
     m_number->set(strings->prototype, m_numberPrototype);
+
+    // $ 20.1.2.6 Number.MAX_SAFE_INTEGER
+    m_number->set(ESString::create(u"MAX_SAFE_INTEGER"), ESValue(9007199254740991.0));
+    // $ 20.1.2.7 Number.MAX_VALUE
+    m_number->set(strings->MAX_VALUE, ESValue(1.7976931348623157E+308));
+    // $ 20.1.2.8 Number.MIN_SAFE_INTEGER
+    m_number->set(ESString::create(u"MIN_SAFE_INTEGER"), ESValue(ESValue::EncodeAsDouble, -9007199254740991.0));
+    // $ 20.1.2.9 Number.MIN_VALUE
+    m_number->set(strings->MIN_VALUE, ESValue(5E-324));
+    // $ 20.1.2.10 Number.NaN
+    m_number->set(strings->NaN, ESValue(std::numeric_limits<double>::quiet_NaN()));
+    // $ 20.1.2.11 Number.NEGATIVE_INFINITY
+    m_number->set(strings->NEGATIVE_INFINITY, ESValue(-std::numeric_limits<double>::infinity()));
+    // $ 20.1.2.14 Number.POSITIVE_INFINITY
+    m_number->set(strings->POSITIVE_INFINITY, ESValue(std::numeric_limits<double>::infinity()));
 
     // initialize numberPrototype object
     m_numberPrototype->setConstructor(m_number);
