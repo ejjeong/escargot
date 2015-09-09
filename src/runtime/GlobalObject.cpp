@@ -140,6 +140,22 @@ void GlobalObject::initGlobalObject()
         return ret;
     }), false, false);
     set(ESString::create(u"isNaN"), ESFunctionObject::create(NULL, node));
+
+    // $18.2.4 parseFloat(string)
+    definePropertyOrThrow(ESString::create(u"parseFloat"), false, false, false);
+    node = new FunctionDeclarationNode(InternalAtomicString(u"parseFloat"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        int len = instance->currentExecutionContext()->argumentCount();
+        if (len < 1) {
+            return ESValue(std::numeric_limits<double>::quiet_NaN());
+         } else {
+            ESValue input = instance->currentExecutionContext()->arguments()[0];
+            escargot::ESString* str = input.toString();
+            double f = atof(str->utf8Data());
+            return ESValue(f);
+         }
+    }), false, false);
+    set(ESString::create(u"parseFloat"), ESFunctionObject::create(NULL, node));
+
     // $18.2.5 parseInt(string, radix)
     definePropertyOrThrow(ESString::create(u"parseInt"), false, false, false);
     node = new FunctionDeclarationNode(InternalAtomicString(u"parseInt"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
