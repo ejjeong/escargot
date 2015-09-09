@@ -23,7 +23,8 @@ public:
 
     ESValue executeExpression(ESVMInstance* instance)
     {
-        ASSERT(!(m_canUseFastAccess && !instance->currentExecutionContext()->needsActivation()));
+        ASSERT(!(m_canUseFastAccess));
+//        ASSERT(instance->currentExecutionContext()->needsActivation());
         if (LIKELY(m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
             return m_cachedSlot.readDataProperty();
         } else {

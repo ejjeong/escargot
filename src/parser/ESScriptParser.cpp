@@ -340,9 +340,9 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
             postAnalysisFunction(((TryStatementNode *)currentNode)->m_finalizer, identifierStack, nearFunctionNode);
         } else if (type == NodeType::CatchClause) {
             markNeedsActivation(nearFunctionNode);
-            postAnalysisFunction(((CatchClauseNode *)currentNode)->m_param, identifierStack, nearFunctionNode);
-            postAnalysisFunction(((CatchClauseNode *)currentNode)->m_guard, identifierStack, nearFunctionNode);
-            postAnalysisFunction(((CatchClauseNode *)currentNode)->m_body, identifierStack, nearFunctionNode);
+            //postAnalysisFunction(((CatchClauseNode *)currentNode)->m_param, identifierStack, nearFunctionNode);
+            //postAnalysisFunction(((CatchClauseNode *)currentNode)->m_guard, identifierStack, nearFunctionNode);
+            //postAnalysisFunction(((CatchClauseNode *)currentNode)->m_body, identifierStack, nearFunctionNode);
         } else if (type == NodeType::ThrowStatement) {
             postAnalysisFunction(((ThrowStatementNode *)currentNode)->m_argument, identifierStack, nearFunctionNode);
         } else {
@@ -622,9 +622,9 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
             postProcessingFunction(((TryStatementNode *)currentNode)->m_finalizer, nearFunction);
         } else if (type == NodeType::CatchClause) {
             RELEASE_ASSERT_NOT_REACHED();
-            postProcessingFunction(((CatchClauseNode *)currentNode)->m_param, nearFunction);
-            postProcessingFunction(((CatchClauseNode *)currentNode)->m_guard, nearFunction);
-            postProcessingFunction(((CatchClauseNode *)currentNode)->m_body, nearFunction);
+            //postProcessingFunction(((CatchClauseNode *)currentNode)->m_param, nearFunction);
+            //postProcessingFunction(((CatchClauseNode *)currentNode)->m_guard, nearFunction);
+            //postProcessingFunction(((CatchClauseNode *)currentNode)->m_body, nearFunction);
         } else if (type == NodeType::ThrowStatement) {
             nodeReplacer((Node **)&((ThrowStatementNode *)currentNode)->m_argument, nearFunction);
             postProcessingFunction(((ThrowStatementNode *)currentNode)->m_argument, nearFunction);
