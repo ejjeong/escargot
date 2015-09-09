@@ -46,6 +46,7 @@ enum NodeType {
     UnaryExpressionMinus,
     UnaryExpressionPlus,
     UnaryExpressionTypeOf,
+    UnaryExpressionVoid,
     AssignmentExpression,
     AssignmentExpressionBitwiseAnd,
     AssignmentExpressionBitwiseOr,

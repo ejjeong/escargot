@@ -4637,7 +4637,8 @@ escargot::Node* parseUnaryExpression(ParseContext* ctx) {
             expr = new escargot::UnaryExpressionDeleteNode(expr);
             expr->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
         } else if(token->m_value == u"void") {
-            RELEASE_ASSERT_NOT_REACHED();
+            expr = new escargot::UnaryExpressionVoidNode(expr);
+            expr->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
         } else if(token->m_value == u"typeof") {
             expr = new escargot::UnaryExpressionTypeOfNode(expr);
             expr->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);

@@ -88,6 +88,7 @@
 #include "UnaryExpressionMinusNode.h"
 #include "UnaryExpressionPlusNode.h"
 #include "UnaryExpressionTypeOfNode.h"
+#include "UnaryExpressionVoidNode.h"
 #include "VariableDeclarationNode.h"
 #include "VariableDeclaratorNode.h"
 #include "TryStatementNode.h"
