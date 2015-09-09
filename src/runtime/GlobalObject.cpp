@@ -584,6 +584,28 @@ void GlobalObject::installArray()
     }), false, false);
     m_arrayPrototype->ESObject::set(strings->join, ESFunctionObject::create(NULL, arrayJoin));
 
+    //$22.1.3.15 Array.prototype.map(callbackfn[, thisArg])
+    FunctionDeclarationNode* arrayMap = new FunctionDeclarationNode(ESString::create(u"map"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        if(arglen < 1)
+            throw ESValue(TypeError::create());
+        ESValue arg = instance->currentExecutionContext()->arguments()[0];
+        if (!(arg.isESPointer() && arg.asESPointer()->isESFunctionObject()))
+            throw ESValue(TypeError::create());
+
+        auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESArrayObject();
+        int arrlen = thisVal->length();
+        escargot::ESArrayObject* ret = ESArrayObject::create(arrlen, instance->globalObject()->arrayPrototype());
+        if (!thisVal->constructor().isUndefinedOrNull())
+            ret->setConstructor(thisVal->constructor());
+
+        ESValue tmpValue(thisVal);
+        for (int idx = 0; idx < arrlen; idx++)
+            ret->set(idx, ESFunctionObject::call(instance, arg.asESPointer()->asESFunctionObject(), instance->globalObject(), &tmpValue, 1, instance));
+        return ret;
+    }), false, false);
+    m_arrayPrototype->ESObject::set(ESString::create(u"map"), ESFunctionObject::create(NULL, arrayMap));
+
     //$22.1.3.16 Array.prototype.pop ( )
     FunctionDeclarationNode* arrayPop = new FunctionDeclarationNode(strings->pop, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESArrayObject();
