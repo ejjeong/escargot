@@ -26,9 +26,10 @@ public:
         ESSlotWriterForAST::prepareExecuteForWriteASTNode(ec);
 
         //http://www.ecma-international.org/ecma-262/5.1/#sec-11.13.1
-        ESValue rvalue = m_right->executeExpression(instance);
         ESSlotAccessor slot = m_left->executeForWrite(instance);
-        ESSlotWriterForAST::setValue(slot, ec, rvalue);
+        ESObject* obj = instance->currentExecutionContext()->lastESObjectMetInMemberExpressionNode();
+        ESValue rvalue = m_right->executeExpression(instance);
+        slot.setValue(rvalue, obj);
         return rvalue;
     }
 
