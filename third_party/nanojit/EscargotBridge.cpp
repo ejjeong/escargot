@@ -43,4 +43,10 @@ void AvmLog(const char* fmt...)
     va_end(args);
 }
 
+void AvmAssertFail(const char *message)
+{
+    AvmLog(message);
+    ASSERT(false);
+}
+
 }

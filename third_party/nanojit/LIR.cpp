@@ -1747,6 +1747,13 @@ namespace nanojit
         : LirFilter(in), sp(sp), stk(alloc), top(0)
     {}
 
+#ifdef ESCARGOT
+    int nanojit::StackFilter::getTop(LIns*)
+    {
+        return 0;
+    }
+#endif
+
     // If we see a sequence like this:
     //
     //   sti sp[0]
@@ -4809,5 +4816,44 @@ namespace nanojit
     }
 #endif
 #endif
+
+
+#ifdef ESCARGOT
+#if defined NJ_VERBOSE
+void
+nanojit::LInsPrinter::formatGuard(InsBuf *buf, LIns *ins)
+{
+    RefBuf b1, b2;
+    VMPI_snprintf(buf->buf, buf->len,
+            "%s: %s %s -> (GuardID=%03d)",
+            formatRef(&b1, ins),
+            lirNames[ins->opcode()],
+            ins->oprnd1() ? formatRef(&b2, ins->oprnd1()) : "",
+            ins->record()->profGuardID);
+}
+
+void
+nanojit::LInsPrinter::formatGuardXov(InsBuf *buf, LIns *ins)
+{
+    RefBuf b1, b2, b3;
+    VMPI_snprintf(buf->buf, buf->len,
+            "%s = %s %s, %s -> (GuardID=%03d)",
+            formatRef(&b1, ins),
+            lirNames[ins->opcode()],
+            formatRef(&b2, ins->oprnd1()),
+            formatRef(&b3, ins->oprnd2()),
+            ins->record()->profGuardID);
+}
+
+const char*
+nanojit::LInsPrinter::accNames[] = {
+    "o",    // (1 << 0) == ACCSET_OTHER
+    "?", "?", "?", "?", "?", "?", "?", "?", "?", "?",   //  1..10 (unused)
+    "?", "?", "?", "?", "?", "?", "?", "?", "?", "?",   // 11..20 (unused)
+    "?", "?", "?", "?", "?", "?", "?", "?", "?", "?",   // 21..30 (unused)
+    "?"                                                 //     31 (unused)
+};
+#endif // if defined NJ_VERBOSE
+#endif // ifdef ESCARGOT
 
 }

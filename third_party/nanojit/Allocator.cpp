@@ -80,6 +80,24 @@ namespace nanojit
         }
         return n;
     }
+
+#ifdef ESCARGOT
+    void* Allocator::allocChunk(size_t nbytes, bool /*fallible*/)
+    {
+        void *p = malloc(nbytes);
+        if (!p)
+            exit(1);
+        return p;
+    }
+
+    void Allocator::freeChunk(void *p) {
+        free(p);
+    }
+
+    void Allocator::postReset() {
+    }
+#endif
+
 }
 
 #endif // FEATURE_NANOJIT

@@ -54,8 +54,8 @@ typedef void* (*decode_instructions_ftype) (void* start, void* end,
 
     static void* decode_instructions_pv = 0;
     static const char* hsdis_path[] = {
-        HSDIS_NAME"-"LIBARCH LIB_EXT,
-        "./" HSDIS_NAME"-"LIBARCH LIB_EXT,
+        HSDIS_NAME "-" LIBARCH LIB_EXT,
+        "./" HSDIS_NAME "-" LIBARCH LIB_EXT,
         NULL
     };
     
@@ -67,11 +67,11 @@ typedef void* (*decode_instructions_ftype) (void* start, void* end,
             if (decode_instructions_pv != NULL)
                 return NULL;
             if (dllib != NULL)
-                return "plugin does not defined "DECODE_INSTRUCTIONS_NAME;
+                return "plugin does not defined " DECODE_INSTRUCTIONS_NAME;
             for (dllib = NULL; dllib == NULL; ) {
                 const char* next_lib = (*next_in_path++);
                 if (next_lib == NULL)
-                    return "cannot find plugin "HSDIS_NAME LIB_EXT;
+                    return "cannot find plugin " HSDIS_NAME LIB_EXT;
                 dllib = dlopen(next_lib, RTLD_LAZY);
             }
         }

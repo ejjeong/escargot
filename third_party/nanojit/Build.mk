@@ -15,7 +15,9 @@ endif
 # MODE-dependent settings
 ####################################
 ifeq ($(MODE), debug)
+	CXXFLAGS += -DDEBUG
 	CXXFLAGS += -D_DEBUG
+	CXXFLAGS += -DNJ_VERBOSE
 endif
 
 ####################################
@@ -26,6 +28,7 @@ CXXFLAGS += -Ithird_party/nanojit/
 CXXFLAGS += -DFEATURE_NANOJIT
 
 #CXXFLAGS += -DAVMPLUS_VERBOSE
+CXXFLAGS += -Wno-error=narrowing
 
 ####################################
 # Makefile flags
@@ -33,3 +36,4 @@ CXXFLAGS += -DFEATURE_NANOJIT
 curdir=third_party/nanojit
 include $(curdir)/manifest.mk
 SRC_NANOJIT = $(avmplus_CXXSRCS)
+SRC_NANOJIT += $(curdir)/EscargotBridge.cpp

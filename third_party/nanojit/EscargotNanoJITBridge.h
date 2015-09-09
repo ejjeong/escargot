@@ -95,6 +95,7 @@ REALLY_INLINE float f4_w(const float4_t& v) { return v.w; }
 namespace avmplus {
 
 void AvmLog(const char* fmt...);
+void AvmAssertFail(const char *message);
 
 } // namespace avmplus
 

@@ -9,6 +9,9 @@
 //#define DOPROF
 #ifndef ESCARGOT
 #include "../vprof/vprof.h"
+#else
+#include <sys/mman.h>
+typedef void *maddr_ptr;
 #endif
 
 #ifdef FEATURE_NANOJIT
@@ -552,5 +555,29 @@ extern  "C" void sync_instruction_memory(caddr_t v, u_int len);
         }
         debug_only(sanity_check();)
     }
+
+#ifdef ESCARGOT
+    void CodeAlloc::markCodeChunkExec(void* addr, size_t nbytes) { }
+
+    void CodeAlloc::markCodeChunkWrite(void* addr, size_t nbytes) { }
+
+    void* CodeAlloc::allocCodeChunk(size_t nbytes) {
+        return mmap(NULL,
+                    nbytes,
+                    PROT_READ | PROT_WRITE | PROT_EXEC,
+                    MAP_PRIVATE | MAP_ANON,
+                    -1,
+                    0);
+    }
+
+    void CodeAlloc::freeCodeChunk(void *p, size_t nbytes) {
+        munmap((maddr_ptr)p, nbytes);
+    }
+
+    bool CodeAlloc::checkChunkMark(void* /*addr*/, size_t /*nbytes*/, bool /*isExec*/) {
+        return true; // always correct
+    }
+#endif
+
 }
 #endif // FEATURE_NANOJIT
