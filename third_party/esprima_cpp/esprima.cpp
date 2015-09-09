@@ -2621,7 +2621,7 @@ escargot::Node* parseBreakStatement(ParseContext* ctx/*node*/) {
         return nd;
     }
 
-    if (ctx->m_hasLineTerminator) {
+    if (ctx->m_hasLineTerminator || ctx->m_lookahead->m_value == u"}") {
         if (!(ctx->m_inIteration || ctx->m_inSwitch)) {
             //throwError(Messages.IllegalBreak);
             throw u"Messages.IllegalBreak";
