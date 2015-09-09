@@ -113,10 +113,8 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
         } else if(type == NodeType::FunctionDeclaration) {
             //TODO
             //printf("add Identifier %s(fn)\n", ((FunctionDeclarationNode *)currentNode)->nonAtomicId()->utf8Data());
-            if(identifierInCurrentContext.end() == std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),
-                    ((FunctionDeclarationNode *)currentNode)->id())) {
-                identifierInCurrentContext.push_back(((FunctionDeclarationNode *)currentNode)->id());
-            }
+            ASSERT(identifierInCurrentContext.end() != std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),
+                    ((FunctionDeclarationNode *)currentNode)->id()));
             //printf("process function body-------------------\n");
             InternalAtomicStringVector newIdentifierVector;
             InternalAtomicStringVector& vec = ((FunctionExpressionNode *)currentNode)->m_params;
@@ -178,7 +176,6 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
                             //        fn->nonAtomicId()->utf8Data(),
                             //        ((IdentifierNode *)currentNode)->nonAtomicName()->utf8Data());
                             size_t idx2 = std::distance(vector->begin(), iter2);
-                            markNeedsActivation(fn);
                             ((IdentifierNode *)currentNode)->setFastAccessIndex(up, idx2);
                         } else {
                             //fn == global case
@@ -186,6 +183,8 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
                         break;
                     }
                 }
+                if(nearFunctionNode)
+                    markNeedsActivation(nearFunctionNode->outerFunctionNode());
             } else {
                 if(nearFunctionNode) {
                     size_t idx = std::distance(identifierInCurrentContext.begin(), iter);

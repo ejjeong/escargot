@@ -503,19 +503,18 @@ char16_t scanHexEscape(ParseContext* ctx, char16_t prefix) {
 
     len = (prefix == 'u') ? 4 : 2;
     for (i = 0; i < len; ++i) {
-        if (ctx->m_index < ctx->m_length && isHexDigit(ctx->m_source[ctx->m_length])) {
+        if (ctx->m_index < ctx->m_length && isHexDigit(ctx->m_source[ctx->m_index])) {
             ch = ctx->m_source[ctx->m_index++];
             int c;
             if(ch >= '0' && ch <= '9') {
                 c = ch - '0';
             } else if(ch >= 'a' && ch <= 'f') {
-                c = ch - 'a';
+                c = ch - 'a' + 10;
             } else if(ch >= 'A' && ch <= 'F') {
-                c = ch - 'A';
+                c = ch - 'A' + 10;
             }
             code = code * 16 + c;
         } else {
-            RELEASE_ASSERT_NOT_REACHED();
             return '\0';
         }
     }
@@ -1859,6 +1858,70 @@ escargot::Node* finishLiteralNode(ParseContext* ctx, RefPtr<ParseStatus> ps)
 }
 
 
+void rearrangeNode(escargot::StatementNodeVector& body)
+{
+    /*
+#ifndef NDEBUG
+    puts("----------");
+    for(size_t i = 0; i < body.size() ; i ++) {
+        if(body[i]->type() == escargot::NodeType::FunctionDeclaration) {
+            puts("FD");
+        } else if(body[i]->type() == escargot::NodeType::VariableDeclarator) {
+            puts("VariableDeclarator");
+        } else {
+            puts("O");
+        }
+    }
+    puts("----------");
+#endif
+*/
+    size_t firstNormalStatementPlace = SIZE_MAX; //not var, function decl.
+    for(size_t i = 0; i < body.size() ; i ++) {
+        if(body[i]->type() != escargot::NodeType::FunctionDeclaration &&
+                body[i]->type() != escargot::NodeType::VariableDeclarator) {
+            firstNormalStatementPlace = i;
+            break;
+        }
+    }
+    if(firstNormalStatementPlace != SIZE_MAX) {
+        for(size_t i = 0; i < firstNormalStatementPlace ; i ++) {
+            if(body[i]->type() == escargot::NodeType::FunctionDeclaration) {
+                for(size_t j = firstNormalStatementPlace - 1 ; j > i ; j --) {
+                    if(body[j]->type() != escargot::NodeType::FunctionDeclaration) {
+                        std::iter_swap(body.begin() + i, body.begin() + j);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    /*
+#ifndef NDEBUG
+    puts("----------");
+    for(size_t i = 0; i < body.size() ; i ++) {
+        if(body[i]->type() == escargot::NodeType::FunctionDeclaration) {
+            puts("FD");
+        } else if(body[i]->type() == escargot::NodeType::VariableDeclarator) {
+            puts("VariableDeclaration");
+        } else {
+            puts("O");
+        }
+    }
+    puts("----------");
+#endif
+*/
+#ifndef NDEBUG
+    bool findFD = false;
+    for(size_t i = 0; i < body.size() ; i ++) {
+        if(body[i]->type() == escargot::NodeType::FunctionDeclaration) {
+            findFD = true;
+        } else if(findFD && (body[i]->type() == escargot::NodeType::VariableDeclarator)){
+            ASSERT_NOT_REACHED();
+        }
+    }
+#endif
+}
+
 void reinterpretExpressionAsPattern(ParseContext* ctx, escargot::Node* expr);
 escargot::Node* parseAssignmentExpression(ParseContext* ctx);
 escargot::Node* parseFunctionDeclaration(ParseContext* ctx/*node, identifierIsOptional*/);
@@ -3040,6 +3103,8 @@ escargot::Node* parseFunctionSourceElements(ParseContext* ctx) {
     ctx->m_inFunctionBody = oldInFunctionBody;
     ctx->m_parenthesizedCount = oldParenthesisCount;
 
+    rearrangeNode(*ctx->m_currentBody);
+
     ctx->m_currentBody = prevBody;
     escargot::Node* nd;
     switch(body.size()) {
@@ -3309,6 +3374,11 @@ escargot::Node* parseFunctionDeclaration(ParseContext* ctx/*node, identifierIsOp
     nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
     ctx->m_currentBody->insert(ctx->m_currentBody->begin(), nd);
 
+    escargot::VariableDeclaratorNode* v = new escargot::VariableDeclaratorNode(
+            new escargot::IdentifierNode(((escargot::IdentifierNode *)id)->name())
+            );
+
+    ctx->m_currentBody->insert(ctx->m_currentBody->begin(), v);
     return NULL;
 }
 
@@ -5035,6 +5105,8 @@ escargot::StatementNodeVector parseScriptBody(ParseContext* ctx)
         if(statement)
             body.push_back(statement);
     }
+
+    rearrangeNode(*ctx->m_currentBody);
     return body;
 }
 
