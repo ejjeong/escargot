@@ -18,6 +18,9 @@ public:
         ASSERT(property->type() == NodeType::Identifier);
         m_object = object;
         m_propertyValue = ESValue(((IdentifierNode *)property)->nonAtomicName());
+#ifndef NDEBUG
+        m_propertyName = ((IdentifierNode *)property)->nonAtomicName();
+#endif
         m_cachedHiddenClass = nullptr;
     }
 
@@ -122,6 +125,9 @@ public:
 protected:
     ESHiddenClass* m_cachedHiddenClass;
     ESValue m_propertyValue;
+#ifndef NDEBUG
+    ESString* m_propertyName;
+#endif
     size_t m_cachedIndex;
 
     Node* m_object; //object: Expression;
