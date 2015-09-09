@@ -20,33 +20,39 @@ public:
 
     void executeStatement(ESVMInstance* instance)
     {
+        ESValue test;
         if(UNLIKELY(m_isSlowCase)) {
             if (m_init)
                 m_init->executeExpression(instance);
-            ESValue test = m_test->executeExpression(instance);
+            test = m_test ? m_test->executeExpression(instance) : ESValue(true);
             instance->currentExecutionContext()->setJumpPositionAndExecute([&](){
                 jmpbuf_wrapper cont;
                 int r = setjmp(cont.m_buffer);
                 if (r != 1) {
                     instance->currentExecutionContext()->pushContinuePosition(cont);
                 } else {
-                    m_update->executeExpression(instance);
-                    test = m_test->executeExpression(instance);
-                }
+                    if (m_update)
+                        m_update->executeExpression(instance);
+                    test = m_test ? m_test->executeExpression(instance) : ESValue(true);
+                  }
                 while (test.toBoolean()) {
                     m_body->executeStatement(instance);
-                    m_update->executeExpression(instance);
-                    test = m_test->executeExpression(instance);
-                }
+                    if (m_update)
+                        m_update->executeExpression(instance);
+                    test = m_test ? m_test->executeExpression(instance) : ESValue(true);
+                  }
                 instance->currentExecutionContext()->popContinuePosition();
             });
         } else {
             if (m_init)
                 m_init->executeExpression(instance);
-            while(m_test->executeExpression(instance).toBoolean()) {
+            test = m_test ? m_test->executeExpression(instance) : ESValue(true);
+            while(test.toBoolean()) {
                 m_body->executeStatement(instance);
-                m_update->executeExpression(instance);
-            }
+                if (m_update)
+                    m_update->executeExpression(instance);
+                test = m_test ? m_test->executeExpression(instance) : ESValue(true);
+             }
         }
     }
 
