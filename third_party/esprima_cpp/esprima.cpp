@@ -2565,7 +2565,7 @@ escargot::Node* parseContinueStatement(ParseContext* ctx/*node*/) {
         return nd;
     }
 
-    if (ctx->m_hasLineTerminator) {
+    if (ctx->m_hasLineTerminator || ctx->m_lookahead->m_value == u"}") {
         if (!ctx->m_inIteration) {
             //throwError(Messages.IllegalContinue);
             throw u"Messages.IllegalContinue";
