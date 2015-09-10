@@ -81,6 +81,11 @@ public:
         longjmp((*(m_labelPositions.rbegin() + upIndex)).m_buffer, 1);
     }
 
+    void doLabeledContinue(size_t upIndex)
+    {
+        longjmp((*(m_labelPositions.rbegin() + upIndex)).m_buffer, 2);
+    }
+
     void pushContinuePosition(jmpbuf_wrapper& pos)
     {
         m_continuePositions.push_back(pos);
@@ -114,8 +119,10 @@ public:
     void setLabelPositionAndExecute(const T& fn) {
         jmpbuf_wrapper newone;
         int r = setjmp(newone.m_buffer);
-        if (r != 1) {
+        if (r == 0) {
             m_labelPositions.push_back(newone);
+            fn();
+        } else if (r == 2) {
             fn();
         }
         m_labelPositions.pop_back();

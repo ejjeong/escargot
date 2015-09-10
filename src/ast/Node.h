@@ -25,6 +25,7 @@ enum NodeType {
     BreakStatement,
     BreakLabelStatement,
     ContinueStatement,
+    ContinueLabelStatement,
     ReturnStatement,
     IfStatement,
     ForStatement,

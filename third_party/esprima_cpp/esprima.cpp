@@ -2546,7 +2546,6 @@ escargot::Node* parseForStatement(ParseContext* ctx/*node*/) {
 
 escargot::Node* parseContinueStatement(ParseContext* ctx/*node*/) {
     //var label = null, key;
-    escargot::Node* label = nullptr;
 
     expectKeyword(ctx, u"continue");
 
@@ -2565,7 +2564,7 @@ escargot::Node* parseContinueStatement(ParseContext* ctx/*node*/) {
         return nd;
     }
 
-    if (ctx->m_hasLineTerminator || ctx->m_lookahead->m_value == u"}") {
+    if (ctx->m_hasLineTerminator) {
         if (!ctx->m_inIteration) {
             //throwError(Messages.IllegalContinue);
             throw u"Messages.IllegalContinue";
@@ -2577,26 +2576,42 @@ escargot::Node* parseContinueStatement(ParseContext* ctx/*node*/) {
         return nd;
     }
 
-    RELEASE_ASSERT_NOT_REACHED();
-    /*
+    escargot::Node* label = NULL;
+    size_t upCount = 0;
+    if(ctx->m_lookahead->m_type == Token::IdentifierToken) {
+        label = parseVariableIdentifier(ctx);
+        escargot::ESString* key = ((escargot::IdentifierNode *)label)->nonAtomicName();
 
-    if (lookahead.type === Token.Identifier) {
-        label = parseVariableIdentifier();
-
-        key = '$' + label.name;
-        if (!Object.prototype.hasOwnProperty.call(state.labelSet, key)) {
-            throwError(Messages.UnknownLabel, label.name);
+        auto iter = ctx->m_labelSet.rbegin();
+        bool find = false;
+        while(iter != ctx->m_labelSet.rend()) {
+            if((*iter)->string() == key->string()) {
+                find = true;
+                break;
+            }
+            upCount ++;
+            iter ++;
+        }
+        if(!find) {
+            throw u"Error(Messages.UnknownLabel, label.name)";
         }
     }
 
-    consumeSemicolon();
+    consumeSemicolon(ctx);
 
-    if (label === null && !state.inIteration) {
-        throwError(Messages.IllegalContinue);
+    if (label == NULL && !(ctx->m_inIteration || ctx->m_inSwitch)) {
+        throw u"throwError(Messages.IllegalContinue);";
     }
 
-    return node.finishContinueStatement(label);
-    */
+    if(label) {
+        escargot::Node* nd = new escargot::ContinueLabelStatementNode(upCount, ((escargot::IdentifierNode *)label)->nonAtomicName());
+        nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
+        return nd;
+    } else {
+        escargot::Node* nd = new escargot::ContinueStatementNode();
+        nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
+        return nd;
+    }
 }
 
 // ECMA-262 13.9 The break statement
