@@ -171,6 +171,7 @@ protected:
     bool m_isSlowCase;
 };
 
+
 }
 
 #endif

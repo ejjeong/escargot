@@ -1104,7 +1104,7 @@ ALWAYS_INLINE ESValue ESObject::get(escargot::ESValue key, bool searchPrototype)
         int idx = key.asInt32();
         if(LIKELY(idx >= 0 && idx < asESArrayObject()->length())) {
             ESValue e = asESArrayObject()->m_vector[idx];
-            if(e == ESValue(ESValue::ESEmptyValue))
+            if(UNLIKELY(e == ESValue(ESValue::ESEmptyValue)))
                 return ESValue();
             else
                 return e;

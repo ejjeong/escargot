@@ -63,22 +63,24 @@ public:
             } else {
                 instance->globalObject()->stringObjectProxy()->setString(value.asESString());
                 ESSlotAccessor slot = instance->globalObject()->stringObjectProxy()->find(m_propertyValue, true);
-                if(slot.isDataProperty()) {
-                    ESValue ret = slot.readDataProperty();
-                    if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->functionAST()->isBuiltInFunction()) {
-                        instance->currentExecutionContext()->setLastESObjectMetInMemberExpressionNode(instance->globalObject()->stringObjectProxy());
-                        return ret;
-                    }
-                } else {
-                    if(slot.accessorData() == instance->stringObjectLengthAccessorData()) {
-                        return slot.value();
+                if(slot.hasData()) {
+                    if(slot.isDataProperty()) {
+                        ESValue ret = slot.readDataProperty();
+                        if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->functionAST()->isBuiltInFunction()) {
+                            instance->currentExecutionContext()->setLastESObjectMetInMemberExpressionNode(instance->globalObject()->stringObjectProxy());
+                            return ret;
+                        }
+                    } else {
+                        if(slot.accessorData() == instance->stringObjectLengthAccessorData()) {
+                            return slot.value();
+                        }
                     }
                 }
             }
         } else if(UNLIKELY(value.isNumber())) {
             instance->globalObject()->numberObjectProxy()->setNumberData(value.asNumber());
             ESSlotAccessor slot = instance->globalObject()->numberObjectProxy()->find(m_propertyValue, true);
-            if(slot.isDataProperty()) {
+            if(slot.hasData() && slot.isDataProperty()) {
                 ESValue ret = slot.value();
                 if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->functionAST()->isBuiltInFunction()) {
                     instance->currentExecutionContext()->setLastESObjectMetInMemberExpressionNode(instance->globalObject()->numberObjectProxy());

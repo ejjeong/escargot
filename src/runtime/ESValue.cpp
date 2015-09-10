@@ -69,11 +69,17 @@ bool ESValue::abstractEqualsTo(const ESValue& val)
 
 bool ESValue::equalsTo(const ESValue& val)
 {
-    if(isNumber()) {
-        return asNumber() == val.toNumber();
-    }
+    if(isUndefined())
+        return val.isUndefined();
+
+    if(isNull())
+        return val.isNull();
+
     if(isBoolean())
-        return asBoolean() == val.toBoolean();
+        return val.isBoolean() && asBoolean() == val.asBoolean();
+
+    if(isNumber())
+        return val.isNumber() && asNumber() == val.asNumber();
 
     if(isESPointer()) {
         ESPointer* o = asESPointer();
@@ -92,12 +98,6 @@ bool ESValue::equalsTo(const ESValue& val)
         //TODO
         return false;
     }
-
-    if(isUndefined())
-        return val.isUndefined();
-
-    if(isNull())
-        return val.isNull();
 
     RELEASE_ASSERT_NOT_REACHED();
 }
