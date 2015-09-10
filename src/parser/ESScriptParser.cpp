@@ -350,6 +350,9 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
             postAnalysisFunction(((CatchClauseNode *)currentNode)->m_body, identifierStack, nearFunctionNode);
         } else if (type == NodeType::ThrowStatement) {
             postAnalysisFunction(((ThrowStatementNode *)currentNode)->m_argument, identifierStack, nearFunctionNode);
+        } else if (type == NodeType::LabeledStatement) {
+            postAnalysisFunction(((LabeledStatementNode *)currentNode)->m_statementNode, identifierStack, nearFunctionNode);
+        } else if (type == NodeType::BreakLabelStatement) {
         } else {
             RELEASE_ASSERT_NOT_REACHED();
         }
@@ -637,6 +640,9 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
 
         } else if(type == NodeType::IdentifierFastCaseWithActivation) {
 
+        } else if (type == NodeType::LabeledStatement) {
+            postProcessingFunction(((LabeledStatementNode *)currentNode)->m_statementNode, nearFunction);
+        } else if (type == NodeType::BreakLabelStatement) {
         } else {
             RELEASE_ASSERT_NOT_REACHED();
         }

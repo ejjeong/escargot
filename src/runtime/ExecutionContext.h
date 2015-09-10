@@ -76,6 +76,11 @@ public:
         longjmp(m_continuePositions.back().m_buffer, 1);
     }
 
+    void doLabeledBreak(size_t upIndex)
+    {
+        longjmp((*(m_labelPositions.rbegin() + upIndex)).m_buffer, 1);
+    }
+
     void pushContinuePosition(jmpbuf_wrapper& pos)
     {
         m_continuePositions.push_back(pos);
@@ -103,6 +108,17 @@ public:
                 m_continuePositions.pop_back();
         }
         m_breakPositions.pop_back();
+    }
+
+    template <typename T>
+    void setLabelPositionAndExecute(const T& fn) {
+        jmpbuf_wrapper newone;
+        int r = setjmp(newone.m_buffer);
+        if (r != 1) {
+            m_labelPositions.push_back(newone);
+            fn();
+        }
+        m_labelPositions.pop_back();
     }
 
     ESValue returnValue()
@@ -145,6 +161,7 @@ private:
 
     std::vector<jmpbuf_wrapper> m_breakPositions;
     std::vector<jmpbuf_wrapper> m_continuePositions;
+    std::vector<jmpbuf_wrapper> m_labelPositions;
 };
 
 }

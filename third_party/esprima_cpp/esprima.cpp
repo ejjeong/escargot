@@ -428,7 +428,7 @@ struct ParseContext {
     size_t m_length;
     bool m_allowIn;
     bool m_allowYield;
-    std::vector<std::u16string> m_labelSet;
+    std::vector<escargot::ESString *,gc_allocator<escargot::ESString *>> m_labelSet;
     bool m_inFunctionBody;
     bool m_inIteration;
     bool m_inSwitch;
@@ -2621,7 +2621,7 @@ escargot::Node* parseBreakStatement(ParseContext* ctx/*node*/) {
         return nd;
     }
 
-    if (ctx->m_hasLineTerminator || ctx->m_lookahead->m_value == u"}") {
+    if (ctx->m_hasLineTerminator) {
         if (!(ctx->m_inIteration || ctx->m_inSwitch)) {
             //throwError(Messages.IllegalBreak);
             throw u"Messages.IllegalBreak";
@@ -2631,26 +2631,41 @@ escargot::Node* parseBreakStatement(ParseContext* ctx/*node*/) {
         return nd;
     }
 
-    RELEASE_ASSERT_NOT_REACHED();
-    /*
+    escargot::Node* label = NULL;
+    size_t upCount = 0;
+    if(ctx->m_lookahead->m_type == Token::IdentifierToken) {
+        label = parseVariableIdentifier(ctx);
+        escargot::ESString* key = ((escargot::IdentifierNode *)label)->nonAtomicName();
 
-    if (lookahead.type === Token.Identifier) {
-        label = parseVariableIdentifier();
-
-        key = '$' + label.name;
-        if (!Object.prototype.hasOwnProperty.call(state.labelSet, key)) {
-            throwError(Messages.UnknownLabel, label.name);
+        auto iter = ctx->m_labelSet.rbegin();
+        bool find = false;
+        while(iter != ctx->m_labelSet.rend()) {
+            if((*iter)->string() == key->string()) {
+                find = true;
+                break;
+            }
+            upCount ++;
+            iter ++;
+        }
+        if(!find) {
+            throw u"Error(Messages.UnknownLabel, label.name)";
         }
     }
 
-    consumeSemicolon();
+    consumeSemicolon(ctx);
 
-    if (label === null && !(state.inIteration || state.inSwitch)) {
-        throwError(Messages.IllegalBreak);
+    if (label == NULL && !(ctx->m_inIteration || ctx->m_inSwitch)) {
+        throw u"throwError(Messages.IllegalBreak);";
     }
-
-    return node.finishBreakStatement(label);
-    */
+    if(label) {
+        escargot::Node* nd = new escargot::BreakLabelStatementNode(upCount, ((escargot::IdentifierNode *)label)->nonAtomicName());
+        nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
+        return nd;
+    } else {
+        escargot::Node* nd = new escargot::BreakStatementNode();
+        nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
+        return nd;
+    }
 }
 
 // ECMA-262 13.10 The return statement
@@ -2981,20 +2996,23 @@ escargot::Node* parseStatement(ParseContext* ctx) {
 
     // ECMA-262 12.12 Labelled Statements
     if ((expr->type() == escargot::NodeType::Identifier) && match(ctx, ':')) {
-        RELEASE_ASSERT_NOT_REACHED();
-        /*
-        lex();
+        lex(ctx);
 
-        key = '$' + expr.name;
-        if (Object.prototype.hasOwnProperty.call(state.labelSet, key)) {
-            throwError(Messages.Redeclaration, 'Label', expr.name);
+        escargot::ESString* key = ((escargot::IdentifierNode *)expr)->nonAtomicName();
+        auto iter = ctx->m_labelSet.begin();
+        while(iter != ctx->m_labelSet.end()) {
+            if((*iter)->string() == key->string()) {
+                throw u"throwError(Messages.Redeclaration, 'Label', expr.name);";
+            }
+            iter ++;
         }
 
-        state.labelSet[key] = true;
-        labeledBody = parseStatement();
-        delete state.labelSet[key];
-        return node.finishLabeledStatement(expr, labeledBody);
-        */
+        ctx->m_labelSet.push_back(key);
+        escargot::Node* labeledBody = parseStatement(ctx);
+        ctx->m_labelSet.pop_back();
+        escargot::LabeledStatementNode* nd = new escargot::LabeledStatementNode((escargot::StatementNode *)labeledBody, key);
+        nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
+        return nd;
     }
 
     consumeSemicolon(ctx);
@@ -3074,7 +3092,7 @@ escargot::Node* parseFunctionSourceElements(ParseContext* ctx) {
         }*/
     }
 
-    std::vector<std::u16string> oldLabelSet = ctx->m_labelSet;
+    std::vector<escargot::ESString *,gc_allocator<escargot::ESString *>> oldLabelSet = ctx->m_labelSet;
     bool oldInIteration = ctx->m_inIteration;
     bool oldInSwitch = ctx->m_inSwitch;
     bool oldInFunctionBody = ctx->m_inFunctionBody;

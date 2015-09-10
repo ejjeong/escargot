@@ -24,13 +24,11 @@ public:
     ESValue executeExpression(ESVMInstance* instance)
     {
         ASSERT(!(m_canUseFastAccess));
-//        ASSERT(instance->currentExecutionContext()->needsActivation());
         if (LIKELY(m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
             return m_cachedSlot.readDataProperty();
         } else {
             ExecutionContext* ec = instance->currentExecutionContext();
             ESSlotAccessor slot = ec->resolveBinding(name(), nonAtomicName());
-            //printf("%s\n", nonAtomicName()->utf8Data());
             if(LIKELY(slot.hasData())) {
                 m_cachedSlot = ESSlotAccessor(slot);
                 m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
