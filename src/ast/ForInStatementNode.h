@@ -26,7 +26,6 @@ public:
                 return ;
 
             ExecutionContext* ec = instance->currentExecutionContext();
-            ec->resetLastESObjectMetInMemberExpressionNode();
 
             std::vector<ESValue> propertyVals;
             ESObject* obj = exprValue.toObject();
@@ -50,9 +49,8 @@ public:
                 for (unsigned int i=0; i<propertyVals.size(); i++) {
                     if (obj->hasOwnProperty(propertyVals[i])) {
                         ESValue name = propertyVals[i];
-                        ESSlotWriterForAST::prepareExecuteForWriteASTNode(ec);
                         ESSlotAccessor slot = m_left->executeForWrite(instance);
-                        ESSlotWriterForAST::setValue(slot, ec, name);
+                        slot.setValue(name);
                         m_body->executeStatement(instance);
                     }
                 }
@@ -64,7 +62,6 @@ public:
                 return ;
 
             ExecutionContext* ec = instance->currentExecutionContext();
-            ec->resetLastESObjectMetInMemberExpressionNode();
 
             std::vector<ESValue> propertyVals;
             ESObject* obj = exprValue.toObject();
@@ -84,9 +81,8 @@ public:
             for (unsigned int i=0; i<propertyVals.size(); i++) {
                 if (obj->hasOwnProperty(propertyVals[i])) {
                     ESValue name = propertyVals[i];
-                    ESSlotWriterForAST::prepareExecuteForWriteASTNode(ec);
                     ESSlotAccessor slot = m_left->executeForWrite(instance);
-                    ESSlotWriterForAST::setValue(slot, ec, name);
+                    slot.setValue(name);
                     m_body->executeStatement(instance);
                 }
             }

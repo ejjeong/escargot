@@ -22,14 +22,11 @@ public:
     ESValue executeExpression(ESVMInstance* instance)
     {
         ASSERT(m_left->type() != NodeType::IdentifierFastCase);
-        ExecutionContext* ec = instance->currentExecutionContext();
-        ESSlotWriterForAST::prepareExecuteForWriteASTNode(ec);
 
         //http://www.ecma-international.org/ecma-262/5.1/#sec-11.13.1
         ESSlotAccessor slot = m_left->executeForWrite(instance);
-        ESObject* obj = instance->currentExecutionContext()->lastESObjectMetInMemberExpressionNode();
         ESValue rvalue = m_right->executeExpression(instance);
-        slot.setValue(rvalue, obj);
+        slot.setValue(rvalue);
         return rvalue;
     }
 

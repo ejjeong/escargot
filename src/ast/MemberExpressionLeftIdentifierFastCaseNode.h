@@ -75,7 +75,7 @@ public:
                     }
                 } else {
                     if(slot.accessorData() == instance->stringObjectLengthAccessorData()) {
-                        return slot.value(instance->globalObject()->stringObjectProxy());
+                        return slot.value();
                     }
                 }
             }
@@ -83,7 +83,7 @@ public:
             instance->globalObject()->numberObjectProxy()->setNumberData(value.asNumber());
             ESSlotAccessor slot = instance->globalObject()->numberObjectProxy()->find(propertyValue, true);
             if(slot.isDataProperty()) {
-                ESValue ret = slot.value(instance->globalObject()->numberObjectProxy());
+                ESValue ret = slot.value();
                 if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->functionAST()->isBuiltInFunction()) {
                     instance->currentExecutionContext()->setLastESObjectMetInMemberExpressionNode(instance->globalObject()->numberObjectProxy());
                     return ret;
@@ -102,19 +102,19 @@ public:
         if(obj->isHiddenClassMode() && !obj->isESArrayObject()) {
             ESString* val = propertyValue.toString();
             if(m_cachedHiddenClass == obj->hiddenClass() && (val == m_cachedPropertyValue || *val == *m_cachedPropertyValue)) {
-                return obj->readHiddenClass(m_cachedIndex).value(obj);
+                return obj->readHiddenClass(m_cachedIndex).value();
             } else {
                 size_t idx = obj->hiddenClass()->findProperty(val);
                 if(idx != SIZE_MAX) {
                     m_cachedHiddenClass = obj->hiddenClass();
                     m_cachedPropertyValue = val;
                     m_cachedIndex = idx;
-                    return obj->readHiddenClass(idx).value(obj);
+                    return obj->readHiddenClass(idx).value();
                 } else {
                     m_cachedHiddenClass = nullptr;
                     ESSlotAccessor ac = obj->findOnlyPrototype(val);
                     if(ac.hasData())
-                        return obj->findOnlyPrototype(val).value(obj);
+                        return obj->findOnlyPrototype(val).value();
                     return ESValue();
                 }
             }

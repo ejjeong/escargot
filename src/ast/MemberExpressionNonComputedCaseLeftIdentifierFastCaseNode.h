@@ -71,7 +71,7 @@ public:
                     }
                 } else {
                     if(slot.accessorData() == instance->stringObjectLengthAccessorData()) {
-                        return slot.value(instance->globalObject()->stringObjectProxy());
+                        return slot.value();
                     }
                 }
             }
@@ -79,7 +79,7 @@ public:
             instance->globalObject()->numberObjectProxy()->setNumberData(value.asNumber());
             ESSlotAccessor slot = instance->globalObject()->numberObjectProxy()->find(m_propertyValue, true);
             if(slot.isDataProperty()) {
-                ESValue ret = slot.value(instance->globalObject()->numberObjectProxy());
+                ESValue ret = slot.value();
                 if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->functionAST()->isBuiltInFunction()) {
                     instance->currentExecutionContext()->setLastESObjectMetInMemberExpressionNode(instance->globalObject()->numberObjectProxy());
                     return ret;
@@ -97,17 +97,17 @@ public:
 
         if(obj->isHiddenClassMode()) {
             if(m_cachedHiddenClass == obj->hiddenClass()) {
-                return obj->readHiddenClass(m_cachedIndex).value(obj);
+                return obj->readHiddenClass(m_cachedIndex).value();
             } else {
                 size_t idx = obj->hiddenClass()->findProperty(m_propertyValue.asESString());
                 if(idx != SIZE_MAX) {
                     m_cachedHiddenClass = obj->hiddenClass();
                     m_cachedIndex = idx;
-                    return obj->readHiddenClass(idx).value(obj);
+                    return obj->readHiddenClass(idx).value();
                 } else {
                     ESSlotAccessor ac = obj->findOnlyPrototype(m_propertyValue.asESString());
                     if(ac.hasData())
-                        return ac.value(obj);
+                        return ac.value();
                     return ESValue();
                 }
             }

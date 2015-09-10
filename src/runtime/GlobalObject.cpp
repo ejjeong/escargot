@@ -347,7 +347,7 @@ void GlobalObject::installObject()
 
                 v = desc->get(ESString::create(u"value"), true);
 
-                obj->definePropertyOrThrow(key, isWritable, isEnumerable, isConfigurable).setValue(v, obj);
+                obj->definePropertyOrThrow(key, isWritable, isEnumerable, isConfigurable).setValue(v);
             } else {
                 throw ESValue(TypeError::create());
             }

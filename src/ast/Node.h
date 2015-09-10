@@ -171,24 +171,6 @@ protected:
     bool m_isSlowCase;
 };
 
-class ESSlotWriterForAST {
-public:
-    ALWAYS_INLINE static void prepareExecuteForWriteASTNode(ExecutionContext* ec)
-    {
-        ec->resetLastESObjectMetInMemberExpressionNode();
-    }
-
-    ALWAYS_INLINE static ESValue readValue(ESSlotAccessor slot, ExecutionContext* ec)
-    {
-        return slot.value(ec->lastESObjectMetInMemberExpressionNode());
-    }
-
-    ALWAYS_INLINE static void setValue(ESSlotAccessor slot, ExecutionContext* ec, ESValue v)
-    {
-        slot.setValue(v, ec->lastESObjectMetInMemberExpressionNode());
-    }
-};
-
 }
 
 #endif

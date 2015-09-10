@@ -22,12 +22,9 @@ public:
     ESValue executeExpression(ESVMInstance* instance)
     {
         ESSlotAccessor slot;
-        ExecutionContext* ec = instance->currentExecutionContext();
-        ESSlotWriterForAST::prepareExecuteForWriteASTNode(ec);
-
         slot = m_left->executeForWrite(instance);
-        ESValue rvalue(slot.value(ec->lastESObjectMetInMemberExpressionNode()).toNumber() / m_right->executeExpression(instance).toNumber());
-        ESSlotWriterForAST::setValue(slot, ec, rvalue);
+        ESValue rvalue(slot.value().toNumber() / m_right->executeExpression(instance).toNumber());
+        slot.setValue(rvalue);
         return rvalue;
     }
 

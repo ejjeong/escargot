@@ -529,20 +529,25 @@ inline bool ESValue::isPrimitive() const
 
 inline void ESSlot::setValue(const ::escargot::ESValue& value, ::escargot::ESObject* object)
 {
-    ESSlotAccessor accessor(const_cast<ESSlot*>(this));
-    return accessor.setValue(value, object);
+    if(LIKELY(m_isDataProperty)) {
+        m_data = value;
+    } else {
+        ESAccessorData* data = (ESAccessorData*)m_data.asESPointer();
+        if(data->m_setter)
+            data->m_setter(object, value);
+    }
 }
 
 inline ESValue ESSlot::value(::escargot::ESObject* object) const
 {
-    ESSlotAccessor accessor(const_cast<ESSlot*>(this));
-    return accessor.value(object);
+    if(LIKELY(m_isDataProperty)) {
+        return m_data;
+    } else {
+        ESAccessorData* data = (ESAccessorData*)m_data.asESPointer();
+        return data->m_getter(object);
+    }
 }
 
-inline void ESSlot::setDataProperty(const ::escargot::ESValue& value) {
-    ESSlotAccessor accessor(const_cast<ESSlot*>(this));
-    return accessor.setDataProperty(value);
-}
 
 //==============================================================================
 //===32-bit architecture========================================================
@@ -966,7 +971,7 @@ inline escargot::ESSlotAccessor ESObject::definePropertyOrThrow(escargot::ESValu
         if(iter != m_map->end()) {
             m_map->erase(iter);
         }
-        return ESSlotAccessor(&m_map->insert(std::make_pair(str, ::escargot::ESSlot(ESValue(), isWritable, isEnumerable, isConfigurable))).first->second);
+        return ESSlotAccessor(&m_map->insert(std::make_pair(str, ::escargot::ESSlot(ESValue(), isWritable, isEnumerable, isConfigurable))).first->second, this);
     } else {
         size_t ret = m_hiddenClass->defineProperty(this, key.toString(), true, isWritable, isEnumerable, isConfigurable);
         if((ret != SIZE_MAX) && (
@@ -986,7 +991,7 @@ inline escargot::ESSlotAccessor ESObject::definePropertyOrThrow(escargot::ESValu
         if(m_hiddenClass->m_propertyFlagInfo[ret].m_isDataProperty) {
             return escargot::ESSlotAccessor(&m_hiddenClassData[ret]);
         } else {
-            return escargot::ESSlotAccessor((ESAccessorData *)m_hiddenClassData[ret].asESPointer());
+            return escargot::ESSlotAccessor((ESAccessorData *)m_hiddenClassData[ret].asESPointer(), this);
         }
     }
 }
@@ -1017,7 +1022,7 @@ inline escargot::ESSlotAccessor ESObject::findOwnProperty(const ESValue& key)
         if(iter == m_map->end()) {
             return ESSlotAccessor();
         }
-        return ESSlotAccessor(&iter->second);
+        return ESSlotAccessor(&iter->second, this);
     } else {
         size_t ret = m_hiddenClass->findProperty(key.toString());
         if(ret == SIZE_MAX)
@@ -1025,7 +1030,7 @@ inline escargot::ESSlotAccessor ESObject::findOwnProperty(const ESValue& key)
         if(m_hiddenClass->m_propertyFlagInfo[ret].m_isDataProperty) {
             return escargot::ESSlotAccessor(&m_hiddenClassData[ret]);
         } else {
-            return escargot::ESSlotAccessor((ESAccessorData *)m_hiddenClassData[ret].asESPointer());
+            return escargot::ESSlotAccessor((ESAccessorData *)m_hiddenClassData[ret].asESPointer(), this);
         }
     }
 }
@@ -1107,7 +1112,7 @@ ALWAYS_INLINE ESValue ESObject::get(escargot::ESValue key, bool searchPrototype)
     }
     ESSlotAccessor ac = find(key, searchPrototype);
     if(LIKELY(ac.hasData())) {
-        return ac.value(this);
+        return ac.value();
     } else {
         return ESValue();
     }
@@ -1132,8 +1137,10 @@ inline escargot::ESSlotAccessor ESObject::find(escargot::ESValue key, bool searc
                 ESObject* target = this->m___proto__.asESPointer()->asESObject();
                 while(true) {
                     escargot::ESSlotAccessor s = target->find(key, false);
-                    if (s.hasData())
+                    if (s.hasData()) {
+                        s.switchOwner(this);
                         return s;
+                    }
                     ESValue proto = target->__proto__();
                     if (proto.isESPointer() && proto.asESPointer()->isESObject()) {
                         target = proto.asESPointer()->asESObject();
@@ -1144,7 +1151,7 @@ inline escargot::ESSlotAccessor ESObject::find(escargot::ESValue key, bool searc
             } else
                 return escargot::ESSlotAccessor();
         }
-        return escargot::ESSlotAccessor(&iter->second);
+        return escargot::ESSlotAccessor(&iter->second, this);
     } else {
         size_t idx = m_hiddenClass->findProperty(key.toString());
         if(idx == SIZE_MAX) {
@@ -1155,8 +1162,10 @@ inline escargot::ESSlotAccessor ESObject::find(escargot::ESValue key, bool searc
                 ESObject* target = this->m___proto__.asESPointer()->asESObject();
                 while(true) {
                     escargot::ESSlotAccessor s = target->find(key, false);
-                    if (s.hasData())
+                    if (s.hasData()) {
+                        s.switchOwner(this);
                         return s;
+                    }
                     ESValue proto = target->__proto__();
                     if (proto.isESPointer() && proto.asESPointer()->isESObject()) {
                         target = proto.asESPointer()->asESObject();
@@ -1171,7 +1180,7 @@ inline escargot::ESSlotAccessor ESObject::find(escargot::ESValue key, bool searc
             if(LIKELY(m_hiddenClass->m_propertyFlagInfo[idx].m_isDataProperty))
                 return ESSlotAccessor(&m_hiddenClassData[idx]);
             else
-                return ESSlotAccessor((ESAccessorData *)m_hiddenClassData[idx].asESPointer());
+                return ESSlotAccessor((ESAccessorData *)m_hiddenClassData[idx].asESPointer(), this);
         }
     }
 }
@@ -1185,8 +1194,10 @@ ALWAYS_INLINE escargot::ESSlotAccessor ESObject::findOnlyPrototype(escargot::ESV
     ESObject* target = this->m___proto__.asESPointer()->asESObject();
     while(true) {
         escargot::ESSlotAccessor s = target->find(key, false);
-        if (s.hasData())
+        if (s.hasData()) {
+            s.switchOwner(this);
             return s;
+        }
         ESValue proto = target->__proto__();
         if (proto.isESPointer() && proto.asESPointer()->isESObject()) {
             target = proto.asESPointer()->asESObject();
@@ -1273,7 +1284,7 @@ ALWAYS_INLINE void ESObject::enumeration(Functor t)
         auto iter = m_map->begin();
         while(iter != m_map->end()) {
             if(iter->second.isEnumerable()) {
-                t(ESValue((*iter).first), ESSlotAccessor(&(*iter).second));
+                t(ESValue((*iter).first), ESSlotAccessor(&(*iter).second, this));
             }
             iter++;
         }
@@ -1285,7 +1296,7 @@ ALWAYS_INLINE void ESObject::enumeration(Functor t)
                 if(m_hiddenClass->m_propertyFlagInfo[idx].m_isDataProperty) {
                     t(ESValue(iter->first), ESSlotAccessor(&m_hiddenClassData[idx]));
                 } else {
-                    t(ESValue(iter->first), ESSlotAccessor((ESAccessorData *)m_hiddenClassData[idx].asESPointer()));
+                    t(ESValue(iter->first), ESSlotAccessor((ESAccessorData *)m_hiddenClassData[idx].asESPointer(), this));
                 }
             }
             iter++;

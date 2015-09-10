@@ -17,10 +17,8 @@ public:
 
     ESValue executeExpression(ESVMInstance* instance)
     {
-        ExecutionContext* ec = instance->currentExecutionContext();
-        ESSlotWriterForAST::prepareExecuteForWriteASTNode(ec);
         ESSlotAccessor slot = m_argument->executeForWrite(instance);
-        ESValue argval = ESSlotWriterForAST::readValue(slot, ec);
+        ESValue argval = slot.value();
         ESValue ret = argval;
 
         if (LIKELY(argval.isInt32())) {
@@ -31,7 +29,7 @@ public:
             argval = ESValue(argnum - 1);
         }
 
-        ESSlotWriterForAST::setValue(slot, ec, argval);
+        slot.setValue(argval);
 
         return ret;
     }

@@ -22,11 +22,9 @@ public:
     ESValue executeExpression(ESVMInstance* instance)
     {
         ESSlotAccessor slot;
-        ExecutionContext* ec = instance->currentExecutionContext();
-        ESSlotWriterForAST::prepareExecuteForWriteASTNode(ec);
 
         slot = m_left->executeForWrite(instance);
-        ESValue lval = slot.value(ec->lastESObjectMetInMemberExpressionNode());
+        ESValue lval = slot.value();
         ESValue rval = m_right->executeExpression(instance);
         ESValue ret(ESValue::ESForceUninitialized);
         // http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.1
@@ -55,7 +53,7 @@ public:
             else
                 ret = ESValue(lval.toNumber() - rval.toNumber());
         }
-        ESSlotWriterForAST::setValue(slot, ec, ret);
+        slot.setValue(ret);
         return ret;
     }
 

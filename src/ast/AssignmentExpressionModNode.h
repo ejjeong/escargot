@@ -22,12 +22,10 @@ public:
     ESValue executeExpression(ESVMInstance* instance)
     {
         ESSlotAccessor slot;
-        ExecutionContext* ec = instance->currentExecutionContext();
-        ESSlotWriterForAST::prepareExecuteForWriteASTNode(ec);
 
         slot = m_left->executeForWrite(instance);
 
-        ESValue lval = ESSlotWriterForAST::readValue(slot, ec);
+        ESValue lval = slot.value();
         ESValue rval = m_right->executeExpression(instance);
         ESValue ret(ESValue::ESForceUninitialized);
         if (lval.isInt32() && rval.isInt32()) {
@@ -54,7 +52,7 @@ public:
                 }
             }
         }
-        ESSlotWriterForAST::setValue(slot, ec, ret);
+        slot.setValue(ret);
         return ret;
     }
 
