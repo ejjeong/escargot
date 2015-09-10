@@ -1094,10 +1094,16 @@ ALWAYS_INLINE bool ESObject::hasOwnProperty(escargot::ESValue key)
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-get-o-p
 ALWAYS_INLINE ESValue ESObject::get(escargot::ESValue key, bool searchPrototype)
 {
+    //TODO a["0"] == a[0]
     if (isESArrayObject() && asESArrayObject()->isFastmode() && key.isInt32()) {
         int idx = key.asInt32();
-        if(LIKELY(idx >= 0 && idx < asESArrayObject()->length()))
-            return asESArrayObject()->m_vector[idx];
+        if(LIKELY(idx >= 0 && idx < asESArrayObject()->length())) {
+            ESValue e = asESArrayObject()->m_vector[idx];
+            if(e == ESValue(ESValue::ESEmptyValue))
+                return ESValue();
+            else
+                return e;
+        }
     }
     ESSlotAccessor ac = find(key, searchPrototype);
     if(LIKELY(ac.hasData())) {

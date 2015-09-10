@@ -96,6 +96,9 @@ bool ESValue::equalsTo(const ESValue& val)
     if(isUndefined())
         return val.isUndefined();
 
+    if(isNull())
+        return val.isNull();
+
     RELEASE_ASSERT_NOT_REACHED();
 }
 
