@@ -53,7 +53,9 @@ public:
             arguments[i] = m_arguments[i]->executeExpression(instance);
         }
 
-        ESFunctionObject::call(instance, fn, receiver, arguments, m_arguments.size(), true);
+        ESValue res = ESFunctionObject::call(instance, fn, receiver, arguments, m_arguments.size(), true);
+        if (res.isObject())
+            return res;
         return receiver;
     }
 
