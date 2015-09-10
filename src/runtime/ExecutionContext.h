@@ -88,13 +88,19 @@ public:
 
     template <typename T>
     void setJumpPositionAndExecute(const T& fn) {
+        setJumpPositionAndExecute(false, fn);
+    }
+
+    template <typename T>
+    void setJumpPositionAndExecute(bool NoNeedContinue, const T& fn) {
         jmpbuf_wrapper newone;
         int r = setjmp(newone.m_buffer);
         if (r != 1) {
             m_breakPositions.push_back(newone);
             fn();
         } else {
-            m_continuePositions.pop_back();
+            if (LIKELY(!NoNeedContinue))
+                m_continuePositions.pop_back();
         }
         m_breakPositions.pop_back();
     }

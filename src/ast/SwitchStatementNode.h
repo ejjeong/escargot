@@ -23,7 +23,7 @@ public:
     void executeStatement(ESVMInstance* instance)
     {
         ESValue input = m_discriminant->executeExpression(instance);
-        instance->currentExecutionContext()->setJumpPositionAndExecute([&](){
+        instance->currentExecutionContext()->setJumpPositionAndExecute(true, [&](){
             bool found = false;
             unsigned i;
             for (i = 0; i < m_casesA.size(); i++) {
