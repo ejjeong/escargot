@@ -1099,17 +1099,42 @@ ALWAYS_INLINE bool ESObject::hasOwnProperty(escargot::ESValue key)
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-get-o-p
 ALWAYS_INLINE ESValue ESObject::get(escargot::ESValue key, bool searchPrototype)
 {
-    //TODO a["0"] == a[0]
-    if (isESArrayObject() && asESArrayObject()->isFastmode() && key.isInt32()) {
-        int idx = key.asInt32();
-        if(LIKELY(idx >= 0 && idx < asESArrayObject()->length())) {
-            ESValue e = asESArrayObject()->m_vector[idx];
-            if(UNLIKELY(e == ESValue(ESValue::ESEmptyValue)))
-                return ESValue();
-            else
-                return e;
+    if (isESArrayObject() && asESArrayObject()->isFastmode()) {
+        if(key.isInt32()) {
+            int idx = key.asInt32();
+            if(LIKELY(idx >= 0 && idx < asESArrayObject()->length())) {
+                ESValue e = asESArrayObject()->m_vector[idx];
+                if(UNLIKELY(e == ESValue(ESValue::ESEmptyValue)))
+                    return ESValue();
+                else
+                    return e;
+            }
+        } else {
+            escargot::ESString* str = key.toString();
+            const u16string& s = str->string();
+            bool allOfCharIsDigit = true;
+            int number = 0;
+            for(unsigned i = 0; i < s.length() ; i ++) {
+                char16_t c = s[i];
+                if(c < '0' || c > '9') {
+                    allOfCharIsDigit = false;
+                    break;
+                } else {
+                    number = number*10 + (c-'0');
+                }
+            }
+            if(allOfCharIsDigit) {
+                if(LIKELY(number >= 0 && number < asESArrayObject()->length())) {
+                    ESValue e = asESArrayObject()->m_vector[number];
+                    if(UNLIKELY(e == ESValue(ESValue::ESEmptyValue)))
+                        return ESValue();
+                    else
+                        return e;
+                }
+            }
         }
     }
+
     ESSlotAccessor ac = find(key, searchPrototype);
     if(LIKELY(ac.hasData())) {
         return ac.value();
