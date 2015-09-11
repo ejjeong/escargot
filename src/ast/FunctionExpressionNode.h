@@ -22,7 +22,7 @@ public:
         function->set__proto__(instance->globalObject()->functionPrototype());
         ESObject* prototype = ESObject::create();
         prototype->setConstructor(function);
-        prototype->set__proto__(instance->globalObject()->object());
+        prototype->set__proto__(instance->globalObject()->object()->protoType());
         function->setProtoType(prototype);
         function->set(strings->name, m_nonAtomicId);
         /////////////////////////////////////////////////////////////////////

@@ -46,7 +46,10 @@ public:
             receiver = ESObject::create();
         }
         receiver->setConstructor(fn);
-        receiver->set__proto__(function->protoType());
+        if(function->protoType().isObject())
+            receiver->set__proto__(function->protoType());
+        else
+            receiver->set__proto__(ESObject::create());
 
         ESValue* arguments = (ESValue*)alloca(sizeof(ESValue) * m_arguments.size());
         for(unsigned i = 0; i < m_arguments.size() ; i ++) {

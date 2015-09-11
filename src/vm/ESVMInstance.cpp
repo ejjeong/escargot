@@ -109,8 +109,7 @@ ESVMInstance::ESVMInstance()
     };
 
     m_functionPrototypeAccessorData.m_setter = [](::escargot::ESObject* self, ESValue value){
-        if(value.isESPointer() && value.asESPointer()->isESObject())
-            self->asESFunctionObject()->setProtoType(value.asESPointer()->asESObject());
+        self->asESFunctionObject()->setProtoType(value);
     };
 
     m_arrayLengthAccessorData.m_getter = [](ESObject* self) -> ESValue {
