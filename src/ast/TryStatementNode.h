@@ -23,11 +23,12 @@ public:
     void executeStatement(ESVMInstance* instance)
     {
         LexicalEnvironment* oldEnv = instance->currentExecutionContext()->environment();
-        ASSERT(oldEnv);
+        ExecutionContext* backupedEC = instance->currentExecutionContext();
         try {
             m_block->executeStatement(instance);
         } catch(const ESValue& err) {
             instance->invalidateIdentifierCacheCheckCount();
+            instance->m_currentExecutionContext = backupedEC;
             LexicalEnvironment* catchEnv = new LexicalEnvironment(new DeclarativeEnvironmentRecord(), oldEnv);
             instance->currentExecutionContext()->setEnvironment(catchEnv);
             instance->currentExecutionContext()->environment()->record()->createMutableBinding(m_handler->param()->name(),

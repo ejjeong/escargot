@@ -119,7 +119,7 @@ public:
                     m_cachedHiddenClass = nullptr;
                     ESSlotAccessor ac = obj->findOnlyPrototype(val);
                     if(ac.hasData())
-                        return obj->findOnlyPrototype(val).value();
+                        return ac.value();
                     return ESValue();
                 }
             }

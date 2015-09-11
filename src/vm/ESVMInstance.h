@@ -23,6 +23,7 @@ typedef std::unordered_map<u16string, InternalAtomicStringData *,
 class ESVMInstance : public gc_cleanup {
     friend class ESFunctionObject;
     friend class ExpressionStatementNode;
+    friend class TryStatementNode;
 public:
     ESVMInstance();
     ~ESVMInstance();
