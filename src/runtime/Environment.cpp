@@ -12,7 +12,7 @@ namespace escargot {
 //$8.1.2.4
 LexicalEnvironment* LexicalEnvironment::newFunctionEnvironment(ESFunctionObject* function, const ESValue& newTarget)
 {
-    ASSERT(newTarget.isUndefined() || (newTarget.isESPointer() && newTarget.asESPointer()->isESObject()));
+    ASSERT(newTarget.isUndefined() || (newTarget.isESPointer() && (newTarget.asESPointer()->isESObject() || newTarget.asESPointer()->isESString())));
     FunctionEnvironmentRecord* envRec = new FunctionEnvironmentRecord(function->functionAST()->innerIdentifiers());
 
     //envRec->m_functionObject = function;

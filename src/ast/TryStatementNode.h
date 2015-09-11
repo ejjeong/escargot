@@ -37,6 +37,7 @@ public:
                     m_handler->param()->nonAtomicName()
                     , err, false);
             m_handler->executeStatement(instance);
+            instance->currentExecutionContext()->setEnvironment(oldEnv);
         }
     }
 
