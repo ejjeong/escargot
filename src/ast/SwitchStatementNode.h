@@ -18,6 +18,7 @@ public:
         m_default = (StatementNode*) deflt;
         m_casesB = casesB;
         m_lexical = lexical;
+        m_isSwitchStatementNode = true;
     }
 
     void executeStatement(ESVMInstance* instance)

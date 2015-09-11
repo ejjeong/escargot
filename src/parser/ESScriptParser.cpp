@@ -332,7 +332,10 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
         } else if(type == NodeType::BreakStatement) {
             controlFlowNodeStack[controlFlowNodeStack.size() - 1]->markAsSlowCase();
         } else if(type == NodeType::ContinueStatement) {
-            controlFlowNodeStack[controlFlowNodeStack.size() - 1]->markAsSlowCase();
+            unsigned idx = controlFlowNodeStack.size() - 1;
+            if (UNLIKELY(controlFlowNodeStack[controlFlowNodeStack.size() - 1]->isSwitchStatementNode()))
+                idx--;
+            controlFlowNodeStack[idx]->markAsSlowCase();
         } else if(type == NodeType::ReturnStatement) {
             nearFunctionNode->markNeedsReturn();
             postAnalysisFunction(((ReturnStatmentNode *)currentNode)->m_argument, identifierStack, nearFunctionNode);

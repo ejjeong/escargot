@@ -165,13 +165,19 @@ public:
     ControlFlowNode()
     {
         m_isSlowCase = false;
+        m_isSwitchStatementNode = false;
     }
     void markAsSlowCase()
     {
         m_isSlowCase = true;
     }
+    bool isSwitchStatementNode()
+    {
+        return m_isSwitchStatementNode;
+    }
 protected:
     bool m_isSlowCase;
+    bool m_isSwitchStatementNode;
 };
 
 
