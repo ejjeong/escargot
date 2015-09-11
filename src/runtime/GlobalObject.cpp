@@ -645,6 +645,36 @@ void GlobalObject::installArray()
     }), false, false);
     m_arrayPrototype->ESObject::set(strings->push, ESFunctionObject::create(NULL, arrayPush));
 
+    //$22.1.3.21 Array.prototype.shift ( )
+    FunctionDeclarationNode* arrayShift = new FunctionDeclarationNode(strings->shift, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        int argumentLen = instance->currentExecutionContext()->argumentCount();
+        ESObject* O = instance->currentExecutionContext()->environment()->record()->getThisBinding(); //1
+        int len = O->get(strings->length, true).toLength(); //3
+        if(len == 0) { //5
+            O->set(strings->length, ESValue(0),true);
+            return ESValue();
+        }
+        ESValue first = O->get(ESValue(0));//6
+        int k = 0; //8
+
+        while(k < len) { //9
+            ESValue from(k);
+            ESValue to(k - 1);
+            ESSlotAccessor fromPresentAccessor = O->findOwnProperty(from);
+            if(fromPresentAccessor.hasData()) { //e
+                ESValue fromVal = fromPresentAccessor.value();
+                O->set(to, fromVal, true);
+            } else {
+                O->deletePropety(to);
+            }
+            k ++;
+        }
+        O->deletePropety(ESValue(len - 1)); //10
+        O->set(strings->length, ESValue(len - 1)); //12
+        return first;
+    }), false, false);
+    m_arrayPrototype->ESObject::set(strings->shift, ESFunctionObject::create(NULL, arrayShift));
+
     //$22.1.3.22 Array.prototype.slice(start, end)
     FunctionDeclarationNode* arraySlice = new FunctionDeclarationNode(strings->slice, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         int arglen = instance->currentExecutionContext()->argumentCount();
@@ -1322,6 +1352,8 @@ void GlobalObject::installString()
         return ESString::create(std::move(newstr));
     }), false, false);
     m_stringPrototype->set(ESString::create(u"toLowerCase"), ESFunctionObject::create(NULL, stringToLowerCase));
+    m_stringPrototype->set(ESString::create(u"toLocalLowerCase"), ESFunctionObject::create(NULL, stringToLowerCase));
+
     //$21.1.3.24 String.prototype.toUpperCase()
     FunctionDeclarationNode* stringToUpperCase = new FunctionDeclarationNode(ESString::create(u"toUpperCase"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->environment()->record()->getThisBinding();
@@ -1333,6 +1365,7 @@ void GlobalObject::installString()
         return ESString::create(std::move(newstr));
     }), false, false);
     m_stringPrototype->set(ESString::create(u"toUpperCase"), ESFunctionObject::create(NULL, stringToUpperCase));
+    m_stringPrototype->set(ESString::create(u"toLocaleUpperCase"), ESFunctionObject::create(NULL, stringToUpperCase));
 
     //$B.2.3.1 String.prototype.substr (start, length)
     FunctionDeclarationNode* stringSubstr = new FunctionDeclarationNode(ESString::create(u"substr"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {

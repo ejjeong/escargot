@@ -56,6 +56,7 @@ ESString* push;
 ESString* pop;
 ESString* slice;
 ESString* splice;
+ESString* shift;
 ESString* sort;
 ESString* Function;
 ESString* Empty;

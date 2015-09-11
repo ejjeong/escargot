@@ -51,6 +51,7 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     pop = ESString::create(u"pop");
     slice = ESString::create(u"slice");
     splice = ESString::create(u"splice");
+    shift = ESString::create(u"shift");
     sort = ESString::create(u"sort");
     Function =  ESString::create(u"Function");
     Empty =  ESString::create(u"Empty");
