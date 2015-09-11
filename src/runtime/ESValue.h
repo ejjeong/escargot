@@ -1239,6 +1239,10 @@ public:
         set(ESValue(key), val, shouldThrowException);
     }
 
+    ALWAYS_INLINE const int32_t length();
+    ALWAYS_INLINE ESValue pop();
+    ALWAYS_INLINE void eraseValues(int, int);
+
     template <typename Functor>
     ALWAYS_INLINE void enumeration(Functor t);
 
@@ -1457,13 +1461,13 @@ public:
         set(m_length, val);
     }
 
-    ESValue pop()
+    ESValue fastPop()
     {
-        //TODO implement non-fastmode
         ASSERT(isFastmode());
         if(m_length == 0)
             return ESValue();
         ESValue ret = m_vector[m_vector.size() - 1];
+        //TODO delete ret from m_vector
         setLength(length() - 1);
         return ret;
     }

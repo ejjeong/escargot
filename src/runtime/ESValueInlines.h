@@ -1143,6 +1143,38 @@ ALWAYS_INLINE ESValue ESObject::get(escargot::ESValue key, bool searchPrototype)
     }
 }
 
+ALWAYS_INLINE const int32_t ESObject::length()
+{
+    if (LIKELY(isESArrayObject()))
+        return asESArrayObject()->length();
+    else
+        return get(strings->length).toInteger();
+}
+ALWAYS_INLINE ESValue ESObject::pop()
+{
+    int len = length();
+    if (len == 0) return ESValue();
+    if (LIKELY(isESArrayObject() && asESArrayObject()->isFastmode()))
+        return asESArrayObject()->fastPop();
+    else {
+        ESValue ret = get(ESValue(len-1));
+        deletePropety(ESValue(len-1));
+        set(strings->length, ESValue(len - 1));
+        return ret;
+    }
+}
+ALWAYS_INLINE void ESObject::eraseValues(int idx, int cnt)
+{
+    if (LIKELY(isESArrayObject()))
+        asESArrayObject()->eraseValues(idx, cnt);
+    else {
+        for (int k = 0, i = idx; i < length() && k < cnt; i++, k++) {
+            set(ESValue(i), get(ESValue(i+cnt)));
+        }
+        //NOTE: length is set in Array.splice
+    }
+}
+
 //DO NOT USE THIS FUNCTION
 //NOTE rooted ESSlot has short life time.
 inline escargot::ESSlotAccessor ESObject::find(escargot::ESValue key, bool searchPrototype)

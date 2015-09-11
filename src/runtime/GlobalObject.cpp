@@ -497,14 +497,21 @@ void GlobalObject::installArray()
     //$22.1.3.1 Array.prototype.concat(...arguments)
     FunctionDeclarationNode* arrayConcat = new FunctionDeclarationNode(strings->concat, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         int arglen = instance->currentExecutionContext()->argumentCount();
-        auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESArrayObject();
-        int arrlen = thisVal->length();
+        auto thisBinded = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+        int arrlen = thisBinded->length();
         escargot::ESArrayObject* ret = ESArrayObject::create(arrlen, instance->globalObject()->arrayPrototype());
-        if (!thisVal->constructor().isUndefinedOrNull())
-            ret->setConstructor(thisVal->constructor());
+        if (!thisBinded->constructor().isUndefinedOrNull())
+            ret->setConstructor(thisBinded->constructor());
         int idx = 0;
-        for (idx = 0; idx < arrlen; idx++)
-            ret->set(idx, thisVal->get(idx));
+        if (LIKELY(thisBinded->isESArrayObject())) {
+            auto thisVal = thisBinded->asESArrayObject();
+            for (idx = 0; idx < arrlen; idx++)
+                ret->set(idx, thisVal->get(idx));
+        } else {
+            ASSERT(thisBinded->isESObject());
+            ESObject* O = thisBinded->asESObject();
+            ret->set(idx++, ESValue(O));
+        }
         for (int i = 0; i < arglen; i++) {
             ESValue& argi = instance->currentExecutionContext()->arguments()[i];
             if (argi.isESPointer() && argi.asESPointer()->isESArrayObject()) {
@@ -523,8 +530,8 @@ void GlobalObject::installArray()
 
     //$22.1.3.11 Array.prototype.indexOf()
     FunctionDeclarationNode* arrayIndexOf = new FunctionDeclarationNode(strings->indexOf, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
-        auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESArrayObject();
-        int len = thisVal->length();
+        auto thisBinded = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+        int len = thisBinded->length();
         int ret = 0;
         if (len == 0) ret = -1;
         else {
@@ -547,7 +554,7 @@ void GlobalObject::installArray()
                 ret = -1;
                 ESValue& searchElement = instance->currentExecutionContext()->arguments()[0];
                 while (k < len) {
-                    ESValue kPresent = thisVal->get(k);
+                    ESValue kPresent = thisBinded->get(ESValue(k));
                     if (searchElement.equalsTo(kPresent)) {
                         ret = k;
                         break;
@@ -563,9 +570,9 @@ void GlobalObject::installArray()
     //$22.1.3.12 Array.prototype.join(separator)
     FunctionDeclarationNode* arrayJoin = new FunctionDeclarationNode(strings->join, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         int arglen = instance->currentExecutionContext()->argumentCount();
-        auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESArrayObject();
+        auto thisBinded = instance->currentExecutionContext()->environment()->record()->getThisBinding();
         u16string ret;
-        int arrlen = thisVal->length();
+        int arrlen = thisBinded->length();
         if (arrlen >= 0) {
             escargot::ESString* separator;
             if (arglen == 0) {
@@ -574,7 +581,7 @@ void GlobalObject::installArray()
                 separator = instance->currentExecutionContext()->arguments()[0].toString();
             }
             for (int i = 0; i < arrlen; i++) {
-                ESValue elemi = thisVal->get(i);
+                ESValue elemi = thisBinded->get(ESValue(i));
                 if (i != 0) ret.append(separator->data());
                 if (!elemi.isUndefinedOrNull())
                     ret.append(elemi.toString()->data());
@@ -586,6 +593,7 @@ void GlobalObject::installArray()
 
     //$22.1.3.15 Array.prototype.map(callbackfn[, thisArg])
     FunctionDeclarationNode* arrayMap = new FunctionDeclarationNode(ESString::create(u"map"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        auto thisBinded = instance->currentExecutionContext()->environment()->record()->getThisBinding();
         int arglen = instance->currentExecutionContext()->argumentCount();
         if(arglen < 1)
             throw ESValue(TypeError::create());
@@ -593,32 +601,32 @@ void GlobalObject::installArray()
         if (!(arg.isESPointer() && arg.asESPointer()->isESFunctionObject()))
             throw ESValue(TypeError::create());
 
-        auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESArrayObject();
-        int arrlen = thisVal->length();
+        int arrlen = thisBinded->length();
         escargot::ESArrayObject* ret = ESArrayObject::create(arrlen, instance->globalObject()->arrayPrototype());
-        if (!thisVal->constructor().isUndefinedOrNull())
-            ret->setConstructor(thisVal->constructor());
+        if (!thisBinded->constructor().isUndefinedOrNull())
+            ret->setConstructor(thisBinded->constructor());
 
-        ESValue tmpValue(thisVal);
-        for (int idx = 0; idx < arrlen; idx++)
+        for (int idx = 0; idx < arrlen; idx++) {
+            ESValue tmpValue(thisBinded->get(ESValue(idx)));
             ret->set(idx, ESFunctionObject::call(instance, arg.asESPointer()->asESFunctionObject(), instance->globalObject(), &tmpValue, 1, instance));
+        }
         return ret;
     }), false, false);
     m_arrayPrototype->ESObject::set(ESString::create(u"map"), ESFunctionObject::create(NULL, arrayMap));
 
     //$22.1.3.16 Array.prototype.pop ( )
     FunctionDeclarationNode* arrayPop = new FunctionDeclarationNode(strings->pop, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
-        auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESArrayObject();
-        return thisVal->pop();
+        auto thisBinded = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+        return thisBinded->pop();
     }), false, false);
     m_arrayPrototype->ESObject::set(strings->pop, ESFunctionObject::create(NULL, arrayPop));
 
     //$22.1.3.17 Array.prototype.push(item)
     FunctionDeclarationNode* arrayPush = new FunctionDeclarationNode(strings->push, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         auto thisBinded = instance->currentExecutionContext()->environment()->record()->getThisBinding();
-        if (thisBinded->isESArrayObject()) {
+        if (LIKELY(thisBinded->isESArrayObject())) {
             int len = instance->currentExecutionContext()->argumentCount();
-            auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESArrayObject();
+            auto thisVal = thisBinded->asESArrayObject();
             for (int i = 0; i < len; i++) {
                 ESValue& val = instance->currentExecutionContext()->arguments()[i];
                 thisVal->push(val);
@@ -626,8 +634,8 @@ void GlobalObject::installArray()
              }
             return ESValue(thisVal->length());
         } else {
-            ASSERT(instance->currentExecutionContext()->environment()->record()->getThisBinding()->isESObject());
-            ESObject* O = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESObject();
+            ASSERT(thisBinded->isESObject());
+            ESObject* O = thisBinded->asESObject();
             int len = O->get(strings->length).toInt32();
             int argCount = instance->currentExecutionContext()->argumentCount();
             if (len+argCount > std::pow(2, 53)-1) {
@@ -678,8 +686,8 @@ void GlobalObject::installArray()
     //$22.1.3.22 Array.prototype.slice(start, end)
     FunctionDeclarationNode* arraySlice = new FunctionDeclarationNode(strings->slice, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         int arglen = instance->currentExecutionContext()->argumentCount();
-        escargot::ESArrayObject* thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESArrayObject();
-        int arrlen = thisVal->length();
+        auto thisBinded = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+        int arrlen = thisBinded->length();
         int start, end;
         if (arglen < 1) start = 0;
         else            start = instance->currentExecutionContext()->arguments()[0].toInteger();
@@ -691,10 +699,10 @@ void GlobalObject::installArray()
         else            end = (end < arrlen) ? end : arrlen;
         int count = (end - start > 0) ? end - start : 0;
         escargot::ESArrayObject* ret = ESArrayObject::create(count, instance->globalObject()->arrayPrototype());
-        if (!thisVal->constructor().isUndefinedOrNull())
-            ret->setConstructor(thisVal->constructor());
+        if (!thisBinded->constructor().isUndefinedOrNull())
+            ret->setConstructor(thisBinded->constructor());
         for (int i = start; i < end; i++) {
-            ret->set(i-start, thisVal->get(i));
+            ret->set(i-start, thisBinded->get(ESValue(i)));
         }
         return ret;
     }), false, false);
@@ -704,7 +712,10 @@ void GlobalObject::installArray()
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-array.prototype.sort
     FunctionDeclarationNode* arraySort = new FunctionDeclarationNode(strings->sort, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         int arglen = instance->currentExecutionContext()->argumentCount();
-        escargot::ESArrayObject* thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESArrayObject();
+        auto thisBinded = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+        RELEASE_ASSERT(thisBinded->isESArrayObject());
+        //TODO support sort for non-array
+        auto thisVal = thisBinded->asESArrayObject();
         if(arglen == 0) {
             thisVal->sort();
         } else {
@@ -731,11 +742,11 @@ void GlobalObject::installArray()
     //$22.1.3.25 Array.prototype.splice(start, deleteCount, ...items)
     FunctionDeclarationNode* arraySplice = new FunctionDeclarationNode(strings->splice, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         int arglen = instance->currentExecutionContext()->argumentCount();
-        auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESArrayObject();
-        int arrlen = thisVal->length();
+        auto thisBinded = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+        int arrlen = thisBinded->length();
         escargot::ESArrayObject* ret = ESArrayObject::create(0, instance->globalObject()->arrayPrototype());
-        if (!thisVal->constructor().isUndefinedOrNull())
-            ret->setConstructor(thisVal->constructor());
+        if (!thisBinded->constructor().isUndefinedOrNull())
+            ret->setConstructor(thisBinded->constructor());
         if (arglen == 0) {
         } else if (arglen >= 1) {
             int start = instance->currentExecutionContext()->arguments()[0].toNumber();
@@ -755,33 +766,36 @@ void GlobalObject::installArray()
             }
             for (k = 0; k < deleteCnt; k++) {
                 int from = start + k;
-                ret->set(k, thisVal->get(from));
+                ret->set(k, thisBinded->get(ESValue(from)));
             }
             int argIdx = 2;
             int leftInsert = insertCnt;
             for (k = start; k < start + deleteCnt; k++) {
                 if (leftInsert > 0) {
-                    thisVal->set(k, instance->currentExecutionContext()->arguments()[argIdx]);
+                    thisBinded->set(ESValue(k), instance->currentExecutionContext()->arguments()[argIdx]);
                     leftInsert--; argIdx++;
                 } else {
-                    thisVal->eraseValues(k, start + deleteCnt - k);
+                    thisBinded->eraseValues(k, start + deleteCnt - k);
                     break;
                 }
             }
-            if (thisVal->isFastmode()) {
+            if (LIKELY(thisBinded->isESArrayObject() && thisBinded->asESArrayObject()->isFastmode())) {
+                auto thisArr = thisBinded->asESArrayObject();
                 while (leftInsert > 0) {
-                    thisVal->insertValue(k, instance->currentExecutionContext()->arguments()[argIdx]);
+                    thisArr->insertValue(k, instance->currentExecutionContext()->arguments()[argIdx]);
                     leftInsert--; argIdx++; k++;
                 }
             } else if (leftInsert > 0) {
                 // Move leftInsert steps to right
                 for (int i = arrlen - 1; i >= k; i--) {
-                    thisVal->set(i + leftInsert, thisVal->get(i));
+                    thisBinded->set(ESValue(i + leftInsert), thisBinded->get(ESValue(i)));
                 }
                 for (int i = k; i < k + leftInsert; i++, argIdx++) {
-                    thisVal->set(i, instance->currentExecutionContext()->arguments()[argIdx]);
+                    thisBinded->set(ESValue(i), instance->currentExecutionContext()->arguments()[argIdx]);
                 }
             }
+            if (UNLIKELY(!thisBinded->isESArrayObject()))
+                thisBinded->set(strings->length, ESValue(arrlen - deleteCnt + insertCnt));
         }
         return ret;
     }), false, false);
