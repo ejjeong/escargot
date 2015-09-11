@@ -17,6 +17,12 @@ public:
         ASSERT(!computed);
         m_index = idx;
         m_propertyValue = value;
+#ifndef NDEBUG
+        if (value.isESString())
+            m_propertyName = value.asESString();
+        else
+            m_propertyName = NULL;
+#endif
         m_cachedHiddenClass = nullptr;
     }
 
@@ -121,6 +127,9 @@ public:
 protected:
     ESHiddenClass* m_cachedHiddenClass;
     ESValue m_propertyValue;
+#ifndef NDEBUG
+    ESString* m_propertyName;
+#endif
     size_t m_cachedIndex;
 
     size_t m_index;
