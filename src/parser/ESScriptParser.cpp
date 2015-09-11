@@ -333,7 +333,7 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
             controlFlowNodeStack[controlFlowNodeStack.size() - 1]->markAsSlowCase();
         } else if(type == NodeType::ContinueStatement) {
             unsigned idx = controlFlowNodeStack.size() - 1;
-            if (UNLIKELY(controlFlowNodeStack[controlFlowNodeStack.size() - 1]->isSwitchStatementNode()))
+            while (UNLIKELY(controlFlowNodeStack[idx]->isSwitchStatementNode()))
                 idx--;
             controlFlowNodeStack[idx]->markAsSlowCase();
         } else if(type == NodeType::ReturnStatement) {
