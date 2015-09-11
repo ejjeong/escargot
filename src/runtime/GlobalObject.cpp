@@ -615,17 +615,32 @@ void GlobalObject::installArray()
 
     //$22.1.3.17 Array.prototype.push(item)
     FunctionDeclarationNode* arrayPush = new FunctionDeclarationNode(strings->push, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
-        ESObject* O = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESObject();
-        int len = O->get(strings->length).toInt32();
-        int argCount = instance->currentExecutionContext()->argumentCount();
-        if (len+argCount > std::pow(2, 53)-1) {
-            throw ESValue(TypeError::create());
-        } else {
-            for (int i = 0; i < argCount; i++) {
+        auto thisBinded = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+        if (thisBinded->isESArrayObject()) {
+            int len = instance->currentExecutionContext()->argumentCount();
+            auto thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESArrayObject();
+            for (int i = 0; i < len; i++) {
                 ESValue& val = instance->currentExecutionContext()->arguments()[i];
-                O->set(ESString::create(len + i), val);
-              }
-            return ESValue(len + argCount);
+                thisVal->push(val);
+                i++;
+             }
+            return ESValue(thisVal->length());
+        } else {
+            ASSERT(instance->currentExecutionContext()->environment()->record()->getThisBinding()->isESObject());
+            ESObject* O = instance->currentExecutionContext()->environment()->record()->getThisBinding()->asESObject();
+            int len = O->get(strings->length).toInt32();
+            int argCount = instance->currentExecutionContext()->argumentCount();
+            if (len+argCount > std::pow(2, 53)-1) {
+                throw ESValue(TypeError::create());
+            } else {
+                for (int i = 0; i < argCount; i++) {
+                    ESValue& val = instance->currentExecutionContext()->arguments()[i];
+                    O->set(ESString::create(len + i), val);
+                  }
+                ESValue ret = ESValue(len + argCount);
+                O->set(strings->length, ret);
+                return ret;
+             }
          }
     }), false, false);
     m_arrayPrototype->ESObject::set(strings->push, ESFunctionObject::create(NULL, arrayPush));
