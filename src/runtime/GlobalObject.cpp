@@ -301,7 +301,7 @@ void GlobalObject::installFunction()
         for (int i = 0; i < arglen; i++) {
             arguments[i] = instance->currentExecutionContext()->arguments()[i + 1];
         }
-        return ESFunctionObject::call(instance, thisVal, thisArg, arguments, arglen, false);
+        return ESFunctionObject::call(instance, thisVal, thisArg.toObject(), arguments, arglen, false);
     }), false, false);
     m_functionPrototype->set(ESString::create(u"call"), ESFunctionObject::create(NULL, node));
 
@@ -319,8 +319,25 @@ void GlobalObject::installObject()
     m_objectPrototype = ESObject::create();
     m_objectPrototype->setConstructor(m_object);
     m_objectPrototype->set(strings->toString, ESFunctionObject::create(NULL, new FunctionDeclarationNode(strings->toString, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
-        //FIXME
-        return ESString::create(u"[Object object]");
+        ESObject* thisVal = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+        if (thisVal->isESArrayObject()) {
+            return ESString::create(u"[object Array]");
+        } else if (thisVal->isESStringObject()) {
+            return ESString::create(u"[object String]");
+        } else if (thisVal->isESFunctionObject()) {
+            return ESString::create(u"[object Function]");
+        } else if (thisVal->isESErrorObject()) {
+            return ESString::create(u"[object Error]");
+        } else if (thisVal->isESBooleanObject()) {
+            return ESString::create(u"[object Boolean]");
+        } else if (thisVal->isESNumberObject()) {
+            return ESString::create(u"[object Number]");
+        } else if (thisVal->isESDateObject()) {
+            return ESString::create(u"[object Date]");
+        } else if (thisVal->isESRegExpObject()) {
+            return ESString::create(u"[object RegExp]");
+         }
+        return ESString::create(u"[object Object]");
     }), false, false)));
 
     m_object->set(strings->prototype, m_objectPrototype);
