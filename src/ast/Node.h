@@ -101,6 +101,7 @@ enum NodeType {
     MemberExpressionNonComputedCaseLeftIdentifierFastCase,
     ConditionalExpression,
     CallExpression,
+    CallEvalFunctionExpression,
     VariableDeclarator,
     Identifier,
     IdentifierFastCase,

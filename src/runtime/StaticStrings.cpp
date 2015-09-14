@@ -35,6 +35,8 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     POSITIVE_INFINITY =  ESString::create(u"POSITIVE_INFINITY");
     MAX_VALUE =  ESString::create(u"MAX_VALUE");
     MIN_VALUE =  ESString::create(u"MIN_VALUE");
+    eval =  ESString::create(u"eval");
+    atomicEval = InternalAtomicString(instance, eval->data());
     Boolean =  ESString::create(u"Boolean");
     Object =  ESString::create(u"Object");
     Array =  ESString::create(u"Array");

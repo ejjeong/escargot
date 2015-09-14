@@ -144,10 +144,6 @@ ESValue ESVMInstance::runOnEvalContext(const F& f, bool isDirectCall)
         m_currentExecutionContext = m_globalExecutionContext;
         ret = f();
     } else {
-        ExecutionContext* caller = ctx->callerContext();
-        ExecutionContext ec(caller->environment(), true, false, caller);
-        m_currentExecutionContext = &ec;
-        //m_currentExecutionContext = m_currentExecutionContext->callerContext();
         ret = f();
     }
     m_currentExecutionContext = ctx;

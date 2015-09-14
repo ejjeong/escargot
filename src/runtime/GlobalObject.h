@@ -161,6 +161,11 @@ public:
         return m_booleanPrototype;
     }
 
+    ALWAYS_INLINE escargot::ESFunctionObject* eval()
+    {
+        return m_eval;
+    }
+
 protected:
     void initGlobalObject();
     void installObject();
@@ -203,6 +208,8 @@ protected:
     escargot::ESObject* m_rangeErrorPrototype;
     escargot::ESFunctionObject* m_syntaxError;
     escargot::ESObject* m_syntaxErrorPrototype;
+
+    escargot::ESFunctionObject* m_eval;
     //JSBuiltinsObject* m_builtins;
     //Context* m_nativeContext;
 };

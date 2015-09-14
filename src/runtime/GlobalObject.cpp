@@ -92,6 +92,33 @@ void GlobalObject::initGlobalObject()
     set(ESString::create(u"load"), loadFunction);
     set(ESString::create(u"run"), loadFunction);
 
+    node = new FunctionDeclarationNode(InternalAtomicString(u"read"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        if(instance->currentExecutionContext()->argumentCount()) {
+            ESValue& val = instance->currentExecutionContext()->arguments()[0];
+            escargot::ESString* str = val.toString();
+            FILE *fp = fopen(str->utf8Data(),"r");
+            if(fp) {
+                fseek(fp, 0L, SEEK_END);
+                size_t sz = ftell(fp);
+                fseek(fp, 0L, SEEK_SET);
+                std::string str;
+                str.reserve(sz+2);
+                static char buf[4096];
+                while(fgets(buf, sizeof buf, fp) != NULL) {
+                    str += buf;
+                }
+                fclose(fp);
+
+                escargot::ESString* data = ESString::create(str.data());
+                return data;
+            }
+            return ESValue();
+        }
+        return ESValue();
+    }), false, false);
+    auto readFunction = ESFunctionObject::create(NULL, node);
+    set(ESString::create(u"read"), readFunction);
+
     // Function Properties of the Global Object
     definePropertyOrThrow(ESString::create(u"eval"), false, false, false);
     node = new FunctionDeclarationNode(InternalAtomicString(u"eval"), InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
@@ -99,14 +126,14 @@ void GlobalObject::initGlobalObject()
         if(!argument.isESString()) {
             return argument;
         }
-        bool isDirectCall = true; // TODO
         ESValue ret = instance->runOnEvalContext([instance, &argument](){
             ESValue ret = instance->evaluate(const_cast<u16string &>(argument.asESString()->string()));
             return ret;
-        }, isDirectCall);
+        }, false);
         return ret;
     }), false, false);
-    set(ESString::create(u"eval"), ESFunctionObject::create(NULL, node));
+    m_eval = ESFunctionObject::create(NULL, node);
+    set(ESString::create(u"eval"), m_eval);
 
     // $18.2.2
     definePropertyOrThrow(ESString::create(u"isFinite"), false, false, false);

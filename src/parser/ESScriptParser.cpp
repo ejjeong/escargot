@@ -426,6 +426,15 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
                     *node = new EmptyNode();
                     (*node)->m_sourceLocation = loc;
                 }
+            } else if((*node)->type() == NodeType::CallExpression) {
+                CallExpressionNode* n = (CallExpressionNode *)*node;
+                if(n->m_callee) {
+                    if(n->m_callee->type() == NodeType::Identifier) {
+                        if(((IdentifierNode *)n->m_callee)->name() == InternalAtomicString(u"eval")) {
+                            *node = new CallEvalFunctionExpressionNode(std::move(n->m_arguments));
+                        }
+                    }
+                }
             }
         }
     };
@@ -488,6 +497,12 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
             nodeReplacer(&((CallExpressionNode *)currentNode)->m_callee, nearFunction);
             postProcessingFunction(callee, nearFunction);
             ArgumentVector& v = ((CallExpressionNode *)currentNode)->m_arguments;
+            for(unsigned i = 0; i < v.size() ; i ++) {
+                nodeReplacer(&v[i], nearFunction);
+                postProcessingFunction(v[i], nearFunction);
+            }
+        } else if(type == NodeType::CallEvalFunctionExpression) {
+            ArgumentVector& v = ((CallEvalFunctionExpressionNode *)currentNode)->m_arguments;
             for(unsigned i = 0; i < v.size() ; i ++) {
                 nodeReplacer(&v[i], nearFunction);
                 postProcessingFunction(v[i], nearFunction);

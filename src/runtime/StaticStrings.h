@@ -39,6 +39,8 @@ ESString* NEGATIVE_INFINITY;
 ESString* POSITIVE_INFINITY;
 ESString* MAX_VALUE;
 ESString* MIN_VALUE;
+ESString* eval;
+InternalAtomicString atomicEval;
 ESString* Object;
 ESString* Boolean;
 ESString* Error;
