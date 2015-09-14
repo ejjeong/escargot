@@ -1,11 +1,11 @@
 #include "Escargot.h"
 #include "ESVMInstance.h"
-#include "jit/JIT.h"
 #include "runtime/Environment.h"
 #include "runtime/ExecutionContext.h"
 #include "runtime/GlobalObject.h"
 #include "parser/ESScriptParser.h"
 #include "bytecode/ByteCode.h"
+#include "jit/ESJIT.h"
 
 #include "BumpPointerAllocator.h"
 
@@ -162,11 +162,24 @@ ESVMInstance::~ESVMInstance()
 
 ESValue ESVMInstance::evaluate(u16string& source)
 {
-    nanoJITTest();
     try {
         m_lastExpressionStatementValue = ESValue();
         CodeBlock* block = ESScriptParser::parseScript(this, source);
+#if 1
         interpret(this, block);
+        // TODO : move this into 'Call' bytecode execution
+        ESJIT::JITFunction jitFunction = reinterpret_cast<ESJIT::JITFunction>(ESJIT::JITCompile(block));
+        if (jitFunction) {
+            printf("JIT succeeded! Execute JIT compiled function\n");
+            ESValue result = jitFunction(this);
+            printf("Result: 0x%lx\n", result.asRawData());
+        } else {
+            printf("JIT failed! Execute interpreter\n");
+            interpret(this, block);
+        }
+#else
+        interpret(this, block);
+#endif
     } catch(const ESValue& err) {
         try{
             printf("Uncaught %s\n", err.toString()->utf8Data());
@@ -218,7 +231,7 @@ void ESVMInstance::printValue(ESValue val)
             str.append(v.toString()->utf8Data());
         } else if(v.isBoolean()) {
             str.append(v.toString()->utf8Data());
-        } else {
+        } else if(v.isESPointer()){
             ESPointer* o = v.asESPointer();
             if(o->isESString()) {
                 str.append(o->asESString()->utf8Data());
@@ -262,6 +275,9 @@ void ESVMInstance::printValue(ESValue val)
             } else {
                 RELEASE_ASSERT_NOT_REACHED();
             }
+        } else {
+            printf("Invalid ESValue Format : 0x%lx\n", v.asRawData());
+            ASSERT(false);
         }
     };
     toString(val);

@@ -6,6 +6,7 @@
 #include "runtime/Environment.h"
 #include "runtime/NullableString.h"
 #include "ast/AST.h"
+#include "jit/ESJIT.h"
 
 #include "Yarr.h"
 
@@ -545,7 +546,20 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
             functionCallerInnerProcess(instance->m_currentExecutionContext, fn, receiver, arguments, argumentCount, true, instance);
             //ESVMInstance->invalidateIdentifierCacheCheckCount();
             //execute;
+#if 1
+            result = interpret(instance, fn->codeBlock()); // for printing code
+
+            ESJIT::JITFunction jitFunction = reinterpret_cast<ESJIT::JITFunction>(ESJIT::JITCompile(fn->codeBlock()));
+            if (jitFunction) {
+                printf("JIT succeeded! Execute JIT compiled function\n");
+                jitFunction(instance);
+            } else {
+                printf("JIT failed! Execute interpreter\n");
+                result = interpret(instance, fn->codeBlock());
+            }
+#else
             result = interpret(instance, fn->codeBlock());
+#endif
             instance->m_currentExecutionContext = currentContext;
         } else {
             ESValue* storage = (::escargot::ESValue *)alloca(sizeof(::escargot::ESValue) * fn->m_codeBlock->m_innerIdentifiers.size());

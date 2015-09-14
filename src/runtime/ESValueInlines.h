@@ -362,6 +362,11 @@ inline double ESValue::asNumber() const
     return isInt32() ? asInt32() : asDouble();
 }
 
+inline uint64_t ESValue::asRawData() const
+{
+    return u.asInt64;
+}
+
 inline ESString* ESValue::toString() const
 {
     if(isESString()) {
