@@ -30,7 +30,7 @@ public:
             std::vector<ESValue> propertyVals;
             ESObject* obj = exprValue.toObject();
             propertyVals.reserve(obj->keyCount());
-            obj->enumeration([&propertyVals](ESValue key, const ::escargot::ESSlotAccessor& slot) {
+            obj->enumeration([&propertyVals](ESValue key, ESValue value) {
                 propertyVals.push_back(key);
             });
             /*
@@ -66,7 +66,7 @@ public:
             std::vector<ESValue> propertyVals;
             ESObject* obj = exprValue.toObject();
             propertyVals.reserve(obj->keyCount());
-            obj->enumeration([&propertyVals](ESValue key, const ::escargot::ESSlotAccessor& slot) {
+            obj->enumeration([&propertyVals](ESValue key, ::escargot::ESValue value) {
                 propertyVals.push_back(key);
             });
 

@@ -37,19 +37,13 @@ public:
         ec->setLastESObjectMetInMemberExpressionNode(obj);
 
         ESValue key = m_property->executeExpression(instance);
-        ESSlotAccessor slot = obj->findOwnProperty(key);
-        if(slot.hasData()) {
-            return slot;
-        } else {
-            return obj->definePropertyOrThrow(key, true, true, true);
-        }
+        return ESSlotAccessor(obj, key);
     }
 
     ESValue executeExpression(ESVMInstance* instance)
     {
         ESValue value = instance->currentExecutionContext()->cachedDeclarativeEnvironmentRecordESValue()[m_index];
         ESValue propertyValue = m_property->executeExpression(instance);
-
         if(UNLIKELY(value.isESString())) {
             if(propertyValue.isInt32()) {
                int prop_val = propertyValue.toInt32();
@@ -66,33 +60,24 @@ public:
                return value.asESString()->substring(prop_val, prop_val+1);
             } else {
                 instance->globalObject()->stringObjectProxy()->setString(value.asESString());
-                ESSlotAccessor slot = instance->globalObject()->stringObjectProxy()->find(propertyValue, true);
-                if(slot.hasData()) {
-                    if(slot.isDataProperty()) {
-                        ESValue ret = slot.readDataProperty();
-                        if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->functionAST()->isBuiltInFunction()) {
-                            instance->currentExecutionContext()->setLastESObjectMetInMemberExpressionNode(instance->globalObject()->stringObjectProxy());
-                            return ret;
-                        }
-                    } else {
-                        if(slot.accessorData() == instance->stringObjectLengthAccessorData()) {
-                            return slot.value();
-                        }
+                ESValue ret = instance->globalObject()->stringObjectProxy()->find(propertyValue, true);
+                if(!ret.isEmpty()) {
+                    if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->functionAST()->isBuiltInFunction()) {
+                        instance->currentExecutionContext()->setLastESObjectMetInMemberExpressionNode(instance->globalObject()->stringObjectProxy());
+                        return ret;
                     }
                 }
             }
         } else if(UNLIKELY(value.isNumber())) {
             instance->globalObject()->numberObjectProxy()->setNumberData(value.asNumber());
-            ESSlotAccessor slot = instance->globalObject()->numberObjectProxy()->find(propertyValue, true);
-            if(slot.hasData() && slot.isDataProperty()) {
-                ESValue ret = slot.value();
+            ESValue ret = instance->globalObject()->numberObjectProxy()->find(propertyValue, true);
+            if(!ret.isEmpty()) {
                 if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->functionAST()->isBuiltInFunction()) {
                     instance->currentExecutionContext()->setLastESObjectMetInMemberExpressionNode(instance->globalObject()->numberObjectProxy());
                     return ret;
                 }
             }
         }
-
         if (UNLIKELY(!value.isObject())) {
             value = value.toObject();
         }
@@ -104,20 +89,20 @@ public:
         if(obj->isHiddenClassMode() && !obj->isESArrayObject()) {
             ESString* val = propertyValue.toString();
             if(m_cachedHiddenClass == obj->hiddenClass() && (val == m_cachedPropertyValue || *val == *m_cachedPropertyValue)) {
-                return obj->readHiddenClass(m_cachedIndex).value();
+                return obj->readHiddenClass(m_cachedIndex);
             } else {
                 size_t idx = obj->hiddenClass()->findProperty(val);
                 if(idx != SIZE_MAX) {
                     m_cachedHiddenClass = obj->hiddenClass();
                     m_cachedPropertyValue = val;
                     m_cachedIndex = idx;
-                    return obj->readHiddenClass(idx).value();
+                    return obj->readHiddenClass(idx);
                 } else {
                     m_cachedHiddenClass = nullptr;
-                    ESSlotAccessor ac = obj->findOnlyPrototype(val);
-                    if(ac.hasData())
-                        return ac.value();
-                    return ESValue();
+                    ESValue v = obj->findOnlyPrototype(val);
+                    if(v.isEmpty())
+                        return ESValue();
+                    return v;
                 }
             }
         } else {

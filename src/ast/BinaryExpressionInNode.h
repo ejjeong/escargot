@@ -19,7 +19,7 @@ public:
         ESValue willBeObj = m_right->executeExpression(instance);
         ESObject* obj = willBeObj.toObject();
         ESValue key = m_left->executeExpression(instance);
-        return ESValue(obj->find(key, true).hasData());
+        return ESValue(!obj->find(key, true).isEmpty());
     }
 
 protected:

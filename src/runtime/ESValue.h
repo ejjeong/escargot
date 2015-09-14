@@ -957,90 +957,42 @@ class ESSlotAccessor {
 public:
     ESSlotAccessor()
     {
-        m_data = nullptr;
+        m_propertyValue = ESValue(ESValue::ESEmptyValue);
         m_targetObject = NULL;
     }
 
     explicit ESSlotAccessor(ESValue* data)
     {
-        m_data = data;
+        m_propertyValue = ESValue((ESPointer *)data);
         m_targetObject = NULL;
     }
 
-    explicit ESSlotAccessor(ESSlot* slot, ESObject* obj)
+    explicit ESSlotAccessor(ESObject* obj, ESValue propertyValue)
     {
-        if (slot) {
-            if(slot->isDataProperty()) {
-                m_data = slot->data();
-                m_targetObject = NULL;
-            } else {
-                m_data = (ESValue *)slot->accessorData();
-                m_targetObject = obj;
-            }
-
-        } else {
-            m_data = nullptr;
-        }
-    }
-
-    explicit ESSlotAccessor(ESAccessorData* data, ESObject* target)
-    {
-        m_targetObject = target;
-        m_data = (ESValue *)data;
+        m_propertyValue = propertyValue;
+        m_targetObject = obj;
     }
 
     ALWAYS_INLINE bool hasData() const
     {
-        return !!m_data;
+        return m_propertyValue != ESValue(ESValue::ESEmptyValue);
     }
 
-    ALWAYS_INLINE bool isDataProperty() const
-    {
-        return m_targetObject == NULL;
-    }
-
-    ALWAYS_INLINE ESAccessorData* accessorData()
-    {
-        ASSERT(m_targetObject);
-        return (ESAccessorData *)m_data;
-    }
-
-    ALWAYS_INLINE void setValue(const ::escargot::ESValue& value)
-    {
-        ASSERT(m_data);
-        if(UNLIKELY(m_targetObject != NULL)) {
-            if(((ESAccessorData *)m_data)->m_setter) {
-                ((ESAccessorData *)m_data)->m_setter(m_targetObject, value);
-            }
-        } else {
-            *m_data = value;
-        }
-    }
-
-    ALWAYS_INLINE ESValue value() const
-    {
-        ASSERT(m_data);
-        if(UNLIKELY(m_targetObject != NULL)) {
-            if(((ESAccessorData *)m_data)->m_getter) {
-                return ((ESAccessorData *)m_data)->m_getter(m_targetObject);
-            }
-            return ESValue();
-        } else {
-            return *m_data;
-        }
-    }
+    ALWAYS_INLINE void setValue(const ::escargot::ESValue& value);
+    ALWAYS_INLINE ESValue value() const;
 
     ALWAYS_INLINE const ESValue& readDataProperty() const
     {
-        ASSERT(m_data);
+        ASSERT(hasData());
         ASSERT(m_targetObject == NULL);
-        return *m_data;
+        return *((ESValue *)m_propertyValue.asESPointer());
     }
 
     ALWAYS_INLINE void setDataProperty(const ::escargot::ESValue& value)
     {
+        ASSERT(hasData());
         ASSERT(m_targetObject == NULL);
-        *m_data = value;
+        *((ESValue *)m_propertyValue.asESPointer()) = value;
     }
 
     ALWAYS_INLINE void switchOwner(ESObject* obj)
@@ -1050,8 +1002,8 @@ public:
     }
 
 public:
-    ESValue* m_data;
     ESObject* m_targetObject;
+    ESValue m_propertyValue;
 };
 
 struct ESHiddenClassPropertyInfo {
@@ -1189,7 +1141,6 @@ public:
         }
     }
 
-    inline escargot::ESSlotAccessor findOwnProperty(const ESValue& val);
     inline void deletePropety(const ESValue& key);
 
     ALWAYS_INLINE bool hasOwnProperty(escargot::ESValue key);
@@ -1213,23 +1164,24 @@ public:
         return new ESObject();
     }
 
-    ESSlotAccessor readHiddenClass(size_t idx)
+    ESValue readHiddenClass(size_t idx)
     {
         ASSERT(!m_map);
         if(LIKELY(m_hiddenClass->m_propertyFlagInfo[idx].m_isDataProperty))
-            return ESSlotAccessor(&m_hiddenClassData[idx]);
-        else
-            return ESSlotAccessor((ESAccessorData *)m_hiddenClassData[idx].asESPointer(), this);
+            return m_hiddenClassData[idx];
+        else {
+            return ((ESAccessorData *)m_hiddenClassData[idx].asESPointer())->m_getter(this);
+        }
     }
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-get-o-p
     ALWAYS_INLINE ESValue get(escargot::ESValue key, bool searchPrototype = false);
+    inline escargot::ESValue find(escargot::ESValue key, bool searchPrototype = false, escargot::ESObject* realObj = nullptr);
+    ALWAYS_INLINE escargot::ESValue findOnlyPrototype(escargot::ESValue key);
+
     //DO NOT USE THIS FUNCTION
     //NOTE rooted ESSlot has short life time.
-    inline escargot::ESSlotAccessor find(escargot::ESValue key, bool searchPrototype = false);
-
-    //NOTE rooted ESSlot has short life time.
-    ALWAYS_INLINE escargot::ESSlotAccessor findOnlyPrototype(escargot::ESValue key);
+    ESSlotAccessor addressOfProperty(escargot::ESValue key);
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
     ALWAYS_INLINE void set(escargot::ESValue key, const ESValue& val, bool shouldThrowException = false);

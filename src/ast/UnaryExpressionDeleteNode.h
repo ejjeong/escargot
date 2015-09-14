@@ -41,9 +41,10 @@ public:
         } else if(m_argument->type() == NodeType::Identifier) {
             IdentifierNode* id = (IdentifierNode*)m_argument;
             ESSlotAccessor acc = instance->currentExecutionContext()->resolveBinding(id->name(), id->nonAtomicName());
-            if(acc.m_data == instance->globalObject()->find(id->nonAtomicName()).m_data) {
+            if(acc.m_targetObject == instance->globalObject()) {
+                //TODO consider strict-mode
                 instance->globalObject()->deletePropety(id->nonAtomicName());
-                return ESValue(!instance->globalObject()->find(id->nonAtomicName()).hasData());
+                return ESValue(!instance->globalObject()->find(id->nonAtomicName()).isEmpty());
             }
         } else {
             m_argument->executeExpression(instance);

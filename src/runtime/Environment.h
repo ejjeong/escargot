@@ -152,33 +152,13 @@ public:
     ObjectEnvironmentRecord(ESObject* O)
         : m_bindingObject(O)
     {
-        m_objectHiddenClassBefore = nullptr;
     }
     ~ObjectEnvironmentRecord() { }
 
     //return NULL == not exist
     virtual ESSlotAccessor hasBinding(const InternalAtomicString& atomicName, ESString* name)
     {
-        if(UNLIKELY(m_bindingObject->isHiddenClassMode())) {
-            if(m_bindingObject->hiddenClass() == m_objectHiddenClassBefore) {
-                auto iter = m_objectAccessorCache.find(atomicName);
-                if(iter != m_objectAccessorCache.end()) {
-                    return iter.operator *().second;
-                } else {
-                    ESSlotAccessor acc = m_bindingObject->find(name);
-                    m_objectAccessorCache.insert(std::make_pair(atomicName, acc));
-                    return acc;
-                }
-            } else {
-                m_objectHiddenClassBefore = m_bindingObject->hiddenClass();
-                m_objectAccessorCache.clear();
-                ESSlotAccessor acc = m_bindingObject->find(name);
-                m_objectAccessorCache.insert(std::make_pair(atomicName, acc));
-                return acc;
-            }
-        } else {
-            return m_bindingObject->find(name, false);
-        }
+        return m_bindingObject->addressOfProperty(name);
     }
     void createMutableBinding(const InternalAtomicString& name,ESString* nonAtomicName, bool canDelete = false);
     void createImmutableBinding(const InternalAtomicString& name, bool throwExecptionWhenAccessBeforeInit = false) {}
@@ -210,10 +190,6 @@ public:
 
 protected:
     ESObject* m_bindingObject;
-    ESHiddenClass* m_objectHiddenClassBefore;
-    std::unordered_map<InternalAtomicString, ::escargot::ESSlotAccessor,
-        std::hash<InternalAtomicString>,std::equal_to<InternalAtomicString>,
-        gc_allocator<std::pair<const InternalAtomicString, ::escargot::ESSlotAccessor> > > m_objectAccessorCache;
 };
 
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-declarative-environment-records

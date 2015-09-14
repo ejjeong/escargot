@@ -74,6 +74,7 @@ THIRD_PARTY_LIBS= $(GCLIBS)
 SRC=
 SRC += $(foreach dir, ./src , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, ./src/ast , $(wildcard $(dir)/*.cpp))
+SRC += $(foreach dir, ./src/bytecode , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, ./src/shell , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, ./src/parser , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, ./src/vm , $(wildcard $(dir)/*.cpp))
