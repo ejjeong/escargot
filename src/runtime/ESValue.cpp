@@ -322,7 +322,7 @@ ESArrayObject::ESArrayObject(int length)
     m_length = 0;
     if (length == -1)
         convertToSlowMode();
-    else {
+    else if (m_length > 0) {
         setLength(length);
     }
 

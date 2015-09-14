@@ -498,14 +498,13 @@ void GlobalObject::installArray()
     FunctionDeclarationNode* arrayConcat = new FunctionDeclarationNode(strings->concat, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
         int arglen = instance->currentExecutionContext()->argumentCount();
         auto thisBinded = instance->currentExecutionContext()->environment()->record()->getThisBinding();
-        int arrlen = thisBinded->length();
-        escargot::ESArrayObject* ret = ESArrayObject::create(arrlen, instance->globalObject()->arrayPrototype());
+        escargot::ESArrayObject* ret = ESArrayObject::create(0, instance->globalObject()->arrayPrototype());
         if (!thisBinded->constructor().isUndefinedOrNull())
             ret->setConstructor(thisBinded->constructor());
         int idx = 0;
         if (LIKELY(thisBinded->isESArrayObject())) {
             auto thisVal = thisBinded->asESArrayObject();
-            for (idx = 0; idx < arrlen; idx++)
+            for (idx = 0; idx < thisVal->length(); idx++)
                 ret->set(idx, thisVal->get(idx));
         } else {
             ASSERT(thisBinded->isESObject());
