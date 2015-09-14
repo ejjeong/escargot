@@ -382,6 +382,12 @@ inline ESString* ESValue::toString() const
         return ESString::create(num);
     } else if(isNumber()) {
         double d = asNumber();
+        if (std::isnan(d))
+            return strings->NaN;
+        if (d == std::numeric_limits<double>::infinity())
+            return strings->Infinity;
+        if (d == -0)
+            d = 0;
         return ESString::create(d);
     } else if(isUndefined()) {
         return strings->undefined;
