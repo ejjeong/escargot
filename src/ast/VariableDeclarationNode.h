@@ -35,7 +35,7 @@ public:
         for(unsigned i = 0; i < m_declarations.size() ; i ++) {
             m_declarations[i]->generateByteCode(codeBlock);
             if(m_declarations[i]->type() != NodeType::VariableDeclarator) {
-                codeBlock->pushCode(JustPop(), this);
+                codeBlock->pushCode(Pop(), this);
             }
         }
     }

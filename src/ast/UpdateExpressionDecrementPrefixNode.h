@@ -34,6 +34,15 @@ public:
         ret = argval;
         return ret;
     }
+
+    virtual void generateByteCode(CodeBlock* codeBlock)
+    {
+        m_argument->generateByteCodeWriteCase(codeBlock);
+        m_argument->generateByteCode(codeBlock);
+        codeBlock->pushCode(Push(ESValue(-1)), this);
+        codeBlock->pushCode(Plus(), this);
+        codeBlock->pushCode(Put(), this);
+    }
 protected:
     ExpressionNode* m_argument;
 };

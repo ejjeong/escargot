@@ -21,6 +21,12 @@ public:
         RELEASE_ASSERT_NOT_REACHED();
     }
 
+    virtual void generateByteCode(CodeBlock* codeBlock)
+    {
+        m_argument->generateByteCode(codeBlock);
+        codeBlock->pushCode(Throw(), this);
+    }
+
 protected:
     Node* m_argument;
 };

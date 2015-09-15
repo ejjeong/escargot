@@ -52,8 +52,34 @@ public:
                 if (m_update)
                     m_update->executeExpression(instance);
                 test = m_test ? m_test->executeExpression(instance) : ESValue(true);
-             }
+            }
         }
+    }
+
+    virtual void generateByteCode(CodeBlock* codeBlock)
+    {
+        if (m_init) {
+            m_init->generateByteCode(codeBlock);
+            codeBlock->pushCode(Pop(), this);
+        }
+
+        size_t forStart = codeBlock->currentCodeSize();
+        if(m_test) {
+            m_test->generateByteCode(codeBlock);
+        } else {
+            codeBlock->pushCode(Push(ESValue(true)), this);
+        }
+
+        codeBlock->pushCode(JumpIfTopOfStackValueIsFalse(SIZE_MAX), this);
+        size_t testPos = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsFalse>();
+        m_body->generateByteCode(codeBlock);
+        if(m_update) {
+            m_update->generateByteCode(codeBlock);
+            codeBlock->pushCode(Pop(), this);
+        }
+        codeBlock->pushCode(Jump(forStart), this);
+        size_t forEnd = codeBlock->currentCodeSize();
+        codeBlock->peekCode<JumpIfTopOfStackValueIsFalse>(testPos)->m_jumpPosition = forEnd;
     }
 
 protected:

@@ -33,6 +33,17 @@ public:
 
         return ret;
     }
+
+    virtual void generateByteCode(CodeBlock* codeBlock)
+    {
+        m_argument->generateByteCode(codeBlock);
+        codeBlock->pushCode(DuplicateTopOfStackValue(), this);
+        codeBlock->pushCode(Push(ESValue(1)), this);
+        codeBlock->pushCode(Plus(), this);
+        m_argument->generateByteCodeWriteCase(codeBlock);
+        codeBlock->pushCode(PutReverseStack(), this);
+        codeBlock->pushCode(Pop(), this);
+    }
 protected:
     ExpressionNode* m_argument;
 };

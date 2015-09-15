@@ -2013,59 +2013,7 @@ escargot::Node* parseBlock(ParseContext* ctx) {
 
     expect(ctx, '}');
     escargot::Node* nd;
-    switch(body.size()) {
-    case 1:
-        nd = new escargot::BlockStatementPredefinedNode<1>(std::move(body));
-        break;
-    case 2:
-        nd = new escargot::BlockStatementPredefinedNode<2>(std::move(body));
-        break;
-    case 3:
-        nd = new escargot::BlockStatementPredefinedNode<3>(std::move(body));
-        break;
-    case 4:
-        nd = new escargot::BlockStatementPredefinedNode<4>(std::move(body));
-        break;
-    case 5:
-        nd = new escargot::BlockStatementPredefinedNode<5>(std::move(body));
-        break;
-    case 6:
-        nd = new escargot::BlockStatementPredefinedNode<6>(std::move(body));
-        break;
-    case 7:
-        nd = new escargot::BlockStatementPredefinedNode<7>(std::move(body));
-        break;
-    case 8:
-        nd = new escargot::BlockStatementPredefinedNode<8>(std::move(body));
-        break;
-    case 9:
-        nd = new escargot::BlockStatementPredefinedNode<9>(std::move(body));
-        break;
-    case 10:
-        nd = new escargot::BlockStatementPredefinedNode<10>(std::move(body));
-        break;
-    case 11:
-        nd = new escargot::BlockStatementPredefinedNode<11>(std::move(body));
-        break;
-    case 12:
-        nd = new escargot::BlockStatementPredefinedNode<12>(std::move(body));
-        break;
-    case 13:
-        nd = new escargot::BlockStatementPredefinedNode<13>(std::move(body));
-        break;
-    case 14:
-        nd = new escargot::BlockStatementPredefinedNode<14>(std::move(body));
-        break;
-    case 15:
-        nd = new escargot::BlockStatementPredefinedNode<15>(std::move(body));
-        break;
-    case 16:
-        nd = new escargot::BlockStatementPredefinedNode<16>(std::move(body));
-        break;
-    default:
-        nd = new escargot::BlockStatementNode(std::move(body));
-        break;
-    }
+    nd = new escargot::BlockStatementNode(std::move(body));
     nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
     return nd;
 }
@@ -3140,59 +3088,7 @@ escargot::Node* parseFunctionSourceElements(ParseContext* ctx) {
 
     ctx->m_currentBody = prevBody;
     escargot::Node* nd;
-    switch(body.size()) {
-    case 1:
-        nd = new escargot::BlockStatementPredefinedNode<1>(std::move(body));
-        break;
-    case 2:
-        nd = new escargot::BlockStatementPredefinedNode<2>(std::move(body));
-        break;
-    case 3:
-        nd = new escargot::BlockStatementPredefinedNode<3>(std::move(body));
-        break;
-    case 4:
-        nd = new escargot::BlockStatementPredefinedNode<4>(std::move(body));
-        break;
-    case 5:
-        nd = new escargot::BlockStatementPredefinedNode<5>(std::move(body));
-        break;
-    case 6:
-        nd = new escargot::BlockStatementPredefinedNode<6>(std::move(body));
-        break;
-    case 7:
-        nd = new escargot::BlockStatementPredefinedNode<7>(std::move(body));
-        break;
-    case 8:
-        nd = new escargot::BlockStatementPredefinedNode<8>(std::move(body));
-        break;
-    case 9:
-        nd = new escargot::BlockStatementPredefinedNode<9>(std::move(body));
-        break;
-    case 10:
-        nd = new escargot::BlockStatementPredefinedNode<10>(std::move(body));
-        break;
-    case 11:
-        nd = new escargot::BlockStatementPredefinedNode<11>(std::move(body));
-        break;
-    case 12:
-        nd = new escargot::BlockStatementPredefinedNode<12>(std::move(body));
-        break;
-    case 13:
-        nd = new escargot::BlockStatementPredefinedNode<13>(std::move(body));
-        break;
-    case 14:
-        nd = new escargot::BlockStatementPredefinedNode<14>(std::move(body));
-        break;
-    case 15:
-        nd = new escargot::BlockStatementPredefinedNode<15>(std::move(body));
-        break;
-    case 16:
-        nd = new escargot::BlockStatementPredefinedNode<16>(std::move(body));
-        break;
-    default:
-        nd = new escargot::BlockStatementNode(std::move(body));
-        break;
-    }
+    nd = new escargot::BlockStatementNode(std::move(body));
     nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
     return nd;
 }

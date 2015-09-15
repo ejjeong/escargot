@@ -23,7 +23,7 @@ public:
     virtual void generateByteCode(CodeBlock* codeBlock)
     {
         m_expression->generateByteCode(codeBlock);
-        codeBlock->pushCode(Pop(), this);
+        codeBlock->pushCode(PopExpressionStatement(), this);
     }
 
     Node* expression() { return m_expression; }

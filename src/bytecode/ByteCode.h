@@ -12,8 +12,8 @@ class Node;
 
 enum Opcode {
     PushOpcode, //Literal
-    PopOpcode, //ExpressionStatement
-    JustPopOpcode,
+    PopExpressionStatementOpcode, //ExpressionStatement
+    PopOpcode,
     GetByIdOpcode,
     GetByIndexOpcode,
     GetByIndexWithActivationOpcode,
@@ -21,6 +21,7 @@ enum Opcode {
     ResolveAddressByIndexOpcode,
     ResolveAddressByIndexWithActivationOpcode,
     PutOpcode,
+    PutReverseStackOpcode,
     CreateBindingOpcode,
     EqualOpcode,
     NotEqualOpcode,
@@ -32,8 +33,6 @@ enum Opcode {
     LeftShiftOpcode,
     SignedRightShiftOpcode,
     UnsignedRightShiftOpcode,
-    LogicalAndOpcode,
-    LogicalOrOpcode,
     LessThanOpcode,
     LessThanOrEqualOpcode,
     GreaterThanOpcode,
@@ -44,7 +43,13 @@ enum Opcode {
     DivisionOpcode,
     ModOpcode,
     JumpOpcode,
+    JumpIfTopOfStackValueIsFalseOpcode,
+    JumpIfTopOfStackValueIsTrueOpcode,
+    JumpIfTopOfStackValueIsFalseWithPeekingOpcode,
+    JumpIfTopOfStackValueIsTrueWithPeekingOpcode,
     CallOpcode,
+    DuplicateTopOfStackValueOpcode,
+    ThrowOpcode,
     EndOpcode,
     EndOfKind
 };
@@ -85,10 +90,10 @@ public:
     }
 };
 
-class JustPop : public ByteCode {
+class PopExpressionStatement : public ByteCode {
 public:
-    JustPop()
-        : ByteCode(JustPopOpcode)
+    PopExpressionStatement()
+        : ByteCode(PopExpressionStatementOpcode)
     {
 
     }
@@ -176,6 +181,15 @@ class Put : public ByteCode {
 public:
     Put()
         : ByteCode(PutOpcode)
+    {
+
+    }
+};
+
+class PutReverseStack : public ByteCode {
+public:
+    PutReverseStack()
+        : ByteCode(PutReverseStackOpcode)
     {
 
     }
@@ -283,24 +297,6 @@ public:
     }
 };
 
-class LogicalAnd : public ByteCode {
-public:
-    LogicalAnd()
-        : ByteCode(LogicalAndOpcode)
-    {
-
-    }
-};
-
-class LogicalOr : public ByteCode {
-public:
-    LogicalOr()
-        : ByteCode(LogicalOrOpcode)
-    {
-
-    }
-};
-
 class LessThan : public ByteCode {
 public:
     LessThan()
@@ -382,6 +378,78 @@ public:
     }
 };
 
+class JumpIfTopOfStackValueIsFalse : public ByteCode {
+public:
+    JumpIfTopOfStackValueIsFalse(size_t jumpPosition)
+        : ByteCode(JumpIfTopOfStackValueIsFalseOpcode)
+    {
+        m_jumpPosition = jumpPosition;
+    }
+
+    size_t m_jumpPosition;
+};
+
+class JumpIfTopOfStackValueIsTrue : public ByteCode {
+public:
+    JumpIfTopOfStackValueIsTrue(size_t jumpPosition)
+        : ByteCode(JumpIfTopOfStackValueIsTrueOpcode)
+    {
+        m_jumpPosition = jumpPosition;
+    }
+
+    size_t m_jumpPosition;
+};
+
+class JumpIfTopOfStackValueIsFalseWithPeeking : public ByteCode {
+public:
+    JumpIfTopOfStackValueIsFalseWithPeeking(size_t jumpPosition)
+        : ByteCode(JumpIfTopOfStackValueIsFalseWithPeekingOpcode)
+    {
+        m_jumpPosition = jumpPosition;
+    }
+
+    size_t m_jumpPosition;
+};
+
+class JumpIfTopOfStackValueIsTrueWithPeeking : public ByteCode {
+public:
+    JumpIfTopOfStackValueIsTrueWithPeeking(size_t jumpPosition)
+        : ByteCode(JumpIfTopOfStackValueIsTrueWithPeekingOpcode)
+    {
+        m_jumpPosition = jumpPosition;
+    }
+
+    size_t m_jumpPosition;
+};
+
+class Jump : public ByteCode {
+public:
+    Jump(size_t jumpPosition)
+        : ByteCode(JumpOpcode)
+    {
+        m_jumpPosition = jumpPosition;
+    }
+
+    size_t m_jumpPosition;
+};
+
+class DuplicateTopOfStackValue : public ByteCode {
+public:
+    DuplicateTopOfStackValue()
+        : ByteCode(DuplicateTopOfStackValueOpcode)
+    {
+
+    }
+};
+
+class Throw : public ByteCode {
+public:
+    Throw()
+        : ByteCode(ThrowOpcode)
+    {
+
+    }
+};
 
 class End : public ByteCode {
 public:
@@ -396,6 +464,24 @@ class CodeBlock : public gc_cleanup {
 public:
     template <typename CodeType>
     void pushCode(const CodeType& type, Node* node);
+    template <typename CodeType>
+    CodeType* peekCode(size_t position)
+    {
+        char* pos = m_code.data();
+        pos = &pos[position];
+        return (CodeType *)pos;
+    }
+
+    template <typename CodeType>
+    size_t lastCodePosition()
+    {
+        return m_code.size() - sizeof(CodeType);
+    }
+
+    size_t currentCodeSize()
+    {
+        return m_code.size();
+    }
     std::vector<char, gc_allocator<char> > m_code;
 };
 
@@ -418,6 +504,21 @@ ALWAYS_INLINE void push(void* stk, size_t& sp, const Type& ptr)
 
 template <typename Type>
 ALWAYS_INLINE Type* pop(void* stk, size_t& sp)
+{
+#ifndef NDEBUG
+    if(sp < sizeof (Type) + sizeof (int)) {
+        ASSERT_NOT_REACHED();
+    }
+    sp -= sizeof (int);
+    int* siz = (int *)(&(((char *)stk)[sp]));
+    ASSERT(*siz == sizeof (Type));
+#endif
+    sp -= sizeof (Type);
+    return (Type *)(&(((char *)stk)[sp]));
+}
+
+template <typename Type>
+ALWAYS_INLINE Type* peek(void* stk, size_t sp)
 {
 #ifndef NDEBUG
     if(sp < sizeof (Type) + sizeof (int)) {
@@ -458,16 +559,16 @@ ALWAYS_INLINE void interpret(ESVMInstance* instance, CodeBlock* codeBlock)
         case PopOpcode:
         {
             Pop* popCode = (Pop*)currentCode;
-            ESValue* t = pop<ESValue>(stack, sp);
-            instance->m_lastExpressionStatementValue = *t;
+            pop<ESValue>(stack, sp);
             excuteNextCode<Pop>(programCounter);
             break;
         }
 
-        case JustPopOpcode:
+        case PopExpressionStatementOpcode:
         {
-            pop<ESValue>(stack, sp);
-            excuteNextCode<JustPop>(programCounter);
+            ESValue* t = pop<ESValue>(stack, sp);
+            instance->m_lastExpressionStatementValue = *t;
+            excuteNextCode<PopExpressionStatement>(programCounter);
             break;
         }
 
@@ -568,12 +669,21 @@ ALWAYS_INLINE void interpret(ESVMInstance* instance, CodeBlock* codeBlock)
 
         case PutOpcode:
         {
-            Put* code = (Put*)currentCode;
             ESValue* value = pop<ESValue>(stack, sp);
             ESSlotAccessor* slot = pop<ESSlotAccessor>(stack, sp);
             slot->setValue(*value);
             push<ESValue>(stack, sp, *value);
             excuteNextCode<Put>(programCounter);
+            break;
+        }
+
+        case PutReverseStackOpcode:
+        {
+            ESSlotAccessor* slot = pop<ESSlotAccessor>(stack, sp);
+            ESValue* value = pop<ESValue>(stack, sp);
+            slot->setValue(*value);
+            push<ESValue>(stack, sp, *value);
+            excuteNextCode<PutReverseStack>(programCounter);
             break;
         }
 
@@ -682,24 +792,6 @@ ALWAYS_INLINE void interpret(ESVMInstance* instance, CodeBlock* codeBlock)
             lnum = ((unsigned int)lnum) >> (((unsigned int)rnum) & 0x1F);
             push<ESValue>(stack, sp, ESValue(lnum));
             excuteNextCode<UnsignedRightShift>(programCounter);
-            break;
-        }
-
-        case LogicalAndOpcode:
-        {
-            ESValue* right = pop<ESValue>(stack, sp);
-            ESValue* left = pop<ESValue>(stack, sp);
-            //TODO
-            excuteNextCode<LogicalAnd>(programCounter);
-            break;
-        }
-
-        case LogicalOrOpcode:
-        {
-            ESValue* right = pop<ESValue>(stack, sp);
-            ESValue* left = pop<ESValue>(stack, sp);
-            //TODO
-            excuteNextCode<LogicalOr>(programCounter);
             break;
         }
 
@@ -895,6 +987,71 @@ ALWAYS_INLINE void interpret(ESVMInstance* instance, CodeBlock* codeBlock)
             }
             push<ESValue>(stack, sp, ret);
             excuteNextCode<Mod>(programCounter);
+            break;
+        }
+
+        case JumpIfTopOfStackValueIsFalseOpcode:
+        {
+            JumpIfTopOfStackValueIsFalse* code = (JumpIfTopOfStackValueIsFalse *)currentCode;
+            ESValue* top = pop<ESValue>(stack, sp);
+            if(!top->toBoolean())
+                programCounter = code->m_jumpPosition;
+            else
+                excuteNextCode<JumpIfTopOfStackValueIsFalse>(programCounter);
+            break;
+        }
+
+        case JumpIfTopOfStackValueIsTrueOpcode:
+        {
+            JumpIfTopOfStackValueIsTrue* code = (JumpIfTopOfStackValueIsTrue *)currentCode;
+            ESValue* top = pop<ESValue>(stack, sp);
+            if(top->toBoolean())
+                programCounter = code->m_jumpPosition;
+            else
+                excuteNextCode<JumpIfTopOfStackValueIsTrue>(programCounter);
+            break;
+        }
+
+        case JumpIfTopOfStackValueIsFalseWithPeekingOpcode:
+        {
+            JumpIfTopOfStackValueIsFalseWithPeeking* code = (JumpIfTopOfStackValueIsFalseWithPeeking *)currentCode;
+            ESValue* top = peek<ESValue>(stack, sp);
+            if(!top->toBoolean())
+                programCounter = code->m_jumpPosition;
+            else
+                excuteNextCode<JumpIfTopOfStackValueIsFalseWithPeeking>(programCounter);
+            break;
+        }
+
+        case JumpIfTopOfStackValueIsTrueWithPeekingOpcode:
+        {
+            JumpIfTopOfStackValueIsTrueWithPeeking* code = (JumpIfTopOfStackValueIsTrueWithPeeking *)currentCode;
+            ESValue* top = peek<ESValue>(stack, sp);
+            if(top->toBoolean())
+                programCounter = code->m_jumpPosition;
+            else
+                excuteNextCode<JumpIfTopOfStackValueIsTrueWithPeeking>(programCounter);
+            break;
+        }
+
+        case JumpOpcode:
+        {
+            Jump* code = (Jump *)currentCode;
+            programCounter = code->m_jumpPosition;
+            break;
+        }
+
+        case DuplicateTopOfStackValueOpcode:
+        {
+            push<ESValue>(stack, sp, *peek<ESValue>(stack, sp));
+            excuteNextCode<DuplicateTopOfStackValue>(programCounter);
+            break;
+        }
+
+        case ThrowOpcode:
+        {
+            ESValue* v = pop<ESValue>(stack, sp);
+            throw *v;
             break;
         }
 
