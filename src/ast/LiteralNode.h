@@ -19,6 +19,12 @@ public:
         return m_value;
     }
 
+    virtual void generateByteCode(CodeBlock* codeBlock)
+    {
+        Push push(m_value);
+        codeBlock->pushCode(push, this);
+    }
+
     ESValue value() { return m_value; }
 protected:
     ESValue m_value;

@@ -24,7 +24,6 @@ public:
 
     ESSlotAccessor executeForWrite(ESVMInstance* instance)
     {
-        ASSERT(m_object->type() != NodeType::IdentifierFastCase);
         ESValue value = m_object->executeExpression(instance);
         ExecutionContext* ec = instance->currentExecutionContext();
 
@@ -43,7 +42,6 @@ public:
 
     ESValue executeExpression(ESVMInstance* instance)
     {
-        ASSERT(m_object->type() != NodeType::IdentifierFastCase);
         ESValue value = m_object->executeExpression(instance);
         ESValue propertyValue = m_property->executeExpression(instance);
         if(UNLIKELY(value.isESString())) {

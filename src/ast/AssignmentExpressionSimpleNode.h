@@ -21,13 +21,18 @@ public:
 
     ESValue executeExpression(ESVMInstance* instance)
     {
-        ASSERT(m_left->type() != NodeType::IdentifierFastCase);
-
         //http://www.ecma-international.org/ecma-262/5.1/#sec-11.13.1
         ESSlotAccessor slot = m_left->executeForWrite(instance);
         ESValue rvalue = m_right->executeExpression(instance);
         slot.setValue(rvalue);
         return rvalue;
+    }
+
+    virtual void generateByteCode(CodeBlock* codeBlock)
+    {
+        m_left->generateByteCodeWriteCase(codeBlock);
+        m_right->generateByteCode(codeBlock);
+        codeBlock->pushCode(Put(), this);
     }
 
 protected:

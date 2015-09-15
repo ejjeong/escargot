@@ -27,17 +27,6 @@ public:
         if(m_argument->type() == NodeType::MemberExpression) {
             MemberExpressionNode* mem = (MemberExpressionNode*)m_argument;
             return doDelete(mem->m_object->executeExpression(instance), mem->m_property->executeExpression(instance));
-        } else if(m_argument->type() == NodeType::MemberExpressionLeftIdentifierFastCase) {
-            MemberExpressionLeftIdentifierFastCaseNode* mem = (MemberExpressionLeftIdentifierFastCaseNode*)m_argument;
-            ESValue value = instance->currentExecutionContext()->cachedDeclarativeEnvironmentRecordESValue()[mem->m_index];
-            return doDelete(value, mem->m_property->executeExpression(instance));
-        } else if(m_argument->type() == NodeType::MemberExpressionNonComputedCase) {
-            MemberExpressionNonComputedCaseNode* mem = (MemberExpressionNonComputedCaseNode*)m_argument;
-            return doDelete(mem->m_object->executeExpression(instance), mem->m_propertyValue);
-        } else if(m_argument->type() == NodeType::MemberExpressionNonComputedCaseLeftIdentifierFastCase) {
-            MemberExpressionNonComputedCaseLeftIdentifierFastCaseNode* mem = (MemberExpressionNonComputedCaseLeftIdentifierFastCaseNode*)m_argument;
-            ESValue value = instance->currentExecutionContext()->cachedDeclarativeEnvironmentRecordESValue()[mem->m_index];
-            return doDelete(value, mem->m_propertyValue);
         } else if(m_argument->type() == NodeType::Identifier) {
             IdentifierNode* id = (IdentifierNode*)m_argument;
             ESSlotAccessor acc = instance->currentExecutionContext()->resolveBinding(id->name(), id->nonAtomicName());

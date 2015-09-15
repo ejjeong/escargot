@@ -5,6 +5,7 @@
 #include "vm/ESVMInstance.h"
 #include "runtime/ExecutionContext.h"
 #include "runtime/Environment.h"
+#include "bytecode/ByteCode.h"
 
 namespace escargot {
 
@@ -62,7 +63,6 @@ enum NodeType {
     AssignmentExpressionSignedRightShift,
     AssignmentExpressionUnsignedRightShift,
     AssignmentExpressionSimple,
-    AssignmentExpressionSimpleLeftIdentifierFastCase,
     BinaryExpression,
     BinaryExpressionBitwiseAnd,
     BinaryExpressionBitwiseOr,
@@ -96,16 +96,11 @@ enum NodeType {
     SequenceExpression,
     NewExpression,
     MemberExpression,
-    MemberExpressionLeftIdentifierFastCase,
-    MemberExpressionNonComputedCase,
-    MemberExpressionNonComputedCaseLeftIdentifierFastCase,
     ConditionalExpression,
     CallExpression,
     CallEvalFunctionExpression,
     VariableDeclarator,
     Identifier,
-    IdentifierFastCase,
-    IdentifierFastCaseWithActivation,
     LabeledStatement,
     Literal,
     NativeFunction,
@@ -140,6 +135,16 @@ public:
     }
 
     virtual ESSlotAccessor executeForWrite(ESVMInstance* instance)
+    {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+
+    virtual void generateByteCode(CodeBlock* codeBlock)
+    {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+
+    virtual void generateByteCodeWriteCase(CodeBlock* codeBlock)
     {
         RELEASE_ASSERT_NOT_REACHED();
     }

@@ -23,6 +23,14 @@ public:
             m_rootedBody[i]->executeStatement(instance);
         }
     }
+
+    virtual void generateByteCode(CodeBlock* codeBlock)
+    {
+        for(unsigned i = 0; i < m_bodySize ; i ++) {
+            m_rootedBody[i]->generateByteCode(codeBlock);
+        }
+        codeBlock->pushCode(End(), this);
+    }
 protected:
     StatementNodeVector m_body; //body: [ Statement ];
     Node** m_rootedBody;

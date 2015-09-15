@@ -272,8 +272,6 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
         } else if(type == NodeType::MemberExpression) {
             postAnalysisFunction(((MemberExpressionNode *)currentNode)->m_object, identifierStack, nearFunctionNode);
             postAnalysisFunction(((MemberExpressionNode *)currentNode)->m_property, identifierStack, nearFunctionNode);
-        } else if(type == NodeType::MemberExpressionNonComputedCase) {
-            postAnalysisFunction(((MemberExpressionNonComputedCaseNode *)currentNode)->m_object, identifierStack, nearFunctionNode);
         } else if(type >= NodeType::BinaryExpressionBitwiseAnd && type <= NodeType::BinaryExpressionUnsignedRightShift) {
             postAnalysisFunction(((BinaryExpressionBitwiseAndNode *)currentNode)->m_right, identifierStack, nearFunctionNode);
             postAnalysisFunction(((BinaryExpressionBitwiseAndNode *)currentNode)->m_left, identifierStack, nearFunctionNode);
@@ -370,53 +368,9 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
     std::function<void (Node** node, FunctionNode* nearFunction)> nodeReplacer = [](Node** node, FunctionNode* nearFunction) {
         if(*node) {
             if((*node)->type() == NodeType::Identifier) {
-                IdentifierNode* n = (IdentifierNode *)*node;
-                if(nearFunction && !nearFunction->needsActivation() && n->canUseFastAccess() && n->fastAccessUpIndex() == 0) {
-                    SourceLocation loc = n->m_sourceLocation;
-#ifdef NDEBUG
-                    *node = new IdentifierFastCaseNode(n->fastAccessIndex());
-#else
-                    *node = new IdentifierFastCaseNode(n->fastAccessIndex(), n->name());
-#endif
-                    (*node)->m_sourceLocation = loc;
-                } else if(nearFunction && n->canUseFastAccess()) {
-                    SourceLocation loc = n->m_sourceLocation;
-#ifdef NDEBUG
-                    *node = new IdentifierFastCaseWithActivationNode(n->fastAccessIndex(), n->fastAccessUpIndex());
-#else
-                    *node = new IdentifierFastCaseWithActivationNode(n->fastAccessIndex(), n->fastAccessUpIndex(), n->name());
-#endif
-                    (*node)->m_sourceLocation = loc;
-                }
-            } else if((*node)->type() == NodeType::AssignmentExpressionSimple) {
-                AssignmentExpressionSimpleNode* n = (AssignmentExpressionSimpleNode *)*node;
-                if(n->m_left->type() == NodeType::Identifier) {
-                    IdentifierNode* n2 = (IdentifierNode *)n->m_left;
-                    if(nearFunction && !nearFunction->needsActivation() && n2->canUseFastAccess() && n2->fastAccessUpIndex() == 0) {
-                        SourceLocation loc = n2->m_sourceLocation;
-                        *node = new AssignmentExpressionSimpleLeftIdentifierFastCaseNode(n2->fastAccessIndex(), n->m_right);
-                        (*node)->m_sourceLocation = loc;
-                    }
-                }
-            } else if((*node)->type() == NodeType::MemberExpression) {
-                MemberExpressionNode* n = (MemberExpressionNode *)*node;
-                if(n->m_object->type() == NodeType::Identifier) {
-                    IdentifierNode* n2 = (IdentifierNode *)n->m_object;
-                    if(nearFunction && !nearFunction->needsActivation() && n2->canUseFastAccess() && n2->fastAccessUpIndex() == 0) {
-                        SourceLocation loc = n2->m_sourceLocation;
-                        *node = new MemberExpressionLeftIdentifierFastCaseNode(n2->fastAccessIndex(), n->m_property, true);
-                        (*node)->m_sourceLocation = loc;
-                    }
-                }
-            } else if((*node)->type() == NodeType::MemberExpressionNonComputedCase) {
-                MemberExpressionNonComputedCaseNode* n = (MemberExpressionNonComputedCaseNode *)*node;
-                if(n->m_object->type() == NodeType::Identifier) {
-                    IdentifierNode* n2 = (IdentifierNode *)n->m_object;
-                    if(nearFunction && !nearFunction->needsActivation() && n2->canUseFastAccess() && n2->fastAccessUpIndex() == 0) {
-                        SourceLocation loc = n2->m_sourceLocation;
-                        *node = new MemberExpressionNonComputedCaseLeftIdentifierFastCaseNode(n2->fastAccessIndex(), n->m_propertyValue, false);
-                        (*node)->m_sourceLocation = loc;
-                    }
+                if(nearFunction && !nearFunction->needsActivation()) {
+                    IdentifierNode* n = (IdentifierNode *)*node;
+                    n->m_needsActivation = false;
                 }
             } else if((*node)->type() == NodeType::VariableDeclarator) {
                 VariableDeclaratorNode* n = (VariableDeclaratorNode *)*node;
@@ -475,9 +429,6 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
             nodeReplacer(&((AssignmentExpressionSimpleNode *)currentNode)->m_left, nearFunction);
             postProcessingFunction(((AssignmentExpressionSimpleNode *)currentNode)->m_right, nearFunction);
             postProcessingFunction(((AssignmentExpressionSimpleNode *)currentNode)->m_left, nearFunction);
-        } else if(type == NodeType::AssignmentExpressionSimpleLeftIdentifierFastCase) {
-            nodeReplacer(&((AssignmentExpressionSimpleLeftIdentifierFastCaseNode*)currentNode)->m_right, nearFunction);
-            postProcessingFunction(((AssignmentExpressionSimpleLeftIdentifierFastCaseNode *)currentNode)->m_right, nearFunction);
         } else if(type == NodeType::Literal) {
             //DO NOTHING
         } else if(type == NodeType::ArrayExpression) {
@@ -549,13 +500,6 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
             nodeReplacer(&((MemberExpressionNode *)currentNode)->m_property, nearFunction);
             postProcessingFunction(((MemberExpressionNode *)currentNode)->m_object, nearFunction);
             postProcessingFunction(((MemberExpressionNode *)currentNode)->m_property, nearFunction);
-        } else if(type == NodeType::MemberExpressionLeftIdentifierFastCase) {
-            nodeReplacer(&((MemberExpressionLeftIdentifierFastCaseNode *)currentNode)->m_property, nearFunction);
-            postProcessingFunction(((MemberExpressionLeftIdentifierFastCaseNode *)currentNode)->m_property, nearFunction);
-        } else if(type == NodeType::MemberExpressionNonComputedCase) {
-            nodeReplacer(&((MemberExpressionNonComputedCaseNode *)currentNode)->m_object, nearFunction);
-            postProcessingFunction(((MemberExpressionNonComputedCaseNode *)currentNode)->m_object, nearFunction);
-        } else if(type == NodeType::MemberExpressionNonComputedCaseLeftIdentifierFastCase) {
         } else if(type >= NodeType::BinaryExpressionBitwiseAnd && type <= NodeType::BinaryExpressionUnsignedRightShift) {
             nodeReplacer((Node **)&((BinaryExpressionBitwiseAndNode *)currentNode)->m_right, nearFunction);
             nodeReplacer((Node **)&((BinaryExpressionBitwiseAndNode *)currentNode)->m_left, nearFunction);
@@ -655,10 +599,6 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
         } else if (type == NodeType::ThrowStatement) {
             nodeReplacer((Node **)&((ThrowStatementNode *)currentNode)->m_argument, nearFunction);
             postProcessingFunction(((ThrowStatementNode *)currentNode)->m_argument, nearFunction);
-        } else if(type == NodeType::IdentifierFastCase) {
-
-        } else if(type == NodeType::IdentifierFastCaseWithActivation) {
-
         } else if (type == NodeType::LabeledStatement) {
             postProcessingFunction(((LabeledStatementNode *)currentNode)->m_statementNode, nearFunction);
         } else if (type == NodeType::BreakLabelStatement) {

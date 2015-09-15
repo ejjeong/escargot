@@ -20,6 +20,12 @@ public:
         instance->m_lastExpressionStatementValue = m_expression->executeExpression(instance);
     }
 
+    virtual void generateByteCode(CodeBlock* codeBlock)
+    {
+        m_expression->generateByteCode(codeBlock);
+        codeBlock->pushCode(Pop(), this);
+    }
+
     Node* expression() { return m_expression; }
 
 protected:

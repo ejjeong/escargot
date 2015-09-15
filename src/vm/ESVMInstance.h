@@ -13,6 +13,7 @@ namespace escargot {
 class ExecutionContext;
 class GlobalObject;
 class ESVMInstance;
+class CodeBlock;
 
 extern __thread ESVMInstance* currentInstance;
 
@@ -21,6 +22,7 @@ typedef std::unordered_map<u16string, InternalAtomicStringData *,
         gc_allocator<std::pair<const u16string, InternalAtomicStringData *>> > InternalAtomicStringMap;
 
 class ESVMInstance : public gc_cleanup {
+    friend void interpret(ESVMInstance* instance, CodeBlock* codeBlock);
     friend class ESFunctionObject;
     friend class ExpressionStatementNode;
     friend class TryStatementNode;
@@ -98,6 +100,10 @@ public:
     //Function for debug
     static void printValue(ESValue val);
 protected:
+    void* m_stack;
+    size_t m_stackSize;
+    size_t m_sp;
+
     ExecutionContext* m_globalExecutionContext;
     ExecutionContext* m_currentExecutionContext;
     GlobalObject* m_globalObject;
