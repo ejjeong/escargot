@@ -29,7 +29,7 @@ void GlobalObject::initGlobalObject()
     installNumber();
     installBoolean();
     installRegExp();
-
+    installTypedArray();
 
     m_functionPrototype->set__proto__(m_objectPrototype);
 
@@ -2183,6 +2183,76 @@ void GlobalObject::installRegExp()
 
     // add regexp to global object
     set(strings->RegExp, m_regexp);
+}
+
+void GlobalObject::installTypedArray()
+{
+    m_Int8Array = installTypedArray<Int8Adaptor> (strings->Int8Array);
+    m_Int16Array = installTypedArray<Int16Adaptor>(strings->Int16Array);
+    m_Int32Array = installTypedArray<Int32Adaptor>(strings->Int32Array);
+    m_Uint8Array = installTypedArray<Uint8Adaptor>(strings->Uint8Array);
+    m_Uint16Array = installTypedArray<Uint16Adaptor>(strings->Uint16Array);
+    m_Uint32Array = installTypedArray<Uint32Adaptor>(strings->Uint32Array);
+    m_Uint8ClampedArray = installTypedArray<Uint8Adaptor> (strings->Uint8ClampedArray);
+    m_Float32Array = installTypedArray<Float32Adaptor> (strings->Float32Array);
+    m_Float64Array = installTypedArray<Float64Adaptor>(strings->Float64Array);
+    m_Int8ArrayPrototype = m_Int8Array->protoType().asESPointer()->asESObject();
+    m_Int16ArrayPrototype = m_Int16Array->protoType().asESPointer()->asESObject();
+    m_Int32ArrayPrototype = m_Int32Array->protoType().asESPointer()->asESObject();
+    m_Uint8ArrayPrototype = m_Uint8Array->protoType().asESPointer()->asESObject();
+    m_Uint16ArrayPrototype = m_Uint16Array->protoType().asESPointer()->asESObject();
+    m_Uint32ArrayPrototype = m_Uint32Array->protoType().asESPointer()->asESObject();
+}
+
+template <typename T>
+ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
+{
+    escargot::ESObject* ta_prototype = escargot::ESTypedArrayObject<T>::create(m_objectPrototype);
+
+    //$22.2.1.1~
+    FunctionDeclarationNode* constructor = new FunctionDeclarationNode(ta_name, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        // if NewTarget is undefined, throw a TypeError
+        if (!instance->currentExecutionContext()->isNewExpression())
+            throw ESValue(TypeError::create(ESString::create(u"Constructor TypedArray requires \'new\'")));
+        ASSERT(instance->currentExecutionContext()->resolveThisBinding()->isESTypedArrayObject());
+        escargot::ESTypedArrayObject<T>* obj = instance->currentExecutionContext()->resolveThisBinding()->asESTypedArrayObject<T>();
+        int len = instance->currentExecutionContext()->argumentCount();
+        if (len == 0)
+            obj->allocateTypedArray(0);
+        else if (len >= 1) {
+            ESValue& val = instance->currentExecutionContext()->arguments()[0];
+            //$22.2.1.2 %TypedArray%(length)
+            if (!val.isObject()) {
+                int numlen = val.toNumber();
+                int elemlen = val.toLength();
+                if (numlen != elemlen)
+                    throw ESValue(RangeError::create());
+                obj->allocateTypedArray(elemlen);
+            }
+            //TODO
+        }
+        return obj;
+    }), false, false);
+    //$22.2.3.2
+    ta_prototype->defineAccessorProperty(escargot::ESString::create(u"byteLength"), [](ESObject* self) -> ESValue {
+        return ESValue(self->asESTypedArrayObject<T>()->bytelength());
+    }, nullptr, true, false, false);
+    //$22.2.3.2
+    ta_prototype->defineAccessorProperty(strings->length, [](ESObject* self) -> ESValue {
+        return ESValue(self->asESTypedArrayObject<T>()->arraylength());
+    }, nullptr, true, false, false);
+
+    escargot::ESFunctionObject* ta_constructor = ESFunctionObject::create(NULL, constructor);
+    ta_constructor->set(strings->name, ta_name);
+    ta_constructor->setConstructor(m_function);
+    ta_constructor->defineAccessorProperty(strings->prototype, [](ESObject* self) -> ESValue {
+        return self->asESFunctionObject()->protoType();
+    }, nullptr, true, false, false);
+    ta_constructor->set__proto__(m_functionPrototype); // empty Function
+    ta_constructor->setProtoType(ta_prototype);
+    ta_prototype->setConstructor(ta_constructor);
+    set(ta_name, ta_constructor);
+    return ta_constructor;
 }
 
 }

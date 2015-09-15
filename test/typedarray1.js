@@ -1,0 +1,12 @@
+var i1 = new Int8Array();
+var i2 = new Int16Array(5);
+var i3 = new Int32Array(10);
+print(i1);
+print(i1.byteLength);
+print(i1.length);
+print(i2);
+print(i2.byteLength);
+print(i2.length);
+print(i3);
+print(i3.byteLength);
+print(i3.length);

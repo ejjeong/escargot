@@ -166,6 +166,96 @@ public:
         return m_eval;
     }
 
+    ALWAYS_INLINE escargot::ESFunctionObject* int8Array()
+    {
+        return m_Int8Array;
+    }
+
+    ALWAYS_INLINE escargot::ESObject* int8ArrayPrototype()
+    {
+        return m_Int8ArrayPrototype;
+    }
+
+    ALWAYS_INLINE escargot::ESFunctionObject* uint8Array()
+    {
+        return m_Uint8Array;
+    }
+
+    ALWAYS_INLINE escargot::ESObject* uint8ArrayPrototype()
+    {
+        return m_Uint8ArrayPrototype;
+    }
+
+    ALWAYS_INLINE escargot::ESFunctionObject* int16Array()
+    {
+        return m_Int16Array;
+    }
+
+    ALWAYS_INLINE escargot::ESObject* int16ArrayPrototype()
+    {
+        return m_Int16ArrayPrototype;
+    }
+
+    ALWAYS_INLINE escargot::ESFunctionObject* uint16Array()
+    {
+        return m_Uint16Array;
+    }
+
+    ALWAYS_INLINE escargot::ESObject* uint16ArrayPrototype()
+    {
+        return m_Uint16ArrayPrototype;
+    }
+
+    ALWAYS_INLINE escargot::ESFunctionObject* int32Array()
+    {
+        return m_Int32Array;
+    }
+
+    ALWAYS_INLINE escargot::ESObject* int32ArrayPrototype()
+    {
+        return m_Int32ArrayPrototype;
+    }
+
+    ALWAYS_INLINE escargot::ESFunctionObject* uint32Array()
+    {
+        return m_Uint32Array;
+    }
+
+    ALWAYS_INLINE escargot::ESObject* uint32ArrayPrototype()
+    {
+        return m_Uint32ArrayPrototype;
+    }
+
+    ALWAYS_INLINE escargot::ESFunctionObject* uint8ClampedArray()
+    {
+        return m_Uint8ClampedArray;
+    }
+
+    ALWAYS_INLINE escargot::ESObject* uint8ClampedArrayPrototype()
+    {
+        return m_Uint8ClampedArrayPrototype;
+    }
+
+    ALWAYS_INLINE escargot::ESFunctionObject* float32Array()
+    {
+        return m_Float32Array;
+    }
+
+    ALWAYS_INLINE escargot::ESObject* float32ArrayPrototype()
+    {
+        return m_Float32ArrayPrototype;
+    }
+
+    ALWAYS_INLINE escargot::ESFunctionObject* float64Array()
+    {
+        return m_Float64Array;
+    }
+
+    ALWAYS_INLINE escargot::ESObject* float64ArrayPrototype()
+    {
+        return m_Float64ArrayPrototype;
+    }
+
 protected:
     void initGlobalObject();
     void installObject();
@@ -178,6 +268,9 @@ protected:
     void installNumber();
     void installBoolean();
     void installRegExp();
+    void installTypedArray();
+    template <typename T>
+    escargot::ESFunctionObject* installTypedArray(escargot::ESString*);
     escargot::ESFunctionObject* m_object;
     escargot::ESObject* m_objectPrototype;
     escargot::ESFunctionObject* m_function;
@@ -208,6 +301,26 @@ protected:
     escargot::ESObject* m_rangeErrorPrototype;
     escargot::ESFunctionObject* m_syntaxError;
     escargot::ESObject* m_syntaxErrorPrototype;
+
+    // Constructor and prototypes for TypedArray
+    escargot::ESFunctionObject* m_Int8Array;
+    escargot::ESObject* m_Int8ArrayPrototype;
+    escargot::ESFunctionObject* m_Uint8Array;
+    escargot::ESObject* m_Uint8ArrayPrototype;
+    escargot::ESFunctionObject* m_Uint8ClampedArray;
+    escargot::ESObject* m_Uint8ClampedArrayPrototype;
+    escargot::ESFunctionObject* m_Int16Array;
+    escargot::ESObject* m_Int16ArrayPrototype;
+    escargot::ESFunctionObject* m_Uint16Array;
+    escargot::ESObject* m_Uint16ArrayPrototype;
+    escargot::ESFunctionObject* m_Int32Array;
+    escargot::ESObject* m_Int32ArrayPrototype;
+    escargot::ESFunctionObject* m_Uint32Array;
+    escargot::ESObject* m_Uint32ArrayPrototype;
+    escargot::ESFunctionObject* m_Float32Array;
+    escargot::ESObject* m_Float32ArrayPrototype;
+    escargot::ESFunctionObject* m_Float64Array;
+    escargot::ESObject* m_Float64ArrayPrototype;
 
     escargot::ESFunctionObject* m_eval;
     //JSBuiltinsObject* m_builtins;

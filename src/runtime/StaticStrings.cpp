@@ -100,6 +100,15 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     exec = ESString::create(u"exec");
     input = ESString::create(u"input");
     index = ESString::create(u"index");
+    Int8Array = ESString::create(u"Int8Array");
+    Int16Array = ESString::create(u"Int16Array");
+    Int32Array = ESString::create(u"Int32Array");
+    Uint8Array = ESString::create(u"Uint8Array");
+    Uint16Array = ESString::create(u"Uint16Array");
+    Uint32Array = ESString::create(u"Uint32Array");
+    Uint8ClampedArray = ESString::create(u"Uint8ClampedArray");
+    Float32Array = ESString::create(u"Float32Array");
+    Float64Array = ESString::create(u"Float64Array");
 }
 
 Strings* strings;

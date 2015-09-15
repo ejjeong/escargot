@@ -42,6 +42,26 @@ public:
             receiver = SyntaxError::create();
         } else if (function == instance->globalObject()->rangeError()) {
             receiver = RangeError::create();
+        }
+        // TypedArray
+        else if (function == instance->globalObject()->int8Array()) {
+            receiver = ESTypedArrayObject<Int8Adaptor>::create();
+        } else if (function == instance->globalObject()->uint8Array()) {
+            receiver = ESTypedArrayObject<Uint8Adaptor>::create();
+        } else if (function == instance->globalObject()->int16Array()) {
+            receiver = ESTypedArrayObject<Int16Adaptor>::create();
+        } else if (function == instance->globalObject()->uint16Array()) {
+            receiver = ESTypedArrayObject<Uint16Adaptor>::create();
+        } else if (function == instance->globalObject()->int32Array()) {
+            receiver = ESTypedArrayObject<Int32Adaptor>::create();
+        } else if (function == instance->globalObject()->uint32Array()) {
+            receiver = ESTypedArrayObject<Uint32Adaptor>::create();
+        } else if (function == instance->globalObject()->uint8ClampedArray()) {
+            receiver = ESTypedArrayObject<Uint8ClampedAdaptor>::create();
+        } else if (function == instance->globalObject()->float32Array()) {
+            receiver = ESTypedArrayObject<Float32Adaptor>::create();
+        } else if (function == instance->globalObject()->float64Array()) {
+            receiver = ESTypedArrayObject<Float64Adaptor>::create();
         } else {
             receiver = ESObject::create();
         }

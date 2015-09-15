@@ -30,6 +30,12 @@ class FunctionNode;
 class ESVMInstance;
 class ESPointer;
 class ESRegExpObject;
+// ES6 Typed Array
+class ESArrayBufferObject;
+class ESArrayBufferView;
+template<typename TypeArg>
+class ESTypedArrayObject;
+class ESDataViewObject;
 
 union ValueDescriptor {
     int64_t asInt64;
@@ -222,6 +228,10 @@ public:
         ESNumberObject = 1 << 8,
         ESRegExpObject = 1 << 9,
         ESBooleanObject = 1 << 10,
+        ESArrayBufferObject = 1 << 11,
+        ESArrayBufferView = 1 << 12,
+        ESTypedArrayObject = 1 << 13,
+        ESDataViewObject = 1 << 14,
         TypeMask = 0xffff
     };
 
@@ -378,6 +388,59 @@ public:
         ASSERT(isESDateObject());
 #endif
         return reinterpret_cast<::escargot::ESDateObject *>(this);
+    }
+
+    ALWAYS_INLINE bool isESArrayBufferObject() const
+    {
+        return m_type & Type::ESArrayBufferObject;
+    }
+
+    ALWAYS_INLINE ::escargot::ESArrayBufferObject* asESArrayBufferObject()
+    {
+#ifndef NDEBUG
+        ASSERT(isESArrayBufferObject());
+#endif
+        return reinterpret_cast<::escargot::ESArrayBufferObject *>(this);
+    }
+
+    ALWAYS_INLINE bool isESArrayBufferView() const
+    {
+        return m_type & Type::ESArrayBufferView;
+    }
+
+    ALWAYS_INLINE ::escargot::ESArrayBufferView* asESArrayBufferView()
+    {
+#ifndef NDEBUG
+        ASSERT(isESArrayBufferView());
+#endif
+        return reinterpret_cast<::escargot::ESArrayBufferView *>(this);
+    }
+
+    ALWAYS_INLINE bool isESTypedArrayObject() const
+    {
+        return m_type & Type::ESTypedArrayObject;
+    }
+
+    template<typename TypeArg>
+    ALWAYS_INLINE ::escargot::ESTypedArrayObject<TypeArg>* asESTypedArrayObject()
+    {
+#ifndef NDEBUG
+        ASSERT(isESTypedArrayObject());
+#endif
+        return reinterpret_cast<::escargot::ESTypedArrayObject<TypeArg> *>(this);
+    }
+
+    ALWAYS_INLINE bool isESDataViewObject() const
+    {
+        return m_type & Type::ESDataViewObject;
+    }
+
+    ALWAYS_INLINE ::escargot::ESDataViewObject* asESDataViewObject()
+    {
+#ifndef NDEBUG
+        ASSERT(isESDataViewObject());
+#endif
+        return reinterpret_cast<::escargot::ESDataViewObject *>(this);
     }
 
 protected:
@@ -1690,6 +1753,131 @@ private:
 
     unsigned m_lastIndex;
     escargot::ESString* m_lastExecutedString;
+};
+
+class ESArrayBufferObject : public ESObject {
+protected:
+    ESArrayBufferObject(ESPointer::Type type = ESPointer::Type::ESArrayBufferObject)
+           : ESObject((Type)(Type::ESObject | Type::ESArrayBufferObject)) {
+    }
+
+    ESArrayBufferObject(unsigned bytelength, ESPointer::Type type = ESPointer::Type::ESArrayBufferObject)
+           : ESObject((Type)(Type::ESObject | Type::ESArrayBufferObject)),
+             m_bytelength(bytelength) {
+        m_data = GC_malloc(bytelength);
+    }
+
+public:
+    static ESArrayBufferObject* create(unsigned bytelength = 0)
+    {
+        return new ESArrayBufferObject(bytelength);
+    }
+    ALWAYS_INLINE void* data() { return m_data; }
+    ALWAYS_INLINE unsigned bytelength() { return m_bytelength; }
+
+private:
+    void* m_data;
+    unsigned m_bytelength;
+};
+
+class ESArrayBufferView : public ESObject {
+protected:
+    ESArrayBufferView(ESPointer::Type type = ESPointer::Type::ESArrayBufferView)
+           : ESObject((Type)(Type::ESObject | Type::ESArrayBufferView | type)) {
+    }
+
+public:
+    static ESArrayBufferView* create()
+    {
+        return new ESArrayBufferView();
+    }
+    ALWAYS_INLINE escargot::ESArrayBufferObject* buffer() { return m_buffer; }
+    ALWAYS_INLINE void setBuffer(escargot::ESArrayBufferObject* bo) { m_buffer = bo; }
+    ALWAYS_INLINE unsigned bytelength() { return m_bytelength; }
+    ALWAYS_INLINE unsigned byteoffset() { return m_byteoffset; }
+
+protected:
+    escargot::ESArrayBufferObject* m_buffer;
+    unsigned m_bytelength;
+    unsigned m_byteoffset;
+};
+
+enum TypedArrayType {
+    NotTypedArray,
+    Int8Array,
+    Uint8Array,
+    Uint8ClampedArray,
+    Int16Array,
+    Uint16Array,
+    Int32Array,
+    Uint32Array,
+    Float32Array,
+    Float64Array
+};
+
+template<typename TypeArg, TypedArrayType type>
+struct TypedArrayAdaptor {
+    typedef TypeArg Type;
+    TypedArrayType typeVal = type;
+};
+struct Int8Adaptor: TypedArrayAdaptor<int8_t, TypedArrayType::Int8Array> {};
+struct Int16Adaptor: TypedArrayAdaptor<int16_t, TypedArrayType::Int16Array> {};
+struct Int32Adaptor: TypedArrayAdaptor<int32_t, TypedArrayType::Int32Array> {};
+struct Uint8Adaptor: TypedArrayAdaptor<uint8_t, TypedArrayType::Uint8Array> {};
+struct Uint16Adaptor: TypedArrayAdaptor<uint16_t, TypedArrayType::Uint16Array> {};
+struct Uint32Adaptor: TypedArrayAdaptor<uint32_t, TypedArrayType::Uint32Array> {};
+struct Uint8ClampedAdaptor: TypedArrayAdaptor<uint8_t, TypedArrayType::Uint8ClampedArray> {};
+struct Float32Adaptor: TypedArrayAdaptor<float, TypedArrayType::Float32Array> {};
+struct Float64Adaptor: TypedArrayAdaptor<double, TypedArrayType::Float64Array> {};
+
+template<typename TypeAdaptor>
+class ESTypedArrayObject : public ESArrayBufferView {
+public:
+
+protected:
+    ESTypedArrayObject(ESPointer::Type type = ESPointer::Type::ESTypedArrayObject)
+           : ESArrayBufferView((Type)(Type::ESObject | Type::ESTypedArrayObject)) {
+    }
+
+public:
+    static const unsigned elementSize = sizeof(typename TypeAdaptor::Type);
+    static ESTypedArrayObject* create()
+    {
+        return new ESTypedArrayObject();
+    }
+    static ESTypedArrayObject* create(ESObject* proto)
+    {
+        ESTypedArrayObject<TypeAdaptor>* obj = new ESTypedArrayObject();
+        if (proto != NULL)
+            obj->set__proto__(proto);
+        return obj;
+    }
+
+    void allocateTypedArray(unsigned length)
+    {
+        m_arraylength = length;
+        m_byteoffset = 0;
+        m_bytelength = length * elementSize;
+        setBuffer(ESArrayBufferObject::create(m_bytelength));
+    }
+
+    ALWAYS_INLINE unsigned arraylength() { return m_arraylength; }
+
+private:
+    unsigned m_arraylength;
+};
+
+class ESDataViewObject : public ESArrayBufferView {
+protected:
+    ESDataViewObject(ESPointer::Type type = ESPointer::Type::ESTypedArrayObject)
+           : ESArrayBufferView((Type)(Type::ESObject | Type::ESDataViewObject)) {
+    }
+
+public:
+    static ESDataViewObject* create()
+    {
+        return new ESDataViewObject();
+    }
 };
 
 }

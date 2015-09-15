@@ -104,6 +104,15 @@ ESString* test;
 ESString* exec;
 ESString* input;
 ESString* index;
+ESString* Int8Array;
+ESString* Int16Array;
+ESString* Int32Array;
+ESString* Uint8Array;
+ESString* Uint16Array;
+ESString* Uint32Array;
+ESString* Uint8ClampedArray;
+ESString* Float32Array;
+ESString* Float64Array;
 
 void initStaticStrings(ESVMInstance* instance);
 };
