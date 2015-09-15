@@ -21,6 +21,13 @@ public:
         lnum <<= ((unsigned int)rnum) & 0x1F;
         return ESValue(lnum);
     }
+
+    virtual void generateByteCode(CodeBlock* codeBlock)
+    {
+        m_left->generateByteCode(codeBlock);
+        m_right->generateByteCode(codeBlock);
+        codeBlock->pushCode(LeftShift(), this);
+    }
 protected:
     ExpressionNode* m_left;
     ExpressionNode* m_right;

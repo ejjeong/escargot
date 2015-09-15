@@ -20,6 +20,13 @@ public:
         lnum >>= ((unsigned int)m_right->executeExpression(instance).toInt32()) & 0x1F;
         return ESValue(lnum);
     }
+
+    virtual void generateByteCode(CodeBlock* codeBlock)
+    {
+        m_left->generateByteCode(codeBlock);
+        m_right->generateByteCode(codeBlock);
+        codeBlock->pushCode(SignedRightShift(), this);
+    }
 protected:
     ExpressionNode* m_left;
     ExpressionNode* m_right;

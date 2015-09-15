@@ -47,6 +47,12 @@ public:
         return ret;
     }
 
+    virtual void generateByteCode(CodeBlock* codeBlock)
+    {
+        m_left->generateByteCode(codeBlock);
+        m_right->generateByteCode(codeBlock);
+        codeBlock->pushCode(Mod(), this);
+    }
 protected:
     ExpressionNode* m_left;
     ExpressionNode* m_right;

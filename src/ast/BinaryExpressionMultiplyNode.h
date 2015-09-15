@@ -20,6 +20,12 @@ public:
         return ESValue(m_left->executeExpression(instance).toNumber() * m_right->executeExpression(instance).toNumber());
     }
 
+    virtual void generateByteCode(CodeBlock* codeBlock)
+    {
+        m_left->generateByteCode(codeBlock);
+        m_right->generateByteCode(codeBlock);
+        codeBlock->pushCode(Multiply(), this);
+    }
 protected:
     ExpressionNode* m_left;
     ExpressionNode* m_right;

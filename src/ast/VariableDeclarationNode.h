@@ -30,6 +30,16 @@ public:
         return ESValue();
     }
 
+    virtual void generateByteCode(CodeBlock* codeBlock)
+    {
+        for(unsigned i = 0; i < m_declarations.size() ; i ++) {
+            m_declarations[i]->generateByteCode(codeBlock);
+            if(m_declarations[i]->type() != NodeType::VariableDeclarator) {
+                codeBlock->pushCode(JustPop(), this);
+            }
+        }
+    }
+
     VariableDeclaratorVector& declarations() { return m_declarations; }
 protected:
     VariableDeclaratorVector m_declarations; //declarations: [ VariableDeclarator ];

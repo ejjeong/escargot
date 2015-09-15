@@ -13,6 +13,7 @@ class Node;
 enum Opcode {
     PushOpcode, //Literal
     PopOpcode, //ExpressionStatement
+    JustPopOpcode,
     GetByIdOpcode,
     GetByIndexOpcode,
     GetByIndexWithActivationOpcode,
@@ -20,15 +21,28 @@ enum Opcode {
     ResolveAddressByIndexOpcode,
     ResolveAddressByIndexWithActivationOpcode,
     PutOpcode,
-    AddOpcode,
-    SubOpcode,
-    MultiplyOpcode,
-    DivideOpcode,
-    ModOpcode,
+    CreateBindingOpcode,
     EqualOpcode,
     NotEqualOpcode,
     StrictEqualOpcode,
     NotStrictEqualOpcode,
+    BitwiseAndOpcode,
+    BitwiseOrOpcode,
+    BitwiseXorOpcode,
+    LeftShiftOpcode,
+    SignedRightShiftOpcode,
+    UnsignedRightShiftOpcode,
+    LogicalAndOpcode,
+    LogicalOrOpcode,
+    LessThanOpcode,
+    LessThanOrEqualOpcode,
+    GreaterThanOpcode,
+    GreaterThanOrEqualOpcode,
+    PlusOpcode,
+    MinusOpcode,
+    MultiplyOpcode,
+    DivisionOpcode,
+    ModOpcode,
     JumpOpcode,
     CallOpcode,
     EndOpcode,
@@ -66,6 +80,15 @@ class Pop : public ByteCode {
 public:
     Pop()
         : ByteCode(PopOpcode)
+    {
+
+    }
+};
+
+class JustPop : public ByteCode {
+public:
+    JustPop()
+        : ByteCode(JustPopOpcode)
     {
 
     }
@@ -158,6 +181,208 @@ public:
     }
 };
 
+class CreateBinding : public ByteCode {
+public:
+    CreateBinding(InternalAtomicString name, ESString* nonAtomicName)
+        : ByteCode(CreateBindingOpcode)
+    {
+        m_name = name;
+        m_nonAtomicName = nonAtomicName;
+    }
+    InternalAtomicString m_name;
+    ESString* m_nonAtomicName;
+};
+
+class Equal : public ByteCode {
+public:
+    Equal()
+        : ByteCode(EqualOpcode)
+    {
+
+    }
+};
+
+class NotEqual : public ByteCode {
+public:
+    NotEqual()
+        : ByteCode(NotEqualOpcode)
+    {
+
+    }
+};
+
+class StrictEqual : public ByteCode {
+public:
+    StrictEqual()
+        : ByteCode(StrictEqualOpcode)
+    {
+
+    }
+};
+
+class NotStrictEqual : public ByteCode {
+public:
+    NotStrictEqual()
+        : ByteCode(NotStrictEqualOpcode)
+    {
+
+    }
+};
+
+class BitwiseAnd : public ByteCode {
+public:
+    BitwiseAnd()
+        : ByteCode(BitwiseAndOpcode)
+    {
+
+    }
+};
+
+class BitwiseOr : public ByteCode {
+public:
+    BitwiseOr()
+        : ByteCode(BitwiseOrOpcode)
+    {
+
+    }
+};
+
+class BitwiseXor : public ByteCode {
+public:
+    BitwiseXor()
+        : ByteCode(BitwiseXorOpcode)
+    {
+
+    }
+};
+
+class LeftShift : public ByteCode {
+public:
+    LeftShift()
+        : ByteCode(LeftShiftOpcode)
+    {
+
+    }
+};
+
+class SignedRightShift : public ByteCode {
+public:
+    SignedRightShift()
+        : ByteCode(SignedRightShiftOpcode)
+    {
+
+    }
+};
+
+class UnsignedRightShift : public ByteCode {
+public:
+    UnsignedRightShift()
+        : ByteCode(UnsignedRightShiftOpcode)
+    {
+
+    }
+};
+
+class LogicalAnd : public ByteCode {
+public:
+    LogicalAnd()
+        : ByteCode(LogicalAndOpcode)
+    {
+
+    }
+};
+
+class LogicalOr : public ByteCode {
+public:
+    LogicalOr()
+        : ByteCode(LogicalOrOpcode)
+    {
+
+    }
+};
+
+class LessThan : public ByteCode {
+public:
+    LessThan()
+        : ByteCode(LessThanOpcode)
+    {
+
+    }
+};
+
+class LessThanOrEqual : public ByteCode {
+public:
+    LessThanOrEqual()
+        : ByteCode(LessThanOrEqualOpcode)
+    {
+
+    }
+};
+
+class GreaterThan : public ByteCode {
+public:
+    GreaterThan()
+        : ByteCode(GreaterThanOpcode)
+    {
+
+    }
+};
+
+class GreaterThanOrEqual : public ByteCode {
+public:
+    GreaterThanOrEqual()
+        : ByteCode(GreaterThanOrEqualOpcode)
+    {
+
+    }
+};
+
+class Plus : public ByteCode {
+public:
+    Plus()
+        : ByteCode(PlusOpcode)
+    {
+
+    }
+};
+
+class Minus : public ByteCode {
+public:
+    Minus()
+        : ByteCode(MinusOpcode)
+    {
+
+    }
+};
+
+class Multiply : public ByteCode {
+public:
+    Multiply ()
+        : ByteCode(MultiplyOpcode)
+    {
+
+    }
+};
+
+class Division : public ByteCode {
+public:
+    Division()
+        : ByteCode(DivisionOpcode)
+    {
+
+    }
+};
+
+class Mod : public ByteCode {
+public:
+    Mod()
+        : ByteCode(ModOpcode)
+    {
+
+    }
+};
+
+
 class End : public ByteCode {
 public:
     End()
@@ -229,6 +454,7 @@ ALWAYS_INLINE void interpret(ESVMInstance* instance, CodeBlock* codeBlock)
             excuteNextCode<Push>(programCounter);
             break;
         }
+
         case PopOpcode:
         {
             Pop* popCode = (Pop*)currentCode;
@@ -237,6 +463,14 @@ ALWAYS_INLINE void interpret(ESVMInstance* instance, CodeBlock* codeBlock)
             excuteNextCode<Pop>(programCounter);
             break;
         }
+
+        case JustPopOpcode:
+        {
+            pop<ESValue>(stack, sp);
+            excuteNextCode<JustPop>(programCounter);
+            break;
+        }
+
         case GetByIdOpcode:
         {
             GetById* code = (GetById*)currentCode;
@@ -264,6 +498,7 @@ ALWAYS_INLINE void interpret(ESVMInstance* instance, CodeBlock* codeBlock)
             excuteNextCode<GetById>(programCounter);
             break;
         }
+
         case GetByIndexOpcode:
         {
             GetByIndex* code = (GetByIndex*)currentCode;
@@ -271,6 +506,7 @@ ALWAYS_INLINE void interpret(ESVMInstance* instance, CodeBlock* codeBlock)
             excuteNextCode<GetByIndex>(programCounter);
             break;
         }
+
         case GetByIndexWithActivationOpcode:
         {
             GetByIndexWithActivation* code = (GetByIndexWithActivation*)currentCode;
@@ -283,6 +519,7 @@ ALWAYS_INLINE void interpret(ESVMInstance* instance, CodeBlock* codeBlock)
             excuteNextCode<GetByIndexWithActivation>(programCounter);
             break;
         }
+
         case ResolveAddressByIdOpcode:
         {
             ResolveAddressById* code = (ResolveAddressById*)currentCode;
@@ -307,6 +544,7 @@ ALWAYS_INLINE void interpret(ESVMInstance* instance, CodeBlock* codeBlock)
             excuteNextCode<ResolveAddressById>(programCounter);
             break;
         }
+
         case ResolveAddressByIndexOpcode:
         {
             ResolveAddressByIndex* code = (ResolveAddressByIndex*)currentCode;
@@ -314,6 +552,7 @@ ALWAYS_INLINE void interpret(ESVMInstance* instance, CodeBlock* codeBlock)
             excuteNextCode<ResolveAddressByIndex>(programCounter);
             break;
         }
+
         case ResolveAddressByIndexWithActivationOpcode:
         {
             ResolveAddressByIndexWithActivation* code = (ResolveAddressByIndexWithActivation*)currentCode;
@@ -326,6 +565,7 @@ ALWAYS_INLINE void interpret(ESVMInstance* instance, CodeBlock* codeBlock)
             excuteNextCode<ResolveAddressByIndexWithActivation>(programCounter);
             break;
         }
+
         case PutOpcode:
         {
             Put* code = (Put*)currentCode;
@@ -336,8 +576,331 @@ ALWAYS_INLINE void interpret(ESVMInstance* instance, CodeBlock* codeBlock)
             excuteNextCode<Put>(programCounter);
             break;
         }
+
+        case CreateBindingOpcode:
+        {
+            CreateBinding* code = (CreateBinding*)currentCode;
+            ec->environment()->record()->createMutableBindingForAST(code->m_name,
+                    code->m_nonAtomicName, false);
+            excuteNextCode<CreateBinding>(programCounter);
+            break;
+        }
+
+        case EqualOpcode:
+        {
+            ESValue* right = pop<ESValue>(stack, sp);
+            ESValue* left = pop<ESValue>(stack, sp);
+            push<ESValue>(stack, sp, ESValue(left->abstractEqualsTo(*right)));
+            excuteNextCode<Equal>(programCounter);
+            break;
+        }
+
+        case NotEqualOpcode:
+        {
+            ESValue* right = pop<ESValue>(stack, sp);
+            ESValue* left = pop<ESValue>(stack, sp);
+            push<ESValue>(stack, sp, ESValue(!left->abstractEqualsTo(*right)));
+            excuteNextCode<NotEqual>(programCounter);
+            break;
+        }
+
+        case StrictEqualOpcode:
+        {
+            ESValue* right = pop<ESValue>(stack, sp);
+            ESValue* left = pop<ESValue>(stack, sp);
+            push<ESValue>(stack, sp, ESValue(left->equalsTo(*right)));
+            excuteNextCode<StrictEqual>(programCounter);
+            break;
+        }
+
+        case NotStrictEqualOpcode:
+        {
+            ESValue* right = pop<ESValue>(stack, sp);
+            ESValue* left = pop<ESValue>(stack, sp);
+            push<ESValue>(stack, sp, ESValue(!left->equalsTo(*right)));
+            excuteNextCode<NotStrictEqual>(programCounter);
+            break;
+        }
+
+        case BitwiseAndOpcode:
+        {
+            ESValue* right = pop<ESValue>(stack, sp);
+            ESValue* left = pop<ESValue>(stack, sp);
+            push<ESValue>(stack, sp, ESValue(left->toInt32() & right->toInt32()));
+            excuteNextCode<BitwiseAnd>(programCounter);
+            break;
+        }
+
+        case BitwiseOrOpcode:
+        {
+            ESValue* right = pop<ESValue>(stack, sp);
+            ESValue* left = pop<ESValue>(stack, sp);
+            push<ESValue>(stack, sp, ESValue(left->toInt32() | right->toInt32()));
+            excuteNextCode<BitwiseOr>(programCounter);
+            break;
+        }
+
+        case BitwiseXorOpcode:
+        {
+            ESValue* right = pop<ESValue>(stack, sp);
+            ESValue* left = pop<ESValue>(stack, sp);
+            push<ESValue>(stack, sp, ESValue(left->toInt32() ^ right->toInt32()));
+            excuteNextCode<BitwiseXor>(programCounter);
+            break;
+        }
+
+        case LeftShiftOpcode:
+        {
+            ESValue* right = pop<ESValue>(stack, sp);
+            ESValue* left = pop<ESValue>(stack, sp);
+            int32_t lnum = left->toInt32();
+            int32_t rnum = right->toInt32();
+            lnum <<= ((unsigned int)rnum) & 0x1F;
+            push<ESValue>(stack, sp, ESValue(lnum));
+            excuteNextCode<LeftShift>(programCounter);
+            break;
+        }
+
+        case SignedRightShiftOpcode:
+        {
+            ESValue* right = pop<ESValue>(stack, sp);
+            ESValue* left = pop<ESValue>(stack, sp);
+            int32_t lnum = left->toInt32();
+            int32_t rnum = right->toInt32();
+            lnum >>= ((unsigned int)rnum) & 0x1F;
+            push<ESValue>(stack, sp, ESValue(lnum));
+            excuteNextCode<SignedRightShift>(programCounter);
+            break;
+        }
+
+        case UnsignedRightShiftOpcode:
+        {
+            ESValue* right = pop<ESValue>(stack, sp);
+            ESValue* left = pop<ESValue>(stack, sp);
+            int32_t lnum = left->toInt32();
+            int32_t rnum = right->toInt32();
+            lnum = ((unsigned int)lnum) >> (((unsigned int)rnum) & 0x1F);
+            push<ESValue>(stack, sp, ESValue(lnum));
+            excuteNextCode<UnsignedRightShift>(programCounter);
+            break;
+        }
+
+        case LogicalAndOpcode:
+        {
+            ESValue* right = pop<ESValue>(stack, sp);
+            ESValue* left = pop<ESValue>(stack, sp);
+            //TODO
+            excuteNextCode<LogicalAnd>(programCounter);
+            break;
+        }
+
+        case LogicalOrOpcode:
+        {
+            ESValue* right = pop<ESValue>(stack, sp);
+            ESValue* left = pop<ESValue>(stack, sp);
+            //TODO
+            excuteNextCode<LogicalOr>(programCounter);
+            break;
+        }
+
+        case LessThanOpcode:
+        {
+            ESValue* right = pop<ESValue>(stack, sp);
+            ESValue* left = pop<ESValue>(stack, sp);
+            ESValue lval = left->toPrimitive();
+            ESValue rval = right->toPrimitive();
+
+            // TODO http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5
+            // string, NaN, zero, infinity, ...
+            bool b;
+            if(lval.isInt32() && rval.isInt32()) {
+                b = lval.asInt32() < rval.asInt32();
+            } else if (lval.isESString() || rval.isESString()) {
+                b = lval.toString()->string() < rval.toString()->string();
+            } else {
+                b = lval.toNumber() < rval.toNumber();
+            }
+            push<ESValue>(stack, sp, ESValue(b));
+            excuteNextCode<LessThan>(programCounter);
+            break;
+        }
+
+        case LessThanOrEqualOpcode:
+        {
+            ESValue* right = pop<ESValue>(stack, sp);
+            ESValue* left = pop<ESValue>(stack, sp);
+            ESValue lval = left->toPrimitive();
+            ESValue rval = right->toPrimitive();
+
+            // TODO http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5
+            // string, NaN, zero, infinity, ...
+            bool b;
+            if(lval.isInt32() && rval.isInt32()) {
+             b = lval.asInt32() <= rval.asInt32();
+            } else if (lval.isESString() || rval.isESString()) {
+             b = lval.toString()->string() <= rval.toString()->string();
+            } else {
+             b = lval.toNumber() <= rval.toNumber();
+            }
+            push<ESValue>(stack, sp, ESValue(b));
+            excuteNextCode<LessThanOrEqual>(programCounter);
+            break;
+        }
+
+        case GreaterThanOpcode:
+        {
+            ESValue* right = pop<ESValue>(stack, sp);
+            ESValue* left = pop<ESValue>(stack, sp);
+            ESValue lval = left->toPrimitive();
+            ESValue rval = right->toPrimitive();
+
+            // TODO http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5
+            // string, NaN, zero, infinity, ...
+            bool b;
+            if(lval.isInt32() && rval.isInt32()) {
+                b = lval.asInt32() > rval.asInt32();
+            } else if (lval.isESString() || rval.isESString()) {
+                b = lval.toString()->string() > rval.toString()->string();
+            } else {
+                b = lval.toNumber() > rval.toNumber();
+            }
+            push<ESValue>(stack, sp, ESValue(b));
+            excuteNextCode<GreaterThan>(programCounter);
+            break;
+        }
+
+        case GreaterThanOrEqualOpcode:
+        {
+            ESValue* right = pop<ESValue>(stack, sp);
+            ESValue* left = pop<ESValue>(stack, sp);
+            ESValue lval = left->toPrimitive();
+            ESValue rval = right->toPrimitive();
+
+            // TODO http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5
+            // string, NaN, zero, infinity, ...
+            bool b;
+            if(lval.isInt32() && rval.isInt32()) {
+             b = lval.asInt32() >= rval.asInt32();
+            } else if (lval.isESString() || rval.isESString()) {
+             b = lval.toString()->string() >= rval.toString()->string();
+            } else {
+             b = lval.toNumber() >= rval.toNumber();
+            }
+            push<ESValue>(stack, sp, ESValue(b));
+            excuteNextCode<GreaterThanOrEqual>(programCounter);
+            break;
+        }
+
+        case PlusOpcode:
+        {
+            ESValue* right = pop<ESValue>(stack, sp);
+            ESValue* left = pop<ESValue>(stack, sp);
+            ESValue lval = left->toPrimitive();
+            ESValue rval = right->toPrimitive();
+            // http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.1
+
+            ESValue ret(ESValue::ESForceUninitialized);
+            if(lval.isInt32() && rval.isInt32()) {
+                int a = lval.asInt32(), b = rval.asInt32();
+                if (UNLIKELY(a > 0 && b > std::numeric_limits<int32_t>::max() - a)) {
+                    //overflow
+                    ret = ESValue((double)lval.asInt32() + (double)rval.asInt32());
+                } else if (UNLIKELY(a < 0 && b < std::numeric_limits<int32_t>::min() - a)) {
+                    //underflow
+                    ret = ESValue((double)lval.asInt32() + (double)rval.asInt32());
+                } else {
+                    ret = ESValue(lval.asInt32() + rval.asInt32());
+                }
+            } else if (lval.isESString() || rval.isESString()) {
+                ret = ESString::concatTwoStrings(lval.toString(), rval.toString());
+            } else {
+                ret = ESValue(lval.toNumber() + rval.toNumber());
+            }
+            push<ESValue>(stack, sp, ret);
+            excuteNextCode<Plus>(programCounter);
+            break;
+        }
+
+        case MinusOpcode:
+        {
+            ESValue* right = pop<ESValue>(stack, sp);
+            ESValue* left = pop<ESValue>(stack, sp);
+            // http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.2
+            ESValue ret(ESValue::ESForceUninitialized);
+            if (left->isInt32() && right->isInt32()) {
+                int a = left->asInt32(), b = right->asInt32();
+                if (UNLIKELY((a > 0 && b < 0 && b < a - std::numeric_limits<int32_t>::max()))) {
+                    //overflow
+                    ret = ESValue((double)left->asInt32() - (double)right->asInt32());
+                } else if (UNLIKELY(a < 0 && b > 0 && b > a - std::numeric_limits<int32_t>::min())) {
+                    //underflow
+                    ret = ESValue((double)left->asInt32() - (double)right->asInt32());
+                } else {
+                    ret = ESValue(left->asInt32() - right->asInt32());
+                }
+            }
+            else
+                ret = ESValue(left->toNumber() - right->toNumber());
+            push<ESValue>(stack, sp, ret);
+            excuteNextCode<Minus>(programCounter);
+            break;
+        }
+
+        case MultiplyOpcode:
+        {
+            ESValue* right = pop<ESValue>(stack, sp);
+            ESValue* left = pop<ESValue>(stack, sp);
+            push<ESValue>(stack, sp, ESValue(left->toNumber() * right->toNumber()));
+            excuteNextCode<Multiply>(programCounter);
+            break;
+        }
+
+        case DivisionOpcode:
+        {
+            ESValue* right = pop<ESValue>(stack, sp);
+            ESValue* left = pop<ESValue>(stack, sp);
+            push<ESValue>(stack, sp, ESValue(left->toNumber() / right->toNumber()));
+            excuteNextCode<Division>(programCounter);
+            break;
+        }
+
+        case ModOpcode:
+        {
+            ESValue* right = pop<ESValue>(stack, sp);
+            ESValue* left = pop<ESValue>(stack, sp);
+            ESValue ret(ESValue::ESForceUninitialized);
+            if (left->isInt32() && right->isInt32()) {
+                ret = ESValue(left->asInt32() % right->asInt32());
+            } else {
+                double lvalue = left->toNumber();
+                double rvalue = right->toNumber();
+                // http://www.ecma-international.org/ecma-262/5.1/#sec-11.5.3
+                if (std::isnan(lvalue) || std::isnan(rvalue))
+                    ret = ESValue(std::numeric_limits<double>::quiet_NaN());
+                else if (lvalue == std::numeric_limits<double>::infinity() || lvalue == -std::numeric_limits<double>::infinity() || rvalue == 0 || rvalue == -0.0) {
+                    ret = ESValue(std::numeric_limits<double>::quiet_NaN());
+                } else {
+                    bool isNeg = lvalue < 0;
+                    bool lisZero = lvalue == 0 || lvalue == -0.0;
+                    bool risZero = rvalue == 0 || rvalue == -0.0;
+                    if (!lisZero && (rvalue == std::numeric_limits<double>::infinity() || rvalue == -std::numeric_limits<double>::infinity()))
+                        ret = ESValue(lvalue);
+                    else if (lisZero && !risZero)
+                        ret = ESValue(lvalue);
+                    else {
+                        int d = lvalue / rvalue;
+                        ret = ESValue(lvalue - (d * rvalue));
+                    }
+                }
+            }
+            push<ESValue>(stack, sp, ret);
+            excuteNextCode<Mod>(programCounter);
+            break;
+        }
+
         case EndOpcode:
         {
+            ASSERT(sp == 0);
             return ;
         }
         default:

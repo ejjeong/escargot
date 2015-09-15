@@ -23,6 +23,13 @@ public:
         // http://www.ecma-international.org/ecma-262/5.1/#sec-11.10
         return ESValue(lnum ^ rnum);
     }
+
+    virtual void generateByteCode(CodeBlock* codeBlock)
+    {
+        m_left->generateByteCode(codeBlock);
+        m_right->generateByteCode(codeBlock);
+        codeBlock->pushCode(BitwiseXor(), this);
+    }
 protected:
     ExpressionNode* m_left;
     ExpressionNode* m_right;
