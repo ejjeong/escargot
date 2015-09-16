@@ -35,6 +35,7 @@ class ESArrayBufferObject;
 class ESArrayBufferView;
 template<typename TypeArg>
 class ESTypedArrayObject;
+class ESTypedArrayObjectWrapper;
 class ESDataViewObject;
 
 union ValueDescriptor {
@@ -428,6 +429,14 @@ public:
         ASSERT(isESTypedArrayObject());
 #endif
         return reinterpret_cast<::escargot::ESTypedArrayObject<TypeArg> *>(this);
+    }
+
+    ALWAYS_INLINE ::escargot::ESTypedArrayObjectWrapper* asESTypedArrayObjectWrapper()
+    {
+#ifndef NDEBUG
+        ASSERT(isESTypedArrayObject());
+#endif
+        return reinterpret_cast<::escargot::ESTypedArrayObjectWrapper *>(this);
     }
 
     ALWAYS_INLINE bool isESDataViewObject() const
@@ -1755,10 +1764,23 @@ private:
     escargot::ESString* m_lastExecutedString;
 };
 
+enum TypedArrayType {
+    Int8Array,
+    Uint8Array,
+    Uint8ClampedArray,
+    Int16Array,
+    Uint16Array,
+    Int32Array,
+    Uint32Array,
+    Float32Array,
+    Float64Array
+};
+
 class ESArrayBufferObject : public ESObject {
 protected:
     ESArrayBufferObject(ESPointer::Type type = ESPointer::Type::ESArrayBufferObject)
-           : ESObject((Type)(Type::ESObject | Type::ESArrayBufferObject)) {
+           : ESObject((Type)(Type::ESObject | Type::ESArrayBufferObject)),
+             m_bytelength(0) {
     }
 
     ESArrayBufferObject(unsigned bytelength, ESPointer::Type type = ESPointer::Type::ESArrayBufferObject)
@@ -1774,6 +1796,45 @@ public:
     }
     ALWAYS_INLINE void* data() { return m_data; }
     ALWAYS_INLINE unsigned bytelength() { return m_bytelength; }
+
+    //$24.1.1.5
+    template<typename Type>
+    ESValue getValueFromBuffer(unsigned byteindex, TypedArrayType typeVal, int isLittleEndian = -1)
+    {
+        if (isLittleEndian != -1) {
+            //TODO
+            RELEASE_ASSERT_NOT_REACHED();
+        }
+        //If isLittleEndian is not present, set isLittleEndian to either true or false.
+        void* rawStart = (int8_t*)m_data + byteindex;
+        if (typeVal == TypedArrayType::Float32Array) {
+            //TODO
+        } else if (typeVal == TypedArrayType::Float64Array) {
+            //TODO
+        } else {
+            return ESValue( *((Type*) rawStart) );
+        }
+        return ESValue();
+    }
+    //$24.1.1.6
+    template<typename TypeAdaptor>
+    bool setValueInBuffer(unsigned byteindex, TypedArrayType typeVal, ESValue val, int isLittleEndian = -1)
+    {
+        if (isLittleEndian != -1) {
+            //TODO
+            RELEASE_ASSERT_NOT_REACHED();
+        }
+        //If isLittleEndian is not present, set isLittleEndian to either true or false.
+        void* rawStart = (int8_t*)m_data + byteindex;
+        if (typeVal == TypedArrayType::Float32Array) {
+            //TODO
+        } else if (typeVal == TypedArrayType::Float64Array) {
+            //TODO
+        } else {
+            *((typename TypeAdaptor::Type*) rawStart) = (typename TypeAdaptor::Type) TypeAdaptor::toNative(val);
+        }
+        return true;
+    }
 
 private:
     void* m_data;
@@ -1802,74 +1863,136 @@ protected:
     unsigned m_byteoffset;
 };
 
-enum TypedArrayType {
-    NotTypedArray,
-    Int8Array,
-    Uint8Array,
-    Uint8ClampedArray,
-    Int16Array,
-    Uint16Array,
-    Int32Array,
-    Uint32Array,
-    Float32Array,
-    Float64Array
-};
-
 template<typename TypeArg, TypedArrayType type>
 struct TypedArrayAdaptor {
     typedef TypeArg Type;
-    TypedArrayType typeVal = type;
+    static const TypedArrayType typeVal = type;
+    static TypeArg toNative(ESValue val) {
+        return static_cast<TypeArg>(val.toNumber());
+    }
 };
-struct Int8Adaptor: TypedArrayAdaptor<int8_t, TypedArrayType::Int8Array> {};
-struct Int16Adaptor: TypedArrayAdaptor<int16_t, TypedArrayType::Int16Array> {};
-struct Int32Adaptor: TypedArrayAdaptor<int32_t, TypedArrayType::Int32Array> {};
-struct Uint8Adaptor: TypedArrayAdaptor<uint8_t, TypedArrayType::Uint8Array> {};
-struct Uint16Adaptor: TypedArrayAdaptor<uint16_t, TypedArrayType::Uint16Array> {};
-struct Uint32Adaptor: TypedArrayAdaptor<uint32_t, TypedArrayType::Uint32Array> {};
-struct Uint8ClampedAdaptor: TypedArrayAdaptor<uint8_t, TypedArrayType::Uint8ClampedArray> {};
-struct Float32Adaptor: TypedArrayAdaptor<float, TypedArrayType::Float32Array> {};
-struct Float64Adaptor: TypedArrayAdaptor<double, TypedArrayType::Float64Array> {};
+struct Int8Adaptor: TypedArrayAdaptor<int8_t, TypedArrayType::Int8Array> {
+};
+struct Int16Adaptor: TypedArrayAdaptor<int16_t, TypedArrayType::Int16Array> {
+};
+struct Int32Adaptor: TypedArrayAdaptor<int32_t, TypedArrayType::Int32Array> {
+};
+struct Uint8Adaptor: TypedArrayAdaptor<uint8_t, TypedArrayType::Uint8Array> {
+};
+struct Uint16Adaptor: TypedArrayAdaptor<uint16_t, TypedArrayType::Uint16Array> {
+};
+struct Uint32Adaptor: TypedArrayAdaptor<uint32_t, TypedArrayType::Uint32Array> {
+};
+struct Uint8ClampedAdaptor: TypedArrayAdaptor<uint8_t, TypedArrayType::Uint8ClampedArray> {
+};
+struct Float32Adaptor: TypedArrayAdaptor<float, TypedArrayType::Float32Array> {
+};
+struct Float64Adaptor: TypedArrayAdaptor<double, TypedArrayType::Float64Array> {
+};
 
-template<typename TypeAdaptor>
-class ESTypedArrayObject : public ESArrayBufferView {
-public:
-
+class ESTypedArrayObjectWrapper : public ESArrayBufferView {
 protected:
-    ESTypedArrayObject(ESPointer::Type type = ESPointer::Type::ESTypedArrayObject)
-           : ESArrayBufferView((Type)(Type::ESObject | Type::ESTypedArrayObject)) {
+    ESTypedArrayObjectWrapper(TypedArrayType arraytype, ESPointer::Type type)
+           : ESArrayBufferView(type),
+             m_arraytype(arraytype) {
     }
-
 public:
-    static const unsigned elementSize = sizeof(typename TypeAdaptor::Type);
-    static ESTypedArrayObject* create()
+    unsigned elementSize()
     {
-        return new ESTypedArrayObject();
-    }
-    static ESTypedArrayObject* create(ESObject* proto)
-    {
-        ESTypedArrayObject<TypeAdaptor>* obj = new ESTypedArrayObject();
-        if (proto != NULL)
-            obj->set__proto__(proto);
-        return obj;
+        switch (m_arraytype) {
+        case TypedArrayType::Int8Array:
+        case TypedArrayType::Uint8Array:
+        case TypedArrayType::Uint8ClampedArray:
+            return 1;
+        case TypedArrayType::Int16Array:
+        case TypedArrayType::Uint16Array:
+            return 2;
+        case TypedArrayType::Int32Array:
+        case TypedArrayType::Uint32Array:
+        case TypedArrayType::Float32Array:
+            return 4;
+        case TypedArrayType::Float64Array:
+            return 8;
+        }
+        RELEASE_ASSERT_NOT_REACHED();
     }
 
     void allocateTypedArray(unsigned length)
     {
         m_arraylength = length;
         m_byteoffset = 0;
-        m_bytelength = length * elementSize;
+        m_bytelength = length * elementSize();
         setBuffer(ESArrayBufferObject::create(m_bytelength));
     }
 
+    ESValue get(int key);
+    bool set(int key, ESValue val);
     ALWAYS_INLINE unsigned arraylength() { return m_arraylength; }
+    ALWAYS_INLINE TypedArrayType arraytype() { return m_arraytype; }
+    /*
+    ALWAYS_INLINE void setArraytype(TypedArrayType t) {
+        m_arraytype = t;
+    }
+    */
 
 private:
     unsigned m_arraylength;
+    TypedArrayType m_arraytype;
 };
+
+template<typename TypeAdaptor>
+class ESTypedArrayObject : public ESTypedArrayObjectWrapper {
+public:
+
+protected:
+    ESTypedArrayObject(TypedArrayType arraytype,
+                       ESPointer::Type type = ESPointer::Type::ESTypedArrayObject)
+           : ESTypedArrayObjectWrapper(arraytype,
+                                       (Type)(Type::ESObject | Type::ESTypedArrayObject)) {
+    }
+
+public:
+    static ESTypedArrayObject* create()
+    {
+        return new ESTypedArrayObject(TypeAdaptor::typeVal);
+    }
+    static ESTypedArrayObject* create(ESObject* proto)
+    {
+        ESTypedArrayObject<TypeAdaptor>* obj = new ESTypedArrayObject(TypeAdaptor::typeVal);
+        if (proto != NULL)
+            obj->set__proto__(proto);
+        return obj;
+    }
+    ESValue get(int key)
+    {
+        if (key >= 0 && key < arraylength()) {
+            unsigned idxPosition = key * elementSize() + byteoffset();
+            escargot::ESArrayBufferObject* b = buffer();
+            return b->getValueFromBuffer<typename TypeAdaptor::Type>(idxPosition, arraytype());
+        }
+        return ESValue();
+    }
+    bool set(int key, ESValue val)
+    {
+        if (key < 0 || key >= arraylength()) return false;
+        unsigned idxPosition = key * elementSize() + byteoffset();
+        escargot::ESArrayBufferObject* b = buffer();
+        return b->setValueInBuffer<TypeAdaptor>(idxPosition, arraytype(), val);
+    }
+};
+typedef ESTypedArrayObject<Int8Adaptor> ESInt8Array;
+typedef ESTypedArrayObject<Int16Adaptor> ESInt16Array;
+typedef ESTypedArrayObject<Int32Adaptor> ESInt32Array;
+typedef ESTypedArrayObject<Uint8Adaptor> ESUint8Array;
+typedef ESTypedArrayObject<Uint16Adaptor> ESUint16Array;
+typedef ESTypedArrayObject<Uint32Adaptor> ESUint32Array;
+typedef ESTypedArrayObject<Uint8ClampedAdaptor> ESUint8ClampedArray;
+typedef ESTypedArrayObject<Float32Adaptor> ESFloat32Array;
+typedef ESTypedArrayObject<Float64Adaptor> ESFloat64Array;
 
 class ESDataViewObject : public ESArrayBufferView {
 protected:
-    ESDataViewObject(ESPointer::Type type = ESPointer::Type::ESTypedArrayObject)
+    ESDataViewObject(ESPointer::Type type = ESPointer::Type::ESDataViewObject)
            : ESArrayBufferView((Type)(Type::ESObject | Type::ESDataViewObject)) {
     }
 

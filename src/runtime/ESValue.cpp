@@ -625,5 +625,53 @@ SyntaxError::SyntaxError(escargot::ESString* message)
     set__proto__(ESVMInstance::currentInstance()->globalObject()->syntaxErrorPrototype());
 }
 
+ESValue ESTypedArrayObjectWrapper::get(int key)
+{
+    switch (m_arraytype) {
+    case TypedArrayType::Int8Array:
+        return (reinterpret_cast<ESInt8Array *>(this))->get(key);
+    case TypedArrayType::Uint8Array:
+        return (reinterpret_cast<ESUint8Array *>(this))->get(key);
+    case TypedArrayType::Uint8ClampedArray:
+        return (reinterpret_cast<ESUint8ClampedArray *>(this))->get(key);
+    case TypedArrayType::Int16Array:
+        return (reinterpret_cast<ESInt16Array *>(this))->get(key);
+    case TypedArrayType::Uint16Array:
+        return (reinterpret_cast<ESUint16Array *>(this))->get(key);
+    case TypedArrayType::Int32Array:
+        return (reinterpret_cast<ESInt32Array *>(this))->get(key);
+    case TypedArrayType::Uint32Array:
+        return (reinterpret_cast<ESUint32Array *>(this))->get(key);
+    case TypedArrayType::Float32Array:
+        return (reinterpret_cast<ESFloat32Array *>(this))->get(key);
+    case TypedArrayType::Float64Array:
+        return (reinterpret_cast<ESFloat64Array *>(this))->get(key);
+    }
+    RELEASE_ASSERT_NOT_REACHED();
+}
+bool ESTypedArrayObjectWrapper::set(int key, ESValue val)
+{
+    switch (m_arraytype) {
+    case TypedArrayType::Int8Array:
+        return (reinterpret_cast<ESInt8Array *>(this))->set(key, val);
+    case TypedArrayType::Uint8Array:
+        return (reinterpret_cast<ESUint8Array *>(this))->set(key, val);
+    case TypedArrayType::Uint8ClampedArray:
+        return (reinterpret_cast<ESUint8ClampedArray *>(this))->set(key, val);
+    case TypedArrayType::Int16Array:
+        return (reinterpret_cast<ESInt16Array *>(this))->set(key, val);
+    case TypedArrayType::Uint16Array:
+        return (reinterpret_cast<ESUint16Array *>(this))->set(key, val);
+    case TypedArrayType::Int32Array:
+        return (reinterpret_cast<ESInt32Array *>(this))->set(key, val);
+    case TypedArrayType::Uint32Array:
+        return (reinterpret_cast<ESUint32Array *>(this))->set(key, val);
+    case TypedArrayType::Float32Array:
+        return (reinterpret_cast<ESFloat32Array *>(this))->set(key, val);
+    case TypedArrayType::Float64Array:
+        return (reinterpret_cast<ESFloat64Array *>(this))->set(key, val);
+    }
+    RELEASE_ASSERT_NOT_REACHED();
+}
 
 }

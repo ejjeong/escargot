@@ -1088,9 +1088,12 @@ ALWAYS_INLINE bool ESObject::hasOwnProperty(escargot::ESValue key)
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-get-o-p
 ALWAYS_INLINE ESValue ESObject::get(escargot::ESValue key, bool searchPrototype)
 {
-    if (isESArrayObject() && asESArrayObject()->isFastmode()) {
+    if ((isESArrayObject() && asESArrayObject()->isFastmode()) || isESTypedArrayObject()) {
         if(key.isInt32()) {
             int idx = key.asInt32();
+            if(UNLIKELY(isESTypedArrayObject())) {
+                return asESTypedArrayObjectWrapper()->get(idx);
+            }
             if(LIKELY(idx >= 0 && idx < asESArrayObject()->length())) {
                 ESValue e = asESArrayObject()->m_vector[idx];
                 if(UNLIKELY(e == ESValue(ESValue::ESEmptyValue)))
@@ -1292,6 +1295,11 @@ ALWAYS_INLINE escargot::ESValue ESObject::findOnlyPrototype(escargot::ESValue ke
 ALWAYS_INLINE void ESObject::set(escargot::ESValue key, const ESValue& val, bool shouldThrowException)
 {
     int i;
+    if (isESTypedArrayObject() && key.isInt32()) {
+        i = key.asInt32();
+        asESTypedArrayObjectWrapper()->set(i, val);
+        return;
+    }
     if (isESArrayObject() && key.isInt32()) {
         i = key.asInt32();
         int len = asESArrayObject()->length();

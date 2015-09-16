@@ -88,7 +88,7 @@ public:
         ExecutionContext* ec = instance->currentExecutionContext();
         ec->setLastESObjectMetInMemberExpressionNode(obj);
 
-        if(obj->isHiddenClassMode() && !obj->isESArrayObject()) {
+        if(obj->isHiddenClassMode() && !obj->isESArrayObject() && !obj->isESTypedArrayObject()) {
             ESString* val = propertyValue.toString();
             if(m_cachedHiddenClass == obj->hiddenClass() && (val == m_cachedPropertyValue || *val == *m_cachedPropertyValue)) {
                 return obj->readHiddenClass(m_cachedIndex);
