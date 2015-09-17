@@ -42,9 +42,9 @@ public:
             codeBlock->pushCode(Jump(SIZE_MAX), this);
             size_t jPos2 = codeBlock->lastCodePosition<Jump>();
             j->m_jumpPosition = codeBlock->currentCodeSize();
-            Jump* j2 = codeBlock->peekCode<Jump>(jPos2);
 
             m_alternate->generateStatementByteCode(codeBlock);
+            Jump* j2 = codeBlock->peekCode<Jump>(jPos2);
             j2->m_jumpPosition = codeBlock->currentCodeSize();
         }
 
