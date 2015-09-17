@@ -65,7 +65,7 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
         //unsigned long end = getLongTickCount();
         //printf("%lf\n",(end-start)/1000.0);
     } catch(...) {
-        throw ESValue(SyntaxError::create());
+        throw ESValue(SyntaxError::create(ESString::create(u"parse error")));
     }
 
     auto markNeedsActivation = [](FunctionNode* nearFunctionNode){
@@ -344,13 +344,16 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
             postAnalysisFunction(((TryStatementNode *)currentNode)->m_block, identifierStack, nearFunctionNode);
             bool prevShouldWorkAroundIdentifier = shouldWorkAroundIdentifier;
             shouldWorkAroundIdentifier = false;
-            postAnalysisFunction(((TryStatementNode *)currentNode)->m_handler, identifierStack, nearFunctionNode);
+            //postAnalysisFunction(((TryStatementNode *)currentNode)->m_handler, identifierStack, nearFunctionNode);
             shouldWorkAroundIdentifier = prevShouldWorkAroundIdentifier;
             postAnalysisFunction(((TryStatementNode *)currentNode)->m_finalizer, identifierStack, nearFunctionNode);
         } else if (type == NodeType::CatchClause) {
+            RELEASE_ASSERT_NOT_REACHED();
+            /*
             postAnalysisFunction(((CatchClauseNode *)currentNode)->m_param, identifierStack, nearFunctionNode);
             postAnalysisFunction(((CatchClauseNode *)currentNode)->m_guard, identifierStack, nearFunctionNode);
             postAnalysisFunction(((CatchClauseNode *)currentNode)->m_body, identifierStack, nearFunctionNode);
+            */
         } else if (type == NodeType::ThrowStatement) {
             postAnalysisFunction(((ThrowStatementNode *)currentNode)->m_argument, identifierStack, nearFunctionNode);
         } else if (type == NodeType::LabeledStatement) {

@@ -2142,7 +2142,7 @@ escargot::VariableDeclaratorVector parseVariableDeclarationList(ParseContext* ct
             list.push_back(node);
         if(node->init()) {
             ASSERT(node->id()->type() == escargot::NodeType::Identifier);
-            escargot::Node* id = node->id();
+            escargot::Node* id = ((escargot::IdentifierNode *) node->id())->clone();
             escargot::Node* init = node->init();
             node->clearInit();
             escargot::Node* nd = new escargot::AssignmentExpressionSimpleNode(id, init);

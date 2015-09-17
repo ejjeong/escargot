@@ -20,6 +20,9 @@ public:
         m_canUseFastAccess = false;
         m_fastAccessIndex = SIZE_MAX;
     }
+    IdentifierNode* clone() {
+        return new IdentifierNode(m_name);
+    }
 
     ESValue executeExpression(ESVMInstance* instance)
     {
