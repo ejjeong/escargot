@@ -109,6 +109,8 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     Uint8ClampedArray = ESString::create(u"Uint8ClampedArray");
     Float32Array = ESString::create(u"Float32Array");
     Float64Array = ESString::create(u"Float64Array");
+    ArrayBuffer = ESString::create(u"ArrayBuffer");
+    byteLength = ESString::create(u"byteLength");
 }
 
 Strings* strings;

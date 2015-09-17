@@ -113,6 +113,8 @@ ESString* Uint32Array;
 ESString* Uint8ClampedArray;
 ESString* Float32Array;
 ESString* Float64Array;
+ESString* ArrayBuffer;
+ESString* byteLength;
 
 void initStaticStrings(ESVMInstance* instance);
 };

@@ -1780,20 +1780,45 @@ class ESArrayBufferObject : public ESObject {
 protected:
     ESArrayBufferObject(ESPointer::Type type = ESPointer::Type::ESArrayBufferObject)
            : ESObject((Type)(Type::ESObject | Type::ESArrayBufferObject)),
+             m_data(NULL),
              m_bytelength(0) {
     }
 
-    ESArrayBufferObject(unsigned bytelength, ESPointer::Type type = ESPointer::Type::ESArrayBufferObject)
-           : ESObject((Type)(Type::ESObject | Type::ESArrayBufferObject)),
-             m_bytelength(bytelength) {
-        m_data = GC_malloc(bytelength);
+public:
+    static ESArrayBufferObject* create()
+    {
+        return new ESArrayBufferObject();
+    }
+    static ESArrayBufferObject* create(ESObject* proto)
+    {
+        ESArrayBufferObject* obj = new ESArrayBufferObject();
+        if (proto != NULL)
+            obj->set__proto__(proto);
+        return obj;
+    }
+    static ESArrayBufferObject* createAndAllocate(unsigned bytelength)
+    {
+        ESArrayBufferObject* obj = new ESArrayBufferObject();
+        obj->allocateArrayBuffer(bytelength);
+        return obj;
     }
 
-public:
-    static ESArrayBufferObject* create(unsigned bytelength = 0)
+    void allocateArrayBuffer(unsigned bytelength)
     {
-        return new ESArrayBufferObject(bytelength);
+        m_bytelength = bytelength;
+        m_data = GC_malloc(bytelength);
     }
+    bool isDetachedBuffer()
+    {
+        if (data() == NULL) return true;
+        return false;
+    }
+    void detachArrayBuffer()
+    {
+        m_data = NULL;
+        m_bytelength = 0;
+    }
+
     ALWAYS_INLINE void* data() { return m_data; }
     ALWAYS_INLINE unsigned bytelength() { return m_bytelength; }
 
@@ -1845,7 +1870,9 @@ public:
     ALWAYS_INLINE escargot::ESArrayBufferObject* buffer() { return m_buffer; }
     ALWAYS_INLINE void setBuffer(escargot::ESArrayBufferObject* bo) { m_buffer = bo; }
     ALWAYS_INLINE unsigned bytelength() { return m_bytelength; }
+    ALWAYS_INLINE void setBytelength(unsigned l) { m_bytelength = l; }
     ALWAYS_INLINE unsigned byteoffset() { return m_byteoffset; }
+    ALWAYS_INLINE void setByteoffset(unsigned o) { m_byteoffset = o; }
 
 protected:
     escargot::ESArrayBufferObject* m_buffer;
@@ -1912,12 +1939,13 @@ public:
         m_arraylength = length;
         m_byteoffset = 0;
         m_bytelength = length * elementSize();
-        setBuffer(ESArrayBufferObject::create(m_bytelength));
+        setBuffer(ESArrayBufferObject::createAndAllocate(m_bytelength));
     }
 
     ESValue get(int key);
     bool set(int key, ESValue val);
     ALWAYS_INLINE unsigned arraylength() { return m_arraylength; }
+    ALWAYS_INLINE void setArraylength(unsigned length) { m_arraylength = length; }
     ALWAYS_INLINE TypedArrayType arraytype() { return m_arraytype; }
     /*
     ALWAYS_INLINE void setArraytype(TypedArrayType t) {

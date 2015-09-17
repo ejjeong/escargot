@@ -62,6 +62,8 @@ public:
             receiver = ESTypedArrayObject<Float32Adaptor>::create();
         } else if (function == instance->globalObject()->float64Array()) {
             receiver = ESTypedArrayObject<Float64Adaptor>::create();
+        } else if (function == instance->globalObject()->arrayBuffer()) {
+            receiver = ESArrayBufferObject::create();
         } else {
             receiver = ESObject::create();
         }

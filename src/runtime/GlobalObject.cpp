@@ -29,6 +29,7 @@ void GlobalObject::initGlobalObject()
     installNumber();
     installBoolean();
     installRegExp();
+    installArrayBuffer();
     installTypedArray();
 
     m_functionPrototype->set__proto__(m_objectPrototype);
@@ -2194,6 +2195,46 @@ void GlobalObject::installRegExp()
     set(strings->RegExp, m_regexp);
 }
 
+void GlobalObject::installArrayBuffer()
+{
+    m_arrayBufferPrototype = ESArrayBufferObject::create(m_objectPrototype);
+
+    //$24.1.2.1 ArrayBuffer(length)
+    FunctionDeclarationNode* constructor = new FunctionDeclarationNode(strings->ArrayBuffer, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        // if NewTarget is undefined, throw a TypeError
+        if (!instance->currentExecutionContext()->isNewExpression())
+            throw ESValue(TypeError::create(ESString::create(u"Constructor ArrayBuffer requires \'new\'")));
+        ASSERT(instance->currentExecutionContext()->resolveThisBinding()->isESArrayBufferObject());
+        escargot::ESArrayBufferObject* obj = instance->currentExecutionContext()->resolveThisBinding()->asESArrayBufferObject();
+        int len = instance->currentExecutionContext()->argumentCount();
+        if (len == 0)
+            obj->allocateArrayBuffer(0);
+        else if (len >= 1) {
+            ESValue& val = instance->currentExecutionContext()->arguments()[0];
+            int numlen = val.toNumber();
+            int elemlen = val.toLength();
+            if (numlen != elemlen)
+                throw ESValue(RangeError::create());
+            obj->allocateArrayBuffer(elemlen);
+        }
+        return obj;
+    }), false, false);
+    //$22.2.3.2
+    m_arrayBufferPrototype->defineAccessorProperty(strings->byteLength, [](ESObject* self) -> ESValue {
+        return ESValue(self->asESArrayBufferObject()->bytelength());
+    }, nullptr, true, false, false);
+    m_arrayBuffer = ESFunctionObject::create(NULL, constructor);
+    m_arrayBuffer->set(strings->name, strings->ArrayBuffer);
+    m_arrayBuffer->setConstructor(m_function);
+    m_arrayBuffer->defineAccessorProperty(strings->prototype, [](ESObject* self) -> ESValue {
+        return self->asESFunctionObject()->protoType();
+    }, nullptr, true, false, false);
+    m_arrayBuffer->set__proto__(m_functionPrototype); // empty Function
+    m_arrayBuffer->setProtoType(m_arrayBufferPrototype);
+    m_arrayBufferPrototype->setConstructor(m_arrayBuffer);
+    set(strings->ArrayBuffer, m_arrayBuffer);
+}
+
 void GlobalObject::installTypedArray()
 {
     m_Int8Array = installTypedArray<Int8Adaptor> (strings->Int8Array);
@@ -2238,12 +2279,49 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
                     throw ESValue(RangeError::create());
                 obj->allocateTypedArray(elemlen);
             }
+            //$22.2.1.5 %TypedArray%(buffer [, byteOffset [, length] ] )
+            else if (val.asESPointer()->isESArrayBufferObject()) {
+                escargot::ESString* msg = ESString::create(u"ArrayBuffer length minus the byteOffset is not a multiple of the element size");
+                unsigned elementSize = obj->elementSize();
+                int offset = 0;
+                ESValue lenVal;
+                if (len >= 2)
+                    offset = instance->currentExecutionContext()->arguments()[1].toInt32();
+                if (offset < 0) {
+                    throw ESValue(RangeError::create(msg));
+                }
+                if (offset % elementSize != 0) {
+                    throw ESValue(RangeError::create(msg));
+                }
+                escargot::ESArrayBufferObject* buffer = val.asESPointer()->asESArrayBufferObject();
+                unsigned bufferByteLength = buffer->bytelength();
+                if (len >= 3) {
+                    lenVal = instance->currentExecutionContext()->arguments()[2];
+                }
+                unsigned newByteLength;
+                if (lenVal.isUndefined()) {
+                    if (bufferByteLength % elementSize != 0)
+                        throw ESValue(RangeError::create());
+                    newByteLength = bufferByteLength - offset;
+                    if (newByteLength < 0)
+                        throw ESValue(RangeError::create(msg));
+                } else {
+                    int length = lenVal.toLength();
+                    newByteLength = length * elementSize;
+                    if (offset + newByteLength > bufferByteLength)
+                        throw ESValue(RangeError::create(msg));
+                }
+                obj->setBuffer(buffer);
+                obj->setBytelength(newByteLength);
+                obj->setByteoffset(offset);
+                obj->setArraylength(newByteLength/elementSize);
+            }
             //TODO
         }
         return obj;
     }), false, false);
     //$22.2.3.2
-    ta_prototype->defineAccessorProperty(escargot::ESString::create(u"byteLength"), [](ESObject* self) -> ESValue {
+    ta_prototype->defineAccessorProperty(strings->byteLength, [](ESObject* self) -> ESValue {
         return ESValue(self->asESTypedArrayObject<T>()->bytelength());
     }, nullptr, true, false, false);
     //$22.2.3.2

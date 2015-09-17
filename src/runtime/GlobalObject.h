@@ -256,6 +256,16 @@ public:
         return m_Float64ArrayPrototype;
     }
 
+    ALWAYS_INLINE escargot::ESFunctionObject* arrayBuffer()
+    {
+        return m_arrayBuffer;
+    }
+
+    ALWAYS_INLINE escargot::ESObject* arrayBufferPrototype()
+    {
+        return m_arrayBufferPrototype;
+    }
+
 protected:
     void initGlobalObject();
     void installObject();
@@ -268,9 +278,11 @@ protected:
     void installNumber();
     void installBoolean();
     void installRegExp();
+    void installArrayBuffer();
     void installTypedArray();
     template <typename T>
     escargot::ESFunctionObject* installTypedArray(escargot::ESString*);
+
     escargot::ESFunctionObject* m_object;
     escargot::ESObject* m_objectPrototype;
     escargot::ESFunctionObject* m_function;
@@ -321,6 +333,8 @@ protected:
     escargot::ESObject* m_Float32ArrayPrototype;
     escargot::ESFunctionObject* m_Float64Array;
     escargot::ESObject* m_Float64ArrayPrototype;
+    escargot::ESFunctionObject* m_arrayBuffer;
+    escargot::ESObject* m_arrayBufferPrototype;
 
     escargot::ESFunctionObject* m_eval;
     //JSBuiltinsObject* m_builtins;
