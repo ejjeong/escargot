@@ -1801,38 +1801,28 @@ public:
     template<typename Type>
     ESValue getValueFromBuffer(unsigned byteindex, TypedArrayType typeVal, int isLittleEndian = -1)
     {
+        ASSERT(byteindex >= 0);
         if (isLittleEndian != -1) {
             //TODO
             RELEASE_ASSERT_NOT_REACHED();
         }
         //If isLittleEndian is not present, set isLittleEndian to either true or false.
         void* rawStart = (int8_t*)m_data + byteindex;
-        if (typeVal == TypedArrayType::Float32Array) {
-            //TODO
-        } else if (typeVal == TypedArrayType::Float64Array) {
-            //TODO
-        } else {
-            return ESValue( *((Type*) rawStart) );
-        }
-        return ESValue();
+        return ESValue( *((Type*) rawStart) );
     }
     //$24.1.1.6
     template<typename TypeAdaptor>
     bool setValueInBuffer(unsigned byteindex, TypedArrayType typeVal, ESValue val, int isLittleEndian = -1)
     {
+        ASSERT(byteindex >= 0);
+        ASSERT(val.isNumber());
         if (isLittleEndian != -1) {
             //TODO
             RELEASE_ASSERT_NOT_REACHED();
         }
         //If isLittleEndian is not present, set isLittleEndian to either true or false.
         void* rawStart = (int8_t*)m_data + byteindex;
-        if (typeVal == TypedArrayType::Float32Array) {
-            //TODO
-        } else if (typeVal == TypedArrayType::Float64Array) {
-            //TODO
-        } else {
-            *((typename TypeAdaptor::Type*) rawStart) = (typename TypeAdaptor::Type) TypeAdaptor::toNative(val);
-        }
+        *((typename TypeAdaptor::Type*) rawStart) = (typename TypeAdaptor::Type) TypeAdaptor::toNative(val);
         return true;
     }
 

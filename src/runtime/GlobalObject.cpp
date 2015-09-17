@@ -336,7 +336,16 @@ void GlobalObject::installObject()
             return ESString::create(u"[object Date]");
         } else if (thisVal->isESRegExpObject()) {
             return ESString::create(u"[object RegExp]");
-         }
+        } else if (thisVal->isESTypedArrayObject()) {
+            u16string ret = u"[object ";
+            ESValue ta_constructor = thisVal->get(strings->constructor);
+            //ALWAYS created from new expression
+            ASSERT(ta_constructor.isESPointer() && ta_constructor.asESPointer()->isESObject());
+            ESValue ta_name = ta_constructor.asESPointer()->asESObject()->get(strings->name);
+            ret.append(ta_name.toString()->data());
+            ret.append(u"]");
+            return ESString::create(std::move(ret));
+        }
         return ESString::create(u"[object Object]");
     }), false, false)));
 
