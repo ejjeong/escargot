@@ -1695,6 +1695,7 @@ public:
     }
 
     CodeBlock* codeBlock() { return m_codeBlock; }
+
     LexicalEnvironment* outerEnvironment() { return m_outerEnvironment; }
 
     ALWAYS_INLINE escargot::ESString* name()

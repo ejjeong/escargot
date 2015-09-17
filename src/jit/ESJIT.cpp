@@ -14,17 +14,17 @@ namespace ESJIT {
 
 void ESJITFunction::compile()
 {
-    m_ir = generateIRFromByteCode(m_codeBlock);
+    m_graph = generateIRFromByteCode(m_codeBlock);
 #ifndef NDEBUG
-    m_ir->dump(std::cout);
+    m_graph->dump(std::cout);
 #endif
-    optimizeIR(m_ir);
-    m_native = generateNativeFromIR(m_ir);
+    optimizeIR(m_graph);
+    m_native = generateNativeFromIR(m_graph);
 }
 
 void ESJITFunction::finalize()
 {
-    delete m_ir;
+    delete m_graph;
 }
 
 JITFunction JITCompile(CodeBlock* codeBlock)

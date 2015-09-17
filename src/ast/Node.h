@@ -121,6 +121,7 @@ protected:
     Node(NodeType type)
     {
         m_nodeType = type;
+        m_nodeIndex = -1;
     }
 public:
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
@@ -162,9 +163,17 @@ public:
     const SourceLocation& sourceLocation() { return m_sourceLocation; }
 
     ALWAYS_INLINE const NodeType& type() { return m_nodeType; }
+
+    void updateNodeIndex() {
+        m_nodeIndex = ESVMInstance::getCurrentNodeIndex();
+        ESVMInstance::setCurrentNodeIndex(m_nodeIndex+1);
+    }
+
+    int nodeIndex() { return m_nodeIndex; }
 protected:
     NodeType m_nodeType;
     SourceLocation m_sourceLocation;
+    int m_nodeIndex;
 };
 
 }

@@ -18,7 +18,7 @@ public:
     {
         if(m_argument) {
             m_argument->generateExpressionByteCode(codeBlock, context);
-            codeBlock->pushCode(ReturnFunctionWithValue(), this);
+            codeBlock->pushCode(ReturnFunctionWithValue(m_argument->nodeIndex()), this);
         } else {
             codeBlock->pushCode(ReturnFunction(), this);
         }

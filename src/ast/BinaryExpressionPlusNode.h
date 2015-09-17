@@ -18,7 +18,8 @@ public:
     {
         m_left->generateExpressionByteCode(codeBlock, context);
         m_right->generateExpressionByteCode(codeBlock, context);
-        codeBlock->pushCode(Plus(), this);
+        updateNodeIndex();
+        codeBlock->pushCode(Plus(m_nodeIndex, m_left->nodeIndex(), m_right->nodeIndex()), this);
     }
 
 protected:

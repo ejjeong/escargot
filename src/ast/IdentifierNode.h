@@ -30,13 +30,15 @@ public:
     {
         if(m_canUseFastAccess) {
             if(codeBlock->m_needsActivation) {
+                updateNodeIndex();
                 codeBlock->pushCode(GetByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), this);
 #ifndef NDEBUG
                 codeBlock->peekCode<GetByIndexWithActivation>(codeBlock->lastCodePosition<GetByIndexWithActivation>())->m_name = m_nonAtomicName;
 #endif
             } else {
                 if(m_fastAccessUpIndex == 0) {
-                    codeBlock->pushCode(GetByIndex(m_fastAccessIndex), this);
+                    updateNodeIndex();
+                    codeBlock->pushCode(GetByIndex(m_fastAccessIndex, m_nodeIndex), this);
 #ifndef NDEBUG
                     codeBlock->peekCode<GetByIndex>(codeBlock->lastCodePosition<GetByIndex>())->m_name = m_nonAtomicName;
 #endif
@@ -48,7 +50,8 @@ public:
                 }
             }
         } else {
-            codeBlock->pushCode(GetById(m_name, m_nonAtomicName), this);
+            updateNodeIndex();
+            codeBlock->pushCode(GetById(m_name, m_nonAtomicName, m_nodeIndex), this);
         }
     }
 
@@ -68,13 +71,15 @@ public:
             if(codeBlock->m_needsActivation) {
                 codeBlock->pushCode(PutByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), this);
             } else {
-                if(m_fastAccessUpIndex == 0)
-                    codeBlock->pushCode(PutByIndex(m_fastAccessIndex), this);
-                else
+                if(m_fastAccessUpIndex == 0) {
+                    updateNodeIndex();
+                    codeBlock->pushCode(PutByIndex(m_fastAccessIndex, m_nodeIndex), this);
+                } else
                     codeBlock->pushCode(PutByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), this);
             }
         } else {
-            codeBlock->pushCode(PutById(m_name, m_nonAtomicName), this);
+            updateNodeIndex();
+            codeBlock->pushCode(PutById(m_name, m_nonAtomicName, m_nodeIndex), this);
         }
     }
 

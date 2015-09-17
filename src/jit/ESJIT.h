@@ -17,18 +17,18 @@ typedef ESValue (*JITFunction)(ESVMInstance*);
 class ESJITFunction {
 public:
     ESJITFunction(CodeBlock* codeBlock)
-        : m_codeBlock(codeBlock), m_ir(nullptr), m_native(nullptr) { }
+        : m_codeBlock(codeBlock), m_graph(nullptr), m_native(nullptr) { }
 
     void compile();
     void finalize();
 
     CodeBlock* codeBlock() { return m_codeBlock; }
-    ESGraph* ir() { return m_ir; }
+    ESGraph* ir() { return m_graph; }
     JITFunction native() { return m_native; }
 
 private:
     CodeBlock* m_codeBlock;
-    ESGraph* m_ir;
+    ESGraph* m_graph;
     JITFunction m_native;
 };
 

@@ -1450,12 +1450,13 @@ ALWAYS_INLINE ESValue minusOperation(const ESValue& left, const ESValue& right)
     return ret;
 }
 
-ByteCode::ByteCode(Opcode code) {
+ByteCode::ByteCode(Opcode code, int targetIndex) {
     m_opcode = (ESVMInstance::currentInstance()->opcodeTable())->m_table[(unsigned)code];
 #ifndef NDEBUG
     m_orgOpcode = code;
     m_node = nullptr;
 #endif
+    m_targetIndex = targetIndex;
 }
 
 CodeBlock* generateByteCode(Node* node)

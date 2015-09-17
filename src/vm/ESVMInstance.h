@@ -100,6 +100,16 @@ public:
         return &m_initialHiddenClassForArrayObject;
     }
 
+    ALWAYS_INLINE static unsigned getCurrentNodeIndex()
+    {
+        return currentInstance()->m_currentNodeIndex;
+    }
+
+    ALWAYS_INLINE static void setCurrentNodeIndex(unsigned index)
+    {
+        currentInstance()->m_currentNodeIndex = index;
+    }
+
     //Function for debug
     static void printValue(ESValue val);
     ALWAYS_INLINE unsigned long tickCount()
@@ -125,6 +135,8 @@ public:
     }
 
 protected:
+    unsigned m_currentNodeIndex;
+
     ExecutionContext* m_globalExecutionContext;
     ExecutionContext* m_currentExecutionContext;
     GlobalObject* m_globalObject;

@@ -9,6 +9,10 @@
 namespace escargot {
 namespace ESJIT {
 
+#define DECLARE_BYTECODE_LENGTH(bytecode) const int bytecode##Length = sizeof(bytecode);
+    FOR_EACH_BYTECODE_OP(DECLARE_BYTECODE_LENGTH)
+#undef DECLARE_BYTECODE_LENGTH
+
 #if 0
 ConstantIR* ConstantIR::s_undefined = ConstantIR::create(ESValue());
 #ifdef ESCARGOT_32
@@ -38,165 +42,134 @@ ESIR* typeCheck(ESBasicBlock* block, ESIR* ir, Type type, int bytecodeIndex)
     return ir;
 }
 
-ESGraph* handMade()
-{
-    ESGraph* cfg = new ESGraph();
-
-    // [0] a: int32
-    // [1] b: int32
-    // function boo(a) {
-    //     var b;
-    //     if (a) b = a+1;
-    //     else   b = 0xff;
-    //     return b;
-    // }
-
-    ESBasicBlock *entryBlock = new ESBasicBlock();
-    cfg->push(entryBlock);
-
-#if 0
-    // IdentifierFastCaseNode (get a)
-    ESIR* undefined = ConstantIR::s_undefined;
-    entryBlock->push(undefined);
-    ESIR* setB = SetVar::create(1, undefined);
-    entryBlock->push(setB);
-    ESIR* getA = GetVarIR::create(0);
-    entryBlock->push(getA);
-    typeCheck(entryBlock, getA, Type::Int32, /* bytecode index to restart execution*/4);
-#endif
-#if 0
-    // IfStatementNode (test if true/false)
-    entryBlock->push(Equal::create());
-    ESBasicBlock* trueBlock = new ESBasicBlock(entryBlock);
-    ESBasicBlock* falseBlock = new ESBasicBlock(entryBlock);
-    entryBlock->push(Branch::create(trueBlock, falseBlock));
-
-    cfg->addBasicBlock(trueBlock);
-    cfg->addBasicBlock(falseBlock);
-
-    // ReturnStatementNode ( return a; )
-    trueBlock->push(Return::create());
-
-    // ReturnStatementNode ( return 0xff; ) , LiteralNode ( 0xff; )
-    falseBlock->push(ESIR::IntConstant(0xff));
-    falseBlock->push(ESIR::Return::create());
-
-    entryBlock->push(ESIR::SetVar::create(1));
-#endif
-
-    return cfg;
-}
-
-template <typename CodeType>
-ALWAYS_INLINE void setupForNextCode(size_t& programCounter, int& sp)
-{
-    programCounter += sizeof (CodeType);
-    // FIXME: do sth with sp automatically (need some pre-defined stack push/pop counts)
-}
-
 ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
 {
-#if 0
-    return handMade();
-#else
-    ESGraph* cfg = new ESGraph();
+#ifndef NDEBUG
+    dumpBytecode(codeBlock);
+#endif
 
-    size_t programCounter = 0;
+    ESGraph* graph = ESGraph::create(codeBlock);
+
+    size_t idx = 0;
     char* code = codeBlock->m_code.data();
-    int sp = 0;
-    int tmp = 0;
 
-    ESBasicBlock *currentBlock = new ESBasicBlock();
-    cfg->push(currentBlock);
+    std::map<int, ESBasicBlock*> basicBlockMapping;
 
-    while(1) {
-        ByteCode* currentCode = (ByteCode *)(&code[programCounter]);
-        switch(currentCode->m_opcode) {
+    ESBasicBlock *entryBlock = ESBasicBlock::create(graph);
+    basicBlockMapping[idx] = entryBlock;
+    ESBasicBlock* currentBlock = entryBlock;
+
+    while(idx < codeBlock->m_code.size()) {
+        ByteCode* currentCode = (ByteCode *)(&code[idx]);
+
+        Opcode opcode = Opcode::OpcodeKindEnd;
+        for(int i = 0; i < Opcode::OpcodeKindEnd; i ++) {
+            if((ESVMInstance::currentInstance()->opcodeTable())->m_table[i] == currentCode->m_opcode) {
+                opcode = (Opcode)i;
+                break;
+            }
+        }
+
+        // Update BasicBlock information 
+        // TODO: find a better way to this (using AST, write information to bytecode..)
+        if (ESBasicBlock* generatedBlock = basicBlockMapping[idx]) {
+            if (currentBlock != generatedBlock && !currentBlock->endsWithJumpOrBranch()) {
+                currentBlock->addChild(generatedBlock);
+                generatedBlock->addParent(currentBlock);
+            }
+            currentBlock = generatedBlock;
+        }
+        //printf("parse idx %lu with BasicBlock %lu\n", idx, currentBlock->index());
+
+#define INIT_BYTECODE(ByteCode) ByteCode* bytecode = (ByteCode*)currentCode;
+#define NEXT_BYTECODE(ByteCode) idx += sizeof(ByteCode);
+        switch(opcode) {
         case PushOpcode:
         {
-            Push* pushCode = (Push*)currentCode;
-            ESIR* literal = ConstantIR::create(tmp, pushCode->m_value);
+            INIT_BYTECODE(Push);
+            ESIR* literal;
+            if (bytecode->m_value.isInt32())
+                literal = ConstantIntIR::create(bytecode->m_targetIndex, bytecode->m_value.asInt32());
+            else
+                RELEASE_ASSERT_NOT_REACHED();
             currentBlock->push(literal);
-            setupForNextCode<Push>(programCounter, sp);
+            NEXT_BYTECODE(Push);
             break;
         }
         case PopExpressionStatementOpcode:
-            setupForNextCode<PopExpressionStatement>(programCounter, sp);
+            NEXT_BYTECODE(PopExpressionStatement);
             break;
         case PopOpcode:
-            setupForNextCode<Pop>(programCounter, sp);
+            NEXT_BYTECODE(Pop);
             break;
         case GetByIdOpcode:
-            setupForNextCode<GetById>(programCounter, sp);
+            NEXT_BYTECODE(GetById);
             break;
         case GetByIndexOpcode:
-            setupForNextCode<GetByIndex>(programCounter, sp);
+        {
+            INIT_BYTECODE(GetByIndex);
+            if (bytecode->m_index < codeBlock->m_params.size()) {
+                ESIR* getArgument = GetArgumentIR::create(bytecode->m_targetIndex, bytecode->m_index);
+                currentBlock->push(getArgument);
+            } else {
+                ESIR* getVar = GetVarIR::create(bytecode->m_targetIndex, bytecode->m_index);
+                currentBlock->push(getVar);
+            }
+            NEXT_BYTECODE(GetByIndex);
             break;
+        }
         case GetByIndexWithActivationOpcode:
-            setupForNextCode<GetByIndexWithActivation>(programCounter, sp);
-            break;
-        case ResolveAddressByIdOpcode:
-            setupForNextCode<ResolveAddressById>(programCounter, sp);
-            break;
-        case ResolveAddressByIndexOpcode:
-            setupForNextCode<ResolveAddressByIndex>(programCounter, sp);
-            break;
-        case ResolveAddressByIndexWithActivationOpcode:
-            setupForNextCode<ResolveAddressByIndexWithActivation>(programCounter, sp);
-            break;
-        case ResolveAddressInObjectOpcode:
-            setupForNextCode<ResolveAddressInObject>(programCounter, sp);
-            break;
-        case PutOpcode:
-            setupForNextCode<Put>(programCounter, sp);
-            break;
-        case PutReverseStackOpcode:
-            setupForNextCode<PutReverseStack>(programCounter, sp);
+            NEXT_BYTECODE(GetByIndexWithActivation);
             break;
         case CreateBindingOpcode:
-            setupForNextCode<CreateBinding>(programCounter, sp);
+            NEXT_BYTECODE(CreateBinding);
             break;
         case EqualOpcode:
-            setupForNextCode<Equal>(programCounter, sp);
+            NEXT_BYTECODE(Equal);
             break;
         case NotEqualOpcode:
-            setupForNextCode<NotEqual>(programCounter, sp);
+            NEXT_BYTECODE(NotEqual);
             break;
         case StrictEqualOpcode:
-            setupForNextCode<StrictEqual>(programCounter, sp);
+            NEXT_BYTECODE(StrictEqual);
             break;
         case NotStrictEqualOpcode:
-            setupForNextCode<NotStrictEqual>(programCounter, sp);
+            NEXT_BYTECODE(NotStrictEqual);
             break;
         case BitwiseAndOpcode:
-            setupForNextCode<BitwiseAnd>(programCounter, sp);
+            NEXT_BYTECODE(BitwiseAnd);
             break;
         case BitwiseOrOpcode:
-            setupForNextCode<BitwiseOr>(programCounter, sp);
+            NEXT_BYTECODE(BitwiseOr);
             break;
         case BitwiseXorOpcode:
-            setupForNextCode<BitwiseXor>(programCounter, sp);
+            NEXT_BYTECODE(BitwiseXor);
             break;
         case LeftShiftOpcode:
-            setupForNextCode<LeftShift>(programCounter, sp);
+            NEXT_BYTECODE(LeftShift);
             break;
         case SignedRightShiftOpcode:
-            setupForNextCode<SignedRightShift>(programCounter, sp);
+            NEXT_BYTECODE(SignedRightShift);
             break;
         case UnsignedRightShiftOpcode:
-            setupForNextCode<UnsignedRightShift>(programCounter, sp);
+            NEXT_BYTECODE(UnsignedRightShift);
             break;
         case LessThanOpcode:
-            setupForNextCode<LessThan>(programCounter, sp);
+        {
+            INIT_BYTECODE(LessThan);
+            ESIR* lessThanIR = LessThanIR::create(bytecode->m_targetIndex, bytecode->m_leftIndex, bytecode->m_rightIndex);
+            currentBlock->push(lessThanIR);
+            NEXT_BYTECODE(LessThan);
             break;
+        }
         case LessThanOrEqualOpcode:
-            setupForNextCode<LessThanOrEqual>(programCounter, sp);
+            NEXT_BYTECODE(LessThanOrEqual);
             break;
         case GreaterThanOpcode:
-            setupForNextCode<GreaterThan>(programCounter, sp);
+            NEXT_BYTECODE(GreaterThan);
             break;
         case GreaterThanOrEqualOpcode:
-            setupForNextCode<GreaterThanOrEqual>(programCounter, sp);
+            NEXT_BYTECODE(GreaterThanOrEqual);
             break;
         case PlusOpcode:
         {
@@ -205,72 +178,114 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             // 1. if both arguments have number type then append StringPlus
             // 2. else if either one of arguments has string type then append NumberPlus
             // 3. else append general Plus
-            ESIR* plus = GenericPlusIR::create(sp-1, sp-2);
-            currentBlock->push(plus, sp-2);
-            sp--;
 #endif
-            setupForNextCode<Plus>(programCounter, sp);
+            NEXT_BYTECODE(Plus);
             break;
         }
         case MinusOpcode:
-            setupForNextCode<Minus>(programCounter, sp);
+            NEXT_BYTECODE(Minus);
             break;
         case MultiplyOpcode:
-            setupForNextCode<Multiply>(programCounter, sp);
+            NEXT_BYTECODE(Multiply);
             break;
         case DivisionOpcode:
-            setupForNextCode<Division>(programCounter, sp);
+            NEXT_BYTECODE(Division);
             break;
         case ModOpcode:
-            setupForNextCode<Mod>(programCounter, sp);
+            NEXT_BYTECODE(Mod);
             break;
         case CreateObjectOpcode:
-            setupForNextCode<CreateObject>(programCounter, sp);
+            NEXT_BYTECODE(CreateObject);
             break;
         case CreateArrayOpcode:
-            setupForNextCode<CreateArray>(programCounter, sp);
+            NEXT_BYTECODE(CreateArray);
             break;
         case SetObjectOpcode:
-            setupForNextCode<SetObject>(programCounter, sp);
+            NEXT_BYTECODE(SetObject);
             break;
         case GetObjectOpcode:
-            setupForNextCode<GetObject>(programCounter, sp);
+            NEXT_BYTECODE(GetObject);
             break;
+        case CreateFunctionOpcode:
+            NEXT_BYTECODE(ExecuteNativeFunction);
+            break;
+        case PrepareFunctionCallOpcode:
+            NEXT_BYTECODE(PrepareFunctionCall);
+            break;
+        case CallFunctionOpcode:
+            NEXT_BYTECODE(CallFunction);
+            break;
+        case NewFunctionCallOpcode:
+            NEXT_BYTECODE(NewFunctionCall);
+            break;
+        case ReturnFunctionOpcode:
+        {
+            INIT_BYTECODE(ReturnFunction);
+            ReturnIR* returnIR = ReturnIR::create(-1);
+            currentBlock->push(returnIR);
+            NEXT_BYTECODE(ReturnFunction);
+            break;
+        }
+        case ReturnFunctionWithValueOpcode:
+        {
+            INIT_BYTECODE(ReturnFunctionWithValue);
+            ReturnWithValueIR* returnWithValueIR = ReturnWithValueIR::create(bytecode->m_targetIndex, bytecode->m_returnIndex);
+            currentBlock->push(returnWithValueIR);
+            NEXT_BYTECODE(ReturnFunctionWithValue);
+            break;
+        }
         case JumpOpcode:
-            setupForNextCode<Jump>(programCounter, sp);
+        {
+            INIT_BYTECODE(Jump);
+            ESBasicBlock* targetBlock = ESBasicBlock::create(graph, currentBlock);
+            JumpIR* jumpIR = JumpIR::create(bytecode->m_targetIndex, targetBlock);
+            currentBlock->push(jumpIR);
+            basicBlockMapping[bytecode->m_jumpPosition] = targetBlock;
+            NEXT_BYTECODE(Jump);
             break;
+        }
         case JumpIfTopOfStackValueIsFalseOpcode:
-            setupForNextCode<JumpIfTopOfStackValueIsFalse>(programCounter, sp);
+        {
+            INIT_BYTECODE(JumpIfTopOfStackValueIsFalse);
+
+            ESBasicBlock* trueBlock = ESBasicBlock::create(graph, currentBlock);
+            ESBasicBlock* falseBlock = ESBasicBlock::create(graph, currentBlock);
+
+            BranchIR* branchIR = BranchIR::create(bytecode->m_targetIndex, bytecode->m_conditionIndex, trueBlock, falseBlock);
+            currentBlock->push(branchIR);
+
+            basicBlockMapping[idx + sizeof(JumpIfTopOfStackValueIsFalse)] = trueBlock;
+            basicBlockMapping[bytecode->m_jumpPosition] = falseBlock;
+
+            NEXT_BYTECODE(JumpIfTopOfStackValueIsFalse);
             break;
+        }
         case JumpIfTopOfStackValueIsTrueOpcode:
-            setupForNextCode<JumpIfTopOfStackValueIsTrue>(programCounter, sp);
+            NEXT_BYTECODE(JumpIfTopOfStackValueIsTrue);
             break;
         case JumpIfTopOfStackValueIsFalseWithPeekingOpcode:
-            setupForNextCode<JumpIfTopOfStackValueIsFalseWithPeeking>(programCounter, sp);
+            NEXT_BYTECODE(JumpIfTopOfStackValueIsFalseWithPeeking);
             break;
         case JumpIfTopOfStackValueIsTrueWithPeekingOpcode:
-            setupForNextCode<JumpIfTopOfStackValueIsTrueWithPeeking>(programCounter, sp);
+            NEXT_BYTECODE(JumpIfTopOfStackValueIsTrueWithPeeking);
             break;
-            /*
-        case CallOpcode:
-            setupForNextCode<Call>(programCounter, sp);
-            break;
-            */
         case DuplicateTopOfStackValueOpcode:
-            setupForNextCode<DuplicateTopOfStackValue>(programCounter, sp);
+            NEXT_BYTECODE(DuplicateTopOfStackValue);
             break;
         case ThrowOpcode:
-            setupForNextCode<Throw>(programCounter, sp);
+            NEXT_BYTECODE(Throw);
             break;
         case EndOpcode:
             goto postprocess;
         default:
+            printf("Invalid Opcode %d\n", opcode);
             RELEASE_ASSERT_NOT_REACHED();
         }
+#undef INIT_BYTECODE
+#undef NEXT_BYTECODE
     }
 postprocess:
-    return cfg;
-#endif
+    return graph;
 }
 
 }}

@@ -466,6 +466,7 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeF
     m_codeBlock = CodeBlock::create();
     m_codeBlock->pushCode(ExecuteNativeFunction(fn), NULL);
     m_codeBlock->m_isBuiltInFunction = true;
+    m_codeBlock->m_dontJIT = true;
     m_name = name;
 }
 
@@ -546,20 +547,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
             functionCallerInnerProcess(instance->m_currentExecutionContext, fn, receiver, arguments, argumentCount, true, instance);
             //ESVMInstance->invalidateIdentifierCacheCheckCount();
             //execute;
-#if 1
-            result = interpret(instance, fn->codeBlock()); // for printing code
-
-            ESJIT::JITFunction jitFunction = reinterpret_cast<ESJIT::JITFunction>(ESJIT::JITCompile(fn->codeBlock()));
-            if (jitFunction) {
-                printf("JIT succeeded! Execute JIT compiled function\n");
-                jitFunction(instance);
-            } else {
-                printf("JIT failed! Execute interpreter\n");
-                result = interpret(instance, fn->codeBlock());
-            }
-#else
             result = interpret(instance, fn->codeBlock());
-#endif
             instance->m_currentExecutionContext = currentContext;
         } else {
             ESValue* storage = (::escargot::ESValue *)alloca(sizeof(::escargot::ESValue) * fn->m_codeBlock->m_innerIdentifiers.size());
@@ -576,7 +564,28 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
             functionCallerInnerProcess(&ec, fn, receiver, arguments, argumentCount, fn->m_codeBlock->m_needsArgumentsObject, instance);
             //ESVMInstance->invalidateIdentifierCacheCheckCount();
             //execute;
+#if 1
+            ESJIT::JITFunction jitFunction = fn->codeBlock()->m_cachedJITFunction;
+            if (!jitFunction && !fn->codeBlock()->m_dontJIT) {
+                jitFunction = reinterpret_cast<ESJIT::JITFunction>(ESJIT::JITCompile(fn->codeBlock()));
+                if (jitFunction)
+                    fn->codeBlock()->m_cachedJITFunction = jitFunction;
+                else
+                    fn->codeBlock()->m_dontJIT = true;
+            }
+
+            if (jitFunction) {
+                printf("Execute JIT compiled function.\n");
+                ESValue res = jitFunction((ESVMInstance*)(arguments[0].asRawData())); // TODO: trampoline to handle multiple arguments
+                printf("JIT Execution successfully ended with return value %lu.\n", res.asRawData());
+                result = ESValue(res.asRawData()); // TODO: Make it as ESValue format in the JIT function
+            } else {
+                printf("JIT failed! Execute interpreter\n");
+                result = interpret(instance, fn->codeBlock());
+            }
+#else
             result = interpret(instance, fn->codeBlock());
+#endif
             instance->m_currentExecutionContext = currentContext;
         }
     } else {

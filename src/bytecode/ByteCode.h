@@ -5,6 +5,7 @@
 #include "vm/ESVMInstance.h"
 #include "runtime/ExecutionContext.h"
 #include "runtime/Environment.h"
+#include "jit/ESIRType.h"
 
 namespace escargot {
 
@@ -185,7 +186,7 @@ struct ByteCodeGenerateContext {
 
 class ByteCode {
 public:
-    ByteCode(Opcode code);
+    ByteCode(Opcode code, int targetIndex = -1);
 
     void* m_opcode;
 #ifndef NDEBUG
@@ -198,6 +199,17 @@ public:
 
     }
 #endif
+    int m_targetIndex;
+};
+
+class ProfileData {
+public:
+    void AccumulateType(ESJIT::Type type) {
+        m_type |= type;
+    }
+protected:
+    ESJIT::Type m_type;
+    ESValue m_value;
 };
 
 #ifdef NDEBUG
@@ -222,8 +234,8 @@ ASSERT_STATIC(sizeof(NoOp0) == sizeof(ByteCode), "sizeof(NoOp0) should be == siz
 
 class Push : public ByteCode {
 public:
-    Push(const ESValue& value)
-        : ByteCode(PushOpcode)
+    Push(const ESValue& value, int nodeIndex = -1)
+        : ByteCode(PushOpcode, nodeIndex)
         , m_value(value)
     {
     }
@@ -231,6 +243,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
+        printf("(t%d = ) ", m_targetIndex);
         if(m_value.isESString()) {
             ESString* str = m_value.asESString();
             if(str->length() > 30) {
@@ -338,8 +351,8 @@ public:
 
 class GetById : public ByteCode {
 public:
-    GetById(const InternalAtomicString& name, ESString* esName)
-        : ByteCode(GetByIdOpcode)
+    GetById(const InternalAtomicString& name, ESString* esName, int targetIndex = -1)
+        : ByteCode(GetByIdOpcode, targetIndex)
     {
         m_name = name;
         m_nonAtomicName = esName;
@@ -356,7 +369,8 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("GetById <%s>\n",m_nonAtomicName->utf8Data());
+        printf("(t%d = resolve \'%s\') ", m_targetIndex, m_nonAtomicName->utf8Data());
+        printf("GetById <%s>\n", m_nonAtomicName->utf8Data());
     }
 #endif
 };
@@ -388,8 +402,8 @@ public:
 
 class GetByIndex : public ByteCode {
 public:
-    GetByIndex(size_t index)
-        : ByteCode(GetByIndexOpcode)
+    GetByIndex(size_t index, int targetIndex = -1)
+        : ByteCode(GetByIndexOpcode, targetIndex)
     {
         m_index = index;
     }
@@ -399,6 +413,7 @@ public:
     ESString* m_name;
     virtual void dump()
     {
+        printf("(t%d = id%u) ", m_targetIndex, (unsigned)m_index);
         printf("GetByIndex <%s, %u>\n", m_name->utf8Data(),  (unsigned)m_index);
     }
 #endif
@@ -426,8 +441,8 @@ public:
 
 class PutById : public ByteCode {
 public:
-    PutById(const InternalAtomicString& name, ESString* esName, Opcode code = PutByIdOpcode)
-        : ByteCode(code)
+    PutById(const InternalAtomicString& name, ESString* esName, Opcode code = PutByIdOpcode, int targetIndex)
+        : ByteCode(code, targetIndex)
     {
         m_name = name;
         m_nonAtomicName = esName;
@@ -444,6 +459,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
+        printf("(t%d = %s) ", m_targetIndex, m_nonAtomicName->utf8Data());
         printf("PutById <%s>\n", m_nonAtomicName->utf8Data());
     }
 #endif
@@ -451,8 +467,8 @@ public:
 
 class PutByIndex : public ByteCode {
 public:
-    PutByIndex(size_t index, Opcode code = PutByIndexOpcode)
-        : ByteCode(code)
+    PutByIndex(size_t index, Opcode code = PutByIndexOpcode, int targetIndex = -1)
+        : ByteCode(code, targetIndex)
     {
         m_index = index;
     }
@@ -461,6 +477,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
+        printf("(t%d = &id%u) ", m_targetIndex, (unsigned)m_index);
         printf("PutByIndex <%u>\n", (unsigned)m_index);
     }
 #endif
@@ -487,17 +504,20 @@ public:
 
 class PutInObject : public ByteCode {
 public:
-    PutInObject(Opcode code = PutInObjectOpcode)
-        : ByteCode(code)
+    PutInObject(Opcode code = PutInObjectOpcode, int targetIndex = -1, int objectIndex = -1, int propertyIndex = -1)
+        : ByteCode(code, targetIndex)
     {
         m_cachedHiddenClass = (ESHiddenClass*)SIZE_MAX;
         m_cachedPropertyValue = nullptr;
         m_cachedIndex = SIZE_MAX;
+        m_objectIndex = objectIndex;
+        m_propertyIndex = propertyIndex;
     }
 
 #ifndef NDEBUG
     virtual void dump()
     {
+        printf("(t%d = t%d[t%d]) ", m_targetIndex, m_objectIndex, m_propertyIndex);
         printf("PutInObject <>\n");
     }
 #endif
@@ -505,6 +525,8 @@ public:
     ESHiddenClass* m_cachedHiddenClass;
     ESString* m_cachedPropertyValue;
     size_t m_cachedIndex;
+    int m_objectIndex;
+    int m_propertyIndex;
 };
 
 class CreateBinding : public ByteCode {
@@ -688,18 +710,22 @@ public:
 
 class LessThan : public ByteCode {
 public:
-    LessThan()
-        : ByteCode(LessThanOpcode)
+    LessThan(int targetIndex = -1, int leftIndex = -1, int rightIndex = -1)
+        : ByteCode(LessThanOpcode, targetIndex)
     {
-
+        m_leftIndex = leftIndex;
+        m_rightIndex = rightIndex;
     }
 
 #ifndef NDEBUG
     virtual void dump()
     {
+        printf("(t%d = ? t%d<t%d) ", m_targetIndex, m_leftIndex, m_rightIndex);
         printf("LessThan <>\n");
     }
 #endif
+    int m_leftIndex;
+    int m_rightIndex;
 };
 
 class LessThanOrEqual : public ByteCode {
@@ -752,14 +778,19 @@ public:
 
 class Plus : public ByteCode {
 public:
-    Plus()
-        : ByteCode(PlusOpcode)
+    Plus(int targetIndex = -1, int leftIndex = -1, int rightIndex = -1)
+        : ByteCode(PlusOpcode, targetIndex)
     {
-
+        m_leftIndex = leftIndex;
+        m_rightIndex = rightIndex;
     }
+    unsigned m_leftIndex;
+    unsigned m_rightIndex;
+
 #ifndef NDEBUG
     virtual void dump()
     {
+        printf("(t%d = t%d + t%d) ", m_targetIndex, m_leftIndex, m_rightIndex);
         printf("Plus <>\n");
     }
 #endif
@@ -1022,17 +1053,19 @@ public:
 
 class JumpIfTopOfStackValueIsFalse : public ByteCode {
 public:
-    JumpIfTopOfStackValueIsFalse(size_t jumpPosition)
-        : ByteCode(JumpIfTopOfStackValueIsFalseOpcode)
+    JumpIfTopOfStackValueIsFalse(size_t jumpPosition, int targetIndex = -1, int conditionIndex = -1)
+        : ByteCode(JumpIfTopOfStackValueIsFalseOpcode, targetIndex), m_conditionIndex(conditionIndex)
     {
         m_jumpPosition = jumpPosition;
     }
 
     size_t m_jumpPosition;
+    int m_conditionIndex;
 
 #ifndef NDEBUG
     virtual void dump()
     {
+        printf("(if (!t%d) goto %lu) ", m_targetIndex, m_jumpPosition);
         printf("JumpIfTopOfStackValueIsFalse <%u>\n",(unsigned)m_jumpPosition);
     }
 #endif
@@ -1040,8 +1073,8 @@ public:
 
 class JumpIfTopOfStackValueIsTrue : public ByteCode {
 public:
-    JumpIfTopOfStackValueIsTrue(size_t jumpPosition)
-        : ByteCode(JumpIfTopOfStackValueIsTrueOpcode)
+    JumpIfTopOfStackValueIsTrue(size_t jumpPosition, int nodeIndex = -1)
+        : ByteCode(JumpIfTopOfStackValueIsTrueOpcode, nodeIndex)
     {
         m_jumpPosition = jumpPosition;
     }
@@ -1051,6 +1084,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
+        printf("(if (t%d) goto %lu) ", m_targetIndex, m_jumpPosition);
         printf("JumpIfTopOfStackValueIsTrue <%u>\n",(unsigned)m_jumpPosition);
     }
 #endif
@@ -1194,17 +1228,20 @@ public:
 
 class GetObject : public ByteCode {
 public:
-    GetObject()
-        : ByteCode(GetObjectOpcode)
+    GetObject(int targetIndex = -1, int objectIndex = -1, int propertyIndex = -1)
+        : ByteCode(GetObjectOpcode, targetIndex)
     {
         m_cachedHiddenClass = (ESHiddenClass*)SIZE_MAX;
         m_cachedPropertyValue = nullptr;
         m_cachedIndex = SIZE_MAX;
+        m_objectIndex = objectIndex;
+        m_propertyIndex = propertyIndex;
     }
 
 #ifndef NDEBUG
     virtual void dump()
     {
+        printf("(t%d = t%d[t%d]) ", m_targetIndex, m_objectIndex, m_propertyIndex);
         printf("GetObject <>\n");
     }
 #endif
@@ -1212,6 +1249,8 @@ public:
     ESHiddenClass* m_cachedHiddenClass;
     ESString* m_cachedPropertyValue;
     size_t m_cachedIndex;
+    int m_objectIndex;
+    int m_propertyIndex;
 };
 
 class GetObjectWithPeeking : public ByteCode {
@@ -1454,24 +1493,26 @@ public:
 
 class ReturnFunctionWithValue : public ByteCode {
 public:
-    ReturnFunctionWithValue()
+    ReturnFunctionWithValue(int returnIndex = -1)
         : ByteCode(ReturnFunctionWithValueOpcode)
     {
+        m_returnIndex = returnIndex;
     }
 
 #ifndef NDEBUG
     virtual void dump()
     {
+        printf("(return t%d) ", m_returnIndex);
         printf("ReturnFunctionWithValue <>\n");
     }
 #endif
-
+    int m_returnIndex;
 };
 
 class Jump : public ByteCode {
 public:
-    Jump(size_t jumpPosition)
-        : ByteCode(JumpOpcode)
+    Jump(size_t jumpPosition, int targetIndex = -1)
+        : ByteCode(JumpOpcode, targetIndex)
     {
         m_jumpPosition = jumpPosition;
     }
@@ -1650,6 +1691,13 @@ public:
     bool m_needsArgumentsObject;
     bool m_isBuiltInFunction;
     bool m_isStrict;
+
+    typedef ESValue (*JITFunction)(ESVMInstance*);
+    JITFunction m_cachedJITFunction;
+    bool m_dontJIT;
+    size_t m_tempRegisterSize;
+    typedef struct {
+    } m_profileData;
 };
 
 template <typename Type>

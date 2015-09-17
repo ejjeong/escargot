@@ -5,7 +5,6 @@
 #include "runtime/GlobalObject.h"
 #include "parser/ESScriptParser.h"
 #include "bytecode/ByteCode.h"
-#include "jit/ESJIT.h"
 
 #include "BumpPointerAllocator.h"
 
@@ -164,22 +163,19 @@ ESValue ESVMInstance::evaluate(u16string& source)
 {
     try {
         m_lastExpressionStatementValue = ESValue();
+<<<<<<< HEAD
         CodeBlock* block = ESScriptParser::parseScript(this, source);
 #if 1
+=======
+        ProgramNode* node = ESScriptParser::parseScript(this, source);
+        CodeBlock* block = CodeBlock::create();
+        ByteCodeGenerateContext context;
+        //unsigned long start = ESVMInstance::tickCount();
+        node->generateStatementByteCode(block, context);
+        //unsigned long end = ESVMInstance::tickCount();
+        //printf("generate code takes %lfms\n",(end-start)/1000.0);
+>>>>>>> Generate simple jit code for int typed function (w/ modification on bytecode)
         interpret(this, block);
-        // TODO : move this into 'Call' bytecode execution
-        ESJIT::JITFunction jitFunction = reinterpret_cast<ESJIT::JITFunction>(ESJIT::JITCompile(block));
-        if (jitFunction) {
-            printf("JIT succeeded! Execute JIT compiled function\n");
-            ESValue result = jitFunction(this);
-            printf("Result: 0x%lx\n", result.asRawData());
-        } else {
-            printf("JIT failed! Execute interpreter\n");
-            interpret(this, block);
-        }
-#else
-        interpret(this, block);
-#endif
     } catch(const ESValue& err) {
         try{
             printf("Uncaught %s\n", err.toString()->utf8Data());

@@ -40,14 +40,17 @@ public:
         if(m_computed) {
             m_property->generateExpressionByteCode(codeBlock, context);
         } else {
-            if(m_property->type() == NodeType::Literal)
-                codeBlock->pushCode(Push(((LiteralNode *)m_property)->value()), this);
-            else {
+            if(m_property->type() == NodeType::Literal) {
+                updateNodeIndex();
+                codeBlock->pushCode(Push(((LiteralNode *)m_property)->value(), m_nodeIndex), this);
+            } else {
                 ASSERT(m_property->type() == NodeType::Identifier);
-                codeBlock->pushCode(Push(((IdentifierNode *)m_property)->nonAtomicName()), this);
+                updateNodeIndex();
+                codeBlock->pushCode(Push(((IdentifierNode *)m_property)->nonAtomicName(), m_nodeIndex), this);
             }
         }
-        codeBlock->pushCode(GetObject(), this);
+        updateNodeIndex();
+        codeBlock->pushCode(GetObject(m_nodeIndex, m_object->nodeIndex(), m_computed ? m_property->nodeIndex() : m_nodeIndex - 1), this);
     }
 
 
@@ -62,11 +65,13 @@ public:
         if(m_computed) {
             m_property->generateExpressionByteCode(codeBlock, context);
         } else {
-            if(m_property->type() == NodeType::Literal)
-                codeBlock->pushCode(Push(((LiteralNode *)m_property)->value()), this);
-            else {
+            if(m_property->type() == NodeType::Literal) {
+                updateNodeIndex();
+                codeBlock->pushCode(Push(((LiteralNode *)m_property)->value(), m_nodeIndex), this);
+            } else {
                 ASSERT(m_property->type() == NodeType::Identifier);
-                codeBlock->pushCode(Push(((IdentifierNode *)m_property)->nonAtomicName()), this);
+                updateNodeIndex();
+                codeBlock->pushCode(Push(((IdentifierNode *)m_property)->nonAtomicName(), m_nodeIndex), this);
             }
         }
     }
@@ -74,6 +79,8 @@ public:
     virtual void generateReferenceResolvedAddressByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         codeBlock->pushCode(GetObjectWithPeeking(), this);
+        //updateNodeIndex();
+        //codeBlock->pushCode(ResolveAddressInObject(m_nodeIndex, m_object->nodeIndex(), m_computed ? m_property->nodeIndex() : m_nodeIndex-1), this);
     }
 protected:
     Node* m_object; //object: Expression;

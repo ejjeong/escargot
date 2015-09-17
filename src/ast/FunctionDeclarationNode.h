@@ -28,8 +28,13 @@ public:
         cb->m_params = std::move(m_params);
         cb->m_isStrict = m_isStrict;
         ByteCodeGenerateContext newContext;
+        unsigned oldNodeIndex = ESVMInstance::getCurrentNodeIndex();
+        ESVMInstance::setCurrentNodeIndex(0);
         m_body->generateStatementByteCode(cb, newContext);
+        cb->m_tempRegisterSize = ESVMInstance::getCurrentNodeIndex();
+        ESVMInstance::setCurrentNodeIndex(oldNodeIndex);
         cb->pushCode(ReturnFunction(), this);
+        cb->pushCode(End(), this);
 
 #ifndef NDEBUG
     if(ESVMInstance::currentInstance()->m_dumpByteCode) {

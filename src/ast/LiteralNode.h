@@ -21,7 +21,8 @@ public:
 
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        codeBlock->pushCode(Push(m_value), this);
+        updateNodeIndex();
+        codeBlock->pushCode(Push(m_value, m_nodeIndex), this);
     }
 
     ESValue value() { return m_value; }
