@@ -26,6 +26,7 @@ enum Opcode {
     PutReverseStackOpcode,
     CreateBindingOpcode,
 
+    //binary expressions
     EqualOpcode,
     NotEqualOpcode,
     StrictEqualOpcode,
@@ -46,11 +47,19 @@ enum Opcode {
     DivisionOpcode,
     ModOpcode,
 
+    //unary expressions
+    BitwiseNotOpcode,
+    LogicalNotOpcode,
+    UnaryMinusOpcode,
+    UnaryPlusOpcode,
+
+    //object, array expressions
     CreateObjectOpcode,
     CreateArrayOpcode,
     SetObjectOpcode,
     GetObjectOpcode,
 
+    //control flow
     JumpOpcode,
     JumpIfTopOfStackValueIsFalseOpcode,
     JumpIfTopOfStackValueIsTrueOpcode,
@@ -59,8 +68,8 @@ enum Opcode {
     CallOpcode,
     DuplicateTopOfStackValueOpcode,
     ThrowOpcode,
+
     EndOpcode,
-    EndOfKind
 };
 
 class ByteCode;
@@ -621,6 +630,70 @@ public:
     virtual void dump()
     {
         printf("Mod <>\n");
+    }
+#endif
+};
+
+class BitwiseNot : public ByteCode {
+public:
+    BitwiseNot()
+        : ByteCode(BitwiseNotOpcode)
+    {
+
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("BitwiseNot <>\n");
+    }
+#endif
+};
+
+class LogicalNot : public ByteCode {
+public:
+    LogicalNot()
+        : ByteCode(LogicalNotOpcode)
+    {
+
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("LogicalNot <>\n");
+    }
+#endif
+};
+
+class UnaryMinus : public ByteCode {
+public:
+    UnaryMinus()
+        : ByteCode(UnaryMinusOpcode)
+    {
+
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("UnaryMinus <>\n");
+    }
+#endif
+};
+
+class UnaryPlus : public ByteCode {
+public:
+    UnaryPlus()
+        : ByteCode(UnaryPlusOpcode)
+    {
+
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("UnaryPlus <>\n");
     }
 #endif
 };
@@ -1406,6 +1479,34 @@ ALWAYS_INLINE void interpret(ESVMInstance* instance, CodeBlock* codeBlock)
             }
             push<ESValue>(stack, sp, ret);
             excuteNextCode<Mod>(programCounter);
+            break;
+        }
+
+        case BitwiseNotOpcode:
+        {
+            push<ESValue>(stack, sp, ESValue(~pop<ESValue>(stack, sp)->toInt32()));
+            excuteNextCode<BitwiseNot>(programCounter);
+            break;
+        }
+
+        case LogicalNotOpcode:
+        {
+            push<ESValue>(stack, sp, ESValue(!pop<ESValue>(stack, sp)->toBoolean()));
+            excuteNextCode<LogicalNot>(programCounter);
+            break;
+        }
+
+        case UnaryMinusOpcode:
+        {
+            push<ESValue>(stack, sp, ESValue(-pop<ESValue>(stack, sp)->toNumber()));
+            excuteNextCode<UnaryMinus>(programCounter);
+            break;
+        }
+
+        case UnaryPlusOpcode:
+        {
+            push<ESValue>(stack, sp, ESValue(pop<ESValue>(stack, sp)->toNumber()));
+            excuteNextCode<UnaryPlus>(programCounter);
             break;
         }
 

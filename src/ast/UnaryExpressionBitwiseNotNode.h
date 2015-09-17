@@ -18,6 +18,12 @@ public:
     {
         return ESValue(~m_argument->executeExpression(instance).toInt32());
     }
+
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock)
+    {
+        m_argument->generateExpressionByteCode(codeBlock);
+        codeBlock->pushCode(BitwiseNot(), this);
+    }
 protected:
     Node* m_argument;
 };

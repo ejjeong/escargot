@@ -19,6 +19,12 @@ public:
         //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-unary-minus-operator
         return ESValue(-m_argument->executeExpression(instance).toNumber());
     }
+
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock)
+    {
+        m_argument->generateExpressionByteCode(codeBlock);
+        codeBlock->pushCode(UnaryMinus(), this);
+    }
 protected:
     Node* m_argument;
 };

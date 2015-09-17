@@ -20,6 +20,11 @@ public:
         return ESValue(m_argument->executeExpression(instance).toNumber());
     }
 
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock)
+    {
+        m_argument->generateExpressionByteCode(codeBlock);
+        codeBlock->pushCode(UnaryPlus(), this);
+    }
 protected:
     Node* m_argument;
 };

@@ -41,6 +41,21 @@ public:
         }
     }
 
+    virtual void generateStatementByteCode(CodeBlock* codeBlock)
+    {
+        size_t whileStart = codeBlock->currentCodeSize();
+        m_test->generateExpressionByteCode(codeBlock);
+
+        codeBlock->pushCode(JumpIfTopOfStackValueIsFalse(SIZE_MAX), this);
+        size_t testPos = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsFalse>();
+
+        m_body->generateStatementByteCode(codeBlock);
+
+        codeBlock->pushCode(Jump(whileStart), this);
+        size_t whileEnd = codeBlock->currentCodeSize();
+        codeBlock->peekCode<JumpIfTopOfStackValueIsFalse>(testPos)->m_jumpPosition = whileEnd;
+    }
+
     void markAsSlowCase()
     {
         m_isSlowCase = true;
