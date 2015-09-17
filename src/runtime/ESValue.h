@@ -1840,7 +1840,6 @@ public:
     bool setValueInBuffer(unsigned byteindex, TypedArrayType typeVal, ESValue val, int isLittleEndian = -1)
     {
         ASSERT(byteindex >= 0);
-        ASSERT(val.isNumber());
         if (isLittleEndian != -1) {
             //TODO
             RELEASE_ASSERT_NOT_REACHED();

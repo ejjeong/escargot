@@ -2328,6 +2328,40 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
     ta_prototype->defineAccessorProperty(strings->length, [](ESObject* self) -> ESValue {
         return ESValue(self->asESTypedArrayObject<T>()->arraylength());
     }, nullptr, true, false, false);
+    //$22.2.3.26 %TypedArray%.prototype.subarray([begin [, end]])
+    FunctionDeclarationNode* subarray = new FunctionDeclarationNode(strings->subarray, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        auto thisBinded = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+        if (!thisBinded->isESTypedArrayObject())
+            throw TypeError::create();
+        auto thisVal = thisBinded->asESTypedArrayObjectWrapper();
+        escargot::ESArrayBufferObject* buffer = thisVal->buffer();
+        unsigned srcLength = thisVal->arraylength();
+        int relativeBegin = 0, beginIndex = 0;
+        if (arglen >= 1)
+            relativeBegin = instance->currentExecutionContext()->arguments()[0].toInt32();
+        if (relativeBegin < 0)
+            beginIndex = (srcLength + relativeBegin) > 0 ? (srcLength + relativeBegin) : 0;
+        else
+            beginIndex = relativeBegin < srcLength ? relativeBegin : srcLength;
+        int relativeEnd = srcLength, endIndex;
+        if (arglen >= 2)
+            relativeEnd = instance->currentExecutionContext()->arguments()[1].toInt32();
+        if (relativeEnd < 0)
+            endIndex = (srcLength + relativeEnd) > 0 ? (srcLength + relativeEnd) : 0;
+        else
+            endIndex = relativeEnd < srcLength ? relativeEnd : srcLength;
+        int newLength = 0;
+        if (endIndex - beginIndex > 0)
+            newLength = endIndex - beginIndex;
+        int srcByteOffset = thisVal->byteoffset();
+
+        ESValue arg[3] = {buffer, ESValue(srcByteOffset + beginIndex * thisVal->elementSize()), ESValue(newLength)};
+        escargot::ESTypedArrayObject<T>* newobj = escargot::ESTypedArrayObject<T>::create(); 
+        ESValue ret = ESFunctionObject::call(instance, thisBinded->get(strings->constructor), newobj, arg, 3, instance);
+        return ret;
+    }), false, false);
+    ta_prototype->ESObject::set(strings->subarray, ESFunctionObject::create(NULL, subarray));
 
     escargot::ESFunctionObject* ta_constructor = ESFunctionObject::create(NULL, constructor);
     ta_constructor->set(strings->name, ta_name);
