@@ -25,6 +25,17 @@ public:
         }
         return arr;
     }
+
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock)
+    {
+        unsigned len = m_elements.size();
+        codeBlock->pushCode(CreateArray(len), this);
+        for(unsigned i = 0; i < len ; i++) {
+            codeBlock->pushCode(Push(ESValue(i)), this);
+            m_elements[i]->generateExpressionByteCode(codeBlock);
+            codeBlock->pushCode(SetObject(), this);
+        }
+    }
 protected:
     ExpressionNodeVector m_elements;
 };

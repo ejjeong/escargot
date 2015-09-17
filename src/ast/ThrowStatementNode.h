@@ -21,9 +21,9 @@ public:
         RELEASE_ASSERT_NOT_REACHED();
     }
 
-    virtual void generateByteCode(CodeBlock* codeBlock)
+    virtual void generateStatementByteCode(CodeBlock* codeBlock)
     {
-        m_argument->generateByteCode(codeBlock);
+        m_argument->generateExpressionByteCode(codeBlock);
         codeBlock->pushCode(Throw(), this);
     }
 

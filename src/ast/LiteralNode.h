@@ -19,10 +19,9 @@ public:
         return m_value;
     }
 
-    virtual void generateByteCode(CodeBlock* codeBlock)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock)
     {
-        Push push(m_value);
-        codeBlock->pushCode(push, this);
+        codeBlock->pushCode(Push(m_value), this);
     }
 
     ESValue value() { return m_value; }

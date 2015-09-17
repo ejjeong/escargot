@@ -21,10 +21,10 @@ public:
         return ESValue(!m_left->executeExpression(instance).abstractEqualsTo(m_right->executeExpression(instance)));
     }
 
-    virtual void generateByteCode(CodeBlock* codeBlock)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock)
     {
-        m_left->generateByteCode(codeBlock);
-        m_right->generateByteCode(codeBlock);
+        m_left->generateExpressionByteCode(codeBlock);
+        m_right->generateExpressionByteCode(codeBlock);
         codeBlock->pushCode(NotEqual(), this);
     }
 protected:

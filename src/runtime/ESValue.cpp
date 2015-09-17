@@ -296,13 +296,13 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
     return matchResult.m_matchResults.size();
 }
 
-ESObject::ESObject(ESPointer::Type type)
+ESObject::ESObject(ESPointer::Type type, size_t initialKeyCount)
     : ESPointer(type)
     , m_map(NULL)
 {
     //m_map = new(GC) ESObjectMap(16);
     //m_hiddenClass = nullptr;
-    m_hiddenClassData.reserve(6);
+    m_hiddenClassData.reserve(initialKeyCount);
     m_hiddenClass = ESVMInstance::currentInstance()->initialHiddenClassForObject();
 
     //definePropertyOrThrow(strings->constructor, true, false, false);

@@ -28,10 +28,10 @@ public:
         return rvalue;
     }
 
-    virtual void generateByteCode(CodeBlock* codeBlock)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock)
     {
         m_left->generateByteCodeWriteCase(codeBlock);
-        m_right->generateByteCode(codeBlock);
+        m_right->generateExpressionByteCode(codeBlock);
         codeBlock->pushCode(Put(), this);
     }
 

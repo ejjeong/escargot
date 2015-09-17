@@ -959,18 +959,21 @@ public:
     {
         m_propertyValue = ESValue(ESValue::ESEmptyValue);
         m_targetObject = NULL;
+        m_hiddenClassIndex = SIZE_MAX;
     }
 
     explicit ESSlotAccessor(ESValue* data)
     {
         m_propertyValue = ESValue((ESPointer *)data);
         m_targetObject = NULL;
+        m_hiddenClassIndex = SIZE_MAX;
     }
 
-    explicit ESSlotAccessor(ESObject* obj, ESValue propertyValue)
+    explicit ESSlotAccessor(ESObject* obj, const ESValue& propertyValue, size_t hiddenClassIndex = SIZE_MAX)
     {
         m_propertyValue = propertyValue;
         m_targetObject = obj;
+        m_hiddenClassIndex = hiddenClassIndex;
     }
 
     ALWAYS_INLINE bool hasData() const
@@ -1004,6 +1007,7 @@ public:
 public:
     ESObject* m_targetObject;
     ESValue m_propertyValue;
+    size_t m_hiddenClassIndex;
 };
 
 struct ESHiddenClassPropertyInfo {
@@ -1097,7 +1101,7 @@ class ESObject : public ESPointer {
     friend class ESSlot;
     friend class ESHiddenClass;
 protected:
-    ESObject(ESPointer::Type type = ESPointer::Type::ESObject);
+    ESObject(ESPointer::Type type = ESPointer::Type::ESObject, size_t initialKeyCount = 6);
 public:
 
     //DO NOT USE THIS FUNCTION
@@ -1159,9 +1163,9 @@ public:
         return m_hiddenClass;
     }
 
-    static ESObject* create()
+    static ESObject* create(size_t initialKeyCount = 6)
     {
-        return new ESObject();
+        return new ESObject(ESPointer::Type::ESObject, initialKeyCount);
     }
 
     ESValue readHiddenClass(size_t idx)
@@ -1174,9 +1178,19 @@ public:
         }
     }
 
+    void writeHiddenClass(size_t idx, const ESValue& value)
+    {
+        ASSERT(!m_map);
+        if(LIKELY(m_hiddenClass->m_propertyFlagInfo[idx].m_isDataProperty))
+            m_hiddenClassData[idx] = value;
+        else {
+            ((ESAccessorData *)m_hiddenClassData[idx].asESPointer())->m_setter(this, value);
+        }
+    }
+
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-get-o-p
     ALWAYS_INLINE ESValue get(escargot::ESValue key, bool searchPrototype = false);
-    inline escargot::ESValue find(escargot::ESValue key, bool searchPrototype = false, escargot::ESObject* realObj = nullptr);
+    inline escargot::ESValue find(const escargot::ESValue& key, bool searchPrototype = false, escargot::ESObject* realObj = nullptr);
     ALWAYS_INLINE escargot::ESValue findOnlyPrototype(escargot::ESValue key);
 
     //DO NOT USE THIS FUNCTION
@@ -1184,7 +1198,7 @@ public:
     ESSlotAccessor addressOfProperty(escargot::ESValue key);
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
-    ALWAYS_INLINE void set(escargot::ESValue key, const ESValue& val, bool shouldThrowException = false);
+    ALWAYS_INLINE void set(const escargot::ESValue& key, const ESValue& val, bool shouldThrowException = false);
 
     void set(escargot::ESString* key, const ESValue& val, bool shouldThrowException = false)
     {
@@ -1555,6 +1569,11 @@ public:
 
     FunctionNode* functionAST() { return m_functionAST; }
     LexicalEnvironment* outerEnvironment() { return m_outerEnvironment; }
+    bool isBuiltInFunction()
+    {
+        //TODO better chedk
+        return m_outerEnvironment == NULL;
+    }
 
     static ESValue call(ESVMInstance* instance, ESValue callee, ESValue receiver, ESValue arguments[], size_t argumentCount, bool isNewExpression = false);
 protected:

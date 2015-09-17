@@ -75,7 +75,7 @@ public:
         }
     }
 
-    virtual void generateByteCode(CodeBlock* codeBlock)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock)
     {
         if(m_canUseFastAccess) {
             if(m_needsActivation) {

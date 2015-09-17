@@ -34,9 +34,9 @@ public:
         return ret;
     }
 
-    virtual void generateByteCode(CodeBlock* codeBlock)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock)
     {
-        m_argument->generateByteCode(codeBlock);
+        m_argument->generateExpressionByteCode(codeBlock);
         codeBlock->pushCode(DuplicateTopOfStackValue(), this);
         codeBlock->pushCode(Push(ESValue(-1)), this);
         codeBlock->pushCode(Plus(), this);

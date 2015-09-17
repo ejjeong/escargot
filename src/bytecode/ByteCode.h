@@ -14,15 +14,18 @@ enum Opcode {
     PushOpcode, //Literal
     PopExpressionStatementOpcode, //ExpressionStatement
     PopOpcode,
+
     GetByIdOpcode,
     GetByIndexOpcode,
     GetByIndexWithActivationOpcode,
     ResolveAddressByIdOpcode,
     ResolveAddressByIndexOpcode,
     ResolveAddressByIndexWithActivationOpcode,
+    ResolveAddressInObjectOpcode,
     PutOpcode,
     PutReverseStackOpcode,
     CreateBindingOpcode,
+
     EqualOpcode,
     NotEqualOpcode,
     StrictEqualOpcode,
@@ -42,6 +45,12 @@ enum Opcode {
     MultiplyOpcode,
     DivisionOpcode,
     ModOpcode,
+
+    CreateObjectOpcode,
+    CreateArrayOpcode,
+    SetObjectOpcode,
+    GetObjectOpcode,
+
     JumpOpcode,
     JumpIfTopOfStackValueIsFalseOpcode,
     JumpIfTopOfStackValueIsTrueOpcode,
@@ -68,6 +77,10 @@ public:
     Opcode m_opcode;
 #ifndef NDEBUG
     Node* m_node;
+    virtual void dump() = 0;
+    virtual ~ByteCode() {
+
+    }
 #endif
 };
 
@@ -79,6 +92,12 @@ public:
         m_value = value;
     }
     ESValue m_value;
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("Push <%s>\n", m_value.toString()->utf8Data());
+    }
+#endif
 };
 
 class Pop : public ByteCode {
@@ -88,6 +107,12 @@ public:
     {
 
     }
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("Pop <>\n");
+    }
+#endif
 };
 
 class PopExpressionStatement : public ByteCode {
@@ -97,6 +122,12 @@ public:
     {
 
     }
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("PopExpressionStatement <>\n");
+    }
+#endif
 };
 
 class GetById : public ByteCode {
@@ -114,6 +145,13 @@ public:
 
     unsigned m_identifierCacheInvalidationCheckCount;
     ESSlotAccessor m_cachedSlot;
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("GetById <%s>\n",m_nonAtomicName->utf8Data());
+    }
+#endif
 };
 
 class GetByIndex : public ByteCode {
@@ -124,6 +162,13 @@ public:
         m_index = index;
     }
     size_t m_index;
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("GetByIndex <%u>\n", (unsigned)m_index);
+    }
+#endif
 };
 
 class GetByIndexWithActivation : public ByteCode {
@@ -136,6 +181,13 @@ public:
     }
     size_t m_index;
     size_t m_upIndex;
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("GetByIndex <%u, %u>\n", (unsigned)m_index, (unsigned)m_upIndex);
+    }
+#endif
 };
 
 class ResolveAddressById : public ByteCode {
@@ -153,6 +205,13 @@ public:
 
     unsigned m_identifierCacheInvalidationCheckCount;
     ESSlotAccessor m_cachedSlot;
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("ResolveAddressById <%s>\n", m_nonAtomicName->utf8Data());
+    }
+#endif
 };
 
 class ResolveAddressByIndex : public ByteCode {
@@ -163,6 +222,13 @@ public:
         m_index = index;
     }
     size_t m_index;
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("ResolveAddressByIndex <%u>\n", (unsigned)m_index);
+    }
+#endif
 };
 
 class ResolveAddressByIndexWithActivation : public ByteCode {
@@ -175,6 +241,35 @@ public:
     }
     size_t m_index;
     size_t m_upIndex;
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("ResolveAddressByIndex <%u, %u>\n", (unsigned)m_index, (unsigned)m_upIndex);
+    }
+#endif
+};
+
+class ResolveAddressInObject : public ByteCode {
+public:
+    ResolveAddressInObject()
+        : ByteCode(ResolveAddressInObjectOpcode)
+    {
+        m_cachedHiddenClass = nullptr;
+        m_cachedPropertyValue = nullptr;
+        m_cachedIndex = SIZE_MAX;
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("ResolveAddressInObject <>\n");
+    }
+#endif
+
+    ESHiddenClass* m_cachedHiddenClass;
+    ESString* m_cachedPropertyValue;
+    size_t m_cachedIndex;
 };
 
 class Put : public ByteCode {
@@ -184,6 +279,13 @@ public:
     {
 
     }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("Put <>\n");
+    }
+#endif
 };
 
 class PutReverseStack : public ByteCode {
@@ -193,6 +295,13 @@ public:
     {
 
     }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("PutReverseStack <>\n");
+    }
+#endif
 };
 
 class CreateBinding : public ByteCode {
@@ -205,6 +314,13 @@ public:
     }
     InternalAtomicString m_name;
     ESString* m_nonAtomicName;
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("CreateBinding <%s>\n",m_nonAtomicName->utf8Data());
+    }
+#endif
 };
 
 class Equal : public ByteCode {
@@ -214,6 +330,13 @@ public:
     {
 
     }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("Equal <>\n");
+    }
+#endif
 };
 
 class NotEqual : public ByteCode {
@@ -223,6 +346,13 @@ public:
     {
 
     }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("NotEqual <>\n");
+    }
+#endif
 };
 
 class StrictEqual : public ByteCode {
@@ -232,6 +362,13 @@ public:
     {
 
     }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("StrictEqual <>\n");
+    }
+#endif
 };
 
 class NotStrictEqual : public ByteCode {
@@ -241,6 +378,13 @@ public:
     {
 
     }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("NotStrictEqual <>\n");
+    }
+#endif
 };
 
 class BitwiseAnd : public ByteCode {
@@ -250,6 +394,13 @@ public:
     {
 
     }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("BitwiseAnd <>\n");
+    }
+#endif
 };
 
 class BitwiseOr : public ByteCode {
@@ -259,6 +410,13 @@ public:
     {
 
     }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("BitwiseOr <>\n");
+    }
+#endif
 };
 
 class BitwiseXor : public ByteCode {
@@ -268,6 +426,13 @@ public:
     {
 
     }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("BitwiseXor <>\n");
+    }
+#endif
 };
 
 class LeftShift : public ByteCode {
@@ -277,6 +442,13 @@ public:
     {
 
     }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("LeftShift <>\n");
+    }
+#endif
 };
 
 class SignedRightShift : public ByteCode {
@@ -286,6 +458,13 @@ public:
     {
 
     }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("SignedRightShift <>\n");
+    }
+#endif
 };
 
 class UnsignedRightShift : public ByteCode {
@@ -295,6 +474,13 @@ public:
     {
 
     }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("UnsignedRightShift <>\n");
+    }
+#endif
 };
 
 class LessThan : public ByteCode {
@@ -304,6 +490,13 @@ public:
     {
 
     }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("LessThan <>\n");
+    }
+#endif
 };
 
 class LessThanOrEqual : public ByteCode {
@@ -313,6 +506,13 @@ public:
     {
 
     }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("LessThanOrEqual <>\n");
+    }
+#endif
 };
 
 class GreaterThan : public ByteCode {
@@ -322,6 +522,13 @@ public:
     {
 
     }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("GreaterThan <>\n");
+    }
+#endif
 };
 
 class GreaterThanOrEqual : public ByteCode {
@@ -331,6 +538,13 @@ public:
     {
 
     }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("GreaterThanOrEqual <>\n");
+    }
+#endif
 };
 
 class Plus : public ByteCode {
@@ -340,6 +554,12 @@ public:
     {
 
     }
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("Plus <>\n");
+    }
+#endif
 };
 
 class Minus : public ByteCode {
@@ -349,6 +569,12 @@ public:
     {
 
     }
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("Minus <>\n");
+    }
+#endif
 };
 
 class Multiply : public ByteCode {
@@ -358,6 +584,13 @@ public:
     {
 
     }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("Multiply <>\n");
+    }
+#endif
 };
 
 class Division : public ByteCode {
@@ -367,6 +600,13 @@ public:
     {
 
     }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("Division <>\n");
+    }
+#endif
 };
 
 class Mod : public ByteCode {
@@ -376,6 +616,13 @@ public:
     {
 
     }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("Mod <>\n");
+    }
+#endif
 };
 
 class JumpIfTopOfStackValueIsFalse : public ByteCode {
@@ -387,6 +634,13 @@ public:
     }
 
     size_t m_jumpPosition;
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("JumpIfTopOfStackValueIsFalse <>\n");
+    }
+#endif
 };
 
 class JumpIfTopOfStackValueIsTrue : public ByteCode {
@@ -398,6 +652,13 @@ public:
     }
 
     size_t m_jumpPosition;
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("JumpIfTopOfStackValueIsTrue <>\n");
+    }
+#endif
 };
 
 class JumpIfTopOfStackValueIsFalseWithPeeking : public ByteCode {
@@ -409,6 +670,13 @@ public:
     }
 
     size_t m_jumpPosition;
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("JumpIfTopOfStackValueIsFalseWithPeeking <>\n");
+    }
+#endif
 };
 
 class JumpIfTopOfStackValueIsTrueWithPeeking : public ByteCode {
@@ -420,6 +688,86 @@ public:
     }
 
     size_t m_jumpPosition;
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("JumpIfTopOfStackValueIsTrueWithPeeking <>\n");
+    }
+#endif
+};
+
+class CreateObject : public ByteCode {
+public:
+    CreateObject(size_t keyCount)
+        : ByteCode(CreateObjectOpcode)
+    {
+        m_keyCount = keyCount;
+    }
+
+    size_t m_keyCount;
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("CreateObject <%u>\n",(unsigned)m_keyCount);
+    }
+#endif
+};
+
+class CreateArray : public ByteCode {
+public:
+    CreateArray(size_t keyCount)
+        : ByteCode(CreateArrayOpcode)
+    {
+        m_keyCount = keyCount;
+    }
+
+    size_t m_keyCount;
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("CreateArray <%u>\n",(unsigned)m_keyCount);
+    }
+#endif
+};
+
+class SetObject : public ByteCode {
+public:
+    SetObject()
+        : ByteCode(SetObjectOpcode)
+    {
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("SetObject <>\n");
+    }
+#endif
+};
+
+class GetObject : public ByteCode {
+public:
+    GetObject()
+        : ByteCode(GetObjectOpcode)
+    {
+        m_cachedHiddenClass = nullptr;
+        m_cachedPropertyValue = nullptr;
+        m_cachedIndex = SIZE_MAX;
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("GetObject <>\n");
+    }
+#endif
+
+    ESHiddenClass* m_cachedHiddenClass;
+    ESString* m_cachedPropertyValue;
+    size_t m_cachedIndex;
 };
 
 class Jump : public ByteCode {
@@ -431,6 +779,13 @@ public:
     }
 
     size_t m_jumpPosition;
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("Jump <>\n");
+    }
+#endif
 };
 
 class DuplicateTopOfStackValue : public ByteCode {
@@ -440,6 +795,13 @@ public:
     {
 
     }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("DuplicateTopOfStackValue <>\n");
+    }
+#endif
 };
 
 class Throw : public ByteCode {
@@ -449,6 +811,13 @@ public:
     {
 
     }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("Throw <>\n");
+    }
+#endif
 };
 
 class End : public ByteCode {
@@ -458,6 +827,13 @@ public:
     {
 
     }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("End <>\n");
+    }
+#endif
 };
 
 class CodeBlock : public gc_cleanup {
@@ -538,6 +914,7 @@ ALWAYS_INLINE void excuteNextCode(size_t& programCounter)
     programCounter += sizeof (CodeType);
 }
 
+
 ALWAYS_INLINE void interpret(ESVMInstance* instance, CodeBlock* codeBlock)
 {
     size_t programCounter = 0;
@@ -545,8 +922,11 @@ ALWAYS_INLINE void interpret(ESVMInstance* instance, CodeBlock* codeBlock)
     size_t& sp = instance->m_sp;
     char* code = codeBlock->m_code.data();
     ExecutionContext* ec = instance->currentExecutionContext();
+    GlobalObject* globalObject = instance->globalObject();
+    ESObject* lastESObjectMetInMemberExpressionNode = globalObject;
     while(1) {
         ByteCode* currentCode = (ByteCode *)(&code[programCounter]);
+        currentCode->dump();
         switch(currentCode->m_opcode) {
         case PushOpcode:
         {
@@ -638,7 +1018,7 @@ ALWAYS_INLINE void interpret(ESVMInstance* instance, CodeBlock* codeBlock)
                 } else {
                     //CHECKTHIS true, true, false is right?
                     instance->invalidateIdentifierCacheCheckCount();
-                    push<ESSlotAccessor>(stack, sp, instance->globalObject()->definePropertyOrThrow(code->m_nonAtomicName, true, true, true));
+                    push<ESSlotAccessor>(stack, sp, globalObject->definePropertyOrThrow(code->m_nonAtomicName, true, true, true));
                 }
             }
 
@@ -667,6 +1047,45 @@ ALWAYS_INLINE void interpret(ESVMInstance* instance, CodeBlock* codeBlock)
             break;
         }
 
+        case ResolveAddressInObjectOpcode:
+        {
+            ResolveAddressInObject* code = (ResolveAddressInObject*)currentCode;
+            ESValue* property = pop<ESValue>(stack, sp);
+            ESValue* willBeObject = pop<ESValue>(stack, sp);
+
+            ESObject* obj = willBeObject->toObject();
+
+            ExecutionContext* ec = instance->currentExecutionContext();
+            lastESObjectMetInMemberExpressionNode = obj;
+
+            if(obj->isHiddenClassMode() && !obj->isESArrayObject()) {
+                ESString* val = property->toString();
+                if(code->m_cachedHiddenClass == obj->hiddenClass() && (val == code->m_cachedPropertyValue || *val == *code->m_cachedPropertyValue)) {
+                    push<ESSlotAccessor>(stack, sp, ESSlotAccessor(obj, val, code->m_cachedIndex));
+                    excuteNextCode<ResolveAddressInObject>(programCounter);
+                } else {
+                    size_t idx = obj->hiddenClass()->findProperty(val);
+                    if(idx != SIZE_MAX) {
+                        code->m_cachedHiddenClass = obj->hiddenClass();
+                        code->m_cachedPropertyValue = val;
+                        code->m_cachedIndex = idx;
+                        push<ESSlotAccessor>(stack, sp, ESSlotAccessor(obj, val, code->m_cachedIndex));
+                        excuteNextCode<ResolveAddressInObject>(programCounter);
+                        break;
+                    } else {
+                        code->m_cachedHiddenClass = nullptr;
+                        push<ESSlotAccessor>(stack, sp, ESSlotAccessor(obj, *property));
+                        excuteNextCode<ResolveAddressInObject>(programCounter);
+                        break;
+                    }
+                }
+            } else {
+                push<ESSlotAccessor>(stack, sp, ESSlotAccessor(obj, *property));
+                excuteNextCode<ResolveAddressInObject>(programCounter);
+                break;
+            }
+            break;
+        }
         case PutOpcode:
         {
             ESValue* value = pop<ESValue>(stack, sp);
@@ -990,6 +1409,138 @@ ALWAYS_INLINE void interpret(ESVMInstance* instance, CodeBlock* codeBlock)
             break;
         }
 
+        case CreateObjectOpcode:
+        {
+            CreateObject* code = (CreateObject*)currentCode;
+            ESObject* obj = ESObject::create(code->m_keyCount);
+            obj->setConstructor(globalObject->object());
+            obj->set__proto__(globalObject->objectPrototype());
+            push<ESValue>(stack, sp, obj);
+            excuteNextCode<CreateObject>(programCounter);
+            break;
+        }
+
+        case CreateArrayOpcode:
+        {
+            CreateArray* code = (CreateArray*)currentCode;
+            ESArrayObject* arr = ESArrayObject::create(code->m_keyCount, globalObject->arrayPrototype());
+            push<ESValue>(stack, sp, arr);
+            excuteNextCode<CreateArray>(programCounter);
+            break;
+        }
+
+        case SetObjectOpcode:
+        {
+            SetObject* code = (SetObject*)currentCode;
+            ESValue* value = pop<ESValue>(stack, sp);
+            ESValue* key = pop<ESValue>(stack, sp);
+            peek<ESValue>(stack, sp)->asESPointer()->asESObject()->set(*key, *value);
+            excuteNextCode<SetObject>(programCounter);
+            break;
+        }
+
+        case GetObjectOpcode:
+        {
+            GetObject* code = (GetObject*)currentCode;
+
+            ESValue* property = pop<ESValue>(stack, sp);
+            ESValue* willBeObject = pop<ESValue>(stack, sp);
+
+            if(UNLIKELY(willBeObject->isESString())) {
+                if(property->isInt32()) {
+                   int prop_val = property->toInt32();
+                   if(LIKELY(0 <= prop_val && prop_val < willBeObject->asESString()->length())) {
+                       char16_t c = willBeObject->asESString()->string().data()[prop_val];
+                       if(LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
+                           push<ESValue>(stack, sp, strings->asciiTable[c]);
+                           excuteNextCode<GetObject>(programCounter);
+                           break;
+                       } else {
+                           push<ESValue>(stack, sp, ESString::create(c));
+                           excuteNextCode<GetObject>(programCounter);
+                           break;
+                       }
+                   } else {
+                       push<ESValue>(stack, sp, ESValue());
+                       excuteNextCode<GetObject>(programCounter);
+                       break;
+                   }
+                   push<ESValue>(stack, sp, willBeObject->asESString()->substring(prop_val, prop_val+1));
+                   excuteNextCode<GetObject>(programCounter);
+                   break;
+                } else {
+                    globalObject->stringObjectProxy()->setString(willBeObject->asESString());
+                    ESValue ret = globalObject->stringObjectProxy()->find(*property, true);
+                    if(!ret.isEmpty()) {
+                        if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->isBuiltInFunction()) {
+                            lastESObjectMetInMemberExpressionNode = (instance->globalObject()->stringObjectProxy());
+                            push<ESValue>(stack, sp, ret);
+                            excuteNextCode<GetObject>(programCounter);
+                            break;
+                        }
+                    }
+                }
+            } else if(UNLIKELY(willBeObject->isNumber())) {
+                globalObject->numberObjectProxy()->setNumberData(willBeObject->asNumber());
+                ESValue ret = globalObject->numberObjectProxy()->find(*property, true);
+                if(!ret.isEmpty()) {
+                    if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->isBuiltInFunction()) {
+                        lastESObjectMetInMemberExpressionNode = (instance->globalObject()->numberObjectProxy());
+                        push<ESValue>(stack, sp, ret);
+                        excuteNextCode<GetObject>(programCounter);
+                        break;
+                    }
+                }
+            }
+
+            ESObject* obj = willBeObject->toObject();
+
+            ExecutionContext* ec = instance->currentExecutionContext();
+            lastESObjectMetInMemberExpressionNode = obj;
+
+            if(obj->isHiddenClassMode() && !obj->isESArrayObject()) {
+                ESString* val = property->toString();
+                if(code->m_cachedHiddenClass == obj->hiddenClass() && (val == code->m_cachedPropertyValue || *val == *code->m_cachedPropertyValue)) {
+                    push<ESValue>(stack, sp, obj->readHiddenClass(code->m_cachedIndex));
+                    excuteNextCode<GetObject>(programCounter);
+                    break;
+                } else {
+                    size_t idx = obj->hiddenClass()->findProperty(val);
+                    if(idx != SIZE_MAX) {
+                        code->m_cachedHiddenClass = obj->hiddenClass();
+                        code->m_cachedPropertyValue = val;
+                        code->m_cachedIndex = idx;
+                        push<ESValue>(stack, sp, obj->readHiddenClass(idx));
+                        excuteNextCode<GetObject>(programCounter);
+                        break;
+                    } else {
+                        code->m_cachedHiddenClass = nullptr;
+                        ESValue v = obj->findOnlyPrototype(val);
+                        if(v.isEmpty()) {
+                            push<ESValue>(stack, sp, ESValue());
+                            excuteNextCode<GetObject>(programCounter);
+                            break;
+                        }
+                        push<ESValue>(stack, sp, v);
+                        excuteNextCode<GetObject>(programCounter);
+                        break;
+                    }
+                }
+            } else {
+                push<ESValue>(stack, sp, obj->get(*property, true));
+                excuteNextCode<GetObject>(programCounter);
+                break;
+            }
+            RELEASE_ASSERT_NOT_REACHED();
+        }
+
+        case JumpOpcode:
+        {
+            Jump* code = (Jump *)currentCode;
+            programCounter = code->m_jumpPosition;
+            break;
+        }
+
         case JumpIfTopOfStackValueIsFalseOpcode:
         {
             JumpIfTopOfStackValueIsFalse* code = (JumpIfTopOfStackValueIsFalse *)currentCode;
@@ -1031,13 +1582,6 @@ ALWAYS_INLINE void interpret(ESVMInstance* instance, CodeBlock* codeBlock)
                 programCounter = code->m_jumpPosition;
             else
                 excuteNextCode<JumpIfTopOfStackValueIsTrueWithPeeking>(programCounter);
-            break;
-        }
-
-        case JumpOpcode:
-        {
-            Jump* code = (Jump *)currentCode;
-            programCounter = code->m_jumpPosition;
             break;
         }
 

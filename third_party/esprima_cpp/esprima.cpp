@@ -2355,7 +2355,8 @@ escargot::Node* parseForStatement(ParseContext* ctx/*node*/) {
             lex(ctx);
 
             ctx->m_allowIn = false;
-            init = new escargot::VariableDeclarationNode(parseVariableDeclarationList(ctx, false));
+            //init = new escargot::VariableDeclarationNode(parseVariableDeclarationList(ctx, false));
+            init = new escargot::VariableDeclarationNode(parseVariableDeclarationList(ctx, true));
             init->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
             ctx->m_allowIn = previousAllowIn;
 

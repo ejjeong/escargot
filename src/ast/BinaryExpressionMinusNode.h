@@ -37,6 +37,13 @@ public:
         return ret;
     }
 
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock)
+    {
+        m_left->generateExpressionByteCode(codeBlock);
+        m_right->generateExpressionByteCode(codeBlock);
+        codeBlock->pushCode(Minus(), this);
+    }
+
 protected:
     ExpressionNode* m_left;
     ExpressionNode* m_right;

@@ -30,12 +30,29 @@ public:
         return ESValue();
     }
 
-    virtual void generateByteCode(CodeBlock* codeBlock)
+    virtual void generateStatementByteCode(CodeBlock* codeBlock)
     {
         for(unsigned i = 0; i < m_declarations.size() ; i ++) {
-            m_declarations[i]->generateByteCode(codeBlock);
-            if(m_declarations[i]->type() != NodeType::VariableDeclarator) {
+            if(m_declarations[i]->type() == NodeType::VariableDeclarator) {
+                m_declarations[i]->generateStatementByteCode(codeBlock);
+            } else if(m_declarations[i]->type() == NodeType::AssignmentExpressionSimple) {
+                m_declarations[i]->generateExpressionByteCode(codeBlock);
                 codeBlock->pushCode(Pop(), this);
+            } else {
+                RELEASE_ASSERT_NOT_REACHED();
+            }
+        }
+    }
+
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock)
+    {
+        for(unsigned i = 0; i < m_declarations.size() ; i ++) {
+            if(m_declarations[i]->type() == NodeType::VariableDeclarator) {
+                RELEASE_ASSERT_NOT_REACHED();
+            } else if(m_declarations[i]->type() == NodeType::AssignmentExpressionSimple) {
+                m_declarations[i]->generateExpressionByteCode(codeBlock);
+            } else {
+                RELEASE_ASSERT_NOT_REACHED();
             }
         }
     }

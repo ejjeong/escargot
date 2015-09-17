@@ -377,7 +377,7 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
                 IdentifierNode* n2 = (IdentifierNode *)n->id();
                 if(n2->canUseFastAccess()) {
                     SourceLocation loc = n2->m_sourceLocation;
-                    *node = new EmptyNode();
+                    *node = new EmptyStatementNode();
                     (*node)->m_sourceLocation = loc;
                 }
             } else if((*node)->type() == NodeType::CallExpression) {

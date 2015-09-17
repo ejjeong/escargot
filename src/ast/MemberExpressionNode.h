@@ -14,12 +14,11 @@ public:
     MemberExpressionNode(Node* object, Node* property, bool computed)
             : ExpressionNode(NodeType::MemberExpression)
     {
-        ASSERT(computed);
         m_object = object;
         m_property = property;
         m_cachedHiddenClass = nullptr;
         m_cachedPropertyValue = nullptr;
-
+        m_computed = computed;
     }
 
     ESSlotAccessor executeForWrite(ESVMInstance* instance)
@@ -110,6 +109,39 @@ public:
         }
         RELEASE_ASSERT_NOT_REACHED();
     }
+
+
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock)
+    {
+        m_object->generateExpressionByteCode(codeBlock);
+        if(m_computed) {
+            m_property->generateExpressionByteCode(codeBlock);
+        } else {
+            if(m_property->type() == NodeType::Literal)
+                codeBlock->pushCode(Push(((LiteralNode *)m_property)->value()), this);
+            else {
+                ASSERT(m_property->type() == NodeType::Identifier)
+                codeBlock->pushCode(Push(((IdentifierNode *)m_property)->nonAtomicName()), this);
+            }
+        }
+        codeBlock->pushCode(GetObject(), this);
+    }
+
+    virtual void generateByteCodeWriteCase(CodeBlock* codeBlock)
+    {
+        m_object->generateExpressionByteCode(codeBlock);
+        if(m_computed) {
+            m_property->generateExpressionByteCode(codeBlock);
+        } else {
+            if(m_property->type() == NodeType::Literal)
+                codeBlock->pushCode(Push(((LiteralNode *)m_property)->value()), this);
+            else {
+                ASSERT(m_property->type() == NodeType::Identifier)
+                codeBlock->pushCode(Push(((IdentifierNode *)m_property)->nonAtomicName()), this);
+            }
+        }
+        codeBlock->pushCode(ResolveAddressInObject(), this);
+    }
 protected:
     ESHiddenClass* m_cachedHiddenClass;
     ESString* m_cachedPropertyValue;
@@ -117,6 +149,8 @@ protected:
 
     Node* m_object; //object: Expression;
     Node* m_property; //property: Identifier | Expression;
+
+    bool m_computed;
 };
 
 }

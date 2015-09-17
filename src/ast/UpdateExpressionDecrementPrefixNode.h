@@ -35,10 +35,10 @@ public:
         return ret;
     }
 
-    virtual void generateByteCode(CodeBlock* codeBlock)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock)
     {
         m_argument->generateByteCodeWriteCase(codeBlock);
-        m_argument->generateByteCode(codeBlock);
+        m_argument->generateExpressionByteCode(codeBlock);
         codeBlock->pushCode(Push(ESValue(-1)), this);
         codeBlock->pushCode(Plus(), this);
         codeBlock->pushCode(Put(), this);

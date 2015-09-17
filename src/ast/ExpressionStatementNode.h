@@ -20,9 +20,9 @@ public:
         instance->m_lastExpressionStatementValue = m_expression->executeExpression(instance);
     }
 
-    virtual void generateByteCode(CodeBlock* codeBlock)
+    virtual void generateStatementByteCode(CodeBlock* codeBlock)
     {
-        m_expression->generateByteCode(codeBlock);
+        m_expression->generateExpressionByteCode(codeBlock);
         codeBlock->pushCode(PopExpressionStatement(), this);
     }
 

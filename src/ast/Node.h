@@ -139,7 +139,12 @@ public:
         RELEASE_ASSERT_NOT_REACHED();
     }
 
-    virtual void generateByteCode(CodeBlock* codeBlock)
+    virtual void generateStatementByteCode(CodeBlock* codeBlock)
+    {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock)
     {
         RELEASE_ASSERT_NOT_REACHED();
     }

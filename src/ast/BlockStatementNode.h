@@ -24,10 +24,10 @@ public:
         }
     }
 
-    virtual void generateByteCode(CodeBlock* codeBlock)
+    virtual void generateStatementByteCode(CodeBlock* codeBlock)
     {
         for(unsigned i = 0; i < m_bodySize ; ++ i) {
-            m_rootedBody[i]->generateByteCode(codeBlock);
+            m_rootedBody[i]->generateStatementByteCode(codeBlock);
         }
     }
 

@@ -24,27 +24,27 @@ public:
             m_alternate->executeStatement(instance);
     }
 
-    virtual void generateByteCode(CodeBlock* codeBlock)
+    virtual void generateStatementByteCode(CodeBlock* codeBlock)
     {
         if(!m_alternate) {
-            m_test->generateByteCode(codeBlock);
+            m_test->generateExpressionByteCode(codeBlock);
             codeBlock->pushCode(JumpIfTopOfStackValueIsFalse(SIZE_MAX), this);
             size_t jPos = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsFalse>();
-            m_consequente->generateByteCode(codeBlock);
+            m_consequente->generateStatementByteCode(codeBlock);
             JumpIfTopOfStackValueIsFalse* j = codeBlock->peekCode<JumpIfTopOfStackValueIsFalse>(jPos);
             j->m_jumpPosition = codeBlock->currentCodeSize();
         } else {
-            m_test->generateByteCode(codeBlock);
+            m_test->generateExpressionByteCode(codeBlock);
             codeBlock->pushCode(JumpIfTopOfStackValueIsFalse(SIZE_MAX), this);
             size_t jPos = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsFalse>();
-            m_consequente->generateByteCode(codeBlock);
+            m_consequente->generateStatementByteCode(codeBlock);
             JumpIfTopOfStackValueIsFalse* j = codeBlock->peekCode<JumpIfTopOfStackValueIsFalse>(jPos);
             codeBlock->pushCode(Jump(SIZE_MAX), this);
             size_t jPos2 = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsFalse>();
             j->m_jumpPosition = codeBlock->currentCodeSize();
             Jump* j2 = codeBlock->peekCode<Jump>(jPos2);
 
-            m_alternate->generateByteCode(codeBlock);
+            m_alternate->generateStatementByteCode(codeBlock);
             j2->m_jumpPosition = codeBlock->currentCodeSize();
         }
 

@@ -35,7 +35,7 @@ public:
                 ((IdentifierNode *)m_id)->nonAtomicName(), false);
     }
 
-    virtual void generateByteCode(CodeBlock* codeBlock)
+    virtual void generateStatementByteCode(CodeBlock* codeBlock)
     {
         ASSERT(m_id->type() == NodeType::Identifier);
         ASSERT(!((IdentifierNode *)m_id)->canUseFastAccess());
