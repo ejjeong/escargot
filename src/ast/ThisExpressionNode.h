@@ -15,6 +15,11 @@ public:
         return instance->currentExecutionContext()->resolveThisBinding();
     }
 
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock)
+    {
+        codeBlock->pushCode(This(), this);
+    }
+
 protected:
 };
 

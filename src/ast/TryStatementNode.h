@@ -41,6 +41,23 @@ public:
         }
     }
 
+    virtual void generateStatementByteCode(CodeBlock* codeBlock)
+    {
+        ASSERT(!m_finalizer); //TODO
+        codeBlock->pushCode(Try(), this);
+        size_t pos = codeBlock->lastCodePosition<Try>();
+        m_block->generateStatementByteCode(codeBlock);
+        codeBlock->pushCode(TryCatchBodyEnd(), this);
+        size_t catchPos = codeBlock->currentCodeSize();
+        m_handler->generateStatementByteCode(codeBlock);
+        codeBlock->pushCode(TryCatchBodyEnd(), this);
+        size_t endPos = codeBlock->currentCodeSize();
+        codeBlock->peekCode<Try>(pos)->m_catchPosition = catchPos;
+        codeBlock->peekCode<Try>(pos)->m_statementEndPosition = endPos;
+        codeBlock->peekCode<Try>(pos)->m_name = m_handler->param()->name();
+        codeBlock->peekCode<Try>(pos)->m_nonAtomicName = m_handler->param()->nonAtomicName();
+    }
+
 protected:
     BlockStatementNode *m_block;
     CatchClauseNode *m_handler;

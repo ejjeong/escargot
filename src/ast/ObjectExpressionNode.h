@@ -42,8 +42,12 @@ public:
         codeBlock->pushCode(CreateObject(m_properties.size()), this);
         for(unsigned i = 0; i < m_properties.size() ; i ++) {
             PropertyNode* p = m_properties[i];
-            ASSERT(p->key()->type() == NodeType::Identifier);
-            codeBlock->pushCode(Push(((IdentifierNode* )p->key())->nonAtomicName()), this);
+            if(p->key()->type() == NodeType::Identifier) {
+                codeBlock->pushCode(Push(((IdentifierNode* )p->key())->nonAtomicName()), this);
+            } else {
+                ASSERT(p->key()->type() == NodeType::Literal);
+                codeBlock->pushCode(Push(((LiteralNode* )p->key())->value()), this);
+            }
             p->value()->generateExpressionByteCode(codeBlock);
             codeBlock->pushCode(SetObject(), this);
         }

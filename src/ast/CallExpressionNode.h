@@ -18,6 +18,7 @@ public:
 
     ESValue executeExpression(ESVMInstance* instance)
     {
+        /*
         instance->currentExecutionContext()->resetLastESObjectMetInMemberExpressionNode();
         ESValue fn = m_callee->executeExpression(instance);
         ESObject* receiver = instance->currentExecutionContext()->lastESObjectMetInMemberExpressionNode();
@@ -30,6 +31,8 @@ public:
         }
 
         return ESFunctionObject::call(instance, fn, receiver, arguments, m_arguments.size(), instance);
+        */
+        return ESValue();
     }
 
     virtual void generateExpressionByteCode(CodeBlock* codeBlock)

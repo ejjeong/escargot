@@ -175,9 +175,11 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
                             fn = fn->outerFunctionNode();
                         }
                         if(fn) {
-                            //printf("outer function of this function  needs capture! -> because fn...%s iden..%s\n",
-                            //        fn->nonAtomicId()->utf8Data(),
-                            //        ((IdentifierNode *)currentNode)->nonAtomicName()->utf8Data());
+                            /*
+                            printf("outer function of this function  needs capture! -> because fn...%s iden..%s\n",
+                                    fn->nonAtomicId()->utf8Data(),
+                                    ((IdentifierNode *)currentNode)->nonAtomicName()->utf8Data());
+                                    */
                             size_t idx2 = std::distance(vector->begin(), iter2);
                             ((IdentifierNode *)currentNode)->setFastAccessIndex(up, idx2);
                         } else {
@@ -370,7 +372,6 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
             if((*node)->type() == NodeType::Identifier) {
                 if(nearFunction && !nearFunction->needsActivation()) {
                     IdentifierNode* n = (IdentifierNode *)*node;
-                    n->m_needsActivation = false;
                 }
             } else if((*node)->type() == NodeType::VariableDeclarator) {
                 VariableDeclaratorNode* n = (VariableDeclaratorNode *)*node;

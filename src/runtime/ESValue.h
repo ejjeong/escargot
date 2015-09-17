@@ -1584,7 +1584,7 @@ public:
         return m_name;
     }
 
-    static ESValue call(ESVMInstance* instance, const ESValue& callee, const ESValue& receiver, ESValue arguments[], const size_t& argumentCount, bool isNewExpression = false);
+    static ESValue call(ESVMInstance* instance, const ESValue& callee, const ESValue& receiver, ESValue arguments[], const size_t& argumentCount, bool isNewExpression);
 protected:
     LexicalEnvironment* m_outerEnvironment;
     ESValue m_protoType;

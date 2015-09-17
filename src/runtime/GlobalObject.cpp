@@ -300,7 +300,9 @@ void GlobalObject::installFunction()
 void GlobalObject::installObject()
 {
     ::escargot::ESFunctionObject* emptyFunction = m_functionPrototype;
-    m_object = ::escargot::ESFunctionObject::create(NULL, NULL, strings->Object);
+    m_object = ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        return ESValue();
+    }, strings->Object);
     m_object->set(strings->name, strings->Object);
     m_object->setConstructor(m_function);
     m_object->set__proto__(emptyFunction);
@@ -634,7 +636,7 @@ void GlobalObject::installArray()
 
         for (int idx = 0; idx < arrlen; idx++) {
             ESValue tmpValue(thisBinded->get(ESValue(idx)));
-            ret->set(idx, ESFunctionObject::call(instance, arg.asESPointer()->asESFunctionObject(), instance->globalObject(), &tmpValue, 1, instance));
+            ret->set(idx, ESFunctionObject::call(instance, arg.asESPointer()->asESFunctionObject(), instance->globalObject(), &tmpValue, 1, false));
         }
         return ret;
     }, ESString::create(u"map")));
@@ -744,7 +746,7 @@ void GlobalObject::installArray()
             thisVal->sort([&arg0, &instance, &thisVal](const ::escargot::ESValue& a, const ::escargot::ESValue& b) -> bool {
                 ESValue arg[2] = { a, b };
                 ESValue ret = ESFunctionObject::call(instance, arg0, thisVal,
-                        arg, 2, instance);
+                        arg, 2, false);
 
                 double v = ret.toNumber();
                 if(v == 0)
@@ -1036,7 +1038,7 @@ void GlobalObject::installString()
                     }
                     arguments[subLen] = ESValue((int)result.m_matchResults[i][0].m_start);
                     arguments[subLen + 1] = origStr;
-                    escargot::ESString* res = ESFunctionObject::call(instance, callee, instance->globalObject(), arguments, subLen + 2, instance).toString();
+                    escargot::ESString* res = ESFunctionObject::call(instance, callee, instance->globalObject(), arguments, subLen + 2, false).toString();
 
                     newThis.append(res->string());
                     if(i < matchCount - 1) {

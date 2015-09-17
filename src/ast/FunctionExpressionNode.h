@@ -33,7 +33,7 @@ public:
         return ESValue();
     }
 
-    virtual void generateStatementByteCode(CodeBlock* codeBlock)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock)
     {
         CodeBlock* cb = new CodeBlock();
         cb->m_innerIdentifiers = std::move(m_innerIdentifiers);

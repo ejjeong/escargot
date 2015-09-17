@@ -122,7 +122,7 @@ public:
             if(m_property->type() == NodeType::Literal)
                 codeBlock->pushCode(Push(((LiteralNode *)m_property)->value()), this);
             else {
-                ASSERT(m_property->type() == NodeType::Identifier)
+                ASSERT(m_property->type() == NodeType::Identifier);
                 codeBlock->pushCode(Push(((IdentifierNode *)m_property)->nonAtomicName()), this);
             }
         }
@@ -138,7 +138,7 @@ public:
             if(m_property->type() == NodeType::Literal)
                 codeBlock->pushCode(Push(((LiteralNode *)m_property)->value()), this);
             else {
-                ASSERT(m_property->type() == NodeType::Identifier)
+                ASSERT(m_property->type() == NodeType::Identifier);
                 codeBlock->pushCode(Push(((IdentifierNode *)m_property)->nonAtomicName()), this);
             }
         }

@@ -40,7 +40,7 @@ public:
             m_consequente->generateStatementByteCode(codeBlock);
             JumpIfTopOfStackValueIsFalse* j = codeBlock->peekCode<JumpIfTopOfStackValueIsFalse>(jPos);
             codeBlock->pushCode(Jump(SIZE_MAX), this);
-            size_t jPos2 = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsFalse>();
+            size_t jPos2 = codeBlock->lastCodePosition<Jump>();
             j->m_jumpPosition = codeBlock->currentCodeSize();
             Jump* j2 = codeBlock->peekCode<Jump>(jPos2);
 

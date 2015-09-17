@@ -17,6 +17,7 @@ public:
 
     ESValue executeExpression(ESVMInstance* instance)
     {
+        /*
         ESValue callee = instance->currentExecutionContext()->resolveBinding(strings->atomicEval, strings->eval).value();
         if(callee.isESPointer() && (void *)callee.asESPointer() == (void *)instance->globalObject()->eval()) {
             ESObject* receiver = instance->globalObject();
@@ -40,7 +41,8 @@ public:
                 arguments[i] = m_arguments[i]->executeExpression(instance);
             }
             return ESFunctionObject::call(instance, callee, receiver, arguments, m_arguments.size(), false);
-        }
+        }*/
+        return ESValue();
     }
 
 protected:

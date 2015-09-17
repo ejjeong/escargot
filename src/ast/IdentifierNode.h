@@ -20,7 +20,6 @@ public:
         m_canUseFastAccess = false;
         m_fastAccessIndex = SIZE_MAX;
         m_fastAccessUpIndex = SIZE_MAX;
-        m_needsActivation = true;
     }
 
     ESValue executeExpression(ESVMInstance* instance)
@@ -78,10 +77,16 @@ public:
     virtual void generateExpressionByteCode(CodeBlock* codeBlock)
     {
         if(m_canUseFastAccess) {
-            if(m_needsActivation) {
+            if(codeBlock->m_needsActivation) {
                 codeBlock->pushCode(GetByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), this);
+#ifndef NDEBUG
+                codeBlock->peekCode<GetByIndexWithActivation>(codeBlock->lastCodePosition<GetByIndexWithActivation>())->m_name = m_nonAtomicName;
+#endif
             } else {
                 codeBlock->pushCode(GetByIndex(m_fastAccessIndex), this);
+#ifndef NDEBUG
+                codeBlock->peekCode<GetByIndex>(codeBlock->lastCodePosition<GetByIndex>())->m_name = m_nonAtomicName;
+#endif
             }
         } else {
             codeBlock->pushCode(GetById(m_name, m_nonAtomicName), this);
@@ -91,7 +96,7 @@ public:
     virtual void generateByteCodeWriteCase(CodeBlock* codeBlock)
     {
         if(m_canUseFastAccess) {
-            if(m_needsActivation) {
+            if(codeBlock->m_needsActivation) {
                 codeBlock->pushCode(ResolveAddressByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), this);
             } else {
                 codeBlock->pushCode(ResolveAddressByIndex(m_fastAccessIndex), this);
@@ -143,7 +148,6 @@ protected:
     bool m_canUseFastAccess;
     size_t m_fastAccessIndex;
     size_t m_fastAccessUpIndex;
-    bool m_needsActivation;
 };
 
 }
