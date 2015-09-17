@@ -20,6 +20,15 @@ public:
         RELEASE_ASSERT_NOT_REACHED();
     }
 
+    virtual void generateStatementByteCode(CodeBlock* codeBlock)
+    {
+        if(m_argument) {
+            m_argument->generateExpressionByteCode(codeBlock);
+            codeBlock->pushCode(ReturnFunctionWithValue(), this);
+        } else {
+            codeBlock->pushCode(ReturnFunction(), this);
+        }
+    }
 protected:
     Node* m_argument;
 };

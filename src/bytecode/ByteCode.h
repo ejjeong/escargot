@@ -22,6 +22,7 @@ enum Opcode {
     ResolveAddressByIndexOpcode,
     ResolveAddressByIndexWithActivationOpcode,
     ResolveAddressInObjectOpcode,
+    ReferenceTopValueWithPeekingOpcode,
     PutOpcode,
     PutReverseStackOpcode,
     CreateBindingOpcode,
@@ -53,11 +54,20 @@ enum Opcode {
     UnaryMinusOpcode,
     UnaryPlusOpcode,
 
-    //object, array expressions
+    //object, array
     CreateObjectOpcode,
     CreateArrayOpcode,
     SetObjectOpcode,
     GetObjectOpcode,
+
+    //function
+    CreateFunctionOpcode,
+    ExecuteNativeFunctionOpcode,
+    PrepareFunctionCallOpcode,
+    CallFunctionOpcode,
+    NewFunctionCallOpcode,
+    ReturnFunctionOpcode,
+    ReturnFunctionWithValueOpcode,
 
     //control flow
     JumpOpcode,
@@ -65,7 +75,6 @@ enum Opcode {
     JumpIfTopOfStackValueIsTrueOpcode,
     JumpIfTopOfStackValueIsFalseWithPeekingOpcode,
     JumpIfTopOfStackValueIsTrueWithPeekingOpcode,
-    CallOpcode,
     DuplicateTopOfStackValueOpcode,
     ThrowOpcode,
 
@@ -280,6 +289,22 @@ public:
     ESString* m_cachedPropertyValue;
     size_t m_cachedIndex;
 };
+
+class ReferenceTopValueWithPeeking : public ByteCode {
+public:
+    ReferenceTopValueWithPeeking()
+        : ByteCode(ReferenceTopValueWithPeekingOpcode)
+    {
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("ReferenceTopValueWithPeeking <>\n");
+    }
+#endif
+};
+
 
 class Put : public ByteCode {
 public:
@@ -843,6 +868,125 @@ public:
     size_t m_cachedIndex;
 };
 
+class CreateFunction : public ByteCode {
+public:
+    CreateFunction(InternalAtomicString name, ESString* nonAtomicName, CodeBlock* codeBlock)
+        : ByteCode(CreateFunctionOpcode)
+    {
+        m_name = name;
+        m_nonAtomicName = nonAtomicName;
+        m_codeBlock = codeBlock;
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("CreateFunction <>\n");
+    }
+#endif
+    InternalAtomicString m_name;
+    ESString* m_nonAtomicName;
+    CodeBlock* m_codeBlock;
+};
+
+class ExecuteNativeFunction : public ByteCode {
+public:
+    ExecuteNativeFunction(const NativeFunctionType& fn)
+        : ByteCode(ExecuteNativeFunctionOpcode)
+    {
+        m_fn = fn;
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("ExecuteNativeFunction <>\n");
+    }
+#endif
+
+    NativeFunctionType m_fn;
+};
+
+class PrepareFunctionCall : public ByteCode {
+public:
+    PrepareFunctionCall()
+        : ByteCode(PrepareFunctionCallOpcode)
+    {
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("PrepareFunctionCall <>\n");
+    }
+#endif
+
+};
+
+class CallFunction : public ByteCode {
+public:
+    CallFunction()
+        : ByteCode(CallFunctionOpcode)
+    {
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("CallFunction <>\n");
+    }
+#endif
+
+};
+
+class NewFunctionCall : public ByteCode {
+public:
+    NewFunctionCall()
+        : ByteCode(NewFunctionCallOpcode)
+    {
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("NewFunctionCall <>\n");
+    }
+#endif
+
+};
+
+class ReturnFunction : public ByteCode {
+public:
+    ReturnFunction()
+        : ByteCode(ReturnFunctionOpcode)
+    {
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("ReturnFunction <>\n");
+    }
+#endif
+
+};
+
+class ReturnFunctionWithValue : public ByteCode {
+public:
+    ReturnFunctionWithValue()
+        : ByteCode(ReturnFunctionWithValueOpcode)
+    {
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("ReturnFunctionWithValue <>\n");
+    }
+#endif
+
+};
+
 class Jump : public ByteCode {
 public:
     Jump(size_t jumpPosition)
@@ -911,6 +1055,12 @@ public:
 
 class CodeBlock : public gc_cleanup {
 public:
+    CodeBlock()
+    {
+        m_needsActivation = false;
+        m_needsArgumentsObject = false;
+        m_isBuiltInFunction = false;
+    }
     template <typename CodeType>
     void pushCode(const CodeType& type, Node* node);
     template <typename CodeType>
@@ -932,6 +1082,13 @@ public:
         return m_code.size();
     }
     std::vector<char, gc_allocator<char> > m_code;
+
+    InternalAtomicStringVector m_params; //params: [ Pattern ];
+    ESStringVector m_nonAtomicParams;
+    InternalAtomicStringVector m_innerIdentifiers;
+    bool m_needsActivation;
+    bool m_needsArgumentsObject;
+    bool m_isBuiltInFunction;
 };
 
 template <typename Type>
@@ -946,6 +1103,7 @@ ALWAYS_INLINE void push(void* stk, size_t& sp, const Type& ptr)
     sp += sizeof (int);
 
     if(sp > 1024*1024*4) {
+        puts("stackoverflow!!!");
         ASSERT_NOT_REACHED();
     }
 #endif
@@ -988,18 +1146,21 @@ ALWAYS_INLINE void excuteNextCode(size_t& programCounter)
 }
 
 
-ALWAYS_INLINE void interpret(ESVMInstance* instance, CodeBlock* codeBlock)
+ALWAYS_INLINE ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock)
 {
     size_t programCounter = 0;
     void* stack = instance->m_stack;
     size_t& sp = instance->m_sp;
+    size_t bp = sp;
     char* code = codeBlock->m_code.data();
     ExecutionContext* ec = instance->currentExecutionContext();
     GlobalObject* globalObject = instance->globalObject();
     ESObject* lastESObjectMetInMemberExpressionNode = globalObject;
+    ESValue* lastExpressionStatementValue = &instance->m_lastExpressionStatementValue;
+    ESValue* nonActivitionModeLocalValuePointer = ec->cachedDeclarativeEnvironmentRecordESValue();
     while(1) {
         ByteCode* currentCode = (ByteCode *)(&code[programCounter]);
-        currentCode->dump();
+        //currentCode->dump();
         switch(currentCode->m_opcode) {
         case PushOpcode:
         {
@@ -1020,7 +1181,7 @@ ALWAYS_INLINE void interpret(ESVMInstance* instance, CodeBlock* codeBlock)
         case PopExpressionStatementOpcode:
         {
             ESValue* t = pop<ESValue>(stack, sp);
-            instance->m_lastExpressionStatementValue = *t;
+            *lastExpressionStatementValue = *t;
             excuteNextCode<PopExpressionStatement>(programCounter);
             break;
         }
@@ -1056,7 +1217,7 @@ ALWAYS_INLINE void interpret(ESVMInstance* instance, CodeBlock* codeBlock)
         case GetByIndexOpcode:
         {
             GetByIndex* code = (GetByIndex*)currentCode;
-            push<ESValue>(stack, sp, ec->cachedDeclarativeEnvironmentRecordESValue()[code->m_index]);
+            push<ESValue>(stack, sp, nonActivitionModeLocalValuePointer[code->m_index]);
             excuteNextCode<GetByIndex>(programCounter);
             break;
         }
@@ -1159,6 +1320,14 @@ ALWAYS_INLINE void interpret(ESVMInstance* instance, CodeBlock* codeBlock)
             }
             break;
         }
+
+        case ReferenceTopValueWithPeekingOpcode:
+        {
+            push<ESValue>(stack, sp, peek<ESSlotAccessor>(stack, sp)->value());
+            excuteNextCode<ReferenceTopValueWithPeeking>(programCounter);
+            break;
+        }
+
         case PutOpcode:
         {
             ESValue* value = pop<ESValue>(stack, sp);
@@ -1573,8 +1742,8 @@ ALWAYS_INLINE void interpret(ESVMInstance* instance, CodeBlock* codeBlock)
                     globalObject->stringObjectProxy()->setString(willBeObject->asESString());
                     ESValue ret = globalObject->stringObjectProxy()->find(*property, true);
                     if(!ret.isEmpty()) {
-                        if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->isBuiltInFunction()) {
-                            lastESObjectMetInMemberExpressionNode = (instance->globalObject()->stringObjectProxy());
+                        if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->codeBlock()->m_isBuiltInFunction) {
+                            lastESObjectMetInMemberExpressionNode = (globalObject->stringObjectProxy());
                             push<ESValue>(stack, sp, ret);
                             excuteNextCode<GetObject>(programCounter);
                             break;
@@ -1585,8 +1754,8 @@ ALWAYS_INLINE void interpret(ESVMInstance* instance, CodeBlock* codeBlock)
                 globalObject->numberObjectProxy()->setNumberData(willBeObject->asNumber());
                 ESValue ret = globalObject->numberObjectProxy()->find(*property, true);
                 if(!ret.isEmpty()) {
-                    if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->isBuiltInFunction()) {
-                        lastESObjectMetInMemberExpressionNode = (instance->globalObject()->numberObjectProxy());
+                    if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->codeBlock()->m_isBuiltInFunction) {
+                        lastESObjectMetInMemberExpressionNode = (globalObject->numberObjectProxy());
                         push<ESValue>(stack, sp, ret);
                         excuteNextCode<GetObject>(programCounter);
                         break;
@@ -1633,6 +1802,114 @@ ALWAYS_INLINE void interpret(ESVMInstance* instance, CodeBlock* codeBlock)
                 break;
             }
             RELEASE_ASSERT_NOT_REACHED();
+            break;
+        }
+
+        case CreateFunctionOpcode:
+        {
+            CreateFunction* code = (CreateFunction*)currentCode;
+            ESFunctionObject* function = ESFunctionObject::create(ec->environment(), code->m_codeBlock, code->m_nonAtomicName == NULL ? strings->emptyESString : code->m_nonAtomicName);
+            function->set__proto__(instance->globalObject()->functionPrototype());
+            ESObject* prototype = ESObject::create();
+            prototype->setConstructor(function);
+            prototype->set__proto__(instance->globalObject()->object()->protoType());
+            function->setProtoType(prototype);
+            if(code->m_nonAtomicName) { //FD
+                function->set(strings->name, code->m_nonAtomicName);
+                ec->environment()->record()->setMutableBinding(code->m_name, code->m_nonAtomicName, function, false);
+            }
+            else //FE
+                push<ESValue>(stack, sp, function);
+            excuteNextCode<CreateFunction>(programCounter);
+            break;
+        }
+
+        case ExecuteNativeFunctionOpcode:
+        {
+            ExecuteNativeFunction* code = (ExecuteNativeFunction*)currentCode;
+            ASSERT(bp == sp);
+            return code->m_fn(instance);
+        }
+        case PrepareFunctionCallOpcode:
+        {
+            lastESObjectMetInMemberExpressionNode = globalObject;
+            excuteNextCode<PrepareFunctionCall>(programCounter);
+            break;
+        }
+
+        case CallFunctionOpcode:
+        {
+            size_t argc = (size_t)pop<ESValue>(stack, sp)->asInt32();
+            ESValue* arguments = (ESValue*)alloca(sizeof(ESValue) * argc);
+            for(int i = argc - 1; i >= 0 ; i --) {
+                arguments[i] = *pop<ESValue>(stack, sp);
+            }
+            push<ESValue>(stack, sp, ESFunctionObject::call(instance, *pop<ESValue>(stack, sp), lastESObjectMetInMemberExpressionNode, arguments, argc, false));
+            excuteNextCode<CallFunction>(programCounter);
+            break;
+        }
+
+        case NewFunctionCallOpcode:
+        {
+            size_t argc = (size_t)pop<ESValue>(stack, sp)->asInt32();
+            ESValue* arguments = (ESValue*)alloca(sizeof(ESValue) * argc);
+            for(int i = argc - 1; i >= 0 ; i --) {
+                arguments[i] = *pop<ESValue>(stack, sp);
+            }
+            ESValue fn = *pop<ESValue>(stack, sp);
+            if(!fn.isESPointer() || !fn.asESPointer()->isESFunctionObject())
+                throw ESValue(TypeError::create(ESString::create(u"constructor is not an function object")));
+            ESFunctionObject* function = fn.asESPointer()->asESFunctionObject();
+            ESObject* receiver;
+            if (function == instance->globalObject()->date()) {
+                receiver = ESDateObject::create();
+            } else if (function == instance->globalObject()->array()) {
+                receiver = ESArrayObject::create(0);
+            } else if (function == instance->globalObject()->string()) {
+                receiver = ESStringObject::create();
+            } else if (function == instance->globalObject()->regexp()) {
+                receiver = ESRegExpObject::create(strings->emptyESString,ESRegExpObject::Option::None);
+            } else if (function == instance->globalObject()->boolean()) {
+                receiver = ESBooleanObject::create(ESValue(ESValue::ESFalseTag::ESFalse));
+            } else if (function == instance->globalObject()->error()) {
+                receiver = ESErrorObject::create();
+            } else if (function == instance->globalObject()->referenceError()) {
+                receiver = ReferenceError::create();
+            } else if (function == instance->globalObject()->typeError()) {
+                receiver = TypeError::create();
+            } else if (function == instance->globalObject()->syntaxError()) {
+                receiver = SyntaxError::create();
+            } else if (function == instance->globalObject()->rangeError()) {
+                receiver = RangeError::create();
+            } else {
+                receiver = ESObject::create();
+            }
+            receiver->setConstructor(fn);
+            if(function->protoType().isObject())
+                receiver->set__proto__(function->protoType());
+            else
+                receiver->set__proto__(ESObject::create());
+
+            ESValue res = ESFunctionObject::call(instance, fn, receiver, arguments, argc, true);
+            if (res.isObject()) {
+                push<ESValue>(stack, sp, res);
+            } else
+                push<ESValue>(stack, sp, receiver);
+            excuteNextCode<NewFunctionCall>(programCounter);
+            break;
+        }
+
+        case ReturnFunctionOpcode:
+        {
+            ASSERT(bp == sp);
+            return ESValue();
+        }
+
+        case ReturnFunctionWithValueOpcode:
+        {
+            ESValue* ret = pop<ESValue>(stack, sp);
+            ASSERT(bp == sp);
+            return *ret;
         }
 
         case JumpOpcode:
@@ -1703,7 +1980,7 @@ ALWAYS_INLINE void interpret(ESVMInstance* instance, CodeBlock* codeBlock)
         case EndOpcode:
         {
             ASSERT(sp == 0);
-            return ;
+            return ESValue();
         }
         default:
             RELEASE_ASSERT_NOT_REACHED();

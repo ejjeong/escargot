@@ -41,6 +41,7 @@ public:
 
     ESValue executeExpression(ESVMInstance* instance)
     {
+        /*
         ESValue value = m_object->executeExpression(instance);
         ESValue propertyValue = m_property->executeExpression(instance);
         if(UNLIKELY(value.isESString())) {
@@ -107,6 +108,7 @@ public:
         } else {
             return obj->get(propertyValue, true);
         }
+        */
         RELEASE_ASSERT_NOT_REACHED();
     }
 

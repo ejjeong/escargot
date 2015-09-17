@@ -14,6 +14,8 @@ __thread ESVMInstance* currentInstance;
 
 ESVMInstance::ESVMInstance()
 {
+    std::srand(std::time(0));
+
     m_stackSize = 1024*1024*4;
     m_stack = malloc(m_stackSize);
     m_sp = 0;
@@ -154,6 +156,7 @@ ESValue ESVMInstance::evaluate(u16string& source)
         ProgramNode* node = ESScriptParser::parseScript(this, source);
         CodeBlock* block = new CodeBlock();
         node->generateStatementByteCode(block);
+        m_sp = 0;
         interpret(this, block);
     } catch(const ESValue& err) {
         try{

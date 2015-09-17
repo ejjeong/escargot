@@ -20,7 +20,8 @@ public:
 
     void executeStatement(ESVMInstance* instance)
     {
-        ESFunctionObject* function = ESFunctionObject::create(instance->currentExecutionContext()->environment(), this);
+        /*
+        ESFunctionObject* function = ESFunctionObject::create(instance->currentExecutionContext()->environment(), NULL);
         //FIXME these lines duplicate with FunctionExpressionNode::execute
         function->set__proto__(instance->globalObject()->functionPrototype());
         ESObject* prototype = ESObject::create();
@@ -33,6 +34,20 @@ public:
             instance->currentExecutionContext()->environment()->record()->createMutableBindingForAST(m_id, nonAtomicId(), false);
         }
         instance->currentExecutionContext()->environment()->record()->setMutableBinding(m_id, nonAtomicId(), function, false);
+        */
+    }
+
+    virtual void generateStatementByteCode(CodeBlock* codeBlock)
+    {
+        CodeBlock* cb = new CodeBlock();
+        cb->m_innerIdentifiers = std::move(m_innerIdentifiers);
+        cb->m_needsActivation = m_needsActivation;
+        cb->m_needsArgumentsObject = m_needsArgumentsObject;
+        cb->m_nonAtomicParams = std::move(m_nonAtomicParams);
+        cb->m_params = std::move(m_params);
+        m_body->generateStatementByteCode(cb);
+        cb->pushCode(ReturnFunction(), this);
+        codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb), this);
     }
 
 protected:

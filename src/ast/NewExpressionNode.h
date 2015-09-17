@@ -62,6 +62,18 @@ public:
         return receiver;
     }
 
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock)
+    {
+        m_callee->generateExpressionByteCode(codeBlock);
+
+        for(unsigned i = 0; i < m_arguments.size() ; i ++) {
+            m_arguments[i]->generateExpressionByteCode(codeBlock);
+        }
+
+        codeBlock->pushCode(Push(ESValue(m_arguments.size())), this);
+        codeBlock->pushCode(NewFunctionCall(), this);
+    }
+
 protected:
     Node* m_callee;
     ArgumentVector m_arguments;

@@ -351,14 +351,12 @@ void ESRegExpObject::setOption(const Option& option)
     m_option = option;
 }
 
-ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST, ESObject* proto)
+ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlock* cb, escargot::ESString* name, ESObject* proto)
     : ESObject((Type)(Type::ESObject | Type::ESFunctionObject))
 {
+    m_name = name;
     m_outerEnvironment = outerEnvironment;
-    m_functionAST = functionAST;
-
-    //defineAccessorProperty(strings->prototype, ESVMInstance::currentInstance()->functionPrototypeAccessorData(), true, false, false);
-    //definePropertyOrThrow(strings->name);
+    m_codeBlock = cb;
 
     m_hiddenClass = ESVMInstance::currentInstance()->initialHiddenClassForFunction();
     m_hiddenClassData.push_back(ESValue((ESPointer *)ESVMInstance::currentInstance()->functionPrototypeAccessorData()));
@@ -370,23 +368,32 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, Functio
         set__proto__(ESVMInstance::currentInstance()->globalFunctionPrototype());
 }
 
-ALWAYS_INLINE void functionCallerInnerProcess(ESFunctionObject* fn, ESValue receiver, ESValue arguments[], size_t argumentCount, bool needsArgumentsObject, ESVMInstance* ESVMInstance)
+ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, const NativeFunctionType& fn, escargot::ESString* name, ESObject* proto)
+    : ESFunctionObject(outerEnvironment, NULL, name, proto)
+{
+    m_codeBlock = new CodeBlock();
+    m_codeBlock->pushCode(ExecuteNativeFunction(fn), NULL);
+    m_codeBlock->m_isBuiltInFunction = true;
+    m_name = name;
+}
+
+ALWAYS_INLINE void functionCallerInnerProcess(ESFunctionObject* fn, const ESValue& receiver, ESValue arguments[], const size_t& argumentCount, bool needsArgumentsObject, ESVMInstance* ESVMInstance)
 {
     //ESVMInstance->invalidateIdentifierCacheCheckCount();
     ((FunctionEnvironmentRecord *)ESVMInstance->currentExecutionContext()->environment()->record())->bindThisValue(receiver.toObject());
     DeclarativeEnvironmentRecord* functionRecord = ESVMInstance->currentExecutionContext()->environment()->record()->toDeclarativeEnvironmentRecord();
 
-    if(UNLIKELY(fn->functionAST()->needsActivation())) {
-        const InternalAtomicStringVector& params = fn->functionAST()->params();
-        const ESStringVector& nonAtomicParams = fn->functionAST()->nonAtomicParams();
+    if(UNLIKELY(fn->codeBlock()->m_needsActivation)) {
+        const InternalAtomicStringVector& params = fn->codeBlock()->m_params;
+        const ESStringVector& nonAtomicParams = fn->codeBlock()->m_nonAtomicParams;
         for(unsigned i = 0; i < params.size() ; i ++) {
             if(i < argumentCount) {
                 *functionRecord->bindingValueForActivationMode(i) = arguments[i];
             }
         }
     } else {
-        const InternalAtomicStringVector& params = fn->functionAST()->params();
-        const ESStringVector& nonAtomicParams = fn->functionAST()->nonAtomicParams();
+        const InternalAtomicStringVector& params = fn->codeBlock()->m_params;
+        const ESStringVector& nonAtomicParams = fn->codeBlock()->m_nonAtomicParams;
         for(unsigned i = 0; i < params.size() ; i ++) {
             if(i < argumentCount) {
                 ESVMInstance->currentExecutionContext()->cachedDeclarativeEnvironmentRecordESValue()[i] = arguments[i];
@@ -405,9 +412,9 @@ ALWAYS_INLINE void functionCallerInnerProcess(ESFunctionObject* fn, ESValue rece
             argumentsObject->set(ESString::create((int)i), arguments[i]);
         }
 
-        if(!fn->functionAST()->needsActivation()) {
-            for(size_t i = 0 ; i < fn->functionAST()->innerIdentifiers().size() ; i++ ) {
-                if(fn->functionAST()->innerIdentifiers()[i] == strings->atomicArguments) {
+        if(!fn->codeBlock()->m_needsActivation) {
+            for(size_t i = 0 ; i < fn->codeBlock()->m_innerIdentifiers.size() ; i++ ) {
+                if(fn->codeBlock()->m_innerIdentifiers[i] == strings->atomicArguments) {
                     *functionRecord->bindingValueForNonActivationMode(i) = argumentsObject;
                     break;
                 }
@@ -421,32 +428,24 @@ ALWAYS_INLINE void functionCallerInnerProcess(ESFunctionObject* fn, ESValue rece
 
 }
 
-
-ESValue ESFunctionObject::call(ESVMInstance* instance, ESValue callee, ESValue receiver, ESValue arguments[], size_t argumentCount, bool isNewExpression)
+ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, const ESValue& receiver, ESValue arguments[], const size_t& argumentCount, bool isNewExpression)
 {
     ESValue result(ESValue::ESForceUninitialized);
     if(LIKELY(callee.isESPointer() && callee.asESPointer()->isESFunctionObject())) {
         ExecutionContext* currentContext = instance->currentExecutionContext();
         ESFunctionObject* fn = callee.asESPointer()->asESFunctionObject();
-        if(UNLIKELY(fn->functionAST()->needsActivation())) {
+        if(UNLIKELY(fn->codeBlock()->m_needsActivation)) {
             instance->m_currentExecutionContext = new ExecutionContext(LexicalEnvironment::newFunctionEnvironment(fn, receiver), true, isNewExpression, currentContext, arguments, argumentCount);
             functionCallerInnerProcess(fn, receiver, arguments, argumentCount, true, instance);
             //ESVMInstance->invalidateIdentifierCacheCheckCount();
-            if(fn->functionAST()->needsReturn()) {
-                int r = setjmp(instance->currentExecutionContext()->returnPosition());
-                if(r != 1) {
-                    fn->functionAST()->body()->executeStatement(instance);
-                }
-            } else {
-                fn->functionAST()->body()->executeStatement(instance);
-            }
-            result = instance->currentExecutionContext()->returnValue();
+            //execute;
+            result = interpret(instance, fn->codeBlock());
             instance->m_currentExecutionContext = currentContext;
         } else {
-            ESValue* storage = (::escargot::ESValue *)alloca(sizeof(::escargot::ESValue) * fn->functionAST()->innerIdentifiers().size());
+            ESValue* storage = (::escargot::ESValue *)alloca(sizeof(::escargot::ESValue) * fn->m_codeBlock->m_innerIdentifiers.size());
             FunctionEnvironmentRecord envRec(
                     storage,
-                    &fn->functionAST()->innerIdentifiers());
+                    &fn->m_codeBlock->m_innerIdentifiers);
 
             //envRec.m_functionObject = fn;
             //envRec.m_newTarget = receiver;
@@ -454,17 +453,10 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, ESValue callee, ESValue r
             LexicalEnvironment env(&envRec, fn->outerEnvironment());
             ExecutionContext ec(&env, false, isNewExpression, currentContext, arguments, argumentCount, storage);
             instance->m_currentExecutionContext = &ec;
-            functionCallerInnerProcess(fn, receiver, arguments, argumentCount, fn->functionAST()->needsArgumentsObject(), instance);
+            functionCallerInnerProcess(fn, receiver, arguments, argumentCount, fn->m_codeBlock->m_needsArgumentsObject, instance);
             //ESVMInstance->invalidateIdentifierCacheCheckCount();
-            if(fn->functionAST()->needsReturn()) {
-                int r = setjmp(instance->currentExecutionContext()->returnPosition());
-                if(r != 1) {
-                    fn->functionAST()->body()->executeStatement(instance);
-                }
-            } else {
-                fn->functionAST()->body()->executeStatement(instance);
-            }
-            result = instance->currentExecutionContext()->returnValue();
+            //execute;
+            result = interpret(instance, fn->codeBlock());
             instance->m_currentExecutionContext = currentContext;
         }
     } else {

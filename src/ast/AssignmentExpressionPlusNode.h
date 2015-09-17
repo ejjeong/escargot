@@ -51,6 +51,15 @@ public:
         return ret;
     }
 
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock)
+    {
+        m_left->generateByteCodeWriteCase(codeBlock);
+        codeBlock->pushCode(ReferenceTopValueWithPeeking(), this);
+        m_right->generateExpressionByteCode(codeBlock);
+        codeBlock->pushCode(Plus(), this);
+        codeBlock->pushCode(Put(), this);
+    }
+
 protected:
     Node* m_left; //left: Pattern;
     Node* m_right; //right: Expression;

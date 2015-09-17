@@ -32,6 +32,19 @@ public:
         return ESFunctionObject::call(instance, fn, receiver, arguments, m_arguments.size(), instance);
     }
 
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock)
+    {
+        codeBlock->pushCode(PrepareFunctionCall(), this);
+        m_callee->generateExpressionByteCode(codeBlock);
+
+        for(unsigned i = 0; i < m_arguments.size() ; i ++) {
+            m_arguments[i]->generateExpressionByteCode(codeBlock);
+        }
+
+        codeBlock->pushCode(Push(ESValue(m_arguments.size())), this);
+        codeBlock->pushCode(CallFunction(), this);
+    }
+
 protected:
     Node* m_callee;//callee: Expression;
     ArgumentVector m_arguments; //arguments: [ Expression ];

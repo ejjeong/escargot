@@ -26,10 +26,12 @@ class ESArrayObject;
 class ESStringObject;
 class ESErrorObject;
 class ESDateObject;
-class FunctionNode;
 class ESVMInstance;
 class ESPointer;
 class ESRegExpObject;
+
+class CodeBlock;
+typedef std::function<ESValue (ESVMInstance*)> NativeFunctionType;
 
 union ValueDescriptor {
     int64_t asInt64;
@@ -1549,11 +1551,18 @@ class LexicalEnvironment;
 class Node;
 class ESFunctionObject : public ESObject {
 protected:
-    ESFunctionObject(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST, ESObject* proto);
+    ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlock* codeBlock, escargot::ESString* name, ESObject* proto);
+    ESFunctionObject(LexicalEnvironment* outerEnvironment, const NativeFunctionType& fn, escargot::ESString* name, ESObject* proto);
 public:
-    static ESFunctionObject* create(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST, ESObject* proto = NULL)
+    static ESFunctionObject* create(LexicalEnvironment* outerEnvironment, CodeBlock* codeBlock, escargot::ESString* name, ESObject* proto = NULL)
     {
-        ESFunctionObject* ret = new ESFunctionObject(outerEnvironment, functionAST, proto);
+        ESFunctionObject* ret = new ESFunctionObject(outerEnvironment, codeBlock, name, proto);
+        return ret;
+    }
+
+    static ESFunctionObject* create(LexicalEnvironment* outerEnvironment, const NativeFunctionType& fn, escargot::ESString* name, ESObject* proto = NULL)
+    {
+        ESFunctionObject* ret = new ESFunctionObject(outerEnvironment, fn, name, proto);
         return ret;
     }
 
@@ -1567,19 +1576,21 @@ public:
         m_protoType = obj;
     }
 
-    FunctionNode* functionAST() { return m_functionAST; }
+    CodeBlock* codeBlock() { return m_codeBlock; }
     LexicalEnvironment* outerEnvironment() { return m_outerEnvironment; }
-    bool isBuiltInFunction()
+
+    ALWAYS_INLINE escargot::ESString* name()
     {
-        //TODO better chedk
-        return m_outerEnvironment == NULL;
+        return m_name;
     }
 
-    static ESValue call(ESVMInstance* instance, ESValue callee, ESValue receiver, ESValue arguments[], size_t argumentCount, bool isNewExpression = false);
+    static ESValue call(ESVMInstance* instance, const ESValue& callee, const ESValue& receiver, ESValue arguments[], const size_t& argumentCount, bool isNewExpression = false);
 protected:
     LexicalEnvironment* m_outerEnvironment;
-    FunctionNode* m_functionAST;
     ESValue m_protoType;
+
+    CodeBlock* m_codeBlock;
+    escargot::ESString* m_name;
     //ESObject functionObject;
     //HomeObject
     ////ESObject newTarget
