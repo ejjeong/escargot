@@ -38,8 +38,9 @@ public:
             codeBlock->pushCode(JumpIfTopOfStackValueIsFalse(SIZE_MAX), this);
             size_t jPos = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsFalse>();
             m_consequente->generateStatementByteCode(codeBlock, context);
-            JumpIfTopOfStackValueIsFalse* j = codeBlock->peekCode<JumpIfTopOfStackValueIsFalse>(jPos);
+
             codeBlock->pushCode(Jump(SIZE_MAX), this);
+            JumpIfTopOfStackValueIsFalse* j = codeBlock->peekCode<JumpIfTopOfStackValueIsFalse>(jPos);
             size_t jPos2 = codeBlock->lastCodePosition<Jump>();
             j->m_jumpPosition = codeBlock->currentCodeSize();
 

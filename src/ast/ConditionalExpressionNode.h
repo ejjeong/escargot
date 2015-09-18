@@ -32,8 +32,8 @@ public:
         size_t jumpPosForTestIsFalse = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsFalse>();
 
         m_consequente->generateExpressionByteCode(codeBlock, context);
-        JumpIfTopOfStackValueIsFalse* jumpForTestIsFalse = codeBlock->peekCode<JumpIfTopOfStackValueIsFalse>(jumpPosForTestIsFalse);
         codeBlock->pushCode(Jump(SIZE_MAX), this);
+        JumpIfTopOfStackValueIsFalse* jumpForTestIsFalse = codeBlock->peekCode<JumpIfTopOfStackValueIsFalse>(jumpPosForTestIsFalse);
         size_t jumpPosForEndOfConsequence = codeBlock->lastCodePosition<Jump>();
 
         jumpForTestIsFalse->m_jumpPosition = codeBlock->currentCodeSize();
