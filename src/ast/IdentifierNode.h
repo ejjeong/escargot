@@ -83,10 +83,17 @@ public:
                 codeBlock->peekCode<GetByIndexWithActivation>(codeBlock->lastCodePosition<GetByIndexWithActivation>())->m_name = m_nonAtomicName;
 #endif
             } else {
-                codeBlock->pushCode(GetByIndex(m_fastAccessIndex), this);
+                if(m_fastAccessUpIndex == 0) {
+                    codeBlock->pushCode(GetByIndex(m_fastAccessIndex), this);
 #ifndef NDEBUG
-                codeBlock->peekCode<GetByIndex>(codeBlock->lastCodePosition<GetByIndex>())->m_name = m_nonAtomicName;
+                    codeBlock->peekCode<GetByIndex>(codeBlock->lastCodePosition<GetByIndex>())->m_name = m_nonAtomicName;
 #endif
+                } else {
+                    codeBlock->pushCode(GetByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), this);
+#ifndef NDEBUG
+                    codeBlock->peekCode<GetByIndexWithActivation>(codeBlock->lastCodePosition<GetByIndexWithActivation>())->m_name = m_nonAtomicName;
+#endif
+                }
             }
         } else {
             codeBlock->pushCode(GetById(m_name, m_nonAtomicName), this);
@@ -99,7 +106,10 @@ public:
             if(codeBlock->m_needsActivation) {
                 codeBlock->pushCode(ResolveAddressByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), this);
             } else {
-                codeBlock->pushCode(ResolveAddressByIndex(m_fastAccessIndex), this);
+                if(m_fastAccessUpIndex == 0)
+                    codeBlock->pushCode(ResolveAddressByIndex(m_fastAccessIndex), this);
+                else
+                    codeBlock->pushCode(ResolveAddressByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), this);
             }
         } else {
             codeBlock->pushCode(ResolveAddressById(m_name, m_nonAtomicName), this);

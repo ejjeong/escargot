@@ -6,7 +6,7 @@
 
 namespace escargot {
 
-class ForInStatementNode : public StatementNode , public ControlFlowNode {
+class ForInStatementNode : public StatementNode {
 public:
     friend class ESScriptParser;
     ForInStatementNode(Node *left, Node *right, Node *body, bool each)
@@ -18,77 +18,6 @@ public:
         m_each = each;
     }
 
-    void executeStatement(ESVMInstance* instance)
-    {
-        if(m_isSlowCase) {
-            ESValue exprValue = m_right->executeExpression(instance);
-            if (exprValue.isNull() || exprValue.isUndefined())
-                return ;
-
-            ExecutionContext* ec = instance->currentExecutionContext();
-
-            std::vector<ESValue> propertyVals;
-            ESObject* obj = exprValue.toObject();
-            propertyVals.reserve(obj->keyCount());
-            obj->enumeration([&propertyVals](ESValue key, ESValue value) {
-                propertyVals.push_back(key);
-            });
-            /*
-            std::sort(propertyVals.begin(), propertyVals.end(), [](const ::escargot::ESValue& a, const ::escargot::ESValue& b) -> bool {
-                ::escargot::ESString* vala = a.toString();
-                ::escargot::ESString* valb = b.toString();
-                return vala->string() < valb->string();
-            });*/
-
-            ec->setJumpPositionAndExecute([&](){
-                jmpbuf_wrapper cont;
-                int r = setjmp(cont.m_buffer);
-                if (r != 1) {
-                    ec->pushContinuePosition(cont);
-                }
-                for (unsigned int i=0; i<propertyVals.size(); i++) {
-                    if (obj->hasOwnProperty(propertyVals[i])) {
-                        ESValue name = propertyVals[i];
-                        ESSlotAccessor slot = m_left->executeForWrite(instance);
-                        slot.setValue(name);
-                        m_body->executeStatement(instance);
-                    }
-                }
-                instance->currentExecutionContext()->popContinuePosition();
-            });
-        } else {
-            ESValue exprValue = m_right->executeExpression(instance);
-            if (exprValue.isNull() || exprValue.isUndefined())
-                return ;
-
-            ExecutionContext* ec = instance->currentExecutionContext();
-
-            std::vector<ESValue> propertyVals;
-            ESObject* obj = exprValue.toObject();
-            propertyVals.reserve(obj->keyCount());
-            obj->enumeration([&propertyVals](ESValue key, ::escargot::ESValue value) {
-                propertyVals.push_back(key);
-            });
-
-            /*
-            std::sort(propertyVals.begin(), propertyVals.end(), [](const ::escargot::ESValue& a, const ::escargot::ESValue& b) -> bool {
-                ::escargot::ESString* vala = a.toString();
-                ::escargot::ESString* valb = b.toString();
-                return vala->string() < valb->string();
-            });
-            */
-
-            for (unsigned int i=0; i<propertyVals.size(); i++) {
-                if (obj->hasOwnProperty(propertyVals[i])) {
-                    ESValue name = propertyVals[i];
-                    ESSlotAccessor slot = m_left->executeForWrite(instance);
-                    slot.setValue(name);
-                    m_body->executeStatement(instance);
-                }
-            }
-        }
-
-    }
 
 protected:
     ExpressionNode *m_left;

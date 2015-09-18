@@ -6,7 +6,7 @@
 
 namespace escargot {
 
-class ForStatementNode : public StatementNode, public ControlFlowNode {
+class ForStatementNode : public StatementNode {
 public:
     friend class ESScriptParser;
     ForStatementNode(Node *init, Node *test, Node *update, Node *body)
@@ -16,44 +16,6 @@ public:
         m_test = (ExpressionNode*) test;
         m_update = (ExpressionNode*) update;
         m_body = (StatementNode*) body;
-    }
-
-    void executeStatement(ESVMInstance* instance)
-    {
-        ESValue test;
-        if(UNLIKELY(m_isSlowCase)) {
-            if (m_init)
-                m_init->executeExpression(instance);
-            test = m_test ? m_test->executeExpression(instance) : ESValue(true);
-            instance->currentExecutionContext()->setJumpPositionAndExecute([&](){
-                jmpbuf_wrapper cont;
-                int r = setjmp(cont.m_buffer);
-                if (r != 1) {
-                    instance->currentExecutionContext()->pushContinuePosition(cont);
-                } else {
-                    if (m_update)
-                        m_update->executeExpression(instance);
-                    test = m_test ? m_test->executeExpression(instance) : ESValue(true);
-                  }
-                while (test.toBoolean()) {
-                    m_body->executeStatement(instance);
-                    if (m_update)
-                        m_update->executeExpression(instance);
-                    test = m_test ? m_test->executeExpression(instance) : ESValue(true);
-                  }
-                instance->currentExecutionContext()->popContinuePosition();
-            });
-        } else {
-            if (m_init)
-                m_init->executeExpression(instance);
-            test = m_test ? m_test->executeExpression(instance) : ESValue(true);
-            while(test.toBoolean()) {
-                m_body->executeStatement(instance);
-                if (m_update)
-                    m_update->executeExpression(instance);
-                test = m_test ? m_test->executeExpression(instance) : ESValue(true);
-            }
-        }
     }
 
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
@@ -73,20 +35,20 @@ public:
         codeBlock->pushCode(JumpIfTopOfStackValueIsFalse(SIZE_MAX), this);
         size_t testPos = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsFalse>();
 
-        {
-            ByteCodeGenereateContextStatePusher c(context.m_lastContinuePosition);
-            context.m_lastContinuePosition = forStart;
-            m_body->generateStatementByteCode(codeBlock, context);
-        }
+        m_body->generateStatementByteCode(codeBlock, context);
 
+        size_t updatePosition = codeBlock->currentCodeSize();
         if(m_update) {
             m_update->generateExpressionByteCode(codeBlock, context);
             codeBlock->pushCode(Pop(), this);
         }
         codeBlock->pushCode(Jump(forStart), this);
-        context.consumeBreakPositions(codeBlock);
+
         size_t forEnd = codeBlock->currentCodeSize();
         codeBlock->peekCode<JumpIfTopOfStackValueIsFalse>(testPos)->m_jumpPosition = forEnd;
+
+        context.consumeBreakPositions(codeBlock, forEnd);
+        context.consumeContinuePositions(codeBlock, updatePosition);
     }
 
 protected:

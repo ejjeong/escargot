@@ -15,10 +15,6 @@ public:
         m_label = label;
     }
 
-    void executeStatement(ESVMInstance* instance)
-    {
-        instance->currentExecutionContext()->doLabeledContinue(m_upIndex);
-    }
 protected:
     size_t m_upIndex;
     ESString* m_label; //for debug

@@ -91,26 +91,9 @@ enum Opcode {
 class ByteCode;
 class CodeBlock;
 
-struct ByteCodeGenereateContextStatePusher {
-    ByteCodeGenereateContextStatePusher(size_t& state)
-        : m_storedStateAddress(state)
-    {
-        m_storedState = state;
-    }
-
-    ~ByteCodeGenereateContextStatePusher()
-    {
-        m_storedStateAddress = m_storedState;
-    }
-
-    size_t& m_storedStateAddress;
-    size_t m_storedState;
-};
-
 struct ByteCodeGenereateContext {
     ByteCodeGenereateContext()
     {
-        m_lastContinuePosition = SIZE_MAX;
     }
 
     void pushBreakPositions(size_t pos)
@@ -118,10 +101,16 @@ struct ByteCodeGenereateContext {
         m_breakStatementPositions.push_back(pos);
     }
 
-    ALWAYS_INLINE void consumeBreakPositions(CodeBlock* cb);
+    void pushContinuePositions(size_t pos)
+    {
+        m_continueStatementPositions.push_back(pos);
+    }
 
-    size_t m_lastContinuePosition;
+    ALWAYS_INLINE void consumeBreakPositions(CodeBlock* cb, size_t position);
+    ALWAYS_INLINE void consumeContinuePositions(CodeBlock* cb, size_t position);
+
     std::vector<size_t> m_breakStatementPositions;
+    std::vector<size_t> m_continueStatementPositions;
 };
 
 class ByteCode {
@@ -1349,14 +1338,24 @@ void CodeBlock::pushCode(const CodeType& type, Node* node)
     m_code.insert(m_code.end(), first, first + sizeof(CodeType));
 }
 
-ALWAYS_INLINE void ByteCodeGenereateContext::consumeBreakPositions(CodeBlock* cb)
+ALWAYS_INLINE void ByteCodeGenereateContext::consumeBreakPositions(CodeBlock* cb, size_t position)
 {
     for(size_t i = 0; i < m_breakStatementPositions.size(); i ++) {
         Jump* shouldBeJump = cb->peekCode<Jump>(m_breakStatementPositions[i]);
         ASSERT(shouldBeJump->m_opcode == JumpOpcode);
-        shouldBeJump->m_jumpPosition = cb->currentCodeSize();
+        shouldBeJump->m_jumpPosition = position;
     }
     m_breakStatementPositions.clear();
+}
+
+ALWAYS_INLINE void ByteCodeGenereateContext::consumeContinuePositions(CodeBlock* cb, size_t position)
+{
+    for(size_t i = 0; i < m_continueStatementPositions.size(); i ++) {
+        Jump* shouldBeJump = cb->peekCode<Jump>(m_continueStatementPositions[i]);
+        ASSERT(shouldBeJump->m_opcode == JumpOpcode);
+        shouldBeJump->m_jumpPosition = position;
+    }
+    m_continueStatementPositions.clear();
 }
 
 }

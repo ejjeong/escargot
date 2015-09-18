@@ -16,14 +16,6 @@ public:
         m_alternate = (StatementNode*) alternate;
     }
 
-    void executeStatement(ESVMInstance* instance)
-    {
-        if (m_test->executeExpression(instance).toBoolean())
-            m_consequente->executeStatement(instance);
-        else if (m_alternate)
-            m_alternate->executeStatement(instance);
-    }
-
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
     {
         if(!m_alternate) {

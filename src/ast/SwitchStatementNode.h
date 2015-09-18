@@ -7,7 +7,7 @@
 
 namespace escargot {
 
-class SwitchStatementNode : public StatementNode, public ControlFlowNode {
+class SwitchStatementNode : public StatementNode {
 public:
     friend class ESScriptParser;
     SwitchStatementNode(Node* discriminant, StatementNodeVector&& casesA, Node* deflt, StatementNodeVector&& casesB, bool lexical)
@@ -18,11 +18,11 @@ public:
         m_default = (StatementNode*) deflt;
         m_casesB = casesB;
         m_lexical = lexical;
-        m_isSwitchStatementNode = true;
     }
 
     void executeStatement(ESVMInstance* instance)
     {
+        /*
         ESValue input = m_discriminant->executeExpression(instance);
         instance->currentExecutionContext()->setJumpPositionAndExecute(true, [&](){
             bool found = false;
@@ -59,6 +59,7 @@ public:
                 caseNode->executeStatement(instance);
             }
         });
+        */
     }
 
 protected:

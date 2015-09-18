@@ -21,12 +21,17 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     ESValue* nonActivitionModeLocalValuePointer = ec->cachedDeclarativeEnvironmentRecordESValue();
     while(1) {
         ByteCode* currentCode = (ByteCode *)(&code[programCounter]);
+        /*
         {
-            //size_t tt = (size_t)currentCode;
-            //ASSERT(tt % sizeof(size_t) == 0);
-            //printf("execute %p %u \t",currentCode, (unsigned)programCounter);
-            //currentCode->dump();
+            size_t tt = (size_t)currentCode;
+            ASSERT(tt % sizeof(size_t) == 0);
+            if(currentCode->m_node)
+                printf("execute %p %u \t(nodeinfo %d)\t",currentCode, (unsigned)programCounter, (int)currentCode->m_node->sourceLocation().m_lineNumber);
+            else
+                printf("execute %p %u \t(nodeinfo null)\t",currentCode, (unsigned)programCounter);
+            currentCode->dump();
         }
+        */
         switch(currentCode->m_opcode) {
         case PushOpcode:
         {
@@ -83,6 +88,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         case GetByIndexOpcode:
         {
             GetByIndex* code = (GetByIndex*)currentCode;
+            ASSERT(code->m_index < ec->environment()->record()->toDeclarativeEnvironmentRecord()->innerIdentifiers()->size());
             push<ESValue>(stack, sp, nonActivitionModeLocalValuePointer[code->m_index]);
             excuteNextCode<GetByIndex>(programCounter);
             break;
@@ -632,9 +638,12 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                 }
             }
 
-            ESObject* obj = willBeObject->toObject();
+            ESObject* obj;
+            if(willBeObject->isObject())
+                obj = willBeObject->asESPointer()->asESObject();
+            else
+                obj = willBeObject->toObject();
 
-            ExecutionContext* ec = instance->currentExecutionContext();
             lastESObjectMetInMemberExpressionNode = obj;
 
             if(obj->isHiddenClassMode() && !obj->isESArrayObject()) {

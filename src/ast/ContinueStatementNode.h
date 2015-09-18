@@ -13,15 +13,10 @@ public:
     {
     }
 
-    void executeStatement(ESVMInstance* instance)
-    {
-        instance->currentExecutionContext()->doContinue();
-    }
-
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
     {
-        ASSERT(context.m_lastContinuePosition != SIZE_MAX);
-        codeBlock->pushCode(Jump(context.m_lastContinuePosition), this);
+        codeBlock->pushCode(Jump(SIZE_MAX), this);
+        context.pushContinuePositions(codeBlock->lastCodePosition<Jump>());
     }
 };
 

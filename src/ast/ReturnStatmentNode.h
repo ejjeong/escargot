@@ -14,12 +14,6 @@ public:
         m_argument = argument;
     }
 
-    void executeStatement(ESVMInstance* instance)
-    {
-        instance->currentExecutionContext()->doReturn(m_argument ? m_argument->executeExpression(instance) : ESValue());
-        RELEASE_ASSERT_NOT_REACHED();
-    }
-
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
     {
         if(m_argument) {

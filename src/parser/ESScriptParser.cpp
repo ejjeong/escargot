@@ -76,12 +76,11 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
         }
     };
 
-    std::vector<ControlFlowNode *> controlFlowNodeStack;
     bool shouldWorkAroundIdentifier = true;
     std::function<void (Node* currentNode,
             std::vector<InternalAtomicStringVector *>& identifierStack,
             FunctionNode* nearFunctionNode)>
-    postAnalysisFunction = [&postAnalysisFunction, instance, &markNeedsActivation, &controlFlowNodeStack, &shouldWorkAroundIdentifier]
+    postAnalysisFunction = [&postAnalysisFunction, instance, &markNeedsActivation, &shouldWorkAroundIdentifier]
              (Node* currentNode,
              std::vector<InternalAtomicStringVector *>& identifierStack,
              FunctionNode* nearFunctionNode) {
@@ -100,7 +99,7 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
                 postAnalysisFunction(v[i], identifierStack, nearFunctionNode);
             }
         } else if(type == NodeType::VariableDeclarator) {
-            //wprintf(L"add Identifier %ls(var)\n", ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name().data());
+            //printf("add Identifier %s(var)\n", ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->nonAtomicName()->utf8Data());
             if(identifierInCurrentContext.end() == std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),
                     ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name())) {
                 identifierInCurrentContext.push_back(((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name());
@@ -126,7 +125,7 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
             postAnalysisFunction(((FunctionDeclarationNode *)currentNode)->m_body, identifierStack, ((FunctionDeclarationNode *)currentNode));
             identifierStack.pop_back();
             ((FunctionDeclarationNode *)currentNode)->setInnerIdentifiers(std::move(newIdentifierVector));
-            //wprintf(L"end of process function body-------------------\n");
+            //printf("end of process function body-------------------\n");
         } else if(type == NodeType::FunctionExpression) {
             //printf("process function body-------------------\n");
             InternalAtomicStringVector newIdentifierVector;
@@ -175,8 +174,7 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
                             fn = fn->outerFunctionNode();
                         }
                         if(fn) {
-                            /*
-                            printf("outer function of this function  needs capture! -> because fn...%s iden..%s\n",
+                            /*printf("outer function of this function  needs capture! -> because fn...%s iden..%s\n",
                                     fn->nonAtomicId()->utf8Data(),
                                     ((IdentifierNode *)currentNode)->nonAtomicName()->utf8Data());
                                     */
@@ -290,29 +288,20 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
             postAnalysisFunction(((IfStatementNode *)currentNode)->m_alternate, identifierStack, nearFunctionNode);
         } else if(type == NodeType::ForStatement) {
             postAnalysisFunction(((ForStatementNode *)currentNode)->m_init, identifierStack, nearFunctionNode);
-            controlFlowNodeStack.push_back(((ForStatementNode *)currentNode));
             postAnalysisFunction(((ForStatementNode *)currentNode)->m_body, identifierStack, nearFunctionNode);
-            controlFlowNodeStack.pop_back();
             postAnalysisFunction(((ForStatementNode *)currentNode)->m_test, identifierStack, nearFunctionNode);
             postAnalysisFunction(((ForStatementNode *)currentNode)->m_update, identifierStack, nearFunctionNode);
         } else if(type == NodeType::ForInStatement) {
             postAnalysisFunction(((ForInStatementNode *)currentNode)->m_left, identifierStack, nearFunctionNode);
             postAnalysisFunction(((ForInStatementNode *)currentNode)->m_right, identifierStack, nearFunctionNode);
-            controlFlowNodeStack.push_back(((ForInStatementNode *)currentNode));
             postAnalysisFunction(((ForInStatementNode *)currentNode)->m_body, identifierStack, nearFunctionNode);
-            controlFlowNodeStack.pop_back();
         } else if(type == NodeType::WhileStatement) {
             postAnalysisFunction(((WhileStatementNode *)currentNode)->m_test, identifierStack, nearFunctionNode);
-            controlFlowNodeStack.push_back(((WhileStatementNode *)currentNode));
             postAnalysisFunction(((WhileStatementNode *)currentNode)->m_body, identifierStack, nearFunctionNode);
-            controlFlowNodeStack.pop_back();
         } else if(type == NodeType::DoWhileStatement) {
             postAnalysisFunction(((DoWhileStatementNode *)currentNode)->m_test, identifierStack, nearFunctionNode);
-            controlFlowNodeStack.push_back(((DoWhileStatementNode *)currentNode));
             postAnalysisFunction(((DoWhileStatementNode *)currentNode)->m_body, identifierStack, nearFunctionNode);
-            controlFlowNodeStack.pop_back();
         } else if(type == NodeType::SwitchStatement) {
-            controlFlowNodeStack.push_back(((SwitchStatementNode *)currentNode));
             postAnalysisFunction(((SwitchStatementNode *)currentNode)->m_discriminant, identifierStack, nearFunctionNode);
             StatementNodeVector& vA =((SwitchStatementNode *)currentNode)->m_casesA;
             for(unsigned i = 0; i < vA.size() ; i ++)
@@ -321,7 +310,6 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
             StatementNodeVector& vB = ((SwitchStatementNode *)currentNode)->m_casesB;
             for(unsigned i = 0; i < vB.size() ; i ++)
                 postAnalysisFunction(vB[i], identifierStack, nearFunctionNode);
-            controlFlowNodeStack.pop_back();
         } else if(type == NodeType::SwitchCase) {
             postAnalysisFunction(((SwitchCaseNode *)currentNode)->m_test, identifierStack, nearFunctionNode);
             StatementNodeVector& v = ((SwitchCaseNode *)currentNode)->m_consequent;
@@ -330,14 +318,8 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
         } else if(type == NodeType::ThisExpression) {
 
         } else if(type == NodeType::BreakStatement) {
-            controlFlowNodeStack[controlFlowNodeStack.size() - 1]->markAsSlowCase();
         } else if(type == NodeType::ContinueStatement) {
-            unsigned idx = controlFlowNodeStack.size() - 1;
-            while (UNLIKELY(controlFlowNodeStack[idx]->isSwitchStatementNode()))
-                idx--;
-            controlFlowNodeStack[idx]->markAsSlowCase();
         } else if(type == NodeType::ReturnStatement) {
-            nearFunctionNode->markNeedsReturn();
             postAnalysisFunction(((ReturnStatmentNode *)currentNode)->m_argument, identifierStack, nearFunctionNode);
         } else if(type == NodeType::EmptyStatement) {
         } else if (type == NodeType::TryStatement) {
@@ -582,7 +564,6 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
         } else if(type == NodeType::ReturnStatement) {
             nodeReplacer((Node **)&((ReturnStatmentNode *)currentNode)->m_argument, nearFunction);
             postProcessingFunction(((ReturnStatmentNode *)currentNode)->m_argument, nearFunction);
-            nearFunction->needsReturn();
         } else if(type == NodeType::EmptyStatement) {
         } else if(type == NodeType::Empty) {
         } else if (type == NodeType::TryStatement) {
