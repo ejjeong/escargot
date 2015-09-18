@@ -16,6 +16,20 @@ public:
         m_body = (StatementNode*) body;
     }
 
+    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
+    {
+        size_t doStart = codeBlock->currentCodeSize();
+        m_body->generateStatementByteCode(codeBlock, context);
+        size_t doEnd = codeBlock->currentCodeSize();
+
+        context.consumeContinuePositions(codeBlock, doStart);
+        context.consumeBreakPositions(codeBlock, doEnd);
+
+
+        m_test->generateExpressionByteCode(codeBlock, context);
+        codeBlock->pushCode(JumpIfTopOfStackValueIsTrue(doStart), this);
+    }
+
 protected:
     ExpressionNode *m_test;
     StatementNode *m_body;
