@@ -129,7 +129,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         case ResolveAddressByIndexOpcode:
         {
             ResolveAddressByIndex* code = (ResolveAddressByIndex*)currentCode;
-            push<ESSlotAccessor>(stack, sp, ESSlotAccessor(&instance->currentExecutionContext()->cachedDeclarativeEnvironmentRecordESValue()[code->m_index]));
+            push<ESSlotAccessor>(stack, sp, ESSlotAccessor(&nonActivitionModeLocalValuePointer[code->m_index]));
             excuteNextCode<ResolveAddressByIndex>(programCounter);
             break;
         }
@@ -153,9 +153,12 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             ESValue* property = pop<ESValue>(stack, sp);
             ESValue* willBeObject = pop<ESValue>(stack, sp);
 
-            ESObject* obj = willBeObject->toObject();
+            ESObject* obj;
+            if(willBeObject->isObject())
+                obj = willBeObject->asESPointer()->asESObject();
+            else
+                obj = willBeObject->toObject();
 
-            ExecutionContext* ec = instance->currentExecutionContext();
             lastESObjectMetInMemberExpressionNode = obj;
 
             if(obj->isHiddenClassMode() && !obj->isESArrayObject()) {

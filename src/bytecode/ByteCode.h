@@ -1356,6 +1356,7 @@ ALWAYS_INLINE void ByteCodeGenereateContext::consumeBreakPositions(CodeBlock* cb
         ASSERT(shouldBeJump->m_opcode == JumpOpcode);
         shouldBeJump->m_jumpPosition = cb->currentCodeSize();
     }
+    m_breakStatementPositions.clear();
 }
 
 }
