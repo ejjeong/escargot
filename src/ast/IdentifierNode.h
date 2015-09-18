@@ -74,7 +74,7 @@ public:
         }
     }
 
-    virtual void generateExpressionByteCode(CodeBlock* codeBlock)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
     {
         if(m_canUseFastAccess) {
             if(codeBlock->m_needsActivation) {
@@ -93,7 +93,7 @@ public:
         }
     }
 
-    virtual void generateByteCodeWriteCase(CodeBlock* codeBlock)
+    virtual void generateByteCodeWriteCase(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
     {
         if(m_canUseFastAccess) {
             if(codeBlock->m_needsActivation) {

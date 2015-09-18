@@ -20,10 +20,10 @@ public:
         RELEASE_ASSERT_NOT_REACHED();
     }
 
-    virtual void generateStatementByteCode(CodeBlock* codeBlock)
+    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
     {
         if(m_argument) {
-            m_argument->generateExpressionByteCode(codeBlock);
+            m_argument->generateExpressionByteCode(codeBlock, context);
             codeBlock->pushCode(ReturnFunctionWithValue(), this);
         } else {
             codeBlock->pushCode(ReturnFunction(), this);

@@ -5,10 +5,12 @@ namespace escargot {
 
 ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter)
 {
+    //GC_gcollect();
     //dumpBytecode(codeBlock);
     //void* stack = instance->m_stack;
     //size_t& sp = instance->m_sp;
-    void* stack = alloca(1024*4);
+    char stackBuf[1024*4];
+    void* stack = stackBuf;
     unsigned sp  = 0;
     unsigned bp = 0;
     char* code = codeBlock->m_code.data();
@@ -903,6 +905,8 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             return ESValue();
         }
         default:
+            printf("%d\n", currentCode->m_opcode);
+            fflush(stdout);
             RELEASE_ASSERT_NOT_REACHED();
         }
     }

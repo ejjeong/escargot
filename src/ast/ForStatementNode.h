@@ -56,25 +56,31 @@ public:
         }
     }
 
-    virtual void generateStatementByteCode(CodeBlock* codeBlock)
+    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
     {
         if (m_init) {
-            m_init->generateExpressionByteCode(codeBlock);
+            m_init->generateExpressionByteCode(codeBlock, context);
             codeBlock->pushCode(Pop(), this);
         }
 
         size_t forStart = codeBlock->currentCodeSize();
         if(m_test) {
-            m_test->generateExpressionByteCode(codeBlock);
+            m_test->generateExpressionByteCode(codeBlock, context);
         } else {
             codeBlock->pushCode(Push(ESValue(true)), this);
         }
 
         codeBlock->pushCode(JumpIfTopOfStackValueIsFalse(SIZE_MAX), this);
         size_t testPos = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsFalse>();
-        m_body->generateStatementByteCode(codeBlock);
+
+        {
+            ByteCodeGenereateContextStatePusher c(context.m_lastContinuePosition);
+            context.m_lastContinuePosition = forStart;
+            m_body->generateStatementByteCode(codeBlock, context);
+        }
+
         if(m_update) {
-            m_update->generateExpressionByteCode(codeBlock);
+            m_update->generateExpressionByteCode(codeBlock, context);
             codeBlock->pushCode(Pop(), this);
         }
         codeBlock->pushCode(Jump(forStart), this);

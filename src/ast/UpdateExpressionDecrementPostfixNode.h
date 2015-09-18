@@ -34,13 +34,13 @@ public:
         return ret;
     }
 
-    virtual void generateExpressionByteCode(CodeBlock* codeBlock)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
     {
-        m_argument->generateExpressionByteCode(codeBlock);
+        m_argument->generateExpressionByteCode(codeBlock, context);
         codeBlock->pushCode(DuplicateTopOfStackValue(), this);
         codeBlock->pushCode(Push(ESValue(-1)), this);
         codeBlock->pushCode(Plus(), this);
-        m_argument->generateByteCodeWriteCase(codeBlock);
+        m_argument->generateByteCodeWriteCase(codeBlock, context);
         codeBlock->pushCode(PutReverseStack(), this);
         codeBlock->pushCode(Pop(), this);
     }

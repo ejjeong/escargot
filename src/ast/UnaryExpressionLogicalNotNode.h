@@ -20,9 +20,9 @@ public:
         return ESValue(!m_argument->executeExpression(instance).toBoolean());
     }
 
-    virtual void generateExpressionByteCode(CodeBlock* codeBlock)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
     {
-        m_argument->generateExpressionByteCode(codeBlock);
+        m_argument->generateExpressionByteCode(codeBlock, context);
         codeBlock->pushCode(LogicalNot(), this);
     }
 

@@ -155,7 +155,8 @@ ESValue ESVMInstance::evaluate(u16string& source)
         m_lastExpressionStatementValue = ESValue();
         ProgramNode* node = ESScriptParser::parseScript(this, source);
         CodeBlock* block = new CodeBlock();
-        node->generateStatementByteCode(block);
+        ByteCodeGenereateContext context;
+        node->generateStatementByteCode(block, context);
         m_sp = 0;
         interpret(this, block);
     } catch(const ESValue& err) {

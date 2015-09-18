@@ -41,15 +41,15 @@ public:
         }
     }
 
-    virtual void generateStatementByteCode(CodeBlock* codeBlock)
+    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
     {
         ASSERT(!m_finalizer); //TODO
         codeBlock->pushCode(Try(), this);
         size_t pos = codeBlock->lastCodePosition<Try>();
-        m_block->generateStatementByteCode(codeBlock);
+        m_block->generateStatementByteCode(codeBlock, context);
         codeBlock->pushCode(TryCatchBodyEnd(), this);
         size_t catchPos = codeBlock->currentCodeSize();
-        m_handler->generateStatementByteCode(codeBlock);
+        m_handler->generateStatementByteCode(codeBlock, context);
         codeBlock->pushCode(TryCatchBodyEnd(), this);
         size_t endPos = codeBlock->currentCodeSize();
         codeBlock->peekCode<Try>(pos)->m_catchPosition = catchPos;

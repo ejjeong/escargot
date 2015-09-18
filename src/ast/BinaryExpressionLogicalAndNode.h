@@ -24,13 +24,13 @@ public:
             return m_right->executeExpression(instance);
     }
 
-    virtual void generateExpressionByteCode(CodeBlock* codeBlock)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
     {
-        m_left->generateExpressionByteCode(codeBlock);
+        m_left->generateExpressionByteCode(codeBlock, context);
         codeBlock->pushCode<JumpIfTopOfStackValueIsFalseWithPeeking>(JumpIfTopOfStackValueIsFalseWithPeeking(SIZE_MAX), this);
         size_t pos = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsFalseWithPeeking>();
         codeBlock->pushCode(Pop(), this);
-        m_right->generateExpressionByteCode(codeBlock);
+        m_right->generateExpressionByteCode(codeBlock, context);
         codeBlock->peekCode<JumpIfTopOfStackValueIsFalseWithPeeking>(pos)->m_jumpPosition = codeBlock->currentCodeSize();
     }
 

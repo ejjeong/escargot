@@ -65,12 +65,12 @@ public:
         return ESValue();
     }
 
-    virtual void generateExpressionByteCode(CodeBlock* codeBlock)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
     {
-        m_callee->generateExpressionByteCode(codeBlock);
+        m_callee->generateExpressionByteCode(codeBlock, context);
 
         for(unsigned i = 0; i < m_arguments.size() ; i ++) {
-            m_arguments[i]->generateExpressionByteCode(codeBlock);
+            m_arguments[i]->generateExpressionByteCode(codeBlock, context);
         }
 
         codeBlock->pushCode(Push(ESValue(m_arguments.size())), this);

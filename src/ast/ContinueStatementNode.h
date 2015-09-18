@@ -17,6 +17,12 @@ public:
     {
         instance->currentExecutionContext()->doContinue();
     }
+
+    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
+    {
+        ASSERT(context.m_lastContinuePosition != SIZE_MAX);
+        codeBlock->pushCode(Jump(context.m_lastContinuePosition), this);
+    }
 };
 
 }

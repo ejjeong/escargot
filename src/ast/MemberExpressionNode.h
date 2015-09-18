@@ -113,11 +113,11 @@ public:
     }
 
 
-    virtual void generateExpressionByteCode(CodeBlock* codeBlock)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
     {
-        m_object->generateExpressionByteCode(codeBlock);
+        m_object->generateExpressionByteCode(codeBlock, context);
         if(m_computed) {
-            m_property->generateExpressionByteCode(codeBlock);
+            m_property->generateExpressionByteCode(codeBlock, context);
         } else {
             if(m_property->type() == NodeType::Literal)
                 codeBlock->pushCode(Push(((LiteralNode *)m_property)->value()), this);
@@ -129,11 +129,11 @@ public:
         codeBlock->pushCode(GetObject(), this);
     }
 
-    virtual void generateByteCodeWriteCase(CodeBlock* codeBlock)
+    virtual void generateByteCodeWriteCase(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
     {
-        m_object->generateExpressionByteCode(codeBlock);
+        m_object->generateExpressionByteCode(codeBlock, context);
         if(m_computed) {
-            m_property->generateExpressionByteCode(codeBlock);
+            m_property->generateExpressionByteCode(codeBlock, context);
         } else {
             if(m_property->type() == NodeType::Literal)
                 codeBlock->pushCode(Push(((LiteralNode *)m_property)->value()), this);

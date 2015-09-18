@@ -37,10 +37,10 @@ public:
         return ret;
     }
 
-    virtual void generateExpressionByteCode(CodeBlock* codeBlock)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
     {
-        m_left->generateExpressionByteCode(codeBlock);
-        m_right->generateExpressionByteCode(codeBlock);
+        m_left->generateExpressionByteCode(codeBlock, context);
+        m_right->generateExpressionByteCode(codeBlock, context);
         codeBlock->pushCode(Minus(), this);
     }
 

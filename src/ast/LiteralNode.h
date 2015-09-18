@@ -19,7 +19,7 @@ public:
         return m_value;
     }
 
-    virtual void generateExpressionByteCode(CodeBlock* codeBlock)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
     {
         codeBlock->pushCode(Push(m_value), this);
     }

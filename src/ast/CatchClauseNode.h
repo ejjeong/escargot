@@ -25,9 +25,9 @@ public:
         m_body->executeStatement(instance);
     }
 
-    virtual void generateStatementByteCode(CodeBlock* codeBlock)
+    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
     {
-        m_body->generateStatementByteCode(codeBlock);
+        m_body->generateStatementByteCode(codeBlock, context);
     }
 
     IdentifierNode* param() {

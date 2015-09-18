@@ -90,6 +90,30 @@ enum Opcode {
 
 class ByteCode;
 
+struct ByteCodeGenereateContextStatePusher {
+    ByteCodeGenereateContextStatePusher(size_t& state)
+        : m_storedStateAddress(state)
+    {
+        m_storedState = state;
+    }
+
+    ~ByteCodeGenereateContextStatePusher()
+    {
+        m_storedStateAddress = m_storedState;
+    }
+
+    size_t& m_storedStateAddress;
+    size_t m_storedState;
+};
+
+struct ByteCodeGenereateContext {
+    ByteCodeGenereateContext()
+    {
+        m_lastContinuePosition = SIZE_MAX;
+    }
+    size_t m_lastContinuePosition;
+};
+
 class ByteCode {
 public:
     ByteCode(Opcode code)
@@ -1216,7 +1240,7 @@ ALWAYS_INLINE void dumpBytecode(CodeBlock* codeBlock)
     char* code = codeBlock->m_code.data();
     while(idx < codeBlock->m_code.size()) {
         ByteCode* currentCode = (ByteCode *)(&code[idx]);
-        printf("%u\t\t", (unsigned)idx);
+        printf("%u\t\t%p\t",(unsigned)idx, currentCode);
         switch(currentCode->m_opcode) {
 #define DUMP_BYTE_CODE(code) \
         case code##Opcode:\

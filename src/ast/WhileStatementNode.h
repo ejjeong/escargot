@@ -41,15 +41,19 @@ public:
         }
     }
 
-    virtual void generateStatementByteCode(CodeBlock* codeBlock)
+    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
     {
         size_t whileStart = codeBlock->currentCodeSize();
-        m_test->generateExpressionByteCode(codeBlock);
+        m_test->generateExpressionByteCode(codeBlock, context);
 
         codeBlock->pushCode(JumpIfTopOfStackValueIsFalse(SIZE_MAX), this);
         size_t testPos = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsFalse>();
 
-        m_body->generateStatementByteCode(codeBlock);
+        {
+            ByteCodeGenereateContextStatePusher c(context.m_lastContinuePosition);
+            context.m_lastContinuePosition = whileStart;
+            m_body->generateStatementByteCode(codeBlock, context);
+        }
 
         codeBlock->pushCode(Jump(whileStart), this);
         size_t whileEnd = codeBlock->currentCodeSize();
