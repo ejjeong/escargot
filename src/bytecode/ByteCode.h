@@ -1139,7 +1139,7 @@ public:
 #endif
 };
 
-class CodeBlock : public gc_cleanup {
+class CodeBlock : public gc {
 public:
     CodeBlock()
     {
@@ -1184,14 +1184,15 @@ ALWAYS_INLINE void push(void* stk, unsigned& sp, const Type& ptr)
     sp += sizeof (Type);
 
 #ifndef NDEBUG
-    int siz = sizeof (Type);
-    memcpy(((char *)stk) + sp, &siz, sizeof (int));
-    sp += sizeof (int);
+    size_t siz = sizeof (Type);
+    memcpy(((char *)stk) + sp, &siz, sizeof (size_t));
+    sp += sizeof (size_t);
 
     if(sp > 1024*4) {
         puts("stackoverflow!!!");
         ASSERT_NOT_REACHED();
     }
+    ASSERT(sp % sizeof(size_t) == 0);
 #endif
 }
 
@@ -1199,14 +1200,15 @@ template <typename Type>
 ALWAYS_INLINE Type* pop(void* stk, unsigned& sp)
 {
 #ifndef NDEBUG
-    if(sp < sizeof (Type) + sizeof (int)) {
+    if(sp < sizeof (Type) + sizeof (size_t)) {
         ASSERT_NOT_REACHED();
     }
-    sp -= sizeof (int);
-    int* siz = (int *)(&(((char *)stk)[sp]));
+    sp -= sizeof (size_t);
+    size_t* siz = (size_t *)(&(((char *)stk)[sp]));
     ASSERT(*siz == sizeof (Type));
 #endif
     sp -= sizeof (Type);
+    ASSERT(sp % sizeof(size_t) == 0);
     return (Type *)(&(((char *)stk)[sp]));
 }
 
@@ -1214,11 +1216,11 @@ template <typename Type>
 ALWAYS_INLINE Type* peek(void* stk, size_t sp)
 {
 #ifndef NDEBUG
-    if(sp < sizeof (Type) + sizeof (int)) {
+    if(sp < sizeof (Type) + sizeof (size_t)) {
         ASSERT_NOT_REACHED();
     }
-    sp -= sizeof (int);
-    int* siz = (int *)(&(((char *)stk)[sp]));
+    sp -= sizeof (size_t);
+    size_t* siz = (size_t *)(&(((char *)stk)[sp]));
     ASSERT(*siz == sizeof (Type));
 #endif
     sp -= sizeof (Type);

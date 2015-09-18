@@ -21,8 +21,12 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     ESValue* nonActivitionModeLocalValuePointer = ec->cachedDeclarativeEnvironmentRecordESValue();
     while(1) {
         ByteCode* currentCode = (ByteCode *)(&code[programCounter]);
-        //printf("execute %u \t",(unsigned)programCounter);
-        //currentCode->dump();
+        {
+            //size_t tt = (size_t)currentCode;
+            //ASSERT(tt % sizeof(size_t) == 0);
+            //printf("execute %p %u \t",currentCode, (unsigned)programCounter);
+            //currentCode->dump();
+        }
         switch(currentCode->m_opcode) {
         case PushOpcode:
         {
@@ -706,11 +710,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             sp -= argc * sizeof(ESValue);
 #else
             sp -= argc * sizeof(ESValue);
-            sp -= argc * sizeof(int);
+            sp -= argc * sizeof(size_t);
             {
                 ESValue* arguments = (ESValue *)&(((char *)stack)[sp]);
                 for(size_t i = 0; i < argc ; i ++) {
-                    arguments[i] = *((ESValue *)&(((char *)stack)[sp + i*(sizeof(ESValue)+sizeof(int))]));
+                    arguments[i] = *((ESValue *)&(((char *)stack)[sp + i*(sizeof(ESValue)+sizeof(size_t))]));
                 }
             }
 #endif
@@ -727,11 +731,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             sp -= argc * sizeof(ESValue);
 #else
             sp -= argc * sizeof(ESValue);
-            sp -= argc * sizeof(int);
+            sp -= argc * sizeof(size_t);
             {
                 ESValue* arguments = (ESValue *)&(((char *)stack)[sp]);
                 for(size_t i = 0; i < argc ; i ++) {
-                    arguments[i] = *((ESValue *)&(((char *)stack)[sp + i*(sizeof(ESValue)+sizeof(int))]));
+                    arguments[i] = *((ESValue *)&(((char *)stack)[sp + i*(sizeof(ESValue)+sizeof(size_t))]));
                 }
             }
 #endif
