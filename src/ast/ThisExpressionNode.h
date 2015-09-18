@@ -15,7 +15,7 @@ public:
         return instance->currentExecutionContext()->resolveThisBinding();
     }
 
-    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         codeBlock->pushCode(This(), this);
     }

@@ -13,7 +13,7 @@ public:
     {
     }
 
-    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
+    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         codeBlock->pushCode(Jump(SIZE_MAX), this);
         context.pushContinuePositions(codeBlock->lastCodePosition<Jump>());

@@ -20,7 +20,7 @@ public:
         return ESValue(m_left->executeExpression(instance).toNumber() * m_right->executeExpression(instance).toNumber());
     }
 
-    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_left->generateExpressionByteCode(codeBlock, context);
         m_right->generateExpressionByteCode(codeBlock, context);

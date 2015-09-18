@@ -14,17 +14,16 @@ enum Opcode {
     PushOpcode, //Literal
     PopExpressionStatementOpcode, //ExpressionStatement
     PopOpcode,
+    PushIntoTempStackOpcode,
+    PopFromTempStackOpcode,
 
     GetByIdOpcode,
     GetByIndexOpcode,
     GetByIndexWithActivationOpcode,
-    ResolveAddressByIdOpcode,
-    ResolveAddressByIndexOpcode,
-    ResolveAddressByIndexWithActivationOpcode,
-    ResolveAddressInObjectOpcode,
-    ReferenceTopValueWithPeekingOpcode,
-    PutOpcode,
-    PutReverseStackOpcode,
+    PutByIdOpcode,
+    PutByIndexOpcode,
+    PutByIndexWithActivationOpcode,
+    PutInObjectOpcode,
     CreateBindingOpcode,
 
     //binary expressions
@@ -47,6 +46,8 @@ enum Opcode {
     MultiplyOpcode,
     DivisionOpcode,
     ModOpcode,
+    IncrementOpcode,
+    DecrementOpcode,
 
     //unary expressions
     BitwiseNotOpcode,
@@ -59,6 +60,7 @@ enum Opcode {
     CreateArrayOpcode,
     SetObjectOpcode,
     GetObjectOpcode,
+    GetObjectWithPeekingOpcode,
 
     //function
     CreateFunctionOpcode,
@@ -96,8 +98,8 @@ struct OpcodeTable {
 class ByteCode;
 class CodeBlock;
 
-struct ByteCodeGenereateContext {
-    ByteCodeGenereateContext()
+struct ByteCodeGenerateContext {
+    ByteCodeGenerateContext()
     {
     }
 
@@ -159,6 +161,36 @@ public:
     virtual void dump()
     {
         printf("Pop <>\n");
+    }
+#endif
+};
+
+class PushIntoTempStack : public ByteCode {
+public:
+    PushIntoTempStack()
+        : ByteCode(PushIntoTempStackOpcode)
+    {
+
+    }
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("PushIntoTempStack <>\n");
+    }
+#endif
+};
+
+class PopFromTempStack : public ByteCode {
+public:
+    PopFromTempStack()
+        : ByteCode(PopFromTempStackOpcode)
+    {
+
+    }
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("PopFromTempStack <>\n");
     }
 #endif
 };
@@ -240,10 +272,10 @@ public:
 #endif
 };
 
-class ResolveAddressById : public ByteCode {
+class PutById : public ByteCode {
 public:
-    ResolveAddressById(const InternalAtomicString& name, ESString* esName)
-        : ByteCode(ResolveAddressByIdOpcode)
+    PutById(const InternalAtomicString& name, ESString* esName)
+        : ByteCode(PutByIdOpcode)
     {
         m_name = name;
         m_nonAtomicName = esName;
@@ -259,15 +291,15 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("ResolveAddressById <%s>\n", m_nonAtomicName->utf8Data());
+        printf("PutById <%s>\n", m_nonAtomicName->utf8Data());
     }
 #endif
 };
 
-class ResolveAddressByIndex : public ByteCode {
+class PutByIndex : public ByteCode {
 public:
-    ResolveAddressByIndex(size_t index)
-        : ByteCode(ResolveAddressByIndexOpcode)
+    PutByIndex(size_t index)
+        : ByteCode(PutByIndexOpcode)
     {
         m_index = index;
     }
@@ -276,15 +308,15 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("ResolveAddressByIndex <%u>\n", (unsigned)m_index);
+        printf("PutByIndex <%u>\n", (unsigned)m_index);
     }
 #endif
 };
 
-class ResolveAddressByIndexWithActivation : public ByteCode {
+class PutByIndexWithActivation : public ByteCode {
 public:
-    ResolveAddressByIndexWithActivation(size_t fastAccessIndex, size_t fastAccessUpIndex)
-        : ByteCode(ResolveAddressByIndexWithActivationOpcode)
+    PutByIndexWithActivation(size_t fastAccessIndex, size_t fastAccessUpIndex)
+        : ByteCode(PutByIndexWithActivationOpcode)
     {
         m_index = fastAccessIndex;
         m_upIndex = fastAccessUpIndex;
@@ -295,15 +327,15 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("ResolveAddressByIndex <%u, %u>\n", (unsigned)m_index, (unsigned)m_upIndex);
+        printf("PutByIndexWithActivation <%u, %u>\n", (unsigned)m_index, (unsigned)m_upIndex);
     }
 #endif
 };
 
-class ResolveAddressInObject : public ByteCode {
+class PutInObject : public ByteCode {
 public:
-    ResolveAddressInObject()
-        : ByteCode(ResolveAddressInObjectOpcode)
+    PutInObject()
+        : ByteCode(PutInObjectOpcode)
     {
         m_cachedHiddenClass = nullptr;
         m_cachedPropertyValue = nullptr;
@@ -313,61 +345,13 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("ResolveAddressInObject <>\n");
+        printf("PutInObject <>\n");
     }
 #endif
 
     ESHiddenClass* m_cachedHiddenClass;
     ESString* m_cachedPropertyValue;
     size_t m_cachedIndex;
-};
-
-class ReferenceTopValueWithPeeking : public ByteCode {
-public:
-    ReferenceTopValueWithPeeking()
-        : ByteCode(ReferenceTopValueWithPeekingOpcode)
-    {
-    }
-
-#ifndef NDEBUG
-    virtual void dump()
-    {
-        printf("ReferenceTopValueWithPeeking <>\n");
-    }
-#endif
-};
-
-
-class Put : public ByteCode {
-public:
-    Put()
-        : ByteCode(PutOpcode)
-    {
-
-    }
-
-#ifndef NDEBUG
-    virtual void dump()
-    {
-        printf("Put <>\n");
-    }
-#endif
-};
-
-class PutReverseStack : public ByteCode {
-public:
-    PutReverseStack()
-        : ByteCode(PutReverseStackOpcode)
-    {
-
-    }
-
-#ifndef NDEBUG
-    virtual void dump()
-    {
-        printf("PutReverseStack <>\n");
-    }
-#endif
 };
 
 class CreateBinding : public ByteCode {
@@ -691,6 +675,38 @@ public:
 #endif
 };
 
+class Increment : public ByteCode {
+public:
+    Increment()
+        : ByteCode(IncrementOpcode)
+    {
+
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("Increment <>\n");
+    }
+#endif
+};
+
+class Decrement : public ByteCode {
+public:
+    Decrement()
+        : ByteCode(DecrementOpcode)
+    {
+
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("Decrement <>\n");
+    }
+#endif
+};
+
 class BitwiseNot : public ByteCode {
 public:
     BitwiseNot()
@@ -892,6 +908,28 @@ public:
     virtual void dump()
     {
         printf("GetObject <>\n");
+    }
+#endif
+
+    ESHiddenClass* m_cachedHiddenClass;
+    ESString* m_cachedPropertyValue;
+    size_t m_cachedIndex;
+};
+
+class GetObjectWithPeeking : public ByteCode {
+public:
+    GetObjectWithPeeking()
+        : ByteCode(GetObjectWithPeekingOpcode)
+    {
+        m_cachedHiddenClass = nullptr;
+        m_cachedPropertyValue = nullptr;
+        m_cachedIndex = SIZE_MAX;
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("GetObjectWithPeeking <>\n");
     }
 #endif
 
@@ -1187,7 +1225,7 @@ ALWAYS_INLINE void push(void* stk, unsigned& sp, const Type& ptr)
     memcpy(((char *)stk) + sp, &siz, sizeof (size_t));
     sp += sizeof (size_t);
 
-    if(sp > 1024*4) {
+    if(sp > 1024) {
         puts("stackoverflow!!!");
         ASSERT_NOT_REACHED();
     }
@@ -1227,7 +1265,7 @@ ALWAYS_INLINE Type* peek(void* stk, size_t sp)
 }
 
 template <typename CodeType>
-ALWAYS_INLINE void excuteNextCode(size_t& programCounter)
+ALWAYS_INLINE void executeNextCode(size_t& programCounter)
 {
     programCounter += sizeof (CodeType);
 }
@@ -1258,7 +1296,7 @@ void CodeBlock::pushCode(const CodeType& type, Node* node)
     m_code.insert(m_code.end(), first, first + sizeof(CodeType));
 }
 
-ALWAYS_INLINE void ByteCodeGenereateContext::consumeBreakPositions(CodeBlock* cb, size_t position)
+ALWAYS_INLINE void ByteCodeGenerateContext::consumeBreakPositions(CodeBlock* cb, size_t position)
 {
     for(size_t i = 0; i < m_breakStatementPositions.size(); i ++) {
         Jump* shouldBeJump = cb->peekCode<Jump>(m_breakStatementPositions[i]);
@@ -1267,7 +1305,7 @@ ALWAYS_INLINE void ByteCodeGenereateContext::consumeBreakPositions(CodeBlock* cb
     m_breakStatementPositions.clear();
 }
 
-ALWAYS_INLINE void ByteCodeGenereateContext::consumeContinuePositions(CodeBlock* cb, size_t position)
+ALWAYS_INLINE void ByteCodeGenerateContext::consumeContinuePositions(CodeBlock* cb, size_t position)
 {
     for(size_t i = 0; i < m_continueStatementPositions.size(); i ++) {
         Jump* shouldBeJump = cb->peekCode<Jump>(m_continueStatementPositions[i]);

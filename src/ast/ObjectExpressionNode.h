@@ -37,7 +37,7 @@ public:
         return obj;
     }
 
-    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         codeBlock->pushCode(CreateObject(m_properties.size()), this);
         for(unsigned i = 0; i < m_properties.size() ; i ++) {

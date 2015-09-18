@@ -18,7 +18,7 @@ public:
         m_rootedExpressions = m_expressions.data();
     }
 
-    ESValue executeExpression(ESVMInstance* instance, ByteCodeGenereateContext& context)
+    ESValue executeExpression(ESVMInstance* instance, ByteCodeGenerateContext& context)
     {
         for (unsigned i = 0; i < m_expressionsSize - 1; i++) {
             m_rootedExpressions[i]->executeExpression(instance);

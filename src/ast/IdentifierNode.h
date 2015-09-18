@@ -22,59 +22,7 @@ public:
         m_fastAccessUpIndex = SIZE_MAX;
     }
 
-    ESValue executeExpression(ESVMInstance* instance)
-    {
-        ASSERT(!(m_canUseFastAccess));
-        if (LIKELY(m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
-            return m_cachedSlot.readDataProperty();
-        } else {
-            ExecutionContext* ec = instance->currentExecutionContext();
-            ESSlotAccessor slot = ec->resolveBinding(name(), nonAtomicName());
-            if(LIKELY(slot.hasData())) {
-                m_cachedSlot = ESSlotAccessor(slot);
-                m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
-                return m_cachedSlot.readDataProperty();
-            }
-
-            ReferenceError* receiver = ReferenceError::create();
-
-            std::vector<ESValue> arguments;
-            u16string err_msg;
-            err_msg.append(nonAtomicName()->data());
-            err_msg.append(u" is not defined");
-            //arguments.push_back(String::create(err_msg));
-
-            //TODO call constructor
-            //ESFunctionObject::call(fn, receiver, &arguments[0], arguments.size(), instance);
-            receiver->set(strings->message, ESString::create(std::move(err_msg)));
-
-            throw ESValue(receiver);
-        }
-        RELEASE_ASSERT_NOT_REACHED();
-    }
-
-    ESSlotAccessor executeForWrite(ESVMInstance* instance)
-    {
-        ASSERT(!(m_canUseFastAccess && !instance->currentExecutionContext()->needsActivation()));
-        if (LIKELY(m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
-            return m_cachedSlot;
-        } else {
-            ExecutionContext* ec = instance->currentExecutionContext();
-            ESSlotAccessor slot = ec->resolveBinding(name(), nonAtomicName());
-
-            if(LIKELY(slot.hasData())) {
-                m_cachedSlot = slot;
-                m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
-                return slot;
-            } else {
-                //CHECKTHIS true, true, false is right?
-                instance->invalidateIdentifierCacheCheckCount();
-                return instance->globalObject()->definePropertyOrThrow(m_nonAtomicName, true, true, true);
-            }
-        }
-    }
-
-    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         if(m_canUseFastAccess) {
             if(codeBlock->m_needsActivation) {
@@ -100,19 +48,29 @@ public:
         }
     }
 
-    virtual void generateByteCodeWriteCase(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
+    virtual void generateResolveAddressByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    {
+    }
+
+    virtual void generateReferenceResolvedAddressByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    {
+        generateExpressionByteCode(codeBlock, context);
+    }
+
+
+    virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         if(m_canUseFastAccess) {
             if(codeBlock->m_needsActivation) {
-                codeBlock->pushCode(ResolveAddressByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), this);
+                codeBlock->pushCode(PutByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), this);
             } else {
                 if(m_fastAccessUpIndex == 0)
-                    codeBlock->pushCode(ResolveAddressByIndex(m_fastAccessIndex), this);
+                    codeBlock->pushCode(PutByIndex(m_fastAccessIndex), this);
                 else
-                    codeBlock->pushCode(ResolveAddressByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), this);
+                    codeBlock->pushCode(PutByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), this);
             }
         } else {
-            codeBlock->pushCode(ResolveAddressById(m_name, m_nonAtomicName), this);
+            codeBlock->pushCode(PutById(m_name, m_nonAtomicName), this);
         }
     }
 

@@ -19,22 +19,13 @@ public:
         m_right = right;
     }
 
-    ESValue executeExpression(ESVMInstance* instance)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        ESSlotAccessor slot;
-        slot = m_left->executeForWrite(instance);
-        ESValue rvalue(slot.value().toNumber() / m_right->executeExpression(instance).toNumber());
-        slot.setValue(rvalue);
-        return rvalue;
-    }
-
-    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
-    {
-        m_left->generateByteCodeWriteCase(codeBlock, context);
-        codeBlock->pushCode(ReferenceTopValueWithPeeking(), this);
+        m_left->generateResolveAddressByteCode(codeBlock, context);
+        m_left->generateReferenceResolvedAddressByteCode(codeBlock, context);
         m_right->generateExpressionByteCode(codeBlock, context);
         codeBlock->pushCode(Division(), this);
-        codeBlock->pushCode(Put(), this);
+        m_left->generatePutByteCode(codeBlock, context);
     }
 
 protected:

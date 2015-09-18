@@ -24,7 +24,7 @@ public:
         }
     }
 
-    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
+    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         for(unsigned i = 0; i < m_bodySize ; ++ i) {
             m_rootedBody[i]->generateStatementByteCode(codeBlock, context);

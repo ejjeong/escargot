@@ -28,11 +28,11 @@ public:
         return rvalue;
     }
 
-    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        m_left->generateByteCodeWriteCase(codeBlock, context);
+        m_left->generateResolveAddressByteCode(codeBlock, context);
         m_right->generateExpressionByteCode(codeBlock, context);
-        codeBlock->pushCode(Put(), this);
+        m_left->generatePutByteCode(codeBlock, context);
     }
 
 protected:

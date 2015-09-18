@@ -35,13 +35,12 @@ public:
         return ret;
     }
 
-    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        m_argument->generateByteCodeWriteCase(codeBlock, context);
-        m_argument->generateExpressionByteCode(codeBlock, context);
-        codeBlock->pushCode(Push(ESValue(1)), this);
-        codeBlock->pushCode(Plus(), this);
-        codeBlock->pushCode(Put(), this);
+        m_argument->generateResolveAddressByteCode(codeBlock, context);
+        m_argument->generateReferenceResolvedAddressByteCode(codeBlock, context);
+        codeBlock->pushCode(Increment(), this);
+        m_argument->generatePutByteCode(codeBlock, context);
     }
 protected:
     ExpressionNode* m_argument;

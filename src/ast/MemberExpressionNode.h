@@ -21,7 +21,7 @@ public:
         m_computed = computed;
     }
 
-    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_object->generateExpressionByteCode(codeBlock, context);
         if(m_computed) {
@@ -37,7 +37,13 @@ public:
         codeBlock->pushCode(GetObject(), this);
     }
 
-    virtual void generateByteCodeWriteCase(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
+
+    virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    {
+        codeBlock->pushCode(PutInObject(), this);
+    }
+
+    virtual void generateResolveAddressByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_object->generateExpressionByteCode(codeBlock, context);
         if(m_computed) {
@@ -50,7 +56,11 @@ public:
                 codeBlock->pushCode(Push(((IdentifierNode *)m_property)->nonAtomicName()), this);
             }
         }
-        codeBlock->pushCode(ResolveAddressInObject(), this);
+    }
+
+    virtual void generateReferenceResolvedAddressByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    {
+        codeBlock->pushCode(GetObjectWithPeeking(), this);
     }
 protected:
     ESHiddenClass* m_cachedHiddenClass;

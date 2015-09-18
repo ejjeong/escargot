@@ -20,7 +20,7 @@ public:
         return ESValue(m_argument->executeExpression(instance).toNumber());
     }
 
-    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_argument->generateExpressionByteCode(codeBlock, context);
         codeBlock->pushCode(UnaryPlus(), this);

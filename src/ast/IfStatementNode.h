@@ -16,7 +16,7 @@ public:
         m_alternate = (StatementNode*) alternate;
     }
 
-    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
+    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         if(!m_alternate) {
             m_test->generateExpressionByteCode(codeBlock, context);

@@ -19,27 +19,14 @@ public:
         m_right = right;
     }
 
-    ESValue executeExpression(ESVMInstance* instance)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        ESSlotAccessor slot;
-        slot = m_left->executeForWrite(instance);
-        int32_t lnum = slot.value().toInt32();
-        int32_t rnum = m_right->executeExpression(instance).toInt32();
-        // http://www.ecma-international.org/ecma-262/5.1/#sec-11.10
-        ESValue rvalue(lnum & rnum);
-        slot.setValue(rvalue);
-        return rvalue;
-    }
-
-    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
-    {
-        m_left->generateByteCodeWriteCase(codeBlock, context);
-        codeBlock->pushCode(ReferenceTopValueWithPeeking(), this);
+        m_left->generateResolveAddressByteCode(codeBlock, context);
+        m_left->generateReferenceResolvedAddressByteCode(codeBlock, context);
         m_right->generateExpressionByteCode(codeBlock, context);
         codeBlock->pushCode(BitwiseAnd(), this);
-        codeBlock->pushCode(Put(), this);
+        m_left->generatePutByteCode(codeBlock, context);
     }
-
 protected:
     Node* m_left; //left: Pattern;
     Node* m_right; //right: Expression;

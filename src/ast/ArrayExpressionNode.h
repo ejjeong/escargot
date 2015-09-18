@@ -26,7 +26,7 @@ public:
         return arr;
     }
 
-    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         unsigned len = m_elements.size();
         codeBlock->pushCode(CreateArray(len), this);

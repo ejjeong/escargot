@@ -37,7 +37,7 @@ public:
         return ret;
     }
 
-    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_left->generateExpressionByteCode(codeBlock, context);
         m_right->generateExpressionByteCode(codeBlock, context);

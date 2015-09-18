@@ -34,15 +34,16 @@ public:
         return ret;
     }
 
-    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        m_argument->generateExpressionByteCode(codeBlock, context);
+        m_argument->generateResolveAddressByteCode(codeBlock, context);
+        m_argument->generateReferenceResolvedAddressByteCode(codeBlock, context);
         codeBlock->pushCode(DuplicateTopOfStackValue(), this);
-        codeBlock->pushCode(Push(ESValue(1)), this);
-        codeBlock->pushCode(Plus(), this);
-        m_argument->generateByteCodeWriteCase(codeBlock, context);
-        codeBlock->pushCode(PutReverseStack(), this);
+        codeBlock->pushCode(PushIntoTempStack(), this);
+        codeBlock->pushCode(Increment(), this);
+        m_argument->generatePutByteCode(codeBlock, context);
         codeBlock->pushCode(Pop(), this);
+        codeBlock->pushCode(PopFromTempStack(), this);
     }
 protected:
     ExpressionNode* m_argument;

@@ -25,7 +25,7 @@ public:
             return m_alternate->executeExpression(instance);
     }
 
-    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_test->generateExpressionByteCode(codeBlock, context);
         codeBlock->pushCode(JumpIfTopOfStackValueIsFalse(SIZE_MAX), this);

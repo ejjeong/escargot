@@ -37,7 +37,7 @@ public:
         */
     }
 
-    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
+    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         CodeBlock* cb = new CodeBlock();
         cb->m_innerIdentifiers = std::move(m_innerIdentifiers);
@@ -45,7 +45,7 @@ public:
         cb->m_needsArgumentsObject = m_needsArgumentsObject;
         cb->m_nonAtomicParams = std::move(m_nonAtomicParams);
         cb->m_params = std::move(m_params);
-        ByteCodeGenereateContext newContext;
+        ByteCodeGenerateContext newContext;
         m_body->generateStatementByteCode(cb, newContext);
         cb->pushCode(ReturnFunction(), this);
         codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb), this);

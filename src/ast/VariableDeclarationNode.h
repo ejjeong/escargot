@@ -30,7 +30,7 @@ public:
         return ESValue();
     }
 
-    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
+    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         for(unsigned i = 0; i < m_declarations.size() ; i ++) {
             if(m_declarations[i]->type() == NodeType::VariableDeclarator) {
@@ -44,7 +44,7 @@ public:
         }
     }
 
-    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         for(unsigned i = 0; i < m_declarations.size() ; i ++) {
             if(m_declarations[i]->type() == NodeType::VariableDeclarator) {

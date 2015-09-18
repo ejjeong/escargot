@@ -65,7 +65,7 @@ public:
         return ESValue();
     }
 
-    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_callee->generateExpressionByteCode(codeBlock, context);
 

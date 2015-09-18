@@ -41,7 +41,7 @@ public:
         }
     }
 
-    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
+    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         ASSERT(!m_finalizer); //TODO
         codeBlock->pushCode(Try(), this);

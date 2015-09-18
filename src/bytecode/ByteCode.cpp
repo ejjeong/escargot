@@ -3,6 +3,9 @@
 
 namespace escargot {
 
+ALWAYS_INLINE ESValue plusOperation(const ESValue& left, const ESValue& right);
+ALWAYS_INLINE ESValue minusOperation(const ESValue& left, const ESValue& right);
+
 ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter)
 {
     if(codeBlock == NULL) {
@@ -11,16 +14,15 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         REGISTER_TABLE(Push);
         REGISTER_TABLE(PopExpressionStatement);
         REGISTER_TABLE(Pop);
+        REGISTER_TABLE(PushIntoTempStack);
+        REGISTER_TABLE(PopFromTempStack);
         REGISTER_TABLE(GetById);
         REGISTER_TABLE(GetByIndex);
         REGISTER_TABLE(GetByIndexWithActivation);
-        REGISTER_TABLE(ResolveAddressById);
-        REGISTER_TABLE(ResolveAddressByIndex);
-        REGISTER_TABLE(ResolveAddressByIndexWithActivation);
-        REGISTER_TABLE(ResolveAddressInObject);
-        REGISTER_TABLE(ReferenceTopValueWithPeeking);
-        REGISTER_TABLE(Put);
-        REGISTER_TABLE(PutReverseStack);
+        REGISTER_TABLE(PutById);
+        REGISTER_TABLE(PutByIndex);
+        REGISTER_TABLE(PutByIndexWithActivation);
+        REGISTER_TABLE(PutInObject);
         REGISTER_TABLE(CreateBinding);
         REGISTER_TABLE(Equal);
         REGISTER_TABLE(NotEqual);
@@ -41,6 +43,8 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         REGISTER_TABLE(Multiply);
         REGISTER_TABLE(Division);
         REGISTER_TABLE(Mod);
+        REGISTER_TABLE(Increment);
+        REGISTER_TABLE(Decrement);
         REGISTER_TABLE(BitwiseNot);
         REGISTER_TABLE(LogicalNot);
         REGISTER_TABLE(UnaryMinus);
@@ -49,6 +53,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         REGISTER_TABLE(CreateArray);
         REGISTER_TABLE(SetObject);
         REGISTER_TABLE(GetObject);
+        REGISTER_TABLE(GetObjectWithPeeking);
         REGISTER_TABLE(CreateFunction);
         REGISTER_TABLE(ExecuteNativeFunction);
         REGISTER_TABLE(PrepareFunctionCall);
@@ -73,10 +78,13 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     //dumpBytecode(codeBlock);
     //void* stack = instance->m_stack;
     //size_t& sp = instance->m_sp;
-    char stackBuf[1024*4];
+    char stackBuf[1024];
     void* stack = stackBuf;
     unsigned sp  = 0;
     unsigned bp = 0;
+    char tmpStackBuf[1024];
+    void* tmpStack = tmpStackBuf;
+    unsigned tmpSp  = 0;
     char* code = codeBlock->m_code.data();
     ExecutionContext* ec = instance->currentExecutionContext();
     GlobalObject* globalObject = instance->globalObject();
@@ -102,7 +110,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         Push* pushCode = (Push*)currentCode;
         push<ESValue>(stack, sp, pushCode->m_value);
-        excuteNextCode<Push>(programCounter);
+        executeNextCode<Push>(programCounter);
         goto NextInstruction;
     }
 
@@ -110,7 +118,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         Pop* popCode = (Pop*)currentCode;
         pop<ESValue>(stack, sp);
-        excuteNextCode<Pop>(programCounter);
+        executeNextCode<Pop>(programCounter);
         goto NextInstruction;
     }
 
@@ -118,7 +126,21 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* t = pop<ESValue>(stack, sp);
         *lastExpressionStatementValue = *t;
-        excuteNextCode<PopExpressionStatement>(programCounter);
+        executeNextCode<PopExpressionStatement>(programCounter);
+        goto NextInstruction;
+    }
+
+    PushIntoTempStackOpcodeLbl:
+    {
+        push<ESValue>(tmpStack, tmpSp, *pop<ESValue>(stack, sp));
+        executeNextCode<PushIntoTempStack>(programCounter);
+        goto NextInstruction;
+    }
+
+    PopFromTempStackOpcodeLbl:
+    {
+        push<ESValue>(stack, sp, *pop<ESValue>(tmpStack, tmpSp));
+        executeNextCode<PopFromTempStack>(programCounter);
         goto NextInstruction;
     }
 
@@ -146,7 +168,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                 throw ESValue(receiver);
             }
         }
-        excuteNextCode<GetById>(programCounter);
+        executeNextCode<GetById>(programCounter);
         goto NextInstruction;
     }
 
@@ -155,7 +177,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         GetByIndex* code = (GetByIndex*)currentCode;
         ASSERT(code->m_index < ec->environment()->record()->toDeclarativeEnvironmentRecord()->innerIdentifiers()->size());
         push<ESValue>(stack, sp, nonActivitionModeLocalValuePointer[code->m_index]);
-        excuteNextCode<GetByIndex>(programCounter);
+        executeNextCode<GetByIndex>(programCounter);
         goto NextInstruction;
     }
 
@@ -168,16 +190,17 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         }
         ASSERT(env->record()->isDeclarativeEnvironmentRecord());
         push<ESValue>(stack, sp, *env->record()->toDeclarativeEnvironmentRecord()->bindingValueForActivationMode(code->m_index));
-        excuteNextCode<GetByIndexWithActivation>(programCounter);
+        executeNextCode<GetByIndexWithActivation>(programCounter);
         goto NextInstruction;
     }
 
-    ResolveAddressByIdOpcodeLbl:
+    PutByIdOpcodeLbl:
     {
-        ResolveAddressById* code = (ResolveAddressById*)currentCode;
+        PutById* code = (PutById*)currentCode;
+        ESValue* value = peek<ESValue>(stack, sp);
 
         if (LIKELY(code->m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
-            push<ESSlotAccessor>(stack, sp, code->m_cachedSlot);
+            code->m_cachedSlot.setValue(*value);
         } else {
             ExecutionContext* ec = instance->currentExecutionContext();
             ESSlotAccessor slot = ec->resolveBinding(code->m_name, code->m_nonAtomicName);
@@ -185,42 +208,42 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             if(LIKELY(slot.hasData())) {
                 code->m_cachedSlot = slot;
                 code->m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
-                push<ESSlotAccessor>(stack, sp, slot);
+                code->m_cachedSlot.setValue(*value);
             } else {
                 //CHECKTHIS true, true, false is right?
                 instance->invalidateIdentifierCacheCheckCount();
-                push<ESSlotAccessor>(stack, sp, globalObject->definePropertyOrThrow(code->m_nonAtomicName, true, true, true));
+                globalObject->definePropertyOrThrow(code->m_nonAtomicName, true, true, true).setValue(*value);
             }
         }
-
-        excuteNextCode<ResolveAddressById>(programCounter);
+        executeNextCode<PutById>(programCounter);
         goto NextInstruction;
     }
 
-    ResolveAddressByIndexOpcodeLbl:
+    PutByIndexOpcodeLbl:
     {
-        ResolveAddressByIndex* code = (ResolveAddressByIndex*)currentCode;
-        push<ESSlotAccessor>(stack, sp, ESSlotAccessor(&nonActivitionModeLocalValuePointer[code->m_index]));
-        excuteNextCode<ResolveAddressByIndex>(programCounter);
+        PutByIndex* code = (PutByIndex*)currentCode;
+        nonActivitionModeLocalValuePointer[code->m_index] = *peek<ESValue>(stack, sp);
+        executeNextCode<PutByIndex>(programCounter);
         goto NextInstruction;
     }
 
-    ResolveAddressByIndexWithActivationOpcodeLbl:
+    PutByIndexWithActivationOpcodeLbl:
     {
-        ResolveAddressByIndexWithActivation* code = (ResolveAddressByIndexWithActivation*)currentCode;
+        PutByIndexWithActivation* code = (PutByIndexWithActivation*)currentCode;
         LexicalEnvironment* env = ec->environment();
         for(unsigned i = 0; i < code->m_upIndex; i ++) {
             env = env->outerEnvironment();
         }
         ASSERT(env->record()->isDeclarativeEnvironmentRecord());
-        push<ESSlotAccessor>(stack, sp, ESSlotAccessor(env->record()->toDeclarativeEnvironmentRecord()->bindingValueForActivationMode(code->m_index)));
-        excuteNextCode<ResolveAddressByIndexWithActivation>(programCounter);
+        *env->record()->toDeclarativeEnvironmentRecord()->bindingValueForActivationMode(code->m_index) = *peek<ESValue>(stack, sp);
+        executeNextCode<PutByIndexWithActivation>(programCounter);
         goto NextInstruction;
     }
 
-    ResolveAddressInObjectOpcodeLbl:
+    PutInObjectOpcodeLbl:
     {
-        ResolveAddressInObject* code = (ResolveAddressInObject*)currentCode;
+        PutInObject* code = (PutInObject*)currentCode;
+        ESValue* value = pop<ESValue>(stack, sp);
         ESValue* property = pop<ESValue>(stack, sp);
         ESValue* willBeObject = pop<ESValue>(stack, sp);
 
@@ -230,62 +253,38 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         else
             obj = willBeObject->toObject();
 
-        lastESObjectMetInMemberExpressionNode = obj;
-
         if(obj->isHiddenClassMode() && !obj->isESArrayObject()) {
             ESString* val = property->toString();
             if(code->m_cachedHiddenClass == obj->hiddenClass() && (val == code->m_cachedPropertyValue || *val == *code->m_cachedPropertyValue)) {
-                push<ESSlotAccessor>(stack, sp, ESSlotAccessor(obj, val, code->m_cachedIndex));
-                excuteNextCode<ResolveAddressInObject>(programCounter);
+                obj->writeHiddenClass(code->m_cachedIndex, *value);
+                push<ESValue>(stack, sp, *value);
+                executeNextCode<PutInObject>(programCounter);
+                goto NextInstruction;
             } else {
                 size_t idx = obj->hiddenClass()->findProperty(val);
                 if(idx != SIZE_MAX) {
                     code->m_cachedHiddenClass = obj->hiddenClass();
                     code->m_cachedPropertyValue = val;
                     code->m_cachedIndex = idx;
-                    push<ESSlotAccessor>(stack, sp, ESSlotAccessor(obj, val, code->m_cachedIndex));
-                    excuteNextCode<ResolveAddressInObject>(programCounter);
+                    obj->writeHiddenClass(code->m_cachedIndex, *value);
+                    push<ESValue>(stack, sp, *value);
+                    executeNextCode<PutInObject>(programCounter);
                     goto NextInstruction;
                 } else {
                     code->m_cachedHiddenClass = nullptr;
-                    push<ESSlotAccessor>(stack, sp, ESSlotAccessor(obj, *property));
-                    excuteNextCode<ResolveAddressInObject>(programCounter);
+                    obj->set(*property, *value, true);
+                    push<ESValue>(stack, sp, *value);
+                    executeNextCode<PutInObject>(programCounter);
                     goto NextInstruction;
                 }
             }
         } else {
-            push<ESSlotAccessor>(stack, sp, ESSlotAccessor(obj, *property));
-            excuteNextCode<ResolveAddressInObject>(programCounter);
+            obj->set(*property, *value, true);
+            push<ESValue>(stack, sp, *value);
+            executeNextCode<PutInObject>(programCounter);
             goto NextInstruction;
         }
-        goto NextInstruction;
-    }
-
-    ReferenceTopValueWithPeekingOpcodeLbl:
-    {
-        push<ESValue>(stack, sp, peek<ESSlotAccessor>(stack, sp)->value());
-        excuteNextCode<ReferenceTopValueWithPeeking>(programCounter);
-        goto NextInstruction;
-    }
-
-    PutOpcodeLbl:
-    {
-        ESValue* value = pop<ESValue>(stack, sp);
-        ESSlotAccessor* slot = pop<ESSlotAccessor>(stack, sp);
-        slot->setValue(*value);
-        push<ESValue>(stack, sp, *value);
-        excuteNextCode<Put>(programCounter);
-        goto NextInstruction;
-    }
-
-    PutReverseStackOpcodeLbl:
-    {
-        ESSlotAccessor* slot = pop<ESSlotAccessor>(stack, sp);
-        ESValue* value = pop<ESValue>(stack, sp);
-        slot->setValue(*value);
-        push<ESValue>(stack, sp, *value);
-        excuteNextCode<PutReverseStack>(programCounter);
-        goto NextInstruction;
+        RELEASE_ASSERT_NOT_REACHED();
     }
 
     CreateBindingOpcodeLbl:
@@ -293,7 +292,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         CreateBinding* code = (CreateBinding*)currentCode;
         ec->environment()->record()->createMutableBindingForAST(code->m_name,
                 code->m_nonAtomicName, false);
-        excuteNextCode<CreateBinding>(programCounter);
+        executeNextCode<CreateBinding>(programCounter);
         goto NextInstruction;
     }
 
@@ -302,7 +301,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* right = pop<ESValue>(stack, sp);
         ESValue* left = pop<ESValue>(stack, sp);
         push<ESValue>(stack, sp, ESValue(left->abstractEqualsTo(*right)));
-        excuteNextCode<Equal>(programCounter);
+        executeNextCode<Equal>(programCounter);
         goto NextInstruction;
     }
 
@@ -311,7 +310,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* right = pop<ESValue>(stack, sp);
         ESValue* left = pop<ESValue>(stack, sp);
         push<ESValue>(stack, sp, ESValue(!left->abstractEqualsTo(*right)));
-        excuteNextCode<NotEqual>(programCounter);
+        executeNextCode<NotEqual>(programCounter);
         goto NextInstruction;
     }
 
@@ -320,7 +319,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* right = pop<ESValue>(stack, sp);
         ESValue* left = pop<ESValue>(stack, sp);
         push<ESValue>(stack, sp, ESValue(left->equalsTo(*right)));
-        excuteNextCode<StrictEqual>(programCounter);
+        executeNextCode<StrictEqual>(programCounter);
         goto NextInstruction;
     }
 
@@ -329,7 +328,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* right = pop<ESValue>(stack, sp);
         ESValue* left = pop<ESValue>(stack, sp);
         push<ESValue>(stack, sp, ESValue(!left->equalsTo(*right)));
-        excuteNextCode<NotStrictEqual>(programCounter);
+        executeNextCode<NotStrictEqual>(programCounter);
         goto NextInstruction;
     }
 
@@ -338,7 +337,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* right = pop<ESValue>(stack, sp);
         ESValue* left = pop<ESValue>(stack, sp);
         push<ESValue>(stack, sp, ESValue(left->toInt32() & right->toInt32()));
-        excuteNextCode<BitwiseAnd>(programCounter);
+        executeNextCode<BitwiseAnd>(programCounter);
         goto NextInstruction;
     }
 
@@ -347,7 +346,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* right = pop<ESValue>(stack, sp);
         ESValue* left = pop<ESValue>(stack, sp);
         push<ESValue>(stack, sp, ESValue(left->toInt32() | right->toInt32()));
-        excuteNextCode<BitwiseOr>(programCounter);
+        executeNextCode<BitwiseOr>(programCounter);
         goto NextInstruction;
     }
 
@@ -356,7 +355,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* right = pop<ESValue>(stack, sp);
         ESValue* left = pop<ESValue>(stack, sp);
         push<ESValue>(stack, sp, ESValue(left->toInt32() ^ right->toInt32()));
-        excuteNextCode<BitwiseXor>(programCounter);
+        executeNextCode<BitwiseXor>(programCounter);
         goto NextInstruction;
     }
 
@@ -368,7 +367,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         int32_t rnum = right->toInt32();
         lnum <<= ((unsigned int)rnum) & 0x1F;
         push<ESValue>(stack, sp, ESValue(lnum));
-        excuteNextCode<LeftShift>(programCounter);
+        executeNextCode<LeftShift>(programCounter);
         goto NextInstruction;
     }
 
@@ -380,7 +379,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         int32_t rnum = right->toInt32();
         lnum >>= ((unsigned int)rnum) & 0x1F;
         push<ESValue>(stack, sp, ESValue(lnum));
-        excuteNextCode<SignedRightShift>(programCounter);
+        executeNextCode<SignedRightShift>(programCounter);
         goto NextInstruction;
     }
 
@@ -392,7 +391,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         int32_t rnum = right->toInt32();
         lnum = ((unsigned int)lnum) >> (((unsigned int)rnum) & 0x1F);
         push<ESValue>(stack, sp, ESValue(lnum));
-        excuteNextCode<UnsignedRightShift>(programCounter);
+        executeNextCode<UnsignedRightShift>(programCounter);
         goto NextInstruction;
     }
 
@@ -414,7 +413,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             b = lval.toNumber() < rval.toNumber();
         }
         push<ESValue>(stack, sp, ESValue(b));
-        excuteNextCode<LessThan>(programCounter);
+        executeNextCode<LessThan>(programCounter);
         goto NextInstruction;
     }
 
@@ -436,7 +435,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
          b = lval.toNumber() <= rval.toNumber();
         }
         push<ESValue>(stack, sp, ESValue(b));
-        excuteNextCode<LessThanOrEqual>(programCounter);
+        executeNextCode<LessThanOrEqual>(programCounter);
         goto NextInstruction;
     }
 
@@ -458,7 +457,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             b = lval.toNumber() > rval.toNumber();
         }
         push<ESValue>(stack, sp, ESValue(b));
-        excuteNextCode<GreaterThan>(programCounter);
+        executeNextCode<GreaterThan>(programCounter);
         goto NextInstruction;
     }
 
@@ -480,62 +479,21 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
          b = lval.toNumber() >= rval.toNumber();
         }
         push<ESValue>(stack, sp, ESValue(b));
-        excuteNextCode<GreaterThanOrEqual>(programCounter);
+        executeNextCode<GreaterThanOrEqual>(programCounter);
         goto NextInstruction;
     }
 
     PlusOpcodeLbl:
     {
-        ESValue* right = pop<ESValue>(stack, sp);
-        ESValue* left = pop<ESValue>(stack, sp);
-        ESValue lval = left->toPrimitive();
-        ESValue rval = right->toPrimitive();
-        // http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.1
-
-        ESValue ret(ESValue::ESForceUninitialized);
-        if(lval.isInt32() && rval.isInt32()) {
-            int a = lval.asInt32(), b = rval.asInt32();
-            if (UNLIKELY(a > 0 && b > std::numeric_limits<int32_t>::max() - a)) {
-                //overflow
-                ret = ESValue((double)lval.asInt32() + (double)rval.asInt32());
-            } else if (UNLIKELY(a < 0 && b < std::numeric_limits<int32_t>::min() - a)) {
-                //underflow
-                ret = ESValue((double)lval.asInt32() + (double)rval.asInt32());
-            } else {
-                ret = ESValue(lval.asInt32() + rval.asInt32());
-            }
-        } else if (lval.isESString() || rval.isESString()) {
-            ret = ESString::concatTwoStrings(lval.toString(), rval.toString());
-        } else {
-            ret = ESValue(lval.toNumber() + rval.toNumber());
-        }
-        push<ESValue>(stack, sp, ret);
-        excuteNextCode<Plus>(programCounter);
+        push<ESValue>(stack, sp, plusOperation(*pop<ESValue>(stack, sp), *pop<ESValue>(stack, sp)));
+        executeNextCode<Plus>(programCounter);
         goto NextInstruction;
     }
 
     MinusOpcodeLbl:
     {
-        ESValue* right = pop<ESValue>(stack, sp);
-        ESValue* left = pop<ESValue>(stack, sp);
-        // http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.2
-        ESValue ret(ESValue::ESForceUninitialized);
-        if (left->isInt32() && right->isInt32()) {
-            int a = left->asInt32(), b = right->asInt32();
-            if (UNLIKELY((a > 0 && b < 0 && b < a - std::numeric_limits<int32_t>::max()))) {
-                //overflow
-                ret = ESValue((double)left->asInt32() - (double)right->asInt32());
-            } else if (UNLIKELY(a < 0 && b > 0 && b > a - std::numeric_limits<int32_t>::min())) {
-                //underflow
-                ret = ESValue((double)left->asInt32() - (double)right->asInt32());
-            } else {
-                ret = ESValue(left->asInt32() - right->asInt32());
-            }
-        }
-        else
-            ret = ESValue(left->toNumber() - right->toNumber());
-        push<ESValue>(stack, sp, ret);
-        excuteNextCode<Minus>(programCounter);
+        push<ESValue>(stack, sp, minusOperation(*pop<ESValue>(stack, sp), *pop<ESValue>(stack, sp)));
+        executeNextCode<Minus>(programCounter);
         goto NextInstruction;
     }
 
@@ -544,7 +502,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* right = pop<ESValue>(stack, sp);
         ESValue* left = pop<ESValue>(stack, sp);
         push<ESValue>(stack, sp, ESValue(left->toNumber() * right->toNumber()));
-        excuteNextCode<Multiply>(programCounter);
+        executeNextCode<Multiply>(programCounter);
         goto NextInstruction;
     }
 
@@ -553,7 +511,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* right = pop<ESValue>(stack, sp);
         ESValue* left = pop<ESValue>(stack, sp);
         push<ESValue>(stack, sp, ESValue(left->toNumber() / right->toNumber()));
-        excuteNextCode<Division>(programCounter);
+        executeNextCode<Division>(programCounter);
         goto NextInstruction;
     }
 
@@ -587,35 +545,49 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             }
         }
         push<ESValue>(stack, sp, ret);
-        excuteNextCode<Mod>(programCounter);
+        executeNextCode<Mod>(programCounter);
+        goto NextInstruction;
+    }
+
+    IncrementOpcodeLbl:
+    {
+        push<ESValue>(stack, sp, plusOperation(*pop<ESValue>(stack, sp), ESValue(1)));
+        executeNextCode<Division>(programCounter);
+        goto NextInstruction;
+    }
+
+    DecrementOpcodeLbl:
+    {
+        push<ESValue>(stack, sp, minusOperation(*pop<ESValue>(stack, sp), ESValue(1)));
+        executeNextCode<Division>(programCounter);
         goto NextInstruction;
     }
 
     BitwiseNotOpcodeLbl:
     {
         push<ESValue>(stack, sp, ESValue(~pop<ESValue>(stack, sp)->toInt32()));
-        excuteNextCode<BitwiseNot>(programCounter);
+        executeNextCode<BitwiseNot>(programCounter);
         goto NextInstruction;
     }
 
     LogicalNotOpcodeLbl:
     {
         push<ESValue>(stack, sp, ESValue(!pop<ESValue>(stack, sp)->toBoolean()));
-        excuteNextCode<LogicalNot>(programCounter);
+        executeNextCode<LogicalNot>(programCounter);
         goto NextInstruction;
     }
 
     UnaryMinusOpcodeLbl:
     {
         push<ESValue>(stack, sp, ESValue(-pop<ESValue>(stack, sp)->toNumber()));
-        excuteNextCode<UnaryMinus>(programCounter);
+        executeNextCode<UnaryMinus>(programCounter);
         goto NextInstruction;
     }
 
     UnaryPlusOpcodeLbl:
     {
         push<ESValue>(stack, sp, ESValue(pop<ESValue>(stack, sp)->toNumber()));
-        excuteNextCode<UnaryPlus>(programCounter);
+        executeNextCode<UnaryPlus>(programCounter);
         goto NextInstruction;
     }
 
@@ -626,7 +598,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         obj->setConstructor(globalObject->object());
         obj->set__proto__(globalObject->objectPrototype());
         push<ESValue>(stack, sp, obj);
-        excuteNextCode<CreateObject>(programCounter);
+        executeNextCode<CreateObject>(programCounter);
         goto NextInstruction;
     }
 
@@ -635,7 +607,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         CreateArray* code = (CreateArray*)currentCode;
         ESArrayObject* arr = ESArrayObject::create(code->m_keyCount, globalObject->arrayPrototype());
         push<ESValue>(stack, sp, arr);
-        excuteNextCode<CreateArray>(programCounter);
+        executeNextCode<CreateArray>(programCounter);
         goto NextInstruction;
     }
 
@@ -645,7 +617,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* value = pop<ESValue>(stack, sp);
         ESValue* key = pop<ESValue>(stack, sp);
         peek<ESValue>(stack, sp)->asESPointer()->asESObject()->set(*key, *value);
-        excuteNextCode<SetObject>(programCounter);
+        executeNextCode<SetObject>(programCounter);
         goto NextInstruction;
     }
 
@@ -663,20 +635,20 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                    char16_t c = willBeObject->asESString()->string().data()[prop_val];
                    if(LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
                        push<ESValue>(stack, sp, strings->asciiTable[c]);
-                       excuteNextCode<GetObject>(programCounter);
+                       executeNextCode<GetObject>(programCounter);
                        goto NextInstruction;
                    } else {
                        push<ESValue>(stack, sp, ESString::create(c));
-                       excuteNextCode<GetObject>(programCounter);
+                       executeNextCode<GetObject>(programCounter);
                        goto NextInstruction;
                    }
                } else {
                    push<ESValue>(stack, sp, ESValue());
-                   excuteNextCode<GetObject>(programCounter);
+                   executeNextCode<GetObject>(programCounter);
                    goto NextInstruction;
                }
                push<ESValue>(stack, sp, willBeObject->asESString()->substring(prop_val, prop_val+1));
-               excuteNextCode<GetObject>(programCounter);
+               executeNextCode<GetObject>(programCounter);
                goto NextInstruction;
             } else {
                 globalObject->stringObjectProxy()->setString(willBeObject->asESString());
@@ -685,7 +657,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                     if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->codeBlock()->m_isBuiltInFunction) {
                         lastESObjectMetInMemberExpressionNode = (globalObject->stringObjectProxy());
                         push<ESValue>(stack, sp, ret);
-                        excuteNextCode<GetObject>(programCounter);
+                        executeNextCode<GetObject>(programCounter);
                         goto NextInstruction;
                     }
                 }
@@ -697,7 +669,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                 if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->codeBlock()->m_isBuiltInFunction) {
                     lastESObjectMetInMemberExpressionNode = (globalObject->numberObjectProxy());
                     push<ESValue>(stack, sp, ret);
-                    excuteNextCode<GetObject>(programCounter);
+                    executeNextCode<GetObject>(programCounter);
                     goto NextInstruction;
                 }
             }
@@ -715,7 +687,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             ESString* val = property->toString();
             if(code->m_cachedHiddenClass == obj->hiddenClass() && (val == code->m_cachedPropertyValue || *val == *code->m_cachedPropertyValue)) {
                 push<ESValue>(stack, sp, obj->readHiddenClass(code->m_cachedIndex));
-                excuteNextCode<GetObject>(programCounter);
+                executeNextCode<GetObject>(programCounter);
                 goto NextInstruction;
             } else {
                 size_t idx = obj->hiddenClass()->findProperty(val);
@@ -724,24 +696,128 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                     code->m_cachedPropertyValue = val;
                     code->m_cachedIndex = idx;
                     push<ESValue>(stack, sp, obj->readHiddenClass(idx));
-                    excuteNextCode<GetObject>(programCounter);
+                    executeNextCode<GetObject>(programCounter);
                     goto NextInstruction;
                 } else {
                     code->m_cachedHiddenClass = nullptr;
                     ESValue v = obj->findOnlyPrototype(val);
                     if(v.isEmpty()) {
                         push<ESValue>(stack, sp, ESValue());
-                        excuteNextCode<GetObject>(programCounter);
+                        executeNextCode<GetObject>(programCounter);
                         goto NextInstruction;
                     }
                     push<ESValue>(stack, sp, v);
-                    excuteNextCode<GetObject>(programCounter);
+                    executeNextCode<GetObject>(programCounter);
                     goto NextInstruction;
                 }
             }
         } else {
             push<ESValue>(stack, sp, obj->get(*property, true));
-            excuteNextCode<GetObject>(programCounter);
+            executeNextCode<GetObject>(programCounter);
+            goto NextInstruction;
+        }
+        RELEASE_ASSERT_NOT_REACHED();
+        goto NextInstruction;
+    }
+
+    GetObjectWithPeekingOpcodeLbl:
+    {
+        GetObject* code = (GetObject*)currentCode;
+
+        ESValue* property = pop<ESValue>(stack, sp);
+        ESValue* willBeObject = pop<ESValue>(stack, sp);
+
+        sp += sizeof(ESValue) * 2;
+#ifndef NDEBUG
+        sp += sizeof(size_t) * 2;
+#endif
+
+        if(UNLIKELY(willBeObject->isESString())) {
+            if(property->isInt32()) {
+               int prop_val = property->toInt32();
+               if(LIKELY(0 <= prop_val && prop_val < willBeObject->asESString()->length())) {
+                   char16_t c = willBeObject->asESString()->string().data()[prop_val];
+                   if(LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
+                       push<ESValue>(stack, sp, strings->asciiTable[c]);
+                       executeNextCode<GetObjectWithPeeking>(programCounter);
+                       goto NextInstruction;
+                   } else {
+                       push<ESValue>(stack, sp, ESString::create(c));
+                       executeNextCode<GetObjectWithPeeking>(programCounter);
+                       goto NextInstruction;
+                   }
+               } else {
+                   push<ESValue>(stack, sp, ESValue());
+                   executeNextCode<GetObjectWithPeeking>(programCounter);
+                   goto NextInstruction;
+               }
+               push<ESValue>(stack, sp, willBeObject->asESString()->substring(prop_val, prop_val+1));
+               executeNextCode<GetObjectWithPeeking>(programCounter);
+               goto NextInstruction;
+            } else {
+                globalObject->stringObjectProxy()->setString(willBeObject->asESString());
+                ESValue ret = globalObject->stringObjectProxy()->find(*property, true);
+                if(!ret.isEmpty()) {
+                    if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->codeBlock()->m_isBuiltInFunction) {
+                        lastESObjectMetInMemberExpressionNode = (globalObject->stringObjectProxy());
+                        push<ESValue>(stack, sp, ret);
+                        executeNextCode<GetObjectWithPeeking>(programCounter);
+                        goto NextInstruction;
+                    }
+                }
+            }
+        } else if(UNLIKELY(willBeObject->isNumber())) {
+            globalObject->numberObjectProxy()->setNumberData(willBeObject->asNumber());
+            ESValue ret = globalObject->numberObjectProxy()->find(*property, true);
+            if(!ret.isEmpty()) {
+                if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->codeBlock()->m_isBuiltInFunction) {
+                    lastESObjectMetInMemberExpressionNode = (globalObject->numberObjectProxy());
+                    push<ESValue>(stack, sp, ret);
+                    executeNextCode<GetObjectWithPeeking>(programCounter);
+                    goto NextInstruction;
+                }
+            }
+        }
+
+        ESObject* obj;
+        if(willBeObject->isObject())
+            obj = willBeObject->asESPointer()->asESObject();
+        else
+            obj = willBeObject->toObject();
+
+        lastESObjectMetInMemberExpressionNode = obj;
+
+        if(obj->isHiddenClassMode() && !obj->isESArrayObject()) {
+            ESString* val = property->toString();
+            if(code->m_cachedHiddenClass == obj->hiddenClass() && (val == code->m_cachedPropertyValue || *val == *code->m_cachedPropertyValue)) {
+                push<ESValue>(stack, sp, obj->readHiddenClass(code->m_cachedIndex));
+                executeNextCode<GetObjectWithPeeking>(programCounter);
+                goto NextInstruction;
+            } else {
+                size_t idx = obj->hiddenClass()->findProperty(val);
+                if(idx != SIZE_MAX) {
+                    code->m_cachedHiddenClass = obj->hiddenClass();
+                    code->m_cachedPropertyValue = val;
+                    code->m_cachedIndex = idx;
+                    push<ESValue>(stack, sp, obj->readHiddenClass(idx));
+                    executeNextCode<GetObjectWithPeeking>(programCounter);
+                    goto NextInstruction;
+                } else {
+                    code->m_cachedHiddenClass = nullptr;
+                    ESValue v = obj->findOnlyPrototype(val);
+                    if(v.isEmpty()) {
+                        push<ESValue>(stack, sp, ESValue());
+                        executeNextCode<GetObjectWithPeeking>(programCounter);
+                        goto NextInstruction;
+                    }
+                    push<ESValue>(stack, sp, v);
+                    executeNextCode<GetObjectWithPeeking>(programCounter);
+                    goto NextInstruction;
+                }
+            }
+        } else {
+            push<ESValue>(stack, sp, obj->get(*property, true));
+            executeNextCode<GetObjectWithPeeking>(programCounter);
             goto NextInstruction;
         }
         RELEASE_ASSERT_NOT_REACHED();
@@ -763,7 +839,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         }
         else //FE
             push<ESValue>(stack, sp, function);
-        excuteNextCode<CreateFunction>(programCounter);
+        executeNextCode<CreateFunction>(programCounter);
         goto NextInstruction;
     }
 
@@ -776,7 +852,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     PrepareFunctionCallOpcodeLbl:
     {
         lastESObjectMetInMemberExpressionNode = globalObject;
-        excuteNextCode<PrepareFunctionCall>(programCounter);
+        executeNextCode<PrepareFunctionCall>(programCounter);
         goto NextInstruction;
     }
 
@@ -797,7 +873,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 #endif
         ESValue* arguments = (ESValue *)&(((char *)stack)[sp]);
         push<ESValue>(stack, sp, ESFunctionObject::call(instance, *pop<ESValue>(stack, sp), lastESObjectMetInMemberExpressionNode, arguments, argc, false));
-        excuteNextCode<CallFunction>(programCounter);
+        executeNextCode<CallFunction>(programCounter);
         goto NextInstruction;
     }
 
@@ -856,7 +932,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             push<ESValue>(stack, sp, res);
         } else
             push<ESValue>(stack, sp, receiver);
-        excuteNextCode<NewFunctionCall>(programCounter);
+        executeNextCode<NewFunctionCall>(programCounter);
         goto NextInstruction;
     }
 
@@ -889,7 +965,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         if(!top->toBoolean())
             programCounter = code->m_jumpPosition;
         else
-            excuteNextCode<JumpIfTopOfStackValueIsFalse>(programCounter);
+            executeNextCode<JumpIfTopOfStackValueIsFalse>(programCounter);
         goto NextInstruction;
     }
 
@@ -901,7 +977,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         if(top->toBoolean())
             programCounter = code->m_jumpPosition;
         else
-            excuteNextCode<JumpIfTopOfStackValueIsTrue>(programCounter);
+            executeNextCode<JumpIfTopOfStackValueIsTrue>(programCounter);
         goto NextInstruction;
     }
 
@@ -913,7 +989,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         if(!top->toBoolean())
             programCounter = code->m_jumpPosition;
         else
-            excuteNextCode<JumpIfTopOfStackValueIsFalseWithPeeking>(programCounter);
+            executeNextCode<JumpIfTopOfStackValueIsFalseWithPeeking>(programCounter);
         goto NextInstruction;
     }
 
@@ -925,14 +1001,14 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         if(top->toBoolean())
             programCounter = code->m_jumpPosition;
         else
-            excuteNextCode<JumpIfTopOfStackValueIsTrueWithPeeking>(programCounter);
+            executeNextCode<JumpIfTopOfStackValueIsTrueWithPeeking>(programCounter);
         goto NextInstruction;
     }
 
     DuplicateTopOfStackValueOpcodeLbl:
     {
         push<ESValue>(stack, sp, *peek<ESValue>(stack, sp));
-        excuteNextCode<DuplicateTopOfStackValue>(programCounter);
+        executeNextCode<DuplicateTopOfStackValue>(programCounter);
         goto NextInstruction;
     }
 
@@ -976,7 +1052,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     ThisOpcodeLbl:
     {
         push<ESValue>(stack, sp, ESValue(ec->resolveThisBinding()));
-        excuteNextCode<This>(programCounter);
+        executeNextCode<This>(programCounter);
         goto NextInstruction;
     }
 
@@ -988,83 +1064,52 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
 }
 
-/*
-//binary expressions
-EqualOpcode,
-NotEqualOpcode,
-StrictEqualOpcode,
-NotStrictEqualOpcode,
-BitwiseAndOpcode,
-BitwiseOrOpcode,
-BitwiseXorOpcode,
-LeftShiftOpcode,
-SignedRightShiftOpcode,
-UnsignedRightShiftOpcode,
-LessThanOpcode,
-LessThanOrEqualOpcode,
-GreaterThanOpcode,
-GreaterThanOrEqualOpcode,
-PlusOpcode,
-MinusOpcode,
-MultiplyOpcode,
-DivisionOpcode,
-ModOpcode,
-
-//unary expressions
-BitwiseNotOpcode,
-LogicalNotOpcode,
-UnaryMinusOpcode,
-UnaryPlusOpcode,
-
-//object, array
-CreateObjectOpcode,
-CreateArrayOpcode,
-SetObjectOpcode,
-GetObjectOpcode,
-
-//function
-CreateFunctionOpcode,
-ExecuteNativeFunctionOpcode,
-PrepareFunctionCallOpcode,
-CallFunctionOpcode,
-NewFunctionCallOpcode,
-ReturnFunctionOpcode,
-ReturnFunctionWithValueOpcode,
-
-//control flow
-JumpOpcode,
-JumpIfTopOfStackValueIsFalseOpcode,
-JumpIfTopOfStackValueIsTrueOpcode,
-JumpIfTopOfStackValueIsFalseWithPeekingOpcode,
-JumpIfTopOfStackValueIsTrueWithPeekingOpcode,
-DuplicateTopOfStackValueOpcode,
-
-//try-catch
-TryOpcode,
-TryCatchBodyEndOpcode,
-ThrowOpcode,
-
-//etc
-ThisOpcode,
-
-EndOpcode,
-*/
-void initOpcodeTable(OpcodeTable& table)
+ALWAYS_INLINE ESValue plusOperation(const ESValue& left, const ESValue& right)
 {
-    /*
-    REGISTER_TABLE(PopExpressionStatementOpcode);
-    REGISTER_TABLE(PopOpcode);
-    REGISTER_TABLE(GetByIdOpcode);
-    REGISTER_TABLE(GetByIndexOpcode);
-    REGISTER_TABLE(ResolveAddressByIdOpcode);
-    REGISTER_TABLE(ResolveAddressByIndexOpcode);
-    REGISTER_TABLE(ResolveAddressByIndexWithActivationOpcode);
-    REGISTER_TABLE(ResolveAddressInObjectOpcode);
-    REGISTER_TABLE(ReferenceTopValueWithPeekingOpcode);
-    REGISTER_TABLE(PutOpcode);
-    REGISTER_TABLE(PutReverseStackOpcode);
-    REGISTER_TABLE(CreateBindingOpcode);
-*/
+    ESValue lval = left.toPrimitive();
+    ESValue rval = right.toPrimitive();
+    // http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.1
+
+    ESValue ret(ESValue::ESForceUninitialized);
+    if(lval.isInt32() && rval.isInt32()) {
+        int a = lval.asInt32(), b = rval.asInt32();
+        if (UNLIKELY(a > 0 && b > std::numeric_limits<int32_t>::max() - a)) {
+            //overflow
+            ret = ESValue((double)lval.asInt32() + (double)rval.asInt32());
+        } else if (UNLIKELY(a < 0 && b < std::numeric_limits<int32_t>::min() - a)) {
+            //underflow
+            ret = ESValue((double)lval.asInt32() + (double)rval.asInt32());
+        } else {
+            ret = ESValue(lval.asInt32() + rval.asInt32());
+        }
+    } else if (lval.isESString() || rval.isESString()) {
+        ret = ESString::concatTwoStrings(lval.toString(), rval.toString());
+    } else {
+        ret = ESValue(lval.toNumber() + rval.toNumber());
+    }
+
+    return ret;
+}
+
+ALWAYS_INLINE ESValue minusOperation(const ESValue& left, const ESValue& right)
+{
+    // http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.2
+    ESValue ret(ESValue::ESForceUninitialized);
+    if (left.isInt32() && right.isInt32()) {
+        int a = left.asInt32(), b = right.asInt32();
+        if (UNLIKELY((a > 0 && b < 0 && b < a - std::numeric_limits<int32_t>::max()))) {
+            //overflow
+            ret = ESValue((double)left.asInt32() - (double)right.asInt32());
+        } else if (UNLIKELY(a < 0 && b > 0 && b > a - std::numeric_limits<int32_t>::min())) {
+            //underflow
+            ret = ESValue((double)left.asInt32() - (double)right.asInt32());
+        } else {
+            ret = ESValue(left.asInt32() - right.asInt32());
+        }
+    }
+    else
+        ret = ESValue(left.toNumber() - right.toNumber());
+    return ret;
 }
 
 ByteCode::ByteCode(Opcode code) {
@@ -1102,16 +1147,15 @@ ALWAYS_INLINE void dumpBytecode(CodeBlock* codeBlock)
         DUMP_BYTE_CODE(Push);
         DUMP_BYTE_CODE(PopExpressionStatement);
         DUMP_BYTE_CODE(Pop);
+        DUMP_BYTE_CODE(PushIntoTempStack);
+        DUMP_BYTE_CODE(PopFromTempStack);
         DUMP_BYTE_CODE(GetById);
         DUMP_BYTE_CODE(GetByIndex);
         DUMP_BYTE_CODE(GetByIndexWithActivation);
-        DUMP_BYTE_CODE(ResolveAddressById);
-        DUMP_BYTE_CODE(ResolveAddressByIndex);
-        DUMP_BYTE_CODE(ResolveAddressByIndexWithActivation);
-        DUMP_BYTE_CODE(ResolveAddressInObject);
-        DUMP_BYTE_CODE(ReferenceTopValueWithPeeking);
-        DUMP_BYTE_CODE(Put);
-        DUMP_BYTE_CODE(PutReverseStack);
+        DUMP_BYTE_CODE(PutById);
+        DUMP_BYTE_CODE(PutByIndex);
+        DUMP_BYTE_CODE(PutByIndexWithActivation);
+        DUMP_BYTE_CODE(PutInObject);
         DUMP_BYTE_CODE(CreateBinding);
         DUMP_BYTE_CODE(Equal);
         DUMP_BYTE_CODE(NotEqual);
@@ -1132,6 +1176,8 @@ ALWAYS_INLINE void dumpBytecode(CodeBlock* codeBlock)
         DUMP_BYTE_CODE(Multiply);
         DUMP_BYTE_CODE(Division);
         DUMP_BYTE_CODE(Mod);
+        DUMP_BYTE_CODE(Increment);
+        DUMP_BYTE_CODE(Decrement);
         DUMP_BYTE_CODE(BitwiseNot);
         DUMP_BYTE_CODE(LogicalNot);
         DUMP_BYTE_CODE(UnaryMinus);
@@ -1140,6 +1186,7 @@ ALWAYS_INLINE void dumpBytecode(CodeBlock* codeBlock)
         DUMP_BYTE_CODE(CreateArray);
         DUMP_BYTE_CODE(SetObject);
         DUMP_BYTE_CODE(GetObject);
+        DUMP_BYTE_CODE(GetObjectWithPeeking);
         DUMP_BYTE_CODE(CreateFunction);
         DUMP_BYTE_CODE(ExecuteNativeFunction);
         DUMP_BYTE_CODE(PrepareFunctionCall);

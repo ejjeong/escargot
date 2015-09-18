@@ -16,7 +16,7 @@ public:
         m_body = (StatementNode*) body;
     }
 
-    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
+    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         size_t whileStart = codeBlock->currentCodeSize();
         m_test->generateExpressionByteCode(codeBlock, context);
