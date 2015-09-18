@@ -61,6 +61,9 @@ enum Opcode {
     SetObjectOpcode,
     GetObjectOpcode,
     GetObjectWithPeekingOpcode,
+    EnumerateObjectOpcode,
+    EnumerateObjectKeyOpcode,
+    EnumerateObjectEndOpcode,
 
     //function
     CreateFunctionOpcode,
@@ -126,6 +129,7 @@ public:
 
     void* m_opcode;
 #ifndef NDEBUG
+    Opcode m_orgOpcode;
     Node* m_node;
     virtual void dump() = 0;
     virtual ~ByteCode() {
@@ -938,6 +942,67 @@ public:
     size_t m_cachedIndex;
 };
 
+struct EnumerateObjectData : public gc {
+    EnumerateObjectData()
+    {
+        m_idx = 0;
+    }
+
+    ESObject* m_object;
+    unsigned m_idx;
+    std::vector<ESValue, gc_allocator<ESValue>> m_keys;
+};
+
+class EnumerateObject : public ByteCode {
+public:
+    EnumerateObject()
+        : ByteCode(EnumerateObjectOpcode)
+    {
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("EnumerateObject <>\n");
+    }
+#endif
+
+};
+
+class EnumerateObjectKey : public ByteCode {
+public:
+    EnumerateObjectKey()
+        : ByteCode(EnumerateObjectKeyOpcode)
+    {
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("EnumerateObjectKey <>\n");
+    }
+#endif
+    size_t m_forInEnd;
+
+};
+
+class EnumerateObjectEnd : public ByteCode {
+public:
+    EnumerateObjectEnd()
+        : ByteCode(EnumerateObjectEndOpcode)
+    {
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("EnumerateObjectEnd <>\n");
+    }
+#endif
+
+
+};
+
 class CreateFunction : public ByteCode {
 public:
     CreateFunction(InternalAtomicString name, ESString* nonAtomicName, CodeBlock* codeBlock)
@@ -1300,6 +1365,7 @@ ALWAYS_INLINE void ByteCodeGenerateContext::consumeBreakPositions(CodeBlock* cb,
 {
     for(size_t i = 0; i < m_breakStatementPositions.size(); i ++) {
         Jump* shouldBeJump = cb->peekCode<Jump>(m_breakStatementPositions[i]);
+        ASSERT(shouldBeJump->m_orgOpcode == JumpOpcode);
         shouldBeJump->m_jumpPosition = position;
     }
     m_breakStatementPositions.clear();
@@ -1309,6 +1375,7 @@ ALWAYS_INLINE void ByteCodeGenerateContext::consumeContinuePositions(CodeBlock* 
 {
     for(size_t i = 0; i < m_continueStatementPositions.size(); i ++) {
         Jump* shouldBeJump = cb->peekCode<Jump>(m_continueStatementPositions[i]);
+        ASSERT(shouldBeJump->m_orgOpcode == JumpOpcode);
         shouldBeJump->m_jumpPosition = position;
     }
     m_continueStatementPositions.clear();

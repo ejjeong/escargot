@@ -54,6 +54,9 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         REGISTER_TABLE(SetObject);
         REGISTER_TABLE(GetObject);
         REGISTER_TABLE(GetObjectWithPeeking);
+        REGISTER_TABLE(EnumerateObject);
+        REGISTER_TABLE(EnumerateObjectKey);
+        REGISTER_TABLE(EnumerateObjectEnd);
         REGISTER_TABLE(CreateFunction);
         REGISTER_TABLE(ExecuteNativeFunction);
         REGISTER_TABLE(PrepareFunctionCall);
@@ -74,10 +77,15 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         REGISTER_TABLE(End);
         return ESValue();
     }
-    //GC_gcollect();
-    //dumpBytecode(codeBlock);
-    //void* stack = instance->m_stack;
-    //size_t& sp = instance->m_sp;
+    /*
+    {
+        char* code = codeBlock->m_code.data();
+        ByteCode* currentCode = (ByteCode *)(&code[0]);
+        if(currentCode->m_orgOpcode != ExecuteNativeFunctionOpcode) {
+            dumpBytecode(codeBlock);
+        }
+    }
+     */
     char stackBuf[1024];
     void* stack = stackBuf;
     unsigned sp  = 0;
@@ -613,7 +621,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
     SetObjectOpcodeLbl:
     {
-        SetObject* code = (SetObject*)currentCode;
         ESValue* value = pop<ESValue>(stack, sp);
         ESValue* key = pop<ESValue>(stack, sp);
         peek<ESValue>(stack, sp)->asESPointer()->asESObject()->set(*key, *value);
@@ -821,6 +828,48 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             goto NextInstruction;
         }
         RELEASE_ASSERT_NOT_REACHED();
+        goto NextInstruction;
+    }
+
+    EnumerateObjectOpcodeLbl:
+    {
+        ESObject* obj = pop<ESValue>(stack, sp)->toObject();
+        EnumerateObjectData* data = new EnumerateObjectData();
+
+        data->m_object = obj;
+        data->m_keys.reserve(obj->keyCount());
+        obj->enumeration([&data](ESValue key, ESValue value) {
+            data->m_keys.push_back(key);
+        });
+
+        push<EnumerateObjectData *>(stack, sp, data);
+        executeNextCode<EnumerateObject>(programCounter);
+        goto NextInstruction;
+    }
+
+    EnumerateObjectKeyOpcodeLbl:
+    {
+        EnumerateObjectKey* code = (EnumerateObjectKey*)currentCode;
+        EnumerateObjectData* data = *peek<EnumerateObjectData*>(stack, sp);
+
+        while(1) {
+            if(data->m_keys.size() == data->m_idx) {
+                programCounter = code->m_forInEnd;
+                goto NextInstruction;
+            }
+            if (data->m_object->hasOwnProperty(data->m_keys[data->m_idx++]))
+            {
+                push<ESValue>(stack, sp, data->m_keys[data->m_idx - 1]);
+                executeNextCode<EnumerateObjectData>(programCounter);
+                goto NextInstruction;
+            }
+        }
+    }
+
+    EnumerateObjectEndOpcodeLbl:
+    {
+        pop<EnumerateObjectData *>(stack, sp);
+        executeNextCode<EnumerateObjectEnd>(programCounter);
         goto NextInstruction;
     }
 
@@ -1115,6 +1164,7 @@ ALWAYS_INLINE ESValue minusOperation(const ESValue& left, const ESValue& right)
 ByteCode::ByteCode(Opcode code) {
     m_opcode = (ESVMInstance::currentInstance()->opcodeTable())->m_table[(unsigned)code];
 #ifndef NDEBUG
+    m_orgOpcode = code;
     m_node = nullptr;
 #endif
 }
@@ -1187,6 +1237,9 @@ ALWAYS_INLINE void dumpBytecode(CodeBlock* codeBlock)
         DUMP_BYTE_CODE(SetObject);
         DUMP_BYTE_CODE(GetObject);
         DUMP_BYTE_CODE(GetObjectWithPeeking);
+        DUMP_BYTE_CODE(EnumerateObject);
+        DUMP_BYTE_CODE(EnumerateObjectKey);
+        DUMP_BYTE_CODE(EnumerateObjectEnd);
         DUMP_BYTE_CODE(CreateFunction);
         DUMP_BYTE_CODE(ExecuteNativeFunction);
         DUMP_BYTE_CODE(PrepareFunctionCall);
