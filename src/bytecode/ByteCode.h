@@ -86,6 +86,11 @@ enum Opcode {
     ThisOpcode,
 
     EndOpcode,
+    OpcodeKindEnd
+};
+
+struct OpcodeTable {
+    void* m_table[OpcodeKindEnd];
 };
 
 class ByteCode;
@@ -115,14 +120,9 @@ struct ByteCodeGenereateContext {
 
 class ByteCode {
 public:
-    ByteCode(Opcode code)
-    {
-        m_opcode = code;
-#ifndef NDEBUG
-        m_node = nullptr;
-#endif
-    }
-    Opcode m_opcode;
+    ByteCode(Opcode code);
+
+    void* m_opcode;
 #ifndef NDEBUG
     Node* m_node;
     virtual void dump() = 0;
@@ -1233,91 +1233,11 @@ ALWAYS_INLINE void excuteNextCode(size_t& programCounter)
 }
 
 #ifndef NDEBUG
-
-ALWAYS_INLINE void dumpBytecode(CodeBlock* codeBlock)
-{
-    printf("dumpBytecode...>>>>>>>>>>>>>>>>>>>>>>\n");
-    size_t idx = 0;
-    char* code = codeBlock->m_code.data();
-    while(idx < codeBlock->m_code.size()) {
-        ByteCode* currentCode = (ByteCode *)(&code[idx]);
-        printf("%u\t\t%p\t",(unsigned)idx, currentCode);
-        switch(currentCode->m_opcode) {
-#define DUMP_BYTE_CODE(code) \
-        case code##Opcode:\
-        currentCode->dump(); \
-        idx += sizeof (code); \
-        continue;
-        DUMP_BYTE_CODE(Push);
-        DUMP_BYTE_CODE(PopExpressionStatement);
-        DUMP_BYTE_CODE(Pop);
-        DUMP_BYTE_CODE(GetById);
-        DUMP_BYTE_CODE(GetByIndex);
-        DUMP_BYTE_CODE(GetByIndexWithActivation);
-        DUMP_BYTE_CODE(ResolveAddressById);
-        DUMP_BYTE_CODE(ResolveAddressByIndex);
-        DUMP_BYTE_CODE(ResolveAddressByIndexWithActivation);
-        DUMP_BYTE_CODE(ResolveAddressInObject);
-        DUMP_BYTE_CODE(ReferenceTopValueWithPeeking);
-        DUMP_BYTE_CODE(Put);
-        DUMP_BYTE_CODE(PutReverseStack);
-        DUMP_BYTE_CODE(CreateBinding);
-        DUMP_BYTE_CODE(Equal);
-        DUMP_BYTE_CODE(NotEqual);
-        DUMP_BYTE_CODE(StrictEqual);
-        DUMP_BYTE_CODE(NotStrictEqual);
-        DUMP_BYTE_CODE(BitwiseAnd);
-        DUMP_BYTE_CODE(BitwiseOr);
-        DUMP_BYTE_CODE(BitwiseXor);
-        DUMP_BYTE_CODE(LeftShift);
-        DUMP_BYTE_CODE(SignedRightShift);
-        DUMP_BYTE_CODE(UnsignedRightShift);
-        DUMP_BYTE_CODE(LessThan);
-        DUMP_BYTE_CODE(LessThanOrEqual);
-        DUMP_BYTE_CODE(GreaterThan);
-        DUMP_BYTE_CODE(GreaterThanOrEqual);
-        DUMP_BYTE_CODE(Plus);
-        DUMP_BYTE_CODE(Minus);
-        DUMP_BYTE_CODE(Multiply);
-        DUMP_BYTE_CODE(Division);
-        DUMP_BYTE_CODE(Mod);
-        DUMP_BYTE_CODE(BitwiseNot);
-        DUMP_BYTE_CODE(LogicalNot);
-        DUMP_BYTE_CODE(UnaryMinus);
-        DUMP_BYTE_CODE(UnaryPlus);
-        DUMP_BYTE_CODE(CreateObject);
-        DUMP_BYTE_CODE(CreateArray);
-        DUMP_BYTE_CODE(SetObject);
-        DUMP_BYTE_CODE(GetObject);
-        DUMP_BYTE_CODE(CreateFunction);
-        DUMP_BYTE_CODE(ExecuteNativeFunction);
-        DUMP_BYTE_CODE(PrepareFunctionCall);
-        DUMP_BYTE_CODE(CallFunction);
-        DUMP_BYTE_CODE(NewFunctionCall);
-        DUMP_BYTE_CODE(ReturnFunction);
-        DUMP_BYTE_CODE(ReturnFunctionWithValue);
-        DUMP_BYTE_CODE(Jump);
-        DUMP_BYTE_CODE(JumpIfTopOfStackValueIsFalse);
-        DUMP_BYTE_CODE(JumpIfTopOfStackValueIsTrue);
-        DUMP_BYTE_CODE(JumpIfTopOfStackValueIsFalseWithPeeking);
-        DUMP_BYTE_CODE(JumpIfTopOfStackValueIsTrueWithPeeking);
-        DUMP_BYTE_CODE(DuplicateTopOfStackValue);
-        DUMP_BYTE_CODE(Try);
-        DUMP_BYTE_CODE(TryCatchBodyEnd);
-        DUMP_BYTE_CODE(Throw);
-        DUMP_BYTE_CODE(This);
-        DUMP_BYTE_CODE(End);
-        default:
-            printf("please add %d\n",(int)currentCode->m_opcode);
-            RELEASE_ASSERT_NOT_REACHED();
-            break;
-        };
-    }
-    printf("dumpBytecode...<<<<<<<<<<<<<<<<<<<<<<\n");
-}
-
+ALWAYS_INLINE void dumpBytecode(CodeBlock* codeBlock);
 #endif
 
+
+void initOpcodeTable(OpcodeTable& table);
 ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter = 0);
 
 }
@@ -1342,7 +1262,6 @@ ALWAYS_INLINE void ByteCodeGenereateContext::consumeBreakPositions(CodeBlock* cb
 {
     for(size_t i = 0; i < m_breakStatementPositions.size(); i ++) {
         Jump* shouldBeJump = cb->peekCode<Jump>(m_breakStatementPositions[i]);
-        ASSERT(shouldBeJump->m_opcode == JumpOpcode);
         shouldBeJump->m_jumpPosition = position;
     }
     m_breakStatementPositions.clear();
@@ -1352,7 +1271,6 @@ ALWAYS_INLINE void ByteCodeGenereateContext::consumeContinuePositions(CodeBlock*
 {
     for(size_t i = 0; i < m_continueStatementPositions.size(); i ++) {
         Jump* shouldBeJump = cb->peekCode<Jump>(m_continueStatementPositions[i]);
-        ASSERT(shouldBeJump->m_opcode == JumpOpcode);
         shouldBeJump->m_jumpPosition = position;
     }
     m_continueStatementPositions.clear();

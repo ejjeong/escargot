@@ -14,6 +14,7 @@ class ExecutionContext;
 class GlobalObject;
 class ESVMInstance;
 class CodeBlock;
+class OpcodeTable;
 
 extern __thread ESVMInstance* currentInstance;
 
@@ -41,6 +42,7 @@ public:
         return escargot::currentInstance;
     }
 
+    ALWAYS_INLINE OpcodeTable* opcodeTable() { return m_table; }
     ALWAYS_INLINE Strings& strings() { return m_strings; }
 
     template <typename F>
@@ -100,13 +102,11 @@ public:
     //Function for debug
     static void printValue(ESValue val);
 protected:
-    void* m_stack;
-    size_t m_stackSize;
-    size_t m_sp;
-
     ExecutionContext* m_globalExecutionContext;
     ExecutionContext* m_currentExecutionContext;
     GlobalObject* m_globalObject;
+
+    OpcodeTable* m_table;
 
     friend class InternalAtomicString;
     friend class InternalAtomicStringData;

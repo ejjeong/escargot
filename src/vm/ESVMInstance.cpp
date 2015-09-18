@@ -16,10 +16,9 @@ ESVMInstance::ESVMInstance()
 {
     std::srand(std::time(0));
 
-    m_stackSize = 1024*1024*4;
-    m_stack = malloc(m_stackSize);
-    m_sp = 0;
-    GC_add_roots(m_stack, ((char *)m_stack) + m_stackSize + 1);
+    m_table = new OpcodeTable();
+    //init goto table
+    interpret(this, NULL, 0);
 
     clock_gettime(CLOCK_REALTIME,&m_cachedTimeOrigin);
     m_cachedTime = localtime(&m_cachedTimeOrigin.tv_sec);
@@ -157,7 +156,6 @@ ESValue ESVMInstance::evaluate(u16string& source)
         CodeBlock* block = new CodeBlock();
         ByteCodeGenereateContext context;
         node->generateStatementByteCode(block, context);
-        m_sp = 0;
         interpret(this, block);
     } catch(const ESValue& err) {
         try{
