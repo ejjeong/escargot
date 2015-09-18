@@ -17,6 +17,12 @@ public:
     {
         instance->currentExecutionContext()->doBreak();
     }
+
+    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenereateContext& context)
+    {
+        codeBlock->pushCode(Jump(SIZE_MAX), this);
+        context.pushBreakPositions(codeBlock->lastCodePosition<Jump>());
+    }
 };
 
 }

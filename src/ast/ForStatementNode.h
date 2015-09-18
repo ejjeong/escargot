@@ -84,6 +84,7 @@ public:
             codeBlock->pushCode(Pop(), this);
         }
         codeBlock->pushCode(Jump(forStart), this);
+        context.consumeBreakPositions(codeBlock);
         size_t forEnd = codeBlock->currentCodeSize();
         codeBlock->peekCode<JumpIfTopOfStackValueIsFalse>(testPos)->m_jumpPosition = forEnd;
     }

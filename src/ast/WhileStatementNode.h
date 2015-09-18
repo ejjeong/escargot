@@ -56,6 +56,7 @@ public:
         }
 
         codeBlock->pushCode(Jump(whileStart), this);
+        context.consumeBreakPositions(codeBlock);
         size_t whileEnd = codeBlock->currentCodeSize();
         codeBlock->peekCode<JumpIfTopOfStackValueIsFalse>(testPos)->m_jumpPosition = whileEnd;
     }

@@ -89,6 +89,7 @@ enum Opcode {
 };
 
 class ByteCode;
+class CodeBlock;
 
 struct ByteCodeGenereateContextStatePusher {
     ByteCodeGenereateContextStatePusher(size_t& state)
@@ -111,7 +112,16 @@ struct ByteCodeGenereateContext {
     {
         m_lastContinuePosition = SIZE_MAX;
     }
+
+    void pushBreakPositions(size_t pos)
+    {
+        m_breakStatementPositions.push_back(pos);
+    }
+
+    ALWAYS_INLINE void consumeBreakPositions(CodeBlock* cb);
+
     size_t m_lastContinuePosition;
+    std::vector<size_t> m_breakStatementPositions;
 };
 
 class ByteCode {
@@ -1338,6 +1348,16 @@ void CodeBlock::pushCode(const CodeType& type, Node* node)
     char* first = (char *)&type;
     m_code.insert(m_code.end(), first, first + sizeof(CodeType));
 }
+
+ALWAYS_INLINE void ByteCodeGenereateContext::consumeBreakPositions(CodeBlock* cb)
+{
+    for(size_t i = 0; i < m_breakStatementPositions.size(); i ++) {
+        Jump* shouldBeJump = cb->peekCode<Jump>(m_breakStatementPositions[i]);
+        ASSERT(shouldBeJump->m_opcode == JumpOpcode);
+        shouldBeJump->m_jumpPosition = cb->currentCodeSize();
+    }
+}
+
 }
 
 #endif
