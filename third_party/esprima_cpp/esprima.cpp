@@ -2355,8 +2355,7 @@ escargot::Node* parseForStatement(ParseContext* ctx/*node*/) {
             lex(ctx);
 
             ctx->m_allowIn = false;
-            //init = new escargot::VariableDeclarationNode(parseVariableDeclarationList(ctx, false));
-            init = new escargot::VariableDeclarationNode(parseVariableDeclarationList(ctx, true));
+            init = new escargot::VariableDeclarationNode(parseVariableDeclarationList(ctx, false));
             init->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
             ctx->m_allowIn = previousAllowIn;
 
@@ -2374,6 +2373,13 @@ escargot::Node* parseForStatement(ParseContext* ctx/*node*/) {
                 init = nullptr;
                 forIn = false;
             } else {
+                escargot::VariableDeclaratorVector& vec = ((escargot::VariableDeclarationNode *)init)->declarations();
+                for(unsigned i = 0 ; i < vec.size() ; i ++) {
+                    if(vec[i]->type() == escargot::NodeType::VariableDeclarator) {
+                        vec.erase(vec.begin() + i);
+                        i = 0;
+                    }
+                }
                 expect(ctx, ';');
             }
         }/* else if (matchKeyword('const') || matchKeyword('let')) {

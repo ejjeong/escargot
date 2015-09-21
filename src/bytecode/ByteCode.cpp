@@ -49,6 +49,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         currentCode->dump();
     }
     */
+
     goto *currentCode->m_opcode;
 
     PushOpcodeLbl:
@@ -797,7 +798,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             if (data->m_object->hasOwnProperty(data->m_keys[data->m_idx++]))
             {
                 push<ESValue>(stack, sp, data->m_keys[data->m_idx - 1]);
-                executeNextCode<EnumerateObjectData>(programCounter);
+                executeNextCode<EnumerateObjectKey>(programCounter);
                 goto NextInstruction;
             }
         }
