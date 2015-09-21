@@ -12,10 +12,6 @@ public:
     {
     }
 
-    void executeStatement(ESVMInstance* instance)
-    {
-    }
-
     ESValue executeExpression(ESVMInstance* instance)
     {
         return ESValue();

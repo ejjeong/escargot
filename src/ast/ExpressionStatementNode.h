@@ -15,11 +15,6 @@ public:
         m_expression = expression;
     }
 
-    void executeStatement(ESVMInstance* instance)
-    {
-        instance->m_lastExpressionStatementValue = m_expression->executeExpression(instance);
-    }
-
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_expression->generateExpressionByteCode(codeBlock, context);

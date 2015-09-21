@@ -32,32 +32,6 @@ public:
             RELEASE_ASSERT_NOT_REACHED();
     }
 
-    ESValue executeExpression(ESVMInstance* instance)
-    {
-        ESValue lval = m_left->executeExpression(instance);
-        ESValue rval = m_right->executeExpression(instance);
-        return execute(instance, lval, rval, m_operator);
-    }
-
-    ALWAYS_INLINE ESValue execute(ESVMInstance* instance, ESValue lval, ESValue rval, LogicalExpressionOperator oper) {
-        ESValue ret;
-        switch(oper) {
-            case LogicalAnd:
-                if (lval.toBoolean() == false) ret = lval;
-                else ret = rval;
-                break;
-            case LogicalOr:
-                if (lval.toBoolean() == true) ret = lval;
-                else ret = rval;
-                break;
-            default:
-                // TODO
-                printf("unsupport operator is->%d\n",(int)oper);
-                RELEASE_ASSERT_NOT_REACHED();
-                break;
-        }
-        return ret;
-    }
 protected:
     ExpressionNode* m_left;
     ExpressionNode* m_right;

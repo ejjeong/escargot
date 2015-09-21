@@ -15,11 +15,6 @@ public:
         m_argument = argument;
     }
 
-    void executeStatement(ESVMInstance* instance)
-    {
-        throw m_argument->executeExpression(instance);
-        RELEASE_ASSERT_NOT_REACHED();
-    }
 
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {

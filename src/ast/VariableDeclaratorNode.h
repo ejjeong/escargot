@@ -18,23 +18,6 @@ public:
         m_init = init;
     }
 
-    ESValue executeExpression(ESVMInstance* instance)
-    {
-        ASSERT(m_id->type() == NodeType::Identifier);
-        ASSERT(!((IdentifierNode *)m_id)->canUseFastAccess());
-        instance->currentExecutionContext()->environment()->record()->createMutableBindingForAST(((IdentifierNode *)m_id)->name(),
-                ((IdentifierNode *)m_id)->nonAtomicName(), false);
-        return ESValue();
-    }
-
-    void executeStatement(ESVMInstance* instance)
-    {
-        ASSERT(m_id->type() == NodeType::Identifier);
-        ASSERT(!((IdentifierNode *)m_id)->canUseFastAccess());
-        instance->currentExecutionContext()->environment()->record()->createMutableBindingForAST(((IdentifierNode *)m_id)->name(),
-                ((IdentifierNode *)m_id)->nonAtomicName(), false);
-    }
-
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         ASSERT(m_id->type() == NodeType::Identifier);

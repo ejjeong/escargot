@@ -14,16 +14,6 @@ public:
         m_right = (ExpressionNode*)right;
     }
 
-    ESValue executeExpression(ESVMInstance* instance)
-    {
-        ESValue lval = m_left->executeExpression(instance);
-
-        if (lval.toBoolean() == true)
-            return lval;
-        else
-            return m_right->executeExpression(instance);
-    }
-
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_left->generateExpressionByteCode(codeBlock, context);

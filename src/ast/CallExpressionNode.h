@@ -16,25 +16,6 @@ public:
         m_arguments = arguments;
     }
 
-    ESValue executeExpression(ESVMInstance* instance)
-    {
-        /*
-        instance->currentExecutionContext()->resetLastESObjectMetInMemberExpressionNode();
-        ESValue fn = m_callee->executeExpression(instance);
-        ESObject* receiver = instance->currentExecutionContext()->lastESObjectMetInMemberExpressionNode();
-        if(receiver == NULL)
-            receiver = instance->globalObject();
-
-        ESValue* arguments = (ESValue*)alloca(sizeof(ESValue) * m_arguments.size());
-        for(unsigned i = 0; i < m_arguments.size() ; i ++) {
-            arguments[i] = m_arguments[i]->executeExpression(instance);
-        }
-
-        return ESFunctionObject::call(instance, fn, receiver, arguments, m_arguments.size(), instance);
-        */
-        return ESValue();
-    }
-
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         codeBlock->pushCode(PrepareFunctionCall(), this);

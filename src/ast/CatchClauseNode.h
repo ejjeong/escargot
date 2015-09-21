@@ -20,11 +20,6 @@ public:
         m_body = (BlockStatementNode*) body;
     }
 
-    void executeStatement(ESVMInstance* instance)
-    {
-        m_body->executeStatement(instance);
-    }
-
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_body->generateStatementByteCode(codeBlock, context);

@@ -14,6 +14,7 @@ public:
         m_right = (ExpressionNode*)right;
     }
 
+    /*
     ESValue executeExpression(ESVMInstance* instance)
     {
         ESValue lval = m_left->executeExpression(instance);
@@ -37,6 +38,7 @@ public:
 
         return ESValue(false);
     }
+    */
 
 protected:
     ExpressionNode* m_left;

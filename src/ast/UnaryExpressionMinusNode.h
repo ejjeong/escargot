@@ -14,11 +14,6 @@ public:
         m_argument = argument;
     }
 
-    ESValue executeExpression(ESVMInstance* instance)
-    {
-        //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-unary-minus-operator
-        return ESValue(-m_argument->executeExpression(instance).toNumber());
-    }
 
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {

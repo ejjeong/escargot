@@ -21,11 +21,6 @@ public:
         m_kind = kind;
     }
 
-    ESValue execute(ESVMInstance* instance)
-    {
-        return ESValue();
-    }
-
     Node* key()
     {
         return m_key;

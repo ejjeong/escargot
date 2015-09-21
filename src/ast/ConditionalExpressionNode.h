@@ -16,15 +16,6 @@ public:
         m_alternate = (ExpressionNode*) alternate;
     }
 
-    ESValue executeExpression(ESVMInstance* instance)
-    {
-        ESValue test = m_test->executeExpression(instance);
-        if (test.toBoolean())
-            return m_consequente->executeExpression(instance);
-        else
-            return m_alternate->executeExpression(instance);
-    }
-
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_test->generateExpressionByteCode(codeBlock, context);

@@ -16,11 +16,6 @@ public:
         m_right = (ExpressionNode*)right;
     }
 
-    ESValue executeExpression(ESVMInstance* instance)
-    {
-        return ESValue(!m_left->executeExpression(instance).abstractEqualsTo(m_right->executeExpression(instance)));
-    }
-
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_left->generateExpressionByteCode(codeBlock, context);

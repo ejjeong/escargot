@@ -14,6 +14,7 @@ public:
         m_right = (ExpressionNode*)right;
     }
 
+    /*
     ESValue executeExpression(ESVMInstance* instance)
     {
         ESValue willBeObj = m_right->executeExpression(instance);
@@ -21,6 +22,7 @@ public:
         ESValue key = m_left->executeExpression(instance);
         return ESValue(!obj->find(key, true).isEmpty());
     }
+    */
 
 protected:
     ExpressionNode* m_left;

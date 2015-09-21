@@ -13,22 +13,10 @@ public:
             : ExpressionNode(NodeType::SequenceExpression)
     {
         m_expressions = expressions;
-        m_expressionsSize = m_expressions.size();
-        ASSERT(m_expressions.size());
-        m_rootedExpressions = m_expressions.data();
     }
 
-    ESValue executeExpression(ESVMInstance* instance, ByteCodeGenerateContext& context)
-    {
-        for (unsigned i = 0; i < m_expressionsSize - 1; i++) {
-            m_rootedExpressions[i]->executeExpression(instance);
-        }
-        return m_rootedExpressions[m_expressionsSize - 1]->executeExpression(instance);
-    }
 protected:
     ExpressionNodeVector m_expressions; //expression: Expression;
-    Node** m_rootedExpressions;
-    size_t m_expressionsSize;
 };
 
 }

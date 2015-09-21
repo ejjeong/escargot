@@ -10,11 +10,6 @@ public:
     ThisExpressionNode()
             : ExpressionNode(NodeType::ThisExpression) { }
 
-    ESValue executeExpression(ESVMInstance* instance)
-    {
-        return instance->currentExecutionContext()->resolveThisBinding();
-    }
-
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         codeBlock->pushCode(This(), this);

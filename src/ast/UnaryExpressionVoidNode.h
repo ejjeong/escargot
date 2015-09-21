@@ -13,7 +13,7 @@ public:
     {
         m_argument = argument;
     }
-
+/*
     ESValue executeExpression(ESVMInstance* instance)
     {
         //www.ecma-international.org/ecma-262/6.0/index.html#sec-unary-minus-operator
@@ -33,6 +33,7 @@ public:
         else
             RELEASE_ASSERT_NOT_REACHED();
     }
+    */
 
 protected:
     Node* m_argument;

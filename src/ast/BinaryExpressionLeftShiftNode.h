@@ -14,14 +14,6 @@ public:
         m_right = (ExpressionNode*)right;
     }
 
-    ESValue executeExpression(ESVMInstance* instance)
-    {
-        int32_t lnum = m_left->executeExpression(instance).toInt32();
-        int32_t rnum = m_right->executeExpression(instance).toInt32();
-        lnum <<= ((unsigned int)rnum) & 0x1F;
-        return ESValue(lnum);
-    }
-
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_left->generateExpressionByteCode(codeBlock, context);

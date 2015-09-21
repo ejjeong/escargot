@@ -14,15 +14,6 @@ public:
         m_right = (ExpressionNode*)right;
     }
 
-    ESValue executeExpression(ESVMInstance* instance)
-    {
-        int32_t lnum = m_left->executeExpression(instance).toInt32();
-        unsigned int shiftCount = ((unsigned int)m_right->executeExpression(instance).toInt32()) & 0x1F;
-        lnum = ((unsigned int)lnum) >> shiftCount;
-
-        return ESValue(lnum);
-    }
-
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_left->generateExpressionByteCode(codeBlock, context);

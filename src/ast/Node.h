@@ -124,21 +124,6 @@ protected:
         m_nodeType = type;
     }
 public:
-    virtual void executeStatement(ESVMInstance* instance)
-    {
-        RELEASE_ASSERT_NOT_REACHED();
-    }
-
-    virtual ESValue executeExpression(ESVMInstance* instance)
-    {
-        RELEASE_ASSERT_NOT_REACHED();
-    }
-
-    virtual ESSlotAccessor executeForWrite(ESVMInstance* instance)
-    {
-        RELEASE_ASSERT_NOT_REACHED();
-    }
-
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         RELEASE_ASSERT_NOT_REACHED();

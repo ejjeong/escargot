@@ -996,26 +996,48 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             throw ESValue(TypeError::create(ESString::create(u"constructor is not an function object")));
         ESFunctionObject* function = fn.asESPointer()->asESFunctionObject();
         ESObject* receiver;
-        if (function == instance->globalObject()->date()) {
+        if (function == globalObject->date()) {
             receiver = ESDateObject::create();
-        } else if (function == instance->globalObject()->array()) {
+        } else if (function == globalObject->array()) {
             receiver = ESArrayObject::create(0);
-        } else if (function == instance->globalObject()->string()) {
+        } else if (function == globalObject->string()) {
             receiver = ESStringObject::create();
-        } else if (function == instance->globalObject()->regexp()) {
+        } else if (function == globalObject->regexp()) {
             receiver = ESRegExpObject::create(strings->emptyESString,ESRegExpObject::Option::None);
-        } else if (function == instance->globalObject()->boolean()) {
+        } else if (function == globalObject->boolean()) {
             receiver = ESBooleanObject::create(ESValue(ESValue::ESFalseTag::ESFalse));
-        } else if (function == instance->globalObject()->error()) {
+        } else if (function == globalObject->error()) {
             receiver = ESErrorObject::create();
-        } else if (function == instance->globalObject()->referenceError()) {
+        } else if (function == globalObject->referenceError()) {
             receiver = ReferenceError::create();
-        } else if (function == instance->globalObject()->typeError()) {
+        } else if (function == globalObject->typeError()) {
             receiver = TypeError::create();
-        } else if (function == instance->globalObject()->syntaxError()) {
+        } else if (function == globalObject->syntaxError()) {
             receiver = SyntaxError::create();
-        } else if (function == instance->globalObject()->rangeError()) {
+        } else if (function == globalObject->rangeError()) {
             receiver = RangeError::create();
+        }
+        // TypedArray
+        else if (function == globalObject->int8Array()) {
+            receiver = ESTypedArrayObject<Int8Adaptor>::create();
+        } else if (function == globalObject->uint8Array()) {
+            receiver = ESTypedArrayObject<Uint8Adaptor>::create();
+        } else if (function == globalObject->int16Array()) {
+            receiver = ESTypedArrayObject<Int16Adaptor>::create();
+        } else if (function == globalObject->uint16Array()) {
+            receiver = ESTypedArrayObject<Uint16Adaptor>::create();
+        } else if (function == globalObject->int32Array()) {
+            receiver = ESTypedArrayObject<Int32Adaptor>::create();
+        } else if (function == globalObject->uint32Array()) {
+            receiver = ESTypedArrayObject<Uint32Adaptor>::create();
+        } else if (function == globalObject->uint8ClampedArray()) {
+            receiver = ESTypedArrayObject<Uint8ClampedAdaptor>::create();
+        } else if (function == globalObject->float32Array()) {
+            receiver = ESTypedArrayObject<Float32Adaptor>::create();
+        } else if (function == globalObject->float64Array()) {
+            receiver = ESTypedArrayObject<Float64Adaptor>::create();
+        } else if (function == globalObject->arrayBuffer()) {
+            receiver = ESArrayBufferObject::create();
         } else {
             receiver = ESObject::create();
         }

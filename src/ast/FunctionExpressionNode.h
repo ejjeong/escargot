@@ -15,24 +15,6 @@ public:
         m_isExpression = false;
     }
 
-    ESValue executeExpression(ESVMInstance* instance)
-    {
-        /*
-        ESFunctionObject* function = ESFunctionObject::create(instance->currentExecutionContext()->environment(), NULL);
-        //FIXME these lines duplicate with FunctionDeclarationNode::execute
-        function->set__proto__(instance->globalObject()->functionPrototype());
-        ESObject* prototype = ESObject::create();
-        prototype->setConstructor(function);
-        prototype->set__proto__(instance->globalObject()->object()->protoType());
-        function->setProtoType(prototype);
-        function->set(strings->name, m_nonAtomicId);
-        /////////////////////////////////////////////////////////////////////
-
-        return function;
-        */
-        return ESValue();
-    }
-
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         CodeBlock* cb = CodeBlock::create();

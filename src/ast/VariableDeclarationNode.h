@@ -15,21 +15,6 @@ public:
         m_declarations = decl;
     }
 
-    void executeStatement(ESVMInstance* instance)
-    {
-        for(unsigned i = 0; i < m_declarations.size() ; i ++) {
-            m_declarations[i]->executeExpression(instance);
-        }
-    }
-
-    ESValue executeExpression(ESVMInstance* instance)
-    {
-        for(unsigned i = 0; i < m_declarations.size() ; i ++) {
-            m_declarations[i]->executeExpression(instance);
-        }
-        return ESValue();
-    }
-
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         for(unsigned i = 0; i < m_declarations.size() ; i ++) {

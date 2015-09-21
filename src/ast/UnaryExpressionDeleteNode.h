@@ -21,7 +21,7 @@ public:
         //TODO return proper value
         return ESValue(true);
     }
-
+/*
     ESValue executeExpression(ESVMInstance* instance)
     {
         if(m_argument->type() == NodeType::MemberExpression) {
@@ -40,6 +40,7 @@ public:
         }
         return ESValue(false);
     }
+    */
 protected:
     Node* m_argument;
 };

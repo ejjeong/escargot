@@ -14,11 +14,6 @@ public:
         m_argument = argument;
     }
 
-    ESValue executeExpression(ESVMInstance* instance)
-    {
-        return ESValue(~m_argument->executeExpression(instance).toInt32());
-    }
-
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_argument->generateExpressionByteCode(codeBlock, context);

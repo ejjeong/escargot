@@ -14,18 +14,6 @@ public:
         m_elements = elements;
     }
 
-    //$ 12.2.5.3
-    ESValue executeExpression(ESVMInstance* instance)
-    {
-        unsigned len = m_elements.size();
-        ESArrayObject* arr = ESArrayObject::create(len, instance->globalObject()->arrayPrototype());
-        for(unsigned i = 0; i < len ; i++) {
-            ESValue result = m_elements[i]->executeExpression(instance);
-            arr->set(i, result);
-        }
-        return arr;
-    }
-
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         unsigned len = m_elements.size();
