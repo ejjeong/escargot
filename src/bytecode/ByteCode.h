@@ -1392,53 +1392,51 @@ public:
 };
 
 template <typename Type>
-ALWAYS_INLINE void push(void* stk, unsigned& sp, const Type& ptr)
+ALWAYS_INLINE void push(void*& stk, void* bp, const Type& ptr)
 {
-    memcpy(((char *)stk) + sp, &ptr, sizeof (Type));
-    sp += sizeof (Type);
+    memcpy(((char *)stk), &ptr, sizeof (Type));
+    stk = (void *)(((size_t)stk) + sizeof(Type));
 
 #ifndef NDEBUG
     size_t siz = sizeof (Type);
-    memcpy(((char *)stk) + sp, &siz, sizeof (size_t));
-    sp += sizeof (size_t);
+    memcpy(((char *)stk), &siz, sizeof (size_t));
+    stk = (void *)(((size_t)stk) + sizeof(size_t));
 
-    if(sp > 1024) {
+    if(((size_t)stk) - ((size_t)bp) > 1024) {
         puts("stackoverflow!!!");
         ASSERT_NOT_REACHED();
     }
-    ASSERT(sp % sizeof(size_t) == 0);
+    ASSERT(((size_t)stk) % sizeof(size_t) == 0);
 #endif
 }
 
 template <typename Type>
-ALWAYS_INLINE Type* pop(void* stk, unsigned& sp)
+ALWAYS_INLINE Type* pop(void*& stk, void* bp)
 {
 #ifndef NDEBUG
-    if(sp < sizeof (Type) + sizeof (size_t)) {
+    if(((size_t)stk) - sizeof (Type) < ((size_t)bp)) {
         ASSERT_NOT_REACHED();
     }
-    sp -= sizeof (size_t);
-    size_t* siz = (size_t *)(&(((char *)stk)[sp]));
+    stk = (void *)(((size_t)stk) - sizeof(Type));
+    size_t* siz = (size_t *)stk;
     ASSERT(*siz == sizeof (Type));
 #endif
-    sp -= sizeof (Type);
-    ASSERT(sp % sizeof(size_t) == 0);
-    return (Type *)(&(((char *)stk)[sp]));
+    stk = (void *)(((size_t)stk) - sizeof(size_t));
+    ASSERT(((size_t)stk) % sizeof(size_t) == 0);
+    return (Type *)stk;
 }
 
 template <typename Type>
-ALWAYS_INLINE Type* peek(void* stk, size_t sp)
+ALWAYS_INLINE Type* peek(void* stk, void* bp)
 {
+    void* address = stk;
 #ifndef NDEBUG
-    if(sp < sizeof (Type) + sizeof (size_t)) {
-        ASSERT_NOT_REACHED();
-    }
-    sp -= sizeof (size_t);
-    size_t* siz = (size_t *)(&(((char *)stk)[sp]));
+    address = (void *)(((size_t)address) - sizeof(size_t));
+    size_t* siz = (size_t *)address;
     ASSERT(*siz == sizeof (Type));
 #endif
-    sp -= sizeof (Type);
-    return (Type *)(&(((char *)stk)[sp]));
+    address = (void *)(((size_t)address) - sizeof(Type));
+    return (Type *)address;
 }
 
 template <typename CodeType>

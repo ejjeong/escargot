@@ -138,7 +138,7 @@ public:
   // GC_n is permitted to be 0.  The C++ standard says nothing about what
   // the return value is when GC_n == 0.
   GC_Tp* allocate(size_type GC_n, const void* = 0) {
-    return (GC_Tp *)GC_malloc(sizeof(GC_Tp) * GC_n);
+    return (GC_Tp *)GC_MALLOC(sizeof(GC_Tp) * GC_n);
   }
 
   // __p is not permitted to be a null pointer.
