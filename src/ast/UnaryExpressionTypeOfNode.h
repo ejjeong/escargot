@@ -16,7 +16,7 @@ public:
 
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        if(m_argument->type() == Identifier) {
+        if(m_argument->type() == Identifier && !((IdentifierNode *)m_argument)->canUseFastAccess()) {
             codeBlock->pushCode(GetByIdWithoutException(
                     ((IdentifierNode *)m_argument)->name(),
                     ((IdentifierNode *)m_argument)->nonAtomicName()
