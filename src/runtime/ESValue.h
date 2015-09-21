@@ -1006,6 +1006,13 @@ public:
             m_targetObject = obj;
     }
 
+#ifndef NDEBUG
+    ESValue* dataAddress()
+    {
+        return ((ESValue *)m_propertyValue.asESPointer());
+    }
+#endif
+
 public:
     ESObject* m_targetObject;
     ESValue m_propertyValue;

@@ -105,6 +105,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         GetById* code = (GetById*)currentCode;
         if (LIKELY(code->m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
+            ASSERT(ec->resolveBinding(code->m_name, code->m_nonAtomicName).dataAddress() == code->m_cachedSlot.dataAddress());
             push<ESValue>(stack, bp, code->m_cachedSlot.readDataProperty());
         } else {
             ESSlotAccessor slot = ec->resolveBinding(code->m_name, code->m_nonAtomicName);
@@ -133,6 +134,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         GetById* code = (GetById*)currentCode;
         if (LIKELY(code->m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
+            ASSERT(ec->resolveBinding(code->m_name, code->m_nonAtomicName).dataAddress() == code->m_cachedSlot.dataAddress());
             push<ESValue>(stack, bp, code->m_cachedSlot.readDataProperty());
         } else {
             ESSlotAccessor slot = ec->resolveBinding(code->m_name, code->m_nonAtomicName);
