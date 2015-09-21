@@ -50,7 +50,16 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     }
     */
 
+#ifndef NDEBUG
+    if (currentCode->m_orgOpcode < 0 || currentCode->m_orgOpcode > OpcodeKindEnd) {
+        printf("Error: unknown opcode\n");
+        return ESValue();
+    } else {
+#endif
     goto *currentCode->m_opcode;
+#ifndef NDEBUG
+    }
+#endif
 
     PushOpcodeLbl:
     {
