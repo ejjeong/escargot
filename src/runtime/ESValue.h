@@ -1186,7 +1186,8 @@ public:
         if(LIKELY(m_hiddenClass->m_propertyFlagInfo[idx].m_isDataProperty))
             m_hiddenClassData[idx] = value;
         else {
-            ((ESAccessorData *)m_hiddenClassData[idx].asESPointer())->m_setter(this, value);
+            if(((ESAccessorData *)m_hiddenClassData[idx].asESPointer())->m_setter)
+                ((ESAccessorData *)m_hiddenClassData[idx].asESPointer())->m_setter(this, value);
         }
     }
 

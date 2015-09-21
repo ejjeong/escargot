@@ -18,6 +18,7 @@ class Node;
     F(PopFromTempStack) \
 \
     F(GetById) \
+    F(GetByIdWithoutException) \
     F(GetByIndex) \
     F(GetByIndexWithActivation) \
     F(PutById) \
@@ -54,6 +55,7 @@ class Node;
     F(LogicalNot) \
     F(UnaryMinus) \
     F(UnaryPlus) \
+    F(UnaryTypeOf) \
 \
     /*//object, array*/ \
     F(CreateObject) \
@@ -71,6 +73,7 @@ class Node;
     F(PrepareFunctionCall) \
     F(PushFunctionCallReceiver) \
     F(CallFunction) \
+    F(CallEvalFunction) \
     F(NewFunctionCall) \
     F(ReturnFunction) \
     F(ReturnFunctionWithValue) \
@@ -79,6 +82,7 @@ class Node;
     F(Jump) \
     F(JumpIfTopOfStackValueIsFalse) \
     F(JumpIfTopOfStackValueIsTrue) \
+    F(JumpAndPopIfTopOfStackValueIsTrue) \
     F(JumpIfTopOfStackValueIsFalseWithPeeking) \
     F(JumpIfTopOfStackValueIsTrueWithPeeking) \
     F(DuplicateTopOfStackValue) \
@@ -247,6 +251,30 @@ public:
     virtual void dump()
     {
         printf("GetById <%s>\n",m_nonAtomicName->utf8Data());
+    }
+#endif
+};
+
+class GetByIdWithoutException : public ByteCode {
+public:
+    GetByIdWithoutException(const InternalAtomicString& name, ESString* esName)
+        : ByteCode(GetByIdWithoutExceptionOpcode)
+    {
+        m_name = name;
+        m_nonAtomicName = esName;
+        m_identifierCacheInvalidationCheckCount = std::numeric_limits<unsigned>::max();
+    }
+
+    InternalAtomicString m_name;
+    ESString* m_nonAtomicName;
+
+    unsigned m_identifierCacheInvalidationCheckCount;
+    ESSlotAccessor m_cachedSlot;
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("GetByIdWithoutException <%s>\n",m_nonAtomicName->utf8Data());
     }
 #endif
 };
@@ -788,6 +816,22 @@ public:
 #endif
 };
 
+class UnaryTypeOf : public ByteCode {
+public:
+    UnaryTypeOf()
+        : ByteCode(UnaryTypeOfOpcode)
+    {
+
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("UnaryTypeOf <>\n");
+    }
+#endif
+};
+
 class JumpIfTopOfStackValueIsFalse : public ByteCode {
 public:
     JumpIfTopOfStackValueIsFalse(size_t jumpPosition)
@@ -823,6 +867,25 @@ public:
     }
 #endif
 };
+
+class JumpAndPopIfTopOfStackValueIsTrue : public ByteCode {
+public:
+    JumpAndPopIfTopOfStackValueIsTrue(size_t jumpPosition)
+        : ByteCode(JumpAndPopIfTopOfStackValueIsTrueOpcode)
+    {
+        m_jumpPosition = jumpPosition;
+    }
+
+    size_t m_jumpPosition;
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("JumpAndPopIfTopOfStackValueIsTrue <%u>\n",(unsigned)m_jumpPosition);
+    }
+#endif
+};
+
 
 class JumpIfTopOfStackValueIsFalseWithPeeking : public ByteCode {
 public:
@@ -1098,6 +1161,22 @@ public:
     virtual void dump()
     {
         printf("CallFunction <>\n");
+    }
+#endif
+
+};
+
+class CallEvalFunction : public ByteCode {
+public:
+    CallEvalFunction()
+        : ByteCode(CallEvalFunctionOpcode)
+    {
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("CallEvalFunction <>\n");
     }
 #endif
 

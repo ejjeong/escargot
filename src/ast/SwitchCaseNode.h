@@ -23,6 +23,12 @@ public:
             m_consequent[i]->executeStatement(instance);
     }
 
+    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    {
+        for (unsigned i = 0; i < m_consequent.size(); i++)
+            m_consequent[i]->generateStatementByteCode(codeBlock, context);
+    }
+
     bool isDefaultNode()
     {
         return !m_test;

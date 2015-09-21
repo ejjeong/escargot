@@ -45,6 +45,14 @@ public:
         return ESValue();
     }
 
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    {
+        for(unsigned i = 0; i < m_arguments.size() ; i ++) {
+            m_arguments[i]->generateExpressionByteCode(codeBlock, context);
+        }
+        codeBlock->pushCode(Push(ESValue(m_arguments.size())), this);
+        codeBlock->pushCode(CallEvalFunction(), this);
+    }
 protected:
     ArgumentVector m_arguments; //arguments: [ Expression ];
 };
