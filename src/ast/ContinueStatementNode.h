@@ -13,9 +13,10 @@ public:
     {
     }
 
-    void executeStatement(ESVMInstance* instance)
+    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        instance->currentExecutionContext()->doContinue();
+        codeBlock->pushCode(Jump(SIZE_MAX), this);
+        context.pushContinuePositions(codeBlock->lastCodePosition<Jump>());
     }
 };
 

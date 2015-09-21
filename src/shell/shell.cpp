@@ -3,9 +3,14 @@
 #include "vm/ESVMInstance.h"
 #include "runtime/ESValue.h"
 
-
 int main(int argc, char* argv[])
 {
+/*    test* ptr = new test;
+    char* pool = (char *)GC_malloc(1024);
+    memcpy(pool + 16, &ptr, 8);
+    ptr = nullptr;
+    GC_gcollect();
+    */
     //GC_malloc(32);
     //GC_disable();
 /*
@@ -54,6 +59,11 @@ int main(int argc, char* argv[])
         }
     } else {
         for(int i = 1; i < argc; i ++) {
+#ifndef NDEBUG
+            if(strcmp(argv[i], "-d") == 0) {
+                ES->m_dumpByteCode = true;
+            }
+#endif
             FILE *fp = fopen(argv[i],"r");
             if(fp) {
                 std::string str;

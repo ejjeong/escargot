@@ -34,6 +34,14 @@ public:
         ret = argval;
         return ret;
     }
+
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    {
+        m_argument->generateResolveAddressByteCode(codeBlock, context);
+        m_argument->generateReferenceResolvedAddressByteCode(codeBlock, context);
+        codeBlock->pushCode(Increment(), this);
+        m_argument->generatePutByteCode(codeBlock, context);
+    }
 protected:
     ExpressionNode* m_argument;
 };

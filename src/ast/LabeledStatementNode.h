@@ -15,13 +15,6 @@ public:
         m_label = label;
     }
 
-    void executeStatement(ESVMInstance* instance)
-    {
-        instance->currentExecutionContext()->setLabelPositionAndExecute([this, &instance](){
-            m_statementNode->executeStatement(instance);
-        });
-
-    }
 protected:
     StatementNode* m_statementNode;
     ESString* m_label;

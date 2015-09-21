@@ -24,11 +24,13 @@ public:
         }
     }
 
-    StatementNodeVector body()
+    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        return m_body;
+        for(unsigned i = 0; i < m_bodySize ; i ++) {
+            m_rootedBody[i]->generateStatementByteCode(codeBlock, context);
+        }
+        codeBlock->pushCode(End(), this);
     }
-
 protected:
     StatementNodeVector m_body; //body: [ Statement ];
     Node** m_rootedBody;

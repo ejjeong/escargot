@@ -558,7 +558,10 @@ ALWAYS_INLINE void ESSlotAccessor::setValue(const ::escargot::ESValue& value)
 {
     ASSERT(hasData());
     if(UNLIKELY(m_targetObject != NULL)) {
-        m_targetObject->set(m_propertyValue, value);
+        if(m_hiddenClassIndex != SIZE_MAX && m_targetObject->isHiddenClassMode())
+            m_targetObject->writeHiddenClass(m_hiddenClassIndex, value);
+        else
+            m_targetObject->set(m_propertyValue, value);
     } else {
         *((ESValue *)m_propertyValue.asESPointer()) = value;
     }
@@ -1200,9 +1203,7 @@ ALWAYS_INLINE void ESObject::eraseValues(int idx, int cnt)
     }
 }
 
-//DO NOT USE THIS FUNCTION
-//NOTE rooted ESSlot has short life time.
-inline escargot::ESValue ESObject::find(escargot::ESValue key, bool searchPrototype, escargot::ESObject* realObj)
+inline escargot::ESValue ESObject::find(const escargot::ESValue& key, bool searchPrototype, escargot::ESObject* realObj)
 {
     if(realObj == nullptr)
         realObj = this;
@@ -1292,7 +1293,7 @@ ALWAYS_INLINE escargot::ESValue ESObject::findOnlyPrototype(escargot::ESValue ke
 }
 
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
-ALWAYS_INLINE void ESObject::set(escargot::ESValue key, const ESValue& val, bool shouldThrowException)
+ALWAYS_INLINE void ESObject::set(const escargot::ESValue& key, const ESValue& val, bool shouldThrowException)
 {
     int i;
     if (isESTypedArrayObject() && key.isInt32()) {

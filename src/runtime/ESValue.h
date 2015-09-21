@@ -26,7 +26,6 @@ class ESArrayObject;
 class ESStringObject;
 class ESErrorObject;
 class ESDateObject;
-class FunctionNode;
 class ESVMInstance;
 class ESPointer;
 class ESRegExpObject;
@@ -37,6 +36,9 @@ template<typename TypeArg>
 class ESTypedArrayObject;
 class ESTypedArrayObjectWrapper;
 class ESDataViewObject;
+
+class CodeBlock;
+typedef std::function<ESValue (ESVMInstance*)> NativeFunctionType;
 
 union ValueDescriptor {
     int64_t asInt64;
@@ -1031,18 +1033,21 @@ public:
     {
         m_propertyValue = ESValue(ESValue::ESEmptyValue);
         m_targetObject = NULL;
+        m_hiddenClassIndex = SIZE_MAX;
     }
 
     explicit ESSlotAccessor(ESValue* data)
     {
         m_propertyValue = ESValue((ESPointer *)data);
         m_targetObject = NULL;
+        m_hiddenClassIndex = SIZE_MAX;
     }
 
-    explicit ESSlotAccessor(ESObject* obj, ESValue propertyValue)
+    explicit ESSlotAccessor(ESObject* obj, const ESValue& propertyValue, size_t hiddenClassIndex = SIZE_MAX)
     {
         m_propertyValue = propertyValue;
         m_targetObject = obj;
+        m_hiddenClassIndex = hiddenClassIndex;
     }
 
     ALWAYS_INLINE bool hasData() const
@@ -1073,9 +1078,17 @@ public:
             m_targetObject = obj;
     }
 
+#ifndef NDEBUG
+    ESValue* dataAddress()
+    {
+        return ((ESValue *)m_propertyValue.asESPointer());
+    }
+#endif
+
 public:
     ESObject* m_targetObject;
     ESValue m_propertyValue;
+    size_t m_hiddenClassIndex;
 };
 
 struct ESHiddenClassPropertyInfo {
@@ -1169,7 +1182,7 @@ class ESObject : public ESPointer {
     friend class ESSlot;
     friend class ESHiddenClass;
 protected:
-    ESObject(ESPointer::Type type = ESPointer::Type::ESObject);
+    ESObject(ESPointer::Type type = ESPointer::Type::ESObject, size_t initialKeyCount = 6);
 public:
 
     //DO NOT USE THIS FUNCTION
@@ -1231,9 +1244,9 @@ public:
         return m_hiddenClass;
     }
 
-    static ESObject* create()
+    static ESObject* create(size_t initialKeyCount = 6)
     {
-        return new ESObject();
+        return new ESObject(ESPointer::Type::ESObject, initialKeyCount);
     }
 
     ESValue readHiddenClass(size_t idx)
@@ -1246,9 +1259,20 @@ public:
         }
     }
 
+    void writeHiddenClass(size_t idx, const ESValue& value)
+    {
+        ASSERT(!m_map);
+        if(LIKELY(m_hiddenClass->m_propertyFlagInfo[idx].m_isDataProperty))
+            m_hiddenClassData[idx] = value;
+        else {
+            if(((ESAccessorData *)m_hiddenClassData[idx].asESPointer())->m_setter)
+                ((ESAccessorData *)m_hiddenClassData[idx].asESPointer())->m_setter(this, value);
+        }
+    }
+
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-get-o-p
     ALWAYS_INLINE ESValue get(escargot::ESValue key, bool searchPrototype = false);
-    inline escargot::ESValue find(escargot::ESValue key, bool searchPrototype = false, escargot::ESObject* realObj = nullptr);
+    inline escargot::ESValue find(const escargot::ESValue& key, bool searchPrototype = false, escargot::ESObject* realObj = nullptr);
     ALWAYS_INLINE escargot::ESValue findOnlyPrototype(escargot::ESValue key);
 
     //DO NOT USE THIS FUNCTION
@@ -1256,7 +1280,7 @@ public:
     ESSlotAccessor addressOfProperty(escargot::ESValue key);
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
-    ALWAYS_INLINE void set(escargot::ESValue key, const ESValue& val, bool shouldThrowException = false);
+    ALWAYS_INLINE void set(const escargot::ESValue& key, const ESValue& val, bool shouldThrowException = false);
 
     void set(escargot::ESString* key, const ESValue& val, bool shouldThrowException = false)
     {
@@ -1607,18 +1631,25 @@ class LexicalEnvironment;
 class Node;
 class ESFunctionObject : public ESObject {
 protected:
-    ESFunctionObject(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST, ESObject* proto);
+    ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlock* codeBlock, escargot::ESString* name, ESObject* proto);
+    ESFunctionObject(LexicalEnvironment* outerEnvironment, const NativeFunctionType& fn, escargot::ESString* name, ESObject* proto);
 public:
-    static ESFunctionObject* create(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST, ESObject* proto = NULL)
+    static ESFunctionObject* create(LexicalEnvironment* outerEnvironment, CodeBlock* codeBlock, escargot::ESString* name, ESObject* proto = NULL)
     {
-        ESFunctionObject* ret = new ESFunctionObject(outerEnvironment, functionAST, proto);
+        ESFunctionObject* ret = new ESFunctionObject(outerEnvironment, codeBlock, name, proto);
         return ret;
     }
 
-    void initialize(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST)
+    static ESFunctionObject* create(LexicalEnvironment* outerEnvironment, const NativeFunctionType& fn, escargot::ESString* name, ESObject* proto = NULL)
+    {
+        ESFunctionObject* ret = new ESFunctionObject(outerEnvironment, fn, name, proto);
+        return ret;
+    }
+
+    void initialize(LexicalEnvironment* outerEnvironment, CodeBlock* codeBlock)
     {
         m_outerEnvironment = outerEnvironment;
-        m_functionAST = functionAST;
+        m_codeBlock = codeBlock;
     }
 
     ALWAYS_INLINE ESValue protoType()
@@ -1631,14 +1662,21 @@ public:
         m_protoType = obj;
     }
 
-    FunctionNode* functionAST() { return m_functionAST; }
+    CodeBlock* codeBlock() { return m_codeBlock; }
     LexicalEnvironment* outerEnvironment() { return m_outerEnvironment; }
 
-    static ESValue call(ESVMInstance* instance, ESValue callee, ESValue receiver, ESValue arguments[], size_t argumentCount, bool isNewExpression = false);
+    ALWAYS_INLINE escargot::ESString* name()
+    {
+        return m_name;
+    }
+
+    static ESValue call(ESVMInstance* instance, const ESValue& callee, const ESValue& receiver, ESValue arguments[], const size_t& argumentCount, bool isNewExpression);
 protected:
     LexicalEnvironment* m_outerEnvironment;
-    FunctionNode* m_functionAST;
     ESValue m_protoType;
+
+    CodeBlock* m_codeBlock;
+    escargot::ESString* m_name;
     //ESObject functionObject;
     //HomeObject
     ////ESObject newTarget

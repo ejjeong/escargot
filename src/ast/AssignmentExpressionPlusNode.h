@@ -19,36 +19,13 @@ public:
         m_right = right;
     }
 
-    ESValue executeExpression(ESVMInstance* instance)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        ESSlotAccessor slot;
-
-        ESValue ret(ESValue::ESForceUninitialized);
-
-        slot = m_left->executeForWrite(instance);
-        ESValue lval = slot.value().toPrimitive();
-        ESValue rval = m_right->executeExpression(instance).toPrimitive();
-
-        // http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.1
-        if(lval.isInt32() && rval.isInt32()) {
-            int a = lval.asInt32(), b = rval.asInt32();
-            if (UNLIKELY(a > 0 && b > std::numeric_limits<int32_t>::max() - a)) {
-                //overflow
-                ret = ESValue((double)lval.asInt32() + (double)rval.asInt32());
-            } else if (UNLIKELY(a < 0 && b < std::numeric_limits<int32_t>::min() - a)) {
-                //underflow
-                ret = ESValue((double)lval.asInt32() + (double)rval.asInt32());
-            } else {
-                ret = ESValue(lval.asInt32() + rval.asInt32());
-            }
-        } else if (lval.isESString() || rval.isESString()) {
-            ret = ESString::concatTwoStrings(lval.toString(), rval.toString());
-        } else {
-            ret = ESValue(lval.toNumber() + rval.toNumber());
-        }
-
-        slot.setValue(ret);
-        return ret;
+        m_left->generateResolveAddressByteCode(codeBlock, context);
+        m_left->generateReferenceResolvedAddressByteCode(codeBlock, context);
+        m_right->generateExpressionByteCode(codeBlock, context);
+        codeBlock->pushCode(Plus(), this);
+        m_left->generatePutByteCode(codeBlock, context);
     }
 
 protected:

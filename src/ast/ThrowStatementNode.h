@@ -21,6 +21,12 @@ public:
         RELEASE_ASSERT_NOT_REACHED();
     }
 
+    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    {
+        m_argument->generateExpressionByteCode(codeBlock, context);
+        codeBlock->pushCode(Throw(), this);
+    }
+
 protected:
     Node* m_argument;
 };

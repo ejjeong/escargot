@@ -5,6 +5,7 @@
 #include "vm/ESVMInstance.h"
 #include "runtime/ExecutionContext.h"
 #include "runtime/Environment.h"
+#include "bytecode/ByteCode.h"
 
 namespace escargot {
 
@@ -62,7 +63,6 @@ enum NodeType {
     AssignmentExpressionSignedRightShift,
     AssignmentExpressionUnsignedRightShift,
     AssignmentExpressionSimple,
-    AssignmentExpressionSimpleLeftIdentifierFastCase,
     BinaryExpression,
     BinaryExpressionBitwiseAnd,
     BinaryExpressionBitwiseOr,
@@ -96,16 +96,11 @@ enum NodeType {
     SequenceExpression,
     NewExpression,
     MemberExpression,
-    MemberExpressionLeftIdentifierFastCase,
-    MemberExpressionNonComputedCase,
-    MemberExpressionNonComputedCaseLeftIdentifierFastCase,
     ConditionalExpression,
     CallExpression,
     CallEvalFunctionExpression,
     VariableDeclarator,
     Identifier,
-    IdentifierFastCase,
-    IdentifierFastCaseWithActivation,
     LabeledStatement,
     Literal,
     NativeFunction,
@@ -144,6 +139,31 @@ public:
         RELEASE_ASSERT_NOT_REACHED();
     }
 
+    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+
+    virtual void generateResolveAddressByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+
+    virtual void generateReferenceResolvedAddressByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+
+    virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+
     virtual ~Node()
     {
 
@@ -155,32 +175,13 @@ public:
         m_sourceLocation.m_lineStart = lineStart;
     }
 
+    const SourceLocation& sourceLocation() { return m_sourceLocation; }
+
     ALWAYS_INLINE const NodeType& type() { return m_nodeType; }
 protected:
     NodeType m_nodeType;
     SourceLocation m_sourceLocation;
 };
-
-class ControlFlowNode {
-public:
-    ControlFlowNode()
-    {
-        m_isSlowCase = false;
-        m_isSwitchStatementNode = false;
-    }
-    void markAsSlowCase()
-    {
-        m_isSlowCase = true;
-    }
-    bool isSwitchStatementNode()
-    {
-        return m_isSwitchStatementNode;
-    }
-protected:
-    bool m_isSlowCase;
-    bool m_isSwitchStatementNode;
-};
-
 
 }
 

@@ -24,29 +24,19 @@ public:
         }
     }
 
+    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    {
+        for(unsigned i = 0; i < m_bodySize ; ++ i) {
+            m_rootedBody[i]->generateStatementByteCode(codeBlock, context);
+        }
+    }
+
 protected:
     StatementNodeVector m_body;// body: [ Statement ];
     Node** m_rootedBody;
     size_t m_bodySize;
 };
 
-
-template <size_t count>
-class BlockStatementPredefinedNode : public BlockStatementNode {
-public:
-    friend class ESScriptParser;
-    BlockStatementPredefinedNode(StatementNodeVector&& body)
-            : BlockStatementNode(std::move(body))
-    {
-        ASSERT(m_body.size() == count);
-    }
-
-    void executeStatement(ESVMInstance* instance)
-    {
-        for(unsigned i = 0; i < count ; i ++)
-            m_rootedBody[i]->executeStatement(instance);
-    }
-};
 
 }
 

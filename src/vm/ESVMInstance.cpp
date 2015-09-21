@@ -4,6 +4,7 @@
 #include "runtime/ExecutionContext.h"
 #include "runtime/GlobalObject.h"
 #include "parser/ESScriptParser.h"
+#include "bytecode/ByteCode.h"
 
 #include "BumpPointerAllocator.h"
 
@@ -13,6 +14,16 @@ __thread ESVMInstance* currentInstance;
 
 ESVMInstance::ESVMInstance()
 {
+#ifndef NDEBUG
+    m_dumpByteCode = false;
+#endif
+
+    std::srand(std::time(0));
+
+    m_table = new OpcodeTable();
+    //init goto table
+    interpret(this, NULL, 0);
+
     clock_gettime(CLOCK_REALTIME,&m_cachedTimeOrigin);
     m_cachedTime = localtime(&m_cachedTimeOrigin.tv_sec);
 
@@ -146,7 +157,10 @@ ESValue ESVMInstance::evaluate(u16string& source)
     try {
         m_lastExpressionStatementValue = ESValue();
         ProgramNode* node = ESScriptParser::parseScript(this, source);
-        node->execute(this);
+        CodeBlock* block = CodeBlock::create();
+        ByteCodeGenerateContext context;
+        node->generateStatementByteCode(block, context);
+        interpret(this, block);
     } catch(const ESValue& err) {
         try{
             printf("Uncaught %s\n", err.toString()->utf8Data());

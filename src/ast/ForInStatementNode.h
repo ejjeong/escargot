@@ -6,7 +6,7 @@
 
 namespace escargot {
 
-class ForInStatementNode : public StatementNode , public ControlFlowNode {
+class ForInStatementNode : public StatementNode {
 public:
     friend class ESScriptParser;
     ForInStatementNode(Node *left, Node *right, Node *body, bool each)
@@ -18,77 +18,51 @@ public:
         m_each = each;
     }
 
-    void executeStatement(ESVMInstance* instance)
+    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        if(m_isSlowCase) {
-            ESValue exprValue = m_right->executeExpression(instance);
-            if (exprValue.isNull() || exprValue.isUndefined())
-                return ;
+        m_right->generateExpressionByteCode(codeBlock, context);
+        codeBlock->pushCode(DuplicateTopOfStackValue(), this);
+        codeBlock->pushCode(Push(ESValue(ESValue::ESUndefined)), this);
+        codeBlock->pushCode(Equal(), this);
+        codeBlock->pushCode(JumpIfTopOfStackValueIsTrue(SIZE_MAX), this);
+        size_t exit1Pos = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsTrue>();
+        codeBlock->pushCode(DuplicateTopOfStackValue(), this);
+        codeBlock->pushCode(Push(ESValue(ESValue::ESNull)), this);
+        codeBlock->pushCode(Equal(), this);
+        codeBlock->pushCode(JumpIfTopOfStackValueIsTrue(SIZE_MAX), this);
+        size_t exit2Pos = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsTrue>();
 
-            ExecutionContext* ec = instance->currentExecutionContext();
+        codeBlock->pushCode(EnumerateObject(), this);
+        size_t continuePosition = codeBlock->currentCodeSize();
+        codeBlock->pushCode(EnumerateObjectKey(), this);
 
-            std::vector<ESValue> propertyVals;
-            ESObject* obj = exprValue.toObject();
-            propertyVals.reserve(obj->keyCount());
-            obj->enumeration([&propertyVals](ESValue key, ESValue value) {
-                propertyVals.push_back(key);
-            });
-            /*
-            std::sort(propertyVals.begin(), propertyVals.end(), [](const ::escargot::ESValue& a, const ::escargot::ESValue& b) -> bool {
-                ::escargot::ESString* vala = a.toString();
-                ::escargot::ESString* valb = b.toString();
-                return vala->string() < valb->string();
-            });*/
+        codeBlock->pushCode(PushIntoTempStack(), this);
+        m_left->generateResolveAddressByteCode(codeBlock, context);
+        codeBlock->pushCode(PopFromTempStack(), this);
+        m_left->generatePutByteCode(codeBlock, context);
+        codeBlock->pushCode(Pop(), this);
 
-            ec->setJumpPositionAndExecute([&](){
-                jmpbuf_wrapper cont;
-                int r = setjmp(cont.m_buffer);
-                if (r != 1) {
-                    ec->pushContinuePosition(cont);
-                }
-                for (unsigned int i=0; i<propertyVals.size(); i++) {
-                    if (obj->hasOwnProperty(propertyVals[i])) {
-                        ESValue name = propertyVals[i];
-                        ESSlotAccessor slot = m_left->executeForWrite(instance);
-                        slot.setValue(name);
-                        m_body->executeStatement(instance);
-                    }
-                }
-                instance->currentExecutionContext()->popContinuePosition();
-            });
-        } else {
-            ESValue exprValue = m_right->executeExpression(instance);
-            if (exprValue.isNull() || exprValue.isUndefined())
-                return ;
+        m_body->generateStatementByteCode(codeBlock, context);
 
-            ExecutionContext* ec = instance->currentExecutionContext();
+        codeBlock->pushCode(Jump(continuePosition), this);
+        size_t forInEnd = codeBlock->currentCodeSize();
+        codeBlock->pushCode(EnumerateObjectEnd(), this);
+        ASSERT(codeBlock->peekCode<EnumerateObjectKey>(continuePosition)->m_orgOpcode == EnumerateObjectKeyOpcode);
+        codeBlock->peekCode<EnumerateObjectKey>(continuePosition)->m_forInEnd = forInEnd;
 
-            std::vector<ESValue> propertyVals;
-            ESObject* obj = exprValue.toObject();
-            propertyVals.reserve(obj->keyCount());
-            obj->enumeration([&propertyVals](ESValue key, ::escargot::ESValue value) {
-                propertyVals.push_back(key);
-            });
+        context.consumeBreakPositions(codeBlock, forInEnd);
+        context.consumeContinuePositions(codeBlock, continuePosition);
+        codeBlock->pushCode(Jump(SIZE_MAX), this);
+        size_t jPos = codeBlock->lastCodePosition<Jump>();
 
-            /*
-            std::sort(propertyVals.begin(), propertyVals.end(), [](const ::escargot::ESValue& a, const ::escargot::ESValue& b) -> bool {
-                ::escargot::ESString* vala = a.toString();
-                ::escargot::ESString* valb = b.toString();
-                return vala->string() < valb->string();
-            });
-            */
+        size_t exitPos = codeBlock->currentCodeSize();
+        codeBlock->pushCode(Pop(), this);
+        codeBlock->peekCode<JumpIfTopOfStackValueIsTrue>(exit1Pos)->m_jumpPosition = exitPos;
+        codeBlock->peekCode<JumpIfTopOfStackValueIsTrue>(exit2Pos)->m_jumpPosition = exitPos;
 
-            for (unsigned int i=0; i<propertyVals.size(); i++) {
-                if (obj->hasOwnProperty(propertyVals[i])) {
-                    ESValue name = propertyVals[i];
-                    ESSlotAccessor slot = m_left->executeForWrite(instance);
-                    slot.setValue(name);
-                    m_body->executeStatement(instance);
-                }
-            }
-        }
-
+        codeBlock->peekCode<Jump>(jPos)->m_jumpPosition = codeBlock->currentCodeSize();
     }
+
 
 protected:
     ExpressionNode *m_left;

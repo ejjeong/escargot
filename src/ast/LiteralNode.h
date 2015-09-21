@@ -19,6 +19,11 @@ public:
         return m_value;
     }
 
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    {
+        codeBlock->pushCode(Push(m_value), this);
+    }
+
     ESValue value() { return m_value; }
 protected:
     ESValue m_value;

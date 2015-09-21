@@ -21,6 +21,13 @@ public:
         return ESValue(m_left->executeExpression(instance).abstractEqualsTo(m_right->executeExpression(instance)));
     }
 
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    {
+        m_left->generateExpressionByteCode(codeBlock, context);
+        m_right->generateExpressionByteCode(codeBlock, context);
+        codeBlock->pushCode(Equal(), this);
+    }
+
 protected:
     ExpressionNode* m_left;
     ExpressionNode* m_right;

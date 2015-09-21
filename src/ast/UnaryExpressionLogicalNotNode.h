@@ -20,6 +20,12 @@ public:
         return ESValue(!m_argument->executeExpression(instance).toBoolean());
     }
 
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    {
+        m_argument->generateExpressionByteCode(codeBlock, context);
+        codeBlock->pushCode(LogicalNot(), this);
+    }
+
 protected:
     Node* m_argument;
 };

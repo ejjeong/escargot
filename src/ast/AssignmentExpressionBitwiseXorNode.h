@@ -19,16 +19,13 @@ public:
         m_right = right;
     }
 
-    ESValue executeExpression(ESVMInstance* instance)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        ESSlotAccessor slot;
-        slot = m_left->executeForWrite(instance);
-        int32_t lnum = slot.value().toInt32();
-        int32_t rnum = m_right->executeExpression(instance).toInt32();
-        // http://www.ecma-international.org/ecma-262/5.1/#sec-11.10
-        ESValue rvalue(lnum ^ rnum);
-        slot.setValue(rvalue);
-        return rvalue;
+        m_left->generateResolveAddressByteCode(codeBlock, context);
+        m_left->generateReferenceResolvedAddressByteCode(codeBlock, context);
+        m_right->generateExpressionByteCode(codeBlock, context);
+        codeBlock->pushCode(BitwiseXor(), this);
+        m_left->generatePutByteCode(codeBlock, context);
     }
 
 protected:

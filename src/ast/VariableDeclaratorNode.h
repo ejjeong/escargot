@@ -35,6 +35,14 @@ public:
                 ((IdentifierNode *)m_id)->nonAtomicName(), false);
     }
 
+    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    {
+        ASSERT(m_id->type() == NodeType::Identifier);
+        ASSERT(!((IdentifierNode *)m_id)->canUseFastAccess());
+        ASSERT(m_init == NULL);
+        codeBlock->pushCode(CreateBinding(((IdentifierNode *)m_id)->name(), ((IdentifierNode *)m_id)->nonAtomicName()), this);
+    }
+
     Node* id() { return m_id; }
     ExpressionNode* init() { return m_init; }
     void clearInit()

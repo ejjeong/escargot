@@ -16,12 +16,31 @@ public:
         m_alternate = (StatementNode*) alternate;
     }
 
-    void executeStatement(ESVMInstance* instance)
+    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        if (m_test->executeExpression(instance).toBoolean())
-            m_consequente->executeStatement(instance);
-        else if (m_alternate)
-            m_alternate->executeStatement(instance);
+        if(!m_alternate) {
+            m_test->generateExpressionByteCode(codeBlock, context);
+            codeBlock->pushCode(JumpIfTopOfStackValueIsFalse(SIZE_MAX), this);
+            size_t jPos = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsFalse>();
+            m_consequente->generateStatementByteCode(codeBlock, context);
+            JumpIfTopOfStackValueIsFalse* j = codeBlock->peekCode<JumpIfTopOfStackValueIsFalse>(jPos);
+            j->m_jumpPosition = codeBlock->currentCodeSize();
+        } else {
+            m_test->generateExpressionByteCode(codeBlock, context);
+            codeBlock->pushCode(JumpIfTopOfStackValueIsFalse(SIZE_MAX), this);
+            size_t jPos = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsFalse>();
+            m_consequente->generateStatementByteCode(codeBlock, context);
+
+            codeBlock->pushCode(Jump(SIZE_MAX), this);
+            JumpIfTopOfStackValueIsFalse* j = codeBlock->peekCode<JumpIfTopOfStackValueIsFalse>(jPos);
+            size_t jPos2 = codeBlock->lastCodePosition<Jump>();
+            j->m_jumpPosition = codeBlock->currentCodeSize();
+
+            m_alternate->generateStatementByteCode(codeBlock, context);
+            Jump* j2 = codeBlock->peekCode<Jump>(jPos2);
+            j2->m_jumpPosition = codeBlock->currentCodeSize();
+        }
+
     }
 
 protected:

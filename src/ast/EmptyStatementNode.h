@@ -16,6 +16,10 @@ public:
     void executeStatement(ESVMInstance* instance)
     {
     }
+
+    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    {
+    }
 protected:
 };
 

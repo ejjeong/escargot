@@ -14,40 +14,16 @@ public:
         m_argument = argument;
     }
 
-    ESValue executeExpression(ESVMInstance* instance)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        //www.ecma-international.org/ecma-262/6.0/index.html#sec-unary-minus-operator
-        ESValue v;
-        try {
-            v = m_argument->executeExpression(instance);
-        } catch(const ESValue& e) {
-            if((m_argument->type() == Identifier || m_argument->type() == IdentifierFastCase || m_argument->type() == IdentifierFastCaseWithActivation) && e.isESPointer() && e.asESPointer()->isESObject() && e.asESPointer()->asESObject()->constructor() == ESValue(instance->globalObject()->referenceError())) {
-
-            } else {
-                throw e;
-            }
-        }
-
-        if(v.isUndefined())
-            return strings->undefined;
-        else if(v.isNull())
-            return strings->null;
-        else if(v.isBoolean())
-            return strings->boolean;
-        else if(v.isNumber())
-            return strings->number;
-        else if(v.isESString())
-            return strings->string;
-        else if(v.isESPointer()) {
-            ESPointer* p = v.asESPointer();
-            if(p->isESFunctionObject()) {
-                return strings->function;
-            } else {
-                return strings->object;
-            }
-        }
-        else
-            RELEASE_ASSERT_NOT_REACHED();
+        if(m_argument->type() == Identifier && !((IdentifierNode *)m_argument)->canUseFastAccess()) {
+            codeBlock->pushCode(GetByIdWithoutException(
+                    ((IdentifierNode *)m_argument)->name(),
+                    ((IdentifierNode *)m_argument)->nonAtomicName()
+                    ), this);
+        } else
+            m_argument->generateExpressionByteCode(codeBlock, context);
+        codeBlock->pushCode(UnaryTypeOf(), this);
     }
 
 protected:

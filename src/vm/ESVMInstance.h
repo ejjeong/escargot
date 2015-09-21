@@ -13,6 +13,8 @@ namespace escargot {
 class ExecutionContext;
 class GlobalObject;
 class ESVMInstance;
+class CodeBlock;
+class OpcodeTable;
 
 extern __thread ESVMInstance* currentInstance;
 
@@ -21,6 +23,7 @@ typedef std::unordered_map<u16string, InternalAtomicStringData *,
         gc_allocator<std::pair<const u16string, InternalAtomicStringData *>> > InternalAtomicStringMap;
 
 class ESVMInstance : public gc_cleanup {
+    friend ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter);
     friend class ESFunctionObject;
     friend class ExpressionStatementNode;
     friend class TryStatementNode;
@@ -40,6 +43,7 @@ public:
         return escargot::currentInstance;
     }
 
+    ALWAYS_INLINE OpcodeTable* opcodeTable() { return m_table; }
     ALWAYS_INLINE Strings& strings() { return m_strings; }
 
     template <typename F>
@@ -98,10 +102,17 @@ public:
 
     //Function for debug
     static void printValue(ESValue val);
+
+#ifndef NDEBUG
+    bool m_dumpByteCode;
+#endif
+
 protected:
     ExecutionContext* m_globalExecutionContext;
     ExecutionContext* m_currentExecutionContext;
     GlobalObject* m_globalObject;
+
+    OpcodeTable* m_table;
 
     friend class InternalAtomicString;
     friend class InternalAtomicStringData;

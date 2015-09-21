@@ -17,7 +17,8 @@ public:
 
     ESValue executeExpression(ESVMInstance* instance)
     {
-        ESFunctionObject* function = ESFunctionObject::create(instance->currentExecutionContext()->environment(), this);
+        /*
+        ESFunctionObject* function = ESFunctionObject::create(instance->currentExecutionContext()->environment(), NULL);
         //FIXME these lines duplicate with FunctionDeclarationNode::execute
         function->set__proto__(instance->globalObject()->functionPrototype());
         ESObject* prototype = ESObject::create();
@@ -28,6 +29,22 @@ public:
         /////////////////////////////////////////////////////////////////////
 
         return function;
+        */
+        return ESValue();
+    }
+
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    {
+        CodeBlock* cb = CodeBlock::create();
+        cb->m_innerIdentifiers = std::move(m_innerIdentifiers);
+        cb->m_needsActivation = m_needsActivation;
+        cb->m_needsArgumentsObject = m_needsArgumentsObject;
+        cb->m_nonAtomicParams = std::move(m_nonAtomicParams);
+        cb->m_params = std::move(m_params);
+        ByteCodeGenerateContext newContext;
+        m_body->generateStatementByteCode(cb, newContext);
+        cb->pushCode(ReturnFunction(), this);
+        codeBlock->pushCode(CreateFunction(InternalAtomicString(), NULL, cb), this);
     }
 
 

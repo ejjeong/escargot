@@ -221,6 +221,8 @@ public:
     {
     }
 
+    InternalAtomicStringVector* innerIdentifiers() { return m_innerIdentifiers; }
+
     virtual ESSlotAccessor hasBinding(const InternalAtomicString& atomicName, ESString* name)
     {
         if(UNLIKELY(m_needsActivation)) {

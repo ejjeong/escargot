@@ -24,6 +24,16 @@ public:
             return m_right->executeExpression(instance);
     }
 
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    {
+        m_left->generateExpressionByteCode(codeBlock, context);
+        codeBlock->pushCode<JumpIfTopOfStackValueIsTrueWithPeeking>(JumpIfTopOfStackValueIsTrueWithPeeking(SIZE_MAX), this);
+        size_t pos = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsTrueWithPeeking>();
+        codeBlock->pushCode(Pop(), this);
+        m_right->generateExpressionByteCode(codeBlock, context);
+        codeBlock->peekCode<JumpIfTopOfStackValueIsTrueWithPeeking>(pos)->m_jumpPosition = codeBlock->currentCodeSize();
+    }
+
 protected:
     ExpressionNode* m_left;
     ExpressionNode* m_right;

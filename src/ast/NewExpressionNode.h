@@ -17,6 +17,7 @@ public:
 
     ESValue executeExpression(ESVMInstance* instance)
     {
+        /*
         ESValue fn = m_callee->executeExpression(instance);
         if(!fn.isESPointer() || !fn.asESPointer()->isESFunctionObject())
             throw ESValue(TypeError::create(ESString::create(u"NewExpression: constructor is not an function object")));
@@ -82,6 +83,20 @@ public:
         if (res.isObject())
             return res;
         return receiver;
+        */
+        return ESValue();
+    }
+
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    {
+        m_callee->generateExpressionByteCode(codeBlock, context);
+
+        for(unsigned i = 0; i < m_arguments.size() ; i ++) {
+            m_arguments[i]->generateExpressionByteCode(codeBlock, context);
+        }
+
+        codeBlock->pushCode(Push(ESValue(m_arguments.size())), this);
+        codeBlock->pushCode(NewFunctionCall(), this);
     }
 
 protected:

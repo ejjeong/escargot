@@ -6,7 +6,7 @@
 
 namespace escargot {
 
-class WhileStatementNode : public StatementNode, public ControlFlowNode {
+class WhileStatementNode : public StatementNode {
 public:
     friend class ESScriptParser;
     WhileStatementNode(Node *test, Node *body)
@@ -16,34 +16,21 @@ public:
         m_body = (StatementNode*) body;
     }
 
-    void executeStatement(ESVMInstance* instance)
+    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        if(UNLIKELY(m_isSlowCase)) {
-            ESValue test = m_test->executeExpression(instance);
-            instance->currentExecutionContext()->setJumpPositionAndExecute([&](){
-                    jmpbuf_wrapper cont;
-                    int r = setjmp(cont.m_buffer);
-                    if (r != 1) {
-                        instance->currentExecutionContext()->pushContinuePosition(cont);
-                    } else {
-                        test = m_test->executeExpression(instance);
-                    }
-                    while (test.toBoolean()) {
-                        m_body->executeStatement(instance);
-                        test = m_test->executeExpression(instance);
-                    }
-                    instance->currentExecutionContext()->popContinuePosition();
-            });
-        } else {
-            while (m_test->executeExpression(instance).toBoolean()) {
-                m_body->executeStatement(instance);
-            }
-        }
-    }
+        size_t whileStart = codeBlock->currentCodeSize();
+        m_test->generateExpressionByteCode(codeBlock, context);
 
-    void markAsSlowCase()
-    {
-        m_isSlowCase = true;
+        codeBlock->pushCode(JumpIfTopOfStackValueIsFalse(SIZE_MAX), this);
+        size_t testPos = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsFalse>();
+
+        m_body->generateStatementByteCode(codeBlock, context);
+
+        codeBlock->pushCode(Jump(whileStart), this);
+        context.consumeContinuePositions(codeBlock, whileStart);
+        size_t whileEnd = codeBlock->currentCodeSize();
+        context.consumeBreakPositions(codeBlock, whileEnd);
+        codeBlock->peekCode<JumpIfTopOfStackValueIsFalse>(testPos)->m_jumpPosition = whileEnd;
     }
 
 protected:

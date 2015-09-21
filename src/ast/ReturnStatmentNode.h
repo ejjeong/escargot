@@ -14,12 +14,15 @@ public:
         m_argument = argument;
     }
 
-    void executeStatement(ESVMInstance* instance)
+    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        instance->currentExecutionContext()->doReturn(m_argument ? m_argument->executeExpression(instance) : ESValue());
-        RELEASE_ASSERT_NOT_REACHED();
+        if(m_argument) {
+            m_argument->generateExpressionByteCode(codeBlock, context);
+            codeBlock->pushCode(ReturnFunctionWithValue(), this);
+        } else {
+            codeBlock->pushCode(ReturnFunction(), this);
+        }
     }
-
 protected:
     Node* m_argument;
 };
