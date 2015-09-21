@@ -3,9 +3,14 @@
 #include "vm/ESVMInstance.h"
 #include "runtime/ESValue.h"
 
-
 int main(int argc, char* argv[])
 {
+/*    test* ptr = new test;
+    char* pool = (char *)GC_malloc(1024);
+    memcpy(pool + 16, &ptr, 8);
+    ptr = nullptr;
+    GC_gcollect();
+    */
     //GC_malloc(32);
     //GC_disable();
 /*

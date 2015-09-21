@@ -1026,7 +1026,7 @@ struct EnumerateObjectData : public gc {
 
     ESObject* m_object;
     unsigned m_idx;
-    std::vector<ESValue, gc_allocator<ESValue>> m_keys;
+    std::vector<ESValue, gc_allocator<ESValue> > m_keys;
 };
 
 class EnumerateObject : public ByteCode {
@@ -1350,12 +1350,16 @@ public:
 };
 
 class CodeBlock : public gc {
-public:
     CodeBlock()
     {
         m_needsActivation = false;
         m_needsArgumentsObject = false;
         m_isBuiltInFunction = false;
+    }
+public:
+    static CodeBlock* create()
+    {
+        return new(GC) CodeBlock();
     }
     template <typename CodeType>
     void pushCode(const CodeType& type, Node* node);
@@ -1377,7 +1381,7 @@ public:
     {
         return m_code.size();
     }
-    std::vector<char, gc_allocator<char> > m_code;
+    std::vector<char, gc_malloc_allocator<char> > m_code;
 
     InternalAtomicStringVector m_params; //params: [ Pattern ];
     ESStringVector m_nonAtomicParams;

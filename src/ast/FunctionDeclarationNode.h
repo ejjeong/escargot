@@ -39,7 +39,7 @@ public:
 
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        CodeBlock* cb = new CodeBlock();
+        CodeBlock* cb = CodeBlock::create();
         cb->m_innerIdentifiers = std::move(m_innerIdentifiers);
         cb->m_needsActivation = m_needsActivation;
         cb->m_needsArgumentsObject = m_needsArgumentsObject;

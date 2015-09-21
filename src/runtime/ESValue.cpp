@@ -371,7 +371,7 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlo
 ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, const NativeFunctionType& fn, escargot::ESString* name, ESObject* proto)
     : ESFunctionObject(outerEnvironment, NULL, name, proto)
 {
-    m_codeBlock = new CodeBlock();
+    m_codeBlock = CodeBlock::create();
     m_codeBlock->pushCode(ExecuteNativeFunction(fn), NULL);
     m_codeBlock->m_isBuiltInFunction = true;
     m_name = name;

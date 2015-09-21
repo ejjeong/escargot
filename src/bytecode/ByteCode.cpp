@@ -36,8 +36,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     ESObject* lastESObjectMetInMemberExpressionNode = globalObject;
     ESValue* lastExpressionStatementValue = &instance->m_lastExpressionStatementValue;
     ESValue* nonActivitionModeLocalValuePointer = ec->cachedDeclarativeEnvironmentRecordESValue();
+    ASSERT(((size_t)stack % sizeof(size_t)) == 0);
+    ASSERT(((size_t)tmpStack % sizeof(size_t)) == 0);
     NextInstruction:
     ByteCode* currentCode = (ByteCode *)(&code[programCounter]);
+    ASSERT(((size_t)currentCode % sizeof(size_t)) == 0);
     /*
     {
         size_t tt = (size_t)currentCode;
@@ -872,6 +875,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     CreateFunctionOpcodeLbl:
     {
         CreateFunction* code = (CreateFunction*)currentCode;
+        ASSERT(((size_t)code->m_codeBlock % sizeof(size_t)) == 0);
         ESFunctionObject* function = ESFunctionObject::create(ec->environment(), code->m_codeBlock, code->m_nonAtomicName == NULL ? strings->emptyESString : code->m_nonAtomicName);
         function->set__proto__(instance->globalObject()->functionPrototype());
         ESObject* prototype = ESObject::create();
