@@ -52,10 +52,15 @@ public:
 
         context.consumeBreakPositions(codeBlock, forInEnd);
         context.consumeContinuePositions(codeBlock, continuePosition);
+        codeBlock->pushCode(Jump(SIZE_MAX), this);
+        size_t jPos = codeBlock->lastCodePosition<Jump>();
 
         size_t exitPos = codeBlock->currentCodeSize();
+        codeBlock->pushCode(Pop(), this);
         codeBlock->peekCode<JumpIfTopOfStackValueIsTrue>(exit1Pos)->m_jumpPosition = exitPos;
         codeBlock->peekCode<JumpIfTopOfStackValueIsTrue>(exit2Pos)->m_jumpPosition = exitPos;
+
+        codeBlock->peekCode<Jump>(jPos)->m_jumpPosition = codeBlock->currentCodeSize();
     }
 
 

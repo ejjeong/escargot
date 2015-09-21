@@ -14,6 +14,10 @@ __thread ESVMInstance* currentInstance;
 
 ESVMInstance::ESVMInstance()
 {
+#ifndef NDEBUG
+    m_dumpByteCode = false;
+#endif
+
     std::srand(std::time(0));
 
     m_table = new OpcodeTable();

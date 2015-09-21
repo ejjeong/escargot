@@ -11,81 +11,18 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     if(codeBlock == NULL) {
 #define REGISTER_TABLE(opcode) \
         instance->opcodeTable()->m_table[opcode##Opcode] = &&opcode##OpcodeLbl;
-        REGISTER_TABLE(Push);
-        REGISTER_TABLE(PopExpressionStatement);
-        REGISTER_TABLE(Pop);
-        REGISTER_TABLE(PushIntoTempStack);
-        REGISTER_TABLE(PopFromTempStack);
-        REGISTER_TABLE(GetById);
-        REGISTER_TABLE(GetByIndex);
-        REGISTER_TABLE(GetByIndexWithActivation);
-        REGISTER_TABLE(PutById);
-        REGISTER_TABLE(PutByIndex);
-        REGISTER_TABLE(PutByIndexWithActivation);
-        REGISTER_TABLE(PutInObject);
-        REGISTER_TABLE(CreateBinding);
-        REGISTER_TABLE(Equal);
-        REGISTER_TABLE(NotEqual);
-        REGISTER_TABLE(StrictEqual);
-        REGISTER_TABLE(NotStrictEqual);
-        REGISTER_TABLE(BitwiseAnd);
-        REGISTER_TABLE(BitwiseOr);
-        REGISTER_TABLE(BitwiseXor);
-        REGISTER_TABLE(LeftShift);
-        REGISTER_TABLE(SignedRightShift);
-        REGISTER_TABLE(UnsignedRightShift);
-        REGISTER_TABLE(LessThan);
-        REGISTER_TABLE(LessThanOrEqual);
-        REGISTER_TABLE(GreaterThan);
-        REGISTER_TABLE(GreaterThanOrEqual);
-        REGISTER_TABLE(Plus);
-        REGISTER_TABLE(Minus);
-        REGISTER_TABLE(Multiply);
-        REGISTER_TABLE(Division);
-        REGISTER_TABLE(Mod);
-        REGISTER_TABLE(Increment);
-        REGISTER_TABLE(Decrement);
-        REGISTER_TABLE(BitwiseNot);
-        REGISTER_TABLE(LogicalNot);
-        REGISTER_TABLE(UnaryMinus);
-        REGISTER_TABLE(UnaryPlus);
-        REGISTER_TABLE(CreateObject);
-        REGISTER_TABLE(CreateArray);
-        REGISTER_TABLE(SetObject);
-        REGISTER_TABLE(GetObject);
-        REGISTER_TABLE(GetObjectWithPeeking);
-        REGISTER_TABLE(EnumerateObject);
-        REGISTER_TABLE(EnumerateObjectKey);
-        REGISTER_TABLE(EnumerateObjectEnd);
-        REGISTER_TABLE(CreateFunction);
-        REGISTER_TABLE(ExecuteNativeFunction);
-        REGISTER_TABLE(PrepareFunctionCall);
-        REGISTER_TABLE(CallFunction);
-        REGISTER_TABLE(NewFunctionCall);
-        REGISTER_TABLE(ReturnFunction);
-        REGISTER_TABLE(ReturnFunctionWithValue);
-        REGISTER_TABLE(Jump);
-        REGISTER_TABLE(JumpIfTopOfStackValueIsFalse);
-        REGISTER_TABLE(JumpIfTopOfStackValueIsTrue);
-        REGISTER_TABLE(JumpIfTopOfStackValueIsFalseWithPeeking);
-        REGISTER_TABLE(JumpIfTopOfStackValueIsTrueWithPeeking);
-        REGISTER_TABLE(DuplicateTopOfStackValue);
-        REGISTER_TABLE(Try);
-        REGISTER_TABLE(TryCatchBodyEnd);
-        REGISTER_TABLE(Throw);
-        REGISTER_TABLE(This);
-        REGISTER_TABLE(End);
+        FOR_EACH_BYTECODE_OP(REGISTER_TABLE);
         return ESValue();
     }
-    /*
-    {
+#ifndef NDEBUG
+    if(instance->m_dumpByteCode) {
         char* code = codeBlock->m_code.data();
         ByteCode* currentCode = (ByteCode *)(&code[0]);
         if(currentCode->m_orgOpcode != ExecuteNativeFunctionOpcode) {
             dumpBytecode(codeBlock);
         }
     }
-     */
+#endif
     char stackBuf[1024];
     void* stack = stackBuf;
     unsigned sp  = 0;
@@ -898,10 +835,18 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ASSERT(bp == sp);
         return code->m_fn(instance);
     }
+
     PrepareFunctionCallOpcodeLbl:
     {
         lastESObjectMetInMemberExpressionNode = globalObject;
         executeNextCode<PrepareFunctionCall>(programCounter);
+        goto NextInstruction;
+    }
+
+    PushFunctionCallReceiverOpcodeLbl:
+    {
+        push<ESValue>(stack, sp, lastESObjectMetInMemberExpressionNode);
+        executeNextCode<PushFunctionCallReceiver>(programCounter);
         goto NextInstruction;
     }
 
@@ -921,7 +866,8 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         }
 #endif
         ESValue* arguments = (ESValue *)&(((char *)stack)[sp]);
-        push<ESValue>(stack, sp, ESFunctionObject::call(instance, *pop<ESValue>(stack, sp), lastESObjectMetInMemberExpressionNode, arguments, argc, false));
+        ESObject* receiver = pop<ESValue>(stack, sp)->asESPointer()->asESObject();
+        push<ESValue>(stack, sp, ESFunctionObject::call(instance, *pop<ESValue>(stack, sp), receiver, arguments, argc, false));
         executeNextCode<CallFunction>(programCounter);
         goto NextInstruction;
     }
@@ -1194,70 +1140,7 @@ ALWAYS_INLINE void dumpBytecode(CodeBlock* codeBlock)
         currentCode->dump(); \
         idx += sizeof (code); \
         continue;
-        DUMP_BYTE_CODE(Push);
-        DUMP_BYTE_CODE(PopExpressionStatement);
-        DUMP_BYTE_CODE(Pop);
-        DUMP_BYTE_CODE(PushIntoTempStack);
-        DUMP_BYTE_CODE(PopFromTempStack);
-        DUMP_BYTE_CODE(GetById);
-        DUMP_BYTE_CODE(GetByIndex);
-        DUMP_BYTE_CODE(GetByIndexWithActivation);
-        DUMP_BYTE_CODE(PutById);
-        DUMP_BYTE_CODE(PutByIndex);
-        DUMP_BYTE_CODE(PutByIndexWithActivation);
-        DUMP_BYTE_CODE(PutInObject);
-        DUMP_BYTE_CODE(CreateBinding);
-        DUMP_BYTE_CODE(Equal);
-        DUMP_BYTE_CODE(NotEqual);
-        DUMP_BYTE_CODE(StrictEqual);
-        DUMP_BYTE_CODE(NotStrictEqual);
-        DUMP_BYTE_CODE(BitwiseAnd);
-        DUMP_BYTE_CODE(BitwiseOr);
-        DUMP_BYTE_CODE(BitwiseXor);
-        DUMP_BYTE_CODE(LeftShift);
-        DUMP_BYTE_CODE(SignedRightShift);
-        DUMP_BYTE_CODE(UnsignedRightShift);
-        DUMP_BYTE_CODE(LessThan);
-        DUMP_BYTE_CODE(LessThanOrEqual);
-        DUMP_BYTE_CODE(GreaterThan);
-        DUMP_BYTE_CODE(GreaterThanOrEqual);
-        DUMP_BYTE_CODE(Plus);
-        DUMP_BYTE_CODE(Minus);
-        DUMP_BYTE_CODE(Multiply);
-        DUMP_BYTE_CODE(Division);
-        DUMP_BYTE_CODE(Mod);
-        DUMP_BYTE_CODE(Increment);
-        DUMP_BYTE_CODE(Decrement);
-        DUMP_BYTE_CODE(BitwiseNot);
-        DUMP_BYTE_CODE(LogicalNot);
-        DUMP_BYTE_CODE(UnaryMinus);
-        DUMP_BYTE_CODE(UnaryPlus);
-        DUMP_BYTE_CODE(CreateObject);
-        DUMP_BYTE_CODE(CreateArray);
-        DUMP_BYTE_CODE(SetObject);
-        DUMP_BYTE_CODE(GetObject);
-        DUMP_BYTE_CODE(GetObjectWithPeeking);
-        DUMP_BYTE_CODE(EnumerateObject);
-        DUMP_BYTE_CODE(EnumerateObjectKey);
-        DUMP_BYTE_CODE(EnumerateObjectEnd);
-        DUMP_BYTE_CODE(CreateFunction);
-        DUMP_BYTE_CODE(ExecuteNativeFunction);
-        DUMP_BYTE_CODE(PrepareFunctionCall);
-        DUMP_BYTE_CODE(CallFunction);
-        DUMP_BYTE_CODE(NewFunctionCall);
-        DUMP_BYTE_CODE(ReturnFunction);
-        DUMP_BYTE_CODE(ReturnFunctionWithValue);
-        DUMP_BYTE_CODE(Jump);
-        DUMP_BYTE_CODE(JumpIfTopOfStackValueIsFalse);
-        DUMP_BYTE_CODE(JumpIfTopOfStackValueIsTrue);
-        DUMP_BYTE_CODE(JumpIfTopOfStackValueIsFalseWithPeeking);
-        DUMP_BYTE_CODE(JumpIfTopOfStackValueIsTrueWithPeeking);
-        DUMP_BYTE_CODE(DuplicateTopOfStackValue);
-        DUMP_BYTE_CODE(Try);
-        DUMP_BYTE_CODE(TryCatchBodyEnd);
-        DUMP_BYTE_CODE(Throw);
-        DUMP_BYTE_CODE(This);
-        DUMP_BYTE_CODE(End);
+        FOR_EACH_BYTECODE_OP(DUMP_BYTE_CODE)
         default:
             RELEASE_ASSERT_NOT_REACHED();
             break;

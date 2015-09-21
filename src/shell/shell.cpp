@@ -54,6 +54,11 @@ int main(int argc, char* argv[])
         }
     } else {
         for(int i = 1; i < argc; i ++) {
+#ifndef NDEBUG
+            if(strcmp(argv[i], "-d") == 0) {
+                ES->m_dumpByteCode = true;
+            }
+#endif
             FILE *fp = fopen(argv[i],"r");
             if(fp) {
                 std::string str;

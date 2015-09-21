@@ -101,6 +101,11 @@ public:
 
     //Function for debug
     static void printValue(ESValue val);
+
+#ifndef NDEBUG
+    bool m_dumpByteCode;
+#endif
+
 protected:
     ExecutionContext* m_globalExecutionContext;
     ExecutionContext* m_currentExecutionContext;

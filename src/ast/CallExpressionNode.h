@@ -39,6 +39,7 @@ public:
     {
         codeBlock->pushCode(PrepareFunctionCall(), this);
         m_callee->generateExpressionByteCode(codeBlock, context);
+        codeBlock->pushCode(PushFunctionCallReceiver(), this);
 
         for(unsigned i = 0; i < m_arguments.size() ; i ++) {
             m_arguments[i]->generateExpressionByteCode(codeBlock, context);

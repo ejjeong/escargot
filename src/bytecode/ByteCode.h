@@ -10,87 +10,93 @@ namespace escargot {
 
 class Node;
 
+#define FOR_EACH_BYTECODE_OP(F) \
+    F(Push) \
+    F(PopExpressionStatement) \
+    F(Pop) \
+    F(PushIntoTempStack) \
+    F(PopFromTempStack) \
+\
+    F(GetById) \
+    F(GetByIndex) \
+    F(GetByIndexWithActivation) \
+    F(PutById) \
+    F(PutByIndex) \
+    F(PutByIndexWithActivation) \
+    F(PutInObject) \
+    F(CreateBinding) \
+\
+    /*binary expressions*/ \
+    F(Equal) \
+    F(NotEqual) \
+    F(StrictEqual) \
+    F(NotStrictEqual) \
+    F(BitwiseAnd) \
+    F(BitwiseOr) \
+    F(BitwiseXor) \
+    F(LeftShift) \
+    F(SignedRightShift) \
+    F(UnsignedRightShift) \
+    F(LessThan) \
+    F(LessThanOrEqual) \
+    F(GreaterThan) \
+    F(GreaterThanOrEqual) \
+    F(Plus) \
+    F(Minus) \
+    F(Multiply) \
+    F(Division) \
+    F(Mod) \
+    F(Increment) \
+    F(Decrement) \
+\
+    /*unary expressions*/ \
+    F(BitwiseNot) \
+    F(LogicalNot) \
+    F(UnaryMinus) \
+    F(UnaryPlus) \
+\
+    /*//object, array*/ \
+    F(CreateObject) \
+    F(CreateArray) \
+    F(SetObject) \
+    F(GetObject) \
+    F(GetObjectWithPeeking) \
+    F(EnumerateObject) \
+    F(EnumerateObjectKey) \
+    F(EnumerateObjectEnd) \
+\
+    /*function*/\
+    F(CreateFunction) \
+    F(ExecuteNativeFunction) \
+    F(PrepareFunctionCall) \
+    F(PushFunctionCallReceiver) \
+    F(CallFunction) \
+    F(NewFunctionCall) \
+    F(ReturnFunction) \
+    F(ReturnFunctionWithValue) \
+\
+    /* control flow */ \
+    F(Jump) \
+    F(JumpIfTopOfStackValueIsFalse) \
+    F(JumpIfTopOfStackValueIsTrue) \
+    F(JumpIfTopOfStackValueIsFalseWithPeeking) \
+    F(JumpIfTopOfStackValueIsTrueWithPeeking) \
+    F(DuplicateTopOfStackValue) \
+\
+    /*try-catch*/ \
+    F(Try) \
+    F(TryCatchBodyEnd) \
+    F(Throw) \
+\
+    /*etc*/ \
+    F(This) \
+\
+    F(End)
+
+
 enum Opcode {
-    PushOpcode, //Literal
-    PopExpressionStatementOpcode, //ExpressionStatement
-    PopOpcode,
-    PushIntoTempStackOpcode,
-    PopFromTempStackOpcode,
-
-    GetByIdOpcode,
-    GetByIndexOpcode,
-    GetByIndexWithActivationOpcode,
-    PutByIdOpcode,
-    PutByIndexOpcode,
-    PutByIndexWithActivationOpcode,
-    PutInObjectOpcode,
-    CreateBindingOpcode,
-
-    //binary expressions
-    EqualOpcode,
-    NotEqualOpcode,
-    StrictEqualOpcode,
-    NotStrictEqualOpcode,
-    BitwiseAndOpcode,
-    BitwiseOrOpcode,
-    BitwiseXorOpcode,
-    LeftShiftOpcode,
-    SignedRightShiftOpcode,
-    UnsignedRightShiftOpcode,
-    LessThanOpcode,
-    LessThanOrEqualOpcode,
-    GreaterThanOpcode,
-    GreaterThanOrEqualOpcode,
-    PlusOpcode,
-    MinusOpcode,
-    MultiplyOpcode,
-    DivisionOpcode,
-    ModOpcode,
-    IncrementOpcode,
-    DecrementOpcode,
-
-    //unary expressions
-    BitwiseNotOpcode,
-    LogicalNotOpcode,
-    UnaryMinusOpcode,
-    UnaryPlusOpcode,
-
-    //object, array
-    CreateObjectOpcode,
-    CreateArrayOpcode,
-    SetObjectOpcode,
-    GetObjectOpcode,
-    GetObjectWithPeekingOpcode,
-    EnumerateObjectOpcode,
-    EnumerateObjectKeyOpcode,
-    EnumerateObjectEndOpcode,
-
-    //function
-    CreateFunctionOpcode,
-    ExecuteNativeFunctionOpcode,
-    PrepareFunctionCallOpcode,
-    CallFunctionOpcode,
-    NewFunctionCallOpcode,
-    ReturnFunctionOpcode,
-    ReturnFunctionWithValueOpcode,
-
-    //control flow
-    JumpOpcode,
-    JumpIfTopOfStackValueIsFalseOpcode,
-    JumpIfTopOfStackValueIsTrueOpcode,
-    JumpIfTopOfStackValueIsFalseWithPeekingOpcode,
-    JumpIfTopOfStackValueIsTrueWithPeekingOpcode,
-    DuplicateTopOfStackValueOpcode,
-
-    //try-catch
-    TryOpcode,
-    TryCatchBodyEndOpcode,
-    ThrowOpcode,
-
-    //etc
-    ThisOpcode,
-
-    EndOpcode,
+#define DECLARE_BYTECODE(name) name##Opcode,
+    FOR_EACH_BYTECODE_OP(DECLARE_BYTECODE)
     OpcodeKindEnd
 };
 
@@ -149,7 +155,14 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("Push <%s>\n", m_value.toString()->utf8Data());
+        if(m_value.isESString()) {
+            ESString* str = m_value.asESString();
+            if(str->length() > 30) {
+                printf("Push <%s>\n", str->substring(0, 30)->utf8Data());
+            } else
+                printf("Push <%s>\n", m_value.toString()->utf8Data());
+        } else
+            printf("Push <%s>\n", m_value.toString()->utf8Data());
     }
 #endif
 };
@@ -1053,6 +1066,22 @@ public:
     virtual void dump()
     {
         printf("PrepareFunctionCall <>\n");
+    }
+#endif
+
+};
+
+class PushFunctionCallReceiver : public ByteCode {
+public:
+    PushFunctionCallReceiver()
+        : ByteCode(PushFunctionCallReceiverOpcode)
+    {
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("PushFunctionCallReceiver <>\n");
     }
 #endif
 
