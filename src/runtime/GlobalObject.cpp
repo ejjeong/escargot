@@ -231,11 +231,54 @@ void GlobalObject::initGlobalObject()
 
 void GlobalObject::installFunction()
 {
-    m_function = ESFunctionObject::create(NULL, new FunctionDeclarationNode(strings->Function, InternalAtomicStringVector(), new EmptyStatementNode(), false, false));
+    //$19.2.1 Function Constructor
+    m_function = ESFunctionObject::create(NULL, new FunctionDeclarationNode(strings->Function, InternalAtomicStringVector(), new NativeFunctionNode([](ESVMInstance* instance)->ESValue {
+        int len = instance->currentExecutionContext()->argumentCount();
+        FunctionNode* functionAST;
+        if (len == 0) {
+            functionAST = new FunctionExpressionNode(InternalAtomicString(u"anonymous"),
+                                                    InternalAtomicStringVector(),
+                                                    new EmptyStatementNode(), false, false);
+        }
+        else {
+//            InternalAtomicString name = InternalAtomicString(u"anonymous");
+//            InternalAtomicStringVector params;
+            escargot::ESString* body = instance->currentExecutionContext()->arguments()[len-1].toString();
+            u16string prefix = u"function anonymous(";
+            for (int i = 0; i < len-1; i++) {
+                escargot::ESString* arg = instance->currentExecutionContext()->arguments()[i].toString();
+                prefix.append(arg->string());
+                if (i != len-2) prefix.append(u",");
+                else    prefix.append(u"){");
+//                params.push_back(InternalAtomicString(arg->data()));
+            }
+            prefix.append(body->string());
+            prefix.append(u"}");
+            ProgramNode* parsed = ESScriptParser::parseScript(instance, std::move(prefix));
+            functionAST = static_cast<FunctionDeclarationNode *>(parsed->body()[1]);
+//            ProgramNode* parsed = ESScriptParser::parseScript(instance, body->data());
+//            BlockStatementNode* bodynode = new BlockStatementNode(parsed->body());
+//            functionAST = new FunctionExpressionNode(name, std::move(params), bodynode, false, false);
+        }
+        escargot::ESFunctionObject* function;
+        LexicalEnvironment* scope = instance->globalExecutionContext()->environment();
+        if (instance->currentExecutionContext()->isNewExpression() && instance->currentExecutionContext()->resolveThisBinding()->isESFunctionObject()) {
+            function = instance->currentExecutionContext()->resolveThisBinding()->asESFunctionObject();
+            function->initialize(scope, functionAST);
+        } else
+            function = ESFunctionObject::create(scope, functionAST, instance->globalObject()->functionPrototype());
+
+        ESObject* prototype = ESObject::create();
+        prototype->setConstructor(function);
+        prototype->set__proto__(instance->globalObject()->object()->protoType());
+        function->setProtoType(prototype);
+        function->set(strings->name, functionAST->nonAtomicId());
+        return function;
+    }), false, false));
     m_function->set(strings->constructor, m_function);
     m_function->set(strings->name, strings->Function);
     m_function->setConstructor(m_function);
-    ::escargot::ESFunctionObject* emptyFunction = ESFunctionObject::create(NULL,new FunctionDeclarationNode(strings->Empty, InternalAtomicStringVector(), new EmptyStatementNode(), false, false));
+    ::escargot::ESFunctionObject* emptyFunction = ESFunctionObject::create(NULL, new FunctionDeclarationNode(strings->Empty, InternalAtomicStringVector(), new EmptyStatementNode(), false, false));
 
     m_functionPrototype = emptyFunction;
     ESVMInstance::currentInstance()->setGlobalFunctionPrototype(m_functionPrototype);
@@ -2357,7 +2400,7 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
         int srcByteOffset = thisVal->byteoffset();
 
         ESValue arg[3] = {buffer, ESValue(srcByteOffset + beginIndex * thisVal->elementSize()), ESValue(newLength)};
-        escargot::ESTypedArrayObject<T>* newobj = escargot::ESTypedArrayObject<T>::create(); 
+        escargot::ESTypedArrayObject<T>* newobj = escargot::ESTypedArrayObject<T>::create();
         ESValue ret = ESFunctionObject::call(instance, thisBinded->get(strings->constructor), newobj, arg, 3, instance);
         return ret;
     }), false, false);

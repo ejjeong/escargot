@@ -30,6 +30,7 @@ public:
     ESValue evaluate(u16string& source);
 
     ALWAYS_INLINE ExecutionContext* currentExecutionContext() { return m_currentExecutionContext; }
+    ALWAYS_INLINE ExecutionContext* globalExecutionContext() { return m_globalExecutionContext; }
     ALWAYS_INLINE GlobalObject* globalObject() { return m_globalObject; }
 
     void enter();

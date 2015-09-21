@@ -23,6 +23,12 @@ public:
             m_rootedBody[i]->executeStatement(instance);
         }
     }
+
+    StatementNodeVector body()
+    {
+        return m_body;
+    }
+
 protected:
     StatementNodeVector m_body; //body: [ Statement ];
     Node** m_rootedBody;

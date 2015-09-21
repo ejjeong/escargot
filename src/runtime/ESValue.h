@@ -1615,6 +1615,12 @@ public:
         return ret;
     }
 
+    void initialize(LexicalEnvironment* outerEnvironment, FunctionNode* functionAST)
+    {
+        m_outerEnvironment = outerEnvironment;
+        m_functionAST = functionAST;
+    }
+
     ALWAYS_INLINE ESValue protoType()
     {
         return m_protoType;
