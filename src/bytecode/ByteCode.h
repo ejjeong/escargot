@@ -1487,6 +1487,26 @@ ALWAYS_INLINE void push(void*& stk, void* bp, const Type& ptr)
 }
 
 template <typename Type>
+ALWAYS_INLINE void push(void*& stk, void* bp, Type* ptr)
+{
+    //memcpy(((char *)stk), &ptr, sizeof (Type));
+    *((Type *)stk) = *ptr;
+    stk = (void *)(((size_t)stk) + sizeof(Type));
+
+#ifndef NDEBUG
+    size_t siz = sizeof (Type);
+    memcpy(((char *)stk), &siz, sizeof (size_t));
+    stk = (void *)(((size_t)stk) + sizeof(size_t));
+
+    if(((size_t)stk) - ((size_t)bp) > ESCARGOT_INTERPRET_STACK_SIZE) {
+        puts("stackoverflow!!!");
+        ASSERT_NOT_REACHED();
+    }
+    ASSERT(((size_t)stk) % sizeof(size_t) == 0);
+#endif
+}
+
+template <typename Type>
 ALWAYS_INLINE Type* pop(void*& stk, void* bp)
 {
 #ifndef NDEBUG

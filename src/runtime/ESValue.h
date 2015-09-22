@@ -38,7 +38,7 @@ class ESTypedArrayObjectWrapper;
 class ESDataViewObject;
 
 class CodeBlock;
-typedef std::function<ESValue (ESVMInstance*)> NativeFunctionType;
+typedef ESValue (*NativeFunctionType)(ESVMInstance*);
 
 union ValueDescriptor {
     int64_t asInt64;
@@ -1078,12 +1078,12 @@ public:
             m_targetObject = obj;
     }
 
-#ifndef NDEBUG
     ESValue* dataAddress()
     {
+        ASSERT(hasData());
+        ASSERT(m_targetObject == NULL);
         return ((ESValue *)m_propertyValue.asESPointer());
     }
-#endif
 
 public:
     ESObject* m_targetObject;
@@ -1632,7 +1632,7 @@ class Node;
 class ESFunctionObject : public ESObject {
 protected:
     ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlock* codeBlock, escargot::ESString* name, ESObject* proto);
-    ESFunctionObject(LexicalEnvironment* outerEnvironment, const NativeFunctionType& fn, escargot::ESString* name, ESObject* proto);
+    ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeFunctionType fn, escargot::ESString* name, ESObject* proto);
 public:
     static ESFunctionObject* create(LexicalEnvironment* outerEnvironment, CodeBlock* codeBlock, escargot::ESString* name, ESObject* proto = NULL)
     {

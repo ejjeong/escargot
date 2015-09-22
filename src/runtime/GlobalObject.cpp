@@ -259,7 +259,9 @@ void GlobalObject::installFunction()
     m_function->set(strings->constructor, m_function);
     m_function->set(strings->name, strings->Function);
     m_function->setConstructor(m_function);
-    ::escargot::ESFunctionObject* emptyFunction = ESFunctionObject::create(NULL,NULL,strings->Empty);
+    ::escargot::ESFunctionObject* emptyFunction = ESFunctionObject::create(NULL,[](ESVMInstance* instance)->ESValue {
+        return ESValue();
+    },strings->Empty);
 
     m_functionPrototype = emptyFunction;
     ESVMInstance::currentInstance()->setGlobalFunctionPrototype(m_functionPrototype);

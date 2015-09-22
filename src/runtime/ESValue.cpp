@@ -368,8 +368,8 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlo
         set__proto__(ESVMInstance::currentInstance()->globalFunctionPrototype());
 }
 
-ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, const NativeFunctionType& fn, escargot::ESString* name, ESObject* proto)
-    : ESFunctionObject(outerEnvironment, NULL, name, proto)
+ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeFunctionType fn, escargot::ESString* name, ESObject* proto)
+    : ESFunctionObject(outerEnvironment, (CodeBlock *)NULL, name, proto)
 {
     m_codeBlock = CodeBlock::create();
     m_codeBlock->pushCode(ExecuteNativeFunction(fn), NULL);
