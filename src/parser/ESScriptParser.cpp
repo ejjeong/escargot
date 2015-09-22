@@ -69,11 +69,21 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
         }
     };
 
+    auto updatePostfixNodeChecker = [](Node* node){
+        if(node->type() == NodeType::UpdateExpressionDecrementPostfix) {
+            ((UpdateExpressionDecrementPostfixNode *)node)->m_isSimpleCase = true;
+        }
+
+        if(node->type() == NodeType::UpdateExpressionIncrementPostfix) {
+            ((UpdateExpressionIncrementPostfixNode *)node)->m_isSimpleCase = true;
+        }
+    };
+
     bool shouldWorkAroundIdentifier = true;
     std::function<void (Node* currentNode,
             std::vector<InternalAtomicStringVector *>& identifierStack,
             FunctionNode* nearFunctionNode)>
-    postAnalysisFunction = [&postAnalysisFunction, instance, &markNeedsActivation, &shouldWorkAroundIdentifier]
+    postAnalysisFunction = [&postAnalysisFunction, instance, &markNeedsActivation, &shouldWorkAroundIdentifier, &updatePostfixNodeChecker]
              (Node* currentNode,
              std::vector<InternalAtomicStringVector *>& identifierStack,
              FunctionNode* nearFunctionNode) {
@@ -199,6 +209,7 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
             */
         } else if(type == NodeType::ExpressionStatement) {
             postAnalysisFunction(((ExpressionStatementNode *)currentNode)->m_expression, identifierStack, nearFunctionNode);
+            updatePostfixNodeChecker(((ExpressionStatementNode *)currentNode)->m_expression);
         } else if(type >= NodeType::AssignmentExpressionBitwiseAnd && type <= NodeType::AssignmentExpressionUnsignedRightShift) {
             postAnalysisFunction(((AssignmentExpressionBitwiseAndNode *)currentNode)->m_right, identifierStack, nearFunctionNode);
             postAnalysisFunction(((AssignmentExpressionBitwiseAndNode *)currentNode)->m_left, identifierStack, nearFunctionNode);
@@ -284,6 +295,8 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
             postAnalysisFunction(((ForStatementNode *)currentNode)->m_body, identifierStack, nearFunctionNode);
             postAnalysisFunction(((ForStatementNode *)currentNode)->m_test, identifierStack, nearFunctionNode);
             postAnalysisFunction(((ForStatementNode *)currentNode)->m_update, identifierStack, nearFunctionNode);
+
+            updatePostfixNodeChecker(((ForStatementNode *)currentNode)->m_update);
         } else if(type == NodeType::ForInStatement) {
             postAnalysisFunction(((ForInStatementNode *)currentNode)->m_left, identifierStack, nearFunctionNode);
             postAnalysisFunction(((ForInStatementNode *)currentNode)->m_right, identifierStack, nearFunctionNode);

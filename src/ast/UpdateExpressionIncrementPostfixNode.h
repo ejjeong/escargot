@@ -13,10 +13,19 @@ public:
             : ExpressionNode(NodeType::UpdateExpressionIncrementPostfix)
     {
         m_argument = (ExpressionNode*)argument;
+        m_isSimpleCase = false;
     }
 
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
+        if(m_isSimpleCase) {
+            m_argument->generateResolveAddressByteCode(codeBlock, context);
+            m_argument->generateReferenceResolvedAddressByteCode(codeBlock, context);
+            codeBlock->pushCode(ToNumber(), this);
+            codeBlock->pushCode(Increment(), this);
+            m_argument->generatePutByteCode(codeBlock, context);
+            return ;
+        }
         m_argument->generateResolveAddressByteCode(codeBlock, context);
         m_argument->generateReferenceResolvedAddressByteCode(codeBlock, context);
         codeBlock->pushCode(ToNumber(), this);
@@ -29,6 +38,7 @@ public:
     }
 protected:
     ExpressionNode* m_argument;
+    bool m_isSimpleCase;
 };
 
 }
