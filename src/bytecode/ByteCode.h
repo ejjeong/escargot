@@ -1415,7 +1415,8 @@ public:
 template <typename Type>
 ALWAYS_INLINE void push(void*& stk, void* bp, const Type& ptr)
 {
-    memcpy(((char *)stk), &ptr, sizeof (Type));
+    //memcpy(((char *)stk), &ptr, sizeof (Type));
+    *((Type *)stk) = ptr;
     stk = (void *)(((size_t)stk) + sizeof(Type));
 
 #ifndef NDEBUG
