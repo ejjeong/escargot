@@ -49,7 +49,7 @@ void ESScriptParser::dumpStats()
 }
 #endif
 
-ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16string& source)
+CodeBlock* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16string& source)
 {
     Node* node;
     try {
@@ -70,11 +70,11 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
     };
 
     auto updatePostfixNodeChecker = [](Node* node){
-        if(node->type() == NodeType::UpdateExpressionDecrementPostfix) {
+        if(node && node->type() == NodeType::UpdateExpressionDecrementPostfix) {
             ((UpdateExpressionDecrementPostfixNode *)node)->m_isSimpleCase = true;
         }
 
-        if(node->type() == NodeType::UpdateExpressionIncrementPostfix) {
+        if(node && node->type() == NodeType::UpdateExpressionIncrementPostfix) {
             ((UpdateExpressionIncrementPostfixNode *)node)->m_isSimpleCase = true;
         }
     };
@@ -359,7 +359,7 @@ ProgramNode* ESScriptParser::parseScript(ESVMInstance* instance, const escargot:
     postAnalysisFunction(node, stack, NULL);
 
     ASSERT(node->type() == Program);
-    return (ProgramNode *)node;
+    return generateByteCode(node);
 }
 
 }

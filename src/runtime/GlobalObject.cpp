@@ -240,9 +240,7 @@ void GlobalObject::installFunction()
             }
             prefix.append(body->string());
             prefix.append(u"}");
-            ProgramNode* parsed = ESScriptParser::parseScript(instance, prefix);
-            ByteCodeGenerateContext context;
-            parsed->generateStatementByteCode(codeBlock, context);
+            codeBlock = ESScriptParser::parseScript(instance, prefix);
         }
         escargot::ESFunctionObject* function;
         LexicalEnvironment* scope = instance->globalExecutionContext()->environment();

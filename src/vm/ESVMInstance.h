@@ -102,7 +102,7 @@ public:
 
     //Function for debug
     static void printValue(ESValue val);
-    static ALWAYS_INLINE unsigned long tickCount()
+    ALWAYS_INLINE unsigned long tickCount()
     {
         struct timespec timespec;
         clock_gettime(CLOCK_MONOTONIC,&timespec);

@@ -10,7 +10,9 @@ namespace escargot {
 
 class Node;
 
+#define ESCARGOT_INTERPRET_STACK_SIZE 512
 #define FOR_EACH_BYTECODE_OP(F) \
+    F(NoOp0) \
     F(Push) \
     F(PopExpressionStatement) \
     F(Pop) \
@@ -143,7 +145,9 @@ public:
 #ifndef NDEBUG
     Opcode m_orgOpcode;
     Node* m_node;
-    virtual void dump() = 0;
+    virtual void dump() {
+        ASSERT_NOT_REACHED();
+    }
     virtual ~ByteCode() {
 
     }
@@ -153,6 +157,22 @@ public:
 #ifdef NDEBUG
 ASSERT_STATIC(sizeof(ByteCode) == sizeof(size_t), "sizeof(ByteCode) should be == sizeof(size_t)");
 #endif
+
+class NoOp0 : public ByteCode {
+public:
+    NoOp0()
+        : ByteCode(NoOp0Opcode)
+    {
+    }
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("NoOp0 <>\n");
+    }
+#endif
+};
+
+ASSERT_STATIC(sizeof(NoOp0) == sizeof(ByteCode), "sizeof(NoOp0) should be == sizeof(ByteCode)");
 
 class Push : public ByteCode {
 public:
@@ -325,8 +345,8 @@ public:
 
 class PutById : public ByteCode {
 public:
-    PutById(const InternalAtomicString& name, ESString* esName)
-        : ByteCode(PutByIdOpcode)
+    PutById(const InternalAtomicString& name, ESString* esName, Opcode code = PutByIdOpcode)
+        : ByteCode(code)
     {
         m_name = name;
         m_nonAtomicName = esName;
@@ -349,8 +369,8 @@ public:
 
 class PutByIndex : public ByteCode {
 public:
-    PutByIndex(size_t index)
-        : ByteCode(PutByIndexOpcode)
+    PutByIndex(size_t index, Opcode code = PutByIndexOpcode)
+        : ByteCode(code)
     {
         m_index = index;
     }
@@ -366,8 +386,8 @@ public:
 
 class PutByIndexWithActivation : public ByteCode {
 public:
-    PutByIndexWithActivation(size_t fastAccessIndex, size_t fastAccessUpIndex)
-        : ByteCode(PutByIndexWithActivationOpcode)
+    PutByIndexWithActivation(size_t fastAccessIndex, size_t fastAccessUpIndex, Opcode code = PutByIndexWithActivationOpcode)
+        : ByteCode(code)
     {
         m_index = fastAccessIndex;
         m_upIndex = fastAccessUpIndex;
@@ -385,10 +405,10 @@ public:
 
 class PutInObject : public ByteCode {
 public:
-    PutInObject()
-        : ByteCode(PutInObjectOpcode)
+    PutInObject(Opcode code = PutInObjectOpcode)
+        : ByteCode(code)
     {
-        m_cachedHiddenClass = nullptr;
+        m_cachedHiddenClass = (ESHiddenClass*)SIZE_MAX;
         m_cachedPropertyValue = nullptr;
         m_cachedIndex = SIZE_MAX;
     }
@@ -1017,7 +1037,7 @@ public:
     GetObject()
         : ByteCode(GetObjectOpcode)
     {
-        m_cachedHiddenClass = nullptr;
+        m_cachedHiddenClass = (ESHiddenClass*)SIZE_MAX;
         m_cachedPropertyValue = nullptr;
         m_cachedIndex = SIZE_MAX;
     }
@@ -1039,7 +1059,7 @@ public:
     GetObjectWithPeeking()
         : ByteCode(GetObjectWithPeekingOpcode)
     {
-        m_cachedHiddenClass = nullptr;
+        m_cachedHiddenClass = (ESHiddenClass*)SIZE_MAX;
         m_cachedPropertyValue = nullptr;
         m_cachedIndex = SIZE_MAX;
     }
@@ -1441,7 +1461,7 @@ ALWAYS_INLINE void push(void*& stk, void* bp, const Type& ptr)
     memcpy(((char *)stk), &siz, sizeof (size_t));
     stk = (void *)(((size_t)stk) + sizeof(size_t));
 
-    if(((size_t)stk) - ((size_t)bp) > 1024) {
+    if(((size_t)stk) - ((size_t)bp) > ESCARGOT_INTERPRET_STACK_SIZE) {
         puts("stackoverflow!!!");
         ASSERT_NOT_REACHED();
     }
@@ -1501,7 +1521,7 @@ ALWAYS_INLINE void dumpBytecode(CodeBlock* codeBlock);
 
 void initOpcodeTable(OpcodeTable& table);
 ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter = 0);
-
+CodeBlock* generateByteCode(Node* node);
 }
 
 #include "ast/Node.h"

@@ -23,10 +23,10 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         }
     }
 #endif
-    char stackBuf[1024];
+    char stackBuf[ESCARGOT_INTERPRET_STACK_SIZE];
     void* stack = stackBuf;
     void* bp = stack;
-    char tmpStackBuf[1024];
+    char tmpStackBuf[ESCARGOT_INTERPRET_STACK_SIZE];
     void* tmpStack = tmpStackBuf;
     void* tmpBp = tmpStack;
     char* codeBuffer = codeBlock->m_code.data();
@@ -63,6 +63,12 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 #ifndef NDEBUG
     }
 #endif
+
+    NoOp0OpcodeLbl:
+    {
+        executeNextCode<NoOp0>(programCounter);
+        goto NextInstruction;
+    }
 
     PushOpcodeLbl:
     {
@@ -179,6 +185,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* value = peek<ESValue>(stack, bp);
 
         if (LIKELY(code->m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
+            ASSERT(ec->resolveBinding(code->m_name, code->m_nonAtomicName).dataAddress() == code->m_cachedSlot.dataAddress());
             code->m_cachedSlot.setValue(*value);
         } else {
             ExecutionContext* ec = instance->currentExecutionContext();
@@ -232,38 +239,39 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         else
             obj = willBeObject->toObject();
 
-        if(obj->isHiddenClassMode() && !obj->isESArrayObject()) {
-            ESString* val = property->toString();
-            if(code->m_cachedHiddenClass == obj->hiddenClass() && (val == code->m_cachedPropertyValue || *val == *code->m_cachedPropertyValue)) {
-                obj->writeHiddenClass(code->m_cachedIndex, *value);
-                push<ESValue>(stack, bp, *value);
-                executeNextCode<PutInObject>(programCounter);
-                goto NextInstruction;
-            } else {
-                size_t idx = obj->hiddenClass()->findProperty(val);
-                if(idx != SIZE_MAX) {
-                    code->m_cachedHiddenClass = obj->hiddenClass();
-                    code->m_cachedPropertyValue = val;
-                    code->m_cachedIndex = idx;
-                    obj->writeHiddenClass(code->m_cachedIndex, *value);
-                    push<ESValue>(stack, bp, *value);
-                    executeNextCode<PutInObject>(programCounter);
-                    goto NextInstruction;
-                } else {
-                    code->m_cachedHiddenClass = nullptr;
-                    obj->set(*property, *value, true);
-                    push<ESValue>(stack, bp, *value);
-                    executeNextCode<PutInObject>(programCounter);
-                    goto NextInstruction;
-                }
-            }
-        } else {
+        if(obj->isESArrayObject() && property->isInt32()) {
             obj->set(*property, *value, true);
             push<ESValue>(stack, bp, *value);
             executeNextCode<PutInObject>(programCounter);
             goto NextInstruction;
         }
-        RELEASE_ASSERT_NOT_REACHED();
+
+        ESString* val = property->toString();
+        if(obj->hiddenClass() == code->m_cachedHiddenClass && (val == code->m_cachedPropertyValue || *val == *code->m_cachedPropertyValue)) {
+            obj->writeHiddenClass(code->m_cachedIndex, *value);
+            push<ESValue>(stack, bp, *value);
+            executeNextCode<PutInObject>(programCounter);
+            goto NextInstruction;
+        }
+
+        if(obj->isHiddenClassMode()) {
+            size_t idx = obj->hiddenClass()->findProperty(val);
+            if(idx != SIZE_MAX) {
+                code->m_cachedHiddenClass = obj->hiddenClass();
+                code->m_cachedPropertyValue = val;
+                code->m_cachedIndex = idx;
+                obj->writeHiddenClass(code->m_cachedIndex, *value);
+                push<ESValue>(stack, bp, *value);
+                executeNextCode<PutInObject>(programCounter);
+                goto NextInstruction;
+            }
+        }
+
+        code->m_cachedHiddenClass = (ESHiddenClass*)SIZE_MAX;
+        obj->set(*property, *value, true);
+        push<ESValue>(stack, bp, *value);
+        executeNextCode<PutInObject>(programCounter);
+        goto NextInstruction;
     }
 
     CreateBindingOpcodeLbl:
@@ -682,26 +690,69 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                executeNextCode<GetObject>(programCounter);
                goto NextInstruction;
             } else {
-                globalObject->stringObjectProxy()->setString(willBeObject->asESString());
-                ESValue ret = globalObject->stringObjectProxy()->find(*property, true);
-                if(!ret.isEmpty()) {
+                if(globalObject->stringObjectProxy()->isHiddenClassMode()) {
+                    ESString* val = property->toString();
+                    if(code->m_cachedHiddenClass == globalObject->stringObjectProxy()->hiddenClass() && (val == code->m_cachedPropertyValue || *val == *code->m_cachedPropertyValue)) {
+
+                    } else {
+                        code->m_cachedHiddenClass = globalObject->stringObjectProxy()->hiddenClass();
+                        code->m_cachedPropertyValue = val;
+                        code->m_cachedIndex = globalObject->stringObjectProxy()->hiddenClass()->findProperty(val);
+                    }
+                    if(code->m_cachedIndex != SIZE_MAX) {
+                        globalObject->stringObjectProxy()->setString(willBeObject->asESString());
+                        ESValue ret = globalObject->stringObjectProxy()->readHiddenClass(code->m_cachedIndex);
+                        if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->codeBlock()->m_isBuiltInFunction) {
+                            globalObject->stringObjectProxy()->setString(willBeObject->asESString());
+                            lastESObjectMetInMemberExpressionNode = (globalObject->stringObjectProxy());
+                            push<ESValue>(stack, bp, ret);
+                            executeNextCode<GetObject>(programCounter);
+                            goto NextInstruction;
+                        }
+                    }
+                } else {
+                    ESValue ret = globalObject->stringObjectProxy()->find(*property, true);
+                    if(!ret.isEmpty()) {
+                        if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->codeBlock()->m_isBuiltInFunction) {
+                            globalObject->stringObjectProxy()->setString(willBeObject->asESString());
+                            lastESObjectMetInMemberExpressionNode = (globalObject->stringObjectProxy());
+                            push<ESValue>(stack, bp, ret);
+                            executeNextCode<GetObject>(programCounter);
+                            goto NextInstruction;
+                        }
+                    }
+                }
+            }
+        } else if(UNLIKELY(willBeObject->isNumber())) {
+            if(globalObject->numberObjectProxy()->isHiddenClassMode()) {
+                ESString* val = property->toString();
+                if(code->m_cachedHiddenClass == globalObject->stringObjectProxy()->hiddenClass() && (val == code->m_cachedPropertyValue || *val == *code->m_cachedPropertyValue)) {
+
+                } else {
+                    code->m_cachedHiddenClass = globalObject->numberObjectProxy()->hiddenClass();
+                    code->m_cachedPropertyValue = val;
+                    code->m_cachedIndex = globalObject->numberObjectProxy()->hiddenClass()->findProperty(val);
+                }
+                if(code->m_cachedIndex != SIZE_MAX) {
+                    ESValue ret = globalObject->numberObjectProxy()->readHiddenClass(code->m_cachedIndex);
                     if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->codeBlock()->m_isBuiltInFunction) {
-                        lastESObjectMetInMemberExpressionNode = (globalObject->stringObjectProxy());
+                        globalObject->numberObjectProxy()->setNumberData(willBeObject->asNumber());
+                        lastESObjectMetInMemberExpressionNode = (globalObject->numberObjectProxy());
                         push<ESValue>(stack, bp, ret);
                         executeNextCode<GetObject>(programCounter);
                         goto NextInstruction;
                     }
                 }
-            }
-        } else if(UNLIKELY(willBeObject->isNumber())) {
-            globalObject->numberObjectProxy()->setNumberData(willBeObject->asNumber());
-            ESValue ret = globalObject->numberObjectProxy()->find(*property, true);
-            if(!ret.isEmpty()) {
-                if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->codeBlock()->m_isBuiltInFunction) {
-                    lastESObjectMetInMemberExpressionNode = (globalObject->numberObjectProxy());
-                    push<ESValue>(stack, bp, ret);
-                    executeNextCode<GetObject>(programCounter);
-                    goto NextInstruction;
+            } else {
+                ESValue ret = globalObject->numberObjectProxy()->find(*property, true);
+                if(!ret.isEmpty()) {
+                    if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->codeBlock()->m_isBuiltInFunction) {
+                        globalObject->numberObjectProxy()->setNumberData(willBeObject->asNumber());
+                        lastESObjectMetInMemberExpressionNode = (globalObject->numberObjectProxy());
+                        push<ESValue>(stack, bp, ret);
+                        executeNextCode<GetObject>(programCounter);
+                        goto NextInstruction;
+                    }
                 }
             }
         }
@@ -714,41 +765,59 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
         lastESObjectMetInMemberExpressionNode = obj;
 
-        if(obj->isHiddenClassMode() && !obj->isESArrayObject()) {
-            ESString* val = property->toString();
-            if(code->m_cachedHiddenClass == obj->hiddenClass() && (val == code->m_cachedPropertyValue || *val == *code->m_cachedPropertyValue)) {
-                push<ESValue>(stack, bp, obj->readHiddenClass(code->m_cachedIndex));
-                executeNextCode<GetObject>(programCounter);
-                goto NextInstruction;
-            } else {
-                size_t idx = obj->hiddenClass()->findProperty(val);
-                if(idx != SIZE_MAX) {
-                    code->m_cachedHiddenClass = obj->hiddenClass();
-                    code->m_cachedPropertyValue = val;
-                    code->m_cachedIndex = idx;
-                    push<ESValue>(stack, bp, obj->readHiddenClass(idx));
-                    executeNextCode<GetObject>(programCounter);
-                    goto NextInstruction;
-                } else {
-                    code->m_cachedHiddenClass = nullptr;
-                    ESValue v = obj->findOnlyPrototype(val);
-                    if(v.isEmpty()) {
-                        push<ESValue>(stack, bp, ESValue());
-                        executeNextCode<GetObject>(programCounter);
-                        goto NextInstruction;
-                    }
-                    push<ESValue>(stack, bp, v);
-                    executeNextCode<GetObject>(programCounter);
-                    goto NextInstruction;
-                }
-            }
-        } else {
+
+        if(obj->isESArrayObject() && property->isInt32()) {
             push<ESValue>(stack, bp, obj->get(*property, true));
             executeNextCode<GetObject>(programCounter);
             goto NextInstruction;
         }
+
+        ESString* val = property->toString();
+        if(obj->hiddenClass() == code->m_cachedHiddenClass && (val == code->m_cachedPropertyValue || *val == *code->m_cachedPropertyValue)) {
+            if(code->m_cachedIndex != SIZE_MAX) {
+                push<ESValue>(stack, bp, obj->readHiddenClass(code->m_cachedIndex));
+                executeNextCode<GetObject>(programCounter);
+                goto NextInstruction;
+            } else {
+                ESValue v = obj->findOnlyPrototype(val);
+                if(v.isEmpty()) {
+                    push<ESValue>(stack, bp, ESValue());
+                    executeNextCode<GetObject>(programCounter);
+                    goto NextInstruction;
+                }
+                push<ESValue>(stack, bp, v);
+                executeNextCode<GetObject>(programCounter);
+                goto NextInstruction;
+            }
+        }
+
+        if(obj->isHiddenClassMode()) {
+            size_t idx = obj->hiddenClass()->findProperty(val);
+            code->m_cachedHiddenClass = obj->hiddenClass();
+            code->m_cachedPropertyValue = val;
+            code->m_cachedIndex = idx;
+            if(idx != SIZE_MAX) {
+                push<ESValue>(stack, bp, obj->readHiddenClass(code->m_cachedIndex));
+                executeNextCode<GetObject>(programCounter);
+                goto NextInstruction;
+            } else {
+                ESValue v = obj->findOnlyPrototype(val);
+                if(v.isEmpty()) {
+                    push<ESValue>(stack, bp, ESValue());
+                    executeNextCode<GetObject>(programCounter);
+                    goto NextInstruction;
+                }
+                push<ESValue>(stack, bp, v);
+                executeNextCode<GetObject>(programCounter);
+                goto NextInstruction;
+            }
+        } else {
+            push<ESValue>(stack, bp, obj->get(val, true));
+            executeNextCode<GetObject>(programCounter);
+            goto NextInstruction;
+        }
+
         RELEASE_ASSERT_NOT_REACHED();
-        goto NextInstruction;
     }
 
     GetObjectWithPeekingOpcodeLbl:
@@ -770,42 +839,85 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                    char16_t c = willBeObject->asESString()->string().data()[prop_val];
                    if(LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
                        push<ESValue>(stack, bp, strings->asciiTable[c]);
-                       executeNextCode<GetObjectWithPeeking>(programCounter);
+                       executeNextCode<GetObject>(programCounter);
                        goto NextInstruction;
                    } else {
                        push<ESValue>(stack, bp, ESString::create(c));
-                       executeNextCode<GetObjectWithPeeking>(programCounter);
+                       executeNextCode<GetObject>(programCounter);
                        goto NextInstruction;
                    }
                } else {
                    push<ESValue>(stack, bp, ESValue());
-                   executeNextCode<GetObjectWithPeeking>(programCounter);
+                   executeNextCode<GetObject>(programCounter);
                    goto NextInstruction;
                }
                push<ESValue>(stack, bp, willBeObject->asESString()->substring(prop_val, prop_val+1));
-               executeNextCode<GetObjectWithPeeking>(programCounter);
+               executeNextCode<GetObject>(programCounter);
                goto NextInstruction;
             } else {
-                globalObject->stringObjectProxy()->setString(willBeObject->asESString());
-                ESValue ret = globalObject->stringObjectProxy()->find(*property, true);
-                if(!ret.isEmpty()) {
-                    if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->codeBlock()->m_isBuiltInFunction) {
-                        lastESObjectMetInMemberExpressionNode = (globalObject->stringObjectProxy());
-                        push<ESValue>(stack, bp, ret);
-                        executeNextCode<GetObjectWithPeeking>(programCounter);
-                        goto NextInstruction;
+                if(globalObject->stringObjectProxy()->isHiddenClassMode()) {
+                    ESString* val = property->toString();
+                    if(code->m_cachedHiddenClass == globalObject->stringObjectProxy()->hiddenClass() && (val == code->m_cachedPropertyValue || *val == *code->m_cachedPropertyValue)) {
+
+                    } else {
+                        code->m_cachedHiddenClass = globalObject->stringObjectProxy()->hiddenClass();
+                        code->m_cachedPropertyValue = val;
+                        code->m_cachedIndex = globalObject->stringObjectProxy()->hiddenClass()->findProperty(val);
+                    }
+                    if(code->m_cachedIndex != SIZE_MAX) {
+                        globalObject->stringObjectProxy()->setString(willBeObject->asESString());
+                        ESValue ret = globalObject->stringObjectProxy()->readHiddenClass(code->m_cachedIndex);
+                        if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->codeBlock()->m_isBuiltInFunction) {
+                            globalObject->stringObjectProxy()->setString(willBeObject->asESString());
+                            lastESObjectMetInMemberExpressionNode = (globalObject->stringObjectProxy());
+                            push<ESValue>(stack, bp, ret);
+                            executeNextCode<GetObject>(programCounter);
+                            goto NextInstruction;
+                        }
+                    }
+                } else {
+                    ESValue ret = globalObject->stringObjectProxy()->find(*property, true);
+                    if(!ret.isEmpty()) {
+                        if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->codeBlock()->m_isBuiltInFunction) {
+                            globalObject->stringObjectProxy()->setString(willBeObject->asESString());
+                            lastESObjectMetInMemberExpressionNode = (globalObject->stringObjectProxy());
+                            push<ESValue>(stack, bp, ret);
+                            executeNextCode<GetObject>(programCounter);
+                            goto NextInstruction;
+                        }
                     }
                 }
             }
         } else if(UNLIKELY(willBeObject->isNumber())) {
-            globalObject->numberObjectProxy()->setNumberData(willBeObject->asNumber());
-            ESValue ret = globalObject->numberObjectProxy()->find(*property, true);
-            if(!ret.isEmpty()) {
-                if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->codeBlock()->m_isBuiltInFunction) {
-                    lastESObjectMetInMemberExpressionNode = (globalObject->numberObjectProxy());
-                    push<ESValue>(stack, bp, ret);
-                    executeNextCode<GetObjectWithPeeking>(programCounter);
-                    goto NextInstruction;
+            if(globalObject->numberObjectProxy()->isHiddenClassMode()) {
+                ESString* val = property->toString();
+                if(code->m_cachedHiddenClass == globalObject->stringObjectProxy()->hiddenClass() && (val == code->m_cachedPropertyValue || *val == *code->m_cachedPropertyValue)) {
+
+                } else {
+                    code->m_cachedHiddenClass = globalObject->numberObjectProxy()->hiddenClass();
+                    code->m_cachedPropertyValue = val;
+                    code->m_cachedIndex = globalObject->numberObjectProxy()->hiddenClass()->findProperty(val);
+                }
+                if(code->m_cachedIndex != SIZE_MAX) {
+                    ESValue ret = globalObject->numberObjectProxy()->readHiddenClass(code->m_cachedIndex);
+                    if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->codeBlock()->m_isBuiltInFunction) {
+                        globalObject->numberObjectProxy()->setNumberData(willBeObject->asNumber());
+                        lastESObjectMetInMemberExpressionNode = (globalObject->numberObjectProxy());
+                        push<ESValue>(stack, bp, ret);
+                        executeNextCode<GetObject>(programCounter);
+                        goto NextInstruction;
+                    }
+                }
+            } else {
+                ESValue ret = globalObject->numberObjectProxy()->find(*property, true);
+                if(!ret.isEmpty()) {
+                    if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->codeBlock()->m_isBuiltInFunction) {
+                        globalObject->numberObjectProxy()->setNumberData(willBeObject->asNumber());
+                        lastESObjectMetInMemberExpressionNode = (globalObject->numberObjectProxy());
+                        push<ESValue>(stack, bp, ret);
+                        executeNextCode<GetObject>(programCounter);
+                        goto NextInstruction;
+                    }
                 }
             }
         }
@@ -818,41 +930,60 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
         lastESObjectMetInMemberExpressionNode = obj;
 
-        if(obj->isHiddenClassMode() && !obj->isESArrayObject()) {
-            ESString* val = property->toString();
-            if(code->m_cachedHiddenClass == obj->hiddenClass() && (val == code->m_cachedPropertyValue || *val == *code->m_cachedPropertyValue)) {
-                push<ESValue>(stack, bp, obj->readHiddenClass(code->m_cachedIndex));
-                executeNextCode<GetObjectWithPeeking>(programCounter);
-                goto NextInstruction;
-            } else {
-                size_t idx = obj->hiddenClass()->findProperty(val);
-                if(idx != SIZE_MAX) {
-                    code->m_cachedHiddenClass = obj->hiddenClass();
-                    code->m_cachedPropertyValue = val;
-                    code->m_cachedIndex = idx;
-                    push<ESValue>(stack, bp, obj->readHiddenClass(idx));
-                    executeNextCode<GetObjectWithPeeking>(programCounter);
-                    goto NextInstruction;
-                } else {
-                    code->m_cachedHiddenClass = nullptr;
-                    ESValue v = obj->findOnlyPrototype(val);
-                    if(v.isEmpty()) {
-                        push<ESValue>(stack, bp, ESValue());
-                        executeNextCode<GetObjectWithPeeking>(programCounter);
-                        goto NextInstruction;
-                    }
-                    push<ESValue>(stack, bp, v);
-                    executeNextCode<GetObjectWithPeeking>(programCounter);
-                    goto NextInstruction;
-                }
-            }
-        } else {
+
+        if(obj->isESArrayObject() && property->isInt32()) {
             push<ESValue>(stack, bp, obj->get(*property, true));
-            executeNextCode<GetObjectWithPeeking>(programCounter);
+            executeNextCode<GetObject>(programCounter);
             goto NextInstruction;
         }
+
+        ESString* val = property->toString();
+        if(obj->hiddenClass() == code->m_cachedHiddenClass && (val == code->m_cachedPropertyValue || *val == *code->m_cachedPropertyValue)) {
+            if(code->m_cachedIndex != SIZE_MAX) {
+                push<ESValue>(stack, bp, obj->readHiddenClass(code->m_cachedIndex));
+                executeNextCode<GetObject>(programCounter);
+                goto NextInstruction;
+            } else {
+                ESValue v = obj->findOnlyPrototype(val);
+                if(v.isEmpty()) {
+                    push<ESValue>(stack, bp, ESValue());
+                    executeNextCode<GetObject>(programCounter);
+                    goto NextInstruction;
+                }
+                push<ESValue>(stack, bp, v);
+                executeNextCode<GetObject>(programCounter);
+                goto NextInstruction;
+            }
+        }
+
+        if(obj->isHiddenClassMode()) {
+            size_t idx = obj->hiddenClass()->findProperty(val);
+            code->m_cachedHiddenClass = obj->hiddenClass();
+            code->m_cachedPropertyValue = val;
+            code->m_cachedIndex = idx;
+            if(idx != SIZE_MAX) {
+                push<ESValue>(stack, bp, obj->readHiddenClass(code->m_cachedIndex));
+                executeNextCode<GetObject>(programCounter);
+                goto NextInstruction;
+            } else {
+                ESValue v = obj->findOnlyPrototype(val);
+                if(v.isEmpty()) {
+                    push<ESValue>(stack, bp, ESValue());
+                    executeNextCode<GetObject>(programCounter);
+                    goto NextInstruction;
+                }
+                push<ESValue>(stack, bp, v);
+                executeNextCode<GetObject>(programCounter);
+                goto NextInstruction;
+            }
+        } else {
+            push<ESValue>(stack, bp, obj->get(val, true));
+            executeNextCode<GetObject>(programCounter);
+            goto NextInstruction;
+        }
+
         RELEASE_ASSERT_NOT_REACHED();
-        goto NextInstruction;
+        RELEASE_ASSERT_NOT_REACHED();
     }
 
     EnumerateObjectOpcodeLbl:
@@ -1282,6 +1413,18 @@ ByteCode::ByteCode(Opcode code) {
     m_orgOpcode = code;
     m_node = nullptr;
 #endif
+}
+
+CodeBlock* generateByteCode(Node* node)
+{
+    CodeBlock* block = CodeBlock::create();
+
+    ByteCodeGenerateContext context;
+    //unsigned long start = ESVMInstance::tickCount();
+    node->generateStatementByteCode(block, context);
+    //unsigned long end = ESVMInstance::tickCount();
+    //printf("generate code takes %lfms\n",(end-start)/1000.0);
+    return block;
 }
 
 #ifndef NDEBUG

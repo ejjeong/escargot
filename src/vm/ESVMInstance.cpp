@@ -156,13 +156,7 @@ ESValue ESVMInstance::evaluate(u16string& source)
 {
     try {
         m_lastExpressionStatementValue = ESValue();
-        ProgramNode* node = ESScriptParser::parseScript(this, source);
-        CodeBlock* block = CodeBlock::create();
-        ByteCodeGenerateContext context;
-        //unsigned long start = ESVMInstance::tickCount();
-        node->generateStatementByteCode(block, context);
-        //unsigned long end = ESVMInstance::tickCount();
-        //printf("generate code takes %lfms\n",(end-start)/1000.0);
+        CodeBlock* block = ESScriptParser::parseScript(this, source);
         interpret(this, block);
     } catch(const ESValue& err) {
         try{
