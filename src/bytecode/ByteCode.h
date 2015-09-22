@@ -56,8 +56,9 @@ class Node;
     F(UnaryMinus) \
     F(UnaryPlus) \
     F(UnaryTypeOf) \
+    F(ToNumber) \
 \
-    /*//object, array*/ \
+    /*object, array*/ \
     F(CreateObject) \
     F(CreateArray) \
     F(SetObject) \
@@ -828,6 +829,22 @@ public:
     virtual void dump()
     {
         printf("UnaryTypeOf <>\n");
+    }
+#endif
+};
+
+class ToNumber : public ByteCode {
+public:
+    ToNumber()
+        : ByteCode(ToNumberOpcode)
+    {
+
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("ToNumber <>\n");
     }
 #endif
 };

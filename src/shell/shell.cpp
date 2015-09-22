@@ -75,6 +75,16 @@ int main(int argc, char* argv[])
                 escargot::ESStringData source(str.c_str());
                 ES->evaluate(source);
             }
+
+            if(strcmp(argv[i], "--shell") == 0) {
+                while (true) {
+                    char buf[512];
+                    printf("shell> ");
+                    fgets(buf, sizeof buf, stdin);
+                    escargot::ESStringData source(buf);
+                    ES->printValue(ES->evaluate(source));
+                }
+            }
         }
     }
 #ifdef ESCARGOT_PROFILE

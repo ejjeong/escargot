@@ -19,6 +19,7 @@ public:
     {
         m_argument->generateResolveAddressByteCode(codeBlock, context);
         m_argument->generateReferenceResolvedAddressByteCode(codeBlock, context);
+        codeBlock->pushCode(ToNumber(), this);
         codeBlock->pushCode(Increment(), this);
         m_argument->generatePutByteCode(codeBlock, context);
     }

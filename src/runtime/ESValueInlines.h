@@ -446,9 +446,16 @@ inline double ESValue::toNumber() const
             });
             return val;
         }
-        else if (o->isESStringObject())
-            RELEASE_ASSERT_NOT_REACHED(); //TODO
-        else if (o->isESObject())
+        else if (o->isESStringObject()) {
+            double val;
+            o->asESStringObject()->getStringData()->wcharData([&val](const wchar_t* buf, unsigned size){
+                wchar_t* end;
+                val = wcstod(buf, &end);
+                if(end != buf + size)
+                    val = std::numeric_limits<double>::quiet_NaN();
+            });
+            return val;
+        } else if (o->isESObject())
             return toPrimitive().toNumber();
         else if (o->isESDateObject())
             return o->asESDateObject()->getTimeAsMilisec();

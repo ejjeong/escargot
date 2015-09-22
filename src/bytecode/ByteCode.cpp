@@ -599,6 +599,18 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         goto NextInstruction;
     }
 
+    ToNumberOpcodeLbl:
+    {
+        ESValue* v = peek<ESValue>(stack, bp);
+        if(!v->isNumber()) {
+            v = pop<ESValue>(stack, bp);
+            push<ESValue>(stack, bp, ESValue(v->toNumber()));
+        }
+
+        executeNextCode<ToNumber>(programCounter);
+        goto NextInstruction;
+    }
+
     CreateObjectOpcodeLbl:
     {
         CreateObject* code = (CreateObject*)currentCode;
