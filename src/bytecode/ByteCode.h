@@ -1466,6 +1466,16 @@ ALWAYS_INLINE void executeNextCode(size_t& programCounter)
     programCounter += sizeof (CodeType);
 }
 
+ALWAYS_INLINE size_t jumpTo(char* codeBuffer, const size_t& jumpPosition)
+{
+    return (size_t)&codeBuffer[jumpPosition];
+}
+
+ALWAYS_INLINE size_t resolveProgramCounter(char* codeBuffer, const size_t& programCounter)
+{
+    return programCounter - (size_t)codeBuffer;
+}
+
 #ifndef NDEBUG
 ALWAYS_INLINE void dumpBytecode(CodeBlock* codeBlock);
 #endif

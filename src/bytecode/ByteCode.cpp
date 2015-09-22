@@ -29,7 +29,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     char tmpStackBuf[1024];
     void* tmpStack = tmpStackBuf;
     void* tmpBp = tmpStack;
-    char* code = codeBlock->m_code.data();
+    char* codeBuffer = codeBlock->m_code.data();
     ExecutionContext* ec = instance->currentExecutionContext();
     GlobalObject* globalObject = instance->globalObject();
     ESObject* lastESObjectMetInMemberExpressionNode = globalObject;
@@ -37,20 +37,21 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     ESValue* nonActivitionModeLocalValuePointer = ec->cachedDeclarativeEnvironmentRecordESValue();
     ASSERT(((size_t)stack % sizeof(size_t)) == 0);
     ASSERT(((size_t)tmpStack % sizeof(size_t)) == 0);
+    //resolve programCounter into address
+    programCounter = (size_t)(&codeBuffer[programCounter]);
     NextInstruction:
-    ByteCode* currentCode = (ByteCode *)(&code[programCounter]);
+    ByteCode* currentCode = (ByteCode *)programCounter;
     ASSERT(((size_t)currentCode % sizeof(size_t)) == 0);
     /*
     {
         size_t tt = (size_t)currentCode;
         ASSERT(tt % sizeof(size_t) == 0);
         if(currentCode->m_node)
-            printf("execute %p %u \t(nodeinfo %d)\t",currentCode, (unsigned)programCounter, (int)currentCode->m_node->sourceLocation().m_lineNumber);
+            printf("execute %p %u \t(nodeinfo %d)\t",currentCode, (unsigned)(programCounter-(size_t)codeBuffer), (int)currentCode->m_node->sourceLocation().m_lineNumber);
         else
-            printf("execute %p %u \t(nodeinfo null)\t",currentCode, (unsigned)programCounter);
+            printf("execute %p %u \t(nodeinfo null)\t",currentCode, (unsigned)(programCounter-(size_t)codeBuffer));
         currentCode->dump();
-    }
-    */
+    }*/
 
 #ifndef NDEBUG
     if (currentCode->m_orgOpcode < 0 || currentCode->m_orgOpcode > OpcodeKindEnd) {
@@ -866,7 +867,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
         while(1) {
             if(data->m_keys.size() == data->m_idx) {
-                programCounter = code->m_forInEnd;
+                programCounter = jumpTo(codeBuffer, code->m_forInEnd);
                 goto NextInstruction;
             }
             if (data->m_object->hasOwnProperty(data->m_keys[data->m_idx++]))
@@ -1085,7 +1086,8 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         Jump* code = (Jump *)currentCode;
         ASSERT(code->m_jumpPosition != SIZE_MAX);
-        programCounter = code->m_jumpPosition;
+
+        programCounter = jumpTo(codeBuffer, code->m_jumpPosition);
         goto NextInstruction;
     }
 
@@ -1095,7 +1097,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* top = pop<ESValue>(stack, bp);
         ASSERT(code->m_jumpPosition != SIZE_MAX);
         if(!top->toBoolean())
-            programCounter = code->m_jumpPosition;
+            programCounter = jumpTo(codeBuffer, code->m_jumpPosition);
         else
             executeNextCode<JumpIfTopOfStackValueIsFalse>(programCounter);
         goto NextInstruction;
@@ -1107,7 +1109,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* top = pop<ESValue>(stack, bp);
         ASSERT(code->m_jumpPosition != SIZE_MAX);
         if(top->toBoolean())
-            programCounter = code->m_jumpPosition;
+            programCounter = jumpTo(codeBuffer, code->m_jumpPosition);
         else
             executeNextCode<JumpIfTopOfStackValueIsTrue>(programCounter);
         goto NextInstruction;
@@ -1119,7 +1121,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* top = pop<ESValue>(stack, bp);
         ASSERT(code->m_jumpPosition != SIZE_MAX);
         if(top->toBoolean()) {
-            programCounter = code->m_jumpPosition;
+            programCounter = jumpTo(codeBuffer, code->m_jumpPosition);
             pop<ESValue>(stack, bp);
         }
         else
@@ -1133,7 +1135,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* top = peek<ESValue>(stack, bp);
         ASSERT(code->m_jumpPosition != SIZE_MAX);
         if(!top->toBoolean())
-            programCounter = code->m_jumpPosition;
+            programCounter = jumpTo(codeBuffer, code->m_jumpPosition);
         else
             executeNextCode<JumpIfTopOfStackValueIsFalseWithPeeking>(programCounter);
         goto NextInstruction;
@@ -1145,7 +1147,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* top = peek<ESValue>(stack, bp);
         ASSERT(code->m_jumpPosition != SIZE_MAX);
         if(top->toBoolean())
-            programCounter = code->m_jumpPosition;
+            programCounter = jumpTo(codeBuffer, code->m_jumpPosition);
         else
             executeNextCode<JumpIfTopOfStackValueIsTrueWithPeeking>(programCounter);
         goto NextInstruction;
@@ -1164,7 +1166,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         LexicalEnvironment* oldEnv = ec->environment();
         ExecutionContext* backupedEC = ec;
         try {
-            interpret(instance, codeBlock, programCounter + sizeof(Try));
+            interpret(instance, codeBlock, resolveProgramCounter(codeBuffer, programCounter + sizeof(Try)));
         } catch(const ESValue& err) {
             instance->invalidateIdentifierCacheCheckCount();
             instance->m_currentExecutionContext = backupedEC;
@@ -1175,10 +1177,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             instance->currentExecutionContext()->environment()->record()->setMutableBinding(code->m_name,
                     code->m_nonAtomicName
                     , err, false);
-            interpret(instance, codeBlock, code->m_catchPosition);
+            //TODO process return value in catch-body
+            interpret(instance, codeBlock, resolveProgramCounter(codeBuffer, code->m_catchPosition));
             instance->currentExecutionContext()->setEnvironment(oldEnv);
         }
-        programCounter = code->m_statementEndPosition;
+        programCounter = jumpTo(codeBuffer, code->m_statementEndPosition);
         goto NextInstruction;
     }
 
