@@ -18,6 +18,9 @@ ExecutionContext::ExecutionContext(LexicalEnvironment* varEnv, bool needsActivat
     m_argumentCount = argumentsCount;
     m_cachedDeclarativeEnvironmentRecord = cachedDeclarativeEnvironmentRecord;
     m_isStrict = false;
+#ifdef ENABLE_ESJIT
+    m_inOSRExit = false;
+#endif
 }
 
 ESValue* ExecutionContext::resolveBinding(const InternalAtomicString& atomicName, escargot::ESString* name)

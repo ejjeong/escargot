@@ -64,6 +64,7 @@ union ValueDescriptor {
 #define CellPayloadOffset PayloadOffset
 #endif
 
+typedef double ESValueInDouble;
 
 class ESValue {
 public:
@@ -166,6 +167,9 @@ public:
 
     inline bool isESPointer() const;
     inline ESPointer* asESPointer() const;
+
+    static ESValueInDouble toDouble(ESValue);
+    static ESValue fromDouble(ESValueInDouble);
 
     static ptrdiff_t offsetOfPayload() { return OBJECT_OFFSETOF(ESValue, u.asBits.payload); }
     static ptrdiff_t offsetOfTag() { return OBJECT_OFFSETOF(ESValue, u.asBits.tag); }

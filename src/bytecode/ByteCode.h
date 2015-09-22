@@ -5,7 +5,9 @@
 #include "vm/ESVMInstance.h"
 #include "runtime/ExecutionContext.h"
 #include "runtime/Environment.h"
+#ifdef ENABLE_ESJIT
 #include "jit/ESIRType.h"
+#endif
 
 namespace escargot {
 
@@ -99,6 +101,7 @@ class Node;
     F(JumpIfTopOfStackValueIsFalseWithPeeking) \
     F(JumpIfTopOfStackValueIsTrueWithPeeking) \
     F(DuplicateTopOfStackValue) \
+    F(LoopStart) \
 \
     /*try-catch*/ \
     F(Try) \
@@ -126,10 +129,17 @@ class ByteCode;
 class CodeBlock;
 
 struct ByteCodeGenerateContext {
+#ifdef ENABLE_ESJIT
+    ByteCodeGenerateContext(int currentNodeIndex = 0)
+    {
+        m_currentNodeIndex = currentNodeIndex;
+    }
+#else
     ByteCodeGenerateContext()
       : m_offsetToBasePointer(0)
     {
     }
+#endif
 
     ~ByteCodeGenerateContext()
     {
@@ -150,6 +160,9 @@ struct ByteCodeGenerateContext {
         m_continueStatementPositions.clear();
         m_labeledBreakStatmentPositions.clear();
         m_labeledContinueStatmentPositions.clear();
+#ifdef ENABLE_ESJIT
+        ctx.m_currentNodeIndex = m_currentNodeIndex;
+#endif
     }
 
     void pushBreakPositions(size_t pos)
@@ -177,6 +190,20 @@ struct ByteCodeGenerateContext {
     ALWAYS_INLINE void consumeContinuePositions(CodeBlock* cb, size_t position);
     ALWAYS_INLINE void consumeLabeledContinuePositions(CodeBlock* cb, size_t position, ESString* lbl);
 
+#ifdef ENABLE_ESJIT
+    ALWAYS_INLINE unsigned getCurrentNodeIndex()
+    {
+        return m_currentNodeIndex;
+    }
+
+    ALWAYS_INLINE void setCurrentNodeIndex(unsigned index)
+    {
+        m_currentNodeIndex = index;
+    }
+
+    unsigned m_currentNodeIndex;
+#endif
+
     std::vector<size_t> m_breakStatementPositions;
     std::vector<size_t> m_continueStatementPositions;
     std::vector<std::pair<ESString*, size_t> > m_labeledBreakStatmentPositions;
@@ -202,15 +229,30 @@ public:
     int m_targetIndex;
 };
 
+#ifdef ENABLE_ESJIT
 class ProfileData {
 public:
-    void AccumulateType(ESJIT::Type type) {
-        m_type |= type;
+    ProfileData() : m_type(ESJIT::TypeBottom), m_value(ESValue()) { }
+
+    void addProfile(ESValue value)
+    {
+        //mergeType(); // it would be too slow
+        m_value = value;
     }
+    void updateProfiledType()
+    {
+        // TODO what happens if this function is called multiple times?
+        m_type.mergeType(ESJIT::Type::getType(m_value));
+        // TODO if m_type is function, profile function address
+        // if m_value is not set to undefined, profiled type will be updated again
+        // m_value = ESValue();
+    }
+    ESJIT::Type& getType() { return m_type; }
 protected:
     ESJIT::Type m_type;
     ESValue m_value;
 };
+#endif
 
 #ifdef NDEBUG
 ASSERT_STATIC(sizeof(ByteCode) == sizeof(size_t), "sizeof(ByteCode) should be == sizeof(size_t)");
@@ -417,6 +459,9 @@ public:
         printf("GetByIndex <%s, %u>\n", m_name->utf8Data(),  (unsigned)m_index);
     }
 #endif
+#ifdef ENABLE_ESJIT
+    ProfileData m_profile;
+#endif
 };
 
 class GetByIndexWithActivation : public ByteCode {
@@ -441,7 +486,7 @@ public:
 
 class PutById : public ByteCode {
 public:
-    PutById(const InternalAtomicString& name, ESString* esName, Opcode code = PutByIdOpcode, int targetIndex)
+    PutById(const InternalAtomicString& name, ESString* esName, int targetIndex = -1, Opcode code = PutByIdOpcode)
         : ByteCode(code, targetIndex)
     {
         m_name = name;
@@ -467,17 +512,19 @@ public:
 
 class PutByIndex : public ByteCode {
 public:
-    PutByIndex(size_t index, Opcode code = PutByIndexOpcode, int targetIndex = -1)
+    PutByIndex(size_t index, int targetIndex = -1, int srcIndex = -1, Opcode code = PutByIndexOpcode)
         : ByteCode(code, targetIndex)
     {
         m_index = index;
+        m_srcIndex = srcIndex;
     }
     size_t m_index;
+    int m_srcIndex;
 
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("(t%d = &id%u) ", m_targetIndex, (unsigned)m_index);
+        printf("(t%d: &id%u = t%d) ", m_targetIndex, (unsigned)m_index, m_srcIndex);
         printf("PutByIndex <%u>\n", (unsigned)m_index);
     }
 #endif
@@ -614,18 +661,22 @@ public:
 
 class BitwiseAnd : public ByteCode {
 public:
-    BitwiseAnd()
-        : ByteCode(BitwiseAndOpcode)
+    BitwiseAnd(int targetIndex = -1, int leftIndex = -1, int rightIndex = -1)
+        : ByteCode(BitwiseAndOpcode, targetIndex)
     {
-
+        m_leftIndex = leftIndex;
+        m_rightIndex = rightIndex;
     }
 
 #ifndef NDEBUG
     virtual void dump()
     {
+        printf("(t%d = t%d&t%d) ", m_targetIndex, m_leftIndex, m_rightIndex);
         printf("BitwiseAnd <>\n");
     }
 #endif
+    int m_leftIndex;
+    int m_rightIndex;
 };
 
 class BitwiseOr : public ByteCode {
@@ -662,34 +713,43 @@ public:
 
 class LeftShift : public ByteCode {
 public:
-    LeftShift()
-        : ByteCode(LeftShiftOpcode)
+    LeftShift(int targetIndex = -1, int leftIndex = -1, int rightIndex = -1)
+        : ByteCode(LeftShiftOpcode, targetIndex)
     {
-
+        m_leftIndex = leftIndex;
+        m_rightIndex = rightIndex;
     }
 
 #ifndef NDEBUG
     virtual void dump()
     {
+        printf("(t%d = t%d<<t%d) ", m_targetIndex, m_leftIndex, m_rightIndex);
         printf("LeftShift <>\n");
     }
 #endif
+    int m_leftIndex;
+    int m_rightIndex;
 };
 
 class SignedRightShift : public ByteCode {
 public:
-    SignedRightShift()
-        : ByteCode(SignedRightShiftOpcode)
+    SignedRightShift(int targetIndex = -1, int leftIndex = -1, int rightIndex = -1)
+        : ByteCode(SignedRightShiftOpcode, targetIndex)
     {
-
+        m_leftIndex = leftIndex;
+        m_rightIndex = rightIndex;
     }
+
 
 #ifndef NDEBUG
     virtual void dump()
     {
+        printf("(t%d = t%d>>t%d) ", m_targetIndex, m_leftIndex, m_rightIndex);
         printf("SignedRightShift <>\n");
     }
 #endif
+    int m_leftIndex;
+    int m_rightIndex;
 };
 
 class UnsignedRightShift : public ByteCode {
@@ -861,8 +921,8 @@ public:
 
 class Increment : public ByteCode {
 public:
-    Increment()
-        : ByteCode(IncrementOpcode)
+    Increment(int targetIndex = -1, size_t sourceIndex = -1)
+        : ByteCode(IncrementOpcode, targetIndex), m_sourceIndex(sourceIndex)
     {
 
     }
@@ -870,9 +930,12 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
+        printf("(t%d = t%d + 1)", m_targetIndex, m_sourceIndex);
         printf("Increment <>\n");
     }
 #endif
+private:
+    int m_sourceIndex;
 };
 
 class Decrement : public ByteCode {
@@ -1037,8 +1100,8 @@ public:
 
 class ToNumber : public ByteCode {
 public:
-    ToNumber()
-        : ByteCode(ToNumberOpcode)
+    ToNumber(int targetIndex = -1, size_t sourceIndex = -1)
+        : ByteCode(ToNumberOpcode, targetIndex), m_sourceIndex(sourceIndex)
     {
 
     }
@@ -1046,9 +1109,11 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
+        printf("(t%d = toNumber(t%d)) ", m_targetIndex, m_sourceIndex);
         printf("ToNumber <>\n");
     }
 #endif
+    int m_sourceIndex;
 };
 
 class JumpIfTopOfStackValueIsFalse : public ByteCode {
@@ -1065,7 +1130,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("(if (!t%d) goto %lu) ", m_targetIndex, m_jumpPosition);
+        printf("(if (!t%d) goto %lu) ", m_conditionIndex, m_jumpPosition);
         printf("JumpIfTopOfStackValueIsFalse <%u>\n",(unsigned)m_jumpPosition);
     }
 #endif
@@ -1543,6 +1608,23 @@ public:
 #endif
 };
 
+class LoopStart : public ByteCode {
+public:
+    LoopStart()
+        : ByteCode(LoopStartOpcode)
+    {
+
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("LoopStart <>\n");
+    }
+#endif
+
+};
+
 class Try : public ByteCode {
 public:
     Try()
@@ -1651,6 +1733,9 @@ class CodeBlock : public gc {
         m_needsArgumentsObject = false;
         m_isBuiltInFunction = false;
         m_isStrict = false;
+#ifdef ENABLE_ESJIT
+        m_executeCount = 0;
+#endif
     }
 public:
     static CodeBlock* create()
@@ -1692,12 +1777,25 @@ public:
     bool m_isBuiltInFunction;
     bool m_isStrict;
 
+#ifdef ENABLE_ESJIT
+public:
+    void ensureHeapProfileDataSlotSize(size_t size);
+    void ensureArgumentProfileDataSlotSize(size_t size);
+    void writeHeapProfileData(unsigned index, ESValue& value);
+    void writeArgumentProfileData(unsigned index, ESValue& value);
+    ProfileData* getHeapProfileData(unsigned index) { return &m_heapProfileDatas[index]; }
+    ProfileData* getArgumentProfileData(unsigned index) { return &m_argumentProfileDatas[index]; }
+
+    // TODO remove size_t (which stands for bytecode index, used only in assert)
+    std::vector<ProfileData, gc_allocator<ProfileData> > m_heapProfileDatas;
+    std::vector<ProfileData, gc_allocator<ProfileData> > m_argumentProfileDatas;
     typedef ESValue (*JITFunction)(ESVMInstance*);
     JITFunction m_cachedJITFunction;
     bool m_dontJIT;
     size_t m_tempRegisterSize;
-    typedef struct {
-    } m_profileData;
+    size_t m_executionCount;
+    size_t m_executeCount;
+#endif
 };
 
 template <typename Type>

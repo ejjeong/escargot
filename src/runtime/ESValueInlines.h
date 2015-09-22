@@ -610,6 +610,18 @@ inline bool ESValue::isPrimitive() const
     return isUndefined() || isNull() || isNumber() || isESString() || isBoolean();
 }
 
+inline double ESValue::toDouble(ESValue value)
+{
+    return bitwise_cast<double>(value.u.asInt64);
+}
+
+inline ESValue ESValue::fromDouble(double value)
+{
+    ESValue val;
+    val.u.asInt64 = bitwise_cast<uint64_t>(value);
+    return val;
+}
+
 inline void ESSlot::setValue(const ::escargot::ESValue& value, ::escargot::ESObject* object)
 {
     if(UNLIKELY(!m_flags.m_isWritable)) {

@@ -466,7 +466,9 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeF
     m_codeBlock = CodeBlock::create();
     m_codeBlock->pushCode(ExecuteNativeFunction(fn), NULL);
     m_codeBlock->m_isBuiltInFunction = true;
+#ifdef ENABLE_ESJIT
     m_codeBlock->m_dontJIT = true;
+#endif
     m_name = name;
 }
 
@@ -486,6 +488,11 @@ ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctio
 
     ((FunctionEnvironmentRecord *)ESVMInstance->currentExecutionContext()->environment()->record())->bindThisValue(receiver);
     DeclarativeEnvironmentRecord* functionRecord = ESVMInstance->currentExecutionContext()->environment()->record()->toDeclarativeEnvironmentRecord();
+
+#ifdef ENABLE_ESJIT
+    for(unsigned i = 0; i < fn->codeBlock()->m_params.size() ; i ++)
+        fn->codeBlock()->writeArgumentProfileData(i, arguments[i]);
+#endif
 
     if(UNLIKELY(fn->codeBlock()->m_needsActivation)) {
         const InternalAtomicStringVector& params = fn->codeBlock()->m_params;
@@ -564,24 +571,36 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
             functionCallerInnerProcess(&ec, fn, receiver, arguments, argumentCount, fn->m_codeBlock->m_needsArgumentsObject, instance);
             //ESVMInstance->invalidateIdentifierCacheCheckCount();
             //execute;
-#if 1
+#ifdef ENABLE_ESJIT
             ESJIT::JITFunction jitFunction = fn->codeBlock()->m_cachedJITFunction;
-            if (!jitFunction && !fn->codeBlock()->m_dontJIT) {
+            if (!jitFunction && !fn->codeBlock()->m_dontJIT && fn->codeBlock()->m_executeCount > 0) {
+                // printf("Try JIT Compile\n");
                 jitFunction = reinterpret_cast<ESJIT::JITFunction>(ESJIT::JITCompile(fn->codeBlock()));
-                if (jitFunction)
+                if (jitFunction) {
+                    //printf("Compilation successful! Cache jit function %p\n", jitFunction);
                     fn->codeBlock()->m_cachedJITFunction = jitFunction;
-                else
+                } else {
+                    //printf("Compilation failed! disable jit compilation from now on\n");
                     fn->codeBlock()->m_dontJIT = true;
+                }
             }
 
             if (jitFunction) {
-                printf("Execute JIT compiled function.\n");
-                ESValue res = jitFunction((ESVMInstance*)(arguments[0].asRawData())); // TODO: trampoline to handle multiple arguments
-                printf("JIT Execution successfully ended with return value %lu.\n", res.asRawData());
-                result = ESValue(res.asRawData()); // TODO: Make it as ESValue format in the JIT function
+                //printf("Execute JIT compiled function.\n");
+                //ESValue res = jitFunction((ESVMInstance*)(arguments[0].asRawData())); // TODO: trampoline to handle multiple arguments
+                ESValue res = jitFunction(instance);
+                //printf("jit with instance %p context %p\n", instance, &ec);
+                // printf("JIT Execution successfully ended with return value %lu.\n", res.asRawData());
+                if (ec.inOSRExit()) {
+                    printf("OSR EXIT from tmp%ld\n", res.asRawData());
+                    RELEASE_ASSERT_NOT_REACHED();
+                } else {
+                    result = ESValue(res.asRawData()); // TODO: Make it as ESValue format in the JIT function
+                }
             } else {
-                printf("JIT failed! Execute interpreter\n");
+                //printf("JIT failed! Execute interpreter\n");
                 result = interpret(instance, fn->codeBlock());
+                fn->codeBlock()->m_executeCount++;
             }
 #else
             result = interpret(instance, fn->codeBlock());

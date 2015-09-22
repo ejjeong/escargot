@@ -20,11 +20,20 @@ public:
 
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
+#ifdef ENABLE_ESJIT
+        ByteCodeGenerateContext newContext(context.m_currentNodeIndex);
+#else
         ByteCodeGenerateContext newContext;
+#endif
         if (m_init) {
             m_init->generateExpressionByteCode(codeBlock, newContext);
             codeBlock->pushCode(Pop(), this);
         }
+
+#ifdef ENABLE_ESJIT
+        codeBlock->pushCode(LoopStart(), this);
+#endif
+
         size_t forStart = codeBlock->currentCodeSize();
 
         if(m_test) {
@@ -33,7 +42,8 @@ public:
             codeBlock->pushCode(Push(ESValue(true)), this);
         }
 
-        codeBlock->pushCode(JumpIfTopOfStackValueIsFalse(SIZE_MAX), this);
+        updateNodeIndex(newContext);
+        codeBlock->pushCode(JumpIfTopOfStackValueIsFalse(SIZE_MAX, m_nodeIndex, m_test->nodeIndex()), this);
         size_t testPos = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsFalse>();
 
         m_body->generateStatementByteCode(codeBlock, newContext);

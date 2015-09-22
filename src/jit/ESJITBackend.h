@@ -1,6 +1,9 @@
 #ifndef ESJITBackend_h
 #define ESJITBackend_h
 
+#ifdef ENABLE_ESJIT
+
+#include "ESIRType.h"
 #include "nanojit.h"
 #include <vector>
 
@@ -23,18 +26,35 @@ public:
     JITFunction nativeCodegen();
     nanojit::LIns* nanojitCodegen(ESIR* ir);
 
-
 private:
+    void setTmpMapping(size_t irIndex, nanojit::LIns* ins) {
+        // printf("tmpMap[%lu] = %p\n", irIndex, ins);
+        m_tmpToLInsMapping[irIndex] = ins;
+    }
+    nanojit::LIns* getTmpMapping(size_t irIndex) {
+        // printf("= tmpMap[%lu]\n", irIndex);
+        return m_tmpToLInsMapping[irIndex];
+    }
+    void setVarMapping(size_t irIndex, nanojit::LIns* ins) {
+        // printf("varMap[%lu] = %p\n", irIndex, ins);
+        m_varToLInsMapping[irIndex] = ins;
+    }
+    nanojit::LIns* getVarMapping(size_t irIndex) {
+        // printf("= varMap[%lu]\n", irIndex);
+        return m_varToLInsMapping[irIndex];
+    }
+    nanojit::LIns* generateOSRExit(size_t currentByteCodeIndex);
+    nanojit::LIns* generateTypeCheck(nanojit::LIns* in, Type type, size_t currentByteCodeIndex);
+    nanojit::LIns* boxESValue(nanojit::LIns* value, Type type);
+    nanojit::LIns* unboxESValue(nanojit::LIns* value, Type type);
+
     ESGraph* m_graph;
-    void setMapping(size_t irIndex, nanojit::LIns* ins) {
-        // printf("map[%lu] = %p\n", index, ins);
-        m_IRToLInsMapping[irIndex] = ins;
-    }
-    nanojit::LIns* getMapping(size_t irIndex) {
-        // printf("= map[%lu]\n", index);
-        return m_IRToLInsMapping[irIndex];
-    }
-    std::vector<nanojit::LIns*> m_IRToLInsMapping;
+    std::vector<nanojit::LIns*, gc_allocator<nanojit::LIns*> > m_tmpToLInsMapping;
+    std::vector<nanojit::LIns*, gc_allocator<nanojit::LIns*> > m_varToLInsMapping;
+
+    nanojit::LIns* m_stackPtr;
+    nanojit::LIns* m_instance;
+    nanojit::LIns* m_context;
 
     nanojit::LogControl m_lc;
     nanojit::Config m_config;
@@ -44,6 +64,11 @@ private:
     nanojit::LirBuffer* m_buf;
     nanojit::Fragment* m_f;
     nanojit::LirBufWriter m_out;
+
+    nanojit::LIns* intTagQ;
+    nanojit::LIns* intTagComplementQ;
+    nanojit::LIns* zeroQ;
+    nanojit::LIns* oneI;
 };
 
 JITFunction generateNativeFromIR(ESGraph* graph);
@@ -52,4 +77,5 @@ JITFunction addDouble();
 int nanoJITTest();
 
 }}
+#endif
 #endif

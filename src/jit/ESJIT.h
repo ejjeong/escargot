@@ -1,6 +1,8 @@
 #ifndef ESJIT_h
 #define ESJIT_h
 
+#ifdef ENABLE_ESJIT
+
 #include "runtime/ESValue.h"
 
 namespace escargot {
@@ -39,4 +41,5 @@ JITFunction JITCompile(CodeBlock* codeBlock);
 unsigned long getLongTickCount();
 
 }
+#endif
 #endif

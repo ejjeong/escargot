@@ -1,46 +1,58 @@
 #ifndef ESJITMiddleend_h
 #define ESJITMiddleend_h
 
+#ifdef ENABLE_ESJIT
+
 namespace escargot {
 
 namespace ESJIT {
 
 class ESGraph;
 
-class IRGraphOptimization {
+class ESGraphOptimization {
 };
 
-class IRGraphSimplification : IRGraphOptimization{
+class ESGraphSSAConversion : ESGraphOptimization {
 public:
     static void run(ESGraph* graph);
 };
 
-class IRGraphLoadElimiation : IRGraphOptimization {
+class ESGraphTypeInference : ESGraphOptimization {
 public:
     static void run(ESGraph* graph);
 };
 
-class IRGraphTypeCheckHoisting : IRGraphOptimization {
+class ESGraphSimplification : ESGraphOptimization {
 public:
     static void run(ESGraph* graph);
 };
 
-class IRGraphLoopInvariantCodeMotion : IRGraphOptimization {
+class ESGraphLoadElimiation : ESGraphOptimization {
 public:
     static void run(ESGraph* graph);
 };
 
-class IRGraphDeadCodeEliminiation : IRGraphOptimization {
+class ESGraphTypeCheckHoisting : ESGraphOptimization {
 public:
     static void run(ESGraph* graph);
 };
 
-class IRGraphCommonSubexpressionElimination : IRGraphOptimization {
+class ESGraphLoopInvariantCodeMotion : ESGraphOptimization {
 public:
     static void run(ESGraph* graph);
 };
 
-class IRGraphGlobalValueNumbering : IRGraphOptimization {
+class ESGraphDeadCodeEliminiation : ESGraphOptimization {
+public:
+    static void run(ESGraph* graph);
+};
+
+class ESGraphCommonSubexpressionElimination : ESGraphOptimization {
+public:
+    static void run(ESGraph* graph);
+};
+
+class ESGraphGlobalValueNumbering : ESGraphOptimization {
 public:
     static void run(ESGraph* graph);
 };
@@ -48,4 +60,5 @@ public:
 void optimizeIR(ESGraph* graph);
 
 }}
+#endif
 #endif

@@ -1,6 +1,10 @@
 #ifndef ESGraph_h
 #define ESGraph_h
 
+#ifdef ENABLE_ESJIT
+
+#include "ESIROperand.h"
+
 #include <vector>
 #include <iostream>
 
@@ -32,6 +36,8 @@ public:
     size_t instructionSize() { return m_instructions.size(); }
     ESIR* instruction(size_t index) { return m_instructions[index]; }
 
+    std::vector<ESBasicBlock*>* parents() { return &m_parents; }
+    std::vector<ESBasicBlock*>* children() { return &m_children; }
     void addParent(ESBasicBlock* parent) { m_parents.push_back(parent); }
     void addChild(ESBasicBlock* child) { m_children.push_back(child); }
 
@@ -59,6 +65,7 @@ private:
     size_t m_index;
     nanojit::LIns* m_label;
     std::vector<nanojit::LIns*> m_jumpOrBranchSources;
+    ESBasicBlock* m_dominanceFrontier;
 };
 
 class ESGraph : public gc {
@@ -75,17 +82,22 @@ public:
     void push(ESBasicBlock* bb) { m_basicBlocks.push_back(bb); }
 
     int tempRegisterSize();
+    void setOperandType(int index, Type type) { m_operands[index].setType(type); }
+    void mergeOperandType(int index, Type type) { m_operands[index].mergeType(type); }
+    Type getOperandType(int index) { return m_operands[index].getType(); }
 
 #ifndef NDEBUG
-    void dump(std::ostream& out);
+    void dump(std::ostream& out, const char* msg = nullptr);
 #endif
 
 private:
-    ESGraph(CodeBlock* codeBlock) : m_codeBlock(codeBlock) { }
+    ESGraph(CodeBlock* codeBlock);
 
     std::vector<ESBasicBlock*> m_basicBlocks;
     CodeBlock* m_codeBlock;
+    std::vector<ESIROperand> m_operands;
 };
 
 }}
+#endif
 #endif

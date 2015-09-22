@@ -1,10 +1,9 @@
 #include "Escargot.h"
 #include "bytecode/ByteCode.h"
 
-namespace escargot {
+#include "runtime/Operations.h"
 
-ALWAYS_INLINE ESValue plusOperation(const ESValue& left, const ESValue& right);
-ALWAYS_INLINE ESValue minusOperation(const ESValue& left, const ESValue& right);
+namespace escargot {
 
 ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter)
 {
@@ -22,6 +21,9 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     void* tmpStack = tmpStackBuf;
     void* tmpBp = tmpStack;
     char* codeBuffer = codeBlock->m_code.data();
+#ifdef ENABLE_ESJIT
+    size_t numParams = codeBlock->m_params.size();
+#endif
     ExecutionContext* ec = instance->currentExecutionContext();
     GlobalObject* globalObject = instance->globalObject();
     ESValue lastESObjectMetInMemberExpressionNode = globalObject;
@@ -182,6 +184,12 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         GetByIndex* code = (GetByIndex*)currentCode;
         ASSERT(code->m_index < ec->environment()->record()->toDeclarativeEnvironmentRecord()->innerIdentifiers()->size());
         push<ESValue>(stack, bp, &nonActivitionModeLocalValuePointer[code->m_index]);
+#ifdef ENABLE_ESJIT
+        if (code->m_index < numParams)
+            codeBlock->writeArgumentProfileData(code->m_index, nonActivitionModeLocalValuePointer[code->m_index]);
+        else
+            codeBlock->writeHeapProfileData(code->m_index, nonActivitionModeLocalValuePointer[code->m_index]);
+#endif
         executeNextCode<GetByIndex>(programCounter);
         goto NextInstruction;
     }
@@ -1342,6 +1350,12 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         goto NextInstruction;
     }
 
+    LoopStartOpcodeLbl:
+    {
+        executeNextCode<LoopStart>(programCounter);
+        goto NextInstruction;
+    }
+
     TryOpcodeLbl:
     {
         Try* code = (Try *)currentCode;
@@ -1400,54 +1414,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         return ESValue();
     }
 
-}
-
-ALWAYS_INLINE ESValue plusOperation(const ESValue& left, const ESValue& right)
-{
-    ESValue lval = left.toPrimitive();
-    ESValue rval = right.toPrimitive();
-    // http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.1
-
-    ESValue ret(ESValue::ESForceUninitialized);
-    if(lval.isInt32() && rval.isInt32()) {
-        int a = lval.asInt32(), b = rval.asInt32();
-        if (UNLIKELY(a > 0 && b > std::numeric_limits<int32_t>::max() - a)) {
-            //overflow
-            ret = ESValue((double)lval.asInt32() + (double)rval.asInt32());
-        } else if (UNLIKELY(a < 0 && b < std::numeric_limits<int32_t>::min() - a)) {
-            //underflow
-            ret = ESValue((double)lval.asInt32() + (double)rval.asInt32());
-        } else {
-            ret = ESValue(lval.asInt32() + rval.asInt32());
-        }
-    } else if (lval.isESString() || rval.isESString()) {
-        ret = ESString::concatTwoStrings(lval.toString(), rval.toString());
-    } else {
-        ret = ESValue(lval.toNumber() + rval.toNumber());
-    }
-
-    return ret;
-}
-
-ALWAYS_INLINE ESValue minusOperation(const ESValue& left, const ESValue& right)
-{
-    // http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.2
-    ESValue ret(ESValue::ESForceUninitialized);
-    if (left.isInt32() && right.isInt32()) {
-        int a = left.asInt32(), b = right.asInt32();
-        if (UNLIKELY((a > 0 && b < 0 && b < a - std::numeric_limits<int32_t>::max()))) {
-            //overflow
-            ret = ESValue((double)left.asInt32() - (double)right.asInt32());
-        } else if (UNLIKELY(a < 0 && b > 0 && b > a - std::numeric_limits<int32_t>::min())) {
-            //underflow
-            ret = ESValue((double)left.asInt32() - (double)right.asInt32());
-        } else {
-            ret = ESValue(left.asInt32() - right.asInt32());
-        }
-    }
-    else
-        ret = ESValue(left.toNumber() - right.toNumber());
-    return ret;
 }
 
 ByteCode::ByteCode(Opcode code, int targetIndex) {
@@ -1517,6 +1483,30 @@ void dumpBytecode(CodeBlock* codeBlock)
     printf("dumpBytecode...<<<<<<<<<<<<<<<<<<<<<<\n");
 }
 
+#endif
+
+#ifdef ENABLE_ESJIT
+void CodeBlock::ensureHeapProfileDataSlotSize(size_t size)
+{
+    m_heapProfileDatas.resize(size);
+}
+
+void CodeBlock::ensureArgumentProfileDataSlotSize(size_t size)
+{
+    m_argumentProfileDatas.resize(size);
+}
+
+void CodeBlock::writeHeapProfileData(unsigned index, ESValue& value)
+{
+    ASSERT(index < m_heapProfileDatas.size());
+    m_heapProfileDatas[index].addProfile(value);
+}
+
+void CodeBlock::writeArgumentProfileData(unsigned index, ESValue& value)
+{
+    ASSERT(index < m_argumentProfileDatas.size());
+    m_argumentProfileDatas[index].addProfile(value);
+}
 #endif
 
 }

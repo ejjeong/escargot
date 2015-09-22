@@ -66,6 +66,12 @@ public:
 
     ExecutionContext* callerContext() { return m_callerContext; }
 
+#ifdef ENABLE_ESJIT
+    bool inOSRExit() { return m_inOSRExit; }
+    static size_t offsetOfArguments() { return offsetof(ExecutionContext, m_arguments); }
+    static size_t offsetofInOSRExit() { return offsetof(ExecutionContext, m_inOSRExit); }
+#endif
+
 private:
     bool m_needsActivation;
     bool m_isNewExpression;
@@ -81,6 +87,10 @@ private:
 
     ESValue* m_cachedDeclarativeEnvironmentRecord;
     //instance->currentExecutionContext()->environment()->record()->toDeclarativeEnvironmentRecord()
+
+#ifdef ENABLE_ESJIT
+    bool m_inOSRExit;
+#endif
 };
 
 }

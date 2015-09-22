@@ -41,20 +41,20 @@ public:
             m_property->generateExpressionByteCode(codeBlock, context);
         } else {
             if(m_property->type() == NodeType::Literal) {
-                updateNodeIndex();
+                updateNodeIndex(context);
                 codeBlock->pushCode(Push(((LiteralNode *)m_property)->value(), m_nodeIndex), this);
             } else {
                 ASSERT(m_property->type() == NodeType::Identifier);
-                updateNodeIndex();
+                updateNodeIndex(context);
                 codeBlock->pushCode(Push(((IdentifierNode *)m_property)->nonAtomicName(), m_nodeIndex), this);
             }
         }
-        updateNodeIndex();
+        updateNodeIndex(context);
         codeBlock->pushCode(GetObject(m_nodeIndex, m_object->nodeIndex(), m_computed ? m_property->nodeIndex() : m_nodeIndex - 1), this);
     }
 
 
-    virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context, int targetIndex = -1)
     {
         codeBlock->pushCode(PutInObject(), this);
     }
@@ -66,11 +66,11 @@ public:
             m_property->generateExpressionByteCode(codeBlock, context);
         } else {
             if(m_property->type() == NodeType::Literal) {
-                updateNodeIndex();
+                updateNodeIndex(context);
                 codeBlock->pushCode(Push(((LiteralNode *)m_property)->value(), m_nodeIndex), this);
             } else {
                 ASSERT(m_property->type() == NodeType::Identifier);
-                updateNodeIndex();
+                updateNodeIndex(context);
                 codeBlock->pushCode(Push(((IdentifierNode *)m_property)->nonAtomicName(), m_nodeIndex), this);
             }
         }
@@ -79,7 +79,7 @@ public:
     virtual void generateReferenceResolvedAddressByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         codeBlock->pushCode(GetObjectWithPeeking(), this);
-        //updateNodeIndex();
+        //updateNodeIndex(context);
         //codeBlock->pushCode(ResolveAddressInObject(m_nodeIndex, m_object->nodeIndex(), m_computed ? m_property->nodeIndex() : m_nodeIndex-1), this);
     }
 protected:

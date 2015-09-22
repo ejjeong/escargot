@@ -18,7 +18,7 @@ public:
 
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        ESVMInstance::setCurrentNodeIndex(0);
+        context.setCurrentNodeIndex(0);
         for(unsigned i = 0; i < m_body.size() ; i ++) {
             m_body[i]->generateStatementByteCode(codeBlock, context);
 #ifndef NDEBUG

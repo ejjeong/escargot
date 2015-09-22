@@ -1,3 +1,5 @@
+#ifdef ENABLE_ESJIT
+
 #include "Escargot.h"
 #include "ESGraph.h"
 
@@ -8,8 +10,9 @@ namespace escargot {
 namespace ESJIT {
 
 ESBasicBlock::ESBasicBlock(ESGraph* graph, ESBasicBlock* parentBlock)
-    : m_index(graph->basicBlockSize())
-      , m_label(nullptr)
+    : m_graph(graph)
+    , m_index(graph->basicBlockSize())
+    , m_label(nullptr)
 {
     graph->push(this);
     if (parentBlock) {
@@ -51,21 +54,34 @@ void ESBasicBlock::dump(std::ostream& out)
         out << std::endl;
     }
 }
-
-void ESGraph::dump(std::ostream& out)
-{
-    out << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
-    out << "Graph (" << m_basicBlocks.size() << " basic blocks)\n";
-    for (size_t i = 0; i < m_basicBlocks.size(); i++) {
-        m_basicBlocks[i]->dump(out);
-    }
-    out << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
-}
 #endif
+
+ESGraph::ESGraph(CodeBlock* codeBlock)
+    : m_codeBlock(codeBlock),
+      m_operands(m_codeBlock->m_tempRegisterSize)
+{
+}
 
 int ESGraph::tempRegisterSize()
 {
     return m_codeBlock->m_tempRegisterSize;
 }
 
+#ifndef NDEBUG
+void ESGraph::dump(std::ostream& out, const char* msg)
+{
+    out << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
+    out << "Graph (" << m_basicBlocks.size() << " basic blocks) : " << (msg?msg:"") << std::endl;
+    for (size_t i = 0; i < m_basicBlocks.size(); i++) {
+        m_basicBlocks[i]->dump(out);
+    }
+    out << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
+    for (size_t i = 0; i < m_operands.size(); i++) {
+        m_operands[i].dump(out, i);
+        out << std::endl;
+    }
+}
+#endif
+
 }}
+#endif

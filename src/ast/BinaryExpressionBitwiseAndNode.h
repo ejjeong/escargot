@@ -20,7 +20,8 @@ public:
     {
         m_left->generateExpressionByteCode(codeBlock, context);
         m_right->generateExpressionByteCode(codeBlock, context);
-        codeBlock->pushCode(BitwiseAnd(), this);
+        updateNodeIndex(context);
+        codeBlock->pushCode(BitwiseAnd(m_nodeIndex, m_left->nodeIndex(), m_right->nodeIndex()), this);
     }
 protected:
     ExpressionNode* m_left;

@@ -30,14 +30,13 @@ public:
     {
         if(m_canUseFastAccess) {
             if(codeBlock->m_needsActivation) {
-                updateNodeIndex();
                 codeBlock->pushCode(GetByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), this);
 #ifndef NDEBUG
                 codeBlock->peekCode<GetByIndexWithActivation>(codeBlock->lastCodePosition<GetByIndexWithActivation>())->m_name = m_nonAtomicName;
 #endif
             } else {
                 if(m_fastAccessUpIndex == 0) {
-                    updateNodeIndex();
+                    updateNodeIndex(context);
                     codeBlock->pushCode(GetByIndex(m_fastAccessIndex, m_nodeIndex), this);
 #ifndef NDEBUG
                     codeBlock->peekCode<GetByIndex>(codeBlock->lastCodePosition<GetByIndex>())->m_name = m_nonAtomicName;
@@ -50,7 +49,7 @@ public:
                 }
             }
         } else {
-            updateNodeIndex();
+            updateNodeIndex(context);
             codeBlock->pushCode(GetById(m_name, m_nonAtomicName, m_nodeIndex), this);
         }
     }
@@ -65,20 +64,20 @@ public:
     }
 
 
-    virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context, int srcIndex = -1)
     {
         if(m_canUseFastAccess) {
             if(codeBlock->m_needsActivation) {
                 codeBlock->pushCode(PutByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), this);
             } else {
                 if(m_fastAccessUpIndex == 0) {
-                    updateNodeIndex();
-                    codeBlock->pushCode(PutByIndex(m_fastAccessIndex, m_nodeIndex), this);
+                    updateNodeIndex(context);
+                    codeBlock->pushCode(PutByIndex(m_fastAccessIndex, m_nodeIndex, srcIndex), this);
                 } else
                     codeBlock->pushCode(PutByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), this);
             }
         } else {
-            updateNodeIndex();
+            updateNodeIndex(context);
             codeBlock->pushCode(PutById(m_name, m_nonAtomicName, m_nodeIndex), this);
         }
     }

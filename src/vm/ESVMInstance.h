@@ -100,16 +100,6 @@ public:
         return &m_initialHiddenClassForArrayObject;
     }
 
-    ALWAYS_INLINE static unsigned getCurrentNodeIndex()
-    {
-        return currentInstance()->m_currentNodeIndex;
-    }
-
-    ALWAYS_INLINE static void setCurrentNodeIndex(unsigned index)
-    {
-        currentInstance()->m_currentNodeIndex = index;
-    }
-
     //Function for debug
     static void printValue(ESValue val);
     ALWAYS_INLINE unsigned long tickCount()
@@ -118,6 +108,10 @@ public:
         clock_gettime(CLOCK_MONOTONIC,&timespec);
         return (unsigned long)(timespec.tv_sec * 1000000L + timespec.tv_nsec/1000);
     }
+
+#ifdef ENABLE_ESJIT
+    static size_t offsetOfCurrentExecutionContext() { return offsetof(ESVMInstance, m_currentExecutionContext); }
+#endif
 
 #ifndef NDEBUG
     bool m_dumpByteCode;
@@ -135,8 +129,6 @@ public:
     }
 
 protected:
-    unsigned m_currentNodeIndex;
-
     ExecutionContext* m_globalExecutionContext;
     ExecutionContext* m_currentExecutionContext;
     GlobalObject* m_globalObject;

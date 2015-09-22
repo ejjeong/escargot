@@ -144,7 +144,7 @@ public:
         RELEASE_ASSERT_NOT_REACHED();
     }
 
-    virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context, int targetIndex = -1)
     {
         RELEASE_ASSERT_NOT_REACHED();
     }
@@ -164,9 +164,9 @@ public:
 
     ALWAYS_INLINE const NodeType& type() { return m_nodeType; }
 
-    void updateNodeIndex() {
-        m_nodeIndex = ESVMInstance::getCurrentNodeIndex();
-        ESVMInstance::setCurrentNodeIndex(m_nodeIndex+1);
+    void updateNodeIndex(ByteCodeGenerateContext& context) {
+        m_nodeIndex = context.getCurrentNodeIndex();
+        context.setCurrentNodeIndex(m_nodeIndex+1);
     }
 
     int nodeIndex() { return m_nodeIndex; }

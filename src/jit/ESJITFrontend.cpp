@@ -1,3 +1,5 @@
+#ifdef ENABLE_ESJIT
+
 #include "Escargot.h"
 #include "ESJITFrontend.h"
 
@@ -62,6 +64,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
     while(idx < codeBlock->m_code.size()) {
         ByteCode* currentCode = (ByteCode *)(&code[idx]);
 
+        // TODO: find a better way to this (e.g. write the size of the bytecode in FOR_EACH_BYTECODE_OP macro)
         Opcode opcode = Opcode::OpcodeKindEnd;
         for(int i = 0; i < Opcode::OpcodeKindEnd; i ++) {
             if((ESVMInstance::currentInstance()->opcodeTable())->m_table[i] == currentCode->m_opcode) {
@@ -71,7 +74,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         }
 
         // Update BasicBlock information 
-        // TODO: find a better way to this (using AST, write information to bytecode..)
+        // TODO: find a better way to this (e.g. using AST, write information to bytecode..)
         if (ESBasicBlock* generatedBlock = basicBlockMapping[idx]) {
             if (currentBlock != generatedBlock && !currentBlock->endsWithJumpOrBranch()) {
                 currentBlock->addChild(generatedBlock);
@@ -79,7 +82,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             }
             currentBlock = generatedBlock;
         }
-        //printf("parse idx %lu with BasicBlock %lu\n", idx, currentBlock->index());
+        // printf("parse idx %lu with BasicBlock %lu\n", idx, currentBlock->index());
 
 #define INIT_BYTECODE(ByteCode) ByteCode* bytecode = (ByteCode*)currentCode;
 #define NEXT_BYTECODE(ByteCode) idx += sizeof(ByteCode);
@@ -108,18 +111,42 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case GetByIndexOpcode:
         {
             INIT_BYTECODE(GetByIndex);
+            // TODO: load from local variable should not be a heap load.
             if (bytecode->m_index < codeBlock->m_params.size()) {
                 ESIR* getArgument = GetArgumentIR::create(bytecode->m_targetIndex, bytecode->m_index);
                 currentBlock->push(getArgument);
+                ProfileData* profileData = codeBlock->getArgumentProfileData(bytecode->m_index);
+                profileData->updateProfiledType();
+                graph->setOperandType(bytecode->m_targetIndex, profileData->getType());
             } else {
                 ESIR* getVar = GetVarIR::create(bytecode->m_targetIndex, bytecode->m_index);
                 currentBlock->push(getVar);
+                ProfileData* profileData = codeBlock->getHeapProfileData(bytecode->m_index);
+                profileData->updateProfiledType();
+                graph->setOperandType(bytecode->m_targetIndex, profileData->getType());
             }
             NEXT_BYTECODE(GetByIndex);
             break;
         }
         case GetByIndexWithActivationOpcode:
             NEXT_BYTECODE(GetByIndexWithActivation);
+            break;
+        case PutByIdOpcode:
+            NEXT_BYTECODE(PutById);
+            break;
+        case PutByIndexOpcode:
+        {
+            INIT_BYTECODE(PutByIndex);
+            ESIR* setVar = SetVarIR::create(bytecode->m_targetIndex, bytecode->m_index, bytecode->m_srcIndex);
+            currentBlock->push(setVar);
+            NEXT_BYTECODE(PutByIndex);
+            break;
+        }
+        case PutByIndexWithActivationOpcode:
+            NEXT_BYTECODE(PutByIndexWithActivation);
+            break;
+        case PutInObjectOpcode:
+            NEXT_BYTECODE(PutInObject);
             break;
         case CreateBindingOpcode:
             NEXT_BYTECODE(CreateBinding);
@@ -137,8 +164,13 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(NotStrictEqual);
             break;
         case BitwiseAndOpcode:
+        {
+            INIT_BYTECODE(BitwiseAnd);
+            ESIR* bitwiseAndIR = BitwiseAndIR::create(bytecode->m_targetIndex, bytecode->m_leftIndex, bytecode->m_rightIndex);
+            currentBlock->push(bitwiseAndIR);
             NEXT_BYTECODE(BitwiseAnd);
             break;
+        }
         case BitwiseOrOpcode:
             NEXT_BYTECODE(BitwiseOr);
             break;
@@ -146,11 +178,21 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(BitwiseXor);
             break;
         case LeftShiftOpcode:
+        {
+            INIT_BYTECODE(LeftShift);
+            ESIR* leftShiftIR = LeftShiftIR::create(bytecode->m_targetIndex, bytecode->m_leftIndex, bytecode->m_rightIndex);
+            currentBlock->push(leftShiftIR);
             NEXT_BYTECODE(LeftShift);
             break;
+        }
         case SignedRightShiftOpcode:
+        {
+            INIT_BYTECODE(SignedRightShift);
+            ESIR* signedRightShiftIR = SignedRightShiftIR::create(bytecode->m_targetIndex, bytecode->m_leftIndex, bytecode->m_rightIndex);
+            currentBlock->push(signedRightShiftIR);
             NEXT_BYTECODE(SignedRightShift);
             break;
+        }
         case UnsignedRightShiftOpcode:
             NEXT_BYTECODE(UnsignedRightShift);
             break;
@@ -173,12 +215,13 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         case PlusOpcode:
         {
-#if 0
             // TODO
             // 1. if both arguments have number type then append StringPlus
             // 2. else if either one of arguments has string type then append NumberPlus
             // 3. else append general Plus
-#endif
+            INIT_BYTECODE(Plus);
+            ESIR* genericPlusIR = GenericPlusIR::create(bytecode->m_targetIndex, bytecode->m_leftIndex, bytecode->m_rightIndex);
+            currentBlock->push(genericPlusIR);
             NEXT_BYTECODE(Plus);
             break;
         }
@@ -194,6 +237,43 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case ModOpcode:
             NEXT_BYTECODE(Mod);
             break;
+        case IncrementOpcode:
+        {
+            NEXT_BYTECODE(Increment);
+            break;
+        }
+        case DecrementOpcode:
+            NEXT_BYTECODE(Decrement);
+            break;
+        case StringInOpcode:
+            NEXT_BYTECODE(StringIn);
+            break;
+        case BitwiseNotOpcode:
+            NEXT_BYTECODE(BitwiseNot);
+            break;
+        case LogicalNotOpcode:
+            NEXT_BYTECODE(LogicalNot);
+            break;
+        case UnaryMinusOpcode:
+            NEXT_BYTECODE(UnaryMinus);
+            break;
+        case UnaryPlusOpcode:
+            NEXT_BYTECODE(UnaryPlus);
+            break;
+        case UnaryTypeOfOpcode:
+            NEXT_BYTECODE(UnaryTypeOf);
+            break;
+        case UnaryDeleteOpcode:
+            NEXT_BYTECODE(UnaryDelete);
+            break;
+        case ToNumberOpcode:
+        {
+            INIT_BYTECODE(ToNumber);
+            ESIR* toNumberIR = ToNumberIR::create(bytecode->m_targetIndex, bytecode->m_sourceIndex);
+            currentBlock->push(toNumberIR);
+            NEXT_BYTECODE(ToNumber);
+            break;
+        }
         case CreateObjectOpcode:
             NEXT_BYTECODE(CreateObject);
             break;
@@ -212,9 +292,14 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case PrepareFunctionCallOpcode:
             NEXT_BYTECODE(PrepareFunctionCall);
             break;
+        case PushFunctionCallReceiverOpcode: 
+            NEXT_BYTECODE(PushFunctionCallReceiver);
+            break;
         case CallFunctionOpcode:
+        {
             NEXT_BYTECODE(CallFunction);
             break;
+        }
         case NewFunctionCallOpcode:
             NEXT_BYTECODE(NewFunctionCall);
             break;
@@ -237,7 +322,13 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case JumpOpcode:
         {
             INIT_BYTECODE(Jump);
-            ESBasicBlock* targetBlock = ESBasicBlock::create(graph, currentBlock);
+            ESBasicBlock* targetBlock;
+            if (basicBlockMapping.find(bytecode->m_jumpPosition) != basicBlockMapping.end()) {
+                targetBlock = basicBlockMapping[bytecode->m_jumpPosition];
+                targetBlock->addParent(currentBlock);
+                currentBlock->addChild(targetBlock);
+            } else
+                targetBlock = ESBasicBlock::create(graph, currentBlock);
             JumpIR* jumpIR = JumpIR::create(bytecode->m_targetIndex, targetBlock);
             currentBlock->push(jumpIR);
             basicBlockMapping[bytecode->m_jumpPosition] = targetBlock;
@@ -272,6 +363,14 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case DuplicateTopOfStackValueOpcode:
             NEXT_BYTECODE(DuplicateTopOfStackValue);
             break;
+        case LoopStartOpcode:
+        {
+            INIT_BYTECODE(LoopStart);
+            ESBasicBlock* loopBlock = ESBasicBlock::create(graph);
+            basicBlockMapping[idx + sizeof(LoopStart)] = loopBlock;
+            NEXT_BYTECODE(LoopStart);
+            break;
+        }
         case ThrowOpcode:
             NEXT_BYTECODE(Throw);
             break;
@@ -285,7 +384,11 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
 #undef NEXT_BYTECODE
     }
 postprocess:
+#ifndef NDEBUG
+    graph->dump(std::cout);
+#endif
     return graph;
 }
 
 }}
+#endif

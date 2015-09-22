@@ -21,9 +21,11 @@ public:
         if(m_isSimpleCase) {
             m_argument->generateResolveAddressByteCode(codeBlock, context);
             m_argument->generateReferenceResolvedAddressByteCode(codeBlock, context);
-            codeBlock->pushCode(ToNumber(), this);
-            codeBlock->pushCode(Increment(), this);
-            m_argument->generatePutByteCode(codeBlock, context);
+            updateNodeIndex(context);
+            codeBlock->pushCode(ToNumber(m_nodeIndex, m_argument->nodeIndex()), this);
+            updateNodeIndex(context);
+            codeBlock->pushCode(Increment(m_nodeIndex, m_nodeIndex-1), this);
+            m_argument->generatePutByteCode(codeBlock, context, m_nodeIndex);
             return ;
         }
         m_argument->generateResolveAddressByteCode(codeBlock, context);

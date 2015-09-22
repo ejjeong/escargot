@@ -12,13 +12,11 @@ else
 endif
 
 ####################################
-# MODE-dependent settings
+# target-dependent settings
 ####################################
-ifeq ($(MODE), debug)
-	CXXFLAGS += -DDEBUG
-	CXXFLAGS += -D_DEBUG
-	CXXFLAGS += -DNJ_VERBOSE
-endif
+jit.debug: CXXFLAGS += -DDEBUG
+jit.debug: CXXFLAGS += -D_DEBUG
+jit.debug: CXXFLAGS += -DNJ_VERBOSE
 
 ####################################
 # Other features

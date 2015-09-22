@@ -18,7 +18,8 @@ public:
     {
         m_left->generateExpressionByteCode(codeBlock, context);
         m_right->generateExpressionByteCode(codeBlock, context);
-        codeBlock->pushCode(SignedRightShift(), this);
+        updateNodeIndex(context);
+        codeBlock->pushCode(SignedRightShift(m_nodeIndex, m_left->nodeIndex(), m_right->nodeIndex()), this);
     }
 protected:
     ExpressionNode* m_left;

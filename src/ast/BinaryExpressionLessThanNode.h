@@ -20,7 +20,7 @@ public:
     {
         m_left->generateExpressionByteCode(codeBlock, context);
         m_right->generateExpressionByteCode(codeBlock, context);
-        updateNodeIndex();
+        updateNodeIndex(context);
         codeBlock->pushCode(LessThan(m_nodeIndex, m_left->nodeIndex(), m_right->nodeIndex()), this);
     }
 

@@ -1,3 +1,5 @@
+#ifdef ENABLE_ESJIT
+
 #include "Escargot.h"
 #include "ESJITMiddleend.h"
 
@@ -9,17 +11,20 @@ namespace ESJIT {
 
 void optimizeIR(ESGraph* graph)
 {
+    ESGraphSSAConversion::run(graph);
+    ESGraphTypeInference::run(graph);
 #if 0
-    IRGraphSimplification::run(graph);
-    IRGraphLoadElimiation::run(graph);
-    IRGraphTypeCheckHoisting::run(graph);
-    IRGraphLoopInvariantCodeMotion::run(graph);
-    IRGraphDeadCodeEliminiation::run(graph);
-    IRGraphCommonSubexpressionElimination::run(graph);
-    IRGraphGlobalValueNumbering::run(graph);
+    ESGraphSimplification::run(graph);
+    ESGraphLoadElimiation::run(graph);
+    ESGraphTypeCheckHoisting::run(graph);
+    ESGraphLoopInvariantCodeMotion::run(graph);
+    ESGraphDeadCodeEliminiation::run(graph);
+    ESGraphCommonSubexpressionElimination::run(graph);
+    ESGraphGlobalValueNumbering::run(graph);
 #endif
 
     return;
 }
 
 }}
+#endif

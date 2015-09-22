@@ -1,6 +1,8 @@
 #ifndef ESIR_h
 #define ESIR_h
 
+#ifdef ENABLE_ESJIT
+
 #include <iostream>
 #include "ESIRType.h"
 
@@ -12,105 +14,119 @@ class ESBasicBlock;
 
 #define FOR_EACH_ESIR_OP(F) \
     /* Typed constant variables */ \
-    F(Constant) \
-    F(ConstantInt) \
-    F(ConstantDouble) \
-    F(ConstantTrue) \
-    F(ConstantFalse) \
+    F(Constant, ) \
+    F(ConstantInt, ) \
+    F(ConstantDouble, ) \
+    F(ConstantTrue, ) \
+    F(ConstantFalse, ) \
     \
     /* Type conversions */ \
-    F(ToNumber) \
-    F(ToString) \
-    F(ToInt32) \
-    F(ToBoolean) \
+    F(ToNumber, ) \
+    F(ToString, ) \
+    F(ToInt32, ) \
+    F(ToBoolean, ) \
     \
     /* From BinaryExpression */ \
-    F(StringPlus) \
-    F(NumberPlus) \
-    F(GenericPlus) \
-    F(Minus) \
-    F(Multiply) \
-    F(Division) \
-    F(Mod) \
+    F(StringPlus, ) \
+    F(NumberPlus, ) \
+    F(GenericPlus, ) \
+    F(Increment, ) \
+    F(Minus, ) \
+    F(Multiply, ) \
+    F(Division, ) \
+    F(Mod, ) \
     \
-    F(BitwiseAnd) \
-    F(BitwiseOr) \
-    F(BitwiseXor) \
-    F(LogicalAnd) \
-    F(LogicalOr) \
+    F(BitwiseAnd, ) \
+    F(BitwiseOr, ) \
+    F(BitwiseXor, ) \
+    F(LogicalAnd, ) \
+    F(LogicalOr, ) \
     \
-    F(Equal) \
-    F(NotEqual) \
-    F(StrictEqual) \
-    F(NotStrictEqual) \
-    F(GreaterThan) \
-    F(GreaterThanOrEqual) \
-    F(LessThan) \
-    F(LessThanOrEqual) \
+    F(Equal, ) \
+    F(NotEqual, ) \
+    F(StrictEqual, ) \
+    F(NotStrictEqual, ) \
+    F(GreaterThan, ) \
+    F(GreaterThanOrEqual, ) \
+    F(LessThan, ) \
+    F(LessThanOrEqual, ) \
     \
-    F(LeftShift) \
-    F(UnsignedRightShift) \
-    F(SignedRightShift) \
+    F(LeftShift, ) \
+    F(UnsignedRightShift, ) \
+    F(SignedRightShift, ) \
     \
-    F(In) \
-    F(InstanceOf) \
+    F(In, ) \
+    F(InstanceOf, ) \
     \
     /* From UnaryExpression */ \
-    F(BitwiseNot) \
-    F(LogicalNot) \
+    F(BitwiseNot, ) \
+    F(LogicalNot, ) \
     \
-    F(UnaryPlus) \
-    F(UnaryMinus) \
+    F(UnaryPlus, ) \
+    F(UnaryMinus, ) \
     \
-    F(Delete) \
-    F(TypeOf) \
-    F(Void) \
+    F(Delete, ) \
+    F(TypeOf, ) \
+    F(Void, ) \
     \
     /* Control Flow */ \
-    F(LoopStart) \
-    F(Jump) \
-    F(Branch) \
-    F(CallJS) \
-    F(CallEval) \
-    F(CallNative) \
-    F(CallRuntime) \
-    F(Return) \
-    F(ReturnWithValue) \
-    F(OSRExit) \
-    F(Phi) \
+    F(LoopStart, ) \
+    F(Jump, ) \
+    F(Branch, ) \
+    F(CallJS, LoadFromHeap) \
+    F(CallEval, LoadFromHeap) \
+    F(CallNative, LoadFromHeap) \
+    F(CallRuntime, LoadFromHeap) \
+    F(Return, ) \
+    F(ReturnWithValue, ) \
+    F(OSRExit, ) \
+    F(Phi, ) \
     \
     /* For-in statement */ \
-    F(GetEnumarablePropertyLength) \
-    F(GetEnumerablePropertyNames) \
+    F(GetEnumarablePropertyLength, ) \
+    F(GetEnumerablePropertyNames, ) \
     \
     /* [Get/Set][Variable|Property] */ \
-    F(GetThis) \
-    F(GetArgument) \
-    F(GetVar) \
-    F(SetVar) \
-    F(GetScoped) \
-    F(SetScoped) \
-    F(GetProperty) \
-    F(SetProperty) \
+    F(GetThis, ) \
+    F(GetArgument, LoadFromHeap) \
+    F(GetVar, LoadFromHeap) \
+    F(SetVar, ) \
+    F(GetScoped, LoadFromHeap) \
+    F(SetScoped, ) \
+    F(GetProperty, LoadFromHeap) \
+    F(SetProperty, ) \
     \
     /* TODO: ArrayExpression Throw [Var|Fn][Decl|Expr] */ \
+
+#define FOR_EACH_ESIR_FLAGS(F) \
+    F(LoadFromHeap, 0) \
+
+#define DECLARE_ESIR_FLAGS(flag, shift) \
+const uint32_t flag = 0x1 << shift;
+FOR_EACH_ESIR_FLAGS(DECLARE_ESIR_FLAGS)
+#undef DECLARE_ESIR_FLAGS
 
 // FIXME find a better allocator
 class ESIR : public gc {
     friend class NativeGenerator;
 public:
     typedef enum {
-        #define DECLARE_IR(name) name,
+        #define DECLARE_IR(name, unused) name,
         FOR_EACH_ESIR_OP(DECLARE_IR)
         #undef DECLARE_IR
         Last
     } Opcode;
-    ESIR(Opcode opcode, int target) : m_opcode(opcode), m_targetIndex(target) { }
+    ESIR(Opcode opcode, int target)
+        : m_opcode(opcode), m_targetIndex(target), m_reconstructedType(TypeBottom) { }
     Opcode opcode() { return m_opcode; }
     template<typename T>
     T* as() { return static_cast<T*>(this); }
 
+    int targetIndex() { return m_targetIndex; }
+
     const char* getOpcodeName();
+    uint32_t getFlags();
+    bool isValueLoadedFromHeap();
 #ifndef NDEBUG
     virtual void dump(std::ostream& out);
 #endif
@@ -118,6 +134,7 @@ public:
 protected:
     Opcode m_opcode;
     int m_targetIndex;
+    Type m_reconstructedType;
 };
 
 #define DECLARE_STATIC_GENERATOR_0(opcode) \
@@ -196,9 +213,30 @@ private:
     int32_t m_value;
 };
 
+class ToNumberIR : public ESIR {
+public:
+    DECLARE_STATIC_GENERATOR_1(ToNumber, int);
+
+    int sourceIndex() { return m_sourceIndex; }
+
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+        out << " tmp" << m_sourceIndex;
+    }
+#endif
+
+private:
+    ToNumberIR(int targetIndex, int sourceIndex)
+        : ESIR(ESIR::Opcode::ToNumber, targetIndex), m_sourceIndex(sourceIndex) { }
+    int m_sourceIndex;
+};
+
 class GetArgumentIR : public ESIR {
 public:
-    DECLARE_STATIC_GENERATOR_1(GetArgument, size_t)
+    DECLARE_STATIC_GENERATOR_1(GetArgument, int)
 
 #ifndef NDEBUG
     virtual void dump(std::ostream& out)
@@ -212,14 +250,14 @@ public:
     int argumentIndex() { return m_argIndex; }
 
 private:
-    GetArgumentIR(int target, int argIndex)
-        : ESIR(ESIR::Opcode::GetArgument, target), m_argIndex(argIndex) { }
+    GetArgumentIR(int targetIndex, int argIndex)
+        : ESIR(ESIR::Opcode::GetArgument, targetIndex), m_argIndex(argIndex) { }
     int m_argIndex;
 };
 
 class GetVarIR : public ESIR {
 public:
-    DECLARE_STATIC_GENERATOR_1(GetVar, size_t)
+    DECLARE_STATIC_GENERATOR_1(GetVar, int)
 
 #ifndef NDEBUG
     virtual void dump(std::ostream& out)
@@ -230,10 +268,35 @@ public:
     }
 #endif
 
+    int varIndex() { return m_varIndex; }
+
 private:
     GetVarIR(int targetIndex, int varIndex)
         : ESIR(ESIR::Opcode::GetVar, targetIndex), m_varIndex(varIndex) { }
     int m_varIndex;
+};
+
+class SetVarIR : public ESIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(SetVar, int, int);
+
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+        out << " var" << m_localVarIndex << " = tmp" << m_sourceIndex;
+    }
+#endif
+
+    int localVarIndex() { return m_localVarIndex; }
+    int sourceIndex() { return m_sourceIndex; }
+
+private:
+    SetVarIR(int targetIndex, int localVarIndex, int sourceIndex)
+        : ESIR(ESIR::Opcode::SetVar, targetIndex), m_localVarIndex(localVarIndex), m_sourceIndex(sourceIndex) { }
+    int m_localVarIndex;
+    int m_sourceIndex;
 };
 
 class BinaryExpressionIR : public ESIR {
@@ -257,13 +320,68 @@ protected:
     int m_rightIndex;
 };
 
+class GenericPlusIR : public BinaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(GenericPlus, int, int);
+
+private:
+    GenericPlusIR(int targetIndex, int leftIndex, int rightIndex)
+        : BinaryExpressionIR(ESIR::Opcode::GenericPlus, targetIndex, leftIndex, rightIndex) { }
+};
+
+class BitwiseAndIR : public BinaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(BitwiseAnd, int, int);
+
+private:
+    BitwiseAndIR(int targetIndex, int leftIndex, int rightIndex)
+        : BinaryExpressionIR(ESIR::Opcode::BitwiseAnd, targetIndex, leftIndex, rightIndex) { }
+};
+
 class LessThanIR : public BinaryExpressionIR {
 public:
-    DECLARE_STATIC_GENERATOR_2(LessThan, int, int)
+    DECLARE_STATIC_GENERATOR_2(LessThan, int, int);
 
 private:
     LessThanIR(int targetIndex, int leftIndex, int rightIndex)
         : BinaryExpressionIR(ESIR::Opcode::LessThan, targetIndex, leftIndex, rightIndex) { }
+};
+
+class LeftShiftIR : public BinaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(LeftShift, int, int);
+
+private:
+    LeftShiftIR(int targetIndex, int leftIndex, int rightIndex)
+        : BinaryExpressionIR(ESIR::Opcode::LeftShift, targetIndex, leftIndex, rightIndex) { }
+};
+
+class SignedRightShiftIR : public BinaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(SignedRightShift, int, int);
+
+private:
+    SignedRightShiftIR(int targetIndex, int leftIndex, int rightIndex)
+        : BinaryExpressionIR(ESIR::Opcode::SignedRightShift, targetIndex, leftIndex, rightIndex) { }
+};
+
+class UnaryExpressionIR : public ESIR {
+public:
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+        out << " tmp" << m_sourceIndex;
+    }
+#endif
+
+    int sourceIndex() { return m_sourceIndex; }
+
+protected:
+    UnaryExpressionIR(ESIR::Opcode opcode, int targetIndex, int sourceIndex)
+        : ESIR(opcode, targetIndex), m_sourceIndex(sourceIndex) { }
+    int m_sourceIndex;
 };
 
 class ReturnWithValueIR : public ESIR {
@@ -332,18 +450,29 @@ private:
         : ESIR(ESIR::Opcode::Return, targetIndex) { }
 };
 
-#if 0
-class SetVar : public ESIR {
+class PhiIR : public ESIR {
 public:
-    static SetVar* create(int varIndex, ESIR* setValue) { return new SetVar(varIndex, setValue); }
+    DECLARE_STATIC_GENERATOR_0(Phi)
+
+    void addIndex(int argumentIndex) { m_argumentIndexes.push_back(argumentIndex); }
+
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+        for (size_t i=0; i<m_argumentIndexes.size(); i++)
+            out << "var " << m_argumentIndexes[i] << ", ";
+    }
+#endif
 
 private:
-    SetVar(int varIndex, ESIR* setValue)
-        : ESIR(ESIR::Opcode::SetVar), m_varIndex(varIndex), m_setValue(setValue) { }
-    int m_varIndex;
-    ESIR* m_setValue;
+    PhiIR(int targetIndex)
+        : ESIR(ESIR::Opcode::Phi, targetIndex) { }
+    std::vector<int, gc_allocator<int> > m_argumentIndexes;
 };
 
+#if 0
 class BitwiseAndIR : public ESIR {
 public:
     static BitwiseAndIR* create(ESIR* left, ESIR* right) { return new BitwiseAndIR(left, right); }
@@ -386,19 +515,8 @@ private:
     ESIR* m_exitNumber;
 };
 
-class GenericPlusIR : public ESIR {
-public:
-    DECLARE_STATIC_GENERATOR_2(GenericPlus, ESIR*, ESIR*);
-
-private:
-    GenericPlusIR(ESIR* left, ESIR* right)
-        : ESIR(ESIR::Opcode::GenericPlus), m_left(left), m_right(right) { }
-    ESIR* m_left;
-    ESIR* m_right;
-};
-
-#undef DECLARE_STATIC_GENERATOR_2
 #endif
 
 }}
+#endif
 #endif

@@ -61,11 +61,18 @@ GCLIBS_DEBUG = third_party/bdwgc/out/debug/.libs/libgc.a #third_party/bdwgc/out/
 CXXFLAGS_RELEASE = -O3 -g3 -DNDEBUG -fomit-frame-pointer -frounding-math -fsignaling-nans -funroll-loops
 GCLIBS_RELEASE = third_party/bdwgc/out/release/.libs/libgc.a #third_party/bdwgc/out/release/.libs/libgccpp.a
 
+jit.debug: CXXFLAGS+=-DENABLE_ESJIT=1
+jit.release: CXXFLAGS+=-DENABLE_ESJIT=1
+
 interpreter.debug: CXXFLAGS+=$(CXXFLAGS_DEBUG)
 interpreter.debug: GCLIBS=$(GCLIBS_DEBUG)
+jit.debug: CXXFLAGS+=$(CXXFLAGS_DEBUG)
+jit.debug: GCLIBS=$(GCLIBS_DEBUG)
 
 interpreter.release: CXXFLAGS+=$(CXXFLAGS_RELEASE)
 interpreter.release: GCLIBS=$(GCLIBS_RELEASE)
+jit.release: CXXFLAGS+=$(CXXFLAGS_RELEASE)
+jit.release: GCLIBS=$(GCLIBS_RELEASE)
 
 THIRD_PARTY_LIBS= $(GCLIBS)
 

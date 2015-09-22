@@ -20,8 +20,8 @@ public:
     {
         if(!m_alternate) {
             m_test->generateExpressionByteCode(codeBlock, context);
-            updateNodeIndex();
-            updateNodeIndex();
+            updateNodeIndex(context);
+            updateNodeIndex(context);
             codeBlock->pushCode(JumpIfTopOfStackValueIsFalse(SIZE_MAX, m_test->nodeIndex()+1, m_test->nodeIndex()), this);
             size_t jPos = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsFalse>();
             m_consequente->generateStatementByteCode(codeBlock, context);
@@ -29,12 +29,12 @@ public:
             j->m_jumpPosition = codeBlock->currentCodeSize();
         } else {
             m_test->generateExpressionByteCode(codeBlock, context);
-            updateNodeIndex();
-            updateNodeIndex();
+            updateNodeIndex(context);
+            updateNodeIndex(context);
             codeBlock->pushCode(JumpIfTopOfStackValueIsFalse(SIZE_MAX, m_test->nodeIndex()+1, m_test->nodeIndex()), this);
             size_t jPos = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsFalse>();
             m_consequente->generateStatementByteCode(codeBlock, context);
-            updateNodeIndex();
+            updateNodeIndex(context);
             codeBlock->pushCode(Jump(SIZE_MAX, m_test->nodeIndex()), this);
             JumpIfTopOfStackValueIsFalse* j = codeBlock->peekCode<JumpIfTopOfStackValueIsFalse>(jPos);
             size_t jPos2 = codeBlock->lastCodePosition<Jump>();
