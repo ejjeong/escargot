@@ -314,6 +314,8 @@ ESObject::ESObject(ESPointer::Type type, size_t initialKeyCount)
     //convertIntoMapMode();
 }
 
+const int ESArrayObject::MAX_FASTMODE_SIZE;
+
 ESArrayObject::ESArrayObject(int length)
     : ESObject((Type)(Type::ESObject | Type::ESArrayObject))
     , m_vector(0)

@@ -1584,6 +1584,10 @@ public:
         if (newLength < m_length) {
             //TODO : delete elements
         } else if (m_fastmode && newLength > m_length) {
+            if((int)m_vector.capacity() < newLength) {
+                size_t reservedSpace = std::min(MAX_FASTMODE_SIZE, newLength*2);
+                m_vector.reserve(reservedSpace);
+            }
             m_vector.resize(newLength);
         }
         m_length = newLength;
