@@ -56,7 +56,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 #ifndef NDEBUG
     if (currentCode->m_orgOpcode < 0 || currentCode->m_orgOpcode > OpcodeKindEnd) {
         printf("Error: unknown opcode\n");
-        return ESValue();
+        RELEASE_ASSERT_NOT_REACHED();
     } else {
 #endif
     goto *currentCode->m_opcode;
@@ -1178,8 +1178,12 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                     code->m_nonAtomicName
                     , err, false);
             //TODO process return value in catch-body
-            interpret(instance, codeBlock, resolveProgramCounter(codeBuffer, code->m_catchPosition));
+            ESValue ret = interpret(instance, codeBlock, code->m_catchPosition);
             instance->currentExecutionContext()->setEnvironment(oldEnv);
+            if(ret != ESValue(ESValue::ESEmptyValue)) {
+                //TODO add sp check
+                return ret;
+            }
         }
         programCounter = jumpTo(codeBuffer, code->m_statementEndPosition);
         goto NextInstruction;
@@ -1188,7 +1192,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     TryCatchBodyEndOpcodeLbl:
     {
         ASSERT(bp == stack);
-        return ESValue();
+        return ESValue(ESValue::ESEmptyValue);
     }
 
     ThrowOpcodeLbl:
