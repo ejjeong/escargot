@@ -46,7 +46,6 @@
 #include "BreakStatementNode.h"
 #include "BreakLabelStatementNode.h"
 #include "CallExpressionNode.h"
-#include "CallEvalFunctionExpressionNode.h"
 #include "CatchClauseNode.h"
 #include "ConditionalExpressionNode.h"
 #include "ContinueStatementNode.h"

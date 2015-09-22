@@ -149,6 +149,10 @@ public:
 #endif
 };
 
+#ifdef NDEBUG
+ASSERT_STATIC(sizeof(ByteCode) == sizeof(size_t), "sizeof(ByteCode) should be == sizeof(size_t)");
+#endif
+
 class Push : public ByteCode {
 public:
     Push(const ESValue& value)

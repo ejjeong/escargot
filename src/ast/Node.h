@@ -98,7 +98,6 @@ enum NodeType {
     MemberExpression,
     ConditionalExpression,
     CallExpression,
-    CallEvalFunctionExpression,
     VariableDeclarator,
     Identifier,
     LabeledStatement,

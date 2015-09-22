@@ -102,6 +102,12 @@ public:
 
     //Function for debug
     static void printValue(ESValue val);
+    static ALWAYS_INLINE unsigned long tickCount()
+    {
+        struct timespec timespec;
+        clock_gettime(CLOCK_MONOTONIC,&timespec);
+        return (unsigned long)(timespec.tv_sec * 1000000L + timespec.tv_nsec/1000);
+    }
 
 #ifndef NDEBUG
     bool m_dumpByteCode;
