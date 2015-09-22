@@ -600,6 +600,17 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         goto NextInstruction;
     }
 
+    UnaryDeleteOpcodeLbl:
+    {
+        ESValue* key = pop<ESValue>(stack, bp);
+        ESValue* obj = pop<ESValue>(stack, bp);
+        obj->toObject()->deletePropety(*key);
+        push<ESValue>(stack, bp, ESValue(true));
+
+        executeNextCode<UnaryDelete>(programCounter);
+        goto NextInstruction;
+    }
+
     ToNumberOpcodeLbl:
     {
         ESValue* v = peek<ESValue>(stack, bp);

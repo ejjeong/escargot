@@ -14,13 +14,6 @@ public:
         m_argument = argument;
     }
 
-    ALWAYS_INLINE ESValue doDelete(ESValue willBeObj, ESValue key)
-    {
-        ESObject* obj = willBeObj.toObject();
-        obj->deletePropety(key);
-        //TODO return proper value
-        return ESValue(true);
-    }
 /*
     ESValue executeExpression(ESVMInstance* instance)
     {
@@ -41,6 +34,21 @@ public:
         return ESValue(false);
     }
     */
+
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    {
+        if (m_argument->type() == NodeType::MemberExpression) {
+            MemberExpressionNode* mem = (MemberExpressionNode*) m_argument;
+            mem->generateExpressionByteCodeWithoutGetObject(codeBlock, context);
+            codeBlock->pushCode(UnaryDelete(), this);
+        } else if (m_argument->type() == NodeType::Identifier) {
+            // TODO This work with the flag configurable
+            codeBlock->pushCode(Push(((IdentifierNode *)m_argument)->nonAtomicName()), this);
+        } else {
+            RELEASE_ASSERT_NOT_REACHED();
+         }
+    }
+
 protected:
     Node* m_argument;
 };

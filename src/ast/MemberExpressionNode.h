@@ -19,6 +19,21 @@ public:
         m_computed = computed;
     }
 
+    virtual void generateExpressionByteCodeWithoutGetObject(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    {
+        m_object->generateExpressionByteCode(codeBlock, context);
+        if(m_computed) {
+            m_property->generateExpressionByteCode(codeBlock, context);
+        } else {
+            if(m_property->type() == NodeType::Literal)
+                codeBlock->pushCode(Push(((LiteralNode *)m_property)->value()), this);
+            else {
+                ASSERT(m_property->type() == NodeType::Identifier);
+                codeBlock->pushCode(Push(((IdentifierNode *)m_property)->nonAtomicName()), this);
+            }
+        }
+    }
+
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_object->generateExpressionByteCode(codeBlock, context);
