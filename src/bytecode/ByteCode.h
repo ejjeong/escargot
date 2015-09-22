@@ -51,6 +51,7 @@ class Node;
     F(Mod) \
     F(Increment) \
     F(Decrement) \
+    F(StringIn) \
 \
     /*unary expressions*/ \
     F(BitwiseNot) \
@@ -806,6 +807,22 @@ public:
     virtual void dump()
     {
         printf("LogicalNot <>\n");
+    }
+#endif
+};
+
+class StringIn : public ByteCode {
+public:
+    StringIn()
+        : ByteCode(StringInOpcode)
+    {
+
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("StringIn <>\n");
     }
 #endif
 };

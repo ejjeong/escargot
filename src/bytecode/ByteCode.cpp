@@ -564,6 +564,16 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         goto NextInstruction;
     }
 
+    StringInOpcodeLbl:
+    {
+        ESValue* obj = pop<ESValue>(stack, bp);
+        ESValue* key = pop<ESValue>(stack, bp);
+        push<ESValue>(stack, bp, ESValue(!obj->toObject()->find(*key).isEmpty()));
+
+        executeNextCode<StringIn>(programCounter);
+        goto NextInstruction;
+    }
+
     UnaryMinusOpcodeLbl:
     {
         push<ESValue>(stack, bp, ESValue(-pop<ESValue>(stack, bp)->toNumber()));

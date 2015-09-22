@@ -14,15 +14,12 @@ public:
         m_right = (ExpressionNode*)right;
     }
 
-    /*
-    ESValue executeExpression(ESVMInstance* instance)
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        ESValue willBeObj = m_right->executeExpression(instance);
-        ESObject* obj = willBeObj.toObject();
-        ESValue key = m_left->executeExpression(instance);
-        return ESValue(!obj->find(key, true).isEmpty());
+        m_left->generateExpressionByteCode(codeBlock, context);
+        m_right->generateExpressionByteCode(codeBlock, context);
+        codeBlock->pushCode(StringIn(), this);
     }
-    */
 
 protected:
     ExpressionNode* m_left;
