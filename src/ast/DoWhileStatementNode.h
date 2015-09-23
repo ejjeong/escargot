@@ -20,14 +20,14 @@ public:
     {
         size_t doStart = codeBlock->currentCodeSize();
         m_body->generateStatementByteCode(codeBlock, context);
+
+        m_test->generateExpressionByteCode(codeBlock, context);
+        codeBlock->pushCode(JumpIfTopOfStackValueIsTrue(doStart), this);
+
         size_t doEnd = codeBlock->currentCodeSize();
 
         context.consumeContinuePositions(codeBlock, doStart);
         context.consumeBreakPositions(codeBlock, doEnd);
-
-
-        m_test->generateExpressionByteCode(codeBlock, context);
-        codeBlock->pushCode(JumpIfTopOfStackValueIsTrue(doStart), this);
     }
 
 protected:
