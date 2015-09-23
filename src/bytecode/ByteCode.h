@@ -10,7 +10,7 @@ namespace escargot {
 
 class Node;
 
-#define ESCARGOT_INTERPRET_STACK_SIZE 512
+#define ESCARGOT_INTERPRET_STACK_SIZE 4096
 #define FOR_EACH_BYTECODE_OP(F) \
     F(NoOp0) \
     F(Push) \

@@ -18,8 +18,10 @@ public:
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         for (unsigned i = 0; i < m_expressions.size(); i++) {
-            escargot::Node* tmp = m_expressions[i];
             m_expressions[i]->generateExpressionByteCode(codeBlock, context);
+            if(i < m_expressions.size() - 1) {
+                  codeBlock->pushCode(Pop(), this);
+              }
          }
     }
 
