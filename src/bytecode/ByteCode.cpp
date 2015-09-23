@@ -786,7 +786,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         lastESObjectMetInMemberExpressionNode = obj;
 
 
-        if(obj->isESArrayObject() && property->isInt32()) {
+        if((obj->isESArrayObject() || obj->isESTypedArrayObject()) && property->isInt32()) {
             push<ESValue>(stack, bp, obj->get(*property, true));
             executeNextCode<GetObject>(programCounter);
             goto NextInstruction;
