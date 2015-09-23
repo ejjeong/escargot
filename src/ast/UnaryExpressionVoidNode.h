@@ -35,6 +35,12 @@ public:
     }
     */
 
+    virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    {
+        m_argument->generateExpressionByteCode(codeBlock, context);
+        codeBlock->pushCode(UnaryVoid(), this);
+    }
+
 protected:
     Node* m_argument;
 };

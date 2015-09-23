@@ -64,6 +64,7 @@ class Node;
     F(UnaryPlus) \
     F(UnaryTypeOf) \
     F(UnaryDelete) \
+    F(UnaryVoid) \
     F(ToNumber) \
 \
     /*object, array*/ \
@@ -980,6 +981,22 @@ public:
     virtual void dump()
     {
         printf("UnaryDelete <>\n");
+    }
+#endif
+};
+
+class UnaryVoid : public ByteCode {
+public:
+    UnaryVoid()
+        : ByteCode(UnaryVoidOpcode)
+    {
+
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("UnaryVoid <>\n");
     }
 #endif
 };

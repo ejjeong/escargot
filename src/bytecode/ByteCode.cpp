@@ -698,6 +698,15 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         goto NextInstruction;
     }
 
+    UnaryVoidOpcodeLbl:
+    {
+        ESValue* res = pop<ESValue>(stack, bp);
+        push<ESValue>(stack, bp, ESValue());
+
+        executeNextCode<UnaryDelete>(programCounter);
+        goto NextInstruction;
+    }
+
     ToNumberOpcodeLbl:
     {
         ESValue* v = peek<ESValue>(stack, bp);
