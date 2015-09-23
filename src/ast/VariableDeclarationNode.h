@@ -33,7 +33,9 @@ public:
     {
         for(unsigned i = 0; i < m_declarations.size() ; i ++) {
             if(m_declarations[i]->type() == NodeType::VariableDeclarator) {
-                RELEASE_ASSERT_NOT_REACHED();
+                m_declarations[i]->generateStatementByteCode(codeBlock, context);
+                if(i < m_declarations.size() - 1)
+                    codeBlock->pushCode(Pop(), this);
             } else if(m_declarations[i]->type() == NodeType::AssignmentExpressionSimple) {
                 m_declarations[i]->generateExpressionByteCode(codeBlock, context);
             } else {
