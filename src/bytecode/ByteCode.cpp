@@ -108,6 +108,24 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         goto NextInstruction;
     }
 
+    SaveStackPointerOpcodeLbl:
+    {
+        SaveStackPointer* code = (SaveStackPointer*)currentCode;
+        code->m_savedStackPointer = stack;
+        executeNextCode<SaveStackPointer>(programCounter);
+        goto NextInstruction;
+    }
+
+    LoadStackPointerOpcodeLbl:
+    {
+        LoadStackPointer* code = (LoadStackPointer *)currentCode;
+        SaveStackPointer* save = (SaveStackPointer *)&codeBuffer[code->m_saveStackPointerPosition];
+        ASSERT(save->m_orgOpcode == SaveStackPointerOpcode);
+        stack = save->m_savedStackPointer;
+        executeNextCode<LoadStackPointer>(programCounter);
+        goto NextInstruction;
+    }
+
     GetByIdOpcodeLbl:
     {
         GetById* code = (GetById*)currentCode;

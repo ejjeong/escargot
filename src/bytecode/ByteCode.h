@@ -18,6 +18,8 @@ class Node;
     F(Pop) \
     F(PushIntoTempStack) \
     F(PopFromTempStack) \
+    F(SaveStackPointer) \
+    F(LoadStackPointer) \
 \
     F(GetById) \
     F(GetByIdWithoutException) \
@@ -122,9 +124,22 @@ struct ByteCodeGenerateContext {
     {
     }
 
+    ~ByteCodeGenerateContext()
+    {
+        ASSERT(m_breakStatementPositions.size() == 0);
+        ASSERT(m_continueStatementPositions.size() == 0);
+        ASSERT(m_labeledBreakStatmentPositions.size() == 0);
+        ASSERT(m_labeledContinueStatmentPositions.size() == 0);
+    }
+
     void pushBreakPositions(size_t pos)
     {
         m_breakStatementPositions.push_back(pos);
+    }
+
+    void pushLabeledBreakPositions(size_t pos, ESString* lbl)
+    {
+        m_labeledBreakStatmentPositions.push_back(std::make_pair(lbl, pos));
     }
 
     void pushContinuePositions(size_t pos)
@@ -132,11 +147,20 @@ struct ByteCodeGenerateContext {
         m_continueStatementPositions.push_back(pos);
     }
 
+    void pushLabeledContinuePositions(size_t pos, ESString* lbl)
+    {
+        m_labeledContinueStatmentPositions.push_back(std::make_pair(lbl, pos));
+    }
+
     ALWAYS_INLINE void consumeBreakPositions(CodeBlock* cb, size_t position);
+    ALWAYS_INLINE void consumeLabeledBreakPositions(CodeBlock* cb, size_t position, ESString* lbl);
     ALWAYS_INLINE void consumeContinuePositions(CodeBlock* cb, size_t position);
+    ALWAYS_INLINE void consumeLabeledContinuePositions(CodeBlock* cb, size_t position, ESString* lbl);
 
     std::vector<size_t> m_breakStatementPositions;
     std::vector<size_t> m_continueStatementPositions;
+    std::vector<std::pair<ESString*, size_t> > m_labeledBreakStatmentPositions;
+    std::vector<std::pair<ESString*, size_t> > m_labeledContinueStatmentPositions;
 };
 
 class ByteCode {
@@ -255,6 +279,40 @@ public:
     virtual void dump()
     {
         printf("PopExpressionStatement <>\n");
+    }
+#endif
+};
+
+class SaveStackPointer : public ByteCode {
+public:
+    SaveStackPointer()
+        : ByteCode(SaveStackPointerOpcode)
+    {
+
+    }
+
+    void* m_savedStackPointer;
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("SaveStackPointer <>\n");
+    }
+#endif
+};
+
+class LoadStackPointer : public ByteCode {
+public:
+    LoadStackPointer(size_t saveStackPointerPosition)
+        : ByteCode(LoadStackPointerOpcode)
+    {
+        m_saveStackPointerPosition = saveStackPointerPosition;
+    }
+
+    size_t m_saveStackPointerPosition;
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("LoadStackPointer <%u>\n", (unsigned)m_saveStackPointerPosition);
     }
 #endif
 };
@@ -1594,6 +1652,19 @@ void CodeBlock::pushCode(const CodeType& type, Node* node)
     m_code.insert(m_code.end(), first, first + sizeof(CodeType));
 }
 
+ALWAYS_INLINE void ByteCodeGenerateContext::consumeLabeledContinuePositions(CodeBlock* cb, size_t position, ESString* lbl)
+{
+    for(size_t i = 0; i < m_labeledContinueStatmentPositions.size(); i ++) {
+        if(*m_labeledContinueStatmentPositions[i].first == *lbl) {
+            Jump* shouldBeJump = cb->peekCode<Jump>(m_labeledContinueStatmentPositions[i].second);
+            ASSERT(shouldBeJump->m_orgOpcode == JumpOpcode);
+            shouldBeJump->m_jumpPosition = position;
+            m_labeledContinueStatmentPositions.erase(m_labeledContinueStatmentPositions.begin() + i);
+            i = -1;
+        }
+    }
+}
+
 ALWAYS_INLINE void ByteCodeGenerateContext::consumeBreakPositions(CodeBlock* cb, size_t position)
 {
     for(size_t i = 0; i < m_breakStatementPositions.size(); i ++) {
@@ -1602,6 +1673,19 @@ ALWAYS_INLINE void ByteCodeGenerateContext::consumeBreakPositions(CodeBlock* cb,
         shouldBeJump->m_jumpPosition = position;
     }
     m_breakStatementPositions.clear();
+}
+
+ALWAYS_INLINE void ByteCodeGenerateContext::consumeLabeledBreakPositions(CodeBlock* cb, size_t position, ESString* lbl)
+{
+    for(size_t i = 0; i < m_labeledBreakStatmentPositions.size(); i ++) {
+        if(*m_labeledBreakStatmentPositions[i].first == *lbl) {
+            Jump* shouldBeJump = cb->peekCode<Jump>(m_labeledBreakStatmentPositions[i].second);
+            ASSERT(shouldBeJump->m_orgOpcode == JumpOpcode);
+            shouldBeJump->m_jumpPosition = position;
+            m_labeledBreakStatmentPositions.erase(m_labeledBreakStatmentPositions.begin() + i);
+            i = -1;
+        }
+    }
 }
 
 ALWAYS_INLINE void ByteCodeGenerateContext::consumeContinuePositions(CodeBlock* cb, size_t position)

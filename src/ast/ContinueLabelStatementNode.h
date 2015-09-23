@@ -15,6 +15,12 @@ public:
         m_label = label;
     }
 
+    virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    {
+        codeBlock->pushCode(Jump(SIZE_MAX), this);
+        context.pushLabeledContinuePositions(codeBlock->lastCodePosition<Jump>(), m_label);
+    }
+
 protected:
     size_t m_upIndex;
     ESString* m_label; //for debug
