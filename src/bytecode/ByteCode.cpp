@@ -574,6 +574,36 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         goto NextInstruction;
     }
 
+    InstanceOfOpcodeLbl:
+    {
+        ESValue* rval = pop<ESValue>(stack, bp);
+        ESValue* lval = pop<ESValue>(stack, bp);
+
+        if (rval->isESPointer() && rval->asESPointer()->isESFunctionObject() &&
+                lval->isESPointer() && lval->asESPointer()->isESObject()) {
+            ESFunctionObject* C = rval->asESPointer()->asESFunctionObject();
+            ESValue P = C->protoType();
+            ESValue O = lval->asESPointer()->asESObject()->__proto__();
+            if (P.isESPointer() && P.asESPointer()->isESObject()) {
+                while (!O.isUndefinedOrNull()) {
+                    if (P == O) {
+                        push<ESValue>(stack, bp, ESValue(true));
+                        executeNextCode<StringIn>(programCounter);
+                        goto NextInstruction;
+                       }
+                    O = O.asESPointer()->asESObject()->__proto__();
+                  }
+            } else {
+                throw ReferenceError::create(ESString::create(u""));
+              }
+         }
+
+        push<ESValue>(stack, bp, ESValue(false));
+
+        executeNextCode<StringIn>(programCounter);
+        goto NextInstruction;
+    }
+
     UnaryMinusOpcodeLbl:
     {
         push<ESValue>(stack, bp, ESValue(-pop<ESValue>(stack, bp)->toNumber()));

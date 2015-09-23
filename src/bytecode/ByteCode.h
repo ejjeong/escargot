@@ -52,6 +52,7 @@ class Node;
     F(Increment) \
     F(Decrement) \
     F(StringIn) \
+    F(InstanceOf) \
 \
     /*unary expressions*/ \
     F(BitwiseNot) \
@@ -823,6 +824,22 @@ public:
     virtual void dump()
     {
         printf("StringIn <>\n");
+    }
+#endif
+};
+
+class InstanceOf : public ByteCode {
+public:
+    InstanceOf()
+        : ByteCode(InstanceOfOpcode)
+    {
+
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("InstanceOf <>\n");
     }
 #endif
 };
