@@ -883,7 +883,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                     goto NextInstruction;
                 }
                 ESValue ret = globalObject->stringObjectProxy()->find(val, true);
-                if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->codeBlock()->m_isBuiltInFunction) {
+                if(ret != ESValue(ESValue::ESEmptyValue) && ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->codeBlock()->m_isBuiltInFunction) {
                     globalObject->stringObjectProxy()->setString(willBeObject->asESString());
                     lastESObjectMetInMemberExpressionNode = (globalObject->stringObjectProxy());
                     push<ESValue>(stack, bp, ret);
@@ -894,7 +894,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         } else if(UNLIKELY(willBeObject->isNumber())) {
             ESString* val = property->toString();
             ESValue ret = globalObject->numberObjectProxy()->find(val, true);
-            if(ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->codeBlock()->m_isBuiltInFunction) {
+            if(ret != ESValue(ESValue::ESEmptyValue) && ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->codeBlock()->m_isBuiltInFunction) {
                 globalObject->numberObjectProxy()->setNumberData(willBeObject->asNumber());
                 lastESObjectMetInMemberExpressionNode = globalObject->numberObjectProxy();
                 push<ESValue>(stack, bp, ret);
@@ -1417,7 +1417,10 @@ ALWAYS_INLINE void dumpBytecode(CodeBlock* codeBlock)
     char* code = codeBlock->m_code.data();
     while(idx < codeBlock->m_code.size()) {
         ByteCode* currentCode = (ByteCode *)(&code[idx]);
-        printf("%u\t\t%p\t",(unsigned)idx, currentCode);
+        if(currentCode->m_node)
+            printf("%u\t\t%p\t(nodeinfo %d)\t\t\t",(unsigned)idx, currentCode, (int)currentCode->m_node->sourceLocation().m_lineNumber);
+        else
+            printf("%u\t\t%p\t(nodeinfo null)\t\t\t",(unsigned)idx, currentCode);
 
         Opcode opcode = Opcode::OpcodeKindEnd;
         for(int i = 0; i < Opcode::OpcodeKindEnd; i ++) {
