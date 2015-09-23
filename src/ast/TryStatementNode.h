@@ -21,19 +21,27 @@ public:
 
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        ASSERT(!m_finalizer); //TODO
         codeBlock->pushCode(Try(), this);
         size_t pos = codeBlock->lastCodePosition<Try>();
         m_block->generateStatementByteCode(codeBlock, context);
         codeBlock->pushCode(TryCatchBodyEnd(), this);
         size_t catchPos = codeBlock->currentCodeSize();
-        m_handler->generateStatementByteCode(codeBlock, context);
-        codeBlock->pushCode(TryCatchBodyEnd(), this);
+        if(m_handler) {
+            m_handler->generateStatementByteCode(codeBlock, context);
+            codeBlock->pushCode(TryCatchBodyEnd(), this);
+        }
         size_t endPos = codeBlock->currentCodeSize();
         codeBlock->peekCode<Try>(pos)->m_catchPosition = catchPos;
         codeBlock->peekCode<Try>(pos)->m_statementEndPosition = endPos;
-        codeBlock->peekCode<Try>(pos)->m_name = m_handler->param()->name();
-        codeBlock->peekCode<Try>(pos)->m_nonAtomicName = m_handler->param()->nonAtomicName();
+        if(m_handler) {
+            codeBlock->peekCode<Try>(pos)->m_name = m_handler->param()->name();
+            codeBlock->peekCode<Try>(pos)->m_nonAtomicName = m_handler->param()->nonAtomicName();
+        } else {
+            codeBlock->peekCode<Try>(pos)->m_name = strings->emptyAtomicString;
+            codeBlock->peekCode<Try>(pos)->m_nonAtomicName = strings->emptyESString;
+        }
+        if(m_finalizer)
+            m_finalizer->generateStatementByteCode(codeBlock, context);
     }
 
 protected:
