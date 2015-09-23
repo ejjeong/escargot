@@ -20,6 +20,7 @@ class Node;
     F(PopFromTempStack) \
     F(SaveStackPointer) \
     F(LoadStackPointer) \
+    F(CheckStackPointer) \
 \
     F(GetById) \
     F(GetByIdWithoutException) \
@@ -102,6 +103,7 @@ class Node;
 \
     /*etc*/ \
     F(This) \
+    F(PrintSpAndBp) \
 \
     F(End)
 
@@ -313,6 +315,22 @@ public:
     virtual void dump()
     {
         printf("LoadStackPointer <%u>\n", (unsigned)m_saveStackPointerPosition);
+    }
+#endif
+};
+
+class CheckStackPointer : public ByteCode {
+public:
+    CheckStackPointer(size_t lineNumber)
+        : ByteCode(CheckStackPointerOpcode)
+    {
+        m_lineNumber = lineNumber - 1;
+    }
+    size_t m_lineNumber;
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("CheckStackPointer <>\n");
     }
 #endif
 };
@@ -1355,6 +1373,8 @@ public:
     {
     }
 
+    size_t m_lineNumber;
+
 #ifndef NDEBUG
     virtual void dump()
     {
@@ -1479,6 +1499,22 @@ public:
     virtual void dump()
     {
         printf("Throw <>\n");
+    }
+#endif
+};
+
+class PrintSpAndBp : public ByteCode {
+public:
+    PrintSpAndBp()
+        : ByteCode(PrintSpAndBpOpcode)
+    {
+
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("PrintSpAndBp <>\n");
     }
 #endif
 };

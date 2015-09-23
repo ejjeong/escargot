@@ -26,6 +26,7 @@ public:
         codeBlock->pushCode(Equal(), this);
         codeBlock->pushCode(JumpIfTopOfStackValueIsTrue(SIZE_MAX), this);
         size_t exit1Pos = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsTrue>();
+
         codeBlock->pushCode(DuplicateTopOfStackValue(), this);
         codeBlock->pushCode(Push(ESValue(ESValue::ESNull)), this);
         codeBlock->pushCode(Equal(), this);

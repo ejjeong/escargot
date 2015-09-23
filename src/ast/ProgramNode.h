@@ -19,6 +19,9 @@ public:
     {
         for(unsigned i = 0; i < m_body.size() ; i ++) {
             m_body[i]->generateStatementByteCode(codeBlock, context);
+#ifndef NDEBUG
+        codeBlock->pushCode(CheckStackPointer(this->m_sourceLocation.m_lineNumber), this);
+#endif
         }
         codeBlock->pushCode(End(), this);
     }

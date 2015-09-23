@@ -24,8 +24,8 @@ public:
             m_init->generateExpressionByteCode(codeBlock, context);
             codeBlock->pushCode(Pop(), this);
         }
-
         size_t forStart = codeBlock->currentCodeSize();
+
         if(m_test) {
             m_test->generateExpressionByteCode(codeBlock, context);
         } else {

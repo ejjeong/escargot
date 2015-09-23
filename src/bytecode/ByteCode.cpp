@@ -126,6 +126,26 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         goto NextInstruction;
     }
 
+    CheckStackPointerOpcodeLbl:
+    {
+        CheckStackPointer* byteCode = (CheckStackPointer *)currentCode;
+        if (stack != bp) {
+            printf("Stack is not equal to Base Point at the end of statement (%ld)\n", byteCode->m_lineNumber);
+            RELEASE_ASSERT_NOT_REACHED();
+         }
+
+        executeNextCode<LoadStackPointer>(programCounter);
+        goto NextInstruction;
+    }
+
+    PrintSpAndBpOpcodeLbl:
+    {
+        printf("SP = %p, BP = %p\n", stack, bp);
+
+        executeNextCode<PrintSpAndBp>(programCounter);
+        goto NextInstruction;
+    }
+
     GetByIdOpcodeLbl:
     {
         GetById* code = (GetById*)currentCode;
@@ -305,6 +325,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* right = pop<ESValue>(stack, bp);
         ESValue* left = pop<ESValue>(stack, bp);
+
         push<ESValue>(stack, bp, ESValue(left->abstractEqualsTo(*right)));
         executeNextCode<Equal>(programCounter);
         goto NextInstruction;
