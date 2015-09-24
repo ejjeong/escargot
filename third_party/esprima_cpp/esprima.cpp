@@ -515,7 +515,8 @@ char16_t scanHexEscape(ParseContext* ctx, char16_t prefix) {
             }
             code = code * 16 + c;
         } else {
-            return '\0';
+            // FIXME : No way to tell between '\0' and code with value 0
+            return -1;
         }
     }
     return code;
@@ -1023,7 +1024,7 @@ PassRefPtr<ParseStatus> scanStringLiteral(ParseContext* ctx) {
                             str += scanUnicodeCodePointEscape(ctx);
                     } else {
                         unescaped = scanHexEscape(ctx, ch);
-                        if (!unescaped) {
+                        if (unescaped < 0) {
                             throwUnexpectedToken();
                         }
                         if(smallBufferUsage < smallBufferMax) {
