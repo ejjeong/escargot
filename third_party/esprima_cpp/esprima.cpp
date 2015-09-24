@@ -3310,8 +3310,10 @@ escargot::Node* parseFunctionDeclaration(ParseContext* ctx/*node, identifierIsOp
     nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
     ctx->m_currentBody->insert(ctx->m_currentBody->begin(), nd);
 
+    escargot::IdentifierNode* idNode = new escargot::IdentifierNode(((escargot::IdentifierNode *)id)->name());
+    idNode->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
     escargot::VariableDeclaratorNode* v = new escargot::VariableDeclaratorNode(
-            new escargot::IdentifierNode(((escargot::IdentifierNode *)id)->name())
+            idNode
             );
 
     ctx->m_currentBody->insert(ctx->m_currentBody->begin(), v);
@@ -4189,6 +4191,7 @@ escargot::Node* parsePrimaryExpression(ParseContext* ctx) {
             tolerateUnexpectedToken(lookahead);
         }*/
         expr = new escargot::IdentifierNode(escargot::InternalAtomicString(lex(ctx)->m_value.data()));
+        expr->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
         //expr = node.finishIdentifier(lex().value);
     } else if (type == Token::StringLiteralToken || type == Token::NumericLiteralToken) {
         ctx->m_isAssignmentTarget = ctx->m_isBindingElement = false;
@@ -4393,6 +4396,12 @@ escargot::Node* parseLeftHandSideExpressionAllowCall(ParseContext* ctx) {
         }*/
     } else {
         expr = inheritCoverGrammar(ctx, matchKeyword(ctx, u"new") ? parseNewExpression : parsePrimaryExpression);
+        ///////////////////FIXME(ksh8281) these lines not original
+        ///////////////////these lines for esprima_bug.js
+        ///////////////////I am not sure what this code is right
+        if(expr->type() == escargot::NodeType::ObjectExpression)
+            return expr;
+        ///////////////////
     }
 
     for (;;) {

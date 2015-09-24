@@ -22,7 +22,9 @@ public:
         m_fastAccessUpIndex = SIZE_MAX;
     }
     IdentifierNode* clone() {
-        return new IdentifierNode(m_name);
+        IdentifierNode* nd = new IdentifierNode(m_name);
+        nd->m_sourceLocation = m_sourceLocation;
+        return nd;
     }
 
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
