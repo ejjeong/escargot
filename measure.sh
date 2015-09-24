@@ -95,6 +95,7 @@ else
     echo $t $(echo -e $summem | awk '{s+=$1} END {printf(": %.4f", s/5)}') >> tmp
   done
   cat tmp
+  cat tmp > test/out/memory.out
   rm tmp
 fi
 
