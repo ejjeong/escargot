@@ -127,7 +127,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             RELEASE_ASSERT_NOT_REACHED();
          }
 
-        executeNextCode<LoadStackPointer>(programCounter);
+        executeNextCode<CheckStackPointer>(programCounter);
         goto NextInstruction;
     }
 
