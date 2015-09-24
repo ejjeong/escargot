@@ -1692,7 +1692,7 @@ ALWAYS_INLINE size_t resolveProgramCounter(char* codeBuffer, const size_t& progr
 }
 
 #ifndef NDEBUG
-ALWAYS_INLINE void dumpBytecode(CodeBlock* codeBlock);
+void dumpBytecode(CodeBlock* codeBlock);
 #endif
 
 

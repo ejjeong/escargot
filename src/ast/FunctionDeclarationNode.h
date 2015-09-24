@@ -29,6 +29,16 @@ public:
         ByteCodeGenerateContext newContext;
         m_body->generateStatementByteCode(cb, newContext);
         cb->pushCode(ReturnFunction(), this);
+
+#ifndef NDEBUG
+    if(ESVMInstance::currentInstance()->m_dumpByteCode) {
+        char* code = cb->m_code.data();
+        ByteCode* currentCode = (ByteCode *)(&code[0]);
+        if(currentCode->m_orgOpcode != ExecuteNativeFunctionOpcode) {
+            dumpBytecode(cb);
+        }
+    }
+#endif
         codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb), this);
     }
 

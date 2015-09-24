@@ -14,15 +14,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         FOR_EACH_BYTECODE_OP(REGISTER_TABLE);
         return ESValue();
     }
-#ifndef NDEBUG
-    if(instance->m_dumpByteCode) {
-        char* code = codeBlock->m_code.data();
-        ByteCode* currentCode = (ByteCode *)(&code[0]);
-        if(currentCode->m_orgOpcode != ExecuteNativeFunctionOpcode) {
-            dumpBytecode(codeBlock);
-        }
-    }
-#endif
+
     char stackBuf[ESCARGOT_INTERPRET_STACK_SIZE];
     void* stack = stackBuf;
     void* bp = stack;
@@ -1320,7 +1312,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         LexicalEnvironment* oldEnv = ec->environment();
         ExecutionContext* backupedEC = ec;
         try {
-            interpret(instance, codeBlock, resolveProgramCounter(codeBuffer, programCounter + sizeof(Try)));
+            ESValue ret = interpret(instance, codeBlock, resolveProgramCounter(codeBuffer, programCounter + sizeof(Try)));
+            if(ret != ESValue(ESValue::ESEmptyValue)) {
+                //TODO add sp check
+                return ret;
+            }
         } catch(const ESValue& err) {
             instance->invalidateIdentifierCacheCheckCount();
             instance->m_currentExecutionContext = backupedEC;
@@ -1331,7 +1327,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             instance->currentExecutionContext()->environment()->record()->setMutableBinding(code->m_name,
                     code->m_nonAtomicName
                     , err, false);
-            //TODO process return value in catch-body
             ESValue ret = interpret(instance, codeBlock, code->m_catchPosition);
             instance->currentExecutionContext()->setEnvironment(oldEnv);
             if(ret != ESValue(ESValue::ESEmptyValue)) {
@@ -1436,12 +1431,21 @@ CodeBlock* generateByteCode(Node* node)
     node->generateStatementByteCode(block, context);
     //unsigned long end = ESVMInstance::tickCount();
     //printf("generate code takes %lfms\n",(end-start)/1000.0);
+#ifndef NDEBUG
+    if(ESVMInstance::currentInstance()->m_dumpByteCode) {
+        char* code = block->m_code.data();
+        ByteCode* currentCode = (ByteCode *)(&code[0]);
+        if(currentCode->m_orgOpcode != ExecuteNativeFunctionOpcode) {
+            dumpBytecode(block);
+        }
+    }
+#endif
     return block;
 }
 
 #ifndef NDEBUG
 
-ALWAYS_INLINE void dumpBytecode(CodeBlock* codeBlock)
+void dumpBytecode(CodeBlock* codeBlock)
 {
     printf("dumpBytecode...>>>>>>>>>>>>>>>>>>>>>>\n");
     size_t idx = 0;
