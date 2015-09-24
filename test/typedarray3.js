@@ -12,6 +12,7 @@ for (var i = 0; i < a.length; i++) {
 print("== subarray ==");
 var b = a.subarray(1, 3);
 print(b);
+print(b.toString());
 print("length = " + b.length);
 for (var i = 0; i < b.length; i++) {
 	print(b[i]);

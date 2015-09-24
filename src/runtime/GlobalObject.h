@@ -256,6 +256,32 @@ public:
         return m_Float64ArrayPrototype;
     }
 
+    template <typename T>
+    ALWAYS_INLINE escargot::ESObject* typedArrayPrototype()
+    {
+        switch (T::typeVal) {
+        case TypedArrayType::Int8Array:
+            return int8ArrayPrototype();
+        case TypedArrayType::Uint8Array:
+            return uint8ArrayPrototype();
+        case TypedArrayType::Uint8ClampedArray:
+            return uint8ClampedArrayPrototype();
+        case TypedArrayType::Int16Array:
+            return int16ArrayPrototype();
+        case TypedArrayType::Uint16Array:
+            return uint16ArrayPrototype();
+        case TypedArrayType::Int32Array:
+            return int32ArrayPrototype();
+        case TypedArrayType::Uint32Array:
+            return uint32ArrayPrototype();
+        case TypedArrayType::Float32Array:
+            return float32ArrayPrototype();
+        case TypedArrayType::Float64Array:
+            return float64ArrayPrototype();
+        }
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+
     ALWAYS_INLINE escargot::ESFunctionObject* arrayBuffer()
     {
         return m_arrayBuffer;

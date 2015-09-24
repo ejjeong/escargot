@@ -2331,7 +2331,8 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
         int srcByteOffset = thisVal->byteoffset();
 
         ESValue arg[3] = {buffer, ESValue(srcByteOffset + beginIndex * thisVal->elementSize()), ESValue(newLength)};
-        escargot::ESTypedArrayObject<T>* newobj = escargot::ESTypedArrayObject<T>::create();
+        escargot::ESTypedArrayObject<T>* newobj = escargot::ESTypedArrayObject<T>::create(instance->globalObject()->typedArrayPrototype<T>());
+        newobj->setConstructor(thisBinded->constructor());
         ESValue ret = ESFunctionObject::call(instance, thisBinded->get(strings->constructor), newobj, arg, 3, instance);
         return ret;
     }, strings->subarray));
