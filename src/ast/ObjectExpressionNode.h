@@ -29,8 +29,17 @@ public:
                 ASSERT(p->key()->type() == NodeType::Literal);
                 codeBlock->pushCode(Push(((LiteralNode* )p->key())->value()), this);
             }
+
             p->value()->generateExpressionByteCode(codeBlock, context);
-            codeBlock->pushCode(SetObject(), this);
+
+            if(p->kind() == PropertyNode::Kind::Init) {
+                codeBlock->pushCode(SetObject(), this);
+            } else if(p->kind() == PropertyNode::Kind::Get) {
+                codeBlock->pushCode(SetObjectPropertyGetter(), this);
+            } else {
+                ASSERT(p->kind() == PropertyNode::Kind::Set);
+                codeBlock->pushCode(SetObjectPropertySetter(), this);
+            }
         }
     }
 protected:

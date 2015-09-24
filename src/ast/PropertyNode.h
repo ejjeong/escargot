@@ -31,6 +31,11 @@ public:
         return m_value;
     }
 
+    Kind kind()
+    {
+        return m_kind;
+    }
+
 protected:
     Node* m_key; //key: Literal | Identifier;
     Node* m_value; //value: Expression;

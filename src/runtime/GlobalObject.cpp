@@ -425,8 +425,22 @@ void GlobalObject::installObject()
                 }
 
                 v = desc->get(ESString::create(u"value"), true);
-
-                obj->definePropertyOrThrow(key, isWritable, isEnumerable, isConfigurable).setValue(v);
+                bool gs = false;
+                ESValue get = desc->find(ESString::create(u"get"));
+                ESValue set = desc->find(ESString::create(u"set"));
+                if(!get.isEmpty() || !set.isEmpty()) {
+                    escargot::ESFunctionObject* getter = NULL;
+                    escargot::ESFunctionObject* setter = NULL;
+                    if(!get.isEmpty() && get.isESPointer() && get.asESPointer()->isESFunctionObject()) {
+                        getter = get.asESPointer()->asESFunctionObject();
+                    }
+                    if(!set.isEmpty() && set.isESPointer() && set.asESPointer()->isESFunctionObject()) {
+                        setter = set.asESPointer()->asESFunctionObject();
+                    }
+                    obj->defineAccessorProperty(key.toString(), getter, setter, isWritable, isEnumerable, isConfigurable);
+                } else {
+                    obj->definePropertyOrThrow(key, isWritable, isEnumerable, isConfigurable).setValue(v);
+                }
             } else {
                 throw ESValue(TypeError::create());
             }

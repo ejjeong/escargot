@@ -741,6 +741,40 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         goto NextInstruction;
     }
 
+    SetObjectPropertySetterOpcodeLbl:
+    {
+        ESValue* value = pop<ESValue>(stack, bp);
+        ESValue* key = pop<ESValue>(stack, bp);
+
+        ESObject* obj = peek<ESValue>(stack, bp)->asESPointer()->asESObject();
+        if(obj->hasOwnProperty(*key)) {
+            //TODO check property is accessor property
+            //TODO check accessor already exists
+            obj->accessorData(*key)->setJSSetter(value->asESPointer()->asESFunctionObject());
+        } else {
+            obj->defineAccessorProperty(key->toString(), NULL, value->asESPointer()->asESFunctionObject(), true, true, true);
+        }
+
+        executeNextCode<SetObjectPropertySetter>(programCounter);
+        goto NextInstruction;
+    }
+
+    SetObjectPropertyGetterOpcodeLbl:
+    {
+        ESValue* value = pop<ESValue>(stack, bp);
+        ESValue* key = pop<ESValue>(stack, bp);
+        ESObject* obj = peek<ESValue>(stack, bp)->asESPointer()->asESObject();
+        if(obj->hasOwnProperty(*key)) {
+            //TODO check property is accessor property
+            //TODO check accessor already exists
+            obj->accessorData(*key)->setJSGetter(value->asESPointer()->asESFunctionObject());
+        } else {
+            obj->defineAccessorProperty(key->toString(), value->asESPointer()->asESFunctionObject(), NULL, true, true, true);
+        }
+        executeNextCode<SetObjectPropertyGetter>(programCounter);
+        goto NextInstruction;
+    }
+
     GetObjectOpcodeLbl:
     {
         GetObject* code = (GetObject*)currentCode;
@@ -987,7 +1021,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         }
 
         RELEASE_ASSERT_NOT_REACHED();
-        RELEASE_ASSERT_NOT_REACHED();
     }
 
     EnumerateObjectOpcodeLbl:
@@ -997,7 +1030,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
         data->m_object = obj;
         data->m_keys.reserve(obj->keyCount());
-        obj->enumeration([&data](ESValue key, ESValue value) {
+        obj->enumeration([&data](ESValue key) {
             data->m_keys.push_back(key);
         });
 

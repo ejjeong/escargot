@@ -71,6 +71,8 @@ class Node;
     F(CreateObject) \
     F(CreateArray) \
     F(SetObject) \
+    F(SetObjectPropertySetter) \
+    F(SetObjectPropertyGetter) \
     F(GetObject) \
     F(GetObjectWithPeeking) \
     F(EnumerateObject) \
@@ -1167,6 +1169,36 @@ public:
     virtual void dump()
     {
         printf("SetObject <>\n");
+    }
+#endif
+};
+
+class SetObjectPropertySetter : public ByteCode {
+public:
+    SetObjectPropertySetter()
+        : ByteCode(SetObjectPropertySetterOpcode)
+    {
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("SetObjectPropertyGetter <>\n");
+    }
+#endif
+};
+
+class SetObjectPropertyGetter : public ByteCode {
+public:
+    SetObjectPropertyGetter()
+        : ByteCode(SetObjectPropertyGetterOpcode)
+    {
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("SetObjectPropertyGetter <>\n");
     }
 #endif
 };

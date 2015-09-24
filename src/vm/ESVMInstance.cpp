@@ -41,15 +41,15 @@ ESVMInstance::ESVMInstance()
     m_bumpPointerAllocator = new(GC) WTF::BumpPointerAllocator();
 
 
-    m_object__proto__AccessorData.m_getter = [](ESObject* obj) -> ESValue {
+    m_object__proto__AccessorData.setGetter([](ESObject* obj) -> ESValue {
         return obj->__proto__();
-    };
+    });
 
-    m_object__proto__AccessorData.m_setter = [](::escargot::ESObject* self, ESValue value){
+    m_object__proto__AccessorData.setSetter([](::escargot::ESObject* self, const ESValue& value) -> void {
         if(value.isESPointer() && value.asESPointer()->isESObject()) {
             self->set__proto__(value.asESPointer()->asESObject());
         }
-    };
+    });
 
     //FIXME set proper flags(is...)
     m_initialHiddenClassForObject.m_propertyInfo.insert(std::make_pair(
@@ -115,25 +115,25 @@ ESVMInstance::ESVMInstance()
             ));
     m_initialHiddenClassForArrayObject.m_propertyFlagInfo.push_back(ESHiddenClassPropertyInfo(false, true, false, false));
 
-    m_functionPrototypeAccessorData.m_getter = [](ESObject* self) -> ESValue {
+    m_functionPrototypeAccessorData.setGetter([](ESObject* self) -> ESValue {
         return self->asESFunctionObject()->protoType();
-    };
+    });
 
-    m_functionPrototypeAccessorData.m_setter = [](::escargot::ESObject* self, ESValue value){
+    m_functionPrototypeAccessorData.setSetter([](::escargot::ESObject* self, const ESValue& value){
         self->asESFunctionObject()->setProtoType(value);
-    };
+    });
 
-    m_arrayLengthAccessorData.m_getter = [](ESObject* self) -> ESValue {
+    m_arrayLengthAccessorData.setGetter([](ESObject* self) -> ESValue {
         return ESValue(self->asESArrayObject()->length());
-    };
+    });
 
-    m_arrayLengthAccessorData.m_setter = [](::escargot::ESObject* self, ESValue value) {
+    m_arrayLengthAccessorData.setSetter([](::escargot::ESObject* self, const ESValue& value) {
         self->asESArrayObject()->setLength(value.toInt32());
-    };
+    });
 
-    m_stringObjectLengthAccessorData.m_getter = [](ESObject* self) -> ESValue {
+    m_stringObjectLengthAccessorData.setGetter([](ESObject* self) -> ESValue {
         return ESValue(self->asESStringObject()->getStringData()->length());
-    };
+    });
 
     enter();
     m_globalObject = new GlobalObject();
@@ -218,12 +218,12 @@ void ESVMInstance::printValue(ESValue val)
             } else if(o->isESArrayObject()) {
                 str.append("[");
                 bool isFirst = true;
-                o->asESObject()->enumeration([&str, &isFirst, o, &toString](escargot::ESValue key, ESValue value) {
+                o->asESObject()->enumeration([&str, &isFirst, o, &toString](escargot::ESValue key) {
                     if(!isFirst)
                         str.append(", ");
                     str.append(key.toString()->utf8Data());
                     str.append(": ");
-                    str.append(value.toString()->utf8Data());
+                    str.append(o->asESObject()->get(key, false).toString()->utf8Data());
                     //toString(slot.value(o->asESObject()));
                     isFirst = false;
                     });
@@ -235,12 +235,12 @@ void ESVMInstance::printValue(ESValue val)
                     str.append(o->asESObject()->constructor().asESPointer()->asESObject()->get(ESValue(currentInstance()->strings().name), true).toString()->utf8Data());
                 str.append(" {");
                 bool isFirst = true;
-                o->asESObject()->enumeration([&str, &isFirst, o, &toString](escargot::ESValue key, ESValue value) {
+                o->asESObject()->enumeration([&str, &isFirst, o, &toString](escargot::ESValue key) {
                     if(!isFirst)
                         str.append(", ");
                         str.append(key.toString()->utf8Data());
                         str.append(": ");
-                        str.append(value.toString()->utf8Data());
+                        str.append(o->asESObject()->get(key, false).toString()->utf8Data());
                         //toString(slot.value(o->asESObject()));
                         isFirst = false;
                     });

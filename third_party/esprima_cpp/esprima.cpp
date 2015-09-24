@@ -3804,6 +3804,149 @@ PassRefPtr<ParseStatus> scanRegExp(ParseContext* ctx) {
     return adoptRef(ps);
 }
 
+bool lookaheadPropertyName(ParseContext* ctx) {
+    switch (ctx->m_lookahead->m_type) {
+    case Token::IdentifierToken:
+    case Token::StringLiteralToken:
+    case Token::BooleanLiteralToken:
+    case Token::NullLiteralToken:
+    case Token::NumericLiteralToken:
+    case Token::KeywordToken:
+        return true;
+    case Token::PunctuatorToken:
+        return ctx->m_lookahead->m_value == u"[";
+    default:
+        return false;
+    }
+}
+
+escargot::Node* parsePropertyFunction(ParseContext* ctx, escargot::InternalAtomicStringVector& vec/*paramInfo, isGenerator*/) {
+    //var previousStrict, body;
+
+    ctx->m_isAssignmentTarget = ctx->m_isBindingElement = false;
+
+    bool previousStrict = ctx->m_strict;
+    escargot::Node* body = isolateCoverGrammar(ctx, parseFunctionSourceElements);
+
+    /*
+    //TODO
+    if (strict && paramInfo.firstRestricted) {
+        tolerateUnexpectedToken(paramInfo.firstRestricted, paramInfo.message);
+    }
+    if (strict && paramInfo.stricted) {
+        tolerateUnexpectedToken(paramInfo.stricted, paramInfo.message);
+    }*/
+
+    ctx->m_strict = previousStrict;
+    //return node.finishFunctionExpression(null, paramInfo.params, paramInfo.defaults, body, isGenerator);
+    escargot::Node* nd = new escargot::FunctionExpressionNode(escargot::strings->emptyAtomicString, std::move(vec), body, false, true);
+    nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
+    return nd;
+}
+
+// This function is to try to parse a MethodDefinition as defined in 14.3. But in the case of object literals,
+ // it might be called at a position where there is in fact a short hand identifier pattern or a data property.
+ // This can only be determined after we consumed up to the left parentheses.
+ //
+ // In order to avoid back tracking, it returns `null` if the position is not a MethodDefinition and the caller
+ // is responsible to visit other options.
+ escargot::Node* tryParseMethodDefinition(ParseContext* ctx, ParseStatus* token, escargot::Node* key, bool computed) {
+     bool previousAllowYield = ctx->m_allowYield;
+     //var value, options, methodNode, params,
+     //    previousAllowYield = state.allowYield;
+
+     if (token->m_type == Token::IdentifierToken) {
+         // check for `get` and `set`;
+
+         if (token->m_value == u"get" && lookaheadPropertyName(ctx)) {
+             computed = match(ctx, '[');
+             key = parseObjectPropertyKey(ctx);
+             //methodNode = new Node();
+             expect(ctx, '(');
+             expect(ctx, ')');
+
+             ctx->m_allowYield = false;
+             escargot::InternalAtomicStringVector vec;
+             escargot::Node* value = parsePropertyFunction(ctx, vec/* {
+                 params: [],
+                 defaults: [],
+                 stricted: null,
+                 firstRestricted: null,
+                 message: null
+             }, false*/);
+             ctx->m_allowYield = previousAllowYield;
+
+             //return node.finishProperty('get', key, computed, value, false, false);
+             escargot::Node* nd = new escargot::PropertyNode(key, value, escargot::PropertyNode::Get);
+             nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
+             return nd;
+         } else if (token->m_value == u"set" && lookaheadPropertyName(ctx)) {
+             computed = match(ctx, '[');
+             key = parseObjectPropertyKey(ctx);
+             //methodNode = new Node();
+             expect(ctx, '(');
+
+             /*options = {
+                 params: [],
+                 defaultCount: 0,
+                 defaults: [],
+                 firstRestricted: null,
+                 paramSet: {}
+             };*/
+             escargot::InternalAtomicStringVector vec;
+             if (match(ctx, ')')) {
+                 //tolerateUnexpectedToken(lookahead);
+                 tolerateUnexpectedToken();
+             } else {
+                 ctx->m_allowYield = false;
+                 parseParam(ctx, vec);
+                 //parseParam(options);
+                 ctx->m_allowYield = previousAllowYield;
+                 /*
+                 if (options.defaultCount === 0) {
+                     options.defaults = [];
+                 }*/
+             }
+             expect(ctx, ')');
+
+             ctx->m_allowYield = false;
+             escargot::Node* value = parsePropertyFunction(ctx, vec/*methodNode, options, false*/);
+             ctx->m_allowYield = previousAllowYield;
+
+             //return node.finishProperty('set', key, computed, value, false, false);
+             escargot::Node* nd = new escargot::PropertyNode(key, value, escargot::PropertyNode::Set);
+             nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
+             return nd;
+         }
+     } else if (token->m_type == Token::PunctuatorToken && token->m_value == u"*" && lookaheadPropertyName(ctx)) {
+         computed = match(ctx, '[');
+         key = parseObjectPropertyKey(ctx);
+         //methodNode = new Node();
+
+         ctx->m_allowYield = false;
+         escargot::InternalAtomicStringVector params = parseParams(ctx);
+         ctx->m_allowYield = previousAllowYield;
+
+         ctx->m_allowYield = false;
+         escargot::Node* value = parsePropertyFunction(ctx, params);
+         ctx->m_allowYield = previousAllowYield;
+
+         escargot::Node* nd = new escargot::PropertyNode(key, value, escargot::PropertyNode::Init);
+         nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
+         return nd;
+         //return node.finishProperty('init', key, computed, value, true, false);
+     }
+
+     if (key && match(ctx, '(')) {
+         //escargot::Node* value = parsePropertyMethodFunction(ctx);
+         //return node.finishProperty('init', key, computed, value, true, false);
+         RELEASE_ASSERT_NOT_REACHED();
+     }
+
+     // Not a MethodDefinition.
+     return NULL;
+ }
+
 escargot::Node* parseObjectProperty(ParseContext* ctx, bool& hasProto) {
     RefPtr<ParseStatus> token = ctx->m_lookahead;
     //, node = new Node(), computed, key, maybeMethod, proto, value;
@@ -3816,10 +3959,10 @@ escargot::Node* parseObjectProperty(ParseContext* ctx, bool& hasProto) {
         key = parseObjectPropertyKey(ctx);
     }
 
-    /*maybeMethod = tryParseMethodDefinition(token, key, computed, node);
+    escargot::Node* maybeMethod = tryParseMethodDefinition(ctx, token.get(), key, computed);
     if (maybeMethod) {
         return maybeMethod;
-    }*/
+    }
 
     if (!key) {
         throwUnexpectedToken();

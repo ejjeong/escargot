@@ -537,8 +537,7 @@ inline void ESSlot::setValue(const ::escargot::ESValue& value, ::escargot::ESObj
         m_data = value;
     } else {
         ESAccessorData* data = (ESAccessorData*)m_data.asESPointer();
-        if(data->m_setter)
-            data->m_setter(object, value);
+        data->setValue(object, value);
     }
 }
 
@@ -548,7 +547,7 @@ inline ESValue ESSlot::value(::escargot::ESObject* object) const
         return m_data;
     } else {
         ESAccessorData* data = (ESAccessorData*)m_data.asESPointer();
-        return data->m_getter(object);
+        return data->value(object);
     }
 }
 
@@ -556,10 +555,7 @@ ALWAYS_INLINE void ESSlotAccessor::setValue(const ::escargot::ESValue& value)
 {
     ASSERT(hasData());
     if(UNLIKELY(m_targetObject != NULL)) {
-        if(m_hiddenClassIndex != SIZE_MAX && m_targetObject->isHiddenClassMode())
-            m_targetObject->writeHiddenClass(m_hiddenClassIndex, value);
-        else
-            m_targetObject->set(m_propertyValue, value);
+        m_targetObject->set(m_propertyValue, value);
     } else {
         *((ESValue *)m_propertyValue.asESPointer()) = value;
     }
@@ -899,6 +895,33 @@ ALWAYS_INLINE ESPointer* ESValue::asESPointer() const
 
 #endif
 
+ALWAYS_INLINE ESValue ESAccessorData::value(::escargot::ESObject* obj)
+{
+    if(m_getter) {
+        ASSERT(!m_jsGetter);
+        return m_getter(obj);
+    }
+    if(m_jsGetter) {
+        ASSERT(!m_getter);
+        return ESFunctionObject::call(ESVMInstance::currentInstance(), m_jsGetter, obj, NULL, 0, false);
+    }
+    return ESValue();
+}
+
+ALWAYS_INLINE void ESAccessorData::setValue(::escargot::ESObject* obj, const ESValue& value)
+{
+    if(m_setter) {
+        ASSERT(!m_jsSetter);
+        m_setter(obj, value);
+    }
+    if(m_jsSetter) {
+        ASSERT(!m_setter);
+        ESValue arg[] = {value};
+        ESFunctionObject::call(ESVMInstance::currentInstance(), m_jsSetter,
+            obj ,arg, 1, false);
+    }
+}
+
 ALWAYS_INLINE size_t ESHiddenClass::defineProperty(ESObject* obj, ESString* name, bool isData, bool isWritable, bool isEnumerable, bool isConfigurable)
 {
     size_t idx = findProperty(name);
@@ -950,8 +973,8 @@ ALWAYS_INLINE ESValue ESHiddenClass::readWithoutCheck(ESObject* obj, size_t idx)
     if(LIKELY(m_propertyFlagInfo[idx].m_isDataProperty)) {
         return obj->m_hiddenClassData[idx];
     } else {
-        ESAccessorData* ac = (ESAccessorData *)obj->m_hiddenClassData[idx].asESPointer();
-        return ac->m_getter(obj);
+        ESAccessorData* data = (ESAccessorData *)obj->m_hiddenClassData[idx].asESPointer();
+        return data->value(obj);
     }
 }
 
@@ -966,8 +989,8 @@ ALWAYS_INLINE ESValue ESHiddenClass::read(ESObject* obj, size_t idx)
         if(LIKELY(m_propertyFlagInfo[idx].m_isDataProperty)) {
             return obj->m_hiddenClassData[idx];
         } else {
-            ESAccessorData* ac = (ESAccessorData *)obj->m_hiddenClassData[idx].asESPointer();
-            return ac->m_getter(obj);
+            ESAccessorData* data = (ESAccessorData *)obj->m_hiddenClassData[idx].asESPointer();
+            return data->value(obj);
         }
     } else {
         return ESValue();
@@ -1054,7 +1077,58 @@ inline void ESObject::deletePropety(const ESValue& key)
     }
 }
 
-ALWAYS_INLINE bool ESObject::hasOwnProperty(escargot::ESValue key)
+inline void ESObject::propertyFlags(const ESValue& key, bool& exists, bool& isDataProperty, bool& isWritable, bool& isEnumerable, bool& isConfigurable)
+{
+    if (isESArrayObject() && asESArrayObject()->isFastmode() && key.isInt32()) {
+        //TODO
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+    if(UNLIKELY(m_map != NULL)){
+        auto iter = m_map->find(key.toString());
+        if(iter == m_map->end()) {
+            exists = false;
+            return ;
+        }
+        exists = true;
+        isDataProperty = iter->second.isDataProperty();
+        isWritable = iter->second.isWritable();
+        isConfigurable = iter->second.isConfigurable();
+        isEnumerable = iter->second.isEnumerable();
+    } else {
+        size_t idx = m_hiddenClass->findProperty(key.toString());
+        if(idx == SIZE_MAX) {
+            exists = false;
+        } else {
+            exists = true;
+            isDataProperty = m_hiddenClass->m_propertyFlagInfo[idx].m_isDataProperty;
+            isWritable = m_hiddenClass->m_propertyFlagInfo[idx].m_isWritable;
+            isConfigurable = m_hiddenClass->m_propertyFlagInfo[idx].m_isConfigurable;
+            isEnumerable = m_hiddenClass->m_propertyFlagInfo[idx].m_isEnumerable;
+        }
+    }
+}
+
+inline ESAccessorData* ESObject::accessorData(const ESValue& key)
+{
+    if (isESArrayObject() && asESArrayObject()->isFastmode() && key.isInt32()) {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+    if(UNLIKELY(m_map != NULL)){
+        auto iter = m_map->find(key.toString());
+        ASSERT(iter != m_map->end());
+        ASSERT(!iter->second.isDataProperty());
+        return iter->second.accessorData();
+    } else {
+        size_t idx = m_hiddenClass->findProperty(key.toString());
+        ASSERT(idx != SIZE_MAX);
+        ASSERT(!m_hiddenClass->m_propertyFlagInfo[idx].m_isDataProperty);
+        ESAccessorData* data = ((ESAccessorData *)m_hiddenClassData[idx].asESPointer());
+        return data;
+    }
+}
+
+
+ALWAYS_INLINE bool ESObject::hasOwnProperty(const escargot::ESValue& key)
 {
     if(isESArrayObject()) {
         if (asESArrayObject()->isFastmode() && key.isInt32()) {
@@ -1266,8 +1340,10 @@ inline escargot::ESValue ESObject::find(const escargot::ESValue& key, bool searc
         } else {
             if(LIKELY(m_hiddenClass->m_propertyFlagInfo[idx].m_isDataProperty))
                 return m_hiddenClassData[idx];
-            else
-                return ((ESAccessorData *)m_hiddenClassData[idx].asESPointer())->m_getter(realObj);
+            else {
+                ESAccessorData* data = ((ESAccessorData *)m_hiddenClassData[idx].asESPointer());
+                return data->value(realObj);
+            }
         }
     }
 }
@@ -1352,8 +1428,7 @@ ALWAYS_INLINE void ESObject::set(const escargot::ESValue& key, const ESValue& va
             m_hiddenClassData[ret] = val;
         } else {
             ESAccessorData * d = (ESAccessorData *)m_hiddenClassData[ret].asESPointer();
-            if(d->m_setter)
-                d->m_setter(this, val);
+            d->setValue(this, val);
         }
     }
 }
@@ -1379,14 +1454,14 @@ ALWAYS_INLINE void ESObject::enumeration(Functor t)
             //FIXME: check if index i exists or not
             if(asESArrayObject()->m_vector[i].isEmpty())
                 continue;
-            t(ESValue(i), asESArrayObject()->m_vector[i]);
+            t(ESValue(i));
         }
     }
     if(UNLIKELY(m_map != NULL)){
         auto iter = m_map->begin();
         while(iter != m_map->end()) {
             if(iter->second.isEnumerable()) {
-                t(ESValue((*iter).first), (*iter).second.value(this));
+                t(ESValue((*iter).first));
             }
             iter++;
         }
@@ -1396,13 +1471,33 @@ ALWAYS_INLINE void ESObject::enumeration(Functor t)
             size_t idx = iter->second;
             if(m_hiddenClass->m_propertyFlagInfo[idx].m_isEnumerable) {
                 if(m_hiddenClass->m_propertyFlagInfo[idx].m_isDataProperty) {
-                    t(ESValue(iter->first), m_hiddenClassData[idx]);
+                    t(ESValue(iter->first));
                 } else {
-                    t(ESValue(iter->first), ((ESAccessorData *)m_hiddenClassData[idx].asESPointer())->m_getter(this));
+                    t(ESValue(iter->first));
                 }
             }
             iter++;
         }
+    }
+}
+
+ALWAYS_INLINE ESValue ESObject::readHiddenClass(size_t idx)
+{
+    ASSERT(!m_map);
+    if(LIKELY(m_hiddenClass->m_propertyFlagInfo[idx].m_isDataProperty))
+        return m_hiddenClassData[idx];
+    else {
+        return ((ESAccessorData *)m_hiddenClassData[idx].asESPointer())->value(this);
+    }
+}
+
+ALWAYS_INLINE void ESObject::writeHiddenClass(size_t idx, const ESValue& value)
+{
+    ASSERT(!m_map);
+    if(LIKELY(m_hiddenClass->m_propertyFlagInfo[idx].m_isDataProperty))
+        m_hiddenClassData[idx] = value;
+    else {
+        ((ESAccessorData *)m_hiddenClassData[idx].asESPointer())->setValue(this, value);
     }
 }
 
