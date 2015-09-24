@@ -2302,6 +2302,63 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
     ta_prototype->defineAccessorProperty(strings->length, [](ESObject* self) -> ESValue {
         return ESValue(self->asESTypedArrayObject<T>()->arraylength());
     }, nullptr, true, false, false);
+    //$22.2.3.22 %TypedArray%.prototype.set(overloaded[, offset])
+    ta_prototype->ESObject::set(strings->set, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        auto thisBinded = instance->currentExecutionContext()->environment()->record()->getThisBinding();
+        if (!thisBinded->isESTypedArrayObject() || arglen < 1) {
+            throw TypeError::create();
+        }
+        auto thisVal = thisBinded->asESTypedArrayObjectWrapper();
+        int offset = 0;
+        if (arglen >= 2)
+            offset = instance->currentExecutionContext()->arguments()[1].toInt32();
+        if (offset < 0)
+            throw TypeError::create();
+        auto arg0 = instance->currentExecutionContext()->arguments()[0].asESPointer();
+        escargot::ESArrayBufferObject* targetBuffer = thisVal->buffer();
+        unsigned targetLength = thisVal->arraylength();
+        int targetByteOffset = thisVal->byteoffset();
+        int targetElementSize = thisVal->elementSize();
+        if (!arg0->isESTypedArrayObject()) {
+            //TODO: 22.2.22.1 %TypedArray%.prototype.set(array[, offset])
+            RELEASE_ASSERT_NOT_REACHED();
+        } else {
+            auto arg0Wrapper = arg0->asESTypedArrayObjectWrapper();
+            escargot::ESArrayBufferObject* srcBuffer = arg0Wrapper->buffer();
+            unsigned srcLength = arg0Wrapper->arraylength();
+            int srcByteOffset = arg0Wrapper->byteoffset();
+            int srcElementSize = arg0Wrapper->elementSize();
+            if (srcLength + offset > targetLength)
+                throw RangeError::create();
+            int srcByteIndex = 0;
+            if (srcBuffer == targetBuffer) {
+                //TODO: 24) should clone targetBuffer
+                RELEASE_ASSERT_NOT_REACHED();
+            } else {
+                srcByteIndex = srcByteOffset;
+            }
+            int targetIndex = offset, srcIndex = 0;
+            int targetByteIndex = offset * targetElementSize + targetByteOffset;
+            int limit = targetByteIndex + targetElementSize * srcLength;
+            if (thisVal->arraytype() != arg0Wrapper->arraytype()) {
+                while (targetIndex < offset + srcLength) {
+                    ESValue value = arg0Wrapper->get(srcIndex);
+                    thisVal->set(targetIndex, value);
+                    srcIndex++;
+                    targetIndex++;
+                }
+            } else {
+                while (targetByteIndex < limit) {
+                    ESValue value = srcBuffer->getValueFromBuffer<uint8_t>(srcByteIndex, escargot::Uint8Array);
+                    targetBuffer->setValueInBuffer<Uint8Adaptor>(targetByteIndex, escargot::Uint8Array, value);
+                    srcByteIndex++;
+                    targetByteIndex++;
+                }
+            }
+            return ESValue();
+        }
+    }, strings->set));
     //$22.2.3.26 %TypedArray%.prototype.subarray([begin [, end]])
     ta_prototype->ESObject::set(strings->subarray, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         int arglen = instance->currentExecutionContext()->argumentCount();

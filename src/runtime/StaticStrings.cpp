@@ -112,6 +112,7 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     ArrayBuffer = ESString::create(u"ArrayBuffer");
     byteLength = ESString::create(u"byteLength");
     subarray = ESString::create(u"subarray");
+    set = ESString::create(u"set");
 }
 
 Strings* strings;
