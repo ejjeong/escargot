@@ -135,6 +135,18 @@ struct ByteCodeGenerateContext {
         ASSERT(m_labeledContinueStatmentPositions.size() == 0);
     }
 
+    void propagateInfomationTo(ByteCodeGenerateContext& ctx)
+    {
+        ctx.m_breakStatementPositions.insert(ctx.m_breakStatementPositions.end(), m_breakStatementPositions.begin(), m_breakStatementPositions.end());
+        ctx.m_continueStatementPositions.insert(ctx.m_continueStatementPositions.end(), m_continueStatementPositions.begin(), m_continueStatementPositions.end());
+        ctx.m_labeledBreakStatmentPositions.insert(ctx.m_labeledBreakStatmentPositions.end(), m_labeledBreakStatmentPositions.begin(), m_labeledBreakStatmentPositions.end());
+        ctx.m_labeledContinueStatmentPositions.insert(ctx.m_labeledContinueStatmentPositions.end(), m_labeledContinueStatmentPositions.begin(), m_labeledContinueStatmentPositions.end());
+        m_breakStatementPositions.clear();
+        m_continueStatementPositions.clear();
+        m_labeledBreakStatmentPositions.clear();
+        m_labeledContinueStatmentPositions.clear();
+    }
+
     void pushBreakPositions(size_t pos)
     {
         m_breakStatementPositions.push_back(pos);

@@ -20,7 +20,9 @@ public:
 
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        m_right->generateExpressionByteCode(codeBlock, context);
+        ByteCodeGenerateContext newContext;
+
+        m_right->generateExpressionByteCode(codeBlock, newContext);
         codeBlock->pushCode(DuplicateTopOfStackValue(), this);
         codeBlock->pushCode(Push(ESValue(ESValue::ESUndefined)), this);
         codeBlock->pushCode(Equal(), this);
@@ -38,12 +40,12 @@ public:
         codeBlock->pushCode(EnumerateObjectKey(), this);
 
         codeBlock->pushCode(PushIntoTempStack(), this);
-        m_left->generateResolveAddressByteCode(codeBlock, context);
+        m_left->generateResolveAddressByteCode(codeBlock, newContext);
         codeBlock->pushCode(PopFromTempStack(), this);
-        m_left->generatePutByteCode(codeBlock, context);
+        m_left->generatePutByteCode(codeBlock, newContext);
         codeBlock->pushCode(Pop(), this);
 
-        m_body->generateStatementByteCode(codeBlock, context);
+        m_body->generateStatementByteCode(codeBlock, newContext);
 
         codeBlock->pushCode(Jump(continuePosition), this);
         size_t forInEnd = codeBlock->currentCodeSize();
@@ -51,8 +53,9 @@ public:
         ASSERT(codeBlock->peekCode<EnumerateObjectKey>(continuePosition)->m_orgOpcode == EnumerateObjectKeyOpcode);
         codeBlock->peekCode<EnumerateObjectKey>(continuePosition)->m_forInEnd = forInEnd;
 
-        context.consumeBreakPositions(codeBlock, forInEnd);
-        context.consumeContinuePositions(codeBlock, continuePosition);
+        newContext.consumeBreakPositions(codeBlock, forInEnd);
+        newContext.consumeContinuePositions(codeBlock, continuePosition);
+        newContext.propagateInfomationTo(context);
         codeBlock->pushCode(Jump(SIZE_MAX), this);
         size_t jPos = codeBlock->lastCodePosition<Jump>();
 
@@ -62,6 +65,7 @@ public:
         codeBlock->peekCode<JumpIfTopOfStackValueIsTrue>(exit2Pos)->m_jumpPosition = exitPos;
 
         codeBlock->peekCode<Jump>(jPos)->m_jumpPosition = codeBlock->currentCodeSize();
+
     }
 
 

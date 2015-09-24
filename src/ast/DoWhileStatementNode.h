@@ -18,16 +18,19 @@ public:
 
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
+        ByteCodeGenerateContext newContext;
         size_t doStart = codeBlock->currentCodeSize();
-        m_body->generateStatementByteCode(codeBlock, context);
+        m_body->generateStatementByteCode(codeBlock, newContext);
 
-        m_test->generateExpressionByteCode(codeBlock, context);
+        m_test->generateExpressionByteCode(codeBlock, newContext);
         codeBlock->pushCode(JumpIfTopOfStackValueIsTrue(doStart), this);
 
         size_t doEnd = codeBlock->currentCodeSize();
 
-        context.consumeContinuePositions(codeBlock, doStart);
-        context.consumeBreakPositions(codeBlock, doEnd);
+        newContext.consumeContinuePositions(codeBlock, doStart);
+        newContext.consumeBreakPositions(codeBlock, doEnd);
+
+        newContext.propagateInfomationTo(context);
     }
 
 protected:
