@@ -33,7 +33,7 @@ public:
         newContext.consumeBreakPositions(codeBlock, whileEnd);
         codeBlock->peekCode<JumpIfTopOfStackValueIsFalse>(testPos)->m_jumpPosition = whileEnd;
 
-        newContext.propagateInfomationTo(context);
+        newContext.propagateInformationTo(context);
     }
 
 protected:

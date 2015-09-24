@@ -50,7 +50,7 @@ public:
 
         newContext.consumeBreakPositions(codeBlock, forEnd);
         newContext.consumeContinuePositions(codeBlock, updatePosition);
-        newContext.propagateInfomationTo(context);
+        newContext.propagateInformationTo(context);
     }
 
 protected:

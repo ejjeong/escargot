@@ -64,7 +64,7 @@ public:
         }
         size_t breakPos = codeBlock->currentCodeSize();
         newContext.consumeBreakPositions(codeBlock, breakPos);
-        newContext.propagateInfomationTo(context);
+        newContext.propagateInformationTo(context);
 
         if(!m_default) {
             codeBlock->peekCode<Jump>(jmpToDefault)->m_jumpPosition = codeBlock->currentCodeSize();

@@ -135,7 +135,7 @@ struct ByteCodeGenerateContext {
         ASSERT(m_labeledContinueStatmentPositions.size() == 0);
     }
 
-    void propagateInfomationTo(ByteCodeGenerateContext& ctx)
+    void propagateInformationTo(ByteCodeGenerateContext& ctx)
     {
         ctx.m_breakStatementPositions.insert(ctx.m_breakStatementPositions.end(), m_breakStatementPositions.begin(), m_breakStatementPositions.end());
         ctx.m_continueStatementPositions.insert(ctx.m_continueStatementPositions.end(), m_continueStatementPositions.begin(), m_continueStatementPositions.end());

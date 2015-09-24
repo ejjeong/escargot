@@ -55,7 +55,7 @@ public:
 
         newContext.consumeBreakPositions(codeBlock, forInEnd);
         newContext.consumeContinuePositions(codeBlock, continuePosition);
-        newContext.propagateInfomationTo(context);
+        newContext.propagateInformationTo(context);
         codeBlock->pushCode(Jump(SIZE_MAX), this);
         size_t jPos = codeBlock->lastCodePosition<Jump>();
 
