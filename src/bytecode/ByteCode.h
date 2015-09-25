@@ -1602,6 +1602,7 @@ class CodeBlock : public gc {
         m_needsActivation = false;
         m_needsArgumentsObject = false;
         m_isBuiltInFunction = false;
+        m_isStrict = false;
     }
 public:
     static CodeBlock* create()
@@ -1630,12 +1631,18 @@ public:
     }
     std::vector<char, gc_malloc_allocator<char> > m_code;
 
+    bool shouldUseStrictMode()
+    {
+        return m_isStrict || m_isBuiltInFunction;
+    }
+
     InternalAtomicStringVector m_params; //params: [ Pattern ];
     ESStringVector m_nonAtomicParams;
     InternalAtomicStringVector m_innerIdentifiers;
     bool m_needsActivation;
     bool m_needsArgumentsObject;
     bool m_isBuiltInFunction;
+    bool m_isStrict;
 };
 
 template <typename Type>

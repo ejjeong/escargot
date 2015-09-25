@@ -161,8 +161,10 @@ public:
     inline double toInteger() const; //$7.1.4 ToInteger
     inline int32_t toInt32() const; //$7.1.5 ToInt32
     inline ESString* toString() const; //$7.1.12 ToString
-    ESObject* toObject() const; //$7.1.13 ToObject
+    inline ESObject* toObject() const; //$7.1.13 ToObject
     inline double toLength() const; //$7.1.15 ToLength
+
+    inline ESObject* toFunctionReceiverObject() const;
 
     inline ESString* asESString() const;
 

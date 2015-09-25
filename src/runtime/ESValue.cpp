@@ -102,41 +102,6 @@ bool ESValue::equalsTo(const ESValue& val)
     RELEASE_ASSERT_NOT_REACHED();
 }
 
-
-
-ESObject* ESValue::toObject() const
-{
-    ESFunctionObject* function;
-    ESObject* receiver;
-    if (isESPointer() && asESPointer()->isESObject()) {
-       return asESPointer()->asESObject();
-    } else if (isNumber()) {
-        function = ESVMInstance::currentInstance()->globalObject()->number();
-        receiver = ESNumberObject::create(toNumber());
-    } else if (isBoolean()) {
-        function = ESVMInstance::currentInstance()->globalObject()->boolean();
-        ESValue ret;
-        if (toBoolean())
-            ret = ESValue(ESValue::ESTrueTag::ESTrue);
-        else
-            ret = ESValue(ESValue::ESFalseTag::ESFalse);
-        receiver = ESBooleanObject::create(ret);
-    } else if (isESString()) {
-        function = ESVMInstance::currentInstance()->globalObject()->string();
-        receiver = ESStringObject::create(asESPointer()->asESString());
-    } else if(isNull()){
-        throw ESValue(TypeError::create(ESString::create(u"cannot convert null into object")));
-    } else if(isUndefined()){
-        throw ESValue(TypeError::create(ESString::create(u"cannot convert undefined into object")));
-    } else {
-        RELEASE_ASSERT_NOT_REACHED();
-    }
-    receiver->setConstructor(function);
-    receiver->set__proto__(function->protoType());
-    return receiver;
-}
-
-
 ESValue ESObject::valueOf()
 {
     if(isESDateObject())
@@ -379,10 +344,21 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeF
     m_name = name;
 }
 
-ALWAYS_INLINE void functionCallerInnerProcess(ESFunctionObject* fn, const ESValue& receiver, ESValue arguments[], const size_t& argumentCount, bool needsArgumentsObject, ESVMInstance* ESVMInstance)
+ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctionObject* fn, ESValue& receiver, ESValue arguments[], const size_t& argumentCount, bool needsArgumentsObject, ESVMInstance* ESVMInstance)
 {
-    //ESVMInstance->invalidateIdentifierCacheCheckCount();
-    ((FunctionEnvironmentRecord *)ESVMInstance->currentExecutionContext()->environment()->record())->bindThisValue(receiver.toObject());
+    bool strict = fn->codeBlock()->shouldUseStrictMode();
+    newEC->setStrictMode(strict);
+
+    //http://www.ecma-international.org/ecma-262/6.0/#sec-ordinarycallbindthis
+    if(!strict) {
+        if(receiver.isUndefinedOrNull()) {
+            receiver = ESVMInstance->globalObject();
+        } else {
+            receiver = receiver.toObject();
+        }
+    }
+
+    ((FunctionEnvironmentRecord *)ESVMInstance->currentExecutionContext()->environment()->record())->bindThisValue(receiver);
     DeclarativeEnvironmentRecord* functionRecord = ESVMInstance->currentExecutionContext()->environment()->record()->toDeclarativeEnvironmentRecord();
 
     if(UNLIKELY(fn->codeBlock()->m_needsActivation)) {
@@ -430,15 +406,20 @@ ALWAYS_INLINE void functionCallerInnerProcess(ESFunctionObject* fn, const ESValu
 
 }
 
-ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, const ESValue& receiver, ESValue arguments[], const size_t& argumentCount, bool isNewExpression)
+ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, const ESValue& receiverInput, ESValue arguments[], const size_t& argumentCount, bool isNewExpression)
 {
     ESValue result(ESValue::ESForceUninitialized);
     if(LIKELY(callee.isESPointer() && callee.asESPointer()->isESFunctionObject())) {
+        ESValue receiver = receiverInput;
         ExecutionContext* currentContext = instance->currentExecutionContext();
         ESFunctionObject* fn = callee.asESPointer()->asESFunctionObject();
+        bool prevStrict = currentContext->isStrictMode();
+
         if(UNLIKELY(fn->codeBlock()->m_needsActivation)) {
-            instance->m_currentExecutionContext = new ExecutionContext(LexicalEnvironment::newFunctionEnvironment(fn, receiver), true, isNewExpression, currentContext, arguments, argumentCount);
-            functionCallerInnerProcess(fn, receiver, arguments, argumentCount, true, instance);
+            instance->m_currentExecutionContext = new ExecutionContext(LexicalEnvironment::newFunctionEnvironment(fn), true, isNewExpression,
+                    currentContext,
+                    arguments, argumentCount);
+            functionCallerInnerProcess(instance->m_currentExecutionContext, fn, receiver, arguments, argumentCount, true, instance);
             //ESVMInstance->invalidateIdentifierCacheCheckCount();
             //execute;
             result = interpret(instance, fn->codeBlock());
@@ -455,7 +436,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
             LexicalEnvironment env(&envRec, fn->outerEnvironment());
             ExecutionContext ec(&env, false, isNewExpression, currentContext, arguments, argumentCount, storage);
             instance->m_currentExecutionContext = &ec;
-            functionCallerInnerProcess(fn, receiver, arguments, argumentCount, fn->m_codeBlock->m_needsArgumentsObject, instance);
+            functionCallerInnerProcess(&ec, fn, receiver, arguments, argumentCount, fn->m_codeBlock->m_needsArgumentsObject, instance);
             //ESVMInstance->invalidateIdentifierCacheCheckCount();
             //execute;
             result = interpret(instance, fn->codeBlock());

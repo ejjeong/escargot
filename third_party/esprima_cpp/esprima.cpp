@@ -3298,13 +3298,10 @@ escargot::Node* parseFunctionDeclaration(ParseContext* ctx/*node, identifierIsOp
         tolerateUnexpectedToken(stricted, message);
     }*/
 
-    ctx->m_strict = previousStrict;
-    ctx->m_allowYield = previousAllowYield;
-
     //return node.finishFunctionDeclaration(id, params, defaults, body, isGenerator);
     ASSERT(id->type() == escargot::NodeType::Identifier);
 
-    escargot::Node* nd = new escargot::FunctionDeclarationNode(((escargot::IdentifierNode *)id)->nonAtomicName(), std::move(params),body,isGenerator,false,false);
+    escargot::Node* nd = new escargot::FunctionDeclarationNode(((escargot::IdentifierNode *)id)->nonAtomicName(), std::move(params),body,isGenerator,false,ctx->m_strict);
     nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
     ctx->m_currentBody->insert(ctx->m_currentBody->begin(), nd);
 
@@ -3315,6 +3312,9 @@ escargot::Node* parseFunctionDeclaration(ParseContext* ctx/*node, identifierIsOp
             );
 
     ctx->m_currentBody->insert(ctx->m_currentBody->begin(), v);
+    ctx->m_strict = previousStrict;
+    ctx->m_allowYield = previousAllowYield;
+
     return NULL;
 }
 
@@ -3378,18 +3378,19 @@ escargot::Node* parseFunctionExpression(ParseContext* ctx) {
         tolerateUnexpectedToken(stricted, message);
     }
     */
-    ctx->m_strict = previousStrict;
-    ctx->m_allowYield = previousAllowYield;
 
     //return node.finishFunctionExpression(id, params, defaults, body, isGenerator);
     escargot::Node* nd;
     if(id)
         nd = new escargot::FunctionExpressionNode(((escargot::IdentifierNode *)id)->name(),
-                std::move(params), body, isGenerator, false);
+                std::move(params), body, isGenerator, true, ctx->m_strict);
     else
         nd = new escargot::FunctionExpressionNode(escargot::strings->emptyAtomicString,
-                std::move(params), body, isGenerator, false);
+                std::move(params), body, isGenerator, true, ctx->m_strict);
     nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
+
+    ctx->m_strict = previousStrict;
+    ctx->m_allowYield = previousAllowYield;
     return nd;
 }
 
@@ -3835,9 +3836,9 @@ escargot::Node* parsePropertyFunction(ParseContext* ctx, escargot::InternalAtomi
         tolerateUnexpectedToken(paramInfo.stricted, paramInfo.message);
     }*/
 
-    ctx->m_strict = previousStrict;
     //return node.finishFunctionExpression(null, paramInfo.params, paramInfo.defaults, body, isGenerator);
-    escargot::Node* nd = new escargot::FunctionExpressionNode(escargot::strings->emptyAtomicString, std::move(vec), body, false, true);
+    escargot::Node* nd = new escargot::FunctionExpressionNode(escargot::strings->emptyAtomicString, std::move(vec), body, false, true, ctx->m_strict);
+    ctx->m_strict = previousStrict;
     nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
     return nd;
 }
@@ -4537,12 +4538,6 @@ escargot::Node* parseLeftHandSideExpressionAllowCall(ParseContext* ctx) {
         }*/
     } else {
         expr = inheritCoverGrammar(ctx, matchKeyword(ctx, u"new") ? parseNewExpression : parsePrimaryExpression);
-        ///////////////////FIXME(ksh8281) these lines not original
-        ///////////////////these lines for esprima_bug.js
-        ///////////////////I am not sure what this code is right
-        if(expr->type() == escargot::NodeType::ObjectExpression)
-            return expr;
-        ///////////////////
     }
 
     for (;;) {
@@ -5209,7 +5204,7 @@ escargot::Node* parseProgram(ParseContext* ctx)
     */
 
     peek(ctx);
-    escargot::ProgramNode* node = new escargot::ProgramNode(parseScriptBody(ctx));
+    escargot::ProgramNode* node = new escargot::ProgramNode(parseScriptBody(ctx), ctx->m_strict);
 
     return node;
 }
@@ -5238,9 +5233,13 @@ escargot::Node* parse(const escargot::u16string& source)
     ctx.m_parenthesizedCount = 0;
     ctx.m_lookahead = nullptr;
     ctx.m_currentBody = nullptr;
-
-    escargot::Node* node = parseProgram(&ctx);
-    return node;
+    try {
+        escargot::Node* node = parseProgram(&ctx);
+        return node;
+    } catch(...) {
+        throw ctx.m_lineNumber;
+    }
+    return NULL;
 }
 
 

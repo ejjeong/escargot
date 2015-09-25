@@ -5,17 +5,19 @@
 namespace escargot {
 
 ExecutionContext::ExecutionContext(LexicalEnvironment* varEnv, bool needsActivation, bool isNewExpression,
-        ExecutionContext* callerContext, ESValue* arguments, size_t argumentsCount, ESValue* cachedDeclarativeEnvironmentRecord)
+        ExecutionContext* callerContext,
+        ESValue* arguments, size_t argumentsCount, ESValue* cachedDeclarativeEnvironmentRecord)
 {
     ASSERT(varEnv);
     m_lexicalEnvironment = varEnv;
     m_variableEnvironment = varEnv;
+    m_callerContext = callerContext;
     m_needsActivation = needsActivation;
     m_isNewExpression = isNewExpression;
-    m_callerContext = callerContext;
     m_arguments = arguments;
     m_argumentCount = argumentsCount;
     m_cachedDeclarativeEnvironmentRecord = cachedDeclarativeEnvironmentRecord;
+    m_isStrict = false;
 }
 
 ESSlotAccessor ExecutionContext::resolveBinding(const InternalAtomicString& atomicName, escargot::ESString* name)
@@ -34,7 +36,7 @@ ESSlotAccessor ExecutionContext::resolveBinding(const InternalAtomicString& atom
 }
 
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvethisbinding
-ESObject* ExecutionContext::resolveThisBinding()
+ESValue ExecutionContext::resolveThisBinding()
 {
     return getThisEnvironment()->record()->getThisBinding();
 }

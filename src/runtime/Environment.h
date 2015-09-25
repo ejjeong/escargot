@@ -48,7 +48,7 @@ public:
     }
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-newfunctionenvironment
-    static LexicalEnvironment* newFunctionEnvironment(ESFunctionObject* function, const ESValue& newTarget);
+    static LexicalEnvironment* newFunctionEnvironment(ESFunctionObject* function);
 
 protected:
     EnvironmentRecord* m_record;
@@ -104,7 +104,7 @@ public:
         RELEASE_ASSERT_NOT_REACHED();
     }
 
-    virtual ESObject* getThisBinding()
+    virtual ESValue getThisBinding()
     {
         RELEASE_ASSERT_NOT_REACHED();
     }
@@ -328,7 +328,7 @@ public:
     void initializeBinding(const InternalAtomicString& name,ESString* nonAtomicName,  const ESValue& V);
     void setMutableBinding(const InternalAtomicString& name, ESString* nonAtomicName, const ESValue& V, bool mustNotThrowTypeErrorExecption);
 
-    ESObject* getThisBinding();
+    ESValue getThisBinding();
     bool hasVarDeclaration(const InternalAtomicString& name);
     //bool hasLexicalDeclaration(ESString* name);
     bool hasRestrictedGlobalProperty(const InternalAtomicString& name);
@@ -386,7 +386,7 @@ public:
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-bindthisvalue
     void bindThisValue(const ESValue& V);
-    ESObject* getThisBinding();
+    ESValue getThisBinding();
 
 protected:
     ESValue m_thisValue;

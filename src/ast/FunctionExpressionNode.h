@@ -8,8 +8,8 @@ namespace escargot {
 class FunctionExpressionNode : public FunctionNode {
 public:
     friend class ESScriptParser;
-    FunctionExpressionNode(const InternalAtomicString& id, InternalAtomicStringVector&& params, Node* body,bool isGenerator, bool isExpression)
-            : FunctionNode(NodeType::FunctionExpression, id, std::move(params), body, isGenerator, isExpression)
+    FunctionExpressionNode(const InternalAtomicString& id, InternalAtomicStringVector&& params, Node* body,bool isGenerator, bool isExpression, bool isStrict)
+            : FunctionNode(NodeType::FunctionExpression, id, std::move(params), body, isGenerator, isExpression, isStrict)
     {
         m_isGenerator = false;
         m_isExpression = false;
@@ -23,6 +23,8 @@ public:
         cb->m_needsArgumentsObject = m_needsArgumentsObject;
         cb->m_nonAtomicParams = std::move(m_nonAtomicParams);
         cb->m_params = std::move(m_params);
+        cb->m_isStrict = m_isStrict;
+
         ByteCodeGenerateContext newContext;
         m_body->generateStatementByteCode(cb, newContext);
         cb->pushCode(ReturnFunction(), this);

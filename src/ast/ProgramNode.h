@@ -9,10 +9,11 @@ namespace escargot {
 class ProgramNode : public Node {
 public:
     friend class ESScriptParser;
-    ProgramNode(StatementNodeVector&& body)
+    ProgramNode(StatementNodeVector&& body, bool isStrict)
             : Node(NodeType::Program)
     {
         m_body = body;
+        m_isStrict = isStrict;
     }
 
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
@@ -24,9 +25,11 @@ public:
 #endif
         }
         codeBlock->pushCode(End(), this);
+        codeBlock->m_isStrict = m_isStrict;
     }
 protected:
     StatementNodeVector m_body; //body: [ Statement ];
+    bool m_isStrict;
 };
 
 }

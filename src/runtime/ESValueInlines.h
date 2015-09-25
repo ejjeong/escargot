@@ -398,6 +398,48 @@ inline ESString* ESValue::toString() const
     }
 }
 
+inline ESObject* ESValue::toObject() const
+{
+    ESFunctionObject* function;
+    ESObject* receiver;
+    if (isESPointer() && asESPointer()->isESObject()) {
+       return asESPointer()->asESObject();
+    } else if (isNumber()) {
+        function = ESVMInstance::currentInstance()->globalObject()->number();
+        receiver = ESNumberObject::create(toNumber());
+    } else if (isBoolean()) {
+        function = ESVMInstance::currentInstance()->globalObject()->boolean();
+        ESValue ret;
+        if (toBoolean())
+            ret = ESValue(ESValue::ESTrueTag::ESTrue);
+        else
+            ret = ESValue(ESValue::ESFalseTag::ESFalse);
+        receiver = ESBooleanObject::create(ret);
+    } else if (isESString()) {
+        function = ESVMInstance::currentInstance()->globalObject()->string();
+        receiver = ESStringObject::create(asESPointer()->asESString());
+    } else if(isNull()){
+        throw ESValue(TypeError::create(ESString::create(u"cannot convert null into object")));
+    } else if(isUndefined()){
+        throw ESValue(TypeError::create(ESString::create(u"cannot convert undefined into object")));
+    } else {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+    receiver->setConstructor(function);
+    receiver->set__proto__(function->protoType());
+    return receiver;
+}
+
+inline ESObject* ESValue::toFunctionReceiverObject() const
+{
+    if(isUndefinedOrNull()) {
+        return ESVMInstance::currentInstance()->globalObject();
+    } else {
+        return toObject();
+    }
+}
+
+
 inline ESValue ESValue::toPrimitive(PrimitiveTypeHint preferredType) const
 {
     if (UNLIKELY(isESPointer() && asESPointer()->isESObject())) {

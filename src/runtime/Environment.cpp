@@ -10,9 +10,8 @@ namespace escargot {
 
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-newfunctionenvironment
 //$8.1.2.4
-LexicalEnvironment* LexicalEnvironment::newFunctionEnvironment(ESFunctionObject* function, const ESValue& newTarget)
+LexicalEnvironment* LexicalEnvironment::newFunctionEnvironment(ESFunctionObject* function)
 {
-    ASSERT(newTarget.isUndefined() || newTarget.isObject());
     FunctionEnvironmentRecord* envRec = new FunctionEnvironmentRecord(function->codeBlock()->m_innerIdentifiers);
 
     //envRec->m_functionObject = function;
@@ -118,7 +117,7 @@ void GlobalEnvironmentRecord::createGlobalFunctionBinding(const InternalAtomicSt
 }
 
 //$8.1.1.4.11
-ESObject* GlobalEnvironmentRecord::getThisBinding() {
+ESValue GlobalEnvironmentRecord::getThisBinding() {
     return m_objectRecord->bindingObject();
 }
 
@@ -199,14 +198,14 @@ void FunctionEnvironmentRecord::bindThisValue(const ESValue& V)
     m_thisValue = V;
 }
 
-ESObject* FunctionEnvironmentRecord::getThisBinding()
+ESValue FunctionEnvironmentRecord::getThisBinding()
 {
 #ifndef NDEBUG
     ASSERT(m_thisBindingStatus != Lexical);
     if(m_thisBindingStatus == Uninitialized)
         throw ReferenceError::create(ESString::create(u""));
 #endif
-    return m_thisValue.asESPointer()->asESObject();
+    return m_thisValue;
 }
 
 }

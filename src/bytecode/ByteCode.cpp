@@ -228,8 +228,16 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                 code->m_cachedSlot.setValue(*value);
             } else {
                 //CHECKTHIS true, true, false is right?
-                instance->invalidateIdentifierCacheCheckCount();
-                globalObject->definePropertyOrThrow(code->m_nonAtomicName, true, true, true).setValue(*value);
+                if(!ec->isStrictMode()) {
+                    instance->invalidateIdentifierCacheCheckCount();
+                    globalObject->definePropertyOrThrow(code->m_nonAtomicName, true, true, true).setValue(*value);
+                } else {
+                    //ReferenceError: assignment to undeclared variable d
+                    u16string err_msg;
+                    err_msg.append(u"assignment to undeclared variable ");
+                    err_msg.append(code->m_nonAtomicName->data());
+                    throw ESValue(ReferenceError::create(ESString::create(std::move(err_msg))));
+                }
             }
         }
         executeNextCode<PutById>(programCounter);

@@ -57,8 +57,10 @@ CodeBlock* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u
         node = esprima::parse(source);
         //unsigned long end = ESVMInstance::tickCount();
         //printf("parse takes %lfms\n",(end-start)/1000.0);
-    } catch(...) {
-        throw ESValue(SyntaxError::create(ESString::create(u"parse error")));
+    } catch(size_t lineNumber) {
+        char temp[512];
+        sprintf(temp, "Parse Error %u line", (unsigned)lineNumber);
+        throw ESValue(SyntaxError::create(ESString::create(temp)));
     }
 
     auto markNeedsActivation = [](FunctionNode* nearFunctionNode){
