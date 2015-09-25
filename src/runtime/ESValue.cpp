@@ -413,7 +413,6 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
         ESValue receiver = receiverInput;
         ExecutionContext* currentContext = instance->currentExecutionContext();
         ESFunctionObject* fn = callee.asESPointer()->asESFunctionObject();
-        bool prevStrict = currentContext->isStrictMode();
 
         if(UNLIKELY(fn->codeBlock()->m_needsActivation)) {
             instance->m_currentExecutionContext = new ExecutionContext(LexicalEnvironment::newFunctionEnvironment(fn), true, isNewExpression,

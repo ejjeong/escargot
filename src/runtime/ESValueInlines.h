@@ -503,8 +503,16 @@ inline bool ESValue::toBoolean() const
         return asBoolean();
     if (isInt32())
         return asInt32();
-    if (isDouble())
-        return asDouble();
+    if (isDouble()) {
+        double d = asDouble();
+        if(isnan(d))
+            return false;
+        if(d == 0.0)
+            return false;
+        if(d == -0.0)
+            return false;
+        return true;
+    }
     if (isUndefinedOrNull())
         return false;
     if (isESString())
@@ -1464,7 +1472,7 @@ ALWAYS_INLINE void ESObject::set(escargot::ESValue key, const ESValue& val, bool
             //TODO set flags
             m_map->insert(std::make_pair(str, escargot::ESSlot(val, true, true, true)));
         } else {
-            if(iter->second.isWritable())
+            if(LIKELY(iter->second.isWritable()))
                 iter->second.setValue(val, this);
         }
     } else {
@@ -1531,11 +1539,7 @@ ALWAYS_INLINE void ESObject::enumeration(Functor t)
         while(iter != m_hiddenClass->m_propertyInfo.end()) {
             size_t idx = iter->second;
             if(m_hiddenClass->m_propertyFlagInfo[idx].m_isEnumerable) {
-                if(m_hiddenClass->m_propertyFlagInfo[idx].m_isDataProperty) {
-                    t(ESValue(iter->first));
-                } else {
-                    t(ESValue(iter->first));
-                }
+                t(ESValue(iter->first));
             }
             iter++;
         }

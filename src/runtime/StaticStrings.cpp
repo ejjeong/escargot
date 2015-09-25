@@ -48,6 +48,7 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     SyntaxError =  ESString::create(u"SyntaxError");
     concat = ESString::create(u"concat");
     indexOf = ESString::create(u"indexOf");
+    lastIndexOf = ESString::create(u"lastIndexOf");
     join = ESString::create(u"join");
     push = ESString::create(u"push");
     pop = ESString::create(u"pop");

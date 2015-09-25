@@ -24,7 +24,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     char* codeBuffer = codeBlock->m_code.data();
     ExecutionContext* ec = instance->currentExecutionContext();
     GlobalObject* globalObject = instance->globalObject();
-    ESObject* lastESObjectMetInMemberExpressionNode = globalObject;
+    ESValue lastESObjectMetInMemberExpressionNode = globalObject;
     ESValue* lastExpressionStatementValue = &instance->m_lastExpressionStatementValue;
     ESValue* nonActivitionModeLocalValuePointer = ec->cachedDeclarativeEnvironmentRecordESValue();
     ASSERT(((size_t)stack % sizeof(size_t)) == 0);
@@ -608,7 +608,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* obj = pop<ESValue>(stack, bp);
         ESValue* key = pop<ESValue>(stack, bp);
-        push<ESValue>(stack, bp, ESValue(!obj->toObject()->find(*key).isEmpty()));
+        push<ESValue>(stack, bp, ESValue(!obj->toObject()->find(*key, true).isEmpty()));
 
         executeNextCode<StringIn>(programCounter);
         goto NextInstruction;
@@ -815,15 +815,14 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             } else {
                 ESString* val = property->toString();
                 if(*val == *strings->length) {
-                    lastESObjectMetInMemberExpressionNode = (globalObject->stringObjectProxy());
+                    lastESObjectMetInMemberExpressionNode = *willBeObject;
                     push<ESValue>(stack, bp, ESValue(willBeObject->asESString()->length()));
                     executeNextCode<GetObject>(programCounter);
                     goto NextInstruction;
                 }
                 ESValue ret = globalObject->stringObjectProxy()->find(val, true);
                 if(ret != ESValue(ESValue::ESEmptyValue) && ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->codeBlock()->m_isBuiltInFunction) {
-                    globalObject->stringObjectProxy()->setString(willBeObject->asESString());
-                    lastESObjectMetInMemberExpressionNode = (globalObject->stringObjectProxy());
+                    lastESObjectMetInMemberExpressionNode = *willBeObject;
                     push<ESValue>(stack, bp, ret);
                     executeNextCode<GetObject>(programCounter);
                     goto NextInstruction;
@@ -833,8 +832,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             ESString* val = property->toString();
             ESValue ret = globalObject->numberObjectProxy()->find(val, true);
             if(ret != ESValue(ESValue::ESEmptyValue) && ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->codeBlock()->m_isBuiltInFunction) {
-                globalObject->numberObjectProxy()->setNumberData(willBeObject->asNumber());
-                lastESObjectMetInMemberExpressionNode = globalObject->numberObjectProxy();
+                lastESObjectMetInMemberExpressionNode = *willBeObject;
                 push<ESValue>(stack, bp, ret);
                 executeNextCode<GetObject>(programCounter);
                 goto NextInstruction;
@@ -942,15 +940,14 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             } else {
                 ESString* val = property->toString();
                 if(*val == *strings->length) {
-                    lastESObjectMetInMemberExpressionNode = (globalObject->stringObjectProxy());
+                    lastESObjectMetInMemberExpressionNode = *willBeObject;
                     push<ESValue>(stack, bp, ESValue(willBeObject->asESString()->length()));
                     executeNextCode<GetObject>(programCounter);
                     goto NextInstruction;
                 }
                 ESValue ret = globalObject->stringObjectProxy()->find(val, true);
                 if(ret != ESValue(ESValue::ESEmptyValue) && ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->codeBlock()->m_isBuiltInFunction) {
-                    globalObject->stringObjectProxy()->setString(willBeObject->asESString());
-                    lastESObjectMetInMemberExpressionNode = (globalObject->stringObjectProxy());
+                    lastESObjectMetInMemberExpressionNode = *willBeObject;
                     push<ESValue>(stack, bp, ret);
                     executeNextCode<GetObject>(programCounter);
                     goto NextInstruction;
@@ -960,8 +957,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             ESString* val = property->toString();
             ESValue ret = globalObject->numberObjectProxy()->find(val, true);
             if(ret != ESValue(ESValue::ESEmptyValue) && ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->codeBlock()->m_isBuiltInFunction) {
-                globalObject->numberObjectProxy()->setNumberData(willBeObject->asNumber());
-                lastESObjectMetInMemberExpressionNode = globalObject->numberObjectProxy();
+                lastESObjectMetInMemberExpressionNode = *willBeObject;
                 push<ESValue>(stack, bp, ret);
                 executeNextCode<GetObject>(programCounter);
                 goto NextInstruction;
@@ -1131,8 +1127,8 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         }
 #endif
         ESValue* arguments = (ESValue *)stack;
-        ESObject* receiver = pop<ESValue>(stack, bp)->asESPointer()->asESObject();
-        push<ESValue>(stack, bp, ESFunctionObject::call(instance, *pop<ESValue>(stack, bp), receiver, arguments, argc, false));
+        ESValue* receiver = pop<ESValue>(stack, bp);
+        push<ESValue>(stack, bp, ESFunctionObject::call(instance, *pop<ESValue>(stack, bp), *receiver, arguments, argc, false));
         executeNextCode<CallFunction>(programCounter);
         goto NextInstruction;
     }

@@ -53,6 +53,7 @@ ESString* valueOf;
 ESString* Array;
 ESString* concat;
 ESString* indexOf;
+ESString* lastIndexOf;
 ESString* join;
 ESString* push;
 ESString* pop;
