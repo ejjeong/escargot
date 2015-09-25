@@ -650,6 +650,26 @@ public:
         fn(buf, length());
     }
 
+    size_t tryToUseAsIndex()
+    {
+        const u16string& s = string();
+        bool allOfCharIsDigit = true;
+        unsigned number = 0;
+        for(unsigned i = 0; i < s.length() ; i ++) {
+            char16_t c = s[i];
+            if(c < '0' || c > '9') {
+                allOfCharIsDigit = false;
+                break;
+            } else {
+                number = number*10 + (c-'0');
+            }
+        }
+        if(allOfCharIsDigit) {
+            return number;
+        }
+        return SIZE_MAX;
+    }
+
     ALWAYS_INLINE void ensureNormalString() const;
     ALWAYS_INLINE const char16_t* data() const;
     ALWAYS_INLINE const u16string& string() const;
@@ -1238,7 +1258,7 @@ public:
 
     //DO NOT USE THIS FUNCTION
     //NOTE rooted ESSlot has short life time.
-    inline escargot::ESSlotAccessor definePropertyOrThrow(escargot::ESValue key, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true);
+    inline escargot::ESSlotAccessor definePropertyOrThrow(escargot::ESValue key, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true, const ESValue& initalValue = ESValue());
     void defineAccessorProperty(escargot::ESString* key,ESValue (*getter)(::escargot::ESObject* obj) = nullptr,
             void (*setter)(::escargot::ESObject* obj, const ESValue& value)  = nullptr,
             bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
@@ -1302,7 +1322,7 @@ public:
     inline void propertyFlags(const ESValue& key, bool& exists, bool& isDataProperty, bool& isWritable, bool& isEnumerable, bool& isConfigurable);
     inline ESAccessorData* accessorData(const ESValue& key);
 
-    ALWAYS_INLINE bool hasOwnProperty(const escargot::ESValue& key);
+    ALWAYS_INLINE bool hasOwnProperty(escargot::ESValue key);
     //$6.1.7.2 Object Internal Methods and Internal Slots
     bool isExtensible() {
         return true;
@@ -1336,7 +1356,7 @@ public:
     ESSlotAccessor addressOfProperty(escargot::ESValue key);
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
-    ALWAYS_INLINE void set(const escargot::ESValue& key, const ESValue& val, bool shouldThrowException = false);
+    ALWAYS_INLINE void set(escargot::ESValue key, const ESValue& val, bool shouldThrowException = false);
 
     void set(escargot::ESString* key, const ESValue& val, bool shouldThrowException = false)
     {
@@ -1549,7 +1569,7 @@ public:
         return arr;
     }
 
-    ESValue get(int key)
+    ESValue get(unsigned key)
     {
         if (m_fastmode) {
             if(key >= 0 && key < m_length)
@@ -1587,19 +1607,19 @@ public:
         }
     }
 
-    void eraseValues(int idx, int cnt)
+    void eraseValues(unsigned idx, unsigned cnt)
     {
         if (m_fastmode) {
             m_vector.erase(m_vector.begin()+idx, m_vector.begin()+idx+cnt);
         } else {
-            for (int k = 0, i = idx; i < length() && k < cnt; i++, k++) {
+            for (int k = 0, i = idx; i < length() && k < (int)cnt; i++, k++) {
                 set(i, get(i+cnt));
             }
         }
         setLength(length() - cnt);
     }
 
-    bool shouldConvertToSlowMode(int i) {
+    bool shouldConvertToSlowMode(unsigned i) {
         if (m_fastmode && i > MAX_FASTMODE_SIZE)
             return true;
         return false;
@@ -1631,16 +1651,16 @@ public:
         if (m_fastmode) {
             m_vector[i] = val;
         } else {
-            ESObject::set(ESValue(i).toString(), val, shouldThrowException);
+            ESObject::set(ESValue(i), val, shouldThrowException);
         }
     }
 
-    void setLength(int32_t newLength)
+    void setLength(unsigned newLength)
     {
         if (newLength < m_length) {
             //TODO : delete elements
         } else if (m_fastmode && newLength > m_length) {
-            if((int)m_vector.capacity() < newLength) {
+            if(m_vector.capacity() < newLength) {
                 size_t reservedSpace = std::min(MAX_FASTMODE_SIZE, newLength*2);
                 m_vector.reserve(reservedSpace);
             }
@@ -1656,7 +1676,7 @@ public:
 
     const int32_t length()
     {
-        return m_length;
+        return (const int32_t)m_length;
     }
 
     void sort()
@@ -1681,10 +1701,10 @@ public:
     }
 
 protected:
-    int32_t m_length;
+    unsigned m_length;
     ESVector m_vector;
     bool m_fastmode;
-    static const int MAX_FASTMODE_SIZE = 65536;
+    static const unsigned MAX_FASTMODE_SIZE = 65536;
 };
 
 class LexicalEnvironment;

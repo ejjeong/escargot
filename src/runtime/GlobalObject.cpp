@@ -35,12 +35,9 @@ void GlobalObject::initGlobalObject()
     m_functionPrototype->set__proto__(m_objectPrototype);
 
     // Value Properties of the Global Object
-    definePropertyOrThrow(strings->Infinity, false, false, false);
-    definePropertyOrThrow(strings->NaN, false, false, false);
-    definePropertyOrThrow(strings->undefined, false, false, false);
-    set(strings->Infinity, ESValue(std::numeric_limits<double>::infinity()));
-    set(strings->NaN, ESValue(std::numeric_limits<double>::quiet_NaN()));
-    set(strings->undefined, ESValue());
+    definePropertyOrThrow(strings->Infinity, false, false, false, ESValue(std::numeric_limits<double>::infinity()));
+    definePropertyOrThrow(strings->NaN, false, false, false, ESValue(std::numeric_limits<double>::quiet_NaN()));
+    definePropertyOrThrow(strings->undefined, false, false, false, ESValue());
 
     auto brkFunction = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         printf("dbgBreak\n");
@@ -116,7 +113,6 @@ void GlobalObject::initGlobalObject()
     set(ESString::create(u"read"), readFunction);
 
     // Function Properties of the Global Object
-    definePropertyOrThrow(ESString::create(u"eval"), false, false, false);
     m_eval = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue argument = instance->currentExecutionContext()->arguments()[0];
         if(!argument.isESString()) {
@@ -128,11 +124,10 @@ void GlobalObject::initGlobalObject()
         }, false);
         return ret;
     }, ESString::create(u"eval"));
-    set(ESString::create(u"eval"), m_eval);
+    definePropertyOrThrow(ESString::create(u"eval"), false, false, false, m_eval);
 
     // $18.2.2
-    definePropertyOrThrow(ESString::create(u"isFinite"), false, false, false);
-    set(ESString::create(u"isFinite"), ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+    definePropertyOrThrow(ESString::create(u"isFinite"), false, false, false, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue ret;
         int len = instance->currentExecutionContext()->argumentCount();
         if (len < 1) ret = ESValue(ESValue::ESFalseTag::ESFalse);
@@ -148,8 +143,7 @@ void GlobalObject::initGlobalObject()
     }, ESString::create(u"isFinite")));
 
     // $18.2.3
-    definePropertyOrThrow(ESString::create(u"isNaN"), false, false, false);
-    set(ESString::create(u"isNaN"), ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+    definePropertyOrThrow(ESString::create(u"isNaN"), false, false, false, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue ret;
         int len = instance->currentExecutionContext()->argumentCount();
         if (len < 1) ret = ESValue(ESValue::ESFalseTag::ESFalse);
@@ -163,8 +157,7 @@ void GlobalObject::initGlobalObject()
     }, ESString::create(u"isNaN")));
 
     // $18.2.4 parseFloat(string)
-    definePropertyOrThrow(ESString::create(u"parseFloat"), false, false, false);
-    set(ESString::create(u"parseFloat"), ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+    definePropertyOrThrow(ESString::create(u"parseFloat"), false, false, false, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         int len = instance->currentExecutionContext()->argumentCount();
         if (len < 1) {
             return ESValue(std::numeric_limits<double>::quiet_NaN());
@@ -177,8 +170,7 @@ void GlobalObject::initGlobalObject()
     }, ESString::create(u"parseFloat")));
 
     // $18.2.5 parseInt(string, radix)
-    definePropertyOrThrow(ESString::create(u"parseInt"), false, false, false);
-    set(ESString::create(u"parseInt"), ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+    definePropertyOrThrow(ESString::create(u"parseInt"), false, false, false, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue ret;
         int len = instance->currentExecutionContext()->argumentCount();
         if (len < 1) {
@@ -440,7 +432,7 @@ void GlobalObject::installObject()
                     }
                     obj->defineAccessorProperty(key.toString(), getter, setter, isWritable, isEnumerable, isConfigurable);
                 } else {
-                    obj->definePropertyOrThrow(key, isWritable, isEnumerable, isConfigurable).setValue(v);
+                    obj->definePropertyOrThrow(key, isWritable, isEnumerable, isConfigurable, v);
                 }
             } else {
                 throw ESValue(TypeError::create());

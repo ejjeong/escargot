@@ -575,8 +575,11 @@ inline bool ESValue::isPrimitive() const
 
 inline void ESSlot::setValue(const ::escargot::ESValue& value, ::escargot::ESObject* object)
 {
+    if(UNLIKELY(!m_isWritable)) {
+        return ;
+    }
     if(LIKELY(m_isDataProperty)) {
-        m_data = value;
+            m_data = value;
     } else {
         ESAccessorData* data = (ESAccessorData*)m_data.asESPointer();
         data->setValue(object, value);
@@ -1042,7 +1045,7 @@ ALWAYS_INLINE ESValue ESHiddenClass::read(ESObject* obj, size_t idx)
 
 //DO NOT USE THIS FUNCTION
 //NOTE rooted ESSlot has short life time.
-inline escargot::ESSlotAccessor ESObject::definePropertyOrThrow(escargot::ESValue key, bool isWritable, bool isEnumerable, bool isConfigurable)
+inline escargot::ESSlotAccessor ESObject::definePropertyOrThrow(escargot::ESValue key, bool isWritable, bool isEnumerable, bool isConfigurable, const ESValue& initalValue)
 {
     if(isESArrayObject()) {
         int i;
@@ -1066,9 +1069,11 @@ inline escargot::ESSlotAccessor ESObject::definePropertyOrThrow(escargot::ESValu
         escargot::ESString* str = key.toString();
         auto iter = m_map->find(str);
         if(iter != m_map->end()) {
+            //TODO(what if property is non-configurable)
+            ASSERT(iter->second.isConfigurable());
             m_map->erase(iter);
         }
-        m_map->insert(std::make_pair(str, ::escargot::ESSlot(ESValue(), isWritable, isEnumerable, isConfigurable)));
+        m_map->insert(std::make_pair(str, ::escargot::ESSlot(initalValue, isWritable, isEnumerable, isConfigurable)));
         return ESSlotAccessor(this, key);
     } else {
         size_t ret = m_hiddenClass->defineProperty(this, key.toString(), true, isWritable, isEnumerable, isConfigurable);
@@ -1079,27 +1084,24 @@ inline escargot::ESSlotAccessor ESObject::definePropertyOrThrow(escargot::ESValu
                 || (true != m_hiddenClass->m_propertyFlagInfo[ret].m_isDataProperty))
                 ) {
             convertIntoMapMode();
-            return definePropertyOrThrow(key, isWritable, isEnumerable, isConfigurable);
+            return definePropertyOrThrow(key, isWritable, isEnumerable, isConfigurable, initalValue);
         }
 
         if(UNLIKELY(m_hiddenClass->m_propertyInfo.size() >= ESHiddenClass::ESHiddenClassSizeLimit)) {
             convertIntoMapMode();
-            return definePropertyOrThrow(key, isWritable, isEnumerable, isConfigurable);
+            return definePropertyOrThrow(key, isWritable, isEnumerable, isConfigurable, initalValue);
         }
-        if(m_hiddenClass->m_propertyFlagInfo[ret].m_isDataProperty) {
-            return ESSlotAccessor(this, key);
-        } else {
-            return ESSlotAccessor(this, key);
-        }
+        ASSERT(m_hiddenClass->m_propertyFlagInfo[ret].m_isDataProperty);
+        m_hiddenClassData[ret] = initalValue;
+        return ESSlotAccessor(this, key);
     }
 }
 
 inline void ESObject::deletePropety(const ESValue& key)
 {
     if(isESArrayObject()) {
-        int i;
         if (key.isInt32()) {
-            i = key.toInt32();
+            int i = key.toInt32();
             if(i < asESArrayObject()->length()) {
                 asESArrayObject()->m_vector[i] = ESValue(ESValue::ESEmptyValue);
             }
@@ -1170,31 +1172,31 @@ inline ESAccessorData* ESObject::accessorData(const ESValue& key)
 }
 
 
-ALWAYS_INLINE bool ESObject::hasOwnProperty(const escargot::ESValue& key)
+ALWAYS_INLINE bool ESObject::hasOwnProperty(escargot::ESValue key)
 {
-    if(isESArrayObject()) {
-        if (asESArrayObject()->isFastmode() && key.isInt32()) {
-            int key_int = key.asInt32();
-            if(key_int >= 0 && key_int < asESArrayObject()->length() && asESArrayObject()->m_vector[key_int] != ESValue(ESValue::ESEmptyValue)) {
-                return true;
-            } else {
-                return false;
-            }
-        } else if (asESArrayObject()->isFastmode()) {
-            wchar_t *end;
-            const wchar_t *bufAddress;
-            long key_int;
-            escargot::ESString* str = key.toString();
-            str->wcharData([&](const wchar_t* buf, unsigned size){
-                bufAddress = buf;
-                //TODO process 16, 8 radix
-                key_int = wcstol(buf, &end, 10);
-            });
-            //FIXME what if key is negative?
-            if (end == bufAddress + str->length()) {
-                if (key_int < asESArrayObject()->m_length)
+    if((isESArrayObject() && asESArrayObject()->isFastmode()) || isESTypedArrayObject()) {
+        size_t idx = SIZE_MAX;
+        if(key.isInt32() && key.asInt32() >= 0) {
+            idx = key.asInt32();
+        } else {
+            key = key.toString();
+            idx = key.asESString()->tryToUseAsIndex();
+        }
+        if(idx != SIZE_MAX) {
+            if(LIKELY(isESArrayObject())) {
+                if((int)idx < asESArrayObject()->length() && asESArrayObject()->m_vector[idx] != ESValue(ESValue::ESEmptyValue)) {
                     return true;
+                } else {
+                    return false;
+                }
+            } else {
+                if((int)idx < asESTypedArrayObjectWrapper()->length()) {
+                    return true;
+                } else {
+                    return false;
+                }
             }
+        } else {
         }
     }
     if(UNLIKELY(m_map != NULL)){
@@ -1213,39 +1215,34 @@ ALWAYS_INLINE ESValue ESObject::get(escargot::ESValue key, bool searchPrototype)
     if ((isESArrayObject() && asESArrayObject()->isFastmode()) || isESTypedArrayObject()) {
         if(key.isInt32()) {
             int idx = key.asInt32();
-            if(UNLIKELY(isESTypedArrayObject())) {
-                return asESTypedArrayObjectWrapper()->get(idx);
-            }
-            if(LIKELY(idx >= 0 && idx < asESArrayObject()->length())) {
-                ESValue e = asESArrayObject()->m_vector[idx];
-                if(UNLIKELY(e == ESValue(ESValue::ESEmptyValue)))
-                    return ESValue();
-                else
-                    return e;
-            }
-        } else {
-            escargot::ESString* str = key.toString();
-            const u16string& s = str->string();
-            bool allOfCharIsDigit = true;
-            int number = 0;
-            for(unsigned i = 0; i < s.length() ; i ++) {
-                char16_t c = s[i];
-                if(c < '0' || c > '9') {
-                    allOfCharIsDigit = false;
-                    break;
-                } else {
-                    number = number*10 + (c-'0');
-                }
-            }
-            if(allOfCharIsDigit) {
-                if(LIKELY(number >= 0 && number < asESArrayObject()->length())) {
-                    ESValue e = asESArrayObject()->m_vector[number];
+            if(LIKELY(idx >= 0)) {
+                if(UNLIKELY(isESTypedArrayObject())) {
+                    return asESTypedArrayObjectWrapper()->get(idx);
+                } else if(LIKELY(idx < asESArrayObject()->length())) {
+                    ESValue e = asESArrayObject()->m_vector[idx];
                     if(UNLIKELY(e == ESValue(ESValue::ESEmptyValue)))
                         return ESValue();
                     else
                         return e;
                 }
             }
+        } else {
+            escargot::ESString* str = key.toString();
+            size_t number = str->tryToUseAsIndex();
+            if(number != SIZE_MAX) {
+                if(LIKELY(isESArrayObject())) {
+                    if(LIKELY((int)number < asESArrayObject()->length())) {
+                        ESValue e = asESArrayObject()->m_vector[number];
+                        if(UNLIKELY(e.isEmpty()))
+                            return ESValue();
+                        else
+                            return e;
+                    }
+                } else {
+                    return asESTypedArrayObjectWrapper()->get(number);
+                }
+            }
+            key = str;
         }
     }
 
@@ -1414,30 +1411,49 @@ ALWAYS_INLINE escargot::ESValue ESObject::findOnlyPrototype(escargot::ESValue ke
 }
 
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
-ALWAYS_INLINE void ESObject::set(const escargot::ESValue& key, const ESValue& val, bool shouldThrowException)
+ALWAYS_INLINE void ESObject::set(escargot::ESValue key, const ESValue& val, bool shouldThrowException)
 {
-    int i;
-    if (isESTypedArrayObject() && key.isInt32()) {
-        i = key.asInt32();
-        asESTypedArrayObjectWrapper()->set(i, val);
-        return;
+    if ((isESArrayObject() && asESArrayObject()->isFastmode()) || isESTypedArrayObject()) {
+        if(key.isInt32()) {
+            int idx = key.asInt32();
+            if(UNLIKELY(isESTypedArrayObject())) {
+                asESTypedArrayObjectWrapper()->set(idx, val);
+                return ;
+            } else if(idx >= 0) {
+                int len = asESArrayObject()->length();
+                if (idx < len) {
+                    asESArrayObject()->m_vector[idx] = val;
+                    return ;
+                } else {
+                    if (asESArrayObject()->shouldConvertToSlowMode(idx)) {
+                        asESArrayObject()->convertToSlowMode();
+                        asESArrayObject()->setLength(idx + 1);
+                    } else {
+                        asESArrayObject()->setLength(idx + 1);
+                        asESArrayObject()->m_vector[idx] = val;
+                        return ;
+                    }
+                }
+            }
+
+        } else {
+            escargot::ESString* str = key.toString();
+            size_t number = str->tryToUseAsIndex();
+            if(number != SIZE_MAX) {
+                if(LIKELY(isESArrayObject())) {
+                    if(LIKELY((int)number < asESArrayObject()->length())) {
+                        asESArrayObject()->m_vector[number] = val;
+                        return ;
+                    }
+                } else {
+                    asESTypedArrayObjectWrapper()->set(number, val);
+                    return ;
+                }
+            }
+            key = str;
+        }
     }
-    if (isESArrayObject() && key.isInt32()) {
-        i = key.asInt32();
-        int len = asESArrayObject()->length();
-        if (i == len && asESArrayObject()->isFastmode()) {
-            asESArrayObject()->setLength(len+1);
-        }
-        else if (i >= len) {
-            if (asESArrayObject()->shouldConvertToSlowMode(i))
-                asESArrayObject()->convertToSlowMode();
-            asESArrayObject()->setLength(i+1);
-        }
-        if (asESArrayObject()->isFastmode()) {
-            asESArrayObject()->m_vector[i] = val;
-            return;
-        }
-    }
+
     if(UNLIKELY(m_map != NULL)){
         //TODO Assert: IsPropertyKey(P) is true.
         //TODO Assert: Type(Throw) is ESBoolean.
@@ -1448,29 +1464,32 @@ ALWAYS_INLINE void ESObject::set(const escargot::ESValue& key, const ESValue& va
             //TODO set flags
             m_map->insert(std::make_pair(str, escargot::ESSlot(val, true, true, true)));
         } else {
-            iter->second.setValue(val, this);
+            if(iter->second.isWritable())
+                iter->second.setValue(val, this);
         }
     } else {
-        size_t ret = m_hiddenClass->findProperty(key.toString());
+        escargot::ESString* keyStr = key.toString();
+        size_t ret = m_hiddenClass->findProperty(keyStr);
         if(ret == SIZE_MAX) {
             //define
             if(UNLIKELY(m_hiddenClass->m_propertyInfo.size() >= ESHiddenClass::ESHiddenClassSizeLimit)) {
                 convertIntoMapMode();
-                escargot::ESString* str = key.toString();
-                auto iter = m_map->find(str);
+                auto iter = m_map->find(keyStr);
                 ASSERT(iter == m_map->end());
-                m_map->insert(std::make_pair(str, escargot::ESSlot(val, true, true, true)));
+                m_map->insert(std::make_pair(keyStr, escargot::ESSlot(val, true, true, true)));
                 return ;
             } else {
-                ret = m_hiddenClass->defineProperty(this, key.toString(), true, true, true, true);
+                ret = m_hiddenClass->defineProperty(this, keyStr, true, true, true, true);
             }
         }
 
-        if(m_hiddenClass->m_propertyFlagInfo[ret].m_isDataProperty) {
-            m_hiddenClassData[ret] = val;
-        } else {
-            ESAccessorData * d = (ESAccessorData *)m_hiddenClassData[ret].asESPointer();
-            d->setValue(this, val);
+        if(LIKELY(m_hiddenClass->m_propertyFlagInfo[ret].m_isWritable)) {
+            if(LIKELY(m_hiddenClass->m_propertyFlagInfo[ret].m_isDataProperty)) {
+                m_hiddenClassData[ret] = val;
+            } else {
+                ESAccessorData * d = (ESAccessorData *)m_hiddenClassData[ret].asESPointer();
+                d->setValue(this, val);
+            }
         }
     }
 }
@@ -1536,10 +1555,12 @@ ALWAYS_INLINE ESValue ESObject::readHiddenClass(size_t idx)
 ALWAYS_INLINE void ESObject::writeHiddenClass(size_t idx, const ESValue& value)
 {
     ASSERT(!m_map);
-    if(LIKELY(m_hiddenClass->m_propertyFlagInfo[idx].m_isDataProperty))
-        m_hiddenClassData[idx] = value;
-    else {
-        ((ESAccessorData *)m_hiddenClassData[idx].asESPointer())->setValue(this, value);
+    if(LIKELY(m_hiddenClass->m_propertyFlagInfo[idx].m_isWritable)) {
+        if(LIKELY(m_hiddenClass->m_propertyFlagInfo[idx].m_isDataProperty))
+            m_hiddenClassData[idx] = value;
+        else {
+            ((ESAccessorData *)m_hiddenClassData[idx].asESPointer())->setValue(this, value);
+        }
     }
 }
 
