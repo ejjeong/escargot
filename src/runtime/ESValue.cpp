@@ -331,8 +331,10 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlo
 
     if (proto != NULL)
         set__proto__(proto);
-    else
-        set__proto__(ESVMInstance::currentInstance()->globalFunctionPrototype());
+    else {
+        //for avoiding assert
+        m___proto__ = ESVMInstance::currentInstance()->globalFunctionPrototype();
+    }
 }
 
 ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeFunctionType fn, escargot::ESString* name, ESObject* proto)

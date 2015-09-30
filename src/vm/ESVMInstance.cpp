@@ -16,6 +16,7 @@ ESVMInstance::ESVMInstance()
 {
 #ifndef NDEBUG
     m_dumpByteCode = false;
+    m_dumpExecuteByteCode = false;
 #endif
 
     std::srand(std::time(0));
@@ -40,6 +41,7 @@ ESVMInstance::ESVMInstance()
     //TODO call destructor
     m_bumpPointerAllocator = new(GC) WTF::BumpPointerAllocator();
 
+    m_globalFunctionPrototype = NULL;
 
     m_object__proto__AccessorData.setGetter([](ESObject* obj) -> ESValue {
         return obj->__proto__();
@@ -48,6 +50,8 @@ ESVMInstance::ESVMInstance()
     m_object__proto__AccessorData.setSetter([](::escargot::ESObject* self, const ESValue& value) -> void {
         if(value.isESPointer() && value.asESPointer()->isESObject()) {
             self->set__proto__(value.asESPointer()->asESObject());
+        } else {
+            self->set__proto__(ESValue());
         }
     });
 

@@ -34,8 +34,9 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     NextInstruction:
     ByteCode* currentCode = (ByteCode *)programCounter;
     ASSERT(((size_t)currentCode % sizeof(size_t)) == 0);
-    /*
-    {
+
+#ifndef NDEBUG
+    if(instance->m_dumpExecuteByteCode) {
         size_t tt = (size_t)currentCode;
         ASSERT(tt % sizeof(size_t) == 0);
         if(currentCode->m_node)
@@ -44,9 +45,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             printf("execute %p %u \t(nodeinfo null)\t",currentCode, (unsigned)(programCounter-(size_t)codeBuffer));
         currentCode->dump();
     }
-    */
 
-#ifndef NDEBUG
     if (currentCode->m_orgOpcode < 0 || currentCode->m_orgOpcode > OpcodeKindEnd) {
         printf("Error: unknown opcode\n");
         RELEASE_ASSERT_NOT_REACHED();

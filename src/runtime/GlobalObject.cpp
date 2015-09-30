@@ -451,7 +451,10 @@ void GlobalObject::installObject()
             throw TypeError::create(ESString::create("first parameter is should be object"));
         }
         ESObject* obj = ESObject::create();
-        obj->set__proto__(proto);
+        if(proto.isNull())
+            obj->set__proto__(ESValue());
+        else
+            obj->set__proto__(proto);
         if(!instance->currentExecutionContext()->readArgument(1).isUndefined()) {
             //TODO
             RELEASE_ASSERT_NOT_REACHED();
@@ -958,6 +961,8 @@ void GlobalObject::installString()
         int length = instance->currentExecutionContext()->argumentCount();
         if(length == 1) {
             char16_t c = (char16_t)instance->currentExecutionContext()->arguments()[0].toInteger();
+            if(c == 0)
+                return strings->emptyESString;
             if(c < ESCARGOT_ASCII_TABLE_MAX)
                 return strings->asciiTable[c];
             return ESString::create(c);
@@ -1061,6 +1066,9 @@ void GlobalObject::installString()
         double len = S->length();
         double start = std::min(std::max(pos, 0.0), len);
         int result = S->string().find_last_of(searchStr->string(), start);
+        if(result != -1) {
+            result -= (searchStr->length() - 1);
+        }
 
         return ESValue(result);
     }, strings->lastIndexOf));

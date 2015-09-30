@@ -111,6 +111,7 @@ public:
 
 #ifndef NDEBUG
     bool m_dumpByteCode;
+    bool m_dumpExecuteByteCode;
 #endif
 
 protected:

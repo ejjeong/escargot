@@ -1377,6 +1377,7 @@ public:
 
     ALWAYS_INLINE void set__proto__(const ESValue& obj)
     {
+        ASSERT(obj.isObject() || obj.isUndefined());
         m___proto__ = obj;
     }
 
