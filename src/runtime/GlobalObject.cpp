@@ -19,15 +19,29 @@ std::string char2hex( char dec )
 {
     char dig1 = (dec&0xF0)>>4;
     char dig2 = (dec&0x0F);
-    if ( 0<= dig1 && dig1<= 9) dig1+=48;    //0,48inascii
-    if (10<= dig1 && dig1<=15) dig1+=65-10; //a,97inascii
-    if ( 0<= dig2 && dig2<= 9) dig2+=48;
-    if (10<= dig2 && dig2<=15) dig2+=65-10;
+    if ( 0 <= dig1 && dig1 <= 9) dig1 += 48;    //0,48inascii
+    if (10 <= dig1 && dig1 <=15) dig1 += 65-10; //a,97inascii
+    if ( 0 <= dig2 && dig2 <= 9) dig2 += 48;
+    if (10 <= dig2 && dig2 <=15) dig2 += 65-10;
 
     std::string r;
     r.append( &dig1, 1);
     r.append( &dig2, 1);
     return r;
+}
+
+char hex2char(char first, char second) {
+    char dig1 = first;
+    char dig2 = second;
+    if (48 <= dig1 && dig1 <= 57) dig1 -= 48;
+    if (65 <= dig1 && dig1 <= 70) dig1 -= 65 - 10;
+    if (48 <= dig2 && dig2 <= 57) dig2 -= 48;
+    if (65 <= dig2 && dig2 <= 70) dig2 -= 65 - 10;
+
+    char dec = dig1 << 4;
+    dec |= dig2;
+
+    return dec;
 }
 
 void GlobalObject::initGlobalObject()
@@ -252,7 +266,21 @@ void GlobalObject::initGlobalObject()
 
     // $B.2.1.2 unescape(string)
     definePropertyOrThrow(ESString::create(u"unescape"), false, false, false, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        return ESValue();
+        int argLen = instance->currentExecutionContext()->argumentCount();
+        if (argLen == 0)
+            return ESValue();
+        std::string str = std::string(instance->currentExecutionContext()->arguments()->asESString()->utf8Data());
+        int length = str.length();
+        std::string R = "";
+        for (int i = 0; i < length; i++) {
+            if (str[i] == '%') {
+                R.push_back(hex2char(str[i+1], str[i+2]));
+                i = i + 2;
+            } else {
+                R.append(&str[i], 1);
+              }
+         }
+        return escargot::ESString::create(R.c_str());
     }, ESString::create(u"unescape")));
 }
 
