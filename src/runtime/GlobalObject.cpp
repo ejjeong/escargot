@@ -749,6 +749,43 @@ void GlobalObject::installArray()
          }
     }, strings->push));
 
+    //$22.1.3.20 Array.prototype.reverse()
+    m_arrayPrototype->ESObject::set(ESString::create(u"reverse"), ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        ESObject* O = instance->currentExecutionContext()->resolveThisBindingToObject();
+        unsigned len = O->get(strings->length, true).toLength();
+        unsigned middle = std::floor(len/2);
+        unsigned lower = 0;
+        while (middle != lower) {
+            unsigned upper = len - lower - 1;
+            ESValue upperP = ESValue(upper);
+            ESValue lowerP = ESValue(lower);
+
+            bool lowerExists = O->hasOwnProperty(lowerP);
+            ESValue lowerValue;
+            if (lowerExists) {
+                lowerValue = O->get(lowerP);
+              }
+            bool upperExists = O->hasOwnProperty(upperP);
+            ESValue upperValue;
+            if (upperExists) {
+                upperValue = O->get(upperP);
+              }
+
+            if (lowerExists && upperExists) {
+                O->set(lowerP, upperValue, true);
+                O->set(upperP, lowerValue, true);
+            } else if (!lowerExists && upperExists) {
+                O->set(lowerP, upperValue, true);
+                O->deletePropety(upperP);
+            } else if (lowerExists && !upperExists) {
+                O->deletePropety(lowerP);
+                O->set(upperP, lowerValue, true);
+              }
+            lower++;
+         }
+        return O;
+    }, ESString::create(u"reverse")));
+
     //$22.1.3.21 Array.prototype.shift ( )
     m_arrayPrototype->ESObject::set(strings->shift, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         int argumentLen = instance->currentExecutionContext()->argumentCount();
@@ -802,7 +839,7 @@ void GlobalObject::installArray()
         return ret;
     }, strings->slice));
 
-    //$22.1.3.25 Array.prototype.sort(comparefn)
+    //$22.1.3.24 Array.prototype.sort(comparefn)
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-array.prototype.sort
     m_arrayPrototype->ESObject::set(strings->sort, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         int arglen = instance->currentExecutionContext()->argumentCount();
