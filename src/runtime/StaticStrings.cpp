@@ -46,6 +46,7 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     TypeError =  ESString::create(u"TypeError");
     RangeError =  ESString::create(u"RangeError");
     SyntaxError =  ESString::create(u"SyntaxError");
+    forEach =  ESString::create(u"forEach");
     concat = ESString::create(u"concat");
     indexOf = ESString::create(u"indexOf");
     lastIndexOf = ESString::create(u"lastIndexOf");
@@ -83,6 +84,7 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     round =  ESString::create(u"round");
     sin =  ESString::create(u"sin");
     sqrt =  ESString::create(u"sqrt");
+    tan =  ESString::create(u"tan");
     log =  ESString::create(u"log");
     toString =  ESString::create(u"toString");
     boolean = ESString::create(u"boolean");

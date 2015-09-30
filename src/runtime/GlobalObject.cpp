@@ -629,6 +629,41 @@ void GlobalObject::installArray()
         return ret;
     }, strings->concat));
 
+    //$22.1.3.10 Array.prototype.forEach()
+    m_arrayPrototype->ESObject::set(strings->forEach, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        //Let O be ToObject(this value).
+        ESObject* O = instance->currentExecutionContext()->resolveThisBindingToObject();
+
+        //Let len be ToLength(Get(O, "length")).
+        int32_t len = O->length();
+
+        ESValue callbackfn = instance->currentExecutionContext()->readArgument(0);
+
+        //If IsCallable(callbackfn) is false, throw a TypeError exception.
+        if(!callbackfn.isESPointer() || !callbackfn.asESPointer()->isESFunctionObject()) {
+            throw ESValue(TypeError::create(ESString::create("first parameter of forEach should be function")));
+        }
+
+        //If thisArg was supplied, let T be thisArg; else let T be undefined.
+        ESValue T = instance->currentExecutionContext()->readArgument(1);
+
+        //Let k be 0.
+        int32_t k = 0;
+        while(k < len) {
+            //Let Pk be ToString(k).
+            ESValue pk(k);
+            //Let kPresent be HasProperty(O, Pk).
+            bool kPresent = O->hasOwnProperty(pk);
+            if(kPresent) {
+                ESValue kValue = O->get(pk, false);
+                ESValue arguments[3] = {kValue, pk, O};
+                ESFunctionObject::call(instance, callbackfn, T, arguments, 3, false);
+            }
+            k++;
+        }
+        return ESValue();
+    }, strings->forEach));
+
     //$22.1.3.11 Array.prototype.indexOf()
     m_arrayPrototype->ESObject::set(strings->indexOf, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         auto thisBinded = instance->currentExecutionContext()->resolveThisBindingToObject();
@@ -1936,6 +1971,26 @@ void GlobalObject::installMath()
         return ESValue();
     }, strings->sqrt));
 
+    // initialize math object: $20.2.2.33 Math.tan()
+    m_math->set(strings->tan, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        double x = instance->currentExecutionContext()->readArgument(0).toNumber();
+        /*
+        If x is NaN, the result is NaN.
+        If x is +0, the result is +0.
+        If x is −0, the result is −0.
+        If x is +∞ or −∞, the result is NaN.
+        */
+        if(isnan(x))
+            return ESValue(std::numeric_limits<double>::quiet_NaN());
+        else if(x == 0.0)
+            return ESValue(0);
+        else if(x == -0.0)
+            return ESValue(ESValue::EncodeAsDouble, -0.0);
+        else if(isinf(x))
+            return ESValue(std::numeric_limits<double>::quiet_NaN());
+        return ESValue(tan(x));
+    }, strings->tan));
+
     // initialize mathPrototype object
     m_mathPrototype->setConstructor(m_math);
 
@@ -1986,8 +2041,11 @@ void GlobalObject::installNumber()
 {
     // create number object: $20.1.1 The Number Constructor
     m_number = ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-
-        return ESValue();
+        if(instance->currentExecutionContext()->isNewExpression()) {
+            return ESNumberObject::create(instance->currentExecutionContext()->readArgument(0).toNumber());
+        } else {
+            return ESValue(instance->currentExecutionContext()->readArgument(0).toNumber());
+        }
     }, strings->Number);
 
     // create numberPrototype object
@@ -2410,7 +2468,7 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
                 //TODO implement 22.2.1.4
                 ESObject* inputObj = val.asESPointer()->asESObject();
                 int32_t length = inputObj->length();
-                ASSERT(length > 0);
+                ASSERT(length >= 0);
                 unsigned elementSize = obj->elementSize();
                 escargot::ESArrayBufferObject *buffer = ESArrayBufferObject::createAndAllocate(length * elementSize);
                 obj->setBuffer(buffer);

@@ -20,7 +20,10 @@ public:
         codeBlock->pushCode(CreateArray(len), this);
         for(unsigned i = 0; i < len ; i++) {
             codeBlock->pushCode(Push(ESValue(i)), this);
-            m_elements[i]->generateExpressionByteCode(codeBlock, context);
+            if(m_elements[i])
+                m_elements[i]->generateExpressionByteCode(codeBlock, context);
+            else
+                codeBlock->pushCode(Push(ESValue(ESValue::ESEmptyValue)), this);
             codeBlock->pushCode(SetObject(), this);
         }
     }
