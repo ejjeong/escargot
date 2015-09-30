@@ -1844,7 +1844,7 @@ escargot::Node* finishLiteralNode(ParseContext* ctx, RefPtr<ParseStatus> ps)
 {
     escargot::LiteralNode* nd;
     if(ps->m_type == Token::StringLiteralToken) {
-        nd = new escargot::LiteralNode(escargot::ESValue(escargot::ESString::create(ps->m_value.data())));
+        nd = new escargot::LiteralNode(escargot::ESValue(escargot::ESString::create(ps->m_value)));
     }
     else if(ps->m_type == Token::NumericLiteralToken) {
         nd = new escargot::LiteralNode(escargot::ESValue(ps->m_valueNumber));

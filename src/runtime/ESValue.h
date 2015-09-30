@@ -469,14 +469,14 @@ public:
     {
         m_hashData.m_isHashInited =  false;
     }
-    ESStringData(const char16_t* str)
-        : u16string(str)
-    {
-        m_hashData.m_isHashInited =  false;
-    }
     ESStringData(u16string&& src)
         : u16string(std::move(src))
     {
+        m_hashData.m_isHashInited =  false;
+    }
+    ESStringData(std::u16string& src)
+    {
+        assign(src.begin(), src.end());
         m_hashData.m_isHashInited =  false;
     }
 
@@ -566,17 +566,19 @@ protected:
     {
         m_string = data;
     }
-    ESString(const char16_t* str)
-        : ESPointer(Type::ESString)
-    {
-        m_string = new(GC) ESStringData(str);
-    }
 
     ESString(u16string&& src)
         : ESPointer(Type::ESString)
     {
         m_string = new(GC) ESStringData(std::move(src));
     }
+
+    ESString(std::u16string& src)
+        : ESPointer(Type::ESString)
+    {
+        m_string = new(GC) ESStringData(src);
+    }
+
 
     ESString(int number)
         : ESPointer(Type::ESString)
@@ -602,13 +604,14 @@ protected:
         m_string = new(GC) ESStringData(str);
     }
 public:
-    static ESString* create(const char16_t* str)
-    {
-        return new ESString(str);
-    }
     static ESString* create(u16string&& src)
     {
         return new ESString(std::move(src));
+    }
+
+    static ESString* create(std::u16string& src)
+    {
+        return new ESString(src);
     }
 
     static ESString* create(int number)
