@@ -18,7 +18,6 @@ class Node;
     F(Pop) \
     F(PushIntoTempStack) \
     F(PopFromTempStack) \
-    F(SaveStackPointer) \
     F(LoadStackPointer) \
     F(CheckStackPointer) \
 \
@@ -126,6 +125,7 @@ class CodeBlock;
 
 struct ByteCodeGenerateContext {
     ByteCodeGenerateContext()
+      : m_offsetToBasePointer(0)
     {
     }
 
@@ -143,6 +143,7 @@ struct ByteCodeGenerateContext {
         ctx.m_continueStatementPositions.insert(ctx.m_continueStatementPositions.end(), m_continueStatementPositions.begin(), m_continueStatementPositions.end());
         ctx.m_labeledBreakStatmentPositions.insert(ctx.m_labeledBreakStatmentPositions.end(), m_labeledBreakStatmentPositions.begin(), m_labeledBreakStatmentPositions.end());
         ctx.m_labeledContinueStatmentPositions.insert(ctx.m_labeledContinueStatmentPositions.end(), m_labeledContinueStatmentPositions.begin(), m_labeledContinueStatmentPositions.end());
+        ctx.m_offsetToBasePointer = m_offsetToBasePointer;
         m_breakStatementPositions.clear();
         m_continueStatementPositions.clear();
         m_labeledBreakStatmentPositions.clear();
@@ -178,6 +179,7 @@ struct ByteCodeGenerateContext {
     std::vector<size_t> m_continueStatementPositions;
     std::vector<std::pair<ESString*, size_t> > m_labeledBreakStatmentPositions;
     std::vector<std::pair<ESString*, size_t> > m_labeledContinueStatmentPositions;
+    size_t m_offsetToBasePointer;
 };
 
 class ByteCode {
@@ -300,36 +302,19 @@ public:
 #endif
 };
 
-class SaveStackPointer : public ByteCode {
-public:
-    SaveStackPointer()
-        : ByteCode(SaveStackPointerOpcode)
-    {
-
-    }
-
-    void* m_savedStackPointer;
-#ifndef NDEBUG
-    virtual void dump()
-    {
-        printf("SaveStackPointer <>\n");
-    }
-#endif
-};
-
 class LoadStackPointer : public ByteCode {
 public:
-    LoadStackPointer(size_t saveStackPointerPosition)
+    LoadStackPointer(size_t offsetToBasePointer)
         : ByteCode(LoadStackPointerOpcode)
     {
-        m_saveStackPointerPosition = saveStackPointerPosition;
+        m_offsetToBasePointer = offsetToBasePointer;
     }
 
-    size_t m_saveStackPointerPosition;
+    size_t m_offsetToBasePointer;
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("LoadStackPointer <%u>\n", (unsigned)m_saveStackPointerPosition);
+        printf("LoadStackPointer <%u>\n", (unsigned)m_offsetToBasePointer);
     }
 #endif
 };
@@ -1688,16 +1673,16 @@ ALWAYS_INLINE void push(void*& stk, void* bp, Type* ptr)
 template <typename Type>
 ALWAYS_INLINE Type* pop(void*& stk, void* bp)
 {
-#ifndef NDEBUG
     if(((size_t)stk) - sizeof (Type) < ((size_t)bp)) {
         ASSERT_NOT_REACHED();
     }
     stk = (void *)(((size_t)stk) - sizeof(Type));
     size_t* siz = (size_t *)stk;
     ASSERT(*siz == sizeof (Type));
-#endif
+#ifndef NDEBUG
     stk = (void *)(((size_t)stk) - sizeof(size_t));
     ASSERT(((size_t)stk) % sizeof(size_t) == 0);
+#endif
     return (Type *)stk;
 }
 
@@ -1712,6 +1697,24 @@ ALWAYS_INLINE Type* peek(void* stk, void* bp)
 #endif
     address = (void *)(((size_t)address) - sizeof(Type));
     return (Type *)address;
+}
+
+template <typename Type>
+ALWAYS_INLINE void sub(void*& stk, void* bp, size_t offsetToBasePointer)
+{
+
+#ifndef NDEBUG
+    if(((size_t)stk) - offsetToBasePointer * (sizeof(Type) + sizeof(size_t)) < ((size_t)bp)) {
+              ASSERT_NOT_REACHED();
+    }
+    stk = (void *)(((size_t)stk) - offsetToBasePointer * (sizeof(Type) + sizeof(size_t)));
+#else
+    if(((size_t)stk) - offsetToBasePointer * sizeof(Type) < ((size_t)bp)) {
+            ASSERT_NOT_REACHED();
+    }
+    stk = (void *)(((size_t)stk) - offsetToBasePointer * sizeof(Type));
+#endif
+
 }
 
 template <typename CodeType>

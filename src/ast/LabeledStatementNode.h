@@ -17,13 +17,12 @@ public:
 
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        size_t position = codeBlock->currentCodeSize();
-        codeBlock->pushCode(SaveStackPointer(), this);
+        codeBlock->currentCodeSize();
         size_t start = codeBlock->currentCodeSize();
         m_statementNode->generateStatementByteCode(codeBlock, context);
-        size_t position2 = codeBlock->currentCodeSize();
-        codeBlock->pushCode(LoadStackPointer(position), this);
-        context.consumeLabeledBreakPositions(codeBlock, position2, m_label);
+        size_t end = codeBlock->currentCodeSize();
+        codeBlock->pushCode(LoadStackPointer(context.m_offsetToBasePointer), this);
+        context.consumeLabeledBreakPositions(codeBlock, end, m_label);
         context.consumeLabeledContinuePositions(codeBlock, start, m_label);
     }
 

@@ -21,6 +21,7 @@ public:
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         ByteCodeGenerateContext newContext;
+        newContext.m_offsetToBasePointer = context.m_offsetToBasePointer + 1;
 
         m_right->generateExpressionByteCode(codeBlock, newContext);
         codeBlock->pushCode(DuplicateTopOfStackValue(), this);
