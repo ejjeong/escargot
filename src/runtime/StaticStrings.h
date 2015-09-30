@@ -118,6 +118,7 @@ ESString* ArrayBuffer;
 ESString* byteLength;
 ESString* subarray;
 ESString* set;
+ESString* buffer;
 
 void initStaticStrings(ESVMInstance* instance);
 };

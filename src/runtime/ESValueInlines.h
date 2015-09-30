@@ -529,7 +529,7 @@ inline double ESValue::toInteger() const
     if (isInt32())
         return asInt32();
     double d = toNumber();
-    if (d == std::numeric_limits<double>::quiet_NaN())
+    if (isnan(d))
         return 0;
     // TODO check +0, -0, +inf, -inf
     return d < 0 ? -1 : 1 * std::floor(std::abs(d));
@@ -546,11 +546,7 @@ inline int32_t ESValue::toInt32() const
     double num = toNumber();
 
     //If number is NaN, +0, −0, +∞, or −∞, return +0.
-    if(UNLIKELY(num == std::numeric_limits<double>::quiet_NaN())) {
-        return 0;
-    } else if(UNLIKELY(num == -std::numeric_limits<double>::quiet_NaN())) {
-        return 0;
-    } else if(UNLIKELY(isnan(num))) {
+    if(UNLIKELY(isnan(num))) {
         return 0;
     } else if(UNLIKELY(num == -0.0)) {
         return 0;

@@ -2299,7 +2299,7 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
                 obj->allocateTypedArray(elemlen);
             }
             //$22.2.1.5 %TypedArray%(buffer [, byteOffset [, length] ] )
-            else if (val.asESPointer()->isESArrayBufferObject()) {
+            else if (val.isESPointer() && val.asESPointer()->isESArrayBufferObject()) {
                 escargot::ESString* msg = ESString::create(u"ArrayBuffer length minus the byteOffset is not a multiple of the element size");
                 unsigned elementSize = obj->elementSize();
                 int offset = 0;
@@ -2334,8 +2334,25 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
                 obj->setBytelength(newByteLength);
                 obj->setByteoffset(offset);
                 obj->setArraylength(newByteLength/elementSize);
+            } else if(val.isESPointer() && val.asESPointer()->isESObject()) {
+                //TODO implement 22.2.1.4
+                ESObject* inputObj = val.asESPointer()->asESObject();
+                int32_t length = inputObj->length();
+                ASSERT(length > 0);
+                unsigned elementSize = obj->elementSize();
+                escargot::ESArrayBufferObject *buffer = ESArrayBufferObject::createAndAllocate(length * elementSize);
+                obj->setBuffer(buffer);
+                obj->setBytelength(length * elementSize);
+                obj->setByteoffset(0);
+                obj->setArraylength(length);
+                for(int32_t i = 0; i < length ; i ++) {
+                    obj->set(i, inputObj->get(ESValue(i), true));
+                }
+            } else {
+                RELEASE_ASSERT_NOT_REACHED();
             }
             //TODO
+            ASSERT(obj->arraylength() < 210000000);
         }
         return obj;
     }, ta_name);
@@ -2346,6 +2363,11 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
     //$22.2.3.2
     ta_prototype->defineAccessorProperty(strings->length, [](ESObject* self) -> ESValue {
         return ESValue(self->asESTypedArrayObject<T>()->arraylength());
+    }, nullptr, true, false, false);
+
+    //TODO add reference
+    ta_prototype->defineAccessorProperty(strings->buffer, [](ESObject* self) -> ESValue {
+        return ESValue(self->asESTypedArrayObject<T>()->buffer());
     }, nullptr, true, false, false);
     //$22.2.3.22 %TypedArray%.prototype.set(overloaded[, offset])
     ta_prototype->ESObject::set(strings->set, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
