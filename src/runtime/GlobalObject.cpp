@@ -15,6 +15,21 @@ GlobalObject::GlobalObject()
 
 }
 
+std::string char2hex( char dec )
+{
+    char dig1 = (dec&0xF0)>>4;
+    char dig2 = (dec&0x0F);
+    if ( 0<= dig1 && dig1<= 9) dig1+=48;    //0,48inascii
+    if (10<= dig1 && dig1<=15) dig1+=65-10; //a,97inascii
+    if ( 0<= dig2 && dig2<= 9) dig2+=48;
+    if (10<= dig2 && dig2<=15) dig2+=65-10;
+
+    std::string r;
+    r.append( &dig1, 1);
+    r.append( &dig2, 1);
+    return r;
+}
+
 void GlobalObject::initGlobalObject()
 {
     convertIntoMapMode();
@@ -209,6 +224,36 @@ void GlobalObject::initGlobalObject()
         }
         return ret;
     }, ESString::create(u"parseInt")));
+
+    // $18.2.6.5 encodeURIComponent(uriComponent)
+    definePropertyOrThrow(ESString::create(u"encodeURIComponent"), false, false, false, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        int argLen = instance->currentExecutionContext()->argumentCount();
+        if (argLen == 0)
+            return ESValue();
+        std::string componentString = std::string(instance->currentExecutionContext()->arguments()->asESString()->utf8Data());
+        int strLen = componentString.length();
+
+        std::string escaped="";
+        for (int i = 0; i < strLen; i++) {
+            if ( (48 <= componentString[i] && componentString[i] <= 57) ||  // DecimalDigit
+                 (65 <= componentString[i] && componentString[i] <= 90) ||  // uriAlpha - lower case
+                 (97 <= componentString[i] && componentString[i] <= 122) ||  // uriAlpha - lower case
+                 (componentString[i]=='-' || componentString[i]=='_' || componentString[i]=='.' || componentString[i]=='!' || componentString[i]=='~' // uriMark
+                         || componentString[i]=='*' || componentString[i]=='`' || componentString[i]=='(' || componentString[i]==')') ) {
+                escaped.append( &componentString[i], 1);
+            } else {
+                escaped.append("%");
+                escaped.append( char2hex(componentString[i]) );//converts char 255 to string "ff"
+              }
+         }
+
+        return escargot::ESString::create(escaped.c_str());
+    }, ESString::create(u"encodeURIComponent")));
+
+    // $B.2.1.2 unescape(string)
+    definePropertyOrThrow(ESString::create(u"unescape"), false, false, false, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        return ESValue();
+    }, ESString::create(u"unescape")));
 }
 
 
