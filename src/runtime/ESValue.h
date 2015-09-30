@@ -1665,7 +1665,7 @@ public:
                 size_t reservedSpace = std::min(MAX_FASTMODE_SIZE, newLength*2);
                 m_vector.reserve(reservedSpace);
             }
-            m_vector.resize(newLength);
+            m_vector.resize(newLength, ESValue(ESValue::ESEmptyValue));
         }
         m_length = newLength;
     }
