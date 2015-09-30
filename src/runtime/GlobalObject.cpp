@@ -961,9 +961,7 @@ void GlobalObject::installString()
         int length = instance->currentExecutionContext()->argumentCount();
         if(length == 1) {
             char16_t c = (char16_t)instance->currentExecutionContext()->arguments()[0].toInteger();
-            if(c == 0)
-                return strings->emptyESString;
-            if(c < ESCARGOT_ASCII_TABLE_MAX)
+            if(c >= 0 && c < ESCARGOT_ASCII_TABLE_MAX)
                 return strings->asciiTable[c];
             return ESString::create(c);
         } else {
