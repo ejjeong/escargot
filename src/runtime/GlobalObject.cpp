@@ -893,6 +893,7 @@ void GlobalObject::installArray()
         return ret;
     }, strings->splice));
 
+    //$22.1.3.27 Array.prototype.toString()
     m_arrayPrototype->ESObject::set(strings->toString, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         //FIXME this is wrong
         u16string ret;
@@ -907,6 +908,40 @@ void GlobalObject::installArray()
         }
         return ESString::create(std::move(ret));
     }, strings->toString));
+
+    //$22.1.3.28 Array.prototype.unshift(...items)
+    m_arrayPrototype->ESObject::set(ESString::create(u"unshift"), ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+
+        ESObject* O = instance->currentExecutionContext()->resolveThisBindingToObject();
+        int len = O->get(strings->length, true).toLength();
+        int argCount = instance->currentExecutionContext()->argumentCount();
+        if (argCount > 0) {
+            if (len+argCount > std::pow(2, 53)-1)
+                throw TypeError::create();
+            int k = len;
+            while (k > 0) {
+                ESValue from(k - 1);
+                ESValue to(k + argCount - 1);
+                bool fromPresent = O->hasOwnProperty(from);
+                if (fromPresent) {
+                    ESValue fromValue = O->get(from);
+                    O->set(to, fromValue, true);
+                } else {
+                    O->deletePropety(to);
+                  }
+                k--;
+             }
+
+            int j = 0;
+            ESValue* items = instance->currentExecutionContext()->arguments();
+            for (int i = 0; i < argCount; i++) {
+                O->set(ESValue(j), *(items+i), true);
+              }
+        }
+
+        O->set(strings->length, ESValue(len + argCount), true);
+        return ESValue(len + argCount);
+    }, ESString::create(u"unshift")));
 
     m_arrayPrototype->setConstructor(m_array);
     m_arrayPrototype->ESObject::set(strings->length, ESValue(0));
