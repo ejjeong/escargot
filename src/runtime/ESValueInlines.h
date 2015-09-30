@@ -457,6 +457,7 @@ inline ESValue ESValue::toPrimitive(PrimitiveTypeHint preferredType) const
 
 inline double ESValue::toNumber() const
 {
+    //http://www.ecma-international.org/ecma-262/6.0/#sec-tonumber
     if (LIKELY(isInt32()))
         return FastI2D(asInt32());
     else if (isDouble())
@@ -469,23 +470,37 @@ inline double ESValue::toNumber() const
         return asBoolean() ?  1 : 0;
     else if (isESPointer()) {
         ESPointer* o = asESPointer();
-        if (o->isESString()) {
+        if (o->isESString() || o->isESStringObject()) {
             double val;
-            o->asESString()->wcharData([&val](const wchar_t* buf, unsigned size){
+            ESString* data;
+            if(LIKELY(o->isESString())) {
+                data = o->asESString();
+            } else {
+                data = o->asESStringObject()->getStringData();
+            }
+
+            //A StringNumericLiteral that is empty or contains only white space is converted to +0.
+            if(data->length() == 0)
+                return 0;
+
+            data->wcharData([&val, &data](const wchar_t* buf, unsigned size){
                 wchar_t* end;
                 val = wcstod(buf, &end);
-                if(end != buf + size)
-                    val = std::numeric_limits<double>::quiet_NaN();
-            });
-            return val;
-        }
-        else if (o->isESStringObject()) {
-            double val;
-            o->asESStringObject()->getStringData()->wcharData([&val](const wchar_t* buf, unsigned size){
-                wchar_t* end;
-                val = wcstod(buf, &end);
-                if(end != buf + size)
-                    val = std::numeric_limits<double>::quiet_NaN();
+                if(end != buf + size) {
+                    const u16string& str = data->string();
+                    bool isOnlyWhiteSpace = true;
+                    for(unsigned i = 0; i < str.length() ; i ++) {
+                        //FIXME we shold not use isspace function. implement javascript isspace function.
+                        if(!isspace(str[i])) {
+                            isOnlyWhiteSpace = false;
+                            break;
+                        }
+                    }
+                    if(isOnlyWhiteSpace) {
+                        val = 0;
+                    } else
+                        val = std::numeric_limits<double>::quiet_NaN();
+                }
             });
             return val;
         } else if (o->isESObject())
