@@ -37,3 +37,15 @@ print("length = " + a.length);
 for (var i = 0; i < a.length; i++) {
 	print(a[i]);
 }
+
+print("== set: non-typed ==");
+for (var i = 0; i < a.length; i++)
+	a[i] = i;
+for (var i = 0; i < a.length; i++) {
+	print(a[i]);
+}
+var non_typed = [100, 101];
+a.set(non_typed, 2);
+for (var i = 0; i < a.length; i++) {
+	print(a[i]);
+}

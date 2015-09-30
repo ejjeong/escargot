@@ -2366,8 +2366,24 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
         int targetByteOffset = thisVal->byteoffset();
         int targetElementSize = thisVal->elementSize();
         if (!arg0->isESTypedArrayObject()) {
-            //TODO: 22.2.22.1 %TypedArray%.prototype.set(array[, offset])
-            RELEASE_ASSERT_NOT_REACHED();
+            ESObject* src = arg0->asESObject();
+            escargot::ESArrayObject* tmp = src->asESArrayObject();
+            int32_t srcLength = src->get(strings->length).asInt32();
+            if (srcLength + offset > targetLength)
+                throw RangeError::create();
+
+            int targetByteIndex = offset * targetElementSize + targetByteOffset;
+            int k = 0;
+            int limit = targetByteIndex + targetElementSize * srcLength;
+
+            while (targetByteIndex < limit) {
+                escargot::ESString* Pk = ESString::create(k);
+                double kNumber = src->get(Pk).toNumber();
+                thisVal->set(targetByteIndex/targetElementSize, ESValue(kNumber));
+                k++;
+                targetByteIndex += targetElementSize;
+              }
+            return ESValue();
         } else {
             auto arg0Wrapper = arg0->asESTypedArrayObjectWrapper();
             escargot::ESArrayBufferObject* srcBuffer = arg0Wrapper->buffer();
