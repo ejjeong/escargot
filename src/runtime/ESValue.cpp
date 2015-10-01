@@ -314,7 +314,6 @@ void ESRegExpObject::setSource(escargot::ESString* src)
 }
 void ESRegExpObject::setOption(const Option& option)
 {
-    m_bytecodePattern = NULL;
     m_option = option;
 }
 
