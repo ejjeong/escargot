@@ -308,6 +308,7 @@ void GlobalObject::installFunction()
             prefix.append(body->string());
             prefix.append(u"}");
             codeBlock = ESScriptParser::parseScript(instance, prefix);
+            codeBlock->m_needsActivation = true;
         }
         escargot::ESFunctionObject* function;
         LexicalEnvironment* scope = instance->globalExecutionContext()->environment();
