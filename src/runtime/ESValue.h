@@ -1551,6 +1551,17 @@ private:
     bool m_isCacheDirty;
 };
 
+class ESJSONObject : public ESObject {
+protected:
+    ESJSONObject();
+public:
+    static ESJSONObject* create()
+    {
+        return new ESJSONObject();
+    }
+protected:
+};
+
 class ESArrayObject : public ESObject {
     friend class ESObject;
 protected:

@@ -121,6 +121,10 @@ ESString* byteLength;
 ESString* subarray;
 ESString* set;
 ESString* buffer;
+ESString* JSON;
+ESString* parse;
+ESString* stringify;
+ESString* toJSON;
 
 void initStaticStrings(ESVMInstance* instance);
 };

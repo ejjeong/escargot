@@ -117,6 +117,10 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     subarray = ESString::create(u"subarray");
     set = ESString::create(u"set");
     buffer = ESString::create(u"buffer");
+    JSON = ESString::create(u"JSON");
+    parse = ESString::create(u"parse");
+    stringify = ESString::create(u"stringify");
+    toJSON = ESString::create(u"toJSON");
 }
 
 Strings* strings;

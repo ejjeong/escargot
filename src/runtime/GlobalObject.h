@@ -136,6 +136,11 @@ public:
         return m_mathPrototype;
     }
 
+    ALWAYS_INLINE escargot::ESObject* json()
+    {
+        return m_json;
+    }
+
     ALWAYS_INLINE escargot::ESFunctionObject* number()
     {
         return m_number;
@@ -301,6 +306,7 @@ protected:
     void installString();
     void installDate();
     void installMath();
+    void installJSON();
     void installNumber();
     void installBoolean();
     void installRegExp();
@@ -322,6 +328,7 @@ protected:
     escargot::ESDateObject* m_datePrototype;
     escargot::ESFunctionObject* m_math;
     escargot::ESObject* m_mathPrototype;
+    escargot::ESObject* m_json;
     escargot::ESFunctionObject* m_number;
     escargot::ESNumberObject* m_numberPrototype;
     escargot::ESNumberObject* m_numberObjectProxy;

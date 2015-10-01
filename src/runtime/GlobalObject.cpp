@@ -55,6 +55,7 @@ void GlobalObject::initGlobalObject()
     installError();
     installDate();
     installMath();
+    installJSON();
     installNumber();
     installBoolean();
     installRegExp();
@@ -1864,6 +1865,80 @@ void GlobalObject::installDate()
         }
         return ESValue();
     }, strings->setTime));
+}
+
+void GlobalObject::installJSON()
+{
+    // create JSON object
+    m_json = ESObject::create();
+    m_json->set__proto__(m_objectPrototype);
+    m_json->setConstructor(m_object);
+    set(strings->JSON, m_json);
+
+    //$24.3.1 JSON.parse(text[, reviver])
+    m_json->set(strings->parse, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED(); //TODO
+        return ESValue();
+    }, strings->parse));
+
+    //$24.3.2 JSON.stringify(value[, replacer[, space ]])
+    m_json->set(strings->stringify, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        int argCount = instance->currentExecutionContext()->argumentCount();
+        if (argCount < 1) {
+            return ESValue();
+        } else {
+            ESValue value = instance->currentExecutionContext()->arguments()[0];
+            ESValue replacer;
+            ESValue space;
+            if (argCount >= 2)
+                replacer = instance->currentExecutionContext()->arguments()[1];
+            if (argCount >= 3)
+                space = instance->currentExecutionContext()->arguments()[2];
+            if (value.isObject()) {
+                ESObject* valObj = value.asESPointer()->asESObject();
+                ESValue toJson = valObj->get(strings->toJSON);
+                if (toJson.isESPointer() && toJson.asESPointer()->isESFunctionObject()) {
+                    value = ESFunctionObject::call(instance, toJson, value, NULL, 0, false);
+                }
+            }
+            if (!replacer.isUndefined()) {
+                RELEASE_ASSERT_NOT_REACHED(); //TODO
+            }
+            if (value.isObject()) {
+                if (value.asESPointer()->isESNumberObject()) {
+                    value = ESValue(value.toNumber());
+                } else if (value.asESPointer()->isESStringObject()) {
+                    value = ESValue(value.toString());
+                } else if (value.asESPointer()->isESBooleanObject()) {
+                    //value = value.booleanData();
+                }
+            }
+            if (value.isNull())
+                return strings->null;
+            else if (value.isBoolean()) {
+                if (value.toBoolean()) return strings->stringTrue;
+                else    return strings->stringFalse;
+            } else if (value.isNumber()) {
+                double valNum = value.toNumber();
+                if (std::isnan(valNum) || valNum == std::numeric_limits<double>::infinity() || valNum == -std::numeric_limits<double>::infinity())
+                    return strings->null;
+                else
+                    return value.toString();
+            } else if (value.isESString()) {
+                RELEASE_ASSERT_NOT_REACHED(); //TODO
+                //return QuoteJSONString(value);
+            } else if (value.isObject() && !value.asESPointer()->isESFunctionObject()) {
+                /*
+                if (value.asESPointer()->isESArrayObject())
+                    return SerializeJSONArray(value);
+                else
+                    return SerializeJSONObject(value);
+                */
+                RELEASE_ASSERT_NOT_REACHED(); //TODO
+            }
+            return ESValue();
+        }
+    }, strings->stringify));
 }
 
 void GlobalObject::installMath()
