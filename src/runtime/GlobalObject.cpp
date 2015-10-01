@@ -1961,39 +1961,62 @@ void GlobalObject::installJSON()
             if (!replacer.isUndefined()) {
                 RELEASE_ASSERT_NOT_REACHED(); //TODO
             }
-            if (value.isObject()) {
-                if (value.asESPointer()->isESNumberObject()) {
-                    value = ESValue(value.toNumber());
-                } else if (value.asESPointer()->isESStringObject()) {
-                    value = ESValue(value.toString());
-                } else if (value.asESPointer()->isESBooleanObject()) {
-                    //value = value.booleanData();
+
+            typedef rapidjson::GenericStringBuffer<rapidjson::UTF16<char16_t>> StringBuffer;
+            typedef rapidjson::GenericValue<rapidjson::UTF16<char16_t>> Value;
+            typedef rapidjson::GenericDocument<rapidjson::UTF16<char16_t>> Document;
+            StringBuffer buf;
+            rapidjson::Writer<StringBuffer, rapidjson::UTF16<char16_t>> writer(buf);
+            Document jsonDocument;
+            Document::AllocatorType& allocator = jsonDocument.GetAllocator();
+
+            std::function<Value (ESValue value)> sfn;
+            sfn = [&](ESValue value) -> Value {
+                if (value.isNumber()) {
+                    Value s;
+                    if (value.isInt32()) {
+                        s.SetInt(value.toInt32());
+                    } else {
+                        double valNum = value.toNumber();
+                        if (std::isnan(valNum) || valNum == std::numeric_limits<double>::infinity() || valNum == -std::numeric_limits<double>::infinity())
+                            return s;
+                        s.SetDouble(valNum);
+                    }
+                    return s;
+                } else if (value.isBoolean()) {
+                    Value s(value.toBoolean());
+                    return s;
+                } else if (value.isNull()) {
+                    return Value();
+                } else if (value.isESString()) {
+                    Value s;
+                    escargot::ESString* str = value.toString();
+                    s.SetString(str->data(), str->length(), allocator);
+                    return s;
+                } else if (value.isObject() && value.asESPointer()->asESObject()->isESArrayObject()) {
+                    escargot::ESArrayObject* arr = value.toObject()->asESArrayObject();
+                    Value s;
+                    s.SetArray();
+                    for (int i =0; i<arr->length(); i++) {
+                        s.PushBack(sfn(arr->get(i)), allocator);
+                    }
+                    return s;
+                } else if (value.isObject()) {
+                    Value s;
+                    s.SetObject();
+                    ESObject* obj = value.toObject();
+                    obj->enumeration([&](ESValue key) {
+                        s.AddMember(sfn(key), sfn(obj->get(key)), allocator);
+                    });
+                    return s;
+                } else {
+                    RELEASE_ASSERT_NOT_REACHED();
                 }
-            }
-            if (value.isNull())
-                return strings->null;
-            else if (value.isBoolean()) {
-                if (value.toBoolean()) return strings->stringTrue;
-                else    return strings->stringFalse;
-            } else if (value.isNumber()) {
-                double valNum = value.toNumber();
-                if (std::isnan(valNum) || valNum == std::numeric_limits<double>::infinity() || valNum == -std::numeric_limits<double>::infinity())
-                    return strings->null;
-                else
-                    return value.toString();
-            } else if (value.isESString()) {
-                RELEASE_ASSERT_NOT_REACHED(); //TODO
-                //return QuoteJSONString(value);
-            } else if (value.isObject() && !value.asESPointer()->isESFunctionObject()) {
-                /*
-                if (value.asESPointer()->isESArrayObject())
-                    return SerializeJSONArray(value);
-                else
-                    return SerializeJSONObject(value);
-                */
-                RELEASE_ASSERT_NOT_REACHED(); //TODO
-            }
-            return ESValue();
+                return Value();
+            };
+            Value root = sfn(value);
+            root.Accept(writer);
+            return ESString::create(buf.GetString());
         }
     }, strings->stringify));
 }
