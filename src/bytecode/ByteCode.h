@@ -85,6 +85,7 @@ class Node;
     F(PushFunctionCallReceiver) \
     F(CallFunction) \
     F(CallEvalFunction) \
+    F(CallBoundFunction) \
     F(NewFunctionCall) \
     F(ReturnFunction) \
     F(ReturnFunctionWithValue) \
@@ -1396,6 +1397,26 @@ public:
 
 };
 
+class CallBoundFunction : public ByteCode {
+public:
+    CallBoundFunction()
+        : ByteCode(CallBoundFunctionOpcode)
+    {
+    }
+
+    ESFunctionObject* m_boundTargetFunction;
+    ESValue m_boundThis;
+    ESValue* m_boundArguments;
+    size_t m_boundArgumentsCount;
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("CallBoundFunction <>\n");
+    }
+#endif
+};
+
 class NewFunctionCall : public ByteCode {
 public:
     NewFunctionCall()
@@ -1418,8 +1439,6 @@ public:
         : ByteCode(ReturnFunctionOpcode)
     {
     }
-
-    size_t m_lineNumber;
 
 #ifndef NDEBUG
     virtual void dump()

@@ -383,6 +383,32 @@ void GlobalObject::installFunction()
         return ESFunctionObject::call(instance, thisVal, thisArg, arguments, arrlen, false);
     }, ESString::create(u"apply")));
 
+    //19.2.3.2 Function.prototype.bind (thisArg , ...args)
+    m_functionPrototype->set(ESString::create(u"bind"), ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        ESValue thisVal = instance->currentExecutionContext()->resolveThisBinding();
+        if(!thisVal.isESPointer() || !thisVal.asESPointer()->isESFunctionObject()) {
+            throw TypeError::create(ESString::create("this value should be function"));
+        }
+        CodeBlock* cb = CodeBlock::create();
+        CallBoundFunction code;
+        code.m_boundTargetFunction = thisVal.asESPointer()->asESFunctionObject();
+        code.m_boundThis = instance->currentExecutionContext()->readArgument(0);
+        if(instance->currentExecutionContext()->argumentCount() >= 2) {
+            code.m_boundArgumentsCount = instance->currentExecutionContext()->argumentCount() - 1;
+        } else
+            code.m_boundArgumentsCount = 0;
+        code.m_boundArguments = (ESValue *)GC_malloc(code.m_boundArgumentsCount * sizeof(ESValue));
+        memcpy(code.m_boundArguments, instance->currentExecutionContext()->arguments() + 1, code.m_boundArgumentsCount * sizeof(ESValue));
+        cb->pushCode(code, NULL);
+        escargot::ESFunctionObject* function = ESFunctionObject::create(NULL, cb, strings->emptyESString);
+        function->set__proto__(instance->globalObject()->functionPrototype());
+        ESObject* prototype = ESObject::create();
+        prototype->setConstructor(function);
+        prototype->set__proto__(instance->globalObject()->object()->protoType());
+        function->setProtoType(prototype);
+        return function;
+    }, ESString::create(u"bind")));
+
     //19.2.3.3 Function.prototype.call (thisArg , ...args)
     m_functionPrototype->set(ESString::create(u"call"), ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         auto thisVal = instance->currentExecutionContext()->resolveThisBindingToObject()->asESFunctionObject();
@@ -395,6 +421,7 @@ void GlobalObject::installFunction()
 
         return ESFunctionObject::call(instance, thisVal, thisArg, arguments, arglen, false);
     }, ESString::create(u"call")));
+
 
     set(strings->Function, m_function);
 }
@@ -521,7 +548,7 @@ void GlobalObject::installObject()
     m_object->set(ESString::create(u"create"), ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue proto = instance->currentExecutionContext()->readArgument(0);
         if(!proto.isObject() && !proto.isNull()) {
-            throw TypeError::create(ESString::create("first parameter is should be object"));
+            throw ESValue(TypeError::create(ESString::create("first parameter is should be object")));
         }
         ESObject* obj = ESObject::create();
         if(proto.isNull())
@@ -534,6 +561,17 @@ void GlobalObject::installObject()
         }
         return obj;
     }, ESString::create(u"create")));
+
+    //$19.1.2.14 Object.keys ( O )
+    m_object->set(ESString::create(u"keys"), ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        //Let obj be ToObject(O).
+        ESObject* obj = instance->currentExecutionContext()->readArgument(0).toObject();
+        escargot::ESArrayObject* arr = ESArrayObject::create();
+        obj->enumeration([&arr](ESValue key) {
+            arr->push(key);
+        });
+        return arr;
+    }, ESString::create(u"keys")));
 
     set(strings->Object, m_object);
 }
