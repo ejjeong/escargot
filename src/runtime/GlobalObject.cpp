@@ -2030,12 +2030,11 @@ void GlobalObject::installJSON()
                     Value s;
                     s.SetObject();
                     ESObject* obj = value.toObject();
-                    obj->enumeration([&](ESValue key) {
-                        s.AddMember(sfn(key), sfn(obj->get(key)), allocator);
+                    obj->enumerationForStringify([&](ESValue key) {
+                        ESValue res = obj->get(key);
+                        s.AddMember(sfn(key), sfn(res), allocator);
                     });
                     return s;
-                } else {
-                    RELEASE_ASSERT_NOT_REACHED();
                 }
                 return Value();
             };

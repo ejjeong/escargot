@@ -1565,6 +1565,46 @@ ALWAYS_INLINE void ESObject::enumeration(Functor t)
     }
 }
 
+template <typename Functor>
+ALWAYS_INLINE void ESObject::enumerationForStringify(Functor t)
+{
+    if (isESArrayObject() && asESArrayObject()->isFastmode()) {
+        for (int i = 0; i < asESArrayObject()->length(); i++) {
+            //FIXME: check if index i exists or not
+            if(asESArrayObject()->m_vector[i].isEmpty())
+                continue;
+            //For JSON.Stringify
+            if(asESArrayObject()->m_vector[i].isUndefined())
+                continue;
+            t(ESValue(i));
+        }
+    }
+    std::map<size_t, escargot::ESString*> sortedMap;
+    if(UNLIKELY(m_map != NULL)){
+        auto iter = m_map->begin();
+        while(iter != m_map->end()) {
+            if(iter->second.isEnumerable()) {
+                //FIXME: how to know creation order?
+                sortedMap.insert(std::make_pair(0, (*iter).first));
+            }
+            iter++;
+        }
+    } else {
+        auto iter = m_hiddenClass->m_propertyInfo.begin();
+        while(iter != m_hiddenClass->m_propertyInfo.end()) {
+            size_t idx = iter->second;
+            if(m_hiddenClass->m_propertyFlagInfo[idx].m_isEnumerable
+                    && !m_hiddenClassData[idx].isUndefined()) { // For JSON.Stringify
+                sortedMap.insert(std::make_pair(idx, iter->first));
+            }
+            iter++;
+        }
+    }
+    for (auto it = sortedMap.begin(); it != sortedMap.end(); it++) {
+        t(ESValue(it->second));
+    }
+}
+
 ALWAYS_INLINE ESValue ESObject::readHiddenClass(size_t idx)
 {
     ASSERT(!m_map);

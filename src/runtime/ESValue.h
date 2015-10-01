@@ -1353,6 +1353,8 @@ public:
 
     template <typename Functor>
     ALWAYS_INLINE void enumeration(Functor t);
+    template <typename Functor>
+    ALWAYS_INLINE void enumerationForStringify(Functor t);
 
     ALWAYS_INLINE ESValue __proto__()
     {
