@@ -314,6 +314,11 @@ void ESRegExpObject::setSource(escargot::ESString* src)
 }
 void ESRegExpObject::setOption(const Option& option)
 {
+    if(((m_option & ESRegExpObject::Option::MultiLine) != (option & ESRegExpObject::Option::MultiLine)) ||
+            ((m_option & ESRegExpObject::Option::IgnoreCase) != (option & ESRegExpObject::Option::IgnoreCase))
+            ) {
+        m_bytecodePattern = NULL;
+    }
     m_option = option;
 }
 
