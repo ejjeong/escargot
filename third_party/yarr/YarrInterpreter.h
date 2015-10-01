@@ -341,7 +341,7 @@ public:
     unsigned m_frameSize;
 };
 
-struct BytecodePattern {
+struct BytecodePattern : public gc_cleanup {
     WTF_MAKE_FAST_ALLOCATED;
 public:
     BytecodePattern(PassOwnPtr<ByteDisjunction> body, Vector<ByteDisjunction*> &allParenthesesInfo, YarrPattern& pattern, BumpPointerAllocator* allocator)
