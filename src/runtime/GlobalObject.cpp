@@ -600,6 +600,8 @@ void GlobalObject::installError()
     m_errorPrototype = escargot::ESObject::create();
     m_error->setProtoType(m_errorPrototype);
     m_errorPrototype->setConstructor(m_error);
+    m_errorPrototype->set__proto__(m_objectPrototype);
+
     escargot::ESFunctionObject* toString = ESFunctionObject::create(NULL,[](ESVMInstance* instance)->ESValue {
         //FIXME this is wrong
         ESValue v(instance->currentExecutionContext()->resolveThisBindingToObject());
@@ -1129,6 +1131,8 @@ void GlobalObject::installArray()
 
     m_arrayPrototype->setConstructor(m_array);
     m_arrayPrototype->ESObject::set(strings->length, ESValue(0));
+    m_arrayPrototype->set__proto__(m_objectPrototype);
+
     m_array->set(strings->prototype, m_arrayPrototype);
     m_array->set(strings->length, ESValue(1));
     m_array->setConstructor(m_function);
@@ -1158,6 +1162,7 @@ void GlobalObject::installString()
 
     m_stringPrototype = ESStringObject::create();
     m_stringPrototype->setConstructor(m_string);
+    m_stringPrototype->set__proto__(m_objectPrototype);
     m_stringPrototype->set(strings->toString, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         if(instance->currentExecutionContext()->resolveThisBinding().isObject()) {
             if(instance->currentExecutionContext()->resolveThisBindingToObject()->isESStringObject()) {
@@ -1746,6 +1751,7 @@ void GlobalObject::installString()
 void GlobalObject::installDate()
 {
     m_datePrototype = ESDateObject::create();
+    m_datePrototype->set__proto__(m_objectPrototype);
 
     //$20.3.2 The Date Constructor
     m_date = ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1877,8 +1883,59 @@ void GlobalObject::installJSON()
 
     //$24.3.1 JSON.parse(text[, reviver])
     m_json->set(strings->parse, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED(); //TODO
-        return ESValue();
+        if(!instance->currentExecutionContext()->readArgument(1).isUndefined())
+            RELEASE_ASSERT_NOT_REACHED(); //implement reviver
+        escargot::ESString* str = instance->currentExecutionContext()->readArgument(0).toString();
+        //FIXME spec says we should we ECMAScript parser instead of json parser
+        /*
+        //FIXME json parser can not parse this form
+        u16string src;
+        src.append(u"(");
+        src.append(str->string());
+        src.append(u") ;");
+        */
+
+        rapidjson::GenericDocument<rapidjson::UTF16<char16_t>> jsonDocument;
+
+        //FIXME(ksh8281) javascript string is not null-terminated string
+        rapidjson::GenericStringStream<rapidjson::UTF16<char16_t>> stringStream(str->data());
+        jsonDocument.ParseStream(stringStream);
+        if(jsonDocument.HasParseError()) {
+            throw ESValue(SyntaxError::create(ESString::create(u"occur error while parse json")));
+        }
+        std::function<ESValue (rapidjson::GenericValue<rapidjson::UTF16<char16_t>>& value)> fn;
+        fn = [&](rapidjson::GenericValue<rapidjson::UTF16<char16_t>>& value) -> ESValue {
+            if(value.IsBool()) {
+                return ESValue(value.GetBool());
+            } else if(value.IsInt()) {
+                return ESValue(value.GetInt());
+            } else if(value.IsDouble()) {
+                return ESValue(value.GetDouble());
+            } else if(value.IsNull()) {
+                return ESValue(ESValue::ESNull);
+            } else if(value.IsString()) {
+                return ESString::create(value.GetString());
+            } else if(value.IsArray()) {
+                escargot::ESArrayObject* arr = ESArrayObject::create();
+                auto iter = value.Begin();
+                while(iter != value.End()) {
+                    arr->push(fn(*iter));
+                    iter ++;
+                }
+                return arr;
+            } else if(value.IsObject()) {
+                escargot::ESObject* obj = ESObject::create();
+                auto iter = value.MemberBegin();
+                while(iter != value.MemberEnd()) {
+                    obj->set(ESString::create(iter->name.GetString()), fn(iter->value));
+                    iter++;;
+                }
+                return obj;
+            } else {
+                RELEASE_ASSERT_NOT_REACHED();
+            }
+        };
+        return fn(jsonDocument);
     }, strings->parse));
 
     //$24.3.2 JSON.stringify(value[, replacer[, space ]])
@@ -2259,6 +2316,7 @@ void GlobalObject::installNumber()
 
     // initialize numberPrototype object
     m_numberPrototype->setConstructor(m_number);
+    m_numberPrototype->set__proto__(m_objectPrototype);
 
     // initialize numberPrototype object: $20.1.3.3 Number.prototype.toFixed(fractionDigits)
     m_numberPrototype->set(strings->toFixed, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -2366,6 +2424,7 @@ void GlobalObject::installBoolean()
 
     // create booleanPrototype object
     m_booleanPrototype = ESBooleanObject::create(ESValue(ESValue::ESFalseTag::ESFalse));
+    m_booleanPrototype->set__proto__(m_objectPrototype);
 
     // initialize boolean object
     m_boolean->set(strings->name, strings->Boolean);
@@ -2426,6 +2485,7 @@ void GlobalObject::installRegExp()
 
     // create regexpPrototype object
     m_regexpPrototype = ESRegExpObject::create(strings->emptyESString,ESRegExpObject::Option::None, m_objectPrototype);
+    m_regexpPrototype->set__proto__(m_objectPrototype);
 
     // initialize regexp object
     m_regexp->set(strings->name, strings->RegExp);
@@ -2801,6 +2861,7 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
     ta_constructor->set__proto__(m_functionPrototype); // empty Function
     ta_constructor->setProtoType(ta_prototype);
     ta_prototype->setConstructor(ta_constructor);
+    ta_prototype->set__proto__(m_objectPrototype);
     set(ta_name, ta_constructor);
     return ta_constructor;
 }
