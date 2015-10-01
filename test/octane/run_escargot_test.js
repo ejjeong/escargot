@@ -37,7 +37,7 @@ load(base_dir + 'regexp.js');
 load(base_dir + 'splay.js');
 load(base_dir + 'navier-stokes.js');
 load(base_dir + 'box2d.js');
-//load(base_dir + 'pdfjs.js');
+load(base_dir + 'pdfjs.js');
 load(base_dir + 'mandreel.js');
 //load(base_dir + 'gbemu-part1.js');
 //load(base_dir + 'gbemu-part2.js');

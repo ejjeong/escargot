@@ -31,6 +31,7 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     Number =  ESString::create(u"Number");
     NaN =  ESString::create(u"NaN");
     Infinity =  ESString::create(u"Infinity");
+    NegativeInfinity =  ESString::create(u"-Infinity");
     NEGATIVE_INFINITY =  ESString::create(u"NEGATIVE_INFINITY");
     POSITIVE_INFINITY =  ESString::create(u"POSITIVE_INFINITY");
     MAX_VALUE =  ESString::create(u"MAX_VALUE");

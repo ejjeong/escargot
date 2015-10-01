@@ -485,26 +485,7 @@ public:
     {
     }
 
-    explicit ESStringData(double number)
-    {
-        m_hashData.m_isHashInited =  false;
-        char16_t buf[512];
-        char chbuf[50];
-        char* end = rapidjson::internal::dtoa(number, chbuf);
-        int i = 0;
-        for (char* p = chbuf; p != end; ++p) {
-            buf[i++] = (char16_t) *p;
-        }
-
-        if(i >= 3 && buf[i-1] == '0' && buf[i-2] == '.') {
-            i -= 2;
-        }
-
-        buf[i] = u'\0';
-
-        reserve(i);
-        append(&buf[0], &buf[i]);
-    }
+    explicit ESStringData(double number);
 
     explicit ESStringData(char16_t c)
         : u16string({c})

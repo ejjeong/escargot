@@ -35,6 +35,7 @@ ESString* String;
 ESString* Number;
 ESString* NaN;
 ESString* Infinity;
+ESString* NegativeInfinity;
 ESString* NEGATIVE_INFINITY;
 ESString* POSITIVE_INFINITY;
 ESString* MAX_VALUE;

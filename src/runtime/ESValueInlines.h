@@ -375,10 +375,14 @@ inline ESString* ESValue::toString() const
         double d = asNumber();
         if (std::isnan(d))
             return strings->NaN;
-        if (d == std::numeric_limits<double>::infinity())
+        if (std::isinf(d) == 1)
             return strings->Infinity;
-        if (d == -0)
+        if (std::isinf(d) == -1)
+            return strings->NegativeInfinity;
+
+        if (d == -0.0)
             d = 0;
+
         return ESString::create(d);
     } else if(isUndefined()) {
         return strings->undefined;
@@ -1315,7 +1319,7 @@ ALWAYS_INLINE const int32_t ESObject::length()
     if (LIKELY(isESArrayObject()))
         return asESArrayObject()->length();
     else
-        return get(strings->length).toInteger();
+        return get(strings->length, true).toInteger();
 }
 ALWAYS_INLINE ESValue ESObject::pop()
 {

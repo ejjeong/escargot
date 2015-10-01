@@ -102,6 +102,107 @@ bool ESValue::equalsTo(const ESValue& val)
     RELEASE_ASSERT_NOT_REACHED();
 }
 
+}
+#ifdef ESCARGOT_LITTLE_ENDIAN
+#define IEEE_8087
+#else
+#define IEEE_MC68k
+#endif
+
+#define NO_GLOBAL_STATE
+#define MALLOC malloc
+#define FREE free
+
+#ifndef Long
+#define Long int32_t
+#endif
+
+#ifndef ULong
+#define ULong uint32_t
+#endif
+
+#include <dtoa.c>
+
+namespace escargot {
+
+ESStringData::ESStringData(double number)
+{
+    m_hashData.m_isHashInited =  false;
+
+    int decPt;        /* Offset of decimal point from first digit */
+    int sign;         /* Nonzero if the sign bit was set in d */
+    int nDigits;      /* Number of significand digits returned by js_dtoa */
+    char *numBegin;   /* Pointer to the digits returned by js_dtoa */
+    char *numEnd = 0; /* Pointer past the digits returned by js_dtoa */
+
+    DtoaState* state = newdtoa();
+    U u;
+    dval(u) = number;
+    numBegin = dtoa(state, u, 0, 100, &decPt, &sign, &numEnd);
+    ASSERT(numBegin);
+    if(sign) {
+        operator +=('-');
+    }
+    char *s = numBegin;
+    if(decPt == 0) {
+        operator +=('0');
+        operator +=('.');
+        while(s != numEnd) {
+            operator +=(*s);
+            s++;
+        }
+    } else if(decPt < 0) {
+        operator +=('0');
+        operator +=('.');
+        for(int i = 0; i > decPt; i --) {
+            operator +=('0');
+        }
+
+        while(s != numEnd) {
+            operator +=(*s);
+            s++;
+        }
+    } else {
+        for(unsigned i = 0; i < decPt; i ++) {
+            if(s < numEnd) {
+                char16_t c = *s;
+                operator +=(c);
+                s++;
+            } else {
+                operator +=('0');
+            }
+        }
+        if(s != numEnd)
+            operator +=('.');
+
+        while(s != numEnd) {
+            operator +=(*s);
+            s++;
+        }
+    }
+
+    freedtoa(state, numBegin);
+    destroydtoa(state);
+    /*
+    char16_t buf[512];
+    char chbuf[128];
+    char* end = rapidjson::internal::dtoa(number, chbuf);
+    int i = 0;
+    for (char* p = chbuf; p != end; ++p) {
+        buf[i++] = (char16_t) *p;
+    }
+
+    if(i >= 3 && buf[i-1] == '0' && buf[i-2] == '.') {
+        i -= 2;
+    }
+
+    buf[i] = u'\0';
+
+    reserve(i);
+    append(&buf[0], &buf[i]);
+    */
+}
+
 ESValue ESObject::valueOf()
 {
     if(isESDateObject())

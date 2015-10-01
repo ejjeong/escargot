@@ -37,6 +37,7 @@ CXXFLAGS += -fdata-sections -ffunction-sections
 #add third_party
 CXXFLAGS += -Ithird_party/rapidjson/include/
 CXXFLAGS += -Ithird_party/bdwgc/include/
+CXXFLAGS += -Ithird_party/netlib/
 
 CXXFLAGS += -Ithird_party/yarr/
 SRC_YARR += third_party/yarr/OSAllocatorPosix.cpp
@@ -60,7 +61,7 @@ else ifeq ($(ARCH), x86)
 endif
 
 ifeq ($(MODE), debug)
-	CXXFLAGS += -O0 -g3 -frounding-math -fsignaling-nans -fno-omit-frame-pointer -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable -Wno-invalid-offsetof
+	CXXFLAGS += -O0 -g3 -frounding-math -fsignaling-nans -fno-omit-frame-pointer -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable -Wno-invalid-offsetof -Wno-sign-compare
 	GCLIBS = third_party/bdwgc/out/debug/.libs/libgc.a #third_party/bdwgc/out/debug/.libs/libgccpp.a
 else ifeq ($(MODE), release)
 	CXXFLAGS += -O3 -g3 -DNDEBUG -fomit-frame-pointer -frounding-math -fsignaling-nans -funroll-loops

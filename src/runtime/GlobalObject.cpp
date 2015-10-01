@@ -7,6 +7,7 @@
 #include "runtime/Environment.h"
 
 #include "Yarr.h"
+#include "esprima.h"
 
 namespace escargot {
 
@@ -876,8 +877,7 @@ void GlobalObject::installArray()
             for (int i = 0; i < len; i++) {
                 ESValue& val = instance->currentExecutionContext()->arguments()[i];
                 thisVal->push(val);
-                i++;
-             }
+            }
             return ESValue(thisVal->length());
         } else {
             ASSERT(thisBinded->isESObject());
@@ -1718,6 +1718,30 @@ void GlobalObject::installString()
         return ESString::create(std::move(newstr));
     }, ESString::create(u"toLocaleUpperCase")));
 
+    //$21.1.3.25 String.prototype.trim()
+    m_stringPrototype->set(ESString::create(u"trim"), ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        escargot::ESString* str = instance->currentExecutionContext()->resolveThisBinding().toString();
+        u16string newstr(str->string());
+
+        //trim left
+        while(newstr.length()) {
+            if(esprima::isWhiteSpace(newstr[0]) || esprima::isLineTerminator(newstr[0])) {
+                newstr.erase(newstr.begin());
+            }
+            break;
+        }
+
+        //trim right
+        while(newstr.length()) {
+            if(esprima::isWhiteSpace(newstr[newstr.length()-1]) || esprima::isLineTerminator(newstr[newstr.length()-1])) {
+                newstr.erase(newstr.end()-1);
+            }
+            break;
+        }
+
+        return ESString::create(std::move(newstr));
+    }, ESString::create(u"trim")));
+
     //$B.2.3.1 String.prototype.substr (start, length)
     m_stringPrototype->set(ESString::create(u"substr"), ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         escargot::ESString* str = instance->currentExecutionContext()->resolveThisBinding().toString();
@@ -2052,7 +2076,7 @@ void GlobalObject::installMath()
             return ESValue(value);
         } else {
             ESValue arg = instance->currentExecutionContext()->arguments()[0];
-            double value = abs(arg.toNumber());
+            double value = std::abs(arg.toNumber());
             return ESValue(value);
          }
         return ESValue();
