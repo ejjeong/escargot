@@ -15,11 +15,12 @@ ESCARGOT
     make run-sunspider
 
 ## Running octane
-    ./escargot test/octane/**.js
+    ./run-octane.sh
 
 ## Running test262
     make run-test262 [OPT=**]
 e.g. make run-test262 S7.2
+[test262:fbba29f](https://github.com/tc39/test262)
 
 ## Measuring
     ./measure.sh [escargot | v8 | jsc.interp | jsc.jit] [time | memory]
