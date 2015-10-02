@@ -508,7 +508,7 @@ newdtoa(void)
     return state;
 }
 
- static void
+ void
 destroydtoa
 #ifdef KR_headers
     (state) STATE_PARAM_DECL

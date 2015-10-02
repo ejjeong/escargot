@@ -18,6 +18,9 @@ ESVMInstance::ESVMInstance()
     m_dumpByteCode = false;
     m_dumpExecuteByteCode = false;
 #endif
+    m_dtoaState = NULL;
+
+    enter();
 
     std::srand(std::time(0));
 
@@ -139,7 +142,7 @@ ESVMInstance::ESVMInstance()
         return ESValue(self->asESStringObject()->getStringData()->length());
     });
 
-    enter();
+
     m_globalObject = new GlobalObject();
     m_globalObject->initGlobalObject();
 

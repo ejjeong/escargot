@@ -135,11 +135,33 @@ ESStringData::ESStringData(double number)
     char *numBegin;   /* Pointer to the digits returned by js_dtoa */
     char *numEnd = 0; /* Pointer past the digits returned by js_dtoa */
 
-    DtoaState* state = newdtoa();
+    DtoaState* state = (DtoaState *)ESVMInstance::currentInstance()->dtoaState();
+    if(UNLIKELY(!state)) {
+        state = newdtoa();
+        ESVMInstance::currentInstance()->setDtoaState(state);
+    }
+
     U u;
     dval(u) = number;
     numBegin = dtoa(state, u, 0, 100, &decPt, &sign, &numEnd);
     ASSERT(numBegin);
+    unsigned resCnt = 0;
+    if(sign) {
+        resCnt++;
+    }
+    if(decPt == 0) {
+        resCnt += 2;
+        resCnt += numEnd - numBegin;
+    } else if(decPt < 0) {
+        resCnt += 2;
+        resCnt += -decPt;
+        resCnt += numEnd - numBegin;
+    } else {
+        resCnt += 1;
+        resCnt += decPt;
+        resCnt += numEnd - numBegin;
+    }
+    reserve(resCnt);
     if(sign) {
         operator +=('-');
     }
@@ -182,7 +204,6 @@ ESStringData::ESStringData(double number)
     }
 
     freedtoa(state, numBegin);
-    destroydtoa(state);
     /*
     char16_t buf[512];
     char chbuf[128];

@@ -114,6 +114,16 @@ public:
     bool m_dumpExecuteByteCode;
 #endif
 
+    void setDtoaState(void* d)
+    {
+        m_dtoaState = d;
+    }
+
+    void* dtoaState()
+    {
+        return m_dtoaState;
+    }
+
 protected:
     ExecutionContext* m_globalExecutionContext;
     ExecutionContext* m_currentExecutionContext;
@@ -146,6 +156,8 @@ protected:
     timespec m_cachedTimeOrigin;
     tm* m_cachedTime;
     tm m_time;
+
+    void* m_dtoaState;
 };
 
 }
