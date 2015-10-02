@@ -623,27 +623,6 @@ inline ESValue ESSlot::value(::escargot::ESObject* object) const
     }
 }
 
-ALWAYS_INLINE void ESSlotAccessor::setValue(const ::escargot::ESValue& value)
-{
-    ASSERT(hasData());
-    if(UNLIKELY(m_targetObject != NULL)) {
-        m_targetObject->set(m_propertyValue, value);
-    } else {
-        *((ESValue *)m_propertyValue.asESPointer()) = value;
-    }
-}
-
-ALWAYS_INLINE ESValue ESSlotAccessor::value() const
-{
-    ASSERT(hasData());
-    if(UNLIKELY(m_targetObject != NULL)) {
-        return m_targetObject->get(m_propertyValue, true);
-    } else {
-        return *((ESValue *)m_propertyValue.asESPointer());
-    }
-}
-
-
 //==============================================================================
 //===32-bit architecture========================================================
 //==============================================================================
@@ -1072,7 +1051,7 @@ ALWAYS_INLINE ESValue ESHiddenClass::read(ESObject* obj, size_t idx)
 
 //DO NOT USE THIS FUNCTION
 //NOTE rooted ESSlot has short life time.
-inline escargot::ESSlotAccessor ESObject::definePropertyOrThrow(escargot::ESValue key, bool isWritable, bool isEnumerable, bool isConfigurable, const ESValue& initalValue)
+inline void ESObject::definePropertyOrThrow(escargot::ESValue key, bool isWritable, bool isEnumerable, bool isConfigurable, const ESValue& initalValue)
 {
     if(isESArrayObject()) {
         int i;
@@ -1087,8 +1066,6 @@ inline escargot::ESSlotAccessor ESObject::definePropertyOrThrow(escargot::ESValu
                     asESArrayObject()->convertToSlowMode();
                 asESArrayObject()->setLength(i+1);
             }
-            if (asESArrayObject()->isFastmode())
-                return ESSlotAccessor(&asESArrayObject()->m_vector[i]);
         }
     }
 
@@ -1101,7 +1078,6 @@ inline escargot::ESSlotAccessor ESObject::definePropertyOrThrow(escargot::ESValu
             m_map->erase(iter);
         }
         m_map->insert(std::make_pair(str, ::escargot::ESSlot(initalValue, isWritable, isEnumerable, isConfigurable)));
-        return ESSlotAccessor(this, key);
     } else {
         size_t ret = m_hiddenClass->defineProperty(this, key.toString(), true, isWritable, isEnumerable, isConfigurable);
         if((ret != SIZE_MAX) && (
@@ -1111,16 +1087,15 @@ inline escargot::ESSlotAccessor ESObject::definePropertyOrThrow(escargot::ESValu
                 || (true != m_hiddenClass->m_propertyFlagInfo[ret].m_isDataProperty))
                 ) {
             convertIntoMapMode();
-            return definePropertyOrThrow(key, isWritable, isEnumerable, isConfigurable, initalValue);
+            definePropertyOrThrow(key, isWritable, isEnumerable, isConfigurable, initalValue);
         }
 
         if(UNLIKELY(m_hiddenClass->m_propertyInfo.size() >= ESHiddenClass::ESHiddenClassSizeLimit)) {
             convertIntoMapMode();
-            return definePropertyOrThrow(key, isWritable, isEnumerable, isConfigurable, initalValue);
+            definePropertyOrThrow(key, isWritable, isEnumerable, isConfigurable, initalValue);
         }
         ASSERT(m_hiddenClass->m_propertyFlagInfo[ret].m_isDataProperty);
         m_hiddenClassData[ret] = initalValue;
-        return ESSlotAccessor(this, key);
     }
 }
 
@@ -1279,7 +1254,7 @@ ALWAYS_INLINE ESValue ESObject::get(escargot::ESValue key, bool searchPrototype)
     return v;
 }
 
-ALWAYS_INLINE ESSlotAccessor ESObject::addressOfProperty(escargot::ESValue key)
+ALWAYS_INLINE ESValue* ESObject::addressOfProperty(escargot::ESValue key)
 {
     if(isESArrayObject()) {
         int i;
@@ -1287,7 +1262,7 @@ ALWAYS_INLINE ESSlotAccessor ESObject::addressOfProperty(escargot::ESValue key)
             i = key.asInt32();
             int len = asESArrayObject()->length();
             if (asESArrayObject()->isFastmode() && i >= 0 && i < len)
-                return ESSlotAccessor(&asESArrayObject()->m_vector[i]);
+                return &asESArrayObject()->m_vector[i];
             else {
                 //TODO
                 RELEASE_ASSERT_NOT_REACHED();
@@ -1299,17 +1274,19 @@ ALWAYS_INLINE ESSlotAccessor ESObject::addressOfProperty(escargot::ESValue key)
         escargot::ESString* str = key.toString();
         auto iter = m_map->find(str);
         if(iter == m_map->end()) {
-            return ESSlotAccessor();
+            return NULL;
         }
-        return ESSlotAccessor(iter->second.data());
+        ASSERT(iter->second.isDataProperty());
+        return iter->second.data();
     } else {
         size_t ret = m_hiddenClass->findProperty(key.toString());
         if(ret == SIZE_MAX)
-            return ESSlotAccessor();
+            return NULL;
+        ASSERT(m_hiddenClass->m_propertyFlagInfo[ret].m_isDataProperty);
         if(m_hiddenClass->m_propertyFlagInfo[ret].m_isDataProperty) {
-            return escargot::ESSlotAccessor(&m_hiddenClassData[ret]);
+            return &m_hiddenClassData[ret];
         } else {
-            return escargot::ESSlotAccessor(this, key);
+            return NULL;
         }
     }
 }

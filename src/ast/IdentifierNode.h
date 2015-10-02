@@ -16,7 +16,6 @@ public:
     {
         m_name = name;
         m_nonAtomicName = ESString::create(name.data());
-        m_identifierCacheInvalidationCheckCount = std::numeric_limits<unsigned>::max();
         m_canUseFastAccess = false;
         m_fastAccessIndex = SIZE_MAX;
         m_fastAccessUpIndex = SIZE_MAX;
@@ -114,9 +113,6 @@ public:
 protected:
     InternalAtomicString m_name;
     ESString* m_nonAtomicName;
-
-    unsigned m_identifierCacheInvalidationCheckCount;
-    ESSlotAccessor m_cachedSlot;
 
     bool m_canUseFastAccess;
     size_t m_fastAccessIndex;

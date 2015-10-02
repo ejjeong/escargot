@@ -525,7 +525,7 @@ ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctio
                     break;
                 }
             }
-            ASSERT(functionRecord->hasBinding(strings->atomicArguments, strings->arguments).hasData());
+            ASSERT(functionRecord->hasBinding(strings->atomicArguments, strings->arguments));
         } else {
             functionRecord->createMutableBinding(strings->atomicArguments, strings->arguments, false);
             functionRecord->setMutableBinding(strings->atomicArguments, strings->arguments, argumentsObject, true);

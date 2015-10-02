@@ -66,11 +66,6 @@ union ValueDescriptor {
 
 
 class ESValue {
-    //static void* operator new(size_t, void* p) = delete;
-    //static void* operator new[](size_t, void* p) = delete;
-    //static void* operator new(size_t size) = delete;
-    //static void* operator new[](size_t size) = delete;
-
 public:
 #if ESCARGOT_32
     enum { Int32Tag =        0xffffffff };
@@ -1086,66 +1081,6 @@ ASSERT_STATIC(sizeof(ESSlot) == 2 * sizeof(void*), "sizeof(ESSlot) should be 16 
 ASSERT_STATIC(false, "sizeof(ESSlot) should be re-considered");
 #endif
 
-class ESSlotAccessor {
-public:
-    ESSlotAccessor()
-    {
-        m_propertyValue = ESValue(ESValue::ESEmptyValue);
-        m_targetObject = NULL;
-    }
-
-    explicit ESSlotAccessor(ESValue* data)
-    {
-        m_propertyValue = ESValue((ESPointer *)data);
-        m_targetObject = NULL;
-    }
-
-    explicit ESSlotAccessor(ESObject* obj, const ESValue& propertyValue)
-    {
-        m_propertyValue = propertyValue;
-        m_targetObject = obj;
-    }
-
-    ALWAYS_INLINE bool hasData() const
-    {
-        return m_propertyValue != ESValue(ESValue::ESEmptyValue);
-    }
-
-    ALWAYS_INLINE void setValue(const ::escargot::ESValue& value);
-    ALWAYS_INLINE ESValue value() const;
-
-    ALWAYS_INLINE const ESValue& readDataProperty() const
-    {
-        ASSERT(hasData());
-        ASSERT(m_targetObject == NULL);
-        return *((ESValue *)m_propertyValue.asESPointer());
-    }
-
-    ALWAYS_INLINE void setDataProperty(const ::escargot::ESValue& value)
-    {
-        ASSERT(hasData());
-        ASSERT(m_targetObject == NULL);
-        *((ESValue *)m_propertyValue.asESPointer()) = value;
-    }
-
-    ALWAYS_INLINE void switchOwner(ESObject* obj)
-    {
-        if(m_targetObject)
-            m_targetObject = obj;
-    }
-
-    ESValue* dataAddress()
-    {
-        ASSERT(hasData());
-        ASSERT(m_targetObject == NULL);
-        return ((ESValue *)m_propertyValue.asESPointer());
-    }
-
-public:
-    ESObject* m_targetObject;
-    ESValue m_propertyValue;
-};
-
 struct ESHiddenClassPropertyInfo {
     ESHiddenClassPropertyInfo(bool isData, bool isWritable, bool isEnumerable, bool isConfigurable)
     {
@@ -1242,7 +1177,7 @@ public:
 
     //DO NOT USE THIS FUNCTION
     //NOTE rooted ESSlot has short life time.
-    inline escargot::ESSlotAccessor definePropertyOrThrow(escargot::ESValue key, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true, const ESValue& initalValue = ESValue());
+    inline void definePropertyOrThrow(escargot::ESValue key, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true, const ESValue& initalValue = ESValue());
     void defineAccessorProperty(escargot::ESString* key,ESValue (*getter)(::escargot::ESObject* obj) = nullptr,
             void (*setter)(::escargot::ESObject* obj, const ESValue& value)  = nullptr,
             bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
@@ -1337,7 +1272,7 @@ public:
 
     //DO NOT USE THIS FUNCTION
     //NOTE rooted ESSlot has short life time.
-    ESSlotAccessor addressOfProperty(escargot::ESValue key);
+    ESValue* addressOfProperty(escargot::ESValue key);
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
     ALWAYS_INLINE void set(escargot::ESValue key, const ESValue& val, bool shouldThrowException = false);

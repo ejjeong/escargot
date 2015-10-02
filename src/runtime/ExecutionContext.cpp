@@ -20,19 +20,19 @@ ExecutionContext::ExecutionContext(LexicalEnvironment* varEnv, bool needsActivat
     m_isStrict = false;
 }
 
-ESSlotAccessor ExecutionContext::resolveBinding(const InternalAtomicString& atomicName, escargot::ESString* name)
+ESValue* ExecutionContext::resolveBinding(const InternalAtomicString& atomicName, escargot::ESString* name)
 {
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
     LexicalEnvironment* env = environment();
 
     while(env) {
-        ESSlotAccessor slot = env->record()->hasBinding(atomicName, name);
-        if(slot.hasData())
+        ESValue* slot = env->record()->hasBinding(atomicName, name);
+        if(slot)
             return slot;
         env = env->outerEnvironment();
     }
 
-    return ESSlotAccessor();
+    return NULL;
 }
 
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvethisbinding

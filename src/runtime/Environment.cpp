@@ -122,26 +122,26 @@ ESValue GlobalEnvironmentRecord::getThisBinding() {
 }
 
 //$8.1.1.4.1
-ESSlotAccessor GlobalEnvironmentRecord::hasBinding(const InternalAtomicString& atomicName, ESString * name) {
-    ESSlotAccessor ret = m_declarativeRecord->hasBinding(atomicName, name);
-    if(ret.hasData())
+ESValue* GlobalEnvironmentRecord::hasBinding(const InternalAtomicString& atomicName, ESString * name) {
+    ESValue* ret = m_declarativeRecord->hasBinding(atomicName, name);
+    if(ret)
         return ret;
     return m_objectRecord->hasBinding(atomicName, name);
 }
 
 //$8.1.1.4.2
 void GlobalEnvironmentRecord::createMutableBinding(const InternalAtomicString& name,ESString * nonAtomicName, bool canDelete) {
-    if( m_declarativeRecord->hasBinding(name, nonAtomicName).hasData() )
+    if( m_declarativeRecord->hasBinding(name, nonAtomicName) )
         throw "TypeError";
     m_declarativeRecord->createMutableBinding(name, nonAtomicName, canDelete);
 }
 
 //$8.1.1.4.4
 void GlobalEnvironmentRecord::initializeBinding(const InternalAtomicString& name,ESString * nonAtomicName, const ESValue& V) {
-    if( m_declarativeRecord->hasBinding(name, nonAtomicName).hasData() )
+    if( m_declarativeRecord->hasBinding(name, nonAtomicName))
         m_declarativeRecord->initializeBinding(name, nonAtomicName, V);
     else {
-        ASSERT(m_objectRecord->hasBinding(name, nonAtomicName).hasData());
+        ASSERT(m_objectRecord->hasBinding(name, nonAtomicName));
         m_objectRecord->initializeBinding(name, nonAtomicName, V);
     }
 }
@@ -161,7 +161,7 @@ ESValue GlobalEnvironmentRecord::getBindingValue(const InternalAtomicString& nam
 //$8.1.1.4.5
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-global-environment-records-setmutablebinding-n-v-s
 void GlobalEnvironmentRecord::setMutableBinding(const InternalAtomicString& name, ESString * nonAtomicName, const ESValue& V, bool S) {
-    if( m_declarativeRecord->hasBinding(name, nonAtomicName).hasData()) {
+    if( m_declarativeRecord->hasBinding(name, nonAtomicName)) {
         m_declarativeRecord->setMutableBinding(name, nonAtomicName, V, S);
     } else {
         m_objectRecord->setMutableBinding(name, nonAtomicName, V, S);

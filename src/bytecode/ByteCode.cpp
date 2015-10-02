@@ -132,14 +132,14 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         GetById* code = (GetById*)currentCode;
         if (LIKELY(code->m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
-            ASSERT(ec->resolveBinding(code->m_name, code->m_nonAtomicName).dataAddress() == code->m_cachedSlot.dataAddress());
-            push<ESValue>(stack, bp, code->m_cachedSlot.dataAddress());
+            ASSERT(ec->resolveBinding(code->m_name, code->m_nonAtomicName) == code->m_cachedSlot);
+            push<ESValue>(stack, bp, code->m_cachedSlot);
         } else {
-            ESSlotAccessor slot = ec->resolveBinding(code->m_name, code->m_nonAtomicName);
-            if(LIKELY(slot.hasData())) {
-                code->m_cachedSlot = ESSlotAccessor(slot);
+            ESValue* slot = ec->resolveBinding(code->m_name, code->m_nonAtomicName);
+            if(LIKELY(slot != NULL)) {
+                code->m_cachedSlot = slot;
                 code->m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
-                push<ESValue>(stack, bp, code->m_cachedSlot.dataAddress());
+                push<ESValue>(stack, bp, code->m_cachedSlot);
             } else {
                 ReferenceError* receiver = ReferenceError::create();
                 std::vector<ESValue> arguments;
@@ -161,14 +161,14 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         GetById* code = (GetById*)currentCode;
         if (LIKELY(code->m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
-            ASSERT(ec->resolveBinding(code->m_name, code->m_nonAtomicName).dataAddress() == code->m_cachedSlot.dataAddress());
-            push<ESValue>(stack, bp, code->m_cachedSlot.dataAddress());
+            ASSERT(ec->resolveBinding(code->m_name, code->m_nonAtomicName) == code->m_cachedSlot);
+            push<ESValue>(stack, bp, code->m_cachedSlot);
         } else {
-            ESSlotAccessor slot = ec->resolveBinding(code->m_name, code->m_nonAtomicName);
-            if(LIKELY(slot.hasData())) {
-                code->m_cachedSlot = ESSlotAccessor(slot);
+            ESValue* slot = ec->resolveBinding(code->m_name, code->m_nonAtomicName);
+            if(LIKELY(slot != NULL)) {
+                code->m_cachedSlot = slot;
                 code->m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
-                push<ESValue>(stack, bp, code->m_cachedSlot.dataAddress());
+                push<ESValue>(stack, bp, code->m_cachedSlot);
             } else {
                 push<ESValue>(stack, bp, ESValue(ESValue::ESEmptyValue));
             }
@@ -205,21 +205,21 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* value = peek<ESValue>(stack, bp);
 
         if (LIKELY(code->m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
-            ASSERT(ec->resolveBinding(code->m_name, code->m_nonAtomicName).dataAddress() == code->m_cachedSlot.dataAddress());
-            code->m_cachedSlot.setValue(*value);
+            ASSERT(ec->resolveBinding(code->m_name, code->m_nonAtomicName) == code->m_cachedSlot);
+            *code->m_cachedSlot = *value;
         } else {
             ExecutionContext* ec = instance->currentExecutionContext();
-            ESSlotAccessor slot = ec->resolveBinding(code->m_name, code->m_nonAtomicName);
+            ESValue* slot = ec->resolveBinding(code->m_name, code->m_nonAtomicName);
 
-            if(LIKELY(slot.hasData())) {
+            if(LIKELY(slot != NULL)) {
                 code->m_cachedSlot = slot;
                 code->m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
-                code->m_cachedSlot.setValue(*value);
+                *code->m_cachedSlot = *value;
             } else {
                 //CHECKTHIS true, true, false is right?
                 if(!ec->isStrictMode()) {
                     instance->invalidateIdentifierCacheCheckCount();
-                    globalObject->definePropertyOrThrow(code->m_nonAtomicName, true, true, true).setValue(*value);
+                    globalObject->definePropertyOrThrow(code->m_nonAtomicName, true, true, true, *value);
                 } else {
                     //ReferenceError: assignment to undeclared variable d
                     u16string err_msg;
@@ -1140,7 +1140,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 #endif
         ESValue* arguments = (ESValue *)stack;
 
-        ESValue callee = ec->resolveBinding(strings->atomicEval, strings->eval).value();
+        ESValue callee = *ec->resolveBinding(strings->atomicEval, strings->eval);
         if(callee.isESPointer() && (void *)callee.asESPointer() == (void *)globalObject->eval()) {
             ESObject* receiver = instance->globalObject();
             ESValue ret = instance->runOnEvalContext([instance, &arguments, &argc](){

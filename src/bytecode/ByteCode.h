@@ -344,13 +344,14 @@ public:
         m_name = name;
         m_nonAtomicName = esName;
         m_identifierCacheInvalidationCheckCount = std::numeric_limits<unsigned>::max();
+        m_cachedSlot = NULL;
     }
 
     InternalAtomicString m_name;
     ESString* m_nonAtomicName;
 
     unsigned m_identifierCacheInvalidationCheckCount;
-    ESSlotAccessor m_cachedSlot;
+    ESValue* m_cachedSlot;
 
 #ifndef NDEBUG
     virtual void dump()
@@ -368,13 +369,14 @@ public:
         m_name = name;
         m_nonAtomicName = esName;
         m_identifierCacheInvalidationCheckCount = std::numeric_limits<unsigned>::max();
+        m_cachedSlot = NULL;
     }
 
     InternalAtomicString m_name;
     ESString* m_nonAtomicName;
 
     unsigned m_identifierCacheInvalidationCheckCount;
-    ESSlotAccessor m_cachedSlot;
+    ESValue* m_cachedSlot;
 
 #ifndef NDEBUG
     virtual void dump()
@@ -430,13 +432,14 @@ public:
         m_name = name;
         m_nonAtomicName = esName;
         m_identifierCacheInvalidationCheckCount = std::numeric_limits<unsigned>::max();
+        m_cachedSlot = NULL;
     }
 
     InternalAtomicString m_name;
     ESString* m_nonAtomicName;
 
     unsigned m_identifierCacheInvalidationCheckCount;
-    ESSlotAccessor m_cachedSlot;
+    ESValue* m_cachedSlot;
 
 #ifndef NDEBUG
     virtual void dump()

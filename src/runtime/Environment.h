@@ -65,7 +65,7 @@ public:
     virtual ~EnvironmentRecord() { }
 
     //return NULL == not exist
-    virtual ESSlotAccessor hasBinding(const InternalAtomicString& atomicName, ESString* name)
+    virtual ESValue* hasBinding(const InternalAtomicString& atomicName, ESString* name)
     {
         RELEASE_ASSERT_NOT_REACHED();
     }
@@ -156,7 +156,7 @@ public:
     ~ObjectEnvironmentRecord() { }
 
     //return NULL == not exist
-    virtual ESSlotAccessor hasBinding(const InternalAtomicString& atomicName, ESString* name)
+    virtual ESValue* hasBinding(const InternalAtomicString& atomicName, ESString* name)
     {
         return m_bindingObject->addressOfProperty(name);
     }
@@ -223,24 +223,24 @@ public:
 
     InternalAtomicStringVector* innerIdentifiers() { return m_innerIdentifiers; }
 
-    virtual ESSlotAccessor hasBinding(const InternalAtomicString& atomicName, ESString* name)
+    virtual ESValue* hasBinding(const InternalAtomicString& atomicName, ESString* name)
     {
         if(UNLIKELY(m_needsActivation)) {
             size_t siz = m_activationData.size();
             for(unsigned i = 0; i < siz ; i ++) {
                 if(m_activationData[i].first == atomicName) {
-                    return ESSlotAccessor(&m_activationData[i].second);
+                    return &m_activationData[i].second;
                 }
             }
 
-            return ESSlotAccessor();
+            return NULL;
         } else {
             for(unsigned i = 0; i < m_innerIdentifiers->size() ; i ++) {
                 if((*m_innerIdentifiers)[i] == atomicName) {
-                    return ESSlotAccessor(&m_vectorData[i]);
+                    return &m_vectorData[i];
                 }
             }
-            return ESSlotAccessor();
+            return NULL;
         }
     }
 
@@ -323,7 +323,7 @@ public:
     }
     ~GlobalEnvironmentRecord() { }
 
-    virtual ESSlotAccessor hasBinding(const InternalAtomicString& atomicName, ESString* name);
+    virtual ESValue* hasBinding(const InternalAtomicString& atomicName, ESString* name);
     void createMutableBinding(const InternalAtomicString& name,ESString* nonAtomicName, bool canDelete = false);
     void initializeBinding(const InternalAtomicString& name,ESString* nonAtomicName,  const ESValue& V);
     void setMutableBinding(const InternalAtomicString& name, ESString* nonAtomicName, const ESValue& V, bool mustNotThrowTypeErrorExecption);
