@@ -7,7 +7,7 @@ ESCARGOT
     cd escargot
     ./init_third_party.sh
     ./build_third_party.sh
-    make -j8
+    make interpreter.[debug|release] -j8
 
 # Running
 

@@ -1,5 +1,4 @@
 MAKECMDGOALS=escargot
-MODE=
 HOST=
 OPT=
 ARCH=x64
@@ -14,15 +13,10 @@ ifeq ($(OS),Darwin) # Assume Mac OS X
   NPROCS:=$(shell system_profiler | awk '/Number Of CPUs/{print $4}{next;}')
 endif
 
-ifeq ($(MODE),)
-	MODE=debug
-endif
-
 ifeq ($(HOST),)
 	HOST=linux
 endif
 
-$(info mode... $(MODE))
 $(info host... $(HOST))
 
 ifeq ($(HOST), linux)
@@ -60,15 +54,16 @@ else ifeq ($(ARCH), x86)
 	CXXFLAGS += -DESCARGOT_32=1
 endif
 
-ifeq ($(MODE), debug)
-	CXXFLAGS += -O0 -g3 -frounding-math -fsignaling-nans -fno-omit-frame-pointer -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable -Wno-invalid-offsetof -Wno-sign-compare
-	GCLIBS = third_party/bdwgc/out/debug/.libs/libgc.a #third_party/bdwgc/out/debug/.libs/libgccpp.a
-else ifeq ($(MODE), release)
-	CXXFLAGS += -O3 -g3 -DNDEBUG -fomit-frame-pointer -frounding-math -fsignaling-nans -funroll-loops
-	GCLIBS = third_party/bdwgc/out/release/.libs/libgc.a #third_party/bdwgc/out/release/.libs/libgccpp.a
-else
-	$(error mode error)
-endif
+CXXFLAGS_DEBUG = -O0 -g3 -frounding-math -fsignaling-nans -fno-omit-frame-pointer -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable -Wno-invalid-offsetof -Wno-sign-compare
+GCLIBS_DEBUG = third_party/bdwgc/out/debug/.libs/libgc.a #third_party/bdwgc/out/debug/.libs/libgccpp.a
+CXXFLAGS_RELEASE = -O3 -g3 -DNDEBUG -fomit-frame-pointer -frounding-math -fsignaling-nans -funroll-loops
+GCLIBS_RELEASE = third_party/bdwgc/out/release/.libs/libgc.a #third_party/bdwgc/out/release/.libs/libgccpp.a
+
+interpreter.debug: CXXFLAGS+=$(CXXFLAGS_DEBUG)
+interpreter.debug: GCLIBS=$(GCLIBS_DEBUG)
+
+interpreter.release: CXXFLAGS+=$(CXXFLAGS_RELEASE)
+interpreter.release: GCLIBS=$(GCLIBS_RELEASE)
 
 THIRD_PARTY_LIBS= $(GCLIBS)
 
@@ -113,6 +108,9 @@ clean:
 	$(shell find ./third_party/esprima_cpp/ -name "*.o" -exec rm {} \;)
 	$(shell find ./third_party/esprima_cpp/ -name "*.d" -exec rm {} \;)
 
+interpreter.debug: $(MAKECMDGOALS)
+
+interpreter.release: $(MAKECMDGOALS)
 
 strip: $(MAKECMDGOALS)
 	strip $<
