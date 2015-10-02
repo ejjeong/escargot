@@ -37,7 +37,8 @@ public:
             } else {
                 if(m_fastAccessUpIndex == 0) {
                     updateNodeIndex(context);
-                    codeBlock->pushCode(GetByIndex(m_fastAccessIndex, m_nodeIndex), this);
+                    codeBlock->pushCode(GetByIndex(m_fastAccessIndex), this);
+                    WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
 #ifndef NDEBUG
                     codeBlock->peekCode<GetByIndex>(codeBlock->lastCodePosition<GetByIndex>())->m_name = m_nonAtomicName;
 #endif
@@ -50,7 +51,8 @@ public:
             }
         } else {
             updateNodeIndex(context);
-            codeBlock->pushCode(GetById(m_name, m_nonAtomicName, m_nodeIndex), this);
+            codeBlock->pushCode(GetById(m_name, m_nonAtomicName), this);
+            WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
         }
     }
 
@@ -64,21 +66,19 @@ public:
     }
 
 
-    virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context, int srcIndex = -1)
+    virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         if(m_canUseFastAccess) {
             if(codeBlock->m_needsActivation) {
                 codeBlock->pushCode(PutByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), this);
             } else {
                 if(m_fastAccessUpIndex == 0) {
-                    updateNodeIndex(context);
-                    codeBlock->pushCode(PutByIndex(m_fastAccessIndex, m_nodeIndex, srcIndex), this);
+                    codeBlock->pushCode(PutByIndex(m_fastAccessIndex), this);
                 } else
                     codeBlock->pushCode(PutByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), this);
             }
         } else {
-            updateNodeIndex(context);
-            codeBlock->pushCode(PutById(m_name, m_nonAtomicName, m_nodeIndex), this);
+            codeBlock->pushCode(PutById(m_name, m_nonAtomicName), this);
         }
     }
 

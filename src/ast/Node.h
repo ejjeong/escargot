@@ -121,7 +121,9 @@ protected:
     Node(NodeType type)
     {
         m_nodeType = type;
+#ifdef ENABLE_ESJIT
         m_nodeIndex = -1;
+#endif
     }
 public:
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
@@ -144,7 +146,7 @@ public:
         RELEASE_ASSERT_NOT_REACHED();
     }
 
-    virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context, int targetIndex = -1)
+    virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         RELEASE_ASSERT_NOT_REACHED();
     }
@@ -164,16 +166,23 @@ public:
 
     ALWAYS_INLINE const NodeType& type() { return m_nodeType; }
 
-    void updateNodeIndex(ByteCodeGenerateContext& context) {
+    void updateNodeIndex(ByteCodeGenerateContext& context)
+    {
+#ifdef ENABLE_ESJIT
         m_nodeIndex = context.getCurrentNodeIndex();
         context.setCurrentNodeIndex(m_nodeIndex+1);
+#endif
     }
 
+#ifdef ENABLE_ESJIT
     int nodeIndex() { return m_nodeIndex; }
+#endif
 protected:
     NodeType m_nodeType;
     SourceLocation m_sourceLocation;
+#ifdef ENABLE_ESJIT
     int m_nodeIndex;
+#endif
 };
 
 }

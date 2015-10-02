@@ -18,7 +18,8 @@ public:
     {
         if(m_argument) {
             m_argument->generateExpressionByteCode(codeBlock, context);
-            codeBlock->pushCode(ReturnFunctionWithValue(m_argument->nodeIndex()), this);
+            codeBlock->pushCode(ReturnFunctionWithValue(), this);
+            WRITE_LAST_INDEX(-1, m_argument->nodeIndex(), -1);
         } else {
             codeBlock->pushCode(ReturnFunction(), this);
         }

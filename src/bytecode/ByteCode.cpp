@@ -1416,13 +1416,12 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
 }
 
-ByteCode::ByteCode(Opcode code, int targetIndex) {
+ByteCode::ByteCode(Opcode code) {
     m_opcode = (ESVMInstance::currentInstance()->opcodeTable())->m_table[(unsigned)code];
 #ifndef NDEBUG
     m_orgOpcode = code;
     m_node = nullptr;
 #endif
-    m_targetIndex = targetIndex;
 }
 
 CodeBlock* generateByteCode(Node* node)

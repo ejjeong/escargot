@@ -213,7 +213,7 @@ struct ByteCodeGenerateContext {
 
 class ByteCode {
 public:
-    ByteCode(Opcode code, int targetIndex = -1);
+    ByteCode(Opcode code);
 
     void* m_opcode;
 #ifndef NDEBUG
@@ -226,7 +226,6 @@ public:
 
     }
 #endif
-    int m_targetIndex;
 };
 
 #ifdef ENABLE_ESJIT
@@ -252,6 +251,20 @@ protected:
     ESJIT::Type m_type;
     ESValue m_value;
 };
+
+class SSAIndex {
+public:
+    inline void set(int targetIndex = -1, int srcIndex1 = -1, int srcIndex2 = -1)
+    {
+        m_targetIndex = targetIndex;
+        m_srcIndex1 = srcIndex1;
+        m_srcIndex2 = srcIndex2;
+    }
+
+    int m_targetIndex;
+    int m_srcIndex1;
+    int m_srcIndex2;
+};
 #endif
 
 #ifdef NDEBUG
@@ -276,8 +289,8 @@ ASSERT_STATIC(sizeof(NoOp0) == sizeof(ByteCode), "sizeof(NoOp0) should be == siz
 
 class Push : public ByteCode {
 public:
-    Push(const ESValue& value, int nodeIndex = -1)
-        : ByteCode(PushOpcode, nodeIndex)
+    Push(const ESValue& value)
+        : ByteCode(PushOpcode)
         , m_value(value)
     {
     }
@@ -285,7 +298,6 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("(t%d = ) ", m_targetIndex);
         if(m_value.isESString()) {
             ESString* str = m_value.asESString();
             if(str->length() > 30) {
@@ -393,8 +405,8 @@ public:
 
 class GetById : public ByteCode {
 public:
-    GetById(const InternalAtomicString& name, ESString* esName, int targetIndex = -1)
-        : ByteCode(GetByIdOpcode, targetIndex)
+    GetById(const InternalAtomicString& name, ESString* esName)
+        : ByteCode(GetByIdOpcode)
     {
         m_name = name;
         m_nonAtomicName = esName;
@@ -411,7 +423,6 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("(t%d = resolve \'%s\') ", m_targetIndex, m_nonAtomicName->utf8Data());
         printf("GetById <%s>\n", m_nonAtomicName->utf8Data());
     }
 #endif
@@ -444,8 +455,8 @@ public:
 
 class GetByIndex : public ByteCode {
 public:
-    GetByIndex(size_t index, int targetIndex = -1)
-        : ByteCode(GetByIndexOpcode, targetIndex)
+    GetByIndex(size_t index)
+        : ByteCode(GetByIndexOpcode)
     {
         m_index = index;
     }
@@ -455,7 +466,6 @@ public:
     ESString* m_name;
     virtual void dump()
     {
-        printf("(t%d = id%u) ", m_targetIndex, (unsigned)m_index);
         printf("GetByIndex <%s, %u>\n", m_name->utf8Data(),  (unsigned)m_index);
     }
 #endif
@@ -486,8 +496,8 @@ public:
 
 class PutById : public ByteCode {
 public:
-    PutById(const InternalAtomicString& name, ESString* esName, int targetIndex = -1, Opcode code = PutByIdOpcode)
-        : ByteCode(code, targetIndex)
+    PutById(const InternalAtomicString& name, ESString* esName, Opcode code = PutByIdOpcode)
+        : ByteCode(code)
     {
         m_name = name;
         m_nonAtomicName = esName;
@@ -504,7 +514,6 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("(t%d = %s) ", m_targetIndex, m_nonAtomicName->utf8Data());
         printf("PutById <%s>\n", m_nonAtomicName->utf8Data());
     }
 #endif
@@ -512,19 +521,16 @@ public:
 
 class PutByIndex : public ByteCode {
 public:
-    PutByIndex(size_t index, int targetIndex = -1, int srcIndex = -1, Opcode code = PutByIndexOpcode)
-        : ByteCode(code, targetIndex)
+    PutByIndex(size_t index, Opcode code = PutByIndexOpcode)
+        : ByteCode(code)
     {
         m_index = index;
-        m_srcIndex = srcIndex;
     }
     size_t m_index;
-    int m_srcIndex;
 
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("(t%d: &id%u = t%d) ", m_targetIndex, (unsigned)m_index, m_srcIndex);
         printf("PutByIndex <%u>\n", (unsigned)m_index);
     }
 #endif
@@ -551,20 +557,17 @@ public:
 
 class PutInObject : public ByteCode {
 public:
-    PutInObject(Opcode code = PutInObjectOpcode, int targetIndex = -1, int objectIndex = -1, int propertyIndex = -1)
-        : ByteCode(code, targetIndex)
+    PutInObject(Opcode code = PutInObjectOpcode)
+        : ByteCode(code)
     {
         m_cachedHiddenClass = (ESHiddenClass*)SIZE_MAX;
         m_cachedPropertyValue = nullptr;
         m_cachedIndex = SIZE_MAX;
-        m_objectIndex = objectIndex;
-        m_propertyIndex = propertyIndex;
     }
 
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("(t%d = t%d[t%d]) ", m_targetIndex, m_objectIndex, m_propertyIndex);
         printf("PutInObject <>\n");
     }
 #endif
@@ -572,8 +575,6 @@ public:
     ESHiddenClass* m_cachedHiddenClass;
     ESString* m_cachedPropertyValue;
     size_t m_cachedIndex;
-    int m_objectIndex;
-    int m_propertyIndex;
 };
 
 class CreateBinding : public ByteCode {
@@ -661,22 +662,17 @@ public:
 
 class BitwiseAnd : public ByteCode {
 public:
-    BitwiseAnd(int targetIndex = -1, int leftIndex = -1, int rightIndex = -1)
-        : ByteCode(BitwiseAndOpcode, targetIndex)
+    BitwiseAnd()
+        : ByteCode(BitwiseAndOpcode)
     {
-        m_leftIndex = leftIndex;
-        m_rightIndex = rightIndex;
     }
 
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("(t%d = t%d&t%d) ", m_targetIndex, m_leftIndex, m_rightIndex);
         printf("BitwiseAnd <>\n");
     }
 #endif
-    int m_leftIndex;
-    int m_rightIndex;
 };
 
 class BitwiseOr : public ByteCode {
@@ -713,43 +709,33 @@ public:
 
 class LeftShift : public ByteCode {
 public:
-    LeftShift(int targetIndex = -1, int leftIndex = -1, int rightIndex = -1)
-        : ByteCode(LeftShiftOpcode, targetIndex)
+    LeftShift()
+        : ByteCode(LeftShiftOpcode)
     {
-        m_leftIndex = leftIndex;
-        m_rightIndex = rightIndex;
     }
 
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("(t%d = t%d<<t%d) ", m_targetIndex, m_leftIndex, m_rightIndex);
         printf("LeftShift <>\n");
     }
 #endif
-    int m_leftIndex;
-    int m_rightIndex;
 };
 
 class SignedRightShift : public ByteCode {
 public:
-    SignedRightShift(int targetIndex = -1, int leftIndex = -1, int rightIndex = -1)
-        : ByteCode(SignedRightShiftOpcode, targetIndex)
+    SignedRightShift()
+        : ByteCode(SignedRightShiftOpcode)
     {
-        m_leftIndex = leftIndex;
-        m_rightIndex = rightIndex;
     }
 
 
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("(t%d = t%d>>t%d) ", m_targetIndex, m_leftIndex, m_rightIndex);
         printf("SignedRightShift <>\n");
     }
 #endif
-    int m_leftIndex;
-    int m_rightIndex;
 };
 
 class UnsignedRightShift : public ByteCode {
@@ -770,22 +756,17 @@ public:
 
 class LessThan : public ByteCode {
 public:
-    LessThan(int targetIndex = -1, int leftIndex = -1, int rightIndex = -1)
-        : ByteCode(LessThanOpcode, targetIndex)
+    LessThan()
+        : ByteCode(LessThanOpcode)
     {
-        m_leftIndex = leftIndex;
-        m_rightIndex = rightIndex;
     }
 
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("(t%d = ? t%d<t%d) ", m_targetIndex, m_leftIndex, m_rightIndex);
         printf("LessThan <>\n");
     }
 #endif
-    int m_leftIndex;
-    int m_rightIndex;
 };
 
 class LessThanOrEqual : public ByteCode {
@@ -838,19 +819,14 @@ public:
 
 class Plus : public ByteCode {
 public:
-    Plus(int targetIndex = -1, int leftIndex = -1, int rightIndex = -1)
-        : ByteCode(PlusOpcode, targetIndex)
+    Plus()
+        : ByteCode(PlusOpcode)
     {
-        m_leftIndex = leftIndex;
-        m_rightIndex = rightIndex;
     }
-    unsigned m_leftIndex;
-    unsigned m_rightIndex;
 
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("(t%d = t%d + t%d) ", m_targetIndex, m_leftIndex, m_rightIndex);
         printf("Plus <>\n");
     }
 #endif
@@ -921,8 +897,8 @@ public:
 
 class Increment : public ByteCode {
 public:
-    Increment(int targetIndex = -1, size_t sourceIndex = -1)
-        : ByteCode(IncrementOpcode, targetIndex), m_sourceIndex(sourceIndex)
+    Increment()
+        : ByteCode(IncrementOpcode)
     {
 
     }
@@ -930,12 +906,10 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("(t%d = t%d + 1)", m_targetIndex, m_sourceIndex);
         printf("Increment <>\n");
     }
 #endif
 private:
-    int m_sourceIndex;
 };
 
 class Decrement : public ByteCode {
@@ -1100,8 +1074,8 @@ public:
 
 class ToNumber : public ByteCode {
 public:
-    ToNumber(int targetIndex = -1, size_t sourceIndex = -1)
-        : ByteCode(ToNumberOpcode, targetIndex), m_sourceIndex(sourceIndex)
+    ToNumber()
+        : ByteCode(ToNumberOpcode)
     {
 
     }
@@ -1109,28 +1083,24 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("(t%d = toNumber(t%d)) ", m_targetIndex, m_sourceIndex);
         printf("ToNumber <>\n");
     }
 #endif
-    int m_sourceIndex;
 };
 
 class JumpIfTopOfStackValueIsFalse : public ByteCode {
 public:
-    JumpIfTopOfStackValueIsFalse(size_t jumpPosition, int targetIndex = -1, int conditionIndex = -1)
-        : ByteCode(JumpIfTopOfStackValueIsFalseOpcode, targetIndex), m_conditionIndex(conditionIndex)
+    JumpIfTopOfStackValueIsFalse(size_t jumpPosition)
+        : ByteCode(JumpIfTopOfStackValueIsFalseOpcode)
     {
         m_jumpPosition = jumpPosition;
     }
 
     size_t m_jumpPosition;
-    int m_conditionIndex;
 
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("(if (!t%d) goto %lu) ", m_conditionIndex, m_jumpPosition);
         printf("JumpIfTopOfStackValueIsFalse <%u>\n",(unsigned)m_jumpPosition);
     }
 #endif
@@ -1138,8 +1108,8 @@ public:
 
 class JumpIfTopOfStackValueIsTrue : public ByteCode {
 public:
-    JumpIfTopOfStackValueIsTrue(size_t jumpPosition, int nodeIndex = -1)
-        : ByteCode(JumpIfTopOfStackValueIsTrueOpcode, nodeIndex)
+    JumpIfTopOfStackValueIsTrue(size_t jumpPosition)
+        : ByteCode(JumpIfTopOfStackValueIsTrueOpcode)
     {
         m_jumpPosition = jumpPosition;
     }
@@ -1149,7 +1119,6 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("(if (t%d) goto %lu) ", m_targetIndex, m_jumpPosition);
         printf("JumpIfTopOfStackValueIsTrue <%u>\n",(unsigned)m_jumpPosition);
     }
 #endif
@@ -1293,20 +1262,17 @@ public:
 
 class GetObject : public ByteCode {
 public:
-    GetObject(int targetIndex = -1, int objectIndex = -1, int propertyIndex = -1)
-        : ByteCode(GetObjectOpcode, targetIndex)
+    GetObject()
+        : ByteCode(GetObjectOpcode)
     {
         m_cachedHiddenClass = (ESHiddenClass*)SIZE_MAX;
         m_cachedPropertyValue = nullptr;
         m_cachedIndex = SIZE_MAX;
-        m_objectIndex = objectIndex;
-        m_propertyIndex = propertyIndex;
     }
 
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("(t%d = t%d[t%d]) ", m_targetIndex, m_objectIndex, m_propertyIndex);
         printf("GetObject <>\n");
     }
 #endif
@@ -1314,8 +1280,6 @@ public:
     ESHiddenClass* m_cachedHiddenClass;
     ESString* m_cachedPropertyValue;
     size_t m_cachedIndex;
-    int m_objectIndex;
-    int m_propertyIndex;
 };
 
 class GetObjectWithPeeking : public ByteCode {
@@ -1558,26 +1522,23 @@ public:
 
 class ReturnFunctionWithValue : public ByteCode {
 public:
-    ReturnFunctionWithValue(int returnIndex = -1)
+    ReturnFunctionWithValue()
         : ByteCode(ReturnFunctionWithValueOpcode)
     {
-        m_returnIndex = returnIndex;
     }
 
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("(return t%d) ", m_returnIndex);
         printf("ReturnFunctionWithValue <>\n");
     }
 #endif
-    int m_returnIndex;
 };
 
 class Jump : public ByteCode {
 public:
-    Jump(size_t jumpPosition, int targetIndex = -1)
-        : ByteCode(JumpOpcode, targetIndex)
+    Jump(size_t jumpPosition)
+        : ByteCode(JumpOpcode)
     {
         m_jumpPosition = jumpPosition;
     }
@@ -1778,7 +1739,10 @@ public:
     bool m_isStrict;
 
 #ifdef ENABLE_ESJIT
+#define WRITE_LAST_INDEX(a, b, c) codeBlock->writeLastSSAIndex(a, b, c)
 public:
+    void writeLastSSAIndex(int targetIndex = -1, int src1 = -1, int src2 = -1) { m_SSAIndexes.back().set(targetIndex, src1, src2); }
+    SSAIndex* getSSAIndex(int bytecodeIndex) { return &m_SSAIndexes[bytecodeIndex]; }
     void ensureHeapProfileDataSlotSize(size_t size);
     void ensureArgumentProfileDataSlotSize(size_t size);
     void writeHeapProfileData(unsigned index, ESValue& value);
@@ -1787,6 +1751,7 @@ public:
     ProfileData* getArgumentProfileData(unsigned index) { return &m_argumentProfileDatas[index]; }
 
     // TODO remove size_t (which stands for bytecode index, used only in assert)
+    std::vector<SSAIndex, gc_allocator<SSAIndex> > m_SSAIndexes;
     std::vector<ProfileData, gc_allocator<ProfileData> > m_heapProfileDatas;
     std::vector<ProfileData, gc_allocator<ProfileData> > m_argumentProfileDatas;
     typedef ESValue (*JITFunction)(ESVMInstance*);
@@ -1795,6 +1760,8 @@ public:
     size_t m_tempRegisterSize;
     size_t m_executionCount;
     size_t m_executeCount;
+#else
+#define WRITE_LAST_INDEX(a, b, c)
 #endif
 };
 
@@ -1925,6 +1892,9 @@ void CodeBlock::pushCode(const CodeType& type, Node* node)
 #endif
     char* first = (char *)&type;
     m_code.insert(m_code.end(), first, first + sizeof(CodeType));
+#ifdef ENABLE_ESJIT
+    m_SSAIndexes.push_back(SSAIndex());
+#endif
 }
 
 ALWAYS_INLINE void ByteCodeGenerateContext::consumeLabeledContinuePositions(CodeBlock* cb, size_t position, ESString* lbl)

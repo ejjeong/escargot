@@ -25,8 +25,11 @@ public:
         m_left->generateReferenceResolvedAddressByteCode(codeBlock, context);
         m_right->generateExpressionByteCode(codeBlock, context);
         updateNodeIndex(context);
-        codeBlock->pushCode(Plus(m_nodeIndex, m_left->nodeIndex(), m_right->nodeIndex()), this);
-        m_left->generatePutByteCode(codeBlock, context, m_nodeIndex);
+        codeBlock->pushCode(Plus(), this);
+        WRITE_LAST_INDEX(m_nodeIndex, m_left->nodeIndex(), m_right->nodeIndex());
+        m_left->updateNodeIndex(context);
+        m_left->generatePutByteCode(codeBlock, context);
+        WRITE_LAST_INDEX(m_left->nodeIndex(), m_nodeIndex, -1);
     }
 
 protected:

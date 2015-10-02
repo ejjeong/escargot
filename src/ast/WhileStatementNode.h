@@ -22,7 +22,8 @@ public:
         size_t whileStart = codeBlock->currentCodeSize();
         m_test->generateExpressionByteCode(codeBlock, newContext);
 
-        codeBlock->pushCode(JumpIfTopOfStackValueIsFalse(SIZE_MAX, m_test->nodeIndex()), this);
+        codeBlock->pushCode(JumpIfTopOfStackValueIsFalse(SIZE_MAX), this);
+        WRITE_LAST_INDEX(m_test->nodeIndex(), -1, -1);
         size_t testPos = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsFalse>();
 
         m_body->generateStatementByteCode(codeBlock, newContext);

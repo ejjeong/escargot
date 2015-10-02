@@ -120,8 +120,9 @@ clean:
 	$(shell find ./third_party/nanojit/ -name "*.o" -exec rm {} \;)
 	$(shell find ./third_party/nanojit/ -name "*.d" -exec rm {} \;)
 
+jit.debug: $(MAKECMDGOALS)
+jit.release: $(MAKECMDGOALS)
 interpreter.debug: $(MAKECMDGOALS)
-
 interpreter.release: $(MAKECMDGOALS)
 
 strip: $(MAKECMDGOALS)

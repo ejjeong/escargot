@@ -21,7 +21,8 @@ public:
         m_left->generateExpressionByteCode(codeBlock, context);
         m_right->generateExpressionByteCode(codeBlock, context);
         updateNodeIndex(context);
-        codeBlock->pushCode(BitwiseAnd(m_nodeIndex, m_left->nodeIndex(), m_right->nodeIndex()), this);
+        codeBlock->pushCode(BitwiseAnd(), this);
+        WRITE_LAST_INDEX(m_nodeIndex, m_left->nodeIndex(), m_right->nodeIndex());
     }
 protected:
     ExpressionNode* m_left;

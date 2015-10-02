@@ -21,7 +21,8 @@ public:
         m_left->generateExpressionByteCode(codeBlock, context);
         m_right->generateExpressionByteCode(codeBlock, context);
         updateNodeIndex(context);
-        codeBlock->pushCode(LessThan(m_nodeIndex, m_left->nodeIndex(), m_right->nodeIndex()), this);
+        codeBlock->pushCode(LessThan(), this);
+        WRITE_LAST_INDEX(m_nodeIndex, m_left->nodeIndex(), m_right->nodeIndex());
     }
 
 protected:
