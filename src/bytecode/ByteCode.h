@@ -1743,17 +1743,9 @@ public:
 public:
     void writeLastSSAIndex(int targetIndex = -1, int src1 = -1, int src2 = -1) { m_SSAIndexes.back().set(targetIndex, src1, src2); }
     SSAIndex* getSSAIndex(int bytecodeIndex) { return &m_SSAIndexes[bytecodeIndex]; }
-    void ensureHeapProfileDataSlotSize(size_t size);
-    void ensureArgumentProfileDataSlotSize(size_t size);
-    void writeHeapProfileData(unsigned index, ESValue& value);
-    void writeArgumentProfileData(unsigned index, ESValue& value);
-    ProfileData* getHeapProfileData(unsigned index) { return &m_heapProfileDatas[index]; }
-    ProfileData* getArgumentProfileData(unsigned index) { return &m_argumentProfileDatas[index]; }
 
     // TODO remove size_t (which stands for bytecode index, used only in assert)
     std::vector<SSAIndex, gc_allocator<SSAIndex> > m_SSAIndexes;
-    std::vector<ProfileData, gc_allocator<ProfileData> > m_heapProfileDatas;
-    std::vector<ProfileData, gc_allocator<ProfileData> > m_argumentProfileDatas;
     typedef ESValue (*JITFunction)(ESVMInstance*);
     JITFunction m_cachedJITFunction;
     bool m_dontJIT;

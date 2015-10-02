@@ -185,10 +185,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ASSERT(code->m_index < ec->environment()->record()->toDeclarativeEnvironmentRecord()->innerIdentifiers()->size());
         push<ESValue>(stack, bp, &nonActivitionModeLocalValuePointer[code->m_index]);
 #ifdef ENABLE_ESJIT
-        if (code->m_index < numParams)
-            codeBlock->writeArgumentProfileData(code->m_index, nonActivitionModeLocalValuePointer[code->m_index]);
-        else
-            codeBlock->writeHeapProfileData(code->m_index, nonActivitionModeLocalValuePointer[code->m_index]);
+        code->m_profile.addProfile(nonActivitionModeLocalValuePointer[code->m_index]);
 #endif
         executeNextCode<GetByIndex>(programCounter);
         goto NextInstruction;
@@ -1483,29 +1480,4 @@ void dumpBytecode(CodeBlock* codeBlock)
 }
 
 #endif
-
-#ifdef ENABLE_ESJIT
-void CodeBlock::ensureHeapProfileDataSlotSize(size_t size)
-{
-    m_heapProfileDatas.resize(size);
-}
-
-void CodeBlock::ensureArgumentProfileDataSlotSize(size_t size)
-{
-    m_argumentProfileDatas.resize(size);
-}
-
-void CodeBlock::writeHeapProfileData(unsigned index, ESValue& value)
-{
-    ASSERT(index < m_heapProfileDatas.size());
-    m_heapProfileDatas[index].addProfile(value);
-}
-
-void CodeBlock::writeArgumentProfileData(unsigned index, ESValue& value)
-{
-    ASSERT(index < m_argumentProfileDatas.size());
-    m_argumentProfileDatas[index].addProfile(value);
-}
-#endif
-
 }

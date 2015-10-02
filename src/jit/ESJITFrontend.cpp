@@ -120,15 +120,13 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             if (bytecode->m_index < codeBlock->m_params.size()) {
                 ESIR* getArgument = GetArgumentIR::create(ssaIndex->m_targetIndex, bytecode->m_index);
                 currentBlock->push(getArgument);
-                ProfileData* profileData = codeBlock->getArgumentProfileData(bytecode->m_index);
-                profileData->updateProfiledType();
-                graph->setOperandType(ssaIndex->m_targetIndex, profileData->getType());
+                bytecode->m_profile.updateProfiledType();
+                graph->setOperandType(ssaIndex->m_targetIndex, bytecode->m_profile.getType());
             } else {
                 ESIR* getVar = GetVarIR::create(ssaIndex->m_targetIndex, bytecode->m_index);
                 currentBlock->push(getVar);
-                ProfileData* profileData = codeBlock->getHeapProfileData(bytecode->m_index);
-                profileData->updateProfiledType();
-                graph->setOperandType(ssaIndex->m_targetIndex, profileData->getType());
+                bytecode->m_profile.updateProfiledType();
+                graph->setOperandType(ssaIndex->m_targetIndex, bytecode->m_profile.getType());
             }
             NEXT_BYTECODE(GetByIndex);
             break;

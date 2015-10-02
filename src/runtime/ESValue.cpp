@@ -489,11 +489,6 @@ ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctio
     ((FunctionEnvironmentRecord *)ESVMInstance->currentExecutionContext()->environment()->record())->bindThisValue(receiver);
     DeclarativeEnvironmentRecord* functionRecord = ESVMInstance->currentExecutionContext()->environment()->record()->toDeclarativeEnvironmentRecord();
 
-#ifdef ENABLE_ESJIT
-    for(unsigned i = 0; i < fn->codeBlock()->m_params.size() ; i ++)
-        fn->codeBlock()->writeArgumentProfileData(i, arguments[i]);
-#endif
-
     if(UNLIKELY(fn->codeBlock()->m_needsActivation)) {
         const InternalAtomicStringVector& params = fn->codeBlock()->m_params;
         const ESStringVector& nonAtomicParams = fn->codeBlock()->m_nonAtomicParams;
