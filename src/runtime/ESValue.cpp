@@ -387,18 +387,14 @@ ESObject::ESObject(ESPointer::Type type, size_t initialKeyCount)
     : ESPointer(type)
     , m_map(NULL)
 {
-    //m_map = new(GC) ESObjectMap(16);
-    //m_hiddenClass = nullptr;
+    m_flags.m_isFrozen = false;
+    m_flags.m_propertyIndex = 0;
+
     m_hiddenClassData.reserve(initialKeyCount);
     m_hiddenClass = ESVMInstance::currentInstance()->initialHiddenClassForObject();
 
-    //definePropertyOrThrow(strings->constructor, true, false, false);
-    //defineAccessorProperty(strings->__proto__, ESVMInstance::currentInstance()->object__proto__AccessorData(), true, false, false);
-
     m_hiddenClassData.push_back(ESValue(ESValue::ESUndefined));
     m_hiddenClassData.push_back(ESValue((ESPointer *)ESVMInstance::currentInstance()->object__proto__AccessorData()));
-
-    //convertIntoMapMode();
 }
 
 const unsigned ESArrayObject::MAX_FASTMODE_SIZE;

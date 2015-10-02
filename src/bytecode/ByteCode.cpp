@@ -1278,7 +1278,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         JumpIfTopOfStackValueIsFalse* code = (JumpIfTopOfStackValueIsFalse *)currentCode;
         ESValue* top = pop<ESValue>(stack, bp);
         ASSERT(code->m_jumpPosition != SIZE_MAX);
-        if(*top == ESValue(ESValue::ESFalse) || !top->toBoolean())
+        if(!top->toBoolean())
             programCounter = jumpTo(codeBuffer, code->m_jumpPosition);
         else
             executeNextCode<JumpIfTopOfStackValueIsFalse>(programCounter);
@@ -1290,7 +1290,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         JumpIfTopOfStackValueIsTrue* code = (JumpIfTopOfStackValueIsTrue *)currentCode;
         ESValue* top = pop<ESValue>(stack, bp);
         ASSERT(code->m_jumpPosition != SIZE_MAX);
-        if(*top == ESValue(ESValue::ESTrue) || top->toBoolean())
+        if(top->toBoolean())
             programCounter = jumpTo(codeBuffer, code->m_jumpPosition);
         else
             executeNextCode<JumpIfTopOfStackValueIsTrue>(programCounter);
@@ -1302,7 +1302,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         JumpAndPopIfTopOfStackValueIsTrue* code = (JumpAndPopIfTopOfStackValueIsTrue *)currentCode;
         ESValue* top = pop<ESValue>(stack, bp);
         ASSERT(code->m_jumpPosition != SIZE_MAX);
-        if(*top == ESValue(ESValue::ESTrue) || top->toBoolean()) {
+        if(top->toBoolean()) {
             programCounter = jumpTo(codeBuffer, code->m_jumpPosition);
             pop<ESValue>(stack, bp);
         }
@@ -1316,7 +1316,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         JumpIfTopOfStackValueIsFalseWithPeeking* code = (JumpIfTopOfStackValueIsFalseWithPeeking *)currentCode;
         ESValue* top = peek<ESValue>(stack, bp);
         ASSERT(code->m_jumpPosition != SIZE_MAX);
-        if(*top == ESValue(ESValue::ESFalse) || !top->toBoolean())
+        if(!top->toBoolean())
             programCounter = jumpTo(codeBuffer, code->m_jumpPosition);
         else
             executeNextCode<JumpIfTopOfStackValueIsFalseWithPeeking>(programCounter);
@@ -1328,7 +1328,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         JumpIfTopOfStackValueIsTrueWithPeeking* code = (JumpIfTopOfStackValueIsTrueWithPeeking *)currentCode;
         ESValue* top = peek<ESValue>(stack, bp);
         ASSERT(code->m_jumpPosition != SIZE_MAX);
-        if(*top == ESValue(ESValue::ESTrue) || top->toBoolean())
+        if(top->toBoolean())
             programCounter = jumpTo(codeBuffer, code->m_jumpPosition);
         else
             executeNextCode<JumpIfTopOfStackValueIsTrueWithPeeking>(programCounter);

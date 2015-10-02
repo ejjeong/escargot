@@ -518,10 +518,15 @@ inline double ESValue::toNumber() const
 
 inline bool ESValue::toBoolean() const
 {
-    if (LIKELY(isBoolean()))
-        return asBoolean();
+    if (*this == ESValue(true))
+        return true;
+
+    if (*this == ESValue(false))
+        return false;
+
     if (isInt32())
         return asInt32();
+
     if (isDouble()) {
         double d = asDouble();
         if(isnan(d))
@@ -532,14 +537,14 @@ inline bool ESValue::toBoolean() const
             return false;
         return true;
     }
+
     if (isUndefinedOrNull())
         return false;
-    if (isESString())
+
+    ASSERT(isESPointer());
+    if(asESPointer()->isESString())
         return asESString()->length();
-    if (isESPointer())
-        return true;
-    //TODO
-    RELEASE_ASSERT_NOT_REACHED();
+    return true;
 }
 
 // http://www.ecma-international.org/ecma-262/5.1/#sec-9.4
@@ -602,10 +607,10 @@ inline bool ESValue::isPrimitive() const
 
 inline void ESSlot::setValue(const ::escargot::ESValue& value, ::escargot::ESObject* object)
 {
-    if(UNLIKELY(!m_isWritable)) {
+    if(UNLIKELY(!m_flags.m_isWritable)) {
         return ;
     }
-    if(LIKELY(m_isDataProperty)) {
+    if(LIKELY(m_flags.m_isDataProperty)) {
             m_data = value;
     } else {
         ESAccessorData* data = (ESAccessorData*)m_data.asESPointer();
@@ -615,7 +620,7 @@ inline void ESSlot::setValue(const ::escargot::ESValue& value, ::escargot::ESObj
 
 inline ESValue ESSlot::value(::escargot::ESObject* object) const
 {
-    if(LIKELY(m_isDataProperty)) {
+    if(LIKELY(m_flags.m_isDataProperty)) {
         return m_data;
     } else {
         ESAccessorData* data = (ESAccessorData*)m_data.asESPointer();
@@ -1077,7 +1082,8 @@ inline void ESObject::definePropertyOrThrow(escargot::ESValue key, bool isWritab
             ASSERT(iter->second.isConfigurable());
             m_map->erase(iter);
         }
-        m_map->insert(std::make_pair(str, ::escargot::ESSlot(initalValue, isWritable, isEnumerable, isConfigurable)));
+        m_flags.m_propertyIndex++;
+        m_map->insert(std::make_pair(str, ::escargot::ESSlot(initalValue, m_flags.m_propertyIndex, isWritable, isEnumerable, isConfigurable)));
     } else {
         size_t ret = m_hiddenClass->defineProperty(this, key.toString(), true, isWritable, isEnumerable, isConfigurable);
         if((ret != SIZE_MAX) && (
@@ -1466,7 +1472,7 @@ ALWAYS_INLINE void ESObject::set(escargot::ESValue key, const ESValue& val, bool
         auto iter = m_map->find(str);
         if(iter == m_map->end()) {
             //TODO set flags
-            m_map->insert(std::make_pair(str, escargot::ESSlot(val, true, true, true)));
+            m_map->insert(std::make_pair(str, escargot::ESSlot(val, m_flags.m_propertyIndex, true, true, true)));
         } else {
             if(LIKELY(iter->second.isWritable()))
                 iter->second.setValue(val, this);
@@ -1480,7 +1486,7 @@ ALWAYS_INLINE void ESObject::set(escargot::ESValue key, const ESValue& val, bool
                 convertIntoMapMode();
                 auto iter = m_map->find(keyStr);
                 ASSERT(iter == m_map->end());
-                m_map->insert(std::make_pair(keyStr, escargot::ESSlot(val, true, true, true)));
+                m_map->insert(std::make_pair(keyStr, escargot::ESSlot(val, m_flags.m_propertyIndex, true, true, true)));
                 return ;
             } else {
                 ret = m_hiddenClass->defineProperty(this, keyStr, true, true, true, true);
@@ -1516,17 +1522,25 @@ ALWAYS_INLINE void ESObject::enumeration(Functor t)
 {
     if (isESArrayObject() && asESArrayObject()->isFastmode()) {
         for (int i = 0; i < asESArrayObject()->length(); i++) {
-            //FIXME: check if index i exists or not
             if(asESArrayObject()->m_vector[i].isEmpty())
                 continue;
             t(ESValue(i));
         }
     }
+
+    if (isESTypedArrayObject()) {
+        for (int i = 0; i < asESTypedArrayObjectWrapper()->length(); i++) {
+            t(ESValue(i));
+        }
+    }
+
+    std::vector<std::pair<escargot::ESString*, size_t> > keys;
+
     if(UNLIKELY(m_map != NULL)){
         auto iter = m_map->begin();
         while(iter != m_map->end()) {
             if(iter->second.isEnumerable()) {
-                t(ESValue((*iter).first));
+                keys.push_back(std::make_pair(iter->first, iter->second.propertyIndex()));
             }
             iter++;
         }
@@ -1535,50 +1549,18 @@ ALWAYS_INLINE void ESObject::enumeration(Functor t)
         while(iter != m_hiddenClass->m_propertyInfo.end()) {
             size_t idx = iter->second;
             if(m_hiddenClass->m_propertyFlagInfo[idx].m_isEnumerable) {
-                t(ESValue(iter->first));
+                keys.push_back(std::make_pair(iter->first, idx));
             }
             iter++;
         }
     }
-}
 
-template <typename Functor>
-ALWAYS_INLINE void ESObject::enumerationForStringify(Functor t)
-{
-    if (isESArrayObject() && asESArrayObject()->isFastmode()) {
-        for (int i = 0; i < asESArrayObject()->length(); i++) {
-            //FIXME: check if index i exists or not
-            if(asESArrayObject()->m_vector[i].isEmpty())
-                continue;
-            //For JSON.Stringify
-            if(asESArrayObject()->m_vector[i].isUndefined())
-                continue;
-            t(ESValue(i));
-        }
-    }
-    std::map<size_t, escargot::ESString*> sortedMap;
-    if(UNLIKELY(m_map != NULL)){
-        auto iter = m_map->begin();
-        while(iter != m_map->end()) {
-            if(iter->second.isEnumerable()) {
-                //FIXME: how to know creation order?
-                sortedMap.insert(std::make_pair(0, (*iter).first));
-            }
-            iter++;
-        }
-    } else {
-        auto iter = m_hiddenClass->m_propertyInfo.begin();
-        while(iter != m_hiddenClass->m_propertyInfo.end()) {
-            size_t idx = iter->second;
-            if(m_hiddenClass->m_propertyFlagInfo[idx].m_isEnumerable
-                    && !m_hiddenClassData[idx].isUndefined()) { // For JSON.Stringify
-                sortedMap.insert(std::make_pair(idx, iter->first));
-            }
-            iter++;
-        }
-    }
-    for (auto it = sortedMap.begin(); it != sortedMap.end(); it++) {
-        t(ESValue(it->second));
+    std::sort(keys.begin(), keys.end(), [](const std::pair<escargot::ESString*, size_t>& a, const std::pair<escargot::ESString*, size_t>& b) -> bool {
+        return a.second < b.second;
+    });
+
+    for(size_t i = 0; i < keys.size() ; i ++) {
+        t(keys[i].first);
     }
 }
 

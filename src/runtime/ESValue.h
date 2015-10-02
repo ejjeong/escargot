@@ -937,124 +937,111 @@ protected:
 
 class ESSlot {
 public:
-    ESSlot()
-    {
-        m_isWritable = true;
-        m_isEnumerable = true;
-        m_isConfigurable = true;
-        m_isDataProperty = true;
-    }
-
     ESSlot(const ::escargot::ESValue& value,
-            bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
+            size_t propertyIndex,
+            bool isWritable, bool isEnumerable, bool isConfigurable)
     {
-        m_data = ESValue(value);
-        m_isWritable = isWritable;
-        m_isEnumerable = isEnumerable;
-        m_isConfigurable = isConfigurable;
-        m_isDataProperty = true;
+        m_data = value;
+        m_flags.m_propertyIndex = propertyIndex;
+        m_flags.m_isWritable = isWritable;
+        m_flags.m_isEnumerable = isEnumerable;
+        m_flags.m_isConfigurable = isConfigurable;
+        m_flags.m_isDataProperty = true;
     }
 
-    ESSlot(ESValue (*getter)(::escargot::ESObject* obj) = nullptr,
-            void (*setter)(::escargot::ESObject* obj, const ESValue& value) = nullptr,
-            bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
+    ESSlot(ESValue (*getter)(::escargot::ESObject* obj),
+            void (*setter)(::escargot::ESObject* obj, const ESValue& value),
+            size_t propertyIndex,
+            bool isWritable, bool isEnumerable, bool isConfigurable)
     {
         ESAccessorData* data = new ESAccessorData;
         data->setGetter(getter);
         data->setSetter(setter);
         m_data = ESValue((ESPointer *)data);
 
-        m_isWritable = isWritable;
-        m_isEnumerable = isEnumerable;
-        m_isConfigurable = isConfigurable;
-        m_isDataProperty = false;
+        m_flags.m_propertyIndex = propertyIndex;
+        m_flags.m_isWritable = isWritable;
+        m_flags.m_isEnumerable = isEnumerable;
+        m_flags.m_isConfigurable = isConfigurable;
+        m_flags.m_isDataProperty = false;
     }
 
-    ESSlot(ESFunctionObject* getter = nullptr,
-            ESFunctionObject* setter = nullptr,
-            bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
+    ESSlot(ESFunctionObject* getter,
+            ESFunctionObject* setter,
+            size_t propertyIndex,
+            bool isWritable, bool isEnumerable, bool isConfigurable)
     {
         ESAccessorData* data = new ESAccessorData;
         data->setJSGetter(getter);
         data->setJSSetter(setter);
         m_data = ESValue((ESPointer *)data);
 
-        m_isWritable = isWritable;
-        m_isEnumerable = isEnumerable;
-        m_isConfigurable = isConfigurable;
-        m_isDataProperty = false;
+        m_flags.m_propertyIndex = propertyIndex;
+        m_flags.m_isWritable = isWritable;
+        m_flags.m_isEnumerable = isEnumerable;
+        m_flags.m_isConfigurable = isConfigurable;
+        m_flags.m_isDataProperty = false;
     }
 
     ESSlot(ESAccessorData* data,
-            bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
+            size_t propertyIndex,
+            bool isWritable, bool isEnumerable, bool isConfigurable)
     {
         m_data = ESValue((ESPointer *)data);
-        m_isWritable = isWritable;
-        m_isEnumerable = isEnumerable;
-        m_isConfigurable = isConfigurable;
-        m_isDataProperty = false;
-    }
-
-    friend class DeclarativeEnvironmentRecord;
-    //DO NOT USE THIS FUNCITON
-    void init(const ::escargot::ESValue& value,
-            bool isWritable = false, bool isEnumerable = false, bool isConfigurable = false)
-    {
-        m_data = ESValue(value);
-        m_isWritable = isWritable;
-        m_isEnumerable = isEnumerable;
-        m_isConfigurable = isConfigurable;
-        m_isDataProperty = true;
+        m_flags.m_propertyIndex = propertyIndex;
+        m_flags.m_isWritable = isWritable;
+        m_flags.m_isEnumerable = isEnumerable;
+        m_flags.m_isConfigurable = isConfigurable;
+        m_flags.m_isDataProperty = false;
     }
 
     ALWAYS_INLINE void setValue(const ::escargot::ESValue& value, ::escargot::ESObject* object = NULL);
 
     ALWAYS_INLINE ESValue value(::escargot::ESObject* object = NULL) const;
 
+    ALWAYS_INLINE size_t propertyIndex() const
+    {
+        return m_flags.m_propertyIndex;
+    }
+
     ALWAYS_INLINE bool isConfigurable() const
     {
-        return m_isConfigurable;
+        return m_flags.m_isConfigurable;
     }
 
     ALWAYS_INLINE bool isEnumerable() const
     {
-        return m_isEnumerable;
+        return m_flags.m_isEnumerable;
     }
 
     ALWAYS_INLINE bool isWritable() const
     {
-        return m_isWritable;
+        return m_flags.m_isWritable;
     }
 
     ALWAYS_INLINE bool isDataProperty() const
     {
-        return m_isDataProperty;
+        return m_flags.m_isDataProperty;
     }
 
     ALWAYS_INLINE void setConfigurable(bool b)
     {
-        m_isConfigurable = b;
+        m_flags.m_isConfigurable = b;
     }
 
     ALWAYS_INLINE void setEnumerable(bool b)
     {
-        m_isEnumerable = b;
+        m_flags.m_isEnumerable = b;
     }
 
     ALWAYS_INLINE void setWritable(bool b)
     {
-        m_isWritable = b;
-    }
-
-    ALWAYS_INLINE void setAsDataProperty()
-    {
-        m_isDataProperty = true;
-        m_data = ESValue();
+        m_flags.m_isWritable = b;
     }
 
     ALWAYS_INLINE ESAccessorData* accessorData() const
     {
-        ASSERT(!m_isDataProperty);
+        ASSERT(!m_flags.m_isDataProperty);
         return (ESAccessorData *)m_data.asESPointer();
     }
 
@@ -1064,14 +1051,25 @@ public:
     }
 
 protected:
-#pragma pack(push, 1)
-    bool m_isDataProperty:1;
-    //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-property-attributes
-    bool m_isWritable:1;
-    bool m_isEnumerable:1;
-    bool m_isConfigurable:1;
-#pragma pack(pop)
-
+#ifdef ESCARGOT_64
+    struct {
+        bool m_isDataProperty:1;
+        //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-property-attributes
+        bool m_isWritable:1;
+        bool m_isEnumerable:1;
+        bool m_isConfigurable:1;
+        size_t m_propertyIndex:60;
+    } m_flags;
+#else
+    struct {
+        bool m_isDataProperty:1;
+        //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-property-attributes
+        bool m_isWritable:1;
+        bool m_isEnumerable:1;
+        bool m_isConfigurable:1;
+        size_t m_propertyIndex:28;
+    } m_flags;
+#endif
     ESValue m_data;
 };
 
@@ -1188,7 +1186,8 @@ public:
             if(iter != m_map->end()) {
                 m_map->erase(iter);
             }
-            m_map->insert(std::make_pair(key, escargot::ESSlot(getter, setter, isWritable, isEnumerable, isConfigurable)));
+            m_flags.m_propertyIndex++;
+            m_map->insert(std::make_pair(key, escargot::ESSlot(getter, setter, m_flags.m_propertyIndex, isWritable, isEnumerable, isConfigurable)));
         } else {
             size_t ret = m_hiddenClass->defineProperty(this, key, false, isWritable, isEnumerable, isConfigurable);
             ASSERT(!m_hiddenClass->m_propertyFlagInfo[m_hiddenClass->findProperty(key)].m_isDataProperty);
@@ -1209,7 +1208,8 @@ public:
             if(iter != m_map->end()) {
                 m_map->erase(iter);
             }
-            m_map->insert(std::make_pair(key, escargot::ESSlot(getter, setter, isWritable, isEnumerable, isConfigurable)));
+            m_flags.m_propertyIndex++;
+            m_map->insert(std::make_pair(key, escargot::ESSlot(getter, setter, m_flags.m_propertyIndex, isWritable, isEnumerable, isConfigurable)));
         } else {
             size_t ret = m_hiddenClass->defineProperty(this, key, false, isWritable, isEnumerable, isConfigurable);
             ASSERT(!m_hiddenClass->m_propertyFlagInfo[m_hiddenClass->findProperty(key)].m_isDataProperty);
@@ -1229,7 +1229,8 @@ public:
             if(iter != m_map->end()) {
                 m_map->erase(iter);
             }
-            m_map->insert(std::make_pair(key, escargot::ESSlot(data, isWritable, isEnumerable, isConfigurable)));
+            m_flags.m_propertyIndex++;
+            m_map->insert(std::make_pair(key, escargot::ESSlot(data, m_flags.m_propertyIndex, isWritable, isEnumerable, isConfigurable)));
         } else {
             size_t ret = m_hiddenClass->defineProperty(this, key, false, isWritable, isEnumerable, isConfigurable);
             ASSERT(!m_hiddenClass->m_propertyFlagInfo[m_hiddenClass->findProperty(key)].m_isDataProperty);
@@ -1332,17 +1333,21 @@ public:
                 size_t idx = iter->second;
                 ASSERT(!hasOwnProperty(iter->first));
                 if(m_hiddenClass->m_propertyFlagInfo[idx].m_isDataProperty) {
+                    m_flags.m_propertyIndex++;
                     m_map->insert(std::make_pair(iter->first,
                         ESSlot(
                                 m_hiddenClassData[idx],
+                                m_flags.m_propertyIndex,
                                 m_hiddenClass->m_propertyFlagInfo[idx].m_isWritable,
                                 m_hiddenClass->m_propertyFlagInfo[idx].m_isEnumerable,
                                 m_hiddenClass->m_propertyFlagInfo[idx].m_isConfigurable
                                 )
                         ));
                 } else {
+                    m_flags.m_propertyIndex++;
                     m_map->insert(std::make_pair(iter->first,
                             ESSlot((ESAccessorData *)m_hiddenClassData[idx].asESPointer(),
+                                    m_flags.m_propertyIndex,
                                     m_hiddenClass->m_propertyFlagInfo[idx].m_isWritable,
                                     m_hiddenClass->m_propertyFlagInfo[idx].m_isEnumerable,
                                     m_hiddenClass->m_propertyFlagInfo[idx].m_isConfigurable
@@ -1358,11 +1363,24 @@ public:
 
     ALWAYS_INLINE size_t keyCount();
 protected:
-    ESObjectMap* m_map;
     ESHiddenClass* m_hiddenClass;
     ESObjectVectorStd m_hiddenClassData;
+    ESObjectMap* m_map;
 
     ESValue m___proto__;
+
+#ifdef ESCARGOT_64
+    struct {
+        size_t m_propertyIndex: 63;
+        bool m_isFrozen: 1;
+    } m_flags;
+#endif
+#ifdef ESCARGOT_32
+    struct {
+        size_t m_propertyIndex: 31;
+        bool m_isFrozen: 1;
+    } m_flags;
+#endif
 };
 
 class ESErrorObject : public ESObject {
