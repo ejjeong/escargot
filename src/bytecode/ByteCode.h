@@ -1819,7 +1819,6 @@ public:
     void writeLastSSAIndex(int targetIndex = -1, int src1 = -1, int src2 = -1) { m_SSAIndexes.back().set(targetIndex, src1, src2); }
     SSAIndex* getSSAIndex(int bytecodeIndex) { return &m_SSAIndexes[bytecodeIndex]; }
 
-    // TODO remove size_t (which stands for bytecode index, used only in assert)
     std::vector<SSAIndex, gc_allocator<SSAIndex> > m_SSAIndexes;
     typedef ESValue (*JITFunction)(ESVMInstance*);
     JITFunction m_cachedJITFunction;

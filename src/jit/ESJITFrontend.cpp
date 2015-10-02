@@ -15,35 +15,6 @@ namespace ESJIT {
     FOR_EACH_BYTECODE_OP(DECLARE_BYTECODE_LENGTH)
 #undef DECLARE_BYTECODE_LENGTH
 
-#if 0
-ConstantIR* ConstantIR::s_undefined = ConstantIR::create(ESValue());
-#ifdef ESCARGOT_32
-COMPILE_ASSERT(false, "define the mask value");
-#else
-ConstantIR* ConstantIR::s_int32Mask = ConstantIR::create(ESValue(0xffff000000000000));
-#endif
-ConstantIR* ConstantIR::s_zero = ConstantIR::create(ESValue(0));
-#endif
-
-ESIR* typeCheck(ESBasicBlock* block, ESIR* ir, Type type, int bytecodeIndex)
-{
-#if 0
-    ESIR* mask = ConstantIR::getMask(type);
-    block->push(mask);
-    ESIR* bitwiseAnd = BitwiseAndIR::create(mask, ir);
-    block->push(bitwiseAnd);
-    ESIR* zero = ConstantIR::s_zero;
-    block->push(zero);
-    ESIR* compare = EqualIR::create(bitwiseAnd, zero);
-    block->push(compare);
-    ESIR* returnIndex = ConstantIR::create(ESValue(bytecodeIndex));
-    block->push(returnIndex);
-    ESIR* ret = ReturnIR::create(returnIndex);
-#endif
-
-    return ir;
-}
-
 ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
 {
 #ifndef NDEBUG
