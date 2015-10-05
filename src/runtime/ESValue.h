@@ -1860,11 +1860,7 @@ enum TypedArrayType {
 
 class ESArrayBufferObject : public ESObject {
 protected:
-    ESArrayBufferObject(ESPointer::Type type = ESPointer::Type::ESArrayBufferObject)
-           : ESObject((Type)(Type::ESObject | Type::ESArrayBufferObject)),
-             m_data(NULL),
-             m_bytelength(0) {
-    }
+    ESArrayBufferObject(ESObject* proto = NULL, ESPointer::Type type = ESPointer::Type::ESArrayBufferObject);
 
 public:
     static ESArrayBufferObject* create()
@@ -1873,9 +1869,7 @@ public:
     }
     static ESArrayBufferObject* create(ESObject* proto)
     {
-        ESArrayBufferObject* obj = new ESArrayBufferObject();
-        if (proto != NULL)
-            obj->set__proto__(proto);
+        ESArrayBufferObject* obj = new ESArrayBufferObject(proto);
         return obj;
     }
     static ESArrayBufferObject* createAndAllocate(unsigned bytelength)

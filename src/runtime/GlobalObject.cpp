@@ -2711,6 +2711,8 @@ void GlobalObject::installTypedArray()
     m_Uint8ArrayPrototype = m_Uint8Array->protoType().asESPointer()->asESObject();
     m_Uint16ArrayPrototype = m_Uint16Array->protoType().asESPointer()->asESObject();
     m_Uint32ArrayPrototype = m_Uint32Array->protoType().asESPointer()->asESObject();
+    m_Float32ArrayPrototype = m_Float32Array->protoType().asESPointer()->asESObject();
+    m_Float64ArrayPrototype = m_Float64Array->protoType().asESPointer()->asESObject();
 }
 
 template <typename T>
@@ -2726,8 +2728,9 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
         ASSERT(instance->currentExecutionContext()->resolveThisBindingToObject()->isESTypedArrayObject());
         escargot::ESTypedArrayObject<T>* obj = instance->currentExecutionContext()->resolveThisBindingToObject()->asESTypedArrayObject<T>();
         int len = instance->currentExecutionContext()->argumentCount();
-        if (len == 0)
+        if (len == 0) {
             obj->allocateTypedArray(0);
+        }
         else if (len >= 1) {
             ESValue& val = instance->currentExecutionContext()->arguments()[0];
             //$22.2.1.2 %TypedArray%(length)
