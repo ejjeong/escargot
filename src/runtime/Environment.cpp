@@ -10,9 +10,9 @@ namespace escargot {
 
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-newfunctionenvironment
 //$8.1.2.4
-LexicalEnvironment* LexicalEnvironment::newFunctionEnvironment(ESFunctionObject* function)
+LexicalEnvironment* LexicalEnvironment::newFunctionEnvironment(ESValue arguments[], const size_t& argumentCount, ESFunctionObject* function)
 {
-    FunctionEnvironmentRecord* envRec = new FunctionEnvironmentRecord(function->codeBlock()->m_innerIdentifiers);
+    FunctionEnvironmentRecord* envRec = new FunctionEnvironmentRecord(arguments, argumentCount, function->codeBlock()->m_innerIdentifiers);
 
     //envRec->m_functionObject = function;
     //envRec->m_newTarget = newTarget;

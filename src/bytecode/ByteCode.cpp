@@ -205,6 +205,13 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         goto NextInstruction;
     }
 
+    GetArgumentsObjectOpcodeLbl:
+    {
+        push<ESValue>(stack, bp, ec->resolveArgumentsObjectBinding());
+        executeNextCode<GetArgumentsObject>(programCounter);
+        goto NextInstruction;
+    }
+
     PutByIdOpcodeLbl:
     {
         PutById* code = (PutById*)currentCode;
@@ -382,6 +389,14 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         obj->set(str, value, true);
         push<ESValue>(stack, bp, value);
         executeNextCode<PutInObjectPreComputedCase>(programCounter);
+        goto NextInstruction;
+    }
+
+    PutArgumentsObjectOpcodeLbl:
+    {
+        ESValue* value = peek<ESValue>(stack, bp);
+        *ec->resolveArgumentsObjectBinding() = *value;
+        executeNextCode<PutArgumentsObject>(programCounter);
         goto NextInstruction;
     }
 

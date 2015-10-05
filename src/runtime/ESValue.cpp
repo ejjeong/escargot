@@ -472,7 +472,7 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeF
     m_name = name;
 }
 
-ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctionObject* fn, ESValue& receiver, ESValue arguments[], const size_t& argumentCount, bool needsArgumentsObject, ESVMInstance* ESVMInstance)
+ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctionObject* fn, ESValue& receiver, ESValue arguments[], const size_t& argumentCount, ESVMInstance* ESVMInstance)
 {
     bool strict = fn->codeBlock()->shouldUseStrictMode();
     newEC->setStrictMode(strict);
@@ -506,32 +506,6 @@ ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctio
             }
         }
     }
-
-    if(UNLIKELY(needsArgumentsObject)) {
-        ESObject* argumentsObject = ESObject::create();
-        unsigned i = 0;
-        argumentsObject->set(strings->length, ESValue(argumentCount));
-        for(; i < argumentCount && i < ESCARGOT_STRINGS_NUMBERS_MAX ; i ++) {
-            argumentsObject->set(strings->nonAtomicNumbers[i], arguments[i]);
-        }
-        for( ; i < argumentCount ; i ++) {
-            argumentsObject->set(ESString::create((int)i), arguments[i]);
-        }
-
-        if(!fn->codeBlock()->m_needsActivation) {
-            for(size_t i = 0 ; i < fn->codeBlock()->m_innerIdentifiers.size() ; i++ ) {
-                if(fn->codeBlock()->m_innerIdentifiers[i] == strings->atomicArguments) {
-                    *functionRecord->bindingValueForNonActivationMode(i) = argumentsObject;
-                    break;
-                }
-            }
-            ASSERT(functionRecord->hasBinding(strings->atomicArguments, strings->arguments));
-        } else {
-            functionRecord->createMutableBinding(strings->atomicArguments, strings->arguments, false);
-            functionRecord->setMutableBinding(strings->atomicArguments, strings->arguments, argumentsObject, true);
-        }
-    }
-
 }
 
 ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, const ESValue& receiverInput, ESValue arguments[], const size_t& argumentCount, bool isNewExpression)
@@ -543,10 +517,10 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
         ESFunctionObject* fn = callee.asESPointer()->asESFunctionObject();
 
         if(UNLIKELY(fn->codeBlock()->m_needsActivation)) {
-            instance->m_currentExecutionContext = new ExecutionContext(LexicalEnvironment::newFunctionEnvironment(fn), true, isNewExpression,
+            instance->m_currentExecutionContext = new ExecutionContext(LexicalEnvironment::newFunctionEnvironment(arguments, argumentCount, fn), true, isNewExpression,
                     currentContext,
                     arguments, argumentCount);
-            functionCallerInnerProcess(instance->m_currentExecutionContext, fn, receiver, arguments, argumentCount, true, instance);
+            functionCallerInnerProcess(instance->m_currentExecutionContext, fn, receiver, arguments, argumentCount, instance);
             //ESVMInstance->invalidateIdentifierCacheCheckCount();
             //execute;
             result = interpret(instance, fn->codeBlock());
@@ -554,6 +528,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
         } else {
             ESValue* storage = (::escargot::ESValue *)alloca(sizeof(::escargot::ESValue) * fn->m_codeBlock->m_innerIdentifiers.size());
             FunctionEnvironmentRecord envRec(
+                    arguments, argumentCount,
                     storage,
                     &fn->m_codeBlock->m_innerIdentifiers);
 
@@ -563,7 +538,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
             LexicalEnvironment env(&envRec, fn->outerEnvironment());
             ExecutionContext ec(&env, false, isNewExpression, currentContext, arguments, argumentCount, storage);
             instance->m_currentExecutionContext = &ec;
-            functionCallerInnerProcess(&ec, fn, receiver, arguments, argumentCount, fn->m_codeBlock->m_needsArgumentsObject, instance);
+            functionCallerInnerProcess(&ec, fn, receiver, arguments, argumentCount, instance);
             //ESVMInstance->invalidateIdentifierCacheCheckCount();
             //execute;
 #ifdef ENABLE_ESJIT

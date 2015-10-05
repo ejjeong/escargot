@@ -28,11 +28,13 @@ class Node;
     F(GetByIdWithoutException) \
     F(GetByIndex) \
     F(GetByIndexWithActivation) \
+    F(GetArgumentsObject) \
     F(PutById) \
     F(PutByIndex) \
     F(PutByIndexWithActivation) \
     F(PutInObject) \
     F(PutInObjectPreComputedCase) \
+    F(PutArgumentsObject) \
     F(CreateBinding) \
 \
     /*binary expressions*/ \
@@ -497,6 +499,21 @@ public:
 #endif
 };
 
+class GetArgumentsObject : public ByteCode {
+public:
+    GetArgumentsObject()
+        : ByteCode(GetArgumentsObjectOpcode)
+    {
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("GetArgumentsObject <>\n");
+    }
+#endif
+};
+
 class PutById : public ByteCode {
 public:
     PutById(const InternalAtomicString& name, ESString* esName, Opcode code = PutByIdOpcode)
@@ -600,6 +617,21 @@ public:
     ESValue m_propertyValue;
     ESHiddenClass* m_cachedHiddenClass;
     size_t m_cachedIndex;
+};
+
+class PutArgumentsObject : public ByteCode {
+public:
+    PutArgumentsObject()
+        : ByteCode(PutArgumentsObjectOpcode)
+    {
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("PutArgumentsObject <>\n");
+    }
+#endif
 };
 
 class CreateBinding : public ByteCode {
@@ -1760,7 +1792,6 @@ class CodeBlock : public gc {
     CodeBlock()
     {
         m_needsActivation = false;
-        m_needsArgumentsObject = false;
         m_isBuiltInFunction = false;
         m_isStrict = false;
 #ifdef ENABLE_ESJIT
@@ -1809,7 +1840,6 @@ public:
     ESStringVector m_nonAtomicParams;
     InternalAtomicStringVector m_innerIdentifiers;
     bool m_needsActivation;
-    bool m_needsArgumentsObject;
     bool m_isBuiltInFunction;
     bool m_isStrict;
 

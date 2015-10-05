@@ -38,6 +38,21 @@ ESValue* ExecutionContext::resolveBinding(const InternalAtomicString& atomicName
     return NULL;
 }
 
+ESValue* ExecutionContext::resolveArgumentsObjectBinding()
+{
+    //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
+    LexicalEnvironment* env = environment();
+
+    while(env) {
+        ESValue* slot = env->record()->hasBindingForArgumentsObject();
+        if(slot)
+            return slot;
+        env = env->outerEnvironment();
+    }
+
+    RELEASE_ASSERT_NOT_REACHED();
+}
+
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvethisbinding
 ESValue ExecutionContext::resolveThisBinding()
 {

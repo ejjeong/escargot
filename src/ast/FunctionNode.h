@@ -25,7 +25,6 @@ public:
         m_isExpression = isExpression;
         m_needsActivation = false;
         m_outerFunctionNode = NULL;
-        m_needsArgumentsObject = false;
         m_isStrict = isStrict;
     }
 
@@ -37,8 +36,6 @@ public:
 
     ALWAYS_INLINE bool needsActivation() { return m_needsActivation; } //child & parent AST has eval, with, catch
     ALWAYS_INLINE void setNeedsActivation(bool b) { m_needsActivation = b; }
-    ALWAYS_INLINE bool needsArgumentsObject() { return m_needsArgumentsObject; }
-    ALWAYS_INLINE void markNeedsArgumentsObject() { m_needsArgumentsObject = true; }
     ALWAYS_INLINE bool isGenerator() { return m_isGenerator; }
     ALWAYS_INLINE bool isExpression() { return m_isExpression; }
     ALWAYS_INLINE bool isStrict() { return m_isStrict; }
@@ -66,7 +63,6 @@ protected:
     bool m_isExpression; //expression: boolean;
 
     bool m_needsActivation;
-    bool m_needsArgumentsObject;
     FunctionNode* m_outerFunctionNode;
 
     bool m_isStrict;

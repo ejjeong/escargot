@@ -161,11 +161,6 @@ Node* ESScriptParser::generateAST(ESVMInstance* instance, const escargot::u16str
                 }
                 riter ++;
             }
-            if(name == strings->atomicArguments && iter == identifierInCurrentContext.end() && nearFunctionNode) {
-                identifierInCurrentContext.push_back(strings->atomicArguments);
-                nearFunctionNode->markNeedsArgumentsObject();
-                iter = std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),name);
-            }
             if(identifierInCurrentContext.end() == iter) {
                 //search top...
                 unsigned up = 0;

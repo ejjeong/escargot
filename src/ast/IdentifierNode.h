@@ -51,7 +51,11 @@ public:
             }
         } else {
             updateNodeIndex(context);
-            codeBlock->pushCode(GetById(m_name, m_nonAtomicName), this);
+            if(m_name == strings->atomicArguments) {
+                codeBlock->pushCode(GetArgumentsObject(), this);
+            } else {
+                codeBlock->pushCode(GetById(m_name, m_nonAtomicName), this);
+            }
             WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
         }
     }
@@ -78,7 +82,11 @@ public:
                     codeBlock->pushCode(PutByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), this);
             }
         } else {
-            codeBlock->pushCode(PutById(m_name, m_nonAtomicName), this);
+            if(m_name == strings->atomicArguments) {
+                codeBlock->pushCode(PutArgumentsObject(), this);
+            } else {
+                codeBlock->pushCode(PutById(m_name, m_nonAtomicName), this);
+            }
         }
     }
 

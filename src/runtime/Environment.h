@@ -48,7 +48,7 @@ public:
     }
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-newfunctionenvironment
-    static LexicalEnvironment* newFunctionEnvironment(ESFunctionObject* function);
+    static LexicalEnvironment* newFunctionEnvironment(ESValue arguments[], const size_t& argumentCount, ESFunctionObject* function);
 
 protected:
     EnvironmentRecord* m_record;
@@ -66,6 +66,10 @@ public:
 
     //return NULL == not exist
     virtual ESValue* hasBinding(const InternalAtomicString& atomicName, ESString* name)
+    {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+    virtual ESValue* hasBindingForArgumentsObject()
     {
         RELEASE_ASSERT_NOT_REACHED();
     }
@@ -361,19 +365,30 @@ class FunctionEnvironmentRecord : public DeclarativeEnvironmentRecord {
     friend class LexicalEnvironment;
     friend class ESFunctionObject;
 public:
-    FunctionEnvironmentRecord(ESValue* vectorBuffer, InternalAtomicStringVector* innerIdentifiers)
+
+    //m_needsActivation = false
+    FunctionEnvironmentRecord(ESValue arguments[], const size_t& argumentCount, ESValue* vectorBuffer, InternalAtomicStringVector* innerIdentifiers)
         : DeclarativeEnvironmentRecord(vectorBuffer, innerIdentifiers)
+        , m_argumentsObject(ESValue::ESEmptyValue)
     {
 #ifndef NDEBUG
         m_thisBindingStatus = Uninitialized;
 #endif
+        m_arguments = arguments;
+        m_argumentCount = argumentCount;
     }
-    FunctionEnvironmentRecord(const InternalAtomicStringVector& innerIdentifiers = InternalAtomicStringVector())
+
+    //m_needsActivation = true
+    FunctionEnvironmentRecord(ESValue arguments[], const size_t& argumentCount, const InternalAtomicStringVector& innerIdentifiers = InternalAtomicStringVector())
         : DeclarativeEnvironmentRecord(innerIdentifiers)
+        , m_argumentsObject(ESValue::ESEmptyValue)
     {
 #ifndef NDEBUG
         m_thisBindingStatus = Uninitialized;
 #endif
+        m_arguments = (ESValue *)GC_malloc(sizeof(ESValue) * argumentCount);
+        memcpy(m_arguments, arguments, sizeof(ESValue) * argumentCount);
+        m_argumentCount = argumentCount;
     }
     enum ThisBindingStatus {
         Lexical, Initialized, Uninitialized
@@ -384,6 +399,22 @@ public:
         return true;
     }
 
+    virtual ESValue* hasBindingForArgumentsObject()
+    {
+        if(m_argumentsObject.isEmpty()) {
+            ESObject* argumentsObject = ESObject::create();
+            m_argumentsObject = argumentsObject;
+            unsigned i = 0;
+            argumentsObject->set(strings->length, ESValue(m_argumentCount));
+            for(; i < m_argumentCount && i < ESCARGOT_STRINGS_NUMBERS_MAX ; i ++) {
+                argumentsObject->set(strings->nonAtomicNumbers[i], m_arguments[i]);
+            }
+            for( ; i < m_argumentCount ; i ++) {
+                argumentsObject->set(ESString::create((int)i), m_arguments[i]);
+            }
+        }
+        return &m_argumentsObject;
+    }
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-bindthisvalue
     void bindThisValue(const ESValue& V);
     ESValue getThisBinding();
@@ -392,6 +423,9 @@ protected:
     ESValue m_thisValue;
     //ESFunctionObject* m_functionObject; //TODO
     //ESValue m_newTarget; //TODO
+    ESValue* m_arguments;
+    size_t m_argumentCount;
+    ESValue m_argumentsObject;
 #ifndef NDEBUG
     ThisBindingStatus m_thisBindingStatus;
 #endif
