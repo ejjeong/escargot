@@ -606,16 +606,16 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
     MinusOpcodeLbl:
     {
-        push<ESValue>(stack, bp, minusOperation(*pop<ESValue>(stack, bp), *pop<ESValue>(stack, bp)));
+        ESValue* right = pop<ESValue>(stack, bp);
+        ESValue* left = pop<ESValue>(stack, bp);
+        push<ESValue>(stack, bp, minusOperation(*left, *right));
         executeNextCode<Minus>(programCounter);
         goto NextInstruction;
     }
 
     MultiplyOpcodeLbl:
     {
-        ESValue* right = pop<ESValue>(stack, bp);
-        ESValue* left = pop<ESValue>(stack, bp);
-        push<ESValue>(stack, bp, ESValue(left->toNumber() * right->toNumber()));
+        push<ESValue>(stack, bp, ESValue(pop<ESValue>(stack, bp)->toNumber() * pop<ESValue>(stack, bp)->toNumber()));
         executeNextCode<Multiply>(programCounter);
         goto NextInstruction;
     }
