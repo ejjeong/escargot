@@ -261,9 +261,9 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(Branch);
         LIns* condition = getTmpMapping(irBranch->operandIndex());
-        LIns* trueValue = m_out.insImmI(1);
+        LIns* trueValue = m_out.insImmI(0);
         LIns* compare = m_out.ins2(LIR_eqi, condition, trueValue);
-        LIns* jumpTrue = m_out.insBranch(LIR_jt, compare, nullptr);
+        LIns* jumpTrue = m_out.insBranch(LIR_jf, compare, nullptr);
         LIns* jumpFalse = m_out.ins2(LIR_j, nullptr, nullptr);
         if (LIns* label = irBranch->falseBlock()->getLabel()) {
             jumpFalse->setTarget(label);
