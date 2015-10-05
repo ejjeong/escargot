@@ -665,14 +665,14 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
     IncrementOpcodeLbl:
     {
-        push<ESValue>(stack, bp, plusOperation(*pop<ESValue>(stack, bp), ESValue(1)));
+        push<ESValue>(stack, bp, ESValue(pop<ESValue>(stack, bp)->asNumber() + 1));
         executeNextCode<Division>(programCounter);
         goto NextInstruction;
     }
 
     DecrementOpcodeLbl:
     {
-        push<ESValue>(stack, bp, minusOperation(*pop<ESValue>(stack, bp), ESValue(1)));
+        push<ESValue>(stack, bp, ESValue(pop<ESValue>(stack, bp)->asNumber() - 1));
         executeNextCode<Division>(programCounter);
         goto NextInstruction;
     }
