@@ -888,7 +888,14 @@ inline bool ESValue::operator!=(const ESValue& other) const
 
 inline bool ESValue::isInt32() const
 {
-    return (u.asInt64 & TagTypeNumber) == TagTypeNumber;
+    //return (u.asInt64 & TagTypeNumber) == TagTypeNumber;
+    ASSERT(sizeof (short) == 2);
+    unsigned short* firstByte = (unsigned short *)&u.asInt64;
+#ifdef ESCARGOT_LITTLE_ENDIAN
+    return firstByte[3] == 0xffff;
+#else
+    return *firstByte == 0xffff;
+#endif
 }
 
 inline bool ESValue::isDouble() const
@@ -921,6 +928,7 @@ inline bool ESValue::isEmpty() const
 
 inline bool ESValue::isNumber() const
 {
+    //return u.asInt64 & TagTypeNumber;
     ASSERT(sizeof (short) == 2);
     unsigned short* firstByte = (unsigned short *)&u.asInt64;
 #ifdef ESCARGOT_LITTLE_ENDIAN
