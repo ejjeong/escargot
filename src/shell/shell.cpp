@@ -82,7 +82,15 @@ int main(int argc, char* argv[])
                 }
                 fclose(fp);
                 escargot::ESStringData source(str.c_str());
-                ES->evaluate(source);
+                try{
+                  ES->evaluate(source);
+                }catch(...) {
+#ifdef ESCARGOT_PROFILE
+                  escargot::ESScriptParser::dumpStats();
+#endif
+                  ES->exit();
+                  return 1;
+                }
             }
 
             if(strcmp(argv[i], "--shell") == 0) {
