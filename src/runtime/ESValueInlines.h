@@ -467,10 +467,21 @@ inline ESValue ESValue::toPrimitive(PrimitiveTypeHint preferredType) const
 inline double ESValue::toNumber() const
 {
     //http://www.ecma-international.org/ecma-262/6.0/#sec-tonumber
+#ifdef ESCARGOT_64
+    auto n = u.asInt64 & TagTypeNumber;
+    if (LIKELY(n)) {
+        if(n == TagTypeNumber) {
+            return FastI2D(asInt32());
+        } else {
+            return asDouble();
+        }
+    }
+#else
     if (LIKELY(isInt32()))
         return FastI2D(asInt32());
     else if (isDouble())
         return asDouble();
+#endif
     else if (isUndefined())
         return std::numeric_limits<double>::quiet_NaN();
     else if (isNull())
@@ -518,7 +529,6 @@ inline double ESValue::toNumber() const
             return o->asESDateObject()->getTimeAsMilisec();
     }
     RELEASE_ASSERT_NOT_REACHED();
-    //return toNumberSlowCase(exec);
 }
 
 inline bool ESValue::toBoolean() const
@@ -878,14 +888,7 @@ inline bool ESValue::operator!=(const ESValue& other) const
 
 inline bool ESValue::isInt32() const
 {
-    //return (u.asInt64 & TagTypeNumber) == TagTypeNumber;
-    ASSERT(sizeof (short) == 2);
-    unsigned short* firstByte = (unsigned short *)&u.asInt64;
-#ifdef ESCARGOT_LITTLE_ENDIAN
-    return firstByte[3] == 0xffff;
-#else
-    return firstByte[0] == 0xffff;
-#endif
+    return (u.asInt64 & TagTypeNumber) == TagTypeNumber;
 }
 
 inline bool ESValue::isDouble() const
