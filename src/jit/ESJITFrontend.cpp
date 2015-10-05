@@ -125,9 +125,13 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(CreateBinding);
             break;
         case EqualOpcode:
-            goto unsupported;
+        {
+            INIT_BYTECODE(Equal);
+            ESIR* equalIR = EqualIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
+            currentBlock->push(equalIR);
             NEXT_BYTECODE(Equal);
             break;
+        }
         case NotEqualOpcode:
             goto unsupported;
             NEXT_BYTECODE(NotEqual);

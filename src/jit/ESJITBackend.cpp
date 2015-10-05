@@ -197,6 +197,18 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         else
             RELEASE_ASSERT_NOT_REACHED();
     }
+    case ESIR::Opcode::Equal:
+    {
+        INIT_ESIR(Equal);
+        LIns* left = getTmpMapping(irEqual->leftIndex());
+        LIns* right = getTmpMapping(irEqual->rightIndex());
+        Type leftType = m_graph->getOperandType(irEqual->leftIndex());
+        Type rightType = m_graph->getOperandType(irEqual->rightIndex());
+        if (leftType.isInt32Type() && rightType.isInt32Type())
+            return m_out.ins2(LIR_eqi, left, right);
+        else
+            RELEASE_ASSERT_NOT_REACHED();
+    }
     case ESIR::Opcode::LessThan:
     {
         INIT_ESIR(LessThan);

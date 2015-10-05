@@ -359,6 +359,15 @@ private:
         : BinaryExpressionIR(ESIR::Opcode::BitwiseAnd, targetIndex, leftIndex, rightIndex) { }
 };
 
+class EqualIR : public BinaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(Equal, int, int);
+
+private:
+    EqualIR(int targetIndex, int leftIndex, int rightIndex)
+        : BinaryExpressionIR(ESIR::Opcode::Equal, targetIndex, leftIndex, rightIndex) { }
+};
+
 class LessThanIR : public BinaryExpressionIR {
 public:
     DECLARE_STATIC_GENERATOR_2(LessThan, int, int);

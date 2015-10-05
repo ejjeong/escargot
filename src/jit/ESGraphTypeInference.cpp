@@ -42,7 +42,14 @@ void ESGraphTypeInference::run(ESGraph* graph)
             case ESIR::Opcode::BitwiseXor:
                 graph->setOperandType(ir->targetIndex(), TypeInt32);
                 break;
+            case ESIR::Opcode::Equal:
+            case ESIR::Opcode::NotEqual:
+            case ESIR::Opcode::StrictEqual:
+            case ESIR::Opcode::NotStrictEqual:
+            case ESIR::Opcode::GreaterThan:
+            case ESIR::Opcode::GreaterThanOrEqual:
             case ESIR::Opcode::LessThan:
+            case ESIR::Opcode::LessThanOrEqual:
                 graph->setOperandType(ir->targetIndex(), TypeBoolean);
                 break;
             case ESIR::Opcode::LeftShift:
