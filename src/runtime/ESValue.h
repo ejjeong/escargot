@@ -1270,6 +1270,7 @@ public:
 
     ALWAYS_INLINE ESValue readHiddenClass(size_t idx);
     ALWAYS_INLINE void writeHiddenClass(size_t idx, const ESValue& value);
+    ALWAYS_INLINE void appendHiddenClassItem(escargot::ESString* str, const ESValue& value);
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-get-o-p
     ALWAYS_INLINE ESValue get(escargot::ESValue key, bool searchPrototype = false);

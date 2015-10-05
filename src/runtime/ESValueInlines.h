@@ -1603,6 +1603,21 @@ ALWAYS_INLINE void ESObject::writeHiddenClass(size_t idx, const ESValue& value)
     }
 }
 
+ALWAYS_INLINE void ESObject::appendHiddenClassItem(escargot::ESString* keyStr, const ESValue& value)
+{
+    ASSERT(!m_map);
+    ASSERT(m_hiddenClass->findProperty(keyStr) == SIZE_MAX);
+    if(UNLIKELY(m_hiddenClass->m_propertyInfo.size() >= ESHiddenClass::ESHiddenClassSizeLimit)) {
+        convertIntoMapMode();
+        auto iter = m_map->find(keyStr);
+        ASSERT(iter == m_map->end());
+        m_map->insert(std::make_pair(keyStr, escargot::ESSlot(value, m_flags.m_propertyIndex, true, true, true)));
+    } else {
+        size_t ret = m_hiddenClass->defineProperty(this, keyStr, true, true, true, true);
+        m_hiddenClassData[ret] = value;
+    }
+}
+
 
 }
 

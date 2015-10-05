@@ -29,6 +29,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     ESValue lastESObjectMetInMemberExpressionNode = globalObject;
     ESValue* lastExpressionStatementValue = &instance->m_lastExpressionStatementValue;
     ESValue* nonActivitionModeLocalValuePointer = ec->cachedDeclarativeEnvironmentRecordESValue();
+    ESValue thisValue = ec->resolveThisBinding();
     ASSERT(((size_t)stack % sizeof(size_t)) == 0);
     ASSERT(((size_t)tmpStack % sizeof(size_t)) == 0);
     //resolve programCounter into address
@@ -281,10 +282,17 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
         ESString* val = property->toString();
         if(obj->hiddenClass() == code->m_cachedHiddenClass && (val == code->m_cachedPropertyValue || *val == *code->m_cachedPropertyValue)) {
-            obj->writeHiddenClass(code->m_cachedIndex, value);
-            push<ESValue>(stack, bp, value);
-            executeNextCode<PutInObject>(programCounter);
-            goto NextInstruction;
+            if(code->m_cachedIndex == SIZE_MAX) {
+                obj->appendHiddenClassItem(val, value);
+                push<ESValue>(stack, bp, value);
+                executeNextCode<PutInObject>(programCounter);
+                goto NextInstruction;
+            } else {
+                obj->writeHiddenClass(code->m_cachedIndex, value);
+                push<ESValue>(stack, bp, value);
+                executeNextCode<PutInObject>(programCounter);
+                goto NextInstruction;
+            }
         }
 
         if(obj->isHiddenClassMode()) {
@@ -294,6 +302,14 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                 code->m_cachedPropertyValue = val;
                 code->m_cachedIndex = idx;
                 obj->writeHiddenClass(code->m_cachedIndex, value);
+                push<ESValue>(stack, bp, value);
+                executeNextCode<PutInObject>(programCounter);
+                goto NextInstruction;
+            } else {
+                code->m_cachedHiddenClass = obj->hiddenClass();
+                code->m_cachedPropertyValue = val;
+                code->m_cachedIndex = idx;
+                obj->appendHiddenClassItem(val, value);
                 push<ESValue>(stack, bp, value);
                 executeNextCode<PutInObject>(programCounter);
                 goto NextInstruction;
@@ -328,10 +344,18 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         }
 
         if(obj->hiddenClass() == code->m_cachedHiddenClass) {
-            obj->writeHiddenClass(code->m_cachedIndex, value);
-            push<ESValue>(stack, bp, value);
-            executeNextCode<PutInObjectPreComputedCase>(programCounter);
-            goto NextInstruction;
+            if(code->m_cachedIndex != SIZE_MAX) {
+                obj->writeHiddenClass(code->m_cachedIndex, value);
+                push<ESValue>(stack, bp, value);
+                executeNextCode<PutInObjectPreComputedCase>(programCounter);
+                goto NextInstruction;
+            } else {
+                obj->appendHiddenClassItem(property.toString(), value);
+                push<ESValue>(stack, bp, value);
+                executeNextCode<PutInObjectPreComputedCase>(programCounter);
+                goto NextInstruction;
+            }
+
         }
 
         ESString* str = property.toString();
@@ -341,6 +365,13 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                 code->m_cachedHiddenClass = obj->hiddenClass();
                 code->m_cachedIndex = idx;
                 obj->writeHiddenClass(code->m_cachedIndex, value);
+                push<ESValue>(stack, bp, value);
+                executeNextCode<PutInObjectPreComputedCase>(programCounter);
+                goto NextInstruction;
+            } else {
+                code->m_cachedHiddenClass = obj->hiddenClass();
+                code->m_cachedIndex = idx;
+                obj->appendHiddenClassItem(str, value);
                 push<ESValue>(stack, bp, value);
                 executeNextCode<PutInObjectPreComputedCase>(programCounter);
                 goto NextInstruction;
@@ -1684,7 +1715,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
     ThisOpcodeLbl:
     {
-        push<ESValue>(stack, bp, ESValue(ec->resolveThisBinding()));
+        push<ESValue>(stack, bp, thisValue);
         executeNextCode<This>(programCounter);
         goto NextInstruction;
     }
