@@ -393,13 +393,11 @@ inline bool ESValue::abstractEqualsTo(const ESValue& val)
 {
     if(u.asInt64 == val.u.asInt64)
         return true;
-    else if (isInt32() && val.isInt32()) {
-        return asInt32() == val.asInt32();
-    } else if (isNumber() && val.isNumber()) {
+
+    if (isNumber() && val.isNumber()) {
         double a = asNumber();
         double b = val.asNumber();
         if (std::isnan(a) || std::isnan(b)) return false;
-        else if (a == b) return true;
         else return false;
     } else if (isESPointer() && val.isESPointer()) {
         ESPointer* o = asESPointer();
@@ -1191,7 +1189,8 @@ inline escargot::ESValue ESObject::find(const escargot::ESValue& key, bool searc
             return asESArrayObject()->m_vector[idx];
     }
     if(UNLIKELY(m_map != NULL)){
-        auto iter = m_map->find(key.toString());
+        escargot::ESString* str = key.toString();
+        auto iter = m_map->find(str);
         if(iter == m_map->end()) {
             if(searchPrototype) {
                 if(UNLIKELY(this->m___proto__.isUndefined())) {
@@ -1199,7 +1198,7 @@ inline escargot::ESValue ESObject::find(const escargot::ESValue& key, bool searc
                 }
                 ESObject* target = this->m___proto__.asESPointer()->asESObject();
                 while(true) {
-                    escargot::ESValue s = target->find(key, false, realObj);
+                    escargot::ESValue s = target->find(str, false, realObj);
                     if (!s.isEmpty()) {
                         return s;
                     }
@@ -1215,7 +1214,8 @@ inline escargot::ESValue ESObject::find(const escargot::ESValue& key, bool searc
         }
         return iter->second.value(this);
     } else {
-        size_t idx = m_hiddenClass->findProperty(key.toString());
+        escargot::ESString* str = key.toString();
+        size_t idx = m_hiddenClass->findProperty(str);
         if(idx == SIZE_MAX) {
             if(searchPrototype) {
                 if(UNLIKELY(this->m___proto__.isUndefined())) {
@@ -1223,7 +1223,7 @@ inline escargot::ESValue ESObject::find(const escargot::ESValue& key, bool searc
                 }
                 ESObject* target = this->m___proto__.asESPointer()->asESObject();
                 while(true) {
-                    escargot::ESValue s = target->find(key, false, realObj);
+                    escargot::ESValue s = target->find(str, false, realObj);
                     if (!s.isEmpty()) {
                         return s;
                     }
@@ -1249,7 +1249,7 @@ inline escargot::ESValue ESObject::find(const escargot::ESValue& key, bool searc
 }
 
 //NOTE rooted ESSlot has short life time.
-ALWAYS_INLINE escargot::ESValue ESObject::findOnlyPrototype(escargot::ESValue key)
+ALWAYS_INLINE escargot::ESValue ESObject::findOnlyPrototype(const escargot::ESValue& key)
 {
     if(UNLIKELY(this->m___proto__.isUndefined())) {
         return ESValue(ESValue::ESEmptyValue);

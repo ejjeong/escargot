@@ -1275,7 +1275,7 @@ public:
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-get-o-p
     ALWAYS_INLINE ESValue get(escargot::ESValue key, bool searchPrototype = false);
     inline escargot::ESValue find(const escargot::ESValue& key, bool searchPrototype = false, escargot::ESObject* realObj = nullptr);
-    ALWAYS_INLINE escargot::ESValue findOnlyPrototype(escargot::ESValue key);
+    ALWAYS_INLINE escargot::ESValue findOnlyPrototype(const escargot::ESValue& key);
 
     //DO NOT USE THIS FUNCTION
     //NOTE rooted ESSlot has short life time.
