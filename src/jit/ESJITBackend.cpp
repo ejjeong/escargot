@@ -332,6 +332,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_ESIR(Increment);
         LIns* source = getTmpMapping(irIncrement->sourceIndex());
         Type srcType = m_graph->getOperandType(irIncrement->sourceIndex());
+
         if (srcType.isInt32Type()) {
             LIns* one = m_out.insImmI(1);
             return m_out.ins2(LIR_addi, source, one);
