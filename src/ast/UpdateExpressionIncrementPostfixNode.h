@@ -26,7 +26,7 @@ public:
             WRITE_LAST_INDEX(m_nodeIndex, m_argument->nodeIndex(), -1);
             updateNodeIndex(context);
             codeBlock->pushCode(Increment(), this);
-            WRITE_LAST_INDEX(m_nodeIndex, m_argument->nodeIndex(), -1);
+            WRITE_LAST_INDEX(m_nodeIndex, m_argument->nodeIndex() + 1, -1);
             m_argument->updateNodeIndex(context);
             m_argument->generatePutByteCode(codeBlock, context);
             WRITE_LAST_INDEX(m_argument->nodeIndex(), m_nodeIndex, -1);

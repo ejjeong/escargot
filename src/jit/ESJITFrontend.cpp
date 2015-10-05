@@ -213,8 +213,11 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         case IncrementOpcode:
         {
-            NEXT_BYTECODE(Increment);
-            break;
+           INIT_BYTECODE(Increment);
+           ESIR* incrementIR = IncrementIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1);
+           currentBlock->push(incrementIR);
+           NEXT_BYTECODE(Increment);
+           break;
         }
         case DecrementOpcode:
             NEXT_BYTECODE(Decrement);

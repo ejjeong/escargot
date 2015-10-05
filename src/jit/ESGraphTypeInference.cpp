@@ -65,6 +65,18 @@ void ESGraphTypeInference::run(ESGraph* graph)
                 graph->setOperandType(ir->targetIndex(), setType);
                 break;
             }
+            case ESIR::Opcode::ToNumber:
+            case ESIR::Opcode::Increment:
+            {
+                ToNumberIR* irToNumber = static_cast<ToNumberIR*>(ir);
+                Type srcType = graph->getOperandType(irToNumber->sourceIndex());
+                if (srcType.isInt32Type()) {
+                    graph->setOperandType(ir->targetIndex(), TypeInt32);
+                } else {
+                    graph->setOperandType(ir->targetIndex(), TypeDouble);
+                  }
+                break;
+            }
             default:
                 printf("ERROR %s not handled in ESGraphTypeInference.\n", ir->getOpcodeName());
                 RELEASE_ASSERT_NOT_REACHED();

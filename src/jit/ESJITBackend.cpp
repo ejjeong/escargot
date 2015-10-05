@@ -302,6 +302,30 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         return m_out.insStore(LIR_std, boxedSource, m_stackPtr, irSetVar->localVarIndex() * sizeof(ESValue), 1);
 #endif
     }
+    case ESIR::Opcode::ToNumber:
+    {
+        INIT_ESIR(ToNumber);
+        LIns* source = getTmpMapping(irToNumber->sourceIndex());
+        Type srcType = m_graph->getOperandType(irToNumber->sourceIndex());
+        if (srcType.isInt32Type() || srcType.isDoubleType()) {
+            return source;
+        } else
+            RELEASE_ASSERT_NOT_REACHED();
+    }
+    case ESIR::Opcode::Increment:
+    {
+        INIT_ESIR(Increment);
+        LIns* source = getTmpMapping(irIncrement->sourceIndex());
+        Type srcType = m_graph->getOperandType(irIncrement->sourceIndex());
+        if (srcType.isInt32Type()) {
+            LIns* one = m_out.insImmI(1);
+            return m_out.ins2(LIR_addi, source, one);
+        } else if (srcType.isDoubleType()) {
+            LIns* one = m_out.insImmD(1);
+            return m_out.ins2(LIR_addd, source, one);
+        } else
+            RELEASE_ASSERT_NOT_REACHED();
+    }
     default:
     {
         return nullptr;

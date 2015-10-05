@@ -384,6 +384,15 @@ protected:
     int m_sourceIndex;
 };
 
+class IncrementIR : public UnaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_1(Increment, int);
+
+private:
+    IncrementIR(int targetIndex, int sourceIndex)
+        : UnaryExpressionIR(ESIR::Opcode::Increment, targetIndex, sourceIndex) { }
+};
+
 class ReturnWithValueIR : public ESIR {
 public:
     DECLARE_STATIC_GENERATOR_1(ReturnWithValue, int)
