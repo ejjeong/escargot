@@ -1896,6 +1896,13 @@ void GlobalObject::installDate()
         }
         return ESValue();
     }, strings->setTime));
+
+    //$44 Date.prototype.valueOf()
+    m_datePrototype->set(strings->valueOf, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        double ret = thisObject->asESDateObject()->getTimeAsMilisec();
+        return ESValue(ret);
+    }, strings->getTime));
 }
 
 void GlobalObject::installJSON()
