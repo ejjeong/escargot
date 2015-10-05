@@ -17,10 +17,6 @@ namespace ESJIT {
 
 ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
 {
-#ifndef NDEBUG
-    dumpBytecode(codeBlock);
-#endif
-
     ESGraph* graph = ESGraph::create(codeBlock);
 
     size_t idx = 0;
@@ -32,18 +28,13 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
     ESBasicBlock *entryBlock = ESBasicBlock::create(graph);
     basicBlockMapping[idx] = entryBlock;
     ESBasicBlock* currentBlock = entryBlock;
+    ByteCode* currentCode;
 
     while(idx < codeBlock->m_code.size()) {
-        ByteCode* currentCode = (ByteCode *)(&code[idx]);
+        currentCode = (ByteCode *)(&code[idx]);
 
         // TODO: find a better way to this (e.g. write the size of the bytecode in FOR_EACH_BYTECODE_OP macro)
-        Opcode opcode = Opcode::OpcodeKindEnd;
-        for(int i = 0; i < Opcode::OpcodeKindEnd; i ++) {
-            if((ESVMInstance::currentInstance()->opcodeTable())->m_table[i] == currentCode->m_opcode) {
-                opcode = (Opcode)i;
-                break;
-            }
-        }
+        Opcode opcode = getOpcodeFromAddress(currentCode->m_opcode);
 
         // Update BasicBlock information 
         // TODO: find a better way to this (e.g. using AST, write information to bytecode..)
@@ -69,8 +60,10 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             ESIR* literal;
             if (bytecode->m_value.isInt32()) {
                 literal = ConstantIntIR::create(ssaIndex->m_targetIndex, bytecode->m_value.asInt32());
+            } else if (bytecode->m_value.isDouble()) {
+                literal = ConstantDoubleIR::create(ssaIndex->m_targetIndex, bytecode->m_value.asDouble());
             } else
-                RELEASE_ASSERT_NOT_REACHED();
+                goto unsupported;
             currentBlock->push(literal);
             NEXT_BYTECODE(Push);
             break;
@@ -82,6 +75,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(Pop);
             break;
         case GetByIdOpcode:
+            goto unsupported;
             NEXT_BYTECODE(GetById);
             break;
         case GetByIndexOpcode:
@@ -103,9 +97,11 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         }
         case GetByIndexWithActivationOpcode:
+            goto unsupported;
             NEXT_BYTECODE(GetByIndexWithActivation);
             break;
         case PutByIdOpcode:
+            goto unsupported;
             NEXT_BYTECODE(PutById);
             break;
         case PutByIndexOpcode:
@@ -117,24 +113,31 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         }
         case PutByIndexWithActivationOpcode:
+            goto unsupported;
             NEXT_BYTECODE(PutByIndexWithActivation);
             break;
         case PutInObjectOpcode:
+            goto unsupported;
             NEXT_BYTECODE(PutInObject);
             break;
         case CreateBindingOpcode:
+            goto unsupported;
             NEXT_BYTECODE(CreateBinding);
             break;
         case EqualOpcode:
+            goto unsupported;
             NEXT_BYTECODE(Equal);
             break;
         case NotEqualOpcode:
+            goto unsupported;
             NEXT_BYTECODE(NotEqual);
             break;
         case StrictEqualOpcode:
+            goto unsupported;
             NEXT_BYTECODE(StrictEqual);
             break;
         case NotStrictEqualOpcode:
+            goto unsupported;
             NEXT_BYTECODE(NotStrictEqual);
             break;
         case BitwiseAndOpcode:
@@ -146,9 +149,11 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         }
         case BitwiseOrOpcode:
+            goto unsupported;
             NEXT_BYTECODE(BitwiseOr);
             break;
         case BitwiseXorOpcode:
+            goto unsupported;
             NEXT_BYTECODE(BitwiseXor);
             break;
         case LeftShiftOpcode:
@@ -168,6 +173,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         }
         case UnsignedRightShiftOpcode:
+            goto unsupported;
             NEXT_BYTECODE(UnsignedRightShift);
             break;
         case LessThanOpcode:
@@ -179,12 +185,15 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         }
         case LessThanOrEqualOpcode:
+            goto unsupported;
             NEXT_BYTECODE(LessThanOrEqual);
             break;
         case GreaterThanOpcode:
+            goto unsupported;
             NEXT_BYTECODE(GreaterThan);
             break;
         case GreaterThanOrEqualOpcode:
+            goto unsupported;
             NEXT_BYTECODE(GreaterThanOrEqual);
             break;
         case PlusOpcode:
@@ -200,47 +209,59 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         }
         case MinusOpcode:
+            goto unsupported;
             NEXT_BYTECODE(Minus);
             break;
         case MultiplyOpcode:
+            goto unsupported;
             NEXT_BYTECODE(Multiply);
             break;
         case DivisionOpcode:
+            goto unsupported;
             NEXT_BYTECODE(Division);
             break;
         case ModOpcode:
+            goto unsupported;
             NEXT_BYTECODE(Mod);
             break;
         case IncrementOpcode:
         {
-           INIT_BYTECODE(Increment);
-           ESIR* incrementIR = IncrementIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1);
-           currentBlock->push(incrementIR);
-           NEXT_BYTECODE(Increment);
-           break;
+            INIT_BYTECODE(Increment);
+            ESIR* incrementIR = IncrementIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1);
+            currentBlock->push(incrementIR);
+            NEXT_BYTECODE(Increment);
+            break;
         }
         case DecrementOpcode:
+            goto unsupported;
             NEXT_BYTECODE(Decrement);
             break;
         case StringInOpcode:
+            goto unsupported;
             NEXT_BYTECODE(StringIn);
             break;
         case BitwiseNotOpcode:
+            goto unsupported;
             NEXT_BYTECODE(BitwiseNot);
             break;
         case LogicalNotOpcode:
+            goto unsupported;
             NEXT_BYTECODE(LogicalNot);
             break;
         case UnaryMinusOpcode:
+            goto unsupported;
             NEXT_BYTECODE(UnaryMinus);
             break;
         case UnaryPlusOpcode:
+            goto unsupported;
             NEXT_BYTECODE(UnaryPlus);
             break;
         case UnaryTypeOfOpcode:
+            goto unsupported;
             NEXT_BYTECODE(UnaryTypeOf);
             break;
         case UnaryDeleteOpcode:
+            goto unsupported;
             NEXT_BYTECODE(UnaryDelete);
             break;
         case ToNumberOpcode:
@@ -252,24 +273,43 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         }
         case CreateObjectOpcode:
+            goto unsupported;
             NEXT_BYTECODE(CreateObject);
             break;
         case CreateArrayOpcode:
+            goto unsupported;
             NEXT_BYTECODE(CreateArray);
             break;
         case SetObjectOpcode:
+            goto unsupported;
             NEXT_BYTECODE(SetObject);
             break;
         case GetObjectOpcode:
+            goto unsupported;
             NEXT_BYTECODE(GetObject);
             break;
+        case GetObjectWithPeekingOpcode:
+            goto unsupported;
+            NEXT_BYTECODE(GetObjectWithPeeking);
+            break;
+        case GetObjectPreComputedCaseOpcode:
+            goto unsupported;
+            NEXT_BYTECODE(GetObjectPreComputedCase);
+            break;
+        case GetObjectWithPeekingPreComputedCaseOpcode:
+            goto unsupported;
+            NEXT_BYTECODE(GetObjectWithPeekingPreComputedCase);
+            break;
         case CreateFunctionOpcode:
+            goto unsupported;
             NEXT_BYTECODE(ExecuteNativeFunction);
             break;
         case PrepareFunctionCallOpcode:
+            goto unsupported;
             NEXT_BYTECODE(PrepareFunctionCall);
             break;
         case PushFunctionCallReceiverOpcode: 
+            goto unsupported;
             NEXT_BYTECODE(PushFunctionCallReceiver);
             break;
         case CallFunctionOpcode:
@@ -329,15 +369,19 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         }
         case JumpIfTopOfStackValueIsTrueOpcode:
+            goto unsupported;
             NEXT_BYTECODE(JumpIfTopOfStackValueIsTrue);
             break;
         case JumpIfTopOfStackValueIsFalseWithPeekingOpcode:
+            goto unsupported;
             NEXT_BYTECODE(JumpIfTopOfStackValueIsFalseWithPeeking);
             break;
         case JumpIfTopOfStackValueIsTrueWithPeekingOpcode:
+            goto unsupported;
             NEXT_BYTECODE(JumpIfTopOfStackValueIsTrueWithPeeking);
             break;
         case DuplicateTopOfStackValueOpcode:
+            goto unsupported;
             NEXT_BYTECODE(DuplicateTopOfStackValue);
             break;
         case LoopStartOpcode:
@@ -348,23 +392,39 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(LoopStart);
             break;
         }
+        case ThisOpcode:
+            goto unsupported;
+            NEXT_BYTECODE(This);
+            break;
         case ThrowOpcode:
+            goto unsupported;
             NEXT_BYTECODE(Throw);
             break;
         case EndOpcode:
             goto postprocess;
         default:
-            printf("Invalid Opcode %d\n", opcode);
+#ifndef NDEBUG
+            printf("Invalid Opcode %s\n", getByteCodeName(opcode));
+#endif
             RELEASE_ASSERT_NOT_REACHED();
         }
 #undef INIT_BYTECODE
 #undef NEXT_BYTECODE
     }
+
 postprocess:
 #ifndef NDEBUG
-    graph->dump(std::cout);
+    if (ESVMInstance::currentInstance()->m_verboseJIT)
+        graph->dump(std::cout);
 #endif
     return graph;
+
+unsupported:
+#ifndef NDEBUG
+    if (ESVMInstance::currentInstance()->m_verboseJIT)
+        printf("Unsupported Opcode %s\n", getByteCodeName(getOpcodeFromAddress(currentCode->m_opcode)));
+#endif
+    return nullptr;
 }
 
 }}

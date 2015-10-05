@@ -57,7 +57,7 @@ public:
     static void run(ESGraph* graph);
 };
 
-void optimizeIR(ESGraph* graph);
+bool optimizeIR(ESGraph* graph);
 
 }}
 #endif

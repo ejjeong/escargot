@@ -66,7 +66,13 @@ int main(int argc, char* argv[])
             if(strcmp(argv[i], "-e") == 0) {
                 ES->m_dumpExecuteByteCode = true;
             }
+            if(strcmp(argv[i], "-vj") == 0) {
+                ES->m_verboseJIT = true;
+            }
 #endif
+            if(strcmp(argv[i], "-p") == 0) {
+                ES->m_profile = true;
+            }
             FILE *fp = fopen(argv[i],"r");
             if(fp) {
                 std::string str;

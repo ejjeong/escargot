@@ -29,7 +29,8 @@ void ESGraphSSAConversion::run(ESGraph* graph)
         }
     }
 #ifndef NDEBUG
-    graph->dump(std::cout, "After running SSA conversion");
+    if (ESVMInstance::currentInstance()->m_verboseJIT)
+        graph->dump(std::cout, "After running SSA conversion");
 #endif
 }
 

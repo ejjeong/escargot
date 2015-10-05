@@ -71,7 +71,10 @@ int ESGraph::tempRegisterSize()
 void ESGraph::dump(std::ostream& out, const char* msg)
 {
     out << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
-    out << "Graph (" << m_basicBlocks.size() << " basic blocks) : " << (msg?msg:"") << std::endl;
+    out << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
+    out << " ESGraph 0x" << std::hex << reinterpret_cast<uint64_t>(this) << std::dec ;
+    out << " (" << m_basicBlocks.size() << " basic blocks) : " << (msg?msg:"") << std::endl;
+    //out << " name : " << /*m_codeBlock->m_nonAtomicId->utf8Data()*/ ", address "  << std::hex << (void*)(this) << std::dec << std::endl;
     for (size_t i = 0; i < m_basicBlocks.size(); i++) {
         m_basicBlocks[i]->dump(out);
     }
@@ -80,6 +83,8 @@ void ESGraph::dump(std::ostream& out, const char* msg)
         m_operands[i].dump(out, i);
         out << std::endl;
     }
+    out << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
+    out << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 }
 #endif
 

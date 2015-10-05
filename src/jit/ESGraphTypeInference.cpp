@@ -85,7 +85,8 @@ void ESGraphTypeInference::run(ESGraph* graph)
     }
 
 #ifndef NDEBUG
-    graph->dump(std::cout, "After running Type Inference");
+    if (ESVMInstance::currentInstance()->m_verboseJIT)
+        graph->dump(std::cout, "After running Type Inference");
 #endif
 }
 

@@ -130,6 +130,29 @@ struct OpcodeTable {
     void* m_table[OpcodeKindEnd];
 };
 
+inline Opcode getOpcodeFromAddress(void* address)
+{
+    Opcode opcode = Opcode::OpcodeKindEnd;
+    for(int i = 0; i < Opcode::OpcodeKindEnd; i ++) {
+        if((ESVMInstance::currentInstance()->opcodeTable())->m_table[i] == address) {
+            opcode = (Opcode)i;
+            break;
+        }
+    }
+    return opcode;
+}
+#ifndef NDEBUG
+inline const char* getByteCodeName(Opcode opcode)
+{
+    switch (opcode) {
+        #define RETURN_BYTECODE_NAME(name) case name##Opcode: return #name;
+        FOR_EACH_BYTECODE_OP(RETURN_BYTECODE_NAME)
+        #undef  RETURN_BYTECODE_NAME
+        default: RELEASE_ASSERT_NOT_REACHED();
+    }
+}
+#endif
+
 class ByteCode;
 class CodeBlock;
 
@@ -1842,6 +1865,11 @@ public:
     bool m_needsActivation;
     bool m_isBuiltInFunction;
     bool m_isStrict;
+
+#ifndef NDEBUG
+    InternalAtomicString m_id;
+    ESString* m_nonAtomicId;
+#endif
 
 #ifdef ENABLE_ESJIT
 #define WRITE_LAST_INDEX(a, b, c) codeBlock->writeLastSSAIndex(a, b, c)

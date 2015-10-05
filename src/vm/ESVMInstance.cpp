@@ -17,6 +17,7 @@ ESVMInstance::ESVMInstance()
 #ifndef NDEBUG
     m_dumpByteCode = false;
     m_dumpExecuteByteCode = false;
+    m_verboseJIT = false;
 #endif
     m_dtoaState = NULL;
 

@@ -50,7 +50,10 @@ NativeGenerator::NativeGenerator(ESGraph* graph)
     m_out(m_buf, m_config)
 {
 #ifdef DEBUG
-    m_lc.lcbits = LC_ReadLIR | LC_Native;
+    if (ESVMInstance::currentInstance()->m_verboseJIT)
+        m_lc.lcbits = LC_ReadLIR | LC_Native;
+    else
+        m_lc.lcbits = 0;
     m_buf->printer = new LInsPrinter(*m_alloc, 1);
 #else
     m_lc.lcbits = 0;
@@ -394,10 +397,10 @@ JITFunction NativeGenerator::nativeCodegen() {
 
     m_assm->compile(m_f, *m_alloc, false verbose_only(, m_f->lirbuf->printer));
     if (m_assm->error() != None) {
-        fprintf(stderr, "error compiling fragment\n");
+        if (ESVMInstance::currentInstance()->m_profile)
+            printf("error compiling fragment\n");
         return nullptr;
     }
-    printf("Compilation successful.\n");
 
     return reinterpret_cast<JITFunction>(m_f->code());
 }
@@ -411,8 +414,9 @@ JITFunction generateNativeFromIR(ESGraph* graph)
     unsigned long time2 = ESVMInstance::currentInstance()->tickCount();
     JITFunction function = gen.nativeCodegen();
     unsigned long time3 = ESVMInstance::currentInstance()->tickCount();
-    printf("JIT Compilation Took %lfms, %lfms each for nanojit/native generation\n",
-            (time2-time1)/1000.0, (time3-time2)/1000.0);
+    if (ESVMInstance::currentInstance()->m_profile)
+        printf("JIT Compilation Took %lfms, %lfms each for nanojit/native generation\n",
+                (time2-time1)/1000.0, (time3-time2)/1000.0);
 
     return function;
 }
@@ -423,7 +427,7 @@ JITFunction addDouble()
 
     using namespace nanojit;
     LogControl lc;
-#ifdef DEBUG
+#ifndef NDEBUG
     lc.lcbits = LC_ReadLIR | LC_Native;
 #else
     lc.lcbits = 0;

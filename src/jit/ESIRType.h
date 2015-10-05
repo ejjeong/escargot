@@ -77,8 +77,10 @@ public:
         else if (value.isUndefined())
             return TypeUndefined;
         else {
-            printf("get type of ESValue %s\n", value.toString()->utf8Data());
-            //RELEASE_ASSERT_NOT_REACHED();
+#ifndef NDEBUG
+            //if (ESVMInstance::currentInstance()->m_verboseJIT)
+                //printf("get type of ESValue %s\n", value.toString()->utf8Data());
+#endif
             return TypeTop;
         }
     }

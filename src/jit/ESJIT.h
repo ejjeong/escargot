@@ -16,12 +16,12 @@ class ESGraph;
 
 typedef ESValue (*JITFunction)(ESVMInstance*);
 
-class ESJITFunction {
+class ESJITCompiler {
 public:
-    ESJITFunction(CodeBlock* codeBlock)
+    ESJITCompiler(CodeBlock* codeBlock)
         : m_codeBlock(codeBlock), m_graph(nullptr), m_native(nullptr) { }
 
-    void compile();
+    bool compile();
     void finalize();
 
     CodeBlock* codeBlock() { return m_codeBlock; }

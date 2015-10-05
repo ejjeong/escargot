@@ -26,6 +26,9 @@ public:
 
         ByteCodeGenerateContext newContext;
         m_body->generateStatementByteCode(cb, newContext);
+#ifdef ENABLE_ESJIT
+        cb->m_tempRegisterSize = newContext.getCurrentNodeIndex();
+#endif
         cb->pushCode(ReturnFunction(), this);
 #ifndef NDEBUG
     if(ESVMInstance::currentInstance()->m_dumpByteCode) {

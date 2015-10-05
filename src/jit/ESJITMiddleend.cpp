@@ -9,7 +9,7 @@
 namespace escargot {
 namespace ESJIT {
 
-void optimizeIR(ESGraph* graph)
+bool optimizeIR(ESGraph* graph)
 {
     ESGraphSSAConversion::run(graph);
     ESGraphTypeInference::run(graph);
@@ -23,7 +23,7 @@ void optimizeIR(ESGraph* graph)
     ESGraphGlobalValueNumbering::run(graph);
 #endif
 
-    return;
+    return true;
 }
 
 }}

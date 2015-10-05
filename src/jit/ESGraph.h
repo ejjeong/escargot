@@ -82,6 +82,7 @@ public:
     void push(ESBasicBlock* bb) { m_basicBlocks.push_back(bb); }
 
     int tempRegisterSize();
+    size_t operandsSize() { return m_operands.size(); }
     void setOperandType(int index, Type type) { m_operands[index].setType(type); }
     void mergeOperandType(int index, Type type) { m_operands[index].mergeType(type); }
     Type getOperandType(int index) { return m_operands[index].getType(); }

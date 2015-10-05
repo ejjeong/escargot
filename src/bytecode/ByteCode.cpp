@@ -1789,13 +1789,7 @@ void dumpBytecode(CodeBlock* codeBlock)
         else
             printf("%u\t\t%p\t(nodeinfo null)\t\t\t",(unsigned)idx, currentCode);
 
-        Opcode opcode = Opcode::OpcodeKindEnd;
-        for(int i = 0; i < Opcode::OpcodeKindEnd; i ++) {
-            if((ESVMInstance::currentInstance()->opcodeTable())->m_table[i] == currentCode->m_opcode) {
-                opcode = (Opcode)i;
-                break;
-            }
-        }
+        Opcode opcode = getOpcodeFromAddress(currentCode->m_opcode);
 
         switch(opcode) {
 #define DUMP_BYTE_CODE(code) \

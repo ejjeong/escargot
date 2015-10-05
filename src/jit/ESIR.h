@@ -203,7 +203,7 @@ public:
     {
         out << "tmp" << m_targetIndex << ": ";
         ESIR::dump(out);
-        out << " const " << m_value;
+        out << " const int " << m_value;
     }
 #endif
 
@@ -211,6 +211,27 @@ private:
     ConstantIntIR(int target, int32_t value)
         : ESIR(ESIR::Opcode::ConstantInt, target), m_value(value) { }
     int32_t m_value;
+};
+
+class ConstantDoubleIR : public ESIR {
+public:
+    DECLARE_STATIC_GENERATOR_1(ConstantDouble, double);
+
+    double value() { return m_value; }
+
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+        out << " const idouble " << m_value;
+    }
+#endif
+
+private:
+    ConstantDoubleIR(int target, double value)
+        : ESIR(ESIR::Opcode::ConstantDouble, target), m_value(value) { }
+    double m_value;
 };
 
 class ToNumberIR : public ESIR {

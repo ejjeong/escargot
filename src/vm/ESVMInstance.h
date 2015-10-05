@@ -116,7 +116,9 @@ public:
 #ifndef NDEBUG
     bool m_dumpByteCode;
     bool m_dumpExecuteByteCode;
+    bool m_verboseJIT;
 #endif
+    bool m_profile;
 
     void setDtoaState(void* d)
     {
