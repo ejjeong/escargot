@@ -49,7 +49,7 @@ void ESScriptParser::dumpStats()
 }
 #endif
 
-CodeBlock* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16string& source)
+Node* ESScriptParser::generateAST(ESVMInstance* instance, const escargot::u16string& source)
 {
     Node* node;
     try {
@@ -359,7 +359,12 @@ CodeBlock* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u
     std::vector<InternalAtomicStringVector *> stack;
     stack.push_back(&identifierInCurrentContext);
     postAnalysisFunction(node, stack, NULL);
+    return node;
+}
 
+CodeBlock* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16string& source)
+{
+    Node* node = generateAST(instance, source);
     ASSERT(node->type() == Program);
     return generateByteCode(node);
 }

@@ -303,12 +303,22 @@ void GlobalObject::installFunction()
                 escargot::ESString* arg = instance->currentExecutionContext()->arguments()[i].toString();
                 prefix.append(arg->string());
                 if (i != len-2) prefix.append(u",");
-                else    prefix.append(u"){");
             }
+            prefix.append(u"){");
             prefix.append(body->string());
             prefix.append(u"}");
-            codeBlock = ESScriptParser::parseScript(instance, prefix);
-            codeBlock->m_needsActivation = true;
+            Node* programNode = ESScriptParser::generateAST(instance, prefix);
+            FunctionNode* functionDeclAST = static_cast<FunctionNode* >(static_cast<ProgramNode *>(programNode)->body()[1]);
+            ByteCodeGenerateContext context;
+            codeBlock->m_innerIdentifiers = std::move(functionDeclAST->innerIdentifiers());
+            codeBlock->m_needsActivation = functionDeclAST->needsActivation();
+            codeBlock->m_needsArgumentsObject = functionDeclAST->needsArgumentsObject();
+            codeBlock->m_nonAtomicParams = std::move(functionDeclAST->nonAtomicParams());
+            codeBlock->m_params = std::move(functionDeclAST->params());
+            codeBlock->m_isStrict = functionDeclAST->isStrict();
+            functionDeclAST->body()->generateStatementByteCode(codeBlock, context);
+            codeBlock->pushCode(ReturnFunction(), functionDeclAST);
+            escargot::InternalAtomicStringVector params = functionDeclAST->params();
         }
         escargot::ESFunctionObject* function;
         LexicalEnvironment* scope = instance->globalExecutionContext()->environment();

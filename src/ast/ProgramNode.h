@@ -30,6 +30,12 @@ public:
         codeBlock->pushCode(End(), this);
         codeBlock->m_isStrict = m_isStrict;
     }
+
+    StatementNodeVector body()
+    {
+        return m_body;
+    }
+
 protected:
     StatementNodeVector m_body; //body: [ Statement ];
     bool m_isStrict;

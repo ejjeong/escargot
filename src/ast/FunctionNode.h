@@ -39,6 +39,9 @@ public:
     ALWAYS_INLINE void setNeedsActivation(bool b) { m_needsActivation = b; }
     ALWAYS_INLINE bool needsArgumentsObject() { return m_needsArgumentsObject; }
     ALWAYS_INLINE void markNeedsArgumentsObject() { m_needsArgumentsObject = true; }
+    ALWAYS_INLINE bool isGenerator() { return m_isGenerator; }
+    ALWAYS_INLINE bool isExpression() { return m_isExpression; }
+    ALWAYS_INLINE bool isStrict() { return m_isStrict; }
 
     void setInnerIdentifiers(InternalAtomicStringVector&& vec)
     {
