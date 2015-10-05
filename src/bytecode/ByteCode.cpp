@@ -29,7 +29,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     ESValue lastESObjectMetInMemberExpressionNode = globalObject;
     ESValue* lastExpressionStatementValue = &instance->m_lastExpressionStatementValue;
     ESValue* nonActivitionModeLocalValuePointer = ec->cachedDeclarativeEnvironmentRecordESValue();
-    ESValue thisValue = ec->resolveThisBinding();
+    ESValue thisValue(ESValue::ESEmptyValue);
     ASSERT(((size_t)stack % sizeof(size_t)) == 0);
     ASSERT(((size_t)tmpStack % sizeof(size_t)) == 0);
     //resolve programCounter into address
@@ -1715,6 +1715,9 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
     ThisOpcodeLbl:
     {
+        if(UNLIKELY(thisValue.isEmpty())) {
+            thisValue = ec->resolveThisBinding();
+        }
         push<ESValue>(stack, bp, thisValue);
         executeNextCode<This>(programCounter);
         goto NextInstruction;
