@@ -263,11 +263,12 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* condition = getTmpMapping(irBranch->operandIndex());
         LIns* trueValue = m_out.insImmI(1);
         LIns* compare = m_out.ins2(LIR_eqi, condition, trueValue);
-        LIns* jumpFalse = m_out.insBranch(LIR_jf, compare, nullptr);
-        //LIns* jumpFalse = m_out.insBranch(LIR_jf, compare, nullptr);
+        LIns* jumpTrue = m_out.insBranch(LIR_jt, compare, nullptr);
+        LIns* jumpFalse = m_out.ins2(LIR_j, nullptr, nullptr);
         if (LIns* label = irBranch->falseBlock()->getLabel()) {
             jumpFalse->setTarget(label);
         } else {
+            irBranch->trueBlock()->addJumpOrBranchSource(jumpTrue);
             irBranch->falseBlock()->addJumpOrBranchSource(jumpFalse);
         }
         return jumpFalse;
@@ -332,7 +333,6 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_ESIR(Increment);
         LIns* source = getTmpMapping(irIncrement->sourceIndex());
         Type srcType = m_graph->getOperandType(irIncrement->sourceIndex());
-
         if (srcType.isInt32Type()) {
             LIns* one = m_out.insImmI(1);
             return m_out.ins2(LIR_addi, source, one);
