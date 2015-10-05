@@ -140,7 +140,8 @@ sub writePrefixFile()
 sub runTestsOnce($)
 {
     my ($useInstruments) = @_;
-    my $shellArgs = $jsShellArgs . " -f $prefixFile -f resources/sunspider-standalone-driver.js 2> " . File::Spec->devnull();
+#    my $shellArgs = $jsShellArgs . " -f $prefixFile -f resources/sunspider-standalone-driver.js 2> " . File::Spec->devnull();
+    my $shellArgs = $jsShellArgs . " $prefixFile resources/sunspider-standalone-driver.js 2> " . File::Spec->devnull();
     my $output;
     if ($useInstruments) {
         $output = `instruments -t "resources/TimeProfile20us.tracetemplate" "$jsShellPath" $shellArgs`;
