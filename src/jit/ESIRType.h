@@ -91,10 +91,18 @@ public:
 #define DECLARE_IS_TYPE(type, unused) \
     bool is##type##Type() \
     { \
-        return (m_type & Type##type) != 0; \
+        return (m_type & Type##type) == Type##type; \
     }
     FOR_EACH_ESIR_TYPES(DECLARE_IS_TYPE)
 #undef DECLARE_IS_TYPE
+
+#define DECLARE_HAS_FLAG(type, unused) \
+    bool has##type##Flag() \
+    { \
+        return (m_type & Type##type) != 0; \
+    }
+    FOR_EACH_ESIR_TYPES(DECLARE_HAS_FLAG)
+#undef DECLARE_HAS_FLAG
 
 private:
     uint64_t m_type;
