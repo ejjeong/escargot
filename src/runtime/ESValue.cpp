@@ -589,15 +589,21 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
     return result;
 }
 
+void ESDateObject::parseYmdhmsToDate(struct tm* timeinfo, int year, int month, int date, int hour, int minute, int second) {
+      char buffer[255];
+      snprintf(buffer, 255, "%d-%d-%d-%d-%d-%d", year, month, date, hour, minute, second);
+      strptime(buffer, "%Y-%m-%d-%H-%M-%S", timeinfo);
+}
+
 void ESDateObject::parseStringToDate(struct tm* timeinfo, escargot::ESString* istr) {
-    int len = istr->length();
-    char* buffer = (char*)istr->utf8Data();
-    if (isalpha(buffer[0])) {
-        strptime(buffer, "%B %d %Y %H:%M:%S %z", timeinfo);
-    } else if (isdigit(buffer[0])) {
-        strptime(buffer, "%m/%d/%Y %H:%M:%S", timeinfo);
-    }
-    GC_free(buffer);
+      int len = istr->length();
+      char* buffer = (char*)istr->utf8Data();
+      if (isalpha(buffer[0])) {
+          strptime(buffer, "%B %d %Y %H:%M:%S %z", timeinfo);
+      } else if (isdigit(buffer[0])) {
+          strptime(buffer, "%m/%d/%Y %H:%M:%S", timeinfo);
+      }
+      GC_free(buffer);
 }
 
 const double hoursPerDay = 24.0;
@@ -621,16 +627,22 @@ static inline double ymdhmsToSeconds(long year, int mon, int day, int hour, int 
 }
 
 
-void ESDateObject::setTimeValue(ESValue str) {
-    if (str.isUndefined()) {
-        clock_gettime(CLOCK_REALTIME,&m_time);
-        m_isCacheDirty = true;
-    } else {
-        escargot::ESString* istr = str.toString();
-        parseStringToDate(&m_cachedTM, istr);
-        m_cachedTM.tm_isdst = true;
-        m_time.tv_sec = ymdhmsToSeconds(m_cachedTM.tm_year+1900, m_cachedTM.tm_mon + 1, m_cachedTM.tm_mday, m_cachedTM.tm_hour, m_cachedTM.tm_min, m_cachedTM.tm_sec);
-    }
+void ESDateObject::setTimeValue() {
+    clock_gettime(CLOCK_REALTIME,&m_time);
+    m_isCacheDirty = true;
+}
+
+void ESDateObject::setTimeValue(const ESValue str) {
+    escargot::ESString* istr = str.toString();
+    parseStringToDate(&m_cachedTM, istr);
+    m_cachedTM.tm_isdst = true;
+    m_time.tv_sec = ymdhmsToSeconds(m_cachedTM.tm_year+1900, m_cachedTM.tm_mon + 1, m_cachedTM.tm_mday, m_cachedTM.tm_hour, m_cachedTM.tm_min, m_cachedTM.tm_sec);
+}
+
+void ESDateObject::setTimeValue(int year, int month, int date, int hour, int minute, int second, int millisecond) {
+    parseYmdhmsToDate(&m_cachedTM, year, month, date, hour, minute, second);
+    m_cachedTM.tm_isdst = true;
+    m_time.tv_sec = ymdhmsToSeconds(m_cachedTM.tm_year+1900, m_cachedTM.tm_mon + 1, m_cachedTM.tm_mday, m_cachedTM.tm_hour, m_cachedTM.tm_min, m_cachedTM.tm_sec);
 }
 
 void ESDateObject::resolveCache()

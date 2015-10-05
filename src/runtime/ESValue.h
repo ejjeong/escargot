@@ -1464,8 +1464,11 @@ public:
     }
 
     void parseStringToDate(struct tm* timeinfo, escargot::ESString* istr);
+    void parseYmdhmsToDate(struct tm* timeinfo, int year, int month, int date, int hour, int minute, int second);
 
-    void setTimeValue(ESValue str);
+    void setTimeValue();
+    void setTimeValue(const ESValue str);
+    void setTimeValue(int year, int month, int date, int hour, int minute, int second, int millisecond);
 
     double getTimeAsMilisec() {
         return m_time.tv_sec*1000 + floor(m_time.tv_nsec/1000000);

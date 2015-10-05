@@ -1795,11 +1795,29 @@ void GlobalObject::installDate()
 
             size_t arg_size = instance->currentExecutionContext()->argumentCount();
             if (arg_size == 0) {
-                thisObject->setTimeValue(ESValue());
-            }
-            else {
-                ESValue arg = instance->currentExecutionContext()->arguments()[0];
-                thisObject->setTimeValue(arg);
+                thisObject->setTimeValue();
+            } else if (arg_size == 1) {
+                ESValue str = instance->currentExecutionContext()->arguments()[0];
+                thisObject->setTimeValue(str);
+            } else {
+                int year = instance->currentExecutionContext()->readArgument(0).toNumber();
+                if(year >= 0 && year <= 99) {
+                  year += 1900;
+                }
+                int month = instance->currentExecutionContext()->readArgument(1).toNumber();
+                int date;
+                if(instance->currentExecutionContext()->readArgument(2).isUndefined()) {
+                  date = 1;
+                }else {
+                  date = instance->currentExecutionContext()->readArgument(2).toNumber();
+                }
+                int hour = instance->currentExecutionContext()->readArgument(3).toNumber();
+                int minute = instance->currentExecutionContext()->readArgument(4).toNumber();
+                int second = instance->currentExecutionContext()->readArgument(5).toNumber();
+                // TODO : have to implement millisecond
+                int millisecond = instance->currentExecutionContext()->readArgument(6).toNumber();
+
+                thisObject->setTimeValue(year, month, date, hour, minute, second, millisecond);
             }
         }
         return ESString::create(u"FixMe: We have to return string with date and time data");
