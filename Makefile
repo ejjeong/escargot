@@ -1,4 +1,9 @@
-MAKECMDGOALS=escargot
+BIN=escargot
+
+#######################################################
+# Environments
+#######################################################
+
 HOST=
 OPT=
 ARCH=x64
@@ -26,13 +31,76 @@ ifeq ($(HOST), linux)
 else
 endif
 
+ifeq ($(ARCH), x64)
+	CXXFLAGS += -DESCARGOT_64=1
+else ifeq ($(ARCH), x86)
+	CXXFLAGS += -DESCARGOT_32=1
+endif
+
+ifeq ($(MAKECMDGOALS), jit.debug)
+	BUILDDIR=out/jit/debug
+else ifeq ($(MAKECMDGOALS), jit.release)
+	BUILDDIR=out/jit/release
+else ifeq ($(MAKECMDGOALS), interpreter.debug)
+	BUILDDIR=out/interpreter/debug
+else ifeq ($(MAKECMDGOALS), interpreter.release)
+	BUILDDIR=out/interpreter/release
+else
+	BUILDDIR=.
+endif
+
+#######################################################
+# Global build flags
+#######################################################
+
+# common flags
 CXXFLAGS += -fno-rtti -fno-math-errno -Isrc/
 CXXFLAGS += -fdata-sections -ffunction-sections
-#add third_party
-CXXFLAGS += -Ithird_party/rapidjson/include/
-CXXFLAGS += -Ithird_party/bdwgc/include/
-CXXFLAGS += -Ithird_party/netlib/
 
+LDFLAGS += -lpthread
+# -ltcmalloc_minimal
+LDFLAGS += -Wl,--gc-sections
+
+# flags for debug/release
+CXXFLAGS_DEBUG = -O0 -g3 -frounding-math -fsignaling-nans -fno-omit-frame-pointer -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable -Wno-invalid-offsetof -Wno-sign-compare
+CXXFLAGS_RELEASE = -O3 -g3 -DNDEBUG -fomit-frame-pointer -frounding-math -fsignaling-nans -funroll-loops
+
+# flags for jit/interpreter
+CXXFLAGS_JIT = -DENABLE_ESJIT=1
+CXXFLAGS_INTERPRETER =
+
+jit.debug: CXXFLAGS+=$(CXXFLAGS_JIT) $(CXXFLAGS_DEBUG)
+jit.release: CXXFLAGS+=$(CXXFLAGS_JIT) $(CXXFLAGS_RELEASE)
+interpreter.debug: CXXFLAGS+=$(CXXFLAGS_INTERPRETER) $(CXXFLAGS_DEBUG)
+interpreter.release: CXXFLAGS+=$(CXXFLAGS_INTERPRETER) $(CXXFLAGS_RELEASE)
+
+#######################################################
+# Third-party build flags
+#######################################################
+
+# bdwgc
+CXXFLAGS += -Ithird_party/bdwgc/include/
+GCLIBS_DEBUG = third_party/bdwgc/out/debug/.libs/libgc.a #third_party/bdwgc/out/debug/.libs/libgccpp.a
+GCLIBS_RELEASE = third_party/bdwgc/out/release/.libs/libgc.a #third_party/bdwgc/out/release/.libs/libgccpp.a
+jit.debug:           GCLIBS=$(GCLIBS_DEBUG)
+jit.release:         GCLIBS=$(GCLIBS_RELEASE)
+interpreter.debug:   GCLIBS=$(GCLIBS_DEBUG)
+interpreter.release: GCLIBS=$(GCLIBS_RELEASE)
+
+# esprima
+CXXFLAGS += -Ithird_party/esprima_cpp/
+SRC_ESPRIMA_CPP += $(foreach dir, ./third_party/esprima_cpp , $(wildcard $(dir)/*.cpp))
+
+# nanojit
+include third_party/nanojit/Build.mk
+
+# netlib
+CXXFLAGS += -I third_party/netlib/
+
+# rapidjson
+CXXFLAGS += -Ithird_party/rapidjson/include/
+
+# yarr
 CXXFLAGS += -Ithird_party/yarr/
 SRC_YARR += third_party/yarr/OSAllocatorPosix.cpp
 SRC_YARR += third_party/yarr/PageBlock.cpp
@@ -41,40 +109,12 @@ SRC_YARR += third_party/yarr/YarrInterpreter.cpp
 SRC_YARR += third_party/yarr/YarrPattern.cpp
 SRC_YARR += third_party/yarr/YarrSyntaxChecker.cpp
 
-SRC_ESPRIMA_CPP += $(foreach dir, ./third_party/esprima_cpp , $(wildcard $(dir)/*.cpp))
-CXXFLAGS += -Ithird_party/esprima_cpp/
-
-include third_party/nanojit/Build.mk
-
-LDFLAGS += -lpthread 
-# -ltcmalloc_minimal
-LDFLAGS += -Wl,--gc-sections
-
-ifeq ($(ARCH), x64)
-	CXXFLAGS += -DESCARGOT_64=1
-else ifeq ($(ARCH), x86)
-	CXXFLAGS += -DESCARGOT_32=1
-endif
-
-CXXFLAGS_DEBUG = -O0 -g3 -frounding-math -fsignaling-nans -fno-omit-frame-pointer -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable -Wno-invalid-offsetof -Wno-sign-compare
-GCLIBS_DEBUG = third_party/bdwgc/out/debug/.libs/libgc.a #third_party/bdwgc/out/debug/.libs/libgccpp.a
-CXXFLAGS_RELEASE = -O3 -g3 -DNDEBUG -fomit-frame-pointer -frounding-math -fsignaling-nans -funroll-loops
-GCLIBS_RELEASE = third_party/bdwgc/out/release/.libs/libgc.a #third_party/bdwgc/out/release/.libs/libgccpp.a
-
-jit.debug: CXXFLAGS+=-DENABLE_ESJIT=1
-jit.release: CXXFLAGS+=-DENABLE_ESJIT=1
-
-interpreter.debug: CXXFLAGS+=$(CXXFLAGS_DEBUG)
-interpreter.debug: GCLIBS=$(GCLIBS_DEBUG)
-jit.debug: CXXFLAGS+=$(CXXFLAGS_DEBUG)
-jit.debug: GCLIBS=$(GCLIBS_DEBUG)
-
-interpreter.release: CXXFLAGS+=$(CXXFLAGS_RELEASE)
-interpreter.release: GCLIBS=$(GCLIBS_RELEASE)
-jit.release: CXXFLAGS+=$(CXXFLAGS_RELEASE)
-jit.release: GCLIBS=$(GCLIBS_RELEASE)
-
+# Common
 THIRD_PARTY_LIBS= $(GCLIBS)
+
+#######################################################
+# SRCS & OBJS
+#######################################################
 
 SRC=
 SRC += $(foreach dir, ./src , $(wildcard $(dir)/*.cpp))
@@ -86,31 +126,44 @@ SRC += $(foreach dir, ./src/runtime , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, ./src/shell , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, ./src/vm , $(wildcard $(dir)/*.cpp))
 
-SRC += $(SRC_YARR) 
+SRC += $(SRC_YARR)
 SRC += $(SRC_ESPRIMA_CPP)
 SRC += $(SRC_NANOJIT)
 
-ifeq ($(HOST), linux)
-endif
+OBJS := $(SRC:%.cpp= $(BUILDDIR)/%.o)
+OBJS += $(SRC_C:%.c= $(BUILDDIR)/%.o)
 
-OBJS :=  $(SRC:%.cpp= %.o)
-OBJS +=  $(SRC_C:%.c= %.o)
+#######################################################
+# Targets
+#######################################################
 
 # pull in dependency info for *existing* .o files
 -include $(OBJS:.o=.d)
 
-$(MAKECMDGOALS): $(OBJS) $(THIRD_PARTY_LIBS)
-	$(CXX) -o $(MAKECMDGOALS) $(OBJS) $(THIRD_PARTY_LIBS) $(LDFLAGS)
+jit.debug: $(BUILDDIR)/$(BIN)
+	cp $< .
+jit.release: $(BUILDDIR)/$(BIN)
+	cp $< .
+interpreter.debug: $(BUILDDIR)/$(BIN)
+	cp $< .
+interpreter.release: $(BUILDDIR)/$(BIN)
+	cp $< .
 
-%.o: %.cpp
-	$(CXX) -c $(CXXFLAGS) $*.cpp -o $*.o
-	$(CXX) -MM $(CXXFLAGS) -MT $*.o $*.cpp > $*.d
+$(BUILDDIR)/$(BIN): $(OBJS) $(THIRD_PARTY_LIBS)
+	$(CXX) -o $@ $(OBJS) $(THIRD_PARTY_LIBS) $(LDFLAGS)
 
-%.o: %.c
-	$(CC) -c $(CFLAGS) $*.c -o $*.o
-	$(CC) -MM $(CFLAGS) -MT $*.o $*.c > $*.d
+$(BUILDDIR)/%.o: %.cpp
+	mkdir -p $(dir $@)
+	$(CXX) -c $(CXXFLAGS) $< -o $@
+	$(CXX) -MM $(CXXFLAGS) -MT $@ $< > $*.d
+
+$(BUILDDIR)/%.o: %.c
+	mkdir -p $(dir $@)
+	$(CC) -c $(CFLAGS) $< -o $@
+	$(CC) -MM $(CFLAGS) -MT $@ $< > $*.d
 
 clean:
+	rm -rf out
 	$(shell find ./src/ -name "*.o" -exec rm {} \;)
 	$(shell find ./src/ -name "*.d" -exec rm {} \;)
 	$(shell find ./third_party/yarr/ -name "*.o" -exec rm {} \;)
@@ -120,26 +173,28 @@ clean:
 	$(shell find ./third_party/nanojit/ -name "*.o" -exec rm {} \;)
 	$(shell find ./third_party/nanojit/ -name "*.d" -exec rm {} \;)
 
-jit.debug: $(MAKECMDGOALS)
-jit.release: $(MAKECMDGOALS)
-interpreter.debug: $(MAKECMDGOALS)
-interpreter.release: $(MAKECMDGOALS)
+# Targets : miscellaneous
 
-strip: $(MAKECMDGOALS)
+strip: $(BIN)
 	strip $<
-
-run-sunspider:
-	cd test/SunSpider/; \
-	./sunspider --shell=../../escargot --suite=sunspider-1.0.2
-
-run-test262:
-	cd test/test262/; \
-	python tools/packaging/test262.py --command ../../escargot $(OPT)
 
 asm: $(MAKECMDGOALS)
 	objdump -d        $< | c++filt > $<.asm
 	readelf -a --wide $< | c++filt > $<.elf
 	vi -O $<.asm $<.elf
 
-.PHONY: $(MAKECMDGOALS) clean
-.DEFAULT_GOAL := escargot
+# Targets : benchmarks
+
+run-sunspider:
+	cd test/SunSpider/; \
+	./sunspider --shell=../../escargot --suite=sunspider-1.0.2
+
+run-octane:
+	cd test/octane/; \
+	../../escargot run_escargot_test.js
+
+run-test262:
+	cd test/test262/; \
+	python tools/packaging/test262.py --command ../../escargot $(OPT)
+
+.PHONY: $(BIN) clean
