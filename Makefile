@@ -155,12 +155,12 @@ $(BUILDDIR)/$(BIN): $(OBJS) $(THIRD_PARTY_LIBS)
 $(BUILDDIR)/%.o: %.cpp
 	mkdir -p $(dir $@)
 	$(CXX) -c $(CXXFLAGS) $< -o $@
-	$(CXX) -MM $(CXXFLAGS) -MT $@ $< > $*.d
+	$(CXX) -MM $(CXXFLAGS) -MT $@ $< > $(BUILDDIR)/$*.d
 
 $(BUILDDIR)/%.o: %.c
 	mkdir -p $(dir $@)
 	$(CC) -c $(CFLAGS) $< -o $@
-	$(CC) -MM $(CFLAGS) -MT $@ $< > $*.d
+	$(CC) -MM $(CFLAGS) -MT $@ $< > $(BUILDDIR)/$*.d
 
 clean:
 	rm -rf out
