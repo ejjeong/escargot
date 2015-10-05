@@ -665,15 +665,40 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
     IncrementOpcodeLbl:
     {
-        push<ESValue>(stack, bp, ESValue(pop<ESValue>(stack, bp)->asNumber() + 1));
-        executeNextCode<Division>(programCounter);
+        ESValue* src = pop<ESValue>(stack, bp);
+
+        ESValue ret(ESValue::ESForceUninitialized);
+        if(src->isInt32()) {
+            int64_t a = src->asInt32();
+            a++;
+            if(a > std::numeric_limits<int32_t>::max() || a < std::numeric_limits<int32_t>::min())
+                ret = ESValue(ESValue::EncodeAsDouble, a);
+            else
+                ret = ESValue((int32_t)a);
+        } else {
+            ret = ESValue(ESValue::EncodeAsDouble, src->asNumber() + 1);
+        }
+        push<ESValue>(stack, bp, ret);
+        executeNextCode<Increment>(programCounter);
         goto NextInstruction;
     }
 
     DecrementOpcodeLbl:
     {
-        push<ESValue>(stack, bp, ESValue(pop<ESValue>(stack, bp)->asNumber() - 1));
-        executeNextCode<Division>(programCounter);
+        ESValue* src = pop<ESValue>(stack, bp);
+        ESValue ret(ESValue::ESForceUninitialized);
+        if(src->isInt32()) {
+            int64_t a = src->asInt32();
+            a--;
+            if(a > std::numeric_limits<int32_t>::max() || a < std::numeric_limits<int32_t>::min())
+                ret = ESValue(ESValue::EncodeAsDouble, a);
+            else
+                ret = ESValue((int32_t)a);
+        } else {
+            ret = ESValue(ESValue::EncodeAsDouble, src->asNumber() - 1);
+        }
+        push<ESValue>(stack, bp, ret);
+        executeNextCode<Decrement>(programCounter);
         goto NextInstruction;
     }
 
