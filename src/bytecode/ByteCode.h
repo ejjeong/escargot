@@ -32,6 +32,7 @@ class Node;
     F(PutByIndex) \
     F(PutByIndexWithActivation) \
     F(PutInObject) \
+    F(PutInObjectPreComputedCase) \
     F(CreateBinding) \
 \
     /*binary expressions*/ \
@@ -77,6 +78,8 @@ class Node;
     F(SetObjectPropertyGetter) \
     F(GetObject) \
     F(GetObjectWithPeeking) \
+    F(GetObjectPreComputedCase) \
+    F(GetObjectWithPeekingPreComputedCase) \
     F(EnumerateObject) \
     F(EnumerateObjectKey) \
     F(EnumerateObjectEnd) \
@@ -574,6 +577,28 @@ public:
 
     ESHiddenClass* m_cachedHiddenClass;
     ESString* m_cachedPropertyValue;
+    size_t m_cachedIndex;
+};
+
+class PutInObjectPreComputedCase : public ByteCode {
+public:
+    PutInObjectPreComputedCase(const ESValue& v)
+        : ByteCode(PutInObjectPreComputedCaseOpcode)
+    {
+        m_cachedHiddenClass = (ESHiddenClass*)SIZE_MAX;
+        m_propertyValue = v;
+        m_cachedIndex = SIZE_MAX;
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("PutInObjectPreComputedCase <>\n");
+    }
+#endif
+
+    ESValue m_propertyValue;
+    ESHiddenClass* m_cachedHiddenClass;
     size_t m_cachedIndex;
 };
 
@@ -1304,6 +1329,50 @@ public:
     size_t m_cachedIndex;
 };
 
+class GetObjectPreComputedCase : public ByteCode {
+public:
+    GetObjectPreComputedCase(const ESValue& v)
+        : ByteCode(GetObjectPreComputedCaseOpcode)
+    {
+        m_cachedHiddenClass = (ESHiddenClass*)SIZE_MAX;
+        m_propertyValue = v;
+        m_cachedIndex = SIZE_MAX;
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("GetObjectPreComputedCase <>\n");
+    }
+#endif
+
+    ESHiddenClass* m_cachedHiddenClass;
+    ESValue m_propertyValue;
+    size_t m_cachedIndex;
+};
+
+class GetObjectWithPeekingPreComputedCase : public ByteCode {
+public:
+    GetObjectWithPeekingPreComputedCase(const ESValue& v)
+        : ByteCode(GetObjectWithPeekingPreComputedCaseOpcode)
+    {
+        m_cachedHiddenClass = (ESHiddenClass*)SIZE_MAX;
+        m_propertyValue = v;
+        m_cachedIndex = SIZE_MAX;
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("GetObjectWithPeekingPreComputedCase <>\n");
+    }
+#endif
+
+    ESHiddenClass* m_cachedHiddenClass;
+    ESValue m_propertyValue;
+    size_t m_cachedIndex;
+};
+
 struct EnumerateObjectData : public gc {
     EnumerateObjectData()
     {
@@ -1717,6 +1786,12 @@ public:
     size_t lastCodePosition()
     {
         return m_code.size() - sizeof(CodeType);
+    }
+
+    template <typename CodeType>
+    void popLastCode()
+    {
+        m_code.resize(m_code.size() - sizeof(CodeType));
     }
 
     size_t currentCodeSize()

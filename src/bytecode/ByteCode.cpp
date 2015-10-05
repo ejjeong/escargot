@@ -307,6 +307,53 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         goto NextInstruction;
     }
 
+    PutInObjectPreComputedCaseOpcodeLbl:
+    {
+        PutInObjectPreComputedCase* code = (PutInObjectPreComputedCase*)currentCode;
+        ESValue value = *pop<ESValue>(stack, bp);
+        const ESValue& property = code->m_propertyValue;
+        ESValue* willBeObject = pop<ESValue>(stack, bp);
+
+        ESObject* obj;
+        if(willBeObject->isObject())
+            obj = willBeObject->asESPointer()->asESObject();
+        else
+            obj = willBeObject->toObject();
+
+        if((obj->isESArrayObject() || obj->isESTypedArrayObject()) && property.isInt32()) {
+            obj->set(property, value, true);
+            push<ESValue>(stack, bp, value);
+            executeNextCode<PutInObjectPreComputedCase>(programCounter);
+            goto NextInstruction;
+        }
+
+        if(obj->hiddenClass() == code->m_cachedHiddenClass) {
+            obj->writeHiddenClass(code->m_cachedIndex, value);
+            push<ESValue>(stack, bp, value);
+            executeNextCode<PutInObjectPreComputedCase>(programCounter);
+            goto NextInstruction;
+        }
+
+        ESString* str = property.toString();
+        if(obj->isHiddenClassMode()) {
+            size_t idx = obj->hiddenClass()->findProperty(str);
+            if(idx != SIZE_MAX) {
+                code->m_cachedHiddenClass = obj->hiddenClass();
+                code->m_cachedIndex = idx;
+                obj->writeHiddenClass(code->m_cachedIndex, value);
+                push<ESValue>(stack, bp, value);
+                executeNextCode<PutInObjectPreComputedCase>(programCounter);
+                goto NextInstruction;
+            }
+        }
+
+        code->m_cachedHiddenClass = (ESHiddenClass*)SIZE_MAX;
+        obj->set(str, value, true);
+        push<ESValue>(stack, bp, value);
+        executeNextCode<PutInObjectPreComputedCase>(programCounter);
+        goto NextInstruction;
+    }
+
     CreateBindingOpcodeLbl:
     {
         CreateBinding* code = (CreateBinding*)currentCode;
@@ -803,9 +850,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                    executeNextCode<GetObject>(programCounter);
                    goto NextInstruction;
                }
-               push<ESValue>(stack, bp, willBeObject->asESString()->substring(prop_val, prop_val+1));
-               executeNextCode<GetObject>(programCounter);
-               goto NextInstruction;
             } else {
                 ESString* val = property->toString();
                 if(*val == *strings->length) {
@@ -1015,6 +1059,246 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         } else {
             push<ESValue>(stack, bp, obj->get(val, true));
             executeNextCode<GetObject>(programCounter);
+            goto NextInstruction;
+        }
+
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+
+    GetObjectPreComputedCaseOpcodeLbl:
+    {
+        GetObjectPreComputedCase* code = (GetObjectPreComputedCase*)currentCode;
+
+        const ESValue& property = code->m_propertyValue;
+        ESValue* willBeObject = pop<ESValue>(stack, bp);
+
+        if(UNLIKELY(willBeObject->isESString())) {
+            if(property.isInt32()) {
+               int prop_val = property.toInt32();
+               if(LIKELY(0 <= prop_val && prop_val < willBeObject->asESString()->length())) {
+                   char16_t c = willBeObject->asESString()->string().data()[prop_val];
+                   if(LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
+                       push<ESValue>(stack, bp, strings->asciiTable[c]);
+                       executeNextCode<GetObjectPreComputedCase>(programCounter);
+                       goto NextInstruction;
+                   } else {
+                       push<ESValue>(stack, bp, ESString::create(c));
+                       executeNextCode<GetObjectPreComputedCase>(programCounter);
+                       goto NextInstruction;
+                   }
+               } else {
+                   push<ESValue>(stack, bp, ESValue());
+                   executeNextCode<GetObjectPreComputedCase>(programCounter);
+                   goto NextInstruction;
+               }
+            } else {
+                ESString* val = property.toString();
+                if(*val == *strings->length) {
+                    lastESObjectMetInMemberExpressionNode = *willBeObject;
+                    push<ESValue>(stack, bp, ESValue(willBeObject->asESString()->length()));
+                    executeNextCode<GetObjectPreComputedCase>(programCounter);
+                    goto NextInstruction;
+                }
+                ESValue ret = globalObject->stringObjectProxy()->find(val, true);
+                if(ret != ESValue(ESValue::ESEmptyValue) && ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->codeBlock()->m_isBuiltInFunction) {
+                    lastESObjectMetInMemberExpressionNode = *willBeObject;
+                    push<ESValue>(stack, bp, ret);
+                    executeNextCode<GetObjectPreComputedCase>(programCounter);
+                    goto NextInstruction;
+                }
+            }
+        } else if(UNLIKELY(willBeObject->isNumber())) {
+            ESString* val = property.toString();
+            ESValue ret = globalObject->numberObjectProxy()->find(val, true);
+            if(ret != ESValue(ESValue::ESEmptyValue) && ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->codeBlock()->m_isBuiltInFunction) {
+                lastESObjectMetInMemberExpressionNode = *willBeObject;
+                push<ESValue>(stack, bp, ret);
+                executeNextCode<GetObjectPreComputedCase>(programCounter);
+                goto NextInstruction;
+            }
+        }
+
+        ESObject* obj;
+        if(willBeObject->isObject())
+            obj = willBeObject->asESPointer()->asESObject();
+        else {
+            obj = willBeObject->toObject();
+        }
+
+        lastESObjectMetInMemberExpressionNode = obj;
+
+
+        if((obj->isESArrayObject() || obj->isESTypedArrayObject()) && property.isInt32()) {
+            push<ESValue>(stack, bp, obj->get(property, true));
+            executeNextCode<GetObjectPreComputedCase>(programCounter);
+            goto NextInstruction;
+        }
+
+        if(obj->hiddenClass() == code->m_cachedHiddenClass) {
+            if(code->m_cachedIndex != SIZE_MAX) {
+                push<ESValue>(stack, bp, obj->readHiddenClass(code->m_cachedIndex));
+                executeNextCode<GetObjectPreComputedCase>(programCounter);
+                goto NextInstruction;
+            } else {
+                ESValue v = obj->findOnlyPrototype(property);
+                if(v.isEmpty()) {
+                    push<ESValue>(stack, bp, ESValue());
+                    executeNextCode<GetObjectPreComputedCase>(programCounter);
+                    goto NextInstruction;
+                }
+                push<ESValue>(stack, bp, v);
+                executeNextCode<GetObjectPreComputedCase>(programCounter);
+                goto NextInstruction;
+            }
+        }
+
+        ESString* val = property.toString();
+        if(obj->isHiddenClassMode()) {
+            size_t idx = obj->hiddenClass()->findProperty(val);
+            code->m_cachedHiddenClass = obj->hiddenClass();
+            code->m_cachedIndex = idx;
+            if(idx != SIZE_MAX) {
+                push<ESValue>(stack, bp, obj->readHiddenClass(code->m_cachedIndex));
+                executeNextCode<GetObjectPreComputedCase>(programCounter);
+                goto NextInstruction;
+            } else {
+                ESValue v = obj->findOnlyPrototype(val);
+                if(v.isEmpty()) {
+                    push<ESValue>(stack, bp, ESValue());
+                    executeNextCode<GetObjectPreComputedCase>(programCounter);
+                    goto NextInstruction;
+                }
+                push<ESValue>(stack, bp, v);
+                executeNextCode<GetObjectPreComputedCase>(programCounter);
+                goto NextInstruction;
+            }
+        } else {
+            push<ESValue>(stack, bp, obj->get(val, true));
+            executeNextCode<GetObjectPreComputedCase>(programCounter);
+            goto NextInstruction;
+        }
+
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+
+    GetObjectWithPeekingPreComputedCaseOpcodeLbl:
+    {
+        GetObjectWithPeekingPreComputedCase* code = (GetObjectWithPeekingPreComputedCase*)currentCode;
+
+        const ESValue& property = code->m_propertyValue;
+        ESValue* willBeObject = pop<ESValue>(stack, bp);
+
+        stack = (void *)(((size_t)stack) + sizeof(ESValue) * 1);
+#ifndef NDEBUG
+        stack = (void *)(((size_t)stack) + sizeof(size_t) * 1);
+#endif
+
+        if(UNLIKELY(willBeObject->isESString())) {
+            if(property.isInt32()) {
+               int prop_val = property.toInt32();
+               if(LIKELY(0 <= prop_val && prop_val < willBeObject->asESString()->length())) {
+                   char16_t c = willBeObject->asESString()->string().data()[prop_val];
+                   if(LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
+                       push<ESValue>(stack, bp, strings->asciiTable[c]);
+                       executeNextCode<GetObjectWithPeekingPreComputedCase>(programCounter);
+                       goto NextInstruction;
+                   } else {
+                       push<ESValue>(stack, bp, ESString::create(c));
+                       executeNextCode<GetObjectWithPeekingPreComputedCase>(programCounter);
+                       goto NextInstruction;
+                   }
+               } else {
+                   push<ESValue>(stack, bp, ESValue());
+                   executeNextCode<GetObjectWithPeekingPreComputedCase>(programCounter);
+                   goto NextInstruction;
+               }
+               push<ESValue>(stack, bp, willBeObject->asESString()->substring(prop_val, prop_val+1));
+               executeNextCode<GetObjectWithPeekingPreComputedCase>(programCounter);
+               goto NextInstruction;
+            } else {
+                ESString* val = property.toString();
+                if(*val == *strings->length) {
+                    lastESObjectMetInMemberExpressionNode = *willBeObject;
+                    push<ESValue>(stack, bp, ESValue(willBeObject->asESString()->length()));
+                    executeNextCode<GetObjectWithPeekingPreComputedCase>(programCounter);
+                    goto NextInstruction;
+                }
+                ESValue ret = globalObject->stringObjectProxy()->find(val, true);
+                if(ret != ESValue(ESValue::ESEmptyValue) && ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->codeBlock()->m_isBuiltInFunction) {
+                    lastESObjectMetInMemberExpressionNode = *willBeObject;
+                    push<ESValue>(stack, bp, ret);
+                    executeNextCode<GetObjectWithPeekingPreComputedCase>(programCounter);
+                    goto NextInstruction;
+                }
+            }
+        } else if(UNLIKELY(willBeObject->isNumber())) {
+            ESString* val = property.toString();
+            ESValue ret = globalObject->numberObjectProxy()->find(val, true);
+            if(ret != ESValue(ESValue::ESEmptyValue) && ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->codeBlock()->m_isBuiltInFunction) {
+                lastESObjectMetInMemberExpressionNode = *willBeObject;
+                push<ESValue>(stack, bp, ret);
+                executeNextCode<GetObjectWithPeekingPreComputedCase>(programCounter);
+                goto NextInstruction;
+            }
+        }
+
+        ESObject* obj;
+        if(willBeObject->isObject())
+            obj = willBeObject->asESPointer()->asESObject();
+        else
+            obj = willBeObject->toObject();
+
+        lastESObjectMetInMemberExpressionNode = obj;
+
+
+        if((obj->isESArrayObject() || obj->isESTypedArrayObject()) && property.isInt32()) {
+            push<ESValue>(stack, bp, obj->get(property, true));
+            executeNextCode<GetObjectWithPeekingPreComputedCase>(programCounter);
+            goto NextInstruction;
+        }
+
+        if(obj->hiddenClass() == code->m_cachedHiddenClass) {
+            if(code->m_cachedIndex != SIZE_MAX) {
+                push<ESValue>(stack, bp, obj->readHiddenClass(code->m_cachedIndex));
+                executeNextCode<GetObjectWithPeekingPreComputedCase>(programCounter);
+                goto NextInstruction;
+            } else {
+                ESValue v = obj->findOnlyPrototype(property);
+                if(v.isEmpty()) {
+                    push<ESValue>(stack, bp, ESValue());
+                    executeNextCode<GetObjectWithPeekingPreComputedCase>(programCounter);
+                    goto NextInstruction;
+                }
+                push<ESValue>(stack, bp, v);
+                executeNextCode<GetObjectWithPeekingPreComputedCase>(programCounter);
+                goto NextInstruction;
+            }
+        }
+
+        ESString* val = property.toString();
+
+        if(obj->isHiddenClassMode()) {
+            size_t idx = obj->hiddenClass()->findProperty(val);
+            code->m_cachedHiddenClass = obj->hiddenClass();
+            code->m_cachedIndex = idx;
+            if(idx != SIZE_MAX) {
+                push<ESValue>(stack, bp, obj->readHiddenClass(code->m_cachedIndex));
+                executeNextCode<GetObjectWithPeekingPreComputedCase>(programCounter);
+                goto NextInstruction;
+            } else {
+                ESValue v = obj->findOnlyPrototype(val);
+                if(v.isEmpty()) {
+                    push<ESValue>(stack, bp, ESValue());
+                    executeNextCode<GetObjectWithPeekingPreComputedCase>(programCounter);
+                    goto NextInstruction;
+                }
+                push<ESValue>(stack, bp, v);
+                executeNextCode<GetObjectWithPeekingPreComputedCase>(programCounter);
+                goto NextInstruction;
+            }
+        } else {
+            push<ESValue>(stack, bp, obj->get(val, true));
+            executeNextCode<GetObjectWithPeekingPreComputedCase>(programCounter);
             goto NextInstruction;
         }
 

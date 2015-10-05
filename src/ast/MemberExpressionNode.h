@@ -19,69 +19,58 @@ public:
         m_computed = computed;
     }
 
-    virtual void generateExpressionByteCodeWithoutGetObject(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    bool isPreComputedCase()
     {
-        m_object->generateExpressionByteCode(codeBlock, context);
-        if(m_computed) {
-            m_property->generateExpressionByteCode(codeBlock, context);
-        } else {
-            if(m_property->type() == NodeType::Literal)
-                codeBlock->pushCode(Push(((LiteralNode *)m_property)->value()), this);
-            else {
-                ASSERT(m_property->type() == NodeType::Identifier);
-                codeBlock->pushCode(Push(((IdentifierNode *)m_property)->nonAtomicName()), this);
-            }
-        }
+        return m_property->type() == NodeType::Literal;
     }
 
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_object->generateExpressionByteCode(codeBlock, context);
-        if(m_computed) {
-            m_property->generateExpressionByteCode(codeBlock, context);
+
+        if(isPreComputedCase()) {
+            updateNodeIndex(context);
+            codeBlock->pushCode(GetObjectPreComputedCase(((LiteralNode *)m_property)->value()), this);
+            WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
+            updateNodeIndex(context);
+            WRITE_LAST_INDEX(m_nodeIndex, m_object->nodeIndex(), m_nodeIndex - 1);
         } else {
-            if(m_property->type() == NodeType::Literal) {
-                updateNodeIndex(context);
-                codeBlock->pushCode(Push(((LiteralNode *)m_property)->value()), this);
-                WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
-            } else {
-                ASSERT(m_property->type() == NodeType::Identifier);
-                updateNodeIndex(context);
-                codeBlock->pushCode(Push(((IdentifierNode *)m_property)->nonAtomicName()), this);
-                WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
-            }
+            m_property->generateExpressionByteCode(codeBlock, context);
+            updateNodeIndex(context);
+            codeBlock->pushCode(GetObject(), this);
+            WRITE_LAST_INDEX(m_nodeIndex, m_object->nodeIndex(), m_property->nodeIndex());
         }
-        updateNodeIndex(context);
-        codeBlock->pushCode(GetObject(), this);
-        WRITE_LAST_INDEX(m_nodeIndex, m_object->nodeIndex(), m_computed ? m_property->nodeIndex() : m_nodeIndex - 1);
     }
 
 
     virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        codeBlock->pushCode(PutInObject(), this);
+        if(isPreComputedCase()) {
+            ASSERT(m_property->type() == NodeType::Literal);
+            codeBlock->pushCode(PutInObjectPreComputedCase(((LiteralNode *)m_property)->value()), this);
+        } else {
+            codeBlock->pushCode(PutInObject(), this);
+        }
     }
 
     virtual void generateResolveAddressByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_object->generateExpressionByteCode(codeBlock, context);
-        if(m_computed) {
-            m_property->generateExpressionByteCode(codeBlock, context);
+        updateNodeIndex(context);
+        if(isPreComputedCase()) {
         } else {
-            if(m_property->type() == NodeType::Literal) {
-                updateNodeIndex(context);
-                codeBlock->pushCode(Push(((LiteralNode *)m_property)->value()), this);
-            } else {
-                ASSERT(m_property->type() == NodeType::Identifier);
-                updateNodeIndex(context);
-                codeBlock->pushCode(Push(((IdentifierNode *)m_property)->nonAtomicName()), this);
-            }
+            m_property->generateExpressionByteCode(codeBlock, context);
         }
     }
 
     virtual void generateReferenceResolvedAddressByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        codeBlock->pushCode(GetObjectWithPeeking(), this);
+        if(isPreComputedCase()) {
+            ASSERT(m_property->type() == NodeType::Literal);
+            codeBlock->pushCode(GetObjectWithPeekingPreComputedCase(((LiteralNode *)m_property)->value()), this);
+        } else {
+            codeBlock->pushCode(GetObjectWithPeeking(), this);
+        }
     }
 protected:
     Node* m_object; //object: Expression;

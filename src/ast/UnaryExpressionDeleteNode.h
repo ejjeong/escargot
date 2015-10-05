@@ -14,32 +14,17 @@ public:
         m_argument = argument;
     }
 
-/*
-    ESValue executeExpression(ESVMInstance* instance)
-    {
-        if(m_argument->type() == NodeType::MemberExpression) {
-            MemberExpressionNode* mem = (MemberExpressionNode*)m_argument;
-            return doDelete(mem->m_object->executeExpression(instance), mem->m_property->executeExpression(instance));
-        } else if(m_argument->type() == NodeType::Identifier) {
-            IdentifierNode* id = (IdentifierNode*)m_argument;
-            ESSlotAccessor acc = instance->currentExecutionContext()->resolveBinding(id->name(), id->nonAtomicName());
-            if(acc.m_targetObject == instance->globalObject()) {
-                //TODO consider strict-mode
-                instance->globalObject()->deletePropety(id->nonAtomicName());
-                return ESValue(!instance->globalObject()->find(id->nonAtomicName()).isEmpty());
-            }
-        } else {
-            m_argument->executeExpression(instance);
-        }
-        return ESValue(false);
-    }
-    */
-
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         if (m_argument->type() == NodeType::MemberExpression) {
             MemberExpressionNode* mem = (MemberExpressionNode*) m_argument;
-            mem->generateExpressionByteCodeWithoutGetObject(codeBlock, context);
+            mem->generateExpressionByteCode(codeBlock, context);
+            if(mem->isPreComputedCase()) {
+                ESValue v = codeBlock->peekCode<GetObjectPreComputedCase>(codeBlock->lastCodePosition<GetObjectPreComputedCase>())->m_propertyValue;
+                codeBlock->popLastCode<GetObjectPreComputedCase>();
+                codeBlock->pushCode(Push(v), this);
+            } else
+                codeBlock->popLastCode<GetObject>();
             codeBlock->pushCode(UnaryDelete(), this);
         } else if (m_argument->type() == NodeType::Identifier) {
             // TODO This work with the flag configurable

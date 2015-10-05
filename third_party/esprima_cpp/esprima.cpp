@@ -4530,7 +4530,8 @@ escargot::Node* parseLeftHandSideExpressionAllowCall(ParseContext* ctx) {
             ctx->m_isAssignmentTarget = true;
             property = parseNonComputedMember(ctx);
             //expr = new WrappingNode(startToken).finishMemberExpression('.', expr, property);
-            expr = new escargot::MemberExpressionNode(expr, property, false);
+            ASSERT(property->type() == escargot::NodeType::Identifier);
+            expr = new escargot::MemberExpressionNode(expr, new escargot::LiteralNode(((escargot::IdentifierNode *)property)->nonAtomicName()), false);
             expr->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
         } else if (match(ctx, '(')) {
             ctx->m_isBindingElement = false;
@@ -4597,7 +4598,8 @@ escargot::Node* parseLeftHandSideExpression(ParseContext* ctx) {
             ctx->m_isAssignmentTarget = true;
             property = parseNonComputedMember(ctx);
             //expr = new WrappingNode(startToken).finishMemberExpression('.', expr, property);
-            expr = new escargot::MemberExpressionNode(expr, property, false);
+            ASSERT(property->type() == escargot::NodeType::Identifier);
+            expr = new escargot::MemberExpressionNode(expr, new escargot::LiteralNode(((escargot::IdentifierNode *)property)->nonAtomicName()), false);
             expr->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
         } else if (ctx->m_lookahead->m_type == Token::TemplateToken && ctx->m_lookahead->m_head) {
             quasi = parseTemplateLiteral(ctx);
