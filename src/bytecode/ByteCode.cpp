@@ -774,8 +774,8 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* key = pop<ESValue>(stack, bp);
         ESValue* obj = pop<ESValue>(stack, bp);
-        obj->toObject()->deletePropety(*key);
-        push<ESValue>(stack, bp, ESValue(true));
+        bool res = obj->toObject()->deletePropety(*key);
+        push<ESValue>(stack, bp, ESValue(res));
 
         executeNextCode<UnaryDelete>(programCounter);
         goto NextInstruction;
@@ -1417,7 +1417,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
     PrepareFunctionCallOpcodeLbl:
     {
-        lastESObjectMetInMemberExpressionNode = globalObject;
+        lastESObjectMetInMemberExpressionNode = ESValue();
         executeNextCode<PrepareFunctionCall>(programCounter);
         goto NextInstruction;
     }

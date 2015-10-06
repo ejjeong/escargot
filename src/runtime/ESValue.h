@@ -1243,7 +1243,7 @@ public:
         }
     }
 
-    inline void deletePropety(const ESValue& key);
+    inline bool deletePropety(const ESValue& key);
     inline void propertyFlags(const ESValue& key, bool& exists, bool& isDataProperty, bool& isWritable, bool& isEnumerable, bool& isConfigurable);
     inline ESAccessorData* accessorData(const ESValue& key);
 

@@ -975,13 +975,14 @@ inline void ESObject::definePropertyOrThrow(escargot::ESValue key, bool isWritab
     }
 }
 
-inline void ESObject::deletePropety(const ESValue& key)
+inline bool ESObject::deletePropety(const ESValue& key)
 {
     if(isESArrayObject()) {
         if (key.isInt32()) {
             int i = key.toInt32();
             if(i < asESArrayObject()->length()) {
                 asESArrayObject()->m_vector[i] = ESValue(ESValue::ESEmptyValue);
+                return true;
             }
         }
     }
@@ -996,7 +997,9 @@ inline void ESObject::deletePropety(const ESValue& key)
     auto iter = m_map->find(str);
     if(iter != m_map->end() && iter->second.isConfigurable()) {
         m_map->erase(iter);
+        return true;
     }
+    return false;
 }
 
 inline void ESObject::propertyFlags(const ESValue& key, bool& exists, bool& isDataProperty, bool& isWritable, bool& isEnumerable, bool& isConfigurable)
