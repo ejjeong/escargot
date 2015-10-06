@@ -150,13 +150,13 @@ OBJS += $(SRC_C:%.c= $(BUILDDIR)/%.o)
 -include $(OBJS:.o=.d)
 
 jit.debug: $(BUILDDIR)/$(BIN)
-	cp $< .
+	cp -f $< .
 jit.release: $(BUILDDIR)/$(BIN)
-	cp $< .
+	cp -f $< .
 interpreter.debug: $(BUILDDIR)/$(BIN)
-	cp $< .
+	cp -f $< .
 interpreter.release: $(BUILDDIR)/$(BIN)
-	cp $< .
+	cp -f $< .
 
 $(BUILDDIR)/$(BIN): $(OBJS) $(THIRD_PARTY_LIBS)
 	$(CXX) -o $@ $(OBJS) $(THIRD_PARTY_LIBS) $(LDFLAGS)
