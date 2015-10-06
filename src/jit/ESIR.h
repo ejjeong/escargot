@@ -368,6 +368,24 @@ private:
         : BinaryExpressionIR(ESIR::Opcode::Equal, targetIndex, leftIndex, rightIndex) { }
 };
 
+class GreaterThanIR : public BinaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(GreaterThan, int, int);
+
+private:
+    GreaterThanIR(int targetIndex, int leftIndex, int rightIndex)
+        : BinaryExpressionIR(ESIR::Opcode::GreaterThan, targetIndex, leftIndex, rightIndex) { }
+};
+
+class GreaterThanOrEqualIR : public BinaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(GreaterThanOrEqual, int, int);
+
+private:
+    GreaterThanOrEqualIR(int targetIndex, int leftIndex, int rightIndex)
+        : BinaryExpressionIR(ESIR::Opcode::GreaterThanOrEqual, targetIndex, leftIndex, rightIndex) { }
+};
+
 class LessThanIR : public BinaryExpressionIR {
 public:
     DECLARE_STATIC_GENERATOR_2(LessThan, int, int);
@@ -375,6 +393,15 @@ public:
 private:
     LessThanIR(int targetIndex, int leftIndex, int rightIndex)
         : BinaryExpressionIR(ESIR::Opcode::LessThan, targetIndex, leftIndex, rightIndex) { }
+};
+
+class LessThanOrEqualIR : public BinaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(LessThanOrEqual, int, int);
+
+private:
+    LessThanOrEqualIR(int targetIndex, int leftIndex, int rightIndex)
+        : BinaryExpressionIR(ESIR::Opcode::LessThanOrEqual, targetIndex, leftIndex, rightIndex) { }
 };
 
 class LeftShiftIR : public BinaryExpressionIR {

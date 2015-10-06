@@ -209,6 +209,30 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         else
             RELEASE_ASSERT_NOT_REACHED();
     }
+    case ESIR::Opcode::GreaterThan:
+    {
+        INIT_ESIR(GreaterThan);
+        LIns* left = getTmpMapping(irGreaterThan->leftIndex());
+        LIns* right = getTmpMapping(irGreaterThan->rightIndex());
+        Type leftType = m_graph->getOperandType(irGreaterThan->leftIndex());
+        Type rightType = m_graph->getOperandType(irGreaterThan->rightIndex());
+        if (leftType.isInt32Type() && rightType.isInt32Type())
+            return m_out.ins2(LIR_gti, left, right);
+        else
+            RELEASE_ASSERT_NOT_REACHED();
+    }
+    case ESIR::Opcode::GreaterThanOrEqual:
+    {
+        INIT_ESIR(GreaterThanOrEqual);
+        LIns* left = getTmpMapping(irGreaterThanOrEqual->leftIndex());
+        LIns* right = getTmpMapping(irGreaterThanOrEqual->rightIndex());
+        Type leftType = m_graph->getOperandType(irGreaterThanOrEqual->leftIndex());
+        Type rightType = m_graph->getOperandType(irGreaterThanOrEqual->rightIndex());
+        if (leftType.isInt32Type() && rightType.isInt32Type())
+            return m_out.ins2(LIR_gei, left, right);
+        else
+            RELEASE_ASSERT_NOT_REACHED();
+    }
     case ESIR::Opcode::LessThan:
     {
         INIT_ESIR(LessThan);
@@ -218,6 +242,18 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         Type rightType = m_graph->getOperandType(irLessThan->rightIndex());
         if (leftType.isInt32Type() && rightType.isInt32Type())
             return m_out.ins2(LIR_lti, left, right);
+        else
+            RELEASE_ASSERT_NOT_REACHED();
+    }
+    case ESIR::Opcode::LessThanOrEqual:
+    {
+        INIT_ESIR(LessThanOrEqual);
+        LIns* left = getTmpMapping(irLessThanOrEqual->leftIndex());
+        LIns* right = getTmpMapping(irLessThanOrEqual->rightIndex());
+        Type leftType = m_graph->getOperandType(irLessThanOrEqual->leftIndex());
+        Type rightType = m_graph->getOperandType(irLessThanOrEqual->rightIndex());
+        if (leftType.isInt32Type() && rightType.isInt32Type())
+            return m_out.ins2(LIR_lei, left, right);
         else
             RELEASE_ASSERT_NOT_REACHED();
     }

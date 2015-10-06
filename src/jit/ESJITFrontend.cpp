@@ -180,6 +180,22 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             goto unsupported;
             NEXT_BYTECODE(UnsignedRightShift);
             break;
+        case GreaterThanOpcode:
+        {
+            INIT_BYTECODE(GreaterThan);
+            ESIR* lessThanIR = GreaterThanIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
+            currentBlock->push(lessThanIR);
+            NEXT_BYTECODE(GreaterThan);
+            break;
+        }
+        case GreaterThanOrEqualOpcode:
+        {
+            INIT_BYTECODE(GreaterThanOrEqual);
+            ESIR* lessThanOrEqualIR = GreaterThanOrEqualIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
+            currentBlock->push(lessThanOrEqualIR);
+            NEXT_BYTECODE(GreaterThanOrEqual);
+            break;
+        }
         case LessThanOpcode:
         {
             INIT_BYTECODE(LessThan);
@@ -189,17 +205,13 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         }
         case LessThanOrEqualOpcode:
-            goto unsupported;
+        {
+            INIT_BYTECODE(LessThanOrEqual);
+            ESIR* lessThanOrEqualIR = LessThanOrEqualIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
+            currentBlock->push(lessThanOrEqualIR);
             NEXT_BYTECODE(LessThanOrEqual);
             break;
-        case GreaterThanOpcode:
-            goto unsupported;
-            NEXT_BYTECODE(GreaterThan);
-            break;
-        case GreaterThanOrEqualOpcode:
-            goto unsupported;
-            NEXT_BYTECODE(GreaterThanOrEqual);
-            break;
+        }
         case PlusOpcode:
         {
             // TODO
