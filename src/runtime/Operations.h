@@ -60,6 +60,50 @@ ALWAYS_INLINE ESValue minusOperation(const ESValue& left, const ESValue& right)
     return ret;
 }
 
+
+//http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5
+ALWAYS_INLINE ESValue abstractRelationalComparison(const ESValue& left, const ESValue& right, bool leftFirst)
+{
+    ESValue lval(ESValue::ESForceUninitialized);
+    ESValue rval(ESValue::ESForceUninitialized);
+    if(leftFirst) {
+        lval = left.toPrimitive();
+        rval = right.toPrimitive();
+    } else {
+        rval = right.toPrimitive();
+        lval = left.toPrimitive();
+    }
+
+    // http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5
+    if(lval.isInt32() && rval.isInt32()) {
+        return ESValue(lval.asInt32() < rval.asInt32());
+    } else if (lval.isESString() && rval.isESString()) {
+        return ESValue(lval.toString()->string() < rval.toString()->string());
+    } else {
+        double n1 = lval.toNumber();
+        double n2 = rval.toNumber();
+        if(isnan(n1) || isnan(n2)) {
+            return ESValue();
+        } else if(n1 == n2) {
+            return ESValue(false);
+        } else if(n1 == 0.0 && n2 == -0.0) {
+            return ESValue(false);
+        } else if(n1 == -0.0 && n2 == 0.0) {
+            return ESValue(false);
+        } else if(isinf(n1) == 1) {
+            return ESValue(false);
+        } else if(isinf(n2) == 1) {
+            return ESValue(true);
+        } else if(isinf(n2) == -1) {
+            return ESValue(false);
+        } else if(isinf(n1) == -1) {
+            return ESValue(true);
+        } else {
+            return ESValue(n1 < n2);
+        }
+    }
+}
+
 inline ESValue* contextResolveBinding(ExecutionContext* context, InternalAtomicString* atomicName, ESString* name)
 {
     return context->resolveBinding(*atomicName, name);

@@ -519,20 +519,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* right = pop<ESValue>(stack, bp);
         ESValue* left = pop<ESValue>(stack, bp);
-        ESValue lval = left->toPrimitive();
-        ESValue rval = right->toPrimitive();
-
-        // TODO http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5
-        // string, NaN, zero, infinity, ...
-        bool b;
-        if(lval.isInt32() && rval.isInt32()) {
-            b = lval.asInt32() < rval.asInt32();
-        } else if (lval.isESString() || rval.isESString()) {
-            b = lval.toString()->string() < rval.toString()->string();
-        } else {
-            b = lval.toNumber() < rval.toNumber();
-        }
-        push<ESValue>(stack, bp, ESValue(b));
+        ESValue r = abstractRelationalComparison(*left, *right, true);
+        if(r.isUndefined())
+            push<ESValue>(stack, bp, ESValue(false));
+        else
+            push<ESValue>(stack, bp, r);
         executeNextCode<LessThan>(programCounter);
         goto NextInstruction;
     }
@@ -541,20 +532,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* right = pop<ESValue>(stack, bp);
         ESValue* left = pop<ESValue>(stack, bp);
-        ESValue lval = left->toPrimitive();
-        ESValue rval = right->toPrimitive();
-
-        // TODO http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5
-        // string, NaN, zero, infinity, ...
-        bool b;
-        if(lval.isInt32() && rval.isInt32()) {
-         b = lval.asInt32() <= rval.asInt32();
-        } else if (lval.isESString() || rval.isESString()) {
-         b = lval.toString()->string() <= rval.toString()->string();
-        } else {
-         b = lval.toNumber() <= rval.toNumber();
-        }
-        push<ESValue>(stack, bp, ESValue(b));
+        ESValue r = abstractRelationalComparison(*right, *left, false);
+        if(r == ESValue(true) || r.isUndefined())
+            push<ESValue>(stack, bp, ESValue(false));
+        else
+            push<ESValue>(stack, bp, ESValue(true));
         executeNextCode<LessThanOrEqual>(programCounter);
         goto NextInstruction;
     }
@@ -563,20 +545,12 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* right = pop<ESValue>(stack, bp);
         ESValue* left = pop<ESValue>(stack, bp);
-        ESValue lval = left->toPrimitive();
-        ESValue rval = right->toPrimitive();
 
-        // TODO http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5
-        // string, NaN, zero, infinity, ...
-        bool b;
-        if(lval.isInt32() && rval.isInt32()) {
-            b = lval.asInt32() > rval.asInt32();
-        } else if (lval.isESString() || rval.isESString()) {
-            b = lval.toString()->string() > rval.toString()->string();
-        } else {
-            b = lval.toNumber() > rval.toNumber();
-        }
-        push<ESValue>(stack, bp, ESValue(b));
+        ESValue r = abstractRelationalComparison(*right, *left, false);
+        if(r.isUndefined())
+            push<ESValue>(stack, bp, ESValue(false));
+        else
+            push<ESValue>(stack, bp, r);
         executeNextCode<GreaterThan>(programCounter);
         goto NextInstruction;
     }
@@ -585,20 +559,12 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* right = pop<ESValue>(stack, bp);
         ESValue* left = pop<ESValue>(stack, bp);
-        ESValue lval = left->toPrimitive();
-        ESValue rval = right->toPrimitive();
 
-        // TODO http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5
-        // string, NaN, zero, infinity, ...
-        bool b;
-        if(lval.isInt32() && rval.isInt32()) {
-         b = lval.asInt32() >= rval.asInt32();
-        } else if (lval.isESString() || rval.isESString()) {
-         b = lval.toString()->string() >= rval.toString()->string();
-        } else {
-         b = lval.toNumber() >= rval.toNumber();
-        }
-        push<ESValue>(stack, bp, ESValue(b));
+        ESValue r = abstractRelationalComparison(*left, *right, true);
+        if(r == ESValue(true) || r.isUndefined())
+            push<ESValue>(stack, bp, ESValue(false));
+        else
+            push<ESValue>(stack, bp, ESValue(true));
         executeNextCode<GreaterThanOrEqual>(programCounter);
         goto NextInstruction;
     }
