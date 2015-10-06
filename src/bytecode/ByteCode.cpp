@@ -507,9 +507,9 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* right = pop<ESValue>(stack, bp);
         ESValue* left = pop<ESValue>(stack, bp);
-        int32_t lnum = left->toInt32();
-        int32_t rnum = right->toInt32();
-        lnum = ((unsigned int)lnum) >> (((unsigned int)rnum) & 0x1F);
+        uint32_t lnum = left->toUint32();
+        uint32_t rnum = right->toUint32();
+        lnum = (lnum) >> ((rnum) & 0x1F);
         push<ESValue>(stack, bp, ESValue(lnum));
         executeNextCode<UnsignedRightShift>(programCounter);
         goto NextInstruction;
@@ -1531,6 +1531,8 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             receiver = ESRegExpObject::create(strings->emptyESString,ESRegExpObject::Option::None);
         } else if (function == globalObject->boolean()) {
             receiver = ESBooleanObject::create(ESValue(ESValue::ESFalseTag::ESFalse));
+        } else if (function == globalObject->number()) {
+            receiver = ESNumberObject::create(0);
         } else if (function == globalObject->error()) {
             receiver = ESErrorObject::create();
         } else if (function == globalObject->referenceError()) {

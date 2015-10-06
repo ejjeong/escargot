@@ -363,6 +363,31 @@ inline int32_t ESValue::toInt32() const
     return res;
 }
 
+inline uint32_t ESValue::toUint32() const
+{
+    //consume fast case
+    if (LIKELY(isInt32()))
+        return asInt32();
+
+    //Let number be the result of calling ToNumber on the input argument.
+    double num = toNumber();
+
+    //If number is NaN, +0, −0, +∞, or −∞, return +0.
+    if(UNLIKELY(isnan(num))) {
+        return 0;
+    } else if(UNLIKELY(num == -0.0)) {
+        return 0;
+    }
+
+    //Let posInt be sign(number) × floor(abs(number)).
+    long long int posInt = (num < 0 ? -1 : 1) * std::floor(std::abs(num));
+
+    //Let int32bit be posInt modulo 232; that is, a finite integer value k of Number type with positive sign and
+    //less than 232 in magnitude such that the mathematical difference of posInt and k is mathematically an integer multiple of 232.
+    long long int int32bit = posInt % 0x100000000;
+    return int32bit;
+}
+
 inline bool ESValue::isObject() const
 {
     return isESPointer() && asESPointer()->isESObject();

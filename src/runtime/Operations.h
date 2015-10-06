@@ -7,14 +7,12 @@ namespace escargot {
 
 ALWAYS_INLINE ESValue plusOperation(const ESValue& left, const ESValue& right)
 {
-    ESValue lval = left.toPrimitive();
-    ESValue rval = right.toPrimitive();
     // http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.1
 
     ESValue ret(ESValue::ESForceUninitialized);
-    if(lval.isInt32() && rval.isInt32()) {
-        int64_t a = lval.asInt32();
-        int64_t b = rval.asInt32();
+    if(left.isInt32() && right.isInt32()) {
+        int64_t a = left.asInt32();
+        int64_t b = right.asInt32();
         a = a + b;
 
         if(a > std::numeric_limits<int32_t>::max() || a < std::numeric_limits<int32_t>::min()) {
@@ -22,7 +20,12 @@ ALWAYS_INLINE ESValue plusOperation(const ESValue& left, const ESValue& right)
         } else {
             ret = ESValue((int32_t)a);
         }
-    } else if (lval.isESString() || rval.isESString()) {
+        return ret;
+    }
+
+    ESValue lval = left.toPrimitive();
+    ESValue rval = right.toPrimitive();
+    if (lval.isESString() || rval.isESString()) {
         ret = ESString::concatTwoStrings(lval.toString(), rval.toString());
     } else {
         ret = ESValue(lval.toNumber() + rval.toNumber());

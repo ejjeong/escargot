@@ -172,7 +172,7 @@ ESValue ESVMInstance::evaluate(u16string& source)
             printf("an error occur in catch-block\n");
         }
         fflush(stdout);
-        throw;
+        return ESValue(ESValue::ESEmptyValue);
     }
 
     return m_lastExpressionStatementValue;

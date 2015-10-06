@@ -157,6 +157,7 @@ public:
     inline double toNumber() const; //$7.1.3 ToNumber
     inline double toInteger() const; //$7.1.4 ToInteger
     inline int32_t toInt32() const; //$7.1.5 ToInt32
+    inline uint32_t toUint32() const; //http://www.ecma-international.org/ecma-262/5.1/#sec-9.6
     inline ESString* toString() const; //$7.1.12 ToString
     inline ESObject* toObject() const; //$7.1.13 ToObject
     inline double toLength() const; //$7.1.15 ToLength

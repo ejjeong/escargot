@@ -2121,12 +2121,21 @@ void GlobalObject::installMath()
     m_math->set(strings->prototype, m_mathPrototype);
 
     // initialize math object: $20.2.1.6 Math.PI
-    m_math->set(strings->PI, ESValue(3.1415926535897932));
+    m_math->definePropertyOrThrow(strings->PI, false, false, false, ESValue(3.1415926535897932));
     // TODO(add reference)
-    m_math->set(strings->E, ESValue(2.718281828459045));
-    // TODO(add reference)
-    m_math->set(escargot::ESString::create(u"LN2"), ESValue(0.6931471805599453));
-    m_math->set(escargot::ESString::create(u"LN10"), ESValue(2.302585092994046));
+    m_math->definePropertyOrThrow(strings->E, false, false, false, ESValue(2.718281828459045));
+    //http://www.ecma-international.org/ecma-262/5.1/#sec-15.8.1.3
+    m_math->definePropertyOrThrow(escargot::ESString::create(u"LN2"), false, false, false, ESValue(0.6931471805599453));
+    //http://www.ecma-international.org/ecma-262/5.1/#sec-15.8.1.2
+    m_math->definePropertyOrThrow(escargot::ESString::create(u"LN10"), false, false, false, ESValue(2.302585092994046));
+    //http://www.ecma-international.org/ecma-262/5.1/#sec-15.8.1.4
+    m_math->definePropertyOrThrow(escargot::ESString::create(u"LOG2E"), false, false, false, ESValue(1.4426950408889634));
+    //http://www.ecma-international.org/ecma-262/5.1/#sec-15.8.1.5
+    m_math->definePropertyOrThrow(escargot::ESString::create(u"LOG10E"), false, false, false, ESValue(0.4342944819032518));
+    //http://www.ecma-international.org/ecma-262/5.1/#sec-15.8.1.7
+    m_math->definePropertyOrThrow(escargot::ESString::create(u"SQRT1_2"), false, false, false, ESValue(0.7071067811865476));
+    //http://www.ecma-international.org/ecma-262/5.1/#sec-15.8.1.8
+    m_math->definePropertyOrThrow(escargot::ESString::create(u"SQRT2"), false, false, false, ESValue(1.4142135623730951));
 
     // initialize math object: $20.2.2.1 Math.abs()
     m_math->set(strings->abs, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -2392,7 +2401,9 @@ void GlobalObject::installNumber()
     // create number object: $20.1.1 The Number Constructor
     m_number = ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         if(instance->currentExecutionContext()->isNewExpression()) {
-            return ESNumberObject::create(instance->currentExecutionContext()->readArgument(0).toNumber());
+            if(instance->currentExecutionContext()->argumentCount())
+                instance->currentExecutionContext()->resolveThisBindingToObject()->asESNumberObject()->setNumberData(instance->currentExecutionContext()->readArgument(0).toNumber());
+            return instance->currentExecutionContext()->resolveThisBinding();
         } else {
             return ESValue(instance->currentExecutionContext()->readArgument(0).toNumber());
         }

@@ -55,7 +55,9 @@ int main(int argc, char* argv[])
             printf("shell> ");
             fgets(buf, sizeof buf, stdin);
             escargot::ESStringData source(buf);
-            ES->printValue(ES->evaluate(source));
+            escargot::ESValue ret = ES->evaluate(source);
+            if(!ret.isEmpty())
+                ES->printValue(ret);
         }
     } else {
         for(int i = 1; i < argc; i ++) {
@@ -86,7 +88,9 @@ int main(int argc, char* argv[])
                 fclose(fp);
                 escargot::ESStringData source(str.c_str());
                 try{
-                  ES->evaluate(source);
+                    escargot::ESValue ret = ES->evaluate(source);
+                    if(ret.isEmpty())
+                        throw ;
                 }catch(...) {
 #ifdef ESCARGOT_PROFILE
                   escargot::ESScriptParser::dumpStats();
