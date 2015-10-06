@@ -69,6 +69,7 @@ private:
     nanojit::LIns* m_tagMaskQ;
     nanojit::LIns* m_intTagQ;
     nanojit::LIns* m_intTagComplementQ;
+    nanojit::LIns* m_undefinedQ;
     nanojit::LIns* m_zeroQ;
     nanojit::LIns* m_zeroP;
     nanojit::LIns* m_oneI;

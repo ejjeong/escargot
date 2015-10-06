@@ -40,10 +40,16 @@ CallInfo logPointerCallInfo = CI(jitLogPointerOperation, CallInfo::typeSig1(ARGT
 #define JIT_LOG_I(arg) { LIns* args[] = {arg}; m_out.insCall(&logIntCallInfo, args); }
 #define JIT_LOG_D(arg) { LIns* args[] = {arg}; m_out.insCall(&logDoubleCallInfo, args); }
 #define JIT_LOG_P(arg) { LIns* args[] = {arg}; m_out.insCall(&logPointerCallInfo, args); }
+#define JIT_LOG(arg) { \
+    if (arg->isI()) JIT_LOG_I(arg); \
+    if (arg->isD()) JIT_LOG_D(arg); \
+    if (arg->isP()) JIT_LOG_P(arg); \
+}
 #else
 #define JIT_LOG_I(arg)
 #define JIT_LOG_D(arg)
 #define JIT_LOG_P(arg)
+#define JIT_LOG(arg)
 #endif
 
 NativeGenerator::NativeGenerator(ESGraph* graph)
@@ -90,7 +96,6 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
 {
     m_out.insStore(LIR_sti, m_oneI, m_context, ExecutionContext::offsetofInOSRExit(), 1);
     LIns* bytecode = m_out.insImmI(currentByteCodeIndex);
-    JIT_LOG_I(bytecode);
     return m_out.ins1(LIR_retq, bytecode); // FIXME returning int as quad
 }
 
@@ -105,6 +110,7 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
         LIns* maskedValue = m_out.ins2(LIR_andq, quadValue, m_intTagQ);
         LIns* checkIfInt = m_out.ins2(LIR_eqq, maskedValue, m_intTagQ);
         LIns* jumpIfInt = m_out.insBranch(LIR_jt, checkIfInt, nullptr);
+        JIT_LOG(in);
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out.ins0(LIR_label);
         jumpIfInt->setTarget(normalPath);
@@ -115,11 +121,21 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
 #ifdef ESCARGOT_64
         LIns* quadValue = m_out.ins1(LIR_dasq, in);
         LIns* maskedValue = m_out.ins2(LIR_andq, quadValue, m_tagMaskQ);
-        LIns* checkIfZero = m_out.ins2(LIR_eqq, maskedValue, m_zeroQ);
-        LIns* jumpIfNotTagged = m_out.insBranch(LIR_jt, checkIfZero, nullptr);
+        LIns* checkIfNotTagged = m_out.ins2(LIR_eqq, maskedValue, m_zeroQ);
+        LIns* jumpIfPointer = m_out.insBranch(LIR_jt, checkIfNotTagged, nullptr);
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out.ins0(LIR_label);
-        jumpIfNotTagged->setTarget(normalPath);
+        jumpIfPointer->setTarget(normalPath);
+#else
+        RELEASE_ASSERT_NOT_REACHED();
+#endif
+    } else if (type.isUndefinedType()) {
+#ifdef ESCARGOT_64
+        LIns* checkIfUndefined = m_out.ins2(LIR_eqq, in, m_undefinedQ);
+        LIns* jumpIfUndefined = m_out.insBranch(LIR_jt, checkIfUndefined, nullptr);
+        generateOSRExit(currentByteCodeIndex);
+        LIns* normalPath = m_out.ins0(LIR_label);
+        jumpIfUndefined->setTarget(normalPath);
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
@@ -143,7 +159,7 @@ LIns* NativeGenerator::boxESValue(LIns* unboxedValue, Type type)
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
-    } else if (type.isPointerType()) {
+    } else if (type.isPointerType() || type.isUndefinedType()) {
 #ifdef ESCARGOT_64
         return unboxedValue;
 #else
@@ -173,7 +189,7 @@ LIns* NativeGenerator::unboxESValue(LIns* boxedValue, Type type)
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
-    } else if (type.isPointerType()) {
+    } else if (type.isPointerType() || type.isUndefinedType()) {
 #ifdef ESCARGOT_64
         return boxedValue;
 #else
@@ -507,6 +523,7 @@ void NativeGenerator::nanojitCodegen()
     m_tagMaskQ = m_out.insImmQ(TagMask);
     m_intTagQ = m_out.insImmQ(TagTypeNumber);
     m_intTagComplementQ = m_out.insImmQ(~TagTypeNumber);
+    m_undefinedQ = m_out.insImmQ(ValueUndefined);
     m_zeroQ = m_out.insImmQ(0);
     m_zeroP = m_out.insImmP(0);
     m_oneI = m_out.insImmI(1);
