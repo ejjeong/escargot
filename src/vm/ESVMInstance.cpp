@@ -18,6 +18,7 @@ ESVMInstance::ESVMInstance()
     m_dumpByteCode = false;
     m_dumpExecuteByteCode = false;
     m_verboseJIT = false;
+    m_reportUnsupportedOpcode = false;
 #endif
     m_dtoaState = NULL;
 

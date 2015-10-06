@@ -69,6 +69,9 @@ int main(int argc, char* argv[])
             if(strcmp(argv[i], "-vj") == 0) {
                 ES->m_verboseJIT = true;
             }
+            if(strcmp(argv[i], "-us") == 0) {
+                ES->m_reportUnsupportedOpcode = true;
+            }
 #endif
             if(strcmp(argv[i], "-p") == 0) {
                 ES->m_profile = true;

@@ -437,7 +437,7 @@ postprocess:
 
 unsupported:
 #ifndef NDEBUG
-    if (ESVMInstance::currentInstance()->m_verboseJIT)
+    if (ESVMInstance::currentInstance()->m_verboseJIT || ESVMInstance::currentInstance()->m_reportUnsupportedOpcode)
         printf("Unsupported Opcode %s\n", getByteCodeName(getOpcodeFromAddress(currentCode->m_opcode)));
 #endif
     return nullptr;

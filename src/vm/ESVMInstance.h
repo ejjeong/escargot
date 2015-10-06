@@ -117,6 +117,7 @@ public:
     bool m_dumpByteCode;
     bool m_dumpExecuteByteCode;
     bool m_verboseJIT;
+    bool m_reportUnsupportedOpcode;
 #endif
     bool m_profile;
 
