@@ -288,6 +288,12 @@ public:
         m_srcIndex1 = srcIndex1;
         m_srcIndex2 = srcIndex2;
     }
+#ifndef NDEBUG
+    void dump()
+    {
+        printf("[%3d %3d %3d] ", m_targetIndex, m_srcIndex1, m_srcIndex2);
+    }
+#endif
 
     int m_targetIndex;
     int m_srcIndex1;
@@ -453,6 +459,9 @@ public:
     {
         printf("GetById <%s>\n", m_nonAtomicName->utf8Data());
     }
+#endif
+#ifdef ENABLE_ESJIT
+    ProfileData m_profile;
 #endif
 };
 

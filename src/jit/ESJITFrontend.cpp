@@ -75,9 +75,15 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(Pop);
             break;
         case GetByIdOpcode:
-            goto unsupported;
+        {
+            INIT_BYTECODE(GetById);
+            ESIR* getVarGeneric = GetVarGenericIR::create(ssaIndex->m_targetIndex, bytecode->m_name, bytecode->m_nonAtomicName);
+            currentBlock->push(getVarGeneric);
+            bytecode->m_profile.updateProfiledType();
+            graph->setOperandType(ssaIndex->m_targetIndex, bytecode->m_profile.getType());
             NEXT_BYTECODE(GetById);
             break;
+        }
         case GetByIndexOpcode:
         {
             INIT_BYTECODE(GetByIndex);
@@ -101,9 +107,13 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(GetByIndexWithActivation);
             break;
         case PutByIdOpcode:
-            goto unsupported;
+        {
+            INIT_BYTECODE(PutById);
+            ESIR* setVarGeneric = SetVarGenericIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, &bytecode->m_name, bytecode->m_nonAtomicName);
+            currentBlock->push(setVarGeneric);
             NEXT_BYTECODE(PutById);
             break;
+        }
         case PutByIndexOpcode:
         {
             INIT_BYTECODE(PutByIndex);
@@ -321,11 +331,11 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(ExecuteNativeFunction);
             break;
         case PrepareFunctionCallOpcode:
-            goto unsupported;
+            // FIXME lastESObjectMetInMemberExpressionNode = globalObject;
             NEXT_BYTECODE(PrepareFunctionCall);
             break;
         case PushFunctionCallReceiverOpcode: 
-            goto unsupported;
+            // FIXME push<ESValue>(stack, bp, lastESObjectMetInMemberExpressionNode);
             NEXT_BYTECODE(PushFunctionCallReceiver);
             break;
         case CallFunctionOpcode:

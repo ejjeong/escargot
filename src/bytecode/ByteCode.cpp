@@ -137,12 +137,18 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         if (LIKELY(code->m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
             ASSERT(ec->resolveBinding(code->m_name, code->m_nonAtomicName) == code->m_cachedSlot);
             push<ESValue>(stack, bp, code->m_cachedSlot);
+#ifdef ENABLE_ESJIT
+            code->m_profile.addProfile(*code->m_cachedSlot);
+#endif
         } else {
             ESValue* slot = ec->resolveBinding(code->m_name, code->m_nonAtomicName);
             if(LIKELY(slot != NULL)) {
                 code->m_cachedSlot = slot;
                 code->m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
                 push<ESValue>(stack, bp, code->m_cachedSlot);
+#ifdef ENABLE_ESJIT
+                code->m_profile.addProfile(*code->m_cachedSlot);
+#endif
             } else {
                 ReferenceError* receiver = ReferenceError::create();
                 std::vector<ESValue> arguments;
@@ -1804,6 +1810,9 @@ void dumpBytecode(CodeBlock* codeBlock)
 {
     printf("dumpBytecode...>>>>>>>>>>>>>>>>>>>>>>\n");
     size_t idx = 0;
+#ifdef ENABLE_ESJIT
+    size_t bytecodeCounter = 0;
+#endif
     char* code = codeBlock->m_code.data();
     while(idx < codeBlock->m_code.size()) {
         ByteCode* currentCode = (ByteCode *)(&code[idx]);
@@ -1814,6 +1823,21 @@ void dumpBytecode(CodeBlock* codeBlock)
 
         Opcode opcode = getOpcodeFromAddress(currentCode->m_opcode);
 
+#ifdef ENABLE_ESJIT
+        switch(opcode) {
+#define DUMP_BYTE_CODE(code) \
+        case code##Opcode:\
+        codeBlock->getSSAIndex(bytecodeCounter)->dump(); \
+        currentCode->dump(); \
+        idx += sizeof (code); \
+        bytecodeCounter++; \
+        continue;
+        FOR_EACH_BYTECODE_OP(DUMP_BYTE_CODE)
+        default:
+            RELEASE_ASSERT_NOT_REACHED();
+            break;
+        };
+#else // ENABLE_ESJIT
         switch(opcode) {
 #define DUMP_BYTE_CODE(code) \
         case code##Opcode:\
@@ -1825,6 +1849,7 @@ void dumpBytecode(CodeBlock* codeBlock)
             RELEASE_ASSERT_NOT_REACHED();
             break;
         };
+#endif // ENABLE_ESJIT
     }
     printf("dumpBytecode...<<<<<<<<<<<<<<<<<<<<<<\n");
 }

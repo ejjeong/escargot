@@ -111,6 +111,7 @@ public:
 
 #ifdef ENABLE_ESJIT
     static size_t offsetOfCurrentExecutionContext() { return offsetof(ESVMInstance, m_currentExecutionContext); }
+    static size_t offsetOfGlobalObject() { return offsetof(ESVMInstance, m_globalObject); }
 #endif
 
 #ifndef NDEBUG

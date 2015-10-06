@@ -93,6 +93,8 @@ class ESBasicBlock;
     F(SetVar, ) \
     F(GetScoped, LoadFromHeap) \
     F(SetScoped, ) \
+    F(GetVarGeneric, LoadFromHeap) \
+    F(SetVarGeneric, ) \
     F(GetProperty, LoadFromHeap) \
     F(SetProperty, ) \
     \
@@ -319,6 +321,54 @@ private:
     int m_localVarIndex;
     int m_sourceIndex;
 };
+
+class GetVarGenericIR : public ESIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(GetVarGeneric, const InternalAtomicString&, ESString*)
+
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+        out << " " << m_esName->utf8Data();
+    }
+#endif
+    InternalAtomicString* name() { return &m_name; }
+    ESString* nonAtomicName() { return m_esName; }
+
+private:
+    GetVarGenericIR(int targetIndex, const InternalAtomicString& name, ESString* esName)
+        : ESIR(ESIR::Opcode::GetVarGeneric, targetIndex), m_name(name), m_esName(esName) { }
+    InternalAtomicString m_name;
+    ESString* m_esName;
+};
+
+class SetVarGenericIR : public ESIR {
+public:
+    DECLARE_STATIC_GENERATOR_3(SetVarGeneric, int, InternalAtomicString*, ESString*);
+
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+        out << " " << m_esName->utf8Data() << " = tmp" << m_sourceIndex;
+    }
+#endif
+
+    int sourceIndex() { return m_sourceIndex; }
+    InternalAtomicString* name() { return m_name; }
+    ESString* nonAtomicName() { return m_esName; }
+
+private:
+    SetVarGenericIR(int targetIndex, int sourceIndex, InternalAtomicString* name, ESString* esName)
+        : ESIR(ESIR::Opcode::SetVarGeneric, targetIndex), m_sourceIndex(sourceIndex), m_name(name), m_esName(esName) { }
+    int m_sourceIndex;
+    InternalAtomicString* m_name;
+    ESString* m_esName;
+};
+
 
 class BinaryExpressionIR : public ESIR {
 public:

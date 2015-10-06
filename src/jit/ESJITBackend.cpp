@@ -29,10 +29,19 @@ using namespace nanojit;
      DEBUG_ONLY_NAME(name)}
 
 CallInfo plusOpCallInfo = CI(plusOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
-CallInfo plusOperationCallInfo = CI(plusOperation, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
-CallInfo minusOperationCallInfo = CI(minusOperation, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
+CallInfo contextResolveBindingCallInfo = CI(contextResolveBinding, CallInfo::typeSig3(ARGTYPE_P, ARGTYPE_P, ARGTYPE_P, ARGTYPE_P));
+CallInfo objectDefinePropertyOrThrowCallInfo = CI(objectDefinePropertyOrThrow, CallInfo::typeSig3(ARGTYPE_V, ARGTYPE_P, ARGTYPE_D, /*ARGTYPE_B, ARGTYPE_B, ARGTYPE_B,*/ ARGTYPE_D));
 #ifndef NDEBUG
-CallInfo logCallInfo = CI(jitLogOperation, CallInfo::typeSig1(ARGTYPE_V, ARGTYPE_D));
+CallInfo logIntCallInfo = CI(jitLogIntOperation, CallInfo::typeSig1(ARGTYPE_V, ARGTYPE_I));
+CallInfo logDoubleCallInfo = CI(jitLogDoubleOperation, CallInfo::typeSig1(ARGTYPE_V, ARGTYPE_D));
+CallInfo logPointerCallInfo = CI(jitLogPointerOperation, CallInfo::typeSig1(ARGTYPE_V, ARGTYPE_P));
+#define JIT_LOG_I(arg) { LIns* args[] = {arg}; m_out.insCall(&logIntCallInfo, args); }
+#define JIT_LOG_D(arg) { LIns* args[] = {arg}; m_out.insCall(&logDoubleCallInfo, args); }
+#define JIT_LOG_P(arg) { LIns* args[] = {arg}; m_out.insCall(&logPointerCallInfo, args); }
+#else
+#define JIT_LOG_I(arg)
+#define JIT_LOG_D(arg)
+#define JIT_LOG_P(arg)
 #endif
 
 NativeGenerator::NativeGenerator(ESGraph* graph)
@@ -77,9 +86,10 @@ NativeGenerator::~NativeGenerator()
 
 LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
 {
-    m_out.insStore(LIR_sti, oneI, m_context, ExecutionContext::offsetofInOSRExit(), 1);
-    LIns* bytecode = m_out.insImmQ(currentByteCodeIndex); // FIXME
-    return m_out.ins1(LIR_retq, bytecode);
+    m_out.insStore(LIR_sti, m_oneI, m_context, ExecutionContext::offsetofInOSRExit(), 1);
+    LIns* bytecode = m_out.insImmI(currentByteCodeIndex);
+    JIT_LOG_I(bytecode);
+    return m_out.ins1(LIR_retq, bytecode); // FIXME returning int as quad
 }
 
 LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteCodeIndex)
@@ -89,8 +99,8 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
 #endif
     if (type.isInt32Type()) {
 #ifdef ESCARGOT_64
-        LIns* maskedValue = m_out.ins2(LIR_andq, in, intTagQ);
-        LIns* checkIfInt = m_out.ins2(LIR_eqq, maskedValue, intTagQ);
+        LIns* maskedValue = m_out.ins2(LIR_andq, in, m_intTagQ);
+        LIns* checkIfInt = m_out.ins2(LIR_eqq, maskedValue, m_intTagQ);
         LIns* jumpIfInt = m_out.insBranch(LIR_jt, checkIfInt, nullptr);
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out.ins0(LIR_label);
@@ -112,7 +122,7 @@ LIns* NativeGenerator::boxESValue(LIns* unboxedValue, Type type)
     if (type.isInt32Type() || type.isBooleanType()) {
 #ifdef ESCARGOT_64
         LIns* wideUnboxedValue = m_out.ins1(LIR_i2q, unboxedValue);
-        LIns* boxedValue = m_out.ins2(LIR_orq, wideUnboxedValue, intTagQ);
+        LIns* boxedValue = m_out.ins2(LIR_orq, wideUnboxedValue, m_intTagQ);
         LIns* boxedValueInDouble = m_out.ins1(LIR_qasd, boxedValue);
         return boxedValueInDouble;
 #else
@@ -127,7 +137,7 @@ LIns* NativeGenerator::unboxESValue(LIns* boxedValue, Type type)
 {
     if (type.isInt32Type() || type.isBooleanType()) {
 #ifdef ESCARGOT_64
-        LIns* unboxedValue = m_out.ins2(LIR_andq, boxedValue, intTagComplementQ);
+        LIns* unboxedValue = m_out.ins2(LIR_andq, boxedValue, m_intTagComplementQ);
         LIns* unboxedValueInInt = m_out.ins1(LIR_q2i, unboxedValue);
         return unboxedValueInInt;
 #else
@@ -284,8 +294,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     case ESIR::Opcode::Jump:
     {
         INIT_ESIR(Jump);
-        LIns* cond = m_out.insImmI(1);
-        LIns* jump = m_out.insBranch(LIR_jt, cond, nullptr);
+        LIns* jump = m_out.insBranch(LIR_jt, m_true, nullptr);
         if (LIns* label = irJump->targetBlock()->getLabel()) {
             jump->setTarget(label);
         } else {
@@ -297,8 +306,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(Branch);
         LIns* condition = getTmpMapping(irBranch->operandIndex());
-        LIns* trueValue = m_out.insImmI(0);
-        LIns* compare = m_out.ins2(LIR_eqi, condition, trueValue);
+        LIns* compare = m_out.ins2(LIR_eqi, condition, m_false);
         LIns* jumpTrue = m_out.insBranch(LIR_jf, compare, nullptr);
         LIns* jumpFalse = m_out.ins2(LIR_j, nullptr, nullptr);
         if (LIns* label = irBranch->falseBlock()->getLabel()) {
@@ -327,32 +335,60 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* arguments = m_out.insLoad(LIR_ldp, m_context, ExecutionContext::offsetOfArguments(), 1, LOAD_NORMAL);
         LIns* argument = m_out.insLoad(LIR_ldp, arguments, irGetArgument->argumentIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
 #if 0
-        LIns* args[] = {argument};
-        m_out.insCall(&logCallInfo, args);
+        JIT_LOG_D(argument);
 #endif
         return argument;
     }
     case ESIR::Opcode::GetVar:
     {
         INIT_ESIR(GetVar);
-#if 0
-        return getVarMapping(irGetVar->varIndex());
-#else
         return m_out.insLoad(LIR_ldd, m_stackPtr, irGetVar->varIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
-#endif
     }
     case ESIR::Opcode::SetVar:
     {
         INIT_ESIR(SetVar);
-#if 0
-        LIns* source = getTmpMapping(irSetVar->sourceIndex());
-        setVarMapping(irSetVar->localVarIndex(), source);
-        return source;
-#else
         LIns* source = getTmpMapping(irSetVar->sourceIndex());
         LIns* boxedSource = boxESValue(source, m_graph->getOperandType(irSetVar->m_targetIndex));
         return m_out.insStore(LIR_std, boxedSource, m_stackPtr, irSetVar->localVarIndex() * sizeof(ESValue), 1);
+    }
+    case ESIR::Opcode::GetVarGeneric:
+    {
+        INIT_ESIR(GetVarGeneric);
+        LIns* name = m_out.insImmP(irGetVarGeneric->name());
+        LIns* nonAtomicName = m_out.insImmP(irGetVarGeneric->nonAtomicName());
+        LIns* args[] = {nonAtomicName, name, m_context};
+        LIns* boxedResultAddress = m_out.insCall(&contextResolveBindingCallInfo, args);
+        LIns* boxedResult = m_out.insLoad(LIR_ldp, boxedResultAddress, 0, 1, LOAD_NORMAL);
+        return boxedResult;
+    }
+    case ESIR::Opcode::SetVarGeneric:
+    {
+        INIT_ESIR(SetVarGeneric);
+        LIns* name = m_out.insImmP(irSetVarGeneric->name());
+        LIns* nonAtomicName = m_out.insImmP(irSetVarGeneric->nonAtomicName());
+
+        LIns* args[] = {nonAtomicName, name, m_context};
+        LIns* boxedResultAddress = m_out.insCall(&contextResolveBindingCallInfo, args);
+        LIns* checkIfAddressIsNull = m_out.ins2(LIR_eqp, boxedResultAddress, m_zeroP);
+        LIns* jumpIfAddressIsNull = m_out.insBranch(LIR_jt, checkIfAddressIsNull, nullptr);
+
+        LIns* source = getTmpMapping(irSetVarGeneric->sourceIndex());
+        LIns* boxedSource = boxESValue(source, m_graph->getOperandType(irSetVarGeneric->m_targetIndex));
+        LIns* store = m_out.insStore(LIR_std, boxedSource, boxedResultAddress, 0, 1);
+        LIns* jumpToEnd = m_out.insBranch(LIR_j, nullptr, nullptr);
+
+        LIns* labelDeclareVariable = m_out.ins0(LIR_label);
+        jumpIfAddressIsNull->setTarget(labelDeclareVariable);
+#if 0
+        LIns* args2[] = {boxedSource, /*m_true, m_true, m_true,*/m_globalObject, nonAtomicName};
+        m_out.insCall(&objectDefinePropertyOrThrowCallInfo, args2);
+#else
+        generateOSRExit(irSetVarGeneric->m_targetIndex);
 #endif
+        LIns* labelEnd = m_out.ins0(LIR_label);
+        jumpToEnd->setTarget(labelEnd);
+
+        return boxedSource;
     }
     case ESIR::Opcode::ToNumber:
     {
@@ -396,11 +432,16 @@ void NativeGenerator::nanojitCodegen()
     m_instance = m_out.insParam(0, 0);
     m_context = m_out.insLoad(LIR_ldp, m_instance, ESVMInstance::offsetOfCurrentExecutionContext(), 1, LOAD_NORMAL); // FIXME generate this only if really needed
     m_stackPtr = m_out.insAlloc(m_graph->tempRegisterSize() * sizeof(ESValue));
+    m_globalObject = m_out.insLoad(LIR_ldp, m_instance, ESVMInstance::offsetOfGlobalObject(), 1, LOAD_NORMAL); // FIXME generate this only if really needed
 
-    intTagQ = m_out.insImmQ(TagTypeNumber);
-    intTagComplementQ = m_out.insImmQ(~TagTypeNumber);
-    zeroQ = m_out.insImmQ(0);
-    oneI = m_out.insImmI(1);
+    m_intTagQ = m_out.insImmQ(TagTypeNumber);
+    m_intTagComplementQ = m_out.insImmQ(~TagTypeNumber);
+    m_zeroQ = m_out.insImmQ(0);
+    m_zeroP = m_out.insImmP(0);
+    m_oneI = m_out.insImmI(1);
+    m_zeroI = m_out.insImmI(0);
+    m_true = m_oneI;
+    m_false = m_zeroI;
 
     // Generate code for each IRs
     for (size_t i = 0; i < m_graph->basicBlockSize(); i++) {

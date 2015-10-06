@@ -20,6 +20,8 @@ void ESGraphTypeInference::run(ESGraph* graph)
         for (size_t j = 0; j < block->instructionSize(); j++) {
             ESIR* ir = block->instruction(j);
             switch(ir->opcode()) {
+            #define INIT_ESIR(opcode) \
+                opcode##IR* ir##opcode = static_cast<opcode##IR*>(ir);
             case ESIR::Opcode::Constant:
                 graph->setOperandType(ir->targetIndex(), TypeTop);
                 break;
@@ -64,11 +66,19 @@ void ESGraphTypeInference::run(ESGraph* graph)
                 break;
             case ESIR::Opcode::GetArgument:
             case ESIR::Opcode::GetVar:
+            case ESIR::Opcode::GetVarGeneric:
                 break;
             case ESIR::Opcode::SetVar:
             {
                 SetVarIR* irSetVar = static_cast<SetVarIR*>(ir);
                 Type setType = graph->getOperandType(irSetVar->sourceIndex());
+                graph->setOperandType(ir->targetIndex(), setType);
+                break;
+            }
+            case ESIR::Opcode::SetVarGeneric:
+            {
+                INIT_ESIR(SetVarGeneric);
+                Type setType = graph->getOperandType(irSetVarGeneric->sourceIndex());
                 graph->setOperandType(ir->targetIndex(), setType);
                 break;
             }

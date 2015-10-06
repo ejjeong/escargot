@@ -55,6 +55,7 @@ private:
     nanojit::LIns* m_stackPtr;
     nanojit::LIns* m_instance;
     nanojit::LIns* m_context;
+    nanojit::LIns* m_globalObject;
 
     nanojit::LogControl m_lc;
     nanojit::Config m_config;
@@ -65,10 +66,14 @@ private:
     nanojit::Fragment* m_f;
     nanojit::LirBufWriter m_out;
 
-    nanojit::LIns* intTagQ;
-    nanojit::LIns* intTagComplementQ;
-    nanojit::LIns* zeroQ;
-    nanojit::LIns* oneI;
+    nanojit::LIns* m_intTagQ;
+    nanojit::LIns* m_intTagComplementQ;
+    nanojit::LIns* m_zeroQ;
+    nanojit::LIns* m_zeroP;
+    nanojit::LIns* m_oneI;
+    nanojit::LIns* m_zeroI;
+    nanojit::LIns* m_true;
+    nanojit::LIns* m_false;
 };
 
 JITFunction generateNativeFromIR(ESGraph* graph);

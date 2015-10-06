@@ -60,10 +60,32 @@ ALWAYS_INLINE ESValue minusOperation(const ESValue& left, const ESValue& right)
     return ret;
 }
 
-#ifndef NDEBUG
-inline void jitLogOperation(ESValueInDouble arg)
+inline ESValue* contextResolveBinding(ExecutionContext* context, InternalAtomicString* atomicName, ESString* name)
 {
-    printf("Logging in JIT code: 0x%lx\n", bitwise_cast<uint64_t>(arg));
+    return context->resolveBinding(*atomicName, name);
+}
+
+inline void objectDefinePropertyOrThrow(ESObject* object, ESString* key,
+        /*bool isWritable, bool isEnumarable, bool isConfigurable,*/
+        ESValueInDouble initial)
+{
+    ESValue initialVal = ESValue::fromDouble(initial);
+    object->definePropertyOrThrow(key, /*isWritable, isEnumarable, isConfigurable,*/
+            true, true, true, initialVal);
+}
+
+#ifndef NDEBUG
+inline void jitLogIntOperation(int arg)
+{
+    printf("Logging in JIT code: int 0x%x\n", bitwise_cast<unsigned>(arg));
+}
+inline void jitLogDoubleOperation(ESValueInDouble arg)
+{
+    printf("Logging in JIT code: double 0x%lx\n", bitwise_cast<uint64_t>(arg));
+}
+inline void jitLogPointerOperation(void* arg)
+{
+    printf("Logging in JIT code: pointer 0x%lx\n", bitwise_cast<uint64_t>(arg));
 }
 #endif
 
