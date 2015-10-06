@@ -19,6 +19,11 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
 {
     ESGraph* graph = ESGraph::create(codeBlock);
 
+#ifndef NDEBUG
+    if (ESVMInstance::currentInstance()->m_verboseJIT)
+        dumpBytecode(codeBlock);
+#endif
+
     size_t idx = 0;
     size_t bytecodeCounter = 0;
     char* code = codeBlock->m_code.data();
@@ -130,6 +135,9 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             goto unsupported;
             NEXT_BYTECODE(PutInObject);
             break;
+        case PutInObjectPreComputedCaseOpcode:
+            goto unsupported;
+            NEXT_BYTECODE(PutInObjectPreComputedCase);
         case CreateBindingOpcode:
             goto unsupported;
             NEXT_BYTECODE(CreateBinding);
@@ -340,10 +348,12 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         case CallFunctionOpcode:
         {
+            goto unsupported;
             NEXT_BYTECODE(CallFunction);
             break;
         }
         case NewFunctionCallOpcode:
+            goto unsupported;
             NEXT_BYTECODE(NewFunctionCall);
             break;
         case ReturnFunctionOpcode:
