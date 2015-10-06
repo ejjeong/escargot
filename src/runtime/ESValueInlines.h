@@ -206,17 +206,20 @@ inline ESObject* ESValue::toFunctionReceiverObject() const
 
 inline ESValue ESValue::toPrimitive(PrimitiveTypeHint preferredType) const
 {
-    if (UNLIKELY(isESPointer() && asESPointer()->isESObject())) {
-        if (preferredType == PrimitiveTypeHint::PreferString || !asESPointer()->asESObject()->hasValueOf()) {
+    if (UNLIKELY(!isPrimitive())) {
+        if (preferredType == PrimitiveTypeHint::PreferString) {
             return ESValue(toString());
         } else { // preferNumber
-            return ESValue(asESPointer()->asESObject()->valueOf());
+            ESValue val = asESPointer()->asESObject()->valueOf();
+            if(val.isObject()) {
+                return toString();
+            } else {
+                return val;
+            }
         }
     } else {
         return *this;
     }
-    RELEASE_ASSERT_NOT_REACHED();
-    return ESValue();
 }
 
 inline double ESValue::toNumber() const
@@ -372,7 +375,8 @@ inline double ESValue::toLength() const
 
 inline bool ESValue::isPrimitive() const
 {
-    return isUndefined() || isNull() || isNumber() || isESString() || isBoolean();
+    //return isUndefined() || isNull() || isNumber() || isESString() || isBoolean();
+    return !isESPointer() || asESPointer()->isESString();
 }
 
 inline double ESValue::toDouble(ESValue value)
@@ -410,15 +414,32 @@ inline bool ESValue::abstractEqualsTo(const ESValue& val)
     } else {
         if (isNull() && val.isUndefined()) return true;
         else if (isUndefined() && val.isNull()) return true;
-        else if (isNumber() && (val.isESString() || val.isBoolean())) {
+        //If Type(x) is Number and Type(y) is String,
+        else if (isNumber() && val.isESString()) {
+            //return the result of the comparison x == ToNumber(y).
             return asNumber() == val.toNumber();
         }
-        else if ((isESString() || isBoolean()) && val.isNumber()) {
+        //If Type(x) is String and Type(y) is Number,
+        else if (isESString() && val.isNumber()) {
+            //return the result of the comparison ToNumber(x) == y.
             return val.asNumber() == toNumber();
         }
+        //If Type(x) is Boolean, return the result of the comparison ToNumber(x) == y.
+        else if (isBoolean()) {
+            //return the result of the comparison ToNumber(x) == y.
+            ESValue x(toNumber());
+            return x.abstractEqualsTo(val);
+        }
+        //If Type(y) is Boolean, return the result of the comparison x == ToNumber(y).
+        else if (val.isBoolean()) {
+            //return the result of the comparison ToNumber(x) == y.
+            return abstractEqualsTo(ESValue(val.toNumber()));
+        }
+        //If Type(x) is either String, Number, or Symbol and Type(y) is Object, then
         else if ((isESString() || isNumber()) && val.isObject()) {
             return abstractEqualsTo(val.toPrimitive());
         }
+        //If Type(x) is Object and Type(y) is either String, Number, or Symbol, then
         else if (isObject() && (val.isESString() || val.isNumber())) {
             return toPrimitive().abstractEqualsTo(val);
         }

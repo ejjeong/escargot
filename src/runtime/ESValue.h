@@ -1319,14 +1319,6 @@ public:
         set(strings->constructor, obj);
     }
 
-    bool hasValueOf()
-    {
-        if(isESArrayObject())
-            return false;
-        else
-            return true;
-    }
-
     ESValue valueOf();
 
     void convertIntoMapMode()

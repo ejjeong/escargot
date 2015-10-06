@@ -62,7 +62,7 @@ LDFLAGS += -lpthread
 LDFLAGS += -Wl,--gc-sections
 
 # flags for debug/release
-CXXFLAGS_DEBUG = -O0 -g3 -frounding-math -fsignaling-nans -fno-omit-frame-pointer -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable -Wno-invalid-offsetof -Wno-sign-compare
+CXXFLAGS_DEBUG = -O0 -g3 -frounding-math -fsignaling-nans -fno-omit-frame-pointer -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable -Wno-invalid-offsetof -Wno-sign-compare -Wno-unused-local-typedefs
 CXXFLAGS_RELEASE = -O3 -g3 -DNDEBUG -fomit-frame-pointer -frounding-math -fsignaling-nans -funroll-loops
 
 # flags for jit/interpreter
@@ -95,7 +95,15 @@ SRC_ESPRIMA_CPP += $(foreach dir, ./third_party/esprima_cpp , $(wildcard $(dir)/
 include third_party/nanojit/Build.mk
 
 # netlib
-CXXFLAGS += -I third_party/netlib/
+CXXFLAGS += -Ithird_party/netlib/
+
+# v8's fast-dtoa
+CXXFLAGS += -Ithird_party/double_conversion/
+SRC_DTOA += third_party/double_conversion/fast-dtoa.cpp
+SRC_DTOA += third_party/double_conversion/diy-fp.cpp
+SRC_DTOA += third_party/double_conversion/cached-powers.cpp
+SRC_DTOA += third_party/double_conversion/bignum.cpp
+SRC_DTOA += third_party/double_conversion/bignum-dtoa.cpp
 
 # rapidjson
 CXXFLAGS += -Ithird_party/rapidjson/include/
@@ -129,6 +137,7 @@ SRC += $(foreach dir, ./src/vm , $(wildcard $(dir)/*.cpp))
 SRC += $(SRC_YARR)
 SRC += $(SRC_ESPRIMA_CPP)
 SRC += $(SRC_NANOJIT)
+SRC += $(SRC_DTOA)
 
 OBJS := $(SRC:%.cpp= $(BUILDDIR)/%.o)
 OBJS += $(SRC_C:%.c= $(BUILDDIR)/%.o)

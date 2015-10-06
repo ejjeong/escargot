@@ -10,150 +10,175 @@
 
 #include "Yarr.h"
 
-#ifdef ESCARGOT_LITTLE_ENDIAN
-#define IEEE_8087
-#else
-#define IEEE_MC68k
-#endif
-
-#define NO_GLOBAL_STATE
-#define MALLOC malloc
-#define FREE free
-
-#ifndef Long
-#define Long int32_t
-#endif
-
-#ifndef ULong
-#define ULong uint32_t
-#endif
-
-#include <dtoa.c>
+#include "fast-dtoa.h"
+#include "bignum-dtoa.h"
 
 namespace escargot {
+
+enum Flags {
+  NO_FLAGS = 0,
+  EMIT_POSITIVE_EXPONENT_SIGN = 1,
+  EMIT_TRAILING_DECIMAL_POINT = 2,
+  EMIT_TRAILING_ZERO_AFTER_POINT = 4,
+  UNIQUE_ZERO = 8
+};
+
+void CreateDecimalRepresentation(
+        int flags_,
+    const char* decimal_digits,
+    int length,
+    int decimal_point,
+    int digits_after_point,
+    double_conversion::StringBuilder* result_builder) {
+  // Create a representation that is padded with zeros if needed.
+  if (decimal_point <= 0) {
+      // "0.00000decimal_rep".
+    result_builder->AddCharacter('0');
+    if (digits_after_point > 0) {
+      result_builder->AddCharacter('.');
+      result_builder->AddPadding('0', -decimal_point);
+      ASSERT(length <= digits_after_point - (-decimal_point));
+      result_builder->AddSubstring(decimal_digits, length);
+      int remaining_digits = digits_after_point - (-decimal_point) - length;
+      result_builder->AddPadding('0', remaining_digits);
+    }
+  } else if (decimal_point >= length) {
+    // "decimal_rep0000.00000" or "decimal_rep.0000"
+    result_builder->AddSubstring(decimal_digits, length);
+    result_builder->AddPadding('0', decimal_point - length);
+    if (digits_after_point > 0) {
+      result_builder->AddCharacter('.');
+      result_builder->AddPadding('0', digits_after_point);
+    }
+  } else {
+    // "decima.l_rep000"
+    ASSERT(digits_after_point > 0);
+    result_builder->AddSubstring(decimal_digits, decimal_point);
+    result_builder->AddCharacter('.');
+    ASSERT(length - decimal_point <= digits_after_point);
+    result_builder->AddSubstring(&decimal_digits[decimal_point],
+                                 length - decimal_point);
+    int remaining_digits = digits_after_point - (length - decimal_point);
+    result_builder->AddPadding('0', remaining_digits);
+  }
+  if (digits_after_point == 0) {
+    if ((flags_ & EMIT_TRAILING_DECIMAL_POINT) != 0) {
+      result_builder->AddCharacter('.');
+    }
+    if ((flags_ & EMIT_TRAILING_ZERO_AFTER_POINT) != 0) {
+      result_builder->AddCharacter('0');
+    }
+  }
+}
+
+void CreateExponentialRepresentation(
+        int flags_,
+        const char* decimal_digits,
+        int length,
+        int exponent,
+        double_conversion::StringBuilder* result_builder) {
+      ASSERT(length != 0);
+      result_builder->AddCharacter(decimal_digits[0]);
+      if (length != 1) {
+        result_builder->AddCharacter('.');
+        result_builder->AddSubstring(&decimal_digits[1], length-1);
+      }
+      result_builder->AddCharacter('e');
+      if (exponent < 0) {
+        result_builder->AddCharacter('-');
+        exponent = -exponent;
+      } else {
+        if ((flags_ & EMIT_POSITIVE_EXPONENT_SIGN) != 0) {
+          result_builder->AddCharacter('+');
+        }
+      }
+      if (exponent == 0) {
+        result_builder->AddCharacter('0');
+        return;
+      }
+      ASSERT(exponent < 1e4);
+      const int kMaxExponentLength = 5;
+      char buffer[kMaxExponentLength + 1];
+      buffer[kMaxExponentLength] = '\0';
+      int first_char_pos = kMaxExponentLength;
+      while (exponent > 0) {
+        buffer[--first_char_pos] = '0' + (exponent % 10);
+        exponent /= 10;
+      }
+      result_builder->AddSubstring(&buffer[first_char_pos],
+                                   kMaxExponentLength - first_char_pos);
+    }
 
 ESStringData::ESStringData(double number)
 {
     m_hashData.m_isHashInited =  false;
 
-    int decPt;        /* Offset of decimal point from first digit */
-    int sign;         /* Nonzero if the sign bit was set in d */
-    int nDigits;      /* Number of significand digits returned by js_dtoa */
-    char *numBegin;   /* Pointer to the digits returned by js_dtoa */
-    char *numEnd = 0; /* Pointer past the digits returned by js_dtoa */
-
-    DtoaState* state = (DtoaState *)ESVMInstance::currentInstance()->dtoaState();
-    if(UNLIKELY(!state)) {
-        state = newdtoa();
-        ESVMInstance::currentInstance()->setDtoaState(state);
+    if(number == 0) {
+        operator += ('0');
+        return ;
+    }
+    const int flags = UNIQUE_ZERO | EMIT_POSITIVE_EXPONENT_SIGN;
+    bool sign = false;
+    if(number < 0) {
+        sign = true;
+        number = -number;
+    }
+    // The maximal number of digits that are needed to emit a double in base 10.
+    // A higher precision can be achieved by using more digits, but the shortest
+    // accurate representation of any double will never use more digits than
+    // kBase10MaximalLength.
+    // Note that DoubleToAscii null-terminates its input. So the given buffer
+    // should be at least kBase10MaximalLength + 1 characters long.
+    const int kBase10MaximalLength = 17;
+    const int kDecimalRepCapacity = kBase10MaximalLength + 1;
+    char decimal_rep[kDecimalRepCapacity];
+    int decimal_rep_length;
+    int decimal_point;
+    double_conversion::Vector<char> vector(decimal_rep, kDecimalRepCapacity);
+    bool fast_worked = FastDtoa(number, double_conversion::FAST_DTOA_SHORTEST, 0, vector, &decimal_rep_length, &decimal_point);
+    if(!fast_worked) {
+        BignumDtoa(number, double_conversion::BIGNUM_DTOA_SHORTEST, 0, vector, &decimal_rep_length, &decimal_point);
+        vector[decimal_rep_length] = '\0';
     }
 
-    U u;
-    dval(u) = number;
-    numBegin = dtoa(state, u, 0, 100, &decPt, &sign, &numEnd);
-    ASSERT(numBegin);
-    unsigned resCnt = 0;
-    if(sign) {
-        resCnt++;
-    }
-    if(decPt == 0) {
-        resCnt += 2;
-        resCnt += numEnd - numBegin;
-    } else if(decPt < 0) {
-        resCnt += 2;
-        resCnt += -decPt;
-        resCnt += numEnd - numBegin;
-    } else {
-        resCnt += 1;
-        resCnt += decPt;
-        resCnt += numEnd - numBegin;
-    }
-    reserve(resCnt);
-    if(sign) {
+/*    reserve(decimal_rep_length + sign ? 1 : 0);
+    if(sign)
         operator +=('-');
-    }
-    char *s = numBegin;
-    if(decPt == 0) {
-        operator +=('0');
-        operator +=('.');
-        while(s != numEnd) {
-            operator +=(*s);
-            s++;
-        }
-    } else if(decPt < 0) {
-        operator +=('0');
-        operator +=('.');
-        for(int i = 0; i > decPt; i --) {
-            operator +=('0');
-        }
+    for(unsigned i = 0; i < decimal_rep_length ; i ++) {
+        operator +=(decimal_rep[i]);
+    }*/
 
-        while(s != numEnd) {
-            operator +=(*s);
-            s++;
-        }
+    const int bufferLength = 128;
+    char buffer[bufferLength];
+    double_conversion::StringBuilder builder(buffer, bufferLength);
+
+    int exponent = decimal_point - 1;
+    const int decimal_in_shortest_low_ = -6;
+    const int decimal_in_shortest_high_ = 21;
+    if ((decimal_in_shortest_low_ <= exponent) &&
+        (exponent < decimal_in_shortest_high_)) {
+      CreateDecimalRepresentation(flags, decimal_rep, decimal_rep_length,
+                                  decimal_point,
+                                  double_conversion::Max(0, decimal_rep_length - decimal_point),
+                                  &builder);
     } else {
-        for(unsigned i = 0; i < decPt; i ++) {
-            if(s < numEnd) {
-                char16_t c = *s;
-                operator +=(c);
-                s++;
-            } else {
-                operator +=('0');
-            }
-        }
-        if(s != numEnd)
-            operator +=('.');
-
-        while(s != numEnd) {
-            operator +=(*s);
-            s++;
-        }
+      CreateExponentialRepresentation(flags, decimal_rep, decimal_rep_length, exponent,
+              &builder);
     }
 
-    freedtoa(state, numBegin);
-    /*
-    char16_t buf[512];
-    char chbuf[128];
-    char* end = rapidjson::internal::dtoa(number, chbuf);
-    int i = 0;
-    for (char* p = chbuf; p != end; ++p) {
-        buf[i++] = (char16_t) *p;
+    if(sign)
+        operator += ('-');
+    char* buf = builder.Finalize();
+    while(*buf) {
+        operator += (*buf);
+        buf++;
     }
 
-    if(i >= 3 && buf[i-1] == '0' && buf[i-2] == '.') {
-        i -= 2;
-    }
-
-    buf[i] = u'\0';
-
-    reserve(i);
-    append(&buf[0], &buf[i]);
-    */
 }
 
 ESValue ESObject::valueOf()
 {
-    if(isESDateObject())
-        return asESDateObject()->valueOf();
-    else if (isESStringObject())
-        return asESStringObject()->valueOf();
-    else if(isESArrayObject())
-        // Array.prototype do not have valueOf() function
-        RELEASE_ASSERT_NOT_REACHED();
-    else
-        return ESValue(this).toString();
-
-    /*
-    if (hint == ESValue::PreferString) {
-        ESValue underScoreProto = get(strings->__proto__);
-        ESValue toStringMethod = underScoreProto.asESPointer()->asESObject()->get(u"toString");
-        std::vector<ESValue> arguments;
-        return ESFunctionObject::call(toStringMethod, this, &arguments[0], arguments.size(), ESVMInstance::currentInstance());
-    } else {
-        //TODO
-        RELEASE_ASSERT_NOT_REACHED();
-    }
-    */
+    return ESFunctionObject::call(ESVMInstance::currentInstance(), get(strings->valueOf, true), this, NULL, 0, false);
 }
 
 ESString* ESString::substring(int from, int to) const

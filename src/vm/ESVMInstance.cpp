@@ -20,8 +20,6 @@ ESVMInstance::ESVMInstance()
     m_verboseJIT = false;
     m_reportUnsupportedOpcode = false;
 #endif
-    m_dtoaState = NULL;
-
     enter();
 
     std::srand(std::time(0));

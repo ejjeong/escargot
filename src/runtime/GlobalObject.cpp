@@ -586,7 +586,7 @@ void GlobalObject::installObject()
     }, ESString::create(u"keys")));
 
     //$19.1.3.7 Object.prototype.valueOf ( )
-    m_object->set(strings->valueOf, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+    m_objectPrototype->set(strings->valueOf, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         //Return ToObject(this value).
         return instance->currentExecutionContext()->resolveThisBindingToObject();
     }, strings->valueOf));
