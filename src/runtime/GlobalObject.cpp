@@ -434,8 +434,7 @@ void GlobalObject::installFunction()
         return ESFunctionObject::call(instance, thisVal, thisArg, arguments, arglen, false);
     }, ESString::create(u"call")));
 
-
-    set(strings->Function, m_function);
+    definePropertyOrThrow(strings->Function, true, false, true, m_function);
 }
 
 void GlobalObject::installObject()
@@ -591,7 +590,7 @@ void GlobalObject::installObject()
         return instance->currentExecutionContext()->resolveThisBindingToObject();
     }, strings->valueOf));
 
-    set(strings->Object, m_object);
+    definePropertyOrThrow(strings->Object, true, false, true, m_object);
 }
 
 void GlobalObject::installError()
@@ -635,7 +634,7 @@ void GlobalObject::installError()
 
     m_error->set(strings->toString, toString);
 
-    set(strings->Error, m_error);
+    definePropertyOrThrow(strings->Error, true, false, true, m_error);
 
     /////////////////////////////
     m_referenceError = ::escargot::ESFunctionObject::create(NULL,errorFn,strings->ReferenceError);
@@ -648,7 +647,7 @@ void GlobalObject::installError()
 
     m_referenceError->set(strings->prototype, m_referenceErrorPrototype);
 
-    set(strings->ReferenceError, m_referenceError);
+    definePropertyOrThrow(strings->ReferenceError, true, false, true, m_referenceError);
 
     /////////////////////////////
     m_typeError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->TypeError);
@@ -661,7 +660,7 @@ void GlobalObject::installError()
 
     m_typeError->set(strings->prototype, m_typeErrorPrototype);
 
-    set(strings->TypeError, m_typeError);
+    definePropertyOrThrow(strings->TypeError, true, false, true, m_typeError);
 
     /////////////////////////////
     m_rangeError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->RangeError);
@@ -674,7 +673,7 @@ void GlobalObject::installError()
 
     m_rangeError->set(strings->prototype, m_rangeErrorPrototype);
 
-    set(strings->RangeError, m_rangeError);
+    definePropertyOrThrow(strings->RangeError, true, false, true, m_rangeError);
 
     /////////////////////////////
     m_syntaxError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->SyntaxError);
@@ -687,7 +686,7 @@ void GlobalObject::installError()
 
     m_syntaxError->set(strings->prototype, m_syntaxErrorPrototype);
 
-    set(strings->SyntaxError, m_syntaxError);
+    definePropertyOrThrow(strings->SyntaxError, true, false, true, m_syntaxError);
 
 }
 
@@ -1153,7 +1152,7 @@ void GlobalObject::installArray()
     m_array->set(strings->length, ESValue(1));
     m_array->setConstructor(m_function);
 
-    set(strings->Array, m_array);
+    definePropertyOrThrow(strings->Array, true, false, true, m_array);
 }
 
 void GlobalObject::installString()
@@ -1194,7 +1193,7 @@ void GlobalObject::installString()
     m_string->set__proto__(m_functionPrototype); // empty Function
     m_string->setProtoType(m_stringPrototype);
 
-    set(strings->String, m_string);
+    definePropertyOrThrow(strings->String, true, false, true, m_string);
 
     //$21.1.2.1 String.fromCharCode(...codeUnits)
     m_string->set(ESString::create(u"fromCharCode"), ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1860,7 +1859,7 @@ void GlobalObject::installDate()
 
     m_date->set(strings->prototype, m_datePrototype);
 
-    set(strings->Date, m_date);
+    definePropertyOrThrow(strings->Date, true, false, true, m_date);
 
     //$20.3.3.1 Date.now()
     m_date->set(ESString::create(u"now"), ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1964,7 +1963,7 @@ void GlobalObject::installJSON()
     m_json = ESObject::create();
     m_json->set__proto__(m_objectPrototype);
     m_json->setConstructor(m_object);
-    set(strings->JSON, m_json);
+    definePropertyOrThrow(strings->JSON, true, false, true, m_json);
 
     //$24.3.1 JSON.parse(text[, reviver])
     m_json->set(strings->parse, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -2346,7 +2345,7 @@ void GlobalObject::installMath()
     m_mathPrototype->setConstructor(m_math);
 
     // add math to global object
-    set(strings->Math, m_math);
+    definePropertyOrThrow(strings->Math, true, false, true, m_math);
 }
 
 static int itoa(int value, char *sp, int radix)
@@ -2518,7 +2517,7 @@ void GlobalObject::installNumber()
     }, strings->valueOf));
 
     // add number to global object
-    set(strings->Number, m_number);
+    definePropertyOrThrow(strings->Number, true, false, true, m_number);
 
     m_numberObjectProxy = ESNumberObject::create(0);
     m_numberObjectProxy->setConstructor(m_number);
@@ -2580,7 +2579,7 @@ void GlobalObject::installBoolean()
     }, strings->valueOf));
 
     // add number to global object
-    set(strings->Boolean, m_boolean);
+    definePropertyOrThrow(strings->Boolean, true, false, true, m_boolean);
 }
 
 void GlobalObject::installRegExp()
@@ -2717,7 +2716,7 @@ void GlobalObject::installRegExp()
     }, strings->exec));
 
     // add regexp to global object
-    set(strings->RegExp, m_regexp);
+    definePropertyOrThrow(strings->RegExp, true, false, true, m_regexp);
 }
 
 void GlobalObject::installArrayBuffer()
@@ -2758,7 +2757,7 @@ void GlobalObject::installArrayBuffer()
     m_arrayBuffer->set__proto__(m_functionPrototype); // empty Function
     m_arrayBuffer->setProtoType(m_arrayBufferPrototype);
     m_arrayBufferPrototype->setConstructor(m_arrayBuffer);
-    set(strings->ArrayBuffer, m_arrayBuffer);
+    definePropertyOrThrow(strings->ArrayBuffer, true, false, true, m_arrayBuffer);
 }
 
 void GlobalObject::installTypedArray()
@@ -2996,7 +2995,7 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
     ta_constructor->setProtoType(ta_prototype);
     ta_prototype->setConstructor(ta_constructor);
     ta_prototype->set__proto__(m_objectPrototype);
-    set(ta_name, ta_constructor);
+    definePropertyOrThrow(ta_name, true, false, true, ta_constructor);
     return ta_constructor;
 }
 
