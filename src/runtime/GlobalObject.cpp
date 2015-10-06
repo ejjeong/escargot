@@ -585,6 +585,12 @@ void GlobalObject::installObject()
         return arr;
     }, ESString::create(u"keys")));
 
+    //$19.1.3.7 Object.prototype.valueOf ( )
+    m_object->set(strings->valueOf, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        //Return ToObject(this value).
+        return instance->currentExecutionContext()->resolveThisBindingToObject();
+    }, strings->valueOf));
+
     set(strings->Object, m_object);
 }
 
@@ -1752,6 +1758,26 @@ void GlobalObject::installString()
         return ESString::create(std::move(newstr));
     }, ESString::create(u"trim")));
 
+    //$21.1.3.26 String.prototype.valueOf ( )
+    m_stringPrototype->set(strings->valueOf, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        //Let s be thisStringValue(this value).
+        //Return s.
+        //The abstract operation thisStringValue(value) performs the following steps:
+        //If Type(value) is String, return value.
+        //If Type(value) is Object and value has a [[StringData]] internal slot, then
+        //Assert: value’s [[StringData]] internal slot is a String value.
+        //Return the value of value’s [[StringData]] internal slot.
+        //Throw a TypeError exception.
+        ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
+        if(thisValue.isESString()) {
+            return thisValue.toString();
+        } else if(thisValue.isESPointer() && thisValue.asESPointer()->isESStringObject()) {
+            return thisValue.asESPointer()->asESStringObject()->getStringData();
+        }
+        throw ESValue(TypeError::create(strings->emptyESString));
+    }, strings->valueOf));
+
+
     //$B.2.3.1 String.prototype.substr (start, length)
     m_stringPrototype->set(ESString::create(u"substr"), ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         escargot::ESString* str = instance->currentExecutionContext()->resolveThisBinding().toString();
@@ -2471,6 +2497,25 @@ void GlobalObject::installNumber()
         }
         return ESValue();
     }, strings->toString));
+
+    //$20.1.3.26 Number.prototype.valueOf ( )
+    m_numberPrototype->set(strings->valueOf, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        //Let s be thisNumberValue(this value).
+        //Return s.
+        //The abstract operation thisNumberValue(value) performs the following steps:
+        //If Type(value) is Number, return value.
+        //If Type(value) is Object and value has a [[NumberData]] internal slot, then
+        //Assert: value’s [[NumberData]] internal slot is a Number value.
+        //Return the value of value’s [[NumberData]] internal slot.
+        //Throw a TypeError exception.
+        ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
+        if(thisValue.isNumber()) {
+            return ESValue(thisValue.asNumber());
+        } else if(thisValue.isESPointer() && thisValue.asESPointer()->isESNumberObject()) {
+            return ESValue(thisValue.asESPointer()->asESNumberObject()->numberData());
+        }
+        throw ESValue(TypeError::create(strings->emptyESString));
+    }, strings->valueOf));
 
     // add number to global object
     set(strings->Number, m_number);
