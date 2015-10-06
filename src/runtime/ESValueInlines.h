@@ -135,11 +135,12 @@ inline ESString* ESValue::toString() const
         double d = asNumber();
         if (std::isnan(d))
             return strings->NaN;
-        if (std::isinf(d) == 1)
-            return strings->Infinity;
-        if (std::isinf(d) == -1)
-            return strings->NegativeInfinity;
-
+        if (std::isinf(d)) {
+            if(std::signbit(d))
+                return strings->NegativeInfinity;
+            else
+                return strings->Infinity;
+        }
         if (d == -0.0)
             d = 0;
 
@@ -154,11 +155,7 @@ inline ESString* ESValue::toString() const
         else
             return strings->stringFalse;
     } else {
-        ASSERT(asESPointer()->isESObject());
-        ESObject* obj = asESPointer()->asESObject();
-        ESValue ret = ESFunctionObject::call(ESVMInstance::currentInstance(), obj->get(ESValue(strings->toString), true), obj, NULL, 0, false);
-        ASSERT(ret.isESString());
-        return ret.asESString();
+        return toPrimitive(PreferString).toString();
     }
 }
 
@@ -207,16 +204,37 @@ inline ESObject* ESValue::toFunctionReceiverObject() const
 inline ESValue ESValue::toPrimitive(PrimitiveTypeHint preferredType) const
 {
     if (UNLIKELY(!isPrimitive())) {
+        ESObject* obj = asESPointer()->asESObject();
         if (preferredType == PrimitiveTypeHint::PreferString) {
-            return ESValue(toString());
+            ESValue toString = obj->get(ESValue(strings->toString), true);
+            if(toString.isESPointer() && toString.asESPointer()->isESFunctionObject()) {
+                ESValue str = ESFunctionObject::call(ESVMInstance::currentInstance(), toString, obj, NULL, 0, false);
+                if(str.isPrimitive())
+                    return str;
+            }
+
+            ESValue valueOf = obj->get(ESValue(strings->valueOf), true);
+            if(valueOf.isESPointer() && valueOf.asESPointer()->isESFunctionObject()) {
+                ESValue val = ESFunctionObject::call(ESVMInstance::currentInstance(), valueOf, obj, NULL, 0, false);
+                if(val.isPrimitive())
+                    return val;
+            }
         } else { // preferNumber
-            ESValue val = asESPointer()->asESObject()->valueOf();
-            if(val.isObject()) {
-                return toString();
-            } else {
-                return val;
+            ESValue valueOf = obj->get(ESValue(strings->valueOf), true);
+            if(valueOf.isESPointer() && valueOf.asESPointer()->isESFunctionObject()) {
+                ESValue val = ESFunctionObject::call(ESVMInstance::currentInstance(), valueOf, obj, NULL, 0, false);
+                if(val.isPrimitive())
+                    return val;
+            }
+
+            ESValue toString = obj->get(ESValue(strings->toString), true);
+            if(toString.isESPointer() && toString.asESPointer()->isESFunctionObject()) {
+                ESValue str = ESFunctionObject::call(ESVMInstance::currentInstance(), toString, obj, NULL, 0, false);
+                if(str.isPrimitive())
+                    return str;
             }
         }
+        throw ESValue(TypeError::create(strings->emptyESString));
     } else {
         return *this;
     }
@@ -420,23 +438,23 @@ inline ESValue ESValue::fromRawDouble(double value)
 // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-abstract-equality-comparison
 inline bool ESValue::abstractEqualsTo(const ESValue& val)
 {
-    if(u.asInt64 == val.u.asInt64)
-        return true;
-
-    if (isNumber() && val.isNumber()) {
+    if(isInt32() && val.isInt32()) {
+        if(u.asInt64 == val.u.asInt64)
+            return true;
+        return false;
+    } else if (isNumber() && val.isNumber()) {
         double a = asNumber();
         double b = val.asNumber();
-        if (std::isnan(a) || std::isnan(b)) return false;
-        else return false;
-    } else if (isESPointer() && val.isESPointer()) {
-        ESPointer* o = asESPointer();
-        ESPointer* comp = val.asESPointer();
 
-        if(o->isESString() && comp->isESString())
-            return *o->asESString() == *comp->asESString();
-        if (o->type() == comp->type())
-            return equalsTo(val);
+        if (std::isnan(a) || std::isnan(b))
+            return false;
+        else if(a == b)
+            return true;
+
+        return false;
     } else {
+        if (isUndefined() && val.isUndefined()) return true;
+        if (isNull() && val.isNull()) return true;
         if (isNull() && val.isUndefined()) return true;
         else if (isUndefined() && val.isNull()) return true;
         //If Type(x) is Number and Type(y) is String,
@@ -468,36 +486,58 @@ inline bool ESValue::abstractEqualsTo(const ESValue& val)
         else if (isObject() && (val.isESString() || val.isNumber())) {
             return toPrimitive().abstractEqualsTo(val);
         }
+
+        if (isESPointer() && val.isESPointer()) {
+            ESPointer* o = asESPointer();
+            ESPointer* comp = val.asESPointer();
+
+            if(o->isESString() && comp->isESString())
+                return *o->asESString() == *comp->asESString();
+            return equalsTo(val);
+        }
     }
     return false;
 }
 
 inline bool ESValue::equalsTo(const ESValue& val)
 {
-    if(u.asInt64 == val.u.asInt64)
-        return true;
+    if(isUndefined())
+        return val.isUndefined();
 
-    if(isNumber())
-        return val.isNumber() && asNumber() == val.asNumber();
+    if(isNull())
+        return val.isNull();
+
+    if(isBoolean())
+        return val.isBoolean() && asBoolean() == val.asBoolean();
+
+    if(isNumber()) {
+        if(!val.isNumber())
+            return false;
+        double a = asNumber();
+        double b = val.asNumber();
+        if (std::isnan(a) || std::isnan(b))
+            return false;
+        //we can pass [If x is +0 and y is −0, return true. If x is −0 and y is +0, return true.]
+        //because
+        //double a = -0.0;
+        //double b = 0.0;
+        //a == b; is true
+        return a == b;
+    }
 
     if(isESPointer()) {
         ESPointer* o = asESPointer();
         if (!val.isESPointer())
             return false;
         ESPointer* o2 = val.asESPointer();
+        if(o->isESString()) {
+            if(!o2->isESString())
+                return false;
+            return o->asESString()->string() == o2->asESString()->string();
+        }
         if(o == o2)
-            return true;
-        if (o->type() != o2->type())
-            return false;
-        //Strict Equality Comparison: ===
-        if(o->isESString() && o->asESString()->string() == o2->asESString()->string())
-            return true;
-        if(o->isESStringObject() && o->asESStringObject()->getStringData()->string() == o2->asESStringObject()->getStringData()->string())
-            return true;
-        //TODO
-        return false;
+            return o == o2;
     }
-
     return false;
 }
 

@@ -1852,10 +1852,19 @@ void GlobalObject::installDate()
 
     m_datePrototype->setConstructor(m_date);
     m_datePrototype->set(strings->toString, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        //FIXME this is wrong
-            ESValue v(instance->currentExecutionContext()->resolveThisBindingToObject());
-            return v.toString();
-        }, strings->toString));
+        //http://www.ecma-international.org/ecma-262/5.1/#sec-15.9.5.2
+        //TODO
+        ESValue e = instance->currentExecutionContext()->resolveThisBinding();
+        if(e.isESPointer() && e.asESPointer()->isESDateObject()) {
+            escargot::ESDateObject* obj = e.asESPointer()->asESDateObject();
+            char buffer[512]; //TODO consider buffer-overflow
+            sprintf(buffer,"%d-%02d-%02d %02d:%02d:%02d"
+                    ,obj->getFullYear(),obj->getMonth() + 1,obj->getDate(),obj->getHours(),obj->getMinutes(),obj->getSeconds());
+            return ESString::create(buffer);
+        } else {
+            return strings->emptyESString;
+        }
+    }, strings->toString));
 
     m_date->set(strings->prototype, m_datePrototype);
 
@@ -2108,17 +2117,8 @@ void GlobalObject::installJSON()
 void GlobalObject::installMath()
 {
     // create math object
-    m_math = ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        return ESValue();
-    }, strings->Math);
+    m_math = ::escargot::ESObject::create();
 
-    // create mathPrototype object
-    m_mathPrototype = ESObject::create();
-
-    // initialize math object
-    m_math->set(strings->name, strings->Math);
-    m_math->setConstructor(m_function);
-    m_math->set(strings->prototype, m_mathPrototype);
 
     // initialize math object: $20.2.1.6 Math.PI
     m_math->definePropertyOrThrow(strings->PI, false, false, false, ESValue(3.1415926535897932));
@@ -2349,9 +2349,6 @@ void GlobalObject::installMath()
             return ESValue(std::numeric_limits<double>::quiet_NaN());
         return ESValue(tan(x));
     }, strings->tan));
-
-    // initialize mathPrototype object
-    m_mathPrototype->setConstructor(m_math);
 
     // add math to global object
     definePropertyOrThrow(strings->Math, true, false, true, m_math);

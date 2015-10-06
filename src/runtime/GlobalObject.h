@@ -126,14 +126,9 @@ public:
         return m_datePrototype;
     }
 
-    ALWAYS_INLINE escargot::ESFunctionObject* math()
+    ALWAYS_INLINE escargot::ESObject* math()
     {
         return m_math;
-    }
-
-    ALWAYS_INLINE escargot::ESObject* mathPrototype()
-    {
-        return m_mathPrototype;
     }
 
     ALWAYS_INLINE escargot::ESObject* json()
@@ -326,8 +321,7 @@ protected:
     escargot::ESStringObject* m_stringObjectProxy;
     escargot::ESFunctionObject* m_date;
     escargot::ESDateObject* m_datePrototype;
-    escargot::ESFunctionObject* m_math;
-    escargot::ESObject* m_mathPrototype;
+    escargot::ESObject* m_math;
     escargot::ESObject* m_json;
     escargot::ESFunctionObject* m_number;
     escargot::ESNumberObject* m_numberPrototype;

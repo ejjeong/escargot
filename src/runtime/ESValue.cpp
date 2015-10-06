@@ -176,11 +176,6 @@ ESStringData::ESStringData(double number)
 
 }
 
-ESValue ESObject::valueOf()
-{
-    return ESFunctionObject::call(ESVMInstance::currentInstance(), get(strings->valueOf, true), this, NULL, 0, false);
-}
-
 ESString* ESString::substring(int from, int to) const
 {
     ASSERT(0 <= from && from <= to && to <= (int)length());

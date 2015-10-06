@@ -1320,8 +1320,6 @@ public:
         set(strings->constructor, obj);
     }
 
-    ESValue valueOf();
-
     void convertIntoMapMode()
     {
         ASSERT(!m_map);
@@ -1476,11 +1474,6 @@ public:
     int getSeconds();
     int getTimezoneOffset();
     void setTime(double t);
-
-    ESValue valueOf()
-    {
-        return ESValue(getTimeAsMilisec());
-    }
 
 private:
     void resolveCache();
@@ -1740,11 +1733,6 @@ public:
     ALWAYS_INLINE void setString(::escargot::ESString* str)
     {
         m_stringData = str;
-    }
-
-    ESValue valueOf()
-    {
-        return ESValue(m_stringData);
     }
 
 private:

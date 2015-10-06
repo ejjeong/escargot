@@ -587,7 +587,10 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
     MultiplyOpcodeLbl:
     {
-        push<ESValue>(stack, bp, ESValue(pop<ESValue>(stack, bp)->toNumber() * pop<ESValue>(stack, bp)->toNumber()));
+        ESValue* right = pop<ESValue>(stack, bp);
+        ESValue* left = pop<ESValue>(stack, bp);
+
+        push<ESValue>(stack, bp, ESValue(left->toNumber() * right->toNumber()));
         executeNextCode<Multiply>(programCounter);
         goto NextInstruction;
     }
@@ -605,32 +608,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* right = pop<ESValue>(stack, bp);
         ESValue* left = pop<ESValue>(stack, bp);
-        ESValue ret(ESValue::ESForceUninitialized);
-        if (left->isInt32() && right->isInt32()) {
-            ret = ESValue(left->asInt32() % right->asInt32());
-        } else {
-            double lvalue = left->toNumber();
-            double rvalue = right->toNumber();
-            // http://www.ecma-international.org/ecma-262/5.1/#sec-11.5.3
-            if (std::isnan(lvalue) || std::isnan(rvalue))
-                ret = ESValue(std::numeric_limits<double>::quiet_NaN());
-            else if (lvalue == std::numeric_limits<double>::infinity() || lvalue == -std::numeric_limits<double>::infinity() || rvalue == 0 || rvalue == -0.0) {
-                ret = ESValue(std::numeric_limits<double>::quiet_NaN());
-            } else {
-                bool isNeg = lvalue < 0;
-                bool lisZero = lvalue == 0 || lvalue == -0.0;
-                bool risZero = rvalue == 0 || rvalue == -0.0;
-                if (!lisZero && (rvalue == std::numeric_limits<double>::infinity() || rvalue == -std::numeric_limits<double>::infinity()))
-                    ret = ESValue(lvalue);
-                else if (lisZero && !risZero)
-                    ret = ESValue(lvalue);
-                else {
-                    int d = lvalue / rvalue;
-                    ret = ESValue(lvalue - (d * rvalue));
-                }
-            }
-        }
-        push<ESValue>(stack, bp, ret);
+        push<ESValue>(stack, bp, modOperation(*left, *right));
         executeNextCode<Mod>(programCounter);
         goto NextInstruction;
     }
@@ -747,7 +725,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         if(v->isUndefined() || v->isEmpty())
             push<ESValue>(stack, bp, strings->undefined);
         else if(v->isNull())
-            push<ESValue>(stack, bp, strings->null);
+            push<ESValue>(stack, bp, strings->object);
         else if(v->isBoolean())
             push<ESValue>(stack, bp, strings->boolean);
         else if(v->isNumber())
