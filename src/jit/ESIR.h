@@ -17,6 +17,7 @@ class ESBasicBlock;
     F(Constant, ) \
     F(ConstantInt, ) \
     F(ConstantDouble, ) \
+    F(ConstantPointer, ) \
     F(ConstantTrue, ) \
     F(ConstantFalse, ) \
     \
@@ -226,7 +227,7 @@ public:
     {
         out << "tmp" << m_targetIndex << ": ";
         ESIR::dump(out);
-        out << " const idouble " << m_value;
+        out << " const double " << m_value;
     }
 #endif
 
@@ -235,6 +236,28 @@ private:
         : ESIR(ESIR::Opcode::ConstantDouble, target), m_value(value) { }
     double m_value;
 };
+
+class ConstantPointerIR : public ESIR {
+public:
+    DECLARE_STATIC_GENERATOR_1(ConstantPointer, void*);
+
+    void* value() { return m_value; }
+
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+        out << " const pointer " << std::hex << bitwise_cast<uint64_t>(m_value) << std::dec;
+    }
+#endif
+
+private:
+    ConstantPointerIR(int target, void* value)
+        : ESIR(ESIR::Opcode::ConstantPointer, target), m_value(value) { }
+    void* m_value;
+};
+
 
 class ToNumberIR : public ESIR {
 public:
@@ -400,6 +423,15 @@ private:
         : BinaryExpressionIR(ESIR::Opcode::GenericPlus, targetIndex, leftIndex, rightIndex) { }
 };
 
+class MinusIR : public BinaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(Minus, int, int);
+
+private:
+    MinusIR(int targetIndex, int leftIndex, int rightIndex)
+        : BinaryExpressionIR(ESIR::Opcode::Minus, targetIndex, leftIndex, rightIndex) { }
+};
+
 class BitwiseAndIR : public BinaryExpressionIR {
 public:
     DECLARE_STATIC_GENERATOR_2(BitwiseAnd, int, int);
@@ -521,6 +553,21 @@ private:
     int m_returnIndex;
 };
 
+class JumpIR : public ESIR {
+public:
+    DECLARE_STATIC_GENERATOR_1(Jump, ESBasicBlock*);
+
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out);
+#endif
+    ESBasicBlock* targetBlock() { return m_targetBlock; }
+
+private:
+    JumpIR(int targetIndex, ESBasicBlock* targetBlock)
+        : ESIR(ESIR::Opcode::Jump, targetIndex), m_targetBlock(targetBlock) { }
+    ESBasicBlock* m_targetBlock;
+};
+
 class BranchIR : public ESIR {
 public:
     DECLARE_STATIC_GENERATOR_3(Branch, int, ESBasicBlock*, ESBasicBlock*);
@@ -542,19 +589,37 @@ private:
     ESBasicBlock* m_falseBlock;
 };
 
-class JumpIR : public ESIR {
+class CallJSIR : public ESIR {
 public:
-    DECLARE_STATIC_GENERATOR_1(Jump, ESBasicBlock*);
+    DECLARE_STATIC_GENERATOR_4(CallJS, int, int, int, int*);
 
 #ifndef NDEBUG
-    virtual void dump(std::ostream& out);
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+        out << " callee tmp" << m_calleeIndex;
+        out << " receiver tmp" << m_receiverIndex;
+        out << " argumentCount " << m_argumentIndexes.size() << " :";
+        for (size_t i=0; i<m_argumentIndexes.size(); i++)
+            out << ", tmp" << m_argumentIndexes[i];
+    }
 #endif
-    ESBasicBlock* targetBlock() { return m_targetBlock; }
+    int calleeIndex() { return m_calleeIndex; }
+    int receiverIndex() { return m_receiverIndex; }
+    int argumentCount() { return m_argumentIndexes.size(); }
+    int argumentIndex(size_t idx) { return m_argumentIndexes[idx]; }
 
 private:
-    JumpIR(int targetIndex, ESBasicBlock* targetBlock)
-        : ESIR(ESIR::Opcode::Jump, targetIndex), m_targetBlock(targetBlock) { }
-    ESBasicBlock* m_targetBlock;
+    CallJSIR(int targetIndex, int calleeIndex, int receiverIndex, int argumentCount, int* argumentIndexes)
+        : ESIR(ESIR::Opcode::CallJS, targetIndex), m_calleeIndex(calleeIndex), m_receiverIndex(receiverIndex), m_argumentIndexes(argumentCount)
+    {
+        for (int i=0; i<argumentCount; i++)
+            m_argumentIndexes[i] = argumentIndexes[i];
+    }
+    int m_calleeIndex;
+    int m_receiverIndex;
+    std::vector<int, gc_allocator<int> > m_argumentIndexes;
 };
 
 class ReturnIR : public ESIR {

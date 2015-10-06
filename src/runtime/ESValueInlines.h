@@ -404,12 +404,12 @@ inline bool ESValue::isPrimitive() const
     return !isESPointer() || asESPointer()->isESString();
 }
 
-inline double ESValue::toDouble(ESValue value)
+inline double ESValue::toRawDouble(ESValue value)
 {
     return bitwise_cast<double>(value.u.asInt64);
 }
 
-inline ESValue ESValue::fromDouble(double value)
+inline ESValue ESValue::fromRawDouble(double value)
 {
     ESValue val;
     val.u.asInt64 = bitwise_cast<uint64_t>(value);

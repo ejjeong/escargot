@@ -14,16 +14,17 @@ namespace ESJIT {
     F(Undefined, 5) \
     F(Empty, 6) \
     F(Deleted, 7) \
-    F(String, 8) \
-    F(RopeString, 9) \
-    F(Object, 10) \
-    F(FunctionObject, 11) \
-    F(ArrayObject, 12) \
-    F(StringObject, 13) \
-    F(ErrorObject, 14) \
-    F(DateObject, 15) \
-    F(NumberObject, 16) \
-    F(BooleanObject, 17) \
+    F(Pointer, 8) \
+    F(String, 9) \
+    F(RopeString, 10) \
+    F(Object, 11) \
+    F(FunctionObject, 12) \
+    F(ArrayObject, 13) \
+    F(StringObject, 14) \
+    F(ErrorObject, 15) \
+    F(DateObject, 16) \
+    F(NumberObject, 17) \
+    F(BooleanObject, 18) \
 
 #define FOR_EACH_ESIR_TYPES(F) \
     FOR_EACH_PRIMITIVE_TYPES(F) \
@@ -76,10 +77,19 @@ public:
             return TypeDouble;
         else if (value.isUndefined())
             return TypeUndefined;
-        else {
+        else if (value.isESPointer()) {
+            return TypePointer;
+#if 0
+            ESPointer* p = value.asESPointer();
+            if (p->isESFunctionObject())
+                return TypeFunctionObject;
+            else
+                return TypeObject;
+#endif
+        } else {
 #ifndef NDEBUG
-            //if (ESVMInstance::currentInstance()->m_verboseJIT)
-                //printf("get type of ESValue %s\n", value.toString()->utf8Data());
+            if (ESVMInstance::currentInstance()->m_verboseJIT)
+                printf("WARNING: Reading type of unhandled ESValue '%s'. Returning Top.\n", value.toString()->utf8Data());
 #endif
             return TypeTop;
         }

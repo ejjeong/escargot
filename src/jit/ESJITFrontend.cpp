@@ -26,6 +26,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
 
     size_t idx = 0;
     size_t bytecodeCounter = 0;
+    size_t callInfoIndex = 0;
     char* code = codeBlock->m_code.data();
 
     std::map<int, ESBasicBlock*> basicBlockMapping;
@@ -243,9 +244,13 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         }
         case MinusOpcode:
-            goto unsupported;
+        {
+            INIT_BYTECODE(Minus);
+            ESIR* minusIR = MinusIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
+            currentBlock->push(minusIR);
             NEXT_BYTECODE(Minus);
             break;
+        }
         case MultiplyOpcode:
             goto unsupported;
             NEXT_BYTECODE(Multiply);
@@ -343,12 +348,27 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(PrepareFunctionCall);
             break;
         case PushFunctionCallReceiverOpcode: 
-            // FIXME push<ESValue>(stack, bp, lastESObjectMetInMemberExpressionNode);
+        {
+            INIT_BYTECODE(PushFunctionCallReceiver);
+            GlobalObject* globalObject = ESVMInstance::currentInstance()->globalObject();
+            ESIR* receiver = ConstantDoubleIR::create(ssaIndex->m_targetIndex, bitwise_cast<double>(globalObject) /*lastESObjectMetInMemberExpressionNode*/);
+            currentBlock->push(receiver);
             NEXT_BYTECODE(PushFunctionCallReceiver);
             break;
+        }
         case CallFunctionOpcode:
         {
-            goto unsupported;
+            INIT_BYTECODE(CallFunction);
+            int calleeIndex = codeBlock->m_functionCallInfos[callInfoIndex++];
+            int receiverIndex = codeBlock->m_functionCallInfos[callInfoIndex++];
+            int argumentCount = codeBlock->m_functionCallInfos[callInfoIndex++];
+            int* argumentIndexes = (int*) alloca (sizeof(int) * argumentCount);
+            for (int i=0; i<argumentCount; i++)
+                argumentIndexes[i] = codeBlock->m_functionCallInfos[callInfoIndex++];
+            CallJSIR* callJSIR = CallJSIR::create(ssaIndex->m_targetIndex, calleeIndex, receiverIndex, argumentCount, argumentIndexes);
+            currentBlock->push(callJSIR);
+            bytecode->m_profile.updateProfiledType();
+            graph->setOperandType(ssaIndex->m_targetIndex, bytecode->m_profile.getType());
             NEXT_BYTECODE(CallFunction);
             break;
         }

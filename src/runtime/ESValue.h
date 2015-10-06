@@ -169,8 +169,8 @@ public:
     inline bool isESPointer() const;
     inline ESPointer* asESPointer() const;
 
-    static ESValueInDouble toDouble(ESValue);
-    static ESValue fromDouble(ESValueInDouble);
+    static ESValueInDouble toRawDouble(ESValue);
+    static ESValue fromRawDouble(ESValueInDouble);
 
     static ptrdiff_t offsetOfPayload() { return OBJECT_OFFSETOF(ESValue, u.asBits.payload); }
     static ptrdiff_t offsetOfTag() { return OBJECT_OFFSETOF(ESValue, u.asBits.tag); }

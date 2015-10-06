@@ -1583,6 +1583,9 @@ public:
     }
 #endif
 
+#ifdef ENABLE_ESJIT
+    ProfileData m_profile;
+#endif
 };
 
 class CallEvalFunction : public ByteCode {
@@ -1885,8 +1888,17 @@ public:
 public:
     void writeLastSSAIndex(int targetIndex = -1, int src1 = -1, int src2 = -1) { m_SSAIndexes.back().set(targetIndex, src1, src2); }
     SSAIndex* getSSAIndex(int bytecodeIndex) { return &m_SSAIndexes[bytecodeIndex]; }
+    void writeFunctionCallInfo(int calleeIndex, int receiverIndex, int argumentCountIndex, int argumentIndexes[])
+    {
+        m_functionCallInfos.push_back(calleeIndex);
+        m_functionCallInfos.push_back(receiverIndex);
+        m_functionCallInfos.push_back(argumentCountIndex);
+        for (size_t i = 0; i < argumentCountIndex; i++)
+            m_functionCallInfos.push_back(argumentIndexes[i]);
+    }
 
     std::vector<SSAIndex, gc_allocator<SSAIndex> > m_SSAIndexes;
+    std::vector<int, gc_allocator<int> > m_functionCallInfos;
     typedef ESValue (*JITFunction)(ESVMInstance*);
     JITFunction m_cachedJITFunction;
     bool m_dontJIT;

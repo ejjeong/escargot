@@ -36,9 +36,13 @@ void ESGraphTypeInference::run(ESGraph* graph)
                 graph->setOperandType(ir->targetIndex(), TypeBoolean);
                 break;
             case ESIR::Opcode::GenericPlus:
-            {
                 // FIXME
-            }
+                graph->setOperandType(ir->targetIndex(), TypeInt32);
+                break;
+            case ESIR::Opcode::Minus:
+                // FIXME
+                graph->setOperandType(ir->targetIndex(), TypeInt32);
+                break;
             case ESIR::Opcode::BitwiseAnd:
             case ESIR::Opcode::BitwiseOr:
             case ESIR::Opcode::BitwiseXor:
@@ -61,6 +65,7 @@ void ESGraphTypeInference::run(ESGraph* graph)
                 break;
             case ESIR::Opcode::Jump:
             case ESIR::Opcode::Branch:
+            case ESIR::Opcode::CallJS:
             case ESIR::Opcode::Return:
             case ESIR::Opcode::ReturnWithValue:
                 break;

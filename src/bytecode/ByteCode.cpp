@@ -1447,7 +1447,12 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 #endif
         ESValue* arguments = (ESValue *)stack;
         ESValue* receiver = pop<ESValue>(stack, bp);
-        push<ESValue>(stack, bp, ESFunctionObject::call(instance, *pop<ESValue>(stack, bp), *receiver, arguments, argc, false));
+        ESValue result = ESFunctionObject::call(instance, *pop<ESValue>(stack, bp), *receiver, arguments, argc, false);
+#ifdef ENABLE_ESJIT
+        CallFunction* code = (CallFunction*)currentCode;
+        code->m_profile.addProfile(result);
+#endif
+        push<ESValue>(stack, bp, result);
         executeNextCode<CallFunction>(programCounter);
         goto NextInstruction;
     }
@@ -1781,6 +1786,7 @@ void dumpBytecode(CodeBlock* codeBlock)
     size_t idx = 0;
 #ifdef ENABLE_ESJIT
     size_t bytecodeCounter = 0;
+    size_t callInfoIndex = 0;
 #endif
     char* code = codeBlock->m_code.data();
     while(idx < codeBlock->m_code.size()) {
@@ -1793,6 +1799,15 @@ void dumpBytecode(CodeBlock* codeBlock)
         Opcode opcode = getOpcodeFromAddress(currentCode->m_opcode);
 
 #ifdef ENABLE_ESJIT
+        if (opcode == CallFunctionOpcode) {
+            int calleeIndex = codeBlock->m_functionCallInfos[callInfoIndex++];
+            int receiverIndex = codeBlock->m_functionCallInfos[callInfoIndex++];
+            int argumentCount = codeBlock->m_functionCallInfos[callInfoIndex++];
+            printf("[%3d,%3d,%3d", calleeIndex, receiverIndex, argumentCount);
+            for (int i=0; i<argumentCount; i++)
+                printf(",%3d", codeBlock->m_functionCallInfos[callInfoIndex++]);
+            printf("] ");
+        }
         switch(opcode) {
 #define DUMP_BYTE_CODE(code) \
         case code##Opcode:\
