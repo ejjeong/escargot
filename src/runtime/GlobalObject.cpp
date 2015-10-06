@@ -2570,9 +2570,13 @@ void GlobalObject::installBoolean()
 
     // initialize booleanPrototype object: $19.3.3.3 Boolean.prototype.valueOf()
     m_booleanPrototype->set(strings->valueOf, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        escargot::ESBooleanObject* thisVal = instance->currentExecutionContext()->resolveThisBindingToObject()->asESBooleanObject();
-        return (thisVal->booleanData());
-        return ESValue();
+        ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
+        if(thisValue.isBoolean()) {
+            return ESValue(thisValue.asNumber());
+        } else if(thisValue.isESPointer() && thisValue.asESPointer()->isESBooleanObject()) {
+            return ESValue(thisValue.asESPointer()->asESBooleanObject()->booleanData());
+        }
+        throw ESValue(TypeError::create(strings->emptyESString));
     }, strings->valueOf));
 
     // add number to global object
