@@ -257,6 +257,17 @@ struct ByteCodeGenerateContext {
     ALWAYS_INLINE void consumeLabeledContinuePositions(CodeBlock* cb, size_t position, ESString* lbl);
     ALWAYS_INLINE void morphJumpPositionIntoComplexCase(CodeBlock* cb,size_t codePos);
 
+    std::vector<size_t> m_breakStatementPositions;
+    std::vector<size_t> m_continueStatementPositions;
+    std::vector<std::pair<ESString*, size_t> > m_labeledBreakStatmentPositions;
+    std::vector<std::pair<ESString*, size_t> > m_labeledContinueStatmentPositions;
+    // For For In Statement
+    size_t m_offsetToBasePointer;
+    // For Label Statement
+    size_t m_positionToContinue;
+    //code position, tryStatement count
+    int m_tryStatementScopeCount;
+    std::map<size_t, size_t> m_complexCaseStatementPositions;
 
 #ifdef ENABLE_ESJIT
     ALWAYS_INLINE unsigned getCurrentNodeIndex()
@@ -272,17 +283,6 @@ struct ByteCodeGenerateContext {
     unsigned m_currentNodeIndex;
 #endif
 
-    std::vector<size_t> m_breakStatementPositions;
-    std::vector<size_t> m_continueStatementPositions;
-    std::vector<std::pair<ESString*, size_t> > m_labeledBreakStatmentPositions;
-    std::vector<std::pair<ESString*, size_t> > m_labeledContinueStatmentPositions;
-    // For For In Statement
-    size_t m_offsetToBasePointer;
-    // For Label Statement
-    size_t m_positionToContinue;
-    //code position, tryStatement count
-    int m_tryStatementScopeCount;
-    std::map<size_t, size_t> m_complexCaseStatementPositions;
 };
 
 class ByteCode {
