@@ -1694,10 +1694,15 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             instance->currentExecutionContext()->environment()->record()->setMutableBinding(code->m_name,
                     code->m_nonAtomicName
                     , err, false);
-            ESValue ret = interpret(instance, codeBlock, code->m_catchPosition);
-            instance->currentExecutionContext()->setEnvironment(oldEnv);
-            if(!ret.isEmpty()) {
-                ec->tryOrCatchBodyResult() = ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsReturn, ret, ESValue((int32_t)code->m_tryDupCount));
+            try{
+                ESValue ret = interpret(instance, codeBlock, code->m_catchPosition);
+                instance->currentExecutionContext()->setEnvironment(oldEnv);
+                if(!ret.isEmpty()) {
+                    ec->tryOrCatchBodyResult() = ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsReturn, ret, ESValue((int32_t)code->m_tryDupCount));
+                }
+            } catch(ESValue e) {
+                instance->currentExecutionContext()->setEnvironment(oldEnv);
+                ec->tryOrCatchBodyResult() = ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsThrow, e, ESValue((int32_t)code->m_tryDupCount));
             }
         }
         programCounter = jumpTo(codeBuffer, code->m_statementEndPosition);
@@ -1731,6 +1736,10 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                     ec->tryOrCatchBodyResult() = ESValue(ESValue::ESEmptyValue);
                     //TODO sp check
                     return ret;
+                } else if(record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsThrow) {
+                    ESValue val = record->value();
+                    ec->tryOrCatchBodyResult() = ESValue(ESValue::ESEmptyValue);
+                    throw val;
                 } else {
                     ASSERT(record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsJump);
                     programCounter = jumpTo(codeBuffer, (size_t)record->value().asESPointer());

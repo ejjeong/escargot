@@ -2100,7 +2100,8 @@ class ESControlFlowRecord : public ESPointer {
 public:
     enum ControlFlowReason {
         NeedsReturn,
-        NeedsJump
+        NeedsJump,
+        NeedsThrow,
     };
 protected:
     ESControlFlowRecord(const ControlFlowReason& reason, const ESValue& value)

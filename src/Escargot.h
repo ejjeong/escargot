@@ -289,8 +289,8 @@ inline bool operator!=(const gc_malloc_allocator<GC_T1>&, const gc_malloc_alloca
 #define COMPILE_ASSERT(exp, name) static_assert((exp), #name)
 #endif
 
-#define RELEASE_ASSERT(assertion) assert(assertion);
-#define RELEASE_ASSERT_NOT_REACHED() do { assert(false); } while (0)
+#define RELEASE_ASSERT(assertion) do { if(!(assertion)) abort(); } while (0);
+#define RELEASE_ASSERT_NOT_REACHED() do { abort(); } while (0)
 
 #if !defined(WARN_UNUSED_RETURN) && COMPILER(GCC)
 #define WARN_UNUSED_RETURN __attribute__((__warn_unused_result__))
