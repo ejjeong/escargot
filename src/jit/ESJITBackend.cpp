@@ -171,6 +171,13 @@ LIns* NativeGenerator::boxESValue(LIns* unboxedValue, Type type)
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
+    } else if (type.isDoubleType()) {
+#ifdef ESCARGOT_64
+        LIns* quadUnboxedValue = m_out.ins1(LIR_dasq, unboxedValue);
+        return m_out.ins2(LIR_addq, quadUnboxedValue, m_doubleEncodeOffsetQ);
+#else
+        RELEASE_ASSERT_NOT_REACHED();
+#endif
     } else if (type.isPointerType() || type.isUndefinedType() || type.isArrayObjectType() || type.isStringType() || type.isFunctionObjectType()) {
 #ifdef ESCARGOT_64
         return unboxedValue;
@@ -197,10 +204,8 @@ LIns* NativeGenerator::unboxESValue(LIns* boxedValue, Type type)
 #endif
     } else if (type.isDoubleType()) {
 #ifdef ESCARGOT_64
-        LIns* doubleOffset = m_out.insImmQ(DoubleEncodeOffset);
-        LIns* doubleValue = m_out.ins2(LIR_subq, boxedValue, doubleOffset);
-        LIns* intValue = m_out.ins1(LIR_q2i, doubleValue);
-        return intValue;
+        LIns* doubleValue = m_out.ins2(LIR_subq, boxedValue, m_doubleEncodeOffsetQ);
+        return m_out.ins1(LIR_q2d, doubleValue);
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
@@ -244,27 +249,60 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_ESIR(ConstantString);
         return m_out.insImmP(irConstantString->value());
     }
+    #define INIT_BINARY_ESIR(opcode) \
+        Type leftType = m_graph->getOperandType(ir##opcode->leftIndex()); \
+        Type rightType = m_graph->getOperandType(ir##opcode->rightIndex()); \
+        LIns* left = getTmpMapping(ir##opcode->leftIndex()); \
+        LIns* right = getTmpMapping(ir##opcode->rightIndex());
+    case ESIR::Opcode::Int32Plus:
+    {
+        INIT_ESIR(Int32Plus);
+        INIT_BINARY_ESIR(Int32Plus);
+        ASSERT(leftType.isInt32Type() && rightType.isInt32Type());
+#if 1
+        return m_out.ins2(LIR_addi, left, right);
+#else
+        LIns* add = m_out.ins3(LIR_addjovi, left, right, nullptr;);
+#endif
+    }
+    case ESIR::Opcode::DoublePlus:
+    {
+        INIT_ESIR(DoublePlus);
+        INIT_BINARY_ESIR(DoublePlus);
+        if (leftType.isInt32Type())
+            left = m_out.ins1(LIR_i2d, left);
+        if (rightType.isInt32Type())
+            left = m_out.ins1(LIR_i2d, left);
+        ASSERT(left->isD() && right->isD());
+        return m_out.ins2(LIR_addd, left, right);
+    }
+    case ESIR::Opcode::StringPlus:
+    {
+        INIT_ESIR(StringPlus);
+        INIT_BINARY_ESIR(StringPlus);
+#if 0
+        if (!leftType.isStringType())
+            left = generateToString(left, leftType);
+        if (!rightType.isStringType())
+            right = generateToString(right, rightType);
+        // TODO
+        ASSERT(left->isP() && right->isP());
+        //return m_out.ins2(LIR_addd, left, right);
+#else
+        RELEASE_ASSERT_NOT_REACHED();
+#endif
+    }
     case ESIR::Opcode::GenericPlus:
     {
         INIT_ESIR(GenericPlus);
-        Type leftType = m_graph->getOperandType(irGenericPlus->leftIndex());
-        Type rightType = m_graph->getOperandType(irGenericPlus->rightIndex());
+        INIT_BINARY_ESIR(GenericPlus);
 
-        LIns* left = getTmpMapping(irGenericPlus->leftIndex());
-        LIns* right = getTmpMapping(irGenericPlus->rightIndex());
-
-        if (leftType.isInt32Type() && rightType.isInt32Type())
-            return m_out.ins2(LIR_addi, left, right);
-        else if (leftType.isNumberType() && rightType.isNumberType())
-            RELEASE_ASSERT_NOT_REACHED();
-        else {
-            LIns* boxedLeft = boxESValue(left, TypeInt32);
-            LIns* boxedRight = boxESValue(right, TypeInt32);
-            LIns* args[] = {boxedRight, boxedLeft};
-            LIns* boxedResult = m_out.insCall(&plusOpCallInfo, args);
-            LIns* unboxedResult = unboxESValue(boxedResult, TypeInt32);
-            return unboxedResult;
-        }
+        LIns* boxedLeft = boxESValue(left, TypeInt32);
+        LIns* boxedRight = boxESValue(right, TypeInt32);
+        LIns* args[] = {boxedRight, boxedLeft};
+        LIns* boxedResult = m_out.insCall(&plusOpCallInfo, args);
+        LIns* unboxedResult = unboxESValue(boxedResult, TypeInt32);
+        return unboxedResult;
     }
     case ESIR::Opcode::Minus:
     {
@@ -616,6 +654,7 @@ void NativeGenerator::nanojitCodegen()
     m_tagMaskQ = m_out.insImmQ(TagMask);
     m_intTagQ = m_out.insImmQ(TagTypeNumber);
     m_intTagComplementQ = m_out.insImmQ(~TagTypeNumber);
+    m_doubleEncodeOffsetQ = m_out.insImmQ(DoubleEncodeOffset);
     m_undefinedQ = m_out.insImmQ(ValueUndefined);
 #endif
     m_zeroQ = m_out.insImmQ(0);

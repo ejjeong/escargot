@@ -39,17 +39,28 @@ void ESGraphTypeInference::run(ESGraph* graph)
                 graph->setOperandType(ir->targetIndex(), TypeString);
                 break;
             case ESIR::Opcode::GenericPlus:
-#if 0
-                Type leftType = m_graph->getOperandType(ir->leftIndex());
-                Type rightType = m_graph->getOperandType(ir->rightIndex());
+            {
+                INIT_ESIR(GenericPlus);
+                Type leftType = graph->getOperandType(irGenericPlus->leftIndex());
+                Type rightType = graph->getOperandType(irGenericPlus->rightIndex());
                 if (leftType.isInt32Type() && rightType.isInt32Type()) {
-                    ESIR* numberPlusIR = NumberPlusIR::create(ir->targetIndex(), ir->leftIndex(), ir->rightIndex());
-                    graph->replaceIR(i, j, );
+                    ESIR* int32PlusIR = Int32PlusIR::create(irGenericPlus->targetIndex(), irGenericPlus->leftIndex(), irGenericPlus->rightIndex());
+                    block->replace(j, int32PlusIR);
+                    graph->setOperandType(irGenericPlus->targetIndex(), TypeInt32);
+                } else if (leftType.hasNumberFlag() && rightType.hasNumberFlag()) {
+                    ESIR* doublePlusIR = DoublePlusIR::create(irGenericPlus->targetIndex(), irGenericPlus->leftIndex(), irGenericPlus->rightIndex());
+                    block->replace(j, doublePlusIR);
+                    graph->setOperandType(irGenericPlus->targetIndex(), TypeDouble);
+                } else if (leftType.isStringType() || rightType.isStringType()) {
+                    ESIR* stringPlusIR = StringPlusIR::create(irGenericPlus->targetIndex(), irGenericPlus->leftIndex(), irGenericPlus->rightIndex());
+                    block->replace(j, stringPlusIR);
+                    graph->setOperandType(irGenericPlus->targetIndex(), TypeString);
+                } else {
+                    printf("Unhandled GenericPlus case in ESGraphTypeInference\n");
+                    RELEASE_ASSERT_NOT_REACHED();
                 }
-#endif
-                // FIXME
-                graph->setOperandType(ir->targetIndex(), TypeInt32);
                 break;
+            }
             case ESIR::Opcode::Minus:
                 // FIXME
                 graph->setOperandType(ir->targetIndex(), TypeInt32);

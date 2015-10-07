@@ -192,6 +192,14 @@ asm:
 	readelf -a --wide $(BIN) | c++filt > $(BIN).elf
 	vi -O $(BIN).asm $(BIN).elf
 
+# Targets : tests
+
+check-jit:
+	make jit.release -j8
+	./run-Sunspider-jit.sh
+	make interpreter.release -j8
+	make run-sunspider
+
 # Targets : benchmarks
 
 run-sunspider:

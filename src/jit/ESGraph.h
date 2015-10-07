@@ -33,6 +33,7 @@ public:
     }
 
     void push(ESIR* ir) { m_instructions.push_back(ir); }
+    void replace(size_t index, ESIR* ir) { ASSERT(index <= instructionSize()); m_instructions[index] = ir; }
     size_t instructionSize() { return m_instructions.size(); }
     ESIR* instruction(size_t index) { return m_instructions[index]; }
 

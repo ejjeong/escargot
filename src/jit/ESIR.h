@@ -32,8 +32,9 @@ class ESBasicBlock;
     F(ToBoolean, ) \
     \
     /* From BinaryExpression */ \
+    F(Int32Plus, ) \
+    F(DoublePlus, ) \
     F(StringPlus, ) \
-    F(NumberPlus, ) \
     F(GenericPlus, ) \
     F(Increment, ) \
     F(Minus, ) \
@@ -480,6 +481,33 @@ protected:
         : ESIR(opcode, targetIndex), m_leftIndex(leftIndex), m_rightIndex(rightIndex) { }
     int m_leftIndex;
     int m_rightIndex;
+};
+
+class Int32PlusIR : public BinaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(Int32Plus, int, int);
+
+private:
+    Int32PlusIR(int targetIndex, int leftIndex, int rightIndex)
+        : BinaryExpressionIR(ESIR::Opcode::Int32Plus, targetIndex, leftIndex, rightIndex) { }
+};
+
+class DoublePlusIR : public BinaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(DoublePlus, int, int);
+
+private:
+    DoublePlusIR(int targetIndex, int leftIndex, int rightIndex)
+        : BinaryExpressionIR(ESIR::Opcode::DoublePlus, targetIndex, leftIndex, rightIndex) { }
+};
+
+class StringPlusIR : public BinaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(StringPlus, int, int);
+
+private:
+    StringPlusIR(int targetIndex, int leftIndex, int rightIndex)
+        : BinaryExpressionIR(ESIR::Opcode::StringPlus, targetIndex, leftIndex, rightIndex) { }
 };
 
 class GenericPlusIR : public BinaryExpressionIR {
