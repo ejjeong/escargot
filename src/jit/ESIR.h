@@ -92,6 +92,7 @@ class ESBasicBlock;
     F(GetArgument, LoadFromHeap) \
     F(GetVar, LoadFromHeap) \
     F(SetVar, ) \
+    F(PutInObject, ) \
     F(GetScoped, LoadFromHeap) \
     F(SetScoped, ) \
     F(GetVarGeneric, LoadFromHeap) \
@@ -349,11 +350,13 @@ class GetVarGenericIR : public ESIR {
 public:
     DECLARE_STATIC_GENERATOR_2(GetVarGeneric, const InternalAtomicString&, ESString*)
 
+
 #ifndef NDEBUG
     virtual void dump(std::ostream& out)
     {
         out << "tmp" << m_targetIndex << ": ";
         ESIR::dump(out);
+
         out << " " << m_esName->utf8Data();
     }
 #endif
@@ -392,6 +395,43 @@ private:
     ESString* m_esName;
 };
 
+class PutInObjectIR : public ESIR {
+public:
+    DECLARE_STATIC_GENERATOR_3(PutInObject, ESHiddenClass*, size_t, int);
+    DECLARE_STATIC_GENERATOR_3(PutInObject, int, int, int);
+
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+        out << " tmp" << m_objectIndex << "[tmp" << m_propertyIndex << "] = " << "tmp" << m_sourceIndex;
+    }
+#endif
+
+    ESHiddenClass* cachedHiddenClass() { return m_cachedHiddenClass; }
+    size_t cachedIndex() { return m_cachedIndex; }
+    int objectIndex() { return m_objectIndex; }
+    int propertyIndex() { return m_propertyIndex; }
+    int sourceIndex() { return m_sourceIndex; }
+
+private:
+    PutInObjectIR(int targetIndex, ESHiddenClass* cachedHiddenClass, size_t cachedIndex, int sourceIndex)
+        : ESIR(ESIR::Opcode::PutInObject, targetIndex),
+          m_cachedHiddenClass(cachedHiddenClass),
+          m_cachedIndex(cachedIndex),
+          m_sourceIndex(sourceIndex) { }
+    PutInObjectIR(int targetIndex, int objectIndex, int propertyIndex, int sourceIndex)
+        : ESIR(ESIR::Opcode::PutInObject, targetIndex),
+          m_objectIndex(objectIndex),
+          m_propertyIndex(propertyIndex),
+          m_sourceIndex(sourceIndex) { }
+    ESHiddenClass* m_cachedHiddenClass;
+    int m_cachedIndex;
+    int m_objectIndex;
+    int m_propertyIndex;
+    int m_sourceIndex;
+};
 
 class BinaryExpressionIR : public ESIR {
 public:

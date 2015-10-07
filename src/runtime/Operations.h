@@ -60,6 +60,22 @@ inline ESValueInDouble plusOp(ESValueInDouble left, ESValueInDouble right)
     return ret;
 }
 
+inline ESValueInDouble ESObjectSetOp(ESValueInDouble obj, ESValueInDouble property, ESValueInDouble source)
+{
+    ESValue objVal = ESValue::fromRawDouble(obj);
+    if (objVal.isESPointer()) {
+        ESPointer* objP = objVal.asESPointer();
+        if (objP->isESArrayObject()) {
+            ESArrayObject* arrObj = objP->asESArrayObject();
+
+            ESValue propVal = ESValue::fromRawDouble(property);
+            ESValue srcVal = ESValue::fromRawDouble(source);
+            arrObj->set(propVal.asInt32(), srcVal);
+        }
+    }
+    return source;
+}
+
 ALWAYS_INLINE ESValue minusOperation(const ESValue& left, const ESValue& right)
 {
     // http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.2

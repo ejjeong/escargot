@@ -68,6 +68,8 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
                 literal = ConstantIntIR::create(ssaIndex->m_targetIndex, bytecode->m_value.asInt32());
             } else if (bytecode->m_value.isDouble()) {
                 literal = ConstantDoubleIR::create(ssaIndex->m_targetIndex, bytecode->m_value.asDouble());
+            } else if (bytecode->m_value.isBoolean()) {
+                literal = ConstantDoubleIR::create(ssaIndex->m_targetIndex, bytecode->m_value.asBoolean());
             } else
                 goto unsupported;
             currentBlock->push(literal);
@@ -133,12 +135,24 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(PutByIndexWithActivation);
             break;
         case PutInObjectOpcode:
-            goto unsupported;
-            NEXT_BYTECODE(PutInObject);
-            break;
+        {
+           INIT_BYTECODE(PutInObject);
+           if (bytecode->m_esir_type.isArrayObjectType()) {
+               ESIR* putInObject = PutInObjectIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2, ssaIndex->m_targetIndex - 1);
+               currentBlock->push(putInObject);
+           } else {
+               if (bytecode->m_cachedIndex != SIZE_MAX) {
+                   ESIR* putInObject = PutInObjectIR::create(ssaIndex->m_targetIndex, bytecode->m_cachedHiddenClass, bytecode->m_cachedIndex, ssaIndex->m_targetIndex - 1);
+                   currentBlock->push(putInObject);
+                }
+            }
+           NEXT_BYTECODE(PutInObject);
+           break;
+        }
         case PutInObjectPreComputedCaseOpcode:
             goto unsupported;
             NEXT_BYTECODE(PutInObjectPreComputedCase);
+            break;
         case CreateBindingOpcode:
             goto unsupported;
             NEXT_BYTECODE(CreateBinding);

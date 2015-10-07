@@ -77,7 +77,9 @@ public:
                 codeBlock->pushCode(PutByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), this);
             } else {
                 if(m_fastAccessUpIndex == 0) {
+//                    updateNodeIndex(context);
                     codeBlock->pushCode(PutByIndex(m_fastAccessIndex), this);
+//                    WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
                 } else
                     codeBlock->pushCode(PutByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), this);
             }

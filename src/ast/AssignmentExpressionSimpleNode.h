@@ -4,6 +4,7 @@
 #include "ExpressionNode.h"
 #include "PatternNode.h"
 #include "IdentifierNode.h"
+//#include "MemberExpressionNode.h"
 
 namespace escargot {
 
@@ -23,9 +24,11 @@ public:
     {
         m_left->generateResolveAddressByteCode(codeBlock, context);
         m_right->generateExpressionByteCode(codeBlock, context);
-        m_left->updateNodeIndex(context);
         m_left->generatePutByteCode(codeBlock, context);
-        WRITE_LAST_INDEX(m_left->nodeIndex(), m_right->nodeIndex(), -1);
+        if (m_left->type() == escargot::NodeType::Identifier) {
+            m_left->updateNodeIndex(context);
+            WRITE_LAST_INDEX(m_left->nodeIndex(), m_right->nodeIndex(), -1);
+         }
     }
 
 protected:

@@ -49,14 +49,15 @@ public:
             ASSERT(m_property->type() == NodeType::Literal);
             codeBlock->pushCode(PutInObjectPreComputedCase(((LiteralNode *)m_property)->value()), this);
         } else {
+            updateNodeIndex(context);
             codeBlock->pushCode(PutInObject(), this);
+            WRITE_LAST_INDEX(m_nodeIndex, m_object->nodeIndex(), m_property->nodeIndex());
         }
     }
 
     virtual void generateResolveAddressByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_object->generateExpressionByteCode(codeBlock, context);
-        updateNodeIndex(context);
         if(isPreComputedCase()) {
         } else {
             m_property->generateExpressionByteCode(codeBlock, context);
@@ -72,6 +73,8 @@ public:
             codeBlock->pushCode(GetObjectWithPeeking(), this);
         }
     }
+    int objectIndex() { return m_object->nodeIndex(); }
+    int propertyIndex() { return m_property->nodeIndex(); }
 protected:
     Node* m_object; //object: Expression;
     Node* m_property; //property: Identifier | Expression;

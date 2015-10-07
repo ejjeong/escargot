@@ -287,6 +287,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             obj = willBeObject->toObject();
 
         if((obj->isESArrayObject() || obj->isESTypedArrayObject()) && property->isInt32()) {
+            code->m_esir_type.mergeType(escargot::ESJIT::TypeArrayObject);
             obj->set(*property, value, true);
             push<ESValue>(stack, bp, value);
             executeNextCode<PutInObject>(programCounter);

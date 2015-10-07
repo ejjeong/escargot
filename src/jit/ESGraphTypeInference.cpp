@@ -99,6 +99,13 @@ void ESGraphTypeInference::run(ESGraph* graph)
                   }
                 break;
             }
+            case ESIR::Opcode::PutInObject:
+            {
+                PutInObjectIR* irPutInObject = static_cast<PutInObjectIR*>(ir);
+                Type srcType = graph->getOperandType(irPutInObject->sourceIndex());
+                graph->setOperandType(ir->targetIndex(), srcType);
+                break;
+            }
             default:
                 printf("ERROR %s not handled in ESGraphTypeInference.\n", ir->getOpcodeName());
                 RELEASE_ASSERT_NOT_REACHED();

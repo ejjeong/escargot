@@ -627,6 +627,7 @@ public:
     ESHiddenClass* m_cachedHiddenClass;
     ESString* m_cachedPropertyValue;
     size_t m_cachedIndex;
+    escargot::ESJIT::Type m_esir_type;
 };
 
 class PutInObjectPreComputedCase : public ByteCode {

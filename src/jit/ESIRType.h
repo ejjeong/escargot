@@ -78,15 +78,13 @@ public:
         else if (value.isUndefined())
             return TypeUndefined;
         else if (value.isESPointer()) {
-            return TypePointer;
-#if 0
             ESPointer* p = value.asESPointer();
-            if (p->isESFunctionObject())
-                return TypeFunctionObject;
-            else
-                return TypeObject;
-#endif
-        } else {
+            if (p->isESArrayObject()) {
+                return TypeArrayObject;
+            } else
+                return TypePointer;
+         }
+        else {
 #ifndef NDEBUG
             if (ESVMInstance::currentInstance()->m_verboseJIT)
                 printf("WARNING: Reading type of unhandled ESValue '%s'. Returning Top.\n", value.toString()->utf8Data());

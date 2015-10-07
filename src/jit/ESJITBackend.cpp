@@ -33,6 +33,7 @@ CallInfo minusOpCallInfo = CI(minusOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, 
 CallInfo contextResolveBindingCallInfo = CI(contextResolveBinding, CallInfo::typeSig3(ARGTYPE_P, ARGTYPE_P, ARGTYPE_P, ARGTYPE_P));
 CallInfo objectDefinePropertyOrThrowCallInfo = CI(objectDefinePropertyOrThrow, CallInfo::typeSig3(ARGTYPE_V, ARGTYPE_P, ARGTYPE_D, /*ARGTYPE_B, ARGTYPE_B, ARGTYPE_B,*/ ARGTYPE_D));
 CallInfo esFunctionObjectCallCallInfo = CI(esFunctionObjectCall, CallInfo::typeSig6(ARGTYPE_D, ARGTYPE_P, ARGTYPE_D, ARGTYPE_D, ARGTYPE_P, ARGTYPE_I, ARGTYPE_B));
+CallInfo ESObjectSetOpCallInfo = CI(ESObjectSetOp, CallInfo::typeSig3(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 #ifndef NDEBUG
 CallInfo logIntCallInfo = CI(jitLogIntOperation, CallInfo::typeSig1(ARGTYPE_V, ARGTYPE_I));
 CallInfo logDoubleCallInfo = CI(jitLogDoubleOperation, CallInfo::typeSig1(ARGTYPE_V, ARGTYPE_D));
@@ -117,6 +118,8 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
+    } else if (type.isArrayObjectType()) {
+        //ToDo
     } else if (type.isPointerType()) {
 #ifdef ESCARGOT_64
         LIns* quadValue = m_out.ins1(LIR_dasq, in);
@@ -159,7 +162,7 @@ LIns* NativeGenerator::boxESValue(LIns* unboxedValue, Type type)
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
-    } else if (type.isPointerType() || type.isUndefinedType()) {
+    } else if (type.isPointerType() || type.isUndefinedType() || type.isArrayObjectType()) {
 #ifdef ESCARGOT_64
         return unboxedValue;
 #else
@@ -189,7 +192,7 @@ LIns* NativeGenerator::unboxESValue(LIns* boxedValue, Type type)
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
-    } else if (type.isPointerType() || type.isUndefinedType()) {
+    } else if (type.isPointerType() || type.isUndefinedType() || type.isArrayObjectType()) {
 #ifdef ESCARGOT_64
         return boxedValue;
 #else
@@ -214,7 +217,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     case ESIR::Opcode::ConstantInt:
     {
         INIT_ESIR(ConstantInt);
-        return m_out.insImmI(irConstantInt->value());
+        return  m_out.insImmI(irConstantInt->value());
     }
     case ESIR::Opcode::ConstantDouble:
     {
@@ -475,6 +478,29 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         jumpToEnd->setTarget(labelEnd);
 
         return boxedSource;
+    }
+    case ESIR::Opcode::PutInObject:
+    {
+        INIT_ESIR(PutInObject);
+        LIns* obj = getTmpMapping(irPutInObject->objectIndex());
+        LIns* prop = getTmpMapping(irPutInObject->propertyIndex());
+        LIns* source = getTmpMapping(irPutInObject->sourceIndex());
+
+        Type objType = m_graph->getOperandType(irPutInObject->objectIndex());
+        Type propType = m_graph->getOperandType(irPutInObject->propertyIndex());
+        Type sourceType = m_graph->getOperandType(irPutInObject->sourceIndex());
+
+        if (objType.isArrayObjectType()) {
+            if (propType.isInt32Type() && sourceType.isInt32Type()) {
+                LIns* boxedProp = boxESValue(prop, TypeInt32);
+                LIns* boxedSrc = boxESValue(source, TypeInt32);
+                LIns* args[] = {boxedSrc, boxedProp, obj};
+                return m_out.insCall(&ESObjectSetOpCallInfo, args);
+             }
+        }
+
+        LIns* boxedSource = boxESValue(source, m_graph->getOperandType(irPutInObject->targetIndex()));
+        return m_out.insStore(LIR_std, boxedSource, (LIns*) irPutInObject->cachedHiddenClass(), irPutInObject->cachedIndex() * sizeof(ESValue), 1);
     }
     case ESIR::Opcode::ToNumber:
     {
