@@ -46,7 +46,7 @@ public:
         cb->m_id = m_id;
         cb->m_nonAtomicId = m_nonAtomicId;
 #endif
-        codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb), this);
+        codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb, true), this);
     }
 
 protected:

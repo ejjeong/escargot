@@ -39,7 +39,7 @@ public:
         }
     }
 #endif
-        codeBlock->pushCode(CreateFunction(InternalAtomicString(), NULL, cb), this);
+        codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb, false), this);
     }
 
 

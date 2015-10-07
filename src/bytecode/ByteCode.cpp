@@ -1379,12 +1379,14 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         prototype->setConstructor(function);
         prototype->set__proto__(instance->globalObject()->object()->protoType());
         function->setProtoType(prototype);
-        if(code->m_nonAtomicName) { //FD
+        if(code->m_isDeclaration) { //FD
             function->set(strings->name, code->m_nonAtomicName);
             ec->environment()->record()->setMutableBinding(code->m_name, code->m_nonAtomicName, function, false);
         }
-        else //FE
+        else {//FE
+            function->set(strings->name, code->m_nonAtomicName);
             push<ESValue>(stack, bp, function);
+        }
         executeNextCode<CreateFunction>(programCounter);
         goto NextInstruction;
     }

@@ -1549,12 +1549,13 @@ public:
 
 class CreateFunction : public ByteCode {
 public:
-    CreateFunction(InternalAtomicString name, ESString* nonAtomicName, CodeBlock* codeBlock)
+    CreateFunction(InternalAtomicString name, ESString* nonAtomicName, CodeBlock* codeBlock, bool isDecl)
         : ByteCode(CreateFunctionOpcode)
     {
         m_name = name;
         m_nonAtomicName = nonAtomicName;
         m_codeBlock = codeBlock;
+        m_isDeclaration = isDecl;
     }
 
 #ifndef NDEBUG
@@ -1566,6 +1567,7 @@ public:
     InternalAtomicString m_name;
     ESString* m_nonAtomicName;
     CodeBlock* m_codeBlock;
+    bool m_isDeclaration;
 };
 
 class ExecuteNativeFunction : public ByteCode {
