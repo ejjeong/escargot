@@ -1162,8 +1162,12 @@ void GlobalObject::installString()
             // called as constructor
             ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
             escargot::ESStringObject* stringObject = thisObject->asESStringObject();
-            ESValue value = instance->currentExecutionContext()->readArgument(0);
-            stringObject->setString(value.toString());
+            if (instance->currentExecutionContext()->argumentCount() == 0) {
+                stringObject->setString(strings->emptyESString);
+            } else {
+                ESValue value = instance->currentExecutionContext()->readArgument(0);
+                stringObject->setString(value.toString());
+            }
             return stringObject;
         } else {
             // called as function
