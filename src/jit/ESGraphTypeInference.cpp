@@ -35,7 +35,18 @@ void ESGraphTypeInference::run(ESGraph* graph)
             case ESIR::Opcode::ConstantFalse:
                 graph->setOperandType(ir->targetIndex(), TypeBoolean);
                 break;
+            case ESIR::Opcode::ConstantString:
+                graph->setOperandType(ir->targetIndex(), TypeString);
+                break;
             case ESIR::Opcode::GenericPlus:
+#if 0
+                Type leftType = m_graph->getOperandType(ir->leftIndex());
+                Type rightType = m_graph->getOperandType(ir->rightIndex());
+                if (leftType.isInt32Type() && rightType.isInt32Type()) {
+                    ESIR* numberPlusIR = NumberPlusIR::create(ir->targetIndex(), ir->leftIndex(), ir->rightIndex());
+                    graph->replaceIR(i, j, );
+                }
+#endif
                 // FIXME
                 graph->setOperandType(ir->targetIndex(), TypeInt32);
                 break;

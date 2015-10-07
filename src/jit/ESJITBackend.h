@@ -66,11 +66,13 @@ private:
     nanojit::Fragment* m_f;
     nanojit::LirBufWriter m_out;
 
+#ifdef ESCARGOT_64
     nanojit::LIns* m_tagMaskQ;
     nanojit::LIns* m_intTagQ;
     nanojit::LIns* m_intTagComplementQ;
     nanojit::LIns* m_undefinedQ;
     nanojit::LIns* m_zeroQ;
+#endif
     nanojit::LIns* m_zeroP;
     nanojit::LIns* m_oneI;
     nanojit::LIns* m_zeroI;

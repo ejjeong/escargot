@@ -122,7 +122,7 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
-    } else if (type.isArrayObjectType()) {
+    } else if (type.isArrayObjectType() || type.isStringType() || type.isFunctionObjectType()) {
         //ToDo
     } else if (type.isPointerType()) {
 #ifdef ESCARGOT_64
@@ -149,6 +149,9 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
         RELEASE_ASSERT_NOT_REACHED();
 #endif
     } else {
+        std::cout << "Unsupported type in NativeGenerator::generateTypeCheck() : ";
+        type.dump(std::cout);
+        std::cout << std::endl;
         RELEASE_ASSERT_NOT_REACHED();
     }
 #ifndef NDEBUG
@@ -168,13 +171,16 @@ LIns* NativeGenerator::boxESValue(LIns* unboxedValue, Type type)
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
-    } else if (type.isPointerType() || type.isUndefinedType() || type.isArrayObjectType()) {
+    } else if (type.isPointerType() || type.isUndefinedType() || type.isArrayObjectType() || type.isStringType() || type.isFunctionObjectType()) {
 #ifdef ESCARGOT_64
         return unboxedValue;
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
     } else {
+        std::cout << "Unsupported type in NativeGenerator::boxESValue() : ";
+        type.dump(std::cout);
+        std::cout << std::endl;
         RELEASE_ASSERT_NOT_REACHED();
     }
 }
@@ -198,13 +204,16 @@ LIns* NativeGenerator::unboxESValue(LIns* boxedValue, Type type)
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
-    } else if (type.isPointerType() || type.isUndefinedType() || type.isArrayObjectType()) {
+    } else if (type.isPointerType() || type.isUndefinedType() || type.isArrayObjectType() || type.isStringType() || type.isFunctionObjectType()) {
 #ifdef ESCARGOT_64
         return boxedValue;
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
     } else {
+        std::cout << "Unsupported type in NativeGenerator::unboxESValue() : ";
+        type.dump(std::cout);
+        std::cout << std::endl;
         RELEASE_ASSERT_NOT_REACHED();
     }
 }
@@ -229,6 +238,11 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(ConstantDouble);
         return m_out.insImmD(irConstantDouble->value());
+    }
+    case ESIR::Opcode::ConstantString:
+    {
+        INIT_ESIR(ConstantString);
+        return m_out.insImmP(irConstantString->value());
     }
     case ESIR::Opcode::GenericPlus:
     {
@@ -598,10 +612,12 @@ void NativeGenerator::nanojitCodegen()
     m_stackPtr = m_out.insAlloc(m_graph->tempRegisterSize() * sizeof(ESValue));
     m_globalObject = m_out.insLoad(LIR_ldp, m_instance, ESVMInstance::offsetOfGlobalObject(), 1, LOAD_NORMAL); // FIXME generate this only if really needed
 
+#ifdef ESCARGOT_64
     m_tagMaskQ = m_out.insImmQ(TagMask);
     m_intTagQ = m_out.insImmQ(TagTypeNumber);
     m_intTagComplementQ = m_out.insImmQ(~TagTypeNumber);
     m_undefinedQ = m_out.insImmQ(ValueUndefined);
+#endif
     m_zeroQ = m_out.insImmQ(0);
     m_zeroP = m_out.insImmP(0);
     m_oneI = m_out.insImmI(1);

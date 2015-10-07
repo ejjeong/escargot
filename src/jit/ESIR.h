@@ -23,6 +23,7 @@ class ESBasicBlock;
     F(ConstantPointer, ) \
     F(ConstantTrue, ) \
     F(ConstantFalse, ) \
+    F(ConstantString, ) \
     \
     /* Type conversions */ \
     F(ToNumber, ) \
@@ -262,6 +263,26 @@ private:
     void* m_value;
 };
 
+class ConstantStringIR : public ESIR {
+public:
+    DECLARE_STATIC_GENERATOR_1(ConstantString, ESString*);
+
+    ESString* value() { return m_value; }
+
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+        out << " const ESString \"" << m_value->utf8Data() << "\"";
+    }
+#endif
+
+private:
+    ConstantStringIR(int target, ESString* value)
+        : ESIR(ESIR::Opcode::ConstantString, target), m_value(value) { }
+    ESString* m_value;
+};
 
 class ToNumberIR : public ESIR {
 public:

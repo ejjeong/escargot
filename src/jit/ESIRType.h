@@ -81,8 +81,17 @@ public:
             ESPointer* p = value.asESPointer();
             if (p->isESArrayObject()) {
                 return TypeArrayObject;
-            } else
+            } else if (p->isESString()) {
+                return TypeString;
+            } else if (p->isESFunctionObject()) {
+                return TypeFunctionObject;
+            } else {
+#ifndef NDEBUG
+                if (ESVMInstance::currentInstance()->m_verboseJIT)
+                    printf("WARNING: Reading type of unhandled ESValue '%s'. Returning Top.\n", value.toString()->utf8Data());
+#endif
                 return TypePointer;
+            }
          }
         else {
 #ifndef NDEBUG
