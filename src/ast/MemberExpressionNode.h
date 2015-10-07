@@ -73,8 +73,10 @@ public:
             codeBlock->pushCode(GetObjectWithPeeking(), this);
         }
     }
+#ifdef ENABLE_ESJIT
     int objectIndex() { return m_object->nodeIndex(); }
     int propertyIndex() { return m_property->nodeIndex(); }
+#endif
 protected:
     Node* m_object; //object: Expression;
     Node* m_property; //property: Identifier | Expression;
