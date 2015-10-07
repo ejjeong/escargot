@@ -216,17 +216,21 @@ inline ESValueInDouble esFunctionObjectCall(ESVMInstance* instance,
 }
 
 #ifndef NDEBUG
-inline void jitLogIntOperation(int arg)
+inline void jitLogIntOperation(int arg, const char* msg)
 {
-    printf("Logging in JIT code: int 0x%x\n", bitwise_cast<unsigned>(arg));
+    printf("[JIT_LOG] %s : int 0x%x\n", msg, bitwise_cast<unsigned>(arg));
 }
-inline void jitLogDoubleOperation(ESValueInDouble arg)
+inline void jitLogDoubleOperation(ESValueInDouble arg, const char* msg)
 {
-    printf("Logging in JIT code: double 0x%lx\n", bitwise_cast<uint64_t>(arg));
+    printf("[JIT_LOG] %s : double 0x%lx\n", msg, bitwise_cast<uint64_t>(arg));
 }
-inline void jitLogPointerOperation(void* arg)
+inline void jitLogPointerOperation(void* arg, const char* msg)
 {
-    printf("Logging in JIT code: pointer 0x%lx\n", bitwise_cast<uint64_t>(arg));
+    printf("[JIT_LOG] %s : pointer 0x%lx\n", msg, bitwise_cast<uint64_t>(arg));
+}
+inline void jitLogStringOperation(const char* arg, const char* msg)
+{
+    printf("[JIT_LOG] %s : string %s\n", msg, arg);
 }
 #endif
 

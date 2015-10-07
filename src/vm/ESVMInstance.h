@@ -110,8 +110,12 @@ public:
     }
 
 #ifdef ENABLE_ESJIT
-    static size_t offsetOfCurrentExecutionContext() { return offsetof(ESVMInstance, m_currentExecutionContext); }
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Winvalid-offsetof"
     static size_t offsetOfGlobalObject() { return offsetof(ESVMInstance, m_globalObject); }
+    static size_t offsetOfCurrentExecutionContext() { return offsetof(ESVMInstance, m_currentExecutionContext); }
+    static size_t offsetOfIdentifierCacheInvalidationCheckCount() { return offsetof(ESVMInstance, m_identifierCacheInvalidationCheckCount); }
+#pragma GCC diagnostic pop
 #endif
 
 #ifndef NDEBUG

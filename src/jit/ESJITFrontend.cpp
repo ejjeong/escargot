@@ -85,7 +85,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case GetByIdOpcode:
         {
             INIT_BYTECODE(GetById);
-            ESIR* getVarGeneric = GetVarGenericIR::create(ssaIndex->m_targetIndex, bytecode->m_name, bytecode->m_nonAtomicName);
+            ESIR* getVarGeneric = GetVarGenericIR::create(ssaIndex->m_targetIndex, bytecode, bytecode->m_name, bytecode->m_nonAtomicName); // FIXME store only bytecode, get name from that
             currentBlock->push(getVarGeneric);
             bytecode->m_profile.updateProfiledType();
             graph->setOperandType(ssaIndex->m_targetIndex, bytecode->m_profile.getType());
@@ -117,7 +117,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case PutByIdOpcode:
         {
             INIT_BYTECODE(PutById);
-            ESIR* setVarGeneric = SetVarGenericIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, &bytecode->m_name, bytecode->m_nonAtomicName);
+            ESIR* setVarGeneric = SetVarGenericIR::create(ssaIndex->m_targetIndex, bytecode, ssaIndex->m_srcIndex1, &bytecode->m_name, bytecode->m_nonAtomicName);
             currentBlock->push(setVarGeneric);
             NEXT_BYTECODE(PutById);
             break;

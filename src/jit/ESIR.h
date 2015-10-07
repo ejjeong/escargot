@@ -7,6 +7,9 @@
 #include "ESIRType.h"
 
 namespace escargot {
+
+class ByteCode;
+
 namespace ESJIT {
 
 class NativeGenerator;
@@ -348,7 +351,7 @@ private:
 
 class GetVarGenericIR : public ESIR {
 public:
-    DECLARE_STATIC_GENERATOR_2(GetVarGeneric, const InternalAtomicString&, ESString*)
+    DECLARE_STATIC_GENERATOR_3(GetVarGeneric, ByteCode*, const InternalAtomicString&, ESString*)
 
 
 #ifndef NDEBUG
@@ -360,19 +363,21 @@ public:
         out << " " << m_esName->utf8Data();
     }
 #endif
+    ByteCode* originalGetByIdByteCode() { return m_originalGetByIdByteCode; }
     InternalAtomicString* name() { return &m_name; }
     ESString* nonAtomicName() { return m_esName; }
 
 private:
-    GetVarGenericIR(int targetIndex, const InternalAtomicString& name, ESString* esName)
-        : ESIR(ESIR::Opcode::GetVarGeneric, targetIndex), m_name(name), m_esName(esName) { }
+    GetVarGenericIR(int targetIndex, ByteCode* originalGetByIdByteCode, const InternalAtomicString& name, ESString* esName)
+        : ESIR(ESIR::Opcode::GetVarGeneric, targetIndex), m_originalGetByIdByteCode(originalGetByIdByteCode), m_name(name), m_esName(esName) { }
+    ByteCode* m_originalGetByIdByteCode;
     InternalAtomicString m_name;
     ESString* m_esName;
 };
 
 class SetVarGenericIR : public ESIR {
 public:
-    DECLARE_STATIC_GENERATOR_3(SetVarGeneric, int, InternalAtomicString*, ESString*);
+    DECLARE_STATIC_GENERATOR_4(SetVarGeneric, ByteCode*, int, InternalAtomicString*, ESString*);
 
 #ifndef NDEBUG
     virtual void dump(std::ostream& out)
@@ -383,13 +388,15 @@ public:
     }
 #endif
 
+    ByteCode* originalPutByIdByteCode() { return m_originalPutByIdByteCode; }
     int sourceIndex() { return m_sourceIndex; }
     InternalAtomicString* name() { return m_name; }
     ESString* nonAtomicName() { return m_esName; }
 
 private:
-    SetVarGenericIR(int targetIndex, int sourceIndex, InternalAtomicString* name, ESString* esName)
-        : ESIR(ESIR::Opcode::SetVarGeneric, targetIndex), m_sourceIndex(sourceIndex), m_name(name), m_esName(esName) { }
+    SetVarGenericIR(int targetIndex, ByteCode* originalPutByIdByteCode, int sourceIndex, InternalAtomicString* name, ESString* esName)
+        : ESIR(ESIR::Opcode::SetVarGeneric, targetIndex), m_originalPutByIdByteCode(originalPutByIdByteCode), m_sourceIndex(sourceIndex), m_name(name), m_esName(esName) { }
+    ByteCode* m_originalPutByIdByteCode;
     int m_sourceIndex;
     InternalAtomicString* m_name;
     ESString* m_esName;

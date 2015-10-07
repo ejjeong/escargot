@@ -7,6 +7,7 @@
 #include "ESIR.h"
 #include "ESIRType.h"
 #include "ESGraph.h"
+#include "bytecode/ByteCode.h"
 #include "runtime/Operations.h"
 #include "runtime/ExecutionContext.h"
 #include "vm/ESVMInstance.h"
@@ -35,22 +36,24 @@ CallInfo objectDefinePropertyOrThrowCallInfo = CI(objectDefinePropertyOrThrow, C
 CallInfo esFunctionObjectCallCallInfo = CI(esFunctionObjectCall, CallInfo::typeSig6(ARGTYPE_D, ARGTYPE_P, ARGTYPE_D, ARGTYPE_D, ARGTYPE_P, ARGTYPE_I, ARGTYPE_B));
 CallInfo ESObjectSetOpCallInfo = CI(ESObjectSetOp, CallInfo::typeSig3(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 #ifndef NDEBUG
-CallInfo logIntCallInfo = CI(jitLogIntOperation, CallInfo::typeSig1(ARGTYPE_V, ARGTYPE_I));
-CallInfo logDoubleCallInfo = CI(jitLogDoubleOperation, CallInfo::typeSig1(ARGTYPE_V, ARGTYPE_D));
-CallInfo logPointerCallInfo = CI(jitLogPointerOperation, CallInfo::typeSig1(ARGTYPE_V, ARGTYPE_P));
-#define JIT_LOG_I(arg) { LIns* args[] = {arg}; m_out.insCall(&logIntCallInfo, args); }
-#define JIT_LOG_D(arg) { LIns* args[] = {arg}; m_out.insCall(&logDoubleCallInfo, args); }
-#define JIT_LOG_P(arg) { LIns* args[] = {arg}; m_out.insCall(&logPointerCallInfo, args); }
-#define JIT_LOG(arg) { \
-    if (arg->isI()) JIT_LOG_I(arg); \
-    if (arg->isD()) JIT_LOG_D(arg); \
-    if (arg->isP()) JIT_LOG_P(arg); \
+CallInfo logIntCallInfo = CI(jitLogIntOperation, CallInfo::typeSig2(ARGTYPE_V, ARGTYPE_I, ARGTYPE_P));
+CallInfo logDoubleCallInfo = CI(jitLogDoubleOperation, CallInfo::typeSig2(ARGTYPE_V, ARGTYPE_D, ARGTYPE_P));
+CallInfo logPointerCallInfo = CI(jitLogPointerOperation, CallInfo::typeSig2(ARGTYPE_V, ARGTYPE_P, ARGTYPE_P));
+#define JIT_LOG_I(arg, msg) { LIns* args[] = { m_out.insImmP(msg), arg }; m_out.insCall(&logIntCallInfo, args); }
+#define JIT_LOG_D(arg, msg) { LIns* args[] = { m_out.insImmP(msg), arg}; m_out.insCall(&logDoubleCallInfo, args); }
+#define JIT_LOG_P(arg, msg) { LIns* args[] = { m_out.insImmP(msg), arg}; m_out.insCall(&logPointerCallInfo, args); }
+#define JIT_LOG_S(arg, msg) { LIns* args[] = { m_out.insImmP(msg), arg}; m_out.insCall(&logStringCallInfo, args); }
+#define JIT_LOG(arg, msg) { \
+    if (arg->isI()) JIT_LOG_I(arg, msg); \
+    if (arg->isD()) JIT_LOG_D(arg, msg); \
+    if (arg->isP()) JIT_LOG_P(arg, msg); \
 }
 #else
-#define JIT_LOG_I(arg)
-#define JIT_LOG_D(arg)
-#define JIT_LOG_P(arg)
-#define JIT_LOG(arg)
+#define JIT_LOG_I(arg, msg)
+#define JIT_LOG_D(arg, msg)
+#define JIT_LOG_P(arg, msg)
+#define JIT_LOG_S(arg, msg)
+#define JIT_LOG(arg, msg)
 #endif
 
 NativeGenerator::NativeGenerator(ESGraph* graph)
@@ -111,7 +114,7 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
         LIns* maskedValue = m_out.ins2(LIR_andq, quadValue, m_intTagQ);
         LIns* checkIfInt = m_out.ins2(LIR_eqq, maskedValue, m_intTagQ);
         LIns* jumpIfInt = m_out.insBranch(LIR_jt, checkIfInt, nullptr);
-        JIT_LOG(in);
+        JIT_LOG(in, "Expected Int-typed value, but got this value");
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out.ins0(LIR_label);
         jumpIfInt->setTarget(normalPath);
@@ -422,10 +425,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(GetArgument);
         LIns* arguments = m_out.insLoad(LIR_ldp, m_context, ExecutionContext::offsetOfArguments(), 1, LOAD_NORMAL);
-        LIns* argument = m_out.insLoad(LIR_ldp, arguments, irGetArgument->argumentIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
-#if 0
-        JIT_LOG_D(argument);
-#endif
+        LIns* argument = m_out.insLoad(LIR_ldd, arguments, irGetArgument->argumentIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
+        // JIT_LOG_D(argument, "Read this argument");
         return argument;
     }
     case ESIR::Opcode::GetVar:
@@ -443,16 +444,53 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     case ESIR::Opcode::GetVarGeneric:
     {
         INIT_ESIR(GetVarGeneric);
+        LIns* bytecode = m_out.insImmP(irGetVarGeneric->originalGetByIdByteCode());
+        LIns* cachedIdentifierCacheInvalidationCheckCount = m_out.insLoad(LIR_ldi, bytecode, offsetof(GetById, m_identifierCacheInvalidationCheckCount), 1, LOAD_NORMAL);
+        LIns* instanceIdentifierCacheInvalidationCheckCount = m_out.insLoad(LIR_ldi, m_instance, ESVMInstance::offsetOfIdentifierCacheInvalidationCheckCount(), 1, LOAD_NORMAL);
+        LIns* checkIfCacheHit = m_out.ins2(LIR_eqi, instanceIdentifierCacheInvalidationCheckCount, cachedIdentifierCacheInvalidationCheckCount);
+        LIns* jumpIfCacheHit = m_out.insBranch(LIR_jt, checkIfCacheHit, nullptr);
+
+        LIns* slowPath = m_out.ins0(LIR_label);
+#if 0
         LIns* name = m_out.insImmP(irGetVarGeneric->name());
         LIns* nonAtomicName = m_out.insImmP(irGetVarGeneric->nonAtomicName());
         LIns* args[] = {nonAtomicName, name, m_context};
-        LIns* boxedResultAddress = m_out.insCall(&contextResolveBindingCallInfo, args);
-        LIns* boxedResult = m_out.insLoad(LIR_ldd, boxedResultAddress, 0, 1, LOAD_NORMAL);
-        return boxedResult;
+        LIns* resolvedSlot = m_out.insCall(&contextResolveBindingCallInfo, args);
+        LIns* resolvedResult = m_out.insLoad(LIR_ldd, resolvedSlot, 0, 1, LOAD_NORMAL);
+#else
+        generateOSRExit(irGetVarGeneric->targetIndex());
+#endif
+
+        LIns* fastPath = m_out.ins0(LIR_label);
+        jumpIfCacheHit->setTarget(fastPath);
+        LIns* cachedSlot = m_out.insLoad(LIR_ldp, bytecode, offsetof(GetById, m_cachedSlot), 1, LOAD_NORMAL);
+        LIns* cachedResult = m_out.insLoad(LIR_ldd, cachedSlot, 0, 1, LOAD_NORMAL);
+
+#if 0
+        m_out.ins1(LIR_livei, checkIfCacheHit);
+        m_out.ins1(LIR_lived, resolvedResult);
+        LIns* phi = m_out.ins3(LIR_cmovd, checkIfCacheHit, resolvedResult, cachedResult);
+
+        return phi;
+#else
+        return cachedResult;
+#endif
     }
     case ESIR::Opcode::SetVarGeneric:
     {
         INIT_ESIR(SetVarGeneric);
+
+        LIns* source = getTmpMapping(irSetVarGeneric->sourceIndex());
+        LIns* boxedSource = boxESValue(source, m_graph->getOperandType(irSetVarGeneric->m_targetIndex));
+
+        LIns* bytecode = m_out.insImmP(irSetVarGeneric->originalPutByIdByteCode());
+        LIns* cachedIdentifierCacheInvalidationCheckCount = m_out.insLoad(LIR_ldi, bytecode, offsetof(PutById, m_identifierCacheInvalidationCheckCount), 1, LOAD_NORMAL);
+        LIns* instanceIdentifierCacheInvalidationCheckCount = m_out.insLoad(LIR_ldi, m_instance, ESVMInstance::offsetOfIdentifierCacheInvalidationCheckCount(), 1, LOAD_NORMAL);
+        LIns* checkIfCacheHit = m_out.ins2(LIR_eqi, instanceIdentifierCacheInvalidationCheckCount, cachedIdentifierCacheInvalidationCheckCount);
+        LIns* jumpIfCacheHit = m_out.insBranch(LIR_jt, checkIfCacheHit, nullptr);
+
+        LIns* slowPath = m_out.ins0(LIR_label);
+#if 0
         LIns* name = m_out.insImmP(irSetVarGeneric->name());
         LIns* nonAtomicName = m_out.insImmP(irSetVarGeneric->nonAtomicName());
 
@@ -461,8 +499,6 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* checkIfAddressIsNull = m_out.ins2(LIR_eqp, boxedResultAddress, m_zeroP);
         LIns* jumpIfAddressIsNull = m_out.insBranch(LIR_jt, checkIfAddressIsNull, nullptr);
 
-        LIns* source = getTmpMapping(irSetVarGeneric->sourceIndex());
-        LIns* boxedSource = boxESValue(source, m_graph->getOperandType(irSetVarGeneric->m_targetIndex));
         LIns* store = m_out.insStore(LIR_std, boxedSource, boxedResultAddress, 0, 1);
         LIns* jumpToEnd = m_out.insBranch(LIR_j, nullptr, nullptr);
 
@@ -474,8 +510,18 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 #else
         generateOSRExit(irSetVarGeneric->m_targetIndex);
 #endif
+
         LIns* labelEnd = m_out.ins0(LIR_label);
         jumpToEnd->setTarget(labelEnd);
+
+#else
+        generateOSRExit(irSetVarGeneric->m_targetIndex);
+#endif
+
+        LIns* fastPath = m_out.ins0(LIR_label);
+        jumpIfCacheHit->setTarget(fastPath);
+        LIns* cachedSlot = m_out.insLoad(LIR_ldp, bytecode, offsetof(PutById, m_cachedSlot), 1, LOAD_NORMAL);
+        LIns* storeToCachedSlot = m_out.insStore(LIR_std, boxedSource, cachedSlot, 0, 1);
 
         return boxedSource;
     }

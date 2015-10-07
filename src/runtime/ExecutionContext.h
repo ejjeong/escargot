@@ -70,8 +70,11 @@ public:
 
 #ifdef ENABLE_ESJIT
     bool inOSRExit() { return m_inOSRExit; }
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Winvalid-offsetof"
     static size_t offsetOfArguments() { return offsetof(ExecutionContext, m_arguments); }
     static size_t offsetofInOSRExit() { return offsetof(ExecutionContext, m_inOSRExit); }
+#pragma GCC diagnostic pop
 #endif
 
 private:

@@ -184,13 +184,13 @@ clean:
 
 # Targets : miscellaneous
 
-strip: $(BIN)
-	strip $<
+strip:
+	strip $(BIN)
 
-asm: $(MAKECMDGOALS)
-	objdump -d        $< | c++filt > $<.asm
-	readelf -a --wide $< | c++filt > $<.elf
-	vi -O $<.asm $<.elf
+asm:
+	objdump -d        $(BIN) | c++filt > $(BIN).asm
+	readelf -a --wide $(BIN) | c++filt > $(BIN).elf
+	vi -O $(BIN).asm $(BIN).elf
 
 # Targets : benchmarks
 
@@ -206,4 +206,4 @@ run-test262:
 	cd test/test262/; \
 	python tools/packaging/test262.py --command ../../escargot $(OPT)
 
-.PHONY: $(BIN) clean
+.PHONY: clean
