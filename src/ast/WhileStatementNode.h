@@ -18,11 +18,7 @@ public:
 
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-#ifdef ENABLE_ESJIT
-        ByteCodeGenerateContext newContext(context.m_currentNodeIndex);
-#else
-        ByteCodeGenerateContext newContext;
-#endif
+        ByteCodeGenerateContext newContext(context);
 
 #ifdef ENABLE_ESJIT
         codeBlock->pushCode(LoopStart(), this);

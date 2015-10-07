@@ -100,6 +100,7 @@ class Node;
 \
     /* control flow */ \
     F(Jump) \
+    F(JumpComplexCase) \
     F(JumpIfTopOfStackValueIsFalse) \
     F(JumpIfTopOfStackValueIsTrue) \
     F(JumpAndPopIfTopOfStackValueIsTrue) \
@@ -112,6 +113,7 @@ class Node;
     F(Try) \
     F(TryCatchBodyEnd) \
     F(Throw) \
+    F(FinallyEnd) \
 \
     /*etc*/ \
     F(This) \
@@ -157,17 +159,22 @@ class ByteCode;
 class CodeBlock;
 
 struct ByteCodeGenerateContext {
-#ifdef ENABLE_ESJIT
-    ByteCodeGenerateContext(int currentNodeIndex = 0)
-    {
-        m_currentNodeIndex = currentNodeIndex;
-    }
-#else
     ByteCodeGenerateContext()
-      : m_offsetToBasePointer(0), m_positionToContinue(0)
+        : m_offsetToBasePointer(0)
+        , m_positionToContinue(0)
+        , m_tryStatementScopeCount(0)
     {
     }
+
+    ByteCodeGenerateContext(const ByteCodeGenerateContext& contextBefore)
+        : m_offsetToBasePointer(0)
+        , m_tryStatementScopeCount(contextBefore.m_tryStatementScopeCount)
+#ifdef ENABLE_ESJIT
+        , m_currentNodeIndex(contextBefore.m_currentNodeIndex)
 #endif
+    {
+    }
+
 
     ~ByteCodeGenerateContext()
     {
@@ -175,6 +182,7 @@ struct ByteCodeGenerateContext {
         ASSERT(m_continueStatementPositions.size() == 0);
         ASSERT(m_labeledBreakStatmentPositions.size() == 0);
         ASSERT(m_labeledContinueStatmentPositions.size() == 0);
+        ASSERT(m_complexCaseStatementPositions.size() == 0);
     }
 
     void propagateInformationTo(ByteCodeGenerateContext& ctx)
@@ -214,10 +222,41 @@ struct ByteCodeGenerateContext {
         m_labeledContinueStatmentPositions.push_back(std::make_pair(lbl, pos));
     }
 
+    void registerJumpPositionsToComplexCase()
+    {
+        ASSERT(m_tryStatementScopeCount);
+        for(unsigned i = 0 ; i < m_breakStatementPositions.size() ; i ++) {
+            if(m_complexCaseStatementPositions.find(m_breakStatementPositions[i]) == m_complexCaseStatementPositions.end()) {
+                m_complexCaseStatementPositions.insert(std::make_pair(m_breakStatementPositions[i], m_tryStatementScopeCount));
+            }
+        }
+
+        for(unsigned i = 0 ; i < m_continueStatementPositions.size() ; i ++) {
+            if(m_complexCaseStatementPositions.find(m_continueStatementPositions[i]) == m_complexCaseStatementPositions.end()) {
+                m_complexCaseStatementPositions.insert(std::make_pair(m_continueStatementPositions[i], m_tryStatementScopeCount));
+            }
+        }
+
+        for(unsigned i = 0 ; i < m_labeledBreakStatmentPositions.size() ; i ++) {
+            if(m_complexCaseStatementPositions.find(m_labeledBreakStatmentPositions[i].second) == m_complexCaseStatementPositions.end()) {
+                m_complexCaseStatementPositions.insert(std::make_pair(m_labeledBreakStatmentPositions[i].second, m_tryStatementScopeCount));
+            }
+        }
+
+        for(unsigned i = 0 ; i < m_labeledContinueStatmentPositions.size() ; i ++) {
+            if(m_complexCaseStatementPositions.find(m_labeledContinueStatmentPositions[i].second) == m_complexCaseStatementPositions.end()) {
+                m_complexCaseStatementPositions.insert(std::make_pair(m_labeledContinueStatmentPositions[i].second, m_tryStatementScopeCount));
+            }
+        }
+
+    }
+
     ALWAYS_INLINE void consumeBreakPositions(CodeBlock* cb, size_t position);
     ALWAYS_INLINE void consumeLabeledBreakPositions(CodeBlock* cb, size_t position, ESString* lbl);
     ALWAYS_INLINE void consumeContinuePositions(CodeBlock* cb, size_t position);
     ALWAYS_INLINE void consumeLabeledContinuePositions(CodeBlock* cb, size_t position, ESString* lbl);
+    ALWAYS_INLINE void morphJumpPositionIntoComplexCase(CodeBlock* cb,size_t codePos);
+
 
 #ifdef ENABLE_ESJIT
     ALWAYS_INLINE unsigned getCurrentNodeIndex()
@@ -241,6 +280,9 @@ struct ByteCodeGenerateContext {
     size_t m_offsetToBasePointer;
     // For Label Statement
     size_t m_positionToContinue;
+    //code position, tryStatement count
+    int m_tryStatementScopeCount;
+    std::map<size_t, size_t> m_complexCaseStatementPositions;
 };
 
 class ByteCode {
@@ -1696,6 +1738,30 @@ public:
 #endif
 };
 
+class JumpComplexCase : public ByteCode {
+public:
+    JumpComplexCase(Jump* jmp, size_t tryDupCount)
+        : ByteCode(JumpComplexCaseOpcode)
+    {
+        m_controlFlowRecord = ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsJump,
+                (ESPointer *)jmp->m_jumpPosition, ESValue((int32_t)tryDupCount));
+#ifndef NDEBUG
+        m_node = jmp->m_node;
+#endif
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("JumpComplexCase <%zd, %zd>\n", (size_t)m_controlFlowRecord->value().asESPointer(), (size_t)m_controlFlowRecord->value2().asESPointer());
+    }
+#endif
+
+    ESControlFlowRecord* m_controlFlowRecord;
+};
+
+ASSERT_STATIC(sizeof(Jump) == sizeof(JumpComplexCase), "sizeof(Jump) == sizeof(JumpComplexCase)");
+
 class DuplicateTopOfStackValue : public ByteCode {
 public:
     DuplicateTopOfStackValue()
@@ -1743,7 +1809,7 @@ public:
         printf("Try <>\n");
     }
 #endif
-
+    size_t m_tryDupCount;
     size_t m_catchPosition;
     size_t m_statementEndPosition;
     InternalAtomicString m_name;
@@ -1794,6 +1860,22 @@ public:
     virtual void dump()
     {
         printf("Throw <>\n");
+    }
+#endif
+};
+
+class FinallyEnd : public ByteCode {
+public:
+    FinallyEnd()
+        : ByteCode(FinallyEndOpcode)
+    {
+
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("FinallyEnd <>\n");
     }
 #endif
 };
@@ -2024,10 +2106,9 @@ ALWAYS_INLINE size_t resolveProgramCounter(char* codeBuffer, const size_t& progr
 void dumpBytecode(CodeBlock* codeBlock);
 #endif
 
-
-void initOpcodeTable(OpcodeTable& table);
 ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter = 0);
 CodeBlock* generateByteCode(Node* node);
+
 }
 
 #include "ast/Node.h"
@@ -2056,6 +2137,7 @@ ALWAYS_INLINE void ByteCodeGenerateContext::consumeLabeledContinuePositions(Code
             Jump* shouldBeJump = cb->peekCode<Jump>(m_labeledContinueStatmentPositions[i].second);
             ASSERT(shouldBeJump->m_orgOpcode == JumpOpcode);
             shouldBeJump->m_jumpPosition = position;
+            morphJumpPositionIntoComplexCase(cb, m_labeledContinueStatmentPositions[i].second);
             m_labeledContinueStatmentPositions.erase(m_labeledContinueStatmentPositions.begin() + i);
             i = -1;
         }
@@ -2068,6 +2150,8 @@ ALWAYS_INLINE void ByteCodeGenerateContext::consumeBreakPositions(CodeBlock* cb,
         Jump* shouldBeJump = cb->peekCode<Jump>(m_breakStatementPositions[i]);
         ASSERT(shouldBeJump->m_orgOpcode == JumpOpcode);
         shouldBeJump->m_jumpPosition = position;
+
+        morphJumpPositionIntoComplexCase(cb, m_breakStatementPositions[i]);
     }
     m_breakStatementPositions.clear();
 }
@@ -2079,6 +2163,7 @@ ALWAYS_INLINE void ByteCodeGenerateContext::consumeLabeledBreakPositions(CodeBlo
             Jump* shouldBeJump = cb->peekCode<Jump>(m_labeledBreakStatmentPositions[i].second);
             ASSERT(shouldBeJump->m_orgOpcode == JumpOpcode);
             shouldBeJump->m_jumpPosition = position;
+            morphJumpPositionIntoComplexCase(cb, m_labeledBreakStatmentPositions[i].second);
             m_labeledBreakStatmentPositions.erase(m_labeledBreakStatmentPositions.begin() + i);
             i = -1;
         }
@@ -2091,8 +2176,20 @@ ALWAYS_INLINE void ByteCodeGenerateContext::consumeContinuePositions(CodeBlock* 
         Jump* shouldBeJump = cb->peekCode<Jump>(m_continueStatementPositions[i]);
         ASSERT(shouldBeJump->m_orgOpcode == JumpOpcode);
         shouldBeJump->m_jumpPosition = position;
+
+        morphJumpPositionIntoComplexCase(cb, m_continueStatementPositions[i]);
     }
     m_continueStatementPositions.clear();
+}
+
+ALWAYS_INLINE void ByteCodeGenerateContext::morphJumpPositionIntoComplexCase(CodeBlock* cb,size_t codePos)
+{
+    auto iter = m_complexCaseStatementPositions.find(codePos);
+    if(iter != m_complexCaseStatementPositions.end()) {
+        JumpComplexCase j(cb->peekCode<Jump>(codePos), iter->second);
+        memcpy(cb->m_code.data() + codePos, &j, sizeof(JumpComplexCase));
+        m_complexCaseStatementPositions.erase(iter);
+    }
 }
 
 }

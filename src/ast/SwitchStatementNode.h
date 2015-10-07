@@ -22,7 +22,7 @@ public:
 
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        ByteCodeGenerateContext newContext;
+        ByteCodeGenerateContext newContext(context);
         m_discriminant->generateExpressionByteCode(codeBlock, newContext);
 
         std::vector<size_t> jumpCodePerCaseNodePosition;

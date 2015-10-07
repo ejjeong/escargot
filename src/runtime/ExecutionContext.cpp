@@ -18,6 +18,7 @@ ExecutionContext::ExecutionContext(LexicalEnvironment* varEnv, bool needsActivat
     m_argumentCount = argumentsCount;
     m_cachedDeclarativeEnvironmentRecord = cachedDeclarativeEnvironmentRecord;
     m_isStrict = false;
+    m_tryOrCatchBodyResult = ESValue(ESValue::ESEmptyValue);
 #ifdef ENABLE_ESJIT
     m_inOSRExit = false;
 #endif

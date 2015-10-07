@@ -1591,6 +1591,14 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         goto NextInstruction;
     }
 
+    JumpComplexCaseOpcodeLbl:
+    {
+        JumpComplexCase* code = (JumpComplexCase*)currentCode;
+        ec->tryOrCatchBodyResult() = code->m_controlFlowRecord->clone();
+        //TODO add check stack pointer;
+        return ESValue(ESValue::ESEmptyValue);
+    }
+
     JumpIfTopOfStackValueIsFalseOpcodeLbl:
     {
         JumpIfTopOfStackValueIsFalse* code = (JumpIfTopOfStackValueIsFalse *)currentCode;
@@ -1673,9 +1681,8 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ExecutionContext* backupedEC = ec;
         try {
             ESValue ret = interpret(instance, codeBlock, resolveProgramCounter(codeBuffer, programCounter + sizeof(Try)));
-            if(ret != ESValue(ESValue::ESEmptyValue)) {
-                //TODO add sp check
-                return ret;
+            if(!ret.isEmpty()) {
+                ec->tryOrCatchBodyResult() = ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsReturn, ret, ESValue((int32_t)code->m_tryDupCount));
             }
         } catch(const ESValue& err) {
             instance->invalidateIdentifierCacheCheckCount();
@@ -1689,9 +1696,8 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                     , err, false);
             ESValue ret = interpret(instance, codeBlock, code->m_catchPosition);
             instance->currentExecutionContext()->setEnvironment(oldEnv);
-            if(ret != ESValue(ESValue::ESEmptyValue)) {
-                //TODO add sp check
-                return ret;
+            if(!ret.isEmpty()) {
+                ec->tryOrCatchBodyResult() = ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsReturn, ret, ESValue((int32_t)code->m_tryDupCount));
             }
         }
         programCounter = jumpTo(codeBuffer, code->m_statementEndPosition);
@@ -1706,9 +1712,39 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
     ThrowOpcodeLbl:
     {
-        ESValue* v = pop<ESValue>(stack, bp);
-        throw *v;
-        goto NextInstruction;
+        ESValue v = *pop<ESValue>(stack, bp);
+        throw v;
+    }
+
+    FinallyEndOpcodeLbl:
+    {
+        if(ec->tryOrCatchBodyResult().isEmpty()) {
+            executeNextCode<FinallyEnd>(programCounter);
+            goto NextInstruction;
+        } else {
+            ASSERT(ec->tryOrCatchBodyResult().asESPointer()->isESControlFlowRecord());
+            ESControlFlowRecord* record = ec->tryOrCatchBodyResult().asESPointer()->asESControlFlowRecord();
+            int32_t dupCnt = record->value2().asInt32();
+            if(dupCnt == 1) {
+                if(record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsReturn) {
+                    ESValue ret = record->value();
+                    ec->tryOrCatchBodyResult() = ESValue(ESValue::ESEmptyValue);
+                    //TODO sp check
+                    return ret;
+                } else {
+                    ASSERT(record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsJump);
+                    programCounter = jumpTo(codeBuffer, (size_t)record->value().asESPointer());
+                    ec->tryOrCatchBodyResult() = ESValue(ESValue::ESEmptyValue);
+                    goto NextInstruction;
+                }
+
+            } else {
+                dupCnt--;
+                record->setValue2(ESValue((int32_t)dupCnt));
+                return ESValue(ESValue::ESEmptyValue);
+            }
+
+        }
     }
 
     ThisOpcodeLbl:

@@ -77,6 +77,7 @@ public:
 #pragma GCC diagnostic pop
 #endif
 
+    ESValue& tryOrCatchBodyResult() { return m_tryOrCatchBodyResult; }
 private:
     bool m_needsActivation;
     bool m_isNewExpression;
@@ -93,6 +94,7 @@ private:
     ESValue* m_cachedDeclarativeEnvironmentRecord;
     //instance->currentExecutionContext()->environment()->record()->toDeclarativeEnvironmentRecord()
 
+    ESValue m_tryOrCatchBodyResult;
 #ifdef ENABLE_ESJIT
     bool m_inOSRExit;
 #endif

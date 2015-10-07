@@ -36,6 +36,7 @@ template<typename TypeArg>
 class ESTypedArrayObject;
 class ESTypedArrayObjectWrapper;
 class ESDataViewObject;
+class ESControlFlowRecord;
 
 class CodeBlock;
 typedef ESValue (*NativeFunctionType)(ESVMInstance*);
@@ -238,6 +239,7 @@ public:
         ESArrayBufferView = 1 << 12,
         ESTypedArrayObject = 1 << 13,
         ESDataViewObject = 1 << 14,
+        ESControlFlowRecord = 1 << 15,
         TypeMask = 0xffff
     };
 
@@ -455,6 +457,19 @@ public:
         ASSERT(isESDataViewObject());
 #endif
         return reinterpret_cast<::escargot::ESDataViewObject *>(this);
+    }
+
+    ALWAYS_INLINE bool isESControlFlowRecord() const
+    {
+        return m_type & Type::ESControlFlowRecord;
+    }
+
+    ALWAYS_INLINE ::escargot::ESControlFlowRecord* asESControlFlowRecord()
+    {
+#ifndef NDEBUG
+        ASSERT(isESControlFlowRecord());
+#endif
+        return reinterpret_cast<::escargot::ESControlFlowRecord *>(this);
     }
 
 protected:
@@ -2070,7 +2085,8 @@ typedef ESTypedArrayObject<Float64Adaptor> ESFloat64Array;
 class ESDataViewObject : public ESArrayBufferView {
 protected:
     ESDataViewObject(ESPointer::Type type = ESPointer::Type::ESDataViewObject)
-           : ESArrayBufferView((Type)(Type::ESObject | Type::ESDataViewObject)) {
+           : ESArrayBufferView((Type)(Type::ESObject | Type::ESDataViewObject))
+    {
     }
 
 public:
@@ -2078,6 +2094,75 @@ public:
     {
         return new ESDataViewObject();
     }
+};
+
+class ESControlFlowRecord : public ESPointer {
+public:
+    enum ControlFlowReason {
+        NeedsReturn,
+        NeedsJump
+    };
+protected:
+    ESControlFlowRecord(const ControlFlowReason& reason, const ESValue& value)
+           : ESPointer(ESPointer::ESControlFlowRecord)
+    {
+        m_reason = reason;
+        m_value = value;
+    }
+
+    ESControlFlowRecord(const ControlFlowReason& reason, const ESValue& value, const ESValue& value2)
+           : ESPointer(ESPointer::ESControlFlowRecord)
+    {
+        m_reason = reason;
+        m_value = value;
+        m_value2 = value2;
+    }
+
+public:
+    ESControlFlowRecord* clone()
+    {
+        return new ESControlFlowRecord(*this);
+    }
+
+    static ESControlFlowRecord* create(const ControlFlowReason& reason, const ESValue& value)
+    {
+        return new ESControlFlowRecord(reason, value);
+    }
+
+    static ESControlFlowRecord* create(const ControlFlowReason& reason, const ESValue& value, const ESValue& value2)
+    {
+        return new ESControlFlowRecord(reason, value, value2);
+    }
+
+    const ControlFlowReason& reason()
+    {
+        return m_reason;
+    }
+
+    const ESValue& value()
+    {
+        return m_value;
+    }
+
+    const ESValue& value2()
+    {
+        return m_value2;
+    }
+
+    void setValue(const ESValue& v)
+    {
+        m_value = v;
+    }
+
+    void setValue2(const ESValue& v)
+    {
+        m_value2 = v;
+    }
+
+protected:
+    ControlFlowReason m_reason;
+    ESValue m_value;
+    ESValue m_value2;
 };
 
 }

@@ -18,7 +18,7 @@ public:
 
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        ByteCodeGenerateContext newContext;
+        ByteCodeGenerateContext newContext(context);
         size_t doStart = codeBlock->currentCodeSize();
         m_body->generateStatementByteCode(codeBlock, newContext);
 

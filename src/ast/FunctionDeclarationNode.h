@@ -26,6 +26,7 @@ public:
         cb->m_nonAtomicParams = std::move(m_nonAtomicParams);
         cb->m_params = std::move(m_params);
         cb->m_isStrict = m_isStrict;
+
         ByteCodeGenerateContext newContext;
         m_body->generateStatementByteCode(cb, newContext);
 #ifdef ENABLE_ESJIT
