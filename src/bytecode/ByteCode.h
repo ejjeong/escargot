@@ -164,7 +164,7 @@ struct ByteCodeGenerateContext {
     }
 #else
     ByteCodeGenerateContext()
-      : m_offsetToBasePointer(0)
+      : m_offsetToBasePointer(0), m_positionToContinue(0)
     {
     }
 #endif
@@ -184,6 +184,7 @@ struct ByteCodeGenerateContext {
         ctx.m_labeledBreakStatmentPositions.insert(ctx.m_labeledBreakStatmentPositions.end(), m_labeledBreakStatmentPositions.begin(), m_labeledBreakStatmentPositions.end());
         ctx.m_labeledContinueStatmentPositions.insert(ctx.m_labeledContinueStatmentPositions.end(), m_labeledContinueStatmentPositions.begin(), m_labeledContinueStatmentPositions.end());
         ctx.m_offsetToBasePointer = m_offsetToBasePointer;
+        ctx.m_positionToContinue = m_positionToContinue;
         m_breakStatementPositions.clear();
         m_continueStatementPositions.clear();
         m_labeledBreakStatmentPositions.clear();
@@ -236,7 +237,10 @@ struct ByteCodeGenerateContext {
     std::vector<size_t> m_continueStatementPositions;
     std::vector<std::pair<ESString*, size_t> > m_labeledBreakStatmentPositions;
     std::vector<std::pair<ESString*, size_t> > m_labeledContinueStatmentPositions;
+    // For For In Statement
     size_t m_offsetToBasePointer;
+    // For Label Statement
+    size_t m_positionToContinue;
 };
 
 class ByteCode {

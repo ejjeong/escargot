@@ -44,7 +44,7 @@ public:
         size_t whileEnd = codeBlock->currentCodeSize();
         newContext.consumeBreakPositions(codeBlock, whileEnd);
         codeBlock->peekCode<JumpIfTopOfStackValueIsFalse>(testPos)->m_jumpPosition = whileEnd;
-
+        newContext.m_positionToContinue = context.m_positionToContinue;
         newContext.propagateInformationTo(context);
     }
 

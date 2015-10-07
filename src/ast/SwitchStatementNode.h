@@ -64,6 +64,7 @@ public:
         }
         size_t breakPos = codeBlock->currentCodeSize();
         newContext.consumeBreakPositions(codeBlock, breakPos);
+        newContext.m_positionToContinue = context.m_positionToContinue;
         newContext.propagateInformationTo(context);
 
         if(!m_default) {

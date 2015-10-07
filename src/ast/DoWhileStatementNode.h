@@ -29,7 +29,7 @@ public:
 
         newContext.consumeContinuePositions(codeBlock, doStart);
         newContext.consumeBreakPositions(codeBlock, doEnd);
-
+        newContext.m_positionToContinue = context.m_positionToContinue;
         newContext.propagateInformationTo(context);
     }
 
