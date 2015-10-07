@@ -491,12 +491,12 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
             }
 
             if (jitFunction) {
-                ESValue res = jitFunction(instance);
+                result = ESValue::fromRawDouble(jitFunction(instance));
+                // printf("JIT Result %s\n", result.toString()->utf8Data());
                 if (ec.inOSRExit()) {
-                    printf("OSR EXIT from tmp%ld\n", res.asRawData());
+                    ASSERT(result.isInt32());
+                    printf("OSR EXIT from tmp%d\n", result.asInt32());
                     RELEASE_ASSERT_NOT_REACHED();
-                } else {
-                    result = ESValue(res.asRawData()); // TODO: Make it as ESValue format in the JIT function
                 }
             } else {
                 //printf("JIT failed! Execute interpreter\n");

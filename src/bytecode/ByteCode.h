@@ -1906,7 +1906,7 @@ public:
 
     std::vector<SSAIndex, gc_allocator<SSAIndex> > m_SSAIndexes;
     std::vector<int, gc_allocator<int> > m_functionCallInfos;
-    typedef ESValue (*JITFunction)(ESVMInstance*);
+    typedef ESValueInDouble (*JITFunction)(ESVMInstance*);
     JITFunction m_cachedJITFunction;
     bool m_dontJIT;
     size_t m_tempRegisterSize;

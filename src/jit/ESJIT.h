@@ -14,7 +14,7 @@ namespace ESJIT {
 
 class ESGraph;
 
-typedef ESValue (*JITFunction)(ESVMInstance*);
+typedef ESValueInDouble (*JITFunction)(ESVMInstance*);
 
 class ESJITCompiler {
 public:

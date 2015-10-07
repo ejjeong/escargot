@@ -100,7 +100,8 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
 {
     m_out.insStore(LIR_sti, m_oneI, m_context, ExecutionContext::offsetofInOSRExit(), 1);
     LIns* bytecode = m_out.insImmI(currentByteCodeIndex);
-    return m_out.ins1(LIR_retq, bytecode); // FIXME returning int as quad
+    LIns* boxedIndex = boxESValue(bytecode, TypeInt32);
+    return m_out.ins1(LIR_retd, boxedIndex);
 }
 
 LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteCodeIndex)
@@ -129,6 +130,7 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
         LIns* maskedValue = m_out.ins2(LIR_andq, quadValue, m_tagMaskQ);
         LIns* checkIfNotTagged = m_out.ins2(LIR_eqq, maskedValue, m_zeroQ);
         LIns* jumpIfPointer = m_out.insBranch(LIR_jt, checkIfNotTagged, nullptr);
+        JIT_LOG(in, "Expected Pointer-typed value, but got this value");
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out.ins0(LIR_label);
         jumpIfPointer->setTarget(normalPath);
@@ -139,6 +141,7 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
 #ifdef ESCARGOT_64
         LIns* checkIfUndefined = m_out.ins2(LIR_eqq, in, m_undefinedQ);
         LIns* jumpIfUndefined = m_out.insBranch(LIR_jt, checkIfUndefined, nullptr);
+        JIT_LOG(in, "Expected undefined value, but got this value");
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out.ins0(LIR_label);
         jumpIfUndefined->setTarget(normalPath);
@@ -418,15 +421,16 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(ReturnWithValue);
         LIns* returnValue = getTmpMapping(irReturnWithValue->returnIndex());
-        LIns* returnESValue = m_out.ins1(LIR_i2q, returnValue);
-        return m_out.ins1(LIR_retq, returnESValue);
+        LIns* returnESValue = boxESValue(returnValue, m_graph->getOperandType(irReturnWithValue->returnIndex()));
+        //JIT_LOG(returnESValue, "Returning this value");
+        return m_out.ins1(LIR_retd, returnESValue);
     }
     case ESIR::Opcode::GetArgument:
     {
         INIT_ESIR(GetArgument);
         LIns* arguments = m_out.insLoad(LIR_ldp, m_context, ExecutionContext::offsetOfArguments(), 1, LOAD_NORMAL);
         LIns* argument = m_out.insLoad(LIR_ldd, arguments, irGetArgument->argumentIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
-        // JIT_LOG_D(argument, "Read this argument");
+        // JIT_LOG(argument, "Read this argument");
         return argument;
     }
     case ESIR::Opcode::GetVar:
@@ -458,6 +462,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* resolvedSlot = m_out.insCall(&contextResolveBindingCallInfo, args);
         LIns* resolvedResult = m_out.insLoad(LIR_ldd, resolvedSlot, 0, 1, LOAD_NORMAL);
 #else
+        JIT_LOG(cachedIdentifierCacheInvalidationCheckCount, "GetVarGeneric Cache Miss");
         generateOSRExit(irGetVarGeneric->targetIndex());
 #endif
 
@@ -515,6 +520,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         jumpToEnd->setTarget(labelEnd);
 
 #else
+        JIT_LOG(cachedIdentifierCacheInvalidationCheckCount, "SetVarGeneric Cache Miss");
         generateOSRExit(irSetVarGeneric->m_targetIndex);
 #endif
 
@@ -602,6 +608,8 @@ void NativeGenerator::nanojitCodegen()
     m_zeroI = m_out.insImmI(0);
     m_true = m_oneI;
     m_false = m_zeroI;
+
+    // JIT_LOG(m_true, "Start executing JIT function");
 
     // Generate code for each IRs
     for (size_t i = 0; i < m_graph->basicBlockSize(); i++) {

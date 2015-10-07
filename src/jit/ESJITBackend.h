@@ -16,7 +16,7 @@ namespace ESJIT {
 class ESGraph;
 class ESIR;
 
-typedef ESValue (*JITFunction)(ESVMInstance*);
+typedef ESValueInDouble (*JITFunction)(ESVMInstance*);
 
 class NativeGenerator {
 public:
