@@ -69,7 +69,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             } else if (bytecode->m_value.isDouble()) {
                 literal = ConstantDoubleIR::create(ssaIndex->m_targetIndex, bytecode->m_value.asDouble());
             } else if (bytecode->m_value.isBoolean()) {
-                literal = ConstantDoubleIR::create(ssaIndex->m_targetIndex, bytecode->m_value.asBoolean());
+                literal = ConstantIntIR::create(ssaIndex->m_targetIndex, bytecode->m_value.asBoolean());
             } else if (bytecode->m_value.isESPointer()) {
                 ESPointer* p = bytecode->m_value.asESPointer();
                 if (p->isESString())
@@ -344,9 +344,18 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(SetObject);
             break;
         case GetObjectOpcode:
-            goto unsupported;
+        {
+            INIT_BYTECODE(GetObject);
+            bytecode->m_profile.updateProfiledType();
+            graph->setOperandType(ssaIndex->m_targetIndex, bytecode->m_profile.getType());
+            if (bytecode->m_esir_type.isArrayObjectType()) {
+               GetObjectIR* getObjectIR = GetObjectIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
+               currentBlock->push(getObjectIR);
+             } else
+               RELEASE_ASSERT_NOT_REACHED();
             NEXT_BYTECODE(GetObject);
             break;
+        }
         case GetObjectWithPeekingOpcode:
             goto unsupported;
             NEXT_BYTECODE(GetObjectWithPeeking);

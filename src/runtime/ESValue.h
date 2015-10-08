@@ -1661,6 +1661,10 @@ public:
         std::sort(m_vector.begin(), m_vector.end(),c);
     }
 
+#ifdef ENABLE_ESJIT
+    static size_t offsetOfVectorData() { return offsetof(ESArrayObject, m_vector); }
+#endif
+
 protected:
     unsigned m_length;
     ESVector m_vector;

@@ -583,6 +583,26 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 
         return boxedSource;
     }
+    case ESIR::Opcode::GetObject:
+    {
+        INIT_ESIR(GetObject);
+        LIns* obj = getTmpMapping(irGetObject->objectIndex());
+        LIns* key = getTmpMapping(irGetObject->propertyIndex());
+
+        Type objType = m_graph->getOperandType(irGetObject->objectIndex());
+        Type keyType = m_graph->getOperandType(irGetObject->propertyIndex());
+        if (objType.isArrayObjectType()) {
+            if (keyType.isInt32Type()) {
+                size_t gapToVector = escargot::ESArrayObject::offsetOfVectorData();;
+                LIns* vectorData = m_out.insLoad(LIR_ldd, obj, gapToVector, 1, LOAD_NORMAL);
+                LIns* ESValueSize = m_out.insImmI(sizeof(ESValue));
+                LIns* offset = m_out.ins2(LIR_muli, key, ESValueSize);
+                LIns* newBase = m_out.ins2(LIR_addd, vectorData, offset);
+                return m_out.insLoad(LIR_ldd, newBase, 0, 1, LOAD_NORMAL);
+             }
+        }
+        RELEASE_ASSERT_NOT_REACHED();
+    }
     case ESIR::Opcode::PutInObject:
     {
         INIT_ESIR(PutInObject);
@@ -623,7 +643,11 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         Type srcType = m_graph->getOperandType(irIncrement->sourceIndex());
         if (srcType.isInt32Type()) {
             LIns* one = m_out.insImmI(1);
-            return m_out.ins2(LIR_addi, source, one);
+            LIns* ret = m_out.ins2(LIR_addi, source, one);
+
+//            JIT_LOG(ret);
+
+            return ret;
         } else if (srcType.isDoubleType()) {
             LIns* one = m_out.insImmD(1);
             return m_out.ins2(LIR_addd, source, one);

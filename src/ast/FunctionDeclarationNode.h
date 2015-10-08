@@ -40,6 +40,7 @@ public:
             char* code = cb->m_code.data();
             ByteCode* currentCode = (ByteCode *)(&code[0]);
             if(currentCode->m_orgOpcode != ExecuteNativeFunctionOpcode) {
+                cb->m_nonAtomicId = m_nonAtomicId;
                 dumpBytecode(cb);
             }
         }
