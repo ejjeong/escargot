@@ -1374,6 +1374,10 @@ public:
     }
 
     ALWAYS_INLINE size_t keyCount();
+
+#ifdef ENABLE_ESJIT
+    static size_t offsetOfHiddenClassData() { return offsetof(ESObject, m_hiddenClassData); }
+#endif
 protected:
     ESHiddenClass* m_hiddenClass;
     ESObjectVectorStd m_hiddenClassData;

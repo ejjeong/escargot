@@ -95,6 +95,7 @@ void ESGraphTypeInference::run(ESGraph* graph)
             case ESIR::Opcode::GetVar:
             case ESIR::Opcode::GetVarGeneric:
             case ESIR::Opcode::GetObject:
+            case ESIR::Opcode::GetArrayObject:
                 break;
             case ESIR::Opcode::SetVar:
             {

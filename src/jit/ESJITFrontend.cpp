@@ -359,9 +359,13 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             bytecode->m_profile.updateProfiledType();
             graph->setOperandType(ssaIndex->m_targetIndex, bytecode->m_profile.getType());
             if (bytecode->m_esir_type.isArrayObjectType()) {
-               GetObjectIR* getObjectIR = GetObjectIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
-               currentBlock->push(getObjectIR);
-             } else
+               GetArrayObjectIR* getArrayObjectIR = GetArrayObjectIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
+               currentBlock->push(getArrayObjectIR);
+            } else if (bytecode->m_esir_type.isObjectType()) {
+                GetObjectIR* getObjectIR = GetObjectIR::create(ssaIndex->m_targetIndex, bytecode->m_cachedHiddenClass, bytecode->m_cachedIndex,
+                        ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
+                currentBlock->push(getObjectIR);
+            } else
                RELEASE_ASSERT_NOT_REACHED();
             NEXT_BYTECODE(GetObject);
             break;
