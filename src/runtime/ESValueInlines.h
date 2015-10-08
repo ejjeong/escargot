@@ -1083,7 +1083,12 @@ inline void ESObject::propertyFlags(const ESValue& key, bool& exists, bool& isDa
     } else {
         size_t idx = m_hiddenClass->findProperty(key.toString());
         if(idx == SIZE_MAX) {
-            exists = false;
+            if (__proto__().isUndefined()) {
+                exists = false;
+                return;
+            }
+            ESObject* proto = __proto__().asESPointer()->asESObject();
+            proto->propertyFlags(key, exists, isDataProperty, isWritable, isEnumerable, isConfigurable);
         } else {
             exists = true;
             isDataProperty = m_hiddenClass->m_propertyFlagInfo[idx].m_isDataProperty;
@@ -1532,8 +1537,16 @@ ALWAYS_INLINE void ESObject::appendHiddenClassItem(escargot::ESString* keyStr, c
         ASSERT(iter == m_map->end());
         m_map->insert(std::make_pair(keyStr, escargot::ESSlot(value, m_flags.m_propertyIndex, true, true, true)));
     } else {
-        size_t ret = m_hiddenClass->defineProperty(this, keyStr, true, true, true, true);
-        m_hiddenClassData[ret] = value;
+        bool exists, isDataProperty, isWritable, isEnumerable, isConfigurable;
+        propertyFlags(keyStr, exists, isDataProperty, isWritable, isEnumerable, isConfigurable);
+
+        if (exists && isWritable) {
+            size_t ret = m_hiddenClass->defineProperty(this, keyStr, true, isWritable, isEnumerable, isConfigurable);
+            m_hiddenClassData[ret] = value;
+        } else if (!exists) {
+            size_t ret = m_hiddenClass->defineProperty(this, keyStr, true, true, true, true);
+            m_hiddenClassData[ret] = value;
+        }
     }
 }
 
