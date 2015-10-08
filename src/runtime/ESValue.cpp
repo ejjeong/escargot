@@ -319,7 +319,6 @@ ESObject::ESObject(ESPointer::Type type, size_t initialKeyCount)
     m_hiddenClassData.reserve(initialKeyCount);
     m_hiddenClass = ESVMInstance::currentInstance()->initialHiddenClassForObject();
 
-    m_hiddenClassData.push_back(ESValue(ESValue::ESUndefined));
     m_hiddenClassData.push_back(ESValue((ESPointer *)ESVMInstance::currentInstance()->object__proto__AccessorData()));
 }
 

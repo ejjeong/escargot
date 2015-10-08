@@ -1009,8 +1009,6 @@ inline void ESObject::definePropertyOrThrow(escargot::ESValue key, bool isWritab
         escargot::ESString* str = key.toString();
         auto iter = m_map->find(str);
         if(iter != m_map->end()) {
-            //TODO(what if property is non-configurable)
-            ASSERT(iter->second.isConfigurable());
             m_map->erase(iter);
         }
         m_flags.m_propertyIndex++;
@@ -1025,11 +1023,13 @@ inline void ESObject::definePropertyOrThrow(escargot::ESValue key, bool isWritab
                 ) {
             convertIntoMapMode();
             definePropertyOrThrow(key, isWritable, isEnumerable, isConfigurable, initalValue);
+            return ;
         }
 
         if(UNLIKELY(m_hiddenClass->m_propertyInfo.size() >= ESHiddenClass::ESHiddenClassSizeLimit)) {
             convertIntoMapMode();
             definePropertyOrThrow(key, isWritable, isEnumerable, isConfigurable, initalValue);
+            return ;
         }
         ASSERT(m_hiddenClass->m_propertyFlagInfo[ret].m_isDataProperty);
         m_hiddenClassData[ret] = initalValue;

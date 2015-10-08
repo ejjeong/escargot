@@ -1332,7 +1332,7 @@ public:
 
     ALWAYS_INLINE void setConstructor(const ESValue& obj)
     {
-        set(strings->constructor, obj);
+        definePropertyOrThrow(strings->constructor, true, false, true, obj);
     }
 
     void convertIntoMapMode()
