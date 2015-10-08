@@ -91,6 +91,12 @@ void ESGraphTypeInference::run(ESGraph* graph)
             case ESIR::Opcode::Return:
             case ESIR::Opcode::ReturnWithValue:
                 break;
+            case ESIR::Opcode::Move:
+            {
+                INIT_ESIR(Move);
+                graph->setOperandType(ir->targetIndex(), irMove->sourceIndex());
+                break;
+            }
             case ESIR::Opcode::GetArgument:
             case ESIR::Opcode::GetVar:
             case ESIR::Opcode::GetVarGeneric:
@@ -112,15 +118,25 @@ void ESGraphTypeInference::run(ESGraph* graph)
                 break;
             }
             case ESIR::Opcode::ToNumber:
+            {
+                INIT_ESIR(ToNumber);
+                Type srcType = graph->getOperandType(irToNumber->sourceIndex());
+                if (srcType.isInt32Type())
+                    graph->setOperandType(ir->targetIndex(), TypeInt32);
+                else
+                    graph->setOperandType(ir->targetIndex(), TypeDouble);
+                break;
+            }
             case ESIR::Opcode::Increment:
             {
-                ToNumberIR* irToNumber = static_cast<ToNumberIR*>(ir);
-                Type srcType = graph->getOperandType(irToNumber->sourceIndex());
-                if (srcType.isInt32Type()) {
+                INIT_ESIR(Increment);
+                Type srcType = graph->getOperandType(irIncrement->sourceIndex());
+                if (srcType.isInt32Type())
                     graph->setOperandType(ir->targetIndex(), TypeInt32);
-                } else {
+                else if (srcType.isDoubleType())
                     graph->setOperandType(ir->targetIndex(), TypeDouble);
-                  }
+                else
+                    RELEASE_ASSERT_NOT_REACHED();
                 break;
             }
             case ESIR::Opcode::PutInObject:

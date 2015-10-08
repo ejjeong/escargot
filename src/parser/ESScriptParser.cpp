@@ -3,6 +3,8 @@
 #include "vm/ESVMInstance.h"
 #include "runtime/ESValue.h"
 
+#include "ast/AST.h"
+
 #include "esprima.h"
 
 #ifdef ESCARGOT_PROFILE

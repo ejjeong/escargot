@@ -1,8 +1,6 @@
 #ifndef __ESScriptParser__
 #define __ESScriptParser__
 
-#include "ast/AST.h"
-
 namespace escargot {
 
 class ESVMInstance;

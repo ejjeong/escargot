@@ -98,6 +98,12 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case PopOpcode:
             NEXT_BYTECODE(Pop);
             break;
+        case PushIntoTempStackOpcode:
+            NEXT_BYTECODE(PushIntoTempStack);
+            break;
+        case PopFromTempStackOpcode:
+            NEXT_BYTECODE(PopFromTempStack);
+            break;
         case GetByIdOpcode:
         {
             INIT_BYTECODE(GetById);
@@ -480,9 +486,13 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(JumpIfTopOfStackValueIsTrueWithPeeking);
             break;
         case DuplicateTopOfStackValueOpcode:
-            goto unsupported;
+        {
+            INIT_BYTECODE(DuplicateTopOfStackValue);
+            MoveIR* moveIR = MoveIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1);
+            currentBlock->push(moveIR);
             NEXT_BYTECODE(DuplicateTopOfStackValue);
             break;
+        }
         case LoopStartOpcode:
         {
             INIT_BYTECODE(LoopStart);
