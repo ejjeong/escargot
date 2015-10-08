@@ -163,6 +163,9 @@ struct ByteCodeGenerateContext {
         : m_offsetToBasePointer(0)
         , m_positionToContinue(0)
         , m_tryStatementScopeCount(0)
+#ifdef ENABLE_ESJIT
+        , m_currentNodeIndex(0)
+#endif
     {
     }
 
