@@ -23,8 +23,11 @@ public:
         ByteCodeGenerateContext newContext(context);
 
         if (m_init) {
+            size_t start = codeBlock->currentCodeSize();
             m_init->generateExpressionByteCode(codeBlock, newContext);
-            codeBlock->pushCode(Pop(), this);
+            size_t end = codeBlock->currentCodeSize();
+            if(start != end)
+                codeBlock->pushCode(Pop(), this);
         }
 
 #ifdef ENABLE_ESJIT

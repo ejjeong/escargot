@@ -141,7 +141,9 @@ inline ESString* ESValue::toString() const
             else
                 return strings->Infinity;
         }
-        if (d == -0.0)
+        //convert -0.0 into 0.0
+        //in c++, d = -0.0, d == 0.0 is true
+        if (d == 0.0)
             d = 0;
 
         return ESString::create(d);
@@ -324,8 +326,6 @@ inline bool ESValue::toBoolean() const
             return false;
         if(d == 0.0)
             return false;
-        if(d == -0.0)
-            return false;
         return true;
     }
 
@@ -361,9 +361,7 @@ inline int32_t ESValue::toInt32() const
     double num = toNumber();
 
     //If number is NaN, +0, −0, +∞, or −∞, return +0.
-    if(UNLIKELY(isnan(num))) {
-        return 0;
-    } else if(UNLIKELY(num == -0.0)) {
+    if(UNLIKELY(isnan(num) || num == 0.0 || isinf(0.0))) {
         return 0;
     }
 
@@ -391,9 +389,7 @@ inline uint32_t ESValue::toUint32() const
     double num = toNumber();
 
     //If number is NaN, +0, −0, +∞, or −∞, return +0.
-    if(UNLIKELY(isnan(num))) {
-        return 0;
-    } else if(UNLIKELY(num == -0.0)) {
+    if(UNLIKELY(isnan(num) || num == 0.0 || isinf(0.0))) {
         return 0;
     }
 

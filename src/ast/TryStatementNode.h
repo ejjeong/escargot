@@ -31,8 +31,8 @@ public:
         size_t catchPos = codeBlock->currentCodeSize();
         if(m_handler) {
             m_handler->generateStatementByteCode(codeBlock, context);
-            codeBlock->pushCode(TryCatchBodyEnd(), this);
         }
+        codeBlock->pushCode(TryCatchBodyEnd(), this);
 
         context.registerJumpPositionsToComplexCase();
         context.m_tryStatementScopeCount--;

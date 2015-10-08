@@ -2324,11 +2324,13 @@ void GlobalObject::installMath()
         */
         if(isnan(x))
             return ESValue(std::numeric_limits<double>::quiet_NaN());
-        else if(x == 0.0)
-            return ESValue(0);
-        else if(x == -0.0)
-            return ESValue(ESValue::EncodeAsDouble, -0.0);
-        else if(isinf(x))
+        else if(x == 0.0) {
+            if(std::signbit(x)) {
+                return ESValue(ESValue::EncodeAsDouble, -0.0);
+            } else {
+                return ESValue(0);
+            }
+        } else if(isinf(x))
             return ESValue(std::numeric_limits<double>::quiet_NaN());
         return ESValue(tan(x));
     }, strings->tan));

@@ -72,6 +72,7 @@ Node* ESScriptParser::generateAST(ESVMInstance* instance, const escargot::u16str
     };
 
     auto updatePostfixNodeChecker = [](Node* node){
+        /*
         if(node && node->type() == NodeType::UpdateExpressionDecrementPostfix) {
             ((UpdateExpressionDecrementPostfixNode *)node)->m_isSimpleCase = true;
         }
@@ -79,6 +80,7 @@ Node* ESScriptParser::generateAST(ESVMInstance* instance, const escargot::u16str
         if(node && node->type() == NodeType::UpdateExpressionIncrementPostfix) {
             ((UpdateExpressionIncrementPostfixNode *)node)->m_isSimpleCase = true;
         }
+        */
     };
 
     bool shouldWorkAroundIdentifier = true;

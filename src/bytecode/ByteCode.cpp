@@ -1699,12 +1699,19 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             try{
                 ESValue ret = interpret(instance, codeBlock, code->m_catchPosition);
                 instance->currentExecutionContext()->setEnvironment(oldEnv);
-                if(!ret.isEmpty()) {
+                if(ret.isEmpty()) {
+                    if(!ec->tryOrCatchBodyResult().isEmpty() && ec->tryOrCatchBodyResult().isESPointer() && ec->tryOrCatchBodyResult().asESPointer()->isESControlFlowRecord()) {
+                        ESControlFlowRecord* record = ec->tryOrCatchBodyResult().asESPointer()->asESControlFlowRecord();
+                        if(record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsThrow) {
+                            ec->tryOrCatchBodyResult() = ESValue(ESValue::ESEmptyValue);
+                        }
+                    }
+                } else {
                     ec->tryOrCatchBodyResult() = ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsReturn, ret, ESValue((int32_t)code->m_tryDupCount));
                 }
             } catch(ESValue e) {
                 instance->currentExecutionContext()->setEnvironment(oldEnv);
-                ec->tryOrCatchBodyResult() = ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsThrow, e, ESValue((int32_t)code->m_tryDupCount));
+                ec->tryOrCatchBodyResult() = ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsThrow, e, ESValue((int32_t)code->m_tryDupCount - 1));
             }
         }
         programCounter = jumpTo(codeBuffer, code->m_statementEndPosition);
