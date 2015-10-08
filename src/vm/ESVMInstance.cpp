@@ -161,20 +161,9 @@ ESVMInstance::~ESVMInstance()
 
 ESValue ESVMInstance::evaluate(u16string& source)
 {
-    try {
-        m_lastExpressionStatementValue = ESValue();
-        CodeBlock* block = ESScriptParser::parseScript(this, source);
-        interpret(this, block);
-    } catch(const ESValue& err) {
-        try{
-            printf("Uncaught %s\n", err.toString()->utf8Data());
-        } catch(...) {
-            printf("an error occur in catch-block\n");
-        }
-        fflush(stdout);
-        return ESValue(ESValue::ESEmptyValue);
-    }
-
+    m_lastExpressionStatementValue = ESValue();
+    CodeBlock* block = ESScriptParser::parseScript(this, source);
+    interpret(this, block);
     return m_lastExpressionStatementValue;
 }
 
