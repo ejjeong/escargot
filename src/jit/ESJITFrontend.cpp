@@ -381,9 +381,17 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(GetObjectWithPeeking);
             break;
         case GetObjectPreComputedCaseOpcode:
-            goto unsupported;
+        {
+            INIT_BYTECODE(GetObjectPreComputedCase);
+            ASSERT(bytecode->m_esir_type.isObjectType());
+            bytecode->m_profile.updateProfiledType();
+            graph->setOperandType(ssaIndex->m_targetIndex, bytecode->m_profile.getType());
+            GetObjectPreComputedIR* getObjectPreComputedIR = GetObjectPreComputedIR::create(ssaIndex->m_targetIndex, bytecode->m_cachedHiddenClass, bytecode->m_cachedIndex,
+                                    ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
+            currentBlock->push(getObjectPreComputedIR);
             NEXT_BYTECODE(GetObjectPreComputedCase);
             break;
+        }
         case GetObjectWithPeekingPreComputedCaseOpcode:
             goto unsupported;
             NEXT_BYTECODE(GetObjectWithPeekingPreComputedCase);

@@ -99,6 +99,7 @@ class ESBasicBlock;
     F(GetVar, LoadFromHeap) \
     F(SetVar, ) \
     F(GetObject, LoadFromHeap)\
+    F(GetObjectPreComputed, LoadFromHeap)\
     F(GetArrayObject, LoadFromHeap)\
     F(PutInObject, ) \
     F(GetScoped, LoadFromHeap) \
@@ -437,7 +438,7 @@ public:
     {
         out << "tmp" << m_targetIndex << ": ";
         ESIR::dump(out);
-        out << " tmp" << m_objectIndex << ".tmp" << m_propertyIndex;
+        out << " tmp" << m_objectIndex << "[tmp" << m_propertyIndex << "]";
     }
 #endif
 
@@ -455,6 +456,37 @@ private:
           m_propertyIndex(propertyIndex){ }
     GetObjectIR(int targetIndex, int objectIndex, int propertyIndex)
         : ESIR(ESIR::Opcode::GetObject, targetIndex),
+          m_objectIndex(objectIndex),
+          m_propertyIndex(propertyIndex){ }
+    ESHiddenClass* m_cachedHiddenClass;
+    int m_cachedIndex;
+    int m_objectIndex;
+    int m_propertyIndex;
+};
+
+class GetObjectPreComputedIR : public ESIR {
+public:
+    DECLARE_STATIC_GENERATOR_4(GetObjectPreComputed, ESHiddenClass*, size_t, int, int);
+
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+        out << " tmp" << m_objectIndex << ".tmp" << m_propertyIndex;
+    }
+#endif
+
+    ESHiddenClass* cachedHiddenClass() { return m_cachedHiddenClass; }
+    size_t cachedIndex() { return m_cachedIndex; }
+    int objectIndex() { return m_objectIndex; }
+    int propertyIndex() { return m_propertyIndex; }
+
+private:
+    GetObjectPreComputedIR(int targetIndex, ESHiddenClass* cachedHiddenClass, size_t cachedIndex, int objectIndex, int propertyIndex)
+        : ESIR(ESIR::Opcode::GetObjectPreComputed, targetIndex),
+          m_cachedHiddenClass(cachedHiddenClass),
+          m_cachedIndex(cachedIndex),
           m_objectIndex(objectIndex),
           m_propertyIndex(propertyIndex){ }
     ESHiddenClass* m_cachedHiddenClass;
