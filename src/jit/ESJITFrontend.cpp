@@ -48,8 +48,18 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             if (currentBlock != generatedBlock && !currentBlock->endsWithJumpOrBranch()) {
                 currentBlock->addChild(generatedBlock);
                 generatedBlock->addParent(currentBlock);
-            }
+              }
             currentBlock = generatedBlock;
+            if (currentBlock->index() == SIZE_MAX) {
+                for (int i = graph->basicBlockSize() - 1; i >= 0; i--) {
+                    int blockIndex = graph->basicBlock(i)->index();
+                    if (blockIndex >= 0) {
+                        currentBlock->setIndexLater(blockIndex + 1);
+                        graph->push(currentBlock);
+                        break;
+                       }
+                  }
+              }
         }
         // printf("parse idx %lu with BasicBlock %lu\n", idx, currentBlock->index());
 
@@ -442,7 +452,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             INIT_BYTECODE(JumpIfTopOfStackValueIsFalse);
 
             ESBasicBlock* trueBlock = ESBasicBlock::create(graph, currentBlock);
-            ESBasicBlock* falseBlock = ESBasicBlock::create(graph, currentBlock);
+            ESBasicBlock* falseBlock = ESBasicBlock::create(graph, currentBlock, true);
 
             BranchIR* branchIR = BranchIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, trueBlock, falseBlock);
             currentBlock->push(branchIR);

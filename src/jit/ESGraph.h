@@ -26,10 +26,11 @@ class ESGraph;
 class ESBasicBlock : public gc {
     friend class NativeGenerator;
 public:
-    static ESBasicBlock* create(ESGraph* graph, ESBasicBlock* parentBlock = nullptr)
+    static ESBasicBlock* create(ESGraph* graph, ESBasicBlock* parentBlock = nullptr, bool setIndexLater = false)
     {
         // FIXME no bdwgc
-        return new ESBasicBlock(graph, parentBlock);
+        ESBasicBlock* newBlock = new ESBasicBlock(graph, parentBlock, setIndexLater);
+        return newBlock;
     }
 
     void push(ESIR* ir) { m_instructions.push_back(ir); }
@@ -43,6 +44,7 @@ public:
     void addChild(ESBasicBlock* child) { m_children.push_back(child); }
 
     size_t index() { return m_index; }
+    void setIndexLater(size_t index) { m_index = index; }
     bool endsWithJumpOrBranch();
 
     void setLabel(nanojit::LIns* label) { m_label = label; }
@@ -57,7 +59,7 @@ public:
 #endif
 
 private:
-    ESBasicBlock(ESGraph* graph, ESBasicBlock* parentBlock);
+    ESBasicBlock(ESGraph* graph, ESBasicBlock* parentBlock, bool setIndexLater);
 
     ESGraph* m_graph;
     std::vector<ESBasicBlock*> m_parents;

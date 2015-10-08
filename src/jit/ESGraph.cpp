@@ -9,12 +9,24 @@
 namespace escargot {
 namespace ESJIT {
 
-ESBasicBlock::ESBasicBlock(ESGraph* graph, ESBasicBlock* parentBlock)
+ESBasicBlock::ESBasicBlock(ESGraph* graph, ESBasicBlock* parentBlock, bool setIndexLater)
     : m_graph(graph)
-    , m_index(graph->basicBlockSize())
     , m_label(nullptr)
 {
-    graph->push(this);
+    if (setIndexLater) {
+        m_index = SIZE_MAX;
+    } else {
+        int tmp = graph->basicBlockSize();
+        for (int i = graph->basicBlockSize() - 1; i >= 0; i--) {
+            int blockIndex = graph->basicBlock(i)->index();
+            if (blockIndex >= 0) {
+                m_index = blockIndex + 1;
+                break;
+            }
+        }
+        graph->push(this);
+    }
+
     if (parentBlock) {
         this->addParent(parentBlock);
         parentBlock->addChild(this);
