@@ -1425,8 +1425,6 @@ public:
     size_t m_cachedIndex;
 #ifdef ENABLE_ESJIT
     escargot::ESJIT::Type m_esir_type;
-#endif
-#ifdef ENABLE_ESJIT
     ProfileData m_profile;
 #endif
 };

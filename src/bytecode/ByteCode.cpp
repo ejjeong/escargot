@@ -972,7 +972,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
     GetObjectWithPeekingOpcodeLbl:
     {
-        GetObject* code = (GetObject*)currentCode;
+        GetObjectWithPeeking* code = (GetObjectWithPeeking*)currentCode;
 
         ESValue* property = pop<ESValue>(stack, bp);
         ESValue* willBeObject = pop<ESValue>(stack, bp);
@@ -989,34 +989,34 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                    char16_t c = willBeObject->asESString()->string().data()[prop_val];
                    if(LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
                        push<ESValue>(stack, bp, strings->asciiTable[c]);
-                       executeNextCode<GetObject>(programCounter);
+                       executeNextCode<GetObjectWithPeeking>(programCounter);
                        goto NextInstruction;
                    } else {
                        push<ESValue>(stack, bp, ESString::create(c));
-                       executeNextCode<GetObject>(programCounter);
+                       executeNextCode<GetObjectWithPeeking>(programCounter);
                        goto NextInstruction;
                    }
                } else {
                    push<ESValue>(stack, bp, ESValue());
-                   executeNextCode<GetObject>(programCounter);
+                   executeNextCode<GetObjectWithPeeking>(programCounter);
                    goto NextInstruction;
                }
                push<ESValue>(stack, bp, willBeObject->asESString()->substring(prop_val, prop_val+1));
-               executeNextCode<GetObject>(programCounter);
+               executeNextCode<GetObjectWithPeeking>(programCounter);
                goto NextInstruction;
             } else {
                 ESString* val = property->toString();
                 if(*val == *strings->length) {
                     lastESObjectMetInMemberExpressionNode = *willBeObject;
                     push<ESValue>(stack, bp, ESValue(willBeObject->asESString()->length()));
-                    executeNextCode<GetObject>(programCounter);
+                    executeNextCode<GetObjectWithPeeking>(programCounter);
                     goto NextInstruction;
                 }
                 ESValue ret = globalObject->stringObjectProxy()->find(val, true);
                 if(ret != ESValue(ESValue::ESEmptyValue) && ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->codeBlock()->m_isBuiltInFunction) {
                     lastESObjectMetInMemberExpressionNode = *willBeObject;
                     push<ESValue>(stack, bp, ret);
-                    executeNextCode<GetObject>(programCounter);
+                    executeNextCode<GetObjectWithPeeking>(programCounter);
                     goto NextInstruction;
                 }
             }
@@ -1026,7 +1026,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             if(ret != ESValue(ESValue::ESEmptyValue) && ret.isESPointer() && ret.asESPointer()->isESFunctionObject() && ret.asESPointer()->asESFunctionObject()->codeBlock()->m_isBuiltInFunction) {
                 lastESObjectMetInMemberExpressionNode = *willBeObject;
                 push<ESValue>(stack, bp, ret);
-                executeNextCode<GetObject>(programCounter);
+                executeNextCode<GetObjectWithPeeking>(programCounter);
                 goto NextInstruction;
             }
         }
@@ -1042,7 +1042,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
         if((obj->isESArrayObject() || obj->isESTypedArrayObject()) && property->isInt32()) {
             push<ESValue>(stack, bp, obj->get(*property, true));
-            executeNextCode<GetObject>(programCounter);
+            executeNextCode<GetObjectWithPeeking>(programCounter);
             goto NextInstruction;
         }
 
@@ -1050,17 +1050,17 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         if(obj->hiddenClass() == code->m_cachedHiddenClass && (val == code->m_cachedPropertyValue || *val == *code->m_cachedPropertyValue)) {
             if(code->m_cachedIndex != SIZE_MAX) {
                 push<ESValue>(stack, bp, obj->readHiddenClass(code->m_cachedIndex));
-                executeNextCode<GetObject>(programCounter);
+                executeNextCode<GetObjectWithPeeking>(programCounter);
                 goto NextInstruction;
             } else {
                 ESValue v = obj->findOnlyPrototype(val);
                 if(v.isEmpty()) {
                     push<ESValue>(stack, bp, ESValue());
-                    executeNextCode<GetObject>(programCounter);
+                    executeNextCode<GetObjectWithPeeking>(programCounter);
                     goto NextInstruction;
                 }
                 push<ESValue>(stack, bp, v);
-                executeNextCode<GetObject>(programCounter);
+                executeNextCode<GetObjectWithPeeking>(programCounter);
                 goto NextInstruction;
             }
         }
@@ -1072,22 +1072,22 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             code->m_cachedIndex = idx;
             if(idx != SIZE_MAX) {
                 push<ESValue>(stack, bp, obj->readHiddenClass(code->m_cachedIndex));
-                executeNextCode<GetObject>(programCounter);
+                executeNextCode<GetObjectWithPeeking>(programCounter);
                 goto NextInstruction;
             } else {
                 ESValue v = obj->findOnlyPrototype(val);
                 if(v.isEmpty()) {
                     push<ESValue>(stack, bp, ESValue());
-                    executeNextCode<GetObject>(programCounter);
+                    executeNextCode<GetObjectWithPeeking>(programCounter);
                     goto NextInstruction;
                 }
                 push<ESValue>(stack, bp, v);
-                executeNextCode<GetObject>(programCounter);
+                executeNextCode<GetObjectWithPeeking>(programCounter);
                 goto NextInstruction;
             }
         } else {
             push<ESValue>(stack, bp, obj->get(val, true));
-            executeNextCode<GetObject>(programCounter);
+            executeNextCode<GetObjectWithPeeking>(programCounter);
             goto NextInstruction;
         }
 
