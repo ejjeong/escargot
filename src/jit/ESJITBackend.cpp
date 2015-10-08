@@ -477,6 +477,11 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         //JIT_LOG(returnESValue, "Returning this value");
         return m_out.ins1(LIR_retd, returnESValue);
     }
+    case ESIR::Opcode::Move:
+    {
+        INIT_ESIR(Move);
+        return getTmpMapping(irMove->sourceIndex());
+    }
     case ESIR::Opcode::GetArgument:
     {
         INIT_ESIR(GetArgument);

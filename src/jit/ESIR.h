@@ -86,6 +86,7 @@ class ESBasicBlock;
     F(Return, ) \
     F(ReturnWithValue, ) \
     F(OSRExit, ) \
+    F(Move, ) \
     F(Phi, ) \
     \
     /* For-in statement */ \
@@ -788,6 +789,28 @@ public:
 private:
     ReturnIR(int targetIndex)
         : ESIR(ESIR::Opcode::Return, targetIndex) { }
+};
+
+class MoveIR : public ESIR {
+public:
+    DECLARE_STATIC_GENERATOR_1(Move, int);
+
+    int sourceIndex() { return m_sourceIndex; }
+
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+        out << " tmp" << m_sourceIndex;
+    }
+#endif
+
+private:
+    MoveIR(int targetIndex, int sourceIndex)
+        : ESIR(ESIR::Opcode::Move, targetIndex), m_sourceIndex(sourceIndex) { }
+
+    int m_sourceIndex;
 };
 
 class PhiIR : public ESIR {
