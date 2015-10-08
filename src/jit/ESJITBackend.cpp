@@ -599,6 +599,17 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
          }
         RELEASE_ASSERT_NOT_REACHED();
     }
+    case ESIR::Opcode::GetObjectPreComputed:
+   {
+       INIT_ESIR(GetObject);
+       LIns* obj = getTmpMapping(irGetObject->objectIndex());
+       if (irGetObject->cachedIndex() < SIZE_MAX) {
+           size_t gapToHiddenClassData = escargot::ESObject::offsetOfHiddenClassData();
+           LIns* hiddenClassData = m_out.insLoad(LIR_ldd, obj, gapToHiddenClassData, 1, LOAD_NORMAL);
+           return m_out.insLoad(LIR_ldd, hiddenClassData, irGetObject->cachedIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
+        }
+       RELEASE_ASSERT_NOT_REACHED();
+   }
     case ESIR::Opcode::GetArrayObject:
     {
         INIT_ESIR(GetArrayObject);

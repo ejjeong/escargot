@@ -1471,6 +1471,10 @@ public:
     ESHiddenClass* m_cachedHiddenClass;
     ESValue m_propertyValue;
     size_t m_cachedIndex;
+#ifdef ENABLE_ESJIT
+    escargot::ESJIT::Type m_esir_type;
+    ProfileData m_profile;
+#endif
 };
 
 class GetObjectWithPeekingPreComputedCase : public ByteCode {
