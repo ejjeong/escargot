@@ -1341,9 +1341,28 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
         data->m_object = obj;
         data->m_keys.reserve(obj->keyCount());
-        obj->enumeration([&data](ESValue key) {
-            data->m_keys.push_back(key);
-        });
+        ESObject* target = obj;
+        while(true) {
+            target->enumeration([&data](ESValue key) {
+                //TODO
+                //time complexity of this operation is O(n^2)
+                //should we use set or something?
+                bool exists = false;
+                for(unsigned i = 0 ; i < data->m_keys.size() ; i ++) {
+                    if(data->m_keys[i] == key || data->m_keys[i].toString() == key.toString()) {
+                        exists = true;
+                    }
+                }
+                if(!exists)
+                    data->m_keys.push_back(key);
+            });
+            ESValue proto = target->__proto__();
+            if (proto.isESPointer() && proto.asESPointer()->isESObject()) {
+                target = proto.asESPointer()->asESObject();
+            } else {
+                break;
+            }
+        }
 
         push<ESValue>(stack, bp, ESValue((ESPointer *)data));
         executeNextCode<EnumerateObject>(programCounter);
@@ -1360,12 +1379,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                 programCounter = jumpTo(codeBuffer, code->m_forInEnd);
                 goto NextInstruction;
             }
-            if (data->m_object->hasOwnProperty(data->m_keys[data->m_idx++]))
-            {
-                push<ESValue>(stack, bp, data->m_keys[data->m_idx - 1]);
-                executeNextCode<EnumerateObjectKey>(programCounter);
-                goto NextInstruction;
-            }
+
+            data->m_idx++;
+            push<ESValue>(stack, bp, data->m_keys[data->m_idx - 1]);
+            executeNextCode<EnumerateObjectKey>(programCounter);
+            goto NextInstruction;
         }
     }
 

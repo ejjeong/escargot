@@ -237,16 +237,15 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
     ESRegExpObject::Option option = ESRegExpObject::Option::None;
     const u16string* regexSource;
     JSC::Yarr::BytecodePattern* byteCode = NULL;
+    ESString* tmpStr;
     if (esptr->isESRegExpObject()) {
         escargot::ESRegExpObject* o = esptr->asESRegExpObject();
         regexSource = &esptr->asESRegExpObject()->source()->string();
         option = esptr->asESRegExpObject()->option();
         byteCode = esptr->asESRegExpObject()->bytecodePattern();
-    } else if (esptr->isESString()) {
-        regexSource = &esptr->asESString()->string();
     } else {
-        //TODO
-        RELEASE_ASSERT_NOT_REACHED();
+        tmpStr = ESValue(esptr).toString();
+        regexSource = tmpStr->stringData();
     }
 
     bool isGlobal = option & ESRegExpObject::Option::Global;
