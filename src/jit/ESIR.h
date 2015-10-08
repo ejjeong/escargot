@@ -98,6 +98,7 @@ class ESBasicBlock;
     F(GetVar, LoadFromHeap) \
     F(SetVar, ) \
     F(GetObject, LoadFromHeap)\
+    F(GetArrayObject, LoadFromHeap)\
     F(PutInObject, ) \
     F(GetScoped, LoadFromHeap) \
     F(SetScoped, ) \
@@ -427,8 +428,43 @@ private:
 
 class GetObjectIR : public ESIR {
 public:
-    DECLARE_STATIC_GENERATOR_2(GetObject, ESHiddenClass*, size_t);
+    DECLARE_STATIC_GENERATOR_4(GetObject, ESHiddenClass*, size_t, int, int);
     DECLARE_STATIC_GENERATOR_2(GetObject, int, int);
+
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+        out << " tmp" << m_objectIndex << ".tmp" << m_propertyIndex;
+    }
+#endif
+
+    ESHiddenClass* cachedHiddenClass() { return m_cachedHiddenClass; }
+    size_t cachedIndex() { return m_cachedIndex; }
+    int objectIndex() { return m_objectIndex; }
+    int propertyIndex() { return m_propertyIndex; }
+
+private:
+    GetObjectIR(int targetIndex, ESHiddenClass* cachedHiddenClass, size_t cachedIndex, int objectIndex, int propertyIndex)
+        : ESIR(ESIR::Opcode::GetObject, targetIndex),
+          m_cachedHiddenClass(cachedHiddenClass),
+          m_cachedIndex(cachedIndex),
+          m_objectIndex(objectIndex),
+          m_propertyIndex(propertyIndex){ }
+    GetObjectIR(int targetIndex, int objectIndex, int propertyIndex)
+        : ESIR(ESIR::Opcode::GetObject, targetIndex),
+          m_objectIndex(objectIndex),
+          m_propertyIndex(propertyIndex){ }
+    ESHiddenClass* m_cachedHiddenClass;
+    int m_cachedIndex;
+    int m_objectIndex;
+    int m_propertyIndex;
+};
+
+class GetArrayObjectIR : public ESIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(GetArrayObject, int, int);
 
 #ifndef NDEBUG
     virtual void dump(std::ostream& out)
@@ -439,22 +475,14 @@ public:
     }
 #endif
 
-    ESHiddenClass* cachedHiddenClass() { return m_cachedHiddenClass; }
-    size_t cachedIndex() { return m_cachedIndex; }
     int objectIndex() { return m_objectIndex; }
     int propertyIndex() { return m_propertyIndex; }
 
 private:
-    GetObjectIR(int targetIndex, ESHiddenClass* cachedHiddenClass, size_t cachedIndex)
-        : ESIR(ESIR::Opcode::GetObject, targetIndex),
-          m_cachedHiddenClass(cachedHiddenClass),
-          m_cachedIndex(cachedIndex){ }
-    GetObjectIR(int targetIndex, int objectIndex, int propertyIndex)
-        : ESIR(ESIR::Opcode::GetObject, targetIndex),
+    GetArrayObjectIR(int targetIndex, int objectIndex, int propertyIndex)
+        : ESIR(ESIR::Opcode::GetArrayObject, targetIndex),
           m_objectIndex(objectIndex),
           m_propertyIndex(propertyIndex){ }
-    ESHiddenClass* m_cachedHiddenClass;
-    int m_cachedIndex;
     int m_objectIndex;
     int m_propertyIndex;
 };

@@ -587,21 +587,30 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(GetObject);
         LIns* obj = getTmpMapping(irGetObject->objectIndex());
-        LIns* key = getTmpMapping(irGetObject->propertyIndex());
+        if (irGetObject->cachedIndex() < SIZE_MAX) {
+            size_t gapToHiddenClassData = escargot::ESObject::offsetOfHiddenClassData();
+            LIns* hiddenClassData = m_out.insLoad(LIR_ldd, obj, gapToHiddenClassData, 1, LOAD_NORMAL);
+            return m_out.insLoad(LIR_ldd, hiddenClassData, irGetObject->cachedIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
+         }
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+    case ESIR::Opcode::GetArrayObject:
+    {
+        INIT_ESIR(GetArrayObject);
+        LIns* obj = getTmpMapping(irGetArrayObject->objectIndex());
+        LIns* key = getTmpMapping(irGetArrayObject->propertyIndex());
 
-        Type objType = m_graph->getOperandType(irGetObject->objectIndex());
-        Type keyType = m_graph->getOperandType(irGetObject->propertyIndex());
-        if (objType.isArrayObjectType()) {
+        ASSERT(m_graph->getOperandType(irGetArrayObject->objectIndex()).isArrayObjectType());
+        Type keyType = m_graph->getOperandType(irGetArrayObject->propertyIndex());
             if (keyType.isInt32Type()) {
-                size_t gapToVector = escargot::ESArrayObject::offsetOfVectorData();;
+                size_t gapToVector = escargot::ESArrayObject::offsetOfVectorData();
                 LIns* vectorData = m_out.insLoad(LIR_ldd, obj, gapToVector, 1, LOAD_NORMAL);
                 LIns* ESValueSize = m_out.insImmI(sizeof(ESValue));
                 LIns* offset = m_out.ins2(LIR_muli, key, ESValueSize);
                 LIns* newBase = m_out.ins2(LIR_addd, vectorData, offset);
                 return m_out.insLoad(LIR_ldd, newBase, 0, 1, LOAD_NORMAL);
-             }
-        }
-        RELEASE_ASSERT_NOT_REACHED();
+             } else
+                 RELEASE_ASSERT_NOT_REACHED();
     }
     case ESIR::Opcode::PutInObject:
     {

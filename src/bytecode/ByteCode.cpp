@@ -900,11 +900,14 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         }
 
         ESObject* obj;
-        if(willBeObject->isObject())
+        if(willBeObject->isObject()) {
+#ifdef ENABLE_ESJIT
+            code->m_esir_type.mergeType(escargot::ESJIT::TypeObject);
+#endif
             obj = willBeObject->asESPointer()->asESObject();
-        else {
+        } else {
             obj = willBeObject->toObject();
-        }
+         }
 
         lastESObjectMetInMemberExpressionNode = obj;
 
@@ -947,7 +950,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             code->m_cachedPropertyValue = val;
             code->m_cachedIndex = idx;
             if(idx != SIZE_MAX) {
-                push<ESValue>(stack, bp, obj->readHiddenClass(code->m_cachedIndex));
+                ESValue prop = obj->readHiddenClass(code->m_cachedIndex);
+                push<ESValue>(stack, bp, prop);
+#ifdef ENABLE_ESJIT
+                code->m_profile.addProfile(prop);
+#endif
                 executeNextCode<GetObject>(programCounter);
                 goto NextInstruction;
             } else {
