@@ -2163,12 +2163,8 @@ void GlobalObject::installMath()
             return ESValue(value);
         } else {
             ESValue arg = instance->currentExecutionContext()->arguments()[0];
-            if (arg.isInt32()) {
-                return arg;
-            } else if (arg.isDouble()) {
-                int value = ceil(arg.asDouble());
-                return ESValue(value);
-             }
+            double value = ceil(arg.toNumber());
+            return ESValue(value);
         }
 
        return ESValue();
@@ -2196,12 +2192,8 @@ void GlobalObject::installMath()
             return ESValue(value);
         } else {
             ESValue arg = instance->currentExecutionContext()->arguments()[0];
-            if (arg.isInt32()) {
-                return ESValue(arg);
-            } else if (arg.isDouble()) {
-                int value = floor(arg.asDouble());
-                return ESValue(value);
-             }
+            double value = floor(arg.toNumber());
+            return ESValue(value);
         }
 
        return ESValue();
@@ -2215,21 +2207,8 @@ void GlobalObject::installMath()
             return ESValue(value);
         } else {
             ESValue arg = instance->currentExecutionContext()->arguments()[0];
-            double value = arg.toNumber();
-            double ret;
-            if(isnan(value))
-                ret = std::numeric_limits<double>::quiet_NaN();
-            else if(value < 0)
-                ret = std::numeric_limits<double>::quiet_NaN();
-            else if(value == 0.0 && value == -0.0)
-                ret = -std::numeric_limits<double>::infinity();
-            else if(value == 1)
-                ret = 0;
-            else if(isinf(value))
-                ret = std::numeric_limits<double>::infinity();
-            else
-                ret = log(value);
-            return ESValue(ret);
+            double value = log(arg.toNumber());
+            return ESValue(value);
         }
         return ESValue();
     }, strings->log));
