@@ -1588,7 +1588,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         } else {
             receiver = ESObject::create();
         }
-        receiver->setConstructor(fn);
+
         if(function->protoType().isObject())
             receiver->set__proto__(function->protoType());
         else

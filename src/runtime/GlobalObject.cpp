@@ -1147,7 +1147,7 @@ void GlobalObject::installArray()
     m_arrayPrototype->ESObject::set(strings->length, ESValue(0));
     m_arrayPrototype->set__proto__(m_objectPrototype);
 
-    m_array->definePropertyOrThrow(strings->prototype, false, false, false, m_arrayPrototype);
+    m_array->setProtoType(m_arrayPrototype);
     m_array->definePropertyOrThrow(strings->length, true, false, true, ESValue(1));
     m_array->setConstructor(m_function);
 
