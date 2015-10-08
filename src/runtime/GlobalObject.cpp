@@ -356,9 +356,6 @@ void GlobalObject::installFunction()
         return ESString::create(std::move(ret));
     }, strings->toString));
 
-    m_function->defineAccessorProperty(strings->prototype, [](ESObject* self) -> ESValue {
-        return self->asESFunctionObject()->protoType();
-    },nullptr, true, false, false);
     m_function->set__proto__(emptyFunction);
     m_function->setProtoType(emptyFunction);
 
@@ -479,7 +476,7 @@ void GlobalObject::installObject()
         return ESString::create(u"[object Object]");
     }, strings->toString));
 
-    m_object->definePropertyOrThrow(strings->prototype, false, false, false, m_objectPrototype);
+    m_object->setProtoType(m_objectPrototype);
 
     //$19.1.3.2 Object.prototype.hasOwnProperty(V)
     m_objectPrototype->definePropertyOrThrow(ESString::create(u"hasOwnProperty"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -644,7 +641,7 @@ void GlobalObject::installError()
     m_referenceErrorPrototype = ESErrorObject::create();
     m_referenceErrorPrototype->setConstructor(m_referenceError);
 
-    m_referenceError->definePropertyOrThrow(strings->prototype, false, false, false, m_referenceErrorPrototype);
+    m_referenceError->setProtoType(m_referenceErrorPrototype);
 
     definePropertyOrThrow(strings->ReferenceError, true, false, true, m_referenceError);
 
@@ -657,7 +654,7 @@ void GlobalObject::installError()
     m_typeErrorPrototype = ESErrorObject::create();
     m_typeErrorPrototype->setConstructor(m_typeError);
 
-    m_typeError->definePropertyOrThrow(strings->prototype, false, false, false, m_typeErrorPrototype);
+    m_typeError->setProtoType(m_typeErrorPrototype);
 
     definePropertyOrThrow(strings->TypeError, true, false, true, m_typeError);
 
@@ -670,7 +667,7 @@ void GlobalObject::installError()
     m_rangeErrorPrototype = ESErrorObject::create();
     m_rangeErrorPrototype->setConstructor(m_rangeError);
 
-    m_rangeError->definePropertyOrThrow(strings->prototype, false, false, false, m_rangeErrorPrototype);
+    m_rangeError->setProtoType(m_rangeErrorPrototype);
 
     definePropertyOrThrow(strings->RangeError, true, false, true, m_rangeError);
 
@@ -683,7 +680,7 @@ void GlobalObject::installError()
     m_syntaxErrorPrototype = ESErrorObject::create();
     m_syntaxErrorPrototype->setConstructor(m_syntaxError);
 
-    m_syntaxError->definePropertyOrThrow(strings->prototype, false, false, false, m_syntaxErrorPrototype);
+    m_syntaxError->setProtoType(m_syntaxErrorPrototype);
 
     definePropertyOrThrow(strings->SyntaxError, true, false, true, m_syntaxError);
 
@@ -1190,9 +1187,6 @@ void GlobalObject::installString()
         return instance->currentExecutionContext()->resolveThisBinding().toString();
     }, strings->toString));
 
-    m_string->defineAccessorProperty(strings->prototype, [](ESObject* self) -> ESValue {
-        return self->asESFunctionObject()->protoType();
-    }, nullptr, true, false, false);
     m_string->set__proto__(m_functionPrototype); // empty Function
     m_string->setProtoType(m_stringPrototype);
 
@@ -1869,7 +1863,7 @@ void GlobalObject::installDate()
         }
     }, strings->toString));
 
-    m_date->set(strings->prototype, m_datePrototype);
+    m_date->setProtoType(m_datePrototype);
 
     definePropertyOrThrow(strings->Date, true, false, true, m_date);
 
@@ -2396,7 +2390,7 @@ void GlobalObject::installNumber()
     // initialize number object
     m_number->definePropertyOrThrow(strings->name, false, false, true, strings->Number);
     m_number->setConstructor(m_function);
-    m_number->definePropertyOrThrow(strings->prototype, false, false, false, m_numberPrototype);
+    m_number->setProtoType(m_numberPrototype);
 
     // $ 20.1.2.6 Number.MAX_SAFE_INTEGER
     m_number->definePropertyOrThrow(ESString::create(u"MAX_SAFE_INTEGER"), false, false, false, ESValue(9007199254740991.0));
@@ -2547,7 +2541,7 @@ void GlobalObject::installBoolean()
     // initialize boolean object
     m_boolean->definePropertyOrThrow(strings->name, false, false, true, strings->Boolean);
     m_boolean->setConstructor(m_function);
-    m_boolean->definePropertyOrThrow(strings->prototype, false, false, false, m_booleanPrototype);
+    m_boolean->setProtoType(m_booleanPrototype);
 
     // initialize booleanPrototype object
     m_booleanPrototype->setConstructor(m_boolean);
@@ -2612,7 +2606,7 @@ void GlobalObject::installRegExp()
     // initialize regexp object
     m_regexp->definePropertyOrThrow(strings->name, false, false, true, strings->RegExp);
     m_regexp->setConstructor(m_function);
-    m_regexp->definePropertyOrThrow(strings->prototype, false, false, false, m_regexpPrototype);
+    m_regexp->setProtoType(m_regexpPrototype);
 
     // initialize regexpPrototype object
     m_regexpPrototype->setConstructor(m_regexp);
@@ -2743,9 +2737,6 @@ void GlobalObject::installArrayBuffer()
 
     m_arrayBuffer->definePropertyOrThrow(strings->name, false, false, true, strings->ArrayBuffer);
     m_arrayBuffer->setConstructor(m_function);
-    m_arrayBuffer->defineAccessorProperty(strings->prototype, [](ESObject* self) -> ESValue {
-        return self->asESFunctionObject()->protoType();
-    }, nullptr, true, false, false);
     m_arrayBuffer->set__proto__(m_functionPrototype); // empty Function
     m_arrayBuffer->setProtoType(m_arrayBufferPrototype);
     m_arrayBufferPrototype->setConstructor(m_arrayBuffer);
@@ -2980,9 +2971,6 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
 
     ta_constructor->definePropertyOrThrow(strings->name, false, false, true, ta_name);
     ta_constructor->setConstructor(m_function);
-    ta_constructor->defineAccessorProperty(strings->prototype, [](ESObject* self) -> ESValue {
-        return self->asESFunctionObject()->protoType();
-    }, nullptr, true, false, false);
     ta_constructor->set__proto__(m_functionPrototype); // empty Function
     ta_constructor->setProtoType(ta_prototype);
     ta_prototype->setConstructor(ta_constructor);
