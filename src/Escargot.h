@@ -322,9 +322,8 @@ namespace escargot {
 typedef std::basic_string<char16_t, std::char_traits<char16_t>, pointer_free_allocator<char16_t> > u16string;
 }
 
-#include "runtime/InternalAtomicString.h"
-#include "runtime/NullableString.h"
 #include "runtime/ESValue.h"
+#include "runtime/InternalAtomicString.h"
 //#include "runtime/InternalString.h"
 #include "runtime/StaticStrings.h"
 

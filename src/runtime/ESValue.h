@@ -39,8 +39,6 @@ class ESDataViewObject;
 class ESControlFlowRecord;
 
 class CodeBlock;
-typedef ESValue (*NativeFunctionType)(ESVMInstance*);
-
 union ValueDescriptor {
     int64_t asInt64;
 #if ESCARGOT_32
@@ -219,6 +217,8 @@ public:
     inline bool equalsTo(const ESValue& val);
 
 };
+
+typedef ESValue (*NativeFunctionType)(ESVMInstance*);
 
 
 class ESPointer : public gc {

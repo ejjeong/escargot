@@ -15,7 +15,7 @@ public:
             : Node(type)
     {
         m_id = id;
-        m_nonAtomicId = ESString::create(id.data());
+        m_nonAtomicId = id.string();
         m_params = params;
         for(unsigned i = 0 ; i < m_params.size() ; i ++) {
             m_nonAtomicParams.push_back(ESString::create(m_params[i].data()));

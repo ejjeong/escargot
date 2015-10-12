@@ -492,8 +492,8 @@ class GetById : public ByteCode {
 public:
     GetById(const InternalAtomicString& name, ESString* esName)
         : ByteCode(GetByIdOpcode)
+        , m_name(name)
     {
-        m_name = name;
         m_nonAtomicName = esName;
         m_identifierCacheInvalidationCheckCount = std::numeric_limits<unsigned>::max();
         m_cachedSlot = NULL;
@@ -520,8 +520,8 @@ class GetByIdWithoutException : public ByteCode {
 public:
     GetByIdWithoutException(const InternalAtomicString& name, ESString* esName)
         : ByteCode(GetByIdWithoutExceptionOpcode)
+        , m_name(name)
     {
-        m_name = name;
         m_nonAtomicName = esName;
         m_identifierCacheInvalidationCheckCount = std::numeric_limits<unsigned>::max();
         m_cachedSlot = NULL;
@@ -601,8 +601,8 @@ class PutById : public ByteCode {
 public:
     PutById(const InternalAtomicString& name, ESString* esName, Opcode code = PutByIdOpcode)
         : ByteCode(code)
+        , m_name(name)
     {
-        m_name = name;
         m_nonAtomicName = esName;
         m_identifierCacheInvalidationCheckCount = std::numeric_limits<unsigned>::max();
         m_cachedSlot = NULL;
@@ -724,8 +724,8 @@ class CreateBinding : public ByteCode {
 public:
     CreateBinding(InternalAtomicString name, ESString* nonAtomicName)
         : ByteCode(CreateBindingOpcode)
+        , m_name(name)
     {
-        m_name = name;
         m_nonAtomicName = nonAtomicName;
     }
     InternalAtomicString m_name;
@@ -1564,8 +1564,8 @@ class CreateFunction : public ByteCode {
 public:
     CreateFunction(InternalAtomicString name, ESString* nonAtomicName, CodeBlock* codeBlock, bool isDecl)
         : ByteCode(CreateFunctionOpcode)
+        , m_name(name)
     {
-        m_name = name;
         m_nonAtomicName = nonAtomicName;
         m_codeBlock = codeBlock;
         m_isDeclaration = isDecl;

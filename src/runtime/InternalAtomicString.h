@@ -4,35 +4,29 @@
 namespace escargot {
 
 class ESVMInstance;
-class ESValue;
 
-class InternalAtomicStringData : public gc_cleanup, public u16string {
+class InternalAtomicStringData : public gc_cleanup {
     friend class InternalAtomicString;
 protected:
     InternalAtomicStringData(ESVMInstance* instance, const char16_t* str);
-
     InternalAtomicStringData(const InternalAtomicStringData& src) = delete;
     void operator = (const InternalAtomicStringData& src) = delete;
 
-    ALWAYS_INLINE void initHash()
-    {
-        std::hash<std::u16string> hashFn;
-        m_hashData = hashFn((std::u16string &)*this);
-    }
 public:
-    InternalAtomicStringData();
     ~InternalAtomicStringData();
     ALWAYS_INLINE size_t hashValue() const
     {
-        return m_hashData;
+        return m_string->stringData()->hashValue();
+    }
+    ESString* string() const
+    {
+        return m_string;
     }
 
 protected:
-    size_t m_hashData;
+    ESString* m_string;
     ESVMInstance* m_instance;
 };
-
-extern InternalAtomicStringData emptyInternalAtomicString;
 
 class InternalAtomicString {
     friend class InternalAtomicStringData;
@@ -46,8 +40,9 @@ protected:
 public:
     ALWAYS_INLINE InternalAtomicString()
     {
-        m_string = &emptyInternalAtomicString;
+        m_string = NULL;
     }
+
     ALWAYS_INLINE InternalAtomicString(const InternalAtomicString& src)
     {
         m_string = src.m_string;
@@ -56,14 +51,18 @@ public:
     InternalAtomicString(const u16string& src);
     InternalAtomicString(const char16_t* src);
     InternalAtomicString(ESVMInstance* instance, const u16string& src);
-    InternalAtomicString(const ESValue* src);
 
     ALWAYS_INLINE const char16_t* data() const
     {
-        return m_string->data();
+        return m_string->string()->data();
     }
 
-    ALWAYS_INLINE const InternalAtomicStringData* string() const
+    ALWAYS_INLINE ESString* string() const
+    {
+        return m_string->string();
+    }
+
+    ALWAYS_INLINE InternalAtomicStringData* stringData() const
     {
         return m_string;
     }
@@ -76,12 +75,12 @@ protected:
 
 ALWAYS_INLINE bool operator == (const InternalAtomicString& a,const InternalAtomicString& b)
 {
-    return a.string() == b.string();
+    return *a.string()->stringData() == *b.string()->stringData();
 }
 
 ALWAYS_INLINE bool operator != (const InternalAtomicString& a,const InternalAtomicString& b)
 {
-    return a.string() != b.string();
+    return !operator==(a,b);
 }
 
 typedef std::vector<InternalAtomicString, gc_allocator<InternalAtomicString> > InternalAtomicStringVector;
@@ -90,15 +89,15 @@ typedef std::vector<InternalAtomicString, gc_allocator<InternalAtomicString> > I
 
 namespace std
 {
-template<> struct hash<::escargot::InternalAtomicString>
+template<> struct hash<escargot::InternalAtomicString>
 {
     size_t operator()(escargot::InternalAtomicString const &x) const
     {
-        return x.string()->hashValue();
+        return x.stringData()->hashValue();
     }
 };
 
-template<> struct equal_to<::escargot::InternalAtomicString>
+template<> struct equal_to<escargot::InternalAtomicString>
 {
     bool operator()(escargot::InternalAtomicString const &a, escargot::InternalAtomicString const &b) const
     {

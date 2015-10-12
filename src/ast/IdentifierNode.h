@@ -15,7 +15,7 @@ public:
             : Node(NodeType::Identifier)
     {
         m_name = name;
-        m_nonAtomicName = ESString::create(name.data());
+        m_nonAtomicName = name.string();
         m_canUseFastAccess = false;
         m_fastAccessIndex = SIZE_MAX;
         m_fastAccessUpIndex = SIZE_MAX;

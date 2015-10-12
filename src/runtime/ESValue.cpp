@@ -4,7 +4,6 @@
 #include "vm/ESVMInstance.h"
 #include "runtime/ExecutionContext.h"
 #include "runtime/Environment.h"
-#include "runtime/NullableString.h"
 #include "ast/AST.h"
 #include "jit/ESJIT.h"
 

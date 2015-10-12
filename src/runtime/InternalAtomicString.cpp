@@ -5,24 +5,16 @@
 
 namespace escargot {
 
-InternalAtomicStringData emptyInternalAtomicString;
-
-InternalAtomicStringData::InternalAtomicStringData()
-{
-    m_instance = NULL;
-    initHash();
-}
 InternalAtomicStringData::InternalAtomicStringData(ESVMInstance* instance, const char16_t* str)
-    : u16string(str)
 {
     m_instance = instance;
-    initHash();
+    m_string = ESString::create(std::move(u16string(str)));
 }
 
 InternalAtomicStringData::~InternalAtomicStringData()
 {
     if(m_instance) {
-        auto iter = m_instance->m_atomicStringMap.find(*this);
+        auto iter = m_instance->m_atomicStringMap.find(m_string->string());
         ASSERT(iter != m_instance->m_atomicStringMap.end());
         m_instance->m_atomicStringMap.erase(iter);
     }
@@ -36,11 +28,6 @@ InternalAtomicString::InternalAtomicString(const u16string& src)
 InternalAtomicString::InternalAtomicString(const char16_t* src)
     : InternalAtomicString(ESVMInstance::currentInstance(), u16string(src))
 {
-}
-
-InternalAtomicString::InternalAtomicString(const ESValue* src)
-{
-    init(ESVMInstance::currentInstance(), src->toString()->data());
 }
 
 InternalAtomicString::InternalAtomicString(ESVMInstance* instance, const u16string& src)

@@ -1828,7 +1828,8 @@ escargot::Node* finishLiteralNode(ParseContext* ctx, RefPtr<ParseStatus> ps)
 {
     escargot::LiteralNode* nd;
     if(ps->m_type == Token::StringLiteralToken) {
-        nd = new escargot::LiteralNode(escargot::ESValue(escargot::ESString::create(ps->m_value)));
+        escargot::InternalAtomicString str(ps->m_value.data());
+        nd = new escargot::LiteralNode(str.string());
     }
     else if(ps->m_type == Token::NumericLiteralToken) {
         nd = new escargot::LiteralNode(escargot::ESValue(ps->m_valueNumber));
@@ -3513,8 +3514,11 @@ escargot::Node* parseObjectPropertyKey(ParseContext* ctx) {
             //tolerateUnexpectedToken(token, Messages.StrictOctalLiteral);
             tolerateUnexpectedToken();
         }
-        nd = new escargot::LiteralNode(escargot::ESValue(escargot::ESString::create(token->m_value.data())));
-        nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
+        {
+            escargot::InternalAtomicString str(token->m_value.data());
+            nd = new escargot::LiteralNode(str.string());
+            nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
+        }
         return nd;
     case Token::NumericLiteralToken:
             if (ctx->m_strict && token->m_octal) {

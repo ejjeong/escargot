@@ -64,29 +64,6 @@ ALWAYS_INLINE const char * utf16ToUtf8(const char16_t *t)
     return result;
 }
 
-ALWAYS_INLINE NullableString toNullableUtf8(const u16string& m_string)
-{
-    unsigned strLength = m_string.length();
-    const char16_t* pt = m_string.data();
-    char buffer [MB_CUR_MAX];
-    memset(buffer, 0, MB_CUR_MAX);
-
-    char* string = new char[strLength * MB_CUR_MAX + 1];
-
-    int idx = 0;
-    for (unsigned i = 0; i < strLength; i++) {
-        int length = std::wctomb(buffer,(wchar_t)*pt);
-        if (length<1) {
-            string[idx++] = '\0';
-        } else {
-            strncpy(string+idx, buffer, length);
-            idx += length;
-        }
-        pt++;
-    }
-    return NullableString(string, idx);
-}
-
 //http://egloos.zum.com/profrog/v/1177107
 ALWAYS_INLINE size_t utf8ToUtf16(char* UTF8, char16_t& uc)
 {
