@@ -94,7 +94,8 @@ void ESGraphTypeInference::run(ESGraph* graph)
             case ESIR::Opcode::Move:
             {
                 INIT_ESIR(Move);
-                graph->setOperandType(ir->targetIndex(), irMove->sourceIndex());
+                Type srcType = graph->getOperandType(irMove->sourceIndex());
+                graph->setOperandType(ir->targetIndex(), srcType);
                 break;
             }
             case ESIR::Opcode::GetArgument:
