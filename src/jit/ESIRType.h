@@ -110,7 +110,7 @@ public:
 #define DECLARE_IS_TYPE(type, unused) \
     bool is##type##Type() \
     { \
-        return (m_type & Type##type) == Type##type; \
+        return Type##type == TypeBottom ? m_type == TypeBottom : (m_type & Type##type) == Type##type; \
     }
     FOR_EACH_ESIR_TYPES(DECLARE_IS_TYPE)
 #undef DECLARE_IS_TYPE

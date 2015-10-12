@@ -469,25 +469,75 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
             //execute;
 #ifdef ENABLE_ESJIT
             ESJIT::JITFunction jitFunction = fn->codeBlock()->m_cachedJITFunction;
-            if (!jitFunction && !fn->codeBlock()->m_dontJIT && fn->codeBlock()->m_executeCount > 7) {
-#ifndef NDEBUG
-                if (ESVMInstance::currentInstance()->m_verboseJIT)
-                    printf("Trying JIT Compile for function %s...\n", fn->codeBlock()->m_nonAtomicId ? (fn->codeBlock()->m_nonAtomicId->utf8Data()):"(anonymous)");
-#endif
-                jitFunction = reinterpret_cast<ESJIT::JITFunction>(ESJIT::JITCompile(fn->codeBlock()));
-                if (jitFunction) {
+            if (!jitFunction && !fn->codeBlock()->m_dontJIT && fn->codeBlock()->m_executeCount >= fn->codeBlock()->m_threshold) {
+                size_t idx = 0;
+                char* code = fn->codeBlock()->m_code.data();
+                ByteCode* currentCode;
+                bool compileNextTime = false;
+                while(idx < fn->codeBlock()->m_code.size()) {
+                    currentCode = (ByteCode *)(&code[idx]);
+                    Opcode opcode = getOpcodeFromAddress(currentCode->m_opcode);
+                    switch(opcode) {
+                    case GetByIdOpcode: {
+                        reinterpret_cast<GetById*>(currentCode)->m_profile.updateProfiledType();
+                        if (reinterpret_cast<GetById*>(currentCode)->m_profile.getType().isBottomType())
+                            compileNextTime = true;
+                        break;
+                       }
+                    case GetByIndexOpcode: {
+                        reinterpret_cast<GetByIndex*>(currentCode)->m_profile.updateProfiledType();
+                        if (reinterpret_cast<GetByIndex*>(currentCode)->m_profile.getType().isBottomType() ||
+                                reinterpret_cast<GetByIndex*>(currentCode)->m_profile.getType().isUndefinedType())
+                            compileNextTime = true;
+                        break;
+                       }
+                    case GetObjectOpcode: {
+                        reinterpret_cast<GetObject*>(currentCode)->m_profile.updateProfiledType();
+                        if (reinterpret_cast<GetObject*>(currentCode)->m_profile.getType().isBottomType())
+                            compileNextTime = true;
+                        break;
+                       }
+                    case GetObjectPreComputedCaseOpcode: {
+                        reinterpret_cast<GetObjectPreComputedCase*>(currentCode)->m_profile.updateProfiledType();
+                        if (reinterpret_cast<GetObjectPreComputedCase*>(currentCode)->m_profile.getType().isBottomType())
+                            compileNextTime = true;
+                        break;
+                       }
+                    case CallFunctionOpcode: {
+                         reinterpret_cast<CallFunction*>(currentCode)->m_profile.updateProfiledType();
+                         if (reinterpret_cast<CallFunction*>(currentCode)->m_profile.getType().isBottomType() ||
+                                 reinterpret_cast<CallFunction*>(currentCode)->m_profile.getType().isUndefinedType())
+                            compileNextTime = true;
+                           break;
+                       }
+                    default:
+                        break;
+                       }
+                    if (compileNextTime) break;
+                    idx++;
+                  }
+
+                if (!compileNextTime) {
 #ifndef NDEBUG
                     if (ESVMInstance::currentInstance()->m_verboseJIT)
-                        printf("> Compilation successful! Cache jit function %p\n", jitFunction);
+                        printf("Trying JIT Compile for function %s...\n", fn->codeBlock()->m_nonAtomicId ? (fn->codeBlock()->m_nonAtomicId->utf8Data()):"(anonymous)");
 #endif
-                    fn->codeBlock()->m_cachedJITFunction = jitFunction;
-                } else {
+                    jitFunction = reinterpret_cast<ESJIT::JITFunction>(ESJIT::JITCompile(fn->codeBlock()));
+                    if (jitFunction) {
 #ifndef NDEBUG
-                    if (ESVMInstance::currentInstance()->m_verboseJIT)
-                        printf("> Compilation failed! disable jit compilation from now on\n");
+                        if (ESVMInstance::currentInstance()->m_verboseJIT)
+                            printf("> Compilation successful! Cache jit function %p\n", jitFunction);
 #endif
-                    fn->codeBlock()->m_dontJIT = true;
-                }
+                        fn->codeBlock()->m_cachedJITFunction = jitFunction;
+                    } else {
+#ifndef NDEBUG
+                        if (ESVMInstance::currentInstance()->m_verboseJIT)
+                            printf("> Compilation failed! disable jit compilation from now on\n");
+#endif
+                        fn->codeBlock()->m_dontJIT = true;
+                    }
+                } else
+                    fn->codeBlock()->m_threshold *= 2;
             }
 
             if (jitFunction) {

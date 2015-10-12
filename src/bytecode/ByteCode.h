@@ -320,6 +320,8 @@ public:
     void updateProfiledType()
     {
         // TODO what happens if this function is called multiple times?
+        if (m_type.isUndefinedType())
+            m_type = ESJIT::TypeBottom;
         m_type.mergeType(ESJIT::Type::getType(m_value));
         // TODO if m_type is function, profile function address
         // if m_value is not set to undefined, profiled type will be updated again
@@ -1935,6 +1937,7 @@ class CodeBlock : public gc {
         m_isStrict = false;
 #ifdef ENABLE_ESJIT
         m_executeCount = 0;
+        m_threshold = 1;
 #endif
     }
 public:
@@ -2009,6 +2012,7 @@ public:
     size_t m_tempRegisterSize;
     size_t m_executionCount;
     size_t m_executeCount;
+    size_t m_threshold;
 #else
 #define WRITE_LAST_INDEX(a, b, c)
 #endif
