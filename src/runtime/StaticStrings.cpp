@@ -7,7 +7,8 @@ void Strings::initStaticStrings(ESVMInstance* instance)
 {
     emptyString = InternalAtomicString(instance, u"");
     for(unsigned i = 0; i < ESCARGOT_ASCII_TABLE_MAX ; i ++) {
-        asciiTable[i] = InternalAtomicString(instance, {(char16_t)i});
+        ESString* str = ESString::create((char16_t)i);
+        asciiTable[i] = InternalAtomicString(instance, str->string());
     }
     null = InternalAtomicString(instance, u"null");
     undefined =  InternalAtomicString(instance, u"undefined");

@@ -8,7 +8,7 @@ class ESVMInstance;
 class InternalAtomicStringData : public gc_cleanup {
     friend class InternalAtomicString;
 protected:
-    InternalAtomicStringData(ESVMInstance* instance, const char16_t* str);
+    InternalAtomicStringData(ESVMInstance* instance, const u16string& str);
     InternalAtomicStringData(const InternalAtomicStringData& src) = delete;
     void operator = (const InternalAtomicStringData& src) = delete;
 
