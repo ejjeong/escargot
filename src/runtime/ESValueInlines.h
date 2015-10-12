@@ -129,17 +129,17 @@ inline ESString* ESValue::toString() const
     } else if(isInt32()) {
         int num = asInt32();
         if(num >= 0 && num < ESCARGOT_STRINGS_NUMBERS_MAX)
-            return strings->nonAtomicNumbers[num];
+            return strings->numbers[num].string();
         return ESString::create(num);
     } else if(isNumber()) {
         double d = asNumber();
         if (std::isnan(d))
-            return strings->NaN;
+            return strings->NaN.string();
         if (std::isinf(d)) {
             if(std::signbit(d))
-                return strings->NegativeInfinity;
+                return strings->NegativeInfinity.string();
             else
-                return strings->Infinity;
+                return strings->Infinity.string();
         }
         //convert -0.0 into 0.0
         //in c++, d = -0.0, d == 0.0 is true
@@ -148,14 +148,14 @@ inline ESString* ESValue::toString() const
 
         return ESString::create(d);
     } else if(isUndefined()) {
-        return strings->undefined;
+        return strings->undefined.string();
     } else if(isNull()) {
-        return strings->null;
+        return strings->null.string();
     } else if(isBoolean()) {
         if(asBoolean())
-            return strings->stringTrue;
+            return strings->stringTrue.string();
         else
-            return strings->stringFalse;
+            return strings->stringFalse.string();
     } else {
         return toPrimitive(PreferString).toString();
     }
@@ -208,35 +208,35 @@ inline ESValue ESValue::toPrimitive(PrimitiveTypeHint preferredType) const
     if (UNLIKELY(!isPrimitive())) {
         ESObject* obj = asESPointer()->asESObject();
         if (preferredType == PrimitiveTypeHint::PreferString) {
-            ESValue toString = obj->get(ESValue(strings->toString), true);
+            ESValue toString = obj->get(ESValue(strings->toString.string()), true);
             if(toString.isESPointer() && toString.asESPointer()->isESFunctionObject()) {
                 ESValue str = ESFunctionObject::call(ESVMInstance::currentInstance(), toString, obj, NULL, 0, false);
                 if(str.isPrimitive())
                     return str;
             }
 
-            ESValue valueOf = obj->get(ESValue(strings->valueOf), true);
+            ESValue valueOf = obj->get(ESValue(strings->valueOf.string()), true);
             if(valueOf.isESPointer() && valueOf.asESPointer()->isESFunctionObject()) {
                 ESValue val = ESFunctionObject::call(ESVMInstance::currentInstance(), valueOf, obj, NULL, 0, false);
                 if(val.isPrimitive())
                     return val;
             }
         } else { // preferNumber
-            ESValue valueOf = obj->get(ESValue(strings->valueOf), true);
+            ESValue valueOf = obj->get(ESValue(strings->valueOf.string()), true);
             if(valueOf.isESPointer() && valueOf.asESPointer()->isESFunctionObject()) {
                 ESValue val = ESFunctionObject::call(ESVMInstance::currentInstance(), valueOf, obj, NULL, 0, false);
                 if(val.isPrimitive())
                     return val;
             }
 
-            ESValue toString = obj->get(ESValue(strings->toString), true);
+            ESValue toString = obj->get(ESValue(strings->toString.string()), true);
             if(toString.isESPointer() && toString.asESPointer()->isESFunctionObject()) {
                 ESValue str = ESFunctionObject::call(ESVMInstance::currentInstance(), toString, obj, NULL, 0, false);
                 if(str.isPrimitive())
                     return str;
             }
         }
-        throw ESValue(TypeError::create(strings->emptyESString));
+        throw ESValue(TypeError::create());
     } else {
         return *this;
     }
@@ -1241,7 +1241,7 @@ ALWAYS_INLINE const int32_t ESObject::length()
     if (LIKELY(isESArrayObject()))
         return asESArrayObject()->length();
     else
-        return get(strings->length, true).toInteger();
+        return get(strings->length.string(), true).toInteger();
 }
 ALWAYS_INLINE ESValue ESObject::pop()
 {
@@ -1252,7 +1252,7 @@ ALWAYS_INLINE ESValue ESObject::pop()
     else {
         ESValue ret = get(ESValue(len-1));
         deletePropety(ESValue(len-1));
-        set(strings->length, ESValue(len - 1));
+        set(strings->length.string(), ESValue(len - 1));
         return ret;
     }
 }

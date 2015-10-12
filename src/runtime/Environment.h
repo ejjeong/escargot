@@ -405,9 +405,9 @@ public:
             ESObject* argumentsObject = ESObject::create();
             m_argumentsObject = argumentsObject;
             unsigned i = 0;
-            argumentsObject->set(strings->length, ESValue(m_argumentCount));
+            argumentsObject->set(strings->length.string(), ESValue(m_argumentCount));
             for(; i < m_argumentCount && i < ESCARGOT_STRINGS_NUMBERS_MAX ; i ++) {
-                argumentsObject->set(strings->nonAtomicNumbers[i], m_arguments[i]);
+                argumentsObject->set(strings->numbers[i].string(), m_arguments[i]);
             }
             for( ; i < m_argumentCount ; i ++) {
                 argumentsObject->set(ESString::create((int)i), m_arguments[i]);

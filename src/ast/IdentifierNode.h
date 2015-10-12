@@ -51,7 +51,7 @@ public:
             }
         } else {
             updateNodeIndex(context);
-            if(m_name == strings->atomicArguments) {
+            if(m_name == strings->arguments) {
                 codeBlock->pushCode(GetArgumentsObject(), this);
             } else {
                 codeBlock->pushCode(GetById(m_name, m_nonAtomicName), this);
@@ -84,7 +84,7 @@ public:
                     codeBlock->pushCode(PutByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), this);
             }
         } else {
-            if(m_name == strings->atomicArguments) {
+            if(m_name == strings->arguments) {
                 codeBlock->pushCode(PutArgumentsObject(), this);
             } else {
                 codeBlock->pushCode(PutById(m_name, m_nonAtomicName), this);

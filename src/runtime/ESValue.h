@@ -1194,8 +1194,10 @@ protected:
     ESObject(ESPointer::Type type = ESPointer::Type::ESObject, size_t initialKeyCount = 6);
 public:
 
-    //DO NOT USE THIS FUNCTION
-    //NOTE rooted ESSlot has short life time.
+    void definePropertyOrThrow(InternalAtomicString name, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true, const ESValue& initalValue = ESValue())
+    {
+        definePropertyOrThrow(name.string(), isWritable, isEnumerable, isConfigurable, initalValue);
+    }
     inline void definePropertyOrThrow(escargot::ESValue key, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true, const ESValue& initalValue = ESValue());
     void defineAccessorProperty(escargot::ESString* key,ESValue (*getter)(::escargot::ESObject* obj) = nullptr,
             void (*setter)(::escargot::ESObject* obj, const ESValue& value)  = nullptr,
@@ -1327,12 +1329,12 @@ public:
 
     ALWAYS_INLINE ESValue constructor()
     {
-        return get(ESValue(strings->constructor));
+        return get(strings->constructor.string(), true);
     }
 
     ALWAYS_INLINE void setConstructor(const ESValue& obj)
     {
-        definePropertyOrThrow(strings->constructor, true, false, true, obj);
+        definePropertyOrThrow(strings->constructor.string(), true, false, true, obj);
     }
 
     void convertIntoMapMode()
@@ -1403,7 +1405,7 @@ class ESErrorObject : public ESObject {
 protected:
     ESErrorObject(escargot::ESString* message);
 public:
-    static ESErrorObject* create(escargot::ESString* message = strings->emptyESString)
+    static ESErrorObject* create(escargot::ESString* message = strings->emptyString.string())
     {
         return new ESErrorObject(message);
     }
@@ -1412,9 +1414,9 @@ protected:
 
 class ReferenceError : public ESErrorObject {
 protected:
-    ReferenceError(escargot::ESString* message = strings->emptyESString);
+    ReferenceError(escargot::ESString* message = strings->emptyString.string());
 public:
-    static ReferenceError* create(escargot::ESString* message = strings->emptyESString)
+    static ReferenceError* create(escargot::ESString* message = strings->emptyString.string())
     {
         return new ReferenceError(message);
     }
@@ -1422,9 +1424,9 @@ public:
 
 class TypeError : public ESErrorObject {
 protected:
-    TypeError(escargot::ESString* message = strings->emptyESString);
+    TypeError(escargot::ESString* message = strings->emptyString.string());
 public:
-    static TypeError* create(escargot::ESString* message = strings->emptyESString)
+    static TypeError* create(escargot::ESString* message = strings->emptyString.string())
     {
         return new TypeError(message);
     }
@@ -1432,10 +1434,10 @@ public:
 
 class SyntaxError : public ESErrorObject {
 protected:
-    SyntaxError(escargot::ESString* message = strings->emptyESString);
+    SyntaxError(escargot::ESString* message = strings->emptyString.string());
 public:
 
-    static SyntaxError* create(escargot::ESString* message = strings->emptyESString)
+    static SyntaxError* create(escargot::ESString* message = strings->emptyString.string())
     {
         return new SyntaxError(message);
     }
@@ -1443,9 +1445,9 @@ public:
 
 class RangeError : public ESErrorObject {
 protected:
-    RangeError(escargot::ESString* message = strings->emptyESString);
+    RangeError(escargot::ESString* message = strings->emptyString.string());
 public:
-    static RangeError* create(escargot::ESString* message = strings->emptyESString)
+    static RangeError* create(escargot::ESString* message = strings->emptyString.string())
     {
         return new RangeError(message);
     }
@@ -1745,7 +1747,7 @@ public:
 
     static ESStringObject* create()
     {
-        return new ESStringObject(strings->emptyESString);
+        return new ESStringObject(strings->emptyString.string());
     }
 
     ALWAYS_INLINE ::escargot::ESString* getStringData()

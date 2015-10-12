@@ -158,7 +158,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
                 //TODO call constructor
                 //ESFunctionObject::call(fn, receiver, &arguments[0], arguments.size(), instance);
-                receiver->set(strings->message, ESString::create(std::move(err_msg)));
+                receiver->set(strings->message.string(), ESString::create(std::move(err_msg)));
                 throw ESValue(receiver);
             }
         }
@@ -726,21 +726,21 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* v = pop<ESValue>(stack, bp);
 
         if(v->isUndefined() || v->isEmpty())
-            push<ESValue>(stack, bp, strings->undefined);
+            push<ESValue>(stack, bp, strings->undefined.string());
         else if(v->isNull())
-            push<ESValue>(stack, bp, strings->object);
+            push<ESValue>(stack, bp, strings->object.string());
         else if(v->isBoolean())
-            push<ESValue>(stack, bp, strings->boolean);
+            push<ESValue>(stack, bp, strings->boolean.string());
         else if(v->isNumber())
-            push<ESValue>(stack, bp, strings->number);
+            push<ESValue>(stack, bp, strings->number.string());
         else if(v->isESString())
-            push<ESValue>(stack, bp, strings->string);
+            push<ESValue>(stack, bp, strings->string.string());
         else if(v->isESPointer()) {
             ESPointer* p = v->asESPointer();
             if(p->isESFunctionObject()) {
-                push<ESValue>(stack, bp, strings->function);
+                push<ESValue>(stack, bp, strings->function.string());
             } else {
-                push<ESValue>(stack, bp, strings->object);
+                push<ESValue>(stack, bp, strings->object.string());
             }
         }
         else
@@ -859,7 +859,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                if(LIKELY(0 <= prop_val && prop_val < willBeObject->asESString()->length())) {
                    char16_t c = willBeObject->asESString()->string().data()[prop_val];
                    if(LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
-                       push<ESValue>(stack, bp, strings->asciiTable[c]);
+                       push<ESValue>(stack, bp, strings->asciiTable[c].string());
                        executeNextCode<GetObject>(programCounter);
                        goto NextInstruction;
                    } else {
@@ -874,7 +874,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                }
             } else {
                 ESString* val = property->toString();
-                if(*val == *strings->length) {
+                if(*val == *strings->length.string()) {
                     lastESObjectMetInMemberExpressionNode = *willBeObject;
                     push<ESValue>(stack, bp, ESValue(willBeObject->asESString()->length()));
                     executeNextCode<GetObject>(programCounter);
@@ -995,7 +995,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                if(LIKELY(0 <= prop_val && prop_val < willBeObject->asESString()->length())) {
                    char16_t c = willBeObject->asESString()->string().data()[prop_val];
                    if(LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
-                       push<ESValue>(stack, bp, strings->asciiTable[c]);
+                       push<ESValue>(stack, bp, strings->asciiTable[c].string());
                        executeNextCode<GetObjectWithPeeking>(programCounter);
                        goto NextInstruction;
                    } else {
@@ -1013,7 +1013,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                goto NextInstruction;
             } else {
                 ESString* val = property->toString();
-                if(*val == *strings->length) {
+                if(*val == *strings->length.string()) {
                     lastESObjectMetInMemberExpressionNode = *willBeObject;
                     push<ESValue>(stack, bp, ESValue(willBeObject->asESString()->length()));
                     executeNextCode<GetObjectWithPeeking>(programCounter);
@@ -1114,7 +1114,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                if(LIKELY(0 <= prop_val && prop_val < willBeObject->asESString()->length())) {
                    char16_t c = willBeObject->asESString()->string().data()[prop_val];
                    if(LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
-                       push<ESValue>(stack, bp, strings->asciiTable[c]);
+                       push<ESValue>(stack, bp, strings->asciiTable[c].string());
                        executeNextCode<GetObjectPreComputedCase>(programCounter);
                        goto NextInstruction;
                    } else {
@@ -1129,7 +1129,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                }
             } else {
                 ESString* val = property.toString();
-                if(*val == *strings->length) {
+                if(*val == *strings->length.string()) {
                     lastESObjectMetInMemberExpressionNode = *willBeObject;
                     push<ESValue>(stack, bp, ESValue(willBeObject->asESString()->length()));
                     executeNextCode<GetObjectPreComputedCase>(programCounter);
@@ -1242,7 +1242,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                if(LIKELY(0 <= prop_val && prop_val < willBeObject->asESString()->length())) {
                    char16_t c = willBeObject->asESString()->string().data()[prop_val];
                    if(LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
-                       push<ESValue>(stack, bp, strings->asciiTable[c]);
+                       push<ESValue>(stack, bp, strings->asciiTable[c].string());
                        executeNextCode<GetObjectWithPeekingPreComputedCase>(programCounter);
                        goto NextInstruction;
                    } else {
@@ -1260,7 +1260,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                goto NextInstruction;
             } else {
                 ESString* val = property.toString();
-                if(*val == *strings->length) {
+                if(*val == *strings->length.string()) {
                     lastESObjectMetInMemberExpressionNode = *willBeObject;
                     push<ESValue>(stack, bp, ESValue(willBeObject->asESString()->length()));
                     executeNextCode<GetObjectWithPeekingPreComputedCase>(programCounter);
@@ -1412,18 +1412,18 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         CreateFunction* code = (CreateFunction*)currentCode;
         ASSERT(((size_t)code->m_codeBlock % sizeof(size_t)) == 0);
-        ESFunctionObject* function = ESFunctionObject::create(ec->environment(), code->m_codeBlock, code->m_nonAtomicName == NULL ? strings->emptyESString : code->m_nonAtomicName);
+        ESFunctionObject* function = ESFunctionObject::create(ec->environment(), code->m_codeBlock, code->m_nonAtomicName == NULL ? strings->emptyString.string() : code->m_nonAtomicName);
         function->set__proto__(instance->globalObject()->functionPrototype());
         ESObject* prototype = ESObject::create();
         prototype->setConstructor(function);
         prototype->set__proto__(instance->globalObject()->object()->protoType());
         function->setProtoType(prototype);
         if(code->m_isDeclaration) { //FD
-            function->set(strings->name, code->m_nonAtomicName);
+            function->set(strings->name.string(), code->m_nonAtomicName);
             ec->environment()->record()->setMutableBinding(code->m_name, code->m_nonAtomicName, function, false);
         }
         else {//FE
-            function->set(strings->name, code->m_nonAtomicName);
+            function->set(strings->name.string(), code->m_nonAtomicName);
             push<ESValue>(stack, bp, function);
         }
         executeNextCode<CreateFunction>(programCounter);
@@ -1497,7 +1497,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 #endif
         ESValue* arguments = (ESValue *)stack;
 
-        ESValue callee = *ec->resolveBinding(strings->atomicEval, strings->eval);
+        ESValue callee = *ec->resolveBinding(strings->eval, strings->eval.string());
         if(callee.isESPointer() && (void *)callee.asESPointer() == (void *)globalObject->eval()) {
             ESObject* receiver = instance->globalObject();
             ESValue ret = instance->runOnEvalContext([instance, &arguments, &argc](){
@@ -1555,7 +1555,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         } else if (function == globalObject->string()) {
             receiver = ESStringObject::create();
         } else if (function == globalObject->regexp()) {
-            receiver = ESRegExpObject::create(strings->emptyESString,ESRegExpObject::Option::None);
+            receiver = ESRegExpObject::create(strings->emptyString.string(),ESRegExpObject::Option::None);
         } else if (function == globalObject->boolean()) {
             receiver = ESBooleanObject::create(ESValue(ESValue::ESFalseTag::ESFalse));
         } else if (function == globalObject->number()) {

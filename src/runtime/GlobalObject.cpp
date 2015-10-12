@@ -333,7 +333,7 @@ void GlobalObject::installFunction()
         function->setProtoType(prototype);
         return function;
     }, strings->Function);
-    m_function->definePropertyOrThrow(strings->name,false, false, true, strings->Function);
+    m_function->definePropertyOrThrow(strings->name,false, false, true, strings->Function.string());
     m_function->setConstructor(m_function);
     ::escargot::ESFunctionObject* emptyFunction = ESFunctionObject::create(NULL,[](ESVMInstance* instance)->ESValue {
         return ESValue();
@@ -378,7 +378,7 @@ void GlobalObject::installFunction()
                 }
                 else if(instance->currentExecutionContext()->arguments()[1].asESPointer()->isESObject()) {
                     escargot::ESObject* obj = instance->currentExecutionContext()->arguments()[1].asESPointer()->asESObject();
-                    arrlen = obj->get(strings->length).toInteger();
+                    arrlen = obj->get(strings->length.string()).toInteger();
                     arguments = (ESValue*)alloca(sizeof(ESValue) * arrlen);
                     for (int i = 0; i < arrlen; i++) {
                         arguments[i] = obj->get(ESValue(i));
@@ -408,7 +408,7 @@ void GlobalObject::installFunction()
         code.m_boundArguments = (ESValue *)GC_malloc(code.m_boundArgumentsCount * sizeof(ESValue));
         memcpy(code.m_boundArguments, instance->currentExecutionContext()->arguments() + 1, code.m_boundArgumentsCount * sizeof(ESValue));
         cb->pushCode(code, NULL);
-        escargot::ESFunctionObject* function = ESFunctionObject::create(NULL, cb, strings->emptyESString);
+        escargot::ESFunctionObject* function = ESFunctionObject::create(NULL, cb, strings->emptyString);
         function->set__proto__(instance->globalObject()->functionPrototype());
         ESObject* prototype = ESObject::create();
         prototype->setConstructor(function);
@@ -439,7 +439,7 @@ void GlobalObject::installObject()
     m_object = ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         return ESValue();
     }, strings->Object);
-    m_object->definePropertyOrThrow(strings->name, false, false, true, strings->Object);
+    m_object->definePropertyOrThrow(strings->name, false, false, true, strings->Object.string());
     m_object->setConstructor(m_function);
     m_object->set__proto__(emptyFunction);
 
@@ -465,10 +465,10 @@ void GlobalObject::installObject()
             return ESString::create(u"[object RegExp]");
         } else if (thisVal->isESTypedArrayObject()) {
             u16string ret = u"[object ";
-            ESValue ta_constructor = thisVal->get(strings->constructor);
+            ESValue ta_constructor = thisVal->get(strings->constructor.string());
             //ALWAYS created from new expression
             ASSERT(ta_constructor.isESPointer() && ta_constructor.asESPointer()->isESObject());
-            ESValue ta_name = ta_constructor.asESPointer()->asESObject()->get(strings->name);
+            ESValue ta_name = ta_constructor.asESPointer()->asESObject()->get(strings->name.string());
             ret.append(ta_name.toString()->data());
             ret.append(u"]");
             return ESString::create(std::move(ret));
@@ -606,7 +606,7 @@ void GlobalObject::installError()
         }
     };
     m_error = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->Error);
-    m_error->definePropertyOrThrow(strings->name, false, false, true, strings->Error);
+    m_error->definePropertyOrThrow(strings->name, false, false, true, strings->Error.string());
     m_error->setConstructor(m_function);
     m_error->set__proto__(m_objectPrototype);
     m_errorPrototype = escargot::ESObject::create();
@@ -634,7 +634,7 @@ void GlobalObject::installError()
 
     /////////////////////////////
     m_referenceError = ::escargot::ESFunctionObject::create(NULL,errorFn,strings->ReferenceError);
-    m_referenceError->definePropertyOrThrow(strings->name, false, false, true, strings->ReferenceError);
+    m_referenceError->definePropertyOrThrow(strings->name, false, false, true, strings->ReferenceError.string());
     m_referenceError->setConstructor(m_function);
     m_referenceError->set__proto__(m_errorPrototype);
 
@@ -647,7 +647,7 @@ void GlobalObject::installError()
 
     /////////////////////////////
     m_typeError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->TypeError);
-    m_typeError->definePropertyOrThrow(strings->name, false, false, true, strings->TypeError);
+    m_typeError->definePropertyOrThrow(strings->name, false, false, true, strings->TypeError.string());
     m_typeError->setConstructor(m_function);
     m_typeError->set__proto__(m_errorPrototype);
 
@@ -660,7 +660,7 @@ void GlobalObject::installError()
 
     /////////////////////////////
     m_rangeError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->RangeError);
-    m_rangeError->definePropertyOrThrow(strings->name, false, false, true, strings->RangeError);
+    m_rangeError->definePropertyOrThrow(strings->name, false, false, true, strings->RangeError.string());
     m_rangeError->setConstructor(m_function);
     m_rangeError->set__proto__(m_errorPrototype);
 
@@ -673,7 +673,7 @@ void GlobalObject::installError()
 
     /////////////////////////////
     m_syntaxError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->SyntaxError);
-    m_syntaxError->definePropertyOrThrow(strings->name, false, false, true, strings->SyntaxError);
+    m_syntaxError->definePropertyOrThrow(strings->name, false, false, true, strings->SyntaxError.string());
     m_syntaxError->setConstructor(m_function);
     m_syntaxError->set__proto__(m_errorPrototype);
 
@@ -893,7 +893,7 @@ void GlobalObject::installArray()
         } else {
             ASSERT(thisBinded->isESObject());
             ESObject* O = thisBinded->asESObject();
-            int len = O->get(strings->length).toInt32();
+            int len = O->get(strings->length.string()).toInt32();
             int argCount = instance->currentExecutionContext()->argumentCount();
             if (len+argCount > std::pow(2, 53)-1) {
                 throw ESValue(TypeError::create());
@@ -912,7 +912,7 @@ void GlobalObject::installArray()
     //$22.1.3.20 Array.prototype.reverse()
     m_arrayPrototype->ESObject::definePropertyOrThrow(ESString::create(u"reverse"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* O = instance->currentExecutionContext()->resolveThisBindingToObject();
-        unsigned len = O->get(strings->length, true).toLength();
+        unsigned len = O->get(strings->length.string(), true).toLength();
         unsigned middle = std::floor(len/2);
         unsigned lower = 0;
         while (middle != lower) {
@@ -950,7 +950,7 @@ void GlobalObject::installArray()
     m_arrayPrototype->ESObject::definePropertyOrThrow(strings->shift, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         int argumentLen = instance->currentExecutionContext()->argumentCount();
         ESObject* O = instance->currentExecutionContext()->resolveThisBindingToObject(); //1
-        int len = O->get(strings->length, true).toLength(); //3
+        int len = O->get(strings->length.string(), true).toLength(); //3
         if(len == 0) { //5
             O->set(strings->length, ESValue(0),true);
             return ESValue();
@@ -1110,7 +1110,7 @@ void GlobalObject::installArray()
     m_arrayPrototype->ESObject::definePropertyOrThrow(ESString::create(u"unshift"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
 
         ESObject* O = instance->currentExecutionContext()->resolveThisBindingToObject();
-        int len = O->get(strings->length, true).toLength();
+        int len = O->get(strings->length.string(), true).toLength();
         int argCount = instance->currentExecutionContext()->argumentCount();
         if (argCount > 0) {
             if (len+argCount > std::pow(2, 53)-1)
@@ -1159,7 +1159,7 @@ void GlobalObject::installString()
             ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
             escargot::ESStringObject* stringObject = thisObject->asESStringObject();
             if (instance->currentExecutionContext()->argumentCount() == 0) {
-                stringObject->setString(strings->emptyESString);
+                stringObject->setString(strings->emptyString.string());
             } else {
                 ESValue value = instance->currentExecutionContext()->readArgument(0);
                 stringObject->setString(value.toString());
@@ -1172,7 +1172,7 @@ void GlobalObject::installString()
         }
         return ESValue();
     }, strings->String);
-    m_string->definePropertyOrThrow(strings->name, false, false, true, strings->String);
+    m_string->definePropertyOrThrow(strings->name, false, false, true, strings->String.string());
     m_string->setConstructor(m_function);
 
     m_stringPrototype = ESStringObject::create();
@@ -1198,7 +1198,7 @@ void GlobalObject::installString()
         if(length == 1) {
             char16_t c = (char16_t)instance->currentExecutionContext()->arguments()[0].toInteger();
             if(c >= 0 && c < ESCARGOT_ASCII_TABLE_MAX)
-                return strings->asciiTable[c];
+                return strings->asciiTable[c].string();
             return ESString::create(c);
         } else {
             u16string elements;
@@ -1220,15 +1220,15 @@ void GlobalObject::installString()
             if(LIKELY(0 <= position && position < (int)str.length())) {
                 char16_t c = str[position];
                 if(LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
-                    return strings->asciiTable[c];
+                    return strings->asciiTable[c].string();
                 } else {
                     return ESString::create(c);
                 }
             } else {
-                return strings->emptyESString;
+                return strings->emptyString.string();
             }
         }
-        return ESValue(strings->emptyESString);
+        return ESValue(strings->emptyString.string());
     }, ESString::create(u"charAt")));
 
     //$21.1.3.2 String.prototype.charCodeAt(pos)
@@ -1258,7 +1258,7 @@ void GlobalObject::installString()
     m_stringPrototype->definePropertyOrThrow(strings->indexOf, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue thisObject = instance->currentExecutionContext()->resolveThisBinding();
         if (thisObject.isUndefinedOrNull())
-            throw TypeError::create(strings->emptyESString);
+            throw TypeError::create();
         const u16string& str = instance->currentExecutionContext()->resolveThisBinding().toString()->string();
         escargot::ESString* searchStr = instance->currentExecutionContext()->readArgument(0).toString();
 
@@ -1323,7 +1323,7 @@ void GlobalObject::installString()
             for(unsigned i = 0; i < result.m_matchResults.size() ; i ++) {
                 for(unsigned j = 0; j < result.m_matchResults[i].size() ; j ++) {
                     if(std::numeric_limits<unsigned>::max() == result.m_matchResults[i][j].m_start)
-                        ret->set(idx++,ESValue(strings->emptyESString));
+                        ret->set(idx++,ESValue(strings->emptyString.string()));
                     else
                         ret->set(idx++,ESString::create(std::move(u16string(str + result.m_matchResults[i][j].m_start,str + result.m_matchResults[i][j].m_end))));
                 }
@@ -1673,7 +1673,7 @@ void GlobalObject::installString()
     m_stringPrototype->definePropertyOrThrow(ESString::create(u"substring"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue thisObject = instance->currentExecutionContext()->resolveThisBinding();
         if (thisObject.isUndefinedOrNull())
-            throw TypeError::create(strings->emptyESString);
+            throw TypeError::create();
         int argCount = instance->currentExecutionContext()->argumentCount();
         escargot::ESString* str = thisObject.toString();
         if(argCount == 0) {
@@ -1770,7 +1770,7 @@ void GlobalObject::installString()
         } else if(thisValue.isESPointer() && thisValue.asESPointer()->isESStringObject()) {
             return thisValue.asESPointer()->asESStringObject()->getStringData();
         }
-        throw ESValue(TypeError::create(strings->emptyESString));
+        throw ESValue(TypeError::create());
     }, strings->valueOf));
 
 
@@ -1795,7 +1795,7 @@ void GlobalObject::installString()
             intStart = std::max(size + intStart,0.0);
         double resultLength = std::min(std::max(end,0.0), size - intStart);
         if(resultLength <= 0)
-            return strings->emptyESString;
+            return strings->emptyString.string();
         return str->substring(intStart, intStart + resultLength);
     }, ESString::create(u"substr")));
 
@@ -1844,7 +1844,7 @@ void GlobalObject::installDate()
         }
         return ESString::create(u"FixMe: We have to return string with date and time data");
     }, strings->Date);
-    m_date->definePropertyOrThrow(strings->name, false, false, true, strings->Date);
+    m_date->definePropertyOrThrow(strings->name, false, false, true, strings->Date.string());
     m_date->setConstructor(m_function);
 
     m_datePrototype->setConstructor(m_date);
@@ -1859,7 +1859,7 @@ void GlobalObject::installDate()
                     ,obj->getFullYear(),obj->getMonth() + 1,obj->getDate(),obj->getHours(),obj->getMinutes(),obj->getSeconds());
             return ESString::create(buffer);
         } else {
-            return strings->emptyESString;
+            return strings->emptyString.string();
         }
     }, strings->toString));
 
@@ -2043,7 +2043,7 @@ void GlobalObject::installJSON()
                 space = instance->currentExecutionContext()->arguments()[2];
             if (value.isObject()) {
                 ESObject* valObj = value.asESPointer()->asESObject();
-                ESValue toJson = valObj->get(strings->toJSON);
+                ESValue toJson = valObj->get(strings->toJSON.string());
                 if (toJson.isESPointer() && toJson.asESPointer()->isESFunctionObject()) {
                     value = ESFunctionObject::call(instance, toJson, value, NULL, 0, false);
                 }
@@ -2388,7 +2388,7 @@ void GlobalObject::installNumber()
     m_numberPrototype = ESNumberObject::create(0.0);
 
     // initialize number object
-    m_number->definePropertyOrThrow(strings->name, false, false, true, strings->Number);
+    m_number->definePropertyOrThrow(strings->name, false, false, true, strings->Number.string());
     m_number->setConstructor(m_function);
     m_number->setProtoType(m_numberPrototype);
 
@@ -2435,7 +2435,7 @@ void GlobalObject::installNumber()
             double x = number;
             int p = instance->currentExecutionContext()->arguments()[0].toInteger();
             if(isnan(x)) {
-                return strings->NaN;
+                return strings->NaN.string();
             }
             u16string s;
             if(x < 0) {
@@ -2499,7 +2499,7 @@ void GlobalObject::installNumber()
         } else if(thisValue.isESPointer() && thisValue.asESPointer()->isESNumberObject()) {
             return ESValue(thisValue.asESPointer()->asESNumberObject()->numberData());
         }
-        throw ESValue(TypeError::create(strings->emptyESString));
+        throw ESValue(TypeError::create());
     }, strings->valueOf));
 
     // add number to global object
@@ -2539,7 +2539,7 @@ void GlobalObject::installBoolean()
     m_booleanPrototype->set__proto__(m_objectPrototype);
 
     // initialize boolean object
-    m_boolean->definePropertyOrThrow(strings->name, false, false, true, strings->Boolean);
+    m_boolean->definePropertyOrThrow(strings->name, false, false, true, strings->Boolean.string());
     m_boolean->setConstructor(m_function);
     m_boolean->setProtoType(m_booleanPrototype);
 
@@ -2561,7 +2561,7 @@ void GlobalObject::installBoolean()
         } else if(thisValue.isESPointer() && thisValue.asESPointer()->isESBooleanObject()) {
             return ESValue(thisValue.asESPointer()->asESBooleanObject()->booleanData());
         }
-        throw ESValue(TypeError::create(strings->emptyESString));
+        throw ESValue(TypeError::create(strings->emptyString));
     }, strings->valueOf));
 
     // add number to global object
@@ -2600,11 +2600,11 @@ void GlobalObject::installRegExp()
     }, strings->RegExp);
 
     // create regexpPrototype object
-    m_regexpPrototype = ESRegExpObject::create(strings->emptyESString,ESRegExpObject::Option::None, m_objectPrototype);
+    m_regexpPrototype = ESRegExpObject::create(strings->emptyString,ESRegExpObject::Option::None, m_objectPrototype);
     m_regexpPrototype->set__proto__(m_objectPrototype);
 
     // initialize regexp object
-    m_regexp->definePropertyOrThrow(strings->name, false, false, true, strings->RegExp);
+    m_regexp->definePropertyOrThrow(strings->name, false, false, true, strings->RegExp.string());
     m_regexp->setConstructor(m_function);
     m_regexp->setProtoType(m_regexpPrototype);
 
@@ -2690,7 +2690,7 @@ void GlobalObject::installRegExp()
             for(unsigned i = 0; i < result.m_matchResults.size() ; i ++) {
                 for(unsigned j = 0; j < result.m_matchResults[i].size() ; j ++) {
                     if(result.m_matchResults[i][j].m_start == std::numeric_limits<unsigned>::max())
-                        arr->set(idx++,ESValue(strings->emptyESString));
+                        arr->set(idx++,ESValue(strings->emptyString));
                     else
                         arr->set(idx++,ESString::create(std::move(u16string(str + result.m_matchResults[i][j].m_start,str + result.m_matchResults[i][j].m_end))));
                 }
@@ -2735,7 +2735,7 @@ void GlobalObject::installArrayBuffer()
         return ESValue(self->asESArrayBufferObject()->bytelength());
     }, nullptr, true, false, false);
 
-    m_arrayBuffer->definePropertyOrThrow(strings->name, false, false, true, strings->ArrayBuffer);
+    m_arrayBuffer->definePropertyOrThrow(strings->name, false, false, true, strings->ArrayBuffer.string());
     m_arrayBuffer->setConstructor(m_function);
     m_arrayBuffer->set__proto__(m_functionPrototype); // empty Function
     m_arrayBuffer->setProtoType(m_arrayBufferPrototype);
@@ -2882,7 +2882,7 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
         if (!arg0->isESTypedArrayObject()) {
             ESObject* src = arg0->asESObject();
             escargot::ESArrayObject* tmp = src->asESArrayObject();
-            int32_t srcLength = src->get(strings->length).asInt32();
+            int32_t srcLength = src->get(strings->length.string()).asInt32();
             if (srcLength + offset > targetLength)
                 throw RangeError::create();
 
@@ -2965,7 +2965,7 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
         ESValue arg[3] = {buffer, ESValue(srcByteOffset + beginIndex * thisVal->elementSize()), ESValue(newLength)};
         escargot::ESTypedArrayObject<T>* newobj = escargot::ESTypedArrayObject<T>::create(instance->globalObject()->typedArrayPrototype<T>());
         newobj->setConstructor(thisBinded->constructor());
-        ESValue ret = ESFunctionObject::call(instance, thisBinded->get(strings->constructor), newobj, arg, 3, instance);
+        ESValue ret = ESFunctionObject::call(instance, thisBinded->get(strings->constructor.string()), newobj, arg, 3, instance);
         return ret;
     }, strings->subarray));
 

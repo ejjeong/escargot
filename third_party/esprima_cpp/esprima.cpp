@@ -3370,7 +3370,7 @@ escargot::Node* parseFunctionExpression(ParseContext* ctx) {
         nd = new escargot::FunctionExpressionNode(((escargot::IdentifierNode *)id)->name(),
                 std::move(params), body, isGenerator, true, ctx->m_strict);
     else
-        nd = new escargot::FunctionExpressionNode(escargot::strings->emptyAtomicString,
+        nd = new escargot::FunctionExpressionNode(escargot::strings->emptyString,
                 std::move(params), body, isGenerator, true, ctx->m_strict);
     nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
 
@@ -3825,7 +3825,7 @@ escargot::Node* parsePropertyFunction(ParseContext* ctx, escargot::InternalAtomi
     }*/
 
     //return node.finishFunctionExpression(null, paramInfo.params, paramInfo.defaults, body, isGenerator);
-    escargot::Node* nd = new escargot::FunctionExpressionNode(escargot::strings->emptyAtomicString, std::move(vec), body, false, true, ctx->m_strict);
+    escargot::Node* nd = new escargot::FunctionExpressionNode(escargot::strings->emptyString, std::move(vec), body, false, true, ctx->m_strict);
     ctx->m_strict = previousStrict;
     nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
     return nd;

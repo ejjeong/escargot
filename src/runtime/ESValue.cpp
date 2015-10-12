@@ -189,7 +189,7 @@ ESString* ESString::substring(int from, int to) const
                 c = rope->m_left->stringData()->c_str()[from - len_left];
             }
             if(c < ESCARGOT_ASCII_TABLE_MAX) {
-                return strings->asciiTable[c];
+                return strings->asciiTable[c].string();
             }
         }
         int len_left = rope->m_left->length();
@@ -220,7 +220,7 @@ ESString* ESString::substring(int from, int to) const
     }
     if(to - from == 1) {
         if(string()[from] < ESCARGOT_ASCII_TABLE_MAX) {
-            return strings->asciiTable[string()[from]];
+            return strings->asciiTable[string()[from]].string();
         }
     }
     u16string ret(std::move(m_string->substr(from, to-from)));
@@ -630,14 +630,14 @@ ESStringObject::ESStringObject(escargot::ESString* str)
     m_stringData = str;
 
     //$21.1.4.1 String.length
-    defineAccessorProperty(strings->length, ESVMInstance::currentInstance()->stringObjectLengthAccessorData(), false, true, false);
+    defineAccessorProperty(strings->length.string(), ESVMInstance::currentInstance()->stringObjectLengthAccessorData(), false, true, false);
 }
 
 ESErrorObject::ESErrorObject(escargot::ESString* message)
        : ESObject((Type)(Type::ESObject | Type::ESErrorObject))
 {
     set(strings->message, message);
-    set(strings->name, strings->Error);
+    set(strings->name, strings->Error.string());
     escargot::ESFunctionObject* fn = ESVMInstance::currentInstance()->globalObject()->error();
     setConstructor(fn);
     set__proto__(ESVMInstance::currentInstance()->globalObject()->errorPrototype());
@@ -646,7 +646,7 @@ ESErrorObject::ESErrorObject(escargot::ESString* message)
 ReferenceError::ReferenceError(escargot::ESString* message)
     : ESErrorObject(message)
 {
-    set(strings->name, strings->ReferenceError);
+    set(strings->name, strings->ReferenceError.string());
     setConstructor(ESVMInstance::currentInstance()->globalObject()->referenceError());
     set__proto__(ESVMInstance::currentInstance()->globalObject()->referenceErrorPrototype());
 }
@@ -654,7 +654,7 @@ ReferenceError::ReferenceError(escargot::ESString* message)
 TypeError::TypeError(escargot::ESString* message)
     : ESErrorObject(message)
 {
-    set(strings->name, strings->TypeError);
+    set(strings->name, strings->TypeError.string());
     setConstructor(ESVMInstance::currentInstance()->globalObject()->typeError());
     set__proto__(ESVMInstance::currentInstance()->globalObject()->typeErrorPrototype());
 }
@@ -662,7 +662,7 @@ TypeError::TypeError(escargot::ESString* message)
 RangeError::RangeError(escargot::ESString* message)
     : ESErrorObject(message)
 {
-    set(strings->name, strings->RangeError);
+    set(strings->name, strings->RangeError.string());
     setConstructor(ESVMInstance::currentInstance()->globalObject()->rangeError());
     set__proto__(ESVMInstance::currentInstance()->globalObject()->rangeErrorPrototype());
 }
@@ -670,7 +670,7 @@ RangeError::RangeError(escargot::ESString* message)
 SyntaxError::SyntaxError(escargot::ESString* message)
     : ESErrorObject(message)
 {
-    set(strings->name, strings->SyntaxError);
+    set(strings->name, strings->SyntaxError.string());
     setConstructor(ESVMInstance::currentInstance()->globalObject()->syntaxError());
     set__proto__(ESVMInstance::currentInstance()->globalObject()->syntaxErrorPrototype());
 }
