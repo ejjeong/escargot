@@ -85,14 +85,14 @@ else
     finalcmd="sleep 0.5; $cmd $filename &"
     summem=""
     echo '===================' >> $memresfile
-    for j in {1..5}; do
+    for j in {1..10}; do
       MAXV='Error'
       measure $finalcmd 2> /dev/null
       summem=$summem$MAXV"\\n"
       sleep 0.5s;
     done
-    echo $(echo -e $summem | awk '{s+=$1} END {printf("Avg. MaxPSS: %.4f", s/5)}')
-    echo $t $(echo -e $summem | awk '{s+=$1} END {printf(": %.4f", s/5)}') >> tmp
+    echo $(echo -e $summem | awk '{s+=$1;if(NR==1||max<$1){max=$1};if(NR==1||($1!="" && $1<min)){min=$1}} END {printf("Avg. MaxPSS: %.4f", (s-max-min)/8)}')
+    echo $t $(echo -e $summem | awk '{s+=$1;if(NR==1||max<$1){max=$1};if(NR==1||($1!="" && $1<min)){min=$1}} END {printf(": %.4f", (s-max-min)/8)}') >> tmp
   done
   cat tmp
   cat tmp > test/out/memory.res
