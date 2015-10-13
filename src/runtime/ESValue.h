@@ -1306,12 +1306,6 @@ public:
 
     ESValue get(unsigned key)
     {
-        if (m_fastmode) {
-            if(key >= 0 && key < m_length)
-                return m_vector[key];
-            else
-                return ESValue();
-        }
         return ESObject::get(ESValue(key));
     }
 
@@ -1326,22 +1320,25 @@ public:
         if(m_length == 0)
             return ESValue();
         ESValue ret = m_vector[m_vector.size() - 1];
-        //TODO delete ret from m_vector
         setLength(length() - 1);
         return ret;
     }
 
+    // Insert 1 element val at idx
     void insertValue(int idx, const ESValue& val)
     {
         if (m_fastmode) {
             m_vector.insert(m_vector.begin()+idx, val);
             setLength(length() + 1);
         } else {
-            // TODO
-            RELEASE_ASSERT_NOT_REACHED();
+            for (int i = length(); i >= idx; i--) {
+                set(i, get(i-1));
+            }
+            set(idx - 1, val);
         }
     }
 
+    // Erase #cnt elements from idx
     void eraseValues(unsigned idx, unsigned cnt)
     {
         if (m_fastmode) {
@@ -1375,25 +1372,13 @@ public:
 
     void set(int i, const ESValue& val)
     {
-        int len = length();
-        if (i == len && m_fastmode) {
-            setLength(len+1);
-        }
-        else if (i >= len) {
-            if (shouldConvertToSlowMode(i)) convertToSlowMode();
-            setLength(i+1);
-        }
-        if (m_fastmode) {
-            m_vector[i] = val;
-        } else {
-            ESObject::set(ESValue(i), val);
-        }
+        ESObject::set(ESValue(i), val);
     }
 
     void setLength(unsigned newLength)
     {
         if (newLength < m_length) {
-            //TODO : delete elements
+            m_vector.resize(newLength);
         } else if (m_fastmode && newLength > m_length) {
             if(m_vector.capacity() < newLength) {
                 size_t reservedSpace = std::min(MAX_FASTMODE_SIZE, newLength*2);

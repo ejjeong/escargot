@@ -1272,7 +1272,7 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
     if(isESArrayObject() && asESArrayObject()->isFastmode()) {
         size_t idx = key.toIndex();
         if(idx != SIZE_MAX) {
-            if(idx < asESArrayObject()->length()) {
+            if(idx >= asESArrayObject()->length()) {
                 if (asESArrayObject()->shouldConvertToSlowMode(idx)) {
                     asESArrayObject()->convertToSlowMode();
                     asESArrayObject()->setLength(idx + 1);
