@@ -270,8 +270,8 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case PlusOpcode:
         {
             // TODO
-            // 1. if both arguments have number type then append StringPlus
-            // 2. else if either one of arguments has string type then append NumberPlus
+            // 1. if both arguments have number type then append NumberPlus
+            // 2. else if either one of arguments has string type then append StringPlus
             // 3. else append general Plus
             INIT_BYTECODE(Plus);
             ESIR* genericPlusIR = GenericPlusIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
