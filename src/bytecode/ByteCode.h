@@ -125,6 +125,7 @@ class Node;
 enum Opcode {
 #define DECLARE_BYTECODE(name) name##Opcode,
     FOR_EACH_BYTECODE_OP(DECLARE_BYTECODE)
+#undef DECLARE_BYTECODE
     OpcodeKindEnd
 };
 

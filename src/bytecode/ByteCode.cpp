@@ -11,6 +11,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 #define REGISTER_TABLE(opcode) \
         instance->opcodeTable()->m_table[opcode##Opcode] = &&opcode##OpcodeLbl;
         FOR_EACH_BYTECODE_OP(REGISTER_TABLE);
+#undef REGISTER_TABLE
         return ESValue();
     }
 
@@ -1873,6 +1874,7 @@ void dumpBytecode(CodeBlock* codeBlock)
         bytecodeCounter++; \
         continue;
         FOR_EACH_BYTECODE_OP(DUMP_BYTE_CODE)
+#undef  DUMP_BYTE_CODE
         default:
             RELEASE_ASSERT_NOT_REACHED();
             break;
@@ -1885,6 +1887,7 @@ void dumpBytecode(CodeBlock* codeBlock)
         idx += sizeof (code); \
         continue;
         FOR_EACH_BYTECODE_OP(DUMP_BYTE_CODE)
+#undef  DUMP_BYTE_CODE
         default:
             RELEASE_ASSERT_NOT_REACHED();
             break;

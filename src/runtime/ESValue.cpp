@@ -514,7 +514,16 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                         break;
                        }
                     if (compileNextTime) break;
-                    idx++;
+                    switch(opcode) {
+                    #define DECLARE_EXECUTE_NEXTCODE(opcode) \
+                                        case opcode##Opcode: \
+                                            idx += sizeof (opcode); \
+                                            break;
+                                        FOR_EACH_BYTECODE_OP(DECLARE_EXECUTE_NEXTCODE);
+                    #undef DECLARE_EXECUTE_NEXTCODE
+                                        case OpcodeKindEnd:
+                                            break;
+                                        }
                   }
 
                 if (!compileNextTime) {
