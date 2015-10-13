@@ -276,7 +276,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue value = *pop<ESValue>(stack, bp);
         ESValue* property = pop<ESValue>(stack, bp);
         ESValue* willBeObject = pop<ESValue>(stack, bp);
-        RELEASE_ASSERT_NOT_REACHED();
+        willBeObject->toObject()->set(*property, value);
         executeNextCode<PutInObject>(programCounter);
         goto NextInstruction;
     }
@@ -286,7 +286,9 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         PutInObjectPreComputedCase* code = (PutInObjectPreComputedCase*)currentCode;
         ESValue value = *pop<ESValue>(stack, bp);
         const ESValue& property = code->m_propertyValue;
-        RELEASE_ASSERT_NOT_REACHED();
+        ESValue* willBeObject = pop<ESValue>(stack, bp);
+        willBeObject->toObject()->set(property, value);
+        push<ESValue>(stack, bp, value);
         executeNextCode<PutInObjectPreComputedCase>(programCounter);
         goto NextInstruction;
     }
@@ -757,7 +759,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
         ESValue* property = pop<ESValue>(stack, bp);
         ESValue* willBeObject = pop<ESValue>(stack, bp);
-        RELEASE_ASSERT_NOT_REACHED();
+        push<ESValue>(stack, bp, willBeObject->toObject()->get(*property));
         executeNextCode<GetObject>(programCounter);
         goto NextInstruction;
     }
@@ -773,7 +775,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 #ifndef NDEBUG
         stack = (void *)(((size_t)stack) + sizeof(size_t) * 2);
 #endif
-        RELEASE_ASSERT_NOT_REACHED();
+        push<ESValue>(stack, bp, willBeObject->toObject()->get(*property));
         executeNextCode<GetObjectWithPeeking>(programCounter);
         goto NextInstruction;
     }
@@ -784,7 +786,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
         const ESValue& property = code->m_propertyValue;
         ESValue* willBeObject = pop<ESValue>(stack, bp);
-        RELEASE_ASSERT_NOT_REACHED();
+        push<ESValue>(stack, bp, willBeObject->toObject()->get(property));
         executeNextCode<GetObjectPreComputedCase>(programCounter);
         goto NextInstruction;
     }
@@ -801,7 +803,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         stack = (void *)(((size_t)stack) + sizeof(size_t) * 1);
 #endif
 
-        RELEASE_ASSERT_NOT_REACHED();
+        push<ESValue>(stack, bp, willBeObject->toObject()->get(property));
         executeNextCode<GetObjectWithPeekingPreComputedCase>(programCounter);
         goto NextInstruction;
     }
