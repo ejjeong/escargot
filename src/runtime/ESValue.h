@@ -922,6 +922,20 @@ namespace escargot {
 
 class ESPropertyAccessorData : public gc {
 public:
+    ESPropertyAccessorData(ESFunctionObject* getter, ESFunctionObject* setter)
+    {
+        m_nativeGetter = nullptr;
+        m_nativeSetter = nullptr;
+        m_jsGetter = getter;
+        m_jsSetter = setter;
+    }
+    ESPropertyAccessorData(ESValue (*getter)(::escargot::ESObject* obj), void (*setter)(::escargot::ESObject* obj, const ESValue& value))
+    {
+        m_nativeGetter = getter;
+        m_nativeSetter = setter;
+        m_jsGetter = nullptr;
+        m_jsSetter = nullptr;
+    }
     ESPropertyAccessorData()
     {
         m_nativeGetter = nullptr;
@@ -1078,7 +1092,7 @@ class ESObject : public ESPointer {
     friend class ESSlot;
     friend class ESHiddenClass;
 protected:
-    ESObject(ESPointer::Type type, ESValue __proto__, size_t initialKeyCount);
+    ESObject(ESPointer::Type type, ESValue __proto__, size_t initialKeyCount = 6);
 public:
     static ESObject* create(size_t initialKeyCount = 6);
 
@@ -1088,6 +1102,18 @@ public:
     }
     inline void defineDataProperty(const escargot::ESValue& key, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true, const ESValue& initalValue = ESValue());
     inline void defineAccessorProperty(const escargot::ESValue& key,ESPropertyAccessorData* data, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true);
+    inline void defineAccessorProperty(const escargot::ESValue& key,ESValue (*getter)(::escargot::ESObject* obj),
+                void (*setter)(::escargot::ESObject* obj, const ESValue& value),
+                bool isWritable, bool isEnumerable, bool isConfigurable)
+    {
+        defineAccessorProperty(key, new ESPropertyAccessorData(getter, setter), isWritable, isEnumerable, isConfigurable);
+    }
+    inline void defineAccessorProperty(escargot::ESString* key,ESValue (*getter)(::escargot::ESObject* obj),
+                void (*setter)(::escargot::ESObject* obj, const ESValue& value),
+                bool isWritable, bool isEnumerable, bool isConfigurable)
+    {
+        defineAccessorProperty(key, new ESPropertyAccessorData(getter, setter), isWritable, isEnumerable, isConfigurable);
+    }
 
     inline bool deletePropety(const ESValue& key);
     inline void propertyFlags(const ESValue& key, bool& exists, bool& isDataProperty, bool& isWritable, bool& isEnumerable, bool& isConfigurable);
@@ -1118,6 +1144,8 @@ public:
     {
         return set(ESValue(key), val);
     }
+
+    ALWAYS_INLINE void set(const escargot::ESValue& key, const ESValue& val, bool throwExpetion);
 
     ALWAYS_INLINE const int32_t length();
     ALWAYS_INLINE ESValue pop();

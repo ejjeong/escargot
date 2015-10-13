@@ -4388,7 +4388,7 @@ escargot::Node* parsePrimaryExpression(ParseContext* ctx) {
             f = f | ESRegExpObject::Sticky;
         }*/
         expr = new escargot::LiteralNode(escargot::ESRegExpObject::create(
-                escargot::ESString::create(token->m_regexBody.data()), (escargot::ESRegExpObject::Option)f, escargot::ESVMInstance::currentInstance()->globalObject()->regexpPrototype()));
+                escargot::ESString::create(token->m_regexBody.data()), (escargot::ESRegExpObject::Option)f));
         expr->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
         //parsedNode = new LiteralNode(ESRegExpObject::create(source, (escargot::ESRegExpObject::Option)f, escargot::ESVMInstance::currentInstance()->globalObject()->regexpPrototype()));
     } else if (type == Token::TemplateToken) {

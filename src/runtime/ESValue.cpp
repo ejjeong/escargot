@@ -308,7 +308,7 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
     return matchResult.m_matchResults.size();
 }
 
-ESObject* ESObject::create(size_t initialKeyCount = 6)
+ESObject* ESObject::create(size_t initialKeyCount)
 {
     return new ESObject(ESPointer::Type::ESObject, ESVMInstance::currentInstance()->globalObject()->objectPrototype(), initialKeyCount);
 }
@@ -511,7 +511,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
     return result;
 }
 
-ESDateObject::ESDateObject(ESPointer::Type type = ESPointer::Type::ESDateObject)
+ESDateObject::ESDateObject(ESPointer::Type type)
        : ESObject((Type)(Type::ESObject | Type::ESDateObject), ESVMInstance::currentInstance()->globalObject()->datePrototype())
 {
     m_isCacheDirty = true;
@@ -644,7 +644,7 @@ ESNumberObject::ESNumberObject(double value)
     m_primitiveValue = value;
 }
 
-ESNumberObject::ESBooleanObject(bool value)
+ESBooleanObject::ESBooleanObject(bool value)
     : ESObject((Type)(Type::ESObject | Type::ESBooleanObject), ESVMInstance::currentInstance()->globalObject()->booleanPrototype())
 {
     m_primitiveValue = value;
@@ -698,7 +698,7 @@ ESArrayBufferObject::ESArrayBufferObject(ESObject* proto,
         set__proto__(ESVMInstance::currentInstance()->globalObject()->arrayBufferPrototype());
 }
 
-ESArrayBufferView::ESArrayBufferView(ESPointer::Type type = ESPointer::Type::ESArrayBufferView, ESValue __proto__)
+ESArrayBufferView::ESArrayBufferView(ESPointer::Type type, ESValue __proto__)
        : ESObject((Type)(Type::ESObject | Type::ESArrayBufferView | type), __proto__)
 {
 }
@@ -752,11 +752,5 @@ bool ESTypedArrayObjectWrapper::set(int key, ESValue val)
     RELEASE_ASSERT_NOT_REACHED();
 }
 
-ESTypedArrayObject<Int8Adaptor>::ESTypedArrayObject(TypedArrayType arraytype,
-                   ESPointer::Type type = ESPointer::Type::ESTypedArrayObject)
-       : ESTypedArrayObjectWrapper(arraytype,
-                                   (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->int8ArrayPrototype())
-{
-}
 
 }

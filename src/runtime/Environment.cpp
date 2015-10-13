@@ -183,7 +183,8 @@ void ObjectEnvironmentRecord::initializeBinding(const InternalAtomicString& name
 //$8.1.1.2.5
 void ObjectEnvironmentRecord::setMutableBinding(const InternalAtomicString& name,ESString * nonAtomicName, const ESValue& V, bool S)
 {
-    m_bindingObject->set(nonAtomicName, V, S);
+    //TODO use S
+    m_bindingObject->set(nonAtomicName, V);
 }
 
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-bindthisvalue

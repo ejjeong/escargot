@@ -60,11 +60,11 @@ ESVMInstance::ESVMInstance()
         }
     });
 
-    m_initialHiddenClassForObject.m_propertyInfo.insert(std::make_pair(
+    m_initialHiddenClassForObject.m_propertyIndexHashMapInfo.insert(std::make_pair(
             m_strings.__proto__,
             0
             ));
-    m_initialHiddenClassForObject.m_propertyFlagInfo.push_back(ESHiddenClassPropertyInfo(false, true, false, false));
+    m_initialHiddenClassForObject.m_propertyInfo.push_back(ESHiddenClassPropertyInfo(m_strings.__proto__.string(), false, true, false, false));
 
     m_functionPrototypeAccessorData.setGetter([](ESObject* self) -> ESValue {
         return self->asESFunctionObject()->protoType();
@@ -83,7 +83,7 @@ ESVMInstance::ESVMInstance()
     });
 
     m_stringObjectLengthAccessorData.setGetter([](ESObject* self) -> ESValue {
-        return ESValue(self->asESStringObject()->getStringData()->length());
+        return ESValue(self->asESStringObject()->stringData()->length());
     });
 
 
@@ -164,7 +164,7 @@ void ESVMInstance::printValue(ESValue val)
                         str.append(", ");
                     str.append(key.toString()->utf8Data());
                     str.append(": ");
-                    str.append(o->asESObject()->get(key, false).toString()->utf8Data());
+                    str.append(o->asESObject()->getOwnProperty(key).toString()->utf8Data());
                     //toString(slot.value(o->asESObject()));
                     isFirst = false;
                     });
@@ -172,8 +172,8 @@ void ESVMInstance::printValue(ESValue val)
             } else if(o->isESErrorObject()) {
                 str.append(v.toString()->utf8Data());
             } else if(o->isESObject()) {
-                if(o->asESObject()->constructor().isESPointer() && o->asESObject()->constructor().asESPointer()->isESObject())
-                    str.append(o->asESObject()->constructor().asESPointer()->asESObject()->get(ESValue(currentInstance()->strings().name), true).toString()->utf8Data());
+                if(o->asESObject()->get(ESValue(currentInstance()->strings().constructor)).isESPointer() && o->asESObject()->get(ESValue(currentInstance()->strings().constructor)).asESPointer()->isESObject())
+                    str.append(o->asESObject()->get(ESValue(currentInstance()->strings().constructor)).asESPointer()->asESObject()->get(ESValue(currentInstance()->strings().name)).toString()->utf8Data());
                 str.append(" {");
                 bool isFirst = true;
                 o->asESObject()->enumeration([&str, &isFirst, o, &toString](escargot::ESValue key) {
@@ -181,13 +181,13 @@ void ESVMInstance::printValue(ESValue val)
                         str.append(", ");
                         str.append(key.toString()->utf8Data());
                         str.append(": ");
-                        str.append(o->asESObject()->get(key, false).toString()->utf8Data());
+                        str.append(o->asESObject()->getOwnProperty(key).toString()->utf8Data());
                         //toString(slot.value(o->asESObject()));
                         isFirst = false;
                     });
                 if(o->isESStringObject()) {
                     str.append(", [[PrimitiveValue]]: \"");
-                    str.append(o->asESStringObject()->getStringData()->utf8Data());
+                    str.append(o->asESStringObject()->stringData()->utf8Data());
                     str.append("\"");
                 }
                 str.append("}");
