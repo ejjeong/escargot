@@ -110,8 +110,7 @@ void GlobalEnvironmentRecord::createGlobalVarBinding(const InternalAtomicString&
 //$8.1.1.4.18
 void GlobalEnvironmentRecord::createGlobalFunctionBinding(const InternalAtomicString& name,ESString * nonAtomicName, const ESValue& V, bool canDelete) {
     ESObject* globalObj = m_objectRecord->bindingObject();
-    globalObj->definePropertyOrThrow(nonAtomicName, true, true, canDelete);
-    globalObj->set(nonAtomicName, V, false);
+    globalObj->defineDataProperty(nonAtomicName, true, true, canDelete, V);
     if( std::find(m_varNames.begin(), m_varNames.end(), name) == m_varNames.end() )
         m_varNames.push_back(name);
 }
@@ -144,6 +143,7 @@ void GlobalEnvironmentRecord::initializeBinding(const InternalAtomicString& name
         ASSERT(m_objectRecord->hasBinding(name, nonAtomicName));
         m_objectRecord->initializeBinding(name, nonAtomicName, V);
     }
+    m_objectRecord->initializeBinding(name, nonAtomicName, V);
 }
 
 //$8.1.1.4.6
@@ -171,7 +171,7 @@ void GlobalEnvironmentRecord::setMutableBinding(const InternalAtomicString& name
 //$8.1.1.2.2
 void ObjectEnvironmentRecord::createMutableBinding(const InternalAtomicString& name,ESString * nonAtomicName, bool canDelete)
 {
-    m_bindingObject->definePropertyOrThrow(nonAtomicName, true, true, canDelete);
+    m_bindingObject->defineDataProperty(nonAtomicName, true, true, canDelete);
 }
 
 //$8.1.1.2.4
@@ -192,7 +192,7 @@ void FunctionEnvironmentRecord::bindThisValue(const ESValue& V)
 #ifndef NDEBUG
     ASSERT(m_thisBindingStatus != Initialized);
     if(m_thisBindingStatus == Lexical)
-        throw ReferenceError::create(ESString::create(u""));
+        throw ReferenceError::create();
     m_thisBindingStatus = Initialized;
 #endif
     m_thisValue = V;
@@ -203,7 +203,7 @@ ESValue FunctionEnvironmentRecord::getThisBinding()
 #ifndef NDEBUG
     ASSERT(m_thisBindingStatus != Lexical);
     if(m_thisBindingStatus == Uninitialized)
-        throw ReferenceError::create(ESString::create(u""));
+        throw ReferenceError::create();
 #endif
     return m_thisValue;
 }

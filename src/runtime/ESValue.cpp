@@ -310,10 +310,9 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
 
 ESObject::ESObject(ESPointer::Type type, size_t initialKeyCount)
     : ESPointer(type)
-    , m_map(NULL)
 {
-    m_flags.m_isFrozen = false;
-    m_flags.m_propertyIndex = 0;
+    m_flags.m_isExtensible = true;
+    m_flags.m_isGlobalObject = false;
 
     m_hiddenClassData.reserve(initialKeyCount);
     m_hiddenClass = ESVMInstance::currentInstance()->initialHiddenClassForObject();
@@ -335,8 +334,7 @@ ESArrayObject::ESArrayObject(int length)
         setLength(length);
     }
 
-    m_hiddenClass = ESVMInstance::currentInstance()->initialHiddenClassForArrayObject();
-    m_hiddenClassData.push_back(ESValue((ESPointer *)ESVMInstance::currentInstance()->arrayLengthAccessorData()));
+    defineAccessorProperty(strings->length.string(), ESVMInstance::currentInstance()->arrayLengthAccessorData(), true, false, false);
 }
 
 ESRegExpObject::ESRegExpObject(escargot::ESString* source, const Option& option)
@@ -371,9 +369,8 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlo
     m_outerEnvironment = outerEnvironment;
     m_codeBlock = cb;
 
-    m_hiddenClass = ESVMInstance::currentInstance()->initialHiddenClassForFunction();
-    m_hiddenClassData.push_back(ESValue((ESPointer *)ESVMInstance::currentInstance()->functionPrototypeAccessorData()));
-    m_hiddenClassData.push_back(ESValue(ESValue::ESUndefined));
+    defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), true, false, false);
+    defineDataProperty(strings->name.string(), true, false, false);
 
     if (proto != NULL)
         set__proto__(proto);
@@ -639,7 +636,6 @@ ESErrorObject::ESErrorObject(escargot::ESString* message)
     set(strings->message, message);
     set(strings->name, strings->Error.string());
     escargot::ESFunctionObject* fn = ESVMInstance::currentInstance()->globalObject()->error();
-    setConstructor(fn);
     set__proto__(ESVMInstance::currentInstance()->globalObject()->errorPrototype());
 }
 
@@ -647,7 +643,6 @@ ReferenceError::ReferenceError(escargot::ESString* message)
     : ESErrorObject(message)
 {
     set(strings->name, strings->ReferenceError.string());
-    setConstructor(ESVMInstance::currentInstance()->globalObject()->referenceError());
     set__proto__(ESVMInstance::currentInstance()->globalObject()->referenceErrorPrototype());
 }
 
@@ -655,7 +650,6 @@ TypeError::TypeError(escargot::ESString* message)
     : ESErrorObject(message)
 {
     set(strings->name, strings->TypeError.string());
-    setConstructor(ESVMInstance::currentInstance()->globalObject()->typeError());
     set__proto__(ESVMInstance::currentInstance()->globalObject()->typeErrorPrototype());
 }
 
@@ -663,7 +657,6 @@ RangeError::RangeError(escargot::ESString* message)
     : ESErrorObject(message)
 {
     set(strings->name, strings->RangeError.string());
-    setConstructor(ESVMInstance::currentInstance()->globalObject()->rangeError());
     set__proto__(ESVMInstance::currentInstance()->globalObject()->rangeErrorPrototype());
 }
 
@@ -671,7 +664,6 @@ SyntaxError::SyntaxError(escargot::ESString* message)
     : ESErrorObject(message)
 {
     set(strings->name, strings->SyntaxError.string());
-    setConstructor(ESVMInstance::currentInstance()->globalObject()->syntaxError());
     set__proto__(ESVMInstance::currentInstance()->globalObject()->syntaxErrorPrototype());
 }
 
@@ -685,7 +677,6 @@ ESArrayBufferObject::ESArrayBufferObject(ESObject* proto,
         set__proto__(proto);
     else
         set__proto__(ESVMInstance::currentInstance()->globalObject()->arrayBufferPrototype());
-    setConstructor(ESVMInstance::currentInstance()->globalObject()->arrayBuffer());
 }
 
 ESValue ESTypedArrayObjectWrapper::get(int key)

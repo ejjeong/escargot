@@ -323,8 +323,5 @@ typedef std::basic_string<char16_t, std::char_traits<char16_t>, pointer_free_all
 }
 
 #include "runtime/ESValue.h"
-#include "runtime/InternalAtomicString.h"
-//#include "runtime/InternalString.h"
-#include "runtime/StaticStrings.h"
 
 #endif

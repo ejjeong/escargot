@@ -13,7 +13,8 @@ namespace escargot {
 
 GlobalObject::GlobalObject()
 {
-
+    m_flags.m_isGlobalObject = true;
+    m_someObjectHasReadOnlyIndexedProperty = false;
 }
 
 std::string char2hex( char dec )
@@ -47,8 +48,6 @@ char hex2char(char first, char second) {
 
 void GlobalObject::initGlobalObject()
 {
-    convertIntoMapMode();
-
     installFunction();
     installObject();
     installArray();

@@ -72,10 +72,10 @@ public:
         }
     }
 
-    ALWAYS_INLINE ESAccessorData* object__proto__AccessorData() { return &m_object__proto__AccessorData; }
-    ALWAYS_INLINE ESAccessorData* functionPrototypeAccessorData() { return &m_functionPrototypeAccessorData; }
-    ALWAYS_INLINE ESAccessorData* arrayLengthAccessorData() { return &m_arrayLengthAccessorData; }
-    ALWAYS_INLINE ESAccessorData* stringObjectLengthAccessorData() { return &m_stringObjectLengthAccessorData; }
+    ALWAYS_INLINE ESPropertyAccessorData* object__proto__AccessorData() { return &m_object__proto__AccessorData; }
+    ALWAYS_INLINE ESPropertyAccessorData* functionPrototypeAccessorData() { return &m_functionPrototypeAccessorData; }
+    ALWAYS_INLINE ESPropertyAccessorData* arrayLengthAccessorData() { return &m_arrayLengthAccessorData; }
+    ALWAYS_INLINE ESPropertyAccessorData* stringObjectLengthAccessorData() { return &m_stringObjectLengthAccessorData; }
 
     ALWAYS_INLINE ESFunctionObject* globalFunctionPrototype() { return m_globalFunctionPrototype; }
     ALWAYS_INLINE void setGlobalFunctionPrototype(ESFunctionObject* o) { m_globalFunctionPrototype = o; }
@@ -88,16 +88,6 @@ public:
     ALWAYS_INLINE ESHiddenClass* initialHiddenClassForObject()
     {
         return &m_initialHiddenClassForObject;
-    }
-
-    ALWAYS_INLINE ESHiddenClass* initialHiddenClassForFunction()
-    {
-        return &m_initialHiddenClassForFunction;
-    }
-
-    ALWAYS_INLINE ESHiddenClass* initialHiddenClassForArrayObject()
-    {
-        return &m_initialHiddenClassForArrayObject;
     }
 
     //Function for debug
@@ -141,13 +131,11 @@ protected:
     unsigned m_identifierCacheInvalidationCheckCount;
 
     ESHiddenClass m_initialHiddenClassForObject;
-    ESHiddenClass m_initialHiddenClassForFunction;
-    ESHiddenClass m_initialHiddenClassForArrayObject;
 
-    ESAccessorData m_object__proto__AccessorData;
-    ESAccessorData m_functionPrototypeAccessorData;
-    ESAccessorData m_arrayLengthAccessorData;
-    ESAccessorData m_stringObjectLengthAccessorData;
+    ESPropertyAccessorData m_object__proto__AccessorData;
+    ESPropertyAccessorData m_functionPrototypeAccessorData;
+    ESPropertyAccessorData m_arrayLengthAccessorData;
+    ESPropertyAccessorData m_stringObjectLengthAccessorData;
 
     ESFunctionObject* m_globalFunctionPrototype;
 

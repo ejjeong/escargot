@@ -364,14 +364,7 @@ protected:
     escargot::ESObject* m_arrayBufferPrototype;
 
     escargot::ESFunctionObject* m_eval;
-    //JSBuiltinsObject* m_builtins;
-    //Context* m_nativeContext;
-};
 
-class JSGlobalObject : public GlobalObject {
-};
-
-class JSBuiltinsObject : public GlobalObject {
 };
 
 }

@@ -200,7 +200,7 @@ inline void objectDefinePropertyOrThrow(ESObject* object, ESString* key,
         ESValueInDouble initial)
 {
     ESValue initialVal = ESValue::fromRawDouble(initial);
-    object->definePropertyOrThrow(key, /*isWritable, isEnumarable, isConfigurable,*/
+    object->defineDataProperty(key, /*isWritable, isEnumarable, isConfigurable,*/
             true, true, true, initialVal);
 }
 
