@@ -154,10 +154,10 @@ void GlobalObject::initGlobalObject()
         }, false);
         return ret;
     }, ESString::create(u"eval"));
-    defineDataProperty(ESString::create(u"eval"), false, false, false, m_eval);
+    defineDataProperty(ESString::create(u"eval"), true, false, true, m_eval);
 
     // $18.2.2
-    defineDataProperty(ESString::create(u"isFinite"), false, false, false, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+    defineDataProperty(ESString::create(u"isFinite"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue ret;
         int len = instance->currentExecutionContext()->argumentCount();
         if (len < 1) ret = ESValue(ESValue::ESFalseTag::ESFalse);
@@ -173,7 +173,7 @@ void GlobalObject::initGlobalObject()
     }, ESString::create(u"isFinite")));
 
     // $18.2.3
-    defineDataProperty(ESString::create(u"isNaN"), false, false, false, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+    defineDataProperty(ESString::create(u"isNaN"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue ret;
         int len = instance->currentExecutionContext()->argumentCount();
         if (len < 1) ret = ESValue(ESValue::ESFalseTag::ESFalse);
@@ -187,7 +187,7 @@ void GlobalObject::initGlobalObject()
     }, ESString::create(u"isNaN")));
 
     // $18.2.4 parseFloat(string)
-    defineDataProperty(ESString::create(u"parseFloat"), false, false, false, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+    defineDataProperty(ESString::create(u"parseFloat"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         int len = instance->currentExecutionContext()->argumentCount();
         if (len < 1) {
             return ESValue(std::numeric_limits<double>::quiet_NaN());
@@ -200,7 +200,7 @@ void GlobalObject::initGlobalObject()
     }, ESString::create(u"parseFloat")));
 
     // $18.2.5 parseInt(string, radix)
-    defineDataProperty(ESString::create(u"parseInt"), false, false, false, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+    defineDataProperty(ESString::create(u"parseInt"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue ret;
         int len = instance->currentExecutionContext()->argumentCount();
         if (len < 1) {
@@ -241,7 +241,7 @@ void GlobalObject::initGlobalObject()
     }, ESString::create(u"parseInt")));
 
     // $18.2.6.5 encodeURIComponent(uriComponent)
-    defineDataProperty(ESString::create(u"encodeURIComponent"), false, false, false, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+    defineDataProperty(ESString::create(u"encodeURIComponent"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         int argLen = instance->currentExecutionContext()->argumentCount();
         if (argLen == 0)
             return ESValue();
@@ -266,7 +266,7 @@ void GlobalObject::initGlobalObject()
     }, ESString::create(u"encodeURIComponent")));
 
     // $B.2.1.2 unescape(string)
-    defineDataProperty(ESString::create(u"unescape"), false, false, false, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+    defineDataProperty(ESString::create(u"unescape"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         int argLen = instance->currentExecutionContext()->argumentCount();
         if (argLen == 0)
             return ESValue();
@@ -427,6 +427,7 @@ void GlobalObject::installFunction()
         return ESFunctionObject::call(instance, thisVal, thisArg, arguments, arglen, false);
     }, ESString::create(u"call")));
 
+    m_function->defineDataProperty(strings->length, false, false, true, ESValue(1));
     defineDataProperty(strings->Function, true, false, true, m_function);
 }
 
@@ -617,8 +618,6 @@ void GlobalObject::installError()
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->toString);
     m_errorPrototype->defineDataProperty(strings->toString, true, false, true, toString);
-
-    m_error->defineDataProperty(strings->toString, true, false, true, toString);
 
     defineDataProperty(strings->Error, true, false, true, m_error);
 
@@ -1113,9 +1112,9 @@ void GlobalObject::installArray()
     m_arrayPrototype->set__proto__(m_objectPrototype);
 
     m_array->setProtoType(m_arrayPrototype);
-    m_array->defineDataProperty(strings->length, true, false, true, ESValue(1));
+    m_array->defineDataProperty(strings->length, false, false, true, ESValue(1));
 
-    defineDataProperty(strings->Array, false, false, true, m_array);
+    defineDataProperty(strings->Array, true, false, true, m_array);
 }
 
 void GlobalObject::installString()
