@@ -288,9 +288,13 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         }
         case MultiplyOpcode:
-            goto unsupported;
+        {
+            INIT_BYTECODE(Multiply);
+            ESIR* genericMultiplyIR = GenericMultiplyIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
+            currentBlock->push(genericMultiplyIR);
             NEXT_BYTECODE(Multiply);
             break;
+        }
         case DivisionOpcode:
             goto unsupported;
             NEXT_BYTECODE(Division);

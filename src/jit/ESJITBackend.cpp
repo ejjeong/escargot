@@ -326,6 +326,36 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             return unboxedResult;
         }
     }
+    case ESIR::Opcode::Int32Multiply:
+    {
+        INIT_ESIR(Int32Multiply);
+        INIT_BINARY_ESIR(Int32Multiply);
+#if 1
+        LIns* int32Result = m_out.ins3(LIR_muljovi, left, right, nullptr);
+        LIns* jumpAlways = m_out.ins2(LIR_j, nullptr, nullptr);
+        LIns* labelOverflow = m_out.ins0(LIR_label);
+        int32Result->setTarget(labelOverflow);
+
+        JIT_LOG(int32Result, "Int32Multiply : Result is not int32");
+        generateOSRExit(irInt32Multiply->targetIndex());
+
+        LIns* labelNoOverflow = m_out.ins0(LIR_label);
+        jumpAlways->setTarget(labelNoOverflow);
+        return int32Result;
+#else
+        return m_out.ins2(LIR_muli, left, right);
+#endif
+    }
+    case ESIR::Opcode::DoubleMultiply:
+    {
+        // FIXME
+        return nullptr;
+    }
+    case ESIR::Opcode::GenericMultiply:
+    {
+        // FIXME
+        return nullptr;
+    }
     case ESIR::Opcode::BitwiseAnd:
     {
         INIT_ESIR(BitwiseAnd);

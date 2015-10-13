@@ -65,6 +65,29 @@ void ESGraphTypeInference::run(ESGraph* graph)
                 // FIXME
                 graph->setOperandType(ir->targetIndex(), TypeInt32);
                 break;
+            case ESIR::Opcode::GenericMultiply: {
+                INIT_ESIR(GenericMultiply);
+                Type leftType = graph->getOperandType(irGenericMultiply->leftIndex());
+                Type rightType = graph->getOperandType(irGenericMultiply->rightIndex());
+                if (leftType.isInt32Type() && rightType.isInt32Type()) {
+                    // int32 * int32 = int32 (or Double -> OSR Exit)
+                    ESIR* int32MultiplyIR = Int32MultiplyIR::create(irGenericMultiply->targetIndex(), irGenericMultiply->leftIndex(), irGenericMultiply->rightIndex());
+                    block->replace(j, int32MultiplyIR);
+                    graph->setOperandType(irGenericMultiply->targetIndex(), TypeInt32);
+                } else if (leftType.hasNumberFlag() && rightType.hasNumberFlag()) {
+                    // int32 * Double  = Double
+                    // Double * int32  = Double
+                    // Double * Double = Double
+                    ESIR* doubleMultiplyIR = DoubleMultiplyIR::create(irGenericMultiply->targetIndex(), irGenericMultiply->leftIndex(), irGenericMultiply->rightIndex());
+                    block->replace(j, doubleMultiplyIR);
+                    graph->setOperandType(irGenericMultiply->targetIndex(), TypeDouble);
+                } else {
+                    // FIXME
+                    // Handle unusual case of multiply
+                    graph->setOperandType(irGenericMultiply->targetIndex(), TypeDouble);
+                }
+                break;
+            }
             case ESIR::Opcode::BitwiseAnd:
             case ESIR::Opcode::BitwiseOr:
             case ESIR::Opcode::BitwiseXor:
