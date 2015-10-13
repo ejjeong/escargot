@@ -62,8 +62,6 @@ void GlobalObject::initGlobalObject()
     installArrayBuffer();
     installTypedArray();
 
-    m_functionPrototype->set__proto__(m_objectPrototype);
-
     // Value Properties of the Global Object
     defineDataProperty(strings->Infinity, false, false, false, ESValue(std::numeric_limits<double>::infinity()));
     defineDataProperty(strings->NaN, false, false, false, ESValue(std::numeric_limits<double>::quiet_NaN()));
@@ -336,8 +334,11 @@ void GlobalObject::installFunction()
         return ESValue();
     },strings->Empty);
 
+    m_functionPrototype->set__proto__(m_objectPrototype);
     m_functionPrototype = emptyFunction;
+
     ESVMInstance::currentInstance()->setGlobalFunctionPrototype(m_functionPrototype);
+
     m_functionPrototype->defineDataProperty(strings->toString,true, false, true, ESFunctionObject::create(NULL,[](ESVMInstance* instance)->ESValue {
         //FIXME
         if(instance->currentExecutionContext()->resolveThisBindingToObject()->isESFunctionObject()) {

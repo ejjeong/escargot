@@ -1391,7 +1391,7 @@ ALWAYS_INLINE void ESObject::enumeration(Functor t)
 }
 
 template<>
-ESTypedArrayObject<Int8Adaptor>::ESTypedArrayObject(TypedArrayType arraytype,
+inline ESTypedArrayObject<Int8Adaptor>::ESTypedArrayObject(TypedArrayType arraytype,
                    ESPointer::Type type)
        : ESTypedArrayObjectWrapper(arraytype,
                                    (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->int8ArrayPrototype())
@@ -1399,66 +1399,66 @@ ESTypedArrayObject<Int8Adaptor>::ESTypedArrayObject(TypedArrayType arraytype,
 }
 
 template<>
-ESTypedArrayObject<Int16Adaptor>::ESTypedArrayObject(TypedArrayType arraytype,
+inline ESTypedArrayObject<Int16Adaptor>::ESTypedArrayObject(TypedArrayType arraytype,
                    ESPointer::Type type)
        : ESTypedArrayObjectWrapper(arraytype,
-                                   (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->int8ArrayPrototype())
+                                   (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->int16ArrayPrototype())
 {
 }
 
 template<>
-ESTypedArrayObject<Int32Adaptor>::ESTypedArrayObject(TypedArrayType arraytype,
+inline ESTypedArrayObject<Int32Adaptor>::ESTypedArrayObject(TypedArrayType arraytype,
                    ESPointer::Type type)
        : ESTypedArrayObjectWrapper(arraytype,
-                                   (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->int8ArrayPrototype())
+                                   (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->int32ArrayPrototype())
 {
 }
 
 template<>
-ESTypedArrayObject<Uint8Adaptor>::ESTypedArrayObject(TypedArrayType arraytype,
+inline ESTypedArrayObject<Uint8Adaptor>::ESTypedArrayObject(TypedArrayType arraytype,
                    ESPointer::Type type)
        : ESTypedArrayObjectWrapper(arraytype,
-                                   (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->int8ArrayPrototype())
+                                   (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->uint8ArrayPrototype())
 {
 }
 
 template<>
-ESTypedArrayObject<Uint16Adaptor>::ESTypedArrayObject(TypedArrayType arraytype,
+inline ESTypedArrayObject<Uint16Adaptor>::ESTypedArrayObject(TypedArrayType arraytype,
                    ESPointer::Type type)
        : ESTypedArrayObjectWrapper(arraytype,
-                                   (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->int8ArrayPrototype())
+                                   (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->uint16ArrayPrototype())
 {
 }
 
 template<>
-ESTypedArrayObject<Uint32Adaptor>::ESTypedArrayObject(TypedArrayType arraytype,
+inline ESTypedArrayObject<Uint32Adaptor>::ESTypedArrayObject(TypedArrayType arraytype,
                    ESPointer::Type type)
        : ESTypedArrayObjectWrapper(arraytype,
-                                   (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->int8ArrayPrototype())
+                                   (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->uint32ArrayPrototype())
 {
 }
 
 template<>
-ESTypedArrayObject<Uint8ClampedAdaptor>::ESTypedArrayObject(TypedArrayType arraytype,
+inline ESTypedArrayObject<Uint8ClampedAdaptor>::ESTypedArrayObject(TypedArrayType arraytype,
                    ESPointer::Type type)
        : ESTypedArrayObjectWrapper(arraytype,
-                                   (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->int8ArrayPrototype())
+                                   (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->uint8ClampedArrayPrototype())
 {
 }
 
 template<>
-ESTypedArrayObject<Float32Adaptor>::ESTypedArrayObject(TypedArrayType arraytype,
+inline ESTypedArrayObject<Float32Adaptor>::ESTypedArrayObject(TypedArrayType arraytype,
                    ESPointer::Type type)
        : ESTypedArrayObjectWrapper(arraytype,
-                                   (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->int8ArrayPrototype())
+                                   (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->float32ArrayPrototype())
 {
 }
 
 template<>
-ESTypedArrayObject<Float64Adaptor>::ESTypedArrayObject(TypedArrayType arraytype,
+inline ESTypedArrayObject<Float64Adaptor>::ESTypedArrayObject(TypedArrayType arraytype,
                    ESPointer::Type type)
        : ESTypedArrayObjectWrapper(arraytype,
-                                   (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->int8ArrayPrototype())
+                                   (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->float64ArrayPrototype())
 {
 }
 

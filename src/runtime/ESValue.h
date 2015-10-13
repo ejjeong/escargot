@@ -1789,7 +1789,7 @@ class ESTypedArrayObject : public ESTypedArrayObjectWrapper {
 public:
 
 protected:
-    ESTypedArrayObject(TypedArrayType arraytype,
+    inline ESTypedArrayObject(TypedArrayType arraytype,
                        ESPointer::Type type = ESPointer::Type::ESTypedArrayObject);
 
 public:
