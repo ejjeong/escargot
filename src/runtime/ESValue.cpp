@@ -308,7 +308,12 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
     return matchResult.m_matchResults.size();
 }
 
-ESObject::ESObject(ESPointer::Type type, size_t initialKeyCount)
+ESObject* ESObject::create(size_t initialKeyCount = 6)
+{
+    return new ESObject(ESPointer::Type::ESObject, ESVMInstance::currentInstance()->globalObject()->objectPrototype(), initialKeyCount);
+}
+
+ESObject::ESObject(ESPointer::Type type, ESValue __proto__, size_t initialKeyCount)
     : ESPointer(type)
 {
     m_flags.m_isExtensible = true;
@@ -318,12 +323,14 @@ ESObject::ESObject(ESPointer::Type type, size_t initialKeyCount)
     m_hiddenClass = ESVMInstance::currentInstance()->initialHiddenClassForObject();
 
     m_hiddenClassData.push_back(ESValue((ESPointer *)ESVMInstance::currentInstance()->object__proto__AccessorData()));
+
+    m___proto__ = __proto__;
 }
 
 const unsigned ESArrayObject::MAX_FASTMODE_SIZE;
 
 ESArrayObject::ESArrayObject(int length)
-    : ESObject((Type)(Type::ESObject | Type::ESArrayObject))
+    : ESObject((Type)(Type::ESObject | Type::ESArrayObject), ESVMInstance::currentInstance()->globalObject()->arrayPrototype())
     , m_vector(0)
     , m_fastmode(true)
 {
@@ -338,7 +345,7 @@ ESArrayObject::ESArrayObject(int length)
 }
 
 ESRegExpObject::ESRegExpObject(escargot::ESString* source, const Option& option)
-    : ESObject((Type)(Type::ESObject | Type::ESRegExpObject))
+    : ESObject((Type)(Type::ESObject | Type::ESRegExpObject), ESVMInstance::currentInstance()->globalObject()->regexpPrototype())
 {
     m_source = source;
     m_option = option;
@@ -362,26 +369,21 @@ void ESRegExpObject::setOption(const Option& option)
     m_option = option;
 }
 
-ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlock* cb, escargot::ESString* name, ESObject* proto)
-    : ESObject((Type)(Type::ESObject | Type::ESFunctionObject))
+ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlock* cb, escargot::ESString* name)
+    : ESObject((Type)(Type::ESObject | Type::ESFunctionObject), ESVMInstance::currentInstance()->globalFunctionPrototype())
 {
     m_name = name;
     m_outerEnvironment = outerEnvironment;
     m_codeBlock = cb;
+    m_protoType = ESObject::create();
+    m_protoType.asESPointer()->asESObject()->defineDataProperty(strings->constructor.string(), true, false, true, this);
 
     defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), true, false, false);
     defineDataProperty(strings->name.string(), true, false, false);
-
-    if (proto != NULL)
-        set__proto__(proto);
-    else {
-        //for avoiding assert
-        m___proto__ = ESVMInstance::currentInstance()->globalFunctionPrototype();
-    }
 }
 
-ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeFunctionType fn, escargot::ESString* name, ESObject* proto)
-    : ESFunctionObject(outerEnvironment, (CodeBlock *)NULL, name, proto)
+ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeFunctionType fn, escargot::ESString* name)
+    : ESFunctionObject(outerEnvironment, (CodeBlock *)NULL, name)
 {
     m_codeBlock = CodeBlock::create();
     m_codeBlock->pushCode(ExecuteNativeFunction(fn), NULL);
@@ -509,6 +511,12 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
     return result;
 }
 
+ESDateObject::ESDateObject(ESPointer::Type type = ESPointer::Type::ESDateObject)
+       : ESObject((Type)(Type::ESObject | Type::ESDateObject), ESVMInstance::currentInstance()->globalObject()->datePrototype())
+{
+    m_isCacheDirty = true;
+}
+
 void ESDateObject::parseYmdhmsToDate(struct tm* timeinfo, int year, int month, int date, int hour, int minute, int second) {
       char buffer[255];
       snprintf(buffer, 255, "%d-%d-%d-%d-%d-%d", year, month, date, hour, minute, second);
@@ -622,7 +630,7 @@ void ESDateObject::setTime(double t) {
 }
 
 ESStringObject::ESStringObject(escargot::ESString* str)
-    : ESObject((Type)(Type::ESObject | Type::ESStringObject))
+    : ESObject((Type)(Type::ESObject | Type::ESStringObject), ESVMInstance::currentInstance()->globalObject()->stringPrototype())
 {
     m_stringData = str;
 
@@ -630,13 +638,24 @@ ESStringObject::ESStringObject(escargot::ESString* str)
     defineAccessorProperty(strings->length.string(), ESVMInstance::currentInstance()->stringObjectLengthAccessorData(), false, true, false);
 }
 
+ESNumberObject::ESNumberObject(double value)
+    : ESObject((Type)(Type::ESObject | Type::ESNumberObject), ESVMInstance::currentInstance()->globalObject()->numberPrototype())
+{
+    m_primitiveValue = value;
+}
+
+ESNumberObject::ESBooleanObject(bool value)
+    : ESObject((Type)(Type::ESObject | Type::ESBooleanObject), ESVMInstance::currentInstance()->globalObject()->booleanPrototype())
+{
+    m_primitiveValue = value;
+}
+
 ESErrorObject::ESErrorObject(escargot::ESString* message)
-       : ESObject((Type)(Type::ESObject | Type::ESErrorObject))
+       : ESObject((Type)(Type::ESObject | Type::ESErrorObject), ESVMInstance::currentInstance()->globalObject()->errorPrototype())
 {
     set(strings->message, message);
     set(strings->name, strings->Error.string());
     escargot::ESFunctionObject* fn = ESVMInstance::currentInstance()->globalObject()->error();
-    set__proto__(ESVMInstance::currentInstance()->globalObject()->errorPrototype());
 }
 
 ReferenceError::ReferenceError(escargot::ESString* message)
@@ -669,7 +688,7 @@ SyntaxError::SyntaxError(escargot::ESString* message)
 
 ESArrayBufferObject::ESArrayBufferObject(ESObject* proto,
                                         ESPointer::Type type)
-    : ESObject((Type)(Type::ESObject | Type::ESArrayBufferObject)),
+    : ESObject((Type)(Type::ESObject | Type::ESArrayBufferObject), ESVMInstance::currentInstance()->globalObject()->arrayBufferPrototype()),
     m_data(NULL),
     m_bytelength(0)
 {
@@ -677,6 +696,11 @@ ESArrayBufferObject::ESArrayBufferObject(ESObject* proto,
         set__proto__(proto);
     else
         set__proto__(ESVMInstance::currentInstance()->globalObject()->arrayBufferPrototype());
+}
+
+ESArrayBufferView::ESArrayBufferView(ESPointer::Type type = ESPointer::Type::ESArrayBufferView, ESValue __proto__)
+       : ESObject((Type)(Type::ESObject | Type::ESArrayBufferView | type), __proto__)
+{
 }
 
 ESValue ESTypedArrayObjectWrapper::get(int key)
@@ -726,6 +750,13 @@ bool ESTypedArrayObjectWrapper::set(int key, ESValue val)
         return (reinterpret_cast<ESFloat64Array *>(this))->set(key, val);
     }
     RELEASE_ASSERT_NOT_REACHED();
+}
+
+ESTypedArrayObject<Int8Adaptor>::ESTypedArrayObject(TypedArrayType arraytype,
+                   ESPointer::Type type = ESPointer::Type::ESTypedArrayObject)
+       : ESTypedArrayObjectWrapper(arraytype,
+                                   (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->int8ArrayPrototype())
+{
 }
 
 }

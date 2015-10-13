@@ -53,8 +53,10 @@ ESVMInstance::ESVMInstance()
     m_object__proto__AccessorData.setSetter([](::escargot::ESObject* self, const ESValue& value) -> void {
         if(value.isESPointer() && value.asESPointer()->isESObject()) {
             self->set__proto__(value.asESPointer()->asESObject());
-        } else {
+        } else if(value.isUndefined()){
             self->set__proto__(ESValue());
+        } else if(value.isNull()) {
+            self->set__proto__(ESValue(ESValue::ESNull));
         }
     });
 

@@ -164,23 +164,15 @@ inline ESString* ESValue::toString() const
 inline ESObject* ESValue::toObject() const
 {
     ESFunctionObject* function;
-    ESObject* receiver;
+    ESObject* object;
     if (isESPointer() && asESPointer()->isESObject()) {
        return asESPointer()->asESObject();
     } else if (isNumber()) {
-        function = ESVMInstance::currentInstance()->globalObject()->number();
-        receiver = ESNumberObject::create(toNumber());
+        object = ESNumberObject::create(toNumber());
     } else if (isBoolean()) {
-        function = ESVMInstance::currentInstance()->globalObject()->boolean();
-        ESValue ret;
-        if (toBoolean())
-            ret = ESValue(ESValue::ESTrueTag::ESTrue);
-        else
-            ret = ESValue(ESValue::ESFalseTag::ESFalse);
-        receiver = ESBooleanObject::create(ret);
+        object = ESBooleanObject::create(toBoolean());
     } else if (isESString()) {
-        function = ESVMInstance::currentInstance()->globalObject()->string();
-        receiver = ESStringObject::create(asESPointer()->asESString());
+        object = ESStringObject::create(asESPointer()->asESString());
     } else if(isNull()){
         throw ESValue(TypeError::create(ESString::create(u"cannot convert null into object")));
     } else if(isUndefined()){
@@ -188,9 +180,7 @@ inline ESObject* ESValue::toObject() const
     } else {
         RELEASE_ASSERT_NOT_REACHED();
     }
-
-    receiver->set__proto__(function->protoType());
-    return receiver;
+    return object;
 }
 
 inline ESValue ESValue::toPrimitive(PrimitiveTypeHint preferredType) const
@@ -264,7 +254,7 @@ inline double ESValue::toNumber() const
             if(LIKELY(o->isESString())) {
                 data = o->asESString();
             } else {
-                data = o->asESStringObject()->getStringData();
+                data = o->asESStringObject()->stringData();
             }
 
             //A StringNumericLiteral that is empty or contains only white space is converted to +0.
@@ -895,6 +885,8 @@ ALWAYS_INLINE ESHiddenClass* ESHiddenClass::removeProperty(size_t idx)
     ASSERT(idx != SIZE_MAX);
     //can not delete __proto__
     ASSERT(idx != 0);
+    ASSERT(m_propertyInfo[idx].m_flags.m_isConfigurable);
+
     if(m_flags.m_isVectorMode) {
         ESHiddenClass* ret = ESVMInstance::currentInstance()->initialHiddenClassForObject();
         ASSERT(*m_propertyInfo[0].m_name == *strings->__proto__.string());
@@ -1142,7 +1134,7 @@ inline bool ESObject::deletePropety(const ESValue& key)
     return true;
 }
 
-ALWAYS_INLINE bool ESObject::hasOwnProperty(escargot::ESValue key)
+ALWAYS_INLINE bool ESObject::hasOwnProperty(const escargot::ESValue& key)
 {
     if((isESArrayObject() && asESArrayObject()->isFastmode()) || isESTypedArrayObject()) {
         size_t idx = key.toIndex();

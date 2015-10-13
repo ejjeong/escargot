@@ -1078,12 +1078,9 @@ class ESObject : public ESPointer {
     friend class ESSlot;
     friend class ESHiddenClass;
 protected:
-    ESObject(ESPointer::Type type = ESPointer::Type::ESObject, size_t initialKeyCount = 6);
+    ESObject(ESPointer::Type type, ESValue __proto__, size_t initialKeyCount);
 public:
-    static ESObject* create(size_t initialKeyCount = 6)
-    {
-        return new ESObject(ESPointer::Type::ESObject, initialKeyCount);
-    }
+    static ESObject* create(size_t initialKeyCount = 6);
 
     inline void defineDataProperty(InternalAtomicString name, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true, const ESValue& initalValue = ESValue())
     {
@@ -1094,7 +1091,7 @@ public:
 
     inline bool deletePropety(const ESValue& key);
     inline void propertyFlags(const ESValue& key, bool& exists, bool& isDataProperty, bool& isWritable, bool& isEnumerable, bool& isConfigurable);
-    inline bool hasOwnProperty(escargot::ESValue key);
+    inline bool hasOwnProperty(const escargot::ESValue& key);
 
     //$6.1.7.2 Object Internal Methods and Internal Slots
     bool isExtensible()
@@ -1221,24 +1218,11 @@ public:
 
 class ESDateObject : public ESObject {
 protected:
-    ESDateObject(ESPointer::Type type = ESPointer::Type::ESDateObject)
-           : ESObject((Type)(Type::ESObject | Type::ESDateObject)) {
-        m_isCacheDirty = true;
-    }
-
+    ESDateObject(ESPointer::Type type = ESPointer::Type::ESDateObject);
 public:
     static ESDateObject* create()
     {
         return new ESDateObject();
-    }
-
-    static ESDateObject* create(ESObject* proto)
-    {
-        //TODO
-        ESDateObject* date = new ESDateObject();
-        if(proto != NULL)
-            date->set__proto__(proto);
-        return date;
     }
 
     void parseStringToDate(struct tm* timeinfo, escargot::ESString* istr);
@@ -1285,21 +1269,11 @@ class ESArrayObject : public ESObject {
 protected:
     ESArrayObject(int length);
 public:
-    static ESArrayObject* create()
-    {
-        return ESArrayObject::create(0);
-    }
 
     // $9.4.2.2
-    static ESArrayObject* create(int length, ESObject* proto = NULL)
+    static ESArrayObject* create(int length = 0)
     {
-        //TODO
-        ESArrayObject* arr = new ESArrayObject(length);
-        //if(proto == NULL)
-        //    proto = global->arrayPrototype();
-        if(proto != NULL)
-            arr->set__proto__(proto);
-        return arr;
+        return ESArrayObject::create(length);
     }
 
     ESValue get(unsigned key)
@@ -1448,18 +1422,18 @@ class LexicalEnvironment;
 class Node;
 class ESFunctionObject : public ESObject {
 protected:
-    ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlock* codeBlock, escargot::ESString* name, ESObject* proto);
-    ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeFunctionType fn, escargot::ESString* name, ESObject* proto);
+    ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlock* codeBlock, escargot::ESString* name);
+    ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeFunctionType fn, escargot::ESString* name);
 public:
-    static ESFunctionObject* create(LexicalEnvironment* outerEnvironment, CodeBlock* codeBlock, escargot::ESString* name, ESObject* proto = NULL)
+    static ESFunctionObject* create(LexicalEnvironment* outerEnvironment, CodeBlock* codeBlock, escargot::ESString* name)
     {
-        ESFunctionObject* ret = new ESFunctionObject(outerEnvironment, codeBlock, name, proto);
+        ESFunctionObject* ret = new ESFunctionObject(outerEnvironment, codeBlock, name);
         return ret;
     }
 
-    static ESFunctionObject* create(LexicalEnvironment* outerEnvironment, const NativeFunctionType& fn, escargot::ESString* name, ESObject* proto = NULL)
+    static ESFunctionObject* create(LexicalEnvironment* outerEnvironment, const NativeFunctionType& fn, escargot::ESString* name)
     {
-        ESFunctionObject* ret = new ESFunctionObject(outerEnvironment, fn, name, proto);
+        ESFunctionObject* ret = new ESFunctionObject(outerEnvironment, fn, name);
         return ret;
     }
 
@@ -1506,22 +1480,17 @@ class ESStringObject : public ESObject {
 protected:
     ESStringObject(escargot::ESString* str);
 public:
-    static ESStringObject* create(escargot::ESString* str)
+    static ESStringObject* create(escargot::ESString* str = strings->emptyString.string())
     {
         return new ESStringObject(str);
     }
 
-    static ESStringObject* create()
-    {
-        return new ESStringObject(strings->emptyString.string());
-    }
-
-    ALWAYS_INLINE ::escargot::ESString* getStringData()
+    ALWAYS_INLINE ::escargot::ESString* stringData()
     {
         return m_stringData;
     }
 
-    ALWAYS_INLINE void setString(::escargot::ESString* str)
+    ALWAYS_INLINE void setStringData(::escargot::ESString* str)
     {
         m_stringData = str;
     }
@@ -1532,11 +1501,7 @@ private:
 
 class ESNumberObject : public ESObject {
 protected:
-    ESNumberObject(double value)
-        : ESObject((Type)(Type::ESObject | Type::ESNumberObject))
-    {
-        m_primitiveValue = value;
-    }
+    ESNumberObject(double value);
 
 public:
     static ESNumberObject* create(double value)
@@ -1556,23 +1521,19 @@ private:
 
 class ESBooleanObject : public ESObject {
 protected:
-    ESBooleanObject(const ESValue& value)
-        : ESObject((Type)(Type::ESObject | Type::ESBooleanObject))
-    {
-        m_primitiveValue = value;
-    }
+    ESBooleanObject(bool value);
 
 public:
-    static ESBooleanObject* create(const ESValue& value)
+    static ESBooleanObject* create(bool value)
     {
         return new ESBooleanObject(value);
     }
 
-    void setBooleanData(const ESValue& value) { m_primitiveValue = value; }
-    ALWAYS_INLINE ESValue booleanData() { return m_primitiveValue; }
+    void setBooleanData(bool value) { m_primitiveValue = value; }
+    ALWAYS_INLINE bool booleanData() { return m_primitiveValue; }
 
 private:
-    ESValue m_primitiveValue;
+    bool m_primitiveValue;
 };
 
 class ESRegExpObject : public ESObject {
@@ -1586,12 +1547,9 @@ public:
         MultiLine = 1 << 2,
         Sticky = 1 << 3,
     };
-    static ESRegExpObject* create(escargot::ESString* source, const Option& option, ESObject* proto = NULL)
+    static ESRegExpObject* create(escargot::ESString* source, const Option& option)
     {
         ESRegExpObject* ret = new ESRegExpObject(source, option);
-        if (proto != NULL)
-            ret->set__proto__(proto);
-
         return ret;
     }
 
@@ -1642,11 +1600,7 @@ public:
     {
         return new ESArrayBufferObject();
     }
-    static ESArrayBufferObject* create(ESObject* proto)
-    {
-        ESArrayBufferObject* obj = new ESArrayBufferObject(proto);
-        return obj;
-    }
+
     static ESArrayBufferObject* createAndAllocate(unsigned bytelength)
     {
         ESArrayBufferObject* obj = new ESArrayBufferObject();
@@ -1708,15 +1662,8 @@ private:
 
 class ESArrayBufferView : public ESObject {
 protected:
-    ESArrayBufferView(ESPointer::Type type = ESPointer::Type::ESArrayBufferView)
-           : ESObject((Type)(Type::ESObject | Type::ESArrayBufferView | type)) {
-    }
-
+    ESArrayBufferView(ESPointer::Type type, ESValue __proto__);
 public:
-    static ESArrayBufferView* create()
-    {
-        return new ESArrayBufferView();
-    }
     ALWAYS_INLINE escargot::ESArrayBufferObject* buffer() { return m_buffer; }
     ALWAYS_INLINE void setBuffer(escargot::ESArrayBufferObject* bo) { m_buffer = bo; }
     ALWAYS_INLINE unsigned bytelength() { return m_bytelength; }
@@ -1759,9 +1706,10 @@ struct Float64Adaptor: TypedArrayAdaptor<double, TypedArrayType::Float64Array> {
 
 class ESTypedArrayObjectWrapper : public ESArrayBufferView {
 protected:
-    ESTypedArrayObjectWrapper(TypedArrayType arraytype, ESPointer::Type type)
-           : ESArrayBufferView(type),
-             m_arraytype(arraytype) {
+    ESTypedArrayObjectWrapper(TypedArrayType arraytype, ESPointer::Type type, ESValue __proto__)
+       : ESArrayBufferView(type, __proto__),
+         m_arraytype(arraytype)
+    {
     }
 public:
     unsigned elementSize()
@@ -1814,23 +1762,14 @@ public:
 
 protected:
     ESTypedArrayObject(TypedArrayType arraytype,
-                       ESPointer::Type type = ESPointer::Type::ESTypedArrayObject)
-           : ESTypedArrayObjectWrapper(arraytype,
-                                       (Type)(Type::ESObject | Type::ESTypedArrayObject)) {
-    }
+                       ESPointer::Type type = ESPointer::Type::ESTypedArrayObject);
 
 public:
     static ESTypedArrayObject* create()
     {
         return new ESTypedArrayObject(TypeAdaptor::typeVal);
     }
-    static ESTypedArrayObject* create(ESObject* proto)
-    {
-        ESTypedArrayObject<TypeAdaptor>* obj = new ESTypedArrayObject(TypeAdaptor::typeVal);
-        if (proto != NULL)
-            obj->set__proto__(proto);
-        return obj;
-    }
+
     ESValue get(int key)
     {
         if (key >= 0 && key < arraylength()) {
@@ -1861,8 +1800,10 @@ typedef ESTypedArrayObject<Float64Adaptor> ESFloat64Array;
 class ESDataViewObject : public ESArrayBufferView {
 protected:
     ESDataViewObject(ESPointer::Type type = ESPointer::Type::ESDataViewObject)
-           : ESArrayBufferView((Type)(Type::ESObject | Type::ESDataViewObject))
+           : ESArrayBufferView((Type)(Type::ESObject | Type::ESDataViewObject), ESValue()) //TODO set __proto__ properly
     {
+        //TODO
+        RELEASE_ASSERT_NOT_REACHED();
     }
 
 public:
