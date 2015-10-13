@@ -1161,7 +1161,7 @@ public:
 
     ALWAYS_INLINE void set__proto__(const ESValue& obj)
     {
-        ASSERT(obj.isObject() || obj.isUndefined());
+        ASSERT(obj.isObject() || obj.isUndefinedOrNull());
         m___proto__ = obj;
     }
 
@@ -1301,7 +1301,7 @@ public:
     // $9.4.2.2
     static ESArrayObject* create(int length = 0)
     {
-        return ESArrayObject::create(length);
+        return new ESArrayObject(length);
     }
 
     ESValue get(unsigned key)
@@ -1606,7 +1606,7 @@ enum TypedArrayType {
 
 class ESArrayBufferObject : public ESObject {
 protected:
-    ESArrayBufferObject(ESObject* proto = NULL, ESPointer::Type type = ESPointer::Type::ESArrayBufferObject);
+    ESArrayBufferObject(ESPointer::Type type = ESPointer::Type::ESArrayBufferObject);
 
 public:
     static ESArrayBufferObject* create()

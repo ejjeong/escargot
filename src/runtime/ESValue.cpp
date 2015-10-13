@@ -686,16 +686,12 @@ SyntaxError::SyntaxError(escargot::ESString* message)
     set__proto__(ESVMInstance::currentInstance()->globalObject()->syntaxErrorPrototype());
 }
 
-ESArrayBufferObject::ESArrayBufferObject(ESObject* proto,
-                                        ESPointer::Type type)
+ESArrayBufferObject::ESArrayBufferObject(ESPointer::Type type)
     : ESObject((Type)(Type::ESObject | Type::ESArrayBufferObject), ESVMInstance::currentInstance()->globalObject()->arrayBufferPrototype()),
     m_data(NULL),
     m_bytelength(0)
 {
-    if( proto != NULL )
-        set__proto__(proto);
-    else
-        set__proto__(ESVMInstance::currentInstance()->globalObject()->arrayBufferPrototype());
+    m___proto__ = (ESVMInstance::currentInstance()->globalObject()->arrayBufferPrototype());
 }
 
 ESArrayBufferView::ESArrayBufferView(ESPointer::Type type, ESValue __proto__)
