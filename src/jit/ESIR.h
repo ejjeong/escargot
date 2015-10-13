@@ -466,33 +466,33 @@ private:
 
 class GetObjectPreComputedIR : public ESIR {
 public:
-    DECLARE_STATIC_GENERATOR_4(GetObjectPreComputed, ESHiddenClass*, size_t, int, int);
+    DECLARE_STATIC_GENERATOR_4(GetObjectPreComputed, ESHiddenClass*, size_t, int, ESValue);
 
 #ifndef NDEBUG
     virtual void dump(std::ostream& out)
     {
         out << "tmp" << m_targetIndex << ": ";
         ESIR::dump(out);
-        out << " tmp" << m_objectIndex << ".tmp" << m_propertyIndex;
+        out << " tmp" << m_objectIndex << "." << m_propertyValue.asESString()->utf8Data();
     }
 #endif
 
     ESHiddenClass* cachedHiddenClass() { return m_cachedHiddenClass; }
     size_t cachedIndex() { return m_cachedIndex; }
     int objectIndex() { return m_objectIndex; }
-    int propertyIndex() { return m_propertyIndex; }
+    ESValue propertyValue() { return m_propertyValue; }
 
 private:
-    GetObjectPreComputedIR(int targetIndex, ESHiddenClass* cachedHiddenClass, size_t cachedIndex, int objectIndex, int propertyIndex)
+    GetObjectPreComputedIR(int targetIndex, ESHiddenClass* cachedHiddenClass, size_t cachedIndex, int objectIndex, ESValue propertyValue)
         : ESIR(ESIR::Opcode::GetObjectPreComputed, targetIndex),
           m_cachedHiddenClass(cachedHiddenClass),
           m_cachedIndex(cachedIndex),
           m_objectIndex(objectIndex),
-          m_propertyIndex(propertyIndex){ }
+          m_propertyValue(propertyValue){}
     ESHiddenClass* m_cachedHiddenClass;
     int m_cachedIndex;
     int m_objectIndex;
-    int m_propertyIndex;
+    ESValue m_propertyValue;
 };
 
 class GetArrayObjectIR : public ESIR {

@@ -387,7 +387,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             bytecode->m_profile.updateProfiledType();
             graph->setOperandType(ssaIndex->m_targetIndex, bytecode->m_profile.getType());
             GetObjectPreComputedIR* getObjectPreComputedIR = GetObjectPreComputedIR::create(ssaIndex->m_targetIndex, bytecode->m_cachedHiddenClass, bytecode->m_cachedIndex,
-                                    ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
+                                    ssaIndex->m_srcIndex1, bytecode->m_propertyValue);
             currentBlock->push(getObjectPreComputedIR);
             NEXT_BYTECODE(GetObjectPreComputedCase);
             break;

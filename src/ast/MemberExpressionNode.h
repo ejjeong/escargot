@@ -29,9 +29,8 @@ public:
         m_object->generateExpressionByteCode(codeBlock, context);
 
         if(isPreComputedCase()) {
-            updateNodeIndex(context);
+            LiteralNode* tmp = (LiteralNode*) m_property;
             codeBlock->pushCode(GetObjectPreComputedCase(((LiteralNode *)m_property)->value()), this);
-            WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
             updateNodeIndex(context);
             WRITE_LAST_INDEX(m_nodeIndex, m_object->nodeIndex(), m_nodeIndex - 1);
         } else {
