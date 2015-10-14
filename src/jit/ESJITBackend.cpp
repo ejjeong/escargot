@@ -223,7 +223,7 @@ LIns* NativeGenerator::unboxESValue(LIns* boxedValue, Type type)
     } else if (type.isDoubleType()) {
 #ifdef ESCARGOT_64
         LIns* doubleValue = m_out.ins2(LIR_subq, boxedValue, m_doubleEncodeOffsetQ);
-        return m_out.ins1(LIR_q2d, doubleValue);
+        return m_out.ins1(LIR_qasd, doubleValue);
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
