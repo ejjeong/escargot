@@ -1170,7 +1170,14 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
 
         if((obj->isESArrayObject() || obj->isESTypedArrayObject()) && property.isInt32()) {
-            push<ESValue>(stack, bp, obj->get(property, true));
+#ifdef ENABLE_ESJIT
+            code->m_esir_type.mergeType(escargot::ESJIT::TypeArrayObject);
+#endif
+            ESValue elem = obj->get(property, true);
+            push<ESValue>(stack, bp, elem);
+#ifdef ENABLE_ESJIT
+            code->m_profile.addProfile(elem);
+#endif
             executeNextCode<GetObjectPreComputedCase>(programCounter);
             goto NextInstruction;
         }

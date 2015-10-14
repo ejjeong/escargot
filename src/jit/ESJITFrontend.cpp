@@ -391,12 +391,18 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
                 // ToDo: GetObjectPreComputed for string object
                 goto unsupported;
               }
-            ASSERT(bytecode->m_esir_type.isObjectType() || bytecode->m_esir_type.isStringObjectType());
+            ASSERT(bytecode->m_esir_type.isObjectType());
             bytecode->m_profile.updateProfiledType();
             graph->setOperandType(ssaIndex->m_targetIndex, bytecode->m_profile.getType());
-            GetObjectPreComputedIR* getObjectPreComputedIR = GetObjectPreComputedIR::create(ssaIndex->m_targetIndex, bytecode->m_cachedHiddenClass, bytecode->m_cachedIndex,
+            if (bytecode->m_esir_type.isArrayObjectType()) {
+                ASSERT(bytecode->m_propertyValue.isInt32());
+                GetArrayObjectPreComputedIR* getArrayObjectPreComputedIR = GetArrayObjectPreComputedIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, bytecode->m_propertyValue.asInt32());
+                currentBlock->push(getArrayObjectPreComputedIR);
+            } else {
+                GetObjectPreComputedIR* getObjectPreComputedIR = GetObjectPreComputedIR::create(ssaIndex->m_targetIndex, bytecode->m_cachedHiddenClass, bytecode->m_cachedIndex,
                                     ssaIndex->m_srcIndex1, bytecode->m_propertyValue);
-            currentBlock->push(getObjectPreComputedIR);
+                currentBlock->push(getObjectPreComputedIR);
+              }
             NEXT_BYTECODE(GetObjectPreComputedCase);
             break;
         }

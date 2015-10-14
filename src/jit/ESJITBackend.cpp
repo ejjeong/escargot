@@ -652,12 +652,12 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     }
     case ESIR::Opcode::GetObjectPreComputed:
    {
-       INIT_ESIR(GetObject);
-       LIns* obj = getTmpMapping(irGetObject->objectIndex());
-       if (irGetObject->cachedIndex() < SIZE_MAX) {
+       INIT_ESIR(GetObjectPreComputed);
+       LIns* obj = getTmpMapping(irGetObjectPreComputed->objectIndex());
+       if (irGetObjectPreComputed->cachedIndex() < SIZE_MAX) {
            size_t gapToHiddenClassData = escargot::ESObject::offsetOfHiddenClassData();
            LIns* hiddenClassData = m_out.insLoad(LIR_ldd, obj, gapToHiddenClassData, 1, LOAD_NORMAL);
-           return m_out.insLoad(LIR_ldd, hiddenClassData, irGetObject->cachedIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
+           return m_out.insLoad(LIR_ldd, hiddenClassData, irGetObjectPreComputed->cachedIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
         }
        RELEASE_ASSERT_NOT_REACHED();
    }
@@ -678,6 +678,20 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
                 return m_out.insLoad(LIR_ldd, newBase, 0, 1, LOAD_NORMAL);
              } else
                  RELEASE_ASSERT_NOT_REACHED();
+    }
+    case ESIR::Opcode::GetArrayObjectPreComputed:
+    {
+        INIT_ESIR(GetArrayObjectPreComputed);
+        LIns* obj = getTmpMapping(irGetArrayObjectPreComputed->objectIndex());
+        LIns* key = m_out.insImmI(irGetArrayObjectPreComputed->computedIndex());
+
+        ASSERT(m_graph->getOperandType(irGetArrayObjectPreComputed->objectIndex()).isArrayObjectType());
+        size_t gapToVector = escargot::ESArrayObject::offsetOfVectorData();
+        LIns* vectorData = m_out.insLoad(LIR_ldd, obj, gapToVector, 1, LOAD_NORMAL);
+        LIns* ESValueSize = m_out.insImmI(sizeof(ESValue));
+        LIns* offset = m_out.ins2(LIR_muli, key, ESValueSize);
+        LIns* newBase = m_out.ins2(LIR_addd, vectorData, offset);
+        return m_out.insLoad(LIR_ldd, newBase, 0, 1, LOAD_NORMAL);
     }
     case ESIR::Opcode::PutInObject:
     {

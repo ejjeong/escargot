@@ -103,6 +103,7 @@ class ESBasicBlock;
     F(GetObject, LoadFromHeap)\
     F(GetObjectPreComputed, LoadFromHeap)\
     F(GetArrayObject, LoadFromHeap)\
+    F(GetArrayObjectPreComputed, LoadFromHeap)\
     F(PutInObject, ) \
     F(GetScoped, LoadFromHeap) \
     F(SetScoped, ) \
@@ -520,6 +521,31 @@ private:
           m_propertyIndex(propertyIndex){ }
     int m_objectIndex;
     int m_propertyIndex;
+};
+
+class GetArrayObjectPreComputedIR : public ESIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(GetArrayObjectPreComputed, int, int);
+
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+        out << " tmp" << m_objectIndex << "[" << m_computedIndex << "]";
+    }
+#endif
+
+    int objectIndex() { return m_objectIndex; }
+    int computedIndex() { return m_computedIndex; }
+
+private:
+    GetArrayObjectPreComputedIR(int targetIndex, int objectIndex, int computedIndex)
+        : ESIR(ESIR::Opcode::GetArrayObjectPreComputed, targetIndex),
+          m_objectIndex(objectIndex),
+          m_computedIndex(computedIndex){ }
+    int m_objectIndex;
+    int m_computedIndex;
 };
 
 class PutInObjectIR : public ESIR {
