@@ -304,11 +304,11 @@ public:
         return &m_hiddenClassData[ret];
     }
 
-    bool didSomeObjectDefineIndexedProperty()
+    bool didSomeObjectDefineIndexedReadOnlyOrAccessorProperty()
     {
-        return m_didSomeObjectDefineIndexedProperty;
+        return m_didSomeObjectDefineIndexedReadOnlyOrAccessorProperty;
     }
-    void someObjectDefineIndexedProperty();
+    void someObjectDefineIndexedReadOnlyOrAccessorProperty();
 
     void registerCodeBlock(CodeBlock* cb);
     void unregisterCodeBlock(CodeBlock* cb);
@@ -386,7 +386,7 @@ protected:
 
     escargot::ESFunctionObject* m_eval;
 
-    bool m_didSomeObjectDefineIndexedProperty;
+    bool m_didSomeObjectDefineIndexedReadOnlyOrAccessorProperty;
     std::vector<CodeBlock*> m_codeBlocks;
 };
 

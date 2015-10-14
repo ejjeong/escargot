@@ -618,6 +618,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         else if(v->isESString())
             push<ESValue>(stack, bp, strings->string.string());
         else if(v->isESPointer()) {
+            ASSERT(v->isESPointer());
             ESPointer* p = v->asESPointer();
             if(p->isESFunctionObject()) {
                 push<ESValue>(stack, bp, strings->function.string());
@@ -625,9 +626,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                 push<ESValue>(stack, bp, strings->object.string());
             }
         }
-        else
-            RELEASE_ASSERT_NOT_REACHED();
-
 
         executeNextCode<UnaryPlus>(programCounter);
         goto NextInstruction;
@@ -886,8 +884,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESObject* obj = pop<ESValue>(stack, bp)->toObject();
         EnumerateObjectData* data = new EnumerateObjectData();
 
-        RELEASE_ASSERT_NOT_REACHED();
-        /*
         data->m_object = obj;
         data->m_keys.reserve(obj->keyCount());
         ESObject* target = obj;
@@ -913,7 +909,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             }
         }
         push<ESValue>(stack, bp, ESValue((ESPointer *)data));
-        */
         executeNextCode<EnumerateObject>(programCounter);
         goto NextInstruction;
     }

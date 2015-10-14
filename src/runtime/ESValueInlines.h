@@ -1060,8 +1060,8 @@ inline void ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
         ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
 
     escargot::ESString* keyString = key.toString();
-    if(keyString->hasOnlyDigit()) {
-        ESVMInstance::currentInstance()->globalObject()->someObjectDefineIndexedProperty();
+    if(!isWritable && keyString->hasOnlyDigit()) {
+        ESVMInstance::currentInstance()->globalObject()->someObjectDefineIndexedReadOnlyOrAccessorProperty();
     }
     size_t oldIdx = m_hiddenClass->findProperty(keyString);
     if(oldIdx == SIZE_MAX) {
@@ -1098,7 +1098,7 @@ inline void ESObject::defineAccessorProperty(const escargot::ESValue& key,ESProp
 
     escargot::ESString* keyString = key.toString();
     if(keyString->hasOnlyDigit()) {
-        ESVMInstance::currentInstance()->globalObject()->someObjectDefineIndexedProperty();
+        ESVMInstance::currentInstance()->globalObject()->someObjectDefineIndexedReadOnlyOrAccessorProperty();
     }
     size_t oldIdx = m_hiddenClass->findProperty(keyString);
     if(oldIdx == SIZE_MAX) {
@@ -1316,9 +1316,6 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
     }
     array_fastmode_fail:
     escargot::ESString* keyString = key.toString();
-    if(keyString->hasOnlyDigit()) {
-        ESVMInstance::currentInstance()->globalObject()->someObjectDefineIndexedProperty();
-    }
     size_t idx = m_hiddenClass->findProperty(keyString);
     if(idx == SIZE_MAX) {
         ESValue target = m___proto__;

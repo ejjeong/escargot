@@ -15,6 +15,7 @@ GlobalObject::GlobalObject()
     : ESObject(ESPointer::Type::ESObject, ESValue())
 {
     m_flags.m_isGlobalObject = true;
+    m_didSomeObjectDefineIndexedReadOnlyOrAccessorProperty = false;
 }
 
 std::string char2hex( char dec )
@@ -2949,11 +2950,11 @@ void GlobalObject::unregisterCodeBlock(CodeBlock* cb)
     m_codeBlocks.erase(std::find(m_codeBlocks.begin(), m_codeBlocks.end(), cb));
 }
 
-void GlobalObject::someObjectDefineIndexedProperty()
+void GlobalObject::someObjectDefineIndexedReadOnlyOrAccessorProperty()
 {
-    if(!m_didSomeObjectDefineIndexedProperty) {
-        fprintf(stderr, "some object define indexed property.\n");
-        m_didSomeObjectDefineIndexedProperty = true;
+    if(!m_didSomeObjectDefineIndexedReadOnlyOrAccessorProperty) {
+        fprintf(stderr, "some object define indexed Readonly|Accessor property.\n");
+        m_didSomeObjectDefineIndexedReadOnlyOrAccessorProperty = true;
         for(unsigned i = 0; i < m_codeBlocks.size() ; i ++) {
             //printf("%p..\n",m_codeBlocks[i]);
             iterateByteCode(m_codeBlocks[i], [](ByteCode* code, Opcode opcode){
