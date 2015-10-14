@@ -366,8 +366,14 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     }
     case ESIR::Opcode::DoubleMultiply:
     {
-        // FIXME
-        return nullptr;
+        INIT_ESIR(DoubleMultiply);
+        INIT_BINARY_ESIR(DoubleMultiply);
+        if (leftType.isInt32Type())
+            left = m_out.ins1(LIR_i2d, left);
+        if (rightType.isInt32Type())
+            right = m_out.ins1(LIR_i2d, right);
+        ASSERT(left->isD() && right->isD());
+        return m_out.ins2(LIR_muld, left, right);
     }
     case ESIR::Opcode::GenericMultiply:
     {
