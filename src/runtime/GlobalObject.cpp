@@ -1221,7 +1221,7 @@ void GlobalObject::installString()
     m_stringPrototype->defineDataProperty(strings->indexOf, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue thisObject = instance->currentExecutionContext()->resolveThisBinding();
         if (thisObject.isUndefinedOrNull())
-            throw TypeError::create();
+            throw ESValue(TypeError::create());
         const u16string& str = instance->currentExecutionContext()->resolveThisBinding().toString()->string();
         escargot::ESString* searchStr = instance->currentExecutionContext()->readArgument(0).toString();
 

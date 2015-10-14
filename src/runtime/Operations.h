@@ -157,22 +157,25 @@ ALWAYS_INLINE ESValue abstractRelationalComparison(const ESValue& left, const ES
 }
 
 //d = {}. d[0]
-ALWAYS_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* property)
+ALWAYS_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* property, ESValue* lastObjectValueMetInMemberExpression)
 {
     ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedProperty());
+    *lastObjectValueMetInMemberExpression = *willBeObject;
     return willBeObject->toObject()->get(*property);
 }
 
 //d = {}. d.foo
-ALWAYS_INLINE ESValue getObjectPreComputedCaseOperation(ESValue* willBeObject, ESValue* property)
+ALWAYS_INLINE ESValue getObjectPreComputedCaseOperation(ESValue* willBeObject, ESValue* property, ESValue* lastObjectValueMetInMemberExpression)
 {
     ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedProperty());
+    *lastObjectValueMetInMemberExpression = *willBeObject;
     return willBeObject->toObject()->get(*property);
 }
 
-ALWAYS_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue* property)
+ALWAYS_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue* property, ESValue* lastObjectValueMetInMemberExpression)
 {
     ASSERT(ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedProperty());
+    *lastObjectValueMetInMemberExpression = *willBeObject;
     return willBeObject->toObject()->get(*property);
 }
 
