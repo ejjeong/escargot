@@ -735,7 +735,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
         ESValue* property = pop<ESValue>(stack, bp);
         ESValue* willBeObject = pop<ESValue>(stack, bp);
-        push<ESValue>(stack, bp, getObjectOperation(willBeObject, property, &lastESObjectMetInMemberExpressionNode));
+        push<ESValue>(stack, bp, getObjectOperation(willBeObject, property, &lastESObjectMetInMemberExpressionNode, globalObject));
         executeNextCode<GetObject>(programCounter);
         goto NextInstruction;
     }
@@ -746,7 +746,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
         ESValue* property = pop<ESValue>(stack, bp);
         ESValue* willBeObject = pop<ESValue>(stack, bp);
-        push<ESValue>(stack, bp, getObjectOperationSlowMode(willBeObject, property, &lastESObjectMetInMemberExpressionNode));
+        push<ESValue>(stack, bp, getObjectOperationSlowMode(willBeObject, property, &lastESObjectMetInMemberExpressionNode, globalObject));
         executeNextCode<GetObjectSlowMode>(programCounter);
         goto NextInstruction;
     }
@@ -762,7 +762,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 #ifndef NDEBUG
         stack = (void *)(((size_t)stack) + sizeof(size_t) * 2);
 #endif
-        push<ESValue>(stack, bp, getObjectOperation(willBeObject, property, &lastESObjectMetInMemberExpressionNode));
+        push<ESValue>(stack, bp, getObjectOperation(willBeObject, property, &lastESObjectMetInMemberExpressionNode, globalObject));
         executeNextCode<GetObjectWithPeeking>(programCounter);
         goto NextInstruction;
     }
@@ -778,7 +778,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 #ifndef NDEBUG
         stack = (void *)(((size_t)stack) + sizeof(size_t) * 2);
 #endif
-        push<ESValue>(stack, bp, getObjectOperationSlowMode(willBeObject, property, &lastESObjectMetInMemberExpressionNode));
+        push<ESValue>(stack, bp, getObjectOperationSlowMode(willBeObject, property, &lastESObjectMetInMemberExpressionNode, globalObject));
         executeNextCode<GetObjectWithPeekingSlowMode>(programCounter);
         goto NextInstruction;
     }
@@ -787,7 +787,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         GetObjectPreComputedCase* code = (GetObjectPreComputedCase*)currentCode;
         ESValue* willBeObject = pop<ESValue>(stack, bp);
-        push<ESValue>(stack, bp, getObjectPreComputedCaseOperation(willBeObject, &code->m_propertyValue, &lastESObjectMetInMemberExpressionNode));
+        push<ESValue>(stack, bp, getObjectPreComputedCaseOperation(willBeObject, &code->m_propertyValue, &lastESObjectMetInMemberExpressionNode, globalObject));
         executeNextCode<GetObjectPreComputedCase>(programCounter);
         goto NextInstruction;
     }
@@ -796,7 +796,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         GetObjectPreComputedCaseSlowMode* code = (GetObjectPreComputedCaseSlowMode*)currentCode;
         ESValue* willBeObject = pop<ESValue>(stack, bp);
-        push<ESValue>(stack, bp, getObjectOperationSlowMode(willBeObject, &code->m_propertyValue, &lastESObjectMetInMemberExpressionNode));
+        push<ESValue>(stack, bp, getObjectOperationSlowMode(willBeObject, &code->m_propertyValue, &lastESObjectMetInMemberExpressionNode, globalObject));
         executeNextCode<GetObjectPreComputedCaseSlowMode>(programCounter);
         goto NextInstruction;
     }
@@ -812,7 +812,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         stack = (void *)(((size_t)stack) + sizeof(size_t) * 1);
 #endif
 
-        push<ESValue>(stack, bp, getObjectPreComputedCaseOperation(willBeObject, &code->m_propertyValue, &lastESObjectMetInMemberExpressionNode));
+        push<ESValue>(stack, bp, getObjectPreComputedCaseOperation(willBeObject, &code->m_propertyValue, &lastESObjectMetInMemberExpressionNode, globalObject));
         executeNextCode<GetObjectWithPeekingPreComputedCase>(programCounter);
         goto NextInstruction;
     }
@@ -828,7 +828,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         stack = (void *)(((size_t)stack) + sizeof(size_t) * 1);
 #endif
 
-        push<ESValue>(stack, bp, getObjectOperationSlowMode(willBeObject, &code->m_propertyValue, &lastESObjectMetInMemberExpressionNode));
+        push<ESValue>(stack, bp, getObjectOperationSlowMode(willBeObject, &code->m_propertyValue, &lastESObjectMetInMemberExpressionNode, globalObject));
         executeNextCode<GetObjectWithPeekingPreComputedCaseSlowMode>(programCounter);
         goto NextInstruction;
     }

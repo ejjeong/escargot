@@ -157,26 +157,106 @@ ALWAYS_INLINE ESValue abstractRelationalComparison(const ESValue& left, const ES
 }
 
 //d = {}. d[0]
-ALWAYS_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* property, ESValue* lastObjectValueMetInMemberExpression)
+ALWAYS_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject)
 {
     ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedReadOnlyOrAccessorProperty());
     *lastObjectValueMetInMemberExpression = *willBeObject;
-    return willBeObject->toObject()->get(*property);
+    if(willBeObject->isESPointer()) {
+        if(LIKELY(willBeObject->asESPointer()->isESArrayObject())) {
+            //TODO fast reading
+            return willBeObject->toObject()->get(*property);
+        } else if(willBeObject->asESPointer()->isESString()) {
+            size_t idx = property->toIndex();
+            if(idx != SIZE_MAX) {
+                if(LIKELY(0 <= idx && idx < willBeObject->asESString()->length())) {
+                    char16_t c = willBeObject->asESString()->string().data()[idx];
+                    if(LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
+                        return strings->asciiTable[c].string();
+                    } else {
+                        return ESString::create(c);
+                    }
+                }
+                return willBeObject->toObject()->get(*property);
+            } else {
+                ESString* val = property->toString();
+                if(*val == *strings->length) {
+                    return ESValue(willBeObject->asESString()->length());
+                }
+                ESValue ret = globalObject->stringObjectProxy()->get(val);
+                return ret;
+            }
+        } else {
+            ASSERT(willBeObject->asESPointer()->isESObject());
+            return willBeObject->asESPointer()->asESObject()->get(*property);
+        }
+    } else {
+        //number
+        return globalObject->numberObjectProxy()->get(*property);
+    }
 }
 
 //d = {}. d.foo
-ALWAYS_INLINE ESValue getObjectPreComputedCaseOperation(ESValue* willBeObject, ESValue* property, ESValue* lastObjectValueMetInMemberExpression)
+ALWAYS_INLINE ESValue getObjectPreComputedCaseOperation(ESValue* willBeObject, ESValue* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject)
 {
     ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedReadOnlyOrAccessorProperty());
     *lastObjectValueMetInMemberExpression = *willBeObject;
-    return willBeObject->toObject()->get(*property);
+    if(willBeObject->isESPointer()) {
+        if(LIKELY(willBeObject->asESPointer()->isESObject())) {
+            return willBeObject->asESPointer()->asESObject()->get(*property);
+        } else {
+            ASSERT(willBeObject->asESPointer()->isESString());
+            ESString* val = property->toString();
+            if(*val == *strings->length) {
+                return ESValue(willBeObject->asESString()->length());
+            }
+            globalObject->stringObjectProxy()->setStringData(willBeObject->asESString());
+            ESValue ret = globalObject->stringObjectProxy()->get(val);
+            return ret;
+        }
+    } else {
+        //number
+        globalObject->numberObjectProxy()->setNumberData(willBeObject->asNumber());
+        return globalObject->numberObjectProxy()->get(*property);
+    }
 }
 
-ALWAYS_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue* property, ESValue* lastObjectValueMetInMemberExpression)
+ALWAYS_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject)
 {
     ASSERT(ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedReadOnlyOrAccessorProperty());
     *lastObjectValueMetInMemberExpression = *willBeObject;
-    return willBeObject->toObject()->get(*property);
+    if(willBeObject->isESPointer()) {
+        if(LIKELY(willBeObject->asESPointer()->isESArrayObject())) {
+            return  willBeObject->toObject()->get(*property);
+        } else if(willBeObject->asESPointer()->isESString()) {
+            size_t idx = property->toIndex();
+            if(idx != SIZE_MAX) {
+                if(LIKELY(0 <= idx && idx < willBeObject->asESString()->length())) {
+                    char16_t c = willBeObject->asESString()->string().data()[idx];
+                    if(LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
+                        return strings->asciiTable[c].string();
+                    } else {
+                        return ESString::create(c);
+                    }
+                }
+                return willBeObject->toObject()->get(*property);
+            } else {
+                ESString* val = property->toString();
+                if(*val == *strings->length) {
+                    return ESValue(willBeObject->asESString()->length());
+                }
+                globalObject->stringObjectProxy()->setStringData(willBeObject->asESString());
+                ESValue ret = globalObject->stringObjectProxy()->get(val);
+                return ret;
+            }
+        } else {
+            ASSERT(willBeObject->asESPointer()->isESObject());
+            return willBeObject->asESPointer()->asESObject()->get(*property);
+        }
+    } else {
+        //number
+        globalObject->numberObjectProxy()->setNumberData(willBeObject->asNumber());
+        return globalObject->numberObjectProxy()->get(*property);
+    }
 }
 
 //d = {}. d[0]

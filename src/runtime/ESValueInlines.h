@@ -402,7 +402,7 @@ inline size_t ESValue::toIndex() const
 {
     size_t idx = SIZE_MAX;
     int32_t i;
-    if(isInt32() && (i = asInt32()) >= 0) {
+    if(LIKELY(isInt32()) && LIKELY((i = asInt32()) >= 0)) {
         return i;
     } else {
         ESString* key = toString();

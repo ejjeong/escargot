@@ -729,9 +729,15 @@ ALWAYS_INLINE bool operator != (const ESString& a,const char16_t* b)
 
 ALWAYS_INLINE bool operator == (const ESString& a,const ESString& b)
 {
-    if(a.length() == b.length()) {
-        if(a.stringData()->hashValue() == b.stringData()->hashValue()) {
-            return a.string() == b.string();
+    const ESStringData* dataA = a.stringData();
+    const ESStringData* dataB = b.stringData();
+
+    if(dataA == dataB)
+        return true;
+
+    if(dataA->length() == dataB->length()) {
+        if(dataA->hashValue() == dataB->hashValue()) {
+            return *dataA == *dataB;
         }
     }
     return false;
