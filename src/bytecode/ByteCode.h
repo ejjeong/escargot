@@ -77,11 +77,17 @@ class Node;
     F(SetObjectPropertySetter) \
     F(SetObjectPropertyGetter) \
     F(GetObject) \
+    F(GetObjectSlowMode) \
     F(GetObjectWithPeeking) \
+    F(GetObjectWithPeekingSlowMode) \
     F(GetObjectPreComputedCase) \
+    F(GetObjectPreComputedCaseSlowMode) \
     F(GetObjectWithPeekingPreComputedCase) \
+    F(GetObjectWithPeekingPreComputedCaseSlowMode) \
     F(SetObject) \
+    F(SetObjectSlowMode) \
     F(SetObjectPreComputedCase) \
+    F(SetObjectPreComputedCaseSlowMode) \
     F(EnumerateObject) \
     F(EnumerateObjectKey) \
     F(EnumerateObjectEnd) \
@@ -130,18 +136,12 @@ enum Opcode {
 
 struct OpcodeTable {
     void* m_table[OpcodeKindEnd];
+    std::unordered_map<void*, Opcode> m_reverseTable;
 };
 
-inline Opcode getOpcodeFromAddress(void* address)
+inline Opcode opcodeFromAddress(void* address)
 {
-    Opcode opcode = Opcode::OpcodeKindEnd;
-    for(int i = 0; i < Opcode::OpcodeKindEnd; i ++) {
-        if((ESVMInstance::currentInstance()->opcodeTable())->m_table[i] == address) {
-            opcode = (Opcode)i;
-            break;
-        }
-    }
-    return opcode;
+    return (ESVMInstance::currentInstance()->opcodeTable())->m_reverseTable[address];
 }
 #ifndef NDEBUG
 inline const char* getByteCodeName(Opcode opcode)
@@ -1358,8 +1358,8 @@ public:
 
 class GetObject : public ByteCode {
 public:
-    GetObject()
-        : ByteCode(GetObjectOpcode)
+    GetObject(Opcode code = GetObjectOpcode)
+        : ByteCode(code)
     {
         m_cachedHiddenClass = (ESHiddenClass*)SIZE_MAX;
         m_cachedPropertyValue = nullptr;
@@ -1382,10 +1382,26 @@ public:
 #endif
 };
 
+class GetObjectSlowMode : public GetObject {
+public:
+    GetObjectSlowMode()
+        : GetObject(GetObjectSlowModeOpcode)
+    {
+    }
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("GetObjectSlowMode <>\n");
+    }
+#endif
+};
+
+ASSERT_STATIC(sizeof(GetObject) == sizeof(GetObjectSlowMode),"");
+
 class GetObjectWithPeeking : public ByteCode {
 public:
-    GetObjectWithPeeking()
-        : ByteCode(GetObjectWithPeekingOpcode)
+    GetObjectWithPeeking(Opcode code = GetObjectWithPeekingOpcode)
+        : ByteCode(code)
     {
         m_cachedHiddenClass = (ESHiddenClass*)SIZE_MAX;
         m_cachedPropertyValue = nullptr;
@@ -1404,10 +1420,26 @@ public:
     size_t m_cachedIndex;
 };
 
+class GetObjectWithPeekingSlowMode : public GetObjectWithPeeking {
+public:
+    GetObjectWithPeekingSlowMode()
+        : GetObjectWithPeeking(GetObjectWithPeekingSlowModeOpcode)
+    {
+    }
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("GetObjectWithPeekingSlowMode <>\n");
+    }
+#endif
+};
+
+ASSERT_STATIC(sizeof(GetObjectWithPeeking) == sizeof(GetObjectWithPeekingSlowMode),"");
+
 class GetObjectPreComputedCase : public ByteCode {
 public:
-    GetObjectPreComputedCase(const ESValue& v)
-        : ByteCode(GetObjectPreComputedCaseOpcode)
+    GetObjectPreComputedCase(const ESValue& v, Opcode code = GetObjectPreComputedCaseOpcode)
+        : ByteCode(code)
     {
         m_cachedHiddenClass = (ESHiddenClass*)SIZE_MAX;
         m_propertyValue = v;
@@ -1430,10 +1462,26 @@ public:
 #endif
 };
 
+class GetObjectPreComputedCaseSlowMode : public GetObjectPreComputedCase {
+public:
+    GetObjectPreComputedCaseSlowMode(const ESValue& v)
+        : GetObjectPreComputedCase(v, GetObjectPreComputedCaseSlowModeOpcode)
+    {
+    }
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("GetObjectPreComputedCaseSlowMode <>\n");
+    }
+#endif
+};
+
+ASSERT_STATIC(sizeof(GetObjectPreComputedCase) == sizeof(GetObjectPreComputedCaseSlowMode),"");
+
 class GetObjectWithPeekingPreComputedCase : public ByteCode {
 public:
-    GetObjectWithPeekingPreComputedCase(const ESValue& v)
-        : ByteCode(GetObjectWithPeekingPreComputedCaseOpcode)
+    GetObjectWithPeekingPreComputedCase(const ESValue& v, Opcode code = GetObjectWithPeekingPreComputedCaseOpcode)
+        : ByteCode(code)
     {
         m_cachedHiddenClass = (ESHiddenClass*)SIZE_MAX;
         m_propertyValue = v;
@@ -1451,6 +1499,22 @@ public:
     ESValue m_propertyValue;
     size_t m_cachedIndex;
 };
+
+class GetObjectWithPeekingPreComputedCaseSlowMode : public GetObjectWithPeekingPreComputedCase {
+public:
+    GetObjectWithPeekingPreComputedCaseSlowMode(const ESValue& v)
+        : GetObjectWithPeekingPreComputedCase(v, GetObjectWithPeekingPreComputedCaseSlowModeOpcode)
+    {
+    }
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("GetObjectWithPeekingPreComputedCaseSlowMode <>\n");
+    }
+#endif
+};
+
+ASSERT_STATIC(sizeof(GetObjectWithPeekingPreComputedCase) == sizeof(GetObjectWithPeekingPreComputedCaseSlowMode),"");
 
 class SetObject : public ByteCode {
 public:
@@ -1477,10 +1541,26 @@ public:
 #endif
 };
 
+class SetObjectSlowMode : public SetObject {
+public:
+    SetObjectSlowMode()
+        : SetObject(SetObjectSlowModeOpcode)
+    {
+    }
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("SetObjectSlowMode <>\n");
+    }
+#endif
+};
+
+ASSERT_STATIC(sizeof(SetObject) == sizeof(SetObjectSlowMode),"");
+
 class SetObjectPreComputedCase : public ByteCode {
 public:
-    SetObjectPreComputedCase(const ESValue& v)
-        : ByteCode(SetObjectPreComputedCaseOpcode)
+    SetObjectPreComputedCase(const ESValue& v, Opcode code = SetObjectPreComputedCaseOpcode)
+        : ByteCode(code)
     {
         m_cachedHiddenClass = (ESHiddenClass*)SIZE_MAX;
         m_propertyValue = v;
@@ -1498,6 +1578,22 @@ public:
     ESHiddenClass* m_cachedHiddenClass;
     size_t m_cachedIndex;
 };
+
+class SetObjectPreComputedCaseSlowMode : public SetObjectPreComputedCase {
+public:
+    SetObjectPreComputedCaseSlowMode(const ESValue& v)
+        : SetObjectPreComputedCase(v, SetObjectPreComputedCaseSlowModeOpcode)
+    {
+    }
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("SetObjectPreComputedCaseSlowMode <>\n");
+    }
+#endif
+};
+
+ASSERT_STATIC(sizeof(SetObjectPreComputedCase) == sizeof(SetObjectPreComputedCaseSlowMode),"");
 
 struct EnumerateObjectData : public gc {
     EnumerateObjectData()
@@ -2116,6 +2212,7 @@ void dumpBytecode(CodeBlock* codeBlock);
 
 ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter = 0);
 CodeBlock* generateByteCode(Node* node);
+inline void iterateByteCode(CodeBlock* codeBlock, void (*fn)(ByteCode* code, Opcode opcode));
 
 }
 
@@ -2197,6 +2294,23 @@ ALWAYS_INLINE void ByteCodeGenerateContext::morphJumpPositionIntoComplexCase(Cod
         JumpComplexCase j(cb->peekCode<Jump>(codePos), iter->second);
         memcpy(cb->m_code.data() + codePos, &j, sizeof(JumpComplexCase));
         m_complexCaseStatementPositions.erase(iter);
+    }
+}
+
+inline void iterateByteCode(CodeBlock* codeBlock, void (*fn)(ByteCode* code, Opcode opcode))
+{
+    char* ptr = codeBlock->m_code.data();
+    char* end = &codeBlock->m_code.data()[codeBlock->m_code.size()];
+
+    while(ptr <= end) {
+        Opcode code = opcodeFromAddress(((ByteCode *)ptr)->m_opcode);
+        fn((ByteCode *)ptr, code);
+        switch(code) {
+#define ADD_BYTECODE_SIZE(name) case name##Opcode: ptr += sizeof(name); break;
+        FOR_EACH_BYTECODE_OP(ADD_BYTECODE_SIZE)
+        default:
+            RELEASE_ASSERT_NOT_REACHED();
+        }
     }
 }
 

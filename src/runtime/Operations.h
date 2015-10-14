@@ -156,16 +156,44 @@ ALWAYS_INLINE ESValue abstractRelationalComparison(const ESValue& left, const ES
     }
 }
 
+//d = {}. d[0]
 ALWAYS_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* property)
 {
     ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedProperty());
     return willBeObject->toObject()->get(*property);
 }
 
-ALWAYS_INLINE ESValue getObjectSlowCaseOperation(ESValue* willBeObject, ESValue* property)
+//d = {}. d.foo
+ALWAYS_INLINE ESValue getObjectPreComputedCaseOperation(ESValue* willBeObject, ESValue* property)
+{
+    ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedProperty());
+    return willBeObject->toObject()->get(*property);
+}
+
+ALWAYS_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue* property)
 {
     ASSERT(ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedProperty());
     return willBeObject->toObject()->get(*property);
+}
+
+//d = {}. d[0]
+ALWAYS_INLINE void setObjectOperation(ESValue* willBeObject, ESValue* property, const ESValue& value)
+{
+    ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedProperty());
+    willBeObject->toObject()->set(*property, value);
+}
+
+//d = {}. d.foo
+ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESValue* property, const ESValue& value)
+{
+    ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedProperty());
+    willBeObject->toObject()->set(*property, value);
+}
+
+ALWAYS_INLINE void setObjectOperationSlowMode(ESValue* willBeObject, ESValue* property, const ESValue& value)
+{
+    ASSERT(ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedProperty());
+    willBeObject->toObject()->set(*property, value);
 }
 
 }

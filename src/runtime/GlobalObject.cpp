@@ -2930,4 +2930,56 @@ void GlobalObject::unregisterCodeBlock(CodeBlock* cb)
     m_codeBlocks.erase(std::find(m_codeBlocks.begin(), m_codeBlocks.end(), cb));
 }
 
+void GlobalObject::someObjectDefineIndexedProperty()
+{
+    if(!m_didSomeObjectDefineIndexedProperty) {
+        fprintf(stderr, "some object define indexed property.\n");
+        m_didSomeObjectDefineIndexedProperty = true;
+        for(unsigned i = 0; i < m_codeBlocks.size() ; i ++) {
+            //printf("%p..\n",m_codeBlocks[i]);
+            iterateByteCode(m_codeBlocks[i], [](ByteCode* code, Opcode opcode){
+                switch(opcode) {
+                case GetObjectOpcode:
+                    {
+                        GetObjectSlowMode n;
+                        memcpy(code, &n, sizeof(GetObjectSlowMode));
+                        break;
+                    }
+                case GetObjectWithPeekingOpcode:
+                    {
+                        GetObjectWithPeekingSlowMode n;
+                        memcpy(code, &n, sizeof(GetObjectWithPeekingSlowMode));
+                        break;
+                    }
+                case GetObjectPreComputedCaseOpcode:
+                    {
+                        GetObjectPreComputedCaseSlowMode n(((GetObjectPreComputedCase *)code)->m_propertyValue);
+                        memcpy(code, &n, sizeof(GetObjectPreComputedCaseSlowMode));
+                        break;
+                    }
+                case GetObjectWithPeekingPreComputedCaseOpcode:
+                    {
+                        GetObjectWithPeekingPreComputedCaseSlowMode n(((GetObjectWithPeekingPreComputedCase *)code)->m_propertyValue);
+                        memcpy(code, &n, sizeof(GetObjectWithPeekingPreComputedCaseSlowMode));
+                        break;
+                    }
+                case SetObjectOpcode:
+                    {
+                        SetObjectSlowMode n;
+                        memcpy(code, &n, sizeof(SetObjectSlowMode));
+                        break;
+                    }
+                case SetObjectPreComputedCaseOpcode:
+                    {
+                        SetObjectPreComputedCaseSlowMode n(((SetObjectPreComputedCase *)code)->m_propertyValue);
+                        memcpy(code, &n, sizeof(SetObjectPreComputedCaseSlowMode));
+                        break;
+                    }
+                default:;
+                }
+            });
+        }
+    }
+}
+
 }

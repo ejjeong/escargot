@@ -162,7 +162,7 @@ public:
     //return NULL == not exist
     virtual ESValue* hasBinding(const InternalAtomicString& atomicName, ESString* name)
     {
-        return m_bindingObject->addressOfProperty(name);
+        return ((GlobalObject *)m_bindingObject)->addressOfProperty(name);
     }
     void createMutableBinding(const InternalAtomicString& name,ESString* nonAtomicName, bool canDelete = false);
     void createImmutableBinding(const InternalAtomicString& name, bool throwExecptionWhenAccessBeforeInit = false) {}

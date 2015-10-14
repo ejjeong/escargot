@@ -1059,9 +1059,13 @@ inline void ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
     if(UNLIKELY(m_flags.m_isGlobalObject))
         ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
 
-    size_t oldIdx = m_hiddenClass->findProperty(key.toString());
+    escargot::ESString* keyString = key.toString();
+    if(keyString->hasOnlyDigit()) {
+        ESVMInstance::currentInstance()->globalObject()->someObjectDefineIndexedProperty();
+    }
+    size_t oldIdx = m_hiddenClass->findProperty(keyString);
     if(oldIdx == SIZE_MAX) {
-        m_hiddenClass = m_hiddenClass->defineProperty(key.toString(), true, isWritable, isEnumerable, isConfigurable);
+        m_hiddenClass = m_hiddenClass->defineProperty(keyString, true, isWritable, isEnumerable, isConfigurable);
         m_hiddenClassData.push_back(initalValue);
     } else {
         if(!m_hiddenClass->m_propertyInfo[oldIdx].m_flags.m_isConfigurable) {
@@ -1069,7 +1073,7 @@ inline void ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
         }
         m_hiddenClass = m_hiddenClass->removeProperty(oldIdx);
         m_hiddenClassData.erase(m_hiddenClassData.begin() + oldIdx);
-        m_hiddenClass = m_hiddenClass->defineProperty(key.toString(), true, isWritable, isEnumerable, isConfigurable);
+        m_hiddenClass = m_hiddenClass->defineProperty(keyString, true, isWritable, isEnumerable, isConfigurable);
         m_hiddenClassData.push_back(initalValue);
     }
 }
@@ -1089,10 +1093,16 @@ inline void ESObject::defineAccessorProperty(const escargot::ESValue& key,ESProp
         }
     }
 
-    size_t oldIdx = m_hiddenClass->findProperty(key.toString());
+    if(UNLIKELY(m_flags.m_isGlobalObject))
+        ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
 
+    escargot::ESString* keyString = key.toString();
+    if(keyString->hasOnlyDigit()) {
+        ESVMInstance::currentInstance()->globalObject()->someObjectDefineIndexedProperty();
+    }
+    size_t oldIdx = m_hiddenClass->findProperty(keyString);
     if(oldIdx == SIZE_MAX) {
-        m_hiddenClass = m_hiddenClass->defineProperty(key.toString(), false, isWritable, isEnumerable, isConfigurable);
+        m_hiddenClass = m_hiddenClass->defineProperty(keyString, false, isWritable, isEnumerable, isConfigurable);
         m_hiddenClassData.push_back((ESPointer *)data);
     } else {
         if(!m_hiddenClass->m_propertyInfo[oldIdx].m_flags.m_isConfigurable) {
@@ -1100,7 +1110,7 @@ inline void ESObject::defineAccessorProperty(const escargot::ESValue& key,ESProp
         }
         m_hiddenClass = m_hiddenClass->removeProperty(oldIdx);
         m_hiddenClassData.erase(m_hiddenClassData.begin() + oldIdx);
-        m_hiddenClass = m_hiddenClass->defineProperty(key.toString(), false, isWritable, isEnumerable, isConfigurable);
+        m_hiddenClass = m_hiddenClass->defineProperty(keyString, false, isWritable, isEnumerable, isConfigurable);
         m_hiddenClassData.push_back((ESPointer *)data);
     }
 }
@@ -1224,16 +1234,6 @@ ALWAYS_INLINE ESValue ESObject::getOwnProperty(escargot::ESValue key)
     }
 }
 
-ALWAYS_INLINE ESValue* ESObject::addressOfProperty(escargot::ESValue key)
-{
-    ASSERT(m_flags.m_isGlobalObject);
-    size_t ret = m_hiddenClass->findProperty(key.toString());
-    if(ret == SIZE_MAX)
-        return NULL;
-    ASSERT(m_hiddenClass->m_propertyInfo[ret].m_flags.m_isDataProperty);
-    return &m_hiddenClassData[ret];
-}
-
 ALWAYS_INLINE const int32_t ESObject::length()
 {
     if (LIKELY(isESArrayObject()))
@@ -1316,6 +1316,9 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
     }
     array_fastmode_fail:
     escargot::ESString* keyString = key.toString();
+    if(keyString->hasOnlyDigit()) {
+        ESVMInstance::currentInstance()->globalObject()->someObjectDefineIndexedProperty();
+    }
     size_t idx = m_hiddenClass->findProperty(keyString);
     if(idx == SIZE_MAX) {
         ESValue target = m___proto__;

@@ -24,7 +24,7 @@ public:
                 m_elements[i]->generateExpressionByteCode(codeBlock, context);
             else
                 codeBlock->pushCode(Push(ESValue(ESValue::ESEmptyValue)), this);
-            codeBlock->pushCode(SetObject(), this);
+            codeBlock->pushCode(InitObject(), this);
         }
     }
 protected:

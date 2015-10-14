@@ -292,11 +292,23 @@ public:
         return m_arrayBufferPrototype;
     }
 
+    //DO NOT USE THIS FUNCTION. THIS IS FOR GLOBAL OBJECT
+    //NOTE rooted ESValue* has short life time.
+    ALWAYS_INLINE ESValue* addressOfProperty(escargot::ESString* key)
+    {
+        ASSERT(m_flags.m_isGlobalObject);
+        size_t ret = m_hiddenClass->findProperty(key);
+        if(ret == SIZE_MAX)
+            return NULL;
+        ASSERT(m_hiddenClass->m_propertyInfo[ret].m_flags.m_isDataProperty);
+        return &m_hiddenClassData[ret];
+    }
+
     bool didSomeObjectDefineIndexedProperty()
     {
         return m_didSomeObjectDefineIndexedProperty;
     }
-    void SomeObjectDefineIndexedProperty();
+    void someObjectDefineIndexedProperty();
 
     void registerCodeBlock(CodeBlock* cb);
     void unregisterCodeBlock(CodeBlock* cb);

@@ -33,7 +33,7 @@ public:
             p->value()->generateExpressionByteCode(codeBlock, context);
 
             if(p->kind() == PropertyNode::Kind::Init) {
-                codeBlock->pushCode(SetObject(), this);
+                codeBlock->pushCode(InitObject(), this);
             } else if(p->kind() == PropertyNode::Kind::Get) {
                 codeBlock->pushCode(SetObjectPropertyGetter(), this);
             } else {

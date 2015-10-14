@@ -1029,6 +1029,7 @@ class ESHiddenClass : public gc {
     static const unsigned ESHiddenClassVectorModeSizeLimit = 64;
     friend class ESVMInstance;
     friend class ESObject;
+    friend class GlobalObject;
 public:
     size_t findProperty(const ESString* name)
     {
@@ -1133,10 +1134,6 @@ public:
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-get-o-p
     ALWAYS_INLINE ESValue get(escargot::ESValue key);
     ALWAYS_INLINE ESValue getOwnProperty(escargot::ESValue key);
-
-    //DO NOT USE THIS FUNCTION. THIS IS FOR GLOBAL OBJECT
-    //NOTE rooted ESValue* has short life time.
-    ESValue* addressOfProperty(escargot::ESValue key);
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
     ALWAYS_INLINE bool set(const escargot::ESValue& key, const ESValue& val);
