@@ -123,6 +123,14 @@ public:
     FOR_EACH_ESIR_TYPES(DECLARE_HAS_FLAG)
 #undef DECLARE_HAS_FLAG
 
+#define DECLARE_HAS_FLAG(type, unused) \
+    bool has##type##FlagOnly() \
+    { \
+        return m_type == Type##type; \
+    }
+    FOR_EACH_ESIR_TYPES(DECLARE_HAS_FLAG)
+#undef DECLARE_HAS_FLAG
+
 private:
     uint64_t m_type;
 };

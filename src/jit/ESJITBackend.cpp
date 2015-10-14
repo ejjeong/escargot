@@ -115,7 +115,8 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
         LIns* maskedValue = m_out.ins2(LIR_andq, quadValue, m_intTagQ);
         LIns* checkIfInt = m_out.ins2(LIR_eqq, maskedValue, m_intTagQ);
         LIns* jumpIfInt = m_out.insBranch(LIR_jt, checkIfInt, nullptr);
-        JIT_LOG(in, "Expected Int-typed value, but got this value");
+        LIns* zero = m_out.insImmI(0);
+        JIT_LOG(zero, "Expected Int-typed value, but got this value");
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out.ins0(LIR_label);
         jumpIfInt->setTarget(normalPath);
