@@ -163,7 +163,15 @@ ALWAYS_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* propert
     *lastObjectValueMetInMemberExpression = *willBeObject;
     if(willBeObject->isESPointer()) {
         if(LIKELY(willBeObject->asESPointer()->isESArrayObject())) {
-            //TODO fast reading
+            ESArrayObject* arr = willBeObject->asESPointer()->asESArrayObject();
+            if(arr->isFastmode()) {
+                size_t idx = property->toIndex();
+                if(idx != SIZE_MAX && idx < arr->length()) {
+                    const ESValue& v = arr->data()[idx];
+                    if(!v.isEmpty())
+                        return v;
+                }
+            }
             return willBeObject->toObject()->get(*property);
         } else if(willBeObject->asESPointer()->isESString()) {
             size_t idx = property->toIndex();

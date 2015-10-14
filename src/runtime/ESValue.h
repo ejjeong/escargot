@@ -1307,6 +1307,12 @@ public:
         return new ESArrayObject(length);
     }
 
+    ESValue* data()
+    {
+        ASSERT(isFastmode());
+        return m_vector.data();
+    }
+
     ESValue get(unsigned key)
     {
         return ESObject::get(ESValue(key));
