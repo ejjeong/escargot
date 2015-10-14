@@ -1139,6 +1139,7 @@ inline bool ESObject::deletePropety(const ESValue& key)
         return false;
 
     m_hiddenClass = m_hiddenClass->removeProperty(idx);
+    m_hiddenClassData.erase(m_hiddenClassData.begin() + idx);
     if(UNLIKELY(m_flags.m_isGlobalObject))
         ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
     return true;
