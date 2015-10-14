@@ -1432,18 +1432,18 @@ class LexicalEnvironment;
 class Node;
 class ESFunctionObject : public ESObject {
 protected:
-    ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlock* codeBlock, escargot::ESString* name);
-    ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeFunctionType fn, escargot::ESString* name);
+    ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlock* codeBlock, escargot::ESString* name, unsigned length);
+    ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeFunctionType fn, escargot::ESString* name, unsigned length);
 public:
-    static ESFunctionObject* create(LexicalEnvironment* outerEnvironment, CodeBlock* codeBlock, escargot::ESString* name)
+    static ESFunctionObject* create(LexicalEnvironment* outerEnvironment, CodeBlock* codeBlock, escargot::ESString* name, unsigned length = 0)
     {
-        ESFunctionObject* ret = new ESFunctionObject(outerEnvironment, codeBlock, name);
+        ESFunctionObject* ret = new ESFunctionObject(outerEnvironment, codeBlock, name, length);
         return ret;
     }
 
-    static ESFunctionObject* create(LexicalEnvironment* outerEnvironment, const NativeFunctionType& fn, escargot::ESString* name)
+    static ESFunctionObject* create(LexicalEnvironment* outerEnvironment, const NativeFunctionType& fn, escargot::ESString* name, unsigned length = 1)
     {
-        ESFunctionObject* ret = new ESFunctionObject(outerEnvironment, fn, name);
+        ESFunctionObject* ret = new ESFunctionObject(outerEnvironment, fn, name, length);
         return ret;
     }
 

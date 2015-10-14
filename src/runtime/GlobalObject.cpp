@@ -337,10 +337,13 @@ void GlobalObject::installFunction()
 
     m_functionPrototype = emptyFunction;
     m_functionPrototype->set__proto__(m_objectPrototype);
+    m_function->set__proto__(emptyFunction);
+    m_function->setProtoType(emptyFunction);
+    m_functionPrototype->defineDataProperty(strings->constructor, true, false, true, m_function);
 
     ESVMInstance::currentInstance()->setGlobalFunctionPrototype(m_functionPrototype);
 
-    m_functionPrototype->defineDataProperty(strings->toString,true, false, true, ESFunctionObject::create(NULL,[](ESVMInstance* instance)->ESValue {
+    m_functionPrototype->defineDataProperty(strings->toString, true, false, true, ESFunctionObject::create(NULL,[](ESVMInstance* instance)->ESValue {
         //FIXME
         if(instance->currentExecutionContext()->resolveThisBindingToObject()->isESFunctionObject()) {
             u16string ret;
@@ -353,9 +356,6 @@ void GlobalObject::installFunction()
         u16string ret;
         return ESString::create(std::move(ret));
     }, strings->toString));
-
-    m_function->set__proto__(emptyFunction);
-    m_function->setProtoType(emptyFunction);
 
     //$19.2.3.1 Function.prototype.apply(thisArg, argArray)
     m_functionPrototype->defineDataProperty(ESString::create(u"apply"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -427,7 +427,6 @@ void GlobalObject::installFunction()
         return ESFunctionObject::call(instance, thisVal, thisArg, arguments, arglen, false);
     }, ESString::create(u"call")));
 
-    m_function->defineDataProperty(strings->length, false, false, true, ESValue(1));
     defineDataProperty(strings->Function, true, false, true, m_function);
 }
 
@@ -438,6 +437,8 @@ void GlobalObject::installObject()
         return ESValue();
     }, strings->Object);
     m_object->set__proto__(emptyFunction);
+    m_object->setProtoType(m_objectPrototype);
+    m_objectPrototype->defineDataProperty(strings->constructor, true, false, true, m_object);
 
     m_objectPrototype->defineDataProperty(strings->toString, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisVal = instance->currentExecutionContext()->resolveThisBindingToObject();
@@ -469,8 +470,6 @@ void GlobalObject::installObject()
         }
         return ESString::create(u"[object Object]");
     }, strings->toString));
-
-    m_object->setProtoType(m_objectPrototype);
 
     //$19.1.3.2 Object.prototype.hasOwnProperty(V)
     m_objectPrototype->defineDataProperty(ESString::create(u"hasOwnProperty"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -604,6 +603,7 @@ void GlobalObject::installError()
     m_errorPrototype = escargot::ESObject::create();
     m_error->setProtoType(m_errorPrototype);
     m_errorPrototype->set__proto__(m_objectPrototype);
+    m_errorPrototype->defineDataProperty(strings->constructor, true, false, true, m_error);
 
     escargot::ESFunctionObject* toString = ESFunctionObject::create(NULL,[](ESVMInstance* instance)->ESValue {
         //FIXME this is wrong
@@ -629,6 +629,8 @@ void GlobalObject::installError()
 
     m_referenceError->setProtoType(m_referenceErrorPrototype);
 
+    m_referenceErrorPrototype->defineDataProperty(strings->constructor, true, false, true, m_referenceError);
+
     defineDataProperty(strings->ReferenceError, true, false, true, m_referenceError);
 
     /////////////////////////////
@@ -638,6 +640,8 @@ void GlobalObject::installError()
     m_typeErrorPrototype = ESErrorObject::create();
 
     m_typeError->setProtoType(m_typeErrorPrototype);
+
+    m_typeErrorPrototype->defineDataProperty(strings->constructor, true, false, true, m_typeError);
 
     defineDataProperty(strings->TypeError, true, false, true, m_typeError);
 
@@ -649,6 +653,8 @@ void GlobalObject::installError()
 
     m_rangeError->setProtoType(m_rangeErrorPrototype);
 
+    m_rangeErrorPrototype->defineDataProperty(strings->constructor, true, false, true, m_rangeError);
+
     defineDataProperty(strings->RangeError, true, false, true, m_rangeError);
 
     /////////////////////////////
@@ -658,6 +664,8 @@ void GlobalObject::installError()
     m_syntaxErrorPrototype = ESErrorObject::create();
 
     m_syntaxError->setProtoType(m_syntaxErrorPrototype);
+
+    m_syntaxErrorPrototype->defineDataProperty(strings->constructor, true, false, true, m_syntaxError);
 
     defineDataProperty(strings->SyntaxError, true, false, true, m_syntaxError);
 
@@ -699,6 +707,7 @@ void GlobalObject::installArray()
         }
         return array;
     }, strings->Array);
+    m_arrayPrototype->defineDataProperty(strings->constructor, true, false, true, m_array);
 
     //$22.1.3.1 Array.prototype.concat(...arguments)
     m_arrayPrototype->ESObject::defineDataProperty(strings->concat, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1112,7 +1121,6 @@ void GlobalObject::installArray()
     m_arrayPrototype->set__proto__(m_objectPrototype);
 
     m_array->setProtoType(m_arrayPrototype);
-    m_array->defineDataProperty(strings->length, false, false, true, ESValue(1));
 
     defineDataProperty(strings->Array, true, false, true, m_array);
 }
@@ -1141,6 +1149,7 @@ void GlobalObject::installString()
 
     m_stringPrototype = ESStringObject::create();
     m_stringPrototype->set__proto__(m_objectPrototype);
+    m_stringPrototype->defineDataProperty(strings->constructor, true, false, true, m_string);
     m_stringPrototype->defineDataProperty(strings->toString, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         if(instance->currentExecutionContext()->resolveThisBinding().isObject()) {
             if(instance->currentExecutionContext()->resolveThisBindingToObject()->isESStringObject()) {
@@ -1824,6 +1833,8 @@ void GlobalObject::installDate()
 
     m_date->setProtoType(m_datePrototype);
 
+    m_datePrototype->defineDataProperty(strings->constructor, true, false, true, m_date);
+
     defineDataProperty(strings->Date, true, false, true, m_date);
 
     //$20.3.3.1 Date.now()
@@ -2073,7 +2084,6 @@ void GlobalObject::installMath()
 {
     // create math object
     m_math = ::escargot::ESObject::create();
-
 
     // initialize math object: $20.2.1.6 Math.PI
     m_math->defineDataProperty(strings->PI, false, false, false, ESValue(3.1415926535897932));
@@ -2348,6 +2358,8 @@ void GlobalObject::installNumber()
     // initialize number object
     m_number->setProtoType(m_numberPrototype);
 
+    m_numberPrototype->defineDataProperty(strings->constructor, true, false, true, m_number);
+
     // $ 20.1.2.6 Number.MAX_SAFE_INTEGER
     m_number->defineDataProperty(ESString::create(u"MAX_SAFE_INTEGER"), false, false, false, ESValue(9007199254740991.0));
     // $ 20.1.2.7 Number.MAX_VALUE
@@ -2498,6 +2510,8 @@ void GlobalObject::installBoolean()
     // initialize booleanPrototype object
     m_booleanPrototype->set__proto__(m_objectPrototype);
 
+    m_booleanPrototype->defineDataProperty(strings->constructor, true, false, true, m_boolean);
+
     // initialize booleanPrototype object: $19.3.3.2 Boolean.prototype.toString()
     m_booleanPrototype->defineDataProperty(strings->toString, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         escargot::ESBooleanObject* thisVal = instance->currentExecutionContext()->resolveThisBindingToObject()->asESBooleanObject();
@@ -2553,6 +2567,8 @@ void GlobalObject::installRegExp()
     // create regexpPrototype object
     m_regexpPrototype = ESRegExpObject::create(strings->emptyString,ESRegExpObject::Option::None);
     m_regexpPrototype->set__proto__(m_objectPrototype);
+
+    m_regexpPrototype->defineDataProperty(strings->constructor, true, false, true, m_regexp);
 
     // initialize regexp object
     m_regexp->setProtoType(m_regexpPrototype);
@@ -2655,6 +2671,7 @@ void GlobalObject::installArrayBuffer()
 {
     m_arrayBufferPrototype = ESArrayBufferObject::create();
     m_arrayBufferPrototype->set__proto__(m_objectPrototype);
+    m_arrayBufferPrototype->defineDataProperty(strings->constructor, true, false, true, m_arrayBuffer);
 
     //$24.1.2.1 ArrayBuffer(length)
     m_arrayBuffer = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -2793,6 +2810,7 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
         }
         return obj;
     }, ta_name);
+
     //$22.2.3.2
     ta_prototype->defineAccessorProperty(strings->byteLength, [](ESObject* self) -> ESValue {
         return ESValue(self->asESTypedArrayObject<T>()->bytelength());
@@ -2916,6 +2934,7 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
     ta_constructor->set__proto__(m_functionPrototype); // empty Function
     ta_constructor->setProtoType(ta_prototype);
     ta_prototype->set__proto__(m_objectPrototype);
+    ta_prototype->defineDataProperty(strings->constructor, true, false, true, ta_constructor);
     defineDataProperty(ta_name, true, false, true, ta_constructor);
     return ta_constructor;
 }

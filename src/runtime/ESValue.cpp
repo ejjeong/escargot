@@ -369,21 +369,21 @@ void ESRegExpObject::setOption(const Option& option)
     m_option = option;
 }
 
-ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlock* cb, escargot::ESString* name)
+ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlock* cb, escargot::ESString* name, unsigned length)
     : ESObject((Type)(Type::ESObject | Type::ESFunctionObject), ESVMInstance::currentInstance()->globalFunctionPrototype())
 {
     m_name = name;
     m_outerEnvironment = outerEnvironment;
     m_codeBlock = cb;
-    m_protoType = ESObject::create();
-    m_protoType.asESPointer()->asESObject()->defineDataProperty(strings->constructor.string(), true, false, true, this);
 
+    // $19.2.4 Function Instances
+    defineDataProperty(strings->length, false, false, true, ESValue(length));
     defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), true, false, false);
-    defineDataProperty(strings->name.string(), true, false, false);
+    defineDataProperty(strings->name.string(), false, false, true, name);
 }
 
-ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeFunctionType fn, escargot::ESString* name)
-    : ESFunctionObject(outerEnvironment, (CodeBlock *)NULL, name)
+ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeFunctionType fn, escargot::ESString* name, unsigned length)
+    : ESFunctionObject(outerEnvironment, (CodeBlock *)NULL, name, length)
 {
     m_codeBlock = CodeBlock::create();
     m_codeBlock->pushCode(ExecuteNativeFunction(fn), NULL);

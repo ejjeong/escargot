@@ -947,7 +947,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         CreateFunction* code = (CreateFunction*)currentCode;
         ASSERT(((size_t)code->m_codeBlock % sizeof(size_t)) == 0);
-        ESFunctionObject* function = ESFunctionObject::create(ec->environment(), code->m_codeBlock, code->m_nonAtomicName == NULL ? strings->emptyString.string() : code->m_nonAtomicName);
+        ESFunctionObject* function = ESFunctionObject::create(ec->environment(), code->m_codeBlock, code->m_nonAtomicName == NULL ? strings->emptyString.string() : code->m_nonAtomicName, code->m_codeBlock->m_params.size());
         if(code->m_isDeclaration) { //FD
             function->set(strings->name.string(), code->m_nonAtomicName);
             ec->environment()->record()->setMutableBinding(code->m_name, code->m_nonAtomicName, function, false);
