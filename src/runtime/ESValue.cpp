@@ -375,6 +375,8 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlo
     m_name = name;
     m_outerEnvironment = outerEnvironment;
     m_codeBlock = cb;
+    m_protoType = ESObject::create();
+    m_protoType.asESPointer()->asESObject()->defineDataProperty(strings->constructor.string(), true, false, true, this);
 
     // $19.2.4 Function Instances
     defineDataProperty(strings->length, false, false, true, ESValue(length));
