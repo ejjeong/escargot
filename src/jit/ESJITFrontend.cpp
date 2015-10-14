@@ -387,7 +387,11 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case GetObjectPreComputedCaseOpcode:
         {
             INIT_BYTECODE(GetObjectPreComputedCase);
-            ASSERT(bytecode->m_esir_type.isObjectType());
+            if (bytecode->m_esir_type.isStringObjectType()) {
+                // ToDo: GetObjectPreComputed for string object
+                goto unsupported;
+              }
+            ASSERT(bytecode->m_esir_type.isObjectType() || bytecode->m_esir_type.isStringObjectType());
             bytecode->m_profile.updateProfiledType();
             graph->setOperandType(ssaIndex->m_targetIndex, bytecode->m_profile.getType());
             GetObjectPreComputedIR* getObjectPreComputedIR = GetObjectPreComputedIR::create(ssaIndex->m_targetIndex, bytecode->m_cachedHiddenClass, bytecode->m_cachedIndex,

@@ -1130,6 +1130,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                }
             } else {
                 ESString* val = property.toString();
+                code->m_esir_type.mergeType(escargot::ESJIT::TypeStringObject);
                 if(*val == *strings->length) {
                     lastESObjectMetInMemberExpressionNode = *willBeObject;
                     push<ESValue>(stack, bp, ESValue(willBeObject->asESString()->length()));
