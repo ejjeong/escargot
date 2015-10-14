@@ -102,12 +102,8 @@ GC_bool GC_quiet = 0; /* used also in pcr_interface.c */
 #endif
 
 #ifndef NO_DEBUGGING
-# ifdef GC_DUMP_REGULARLY
-    GC_INNER GC_bool GC_dump_regularly = TRUE;
+  GC_INNER GC_bool GC_dump_regularly = FALSE;
                                 /* Generate regular debugging dumps. */
-# else
-    GC_INNER GC_bool GC_dump_regularly = FALSE;
-# endif
 #endif
 
 #ifdef KEEP_BACK_PTRS
@@ -349,14 +345,13 @@ GC_INNER void GC_extend_size_map(size_t i)
 /* another frame.                                                       */
 GC_API void * GC_CALL GC_clear_stack(void *arg)
 {
-# ifndef STACK_NOT_SCANNED
     ptr_t sp = GC_approx_sp();  /* Hotter than actual sp */
 #   ifdef THREADS
         word volatile dummy[SMALL_CLEAR_SIZE];
         static unsigned random_no = 0;
-                                /* Should be more random than it is ... */
-                                /* Used to occasionally clear a bigger  */
-                                /* chunk.                               */
+                                 /* Should be more random than it is ... */
+                                 /* Used to occasionally clear a bigger  */
+                                 /* chunk.                               */
 #   endif
     ptr_t limit;
 
@@ -375,53 +370,52 @@ GC_API void * GC_CALL GC_clear_stack(void *arg)
         /* frequency decreases, thus clearing frequency would decrease, */
         /* thus more junk remains accessible, thus the heap gets        */
         /* larger ...                                                   */
-#   ifdef THREADS
-      if (++random_no % 13 == 0) {
+# ifdef THREADS
+    if (++random_no % 13 == 0) {
         limit = sp;
         MAKE_HOTTER(limit, BIG_CLEAR_SIZE*sizeof(word));
         limit = (ptr_t)((word)limit & ~0xf);
                         /* Make it sufficiently aligned for assembly    */
                         /* implementations of GC_clear_stack_inner.     */
         return GC_clear_stack_inner(arg, limit);
-      } else {
+    } else {
         BZERO((void *)dummy, SMALL_CLEAR_SIZE*sizeof(word));
-      }
-#   else
-      if (GC_gc_no > GC_stack_last_cleared) {
+        return arg;
+    }
+# else
+    if (GC_gc_no > GC_stack_last_cleared) {
         /* Start things over, so we clear the entire stack again */
-        if (GC_stack_last_cleared == 0)
-          GC_high_water = (ptr_t)GC_stackbottom;
+        if (GC_stack_last_cleared == 0) GC_high_water = (ptr_t)GC_stackbottom;
         GC_min_sp = GC_high_water;
         GC_stack_last_cleared = GC_gc_no;
         GC_bytes_allocd_at_reset = GC_bytes_allocd;
-      }
-      /* Adjust GC_high_water */
-      MAKE_COOLER(GC_high_water, WORDS_TO_BYTES(DEGRADE_RATE) + GC_SLOP);
-      if ((word)sp HOTTER_THAN (word)GC_high_water) {
-          GC_high_water = sp;
-      }
-      MAKE_HOTTER(GC_high_water, GC_SLOP);
-      limit = GC_min_sp;
-      MAKE_HOTTER(limit, SLOP);
-      if ((word)sp COOLER_THAN (word)limit) {
+    }
+    /* Adjust GC_high_water */
+        MAKE_COOLER(GC_high_water, WORDS_TO_BYTES(DEGRADE_RATE) + GC_SLOP);
+        if ((word)sp HOTTER_THAN (word)GC_high_water) {
+            GC_high_water = sp;
+        }
+        MAKE_HOTTER(GC_high_water, GC_SLOP);
+    limit = GC_min_sp;
+    MAKE_HOTTER(limit, SLOP);
+    if ((word)sp COOLER_THAN (word)limit) {
         limit = (ptr_t)((word)limit & ~0xf);
                         /* Make it sufficiently aligned for assembly    */
                         /* implementations of GC_clear_stack_inner.     */
         GC_min_sp = sp;
-        return GC_clear_stack_inner(arg, limit);
-      } else if (GC_bytes_allocd - GC_bytes_allocd_at_reset
-                    > CLEAR_THRESHOLD) {
+        return(GC_clear_stack_inner(arg, limit));
+    } else if (GC_bytes_allocd - GC_bytes_allocd_at_reset > CLEAR_THRESHOLD) {
         /* Restart clearing process, but limit how much clearing we do. */
         GC_min_sp = sp;
         MAKE_HOTTER(GC_min_sp, CLEAR_THRESHOLD/4);
         if ((word)GC_min_sp HOTTER_THAN (word)GC_high_water)
           GC_min_sp = GC_high_water;
         GC_bytes_allocd_at_reset = GC_bytes_allocd;
-      }
-#   endif
+    }
+    return(arg);
 # endif
-  return arg;
 }
+
 
 /* Return a pointer to the base address of p, given a pointer to a      */
 /* an address within an object.  Return 0 o.w.                          */
@@ -788,35 +782,7 @@ GC_INNER GC_bool GC_is_initialized = FALSE;
   STATIC int GC_stdout = GC_DEFAULT_STDOUT_FD;
   STATIC int GC_stderr = GC_DEFAULT_STDERR_FD;
   STATIC int GC_log = GC_DEFAULT_STDERR_FD;
-
-  GC_API void GC_CALL GC_set_log_fd(int fd)
-  {
-    GC_log = fd;
-  }
 #endif
-
-#if defined(MSWIN32) && (!defined(SMALL_CONFIG) \
-                         || (!defined(_WIN64) && defined(GC_WIN32_THREADS) \
-                             && defined(CHECK_NOT_WOW64)))
-  STATIC void GC_win32_MessageBoxA(const char *msg, const char *caption,
-                                   unsigned flags)
-  {
-#   ifndef DONT_USE_USER32_DLL
-      /* Use static binding to "user32.dll".    */
-      (void)MessageBoxA(NULL, msg, caption, flags);
-#   else
-      /* This simplifies linking - resolve "MessageBoxA" at run-time. */
-      HINSTANCE hU32 = LoadLibrary(TEXT("user32.dll"));
-      if (hU32) {
-        FARPROC pfn = GetProcAddress(hU32, "MessageBoxA");
-        if (pfn)
-          (void)(*(int (WINAPI *)(HWND, LPCSTR, LPCSTR, UINT))pfn)(
-                              NULL /* hWnd */, msg, caption, flags);
-        (void)FreeLibrary(hU32);
-      }
-#   endif
-  }
-#endif /* MSWIN32 */
 
 STATIC word GC_parse_mem_size_arg(const char *str)
 {
@@ -875,31 +841,6 @@ GC_API void GC_CALL GC_init(void)
 #   else
       initial_heap_sz = (word)MINHINCR;
 #   endif
-
-#   if defined(MSWIN32) && !defined(_WIN64) && defined(GC_WIN32_THREADS) \
-       && defined(CHECK_NOT_WOW64)
-      {
-        /* Windows: running 32-bit GC on 64-bit system is broken!       */
-        /* WoW64 bug affects SuspendThread, no workaround exists.       */
-        HMODULE hK32 = GetModuleHandle(TEXT("kernel32.dll"));
-        if (hK32) {
-          FARPROC pfn = GetProcAddress(hK32, "IsWow64Process");
-          BOOL bIsWow64 = FALSE;
-          if (pfn
-              && (*(BOOL (WINAPI*)(HANDLE, BOOL*))pfn)(GetCurrentProcess(),
-                                                       &bIsWow64)
-              && bIsWow64) {
-            GC_win32_MessageBoxA("This program uses BDWGC garbage collector"
-                " compiled for 32-bit but running on 64-bit Windows.\n"
-                "This is known to be broken due to a design flaw"
-                " in Windows itself! Expect erratic behavior...",
-                "32-bit program running on 64-bit system",
-                MB_ICONWARNING | MB_OK);
-          }
-        }
-      }
-#   endif
-
     DISABLE_CANCEL(cancel_state);
     /* Note that although we are nominally called with the */
     /* allocation lock held, the allocation lock is now    */
@@ -908,20 +849,13 @@ GC_API void GC_CALL GC_init(void)
     /* then.  Thus we really don't hold any locks, and can */
     /* in fact safely initialize them here.                */
 #   ifdef THREADS
-#     ifndef GC_ALWAYS_MULTITHREADED
-        GC_ASSERT(!GC_need_to_lock);
-#     endif
+      GC_ASSERT(!GC_need_to_lock);
 #     ifdef SN_TARGET_PS3
         {
           pthread_mutexattr_t mattr;
-
-          if (0 != pthread_mutexattr_init(&mattr)) {
-            ABORT("pthread_mutexattr_init failed");
-          }
-          if (0 != pthread_mutex_init(&GC_allocate_ml, &mattr)) {
-            ABORT("pthread_mutex_init failed");
-          }
-          (void)pthread_mutexattr_destroy(&mattr);
+          pthread_mutexattr_init(&mattr);
+          pthread_mutex_init(&GC_allocate_ml, &mattr);
+          pthread_mutexattr_destroy(&mattr);
         }
 #     endif
 #   endif /* THREADS */
@@ -1000,7 +934,7 @@ GC_API void GC_CALL GC_init(void)
         }
 #     endif
 #   endif /* !SMALL_CONFIG */
-#   if !defined(NO_DEBUGGING) && !defined(GC_DUMP_REGULARLY)
+#   ifndef NO_DEBUGGING
       if (0 != GETENV("GC_DUMP_REGULARLY")) {
         GC_dump_regularly = TRUE;
       }
@@ -1276,9 +1210,7 @@ GC_API void GC_CALL GC_init(void)
 
     /* The rest of this again assumes we don't really hold      */
     /* the allocation lock.                                     */
-#   if defined(PARALLEL_MARK) || defined(THREAD_LOCAL_ALLOC) \
-       || (defined(GC_ALWAYS_MULTITHREADED) && defined(GC_WIN32_THREADS) \
-           && !defined(GC_NO_THREADS_DISCOVERY))
+#   if defined(PARALLEL_MARK) || defined(THREAD_LOCAL_ALLOC)
         /* Make sure marker threads are started and thread local */
         /* allocation is initialized, in case we didn't get      */
         /* called from GC_init_parallel.                         */
@@ -1357,7 +1289,7 @@ GC_API void GC_CALL GC_enable_incremental(void)
   }
 
 # ifdef THREADS
-#   if defined(PARALLEL_MARK) && !defined(GC_ALWAYS_MULTITHREADED)
+#   ifdef PARALLEL_MARK
 #     define IF_NEED_TO_LOCK(x) if (GC_parallel || GC_need_to_lock) x
 #   else
 #     define IF_NEED_TO_LOCK(x) if (GC_need_to_lock) x
@@ -1560,8 +1492,8 @@ GC_API void GC_CALL GC_enable_incremental(void)
 
 #define BUFSZ 1024
 
-#if defined(DJGPP) || defined(__STRICT_ANSI__)
-  /* vsnprintf is missing in DJGPP (v2.0.3) */
+#ifdef NO_VSNPRINTF
+  /* In case this function is missing (e.g., in DJGPP v2.0.3).  */
 # define GC_VSNPRINTF(buf, bufsz, format, args) vsprintf(buf, format, args)
 #elif defined(_MSC_VER)
 # ifdef MSWINCE
@@ -1709,7 +1641,22 @@ GC_API GC_warn_proc GC_CALL GC_get_warn_proc(void)
 
     if (msg != NULL) {
 #     if defined(MSWIN32)
-        GC_win32_MessageBoxA(msg, "Fatal error in GC", MB_ICONERROR | MB_OK);
+#       ifndef DONT_USE_USER32_DLL
+          /* Use static binding to "user32.dll".        */
+          (void)MessageBoxA(NULL, msg, "Fatal error in GC",
+                            MB_ICONERROR | MB_OK);
+#       else
+          /* This simplifies linking - resolve "MessageBoxA" at run-time. */
+          HINSTANCE hU32 = LoadLibrary(TEXT("user32.dll"));
+          if (hU32) {
+            FARPROC pfn = GetProcAddress(hU32, "MessageBoxA");
+            if (pfn)
+              (void)(*(int (WINAPI *)(HWND, LPCSTR, LPCSTR, UINT))pfn)(
+                                  NULL /* hWnd */, msg, "Fatal error in GC",
+                                  MB_ICONERROR | MB_OK);
+            (void)FreeLibrary(hU32);
+          }
+#       endif
         /* Also duplicate msg to GC log file.   */
 #     endif
 
@@ -2014,24 +1961,6 @@ GC_API void * GC_CALL GC_do_blocking(GC_fn_type fn, void * client_data)
   }
 #endif /* !NO_DEBUGGING */
 
-static void block_add_size(struct hblk *h, word pbytes)
-{
-  hdr *hhdr = HDR(h);
-  *(word *)pbytes += (WORDS_TO_BYTES(hhdr->hb_sz) + (HBLKSIZE - 1))
-                        & ~(HBLKSIZE - 1);
-}
-
-GC_API size_t GC_CALL GC_get_memory_use(void)
-{
-  word bytes = 0;
-  DCL_LOCK_STATE;
-
-  LOCK();
-  GC_apply_to_all_blocks(block_add_size, (word)(&bytes));
-  UNLOCK();
-  return (size_t)bytes;
-}
-
 /* Getter functions for the public Read-only variables.                 */
 
 /* GC_get_gc_no() is unsynchronized and should be typically called      */
@@ -2048,28 +1977,7 @@ GC_API GC_word GC_CALL GC_get_gc_no(void)
     /* GC_parallel is initialized at start-up.  */
     return GC_parallel;
   }
-
-  GC_INNER GC_on_thread_event_proc GC_on_thread_event = 0;
-
-  GC_API void GC_CALL GC_set_on_thread_event(GC_on_thread_event_proc fn)
-  {
-    /* fn may be 0 (means no event notifier). */
-    DCL_LOCK_STATE;
-    LOCK();
-    GC_on_thread_event = fn;
-    UNLOCK();
-  }
-
-  GC_API GC_on_thread_event_proc GC_CALL GC_get_on_thread_event(void)
-  {
-    GC_on_thread_event_proc fn;
-    DCL_LOCK_STATE;
-    LOCK();
-    fn = GC_on_thread_event;
-    UNLOCK();
-    return fn;
-  }
-#endif /* THREADS */
+#endif
 
 /* Setter and getter functions for the public R/W function variables.   */
 /* These functions are synchronized (like GC_set_warn_proc() and        */

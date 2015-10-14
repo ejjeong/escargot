@@ -22,7 +22,4 @@ EXTRA_DIST += \
         cord/tests/de_win.h \
         cord/tests/de_win.rc
 
-pkginclude_HEADERS += \
-        include/cord.h \
-        include/cord_pos.h \
-        include/ec.h
+pkginclude_HEADERS += include/cord.h

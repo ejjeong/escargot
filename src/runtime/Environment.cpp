@@ -32,7 +32,6 @@ void EnvironmentRecord::createMutableBindingForAST(const InternalAtomicString& a
 {
     if(UNLIKELY(isGlobalEnvironmentRecord())) {
         toGlobalEnvironmentRecord()->createGlobalVarBinding(atomicName, name, canDelete);
-        ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
     } else {
         createMutableBinding(atomicName, name, canDelete);
     }

@@ -58,7 +58,7 @@ GC_INNER struct obj_kind GC_obj_kinds[MAXOBJKINDS] = {
               { &GC_uobjfreelist[0], 0,
                 0 | GC_DS_LENGTH, TRUE /* add length to descr */, TRUE
                 /*, */ OK_DISCLAIM_INITZ },
-# ifdef GC_ATOMIC_UNCOLLECTABLE
+# ifdef ATOMIC_UNCOLLECTABLE
    /* AUNCOLLECTABLE */
               { &GC_auobjfreelist[0], 0,
                 0 | GC_DS_LENGTH, FALSE /* add length to descr */, FALSE
@@ -71,7 +71,7 @@ GC_INNER struct obj_kind GC_obj_kinds[MAXOBJKINDS] = {
 # endif
 };
 
-# ifdef GC_ATOMIC_UNCOLLECTABLE
+# ifdef ATOMIC_UNCOLLECTABLE
 #   ifdef STUBBORN_ALLOC
 #     define GC_N_KINDS_INITIAL_VALUE 5
 #   else
@@ -83,7 +83,7 @@ GC_INNER struct obj_kind GC_obj_kinds[MAXOBJKINDS] = {
 #   else
 #     define GC_N_KINDS_INITIAL_VALUE 3
 #   endif
-# endif /* !GC_ATOMIC_UNCOLLECTABLE */
+# endif
 
 GC_INNER unsigned GC_n_kinds = GC_N_KINDS_INITIAL_VALUE;
 
@@ -1488,7 +1488,7 @@ void GC_print_trace(word gc_no)
  * and scans the entire region immediately, in case the contents
  * change.
  */
-GC_API void GC_CALL GC_push_all_eager(char *bottom, char *top)
+GC_INNER void GC_push_all_eager(ptr_t bottom, ptr_t top)
 {
     word * b = (word *)(((word) bottom + ALIGNMENT-1) & ~(ALIGNMENT-1));
     word * t = (word *)(((word) top) & ~(ALIGNMENT-1));

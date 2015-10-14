@@ -292,6 +292,15 @@ public:
         return m_arrayBufferPrototype;
     }
 
+    bool didSomeObjectDefineIndexedProperty()
+    {
+        return m_didSomeObjectDefineIndexedProperty;
+    }
+    void SomeObjectDefineIndexedProperty();
+
+    void registerCodeBlock(CodeBlock* cb);
+    void unregisterCodeBlock(CodeBlock* cb);
+
 protected:
     void initGlobalObject();
     void installObject();
@@ -365,6 +374,8 @@ protected:
 
     escargot::ESFunctionObject* m_eval;
 
+    bool m_didSomeObjectDefineIndexedProperty;
+    std::vector<CodeBlock*> m_codeBlocks;
 };
 
 }

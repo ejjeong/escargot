@@ -29,12 +29,10 @@ class Node;
     F(GetByIndex) \
     F(GetByIndexWithActivation) \
     F(GetArgumentsObject) \
-    F(PutById) \
-    F(PutByIndex) \
-    F(PutByIndexWithActivation) \
-    F(PutInObject) \
-    F(PutInObjectPreComputedCase) \
-    F(PutArgumentsObject) \
+    F(SetById) \
+    F(SetByIndex) \
+    F(SetByIndexWithActivation) \
+    F(SetArgumentsObject) \
     F(CreateBinding) \
 \
     /*binary expressions*/ \
@@ -75,13 +73,15 @@ class Node;
     /*object, array*/ \
     F(CreateObject) \
     F(CreateArray) \
-    F(SetObject) \
+    F(InitObject) \
     F(SetObjectPropertySetter) \
     F(SetObjectPropertyGetter) \
     F(GetObject) \
     F(GetObjectWithPeeking) \
     F(GetObjectPreComputedCase) \
     F(GetObjectWithPeekingPreComputedCase) \
+    F(SetObject) \
+    F(SetObjectPreComputedCase) \
     F(EnumerateObject) \
     F(EnumerateObjectKey) \
     F(EnumerateObjectEnd) \
@@ -597,9 +597,9 @@ public:
 #endif
 };
 
-class PutById : public ByteCode {
+class SetById : public ByteCode {
 public:
-    PutById(const InternalAtomicString& name, ESString* esName, Opcode code = PutByIdOpcode)
+    SetById(const InternalAtomicString& name, ESString* esName, Opcode code = SetByIdOpcode)
         : ByteCode(code)
         , m_name(name)
     {
@@ -617,14 +617,14 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("PutById <%s>\n", m_nonAtomicName->utf8Data());
+        printf("SetById <%s>\n", m_nonAtomicName->utf8Data());
     }
 #endif
 };
 
-class PutByIndex : public ByteCode {
+class SetByIndex : public ByteCode {
 public:
-    PutByIndex(size_t index, Opcode code = PutByIndexOpcode)
+    SetByIndex(size_t index, Opcode code = SetByIndexOpcode)
         : ByteCode(code)
     {
         m_index = index;
@@ -634,14 +634,14 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("PutByIndex <%u>\n", (unsigned)m_index);
+        printf("SetByIndex <%u>\n", (unsigned)m_index);
     }
 #endif
 };
 
-class PutByIndexWithActivation : public ByteCode {
+class SetByIndexWithActivation : public ByteCode {
 public:
-    PutByIndexWithActivation(size_t fastAccessIndex, size_t fastAccessUpIndex, Opcode code = PutByIndexWithActivationOpcode)
+    SetByIndexWithActivation(size_t fastAccessIndex, size_t fastAccessUpIndex, Opcode code = SetByIndexWithActivationOpcode)
         : ByteCode(code)
     {
         m_index = fastAccessIndex;
@@ -653,69 +653,22 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("PutByIndexWithActivation <%u, %u>\n", (unsigned)m_index, (unsigned)m_upIndex);
+        printf("SetByIndexWithActivation <%u, %u>\n", (unsigned)m_index, (unsigned)m_upIndex);
     }
 #endif
 };
 
-class PutInObject : public ByteCode {
+class SetArgumentsObject : public ByteCode {
 public:
-    PutInObject(Opcode code = PutInObjectOpcode)
-        : ByteCode(code)
-    {
-        m_cachedHiddenClass = (ESHiddenClass*)SIZE_MAX;
-        m_cachedPropertyValue = nullptr;
-        m_cachedIndex = SIZE_MAX;
-    }
-
-#ifndef NDEBUG
-    virtual void dump()
-    {
-        printf("PutInObject <>\n");
-    }
-#endif
-
-    ESHiddenClass* m_cachedHiddenClass;
-    ESString* m_cachedPropertyValue;
-    size_t m_cachedIndex;
-#ifdef ENABLE_ESJIT
-    escargot::ESJIT::Type m_esir_type;
-#endif
-};
-
-class PutInObjectPreComputedCase : public ByteCode {
-public:
-    PutInObjectPreComputedCase(const ESValue& v)
-        : ByteCode(PutInObjectPreComputedCaseOpcode)
-    {
-        m_cachedHiddenClass = (ESHiddenClass*)SIZE_MAX;
-        m_propertyValue = v;
-        m_cachedIndex = SIZE_MAX;
-    }
-
-#ifndef NDEBUG
-    virtual void dump()
-    {
-        printf("PutInObjectPreComputedCase <>\n");
-    }
-#endif
-
-    ESValue m_propertyValue;
-    ESHiddenClass* m_cachedHiddenClass;
-    size_t m_cachedIndex;
-};
-
-class PutArgumentsObject : public ByteCode {
-public:
-    PutArgumentsObject()
-        : ByteCode(PutArgumentsObjectOpcode)
+    SetArgumentsObject()
+        : ByteCode(SetArgumentsObjectOpcode)
     {
     }
 
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("PutArgumentsObject <>\n");
+        printf("SetArgumentsObject <>\n");
     }
 #endif
 };
@@ -1358,17 +1311,17 @@ public:
 #endif
 };
 
-class SetObject : public ByteCode {
+class InitObject : public ByteCode {
 public:
-    SetObject()
-        : ByteCode(SetObjectOpcode)
+    InitObject()
+        : ByteCode(InitObjectOpcode)
     {
     }
 
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("SetObject <>\n");
+        printf("InitObject <>\n");
     }
 #endif
 };
@@ -1496,6 +1449,53 @@ public:
 
     ESHiddenClass* m_cachedHiddenClass;
     ESValue m_propertyValue;
+    size_t m_cachedIndex;
+};
+
+class SetObject : public ByteCode {
+public:
+    SetObject(Opcode code = SetObjectOpcode)
+        : ByteCode(code)
+    {
+        m_cachedHiddenClass = (ESHiddenClass*)SIZE_MAX;
+        m_cachedPropertyValue = nullptr;
+        m_cachedIndex = SIZE_MAX;
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("SetObject <>\n");
+    }
+#endif
+
+    ESHiddenClass* m_cachedHiddenClass;
+    ESString* m_cachedPropertyValue;
+    size_t m_cachedIndex;
+#ifdef ENABLE_ESJIT
+    escargot::ESJIT::Type m_esir_type;
+#endif
+};
+
+class SetObjectPreComputedCase : public ByteCode {
+public:
+    SetObjectPreComputedCase(const ESValue& v)
+        : ByteCode(SetObjectPreComputedCaseOpcode)
+    {
+        m_cachedHiddenClass = (ESHiddenClass*)SIZE_MAX;
+        m_propertyValue = v;
+        m_cachedIndex = SIZE_MAX;
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("SetObjectPreComputedCase <>\n");
+    }
+#endif
+
+    ESValue m_propertyValue;
+    ESHiddenClass* m_cachedHiddenClass;
     size_t m_cachedIndex;
 };
 
@@ -1927,16 +1927,9 @@ public:
 #endif
 };
 
-class CodeBlock : public gc {
-    CodeBlock()
-    {
-        m_needsActivation = false;
-        m_isBuiltInFunction = false;
-        m_isStrict = false;
-#ifdef ENABLE_ESJIT
-        m_executeCount = 0;
-#endif
-    }
+class CodeBlock : public gc_cleanup {
+    CodeBlock();
+    ~CodeBlock();
 public:
     static CodeBlock* create()
     {

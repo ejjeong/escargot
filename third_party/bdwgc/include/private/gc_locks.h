@@ -83,26 +83,19 @@
      /* structure.  It also helps if comparisons don't involve a        */
      /* function call.  Hence we introduce platform-dependent macros    */
      /* to compare pthread_t ids and to map them to integers.           */
-     /* The mapping to integers does not need to result in different    */
+     /* the mapping to integers does not need to result in different    */
      /* integers for each thread, though that should be true as much    */
      /* as possible.                                                    */
-     /* Refine to exclude platforms on which pthread_t is struct.       */
+     /* Refine to exclude platforms on which pthread_t is struct */
 #    if !defined(GC_WIN32_PTHREADS)
 #      define NUMERIC_THREAD_ID(id) ((unsigned long)(id))
 #      define THREAD_EQUAL(id1, id2) ((id1) == (id2))
 #      define NUMERIC_THREAD_ID_UNIQUE
-#    elif defined(__WINPTHREADS_VERSION_MAJOR) /* winpthreads */
-#      define NUMERIC_THREAD_ID(id) ((unsigned long)(id))
-#      define THREAD_EQUAL(id1, id2) ((id1) == (id2))
-#      ifndef _WIN64
-         /* NUMERIC_THREAD_ID is 32-bit and not unique on Win64. */
-#        define NUMERIC_THREAD_ID_UNIQUE
-#      endif
-#    else /* pthreads-win32 */
-#      define NUMERIC_THREAD_ID(id) ((unsigned long)(word)(id.p))
-       /* Using documented internal details of pthreads-win32 library.  */
+#    else
+#      define NUMERIC_THREAD_ID(id) ((unsigned long)(id.p))
+       /* Using documented internal details of win32-pthread library.   */
        /* Faster than pthread_equal(). Should not change with           */
-       /* future versions of pthreads-win32 library.                    */
+       /* future versions of win32-pthread library.                     */
 #      define THREAD_EQUAL(id1, id2) ((id1.p == id2.p) && (id1.x == id2.x))
 #      undef NUMERIC_THREAD_ID_UNIQUE
        /* Generic definitions based on pthread_equal() always work but  */
@@ -173,8 +166,8 @@
                 GC_lock_holder = NUMERIC_THREAD_ID(pthread_self())
 #      define UNSET_LOCK_HOLDER() GC_lock_holder = NO_THREAD
 #      define I_HOLD_LOCK() \
-                (!GC_need_to_lock \
-                 || GC_lock_holder == NUMERIC_THREAD_ID(pthread_self()))
+                (!GC_need_to_lock || \
+                 GC_lock_holder == NUMERIC_THREAD_ID(pthread_self()))
 #      ifndef NUMERIC_THREAD_ID_UNIQUE
 #        define I_DONT_HOLD_LOCK() 1  /* Conservatively say yes */
 #      else
@@ -188,11 +181,7 @@
 #    define EXIT_GC() GC_collecting = 0;
      GC_INNER void GC_lock(void);
 #  endif /* GC_PTHREADS with linux_threads.c implementation */
-#  ifdef GC_ALWAYS_MULTITHREADED
-#    define GC_need_to_lock TRUE
-#  else
-     GC_EXTERN GC_bool GC_need_to_lock;
-#  endif
+   GC_EXTERN GC_bool GC_need_to_lock;
 
 # else /* !THREADS */
 #   define LOCK() (void)0
@@ -207,7 +196,7 @@
 # endif /* !THREADS */
 
 #if defined(UNCOND_LOCK) && !defined(LOCK)
-# if defined(LINT2) || defined(GC_ALWAYS_MULTITHREADED)
+# ifdef LINT2
     /* Instruct code analysis tools not to care about GC_need_to_lock   */
     /* influence to LOCK/UNLOCK semantic.                               */
 #   define LOCK() UNCOND_LOCK()

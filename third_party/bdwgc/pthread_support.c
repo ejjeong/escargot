@@ -274,9 +274,7 @@
 
 static GC_bool parallel_initialized = FALSE;
 
-#ifndef GC_ALWAYS_MULTITHREADED
-  GC_INNER GC_bool GC_need_to_lock = FALSE;
-#endif
+GC_INNER GC_bool GC_need_to_lock = FALSE;
 
 STATIC int GC_nprocs = 1;
                         /* Number of processors.  We may not have       */
@@ -445,7 +443,7 @@ start_mark_threads(void)
       }
     }
     GC_markers_m1 = i;
-    (void)pthread_attr_destroy(&attr);
+    pthread_attr_destroy(&attr);
     GC_COND_LOG_PRINTF("Started %d mark helper threads\n", GC_markers_m1);
 }
 
@@ -1031,10 +1029,6 @@ static void fork_child_proc(void)
                                         ptr_t *startp, ptr_t *endp);
 #endif
 
-#ifdef PARALLEL_MARK
-  static void setup_mark_lock(void);
-#endif
-
 /* We hold the allocation lock. */
 GC_INNER void GC_thr_init(void)
 {
@@ -1147,7 +1141,6 @@ GC_INNER void GC_thr_init(void)
     } else {
       /* Disable true incremental collection, but generational is OK.   */
       GC_time_limit = GC_TIME_UNLIMITED;
-      setup_mark_lock();
       /* If we are using a parallel marker, actually start helper threads. */
       start_mark_threads();
     }
@@ -1551,9 +1544,7 @@ GC_API void GC_CALL GC_allow_register_threads(void)
     /* Check GC is initialized and the current thread is registered. */
     GC_ASSERT(GC_lookup_thread(pthread_self()) != 0);
 
-#   ifndef GC_ALWAYS_MULTITHREADED
-      GC_need_to_lock = TRUE;   /* We are multi-threaded now. */
-#   endif
+    GC_need_to_lock = TRUE; /* We are multi-threaded now. */
 }
 
 GC_API int GC_CALL GC_register_my_thread(const struct GC_stack_base *sb)
@@ -1706,17 +1697,14 @@ GC_API int WRAP_FUNC(pthread_create)(pthread_t *new_thread,
       {
         size_t stack_size = 0;
         if (NULL != attr) {
-          if (pthread_attr_getstacksize(attr, &stack_size) != 0)
-            ABORT("pthread_attr_getstacksize failed");
+           pthread_attr_getstacksize(attr, &stack_size);
         }
         if (0 == stack_size) {
            pthread_attr_t my_attr;
 
-           if (pthread_attr_init(&my_attr) != 0)
-             ABORT("pthread_attr_init failed");
-           if (pthread_attr_getstacksize(&my_attr, &stack_size) != 0)
-             ABORT("pthread_attr_getstacksize failed");
-           (void)pthread_attr_destroy(&my_attr);
+           pthread_attr_init(&my_attr);
+           pthread_attr_getstacksize(&my_attr, &stack_size);
+           pthread_attr_destroy(&my_attr);
         }
         /* On Solaris 10, with default attr initialization,     */
         /* stack_size remains 0.  Fudge it.                     */
@@ -1750,9 +1738,7 @@ GC_API int WRAP_FUNC(pthread_create)(pthread_t *new_thread,
       GC_log_printf("About to start new thread from thread %p\n",
                     (void *)pthread_self());
 #   endif
-#   ifndef GC_ALWAYS_MULTITHREADED
-      GC_need_to_lock = TRUE;
-#   endif
+    GC_need_to_lock = TRUE;
 
     result = REAL_FUNC(pthread_create)(new_thread, attr, GC_start_routine, si);
 
@@ -1993,60 +1979,9 @@ GC_INNER void GC_lock(void)
 
 static pthread_cond_t builder_cv = PTHREAD_COND_INITIALIZER;
 
-#ifdef GLIBC_2_19_TSX_BUG
-  /* Parse string like <major>[.<minor>[<tail>]] and return major value. */
-  static int parse_version(int *pminor, const char *pverstr) {
-    char *endp;
-    unsigned long value = strtoul(pverstr, &endp, 10);
-    int major = (int)value;
-
-    if (major < 0 || (char *)pverstr == endp || (unsigned)major != value) {
-      /* Parse error */
-      return -1;
-    }
-    if (*endp != '.') {
-      /* No minor part. */
-      *pminor = -1;
-    } else {
-      value = strtoul(endp + 1, &endp, 10);
-      *pminor = (int)value;
-      if (*pminor < 0 || (unsigned)(*pminor) != value) {
-        return -1;
-      }
-    }
-    return major;
-  }
-#endif /* GLIBC_2_19_TSX_BUG */
-
-static void setup_mark_lock(void)
-{
-# ifdef GLIBC_2_19_TSX_BUG
-    pthread_mutexattr_t mattr;
-    int glibc_minor = -1;
-    int glibc_major = parse_version(&glibc_minor, gnu_get_libc_version());
-
-    if (glibc_major > 2 || (glibc_major == 2 && glibc_minor >= 19)) {
-      /* TODO: disable this workaround for glibc with fixed TSX */
-      /* This disables lock elision to workaround a bug in glibc 2.19+  */
-      if (0 != pthread_mutexattr_init(&mattr)) {
-        ABORT("pthread_mutexattr_init failed");
-      }
-      if (0 != pthread_mutexattr_settype(&mattr, PTHREAD_MUTEX_NORMAL)) {
-        ABORT("pthread_mutexattr_settype failed");
-      }
-      if (0 != pthread_mutex_init(&mark_mutex, &mattr)) {
-        ABORT("pthread_mutex_init failed");
-      }
-      (void)pthread_mutexattr_destroy(&mattr);
-    }
-# endif
-}
-
 GC_INNER void GC_acquire_mark_lock(void)
 {
-#   ifdef NUMERIC_THREAD_ID_UNIQUE
-      GC_ASSERT(GC_mark_lock_holder != NUMERIC_THREAD_ID(pthread_self()));
-#   endif
+    GC_ASSERT(GC_mark_lock_holder != NUMERIC_THREAD_ID(pthread_self()));
     GC_generic_lock(&mark_mutex);
     SET_MARK_LOCK_HOLDER;
 }

@@ -141,9 +141,7 @@ typedef LONG * IE_t;
 
 STATIC GC_bool GC_thr_initialized = FALSE;
 
-#ifndef GC_ALWAYS_MULTITHREADED
-  GC_INNER GC_bool GC_need_to_lock = FALSE;
-#endif
+GC_INNER GC_bool GC_need_to_lock = FALSE;
 
 static GC_bool parallel_initialized = FALSE;
 
@@ -158,8 +156,6 @@ GC_API void GC_CALL GC_use_threads_discovery(void)
 # else
     /* Turn on GC_win32_dll_threads. */
     GC_ASSERT(!parallel_initialized);
-    /* Note that GC_use_threads_discovery is expected to be called by   */
-    /* the client application (not from DllMain) at start-up.           */
 #   ifndef GC_DISCOVER_TASK_THREADS
       GC_win32_dll_threads = TRUE;
 #   endif
@@ -620,12 +616,7 @@ GC_API int GC_CALL GC_thread_is_registered(void)
 #ifdef CYGWIN32
 # define GC_PTHREAD_PTRVAL(pthread_id) pthread_id
 #elif defined(GC_WIN32_PTHREADS) || defined(GC_PTHREADS_PARAMARK)
-# include <pthread.h> /* to check for winpthreads */
-# if defined(__WINPTHREADS_VERSION_MAJOR)
-#   define GC_PTHREAD_PTRVAL(pthread_id) pthread_id
-# else
-#   define GC_PTHREAD_PTRVAL(pthread_id) pthread_id.p
-# endif
+# define GC_PTHREAD_PTRVAL(pthread_id) pthread_id.p
 #endif
 
 /* If a thread has been joined, but we have not yet             */
@@ -719,13 +710,12 @@ GC_API void GC_CALL GC_allow_register_threads(void)
 {
   /* Check GC is initialized and the current thread is registered. */
   GC_ASSERT(GC_lookup_thread_inner(GetCurrentThreadId()) != 0);
-# ifndef GC_ALWAYS_MULTITHREADED
-#   if !defined(GC_NO_THREADS_DISCOVERY) && !defined(PARALLEL_MARK)
-      /* GC_init() does not call GC_init_parallel() in this case.   */
-      parallel_initialized = TRUE;
-#   endif
-    GC_need_to_lock = TRUE; /* We are multi-threaded now. */
+
+# if !defined(GC_NO_THREADS_DISCOVERY) && !defined(PARALLEL_MARK)
+    /* GC_init() doesn't call GC_init_parallel() in this case.  */
+    parallel_initialized = TRUE;
 # endif
+  GC_need_to_lock = TRUE; /* We are multi-threaded now. */
 }
 
 GC_API int GC_CALL GC_register_my_thread(const struct GC_stack_base *sb)
@@ -1182,8 +1172,6 @@ STATIC void GC_suspend(GC_thread t)
 # if defined(MPROTECT_VDB)
     AO_CLEAR(&GC_fault_handler_lock);
 # endif
-  if (GC_on_thread_event)
-    GC_on_thread_event(GC_EVENT_THREAD_SUSPENDED, THREAD_HANDLE(t));
 }
 
 #if defined(GC_ASSERTIONS) && !defined(CYGWIN32)
@@ -1282,8 +1270,6 @@ GC_INNER void GC_start_world(void)
         if (ResumeThread(THREAD_HANDLE(t)) == (DWORD)-1)
           ABORT("ResumeThread failed");
         t -> suspended = FALSE;
-        if (GC_on_thread_event)
-          GC_on_thread_event(GC_EVENT_THREAD_UNSUSPENDED, THREAD_HANDLE(t));
       }
     }
   } else {
@@ -1298,8 +1284,6 @@ GC_INNER void GC_start_world(void)
             ABORT("ResumeThread failed");
           UNPROTECT_THREAD(t);
           t -> suspended = FALSE;
-          if (GC_on_thread_event)
-            GC_on_thread_event(GC_EVENT_THREAD_UNSUSPENDED, THREAD_HANDLE(t));
         }
       }
     }
@@ -1744,9 +1728,8 @@ GC_INNER void GC_get_next_stack(char *start, char *limit,
 # ifdef GC_PTHREADS_PARAMARK
 #   include <pthread.h>
 
-#   if defined(GC_ASSERTIONS) && !defined(NUMERIC_THREAD_ID)
-#     define NUMERIC_THREAD_ID(id) (unsigned long)(word)GC_PTHREAD_PTRVAL(id)
-      /* Id not guaranteed to be unique. */
+#   ifndef NUMERIC_THREAD_ID
+#     define NUMERIC_THREAD_ID(id) (unsigned long)GC_PTHREAD_PTRVAL(id)
 #   endif
 
     /* start_mark_threads is the same as in pthread_support.c except    */
@@ -1784,7 +1767,7 @@ GC_INNER void GC_get_next_stack(char *start, char *limit,
         }
       }
       GC_markers_m1 = i;
-      (void)pthread_attr_destroy(&attr);
+      pthread_attr_destroy(&attr);
       GC_COND_LOG_PRINTF("Started %d mark helper threads\n", GC_markers_m1);
     }
 
@@ -1814,9 +1797,7 @@ GC_INNER void GC_get_next_stack(char *start, char *limit,
 
     GC_INNER void GC_acquire_mark_lock(void)
     {
-#     ifdef NUMERIC_THREAD_ID_UNIQUE
-        GC_ASSERT(GC_mark_lock_holder != NUMERIC_THREAD_ID(pthread_self()));
-#     endif
+      GC_ASSERT(GC_mark_lock_holder != NUMERIC_THREAD_ID(pthread_self()));
       if (pthread_mutex_lock(&mark_mutex) != 0) {
         ABORT("pthread_mutex_lock failed");
       }
@@ -2176,9 +2157,7 @@ GC_INNER void GC_get_next_stack(char *start, char *limit,
       args -> start = lpStartAddress;
       args -> param = lpParameter;
 
-#     ifndef GC_ALWAYS_MULTITHREADED
-        GC_need_to_lock = TRUE;
-#     endif
+      GC_need_to_lock = TRUE;
       thread_h = CreateThread(lpThreadAttributes, dwStackSize, GC_win32_start,
                               args, dwCreationFlags, lpThreadId);
       if (thread_h == 0) GC_free(args);
@@ -2231,9 +2210,7 @@ GC_INNER void GC_get_next_stack(char *start, char *limit,
         args -> start = (LPTHREAD_START_ROUTINE)start_address;
         args -> param = arglist;
 
-#       ifndef GC_ALWAYS_MULTITHREADED
-          GC_need_to_lock = TRUE;
-#       endif
+        GC_need_to_lock = TRUE;
         thread_h = _beginthreadex(security, stack_size,
                         (unsigned (__stdcall *)(void *))GC_win32_start,
                         args, initflag, thrdaddr);
@@ -2479,14 +2456,15 @@ GC_INNER void GC_thr_init(void)
 #   ifndef GC_WIN32_PTHREADS
       while ((t = GC_lookup_pthread(pthread_id)) == 0)
         Sleep(10);
-      result = pthread_join(pthread_id, retval);
-#   else
-      result = pthread_join(pthread_id, retval);
-      /* pthreads-win32 and winpthreads id are unique (not recycled). */
+#   endif
+
+    result = pthread_join(pthread_id, retval);
+
+#   ifdef GC_WIN32_PTHREADS
+      /* win32_pthreads id are unique */
       t = GC_lookup_pthread(pthread_id);
       if (NULL == t) ABORT("Thread not registered");
 #   endif
-
     LOCK();
     GC_delete_gc_thread_no_free(t);
     GC_INTERNAL_FREE(t);
@@ -2501,7 +2479,7 @@ GC_INNER void GC_thr_init(void)
   }
 
   /* Cygwin-pthreads calls CreateThread internally, but it's not easily */
-  /* interceptable by us..., so intercept pthread_create instead.       */
+  /* interceptible by us..., so intercept pthread_create instead.       */
   GC_API int GC_pthread_create(pthread_t *new_thread,
                                GC_PTHREAD_CREATE_CONST pthread_attr_t *attr,
                                void *(*start_routine)(void *), void *arg)
@@ -2532,9 +2510,7 @@ GC_INNER void GC_thr_init(void)
                       GC_PTHREAD_PTRVAL(pthread_self()),
                       (long)GetCurrentThreadId());
 #     endif
-#     ifndef GC_ALWAYS_MULTITHREADED
-        GC_need_to_lock = TRUE;
-#     endif
+      GC_need_to_lock = TRUE;
       result = pthread_create(new_thread, attr, GC_pthread_start, si);
 
       if (result) { /* failure */
@@ -2682,11 +2658,6 @@ GC_INNER void GC_thr_init(void)
       DWORD thread_id;
       static int entry_count = 0;
 
-      /* Note that GC_use_threads_discovery should be called by the     */
-      /* client application at start-up to activate automatic thread    */
-      /* registration (it is the default GC behavior since v7.0alpha7); */
-      /* to always have automatic thread registration turned on, the GC */
-      /* should be compiled with -D GC_DISCOVER_TASK_THREADS.           */
       if (!GC_win32_dll_threads && parallel_initialized) return TRUE;
 
       switch (reason) {
@@ -2761,15 +2732,13 @@ GC_INNER void GC_init_parallel(void)
   /* GC_init() calls us back, so set flag first.      */
 
   if (!GC_is_initialized) GC_init();
-# ifndef GC_ALWAYS_MULTITHREADED
-    if (GC_win32_dll_threads) {
-      GC_need_to_lock = TRUE;
+  if (GC_win32_dll_threads) {
+    GC_need_to_lock = TRUE;
         /* Cannot intercept thread creation.  Hence we don't know if    */
         /* other threads exist.  However, client is not allowed to      */
         /* create other threads before collector initialization.        */
         /* Thus it's OK not to lock before this.                        */
-    }
-# endif
+  }
   /* Initialize thread local free lists if used.        */
 # if defined(THREAD_LOCAL_ALLOC)
     LOCK();

@@ -21,7 +21,13 @@ public:
 
     bool isPreComputedCase()
     {
-        return m_property->type() == NodeType::Literal;
+        if(!m_computed) {
+            ASSERT(m_property->type() == NodeType::Identifier);
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
@@ -29,8 +35,9 @@ public:
         m_object->generateExpressionByteCode(codeBlock, context);
 
         if(isPreComputedCase()) {
+            ASSERT(m_property->type() == NodeType::Identifier);
             updateNodeIndex(context);
-            codeBlock->pushCode(GetObjectPreComputedCase(((LiteralNode *)m_property)->value()), this);
+            codeBlock->pushCode(GetObjectPreComputedCase(((IdentifierNode *)m_property)->nonAtomicName()), this);
             WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
             updateNodeIndex(context);
             WRITE_LAST_INDEX(m_nodeIndex, m_object->nodeIndex(), m_nodeIndex - 1);
@@ -46,11 +53,11 @@ public:
     virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         if(isPreComputedCase()) {
-            ASSERT(m_property->type() == NodeType::Literal);
-            codeBlock->pushCode(PutInObjectPreComputedCase(((LiteralNode *)m_property)->value()), this);
+            ASSERT(m_property->type() == NodeType::Identifier);
+            codeBlock->pushCode(SetObjectPreComputedCase(((IdentifierNode *)m_property)->nonAtomicName()), this);
         } else {
             updateNodeIndex(context);
-            codeBlock->pushCode(PutInObject(), this);
+            codeBlock->pushCode(SetObject(), this);
             WRITE_LAST_INDEX(m_nodeIndex, m_object->nodeIndex(), m_property->nodeIndex());
         }
     }
@@ -67,8 +74,8 @@ public:
     virtual void generateReferenceResolvedAddressByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         if(isPreComputedCase()) {
-            ASSERT(m_property->type() == NodeType::Literal);
-            codeBlock->pushCode(GetObjectWithPeekingPreComputedCase(((LiteralNode *)m_property)->value()), this);
+            ASSERT(m_property->type() == NodeType::Identifier);
+            codeBlock->pushCode(GetObjectWithPeekingPreComputedCase(((IdentifierNode *)m_property)->nonAtomicName()), this);
         } else {
             codeBlock->pushCode(GetObjectWithPeeking(), this);
         }

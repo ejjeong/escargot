@@ -51,30 +51,6 @@ ALWAYS_INLINE ESValue plusOperation(const ESValue& left, const ESValue& right)
     return ret;
 }
 
-inline ESValueInDouble plusOp(ESValueInDouble left, ESValueInDouble right)
-{
-    ESValue leftVal = ESValue::fromRawDouble(left);
-    ESValue rightVal = ESValue::fromRawDouble(right);
-    ESValueInDouble ret = ESValue::toRawDouble(plusOperation(leftVal, rightVal));
-    //printf("plusop %lx = %lx + %lx\n", bitwise_cast<uint64_t>(ret), bitwise_cast<uint64_t>(left), bitwise_cast<uint64_t>(right));
-    return ret;
-}
-
-inline ESValueInDouble ESObjectSetOp(ESValueInDouble obj, ESValueInDouble property, ESValueInDouble source)
-{
-    ESValue objVal = ESValue::fromRawDouble(obj);
-    if (objVal.isESPointer()) {
-        ESPointer* objP = objVal.asESPointer();
-        if (objP->isESArrayObject()) {
-            ESArrayObject* arrObj = objP->asESArrayObject();
-
-            ESValue propVal = ESValue::fromRawDouble(property);
-            ESValue srcVal = ESValue::fromRawDouble(source);
-            arrObj->set(propVal.asInt32(), srcVal);
-        }
-    }
-    return source;
-}
 
 ALWAYS_INLINE ESValue minusOperation(const ESValue& left, const ESValue& right)
 {
@@ -93,15 +69,6 @@ ALWAYS_INLINE ESValue minusOperation(const ESValue& left, const ESValue& right)
     }
     else
         ret = ESValue(left.toNumber() - right.toNumber());
-    return ret;
-}
-
-inline ESValueInDouble minusOp(ESValueInDouble left, ESValueInDouble right)
-{
-    ESValue leftVal = ESValue::fromRawDouble(left);
-    ESValue rightVal = ESValue::fromRawDouble(right);
-    ESValueInDouble ret = ESValue::toRawDouble(minusOperation(leftVal, rightVal));
-    //printf("plusop %lx = %lx + %lx\n", bitwise_cast<uint64_t>(ret), bitwise_cast<uint64_t>(left), bitwise_cast<uint64_t>(right));
     return ret;
 }
 
@@ -143,7 +110,6 @@ ALWAYS_INLINE ESValue modOperation(const ESValue& left, const ESValue& right)
 
     return ret;
 }
-
 
 //http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5
 ALWAYS_INLINE ESValue abstractRelationalComparison(const ESValue& left, const ESValue& right, bool leftFirst)
@@ -190,49 +156,17 @@ ALWAYS_INLINE ESValue abstractRelationalComparison(const ESValue& left, const ES
     }
 }
 
-inline ESValue* contextResolveBinding(ExecutionContext* context, InternalAtomicString* atomicName, ESString* name)
+ALWAYS_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* property)
 {
-    return context->resolveBinding(*atomicName, name);
+    ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedProperty());
+    return willBeObject->toObject()->get(*property);
 }
 
-inline void objectDefinePropertyOrThrow(ESObject* object, ESString* key,
-        /*bool isWritable, bool isEnumarable, bool isConfigurable,*/
-        ESValueInDouble initial)
+ALWAYS_INLINE ESValue getObjectSlowCaseOperation(ESValue* willBeObject, ESValue* property)
 {
-    ESValue initialVal = ESValue::fromRawDouble(initial);
-    object->defineDataProperty(key, /*isWritable, isEnumarable, isConfigurable,*/
-            true, true, true, initialVal);
+    ASSERT(ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedProperty());
+    return willBeObject->toObject()->get(*property);
 }
-
-inline ESValueInDouble esFunctionObjectCall(ESVMInstance* instance,
-        ESValueInDouble callee, ESValueInDouble receiverInput,
-        ESValue* arguments, size_t argumentCount, int isNewExpression)
-{
-    ESValue calleeVal = ESValue::fromRawDouble(callee);
-    ESValue receiverInputVal = ESValue::fromRawDouble(receiverInput);
-    ESValue ret = ESFunctionObject::call(instance, calleeVal,
-            receiverInputVal, arguments, argumentCount, isNewExpression);
-    return ESValue::toRawDouble(ret);
-}
-
-#ifndef NDEBUG
-inline void jitLogIntOperation(int arg, const char* msg)
-{
-    printf("[JIT_LOG] %s : int 0x%x\n", msg, bitwise_cast<unsigned>(arg));
-}
-inline void jitLogDoubleOperation(ESValueInDouble arg, const char* msg)
-{
-    printf("[JIT_LOG] %s : double 0x%lx\n", msg, bitwise_cast<uint64_t>(arg));
-}
-inline void jitLogPointerOperation(void* arg, const char* msg)
-{
-    printf("[JIT_LOG] %s : pointer 0x%lx\n", msg, bitwise_cast<uint64_t>(arg));
-}
-inline void jitLogStringOperation(const char* arg, const char* msg)
-{
-    printf("[JIT_LOG] %s : string %s\n", msg, arg);
-}
-#endif
 
 }
 #endif

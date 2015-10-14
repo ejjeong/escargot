@@ -548,25 +548,6 @@ void check_marks_int_list(sexpr x)
 
 #endif
 
-void test_generic_malloc_or_special(void *p) {
-  size_t size;
-  int kind = GC_get_kind_and_size(p, &size);
-  void *p2;
-
-  if (size != GC_size(p)) {
-    GC_printf("GC_get_kind_and_size returned size not matching GC_size\n");
-    FAIL;
-  }
-  p2 = GC_GENERIC_OR_SPECIAL_MALLOC(10, kind);
-  CHECK_OUT_OF_MEMORY(p2);
-  if (GC_get_kind_and_size(p2, NULL) != kind) {
-    GC_printf("GC_generic_or_special_malloc:"
-              " unexpected kind of returned object\n");
-    FAIL;
-  }
-  GC_FREE(p2);
-}
-
 /* Try to force a to be strangely aligned */
 struct {
   char dummy;
@@ -615,7 +596,6 @@ void *GC_CALLBACK reverse_test_inner(void *data)
     b = ints(1, 50);
     c = ints(1, BIG);
     d = uncollectable_ints(1, 100);
-    test_generic_malloc_or_special(d);
     e = uncollectable_ints(1, 1);
     /* Check that realloc updates object descriptors correctly */
     collectable_count++;
@@ -626,7 +606,6 @@ void *GC_CALLBACK reverse_test_inner(void *data)
     f[5] = ints(1,17);
     collectable_count++;
     g = (sexpr *)GC_MALLOC(513 * sizeof(sexpr));
-    test_generic_malloc_or_special(g);
     realloc_count++;
     g = (sexpr *)GC_REALLOC((void *)g, 800 * sizeof(sexpr));
     CHECK_OUT_OF_MEMORY(g);
@@ -1304,7 +1283,6 @@ void run_one_test(void)
              GC_FREE(GC_MALLOC(0));
              (void)GC_MALLOC_ATOMIC(0);
              GC_FREE(GC_MALLOC_ATOMIC(0));
-             test_generic_malloc_or_special(GC_malloc_atomic(1));
            }
          }
 #   ifdef GC_GCJ_SUPPORT
@@ -1519,8 +1497,6 @@ void check_heap_stats(void)
 #   endif
     GC_printf("Total number of bytes allocated is %lu\n",
                   (unsigned long)GC_get_total_bytes());
-    GC_printf("Total memory use by allocated blocks is %lu bytes\n",
-              (unsigned long)GC_get_memory_use());
     GC_printf("Final heap size is %lu bytes\n",
                   (unsigned long)GC_get_heap_size());
     if (GC_get_total_bytes() < n_tests *
@@ -1595,8 +1571,7 @@ void GC_CALLBACK warn_proc(char *msg, GC_word p)
 
 #if !defined(PCR) && !defined(GC_WIN32_THREADS) && !defined(GC_PTHREADS) \
     || defined(LINT)
-#if ((defined(MSWIN32) && !defined(__MINGW32__)) || defined(MSWINCE)) \
-    && !defined(NO_WINMAIN_ENTRY)
+#if defined(MSWIN32) && !defined(__MINGW32__) || defined(MSWINCE)
   int APIENTRY WinMain(HINSTANCE instance GC_ATTR_UNUSED,
                        HINSTANCE prev GC_ATTR_UNUSED,
                        WINMAIN_LPTSTR cmd GC_ATTR_UNUSED,
@@ -1739,14 +1714,10 @@ DWORD __stdcall thr_window(void * arg GC_ATTR_UNUSED)
 }
 #endif
 
-#if !defined(NO_WINMAIN_ENTRY)
-  int APIENTRY WinMain(HINSTANCE instance GC_ATTR_UNUSED,
-                       HINSTANCE prev GC_ATTR_UNUSED,
-                       WINMAIN_LPTSTR cmd GC_ATTR_UNUSED,
-                       int n GC_ATTR_UNUSED)
-#else
-  int main(void)
-#endif
+int APIENTRY WinMain(HINSTANCE instance GC_ATTR_UNUSED,
+                     HINSTANCE prev GC_ATTR_UNUSED,
+                     WINMAIN_LPTSTR cmd GC_ATTR_UNUSED,
+                     int n GC_ATTR_UNUSED)
 {
 # if NTHREADS > 0
    HANDLE h[NTHREADS];
@@ -1881,17 +1852,11 @@ int main(void)
 #   endif
     GC_COND_INIT();
 
-    if ((code = pthread_attr_init(&attr)) != 0) {
-      GC_printf("pthread_attr_init failed, error=%d\n", code);
-      FAIL;
-    }
+    pthread_attr_init(&attr);
 #   if defined(GC_IRIX_THREADS) || defined(GC_FREEBSD_THREADS) \
         || defined(GC_DARWIN_THREADS) || defined(GC_AIX_THREADS) \
         || defined(GC_OPENBSD_THREADS)
-        if ((code = pthread_attr_setstacksize(&attr, 1000 * 1024)) != 0) {
-          GC_printf("pthread_attr_setstacksize failed, error=%d\n", code);
-          FAIL;
-        }
+        pthread_attr_setstacksize(&attr, 1000000);
 #   endif
     n_tests = 0;
 #   if (defined(MPROTECT_VDB)) && !defined(REDIRECT_MALLOC) \
@@ -1929,7 +1894,7 @@ int main(void)
     }
     check_heap_stats();
     (void)fflush(stdout);
-    (void)pthread_attr_destroy(&attr);
+    pthread_attr_destroy(&attr);
 #   ifdef PTW32_STATIC_LIB
         pthread_win32_thread_detach_np ();
         pthread_win32_process_detach_np ();

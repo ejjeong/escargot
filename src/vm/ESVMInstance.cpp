@@ -31,10 +31,13 @@ ESVMInstance::ESVMInstance()
     clock_gettime(CLOCK_REALTIME,&m_cachedTimeOrigin);
     m_cachedTime = localtime(&m_cachedTimeOrigin.tv_sec);
 
+    /*
     GC_set_on_collection_event([](GC_EventType type){
-        if(type == GC_EVENT_RECLAIM_END && ESVMInstance::currentInstance())
+        if(type == GC_EVENT_RECLAIM_END && ESVMInstance::currentInstance()) {
             ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
+        }
     });
+    */
 
     m_identifierCacheInvalidationCheckCount = 0;
 

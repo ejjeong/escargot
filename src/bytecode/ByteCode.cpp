@@ -218,9 +218,9 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         goto NextInstruction;
     }
 
-    PutByIdOpcodeLbl:
+    SetByIdOpcodeLbl:
     {
-        PutById* code = (PutById*)currentCode;
+        SetById* code = (SetById*)currentCode;
         ESValue* value = peek<ESValue>(stack, bp);
 
         if (LIKELY(code->m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
@@ -245,59 +245,36 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                 }
             }
         }
-        executeNextCode<PutById>(programCounter);
+        executeNextCode<SetById>(programCounter);
         goto NextInstruction;
     }
 
-    PutByIndexOpcodeLbl:
+    SetByIndexOpcodeLbl:
     {
-        PutByIndex* code = (PutByIndex*)currentCode;
+        SetByIndex* code = (SetByIndex*)currentCode;
         nonActivitionModeLocalValuePointer[code->m_index] = *peek<ESValue>(stack, bp);
-        executeNextCode<PutByIndex>(programCounter);
+        executeNextCode<SetByIndex>(programCounter);
         goto NextInstruction;
     }
 
-    PutByIndexWithActivationOpcodeLbl:
+    SetByIndexWithActivationOpcodeLbl:
     {
-        PutByIndexWithActivation* code = (PutByIndexWithActivation*)currentCode;
+        SetByIndexWithActivation* code = (SetByIndexWithActivation*)currentCode;
         LexicalEnvironment* env = ec->environment();
         for(unsigned i = 0; i < code->m_upIndex; i ++) {
             env = env->outerEnvironment();
         }
         ASSERT(env->record()->isDeclarativeEnvironmentRecord());
         *env->record()->toDeclarativeEnvironmentRecord()->bindingValueForActivationMode(code->m_index) = *peek<ESValue>(stack, bp);
-        executeNextCode<PutByIndexWithActivation>(programCounter);
+        executeNextCode<SetByIndexWithActivation>(programCounter);
         goto NextInstruction;
     }
 
-    PutInObjectOpcodeLbl:
-    {
-        PutInObject* code = (PutInObject*)currentCode;
-        ESValue value = *pop<ESValue>(stack, bp);
-        ESValue* property = pop<ESValue>(stack, bp);
-        ESValue* willBeObject = pop<ESValue>(stack, bp);
-        willBeObject->toObject()->set(*property, value);
-        executeNextCode<PutInObject>(programCounter);
-        goto NextInstruction;
-    }
-
-    PutInObjectPreComputedCaseOpcodeLbl:
-    {
-        PutInObjectPreComputedCase* code = (PutInObjectPreComputedCase*)currentCode;
-        ESValue value = *pop<ESValue>(stack, bp);
-        const ESValue& property = code->m_propertyValue;
-        ESValue* willBeObject = pop<ESValue>(stack, bp);
-        willBeObject->toObject()->set(property, value);
-        push<ESValue>(stack, bp, value);
-        executeNextCode<PutInObjectPreComputedCase>(programCounter);
-        goto NextInstruction;
-    }
-
-    PutArgumentsObjectOpcodeLbl:
+    SetArgumentsObjectOpcodeLbl:
     {
         ESValue* value = peek<ESValue>(stack, bp);
         *ec->resolveArgumentsObjectBinding() = *value;
-        executeNextCode<PutArgumentsObject>(programCounter);
+        executeNextCode<SetArgumentsObject>(programCounter);
         goto NextInstruction;
     }
 
@@ -705,7 +682,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         goto NextInstruction;
     }
 
-    SetObjectOpcodeLbl:
+    InitObjectOpcodeLbl:
     {
         ESValue* value = pop<ESValue>(stack, bp);
         ESValue* key = pop<ESValue>(stack, bp);
@@ -805,6 +782,29 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
         push<ESValue>(stack, bp, willBeObject->toObject()->get(property));
         executeNextCode<GetObjectWithPeekingPreComputedCase>(programCounter);
+        goto NextInstruction;
+    }
+
+    SetObjectOpcodeLbl:
+    {
+        SetObject* code = (SetObject*)currentCode;
+        ESValue value = *pop<ESValue>(stack, bp);
+        ESValue* property = pop<ESValue>(stack, bp);
+        ESValue* willBeObject = pop<ESValue>(stack, bp);
+        willBeObject->toObject()->set(*property, value);
+        executeNextCode<SetObject>(programCounter);
+        goto NextInstruction;
+    }
+
+    SetObjectPreComputedCaseOpcodeLbl:
+    {
+        SetObjectPreComputedCase* code = (SetObjectPreComputedCase*)currentCode;
+        ESValue value = *pop<ESValue>(stack, bp);
+        const ESValue& property = code->m_propertyValue;
+        ESValue* willBeObject = pop<ESValue>(stack, bp);
+        willBeObject->toObject()->set(property, value);
+        push<ESValue>(stack, bp, value);
+        executeNextCode<SetObjectPreComputedCase>(programCounter);
         goto NextInstruction;
     }
 
@@ -1276,6 +1276,23 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ASSERT(stack == bp);
         return ESValue();
     }
+
+}
+
+CodeBlock::CodeBlock()
+{
+    m_needsActivation = false;
+    m_isBuiltInFunction = false;
+    m_isStrict = false;
+#ifdef ENABLE_ESJIT
+    m_executeCount = 0;
+#endif
+
+    ESVMInstance::currentInstance()->globalObject()->registerCodeBlock(this);
+}
+
+CodeBlock::~CodeBlock()
+{
 
 }
 

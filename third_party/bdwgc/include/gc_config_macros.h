@@ -58,7 +58,7 @@
 #endif
 
 #if defined(GC_WIN32_PTHREADS) && !defined(GC_WIN32_THREADS)
-  /* Using pthreads-win32 library (or other Win32 implementation).  */
+  /* Using pthreads-w32 library. */
 # define GC_WIN32_THREADS
 #endif
 
@@ -172,7 +172,7 @@
 #if defined(GC_DLL) && !defined(GC_API)
 
 # if defined(__MINGW32__) || defined(__CEGCC__)
-#   if defined(GC_BUILD) || defined(__MINGW32_DELAY_LOAD__)
+#   ifdef GC_BUILD
 #     define GC_API __declspec(dllexport)
 #   else
 #     define GC_API __declspec(dllimport)
@@ -242,17 +242,13 @@
 #ifndef GC_ATTR_ALLOC_SIZE
   /* 'alloc_size' attribute improves __builtin_object_size correctness. */
   /* Only single-argument form of 'alloc_size' attribute is used.       */
-# ifdef __clang__
-#   if __has_attribute(__alloc_size__)
-#     define GC_ATTR_ALLOC_SIZE(argnum) __attribute__((__alloc_size__(argnum)))
-#   else
-#     define GC_ATTR_ALLOC_SIZE(argnum) /* empty */
-#   endif
-# elif __GNUC__ > 4 \
-       || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3 && !defined(__ICC))
+# if defined(__GNUC__) && (__GNUC__ > 4 \
+        || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3 && !defined(__ICC)) \
+        || __clang_major__ > 3 \
+        || (__clang_major__ == 3 && __clang_minor__ >= 2))
 #   define GC_ATTR_ALLOC_SIZE(argnum) __attribute__((__alloc_size__(argnum)))
 # else
-#   define GC_ATTR_ALLOC_SIZE(argnum) /* empty */
+#   define GC_ATTR_ALLOC_SIZE(argnum)
 # endif
 #endif
 

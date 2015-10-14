@@ -28,14 +28,16 @@
 int LINES = 0;
 int COLS = 0;
 
-#define szAppName TEXT("DE")
+char       szAppName[]     = "DE";
+char       FullAppName[]   = "Demonstration Editor";
 
 HWND        hwnd;
 
 void de_error(char *s)
 {
-    (void)MessageBoxA(hwnd, s, "Demonstration Editor",
-                      MB_ICONINFORMATION | MB_OK);
+    MessageBox( hwnd, (LPSTR) s,
+                (LPSTR) FullAppName,
+                MB_ICONINFORMATION | MB_OK );
     InvalidateRect(hwnd, NULL, TRUE);
 }
 
@@ -61,7 +63,7 @@ int APIENTRY WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
       wndclass.hIcon          = LoadIcon (hInstance, szAppName);
       wndclass.hCursor        = LoadCursor (NULL, IDC_ARROW);
       wndclass.hbrBackground  = GetStockObject(WHITE_BRUSH);
-      wndclass.lpszMenuName   = TEXT("DE");
+      wndclass.lpszMenuName   = "DE";
       wndclass.lpszClassName  = szAppName;
 
       if (RegisterClass (&wndclass) == 0) {
@@ -87,14 +89,13 @@ int APIENTRY WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance,
    } else {
         char *p = command_line;
 
-        while (*p != 0 && !isspace(*(unsigned char *)p))
-            p++;
+        while (*p != 0 && !isspace(*p)) p++;
         arg_file_name = CORD_to_char_star(
                             CORD_substr(command_line, 0, p - command_line));
    }
 
    hwnd = CreateWindow (szAppName,
-                        TEXT("Demonstration Editor"),
+                        FullAppName,
                         WS_OVERLAPPEDWINDOW | WS_CAPTION, /* Window style */
                         CW_USEDEFAULT, 0, /* default pos. */
                         CW_USEDEFAULT, 0, /* default width, height */
@@ -132,7 +133,7 @@ char * plain_chars(char * text, size_t len)
     register size_t i;
 
     for (i = 0; i < len; i++) {
-       if (iscntrl(((unsigned char *)text)[i])) {
+       if (iscntrl(text[i])) {
            result[i] = ' ';
        } else {
            result[i] = text[i];
@@ -150,7 +151,7 @@ char * control_chars(char * text, size_t len)
     register size_t i;
 
     for (i = 0; i < len; i++) {
-       if (iscntrl(((unsigned char *)text)[i])) {
+       if (iscntrl(text[i])) {
            result[i] = text[i] + 0x40;
        } else {
            result[i] = ' ';
@@ -259,8 +260,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT message,
                unsigned xpos = LOWORD(lParam);  /* From left    */
                unsigned ypos = HIWORD(lParam);  /* from top */
 
-               set_position(xpos / (unsigned)char_width,
-                            ypos / (unsigned)char_height);
+               set_position( xpos/char_width, ypos/char_height );
                return(0);
            }
 
@@ -277,7 +277,7 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT message,
                   return( 0 );
 
                case IDM_HELPABOUT:
-                  if( DialogBox( hInstance, TEXT("ABOUTBOX"),
+                  if( DialogBox( hInstance, "ABOUTBOX",
                                  hwnd, AboutBoxCallback ) )
                      InvalidateRect( hwnd, NULL, TRUE );
                   return( 0 );
@@ -322,15 +322,15 @@ LRESULT CALLBACK WndProc (HWND hwnd, UINT message,
                    SetBkMode(dc, OPAQUE);
                    SetTextColor(dc, GetSysColor(COLOR_WINDOWTEXT));
 
-                   TextOutA(dc, this_line.left, this_line.top,
-                            plain, (int)len);
-                   TextOutA(dc, this_line.left + (int)len * char_width,
-                            this_line.top,
-                            blanks, (int)(COLS - len));
+                   TextOut(dc, this_line.left, this_line.top,
+                           plain, (int)len);
+                   TextOut(dc, this_line.left + (int)len * char_width,
+                           this_line.top,
+                           blanks, (int)(COLS - len));
                    SetBkMode(dc, TRANSPARENT);
                    SetTextColor(dc, RED);
-                   TextOutA(dc, this_line.left, this_line.top,
-                            control, (int)strlen(control));
+                   TextOut(dc, this_line.left, this_line.top,
+                           control, (int)strlen(control));
                }
            }
            EndPaint(hwnd, &ps);

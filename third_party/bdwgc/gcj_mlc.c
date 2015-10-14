@@ -164,15 +164,17 @@ static void maybe_finalize(void)
 #endif
 {
     ptr_t op;
+    ptr_t * opp;
     word lg;
     DCL_LOCK_STATE;
 
     GC_DBG_COLLECT_AT_MALLOC(lb);
     if(SMALL_OBJ(lb)) {
         lg = GC_size_map[lb];
+        opp = &(GC_gcjobjfreelist[lg]);
         LOCK();
-        op = GC_gcjobjfreelist[lg];
-        if(EXPECT(0 == op, FALSE)) {
+        op = *opp;
+        if(EXPECT(op == 0, FALSE)) {
             maybe_finalize();
             op = (ptr_t)GENERAL_MALLOC_INNER((word)lb, GC_gcj_kind);
             if (0 == op) {
@@ -181,7 +183,7 @@ static void maybe_finalize(void)
                 return((*oom_fn)(lb));
             }
         } else {
-            GC_gcjobjfreelist[lg] = obj_link(op);
+            *opp = obj_link(op);
             GC_bytes_allocd += GRANULES_TO_BYTES(lg);
         }
         *(void **)op = ptr_to_struct_containing_descr;
@@ -236,14 +238,16 @@ GC_API GC_ATTR_MALLOC void * GC_CALL GC_gcj_malloc_ignore_off_page(size_t lb,
                                      void * ptr_to_struct_containing_descr)
 {
     ptr_t op;
+    ptr_t * opp;
     word lg;
     DCL_LOCK_STATE;
 
     GC_DBG_COLLECT_AT_MALLOC(lb);
     if(SMALL_OBJ(lb)) {
         lg = GC_size_map[lb];
+        opp = &(GC_gcjobjfreelist[lg]);
         LOCK();
-        op = GC_gcjobjfreelist[lg];
+        op = *opp;
         if (EXPECT(0 == op, FALSE)) {
             maybe_finalize();
             op = (ptr_t)GENERAL_MALLOC_INNER_IOP(lb, GC_gcj_kind);
@@ -253,7 +257,7 @@ GC_API GC_ATTR_MALLOC void * GC_CALL GC_gcj_malloc_ignore_off_page(size_t lb,
                 return((*oom_fn)(lb));
             }
         } else {
-            GC_gcjobjfreelist[lg] = obj_link(op);
+            *opp = obj_link(op);
             GC_bytes_allocd += GRANULES_TO_BYTES(lg);
         }
     } else {

@@ -2920,4 +2920,14 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
     return ta_constructor;
 }
 
+void GlobalObject::registerCodeBlock(CodeBlock* cb)
+{
+    m_codeBlocks.push_back(cb);
+}
+
+void GlobalObject::unregisterCodeBlock(CodeBlock* cb)
+{
+    m_codeBlocks.erase(std::find(m_codeBlocks.begin(), m_codeBlocks.end(), cb));
+}
+
 }
