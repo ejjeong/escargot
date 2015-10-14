@@ -165,7 +165,7 @@ inline ESObject* ESValue::toObject() const
 {
     ESFunctionObject* function;
     ESObject* object;
-    if (isESPointer() && asESPointer()->isESObject()) {
+    if (LIKELY(isESPointer() && asESPointer()->isESObject())) {
        return asESPointer()->asESObject();
     } else if (isNumber()) {
         object = ESNumberObject::create(toNumber());
@@ -994,27 +994,27 @@ ALWAYS_INLINE ESHiddenClass* ESHiddenClass::defineProperty(ESString* name, bool 
     return cls;
 }
 
-ALWAYS_INLINE ESValue ESHiddenClass::read(ESObject* obj, ESString* name)
+ALWAYS_INLINE ESValue ESHiddenClass::read(ESObject* obj, ESObject* originalObject, ESString* name)
 {
-    return read(obj, findProperty(name));
+    return read(obj, originalObject, findProperty(name));
 }
 
-ALWAYS_INLINE ESValue ESHiddenClass::read(ESObject* obj, size_t idx)
+ALWAYS_INLINE ESValue ESHiddenClass::read(ESObject* obj, ESObject* originalObject, size_t idx)
 {
     if(LIKELY(m_propertyInfo[idx].m_flags.m_isDataProperty)) {
         return obj->m_hiddenClassData[idx];
     } else {
         ESPropertyAccessorData* data = (ESPropertyAccessorData *)obj->m_hiddenClassData[idx].asESPointer();
-        return data->value(obj);
+        return data->value(originalObject);
     }
 }
 
-ALWAYS_INLINE void ESHiddenClass::write(ESObject* obj, ESString* name, const ESValue& val)
+ALWAYS_INLINE void ESHiddenClass::write(ESObject* obj, ESObject* originalObject, ESString* name, const ESValue& val)
 {
-    write(obj, findProperty(name), val);
+    write(obj, originalObject, findProperty(name), val);
 }
 
-ALWAYS_INLINE void ESHiddenClass::write(ESObject* obj, size_t idx, const ESValue& val)
+ALWAYS_INLINE void ESHiddenClass::write(ESObject* obj, ESObject* originalObject, size_t idx, const ESValue& val)
 {
     if(UNLIKELY(!m_propertyInfo[idx].m_flags.m_isWritable)) {
         return ;
@@ -1023,7 +1023,7 @@ ALWAYS_INLINE void ESHiddenClass::write(ESObject* obj, size_t idx, const ESValue
         obj->m_hiddenClassData[idx] = val;
     } else {
         ESPropertyAccessorData* data = (ESPropertyAccessorData *)obj->m_hiddenClassData[idx].asESPointer();
-        data->setValue(obj, val);
+        data->setValue(originalObject, val);
     }
 }
 
@@ -1196,7 +1196,7 @@ ALWAYS_INLINE ESValue ESObject::get(escargot::ESValue key)
         }
         size_t t = target->m_hiddenClass->findProperty(keyString);
         if(t != SIZE_MAX) {
-            return target->m_hiddenClass->read(target, t);
+            return target->m_hiddenClass->read(target, this, t);
         }
         if (target->m___proto__.isESPointer() && target->m___proto__.asESPointer()->isESObject()) {
             target = target->m___proto__.asESPointer()->asESObject();
@@ -1228,7 +1228,7 @@ ALWAYS_INLINE ESValue ESObject::getOwnProperty(escargot::ESValue key)
     escargot::ESString* keyString = key.toString();
     size_t t = m_hiddenClass->findProperty(keyString);
     if(t != SIZE_MAX) {
-        return m_hiddenClass->read(this, t);
+        return m_hiddenClass->read(this, this, t);
     } else {
         return ESValue();
     }
@@ -1336,9 +1336,9 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
         m_hiddenClassData.push_back(val);
 
         if(UNLIKELY(m_flags.m_isGlobalObject))
-                ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
+            ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
     } else {
-        m_hiddenClass->write(this, keyString, val);
+        m_hiddenClass->write(this, this, keyString, val);
     }
 
     return true;

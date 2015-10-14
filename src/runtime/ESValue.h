@@ -1046,11 +1046,11 @@ public:
     }
     ALWAYS_INLINE ESHiddenClass* removeProperty(size_t idx);
 
-    ALWAYS_INLINE ESValue read(ESObject* obj, ESString* name);
-    ALWAYS_INLINE ESValue read(ESObject* obj, size_t index);
+    ALWAYS_INLINE ESValue read(ESObject* obj, ESObject* originalObject, ESString* name);
+    ALWAYS_INLINE ESValue read(ESObject* obj, ESObject* originalObject, size_t index);
 
-    ALWAYS_INLINE void write(ESObject* obj, ESString* name, const ESValue& val);
-    ALWAYS_INLINE void write(ESObject* obj, size_t index, const ESValue& val);
+    ALWAYS_INLINE void write(ESObject* obj, ESObject* originalObject, ESString* name, const ESValue& val);
+    ALWAYS_INLINE void write(ESObject* obj, ESObject* originalObject, size_t index, const ESValue& val);
 
     ALWAYS_INLINE bool hasReadOnlyProperty()
     {
