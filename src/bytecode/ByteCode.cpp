@@ -887,26 +887,22 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         data->m_object = obj;
         data->m_keys.reserve(obj->keyCount());
         ESObject* target = obj;
-        while(true) {
-            target->enumeration([&data](ESValue key) {
-                //TODO
-                //time complexity of this operation is O(n^2)
-                //should we use set or something?
-                bool exists = false;
-                for(unsigned i = 0 ; i < data->m_keys.size() ; i ++) {
-                    if(data->m_keys[i] == key || data->m_keys[i].toString() == key.toString()) {
-                        exists = true;
-                    }
-                }
-                if(!exists)
+        std::unordered_set<ESString*, std::hash<ESString*>, std::equal_to<ESString*>, gc_allocator<ESString *> > keyStringSet;
+        target->enumeration([&data, &keyStringSet](ESValue key) {
+            data->m_keys.push_back(key);
+            keyStringSet.insert(key.toString());
+        });
+        ESValue proto = target->__proto__();
+        while(proto.isESPointer() && proto.asESPointer()->isESObject()) {
+            target = proto.asESPointer()->asESObject();
+            target->enumeration([&data, &keyStringSet](ESValue key) {
+                ESString* str = key.toString();
+                if(keyStringSet.find(str) != keyStringSet.end()) {
                     data->m_keys.push_back(key);
+                    keyStringSet.insert(str);
+                }
             });
-            ESValue proto = target->__proto__();
-            if (proto.isESPointer() && proto.asESPointer()->isESObject()) {
-                target = proto.asESPointer()->asESObject();
-            } else {
-                break;
-            }
+            proto = target->__proto__();
         }
         push<ESValue>(stack, bp, ESValue((ESPointer *)data));
         executeNextCode<EnumerateObject>(programCounter);
