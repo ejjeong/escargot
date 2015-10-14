@@ -124,13 +124,11 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
         RELEASE_ASSERT_NOT_REACHED();
 #endif
     } else if (type.isDoubleType()) {
-#if 0
-        // DISABLE Temporarily
 #ifdef ESCARGOT_64
         LIns* quadValue = m_out.ins1(LIR_dasq, in);
         LIns* maskedValue = m_out.ins2(LIR_andq, quadValue, m_intTagQ);
         LIns* checkIfNotNumber = m_out.ins2(LIR_eqq, maskedValue, m_zeroQ);
-        LIns* exitIfNotNumber = m_out.insBranch(LIR_jf, checkIfNotNumber, nullptr);
+        LIns* exitIfNotNumber = m_out.insBranch(LIR_jt, checkIfNotNumber, nullptr);
         LIns* checkIfInt = m_out.ins2(LIR_eqq, maskedValue, m_intTagQ);
         LIns* jumpIfDouble = m_out.insBranch(LIR_jf, checkIfInt, nullptr);
         LIns* exitPath = m_out.ins0(LIR_label);
@@ -142,7 +140,6 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
-#endif //0
     } else if (type.isArrayObjectType() || type.isStringType() || type.isFunctionObjectType()) {
         //ToDo
     } else if (type.isPointerType()) {
