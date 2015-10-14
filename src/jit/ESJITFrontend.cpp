@@ -296,9 +296,13 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         }
         case DivisionOpcode:
-            goto unsupported;
+        {
+            INIT_BYTECODE(Division);
+            ESIR* genericDivisionIR = GenericDivisionIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
+            currentBlock->push(genericDivisionIR);
             NEXT_BYTECODE(Division);
             break;
+        }
         case ModOpcode:
             goto unsupported;
             NEXT_BYTECODE(Mod);

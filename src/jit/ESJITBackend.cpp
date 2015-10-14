@@ -377,6 +377,22 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         // FIXME
         return nullptr;
     }
+    case ESIR::Opcode::Int32Division:
+    {
+        INIT_ESIR(Int32Division);
+        INIT_BINARY_ESIR(Int32Division);
+        return m_out.ins2(LIR_divi, left, right);
+    }
+    case ESIR::Opcode::DoubleDivision:
+    {
+        // FIXME
+        return nullptr;
+    }
+    case ESIR::Opcode::GenericDivision:
+    {
+        // FIXME
+        return nullptr;
+    }
     case ESIR::Opcode::BitwiseAnd:
     {
         INIT_ESIR(BitwiseAnd);

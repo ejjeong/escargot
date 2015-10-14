@@ -88,6 +88,29 @@ void ESGraphTypeInference::run(ESGraph* graph)
                 }
                 break;
             }
+            case ESIR::Opcode::GenericDivision: {
+                INIT_ESIR(GenericDivision);
+                Type leftType = graph->getOperandType(irGenericDivision->leftIndex());
+                Type rightType = graph->getOperandType(irGenericDivision->rightIndex());
+                if (leftType.isInt32Type() && rightType.isInt32Type()) {
+                    // int32 / int32 = int32 (or Double -> OSR Exit)
+                    ESIR* int32DivisionIR = Int32DivisionIR::create(irGenericDivision->targetIndex(), irGenericDivision->leftIndex(), irGenericDivision->rightIndex());
+                    block->replace(j, int32DivisionIR);
+                    graph->setOperandType(irGenericDivision->targetIndex(), TypeInt32);
+                } else if (leftType.hasNumberFlag() && rightType.hasNumberFlag()) {
+                    // int32 / Double  = Double
+                    // Double / int32  = Double
+                    // Double / Double = Double
+                    ESIR* doubleDivisionIR = DoubleDivisionIR::create(irGenericDivision->targetIndex(), irGenericDivision->leftIndex(), irGenericDivision->rightIndex());
+                    block->replace(j, doubleDivisionIR);
+                    graph->setOperandType(irGenericDivision->targetIndex(), TypeDouble);
+                } else {
+                    // FIXME
+                    // Handle unusual case of division
+                    graph->setOperandType(irGenericDivision->targetIndex(), TypeDouble);
+                }
+                break;
+            }
             case ESIR::Opcode::BitwiseAnd:
             case ESIR::Opcode::BitwiseOr:
             case ESIR::Opcode::BitwiseXor:
