@@ -635,7 +635,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* key = pop<ESValue>(stack, bp);
         ESValue* obj = pop<ESValue>(stack, bp);
-        bool res = obj->toObject()->deletePropety(*key);
+        bool res = obj->toObject()->deleteProperty(*key);
         push<ESValue>(stack, bp, ESValue(res));
 
         executeNextCode<UnaryDelete>(programCounter);

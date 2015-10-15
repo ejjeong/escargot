@@ -1115,7 +1115,8 @@ inline void ESObject::defineAccessorProperty(const escargot::ESValue& key,ESProp
     }
 }
 
-inline bool ESObject::deletePropety(const ESValue& key)
+// $9.1.10
+inline bool ESObject::deleteProperty(const ESValue& key)
 {
     if(isESArrayObject() && asESArrayObject()->isFastmode()) {
         size_t i = key.toIndex();
@@ -1124,20 +1125,23 @@ inline bool ESObject::deletePropety(const ESValue& key)
                 asESArrayObject()->m_vector[i] = ESValue(ESValue::ESEmptyValue);
                 return true;
             }
-            return false;
+            return true;
         }
     }
     if(isESTypedArrayObject()) {
         size_t i = key.toIndex();
         if (i != SIZE_MAX) {
-            return false;
+            return true;
         }
     }
 
     size_t idx = m_hiddenClass->findProperty(key.toString());
-    if(idx == SIZE_MAX)
-        return false;
+    if(idx == SIZE_MAX) // if undefined, return true
+        return true;
 
+    if(!m_hiddenClass->m_propertyInfo[idx].m_flags.m_isConfigurable) {
+        return false;
+    }
     m_hiddenClass = m_hiddenClass->removeProperty(idx);
     m_hiddenClassData.erase(m_hiddenClassData.begin() + idx);
     if(UNLIKELY(m_flags.m_isGlobalObject))
@@ -1250,7 +1254,7 @@ ALWAYS_INLINE ESValue ESObject::pop()
         return asESArrayObject()->fastPop();
     else {
         ESValue ret = get(ESValue(len-1));
-        deletePropety(ESValue(len-1));
+        deleteProperty(ESValue(len-1));
         set(strings->length.string(), ESValue(len - 1));
         return ret;
     }

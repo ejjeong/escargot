@@ -1122,7 +1122,7 @@ public:
         defineAccessorProperty(key, new ESPropertyAccessorData(getter, setter), isWritable, isEnumerable, isConfigurable);
     }
 
-    inline bool deletePropety(const ESValue& key);
+    inline bool deleteProperty(const ESValue& key);
     inline void propertyFlags(const ESValue& key, bool& exists, bool& isDataProperty, bool& isWritable, bool& isEnumerable, bool& isConfigurable);
     inline bool hasOwnProperty(const escargot::ESValue& key);
 

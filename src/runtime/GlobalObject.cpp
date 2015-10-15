@@ -919,9 +919,9 @@ void GlobalObject::installArray()
                 O->set(upperP, lowerValue, true);
             } else if (!lowerExists && upperExists) {
                 O->set(lowerP, upperValue, true);
-                O->deletePropety(upperP);
+                O->deleteProperty(upperP);
             } else if (lowerExists && !upperExists) {
-                O->deletePropety(lowerP);
+                O->deleteProperty(lowerP);
                 O->set(upperP, lowerValue, true);
               }
             lower++;
@@ -949,11 +949,11 @@ void GlobalObject::installArray()
                 ESValue fromVal = O->get(from);
                 O->set(to, fromVal, true);
             } else {
-                O->deletePropety(to);
+                O->deleteProperty(to);
             }
             k ++;
         }
-        O->deletePropety(ESValue(len - 1)); //10
+        O->deleteProperty(ESValue(len - 1)); //10
         O->set(strings->length, ESValue(len - 1)); //12
         return first;
     }, strings->shift));
@@ -1098,7 +1098,7 @@ void GlobalObject::installArray()
                     ESValue fromValue = O->get(from);
                     O->set(to, fromValue, true);
                 } else {
-                    O->deletePropety(to);
+                    O->deleteProperty(to);
                   }
                 k--;
              }
