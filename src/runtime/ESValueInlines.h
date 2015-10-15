@@ -1212,7 +1212,7 @@ ALWAYS_INLINE bool ESObject::hasOwnProperty(const escargot::ESValue& key)
 }
 
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-get-o-p
-ALWAYS_INLINE ESValue ESObject::get(escargot::ESValue key)
+ALWAYS_INLINE ESValue ESObject::get(const escargot::ESValue& key)
 {
     ESObject* target = this;
     escargot::ESString* keyString = NULL;
@@ -1249,7 +1249,7 @@ ALWAYS_INLINE ESValue ESObject::get(escargot::ESValue key)
     }
 }
 
-ALWAYS_INLINE ESValue ESObject::getOwnProperty(escargot::ESValue key)
+ALWAYS_INLINE ESValue ESObject::getOwnProperty(const escargot::ESValue& key)
 {
     if(isESArrayObject() && asESArrayObject()->isFastmode()) {
         size_t idx = key.toIndex();

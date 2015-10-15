@@ -48,15 +48,46 @@ NEVER_INLINE ESValue modOperation(const ESValue& left, const ESValue& right)
     return ret;
 }
 
+NEVER_INLINE ESValue getObjectOperationSlowCase(ESValue* willBeObject, ESValue* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject)
+{
+    if(LIKELY(willBeObject->isESPointer())) {
+        if(willBeObject->asESPointer()->isESString()) {
+            size_t idx = property->toIndex();
+            if(idx != SIZE_MAX) {
+                if(LIKELY(0 <= idx && idx < willBeObject->asESString()->length())) {
+                    char16_t c = willBeObject->asESString()->string().data()[idx];
+                    if(LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
+                        return strings->asciiTable[c].string();
+                    } else {
+                        return ESString::create(c);
+                    }
+                }
+                return willBeObject->toObject()->get(*property);
+            } else {
+                ESString* val = property->toString();
+                if(*val == *strings->length) {
+                    return ESValue(willBeObject->asESString()->length());
+                }
+                ESValue ret = globalObject->stringObjectProxy()->get(val);
+                return ret;
+            }
+        } else {
+            ASSERT(willBeObject->asESPointer()->isESObject());
+            return willBeObject->asESPointer()->asESObject()->get(*property);
+        }
+    } else {
+        if(willBeObject->isNumber()) {
+            globalObject->numberObjectProxy()->setNumberData(willBeObject->asNumber());
+            return globalObject->numberObjectProxy()->get(*property);
+        }
+        return willBeObject->toObject()->get(*property);
+    }
+}
+
 NEVER_INLINE ESValue getObjectPreComputedCaseOperationWithNeverInline(ESValue* willBeObject, ESString* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject
         ,ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex)
 {
     return getObjectPreComputedCaseOperation(willBeObject, property, lastObjectValueMetInMemberExpression, globalObject, cachedHiddenClassChain, cachedHiddenClassIndex);
-}
-
-NEVER_INLINE ESValue getObjectOperationWithNeverInline(ESValue* willBeObject, ESValue* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject)
-{
-    return getObjectOperation(willBeObject, property, lastObjectValueMetInMemberExpression, globalObject);
 }
 
 NEVER_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject)
@@ -101,11 +132,32 @@ NEVER_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue* 
     }
 }
 
+NEVER_INLINE void throwObjectWriteError()
+{
+    if(ESVMInstance::currentInstance()->currentExecutionContext()->isStrictMode())
+        throw ESValue(TypeError::create());
+}
 
 NEVER_INLINE void setObjectOperationSlowMode(ESValue* willBeObject, ESValue* property, const ESValue& value)
 {
     ASSERT(ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedReadOnlyOrAccessorProperty());
-    willBeObject->toObject()->set(*property, value, true);
+    if(!willBeObject->toObject()->set(*property, value)) {
+        throwObjectWriteError();
+    }
+}
+
+NEVER_INLINE void setObjectOperationSlowCase(ESValue* willBeObject, ESValue* property, const ESValue& value)
+{
+    if(!willBeObject->toObject()->set(*property, value)) {
+        throwObjectWriteError();
+    }
+}
+
+NEVER_INLINE void setObjectPreComputedCaseOperationSlowCase(ESValue* willBeObject, ESString* keyString, const ESValue& value)
+{
+    if(!willBeObject->toObject()->set(keyString, value)) {
+        throwObjectWriteError();
+    }
 }
 
 NEVER_INLINE bool instanceOfOperation(ESValue* lval, ESValue* rval)

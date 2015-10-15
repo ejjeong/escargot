@@ -618,6 +618,39 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         goto NextInstruction;
     }
 
+    GetObjectWithPeekingOpcodeLbl:
+    {
+        GetObjectWithPeeking* code = (GetObjectWithPeeking*)currentCode;
+
+        ESValue* property = pop<ESValue>(stack, bp);
+        ESValue* willBeObject = pop<ESValue>(stack, bp);
+
+        stack = (void *)(((size_t)stack) + sizeof(ESValue) * 2);
+#ifndef NDEBUG
+        stack = (void *)(((size_t)stack) + sizeof(size_t) * 2);
+#endif
+        push<ESValue>(stack, bp, getObjectOperation(willBeObject, property, &lastESObjectMetInMemberExpressionNode, globalObject));
+        executeNextCode<GetObjectWithPeeking>(programCounter);
+        goto NextInstruction;
+    }
+
+    GetObjectWithPeekingPreComputedCaseOpcodeLbl:
+    {
+        GetObjectWithPeekingPreComputedCase* code = (GetObjectWithPeekingPreComputedCase*)currentCode;
+
+        ESValue* willBeObject = pop<ESValue>(stack, bp);
+
+        stack = (void *)(((size_t)stack) + sizeof(ESValue) * 1);
+#ifndef NDEBUG
+        stack = (void *)(((size_t)stack) + sizeof(size_t) * 1);
+#endif
+
+        push<ESValue>(stack, bp, getObjectPreComputedCaseOperationWithNeverInline(willBeObject, code->m_propertyValue, &lastESObjectMetInMemberExpressionNode, globalObject,
+                        &code->m_cachedhiddenClassChain, &code->m_cachedIndex));
+        executeNextCode<GetObjectWithPeekingPreComputedCase>(programCounter);
+        goto NextInstruction;
+    }
+
     SetObjectOpcodeLbl:
     {
         SetObject* code = (SetObject*)currentCode;
@@ -1021,39 +1054,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* value = peek<ESValue>(stack, bp);
         *ec->resolveArgumentsObjectBinding() = *value;
         executeNextCode<SetArgumentsObject>(programCounter);
-        goto NextInstruction;
-    }
-
-    GetObjectWithPeekingOpcodeLbl:
-    {
-        GetObjectWithPeeking* code = (GetObjectWithPeeking*)currentCode;
-
-        ESValue* property = pop<ESValue>(stack, bp);
-        ESValue* willBeObject = pop<ESValue>(stack, bp);
-
-        stack = (void *)(((size_t)stack) + sizeof(ESValue) * 2);
-#ifndef NDEBUG
-        stack = (void *)(((size_t)stack) + sizeof(size_t) * 2);
-#endif
-        push<ESValue>(stack, bp, getObjectOperationWithNeverInline(willBeObject, property, &lastESObjectMetInMemberExpressionNode, globalObject));
-        executeNextCode<GetObjectWithPeeking>(programCounter);
-        goto NextInstruction;
-    }
-
-    GetObjectWithPeekingPreComputedCaseOpcodeLbl:
-    {
-        GetObjectWithPeekingPreComputedCase* code = (GetObjectWithPeekingPreComputedCase*)currentCode;
-
-        ESValue* willBeObject = pop<ESValue>(stack, bp);
-
-        stack = (void *)(((size_t)stack) + sizeof(ESValue) * 1);
-#ifndef NDEBUG
-        stack = (void *)(((size_t)stack) + sizeof(size_t) * 1);
-#endif
-
-        push<ESValue>(stack, bp, getObjectPreComputedCaseOperationWithNeverInline(willBeObject, code->m_propertyValue, &lastESObjectMetInMemberExpressionNode, globalObject,
-                        &code->m_cachedhiddenClassChain, &code->m_cachedIndex));
-        executeNextCode<GetObjectWithPeekingPreComputedCase>(programCounter);
         goto NextInstruction;
     }
 
