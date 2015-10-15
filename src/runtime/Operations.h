@@ -5,7 +5,7 @@
 
 namespace escargot {
 
-ALWAYS_INLINE ESValue plusOperation(const ESValue& left, const ESValue& right)
+NEVER_INLINE ESValue plusOperation(const ESValue& left, const ESValue& right)
 {
     // http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.1
 
@@ -52,7 +52,7 @@ ALWAYS_INLINE ESValue plusOperation(const ESValue& left, const ESValue& right)
 }
 
 
-ALWAYS_INLINE ESValue minusOperation(const ESValue& left, const ESValue& right)
+NEVER_INLINE ESValue minusOperation(const ESValue& left, const ESValue& right)
 {
     // http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.2
     ESValue ret(ESValue::ESForceUninitialized);
@@ -72,7 +72,7 @@ ALWAYS_INLINE ESValue minusOperation(const ESValue& left, const ESValue& right)
     return ret;
 }
 
-ALWAYS_INLINE ESValue modOperation(const ESValue& left, const ESValue& right)
+NEVER_INLINE ESValue modOperation(const ESValue& left, const ESValue& right)
 {
     ESValue ret(ESValue::ESForceUninitialized);
 
@@ -112,7 +112,7 @@ ALWAYS_INLINE ESValue modOperation(const ESValue& left, const ESValue& right)
 }
 
 //http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5
-ALWAYS_INLINE ESValue abstractRelationalComparison(const ESValue& left, const ESValue& right, bool leftFirst)
+NEVER_INLINE ESValue abstractRelationalComparison(const ESValue& left, const ESValue& right, bool leftFirst)
 {
     ESValue lval(ESValue::ESForceUninitialized);
     ESValue rval(ESValue::ESForceUninitialized);
@@ -157,7 +157,7 @@ ALWAYS_INLINE ESValue abstractRelationalComparison(const ESValue& left, const ES
 }
 
 //d = {}. d[0]
-ALWAYS_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject)
+NEVER_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject)
 {
     ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedReadOnlyOrAccessorProperty());
     *lastObjectValueMetInMemberExpression = *willBeObject;
@@ -208,7 +208,7 @@ ALWAYS_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* propert
 }
 
 //d = {}. d.foo
-ALWAYS_INLINE ESValue getObjectPreComputedCaseOperation(ESValue* willBeObject, ESValue* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject)
+NEVER_INLINE ESValue getObjectPreComputedCaseOperation(ESValue* willBeObject, ESValue* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject)
 {
     ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedReadOnlyOrAccessorProperty());
     *lastObjectValueMetInMemberExpression = *willBeObject;
@@ -232,7 +232,7 @@ ALWAYS_INLINE ESValue getObjectPreComputedCaseOperation(ESValue* willBeObject, E
     }
 }
 
-ALWAYS_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject)
+NEVER_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject)
 {
     ASSERT(ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedReadOnlyOrAccessorProperty());
     *lastObjectValueMetInMemberExpression = *willBeObject;
@@ -272,23 +272,133 @@ ALWAYS_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue*
 }
 
 //d = {}. d[0]
-ALWAYS_INLINE void setObjectOperation(ESValue* willBeObject, ESValue* property, const ESValue& value)
+NEVER_INLINE void setObjectOperation(ESValue* willBeObject, ESValue* property, const ESValue& value)
 {
     ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedReadOnlyOrAccessorProperty());
     willBeObject->toObject()->set(*property, value);
 }
 
 //d = {}. d.foo
-ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESValue* property, const ESValue& value)
+NEVER_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESValue* property, const ESValue& value)
 {
     ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedReadOnlyOrAccessorProperty());
     willBeObject->toObject()->set(*property, value);
 }
 
-ALWAYS_INLINE void setObjectOperationSlowMode(ESValue* willBeObject, ESValue* property, const ESValue& value)
+NEVER_INLINE void setObjectOperationSlowMode(ESValue* willBeObject, ESValue* property, const ESValue& value)
 {
     ASSERT(ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedReadOnlyOrAccessorProperty());
     willBeObject->toObject()->set(*property, value);
+}
+
+NEVER_INLINE bool instanceOfOperation(ESValue* lval, ESValue* rval)
+{
+    if(rval->isESPointer() && rval->asESPointer()->isESFunctionObject() && lval->isESPointer() && lval->asESPointer()->isESObject()) {
+        ESFunctionObject* C = rval->asESPointer()->asESFunctionObject();
+        ESValue P = C->protoType();
+        ESValue O = lval->asESPointer()->asESObject()->__proto__();
+        if(P.isESPointer() && P.asESPointer()->isESObject()) {
+            while (!O.isUndefinedOrNull()) {
+                if(P == O) {
+                    return true;
+                }
+                O = O.asESPointer()->asESObject()->__proto__();
+            }
+        }
+        else {
+            throw ReferenceError::create(ESString::create(u""));
+        }
+    }
+    return false;
+}
+
+NEVER_INLINE ESValue typeOfOperation(ESValue* v)
+{
+    if(v->isUndefined() || v->isEmpty())
+        return strings->undefined.string();
+    else if(v->isNull())
+        return strings->object.string();
+    else if(v->isBoolean())
+        return strings->boolean.string();
+    else if(v->isNumber())
+        return strings->number.string();
+    else if(v->isESString())
+        return strings->string.string();
+    else {
+        ASSERT(v->isESPointer());
+        ESPointer* p = v->asESPointer();
+        if(p->isESFunctionObject()) {
+            return strings->function.string();
+        } else {
+            return strings->object.string();
+        }
+    }
+}
+
+NEVER_INLINE ESValue newOperation(ESVMInstance* instance, GlobalObject* globalObject, ESValue fn, ESValue* arguments, size_t argc)
+{
+    if(!fn.isESPointer() || !fn.asESPointer()->isESFunctionObject())
+        throw ESValue(TypeError::create(ESString::create(u"constructor is not an function object")));
+    ESFunctionObject* function = fn.asESPointer()->asESFunctionObject();
+    ESObject* receiver;
+    if (function == globalObject->date()) {
+        receiver = ESDateObject::create();
+    } else if (function == globalObject->array()) {
+        receiver = ESArrayObject::create(0);
+    } else if (function == globalObject->string()) {
+        receiver = ESStringObject::create();
+    } else if (function == globalObject->regexp()) {
+        receiver = ESRegExpObject::create(strings->emptyString.string(),ESRegExpObject::Option::None);
+    } else if (function == globalObject->boolean()) {
+        receiver = ESBooleanObject::create(false);
+    } else if (function == globalObject->number()) {
+        receiver = ESNumberObject::create(0);
+    } else if (function == globalObject->error()) {
+        receiver = ESErrorObject::create();
+    } else if (function == globalObject->referenceError()) {
+        receiver = ReferenceError::create();
+    } else if (function == globalObject->typeError()) {
+        receiver = TypeError::create();
+    } else if (function == globalObject->syntaxError()) {
+        receiver = SyntaxError::create();
+    } else if (function == globalObject->rangeError()) {
+        receiver = RangeError::create();
+    }
+    // TypedArray
+    else if (function == globalObject->int8Array()) {
+        receiver = ESTypedArrayObject<Int8Adaptor>::create();
+    } else if (function == globalObject->uint8Array()) {
+        receiver = ESTypedArrayObject<Uint8Adaptor>::create();
+    } else if (function == globalObject->int16Array()) {
+        receiver = ESTypedArrayObject<Int16Adaptor>::create();
+    } else if (function == globalObject->uint16Array()) {
+        receiver = ESTypedArrayObject<Uint16Adaptor>::create();
+    } else if (function == globalObject->int32Array()) {
+        receiver = ESTypedArrayObject<Int32Adaptor>::create();
+    } else if (function == globalObject->uint32Array()) {
+        receiver = ESTypedArrayObject<Uint32Adaptor>::create();
+    } else if (function == globalObject->uint8ClampedArray()) {
+        receiver = ESTypedArrayObject<Uint8ClampedAdaptor>::create();
+    } else if (function == globalObject->float32Array()) {
+        receiver = ESTypedArrayObject<Float32Adaptor>::create();
+    } else if (function == globalObject->float64Array()) {
+        receiver = ESTypedArrayObject<Float64Adaptor>::create();
+    } else if (function == globalObject->arrayBuffer()) {
+        receiver = ESArrayBufferObject::create();
+    } else {
+        receiver = ESObject::create();
+    }
+
+    if(function->protoType().isObject())
+        receiver->set__proto__(function->protoType());
+    else
+        receiver->set__proto__(ESObject::create());
+
+    ESValue res = ESFunctionObject::call(instance, fn, receiver, arguments, argc, true);
+    if (res.isObject())
+        return res;
+    else
+        return receiver;
 }
 
 }

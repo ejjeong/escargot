@@ -110,8 +110,8 @@ public:
     explicit ESValue(long long);
     explicit ESValue(unsigned long long);
 
-    bool operator==(const ESValue& other) const;
-    bool operator!=(const ESValue& other) const;
+    ALWAYS_INLINE bool operator==(const ESValue& other) const;
+    ALWAYS_INLINE bool operator!=(const ESValue& other) const;
 
     bool isInt32() const;
     bool isUInt32() const;
@@ -146,21 +146,21 @@ public:
     bool isObject() const;
 
     enum PrimitiveTypeHint { PreferString, PreferNumber };
-    inline ESValue toPrimitive(PrimitiveTypeHint = PreferNumber) const; //$7.1.1 ToPrimitive
-    inline bool toBoolean() const; //$7.1.2 ToBoolean
+    ALWAYS_INLINE ESValue toPrimitive(PrimitiveTypeHint = PreferNumber) const; //$7.1.1 ToPrimitive
+    ALWAYS_INLINE bool toBoolean() const; //$7.1.2 ToBoolean
     inline double toNumber() const; //$7.1.3 ToNumber
-    inline double toInteger() const; //$7.1.4 ToInteger
-    inline int32_t toInt32() const; //$7.1.5 ToInt32
-    inline uint32_t toUint32() const; //http://www.ecma-international.org/ecma-262/5.1/#sec-9.6
+    ALWAYS_INLINE double toInteger() const; //$7.1.4 ToInteger
+    ALWAYS_INLINE int32_t toInt32() const; //$7.1.5 ToInt32
+    ALWAYS_INLINE uint32_t toUint32() const; //http://www.ecma-international.org/ecma-262/5.1/#sec-9.6
     inline ESString* toString() const; //$7.1.12 ToString
-    inline ESObject* toObject() const; //$7.1.13 ToObject
-    inline double toLength() const; //$7.1.15 ToLength
-    inline size_t toIndex() const;
+    ALWAYS_INLINE ESObject* toObject() const; //$7.1.13 ToObject
+    ALWAYS_INLINE double toLength() const; //$7.1.15 ToLength
+    ALWAYS_INLINE size_t toIndex() const;
 
-    inline ESString* asESString() const;
+    ALWAYS_INLINE ESString* asESString() const;
 
-    inline bool isESPointer() const;
-    inline ESPointer* asESPointer() const;
+    ALWAYS_INLINE bool isESPointer() const;
+    ALWAYS_INLINE ESPointer* asESPointer() const;
 
     static ESValueInDouble toRawDouble(ESValue);
     static ESValue fromRawDouble(ESValueInDouble);
@@ -1051,6 +1051,8 @@ public:
         return removeProperty(findProperty(name));
     }
     ALWAYS_INLINE ESHiddenClass* removeProperty(size_t idx);
+    ALWAYS_INLINE ESHiddenClass* morphToNonVectorMode();
+    ALWAYS_INLINE ESHiddenClass* forceNonVectorMode();
 
     ALWAYS_INLINE ESValue read(ESObject* obj, ESObject* originalObject, ESString* name);
     ALWAYS_INLINE ESValue read(ESObject* obj, ESObject* originalObject, size_t index);
@@ -1077,10 +1079,10 @@ private:
         : m_transitionData(4)
     {
         m_flags.m_isVectorMode = true;
+        m_flags.m_forceNonVectorMode = false;
         m_flags.m_hasReadOnlyProperty = false;
         m_flags.m_hasIndexedProperty = false;
         m_flags.m_hasIndexedReadOnlyProperty = false;
-
     }
 
     ESHiddenClassPropertyIndexHashMapInfoStd m_propertyIndexHashMapInfo;
@@ -1089,6 +1091,7 @@ private:
 
     struct {
         bool m_isVectorMode:1;
+        bool m_forceNonVectorMode:1;
         bool m_hasReadOnlyProperty:1;
         bool m_hasIndexedProperty:1;
         bool m_hasIndexedReadOnlyProperty:1;
@@ -1135,6 +1138,12 @@ public:
     ESHiddenClass* hiddenClass()
     {
         return m_hiddenClass;
+    }
+
+    void forceNonVectorHiddenClass()
+    {
+        ASSERT(!m_hiddenClass->m_flags.m_forceNonVectorMode);
+        m_hiddenClass = m_hiddenClass->forceNonVectorMode();
     }
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-get-o-p

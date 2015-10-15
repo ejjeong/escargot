@@ -5,6 +5,9 @@
 
 namespace escargot {
 
+//internal functions
+NEVER_INLINE EnumerateObjectData* executeEnumerateObject(ESObject* obj);
+
 ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter)
 {
     if(codeBlock == NULL) {
@@ -567,26 +570,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* rval = pop<ESValue>(stack, bp);
         ESValue* lval = pop<ESValue>(stack, bp);
 
-        if (rval->isESPointer() && rval->asESPointer()->isESFunctionObject() &&
-                lval->isESPointer() && lval->asESPointer()->isESObject()) {
-            ESFunctionObject* C = rval->asESPointer()->asESFunctionObject();
-            ESValue P = C->protoType();
-            ESValue O = lval->asESPointer()->asESObject()->__proto__();
-            if (P.isESPointer() && P.asESPointer()->isESObject()) {
-                while (!O.isUndefinedOrNull()) {
-                    if (P == O) {
-                        push<ESValue>(stack, bp, ESValue(true));
-                        executeNextCode<StringIn>(programCounter);
-                        goto NextInstruction;
-                       }
-                    O = O.asESPointer()->asESObject()->__proto__();
-                  }
-            } else {
-                throw ReferenceError::create(ESString::create(u""));
-              }
-         }
-
-        push<ESValue>(stack, bp, ESValue(false));
+        push<ESValue>(stack, bp, ESValue(instanceOfOperation(lval, rval)));
 
         executeNextCode<StringIn>(programCounter);
         goto NextInstruction;
@@ -609,28 +593,8 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     UnaryTypeOfOpcodeLbl:
     {
         ESValue* v = pop<ESValue>(stack, bp);
-
-        if(v->isUndefined() || v->isEmpty())
-            push<ESValue>(stack, bp, strings->undefined.string());
-        else if(v->isNull())
-            push<ESValue>(stack, bp, strings->object.string());
-        else if(v->isBoolean())
-            push<ESValue>(stack, bp, strings->boolean.string());
-        else if(v->isNumber())
-            push<ESValue>(stack, bp, strings->number.string());
-        else if(v->isESString())
-            push<ESValue>(stack, bp, strings->string.string());
-        else if(v->isESPointer()) {
-            ASSERT(v->isESPointer());
-            ESPointer* p = v->asESPointer();
-            if(p->isESFunctionObject()) {
-                push<ESValue>(stack, bp, strings->function.string());
-            } else {
-                push<ESValue>(stack, bp, strings->object.string());
-            }
-        }
-
-        executeNextCode<UnaryPlus>(programCounter);
+        push<ESValue>(stack, bp, typeOfOperation(v));
+        executeNextCode<UnaryTypeOf>(programCounter);
         goto NextInstruction;
     }
 
@@ -882,61 +846,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         goto NextInstruction;
     }
 
-    EnumerateObjectOpcodeLbl:
-    {
-        ESObject* obj = pop<ESValue>(stack, bp)->toObject();
-        EnumerateObjectData* data = new EnumerateObjectData();
-
-        data->m_object = obj;
-        data->m_keys.reserve(obj->keyCount());
-        ESObject* target = obj;
-        std::unordered_set<ESString*, std::hash<ESString*>, std::equal_to<ESString*>, gc_allocator<ESString *> > keyStringSet;
-        target->enumeration([&data, &keyStringSet](ESValue key) {
-            data->m_keys.push_back(key);
-            keyStringSet.insert(key.toString());
-        });
-        ESValue proto = target->__proto__();
-        while(proto.isESPointer() && proto.asESPointer()->isESObject()) {
-            target = proto.asESPointer()->asESObject();
-            target->enumeration([&data, &keyStringSet](ESValue key) {
-                ESString* str = key.toString();
-                if(keyStringSet.find(str) != keyStringSet.end()) {
-                    data->m_keys.push_back(key);
-                    keyStringSet.insert(str);
-                }
-            });
-            proto = target->__proto__();
-        }
-        push<ESValue>(stack, bp, ESValue((ESPointer *)data));
-        executeNextCode<EnumerateObject>(programCounter);
-        goto NextInstruction;
-    }
-
-    EnumerateObjectKeyOpcodeLbl:
-    {
-        EnumerateObjectKey* code = (EnumerateObjectKey*)currentCode;
-        EnumerateObjectData* data = (EnumerateObjectData *)peek<ESValue>(stack, bp)->asESPointer();
-
-        while(1) {
-            if(data->m_keys.size() == data->m_idx) {
-                programCounter = jumpTo(codeBuffer, code->m_forInEnd);
-                goto NextInstruction;
-            }
-
-            data->m_idx++;
-            push<ESValue>(stack, bp, data->m_keys[data->m_idx - 1]);
-            executeNextCode<EnumerateObjectKey>(programCounter);
-            goto NextInstruction;
-        }
-    }
-
-    EnumerateObjectEndOpcodeLbl:
-    {
-        pop<ESValue>(stack, bp);
-        executeNextCode<EnumerateObjectEnd>(programCounter);
-        goto NextInstruction;
-    }
-
     CreateFunctionOpcodeLbl:
     {
         CreateFunction* code = (CreateFunction*)currentCode;
@@ -1068,68 +977,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 #endif
         ESValue* arguments = (ESValue *)stack;
         ESValue fn = *pop<ESValue>(stack, bp);
-        if(!fn.isESPointer() || !fn.asESPointer()->isESFunctionObject())
-            throw ESValue(TypeError::create(ESString::create(u"constructor is not an function object")));
-        ESFunctionObject* function = fn.asESPointer()->asESFunctionObject();
-        ESObject* receiver;
-        if (function == globalObject->date()) {
-            receiver = ESDateObject::create();
-        } else if (function == globalObject->array()) {
-            receiver = ESArrayObject::create(0);
-        } else if (function == globalObject->string()) {
-            receiver = ESStringObject::create();
-        } else if (function == globalObject->regexp()) {
-            receiver = ESRegExpObject::create(strings->emptyString.string(),ESRegExpObject::Option::None);
-        } else if (function == globalObject->boolean()) {
-            receiver = ESBooleanObject::create(false);
-        } else if (function == globalObject->number()) {
-            receiver = ESNumberObject::create(0);
-        } else if (function == globalObject->error()) {
-            receiver = ESErrorObject::create();
-        } else if (function == globalObject->referenceError()) {
-            receiver = ReferenceError::create();
-        } else if (function == globalObject->typeError()) {
-            receiver = TypeError::create();
-        } else if (function == globalObject->syntaxError()) {
-            receiver = SyntaxError::create();
-        } else if (function == globalObject->rangeError()) {
-            receiver = RangeError::create();
-        }
-        // TypedArray
-        else if (function == globalObject->int8Array()) {
-            receiver = ESTypedArrayObject<Int8Adaptor>::create();
-        } else if (function == globalObject->uint8Array()) {
-            receiver = ESTypedArrayObject<Uint8Adaptor>::create();
-        } else if (function == globalObject->int16Array()) {
-            receiver = ESTypedArrayObject<Int16Adaptor>::create();
-        } else if (function == globalObject->uint16Array()) {
-            receiver = ESTypedArrayObject<Uint16Adaptor>::create();
-        } else if (function == globalObject->int32Array()) {
-            receiver = ESTypedArrayObject<Int32Adaptor>::create();
-        } else if (function == globalObject->uint32Array()) {
-            receiver = ESTypedArrayObject<Uint32Adaptor>::create();
-        } else if (function == globalObject->uint8ClampedArray()) {
-            receiver = ESTypedArrayObject<Uint8ClampedAdaptor>::create();
-        } else if (function == globalObject->float32Array()) {
-            receiver = ESTypedArrayObject<Float32Adaptor>::create();
-        } else if (function == globalObject->float64Array()) {
-            receiver = ESTypedArrayObject<Float64Adaptor>::create();
-        } else if (function == globalObject->arrayBuffer()) {
-            receiver = ESArrayBufferObject::create();
-        } else {
-            receiver = ESObject::create();
-        }
-
-        if(function->protoType().isObject())
-            receiver->set__proto__(function->protoType());
-        else
-            receiver->set__proto__(ESObject::create());
-
-        ESValue res = ESFunctionObject::call(instance, fn, receiver, arguments, argc, true);
-        if (res.isObject()) {
-            push<ESValue>(stack, bp, res);
-        } else
-            push<ESValue>(stack, bp, receiver);
+        push<ESValue>(stack, bp, newOperation(instance, globalObject, fn, arguments, argc));
         executeNextCode<NewFunctionCall>(programCounter);
         goto NextInstruction;
     }
@@ -1338,6 +1186,39 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         goto NextInstruction;
     }
 
+    EnumerateObjectOpcodeLbl:
+    {
+        ESObject* obj = pop<ESValue>(stack, bp)->toObject();
+        push<ESValue>(stack, bp, ESValue((ESPointer *)executeEnumerateObject(obj)));
+        executeNextCode<EnumerateObject>(programCounter);
+        goto NextInstruction;
+    }
+
+    EnumerateObjectKeyOpcodeLbl:
+    {
+        EnumerateObjectKey* code = (EnumerateObjectKey*)currentCode;
+        EnumerateObjectData* data = (EnumerateObjectData *)peek<ESValue>(stack, bp)->asESPointer();
+
+        while(1) {
+            if(data->m_keys.size() == data->m_idx) {
+                programCounter = jumpTo(codeBuffer, code->m_forInEnd);
+                goto NextInstruction;
+            }
+
+            data->m_idx++;
+            push<ESValue>(stack, bp, data->m_keys[data->m_idx - 1]);
+            executeNextCode<EnumerateObjectKey>(programCounter);
+            goto NextInstruction;
+        }
+    }
+
+    EnumerateObjectEndOpcodeLbl:
+    {
+        pop<ESValue>(stack, bp);
+        executeNextCode<EnumerateObjectEnd>(programCounter);
+        goto NextInstruction;
+    }
+
     EndOpcodeLbl:
     {
         ASSERT(stack == bp);
@@ -1355,12 +1236,12 @@ CodeBlock::CodeBlock()
     m_executeCount = 0;
 #endif
 
-    ESVMInstance::currentInstance()->globalObject()->registerCodeBlock(this);
+    //ESVMInstance::currentInstance()->globalObject()->registerCodeBlock(this);
 }
 
 CodeBlock::~CodeBlock()
 {
-    ESVMInstance::currentInstance()->globalObject()->unregisterCodeBlock(this);
+    //ESVMInstance::currentInstance()->globalObject()->unregisterCodeBlock(this);
 }
 
 ByteCode::ByteCode(Opcode code) {

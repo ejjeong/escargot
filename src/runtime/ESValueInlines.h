@@ -8,12 +8,12 @@ namespace escargot {
 // rounding towards zero.
 // The result is unspecified if x is infinite or NaN, or if the rounded
 // integer value is outside the range of type int.
-inline int FastD2I(double x) {
+ALWAYS_INLINE int FastD2I(double x) {
   return static_cast<int32_t>(x);
 }
 
 
-inline double FastI2D(int x) {
+ALWAYS_INLINE double FastI2D(int x) {
   // There is no rounding involved in converting an integer to a
   // double, so this code should compile to a few instructions without
   // any FPU pipeline stalls.
@@ -36,7 +36,7 @@ inline ToType bitwise_cast(FromType from)
     return u.to;
 }
 
-inline ESValue::ESValue(double d)
+ALWAYS_INLINE ESValue::ESValue(double d)
 {
     const int32_t asInt32 = static_cast<int32_t>(d);
     if (asInt32 != d || (!asInt32 && std::signbit(d))) { // true for -0.0
@@ -46,27 +46,27 @@ inline ESValue::ESValue(double d)
     *this = ESValue(static_cast<int32_t>(d));
 }
 
-inline ESValue::ESValue(char i)
+ALWAYS_INLINE ESValue::ESValue(char i)
 {
     *this = ESValue(static_cast<int32_t>(i));
 }
 
-inline ESValue::ESValue(unsigned char i)
+ALWAYS_INLINE ESValue::ESValue(unsigned char i)
 {
     *this = ESValue(static_cast<int32_t>(i));
 }
 
-inline ESValue::ESValue(short i)
+ALWAYS_INLINE ESValue::ESValue(short i)
 {
     *this = ESValue(static_cast<int32_t>(i));
 }
 
-inline ESValue::ESValue(unsigned short i)
+ALWAYS_INLINE ESValue::ESValue(unsigned short i)
 {
     *this = ESValue(static_cast<int32_t>(i));
 }
 
-inline ESValue::ESValue(unsigned i)
+ALWAYS_INLINE ESValue::ESValue(unsigned i)
 {
     if (static_cast<int32_t>(i) < 0) {
         *this = ESValue(EncodeAsDouble, static_cast<double>(i));
@@ -75,7 +75,7 @@ inline ESValue::ESValue(unsigned i)
     *this = ESValue(static_cast<int32_t>(i));
 }
 
-inline ESValue::ESValue(long i)
+ALWAYS_INLINE ESValue::ESValue(long i)
 {
     if (static_cast<int32_t>(i) != i) {
         *this = ESValue(EncodeAsDouble, static_cast<double>(i));
@@ -84,7 +84,7 @@ inline ESValue::ESValue(long i)
     *this = ESValue(static_cast<int32_t>(i));
 }
 
-inline ESValue::ESValue(unsigned long i)
+ALWAYS_INLINE ESValue::ESValue(unsigned long i)
 {
     if (static_cast<uint32_t>(i) != i) {
         *this = ESValue(EncodeAsDouble, static_cast<double>(i));
@@ -93,7 +93,7 @@ inline ESValue::ESValue(unsigned long i)
     *this = ESValue(static_cast<uint32_t>(i));
 }
 
-inline ESValue::ESValue(long long i)
+ALWAYS_INLINE ESValue::ESValue(long long i)
 {
     if (static_cast<int32_t>(i) != i) {
         *this = ESValue(EncodeAsDouble, static_cast<double>(i));
@@ -102,7 +102,7 @@ inline ESValue::ESValue(long long i)
     *this = ESValue(static_cast<int32_t>(i));
 }
 
-inline ESValue::ESValue(unsigned long long i)
+ALWAYS_INLINE ESValue::ESValue(unsigned long long i)
 {
     if (static_cast<uint32_t>(i) != i) {
         *this = ESValue(EncodeAsDouble, static_cast<double>(i));
@@ -111,13 +111,13 @@ inline ESValue::ESValue(unsigned long long i)
     *this = ESValue(static_cast<uint32_t>(i));
 }
 
-inline double ESValue::asNumber() const
+ALWAYS_INLINE double ESValue::asNumber() const
 {
     ASSERT(isNumber());
     return isInt32() ? asInt32() : asDouble();
 }
 
-inline uint64_t ESValue::asRawData() const
+ALWAYS_INLINE uint64_t ESValue::asRawData() const
 {
     return u.asInt64;
 }
@@ -161,7 +161,7 @@ inline ESString* ESValue::toString() const
     }
 }
 
-inline ESObject* ESValue::toObject() const
+ALWAYS_INLINE ESObject* ESValue::toObject() const
 {
     ESFunctionObject* function;
     ESObject* object;
@@ -183,7 +183,7 @@ inline ESObject* ESValue::toObject() const
     return object;
 }
 
-inline ESValue ESValue::toPrimitive(PrimitiveTypeHint preferredType) const
+ALWAYS_INLINE ESValue ESValue::toPrimitive(PrimitiveTypeHint preferredType) const
 {
     if (UNLIKELY(!isPrimitive())) {
         ESObject* obj = asESPointer()->asESObject();
@@ -289,7 +289,7 @@ inline double ESValue::toNumber() const
     RELEASE_ASSERT_NOT_REACHED();
 }
 
-inline bool ESValue::toBoolean() const
+ALWAYS_INLINE bool ESValue::toBoolean() const
 {
     if (*this == ESValue(true))
         return true;
@@ -319,7 +319,7 @@ inline bool ESValue::toBoolean() const
 }
 
 // http://www.ecma-international.org/ecma-262/5.1/#sec-9.4
-inline double ESValue::toInteger() const
+ALWAYS_INLINE double ESValue::toInteger() const
 {
     if (isInt32())
         return asInt32();
@@ -331,7 +331,7 @@ inline double ESValue::toInteger() const
 }
 
 // http://www.ecma-international.org/ecma-262/5.1/#sec-9.5
-inline int32_t ESValue::toInt32() const
+ALWAYS_INLINE int32_t ESValue::toInt32() const
 {
     //consume fast case
     if (LIKELY(isInt32()))
@@ -359,7 +359,7 @@ inline int32_t ESValue::toInt32() const
     return res;
 }
 
-inline uint32_t ESValue::toUint32() const
+ALWAYS_INLINE uint32_t ESValue::toUint32() const
 {
     //consume fast case
     if (LIKELY(isInt32()))
@@ -382,23 +382,23 @@ inline uint32_t ESValue::toUint32() const
     return int32bit;
 }
 
-inline bool ESValue::isObject() const
+ALWAYS_INLINE bool ESValue::isObject() const
 {
     return isESPointer() && asESPointer()->isESObject();
 }
 
-inline double ESValue::toLength() const
+ALWAYS_INLINE double ESValue::toLength() const
 {
     return toInteger(); // TODO
 }
 
-inline bool ESValue::isPrimitive() const
+ALWAYS_INLINE bool ESValue::isPrimitive() const
 {
     //return isUndefined() || isNull() || isNumber() || isESString() || isBoolean();
     return !isESPointer() || asESPointer()->isESString();
 }
 
-inline size_t ESValue::toIndex() const
+ALWAYS_INLINE size_t ESValue::toIndex() const
 {
     size_t idx = SIZE_MAX;
     int32_t i;
@@ -410,12 +410,12 @@ inline size_t ESValue::toIndex() const
     }
 }
 
-inline double ESValue::toRawDouble(ESValue value)
+ALWAYS_INLINE double ESValue::toRawDouble(ESValue value)
 {
     return bitwise_cast<double>(value.u.asInt64);
 }
 
-inline ESValue ESValue::fromRawDouble(double value)
+ALWAYS_INLINE ESValue ESValue::fromRawDouble(double value)
 {
     ESValue val;
     val.u.asInt64 = bitwise_cast<uint64_t>(value);
@@ -681,61 +681,61 @@ ALWAYS_INLINE JSCell* ESValue::asESPointer() const
 
 #else
 
-inline ESValue::ESValue()
+ALWAYS_INLINE ESValue::ESValue()
 {
     //u.asInt64 = ValueEmpty;
     u.asInt64 = ValueUndefined;
 }
 
-inline ESValue::ESValue(ESForceUninitializedTag)
+ALWAYS_INLINE ESValue::ESValue(ESForceUninitializedTag)
 {
 }
 
-inline ESValue::ESValue(ESNullTag)
+ALWAYS_INLINE ESValue::ESValue(ESNullTag)
 {
     u.asInt64 = ValueNull;
 }
 
-inline ESValue::ESValue(ESUndefinedTag)
+ALWAYS_INLINE ESValue::ESValue(ESUndefinedTag)
 {
     u.asInt64 = ValueUndefined;
 }
 
-inline ESValue::ESValue(ESEmptyValueTag)
+ALWAYS_INLINE ESValue::ESValue(ESEmptyValueTag)
 {
     u.asInt64 = ValueEmpty;
 }
 
-inline ESValue::ESValue(ESTrueTag)
+ALWAYS_INLINE ESValue::ESValue(ESTrueTag)
 {
     u.asInt64 = ValueTrue;
 }
 
-inline ESValue::ESValue(ESFalseTag)
+ALWAYS_INLINE ESValue::ESValue(ESFalseTag)
 {
     u.asInt64 = ValueFalse;
 }
 
-inline ESValue::ESValue(bool b)
+ALWAYS_INLINE ESValue::ESValue(bool b)
 {
     u.asInt64 = (TagBitTypeOther | TagBitBool | b);
 }
 
-inline ESValue::ESValue(ESPointer* ptr)
+ALWAYS_INLINE ESValue::ESValue(ESPointer* ptr)
 {
     u.ptr = ptr;
 }
 
-inline ESValue::ESValue(const ESPointer* ptr)
+ALWAYS_INLINE ESValue::ESValue(const ESPointer* ptr)
 {
     u.ptr = const_cast<ESPointer*>(ptr);
 }
 
-inline int64_t reinterpretDoubleToInt64(double value)
+ALWAYS_INLINE int64_t reinterpretDoubleToInt64(double value)
 {
     return bitwise_cast<int64_t>(value);
 }
-inline double reinterpretInt64ToDouble(int64_t value)
+ALWAYS_INLINE double reinterpretInt64ToDouble(int64_t value)
 {
     return bitwise_cast<double>(value);
 }
@@ -745,17 +745,17 @@ ALWAYS_INLINE ESValue::ESValue(EncodeAsDoubleTag, double d)
     u.asInt64 = reinterpretDoubleToInt64(d) + DoubleEncodeOffset;
 }
 
-inline ESValue::ESValue(int i)
+ALWAYS_INLINE ESValue::ESValue(int i)
 {
     u.asInt64 = TagTypeNumber | static_cast<uint32_t>(i);
 }
 
-inline bool ESValue::operator==(const ESValue& other) const
+ALWAYS_INLINE bool ESValue::operator==(const ESValue& other) const
 {
     return u.asInt64 == other.u.asInt64;
 }
 
-inline bool ESValue::operator!=(const ESValue& other) const
+ALWAYS_INLINE bool ESValue::operator!=(const ESValue& other) const
 {
     return u.asInt64 != other.u.asInt64;
 }
@@ -900,24 +900,7 @@ ALWAYS_INLINE ESHiddenClass* ESHiddenClass::removeProperty(size_t idx)
 
         return ret;
     } else {
-        m_propertyInfo.erase(m_propertyInfo.begin() + idx);
-
-        auto iter = m_propertyIndexHashMapInfo.begin();
-        auto deleteIdx = m_propertyIndexHashMapInfo.end();
-
-        //TODO update m_flags.m_has~~series
-        while(iter != m_propertyIndexHashMapInfo.end()) {
-            if(iter->second == idx) {
-                deleteIdx = iter;
-            } else if(iter->second > idx) {
-                iter->second = iter->second - 1;
-            }
-            iter ++;
-        }
-        ASSERT(deleteIdx != m_propertyIndexHashMapInfo.end());
-        m_propertyIndexHashMapInfo.erase(deleteIdx);
-
-        if(m_propertyInfo.size() < ESHiddenClassVectorModeSizeLimit / 2) {
+        if(!m_flags.m_forceNonVectorMode && m_propertyInfo.size() < ESHiddenClassVectorModeSizeLimit / 2) {
             //convert into vector mode
             ESHiddenClass* ret = ESVMInstance::currentInstance()->initialHiddenClassForObject();
             for(unsigned i = 1 ; i < m_propertyInfo.size() ; i ++) {
@@ -929,8 +912,48 @@ ALWAYS_INLINE ESHiddenClass* ESHiddenClass::removeProperty(size_t idx)
             }
             return ret;
         }
-        return this;
+        ESHiddenClass* cls = new ESHiddenClass;
+        cls->m_flags.m_forceNonVectorMode = m_flags.m_forceNonVectorMode;
+        cls->m_flags.m_isVectorMode = false;
+        for(unsigned i = 0 ; i < m_propertyInfo.size() ; i ++) {
+            cls->m_propertyInfo.push_back(m_propertyInfo[i]);
+            if(i < idx) {
+                cls->m_propertyIndexHashMapInfo.insert(std::make_pair(m_propertyInfo[i].m_name, i));
+            } else if(i > idx) {
+                cls->m_propertyIndexHashMapInfo.insert(std::make_pair(m_propertyInfo[i].m_name, i - 1));
+            }
+            cls->m_flags.m_hasReadOnlyProperty = m_flags.m_hasReadOnlyProperty | (!m_propertyInfo[i].m_flags.m_isWritable);
+            cls->m_flags.m_hasIndexedProperty = m_flags.m_hasIndexedProperty | m_propertyInfo[i].m_name->hasOnlyDigit();
+            cls->m_flags.m_hasIndexedReadOnlyProperty = m_flags.m_hasIndexedReadOnlyProperty | (!m_propertyInfo[i].m_flags.m_isWritable && m_propertyInfo[i].m_name->hasOnlyDigit());
+        }
+
+        //TODO
+        //delete this;
+        return cls;
     }
+}
+ALWAYS_INLINE ESHiddenClass* ESHiddenClass::morphToNonVectorMode()
+{
+    ESHiddenClass* cls = new ESHiddenClass;
+    cls->m_flags.m_isVectorMode = false;
+    for(unsigned i = 0 ; i < m_propertyInfo.size() ; i ++) {
+        cls->m_propertyIndexHashMapInfo.insert(std::make_pair(m_propertyInfo[i].m_name, i));
+    }
+    cls->m_propertyInfo.assign(m_propertyInfo.begin(), m_propertyInfo.end());
+
+    ASSERT(cls->m_propertyIndexHashMapInfo.size() == cls->m_propertyInfo.size());
+    cls->m_flags.m_hasReadOnlyProperty = m_flags.m_hasReadOnlyProperty;
+    cls->m_flags.m_hasIndexedProperty = m_flags.m_hasIndexedProperty;
+    cls->m_flags.m_hasIndexedReadOnlyProperty = m_flags.m_hasIndexedReadOnlyProperty;
+
+    return cls;
+}
+
+ALWAYS_INLINE ESHiddenClass* ESHiddenClass::forceNonVectorMode()
+{
+    ESHiddenClass* cls = morphToNonVectorMode();
+    cls->m_flags.m_forceNonVectorMode = true;
+    return cls;
 }
 
 ALWAYS_INLINE ESHiddenClass* ESHiddenClass::defineProperty(ESString* name, bool isData, bool isWritable, bool isEnumerable, bool isConfigurable)

@@ -88,9 +88,6 @@ class Node;
     F(SetObjectSlowMode) \
     F(SetObjectPreComputedCase) \
     F(SetObjectPreComputedCaseSlowMode) \
-    F(EnumerateObject) \
-    F(EnumerateObjectKey) \
-    F(EnumerateObjectEnd) \
 \
     /*function*/\
     F(CreateFunction) \
@@ -123,6 +120,9 @@ class Node;
 \
     /*etc*/ \
     F(This) \
+    F(EnumerateObject) \
+    F(EnumerateObjectKey) \
+    F(EnumerateObjectEnd) \
     F(PrintSpAndBp) \
 \
     F(End)
@@ -1606,56 +1606,6 @@ struct EnumerateObjectData : public gc {
     std::vector<ESValue, gc_allocator<ESValue> > m_keys;
 };
 
-class EnumerateObject : public ByteCode {
-public:
-    EnumerateObject()
-        : ByteCode(EnumerateObjectOpcode)
-    {
-    }
-
-#ifndef NDEBUG
-    virtual void dump()
-    {
-        printf("EnumerateObject <>\n");
-    }
-#endif
-
-};
-
-class EnumerateObjectKey : public ByteCode {
-public:
-    EnumerateObjectKey()
-        : ByteCode(EnumerateObjectKeyOpcode)
-    {
-    }
-
-#ifndef NDEBUG
-    virtual void dump()
-    {
-        printf("EnumerateObjectKey <>\n");
-    }
-#endif
-    size_t m_forInEnd;
-
-};
-
-class EnumerateObjectEnd : public ByteCode {
-public:
-    EnumerateObjectEnd()
-        : ByteCode(EnumerateObjectEndOpcode)
-    {
-    }
-
-#ifndef NDEBUG
-    virtual void dump()
-    {
-        printf("EnumerateObjectEnd <>\n");
-    }
-#endif
-
-
-};
-
 class CreateFunction : public ByteCode {
 public:
     CreateFunction(InternalAtomicString name, ESString* nonAtomicName, CodeBlock* codeBlock, bool isDecl)
@@ -1957,6 +1907,56 @@ public:
         printf("This <>\n");
     }
 #endif
+};
+
+class EnumerateObject : public ByteCode {
+public:
+    EnumerateObject()
+        : ByteCode(EnumerateObjectOpcode)
+    {
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("EnumerateObject <>\n");
+    }
+#endif
+
+};
+
+class EnumerateObjectKey : public ByteCode {
+public:
+    EnumerateObjectKey()
+        : ByteCode(EnumerateObjectKeyOpcode)
+    {
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("EnumerateObjectKey <>\n");
+    }
+#endif
+    size_t m_forInEnd;
+
+};
+
+class EnumerateObjectEnd : public ByteCode {
+public:
+    EnumerateObjectEnd()
+        : ByteCode(EnumerateObjectEndOpcode)
+    {
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("EnumerateObjectEnd <>\n");
+    }
+#endif
+
+
 };
 
 class Throw : public ByteCode {
