@@ -1,6 +1,6 @@
 #include "Escargot.h"
 #include "bytecode/ByteCode.h"
-#include "Operations.h"
+#include "ByteCodeOperations.h"
 
 namespace escargot {
 
@@ -47,98 +47,6 @@ NEVER_INLINE ESValue modOperation(const ESValue& left, const ESValue& right)
 
     return ret;
 }
-
-NEVER_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESString* keyString, const ESValue& value
-        , ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex, ESHiddenClass** hiddenClassWillBe)
-{
-    ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedReadOnlyOrAccessorProperty());
-
-    if(LIKELY(willBeObject->isESPointer())) {
-        if(LIKELY(willBeObject->asESPointer()->isESObject())) {
-            ESObject* obj = willBeObject->asESPointer()->asESObject();
-            if(*cachedHiddenClassIndex != SIZE_MAX && (*cachedHiddenClassChain)[0] == obj->hiddenClass()) {
-                ASSERT((*cachedHiddenClassChain).size() == 1);
-                if(!obj->hiddenClass()->write(obj, obj, keyString, value))
-                    throw ESValue(TypeError::create());
-                return ;
-            } else if(*hiddenClassWillBe) {
-                size_t cSiz = cachedHiddenClassChain->size();
-                bool miss = false;
-                for(int i = 0; i < cSiz - 1; i ++) {
-                    if((*cachedHiddenClassChain)[i] != obj->hiddenClass()) {
-                        miss = true;
-                        break;
-                    } else {
-                        ESValue o = obj->__proto__();
-                        if(!o.isObject()) {
-                            miss = true;
-                            break;
-                        }
-                        obj = o.asESPointer()->asESObject();
-                    }
-                }
-                if(!miss) {
-                    if((*cachedHiddenClassChain)[cSiz - 1] == obj->hiddenClass()) {
-                        //cache hit!
-                        obj = willBeObject->asESPointer()->asESObject();
-                        obj->m_hiddenClassData.push_back(value);
-                        obj->m_hiddenClass = *hiddenClassWillBe;
-                        return ;
-                    }
-                }
-            }
-
-            //cache miss
-            *cachedHiddenClassIndex = SIZE_MAX;
-            *hiddenClassWillBe = NULL;
-            cachedHiddenClassChain->clear();
-
-            obj = willBeObject->asESPointer()->asESObject();
-            size_t idx = obj->hiddenClass()->findProperty(keyString);
-            if(idx != SIZE_MAX) {
-                //own property
-                *cachedHiddenClassIndex = idx;
-                cachedHiddenClassChain->push_back(obj->hiddenClass());
-
-                if(!obj->hiddenClass()->write(obj, obj, idx, value))
-                    throw ESValue(TypeError::create());
-            } else {
-                cachedHiddenClassChain->push_back(obj->hiddenClass());
-                ESValue proto = obj->__proto__();
-                while(proto.isObject()) {
-                    obj = proto.asESPointer()->asESObject();
-                    cachedHiddenClassChain->push_back(obj->hiddenClass());
-
-                    if(obj->hiddenClass()->hasReadOnlyProperty()) {
-                        size_t idx = obj->hiddenClass()->findProperty(keyString);
-                        if(idx != SIZE_MAX) {
-                            if(!obj->hiddenClass()->propertyInfo(idx).m_flags.m_isWritable) {
-                                *cachedHiddenClassIndex = SIZE_MAX;
-                                *hiddenClassWillBe = NULL;
-                                cachedHiddenClassChain->clear();
-                                throw ESValue(TypeError::create());
-                            }
-                        }
-                    }
-                    proto = obj->__proto__();
-                }
-
-                ASSERT(!willBeObject->asESPointer()->asESObject()->hasOwnProperty(keyString));
-                ESHiddenClass* before = willBeObject->asESPointer()->asESObject()->hiddenClass();
-                willBeObject->asESPointer()->asESObject()->defineDataProperty(keyString, true, true, true, value);
-
-                //only cache vector mode object.
-                if(willBeObject->asESPointer()->asESObject()->hiddenClass() != before)
-                    *hiddenClassWillBe = willBeObject->asESPointer()->asESObject()->hiddenClass();
-            }
-        } else {
-            willBeObject->toObject()->set(keyString, value, true);
-        }
-    } else {
-        willBeObject->toObject()->set(keyString, value, true);
-    }
-}
-
 
 NEVER_INLINE ESValue getObjectPreComputedCaseOperationWithNeverInline(ESValue* willBeObject, ESString* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject
         ,ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex)
@@ -325,6 +233,72 @@ NEVER_INLINE bool inOperation(ESValue* obj, ESValue* key)
     }
 
     return result;
+}
+
+NEVER_INLINE void tryOperation(ESVMInstance* instance, CodeBlock* codeBlock, char* codeBuffer, ExecutionContext* ec, size_t programCounter, Try* code)
+{
+    LexicalEnvironment* oldEnv = ec->environment();
+    ExecutionContext* backupedEC = ec;
+    try {
+        ESValue ret = interpret(instance, codeBlock, resolveProgramCounter(codeBuffer, programCounter + sizeof(Try)));
+        if(!ret.isEmpty()) {
+            ec->tryOrCatchBodyResult() = ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsReturn, ret, ESValue((int32_t)code->m_tryDupCount));
+        }
+    } catch(const ESValue& err) {
+        instance->invalidateIdentifierCacheCheckCount();
+        instance->m_currentExecutionContext = backupedEC;
+        LexicalEnvironment* catchEnv = new LexicalEnvironment(new DeclarativeEnvironmentRecord(), oldEnv);
+        instance->currentExecutionContext()->setEnvironment(catchEnv);
+        instance->currentExecutionContext()->environment()->record()->createMutableBinding(code->m_name,
+                code->m_nonAtomicName);
+        instance->currentExecutionContext()->environment()->record()->setMutableBinding(code->m_name,
+                code->m_nonAtomicName
+                , err, false);
+        try{
+            ESValue ret = interpret(instance, codeBlock, code->m_catchPosition);
+            instance->currentExecutionContext()->setEnvironment(oldEnv);
+            if(ret.isEmpty()) {
+                if(!ec->tryOrCatchBodyResult().isEmpty() && ec->tryOrCatchBodyResult().isESPointer() && ec->tryOrCatchBodyResult().asESPointer()->isESControlFlowRecord()) {
+                    ESControlFlowRecord* record = ec->tryOrCatchBodyResult().asESPointer()->asESControlFlowRecord();
+                    if(record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsThrow) {
+                        ec->tryOrCatchBodyResult() = ESValue(ESValue::ESEmptyValue);
+                    }
+                }
+            } else {
+                ec->tryOrCatchBodyResult() = ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsReturn, ret, ESValue((int32_t)code->m_tryDupCount));
+            }
+        } catch(ESValue e) {
+            instance->currentExecutionContext()->setEnvironment(oldEnv);
+            ec->tryOrCatchBodyResult() = ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsThrow, e, ESValue((int32_t)code->m_tryDupCount - 1));
+        }
+    }
+}
+
+NEVER_INLINE EnumerateObjectData* executeEnumerateObject(ESObject* obj)
+{
+    EnumerateObjectData* data = new EnumerateObjectData();
+    data->m_object = obj;
+    data->m_keys.reserve(obj->keyCount());
+    ESObject* target = obj;
+    std::unordered_set<ESString*, std::hash<ESString*>, std::equal_to<ESString*>, gc_allocator<ESString *> > keyStringSet;
+    target->enumeration([&data, &keyStringSet](ESValue key) {
+        data->m_keys.push_back(key);
+        keyStringSet.insert(key.toString());
+    });
+    ESValue proto = target->__proto__();
+    while(proto.isESPointer() && proto.asESPointer()->isESObject()) {
+        target = proto.asESPointer()->asESObject();
+        target->enumeration([&data, &keyStringSet](ESValue key) {
+            ESString* str = key.toString();
+            if(keyStringSet.find(str) != keyStringSet.end()) {
+                data->m_keys.push_back(key);
+                keyStringSet.insert(str);
+            }
+        });
+        proto = target->__proto__();
+    }
+
+    return data;
 }
 
 }

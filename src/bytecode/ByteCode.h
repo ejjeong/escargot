@@ -15,7 +15,6 @@ class Node;
 
 #define ESCARGOT_INTERPRET_STACK_SIZE 4096
 #define FOR_EACH_BYTECODE_OP(F) \
-    F(NoOp0) \
     F(Push) \
     F(PopExpressionStatement) \
     F(Pop) \
@@ -355,22 +354,6 @@ public:
 #ifdef NDEBUG
 ASSERT_STATIC(sizeof(ByteCode) == sizeof(size_t), "sizeof(ByteCode) should be == sizeof(size_t)");
 #endif
-
-class NoOp0 : public ByteCode {
-public:
-    NoOp0()
-        : ByteCode(NoOp0Opcode)
-    {
-    }
-#ifndef NDEBUG
-    virtual void dump()
-    {
-        printf("NoOp0 <>\n");
-    }
-#endif
-};
-
-ASSERT_STATIC(sizeof(NoOp0) == sizeof(ByteCode), "sizeof(NoOp0) should be == sizeof(ByteCode)");
 
 class Push : public ByteCode {
 public:

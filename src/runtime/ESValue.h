@@ -1119,7 +1119,7 @@ public:
 class ESObject : public ESPointer {
     friend class ESSlot;
     friend class ESHiddenClass;
-    friend NEVER_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ::escargot::ESString* keyString, const ESValue& value
+    friend ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ::escargot::ESString* keyString, const ESValue& value
             , ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex, ESHiddenClass** hiddenClassWillBe);
 protected:
     ESObject(ESPointer::Type type, ESValue __proto__, size_t initialKeyCount = 6);
@@ -1172,7 +1172,7 @@ public:
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
     ALWAYS_INLINE bool set(const escargot::ESValue& key, const ESValue& val);
-    bool set(escargot::ESString* key, const ESValue& val)
+    ALWAYS_INLINE bool set(escargot::ESString* key, const ESValue& val)
     {
         return set(ESValue(key), val);
     }

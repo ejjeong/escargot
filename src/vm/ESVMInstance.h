@@ -15,6 +15,7 @@ class GlobalObject;
 class ESVMInstance;
 class CodeBlock;
 class OpcodeTable;
+class Try;
 
 extern __thread ESVMInstance* currentInstance;
 
@@ -24,6 +25,7 @@ typedef std::unordered_map<u16string, InternalAtomicStringData *,
 
 class ESVMInstance : public gc_cleanup {
     friend ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter);
+    friend NEVER_INLINE void tryOperation(ESVMInstance* instance, CodeBlock* codeBlock, char* codeBuffer, ExecutionContext* ec, size_t programCounter, Try* code);
     friend class ESFunctionObject;
     friend class ExpressionStatementNode;
     friend class TryStatementNode;
