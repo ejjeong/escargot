@@ -808,6 +808,15 @@ private:
         : UnaryExpressionIR(ESIR::Opcode::Increment, targetIndex, sourceIndex) { }
 };
 
+class UnaryMinusIR : public UnaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_1(UnaryMinus, int);
+
+private:
+    UnaryMinusIR(int targetIndex, int sourceIndex)
+        : UnaryExpressionIR(ESIR::Opcode::UnaryMinus, targetIndex, sourceIndex) { }
+};
+
 class ReturnWithValueIR : public ESIR {
 public:
     DECLARE_STATIC_GENERATOR_1(ReturnWithValue, int)

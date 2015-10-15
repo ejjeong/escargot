@@ -332,9 +332,13 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(LogicalNot);
             break;
         case UnaryMinusOpcode:
-            goto unsupported;
+        {
+            INIT_BYTECODE(UnaryMinus);
+            ESIR* UnaryMinusIR = UnaryMinusIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1);
+            currentBlock->push(UnaryMinusIR);
             NEXT_BYTECODE(UnaryMinus);
             break;
+        }
         case UnaryPlusOpcode:
             goto unsupported;
             NEXT_BYTECODE(UnaryPlus);

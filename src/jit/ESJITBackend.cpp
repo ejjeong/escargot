@@ -763,6 +763,18 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         } else
             RELEASE_ASSERT_NOT_REACHED();
     }
+    case ESIR::Opcode::UnaryMinus:
+        {
+            INIT_ESIR(UnaryMinus);
+            LIns* source = getTmpMapping(irUnaryMinus->sourceIndex());
+            Type srcType = m_graph->getOperandType(irUnaryMinus->sourceIndex());
+            if (srcType.isInt32Type()) {
+                return m_out.ins1(LIR_negi, source);
+            } else if (srcType.isDoubleType()) {
+                return m_out.ins1(LIR_negd, source);
+            } else
+                RELEASE_ASSERT_NOT_REACHED();
+        }
     default:
     {
         return nullptr;

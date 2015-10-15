@@ -188,6 +188,18 @@ void ESGraphTypeInference::run(ESGraph* graph)
                     RELEASE_ASSERT_NOT_REACHED();
                 break;
             }
+            case ESIR::Opcode::UnaryMinus:
+            {
+                INIT_ESIR(UnaryMinus);
+                Type srcType = graph->getOperandType(irUnaryMinus->sourceIndex());
+                if (srcType.isInt32Type())
+                    graph->setOperandType(ir->targetIndex(), TypeInt32);
+                else if (srcType.isDoubleType())
+                    graph->setOperandType(ir->targetIndex(), TypeDouble);
+                else
+                    RELEASE_ASSERT_NOT_REACHED();
+                break;
+            }
             case ESIR::Opcode::PutInObject:
             {
                 PutInObjectIR* irPutInObject = static_cast<PutInObjectIR*>(ir);
