@@ -140,7 +140,7 @@ public:
     bool isNumber() const;
     bool isESString() const;
     bool isSymbol() const;
-    bool isPrimitive() const;
+    ALWAYS_INLINE bool isPrimitive() const;
     bool isGetterSetter() const;
     bool isCustomGetterSetter() const;
     bool isObject() const;
@@ -1119,7 +1119,7 @@ public:
 class ESObject : public ESPointer {
     friend class ESSlot;
     friend class ESHiddenClass;
-    friend NEVER_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ::escargot::ESString* keyString, const ESValue& value
+    friend ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ::escargot::ESString* keyString, const ESValue& value
             , ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex, ESHiddenClass** hiddenClassWillBe);
 protected:
     ESObject(ESPointer::Type type, ESValue __proto__, size_t initialKeyCount = 6);

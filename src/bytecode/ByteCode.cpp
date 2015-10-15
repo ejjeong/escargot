@@ -769,7 +769,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         stack = (void *)(((size_t)stack) + sizeof(size_t) * 1);
 #endif
 
-        push<ESValue>(stack, bp, getObjectPreComputedCaseOperation(willBeObject, code->m_propertyValue, &lastESObjectMetInMemberExpressionNode, globalObject,
+        push<ESValue>(stack, bp, getObjectPreComputedCaseOperationWithNeverInline(willBeObject, code->m_propertyValue, &lastESObjectMetInMemberExpressionNode, globalObject,
                         &code->m_cachedhiddenClassChain, &code->m_cachedIndex));
         executeNextCode<GetObjectWithPeekingPreComputedCase>(programCounter);
         goto NextInstruction;

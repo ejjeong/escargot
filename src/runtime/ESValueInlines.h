@@ -397,7 +397,7 @@ inline double ESValue::toLength() const
     return toInteger(); // TODO
 }
 
-inline bool ESValue::isPrimitive() const
+ALWAYS_INLINE bool ESValue::isPrimitive() const
 {
     //return isUndefined() || isNull() || isNumber() || isESString() || isBoolean();
     return !isESPointer() || asESPointer()->isESString();
