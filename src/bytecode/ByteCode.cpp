@@ -548,19 +548,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* obj = pop<ESValue>(stack, bp);
         ESValue* key = pop<ESValue>(stack, bp);
 
-        bool result = false;
-        ESValue target = obj->toObject();
-        while(true) {
-            if(!target.isObject()) {
-                break;
-            }
-            result = target.asESPointer()->asESObject()->hasOwnProperty(*key);
-            if(result)
-                break;
-            target = target.asESPointer()->asESObject()->__proto__();
-        }
-
-        push<ESValue>(stack, bp, ESValue(result));
+        push<ESValue>(stack, bp, ESValue(inOperation(obj, key)));
         executeNextCode<StringIn>(programCounter);
         goto NextInstruction;
     }

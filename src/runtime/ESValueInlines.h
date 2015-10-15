@@ -36,7 +36,7 @@ inline ToType bitwise_cast(FromType from)
     return u.to;
 }
 
-ALWAYS_INLINE ESValue::ESValue(double d)
+inline ESValue::ESValue(double d)
 {
     const int32_t asInt32 = static_cast<int32_t>(d);
     if (asInt32 != d || (!asInt32 && std::signbit(d))) { // true for -0.0
@@ -46,27 +46,27 @@ ALWAYS_INLINE ESValue::ESValue(double d)
     *this = ESValue(static_cast<int32_t>(d));
 }
 
-ALWAYS_INLINE ESValue::ESValue(char i)
+inline ESValue::ESValue(char i)
 {
     *this = ESValue(static_cast<int32_t>(i));
 }
 
-ALWAYS_INLINE ESValue::ESValue(unsigned char i)
+inline ESValue::ESValue(unsigned char i)
 {
     *this = ESValue(static_cast<int32_t>(i));
 }
 
-ALWAYS_INLINE ESValue::ESValue(short i)
+inline ESValue::ESValue(short i)
 {
     *this = ESValue(static_cast<int32_t>(i));
 }
 
-ALWAYS_INLINE ESValue::ESValue(unsigned short i)
+inline ESValue::ESValue(unsigned short i)
 {
     *this = ESValue(static_cast<int32_t>(i));
 }
 
-ALWAYS_INLINE ESValue::ESValue(unsigned i)
+inline ESValue::ESValue(unsigned i)
 {
     if (static_cast<int32_t>(i) < 0) {
         *this = ESValue(EncodeAsDouble, static_cast<double>(i));
@@ -75,7 +75,7 @@ ALWAYS_INLINE ESValue::ESValue(unsigned i)
     *this = ESValue(static_cast<int32_t>(i));
 }
 
-ALWAYS_INLINE ESValue::ESValue(long i)
+inline ESValue::ESValue(long i)
 {
     if (static_cast<int32_t>(i) != i) {
         *this = ESValue(EncodeAsDouble, static_cast<double>(i));
@@ -84,7 +84,7 @@ ALWAYS_INLINE ESValue::ESValue(long i)
     *this = ESValue(static_cast<int32_t>(i));
 }
 
-ALWAYS_INLINE ESValue::ESValue(unsigned long i)
+inline ESValue::ESValue(unsigned long i)
 {
     if (static_cast<uint32_t>(i) != i) {
         *this = ESValue(EncodeAsDouble, static_cast<double>(i));
@@ -93,7 +93,7 @@ ALWAYS_INLINE ESValue::ESValue(unsigned long i)
     *this = ESValue(static_cast<uint32_t>(i));
 }
 
-ALWAYS_INLINE ESValue::ESValue(long long i)
+inline ESValue::ESValue(long long i)
 {
     if (static_cast<int32_t>(i) != i) {
         *this = ESValue(EncodeAsDouble, static_cast<double>(i));
@@ -102,7 +102,7 @@ ALWAYS_INLINE ESValue::ESValue(long long i)
     *this = ESValue(static_cast<int32_t>(i));
 }
 
-ALWAYS_INLINE ESValue::ESValue(unsigned long long i)
+inline ESValue::ESValue(unsigned long long i)
 {
     if (static_cast<uint32_t>(i) != i) {
         *this = ESValue(EncodeAsDouble, static_cast<double>(i));
@@ -111,13 +111,13 @@ ALWAYS_INLINE ESValue::ESValue(unsigned long long i)
     *this = ESValue(static_cast<uint32_t>(i));
 }
 
-ALWAYS_INLINE double ESValue::asNumber() const
+inline double ESValue::asNumber() const
 {
     ASSERT(isNumber());
     return isInt32() ? asInt32() : asDouble();
 }
 
-ALWAYS_INLINE uint64_t ESValue::asRawData() const
+inline uint64_t ESValue::asRawData() const
 {
     return u.asInt64;
 }
@@ -161,7 +161,7 @@ inline ESString* ESValue::toString() const
     }
 }
 
-ALWAYS_INLINE ESObject* ESValue::toObject() const
+inline ESObject* ESValue::toObject() const
 {
     ESFunctionObject* function;
     ESObject* object;
@@ -183,7 +183,7 @@ ALWAYS_INLINE ESObject* ESValue::toObject() const
     return object;
 }
 
-ALWAYS_INLINE ESValue ESValue::toPrimitive(PrimitiveTypeHint preferredType) const
+inline ESValue ESValue::toPrimitive(PrimitiveTypeHint preferredType) const
 {
     if (UNLIKELY(!isPrimitive())) {
         ESObject* obj = asESPointer()->asESObject();
@@ -289,7 +289,7 @@ inline double ESValue::toNumber() const
     RELEASE_ASSERT_NOT_REACHED();
 }
 
-ALWAYS_INLINE bool ESValue::toBoolean() const
+inline bool ESValue::toBoolean() const
 {
     if (*this == ESValue(true))
         return true;
@@ -319,7 +319,7 @@ ALWAYS_INLINE bool ESValue::toBoolean() const
 }
 
 // http://www.ecma-international.org/ecma-262/5.1/#sec-9.4
-ALWAYS_INLINE double ESValue::toInteger() const
+inline double ESValue::toInteger() const
 {
     if (isInt32())
         return asInt32();
@@ -331,7 +331,7 @@ ALWAYS_INLINE double ESValue::toInteger() const
 }
 
 // http://www.ecma-international.org/ecma-262/5.1/#sec-9.5
-ALWAYS_INLINE int32_t ESValue::toInt32() const
+inline int32_t ESValue::toInt32() const
 {
     //consume fast case
     if (LIKELY(isInt32()))
@@ -359,7 +359,7 @@ ALWAYS_INLINE int32_t ESValue::toInt32() const
     return res;
 }
 
-ALWAYS_INLINE uint32_t ESValue::toUint32() const
+inline uint32_t ESValue::toUint32() const
 {
     //consume fast case
     if (LIKELY(isInt32()))
@@ -382,23 +382,23 @@ ALWAYS_INLINE uint32_t ESValue::toUint32() const
     return int32bit;
 }
 
-ALWAYS_INLINE bool ESValue::isObject() const
+inline bool ESValue::isObject() const
 {
     return isESPointer() && asESPointer()->isESObject();
 }
 
-ALWAYS_INLINE double ESValue::toLength() const
+inline double ESValue::toLength() const
 {
     return toInteger(); // TODO
 }
 
-ALWAYS_INLINE bool ESValue::isPrimitive() const
+inline bool ESValue::isPrimitive() const
 {
     //return isUndefined() || isNull() || isNumber() || isESString() || isBoolean();
     return !isESPointer() || asESPointer()->isESString();
 }
 
-ALWAYS_INLINE size_t ESValue::toIndex() const
+inline size_t ESValue::toIndex() const
 {
     int32_t i;
     if(LIKELY(isInt32()) && LIKELY((i = asInt32()) >= 0)) {
@@ -409,7 +409,7 @@ ALWAYS_INLINE size_t ESValue::toIndex() const
     }
 }
 
-ALWAYS_INLINE double ESValue::toRawDouble(ESValue value)
+inline double ESValue::toRawDouble(ESValue value)
 {
     return bitwise_cast<double>(value.u.asInt64);
 }

@@ -146,16 +146,16 @@ public:
     bool isObject() const;
 
     enum PrimitiveTypeHint { PreferString, PreferNumber };
-    ALWAYS_INLINE ESValue toPrimitive(PrimitiveTypeHint = PreferNumber) const; //$7.1.1 ToPrimitive
-    ALWAYS_INLINE bool toBoolean() const; //$7.1.2 ToBoolean
+    inline ESValue toPrimitive(PrimitiveTypeHint = PreferNumber) const; //$7.1.1 ToPrimitive
+    inline bool toBoolean() const; //$7.1.2 ToBoolean
     inline double toNumber() const; //$7.1.3 ToNumber
-    ALWAYS_INLINE double toInteger() const; //$7.1.4 ToInteger
-    ALWAYS_INLINE int32_t toInt32() const; //$7.1.5 ToInt32
-    ALWAYS_INLINE uint32_t toUint32() const; //http://www.ecma-international.org/ecma-262/5.1/#sec-9.6
+    inline double toInteger() const; //$7.1.4 ToInteger
+    inline int32_t toInt32() const; //$7.1.5 ToInt32
+    inline uint32_t toUint32() const; //http://www.ecma-international.org/ecma-262/5.1/#sec-9.6
     inline ESString* toString() const; //$7.1.12 ToString
-    ALWAYS_INLINE ESObject* toObject() const; //$7.1.13 ToObject
-    ALWAYS_INLINE double toLength() const; //$7.1.15 ToLength
-    ALWAYS_INLINE size_t toIndex() const;
+    inline ESObject* toObject() const; //$7.1.13 ToObject
+    inline double toLength() const; //$7.1.15 ToLength
+    inline size_t toIndex() const;
 
     ALWAYS_INLINE ESString* asESString() const;
 

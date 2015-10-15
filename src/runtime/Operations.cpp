@@ -3,73 +3,6 @@
 
 namespace escargot {
 
-NEVER_INLINE ESValue plusOperation(const ESValue& left, const ESValue& right)
-{
-    // http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.1
-
-    ESValue ret(ESValue::ESForceUninitialized);
-    if(left.isInt32() && right.isInt32()) {
-        int64_t a = left.asInt32();
-        int64_t b = right.asInt32();
-        a = a + b;
-
-        if(a > std::numeric_limits<int32_t>::max() || a < std::numeric_limits<int32_t>::min()) {
-            ret = ESValue(ESValue::EncodeAsDouble, a);
-        } else {
-            ret = ESValue((int32_t)a);
-        }
-        return ret;
-    }
-
-    ESValue lval(ESValue::ESForceUninitialized);
-    ESValue rval(ESValue::ESForceUninitialized);
-
-    //http://www.ecma-international.org/ecma-262/5.1/#sec-8.12.8
-    //No hint is provided in the calls to ToPrimitive in steps 5 and 6.
-    //All native ECMAScript objects except Date objects handle the absence of a hint as if the hint Number were given;
-    //Date objects handle the absence of a hint as if the hint String were given.
-    //Host objects may handle the absence of a hint in some other manner.
-    if(left.isESPointer() && left.asESPointer()->isESDateObject()) {
-        lval = left.toPrimitive(ESValue::PreferString);
-    } else {
-        lval = left.toPrimitive();
-    }
-
-    if(right.isESPointer() && right.asESPointer()->isESDateObject()) {
-        rval = right.toPrimitive(ESValue::PreferString);
-    } else {
-        rval = right.toPrimitive();
-    }
-    if (lval.isESString() || rval.isESString()) {
-        ret = ESString::concatTwoStrings(lval.toString(), rval.toString());
-    } else {
-        ret = ESValue(lval.toNumber() + rval.toNumber());
-    }
-
-    return ret;
-}
-
-
-NEVER_INLINE ESValue minusOperation(const ESValue& left, const ESValue& right)
-{
-    // http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.2
-    ESValue ret(ESValue::ESForceUninitialized);
-    if (left.isInt32() && right.isInt32()) {
-        int64_t a = left.asInt32();
-        int64_t b = right.asInt32();
-        a = a - b;
-
-        if(a > std::numeric_limits<int32_t>::max() || a < std::numeric_limits<int32_t>::min()) {
-            ret = ESValue(ESValue::EncodeAsDouble, a);
-        } else {
-            ret = ESValue((int32_t)a);
-        }
-    }
-    else
-        ret = ESValue(left.toNumber() - right.toNumber());
-    return ret;
-}
-
 NEVER_INLINE ESValue modOperation(const ESValue& left, const ESValue& right)
 {
     ESValue ret(ESValue::ESForceUninitialized);
@@ -109,6 +42,7 @@ NEVER_INLINE ESValue modOperation(const ESValue& left, const ESValue& right)
     return ret;
 }
 
+/*
 //http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5
 NEVER_INLINE ESValue abstractRelationalComparison(const ESValue& left, const ESValue& right, bool leftFirst)
 {
@@ -153,6 +87,7 @@ NEVER_INLINE ESValue abstractRelationalComparison(const ESValue& left, const ESV
         }
     }
 }
+*/
 
 //d = {}. d[0]
 NEVER_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject)
@@ -564,6 +499,23 @@ NEVER_INLINE ESValue newOperation(ESVMInstance* instance, GlobalObject* globalOb
         return res;
     else
         return receiver;
+}
+
+NEVER_INLINE bool inOperation(ESValue* obj, ESValue* key)
+{
+    bool result = false;
+    ESValue target = obj->toObject();
+    while(true) {
+        if(!target.isObject()) {
+            break;
+        }
+        result = target.asESPointer()->asESObject()->hasOwnProperty(*key);
+        if(result)
+            break;
+        target = target.asESPointer()->asESObject()->__proto__();
+    }
+
+    return result;
 }
 
 }
