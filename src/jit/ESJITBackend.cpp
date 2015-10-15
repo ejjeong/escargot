@@ -583,16 +583,23 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* bytecode = m_out.insImmP(irGetVarGeneric->originalGetByIdByteCode());
         LIns* cachedIdentifierCacheInvalidationCheckCount = m_out.insLoad(LIR_ldi, bytecode, offsetof(GetById, m_identifierCacheInvalidationCheckCount), 1, LOAD_NORMAL);
         LIns* instanceIdentifierCacheInvalidationCheckCount = m_out.insLoad(LIR_ldi, m_instance, ESVMInstance::offsetOfIdentifierCacheInvalidationCheckCount(), 1, LOAD_NORMAL);
+        LIns* cachedSlot = m_out.insLoad(LIR_ldp, bytecode, offsetof(GetById, m_cachedSlot), 1, LOAD_NORMAL);
+        LIns* phi = m_out.insAlloc(sizeof(ESValue));
         LIns* checkIfCacheHit = m_out.ins2(LIR_eqi, instanceIdentifierCacheInvalidationCheckCount, cachedIdentifierCacheInvalidationCheckCount);
         LIns* jumpIfCacheHit = m_out.insBranch(LIR_jt, checkIfCacheHit, nullptr);
 
         LIns* slowPath = m_out.ins0(LIR_label);
-#if 0
+#if 1
         LIns* name = m_out.insImmP(irGetVarGeneric->name());
         LIns* nonAtomicName = m_out.insImmP(irGetVarGeneric->nonAtomicName());
         LIns* args[] = {nonAtomicName, name, m_context};
         LIns* resolvedSlot = m_out.insCall(&contextResolveBindingCallInfo, args);
         LIns* resolvedResult = m_out.insLoad(LIR_ldd, resolvedSlot, 0, 1, LOAD_NORMAL);
+        m_out.insStore(LIR_std, resolvedResult, phi, 0 , 1);
+
+        LIns* cachingLookuped = m_out.insStore(LIR_std, resolvedResult, cachedSlot, 0, 1);
+        LIns* storeCheckCount = m_out.insStore(LIR_sti, instanceIdentifierCacheInvalidationCheckCount, bytecode, offsetof(GetById, m_identifierCacheInvalidationCheckCount), 1);
+        LIns* jumpToJoin = m_out.ins2(LIR_j, nullptr, nullptr);
 #else
         JIT_LOG(cachedIdentifierCacheInvalidationCheckCount, "GetVarGeneric Cache Miss");
         generateOSRExit(irGetVarGeneric->targetIndex());
@@ -600,14 +607,14 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 
         LIns* fastPath = m_out.ins0(LIR_label);
         jumpIfCacheHit->setTarget(fastPath);
-        LIns* cachedSlot = m_out.insLoad(LIR_ldp, bytecode, offsetof(GetById, m_cachedSlot), 1, LOAD_NORMAL);
         LIns* cachedResult = m_out.insLoad(LIR_ldd, cachedSlot, 0, 1, LOAD_NORMAL);
-#if 0
-        m_out.ins1(LIR_livei, checkIfCacheHit);
-        m_out.ins1(LIR_lived, resolvedResult);
-        LIns* phi = m_out.ins3(LIR_cmovd, checkIfCacheHit, resolvedResult, cachedResult);
-
-        return phi;
+        m_out.insStore(LIR_std, cachedResult, phi, 0 , 1);
+#if 1
+        LIns* pathJoin = m_out.ins0(LIR_label);
+        jumpToJoin->setTarget(pathJoin);
+//        LIns* ret = m_out.ins3(LIR_cmovd, checkIfCacheHit, cachedResult, resolvedResult);
+        LIns* ret = m_out.insLoad(LIR_ldd, phi, 0, 1, LOAD_NORMAL);
+        return ret;
 #else
         return cachedResult;
 #endif
