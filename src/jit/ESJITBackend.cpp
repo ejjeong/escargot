@@ -35,6 +35,7 @@ CallInfo contextResolveBindingCallInfo = CI(contextResolveBinding, CallInfo::typ
 CallInfo objectDefinePropertyOrThrowCallInfo = CI(objectDefinePropertyOrThrow, CallInfo::typeSig3(ARGTYPE_V, ARGTYPE_P, ARGTYPE_D, /*ARGTYPE_B, ARGTYPE_B, ARGTYPE_B,*/ ARGTYPE_D));
 CallInfo esFunctionObjectCallCallInfo = CI(esFunctionObjectCall, CallInfo::typeSig6(ARGTYPE_D, ARGTYPE_P, ARGTYPE_D, ARGTYPE_D, ARGTYPE_P, ARGTYPE_I, ARGTYPE_B));
 CallInfo ESObjectSetOpCallInfo = CI(ESObjectSetOp, CallInfo::typeSig3(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
+CallInfo resolveNonDataPropertyInfo = CI(resolveNonDataProperty, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_P, ARGTYPE_P));
 #ifndef NDEBUG
 CallInfo logIntCallInfo = CI(jitLogIntOperation, CallInfo::typeSig2(ARGTYPE_V, ARGTYPE_I, ARGTYPE_P));
 CallInfo logDoubleCallInfo = CI(jitLogDoubleOperation, CallInfo::typeSig2(ARGTYPE_V, ARGTYPE_D, ARGTYPE_P));
@@ -699,14 +700,34 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     }
     case ESIR::Opcode::GetObjectPreComputed:
    {
-       INIT_ESIR(GetObjectPreComputed);
-       LIns* obj = getTmpMapping(irGetObjectPreComputed->objectIndex());
-       if (irGetObjectPreComputed->cachedIndex() < SIZE_MAX) {
-           size_t gapToHiddenClassData = escargot::ESObject::offsetOfHiddenClassData();
-           LIns* hiddenClassData = m_out.insLoad(LIR_ldd, obj, gapToHiddenClassData, 1, LOAD_NORMAL);
-           return m_out.insLoad(LIR_ldd, hiddenClassData, irGetObjectPreComputed->cachedIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
+        INIT_ESIR(GetObjectPreComputed);
+        LIns* obj = getTmpMapping(irGetObjectPreComputed->objectIndex());
+        if (irGetObjectPreComputed->cachedIndex() < SIZE_MAX) {
+            LIns* phi = m_out.insAlloc(sizeof(ESValue));
+            size_t gapToHiddenClassData = escargot::ESObject::offsetOfHiddenClassData();
+            LIns* hiddenClassData = m_out.insLoad(LIR_ldd, obj, gapToHiddenClassData, 1, LOAD_NORMAL);
+            LIns* normalResult = m_out.insLoad(LIR_ldd, hiddenClassData, irGetObjectPreComputed->cachedIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
+            m_out.insStore(LIR_std, normalResult, phi, 0 , 1);
+
+            LIns* hiddenClass = m_out.insLoad(LIR_ldd, obj, escargot::ESObject::offsetOfHiddenClass(), 1, LOAD_NORMAL);
+            LIns* propertyFlagV = m_out.insLoad(LIR_ldd, hiddenClass, escargot::ESHiddenClass::offsetOfPropertyFlagInfo(), 1, LOAD_NORMAL);
+            // FIXME : offset can be changed when data structure revised
+            LIns* propertyFlags = m_out.insLoad(LIR_lduc2ui, propertyFlagV, irGetObjectPreComputed->cachedIndex() * sizeof(ESHiddenClassPropertyInfo), 1, LOAD_NORMAL);
+            LIns* isDataProperty = m_out.ins2(LIR_andi, propertyFlags, m_oneI);
+            // TODO : can remove
+            LIns* checkIfDataProperty = m_out.ins2(LIR_eqi, isDataProperty, m_oneI);
+            LIns* jumpIfDataProperty = m_out.insBranch(LIR_jt, checkIfDataProperty, nullptr);
+
+            LIns* args[] = {normalResult, obj};
+            LIns* nonDataPropertyResult = m_out.insCall(&resolveNonDataPropertyInfo, args);
+            m_out.insStore(LIR_std, nonDataPropertyResult, phi, 0 , 1);
+
+            LIns* labelSimple = m_out.ins0(LIR_label);
+            jumpIfDataProperty->setTarget(labelSimple);
+            LIns* ret = m_out.insLoad(LIR_ldd, phi, 0, 1, LOAD_NORMAL);
+            return ret;
         }
-       RELEASE_ASSERT_NOT_REACHED();
+        RELEASE_ASSERT_NOT_REACHED();
    }
     case ESIR::Opcode::GetArrayObject:
     {

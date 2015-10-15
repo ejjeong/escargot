@@ -1170,6 +1170,10 @@ public:
         return iter->second;
     }
 
+#ifdef ENABLE_ESJIT
+    static size_t offsetOfPropertyFlagInfo() { return offsetof(ESHiddenClass, m_propertyFlagInfo); }
+#endif
+
 private:
     ESHiddenClass()
         : m_transitionData(4)
@@ -1377,6 +1381,7 @@ public:
 
 #ifdef ENABLE_ESJIT
     static size_t offsetOfHiddenClassData() { return offsetof(ESObject, m_hiddenClassData); }
+    static size_t offsetOfHiddenClass() { return offsetof(ESObject, m_hiddenClass); }
 #endif
 protected:
     ESHiddenClass* m_hiddenClass;

@@ -215,6 +215,13 @@ inline ESValueInDouble esFunctionObjectCall(ESVMInstance* instance,
     return ESValue::toRawDouble(ret);
 }
 
+inline ESValueInDouble resolveNonDataProperty(ESObject* object, ESPointer* hiddenClassIdxData)
+{
+    // printf("[resolveNonDataProperty] (void*)object : %p\n", (void*)object);
+    // printf("[resolveNonDataProperty] (void*)hiddenClassIdxData : %p\n", (void*)hiddenClassIdxData);
+    return ESValue::toRawDouble(((ESAccessorData *)hiddenClassIdxData)->value(object));
+}
+
 #ifndef NDEBUG
 inline void jitLogIntOperation(int arg, const char* msg)
 {
