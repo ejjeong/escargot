@@ -441,6 +441,7 @@ void GlobalObject::installObject()
     m_object->setProtoType(m_objectPrototype);
     m_objectPrototype->defineDataProperty(strings->constructor, true, false, true, m_object);
 
+    // Object.prototype.toString
     m_objectPrototype->defineDataProperty(strings->toString, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisVal = instance->currentExecutionContext()->resolveThisBindingToObject();
         if (thisVal->isESArrayObject()) {
@@ -497,7 +498,7 @@ void GlobalObject::installObject()
                 ESValue key = instance->currentExecutionContext()->arguments()[1].toString();
 
                 if(!instance->currentExecutionContext()->arguments()[2].isObject())
-                    throw ESValue(TypeError::create());
+                    throw ESValue(TypeError::create(ESString::create("Object.defineProperty: 3rd argument is not object")));
                 ESObject* desc = instance->currentExecutionContext()->arguments()[2].toObject();
                 bool isEnumerable = false;
                 bool isConfigurable = false;
@@ -536,10 +537,10 @@ void GlobalObject::installObject()
                     obj->defineDataProperty(key, isWritable, isEnumerable, isConfigurable, v);
                 }
             } else {
-                throw ESValue(TypeError::create());
+                throw ESValue(TypeError::create(ESString::create("Object.defineProperty: 1st argument is not object")));
             }
         } else {
-            throw ESValue(TypeError::create());
+            throw ESValue(TypeError::create(ESString::create("Object.defineProperty: # of arguments < 3")));
         }
         return ESValue();
     }, ESString::create(u"defineProperty")));
@@ -841,10 +842,10 @@ void GlobalObject::installArray()
         auto thisBinded = instance->currentExecutionContext()->resolveThisBindingToObject();
         int arglen = instance->currentExecutionContext()->argumentCount();
         if(arglen < 1)
-            throw ESValue(TypeError::create());
+            throw ESValue(TypeError::create(ESString::create("Array.prototype.map: arglen < 1")));
         ESValue arg = instance->currentExecutionContext()->arguments()[0];
         if (!(arg.isESPointer() && arg.asESPointer()->isESFunctionObject()))
-            throw ESValue(TypeError::create());
+            throw ESValue(TypeError::create(ESString::create("Array.prototype.map: argument is not Function")));
 
         int arrlen = thisBinded->length();
         escargot::ESArrayObject* ret = ESArrayObject::create(arrlen);
@@ -878,7 +879,7 @@ void GlobalObject::installArray()
             int len = O->get(strings->length.string()).toInt32();
             int argCount = instance->currentExecutionContext()->argumentCount();
             if (len+argCount > std::pow(2, 53)-1) {
-                throw ESValue(TypeError::create());
+                throw ESValue(TypeError::create(ESString::create("Array.prototype.push: length is too large")));
             } else {
                 for (int i = 0; i < argCount; i++) {
                     ESValue& val = instance->currentExecutionContext()->arguments()[i];
@@ -1070,18 +1071,13 @@ void GlobalObject::installArray()
 
     //$22.1.3.27 Array.prototype.toString()
     m_arrayPrototype->ESObject::defineDataProperty(strings->toString, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        //FIXME this is wrong
-        u16string ret;
-        escargot::ESArrayObject* fn = instance->currentExecutionContext()->resolveThisBindingToObject()->asESArrayObject();
-        bool isFirst = true;
-        for (int i = 0 ; i < fn->length() ; i++) {
-            if(!isFirst)
-                ret.append(u",");
-            ESValue slot = fn->get(i);
-            ret.append(slot.toString()->data());
-            isFirst = false;
+        auto thisBinded = instance->currentExecutionContext()->resolveThisBindingToObject();
+        int arrlen = thisBinded->length();
+        ESValue toString = thisBinded->get(strings->join.string());
+        if (!toString.isESPointer() || !toString.asESPointer()->isESFunctionObject()) {
+            toString = instance->globalObject()->objectPrototype()->get(strings->toString.string());
         }
-        return ESString::create(std::move(ret));
+        return ESFunctionObject::call(instance, toString, thisBinded, NULL, 0, false);
     }, strings->toString));
 
     //$22.1.3.28 Array.prototype.unshift(...items)
@@ -1092,7 +1088,7 @@ void GlobalObject::installArray()
         int argCount = instance->currentExecutionContext()->argumentCount();
         if (argCount > 0) {
             if (len+argCount > std::pow(2, 53)-1)
-                throw TypeError::create();
+                throw TypeError::create(ESString::create("Array.prototype.unshift: length is too large"));
             int k = len;
             while (k > 0) {
                 ESValue from(k - 1);
@@ -1231,7 +1227,7 @@ void GlobalObject::installString()
     m_stringPrototype->defineDataProperty(strings->indexOf, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue thisObject = instance->currentExecutionContext()->resolveThisBinding();
         if (thisObject.isUndefinedOrNull())
-            throw ESValue(TypeError::create());
+            throw ESValue(TypeError::create(ESString::create("String.prototype.indexOf: this is undefined or null")));
         const u16string& str = instance->currentExecutionContext()->resolveThisBinding().toString()->string();
         escargot::ESString* searchStr = instance->currentExecutionContext()->readArgument(0).toString();
 
@@ -1257,7 +1253,7 @@ void GlobalObject::installString()
         //Let O be RequireObjectCoercible(this value).
         ESValue O = instance->currentExecutionContext()->resolveThisBinding();
         if (O.isUndefinedOrNull())
-            throw ESValue(TypeError::create());
+            throw ESValue(TypeError::create(ESString::create("String.prototype.lastIndexOf: this is undefined or null")));
         //Let S be ToString(O).
         escargot::ESString* S = O.toString();
         escargot::ESString* searchStr = instance->currentExecutionContext()->readArgument(0).toString();
@@ -1646,7 +1642,7 @@ void GlobalObject::installString()
     m_stringPrototype->defineDataProperty(ESString::create(u"substring"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue thisObject = instance->currentExecutionContext()->resolveThisBinding();
         if (thisObject.isUndefinedOrNull())
-            throw TypeError::create();
+            throw TypeError::create(ESString::create("String.prototype.substring: this is undefined or null"));
         int argCount = instance->currentExecutionContext()->argumentCount();
         escargot::ESString* str = thisObject.toString();
         if(argCount == 0) {
@@ -1743,7 +1739,7 @@ void GlobalObject::installString()
         } else if(thisValue.isESPointer() && thisValue.asESPointer()->isESStringObject()) {
             return thisValue.asESPointer()->asESStringObject()->stringData();
         }
-        throw ESValue(TypeError::create());
+        throw ESValue(TypeError::create(ESString::create("String.prototyep.valueOf: this is not String")));
     }, strings->valueOf));
 
 
@@ -2467,7 +2463,7 @@ void GlobalObject::installNumber()
         } else if(thisValue.isESPointer() && thisValue.asESPointer()->isESNumberObject()) {
             return ESValue(thisValue.asESPointer()->asESNumberObject()->numberData());
         }
-        throw ESValue(TypeError::create());
+        throw ESValue(TypeError::create(ESString::create("Number.prototype.valueOf: this is not number")));
     }, strings->valueOf));
 
     // add number to global object
@@ -2689,7 +2685,7 @@ void GlobalObject::installArrayBuffer()
             int numlen = val.toNumber();
             int elemlen = val.toLength();
             if (numlen != elemlen)
-                throw ESValue(RangeError::create());
+                throw ESValue(TypeError::create(ESString::create(u"Constructor ArrayBuffer : 1st argument is error")));
             obj->allocateArrayBuffer(elemlen);
         }
         return obj;
@@ -2750,7 +2746,7 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
                 int numlen = val.toNumber();
                 int elemlen = val.toLength();
                 if (numlen != elemlen)
-                    throw ESValue(RangeError::create());
+                    throw ESValue(RangeError::create(ESString::create(u"Constructor TypedArray : 1st argument is error")));
                 obj->allocateTypedArray(elemlen);
             }
             //$22.2.1.5 %TypedArray%(buffer [, byteOffset [, length] ] )

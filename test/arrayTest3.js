@@ -68,8 +68,6 @@ print("(15) " + obj.length);
 print("-----toString-----");
 obj.toString = Array.prototype.toString;
 print(obj.toString());
-
-//TODO
 var arr = [3, 4, 2, "aaaaa"];
 arr.join = function() {
     return arr[0];
