@@ -936,47 +936,33 @@ ALWAYS_INLINE ESHiddenClass* ESHiddenClass::removeProperty(size_t idx)
 ALWAYS_INLINE ESHiddenClass* ESHiddenClass::defineProperty(ESString* name, bool isData, bool isWritable, bool isEnumerable, bool isConfigurable)
 {
     ASSERT(findProperty(name) == SIZE_MAX);
-    if(m_propertyInfo.size() > ESHiddenClassVectorModeSizeLimit) {
-        ESHiddenClass* cls = new ESHiddenClass;
-        cls->m_flags.m_isVectorMode = false;
-        for(unsigned i = 0 ; i < m_propertyInfo.size() ; i ++) {
-            cls->m_propertyIndexHashMapInfo.insert(std::make_pair(m_propertyInfo[i].m_name, i));
+    if(m_flags.m_isVectorMode) {
+        if(m_propertyInfo.size() > ESHiddenClassVectorModeSizeLimit) {
+            ESHiddenClass* cls = new ESHiddenClass;
+            cls->m_flags.m_isVectorMode = false;
+            for(unsigned i = 0 ; i < m_propertyInfo.size() ; i ++) {
+                cls->m_propertyIndexHashMapInfo.insert(std::make_pair(m_propertyInfo[i].m_name, i));
+            }
+            cls->m_propertyInfo.assign(m_propertyInfo.begin(), m_propertyInfo.end());
+            size_t resultIndex = cls->m_propertyInfo.size();
+            cls->m_propertyIndexHashMapInfo.insert(std::make_pair(name, resultIndex));
+            cls->m_propertyInfo.push_back(ESHiddenClassPropertyInfo(name, isData, isWritable, isEnumerable, isConfigurable));
+
+            ASSERT(cls->m_propertyIndexHashMapInfo.size() == cls->m_propertyInfo.size());
+            ASSERT(cls->m_propertyInfo.size() - 1 == resultIndex);
+
+            cls->m_flags.m_hasReadOnlyProperty = m_flags.m_hasReadOnlyProperty | (!isWritable);
+            cls->m_flags.m_hasIndexedProperty = m_flags.m_hasIndexedProperty | name->hasOnlyDigit();
+            cls->m_flags.m_hasIndexedReadOnlyProperty = m_flags.m_hasIndexedReadOnlyProperty | (!isWritable && name->hasOnlyDigit());
+            return cls;
         }
-        cls->m_propertyInfo.assign(m_propertyInfo.begin(), m_propertyInfo.end());
-        size_t resultIndex = cls->m_propertyInfo.size();
-        cls->m_propertyIndexHashMapInfo.insert(std::make_pair(name, resultIndex));
-        cls->m_propertyInfo.push_back(ESHiddenClassPropertyInfo(name, isData, isWritable, isEnumerable, isConfigurable));
-
-        ASSERT(cls->m_propertyIndexHashMapInfo.size() == cls->m_propertyInfo.size());
-        ASSERT(cls->m_propertyInfo.size() - 1 == resultIndex);
-
-        cls->m_flags.m_hasReadOnlyProperty = m_flags.m_hasReadOnlyProperty | (!isWritable);
-        cls->m_flags.m_hasIndexedProperty = m_flags.m_hasIndexedProperty | name->hasOnlyDigit();
-        cls->m_flags.m_hasIndexedReadOnlyProperty = m_flags.m_hasIndexedReadOnlyProperty | (!isWritable && name->hasOnlyDigit());
-        return cls;
-    }
-    ESHiddenClass* cls;
-    auto iter = m_transitionData.find(name);
-    size_t pid = m_propertyInfo.size();
-    char flag = assembleHidenClassPropertyInfoFlags(isData, isWritable, isEnumerable, isConfigurable);
-    if(iter == m_transitionData.end()) {
-        ESHiddenClass** vec = new(GC) ESHiddenClass*[16];
-        memset(vec, 0, sizeof (ESHiddenClass *) * 16);
-        cls = new ESHiddenClass;
-        cls->m_propertyIndexHashMapInfo.insert(m_propertyIndexHashMapInfo.begin(), m_propertyIndexHashMapInfo.end());
-        cls->m_propertyIndexHashMapInfo.insert(std::make_pair(name, pid));
-        cls->m_propertyInfo.assign(m_propertyInfo.begin(), m_propertyInfo.end());
-        cls->m_propertyInfo.push_back(ESHiddenClassPropertyInfo(name, isData, isWritable, isEnumerable, isConfigurable));
-
-        cls->m_flags.m_hasReadOnlyProperty = m_flags.m_hasReadOnlyProperty | (!isWritable);
-        cls->m_flags.m_hasIndexedProperty = m_flags.m_hasIndexedProperty | name->hasOnlyDigit();
-        cls->m_flags.m_hasIndexedReadOnlyProperty = m_flags.m_hasIndexedReadOnlyProperty | (!isWritable && name->hasOnlyDigit());
-        vec[(size_t)flag] = cls;
-        m_transitionData.insert(std::make_pair(name, vec));
-    } else {
-        if(iter->second[(size_t)flag]) {
-            cls = iter->second[(size_t)flag];
-        } else {
+        ESHiddenClass* cls;
+        auto iter = m_transitionData.find(name);
+        size_t pid = m_propertyInfo.size();
+        char flag = assembleHidenClassPropertyInfoFlags(isData, isWritable, isEnumerable, isConfigurable);
+        if(iter == m_transitionData.end()) {
+            ESHiddenClass** vec = new(GC) ESHiddenClass*[16];
+            memset(vec, 0, sizeof (ESHiddenClass *) * 16);
             cls = new ESHiddenClass;
             cls->m_propertyIndexHashMapInfo.insert(m_propertyIndexHashMapInfo.begin(), m_propertyIndexHashMapInfo.end());
             cls->m_propertyIndexHashMapInfo.insert(std::make_pair(name, pid));
@@ -986,12 +972,36 @@ ALWAYS_INLINE ESHiddenClass* ESHiddenClass::defineProperty(ESString* name, bool 
             cls->m_flags.m_hasReadOnlyProperty = m_flags.m_hasReadOnlyProperty | (!isWritable);
             cls->m_flags.m_hasIndexedProperty = m_flags.m_hasIndexedProperty | name->hasOnlyDigit();
             cls->m_flags.m_hasIndexedReadOnlyProperty = m_flags.m_hasIndexedReadOnlyProperty | (!isWritable && name->hasOnlyDigit());
-            iter->second[(size_t)flag] = cls;
+            vec[(size_t)flag] = cls;
+            m_transitionData.insert(std::make_pair(name, vec));
+        } else {
+            if(iter->second[(size_t)flag]) {
+                cls = iter->second[(size_t)flag];
+            } else {
+                cls = new ESHiddenClass;
+                cls->m_propertyIndexHashMapInfo.insert(m_propertyIndexHashMapInfo.begin(), m_propertyIndexHashMapInfo.end());
+                cls->m_propertyIndexHashMapInfo.insert(std::make_pair(name, pid));
+                cls->m_propertyInfo.assign(m_propertyInfo.begin(), m_propertyInfo.end());
+                cls->m_propertyInfo.push_back(ESHiddenClassPropertyInfo(name, isData, isWritable, isEnumerable, isConfigurable));
+
+                cls->m_flags.m_hasReadOnlyProperty = m_flags.m_hasReadOnlyProperty | (!isWritable);
+                cls->m_flags.m_hasIndexedProperty = m_flags.m_hasIndexedProperty | name->hasOnlyDigit();
+                cls->m_flags.m_hasIndexedReadOnlyProperty = m_flags.m_hasIndexedReadOnlyProperty | (!isWritable && name->hasOnlyDigit());
+                iter->second[(size_t)flag] = cls;
+            }
         }
+        ASSERT(cls->m_propertyIndexHashMapInfo.size() == cls->m_propertyInfo.size());
+        ASSERT(cls->m_propertyInfo.size() - 1 == pid);
+        return cls;
+    } else {
+        size_t idx = m_propertyInfo.size();
+        m_propertyIndexHashMapInfo.insert(std::make_pair(name, idx));
+        m_propertyInfo.push_back(ESHiddenClassPropertyInfo(name, isData, isWritable, isEnumerable, isConfigurable));
+        m_flags.m_hasReadOnlyProperty = m_flags.m_hasReadOnlyProperty | (!isWritable);
+        m_flags.m_hasIndexedProperty = m_flags.m_hasIndexedProperty | name->hasOnlyDigit();
+        m_flags.m_hasIndexedReadOnlyProperty = m_flags.m_hasIndexedReadOnlyProperty | (!isWritable && name->hasOnlyDigit());
+        return this;
     }
-    ASSERT(cls->m_propertyIndexHashMapInfo.size() == cls->m_propertyInfo.size());
-    ASSERT(cls->m_propertyInfo.size() - 1 == pid);
-    return cls;
 }
 
 ALWAYS_INLINE ESValue ESHiddenClass::read(ESObject* obj, ESObject* originalObject, ESString* name)

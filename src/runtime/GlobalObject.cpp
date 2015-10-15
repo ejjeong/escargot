@@ -284,6 +284,7 @@ void GlobalObject::initGlobalObject()
          }
         return escargot::ESString::create(R.c_str());
     }, ESString::create(u"unescape")));
+
 }
 
 

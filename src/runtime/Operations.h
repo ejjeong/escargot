@@ -168,10 +168,14 @@ ALWAYS_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* propert
                 size_t idx = property->toIndex();
                 if(idx != SIZE_MAX && idx < arr->length()) {
                     const ESValue& v = arr->data()[idx];
-                    if(!v.isEmpty())
+                    if(!v.isEmpty()) {
                         return v;
+                    } else {
+                        //TODO search prototo directly
+                    }
                 }
             }
+
             return willBeObject->toObject()->get(*property);
         } else if(willBeObject->asESPointer()->isESString()) {
             size_t idx = property->toIndex();
@@ -233,7 +237,7 @@ ALWAYS_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue*
     ASSERT(ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedReadOnlyOrAccessorProperty());
     *lastObjectValueMetInMemberExpression = *willBeObject;
     if(willBeObject->isESPointer()) {
-        if(LIKELY(willBeObject->asESPointer()->isESArrayObject())) {
+        if(willBeObject->asESPointer()->isESArrayObject()) {
             return  willBeObject->toObject()->get(*property);
         } else if(willBeObject->asESPointer()->isESString()) {
             size_t idx = property->toIndex();

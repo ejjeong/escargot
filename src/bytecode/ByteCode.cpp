@@ -229,6 +229,9 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             *code->m_cachedSlot = *value;
         } else {
             ExecutionContext* ec = instance->currentExecutionContext();
+            //TODO
+            //Object.defineProperty(this,"asdf",{value:1}) //this == global
+            //asdf = 2
             ESValue* slot = ec->resolveBinding(code->m_name, code->m_nonAtomicName);
 
             if(LIKELY(slot != NULL)) {
