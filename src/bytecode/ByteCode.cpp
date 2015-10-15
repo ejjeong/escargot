@@ -1150,7 +1150,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             ASSERT(ec->tryOrCatchBodyResult().asESPointer()->isESControlFlowRecord());
             ESControlFlowRecord* record = ec->tryOrCatchBodyResult().asESPointer()->asESControlFlowRecord();
             int32_t dupCnt = record->value2().asInt32();
-            if(dupCnt == 1) {
+            if(dupCnt <= 1) {
                 if(record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsReturn) {
                     ESValue ret = record->value();
                     ec->tryOrCatchBodyResult() = ESValue(ESValue::ESEmptyValue);

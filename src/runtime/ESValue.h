@@ -1057,8 +1057,8 @@ public:
     ALWAYS_INLINE ESValue read(ESObject* obj, ESObject* originalObject, ESString* name);
     ALWAYS_INLINE ESValue read(ESObject* obj, ESObject* originalObject, size_t index);
 
-    ALWAYS_INLINE void write(ESObject* obj, ESObject* originalObject, ESString* name, const ESValue& val);
-    ALWAYS_INLINE void write(ESObject* obj, ESObject* originalObject, size_t index, const ESValue& val);
+    ALWAYS_INLINE bool write(ESObject* obj, ESObject* originalObject, ESString* name, const ESValue& val);
+    ALWAYS_INLINE bool write(ESObject* obj, ESObject* originalObject, size_t index, const ESValue& val);
 
     ALWAYS_INLINE bool hasReadOnlyProperty()
     {

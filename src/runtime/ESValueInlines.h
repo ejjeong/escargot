@@ -1042,15 +1042,15 @@ ALWAYS_INLINE ESValue ESHiddenClass::read(ESObject* obj, ESObject* originalObjec
     }
 }
 
-ALWAYS_INLINE void ESHiddenClass::write(ESObject* obj, ESObject* originalObject, ESString* name, const ESValue& val)
+ALWAYS_INLINE bool ESHiddenClass::write(ESObject* obj, ESObject* originalObject, ESString* name, const ESValue& val)
 {
-    write(obj, originalObject, findProperty(name), val);
+    return write(obj, originalObject, findProperty(name), val);
 }
 
-ALWAYS_INLINE void ESHiddenClass::write(ESObject* obj, ESObject* originalObject, size_t idx, const ESValue& val)
+ALWAYS_INLINE bool ESHiddenClass::write(ESObject* obj, ESObject* originalObject, size_t idx, const ESValue& val)
 {
     if(UNLIKELY(!m_propertyInfo[idx].m_flags.m_isWritable)) {
-        return ;
+        return false;
     }
     if(LIKELY(m_propertyInfo[idx].m_flags.m_isDataProperty)) {
         obj->m_hiddenClassData[idx] = val;
@@ -1058,6 +1058,7 @@ ALWAYS_INLINE void ESHiddenClass::write(ESObject* obj, ESObject* originalObject,
         ESPropertyAccessorData* data = (ESPropertyAccessorData *)obj->m_hiddenClassData[idx].asESPointer();
         data->setValue(originalObject, val);
     }
+    return true;
 }
 
 
@@ -1376,7 +1377,7 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
         if(UNLIKELY(m_flags.m_isGlobalObject))
             ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
     } else {
-        m_hiddenClass->write(this, this, keyString, val);
+        return m_hiddenClass->write(this, this, keyString, val);
     }
 
     return true;
@@ -1385,7 +1386,7 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
 ALWAYS_INLINE void ESObject::set(const escargot::ESValue& key, const ESValue& val, bool throwExpetion)
 {
     if(!set(key, val) && throwExpetion) {
-        throw ESValue(TypeError::create());
+        throw ESValue(TypeError::create(ESString::create("Cannot assign to readonly property")));
     }
 }
 

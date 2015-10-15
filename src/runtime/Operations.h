@@ -275,20 +275,23 @@ NEVER_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue* 
 NEVER_INLINE void setObjectOperation(ESValue* willBeObject, ESValue* property, const ESValue& value)
 {
     ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedReadOnlyOrAccessorProperty());
-    willBeObject->toObject()->set(*property, value);
+    ExecutionContext* ec = ESVMInstance::currentInstance()->currentExecutionContext();
+    willBeObject->toObject()->set(*property, value, ec->isStrictMode());
 }
 
 //d = {}. d.foo
 NEVER_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESValue* property, const ESValue& value)
 {
     ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedReadOnlyOrAccessorProperty());
-    willBeObject->toObject()->set(*property, value);
+    ExecutionContext* ec = ESVMInstance::currentInstance()->currentExecutionContext();
+    willBeObject->toObject()->set(*property, value, ec->isStrictMode());
 }
 
 NEVER_INLINE void setObjectOperationSlowMode(ESValue* willBeObject, ESValue* property, const ESValue& value)
 {
     ASSERT(ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedReadOnlyOrAccessorProperty());
-    willBeObject->toObject()->set(*property, value);
+    ExecutionContext* ec = ESVMInstance::currentInstance()->currentExecutionContext();
+    willBeObject->toObject()->set(*property, value, ec->isStrictMode());
 }
 
 NEVER_INLINE bool instanceOfOperation(ESValue* lval, ESValue* rval)
