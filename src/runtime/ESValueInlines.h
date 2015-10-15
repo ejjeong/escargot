@@ -400,7 +400,6 @@ ALWAYS_INLINE bool ESValue::isPrimitive() const
 
 ALWAYS_INLINE size_t ESValue::toIndex() const
 {
-    size_t idx = SIZE_MAX;
     int32_t i;
     if(LIKELY(isInt32()) && LIKELY((i = asInt32()) >= 0)) {
         return i;
@@ -1376,11 +1375,10 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
 
         if(UNLIKELY(m_flags.m_isGlobalObject))
             ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
+        return true;
     } else {
         return m_hiddenClass->write(this, this, keyString, val);
     }
-
-    return true;
 }
 
 ALWAYS_INLINE void ESObject::set(const escargot::ESValue& key, const ESValue& val, bool throwExpetion)

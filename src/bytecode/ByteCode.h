@@ -1361,9 +1361,6 @@ public:
     GetObject(Opcode code = GetObjectOpcode)
         : ByteCode(code)
     {
-        m_cachedHiddenClass = (ESHiddenClass*)SIZE_MAX;
-        m_cachedPropertyValue = nullptr;
-        m_cachedIndex = SIZE_MAX;
     }
 
 #ifndef NDEBUG
@@ -1372,10 +1369,6 @@ public:
         printf("GetObject <>\n");
     }
 #endif
-
-    ESHiddenClass* m_cachedHiddenClass;
-    ESString* m_cachedPropertyValue;
-    size_t m_cachedIndex;
 #ifdef ENABLE_ESJIT
     escargot::ESJIT::Type m_esir_type;
     ProfileData m_profile;
@@ -1403,9 +1396,6 @@ public:
     GetObjectWithPeeking(Opcode code = GetObjectWithPeekingOpcode)
         : ByteCode(code)
     {
-        m_cachedHiddenClass = (ESHiddenClass*)SIZE_MAX;
-        m_cachedPropertyValue = nullptr;
-        m_cachedIndex = SIZE_MAX;
     }
 
 #ifndef NDEBUG
@@ -1414,10 +1404,6 @@ public:
         printf("GetObjectWithPeeking <>\n");
     }
 #endif
-
-    ESHiddenClass* m_cachedHiddenClass;
-    ESString* m_cachedPropertyValue;
-    size_t m_cachedIndex;
 };
 
 class GetObjectWithPeekingSlowMode : public GetObjectWithPeeking {
@@ -1441,8 +1427,7 @@ public:
     GetObjectPreComputedCase(const ESValue& v, Opcode code = GetObjectPreComputedCaseOpcode)
         : ByteCode(code)
     {
-        m_cachedHiddenClass = (ESHiddenClass*)SIZE_MAX;
-        m_propertyValue = v;
+        m_propertyValue = v.toString();
         m_cachedIndex = SIZE_MAX;
     }
 
@@ -1452,9 +1437,8 @@ public:
         printf("GetObjectPreComputedCase <>\n");
     }
 #endif
-
-    ESHiddenClass* m_cachedHiddenClass;
-    ESValue m_propertyValue;
+    ESString* m_propertyValue;
+    ESHiddenClassChain m_cachedhiddenClassChain;
     size_t m_cachedIndex;
 #ifdef ENABLE_ESJIT
     escargot::ESJIT::Type m_esir_type;
@@ -1483,10 +1467,13 @@ public:
     GetObjectWithPeekingPreComputedCase(const ESValue& v, Opcode code = GetObjectWithPeekingPreComputedCaseOpcode)
         : ByteCode(code)
     {
-        m_cachedHiddenClass = (ESHiddenClass*)SIZE_MAX;
-        m_propertyValue = v;
+        m_propertyValue = v.toString();
         m_cachedIndex = SIZE_MAX;
     }
+
+    ESString* m_propertyValue;
+    ESHiddenClassChain m_cachedhiddenClassChain;
+    size_t m_cachedIndex;
 
 #ifndef NDEBUG
     virtual void dump()
@@ -1494,10 +1481,6 @@ public:
         printf("GetObjectWithPeekingPreComputedCase <>\n");
     }
 #endif
-
-    ESHiddenClass* m_cachedHiddenClass;
-    ESValue m_propertyValue;
-    size_t m_cachedIndex;
 };
 
 class GetObjectWithPeekingPreComputedCaseSlowMode : public GetObjectWithPeekingPreComputedCase {
@@ -1521,9 +1504,6 @@ public:
     SetObject(Opcode code = SetObjectOpcode)
         : ByteCode(code)
     {
-        m_cachedHiddenClass = (ESHiddenClass*)SIZE_MAX;
-        m_cachedPropertyValue = nullptr;
-        m_cachedIndex = SIZE_MAX;
     }
 
 #ifndef NDEBUG
@@ -1533,9 +1513,6 @@ public:
     }
 #endif
 
-    ESHiddenClass* m_cachedHiddenClass;
-    ESString* m_cachedPropertyValue;
-    size_t m_cachedIndex;
 #ifdef ENABLE_ESJIT
     escargot::ESJIT::Type m_esir_type;
 #endif
@@ -1562,9 +1539,9 @@ public:
     SetObjectPreComputedCase(const ESValue& v, Opcode code = SetObjectPreComputedCaseOpcode)
         : ByteCode(code)
     {
-        m_cachedHiddenClass = (ESHiddenClass*)SIZE_MAX;
-        m_propertyValue = v;
+        m_propertyValue = v.toString();
         m_cachedIndex = SIZE_MAX;
+        m_hiddenClassWillBe = NULL;
     }
 
 #ifndef NDEBUG
@@ -1573,10 +1550,10 @@ public:
         printf("SetObjectPreComputedCase <>\n");
     }
 #endif
-
-    ESValue m_propertyValue;
-    ESHiddenClass* m_cachedHiddenClass;
+    ESHiddenClassChain m_cachedhiddenClassChain;
+    ESString* m_propertyValue;
     size_t m_cachedIndex;
+    ESHiddenClass* m_hiddenClassWillBe;
 };
 
 class SetObjectPreComputedCaseSlowMode : public SetObjectPreComputedCase {

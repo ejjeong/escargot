@@ -754,7 +754,8 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         GetObjectPreComputedCase* code = (GetObjectPreComputedCase*)currentCode;
         ESValue* willBeObject = pop<ESValue>(stack, bp);
-        push<ESValue>(stack, bp, getObjectPreComputedCaseOperation(willBeObject, &code->m_propertyValue, &lastESObjectMetInMemberExpressionNode, globalObject));
+        push<ESValue>(stack, bp, getObjectPreComputedCaseOperation(willBeObject, code->m_propertyValue, &lastESObjectMetInMemberExpressionNode, globalObject,
+                &code->m_cachedhiddenClassChain, &code->m_cachedIndex));
         executeNextCode<GetObjectPreComputedCase>(programCounter);
         goto NextInstruction;
     }
@@ -763,7 +764,8 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         GetObjectPreComputedCaseSlowMode* code = (GetObjectPreComputedCaseSlowMode*)currentCode;
         ESValue* willBeObject = pop<ESValue>(stack, bp);
-        push<ESValue>(stack, bp, getObjectOperationSlowMode(willBeObject, &code->m_propertyValue, &lastESObjectMetInMemberExpressionNode, globalObject));
+        ESValue v(code->m_propertyValue);
+        push<ESValue>(stack, bp, getObjectOperationSlowMode(willBeObject, &v, &lastESObjectMetInMemberExpressionNode, globalObject));
         executeNextCode<GetObjectPreComputedCaseSlowMode>(programCounter);
         goto NextInstruction;
     }
@@ -779,7 +781,8 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         stack = (void *)(((size_t)stack) + sizeof(size_t) * 1);
 #endif
 
-        push<ESValue>(stack, bp, getObjectPreComputedCaseOperation(willBeObject, &code->m_propertyValue, &lastESObjectMetInMemberExpressionNode, globalObject));
+        push<ESValue>(stack, bp, getObjectPreComputedCaseOperation(willBeObject, code->m_propertyValue, &lastESObjectMetInMemberExpressionNode, globalObject,
+                        &code->m_cachedhiddenClassChain, &code->m_cachedIndex));
         executeNextCode<GetObjectWithPeekingPreComputedCase>(programCounter);
         goto NextInstruction;
     }
@@ -795,7 +798,8 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         stack = (void *)(((size_t)stack) + sizeof(size_t) * 1);
 #endif
 
-        push<ESValue>(stack, bp, getObjectOperationSlowMode(willBeObject, &code->m_propertyValue, &lastESObjectMetInMemberExpressionNode, globalObject));
+        ESValue v(code->m_propertyValue);
+        push<ESValue>(stack, bp, getObjectOperationSlowMode(willBeObject, &v, &lastESObjectMetInMemberExpressionNode, globalObject));
         executeNextCode<GetObjectWithPeekingPreComputedCaseSlowMode>(programCounter);
         goto NextInstruction;
     }
@@ -829,7 +833,8 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         SetObjectPreComputedCase* code = (SetObjectPreComputedCase*)currentCode;
         ESValue value = *pop<ESValue>(stack, bp);
         ESValue* willBeObject = pop<ESValue>(stack, bp);
-        setObjectOperation(willBeObject, &code->m_propertyValue, value);
+        setObjectPreComputedCaseOperation(willBeObject, code->m_propertyValue, value, &code->m_cachedhiddenClassChain
+                , &code->m_cachedIndex, &code->m_hiddenClassWillBe);
         push<ESValue>(stack, bp, value);
         executeNextCode<SetObjectPreComputedCase>(programCounter);
         goto NextInstruction;
@@ -840,7 +845,8 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         SetObjectPreComputedCaseSlowMode* code = (SetObjectPreComputedCaseSlowMode*)currentCode;
         ESValue value = *pop<ESValue>(stack, bp);
         ESValue* willBeObject = pop<ESValue>(stack, bp);
-        setObjectOperationSlowMode(willBeObject, &code->m_propertyValue, value);
+        ESValue v(code->m_propertyValue);
+        setObjectOperationSlowMode(willBeObject, &v, value);
         push<ESValue>(stack, bp, value);
         executeNextCode<SetObjectPreComputedCaseSlowMode>(programCounter);
         goto NextInstruction;

@@ -1060,6 +1060,16 @@ public:
     ALWAYS_INLINE bool write(ESObject* obj, ESObject* originalObject, ESString* name, const ESValue& val);
     ALWAYS_INLINE bool write(ESObject* obj, ESObject* originalObject, size_t index, const ESValue& val);
 
+    const ESHiddenClassPropertyInfo& propertyInfo(const size_t& idx)
+    {
+        return m_propertyInfo[idx];
+    }
+
+    const size_t propertyCount()
+    {
+        return m_propertyInfo.size();
+    }
+
     ALWAYS_INLINE bool hasReadOnlyProperty()
     {
         return m_flags.m_hasReadOnlyProperty;
@@ -1098,9 +1108,18 @@ private:
     } m_flags;
 };
 
+typedef std::vector<ESHiddenClass*> ESHiddenClassChainStd;
+class ESHiddenClassChain : public ESHiddenClassChainStd {
+public:
+    ESHiddenClassChain()
+        : ESHiddenClassChainStd() { }
+};
+
 class ESObject : public ESPointer {
     friend class ESSlot;
     friend class ESHiddenClass;
+    friend NEVER_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ::escargot::ESString* keyString, const ESValue& value
+            , ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex, ESHiddenClass** hiddenClassWillBe);
 protected:
     ESObject(ESPointer::Type type, ESValue __proto__, size_t initialKeyCount = 6);
 public:
