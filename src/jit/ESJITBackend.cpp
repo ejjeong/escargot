@@ -379,21 +379,10 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         // FIXME
         return nullptr;
     }
-    case ESIR::Opcode::Int32Division:
-    {
-        INIT_ESIR(Int32Division);
-        INIT_BINARY_ESIR(Int32Division);
-        return m_out.ins2(LIR_divi, left, right);
-    }
     case ESIR::Opcode::DoubleDivision:
     {
         INIT_ESIR(DoubleDivision);
         INIT_BINARY_ESIR(DoubleDivision);
-        //if (leftType.isInt32Type())
-        //    left = m_out.ins1(LIR_i2d, left);
-        //if (rightType.isInt32Type())
-        //    right = m_out.ins1(LIR_i2d, right);
-        //ASSERT(left->isD() && right->isD());
         return m_out.ins2(LIR_divd, left, right);
     }
     case ESIR::Opcode::GenericDivision:
