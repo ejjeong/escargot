@@ -8,6 +8,7 @@ output.js
 *.o
 *.d
 *.js
+*.swp
 !test/*.js
 *.pyc
 tags
