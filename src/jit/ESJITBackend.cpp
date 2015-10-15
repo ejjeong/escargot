@@ -115,8 +115,7 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
         LIns* maskedValue = m_out.ins2(LIR_andq, quadValue, m_intTagQ);
         LIns* checkIfInt = m_out.ins2(LIR_eqq, maskedValue, m_intTagQ);
         LIns* jumpIfInt = m_out.insBranch(LIR_jt, checkIfInt, nullptr);
-        LIns* zero = m_out.insImmI(0);
-        JIT_LOG(zero, "Expected Int-typed value, but got this value");
+        JIT_LOG(in, "Expected Int-typed value, but got this value");
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out.ins0(LIR_label);
         jumpIfInt->setTarget(normalPath);
@@ -603,7 +602,6 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         jumpIfCacheHit->setTarget(fastPath);
         LIns* cachedSlot = m_out.insLoad(LIR_ldp, bytecode, offsetof(GetById, m_cachedSlot), 1, LOAD_NORMAL);
         LIns* cachedResult = m_out.insLoad(LIR_ldd, cachedSlot, 0, 1, LOAD_NORMAL);
-
 #if 0
         m_out.ins1(LIR_livei, checkIfCacheHit);
         m_out.ins1(LIR_lived, resolvedResult);
@@ -789,14 +787,12 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     }
 }
 
-void NativeGenerator::nanojitCodegen()
+void NativeGenerator::nanojitCodegen(ESVMInstance* instance)
 {
     m_out.ins0(LIR_start);
-
     for (int i = 0; i < nanojit::NumSavedRegs; ++i)
         m_out.insParam(i, 1);
-
-    m_instance = m_out.insParam(0, 0);
+    m_instance = m_out.insImmP(instance);
     m_context = m_out.insLoad(LIR_ldp, m_instance, ESVMInstance::offsetOfCurrentExecutionContext(), 1, LOAD_NORMAL); // FIXME generate this only if really needed
     m_stackPtr = m_out.insAlloc(m_graph->tempRegisterSize() * sizeof(ESValue));
     m_globalObject = m_out.insLoad(LIR_ldp, m_instance, ESVMInstance::offsetOfGlobalObject(), 1, LOAD_NORMAL); // FIXME generate this only if really needed
@@ -869,12 +865,12 @@ JITFunction NativeGenerator::nativeCodegen() {
     return reinterpret_cast<JITFunction>(m_f->code());
 }
 
-JITFunction generateNativeFromIR(ESGraph* graph)
+JITFunction generateNativeFromIR(ESGraph* graph, ESVMInstance* instance)
 {
     NativeGenerator gen(graph);
 
     unsigned long time1 = ESVMInstance::currentInstance()->tickCount();
-    gen.nanojitCodegen();
+    gen.nanojitCodegen(instance);
     unsigned long time2 = ESVMInstance::currentInstance()->tickCount();
     JITFunction function = gen.nativeCodegen();
     unsigned long time3 = ESVMInstance::currentInstance()->tickCount();

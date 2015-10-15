@@ -22,7 +22,7 @@ class NativeGenerator {
 public:
     NativeGenerator(ESGraph* graph);
     ~NativeGenerator();
-    void nanojitCodegen();
+    void nanojitCodegen(ESVMInstance* instance);
     JITFunction nativeCodegen();
     nanojit::LIns* nanojitCodegen(ESIR* ir);
 
@@ -81,7 +81,7 @@ private:
     nanojit::LIns* m_false;
 };
 
-JITFunction generateNativeFromIR(ESGraph* graph);
+JITFunction generateNativeFromIR(ESGraph* graph, ESVMInstance* instance);
 
 JITFunction addDouble();
 int nanoJITTest();

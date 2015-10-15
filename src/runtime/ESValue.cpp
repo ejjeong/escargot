@@ -531,7 +531,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                     if (ESVMInstance::currentInstance()->m_verboseJIT)
                         printf("Trying JIT Compile for function %s...\n", fn->codeBlock()->m_nonAtomicId ? (fn->codeBlock()->m_nonAtomicId->utf8Data()):"(anonymous)");
 #endif
-                    jitFunction = reinterpret_cast<ESJIT::JITFunction>(ESJIT::JITCompile(fn->codeBlock()));
+                    jitFunction = reinterpret_cast<ESJIT::JITFunction>(ESJIT::JITCompile(fn->codeBlock(), instance));
                     if (jitFunction) {
 #ifndef NDEBUG
                         if (ESVMInstance::currentInstance()->m_verboseJIT)

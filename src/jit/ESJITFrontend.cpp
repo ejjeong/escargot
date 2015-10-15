@@ -19,10 +19,10 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
 {
     ESGraph* graph = ESGraph::create(codeBlock);
 
-#ifndef NDEBUG
-    if (ESVMInstance::currentInstance()->m_verboseJIT)
-        dumpBytecode(codeBlock);
-#endif
+//#ifndef NDEBUG
+//    if (ESVMInstance::currentInstance()->m_verboseJIT)
+//        dumpBytecode(codeBlock);
+//#endif
 
     size_t idx = 0;
     size_t bytecodeCounter = 0;
