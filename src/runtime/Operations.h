@@ -122,12 +122,88 @@ ALWAYS_INLINE ESValue abstractRelationalComparison(const ESValue& left, const ES
     }
 }
 //d = {}. d[0]
-NEVER_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject);
+ALWAYS_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject)
+{
+    ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedReadOnlyOrAccessorProperty());
+    *lastObjectValueMetInMemberExpression = *willBeObject;
+    if(LIKELY(willBeObject->isESPointer())) {
+        if(LIKELY(willBeObject->asESPointer()->isESArrayObject())) {
+            ESArrayObject* arr = willBeObject->asESPointer()->asESArrayObject();
+            if(arr->isFastmode()) {
+                size_t idx = property->toIndex();
+                if(idx != SIZE_MAX && idx < arr->length()) {
+                    const ESValue& v = arr->data()[idx];
+                    if(!v.isEmpty()) {
+                        return v;
+                    } else {
+                        //TODO search prototo directly
+                    }
+                }
+            }
+
+            return willBeObject->toObject()->get(*property);
+        } else if(willBeObject->asESPointer()->isESString()) {
+            size_t idx = property->toIndex();
+            if(idx != SIZE_MAX) {
+                if(LIKELY(0 <= idx && idx < willBeObject->asESString()->length())) {
+                    char16_t c = willBeObject->asESString()->string().data()[idx];
+                    if(LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
+                        return strings->asciiTable[c].string();
+                    } else {
+                        return ESString::create(c);
+                    }
+                }
+                return willBeObject->toObject()->get(*property);
+            } else {
+                ESString* val = property->toString();
+                if(*val == *strings->length) {
+                    return ESValue(willBeObject->asESString()->length());
+                }
+                ESValue ret = globalObject->stringObjectProxy()->get(val);
+                return ret;
+            }
+        } else {
+            ASSERT(willBeObject->asESPointer()->isESObject());
+            return willBeObject->asESPointer()->asESObject()->get(*property);
+        }
+    } else {
+        //number
+        if(willBeObject->isNumber()) {
+            globalObject->numberObjectProxy()->setNumberData(willBeObject->asNumber());
+            return globalObject->numberObjectProxy()->get(*property);
+        }
+        return willBeObject->toObject()->get(*property);
+    }
+}
 //d = {}. d.foo
 NEVER_INLINE ESValue getObjectPreComputedCaseOperation(ESValue* willBeObject, ESString* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject
         ,ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex);
 //d = {}. d[0] = 1
-NEVER_INLINE void setObjectOperation(ESValue* willBeObject, ESValue* property, const ESValue& value);
+ALWAYS_INLINE void setObjectOperation(ESValue* willBeObject, ESValue* property, const ESValue& value)
+{
+    ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedReadOnlyOrAccessorProperty());
+    if(LIKELY(willBeObject->isESPointer())) {
+        if(LIKELY(willBeObject->asESPointer()->isESArrayObject())) {
+            ESArrayObject* arr = willBeObject->asESPointer()->asESArrayObject();
+            if(arr->isFastmode()) {
+                size_t idx = property->toIndex();
+                if(/*idx != SIZE_MAX && */idx < arr->length()) {
+                    ASSERT(idx != SIZE_MAX);
+                    arr->data()[idx] = value;
+                    return ;
+                }
+            }
+            willBeObject->toObject()->set(*property, value, true);
+        } else if(willBeObject->asESPointer()->isESString()) {
+            willBeObject->toObject()->set(*property, value, true);
+        } else {
+            ASSERT(willBeObject->asESPointer()->isESObject());
+            willBeObject->asESPointer()->asESObject()->set(*property, value, true);
+        }
+    } else {
+        willBeObject->toObject()->set(*property, value, true);
+    }
+}
 //d = {}. d.foo = 1
 NEVER_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESString* keyString, const ESValue& value
         , ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex, ESHiddenClass** hiddenClassWillBe);

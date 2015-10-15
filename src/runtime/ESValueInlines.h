@@ -246,50 +246,55 @@ inline double ESValue::toNumber() const
         return 0;
     else if (isBoolean())
         return asBoolean() ?  1 : 0;
-    else if (isESPointer()) {
-        ESPointer* o = asESPointer();
-        if (o->isESString() || o->isESStringObject()) {
-            double val;
-            ESString* data;
-            if(LIKELY(o->isESString())) {
-                data = o->asESString();
-            } else {
-                data = o->asESStringObject()->stringData();
-            }
-
-            //A StringNumericLiteral that is empty or contains only white space is converted to +0.
-            if(data->length() == 0)
-                return 0;
-
-            data->wcharData([&val, &data](const wchar_t* buf, unsigned size){
-                wchar_t* end;
-                val = wcstod(buf, &end);
-                if(end != buf + size) {
-                    const u16string& str = data->string();
-                    bool isOnlyWhiteSpace = true;
-                    for(unsigned i = 0; i < str.length() ; i ++) {
-                        //FIXME we shold not use isspace function. implement javascript isspace function.
-                        if(!isspace(str[i])) {
-                            isOnlyWhiteSpace = false;
-                            break;
-                        }
-                    }
-                    if(isOnlyWhiteSpace) {
-                        val = 0;
-                    } else
-                        val = std::numeric_limits<double>::quiet_NaN();
-                }
-            });
-            return val;
-        } else if (o->isESObject())
-            return toPrimitive().toNumber();
-        else if (o->isESDateObject())
-            return o->asESDateObject()->getTimeAsMilisec();
+    else {
+        return toNumberSlowCase();
     }
     RELEASE_ASSERT_NOT_REACHED();
 }
 
-inline bool ESValue::toBoolean() const
+inline double ESValue::toNumberSlowCase() const
+{
+    ASSERT(isESPointer());
+    ESPointer* o = asESPointer();
+    if (o->isESString() || o->isESStringObject()) {
+        double val;
+        ESString* data;
+        if(LIKELY(o->isESString())) {
+            data = o->asESString();
+        } else {
+            data = o->asESStringObject()->stringData();
+        }
+
+        //A StringNumericLiteral that is empty or contains only white space is converted to +0.
+        if(data->length() == 0)
+            return 0;
+
+        data->wcharData([&val, &data](const wchar_t* buf, unsigned size){
+            wchar_t* end;
+            val = wcstod(buf, &end);
+            if(end != buf + size) {
+                const u16string& str = data->string();
+                bool isOnlyWhiteSpace = true;
+                for(unsigned i = 0; i < str.length() ; i ++) {
+                    //FIXME we shold not use isspace function. implement javascript isspace function.
+                    if(!isspace(str[i])) {
+                        isOnlyWhiteSpace = false;
+                        break;
+                    }
+                }
+                if(isOnlyWhiteSpace) {
+                    val = 0;
+                } else
+                    val = std::numeric_limits<double>::quiet_NaN();
+            }
+        });
+        return val;
+    } else {
+        return toPrimitive().toNumber();
+    }
+}
+
+ALWAYS_INLINE bool ESValue::toBoolean() const
 {
     if (*this == ESValue(true))
         return true;
@@ -398,7 +403,7 @@ inline bool ESValue::isPrimitive() const
     return !isESPointer() || asESPointer()->isESString();
 }
 
-inline size_t ESValue::toIndex() const
+ALWAYS_INLINE size_t ESValue::toIndex() const
 {
     int32_t i;
     if(LIKELY(isInt32()) && LIKELY((i = asInt32()) >= 0)) {
