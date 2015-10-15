@@ -1,7 +1,13 @@
 #include "Escargot.h"
+#include "bytecode/ByteCode.h"
 #include "Operations.h"
 
 namespace escargot {
+
+NEVER_INLINE ESValue* getByIdOperationWithNoInline(ESVMInstance* instance, ExecutionContext* ec, GetById* code)
+{
+    return getByIdOperation(instance, ec, code);
+}
 
 NEVER_INLINE ESValue modOperation(const ESValue& left, const ESValue& right)
 {
@@ -42,57 +48,107 @@ NEVER_INLINE ESValue modOperation(const ESValue& left, const ESValue& right)
     return ret;
 }
 
-/*
-//http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5
-NEVER_INLINE ESValue abstractRelationalComparison(const ESValue& left, const ESValue& right, bool leftFirst)
+NEVER_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESString* keyString, const ESValue& value
+        , ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex, ESHiddenClass** hiddenClassWillBe)
 {
-    ESValue lval(ESValue::ESForceUninitialized);
-    ESValue rval(ESValue::ESForceUninitialized);
-    if(leftFirst) {
-        lval = left.toPrimitive();
-        rval = right.toPrimitive();
-    } else {
-        rval = right.toPrimitive();
-        lval = left.toPrimitive();
-    }
+    ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedReadOnlyOrAccessorProperty());
 
-    // http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5
-    if(lval.isInt32() && rval.isInt32()) {
-        return ESValue(lval.asInt32() < rval.asInt32());
-    } else if (lval.isESString() && rval.isESString()) {
-        return ESValue(lval.toString()->string() < rval.toString()->string());
-    } else {
-        double n1 = lval.toNumber();
-        double n2 = rval.toNumber();
-        bool sign1 = std::signbit(n1);
-        bool sign2 = std::signbit(n2);
-        if(isnan(n1) || isnan(n2)) {
-            return ESValue();
-        } else if(n1 == n2) {
-            return ESValue(false);
-        } else if(n1 == 0.0 && n2 == 0.0 && sign2) {
-            return ESValue(false);
-        } else if(n1 == 0.0 && n2 == 0.0 && sign1) {
-            return ESValue(false);
-        } else if(isinf(n1) && !sign1) {
-            return ESValue(false);
-        } else if(isinf(n2) && !sign2) {
-            return ESValue(true);
-        } else if(isinf(n2) && sign2) {
-            return ESValue(false);
-        } else if(isinf(n1) && sign1) {
-            return ESValue(true);
+    if(LIKELY(willBeObject->isESPointer())) {
+        if(LIKELY(willBeObject->asESPointer()->isESObject())) {
+            ESObject* obj = willBeObject->asESPointer()->asESObject();
+            if(*cachedHiddenClassIndex != SIZE_MAX && (*cachedHiddenClassChain)[0] == obj->hiddenClass()) {
+                ASSERT((*cachedHiddenClassChain).size() == 1);
+                if(!obj->hiddenClass()->write(obj, obj, keyString, value))
+                    throw ESValue(TypeError::create());
+                return ;
+            } else if(*hiddenClassWillBe) {
+                size_t cSiz = cachedHiddenClassChain->size();
+                bool miss = false;
+                for(int i = 0; i < cSiz - 1; i ++) {
+                    if((*cachedHiddenClassChain)[i] != obj->hiddenClass()) {
+                        miss = true;
+                        break;
+                    } else {
+                        ESValue o = obj->__proto__();
+                        if(!o.isObject()) {
+                            miss = true;
+                            break;
+                        }
+                        obj = o.asESPointer()->asESObject();
+                    }
+                }
+                if(!miss) {
+                    if((*cachedHiddenClassChain)[cSiz - 1] == obj->hiddenClass()) {
+                        //cache hit!
+                        obj = willBeObject->asESPointer()->asESObject();
+                        obj->m_hiddenClassData.push_back(value);
+                        obj->m_hiddenClass = *hiddenClassWillBe;
+                        return ;
+                    }
+                }
+            }
+
+            //cache miss
+            *cachedHiddenClassIndex = SIZE_MAX;
+            *hiddenClassWillBe = NULL;
+            cachedHiddenClassChain->clear();
+
+            obj = willBeObject->asESPointer()->asESObject();
+            size_t idx = obj->hiddenClass()->findProperty(keyString);
+            if(idx != SIZE_MAX) {
+                //own property
+                *cachedHiddenClassIndex = idx;
+                cachedHiddenClassChain->push_back(obj->hiddenClass());
+
+                if(!obj->hiddenClass()->write(obj, obj, idx, value))
+                    throw ESValue(TypeError::create());
+            } else {
+                cachedHiddenClassChain->push_back(obj->hiddenClass());
+                ESValue proto = obj->__proto__();
+                while(proto.isObject()) {
+                    obj = proto.asESPointer()->asESObject();
+                    cachedHiddenClassChain->push_back(obj->hiddenClass());
+
+                    if(obj->hiddenClass()->hasReadOnlyProperty()) {
+                        size_t idx = obj->hiddenClass()->findProperty(keyString);
+                        if(idx != SIZE_MAX) {
+                            if(!obj->hiddenClass()->propertyInfo(idx).m_flags.m_isWritable) {
+                                *cachedHiddenClassIndex = SIZE_MAX;
+                                *hiddenClassWillBe = NULL;
+                                cachedHiddenClassChain->clear();
+                                throw ESValue(TypeError::create());
+                            }
+                        }
+                    }
+                    proto = obj->__proto__();
+                }
+
+                ASSERT(!willBeObject->asESPointer()->asESObject()->hasOwnProperty(keyString));
+                ESHiddenClass* before = willBeObject->asESPointer()->asESObject()->hiddenClass();
+                willBeObject->asESPointer()->asESObject()->defineDataProperty(keyString, true, true, true, value);
+
+                //only cache vector mode object.
+                if(willBeObject->asESPointer()->asESObject()->hiddenClass() != before)
+                    *hiddenClassWillBe = willBeObject->asESPointer()->asESObject()->hiddenClass();
+            }
         } else {
-            return ESValue(n1 < n2);
+            willBeObject->toObject()->set(keyString, value, true);
         }
+    } else {
+        willBeObject->toObject()->set(keyString, value, true);
     }
 }
-*/
+
 
 NEVER_INLINE ESValue getObjectPreComputedCaseOperationWithNeverInline(ESValue* willBeObject, ESString* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject
         ,ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex)
 {
     return getObjectPreComputedCaseOperation(willBeObject, property, lastObjectValueMetInMemberExpression, globalObject, cachedHiddenClassChain, cachedHiddenClassIndex);
+}
+
+NEVER_INLINE ESValue getObjectOperationWithNeverInline(ESValue* willBeObject, ESValue* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject)
+{
+    return getObjectOperation(willBeObject, property, lastObjectValueMetInMemberExpression, globalObject);
 }
 
 NEVER_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject)

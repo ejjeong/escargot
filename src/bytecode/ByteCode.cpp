@@ -107,65 +107,10 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         goto NextInstruction;
     }
 
-    LoadStackPointerOpcodeLbl:
-    {
-        LoadStackPointer* code = (LoadStackPointer *)currentCode;
-        sub<ESValue>(stack, bp, code->m_offsetToBasePointer);
-        executeNextCode<LoadStackPointer>(programCounter);
-        goto NextInstruction;
-    }
-
-    CheckStackPointerOpcodeLbl:
-    {
-        CheckStackPointer* byteCode = (CheckStackPointer *)currentCode;
-        if (stack != bp) {
-            printf("Stack is not equal to Base Point at the end of statement (%ld)\n", byteCode->m_lineNumber);
-            RELEASE_ASSERT_NOT_REACHED();
-         }
-
-        executeNextCode<CheckStackPointer>(programCounter);
-        goto NextInstruction;
-    }
-
-    PrintSpAndBpOpcodeLbl:
-    {
-        printf("SP = %p, BP = %p\n", stack, bp);
-
-        executeNextCode<PrintSpAndBp>(programCounter);
-        goto NextInstruction;
-    }
-
     GetByIdOpcodeLbl:
     {
         GetById* code = (GetById*)currentCode;
-        if (LIKELY(code->m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
-            ASSERT(ec->resolveBinding(code->m_name, code->m_nonAtomicName) == code->m_cachedSlot);
-            push<ESValue>(stack, bp, code->m_cachedSlot);
-#ifdef ENABLE_ESJIT
-            code->m_profile.addProfile(*code->m_cachedSlot);
-#endif
-        } else {
-            ESValue* slot = ec->resolveBinding(code->m_name, code->m_nonAtomicName);
-            if(LIKELY(slot != NULL)) {
-                code->m_cachedSlot = slot;
-                code->m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
-                push<ESValue>(stack, bp, code->m_cachedSlot);
-#ifdef ENABLE_ESJIT
-                code->m_profile.addProfile(*code->m_cachedSlot);
-#endif
-            } else {
-                ReferenceError* receiver = ReferenceError::create();
-                std::vector<ESValue> arguments;
-                u16string err_msg;
-                err_msg.append(code->m_nonAtomicName->data());
-                err_msg.append(u" is not defined");
-
-                //TODO call constructor
-                //ESFunctionObject::call(fn, receiver, &arguments[0], arguments.size(), instance);
-                receiver->set(strings->message.string(), ESString::create(std::move(err_msg)));
-                throw ESValue(receiver);
-            }
-        }
+        push<ESValue>(stack, bp, getByIdOperation(instance, ec, code));
         executeNextCode<GetById>(programCounter);
         goto NextInstruction;
     }
@@ -173,18 +118,10 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     GetByIdWithoutExceptionOpcodeLbl:
     {
         GetById* code = (GetById*)currentCode;
-        if (LIKELY(code->m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
-            ASSERT(ec->resolveBinding(code->m_name, code->m_nonAtomicName) == code->m_cachedSlot);
-            push<ESValue>(stack, bp, code->m_cachedSlot);
-        } else {
-            ESValue* slot = ec->resolveBinding(code->m_name, code->m_nonAtomicName);
-            if(LIKELY(slot != NULL)) {
-                code->m_cachedSlot = slot;
-                code->m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
-                push<ESValue>(stack, bp, code->m_cachedSlot);
-            } else {
-                push<ESValue>(stack, bp, ESValue(ESValue::ESEmptyValue));
-            }
+        try {
+            push<ESValue>(stack, bp, getByIdOperationWithNoInline(instance, ec, code));
+        } catch(...) {
+            push<ESValue>(stack, bp, ESValue(ESValue::ESEmptyValue));
         }
         executeNextCode<GetById>(programCounter);
         goto NextInstruction;
@@ -717,7 +654,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 #ifndef NDEBUG
         stack = (void *)(((size_t)stack) + sizeof(size_t) * 2);
 #endif
-        push<ESValue>(stack, bp, getObjectOperation(willBeObject, property, &lastESObjectMetInMemberExpressionNode, globalObject));
+        push<ESValue>(stack, bp, getObjectOperationWithNeverInline(willBeObject, property, &lastESObjectMetInMemberExpressionNode, globalObject));
         executeNextCode<GetObjectWithPeeking>(programCounter);
         goto NextInstruction;
     }
@@ -1075,6 +1012,44 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         goto NextInstruction;
     }
 
+    ThisOpcodeLbl:
+    {
+        if(UNLIKELY(thisValue.isEmpty())) {
+            thisValue = ec->resolveThisBinding();
+        }
+        push<ESValue>(stack, bp, thisValue);
+        executeNextCode<This>(programCounter);
+        goto NextInstruction;
+    }
+
+    LoadStackPointerOpcodeLbl:
+    {
+        LoadStackPointer* code = (LoadStackPointer *)currentCode;
+        sub<ESValue>(stack, bp, code->m_offsetToBasePointer);
+        executeNextCode<LoadStackPointer>(programCounter);
+        goto NextInstruction;
+    }
+
+    CheckStackPointerOpcodeLbl:
+    {
+        CheckStackPointer* byteCode = (CheckStackPointer *)currentCode;
+        if (stack != bp) {
+            printf("Stack is not equal to Base Point at the end of statement (%ld)\n", byteCode->m_lineNumber);
+            RELEASE_ASSERT_NOT_REACHED();
+         }
+
+        executeNextCode<CheckStackPointer>(programCounter);
+        goto NextInstruction;
+    }
+
+    PrintSpAndBpOpcodeLbl:
+    {
+        printf("SP = %p, BP = %p\n", stack, bp);
+
+        executeNextCode<PrintSpAndBp>(programCounter);
+        goto NextInstruction;
+    }
+
     LoopStartOpcodeLbl:
     {
         executeNextCode<LoopStart>(programCounter);
@@ -1168,16 +1143,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             }
 
         }
-    }
-
-    ThisOpcodeLbl:
-    {
-        if(UNLIKELY(thisValue.isEmpty())) {
-            thisValue = ec->resolveThisBinding();
-        }
-        push<ESValue>(stack, bp, thisValue);
-        executeNextCode<This>(programCounter);
-        goto NextInstruction;
     }
 
     EnumerateObjectOpcodeLbl:

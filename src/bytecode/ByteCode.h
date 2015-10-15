@@ -541,6 +541,8 @@ public:
 #endif
 };
 
+ASSERT_STATIC(sizeof(GetById) == sizeof(GetByIdWithoutException), "");
+
 class GetByIndex : public ByteCode {
 public:
     GetByIndex(size_t index)

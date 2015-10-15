@@ -1119,7 +1119,7 @@ public:
 class ESObject : public ESPointer {
     friend class ESSlot;
     friend class ESHiddenClass;
-    friend ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ::escargot::ESString* keyString, const ESValue& value
+    friend NEVER_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ::escargot::ESString* keyString, const ESValue& value
             , ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex, ESHiddenClass** hiddenClassWillBe);
 protected:
     ESObject(ESPointer::Type type, ESValue __proto__, size_t initialKeyCount = 6);
