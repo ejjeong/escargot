@@ -35,7 +35,11 @@ CallInfo contextResolveBindingCallInfo = CI(contextResolveBinding, CallInfo::typ
 CallInfo objectDefinePropertyOrThrowCallInfo = CI(objectDefinePropertyOrThrow, CallInfo::typeSig3(ARGTYPE_V, ARGTYPE_P, ARGTYPE_D, /*ARGTYPE_B, ARGTYPE_B, ARGTYPE_B,*/ ARGTYPE_D));
 CallInfo esFunctionObjectCallCallInfo = CI(esFunctionObjectCall, CallInfo::typeSig6(ARGTYPE_D, ARGTYPE_P, ARGTYPE_D, ARGTYPE_D, ARGTYPE_P, ARGTYPE_I, ARGTYPE_B));
 CallInfo ESObjectSetOpCallInfo = CI(ESObjectSetOp, CallInfo::typeSig3(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
+#if 0
 CallInfo resolveNonDataPropertyInfo = CI(resolveNonDataProperty, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_P, ARGTYPE_P));
+#else
+CallInfo resolveNonDataPropertyInfo = CI(resolveNonDataProperty, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_P, ARGTYPE_Q));
+#endif
 #ifndef NDEBUG
 CallInfo logIntCallInfo = CI(jitLogIntOperation, CallInfo::typeSig2(ARGTYPE_V, ARGTYPE_I, ARGTYPE_P));
 CallInfo logDoubleCallInfo = CI(jitLogDoubleOperation, CallInfo::typeSig2(ARGTYPE_V, ARGTYPE_D, ARGTYPE_P));
@@ -703,6 +707,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_ESIR(GetObjectPreComputed);
         LIns* obj = getTmpMapping(irGetObjectPreComputed->objectIndex());
         if (irGetObjectPreComputed->cachedIndex() < SIZE_MAX) {
+#if 0
             LIns* phi = m_out.insAlloc(sizeof(ESValue));
             size_t gapToHiddenClassData = escargot::ESObject::offsetOfHiddenClassData();
             LIns* hiddenClassData = m_out.insLoad(LIR_ldd, obj, gapToHiddenClassData, 1, LOAD_NORMAL);
@@ -714,7 +719,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             // FIXME : offset can be changed when data structure revised
             LIns* propertyFlags = m_out.insLoad(LIR_lduc2ui, propertyFlagV, irGetObjectPreComputed->cachedIndex() * sizeof(ESHiddenClassPropertyInfo), 1, LOAD_NORMAL);
             LIns* isDataProperty = m_out.ins2(LIR_andi, propertyFlags, m_oneI);
-            // TODO : can remove
+
             LIns* checkIfDataProperty = m_out.ins2(LIR_eqi, isDataProperty, m_oneI);
             LIns* jumpIfDataProperty = m_out.insBranch(LIR_jt, checkIfDataProperty, nullptr);
 
@@ -725,6 +730,12 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             LIns* labelSimple = m_out.ins0(LIR_label);
             jumpIfDataProperty->setTarget(labelSimple);
             LIns* ret = m_out.insLoad(LIR_ldd, phi, 0, 1, LOAD_NORMAL);
+#else
+            // FIXME!!!!!!!!
+            // This code is simple function call
+            LIns* args[] = {m_out.insImmQ(irGetObjectPreComputed->cachedIndex()), obj};
+            LIns* ret = m_out.insCall(&resolveNonDataPropertyInfo, args);
+#endif
             return ret;
         }
         RELEASE_ASSERT_NOT_REACHED();
