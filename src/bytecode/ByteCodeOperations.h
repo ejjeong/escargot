@@ -86,8 +86,8 @@ ALWAYS_INLINE ESValue minusOperation(const ESValue& left, const ESValue& right)
 
 NEVER_INLINE ESValue modOperation(const ESValue& left, const ESValue& right);
 
-NEVER_INLINE ESValue abstractRelationalComparisonSlowCase(const ESValue& left, const ESValue& right, bool leftFirst);
 //http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5
+NEVER_INLINE ESValue abstractRelationalComparisonSlowCase(const ESValue& left, const ESValue& right, bool leftFirst);
 ALWAYS_INLINE ESValue abstractRelationalComparison(const ESValue& left, const ESValue& right, bool leftFirst)
 {
     //consume very fast case
@@ -98,8 +98,8 @@ ALWAYS_INLINE ESValue abstractRelationalComparison(const ESValue& left, const ES
     return abstractRelationalComparisonSlowCase(left, right, leftFirst);
 }
 
-NEVER_INLINE ESValue getObjectOperationSlowCase(ESValue* willBeObject, ESValue* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject);
 //d = {}. d[0]
+NEVER_INLINE ESValue getObjectOperationSlowCase(ESValue* willBeObject, ESValue* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject);
 ALWAYS_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject)
 {
     ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedReadOnlyOrAccessorProperty());
@@ -201,9 +201,11 @@ ALWAYS_INLINE ESValue getObjectPreComputedCaseOperation(ESValue* willBeObject, E
 
 NEVER_INLINE ESValue getObjectPreComputedCaseOperationWithNeverInline(ESValue* willBeObject, ESString* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject
         ,ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex);
-NEVER_INLINE void setObjectOperationSlowCase(ESValue* willBeObject, ESValue* property, const ESValue& value);
+
 NEVER_INLINE void throwObjectWriteError();
+
 //d = {}. d[0] = 1
+NEVER_INLINE void setObjectOperationSlowCase(ESValue* willBeObject, ESValue* property, const ESValue& value);
 ALWAYS_INLINE void setObjectOperation(ESValue* willBeObject, ESValue* property, const ESValue& value)
 {
     ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedReadOnlyOrAccessorProperty());
@@ -223,8 +225,8 @@ ALWAYS_INLINE void setObjectOperation(ESValue* willBeObject, ESValue* property, 
     setObjectOperationSlowCase(willBeObject, property, value);
 }
 
-NEVER_INLINE void setObjectPreComputedCaseOperationSlowCase(ESValue* willBeObject, ESString* keyString, const ESValue& value);
 //d = {}. d.foo = 1
+NEVER_INLINE void setObjectPreComputedCaseOperationSlowCase(ESValue* willBeObject, ESString* keyString, const ESValue& value);
 ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESString* keyString, const ESValue& value
         , ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex, ESHiddenClass** hiddenClassWillBe)
 {

@@ -406,23 +406,46 @@ NEVER_INLINE EnumerateObjectData* executeEnumerateObject(ESObject* obj)
     EnumerateObjectData* data = new EnumerateObjectData();
     data->m_object = obj;
     data->m_keys.reserve(obj->keyCount());
+
     ESObject* target = obj;
-    std::unordered_set<ESString*, std::hash<ESString*>, std::equal_to<ESString*>, gc_allocator<ESString *> > keyStringSet;
-    target->enumeration([&data, &keyStringSet](ESValue key) {
-        data->m_keys.push_back(key);
-        keyStringSet.insert(key.toString());
-    });
+    bool shouldSearchProto = false;
     ESValue proto = target->__proto__();
+
     while(proto.isESPointer() && proto.asESPointer()->isESObject()) {
         target = proto.asESPointer()->asESObject();
+        target->enumeration([&shouldSearchProto](ESValue key) {
+            shouldSearchProto = true;
+        });
+
+        if(shouldSearchProto) {
+            break;
+        }
+        proto = target->__proto__();
+    }
+
+    target = obj;
+    if(shouldSearchProto) {
+        std::unordered_set<ESString*, std::hash<ESString*>, std::equal_to<ESString*>, gc_allocator<ESString *> > keyStringSet;
         target->enumeration([&data, &keyStringSet](ESValue key) {
-            ESString* str = key.toString();
-            if(keyStringSet.find(str) != keyStringSet.end()) {
-                data->m_keys.push_back(key);
-                keyStringSet.insert(str);
-            }
+            data->m_keys.push_back(key);
+            keyStringSet.insert(key.toString());
         });
         proto = target->__proto__();
+        while(proto.isESPointer() && proto.asESPointer()->isESObject()) {
+            target = proto.asESPointer()->asESObject();
+            target->enumeration([&data, &keyStringSet](ESValue key) {
+                ESString* str = key.toString();
+                if(keyStringSet.find(str) != keyStringSet.end()) {
+                    data->m_keys.push_back(key);
+                    keyStringSet.insert(str);
+                }
+            });
+            proto = target->__proto__();
+        }
+    } else {
+        target->enumeration([&data](ESValue key) {
+            data->m_keys.push_back(key);
+        });
     }
 
     return data;
