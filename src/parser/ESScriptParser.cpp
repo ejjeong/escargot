@@ -145,6 +145,9 @@ Node* ESScriptParser::generateAST(ESVMInstance* instance, const escargot::u16str
             for(unsigned i = 0; i < vec.size() ; i ++) {
                 newIdentifierVector.push_back(vec[i]);
             }
+            //If it has own name, should bind function name
+            if (((FunctionExpressionNode *)currentNode)->nonAtomicId() != strings->emptyString.string())
+                newIdentifierVector.push_back(((FunctionExpressionNode *)currentNode)->id());
             ((FunctionExpressionNode *)currentNode)->setOuterFunctionNode(nearFunctionNode);
             identifierStack.push_back(&newIdentifierVector);
             bool preShowedEvalInFunction = showedEvalInFunction;
