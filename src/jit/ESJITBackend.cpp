@@ -383,6 +383,11 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(DoubleDivision);
         INIT_BINARY_ESIR(DoubleDivision);
+        if (leftType.isInt32Type())
+            left = m_out.ins1(LIR_i2d, left);
+        if (rightType.isInt32Type())
+            right = m_out.ins1(LIR_i2d, right);
+        ASSERT(left->isD() && right->isD());
         return m_out.ins2(LIR_divd, left, right);
     }
     case ESIR::Opcode::GenericDivision:
