@@ -772,45 +772,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         NEXT_INSTRUCTION();
     }
 
-    SetObjectPropertySetterOpcodeLbl:
-    {
-        ESValue* value = pop<ESValue>(stack, bp);
-        ESValue* key = pop<ESValue>(stack, bp);
-
-        ESObject* obj = peek<ESValue>(stack, bp)->asESPointer()->asESObject();
-        RELEASE_ASSERT_NOT_REACHED();
-        /*
-        if(obj->hasOwnProperty(*key)) {
-            //TODO check property is accessor property
-            //TODO check accessor already exists
-            obj->accessorData(*key)->setJSSetter(value->asESPointer()->asESFunctionObject());
-        } else {
-            obj->defineAccessorProperty(key->toString(), NULL, value->asESPointer()->asESFunctionObject(), true, true, true);
-        }
-*/
-        executeNextCode<SetObjectPropertySetter>(programCounter);
-        NEXT_INSTRUCTION();
-    }
-
-    SetObjectPropertyGetterOpcodeLbl:
-    {
-        ESValue* value = pop<ESValue>(stack, bp);
-        ESValue* key = pop<ESValue>(stack, bp);
-        ESObject* obj = peek<ESValue>(stack, bp)->asESPointer()->asESObject();
-
-        RELEASE_ASSERT_NOT_REACHED();
-        /*
-        if(obj->hasOwnProperty(*key)) {
-            //TODO check property is accessor property
-            //TODO check accessor already exists
-            obj->accessorData(*key)->setJSGetter(value->asESPointer()->asESFunctionObject());
-        } else {
-            obj->defineAccessorProperty(key->toString(), value->asESPointer()->asESFunctionObject(), NULL, true, true, true);
-        }*/
-        executeNextCode<SetObjectPropertyGetter>(programCounter);
-        NEXT_INSTRUCTION();
-    }
-
     UnaryTypeOfOpcodeLbl:
     {
         ESValue* v = pop<ESValue>(stack, bp);
@@ -1133,6 +1094,42 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ExecuteNativeFunction* code = (ExecuteNativeFunction*)currentCode;
         ASSERT(bp == stack);
         return code->m_fn(instance);
+    }
+
+    SetObjectPropertySetterOpcodeLbl:
+    {
+        ESValue* value = pop<ESValue>(stack, bp);
+        ESValue* key = pop<ESValue>(stack, bp);
+        ESObject* obj = peek<ESValue>(stack, bp)->asESPointer()->asESObject();
+
+        ESString* keyString = key->toString();
+        if(obj->hasOwnProperty(keyString)) {
+            //TODO check property is accessor property
+            //TODO check accessor already exists
+            obj->accessorData(keyString)->setJSSetter(value->asESPointer()->asESFunctionObject());
+        } else {
+            obj->defineAccessorProperty(keyString, new ESPropertyAccessorData(NULL, value->asESPointer()->asESFunctionObject()), true, true, true);
+        }
+        executeNextCode<SetObjectPropertySetter>(programCounter);
+        NEXT_INSTRUCTION();
+    }
+
+    SetObjectPropertyGetterOpcodeLbl:
+    {
+        ESValue* value = pop<ESValue>(stack, bp);
+        ESValue* key = pop<ESValue>(stack, bp);
+        ESObject* obj = peek<ESValue>(stack, bp)->asESPointer()->asESObject();
+
+        ESString* keyString = key->toString();
+        if(obj->hasOwnProperty(keyString)) {
+            //TODO check property is accessor property
+            //TODO check accessor already exists
+            obj->accessorData(keyString)->setJSGetter(value->asESPointer()->asESFunctionObject());
+        } else {
+            obj->defineAccessorProperty(keyString, new ESPropertyAccessorData(value->asESPointer()->asESFunctionObject(), NULL), true, true, true);
+        }
+        executeNextCode<SetObjectPropertyGetter>(programCounter);
+        NEXT_INSTRUCTION();
     }
 
     EndOpcodeLbl:

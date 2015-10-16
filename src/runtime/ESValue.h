@@ -1167,6 +1167,13 @@ public:
         m_hiddenClass = m_hiddenClass->forceNonVectorMode();
     }
 
+    ESPropertyAccessorData* accessorData(escargot::ESString* key)
+    {
+        size_t idx = m_hiddenClass->findProperty(key);
+        ASSERT(!m_hiddenClass->propertyInfo(idx).m_flags.m_isDataProperty);
+        return (ESPropertyAccessorData *)m_hiddenClassData[idx].asESPointer();
+    }
+
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-get-o-p
     ALWAYS_INLINE ESValue get(escargot::ESValue key);
     ALWAYS_INLINE ESValue getOwnProperty(escargot::ESValue key);
