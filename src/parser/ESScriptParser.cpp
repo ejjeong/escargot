@@ -86,10 +86,11 @@ Node* ESScriptParser::generateAST(ESVMInstance* instance, const escargot::u16str
     };
 
     bool shouldWorkAroundIdentifier = true;
+    bool showedEvalInFunction = false;
     std::function<void (Node* currentNode,
             std::vector<InternalAtomicStringVector *>& identifierStack,
             FunctionNode* nearFunctionNode)>
-    postAnalysisFunction = [&postAnalysisFunction, instance, &markNeedsActivation, &shouldWorkAroundIdentifier, &updatePostfixNodeChecker]
+    postAnalysisFunction = [&postAnalysisFunction, instance, &markNeedsActivation, &shouldWorkAroundIdentifier, &updatePostfixNodeChecker, &showedEvalInFunction]
              (Node* currentNode,
              std::vector<InternalAtomicStringVector *>& identifierStack,
              FunctionNode* nearFunctionNode) {
@@ -131,7 +132,9 @@ Node* ESScriptParser::generateAST(ESVMInstance* instance, const escargot::u16str
             }
             ((FunctionDeclarationNode *)currentNode)->setOuterFunctionNode(nearFunctionNode);
             identifierStack.push_back(&newIdentifierVector);
+            bool preShowedEvalInFunction = showedEvalInFunction;
             postAnalysisFunction(((FunctionDeclarationNode *)currentNode)->m_body, identifierStack, ((FunctionDeclarationNode *)currentNode));
+            showedEvalInFunction = preShowedEvalInFunction;
             identifierStack.pop_back();
             ((FunctionDeclarationNode *)currentNode)->setInnerIdentifiers(std::move(newIdentifierVector));
             //printf("end of process function body-------------------\n");
@@ -144,12 +147,14 @@ Node* ESScriptParser::generateAST(ESVMInstance* instance, const escargot::u16str
             }
             ((FunctionExpressionNode *)currentNode)->setOuterFunctionNode(nearFunctionNode);
             identifierStack.push_back(&newIdentifierVector);
+            bool preShowedEvalInFunction = showedEvalInFunction;
             postAnalysisFunction(((FunctionExpressionNode *)currentNode)->m_body, identifierStack, ((FunctionExpressionNode *)currentNode));
+            showedEvalInFunction = preShowedEvalInFunction;
             identifierStack.pop_back();
             ((FunctionExpressionNode *)currentNode)->setInnerIdentifiers(std::move(newIdentifierVector));
             //printf("end of process function body-------------------\n");
         } else if(type == NodeType::Identifier) {
-            if(!shouldWorkAroundIdentifier) {
+            if(!shouldWorkAroundIdentifier || showedEvalInFunction) {
                 return ;
             }
             //use case
@@ -236,6 +241,7 @@ Node* ESScriptParser::generateAST(ESVMInstance* instance, const escargot::u16str
                 if(callee->type() == NodeType::Identifier) {
                     if(((IdentifierNode *)callee)->name() == InternalAtomicString(u"eval")) {
                         markNeedsActivation(nearFunctionNode);
+                        showedEvalInFunction = true;
                     }
                 }
             }
