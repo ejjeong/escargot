@@ -31,8 +31,7 @@ void ESGraphTypeInference::run(ESGraph* graph)
             case ESIR::Opcode::ConstantDouble:
                 graph->setOperandType(ir->targetIndex(), TypeDouble);
                 break;
-            case ESIR::Opcode::ConstantTrue:
-            case ESIR::Opcode::ConstantFalse:
+            case ESIR::Opcode::ConstantBoolean:
                 graph->setOperandType(ir->targetIndex(), TypeBoolean);
                 break;
             case ESIR::Opcode::ConstantString:

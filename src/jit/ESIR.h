@@ -21,8 +21,7 @@ class ESBasicBlock;
     F(ConstantInt, ) \
     F(ConstantDouble, ) \
     F(ConstantPointer, ) \
-    F(ConstantTrue, ) \
-    F(ConstantFalse, ) \
+    F(ConstantBoolean, ) \
     F(ConstantString, ) \
     \
     /* Type conversions */ \
@@ -251,6 +250,26 @@ private:
     double m_value;
 };
 
+class ConstantBooleanIR : public ESIR {
+public:
+    DECLARE_STATIC_GENERATOR_1(ConstantBoolean, bool);
+
+    double value() { return m_value; }
+
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+        out << " const boolean " << std::boolalpha << m_value;
+    }
+#endif
+
+private:
+    ConstantBooleanIR(int target, bool value)
+        : ESIR(ESIR::Opcode::ConstantBoolean, target), m_value(value) { }
+    bool m_value;
+};
 class ConstantPointerIR : public ESIR {
 public:
     DECLARE_STATIC_GENERATOR_1(ConstantPointer, void*);

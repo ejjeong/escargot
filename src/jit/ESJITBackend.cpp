@@ -239,7 +239,16 @@ LIns* NativeGenerator::boxESValue(LIns* unboxedValue, Type type)
 
 LIns* NativeGenerator::unboxESValue(LIns* boxedValue, Type type)
 {
-    if (type.isInt32Type() || type.isBooleanType()) {
+    if (type.isBooleanType()) {
+  #ifdef ESCARGOT_64
+          LIns* unboxedValue = m_out.ins2(LIR_andq, boxedValue, m_booleanTagComplementQ);
+          LIns* unboxedValueInInt = m_out.ins1(LIR_q2i, unboxedValue);
+          return unboxedValueInInt;
+  #else
+          RELEASE_ASSERT_NOT_REACHED();
+  #endif
+      }
+    else if (type.isInt32Type()) {
 #ifdef ESCARGOT_64
         LIns* unboxedValue = m_out.ins2(LIR_andq, boxedValue, m_intTagComplementQ);
         LIns* unboxedValueInInt = m_out.ins1(LIR_q2i, unboxedValue);
@@ -288,6 +297,11 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(ConstantDouble);
         return m_out.insImmD(irConstantDouble->value());
+    }
+    case ESIR::Opcode::ConstantBoolean:
+    {
+        INIT_ESIR(ConstantBoolean);
+        return m_out.insImmI(irConstantBoolean->value());
     }
     case ESIR::Opcode::ConstantString:
     {
@@ -872,6 +886,7 @@ void NativeGenerator::nanojitCodegen(ESVMInstance* instance)
 #ifdef ESCARGOT_64
     m_tagMaskQ = m_out.insImmQ(TagMask);
     m_booleanTagQ = m_out.insImmQ(TagBitTypeOther | TagBitBool);
+    m_booleanTagComplementQ = m_out.insImmQ(~(TagBitTypeOther | TagBitBool));
     m_intTagQ = m_out.insImmQ(TagTypeNumber);
     m_intTagComplementQ = m_out.insImmQ(~TagTypeNumber);
     m_doubleEncodeOffsetQ = m_out.insImmQ(DoubleEncodeOffset);

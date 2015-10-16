@@ -79,7 +79,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             } else if (bytecode->m_value.isDouble()) {
                 literal = ConstantDoubleIR::create(ssaIndex->m_targetIndex, bytecode->m_value.asDouble());
             } else if (bytecode->m_value.isBoolean()) {
-                literal = ConstantIntIR::create(ssaIndex->m_targetIndex, bytecode->m_value.asBoolean());
+                literal = ConstantBooleanIR::create(ssaIndex->m_targetIndex, bytecode->m_value.asBoolean());
             } else if (bytecode->m_value.isESPointer()) {
                 ESPointer* p = bytecode->m_value.asESPointer();
                 if (p->isESString())
