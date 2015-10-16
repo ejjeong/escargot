@@ -336,12 +336,18 @@ inline double ESValue::toInteger() const
 }
 
 // http://www.ecma-international.org/ecma-262/5.1/#sec-9.5
-inline int32_t ESValue::toInt32() const
+ALWAYS_INLINE int32_t ESValue::toInt32() const
 {
     //consume fast case
     if (LIKELY(isInt32()))
         return asInt32();
 
+    return toInt32SlowCase();
+}
+
+// http://www.ecma-international.org/ecma-262/5.1/#sec-9.5
+inline int32_t ESValue::toInt32SlowCase() const
+{
     //Let number be the result of calling ToNumber on the input argument.
     double num = toNumber();
 
