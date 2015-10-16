@@ -1828,8 +1828,8 @@ escargot::Node* finishLiteralNode(ParseContext* ctx, RefPtr<ParseStatus> ps)
 {
     escargot::LiteralNode* nd;
     if(ps->m_type == Token::StringLiteralToken) {
-        escargot::InternalAtomicString str(ps->m_value.data());
-        nd = new escargot::LiteralNode(str.string());
+        escargot::u16string estr(ps->m_value.begin(), ps->m_value.end());
+        nd = new escargot::LiteralNode(escargot::ESString::create(std::move(estr)));
     }
     else if(ps->m_type == Token::NumericLiteralToken) {
         nd = new escargot::LiteralNode(escargot::ESValue(ps->m_valueNumber));
