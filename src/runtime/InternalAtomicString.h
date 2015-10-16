@@ -80,7 +80,7 @@ protected:
 
 ALWAYS_INLINE bool operator == (const InternalAtomicString& a,const InternalAtomicString& b)
 {
-    return *a.string()->stringData() == *b.string()->stringData();
+    return a.string() == b.string();
 }
 
 ALWAYS_INLINE bool operator != (const InternalAtomicString& a,const InternalAtomicString& b)

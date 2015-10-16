@@ -92,6 +92,21 @@ public:
         return &m_initialHiddenClassForObject;
     }
 
+    ALWAYS_INLINE ESHiddenClass* initialHiddenClassForFunctionObject()
+    {
+        return m_initialHiddenClassForFunctionObject;
+    }
+
+    ALWAYS_INLINE ESHiddenClass* initialHiddenClassForPrototypeObject()
+    {
+        return m_initialHiddenClassForPrototypeObject;
+    }
+
+    ALWAYS_INLINE ESHiddenClass* initialHiddenClassForArrayObject()
+    {
+        return m_initialHiddenClassForArrayObject;
+    }
+
     //Function for debug
     static void printValue(ESValue val);
     ALWAYS_INLINE unsigned long tickCount()
@@ -133,6 +148,9 @@ protected:
     unsigned m_identifierCacheInvalidationCheckCount;
 
     ESHiddenClass m_initialHiddenClassForObject;
+    ESHiddenClass* m_initialHiddenClassForFunctionObject;
+    ESHiddenClass* m_initialHiddenClassForPrototypeObject;
+    ESHiddenClass* m_initialHiddenClassForArrayObject;
 
     ESPropertyAccessorData m_object__proto__AccessorData;
     ESPropertyAccessorData m_functionPrototypeAccessorData;

@@ -330,7 +330,7 @@ ESObject::ESObject(ESPointer::Type type, ESValue __proto__, size_t initialKeyCou
 const unsigned ESArrayObject::MAX_FASTMODE_SIZE;
 
 ESArrayObject::ESArrayObject(int length)
-    : ESObject((Type)(Type::ESObject | Type::ESArrayObject), ESVMInstance::currentInstance()->globalObject()->arrayPrototype())
+    : ESObject((Type)(Type::ESObject | Type::ESArrayObject), ESVMInstance::currentInstance()->globalObject()->arrayPrototype(), 3)
     , m_vector(0)
     , m_fastmode(true)
 {
@@ -341,7 +341,9 @@ ESArrayObject::ESArrayObject(int length)
         setLength(length);
     }
 
-    defineAccessorProperty(strings->length.string(), ESVMInstance::currentInstance()->arrayLengthAccessorData(), true, false, false);
+    //defineAccessorProperty(strings->length.string(), ESVMInstance::currentInstance()->arrayLengthAccessorData(), true, false, false);
+    m_hiddenClass = ESVMInstance::currentInstance()->initialHiddenClassForArrayObject();
+    m_hiddenClassData.push_back((ESPointer *)ESVMInstance::currentInstance()->arrayLengthAccessorData());
 }
 
 ESRegExpObject::ESRegExpObject(escargot::ESString* source, const Option& option)
@@ -370,18 +372,26 @@ void ESRegExpObject::setOption(const Option& option)
 }
 
 ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlock* cb, escargot::ESString* name, unsigned length)
-    : ESObject((Type)(Type::ESObject | Type::ESFunctionObject), ESVMInstance::currentInstance()->globalFunctionPrototype())
+    : ESObject((Type)(Type::ESObject | Type::ESFunctionObject), ESVMInstance::currentInstance()->globalFunctionPrototype(), 4)
 {
     m_name = name;
     m_outerEnvironment = outerEnvironment;
     m_codeBlock = cb;
-    m_protoType = ESObject::create();
-    m_protoType.asESPointer()->asESObject()->defineDataProperty(strings->constructor.string(), true, false, true, this);
+    m_protoType = ESObject::create(2);
+
+    //m_protoType.asESPointer()->asESObject()->defineDataProperty(strings->constructor.string(), true, false, true, this);
+    m_protoType.asESPointer()->asESObject()->m_hiddenClass = ESVMInstance::currentInstance()->initialHiddenClassForPrototypeObject();
+    m_protoType.asESPointer()->asESObject()->m_hiddenClassData.push_back(this);
 
     // $19.2.4 Function Instances
-    defineDataProperty(strings->length, false, false, true, ESValue(length));
-    defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), true, false, false);
-    defineDataProperty(strings->name.string(), false, false, true, name);
+    // these define in ESVMInstance::ESVMInstance()
+    //defineDataProperty(strings->length, false, false, true, ESValue(length));
+    //defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), true, false, false);
+    //defineDataProperty(strings->name.string(), false, false, true, name);
+    m_hiddenClass = ESVMInstance::currentInstance()->initialHiddenClassForFunctionObject();
+    m_hiddenClassData.push_back(ESValue(length));
+    m_hiddenClassData.push_back(ESValue((ESPointer *)ESVMInstance::currentInstance()->functionPrototypeAccessorData()));
+    m_hiddenClassData.push_back(ESValue(name));
 }
 
 ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeFunctionType fn, escargot::ESString* name, unsigned length)
