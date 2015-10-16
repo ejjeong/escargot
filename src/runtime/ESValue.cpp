@@ -453,7 +453,7 @@ ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctio
             }
         }
         // if FunctionExpressionNode has own name, should bind own name
-        if (fn->codeBlock()->m_isFunctionExpression && *fn->name() != *(strings->emptyString.string()))
+        if (fn->codeBlock()->m_isFunctionExpression && fn->name()->length())
             *functionRecord->bindingValueForActivationMode(params.size()) = ESValue(fn);
     } else {
         const InternalAtomicStringVector& params = fn->codeBlock()->m_params;
@@ -464,7 +464,7 @@ ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctio
             }
         }
         // if FunctionExpressionNode has own name, should bind own name
-        if (fn->codeBlock()->m_isFunctionExpression && *fn->name() != *(strings->emptyString.string()))
+        if (fn->codeBlock()->m_isFunctionExpression && fn->name()->length())
             ESVMInstance->currentExecutionContext()->cachedDeclarativeEnvironmentRecordESValue()[params.size()] = ESValue(fn);
     }
 }
