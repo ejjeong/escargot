@@ -158,7 +158,7 @@ public:
     inline ESObject* toObject() const; //$7.1.13 ToObject
     inline double toLength() const; //$7.1.15 ToLength
 
-    static const uint32_t ESInvaildIndexValue = std::numeric_limits<uint32_t>::max();
+    enum { ESInvalidIndexValue = std::numeric_limits<uint32_t>::max() };
     ALWAYS_INLINE uint32_t toIndex() const; //http://www.ecma-international.org/ecma-262/5.1/#sec-15.4
 
     ALWAYS_INLINE ESString* asESString() const;

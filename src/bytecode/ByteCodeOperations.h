@@ -109,7 +109,7 @@ ALWAYS_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* propert
         if(LIKELY(arr->isFastmode())) {
             uint32_t idx = property->toIndex();
             if(LIKELY(idx < arr->length())) {
-                ASSERT(idx != ESValue::ESInvaildIndexValue);
+                ASSERT(idx != ESValue::ESInvalidIndexValue);
                 const ESValue& v = arr->data()[idx];
                 if(LIKELY(!v.isEmpty())) {
                     return v;
@@ -221,7 +221,7 @@ ALWAYS_INLINE void setObjectOperation(ESValue* willBeObject, ESValue* property, 
             if(LIKELY(arr->isFastmode())) {
                 uint32_t idx = property->toIndex();
                 if(LIKELY(idx < arr->length())) {
-                    ASSERT(idx != ESValue::ESInvaildIndexValue);
+                    ASSERT(idx != ESValue::ESInvalidIndexValue);
                     arr->data()[idx] = value;
                     return ;
                 }

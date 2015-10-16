@@ -128,7 +128,7 @@ NEVER_INLINE ESValue getObjectOperationSlowCase(ESValue* willBeObject, ESValue* 
     if(LIKELY(willBeObject->isESPointer())) {
         if(willBeObject->asESPointer()->isESString()) {
             uint32_t idx = property->toIndex();
-            if(idx != ESValue::ESInvaildIndexValue) {
+            if(idx != ESValue::ESInvalidIndexValue) {
                 if(LIKELY(idx < willBeObject->asESString()->length())) {
                     char16_t c = willBeObject->asESString()->string().data()[idx];
                     if(LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
@@ -174,7 +174,7 @@ NEVER_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue* 
             return willBeObject->toObject()->get(*property);
         } else if(willBeObject->asESPointer()->isESString()) {
             uint32_t idx = property->toIndex();
-            if(idx != ESValue::ESInvaildIndexValue) {
+            if(idx != ESValue::ESInvalidIndexValue) {
                 if(LIKELY(idx < willBeObject->asESString()->length())) {
                     char16_t c = willBeObject->asESString()->string().data()[idx];
                     if(LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {

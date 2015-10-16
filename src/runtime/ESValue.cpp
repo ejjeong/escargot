@@ -192,7 +192,7 @@ uint32_t ESString::tryToUseAsIndex()
     if(allOfCharIsDigit) {
         return number;
     }
-    return ESValue::ESInvaildIndexValue;
+    return ESValue::ESInvalidIndexValue;
 }
 
 ESString* ESString::substring(int from, int to) const
