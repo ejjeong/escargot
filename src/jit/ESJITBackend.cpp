@@ -109,7 +109,21 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
 #ifndef NDEBUG
     m_out.insComment(".= typecheck start =.");
 #endif
-    if (type.isInt32Type()) {
+    if (type.isBooleanType()) {
+#ifdef ESCARGOT_64
+        LIns* quadValue = m_out.ins1(LIR_dasq, in);
+        LIns* maskedValue = m_out.ins2(LIR_orq, quadValue, m_booleanTagQ);
+        LIns* maskedValue2 = m_out.ins2(LIR_subq, quadValue, m_booleanTagQ);
+        LIns* checkIfBoolean = m_out.ins2(LIR_leuq, maskedValue2, m_oneI);
+        LIns* jumpIfBoolean = m_out.insBranch(LIR_jt, checkIfBoolean, nullptr);
+        JIT_LOG(in, "Expected Boolean-typed value, but got this value");
+        generateOSRExit(currentByteCodeIndex);
+        LIns* normalPath = m_out.ins0(LIR_label);
+        jumpIfBoolean->setTarget(normalPath);
+#else
+        RELEASE_ASSERT_NOT_REACHED();
+#endif
+    } else if (type.isInt32Type()) {
 #ifdef ESCARGOT_64
         LIns* quadValue = m_out.ins1(LIR_dasq, in);
         LIns* maskedValue = m_out.ins2(LIR_andq, quadValue, m_intTagQ);
@@ -179,7 +193,16 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
 
 LIns* NativeGenerator::boxESValue(LIns* unboxedValue, Type type)
 {
-    if (type.isInt32Type() || type.isBooleanType()) {
+    if (type.isBooleanType()) {
+#ifdef ESCARGOT_64
+        LIns* wideUnboxedValue = m_out.ins1(LIR_i2q, unboxedValue);
+        LIns* boxedValue = m_out.ins2(LIR_orq, wideUnboxedValue, m_booleanTagQ);
+        LIns* boxedValueInDouble = m_out.ins1(LIR_qasd, boxedValue);
+        return boxedValueInDouble;
+#else
+        RELEASE_ASSERT_NOT_REACHED();
+#endif
+    } else if (type.isInt32Type()) {
 #ifdef ESCARGOT_64
         LIns* wideUnboxedValue = m_out.ins1(LIR_i2q, unboxedValue);
         LIns* boxedValue = m_out.ins2(LIR_orq, wideUnboxedValue, m_intTagQ);
@@ -729,11 +752,27 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         Type sourceType = m_graph->getOperandType(irPutInObject->sourceIndex());
 
         if (objType.isArrayObjectType()) {
-            if (propType.isInt32Type() && sourceType.isInt32Type()) {
-                LIns* boxedProp = boxESValue(prop, TypeInt32);
-                LIns* boxedSrc = boxESValue(source, TypeInt32);
-                LIns* args[] = {boxedSrc, boxedProp, obj};
-                return m_out.insCall(&ESObjectSetOpCallInfo, args);
+            if (propType.isInt32Type()) {
+                if (sourceType.isBooleanType()) {
+                    LIns* boxedProp = boxESValue(prop, TypeInt32);
+                    LIns* boxedSrc = boxESValue(source, TypeBoolean);
+                    LIns* args[] = {boxedSrc, boxedProp, obj};
+                    return m_out.insCall(&ESObjectSetOpCallInfo, args);
+                } else if (sourceType.isInt32Type()) {
+                    LIns* boxedProp = boxESValue(prop, TypeInt32);
+                    LIns* boxedSrc = boxESValue(source, TypeInt32);
+                    LIns* args[] = {boxedSrc, boxedProp, obj};
+                    return m_out.insCall(&ESObjectSetOpCallInfo, args);
+                } else if (sourceType.isDoubleType()) {
+                    LIns* boxedProp = boxESValue(prop, TypeInt32);
+                    LIns* boxedSrc = boxESValue(source, TypeDouble);
+                    LIns* args[] = {boxedSrc, boxedProp, obj};
+                    return m_out.insCall(&ESObjectSetOpCallInfo, args);
+                } else {
+                    LIns* boxedProp = boxESValue(prop, TypeInt32);
+                    LIns* args[] = {source, boxedProp, obj};
+                    return m_out.insCall(&ESObjectSetOpCallInfo, args);
+                }
              }
         }
 
@@ -800,6 +839,7 @@ void NativeGenerator::nanojitCodegen(ESVMInstance* instance)
 
 #ifdef ESCARGOT_64
     m_tagMaskQ = m_out.insImmQ(TagMask);
+    m_booleanTagQ = m_out.insImmQ(TagBitTypeOther | TagBitBool);
     m_intTagQ = m_out.insImmQ(TagTypeNumber);
     m_intTagComplementQ = m_out.insImmQ(~TagTypeNumber);
     m_doubleEncodeOffsetQ = m_out.insImmQ(DoubleEncodeOffset);

@@ -71,7 +71,9 @@ public:
 
     static Type getType(ESValue value)
     {
-        if (value.isInt32())
+        if (value.isBoolean())
+            return TypeBoolean;
+        else if (value.isInt32())
             return TypeInt32;
         else if (value.isDouble())
             return TypeDouble;

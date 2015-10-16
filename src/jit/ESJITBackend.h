@@ -68,6 +68,7 @@ private:
 
 #ifdef ESCARGOT_64
     nanojit::LIns* m_tagMaskQ;
+    nanojit::LIns* m_booleanTagQ;
     nanojit::LIns* m_intTagQ;
     nanojit::LIns* m_intTagComplementQ;
     nanojit::LIns* m_doubleEncodeOffsetQ;
