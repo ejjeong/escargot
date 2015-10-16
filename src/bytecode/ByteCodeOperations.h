@@ -120,15 +120,17 @@ ALWAYS_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* propert
 }
 
 //d = {}. d.foo
-ALWAYS_INLINE ESValue getObjectPreComputedCaseOperation(ESValue* willBeObject, ESString* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject
+ALWAYS_INLINE ESValue getObjectPreComputedCaseOperation(ESValue* willBeObject, ESString* keyString, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject
         ,ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex)
 {
     ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedReadOnlyOrAccessorProperty());
     *lastObjectValueMetInMemberExpression = *willBeObject;
+    ESObject* obj;
+    ESObject* targetObj;
     if(LIKELY(willBeObject->isESPointer())) {
         if(LIKELY(willBeObject->asESPointer()->isESObject())) {
-            ESObject* obj = willBeObject->asESPointer()->asESObject();
-            ESString* keyString = property;
+            targetObj = obj = willBeObject->asESPointer()->asESObject();
+GetObjectPreComputedCaseInlineCacheOperation:
             size_t cSiz = cachedHiddenClassChain->size();
             bool miss = !cSiz;
             if(!miss) {
@@ -149,7 +151,7 @@ ALWAYS_INLINE ESValue getObjectPreComputedCaseOperation(ESValue* willBeObject, E
             if(!miss) {
                 if((*cachedHiddenClassChain)[cSiz - 1] == obj->hiddenClass()) {
                     if(*cachedHiddenClassIndex != SIZE_MAX) {
-                        return obj->hiddenClass()->read(obj, willBeObject->asESPointer()->asESObject(), *cachedHiddenClassIndex);
+                        return obj->hiddenClass()->read(obj, targetObj, *cachedHiddenClassIndex);
                     } else {
                         return ESValue();
                     }
@@ -157,7 +159,7 @@ ALWAYS_INLINE ESValue getObjectPreComputedCaseOperation(ESValue* willBeObject, E
             }
 
             //cache miss.
-            obj = willBeObject->asESPointer()->asESObject();
+            obj = targetObj;
 
             *cachedHiddenClassIndex = SIZE_MAX;
             cachedHiddenClassChain->clear();
@@ -176,26 +178,27 @@ ALWAYS_INLINE ESValue getObjectPreComputedCaseOperation(ESValue* willBeObject, E
             }
 
             if(*cachedHiddenClassIndex != SIZE_MAX) {
-                return obj->hiddenClass()->read(obj, willBeObject->asESPointer()->asESObject(), *cachedHiddenClassIndex);
+                return obj->hiddenClass()->read(obj, targetObj, *cachedHiddenClassIndex);
             } else {
                 return ESValue();
             }
         } else {
             ASSERT(willBeObject->asESPointer()->isESString());
-            if(*property == *strings->length) {
+            if(*keyString == *strings->length.string()) {
                 return ESValue(willBeObject->asESString()->length());
             }
             globalObject->stringObjectProxy()->setStringData(willBeObject->asESString());
-            ESValue ret = globalObject->stringObjectProxy()->get(property);
-            return ret;
+            targetObj = obj = globalObject->stringObjectProxy();
+            goto GetObjectPreComputedCaseInlineCacheOperation;
         }
     } else {
         //number
         if(willBeObject->isNumber()) {
             globalObject->numberObjectProxy()->setNumberData(willBeObject->asNumber());
-            return globalObject->numberObjectProxy()->get(property);
+            targetObj = obj = globalObject->numberObjectProxy();
+            goto GetObjectPreComputedCaseInlineCacheOperation;
         }
-        return willBeObject->toObject()->get(property);
+        return willBeObject->toObject()->get(keyString);
     }
 }
 
