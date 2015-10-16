@@ -34,7 +34,7 @@ public:
     {
         m_object->generateExpressionByteCode(codeBlock, context);
 
-        if(ESVMInstance::currentInstance()->currentInstance()->globalObject()->didSomeObjectDefineIndexedReadOnlyOrAccessorProperty()) {
+        if(ESVMInstance::currentInstance()->currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty()) {
             if(isPreComputedCase()) {
                 ASSERT(m_property->type() == NodeType::Identifier);
                 updateNodeIndex(context);
@@ -68,7 +68,7 @@ public:
 
     virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        if(ESVMInstance::currentInstance()->currentInstance()->globalObject()->didSomeObjectDefineIndexedReadOnlyOrAccessorProperty()) {
+        if(ESVMInstance::currentInstance()->currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty()) {
             if(isPreComputedCase()) {
                 ASSERT(m_property->type() == NodeType::Identifier);
                 codeBlock->pushCode(SetObjectPreComputedCaseSlowMode(((IdentifierNode *)m_property)->nonAtomicName()), this);
@@ -100,7 +100,7 @@ public:
 
     virtual void generateReferenceResolvedAddressByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        if(ESVMInstance::currentInstance()->currentInstance()->globalObject()->didSomeObjectDefineIndexedReadOnlyOrAccessorProperty()) {
+        if(ESVMInstance::currentInstance()->currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty()) {
             if(isPreComputedCase()) {
                 ASSERT(m_property->type() == NodeType::Identifier);
                 codeBlock->pushCode(GetObjectWithPeekingPreComputedCaseSlowMode(((IdentifierNode *)m_property)->nonAtomicName()), this);

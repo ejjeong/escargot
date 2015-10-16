@@ -102,16 +102,19 @@ ALWAYS_INLINE ESValue abstractRelationalComparison(const ESValue& left, const ES
 NEVER_INLINE ESValue getObjectOperationSlowCase(ESValue* willBeObject, ESValue* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject);
 ALWAYS_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject)
 {
-    ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedReadOnlyOrAccessorProperty());
+    ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty());
     *lastObjectValueMetInMemberExpression = *willBeObject;
     if(LIKELY(willBeObject->isESPointer() && willBeObject->asESPointer()->isESArrayObject())) {
         ESArrayObject* arr = willBeObject->asESPointer()->asESArrayObject();
         if(LIKELY(arr->isFastmode())) {
-            size_t idx = property->toIndex();
-            if(LIKELY(idx != SIZE_MAX && idx < arr->length())) {
+            uint32_t idx = property->toIndex();
+            if(LIKELY(idx < arr->length())) {
+                ASSERT(idx != ESValue::ESInvaildIndexValue);
                 const ESValue& v = arr->data()[idx];
                 if(LIKELY(!v.isEmpty())) {
                     return v;
+                } else {
+                    return ESValue();
                 }
             }
         }
@@ -123,7 +126,7 @@ ALWAYS_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* propert
 ALWAYS_INLINE ESValue getObjectPreComputedCaseOperation(ESValue* willBeObject, ESString* keyString, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject
         ,ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex)
 {
-    ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedReadOnlyOrAccessorProperty());
+    ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty());
     *lastObjectValueMetInMemberExpression = *willBeObject;
     ESObject* obj;
     ESObject* targetObj;
@@ -211,14 +214,14 @@ NEVER_INLINE void throwObjectWriteError();
 NEVER_INLINE void setObjectOperationSlowCase(ESValue* willBeObject, ESValue* property, const ESValue& value);
 ALWAYS_INLINE void setObjectOperation(ESValue* willBeObject, ESValue* property, const ESValue& value)
 {
-    ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedReadOnlyOrAccessorProperty());
+    ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty());
     if(LIKELY(willBeObject->isESPointer())) {
         if(LIKELY(willBeObject->asESPointer()->isESArrayObject())) {
             ESArrayObject* arr = willBeObject->asESPointer()->asESArrayObject();
             if(LIKELY(arr->isFastmode())) {
-                size_t idx = property->toIndex();
-                if(/*idx != SIZE_MAX && */LIKELY(idx < arr->length())) {
-                    ASSERT(idx != SIZE_MAX);
+                uint32_t idx = property->toIndex();
+                if(LIKELY(idx < arr->length())) {
+                    ASSERT(idx != ESValue::ESInvaildIndexValue);
                     arr->data()[idx] = value;
                     return ;
                 }
@@ -233,7 +236,7 @@ NEVER_INLINE void setObjectPreComputedCaseOperationSlowCase(ESValue* willBeObjec
 ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESString* keyString, const ESValue& value
         , ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex, ESHiddenClass** hiddenClassWillBe)
 {
-    ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedReadOnlyOrAccessorProperty());
+    ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty());
 
     if(LIKELY(willBeObject->isESPointer())) {
         if(LIKELY(willBeObject->asESPointer()->isESObject())) {

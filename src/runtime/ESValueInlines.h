@@ -409,7 +409,7 @@ ALWAYS_INLINE bool ESValue::isPrimitive() const
     return !isESPointer() || asESPointer()->isESString();
 }
 
-ALWAYS_INLINE size_t ESValue::toIndex() const
+ALWAYS_INLINE uint32_t ESValue::toIndex() const
 {
     int32_t i;
     if(LIKELY(isInt32()) && LIKELY((i = asInt32()) >= 0)) {
@@ -805,7 +805,7 @@ inline double ESValue::asDouble() const
     return reinterpretInt64ToDouble(u.asInt64 - DoubleEncodeOffset);
 }
 
-inline bool ESValue::isEmpty() const
+ALWAYS_INLINE bool ESValue::isEmpty() const
 {
     return u.asInt64 == ValueEmpty;
 }
@@ -1075,8 +1075,8 @@ ALWAYS_INLINE bool ESHiddenClass::write(ESObject* obj, ESObject* originalObject,
 inline void ESObject::defineDataProperty(const escargot::ESValue& key, bool isWritable, bool isEnumerable, bool isConfigurable, const ESValue& initalValue)
 {
     if(isESArrayObject() && asESArrayObject()->isFastmode()) {
-        size_t i = key.toIndex();
-        if (i != SIZE_MAX) {
+        uint32_t i = key.toIndex();
+        if (i != ESValue::ESInvaildIndexValue) {
             if(isWritable && isEnumerable && isEnumerable) {
                 int len = asESArrayObject()->length();
                 if (i == len) {
@@ -1094,8 +1094,8 @@ inline void ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
         }
     }
     if(isESTypedArrayObject()) {
-        size_t i = key.toIndex();
-        if (i != SIZE_MAX) {
+        uint32_t i = key.toIndex();
+        if (i != ESValue::ESInvaildIndexValue) {
             throw ESValue(TypeError::create(ESString::create("cannot redefine property")));
         }
     }
@@ -1104,8 +1104,8 @@ inline void ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
         ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
 
     escargot::ESString* keyString = key.toString();
-    if(!isWritable && keyString->hasOnlyDigit()) {
-        ESVMInstance::currentInstance()->globalObject()->someObjectDefineIndexedReadOnlyOrAccessorProperty();
+    if(m_flags.m_isEverSetAsPrototypeObject && keyString->hasOnlyDigit()) {
+        ESVMInstance::currentInstance()->globalObject()->somePrototypeObjectDefineIndexedProperty();
     }
     size_t oldIdx = m_hiddenClass->findProperty(keyString);
     if(oldIdx == SIZE_MAX) {
@@ -1125,14 +1125,14 @@ inline void ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
 inline void ESObject::defineAccessorProperty(const escargot::ESValue& key,ESPropertyAccessorData* data, bool isWritable, bool isEnumerable, bool isConfigurable)
 {
     if(isESArrayObject() && asESArrayObject()->isFastmode()) {
-        size_t i = key.toIndex();
-        if (i != SIZE_MAX) {
+        uint32_t i = key.toIndex();
+        if (i != ESValue::ESInvaildIndexValue) {
             asESArrayObject()->convertToSlowMode();
         }
     }
     if(isESTypedArrayObject()) {
-        size_t i = key.toIndex();
-        if (i != SIZE_MAX) {
+        uint32_t i = key.toIndex();
+        if (i != ESValue::ESInvaildIndexValue) {
             throw ESValue(TypeError::create(ESString::create("cannot redefine property")));
         }
     }
@@ -1141,8 +1141,8 @@ inline void ESObject::defineAccessorProperty(const escargot::ESValue& key,ESProp
         ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
 
     escargot::ESString* keyString = key.toString();
-    if(keyString->hasOnlyDigit()) {
-        ESVMInstance::currentInstance()->globalObject()->someObjectDefineIndexedReadOnlyOrAccessorProperty();
+    if(m_flags.m_isEverSetAsPrototypeObject && keyString->hasOnlyDigit()) {
+        ESVMInstance::currentInstance()->globalObject()->somePrototypeObjectDefineIndexedProperty();
     }
     size_t oldIdx = m_hiddenClass->findProperty(keyString);
     if(oldIdx == SIZE_MAX) {
@@ -1163,8 +1163,8 @@ inline void ESObject::defineAccessorProperty(const escargot::ESValue& key,ESProp
 inline bool ESObject::deleteProperty(const ESValue& key)
 {
     if(isESArrayObject() && asESArrayObject()->isFastmode()) {
-        size_t i = key.toIndex();
-        if (i != SIZE_MAX) {
+        uint32_t i = key.toIndex();
+        if (i != ESValue::ESInvaildIndexValue) {
             if(i < asESArrayObject()->length()) {
                 asESArrayObject()->m_vector[i] = ESValue(ESValue::ESEmptyValue);
                 return true;
@@ -1173,8 +1173,8 @@ inline bool ESObject::deleteProperty(const ESValue& key)
         }
     }
     if(isESTypedArrayObject()) {
-        size_t i = key.toIndex();
-        if (i != SIZE_MAX) {
+        uint32_t i = key.toIndex();
+        if (i != ESValue::ESInvaildIndexValue) {
             return true;
         }
     }
@@ -1196,8 +1196,8 @@ inline bool ESObject::deleteProperty(const ESValue& key)
 ALWAYS_INLINE bool ESObject::hasOwnProperty(const escargot::ESValue& key)
 {
     if((isESArrayObject() && asESArrayObject()->isFastmode()) || isESTypedArrayObject()) {
-        size_t idx = key.toIndex();
-        if(idx != SIZE_MAX) {
+        uint32_t idx = key.toIndex();
+        if(idx != ESValue::ESInvaildIndexValue) {
             if(LIKELY(isESArrayObject())) {
                 if((int)idx < asESArrayObject()->length() && asESArrayObject()->m_vector[idx] != ESValue(ESValue::ESEmptyValue)) {
                     return true;
@@ -1224,8 +1224,8 @@ ALWAYS_INLINE ESValue ESObject::get(escargot::ESValue key)
     escargot::ESString* keyString = NULL;
     while(true) {
         if(target->isESArrayObject() && target->asESArrayObject()->isFastmode()) {
-            size_t idx = key.toIndex();
-            if(idx != SIZE_MAX) {
+            uint32_t idx = key.toIndex();
+            if(idx != ESValue::ESInvaildIndexValue) {
                 if(LIKELY((int)idx < target->asESArrayObject()->length())) {
                     ESValue e = target->asESArrayObject()->m_vector[idx];
                     if(LIKELY(!e.isEmpty()))
@@ -1234,8 +1234,8 @@ ALWAYS_INLINE ESValue ESObject::get(escargot::ESValue key)
             }
         }
         if(target->isESTypedArrayObject()) {
-            size_t idx = key.toIndex();
-            if(idx != SIZE_MAX) {
+            uint32_t idx = key.toIndex();
+            if(idx != ESValue::ESInvaildIndexValue) {
                 return target->asESTypedArrayObjectWrapper()->get(idx);
             }
         }
@@ -1247,8 +1247,8 @@ ALWAYS_INLINE ESValue ESObject::get(escargot::ESValue key)
         if(t != SIZE_MAX) {
             return target->m_hiddenClass->read(target, this, t);
         }
-        if (target->m___proto__.isESPointer() && target->m___proto__.asESPointer()->isESObject()) {
-            target = target->m___proto__.asESPointer()->asESObject();
+        if (target->__proto__().isESPointer() && target->__proto__().asESPointer()->isESObject()) {
+            target = target->__proto__().asESPointer()->asESObject();
         } else {
             return ESValue();
         }
@@ -1258,8 +1258,8 @@ ALWAYS_INLINE ESValue ESObject::get(escargot::ESValue key)
 ALWAYS_INLINE ESValue ESObject::getOwnProperty(escargot::ESValue key)
 {
     if(isESArrayObject() && asESArrayObject()->isFastmode()) {
-        size_t idx = key.toIndex();
-        if(idx != SIZE_MAX) {
+        uint32_t idx = key.toIndex();
+        if(idx != ESValue::ESInvaildIndexValue) {
             if(LIKELY((int)idx < asESArrayObject()->length())) {
                 ESValue e = asESArrayObject()->m_vector[idx];
                 if(LIKELY(!e.isEmpty()))
@@ -1268,8 +1268,8 @@ ALWAYS_INLINE ESValue ESObject::getOwnProperty(escargot::ESValue key)
         }
     }
     if(isESTypedArrayObject()) {
-        size_t idx = key.toIndex();
-        if(idx != SIZE_MAX) {
+        uint32_t idx = key.toIndex();
+        if(idx != ESValue::ESInvaildIndexValue) {
             return asESTypedArrayObjectWrapper()->get(idx);
         }
     }
@@ -1319,8 +1319,8 @@ ALWAYS_INLINE void ESObject::eraseValues(int idx, int cnt)
 ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& val)
 {
     if(isESArrayObject() && asESArrayObject()->isFastmode()) {
-        size_t idx = key.toIndex();
-        if(idx != SIZE_MAX) {
+        uint32_t idx = key.toIndex();
+        if(idx != ESValue::ESInvaildIndexValue) {
             if(idx >= asESArrayObject()->length()) {
                 if (asESArrayObject()->shouldConvertToSlowMode(idx)) {
                     asESArrayObject()->convertToSlowMode();
@@ -1336,7 +1336,7 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
                 return true;
             } else {
                 //if hole, check prototypes.
-                ESValue target = m___proto__;
+                ESValue target = __proto__();
                 while(true) {
                     if(!target.isObject()) {
                         break;
@@ -1356,8 +1356,8 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
         }
     }
     if(isESTypedArrayObject()) {
-        size_t idx = key.toIndex();
-        if(idx != SIZE_MAX) {
+        uint32_t idx = key.toIndex();
+        if(idx != ESValue::ESInvaildIndexValue) {
             if(idx < asESTypedArrayObjectWrapper()->length())
                 asESTypedArrayObjectWrapper()->set(idx, val);
             return true;
@@ -1367,7 +1367,7 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
     escargot::ESString* keyString = key.toString();
     size_t idx = m_hiddenClass->findProperty(keyString);
     if(idx == SIZE_MAX) {
-        ESValue target = m___proto__;
+        ESValue target = __proto__();
         while(true) {
             if(!target.isObject()) {
                 break;

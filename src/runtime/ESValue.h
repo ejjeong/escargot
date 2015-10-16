@@ -127,7 +127,7 @@ public:
     uint64_t asRawData() const;
 
     // Querying the type.
-    bool isEmpty() const;
+    ALWAYS_INLINE bool isEmpty() const;
     bool isFunction() const;
     bool isUndefined() const;
     bool isNull() const;
@@ -157,7 +157,9 @@ public:
     inline ESString* toString() const; //$7.1.12 ToString
     inline ESObject* toObject() const; //$7.1.13 ToObject
     inline double toLength() const; //$7.1.15 ToLength
-    ALWAYS_INLINE size_t toIndex() const;
+
+    static const uint32_t ESInvaildIndexValue = std::numeric_limits<uint32_t>::max();
+    ALWAYS_INLINE uint32_t toIndex() const; //http://www.ecma-international.org/ecma-262/5.1/#sec-15.4
 
     ALWAYS_INLINE ESString* asESString() const;
 
@@ -305,7 +307,7 @@ public:
 
     ALWAYS_INLINE bool isESArrayObject() const
     {
-        return m_type & Type::ESArrayObject;
+        return m_type == (Type::ESArrayObject | Type::ESObject);
     }
 
     ALWAYS_INLINE ::escargot::ESArrayObject* asESArrayObject()
@@ -646,26 +648,7 @@ public:
         fn(buf, length());
     }
 
-    size_t tryToUseAsIndex()
-    {
-        const u16string& s = string();
-        bool allOfCharIsDigit = true;
-        unsigned number = 0;
-        for(unsigned i = 0; i < s.length() ; i ++) {
-            char16_t c = s[i];
-            if(c < '0' || c > '9') {
-                allOfCharIsDigit = false;
-                break;
-            } else {
-                number = number*10 + (c-'0');
-            }
-        }
-        if(allOfCharIsDigit) {
-            return number;
-        }
-        return SIZE_MAX;
-    }
-
+    uint32_t tryToUseAsIndex();
     bool hasOnlyDigit()
     {
         const u16string& s = string();
@@ -1194,15 +1177,21 @@ public:
     template <typename Functor>
     ALWAYS_INLINE void enumeration(Functor t);
 
-    ALWAYS_INLINE ESValue __proto__()
+    ALWAYS_INLINE const ESValue& __proto__()
     {
         return m___proto__;
     }
 
     ALWAYS_INLINE void set__proto__(const ESValue& obj)
     {
+        //for global init
+        if(obj.isEmpty())
+            return ;
         ASSERT(obj.isObject() || obj.isUndefinedOrNull());
         m___proto__ = obj;
+        if(m___proto__.isObject()) {
+            m___proto__.asESPointer()->asESObject()->m_flags.m_isEverSetAsPrototypeObject = true;
+        }
     }
 
     ALWAYS_INLINE size_t keyCount();
@@ -1220,14 +1209,16 @@ protected:
     struct {
         bool m_isGlobalObject: 1;
         bool m_isExtensible: 1;
-        size_t m_margin: 62;
+        bool m_isEverSetAsPrototypeObject: 1;
+        size_t m_margin: 61;
     } m_flags;
 #endif
 #ifdef ESCARGOT_32
     struct {
         bool m_isGlobalObject: 1;
         bool m_isExtensible: 1;
-        size_t m_margin: 30;
+        bool m_isEverSetAsPrototypeObject: 1;
+        size_t m_margin: 29;
     } m_flags;
 #endif
 };
@@ -1332,7 +1323,7 @@ public:
 protected:
 };
 
-class ESArrayObject : public ESObject {
+class ESArrayObject final : public ESObject {
     friend class ESObject;
 protected:
     ESArrayObject(int length);
@@ -1344,7 +1335,7 @@ public:
         return new ESArrayObject(length);
     }
 
-    ESValue* data()
+    ALWAYS_INLINE ESValue* data()
     {
         ASSERT(isFastmode());
         return m_vector.data();
@@ -1435,14 +1426,14 @@ public:
         m_length = newLength;
     }
 
-    bool isFastmode()
+    const bool& isFastmode()
     {
         return m_fastmode;
     }
 
-    const int32_t length()
+    const int32_t& length()
     {
-        return (const int32_t)m_length;
+        return (const int32_t &)m_length;
     }
 
     void sort()
@@ -1471,7 +1462,7 @@ public:
 #endif
 
 protected:
-    unsigned m_length;
+    int32_t m_length;
     ESValueVector m_vector;
     bool m_fastmode;
     static const unsigned MAX_FASTMODE_SIZE = 65536;

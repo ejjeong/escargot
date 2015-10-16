@@ -175,6 +175,26 @@ ESStringData::ESStringData(double number)
 
 }
 
+uint32_t ESString::tryToUseAsIndex()
+{
+    const u16string& s = string();
+    bool allOfCharIsDigit = true;
+    uint32_t number = 0;
+    for(unsigned i = 0; i < s.length() ; i ++) {
+        char16_t c = s[i];
+        if(c < '0' || c > '9') {
+            allOfCharIsDigit = false;
+            break;
+        } else {
+            number = number*10 + (c-'0');
+        }
+    }
+    if(allOfCharIsDigit) {
+        return number;
+    }
+    return ESValue::ESInvaildIndexValue;
+}
+
 ESString* ESString::substring(int from, int to) const
 {
     ASSERT(0 <= from && from <= to && to <= (int)length());
@@ -318,13 +338,14 @@ ESObject::ESObject(ESPointer::Type type, ESValue __proto__, size_t initialKeyCou
 {
     m_flags.m_isExtensible = true;
     m_flags.m_isGlobalObject = false;
+    m_flags.m_isEverSetAsPrototypeObject = false;
 
     m_hiddenClassData.reserve(initialKeyCount);
     m_hiddenClass = ESVMInstance::currentInstance()->initialHiddenClassForObject();
 
     m_hiddenClassData.push_back(ESValue((ESPointer *)ESVMInstance::currentInstance()->object__proto__AccessorData()));
 
-    m___proto__ = __proto__;
+    set__proto__(__proto__);
 }
 
 const unsigned ESArrayObject::MAX_FASTMODE_SIZE;
@@ -703,7 +724,7 @@ ESArrayBufferObject::ESArrayBufferObject(ESPointer::Type type)
     m_data(NULL),
     m_bytelength(0)
 {
-    m___proto__ = (ESVMInstance::currentInstance()->globalObject()->arrayBufferPrototype());
+    set__proto__(ESVMInstance::currentInstance()->globalObject()->arrayBufferPrototype());
 }
 
 ESArrayBufferView::ESArrayBufferView(ESPointer::Type type, ESValue __proto__)

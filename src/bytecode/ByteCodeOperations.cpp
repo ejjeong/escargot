@@ -127,9 +127,9 @@ NEVER_INLINE ESValue getObjectOperationSlowCase(ESValue* willBeObject, ESValue* 
 {
     if(LIKELY(willBeObject->isESPointer())) {
         if(willBeObject->asESPointer()->isESString()) {
-            size_t idx = property->toIndex();
-            if(idx != SIZE_MAX) {
-                if(LIKELY(0 <= idx && idx < willBeObject->asESString()->length())) {
+            uint32_t idx = property->toIndex();
+            if(idx != ESValue::ESInvaildIndexValue) {
+                if(LIKELY(idx < willBeObject->asESString()->length())) {
                     char16_t c = willBeObject->asESString()->string().data()[idx];
                     if(LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
                         return strings->asciiTable[c].string();
@@ -167,15 +167,15 @@ NEVER_INLINE ESValue getObjectPreComputedCaseOperationWithNeverInline(ESValue* w
 
 NEVER_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject)
 {
-    ASSERT(ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedReadOnlyOrAccessorProperty());
+    ASSERT(ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty());
     *lastObjectValueMetInMemberExpression = *willBeObject;
     if(willBeObject->isESPointer()) {
         if(willBeObject->asESPointer()->isESArrayObject()) {
             return willBeObject->toObject()->get(*property);
         } else if(willBeObject->asESPointer()->isESString()) {
-            size_t idx = property->toIndex();
-            if(idx != SIZE_MAX) {
-                if(LIKELY(0 <= idx && idx < willBeObject->asESString()->length())) {
+            uint32_t idx = property->toIndex();
+            if(idx != ESValue::ESInvaildIndexValue) {
+                if(LIKELY(idx < willBeObject->asESString()->length())) {
                     char16_t c = willBeObject->asESString()->string().data()[idx];
                     if(LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
                         return strings->asciiTable[c].string();
@@ -215,7 +215,7 @@ NEVER_INLINE void throwObjectWriteError()
 
 NEVER_INLINE void setObjectOperationSlowMode(ESValue* willBeObject, ESValue* property, const ESValue& value)
 {
-    ASSERT(ESVMInstance::currentInstance()->globalObject()->didSomeObjectDefineIndexedReadOnlyOrAccessorProperty());
+    ASSERT(ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty());
     if(!willBeObject->toObject()->set(*property, value)) {
         throwObjectWriteError();
     }
