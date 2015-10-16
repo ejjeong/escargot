@@ -8,6 +8,7 @@ CodeBlock::CodeBlock()
     m_needsActivation = false;
     m_isBuiltInFunction = false;
     m_isStrict = false;
+    m_isFunctionExpression = false;
 #ifdef ENABLE_ESJIT
     m_executeCount = 0;
 #endif

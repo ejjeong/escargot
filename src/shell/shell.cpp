@@ -49,8 +49,6 @@ int main(int argc, char* argv[])
      */
     escargot::ESVMInstance* ES = new escargot::ESVMInstance();
     ES->enter();
-    escargot::ESString* str = escargot::ESString::create("asdf");
-    uint32_t d = escargot::ESValue(str).toUint32();
     if(argc == 1) {
         while (true) {
             char buf[512];

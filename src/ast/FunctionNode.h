@@ -26,6 +26,7 @@ public:
         m_needsActivation = false;
         m_outerFunctionNode = NULL;
         m_isStrict = isStrict;
+        m_isExpression = false;
     }
 
     ALWAYS_INLINE const InternalAtomicStringVector& params() { return m_params; }

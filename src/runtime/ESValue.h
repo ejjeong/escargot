@@ -687,6 +687,7 @@ public:
     ALWAYS_INLINE friend bool operator == (const ESString& a,const char16_t* b);
     ALWAYS_INLINE friend bool operator != (const ESString& a,const char16_t* b);
     ALWAYS_INLINE friend bool operator == (const ESString& a,const ESString& b);
+    ALWAYS_INLINE friend bool operator != (const ESString& a,const ESString& b);
     ALWAYS_INLINE friend bool operator < (const ESString& a,const ESString& b);
     ALWAYS_INLINE friend bool operator > (const ESString& a,const ESString& b);
     ALWAYS_INLINE friend bool operator <= (const ESString& a,const ESString& b);
@@ -726,6 +727,11 @@ ALWAYS_INLINE bool operator == (const ESString& a,const ESString& b)
         }
     }
     return false;
+}
+
+ALWAYS_INLINE bool operator != (const ESString& a,const ESString& b)
+{
+    return !operator ==(a, b);
 }
 
 ALWAYS_INLINE bool operator < (const ESString& a,const ESString& b)
@@ -1038,6 +1044,10 @@ public:
     ALWAYS_INLINE ESHiddenClass* removeProperty(size_t idx);
     ALWAYS_INLINE ESHiddenClass* morphToNonVectorMode();
     ALWAYS_INLINE ESHiddenClass* forceNonVectorMode();
+    bool isVectorMode()
+    {
+        return m_flags.m_isVectorMode;
+    }
 
     ALWAYS_INLINE ESValue read(ESObject* obj, ESObject* originalObject, ESString* name);
     ALWAYS_INLINE ESValue read(ESObject* obj, ESObject* originalObject, size_t index);
@@ -1398,11 +1408,13 @@ public:
     {
         //wprintf(L"CONVERT TO SLOW MODE!!!  \n");
         m_fastmode = false;
-        int len = length();
+        uint32_t len = length();
         if (len == 0) return;
 
-        for (int i = 0; i < len; i++) {
-            ESObject::set(ESValue(i).toString(), m_vector[i]);
+        ESValue* dataPtr = m_vector.data();
+        for (uint32_t i = 0; i < len; i++) {
+            if(dataPtr[i] != ESValue(ESValue::ESEmptyValue))
+                ESObject::set(ESValue(i).toString(), dataPtr[i]);
         }
         m_vector.clear();
     }

@@ -2032,6 +2032,7 @@ public:
     bool m_needsActivation;
     bool m_isBuiltInFunction;
     bool m_isStrict;
+    bool m_isFunctionExpression;
 
 #ifndef NDEBUG
     InternalAtomicString m_id;

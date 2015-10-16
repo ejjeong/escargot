@@ -315,8 +315,11 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
                 willBeObject->asESPointer()->asESObject()->defineDataProperty(keyString, true, true, true, value);
 
                 //only cache vector mode object.
-                if(willBeObject->asESPointer()->asESObject()->hiddenClass() != before) {
+                if(willBeObject->asESPointer()->asESObject()->hiddenClass()->isVectorMode()) {
                     *hiddenClassWillBe = willBeObject->asESPointer()->asESObject()->hiddenClass();
+                } else {
+                    cachedHiddenClassChain->clear();
+                    *hiddenClassWillBe = NULL;
                 }
             }
             return ;

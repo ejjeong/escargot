@@ -12,7 +12,7 @@ public:
             : FunctionNode(NodeType::FunctionExpression, id, std::move(params), body, isGenerator, isExpression, isStrict)
     {
         m_isGenerator = false;
-        m_isExpression = false;
+        m_isExpression = true;
     }
 
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
@@ -23,6 +23,7 @@ public:
         cb->m_nonAtomicParams = std::move(m_nonAtomicParams);
         cb->m_params = std::move(m_params);
         cb->m_isStrict = m_isStrict;
+        cb->m_isFunctionExpression = true;
 
         ByteCodeGenerateContext newContext;
         m_body->generateStatementByteCode(cb, newContext);
