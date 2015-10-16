@@ -1,8 +1,6 @@
 #include "Escargot.h"
 #include "bytecode/ByteCode.h"
 
-#include "ByteCodeOperations.h"
-
 namespace escargot {
 
 CodeBlock::CodeBlock()

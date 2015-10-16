@@ -76,6 +76,13 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         goto NextInstruction;
     }
 
+    DuplicateTopOfStackValueOpcodeLbl:
+    {
+        push<ESValue>(stack, bp, peek<ESValue>(stack, bp));
+        executeNextCode<DuplicateTopOfStackValue>(programCounter);
+        goto NextInstruction;
+    }
+
     PopExpressionStatementOpcodeLbl:
     {
         ESValue* t = pop<ESValue>(stack, bp);
@@ -102,18 +109,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         GetById* code = (GetById*)currentCode;
         push<ESValue>(stack, bp, getByIdOperation(instance, ec, code));
-        executeNextCode<GetById>(programCounter);
-        goto NextInstruction;
-    }
-
-    GetByIdWithoutExceptionOpcodeLbl:
-    {
-        GetById* code = (GetById*)currentCode;
-        try {
-            push<ESValue>(stack, bp, getByIdOperationWithNoInline(instance, ec, code));
-        } catch(...) {
-            push<ESValue>(stack, bp, ESValue(ESValue::ESEmptyValue));
-        }
         executeNextCode<GetById>(programCounter);
         goto NextInstruction;
     }
@@ -456,27 +451,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         goto NextInstruction;
     }
 
-    StringInOpcodeLbl:
-    {
-        ESValue* obj = pop<ESValue>(stack, bp);
-        ESValue* key = pop<ESValue>(stack, bp);
-
-        push<ESValue>(stack, bp, ESValue(inOperation(obj, key)));
-        executeNextCode<StringIn>(programCounter);
-        goto NextInstruction;
-    }
-
-    InstanceOfOpcodeLbl:
-    {
-        ESValue* rval = pop<ESValue>(stack, bp);
-        ESValue* lval = pop<ESValue>(stack, bp);
-
-        push<ESValue>(stack, bp, ESValue(instanceOfOperation(lval, rval)));
-
-        executeNextCode<StringIn>(programCounter);
-        goto NextInstruction;
-    }
-
     UnaryMinusOpcodeLbl:
     {
         push<ESValue>(stack, bp, ESValue(-pop<ESValue>(stack, bp)->toNumber()));
@@ -491,34 +465,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         goto NextInstruction;
     }
 
-    UnaryTypeOfOpcodeLbl:
-    {
-        ESValue* v = pop<ESValue>(stack, bp);
-        push<ESValue>(stack, bp, typeOfOperation(v));
-        executeNextCode<UnaryTypeOf>(programCounter);
-        goto NextInstruction;
-    }
-
-    UnaryDeleteOpcodeLbl:
-    {
-        ESValue* key = pop<ESValue>(stack, bp);
-        ESValue* obj = pop<ESValue>(stack, bp);
-        bool res = obj->toObject()->deleteProperty(*key);
-        push<ESValue>(stack, bp, ESValue(res));
-
-        executeNextCode<UnaryDelete>(programCounter);
-        goto NextInstruction;
-    }
-
-    UnaryVoidOpcodeLbl:
-    {
-        ESValue* res = pop<ESValue>(stack, bp);
-        push<ESValue>(stack, bp, ESValue());
-
-        executeNextCode<UnaryDelete>(programCounter);
-        goto NextInstruction;
-    }
-
     ToNumberOpcodeLbl:
     {
         ESValue* v = peek<ESValue>(stack, bp);
@@ -529,6 +475,29 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
         executeNextCode<ToNumber>(programCounter);
         goto NextInstruction;
+    }
+
+    ThisOpcodeLbl:
+    {
+        if(UNLIKELY(thisValue.isEmpty())) {
+            thisValue = ec->resolveThisBinding();
+        }
+        push<ESValue>(stack, bp, thisValue);
+        executeNextCode<This>(programCounter);
+        goto NextInstruction;
+    }
+
+    ReturnFunctionOpcodeLbl:
+    {
+        ASSERT(bp == stack);
+        return ESValue();
+    }
+
+    ReturnFunctionWithValueOpcodeLbl:
+    {
+        ESValue* ret = pop<ESValue>(stack, bp);
+        ASSERT(bp == stack);
+        return *ret;
     }
 
     CreateObjectOpcodeLbl:
@@ -549,53 +518,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         goto NextInstruction;
     }
 
-    InitObjectOpcodeLbl:
-    {
-        ESValue* value = pop<ESValue>(stack, bp);
-        ESValue* key = pop<ESValue>(stack, bp);
-        peek<ESValue>(stack, bp)->asESPointer()->asESObject()->set(*key, *value);
-        executeNextCode<InitObject>(programCounter);
-        goto NextInstruction;
-    }
 
-    SetObjectPropertySetterOpcodeLbl:
-    {
-        ESValue* value = pop<ESValue>(stack, bp);
-        ESValue* key = pop<ESValue>(stack, bp);
-
-        ESObject* obj = peek<ESValue>(stack, bp)->asESPointer()->asESObject();
-        RELEASE_ASSERT_NOT_REACHED();
-        /*
-        if(obj->hasOwnProperty(*key)) {
-            //TODO check property is accessor property
-            //TODO check accessor already exists
-            obj->accessorData(*key)->setJSSetter(value->asESPointer()->asESFunctionObject());
-        } else {
-            obj->defineAccessorProperty(key->toString(), NULL, value->asESPointer()->asESFunctionObject(), true, true, true);
-        }
-*/
-        executeNextCode<SetObjectPropertySetter>(programCounter);
-        goto NextInstruction;
-    }
-
-    SetObjectPropertyGetterOpcodeLbl:
-    {
-        ESValue* value = pop<ESValue>(stack, bp);
-        ESValue* key = pop<ESValue>(stack, bp);
-        ESObject* obj = peek<ESValue>(stack, bp)->asESPointer()->asESObject();
-
-        RELEASE_ASSERT_NOT_REACHED();
-        /*
-        if(obj->hasOwnProperty(*key)) {
-            //TODO check property is accessor property
-            //TODO check accessor already exists
-            obj->accessorData(*key)->setJSGetter(value->asESPointer()->asESFunctionObject());
-        } else {
-            obj->defineAccessorProperty(key->toString(), value->asESPointer()->asESFunctionObject(), NULL, true, true, true);
-        }*/
-        executeNextCode<SetObjectPropertyGetter>(programCounter);
-        goto NextInstruction;
-    }
 
     GetObjectOpcodeLbl:
     {
@@ -764,19 +687,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         goto NextInstruction;
     }
 
-    ReturnFunctionOpcodeLbl:
-    {
-        ASSERT(bp == stack);
-        return ESValue();
-    }
-
-    ReturnFunctionWithValueOpcodeLbl:
-    {
-        ESValue* ret = pop<ESValue>(stack, bp);
-        ASSERT(bp == stack);
-        return *ret;
-    }
-
     JumpOpcodeLbl:
     {
         Jump* code = (Jump *)currentCode;
@@ -856,20 +766,112 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         goto NextInstruction;
     }
 
-    DuplicateTopOfStackValueOpcodeLbl:
+    InitObjectOpcodeLbl:
     {
-        push<ESValue>(stack, bp, peek<ESValue>(stack, bp));
-        executeNextCode<DuplicateTopOfStackValue>(programCounter);
+        ESValue* value = pop<ESValue>(stack, bp);
+        ESValue* key = pop<ESValue>(stack, bp);
+        peek<ESValue>(stack, bp)->asESPointer()->asESObject()->set(*key, *value);
+        executeNextCode<InitObject>(programCounter);
         goto NextInstruction;
     }
 
-    ThisOpcodeLbl:
+    SetObjectPropertySetterOpcodeLbl:
     {
-        if(UNLIKELY(thisValue.isEmpty())) {
-            thisValue = ec->resolveThisBinding();
+        ESValue* value = pop<ESValue>(stack, bp);
+        ESValue* key = pop<ESValue>(stack, bp);
+
+        ESObject* obj = peek<ESValue>(stack, bp)->asESPointer()->asESObject();
+        RELEASE_ASSERT_NOT_REACHED();
+        /*
+        if(obj->hasOwnProperty(*key)) {
+            //TODO check property is accessor property
+            //TODO check accessor already exists
+            obj->accessorData(*key)->setJSSetter(value->asESPointer()->asESFunctionObject());
+        } else {
+            obj->defineAccessorProperty(key->toString(), NULL, value->asESPointer()->asESFunctionObject(), true, true, true);
         }
-        push<ESValue>(stack, bp, thisValue);
-        executeNextCode<This>(programCounter);
+*/
+        executeNextCode<SetObjectPropertySetter>(programCounter);
+        goto NextInstruction;
+    }
+
+    SetObjectPropertyGetterOpcodeLbl:
+    {
+        ESValue* value = pop<ESValue>(stack, bp);
+        ESValue* key = pop<ESValue>(stack, bp);
+        ESObject* obj = peek<ESValue>(stack, bp)->asESPointer()->asESObject();
+
+        RELEASE_ASSERT_NOT_REACHED();
+        /*
+        if(obj->hasOwnProperty(*key)) {
+            //TODO check property is accessor property
+            //TODO check accessor already exists
+            obj->accessorData(*key)->setJSGetter(value->asESPointer()->asESFunctionObject());
+        } else {
+            obj->defineAccessorProperty(key->toString(), value->asESPointer()->asESFunctionObject(), NULL, true, true, true);
+        }*/
+        executeNextCode<SetObjectPropertyGetter>(programCounter);
+        goto NextInstruction;
+    }
+
+    UnaryTypeOfOpcodeLbl:
+    {
+        ESValue* v = pop<ESValue>(stack, bp);
+        push<ESValue>(stack, bp, typeOfOperation(v));
+        executeNextCode<UnaryTypeOf>(programCounter);
+        goto NextInstruction;
+    }
+
+    UnaryDeleteOpcodeLbl:
+    {
+        ESValue* key = pop<ESValue>(stack, bp);
+        ESValue* obj = pop<ESValue>(stack, bp);
+        bool res = obj->toObject()->deleteProperty(*key);
+        push<ESValue>(stack, bp, ESValue(res));
+
+        executeNextCode<UnaryDelete>(programCounter);
+        goto NextInstruction;
+    }
+
+    UnaryVoidOpcodeLbl:
+    {
+        ESValue* res = pop<ESValue>(stack, bp);
+        push<ESValue>(stack, bp, ESValue());
+
+        executeNextCode<UnaryDelete>(programCounter);
+        goto NextInstruction;
+    }
+
+    StringInOpcodeLbl:
+    {
+        ESValue* obj = pop<ESValue>(stack, bp);
+        ESValue* key = pop<ESValue>(stack, bp);
+
+        push<ESValue>(stack, bp, ESValue(inOperation(obj, key)));
+        executeNextCode<StringIn>(programCounter);
+        goto NextInstruction;
+    }
+
+    InstanceOfOpcodeLbl:
+    {
+        ESValue* rval = pop<ESValue>(stack, bp);
+        ESValue* lval = pop<ESValue>(stack, bp);
+
+        push<ESValue>(stack, bp, ESValue(instanceOfOperation(lval, rval)));
+
+        executeNextCode<StringIn>(programCounter);
+        goto NextInstruction;
+    }
+
+    GetByIdWithoutExceptionOpcodeLbl:
+    {
+        GetById* code = (GetById*)currentCode;
+        try {
+            push<ESValue>(stack, bp, getByIdOperationWithNoInline(instance, ec, code));
+        } catch(...) {
+            push<ESValue>(stack, bp, ESValue(ESValue::ESEmptyValue));
+        }
+        executeNextCode<GetById>(programCounter);
         goto NextInstruction;
     }
 

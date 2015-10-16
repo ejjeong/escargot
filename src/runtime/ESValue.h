@@ -1109,7 +1109,7 @@ private:
     } m_flags;
 };
 
-typedef std::vector<ESHiddenClass*> ESHiddenClassChainStd;
+typedef std::vector<ESHiddenClass*, pointer_free_allocator<ESHiddenClass*> > ESHiddenClassChainStd;
 class ESHiddenClassChain : public ESHiddenClassChainStd {
 public:
     ESHiddenClassChain()
@@ -1167,8 +1167,8 @@ public:
     }
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-get-o-p
-    ALWAYS_INLINE ESValue get(const escargot::ESValue& key);
-    ALWAYS_INLINE ESValue getOwnProperty(const escargot::ESValue& key);
+    ALWAYS_INLINE ESValue get(escargot::ESValue key);
+    ALWAYS_INLINE ESValue getOwnProperty(escargot::ESValue key);
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
     ALWAYS_INLINE bool set(const escargot::ESValue& key, const ESValue& val);
