@@ -89,7 +89,7 @@ void dumpBytecode(CodeBlock* codeBlock)
             printf("] ");
         }
         switch(opcode) {
-#define DUMP_BYTE_CODE(code) \
+#define DUMP_BYTE_CODE(code, pushCount, popCount) \
         case code##Opcode:\
         codeBlock->getSSAIndex(bytecodeCounter)->dump(); \
         currentCode->dump(); \
@@ -104,7 +104,7 @@ void dumpBytecode(CodeBlock* codeBlock)
         };
 #else // ENABLE_ESJIT
         switch(opcode) {
-#define DUMP_BYTE_CODE(code) \
+#define DUMP_BYTE_CODE(code, pushCount, popCount) \
         case code##Opcode:\
         currentCode->dump(); \
         idx += sizeof (code); \

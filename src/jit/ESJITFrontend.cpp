@@ -11,7 +11,7 @@
 namespace escargot {
 namespace ESJIT {
 
-#define DECLARE_BYTECODE_LENGTH(bytecode) const int bytecode##Length = sizeof(bytecode);
+#define DECLARE_BYTECODE_LENGTH(bytecode, pushCount, popCount) const int bytecode##Length = sizeof(bytecode);
     FOR_EACH_BYTECODE_OP(DECLARE_BYTECODE_LENGTH)
 #undef DECLARE_BYTECODE_LENGTH
 

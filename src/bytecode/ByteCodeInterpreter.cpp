@@ -8,7 +8,7 @@ namespace escargot {
 ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter)
 {
     if(codeBlock == NULL) {
-#define REGISTER_TABLE(opcode) \
+#define REGISTER_TABLE(opcode, pushCount, popCount) \
         instance->opcodeTable()->m_table[opcode##Opcode] = &&opcode##OpcodeLbl; \
         instance->opcodeTable()->m_reverseTable[&&opcode##OpcodeLbl] = opcode##Opcode;
         FOR_EACH_BYTECODE_OP(REGISTER_TABLE);

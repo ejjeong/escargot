@@ -549,7 +549,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                        }
                     if (compileNextTime) break;
                     switch(opcode) {
-                    #define DECLARE_EXECUTE_NEXTCODE(opcode) \
+                    #define DECLARE_EXECUTE_NEXTCODE(opcode, pushCount, popCount) \
                                         case opcode##Opcode: \
                                             idx += sizeof (opcode); \
                                             break;

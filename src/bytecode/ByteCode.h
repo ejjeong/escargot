@@ -14,120 +14,122 @@ namespace escargot {
 class Node;
 
 #define ESCARGOT_INTERPRET_STACK_SIZE 4096
+
+///<OpcodeName, PushCount, PopCount>
 #define FOR_EACH_BYTECODE_OP(F) \
-    F(Push) \
-    F(PopExpressionStatement) \
-    F(Pop) \
-    F(PushIntoTempStack) \
-    F(PopFromTempStack) \
-    F(LoadStackPointer) \
-    F(CheckStackPointer) \
+    F(Push, 1, 0) \
+    F(PopExpressionStatement, 0, 1) \
+    F(Pop, 0, 1) \
+    F(PushIntoTempStack, 0, 1) \
+    F(PopFromTempStack, 1, 0) \
+    F(LoadStackPointer, 0, 0) \
+    F(CheckStackPointer, 0, 0) \
 \
-    F(GetById) \
-    F(GetByIdWithoutException) \
-    F(GetByIndex) \
-    F(GetByIndexWithActivation) \
-    F(GetArgumentsObject) \
-    F(SetById) \
-    F(SetByIndex) \
-    F(SetByIndexWithActivation) \
-    F(SetArgumentsObject) \
-    F(CreateBinding) \
+    F(GetById, 1, 0) \
+    F(GetByIdWithoutException, 1, 0) \
+    F(GetByIndex, 1, 0) \
+    F(GetByIndexWithActivation, 1, 0) \
+    F(GetArgumentsObject, 1, 0) \
+    F(SetById, 0, 0) \
+    F(SetByIndex, 0, 0) \
+    F(SetByIndexWithActivation, 0, 0) \
+    F(SetArgumentsObject, 0, 0) \
+    F(CreateBinding, 0, 0) \
 \
     /*binary expressions*/ \
-    F(Equal) \
-    F(NotEqual) \
-    F(StrictEqual) \
-    F(NotStrictEqual) \
-    F(BitwiseAnd) \
-    F(BitwiseOr) \
-    F(BitwiseXor) \
-    F(LeftShift) \
-    F(SignedRightShift) \
-    F(UnsignedRightShift) \
-    F(LessThan) \
-    F(LessThanOrEqual) \
-    F(GreaterThan) \
-    F(GreaterThanOrEqual) \
-    F(Plus) \
-    F(Minus) \
-    F(Multiply) \
-    F(Division) \
-    F(Mod) \
-    F(Increment) \
-    F(Decrement) \
-    F(StringIn) \
-    F(InstanceOf) \
+    F(Equal, 1, 2) \
+    F(NotEqual, 1, 2) \
+    F(StrictEqual, 1, 2) \
+    F(NotStrictEqual, 1, 2) \
+    F(BitwiseAnd, 1, 2) \
+    F(BitwiseOr, 1, 2) \
+    F(BitwiseXor, 1, 2) \
+    F(LeftShift, 1, 2) \
+    F(SignedRightShift, 1, 2) \
+    F(UnsignedRightShift, 1, 2) \
+    F(LessThan, 1, 2) \
+    F(LessThanOrEqual, 1, 2) \
+    F(GreaterThan, 1, 2) \
+    F(GreaterThanOrEqual, 1, 2) \
+    F(Plus, 1, 2) \
+    F(Minus, 1, 2) \
+    F(Multiply, 1, 2) \
+    F(Division, 1, 2) \
+    F(Mod, 1, 2) \
+    F(Increment, 1, 2) \
+    F(Decrement, 1, 2) \
+    F(StringIn, 1, 2) \
+    F(InstanceOf, 1, 2) \
 \
     /*unary expressions*/ \
-    F(BitwiseNot) \
-    F(LogicalNot) \
-    F(UnaryMinus) \
-    F(UnaryPlus) \
-    F(UnaryTypeOf) \
-    F(UnaryDelete) \
-    F(UnaryVoid) \
-    F(ToNumber) \
+    F(BitwiseNot, 1, 1) \
+    F(LogicalNot, 1, 1) \
+    F(UnaryMinus, 1, 1) \
+    F(UnaryPlus, 1, 1) \
+    F(UnaryTypeOf, 1, 1) \
+    F(UnaryDelete, 1, 1) \
+    F(UnaryVoid, 1, 1) \
+    F(ToNumber, 1, 1) \
 \
     /*object, array*/ \
-    F(CreateObject) \
-    F(CreateArray) \
-    F(InitObject) \
-    F(SetObjectPropertySetter) \
-    F(SetObjectPropertyGetter) \
-    F(GetObject) \
-    F(GetObjectSlowMode) \
-    F(GetObjectWithPeeking) \
-    F(GetObjectWithPeekingSlowMode) \
-    F(GetObjectPreComputedCase) \
-    F(GetObjectPreComputedCaseSlowMode) \
-    F(GetObjectWithPeekingPreComputedCase) \
-    F(GetObjectWithPeekingPreComputedCaseSlowMode) \
-    F(SetObject) \
-    F(SetObjectSlowMode) \
-    F(SetObjectPreComputedCase) \
-    F(SetObjectPreComputedCaseSlowMode) \
+    F(CreateObject, 1, 0) \
+    F(CreateArray, 1, 0) \
+    F(InitObject, 0, 2) \
+    F(SetObjectPropertySetter, 0, 2) \
+    F(SetObjectPropertyGetter, 0, 2) \
+    F(GetObject, 1, 2) \
+    F(GetObjectSlowMode, 1, 2) \
+    F(GetObjectWithPeeking, 1, 0) \
+    F(GetObjectWithPeekingSlowMode, 1, 0) \
+    F(GetObjectPreComputedCase, 1, 1) \
+    F(GetObjectPreComputedCaseSlowMode, 1, 1) \
+    F(GetObjectWithPeekingPreComputedCase, 1, 0) \
+    F(GetObjectWithPeekingPreComputedCaseSlowMode, 1, 0) \
+    F(SetObject, 1, 3) \
+    F(SetObjectSlowMode, 1, 3) \
+    F(SetObjectPreComputedCase, 1, 2) \
+    F(SetObjectPreComputedCaseSlowMode, 1, 2) \
 \
     /*function*/\
-    F(CreateFunction) \
-    F(ExecuteNativeFunction) \
-    F(PrepareFunctionCall) \
-    F(PushFunctionCallReceiver) \
-    F(CallFunction) \
-    F(CallEvalFunction) \
-    F(CallBoundFunction) \
-    F(NewFunctionCall) \
-    F(ReturnFunction) \
-    F(ReturnFunctionWithValue) \
+    F(CreateFunction, 1, 0) \
+    F(ExecuteNativeFunction, 0, 0) \
+    F(PrepareFunctionCall, 0, 0) \
+    F(PushFunctionCallReceiver, 1, 0) \
+    F(CallFunction, 0, 0) \
+    F(CallEvalFunction, 0, 0) \
+    F(CallBoundFunction, 0, 0) \
+    F(NewFunctionCall, 0, 0) \
+    F(ReturnFunction, 0, 0) \
+    F(ReturnFunctionWithValue, 0, 1) \
 \
     /* control flow */ \
-    F(Jump) \
-    F(JumpComplexCase) \
-    F(JumpIfTopOfStackValueIsFalse) \
-    F(JumpIfTopOfStackValueIsTrue) \
-    F(JumpAndPopIfTopOfStackValueIsTrue) \
-    F(JumpIfTopOfStackValueIsFalseWithPeeking) \
-    F(JumpIfTopOfStackValueIsTrueWithPeeking) \
-    F(DuplicateTopOfStackValue) \
-    F(LoopStart) \
+    F(Jump, 0, 0) \
+    F(JumpComplexCase, 0, 0) \
+    F(JumpIfTopOfStackValueIsFalse, 0, 1) \
+    F(JumpIfTopOfStackValueIsTrue, 0, 1) \
+    F(JumpAndPopIfTopOfStackValueIsTrue, 0, 0) \
+    F(JumpIfTopOfStackValueIsFalseWithPeeking, 0, 0) \
+    F(JumpIfTopOfStackValueIsTrueWithPeeking, 0, 0) \
+    F(DuplicateTopOfStackValue, 1, 0) \
+    F(LoopStart, 0, 0) \
 \
     /*try-catch*/ \
-    F(Try) \
-    F(TryCatchBodyEnd) \
-    F(Throw) \
-    F(FinallyEnd) \
+    F(Try, 0, 0) \
+    F(TryCatchBodyEnd, 0, 0) \
+    F(Throw, 0, 0) \
+    F(FinallyEnd, 0, 0) \
 \
     /*etc*/ \
-    F(This) \
-    F(EnumerateObject) \
-    F(EnumerateObjectKey) \
-    F(PrintSpAndBp) \
+    F(This, 0, 1) \
+    F(EnumerateObject, 0, 1) \
+    F(EnumerateObjectKey, 0, 1) \
+    F(PrintSpAndBp, 0, 0) \
 \
-    F(End)
+    F(End, 0, 0)
 
 
 enum Opcode {
-#define DECLARE_BYTECODE(name) name##Opcode,
+#define DECLARE_BYTECODE(name, pushCount, popCount) name##Opcode,
     FOR_EACH_BYTECODE_OP(DECLARE_BYTECODE)
 #undef DECLARE_BYTECODE
     OpcodeKindEnd
@@ -146,7 +148,7 @@ inline Opcode opcodeFromAddress(void* address)
 inline const char* getByteCodeName(Opcode opcode)
 {
     switch (opcode) {
-        #define RETURN_BYTECODE_NAME(name) case name##Opcode: return #name;
+        #define RETURN_BYTECODE_NAME(name, pushCount, popCount) case name##Opcode: return #name;
         FOR_EACH_BYTECODE_OP(RETURN_BYTECODE_NAME)
         #undef  RETURN_BYTECODE_NAME
         default: RELEASE_ASSERT_NOT_REACHED();
@@ -2264,7 +2266,7 @@ inline void iterateByteCode(CodeBlock* codeBlock, void (*fn)(CodeBlock* block, u
         fn(codeBlock, idx, (ByteCode *)ptr, code);
         idx++;
         switch(code) {
-#define ADD_BYTECODE_SIZE(name) case name##Opcode: ptr += sizeof(name); break;
+#define ADD_BYTECODE_SIZE(name, pushCount, popCount) case name##Opcode: ptr += sizeof(name); break;
         FOR_EACH_BYTECODE_OP(ADD_BYTECODE_SIZE)
         default:
             RELEASE_ASSERT_NOT_REACHED();
