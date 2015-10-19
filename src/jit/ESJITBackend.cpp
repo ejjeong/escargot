@@ -443,8 +443,13 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 
         if (leftType.isInt32Type() && rightType.isInt32Type())
             return m_out.ins2(LIR_subi, left, right);
-        else if (leftType.isNumberType() && rightType.isNumberType())
-            RELEASE_ASSERT_NOT_REACHED();
+        else if (leftType.isNumberType() && rightType.isNumberType()) {
+            if (leftType.isInt32Type())
+                left = m_out.ins1(LIR_i2d, left);
+            if (rightType.isInt32Type())
+                right = m_out.ins1(LIR_i2d, right);
+            return m_out.ins2(LIR_subd, left, right);
+        }
         else {
             LIns* boxedLeft = boxESValue(left, TypeInt32);
             LIns* boxedRight = boxESValue(right, TypeInt32);
@@ -644,8 +649,13 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* right = getTmpMapping(irSignedRightShift->rightIndex());
         Type leftType = m_graph->getOperandType(irSignedRightShift->leftIndex());
         Type rightType = m_graph->getOperandType(irSignedRightShift->rightIndex());
-        if (leftType.isInt32Type() && rightType.isInt32Type())
+        if (leftType.isNumberType() && rightType.isNumberType()) {
+            if (leftType.isDoubleType())
+                left = m_out.ins1(LIR_d2i, left);
+            if (rightType.isDoubleType())
+                right = m_out.ins1(LIR_d2i, right);
             return m_out.ins2(LIR_rshi, left, right);
+        }
         else
             RELEASE_ASSERT_NOT_REACHED();
     }

@@ -83,10 +83,23 @@ void ESGraphTypeInference::run(ESGraph* graph)
                 break;
             }
             case ESIR::Opcode::Minus:
-                // FIXME
-                graph->setOperandType(ir->targetIndex(), TypeInt32);
+            {
+                INIT_ESIR(Minus);
+                Type leftType = graph->getOperandType(irMinus->leftIndex());
+                Type rightType = graph->getOperandType(irMinus->rightIndex());
+
+                // FIXME : Question> need to seperate IR? (e.g. DoubleMinus, Int32Minus)
+                if (leftType.isNumberType() && rightType.isNumberType()) {
+                    if (leftType.isInt32Type() && rightType.isInt32Type())
+                        graph->setOperandType(ir->targetIndex(), TypeInt32);
+                    else
+                        graph->setOperandType(ir->targetIndex(), TypeDouble);
+                } else
+                    graph->setOperandType(ir->targetIndex(), TypeInt32); // FIXME : can be Double
                 break;
-            case ESIR::Opcode::GenericMultiply: {
+            }
+            case ESIR::Opcode::GenericMultiply:
+            {
                 INIT_ESIR(GenericMultiply);
                 Type leftType = graph->getOperandType(irGenericMultiply->leftIndex());
                 Type rightType = graph->getOperandType(irGenericMultiply->rightIndex());
@@ -109,7 +122,8 @@ void ESGraphTypeInference::run(ESGraph* graph)
                 }
                 break;
             }
-            case ESIR::Opcode::GenericDivision: {
+            case ESIR::Opcode::GenericDivision:
+            {
                 INIT_ESIR(GenericDivision);
                 Type leftType = graph->getOperandType(irGenericDivision->leftIndex());
                 Type rightType = graph->getOperandType(irGenericDivision->rightIndex());
