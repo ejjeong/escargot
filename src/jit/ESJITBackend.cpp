@@ -105,6 +105,62 @@ NativeGenerator::~NativeGenerator()
 LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
 {
     m_out.insStore(LIR_sti, m_oneI, m_context, ExecutionContext::offsetofInOSRExit(), 1);
+
+    bool isPrevBlock = false;
+    bool isDone = false;
+    for (int i = m_graph->basicBlockSize() - 1; i >= 0; i--) {
+        ESBasicBlock* block = m_graph->basicBlock(i);
+        if (!isPrevBlock && block->instruction(0)->targetIndex() <= currentByteCodeIndex) {
+            int j = block->instructionSize() - 1;
+            unsigned maxStackPos;
+            if (!isPrevBlock) {
+                for (; j >= 0; j--) {
+                    if (block->instruction(j)->targetIndex() == currentByteCodeIndex) {
+                        if (j == 0)
+                            maxStackPos = 0;
+                        else {
+                            j--;
+                            unsigned followPopCount = m_graph->getFollowPopCountOf(block->instruction(j)->targetIndex());
+                            maxStackPos = m_graph->getOperandStackPos(block->instruction(j)->targetIndex()) - followPopCount;
+                            }
+                        break;
+                       }
+                   }
+                isPrevBlock = true;
+              }
+
+            if (maxStackPos > 0) {
+                for (; j >= 0; j--) {
+                    ESIR* esir = block->instruction(j);
+                    unsigned stackPos = m_graph->getOperandStackPos(esir->targetIndex());
+                    Type type = m_graph->getOperandType(esir->targetIndex());
+                    LIns* lIns = m_tmpToLInsMapping[esir->targetIndex()];
+                    LIns* boxedLIns = boxESValue(lIns, type);
+                    LIns* size = m_out.insImmI(sizeof(ESValue));
+                    int bufOffset = (stackPos-1) * sizeof(ESValue);
+#ifndef NDEBUG
+                    bufOffset *= 2;
+#endif
+                    m_out.insStore(LIR_std, boxedLIns, m_context, ExecutionContext::offsetofStackBuf() + bufOffset, 1);
+#ifndef NDEBUG
+                    m_out.insStore(LIR_sti, size, m_context, ExecutionContext::offsetofStackBuf() + bufOffset + sizeof(ESValue), 1);
+#endif
+                    if (stackPos == 1) {
+                        LIns* maxStackPosLIns = m_out.insImmI(maxStackPos);
+                        m_out.insStore(LIR_sti, maxStackPosLIns, m_context, ExecutionContext::offsetofStackPos(), 1);
+                        isDone = true;
+                        break;
+                       }
+                  }
+            } else {
+                LIns* maxStackPosLIns = m_out.insImmI(maxStackPos);
+                m_out.insStore(LIR_sti, maxStackPosLIns, m_context, ExecutionContext::offsetofStackPos(), 1);
+                isDone = true;
+              }
+            if (isDone) break;
+          }
+     }
+
     LIns* bytecode = m_out.insImmI(currentByteCodeIndex);
     LIns* boxedIndex = boxESValue(bytecode, TypeInt32);
     return m_out.ins1(LIR_retd, boxedIndex);
@@ -135,7 +191,8 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
         LIns* maskedValue = m_out.ins2(LIR_andq, quadValue, m_intTagQ);
         LIns* checkIfInt = m_out.ins2(LIR_eqq, maskedValue, m_intTagQ);
         LIns* jumpIfInt = m_out.insBranch(LIR_jt, checkIfInt, nullptr);
-        JIT_LOG(in, "Expected Int-typed value, but got this value");
+        if (ESVMInstance::currentInstance()->m_verboseJIT)
+            JIT_LOG(in, "Expected Int-typed value, but got this value");
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out.ins0(LIR_label);
         jumpIfInt->setTarget(normalPath);
@@ -616,6 +673,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_ESIR(SetVar);
         LIns* source = getTmpMapping(irSetVar->sourceIndex());
         LIns* boxedSource = boxESValue(source, m_graph->getOperandType(irSetVar->m_targetIndex));
+        LIns* cachedDeclarativeEnvironmentRecordESValue = m_out.insLoad(LIR_ldp, m_context, ExecutionContext::offsetofcachedDeclarativeEnvironmentRecordESValue(), 1, LOAD_NORMAL);
+        m_out.insStore(LIR_std, boxedSource, cachedDeclarativeEnvironmentRecordESValue, irSetVar->localVarIndex() * sizeof(ESValue), 1);
         return m_out.insStore(LIR_std, boxedSource, m_stackPtr, irSetVar->localVarIndex() * sizeof(ESValue), 1);
     }
     case ESIR::Opcode::GetVarGeneric:

@@ -71,6 +71,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case PushOpcode:
         {
             INIT_BYTECODE(Push);
+            graph->setOperandStackPos(ssaIndex->m_targetIndex, bytecode->m_stackPos);
             ESIR* literal;
             if (bytecode->m_value.isInt32()) {
                 literal = ConstantIntIR::create(ssaIndex->m_targetIndex, bytecode->m_value.asInt32());
@@ -93,9 +94,11 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case PopExpressionStatementOpcode:
             NEXT_BYTECODE(PopExpressionStatement);
             break;
-        case PopOpcode:
+        case PopOpcode: {
+            graph->increaseFollowingPopCountOf(graph->lastStackPosSettingTargetIndex());
             NEXT_BYTECODE(Pop);
             break;
+        }
         case PushIntoTempStackOpcode:
             NEXT_BYTECODE(PushIntoTempStack);
             break;
@@ -115,18 +118,17 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case GetByIndexOpcode:
         {
             INIT_BYTECODE(GetByIndex);
+            graph->setOperandStackPos(ssaIndex->m_targetIndex, bytecode->m_stackPos);
             // TODO: load from local variable should not be a heap load.
             if (bytecode->m_index < codeBlock->m_params.size()) {
                 ESIR* getArgument = GetArgumentIR::create(ssaIndex->m_targetIndex, bytecode->m_index);
                 currentBlock->push(getArgument);
-                bytecode->m_profile.updateProfiledType();
-                graph->setOperandType(ssaIndex->m_targetIndex, bytecode->m_profile.getType());
             } else {
                 ESIR* getVar = GetVarIR::create(ssaIndex->m_targetIndex, bytecode->m_index);
                 currentBlock->push(getVar);
-                bytecode->m_profile.updateProfiledType();
-                graph->setOperandType(ssaIndex->m_targetIndex, bytecode->m_profile.getType());
             }
+            bytecode->m_profile.updateProfiledType();
+            graph->setOperandType(ssaIndex->m_targetIndex, bytecode->m_profile.getType());
             NEXT_BYTECODE(GetByIndex);
             break;
         }
@@ -145,6 +147,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case SetByIndexOpcode:
         {
             INIT_BYTECODE(SetByIndex);
+            graph->setOperandStackPos(ssaIndex->m_targetIndex, bytecode->m_stackPos);
             ESIR* setVar = SetVarIR::create(ssaIndex->m_targetIndex, bytecode->m_index, ssaIndex->m_srcIndex1);
             currentBlock->push(setVar);
             NEXT_BYTECODE(SetByIndex);
@@ -265,6 +268,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             // 2. else if either one of arguments has string type then append StringPlus
             // 3. else append general Plus
             INIT_BYTECODE(Plus);
+            graph->setOperandStackPos(ssaIndex->m_targetIndex, bytecode->m_stackPos);
             ESIR* genericPlusIR = GenericPlusIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
             currentBlock->push(genericPlusIR);
             NEXT_BYTECODE(Plus);
@@ -361,6 +365,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case GetObjectOpcode:
         {
             INIT_BYTECODE(GetObject);
+            graph->setOperandStackPos(ssaIndex->m_targetIndex, bytecode->m_stackPos);
             bytecode->m_profile.updateProfiledType();
             graph->setOperandType(ssaIndex->m_targetIndex, bytecode->m_profile.getType());
             GetObjectIR* getObjectIR = GetObjectIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
@@ -428,6 +433,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case ReturnFunctionOpcode:
         {
             INIT_BYTECODE(ReturnFunction);
+            graph->setOperandStackPos(ssaIndex->m_targetIndex, bytecode->m_stackPos);
             ReturnIR* returnIR = ReturnIR::create(-1);
             currentBlock->push(returnIR);
             NEXT_BYTECODE(ReturnFunction);

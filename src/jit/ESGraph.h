@@ -89,6 +89,14 @@ public:
     void setOperandType(int index, Type type) { m_operands[index].setType(type); }
     void mergeOperandType(int index, Type type) { m_operands[index].mergeType(type); }
     Type getOperandType(int index) { return m_operands[index].getType(); }
+    void setOperandStackPos(int index, unsigned stackPos) {
+        m_operands[index].setStackPos(stackPos);
+        m_lastStackPosSettingTargetIndex = index;
+    }
+    unsigned getOperandStackPos(int index) { return m_operands[index].getStackPos(); }
+    unsigned lastStackPosSettingTargetIndex() { return m_lastStackPosSettingTargetIndex; }
+    void increaseFollowingPopCountOf(int index) { m_operands[index].increaseFollowingPopCount(); }
+    unsigned getFollowPopCountOf(int index) { return m_operands[index].getFollowingPopCount(); }
 
 #ifndef NDEBUG
     void dump(std::ostream& out, const char* msg = nullptr);
@@ -100,6 +108,7 @@ private:
     std::vector<ESBasicBlock*> m_basicBlocks;
     CodeBlock* m_codeBlock;
     std::vector<ESIROperand> m_operands;
+    unsigned m_lastStackPosSettingTargetIndex;
 };
 
 }}

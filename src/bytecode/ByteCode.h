@@ -297,6 +297,10 @@ public:
 
     void assignOpcodeInAddress();
     void* m_opcodeInAddress;
+#ifdef ENABLE_ESJIT
+    unsigned m_stackPos;
+#endif
+
 #ifndef NDEBUG
     Opcode m_orgOpcode;
     Node* m_node;
@@ -2159,7 +2163,7 @@ ALWAYS_INLINE size_t resolveProgramCounter(char* codeBuffer, const size_t& progr
 void dumpBytecode(CodeBlock* codeBlock);
 #endif
 
-ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter = 0);
+ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter = 0, unsigned maxStackPos = 0);
 CodeBlock* generateByteCode(Node* node);
 inline void iterateByteCode(CodeBlock* codeBlock, void (*fn)(CodeBlock* block, unsigned idx, ByteCode* code, Opcode opcode));
 

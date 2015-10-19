@@ -2,6 +2,7 @@
 #define ExecutionContext_h
 
 #include "ESValue.h"
+#include "bytecode/ByteCode.h"
 
 namespace escargot {
 
@@ -70,10 +71,17 @@ public:
 
 #ifdef ENABLE_ESJIT
     bool inOSRExit() { return m_inOSRExit; }
+    char* getBp() { return m_stackBuf; }
+    unsigned getStackPos() { return m_stackPos; }
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Winvalid-offsetof"
     static size_t offsetOfArguments() { return offsetof(ExecutionContext, m_arguments); }
     static size_t offsetofInOSRExit() { return offsetof(ExecutionContext, m_inOSRExit); }
+    static size_t offsetofStackBuf() { return offsetof(ExecutionContext, m_stackBuf); }
+    static size_t offsetofStackPos() { return offsetof(ExecutionContext, m_stackPos); }
+    static size_t offsetofcachedDeclarativeEnvironmentRecordESValue() {
+        return offsetof(ExecutionContext, m_cachedDeclarativeEnvironmentRecord);
+    }
 #pragma GCC diagnostic pop
 #endif
 
@@ -97,6 +105,8 @@ private:
     ESValue m_tryOrCatchBodyResult;
 #ifdef ENABLE_ESJIT
     bool m_inOSRExit;
+    char m_stackBuf[ESCARGOT_INTERPRET_STACK_SIZE];
+    unsigned m_stackPos;
 #endif
 };
 

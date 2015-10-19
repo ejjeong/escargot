@@ -6,6 +6,7 @@
 #include "runtime/Environment.h"
 #include "ast/AST.h"
 #include "jit/ESJIT.h"
+#include "bytecode/ByteCode.h"
 
 #include "Yarr.h"
 
@@ -595,9 +596,34 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                 result = ESValue::fromRawDouble(jitFunction(instance));
                 // printf("JIT Result %s\n", result.toString()->utf8Data());
                 if (ec.inOSRExit()) {
-                    ASSERT(result.isInt32());
-                    printf("OSR EXIT from tmp%d\n", result.asInt32());
-                    RELEASE_ASSERT_NOT_REACHED();
+                    int32_t tmpIndex = result.asInt32();
+                    char* code = fn->codeBlock()->m_code.data();
+                    size_t idx = 0;
+                    size_t bytecodeCounter = 0;
+                    unsigned maxStackPos = 0;
+                    while (idx < fn->codeBlock()->m_code.size()) {
+                        ByteCode* currentCode = (ByteCode *)(&code[idx]);
+                        Opcode opcode = opcodeFromAddress(currentCode->m_opcodeInAddress);
+                        if (fn->codeBlock()->getSSAIndex(bytecodeCounter)->m_targetIndex == tmpIndex) {
+                            maxStackPos = ec.getStackPos();
+                            break;
+                           }
+
+                        switch(opcode) {
+                            #define DECLARE_EXECUTE_NEXTCODE(code, pushCount, popCount) \
+                                                case code##Opcode: \
+                                                    idx += sizeof (code); \
+                                                    bytecodeCounter++; \
+                                                    continue;
+                                                FOR_EACH_BYTECODE_OP(DECLARE_EXECUTE_NEXTCODE);
+                            #undef DECLARE_EXECUTE_NEXTCODE
+                                                default:
+                                                    RELEASE_ASSERT_NOT_REACHED();
+                                                    break;
+                           }
+                       }
+                    result = interpret(instance, fn->codeBlock(), idx, maxStackPos);
+                    fn->codeBlock()->m_executeCount++;
                 }
             } else {
                 //printf("JIT failed! Execute interpreter\n");

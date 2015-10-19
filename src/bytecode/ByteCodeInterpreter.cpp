@@ -5,7 +5,7 @@
 
 namespace escargot {
 
-ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter)
+ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter, unsigned maxStackPos)
 {
     if(codeBlock == NULL) {
 #define REGISTER_TABLE(opcode, pushCount, popCount) \
@@ -18,9 +18,22 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 #define NEXT_INSTRUCTION() \
         goto NextInstruction
 
+    ExecutionContext* ec = instance->currentExecutionContext();
     char stackBuf[ESCARGOT_INTERPRET_STACK_SIZE];
-    void* stack = stackBuf;
-    void* bp = stack;
+    void* bp = stackBuf;
+    void* stack;
+    if (maxStackPos == 0)
+        stack = bp;
+    else {
+#ifdef ENABLE_ESJIT
+            size_t offset = maxStackPos*sizeof(ESValue);
+#ifndef NDEBUG
+            offset *= 2;
+#endif
+            memcpy(stackBuf, ec->getBp(), offset);
+            stack = (void*)(((size_t)bp) + offset);
+#endif
+     }
     char tmpStackBuf[128];
     void* tmpStack = tmpStackBuf;
     void* tmpBp = tmpStack;
@@ -28,7 +41,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 #ifdef ENABLE_ESJIT
     size_t numParams = codeBlock->m_params.size();
 #endif
-    ExecutionContext* ec = instance->currentExecutionContext();
     GlobalObject* globalObject = instance->globalObject();
     ESValue lastESObjectMetInMemberExpressionNode = ESValue();
     ESValue* lastExpressionStatementValue = &instance->m_lastExpressionStatementValue;
@@ -39,10 +51,30 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     //resolve programCounter into address
     programCounter = (size_t)(&codeBuffer[programCounter]);
     ByteCode* currentCode;
+    ByteCode* prevCode = NULL;
 
     NextInstruction:
     currentCode = (ByteCode *)programCounter;
     ASSERT(((size_t)currentCode % sizeof(size_t)) == 0);
+
+    if (prevCode == NULL) {
+//#ifndef NDEBUG
+//        printf("\n\ncodeBlock: %p\n", codeBlock);
+//        printf("    :    bp = %p, sp = %p\n", bp, stack);
+//#endif
+    } else {
+            size_t siz = sizeof(ESValue);
+#ifndef NDEBUG
+            siz += sizeof(ESValue);
+    //        prevCode->dump();
+    //        printf("    :    bp = %p, sp = %p(%lld)\n", bp, stack, ((long long)stack - (long long)bp)/siz);
+#endif
+#ifdef ENABLE_ESJIT
+            prevCode->m_stackPos = ((long long)stack - (long long)bp)/siz;
+#endif
+     }
+     prevCode = currentCode;
+
 #ifndef NDEBUG
     if(instance->m_dumpExecuteByteCode) {
         size_t tt = (size_t)currentCode;
@@ -366,7 +398,9 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
     PlusOpcodeLbl:
     {
-        push<ESValue>(stack, bp, plusOperation(*pop<ESValue>(stack, bp), *pop<ESValue>(stack, bp)));
+        ESValue right = *pop<ESValue>(stack, bp);
+        ESValue left = *pop<ESValue>(stack, bp);
+        push<ESValue>(stack, bp, plusOperation(left, right));
         executeNextCode<Plus>(programCounter);
         NEXT_INSTRUCTION();
     }
