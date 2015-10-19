@@ -37,9 +37,7 @@ public:
         if(ESVMInstance::currentInstance()->currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty()) {
             if(isPreComputedCase()) {
                 ASSERT(m_property->type() == NodeType::Identifier);
-                updateNodeIndex(context);
                 codeBlock->pushCode(GetObjectPreComputedCaseSlowMode(((IdentifierNode *)m_property)->nonAtomicName()), this);
-                WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
                 updateNodeIndex(context);
                 WRITE_LAST_INDEX(m_nodeIndex, m_object->nodeIndex(), m_nodeIndex - 1);
             } else {
@@ -55,8 +53,6 @@ public:
             updateNodeIndex(context);
             codeBlock->pushCode(GetObjectPreComputedCase(((IdentifierNode *)m_property)->nonAtomicName()), this);
             WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
-            updateNodeIndex(context);
-            WRITE_LAST_INDEX(m_nodeIndex, m_object->nodeIndex(), m_nodeIndex - 1);
         } else {
             m_property->generateExpressionByteCode(codeBlock, context);
             updateNodeIndex(context);

@@ -1079,6 +1079,11 @@ public:
     {
         return m_flags.m_hasIndexedReadOnlyProperty;
     }
+
+#ifdef ENABLE_ESJIT
+    static size_t offsetOfFlags() { return offsetof(ESHiddenClass, m_flags); }
+#endif
+
 private:
     ESHiddenClass()
         : m_transitionData(4)
@@ -1208,6 +1213,7 @@ public:
 
 #ifdef ENABLE_ESJIT
     static size_t offsetOfHiddenClassData() { return offsetof(ESObject, m_hiddenClassData); }
+    static size_t offsetOfHiddenClass() { return offsetof(ESObject, m_hiddenClass); }
 #endif
 protected:
     ESHiddenClass* m_hiddenClass;

@@ -45,7 +45,7 @@ inline ESValue* contextResolveBinding(ExecutionContext* context, InternalAtomicS
     return context->resolveBinding(*atomicName, name);
 }
 
-inline void objectDefinePropertyOrThrow(ESObject* object, ESString* key,
+inline void objectDefineDataProperty(ESObject* object, ESString* key,
         /*bool isWritable, bool isEnumarable, bool isConfigurable,*/
         ESValueInDouble initial)
 {
@@ -64,6 +64,25 @@ inline ESValueInDouble esFunctionObjectCall(ESVMInstance* instance,
             receiverInputVal, arguments, argumentCount, isNewExpression);
     return ESValue::toRawDouble(ret);
 }
+
+#if 0
+ALWAYS_INLINE ESValueInDouble resolveNonDataProperty(ESObject* object, ESPointer* hiddenClassIdxData)
+{
+    // printf("[resolveNonDataProperty] (void*)object : %p\n", (void*)object);
+    // printf("[resolveNonDataProperty] (void*)hiddenClassIdxData : %p\n", (void*)hiddenClassIdxData);
+    return ESValue::toRawDouble(((ESAccessorData *)hiddenClassIdxData)->value(object));
+}
+#else
+ALWAYS_INLINE ESValueInDouble resolveNonDataProperty(ESObject* object, size_t idx)
+{
+    // printf("[resolveNonDataProperty] (void*)object : %p\n", (void*)object);
+#ifdef EJJEONG_MERGING
+    return ESValue::toRawDouble(object->readHiddenClass(idx));
+#else
+    return 0;
+#endif
+}
+#endif
 
 #ifndef NDEBUG
 inline void jitLogIntOperation(int arg, const char* msg)

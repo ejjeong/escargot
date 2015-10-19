@@ -27,7 +27,16 @@ public:
         m_left->generatePutByteCode(codeBlock, context);
         if (m_left->type() == escargot::NodeType::Identifier) {
             m_left->updateNodeIndex(context);
-            WRITE_LAST_INDEX(m_left->nodeIndex(), m_right->nodeIndex(), -1);
+#ifdef ENABLE_ESJIT
+            if (m_right->nodeIndex() == -1) { /* For, var a = b = .. = something */
+                if (((AssignmentExpressionSimpleNode*)m_right)->m_left != nullptr &&
+                    ((AssignmentExpressionSimpleNode*)m_right)->m_left->type() == escargot::NodeType::Identifier) {
+                    WRITE_LAST_INDEX(m_left->nodeIndex(), ((AssignmentExpressionSimpleNode*)m_right)->m_left->nodeIndex(), -1);
+                }
+            } else {
+                WRITE_LAST_INDEX(m_left->nodeIndex(), m_right->nodeIndex(), -1);
+            }
+#endif
          }
     }
 

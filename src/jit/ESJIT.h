@@ -21,7 +21,7 @@ public:
     ESJITCompiler(CodeBlock* codeBlock)
         : m_codeBlock(codeBlock), m_graph(nullptr), m_native(nullptr) { }
 
-    bool compile();
+    bool compile(ESVMInstance* instance);
     void finalize();
 
     CodeBlock* codeBlock() { return m_codeBlock; }
@@ -34,7 +34,7 @@ private:
     JITFunction m_native;
 };
 
-JITFunction JITCompile(CodeBlock* codeBlock);
+JITFunction JITCompile(CodeBlock* codeBlock, ESVMInstance* instance);
 
 }
 

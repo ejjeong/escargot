@@ -21,8 +21,7 @@ class ESBasicBlock;
     F(ConstantInt, ) \
     F(ConstantDouble, ) \
     F(ConstantPointer, ) \
-    F(ConstantTrue, ) \
-    F(ConstantFalse, ) \
+    F(ConstantBoolean, ) \
     F(ConstantString, ) \
     \
     /* Type conversions */ \
@@ -38,8 +37,11 @@ class ESBasicBlock;
     F(GenericPlus, ) \
     F(Increment, ) \
     F(Minus, ) \
-    F(Multiply, ) \
-    F(Division, ) \
+    F(Int32Multiply, ) \
+    F(DoubleMultiply, ) \
+    F(GenericMultiply, ) \
+    F(DoubleDivision, ) \
+    F(GenericDivision, ) \
     F(Mod, ) \
     \
     F(BitwiseAnd, ) \
@@ -101,7 +103,8 @@ class ESBasicBlock;
     F(GetObject, LoadFromHeap)\
     F(GetObjectPreComputed, LoadFromHeap)\
     F(GetArrayObject, LoadFromHeap)\
-    F(PutInObject, ) \
+    F(GetArrayObjectPreComputed, LoadFromHeap)\
+    F(SetObject, ) \
     F(GetScoped, LoadFromHeap) \
     F(SetScoped, ) \
     F(GetVarGeneric, LoadFromHeap) \
@@ -247,6 +250,26 @@ private:
     double m_value;
 };
 
+class ConstantBooleanIR : public ESIR {
+public:
+    DECLARE_STATIC_GENERATOR_1(ConstantBoolean, bool);
+
+    double value() { return m_value; }
+
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+        out << " const boolean " << std::boolalpha << m_value;
+    }
+#endif
+
+private:
+    ConstantBooleanIR(int target, bool value)
+        : ESIR(ESIR::Opcode::ConstantBoolean, target), m_value(value) { }
+    bool m_value;
+};
 class ConstantPointerIR : public ESIR {
 public:
     DECLARE_STATIC_GENERATOR_1(ConstantPointer, void*);
@@ -430,7 +453,7 @@ private:
 
 class GetObjectIR : public ESIR {
 public:
-    DECLARE_STATIC_GENERATOR_4(GetObject, ESHiddenClass*, size_t, int, int);
+    //DECLARE_STATIC_GENERATOR_4(GetObject, ESHiddenClass*, size_t, int, int);
     DECLARE_STATIC_GENERATOR_2(GetObject, int, int);
 
 #ifndef NDEBUG
@@ -448,12 +471,14 @@ public:
     int propertyIndex() { return m_propertyIndex; }
 
 private:
+    /*
     GetObjectIR(int targetIndex, ESHiddenClass* cachedHiddenClass, size_t cachedIndex, int objectIndex, int propertyIndex)
         : ESIR(ESIR::Opcode::GetObject, targetIndex),
           m_cachedHiddenClass(cachedHiddenClass),
           m_cachedIndex(cachedIndex),
           m_objectIndex(objectIndex),
           m_propertyIndex(propertyIndex){ }
+          */
     GetObjectIR(int targetIndex, int objectIndex, int propertyIndex)
         : ESIR(ESIR::Opcode::GetObject, targetIndex),
           m_objectIndex(objectIndex),
@@ -466,33 +491,34 @@ private:
 
 class GetObjectPreComputedIR : public ESIR {
 public:
-    DECLARE_STATIC_GENERATOR_4(GetObjectPreComputed, ESHiddenClass*, size_t, int, int);
+    DECLARE_STATIC_GENERATOR_4(GetObjectPreComputed, ESHiddenClass*, size_t, int, ESValue);
 
 #ifndef NDEBUG
     virtual void dump(std::ostream& out)
     {
         out << "tmp" << m_targetIndex << ": ";
         ESIR::dump(out);
-        out << " tmp" << m_objectIndex << ".tmp" << m_propertyIndex;
+        out << " tmp" << m_objectIndex << "." << m_propertyValue.asESString()->utf8Data();
     }
 #endif
 
     ESHiddenClass* cachedHiddenClass() { return m_cachedHiddenClass; }
     size_t cachedIndex() { return m_cachedIndex; }
     int objectIndex() { return m_objectIndex; }
-    int propertyIndex() { return m_propertyIndex; }
+    ESValue propertyValue() { return m_propertyValue; }
 
 private:
-    GetObjectPreComputedIR(int targetIndex, ESHiddenClass* cachedHiddenClass, size_t cachedIndex, int objectIndex, int propertyIndex)
+    GetObjectPreComputedIR(int targetIndex, ESHiddenClass* cachedHiddenClass, size_t cachedIndex, int objectIndex, ESValue propertyValue)
         : ESIR(ESIR::Opcode::GetObjectPreComputed, targetIndex),
           m_cachedHiddenClass(cachedHiddenClass),
           m_cachedIndex(cachedIndex),
           m_objectIndex(objectIndex),
-          m_propertyIndex(propertyIndex){ }
+          m_propertyValue(propertyValue) { }
+
     ESHiddenClass* m_cachedHiddenClass;
     int m_cachedIndex;
     int m_objectIndex;
-    int m_propertyIndex;
+    ESValue m_propertyValue;
 };
 
 class GetArrayObjectIR : public ESIR {
@@ -520,10 +546,35 @@ private:
     int m_propertyIndex;
 };
 
-class PutInObjectIR : public ESIR {
+class GetArrayObjectPreComputedIR : public ESIR {
 public:
-    DECLARE_STATIC_GENERATOR_3(PutInObject, ESHiddenClass*, size_t, int);
-    DECLARE_STATIC_GENERATOR_3(PutInObject, int, int, int);
+    DECLARE_STATIC_GENERATOR_2(GetArrayObjectPreComputed, int, int);
+
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+        out << " tmp" << m_objectIndex << "[" << m_computedIndex << "]";
+    }
+#endif
+
+    int objectIndex() { return m_objectIndex; }
+    int computedIndex() { return m_computedIndex; }
+
+private:
+    GetArrayObjectPreComputedIR(int targetIndex, int objectIndex, int computedIndex)
+        : ESIR(ESIR::Opcode::GetArrayObjectPreComputed, targetIndex),
+          m_objectIndex(objectIndex),
+          m_computedIndex(computedIndex){ }
+    int m_objectIndex;
+    int m_computedIndex;
+};
+
+class SetObjectIR : public ESIR {
+public:
+    //DECLARE_STATIC_GENERATOR_3(SetObject, ESHiddenClass*, size_t, int);
+    DECLARE_STATIC_GENERATOR_3(SetObject, int, int, int);
 
 #ifndef NDEBUG
     virtual void dump(std::ostream& out)
@@ -541,13 +592,15 @@ public:
     int sourceIndex() { return m_sourceIndex; }
 
 private:
-    PutInObjectIR(int targetIndex, ESHiddenClass* cachedHiddenClass, size_t cachedIndex, int sourceIndex)
-        : ESIR(ESIR::Opcode::PutInObject, targetIndex),
+    /*
+    SetObjectIR(int targetIndex, ESHiddenClass* cachedHiddenClass, size_t cachedIndex, int sourceIndex)
+        : ESIR(ESIR::Opcode::SetObject, targetIndex),
           m_cachedHiddenClass(cachedHiddenClass),
           m_cachedIndex(cachedIndex),
           m_sourceIndex(sourceIndex) { }
-    PutInObjectIR(int targetIndex, int objectIndex, int propertyIndex, int sourceIndex)
-        : ESIR(ESIR::Opcode::PutInObject, targetIndex),
+          */
+    SetObjectIR(int targetIndex, int objectIndex, int propertyIndex, int sourceIndex)
+        : ESIR(ESIR::Opcode::SetObject, targetIndex),
           m_objectIndex(objectIndex),
           m_propertyIndex(propertyIndex),
           m_sourceIndex(sourceIndex) { }
@@ -622,6 +675,51 @@ public:
 private:
     MinusIR(int targetIndex, int leftIndex, int rightIndex)
         : BinaryExpressionIR(ESIR::Opcode::Minus, targetIndex, leftIndex, rightIndex) { }
+};
+
+class Int32MultiplyIR : public BinaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(Int32Multiply, int, int);
+
+private:
+    Int32MultiplyIR(int targetIndex, int leftIndex, int rightIndex)
+        : BinaryExpressionIR(ESIR::Opcode::Int32Multiply, targetIndex, leftIndex, rightIndex) { }
+};
+
+class DoubleMultiplyIR : public BinaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(DoubleMultiply, int, int);
+
+private:
+    DoubleMultiplyIR(int targetIndex, int leftIndex, int rightIndex)
+        : BinaryExpressionIR(ESIR::Opcode::DoubleMultiply, targetIndex, leftIndex, rightIndex) { }
+};
+
+class GenericMultiplyIR : public BinaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(GenericMultiply, int, int);
+
+private:
+    GenericMultiplyIR(int targetIndex, int leftIndex, int rightIndex)
+        : BinaryExpressionIR(ESIR::Opcode::GenericMultiply, targetIndex, leftIndex, rightIndex) { }
+};
+
+class DoubleDivisionIR : public BinaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(DoubleDivision, int, int);
+
+private:
+    DoubleDivisionIR(int targetIndex, int leftIndex, int rightIndex)
+        : BinaryExpressionIR(ESIR::Opcode::DoubleDivision, targetIndex, leftIndex, rightIndex) { }
+};
+
+class GenericDivisionIR : public BinaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(GenericDivision, int, int);
+
+private:
+    GenericDivisionIR(int targetIndex, int leftIndex, int rightIndex)
+        : BinaryExpressionIR(ESIR::Opcode::GenericDivision, targetIndex, leftIndex, rightIndex) { }
 };
 
 class BitwiseAndIR : public BinaryExpressionIR {
@@ -722,6 +820,15 @@ public:
 private:
     IncrementIR(int targetIndex, int sourceIndex)
         : UnaryExpressionIR(ESIR::Opcode::Increment, targetIndex, sourceIndex) { }
+};
+
+class UnaryMinusIR : public UnaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_1(UnaryMinus, int);
+
+private:
+    UnaryMinusIR(int targetIndex, int sourceIndex)
+        : UnaryExpressionIR(ESIR::Opcode::UnaryMinus, targetIndex, sourceIndex) { }
 };
 
 class ReturnWithValueIR : public ESIR {

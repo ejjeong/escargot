@@ -14,7 +14,7 @@ class CodeBlock;
 
 namespace ESJIT {
 
-bool ESJITCompiler::compile()
+bool ESJITCompiler::compile(ESVMInstance* instance)
 {
     unsigned long time1 = ESVMInstance::currentInstance()->tickCount();
     if (!(m_graph = generateIRFromByteCode(m_codeBlock)))
@@ -23,7 +23,7 @@ bool ESJITCompiler::compile()
     if (!optimizeIR(m_graph))
         return false;
     unsigned long time3 = ESVMInstance::currentInstance()->tickCount();
-    if (!(m_native = generateNativeFromIR(m_graph)))
+    if (!(m_native = generateNativeFromIR(m_graph, instance)))
         return false;
     unsigned long time4 = ESVMInstance::currentInstance()->tickCount();
 
@@ -39,10 +39,10 @@ void ESJITCompiler::finalize()
     delete m_graph;
 }
 
-JITFunction JITCompile(CodeBlock* codeBlock)
+JITFunction JITCompile(CodeBlock* codeBlock, ESVMInstance* instance)
 {
     ESJITCompiler jitFunction(codeBlock);
-    if (!jitFunction.compile())
+    if (!jitFunction.compile(instance))
         return nullptr;
     jitFunction.finalize();
     return jitFunction.native();

@@ -11,6 +11,7 @@ CodeBlock::CodeBlock()
     m_isFunctionExpression = false;
 #ifdef ENABLE_ESJIT
     m_executeCount = 0;
+    m_threshold = 1;
 #endif
 
     ESVMInstance::currentInstance()->globalObject()->registerCodeBlock(this);
@@ -90,6 +91,7 @@ void dumpBytecode(CodeBlock* codeBlock)
         bytecodeCounter++; \
         continue;
         FOR_EACH_BYTECODE_OP(DUMP_BYTE_CODE)
+#undef  DUMP_BYTE_CODE
         default:
             RELEASE_ASSERT_NOT_REACHED();
             break;
@@ -102,6 +104,7 @@ void dumpBytecode(CodeBlock* codeBlock)
         idx += sizeof (code); \
         continue;
         FOR_EACH_BYTECODE_OP(DUMP_BYTE_CODE)
+#undef  DUMP_BYTE_CODE
         default:
             RELEASE_ASSERT_NOT_REACHED();
             break;

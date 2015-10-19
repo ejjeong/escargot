@@ -71,7 +71,9 @@ public:
 
     static Type getType(ESValue value)
     {
-        if (value.isInt32())
+        if (value.isBoolean())
+            return TypeBoolean;
+        else if (value.isInt32())
             return TypeInt32;
         else if (value.isDouble())
             return TypeDouble;
@@ -85,6 +87,8 @@ public:
                 return TypeString;
             } else if (p->isESFunctionObject()) {
                 return TypeFunctionObject;
+            } else if (p->isESObject()) {
+                return TypePointer;
             } else {
 #ifndef NDEBUG
                 if (ESVMInstance::currentInstance()->m_verboseJIT)
@@ -110,7 +114,7 @@ public:
 #define DECLARE_IS_TYPE(type, unused) \
     bool is##type##Type() \
     { \
-        return (m_type & Type##type) == Type##type; \
+        return Type##type == TypeBottom ? m_type == TypeBottom : (m_type & Type##type) == Type##type; \
     }
     FOR_EACH_ESIR_TYPES(DECLARE_IS_TYPE)
 #undef DECLARE_IS_TYPE
@@ -119,6 +123,14 @@ public:
     bool has##type##Flag() \
     { \
         return (m_type & Type##type) != 0; \
+    }
+    FOR_EACH_ESIR_TYPES(DECLARE_HAS_FLAG)
+#undef DECLARE_HAS_FLAG
+
+#define DECLARE_HAS_FLAG(type, unused) \
+    bool has##type##FlagOnly() \
+    { \
+        return m_type == Type##type; \
     }
     FOR_EACH_ESIR_TYPES(DECLARE_HAS_FLAG)
 #undef DECLARE_HAS_FLAG

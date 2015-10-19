@@ -130,6 +130,7 @@ class Node;
 enum Opcode {
 #define DECLARE_BYTECODE(name) name##Opcode,
     FOR_EACH_BYTECODE_OP(DECLARE_BYTECODE)
+#undef DECLARE_BYTECODE
     OpcodeKindEnd
 };
 
@@ -319,6 +320,8 @@ public:
     void updateProfiledType()
     {
         // TODO what happens if this function is called multiple times?
+        if (m_type.isUndefinedType())
+            m_type = ESJIT::TypeBottom;
         m_type.mergeType(ESJIT::Type::getType(m_value));
         // TODO if m_type is function, profile function address
         // if m_value is not set to undefined, profiled type will be updated again
@@ -521,6 +524,9 @@ public:
     {
         printf("GetByIdWithoutException <%s>\n",m_nonAtomicName->utf8Data());
     }
+#endif
+#ifdef ENABLE_ESJIT
+    ProfileData m_profile;
 #endif
 };
 
@@ -2061,6 +2067,7 @@ public:
     size_t m_tempRegisterSize;
     size_t m_executionCount;
     size_t m_executeCount;
+    size_t m_threshold;
 #else
 #define WRITE_LAST_INDEX(a, b, c)
 #endif

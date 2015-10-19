@@ -112,7 +112,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     GetByIdOpcodeLbl:
     {
         GetById* code = (GetById*)currentCode;
-        push<ESValue>(stack, bp, getByIdOperation(instance, ec, code));
+        ESValue* value = getByIdOperation(instance, ec, code);
+        push<ESValue>(stack, bp, value);
+#ifdef ENABLE_ESJIT
+        code->m_profile.addProfile(*value);
+#endif
         executeNextCode<GetById>(programCounter);
         NEXT_INSTRUCTION();
     }
@@ -528,7 +532,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
         ESValue* property = pop<ESValue>(stack, bp);
         ESValue* willBeObject = pop<ESValue>(stack, bp);
-        push<ESValue>(stack, bp, getObjectOperation(willBeObject, property, &lastESObjectMetInMemberExpressionNode, globalObject));
+        ESValue value = getObjectOperation(willBeObject, property, &lastESObjectMetInMemberExpressionNode, globalObject);
+        push<ESValue>(stack, bp, value);
+#ifdef ENABLE_ESJIT
+        code->m_profile.addProfile(value);
+#endif
         executeNextCode<GetObject>(programCounter);
         NEXT_INSTRUCTION();
     }
@@ -537,8 +545,12 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         GetObjectPreComputedCase* code = (GetObjectPreComputedCase*)currentCode;
         ESValue* willBeObject = pop<ESValue>(stack, bp);
-        push<ESValue>(stack, bp, getObjectPreComputedCaseOperation(willBeObject, code->m_propertyValue, &lastESObjectMetInMemberExpressionNode, globalObject,
-                &code->m_cachedhiddenClassChain, &code->m_cachedIndex));
+        ESValue value = getObjectPreComputedCaseOperation(willBeObject, code->m_propertyValue, &lastESObjectMetInMemberExpressionNode, globalObject,
+                &code->m_cachedhiddenClassChain, &code->m_cachedIndex);
+        push<ESValue>(stack, bp, value);
+#ifdef ENABLE_ESJIT
+        code->m_profile.addProfile(value);
+#endif
         executeNextCode<GetObjectPreComputedCase>(programCounter);
         NEXT_INSTRUCTION();
     }

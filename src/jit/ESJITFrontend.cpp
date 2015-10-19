@@ -19,10 +19,10 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
 {
     ESGraph* graph = ESGraph::create(codeBlock);
 
-#ifndef NDEBUG
-    if (ESVMInstance::currentInstance()->m_verboseJIT)
-        dumpBytecode(codeBlock);
-#endif
+//#ifndef NDEBUG
+//    if (ESVMInstance::currentInstance()->m_verboseJIT)
+//        dumpBytecode(codeBlock);
+//#endif
 
     size_t idx = 0;
     size_t bytecodeCounter = 0;
@@ -40,7 +40,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         currentCode = (ByteCode *)(&code[idx]);
 
         // TODO: find a better way to this (e.g. write the size of the bytecode in FOR_EACH_BYTECODE_OP macro)
-        Opcode opcode = getOpcodeFromAddress(currentCode->m_opcode);
+        Opcode opcode = opcodeFromAddress(currentCode->m_opcode);
 
         // Update BasicBlock information 
         // TODO: find a better way to this (e.g. using AST, write information to bytecode..)
@@ -79,7 +79,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             } else if (bytecode->m_value.isDouble()) {
                 literal = ConstantDoubleIR::create(ssaIndex->m_targetIndex, bytecode->m_value.asDouble());
             } else if (bytecode->m_value.isBoolean()) {
-                literal = ConstantIntIR::create(ssaIndex->m_targetIndex, bytecode->m_value.asBoolean());
+                literal = ConstantBooleanIR::create(ssaIndex->m_targetIndex, bytecode->m_value.asBoolean());
             } else if (bytecode->m_value.isESPointer()) {
                 ESPointer* p = bytecode->m_value.asESPointer();
                 if (p->isESString())
@@ -136,44 +136,48 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             goto unsupported;
             NEXT_BYTECODE(GetByIndexWithActivation);
             break;
-        case PutByIdOpcode:
+        case SetByIdOpcode:
         {
-            INIT_BYTECODE(PutById);
+            INIT_BYTECODE(SetById);
             ESIR* setVarGeneric = SetVarGenericIR::create(ssaIndex->m_targetIndex, bytecode, ssaIndex->m_srcIndex1, &bytecode->m_name, bytecode->m_nonAtomicName);
             currentBlock->push(setVarGeneric);
-            NEXT_BYTECODE(PutById);
+            NEXT_BYTECODE(SetById);
             break;
         }
-        case PutByIndexOpcode:
+        case SetByIndexOpcode:
         {
-            INIT_BYTECODE(PutByIndex);
+            INIT_BYTECODE(SetByIndex);
             ESIR* setVar = SetVarIR::create(ssaIndex->m_targetIndex, bytecode->m_index, ssaIndex->m_srcIndex1);
             currentBlock->push(setVar);
-            NEXT_BYTECODE(PutByIndex);
+            NEXT_BYTECODE(SetByIndex);
             break;
         }
-        case PutByIndexWithActivationOpcode:
+        case SetByIndexWithActivationOpcode:
             goto unsupported;
-            NEXT_BYTECODE(PutByIndexWithActivation);
+            NEXT_BYTECODE(SetByIndexWithActivation);
             break;
-        case PutInObjectOpcode:
+        case SetObjectOpcode:
         {
-           INIT_BYTECODE(PutInObject);
+           INIT_BYTECODE(SetObject);
            if (bytecode->m_esir_type.isArrayObjectType()) {
-               ESIR* putInObject = PutInObjectIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2, ssaIndex->m_targetIndex - 1);
-               currentBlock->push(putInObject);
+               ESIR* setObject = SetObjectIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2, ssaIndex->m_targetIndex - 1);
+               currentBlock->push(setObject);
            } else {
+               /*
                if (bytecode->m_cachedIndex != SIZE_MAX) {
-                   ESIR* putInObject = PutInObjectIR::create(ssaIndex->m_targetIndex, bytecode->m_cachedHiddenClass, bytecode->m_cachedIndex, ssaIndex->m_targetIndex - 1);
-                   currentBlock->push(putInObject);
-                }
+                   ESIR* setObject = SetObjectIR::create(ssaIndex->m_targetIndex, bytecode->m_cachedHiddenClass, bytecode->m_cachedIndex, ssaIndex->m_targetIndex - 1);
+                   currentBlock->push(setObject);
+               }
+               */
+               ESIR* setObject = SetObjectIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2, ssaIndex->m_targetIndex - 1);
+               currentBlock->push(setObject);
             }
-           NEXT_BYTECODE(PutInObject);
+           NEXT_BYTECODE(SetObject);
            break;
         }
-        case PutInObjectPreComputedCaseOpcode:
+        case SetObjectPreComputedCaseOpcode:
             goto unsupported;
-            NEXT_BYTECODE(PutInObjectPreComputedCase);
+            NEXT_BYTECODE(SetObjectPreComputedCase);
             break;
         case CreateBindingOpcode:
             goto unsupported;
@@ -270,8 +274,8 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case PlusOpcode:
         {
             // TODO
-            // 1. if both arguments have number type then append StringPlus
-            // 2. else if either one of arguments has string type then append NumberPlus
+            // 1. if both arguments have number type then append NumberPlus
+            // 2. else if either one of arguments has string type then append StringPlus
             // 3. else append general Plus
             INIT_BYTECODE(Plus);
             ESIR* genericPlusIR = GenericPlusIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
@@ -288,13 +292,21 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         }
         case MultiplyOpcode:
-            goto unsupported;
+        {
+            INIT_BYTECODE(Multiply);
+            ESIR* genericMultiplyIR = GenericMultiplyIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
+            currentBlock->push(genericMultiplyIR);
             NEXT_BYTECODE(Multiply);
             break;
+        }
         case DivisionOpcode:
-            goto unsupported;
+        {
+            INIT_BYTECODE(Division);
+            ESIR* genericDivisionIR = GenericDivisionIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
+            currentBlock->push(genericDivisionIR);
             NEXT_BYTECODE(Division);
             break;
+        }
         case ModOpcode:
             goto unsupported;
             NEXT_BYTECODE(Mod);
@@ -324,9 +336,13 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(LogicalNot);
             break;
         case UnaryMinusOpcode:
-            goto unsupported;
+        {
+            INIT_BYTECODE(UnaryMinus);
+            ESIR* UnaryMinusIR = UnaryMinusIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1);
+            currentBlock->push(UnaryMinusIR);
             NEXT_BYTECODE(UnaryMinus);
             break;
+        }
         case UnaryPlusOpcode:
             goto unsupported;
             NEXT_BYTECODE(UnaryPlus);
@@ -355,10 +371,6 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             goto unsupported;
             NEXT_BYTECODE(CreateArray);
             break;
-        case SetObjectOpcode:
-            goto unsupported;
-            NEXT_BYTECODE(SetObject);
-            break;
         case GetObjectOpcode:
         {
             INIT_BYTECODE(GetObject);
@@ -368,8 +380,11 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
                GetArrayObjectIR* getArrayObjectIR = GetArrayObjectIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
                currentBlock->push(getArrayObjectIR);
             } else if (bytecode->m_esir_type.isObjectType()) {
+                /*
                 GetObjectIR* getObjectIR = GetObjectIR::create(ssaIndex->m_targetIndex, bytecode->m_cachedHiddenClass, bytecode->m_cachedIndex,
                         ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
+                        */
+                GetObjectIR* getObjectIR = GetObjectIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
                 currentBlock->push(getObjectIR);
             } else
                RELEASE_ASSERT_NOT_REACHED();
@@ -382,13 +397,27 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         case GetObjectPreComputedCaseOpcode:
         {
+#ifdef EJJEONG_MERGING
             INIT_BYTECODE(GetObjectPreComputedCase);
+            if (bytecode->m_esir_type.isStringObjectType()) {
+                // ToDo: GetObjectPreComputed for string object
+                goto unsupported;
+            }
             ASSERT(bytecode->m_esir_type.isObjectType());
             bytecode->m_profile.updateProfiledType();
             graph->setOperandType(ssaIndex->m_targetIndex, bytecode->m_profile.getType());
-            GetObjectPreComputedIR* getObjectPreComputedIR = GetObjectPreComputedIR::create(ssaIndex->m_targetIndex, bytecode->m_cachedHiddenClass, bytecode->m_cachedIndex,
-                                    ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
-            currentBlock->push(getObjectPreComputedIR);
+            if (bytecode->m_esir_type.isArrayObjectType()) {
+                ASSERT(bytecode->m_propertyValue->isInt32());
+                GetArrayObjectPreComputedIR* getArrayObjectPreComputedIR = GetArrayObjectPreComputedIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, bytecode->m_propertyValue->asInt32());
+                currentBlock->push(getArrayObjectPreComputedIR);
+            } else {
+                GetObjectPreComputedIR* getObjectPreComputedIR = GetObjectPreComputedIR::create(ssaIndex->m_targetIndex, bytecode->m_cachedHiddenClass, bytecode->m_cachedIndex,
+                                    ssaIndex->m_srcIndex1, bytecode->m_propertyValue);
+                currentBlock->push(getObjectPreComputedIR);
+            }
+#else
+            goto unsupported;
+#endif
             NEXT_BYTECODE(GetObjectPreComputedCase);
             break;
         }
@@ -509,14 +538,16 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(LoopStart);
             break;
         }
-        case ThisOpcode:
-            goto unsupported;
-            NEXT_BYTECODE(This);
-            break;
         case ThrowOpcode:
             goto unsupported;
             NEXT_BYTECODE(Throw);
             break;
+        case ThisOpcode:
+        case EnumerateObjectOpcode:
+        case EnumerateObjectKeyOpcode:
+        case EnumerateObjectEndOpcode:
+        case PrintSpAndBpOpcode:
+            goto unsupported;
         case EndOpcode:
             goto postprocess;
         default:
@@ -539,7 +570,7 @@ postprocess:
 unsupported:
 #ifndef NDEBUG
     if (ESVMInstance::currentInstance()->m_verboseJIT || ESVMInstance::currentInstance()->m_reportUnsupportedOpcode)
-        printf("Unsupported Opcode %s\n", getByteCodeName(getOpcodeFromAddress(currentCode->m_opcode)));
+        printf("Unsupported Opcode %s\n", getByteCodeName(opcodeFromAddress(currentCode->m_opcode)));
 #endif
     return nullptr;
 }

@@ -31,8 +31,7 @@ void ESGraphTypeInference::run(ESGraph* graph)
             case ESIR::Opcode::ConstantDouble:
                 graph->setOperandType(ir->targetIndex(), TypeDouble);
                 break;
-            case ESIR::Opcode::ConstantTrue:
-            case ESIR::Opcode::ConstantFalse:
+            case ESIR::Opcode::ConstantBoolean:
                 graph->setOperandType(ir->targetIndex(), TypeBoolean);
                 break;
             case ESIR::Opcode::ConstantString:
@@ -65,6 +64,44 @@ void ESGraphTypeInference::run(ESGraph* graph)
                 // FIXME
                 graph->setOperandType(ir->targetIndex(), TypeInt32);
                 break;
+            case ESIR::Opcode::GenericMultiply: {
+                INIT_ESIR(GenericMultiply);
+                Type leftType = graph->getOperandType(irGenericMultiply->leftIndex());
+                Type rightType = graph->getOperandType(irGenericMultiply->rightIndex());
+                if (leftType.isInt32Type() && rightType.isInt32Type()) {
+                    // int32 * int32 = int32 (or Double -> OSR Exit)
+                    ESIR* int32MultiplyIR = Int32MultiplyIR::create(irGenericMultiply->targetIndex(), irGenericMultiply->leftIndex(), irGenericMultiply->rightIndex());
+                    block->replace(j, int32MultiplyIR);
+                    graph->setOperandType(irGenericMultiply->targetIndex(), TypeInt32);
+                } else if (leftType.hasNumberFlag() && rightType.hasNumberFlag()) {
+                    // int32 * Double  = Double
+                    // Double * int32  = Double
+                    // Double * Double = Double
+                    ESIR* doubleMultiplyIR = DoubleMultiplyIR::create(irGenericMultiply->targetIndex(), irGenericMultiply->leftIndex(), irGenericMultiply->rightIndex());
+                    block->replace(j, doubleMultiplyIR);
+                    graph->setOperandType(irGenericMultiply->targetIndex(), TypeDouble);
+                } else {
+                    // FIXME
+                    // Handle unusual case of multiply
+                    graph->setOperandType(irGenericMultiply->targetIndex(), TypeDouble);
+                }
+                break;
+            }
+            case ESIR::Opcode::GenericDivision: {
+                INIT_ESIR(GenericDivision);
+                Type leftType = graph->getOperandType(irGenericDivision->leftIndex());
+                Type rightType = graph->getOperandType(irGenericDivision->rightIndex());
+                if (leftType.hasNumberFlag() && rightType.hasNumberFlag()) {
+                    ESIR* doubleDivisionIR = DoubleDivisionIR::create(irGenericDivision->targetIndex(), irGenericDivision->leftIndex(), irGenericDivision->rightIndex());
+                    block->replace(j, doubleDivisionIR);
+                    graph->setOperandType(irGenericDivision->targetIndex(), TypeDouble);
+                } else {
+                    // FIXME
+                    // Handle unusual case of division
+                    graph->setOperandType(irGenericDivision->targetIndex(), TypeDouble);
+                }
+                break;
+            }
             case ESIR::Opcode::BitwiseAnd:
             case ESIR::Opcode::BitwiseOr:
             case ESIR::Opcode::BitwiseXor:
@@ -94,7 +131,8 @@ void ESGraphTypeInference::run(ESGraph* graph)
             case ESIR::Opcode::Move:
             {
                 INIT_ESIR(Move);
-                graph->setOperandType(ir->targetIndex(), irMove->sourceIndex());
+                Type srcType = graph->getOperandType(irMove->sourceIndex());
+                graph->setOperandType(ir->targetIndex(), srcType);
                 break;
             }
             case ESIR::Opcode::GetArgument:
@@ -103,6 +141,7 @@ void ESGraphTypeInference::run(ESGraph* graph)
             case ESIR::Opcode::GetObject:
             case ESIR::Opcode::GetObjectPreComputed:
             case ESIR::Opcode::GetArrayObject:
+            case ESIR::Opcode::GetArrayObjectPreComputed:
                 break;
             case ESIR::Opcode::SetVar:
             {
@@ -140,10 +179,22 @@ void ESGraphTypeInference::run(ESGraph* graph)
                     RELEASE_ASSERT_NOT_REACHED();
                 break;
             }
-            case ESIR::Opcode::PutInObject:
+            case ESIR::Opcode::UnaryMinus:
             {
-                PutInObjectIR* irPutInObject = static_cast<PutInObjectIR*>(ir);
-                Type srcType = graph->getOperandType(irPutInObject->sourceIndex());
+                INIT_ESIR(UnaryMinus);
+                Type srcType = graph->getOperandType(irUnaryMinus->sourceIndex());
+                if (srcType.isInt32Type())
+                    graph->setOperandType(ir->targetIndex(), TypeInt32);
+                else if (srcType.isDoubleType())
+                    graph->setOperandType(ir->targetIndex(), TypeDouble);
+                else
+                    RELEASE_ASSERT_NOT_REACHED();
+                break;
+            }
+            case ESIR::Opcode::SetObject:
+            {
+                SetObjectIR* irSetObject = static_cast<SetObjectIR*>(ir);
+                Type srcType = graph->getOperandType(irSetObject->sourceIndex());
                 graph->setOperandType(ir->targetIndex(), srcType);
                 break;
             }
