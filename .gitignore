@@ -49,3 +49,4 @@ test/SunSpider/resources/sunspider-standalone-driver.js
 memps
 escargot.asm
 escargot.elf
+compiledFunctions.txt
