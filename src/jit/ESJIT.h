@@ -4,6 +4,7 @@
 #ifdef ENABLE_ESJIT
 
 #include "runtime/ESValue.h"
+#include "stdarg.h"
 
 namespace escargot {
 
@@ -36,9 +37,17 @@ private:
 
 JITFunction JITCompile(CodeBlock* codeBlock, ESVMInstance* instance);
 
-}
+void logVerboseJIT(const char* fmt...);
 
-unsigned long getLongTickCount();
+#ifndef LOG_VJ
+#ifndef NDEBUG
+#define LOG_VJ(fmt, ...) ::escargot::ESJIT::logVerboseJIT(fmt, __VA_ARGS__)
+#else
+#define LOG_VJ(fmt, ...)
+#endif
+#endif
+
+}
 
 }
 #endif

@@ -48,5 +48,19 @@ JITFunction JITCompile(CodeBlock* codeBlock, ESVMInstance* instance)
     return jitFunction.native();
 }
 
+void logVerboseJIT(const char* format...)
+{
+#ifndef NDEBUG
+    if (ESVMInstance::currentInstance()->m_verboseJIT) {
+        va_list argList;
+        va_start(argList, format);
+        vprintf(format, argList);
+        va_end(argList);
+    }
+#else
+    // do nothing
+#endif
+}
+
 }}
 #endif

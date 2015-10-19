@@ -58,6 +58,16 @@ inline const char* getESIRTypeName(uint64_t m_type)
     return "Complex";
 }
 
+void logVerboseJIT(const char* fmt...);
+
+#ifndef LOG_VJ
+#ifndef NDEBUG
+#define LOG_VJ(...) ::escargot::ESJIT::logVerboseJIT(__VA_ARGS__)
+#else
+#define LOG_VJ(...)
+#endif
+#endif
+
 class Type
 {
 public:
@@ -90,18 +100,12 @@ public:
             } else if (p->isESObject()) {
                 return TypeObject;
             } else {
-#ifndef NDEBUG
-                if (ESVMInstance::currentInstance()->m_verboseJIT)
-                    printf("WARNING: Reading type of unhandled ESValue '%s'. Returning Top.\n", value.toString()->utf8Data());
-#endif
+                LOG_VJ("WARNING: Reading type of unhandled ESValue '%s'. Returning Top.\n", value.toString()->utf8Data());
                 return TypePointer;
             }
          }
         else {
-#ifndef NDEBUG
-            if (ESVMInstance::currentInstance()->m_verboseJIT)
-                printf("WARNING: Reading type of unhandled ESValue '%s'. Returning Top.\n", value.toString()->utf8Data());
-#endif
+            LOG_VJ("WARNING: Reading type of unhandled ESValue '%s'. Returning Top.\n", value.toString()->utf8Data());
             return TypeTop;
         }
     }
