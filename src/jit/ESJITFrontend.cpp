@@ -526,6 +526,15 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(Throw);
             break;
         case ThisOpcode:
+        {
+            INIT_BYTECODE(This);
+            bytecode->m_profile.updateProfiledType();
+            graph->setOperandType(ssaIndex->m_targetIndex, bytecode->m_profile.getType());
+            GetThisIR* getThisIR = GetThisIR::create(ssaIndex->m_targetIndex);
+            currentBlock->push(getThisIR);
+            NEXT_BYTECODE(This);
+            break;
+        }
         case EnumerateObjectOpcode:
         case EnumerateObjectKeyOpcode:
             goto unsupported;
@@ -553,7 +562,7 @@ postprocess:
 unsupported:
 #ifndef NDEBUG
     if (ESVMInstance::currentInstance()->m_verboseJIT || ESVMInstance::currentInstance()->m_reportUnsupportedOpcode)
-        printf("Unsupported Opcode %s\n", getByteCodeName(opcodeFromAddress(currentCode->m_opcodeInAddress)));
+        printf("Unsupported ByteCode %s in JIT FrontEnd\n", getByteCodeName(opcodeFromAddress(currentCode->m_opcodeInAddress)));
 #endif
     return nullptr;
 }

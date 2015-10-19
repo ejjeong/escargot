@@ -74,13 +74,16 @@ private:
     nanojit::LIns* m_intTagComplementQ;
     nanojit::LIns* m_doubleEncodeOffsetQ;
     nanojit::LIns* m_undefinedQ;
+    nanojit::LIns* m_emptyQ;
     nanojit::LIns* m_zeroQ;
 #endif
+    nanojit::LIns* m_zeroD;
     nanojit::LIns* m_zeroP;
     nanojit::LIns* m_oneI;
     nanojit::LIns* m_zeroI;
     nanojit::LIns* m_true;
     nanojit::LIns* m_false;
+    nanojit::LIns* m_thisValueP;
 };
 
 JITFunction generateNativeFromIR(ESGraph* graph, ESVMInstance* instance);

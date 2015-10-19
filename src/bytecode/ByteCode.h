@@ -333,7 +333,7 @@ struct ByteCodeExtraData {
 #ifdef ENABLE_ESJIT
 class ProfileData {
 public:
-    ProfileData() : m_type(ESJIT::TypeBottom), m_value(ESValue()) { }
+    ProfileData() : m_type(ESJIT::TypeBottom), m_value(ESValue(ESValue::ESEmptyValueTag::ESEmptyValue)) { }
 
     void addProfile(ESValue value)
     {
@@ -343,8 +343,6 @@ public:
     void updateProfiledType()
     {
         // TODO what happens if this function is called multiple times?
-        if (m_type.isUndefinedType())
-            m_type = ESJIT::TypeBottom;
         m_type.mergeType(ESJIT::Type::getType(m_value));
         // TODO if m_type is function, profile function address
         // if m_value is not set to undefined, profiled type will be updated again
@@ -1889,6 +1887,10 @@ public:
     {
         printf("This <>\n");
     }
+#endif
+
+#ifdef ENABLE_ESJIT
+    ProfileData m_profile;
 #endif
 };
 

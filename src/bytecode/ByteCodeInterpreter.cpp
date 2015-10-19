@@ -522,6 +522,10 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         if(UNLIKELY(thisValue.isEmpty())) {
             thisValue = ec->resolveThisBinding();
         }
+#ifdef ENABLE_ESJIT
+        This* code = (This*)currentCode;
+        code->m_profile.addProfile(thisValue);
+#endif
         push<ESValue>(stack, topOfStack, thisValue);
         executeNextCode<This>(programCounter);
         NEXT_INSTRUCTION();

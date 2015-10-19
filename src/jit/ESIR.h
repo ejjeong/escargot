@@ -98,7 +98,7 @@ class ESBasicBlock;
     F(GetEnumerablePropertyNames, ) \
     \
     /* [Get/Set][Variable|Property] */ \
-    F(GetThis, ) \
+    F(GetThis, LoadFromHeap) \
     F(GetArgument, LoadFromHeap) \
     F(GetVar, LoadFromHeap) \
     F(SetVar, ) \
@@ -334,6 +334,23 @@ private:
     ToNumberIR(int targetIndex, int sourceIndex)
         : ESIR(ESIR::Opcode::ToNumber, targetIndex), m_sourceIndex(sourceIndex) { }
     int m_sourceIndex;
+};
+
+class GetThisIR : public ESIR {
+public:
+    DECLARE_STATIC_GENERATOR_0(GetThis)
+
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+    }
+#endif
+
+private:
+    GetThisIR(int targetIndex)
+        : ESIR(ESIR::Opcode::GetThis, targetIndex) { }
 };
 
 class GetArgumentIR : public ESIR {

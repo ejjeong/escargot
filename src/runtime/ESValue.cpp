@@ -702,10 +702,13 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                 }
 
                 if (!compileNextTime) {
-                    LOG_VJ("Trying JIT Compile for function %s...\n", fn->codeBlock()->m_nonAtomicId ? (fn->codeBlock()->m_nonAtomicId->utf8Data()):"(anonymous)");
+#ifndef NDEBUG
+                    const char* functionName = fn->codeBlock()->m_nonAtomicId ? (fn->codeBlock()->m_nonAtomicId->utf8Data()):"(anonymous)";
+#endif
+                    LOG_VJ("Trying JIT Compile for function %s...\n", functionName);
                     jitFunction = reinterpret_cast<ESJIT::JITFunction>(ESJIT::JITCompile(fn->codeBlock(), instance));
                     if (jitFunction) {
-                        LOG_VJ("> Compilation successful! Cache jit function %p\n", jitFunction);
+                        LOG_VJ("> Compilation successful for function %s! Cache jit function %p\n", functionName, jitFunction);
 #ifndef NDEBUG
                         if (ESVMInstance::currentInstance()->m_reportCompiledFunction) {
                             if (ESVMInstance::currentInstance()->m_compiledFunctions == 0) {

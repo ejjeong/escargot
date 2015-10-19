@@ -203,6 +203,7 @@ void ESGraphTypeInference::run(ESGraph* graph)
                 graph->setOperandType(ir->targetIndex(), srcType);
                 break;
             }
+            case ESIR::Opcode::GetThis:
             case ESIR::Opcode::GetArgument:
             case ESIR::Opcode::GetVar:
             case ESIR::Opcode::GetVarGeneric:

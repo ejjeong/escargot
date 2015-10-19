@@ -45,6 +45,13 @@ inline ESValue* contextResolveBinding(ExecutionContext* context, InternalAtomicS
     return context->resolveBinding(*atomicName);
 }
 
+inline ESValueInDouble contextResolveThisBinding(ExecutionContext* ec)
+{
+    ESValue thisValue = ec->resolveThisBinding();
+    // printf("This: %s %p\n", thisValue.toString()->utf8Data(), thisValue.asESPointer());
+    return ESValue::toRawDouble(thisValue);
+}
+
 inline void objectDefineDataProperty(ESObject* object, ESString* key,
         /*bool isWritable, bool isEnumarable, bool isConfigurable,*/
         ESValueInDouble initial)

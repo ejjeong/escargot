@@ -89,6 +89,8 @@ public:
             return TypeDouble;
         else if (value.isUndefined())
             return TypeUndefined;
+        else if (value.isEmpty()) // FIXME what if the profiled value was empty? (!= not profiled)
+            return TypeBottom;
         else if (value.isESPointer()) {
             ESPointer* p = value.asESPointer();
             if (p->isESArrayObject()) {

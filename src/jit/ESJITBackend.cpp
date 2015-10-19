@@ -33,6 +33,7 @@ using namespace nanojit;
 CallInfo plusOpCallInfo = CI(plusOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 CallInfo minusOpCallInfo = CI(minusOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 CallInfo contextResolveBindingCallInfo = CI(contextResolveBinding, CallInfo::typeSig3(ARGTYPE_P, ARGTYPE_P, ARGTYPE_P, ARGTYPE_P));
+CallInfo contextResolveThisBindingCallInfo = CI(contextResolveThisBinding, CallInfo::typeSig1(ARGTYPE_D, ARGTYPE_P));
 CallInfo objectDefineDataPropertyCallInfo = CI(objectDefineDataProperty, CallInfo::typeSig3(ARGTYPE_V, ARGTYPE_P, ARGTYPE_D, /*ARGTYPE_B, ARGTYPE_B, ARGTYPE_B,*/ ARGTYPE_D));
 CallInfo esFunctionObjectCallCallInfo = CI(esFunctionObjectCall, CallInfo::typeSig6(ARGTYPE_D, ARGTYPE_P, ARGTYPE_D, ARGTYPE_D, ARGTYPE_P, ARGTYPE_I, ARGTYPE_B));
 CallInfo ESObjectSetOpCallInfo = CI(ESObjectSetOp, CallInfo::typeSig3(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
@@ -226,6 +227,8 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
     } else if (type.isArrayObjectType() || type.isStringType() || type.isFunctionObjectType()) {
         //ToDo
     } else if (type.isObjectType()) {
+        //Todo
+    } else if (type.isPointerType()) {
 #ifdef ESCARGOT_64
         LIns* quadValue = m_out.ins1(LIR_dasq, in);
         LIns* maskedValue = m_out.ins2(LIR_andq, quadValue, m_tagMaskQ);
@@ -719,6 +722,28 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_ESIR(Move);
         return getTmpMapping(irMove->sourceIndex());
     }
+    case ESIR::Opcode::GetThis:
+    {
+        INIT_ESIR(GetThis);
+
+#ifdef ESCARGOT_64
+        LIns* m_cachedThisValue = m_out.insLoad(LIR_ldq, m_thisValueP, 0, 1, LOAD_NORMAL);
+        LIns* checkIfThisValueisEmpty = m_out.ins2(LIR_eqq, m_cachedThisValue, m_emptyQ);
+#else
+        RELEASE_ASSERT_NOT_REACHED();
+#endif
+        LIns* jumpIfThisValueisNotEmpty = m_out.insBranch(LIR_jf, checkIfThisValueisEmpty, nullptr);
+
+        LIns* args[] = {m_context};
+        LIns* resolvedThisValue = m_out.insCall(&contextResolveThisBindingCallInfo, args);
+        m_out.insStore(LIR_std, resolvedThisValue, m_thisValueP, 0 , 1);
+
+        LIns* thisValueIsValid = m_out.ins0(LIR_label);
+        jumpIfThisValueisNotEmpty->setTarget(thisValueIsValid);
+
+        m_out.ins0(LIR_label);
+        return m_out.insLoad(LIR_ldd, m_thisValueP, 0, 1, LOAD_NORMAL);
+    }
     case ESIR::Opcode::GetArgument:
     {
         INIT_ESIR(GetArgument);
@@ -1004,13 +1029,19 @@ void NativeGenerator::nanojitCodegen(ESVMInstance* instance)
     m_intTagComplementQ = m_out.insImmQ(~TagTypeNumber);
     m_doubleEncodeOffsetQ = m_out.insImmQ(DoubleEncodeOffset);
     m_undefinedQ = m_out.insImmQ(ValueUndefined);
-#endif
+    m_emptyQ = m_out.insImmQ(ValueEmpty);
     m_zeroQ = m_out.insImmQ(0);
+#endif
+    m_zeroD = m_out.insImmD(0);
     m_zeroP = m_out.insImmP(0);
     m_oneI = m_out.insImmI(1);
     m_zeroI = m_out.insImmI(0);
     m_true = m_oneI;
     m_false = m_zeroI;
+    m_thisValueP = m_out.insAlloc(sizeof(ESValue));
+#ifdef ESCARGOT_64
+    m_out.insStore(LIR_stq, m_emptyQ, m_thisValueP, 0, 1);
+#endif
 
     // JIT_LOG(m_true, "Start executing JIT function");
 
@@ -1022,7 +1053,7 @@ void NativeGenerator::nanojitCodegen(ESVMInstance* instance)
             ESIR* ir = block->instruction(j);
             LIns* generatedLIns = nanojitCodegen(ir);
             if (!generatedLIns)
-                printf("ERROR: Cannot generate code for JIT IR `%s`\n", ir->getOpcodeName());
+                printf("ERROR: Cannot generate code for JIT IR `%s` in ESJITBackEnd\n", ir->getOpcodeName());
             if (ir->isValueLoadedFromHeap()) {
                 Type type = m_graph->getOperandType(ir->m_targetIndex);
                 generatedLIns = generateTypeCheck(generatedLIns, type, ir->m_targetIndex);
