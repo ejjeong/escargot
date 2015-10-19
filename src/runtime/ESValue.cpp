@@ -571,6 +571,14 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
 #ifndef NDEBUG
                         if (ESVMInstance::currentInstance()->m_verboseJIT)
                             printf("> Compilation successful! Cache jit function %p\n", jitFunction);
+
+                        if (ESVMInstance::currentInstance()->m_reportCompiledFunction) {
+                            if (ESVMInstance::currentInstance()->m_compiledFunctions == 0) {
+                                printf("<<<< Compiled Functions >>>>\n");
+                            }
+                            printf("%s ", fn->codeBlock()->m_nonAtomicId ? (fn->codeBlock()->m_nonAtomicId->utf8Data()):"(anonymous)");
+                            ESVMInstance::currentInstance()->m_compiledFunctions++;
+                        }
 #endif
                         fn->codeBlock()->m_cachedJITFunction = jitFunction;
                     } else {

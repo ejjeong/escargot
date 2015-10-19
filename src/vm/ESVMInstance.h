@@ -130,6 +130,8 @@ public:
     bool m_dumpExecuteByteCode;
     bool m_verboseJIT;
     bool m_reportUnsupportedOpcode;
+    bool m_reportCompiledFunction;
+    int m_compiledFunctions;
 #endif
     bool m_profile;
 

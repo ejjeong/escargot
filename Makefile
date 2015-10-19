@@ -199,6 +199,9 @@ check-jit:
 	./run-Sunspider-jit.sh
 	make interpreter.release -j8
 	make run-sunspider
+	make jit.debug -j8
+	./run-Sunspider-jit.sh -rcf > compiledFunctions.txt
+	vimdiff compiledFunctions.txt originalCompiledFunctions.txt
 
 # Targets : benchmarks
 
