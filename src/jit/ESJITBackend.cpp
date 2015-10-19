@@ -573,8 +573,19 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* right = getTmpMapping(irGreaterThan->rightIndex());
         Type leftType = m_graph->getOperandType(irGreaterThan->leftIndex());
         Type rightType = m_graph->getOperandType(irGreaterThan->rightIndex());
-        if (leftType.isInt32Type() && rightType.isInt32Type())
-            return m_out.ins2(LIR_gti, left, right);
+
+        if (leftType.isNumberType() && rightType.isNumberType()) {
+            if (leftType.isInt32Type() && rightType.isInt32Type())
+                return m_out.ins2(LIR_gti, left, right);
+            else {
+                // FIXME-JY : what if left/right type changes on runtime
+                if (leftType.isInt32Type())
+                    left = m_out.ins1(LIR_i2d, left);
+                if (rightType.isInt32Type())
+                    right = m_out.ins1(LIR_i2d, right);
+                return m_out.ins2(LIR_gtd, left, right);
+            }
+        }
         else
             RELEASE_ASSERT_NOT_REACHED();
     }
