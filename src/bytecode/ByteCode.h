@@ -12,8 +12,8 @@
 namespace escargot {
 
 class Node;
-
-#define ESCARGOT_INTERPRET_STACK_SIZE 4096
+class ByteCode;
+class CodeBlock;
 
 ///<OpcodeName, PushCount, PopCount>
 #define FOR_EACH_BYTECODE_OP(F) \
@@ -56,8 +56,6 @@ class Node;
     F(Multiply, 1, 2) \
     F(Division, 1, 2) \
     F(Mod, 1, 2) \
-    F(Increment, 1, 2) \
-    F(Decrement, 1, 2) \
     F(StringIn, 1, 2) \
     F(InstanceOf, 1, 2) \
 \
@@ -70,6 +68,8 @@ class Node;
     F(UnaryDelete, 1, 1) \
     F(UnaryVoid, 1, 1) \
     F(ToNumber, 1, 1) \
+    F(Increment, 1, 1) \
+    F(Decrement, 1, 1) \
 \
     /*object, array*/ \
     F(CreateObject, 1, 0) \
@@ -91,14 +91,14 @@ class Node;
     F(SetObjectPreComputedCaseSlowMode, 1, 2) \
 \
     /*function*/\
-    F(CreateFunction, 1, 0) \
+    F(CreateFunction, -1, 0) \
     F(ExecuteNativeFunction, 0, 0) \
     F(PrepareFunctionCall, 0, 0) \
     F(PushFunctionCallReceiver, 1, 0) \
-    F(CallFunction, 0, 0) \
-    F(CallEvalFunction, 0, 0) \
+    F(CallFunction, 1, -1) \
+    F(CallEvalFunction, 1, -1) \
     F(CallBoundFunction, 0, 0) \
-    F(NewFunctionCall, 0, 0) \
+    F(NewFunctionCall, 1, -1) \
     F(ReturnFunction, 0, 0) \
     F(ReturnFunctionWithValue, 0, 1) \
 \
@@ -107,7 +107,7 @@ class Node;
     F(JumpComplexCase, 0, 0) \
     F(JumpIfTopOfStackValueIsFalse, 0, 1) \
     F(JumpIfTopOfStackValueIsTrue, 0, 1) \
-    F(JumpAndPopIfTopOfStackValueIsTrue, 0, 0) \
+    F(JumpAndPopIfTopOfStackValueIsTrue, 0, 1) \
     F(JumpIfTopOfStackValueIsFalseWithPeeking, 0, 0) \
     F(JumpIfTopOfStackValueIsTrueWithPeeking, 0, 0) \
     F(DuplicateTopOfStackValue, 1, 0) \
@@ -116,13 +116,13 @@ class Node;
     /*try-catch*/ \
     F(Try, 0, 0) \
     F(TryCatchBodyEnd, 0, 0) \
-    F(Throw, 0, 0) \
+    F(Throw, 0, 1) \
     F(FinallyEnd, 0, 0) \
 \
     /*etc*/ \
-    F(This, 0, 1) \
-    F(EnumerateObject, 0, 1) \
-    F(EnumerateObjectKey, 0, 1) \
+    F(This, 1, 0) \
+    F(EnumerateObject, 1, 0) \
+    F(EnumerateObjectKey, 0, 0) \
     F(PrintSpAndBp, 0, 0) \
 \
     F(End, 0, 0)
@@ -144,6 +144,10 @@ inline Opcode opcodeFromAddress(void* address)
 {
     return (ESVMInstance::currentInstance()->opcodeTable())->m_reverseTable[address];
 }
+
+unsigned char popCountFromOpcode(ByteCode* code, Opcode opcode);
+unsigned char pushCountFromOpcode(ByteCode* code, Opcode opcode);
+
 #ifndef NDEBUG
 inline const char* getByteCodeName(Opcode opcode)
 {
@@ -156,9 +160,6 @@ inline const char* getByteCodeName(Opcode opcode)
 }
 #endif
 
-class ByteCode;
-class CodeBlock;
-
 struct ByteCodeGenerateContext {
     ByteCodeGenerateContext()
         : m_offsetToBasePointer(0)
@@ -168,10 +169,12 @@ struct ByteCodeGenerateContext {
         , m_currentNodeIndex(0)
 #endif
     {
+        m_baseRegisterCount = 0;
     }
 
     ByteCodeGenerateContext(const ByteCodeGenerateContext& contextBefore)
-        : m_offsetToBasePointer(0)
+        : m_baseRegisterCount(contextBefore.m_baseRegisterCount)
+        , m_offsetToBasePointer(0)
         , m_tryStatementScopeCount(contextBefore.m_tryStatementScopeCount)
 #ifdef ENABLE_ESJIT
         , m_currentNodeIndex(contextBefore.m_currentNodeIndex)
@@ -263,6 +266,8 @@ struct ByteCodeGenerateContext {
     ALWAYS_INLINE void consumeLabeledContinuePositions(CodeBlock* cb, size_t position, ESString* lbl);
     ALWAYS_INLINE void morphJumpPositionIntoComplexCase(CodeBlock* cb,size_t codePos);
 
+    int m_baseRegisterCount;
+
     std::vector<size_t> m_breakStatementPositions;
     std::vector<size_t> m_continueStatementPositions;
     std::vector<std::pair<ESString*, size_t> > m_labeledBreakStatmentPositions;
@@ -315,6 +320,17 @@ public:
 
 struct ByteCodeExtraData {
     Opcode m_opcode;
+    int m_baseRegisterIndex;
+    int m_registerIncrementCount; //stack push
+    int m_registerDecrementCount; //stack pop
+
+    ByteCodeExtraData()
+    {
+        m_opcode = (Opcode)0;
+        m_baseRegisterIndex = 0;
+        m_registerIncrementCount = 0;
+        m_registerDecrementCount = 0;
+    }
 };
 
 #ifdef ENABLE_ESJIT
@@ -1644,10 +1660,13 @@ public:
 
 class CallFunction : public ByteCode {
 public:
-    CallFunction()
+    CallFunction(unsigned argumentCount)
         : ByteCode(CallFunctionOpcode)
     {
+        m_argmentCount = argumentCount;
     }
+
+    unsigned m_argmentCount;
 
 #ifndef NDEBUG
     virtual void dump()
@@ -1663,10 +1682,13 @@ public:
 
 class CallEvalFunction : public ByteCode {
 public:
-    CallEvalFunction()
+    CallEvalFunction(unsigned argumentCount)
         : ByteCode(CallEvalFunctionOpcode)
     {
+        m_argmentCount = argumentCount;
     }
+
+    unsigned m_argmentCount;
 
 #ifndef NDEBUG
     virtual void dump()
@@ -1699,11 +1721,13 @@ public:
 
 class NewFunctionCall : public ByteCode {
 public:
-    NewFunctionCall()
+    NewFunctionCall(unsigned argumentCount)
         : ByteCode(NewFunctionCallOpcode)
     {
+        m_argmentCount = argumentCount;
     }
 
+    unsigned m_argmentCount;
 #ifndef NDEBUG
     virtual void dump()
     {
@@ -1977,7 +2001,8 @@ public:
         return new(GC) CodeBlock(isBuiltInFunction);
     }
     template <typename CodeType>
-    void pushCode(const CodeType& type, Node* node);
+    void pushCode(const CodeType& type, ByteCodeGenerateContext& context, Node* node);
+    inline void pushCode(const ExecuteNativeFunction& code);
     template <typename CodeType>
     CodeType* peekCode(size_t position)
     {
@@ -2008,6 +2033,8 @@ public:
         return m_isStrict || m_isBuiltInFunction;
     }
 
+    void fillExtraData();
+
     std::vector<char, gc_malloc_allocator<char> > m_code;
 
     std::vector<ByteCodeExtraData> m_extraData;
@@ -2017,11 +2044,13 @@ public:
     InternalAtomicStringVector m_params; //params: [ Pattern ];
     ESStringVector m_nonAtomicParams;
     InternalAtomicStringVector m_innerIdentifiers;
+    unsigned m_requiredStackSizeInESValueSize;
 
     bool m_needsActivation;
     bool m_isBuiltInFunction;
     bool m_isStrict;
     bool m_isFunctionExpression;
+
 
 #ifndef NDEBUG
     InternalAtomicString m_id;
@@ -2042,8 +2071,8 @@ public:
             m_functionCallInfos.push_back(argumentIndexes[i]);
     }
 
-    std::vector<SSAIndex, gc_allocator<SSAIndex> > m_SSAIndexes;
-    std::vector<int, gc_allocator<int> > m_functionCallInfos;
+    std::vector<SSAIndex> m_SSAIndexes;
+    std::vector<int> m_functionCallInfos;
     typedef ESValueInDouble (*JITFunction)(ESVMInstance*);
     JITFunction m_cachedJITFunction;
     bool m_dontJIT;
@@ -2054,10 +2083,13 @@ public:
 #else
 #define WRITE_LAST_INDEX(a, b, c)
 #endif
+
+private:
+    void pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, ByteCodeGenerateContext& context);
 };
 
 template <typename Type>
-ALWAYS_INLINE void push(void*& stk, void* bp, const Type& ptr)
+ALWAYS_INLINE void push(void*& stk, void* topOfStack, const Type& ptr)
 {
     //memcpy(((char *)stk), &ptr, sizeof (Type));
     *((Type *)stk) = ptr;
@@ -2068,7 +2100,7 @@ ALWAYS_INLINE void push(void*& stk, void* bp, const Type& ptr)
     memcpy(((char *)stk), &siz, sizeof (size_t));
     stk = (void *)(((size_t)stk) + sizeof(size_t));
 
-    if(((size_t)stk) - ((size_t)bp) > ESCARGOT_INTERPRET_STACK_SIZE) {
+    if(stk > topOfStack) {
         puts("stackoverflow!!!");
         ASSERT_NOT_REACHED();
     }
@@ -2077,7 +2109,7 @@ ALWAYS_INLINE void push(void*& stk, void* bp, const Type& ptr)
 }
 
 template <typename Type>
-ALWAYS_INLINE void push(void*& stk, void* bp, Type* ptr)
+ALWAYS_INLINE void push(void*& stk, void* topOfStack, Type* ptr)
 {
     //memcpy(((char *)stk), &ptr, sizeof (Type));
     *((Type *)stk) = *ptr;
@@ -2088,7 +2120,7 @@ ALWAYS_INLINE void push(void*& stk, void* bp, Type* ptr)
     memcpy(((char *)stk), &siz, sizeof (size_t));
     stk = (void *)(((size_t)stk) + sizeof(size_t));
 
-    if(((size_t)stk) - ((size_t)bp) > ESCARGOT_INTERPRET_STACK_SIZE) {
+    if(stk > topOfStack) {
         puts("stackoverflow!!!");
         ASSERT_NOT_REACHED();
     }
@@ -2163,7 +2195,7 @@ ALWAYS_INLINE size_t resolveProgramCounter(char* codeBuffer, const size_t& progr
 void dumpBytecode(CodeBlock* codeBlock);
 #endif
 
-ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter = 0, unsigned maxStackPos = 0);
+ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter = 0);
 CodeBlock* generateByteCode(Node* node);
 inline void iterateByteCode(CodeBlock* codeBlock, void (*fn)(CodeBlock* block, unsigned idx, ByteCode* code, Opcode opcode));
 
@@ -2173,7 +2205,7 @@ inline void iterateByteCode(CodeBlock* codeBlock, void (*fn)(CodeBlock* block, u
 namespace escargot {
 
 template <typename CodeType>
-void CodeBlock::pushCode(const CodeType& code, Node* node)
+void CodeBlock::pushCode(const CodeType& code, ByteCodeGenerateContext& context, Node* node)
 {
 #ifndef NDEBUG
     {
@@ -2182,19 +2214,31 @@ void CodeBlock::pushCode(const CodeType& code, Node* node)
     }
 #endif
 
-    Opcode op = (Opcode)(size_t)code.m_opcodeInAddress;
+    //record extra Info
+    ByteCodeExtraData extraData;
+    extraData.m_opcode = (Opcode)(size_t)code.m_opcodeInAddress;
+    pushCodeFillExtraData((ByteCode *)&code, &extraData, context);
+
     const_cast<CodeType &>(code).assignOpcodeInAddress();
 
     char* first = (char *)&code;
     m_code.insert(m_code.end(), first, first + sizeof(CodeType));
 
-    //record extra Info
-    ByteCodeExtraData extraData;
-    extraData.m_opcode = op;
     m_extraData.push_back(extraData);
+
+    m_requiredStackSizeInESValueSize = std::max(m_requiredStackSizeInESValueSize, (unsigned)context.m_baseRegisterCount);
 #ifdef ENABLE_ESJIT
     m_SSAIndexes.push_back(SSAIndex());
 #endif
+}
+
+inline void CodeBlock::pushCode(const ExecuteNativeFunction& code)
+{
+    Opcode op = (Opcode)(size_t)code.m_opcodeInAddress;
+    const_cast<ExecuteNativeFunction &>(code).assignOpcodeInAddress();
+
+    char* first = (char *)&code;
+    m_code.insert(m_code.end(), first, first + sizeof(ExecuteNativeFunction));
 }
 
 ALWAYS_INLINE void ByteCodeGenerateContext::consumeLabeledContinuePositions(CodeBlock* cb, size_t position, ESString* lbl)

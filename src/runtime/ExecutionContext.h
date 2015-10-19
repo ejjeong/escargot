@@ -78,7 +78,6 @@ public:
     static size_t offsetOfArguments() { return offsetof(ExecutionContext, m_arguments); }
     static size_t offsetofInOSRExit() { return offsetof(ExecutionContext, m_inOSRExit); }
     static size_t offsetofStackBuf() { return offsetof(ExecutionContext, m_stackBuf); }
-    static size_t offsetofStackPos() { return offsetof(ExecutionContext, m_stackPos); }
     static size_t offsetofcachedDeclarativeEnvironmentRecordESValue() {
         return offsetof(ExecutionContext, m_cachedDeclarativeEnvironmentRecord);
     }
@@ -104,9 +103,7 @@ private:
 
     ESValue m_tryOrCatchBodyResult;
 #ifdef ENABLE_ESJIT
-    bool m_inOSRExit;
-    char m_stackBuf[ESCARGOT_INTERPRET_STACK_SIZE];
-    unsigned m_stackPos;
+    char* m_stackBuf;
 #endif
 };
 

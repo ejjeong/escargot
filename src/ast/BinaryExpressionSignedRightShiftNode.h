@@ -19,7 +19,7 @@ public:
         m_left->generateExpressionByteCode(codeBlock, context);
         m_right->generateExpressionByteCode(codeBlock, context);
         updateNodeIndex(context);
-        codeBlock->pushCode(SignedRightShift(), this);
+        codeBlock->pushCode(SignedRightShift(), context, this);
         WRITE_LAST_INDEX(m_nodeIndex, m_left->nodeIndex(), m_right->nodeIndex());
     }
 protected:

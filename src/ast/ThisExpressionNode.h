@@ -12,7 +12,7 @@ public:
 
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        codeBlock->pushCode(This(), this);
+        codeBlock->pushCode(This(), context, this);
     }
 
 protected:

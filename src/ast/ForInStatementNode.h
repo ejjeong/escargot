@@ -24,48 +24,47 @@ public:
         newContext.m_offsetToBasePointer = context.m_offsetToBasePointer + 1;
 
         m_right->generateExpressionByteCode(codeBlock, newContext);
-        codeBlock->pushCode(DuplicateTopOfStackValue(), this);
-        codeBlock->pushCode(Push(ESValue(ESValue::ESUndefined)), this);
-        codeBlock->pushCode(Equal(), this);
-        codeBlock->pushCode(JumpIfTopOfStackValueIsTrue(SIZE_MAX), this);
-        size_t exit1Pos = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsTrue>();
+        codeBlock->pushCode(DuplicateTopOfStackValue(), newContext, this);
+        codeBlock->pushCode(Push(ESValue(ESValue::ESUndefined)), newContext, this);
+        codeBlock->pushCode(Equal(), newContext, this);
+        codeBlock->pushCode(JumpAndPopIfTopOfStackValueIsTrue(SIZE_MAX), newContext, this);
+        size_t exit1Pos = codeBlock->lastCodePosition<JumpAndPopIfTopOfStackValueIsTrue>();
 
-        codeBlock->pushCode(DuplicateTopOfStackValue(), this);
-        codeBlock->pushCode(Push(ESValue(ESValue::ESNull)), this);
-        codeBlock->pushCode(Equal(), this);
-        codeBlock->pushCode(JumpIfTopOfStackValueIsTrue(SIZE_MAX), this);
-        size_t exit2Pos = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsTrue>();
+        codeBlock->pushCode(DuplicateTopOfStackValue(), newContext, this);
+        codeBlock->pushCode(Push(ESValue(ESValue::ESNull)), newContext, this);
+        codeBlock->pushCode(Equal(), newContext, this);
+        codeBlock->pushCode(JumpAndPopIfTopOfStackValueIsTrue(SIZE_MAX), newContext, this);
+        size_t exit2Pos = codeBlock->lastCodePosition<JumpAndPopIfTopOfStackValueIsTrue>();
 
-        codeBlock->pushCode(EnumerateObject(), this);
+        codeBlock->pushCode(EnumerateObject(), newContext, this);
         size_t continuePosition = codeBlock->currentCodeSize();
-        codeBlock->pushCode(EnumerateObjectKey(), this);
+        codeBlock->pushCode(EnumerateObjectKey(), newContext, this);
 
-        codeBlock->pushCode(PushIntoTempStack(), this);
+        codeBlock->pushCode(PushIntoTempStack(), newContext, this);
         m_left->generateResolveAddressByteCode(codeBlock, newContext);
-        codeBlock->pushCode(PopFromTempStack(), this);
+        codeBlock->pushCode(PopFromTempStack(), newContext, this);
         m_left->generatePutByteCode(codeBlock, newContext);
-        codeBlock->pushCode(Pop(), this);
+        codeBlock->pushCode(Pop(), newContext, this);
 
         m_body->generateStatementByteCode(codeBlock, newContext);
 
-        codeBlock->pushCode(Jump(continuePosition), this);
+        codeBlock->pushCode(Jump(continuePosition), newContext, this);
         size_t forInEnd = codeBlock->currentCodeSize();
         //codeBlock->pushCode(EnumerateObjectEnd(), this);
-        codeBlock->pushCode(Pop(), this);
+        codeBlock->pushCode(Pop(), newContext, this);
         ASSERT(codeBlock->peekCode<EnumerateObjectKey>(continuePosition)->m_orgOpcode == EnumerateObjectKeyOpcode);
         codeBlock->peekCode<EnumerateObjectKey>(continuePosition)->m_forInEnd = forInEnd;
 
         newContext.consumeBreakPositions(codeBlock, forInEnd);
         newContext.consumeContinuePositions(codeBlock, continuePosition);
         newContext.m_positionToContinue = continuePosition;
-        newContext.propagateInformationTo(context);
-        codeBlock->pushCode(Jump(SIZE_MAX), this);
+        newContext.propagateInformationTo(newContext);
+        codeBlock->pushCode(Jump(SIZE_MAX), newContext, this);
         size_t jPos = codeBlock->lastCodePosition<Jump>();
 
         size_t exitPos = codeBlock->currentCodeSize();
-        codeBlock->pushCode(Pop(), this);
-        codeBlock->peekCode<JumpIfTopOfStackValueIsTrue>(exit1Pos)->m_jumpPosition = exitPos;
-        codeBlock->peekCode<JumpIfTopOfStackValueIsTrue>(exit2Pos)->m_jumpPosition = exitPos;
+        codeBlock->peekCode<JumpAndPopIfTopOfStackValueIsTrue>(exit1Pos)->m_jumpPosition = exitPos;
+        codeBlock->peekCode<JumpAndPopIfTopOfStackValueIsTrue>(exit2Pos)->m_jumpPosition = exitPos;
 
         codeBlock->peekCode<Jump>(jPos)->m_jumpPosition = codeBlock->currentCodeSize();
 

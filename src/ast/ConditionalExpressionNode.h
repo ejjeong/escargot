@@ -19,11 +19,11 @@ public:
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_test->generateExpressionByteCode(codeBlock, context);
-        codeBlock->pushCode(JumpIfTopOfStackValueIsFalse(SIZE_MAX), this);
+        codeBlock->pushCode(JumpIfTopOfStackValueIsFalse(SIZE_MAX), context, this);
         size_t jumpPosForTestIsFalse = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsFalse>();
 
         m_consequente->generateExpressionByteCode(codeBlock, context);
-        codeBlock->pushCode(Jump(SIZE_MAX), this);
+        codeBlock->pushCode(Jump(SIZE_MAX), context, this);
         JumpIfTopOfStackValueIsFalse* jumpForTestIsFalse = codeBlock->peekCode<JumpIfTopOfStackValueIsFalse>(jumpPosForTestIsFalse);
         size_t jumpPosForEndOfConsequence = codeBlock->lastCodePosition<Jump>();
 

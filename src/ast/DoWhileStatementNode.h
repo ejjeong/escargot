@@ -24,7 +24,7 @@ public:
 
         size_t testPos = codeBlock->currentCodeSize();
         m_test->generateExpressionByteCode(codeBlock, newContext);
-        codeBlock->pushCode(JumpIfTopOfStackValueIsTrue(doStart), this);
+        codeBlock->pushCode(JumpIfTopOfStackValueIsTrue(doStart), newContext, this);
 
         size_t doEnd = codeBlock->currentCodeSize();
 

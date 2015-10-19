@@ -22,17 +22,17 @@ public:
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         context.m_tryStatementScopeCount++;
-        codeBlock->pushCode(Try(), this);
+        codeBlock->pushCode(Try(), context, this);
         size_t pos = codeBlock->lastCodePosition<Try>();
         codeBlock->peekCode<Try>(pos)->m_tryDupCount = context.m_tryStatementScopeCount;
         m_block->generateStatementByteCode(codeBlock, context);
 
-        codeBlock->pushCode(TryCatchBodyEnd(), this);
+        codeBlock->pushCode(TryCatchBodyEnd(), context, this);
         size_t catchPos = codeBlock->currentCodeSize();
         if(m_handler) {
             m_handler->generateStatementByteCode(codeBlock, context);
         }
-        codeBlock->pushCode(TryCatchBodyEnd(), this);
+        codeBlock->pushCode(TryCatchBodyEnd(), context, this);
 
         context.registerJumpPositionsToComplexCase();
         context.m_tryStatementScopeCount--;
@@ -47,7 +47,7 @@ public:
         }
         if(m_finalizer)
             m_finalizer->generateStatementByteCode(codeBlock, context);
-        codeBlock->pushCode(FinallyEnd(), this);
+        codeBlock->pushCode(FinallyEnd(), context, this);
     }
 
 protected:

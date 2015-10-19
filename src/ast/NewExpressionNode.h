@@ -23,8 +23,7 @@ public:
             m_arguments[i]->generateExpressionByteCode(codeBlock, context);
         }
 
-        codeBlock->pushCode(Push(ESValue(m_arguments.size())), this);
-        codeBlock->pushCode(NewFunctionCall(), this);
+        codeBlock->pushCode(NewFunctionCall(m_arguments.size()), context, this);
     }
 
 protected:

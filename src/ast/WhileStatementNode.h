@@ -21,7 +21,7 @@ public:
         ByteCodeGenerateContext newContext(context);
 
 #ifdef ENABLE_ESJIT
-        codeBlock->pushCode(LoopStart(), this);
+        codeBlock->pushCode(LoopStart(), newContext, this);
 #endif
 
         size_t whileStart = codeBlock->currentCodeSize();
@@ -29,13 +29,13 @@ public:
 
         updateNodeIndex(newContext);
 
-        codeBlock->pushCode(JumpIfTopOfStackValueIsFalse(SIZE_MAX), this);
+        codeBlock->pushCode(JumpIfTopOfStackValueIsFalse(SIZE_MAX), newContext, this);
         WRITE_LAST_INDEX(m_nodeIndex, m_test->nodeIndex(), -1);
         size_t testPos = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsFalse>();
 
         m_body->generateStatementByteCode(codeBlock, newContext);
 
-        codeBlock->pushCode(Jump(whileStart), this);
+        codeBlock->pushCode(Jump(whileStart), newContext, this);
         newContext.consumeContinuePositions(codeBlock, whileStart);
         size_t whileEnd = codeBlock->currentCodeSize();
         newContext.consumeBreakPositions(codeBlock, whileEnd);

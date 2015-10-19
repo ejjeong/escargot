@@ -21,7 +21,7 @@ public:
         context.m_positionToContinue = start;
         m_statementNode->generateStatementByteCode(codeBlock, context);
         size_t end = codeBlock->currentCodeSize();
-        codeBlock->pushCode(LoadStackPointer(context.m_offsetToBasePointer), this);
+        codeBlock->pushCode(LoadStackPointer(context.m_offsetToBasePointer), context, this);
         context.consumeLabeledBreakPositions(codeBlock, end, m_label);
         context.consumeLabeledContinuePositions(codeBlock, context.m_positionToContinue, m_label);
     }

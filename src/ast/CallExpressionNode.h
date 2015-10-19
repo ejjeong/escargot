@@ -23,15 +23,14 @@ public:
                 for(unsigned i = 0; i < m_arguments.size() ; i ++) {
                     m_arguments[i]->generateExpressionByteCode(codeBlock, context);
                 }
-                codeBlock->pushCode(Push(ESValue(m_arguments.size())), this);
-                codeBlock->pushCode(CallEvalFunction(), this);
+                codeBlock->pushCode(CallEvalFunction(m_arguments.size()), context, this);
                 return ;
             }
         }
-        codeBlock->pushCode(PrepareFunctionCall(), this);
+        codeBlock->pushCode(PrepareFunctionCall(), context, this);
         m_callee->generateExpressionByteCode(codeBlock, context);
         updateNodeIndex(context);
-        codeBlock->pushCode(PushFunctionCallReceiver(), this);
+        codeBlock->pushCode(PushFunctionCallReceiver(), context, this);
 #ifdef ENABLE_ESJIT
         int receiverIndex = m_nodeIndex;
 #endif
@@ -48,10 +47,7 @@ public:
         }
 
         updateNodeIndex(context);
-        codeBlock->pushCode(Push(ESValue(m_arguments.size())), this);
-        WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
-        updateNodeIndex(context);
-        codeBlock->pushCode(CallFunction(), this);
+        codeBlock->pushCode(CallFunction(m_arguments.size()), context, this);
         WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
 #ifdef ENABLE_ESJIT
         codeBlock->writeFunctionCallInfo(m_callee->nodeIndex(), receiverIndex, m_arguments.size(), argumentIndexes);

@@ -153,7 +153,7 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
                         isDone = true;
                         break;
                     }
-                }
+                  }
             } else {
                 LIns* maxStackPosLIns = m_out.insImmI(maxStackPos);
                 m_out.insStore(LIR_sti, maxStackPosLIns, m_context, ExecutionContext::offsetofStackPos(), 1);

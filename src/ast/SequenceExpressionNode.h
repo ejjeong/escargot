@@ -20,7 +20,7 @@ public:
         for (unsigned i = 0; i < m_expressions.size(); i++) {
             m_expressions[i]->generateExpressionByteCode(codeBlock, context);
             if (i < m_expressions.size() - 1)
-                codeBlock->pushCode(Pop(), this);
+                codeBlock->pushCode(Pop(), context, this);
          }
     }
 

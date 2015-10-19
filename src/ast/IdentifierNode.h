@@ -29,20 +29,20 @@ public:
     {
         if(m_canUseFastAccess) {
             if(codeBlock->m_needsActivation) {
-                codeBlock->pushCode(GetByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), this);
+                codeBlock->pushCode(GetByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), context, this);
 #ifndef NDEBUG
                 codeBlock->peekCode<GetByIndexWithActivation>(codeBlock->lastCodePosition<GetByIndexWithActivation>())->m_name = m_name;
 #endif
             } else {
                 if(m_fastAccessUpIndex == 0) {
                     updateNodeIndex(context);
-                    codeBlock->pushCode(GetByIndex(m_fastAccessIndex), this);
+                    codeBlock->pushCode(GetByIndex(m_fastAccessIndex), context, this);
                     WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
 #ifndef NDEBUG
                     codeBlock->peekCode<GetByIndex>(codeBlock->lastCodePosition<GetByIndex>())->m_name = m_name;
 #endif
                 } else {
-                    codeBlock->pushCode(GetByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), this);
+                    codeBlock->pushCode(GetByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), context, this);
 #ifndef NDEBUG
                     codeBlock->peekCode<GetByIndexWithActivation>(codeBlock->lastCodePosition<GetByIndexWithActivation>())->m_name = m_name;
 #endif
@@ -51,9 +51,9 @@ public:
         } else {
             updateNodeIndex(context);
             if(m_name == strings->arguments) {
-                codeBlock->pushCode(GetArgumentsObject(), this);
+                codeBlock->pushCode(GetArgumentsObject(), context, this);
             } else {
-                codeBlock->pushCode(GetById(m_name), this);
+                codeBlock->pushCode(GetById(m_name), context, this);
             }
             WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
         }
@@ -73,20 +73,20 @@ public:
     {
         if(m_canUseFastAccess) {
             if(codeBlock->m_needsActivation) {
-                codeBlock->pushCode(SetByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), this);
+                codeBlock->pushCode(SetByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), context, this);
             } else {
                 if(m_fastAccessUpIndex == 0) {
 //                    updateNodeIndex(context);
-                    codeBlock->pushCode(SetByIndex(m_fastAccessIndex), this);
+                    codeBlock->pushCode(SetByIndex(m_fastAccessIndex), context, this);
 //                    WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
                 } else
-                    codeBlock->pushCode(SetByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), this);
+                    codeBlock->pushCode(SetByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), context, this);
             }
         } else {
             if(m_name == strings->arguments) {
-                codeBlock->pushCode(SetArgumentsObject(), this);
+                codeBlock->pushCode(SetArgumentsObject(), context, this);
             } else {
-                codeBlock->pushCode(SetById(m_name), this);
+                codeBlock->pushCode(SetById(m_name), context, this);
             }
         }
     }

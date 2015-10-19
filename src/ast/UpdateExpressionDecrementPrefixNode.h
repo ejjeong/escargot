@@ -19,8 +19,8 @@ public:
     {
         m_argument->generateResolveAddressByteCode(codeBlock, context);
         m_argument->generateReferenceResolvedAddressByteCode(codeBlock, context);
-        codeBlock->pushCode(ToNumber(), this);
-        codeBlock->pushCode(Decrement(), this);
+        codeBlock->pushCode(ToNumber(), context, this);
+        codeBlock->pushCode(Decrement(), context, this);
         m_argument->generatePutByteCode(codeBlock, context);
     }
 protected:

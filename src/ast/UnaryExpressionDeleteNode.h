@@ -22,13 +22,13 @@ public:
             if(mem->isPreComputedCase()) {
                 ESValue v = codeBlock->peekCode<GetObjectPreComputedCase>(codeBlock->lastCodePosition<GetObjectPreComputedCase>())->m_propertyValue;
                 codeBlock->popLastCode<GetObjectPreComputedCase>();
-                codeBlock->pushCode(Push(v), this);
+                codeBlock->pushCode(Push(v), context, this);
             } else
                 codeBlock->popLastCode<GetObject>();
-            codeBlock->pushCode(UnaryDelete(), this);
+            codeBlock->pushCode(UnaryDelete(), context, this);
         } else if (m_argument->type() == NodeType::Identifier) {
             // TODO This work with the flag configurable
-            codeBlock->pushCode(Push(((IdentifierNode *)m_argument)->name().string()), this);
+            codeBlock->pushCode(Push(((IdentifierNode *)m_argument)->name().string()), context, this);
         } else {
             RELEASE_ASSERT_NOT_REACHED();
          }

@@ -38,7 +38,7 @@ public:
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_argument->generateExpressionByteCode(codeBlock, context);
-        codeBlock->pushCode(UnaryVoid(), this);
+        codeBlock->pushCode(UnaryVoid(), context, this);
     }
 
 protected:

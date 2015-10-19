@@ -37,13 +37,13 @@ public:
         if(ESVMInstance::currentInstance()->currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty()) {
             if(isPreComputedCase()) {
                 ASSERT(m_property->type() == NodeType::Identifier);
-                codeBlock->pushCode(GetObjectPreComputedCaseSlowMode(((IdentifierNode *)m_property)->name().string()), this);
+                codeBlock->pushCode(GetObjectPreComputedCaseSlowMode(((IdentifierNode *)m_property)->name().string()), context, this);
                 updateNodeIndex(context);
                 WRITE_LAST_INDEX(m_nodeIndex, m_object->nodeIndex(), m_nodeIndex - 1);
             } else {
                 m_property->generateExpressionByteCode(codeBlock, context);
                 updateNodeIndex(context);
-                codeBlock->pushCode(GetObjectSlowMode(), this);
+                codeBlock->pushCode(GetObjectSlowMode(), context, this);
                 WRITE_LAST_INDEX(m_nodeIndex, m_object->nodeIndex(), m_property->nodeIndex());
             }
             return ;
@@ -51,12 +51,12 @@ public:
         if(isPreComputedCase()) {
             ASSERT(m_property->type() == NodeType::Identifier);
             updateNodeIndex(context);
-            codeBlock->pushCode(GetObjectPreComputedCase(((IdentifierNode *)m_property)->name().string()), this);
+            codeBlock->pushCode(GetObjectPreComputedCase(((IdentifierNode *)m_property)->name().string()), context, this);
             WRITE_LAST_INDEX(m_nodeIndex, m_object->nodeIndex(), -1);
         } else {
             m_property->generateExpressionByteCode(codeBlock, context);
             updateNodeIndex(context);
-            codeBlock->pushCode(GetObject(), this);
+            codeBlock->pushCode(GetObject(), context, this);
             WRITE_LAST_INDEX(m_nodeIndex, m_object->nodeIndex(), m_property->nodeIndex());
         }
     }
@@ -67,20 +67,20 @@ public:
         if(ESVMInstance::currentInstance()->currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty()) {
             if(isPreComputedCase()) {
                 ASSERT(m_property->type() == NodeType::Identifier);
-                codeBlock->pushCode(SetObjectPreComputedCaseSlowMode(((IdentifierNode *)m_property)->name().string()), this);
+                codeBlock->pushCode(SetObjectPreComputedCaseSlowMode(((IdentifierNode *)m_property)->name().string()), context, this);
             } else {
                 updateNodeIndex(context);
-                codeBlock->pushCode(SetObjectSlowMode(), this);
+                codeBlock->pushCode(SetObjectSlowMode(), context, this);
                 WRITE_LAST_INDEX(m_nodeIndex, m_object->nodeIndex(), m_property->nodeIndex());
             }
             return ;
         }
         if(isPreComputedCase()) {
             ASSERT(m_property->type() == NodeType::Identifier);
-            codeBlock->pushCode(SetObjectPreComputedCase(((IdentifierNode *)m_property)->name().string()), this);
+            codeBlock->pushCode(SetObjectPreComputedCase(((IdentifierNode *)m_property)->name().string()), context, this);
         } else {
             updateNodeIndex(context);
-            codeBlock->pushCode(SetObject(), this);
+            codeBlock->pushCode(SetObject(), context, this);
             WRITE_LAST_INDEX(m_nodeIndex, m_object->nodeIndex(), m_property->nodeIndex());
         }
     }
@@ -99,17 +99,17 @@ public:
         if(ESVMInstance::currentInstance()->currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty()) {
             if(isPreComputedCase()) {
                 ASSERT(m_property->type() == NodeType::Identifier);
-                codeBlock->pushCode(GetObjectWithPeekingPreComputedCaseSlowMode(((IdentifierNode *)m_property)->name().string()), this);
+                codeBlock->pushCode(GetObjectWithPeekingPreComputedCaseSlowMode(((IdentifierNode *)m_property)->name().string()), context, this);
             } else {
-                codeBlock->pushCode(GetObjectWithPeekingSlowMode(), this);
+                codeBlock->pushCode(GetObjectWithPeekingSlowMode(), context, this);
             }
             return ;
         }
         if(isPreComputedCase()) {
             ASSERT(m_property->type() == NodeType::Identifier);
-            codeBlock->pushCode(GetObjectWithPeekingPreComputedCase(((IdentifierNode *)m_property)->name().string()), this);
+            codeBlock->pushCode(GetObjectWithPeekingPreComputedCase(((IdentifierNode *)m_property)->name().string()), context, this);
         } else {
-            codeBlock->pushCode(GetObjectWithPeeking(), this);
+            codeBlock->pushCode(GetObjectWithPeeking(), context, this);
         }
     }
 #ifdef ENABLE_ESJIT

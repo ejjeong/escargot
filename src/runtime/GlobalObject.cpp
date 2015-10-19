@@ -297,8 +297,9 @@ void GlobalObject::installFunction()
     m_function = ESFunctionObject::create(NULL, [](ESVMInstance* instance) -> ESValue {
         int len = instance->currentExecutionContext()->argumentCount();
         CodeBlock* codeBlock = CodeBlock::create();
+        ByteCodeGenerateContext context;
         if (len == 0) {
-            codeBlock->pushCode(End(), NULL);
+            codeBlock->pushCode(End(), context, NULL);
         }
         else {
             escargot::ESString* body = instance->currentExecutionContext()->arguments()[len-1].toString();
@@ -320,7 +321,7 @@ void GlobalObject::installFunction()
             codeBlock->m_params = std::move(functionDeclAST->params());
             codeBlock->m_isStrict = functionDeclAST->isStrict();
             functionDeclAST->body()->generateStatementByteCode(codeBlock, context);
-            codeBlock->pushCode(ReturnFunction(), functionDeclAST);
+            codeBlock->pushCode(ReturnFunction(), context, functionDeclAST);
             escargot::InternalAtomicStringVector params = functionDeclAST->params();
         }
         escargot::ESFunctionObject* function;
@@ -403,6 +404,7 @@ void GlobalObject::installFunction()
             throw TypeError::create(ESString::create("this value should be function"));
         }
         CodeBlock* cb = CodeBlock::create();
+        ByteCodeGenerateContext context;
         CallBoundFunction code;
         code.m_boundTargetFunction = thisVal.asESPointer()->asESFunctionObject();
         code.m_boundThis = instance->currentExecutionContext()->readArgument(0);
@@ -412,7 +414,7 @@ void GlobalObject::installFunction()
             code.m_boundArgumentsCount = 0;
         code.m_boundArguments = (ESValue *)GC_malloc(code.m_boundArgumentsCount * sizeof(ESValue));
         memcpy(code.m_boundArguments, instance->currentExecutionContext()->arguments() + 1, code.m_boundArgumentsCount * sizeof(ESValue));
-        cb->pushCode(code, NULL);
+        cb->pushCode(code, context, NULL);
         escargot::ESFunctionObject* function = ESFunctionObject::create(NULL, cb, strings->emptyString);
         function->set__proto__(instance->globalObject()->functionPrototype());
         ESObject* prototype = ESObject::create();

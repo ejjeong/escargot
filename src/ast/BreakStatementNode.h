@@ -15,7 +15,7 @@ public:
 
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        codeBlock->pushCode(Jump(SIZE_MAX), this);
+        codeBlock->pushCode(Jump(SIZE_MAX), context, this);
         context.pushBreakPositions(codeBlock->lastCodePosition<Jump>());
     }
 };

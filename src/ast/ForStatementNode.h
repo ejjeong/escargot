@@ -27,11 +27,11 @@ public:
             m_init->generateExpressionByteCode(codeBlock, newContext);
             size_t end = codeBlock->currentCodeSize();
             if(start != end)
-                codeBlock->pushCode(Pop(), this);
+                codeBlock->pushCode(Pop(), newContext, this);
         }
 
 #ifdef ENABLE_ESJIT
-        codeBlock->pushCode(LoopStart(), this);
+        codeBlock->pushCode(LoopStart(), newContext, this);
 #endif
 
         size_t forStart = codeBlock->currentCodeSize();
@@ -40,12 +40,12 @@ public:
             m_test->generateExpressionByteCode(codeBlock, newContext);
         } else {
             updateNodeIndex(newContext);
-            codeBlock->pushCode(Push(ESValue(true)), this);
+            codeBlock->pushCode(Push(ESValue(true)), newContext, this);
             WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
         }
 
         updateNodeIndex(newContext);
-        codeBlock->pushCode(JumpIfTopOfStackValueIsFalse(SIZE_MAX), this);
+        codeBlock->pushCode(JumpIfTopOfStackValueIsFalse(SIZE_MAX), newContext, this);
         if (m_test)
             WRITE_LAST_INDEX(m_nodeIndex, m_test->nodeIndex(), -1);
         else
@@ -57,9 +57,9 @@ public:
         size_t updatePosition = codeBlock->currentCodeSize();
         if(m_update) {
             m_update->generateExpressionByteCode(codeBlock, newContext);
-            codeBlock->pushCode(Pop(), this);
+            codeBlock->pushCode(Pop(), newContext, this);
         }
-        codeBlock->pushCode(Jump(forStart), this);
+        codeBlock->pushCode(Jump(forStart), newContext, this);
 
         size_t forEnd = codeBlock->currentCodeSize();
         codeBlock->peekCode<JumpIfTopOfStackValueIsFalse>(testPos)->m_jumpPosition = forEnd;

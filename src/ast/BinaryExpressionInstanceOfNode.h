@@ -44,7 +44,7 @@ public:
     {
         m_left->generateExpressionByteCode(codeBlock, context);
         m_right->generateExpressionByteCode(codeBlock, context);
-        codeBlock->pushCode(InstanceOf(), this);
+        codeBlock->pushCode(InstanceOf(), context, this);
     }
 
 protected:

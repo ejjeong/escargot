@@ -9,6 +9,7 @@ CodeBlock::CodeBlock(bool isBuiltInFunction)
     m_isBuiltInFunction = isBuiltInFunction;
     m_isStrict = false;
     m_isFunctionExpression = false;
+    m_requiredStackSizeInESValueSize = 0;
 #ifdef ENABLE_ESJIT
     m_executeCount = 0;
     m_threshold = 1;
@@ -20,6 +21,16 @@ CodeBlock::CodeBlock(bool isBuiltInFunction)
 CodeBlock::~CodeBlock()
 {
     ESVMInstance::currentInstance()->globalObject()->unregisterCodeBlock(this);
+}
+
+void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, ByteCodeGenerateContext& context)
+{
+    Opcode op = (Opcode)(size_t)code->m_opcodeInAddress;
+    data->m_baseRegisterIndex = context.m_baseRegisterCount;
+    data->m_registerIncrementCount = pushCountFromOpcode(code, op);
+    data->m_registerDecrementCount = popCountFromOpcode(code, op);
+    context.m_baseRegisterCount = context.m_baseRegisterCount + data->m_registerIncrementCount - data->m_registerDecrementCount;
+    ASSERT(context.m_baseRegisterCount>=0);
 }
 
 ByteCode::ByteCode(Opcode code) {
@@ -35,6 +46,7 @@ void ByteCode::assignOpcodeInAddress()
     Opcode op = (Opcode)(size_t)m_opcodeInAddress;
     m_opcodeInAddress = (ESVMInstance::currentInstance()->opcodeTable())->m_table[op];
 }
+
 
 CodeBlock* generateByteCode(Node* node)
 {
@@ -57,6 +69,48 @@ CodeBlock* generateByteCode(Node* node)
     return block;
 }
 
+unsigned char popCountFromOpcode(ByteCode* code, Opcode opcode)
+{
+    if(opcode == CallFunctionOpcode) {
+        CallFunction* c = (CallFunction*)code;
+        return c->m_argmentCount + 1/* receiver */ + 1/* function */;
+    } else if(opcode == CallEvalFunctionOpcode) {
+        CallEvalFunction* c = (CallEvalFunction*)code;
+        return c->m_argmentCount;
+    } else if(opcode == NewFunctionCallOpcode) {
+        NewFunctionCall* c = (NewFunctionCall*)code;
+        return c->m_argmentCount + 1/* function */;
+    }
+#define FETCH_POP_COUNT_BYTE_CODE(code, pushCount, popCount) \
+    case code##Opcode: \
+        ASSERT(popCount != -1); \
+        return popCount;
+    switch(opcode) {
+    FOR_EACH_BYTECODE_OP(FETCH_POP_COUNT_BYTE_CODE);
+    default:
+            RELEASE_ASSERT_NOT_REACHED();
+    }
+}
+
+unsigned char pushCountFromOpcode(ByteCode* code, Opcode opcode)
+{
+    if(opcode == CreateFunctionOpcode) {
+        if(((CreateFunction *)code)->m_codeBlock->m_isFunctionExpression) {
+            return 1;
+        } else
+            return 0;
+    }
+#define FETCH_PUSH_COUNT_BYTE_CODE(code, pushCount, popCount) \
+case code##Opcode: \
+    ASSERT(pushCount != -1); \
+    return pushCount;
+    switch(opcode) {
+    FOR_EACH_BYTECODE_OP(FETCH_PUSH_COUNT_BYTE_CODE);
+    default:
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+}
+
 #ifndef NDEBUG
 
 void dumpBytecode(CodeBlock* codeBlock)
@@ -69,12 +123,16 @@ void dumpBytecode(CodeBlock* codeBlock)
     size_t callInfoIndex = 0;
 #endif
     char* code = codeBlock->m_code.data();
+    size_t byteCodeIndex = 0;
     while(idx < codeBlock->m_code.size()) {
         ByteCode* currentCode = (ByteCode *)(&code[idx]);
+        ByteCodeExtraData* ex = &codeBlock->m_extraData[byteCodeIndex++];
         if(currentCode->m_node)
-            printf("%u\t\t%p\t(nodeinfo %d)\t\t\t",(unsigned)idx, currentCode, (int)currentCode->m_node->sourceLocation().m_lineNumber);
+            printf("%u\t\t%p\t(nodeinfo %d)\t\t",(unsigned)idx, currentCode, (int)currentCode->m_node->sourceLocation().m_lineNumber);
         else
-            printf("%u\t\t%p\t(nodeinfo null)\t\t\t",(unsigned)idx, currentCode);
+            printf("%u\t\t%p\t(nodeinfo null)\t\t",(unsigned)idx, currentCode);
+
+        printf("regIndex[%d,+%d,-%d]\t\t", ex->m_baseRegisterIndex, ex->m_registerIncrementCount, ex->m_registerDecrementCount);
 
         Opcode opcode = opcodeFromAddress(currentCode->m_opcodeInAddress);
 

@@ -420,7 +420,7 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeF
     : ESFunctionObject(outerEnvironment, (CodeBlock *)NULL, name, length)
 {
     m_codeBlock = CodeBlock::create(true);
-    m_codeBlock->pushCode(ExecuteNativeFunction(fn), NULL);
+    m_codeBlock->pushCode(ExecuteNativeFunction(fn));
 #ifdef ENABLE_ESJIT
     m_codeBlock->m_dontJIT = true;
 #endif

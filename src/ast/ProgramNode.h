@@ -24,10 +24,10 @@ public:
         for(unsigned i = 0; i < m_body.size() ; i ++) {
             m_body[i]->generateStatementByteCode(codeBlock, context);
 #ifndef NDEBUG
-        codeBlock->pushCode(CheckStackPointer(this->m_sourceLocation.m_lineNumber), this);
+        codeBlock->pushCode(CheckStackPointer(this->m_sourceLocation.m_lineNumber), context, this);
 #endif
         }
-        codeBlock->pushCode(End(), this);
+        codeBlock->pushCode(End(), context, this);
         codeBlock->m_isStrict = m_isStrict;
     }
 

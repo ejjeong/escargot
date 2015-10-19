@@ -20,7 +20,7 @@ public:
     {
         m_left->generateExpressionByteCode(codeBlock, context);
         m_right->generateExpressionByteCode(codeBlock, context);
-        codeBlock->pushCode(NotEqual(), this);
+        codeBlock->pushCode(NotEqual(), context, this);
     }
 protected:
     ExpressionNode* m_left;

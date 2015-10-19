@@ -18,7 +18,7 @@ public:
     {
         m_left->generateExpressionByteCode(codeBlock, context);
         m_right->generateExpressionByteCode(codeBlock, context);
-        codeBlock->pushCode(StringIn(), this);
+        codeBlock->pushCode(StringIn(), context, this);
     }
 
 protected:

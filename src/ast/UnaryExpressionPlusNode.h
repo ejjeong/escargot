@@ -17,7 +17,7 @@ public:
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_argument->generateExpressionByteCode(codeBlock, context);
-        codeBlock->pushCode(UnaryPlus(), this);
+        codeBlock->pushCode(UnaryPlus(), context, this);
     }
 protected:
     Node* m_argument;

@@ -28,24 +28,24 @@ public:
         std::vector<size_t> jumpCodePerCaseNodePosition;
         for(unsigned i = 0; i < m_casesB.size() ; i ++) {
             SwitchCaseNode* caseNode = (SwitchCaseNode*) m_casesB[i];
-            codeBlock->pushCode(DuplicateTopOfStackValue(), this);
+            codeBlock->pushCode(DuplicateTopOfStackValue(), newContext, this);
             caseNode->m_test->generateExpressionByteCode(codeBlock, newContext);
-            codeBlock->pushCode(StrictEqual(), this);
+            codeBlock->pushCode(StrictEqual(), newContext, this);
             jumpCodePerCaseNodePosition.push_back(codeBlock->currentCodeSize());
-            codeBlock->pushCode(JumpAndPopIfTopOfStackValueIsTrue(SIZE_MAX), this);
+            codeBlock->pushCode(JumpAndPopIfTopOfStackValueIsTrue(SIZE_MAX), newContext, this);
         }
         for(unsigned i = 0; i < m_casesA.size() ; i ++) {
             SwitchCaseNode* caseNode = (SwitchCaseNode*) m_casesA[i];
-            codeBlock->pushCode(DuplicateTopOfStackValue(), this);
+            codeBlock->pushCode(DuplicateTopOfStackValue(), newContext, this);
             caseNode->m_test->generateExpressionByteCode(codeBlock, newContext);
-            codeBlock->pushCode(StrictEqual(), this);
+            codeBlock->pushCode(StrictEqual(), newContext, this);
             jumpCodePerCaseNodePosition.push_back(codeBlock->currentCodeSize());
-            codeBlock->pushCode(JumpAndPopIfTopOfStackValueIsTrue(SIZE_MAX), this);
+            codeBlock->pushCode(JumpAndPopIfTopOfStackValueIsTrue(SIZE_MAX), newContext, this);
         }
         size_t jmpToDefault = SIZE_MAX;
-        codeBlock->pushCode(Pop(), this);
+        codeBlock->pushCode(Pop(), newContext, this);
         jmpToDefault = codeBlock->currentCodeSize();
-        codeBlock->pushCode(Jump(SIZE_MAX), this);
+        codeBlock->pushCode(Jump(SIZE_MAX), newContext, this);
 
         size_t caseIdx = 0;
         for(unsigned i = 0; i < m_casesB.size() ; i ++) {

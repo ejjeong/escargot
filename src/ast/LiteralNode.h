@@ -22,7 +22,7 @@ public:
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         updateNodeIndex(context);
-        codeBlock->pushCode(Push(m_value), this);
+        codeBlock->pushCode(Push(m_value), context, this);
         WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
     }
 

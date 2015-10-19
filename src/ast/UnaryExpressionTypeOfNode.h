@@ -19,10 +19,10 @@ public:
         if(m_argument->type() == Identifier && !((IdentifierNode *)m_argument)->canUseFastAccess()) {
             codeBlock->pushCode(GetByIdWithoutException(
                     ((IdentifierNode *)m_argument)->name()
-                    ), this);
+                    ), context, this);
         } else
             m_argument->generateExpressionByteCode(codeBlock, context);
-        codeBlock->pushCode(UnaryTypeOf(), this);
+        codeBlock->pushCode(UnaryTypeOf(), context, this);
     }
 
 protected:

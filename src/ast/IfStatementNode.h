@@ -22,7 +22,7 @@ public:
             m_test->generateExpressionByteCode(codeBlock, context);
             updateNodeIndex(context);
             updateNodeIndex(context);
-            codeBlock->pushCode(JumpIfTopOfStackValueIsFalse(SIZE_MAX), this);
+            codeBlock->pushCode(JumpIfTopOfStackValueIsFalse(SIZE_MAX), context, this);
             WRITE_LAST_INDEX(m_test->nodeIndex()+1, m_test->nodeIndex(), -1);
             size_t jPos = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsFalse>();
             m_consequente->generateStatementByteCode(codeBlock, context);
@@ -32,12 +32,12 @@ public:
             m_test->generateExpressionByteCode(codeBlock, context);
             updateNodeIndex(context);
             updateNodeIndex(context);
-            codeBlock->pushCode(JumpIfTopOfStackValueIsFalse(SIZE_MAX), this);
+            codeBlock->pushCode(JumpIfTopOfStackValueIsFalse(SIZE_MAX), context, this);
             WRITE_LAST_INDEX(m_test->nodeIndex()+1, m_test->nodeIndex(), -1);
             size_t jPos = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsFalse>();
             m_consequente->generateStatementByteCode(codeBlock, context);
             updateNodeIndex(context);
-            codeBlock->pushCode(Jump(SIZE_MAX), this);
+            codeBlock->pushCode(Jump(SIZE_MAX), context, this);
             WRITE_LAST_INDEX(m_test->nodeIndex(), -1, -1);
             JumpIfTopOfStackValueIsFalse* j = codeBlock->peekCode<JumpIfTopOfStackValueIsFalse>(jPos);
             size_t jPos2 = codeBlock->lastCodePosition<Jump>();

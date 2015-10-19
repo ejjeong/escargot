@@ -21,20 +21,20 @@ public:
         if(m_isSimpleCase) {
             m_argument->generateResolveAddressByteCode(codeBlock, context);
             m_argument->generateReferenceResolvedAddressByteCode(codeBlock, context);
-            codeBlock->pushCode(ToNumber(), this);
-            codeBlock->pushCode(Decrement(), this);
+            codeBlock->pushCode(ToNumber(), context, this);
+            codeBlock->pushCode(Decrement(), context, this);
             m_argument->generatePutByteCode(codeBlock, context);
             return ;
         }
         m_argument->generateResolveAddressByteCode(codeBlock, context);
         m_argument->generateReferenceResolvedAddressByteCode(codeBlock, context);
-        codeBlock->pushCode(ToNumber(), this);
-        codeBlock->pushCode(DuplicateTopOfStackValue(), this);
-        codeBlock->pushCode(PushIntoTempStack(), this);
-        codeBlock->pushCode(Decrement(), this);
+        codeBlock->pushCode(ToNumber(), context, this);
+        codeBlock->pushCode(DuplicateTopOfStackValue(), context, this);
+        codeBlock->pushCode(PushIntoTempStack(), context, this);
+        codeBlock->pushCode(Decrement(), context, this);
         m_argument->generatePutByteCode(codeBlock, context);
-        codeBlock->pushCode(Pop(), this);
-        codeBlock->pushCode(PopFromTempStack(), this);
+        codeBlock->pushCode(Pop(), context, this);
+        codeBlock->pushCode(PopFromTempStack(), context, this);
     }
 
 protected:

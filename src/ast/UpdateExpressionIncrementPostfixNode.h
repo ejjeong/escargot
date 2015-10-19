@@ -22,10 +22,10 @@ public:
             m_argument->generateResolveAddressByteCode(codeBlock, context);
             m_argument->generateReferenceResolvedAddressByteCode(codeBlock, context);
             updateNodeIndex(context);
-            codeBlock->pushCode(ToNumber(), this);
+            codeBlock->pushCode(ToNumber(), context, this);
             WRITE_LAST_INDEX(m_nodeIndex, m_argument->nodeIndex(), -1);
             updateNodeIndex(context);
-            codeBlock->pushCode(Increment(), this);
+            codeBlock->pushCode(Increment(), context, this);
             WRITE_LAST_INDEX(m_nodeIndex, m_argument->nodeIndex() + 1, -1);
             m_argument->updateNodeIndex(context);
             m_argument->generatePutByteCode(codeBlock, context);
@@ -35,24 +35,24 @@ public:
         m_argument->generateResolveAddressByteCode(codeBlock, context);
         m_argument->generateReferenceResolvedAddressByteCode(codeBlock, context);
         updateNodeIndex(context);
-        codeBlock->pushCode(ToNumber(), this);
+        codeBlock->pushCode(ToNumber(), context, this);
         WRITE_LAST_INDEX(m_nodeIndex, m_argument->nodeIndex(), -1);
 #ifdef ENABLE_ESJIT
         int originalValueIndex = m_nodeIndex;
 #endif
         updateNodeIndex(context);
-        codeBlock->pushCode(DuplicateTopOfStackValue(), this);
+        codeBlock->pushCode(DuplicateTopOfStackValue(), context, this);
         WRITE_LAST_INDEX(m_nodeIndex, originalValueIndex, -1);
-        codeBlock->pushCode(PushIntoTempStack(), this);
+        codeBlock->pushCode(PushIntoTempStack(), context, this);
         updateNodeIndex(context);
-        codeBlock->pushCode(Increment(), this);
+        codeBlock->pushCode(Increment(), context, this);
         WRITE_LAST_INDEX(m_nodeIndex, m_nodeIndex-1, -1);
         updateNodeIndex(context);
         m_argument->generatePutByteCode(codeBlock, context);
         WRITE_LAST_INDEX(m_nodeIndex, m_nodeIndex-1, -1);
-        codeBlock->pushCode(Pop(), this);
+        codeBlock->pushCode(Pop(), context, this);
         updateNodeIndex(context);
-        codeBlock->pushCode(PopFromTempStack(), this);
+        codeBlock->pushCode(PopFromTempStack(), context, this);
         WRITE_LAST_INDEX(m_nodeIndex, originalValueIndex, -1);
     }
 protected:

@@ -24,7 +24,7 @@ public:
         m_left->generateResolveAddressByteCode(codeBlock, context);
         m_left->generateReferenceResolvedAddressByteCode(codeBlock, context);
         m_right->generateExpressionByteCode(codeBlock, context);
-        codeBlock->pushCode(BitwiseAnd(), this);
+        codeBlock->pushCode(BitwiseAnd(), context, this);
         m_left->generatePutByteCode(codeBlock, context);
     }
 protected:

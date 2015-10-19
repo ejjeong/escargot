@@ -17,7 +17,7 @@ public:
 
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        codeBlock->pushCode(Jump(SIZE_MAX), this);
+        codeBlock->pushCode(Jump(SIZE_MAX), context, this);
         context.pushLabeledContinuePositions(codeBlock->lastCodePosition<Jump>(), m_label);
     }
 

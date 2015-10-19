@@ -34,9 +34,7 @@ public:
 #ifdef ENABLE_ESJIT
         cb->m_tempRegisterSize = newContext.getCurrentNodeIndex();
 #endif
-        cb->pushCode(ReturnFunction(), this);
-        cb->pushCode(End(), this);
-
+        cb->pushCode(ReturnFunction(), newContext, this);
 #ifndef NDEBUG
         if(ESVMInstance::currentInstance()->m_dumpByteCode) {
             char* code = cb->m_code.data();
@@ -49,7 +47,7 @@ public:
         cb->m_id = m_id;
         cb->m_nonAtomicId = m_nonAtomicId;
 #endif
-        codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb, true), this);
+        codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb, true), context, this);
     }
 
 protected:

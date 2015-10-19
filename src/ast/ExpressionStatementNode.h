@@ -18,7 +18,7 @@ public:
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_expression->generateExpressionByteCode(codeBlock, context);
-        codeBlock->pushCode(PopExpressionStatement(), this);
+        codeBlock->pushCode(PopExpressionStatement(), context, this);
     }
 
     Node* expression() { return m_expression; }

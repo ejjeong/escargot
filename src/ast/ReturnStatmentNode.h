@@ -18,10 +18,10 @@ public:
     {
         if(m_argument) {
             m_argument->generateExpressionByteCode(codeBlock, context);
-            codeBlock->pushCode(ReturnFunctionWithValue(), this);
+            codeBlock->pushCode(ReturnFunctionWithValue(), context, this);
             WRITE_LAST_INDEX(-1, m_argument->nodeIndex(), -1);
         } else {
-            codeBlock->pushCode(ReturnFunction(), this);
+            codeBlock->pushCode(ReturnFunction(), context, this);
         }
     }
 protected:
