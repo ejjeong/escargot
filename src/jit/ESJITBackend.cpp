@@ -220,7 +220,9 @@ LIns* NativeGenerator::boxESValue(LIns* unboxedValue, Type type)
     } else if (type.isDoubleType()) {
 #ifdef ESCARGOT_64
         LIns* quadUnboxedValue = m_out.ins1(LIR_dasq, unboxedValue);
-        return m_out.ins2(LIR_addq, quadUnboxedValue, m_doubleEncodeOffsetQ);
+        LIns* boxedValue = m_out.ins2(LIR_addq, quadUnboxedValue, m_doubleEncodeOffsetQ);
+        LIns* boxedValueInDouble = m_out.ins1(LIR_qasd, boxedValue);
+        return boxedValueInDouble;
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
@@ -251,7 +253,8 @@ LIns* NativeGenerator::unboxESValue(LIns* boxedValue, Type type)
       }
     else if (type.isInt32Type()) {
 #ifdef ESCARGOT_64
-        LIns* unboxedValue = m_out.ins2(LIR_andq, boxedValue, m_intTagComplementQ);
+        LIns* boxedValueInQuad = m_out.ins1(LIR_dasq, boxedValue);
+        LIns* unboxedValue = m_out.ins2(LIR_andq, boxedValueInQuad, m_intTagComplementQ);
         LIns* unboxedValueInInt = m_out.ins1(LIR_q2i, unboxedValue);
         return unboxedValueInInt;
 #else
@@ -259,7 +262,8 @@ LIns* NativeGenerator::unboxESValue(LIns* boxedValue, Type type)
 #endif
     } else if (type.isDoubleType()) {
 #ifdef ESCARGOT_64
-        LIns* doubleValue = m_out.ins2(LIR_subq, boxedValue, m_doubleEncodeOffsetQ);
+        LIns* boxedValueInQuad = m_out.ins1(LIR_dasq, boxedValue);
+        LIns* doubleValue = m_out.ins2(LIR_subq, boxedValueInQuad, m_doubleEncodeOffsetQ);
         return m_out.ins1(LIR_qasd, doubleValue);
 #else
         RELEASE_ASSERT_NOT_REACHED();
