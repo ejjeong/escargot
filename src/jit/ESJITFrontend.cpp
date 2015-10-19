@@ -545,7 +545,10 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case ThisOpcode:
         case EnumerateObjectOpcode:
         case EnumerateObjectKeyOpcode:
+            goto unsupported;
         case EnumerateObjectEndOpcode:
+            NEXT_BYTECODE(EnumerateObjectEndOpcode);
+            break;
         case PrintSpAndBpOpcode:
             goto unsupported;
         case EndOpcode:
