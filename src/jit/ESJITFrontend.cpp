@@ -108,6 +108,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case GetByIdOpcode:
         {
             INIT_BYTECODE(GetById);
+            graph->setOperandStackPos(ssaIndex->m_targetIndex, bytecode->m_stackPos);
             ESIR* getVarGeneric = GetVarGenericIR::create(ssaIndex->m_targetIndex, bytecode, bytecode->m_name, bytecode->m_name.string()); // FIXME store only bytecode, get name from that
             currentBlock->push(getVarGeneric);
             bytecode->m_profile.updateProfiledType();
@@ -139,6 +140,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case SetByIdOpcode:
         {
             INIT_BYTECODE(SetById);
+            graph->setOperandStackPos(ssaIndex->m_targetIndex, bytecode->m_stackPos);
             ESIR* setVarGeneric = SetVarGenericIR::create(ssaIndex->m_targetIndex, bytecode, ssaIndex->m_srcIndex1, &bytecode->m_name, bytecode->m_name.string());
             currentBlock->push(setVarGeneric);
             NEXT_BYTECODE(SetById);
@@ -269,6 +271,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             // 3. else append general Plus
             INIT_BYTECODE(Plus);
             graph->setOperandStackPos(ssaIndex->m_targetIndex, bytecode->m_stackPos);
+            graph->setOperandStackPos(ssaIndex->m_targetIndex, bytecode->m_stackPos);
             ESIR* genericPlusIR = GenericPlusIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
             currentBlock->push(genericPlusIR);
             NEXT_BYTECODE(Plus);
@@ -277,6 +280,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case MinusOpcode:
         {
             INIT_BYTECODE(Minus);
+            graph->setOperandStackPos(ssaIndex->m_targetIndex, bytecode->m_stackPos);
             ESIR* minusIR = MinusIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
             currentBlock->push(minusIR);
             NEXT_BYTECODE(Minus);
@@ -285,6 +289,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case MultiplyOpcode:
         {
             INIT_BYTECODE(Multiply);
+            graph->setOperandStackPos(ssaIndex->m_targetIndex, bytecode->m_stackPos);
             ESIR* genericMultiplyIR = GenericMultiplyIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
             currentBlock->push(genericMultiplyIR);
             NEXT_BYTECODE(Multiply);
@@ -293,6 +298,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case DivisionOpcode:
         {
             INIT_BYTECODE(Division);
+            graph->setOperandStackPos(ssaIndex->m_targetIndex, bytecode->m_stackPos);
             ESIR* genericDivisionIR = GenericDivisionIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
             currentBlock->push(genericDivisionIR);
             NEXT_BYTECODE(Division);
@@ -305,6 +311,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case IncrementOpcode:
         {
             INIT_BYTECODE(Increment);
+            graph->setOperandStackPos(ssaIndex->m_targetIndex, bytecode->m_stackPos);
             ESIR* incrementIR = IncrementIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1);
             currentBlock->push(incrementIR);
             NEXT_BYTECODE(Increment);
@@ -381,6 +388,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         {
 //#ifdef EJJEONG_MERGING
             INIT_BYTECODE(GetObjectPreComputedCase);
+            graph->setOperandStackPos(ssaIndex->m_targetIndex, bytecode->m_stackPos);
             bytecode->m_profile.updateProfiledType();
             graph->setOperandType(ssaIndex->m_targetIndex, bytecode->m_profile.getType());
             GetObjectPreComputedIR* getObjectPreComputedIR = GetObjectPreComputedIR::create(ssaIndex->m_targetIndex, bytecode->m_cachedIndex,
@@ -404,6 +412,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case PushFunctionCallReceiverOpcode: 
         {
             INIT_BYTECODE(PushFunctionCallReceiver);
+            graph->setOperandStackPos(ssaIndex->m_targetIndex, bytecode->m_stackPos);
             GlobalObject* globalObject = ESVMInstance::currentInstance()->globalObject();
             ESIR* receiver = ConstantDoubleIR::create(ssaIndex->m_targetIndex, bitwise_cast<double>(globalObject) /*lastESObjectMetInMemberExpressionNode*/);
             currentBlock->push(receiver);
@@ -413,6 +422,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case CallFunctionOpcode:
         {
             INIT_BYTECODE(CallFunction);
+            graph->setOperandStackPos(ssaIndex->m_targetIndex, bytecode->m_stackPos);
             int calleeIndex = codeBlock->m_functionCallInfos[callInfoIndex++];
             int receiverIndex = codeBlock->m_functionCallInfos[callInfoIndex++];
             int argumentCount = codeBlock->m_functionCallInfos[callInfoIndex++];
@@ -433,7 +443,6 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case ReturnFunctionOpcode:
         {
             INIT_BYTECODE(ReturnFunction);
-            graph->setOperandStackPos(ssaIndex->m_targetIndex, bytecode->m_stackPos);
             ReturnIR* returnIR = ReturnIR::create(-1);
             currentBlock->push(returnIR);
             NEXT_BYTECODE(ReturnFunction);

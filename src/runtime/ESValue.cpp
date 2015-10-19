@@ -622,6 +622,8 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                                                     break;
                            }
                        }
+                    fn->codeBlock()->m_cachedJITFunction = nullptr;
+                    fn->codeBlock()->m_dontJIT = true; // Fixme(JMP): We have to compile  to JIT code again when gathering enough type data
                     result = interpret(instance, fn->codeBlock(), idx, maxStackPos);
                     fn->codeBlock()->m_executeCount++;
                 }

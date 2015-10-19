@@ -135,16 +135,18 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
                     unsigned stackPos = m_graph->getOperandStackPos(esir->targetIndex());
                     Type type = m_graph->getOperandType(esir->targetIndex());
                     LIns* lIns = m_tmpToLInsMapping[esir->targetIndex()];
-                    LIns* boxedLIns = boxESValue(lIns, type);
-                    LIns* size = m_out.insImmI(sizeof(ESValue));
-                    int bufOffset = (stackPos-1) * sizeof(ESValue);
+                    if (lIns) {
+                        LIns* boxedLIns = boxESValue(lIns, type);
+                        LIns* size = m_out.insImmI(sizeof(ESValue));
+                        int bufOffset = (stackPos-1) * sizeof(ESValue);
 #ifndef NDEBUG
-                    bufOffset *= 2;
+                        bufOffset *= 2;
 #endif
-                    m_out.insStore(LIR_std, boxedLIns, m_context, ExecutionContext::offsetofStackBuf() + bufOffset, 1);
+                        m_out.insStore(LIR_std, boxedLIns, m_context, ExecutionContext::offsetofStackBuf() + bufOffset, 1);
 #ifndef NDEBUG
-                    m_out.insStore(LIR_sti, size, m_context, ExecutionContext::offsetofStackBuf() + bufOffset + sizeof(ESValue), 1);
+                        m_out.insStore(LIR_sti, size, m_context, ExecutionContext::offsetofStackBuf() + bufOffset + sizeof(ESValue), 1);
 #endif
+                       }
                     if (stackPos == 1) {
                         LIns* maxStackPosLIns = m_out.insImmI(maxStackPos);
                         m_out.insStore(LIR_sti, maxStackPosLIns, m_context, ExecutionContext::offsetofStackPos(), 1);
@@ -191,8 +193,11 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
         LIns* maskedValue = m_out.ins2(LIR_andq, quadValue, m_intTagQ);
         LIns* checkIfInt = m_out.ins2(LIR_eqq, maskedValue, m_intTagQ);
         LIns* jumpIfInt = m_out.insBranch(LIR_jt, checkIfInt, nullptr);
-        if (ESVMInstance::currentInstance()->m_verboseJIT)
+        if (ESVMInstance::currentInstance()->m_verboseJIT) {
             JIT_LOG(in, "Expected Int-typed value, but got this value");
+            LIns* index = m_out.insImmI(currentByteCodeIndex);
+            JIT_LOG(index, "ESIR index = ");
+         }
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out.ins0(LIR_label);
         jumpIfInt->setTarget(normalPath);
@@ -283,7 +288,7 @@ LIns* NativeGenerator::boxESValue(LIns* unboxedValue, Type type)
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
-    } else if (type.isPointerType() || type.isUndefinedType() || type.isArrayObjectType() || type.isStringType() || type.isFunctionObjectType()) {
+    } else if (type.isObjectType() || type.isUndefinedType() || type.isArrayObjectType() || type.isStringType() || type.isFunctionObjectType()) {
 #ifdef ESCARGOT_64
         return unboxedValue;
 #else
