@@ -1220,18 +1220,7 @@ public:
         return m___proto__;
     }
 
-    ALWAYS_INLINE void set__proto__(const ESValue& obj)
-    {
-        //for global init
-        if(obj.isEmpty())
-            return ;
-        ASSERT(obj.isObject() || obj.isUndefinedOrNull());
-        m___proto__ = obj;
-        if(m___proto__.isObject()) {
-            m___proto__.asESPointer()->asESObject()->m_flags.m_isEverSetAsPrototypeObject = true;
-        }
-    }
-
+    inline void set__proto__(const ESValue& obj);
     ALWAYS_INLINE size_t keyCount();
 
 #ifdef ENABLE_ESJIT

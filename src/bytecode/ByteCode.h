@@ -293,7 +293,8 @@ class ByteCode {
 public:
     ByteCode(Opcode code);
 
-    void* m_opcode;
+    void assignOpcodeInAddress();
+    void* m_opcodeInAddress;
 #ifndef NDEBUG
     Opcode m_orgOpcode;
     Node* m_node;
@@ -304,6 +305,10 @@ public:
 
     }
 #endif
+};
+
+struct ByteCodeExtraData {
+    Opcode m_opcode;
 };
 
 #ifdef ENABLE_ESJIT
@@ -1965,12 +1970,12 @@ public:
 };
 
 class CodeBlock : public gc_cleanup {
-    CodeBlock();
+    CodeBlock(bool isBuiltInFunction);
     ~CodeBlock();
 public:
-    static CodeBlock* create()
+    static CodeBlock* create(bool isBuiltInFunction = false)
     {
-        return new(GC) CodeBlock();
+        return new(GC) CodeBlock(isBuiltInFunction);
     }
     template <typename CodeType>
     void pushCode(const CodeType& type, Node* node);
@@ -1998,16 +2003,22 @@ public:
     {
         return m_code.size();
     }
-    std::vector<char, gc_malloc_allocator<char> > m_code;
 
     bool shouldUseStrictMode()
     {
         return m_isStrict || m_isBuiltInFunction;
     }
 
+    std::vector<char, gc_malloc_allocator<char> > m_code;
+
+    std::vector<ByteCodeExtraData> m_extraData;
+    //std::vector<ByteCodeExtraData, pointer_free_allocator<ByteCodeExtraData> > -> std::vector<ByteCodeExtraData>
+    //because CodeBlock is gc_cleanup!
+
     InternalAtomicStringVector m_params; //params: [ Pattern ];
     ESStringVector m_nonAtomicParams;
     InternalAtomicStringVector m_innerIdentifiers;
+
     bool m_needsActivation;
     bool m_isBuiltInFunction;
     bool m_isStrict;
@@ -2155,7 +2166,7 @@ void dumpBytecode(CodeBlock* codeBlock);
 
 ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter = 0);
 CodeBlock* generateByteCode(Node* node);
-inline void iterateByteCode(CodeBlock* codeBlock, void (*fn)(ByteCode* code, Opcode opcode));
+inline void iterateByteCode(CodeBlock* codeBlock, void (*fn)(CodeBlock* block, unsigned idx, ByteCode* code, Opcode opcode));
 
 }
 
@@ -2163,16 +2174,25 @@ inline void iterateByteCode(CodeBlock* codeBlock, void (*fn)(ByteCode* code, Opc
 namespace escargot {
 
 template <typename CodeType>
-void CodeBlock::pushCode(const CodeType& type, Node* node)
+void CodeBlock::pushCode(const CodeType& code, Node* node)
 {
 #ifndef NDEBUG
     {
-        CodeType& t = const_cast<CodeType &>(type);
+        CodeType& t = const_cast<CodeType &>(code);
         t.m_node = node;
     }
 #endif
-    char* first = (char *)&type;
+
+    Opcode op = (Opcode)(size_t)code.m_opcodeInAddress;
+    const_cast<CodeType &>(code).assignOpcodeInAddress();
+
+    char* first = (char *)&code;
     m_code.insert(m_code.end(), first, first + sizeof(CodeType));
+
+    //record extra Info
+    ByteCodeExtraData extraData;
+    extraData.m_opcode = op;
+    m_extraData.push_back(extraData);
 #ifdef ENABLE_ESJIT
     m_SSAIndexes.push_back(SSAIndex());
 #endif
@@ -2240,14 +2260,16 @@ ALWAYS_INLINE void ByteCodeGenerateContext::morphJumpPositionIntoComplexCase(Cod
     }
 }
 
-inline void iterateByteCode(CodeBlock* codeBlock, void (*fn)(ByteCode* code, Opcode opcode))
+inline void iterateByteCode(CodeBlock* codeBlock, void (*fn)(CodeBlock* block, unsigned idx, ByteCode* code, Opcode opcode))
 {
     char* ptr = codeBlock->m_code.data();
+    unsigned idx = 0;
     char* end = &codeBlock->m_code.data()[codeBlock->m_code.size()];
 
     while(ptr <= end) {
-        Opcode code = opcodeFromAddress(((ByteCode *)ptr)->m_opcode);
-        fn((ByteCode *)ptr, code);
+        Opcode code = codeBlock->m_extraData[idx].m_opcode;
+        fn(codeBlock, idx, (ByteCode *)ptr, code);
+        idx++;
         switch(code) {
 #define ADD_BYTECODE_SIZE(name) case name##Opcode: ptr += sizeof(name); break;
         FOR_EACH_BYTECODE_OP(ADD_BYTECODE_SIZE)

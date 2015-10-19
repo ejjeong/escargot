@@ -51,6 +51,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             printf("execute %p %u \t(nodeinfo %d)\t",currentCode, (unsigned)(programCounter-(size_t)codeBuffer), (int)currentCode->m_node->sourceLocation().m_lineNumber);
         else
             printf("execute %p %u \t(nodeinfo null)\t",currentCode, (unsigned)(programCounter-(size_t)codeBuffer));
+        fflush(stdout);
         currentCode->dump();
     }
 
@@ -62,7 +63,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
     }
 #endif
-    goto *(currentCode->m_opcode);
+    goto *(currentCode->m_opcodeInAddress);
 
     PushOpcodeLbl:
     {

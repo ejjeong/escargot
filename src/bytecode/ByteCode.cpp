@@ -3,18 +3,18 @@
 
 namespace escargot {
 
-CodeBlock::CodeBlock()
+CodeBlock::CodeBlock(bool isBuiltInFunction)
 {
     m_needsActivation = false;
-    m_isBuiltInFunction = false;
+    m_isBuiltInFunction = isBuiltInFunction;
     m_isStrict = false;
     m_isFunctionExpression = false;
 #ifdef ENABLE_ESJIT
     m_executeCount = 0;
     m_threshold = 1;
 #endif
-
-    ESVMInstance::currentInstance()->globalObject()->registerCodeBlock(this);
+    if(!isBuiltInFunction)
+        ESVMInstance::currentInstance()->globalObject()->registerCodeBlock(this);
 }
 
 CodeBlock::~CodeBlock()
@@ -23,11 +23,17 @@ CodeBlock::~CodeBlock()
 }
 
 ByteCode::ByteCode(Opcode code) {
-    m_opcode = (ESVMInstance::currentInstance()->opcodeTable())->m_table[(unsigned)code];
+    m_opcodeInAddress = (void *)(size_t)code;
 #ifndef NDEBUG
     m_orgOpcode = code;
     m_node = nullptr;
 #endif
+}
+
+void ByteCode::assignOpcodeInAddress()
+{
+    Opcode op = (Opcode)(size_t)m_opcodeInAddress;
+    m_opcodeInAddress = (ESVMInstance::currentInstance()->opcodeTable())->m_table[op];
 }
 
 CodeBlock* generateByteCode(Node* node)
@@ -70,7 +76,7 @@ void dumpBytecode(CodeBlock* codeBlock)
         else
             printf("%u\t\t%p\t(nodeinfo null)\t\t\t",(unsigned)idx, currentCode);
 
-        Opcode opcode = opcodeFromAddress(currentCode->m_opcode);
+        Opcode opcode = opcodeFromAddress(currentCode->m_opcodeInAddress);
 
 #ifdef ENABLE_ESJIT
         if (opcode == CallFunctionOpcode) {

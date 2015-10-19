@@ -40,7 +40,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         currentCode = (ByteCode *)(&code[idx]);
 
         // TODO: find a better way to this (e.g. write the size of the bytecode in FOR_EACH_BYTECODE_OP macro)
-        Opcode opcode = opcodeFromAddress(currentCode->m_opcode);
+        Opcode opcode = opcodeFromAddress(currentCode->m_opcodeInAddress);
 
         // Update BasicBlock information 
         // TODO: find a better way to this (e.g. using AST, write information to bytecode..)
@@ -570,7 +570,7 @@ postprocess:
 unsupported:
 #ifndef NDEBUG
     if (ESVMInstance::currentInstance()->m_verboseJIT || ESVMInstance::currentInstance()->m_reportUnsupportedOpcode)
-        printf("Unsupported Opcode %s\n", getByteCodeName(opcodeFromAddress(currentCode->m_opcode)));
+        printf("Unsupported Opcode %s\n", getByteCodeName(opcodeFromAddress(currentCode->m_opcodeInAddress)));
 #endif
     return nullptr;
 }

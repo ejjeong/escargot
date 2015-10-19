@@ -418,9 +418,8 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlo
 ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeFunctionType fn, escargot::ESString* name, unsigned length)
     : ESFunctionObject(outerEnvironment, (CodeBlock *)NULL, name, length)
 {
-    m_codeBlock = CodeBlock::create();
+    m_codeBlock = CodeBlock::create(true);
     m_codeBlock->pushCode(ExecuteNativeFunction(fn), NULL);
-    m_codeBlock->m_isBuiltInFunction = true;
 #ifdef ENABLE_ESJIT
     m_codeBlock->m_dontJIT = true;
 #endif
@@ -511,7 +510,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                 bool compileNextTime = false;
                 while(idx < fn->codeBlock()->m_code.size()) {
                     currentCode = (ByteCode *)(&code[idx]);
-                    Opcode opcode = opcodeFromAddress(currentCode->m_opcode);
+                    Opcode opcode = opcodeFromAddress(currentCode->m_opcodeInAddress);
                     switch(opcode) {
                     case GetByIdOpcode: {
                         reinterpret_cast<GetById*>(currentCode)->m_profile.updateProfiledType();

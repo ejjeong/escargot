@@ -1071,6 +1071,20 @@ ALWAYS_INLINE bool ESHiddenClass::write(ESObject* obj, ESObject* originalObject,
     return true;
 }
 
+inline void ESObject::set__proto__(const ESValue& obj)
+{
+    //for global init
+    if(obj.isEmpty())
+        return ;
+    ASSERT(obj.isObject() || obj.isUndefinedOrNull());
+    m___proto__ = obj;
+    if(m___proto__.isObject()) {
+        m___proto__.asESPointer()->asESObject()->m_flags.m_isEverSetAsPrototypeObject = true;
+        if(m___proto__.asESPointer()->asESObject()->hiddenClass()->hasIndexedProperty()) {
+            ESVMInstance::currentInstance()->globalObject()->somePrototypeObjectDefineIndexedProperty();
+        }
+    }
+}
 
 inline void ESObject::defineDataProperty(const escargot::ESValue& key, bool isWritable, bool isEnumerable, bool isConfigurable, const ESValue& initalValue)
 {
