@@ -42,7 +42,9 @@ class ESBasicBlock;
     F(GenericMultiply, ) \
     F(DoubleDivision, ) \
     F(GenericDivision, ) \
-    F(Mod, ) \
+    F(Int32Mod, ) \
+    F(DoubleMod, ) \
+    F(GenericMod, ) \
     \
     F(BitwiseAnd, ) \
     F(BitwiseOr, ) \
@@ -730,6 +732,33 @@ public:
 private:
     GenericDivisionIR(int targetIndex, int leftIndex, int rightIndex)
         : BinaryExpressionIR(ESIR::Opcode::GenericDivision, targetIndex, leftIndex, rightIndex) { }
+};
+
+class Int32ModIR : public BinaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(Int32Mod, int, int);
+
+private:
+    Int32ModIR(int targetIndex, int leftIndex, int rightIndex)
+        : BinaryExpressionIR(ESIR::Opcode::Int32Mod, targetIndex, leftIndex, rightIndex) { }
+};
+
+class DoubleModIR : public BinaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(DoubleMod, int, int);
+
+private:
+    DoubleModIR(int targetIndex, int leftIndex, int rightIndex)
+        : BinaryExpressionIR(ESIR::Opcode::DoubleMod, targetIndex, leftIndex, rightIndex) { }
+};
+
+class GenericModIR : public BinaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(GenericMod, int, int);
+
+private:
+    GenericModIR(int targetIndex, int leftIndex, int rightIndex)
+        : BinaryExpressionIR(ESIR::Opcode::GenericMod, targetIndex, leftIndex, rightIndex) { }
 };
 
 class BitwiseAndIR : public BinaryExpressionIR {

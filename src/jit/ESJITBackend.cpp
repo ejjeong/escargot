@@ -506,6 +506,42 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         // FIXME
         return nullptr;
     }
+    case ESIR::Opcode::Int32Mod:
+    {
+        INIT_ESIR(Int32Mod);
+        INIT_BINARY_ESIR(Int32Mod);
+        ASSERT(leftType.isInt32Type() && rightType.isInt32Type());
+        LIns* res = m_out.ins2(LIR_divi, left, right);
+        res = m_out.ins2(LIR_muli, res, right);
+        res = m_out.ins2(LIR_subi, left, res);
+        return res;// e_out.ins2(LIR_modi, left, right);
+    }
+    case ESIR::Opcode::DoubleMod:
+    {
+        INIT_ESIR(DoubleMod);
+        INIT_BINARY_ESIR(DoubleMod);
+        if (leftType.isInt32Type())
+            left = m_out.ins1(LIR_i2d, left);
+        if (rightType.isInt32Type())
+            right = m_out.ins1(LIR_i2d, right);
+        ASSERT(left->isD() && right->isD());
+        //FIXME: consider minus left
+        /*
+        left = m_out.ins1(LIR_absd, left);
+        right = m_out.ins1(LIR_absd, right);
+        */
+        LIns* res = m_out.ins2(LIR_divd, left, right);
+        res = m_out.ins1(LIR_d2i, res);
+        res = m_out.ins1(LIR_i2d, res);
+        res = m_out.ins2(LIR_muld, res, right);
+        res = m_out.ins2(LIR_subd, left, res);
+        return res;
+    }
+    case ESIR::Opcode::GenericMod:
+    {
+        // FIXME
+        return nullptr;
+    }
     case ESIR::Opcode::BitwiseAnd:
     {
         INIT_ESIR(BitwiseAnd);

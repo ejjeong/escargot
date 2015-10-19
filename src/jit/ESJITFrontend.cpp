@@ -307,9 +307,13 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         }
         case ModOpcode:
-            goto unsupported;
+        {
+            INIT_BYTECODE(Mod);
+            ESIR* genericModIR = GenericModIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
+            currentBlock->push(genericModIR);
             NEXT_BYTECODE(Mod);
             break;
+        }
         case IncrementOpcode:
         {
             INIT_BYTECODE(Increment);

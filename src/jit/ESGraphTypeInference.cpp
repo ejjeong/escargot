@@ -124,6 +124,26 @@ void ESGraphTypeInference::run(ESGraph* graph)
                 }
                 break;
             }
+            case ESIR::Opcode::GenericMod:
+            {
+                INIT_ESIR(GenericMod);
+                Type leftType = graph->getOperandType(irGenericMod->leftIndex());
+                Type rightType = graph->getOperandType(irGenericMod->rightIndex());
+                if (leftType.isInt32Type() && rightType.isInt32Type()) {
+                    ESIR* int32ModIR = Int32ModIR::create(irGenericMod->targetIndex(), irGenericMod->leftIndex(), irGenericMod->rightIndex());
+                    block->replace(j, int32ModIR);
+                    graph->setOperandType(irGenericMod->targetIndex(), TypeInt32);
+                } else if (leftType.hasNumberFlag() && rightType.hasNumberFlag()) {
+                    ESIR* doubleModIR = DoubleModIR::create(irGenericMod->targetIndex(), irGenericMod->leftIndex(), irGenericMod->rightIndex());
+                    block->replace(j, doubleModIR);
+                    graph->setOperandType(irGenericMod->targetIndex(), TypeDouble);
+                } else {
+                    // FIXME
+                    // Handle unusual case of division
+                    graph->setOperandType(irGenericMod->targetIndex(), TypeDouble);
+                }
+                break;
+            }
             case ESIR::Opcode::BitwiseAnd:
             case ESIR::Opcode::BitwiseOr:
             case ESIR::Opcode::BitwiseXor:
