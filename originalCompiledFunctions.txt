@@ -1,3 +1,6 @@
+test/SunSpider/tests/sunspider-1.0.2/access-nsieve.js
+<<<< Compiled Functions >>>>
+nsieve 
 test/SunSpider/tests/sunspider-1.0.2/bitops-3bit-bits-in-byte.js
 <<<< Compiled Functions >>>>
 fast3bitlookup 

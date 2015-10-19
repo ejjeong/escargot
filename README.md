@@ -26,6 +26,9 @@ e.g. make run-test262 S7.2
 ## Measuring
     ./measure.sh [escargot | v8 | jsc.interp | jsc.jit] [time | memory]
 
+## Testing JIT
+	make check-jit
+
 # Contributing
 
 [Webkit coding style guidelines](https://www.webkit.org/coding/coding-style.html)
