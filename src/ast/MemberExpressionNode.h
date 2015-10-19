@@ -37,7 +37,7 @@ public:
         if(ESVMInstance::currentInstance()->currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty()) {
             if(isPreComputedCase()) {
                 ASSERT(m_property->type() == NodeType::Identifier);
-                codeBlock->pushCode(GetObjectPreComputedCaseSlowMode(((IdentifierNode *)m_property)->nonAtomicName()), this);
+                codeBlock->pushCode(GetObjectPreComputedCaseSlowMode(((IdentifierNode *)m_property)->name().string()), this);
                 updateNodeIndex(context);
                 WRITE_LAST_INDEX(m_nodeIndex, m_object->nodeIndex(), m_nodeIndex - 1);
             } else {
@@ -51,7 +51,7 @@ public:
         if(isPreComputedCase()) {
             ASSERT(m_property->type() == NodeType::Identifier);
             updateNodeIndex(context);
-            codeBlock->pushCode(GetObjectPreComputedCase(((IdentifierNode *)m_property)->nonAtomicName()), this);
+            codeBlock->pushCode(GetObjectPreComputedCase(((IdentifierNode *)m_property)->name().string()), this);
             WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
         } else {
             m_property->generateExpressionByteCode(codeBlock, context);
@@ -67,7 +67,7 @@ public:
         if(ESVMInstance::currentInstance()->currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty()) {
             if(isPreComputedCase()) {
                 ASSERT(m_property->type() == NodeType::Identifier);
-                codeBlock->pushCode(SetObjectPreComputedCaseSlowMode(((IdentifierNode *)m_property)->nonAtomicName()), this);
+                codeBlock->pushCode(SetObjectPreComputedCaseSlowMode(((IdentifierNode *)m_property)->name().string()), this);
             } else {
                 updateNodeIndex(context);
                 codeBlock->pushCode(SetObjectSlowMode(), this);
@@ -77,7 +77,7 @@ public:
         }
         if(isPreComputedCase()) {
             ASSERT(m_property->type() == NodeType::Identifier);
-            codeBlock->pushCode(SetObjectPreComputedCase(((IdentifierNode *)m_property)->nonAtomicName()), this);
+            codeBlock->pushCode(SetObjectPreComputedCase(((IdentifierNode *)m_property)->name().string()), this);
         } else {
             updateNodeIndex(context);
             codeBlock->pushCode(SetObject(), this);
@@ -99,7 +99,7 @@ public:
         if(ESVMInstance::currentInstance()->currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty()) {
             if(isPreComputedCase()) {
                 ASSERT(m_property->type() == NodeType::Identifier);
-                codeBlock->pushCode(GetObjectWithPeekingPreComputedCaseSlowMode(((IdentifierNode *)m_property)->nonAtomicName()), this);
+                codeBlock->pushCode(GetObjectWithPeekingPreComputedCaseSlowMode(((IdentifierNode *)m_property)->name().string()), this);
             } else {
                 codeBlock->pushCode(GetObjectWithPeekingSlowMode(), this);
             }
@@ -107,7 +107,7 @@ public:
         }
         if(isPreComputedCase()) {
             ASSERT(m_property->type() == NodeType::Identifier);
-            codeBlock->pushCode(GetObjectWithPeekingPreComputedCase(((IdentifierNode *)m_property)->nonAtomicName()), this);
+            codeBlock->pushCode(GetObjectWithPeekingPreComputedCase(((IdentifierNode *)m_property)->name().string()), this);
         } else {
             codeBlock->pushCode(GetObjectWithPeeking(), this);
         }

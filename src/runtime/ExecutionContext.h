@@ -31,7 +31,7 @@ public:
     }
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
-    ESValue* resolveBinding(const InternalAtomicString& atomicName, ESString* name);
+    ESValue* resolveBinding(const InternalAtomicString& atomicName);
 
     ESValue* resolveArgumentsObjectBinding();
 

@@ -376,11 +376,8 @@ NEVER_INLINE void tryOperation(ESVMInstance* instance, CodeBlock* codeBlock, cha
         instance->m_currentExecutionContext = backupedEC;
         LexicalEnvironment* catchEnv = new LexicalEnvironment(new DeclarativeEnvironmentRecord(), oldEnv);
         instance->currentExecutionContext()->setEnvironment(catchEnv);
-        instance->currentExecutionContext()->environment()->record()->createMutableBinding(code->m_name,
-                code->m_nonAtomicName);
-        instance->currentExecutionContext()->environment()->record()->setMutableBinding(code->m_name,
-                code->m_nonAtomicName
-                , err, false);
+        instance->currentExecutionContext()->environment()->record()->createMutableBinding(code->m_name);
+        instance->currentExecutionContext()->environment()->record()->setMutableBinding(code->m_name, err, false);
         try{
             ESValue ret = interpret(instance, codeBlock, code->m_catchPosition);
             instance->currentExecutionContext()->setEnvironment(oldEnv);

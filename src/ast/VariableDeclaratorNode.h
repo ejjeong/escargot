@@ -23,7 +23,7 @@ public:
         ASSERT(m_id->type() == NodeType::Identifier);
         ASSERT(m_init == NULL);
         if(!((IdentifierNode *)m_id)->canUseFastAccess())
-            codeBlock->pushCode(CreateBinding(((IdentifierNode *)m_id)->name(), ((IdentifierNode *)m_id)->nonAtomicName()), this);
+            codeBlock->pushCode(CreateBinding(((IdentifierNode *)m_id)->name()), this);
     }
 
     Node* id() { return m_id; }

@@ -24,7 +24,7 @@ public:
         for(unsigned i = 0; i < m_properties.size() ; i ++) {
             PropertyNode* p = m_properties[i];
             if(p->key()->type() == NodeType::Identifier) {
-                codeBlock->pushCode(Push(((IdentifierNode* )p->key())->nonAtomicName()), this);
+                codeBlock->pushCode(Push(((IdentifierNode* )p->key())->name().string()), this);
             } else {
                 ASSERT(p->key()->type() == NodeType::Literal);
                 codeBlock->pushCode(Push(((LiteralNode* )p->key())->value()), this);

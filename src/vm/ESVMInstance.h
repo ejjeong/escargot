@@ -19,9 +19,9 @@ class Try;
 
 extern __thread ESVMInstance* currentInstance;
 
-typedef std::unordered_map<u16string, InternalAtomicStringData *,
+typedef std::unordered_map<u16string, ESString *,
         std::hash<u16string>, std::equal_to<u16string>,
-        gc_allocator<std::pair<const u16string, InternalAtomicStringData *> > > InternalAtomicStringMap;
+        gc_allocator<std::pair<const u16string, ESString *> > > InternalAtomicStringMap;
 
 class ESVMInstance : public gc_cleanup {
     friend ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter);

@@ -42,7 +42,7 @@ inline ESValueInDouble ESObjectSetOp(ESValueInDouble obj, ESValueInDouble proper
 
 inline ESValue* contextResolveBinding(ExecutionContext* context, InternalAtomicString* atomicName, ESString* name)
 {
-    return context->resolveBinding(*atomicName, name);
+    return context->resolveBinding(*atomicName);
 }
 
 inline void objectDefineDataProperty(ESObject* object, ESString* key,

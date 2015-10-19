@@ -18,8 +18,7 @@ public:
     {
         if(m_argument->type() == Identifier && !((IdentifierNode *)m_argument)->canUseFastAccess()) {
             codeBlock->pushCode(GetByIdWithoutException(
-                    ((IdentifierNode *)m_argument)->name(),
-                    ((IdentifierNode *)m_argument)->nonAtomicName()
+                    ((IdentifierNode *)m_argument)->name()
                     ), this);
         } else
             m_argument->generateExpressionByteCode(codeBlock, context);

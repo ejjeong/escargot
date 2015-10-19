@@ -483,11 +483,19 @@ public:
     {
         m_hashData.m_isHashInited =  false;
     }
+
+    ESStringData(const u16string& src)
+            : u16string(src)
+    {
+        m_hashData.m_isHashInited =  false;
+    }
+
     ESStringData(u16string&& src)
         : u16string(std::move(src))
     {
         m_hashData.m_isHashInited =  false;
     }
+
     ESStringData(std::u16string& src)
     {
         assign(src.begin(), src.end());
@@ -562,6 +570,12 @@ protected:
         m_string = data;
     }
 
+    ESString(const u16string& src)
+        : ESPointer(Type::ESString)
+    {
+        m_string = new(GC) ESStringData(src);
+    }
+
     ESString(u16string&& src)
         : ESPointer(Type::ESString)
     {
@@ -602,6 +616,11 @@ public:
     static ESString* create(u16string&& src)
     {
         return new ESString(std::move(src));
+    }
+
+    static ESString* create(const u16string& src)
+    {
+        return new ESString(src);
     }
 
     static ESString* create(std::u16string& src)
@@ -668,6 +687,10 @@ public:
     ALWAYS_INLINE const u16string& string() const;
     ALWAYS_INLINE const ESStringData* stringData() const;
     ALWAYS_INLINE int length() const;
+    ALWAYS_INLINE size_t hashValue() const
+    {
+        return m_string->hashValue();
+    }
 
     ESString* substring(int from, int to) const;
 

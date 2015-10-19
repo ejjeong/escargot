@@ -28,7 +28,7 @@ public:
             codeBlock->pushCode(UnaryDelete(), this);
         } else if (m_argument->type() == NodeType::Identifier) {
             // TODO This work with the flag configurable
-            codeBlock->pushCode(Push(((IdentifierNode *)m_argument)->nonAtomicName()), this);
+            codeBlock->pushCode(Push(((IdentifierNode *)m_argument)->name().string()), this);
         } else {
             RELEASE_ASSERT_NOT_REACHED();
          }

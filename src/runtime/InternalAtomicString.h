@@ -5,37 +5,8 @@ namespace escargot {
 
 class ESVMInstance;
 
-class InternalAtomicStringData : public gc_cleanup {
-    friend class InternalAtomicString;
-protected:
-    InternalAtomicStringData(ESVMInstance* instance, const u16string& str);
-    InternalAtomicStringData(const InternalAtomicStringData& src) = delete;
-    void operator = (const InternalAtomicStringData& src) = delete;
-
-public:
-    ~InternalAtomicStringData();
-    ALWAYS_INLINE size_t hashValue() const
-    {
-        return m_string->stringData()->hashValue();
-    }
-    ESString* string() const
-    {
-        return m_string;
-    }
-
-protected:
-    ESString* m_string;
-    ESVMInstance* m_instance;
-};
-
 class InternalAtomicString {
-    friend class InternalAtomicStringData;
 protected:
-    ALWAYS_INLINE InternalAtomicString(InternalAtomicStringData* string)
-    {
-        m_string = string;
-    }
-
     void init(ESVMInstance* instance, const u16string& src);
 public:
     ALWAYS_INLINE InternalAtomicString()
@@ -48,26 +19,21 @@ public:
         m_string = src.m_string;
     }
 
-    InternalAtomicString(const u16string& src);
+    InternalAtomicString(u16string& src);
     InternalAtomicString(const char16_t* src);
-    InternalAtomicString(ESVMInstance* instance, const u16string& src);
+    InternalAtomicString(ESVMInstance* instance,  const u16string& src);
 
     ALWAYS_INLINE const char16_t* data() const
     {
-        return m_string->string()->data();
+        return string()->data();
     }
 
     ALWAYS_INLINE ESString* string() const
     {
-        return m_string->string();
-    }
-
-    ALWAYS_INLINE InternalAtomicStringData* stringData() const
-    {
         return m_string;
     }
 
-    operator ESString* ()
+    operator ESString*() const
     {
         return string();
     }
@@ -75,7 +41,7 @@ public:
     ALWAYS_INLINE friend bool operator == (const InternalAtomicString& a,const InternalAtomicString& b);
     ALWAYS_INLINE friend bool operator != (const InternalAtomicString& a,const InternalAtomicString& b);
 protected:
-    InternalAtomicStringData* m_string;
+    ESString* m_string;
 };
 
 ALWAYS_INLINE bool operator == (const InternalAtomicString& a,const InternalAtomicString& b)
@@ -98,7 +64,7 @@ template<> struct hash<escargot::InternalAtomicString>
 {
     size_t operator()(escargot::InternalAtomicString const &x) const
     {
-        return x.stringData()->hashValue();
+        return x.string()->hashValue();
     }
 };
 

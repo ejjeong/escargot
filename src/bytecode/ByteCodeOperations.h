@@ -8,13 +8,13 @@ namespace escargot {
 ALWAYS_INLINE ESValue* getByIdOperation(ESVMInstance* instance, ExecutionContext* ec, GetById* code)
 {
     if (LIKELY(code->m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
-        ASSERT(ec->resolveBinding(code->m_name, code->m_nonAtomicName) == code->m_cachedSlot);
+        ASSERT(ec->resolveBinding(code->m_name) == code->m_cachedSlot);
         return code->m_cachedSlot;
 #ifdef ENABLE_ESJIT
         code->m_profile.addProfile(*code->m_cachedSlot);
 #endif
     } else {
-        ESValue* slot = ec->resolveBinding(code->m_name, code->m_nonAtomicName);
+        ESValue* slot = ec->resolveBinding(code->m_name);
         if(LIKELY(slot != NULL)) {
             code->m_cachedSlot = slot;
             code->m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
@@ -26,7 +26,7 @@ ALWAYS_INLINE ESValue* getByIdOperation(ESVMInstance* instance, ExecutionContext
             ReferenceError* receiver = ReferenceError::create();
             std::vector<ESValue> arguments;
             u16string err_msg;
-            err_msg.append(code->m_nonAtomicName->data());
+            err_msg.append(code->m_name.string()->data());
             err_msg.append(u" is not defined");
 
             //TODO call constructor

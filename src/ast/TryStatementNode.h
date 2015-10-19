@@ -42,10 +42,8 @@ public:
         codeBlock->peekCode<Try>(pos)->m_statementEndPosition = endPos;
         if(m_handler) {
             codeBlock->peekCode<Try>(pos)->m_name = m_handler->param()->name();
-            codeBlock->peekCode<Try>(pos)->m_nonAtomicName = m_handler->param()->nonAtomicName();
         } else {
             codeBlock->peekCode<Try>(pos)->m_name = strings->emptyString;
-            codeBlock->peekCode<Try>(pos)->m_nonAtomicName = strings->emptyString.string();
         }
         if(m_finalizer)
             m_finalizer->generateStatementByteCode(codeBlock, context);

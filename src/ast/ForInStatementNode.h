@@ -50,7 +50,8 @@ public:
 
         codeBlock->pushCode(Jump(continuePosition), this);
         size_t forInEnd = codeBlock->currentCodeSize();
-        codeBlock->pushCode(EnumerateObjectEnd(), this);
+        //codeBlock->pushCode(EnumerateObjectEnd(), this);
+        codeBlock->pushCode(Pop(), this);
         ASSERT(codeBlock->peekCode<EnumerateObjectKey>(continuePosition)->m_orgOpcode == EnumerateObjectKeyOpcode);
         codeBlock->peekCode<EnumerateObjectKey>(continuePosition)->m_forInEnd = forInEnd;
 

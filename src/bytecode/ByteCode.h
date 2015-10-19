@@ -121,7 +121,6 @@ class Node;
     F(This) \
     F(EnumerateObject) \
     F(EnumerateObjectKey) \
-    F(EnumerateObjectEnd) \
     F(PrintSpAndBp) \
 \
     F(End)
@@ -476,17 +475,14 @@ public:
 
 class GetById : public ByteCode {
 public:
-    GetById(const InternalAtomicString& name, ESString* esName)
+    GetById(const InternalAtomicString& name)
         : ByteCode(GetByIdOpcode)
         , m_name(name)
     {
-        m_nonAtomicName = esName;
         m_identifierCacheInvalidationCheckCount = std::numeric_limits<unsigned>::max();
         m_cachedSlot = NULL;
     }
-
     InternalAtomicString m_name;
-    ESString* m_nonAtomicName;
 
     unsigned m_identifierCacheInvalidationCheckCount;
     ESValue* m_cachedSlot;
@@ -494,7 +490,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("GetById <%s>\n", m_nonAtomicName->utf8Data());
+        printf("GetById <%s>\n", m_name.string()->utf8Data());
     }
 #endif
 #ifdef ENABLE_ESJIT
@@ -504,17 +500,15 @@ public:
 
 class GetByIdWithoutException : public ByteCode {
 public:
-    GetByIdWithoutException(const InternalAtomicString& name, ESString* esName)
+    GetByIdWithoutException(const InternalAtomicString& name)
         : ByteCode(GetByIdWithoutExceptionOpcode)
         , m_name(name)
     {
-        m_nonAtomicName = esName;
         m_identifierCacheInvalidationCheckCount = std::numeric_limits<unsigned>::max();
         m_cachedSlot = NULL;
     }
 
     InternalAtomicString m_name;
-    ESString* m_nonAtomicName;
 
     unsigned m_identifierCacheInvalidationCheckCount;
     ESValue* m_cachedSlot;
@@ -522,7 +516,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("GetByIdWithoutException <%s>\n",m_nonAtomicName->utf8Data());
+        printf("GetByIdWithoutException <%s>\n",m_name.string()->utf8Data());
     }
 #endif
 #ifdef ENABLE_ESJIT
@@ -590,17 +584,15 @@ public:
 
 class SetById : public ByteCode {
 public:
-    SetById(const InternalAtomicString& name, ESString* esName, Opcode code = SetByIdOpcode)
+    SetById(const InternalAtomicString& name, Opcode code = SetByIdOpcode)
         : ByteCode(code)
         , m_name(name)
     {
-        m_nonAtomicName = esName;
         m_identifierCacheInvalidationCheckCount = std::numeric_limits<unsigned>::max();
         m_cachedSlot = NULL;
     }
 
     InternalAtomicString m_name;
-    ESString* m_nonAtomicName;
 
     unsigned m_identifierCacheInvalidationCheckCount;
     ESValue* m_cachedSlot;
@@ -608,7 +600,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("SetById <%s>\n", m_nonAtomicName->utf8Data());
+        printf("SetById <%s>\n", m_name.string()->utf8Data());
     }
 #endif
 };
@@ -666,19 +658,17 @@ public:
 
 class CreateBinding : public ByteCode {
 public:
-    CreateBinding(InternalAtomicString name, ESString* nonAtomicName)
+    CreateBinding(InternalAtomicString name)
         : ByteCode(CreateBindingOpcode)
         , m_name(name)
     {
-        m_nonAtomicName = nonAtomicName;
     }
     InternalAtomicString m_name;
-    ESString* m_nonAtomicName;
 
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("CreateBinding <%s>\n",m_nonAtomicName->utf8Data());
+        printf("CreateBinding <%s>\n",m_name.string()->utf8Data());
     }
 #endif
 };
@@ -1842,7 +1832,6 @@ public:
     size_t m_catchPosition;
     size_t m_statementEndPosition;
     InternalAtomicString m_name;
-    ESString* m_nonAtomicName;
 };
 
 class TryCatchBodyEnd : public ByteCode {
@@ -1910,22 +1899,6 @@ public:
 
 };
 
-class EnumerateObjectEnd : public ByteCode {
-public:
-    EnumerateObjectEnd()
-        : ByteCode(EnumerateObjectEndOpcode)
-    {
-    }
-
-#ifndef NDEBUG
-    virtual void dump()
-    {
-        printf("EnumerateObjectEnd <>\n");
-    }
-#endif
-
-
-};
 
 class Throw : public ByteCode {
 public:

@@ -65,7 +65,7 @@ public:
     virtual ~EnvironmentRecord() { }
 
     //return NULL == not exist
-    virtual ESValue* hasBinding(const InternalAtomicString& atomicName, ESString* name)
+    virtual ESValue* hasBinding(const InternalAtomicString& atomicName)
     {
         RELEASE_ASSERT_NOT_REACHED();
     }
@@ -73,7 +73,7 @@ public:
     {
         RELEASE_ASSERT_NOT_REACHED();
     }
-    virtual void createMutableBinding(const InternalAtomicString& name, ESString* nonAtomicName, bool canDelete = false)
+    virtual void createMutableBinding(const InternalAtomicString& name, bool canDelete = false)
     {
         RELEASE_ASSERT_NOT_REACHED();
     }
@@ -83,12 +83,12 @@ public:
         RELEASE_ASSERT_NOT_REACHED();
     }
 
-    virtual void initializeBinding(const InternalAtomicString& name, ESString* nonAtomicName, const ESValue& V)
+    virtual void initializeBinding(const InternalAtomicString& name, const ESValue& V)
     {
         RELEASE_ASSERT_NOT_REACHED();
     }
 
-    virtual void setMutableBinding(const InternalAtomicString& name, ESString* nonAtomicName, const ESValue& V, bool mustNotThrowTypeErrorExecption)
+    virtual void setMutableBinding(const InternalAtomicString& name, const ESValue& V, bool mustNotThrowTypeErrorExecption)
     {
         RELEASE_ASSERT_NOT_REACHED();
     }
@@ -146,7 +146,7 @@ public:
         return reinterpret_cast<DeclarativeEnvironmentRecord*>(this);
     }
 
-    void createMutableBindingForAST(const InternalAtomicString& atomicName,ESString* name,bool canDelete);
+    void createMutableBindingForAST(const InternalAtomicString& atomicName,bool canDelete);
 
 protected:
 };
@@ -160,14 +160,14 @@ public:
     ~ObjectEnvironmentRecord() { }
 
     //return NULL == not exist
-    virtual ESValue* hasBinding(const InternalAtomicString& atomicName, ESString* name)
+    virtual ESValue* hasBinding(const InternalAtomicString& atomicName)
     {
-        return ((GlobalObject *)m_bindingObject)->addressOfProperty(name);
+        return ((GlobalObject *)m_bindingObject)->addressOfProperty(atomicName.string());
     }
-    void createMutableBinding(const InternalAtomicString& name,ESString* nonAtomicName, bool canDelete = false);
+    void createMutableBinding(const InternalAtomicString& name, bool canDelete = false);
     void createImmutableBinding(const InternalAtomicString& name, bool throwExecptionWhenAccessBeforeInit = false) {}
-    void initializeBinding(const InternalAtomicString& name,ESString* nonAtomicName,  const ESValue& V);
-    void setMutableBinding(const InternalAtomicString& name,ESString* nonAtomicName, const ESValue& V, bool mustNotThrowTypeErrorExecption);
+    void initializeBinding(const InternalAtomicString& name,  const ESValue& V);
+    void setMutableBinding(const InternalAtomicString& name, const ESValue& V, bool mustNotThrowTypeErrorExecption);
     /*
     ESValue getBindingValue(const InternalAtomicString& name, bool ignoreReferenceErrorException)
     {
@@ -227,7 +227,7 @@ public:
 
     InternalAtomicStringVector* innerIdentifiers() { return m_innerIdentifiers; }
 
-    virtual ESValue* hasBinding(const InternalAtomicString& atomicName, ESString* name)
+    virtual ESValue* hasBinding(const InternalAtomicString& atomicName)
     {
         if(UNLIKELY(m_needsActivation)) {
             size_t siz = m_activationData.size();
@@ -248,8 +248,8 @@ public:
         }
     }
 
-    virtual void createMutableBinding(const InternalAtomicString& name,ESString* nonAtomicName, bool canDelete = false);
-    virtual void setMutableBinding(const InternalAtomicString& name, ESString* nonAtomicName, const ESValue& V, bool mustNotThrowTypeErrorExecption)
+    virtual void createMutableBinding(const InternalAtomicString& name, bool canDelete = false);
+    virtual void setMutableBinding(const InternalAtomicString& name, const ESValue& V, bool mustNotThrowTypeErrorExecption)
     {
         //TODO mustNotThrowTypeErrorExecption
         if(UNLIKELY(m_needsActivation)) {
@@ -327,10 +327,10 @@ public:
     }
     ~GlobalEnvironmentRecord() { }
 
-    virtual ESValue* hasBinding(const InternalAtomicString& atomicName, ESString* name);
-    void createMutableBinding(const InternalAtomicString& name,ESString* nonAtomicName, bool canDelete = false);
-    void initializeBinding(const InternalAtomicString& name,ESString* nonAtomicName,  const ESValue& V);
-    void setMutableBinding(const InternalAtomicString& name, ESString* nonAtomicName, const ESValue& V, bool mustNotThrowTypeErrorExecption);
+    virtual ESValue* hasBinding(const InternalAtomicString& atomicName);
+    void createMutableBinding(const InternalAtomicString& name, bool canDelete = false);
+    void initializeBinding(const InternalAtomicString& name,  const ESValue& V);
+    void setMutableBinding(const InternalAtomicString& name, const ESValue& V, bool mustNotThrowTypeErrorExecption);
 
     ESValue getThisBinding();
     bool hasVarDeclaration(const InternalAtomicString& name);
@@ -338,8 +338,8 @@ public:
     bool hasRestrictedGlobalProperty(const InternalAtomicString& name);
     bool canDeclareGlobalVar(const InternalAtomicString& name);
     bool canDeclareGlobalFunction(const InternalAtomicString& name);
-    void createGlobalVarBinding(const InternalAtomicString& name,ESString* nonAtomicName, bool canDelete);
-    void createGlobalFunctionBinding(const InternalAtomicString& name,ESString* nonAtomicName, const ESValue& V, bool canDelete);
+    void createGlobalVarBinding(const InternalAtomicString& name, bool canDelete);
+    void createGlobalFunctionBinding(const InternalAtomicString& name, const ESValue& V, bool canDelete);
     //ESValue getBindingValue(const InternalAtomicString& name, bool ignoreReferenceErrorException);
 
     virtual bool isGlobalEnvironmentRecord()

@@ -152,14 +152,14 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* value = peek<ESValue>(stack, bp);
 
         if (LIKELY(code->m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
-            ASSERT(ec->resolveBinding(code->m_name, code->m_nonAtomicName) == code->m_cachedSlot);
+            ASSERT(ec->resolveBinding(code->m_name) == code->m_cachedSlot);
             *code->m_cachedSlot = *value;
         } else {
             ExecutionContext* ec = instance->currentExecutionContext();
             //TODO
             //Object.defineProperty(this,"asdf",{value:1}) //this == global
             //asdf = 2
-            ESValue* slot = ec->resolveBinding(code->m_name, code->m_nonAtomicName);
+            ESValue* slot = ec->resolveBinding(code->m_name);
 
             if(LIKELY(slot != NULL)) {
                 code->m_cachedSlot = slot;
@@ -167,11 +167,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                 *code->m_cachedSlot = *value;
             } else {
                 if(!ec->isStrictMode()) {
-                    globalObject->defineDataProperty(code->m_nonAtomicName, true, true, true, *value);
+                    globalObject->defineDataProperty(code->m_name.string(), true, true, true, *value);
                 } else {
                     u16string err_msg;
                     err_msg.append(u"assignment to undeclared variable ");
-                    err_msg.append(code->m_nonAtomicName->data());
+                    err_msg.append(code->m_name.string()->data());
                     throw ESValue(ReferenceError::create(ESString::create(std::move(err_msg))));
                 }
             }
@@ -204,8 +204,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     CreateBindingOpcodeLbl:
     {
         CreateBinding* code = (CreateBinding*)currentCode;
-        ec->environment()->record()->createMutableBindingForAST(code->m_name,
-                code->m_nonAtomicName, false);
+        ec->environment()->record()->createMutableBindingForAST(code->m_name, false);
         executeNextCode<CreateBinding>(programCounter);
         NEXT_INSTRUCTION();
     }
@@ -615,7 +614,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESFunctionObject* function = ESFunctionObject::create(ec->environment(), code->m_codeBlock, code->m_nonAtomicName == NULL ? strings->emptyString.string() : code->m_nonAtomicName, code->m_codeBlock->m_params.size());
         if(code->m_isDeclaration) { //FD
             function->set(strings->name.string(), code->m_nonAtomicName);
-            ec->environment()->record()->setMutableBinding(code->m_name, code->m_nonAtomicName, function, false);
+            ec->environment()->record()->setMutableBinding(code->m_name, function, false);
         }
         else {//FE
             function->set(strings->name.string(), code->m_nonAtomicName);
@@ -964,13 +963,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         }
     }
 
-    EnumerateObjectEndOpcodeLbl:
-    {
-        pop<ESValue>(stack, bp);
-        executeNextCode<EnumerateObjectEnd>(programCounter);
-        NEXT_INSTRUCTION();
-    }
-
     CallEvalFunctionOpcodeLbl:
     {
         size_t argc = (size_t)pop<ESValue>(stack, bp)->asInt32();
@@ -989,7 +981,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 #endif
         ESValue* arguments = (ESValue *)stack;
 
-        ESValue callee = *ec->resolveBinding(strings->eval, strings->eval.string());
+        ESValue callee = *ec->resolveBinding(strings->eval);
         if(callee.isESPointer() && (void *)callee.asESPointer() == (void *)globalObject->eval()) {
             ESObject* receiver = instance->globalObject();
             ESValue ret = instance->runOnEvalContext([instance, &arguments, &argc](){

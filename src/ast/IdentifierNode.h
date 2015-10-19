@@ -15,7 +15,6 @@ public:
             : Node(NodeType::Identifier)
     {
         m_name = name;
-        m_nonAtomicName = name.string();
         m_canUseFastAccess = false;
         m_fastAccessIndex = SIZE_MAX;
         m_fastAccessUpIndex = SIZE_MAX;
@@ -32,7 +31,7 @@ public:
             if(codeBlock->m_needsActivation) {
                 codeBlock->pushCode(GetByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), this);
 #ifndef NDEBUG
-                codeBlock->peekCode<GetByIndexWithActivation>(codeBlock->lastCodePosition<GetByIndexWithActivation>())->m_name = m_nonAtomicName;
+                codeBlock->peekCode<GetByIndexWithActivation>(codeBlock->lastCodePosition<GetByIndexWithActivation>())->m_name = m_name;
 #endif
             } else {
                 if(m_fastAccessUpIndex == 0) {
@@ -40,12 +39,12 @@ public:
                     codeBlock->pushCode(GetByIndex(m_fastAccessIndex), this);
                     WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
 #ifndef NDEBUG
-                    codeBlock->peekCode<GetByIndex>(codeBlock->lastCodePosition<GetByIndex>())->m_name = m_nonAtomicName;
+                    codeBlock->peekCode<GetByIndex>(codeBlock->lastCodePosition<GetByIndex>())->m_name = m_name;
 #endif
                 } else {
                     codeBlock->pushCode(GetByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), this);
 #ifndef NDEBUG
-                    codeBlock->peekCode<GetByIndexWithActivation>(codeBlock->lastCodePosition<GetByIndexWithActivation>())->m_name = m_nonAtomicName;
+                    codeBlock->peekCode<GetByIndexWithActivation>(codeBlock->lastCodePosition<GetByIndexWithActivation>())->m_name = m_name;
 #endif
                 }
             }
@@ -54,7 +53,7 @@ public:
             if(m_name == strings->arguments) {
                 codeBlock->pushCode(GetArgumentsObject(), this);
             } else {
-                codeBlock->pushCode(GetById(m_name, m_nonAtomicName), this);
+                codeBlock->pushCode(GetById(m_name), this);
             }
             WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
         }
@@ -87,7 +86,7 @@ public:
             if(m_name == strings->arguments) {
                 codeBlock->pushCode(SetArgumentsObject(), this);
             } else {
-                codeBlock->pushCode(SetById(m_name, m_nonAtomicName), this);
+                codeBlock->pushCode(SetById(m_name), this);
             }
         }
     }
@@ -97,9 +96,9 @@ public:
         return m_name;
     }
 
-    ESString* nonAtomicName()
+    ESString* nonAtomicName() const
     {
-        return m_nonAtomicName;
+        return m_name.string();
     }
 
     void setFastAccessIndex(size_t upIndex, size_t index)
@@ -126,7 +125,6 @@ public:
 
 protected:
     InternalAtomicString m_name;
-    ESString* m_nonAtomicName;
 
     bool m_canUseFastAccess;
     size_t m_fastAccessIndex;
