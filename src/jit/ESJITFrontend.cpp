@@ -91,9 +91,11 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(Push);
             break;
         }
-        case PopExpressionStatementOpcode:
+        case PopExpressionStatementOpcode: {
+            graph->increaseFollowingPopCountOf(graph->lastStackPosSettingTargetIndex());
             NEXT_BYTECODE(PopExpressionStatement);
             break;
+        }
         case PopOpcode: {
             graph->increaseFollowingPopCountOf(graph->lastStackPosSettingTargetIndex());
             NEXT_BYTECODE(Pop);
