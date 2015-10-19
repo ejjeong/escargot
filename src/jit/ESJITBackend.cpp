@@ -122,12 +122,12 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
                             j--;
                             unsigned followPopCount = m_graph->getFollowPopCountOf(block->instruction(j)->targetIndex());
                             maxStackPos = m_graph->getOperandStackPos(block->instruction(j)->targetIndex()) - followPopCount;
-                            }
+                        }
                         break;
-                       }
-                   }
+                    }
+                }
                 isPrevBlock = true;
-              }
+            }
 
             if (maxStackPos > 0) {
                 for (; j >= 0; j--) {
@@ -146,22 +146,22 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
 #ifndef NDEBUG
                         m_out.insStore(LIR_sti, size, m_context, ExecutionContext::offsetofStackBuf() + bufOffset + sizeof(ESValue), 1);
 #endif
-                       }
+                    }
                     if (stackPos == 1) {
                         LIns* maxStackPosLIns = m_out.insImmI(maxStackPos);
                         m_out.insStore(LIR_sti, maxStackPosLIns, m_context, ExecutionContext::offsetofStackPos(), 1);
                         isDone = true;
                         break;
-                       }
-                  }
+                    }
+                }
             } else {
                 LIns* maxStackPosLIns = m_out.insImmI(maxStackPos);
                 m_out.insStore(LIR_sti, maxStackPosLIns, m_context, ExecutionContext::offsetofStackPos(), 1);
                 isDone = true;
-              }
+            }
             if (isDone) break;
-          }
-     }
+        }
+    }
 
     LIns* bytecode = m_out.insImmI(currentByteCodeIndex);
     LIns* boxedIndex = boxESValue(bytecode, TypeInt32);
