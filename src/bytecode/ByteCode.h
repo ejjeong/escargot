@@ -1356,7 +1356,6 @@ public:
     }
 #endif
 #ifdef ENABLE_ESJIT
-    escargot::ESJIT::Type m_esir_type;
     ProfileData m_profile;
 #endif
 };
@@ -1427,7 +1426,6 @@ public:
     ESHiddenClassChain m_cachedhiddenClassChain;
     size_t m_cachedIndex;
 #ifdef ENABLE_ESJIT
-    escargot::ESJIT::Type m_esir_type;
     ProfileData m_profile;
 #endif
 };
@@ -1497,10 +1495,6 @@ public:
     {
         printf("SetObject <>\n");
     }
-#endif
-
-#ifdef ENABLE_ESJIT
-    escargot::ESJIT::Type m_esir_type;
 #endif
 };
 
@@ -1903,7 +1897,6 @@ public:
     size_t m_forInEnd;
 
 };
-
 
 class Throw : public ByteCode {
 public:

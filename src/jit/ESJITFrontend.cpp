@@ -38,8 +38,6 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
 
     while(idx < codeBlock->m_code.size()) {
         currentCode = (ByteCode *)(&code[idx]);
-
-        // TODO: find a better way to this (e.g. write the size of the bytecode in FOR_EACH_BYTECODE_OP macro)
         Opcode opcode = opcodeFromAddress(currentCode->m_opcodeInAddress);
 
         // Update BasicBlock information 
@@ -158,22 +156,11 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         case SetObjectOpcode:
         {
-           INIT_BYTECODE(SetObject);
-           if (bytecode->m_esir_type.isArrayObjectType()) {
-               ESIR* setObject = SetObjectIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2, ssaIndex->m_targetIndex - 1);
-               currentBlock->push(setObject);
-           } else {
-               /*
-               if (bytecode->m_cachedIndex != SIZE_MAX) {
-                   ESIR* setObject = SetObjectIR::create(ssaIndex->m_targetIndex, bytecode->m_cachedHiddenClass, bytecode->m_cachedIndex, ssaIndex->m_targetIndex - 1);
-                   currentBlock->push(setObject);
-               }
-               */
-               ESIR* setObject = SetObjectIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2, ssaIndex->m_targetIndex - 1);
-               currentBlock->push(setObject);
-            }
-           NEXT_BYTECODE(SetObject);
-           break;
+            INIT_BYTECODE(SetObject);
+            ESIR* setObject = SetObjectIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2, ssaIndex->m_targetIndex - 1);
+            currentBlock->push(setObject);
+            NEXT_BYTECODE(SetObject);
+            break;
         }
         case SetObjectPreComputedCaseOpcode:
             goto unsupported;
@@ -376,18 +363,8 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             INIT_BYTECODE(GetObject);
             bytecode->m_profile.updateProfiledType();
             graph->setOperandType(ssaIndex->m_targetIndex, bytecode->m_profile.getType());
-            if (bytecode->m_esir_type.isArrayObjectType()) {
-               GetArrayObjectIR* getArrayObjectIR = GetArrayObjectIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
-               currentBlock->push(getArrayObjectIR);
-            } else if (bytecode->m_esir_type.isObjectType()) {
-                /*
-                GetObjectIR* getObjectIR = GetObjectIR::create(ssaIndex->m_targetIndex, bytecode->m_cachedHiddenClass, bytecode->m_cachedIndex,
-                        ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
-                        */
-                GetObjectIR* getObjectIR = GetObjectIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
-                currentBlock->push(getObjectIR);
-            } else
-               RELEASE_ASSERT_NOT_REACHED();
+            GetObjectIR* getObjectIR = GetObjectIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
+            currentBlock->push(getObjectIR);
             NEXT_BYTECODE(GetObject);
             break;
         }
@@ -398,15 +375,16 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case GetObjectPreComputedCaseOpcode:
         {
 #ifdef EJJEONG_MERGING
+            Type objectType = bytecode->m_profile.getType();
             INIT_BYTECODE(GetObjectPreComputedCase);
-            if (bytecode->m_esir_type.isStringObjectType()) {
+            if (objectType.isStringObjectType()) {
                 // ToDo: GetObjectPreComputed for string object
                 goto unsupported;
             }
-            ASSERT(bytecode->m_esir_type.isObjectType());
+            ASSERT(objectType.isObjectType());
             bytecode->m_profile.updateProfiledType();
             graph->setOperandType(ssaIndex->m_targetIndex, bytecode->m_profile.getType());
-            if (bytecode->m_esir_type.isArrayObjectType()) {
+            if (objectType.isArrayObjectType()) {
                 ASSERT(bytecode->m_propertyValue->isInt32());
                 GetArrayObjectPreComputedIR* getArrayObjectPreComputedIR = GetArrayObjectPreComputedIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, bytecode->m_propertyValue->asInt32());
                 currentBlock->push(getArrayObjectPreComputedIR);

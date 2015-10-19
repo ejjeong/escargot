@@ -780,6 +780,43 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
              } else
                  RELEASE_ASSERT_NOT_REACHED();
     }
+    case ESIR::Opcode::SetArrayObject:
+    {
+        INIT_ESIR(SetArrayObject);
+
+        LIns* obj = getTmpMapping(irSetArrayObject->objectIndex());
+        LIns* prop = getTmpMapping(irSetArrayObject->propertyIndex());
+        LIns* source = getTmpMapping(irSetArrayObject->sourceIndex());
+
+        Type objType = m_graph->getOperandType(irSetArrayObject->objectIndex());
+        Type propType = m_graph->getOperandType(irSetArrayObject->propertyIndex());
+        Type sourceType = m_graph->getOperandType(irSetArrayObject->sourceIndex());
+
+        if (propType.isInt32Type()) {
+            if (sourceType.isBooleanType()) {
+                LIns* boxedProp = boxESValue(prop, TypeInt32);
+                LIns* boxedSrc = boxESValue(source, TypeBoolean);
+                LIns* args[] = {boxedSrc, boxedProp, obj};
+                return m_out.insCall(&ESObjectSetOpCallInfo, args);
+            } else if (sourceType.isInt32Type()) {
+                LIns* boxedProp = boxESValue(prop, TypeInt32);
+                LIns* boxedSrc = boxESValue(source, TypeInt32);
+                LIns* args[] = {boxedSrc, boxedProp, obj};
+                return m_out.insCall(&ESObjectSetOpCallInfo, args);
+            } else if (sourceType.isDoubleType()) {
+                LIns* boxedProp = boxESValue(prop, TypeInt32);
+                LIns* boxedSrc = boxESValue(source, TypeDouble);
+                LIns* args[] = {boxedSrc, boxedProp, obj};
+                return m_out.insCall(&ESObjectSetOpCallInfo, args);
+            } else {
+                LIns* boxedProp = boxESValue(prop, TypeInt32);
+                LIns* args[] = {source, boxedProp, obj};
+                return m_out.insCall(&ESObjectSetOpCallInfo, args);
+            }
+        } else {
+            RELEASE_ASSERT_NOT_REACHED();
+        }
+    }
     case ESIR::Opcode::GetArrayObjectPreComputed:
     {
         INIT_ESIR(GetArrayObjectPreComputed);
@@ -804,31 +841,6 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         Type objType = m_graph->getOperandType(irSetObject->objectIndex());
         Type propType = m_graph->getOperandType(irSetObject->propertyIndex());
         Type sourceType = m_graph->getOperandType(irSetObject->sourceIndex());
-
-        if (objType.isArrayObjectType()) {
-            if (propType.isInt32Type()) {
-                if (sourceType.isBooleanType()) {
-                    LIns* boxedProp = boxESValue(prop, TypeInt32);
-                    LIns* boxedSrc = boxESValue(source, TypeBoolean);
-                    LIns* args[] = {boxedSrc, boxedProp, obj};
-                    return m_out.insCall(&ESObjectSetOpCallInfo, args);
-                } else if (sourceType.isInt32Type()) {
-                    LIns* boxedProp = boxESValue(prop, TypeInt32);
-                    LIns* boxedSrc = boxESValue(source, TypeInt32);
-                    LIns* args[] = {boxedSrc, boxedProp, obj};
-                    return m_out.insCall(&ESObjectSetOpCallInfo, args);
-                } else if (sourceType.isDoubleType()) {
-                    LIns* boxedProp = boxESValue(prop, TypeInt32);
-                    LIns* boxedSrc = boxESValue(source, TypeDouble);
-                    LIns* args[] = {boxedSrc, boxedProp, obj};
-                    return m_out.insCall(&ESObjectSetOpCallInfo, args);
-                } else {
-                    LIns* boxedProp = boxESValue(prop, TypeInt32);
-                    LIns* args[] = {source, boxedProp, obj};
-                    return m_out.insCall(&ESObjectSetOpCallInfo, args);
-                }
-             }
-        }
 
         LIns* boxedSource = boxESValue(source, m_graph->getOperandType(irSetObject->targetIndex()));
         return m_out.insStore(LIR_std, boxedSource, (LIns*) irSetObject->cachedHiddenClass(), irSetObject->cachedIndex() * sizeof(ESValue), 1);

@@ -37,6 +37,16 @@ void ESGraphTypeInference::run(ESGraph* graph)
             case ESIR::Opcode::ConstantString:
                 graph->setOperandType(ir->targetIndex(), TypeString);
                 break;
+            case ESIR::Opcode::ToNumber:
+            {
+                INIT_ESIR(ToNumber);
+                Type srcType = graph->getOperandType(irToNumber->sourceIndex());
+                if (srcType.isInt32Type())
+                    graph->setOperandType(ir->targetIndex(), TypeInt32);
+                else
+                    graph->setOperandType(ir->targetIndex(), TypeDouble);
+                break;
+            }
             case ESIR::Opcode::GenericPlus:
             {
                 INIT_ESIR(GenericPlus);
@@ -58,6 +68,18 @@ void ESGraphTypeInference::run(ESGraph* graph)
                     printf("Unhandled GenericPlus case in ESGraphTypeInference\n");
                     RELEASE_ASSERT_NOT_REACHED();
                 }
+                break;
+            }
+            case ESIR::Opcode::Increment:
+            {
+                INIT_ESIR(Increment);
+                Type srcType = graph->getOperandType(irIncrement->sourceIndex());
+                if (srcType.isInt32Type())
+                    graph->setOperandType(ir->targetIndex(), TypeInt32);
+                else if (srcType.isDoubleType())
+                    graph->setOperandType(ir->targetIndex(), TypeDouble);
+                else
+                    RELEASE_ASSERT_NOT_REACHED();
                 break;
             }
             case ESIR::Opcode::Minus:
@@ -122,6 +144,18 @@ void ESGraphTypeInference::run(ESGraph* graph)
             case ESIR::Opcode::UnsignedRightShift:
                 graph->setOperandType(ir->targetIndex(), TypeInt32);
                 break;
+            case ESIR::Opcode::UnaryMinus:
+            {
+                INIT_ESIR(UnaryMinus);
+                Type srcType = graph->getOperandType(irUnaryMinus->sourceIndex());
+                if (srcType.isInt32Type())
+                    graph->setOperandType(ir->targetIndex(), TypeInt32);
+                else if (srcType.isDoubleType())
+                    graph->setOperandType(ir->targetIndex(), TypeDouble);
+                else
+                    RELEASE_ASSERT_NOT_REACHED();
+                break;
+            }
             case ESIR::Opcode::Jump:
             case ESIR::Opcode::Branch:
             case ESIR::Opcode::CallJS:
@@ -138,7 +172,37 @@ void ESGraphTypeInference::run(ESGraph* graph)
             case ESIR::Opcode::GetArgument:
             case ESIR::Opcode::GetVar:
             case ESIR::Opcode::GetVarGeneric:
+                break;
             case ESIR::Opcode::GetObject:
+            {
+                INIT_ESIR(GetObject);
+                Type objectType = graph->getOperandType(irGetObject->objectIndex());
+                if (objectType.isArrayObjectType()) {
+                    GetArrayObjectIR* getArrayObjectIR = GetArrayObjectIR::create(irGetObject->targetIndex(), irGetObject->objectIndex(), irGetObject->propertyIndex());
+                    block->replace(j, getArrayObjectIR);
+                } else if (objectType.isObjectType()) {
+                    // do nothing
+                } else {
+                    RELEASE_ASSERT_NOT_REACHED();
+                }
+                break;
+            }
+            case ESIR::Opcode::SetObject:
+            {
+                INIT_ESIR(SetObject);
+                Type srcType = graph->getOperandType(irSetObject->sourceIndex());
+                graph->setOperandType(ir->targetIndex(), srcType);
+                Type objectType = graph->getOperandType(irSetObject->objectIndex());
+                if (objectType.isArrayObjectType()) {
+                    SetArrayObjectIR* setArrayObjectIR = SetArrayObjectIR::create(irSetObject->targetIndex(), irSetObject->objectIndex(), irSetObject->propertyIndex(), irSetObject->sourceIndex());
+                    block->replace(j, setArrayObjectIR);
+                } else if (objectType.isObjectType()) {
+                    // do nothing
+                } else {
+                    RELEASE_ASSERT_NOT_REACHED();
+                }
+                break;
+            }
             case ESIR::Opcode::GetObjectPreComputed:
             case ESIR::Opcode::GetArrayObject:
             case ESIR::Opcode::GetArrayObjectPreComputed:
@@ -155,47 +219,6 @@ void ESGraphTypeInference::run(ESGraph* graph)
                 INIT_ESIR(SetVarGeneric);
                 Type setType = graph->getOperandType(irSetVarGeneric->sourceIndex());
                 graph->setOperandType(ir->targetIndex(), setType);
-                break;
-            }
-            case ESIR::Opcode::ToNumber:
-            {
-                INIT_ESIR(ToNumber);
-                Type srcType = graph->getOperandType(irToNumber->sourceIndex());
-                if (srcType.isInt32Type())
-                    graph->setOperandType(ir->targetIndex(), TypeInt32);
-                else
-                    graph->setOperandType(ir->targetIndex(), TypeDouble);
-                break;
-            }
-            case ESIR::Opcode::Increment:
-            {
-                INIT_ESIR(Increment);
-                Type srcType = graph->getOperandType(irIncrement->sourceIndex());
-                if (srcType.isInt32Type())
-                    graph->setOperandType(ir->targetIndex(), TypeInt32);
-                else if (srcType.isDoubleType())
-                    graph->setOperandType(ir->targetIndex(), TypeDouble);
-                else
-                    RELEASE_ASSERT_NOT_REACHED();
-                break;
-            }
-            case ESIR::Opcode::UnaryMinus:
-            {
-                INIT_ESIR(UnaryMinus);
-                Type srcType = graph->getOperandType(irUnaryMinus->sourceIndex());
-                if (srcType.isInt32Type())
-                    graph->setOperandType(ir->targetIndex(), TypeInt32);
-                else if (srcType.isDoubleType())
-                    graph->setOperandType(ir->targetIndex(), TypeDouble);
-                else
-                    RELEASE_ASSERT_NOT_REACHED();
-                break;
-            }
-            case ESIR::Opcode::SetObject:
-            {
-                SetObjectIR* irSetObject = static_cast<SetObjectIR*>(ir);
-                Type srcType = graph->getOperandType(irSetObject->sourceIndex());
-                graph->setOperandType(ir->targetIndex(), srcType);
                 break;
             }
             default:
