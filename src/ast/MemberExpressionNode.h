@@ -52,7 +52,7 @@ public:
             ASSERT(m_property->type() == NodeType::Identifier);
             updateNodeIndex(context);
             codeBlock->pushCode(GetObjectPreComputedCase(((IdentifierNode *)m_property)->name().string()), this);
-            WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
+            WRITE_LAST_INDEX(m_nodeIndex, m_object->nodeIndex(), -1);
         } else {
             m_property->generateExpressionByteCode(codeBlock, context);
             updateNodeIndex(context);

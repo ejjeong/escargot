@@ -203,10 +203,22 @@ void ESGraphTypeInference::run(ESGraph* graph)
                 }
                 break;
             }
-            case ESIR::Opcode::GetObjectPreComputed:
-            case ESIR::Opcode::GetArrayObject:
             case ESIR::Opcode::GetArrayObjectPreComputed:
+            case ESIR::Opcode::GetArrayObject:
                 break;
+            case ESIR::Opcode::GetObjectPreComputed: {
+                INIT_ESIR(GetObjectPreComputed);
+                Type objectType = graph->getOperandType(irGetObjectPreComputed->objectIndex());
+                if (objectType.isArrayObjectType()) {
+                    GetArrayObjectPreComputedIR* getArrayObjectPreComputedIR = GetArrayObjectPreComputedIR::create(irGetObjectPreComputed->targetIndex(), irGetObjectPreComputed->objectIndex(), irGetObjectPreComputed->cachedIndex());
+                    block->replace(j, getArrayObjectPreComputedIR);
+                } else if (objectType.isObjectType()) {
+                    // do nothing
+                } else {
+                    RELEASE_ASSERT_NOT_REACHED();
+                  }
+                break;
+            }
             case ESIR::Opcode::SetVar:
             {
                 SetVarIR* irSetVar = static_cast<SetVarIR*>(ir);

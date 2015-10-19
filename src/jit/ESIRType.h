@@ -88,7 +88,7 @@ public:
             } else if (p->isESFunctionObject()) {
                 return TypeFunctionObject;
             } else if (p->isESObject()) {
-                return TypePointer;
+                return TypeObject;
             } else {
 #ifndef NDEBUG
                 if (ESVMInstance::currentInstance()->m_verboseJIT)

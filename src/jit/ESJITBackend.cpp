@@ -161,7 +161,7 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
 #endif
     } else if (type.isArrayObjectType() || type.isStringType() || type.isFunctionObjectType()) {
         //ToDo
-    } else if (type.isPointerType()) {
+    } else if (type.isObjectType()) {
 #ifdef ESCARGOT_64
         LIns* quadValue = m_out.ins1(LIR_dasq, in);
         LIns* maskedValue = m_out.ins2(LIR_andq, quadValue, m_tagMaskQ);
@@ -268,7 +268,7 @@ LIns* NativeGenerator::unboxESValue(LIns* boxedValue, Type type)
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
-    } else if (type.isPointerType() || type.isUndefinedType() || type.isArrayObjectType() || type.isStringType() || type.isFunctionObjectType()) {
+    } else if (type.isObjectType() || type.isUndefinedType() || type.isArrayObjectType() || type.isStringType() || type.isFunctionObjectType()) {
 #ifdef ESCARGOT_64
         return boxedValue;
 #else
@@ -723,42 +723,12 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     }
     case ESIR::Opcode::GetObjectPreComputed:
     {
-#ifndef EJJEONG_MERGING
-        return nullptr;
-#endif
         INIT_ESIR(GetObjectPreComputed);
         LIns* obj = getTmpMapping(irGetObjectPreComputed->objectIndex());
         if (irGetObjectPreComputed->cachedIndex() < SIZE_MAX) {
-#if 0
-            LIns* phi = m_out.insAlloc(sizeof(ESValue));
             size_t gapToHiddenClassData = escargot::ESObject::offsetOfHiddenClassData();
             LIns* hiddenClassData = m_out.insLoad(LIR_ldd, obj, gapToHiddenClassData, 1, LOAD_NORMAL);
-            LIns* normalResult = m_out.insLoad(LIR_ldd, hiddenClassData, irGetObjectPreComputed->cachedIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
-            m_out.insStore(LIR_std, normalResult, phi, 0 , 1);
-
-            LIns* hiddenClass = m_out.insLoad(LIR_ldd, obj, escargot::ESObject::offsetOfHiddenClass(), 1, LOAD_NORMAL);
-            LIns* propertyFlagV = m_out.insLoad(LIR_ldd, hiddenClass, escargot::ESHiddenClass::offsetOfPropertyFlagInfo(), 1, LOAD_NORMAL);
-            // FIXME : offset can be changed when data structure revised
-            LIns* propertyFlags = m_out.insLoad(LIR_lduc2ui, propertyFlagV, irGetObjectPreComputed->cachedIndex() * sizeof(ESHiddenClassPropertyInfo), 1, LOAD_NORMAL);
-            LIns* isDataProperty = m_out.ins2(LIR_andi, propertyFlags, m_oneI);
-
-            LIns* checkIfDataProperty = m_out.ins2(LIR_eqi, isDataProperty, m_oneI);
-            LIns* jumpIfDataProperty = m_out.insBranch(LIR_jt, checkIfDataProperty, nullptr);
-
-            LIns* args[] = {normalResult, obj};
-            LIns* nonDataPropertyResult = m_out.insCall(&resolveNonDataPropertyInfo, args);
-            m_out.insStore(LIR_std, nonDataPropertyResult, phi, 0 , 1);
-
-            LIns* labelSimple = m_out.ins0(LIR_label);
-            jumpIfDataProperty->setTarget(labelSimple);
-            LIns* ret = m_out.insLoad(LIR_ldd, phi, 0, 1, LOAD_NORMAL);
-#else
-            // FIXME!!!!!!!!
-            // This code is simple function call
-            LIns* args[] = {m_out.insImmQ(irGetObjectPreComputed->cachedIndex()), obj};
-            LIns* ret = m_out.insCall(&resolveNonDataPropertyInfo, args);
-#endif
-            return ret;
+            return m_out.insLoad(LIR_ldd, hiddenClassData, irGetObjectPreComputed->cachedIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
         }
         RELEASE_ASSERT_NOT_REACHED();
     }

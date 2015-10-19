@@ -374,28 +374,13 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         case GetObjectPreComputedCaseOpcode:
         {
-#ifdef EJJEONG_MERGING
-            Type objectType = bytecode->m_profile.getType();
+//#ifdef EJJEONG_MERGING
             INIT_BYTECODE(GetObjectPreComputedCase);
-            if (objectType.isStringObjectType()) {
-                // ToDo: GetObjectPreComputed for string object
-                goto unsupported;
-            }
-            ASSERT(objectType.isObjectType());
             bytecode->m_profile.updateProfiledType();
             graph->setOperandType(ssaIndex->m_targetIndex, bytecode->m_profile.getType());
-            if (objectType.isArrayObjectType()) {
-                ASSERT(bytecode->m_propertyValue->isInt32());
-                GetArrayObjectPreComputedIR* getArrayObjectPreComputedIR = GetArrayObjectPreComputedIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, bytecode->m_propertyValue->asInt32());
-                currentBlock->push(getArrayObjectPreComputedIR);
-            } else {
-                GetObjectPreComputedIR* getObjectPreComputedIR = GetObjectPreComputedIR::create(ssaIndex->m_targetIndex, bytecode->m_cachedHiddenClass, bytecode->m_cachedIndex,
-                                    ssaIndex->m_srcIndex1, bytecode->m_propertyValue);
-                currentBlock->push(getObjectPreComputedIR);
-            }
-#else
-            goto unsupported;
-#endif
+            GetObjectPreComputedIR* getObjectPreComputedIR = GetObjectPreComputedIR::create(ssaIndex->m_targetIndex, bytecode->m_cachedIndex,
+                ssaIndex->m_srcIndex1, bytecode->m_propertyValue);
+            currentBlock->push(getObjectPreComputedIR);
             NEXT_BYTECODE(GetObjectPreComputedCase);
             break;
         }

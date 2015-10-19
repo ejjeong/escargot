@@ -483,7 +483,7 @@ private:
 
 class GetObjectPreComputedIR : public ESIR {
 public:
-    DECLARE_STATIC_GENERATOR_4(GetObjectPreComputed, ESHiddenClass*, size_t, int, ESValue);
+    DECLARE_STATIC_GENERATOR_3(GetObjectPreComputed, size_t, int, ESValue);
 
 #ifndef NDEBUG
     virtual void dump(std::ostream& out)
@@ -494,20 +494,17 @@ public:
     }
 #endif
 
-    ESHiddenClass* cachedHiddenClass() { return m_cachedHiddenClass; }
     size_t cachedIndex() { return m_cachedIndex; }
     int objectIndex() { return m_objectIndex; }
     ESValue propertyValue() { return m_propertyValue; }
 
 private:
-    GetObjectPreComputedIR(int targetIndex, ESHiddenClass* cachedHiddenClass, size_t cachedIndex, int objectIndex, ESValue propertyValue)
+    GetObjectPreComputedIR(int targetIndex, size_t cachedIndex, int objectIndex, ESValue propertyValue)
         : ESIR(ESIR::Opcode::GetObjectPreComputed, targetIndex),
-          m_cachedHiddenClass(cachedHiddenClass),
           m_cachedIndex(cachedIndex),
           m_objectIndex(objectIndex),
           m_propertyValue(propertyValue) { }
 
-    ESHiddenClass* m_cachedHiddenClass;
     int m_cachedIndex;
     int m_objectIndex;
     ESValue m_propertyValue;
