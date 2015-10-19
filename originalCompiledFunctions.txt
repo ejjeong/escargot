@@ -12,7 +12,7 @@ test/SunSpider/tests/sunspider-1.0.2/controlflow-recursive.js
 ack fib tak 
 test/SunSpider/tests/sunspider-1.0.2/math-spectral-norm.js
 <<<< Compiled Functions >>>>
-A 
+A Au Atu 
 test/SunSpider/tests/sunspider-1.0.2/string-unpack-code.js
 <<<< Compiled Functions >>>>
 (anonymous) (anonymous) (anonymous) (anonymous) 
