@@ -3,10 +3,8 @@
 
 #ifdef ENABLE_ESJIT
 
+#include "ESIR.h"
 #include "ESIROperand.h"
-
-#include <vector>
-#include <iostream>
 
 namespace nanojit {
 
@@ -22,13 +20,19 @@ namespace ESJIT {
 
 class ESIR;
 class ESGraph;
+class ESBasicBlock;
+
+typedef std::vector<ESBasicBlock*, gc_allocator<ESBasicBlock *> > ESBasicBlockVectorStd;
+
+class ESBasicBlockVector : public ESBasicBlockVectorStd, public gc {
+
+};
 
 class ESBasicBlock : public gc {
     friend class NativeGenerator;
 public:
     static ESBasicBlock* create(ESGraph* graph, ESBasicBlock* parentBlock = nullptr, bool setIndexLater = false)
     {
-        // FIXME no bdwgc
         ESBasicBlock* newBlock = new ESBasicBlock(graph, parentBlock, setIndexLater);
         return newBlock;
     }
@@ -38,8 +42,8 @@ public:
     size_t instructionSize() { return m_instructions.size(); }
     ESIR* instruction(size_t index) { return m_instructions[index]; }
 
-    std::vector<ESBasicBlock*>* parents() { return &m_parents; }
-    std::vector<ESBasicBlock*>* children() { return &m_children; }
+    ESBasicBlockVector* parents() { return &m_parents; }
+    ESBasicBlockVector* children() { return &m_children; }
     void addParent(ESBasicBlock* parent) { m_parents.push_back(parent); }
     void addChild(ESBasicBlock* child) { m_children.push_back(child); }
 
@@ -62,12 +66,12 @@ private:
     ESBasicBlock(ESGraph* graph, ESBasicBlock* parentBlock, bool setIndexLater);
 
     ESGraph* m_graph;
-    std::vector<ESBasicBlock*> m_parents;
-    std::vector<ESBasicBlock*> m_children;
-    std::vector<ESIR*> m_instructions;
+    ESBasicBlockVector m_parents;
+    ESBasicBlockVector m_children;
+    ESIRVector m_instructions;
     size_t m_index;
     nanojit::LIns* m_label;
-    std::vector<nanojit::LIns*> m_jumpOrBranchSources;
+    std::vector<nanojit::LIns*, pointer_free_allocator<nanojit::LIns*> > m_jumpOrBranchSources;
     ESBasicBlock* m_dominanceFrontier;
 };
 
@@ -105,7 +109,7 @@ public:
 private:
     ESGraph(CodeBlock* codeBlock);
 
-    std::vector<ESBasicBlock*, gc_allocator<ESBasicBlock*> > m_basicBlocks;
+    ESBasicBlockVector m_basicBlocks;
     CodeBlock* m_codeBlock;
     std::vector<ESIROperand, gc_allocator<ESIROperand> > m_operands;
     unsigned m_lastStackPosSettingTargetIndex;

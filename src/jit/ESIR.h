@@ -128,6 +128,13 @@ const uint32_t flag = 0x1 << shift;
 FOR_EACH_ESIR_FLAGS(DECLARE_ESIR_FLAGS)
 #undef DECLARE_ESIR_FLAGS
 
+class ESIR;
+typedef std::vector<ESIR*, gc_allocator<ESIR *> > ESIRVectorStd;
+
+class ESIRVector : public ESIRVectorStd, public gc {
+
+};
+
 // FIXME find a better allocator
 class ESIR : public gc {
     friend class NativeGenerator;
