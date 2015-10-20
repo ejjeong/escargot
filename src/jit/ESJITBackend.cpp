@@ -580,10 +580,14 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* right = getTmpMapping(irEqual->rightIndex());
         Type leftType = m_graph->getOperandType(irEqual->leftIndex());
         Type rightType = m_graph->getOperandType(irEqual->rightIndex());
+        bool isLeftUndefinedOrNull = leftType.isNullType() || leftType.isUndefinedType();
+        bool isRightUndefinedOrNull = rightType.isNullType() || rightType.isUndefinedType();
         if (leftType.isInt32Type() && rightType.isInt32Type())
             return m_out.ins2(LIR_eqi, left, right);
-        else if (leftType.isNullType() && rightType.isNullType())
-            return m_out.ins2(LIR_eqd, left, right);
+        else if (isLeftUndefinedOrNull && isRightUndefinedOrNull)
+            return m_true;
+        else if (isLeftUndefinedOrNull || isRightUndefinedOrNull)
+            return m_false;
         else
             RELEASE_ASSERT_NOT_REACHED();
     }

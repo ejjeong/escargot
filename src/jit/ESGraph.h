@@ -105,9 +105,9 @@ public:
 private:
     ESGraph(CodeBlock* codeBlock);
 
-    std::vector<ESBasicBlock*> m_basicBlocks;
+    std::vector<ESBasicBlock*, gc_allocator<ESBasicBlock*> > m_basicBlocks;
     CodeBlock* m_codeBlock;
-    std::vector<ESIROperand> m_operands;
+    std::vector<ESIROperand, gc_allocator<ESIROperand> > m_operands;
     unsigned m_lastStackPosSettingTargetIndex;
 };
 

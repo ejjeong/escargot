@@ -520,6 +520,20 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             goto unsupported;
             NEXT_BYTECODE(JumpIfTopOfStackValueIsTrueWithPeeking);
             break;
+        case JumpAndPopIfTopOfStackValueIsTrueOpcode:
+        {
+            INIT_BYTECODE(JumpAndPopIfTopOfStackValueIsTrue);
+            ESBasicBlock* falseBlock = ESBasicBlock::create(graph, currentBlock);
+            ESBasicBlock* trueBlock = ESBasicBlock::create(graph, currentBlock, true);
+
+            BranchIR* branchIR = BranchIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, trueBlock, falseBlock);
+            currentBlock->push(branchIR);
+
+            basicBlockMapping[idx + sizeof(JumpAndPopIfTopOfStackValueIsTrue)] = falseBlock;
+            basicBlockMapping[bytecode->m_jumpPosition] = trueBlock;
+            NEXT_BYTECODE(JumpAndPopIfTopOfStackValueIsTrue);
+            break;
+        }
         case DuplicateTopOfStackValueOpcode:
         {
             INIT_BYTECODE(DuplicateTopOfStackValue);
