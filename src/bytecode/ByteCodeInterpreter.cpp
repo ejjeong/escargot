@@ -543,7 +543,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     CreateObjectOpcodeLbl:
     {
         CreateObject* code = (CreateObject*)currentCode;
-        ESObject* obj = ESObject::create(code->m_keyCount);
+        ESObject* obj = ESObject::create(code->m_keyCount + 1);
         push<ESValue>(stack, topOfStack, obj);
         executeNextCode<CreateObject>(programCounter);
         NEXT_INSTRUCTION();

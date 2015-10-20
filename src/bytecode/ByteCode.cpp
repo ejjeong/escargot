@@ -20,7 +20,8 @@ CodeBlock::CodeBlock(bool isBuiltInFunction)
 
 CodeBlock::~CodeBlock()
 {
-    ESVMInstance::currentInstance()->globalObject()->unregisterCodeBlock(this);
+    if(!m_isBuiltInFunction)
+        ESVMInstance::currentInstance()->globalObject()->unregisterCodeBlock(this);
 }
 
 void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, ByteCodeGenerateContext& context)

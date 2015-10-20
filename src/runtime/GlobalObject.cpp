@@ -2982,7 +2982,10 @@ void GlobalObject::registerCodeBlock(CodeBlock* cb)
 
 void GlobalObject::unregisterCodeBlock(CodeBlock* cb)
 {
-    m_codeBlocks.erase(std::find(m_codeBlocks.begin(), m_codeBlocks.end(), cb));
+    auto iter = std::find(m_codeBlocks.begin(), m_codeBlocks.end(), cb);
+    ASSERT(iter != m_codeBlocks.end());
+    m_codeBlocks.erase(iter);
+
 }
 
 void GlobalObject::somePrototypeObjectDefineIndexedProperty()
