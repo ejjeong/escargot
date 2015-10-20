@@ -471,7 +471,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
                 targetBlock->addParent(currentBlock);
                 currentBlock->addChild(targetBlock);
             } else
-                targetBlock = ESBasicBlock::create(graph, currentBlock);
+                targetBlock = ESBasicBlock::create(graph, currentBlock, true);
             JumpIR* jumpIR = JumpIR::create(ssaIndex->m_targetIndex, targetBlock);
             currentBlock->push(jumpIR);
             basicBlockMapping[bytecode->m_jumpPosition] = targetBlock;
