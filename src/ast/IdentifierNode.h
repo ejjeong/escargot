@@ -51,6 +51,7 @@ public:
                 }
             }
         } else if(m_canUseGlobalFastAccess) {
+            updateNodeIndex(context);
             codeBlock->pushCode(GetByGlobalIndex(m_globalFastAccessIndex, m_name.string()), context, this);
             WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
         } else {

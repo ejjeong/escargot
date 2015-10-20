@@ -6,6 +6,16 @@
 
 namespace escargot {
 
+inline ESValueInDouble getByGlobalIndexOp(GlobalObject* globalObject, GetByGlobalIndex* code)
+{
+    return ESValue::toRawDouble(getByGlobalIndexOperation(globalObject, code));
+}
+
+inline void setByGlobalIndexOp(GlobalObject* globalObject, SetByGlobalIndex* code, ESValueInDouble v)
+{
+    setByGlobalIndexOperation(globalObject, code, ESValue::fromRawDouble(v));
+}
+
 inline ESValueInDouble plusOp(ESValueInDouble left, ESValueInDouble right)
 {
     ESValue leftVal = ESValue::fromRawDouble(left);

@@ -7,8 +7,6 @@ namespace escargot {
 
 ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter, unsigned maxStackPos)
 {
-    if (maxStackPos > 0)
-        int jmp = 1;
     if(codeBlock == NULL) {
 #define REGISTER_TABLE(opcode, pushCount, popCount) \
         instance->opcodeTable()->m_table[opcode##Opcode] = &&opcode##OpcodeLbl; \
@@ -170,7 +168,13 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     GetByGlobalIndexOpcodeLbl:
     {
         GetByGlobalIndex* code = (GetByGlobalIndex*)currentCode;
+#ifndef ENABLE_ESJIT
         push<ESValue>(stack, topOfStack, getByGlobalIndexOperation(globalObject, code));
+#else
+        ESValue value = getByGlobalIndexOperation(globalObject, code);
+        push<ESValue>(stack, topOfStack, value);
+        code->m_profile.addProfile(value);
+#endif
         executeNextCode<GetByGlobalIndex>(programCounter);
         NEXT_INSTRUCTION();
     }

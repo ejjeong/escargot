@@ -113,6 +113,8 @@ class ESBasicBlock;
     F(SetScoped, ) \
     F(GetVarGeneric, LoadFromHeap) \
     F(SetVarGeneric, ) \
+    F(GetGlobalVarGeneric, LoadFromHeap) \
+    F(SetGlobalVarGeneric, ) \
     F(GetProperty, LoadFromHeap) \
     F(SetProperty, ) \
     \
@@ -461,6 +463,55 @@ private:
     ByteCode* m_originalPutByIdByteCode;
     int m_sourceIndex;
     InternalAtomicString* m_name;
+    ESString* m_esName;
+};
+
+class GetGlobalVarGenericIR : public ESIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(GetGlobalVarGeneric, ByteCode*, ESString*)
+
+
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+
+        out << " " << m_esName->utf8Data();
+    }
+#endif
+    ByteCode* byteCode() { return m_byteCode; }
+    ESString* nonAtomicName() { return m_esName; }
+
+private:
+    GetGlobalVarGenericIR(int targetIndex, ByteCode* v, ESString* esName)
+        : ESIR(ESIR::Opcode::GetGlobalVarGeneric, targetIndex), m_byteCode(v), m_esName(esName) { }
+    ByteCode* m_byteCode;
+    ESString* m_esName;
+};
+
+class SetGlobalVarGenericIR : public ESIR {
+public:
+    DECLARE_STATIC_GENERATOR_3(SetGlobalVarGeneric, ByteCode*, int, ESString*);
+
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+        out << " " << m_esName->utf8Data() << " = tmp" << m_sourceIndex;
+    }
+#endif
+
+    ByteCode* byteCode() { return m_byteCode; }
+    int sourceIndex() { return m_sourceIndex; }
+    ESString* nonAtomicName() { return m_esName; }
+
+private:
+    SetGlobalVarGenericIR(int targetIndex, ByteCode* v, int sourceIndex, ESString* esName)
+        : ESIR(ESIR::Opcode::SetGlobalVarGeneric, targetIndex), m_byteCode(v), m_sourceIndex(sourceIndex), m_esName(esName) { }
+    ByteCode* m_byteCode;
+    int m_sourceIndex;
     ESString* m_esName;
 };
 

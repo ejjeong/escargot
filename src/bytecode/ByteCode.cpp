@@ -120,8 +120,8 @@ void dumpBytecode(CodeBlock* codeBlock)
     printf("dumpBytecode...>>>>>>>>>>>>>>>>>>>>>>\n");
     printf("function %s\n", codeBlock->m_nonAtomicId ? (codeBlock->m_nonAtomicId->utf8Data()):"(anonymous)");
     size_t idx = 0;
-#ifdef ENABLE_ESJIT
     size_t bytecodeCounter = 0;
+#ifdef ENABLE_ESJIT
     size_t callInfoIndex = 0;
 #endif
     char* code = codeBlock->m_code.data();

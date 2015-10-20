@@ -30,6 +30,8 @@ using namespace nanojit;
     {(uintptr_t) (&name), args, nanojit::ABI_CDECL, /*isPure*/0, ACCSET_STORE_ANY \
      DEBUG_ONLY_NAME(name)}
 
+CallInfo getByGlobalIndexOpCallInfo = CI(getByGlobalIndexOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_P, ARGTYPE_P));
+CallInfo setByGlobalIndexOpCallInfo = CI(setByGlobalIndexOp, CallInfo::typeSig3(ARGTYPE_V, ARGTYPE_P, ARGTYPE_P, ARGTYPE_D));
 CallInfo plusOpCallInfo = CI(plusOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 CallInfo minusOpCallInfo = CI(minusOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 CallInfo equalOpCallInfo = CI(equalOp, CallInfo::typeSig2(ARGTYPE_B, ARGTYPE_D, ARGTYPE_D));
@@ -882,6 +884,13 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         return cachedResult;
 #endif
     }
+    case ESIR::Opcode::GetGlobalVarGeneric:
+    {
+        INIT_ESIR(GetGlobalVarGeneric);
+        LIns* byteCode = m_out.insImmP(irGetGlobalVarGeneric->byteCode());
+        LIns* args[] = {byteCode, m_globalObject};
+        return m_out.insCall(&getByGlobalIndexOpCallInfo, args);
+    }
     case ESIR::Opcode::SetVarGeneric:
     {
         INIT_ESIR(SetVarGeneric);
@@ -931,6 +940,17 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* storeToCachedSlot = m_out.insStore(LIR_std, boxedSource, cachedSlot, 0, 1);
 
         return source;
+    }
+    case ESIR::Opcode::SetGlobalVarGeneric:
+    {
+        INIT_ESIR(SetGlobalVarGeneric);
+
+        LIns* source = getTmpMapping(irSetGlobalVarGeneric->sourceIndex());
+        LIns* boxedSource = boxESValue(source, m_graph->getOperandType(irSetGlobalVarGeneric->m_targetIndex));
+        LIns* byteCode = m_out.insImmP(irSetGlobalVarGeneric->byteCode());
+        LIns* args[] = {boxedSource, byteCode, m_globalObject};
+
+        return m_out.insCall(&setByGlobalIndexOpCallInfo, args);
     }
     case ESIR::Opcode::GetObject:
     {

@@ -211,6 +211,7 @@ void ESGraphTypeInference::run(ESGraph* graph)
             case ESIR::Opcode::GetArgument:
             case ESIR::Opcode::GetVar:
             case ESIR::Opcode::GetVarGeneric:
+            case ESIR::Opcode::GetGlobalVarGeneric:
                 break;
             case ESIR::Opcode::GetObject:
             {
@@ -269,6 +270,13 @@ void ESGraphTypeInference::run(ESGraph* graph)
             {
                 INIT_ESIR(SetVarGeneric);
                 Type setType = graph->getOperandType(irSetVarGeneric->sourceIndex());
+                graph->setOperandType(ir->targetIndex(), setType);
+                break;
+            }
+            case ESIR::Opcode::SetGlobalVarGeneric:
+            {
+                INIT_ESIR(SetGlobalVarGeneric);
+                Type setType = graph->getOperandType(irSetGlobalVarGeneric->sourceIndex());
                 graph->setOperandType(ir->targetIndex(), setType);
                 break;
             }

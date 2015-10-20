@@ -121,6 +121,17 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(GetById);
             break;
         }
+        case GetByGlobalIndexOpcode:
+        {
+            INIT_BYTECODE(GetByGlobalIndex);
+            graph->setOperandStackPos(ssaIndex->m_targetIndex, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
+            ESIR* getGlobalVarGeneric = GetGlobalVarGenericIR::create(ssaIndex->m_targetIndex, bytecode, bytecode->m_name); // FIXME store only bytecode, get name from that
+            currentBlock->push(getGlobalVarGeneric);
+            bytecode->m_profile.updateProfiledType();
+            graph->setOperandType(ssaIndex->m_targetIndex, bytecode->m_profile.getType());
+            NEXT_BYTECODE(GetByGlobalIndex);
+            break;
+        }
         case GetByIndexOpcode:
         {
             INIT_BYTECODE(GetByIndex);
@@ -158,6 +169,15 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             ESIR* setVar = SetVarIR::create(ssaIndex->m_targetIndex, bytecode->m_index, ssaIndex->m_srcIndex1);
             currentBlock->push(setVar);
             NEXT_BYTECODE(SetByIndex);
+            break;
+        }
+        case SetByGlobalIndexOpcode:
+        {
+            INIT_BYTECODE(SetByGlobalIndex);
+            graph->setOperandStackPos(ssaIndex->m_targetIndex, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
+            ESIR* setGlobalVarGeneric = SetGlobalVarGenericIR::create(ssaIndex->m_targetIndex, bytecode, ssaIndex->m_srcIndex1, bytecode->m_name);
+            currentBlock->push(setGlobalVarGeneric);
+            NEXT_BYTECODE(SetByGlobalIndex);
             break;
         }
         case SetByIndexWithActivationOpcode:
