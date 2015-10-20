@@ -35,6 +35,7 @@ public:
         cb->m_tempRegisterSize = newContext.getCurrentNodeIndex();
 #endif
         cb->pushCode(ReturnFunction(), newContext, this);
+
 #ifndef NDEBUG
         if(ESVMInstance::currentInstance()->m_dumpByteCode) {
             char* code = cb->m_code.data();

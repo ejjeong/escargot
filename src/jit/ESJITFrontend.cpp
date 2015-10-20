@@ -36,9 +36,10 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
     ESBasicBlock* currentBlock = entryBlock;
     ByteCode* currentCode;
 
-    while(idx < codeBlock->m_code.size()) {
+    char* end = &codeBlock->m_code.data()[codeBlock->m_code.size()];
+    while(&code[idx] < end) {
         currentCode = (ByteCode *)(&code[idx]);
-        Opcode opcode = opcodeFromAddress(currentCode->m_opcodeInAddress);
+        Opcode opcode = codeBlock->m_extraData[bytecodeCounter].m_opcode;
 
         // Update BasicBlock information
         // TODO: find a better way to this (e.g. using AST, write information to bytecode..)

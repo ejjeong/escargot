@@ -680,7 +680,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                             LOG_VJ("> Cannot Compile JIT Function due to GetObjectPreComputedCase(idx %u) is not profiled yet\n", (unsigned)idx);
                         }
                         break;
-                    }
+                       }
                     case CallFunctionOpcode: {
                          reinterpret_cast<CallFunction*>(currentCode)->m_profile.updateProfiledType();
                          if (reinterpret_cast<CallFunction*>(currentCode)->m_profile.getType().isBottomType()) {
@@ -688,11 +688,13 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                             LOG_VJ("> Cannot Compile JIT Function due to CallFunction(idx %u) is not profiled yet\n", (unsigned)idx);
                          }
                          break;
-                    }
+                       }
                     default:
                         break;
-                    }
+                       }
+
                     if (compileNextTime) break;
+
                     switch(opcode) {
                         #define DECLARE_EXECUTE_NEXTCODE(opcode, pushCount, popCount) \
                         case opcode##Opcode: \
@@ -702,8 +704,8 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                         #undef DECLARE_EXECUTE_NEXTCODE
                         case OpcodeKindEnd:
                             break;
-                    }
-                }
+                      }
+                  }
 
                 if (!compileNextTime) {
                     jitFunction = reinterpret_cast<ESJIT::JITFunction>(ESJIT::JITCompile(fn->codeBlock(), instance));
