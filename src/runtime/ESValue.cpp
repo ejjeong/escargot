@@ -89,6 +89,63 @@ ESString* ESValue::toStringSlowCase() const
     }
 }
 
+bool ESValue::abstractEqualsToSlowCase(const ESValue& val)
+{
+    if (isNumber() && val.isNumber()) {
+        double a = asNumber();
+        double b = val.asNumber();
+
+        if (std::isnan(a) || std::isnan(b))
+            return false;
+        else if(a == b)
+            return true;
+
+        return false;
+    } else {
+        if (isUndefinedOrNull() && val.isUndefinedOrNull()) return true;
+
+        //If Type(x) is Number and Type(y) is String,
+        if (isNumber() && val.isESString()) {
+            //return the result of the comparison x == ToNumber(y).
+            return asNumber() == val.toNumber();
+        }
+        //If Type(x) is String and Type(y) is Number,
+        else if (isESString() && val.isNumber()) {
+            //return the result of the comparison ToNumber(x) == y.
+            return val.asNumber() == toNumber();
+        }
+        //If Type(x) is Boolean, return the result of the comparison ToNumber(x) == y.
+        else if (isBoolean()) {
+            //return the result of the comparison ToNumber(x) == y.
+            ESValue x(toNumber());
+            return x.abstractEqualsTo(val);
+        }
+        //If Type(y) is Boolean, return the result of the comparison x == ToNumber(y).
+        else if (val.isBoolean()) {
+            //return the result of the comparison ToNumber(x) == y.
+            return abstractEqualsTo(ESValue(val.toNumber()));
+        }
+        //If Type(x) is either String, Number, or Symbol and Type(y) is Object, then
+        else if ((isESString() || isNumber()) && val.isObject()) {
+            return abstractEqualsTo(val.toPrimitive());
+        }
+        //If Type(x) is Object and Type(y) is either String, Number, or Symbol, then
+        else if (isObject() && (val.isESString() || val.isNumber())) {
+            return toPrimitive().abstractEqualsTo(val);
+        }
+
+        if (isESPointer() && val.isESPointer()) {
+            ESPointer* o = asESPointer();
+            ESPointer* comp = val.asESPointer();
+
+            if(o->isESString() && comp->isESString())
+                return *o->asESString() == *comp->asESString();
+            return equalsTo(val);
+        }
+    }
+    return false;
+}
+
 enum Flags {
   NO_FLAGS = 0,
   EMIT_POSITIVE_EXPONENT_SIGN = 1,

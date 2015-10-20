@@ -372,69 +372,16 @@ ALWAYS_INLINE ESValue ESValue::fromRawDouble(double value)
     return val;
 }
 
-
 // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-abstract-equality-comparison
-inline bool ESValue::abstractEqualsTo(const ESValue& val)
+ALWAYS_INLINE bool ESValue::abstractEqualsTo(const ESValue& val)
 {
     if(isInt32() && val.isInt32()) {
         if(u.asInt64 == val.u.asInt64)
             return true;
         return false;
-    } else if (isNumber() && val.isNumber()) {
-        double a = asNumber();
-        double b = val.asNumber();
-
-        if (std::isnan(a) || std::isnan(b))
-            return false;
-        else if(a == b)
-            return true;
-
-        return false;
     } else {
-        if (isUndefined() && val.isUndefined()) return true;
-        if (isNull() && val.isNull()) return true;
-        if (isNull() && val.isUndefined()) return true;
-        else if (isUndefined() && val.isNull()) return true;
-        //If Type(x) is Number and Type(y) is String,
-        else if (isNumber() && val.isESString()) {
-            //return the result of the comparison x == ToNumber(y).
-            return asNumber() == val.toNumber();
-        }
-        //If Type(x) is String and Type(y) is Number,
-        else if (isESString() && val.isNumber()) {
-            //return the result of the comparison ToNumber(x) == y.
-            return val.asNumber() == toNumber();
-        }
-        //If Type(x) is Boolean, return the result of the comparison ToNumber(x) == y.
-        else if (isBoolean()) {
-            //return the result of the comparison ToNumber(x) == y.
-            ESValue x(toNumber());
-            return x.abstractEqualsTo(val);
-        }
-        //If Type(y) is Boolean, return the result of the comparison x == ToNumber(y).
-        else if (val.isBoolean()) {
-            //return the result of the comparison ToNumber(x) == y.
-            return abstractEqualsTo(ESValue(val.toNumber()));
-        }
-        //If Type(x) is either String, Number, or Symbol and Type(y) is Object, then
-        else if ((isESString() || isNumber()) && val.isObject()) {
-            return abstractEqualsTo(val.toPrimitive());
-        }
-        //If Type(x) is Object and Type(y) is either String, Number, or Symbol, then
-        else if (isObject() && (val.isESString() || val.isNumber())) {
-            return toPrimitive().abstractEqualsTo(val);
-        }
-
-        if (isESPointer() && val.isESPointer()) {
-            ESPointer* o = asESPointer();
-            ESPointer* comp = val.asESPointer();
-
-            if(o->isESString() && comp->isESString())
-                return *o->asESString() == *comp->asESString();
-            return equalsTo(val);
-        }
+        return abstractEqualsToSlowCase(val);
     }
-    return false;
 }
 
 inline bool ESValue::equalsTo(const ESValue& val)

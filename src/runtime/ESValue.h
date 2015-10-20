@@ -213,7 +213,8 @@ private:
     ValueDescriptor u;
 
 public:
-    inline bool abstractEqualsTo(const ESValue& val);
+    ALWAYS_INLINE bool abstractEqualsTo(const ESValue& val);
+    bool abstractEqualsToSlowCase(const ESValue& val);
     inline bool equalsTo(const ESValue& val);
 
 };
