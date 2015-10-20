@@ -38,7 +38,8 @@ CallInfo equalOpCallInfo = CI(equalOp, CallInfo::typeSig2(ARGTYPE_B, ARGTYPE_D, 
 CallInfo lessThanOpCallInfo = CI(lessThanOp, CallInfo::typeSig2(ARGTYPE_B, ARGTYPE_D, ARGTYPE_D));
 CallInfo contextResolveBindingCallInfo = CI(contextResolveBinding, CallInfo::typeSig3(ARGTYPE_P, ARGTYPE_P, ARGTYPE_P, ARGTYPE_P));
 CallInfo contextResolveThisBindingCallInfo = CI(contextResolveThisBinding, CallInfo::typeSig1(ARGTYPE_D, ARGTYPE_P));
-CallInfo objectDefineDataPropertyCallInfo = CI(objectDefineDataProperty, CallInfo::typeSig3(ARGTYPE_V, ARGTYPE_P, ARGTYPE_D, /*ARGTYPE_B, ARGTYPE_B, ARGTYPE_B,*/ ARGTYPE_D));
+CallInfo setVarContextResolveBindingCallInfo = CI(setVarContextResolveBinding, CallInfo::typeSig2(ARGTYPE_P, ARGTYPE_P, ARGTYPE_P));
+CallInfo setVarDefineDataPropertyCallInfo = CI(setVarDefineDataProperty, CallInfo::typeSig4(ARGTYPE_V, ARGTYPE_P, ARGTYPE_P, ARGTYPE_P, ARGTYPE_D));
 CallInfo esFunctionObjectCallCallInfo = CI(esFunctionObjectCall, CallInfo::typeSig6(ARGTYPE_D, ARGTYPE_P, ARGTYPE_D, ARGTYPE_D, ARGTYPE_P, ARGTYPE_I, ARGTYPE_B));
 CallInfo newOpCallInfo = CI(newOp, CallInfo::typeSig5(ARGTYPE_D, ARGTYPE_P, ARGTYPE_P, ARGTYPE_D, ARGTYPE_P, ARGTYPE_I));
 CallInfo ESObjectSetOpCallInfo = CI(ESObjectSetOp, CallInfo::typeSig3(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
@@ -221,7 +222,7 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
 #ifndef NDEBUG
         if (ESVMInstance::currentInstance()->m_verboseJIT) {
             JIT_LOG(in, "Expected Double-typed value, but got this value");
-         }
+        }
 #endif
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out.ins0(LIR_label);
@@ -903,41 +904,37 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* instanceIdentifierCacheInvalidationCheckCount = m_out.insLoad(LIR_ldi, m_instance, ESVMInstance::offsetOfIdentifierCacheInvalidationCheckCount(), 1, LOAD_NORMAL);
         LIns* checkIfCacheHit = m_out.ins2(LIR_eqi, instanceIdentifierCacheInvalidationCheckCount, cachedIdentifierCacheInvalidationCheckCount);
         LIns* jumpIfCacheHit = m_out.insBranch(LIR_jt, checkIfCacheHit, nullptr);
+#if 1
+        //JIT_LOG(bytecode, "SetVarGeneric Cache Miss");
+        LIns* args[] = {bytecode, m_context};
+        LIns* resolvedSlot = m_out.insCall(&setVarContextResolveBindingCallInfo, args);
+        LIns* checkIfSlotIsNull = m_out.ins2(LIR_eqp, resolvedSlot, m_zeroP);
+        LIns* jumpIfSlotIsNull = m_out.insBranch(LIR_jt, checkIfSlotIsNull, nullptr);
 
-        LIns* slowPath = m_out.ins0(LIR_label);
-#if 0
-        LIns* name = m_out.insImmP(irSetVarGeneric->name());
-        LIns* nonAtomicName = m_out.insImmP(irSetVarGeneric->nonAtomicName());
-
-        LIns* args[] = {nonAtomicName, name, m_context};
-        LIns* boxedResultAddress = m_out.insCall(&contextResolveBindingCallInfo, args);
-        LIns* checkIfAddressIsNull = m_out.ins2(LIR_eqp, boxedResultAddress, m_zeroP);
-        LIns* jumpIfAddressIsNull = m_out.insBranch(LIR_jt, checkIfAddressIsNull, nullptr);
-
-        LIns* store = m_out.insStore(LIR_std, boxedSource, boxedResultAddress, 0, 1);
-        LIns* jumpToEnd = m_out.insBranch(LIR_j, nullptr, nullptr);
+        //JIT_LOG(bytecode, "SetVarGeneric Cache Miss->resolveBinding->validSlot");
+        m_out.insStore(LIR_stp, resolvedSlot, bytecode, offsetof(SetById, m_cachedSlot), 1);
+        m_out.insStore(LIR_sti, instanceIdentifierCacheInvalidationCheckCount, bytecode, offsetof(SetById, m_identifierCacheInvalidationCheckCount), 1);
+        m_out.insStore(LIR_std, boxedSource, resolvedSlot, 0, 1);
+        LIns* jumpToEnd1 = m_out.insBranch(LIR_j, nullptr, nullptr);
 
         LIns* labelDeclareVariable = m_out.ins0(LIR_label);
-        jumpIfAddressIsNull->setTarget(labelDeclareVariable);
-#if 0
-        LIns* args2[] = {boxedSource, /*m_true, m_true, m_true,*/m_globalObject, nonAtomicName};
-        m_out.insCall(&objectDefinePropertyOrThrowCallInfo, args2);
+        jumpIfSlotIsNull->setTarget(labelDeclareVariable);
+        //JIT_LOG(bytecode, "SetVarGeneric Cache Miss->resolveBinding->emptySlot");
+        LIns* args2[] = {boxedSource, bytecode, m_globalObject, m_context};
+        m_out.insCall(&setVarDefineDataPropertyCallInfo, args2);
+        LIns* jumpToEnd2 = m_out.insBranch(LIR_j, nullptr, nullptr);
 #else
+        JIT_LOG(bytecode, "SetVarGeneric Cache Miss");
         generateOSRExit(irSetVarGeneric->m_targetIndex);
 #endif
-
-        LIns* labelEnd = m_out.ins0(LIR_label);
-        jumpToEnd->setTarget(labelEnd);
-
-#else
-        JIT_LOG(cachedIdentifierCacheInvalidationCheckCount, "SetVarGeneric Cache Miss");
-        generateOSRExit(irSetVarGeneric->m_targetIndex);
-#endif
-
         LIns* fastPath = m_out.ins0(LIR_label);
         jumpIfCacheHit->setTarget(fastPath);
+        //JIT_LOG(bytecode, "SetVarGeneric Cache Hit");
         LIns* cachedSlot = m_out.insLoad(LIR_ldp, bytecode, offsetof(SetById, m_cachedSlot), 1, LOAD_NORMAL);
-        LIns* storeToCachedSlot = m_out.insStore(LIR_std, boxedSource, cachedSlot, 0, 1);
+        m_out.insStore(LIR_std, boxedSource, cachedSlot, 0, 1);
+        LIns* labelEnd = m_out.ins0(LIR_label);
+        jumpToEnd1->setTarget(labelEnd);
+        jumpToEnd2->setTarget(labelEnd);
 
         return source;
     }

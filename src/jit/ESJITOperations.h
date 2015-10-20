@@ -55,11 +55,32 @@ inline ESValue* contextResolveBinding(ExecutionContext* context, InternalAtomicS
     return context->resolveBinding(*atomicName);
 }
 
+inline ESValue* setVarContextResolveBinding(ExecutionContext* ec, ByteCode* currentCode)
+{
+    SetById* code = (SetById*)currentCode;
+    return ec->resolveBinding(code->m_name);
+}
+
 inline ESValueInDouble contextResolveThisBinding(ExecutionContext* ec)
 {
     ESValue thisValue = ec->resolveThisBinding();
     // printf("This: %s %p\n", thisValue.toString()->utf8Data(), thisValue.asESPointer());
     return ESValue::toRawDouble(thisValue);
+}
+
+inline void setVarDefineDataProperty(ExecutionContext* ec, GlobalObject* globalObj, ByteCode* currentCode, ESValueInDouble rawValue)
+{
+    SetById* code = (SetById*)currentCode;
+    ESValue value = ESValue::fromRawDouble(rawValue);
+
+    if(!ec->isStrictMode()) {
+        globalObj->defineDataProperty(code->m_name.string(), true, true, true, value);
+    } else {
+        u16string err_msg;
+        err_msg.append(u"assignment to undeclared variable ");
+        err_msg.append(code->m_name.string()->data());
+        throw ESValue(ReferenceError::create(ESString::create(std::move(err_msg))));
+    }
 }
 
 inline void objectDefineDataProperty(ESObject* object, ESString* key,
