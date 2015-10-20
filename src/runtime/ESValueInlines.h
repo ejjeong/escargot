@@ -122,42 +122,12 @@ inline uint64_t ESValue::asRawData() const
     return u.asInt64;
 }
 
-inline ESString* ESValue::toString() const
+ALWAYS_INLINE ESString* ESValue::toString() const
 {
     if(isESString()) {
         return asESString();
-    } else if(isInt32()) {
-        int num = asInt32();
-        if(num >= 0 && num < ESCARGOT_STRINGS_NUMBERS_MAX)
-            return strings->numbers[num].string();
-        return ESString::create(num);
-    } else if(isNumber()) {
-        double d = asNumber();
-        if (std::isnan(d))
-            return strings->NaN.string();
-        if (std::isinf(d)) {
-            if(std::signbit(d))
-                return strings->NegativeInfinity.string();
-            else
-                return strings->Infinity.string();
-        }
-        //convert -0.0 into 0.0
-        //in c++, d = -0.0, d == 0.0 is true
-        if (d == 0.0)
-            d = 0;
-
-        return ESString::create(d);
-    } else if(isUndefined()) {
-        return strings->undefined.string();
-    } else if(isNull()) {
-        return strings->null.string();
-    } else if(isBoolean()) {
-        if(asBoolean())
-            return strings->stringTrue.string();
-        else
-            return strings->stringFalse.string();
     } else {
-        return toPrimitive(PreferString).toString();
+        return toStringSlowCase();
     }
 }
 
