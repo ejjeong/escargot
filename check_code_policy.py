@@ -27,7 +27,7 @@ class Problem:
 
 re_trailing_ws = re.compile(r'^.*?\s$')
 re_only_ws = re.compile(r'^\s*$')
-re_nonleading_tab = re.compile(r'^.*?[^\t]\t.*?$')  # tabs are only used for indent
+re_leading_tab = re.compile(r'^[\t]+.*$')  # tabs are only used for indent
 re_identifier = re.compile(r'[A-Za-z0-9_]+')
 
 # These identifiers are wrapped in duk_config.h, and should only be used
@@ -104,13 +104,12 @@ def checkMixedIndent(lines, idx, filename):
 	subCheckMixedIndent(lines[idx], '\x09\x20')
 
 
-def checkNonLeadingTab(lines, idx, filename):
+def checkLeadingTab(lines, idx, filename):
 	line = lines[idx]
-	m = re_nonleading_tab.match(line)
+	m = re_leading_tab.match(line)
 	if m is None:
 		return
-
-	raise Exception('non-leading tab (idx %d)' % idx)
+	raise Exception('leading tab (idx %d)' % idx)
 
 def checkFixme(lines, idx, filename):
 	line = lines[idx]
@@ -173,7 +172,7 @@ def main():
 	checkersNoExpectStrings = []
 	checkersNoExpectStrings.append(checkTrailingWhitespace)
 	checkersNoExpectStrings.append(checkMixedIndent)
-	checkersNoExpectStrings.append(checkNonLeadingTab)
+	checkersNoExpectStrings.append(checkLeadingTab)
 
 	for filename in args:
 		processFile(filename, checkersRaw, checkersNoExpectStrings)
