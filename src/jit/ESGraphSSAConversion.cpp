@@ -13,7 +13,7 @@ void computeDominanceFrontier(ESGraph* graph)
 {
 }
 
-void ESGraphSSAConversion::run(ESGraph* graph)
+bool ESGraphSSAConversion::run(ESGraph* graph)
 {
     computeDominanceFrontier(graph);
     for (size_t i = 0; i < graph->basicBlockSize(); i++) {
@@ -32,6 +32,7 @@ void ESGraphSSAConversion::run(ESGraph* graph)
     // if (ESVMInstance::currentInstance()->m_verboseJIT)
         // graph->dump(std::cout, "After running SSA conversion");
 #endif
+    return true;
 }
 
 }}

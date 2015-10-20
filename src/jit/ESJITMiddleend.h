@@ -14,47 +14,47 @@ class ESGraphOptimization {
 
 class ESGraphSSAConversion : ESGraphOptimization {
 public:
-    static void run(ESGraph* graph);
+    static bool run(ESGraph* graph);
 };
 
 class ESGraphTypeInference : ESGraphOptimization {
 public:
-    static void run(ESGraph* graph);
+    static bool run(ESGraph* graph);
 };
 
 class ESGraphSimplification : ESGraphOptimization {
 public:
-    static void run(ESGraph* graph);
+    static bool run(ESGraph* graph);
 };
 
 class ESGraphLoadElimiation : ESGraphOptimization {
 public:
-    static void run(ESGraph* graph);
+    static bool run(ESGraph* graph);
 };
 
 class ESGraphTypeCheckHoisting : ESGraphOptimization {
 public:
-    static void run(ESGraph* graph);
+    static bool run(ESGraph* graph);
 };
 
 class ESGraphLoopInvariantCodeMotion : ESGraphOptimization {
 public:
-    static void run(ESGraph* graph);
+    static bool run(ESGraph* graph);
 };
 
 class ESGraphDeadCodeEliminiation : ESGraphOptimization {
 public:
-    static void run(ESGraph* graph);
+    static bool run(ESGraph* graph);
 };
 
 class ESGraphCommonSubexpressionElimination : ESGraphOptimization {
 public:
-    static void run(ESGraph* graph);
+    static bool run(ESGraph* graph);
 };
 
 class ESGraphGlobalValueNumbering : ESGraphOptimization {
 public:
-    static void run(ESGraph* graph);
+    static bool run(ESGraph* graph);
 };
 
 bool optimizeIR(ESGraph* graph);

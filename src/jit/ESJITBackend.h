@@ -22,26 +22,22 @@ class NativeGenerator {
 public:
     NativeGenerator(ESGraph* graph);
     ~NativeGenerator();
-    void nanojitCodegen(ESVMInstance* instance);
+    bool nanojitCodegen(ESVMInstance* instance);
     JITFunction nativeCodegen();
     nanojit::LIns* nanojitCodegen(ESIR* ir);
 
 private:
     void setTmpMapping(size_t irIndex, nanojit::LIns* ins) {
         // printf("tmpMap[%lu] = %p\n", irIndex, ins);
+        ASSERT(irIndex < m_tmpToLInsMapping.size());
+        ASSERT(ins);
         m_tmpToLInsMapping[irIndex] = ins;
     }
     nanojit::LIns* getTmpMapping(size_t irIndex) {
         // printf("= tmpMap[%lu]\n", irIndex);
+        ASSERT(irIndex < m_tmpToLInsMapping.size());
+        ASSERT(m_tmpToLInsMapping[irIndex]);
         return m_tmpToLInsMapping[irIndex];
-    }
-    void setVarMapping(size_t irIndex, nanojit::LIns* ins) {
-        // printf("varMap[%lu] = %p\n", irIndex, ins);
-        m_varToLInsMapping[irIndex] = ins;
-    }
-    nanojit::LIns* getVarMapping(size_t irIndex) {
-        // printf("= varMap[%lu]\n", irIndex);
-        return m_varToLInsMapping[irIndex];
     }
     nanojit::LIns* generateOSRExit(size_t currentByteCodeIndex);
     nanojit::LIns* generateTypeCheck(nanojit::LIns* in, Type type, size_t currentByteCodeIndex);
@@ -50,7 +46,6 @@ private:
 
     ESGraph* m_graph;
     std::vector<nanojit::LIns*, gc_allocator<nanojit::LIns*> > m_tmpToLInsMapping;
-    std::vector<nanojit::LIns*, gc_allocator<nanojit::LIns*> > m_varToLInsMapping;
 
     nanojit::LIns* m_stackPtr;
     nanojit::LIns* m_instance;

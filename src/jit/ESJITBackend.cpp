@@ -72,7 +72,6 @@ CallInfo logPointerCallInfo = CI(jitLogPointerOperation, CallInfo::typeSig2(ARGT
 NativeGenerator::NativeGenerator(ESGraph* graph)
     : m_graph(graph),
     m_tmpToLInsMapping(graph->tempRegisterSize()),
-    m_varToLInsMapping(10), // TODO
     m_stackPtr(nullptr),
     m_instance(nullptr),
     m_context(nullptr),
@@ -454,7 +453,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         ASSERT(left->isP() && right->isP());
         //return m_out.ins2(LIR_addd, left, right);
 #else
-        RELEASE_ASSERT_NOT_REACHED();
+        return nullptr;
 #endif
     }
     case ESIR::Opcode::GenericPlus:
@@ -594,7 +593,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         if (leftType.isInt32Type() && rightType.isInt32Type())
             return m_out.ins2(LIR_andi, left, right);
         else
-            RELEASE_ASSERT_NOT_REACHED();
+            return nullptr;
     }
     case ESIR::Opcode::Equal:
     {
@@ -641,7 +640,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             }
         }
         else
-            RELEASE_ASSERT_NOT_REACHED();
+            return nullptr;
     }
     case ESIR::Opcode::GreaterThanOrEqual:
     {
@@ -653,7 +652,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         if (leftType.isInt32Type() && rightType.isInt32Type())
             return m_out.ins2(LIR_gei, left, right);
         else
-            RELEASE_ASSERT_NOT_REACHED();
+            return nullptr;
     }
     case ESIR::Opcode::LessThan:
     {
@@ -692,7 +691,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         if (leftType.isInt32Type() && rightType.isInt32Type())
             return m_out.ins2(LIR_lei, left, right);
         else
-            RELEASE_ASSERT_NOT_REACHED();
+            return nullptr;
     }
     case ESIR::Opcode::LeftShift:
     {
@@ -704,7 +703,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         if (leftType.isInt32Type() && rightType.isInt32Type())
             return m_out.ins2(LIR_lshi, left, right);
         else
-            RELEASE_ASSERT_NOT_REACHED();
+            return nullptr;
     }
     case ESIR::Opcode::SignedRightShift:
     {
@@ -721,7 +720,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             return m_out.ins2(LIR_rshi, left, right);
         }
         else
-            RELEASE_ASSERT_NOT_REACHED();
+            return nullptr;
     }
     case ESIR::Opcode::Jump:
     {
@@ -957,8 +956,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             size_t gapToHiddenClassData = escargot::ESObject::offsetOfHiddenClassData();
             LIns* hiddenClassData = m_out.insLoad(LIR_ldd, obj, gapToHiddenClassData, 1, LOAD_NORMAL);
             return m_out.insLoad(LIR_ldd, hiddenClassData, irGetObject->cachedIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
-         }
-        RELEASE_ASSERT_NOT_REACHED();
+        }
+        return nullptr;
     }
     case ESIR::Opcode::GetObjectPreComputed:
     {
@@ -969,7 +968,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             LIns* hiddenClassData = m_out.insLoad(LIR_ldd, obj, gapToHiddenClassData, 1, LOAD_NORMAL);
             return m_out.insLoad(LIR_ldd, hiddenClassData, irGetObjectPreComputed->cachedIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
         }
-        RELEASE_ASSERT_NOT_REACHED();
+        return nullptr;
     }
     case ESIR::Opcode::GetArrayObject:
     {
@@ -986,8 +985,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
                 LIns* offset = m_out.ins2(LIR_muli, key, ESValueSize);
                 LIns* newBase = m_out.ins2(LIR_addd, vectorData, offset);
                 return m_out.insLoad(LIR_ldd, newBase, 0, 1, LOAD_NORMAL);
-             } else
-                 RELEASE_ASSERT_NOT_REACHED();
+            } else
+                return nullptr;
     }
     case ESIR::Opcode::SetArrayObject:
     {
@@ -1022,9 +1021,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
                 LIns* args[] = {source, boxedProp, obj};
                 return m_out.insCall(&ESObjectSetOpCallInfo, args);
             }
-        } else {
-            RELEASE_ASSERT_NOT_REACHED();
-        }
+        } else
+            return nullptr;
     }
     case ESIR::Opcode::GetArrayObjectPreComputed:
     {
@@ -1059,10 +1057,10 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_ESIR(ToNumber);
         LIns* source = getTmpMapping(irToNumber->sourceIndex());
         Type srcType = m_graph->getOperandType(irToNumber->sourceIndex());
-        if (srcType.isInt32Type() || srcType.isDoubleType()) {
+        if (srcType.isInt32Type() || srcType.isDoubleType())
             return source;
-        } else
-            RELEASE_ASSERT_NOT_REACHED();
+        else
+            return nullptr;
     }
     case ESIR::Opcode::Increment:
     {
@@ -1072,27 +1070,24 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         if (srcType.isInt32Type()) {
             LIns* one = m_out.insImmI(1);
             LIns* ret = m_out.ins2(LIR_addi, source, one);
-
-//            JIT_LOG(ret);
-
             return ret;
         } else if (srcType.isDoubleType()) {
             LIns* one = m_out.insImmD(1);
             return m_out.ins2(LIR_addd, source, one);
         } else
-            RELEASE_ASSERT_NOT_REACHED();
+            return nullptr;
     }
     case ESIR::Opcode::UnaryMinus:
     {
         INIT_ESIR(UnaryMinus);
         LIns* source = getTmpMapping(irUnaryMinus->sourceIndex());
         Type srcType = m_graph->getOperandType(irUnaryMinus->sourceIndex());
-        if (srcType.isInt32Type()) {
+        if (srcType.isInt32Type())
             return m_out.ins1(LIR_negi, source);
-        } else if (srcType.isDoubleType()) {
+        else if (srcType.isDoubleType())
             return m_out.ins1(LIR_negd, source);
-        } else
-            RELEASE_ASSERT_NOT_REACHED();
+        else
+            return nullptr;
     }
     case ESIR::Opcode::AllocPhi:
     {
@@ -1110,7 +1105,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         if (srcType.isInt32Type())
             return m_out.insStore(LIR_sti, source, phi, 0 , 1);
         else
-            RELEASE_ASSERT_NOT_REACHED();
+            return nullptr;
     }
     case ESIR::Opcode::LoadPhi:
     {
@@ -1121,7 +1116,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         if (consequentType.isInt32Type())
             return m_out.insLoad(LIR_ldi, phi, 0, 1, LOAD_NORMAL);
         else
-            RELEASE_ASSERT_NOT_REACHED();
+            return nullptr;
     }
     default:
     {
@@ -1131,7 +1126,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     }
 }
 
-void NativeGenerator::nanojitCodegen(ESVMInstance* instance)
+bool NativeGenerator::nanojitCodegen(ESVMInstance* instance)
 {
     m_out.ins0(LIR_start);
     for (int i = 0; i < nanojit::NumSavedRegs; ++i)
@@ -1173,8 +1168,10 @@ void NativeGenerator::nanojitCodegen(ESVMInstance* instance)
         for (size_t j = 0; j < block->instructionSize(); j++) {
             ESIR* ir = block->instruction(j);
             LIns* generatedLIns = nanojitCodegen(ir);
-            if (!generatedLIns)
-                printf("ERROR: Cannot generate code for JIT IR `%s` in ESJITBackEnd\n", ir->getOpcodeName());
+            if (!generatedLIns) {
+                LOG_VJ("Cannot generate code for JIT IR `%s` in ESJITBackEnd\n", ir->getOpcodeName());
+                return false;
+            }
             if (ir->isValueLoadedFromHeap()) {
                 Type type = m_graph->getOperandType(ir->m_targetIndex);
                 generatedLIns = generateTypeCheck(generatedLIns, type, ir->m_targetIndex);
@@ -1204,6 +1201,8 @@ void NativeGenerator::nanojitCodegen(ESVMInstance* instance)
     exit->addGuard(rec);
 
     m_f->lastIns = m_out.insGuard(LIR_x, nullptr, rec);
+
+    return true;
 }
 
 JITFunction NativeGenerator::nativeCodegen() {
@@ -1228,7 +1227,8 @@ JITFunction generateNativeFromIR(ESGraph* graph, ESVMInstance* instance)
     NativeGenerator gen(graph);
 
     unsigned long time1 = ESVMInstance::currentInstance()->tickCount();
-    gen.nanojitCodegen(instance);
+    if (!gen.nanojitCodegen(instance))
+        return nullptr;
     unsigned long time2 = ESVMInstance::currentInstance()->tickCount();
     JITFunction function = gen.nativeCodegen();
     unsigned long time3 = ESVMInstance::currentInstance()->tickCount();

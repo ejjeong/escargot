@@ -1481,7 +1481,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("GetObjectPreComputedCase <>\n");
+        printf("GetObjectPreComputedCase <%s>\n", m_propertyValue->utf8Data());
     }
 #endif
     ESString* m_propertyValue;

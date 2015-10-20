@@ -11,8 +11,14 @@ namespace ESJIT {
 
 bool optimizeIR(ESGraph* graph)
 {
-    ESGraphSSAConversion::run(graph);
-    ESGraphTypeInference::run(graph);
+    if (!ESGraphSSAConversion::run(graph)) {
+        LOG_VJ("Failed to run SSAConversion\n");
+        return false;
+    }
+    if (!ESGraphTypeInference::run(graph)) {
+        LOG_VJ("Failed to run TypeInference\n");
+        return false;
+    }
 #if 0
     ESGraphSimplification::run(graph);
     ESGraphLoadElimiation::run(graph);

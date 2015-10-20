@@ -13,7 +13,7 @@ namespace ESJIT {
 // heap, 2. function argument, and 3. return value of function call.
 // For other IRs, We should run type inference phase to examine the types.
 
-void ESGraphTypeInference::run(ESGraph* graph)
+bool ESGraphTypeInference::run(ESGraph* graph)
 {
     for (size_t i = 0; i < graph->basicBlockSize(); i++) {
         ESBasicBlock* block = graph->basicBlock(i);
@@ -255,8 +255,8 @@ void ESGraphTypeInference::run(ESGraph* graph)
                 } else if (objectType.isObjectType()) {
                     // do nothing
                 } else {
-                    RELEASE_ASSERT_NOT_REACHED();
-                  }
+                    goto unsupported;
+                }
                 break;
             }
             case ESIR::Opcode::SetVar:
@@ -297,9 +297,15 @@ void ESGraphTypeInference::run(ESGraph* graph)
                 break;
             }
             default:
+            {
                 printf("ERROR %s not handled in ESGraphTypeInference.\n", ir->getOpcodeName());
                 RELEASE_ASSERT_NOT_REACHED();
             }
+            }
+            continue;
+unsupported:
+            LOG_VJ("Unsupported case in TypeInference (IR %s)\n", ir->getOpcodeName());
+            return false;
         }
     }
 
@@ -307,6 +313,8 @@ void ESGraphTypeInference::run(ESGraph* graph)
     if (ESVMInstance::currentInstance()->m_verboseJIT)
         graph->dump(std::cout, "After running Type Inference");
 #endif
+
+    return true;
 }
 
 }}
