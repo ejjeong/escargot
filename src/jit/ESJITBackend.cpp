@@ -792,7 +792,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* boxedSource = boxESValue(source, m_graph->getOperandType(irSetVar->m_targetIndex));
         LIns* cachedDeclarativeEnvironmentRecordESValue = m_out.insLoad(LIR_ldp, m_context, ExecutionContext::offsetofcachedDeclarativeEnvironmentRecordESValue(), 1, LOAD_NORMAL);
         m_out.insStore(LIR_std, boxedSource, cachedDeclarativeEnvironmentRecordESValue, irSetVar->localVarIndex() * sizeof(ESValue), 1);
-        return m_out.insStore(LIR_std, boxedSource, m_stackPtr, irSetVar->localVarIndex() * sizeof(ESValue), 1);
+        m_out.insStore(LIR_std, boxedSource, m_stackPtr, irSetVar->localVarIndex() * sizeof(ESValue), 1);
+        return source;
     }
     case ESIR::Opcode::GetVarGeneric:
     {
@@ -884,7 +885,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* cachedSlot = m_out.insLoad(LIR_ldp, bytecode, offsetof(SetById, m_cachedSlot), 1, LOAD_NORMAL);
         LIns* storeToCachedSlot = m_out.insStore(LIR_std, boxedSource, cachedSlot, 0, 1);
 
-        return boxedSource;
+        return source;
     }
     case ESIR::Opcode::GetObject:
     {
