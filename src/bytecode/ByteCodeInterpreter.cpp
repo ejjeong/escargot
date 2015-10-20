@@ -23,10 +23,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     ExecutionContext* ec = instance->currentExecutionContext();
 
     unsigned stackSiz = codeBlock->m_requiredStackSizeInESValueSize * sizeof(ESValue);
-#ifndef NDEBUG
-    stackSiz *= 2;
-#endif
-
     char* stackBuf;
     void* bp;
     void* stack;
@@ -592,15 +588,8 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         GetObjectWithPeeking* code = (GetObjectWithPeeking*)currentCode;
 
-#ifdef NDEBUG
         ESValue* property = (ESValue *)((size_t)stack - sizeof(ESValue));
         ESValue* willBeObject = (ESValue *)((size_t)stack - sizeof(ESValue) * 2);
-#else
-        ESValue* property = pop<ESValue>(stack, bp);
-        ESValue* willBeObject = pop<ESValue>(stack, bp);
-        stack = (void *)(((size_t)stack) + sizeof(ESValue) * 2);
-        stack = (void *)(((size_t)stack) + sizeof(size_t) * 2);
-#endif
         push<ESValue>(stack, topOfStack, getObjectOperation(willBeObject, property, &lastESObjectMetInMemberExpressionNode, globalObject));
         executeNextCode<GetObjectWithPeeking>(programCounter);
         NEXT_INSTRUCTION();
@@ -676,19 +665,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         CallFunction* code = (CallFunction*)currentCode;
         const unsigned& argc = code->m_argmentCount;
-#ifdef NDEBUG
         stack = (void *)((size_t)stack - argc * sizeof(ESValue));
-#else
-        stack = (void *)((size_t)stack - argc * sizeof(ESValue));
-        stack = (void *)((size_t)stack - argc * sizeof(size_t));
-
-        {
-            ESValue* arguments = (ESValue *)stack;
-            for(size_t i = 0; i < argc ; i ++) {
-                arguments[i] = *((ESValue *)&(((char *)stack)[i*(sizeof(ESValue)+sizeof(size_t))]));
-            }
-        }
-#endif
         ESValue* arguments = (ESValue *)stack;
         ESValue* receiver = pop<ESValue>(stack, bp);
         ESValue result = ESFunctionObject::call(instance, *pop<ESValue>(stack, bp), *receiver, arguments, argc, false);
@@ -704,19 +681,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         NewFunctionCall* code = (NewFunctionCall*)currentCode;
         const unsigned& argc = code->m_argmentCount;
-#ifdef NDEBUG
         stack = (void *)((size_t)stack - argc * sizeof(ESValue));
-#else
-        stack = (void *)((size_t)stack - argc * sizeof(ESValue));
-        stack = (void *)((size_t)stack - argc * sizeof(size_t));
-
-        {
-            ESValue* arguments = (ESValue *)stack;
-            for(size_t i = 0; i < argc ; i ++) {
-                arguments[i] = *((ESValue *)&(((char *)stack)[i*(sizeof(ESValue)+sizeof(size_t))]));
-            }
-        }
-#endif
         ESValue* arguments = (ESValue *)stack;
         ESValue fn = *pop<ESValue>(stack, bp);
         push<ESValue>(stack, topOfStack, newOperation(instance, globalObject, fn, arguments, argc));
@@ -1002,19 +967,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         CallEvalFunction* code = (CallEvalFunction *)currentCode;
         const unsigned& argc = code->m_argmentCount;
-#ifdef NDEBUG
         stack = (void *)((size_t)stack - argc * sizeof(ESValue));
-#else
-        stack = (void *)((size_t)stack - argc * sizeof(ESValue));
-        stack = (void *)((size_t)stack - argc * sizeof(size_t));
-
-        {
-            ESValue* arguments = (ESValue *)stack;
-            for(size_t i = 0; i < argc ; i ++) {
-                arguments[i] = *((ESValue *)&(((char *)stack)[i*(sizeof(ESValue)+sizeof(size_t))]));
-            }
-        }
-#endif
         ESValue* arguments = (ESValue *)stack;
 
         ESValue callee = *ec->resolveBinding(strings->eval);
@@ -1082,9 +1035,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* willBeObject = pop<ESValue>(stack, bp);
 
         stack = (void *)(((size_t)stack) + sizeof(ESValue) * 1);
-#ifndef NDEBUG
-        stack = (void *)(((size_t)stack) + sizeof(size_t) * 1);
-#endif
 
         ESValue v(code->m_propertyValue);
         push<ESValue>(stack, topOfStack, getObjectOperationSlowMode(willBeObject, &v, &lastESObjectMetInMemberExpressionNode, globalObject));
@@ -1110,9 +1060,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* willBeObject = pop<ESValue>(stack, bp);
 
         stack = (void *)(((size_t)stack) + sizeof(ESValue) * 2);
-#ifndef NDEBUG
-        stack = (void *)(((size_t)stack) + sizeof(size_t) * 2);
-#endif
         push<ESValue>(stack, topOfStack, getObjectOperationSlowMode(willBeObject, property, &lastESObjectMetInMemberExpressionNode, globalObject));
         executeNextCode<GetObjectWithPeekingSlowMode>(programCounter);
         NEXT_INSTRUCTION();

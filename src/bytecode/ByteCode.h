@@ -2095,10 +2095,6 @@ ALWAYS_INLINE void push(void*& stk, void* topOfStack, const Type& ptr)
     stk = (void *)(((size_t)stk) + sizeof(Type));
 
 #ifndef NDEBUG
-    size_t siz = sizeof (Type);
-    memcpy(((char *)stk), &siz, sizeof (size_t));
-    stk = (void *)(((size_t)stk) + sizeof(size_t));
-
     if(stk > topOfStack) {
         puts("stackoverflow!!!");
         ASSERT_NOT_REACHED();
@@ -2115,10 +2111,6 @@ ALWAYS_INLINE void push(void*& stk, void* topOfStack, Type* ptr)
     stk = (void *)(((size_t)stk) + sizeof(Type));
 
 #ifndef NDEBUG
-    size_t siz = sizeof (Type);
-    memcpy(((char *)stk), &siz, sizeof (size_t));
-    stk = (void *)(((size_t)stk) + sizeof(size_t));
-
     if(stk > topOfStack) {
         puts("stackoverflow!!!");
         ASSERT_NOT_REACHED();
@@ -2130,16 +2122,12 @@ ALWAYS_INLINE void push(void*& stk, void* topOfStack, Type* ptr)
 template <typename Type>
 ALWAYS_INLINE Type* pop(void*& stk, void* bp)
 {
+#ifndef NDEBUG
     if(((size_t)stk) - sizeof (Type) < ((size_t)bp)) {
         ASSERT_NOT_REACHED();
     }
-    stk = (void *)(((size_t)stk) - sizeof(Type));
-    size_t* siz = (size_t *)stk;
-//    ASSERT(*siz == sizeof (Type));
-#ifndef NDEBUG
-    stk = (void *)(((size_t)stk) - sizeof(size_t));
-    ASSERT(((size_t)stk) % sizeof(size_t) == 0);
 #endif
+    stk = (void *)(((size_t)stk) - sizeof(Type));
     return (Type *)stk;
 }
 
@@ -2147,11 +2135,6 @@ template <typename Type>
 ALWAYS_INLINE Type* peek(void* stk, void* bp)
 {
     void* address = stk;
-#ifndef NDEBUG
-    address = (void *)(((size_t)address) - sizeof(size_t));
-    size_t* siz = (size_t *)address;
-    ASSERT(*siz == sizeof (Type));
-#endif
     address = (void *)(((size_t)address) - sizeof(Type));
     return (Type *)address;
 }
