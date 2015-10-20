@@ -228,6 +228,18 @@ NEVER_INLINE void setObjectOperationSlowCase(ESValue* willBeObject, ESValue* pro
     }
 }
 
+NEVER_INLINE void setObjectOperationExpandLengthCase(ESArrayObject* arr, uint32_t idx, const ESValue& value)
+{
+    if (UNLIKELY(arr->shouldConvertToSlowMode(idx))) {
+        ESValue obj(arr);
+        ESValue pro((double)idx);
+        setObjectOperationSlowCase(&obj, &pro, value);
+    } else {
+        arr->setLength(idx + 1);
+        arr->data()[idx] = value;
+    }
+}
+
 NEVER_INLINE void setObjectPreComputedCaseOperationSlowCase(ESValue* willBeObject, ESString* keyString, const ESValue& value)
 {
     if(!willBeObject->toObject()->set(keyString, value)) {

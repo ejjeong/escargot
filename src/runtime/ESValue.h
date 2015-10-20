@@ -1442,6 +1442,7 @@ public:
         ESObject::set(ESValue(i), val);
     }
 
+
     void setLength(unsigned newLength)
     {
         if (newLength < m_length) {

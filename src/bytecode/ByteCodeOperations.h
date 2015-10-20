@@ -212,6 +212,7 @@ NEVER_INLINE void throwObjectWriteError();
 
 //d = {}. d[0] = 1
 NEVER_INLINE void setObjectOperationSlowCase(ESValue* willBeObject, ESValue* property, const ESValue& value);
+NEVER_INLINE void setObjectOperationExpandLengthCase(ESArrayObject* arr, uint32_t idx, const ESValue& value);
 ALWAYS_INLINE void setObjectOperation(ESValue* willBeObject, ESValue* property, const ESValue& value)
 {
     ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty());
@@ -223,6 +224,9 @@ ALWAYS_INLINE void setObjectOperation(ESValue* willBeObject, ESValue* property, 
                 if(LIKELY(idx < arr->length())) {
                     ASSERT(idx != ESValue::ESInvalidIndexValue);
                     arr->data()[idx] = value;
+                    return ;
+                } else {
+                    setObjectOperationExpandLengthCase(arr, idx, value);
                     return ;
                 }
             }
