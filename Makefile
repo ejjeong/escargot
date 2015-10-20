@@ -203,6 +203,9 @@ check-jit:
 	./run-Sunspider-jit.sh -rcf > compiledFunctions.txt
 	vimdiff compiledFunctions.txt originalCompiledFunctions.txt
 
+tidy:
+	python check_code_policy.py `find ./src/ -name "*.cpp" -o -name "*.h"`
+
 # Targets : benchmarks
 
 run-sunspider:
