@@ -19,3 +19,6 @@ ack fib tak
 test/SunSpider/tests/sunspider-1.0.2/string-unpack-code.js
 <<<< Compiled Functions >>>>
 (anonymous) (anonymous) (anonymous) (anonymous) 
+test/SunSpider/tests/sunspider-1.0.2/string-fasta.js
+<<<< Compiled Functions >>>>
+rand 
