@@ -312,7 +312,7 @@ void GlobalObject::installFunction()
             prefix.append(u"){");
             prefix.append(body->string());
             prefix.append(u"}");
-            Node* programNode = ScriptParser::generateAST(instance, prefix, true);
+            Node* programNode = instance->scriptParser()->generateAST(instance, prefix, true);
             FunctionNode* functionDeclAST = static_cast<FunctionNode* >(static_cast<ProgramNode *>(programNode)->body()[1]);
             ByteCodeGenerateContext context;
             codeBlock->m_innerIdentifiers = std::move(functionDeclAST->innerIdentifiers());

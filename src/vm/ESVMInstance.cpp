@@ -22,6 +22,7 @@ ESVMInstance::ESVMInstance()
 #endif
     enter();
 
+    m_scriptParser = new(GC) ScriptParser();
     std::srand(std::time(0));
 
     m_table = new OpcodeTable();
@@ -118,7 +119,7 @@ ESVMInstance::~ESVMInstance()
 ESValue ESVMInstance::evaluate(u16string& source, bool isForGlobalScope)
 {
     m_lastExpressionStatementValue = ESValue();
-    CodeBlock* block = ScriptParser::parseScript(this, source, isForGlobalScope);
+    CodeBlock* block = m_scriptParser->parseScript(this, source, isForGlobalScope);
     interpret(this, block);
     return m_lastExpressionStatementValue;
 }

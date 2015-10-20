@@ -16,6 +16,7 @@ class ESVMInstance;
 class CodeBlock;
 class OpcodeTable;
 class Try;
+class ScriptParser;
 
 extern __thread ESVMInstance* currentInstance;
 
@@ -107,6 +108,11 @@ public:
         return m_initialHiddenClassForArrayObject;
     }
 
+    ALWAYS_INLINE ScriptParser* scriptParser()
+    {
+        return m_scriptParser;
+    }
+
     //Function for debug
     static void printValue(ESValue val);
     ALWAYS_INLINE unsigned long tickCount()
@@ -136,6 +142,7 @@ public:
     bool m_profile;
 
 protected:
+    ScriptParser* m_scriptParser;
     ExecutionContext* m_globalExecutionContext;
     ExecutionContext* m_currentExecutionContext;
     GlobalObject* m_globalObject;
@@ -168,6 +175,7 @@ protected:
     timespec m_cachedTimeOrigin;
     tm* m_cachedTime;
     tm m_time;
+
 };
 
 }

@@ -390,9 +390,33 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16strin
 
 CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, const escargot::u16string& source, bool isForGlobalScope)
 {
+    if(source.length() < 1024) {
+        if(isForGlobalScope) {
+            auto iter = m_globalCodeCache.find(source);
+            if(iter != m_globalCodeCache.end()) {
+                return iter->second;
+            }
+        } else {
+            auto iter = m_nonGlobalCodeCache.find(source);
+            if(iter != m_nonGlobalCodeCache.end()) {
+                return iter->second;
+            }
+        }
+    }
+
     Node* node = generateAST(instance, source, isForGlobalScope);
     ASSERT(node->type() == Program);
-    return generateByteCode(node);
+    CodeBlock* cb = generateByteCode(node);
+
+    if(source.length() < 1024) {
+        if(isForGlobalScope) {
+            m_globalCodeCache.insert(std::make_pair(source, cb));
+        } else {
+            m_nonGlobalCodeCache.insert(std::make_pair(source, cb));
+        }
+    }
+
+    return cb;
 }
 
 }
