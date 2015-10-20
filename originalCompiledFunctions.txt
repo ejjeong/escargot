@@ -16,6 +16,9 @@ bitsinbyte
 test/SunSpider/tests/sunspider-1.0.2/controlflow-recursive.js
 <<<< Compiled Functions >>>>
 ack fib tak 
+test/SunSpider/tests/sunspider-1.0.2/math-cordic.js
+<<<< Compiled Functions >>>>
+FIXED FLOAT cordicsincos
 test/SunSpider/tests/sunspider-1.0.2/string-unpack-code.js
 <<<< Compiled Functions >>>>
 (anonymous) (anonymous) (anonymous) (anonymous) 

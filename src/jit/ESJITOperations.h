@@ -101,19 +101,23 @@ ALWAYS_INLINE ESValueInDouble resolveNonDataProperty(ESObject* object, size_t id
 #ifndef NDEBUG
 inline void jitLogIntOperation(int arg, const char* msg)
 {
-    printf("[JIT_LOG] %s : int 0x%x\n", msg, bitwise_cast<unsigned>(arg));
+    if (!ESVMInstance::currentInstance()->m_reportCompiledFunction)
+        printf("[JIT_LOG] %s : int 0x%x\n", msg, bitwise_cast<unsigned>(arg));
 }
 inline void jitLogDoubleOperation(ESValueInDouble arg, const char* msg)
 {
-    printf("[JIT_LOG] %s : double 0x%lx\n", msg, bitwise_cast<uint64_t>(arg));
+    if (!ESVMInstance::currentInstance()->m_reportCompiledFunction)
+        printf("[JIT_LOG] %s : double 0x%lx\n", msg, bitwise_cast<uint64_t>(arg));
 }
 inline void jitLogPointerOperation(void* arg, const char* msg)
 {
-    printf("[JIT_LOG] %s : pointer 0x%lx\n", msg, bitwise_cast<uint64_t>(arg));
+    if (!ESVMInstance::currentInstance()->m_reportCompiledFunction)
+        printf("[JIT_LOG] %s : pointer 0x%lx\n", msg, bitwise_cast<uint64_t>(arg));
 }
 inline void jitLogStringOperation(const char* arg, const char* msg)
 {
-    printf("[JIT_LOG] %s : string %s\n", msg, arg);
+    if (!ESVMInstance::currentInstance()->m_reportCompiledFunction)
+        printf("[JIT_LOG] %s : string %s\n", msg, arg);
 }
 #endif
 
