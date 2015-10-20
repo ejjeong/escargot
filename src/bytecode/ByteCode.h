@@ -140,11 +140,6 @@ struct OpcodeTable {
     std::unordered_map<void*, Opcode> m_reverseTable;
 };
 
-inline Opcode opcodeFromAddress(void* address)
-{
-    return (ESVMInstance::currentInstance()->opcodeTable())->m_reverseTable[address];
-}
-
 unsigned char popCountFromOpcode(ByteCode* code, Opcode opcode);
 unsigned char pushCountFromOpcode(ByteCode* code, Opcode opcode);
 

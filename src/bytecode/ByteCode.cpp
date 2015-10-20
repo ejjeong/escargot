@@ -125,7 +125,8 @@ void dumpBytecode(CodeBlock* codeBlock)
 #endif
     char* code = codeBlock->m_code.data();
     size_t byteCodeIndex = 0;
-    while(idx < codeBlock->m_code.size()) {
+    char* end = &codeBlock->m_code.data()[codeBlock->m_code.size()];
+    while(&code[idx] < end) {
         ByteCode* currentCode = (ByteCode *)(&code[idx]);
         ByteCodeExtraData* ex = &codeBlock->m_extraData[byteCodeIndex++];
         if(currentCode->m_node)
@@ -135,7 +136,7 @@ void dumpBytecode(CodeBlock* codeBlock)
 
         printf("regIndex[%d,+%d,-%d]\t\t", ex->m_baseRegisterIndex, ex->m_registerIncrementCount, ex->m_registerDecrementCount);
 
-        Opcode opcode = opcodeFromAddress(currentCode->m_opcodeInAddress);
+        Opcode opcode = codeBlock->m_extraData[bytecodeCounter].m_opcode;
 
 #ifdef ENABLE_ESJIT
         if (opcode == CallFunctionOpcode || opcode == NewFunctionCallOpcode) {

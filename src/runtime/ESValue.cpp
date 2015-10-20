@@ -641,12 +641,14 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
             if (!jitFunction && !fn->codeBlock()->m_dontJIT && fn->codeBlock()->m_executeCount >= fn->codeBlock()->m_threshold) {
                 LOG_VJ("==========Trying JIT Compile for function %s...==========\n", functionName);
                 size_t idx = 0;
+                size_t bytecodeCounter = 0;
                 char* code = fn->codeBlock()->m_code.data();
                 ByteCode* currentCode;
                 bool compileNextTime = false;
-                while(idx < fn->codeBlock()->m_code.size()) {
+                char* end = &fn->codeBlock()->m_code.data()[fn->codeBlock()->m_code.size()];
+                while(&code[idx] < end) {
                     currentCode = (ByteCode *)(&code[idx]);
-                    Opcode opcode = opcodeFromAddress(currentCode->m_opcodeInAddress);
+                    Opcode opcode = fn->codeBlock()->m_extraData[bytecodeCounter].m_opcode;
                     switch(opcode) {
                     case GetByIdOpcode: {
                         reinterpret_cast<GetById*>(currentCode)->m_profile.updateProfiledType();
@@ -699,6 +701,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                         #define DECLARE_EXECUTE_NEXTCODE(opcode, pushCount, popCount) \
                         case opcode##Opcode: \
                             idx += sizeof (opcode); \
+                            bytecodeCounter++; \
                             break;
                         FOR_EACH_BYTECODE_OP(DECLARE_EXECUTE_NEXTCODE);
                         #undef DECLARE_EXECUTE_NEXTCODE
@@ -748,9 +751,10 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                     size_t idx = 0;
                     size_t bytecodeCounter = 0;
                     unsigned maxStackPos = 0;
-                    while (idx < fn->codeBlock()->m_code.size()) {
+                    char* end = &fn->codeBlock()->m_code.data()[fn->codeBlock()->m_code.size()];
+                    while (&code[idx] < end) {
                         ByteCode* currentCode = (ByteCode *)(&code[idx]);
-                        Opcode opcode = opcodeFromAddress(currentCode->m_opcodeInAddress);
+                        Opcode opcode = fn->codeBlock()->m_extraData[bytecodeCounter].m_opcode;
                         if (fn->codeBlock()->getSSAIndex(bytecodeCounter)->m_targetIndex == tmpIndex) {
                             maxStackPos = ec.getStackPos();
                             break;
