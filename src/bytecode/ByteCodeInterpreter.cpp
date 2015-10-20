@@ -170,19 +170,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     GetByGlobalIndexOpcodeLbl:
     {
         GetByGlobalIndex* code = (GetByGlobalIndex*)currentCode;
-        ESValue val = globalObject->hiddenClass()->read(globalObject, globalObject, code->m_index);
-        if(UNLIKELY(val.isDeleted())) {
-            size_t idx = globalObject->hiddenClass()->findProperty(code->m_name);
-            if(UNLIKELY(idx == SIZE_MAX)) {
-                throw ESValue(ReferenceError::create());
-            } else {
-                code->m_index = idx;
-                push<ESValue>(stack, topOfStack, globalObject->hiddenClass()->read(globalObject, globalObject, idx));
-            }
-        } else {
-            ASSERT(globalObject->hiddenClass()->findProperty(code->m_name) == code->m_index);
-            push<ESValue>(stack, topOfStack, val);
-        }
+        push<ESValue>(stack, topOfStack, getByGlobalIndexOperation(globalObject, code));
         executeNextCode<GetByGlobalIndex>(programCounter);
         NEXT_INSTRUCTION();
     }
@@ -224,19 +212,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     SetByGlobalIndexOpcodeLbl:
     {
         SetByGlobalIndex* code = (SetByGlobalIndex*)currentCode;
-        ESValue* value = peek<ESValue>(stack, bp);
-        const ESHiddenClassPropertyInfo& info = globalObject->hiddenClass()->propertyInfo(code->m_index);
-        if(LIKELY(!info.m_flags.m_isDeletedValue)) {
-            globalObject->hiddenClass()->write(globalObject, globalObject, code->m_index, *value);
-        } else {
-            size_t idx = globalObject->hiddenClass()->findProperty(code->m_name);
-            if(UNLIKELY(idx == SIZE_MAX)) {
-                throw ESValue(ReferenceError::create());
-            } else {
-                code->m_index = idx;
-                globalObject->hiddenClass()->write(globalObject, globalObject, code->m_index, *value);
-            }
-        }
+        setByGlobalIndexOperation(globalObject, code, *peek<ESValue>(stack, bp));
         executeNextCode<SetByGlobalIndex>(programCounter);
         NEXT_INSTRUCTION();
     }

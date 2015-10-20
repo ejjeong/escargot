@@ -9,6 +9,18 @@ NEVER_INLINE ESValue* getByIdOperationWithNoInline(ESVMInstance* instance, Execu
     return getByIdOperation(instance, ec, code);
 }
 
+NEVER_INLINE ESValue getByGlobalIndexOperationWithNoInline(GlobalObject* globalObject, GetByGlobalIndex* code)
+{
+    return getByGlobalIndexOperation(globalObject, code);
+}
+
+
+NEVER_INLINE void setByGlobalIndexOperationWithNoInline(GlobalObject* globalObject, SetByGlobalIndex* code, const ESValue& value)
+{
+    setByGlobalIndexOperation(globalObject, code, value);
+}
+
+
 NEVER_INLINE ESValue plusOperationSlowCase(const ESValue& left, const ESValue& right)
 {
     ESValue ret(ESValue::ESForceUninitialized);

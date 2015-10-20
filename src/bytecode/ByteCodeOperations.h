@@ -37,6 +37,41 @@ ALWAYS_INLINE ESValue* getByIdOperation(ESVMInstance* instance, ExecutionContext
     }
 }
 
+ALWAYS_INLINE ESValue getByGlobalIndexOperation(GlobalObject* globalObject, GetByGlobalIndex* code)
+{
+    ESValue val = globalObject->hiddenClass()->read(globalObject, globalObject, code->m_index);
+    if(UNLIKELY(val.isDeleted())) {
+        size_t idx = globalObject->hiddenClass()->findProperty(code->m_name);
+        if(UNLIKELY(idx == SIZE_MAX)) {
+            throw ESValue(ReferenceError::create());
+        } else {
+            code->m_index = idx;
+            return globalObject->hiddenClass()->read(globalObject, globalObject, idx);
+        }
+    } else {
+        ASSERT(globalObject->hiddenClass()->findProperty(code->m_name) == code->m_index);
+        return val;
+    }
+}
+
+ALWAYS_INLINE void setByGlobalIndexOperation(GlobalObject* globalObject, SetByGlobalIndex* code, const ESValue& value)
+{
+    const ESHiddenClassPropertyInfo& info = globalObject->hiddenClass()->propertyInfo(code->m_index);
+    if(LIKELY(!info.m_flags.m_isDeletedValue)) {
+        globalObject->hiddenClass()->write(globalObject, globalObject, code->m_index, value);
+    } else {
+        size_t idx = globalObject->hiddenClass()->findProperty(code->m_name);
+        if(UNLIKELY(idx == SIZE_MAX)) {
+            throw ESValue(ReferenceError::create());
+        } else {
+            code->m_index = idx;
+            globalObject->hiddenClass()->write(globalObject, globalObject, code->m_index, value);
+        }
+    }
+}
+
+NEVER_INLINE ESValue getByGlobalIndexOperationWithNoInline(GlobalObject* globalObject, GetByGlobalIndex* code);
+NEVER_INLINE void setByGlobalIndexOperationWithNoInline(GlobalObject* globalObject, SetByGlobalIndex* code, const ESValue& value);
 
 NEVER_INLINE ESValue* getByIdOperationWithNoInline(ESVMInstance* instance, ExecutionContext* ec, GetById* code);
 
