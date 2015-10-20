@@ -87,10 +87,6 @@ jit.release:         GCLIBS=$(GCLIBS_RELEASE)
 interpreter.debug:   GCLIBS=$(GCLIBS_DEBUG)
 interpreter.release: GCLIBS=$(GCLIBS_RELEASE)
 
-# esprima
-CXXFLAGS += -Ithird_party/esprima_cpp/
-SRC_ESPRIMA_CPP += $(foreach dir, ./third_party/esprima_cpp , $(wildcard $(dir)/*.cpp))
-
 # nanojit
 include third_party/nanojit/Build.mk
 

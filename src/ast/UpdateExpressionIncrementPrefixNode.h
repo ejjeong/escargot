@@ -7,7 +7,7 @@ namespace escargot {
 
 class UpdateExpressionIncrementPrefixNode : public ExpressionNode {
 public:
-    friend class ESScriptParser;
+    friend class ScriptParser;
 
     UpdateExpressionIncrementPrefixNode(Node *argument)
             : ExpressionNode(NodeType::UpdateExpressionIncrementPrefix)

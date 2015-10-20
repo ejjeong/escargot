@@ -7,7 +7,7 @@ namespace escargot {
 
 class ConditionalExpressionNode : public ExpressionNode {
 public:
-    friend class ESScriptParser;
+    friend class ScriptParser;
     ConditionalExpressionNode(Node *test, Node *consequente, Node *alternate)
             : ExpressionNode(NodeType::ConditionalExpression)
     {

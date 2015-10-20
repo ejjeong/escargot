@@ -7,7 +7,7 @@ namespace escargot {
 
 class ContinueLabelStatementNode : public StatementNode {
 public:
-    friend class ESScriptParser;
+    friend class ScriptParser;
     ContinueLabelStatementNode(size_t upIndex, ESString* label)
             : StatementNode(NodeType::ContinueLabelStatement)
     {

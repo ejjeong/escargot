@@ -8,7 +8,7 @@ namespace escargot {
 
 class ForInStatementNode : public StatementNode {
 public:
-    friend class ESScriptParser;
+    friend class ScriptParser;
     ForInStatementNode(Node *left, Node *right, Node *body, bool each)
             : StatementNode(NodeType::ForInStatement)
     {

@@ -7,7 +7,7 @@ namespace escargot {
 
 class UnaryExpressionBitwiseNotNode : public ExpressionNode {
 public:
-    friend class ESScriptParser;
+    friend class ScriptParser;
     UnaryExpressionBitwiseNotNode(Node* argument)
         : ExpressionNode(NodeType::UnaryExpressionBitwiseNot)
     {

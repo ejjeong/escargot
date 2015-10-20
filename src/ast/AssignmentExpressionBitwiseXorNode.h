@@ -10,7 +10,7 @@ namespace escargot {
 //An assignment operator expression.
 class AssignmentExpressionBitwiseXorNode : public ExpressionNode {
 public:
-    friend class ESScriptParser;
+    friend class ScriptParser;
 
     AssignmentExpressionBitwiseXorNode(Node* left, Node* right)
             : ExpressionNode(NodeType::AssignmentExpressionBitwiseXor)

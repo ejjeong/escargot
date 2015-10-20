@@ -7,7 +7,7 @@ namespace escargot {
 
 class BinaryExpressionNotEqualNode : public ExpressionNode {
 public:
-    friend class ESScriptParser;
+    friend class ScriptParser;
 
     BinaryExpressionNotEqualNode(Node *left, Node* right)
             : ExpressionNode(NodeType::BinaryExpressionNotEqual)

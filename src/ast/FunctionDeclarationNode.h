@@ -7,7 +7,7 @@ namespace escargot {
 
 class FunctionDeclarationNode : public FunctionNode {
 public:
-    friend class ESScriptParser;
+    friend class ScriptParser;
     FunctionDeclarationNode(const InternalAtomicString& id, InternalAtomicStringVector&& params, Node* body, bool isGenerator, bool isExpression, bool isStrict)
             : FunctionNode(NodeType::FunctionDeclaration, id, std::move(params), body, isGenerator, isExpression, isStrict)
     {

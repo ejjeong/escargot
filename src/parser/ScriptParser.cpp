@@ -1,5 +1,5 @@
 #include "Escargot.h"
-#include "ESScriptParser.h"
+#include "parser/ScriptParser.h"
 #include "vm/ESVMInstance.h"
 #include "runtime/ESValue.h"
 
@@ -17,7 +17,7 @@
 namespace escargot {
 
 #ifdef ESCARGOT_PROFILE
-void ESScriptParser::dumpStats()
+void ScriptParser::dumpStats()
 {
     unsigned stat;
     auto stream = stderr;
@@ -51,7 +51,7 @@ void ESScriptParser::dumpStats()
 }
 #endif
 
-Node* ESScriptParser::generateAST(ESVMInstance* instance, const escargot::u16string& source)
+Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16string& source)
 {
     Node* node;
     try {
@@ -370,7 +370,7 @@ Node* ESScriptParser::generateAST(ESVMInstance* instance, const escargot::u16str
     return node;
 }
 
-CodeBlock* ESScriptParser::parseScript(ESVMInstance* instance, const escargot::u16string& source)
+CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, const escargot::u16string& source)
 {
     Node* node = generateAST(instance, source);
     ASSERT(node->type() == Program);

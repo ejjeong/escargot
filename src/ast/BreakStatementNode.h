@@ -7,7 +7,7 @@ namespace escargot {
 
 class BreakStatementNode : public StatementNode {
 public:
-    friend class ESScriptParser;
+    friend class ScriptParser;
     BreakStatementNode()
             : StatementNode(NodeType::BreakStatement)
     {

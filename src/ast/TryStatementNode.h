@@ -9,7 +9,7 @@ namespace escargot {
 
 class TryStatementNode : public StatementNode {
 public:
-    friend class ESScriptParser;
+    friend class ScriptParser;
     TryStatementNode(Node *block, Node *handler, CatchClauseNodeVector&& guardedHandlers,  Node *finalizer)
         : StatementNode(NodeType::TryStatement)
       {

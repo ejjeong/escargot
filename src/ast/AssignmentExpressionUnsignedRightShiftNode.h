@@ -10,7 +10,7 @@ namespace escargot {
 //An assignment operator expression.
 class AssignmentExpressionUnsignedShiftNode : public ExpressionNode {
 public:
-    friend class ESScriptParser;
+    friend class ScriptParser;
 
     AssignmentExpressionUnsignedShiftNode(Node* left, Node* right)
             : ExpressionNode(NodeType::AssignmentExpressionUnsignedRightShift)

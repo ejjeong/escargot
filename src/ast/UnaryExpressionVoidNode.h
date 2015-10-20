@@ -7,7 +7,7 @@ namespace escargot {
 
 class UnaryExpressionVoidNode : public ExpressionNode {
 public:
-    friend class ESScriptParser;
+    friend class ScriptParser;
     UnaryExpressionVoidNode(Node* argument)
         : ExpressionNode(NodeType::UnaryExpressionVoid)
     {

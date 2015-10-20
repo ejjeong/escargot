@@ -7,7 +7,7 @@ namespace escargot {
 
 class BinaryExpressionDivisionNode : public ExpressionNode {
 public:
-    friend class ESScriptParser;
+    friend class ScriptParser;
 
     BinaryExpressionDivisionNode(Node *left, Node* right)
             : ExpressionNode(NodeType::BinaryExpressionDivison)

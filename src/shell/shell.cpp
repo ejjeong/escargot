@@ -1,5 +1,4 @@
 #include "Escargot.h"
-#include "parser/ESScriptParser.h"
 #include "vm/ESVMInstance.h"
 #include "runtime/ESValue.h"
 

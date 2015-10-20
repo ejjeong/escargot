@@ -8,7 +8,7 @@ namespace escargot {
 
 class DoWhileStatementNode : public StatementNode {
 public:
-    friend class ESScriptParser;
+    friend class ScriptParser;
     DoWhileStatementNode(Node *test, Node *body)
             : StatementNode(NodeType::DoWhileStatement)
     {

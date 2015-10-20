@@ -8,7 +8,7 @@ namespace escargot {
 
 class WhileStatementNode : public StatementNode {
 public:
-    friend class ESScriptParser;
+    friend class ScriptParser;
     WhileStatementNode(Node *test, Node *body)
             : StatementNode(NodeType::WhileStatement)
     {

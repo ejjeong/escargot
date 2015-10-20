@@ -1,9 +1,9 @@
 #include "Escargot.h"
+#include "parser/ScriptParser.h"
 #include "ESVMInstance.h"
 #include "runtime/Environment.h"
 #include "runtime/ExecutionContext.h"
 #include "runtime/GlobalObject.h"
-#include "parser/ESScriptParser.h"
 #include "bytecode/ByteCode.h"
 
 #include "BumpPointerAllocator.h"
@@ -118,7 +118,7 @@ ESVMInstance::~ESVMInstance()
 ESValue ESVMInstance::evaluate(u16string& source)
 {
     m_lastExpressionStatementValue = ESValue();
-    CodeBlock* block = ESScriptParser::parseScript(this, source);
+    CodeBlock* block = ScriptParser::parseScript(this, source);
     interpret(this, block);
     return m_lastExpressionStatementValue;
 }

@@ -7,7 +7,7 @@ namespace escargot {
 
 class UnaryExpressionLogicalNotNode : public ExpressionNode {
 public:
-    friend class ESScriptParser;
+    friend class ScriptParser;
     UnaryExpressionLogicalNotNode(Node* argument)
         : ExpressionNode(NodeType::UnaryExpressionLogicalNot)
     {

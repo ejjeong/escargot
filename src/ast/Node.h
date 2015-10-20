@@ -12,7 +12,7 @@ namespace escargot {
 class ESVMInstance;
 class ExecutionContext;
 class ESSlot;
-class ESScriptParser;
+class ScriptParser;
 
 enum NodeType {
     Program,
@@ -116,7 +116,7 @@ public:
 };
 
 class Node : public gc {
-    friend class ESScriptParser;
+    friend class ScriptParser;
 protected:
     Node(NodeType type)
     {

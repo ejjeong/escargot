@@ -8,7 +8,7 @@ namespace escargot {
 
 class SwitchCaseNode : public StatementNode {
 public:
-    friend class ESScriptParser;
+    friend class ScriptParser;
     friend class SwitchStatementNode;
     SwitchCaseNode(Node* test, StatementNodeVector&& consequent)
             : StatementNode(NodeType::SwitchCase)

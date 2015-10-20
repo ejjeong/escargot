@@ -9,7 +9,7 @@ namespace escargot {
 
 class MemberExpressionNode : public ExpressionNode {
 public:
-    friend class ESScriptParser;
+    friend class ScriptParser;
     friend class UnaryExpressionDeleteNode;
     MemberExpressionNode(Node* object, Node* property, bool computed)
             : ExpressionNode(NodeType::MemberExpression)

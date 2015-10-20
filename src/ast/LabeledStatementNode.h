@@ -7,7 +7,7 @@ namespace escargot {
 
 class LabeledStatementNode : public StatementNode {
 public:
-    friend class ESScriptParser;
+    friend class ScriptParser;
     LabeledStatementNode(StatementNode* statementNode, ESString* label)
             : StatementNode(NodeType::LabeledStatement)
     {

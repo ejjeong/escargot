@@ -8,7 +8,7 @@ namespace escargot {
 
 class CallExpressionNode : public ExpressionNode {
 public:
-    friend class ESScriptParser;
+    friend class ScriptParser;
     CallExpressionNode(Node* callee, ArgumentVector&& arguments)
             : ExpressionNode(NodeType::CallExpression)
     {

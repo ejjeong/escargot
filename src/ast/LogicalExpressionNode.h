@@ -7,7 +7,7 @@ namespace escargot {
 
 class LogicalExpressionNode : public ExpressionNode {
 public:
-    friend class ESScriptParser;
+    friend class ScriptParser;
     enum LogicalExpressionOperator {
         // http://www.ecma-international.org/ecma-262/5.1/#sec-11.11
         // Binary Logical Operators

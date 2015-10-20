@@ -1,13 +1,13 @@
 #include "Escargot.h"
 #include "GlobalObject.h"
 #include "ast/AST.h"
-#include "parser/ESScriptParser.h"
 #include "vm/ESVMInstance.h"
 #include "runtime/ExecutionContext.h"
 #include "runtime/Environment.h"
+#include "parser/ScriptParser.h"
 
 #include "Yarr.h"
-#include "esprima.h"
+#include "parser/esprima.h"
 
 namespace escargot {
 
@@ -312,7 +312,7 @@ void GlobalObject::installFunction()
             prefix.append(u"){");
             prefix.append(body->string());
             prefix.append(u"}");
-            Node* programNode = ESScriptParser::generateAST(instance, prefix);
+            Node* programNode = ScriptParser::generateAST(instance, prefix);
             FunctionNode* functionDeclAST = static_cast<FunctionNode* >(static_cast<ProgramNode *>(programNode)->body()[1]);
             ByteCodeGenerateContext context;
             codeBlock->m_innerIdentifiers = std::move(functionDeclAST->innerIdentifiers());

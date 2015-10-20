@@ -11,7 +11,7 @@ namespace escargot {
 //interface CatchClause <: Node {
 class CatchClauseNode : public Node {
 public:
-    friend class ESScriptParser;
+    friend class ScriptParser;
     CatchClauseNode(Node *param, Node *guard, Node *body)
             : Node(NodeType::CatchClause)
     {

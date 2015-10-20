@@ -7,7 +7,7 @@ namespace escargot {
 
 class BreakLabelStatementNode : public StatementNode {
 public:
-    friend class ESScriptParser;
+    friend class ScriptParser;
     BreakLabelStatementNode(size_t upIndex, ESString* label)
             : StatementNode(NodeType::BreakLabelStatement)
     {

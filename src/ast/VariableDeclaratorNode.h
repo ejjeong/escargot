@@ -10,7 +10,7 @@ namespace escargot {
 
 class VariableDeclaratorNode : public Node {
 public:
-    friend class ESScriptParser;
+    friend class ScriptParser;
     VariableDeclaratorNode(Node* id,ExpressionNode* init=NULL)
             : Node(NodeType::VariableDeclarator)
     {

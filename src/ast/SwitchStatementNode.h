@@ -9,7 +9,7 @@ namespace escargot {
 
 class SwitchStatementNode : public StatementNode {
 public:
-    friend class ESScriptParser;
+    friend class ScriptParser;
     SwitchStatementNode(Node* discriminant, StatementNodeVector&& casesA, Node* deflt, StatementNodeVector&& casesB, bool lexical)
             : StatementNode(NodeType::SwitchStatement)
     {

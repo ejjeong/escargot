@@ -7,7 +7,7 @@ namespace escargot {
 
 class IfStatementNode : public StatementNode {
 public:
-    friend class ESScriptParser;
+    friend class ScriptParser;
     IfStatementNode(Node *test, Node *consequente, Node *alternate)
             : StatementNode(NodeType::IfStatement)
     {

@@ -8,7 +8,7 @@ namespace escargot {
 //An sequence expression, i.e., a statement consisting of vector of expressions.
 class SequenceExpressionNode : public ExpressionNode {
 public:
-    friend class ESScriptParser;
+    friend class ScriptParser;
     SequenceExpressionNode(ExpressionNodeVector&& expressions)
             : ExpressionNode(NodeType::SequenceExpression)
     {

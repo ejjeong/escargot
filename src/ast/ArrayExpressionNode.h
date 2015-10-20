@@ -7,7 +7,7 @@ namespace escargot {
 
 class ArrayExpressionNode : public ExpressionNode {
 public:
-    friend class ESScriptParser;
+    friend class ScriptParser;
     ArrayExpressionNode(ExpressionNodeVector&& elements)
         : ExpressionNode(NodeType::ArrayExpression)
     {

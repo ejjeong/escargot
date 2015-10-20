@@ -7,7 +7,7 @@ namespace escargot {
 
 class BinaryExpressionBitwiseAndNode: public ExpressionNode {
 public:
-    friend class ESScriptParser;
+    friend class ScriptParser;
 
     BinaryExpressionBitwiseAndNode(Node *left, Node* right)
             : ExpressionNode(NodeType::BinaryExpressionBitwiseAnd)

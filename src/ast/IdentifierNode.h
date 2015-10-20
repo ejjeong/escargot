@@ -10,7 +10,7 @@ namespace escargot {
 //interface Identifier <: Node, Expression, Pattern {
 class IdentifierNode : public Node {
 public:
-    friend class ESScriptParser;
+    friend class ScriptParser;
     IdentifierNode(const InternalAtomicString& name)
             : Node(NodeType::Identifier)
     {

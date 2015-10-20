@@ -7,7 +7,7 @@ namespace escargot {
 
 class ContinueStatementNode : public StatementNode {
 public:
-    friend class ESScriptParser;
+    friend class ScriptParser;
     ContinueStatementNode()
             : StatementNode(NodeType::ContinueStatement)
     {

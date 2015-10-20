@@ -7,7 +7,7 @@ namespace escargot {
 
 class BinaryExpressionLessThanNode : public ExpressionNode {
 public:
-    friend class ESScriptParser;
+    friend class ScriptParser;
 
     BinaryExpressionLessThanNode(Node *left, Node* right)
             : ExpressionNode(NodeType::BinaryExpressionLessThan)
