@@ -252,6 +252,17 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
+    } else if (type.isNullType()) {
+#ifdef ESCARGOT_64
+        LIns* checkIfNull = m_out.ins2(LIR_eqq, in, m_nullQ);
+        LIns* jumpIfNull = m_out.insBranch(LIR_jt, checkIfNull, nullptr);
+        JIT_LOG(in, "Expected null value, but got this value");
+        generateOSRExit(currentByteCodeIndex);
+        LIns* normalPath = m_out.ins0(LIR_label);
+        jumpIfNull->setTarget(normalPath);
+#else
+        RELEASE_ASSERT_NOT_REACHED();
+#endif
     } else {
         std::cout << "Unsupported type in NativeGenerator::generateTypeCheck() : ";
         type.dump(std::cout);
@@ -293,7 +304,7 @@ LIns* NativeGenerator::boxESValue(LIns* unboxedValue, Type type)
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
-    } else if (type.isObjectType() || type.isUndefinedType() || type.isArrayObjectType() || type.isStringType() || type.isFunctionObjectType()) {
+    } else if (type.isObjectType() || type.isUndefinedType() || type.isNullType() || type.isArrayObjectType() || type.isStringType() || type.isFunctionObjectType()) {
 #ifdef ESCARGOT_64
         return unboxedValue;
 #else
@@ -335,7 +346,7 @@ LIns* NativeGenerator::unboxESValue(LIns* boxedValue, Type type)
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
-    } else if (type.isObjectType() || type.isUndefinedType() || type.isArrayObjectType() || type.isStringType() || type.isFunctionObjectType()) {
+    } else if (type.isObjectType() || type.isUndefinedType() || type.isNullType() || type.isArrayObjectType() || type.isStringType() || type.isFunctionObjectType()) {
 #ifdef ESCARGOT_64
         return boxedValue;
 #else
@@ -360,6 +371,11 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     #define INIT_ESIR(opcode) \
         opcode##IR* ir##opcode = static_cast<opcode##IR*>(ir);
 #endif
+    case ESIR::Opcode::Constant:
+    {
+        INIT_ESIR(Constant);
+        return  m_out.insImmD(ESValue::toRawDouble(irConstant->value()));
+    }
     case ESIR::Opcode::ConstantInt:
     {
         INIT_ESIR(ConstantInt);
@@ -571,6 +587,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         Type rightType = m_graph->getOperandType(irEqual->rightIndex());
         if (leftType.isInt32Type() && rightType.isInt32Type())
             return m_out.ins2(LIR_eqi, left, right);
+        else if (leftType.isNullType() && rightType.isNullType())
+            return m_out.ins2(LIR_eqd, left, right);
         else
             RELEASE_ASSERT_NOT_REACHED();
     }
@@ -1029,6 +1047,7 @@ void NativeGenerator::nanojitCodegen(ESVMInstance* instance)
     m_intTagComplementQ = m_out.insImmQ(~TagTypeNumber);
     m_doubleEncodeOffsetQ = m_out.insImmQ(DoubleEncodeOffset);
     m_undefinedQ = m_out.insImmQ(ValueUndefined);
+    m_nullQ = m_out.insImmQ(ValueNull);
     m_emptyQ = m_out.insImmQ(ValueEmpty);
     m_zeroQ = m_out.insImmQ(0);
 #endif
@@ -1089,8 +1108,13 @@ JITFunction NativeGenerator::nativeCodegen() {
 
     m_assm->compile(m_f, *m_alloc, false verbose_only(, m_f->lirbuf->printer));
     if (m_assm->error() != None) {
-        if (ESVMInstance::currentInstance()->m_profile)
-            printf("error compiling fragment\n");
+        LOG_VJ("nanojit failed to generate native code (Error : ", m_assm->error());
+        switch(m_assm->error()) {
+        case StackFull:     LOG_VJ("StackFull)\n");     break;
+        case UnknownBranch: LOG_VJ("UnknownBranch)\n"); break;
+        case BranchTooFar : LOG_VJ("BranchTooFar)\n");  break;
+        default: RELEASE_ASSERT_NOT_REACHED();
+        }
         return nullptr;
     }
 

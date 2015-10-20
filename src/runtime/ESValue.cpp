@@ -634,8 +634,12 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
             //ESVMInstance->invalidateIdentifierCacheCheckCount();
             //execute;
 #ifdef ENABLE_ESJIT
+#ifndef NDEBUG
+            const char* functionName = fn->codeBlock()->m_nonAtomicId ? (fn->codeBlock()->m_nonAtomicId->utf8Data()):"(anonymous)";
+#endif
             ESJIT::JITFunction jitFunction = fn->codeBlock()->m_cachedJITFunction;
             if (!jitFunction && !fn->codeBlock()->m_dontJIT && fn->codeBlock()->m_executeCount >= fn->codeBlock()->m_threshold) {
+                LOG_VJ("==========Trying JIT Compile for function %s...==========\n", functionName);
                 size_t idx = 0;
                 char* code = fn->codeBlock()->m_code.data();
                 ByteCode* currentCode;
@@ -702,10 +706,6 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                 }
 
                 if (!compileNextTime) {
-#ifndef NDEBUG
-                    const char* functionName = fn->codeBlock()->m_nonAtomicId ? (fn->codeBlock()->m_nonAtomicId->utf8Data()):"(anonymous)";
-#endif
-                    LOG_VJ("Trying JIT Compile for function %s...\n", functionName);
                     jitFunction = reinterpret_cast<ESJIT::JITFunction>(ESJIT::JITCompile(fn->codeBlock(), instance));
                     if (jitFunction) {
                         LOG_VJ("> Compilation successful for function %s! Cache jit function %p\n", functionName, jitFunction);
@@ -720,12 +720,12 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
 #endif
                         fn->codeBlock()->m_cachedJITFunction = jitFunction;
                     } else {
-                        LOG_VJ("> Compilation failed! disable jit compilation from now on\n");
+                        LOG_VJ("> Compilation failed! disable jit compilation for function %s from now on\n", functionName);
                         fn->codeBlock()->m_dontJIT = true;
                     }
                 } else {
                     size_t threshold = fn->codeBlock()->m_threshold;
-                    LOG_VJ("> Doubling JIT compilation threshold from %d to %d\n", threshold, threshold*2);
+                    LOG_VJ("> Doubling JIT compilation threshold from %d to %d for function %s\n", threshold, threshold*2, functionName);
                     fn->codeBlock()->m_threshold *= 2;
                 }
             }

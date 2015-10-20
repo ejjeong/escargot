@@ -85,6 +85,8 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
                     literal = ConstantStringIR::create(ssaIndex->m_targetIndex, bytecode->m_value.asESString());
                 else
                     goto unsupported;
+            } else if (bytecode->m_value.isNull() || bytecode->m_value.isUndefined()) {
+                literal = ConstantIR::create(ssaIndex->m_targetIndex, bytecode->m_value);
             } else
                 goto unsupported;
             currentBlock->push(literal);
@@ -562,7 +564,7 @@ postprocess:
 unsupported:
 #ifndef NDEBUG
     if (ESVMInstance::currentInstance()->m_verboseJIT || ESVMInstance::currentInstance()->m_reportUnsupportedOpcode)
-        printf("Unsupported ByteCode %s in JIT FrontEnd\n", getByteCodeName(opcodeFromAddress(currentCode->m_opcodeInAddress)));
+        printf("Unsupported ByteCode %s (idx %zu) in JIT FrontEnd\n", getByteCodeName(opcodeFromAddress(currentCode->m_opcodeInAddress)), idx);
 #endif
     return nullptr;
 }

@@ -23,8 +23,11 @@ void ESGraphTypeInference::run(ESGraph* graph)
             #define INIT_ESIR(opcode) \
                 opcode##IR* ir##opcode = static_cast<opcode##IR*>(ir);
             case ESIR::Opcode::Constant:
-                graph->setOperandType(ir->targetIndex(), TypeTop);
+            {
+                INIT_ESIR(Constant);
+                graph->setOperandType(ir->targetIndex(), Type::getType(irConstant->value()));
                 break;
+            }
             case ESIR::Opcode::ConstantInt:
                 graph->setOperandType(ir->targetIndex(), TypeInt32);
                 break;

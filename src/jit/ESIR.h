@@ -187,23 +187,15 @@ class ConstantIR : public ESIR {
 public:
     DECLARE_STATIC_GENERATOR_1(Constant, ESValue)
 
-    static ConstantIR* getMask(Type type)
-    {
-        RELEASE_ASSERT_NOT_REACHED();
-    }
-
-    static ConstantIR* s_undefined;
-    static ConstantIR* s_int32Mask;
-    static ConstantIR* s_zero;
-
 #ifndef NDEBUG
     virtual void dump(std::ostream& out)
     {
         out << "tmp" << m_targetIndex << ": ";
         ESIR::dump(out);
-        out << " const " << m_value.toString()->utf8Data();
+        out << " constant " << m_value.toString()->utf8Data();
     }
 #endif
+    ESValue value() { return m_value; }
 
 private:
     ConstantIR(int target, ESValue value)

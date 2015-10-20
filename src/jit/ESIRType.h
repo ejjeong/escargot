@@ -87,6 +87,8 @@ public:
             return TypeInt32;
         else if (value.isDouble())
             return TypeDouble;
+        else if (value.isNull())
+            return TypeNull;
         else if (value.isUndefined())
             return TypeUndefined;
         else if (value.isEmpty()) // FIXME what if the profiled value was empty? (!= not profiled)
