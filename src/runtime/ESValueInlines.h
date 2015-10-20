@@ -183,40 +183,10 @@ inline ESObject* ESValue::toObject() const
     return object;
 }
 
-inline ESValue ESValue::toPrimitive(PrimitiveTypeHint preferredType) const
+ALWAYS_INLINE ESValue ESValue::toPrimitive(PrimitiveTypeHint preferredType) const
 {
     if (UNLIKELY(!isPrimitive())) {
-        ESObject* obj = asESPointer()->asESObject();
-        if (preferredType == PrimitiveTypeHint::PreferString) {
-            ESValue toString = obj->get(ESValue(strings->toString.string()));
-            if(toString.isESPointer() && toString.asESPointer()->isESFunctionObject()) {
-                ESValue str = ESFunctionObject::call(ESVMInstance::currentInstance(), toString, obj, NULL, 0, false);
-                if(str.isPrimitive())
-                    return str;
-            }
-
-            ESValue valueOf = obj->get(ESValue(strings->valueOf.string()));
-            if(valueOf.isESPointer() && valueOf.asESPointer()->isESFunctionObject()) {
-                ESValue val = ESFunctionObject::call(ESVMInstance::currentInstance(), valueOf, obj, NULL, 0, false);
-                if(val.isPrimitive())
-                    return val;
-            }
-        } else { // preferNumber
-            ESValue valueOf = obj->get(ESValue(strings->valueOf.string()));
-            if(valueOf.isESPointer() && valueOf.asESPointer()->isESFunctionObject()) {
-                ESValue val = ESFunctionObject::call(ESVMInstance::currentInstance(), valueOf, obj, NULL, 0, false);
-                if(val.isPrimitive())
-                    return val;
-            }
-
-            ESValue toString = obj->get(ESValue(strings->toString.string()));
-            if(toString.isESPointer() && toString.asESPointer()->isESFunctionObject()) {
-                ESValue str = ESFunctionObject::call(ESVMInstance::currentInstance(), toString, obj, NULL, 0, false);
-                if(str.isPrimitive())
-                    return str;
-            }
-        }
-        throw ESValue(TypeError::create());
+        return toPrimitiveSlowCase(preferredType);
     } else {
         return *this;
     }

@@ -15,6 +15,42 @@
 
 namespace escargot {
 
+ESValue ESValue::toPrimitiveSlowCase(PrimitiveTypeHint preferredType) const
+{
+    ASSERT(!isPrimitive());
+    ESObject* obj = asESPointer()->asESObject();
+    if (preferredType == PrimitiveTypeHint::PreferString) {
+        ESValue toString = obj->get(ESValue(strings->toString.string()));
+        if(toString.isESPointer() && toString.asESPointer()->isESFunctionObject()) {
+            ESValue str = ESFunctionObject::call(ESVMInstance::currentInstance(), toString, obj, NULL, 0, false);
+            if(str.isPrimitive())
+                return str;
+        }
+
+        ESValue valueOf = obj->get(ESValue(strings->valueOf.string()));
+        if(valueOf.isESPointer() && valueOf.asESPointer()->isESFunctionObject()) {
+            ESValue val = ESFunctionObject::call(ESVMInstance::currentInstance(), valueOf, obj, NULL, 0, false);
+            if(val.isPrimitive())
+                return val;
+        }
+    } else { // preferNumber
+        ESValue valueOf = obj->get(ESValue(strings->valueOf.string()));
+        if(valueOf.isESPointer() && valueOf.asESPointer()->isESFunctionObject()) {
+            ESValue val = ESFunctionObject::call(ESVMInstance::currentInstance(), valueOf, obj, NULL, 0, false);
+            if(val.isPrimitive())
+                return val;
+        }
+
+        ESValue toString = obj->get(ESValue(strings->toString.string()));
+        if(toString.isESPointer() && toString.asESPointer()->isESFunctionObject()) {
+            ESValue str = ESFunctionObject::call(ESVMInstance::currentInstance(), toString, obj, NULL, 0, false);
+            if(str.isPrimitive())
+                return str;
+        }
+    }
+    throw ESValue(TypeError::create());
+}
+
 enum Flags {
   NO_FLAGS = 0,
   EMIT_POSITIVE_EXPONENT_SIGN = 1,

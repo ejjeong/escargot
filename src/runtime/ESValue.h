@@ -146,7 +146,8 @@ public:
     bool isObject() const;
 
     enum PrimitiveTypeHint { PreferString, PreferNumber };
-    inline ESValue toPrimitive(PrimitiveTypeHint = PreferNumber) const; //$7.1.1 ToPrimitive
+    ALWAYS_INLINE ESValue toPrimitive(PrimitiveTypeHint = PreferNumber) const; //$7.1.1 ToPrimitive
+    ESValue toPrimitiveSlowCase(PrimitiveTypeHint = PreferNumber) const;
     ALWAYS_INLINE bool toBoolean() const; //$7.1.2 ToBoolean
     ALWAYS_INLINE double toNumber() const; //$7.1.3 ToNumber
     inline double toNumberSlowCase() const; //$7.1.3 ToNumber
