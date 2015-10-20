@@ -40,7 +40,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         currentCode = (ByteCode *)(&code[idx]);
         Opcode opcode = opcodeFromAddress(currentCode->m_opcodeInAddress);
 
-        // Update BasicBlock information 
+        // Update BasicBlock information
         // TODO: find a better way to this (e.g. using AST, write information to bytecode..)
         if (ESBasicBlock* generatedBlock = basicBlockMapping[idx]) {
             if (currentBlock != generatedBlock && !currentBlock->endsWithJumpOrBranch()) {
@@ -414,7 +414,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             // FIXME lastESObjectMetInMemberExpressionNode = globalObject;
             NEXT_BYTECODE(PrepareFunctionCall);
             break;
-        case PushFunctionCallReceiverOpcode: 
+        case PushFunctionCallReceiverOpcode:
         {
             INIT_BYTECODE(PushFunctionCallReceiver);
             graph->setOperandStackPos(ssaIndex->m_targetIndex, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);

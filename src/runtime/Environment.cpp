@@ -88,7 +88,7 @@ bool GlobalEnvironmentRecord::canDeclareGlobalFunction(const InternalAtomicStrin
 
     // IsDataDescriptor && ..
      */
-    
+
     return false;
 }
 

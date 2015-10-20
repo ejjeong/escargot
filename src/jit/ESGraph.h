@@ -50,7 +50,7 @@ public:
     void setLabel(nanojit::LIns* label) { m_label = label; }
     nanojit::LIns* getLabel() { return m_label; }
 
-    void addJumpOrBranchSource(nanojit::LIns* source) { 
+    void addJumpOrBranchSource(nanojit::LIns* source) {
         m_jumpOrBranchSources.push_back(source);
     }
 
@@ -74,7 +74,7 @@ private:
 class ESGraph : public gc {
     friend class NativeGenerator;
 public:
-    static ESGraph* create(CodeBlock* codeBlock) 
+    static ESGraph* create(CodeBlock* codeBlock)
     {
         ASSERT(codeBlock);
         // FIXME no bdwgc
