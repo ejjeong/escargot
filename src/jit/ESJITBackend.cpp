@@ -122,7 +122,7 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
                             j--;
                             unsigned followPopCount = m_graph->getFollowPopCountOf(block->instruction(j)->targetIndex());
                             maxStackPos = m_graph->getOperandStackPos(block->instruction(j)->targetIndex()) - followPopCount;
-                        }
+                           }
                         break;
                     }
                 }

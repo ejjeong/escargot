@@ -5,8 +5,10 @@
 
 namespace escargot {
 
-ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter)
+ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter, unsigned maxStackPos)
 {
+    if (maxStackPos > 0)
+        int jmp = 1;
     if(codeBlock == NULL) {
 #define REGISTER_TABLE(opcode, pushCount, popCount) \
         instance->opcodeTable()->m_table[opcode##Opcode] = &&opcode##OpcodeLbl; \
@@ -19,17 +21,35 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         goto NextInstruction
 
     ExecutionContext* ec = instance->currentExecutionContext();
+
     unsigned stackSiz = codeBlock->m_requiredStackSizeInESValueSize * sizeof(ESValue);
 #ifndef NDEBUG
     stackSiz += sizeof(size_t) * codeBlock->m_requiredStackSizeInESValueSize;
 #endif
-    char* stackBuf = (char *)alloca(stackSiz);
-    void* stack = stackBuf;
-    void* topOfStack = stackBuf + stackSiz;
+
+    char stackBuf[4096];
     void* bp = stackBuf;
+    void* stack;
+    if (maxStackPos == 0)
+        stack = bp;
+    else {
 #ifdef ENABLE_ESJIT
-    ec->m_stackBuf = stackBuf;
+        size_t offset = maxStackPos*sizeof(ESValue);
+#ifndef NDEBUG
+        offset *= 2;
 #endif
+        memcpy(stackBuf, ec->getBp(), offset);
+        stack = (void*)(((size_t)bp) + offset);
+#endif
+    }
+
+//    char* stackBuf = (char *)alloca(stackSiz);
+//    void* stack = stackBuf;
+    void* topOfStack = stackBuf + stackSiz;
+//    void* bp = stackBuf;
+//#ifdef ENABLE_ESJIT
+//    ec->setBp(stackBuf);
+//#endif
     char tmpStackBuf[32];
     void* tmpStack = tmpStackBuf;
     void* tmpBp = tmpStack;
@@ -48,29 +68,10 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     //resolve programCounter into address
     programCounter = (size_t)(&codeBuffer[programCounter]);
     ByteCode* currentCode;
-    ByteCode* prevCode = NULL;
 
     NextInstruction:
     currentCode = (ByteCode *)programCounter;
     ASSERT(((size_t)currentCode % sizeof(size_t)) == 0);
-
-    if (prevCode == NULL) {
-//#ifndef NDEBUG
-//        printf("\n\ncodeBlock: %p\n", codeBlock);
-//        printf("    :    bp = %p, sp = %p\n", bp, stack);
-//#endif
-    } else {
-            size_t siz = sizeof(ESValue);
-#ifndef NDEBUG
-            siz += sizeof(ESValue);
-    //        prevCode->dump();
-    //        printf("    :    bp = %p, sp = %p(%lld)\n", bp, stack, ((long long)stack - (long long)bp)/siz);
-#endif
-#ifdef ENABLE_ESJIT
-            prevCode->m_stackPos = ((long long)stack - (long long)bp)/siz;
-#endif
-     }
-     prevCode = currentCode;
 
 #ifndef NDEBUG
     if(instance->m_dumpExecuteByteCode) {

@@ -24,7 +24,7 @@ typedef std::unordered_map<u16string, ESString *,
         gc_allocator<std::pair<const u16string, ESString *> > > InternalAtomicStringMap;
 
 class ESVMInstance : public gc_cleanup {
-    friend ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter);
+    friend ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter, unsigned maxStackPos);
     friend NEVER_INLINE void tryOperation(ESVMInstance* instance, CodeBlock* codeBlock, char* codeBuffer, ExecutionContext* ec, size_t programCounter, Try* code);
     friend class ESFunctionObject;
     friend class ExpressionStatementNode;

@@ -72,12 +72,14 @@ public:
 #ifdef ENABLE_ESJIT
     bool inOSRExit() { return m_inOSRExit; }
     char* getBp() { return m_stackBuf; }
+//    void setBp(char* bp) { m_stackBuf = bp; }
     unsigned getStackPos() { return m_stackPos; }
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Winvalid-offsetof"
     static size_t offsetOfArguments() { return offsetof(ExecutionContext, m_arguments); }
     static size_t offsetofInOSRExit() { return offsetof(ExecutionContext, m_inOSRExit); }
     static size_t offsetofStackBuf() { return offsetof(ExecutionContext, m_stackBuf); }
+    static size_t offsetofStackPos() { return offsetof(ExecutionContext, m_stackPos); }
     static size_t offsetofcachedDeclarativeEnvironmentRecordESValue() {
         return offsetof(ExecutionContext, m_cachedDeclarativeEnvironmentRecord);
     }
@@ -103,7 +105,10 @@ private:
 
     ESValue m_tryOrCatchBodyResult;
 #ifdef ENABLE_ESJIT
-    char* m_stackBuf;
+    bool m_inOSRExit;
+    unsigned m_stackPos;
+//    char* m_stackBuf;
+    char m_stackBuf[4096];
 #endif
 };
 
