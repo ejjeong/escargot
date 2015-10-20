@@ -176,7 +176,11 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
         LIns* maskedValue2 = m_out.ins2(LIR_subq, quadValue, m_booleanTagQ);
         LIns* checkIfBoolean = m_out.ins2(LIR_leuq, maskedValue2, m_oneI);
         LIns* jumpIfBoolean = m_out.insBranch(LIR_jt, checkIfBoolean, nullptr);
-        JIT_LOG(in, "Expected Boolean-typed value, but got this value");
+#ifndef NDEBUG
+        if (ESVMInstance::currentInstance()->m_verboseJIT) {
+            JIT_LOG(in, "Expected Boolean-typed value, but got this value");
+         }
+#endif
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out.ins0(LIR_label);
         jumpIfBoolean->setTarget(normalPath);
@@ -192,9 +196,7 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
 #ifndef NDEBUG
         if (ESVMInstance::currentInstance()->m_verboseJIT) {
             JIT_LOG(in, "Expected Int-typed value, but got this value");
-            LIns* index = m_out.insImmI(currentByteCodeIndex);
-            JIT_LOG(index, "ESIR index = ");
-        }
+         }
 #endif
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out.ins0(LIR_label);
@@ -212,7 +214,11 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
         LIns* jumpIfDouble = m_out.insBranch(LIR_jf, checkIfInt, nullptr);
         LIns* exitPath = m_out.ins0(LIR_label);
         exitIfNotNumber->setTarget(exitPath);
-        JIT_LOG(in, "Expected Double-typed value, but got this value");
+#ifndef NDEBUG
+        if (ESVMInstance::currentInstance()->m_verboseJIT) {
+            JIT_LOG(in, "Expected Double-typed value, but got this value");
+         }
+#endif
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out.ins0(LIR_label);
         jumpIfDouble->setTarget(normalPath);
@@ -229,7 +235,11 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
         LIns* maskedValue = m_out.ins2(LIR_andq, quadValue, m_tagMaskQ);
         LIns* checkIfNotTagged = m_out.ins2(LIR_eqq, maskedValue, m_zeroQ);
         LIns* jumpIfPointer = m_out.insBranch(LIR_jt, checkIfNotTagged, nullptr);
-        JIT_LOG(in, "Expected Pointer-typed value, but got this value");
+#ifndef NDEBUG
+        if (ESVMInstance::currentInstance()->m_verboseJIT) {
+            JIT_LOG(in, "Expected Pointer-typed value, but got this value");
+         }
+#endif
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out.ins0(LIR_label);
         jumpIfPointer->setTarget(normalPath);
@@ -240,7 +250,11 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
 #ifdef ESCARGOT_64
         LIns* checkIfUndefined = m_out.ins2(LIR_eqq, in, m_undefinedQ);
         LIns* jumpIfUndefined = m_out.insBranch(LIR_jt, checkIfUndefined, nullptr);
-        JIT_LOG(in, "Expected undefined value, but got this value");
+#ifndef NDEBUG
+        if (ESVMInstance::currentInstance()->m_verboseJIT) {
+            JIT_LOG(in, "Expected undefined value, but got this value");
+         }
+#endif
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out.ins0(LIR_label);
         jumpIfUndefined->setTarget(normalPath);
@@ -251,7 +265,11 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
 #ifdef ESCARGOT_64
         LIns* checkIfNull = m_out.ins2(LIR_eqq, in, m_nullQ);
         LIns* jumpIfNull = m_out.insBranch(LIR_jt, checkIfNull, nullptr);
-        JIT_LOG(in, "Expected null value, but got this value");
+#ifndef NDEBUG
+        if (ESVMInstance::currentInstance()->m_verboseJIT) {
+            JIT_LOG(in, "Expected null value, but got this value");
+         }
+#endif
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out.ins0(LIR_label);
         jumpIfNull->setTarget(normalPath);
