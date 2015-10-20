@@ -32,6 +32,8 @@ using namespace nanojit;
 
 CallInfo plusOpCallInfo = CI(plusOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 CallInfo minusOpCallInfo = CI(minusOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
+CallInfo equalOpCallInfo = CI(equalOp, CallInfo::typeSig2(ARGTYPE_B, ARGTYPE_D, ARGTYPE_D));
+CallInfo lessThanOpCallInfo = CI(lessThanOp, CallInfo::typeSig2(ARGTYPE_B, ARGTYPE_D, ARGTYPE_D));
 CallInfo contextResolveBindingCallInfo = CI(contextResolveBinding, CallInfo::typeSig3(ARGTYPE_P, ARGTYPE_P, ARGTYPE_P, ARGTYPE_P));
 CallInfo contextResolveThisBindingCallInfo = CI(contextResolveThisBinding, CallInfo::typeSig1(ARGTYPE_D, ARGTYPE_P));
 CallInfo objectDefineDataPropertyCallInfo = CI(objectDefineDataProperty, CallInfo::typeSig3(ARGTYPE_V, ARGTYPE_P, ARGTYPE_D, /*ARGTYPE_B, ARGTYPE_B, ARGTYPE_B,*/ ARGTYPE_D));
@@ -606,8 +608,14 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             return m_true;
         else if (isLeftUndefinedOrNull || isRightUndefinedOrNull)
             return m_false;
-        else
-            RELEASE_ASSERT_NOT_REACHED();
+        else {
+            LIns* boxedLeft = boxESValue(left, leftType);
+            LIns* boxedRight = boxESValue(right, rightType);
+            LIns* args[] = {boxedRight, boxedLeft};
+            LIns* boxedResult = m_out.insCall(&equalOpCallInfo, args);
+            LIns* unboxedResult = unboxESValue(boxedResult, TypeBoolean);
+            return unboxedResult;
+        }
     }
     case ESIR::Opcode::GreaterThan:
     {
@@ -653,8 +661,23 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         Type rightType = m_graph->getOperandType(irLessThan->rightIndex());
         if (leftType.isInt32Type() && rightType.isInt32Type())
             return m_out.ins2(LIR_lti, left, right);
-        else
-            RELEASE_ASSERT_NOT_REACHED();
+        else if (leftType.isNumberType() && rightType.isNumberType()) {
+            if (leftType.isInt32Type())
+                left = m_out.ins1(LIR_i2d, left);
+            if (rightType.isInt32Type())
+                right = m_out.ins1(LIR_i2d, right);
+            return m_out.ins2(LIR_ltd, left, right);
+        }
+        else if (leftType.isUndefinedType() || rightType.isUndefinedType())
+            return m_false;
+        else {
+            LIns* boxedLeft = boxESValue(left, leftType);
+            LIns* boxedRight = boxESValue(right, rightType);
+            LIns* args[] = {boxedRight, boxedLeft};
+            LIns* boxedResult = m_out.insCall(&lessThanOpCallInfo, args);
+            LIns* unboxedResult = unboxESValue(boxedResult, TypeBoolean);
+            return unboxedResult;
+        }
     }
     case ESIR::Opcode::LessThanOrEqual:
     {

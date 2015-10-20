@@ -18,10 +18,13 @@ test/SunSpider/tests/sunspider-1.0.2/controlflow-recursive.js
 ack fib tak 
 test/SunSpider/tests/sunspider-1.0.2/math-cordic.js
 <<<< Compiled Functions >>>>
-FIXED FLOAT cordicsincos
+FIXED FLOAT cordicsincos 
 test/SunSpider/tests/sunspider-1.0.2/string-unpack-code.js
 <<<< Compiled Functions >>>>
 (anonymous) (anonymous) (anonymous) (anonymous) 
 test/SunSpider/tests/sunspider-1.0.2/string-fasta.js
 <<<< Compiled Functions >>>>
 rand 
+test/SunSpider/tests/sunspider-1.0.2/string-tagcloud.js
+<<<< Compiled Functions >>>>
+(anonymous) (anonymous) 

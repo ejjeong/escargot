@@ -79,6 +79,23 @@ inline ESValueInDouble newOp(ESVMInstance* instance, GlobalObject* globalObject,
     return ESValue::toRawDouble(newOperation(instance, globalObject, fnVal, arguments, argc));
 }
 
+inline bool equalOp(ESValueInDouble left, ESValueInDouble right)
+{
+    ESValue leftVal = ESValue::fromRawDouble(left);
+    ESValue rightVal = ESValue::fromRawDouble(right);
+    bool ret = leftVal.abstractEqualsTo(rightVal);
+    return ret;
+}
+
+inline bool lessThanOp(ESValueInDouble left, ESValueInDouble right)
+{
+    ESValue leftVal = ESValue::fromRawDouble(left);
+    ESValue rightVal = ESValue::fromRawDouble(right);
+    ESValue ret = abstractRelationalComparison(leftVal, rightVal, true);
+    if (ret.isUndefined()) return false;
+    return ret.asBoolean();
+}
+
 #if 0
 ALWAYS_INLINE ESValueInDouble resolveNonDataProperty(ESObject* object, ESPointer* hiddenClassIdxData)
 {
