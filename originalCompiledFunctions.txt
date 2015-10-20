@@ -1,3 +1,9 @@
+test/SunSpider/tests/sunspider-1.0.2/access-binary-trees.js
+<<<< Compiled Functions >>>>
+bottomUpTree 
+test/SunSpider/tests/sunspider-1.0.2/access-nbody.js
+<<<< Compiled Functions >>>>
+(anonymous) Sun Jupiter Saturn Uranus Neptune 
 test/SunSpider/tests/sunspider-1.0.2/access-nsieve.js
 <<<< Compiled Functions >>>>
 nsieve 
