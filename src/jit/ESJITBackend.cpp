@@ -138,23 +138,16 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
                     LIns* lIns = m_tmpToLInsMapping[esir->targetIndex()];
                     if (lIns) {
                         LIns* boxedLIns = boxESValue(lIns, type);
-                        LIns* size = m_out.insImmI(sizeof(ESValue));
                         int bufOffset = (stackPos-1) * sizeof(ESValue);
-#ifndef NDEBUG
-                        bufOffset *= 2;
-#endif
                         LIns* stackBuf = m_out.insLoad(LIR_ldp, m_context, ExecutionContext::offsetofStackBuf(), 1, LOAD_NORMAL);
                         m_out.insStore(LIR_std, boxedLIns, stackBuf, bufOffset, 1);
-#ifndef NDEBUG
-                        m_out.insStore(LIR_sti, size, stackBuf, bufOffset + sizeof(ESValue), 1);
-#endif
-                    }
+                       }
                     if (stackPos == 1) {
                         LIns* maxStackPosLIns = m_out.insImmI(maxStackPos);
                         m_out.insStore(LIR_sti, maxStackPosLIns, m_context, ExecutionContext::offsetofStackPos(), 1);
                         isDone = true;
                         break;
-                    }
+                       }
                   }
             } else {
                 LIns* maxStackPosLIns = m_out.insImmI(maxStackPos);

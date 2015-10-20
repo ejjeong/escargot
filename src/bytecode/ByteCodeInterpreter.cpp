@@ -33,9 +33,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     } else {
 #ifdef ENABLE_ESJIT
         size_t offset = maxStackPos*sizeof(ESValue);
-#ifndef NDEBUG
-        offset *= 2;
-#endif
         stackBuf = ec->getBp();
         bp = stackBuf;
         stack = (void*)(((size_t)bp) + offset);
