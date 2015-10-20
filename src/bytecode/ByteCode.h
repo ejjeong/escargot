@@ -1730,6 +1730,9 @@ public:
     }
 #endif
 
+#ifdef ENABLE_ESJIT
+    ProfileData m_profile;
+#endif
 };
 
 class ReturnFunction : public ByteCode {

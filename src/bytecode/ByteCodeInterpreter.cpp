@@ -681,7 +681,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         stack = (void *)((size_t)stack - argc * sizeof(ESValue));
         ESValue* arguments = (ESValue *)stack;
         ESValue fn = *pop<ESValue>(stack, bp);
-        push<ESValue>(stack, topOfStack, newOperation(instance, globalObject, fn, arguments, argc));
+        ESValue result = newOperation(instance, globalObject, fn, arguments, argc);
+#ifdef ENABLE_ESJIT
+        code->m_profile.addProfile(result);
+#endif
+        push<ESValue>(stack, topOfStack, result);
         executeNextCode<NewFunctionCall>(programCounter);
         NEXT_INSTRUCTION();
     }

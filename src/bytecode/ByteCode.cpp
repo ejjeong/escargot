@@ -138,7 +138,7 @@ void dumpBytecode(CodeBlock* codeBlock)
         Opcode opcode = opcodeFromAddress(currentCode->m_opcodeInAddress);
 
 #ifdef ENABLE_ESJIT
-        if (opcode == CallFunctionOpcode) {
+        if (opcode == CallFunctionOpcode || opcode == NewFunctionCallOpcode) {
             int calleeIndex = codeBlock->m_functionCallInfos[callInfoIndex++];
             int receiverIndex = codeBlock->m_functionCallInfos[callInfoIndex++];
             int argumentCount = codeBlock->m_functionCallInfos[callInfoIndex++];

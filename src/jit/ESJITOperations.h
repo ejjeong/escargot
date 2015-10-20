@@ -72,6 +72,13 @@ inline ESValueInDouble esFunctionObjectCall(ESVMInstance* instance,
     return ESValue::toRawDouble(ret);
 }
 
+NEVER_INLINE ESValue newOperation(ESVMInstance* instance, GlobalObject* globalObject, ESValue fn, ESValue* arguments, size_t argc);
+inline ESValueInDouble newOp(ESVMInstance* instance, GlobalObject* globalObject, ESValueInDouble fn, ESValue* arguments, size_t argc)
+{
+    ESValue fnVal = ESValue::fromRawDouble(fn);
+    return ESValue::toRawDouble(newOperation(instance, globalObject, fnVal, arguments, argc));
+}
+
 #if 0
 ALWAYS_INLINE ESValueInDouble resolveNonDataProperty(ESObject* object, ESPointer* hiddenClassIdxData)
 {

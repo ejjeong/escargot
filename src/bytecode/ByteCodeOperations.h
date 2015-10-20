@@ -56,7 +56,7 @@ ALWAYS_INLINE ESValue plusOperation(const ESValue& left, const ESValue& right)
         }
         return ret;
     } else if(left.isNumber() && right.isNumber()) {
-        ret = ESValue(left.toNumber() + right.toNumber());
+        ret = ESValue(left.asNumber() + right.asNumber());
         return ret;
     } else {
         return plusOperationSlowCase(left, right);

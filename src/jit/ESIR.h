@@ -84,6 +84,7 @@ class ESBasicBlock;
     F(Jump, ) \
     F(Branch, ) \
     F(CallJS, LoadFromHeap) \
+    F(CallNewJS, LoadFromHeap) \
     F(CallEval, LoadFromHeap) \
     F(CallNative, LoadFromHeap) \
     F(CallRuntime, LoadFromHeap) \
@@ -957,7 +958,7 @@ public:
     int argumentCount() { return m_argumentIndexes.size(); }
     int argumentIndex(size_t idx) { return m_argumentIndexes[idx]; }
 
-private:
+protected:
     CallJSIR(int targetIndex, int calleeIndex, int receiverIndex, int argumentCount, int* argumentIndexes)
         : ESIR(ESIR::Opcode::CallJS, targetIndex), m_calleeIndex(calleeIndex), m_receiverIndex(receiverIndex), m_argumentIndexes(argumentCount)
     {
@@ -967,6 +968,15 @@ private:
     int m_calleeIndex;
     int m_receiverIndex;
     std::vector<int, gc_allocator<int> > m_argumentIndexes;
+};
+
+class CallNewJSIR : public CallJSIR {
+public:
+    DECLARE_STATIC_GENERATOR_4(CallNewJS, int, int, int, int*);
+
+protected:
+    CallNewJSIR(int targetIndex, int calleeIndex, int receiverIndex, int argumentCount, int* argumentIndexes)
+        : CallJSIR(targetIndex, calleeIndex, receiverIndex, argumentCount, argumentIndexes) { m_opcode = ESIR::Opcode::CallNewJS; }
 };
 
 class ReturnIR : public ESIR {

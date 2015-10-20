@@ -36,6 +36,7 @@ CallInfo contextResolveBindingCallInfo = CI(contextResolveBinding, CallInfo::typ
 CallInfo contextResolveThisBindingCallInfo = CI(contextResolveThisBinding, CallInfo::typeSig1(ARGTYPE_D, ARGTYPE_P));
 CallInfo objectDefineDataPropertyCallInfo = CI(objectDefineDataProperty, CallInfo::typeSig3(ARGTYPE_V, ARGTYPE_P, ARGTYPE_D, /*ARGTYPE_B, ARGTYPE_B, ARGTYPE_B,*/ ARGTYPE_D));
 CallInfo esFunctionObjectCallCallInfo = CI(esFunctionObjectCall, CallInfo::typeSig6(ARGTYPE_D, ARGTYPE_P, ARGTYPE_D, ARGTYPE_D, ARGTYPE_P, ARGTYPE_I, ARGTYPE_B));
+CallInfo newOpCallInfo = CI(newOp, CallInfo::typeSig5(ARGTYPE_D, ARGTYPE_P, ARGTYPE_P, ARGTYPE_D, ARGTYPE_P, ARGTYPE_I));
 CallInfo ESObjectSetOpCallInfo = CI(ESObjectSetOp, CallInfo::typeSig3(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 #if 0
 CallInfo resolveNonDataPropertyInfo = CI(resolveNonDataProperty, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_P, ARGTYPE_P));
@@ -714,6 +715,21 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         }
         LIns* args[] = {m_false, argumentCount, arguments, receiver, callee, m_instance};
         LIns* boxedResult = m_out.insCall(&esFunctionObjectCallCallInfo, args);
+        return boxedResult;
+    }
+    case ESIR::Opcode::CallNewJS:
+    {
+        INIT_ESIR(CallNewJS);
+        LIns* callee = getTmpMapping(irCallNewJS->calleeIndex());
+        LIns* arguments = m_out.insAlloc(irCallNewJS->argumentCount() * sizeof(ESValue));
+        LIns* argumentCount = m_out.insImmI(irCallNewJS->argumentCount());
+        for (size_t i=0; i<irCallNewJS->argumentCount(); i++) {
+            LIns* argument = getTmpMapping(irCallNewJS->argumentIndex(i));
+            LIns* boxedArgument = boxESValue(argument, m_graph->getOperandType(irCallNewJS->argumentIndex(i)));
+            m_out.insStore(LIR_std, boxedArgument, arguments, i * sizeof(ESValue), 1);
+        }
+        LIns* args[] = {argumentCount, arguments, callee, m_globalObject, m_instance};
+        LIns* boxedResult = m_out.insCall(&newOpCallInfo, args);
         return boxedResult;
     }
     case ESIR::Opcode::Return:

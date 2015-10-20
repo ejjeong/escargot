@@ -444,9 +444,22 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         }
         case NewFunctionCallOpcode:
-            goto unsupported;
+        {
+            INIT_BYTECODE(NewFunctionCall);
+            graph->setOperandStackPos(ssaIndex->m_targetIndex, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
+            int calleeIndex = codeBlock->m_functionCallInfos[callInfoIndex++];
+            int receiverIndex = codeBlock->m_functionCallInfos[callInfoIndex++];
+            int argumentCount = codeBlock->m_functionCallInfos[callInfoIndex++];
+            int* argumentIndexes = (int*) alloca (sizeof(int) * argumentCount);
+            for (int i=0; i<argumentCount; i++)
+                argumentIndexes[i] = codeBlock->m_functionCallInfos[callInfoIndex++];
+            CallNewJSIR* callNewJSIR = CallNewJSIR::create(ssaIndex->m_targetIndex, calleeIndex, receiverIndex, argumentCount, argumentIndexes);
+            currentBlock->push(callNewJSIR);
+            bytecode->m_profile.updateProfiledType();
+            graph->setOperandType(ssaIndex->m_targetIndex, bytecode->m_profile.getType());
             NEXT_BYTECODE(NewFunctionCall);
             break;
+        }
         case ReturnFunctionOpcode:
         {
             INIT_BYTECODE(ReturnFunction);
