@@ -93,7 +93,9 @@ public:
     void setOperandType(int index, Type type) { m_operands[index].setType(type); }
     void mergeOperandType(int index, Type type) { m_operands[index].mergeType(type); }
     Type getOperandType(int index) { return m_operands[index].getType(); }
-    void setOperandStackPos(int index, unsigned stackPos) {
+    void setOperandStackPos(int index, unsigned stackPos)
+    {
+        ASSERT(index < m_operands.size());
         m_operands[index].setStackPos(stackPos);
         m_lastStackPosSettingTargetIndex = index;
     }

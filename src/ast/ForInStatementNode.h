@@ -67,7 +67,7 @@ public:
         codeBlock->peekCode<JumpAndPopIfTopOfStackValueIsTrue>(exit2Pos)->m_jumpPosition = exitPos;
 
         codeBlock->peekCode<Jump>(jPos)->m_jumpPosition = codeBlock->currentCodeSize();
-
+        newContext.propagateInformationTo(context);
     }
 
 
