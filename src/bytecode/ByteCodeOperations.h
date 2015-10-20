@@ -9,19 +9,19 @@ ALWAYS_INLINE ESValue* getByIdOperation(ESVMInstance* instance, ExecutionContext
 {
     if (LIKELY(code->m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
         ASSERT(ec->resolveBinding(code->m_name) == code->m_cachedSlot);
-        return code->m_cachedSlot;
 #ifdef ENABLE_ESJIT
         code->m_profile.addProfile(*code->m_cachedSlot);
 #endif
+        return code->m_cachedSlot;
     } else {
         ESValue* slot = ec->resolveBinding(code->m_name);
         if(LIKELY(slot != NULL)) {
             code->m_cachedSlot = slot;
             code->m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
-            return code->m_cachedSlot;
 #ifdef ENABLE_ESJIT
             code->m_profile.addProfile(*code->m_cachedSlot);
 #endif
+            return code->m_cachedSlot;
         } else {
             ReferenceError* receiver = ReferenceError::create();
             std::vector<ESValue> arguments;
