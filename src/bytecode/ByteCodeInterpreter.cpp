@@ -24,21 +24,24 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
     unsigned stackSiz = codeBlock->m_requiredStackSizeInESValueSize * sizeof(ESValue);
 #ifndef NDEBUG
-    stackSiz += sizeof(size_t) * codeBlock->m_requiredStackSizeInESValueSize;
+    stackSiz *= 2;
 #endif
 
-    char stackBuf[4096];
-    void* bp = stackBuf;
+    char* stackBuf;
+    void* bp;
     void* stack;
-    if (maxStackPos == 0)
+    if (maxStackPos == 0) {
+        stackBuf = (char *)alloca(stackSiz);
+        bp = stackBuf;
         stack = bp;
-    else {
+    } else {
 #ifdef ENABLE_ESJIT
         size_t offset = maxStackPos*sizeof(ESValue);
 #ifndef NDEBUG
         offset *= 2;
 #endif
-        memcpy(stackBuf, ec->getBp(), offset);
+        stackBuf = ec->getBp();
+        bp = stackBuf;
         stack = (void*)(((size_t)bp) + offset);
 #endif
     }

@@ -2135,7 +2135,7 @@ ALWAYS_INLINE Type* pop(void*& stk, void* bp)
     }
     stk = (void *)(((size_t)stk) - sizeof(Type));
     size_t* siz = (size_t *)stk;
-    ASSERT(*siz == sizeof (Type));
+//    ASSERT(*siz == sizeof (Type));
 #ifndef NDEBUG
     stk = (void *)(((size_t)stk) - sizeof(size_t));
     ASSERT(((size_t)stk) % sizeof(size_t) == 0);

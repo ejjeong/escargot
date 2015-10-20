@@ -72,7 +72,7 @@ public:
 #ifdef ENABLE_ESJIT
     bool inOSRExit() { return m_inOSRExit; }
     char* getBp() { return m_stackBuf; }
-//    void setBp(char* bp) { m_stackBuf = bp; }
+    void setBp(char* bp) { m_stackBuf = bp; }
     unsigned getStackPos() { return m_stackPos; }
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Winvalid-offsetof"
@@ -107,8 +107,7 @@ private:
 #ifdef ENABLE_ESJIT
     bool m_inOSRExit;
     unsigned m_stackPos;
-//    char* m_stackBuf;
-    char m_stackBuf[4096];
+    char* m_stackBuf;
 #endif
 };
 

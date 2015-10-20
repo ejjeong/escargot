@@ -731,6 +731,13 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
             }
 
             if (jitFunction) {
+                unsigned stackSiz = fn->codeBlock()->m_requiredStackSizeInESValueSize * sizeof(ESValue);
+#ifndef NDEBUG
+                stackSiz *= 2;
+#endif
+                char* stackBuf = (char *)alloca(stackSiz);
+                ec.setBp(stackBuf);
+
                 result = ESValue::fromRawDouble(jitFunction(instance));
                 // printf("JIT Result %s\n", result.toString()->utf8Data());
                 if (ec.inOSRExit()) {

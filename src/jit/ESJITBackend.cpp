@@ -143,9 +143,10 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
 #ifndef NDEBUG
                         bufOffset *= 2;
 #endif
-                        m_out.insStore(LIR_std, boxedLIns, m_context, ExecutionContext::offsetofStackBuf() + bufOffset, 1);
+                        LIns* stackBuf = m_out.insLoad(LIR_ldp, m_context, ExecutionContext::offsetofStackBuf(), 1, LOAD_NORMAL);
+                        m_out.insStore(LIR_std, boxedLIns, stackBuf, bufOffset, 1);
 #ifndef NDEBUG
-                        m_out.insStore(LIR_sti, size, m_context, ExecutionContext::offsetofStackBuf() + bufOffset + sizeof(ESValue), 1);
+                        m_out.insStore(LIR_sti, size, stackBuf, bufOffset + sizeof(ESValue), 1);
 #endif
                     }
                     if (stackPos == 1) {
