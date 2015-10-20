@@ -80,6 +80,7 @@ public:
     enum ESNullTag { ESNull };
     enum ESUndefinedTag { ESUndefined };
     enum ESEmptyValueTag { ESEmptyValue };
+    enum ESDeletedValueTag { ESDeletedValue };
     enum ESTrueTag { ESTrue };
     enum ESFalseTag { ESFalse };
     enum EncodeAsDoubleTag { EncodeAsDouble };
@@ -90,6 +91,7 @@ public:
     ESValue(ESNullTag);
     ESValue(ESUndefinedTag);
     ESValue(ESEmptyValueTag);
+    ESValue(ESDeletedValueTag);
     ESValue(ESTrueTag);
     ESValue(ESFalseTag);
     ESValue(ESPointer* ptr);
@@ -128,6 +130,7 @@ public:
 
     // Querying the type.
     ALWAYS_INLINE bool isEmpty() const;
+    bool isDeleted() const;
     bool isFunction() const;
     bool isUndefined() const;
     bool isNull() const;
@@ -1014,13 +1017,25 @@ struct ESHiddenClassPropertyInfo {
         m_flags.m_isWritable = isWritable;
         m_flags.m_isEnumerable = isEnumerable;
         m_flags.m_isConfigurable = isConfigurable;
+        m_flags.m_isDeletedValue = false;
     }
 
-    ESString* m_name;
+    ESHiddenClassPropertyInfo()
+    {
+        m_name = NULL;
+        m_flags.m_isDataProperty = true;
+        m_flags.m_isWritable = false;
+        m_flags.m_isEnumerable = false;
+        m_flags.m_isConfigurable = false;
+        m_flags.m_isDeletedValue = true;
+    }
+
     char flags()
     {
         return assembleHidenClassPropertyInfoFlags(m_flags.m_isDataProperty, m_flags.m_isWritable, m_flags.m_isEnumerable, m_flags.m_isConfigurable);
     }
+
+    ESString* m_name;
 
     struct {
         bool m_isDataProperty:1;
@@ -1028,6 +1043,7 @@ struct ESHiddenClassPropertyInfo {
         bool m_isWritable:1;
         bool m_isEnumerable:1;
         bool m_isConfigurable:1;
+        bool m_isDeletedValue:1;
     } m_flags;
 };
 
@@ -1068,6 +1084,7 @@ public:
         return removeProperty(findProperty(name));
     }
     ALWAYS_INLINE ESHiddenClass* removeProperty(size_t idx);
+    ALWAYS_INLINE ESHiddenClass* removePropertyWithoutIndexChange(size_t idx);
     ALWAYS_INLINE ESHiddenClass* morphToNonVectorMode();
     ALWAYS_INLINE ESHiddenClass* forceNonVectorMode();
     bool isVectorMode()
@@ -1084,6 +1101,11 @@ public:
     const ESHiddenClassPropertyInfo& propertyInfo(const size_t& idx)
     {
         return m_propertyInfo[idx];
+    }
+
+    const ESHiddenClassPropertyInfoStd& propertyInfo()
+    {
+        return m_propertyInfo;
     }
 
     const size_t propertyCount()
@@ -1105,6 +1127,7 @@ public:
     {
         return m_flags.m_hasIndexedReadOnlyProperty;
     }
+
 
 #ifdef ENABLE_ESJIT
     static size_t offsetOfFlags() { return offsetof(ESHiddenClass, m_flags); }

@@ -28,10 +28,12 @@ class CodeBlock;
     F(GetById, 1, 0) \
     F(GetByIdWithoutException, 1, 0) \
     F(GetByIndex, 1, 0) \
+    F(GetByGlobalIndex, 1, 0) \
     F(GetByIndexWithActivation, 1, 0) \
     F(GetArgumentsObject, 1, 0) \
     F(SetById, 0, 0) \
     F(SetByIndex, 0, 0) \
+    F(SetByGlobalIndex, 0, 0) \
     F(SetByIndexWithActivation, 0, 0) \
     F(SetArgumentsObject, 0, 0) \
     F(CreateBinding, 0, 0) \
@@ -564,6 +566,28 @@ public:
 #endif
 };
 
+class GetByGlobalIndex : public ByteCode {
+public:
+    GetByGlobalIndex(size_t index, ESString* name)
+        : ByteCode(GetByGlobalIndexOpcode)
+    {
+        m_index = index;
+        m_name = name;
+    }
+    size_t m_index;
+    ESString* m_name;
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("GetByGlobalIndex <%s, %u>\n", m_name->utf8Data(),  (unsigned)m_index);
+    }
+#endif
+#ifdef ENABLE_ESJIT
+    ProfileData m_profile;
+#endif
+};
+
 class GetByIndexWithActivation : public ByteCode {
 public:
     GetByIndexWithActivation(size_t fastAccessIndex, size_t fastAccessUpIndex)
@@ -635,6 +659,25 @@ public:
     virtual void dump()
     {
         printf("SetByIndex <%u>\n", (unsigned)m_index);
+    }
+#endif
+};
+
+class SetByGlobalIndex : public ByteCode {
+public:
+    SetByGlobalIndex(size_t index, ESString* name)
+        : ByteCode(SetByGlobalIndexOpcode)
+    {
+        m_index = index;
+        m_name = name;
+    }
+    size_t m_index;
+    ESString* m_name;
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("SetByGlobalIndex <%u>\n", (unsigned)m_index);
     }
 #endif
 };
@@ -1136,11 +1179,13 @@ public:
 
 class UnaryDelete : public ByteCode {
 public:
-    UnaryDelete()
+    UnaryDelete(bool isDeleteObjectKey)
         : ByteCode(UnaryDeleteOpcode)
     {
-
+        m_isDeleteObjectKey = isDeleteObjectKey;
     }
+
+    bool m_isDeleteObjectKey;
 
 #ifndef NDEBUG
     virtual void dump()
@@ -2029,8 +2074,6 @@ public:
     {
         return m_isStrict || m_isBuiltInFunction;
     }
-
-    void fillExtraData();
 
     std::vector<char, gc_malloc_allocator<char> > m_code;
 

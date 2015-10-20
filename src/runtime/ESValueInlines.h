@@ -603,6 +603,11 @@ ALWAYS_INLINE ESValue::ESValue(ESEmptyValueTag)
     u.asInt64 = ValueEmpty;
 }
 
+ALWAYS_INLINE ESValue::ESValue(ESDeletedValueTag)
+{
+    u.asInt64 = ValueDeleted;
+}
+
 ALWAYS_INLINE ESValue::ESValue(ESTrueTag)
 {
     u.asInt64 = ValueTrue;
@@ -695,6 +700,11 @@ inline double ESValue::asDouble() const
 ALWAYS_INLINE bool ESValue::isEmpty() const
 {
     return u.asInt64 == ValueEmpty;
+}
+
+inline bool ESValue::isDeleted() const
+{
+    return u.asInt64 == ValueDeleted;
 }
 
 inline bool ESValue::isNumber() const
@@ -829,6 +839,37 @@ ALWAYS_INLINE ESHiddenClass* ESHiddenClass::removeProperty(size_t idx)
         return cls;
     }
 }
+
+//IS FUNCTION IS FOR GLOBAL OBJECT
+ALWAYS_INLINE ESHiddenClass* ESHiddenClass::removePropertyWithoutIndexChange(size_t idx)
+{
+    ASSERT(idx != SIZE_MAX);
+    //can not delete __proto__
+    ASSERT(idx != 0);
+    ASSERT(m_propertyInfo[idx].m_flags.m_isConfigurable);
+    ASSERT(m_flags.m_forceNonVectorMode);
+    ASSERT(!m_flags.m_isVectorMode);
+
+    ESHiddenClass* cls = new ESHiddenClass;
+    cls->m_flags.m_forceNonVectorMode = true;
+    cls->m_flags.m_isVectorMode = false;
+    for(unsigned i = 0 ; i < m_propertyInfo.size() ; i ++) {
+        if(i == idx) {
+            cls->m_propertyInfo.push_back(ESHiddenClassPropertyInfo());
+        } else {
+            cls->m_propertyInfo.push_back(m_propertyInfo[i]);
+            cls->m_propertyIndexHashMapInfo.insert(std::make_pair(m_propertyInfo[i].m_name, i));
+            cls->m_flags.m_hasReadOnlyProperty = m_flags.m_hasReadOnlyProperty | (!m_propertyInfo[i].m_flags.m_isWritable);
+            cls->m_flags.m_hasIndexedProperty = m_flags.m_hasIndexedProperty | m_propertyInfo[i].m_name->hasOnlyDigit();
+            cls->m_flags.m_hasIndexedReadOnlyProperty = m_flags.m_hasIndexedReadOnlyProperty | (!m_propertyInfo[i].m_flags.m_isWritable && m_propertyInfo[i].m_name->hasOnlyDigit());
+        }
+    }
+
+    //TODO
+    //delete this;
+    return cls;
+}
+
 ALWAYS_INLINE ESHiddenClass* ESHiddenClass::morphToNonVectorMode()
 {
     ESHiddenClass* cls = new ESHiddenClass;
@@ -1087,10 +1128,15 @@ inline bool ESObject::deleteProperty(const ESValue& key)
     if(!m_hiddenClass->m_propertyInfo[idx].m_flags.m_isConfigurable) {
         return false;
     }
-    m_hiddenClass = m_hiddenClass->removeProperty(idx);
-    m_hiddenClassData.erase(m_hiddenClassData.begin() + idx);
-    if(UNLIKELY(m_flags.m_isGlobalObject))
+    if(UNLIKELY(m_flags.m_isGlobalObject)) {
         ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
+        m_hiddenClass = m_hiddenClass->removePropertyWithoutIndexChange(idx);
+        m_hiddenClassData[idx] = ESValue(ESValue::ESDeletedValue);
+    } else {
+        m_hiddenClass = m_hiddenClass->removeProperty(idx);
+        m_hiddenClassData.erase(m_hiddenClassData.begin() + idx);
+    }
+
     return true;
 }
 

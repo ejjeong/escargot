@@ -115,10 +115,10 @@ ESVMInstance::~ESVMInstance()
 {
 }
 
-ESValue ESVMInstance::evaluate(u16string& source)
+ESValue ESVMInstance::evaluate(u16string& source, bool isForGlobalScope)
 {
     m_lastExpressionStatementValue = ESValue();
-    CodeBlock* block = ScriptParser::parseScript(this, source);
+    CodeBlock* block = ScriptParser::parseScript(this, source, isForGlobalScope);
     interpret(this, block);
     return m_lastExpressionStatementValue;
 }

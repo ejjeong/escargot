@@ -153,7 +153,7 @@ void GlobalObject::initGlobalObject()
             return argument;
         }
         ESValue ret = instance->runOnEvalContext([instance, &argument](){
-            ESValue ret = instance->evaluate(const_cast<u16string &>(argument.asESString()->string()));
+            ESValue ret = instance->evaluate(const_cast<u16string &>(argument.asESString()->string()), true);
             return ret;
         }, false);
         return ret;
@@ -312,7 +312,7 @@ void GlobalObject::installFunction()
             prefix.append(u"){");
             prefix.append(body->string());
             prefix.append(u"}");
-            Node* programNode = ScriptParser::generateAST(instance, prefix);
+            Node* programNode = ScriptParser::generateAST(instance, prefix, true);
             FunctionNode* functionDeclAST = static_cast<FunctionNode* >(static_cast<ProgramNode *>(programNode)->body()[1]);
             ByteCodeGenerateContext context;
             codeBlock->m_innerIdentifiers = std::move(functionDeclAST->innerIdentifiers());

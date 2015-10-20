@@ -18,6 +18,8 @@ public:
         m_canUseFastAccess = false;
         m_fastAccessIndex = SIZE_MAX;
         m_fastAccessUpIndex = SIZE_MAX;
+        m_canUseGlobalFastAccess = false;
+        m_globalFastAccessIndex = SIZE_MAX;
     }
     IdentifierNode* clone() {
         IdentifierNode* nd = new IdentifierNode(m_name);
@@ -48,6 +50,9 @@ public:
 #endif
                 }
             }
+        } else if(m_canUseGlobalFastAccess) {
+            codeBlock->pushCode(GetByGlobalIndex(m_globalFastAccessIndex, m_name.string()), context, this);
+            WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
         } else {
             updateNodeIndex(context);
             if(m_name == strings->arguments) {
@@ -82,6 +87,8 @@ public:
                 } else
                     codeBlock->pushCode(SetByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), context, this);
             }
+        } else if(m_canUseGlobalFastAccess) {
+            codeBlock->pushCode(SetByGlobalIndex(m_globalFastAccessIndex, m_name.string()), context, this);
         } else {
             if(m_name == strings->arguments) {
                 codeBlock->pushCode(SetArgumentsObject(), context, this);
@@ -123,12 +130,26 @@ public:
         return m_fastAccessUpIndex;
     }
 
+    void setGlobalFastAccessIndex(size_t index)
+    {
+        m_canUseGlobalFastAccess = true;
+        m_globalFastAccessIndex = index;
+    }
+
+    size_t globalFastAccessIndex()
+    {
+        return m_globalFastAccessIndex;
+    }
+
 protected:
     InternalAtomicString m_name;
 
     bool m_canUseFastAccess;
     size_t m_fastAccessIndex;
     size_t m_fastAccessUpIndex;
+
+    bool m_canUseGlobalFastAccess;
+    size_t m_globalFastAccessIndex;
 };
 
 }

@@ -32,7 +32,7 @@ class ESVMInstance : public gc_cleanup {
 public:
     ESVMInstance();
     ~ESVMInstance();
-    ESValue evaluate(u16string& source);
+    ESValue evaluate(u16string& source, bool isForGlobalScope = true);
 
     ALWAYS_INLINE ExecutionContext* currentExecutionContext() { return m_currentExecutionContext; }
     ALWAYS_INLINE ExecutionContext* globalExecutionContext() { return m_globalExecutionContext; }

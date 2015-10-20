@@ -14,8 +14,9 @@ CodeBlock::CodeBlock(bool isBuiltInFunction)
     m_executeCount = 0;
     m_threshold = 1;
 #endif
-    if(!isBuiltInFunction)
+    if(!isBuiltInFunction) {
         ESVMInstance::currentInstance()->globalObject()->registerCodeBlock(this);
+    }
 }
 
 CodeBlock::~CodeBlock()

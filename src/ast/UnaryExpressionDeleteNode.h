@@ -25,10 +25,10 @@ public:
                 codeBlock->pushCode(Push(v), context, this);
             } else
                 codeBlock->popLastCode<GetObject>();
-            codeBlock->pushCode(UnaryDelete(), context, this);
+            codeBlock->pushCode(UnaryDelete(true), context, this);
         } else if (m_argument->type() == NodeType::Identifier) {
-            // TODO This work with the flag configurable
             codeBlock->pushCode(Push(((IdentifierNode *)m_argument)->name().string()), context, this);
+            // TODO
         } else {
             RELEASE_ASSERT_NOT_REACHED();
          }

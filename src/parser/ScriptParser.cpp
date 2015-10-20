@@ -22,11 +22,6 @@ void ScriptParser::dumpStats()
     unsigned stat;
     auto stream = stderr;
 
-    stat = JS_GetGCParameter(s_rt, JSGC_TOTAL_CHUNKS);
-    fwprintf(stream, L"[MOZJS] JSGC_TOTAL_CHUNKS: %d\n", stat);
-    stat = JS_GetGCParameter(s_rt, JSGC_UNUSED_CHUNKS);
-    fwprintf(stream, L"[MOZJS] JSGC_UNUSED_CHUNKS: %d\n", stat);
-
     stat = GC_get_heap_size();
     fwprintf(stream, L"[BOEHM] heap_size: %d\n", stat);
     stat = GC_get_unmapped_bytes();
@@ -51,7 +46,7 @@ void ScriptParser::dumpStats()
 }
 #endif
 
-Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16string& source)
+Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16string& source, bool isForGlobalScope)
 {
     Node* node;
     try {
@@ -87,10 +82,23 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16strin
 
     bool shouldWorkAroundIdentifier = true;
     bool showedEvalInFunction = false;
+    std::unordered_map<InternalAtomicString, unsigned, std::hash<InternalAtomicString>, std::equal_to<InternalAtomicString> > knownGlobalNames;
+
+    //fill GlobalData
+    if(isForGlobalScope) {
+        const ESHiddenClassPropertyInfoStd& info = instance->globalObject()->hiddenClass()->propertyInfo();
+        for(unsigned i = 0; i < info.size() ; i ++) {
+            if(!info[i].m_flags.m_isDeletedValue) {
+                InternalAtomicString as(instance, info[i].m_name->string());
+                knownGlobalNames.insert(std::make_pair(as, i));
+            }
+        }
+    }
+
     std::function<void (Node* currentNode,
             std::vector<InternalAtomicStringVector *>& identifierStack,
             FunctionNode* nearFunctionNode)>
-    postAnalysisFunction = [&postAnalysisFunction, instance, &markNeedsActivation, &shouldWorkAroundIdentifier, &updatePostfixNodeChecker, &showedEvalInFunction]
+    postAnalysisFunction = [&postAnalysisFunction, instance, &markNeedsActivation, &shouldWorkAroundIdentifier, &updatePostfixNodeChecker, &showedEvalInFunction, &knownGlobalNames, &isForGlobalScope]
              (Node* currentNode,
              std::vector<InternalAtomicStringVector *>& identifierStack,
              FunctionNode* nearFunctionNode) {
@@ -115,9 +123,15 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16strin
                 identifierInCurrentContext.push_back(((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name());
             }
             if(nearFunctionNode) {
+                //local
                 auto iter = std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),
                         ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name());
                 ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->setFastAccessIndex(0, std::distance(identifierInCurrentContext.begin(), iter));
+            } else {
+                //global
+                if(isForGlobalScope) {
+                    knownGlobalNames.insert(std::make_pair(((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name(), knownGlobalNames.size()));
+                }
             }
         } else if(type == NodeType::FunctionDeclaration) {
             //TODO
@@ -161,8 +175,8 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16strin
                 return ;
             }
             //use case
+
             InternalAtomicString name = ((IdentifierNode *)currentNode)->name();
-            //ESString* nonAtomicName = ((IdentifierNode *)currentNode)->nonAtomicName();
             auto iter = identifierInCurrentContext.end();
             auto riter = identifierInCurrentContext.rbegin();//std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),name);
             while(riter != identifierInCurrentContext.rend()) {
@@ -194,6 +208,10 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16strin
                             ((IdentifierNode *)currentNode)->setFastAccessIndex(up, idx2);
                         } else {
                             //fn == global case
+                            auto iter = knownGlobalNames.find(name);
+                            if(iter != knownGlobalNames.end()) {
+                                ((IdentifierNode *)currentNode)->setGlobalFastAccessIndex(iter->second);
+                            }
                         }
                         break;
                     }
@@ -370,9 +388,9 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16strin
     return node;
 }
 
-CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, const escargot::u16string& source)
+CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, const escargot::u16string& source, bool isForGlobalScope)
 {
-    Node* node = generateAST(instance, source);
+    Node* node = generateAST(instance, source, isForGlobalScope);
     ASSERT(node->type() == Program);
     return generateByteCode(node);
 }

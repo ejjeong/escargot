@@ -71,8 +71,8 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             printf("execute %p %u \t(nodeinfo %d)\t",currentCode, (unsigned)(programCounter-(size_t)codeBuffer), (int)currentCode->m_node->sourceLocation().m_lineNumber);
         else
             printf("execute %p %u \t(nodeinfo null)\t",currentCode, (unsigned)(programCounter-(size_t)codeBuffer));
-        fflush(stdout);
         currentCode->dump();
+        fflush(stdout);
     }
 
     if (currentCode->m_orgOpcode < 0 || currentCode->m_orgOpcode > OpcodeKindEnd) {
@@ -167,6 +167,26 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         NEXT_INSTRUCTION();
     }
 
+    GetByGlobalIndexOpcodeLbl:
+    {
+        GetByGlobalIndex* code = (GetByGlobalIndex*)currentCode;
+        ESValue val = globalObject->hiddenClass()->read(globalObject, globalObject, code->m_index);
+        if(UNLIKELY(val.isDeleted())) {
+            size_t idx = globalObject->hiddenClass()->findProperty(code->m_name);
+            if(UNLIKELY(idx == SIZE_MAX)) {
+                throw ESValue(ReferenceError::create());
+            } else {
+                code->m_index = idx;
+                push<ESValue>(stack, topOfStack, globalObject->hiddenClass()->read(globalObject, globalObject, idx));
+            }
+        } else {
+            ASSERT(globalObject->hiddenClass()->findProperty(code->m_name) == code->m_index);
+            push<ESValue>(stack, topOfStack, val);
+        }
+        executeNextCode<GetByGlobalIndex>(programCounter);
+        NEXT_INSTRUCTION();
+    }
+
     SetByIdOpcodeLbl:
     {
         SetById* code = (SetById*)currentCode;
@@ -201,6 +221,26 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         NEXT_INSTRUCTION();
     }
 
+    SetByGlobalIndexOpcodeLbl:
+    {
+        SetByGlobalIndex* code = (SetByGlobalIndex*)currentCode;
+        ESValue* value = peek<ESValue>(stack, bp);
+        const ESHiddenClassPropertyInfo& info = globalObject->hiddenClass()->propertyInfo(code->m_index);
+        if(LIKELY(!info.m_flags.m_isDeletedValue)) {
+            globalObject->hiddenClass()->write(globalObject, globalObject, code->m_index, *value);
+        } else {
+            size_t idx = globalObject->hiddenClass()->findProperty(code->m_name);
+            if(UNLIKELY(idx == SIZE_MAX)) {
+                throw ESValue(ReferenceError::create());
+            } else {
+                code->m_index = idx;
+                globalObject->hiddenClass()->write(globalObject, globalObject, code->m_index, *value);
+            }
+        }
+        executeNextCode<SetByGlobalIndex>(programCounter);
+        NEXT_INSTRUCTION();
+    }
+
     SetByIndexOpcodeLbl:
     {
         SetByIndex* code = (SetByIndex*)currentCode;
@@ -221,6 +261,8 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         executeNextCode<SetByIndexWithActivation>(programCounter);
         NEXT_INSTRUCTION();
     }
+
+
 
     CreateBindingOpcodeLbl:
     {
@@ -794,10 +836,15 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
     UnaryDeleteOpcodeLbl:
     {
-        ESValue* key = pop<ESValue>(stack, bp);
-        ESValue* obj = pop<ESValue>(stack, bp);
-        bool res = obj->toObject()->deleteProperty(*key);
-        push<ESValue>(stack, topOfStack, ESValue(res));
+        UnaryDelete* code = (UnaryDelete*)currentCode;
+        if(code->m_isDeleteObjectKey) {
+            ESValue* key = pop<ESValue>(stack, bp);
+            ESValue* obj = pop<ESValue>(stack, bp);
+            bool res = obj->toObject()->deleteProperty(*key);
+            push<ESValue>(stack, topOfStack, ESValue(res));
+        } else {
+            //TODO
+        }
 
         executeNextCode<UnaryDelete>(programCounter);
         NEXT_INSTRUCTION();
@@ -808,7 +855,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* res = pop<ESValue>(stack, bp);
         push<ESValue>(stack, topOfStack, ESValue());
 
-        executeNextCode<UnaryDelete>(programCounter);
+        executeNextCode<UnaryVoid>(programCounter);
         NEXT_INSTRUCTION();
     }
 
@@ -977,7 +1024,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             ESValue ret = instance->runOnEvalContext([instance, &arguments, &argc](){
                 ESValue ret;
                 if(argc)
-                    ret = instance->evaluate(const_cast<u16string &>(arguments[0].asESString()->string()));
+                    ret = instance->evaluate(const_cast<u16string &>(arguments[0].asESString()->string()), false);
                 return ret;
             }, true);
             push<ESValue>(stack, topOfStack, ret);
