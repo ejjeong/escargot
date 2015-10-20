@@ -1,3 +1,8 @@
+test/SunSpider/tests/sunspider-1.0.2/3d-cube.js
+
+test/SunSpider/tests/sunspider-1.0.2/3d-morph.js
+<<<< Compiled Functions >>>>
+morph 
 test/SunSpider/tests/sunspider-1.0.2/access-binary-trees.js
 <<<< Compiled Functions >>>>
 bottomUpTree 
@@ -13,18 +18,38 @@ fast3bitlookup
 test/SunSpider/tests/sunspider-1.0.2/bitops-bits-in-byte.js
 <<<< Compiled Functions >>>>
 bitsinbyte 
+test/SunSpider/tests/sunspider-1.0.2/bitops-bitwise-and.js
+
+test/SunSpider/tests/sunspider-1.0.2/bitops-nsieve-bits.js
+
 test/SunSpider/tests/sunspider-1.0.2/controlflow-recursive.js
 <<<< Compiled Functions >>>>
 ack fib tak 
+test/SunSpider/tests/sunspider-1.0.2/crypto-aes.js
+<<<< Compiled Functions >>>>
+SubWord RotWord SubBytes ShiftRows 
+test/SunSpider/tests/sunspider-1.0.2/date-format-tofte.js
+<<<< Compiled Functions >>>>
+arrayExists 
 test/SunSpider/tests/sunspider-1.0.2/math-cordic.js
 <<<< Compiled Functions >>>>
 FIXED FLOAT cordicsincos 
-test/SunSpider/tests/sunspider-1.0.2/string-unpack-code.js
+test/SunSpider/tests/sunspider-1.0.2/math-partial-sums.js
 <<<< Compiled Functions >>>>
-(anonymous) (anonymous) (anonymous) (anonymous) 
+partial 
+test/SunSpider/tests/sunspider-1.0.2/math-spectral-norm.js
+<<<< Compiled Functions >>>>
+A AtAu Au Atu 
+test/SunSpider/tests/sunspider-1.0.2/regexp-dna.js
+
+test/SunSpider/tests/sunspider-1.0.2/string-base64.js
+
 test/SunSpider/tests/sunspider-1.0.2/string-fasta.js
 <<<< Compiled Functions >>>>
 rand 
 test/SunSpider/tests/sunspider-1.0.2/string-tagcloud.js
 <<<< Compiled Functions >>>>
 (anonymous) (anonymous) 
+test/SunSpider/tests/sunspider-1.0.2/string-unpack-code.js
+<<<< Compiled Functions >>>>
+(anonymous) (anonymous) (anonymous) (anonymous) 

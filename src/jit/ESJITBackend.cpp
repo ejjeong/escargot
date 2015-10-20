@@ -888,7 +888,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(GetGlobalVarGeneric);
         LIns* byteCode = m_out.insImmP(irGetGlobalVarGeneric->byteCode());
-        LIns* args[] = {byteCode, m_globalObject};
+        LIns* globalObject = m_out.insLoad(LIR_ldp, m_instance, ESVMInstance::offsetOfGlobalObject(), 1, LOAD_NORMAL); // FIXME workround to fix register allocation bug
+        LIns* args[] = {byteCode, globalObject};
         return m_out.insCall(&getByGlobalIndexOpCallInfo, args);
     }
     case ESIR::Opcode::SetVarGeneric:
