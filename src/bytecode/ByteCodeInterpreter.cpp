@@ -46,13 +46,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 #endif
     }
 
-//    char* stackBuf = (char *)alloca(stackSiz);
-//    void* stack = stackBuf;
     void* topOfStack = stackBuf + stackSiz;
-//    void* bp = stackBuf;
-//#ifdef ENABLE_ESJIT
-//    ec->setBp(stackBuf);
-//#endif
     char tmpStackBuf[32];
     void* tmpStack = tmpStackBuf;
     void* tmpBp = tmpStack;

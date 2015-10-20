@@ -111,7 +111,7 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
     bool isDone = false;
     for (int i = m_graph->basicBlockSize() - 1; i >= 0; i--) {
         ESBasicBlock* block = m_graph->basicBlock(i);
-        if (!isPrevBlock && block->instruction(0)->targetIndex() <= currentByteCodeIndex) {
+        if (!isPrevBlock && block->instructionSize() > 0 && block->instruction(0)->targetIndex() <= currentByteCodeIndex) {
             int j = block->instructionSize() - 1;
             unsigned maxStackPos;
             if (!isPrevBlock) {
