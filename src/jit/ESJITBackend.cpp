@@ -8,7 +8,7 @@
 #include "ESIRType.h"
 #include "ESGraph.h"
 #include "bytecode/ByteCode.h"
-#include "runtime/Operations.h"
+#include "bytecode/ByteCodeOperations.h"
 #include "ESJITOperations.h"
 #include "runtime/ExecutionContext.h"
 #include "vm/ESVMInstance.h"

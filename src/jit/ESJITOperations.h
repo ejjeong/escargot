@@ -2,7 +2,7 @@
 #define ESJITOperations_h
 
 #include "runtime/ESValue.h"
-#include "runtime/Operations.h"
+#include "bytecode/ByteCodeOperations.h"
 
 namespace escargot {
 
