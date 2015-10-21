@@ -30,20 +30,29 @@ public:
         }
     }
 
+
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
+        bool prevHead = context.m_isHeadOfMemberExpression;
+        context.m_isHeadOfMemberExpression = false;
         m_object->generateExpressionByteCode(codeBlock, context);
 
         if(ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty()) {
             if(isPreComputedCase()) {
                 ASSERT(m_property->type() == NodeType::Identifier);
-                codeBlock->pushCode(GetObjectPreComputedCaseSlowMode(((IdentifierNode *)m_property)->name().string()), context, this);
+                if(context.m_inCallingExpressionScope && prevHead)
+                    codeBlock->pushCode(GetObjectPreComputedCaseAndPushObjectSlowMode(((IdentifierNode *)m_property)->name().string()), context, this);
+                else
+                    codeBlock->pushCode(GetObjectPreComputedCaseSlowMode(((IdentifierNode *)m_property)->name().string()), context, this);
                 updateNodeIndex(context);
                 WRITE_LAST_INDEX(m_nodeIndex, m_object->nodeIndex(), m_nodeIndex - 1);
             } else {
                 m_property->generateExpressionByteCode(codeBlock, context);
                 updateNodeIndex(context);
-                codeBlock->pushCode(GetObjectSlowMode(), context, this);
+                if(context.m_inCallingExpressionScope && prevHead)
+                    codeBlock->pushCode(GetObjectAndPushObjectSlowMode(), context, this);
+                else
+                    codeBlock->pushCode(GetObjectSlowMode(), context, this);
                 WRITE_LAST_INDEX(m_nodeIndex, m_object->nodeIndex(), m_property->nodeIndex());
             }
             return ;
@@ -51,12 +60,18 @@ public:
         if(isPreComputedCase()) {
             ASSERT(m_property->type() == NodeType::Identifier);
             updateNodeIndex(context);
-            codeBlock->pushCode(GetObjectPreComputedCase(((IdentifierNode *)m_property)->name().string()), context, this);
+            if(context.m_inCallingExpressionScope && prevHead)
+                codeBlock->pushCode(GetObjectPreComputedCaseAndPushObject(((IdentifierNode *)m_property)->name().string()), context, this);
+            else
+                codeBlock->pushCode(GetObjectPreComputedCase(((IdentifierNode *)m_property)->name().string()), context, this);
             WRITE_LAST_INDEX(m_nodeIndex, m_object->nodeIndex(), -1);
         } else {
             m_property->generateExpressionByteCode(codeBlock, context);
             updateNodeIndex(context);
-            codeBlock->pushCode(GetObject(), context, this);
+            if(context.m_inCallingExpressionScope && prevHead)
+                codeBlock->pushCode(GetObjectAndPushObject(), context, this);
+            else
+                codeBlock->pushCode(GetObject(), context, this);
             WRITE_LAST_INDEX(m_nodeIndex, m_object->nodeIndex(), m_property->nodeIndex());
         }
     }

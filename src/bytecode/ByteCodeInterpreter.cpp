@@ -47,7 +47,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     size_t numParams = codeBlock->m_params.size();
 #endif
     GlobalObject* globalObject = instance->globalObject();
-    ESValue lastESObjectMetInMemberExpressionNode = ESValue();
     ESValue* lastExpressionStatementValue = &instance->m_lastExpressionStatementValue;
     ESValue* nonActivitionModeLocalValuePointer = ec->cachedDeclarativeEnvironmentRecordESValue();
     ESValue thisValue(ESValue::ESEmptyValue);
@@ -580,7 +579,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
         ESValue* property = pop<ESValue>(stack, bp);
         ESValue* willBeObject = pop<ESValue>(stack, bp);
-        ESValue value = getObjectOperation(willBeObject, property, &lastESObjectMetInMemberExpressionNode, globalObject);
+        ESValue value = getObjectOperation(willBeObject, property, globalObject);
         push<ESValue>(stack, topOfStack, value);
 #ifdef ENABLE_ESJIT
         code->m_profile.addProfile(value);
@@ -589,11 +588,27 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         NEXT_INSTRUCTION();
     }
 
+    GetObjectAndPushObjectOpcodeLbl:
+    {
+        GetObject* code = (GetObject*)currentCode;
+
+        ESValue* property = pop<ESValue>(stack, bp);
+        ESValue willBeObject = *pop<ESValue>(stack, bp);
+        ESValue value = getObjectOperation(&willBeObject, property, globalObject);
+        push<ESValue>(stack, topOfStack, value);
+        push<ESValue>(stack, topOfStack, willBeObject);
+#ifdef ENABLE_ESJIT
+        code->m_profile.addProfile(value);
+#endif
+        executeNextCode<GetObjectAndPushObject>(programCounter);
+        NEXT_INSTRUCTION();
+    }
+
     GetObjectPreComputedCaseOpcodeLbl:
     {
         GetObjectPreComputedCase* code = (GetObjectPreComputedCase*)currentCode;
         ESValue* willBeObject = pop<ESValue>(stack, bp);
-        ESValue value = getObjectPreComputedCaseOperation(willBeObject, code->m_propertyValue, &lastESObjectMetInMemberExpressionNode, globalObject,
+        ESValue value = getObjectPreComputedCaseOperation(willBeObject, code->m_propertyValue, globalObject,
                 &code->m_cachedhiddenClassChain, &code->m_cachedIndex);
         push<ESValue>(stack, topOfStack, value);
 #ifdef ENABLE_ESJIT
@@ -603,13 +618,28 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         NEXT_INSTRUCTION();
     }
 
+    GetObjectPreComputedCaseAndPushObjectOpcodeLbl:
+    {
+        GetObjectPreComputedCaseAndPushObject* code = (GetObjectPreComputedCaseAndPushObject*)currentCode;
+        ESValue willBeObject = *pop<ESValue>(stack, bp);
+        ESValue value = getObjectPreComputedCaseOperation(&willBeObject, code->m_propertyValue, globalObject,
+                &code->m_cachedhiddenClassChain, &code->m_cachedIndex);
+        push<ESValue>(stack, topOfStack, value);
+        push<ESValue>(stack, topOfStack, willBeObject);
+#ifdef ENABLE_ESJIT
+        code->m_profile.addProfile(value);
+#endif
+        executeNextCode<GetObjectPreComputedCaseAndPushObject>(programCounter);
+        NEXT_INSTRUCTION();
+    }
+
     GetObjectWithPeekingOpcodeLbl:
     {
         GetObjectWithPeeking* code = (GetObjectWithPeeking*)currentCode;
 
         ESValue* property = (ESValue *)((size_t)stack - sizeof(ESValue));
         ESValue* willBeObject = (ESValue *)((size_t)stack - sizeof(ESValue) * 2);
-        push<ESValue>(stack, topOfStack, getObjectOperation(willBeObject, property, &lastESObjectMetInMemberExpressionNode, globalObject));
+        push<ESValue>(stack, topOfStack, getObjectOperation(willBeObject, property, globalObject));
         executeNextCode<GetObjectWithPeeking>(programCounter);
         NEXT_INSTRUCTION();
     }
@@ -619,7 +649,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         GetObjectWithPeekingPreComputedCase* code = (GetObjectWithPeekingPreComputedCase*)currentCode;
 
         ESValue* willBeObject = peek<ESValue>(stack, bp);
-        push<ESValue>(stack, topOfStack, getObjectPreComputedCaseOperationWithNeverInline(willBeObject, code->m_propertyValue, &lastESObjectMetInMemberExpressionNode, globalObject,
+        push<ESValue>(stack, topOfStack, getObjectPreComputedCaseOperationWithNeverInline(willBeObject, code->m_propertyValue, globalObject,
                         &code->m_cachedhiddenClassChain, &code->m_cachedIndex));
         executeNextCode<GetObjectWithPeekingPreComputedCase>(programCounter);
         NEXT_INSTRUCTION();
@@ -666,23 +696,24 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         NEXT_INSTRUCTION();
     }
 
-    PrepareFunctionCallOpcodeLbl:
-    {
-        lastESObjectMetInMemberExpressionNode = ESValue();
-        executeNextCode<PrepareFunctionCall>(programCounter);
-        NEXT_INSTRUCTION();
-    }
-
-    PushFunctionCallReceiverOpcodeLbl:
-    {
-        push<ESValue>(stack, topOfStack, lastESObjectMetInMemberExpressionNode);
-        executeNextCode<PushFunctionCallReceiver>(programCounter);
-        NEXT_INSTRUCTION();
-    }
-
     CallFunctionOpcodeLbl:
     {
         CallFunction* code = (CallFunction*)currentCode;
+        const unsigned& argc = code->m_argmentCount;
+        stack = (void *)((size_t)stack - argc * sizeof(ESValue));
+        ESValue* arguments = (ESValue *)stack;
+        ESValue result = ESFunctionObject::call(instance, *pop<ESValue>(stack, bp), ESValue(), arguments, argc, false);
+#ifdef ENABLE_ESJIT
+        code->m_profile.addProfile(result);
+#endif
+        push<ESValue>(stack, topOfStack, result);
+        executeNextCode<CallFunction>(programCounter);
+        NEXT_INSTRUCTION();
+    }
+
+    CallFunctionWithReceiverOpcodeLbl:
+    {
+        CallFunctionWithReceiver* code = (CallFunctionWithReceiver*)currentCode;
         const unsigned& argc = code->m_argmentCount;
         stack = (void *)((size_t)stack - argc * sizeof(ESValue));
         ESValue* arguments = (ESValue *)stack;
@@ -692,7 +723,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         code->m_profile.addProfile(result);
 #endif
         push<ESValue>(stack, topOfStack, result);
-        executeNextCode<CallFunction>(programCounter);
+        executeNextCode<CallFunctionWithReceiver>(programCounter);
         NEXT_INSTRUCTION();
     }
 
@@ -1083,7 +1114,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         stack = (void *)(((size_t)stack) + sizeof(ESValue) * 1);
 
         ESValue v(code->m_propertyValue);
-        push<ESValue>(stack, topOfStack, getObjectOperationSlowMode(willBeObject, &v, &lastESObjectMetInMemberExpressionNode, globalObject));
+        push<ESValue>(stack, topOfStack, getObjectOperationSlowMode(willBeObject, &v, globalObject));
         executeNextCode<GetObjectWithPeekingPreComputedCaseSlowMode>(programCounter);
         NEXT_INSTRUCTION();
     }
@@ -1093,7 +1124,18 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         GetObjectPreComputedCaseSlowMode* code = (GetObjectPreComputedCaseSlowMode*)currentCode;
         ESValue* willBeObject = pop<ESValue>(stack, bp);
         ESValue v(code->m_propertyValue);
-        push<ESValue>(stack, topOfStack, getObjectOperationSlowMode(willBeObject, &v, &lastESObjectMetInMemberExpressionNode, globalObject));
+        push<ESValue>(stack, topOfStack, getObjectOperationSlowMode(willBeObject, &v, globalObject));
+        executeNextCode<GetObjectPreComputedCaseSlowMode>(programCounter);
+        NEXT_INSTRUCTION();
+    }
+
+    GetObjectPreComputedCaseAndPushObjectSlowModeOpcodeLbl:
+    {
+        GetObjectPreComputedCaseAndPushObjectSlowMode* code = (GetObjectPreComputedCaseAndPushObjectSlowMode*)currentCode;
+        ESValue willBeObject = *pop<ESValue>(stack, bp);
+        ESValue v(code->m_propertyValue);
+        push<ESValue>(stack, topOfStack, getObjectOperationSlowMode(&willBeObject, &v, globalObject));
+        push<ESValue>(stack, topOfStack, willBeObject);
         executeNextCode<GetObjectPreComputedCaseSlowMode>(programCounter);
         NEXT_INSTRUCTION();
     }
@@ -1106,7 +1148,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* willBeObject = pop<ESValue>(stack, bp);
 
         stack = (void *)(((size_t)stack) + sizeof(ESValue) * 2);
-        push<ESValue>(stack, topOfStack, getObjectOperationSlowMode(willBeObject, property, &lastESObjectMetInMemberExpressionNode, globalObject));
+        push<ESValue>(stack, topOfStack, getObjectOperationSlowMode(willBeObject, property, globalObject));
         executeNextCode<GetObjectWithPeekingSlowMode>(programCounter);
         NEXT_INSTRUCTION();
     }
@@ -1117,7 +1159,19 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
         ESValue* property = pop<ESValue>(stack, bp);
         ESValue* willBeObject = pop<ESValue>(stack, bp);
-        push<ESValue>(stack, topOfStack, getObjectOperationSlowMode(willBeObject, property, &lastESObjectMetInMemberExpressionNode, globalObject));
+        push<ESValue>(stack, topOfStack, getObjectOperationSlowMode(willBeObject, property, globalObject));
+        executeNextCode<GetObjectSlowMode>(programCounter);
+        NEXT_INSTRUCTION();
+    }
+
+    GetObjectAndPushObjectSlowModeOpcodeLbl:
+    {
+        GetObjectAndPushObjectSlowMode* code = (GetObjectAndPushObjectSlowMode*)currentCode;
+
+        ESValue* property = pop<ESValue>(stack, bp);
+        ESValue willBeObject = *pop<ESValue>(stack, bp);
+        push<ESValue>(stack, topOfStack, getObjectOperationSlowMode(&willBeObject, property, globalObject));
+        push<ESValue>(stack, topOfStack, &willBeObject);
         executeNextCode<GetObjectSlowMode>(programCounter);
         NEXT_INSTRUCTION();
     }

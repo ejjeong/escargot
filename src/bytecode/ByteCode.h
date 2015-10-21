@@ -80,11 +80,15 @@ class CodeBlock;
     F(SetObjectPropertySetter, 0, 2, 0) \
     F(SetObjectPropertyGetter, 0, 2, 0) \
     F(GetObject, 1, 2, 1) \
+    F(GetObjectAndPushObject, 2, 2, 0) \
     F(GetObjectSlowMode, 1, 2, 1) \
+    F(GetObjectAndPushObjectSlowMode, 2, 2, 0) \
     F(GetObjectWithPeeking, 1, 0, 0) \
     F(GetObjectWithPeekingSlowMode, 1, 0, 0) \
     F(GetObjectPreComputedCase, 1, 1, 1) \
+    F(GetObjectPreComputedCaseAndPushObject, 2, 1, 0) \
     F(GetObjectPreComputedCaseSlowMode, 1, 1, 0) \
+    F(GetObjectPreComputedCaseAndPushObjectSlowMode, 2, 1, 0) \
     F(GetObjectWithPeekingPreComputedCase, 1, 0, 0) \
     F(GetObjectWithPeekingPreComputedCaseSlowMode, 1, 0, 0) \
     F(SetObject, 1, 3, 1) \
@@ -95,9 +99,8 @@ class CodeBlock;
     /*function*/\
     F(CreateFunction, -1, 0, 0) \
     F(ExecuteNativeFunction, 0, 0, 0) \
-    F(PrepareFunctionCall, 0, 0, 1) \
-    F(PushFunctionCallReceiver, 1, 0, 1) \
     F(CallFunction, 1, -1, 1) \
+    F(CallFunctionWithReceiver, 1, -1, 1) \
     F(CallEvalFunction, 1, -1, 0) \
     F(CallBoundFunction, 0, 0, 0) \
     F(NewFunctionCall, 1, -1, 1) \
@@ -172,16 +175,20 @@ struct ByteCodeGenerateContext {
 #endif
     {
         m_baseRegisterCount = 0;
+        m_inCallingExpressionScope = false;
+        m_isHeadOfMemberExpression = false;
     }
 
     ByteCodeGenerateContext(const ByteCodeGenerateContext& contextBefore)
         : m_baseRegisterCount(contextBefore.m_baseRegisterCount)
+        , m_inCallingExpressionScope(contextBefore.m_inCallingExpressionScope)
         , m_offsetToBasePointer(0)
         , m_tryStatementScopeCount(contextBefore.m_tryStatementScopeCount)
 #ifdef ENABLE_ESJIT
         , m_currentNodeIndex(contextBefore.m_currentNodeIndex)
 #endif
     {
+        m_isHeadOfMemberExpression = false;
     }
 
 
@@ -286,6 +293,9 @@ struct ByteCodeGenerateContext {
     ALWAYS_INLINE void morphJumpPositionIntoComplexCase(CodeBlock* cb,size_t codePos);
 
     int m_baseRegisterCount;
+
+    bool m_inCallingExpressionScope;
+    bool m_isHeadOfMemberExpression;
 
     std::vector<size_t> m_breakStatementPositions;
     std::vector<size_t> m_continueStatementPositions;
@@ -1439,6 +1449,26 @@ public:
 #endif
 };
 
+class GetObjectAndPushObject : public ByteCode {
+public:
+    GetObjectAndPushObject(Opcode code = GetObjectAndPushObjectOpcode)
+        : ByteCode(code)
+    {
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("GetObjectAndPushObject <>\n");
+    }
+#endif
+#ifdef ENABLE_ESJIT
+    ProfileData m_profile;
+#endif
+};
+
+ASSERT_STATIC(sizeof(GetObject) == sizeof(GetObjectAndPushObject),"");
+
 class GetObjectSlowMode : public GetObject {
 public:
     GetObjectSlowMode()
@@ -1454,6 +1484,22 @@ public:
 };
 
 ASSERT_STATIC(sizeof(GetObject) == sizeof(GetObjectSlowMode),"");
+
+class GetObjectAndPushObjectSlowMode : public GetObjectAndPushObject {
+public:
+    GetObjectAndPushObjectSlowMode()
+        : GetObjectAndPushObject(GetObjectAndPushObjectSlowModeOpcode)
+    {
+    }
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("GetObjectAndPushObjectSlowMode <>\n");
+    }
+#endif
+};
+
+ASSERT_STATIC(sizeof(GetObjectAndPushObject) == sizeof(GetObjectAndPushObjectSlowMode),"");
 
 class GetObjectWithPeeking : public ByteCode {
 public:
@@ -1509,6 +1555,31 @@ public:
 #endif
 };
 
+class GetObjectPreComputedCaseAndPushObject : public ByteCode {
+public:
+    GetObjectPreComputedCaseAndPushObject(const ESValue& v, Opcode code = GetObjectPreComputedCaseAndPushObjectOpcode)
+        : ByteCode(code)
+    {
+        m_propertyValue = v.toString();
+        m_cachedIndex = SIZE_MAX;
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("GetObjectPreComputedCaseAndPushObject <%s>\n", m_propertyValue->utf8Data());
+    }
+#endif
+    ESString* m_propertyValue;
+    ESHiddenClassChain m_cachedhiddenClassChain;
+    size_t m_cachedIndex;
+#ifdef ENABLE_ESJIT
+    ProfileData m_profile;
+#endif
+};
+
+ASSERT_STATIC(sizeof(GetObjectPreComputedCase) == sizeof(GetObjectPreComputedCaseAndPushObject),"");
+
 class GetObjectPreComputedCaseSlowMode : public GetObjectPreComputedCase {
 public:
     GetObjectPreComputedCaseSlowMode(const ESValue& v)
@@ -1523,7 +1594,21 @@ public:
 #endif
 };
 
-ASSERT_STATIC(sizeof(GetObjectPreComputedCase) == sizeof(GetObjectPreComputedCaseSlowMode),"");
+class GetObjectPreComputedCaseAndPushObjectSlowMode : public GetObjectPreComputedCaseAndPushObject {
+public:
+    GetObjectPreComputedCaseAndPushObjectSlowMode(const ESValue& v)
+        : GetObjectPreComputedCaseAndPushObject(v, GetObjectPreComputedCaseAndPushObjectSlowModeOpcode)
+    {
+    }
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("GetObjectPreComputedCaseAndPushObjectSlowMode <>\n");
+    }
+#endif
+};
+
+ASSERT_STATIC(sizeof(GetObjectPreComputedCaseAndPushObject) == sizeof(GetObjectPreComputedCaseAndPushObjectSlowMode),"");
 
 class GetObjectWithPeekingPreComputedCase : public ByteCode {
 public:
@@ -1683,38 +1768,6 @@ public:
     NativeFunctionType m_fn;
 };
 
-class PrepareFunctionCall : public ByteCode {
-public:
-    PrepareFunctionCall()
-        : ByteCode(PrepareFunctionCallOpcode)
-    {
-    }
-
-#ifndef NDEBUG
-    virtual void dump()
-    {
-        printf("PrepareFunctionCall <>\n");
-    }
-#endif
-
-};
-
-class PushFunctionCallReceiver : public ByteCode {
-public:
-    PushFunctionCallReceiver()
-        : ByteCode(PushFunctionCallReceiverOpcode)
-    {
-    }
-
-#ifndef NDEBUG
-    virtual void dump()
-    {
-        printf("PushFunctionCallReceiver <>\n");
-    }
-#endif
-
-};
-
 class CallFunction : public ByteCode {
 public:
     CallFunction(unsigned argumentCount)
@@ -1729,6 +1782,28 @@ public:
     virtual void dump()
     {
         printf("CallFunction <>\n");
+    }
+#endif
+
+#ifdef ENABLE_ESJIT
+    ProfileData m_profile;
+#endif
+};
+
+class CallFunctionWithReceiver : public ByteCode {
+public:
+    CallFunctionWithReceiver(unsigned argumentCount)
+        : ByteCode(CallFunctionWithReceiverOpcode)
+    {
+        m_argmentCount = argumentCount;
+    }
+
+    unsigned m_argmentCount;
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("CallFunctionWithReceiver <>\n");
     }
 #endif
 
@@ -2128,6 +2203,11 @@ public:
     size_t lastCodePosition()
     {
         return m_code.size() - sizeof(CodeType);
+    }
+
+    Opcode lastCode()
+    {
+        return m_extraData[m_extraData.size() - 1].m_opcode;
     }
 
     template <typename CodeType>

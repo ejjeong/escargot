@@ -3005,6 +3005,14 @@ void GlobalObject::somePrototypeObjectDefineIndexedProperty()
                         memcpy(code, &n, sizeof(GetObjectSlowMode));
                         break;
                     }
+                case GetObjectAndPushObjectSlowModeOpcode:
+                    {
+                        GetObjectAndPushObjectSlowMode n;
+                        n.assignOpcodeInAddress();
+                        block->m_extraData[idx].m_opcode = GetObjectAndPushObjectSlowModeOpcode;
+                        memcpy(code, &n, sizeof(GetObjectAndPushObjectSlowMode));
+                        break;
+                    }
                 case GetObjectWithPeekingOpcode:
                     {
                         GetObjectWithPeekingSlowMode n;
@@ -3019,6 +3027,14 @@ void GlobalObject::somePrototypeObjectDefineIndexedProperty()
                         n.assignOpcodeInAddress();
                         block->m_extraData[idx].m_opcode = GetObjectPreComputedCaseSlowModeOpcode;
                         memcpy(code, &n, sizeof(GetObjectPreComputedCaseSlowMode));
+                        break;
+                    }
+                case GetObjectPreComputedCaseAndPushObjectOpcode:
+                    {
+                        GetObjectPreComputedCaseAndPushObjectSlowMode n(((GetObjectPreComputedCaseAndPushObject *)code)->m_propertyValue);
+                        n.assignOpcodeInAddress();
+                        block->m_extraData[idx].m_opcode = GetObjectPreComputedCaseAndPushObjectSlowModeOpcode;
+                        memcpy(code, &n, sizeof(GetObjectPreComputedCaseAndPushObjectSlowMode));
                         break;
                     }
                 case GetObjectWithPeekingPreComputedCaseOpcode:

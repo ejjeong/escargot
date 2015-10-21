@@ -80,6 +80,9 @@ unsigned char popCountFromOpcode(ByteCode* code, Opcode opcode)
 {
     if(opcode == CallFunctionOpcode) {
         CallFunction* c = (CallFunction*)code;
+        return c->m_argmentCount + 1/* function */;
+    } if(opcode == CallFunctionWithReceiverOpcode) {
+        CallFunctionWithReceiver* c = (CallFunctionWithReceiver*)code;
         return c->m_argmentCount + 1/* receiver */ + 1/* function */;
     } else if(opcode == CallEvalFunctionOpcode) {
         CallEvalFunction* c = (CallEvalFunction*)code;

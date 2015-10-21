@@ -137,11 +137,10 @@ ALWAYS_INLINE ESValue abstractRelationalComparison(const ESValue& left, const ES
 }
 
 //d = {}. d[0]
-NEVER_INLINE ESValue getObjectOperationSlowCase(ESValue* willBeObject, ESValue* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject);
-ALWAYS_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject)
+NEVER_INLINE ESValue getObjectOperationSlowCase(ESValue* willBeObject, ESValue* property, GlobalObject* globalObject);
+ALWAYS_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* property, GlobalObject* globalObject)
 {
     ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty());
-    *lastObjectValueMetInMemberExpression = *willBeObject;
     if(LIKELY(willBeObject->isESPointer() && willBeObject->asESPointer()->isESArrayObject())) {
         ESArrayObject* arr = willBeObject->asESPointer()->asESArrayObject();
         if(LIKELY(arr->isFastmode())) {
@@ -157,15 +156,14 @@ ALWAYS_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* propert
             }
         }
     }
-    return getObjectOperationSlowCase(willBeObject, property, lastObjectValueMetInMemberExpression, globalObject);
+    return getObjectOperationSlowCase(willBeObject, property, globalObject);
 }
 
 //d = {}. d.foo
-ALWAYS_INLINE ESValue getObjectPreComputedCaseOperation(ESValue* willBeObject, ESString* keyString, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject
+ALWAYS_INLINE ESValue getObjectPreComputedCaseOperation(ESValue* willBeObject, ESString* keyString, GlobalObject* globalObject
         ,ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex)
 {
     ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty());
-    *lastObjectValueMetInMemberExpression = *willBeObject;
     ESObject* obj;
     ESObject* targetObj;
     if(LIKELY(willBeObject->isESPointer())) {
@@ -243,7 +241,7 @@ GetObjectPreComputedCaseInlineCacheOperation:
     }
 }
 
-NEVER_INLINE ESValue getObjectPreComputedCaseOperationWithNeverInline(ESValue* willBeObject, ESString* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject
+NEVER_INLINE ESValue getObjectPreComputedCaseOperationWithNeverInline(ESValue* willBeObject, ESString* property, GlobalObject* globalObject
         ,ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex);
 
 NEVER_INLINE void throwObjectWriteError();
@@ -370,7 +368,7 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
     setObjectPreComputedCaseOperationSlowCase(willBeObject, keyString, value);
 }
 
-NEVER_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue* property, ESValue* lastObjectValueMetInMemberExpression, GlobalObject* globalObject);
+NEVER_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue* property, GlobalObject* globalObject);
 NEVER_INLINE void setObjectOperationSlowMode(ESValue* willBeObject, ESValue* property, const ESValue& value);
 
 NEVER_INLINE bool instanceOfOperation(ESValue* lval, ESValue* rval);
