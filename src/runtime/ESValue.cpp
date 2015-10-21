@@ -645,6 +645,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                 char* code = fn->codeBlock()->m_code.data();
                 ByteCode* currentCode;
                 bool compileNextTime = false;
+                bool dontJIT = false;
                 char* end = &fn->codeBlock()->m_code.data()[fn->codeBlock()->m_code.size()];
                 while(&code[idx] < end) {
                     currentCode = (ByteCode *)(&code[idx]);
@@ -682,7 +683,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                             LOG_VJ("> Cannot Compile JIT Function due to GetObjectPreComputedCase(idx %u) is not profiled yet\n", (unsigned)idx);
                         }
                         break;
-                       }
+                    }
                     case CallFunctionOpcode: {
                          reinterpret_cast<CallFunction*>(currentCode)->m_profile.updateProfiledType();
                          if (reinterpret_cast<CallFunction*>(currentCode)->m_profile.getType().isBottomType()) {
@@ -690,16 +691,21 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                             LOG_VJ("> Cannot Compile JIT Function due to CallFunction(idx %u) is not profiled yet\n", (unsigned)idx);
                          }
                          break;
-                       }
+                    }
                     default:
                         break;
-                       }
+                    }
 
                     if (compileNextTime) break;
 
                     switch(opcode) {
-                        #define DECLARE_EXECUTE_NEXTCODE(opcode, pushCount, popCount) \
+                        #define DECLARE_EXECUTE_NEXTCODE(opcode, pushCount, popCount, JITSupported) \
                         case opcode##Opcode: \
+                            if (!JITSupported) { \
+                                dontJIT = true; \
+                                LOG_VJ("> Unsupported ByteCode %s (idx %u). Stop trying JIT.\n", #opcode, (unsigned)idx); \
+                                break; \
+                            } \
                             idx += sizeof (opcode); \
                             bytecodeCounter++; \
                             break;
@@ -707,8 +713,14 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                         #undef DECLARE_EXECUTE_NEXTCODE
                         case OpcodeKindEnd:
                             break;
-                      }
-                  }
+                    }
+
+                    if (dontJIT) {
+                        fn->codeBlock()->m_dontJIT = true;
+                        compileNextTime = true;
+                        break;
+                    }
+                }
 
                 if (!compileNextTime) {
                     jitFunction = reinterpret_cast<ESJIT::JITFunction>(ESJIT::JITCompile(fn->codeBlock(), instance));
@@ -761,7 +773,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                            }
 
                         switch(opcode) {
-                            #define DECLARE_EXECUTE_NEXTCODE(code, pushCount, popCount) \
+                            #define DECLARE_EXECUTE_NEXTCODE(code, pushCount, popCount, JITSupported) \
                                                 case code##Opcode: \
                                                     idx += sizeof (code); \
                                                     bytecodeCounter++; \

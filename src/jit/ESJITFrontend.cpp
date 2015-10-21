@@ -11,7 +11,7 @@
 namespace escargot {
 namespace ESJIT {
 
-#define DECLARE_BYTECODE_LENGTH(bytecode, pushCount, popCount) const int bytecode##Length = sizeof(bytecode);
+#define DECLARE_BYTECODE_LENGTH(bytecode, pushCount, popCount, JITSupported) const int bytecode##Length = sizeof(bytecode);
     FOR_EACH_BYTECODE_OP(DECLARE_BYTECODE_LENGTH)
 #undef DECLARE_BYTECODE_LENGTH
 
@@ -257,22 +257,6 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             goto unsupported;
             NEXT_BYTECODE(UnsignedRightShift);
             break;
-        case GreaterThanOpcode:
-        {
-            INIT_BYTECODE(GreaterThan);
-            ESIR* lessThanIR = GreaterThanIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
-            currentBlock->push(lessThanIR);
-            NEXT_BYTECODE(GreaterThan);
-            break;
-        }
-        case GreaterThanOrEqualOpcode:
-        {
-            INIT_BYTECODE(GreaterThanOrEqual);
-            ESIR* lessThanOrEqualIR = GreaterThanOrEqualIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
-            currentBlock->push(lessThanOrEqualIR);
-            NEXT_BYTECODE(GreaterThanOrEqual);
-            break;
-        }
         case LessThanOpcode:
         {
             INIT_BYTECODE(LessThan);
@@ -287,6 +271,22 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             ESIR* lessThanOrEqualIR = LessThanOrEqualIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
             currentBlock->push(lessThanOrEqualIR);
             NEXT_BYTECODE(LessThanOrEqual);
+            break;
+        }
+        case GreaterThanOpcode:
+        {
+            INIT_BYTECODE(GreaterThan);
+            ESIR* lessThanIR = GreaterThanIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
+            currentBlock->push(lessThanIR);
+            NEXT_BYTECODE(GreaterThan);
+            break;
+        }
+        case GreaterThanOrEqualOpcode:
+        {
+            INIT_BYTECODE(GreaterThanOrEqual);
+            ESIR* lessThanOrEqualIR = GreaterThanOrEqualIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
+            currentBlock->push(lessThanOrEqualIR);
+            NEXT_BYTECODE(GreaterThanOrEqual);
             break;
         }
         case PlusOpcode:
@@ -337,19 +337,6 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(Mod);
             break;
         }
-        case IncrementOpcode:
-        {
-            INIT_BYTECODE(Increment);
-            graph->setOperandStackPos(ssaIndex->m_targetIndex, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
-            ESIR* incrementIR = IncrementIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1);
-            currentBlock->push(incrementIR);
-            NEXT_BYTECODE(Increment);
-            break;
-        }
-        case DecrementOpcode:
-            goto unsupported;
-            NEXT_BYTECODE(Decrement);
-            break;
         case StringInOpcode:
             goto unsupported;
             NEXT_BYTECODE(StringIn);
@@ -392,6 +379,19 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(ToNumber);
             break;
         }
+        case IncrementOpcode:
+        {
+            INIT_BYTECODE(Increment);
+            graph->setOperandStackPos(ssaIndex->m_targetIndex, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
+            ESIR* incrementIR = IncrementIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1);
+            currentBlock->push(incrementIR);
+            NEXT_BYTECODE(Increment);
+            break;
+        }
+        case DecrementOpcode:
+            goto unsupported;
+            NEXT_BYTECODE(Decrement);
+            break;
         case CreateObjectOpcode:
             goto unsupported;
             NEXT_BYTECODE(CreateObject);
@@ -437,7 +437,6 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(ExecuteNativeFunction);
             break;
         case PrepareFunctionCallOpcode:
-            // FIXME lastESObjectMetInMemberExpressionNode = globalObject;
             NEXT_BYTECODE(PrepareFunctionCall);
             break;
         case PushFunctionCallReceiverOpcode:
@@ -587,21 +586,21 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         }
         case StorePhiOpcode:
-       {
+        {
            INIT_BYTECODE(StorePhi);
            StorePhiIR* storePhiIR = StorePhiIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
            currentBlock->push(storePhiIR);
            NEXT_BYTECODE(StorePhi);
            break;
-       }
+        }
         case LoadPhiOpcode:
-       {
+        {
            INIT_BYTECODE(LoadPhi);
            LoadPhiIR* loadPhiIR = LoadPhiIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
            currentBlock->push(loadPhiIR);
            NEXT_BYTECODE(LoadPhi);
            break;
-       }
+        }
         case ThisOpcode:
         {
             INIT_BYTECODE(This);

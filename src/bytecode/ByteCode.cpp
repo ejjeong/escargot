@@ -88,7 +88,7 @@ unsigned char popCountFromOpcode(ByteCode* code, Opcode opcode)
         NewFunctionCall* c = (NewFunctionCall*)code;
         return c->m_argmentCount + 1/* function */;
     }
-#define FETCH_POP_COUNT_BYTE_CODE(code, pushCount, popCount) \
+#define FETCH_POP_COUNT_BYTE_CODE(code, pushCount, popCount, JITSupported) \
     case code##Opcode: \
         ASSERT(popCount != -1); \
         return popCount;
@@ -107,7 +107,7 @@ unsigned char pushCountFromOpcode(ByteCode* code, Opcode opcode)
         } else
             return 0;
     }
-#define FETCH_PUSH_COUNT_BYTE_CODE(code, pushCount, popCount) \
+#define FETCH_PUSH_COUNT_BYTE_CODE(code, pushCount, popCount, JITSupported) \
 case code##Opcode: \
     ASSERT(pushCount != -1); \
     return pushCount;
@@ -157,7 +157,7 @@ void dumpBytecode(CodeBlock* codeBlock)
             printf("] ");
         }
         switch(opcode) {
-#define DUMP_BYTE_CODE(code, pushCount, popCount) \
+#define DUMP_BYTE_CODE(code, pushCount, popCount, JITSupported) \
         case code##Opcode:\
         codeBlock->getSSAIndex(bytecodeCounter)->dump(); \
         currentCode->dump(); \
@@ -171,7 +171,7 @@ void dumpBytecode(CodeBlock* codeBlock)
         };
 #else // ENABLE_ESJIT
         switch(opcode) {
-#define DUMP_BYTE_CODE(code, pushCount, popCount) \
+#define DUMP_BYTE_CODE(code, pushCount, popCount, JITSupported) \
         case code##Opcode:\
         currentCode->dump(); \
         idx += sizeof (code); \
