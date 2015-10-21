@@ -114,7 +114,7 @@ inline ESValueInDouble concatTwoStrings(ESValueInDouble left, ESValueInDouble ri
 {
     ESValue leftVal = ESValue::fromRawDouble(left);
     ESValue rightVal = ESValue::fromRawDouble(right);
-    ESValue ret = ESString::concatTwoStrings(leftVal.asESString(), rightVal.asESString());
+    ESValue ret = ESString::concatTwoStrings(rightVal.asESString(), leftVal.asESString());
     return ESValue::toRawDouble(ret);
 }
 

@@ -455,8 +455,9 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             LIns* args[] = {boxedLeft};
             left = m_out.insCall(&generateToStringCallInfo, args);
         }
+
         if (!rightType.isStringType()) {
-            LIns* boxedRight = boxESValue(left, rightType);
+            LIns* boxedRight = boxESValue(right, rightType);
             LIns* args[] = {boxedRight};
             right = m_out.insCall(&generateToStringCallInfo, args);
         }
