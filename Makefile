@@ -202,7 +202,7 @@ asm:
 
 check-jit:
 	make jit.release -j8
-	./run-Sunspider-jit.sh
+	make run-sunspider
 	make interpreter.release -j8
 	make run-sunspider
 	make jit.debug -j8

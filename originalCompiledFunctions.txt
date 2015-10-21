@@ -3,9 +3,14 @@ test/SunSpider/tests/sunspider-1.0.2/3d-cube.js
 test/SunSpider/tests/sunspider-1.0.2/3d-morph.js
 <<<< Compiled Functions >>>>
 morph 
+test/SunSpider/tests/sunspider-1.0.2/3d-raytrace.js
+<<<< Compiled Functions >>>>
+createVector sub lengthVector dot add scalev 
 test/SunSpider/tests/sunspider-1.0.2/access-binary-trees.js
 <<<< Compiled Functions >>>>
 bottomUpTree 
+test/SunSpider/tests/sunspider-1.0.2/access-fannkuch.js
+
 test/SunSpider/tests/sunspider-1.0.2/access-nbody.js
 <<<< Compiled Functions >>>>
 (anonymous) Sun Jupiter Saturn Uranus Neptune 
@@ -28,6 +33,12 @@ ack fib tak
 test/SunSpider/tests/sunspider-1.0.2/crypto-aes.js
 <<<< Compiled Functions >>>>
 SubWord RotWord SubBytes ShiftRows 
+test/SunSpider/tests/sunspider-1.0.2/crypto-md5.js
+<<<< Compiled Functions >>>>
+md5_cmn 
+test/SunSpider/tests/sunspider-1.0.2/crypto-sha1.js
+<<<< Compiled Functions >>>>
+sha1_kt 
 test/SunSpider/tests/sunspider-1.0.2/date-format-tofte.js
 <<<< Compiled Functions >>>>
 arrayExists 
@@ -55,3 +66,6 @@ test/SunSpider/tests/sunspider-1.0.2/string-tagcloud.js
 test/SunSpider/tests/sunspider-1.0.2/string-unpack-code.js
 <<<< Compiled Functions >>>>
 (anonymous) (anonymous) (anonymous) (anonymous) 
+test/SunSpider/tests/sunspider-1.0.2/string-validate-input.js
+<<<< Compiled Functions >>>>
+addResult 
