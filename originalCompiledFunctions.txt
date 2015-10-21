@@ -31,6 +31,9 @@ SubWord RotWord SubBytes ShiftRows
 test/SunSpider/tests/sunspider-1.0.2/date-format-tofte.js
 <<<< Compiled Functions >>>>
 arrayExists 
+test/SunSpider/tests/sunspider-1.0.2/date-format-xparb.js
+<<<< Compiled Functions >>>>
+(anonymous) 
 test/SunSpider/tests/sunspider-1.0.2/math-cordic.js
 <<<< Compiled Functions >>>>
 FIXED FLOAT cordicsincos 
