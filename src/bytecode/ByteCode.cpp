@@ -138,6 +138,8 @@ void dumpBytecode(CodeBlock* codeBlock)
         printf("regIndex[%d,+%d,-%d]\t\t", ex->m_baseRegisterIndex, ex->m_registerIncrementCount, ex->m_registerDecrementCount);
 
         Opcode opcode = codeBlock->m_extraData[bytecodeCounter].m_opcode;
+        bytecodeCounter++;
+        ASSERT(opcode == currentCode->m_orgOpcode);
 
 #ifdef ENABLE_ESJIT
         if (opcode == CallFunctionOpcode || opcode == NewFunctionCallOpcode) {
@@ -155,7 +157,6 @@ void dumpBytecode(CodeBlock* codeBlock)
         codeBlock->getSSAIndex(bytecodeCounter)->dump(); \
         currentCode->dump(); \
         idx += sizeof (code); \
-        bytecodeCounter++; \
         continue;
         FOR_EACH_BYTECODE_OP(DUMP_BYTE_CODE)
 #undef  DUMP_BYTE_CODE
