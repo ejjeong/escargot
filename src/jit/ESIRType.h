@@ -114,6 +114,8 @@ public:
         }
     }
 
+    uint64_t type() { return m_type; }
+
     void dump(std::ostream& out) {
         out << "[Type: 0x" << std::hex << m_type << std::dec;
         out << " : " << getESIRTypeName(m_type) << "]";

@@ -47,8 +47,8 @@ CallInfo getObjectOpCallInfo = CI(getObjectOp, CallInfo::typeSig3(ARGTYPE_D, ARG
 CallInfo getObjectPreComputedCaseOpCallInfo = CI(getObjectPreComputedCaseOp, CallInfo::typeSig3(ARGTYPE_D, ARGTYPE_D, ARGTYPE_P, ARGTYPE_P));
 CallInfo setObjectOpCallInfo = CI(setObjectOp, CallInfo::typeSig3(ARGTYPE_V, ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 CallInfo ESObjectSetOpCallInfo = CI(ESObjectSetOp, CallInfo::typeSig3(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
-CallInfo generateToStringCallInfo = CI(generateToString, CallInfo::typeSig1(ARGTYPE_D, ARGTYPE_D));
-CallInfo concatTwoStringsCallInfo = CI(concatTwoStrings, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_P, ARGTYPE_P));
+CallInfo generateToStringCallInfo = CI(generateToString, CallInfo::typeSig1(ARGTYPE_P, ARGTYPE_D));
+CallInfo concatTwoStringsCallInfo = CI(concatTwoStrings, CallInfo::typeSig2(ARGTYPE_P, ARGTYPE_P, ARGTYPE_P));
 #if 0
 CallInfo resolveNonDataPropertyInfo = CI(resolveNonDataProperty, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_P, ARGTYPE_P));
 #else
@@ -58,20 +58,23 @@ CallInfo resolveNonDataPropertyInfo = CI(resolveNonDataProperty, CallInfo::typeS
 CallInfo logIntCallInfo = CI(jitLogIntOperation, CallInfo::typeSig2(ARGTYPE_V, ARGTYPE_I, ARGTYPE_P));
 CallInfo logDoubleCallInfo = CI(jitLogDoubleOperation, CallInfo::typeSig2(ARGTYPE_V, ARGTYPE_D, ARGTYPE_P));
 CallInfo logPointerCallInfo = CI(jitLogPointerOperation, CallInfo::typeSig2(ARGTYPE_V, ARGTYPE_P, ARGTYPE_P));
-#define JIT_LOG_I(arg, msg) { LIns* args[] = { m_out.insImmP(msg), arg }; m_out.insCall(&logIntCallInfo, args); }
+#define JIT_LOG_I(arg, msg) { LIns* args[] = { m_out.insImmP(msg), arg}; m_out.insCall(&logIntCallInfo, args); }
 #define JIT_LOG_D(arg, msg) { LIns* args[] = { m_out.insImmP(msg), arg}; m_out.insCall(&logDoubleCallInfo, args); }
 #define JIT_LOG_P(arg, msg) { LIns* args[] = { m_out.insImmP(msg), arg}; m_out.insCall(&logPointerCallInfo, args); }
-#define JIT_LOG_S(arg, msg) { LIns* args[] = { m_out.insImmP(msg), arg}; m_out.insCall(&logStringCallInfo, args); }
 #define JIT_LOG(arg, msg) { \
-    if (arg->isI()) JIT_LOG_I(arg, msg); \
-    if (arg->isD()) JIT_LOG_D(arg, msg); \
-    if (arg->isP()) JIT_LOG_P(arg, msg); \
+    if (arg->isI()) { \
+        JIT_LOG_I(arg, msg); \
+    } else if (arg->isD()) { \
+        JIT_LOG_D(arg, msg); \
+    } else if (arg->isP()) { \
+        JIT_LOG_P(arg, msg); \
+    } else \
+        RELEASE_ASSERT_NOT_REACHED(); \
 }
 #else
 #define JIT_LOG_I(arg, msg)
 #define JIT_LOG_D(arg, msg)
 #define JIT_LOG_P(arg, msg)
-#define JIT_LOG_S(arg, msg)
 #define JIT_LOG(arg, msg)
 #endif
 
@@ -278,7 +281,8 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
         LIns* jumpIfFlagIdentical = m_out.insBranch(LIR_jt, checkIfFlagIdentical, nullptr);
 #ifndef NDEBUG
         if (ESVMInstance::currentInstance()->m_verboseJIT) {
-            JIT_LOG(in, "Expected Pointer-typed value, but got this value");
+            JIT_LOG(in, "Expected below-typed value, but got this value");
+            JIT_LOG(in, getESIRTypeName(type.type()));
         }
 #endif
         generateOSRExit(currentByteCodeIndex);
@@ -378,9 +382,16 @@ LIns* NativeGenerator::boxESValue(LIns* unboxedValue, Type type)
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
-    } else if (type.isObjectType() || type.isUndefinedType() || type.isNullType() || type.isArrayObjectType() || type.isStringType() || type.isFunctionObjectType()) {
+    } else if (type.isObjectType() || type.isArrayObjectType() || type.isStringType() || type.isFunctionObjectType()) {
 #ifdef ESCARGOT_64
-        return unboxedValue;
+        // "pointer" : a quad on 64-bit machines
+        return m_out.ins1(LIR_qasd, unboxedValue);
+#else
+        RELEASE_ASSERT_NOT_REACHED();
+#endif
+    } else if (type.isUndefinedType() || type.isNullType()) {
+#ifdef ESCARGOT_64
+        return m_out.ins1(LIR_qasd, unboxedValue);
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
@@ -421,9 +432,16 @@ LIns* NativeGenerator::unboxESValue(LIns* boxedValue, Type type)
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
-    } else if (type.isObjectType() || type.isUndefinedType() || type.isNullType() || type.isArrayObjectType() || type.isStringType() || type.isFunctionObjectType()) {
+    } else if (type.isObjectType() || type.isArrayObjectType() || type.isStringType() || type.isFunctionObjectType()) {
 #ifdef ESCARGOT_64
-        return boxedValue;
+        // "pointer" : a quad on 64-bit machines
+        return m_out.ins1(LIR_dasq, boxedValue);
+#else
+        RELEASE_ASSERT_NOT_REACHED();
+#endif
+    } else if (type.isUndefinedType() || type.isNullType()) {
+#ifdef ESCARGOT_64
+        return m_out.ins1(LIR_dasq, boxedValue);
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif

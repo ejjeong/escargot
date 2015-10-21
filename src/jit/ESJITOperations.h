@@ -133,17 +133,15 @@ inline ESValueInDouble esFunctionObjectCallWithReceiver(ESVMInstance* instance,
     return ESValue::toRawDouble(ret);
 }
 
-inline ESValueInDouble generateToString(ESValueInDouble rawValue)
+inline ESString* generateToString(ESValueInDouble rawValue)
 {
     ESValue value = ESValue::fromRawDouble(rawValue);
-    ESString* string =  value.toStringSlowCase();
-    return ESValue::toRawDouble(string);
+    return value.toStringSlowCase();
 }
 
-inline ESValueInDouble concatTwoStrings(ESString* left, ESString* right)
+inline ESString* concatTwoStrings(ESString* left, ESString* right)
 {
-    ESValue ret = ESString::concatTwoStrings(left, right);
-    return ESValue::toRawDouble(ret);
+    return ESString::concatTwoStrings(left, right);
 }
 
 NEVER_INLINE ESValue newOperation(ESVMInstance* instance, GlobalObject* globalObject, ESValue fn, ESValue* arguments, size_t argc);
