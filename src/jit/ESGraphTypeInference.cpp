@@ -280,6 +280,22 @@ void ESGraphTypeInference::run(ESGraph* graph)
                 graph->setOperandType(ir->targetIndex(), setType);
                 break;
             }
+            case ESIR::Opcode::AllocPhi:
+                break;
+            case ESIR::Opcode::StorePhi:
+            {
+                INIT_ESIR(StorePhi);
+                Type srcType = graph->getOperandType(irStorePhi->sourceIndex());
+                graph->setOperandType(ir->targetIndex(), srcType);
+                break;
+            }
+            case ESIR::Opcode::LoadPhi:
+            {
+                INIT_ESIR(LoadPhi);
+                Type consequentType = graph->getOperandType(irLoadPhi->consequentIndex());
+                graph->setOperandType(ir->targetIndex(), consequentType);
+                break;
+            }
             default:
                 printf("ERROR %s not handled in ESGraphTypeInference.\n", ir->getOpcodeName());
                 RELEASE_ASSERT_NOT_REACHED();

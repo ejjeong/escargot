@@ -121,6 +121,11 @@ class CodeBlock;
     F(Throw, 0, 1) \
     F(FinallyEnd, 0, 0) \
 \
+    /*phi*/ \
+    F(AllocPhi, 0, 0) \
+    F(StorePhi, 0, 0) \
+    F(LoadPhi, 0, 0) \
+\
     /*etc*/ \
     F(This, 1, 0) \
     F(EnumerateObject, 1, 0) \
@@ -1913,6 +1918,55 @@ public:
     virtual void dump()
     {
         printf("TryBodyEnd <>\n");
+    }
+#endif
+};
+
+
+class AllocPhi : public ByteCode {
+public:
+    AllocPhi()
+        : ByteCode(AllocPhiOpcode)
+    {
+
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("AllocPhi <>\n");
+    }
+#endif
+};
+
+class StorePhi : public ByteCode {
+public:
+    StorePhi()
+        : ByteCode(StorePhiOpcode)
+    {
+
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("StorePhi <>\n");
+    }
+#endif
+};
+
+class LoadPhi : public ByteCode {
+public:
+    LoadPhi()
+        : ByteCode(LoadPhiOpcode)
+    {
+
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("LoadPhi <>\n");
     }
 #endif
 };

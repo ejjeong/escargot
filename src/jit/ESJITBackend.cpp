@@ -1083,17 +1083,46 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             RELEASE_ASSERT_NOT_REACHED();
     }
     case ESIR::Opcode::UnaryMinus:
-        {
-            INIT_ESIR(UnaryMinus);
-            LIns* source = getTmpMapping(irUnaryMinus->sourceIndex());
-            Type srcType = m_graph->getOperandType(irUnaryMinus->sourceIndex());
-            if (srcType.isInt32Type()) {
-                return m_out.ins1(LIR_negi, source);
-            } else if (srcType.isDoubleType()) {
-                return m_out.ins1(LIR_negd, source);
-            } else
-                RELEASE_ASSERT_NOT_REACHED();
-        }
+    {
+        INIT_ESIR(UnaryMinus);
+        LIns* source = getTmpMapping(irUnaryMinus->sourceIndex());
+        Type srcType = m_graph->getOperandType(irUnaryMinus->sourceIndex());
+        if (srcType.isInt32Type()) {
+            return m_out.ins1(LIR_negi, source);
+        } else if (srcType.isDoubleType()) {
+            return m_out.ins1(LIR_negd, source);
+        } else
+            RELEASE_ASSERT_NOT_REACHED();
+    }
+    case ESIR::Opcode::AllocPhi:
+    {
+        INIT_ESIR(AllocPhi);
+        LIns* phi = m_out.insAlloc(sizeof(ESValue));
+        return phi;
+    }
+    case ESIR::Opcode::StorePhi:
+    {
+        INIT_ESIR(StorePhi);
+        LIns* source = getTmpMapping(irStorePhi->sourceIndex());
+        LIns* phi = getTmpMapping(irStorePhi->allocPhiIndex());
+
+        Type srcType = m_graph->getOperandType(irStorePhi->sourceIndex());
+        if (srcType.isInt32Type())
+            return m_out.insStore(LIR_sti, source, phi, 0 , 1);
+        else
+            RELEASE_ASSERT_NOT_REACHED();
+    }
+    case ESIR::Opcode::LoadPhi:
+    {
+        INIT_ESIR(LoadPhi);
+        LIns* phi = getTmpMapping(irLoadPhi->allocPhiIndex());
+
+        Type consequentType = m_graph->getOperandType(irLoadPhi->consequentIndex());
+        if (consequentType.isInt32Type())
+            return m_out.insLoad(LIR_ldi, phi, 0, 1, LOAD_NORMAL);
+        else
+            RELEASE_ASSERT_NOT_REACHED();
+    }
     default:
     {
         return nullptr;

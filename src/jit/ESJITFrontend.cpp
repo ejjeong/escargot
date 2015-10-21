@@ -575,6 +575,30 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             goto unsupported;
             NEXT_BYTECODE(Throw);
             break;
+        case AllocPhiOpcode:
+        {
+            INIT_BYTECODE(AllocPhi);
+            AllocPhiIR* allocPhiIR = AllocPhiIR::create(ssaIndex->m_targetIndex);
+            currentBlock->push(allocPhiIR);
+            NEXT_BYTECODE(AllocPhi);
+            break;
+        }
+        case StorePhiOpcode:
+       {
+           INIT_BYTECODE(StorePhi);
+           StorePhiIR* storePhiIR = StorePhiIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
+           currentBlock->push(storePhiIR);
+           NEXT_BYTECODE(StorePhi);
+           break;
+       }
+        case LoadPhiOpcode:
+       {
+           INIT_BYTECODE(LoadPhi);
+           LoadPhiIR* loadPhiIR = LoadPhiIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
+           currentBlock->push(loadPhiIR);
+           NEXT_BYTECODE(LoadPhi);
+           break;
+       }
         case ThisOpcode:
         {
             INIT_BYTECODE(This);

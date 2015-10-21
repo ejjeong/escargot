@@ -93,6 +93,9 @@ class ESBasicBlock;
     F(OSRExit, ) \
     F(Move, ) \
     F(Phi, ) \
+    F(AllocPhi, ) \
+    F(StorePhi, ) \
+    F(LoadPhi, ) \
     \
     /* For-in statement */ \
     F(GetEnumarablePropertyLength, ) \
@@ -1088,6 +1091,72 @@ private:
     PhiIR(int targetIndex)
         : ESIR(ESIR::Opcode::Phi, targetIndex) { }
     std::vector<int, gc_allocator<int> > m_argumentIndexes;
+};
+
+class AllocPhiIR : public ESIR {
+public:
+    DECLARE_STATIC_GENERATOR_0(AllocPhi);
+
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+    }
+#endif
+
+private:
+    AllocPhiIR(int targetIndex)
+        : ESIR(ESIR::Opcode::AllocPhi, targetIndex) { }
+};
+
+class StorePhiIR : public ESIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(StorePhi, int, int);
+
+    int sourceIndex() { return m_sourceIndex; }
+    int allocPhiIndex() { return m_allocPhiIndex; }
+
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+        out << "tmp" << m_sourceIndex << " to tmp" << m_allocPhiIndex;
+    }
+#endif
+
+private:
+    StorePhiIR(int targetIndex, int sourceIndex, int allocPhiIndex)
+        : ESIR(ESIR::Opcode::StorePhi, targetIndex),
+          m_sourceIndex(sourceIndex),
+          m_allocPhiIndex(allocPhiIndex) { }
+
+    int m_sourceIndex;
+    int m_allocPhiIndex;
+};
+
+class LoadPhiIR : public ESIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(LoadPhi, int, int)
+
+    int allocPhiIndex() { return m_allocPhiIndex; }
+    int consequentIndex() { return m_consequentIndex; }
+
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+        out << "tmp" << m_allocPhiIndex;
+    }
+#endif
+
+private:
+    LoadPhiIR(int targetIndex, int allocPhiIndex, int consequentIndex)
+        : ESIR(ESIR::Opcode::LoadPhi, targetIndex), m_allocPhiIndex(allocPhiIndex), m_consequentIndex(consequentIndex) { }
+    int m_allocPhiIndex;
+    int m_consequentIndex;
 };
 
 #if 0

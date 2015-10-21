@@ -965,6 +965,24 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         }
     }
 
+    AllocPhiOpcodeLbl:
+    {
+        executeNextCode<AllocPhi>(programCounter);
+        NEXT_INSTRUCTION();
+    }
+
+    StorePhiOpcodeLbl:
+    {
+        executeNextCode<StorePhi>(programCounter);
+        NEXT_INSTRUCTION();
+    }
+
+    LoadPhiOpcodeLbl:
+    {
+        executeNextCode<LoadPhi>(programCounter);
+        NEXT_INSTRUCTION();
+    }
+
     EnumerateObjectOpcodeLbl:
     {
         ESObject* obj = pop<ESValue>(stack, bp)->toObject();
