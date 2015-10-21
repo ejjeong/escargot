@@ -68,6 +68,10 @@ CodeBlock* generateByteCode(Node* node)
         }
     }
 #endif
+
+#ifdef ENABLE_ESJIT
+    context.dumpCurrentNodeIndex();
+#endif
     return block;
 }
 

@@ -49,6 +49,10 @@ public:
         cb->m_nonAtomicId = m_nonAtomicId;
 #endif
         codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb, true), context, this);
+
+#ifdef ENABLE_ESJIT
+        newContext.dumpCurrentNodeIndex();
+#endif
     }
 
 protected:

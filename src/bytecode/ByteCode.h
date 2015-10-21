@@ -192,6 +192,9 @@ struct ByteCodeGenerateContext {
         ASSERT(m_labeledBreakStatmentPositions.size() == 0);
         ASSERT(m_labeledContinueStatmentPositions.size() == 0);
         ASSERT(m_complexCaseStatementPositions.size() == 0);
+#ifdef ENABLE_ESJIT
+        ASSERT(m_currentNodeIndex == std::numeric_limits<unsigned>::max());
+#endif
     }
 
     void propagateInformationTo(ByteCodeGenerateContext& ctx)
@@ -210,8 +213,22 @@ struct ByteCodeGenerateContext {
         m_complexCaseStatementPositions.clear();
 #ifdef ENABLE_ESJIT
         ctx.m_currentNodeIndex = m_currentNodeIndex;
+#ifndef NDEBUG
+        m_currentNodeIndex = std::numeric_limits<unsigned>::max();
+#endif
 #endif
     }
+
+#ifdef ENABLE_ESJIT
+
+    ALWAYS_INLINE void dumpCurrentNodeIndex()
+    {
+#ifndef NDEBUG
+        m_currentNodeIndex = std::numeric_limits<unsigned>::max();
+#endif
+    }
+
+#endif
 
     void pushBreakPositions(size_t pos)
     {
