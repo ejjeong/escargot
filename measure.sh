@@ -1,5 +1,6 @@
 #!/bin/bash
 
+make full
 tests=("3d-cube" "3d-morph" "3d-raytrace" "access-binary-trees" "access-fannkuch" "access-nbody" "access-nsieve" "bitops-3bit-bits-in-byte" "bitops-bits-in-byte" "bitops-bitwise-and" "bitops-nsieve-bits" "controlflow-recursive" "crypto-aes" "crypto-md5" "crypto-sha1" "date-format-tofte" "date-format-xparb" "math-cordic" "math-partial-sums" "math-spectral-norm" "regexp-dna" "string-base64" "string-fasta" "string-tagcloud" "string-unpack-code" "string-validate-input")
 cp test/SunSpider/resources/sunspider-standalone-driver.orig.js test/SunSpider/resources/sunspider-standalone-driver.js
 if [[ $1 == duk* ]]; then
@@ -21,9 +22,15 @@ elif [[ $1 == jsc.base* ]]; then
 elif [[ $1 == jsc.jit || $1 == jsc.dfg* ]]; then
   cmd="./test/bin/jsc.jit"
   tc="jsc.jit"
+elif [[ $1 == escargot.interp* ]]; then
+  cmd="./out/interpreter/release/escargot"
+  tc="escargot.interp"
+elif [[ $1 == escargot.jit ]]; then
+  cmd="./out/jit/release/escargot"
+  tc="escargot.jit"
 else
-  cmd="./escargot"
-  tc="escargot"
+  cmd="./out/interpreter/release/escargot"
+  tc="escargot.interp"
 fi
 echo $cmd
 testpath="./test/SunSpider/tests/sunspider-1.0.2/"
