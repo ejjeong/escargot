@@ -167,6 +167,16 @@ $(BUILDDIR)/%.o: %.c
 	$(CC) -c $(CFLAGS) $< -o $@
 	$(CC) -MM $(CFLAGS) -MT $@ $< > $(BUILDDIR)/$*.d
 
+full:
+	BUILDDIR=out/jit/debug make jit.debug -j 32
+	ln -sf out/jit/debug/$(BIN) $(BIN).jd
+	BUILDDIR=out/jit/release make jit.release -j 32
+	ln -sf out/jit/release/$(BIN) $(BIN).jr
+	BUILDDIR=out/interpreter/debug make interpreter.debug -j 32
+	ln -sf out/interpreter/debug/$(BIN) $(BIN).id
+	BUILDDIR=out/interpreter/release make interpreter.release -j 32
+	ln -sf out/interpreter/release/$(BIN) $(BIN).ir
+
 clean:
 	rm -rf out
 	$(shell find ./src/ -name "*.o" -exec rm {} \;)
