@@ -187,6 +187,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case SetObjectOpcode:
         {
             INIT_BYTECODE(SetObject);
+            graph->setOperandStackPos(ssaIndex->m_targetIndex, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
             ESIR* setObject = SetObjectIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2, ssaIndex->m_targetIndex - 1);
             currentBlock->push(setObject);
             NEXT_BYTECODE(SetObject);
@@ -364,6 +365,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case UnaryMinusOpcode:
         {
             INIT_BYTECODE(UnaryMinus);
+            graph->setOperandStackPos(ssaIndex->m_targetIndex, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
             ESIR* UnaryMinusIR = UnaryMinusIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1);
             currentBlock->push(UnaryMinusIR);
             NEXT_BYTECODE(UnaryMinus);
@@ -384,6 +386,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case ToNumberOpcode:
         {
             INIT_BYTECODE(ToNumber);
+            graph->setOperandStackPos(ssaIndex->m_targetIndex, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
             ESIR* toNumberIR = ToNumberIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1);
             currentBlock->push(toNumberIR);
             NEXT_BYTECODE(ToNumber);
