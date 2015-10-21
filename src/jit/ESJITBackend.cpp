@@ -43,6 +43,8 @@ CallInfo setVarDefineDataPropertyCallInfo = CI(setVarDefineDataProperty, CallInf
 CallInfo esFunctionObjectCallCallInfo = CI(esFunctionObjectCall, CallInfo::typeSig6(ARGTYPE_D, ARGTYPE_P, ARGTYPE_D, ARGTYPE_D, ARGTYPE_P, ARGTYPE_I, ARGTYPE_B));
 CallInfo newOpCallInfo = CI(newOp, CallInfo::typeSig5(ARGTYPE_D, ARGTYPE_P, ARGTYPE_P, ARGTYPE_D, ARGTYPE_P, ARGTYPE_I));
 CallInfo ESObjectSetOpCallInfo = CI(ESObjectSetOp, CallInfo::typeSig3(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
+CallInfo generateToStringCallInfo = CI(generateToString, CallInfo::typeSig1(ARGTYPE_D, ARGTYPE_D));
+CallInfo concatTwoStringsCallInfo = CI(concatTwoStrings, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 #if 0
 CallInfo resolveNonDataPropertyInfo = CI(resolveNonDataProperty, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_P, ARGTYPE_P));
 #else
@@ -444,17 +446,21 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(StringPlus);
         INIT_BINARY_ESIR(StringPlus);
-#if 0
-        if (!leftType.isStringType())
-            left = generateToString(left, leftType);
-        if (!rightType.isStringType())
-            right = generateToString(right, rightType);
-        // TODO
-        ASSERT(left->isP() && right->isP());
-        //return m_out.ins2(LIR_addd, left, right);
-#else
-        return nullptr;
-#endif
+
+        if (!leftType.isStringType()) {
+            LIns* boxedLeft = boxESValue(left, leftType);
+            LIns* args[] = {boxedLeft};
+            left = m_out.insCall(&generateToStringCallInfo, args);
+        }
+        if (!rightType.isStringType()) {
+            LIns* boxedRight = boxESValue(left, rightType);
+            LIns* args[] = {boxedRight};
+            right = m_out.insCall(&generateToStringCallInfo, args);
+        }
+        LIns* args[] = {left, right};
+        LIns* boxedResult = m_out.insCall(&concatTwoStringsCallInfo, args);
+        LIns* unboxedResult = unboxESValue(boxedResult, TypeString);
+        return unboxedResult;
     }
     case ESIR::Opcode::GenericPlus:
     {
