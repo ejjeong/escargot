@@ -11,6 +11,7 @@ CodeBlock::CodeBlock(bool isBuiltInFunction)
     m_isFunctionExpression = false;
     m_requiredStackSizeInESValueSize = 0;
 #ifdef ENABLE_ESJIT
+    m_cachedJITFunction = nullptr;
     m_executeCount = 0;
     m_threshold = 1;
 #endif
@@ -122,7 +123,7 @@ case code##Opcode: \
 void dumpBytecode(CodeBlock* codeBlock)
 {
     printf("dumpBytecode...>>>>>>>>>>>>>>>>>>>>>>\n");
-    printf("function %s\n", codeBlock->m_nonAtomicId ? (codeBlock->m_nonAtomicId->utf8Data()):"(anonymous)");
+    printf("function %s (%p)\n", codeBlock->m_nonAtomicId ? (codeBlock->m_nonAtomicId->utf8Data()):"(anonymous)", codeBlock);
     size_t idx = 0;
     size_t bytecodeCounter = 0;
 #ifdef ENABLE_ESJIT

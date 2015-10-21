@@ -241,10 +241,47 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
-    } else if (type.isArrayObjectType() || type.isStringType() || type.isFunctionObjectType()) {
-        //ToDo
-    } else if (type.isObjectType()) {
-        //Todo
+    } else if (type.isObjectType() || type.isArrayObjectType() || type.isStringType() || type.isFunctionObjectType()) {
+#ifdef ESCARGOT_64
+        LIns* quadValue = m_out.ins1(LIR_dasq, in);
+        LIns* maskedValue = m_out.ins2(LIR_andq, quadValue, m_tagMaskQ);
+        LIns* checkIfNotTagged = m_out.ins2(LIR_eqq, maskedValue, m_zeroQ);
+        LIns* jumpIfPointer = m_out.insBranch(LIR_jt, checkIfNotTagged, nullptr);
+#ifndef NDEBUG
+        if (ESVMInstance::currentInstance()->m_verboseJIT) {
+            JIT_LOG(in, "Expected Pointer-typed value, but got this value");
+        }
+#endif
+        generateOSRExit(currentByteCodeIndex);
+        LIns* normalPath = m_out.ins0(LIR_label);
+        jumpIfPointer->setTarget(normalPath);
+
+        LIns* mask;
+        if (type.isStringType())
+            mask = m_out.insImmQ(ESPointer::Type::ESString);
+        else if (type.isObjectType())
+            mask = m_out.insImmQ(ESPointer::Type::ESObject);
+        else if (type.isFunctionObjectType())
+            mask = m_out.insImmQ(ESPointer::Type::ESFunctionObject);
+        else if (type.isArrayObjectType())
+            mask = m_out.insImmQ(ESPointer::Type::ESArrayObject);
+        else
+            RELEASE_ASSERT_NOT_REACHED();
+        LIns* esPointerMaskedValue = m_out.ins2(LIR_andq, quadValue, mask);
+        LIns* checkIfFlagIdentical = m_out.ins2(LIR_eqq, esPointerMaskedValue, mask);
+        LIns* jumpIfFlagIdentical = m_out.insBranch(LIR_jt, checkIfFlagIdentical, nullptr);
+#ifndef NDEBUG
+        if (ESVMInstance::currentInstance()->m_verboseJIT) {
+            JIT_LOG(in, "Expected Pointer-typed value, but got this value");
+        }
+#endif
+        generateOSRExit(currentByteCodeIndex);
+        LIns* normalPath2 = m_out.ins0(LIR_label);
+        jumpIfFlagIdentical->setTarget(normalPath2);
+
+#else
+        RELEASE_ASSERT_NOT_REACHED();
+#endif
     } else if (type.isPointerType()) {
 #ifdef ESCARGOT_64
         LIns* quadValue = m_out.ins1(LIR_dasq, in);
