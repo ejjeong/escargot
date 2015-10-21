@@ -40,7 +40,7 @@ CallInfo contextResolveBindingCallInfo = CI(contextResolveBinding, CallInfo::typ
 CallInfo contextResolveThisBindingCallInfo = CI(contextResolveThisBinding, CallInfo::typeSig1(ARGTYPE_D, ARGTYPE_P));
 CallInfo setVarContextResolveBindingCallInfo = CI(setVarContextResolveBinding, CallInfo::typeSig2(ARGTYPE_P, ARGTYPE_P, ARGTYPE_P));
 CallInfo setVarDefineDataPropertyCallInfo = CI(setVarDefineDataProperty, CallInfo::typeSig4(ARGTYPE_V, ARGTYPE_P, ARGTYPE_P, ARGTYPE_P, ARGTYPE_D));
-CallInfo esFunctionObjectCallCallInfo = CI(esFunctionObjectCall, CallInfo::typeSig6(ARGTYPE_D, ARGTYPE_P, ARGTYPE_D, ARGTYPE_D, ARGTYPE_P, ARGTYPE_I, ARGTYPE_I));
+CallInfo esFunctionObjectCallCallInfo = CI(esFunctionObjectCall, CallInfo::typeSig5(ARGTYPE_D, ARGTYPE_P, ARGTYPE_D, ARGTYPE_P, ARGTYPE_I, ARGTYPE_I));
 CallInfo newOpCallInfo = CI(newOp, CallInfo::typeSig5(ARGTYPE_D, ARGTYPE_P, ARGTYPE_P, ARGTYPE_D, ARGTYPE_P, ARGTYPE_I));
 CallInfo ESObjectSetOpCallInfo = CI(ESObjectSetOp, CallInfo::typeSig3(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 CallInfo generateToStringCallInfo = CI(generateToString, CallInfo::typeSig1(ARGTYPE_D, ARGTYPE_D));
@@ -813,15 +813,15 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(CallJS);
         LIns* callee = getTmpMapping(irCallJS->calleeIndex());
-        LIns* receiver = getTmpMapping(irCallJS->receiverIndex());
         LIns* arguments = m_out.insAlloc(irCallJS->argumentCount() * sizeof(ESValue));
         LIns* argumentCount = m_out.insImmI(irCallJS->argumentCount());
+        RELEASE_ASSERT(irCallJS->receiverIndex() == -1);
         for (size_t i=0; i<irCallJS->argumentCount(); i++) {
             LIns* argument = getTmpMapping(irCallJS->argumentIndex(i));
             LIns* boxedArgument = boxESValue(argument, m_graph->getOperandType(irCallJS->argumentIndex(i)));
             m_out.insStore(LIR_std, boxedArgument, arguments, i * sizeof(ESValue), 1);
         }
-        LIns* args[] = {m_false, argumentCount, arguments, receiver, callee, m_instance};
+        LIns* args[] = {m_false, argumentCount, arguments, callee, m_instance};
         LIns* boxedResult = m_out.insCall(&esFunctionObjectCallCallInfo, args);
         return boxedResult;
     }

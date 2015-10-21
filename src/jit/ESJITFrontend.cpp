@@ -436,19 +436,6 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             goto unsupported;
             NEXT_BYTECODE(ExecuteNativeFunction);
             break;
-        case PrepareFunctionCallOpcode:
-            NEXT_BYTECODE(PrepareFunctionCall);
-            break;
-        case PushFunctionCallReceiverOpcode:
-        {
-            INIT_BYTECODE(PushFunctionCallReceiver);
-            graph->setOperandStackPos(ssaIndex->m_targetIndex, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
-            GlobalObject* globalObject = ESVMInstance::currentInstance()->globalObject();
-            ESIR* receiver = ConstantDoubleIR::create(ssaIndex->m_targetIndex, bitwise_cast<double>(globalObject) /*lastESObjectMetInMemberExpressionNode*/);
-            currentBlock->push(receiver);
-            NEXT_BYTECODE(PushFunctionCallReceiver);
-            break;
-        }
         case CallFunctionOpcode:
         {
             INIT_BYTECODE(CallFunction);

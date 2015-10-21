@@ -3,6 +3,7 @@
 
 #include "ExpressionNode.h"
 #include "PatternNode.h"
+#include "MemberExpressionNode.h"
 
 namespace escargot {
 
@@ -32,11 +33,14 @@ public:
         context.m_isHeadOfMemberExpression = true;
         m_callee->generateExpressionByteCode(codeBlock, context);
         context.m_inCallingExpressionScope = prevInCallingExpressionScope;
-        updateNodeIndex(context);
+
 #ifdef ENABLE_ESJIT
-        int receiverIndex = m_nodeIndex;
+        int receiverIndex = -1;
+        if(m_callee->isMemberExpresion()) {
+            updateNodeIndex(context);
+            receiverIndex = ((MemberExpressionNode *)m_callee)->objectIndex();
+        }
 #endif
-        WRITE_LAST_INDEX(receiverIndex, -1, -1);
 
 #ifdef ENABLE_ESJIT
         int* argumentIndexes = (int*)alloca(sizeof(int) * m_arguments.size());
