@@ -130,7 +130,7 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
                             j--;
                             unsigned followPopCount = m_graph->getFollowPopCountOf(block->instruction(j)->targetIndex());
                             maxStackPos = m_graph->getOperandStackPos(block->instruction(j)->targetIndex()) - followPopCount;
-                           }
+                        }
                         break;
                     }
                 }
@@ -148,14 +148,14 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
                         int bufOffset = (stackPos-1) * sizeof(ESValue);
                         LIns* stackBuf = m_out.insLoad(LIR_ldp, m_context, ExecutionContext::offsetofStackBuf(), 1, LOAD_NORMAL);
                         m_out.insStore(LIR_std, boxedLIns, stackBuf, bufOffset, 1);
-                       }
+                    }
                     if (stackPos == 1) {
                         LIns* maxStackPosLIns = m_out.insImmI(maxStackPos);
                         m_out.insStore(LIR_sti, maxStackPosLIns, m_context, ExecutionContext::offsetofStackPos(), 1);
                         isDone = true;
                         break;
-                       }
-                  }
+                    }
+                }
             } else {
                 LIns* maxStackPosLIns = m_out.insImmI(maxStackPos);
                 m_out.insStore(LIR_sti, maxStackPosLIns, m_context, ExecutionContext::offsetofStackPos(), 1);
@@ -185,7 +185,7 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
 #ifndef NDEBUG
         if (ESVMInstance::currentInstance()->m_verboseJIT) {
             JIT_LOG(in, "Expected Boolean-typed value, but got this value");
-         }
+        }
 #endif
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out.ins0(LIR_label);
@@ -202,7 +202,7 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
 #ifndef NDEBUG
         if (ESVMInstance::currentInstance()->m_verboseJIT) {
             JIT_LOG(in, "Expected Int-typed value, but got this value");
-         }
+        }
 #endif
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out.ins0(LIR_label);
@@ -244,7 +244,7 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
 #ifndef NDEBUG
         if (ESVMInstance::currentInstance()->m_verboseJIT) {
             JIT_LOG(in, "Expected Pointer-typed value, but got this value");
-         }
+        }
 #endif
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out.ins0(LIR_label);
@@ -259,7 +259,7 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
 #ifndef NDEBUG
         if (ESVMInstance::currentInstance()->m_verboseJIT) {
             JIT_LOG(in, "Expected undefined value, but got this value");
-         }
+        }
 #endif
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out.ins0(LIR_label);
@@ -274,7 +274,7 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
 #ifndef NDEBUG
         if (ESVMInstance::currentInstance()->m_verboseJIT) {
             JIT_LOG(in, "Expected null value, but got this value");
-         }
+        }
 #endif
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out.ins0(LIR_label);
