@@ -685,6 +685,36 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         else
             return nullptr;
     }
+    case ESIR::Opcode::BitwiseOr:
+    {
+        INIT_ESIR(BitwiseOr);
+        INIT_BINARY_ESIR(BitwiseOr);
+        if (leftType.isNumberType() && rightType.isNumberType()) {
+            if (leftType.isDoubleType())
+                left = m_out.ins1(LIR_d2i, left);
+            if (rightType.isDoubleType())
+                right = m_out.ins1(LIR_d2i, right);
+            return m_out.ins2(LIR_ori, left, right);
+        } else {
+            // TODO : call function to handle non-number cases
+            return nullptr;
+        }
+    }
+    case ESIR::Opcode::BitwiseXor:
+    {
+        INIT_ESIR(BitwiseXor);
+        INIT_BINARY_ESIR(BitwiseXor);
+        if (leftType.isNumberType() && rightType.isNumberType()) {
+            if (leftType.isDoubleType())
+                left = m_out.ins1(LIR_d2i, left);
+            if (rightType.isDoubleType())
+                right = m_out.ins1(LIR_d2i, right);
+            return m_out.ins2(LIR_xori, left, right);
+        } else {
+            // TODO : call function to handle non-number cases
+            return nullptr;
+        }
+    }
     case ESIR::Opcode::Equal:
     {
         INIT_ESIR(Equal);
@@ -721,7 +751,6 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             if (leftType.isInt32Type() && rightType.isInt32Type())
                 return m_out.ins2(LIR_gti, left, right);
             else {
-                // FIXME-JY : what if left/right type changes on runtime
                 if (leftType.isInt32Type()) {
                     ASSERT(left->isI());
                     left = m_out.ins1(LIR_i2d, left);
