@@ -252,7 +252,7 @@ bool ESGraphTypeInference::run(ESGraph* graph)
                 if (objectType.isArrayObjectType()) {
                     GetArrayObjectPreComputedIR* getArrayObjectPreComputedIR = GetArrayObjectPreComputedIR::create(irGetObjectPreComputed->targetIndex(), irGetObjectPreComputed->objectIndex(), irGetObjectPreComputed->cachedIndex());
                     block->replace(j, getArrayObjectPreComputedIR);
-                } else if (objectType.isObjectType() || objectType.isStringType()) {
+                } else if (objectType.isObjectType()) {
                     // do nothing
                 } else {
                     goto unsupported;
