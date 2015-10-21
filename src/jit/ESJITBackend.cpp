@@ -116,6 +116,8 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
 
     bool isPrevBlock = false;
     bool isDone = false;
+    unsigned writeCount = 0;
+    bool* writeFlags;
     for (int i = m_graph->basicBlockSize() - 1; i >= 0; i--) {
         ESBasicBlock* block = m_graph->basicBlock(i);
         if (!isPrevBlock && block->instructionSize() > 0 && block->instruction(0)->targetIndex() <= currentByteCodeIndex) {
@@ -130,12 +132,14 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
                             j--;
                             unsigned followPopCount = m_graph->getFollowPopCountOf(block->instruction(j)->targetIndex());
                             maxStackPos = m_graph->getOperandStackPos(block->instruction(j)->targetIndex()) - followPopCount;
-                        }
+                            writeFlags = (bool *)alloca(maxStackPos);
+                            memset(writeFlags, 0, maxStackPos * sizeof(bool));
+                           }
                         break;
                     }
                 }
                 isPrevBlock = true;
-            }
+              }
 
             if (maxStackPos > 0) {
                 for (; j >= 0; j--) {
@@ -143,13 +147,15 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
                     unsigned stackPos = m_graph->getOperandStackPos(esir->targetIndex());
                     Type type = m_graph->getOperandType(esir->targetIndex());
                     LIns* lIns = m_tmpToLInsMapping[esir->targetIndex()];
-                    if (lIns) {
+                    if (!writeFlags[stackPos - 1] && lIns) {
                         LIns* boxedLIns = boxESValue(lIns, type);
                         int bufOffset = (stackPos-1) * sizeof(ESValue);
                         LIns* stackBuf = m_out.insLoad(LIR_ldp, m_context, ExecutionContext::offsetofStackBuf(), 1, LOAD_NORMAL);
                         m_out.insStore(LIR_std, boxedLIns, stackBuf, bufOffset, 1);
-                    }
-                    if (stackPos == 1) {
+                        writeFlags[stackPos - 1] = true;
+                        writeCount++;
+                       }
+                    if (writeCount == maxStackPos) {
                         LIns* maxStackPosLIns = m_out.insImmI(maxStackPos);
                         m_out.insStore(LIR_sti, maxStackPosLIns, m_context, ExecutionContext::offsetofStackPos(), 1);
                         isDone = true;
@@ -185,7 +191,9 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
 #ifndef NDEBUG
         if (ESVMInstance::currentInstance()->m_verboseJIT) {
             JIT_LOG(in, "Expected Boolean-typed value, but got this value");
-        }
+            LIns* index = m_out.insImmI(currentByteCodeIndex);
+            JIT_LOG(index, "currentByteCodeIndex = ");
+         }
 #endif
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out.ins0(LIR_label);
@@ -202,7 +210,9 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
 #ifndef NDEBUG
         if (ESVMInstance::currentInstance()->m_verboseJIT) {
             JIT_LOG(in, "Expected Int-typed value, but got this value");
-        }
+            LIns* index = m_out.insImmI(currentByteCodeIndex);
+            JIT_LOG(index, "currentByteCodeIndex = ");
+         }
 #endif
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out.ins0(LIR_label);

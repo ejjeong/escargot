@@ -43,7 +43,7 @@ public:
             if(currentCode->m_orgOpcode != ExecuteNativeFunctionOpcode) {
                 cb->m_nonAtomicId = m_nonAtomicId;
                 dumpBytecode(cb);
-            }
+              }
         }
         cb->m_id = m_id;
         cb->m_nonAtomicId = m_nonAtomicId;

@@ -36,6 +36,8 @@ public:
         char* code = cb->m_code.data();
         ByteCode* currentCode = (ByteCode *)(&code[0]);
         if(currentCode->m_orgOpcode != ExecuteNativeFunctionOpcode) {
+            if (m_nonAtomicId)
+                cb->m_nonAtomicId = m_nonAtomicId;
             dumpBytecode(cb);
         }
     }

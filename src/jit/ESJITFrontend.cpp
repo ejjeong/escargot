@@ -602,6 +602,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case ThisOpcode:
         {
             INIT_BYTECODE(This);
+            graph->setOperandStackPos(ssaIndex->m_targetIndex, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
             bytecode->m_profile.updateProfiledType();
             graph->setOperandType(ssaIndex->m_targetIndex, bytecode->m_profile.getType());
             GetThisIR* getThisIR = GetThisIR::create(ssaIndex->m_targetIndex);
