@@ -167,6 +167,12 @@ $(BUILDDIR)/%.o: %.c
 	$(CC) -c $(CFLAGS) $< -o $@
 	$(CC) -MM $(CFLAGS) -MT $@ $< > $(BUILDDIR)/$*.d
 
+jit:
+	BUILDDIR=out/jit/debug make jit.debug -j 32
+	ln -sf out/jit/debug/$(BIN) $(BIN).jd
+	BUILDDIR=out/jit/release make jit.release -j 32
+	ln -sf out/jit/release/$(BIN) $(BIN).jr
+
 full:
 	BUILDDIR=out/jit/debug make jit.debug -j 32
 	ln -sf out/jit/debug/$(BIN) $(BIN).jd
