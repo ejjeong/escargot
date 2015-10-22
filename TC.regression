@@ -10,8 +10,10 @@ test/SunSpider/tests/sunspider-1.0.2/bitops-bitwise-and.js
 test/SunSpider/tests/sunspider-1.0.2/bitops-nsieve-bits.js
 test/SunSpider/tests/sunspider-1.0.2/controlflow-recursive.js
 test/SunSpider/tests/sunspider-1.0.2/crypto-aes.js
+test/SunSpider/tests/sunspider-1.0.2/crypto-md5.js
 test/SunSpider/tests/sunspider-1.0.2/crypto-sha1.js
 test/SunSpider/tests/sunspider-1.0.2/date-format-tofte.js
+test/SunSpider/tests/sunspider-1.0.2/date-format-xparb.js
 test/SunSpider/tests/sunspider-1.0.2/math-cordic.js
 test/SunSpider/tests/sunspider-1.0.2/math-partial-sums.js
 test/SunSpider/tests/sunspider-1.0.2/math-spectral-norm.js
