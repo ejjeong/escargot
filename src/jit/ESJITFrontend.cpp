@@ -87,7 +87,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
                 else
                     goto unsupported;
             } else if (bytecode->m_value.isNull() || bytecode->m_value.isUndefined()) {
-                literal = ConstantIR::create(ssaIndex->m_targetIndex, bytecode->m_value);
+                literal = ConstantESValueIR::create(ssaIndex->m_targetIndex, bytecode->m_value);
             } else
                 goto unsupported;
             currentBlock->push(literal);

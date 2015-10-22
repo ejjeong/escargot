@@ -475,10 +475,10 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     #define INIT_ESIR(opcode) \
         opcode##IR* ir##opcode = static_cast<opcode##IR*>(ir);
 #endif
-    case ESIR::Opcode::Constant:
+    case ESIR::Opcode::ConstantESValue:
     {
-        INIT_ESIR(Constant);
-        return  m_out.insImmD(ESValue::toRawDouble(irConstant->value()));
+        INIT_ESIR(ConstantESValue);
+        return m_out.insImmQ(ESValue::toRawDouble(irConstantESValue->value()));
     }
     case ESIR::Opcode::ConstantInt:
     {

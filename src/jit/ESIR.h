@@ -16,7 +16,7 @@ class ESBasicBlock;
 
 #define FOR_EACH_ESIR_OP(F) \
     /* Typed constant variables */ \
-    F(Constant, ) \
+    F(ConstantESValue, ) \
     F(ConstantInt, ) \
     F(ConstantDouble, ) \
     F(ConstantPointer, ) \
@@ -194,9 +194,9 @@ protected:
 
 
 
-class ConstantIR : public ESIR {
+class ConstantESValueIR : public ESIR {
 public:
-    DECLARE_STATIC_GENERATOR_1(Constant, ESValue)
+    DECLARE_STATIC_GENERATOR_1(ConstantESValue, ESValue)
 
 #ifndef NDEBUG
     virtual void dump(std::ostream& out)
@@ -209,8 +209,8 @@ public:
     ESValue value() { return m_value; }
 
 private:
-    ConstantIR(int target, ESValue value)
-        : ESIR(ESIR::Opcode::Constant, target), m_value(value) { }
+    ConstantESValueIR(int target, ESValue value)
+        : ESIR(ESIR::Opcode::ConstantESValue, target), m_value(value) { }
     ESValue m_value;
 };
 
