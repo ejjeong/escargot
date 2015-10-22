@@ -419,7 +419,9 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        if(m_value.isESString()) {
+        if(m_value.isEmpty())
+            printf("Push <Empty>\n");
+        else if(m_value.isESString()) {
             ESString* str = m_value.asESString();
             if(str->length() > 30) {
                 printf("Push <%s>\n", str->substring(0, 30)->utf8Data());
@@ -2214,6 +2216,7 @@ public:
     void popLastCode()
     {
         m_code.resize(m_code.size() - sizeof(CodeType));
+        m_extraData.erase(m_extraData.end() - 1);
     }
 
     size_t currentCodeSize()

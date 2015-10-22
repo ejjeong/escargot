@@ -133,11 +133,11 @@ void dumpBytecode(CodeBlock* codeBlock)
     size_t callInfoIndex = 0;
 #endif
     char* code = codeBlock->m_code.data();
-    size_t byteCodeIndex = 0;
     char* end = &codeBlock->m_code.data()[codeBlock->m_code.size()];
     while(&code[idx] < end) {
         ByteCode* currentCode = (ByteCode *)(&code[idx]);
-        ByteCodeExtraData* ex = &codeBlock->m_extraData[byteCodeIndex++];
+        unsigned currentCount = bytecodeCounter;
+        ByteCodeExtraData* ex = &codeBlock->m_extraData[currentCount];
         if(currentCode->m_node)
             printf("%u\t\t%p\t(nodeinfo %d)\t\t",(unsigned)idx, currentCode, (int)currentCode->m_node->sourceLocation().m_lineNumber);
         else
@@ -145,7 +145,6 @@ void dumpBytecode(CodeBlock* codeBlock)
 
         printf("regIndex[%d,+%d,-%d]\t\t", ex->m_baseRegisterIndex, ex->m_registerIncrementCount, ex->m_registerDecrementCount);
 
-        unsigned currentCount = bytecodeCounter;
         Opcode opcode = codeBlock->m_extraData[bytecodeCounter].m_opcode;
         bytecodeCounter++;
         ASSERT(opcode == currentCode->m_orgOpcode);
