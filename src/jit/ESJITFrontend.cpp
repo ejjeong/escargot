@@ -401,6 +401,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(CreateArray);
             break;
         case GetObjectOpcode:
+        case GetObjectAndPushObjectOpcode:
         {
             INIT_BYTECODE(GetObject);
             graph->setOperandStackPos(ssaIndex->m_targetIndex, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
@@ -416,14 +417,14 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(GetObjectWithPeeking);
             break;
         case GetObjectPreComputedCaseOpcode:
+        case GetObjectPreComputedCaseAndPushObjectOpcode:
         {
-//#ifdef EJJEONG_MERGING
             INIT_BYTECODE(GetObjectPreComputedCase);
             graph->setOperandStackPos(ssaIndex->m_targetIndex, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
             bytecode->m_profile.updateProfiledType();
             graph->setOperandType(ssaIndex->m_targetIndex, bytecode->m_profile.getType());
-            GetObjectPreComputedIR* getObjectPreComputedIR = GetObjectPreComputedIR::create(ssaIndex->m_targetIndex, bytecode->m_cachedIndex,
-                ssaIndex->m_srcIndex1, bytecode->m_propertyValue);
+            GetObjectPreComputedIR* getObjectPreComputedIR = GetObjectPreComputedIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1,
+                    bytecode->m_cachedIndex, bytecode);
             currentBlock->push(getObjectPreComputedIR);
             NEXT_BYTECODE(GetObjectPreComputedCase);
             break;
@@ -453,6 +454,26 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(CallFunction);
             break;
         }
+
+        case CallFunctionWithReceiverOpcode:
+        {
+            INIT_BYTECODE(CallFunctionWithReceiver);
+            graph->setOperandStackPos(ssaIndex->m_targetIndex, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
+            int calleeIndex = codeBlock->m_functionCallInfos[callInfoIndex++];
+            callInfoIndex++;
+            int receiverIndex = calleeIndex - 1;
+            int argumentCount = codeBlock->m_functionCallInfos[callInfoIndex++];
+            int* argumentIndexes = (int*) alloca (sizeof(int) * argumentCount);
+            for (int i=0; i<argumentCount; i++)
+                argumentIndexes[i] = codeBlock->m_functionCallInfos[callInfoIndex++];
+            CallJSIR* callJSIR = CallJSIR::create(ssaIndex->m_targetIndex, calleeIndex, receiverIndex, argumentCount, argumentIndexes);
+            currentBlock->push(callJSIR);
+            bytecode->m_profile.updateProfiledType();
+            graph->setOperandType(ssaIndex->m_targetIndex, bytecode->m_profile.getType());
+            NEXT_BYTECODE(CallFunctionWithReceiver);
+            break;
+        }
+
         case NewFunctionCallOpcode:
         {
             INIT_BYTECODE(NewFunctionCall);

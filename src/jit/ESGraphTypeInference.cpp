@@ -243,20 +243,9 @@ bool ESGraphTypeInference::run(ESGraph* graph)
                 }
                 break;
             }
-            case ESIR::Opcode::GetArrayObjectPreComputed:
             case ESIR::Opcode::GetArrayObject:
                 break;
             case ESIR::Opcode::GetObjectPreComputed: {
-                INIT_ESIR(GetObjectPreComputed);
-                Type objectType = graph->getOperandType(irGetObjectPreComputed->objectIndex());
-                if (objectType.isArrayObjectType()) {
-                    GetArrayObjectPreComputedIR* getArrayObjectPreComputedIR = GetArrayObjectPreComputedIR::create(irGetObjectPreComputed->targetIndex(), irGetObjectPreComputed->objectIndex(), irGetObjectPreComputed->cachedIndex());
-                    block->replace(j, getArrayObjectPreComputedIR);
-                } else if (objectType.isObjectType()) {
-                    // do nothing
-                } else {
-                    goto unsupported;
-                }
                 break;
             }
             case ESIR::Opcode::SetVar:
@@ -300,6 +289,8 @@ bool ESGraphTypeInference::run(ESGraph* graph)
             {
                 printf("ERROR %s not handled in ESGraphTypeInference.\n", ir->getOpcodeName());
                 RELEASE_ASSERT_NOT_REACHED();
+                //for complie
+                goto unsupported;
             }
             }
             continue;

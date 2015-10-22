@@ -80,13 +80,13 @@ class CodeBlock;
     F(SetObjectPropertySetter, 0, 2, 0) \
     F(SetObjectPropertyGetter, 0, 2, 0) \
     F(GetObject, 1, 2, 1) \
-    F(GetObjectAndPushObject, 2, 2, 0) \
+    F(GetObjectAndPushObject, 2, 2, 1) \
     F(GetObjectSlowMode, 1, 2, 1) \
     F(GetObjectAndPushObjectSlowMode, 2, 2, 0) \
     F(GetObjectWithPeeking, 1, 0, 0) \
     F(GetObjectWithPeekingSlowMode, 1, 0, 0) \
     F(GetObjectPreComputedCase, 1, 1, 1) \
-    F(GetObjectPreComputedCaseAndPushObject, 2, 1, 0) \
+    F(GetObjectPreComputedCaseAndPushObject, 2, 1, 1) \
     F(GetObjectPreComputedCaseSlowMode, 1, 1, 0) \
     F(GetObjectPreComputedCaseAndPushObjectSlowMode, 2, 1, 0) \
     F(GetObjectWithPeekingPreComputedCase, 1, 0, 0) \
@@ -100,7 +100,7 @@ class CodeBlock;
     F(CreateFunction, -1, 0, 0) \
     F(ExecuteNativeFunction, 0, 0, 0) \
     F(CallFunction, 1, -1, 1) \
-    F(CallFunctionWithReceiver, 1, -1, 0) \
+    F(CallFunctionWithReceiver, 1, -1, 1) \
     F(CallEvalFunction, 1, -1, 0) \
     F(CallBoundFunction, 0, 0, 0) \
     F(NewFunctionCall, 1, -1, 1) \

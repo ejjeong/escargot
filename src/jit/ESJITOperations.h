@@ -50,6 +50,13 @@ inline ESValueInDouble ESObjectSetOp(ESValueInDouble obj, ESValueInDouble proper
     return source;
 }
 
+inline ESValueInDouble getObjectPreComputedCaseOp(ESValueInDouble willBeObject, GlobalObject* globalObject, GetObjectPreComputedCase* byteCode)
+{
+    ESValue obj = ESValue::fromRawDouble(willBeObject);
+    return ESValue::toRawDouble(getObjectPreComputedCaseOperation(&obj, byteCode->m_propertyValue, globalObject,
+            &byteCode->m_cachedhiddenClassChain, &byteCode->m_cachedIndex));
+}
+
 inline ESValue* contextResolveBinding(ExecutionContext* context, InternalAtomicString* atomicName, ESString* name)
 {
     return context->resolveBinding(*atomicName);
@@ -98,6 +105,16 @@ inline ESValueInDouble esFunctionObjectCall(ESVMInstance* instance,
     ESValue calleeVal = ESValue::fromRawDouble(callee);
     ESValue ret = ESFunctionObject::call(instance, calleeVal,
             ESValue(), arguments, argumentCount, isNewExpression);
+    return ESValue::toRawDouble(ret);
+}
+
+inline ESValueInDouble esFunctionObjectCallWithReceiver(ESVMInstance* instance,
+        ESValueInDouble callee,ESValueInDouble receiver,ESValue* arguments, size_t argumentCount, int isNewExpression)
+{
+    ESValue calleeVal = ESValue::fromRawDouble(callee);
+    ESValue receiverVal = ESValue::fromRawDouble(receiver);
+    ESValue ret = ESFunctionObject::call(instance, calleeVal,
+            receiverVal, arguments, argumentCount, isNewExpression);
     return ESValue::toRawDouble(ret);
 }
 

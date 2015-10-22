@@ -111,7 +111,6 @@ class ESBasicBlock;
     F(GetObjectPreComputed, LoadFromHeap) \
     F(GetArrayObject, LoadFromHeap) \
     F(SetArrayObject, ) \
-    F(GetArrayObjectPreComputed, LoadFromHeap) \
     F(GetScoped, LoadFromHeap) \
     F(SetScoped, ) \
     F(GetVarGeneric, LoadFromHeap) \
@@ -556,31 +555,32 @@ private:
 
 class GetObjectPreComputedIR : public ESIR {
 public:
-    DECLARE_STATIC_GENERATOR_3(GetObjectPreComputed, size_t, int, ESValue);
+    DECLARE_STATIC_GENERATOR_3(GetObjectPreComputed, int, int, GetObjectPreComputedCase *);
 
 #ifndef NDEBUG
     virtual void dump(std::ostream& out)
     {
         out << "tmp" << m_targetIndex << ": ";
         ESIR::dump(out);
-        out << " tmp" << m_objectIndex << "." << m_propertyValue.asESString()->utf8Data();
+        out << " tmp" << m_objectIndex << "." << m_byteCode->m_propertyValue->utf8Data();
     }
 #endif
 
-    size_t cachedIndex() { return m_cachedIndex; }
+    int cachedIndex() { return m_cachedIndex; }
+    int targetIndex() { return m_targetIndex; }
     int objectIndex() { return m_objectIndex; }
-    ESValue propertyValue() { return m_propertyValue; }
+    GetObjectPreComputedCase* byteCode() { return m_byteCode; }
 
 private:
-    GetObjectPreComputedIR(int targetIndex, size_t cachedIndex, int objectIndex, ESValue propertyValue)
+    GetObjectPreComputedIR(int targetIndex, int objectIndex, int cachedIndex, GetObjectPreComputedCase* b)
         : ESIR(ESIR::Opcode::GetObjectPreComputed, targetIndex),
-          m_cachedIndex(cachedIndex),
           m_objectIndex(objectIndex),
-          m_propertyValue(propertyValue) { }
+          m_cachedIndex(cachedIndex),
+          m_byteCode(b) { }
 
-    int m_cachedIndex;
     int m_objectIndex;
-    ESValue m_propertyValue;
+    int m_cachedIndex;
+    GetObjectPreComputedCase* m_byteCode;
 };
 
 class GetArrayObjectIR : public ESIR {
@@ -634,31 +634,6 @@ private:
     int m_objectIndex;
     int m_propertyIndex;
     int m_sourceIndex;
-};
-
-class GetArrayObjectPreComputedIR : public ESIR {
-public:
-    DECLARE_STATIC_GENERATOR_2(GetArrayObjectPreComputed, int, int);
-
-#ifndef NDEBUG
-    virtual void dump(std::ostream& out)
-    {
-        out << "tmp" << m_targetIndex << ": ";
-        ESIR::dump(out);
-        out << " tmp" << m_objectIndex << "[" << m_computedIndex << "]";
-    }
-#endif
-
-    int objectIndex() { return m_objectIndex; }
-    int computedIndex() { return m_computedIndex; }
-
-private:
-    GetArrayObjectPreComputedIR(int targetIndex, int objectIndex, int computedIndex)
-        : ESIR(ESIR::Opcode::GetArrayObjectPreComputed, targetIndex),
-          m_objectIndex(objectIndex),
-          m_computedIndex(computedIndex){ }
-    int m_objectIndex;
-    int m_computedIndex;
 };
 
 class SetObjectIR : public ESIR {

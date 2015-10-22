@@ -41,7 +41,9 @@ CallInfo contextResolveThisBindingCallInfo = CI(contextResolveThisBinding, CallI
 CallInfo setVarContextResolveBindingCallInfo = CI(setVarContextResolveBinding, CallInfo::typeSig2(ARGTYPE_P, ARGTYPE_P, ARGTYPE_P));
 CallInfo setVarDefineDataPropertyCallInfo = CI(setVarDefineDataProperty, CallInfo::typeSig4(ARGTYPE_V, ARGTYPE_P, ARGTYPE_P, ARGTYPE_P, ARGTYPE_D));
 CallInfo esFunctionObjectCallCallInfo = CI(esFunctionObjectCall, CallInfo::typeSig5(ARGTYPE_D, ARGTYPE_P, ARGTYPE_D, ARGTYPE_P, ARGTYPE_I, ARGTYPE_I));
+CallInfo esFunctionObjectCallWithReceiverCallInfo = CI(esFunctionObjectCallWithReceiver, CallInfo::typeSig6(ARGTYPE_D, ARGTYPE_P, ARGTYPE_D, ARGTYPE_D, ARGTYPE_P, ARGTYPE_I, ARGTYPE_I));
 CallInfo newOpCallInfo = CI(newOp, CallInfo::typeSig5(ARGTYPE_D, ARGTYPE_P, ARGTYPE_P, ARGTYPE_D, ARGTYPE_P, ARGTYPE_I));
+CallInfo getObjectPreComputedCaseOpCallInfo = CI(getObjectPreComputedCaseOp, CallInfo::typeSig3(ARGTYPE_D, ARGTYPE_D, ARGTYPE_P, ARGTYPE_P));
 CallInfo ESObjectSetOpCallInfo = CI(ESObjectSetOp, CallInfo::typeSig3(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 CallInfo generateToStringCallInfo = CI(generateToString, CallInfo::typeSig1(ARGTYPE_D, ARGTYPE_D));
 CallInfo concatTwoStringsCallInfo = CI(concatTwoStrings, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
@@ -817,15 +819,26 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* callee = getTmpMapping(irCallJS->calleeIndex());
         LIns* arguments = m_out.insAlloc(irCallJS->argumentCount() * sizeof(ESValue));
         LIns* argumentCount = m_out.insImmI(irCallJS->argumentCount());
-        RELEASE_ASSERT(irCallJS->receiverIndex() == -1);
-        for (size_t i=0; i<irCallJS->argumentCount(); i++) {
-            LIns* argument = getTmpMapping(irCallJS->argumentIndex(i));
-            LIns* boxedArgument = boxESValue(argument, m_graph->getOperandType(irCallJS->argumentIndex(i)));
-            m_out.insStore(LIR_std, boxedArgument, arguments, i * sizeof(ESValue), 1);
+        if(irCallJS->receiverIndex() == -1) {
+            for (size_t i=0; i<irCallJS->argumentCount(); i++) {
+                LIns* argument = getTmpMapping(irCallJS->argumentIndex(i));
+                LIns* boxedArgument = boxESValue(argument, m_graph->getOperandType(irCallJS->argumentIndex(i)));
+                m_out.insStore(LIR_std, boxedArgument, arguments, i * sizeof(ESValue), 1);
+            }
+            LIns* args[] = {m_false, argumentCount, arguments, callee, m_instance};
+            LIns* boxedResult = m_out.insCall(&esFunctionObjectCallCallInfo, args);
+            return boxedResult;
+        } else {
+            LIns* receiver = getTmpMapping(irCallJS->receiverIndex());
+            for (size_t i=0; i<irCallJS->argumentCount(); i++) {
+                LIns* argument = getTmpMapping(irCallJS->argumentIndex(i));
+                LIns* boxedArgument = boxESValue(argument, m_graph->getOperandType(irCallJS->argumentIndex(i)));
+                m_out.insStore(LIR_std, boxedArgument, arguments, i * sizeof(ESValue), 1);
+            }
+            LIns* args[] = {m_false, argumentCount, arguments, receiver, callee, m_instance};
+            LIns* boxedResult = m_out.insCall(&esFunctionObjectCallWithReceiverCallInfo, args);
+            return boxedResult;
         }
-        LIns* args[] = {m_false, argumentCount, arguments, callee, m_instance};
-        LIns* boxedResult = m_out.insCall(&esFunctionObjectCallCallInfo, args);
-        return boxedResult;
     }
     case ESIR::Opcode::CallNewJS:
     {
@@ -1026,14 +1039,17 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     }
     case ESIR::Opcode::GetObjectPreComputed:
     {
-        INIT_ESIR(GetObjectPreComputed);
-        LIns* obj = getTmpMapping(irGetObjectPreComputed->objectIndex());
+        /*
         if (irGetObjectPreComputed->cachedIndex() < SIZE_MAX) {
             size_t gapToHiddenClassData = escargot::ESObject::offsetOfHiddenClassData();
             LIns* hiddenClassData = m_out.insLoad(LIR_ldd, obj, gapToHiddenClassData, 1, LOAD_NORMAL);
             return m_out.insLoad(LIR_ldd, hiddenClassData, irGetObjectPreComputed->cachedIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
         }
-        return nullptr;
+        */
+        INIT_ESIR(GetObjectPreComputed);
+        LIns* obj = getTmpMapping(irGetObjectPreComputed->objectIndex());
+        LIns* args[] = {m_out.insImmP(irGetObjectPreComputed), m_globalObject, obj};
+        return m_out.insCall(&getObjectPreComputedCaseOpCallInfo, args);
     }
     case ESIR::Opcode::GetArrayObject:
     {
@@ -1092,17 +1108,6 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             }
         } else
             return nullptr;
-    }
-    case ESIR::Opcode::GetArrayObjectPreComputed:
-    {
-        INIT_ESIR(GetArrayObjectPreComputed);
-        LIns* obj = getTmpMapping(irGetArrayObjectPreComputed->objectIndex());
-        LIns* key = m_out.insImmI(irGetArrayObjectPreComputed->computedIndex());
-
-        ASSERT(m_graph->getOperandType(irGetArrayObjectPreComputed->objectIndex()).isArrayObjectType());
-        int32_t gapToVector = (int32_t) escargot::ESArrayObject::offsetOfVectorData();
-        LIns* vectorData = m_out.insLoad(LIR_ldp, obj, gapToVector, 1, LOAD_NORMAL);
-        return m_out.insLoad(LIR_ldd, vectorData, irGetArrayObjectPreComputed->computedIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
     }
     case ESIR::Opcode::SetObject:
     {
