@@ -235,13 +235,21 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         }
         case BitwiseOrOpcode:
-            goto unsupported;
+        {
+            INIT_BYTECODE(BitwiseOr);
+            ESIR* bitwiseOrIR = BitwiseOrIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
+            currentBlock->push(bitwiseOrIR);
             NEXT_BYTECODE(BitwiseOr);
             break;
+        }
         case BitwiseXorOpcode:
-            goto unsupported;
+        {
+            INIT_BYTECODE(BitwiseXor);
+            ESIR* bitwiseXorIR = BitwiseXorIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
+            currentBlock->push(bitwiseXorIR);
             NEXT_BYTECODE(BitwiseXor);
             break;
+        }
         case LeftShiftOpcode:
         {
             INIT_BYTECODE(LeftShift);

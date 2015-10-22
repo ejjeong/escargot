@@ -846,6 +846,25 @@ private:
         : BinaryExpressionIR(ESIR::Opcode::BitwiseAnd, targetIndex, leftIndex, rightIndex) { }
 };
 
+class BitwiseOrIR : public BinaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(BitwiseOr, int, int);
+
+private:
+    BitwiseOrIR(int targetIndex, int leftIndex, int rightIndex)
+        : BinaryExpressionIR(ESIR::Opcode::BitwiseOr, targetIndex, leftIndex, rightIndex) { }
+};
+
+class BitwiseXorIR : public BinaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(BitwiseXor, int, int);
+
+private:
+    BitwiseXorIR(int targetIndex, int leftIndex, int rightIndex)
+        : BinaryExpressionIR(ESIR::Opcode::BitwiseXor, targetIndex, leftIndex, rightIndex) { }
+};
+
+
 class EqualIR : public BinaryExpressionIR {
 public:
     DECLARE_STATIC_GENERATOR_2(Equal, int, int);

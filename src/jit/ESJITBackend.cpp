@@ -686,6 +686,36 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         else
             return nullptr;
     }
+    case ESIR::Opcode::BitwiseOr:
+    {
+        INIT_ESIR(BitwiseOr);
+        INIT_BINARY_ESIR(BitwiseOr);
+        if (leftType.isNumberType() && rightType.isNumberType()) {
+            if (leftType.isDoubleType())
+                left = m_out.ins1(LIR_d2i, left);
+            if (rightType.isDoubleType())
+                right = m_out.ins1(LIR_d2i, right);
+            return m_out.ins2(LIR_ori, left, right);
+        } else {
+            // TODO : call function to handle non-number cases
+            return nullptr;
+        }
+    }
+    case ESIR::Opcode::BitwiseXor:
+    {
+        INIT_ESIR(BitwiseXor);
+        INIT_BINARY_ESIR(BitwiseXor);
+        if (leftType.isNumberType() && rightType.isNumberType()) {
+            if (leftType.isDoubleType())
+                left = m_out.ins1(LIR_d2i, left);
+            if (rightType.isDoubleType())
+                right = m_out.ins1(LIR_d2i, right);
+            return m_out.ins2(LIR_xori, left, right);
+        } else {
+            // TODO : call function to handle non-number cases
+            return nullptr;
+        }
+    }
     case ESIR::Opcode::Equal:
     {
         INIT_ESIR(Equal);
@@ -722,7 +752,6 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             if (leftType.isInt32Type() && rightType.isInt32Type())
                 return m_out.ins2(LIR_gti, left, right);
             else {
-                // FIXME-JY : what if left/right type changes on runtime
                 if (leftType.isInt32Type()) {
                     ASSERT(left->isI());
                     left = m_out.ins1(LIR_i2d, left);
@@ -867,7 +896,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             return boxedResult;
         } else {
             LIns* receiver = getTmpMapping(irCallJS->receiverIndex());
-            LIns* boxedReceiver = boxESValue(callee,  m_graph->getOperandType(irCallJS->receiverIndex()));
+            LIns* boxedReceiver = boxESValue(receiver,  m_graph->getOperandType(irCallJS->receiverIndex()));
             for (size_t i=0; i<irCallJS->argumentCount(); i++) {
                 LIns* argument = getTmpMapping(irCallJS->argumentIndex(i));
                 LIns* boxedArgument = boxESValue(argument, m_graph->getOperandType(irCallJS->argumentIndex(i)));
@@ -882,6 +911,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(CallNewJS);
         LIns* callee = getTmpMapping(irCallNewJS->calleeIndex());
+        LIns* boxedCallee = boxESValue(callee,  m_graph->getOperandType(irCallNewJS->calleeIndex()));
         LIns* arguments = m_out.insAlloc(irCallNewJS->argumentCount() * sizeof(ESValue));
         LIns* argumentCount = m_out.insImmI(irCallNewJS->argumentCount());
         for (size_t i=0; i<irCallNewJS->argumentCount(); i++) {
@@ -889,7 +919,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             LIns* boxedArgument = boxESValue(argument, m_graph->getOperandType(irCallNewJS->argumentIndex(i)));
             m_out.insStore(LIR_std, boxedArgument, arguments, i * sizeof(ESValue), 1);
         }
-        LIns* args[] = {argumentCount, arguments, callee, m_globalObject, m_instance};
+        LIns* args[] = {argumentCount, arguments, boxedCallee, m_globalObject, m_instance};
         LIns* boxedResult = m_out.insCall(&newOpCallInfo, args);
         return boxedResult;
     }
@@ -1119,7 +1149,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(SetArrayObject);
 
-        LIns* obj = getTmpMapping(irSetArrayObject->objectIndex());
+        LIns* obj = boxESValue(getTmpMapping(irSetArrayObject->objectIndex()) , m_graph->getOperandType(irSetArrayObject->objectIndex()));
         LIns* prop = getTmpMapping(irSetArrayObject->propertyIndex());
         LIns* source = getTmpMapping(irSetArrayObject->sourceIndex());
 
