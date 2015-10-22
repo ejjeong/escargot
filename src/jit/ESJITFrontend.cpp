@@ -437,9 +437,26 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(CreateObject);
             break;
         case CreateArrayOpcode:
-            goto unsupported;
+        {
+            INIT_BYTECODE(CreateArray);
+            graph->setOperandStackPos(ssaIndex->m_targetIndex, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
+            CreateArrayIR* createArrayIR = CreateArrayIR::create(ssaIndex->m_targetIndex, bytecode->m_keyCount);
+            bytecode->m_profile.updateProfiledType();
+            graph->setOperandType(ssaIndex->m_targetIndex, bytecode->m_profile.getType());
+            Type t = graph->getOperandType(ssaIndex->m_targetIndex);
+            currentBlock->push(createArrayIR);
             NEXT_BYTECODE(CreateArray);
             break;
+        }
+        case InitObjectOpcode:
+        {
+            INIT_BYTECODE(InitObject);
+            graph->setOperandStackPos(ssaIndex->m_targetIndex, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
+            InitObjectIR* initObjectIR = InitObjectIR::create(ssaIndex->m_targetIndex, bytecode->m_arrayIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
+            currentBlock->push(initObjectIR);
+            NEXT_BYTECODE(InitObject);
+            break;
+        }
         case GetObjectOpcode:
         case GetObjectAndPushObjectOpcode:
         {

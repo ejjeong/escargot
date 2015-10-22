@@ -1287,16 +1287,16 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
                 while(true) {
                     if(!target.isObject()) {
                         break;
-                    }
+                       }
                     if(target.asESPointer()->asESObject()->hiddenClass()->hasIndexedReadOnlyProperty()) {
                         size_t t = target.asESPointer()->asESObject()->hiddenClass()->findProperty(key.toString());
                         if(t != SIZE_MAX) {
                             if(!target.asESPointer()->asESObject()->hiddenClass()->m_propertyInfo[t].m_flags.m_isWritable)
                                 return false;
-                        }
-                    }
+                            }
+                       }
                     target = target.asESPointer()->asESObject()->__proto__();
-                }
+                  }
                 asESArrayObject()->m_vector[idx] = val;
                 return true;
             }

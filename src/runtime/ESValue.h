@@ -212,6 +212,10 @@ public:
     #define ValueDeleted 0x4ll
 #endif
 
+#ifdef ENABLE_ESJIT
+    static size_t offsetOfAsInt64() { return offsetof(ESValue, u.asInt64); }
+#endif
+
 private:
     ValueDescriptor u;
 
@@ -1256,6 +1260,7 @@ public:
 #ifdef ENABLE_ESJIT
     static size_t offsetOfHiddenClassData() { return offsetof(ESObject, m_hiddenClassData); }
     static size_t offsetOfHiddenClass() { return offsetof(ESObject, m_hiddenClass); }
+    static size_t offsetOf__proto__() { return offsetof(ESObject, m___proto__); }
 #endif
 protected:
     ESHiddenClass* m_hiddenClass;
@@ -1520,6 +1525,9 @@ public:
 
 #ifdef ENABLE_ESJIT
     static size_t offsetOfVectorData() { return offsetof(ESArrayObject, m_vector); }
+#endif
+#ifdef ENABLE_ESJIT
+    static size_t offsetOfLength() { return offsetof(ESArrayObject, m_length); }
 #endif
 
 protected:

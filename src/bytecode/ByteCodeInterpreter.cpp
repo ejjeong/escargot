@@ -579,6 +579,9 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         CreateArray* code = (CreateArray*)currentCode;
         ESArrayObject* arr = ESArrayObject::create(code->m_keyCount);
         push<ESValue>(stack, topOfStack, arr);
+#ifdef ENABLE_ESJIT
+        code->m_profile.addProfile(arr);
+#endif
         executeNextCode<CreateArray>(programCounter);
         NEXT_INSTRUCTION();
     }

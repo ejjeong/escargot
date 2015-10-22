@@ -244,6 +244,11 @@ inline ESValueInDouble newOp(ESVMInstance* instance, GlobalObject* globalObject,
 //     return ret.asBoolean();
 // }
 
+inline ESValueInDouble createArr(int keyCount) {
+    ESArrayObject* arrObj = ESArrayObject::create(keyCount);
+    return ESValue::toRawDouble(arrObj);
+}
+
 inline ESValueInDouble equalOp(ESValueInDouble left, ESValueInDouble right)
 {
     ESValue leftVal = ESValue::fromRawDouble(left);

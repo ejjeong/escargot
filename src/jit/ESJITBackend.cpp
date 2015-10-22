@@ -65,6 +65,7 @@ CallInfo setObjectPreComputedCaseOpCallInfo = CI(setObjectPreComputedOp, CallInf
 CallInfo ESObjectSetOpCallInfo = CI(ESObjectSetOp, CallInfo::typeSig3(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 CallInfo generateToStringCallInfo = CI(generateToString, CallInfo::typeSig1(ARGTYPE_P, ARGTYPE_D));
 CallInfo concatTwoStringsCallInfo = CI(concatTwoStrings, CallInfo::typeSig2(ARGTYPE_P, ARGTYPE_P, ARGTYPE_P));
+CallInfo createArrayCallInfo = CI(createArr, CallInfo::typeSig1(ARGTYPE_D, ARGTYPE_I));
 
 #ifndef NDEBUG
 CallInfo logIntCallInfo = CI(jitLogIntOperation, CallInfo::typeSig2(ARGTYPE_V, ARGTYPE_I, ARGTYPE_P));
@@ -286,6 +287,8 @@ void NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteC
 #ifndef NDEBUG
         if (ESVMInstance::currentInstance()->m_verboseJIT) {
             JIT_LOG(in, "Expected Pointer-typed value, but got this value");
+            LIns* index = m_out->insImmI(currentByteCodeIndex);
+            JIT_LOG(index, "currentByteCodeIndex = ");
         }
 #endif
         generateOSRExit(currentByteCodeIndex);
@@ -1192,8 +1195,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(GetArrayObject);
         LIns* obj = getTmpMapping(irGetArrayObject->objectIndex());
+        LIns* length  = m_out->insLoad(LIR_ldi, obj, ESArrayObject::offsetOfLength(), 1, LOAD_NORMAL);
         LIns* key = getTmpMapping(irGetArrayObject->propertyIndex());
-
         ASSERT(m_graph->getOperandType(irGetArrayObject->objectIndex()).isArrayObjectType());
         Type keyType = m_graph->getOperandType(irGetArrayObject->propertyIndex());
             if (keyType.isInt32Type()) {
@@ -1346,6 +1349,56 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             return m_out->insLoad(LIR_ldi, phi, 0, 1, LOAD_NORMAL);
         else
             return nullptr;
+    }
+    case ESIR::Opcode::CreateArray:
+    {
+        INIT_ESIR(CreateArray);
+        LIns* keyCount = m_out->insImmI(irCreateArray->keyCount());
+        LIns* args[] = {keyCount};
+        return m_out->insCall(&createArrayCallInfo, args);
+    }
+    case ESIR::Opcode::InitObject:
+    {
+        INIT_ESIR(InitObject);
+        LIns* obj = getTmpMapping(irInitObject->objectIndex());
+        LIns* key = getTmpMapping(irInitObject->keyIndex());
+        LIns* source = getTmpMapping(irInitObject->sourceIndex());
+        Type srcType = m_graph->getOperandType(irInitObject->sourceIndex());
+
+        LIns* invalidIndexValue = m_out->insImmI(ESValue::ESInvalidIndexValue);
+        LIns* checkInvalidIndex = m_out->ins2(LIR_eqi, key, invalidIndexValue);
+        LIns* jf1 = m_out->insBranch(LIR_jf, checkInvalidIndex, nullptr);
+        JIT_LOG(key, "InitObject: key is invalid(Too Big)");
+
+        LIns* label1 = m_out->ins0(LIR_label);
+        jf1->setTarget(label1);
+
+        LIns* length  = m_out->insLoad(LIR_ldi, obj, ESArrayObject::offsetOfLength(), 1, LOAD_NORMAL);
+        LIns* checkBound = m_out->ins2(LIR_gti, key, length);
+        LIns* jf2 = m_out->insBranch(LIR_jf, checkBound, nullptr);
+        JIT_LOG(key, "InitObject: bound error ");
+
+        LIns* label2 = m_out->ins0(LIR_label);
+        jf2->setTarget(label2);
+        LIns* ESValueSize = m_out->insImmI(sizeof(ESValue));
+        LIns* offset = m_out->ins2(LIR_muli, key, ESValueSize);
+        LIns* vectorData = m_out->insLoad(LIR_ldd, obj, ESArrayObject::offsetOfVectorData(), 1, LOAD_NORMAL);
+        LIns* valuePtr = m_out->ins2(LIR_addd, vectorData, offset);
+        LIns* asInt32 = m_out->insLoad(LIR_ldq, valuePtr, ESValue::offsetOfAsInt64(), 1, LOAD_NORMAL);
+        LIns* checkEmptyValue = m_out->ins2(LIR_eqi, asInt32, m_zeroQ);
+        LIns* jf3 = m_out->insBranch(LIR_jt, checkEmptyValue, nullptr);
+        JIT_LOG(key, "InitObject: NonEmptyValue ");
+
+        LIns* label3 = m_out->ins0(LIR_label);
+        jf3->setTarget(label3);
+
+//        LIns* proto = m_out->insLoad(LIR_ldd, obj, ESObject::offsetOf__proto__(), 1, LOAD_NORMAL);
+        // ToDo(JMP) : ReadOnly Check
+
+        LIns* boxedSrc = boxESValue(source, srcType);
+        LIns* offset1 = m_out->ins2(LIR_muli, key, ESValueSize);
+        LIns* valuePtr1 = m_out->ins2(LIR_addd, vectorData, offset1);
+        return m_out->insStore(LIR_std, boxedSrc, valuePtr1, 0, 1);
     }
     default:
     {
