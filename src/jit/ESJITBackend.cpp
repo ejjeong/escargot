@@ -185,6 +185,7 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
 
 LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteCodeIndex)
 {
+    ASSERT(in->isD());
 #ifndef NDEBUG
     m_out.insComment(".= typecheck start =.");
 #endif
@@ -355,43 +356,46 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
 
 LIns* NativeGenerator::boxESValue(LIns* unboxedValue, Type type)
 {
+    LIns* boxedValueInDouble = nullptr;
     if (type.isBooleanType()) {
+        ASSERT(unboxedValue->isI());
 #ifdef ESCARGOT_64
         LIns* wideUnboxedValue = m_out.ins1(LIR_i2q, unboxedValue);
         LIns* boxedValue = m_out.ins2(LIR_orq, wideUnboxedValue, m_booleanTagQ);
-        LIns* boxedValueInDouble = m_out.ins1(LIR_qasd, boxedValue);
-        return boxedValueInDouble;
+        boxedValueInDouble = m_out.ins1(LIR_qasd, boxedValue);
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
     } else if (type.isInt32Type()) {
+        ASSERT(unboxedValue->isI());
 #ifdef ESCARGOT_64
         LIns* wideUnboxedValue = m_out.ins1(LIR_i2q, unboxedValue);
         LIns* boxedValue = m_out.ins2(LIR_orq, wideUnboxedValue, m_intTagQ);
-        LIns* boxedValueInDouble = m_out.ins1(LIR_qasd, boxedValue);
-        return boxedValueInDouble;
+        boxedValueInDouble = m_out.ins1(LIR_qasd, boxedValue);
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
     } else if (type.isDoubleType()) {
+        ASSERT(unboxedValue->isD());
 #ifdef ESCARGOT_64
         LIns* quadUnboxedValue = m_out.ins1(LIR_dasq, unboxedValue);
         LIns* boxedValue = m_out.ins2(LIR_addq, quadUnboxedValue, m_doubleEncodeOffsetQ);
-        LIns* boxedValueInDouble = m_out.ins1(LIR_qasd, boxedValue);
-        return boxedValueInDouble;
+        boxedValueInDouble = m_out.ins1(LIR_qasd, boxedValue);
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
     } else if (type.isObjectType() || type.isArrayObjectType() || type.isStringType() || type.isFunctionObjectType()) {
+        ASSERT(unboxedValue->isP());
 #ifdef ESCARGOT_64
         // "pointer" : a quad on 64-bit machines
-        return m_out.ins1(LIR_qasd, unboxedValue);
+        boxedValueInDouble = m_out.ins1(LIR_qasd, unboxedValue);
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
     } else if (type.isUndefinedType() || type.isNullType()) {
+        ASSERT(unboxedValue->isQ());
 #ifdef ESCARGOT_64
-        return m_out.ins1(LIR_qasd, unboxedValue);
+        boxedValueInDouble = m_out.ins1(LIR_qasd, unboxedValue);
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
@@ -401,26 +405,29 @@ LIns* NativeGenerator::boxESValue(LIns* unboxedValue, Type type)
         std::cout << std::endl;
         RELEASE_ASSERT_NOT_REACHED();
     }
+    ASSERT(boxedValueInDouble->isD());
+    return boxedValueInDouble;
 }
 
 LIns* NativeGenerator::unboxESValue(LIns* boxedValue, Type type)
 {
+    ASSERT(boxedValue->isD());
+    LIns* unboxedValue = nullptr;
     if (type.isBooleanType()) {
-  #ifdef ESCARGOT_64
-        LIns* boxedValueInQuad = m_out.ins1(LIR_dasq, boxedValue);
-        LIns* unboxedValue = m_out.ins2(LIR_andq, boxedValueInQuad, m_booleanTagComplementQ);
-        LIns* unboxedValueInInt = m_out.ins1(LIR_q2i, unboxedValue);
-        return unboxedValueInInt;
-  #else
-          RELEASE_ASSERT_NOT_REACHED();
-  #endif
-      }
-    else if (type.isInt32Type()) {
 #ifdef ESCARGOT_64
         LIns* boxedValueInQuad = m_out.ins1(LIR_dasq, boxedValue);
-        LIns* unboxedValue = m_out.ins2(LIR_andq, boxedValueInQuad, m_intTagComplementQ);
-        LIns* unboxedValueInInt = m_out.ins1(LIR_q2i, unboxedValue);
-        return unboxedValueInInt;
+        LIns* unboxedValueInQuad = m_out.ins2(LIR_andq, boxedValueInQuad, m_booleanTagComplementQ);
+        unboxedValue = m_out.ins1(LIR_q2i, unboxedValueInQuad);
+        ASSERT(unboxedValue->isI());
+#else
+        RELEASE_ASSERT_NOT_REACHED();
+#endif
+    } else if (type.isInt32Type()) {
+#ifdef ESCARGOT_64
+        LIns* boxedValueInQuad = m_out.ins1(LIR_dasq, boxedValue);
+        LIns* unboxedValueInQuad = m_out.ins2(LIR_andq, boxedValueInQuad, m_intTagComplementQ);
+        unboxedValue = m_out.ins1(LIR_q2i, unboxedValueInQuad);
+        ASSERT(unboxedValue->isI());
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
@@ -428,20 +435,23 @@ LIns* NativeGenerator::unboxESValue(LIns* boxedValue, Type type)
 #ifdef ESCARGOT_64
         LIns* boxedValueInQuad = m_out.ins1(LIR_dasq, boxedValue);
         LIns* doubleValue = m_out.ins2(LIR_subq, boxedValueInQuad, m_doubleEncodeOffsetQ);
-        return m_out.ins1(LIR_qasd, doubleValue);
+        unboxedValue = m_out.ins1(LIR_qasd, doubleValue);
+        ASSERT(unboxedValue->isD());
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
     } else if (type.isObjectType() || type.isArrayObjectType() || type.isStringType() || type.isFunctionObjectType()) {
 #ifdef ESCARGOT_64
         // "pointer" : a quad on 64-bit machines
-        return m_out.ins1(LIR_dasq, boxedValue);
+        unboxedValue = m_out.ins1(LIR_dasq, boxedValue);
+        ASSERT(unboxedValue->isP());
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
     } else if (type.isUndefinedType() || type.isNullType()) {
 #ifdef ESCARGOT_64
-        return m_out.ins1(LIR_dasq, boxedValue);
+        unboxedValue = m_out.ins1(LIR_dasq, boxedValue);
+        ASSERT(unboxedValue->isQ());
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
@@ -451,6 +461,7 @@ LIns* NativeGenerator::unboxESValue(LIns* boxedValue, Type type)
         std::cout << std::endl;
         RELEASE_ASSERT_NOT_REACHED();
     }
+    return unboxedValue;
 }
 
 LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
