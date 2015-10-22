@@ -17,15 +17,30 @@ public:
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         unsigned len = m_elements.size();
+        updateNodeIndex(context);
         codeBlock->pushCode(CreateArray(len), context, this);
+        WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
+        int arrayIndex = m_nodeIndex;
         for(unsigned i = 0; i < len ; i++) {
+            updateNodeIndex(context);
             codeBlock->pushCode(Push(ESValue(i)), context, this);
-            if(m_elements[i])
+            WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
+            int keyIndex = m_nodeIndex;
+            int sourceIndex;
+            if(m_elements[i]) {
                 m_elements[i]->generateExpressionByteCode(codeBlock, context);
-            else
+                sourceIndex = m_elements[i]->nodeIndex();
+            } else {
+                updateNodeIndex(context);
                 codeBlock->pushCode(Push(ESValue(ESValue::ESEmptyValue)), context, this);
-            codeBlock->pushCode(InitObject(), context, this);
+                WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
+                sourceIndex = m_nodeIndex;
+              }
+            updateNodeIndex(context);
+            codeBlock->pushCode(InitObject(arrayIndex), context, this);
+            WRITE_LAST_INDEX(m_nodeIndex, keyIndex, sourceIndex);
         }
+        m_nodeIndex = arrayIndex;
     }
 protected:
     ExpressionNodeVector m_elements;
