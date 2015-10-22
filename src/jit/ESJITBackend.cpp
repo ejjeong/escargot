@@ -847,6 +847,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(CallJS);
         LIns* callee = getTmpMapping(irCallJS->calleeIndex());
+        LIns* boxedCallee = boxESValue(callee,  m_graph->getOperandType(irCallJS->calleeIndex()));
         LIns* arguments = m_out.insAlloc(irCallJS->argumentCount() * sizeof(ESValue));
         LIns* argumentCount = m_out.insImmI(irCallJS->argumentCount());
         if(irCallJS->receiverIndex() == -1) {
@@ -860,12 +861,13 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             return boxedResult;
         } else {
             LIns* receiver = getTmpMapping(irCallJS->receiverIndex());
+            LIns* boxedReceiver = boxESValue(callee,  m_graph->getOperandType(irCallJS->receiverIndex()));
             for (size_t i=0; i<irCallJS->argumentCount(); i++) {
                 LIns* argument = getTmpMapping(irCallJS->argumentIndex(i));
                 LIns* boxedArgument = boxESValue(argument, m_graph->getOperandType(irCallJS->argumentIndex(i)));
                 m_out.insStore(LIR_std, boxedArgument, arguments, i * sizeof(ESValue), 1);
             }
-            LIns* args[] = {m_false, argumentCount, arguments, receiver, callee, m_instance};
+            LIns* args[] = {m_false, argumentCount, arguments, boxedReceiver, boxedCallee, m_instance};
             LIns* boxedResult = m_out.insCall(&esFunctionObjectCallWithReceiverCallInfo, args);
             return boxedResult;
         }
@@ -1081,7 +1083,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         */
         INIT_ESIR(GetObjectPreComputed);
         LIns* obj = getTmpMapping(irGetObjectPreComputed->objectIndex());
-        LIns* args[] = {m_out.insImmP(irGetObjectPreComputed), m_globalObject, obj};
+        LIns* boxedObj = boxESValue(obj, m_graph->getOperandType(irGetObjectPreComputed->objectIndex()));
+        LIns* args[] = {m_out.insImmP(irGetObjectPreComputed), m_globalObject, boxedObj};
         return m_out.insCall(&getObjectPreComputedCaseOpCallInfo, args);
     }
     case ESIR::Opcode::GetArrayObject:

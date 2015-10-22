@@ -57,11 +57,11 @@ inline ESValueInDouble getObjectOp(ESValueInDouble willBeObject, ESValueInDouble
     return ESValue::toRawDouble(getObjectOperation(&obj, &p, globalObject));
 }
 
-inline ESValueInDouble getObjectPreComputedCaseOp(ESValueInDouble willBeObject, GlobalObject* globalObject, GetObjectPreComputedCase* byteCode)
+inline ESValueInDouble getObjectPreComputedCaseOp(ESValueInDouble willBeObject, GlobalObject* globalObject, ESJIT::GetObjectPreComputedIR* ir)
 {
     ESValue obj = ESValue::fromRawDouble(willBeObject);
-    return ESValue::toRawDouble(getObjectPreComputedCaseOperation(&obj, byteCode->m_propertyValue, globalObject,
-            &byteCode->m_cachedhiddenClassChain, &byteCode->m_cachedIndex));
+    return ESValue::toRawDouble(getObjectPreComputedCaseOperation(&obj, ir->byteCode()->m_propertyValue, globalObject,
+            &ir->byteCode()->m_cachedhiddenClassChain, &ir->byteCode()->m_cachedIndex));
 }
 
 inline void setObjectOp(ESValueInDouble willBeObject, ESValueInDouble property, ESValueInDouble value)
