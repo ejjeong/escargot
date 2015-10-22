@@ -223,7 +223,7 @@ void NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteC
             JIT_LOG(index, "currentByteCodeIndex = ");
          }
 #endif
-        //generateOSRExit(currentByteCodeIndex);
+        generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out.ins0(LIR_label);
         jumpIfInt->setTarget(normalPath);
 #else
