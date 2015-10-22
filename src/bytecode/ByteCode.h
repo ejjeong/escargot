@@ -75,8 +75,8 @@ class CodeBlock;
 \
     /*object, array*/ \
     F(CreateObject, 1, 0, 0) \
-    F(CreateArray, 1, 0, 1) \
-    F(InitObject, 0, 2, 1) \
+    F(CreateArray, 1, 0, 0) \
+    F(InitObject, 0, 2, 0) \
     F(SetObjectPropertySetter, 0, 2, 0) \
     F(SetObjectPropertyGetter, 0, 2, 0) \
     F(GetObject, 1, 2, 1) \
@@ -1386,9 +1386,6 @@ public:
         printf("CreateArray <%u>\n",(unsigned)m_keyCount);
     }
 #endif
-#ifdef ENABLE_ESJIT
-    ProfileData m_profile;
-#endif
 };
 
 class InitObject : public ByteCode {
@@ -1412,9 +1409,12 @@ public:
         printf("InitObject <>\n");
     }
 #endif
+<<<<<<< HEAD
 #ifdef ENABLE_ESJIT
     int m_arrayIndex;
 #endif
+=======
+>>>>>>> parent of ecfc77b... Implement CreateArray and InitObject
 };
 
 class SetObjectPropertySetter : public ByteCode {

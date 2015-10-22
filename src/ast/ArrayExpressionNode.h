@@ -17,14 +17,12 @@ public:
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         unsigned len = m_elements.size();
-        updateNodeIndex(context);
         codeBlock->pushCode(CreateArray(len), context, this);
         WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
 #ifdef ENABLE_ESJIT
         int arrayIndex = m_nodeIndex;
 #endif
         for(unsigned i = 0; i < len ; i++) {
-            updateNodeIndex(context);
             codeBlock->pushCode(Push(ESValue(i)), context, this);
             WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
 #ifdef ENABLE_ESJIT
@@ -55,6 +53,12 @@ public:
 #ifdef ENABLE_ESJIT
         m_nodeIndex = arrayIndex;
 #endif
+            if(m_elements[i])
+                m_elements[i]->generateExpressionByteCode(codeBlock, context);
+            else
+                codeBlock->pushCode(Push(ESValue(ESValue::ESEmptyValue)), context, this);
+            codeBlock->pushCode(InitObject(), context, this);
+        }
     }
 protected:
     ExpressionNodeVector m_elements;

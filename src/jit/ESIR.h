@@ -1135,52 +1135,6 @@ private:
     int m_consequentIndex;
 };
 
-class CreateArrayIR : public ESIR {
-public:
-    DECLARE_STATIC_GENERATOR_1(CreateArray, int)
-
-    int keyCount() { return m_keyCount; }
-
-#ifndef NDEBUG
-    virtual void dump(std::ostream& out)
-    {
-        out << "tmp" << m_targetIndex << ": ";
-        ESIR::dump(out);
-        out << "CreateArray(" << m_keyCount << ")";
-    }
-#endif
-
-private:
-    CreateArrayIR(int targetIndex, int keyCount)
-        : ESIR(ESIR::Opcode::CreateArray, targetIndex), m_keyCount(keyCount) { }
-    int m_keyCount;
-};
-
-class InitObjectIR : public ESIR {
-public:
-    DECLARE_STATIC_GENERATOR_3(InitObject, int, int, int)
-
-    int objectIndex() { return m_objectIndex; }
-    int keyIndex() { return m_keyIndex; }
-    int sourceIndex() { return m_sourceIndex; }
-
-#ifndef NDEBUG
-    virtual void dump(std::ostream& out)
-    {
-        out << "tmp" << m_targetIndex << ": ";
-        ESIR::dump(out);
-        out << " tmp" << m_objectIndex << "[tmp" << m_keyIndex << "] = tmp" << m_sourceIndex;
-    }
-#endif
-
-private:
-    InitObjectIR(int targetIndex, int objectIndex, int keyIndex, int sourceIndex)
-        : ESIR(ESIR::Opcode::InitObject, targetIndex), m_objectIndex(objectIndex), m_keyIndex(keyIndex), m_sourceIndex(sourceIndex) { }
-    int m_objectIndex;
-    int m_keyIndex;
-    int m_sourceIndex;
-};
-
 #if 0
 class BitwiseAndIR : public ESIR {
 public:
