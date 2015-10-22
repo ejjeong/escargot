@@ -427,6 +427,9 @@ void GlobalObject::installFunction()
         ESObject* prototype = ESObject::create();
         prototype->set__proto__(instance->globalObject()->object()->protoType());
         function->setProtoType(prototype);
+#ifdef ENABLE_ESJIT
+        context.dumpCurrentNodeIndex();
+#endif
         return function;
     }, ESString::create(u"bind")));
 
