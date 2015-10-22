@@ -434,8 +434,12 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             GetObject* bytecode = (GetObject*)currentCode;
             SSAIndex* ssaIndex = codeBlock->getSSAIndex(bytecodeCounter);
             ASSERT(codeBlock->m_extraData[bytecodeCounter].m_registerIncrementCount < 3);
-            if (codeBlock->m_extraData[bytecodeCounter].m_registerIncrementCount >= 1)
+            if (codeBlock->m_extraData[bytecodeCounter].m_registerIncrementCount == 1)
                 graph->setOperandStackPos(ssaIndex->m_targetIndex, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
+            else if (codeBlock->m_extraData[bytecodeCounter].m_registerIncrementCount == 2) {
+                graph->setOperandStackPos(ssaIndex->m_targetIndex, codeBlock->m_extraData[bytecodeCounter].m_baseRegisterIndex);
+                graph->setOperandStackPos(ssaIndex->m_targetIndex - 1, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
+             }
             else
                 graph->setOperandStackPos(ssaIndex->m_targetIndex, -1);
             bytecode->m_profile.updateProfiledType();
@@ -458,8 +462,12 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             GetObjectPreComputedCase* bytecode = (GetObjectPreComputedCase*)currentCode;
             SSAIndex* ssaIndex = codeBlock->getSSAIndex(bytecodeCounter);
             ASSERT(codeBlock->m_extraData[bytecodeCounter].m_registerIncrementCount < 3);
-            if (codeBlock->m_extraData[bytecodeCounter].m_registerIncrementCount >= 1)
+            if (codeBlock->m_extraData[bytecodeCounter].m_registerIncrementCount == 1)
                 graph->setOperandStackPos(ssaIndex->m_targetIndex, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
+            else if (codeBlock->m_extraData[bytecodeCounter].m_registerIncrementCount == 2) {
+                graph->setOperandStackPos(ssaIndex->m_targetIndex, codeBlock->m_extraData[bytecodeCounter].m_baseRegisterIndex);
+                graph->setOperandStackPos(ssaIndex->m_targetIndex - 1, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
+             }
             else
                 graph->setOperandStackPos(ssaIndex->m_targetIndex, -1);
             bytecode->m_profile.updateProfiledType();
