@@ -592,6 +592,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_ESIR(Int32Multiply);
         INIT_BINARY_ESIR(Int32Multiply);
 #if 1
+        ASSERT(left->isI() && right->isI());
         LIns* int32Result = m_out.ins3(LIR_muljovi, left, right, nullptr);
         LIns* jumpAlways = m_out.ins2(LIR_j, nullptr, nullptr);
         LIns* labelOverflow = m_out.ins0(LIR_label);
@@ -643,6 +644,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(Int32Mod);
         INIT_BINARY_ESIR(Int32Mod);
+        ASSERT(left->isI() && right->isI());
         ASSERT(leftType.isInt32Type() && rightType.isInt32Type());
         LIns* res = m_out.ins2(LIR_divi, left, right);
         res = m_out.ins2(LIR_muli, res, right);
@@ -857,7 +859,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
                 LIns* boxedArgument = boxESValue(argument, m_graph->getOperandType(irCallJS->argumentIndex(i)));
                 m_out.insStore(LIR_std, boxedArgument, arguments, i * sizeof(ESValue), 1);
             }
-            LIns* args[] = {m_false, argumentCount, arguments, callee, m_instance};
+            LIns* args[] = {m_false, argumentCount, arguments, boxedCallee, m_instance};
             LIns* boxedResult = m_out.insCall(&esFunctionObjectCallCallInfo, args);
             return boxedResult;
         } else {
