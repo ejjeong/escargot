@@ -115,7 +115,7 @@ inline void objectDefineDataProperty(ESObject* object, ESString* key,
 }
 
 inline ESValueInDouble esFunctionObjectCall(ESVMInstance* instance,
-        ESValueInDouble callee,ESValue* arguments, size_t argumentCount, int isNewExpression)
+        ESValueInDouble callee,ESValue* arguments, uint32_t argumentCount, int32_t isNewExpression)
 {
     ESValue calleeVal = ESValue::fromRawDouble(callee);
     ESValue ret = ESFunctionObject::call(instance, calleeVal,
@@ -124,7 +124,7 @@ inline ESValueInDouble esFunctionObjectCall(ESVMInstance* instance,
 }
 
 inline ESValueInDouble esFunctionObjectCallWithReceiver(ESVMInstance* instance,
-        ESValueInDouble callee,ESValueInDouble receiver,ESValue* arguments, size_t argumentCount, int isNewExpression)
+        ESValueInDouble callee,ESValueInDouble receiver,ESValue* arguments, uint32_t argumentCount, int32_t isNewExpression)
 {
     ESValue calleeVal = ESValue::fromRawDouble(callee);
     ESValue receiverVal = ESValue::fromRawDouble(receiver);

@@ -184,7 +184,7 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
     return m_out.ins1(LIR_retd, boxedIndex);
 }
 
-LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteCodeIndex)
+void NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteCodeIndex)
 {
     ASSERT(in->isD());
 #ifndef NDEBUG
@@ -223,7 +223,7 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
             JIT_LOG(index, "currentByteCodeIndex = ");
          }
 #endif
-        generateOSRExit(currentByteCodeIndex);
+        //generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out.ins0(LIR_label);
         jumpIfInt->setTarget(normalPath);
 #else
@@ -354,7 +354,6 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
 #ifndef NDEBUG
     m_out.insComment("'= typecheck ended ='");
 #endif
-    return in;
 }
 
 LIns* NativeGenerator::boxESValue(LIns* unboxedValue, Type type)
@@ -834,17 +833,23 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     case ESIR::Opcode::Branch:
     {
         INIT_ESIR(Branch);
-        LIns* condition = getTmpMapping(irBranch->operandIndex());
-        LIns* compare = m_out.ins2(LIR_eqi, condition, m_false);
-        LIns* jumpTrue = m_out.insBranch(LIR_jf, compare, nullptr);
-        LIns* jumpFalse = m_out.ins2(LIR_j, nullptr, nullptr);
-        if (LIns* label = irBranch->falseBlock()->getLabel()) {
-            jumpFalse->setTarget(label);
-        } else {
-            irBranch->trueBlock()->addJumpOrBranchSource(jumpTrue);
-            irBranch->falseBlock()->addJumpOrBranchSource(jumpFalse);
-        }
-        return jumpFalse;
+        //TODO implement other type
+        if(m_graph->getOperandType(irBranch->operandIndex()).isInt32Type()
+                || m_graph->getOperandType(irBranch->operandIndex()).isBooleanType()
+                ) {
+            LIns* condition = getTmpMapping(irBranch->operandIndex());
+            LIns* compare = m_out.ins2(LIR_eqi, condition, m_false);
+            LIns* jumpTrue = m_out.insBranch(LIR_jf, compare, nullptr);
+            LIns* jumpFalse = m_out.ins2(LIR_j, nullptr, nullptr);
+            if (LIns* label = irBranch->falseBlock()->getLabel()) {
+                jumpFalse->setTarget(label);
+            } else {
+                irBranch->trueBlock()->addJumpOrBranchSource(jumpTrue);
+                irBranch->falseBlock()->addJumpOrBranchSource(jumpFalse);
+            }
+            return jumpFalse;
+        } else
+            RELEASE_ASSERT_NOT_REACHED();
     }
     case ESIR::Opcode::CallJS:
     {
@@ -1332,7 +1337,7 @@ bool NativeGenerator::nanojitCodegen(ESVMInstance* instance)
             }
             if (ir->returnsESValue()) {
                 Type type = m_graph->getOperandType(ir->m_targetIndex);
-                generatedLIns = generateTypeCheck(generatedLIns, type, ir->m_targetIndex);
+                generateTypeCheck(generatedLIns, type, ir->m_targetIndex);
                 generatedLIns = unboxESValue(generatedLIns, type);
             }
             if (ir->m_targetIndex >= 0) {

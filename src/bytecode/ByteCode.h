@@ -1393,10 +1393,18 @@ public:
 
 class InitObject : public ByteCode {
 public:
+#ifndef ENABLE_ESJIT
+    InitObject()
+        : ByteCode(InitObjectOpcode)
+    {
+    }
+#endif
+#ifdef ENABLE_ESJIT
     InitObject(int arrayIndex)
         : ByteCode(InitObjectOpcode), m_arrayIndex(arrayIndex)
     {
     }
+#endif
 
 #ifndef NDEBUG
     virtual void dump()
@@ -1404,8 +1412,9 @@ public:
         printf("InitObject <>\n");
     }
 #endif
-
+#ifdef ENABLE_ESJIT
     int m_arrayIndex;
+#endif
 };
 
 class SetObjectPropertySetter : public ByteCode {
