@@ -153,7 +153,9 @@ void ESVMInstance::printValue(ESValue val)
 {
     std::string str;
     std::function<void (ESValue v)> toString = [&str, &toString](ESValue v) {
-        if(v.isInt32()) {
+        if(v.isEmpty()) {
+            str.append("[Empty Value]");
+        } else if(v.isInt32()) {
             str.append(v.toString()->utf8Data());
         } else if(v.isNumber()) {
             str.append(v.toString()->utf8Data());

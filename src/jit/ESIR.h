@@ -3,7 +3,6 @@
 
 #ifdef ENABLE_ESJIT
 
-#include <iostream>
 #include "ESIRType.h"
 
 namespace escargot {
@@ -526,7 +525,7 @@ private:
 
 class GetObjectIR : public ESIR {
 public:
-    DECLARE_STATIC_GENERATOR_2(GetObject, int, int);
+    DECLARE_STATIC_GENERATOR_3(GetObject, int, int, escargot::GetObject *);
 
 #ifndef NDEBUG
     virtual void dump(std::ostream& out)
@@ -537,20 +536,20 @@ public:
     }
 #endif
 
-    ESHiddenClass* cachedHiddenClass() { return m_cachedHiddenClass; }
-    size_t cachedIndex() { return m_cachedIndex; }
     int objectIndex() { return m_objectIndex; }
     int propertyIndex() { return m_propertyIndex; }
 
 private:
-    GetObjectIR(int targetIndex, int objectIndex, int propertyIndex)
+    GetObjectIR(int targetIndex, int objectIndex, int propertyIndex, escargot::GetObject* b)
         : ESIR(ESIR::Opcode::GetObject, targetIndex),
           m_objectIndex(objectIndex),
-          m_propertyIndex(propertyIndex){ }
-    ESHiddenClass* m_cachedHiddenClass;
+          m_propertyIndex(propertyIndex),
+          m_byteCode(b) { }
+
     int m_cachedIndex;
     int m_objectIndex;
     int m_propertyIndex;
+    escargot::GetObject* m_byteCode;
 };
 
 class GetObjectPreComputedIR : public ESIR {

@@ -43,10 +43,12 @@ CallInfo setVarDefineDataPropertyCallInfo = CI(setVarDefineDataProperty, CallInf
 CallInfo esFunctionObjectCallCallInfo = CI(esFunctionObjectCall, CallInfo::typeSig5(ARGTYPE_D, ARGTYPE_P, ARGTYPE_D, ARGTYPE_P, ARGTYPE_I, ARGTYPE_I));
 CallInfo esFunctionObjectCallWithReceiverCallInfo = CI(esFunctionObjectCallWithReceiver, CallInfo::typeSig6(ARGTYPE_D, ARGTYPE_P, ARGTYPE_D, ARGTYPE_D, ARGTYPE_P, ARGTYPE_I, ARGTYPE_I));
 CallInfo newOpCallInfo = CI(newOp, CallInfo::typeSig5(ARGTYPE_D, ARGTYPE_P, ARGTYPE_P, ARGTYPE_D, ARGTYPE_P, ARGTYPE_I));
+CallInfo getObjectOpCallInfo = CI(getObjectOp, CallInfo::typeSig3(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D, ARGTYPE_P));
 CallInfo getObjectPreComputedCaseOpCallInfo = CI(getObjectPreComputedCaseOp, CallInfo::typeSig3(ARGTYPE_D, ARGTYPE_D, ARGTYPE_P, ARGTYPE_P));
+CallInfo setObjectOpCallInfo = CI(setObjectOp, CallInfo::typeSig3(ARGTYPE_V, ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 CallInfo ESObjectSetOpCallInfo = CI(ESObjectSetOp, CallInfo::typeSig3(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 CallInfo generateToStringCallInfo = CI(generateToString, CallInfo::typeSig1(ARGTYPE_D, ARGTYPE_D));
-CallInfo concatTwoStringsCallInfo = CI(concatTwoStrings, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
+CallInfo concatTwoStringsCallInfo = CI(concatTwoStrings, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_P, ARGTYPE_P));
 #if 0
 CallInfo resolveNonDataPropertyInfo = CI(resolveNonDataProperty, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_P, ARGTYPE_P));
 #else
@@ -512,7 +514,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             LIns* args[] = {boxedRight};
             right = m_out.insCall(&generateToStringCallInfo, args);
         }
-        LIns* args[] = {left, right};
+
+        LIns* args[] = {right, left};
         LIns* boxedResult = m_out.insCall(&concatTwoStringsCallInfo, args);
         LIns* unboxedResult = unboxESValue(boxedResult, TypeString);
         return unboxedResult;
@@ -857,7 +860,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     }
     case ESIR::Opcode::Return:
     {
-        LIns* undefined = m_out.insImmD(0);
+        LIns* undefined = m_out.ins1(LIR_qasd, m_undefinedQ);
         return m_out.ins1(LIR_retd, undefined);
     }
     case ESIR::Opcode::ReturnWithValue:
@@ -1030,12 +1033,15 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(GetObject);
         LIns* obj = getTmpMapping(irGetObject->objectIndex());
+        LIns* property = getTmpMapping(irGetObject->propertyIndex());
+        /*
         if (irGetObject->cachedIndex() < SIZE_MAX) {
             size_t gapToHiddenClassData = escargot::ESObject::offsetOfHiddenClassData();
             LIns* hiddenClassData = m_out.insLoad(LIR_ldd, obj, gapToHiddenClassData, 1, LOAD_NORMAL);
             return m_out.insLoad(LIR_ldd, hiddenClassData, irGetObject->cachedIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
-        }
-        return nullptr;
+        }*/
+        LIns* args[] = {m_globalObject, property, obj};
+        return m_out.insCall(&getObjectOpCallInfo, args);
     }
     case ESIR::Opcode::GetObjectPreComputed:
     {
@@ -1115,13 +1121,11 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* obj = getTmpMapping(irSetObject->objectIndex());
         LIns* prop = getTmpMapping(irSetObject->propertyIndex());
         LIns* source = getTmpMapping(irSetObject->sourceIndex());
-
-        Type objType = m_graph->getOperandType(irSetObject->objectIndex());
-        Type propType = m_graph->getOperandType(irSetObject->propertyIndex());
-        Type sourceType = m_graph->getOperandType(irSetObject->sourceIndex());
-
         LIns* boxedSource = boxESValue(source, m_graph->getOperandType(irSetObject->targetIndex()));
-        return m_out.insStore(LIR_std, boxedSource, (LIns*) irSetObject->cachedHiddenClass(), irSetObject->cachedIndex() * sizeof(ESValue), 1);
+
+        LIns* args[] = {boxedSource, prop, obj};
+        m_out.insCall(&setObjectOpCallInfo, args);
+        return source;
     }
     case ESIR::Opcode::ToNumber:
     {

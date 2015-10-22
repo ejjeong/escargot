@@ -50,12 +50,27 @@ inline ESValueInDouble ESObjectSetOp(ESValueInDouble obj, ESValueInDouble proper
     return source;
 }
 
+inline ESValueInDouble getObjectOp(ESValueInDouble willBeObject, ESValueInDouble property, GlobalObject* globalObject)
+{
+    ESValue obj = ESValue::fromRawDouble(willBeObject);
+    ESValue p = ESValue::fromRawDouble(property);
+    return ESValue::toRawDouble(getObjectOperation(&obj, &p, globalObject));
+}
+
 inline ESValueInDouble getObjectPreComputedCaseOp(ESValueInDouble willBeObject, GlobalObject* globalObject, GetObjectPreComputedCase* byteCode)
 {
     ESValue obj = ESValue::fromRawDouble(willBeObject);
     return ESValue::toRawDouble(getObjectPreComputedCaseOperation(&obj, byteCode->m_propertyValue, globalObject,
             &byteCode->m_cachedhiddenClassChain, &byteCode->m_cachedIndex));
 }
+
+inline void setObjectOp(ESValueInDouble willBeObject, ESValueInDouble property, ESValueInDouble value)
+{
+    ESValue obj = ESValue::fromRawDouble(willBeObject);
+    ESValue p = ESValue::fromRawDouble(property);
+    setObjectOperation(&obj, &p, ESValue::fromRawDouble(value));
+}
+
 
 inline ESValue* contextResolveBinding(ExecutionContext* context, InternalAtomicString* atomicName, ESString* name)
 {
@@ -125,11 +140,9 @@ inline ESValueInDouble generateToString(ESValueInDouble rawValue)
     return ESValue::toRawDouble(string);
 }
 
-inline ESValueInDouble concatTwoStrings(ESValueInDouble left, ESValueInDouble right)
+inline ESValueInDouble concatTwoStrings(ESString* left, ESString* right)
 {
-    ESValue leftVal = ESValue::fromRawDouble(left);
-    ESValue rightVal = ESValue::fromRawDouble(right);
-    ESValue ret = ESString::concatTwoStrings(rightVal.asESString(), leftVal.asESString());
+    ESValue ret = ESString::concatTwoStrings(left, right);
     return ESValue::toRawDouble(ret);
 }
 
