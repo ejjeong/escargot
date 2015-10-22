@@ -190,5 +190,31 @@ void dumpBytecode(CodeBlock* codeBlock)
     printf("dumpBytecode...<<<<<<<<<<<<<<<<<<<<<<\n");
 }
 
+void dumpUnsupported(CodeBlock* block)
+{
+    const char* functionName = block->m_nonAtomicId ? (block->m_nonAtomicId->utf8Data()):"(anonymous)";
+    printf("Unsupported opcodes for function %s (codeBlock %p)\n", functionName, block);
+    size_t idx = 0;
+    size_t bytecodeCounter = 0;
+    char* code = block->m_code.data();
+    char* end = &block->m_code.data()[block->m_code.size()];
+    while(&code[idx] < end) {
+        Opcode opcode = block->m_extraData[bytecodeCounter].m_opcode;
+        switch(opcode) {
+        #define DECLARE_EXECUTE_NEXTCODE(opcode, pushCount, popCount, JITSupported) \
+        case opcode##Opcode: \
+            if (!JITSupported) \
+                printf("%s ", #opcode); \
+            idx += sizeof (opcode); \
+            bytecodeCounter++; \
+            break;
+        FOR_EACH_BYTECODE_OP(DECLARE_EXECUTE_NEXTCODE);
+        #undef DECLARE_EXECUTE_NEXTCODE
+        case OpcodeKindEnd:
+            break;
+        }
+    }
+    printf("\n");
+}
 #endif
 }

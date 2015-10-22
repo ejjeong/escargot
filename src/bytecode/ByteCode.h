@@ -2377,6 +2377,7 @@ ALWAYS_INLINE size_t resolveProgramCounter(char* codeBuffer, const size_t& progr
 
 #ifndef NDEBUG
 void dumpBytecode(CodeBlock* codeBlock);
+void dumpUnsupported(CodeBlock* codeBlock);
 #endif
 
 ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter = 0, unsigned maxStackPos = 0);

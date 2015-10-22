@@ -41,6 +41,13 @@ public:
             dumpBytecode(cb);
         }
     }
+        if (ESVMInstance::currentInstance()->m_reportUnsupportedOpcode) {
+            char* code = cb->m_code.data();
+            ByteCode* currentCode = (ByteCode *)(&code[0]);
+            if(currentCode->m_orgOpcode != ExecuteNativeFunctionOpcode) {
+                dumpUnsupported(cb);
+            }
+        }
 #endif
         codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb, false), context, this);
 

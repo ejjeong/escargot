@@ -37,6 +37,8 @@ public:
         cb->pushCode(ReturnFunction(), newContext, this);
 
 #ifndef NDEBUG
+        cb->m_id = m_id;
+        cb->m_nonAtomicId = m_nonAtomicId;
         if(ESVMInstance::currentInstance()->m_dumpByteCode) {
             char* code = cb->m_code.data();
             ByteCode* currentCode = (ByteCode *)(&code[0]);
@@ -45,8 +47,13 @@ public:
                 dumpBytecode(cb);
               }
         }
-        cb->m_id = m_id;
-        cb->m_nonAtomicId = m_nonAtomicId;
+        if (ESVMInstance::currentInstance()->m_reportUnsupportedOpcode) {
+            char* code = cb->m_code.data();
+            ByteCode* currentCode = (ByteCode *)(&code[0]);
+            if(currentCode->m_orgOpcode != ExecuteNativeFunctionOpcode) {
+                dumpUnsupported(cb);
+            }
+        }
 #endif
         codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb, true), context, this);
 

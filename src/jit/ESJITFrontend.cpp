@@ -686,10 +686,7 @@ postprocess:
     return graph;
 
 unsupported:
-#ifndef NDEBUG
-    if (ESVMInstance::currentInstance()->m_verboseJIT || ESVMInstance::currentInstance()->m_reportUnsupportedOpcode)
-        printf("Unsupported ByteCode %s (idx %zu) in JIT FrontEnd\n", getByteCodeName(codeBlock->m_extraData[bytecodeCounter].m_opcode), idx);
-#endif
+    LOG_VJ("Unsupported case in ByteCode %s (idx %zu) (while parsing in FrontEnd)\n", getByteCodeName(codeBlock->m_extraData[bytecodeCounter].m_opcode), idx);
     return nullptr;
 }
 
