@@ -668,6 +668,15 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                         }
                         break;
                     }
+                    case GetByGlobalIndexOpcode: {
+                        reinterpret_cast<GetByGlobalIndex*>(currentCode)->m_profile.updateProfiledType();
+                        if (reinterpret_cast<GetByGlobalIndex*>(currentCode)->m_profile.getType().isBottomType() ||
+                                reinterpret_cast<GetByGlobalIndex*>(currentCode)->m_profile.getType().isUndefinedType()) {
+                            compileNextTime = true;
+                            LOG_VJ("> Cannot Compile JIT Function due to GetByGlobalIndex(idx %u) is not profiled yet\n", (unsigned)idx);
+                        }
+                        break;
+                    }
                     case GetObjectOpcode: {
                         reinterpret_cast<GetObject*>(currentCode)->m_profile.updateProfiledType();
                         if (reinterpret_cast<GetObject*>(currentCode)->m_profile.getType().isBottomType()) {
@@ -676,11 +685,27 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                         }
                         break;
                     }
+                    case GetObjectAndPushObjectOpcode: {
+                        reinterpret_cast<GetObjectAndPushObject*>(currentCode)->m_profile.updateProfiledType();
+                        if (reinterpret_cast<GetObjectAndPushObject*>(currentCode)->m_profile.getType().isBottomType()) {
+                            compileNextTime = true;
+                            LOG_VJ("> Cannot Compile JIT Function due to GetObjectAndPushObject(idx %u) is not profiled yet\n", (unsigned)idx);
+                        }
+                        break;
+                    }
                     case GetObjectPreComputedCaseOpcode: {
                         reinterpret_cast<GetObjectPreComputedCase*>(currentCode)->m_profile.updateProfiledType();
                         if (reinterpret_cast<GetObjectPreComputedCase*>(currentCode)->m_profile.getType().isBottomType()) {
                             compileNextTime = true;
                             LOG_VJ("> Cannot Compile JIT Function due to GetObjectPreComputedCase(idx %u) is not profiled yet\n", (unsigned)idx);
+                        }
+                        break;
+                    }
+                    case GetObjectPreComputedCaseAndPushObjectOpcode: {
+                        reinterpret_cast<GetObjectPreComputedCaseAndPushObject*>(currentCode)->m_profile.updateProfiledType();
+                        if (reinterpret_cast<GetObjectPreComputedCaseAndPushObject*>(currentCode)->m_profile.getType().isBottomType()) {
+                            compileNextTime = true;
+                            LOG_VJ("> Cannot Compile JIT Function due to GetObjectPreComputedCaseAndPushObject(idx %u) is not profiled yet\n", (unsigned)idx);
                         }
                         break;
                     }
