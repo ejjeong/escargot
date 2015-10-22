@@ -476,6 +476,10 @@ public:
         return reinterpret_cast<::escargot::ESControlFlowRecord *>(this);
     }
 
+#ifdef ENABLE_ESJIT
+    static size_t offsetOfType() { return offsetof(ESPointer, m_type); }
+#endif
+
 protected:
     // 0x******@@
     // * -> Data

@@ -253,6 +253,7 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
         }
 #endif
         generateOSRExit(currentByteCodeIndex);
+
         LIns* normalPath = m_out.ins0(LIR_label);
         jumpIfPointer->setTarget(normalPath);
 
@@ -267,7 +268,8 @@ LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByte
             mask = m_out.insImmQ(ESPointer::Type::ESArrayObject);
         else
             RELEASE_ASSERT_NOT_REACHED();
-        LIns* esPointerMaskedValue = m_out.ins2(LIR_andq, quadValue, mask);
+        LIns* typeOfESPtr = m_out.insLoad(LIR_ldq, in, ESPointer::offsetOfType(), 1, LOAD_NORMAL);
+        LIns* esPointerMaskedValue = m_out.ins2(LIR_andq, typeOfESPtr, mask);
         LIns* checkIfFlagIdentical = m_out.ins2(LIR_eqq, esPointerMaskedValue, mask);
         LIns* jumpIfFlagIdentical = m_out.insBranch(LIR_jt, checkIfFlagIdentical, nullptr);
 #ifndef NDEBUG
