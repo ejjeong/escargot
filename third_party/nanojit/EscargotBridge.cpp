@@ -37,10 +37,12 @@ namespace avmplus {
 
 void AvmLog(const char* fmt...)
 {
+#ifndef NDEBUG
     va_list args;
     va_start(args, fmt);
     vfprintf(stdout, fmt, args);
     va_end(args);
+#endif
 }
 
 void AvmAssertFail(const char *message)
