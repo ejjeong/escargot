@@ -57,11 +57,11 @@ inline ESValueInDouble getObjectOp(ESValueInDouble willBeObject, ESValueInDouble
     return ESValue::toRawDouble(getObjectOperation(&obj, &p, globalObject));
 }
 
-inline ESValueInDouble getObjectPreComputedCaseOp(ESValueInDouble willBeObject, GlobalObject* globalObject, ESJIT::GetObjectPreComputedIR* ir)
+inline ESValueInDouble getObjectPreComputedCaseOp(ESValueInDouble willBeObject, GlobalObject* globalObject, GetObjectPreComputedCase* bytecode)
 {
     ESValue obj = ESValue::fromRawDouble(willBeObject);
-    return ESValue::toRawDouble(getObjectPreComputedCaseOperation(&obj, ir->byteCode()->m_propertyValue, globalObject,
-            &ir->byteCode()->m_cachedhiddenClassChain, &ir->byteCode()->m_cachedIndex));
+    return ESValue::toRawDouble(getObjectPreComputedCaseOperation(&obj, bytecode->m_propertyValue, globalObject,
+            &bytecode->m_cachedhiddenClassChain, &bytecode->m_cachedIndex));
 }
 
 inline void setObjectOp(ESValueInDouble willBeObject, ESValueInDouble property, ESValueInDouble value)
@@ -71,6 +71,13 @@ inline void setObjectOp(ESValueInDouble willBeObject, ESValueInDouble property, 
     setObjectOperation(&obj, &p, ESValue::fromRawDouble(value));
 }
 
+inline void setObjectPreComputedOp(ESValueInDouble willBeObject, GlobalObject* globalObject, SetObjectPreComputedCase* bytecode, ESValueInDouble value)
+{
+    ESValue obj = ESValue::fromRawDouble(willBeObject);
+    ESValue v = ESValue::fromRawDouble(value);
+    setObjectPreComputedCaseOperation(&obj, bytecode->m_propertyValue, v,
+            &bytecode->m_cachedhiddenClassChain, &bytecode->m_cachedIndex, &bytecode->m_hiddenClassWillBe);
+}
 
 inline ESValue* contextResolveBinding(ExecutionContext* context, InternalAtomicString* atomicName, ESString* name)
 {

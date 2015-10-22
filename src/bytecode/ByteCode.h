@@ -93,7 +93,7 @@ class CodeBlock;
     F(GetObjectWithPeekingPreComputedCaseSlowMode, 1, 0, 0) \
     F(SetObject, 1, 3, 1) \
     F(SetObjectSlowMode, 1, 3, 0) \
-    F(SetObjectPreComputedCase, 1, 2, 0) \
+    F(SetObjectPreComputedCase, 1, 2, 1) \
     F(SetObjectPreComputedCaseSlowMode, 1, 2, 0) \
 \
     /*function*/\

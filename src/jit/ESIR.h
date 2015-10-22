@@ -108,8 +108,9 @@ class ESBasicBlock;
     F(GetVar, ReturnsESValue) \
     F(SetVar, ) \
     F(GetObject, ReturnsESValue)\
-    F(SetObject, ) \
     F(GetObjectPreComputed, ReturnsESValue) \
+    F(SetObject, ) \
+    F(SetObjectPreComputed, ) \
     F(GetArrayObject, ReturnsESValue) \
     F(SetArrayObject, ) \
     F(GetScoped, ReturnsESValue) \
@@ -668,6 +669,34 @@ private:
     int m_objectIndex;
     int m_propertyIndex;
     int m_sourceIndex;
+};
+
+class SetObjectPreComputedIR : public ESIR {
+public:
+    DECLARE_STATIC_GENERATOR_3(SetObjectPreComputed, int, int, SetObjectPreComputedCase *);
+
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+        out << " tmp" << m_objectIndex << "["<< m_byteCode->m_propertyValue->utf8Data() << "] = " << "tmp" << m_sourceIndex;
+    }
+#endif
+
+    int objectIndex() { return m_objectIndex; }
+    int sourceIndex() { return m_sourceIndex; }
+    SetObjectPreComputedCase * byteCode() { return m_byteCode; }
+
+private:
+    SetObjectPreComputedIR(int targetIndex, int objectIndex, int sourceIndex, SetObjectPreComputedCase* byteCode)
+        : ESIR(ESIR::Opcode::SetObjectPreComputed, targetIndex),
+          m_objectIndex(objectIndex),
+          m_sourceIndex(sourceIndex),
+          m_byteCode(byteCode) { }
+    int m_objectIndex;
+    int m_sourceIndex;
+    SetObjectPreComputedCase* m_byteCode;
 };
 
 class BinaryExpressionIR : public ESIR {

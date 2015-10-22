@@ -243,6 +243,14 @@ bool ESGraphTypeInference::run(ESGraph* graph)
                 }
                 break;
             }
+            case ESIR::Opcode::SetObjectPreComputed:
+            {
+                INIT_ESIR(SetObjectPreComputed);
+                Type srcType = graph->getOperandType(irSetObjectPreComputed->sourceIndex());
+                graph->setOperandType(ir->targetIndex(), srcType);
+                Type objectType = graph->getOperandType(irSetObjectPreComputed->objectIndex());
+                break;
+            }
             case ESIR::Opcode::GetArrayObject:
                 break;
             case ESIR::Opcode::GetObjectPreComputed: {
