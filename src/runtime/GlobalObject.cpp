@@ -322,6 +322,9 @@ void GlobalObject::installFunction()
             codeBlock->m_isStrict = functionDeclAST->isStrict();
             functionDeclAST->body()->generateStatementByteCode(codeBlock, context);
             codeBlock->pushCode(ReturnFunction(), context, functionDeclAST);
+#ifdef ENABLE_ESJIT
+            context.dumpCurrentNodeIndex();
+#endif
             escargot::InternalAtomicStringVector params = functionDeclAST->params();
         }
         escargot::ESFunctionObject* function;
@@ -331,6 +334,10 @@ void GlobalObject::installFunction()
             function->initialize(scope, codeBlock);
         } else
             function = ESFunctionObject::create(scope, codeBlock, ESString::create(u"anonymous"));
+
+#ifdef ENABLE_ESJIT
+        context.dumpCurrentNodeIndex();
+#endif
 
         ESObject* prototype = ESObject::create();
         prototype->set__proto__(instance->globalObject()->object()->protoType());

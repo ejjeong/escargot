@@ -145,6 +145,7 @@ void dumpBytecode(CodeBlock* codeBlock)
 
         printf("regIndex[%d,+%d,-%d]\t\t", ex->m_baseRegisterIndex, ex->m_registerIncrementCount, ex->m_registerDecrementCount);
 
+        unsigned currentCount = bytecodeCounter;
         Opcode opcode = codeBlock->m_extraData[bytecodeCounter].m_opcode;
         bytecodeCounter++;
         ASSERT(opcode == currentCode->m_orgOpcode);
@@ -162,7 +163,7 @@ void dumpBytecode(CodeBlock* codeBlock)
         switch(opcode) {
 #define DUMP_BYTE_CODE(code, pushCount, popCount, JITSupported) \
         case code##Opcode:\
-        codeBlock->getSSAIndex(bytecodeCounter)->dump(); \
+        codeBlock->getSSAIndex(currentCount)->dump(); \
         currentCode->dump(); \
         idx += sizeof (code); \
         continue;
