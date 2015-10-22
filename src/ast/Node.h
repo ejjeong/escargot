@@ -146,7 +146,7 @@ public:
         RELEASE_ASSERT_NOT_REACHED();
     }
 
-    virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context, int sourceIndex = -1)
     {
         RELEASE_ASSERT_NOT_REACHED();
     }

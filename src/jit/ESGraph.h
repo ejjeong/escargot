@@ -104,6 +104,8 @@ public:
     void increaseFollowingPopCountOf(int index) { m_operands[index].increaseFollowingPopCount(); }
     unsigned getFollowPopCountOf(int index) { return m_operands[index].getFollowingPopCount(); }
 
+    CodeBlock* codeBlock() { return m_codeBlock; }
+
 #ifndef NDEBUG
     void dump(std::ostream& out, const char* msg = nullptr);
 #endif

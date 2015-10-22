@@ -77,7 +77,7 @@ public:
     }
 
 
-    virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context, int sourceIndex = -1)
     {
         if(ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty()) {
             if(isPreComputedCase()) {
@@ -94,7 +94,7 @@ public:
             ASSERT(m_property->type() == NodeType::Identifier);
             updateNodeIndex(context);
             codeBlock->pushCode(SetObjectPreComputedCase(((IdentifierNode *)m_property)->name().string()), context, this);
-            WRITE_LAST_INDEX(m_nodeIndex, m_object->nodeIndex(), -1);
+            WRITE_LAST_INDEX(m_nodeIndex, m_object->nodeIndex(), sourceIndex);
         } else {
             updateNodeIndex(context);
             codeBlock->pushCode(SetObject(), context, this);

@@ -212,7 +212,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         {
             INIT_BYTECODE(SetObjectPreComputedCase);
             //graph->setOperandStackPos(ssaIndex->m_targetIndex, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
-            ESIR* setObject = SetObjectPreComputedIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_targetIndex - 1, bytecode);
+            ESIR* setObject = SetObjectPreComputedIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2, bytecode);
             currentBlock->push(setObject);
             NEXT_BYTECODE(SetObjectPreComputedCase);
             break;

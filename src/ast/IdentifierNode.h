@@ -77,7 +77,7 @@ public:
     }
 
 
-    virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context, int sourceIndex = -1)
     {
         if(m_canUseFastAccess) {
             if(codeBlock->m_needsActivation) {

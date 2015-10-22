@@ -178,7 +178,7 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
             if (maxStackPos > 0) {
                 for (; j >= 0; j--) {
                     ESIR* esir = block->instruction(j);
-                    if (esir->targetIndex() < 0) continue;
+                    if (esir->targetIndex() < 0 || m_graph->codeBlock()->m_extraData[esir->targetIndex()].m_registerIncrementCount <= 0) continue;
                     unsigned stackPos = m_graph->getOperandStackPos(esir->targetIndex());
                     if (!(stackPos > 0 && stackPos <= maxStackPos && !writeFlags[stackPos - 1])) continue;
                     Type type = m_graph->getOperandType(esir->targetIndex());
@@ -1398,7 +1398,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* boxedSrc = boxESValue(source, srcType);
         LIns* offset1 = m_out->ins2(LIR_muli, key, ESValueSize);
         LIns* valuePtr1 = m_out->ins2(LIR_addd, vectorData, offset1);
-        return m_out->insStore(LIR_std, boxedSrc, valuePtr1, 0, 1);
+        LIns* ret =  m_out->insStore(LIR_std, boxedSrc, valuePtr1, 0, 1);
+        return source;
     }
     default:
     {
