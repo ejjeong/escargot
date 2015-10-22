@@ -159,7 +159,7 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
                     unsigned stackPos = m_graph->getOperandStackPos(esir->targetIndex());
                     Type type = m_graph->getOperandType(esir->targetIndex());
                     LIns* lIns = m_tmpToLInsMapping[esir->targetIndex()];
-                    if (!writeFlags[stackPos - 1] && lIns) {
+                    if (!writeFlags[stackPos - 1] && lIns && stackPos > 0 && stackPos <= maxStackPos) {
                         LIns* boxedLIns = boxESValue(lIns, type);
                         int bufOffset = (stackPos-1) * sizeof(ESValue);
                         LIns* stackBuf = m_out.insLoad(LIR_ldp, m_context, ExecutionContext::offsetofStackBuf(), 1, LOAD_NORMAL);
