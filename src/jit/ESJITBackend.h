@@ -59,7 +59,7 @@ private:
     nanojit::Assembler* m_assm;
     nanojit::LirBuffer* m_buf;
     nanojit::Fragment* m_f;
-    nanojit::LirBufWriter m_out;
+    nanojit::LirBufWriter* m_out;
 
 #ifdef ESCARGOT_64
     nanojit::LIns* m_tagMaskQ;
