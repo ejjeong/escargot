@@ -552,12 +552,10 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_ESIR(GenericPlus);
         INIT_BINARY_ESIR(GenericPlus);
 
-        LIns* boxedLeft = boxESValue(left, TypeInt32);
-        LIns* boxedRight = boxESValue(right, TypeInt32);
+        LIns* boxedLeft = boxESValue(left, leftType);
+        LIns* boxedRight = boxESValue(right, rightType);
         LIns* args[] = {boxedRight, boxedLeft};
-        LIns* boxedResult = m_out.insCall(&plusOpCallInfo, args);
-        LIns* unboxedResult = unboxESValue(boxedResult, TypeInt32);
-        return unboxedResult;
+        return m_out.insCall(&plusOpCallInfo, args);
     }
     case ESIR::Opcode::Minus:
     {
@@ -1277,7 +1275,7 @@ bool NativeGenerator::nanojitCodegen(ESVMInstance* instance)
                 LOG_VJ("Cannot generate code for JIT IR `%s` in ESJITBackEnd\n", ir->getOpcodeName());
                 return false;
             }
-            if (ir->isValueLoadedFromHeap()) {
+            if (ir->returnsESValue()) {
                 Type type = m_graph->getOperandType(ir->m_targetIndex);
                 generatedLIns = generateTypeCheck(generatedLIns, type, ir->m_targetIndex);
                 generatedLIns = unboxESValue(generatedLIns, type);

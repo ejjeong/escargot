@@ -33,7 +33,7 @@ class ESBasicBlock;
     F(Int32Plus, ) \
     F(DoublePlus, ) \
     F(StringPlus, ) \
-    F(GenericPlus, ) \
+    F(GenericPlus, ReturnsESValue) \
     F(Increment, ) \
     F(Minus, ) \
     F(Int32Multiply, ) \
@@ -82,11 +82,11 @@ class ESBasicBlock;
     F(LoopStart, ) \
     F(Jump, ) \
     F(Branch, ) \
-    F(CallJS, LoadFromHeap) \
-    F(CallNewJS, LoadFromHeap) \
-    F(CallEval, LoadFromHeap) \
-    F(CallNative, LoadFromHeap) \
-    F(CallRuntime, LoadFromHeap) \
+    F(CallJS, ReturnsESValue) \
+    F(CallNewJS, ReturnsESValue) \
+    F(CallEval, ReturnsESValue) \
+    F(CallNative, ReturnsESValue) \
+    F(CallRuntime, ReturnsESValue) \
     F(Return, ) \
     F(ReturnWithValue, ) \
     F(OSRExit, ) \
@@ -101,28 +101,28 @@ class ESBasicBlock;
     F(GetEnumerablePropertyNames, ) \
     \
     /* [Get/Set][Variable|Property] */ \
-    F(GetThis, LoadFromHeap) \
-    F(GetArgument, LoadFromHeap) \
-    F(GetVar, LoadFromHeap) \
+    F(GetThis, ReturnsESValue) \
+    F(GetArgument, ReturnsESValue) \
+    F(GetVar, ReturnsESValue) \
     F(SetVar, ) \
-    F(GetObject, LoadFromHeap)\
+    F(GetObject, ReturnsESValue)\
     F(SetObject, ) \
-    F(GetObjectPreComputed, LoadFromHeap) \
-    F(GetArrayObject, LoadFromHeap) \
+    F(GetObjectPreComputed, ReturnsESValue) \
+    F(GetArrayObject, ReturnsESValue) \
     F(SetArrayObject, ) \
-    F(GetScoped, LoadFromHeap) \
+    F(GetScoped, ReturnsESValue) \
     F(SetScoped, ) \
-    F(GetVarGeneric, LoadFromHeap) \
+    F(GetVarGeneric, ReturnsESValue) \
     F(SetVarGeneric, ) \
-    F(GetGlobalVarGeneric, LoadFromHeap) \
+    F(GetGlobalVarGeneric, ReturnsESValue) \
     F(SetGlobalVarGeneric, ) \
-    F(GetProperty, LoadFromHeap) \
+    F(GetProperty, ReturnsESValue) \
     F(SetProperty, ) \
     \
     /* TODO: ArrayExpression Throw [Var|Fn][Decl|Expr] */ \
 
 #define FOR_EACH_ESIR_FLAGS(F) \
-    F(LoadFromHeap, 0) \
+    F(ReturnsESValue, 0) \
 
 #define DECLARE_ESIR_FLAGS(flag, shift) \
 const uint32_t flag = 0x1 << shift;
@@ -156,7 +156,7 @@ public:
 
     const char* getOpcodeName();
     uint32_t getFlags();
-    bool isValueLoadedFromHeap();
+    bool returnsESValue();
 #ifndef NDEBUG
     virtual void dump(std::ostream& out);
 #endif

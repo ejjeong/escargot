@@ -29,9 +29,9 @@ uint32_t ESIR::getFlags()
     }
 }
 
-bool ESIR::isValueLoadedFromHeap()
+bool ESIR::returnsESValue()
 {
-    return getFlags() & LoadFromHeap;
+    return getFlags() & ReturnsESValue;
 }
 
 #ifndef NDEBUG
