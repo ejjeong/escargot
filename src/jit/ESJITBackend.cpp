@@ -1149,7 +1149,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(SetArrayObject);
 
-        LIns* obj = getTmpMapping(irSetArrayObject->objectIndex());
+        LIns* obj = boxESValue(getTmpMapping(irSetArrayObject->objectIndex()) , m_graph->getOperandType(irSetArrayObject->objectIndex()));
         LIns* prop = getTmpMapping(irSetArrayObject->propertyIndex());
         LIns* source = getTmpMapping(irSetArrayObject->sourceIndex());
 
