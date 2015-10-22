@@ -38,7 +38,6 @@ public:
 #else
                 codeBlock->pushCode(InitObject(-1), context, this);
 #endif
-                codeBlock->pushCode(InitObject(), context, this);
             } else if(p->kind() == PropertyNode::Kind::Get) {
                 codeBlock->pushCode(SetObjectPropertyGetter(), context, this);
             } else {

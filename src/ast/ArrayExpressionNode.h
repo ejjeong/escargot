@@ -53,12 +53,6 @@ public:
 #ifdef ENABLE_ESJIT
         m_nodeIndex = arrayIndex;
 #endif
-            if(m_elements[i])
-                m_elements[i]->generateExpressionByteCode(codeBlock, context);
-            else
-                codeBlock->pushCode(Push(ESValue(ESValue::ESEmptyValue)), context, this);
-            codeBlock->pushCode(InitObject(), context, this);
-        }
     }
 protected:
     ExpressionNodeVector m_elements;

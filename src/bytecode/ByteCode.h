@@ -1409,12 +1409,9 @@ public:
         printf("InitObject <>\n");
     }
 #endif
-<<<<<<< HEAD
 #ifdef ENABLE_ESJIT
     int m_arrayIndex;
 #endif
-=======
->>>>>>> parent of ecfc77b... Implement CreateArray and InitObject
 };
 
 class SetObjectPropertySetter : public ByteCode {
