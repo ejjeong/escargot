@@ -431,7 +431,15 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case GetObjectOpcode:
         case GetObjectAndPushObjectOpcode:
         {
-            INIT_BYTECODE(GetObject);
+            GetObject* bytecode = (GetObject*)currentCode;
+            SSAIndex* ssaIndex = codeBlock->getSSAIndex(bytecodeCounter);
+            ASSERT(codeBlock->m_extraData[bytecodeCounter].m_registerIncrementCount < 3);
+            if (codeBlock->m_extraData[bytecodeCounter].m_registerIncrementCount >= 1)
+                graph->setOperandStackPos(ssaIndex->m_targetIndex, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
+            else
+                graph->setOperandStackPos(ssaIndex->m_targetIndex, -1);
+            bytecode->m_profile.updateProfiledType();
+            graph->setOperandType(ssaIndex->m_targetIndex, bytecode->m_profile.getType());
             //graph->setOperandStackPos(ssaIndex->m_targetIndex, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
             bytecode->m_profile.updateProfiledType();
             graph->setOperandType(ssaIndex->m_targetIndex, bytecode->m_profile.getType());
