@@ -534,9 +534,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         }
 
         LIns* args[] = {right, left};
-        LIns* boxedResult = m_out.insCall(&concatTwoStringsCallInfo, args);
-        LIns* unboxedResult = unboxESValue(boxedResult, TypeString);
-        return unboxedResult;
+        return m_out.insCall(&concatTwoStringsCallInfo, args);
     }
     case ESIR::Opcode::GenericPlus:
     {
