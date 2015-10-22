@@ -1,5 +1,6 @@
 test/SunSpider/tests/sunspider-1.0.2/3d-cube.js
 test/SunSpider/tests/sunspider-1.0.2/3d-morph.js
+test/SunSpider/tests/sunspider-1.0.2/3d-raytrace.js
 test/SunSpider/tests/sunspider-1.0.2/access-binary-trees.js
 test/SunSpider/tests/sunspider-1.0.2/access-fannkuch.js
 test/SunSpider/tests/sunspider-1.0.2/access-nbody.js
