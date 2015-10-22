@@ -92,7 +92,9 @@ public:
         }
         if(isPreComputedCase()) {
             ASSERT(m_property->type() == NodeType::Identifier);
+            updateNodeIndex(context);
             codeBlock->pushCode(SetObjectPreComputedCase(((IdentifierNode *)m_property)->name().string()), context, this);
+            WRITE_LAST_INDEX(m_nodeIndex, m_object->nodeIndex(), -1);
         } else {
             updateNodeIndex(context);
             codeBlock->pushCode(SetObject(), context, this);

@@ -46,6 +46,7 @@ CallInfo newOpCallInfo = CI(newOp, CallInfo::typeSig5(ARGTYPE_D, ARGTYPE_P, ARGT
 CallInfo getObjectOpCallInfo = CI(getObjectOp, CallInfo::typeSig3(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D, ARGTYPE_P));
 CallInfo getObjectPreComputedCaseOpCallInfo = CI(getObjectPreComputedCaseOp, CallInfo::typeSig3(ARGTYPE_D, ARGTYPE_D, ARGTYPE_P, ARGTYPE_P));
 CallInfo setObjectOpCallInfo = CI(setObjectOp, CallInfo::typeSig3(ARGTYPE_V, ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
+CallInfo setObjectPreComputedCaseOpCallInfo = CI(setObjectPreComputedOp, CallInfo::typeSig4(ARGTYPE_V, ARGTYPE_D, ARGTYPE_P, ARGTYPE_P, ARGTYPE_D));
 CallInfo ESObjectSetOpCallInfo = CI(ESObjectSetOp, CallInfo::typeSig3(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 CallInfo generateToStringCallInfo = CI(generateToString, CallInfo::typeSig1(ARGTYPE_P, ARGTYPE_D));
 CallInfo concatTwoStringsCallInfo = CI(concatTwoStrings, CallInfo::typeSig2(ARGTYPE_P, ARGTYPE_P, ARGTYPE_P));
@@ -1066,8 +1067,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     case ESIR::Opcode::GetObject:
     {
         INIT_ESIR(GetObject);
-        LIns* obj = getTmpMapping(irGetObject->objectIndex());
-        LIns* property = getTmpMapping(irGetObject->propertyIndex());
+        LIns* obj = boxESValue(getTmpMapping(irGetObject->objectIndex()), m_graph->getOperandType(irGetObject->objectIndex()));
+        LIns* property = boxESValue(getTmpMapping(irGetObject->propertyIndex()), m_graph->getOperandType(irGetObject->propertyIndex()));
         /*
         if (irGetObject->cachedIndex() < SIZE_MAX) {
             size_t gapToHiddenClassData = escargot::ESObject::offsetOfHiddenClassData();
@@ -1089,7 +1090,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_ESIR(GetObjectPreComputed);
         LIns* obj = getTmpMapping(irGetObjectPreComputed->objectIndex());
         LIns* boxedObj = boxESValue(obj, m_graph->getOperandType(irGetObjectPreComputed->objectIndex()));
-        LIns* args[] = {m_out.insImmP(irGetObjectPreComputed), m_globalObject, boxedObj};
+        LIns* args[] = {m_out.insImmP(irGetObjectPreComputed->byteCode()), m_globalObject, boxedObj};
         return m_out.insCall(&getObjectPreComputedCaseOpCallInfo, args);
     }
     case ESIR::Opcode::GetArrayObject:
@@ -1153,13 +1154,23 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     case ESIR::Opcode::SetObject:
     {
         INIT_ESIR(SetObject);
-        LIns* obj = getTmpMapping(irSetObject->objectIndex());
-        LIns* prop = getTmpMapping(irSetObject->propertyIndex());
+        LIns* obj = boxESValue(getTmpMapping(irSetObject->objectIndex()), m_graph->getOperandType(irSetObject->objectIndex()));
+        LIns* prop = boxESValue(getTmpMapping(irSetObject->propertyIndex()), m_graph->getOperandType(irSetObject->propertyIndex()));
         LIns* source = getTmpMapping(irSetObject->sourceIndex());
         LIns* boxedSource = boxESValue(source, m_graph->getOperandType(irSetObject->targetIndex()));
 
         LIns* args[] = {boxedSource, prop, obj};
         m_out.insCall(&setObjectOpCallInfo, args);
+        return source;
+    }
+    case ESIR::Opcode::SetObjectPreComputed:
+    {
+        INIT_ESIR(SetObjectPreComputed);
+        LIns* obj = boxESValue(getTmpMapping(irSetObjectPreComputed->objectIndex()), m_graph->getOperandType(irSetObjectPreComputed->objectIndex()));
+        LIns* source = getTmpMapping(irSetObjectPreComputed->sourceIndex());
+        LIns* boxedSource = boxESValue(source, m_graph->getOperandType(irSetObjectPreComputed->targetIndex()));
+        LIns* args[] = {boxedSource, m_out.insImmP(irSetObjectPreComputed->byteCode()), m_globalObject, obj};
+        m_out.insCall(&setObjectPreComputedCaseOpCallInfo, args);
         return source;
     }
     case ESIR::Opcode::ToNumber:
