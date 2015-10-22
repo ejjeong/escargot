@@ -668,6 +668,15 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                         }
                         break;
                     }
+                    case GetByIndexWithActivationOpcode: {
+                        reinterpret_cast<GetByIndexWithActivation*>(currentCode)->m_profile.updateProfiledType();
+                        if (reinterpret_cast<GetByIndexWithActivation*>(currentCode)->m_profile.getType().isBottomType() ||
+                                reinterpret_cast<GetByIndexWithActivation*>(currentCode)->m_profile.getType().isUndefinedType()) {
+                            compileNextTime = true;
+                            LOG_VJ("> Cannot Compile JIT Function due to GetByIndexWithActivation(idx %u) is not profiled yet\n", (unsigned)idx);
+                        }
+                        break;
+                    }
                     case GetByGlobalIndexOpcode: {
                         reinterpret_cast<GetByGlobalIndex*>(currentCode)->m_profile.updateProfiledType();
                         if (reinterpret_cast<GetByGlobalIndex*>(currentCode)->m_profile.getType().isBottomType() ||

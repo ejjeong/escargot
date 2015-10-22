@@ -16,6 +16,24 @@ inline void setByGlobalIndexOp(GlobalObject* globalObject, SetByGlobalIndex* cod
     setByGlobalIndexOperation(globalObject, code, ESValue::fromRawDouble(v));
 }
 
+inline ESValueInDouble getByIndexWithActivationOp(ExecutionContext* ec, int32_t upCount, int32_t index)
+{
+    LexicalEnvironment* env = ec->environment();
+    for(int i = 0; i < upCount; i ++) {
+        env = env->outerEnvironment();
+    }
+    return ESValue::toRawDouble(*env->record()->toDeclarativeEnvironmentRecord()->bindingValueForActivationMode((unsigned)index));
+}
+
+inline void setByIndexWithActivationOp(ExecutionContext* ec, int32_t upCount, int32_t index, ESValueInDouble val)
+{
+    LexicalEnvironment* env = ec->environment();
+    for(int i = 0; i < upCount; i ++) {
+        env = env->outerEnvironment();
+    }
+    *env->record()->toDeclarativeEnvironmentRecord()->bindingValueForActivationMode((unsigned)index) = ESValue::fromRawDouble(val);
+}
+
 inline ESValueInDouble plusOp(ESValueInDouble left, ESValueInDouble right)
 {
     ESValue leftVal = ESValue::fromRawDouble(left);

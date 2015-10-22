@@ -382,45 +382,49 @@ private:
 
 class GetVarIR : public ESIR {
 public:
-    DECLARE_STATIC_GENERATOR_1(GetVar, int)
+    DECLARE_STATIC_GENERATOR_2(GetVar, int, int)
 
 #ifndef NDEBUG
     virtual void dump(std::ostream& out)
     {
         out << "tmp" << m_targetIndex << ": ";
         ESIR::dump(out);
-        out << " var" << m_varIndex;
+        out << " var" << m_varIndex << " up " << m_varUpIndex;
     }
 #endif
 
     int varIndex() { return m_varIndex; }
+    int varUpIndex() { return m_varUpIndex; }
 
 private:
-    GetVarIR(int targetIndex, int varIndex)
-        : ESIR(ESIR::Opcode::GetVar, targetIndex), m_varIndex(varIndex) { }
+    GetVarIR(int targetIndex, int varIndex, int varUpIndex)
+        : ESIR(ESIR::Opcode::GetVar, targetIndex), m_varIndex(varIndex) , m_varUpIndex(varUpIndex) { }
     int m_varIndex;
+    int m_varUpIndex;
 };
 
 class SetVarIR : public ESIR {
 public:
-    DECLARE_STATIC_GENERATOR_2(SetVar, int, int);
+    DECLARE_STATIC_GENERATOR_3(SetVar, int, int, int);
 
 #ifndef NDEBUG
     virtual void dump(std::ostream& out)
     {
         out << "tmp" << m_targetIndex << ": ";
         ESIR::dump(out);
-        out << " var" << m_localVarIndex << " = tmp" << m_sourceIndex;
+        out << " var" << m_localVarIndex << " (up) " << m_upVarIndex << " = tmp" << m_sourceIndex;
     }
 #endif
 
     int localVarIndex() { return m_localVarIndex; }
+    int upVarIndex() { return m_upVarIndex; }
     int sourceIndex() { return m_sourceIndex; }
 
 private:
-    SetVarIR(int targetIndex, int localVarIndex, int sourceIndex)
-        : ESIR(ESIR::Opcode::SetVar, targetIndex), m_localVarIndex(localVarIndex), m_sourceIndex(sourceIndex) { }
+    SetVarIR(int targetIndex, int localVarIndex, int upVarIndex, int sourceIndex)
+        : ESIR(ESIR::Opcode::SetVar, targetIndex), m_localVarIndex(localVarIndex), m_upVarIndex(upVarIndex), m_sourceIndex(sourceIndex) { }
     int m_localVarIndex;
+    int m_upVarIndex;
     int m_sourceIndex;
 };
 

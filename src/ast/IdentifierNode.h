@@ -44,7 +44,9 @@ public:
                     codeBlock->peekCode<GetByIndex>(codeBlock->lastCodePosition<GetByIndex>())->m_name = m_name;
 #endif
                 } else {
+                    updateNodeIndex(context);
                     codeBlock->pushCode(GetByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), context, this);
+                    WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
 #ifndef NDEBUG
                     codeBlock->peekCode<GetByIndexWithActivation>(codeBlock->lastCodePosition<GetByIndexWithActivation>())->m_name = m_name;
 #endif
@@ -82,9 +84,7 @@ public:
                 codeBlock->pushCode(SetByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), context, this);
             } else {
                 if(m_fastAccessUpIndex == 0) {
-//                    updateNodeIndex(context);
                     codeBlock->pushCode(SetByIndex(m_fastAccessIndex), context, this);
-//                    WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
                 } else
                     codeBlock->pushCode(SetByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), context, this);
             }

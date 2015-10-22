@@ -29,12 +29,12 @@ class CodeBlock;
     F(GetByIdWithoutException, 1, 0, 0) \
     F(GetByIndex, 1, 0, 1) \
     F(GetByGlobalIndex, 1, 0, 1) \
-    F(GetByIndexWithActivation, 1, 0, 0) \
+    F(GetByIndexWithActivation, 1, 0, 1) \
     F(GetArgumentsObject, 1, 0, 0) \
     F(SetById, 0, 0, 1) \
     F(SetByIndex, 0, 0, 1) \
     F(SetByGlobalIndex, 0, 0, 1) \
-    F(SetByIndexWithActivation, 0, 0, 0) \
+    F(SetByIndexWithActivation, 0, 0, 1) \
     F(SetArgumentsObject, 0, 0, 0) \
     F(CreateBinding, 0, 0, 0) \
 \
@@ -641,6 +641,9 @@ public:
     {
         printf("GetByIndexWithActivation <%s, %u, %u>\n", m_name->utf8Data(), (unsigned)m_index, (unsigned)m_upIndex);
     }
+#endif
+#ifdef ENABLE_ESJIT
+    ProfileData m_profile;
 #endif
 };
 

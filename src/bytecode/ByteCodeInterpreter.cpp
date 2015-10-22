@@ -143,9 +143,12 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         GetByIndex* code = (GetByIndex*)currentCode;
         ASSERT(code->m_index < ec->environment()->record()->toDeclarativeEnvironmentRecord()->innerIdentifiers()->size());
+#ifndef ENABLE_ESJIT
         push<ESValue>(stack, topOfStack, &nonActivitionModeLocalValuePointer[code->m_index]);
-#ifdef ENABLE_ESJIT
-        code->m_profile.addProfile(nonActivitionModeLocalValuePointer[code->m_index]);
+#else
+        ESValue v = nonActivitionModeLocalValuePointer[code->m_index];
+        push<ESValue>(stack, topOfStack, v);
+        code->m_profile.addProfile(v);
 #endif
         executeNextCode<GetByIndex>(programCounter);
         NEXT_INSTRUCTION();
@@ -159,7 +162,14 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             env = env->outerEnvironment();
         }
         ASSERT(env->record()->isDeclarativeEnvironmentRecord());
+
+#ifndef ENABLE_ESJIT
         push<ESValue>(stack, topOfStack, env->record()->toDeclarativeEnvironmentRecord()->bindingValueForActivationMode(code->m_index));
+#else
+        ESValue v = *env->record()->toDeclarativeEnvironmentRecord()->bindingValueForActivationMode(code->m_index);
+        push<ESValue>(stack, topOfStack, v);
+        code->m_profile.addProfile(v);
+#endif
         executeNextCode<GetByIndexWithActivation>(programCounter);
         NEXT_INSTRUCTION();
     }

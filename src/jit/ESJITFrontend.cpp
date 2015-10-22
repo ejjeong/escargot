@@ -141,7 +141,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
                 ESIR* getArgument = GetArgumentIR::create(ssaIndex->m_targetIndex, bytecode->m_index);
                 currentBlock->push(getArgument);
             } else {
-                ESIR* getVar = GetVarIR::create(ssaIndex->m_targetIndex, bytecode->m_index);
+                ESIR* getVar = GetVarIR::create(ssaIndex->m_targetIndex, bytecode->m_index, 0);
                 currentBlock->push(getVar);
             }
             bytecode->m_profile.updateProfiledType();
@@ -150,9 +150,16 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         }
         case GetByIndexWithActivationOpcode:
-            goto unsupported;
+        {
+            INIT_BYTECODE(GetByIndexWithActivation);
+            graph->setOperandStackPos(ssaIndex->m_targetIndex, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
+            ESIR* getVar = GetVarIR::create(ssaIndex->m_targetIndex, bytecode->m_index, bytecode->m_upIndex);
+            currentBlock->push(getVar);
+            bytecode->m_profile.updateProfiledType();
+            graph->setOperandType(ssaIndex->m_targetIndex, bytecode->m_profile.getType());
             NEXT_BYTECODE(GetByIndexWithActivation);
             break;
+        }
         case SetByIdOpcode:
         {
             INIT_BYTECODE(SetById);
@@ -166,9 +173,18 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         {
             INIT_BYTECODE(SetByIndex);
             graph->setOperandStackPos(ssaIndex->m_targetIndex, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
-            ESIR* setVar = SetVarIR::create(ssaIndex->m_targetIndex, bytecode->m_index, ssaIndex->m_srcIndex1);
+            ESIR* setVar = SetVarIR::create(ssaIndex->m_targetIndex, bytecode->m_index, 0, ssaIndex->m_srcIndex1);
             currentBlock->push(setVar);
             NEXT_BYTECODE(SetByIndex);
+            break;
+        }
+        case SetByIndexWithActivationOpcode:
+        {
+            INIT_BYTECODE(SetByIndexWithActivation);
+            graph->setOperandStackPos(ssaIndex->m_targetIndex, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
+            ESIR* setVar = SetVarIR::create(ssaIndex->m_targetIndex, bytecode->m_index, bytecode->m_upIndex, ssaIndex->m_srcIndex1);
+            currentBlock->push(setVar);
+            NEXT_BYTECODE(SetByIndexWithActivation);
             break;
         }
         case SetByGlobalIndexOpcode:
@@ -180,10 +196,6 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(SetByGlobalIndex);
             break;
         }
-        case SetByIndexWithActivationOpcode:
-            goto unsupported;
-            NEXT_BYTECODE(SetByIndexWithActivation);
-            break;
         case SetObjectOpcode:
         {
             INIT_BYTECODE(SetObject);
