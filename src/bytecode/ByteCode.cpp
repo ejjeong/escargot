@@ -198,13 +198,17 @@ void dumpUnsupported(CodeBlock* block)
     size_t bytecodeCounter = 0;
     char* code = block->m_code.data();
     char* end = &block->m_code.data()[block->m_code.size()];
+    std::map<std::string, size_t> names;
     while(&code[idx] < end) {
         Opcode opcode = block->m_extraData[bytecodeCounter].m_opcode;
         switch(opcode) {
         #define DECLARE_EXECUTE_NEXTCODE(opcode, pushCount, popCount, JITSupported) \
         case opcode##Opcode: \
-            if (!JITSupported) \
-                printf("%s ", #opcode); \
+            if (!JITSupported) { \
+                auto result = names.insert(std::pair<std::string, size_t>(std::string(#opcode), 1)); \
+                if (!result.second) \
+                    names[std::string(#opcode)]++; \
+            } \
             idx += sizeof (opcode); \
             bytecodeCounter++; \
             break;
@@ -214,6 +218,8 @@ void dumpUnsupported(CodeBlock* block)
             break;
         }
     }
+    for (auto it=names.begin(); it!=names.end(); ++it)
+        std::cout << it->first << "(" << it->second << ") ";
     printf("\n");
 }
 #endif
