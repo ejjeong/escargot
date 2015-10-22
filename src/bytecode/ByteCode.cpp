@@ -126,7 +126,7 @@ case code##Opcode: \
 void dumpBytecode(CodeBlock* codeBlock)
 {
     printf("dumpBytecode...>>>>>>>>>>>>>>>>>>>>>>\n");
-    printf("function %s (%p)\n", codeBlock->m_nonAtomicId ? (codeBlock->m_nonAtomicId->utf8Data()):"(anonymous)", codeBlock);
+    printf("function %s (codeBlock %p)\n", codeBlock->m_nonAtomicId ? (codeBlock->m_nonAtomicId->utf8Data()):"(anonymous)", codeBlock);
     size_t idx = 0;
     size_t bytecodeCounter = 0;
 #ifdef ENABLE_ESJIT

@@ -639,7 +639,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
 #endif
             ESJIT::JITFunction jitFunction = fn->codeBlock()->m_cachedJITFunction;
             if (!jitFunction && !fn->codeBlock()->m_dontJIT && fn->codeBlock()->m_executeCount >= fn->codeBlock()->m_threshold) {
-                LOG_VJ("==========Trying JIT Compile for function %s...==========\n", functionName);
+                LOG_VJ("==========Trying JIT Compile for function %s... (codeBlock %p)==========\n", functionName, fn->codeBlock());
                 size_t idx = 0;
                 size_t bytecodeCounter = 0;
                 char* code = fn->codeBlock()->m_code.data();
@@ -725,7 +725,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                 if (!compileNextTime) {
                     jitFunction = reinterpret_cast<ESJIT::JITFunction>(ESJIT::JITCompile(fn->codeBlock(), instance));
                     if (jitFunction) {
-                        LOG_VJ("> Compilation successful for function %s! Cache jit function %p\n", functionName, jitFunction);
+                        LOG_VJ("> Compilation successful for function %s (codeBlock %p)! Cache jit function %p\n", functionName, fn->codeBlock(), jitFunction);
 #ifndef NDEBUG
                         if (ESVMInstance::currentInstance()->m_reportCompiledFunction) {
                             if (ESVMInstance::currentInstance()->m_compiledFunctions == 0) {
@@ -737,7 +737,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
 #endif
                         fn->codeBlock()->m_cachedJITFunction = jitFunction;
                     } else {
-                        LOG_VJ("> Compilation failed! disable jit compilation for function %s from now on\n", functionName);
+                        LOG_VJ("> Compilation failed! disable jit compilation for function %s (codeBlock %p) from now on\n", functionName, fn->codeBlock());
                         fn->codeBlock()->m_dontJIT = true;
                     }
                 } else {
