@@ -2334,19 +2334,10 @@ ALWAYS_INLINE Type* peek(void* stk, void* bp)
 template <typename Type>
 ALWAYS_INLINE void sub(void*& stk, void* bp, size_t offsetToBasePointer)
 {
-
-#ifndef NDEBUG
-    if(((size_t)stk) - offsetToBasePointer * (sizeof(Type) + sizeof(size_t)) < ((size_t)bp)) {
-              ASSERT_NOT_REACHED();
-    }
-    stk = (void *)(((size_t)stk) - offsetToBasePointer * (sizeof(Type) + sizeof(size_t)));
-#else
     if(((size_t)stk) - offsetToBasePointer * sizeof(Type) < ((size_t)bp)) {
             ASSERT_NOT_REACHED();
     }
     stk = (void *)(((size_t)stk) - offsetToBasePointer * sizeof(Type));
-#endif
-
 }
 
 template <typename CodeType>
