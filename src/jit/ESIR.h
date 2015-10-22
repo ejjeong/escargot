@@ -95,7 +95,7 @@ class ESBasicBlock;
     F(AllocPhi, ) \
     F(StorePhi, ) \
     F(LoadPhi, ) \
-    F(CreateArray, LoadFromHeap) \
+    F(CreateArray, ReturnsESValue) \
     F(InitObject, ) \
     \
     /* For-in statement */ \
