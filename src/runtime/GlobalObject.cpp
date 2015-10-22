@@ -321,6 +321,9 @@ void GlobalObject::installFunction()
             codeBlock->m_params = std::move(functionDeclAST->params());
             codeBlock->m_isStrict = functionDeclAST->isStrict();
             functionDeclAST->body()->generateStatementByteCode(codeBlock, context);
+#ifdef ENABLE_ESJIT
+            codeBlock->m_tempRegisterSize = context.getCurrentNodeIndex();
+#endif
             codeBlock->pushCode(ReturnFunction(), context, functionDeclAST);
 #ifdef ENABLE_ESJIT
             context.dumpCurrentNodeIndex();
@@ -427,6 +430,11 @@ void GlobalObject::installFunction()
         ESObject* prototype = ESObject::create();
         prototype->set__proto__(instance->globalObject()->object()->protoType());
         function->setProtoType(prototype);
+
+// TODO : Check Seong-Hyun
+// #ifdef ENABLE_ESJIT
+//         cb->m_dontJIT = true;
+// #endif
 #ifdef ENABLE_ESJIT
         context.dumpCurrentNodeIndex();
 #endif
