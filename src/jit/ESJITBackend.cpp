@@ -478,7 +478,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     case ESIR::Opcode::ConstantESValue:
     {
         INIT_ESIR(ConstantESValue);
-        return m_out.insImmQ(ESValue::toRawDouble(irConstantESValue->value()));
+        return m_out.insImmQ(irConstantESValue->value().asRawData());
     }
     case ESIR::Opcode::ConstantInt:
     {
