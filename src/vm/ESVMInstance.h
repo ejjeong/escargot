@@ -134,12 +134,10 @@ public:
 #ifndef NDEBUG
     bool m_dumpByteCode;
     bool m_dumpExecuteByteCode;
-    bool m_validateJIT;
     bool m_verboseJIT;
     bool m_reportUnsupportedOpcode;
     bool m_reportCompiledFunction;
     bool m_useLirWriter;
-    bool m_useValidateWriter;
     bool m_useVerboseWriter;
     bool m_useExprFilter;
     bool m_useCseFilter;

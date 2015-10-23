@@ -110,11 +110,11 @@ NativeGenerator::NativeGenerator(ESGraph* graph)
         m_lc.lcbits = 0;
     m_buf->printer = new LInsPrinter(*m_alloc, 1);
 
-    // Writer Pipeline
+    // Default Writer Pipeline
+    m_out = new ValidateWriter(m_out, m_buf->printer, "[validate]");
+    // Selectable Writer Pipeline
     if (ESVMInstance::currentInstance()->m_useLirWriter)
         m_out = new LirWriter(m_out);
-    if (ESVMInstance::currentInstance()->m_useValidateWriter)
-        m_out = new ValidateWriter(m_out, m_buf->printer, "[validate]");
     if (ESVMInstance::currentInstance()->m_useVerboseWriter)
         m_out = new VerboseWriter(*m_alloc, m_out, m_buf->printer, &m_lc, "[verbose]");
     if (ESVMInstance::currentInstance()->m_useExprFilter)
