@@ -35,6 +35,7 @@ class ESBasicBlock;
     F(StringPlus, ) \
     F(GenericPlus, ReturnsESValue) \
     F(Increment, ) \
+    F(Decrement, ) \
     F(Minus, ) \
     F(Int32Multiply, ) \
     F(DoubleMultiply, ) \
@@ -971,6 +972,15 @@ public:
 private:
     IncrementIR(int targetIndex, int sourceIndex)
         : UnaryExpressionIR(ESIR::Opcode::Increment, targetIndex, sourceIndex) { }
+};
+
+class DecrementIR : public UnaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_1(Decrement, int);
+
+private:
+    DecrementIR(int targetIndex, int sourceIndex)
+        : UnaryExpressionIR(ESIR::Opcode::Decrement, targetIndex, sourceIndex) { }
 };
 
 class BitwiseNotIR : public UnaryExpressionIR {

@@ -411,9 +411,13 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         }
         case DecrementOpcode:
-            goto unsupported;
+        {
+            INIT_BYTECODE(Decrement);
+            ESIR* decrementIR = DecrementIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1);
+            currentBlock->push(decrementIR);
             NEXT_BYTECODE(Decrement);
             break;
+        }
         case CreateObjectOpcode:
             goto unsupported;
             NEXT_BYTECODE(CreateObject);

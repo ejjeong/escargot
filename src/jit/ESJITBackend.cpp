@@ -1283,15 +1283,28 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     case ESIR::Opcode::Increment:
     {
         INIT_ESIR(Increment);
-        LIns* source = getTmpMapping(irIncrement->sourceIndex());
-        Type srcType = m_graph->getOperandType(irIncrement->sourceIndex());
-        if (srcType.isInt32Type()) {
+        INIT_UNARY_ESIR(Increment);
+        if (valueType.isInt32Type()) {
             LIns* one = m_out->insImmI(1);
-            LIns* ret = m_out->ins2(LIR_addi, source, one);
+            LIns* ret = m_out->ins2(LIR_addi, value, one);
             return ret;
-        } else if (srcType.isDoubleType()) {
+        } else if (valueType.isDoubleType()) {
             LIns* one = m_out->insImmD(1);
-            return m_out->ins2(LIR_addd, source, one);
+            return m_out->ins2(LIR_addd, value, one);
+        } else
+            return nullptr;
+    }
+    case ESIR::Opcode::Decrement:
+    {
+        INIT_ESIR(Decrement);
+        INIT_UNARY_ESIR(Decrement);
+        if (valueType.isInt32Type()) {
+            LIns* one = m_out->insImmI(1);
+            LIns* ret = m_out->ins2(LIR_subi, value, one);
+            return ret;
+        } else if (valueType.isDoubleType()) {
+            LIns* one = m_out->insImmD(1);
+            return m_out->ins2(LIR_subd, value, one);
         } else
             return nullptr;
     }
@@ -1311,12 +1324,11 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     case ESIR::Opcode::UnaryMinus:
     {
         INIT_ESIR(UnaryMinus);
-        LIns* source = getTmpMapping(irUnaryMinus->sourceIndex());
-        Type srcType = m_graph->getOperandType(irUnaryMinus->sourceIndex());
-        if (srcType.isInt32Type())
-            return m_out->ins1(LIR_negi, source);
-        else if (srcType.isDoubleType())
-            return m_out->ins1(LIR_negd, source);
+        INIT_UNARY_ESIR(UnaryMinus);
+        if (valueType.isInt32Type())
+            return m_out->ins1(LIR_negi, value);
+        else if (valueType.isDoubleType())
+            return m_out->ins1(LIR_negd, value);
         else
             return nullptr;
     }
