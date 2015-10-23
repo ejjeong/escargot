@@ -535,7 +535,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* args[] = {boxedRight, boxedLeft}; \
         LIns* boxedResult = m_out->insCall(&callInfo, args); \
         Type expectedType = m_graph->getOperandType(ir##opcode->m_targetIndex); \
-        LIns* result = unboxESValue(boxedResult, expectedType);
+        LIns* unboxedResult = unboxESValue(boxedResult, expectedType);
     #define INIT_UNARY_ESIR(opcode) \
         Type valueType = m_graph->getOperandType(ir##opcode->sourceIndex()); \
         LIns* value = getTmpMapping(ir##opcode->sourceIndex());
@@ -544,7 +544,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* args[] = {boxedValue}; \
         LIns* boxedResult = m_out->insCall(&callInfo, args); \
         Type expectedType = m_graph->getOperandType(ir##opcode->m_targetIndex); \
-        LIns* result = unboxESValue(boxedResult, expectedType);
+        LIns* unboxedResult = unboxESValue(boxedResult, expectedType);
     case ESIR::Opcode::Int32Plus:
     {
         INIT_ESIR(Int32Plus);
@@ -600,11 +600,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     case ESIR::Opcode::Minus:
     {
         INIT_ESIR(Minus);
-        Type leftType = m_graph->getOperandType(irMinus->leftIndex());
-        Type rightType = m_graph->getOperandType(irMinus->rightIndex());
-
-        LIns* left = getTmpMapping(irMinus->leftIndex());
-        LIns* right = getTmpMapping(irMinus->rightIndex());
+        INIT_BINARY_ESIR(Minus);
 
         if (leftType.isInt32Type() && rightType.isInt32Type())
             return m_out->ins2(LIR_subi, left, right);
@@ -717,10 +713,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     case ESIR::Opcode::BitwiseAnd:
     {
         INIT_ESIR(BitwiseAnd);
-        LIns* left = getTmpMapping(irBitwiseAnd->leftIndex());
-        LIns* right = getTmpMapping(irBitwiseAnd->rightIndex());
-        Type leftType = m_graph->getOperandType(irBitwiseAnd->leftIndex());
-        Type rightType = m_graph->getOperandType(irBitwiseAnd->rightIndex());
+        INIT_BINARY_ESIR(BitwiseAnd);
         if (leftType.isInt32Type() && rightType.isInt32Type())
             return m_out->ins2(LIR_andi, left, right);
         else {
@@ -740,7 +733,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             return m_out->ins2(LIR_ori, left, right);
         } else {
             CALL_BINARY_ESIR(BitwiseOr, bitwiseOrOpCallInfo);
-            return result;
+            return unboxedResult;
         }
     }
     case ESIR::Opcode::BitwiseXor:
@@ -755,16 +748,13 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             return m_out->ins2(LIR_xori, left, right);
         } else {
             CALL_BINARY_ESIR(BitwiseXor, bitwiseXorOpCallInfo);
-            return result;
+            return unboxedResult;
         }
     }
     case ESIR::Opcode::Equal:
     {
         INIT_ESIR(Equal);
-        LIns* left = getTmpMapping(irEqual->leftIndex());
-        LIns* right = getTmpMapping(irEqual->rightIndex());
-        Type leftType = m_graph->getOperandType(irEqual->leftIndex());
-        Type rightType = m_graph->getOperandType(irEqual->rightIndex());
+        INIT_BINARY_ESIR(Equal);
         bool isLeftUndefinedOrNull = leftType.isNullType() || leftType.isUndefinedType();
         bool isRightUndefinedOrNull = rightType.isNullType() || rightType.isUndefinedType();
         if (leftType.isInt32Type() && rightType.isInt32Type())
@@ -774,22 +764,14 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         else if (isLeftUndefinedOrNull || isRightUndefinedOrNull)
             return m_false;
         else {
-            LIns* boxedLeft = boxESValue(left, leftType);
-            LIns* boxedRight = boxESValue(right, rightType);
-            LIns* args[] = {boxedRight, boxedLeft};
-            LIns* boxedResult = m_out->insCall(&equalOpCallInfo, args);
-            LIns* unboxedResult = unboxESValue(boxedResult, TypeBoolean);
+            CALL_BINARY_ESIR(Equal, equalOpCallInfo);
             return unboxedResult;
         }
     }
     case ESIR::Opcode::GreaterThan:
     {
         INIT_ESIR(GreaterThan);
-        LIns* left = getTmpMapping(irGreaterThan->leftIndex());
-        LIns* right = getTmpMapping(irGreaterThan->rightIndex());
-        Type leftType = m_graph->getOperandType(irGreaterThan->leftIndex());
-        Type rightType = m_graph->getOperandType(irGreaterThan->rightIndex());
-
+        INIT_BINARY_ESIR(GreaterThan);
         if (leftType.isNumberType() && rightType.isNumberType()) {
             if (leftType.isInt32Type() && rightType.isInt32Type())
                 return m_out->ins2(LIR_gti, left, right);
@@ -811,10 +793,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     case ESIR::Opcode::GreaterThanOrEqual:
     {
         INIT_ESIR(GreaterThanOrEqual);
-        LIns* left = getTmpMapping(irGreaterThanOrEqual->leftIndex());
-        LIns* right = getTmpMapping(irGreaterThanOrEqual->rightIndex());
-        Type leftType = m_graph->getOperandType(irGreaterThanOrEqual->leftIndex());
-        Type rightType = m_graph->getOperandType(irGreaterThanOrEqual->rightIndex());
+        INIT_BINARY_ESIR(GreaterThanOrEqual);
         if (leftType.isInt32Type() && rightType.isInt32Type())
             return m_out->ins2(LIR_gei, left, right);
         else
@@ -823,10 +802,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     case ESIR::Opcode::LessThan:
     {
         INIT_ESIR(LessThan);
-        LIns* left = getTmpMapping(irLessThan->leftIndex());
-        LIns* right = getTmpMapping(irLessThan->rightIndex());
-        Type leftType = m_graph->getOperandType(irLessThan->leftIndex());
-        Type rightType = m_graph->getOperandType(irLessThan->rightIndex());
+        INIT_BINARY_ESIR(LessThan);
         if (leftType.isInt32Type() && rightType.isInt32Type())
             return m_out->ins2(LIR_lti, left, right);
         else if (leftType.isNumberType() && rightType.isNumberType()) {
@@ -839,21 +815,14 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         else if (leftType.isUndefinedType() || rightType.isUndefinedType())
             return m_false;
         else {
-            LIns* boxedLeft = boxESValue(left, leftType);
-            LIns* boxedRight = boxESValue(right, rightType);
-            LIns* args[] = {boxedRight, boxedLeft};
-            LIns* boxedResult = m_out->insCall(&lessThanOpCallInfo, args);
-            LIns* unboxedResult = unboxESValue(boxedResult, TypeBoolean);
+            CALL_BINARY_ESIR(LessThan, lessThanOpCallInfo);
             return unboxedResult;
         }
     }
     case ESIR::Opcode::LessThanOrEqual:
     {
         INIT_ESIR(LessThanOrEqual);
-        LIns* left = getTmpMapping(irLessThanOrEqual->leftIndex());
-        LIns* right = getTmpMapping(irLessThanOrEqual->rightIndex());
-        Type leftType = m_graph->getOperandType(irLessThanOrEqual->leftIndex());
-        Type rightType = m_graph->getOperandType(irLessThanOrEqual->rightIndex());
+        INIT_BINARY_ESIR(LessThanOrEqual);
         if (leftType.isInt32Type() && rightType.isInt32Type())
             return m_out->ins2(LIR_lei, left, right);
         else
@@ -862,15 +831,12 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     case ESIR::Opcode::LeftShift:
     {
         INIT_ESIR(LeftShift);
-        LIns* left = getTmpMapping(irLeftShift->leftIndex());
-        LIns* right = getTmpMapping(irLeftShift->rightIndex());
-        Type leftType = m_graph->getOperandType(irLeftShift->leftIndex());
-        Type rightType = m_graph->getOperandType(irLeftShift->rightIndex());
+        INIT_BINARY_ESIR(LeftShift);
         if (leftType.isInt32Type() && rightType.isInt32Type())
             return m_out->ins2(LIR_lshi, left, right);
         else {
             CALL_BINARY_ESIR(LeftShift, leftShiftOpCallInfo);
-            return result;
+            return unboxedResult;
         }
     }
     case ESIR::Opcode::SignedRightShift:
@@ -886,7 +852,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         }
         else {
             CALL_BINARY_ESIR(SignedRightShift, signedRightShiftOpCallInfo);
-            return result;
+            return unboxedResult;
         }
     }
     case ESIR::Opcode::UnsignedRightShift:
@@ -902,7 +868,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         }
         else {
             CALL_BINARY_ESIR(UnsignedRightShift, unsignedRightShiftOpCallInfo);
-            return result;
+            return unboxedResult;
         }
     }
     case ESIR::Opcode::Jump:
@@ -1309,7 +1275,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             return m_out->ins1(LIR_noti, m_out->ins1(LIR_d2i, value));
         else {
             CALL_UNARY_ESIR(BitwiseNot, bitwiseNotOpCallInfo);
-            return result;
+            return unboxedResult;
         }
     }
     case ESIR::Opcode::UnaryMinus:
