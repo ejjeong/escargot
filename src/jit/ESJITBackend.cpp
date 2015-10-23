@@ -1247,6 +1247,20 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         } else
             return nullptr;
     }
+    case ESIR::Opcode::BitwiseNot:
+    {
+        INIT_ESIR(BitwiseNot);
+        LIns* source = getTmpMapping(irBitwiseNot->sourceIndex());
+        Type srcType = m_graph->getOperandType(irBitwiseNot->sourceIndex());
+        if (srcType.isInt32Type())
+            return m_out->ins1(LIR_noti, source);
+        if (srcType.isDoubleType())
+            return m_out->ins1(LIR_noti, m_out->ins1(LIR_d2i, source));
+        else {
+            // TODO : call function to handle non-number cases
+            return nullptr;
+        }
+    }
     case ESIR::Opcode::UnaryMinus:
     {
         INIT_ESIR(UnaryMinus);

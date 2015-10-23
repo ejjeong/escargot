@@ -44,8 +44,8 @@ class CodeBlock;
     F(StrictEqual, 1, 2, 0) \
     F(NotStrictEqual, 1, 2, 0) \
     F(BitwiseAnd, 1, 2, 1) \
-    F(BitwiseOr, 1, 2, 0) \
-    F(BitwiseXor, 1, 2, 0) \
+    F(BitwiseOr, 1, 2, 1) \
+    F(BitwiseXor, 1, 2, 1) \
     F(LeftShift, 1, 2, 1) \
     F(SignedRightShift, 1, 2, 1) \
     F(UnsignedRightShift, 1, 2, 0) \
@@ -62,7 +62,7 @@ class CodeBlock;
     F(InstanceOf, 1, 2, 0) \
 \
     /*unary expressions*/ \
-    F(BitwiseNot, 1, 1, 0) \
+    F(BitwiseNot, 1, 1, 1) \
     F(LogicalNot, 1, 1, 0) \
     F(UnaryMinus, 1, 1, 1) \
     F(UnaryPlus, 1, 1, 0) \

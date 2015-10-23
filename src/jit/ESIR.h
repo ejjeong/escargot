@@ -868,7 +868,6 @@ private:
         : BinaryExpressionIR(ESIR::Opcode::BitwiseXor, targetIndex, leftIndex, rightIndex) { }
 };
 
-
 class EqualIR : public BinaryExpressionIR {
 public:
     DECLARE_STATIC_GENERATOR_2(Equal, int, int);
@@ -958,6 +957,15 @@ public:
 private:
     IncrementIR(int targetIndex, int sourceIndex)
         : UnaryExpressionIR(ESIR::Opcode::Increment, targetIndex, sourceIndex) { }
+};
+
+class BitwiseNotIR : public UnaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_1(BitwiseNot, int);
+
+private:
+    BitwiseNotIR(int targetIndex, int sourceIndex)
+        : UnaryExpressionIR(ESIR::Opcode::BitwiseNot, targetIndex, sourceIndex) { }
 };
 
 class UnaryMinusIR : public UnaryExpressionIR {

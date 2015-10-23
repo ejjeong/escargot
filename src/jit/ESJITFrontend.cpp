@@ -370,9 +370,13 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(StringIn);
             break;
         case BitwiseNotOpcode:
-            goto unsupported;
+        {
+            INIT_BYTECODE(BitwiseNot);
+            ESIR* bitwiseNotIR = BitwiseNotIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1);
+            currentBlock->push(bitwiseNotIR);
             NEXT_BYTECODE(BitwiseNot);
             break;
+        }
         case LogicalNotOpcode:
             goto unsupported;
             NEXT_BYTECODE(LogicalNot);
