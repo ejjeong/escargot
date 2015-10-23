@@ -24,7 +24,11 @@ public:
     {
         m_left->generateResolveAddressByteCode(codeBlock, context);
         m_right->generateExpressionByteCode(codeBlock, context);
+#ifndef ENABLE_ESJIT
+        m_left->generatePutByteCode(codeBlock, context);
+#else
         m_left->generatePutByteCode(codeBlock, context, m_right->nodeIndex());
+#endif
         if (m_left->type() == escargot::NodeType::Identifier) {
             m_left->updateNodeIndex(context);
 #ifdef ENABLE_ESJIT
