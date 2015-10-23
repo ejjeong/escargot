@@ -608,9 +608,31 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         }
         case JumpIfTopOfStackValueIsTrueOpcode:
-            goto unsupported;
+        {
+            INIT_BYTECODE(JumpIfTopOfStackValueIsTrue);
+
+            std::map<int, ESBasicBlock*>::iterator findIter;
+            ESBasicBlock* trueBlock, *falseBlock;
+            if((findIter = basicBlockMapping.find(idx + sizeof(JumpIfTopOfStackValueIsTrue))) != basicBlockMapping.end()) {
+                falseBlock = basicBlockMapping[idx + sizeof(JumpIfTopOfStackValueIsTrue)];
+            } else {
+                falseBlock = ESBasicBlock::create(graph, currentBlock);
+                basicBlockMapping[idx + sizeof(JumpIfTopOfStackValueIsTrue)] = falseBlock;
+            }
+
+            if((findIter = basicBlockMapping.find(bytecode->m_jumpPosition)) != basicBlockMapping.end()) {
+                trueBlock = basicBlockMapping[bytecode->m_jumpPosition];
+            } else {
+                trueBlock = ESBasicBlock::create(graph, currentBlock, true);
+                basicBlockMapping[bytecode->m_jumpPosition] = trueBlock;
+            }
+
+            BranchIR* branchIR = BranchIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, trueBlock, falseBlock);
+            currentBlock->push(branchIR);
+
             NEXT_BYTECODE(JumpIfTopOfStackValueIsTrue);
             break;
+        }
         case JumpIfTopOfStackValueIsFalseWithPeekingOpcode:
             goto unsupported;
             NEXT_BYTECODE(JumpIfTopOfStackValueIsFalseWithPeeking);

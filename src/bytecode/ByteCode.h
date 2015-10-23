@@ -111,7 +111,7 @@ class CodeBlock;
     F(Jump, 0, 0, 1) \
     F(JumpComplexCase, 0, 0, 0) \
     F(JumpIfTopOfStackValueIsFalse, 0, 1, 1) \
-    F(JumpIfTopOfStackValueIsTrue, 0, 1, 0) \
+    F(JumpIfTopOfStackValueIsTrue, 0, 1, 1) \
     F(JumpAndPopIfTopOfStackValueIsTrue, 0, 1, 1) \
     F(JumpIfTopOfStackValueIsFalseWithPeeking, 0, 0, 0) \
     F(JumpIfTopOfStackValueIsTrueWithPeeking, 0, 0, 1) \

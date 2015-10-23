@@ -19,12 +19,16 @@ public:
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         ByteCodeGenerateContext newContext(context);
+#ifdef ENABLE_ESJIT
+        codeBlock->pushCode(LoopStart(), newContext, this);
+#endif
         size_t doStart = codeBlock->currentCodeSize();
         m_body->generateStatementByteCode(codeBlock, newContext);
 
         size_t testPos = codeBlock->currentCodeSize();
         m_test->generateExpressionByteCode(codeBlock, newContext);
         codeBlock->pushCode(JumpIfTopOfStackValueIsTrue(doStart), newContext, this);
+        WRITE_LAST_INDEX(-1, m_test->nodeIndex(), -1);
 
         size_t doEnd = codeBlock->currentCodeSize();
 
