@@ -216,7 +216,7 @@ check-jit:
 	vimdiff compiledFunctions.txt originalCompiledFunctions.txt
 
 tidy:
-	python check_code_policy.py `find ./src/ -name "*.cpp" -o -name "*.h"`
+	./tools/check-webkit-style `find src/ -name "*.cpp" -o -name "*.h"`> error_report 2>& 1
 
 # Targets : benchmarks
 
