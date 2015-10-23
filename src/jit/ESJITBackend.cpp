@@ -1361,6 +1361,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(InitObject);
         LIns* obj = getTmpMapping(irInitObject->objectIndex());
+        if (obj->isI())
+            obj = m_out->ins1(LIR_i2q, obj);
         LIns* key = getTmpMapping(irInitObject->keyIndex());
         LIns* source = getTmpMapping(irInitObject->sourceIndex());
         Type srcType = m_graph->getOperandType(irInitObject->sourceIndex());
@@ -1382,10 +1384,11 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         jf2->setTarget(label2);
         LIns* ESValueSize = m_out->insImmI(sizeof(ESValue));
         LIns* offset = m_out->ins2(LIR_muli, key, ESValueSize);
-        LIns* vectorData = m_out->insLoad(LIR_ldd, obj, ESArrayObject::offsetOfVectorData(), 1, LOAD_NORMAL);
-        LIns* valuePtr = m_out->ins2(LIR_addd, vectorData, offset);
+        LIns* offsetP = m_out->ins1(LIR_i2q, offset);
+        LIns* vectorData = m_out->insLoad(LIR_ldp, obj, ESArrayObject::offsetOfVectorData(), 1, LOAD_NORMAL);
+        LIns* valuePtr = m_out->ins2(LIR_addp, vectorData, offsetP);
         LIns* asInt32 = m_out->insLoad(LIR_ldq, valuePtr, ESValue::offsetOfAsInt64(), 1, LOAD_NORMAL);
-        LIns* checkEmptyValue = m_out->ins2(LIR_eqi, asInt32, m_zeroQ);
+        LIns* checkEmptyValue = m_out->ins2(LIR_eqq, asInt32, m_zeroQ);
         LIns* jf3 = m_out->insBranch(LIR_jt, checkEmptyValue, nullptr);
         JIT_LOG(key, "InitObject: NonEmptyValue ");
 
@@ -1397,7 +1400,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 
         LIns* boxedSrc = boxESValue(source, srcType);
         LIns* offset1 = m_out->ins2(LIR_muli, key, ESValueSize);
-        LIns* valuePtr1 = m_out->ins2(LIR_addd, vectorData, offset1);
+        LIns* offset1P = m_out->ins1(LIR_i2q, offset1);
+        LIns* valuePtr1 = m_out->ins2(LIR_addq, vectorData, offset1P);
         LIns* ret =  m_out->insStore(LIR_std, boxedSrc, valuePtr1, 0, 1);
         return source;
     }
