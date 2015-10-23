@@ -962,7 +962,12 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_ESIR(CallNewJS);
         LIns* callee = getTmpMapping(irCallNewJS->calleeIndex());
         LIns* boxedCallee = boxESValue(callee,  m_graph->getOperandType(irCallNewJS->calleeIndex()));
-        LIns* arguments = m_out->insAlloc(irCallNewJS->argumentCount() * sizeof(ESValue));
+        LIns* arguments;
+        if (irCallNewJS->argumentCount() > 0) {
+            arguments = m_out->insAlloc(irCallNewJS->argumentCount() * sizeof(ESValue));
+        } else {
+            arguments = m_out->insImmP(0);
+        }
         LIns* argumentCount = m_out->insImmI(irCallNewJS->argumentCount());
         for (size_t i=0; i<irCallNewJS->argumentCount(); i++) {
             LIns* argument = getTmpMapping(irCallNewJS->argumentIndex(i));
