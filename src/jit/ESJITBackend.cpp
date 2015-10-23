@@ -30,16 +30,26 @@ using namespace nanojit;
     {(uintptr_t) (&name), args, nanojit::ABI_CDECL, /*isPure*/0, ACCSET_STORE_ANY \
      DEBUG_ONLY_NAME(name)}
 
+/* CallInfo */
 CallInfo getByIndexWithActivationOpCallInfo = CI(getByIndexWithActivationOp, CallInfo::typeSig3(ARGTYPE_D, ARGTYPE_P, ARGTYPE_I, ARGTYPE_I));
 CallInfo setByIndexWithActivationOpCallInfo = CI(setByIndexWithActivationOp, CallInfo::typeSig4(ARGTYPE_V, ARGTYPE_P, ARGTYPE_I, ARGTYPE_I, ARGTYPE_D));
 
 CallInfo getByGlobalIndexOpCallInfo = CI(getByGlobalIndexOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_P, ARGTYPE_P));
 CallInfo setByGlobalIndexOpCallInfo = CI(setByGlobalIndexOp, CallInfo::typeSig3(ARGTYPE_V, ARGTYPE_P, ARGTYPE_P, ARGTYPE_D));
 
+/* CallInfo: Binary/Unary operations */
 CallInfo plusOpCallInfo = CI(plusOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 CallInfo minusOpCallInfo = CI(minusOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
+CallInfo bitwiseOrOpCallInfo = CI(bitwiseOrOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
+CallInfo bitwiseXorOpCallInfo = CI(bitwiseXorOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
+CallInfo leftShiftOpCallInfo = CI(leftShiftOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
+CallInfo signedRightShiftOpCallInfo = CI(signedRightShiftOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
+CallInfo unsignedRightShiftOpCallInfo = CI(unsignedRightShiftOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
+CallInfo bitwiseNotOpCallInfo = CI(bitwiseNotOp, CallInfo::typeSig1(ARGTYPE_D, ARGTYPE_D));
 CallInfo equalOpCallInfo = CI(equalOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 CallInfo lessThanOpCallInfo = CI(lessThanOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
+
+/* CallInfo */
 CallInfo contextResolveBindingCallInfo = CI(contextResolveBinding, CallInfo::typeSig3(ARGTYPE_P, ARGTYPE_P, ARGTYPE_P, ARGTYPE_P));
 CallInfo contextResolveThisBindingCallInfo = CI(contextResolveThisBinding, CallInfo::typeSig1(ARGTYPE_D, ARGTYPE_P));
 CallInfo setVarContextResolveBindingCallInfo = CI(setVarContextResolveBinding, CallInfo::typeSig2(ARGTYPE_P, ARGTYPE_P, ARGTYPE_P));
@@ -54,11 +64,7 @@ CallInfo setObjectPreComputedCaseOpCallInfo = CI(setObjectPreComputedOp, CallInf
 CallInfo ESObjectSetOpCallInfo = CI(ESObjectSetOp, CallInfo::typeSig3(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 CallInfo generateToStringCallInfo = CI(generateToString, CallInfo::typeSig1(ARGTYPE_P, ARGTYPE_D));
 CallInfo concatTwoStringsCallInfo = CI(concatTwoStrings, CallInfo::typeSig2(ARGTYPE_P, ARGTYPE_P, ARGTYPE_P));
-#if 0
-CallInfo resolveNonDataPropertyInfo = CI(resolveNonDataProperty, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_P, ARGTYPE_P));
-#else
-CallInfo resolveNonDataPropertyInfo = CI(resolveNonDataProperty, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_P, ARGTYPE_Q));
-#endif
+
 #ifndef NDEBUG
 CallInfo logIntCallInfo = CI(jitLogIntOperation, CallInfo::typeSig2(ARGTYPE_V, ARGTYPE_I, ARGTYPE_P));
 CallInfo logDoubleCallInfo = CI(jitLogDoubleOperation, CallInfo::typeSig2(ARGTYPE_V, ARGTYPE_D, ARGTYPE_P));
@@ -523,6 +529,20 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         Type rightType = m_graph->getOperandType(ir##opcode->rightIndex()); \
         LIns* left = getTmpMapping(ir##opcode->leftIndex()); \
         LIns* right = getTmpMapping(ir##opcode->rightIndex());
+    #define CALL_BINARY_ESIR(callInfo) \
+        LIns* boxedLeft = boxESValue(left, leftType); \
+        LIns* boxedRight = boxESValue(right, rightType); \
+        LIns* args[] = {boxedRight, boxedLeft}; \
+        LIns* boxedResult = m_out->insCall(&callInfo, args); \
+        LIns* result = unboxESValue(boxedResult, TypeBoolean);
+    #define INIT_UNARY_ESIR(opcode) \
+        Type valueType = m_graph->getOperandType(ir##opcode->sourceIndex()); \
+        LIns* value = getTmpMapping(ir##opcode->sourceIndex());
+    #define CALL_UNARY_ESIR(callInfo) \
+        LIns* boxedValue = boxESValue(value, valueType); \
+        LIns* args[] = {boxedValue}; \
+        LIns* boxedResult = m_out->insCall(&callInfo, args); \
+        LIns* result = unboxESValue(boxedResult, TypeBoolean);
     case ESIR::Opcode::Int32Plus:
     {
         INIT_ESIR(Int32Plus);
@@ -701,8 +721,10 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         Type rightType = m_graph->getOperandType(irBitwiseAnd->rightIndex());
         if (leftType.isInt32Type() && rightType.isInt32Type())
             return m_out->ins2(LIR_andi, left, right);
-        else
+        else {
+            // TODO : call function to handle non-number cases
             return nullptr;
+        }
     }
     case ESIR::Opcode::BitwiseOr:
     {
@@ -715,8 +737,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
                 right = m_out->ins1(LIR_d2i, right);
             return m_out->ins2(LIR_ori, left, right);
         } else {
-            // TODO : call function to handle non-number cases
-            return nullptr;
+            CALL_BINARY_ESIR(bitwiseOrOpCallInfo);
+            return result;
         }
     }
     case ESIR::Opcode::BitwiseXor:
@@ -730,8 +752,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
                 right = m_out->ins1(LIR_d2i, right);
             return m_out->ins2(LIR_xori, left, right);
         } else {
-            // TODO : call function to handle non-number cases
-            return nullptr;
+            CALL_BINARY_ESIR(bitwiseXorOpCallInfo);
+            return result;
         }
     }
     case ESIR::Opcode::Equal:
@@ -844,8 +866,10 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         Type rightType = m_graph->getOperandType(irLeftShift->rightIndex());
         if (leftType.isInt32Type() && rightType.isInt32Type())
             return m_out->ins2(LIR_lshi, left, right);
-        else
-            return nullptr;
+        else {
+            CALL_BINARY_ESIR(leftShiftOpCallInfo);
+            return result;
+        }
     }
     case ESIR::Opcode::SignedRightShift:
     {
@@ -859,8 +883,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             return m_out->ins2(LIR_rshi, left, right);
         }
         else {
-            // TODO : call function to handle non-number cases
-            return nullptr;
+            CALL_BINARY_ESIR(signedRightShiftOpCallInfo);
+            return result;
         }
     }
     case ESIR::Opcode::UnsignedRightShift:
@@ -875,8 +899,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             return m_out->ins2(LIR_rshui, left, right);
         }
         else {
-            // TODO : call function to handle non-number cases
-            return nullptr;
+            CALL_BINARY_ESIR(unsignedRightShiftOpCallInfo);
+            return result;
         }
     }
     case ESIR::Opcode::Jump:
@@ -1276,15 +1300,14 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     case ESIR::Opcode::BitwiseNot:
     {
         INIT_ESIR(BitwiseNot);
-        LIns* source = getTmpMapping(irBitwiseNot->sourceIndex());
-        Type srcType = m_graph->getOperandType(irBitwiseNot->sourceIndex());
-        if (srcType.isInt32Type())
-            return m_out->ins1(LIR_noti, source);
-        if (srcType.isDoubleType())
-            return m_out->ins1(LIR_noti, m_out->ins1(LIR_d2i, source));
+        INIT_UNARY_ESIR(BitwiseNot);
+        if (valueType.isInt32Type())
+            return m_out->ins1(LIR_noti, value);
+        if (valueType.isDoubleType())
+            return m_out->ins1(LIR_noti, m_out->ins1(LIR_d2i, value));
         else {
-            // TODO : call function to handle non-number cases
-            return nullptr;
+            CALL_UNARY_ESIR(bitwiseNotOpCallInfo);
+            return result;
         }
     }
     case ESIR::Opcode::UnaryMinus:

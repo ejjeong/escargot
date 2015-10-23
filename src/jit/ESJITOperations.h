@@ -52,6 +52,56 @@ inline ESValueInDouble minusOp(ESValueInDouble left, ESValueInDouble right)
     return ret;
 }
 
+inline ESValueInDouble bitwiseOrOp(ESValueInDouble leftInDouble, ESValueInDouble rightInDouble)
+{
+    ESValue left = ESValue::fromRawDouble(leftInDouble);
+    ESValue right = ESValue::fromRawDouble(rightInDouble);
+    return ESValue::toRawDouble(ESValue(left.toInt32() | right.toInt32()));
+}
+
+inline ESValueInDouble bitwiseXorOp(ESValueInDouble leftInDouble, ESValueInDouble rightInDouble)
+{
+    ESValue left = ESValue::fromRawDouble(leftInDouble);
+    ESValue right = ESValue::fromRawDouble(rightInDouble);
+    return ESValue::toRawDouble(ESValue(left.toInt32() ^ right.toInt32()));
+}
+
+inline ESValueInDouble bitwiseNotOp(ESValueInDouble valueInDouble)
+{
+    ESValue value = ESValue::fromRawDouble(valueInDouble);
+    return ESValue::toRawDouble(ESValue(~value.toInt32()));
+}
+
+inline ESValueInDouble leftShiftOp(ESValueInDouble leftInDouble, ESValueInDouble rightInDouble)
+{
+    ESValue left = ESValue::fromRawDouble(leftInDouble);
+    ESValue right = ESValue::fromRawDouble(rightInDouble);
+    int32_t lnum = left.toInt32();
+    int32_t rnum = right.toInt32();
+    lnum <<= ((unsigned int)rnum) & 0x1F;
+    return ESValue::toRawDouble(ESValue(lnum));
+}
+
+inline ESValueInDouble signedRightShiftOp(ESValueInDouble leftInDouble, ESValueInDouble rightInDouble)
+{
+    ESValue left = ESValue::fromRawDouble(leftInDouble);
+    ESValue right = ESValue::fromRawDouble(rightInDouble);
+    int32_t lnum = left.toInt32();
+    int32_t rnum = right.toInt32();
+    lnum >>= ((unsigned int)rnum) & 0x1F;
+    return ESValue::toRawDouble(ESValue(lnum));
+}
+
+inline ESValueInDouble unsignedRightShiftOp(ESValueInDouble leftInDouble, ESValueInDouble rightInDouble)
+{
+    ESValue left = ESValue::fromRawDouble(leftInDouble);
+    ESValue right = ESValue::fromRawDouble(rightInDouble);
+    int32_t lnum = left.toInt32();
+    int32_t rnum = right.toInt32();
+    lnum = (lnum) >> ((rnum) & 0x1F);
+    return ESValue::toRawDouble(ESValue(lnum));
+}
+
 inline ESValueInDouble ESObjectSetOp(ESValueInDouble obj, ESValueInDouble property, ESValueInDouble source)
 {
     ESValue objVal = ESValue::fromRawDouble(obj);
