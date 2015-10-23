@@ -850,10 +850,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     case ESIR::Opcode::SignedRightShift:
     {
         INIT_ESIR(SignedRightShift);
-        LIns* left = getTmpMapping(irSignedRightShift->leftIndex());
-        LIns* right = getTmpMapping(irSignedRightShift->rightIndex());
-        Type leftType = m_graph->getOperandType(irSignedRightShift->leftIndex());
-        Type rightType = m_graph->getOperandType(irSignedRightShift->rightIndex());
+        INIT_BINARY_ESIR(SignedRightShift);
         if (leftType.isNumberType() && rightType.isNumberType()) {
             if (leftType.isDoubleType())
                 left = m_out->ins1(LIR_d2i, left);
@@ -861,8 +858,26 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
                 right = m_out->ins1(LIR_d2i, right);
             return m_out->ins2(LIR_rshi, left, right);
         }
-        else
+        else {
+            // TODO : call function to handle non-number cases
             return nullptr;
+        }
+    }
+    case ESIR::Opcode::UnsignedRightShift:
+    {
+        INIT_ESIR(UnsignedRightShift);
+        INIT_BINARY_ESIR(UnsignedRightShift);
+        if (leftType.isNumberType() && rightType.isNumberType()) {
+            if (leftType.isDoubleType())
+                left = m_out->ins1(LIR_d2i, left);
+            if (rightType.isDoubleType())
+                right = m_out->ins1(LIR_d2i, right);
+            return m_out->ins2(LIR_rshui, left, right);
+        }
+        else {
+            // TODO : call function to handle non-number cases
+            return nullptr;
+        }
     }
     case ESIR::Opcode::Jump:
     {

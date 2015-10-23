@@ -931,6 +931,15 @@ private:
         : BinaryExpressionIR(ESIR::Opcode::SignedRightShift, targetIndex, leftIndex, rightIndex) { }
 };
 
+class UnsignedRightShiftIR : public BinaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(UnsignedRightShift, int, int);
+
+private:
+    UnsignedRightShiftIR(int targetIndex, int leftIndex, int rightIndex)
+        : BinaryExpressionIR(ESIR::Opcode::UnsignedRightShift, targetIndex, leftIndex, rightIndex) { }
+};
+
 class UnaryExpressionIR : public ESIR {
 public:
 #ifndef NDEBUG

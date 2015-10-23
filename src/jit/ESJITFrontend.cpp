@@ -282,9 +282,13 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         }
         case UnsignedRightShiftOpcode:
-            goto unsupported;
+        {
+            INIT_BYTECODE(UnsignedRightShift);
+            ESIR* unsignedRightShiftIR = UnsignedRightShiftIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
+            currentBlock->push(unsignedRightShiftIR);
             NEXT_BYTECODE(UnsignedRightShift);
             break;
+        }
         case LessThanOpcode:
         {
             INIT_BYTECODE(LessThan);

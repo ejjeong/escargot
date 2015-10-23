@@ -48,7 +48,7 @@ class CodeBlock;
     F(BitwiseXor, 1, 2, 1) \
     F(LeftShift, 1, 2, 1) \
     F(SignedRightShift, 1, 2, 1) \
-    F(UnsignedRightShift, 1, 2, 0) \
+    F(UnsignedRightShift, 1, 2, 1) \
     F(LessThan, 1, 2, 1) \
     F(LessThanOrEqual, 1, 2, 1) \
     F(GreaterThan, 1, 2, 1) \
