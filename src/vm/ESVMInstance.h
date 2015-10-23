@@ -138,6 +138,7 @@ public:
     bool m_verboseJIT;
     bool m_reportUnsupportedOpcode;
     bool m_reportCompiledFunction;
+    bool m_useLirWriter;
     bool m_useValidateWriter;
     bool m_useVerboseWriter;
     bool m_useExprFilter;

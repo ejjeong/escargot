@@ -110,10 +110,12 @@ NativeGenerator::NativeGenerator(ESGraph* graph)
     m_buf->printer = new LInsPrinter(*m_alloc, 1);
 
     // Writer Pipeline
+    if (ESVMInstance::currentInstance()->m_useLirWriter)
+        m_out = new LirWriter(m_out);
     if (ESVMInstance::currentInstance()->m_useValidateWriter)
-        m_out = new ValidateWriter(m_out, m_buf->printer, "Validate");
+        m_out = new ValidateWriter(m_out, m_buf->printer, "[validate]");
     if (ESVMInstance::currentInstance()->m_useVerboseWriter)
-        m_out = new VerboseWriter(*m_alloc, m_out, m_buf->printer, &m_lc, "Verbose");
+        m_out = new VerboseWriter(*m_alloc, m_out, m_buf->printer, &m_lc, "[verbose]");
     if (ESVMInstance::currentInstance()->m_useExprFilter)
         m_out = new ExprFilter(m_out);
     if (ESVMInstance::currentInstance()->m_useCseFilter)
@@ -301,7 +303,7 @@ void NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteC
             mask = m_out->insImmQ(ESPointer::Type::ESArrayObject);
         else
             RELEASE_ASSERT_NOT_REACHED();
-        LIns* typeOfESPtr = m_out->insLoad(LIR_ldq, in, ESPointer::offsetOfType(), 1, LOAD_NORMAL);
+        LIns* typeOfESPtr = m_out->insLoad(LIR_ldq, quadValue, ESPointer::offsetOfType(), 1, LOAD_NORMAL);
         LIns* esPointerMaskedValue = m_out->ins2(LIR_andq, typeOfESPtr, mask);
         LIns* checkIfFlagIdentical = m_out->ins2(LIR_eqq, esPointerMaskedValue, mask);
         LIns* jumpIfFlagIdentical = m_out->insBranch(LIR_jt, checkIfFlagIdentical, nullptr);
@@ -553,7 +555,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 #if 1
         return m_out->ins2(LIR_addi, left, right);
 #else
-        LIns* add = m_out->ins3(LIR_addjovi, left, right, nullptr;);
+        LIns* add = m_out->insBranchJov(LIR_addjovi, left, right, nullptr;);
 #endif
     }
     case ESIR::Opcode::DoublePlus:
@@ -626,7 +628,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_BINARY_ESIR(Int32Multiply);
 #if 1
         ASSERT(left->isI() && right->isI());
-        LIns* int32Result = m_out->ins3(LIR_muljovi, left, right, nullptr);
+        LIns* int32Result = m_out->insBranchJov(LIR_muljovi, left, right, nullptr);
         LIns* jumpAlways = m_out->insBranch(LIR_j, nullptr, nullptr);
         LIns* labelOverflow = m_out->ins0(LIR_label);
         int32Result->setTarget(labelOverflow);
@@ -1329,6 +1331,12 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 
 bool NativeGenerator::nanojitCodegen(ESVMInstance* instance)
 {
+#ifndef NDEBUG
+    if (ESVMInstance::currentInstance()->m_useVerboseWriter) {
+        printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+        printf("LIR Generation Started\n");
+    }
+#endif
     m_out->ins0(LIR_start);
     for (int i = 0; i < nanojit::NumSavedRegs; ++i)
         m_out->insParam(i, 1);
@@ -1371,6 +1379,12 @@ bool NativeGenerator::nanojitCodegen(ESVMInstance* instance)
             LIns* generatedLIns = nanojitCodegen(ir);
             if (!generatedLIns) {
                 LOG_VJ("Cannot generate code for JIT IR `%s` in ESJITBackEnd\n", ir->getOpcodeName());
+#ifndef NDEBUG
+                if (ESVMInstance::currentInstance()->m_useVerboseWriter) {
+                    printf("LIR Generation Aborted\n");
+                    printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+                }
+#endif
                 return false;
             }
             if (ir->returnsESValue()) {
@@ -1402,6 +1416,13 @@ bool NativeGenerator::nanojitCodegen(ESVMInstance* instance)
     exit->addGuard(rec);
 
     m_f->lastIns = m_out->insGuard(LIR_x, nullptr, rec);
+
+#ifndef NDEBUG
+    if (ESVMInstance::currentInstance()->m_useVerboseWriter) {
+        printf("LIR Generation Ended\n");
+        printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+    }
+#endif
 
     return true;
 }
