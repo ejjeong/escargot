@@ -70,6 +70,18 @@ int main(int argc, char* argv[])
             if(strcmp(argv[i], "-e") == 0) {
                 ES->m_dumpExecuteByteCode = true;
             }
+            if(strcmp(argv[i], "-useval") == 0) {
+                ES->m_useValidateWriter = true;
+            }
+            if(strcmp(argv[i], "-usever") == 0) {
+                ES->m_useVerboseWriter = true;
+            }
+            if(strcmp(argv[i], "-useexp") == 0) {
+                ES->m_useExprFilter = true;
+            }
+            if(strcmp(argv[i], "-usecse") == 0) {
+                ES->m_useCseFilter = true;
+            }
             if(strcmp(argv[i], "-vj") == 0) {
                 ES->m_verboseJIT = true;
             }

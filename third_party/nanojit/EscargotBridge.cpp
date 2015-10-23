@@ -1,4 +1,5 @@
 #include "EscargotNanoJITBridge.h"
+#include "nanojit.h"
 
 size_t VMPI_getVMPageSize()
 {
@@ -6,6 +7,13 @@ size_t VMPI_getVMPageSize()
 }
 
 namespace nanojit {
+
+#ifdef DEBUG
+void ValidateWriter::checkAccSet(LOpcode op, LIns *base, int32_t disp, AccSet accSet)
+{
+    // TODO
+}
+#endif
 
 float4_t f4_add(const float4_t& x1, const float4_t& x2)
 {

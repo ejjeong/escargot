@@ -96,12 +96,23 @@ NativeGenerator::NativeGenerator(ESGraph* graph)
     m_f(new Fragment(NULL verbose_only(, 0))),
     m_out(new LirBufWriter(m_buf, m_config))
 {
-#ifdef DEBUG
+#ifndef NDEBUG
     if (ESVMInstance::currentInstance()->m_verboseJIT)
         m_lc.lcbits = LC_ReadLIR | LC_Native;
     else
         m_lc.lcbits = 0;
     m_buf->printer = new LInsPrinter(*m_alloc, 1);
+
+    // Writer Pipeline
+    if (ESVMInstance::currentInstance()->m_useValidateWriter)
+        m_out = new ValidateWriter(m_out, m_buf->printer, "Validate");
+    if (ESVMInstance::currentInstance()->m_useVerboseWriter)
+        m_out = new VerboseWriter(*m_alloc, m_out, m_buf->printer, &m_lc, "Verbose");
+    if (ESVMInstance::currentInstance()->m_useExprFilter)
+        m_out = new ExprFilter(m_out);
+    if (ESVMInstance::currentInstance()->m_useCseFilter)
+        m_out = new CseFilter(m_out, 1, *m_alloc);
+
 #else
     m_lc.lcbits = 0;
 #endif
@@ -112,7 +123,7 @@ NativeGenerator::NativeGenerator(ESGraph* graph)
 NativeGenerator::~NativeGenerator()
 {
     // TODO : separate long-lived and short-lived data structures
-#ifdef DEBUG
+#ifndef NDEBUG
     delete m_buf->printer;
 #endif
     delete m_alloc;
@@ -598,7 +609,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 #if 1
         ASSERT(left->isI() && right->isI());
         LIns* int32Result = m_out->ins3(LIR_muljovi, left, right, nullptr);
-        LIns* jumpAlways = m_out->ins2(LIR_j, nullptr, nullptr);
+        LIns* jumpAlways = m_out->insBranch(LIR_j, nullptr, nullptr);
         LIns* labelOverflow = m_out->ins0(LIR_label);
         int32Result->setTarget(labelOverflow);
 
@@ -874,7 +885,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             LIns* condition = getTmpMapping(irBranch->operandIndex());
             LIns* compare = m_out->ins2(LIR_eqi, condition, m_false);
             LIns* jumpTrue = m_out->insBranch(LIR_jf, compare, nullptr);
-            LIns* jumpFalse = m_out->ins2(LIR_j, nullptr, nullptr);
+            LIns* jumpFalse = m_out->insBranch(LIR_j, nullptr, nullptr);
             if (LIns* label = irBranch->falseBlock()->getLabel()) {
                 jumpFalse->setTarget(label);
             } else {
@@ -1027,7 +1038,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 
         LIns* cachingLookuped = m_out->insStore(LIR_std, resolvedResult, cachedSlot, 0, 1);
         LIns* storeCheckCount = m_out->insStore(LIR_sti, instanceIdentifierCacheInvalidationCheckCount, bytecode, offsetof(GetById, m_identifierCacheInvalidationCheckCount), 1);
-        LIns* jumpToJoin = m_out->ins2(LIR_j, nullptr, nullptr);
+        LIns* jumpToJoin = m_out->insBranch(LIR_j, nullptr, nullptr);
 #else
         JIT_LOG(cachedIdentifierCacheInvalidationCheckCount, "GetVarGeneric Cache Miss");
         generateOSRExit(irGetVarGeneric->targetIndex());
