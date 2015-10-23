@@ -431,11 +431,10 @@ void GlobalObject::installFunction()
         prototype->set__proto__(instance->globalObject()->object()->protoType());
         function->setProtoType(prototype);
 
-// TODO : Check Seong-Hyun
-// #ifdef ENABLE_ESJIT
-//         cb->m_dontJIT = true;
-// #endif
 #ifdef ENABLE_ESJIT
+        //NOTE
+        //The binded function has only one bytecode what is CallBoundFunction
+        //so we should not try JIT for binded function.
         context.dumpCurrentNodeIndex();
 #endif
         return function;

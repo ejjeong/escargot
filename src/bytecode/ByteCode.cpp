@@ -71,6 +71,8 @@ CodeBlock* generateByteCode(Node* node)
 #endif
 
 #ifdef ENABLE_ESJIT
+    //Fill temp register size for future
+    block->m_tempRegisterSize = context.getCurrentNodeIndex();
     context.dumpCurrentNodeIndex();
 #endif
     return block;
