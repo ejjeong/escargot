@@ -47,10 +47,11 @@ CallInfo signedRightShiftOpCallInfo = CI(signedRightShiftOp, CallInfo::typeSig2(
 CallInfo unsignedRightShiftOpCallInfo = CI(unsignedRightShiftOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 CallInfo bitwiseNotOpCallInfo = CI(bitwiseNotOp, CallInfo::typeSig1(ARGTYPE_D, ARGTYPE_D));
 CallInfo equalOpCallInfo = CI(equalOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
+CallInfo strictEqualOpCallInfo = CI(strictEqualOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 CallInfo lessThanOpCallInfo = CI(lessThanOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 
 /* CallInfo */
-CallInfo contextResolveBindingCallInfo = CI(contextResolveBinding, CallInfo::typeSig3(ARGTYPE_P, ARGTYPE_P, ARGTYPE_P, ARGTYPE_P));
+CallInfo contextResolveBindingCallInfo = CI(contextResolveBinding, CallInfo::typeSig2(ARGTYPE_P, ARGTYPE_P, ARGTYPE_P));
 CallInfo contextResolveThisBindingCallInfo = CI(contextResolveThisBinding, CallInfo::typeSig1(ARGTYPE_D, ARGTYPE_P));
 CallInfo setVarContextResolveBindingCallInfo = CI(setVarContextResolveBinding, CallInfo::typeSig2(ARGTYPE_P, ARGTYPE_P, ARGTYPE_P));
 CallInfo setVarDefineDataPropertyCallInfo = CI(setVarDefineDataProperty, CallInfo::typeSig4(ARGTYPE_V, ARGTYPE_P, ARGTYPE_P, ARGTYPE_P, ARGTYPE_D));
@@ -770,6 +771,28 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             return unboxedResult;
         }
     }
+    case ESIR::Opcode::StrictEqual:
+    {
+        INIT_ESIR(StrictEqual);
+        LIns* left = getTmpMapping(irStrictEqual->leftIndex());
+        LIns* right = getTmpMapping(irStrictEqual->rightIndex());
+        Type leftType = m_graph->getOperandType(irStrictEqual->leftIndex());
+        Type rightType = m_graph->getOperandType(irStrictEqual->rightIndex());
+        if (leftType != rightType) {
+          return m_false;
+        } else {
+          if (leftType.isInt32Type() || leftType.isBooleanType()) {
+              return m_out->ins2(LIR_eqi, left, right);
+          } else {
+              LIns* boxedLeft = boxESValue(left, leftType);
+              LIns* boxedRight = boxESValue(right, rightType);
+              LIns* args[] = {boxedRight, boxedLeft};
+              LIns* boxedResult = m_out->insCall(&strictEqualOpCallInfo, args);
+              LIns* unboxedResult = unboxESValue(boxedResult, TypeBoolean);
+              return unboxedResult;
+          }
+        }
+    }
     case ESIR::Opcode::GreaterThan:
     {
         INIT_ESIR(GreaterThan);
@@ -1038,9 +1061,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 
         LIns* slowPath = m_out->ins0(LIR_label);
 #if 1
-        LIns* name = m_out->insImmP(irGetVarGeneric->name());
-        LIns* nonAtomicName = m_out->insImmP(irGetVarGeneric->nonAtomicName());
-        LIns* args[] = {nonAtomicName, name, m_context};
+        LIns* args[] = {bytecode, m_context};
         LIns* resolvedSlot = m_out->insCall(&contextResolveBindingCallInfo, args);
         LIns* resolvedResult = m_out->insLoad(LIR_ldd, resolvedSlot, 0, 1, LOAD_NORMAL);
         m_out->insStore(LIR_std, resolvedResult, phi, 0 , 1);

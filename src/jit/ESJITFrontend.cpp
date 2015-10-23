@@ -117,7 +117,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         {
             INIT_BYTECODE(GetById);
             //graph->setOperandStackPos(ssaIndex->m_targetIndex, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
-            ESIR* getVarGeneric = GetVarGenericIR::create(ssaIndex->m_targetIndex, bytecode, bytecode->m_name, bytecode->m_name.string()); // FIXME store only bytecode, get name from that
+            ESIR* getVarGeneric = GetVarGenericIR::create(ssaIndex->m_targetIndex, bytecode);
             currentBlock->push(getVarGeneric);
             bytecode->m_profile.updateProfiledType();
             graph->setOperandType(ssaIndex->m_targetIndex, bytecode->m_profile.getType());
@@ -234,9 +234,13 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(NotEqual);
             break;
         case StrictEqualOpcode:
-            goto unsupported;
+        {
+            INIT_BYTECODE(StrictEqual);
+            ESIR* strictEqualIR = StrictEqualIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
+            currentBlock->push(strictEqualIR);
             NEXT_BYTECODE(StrictEqual);
             break;
+        }
         case NotStrictEqualOpcode:
             goto unsupported;
             NEXT_BYTECODE(NotStrictEqual);
@@ -584,14 +588,24 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         {
             INIT_BYTECODE(JumpIfTopOfStackValueIsFalse);
 
-            ESBasicBlock* trueBlock = ESBasicBlock::create(graph, currentBlock);
-            ESBasicBlock* falseBlock = ESBasicBlock::create(graph, currentBlock, true);
+            std::map<int, ESBasicBlock*>::iterator findIter;
+            ESBasicBlock* trueBlock, *falseBlock;
+            if((findIter = basicBlockMapping.find(idx + sizeof(JumpIfTopOfStackValueIsFalse))) != basicBlockMapping.end()) {
+                trueBlock = basicBlockMapping[idx + sizeof(JumpIfTopOfStackValueIsFalse)];
+            } else {
+                trueBlock = ESBasicBlock::create(graph, currentBlock);
+                basicBlockMapping[idx + sizeof(JumpIfTopOfStackValueIsFalse)] = trueBlock;
+            }
+
+            if((findIter = basicBlockMapping.find(bytecode->m_jumpPosition)) != basicBlockMapping.end()) {
+                falseBlock = basicBlockMapping[bytecode->m_jumpPosition];
+            } else {
+                falseBlock = ESBasicBlock::create(graph, currentBlock, true);
+                basicBlockMapping[bytecode->m_jumpPosition] = falseBlock;
+            }
 
             BranchIR* branchIR = BranchIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, trueBlock, falseBlock);
             currentBlock->push(branchIR);
-
-            basicBlockMapping[idx + sizeof(JumpIfTopOfStackValueIsFalse)] = trueBlock;
-            basicBlockMapping[bytecode->m_jumpPosition] = falseBlock;
 
             NEXT_BYTECODE(JumpIfTopOfStackValueIsFalse);
             break;
@@ -611,14 +625,25 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case JumpAndPopIfTopOfStackValueIsTrueOpcode:
         {
             INIT_BYTECODE(JumpAndPopIfTopOfStackValueIsTrue);
-            ESBasicBlock* falseBlock = ESBasicBlock::create(graph, currentBlock);
-            ESBasicBlock* trueBlock = ESBasicBlock::create(graph, currentBlock, true);
+
+            std::map<int, ESBasicBlock*>::iterator findIter;
+            ESBasicBlock* trueBlock, *falseBlock;
+            if((findIter = basicBlockMapping.find(idx + sizeof(JumpAndPopIfTopOfStackValueIsTrue))) != basicBlockMapping.end()) {
+                falseBlock = basicBlockMapping[idx + sizeof(JumpAndPopIfTopOfStackValueIsTrue)];
+            } else {
+                falseBlock = ESBasicBlock::create(graph, currentBlock);
+                basicBlockMapping[idx + sizeof(JumpAndPopIfTopOfStackValueIsTrue)] = falseBlock;
+            }
+
+            if((findIter = basicBlockMapping.find(bytecode->m_jumpPosition)) != basicBlockMapping.end()) {
+                trueBlock = basicBlockMapping[bytecode->m_jumpPosition];
+            } else {
+                trueBlock = ESBasicBlock::create(graph, currentBlock, true);
+                basicBlockMapping[bytecode->m_jumpPosition] = trueBlock;
+            }
 
             BranchIR* branchIR = BranchIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, trueBlock, falseBlock);
             currentBlock->push(branchIR);
-
-            basicBlockMapping[idx + sizeof(JumpAndPopIfTopOfStackValueIsTrue)] = falseBlock;
-            basicBlockMapping[bytecode->m_jumpPosition] = trueBlock;
             NEXT_BYTECODE(JumpAndPopIfTopOfStackValueIsTrue);
             break;
         }

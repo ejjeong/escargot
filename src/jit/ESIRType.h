@@ -116,6 +116,14 @@ public:
 
     uint64_t type() { return m_type; }
 
+    bool operator==(Type& otherType) {
+        return m_type == otherType.m_type;
+    }
+
+    bool operator!=(Type& otherType) {
+        return ! operator==(otherType);
+    }
+
     void dump(std::ostream& out) {
         out << "[Type: 0x" << std::hex << m_type << std::dec;
         out << " : " << getESIRTypeName(m_type) << "]";

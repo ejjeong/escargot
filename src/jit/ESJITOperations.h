@@ -147,9 +147,10 @@ inline void setObjectPreComputedOp(ESValueInDouble willBeObject, GlobalObject* g
             &bytecode->m_cachedhiddenClassChain, &bytecode->m_cachedIndex, &bytecode->m_hiddenClassWillBe);
 }
 
-inline ESValue* contextResolveBinding(ExecutionContext* context, InternalAtomicString* atomicName, ESString* name)
+inline ESValue* contextResolveBinding(ExecutionContext* context, ByteCode* currentCode)
 {
-    return context->resolveBinding(*atomicName);
+    GetById *code = (GetById*)currentCode;
+    return context->resolveBinding(code->m_name);
 }
 
 inline ESValue* setVarContextResolveBinding(ExecutionContext* ec, ByteCode* currentCode)
@@ -248,6 +249,14 @@ inline ESValueInDouble equalOp(ESValueInDouble left, ESValueInDouble right)
     ESValue leftVal = ESValue::fromRawDouble(left);
     ESValue rightVal = ESValue::fromRawDouble(right);
     bool ret = leftVal.abstractEqualsTo(rightVal);
+    return ESValue::toRawDouble(ESValue(ret));
+}
+
+inline ESValueInDouble strictEqualOp(ESValueInDouble left, ESValueInDouble right)
+{
+    ESValue leftVal = ESValue::fromRawDouble(left);
+    ESValue rightVal = ESValue::fromRawDouble(right);
+    bool ret = leftVal.equalsTo(rightVal);
     return ESValue::toRawDouble(ESValue(ret));
 }
 

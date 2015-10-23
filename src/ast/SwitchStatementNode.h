@@ -28,24 +28,37 @@ public:
         std::vector<size_t> jumpCodePerCaseNodePosition;
         for(unsigned i = 0; i < m_casesB.size() ; i ++) {
             SwitchCaseNode* caseNode = (SwitchCaseNode*) m_casesB[i];
+            updateNodeIndex(newContext);
             codeBlock->pushCode(DuplicateTopOfStackValue(), newContext, this);
+            WRITE_LAST_INDEX(m_nodeIndex, m_discriminant->nodeIndex(), -1);
             caseNode->m_test->generateExpressionByteCode(codeBlock, newContext);
+            updateNodeIndex(newContext);
             codeBlock->pushCode(StrictEqual(), newContext, this);
+            WRITE_LAST_INDEX(m_nodeIndex, caseNode->m_test->nodeIndex() - 1, caseNode->m_test->nodeIndex());
             jumpCodePerCaseNodePosition.push_back(codeBlock->currentCodeSize());
+            updateNodeIndex(newContext);
             codeBlock->pushCode(JumpAndPopIfTopOfStackValueIsTrue(SIZE_MAX), newContext, this);
+            WRITE_LAST_INDEX(m_nodeIndex, m_nodeIndex - 1, -1);
         }
         for(unsigned i = 0; i < m_casesA.size() ; i ++) {
             SwitchCaseNode* caseNode = (SwitchCaseNode*) m_casesA[i];
+            updateNodeIndex(newContext);
             codeBlock->pushCode(DuplicateTopOfStackValue(), newContext, this);
+            WRITE_LAST_INDEX(m_nodeIndex, m_discriminant->nodeIndex(), -1);
             caseNode->m_test->generateExpressionByteCode(codeBlock, newContext);
+            updateNodeIndex(newContext);
             codeBlock->pushCode(StrictEqual(), newContext, this);
+            WRITE_LAST_INDEX(m_nodeIndex, caseNode->m_test->nodeIndex() - 1, caseNode->m_test->nodeIndex());
             jumpCodePerCaseNodePosition.push_back(codeBlock->currentCodeSize());
+            updateNodeIndex(newContext);
             codeBlock->pushCode(JumpAndPopIfTopOfStackValueIsTrue(SIZE_MAX), newContext, this);
+            WRITE_LAST_INDEX(m_nodeIndex, m_nodeIndex - 1, -1);
         }
         size_t jmpToDefault = SIZE_MAX;
         codeBlock->pushCode(Pop(), newContext, this);
         jmpToDefault = codeBlock->currentCodeSize();
         codeBlock->pushCode(Jump(SIZE_MAX), newContext, this);
+        WRITE_LAST_INDEX(-1, -1, -1);
 
         size_t caseIdx = 0;
         for(unsigned i = 0; i < m_casesB.size() ; i ++) {

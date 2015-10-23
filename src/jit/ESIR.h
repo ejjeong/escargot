@@ -430,7 +430,7 @@ private:
 
 class GetVarGenericIR : public ESIR {
 public:
-    DECLARE_STATIC_GENERATOR_3(GetVarGeneric, ByteCode*, const InternalAtomicString&, ESString*)
+    DECLARE_STATIC_GENERATOR_1(GetVarGeneric, ByteCode*)
 
 
 #ifndef NDEBUG
@@ -439,19 +439,15 @@ public:
         out << "tmp" << m_targetIndex << ": ";
         ESIR::dump(out);
 
-        out << " " << m_esName->utf8Data();
+        out << " " << ((GetById*) m_originalGetByIdByteCode)->m_name.string()->utf8Data();
     }
 #endif
     ByteCode* originalGetByIdByteCode() { return m_originalGetByIdByteCode; }
-    InternalAtomicString* name() { return &m_name; }
-    ESString* nonAtomicName() { return m_esName; }
 
 private:
-    GetVarGenericIR(int targetIndex, ByteCode* originalGetByIdByteCode, const InternalAtomicString& name, ESString* esName)
-        : ESIR(ESIR::Opcode::GetVarGeneric, targetIndex), m_originalGetByIdByteCode(originalGetByIdByteCode), m_name(name), m_esName(esName) { }
+    GetVarGenericIR(int targetIndex, ByteCode* originalGetByIdByteCode)
+        : ESIR(ESIR::Opcode::GetVarGeneric, targetIndex), m_originalGetByIdByteCode(originalGetByIdByteCode) { }
     ByteCode* m_originalGetByIdByteCode;
-    InternalAtomicString m_name;
-    ESString* m_esName;
 };
 
 class SetVarGenericIR : public ESIR {
@@ -875,6 +871,15 @@ public:
 private:
     EqualIR(int targetIndex, int leftIndex, int rightIndex)
         : BinaryExpressionIR(ESIR::Opcode::Equal, targetIndex, leftIndex, rightIndex) { }
+};
+
+class StrictEqualIR : public BinaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(StrictEqual, int, int);
+
+private:
+    StrictEqualIR(int targetIndex, int leftIndex, int rightIndex)
+        : BinaryExpressionIR(ESIR::Opcode::StrictEqual, targetIndex, leftIndex, rightIndex) { }
 };
 
 class GreaterThanIR : public BinaryExpressionIR {
