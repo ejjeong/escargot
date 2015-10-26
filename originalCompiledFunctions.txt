@@ -3,13 +3,13 @@ CreateP CalcNormal CalcCross MMulti VMulti VMulti2 Translate RotateX RotateY Rot
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-morph.js
 morph 
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-raytrace.js
-createVector sub cross normalise lengthVector dot transformMatrix scale add scalev (anonymous) (anonymous) 
+createVector sub cross normalise lengthVector dot normaliseVector subVector transformMatrix scale addVector scaleVector add scalev (anonymous) (anonymous) 
 ===> test/SunSpider/tests/sunspider-1.0.2/access-binary-trees.js
 TreeNode bottomUpTree 
 ===> test/SunSpider/tests/sunspider-1.0.2/access-fannkuch.js
 
 ===> test/SunSpider/tests/sunspider-1.0.2/access-nbody.js
-Body (anonymous) Sun Jupiter Saturn Uranus Neptune NBodySystem (anonymous) 
+Body (anonymous) (anonymous) Sun Jupiter Saturn Uranus Neptune NBodySystem (anonymous) 
 ===> test/SunSpider/tests/sunspider-1.0.2/access-nsieve.js
 nsieve 
 ===> test/SunSpider/tests/sunspider-1.0.2/bitops-3bit-bits-in-byte.js
@@ -23,7 +23,7 @@ bitsinbyte
 ===> test/SunSpider/tests/sunspider-1.0.2/controlflow-recursive.js
 ack fib tak 
 ===> test/SunSpider/tests/sunspider-1.0.2/crypto-aes.js
-SubWord RotWord SubBytes ShiftRows MixColumns Cipher (anonymous) (anonymous) 
+SubWord RotWord AddRoundKey SubBytes ShiftRows MixColumns Cipher (anonymous) (anonymous) 
 ===> test/SunSpider/tests/sunspider-1.0.2/crypto-md5.js
 safe_add md5_ff md5_cmn bit_rol md5_gg md5_hh md5_ii 
 ===> test/SunSpider/tests/sunspider-1.0.2/crypto-sha1.js

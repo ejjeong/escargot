@@ -3,13 +3,13 @@ CalcNormal VMulti2 MMulti VMulti Translate RotateX RotateY RotateZ
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-morph.js
 morph 
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-raytrace.js
-lengthVector normalise dot createVector cross scale sub add (anonymous) scalev 
+lengthVector normalise dot createVector cross normaliseVector subVector addVector scale sub add scaleVector (anonymous) scalev 
 ===> test/SunSpider/tests/sunspider-1.0.2/access-binary-trees.js
 TreeNode 
 ===> test/SunSpider/tests/sunspider-1.0.2/access-fannkuch.js
 
 ===> test/SunSpider/tests/sunspider-1.0.2/access-nbody.js
-Body (anonymous) NBodySystem 
+Body (anonymous) (anonymous) NBodySystem 
 ===> test/SunSpider/tests/sunspider-1.0.2/access-nsieve.js
 
 ===> test/SunSpider/tests/sunspider-1.0.2/bitops-3bit-bits-in-byte.js
@@ -23,7 +23,7 @@ Body (anonymous) NBodySystem
 ===> test/SunSpider/tests/sunspider-1.0.2/controlflow-recursive.js
 
 ===> test/SunSpider/tests/sunspider-1.0.2/crypto-aes.js
-Cipher 
+Cipher AddRoundKey 
 ===> test/SunSpider/tests/sunspider-1.0.2/crypto-md5.js
 md5_ff md5_cmn safe_add md5_gg md5_hh md5_ii 
 ===> test/SunSpider/tests/sunspider-1.0.2/crypto-sha1.js
