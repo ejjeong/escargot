@@ -37,6 +37,8 @@ else ifeq ($(ARCH), x86)
 	CXXFLAGS += -DESCARGOT_32=1
 endif
 
+.DEFAULT_GOAL:=jit.debug
+
 ifeq ($(MAKECMDGOALS), jit.debug)
 	BUILDDIR=out/jit/debug
 else ifeq ($(MAKECMDGOALS), jit.release)
@@ -46,7 +48,7 @@ else ifeq ($(MAKECMDGOALS), interpreter.debug)
 else ifeq ($(MAKECMDGOALS), interpreter.release)
 	BUILDDIR=out/interpreter/release
 else
-	BUILDDIR=.
+	BUILDDIR=out/jit/debug
 endif
 
 #######################################################
