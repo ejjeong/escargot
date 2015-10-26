@@ -108,6 +108,12 @@ inline ESValueInDouble unsignedRightShiftOp(ESValueInDouble leftInDouble, ESValu
     return ESValue::toRawDouble(ESValue(lnum));
 }
 
+inline ESValueInDouble typeOfOp(ESValueInDouble valueInDouble)
+{
+    ESValue value = ESValue::fromRawDouble(valueInDouble);
+    return ESValue::toRawDouble(typeOfOperation(&value));
+}
+
 inline ESValueInDouble ESObjectSetOp(ESValueInDouble obj, ESValueInDouble property, ESValueInDouble source)
 {
     ESValue objVal = ESValue::fromRawDouble(obj);

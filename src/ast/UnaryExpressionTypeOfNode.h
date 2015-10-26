@@ -22,7 +22,9 @@ public:
                     ), context, this);
         } else
             m_argument->generateExpressionByteCode(codeBlock, context);
+        updateNodeIndex(context);
         codeBlock->pushCode(UnaryTypeOf(), context, this);
+        WRITE_LAST_INDEX(m_nodeIndex, m_argument->nodeIndex(), -1);
     }
 
 protected:

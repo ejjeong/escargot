@@ -47,6 +47,7 @@ CallInfo signedRightShiftOpCallInfo = CI(signedRightShiftOp, CallInfo::typeSig2(
 CallInfo unsignedRightShiftOpCallInfo = CI(unsignedRightShiftOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 CallInfo bitwiseNotOpCallInfo = CI(bitwiseNotOp, CallInfo::typeSig1(ARGTYPE_D, ARGTYPE_D));
 CallInfo logicalNotOpCallInfo = CI(logicalNotOp, CallInfo::typeSig1(ARGTYPE_D, ARGTYPE_D));
+CallInfo typeOfOpCallInfo = CI(typeOfOp, CallInfo::typeSig1(ARGTYPE_D, ARGTYPE_D));
 CallInfo equalOpCallInfo = CI(equalOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 CallInfo strictEqualOpCallInfo = CI(strictEqualOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 CallInfo lessThanOpCallInfo = CI(lessThanOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
@@ -1382,6 +1383,13 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             return m_out->ins1(LIR_negd, value);
         else
             return nullptr;
+    }
+    case ESIR::Opcode::TypeOf:
+    {
+        INIT_ESIR(TypeOf);
+        INIT_UNARY_ESIR(TypeOf);
+        CALL_UNARY_ESIR(TypeOf, typeOfOpCallInfo);
+        return unboxedResult;
     }
     case ESIR::Opcode::AllocPhi:
     {

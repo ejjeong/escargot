@@ -195,6 +195,12 @@ bool ESGraphTypeInference::run(ESGraph* graph)
                     RELEASE_ASSERT_NOT_REACHED();
                 break;
             }
+            case ESIR::Opcode::TypeOf:
+            {
+                INIT_ESIR(TypeOf);
+                graph->setOperandType(irTypeOf->targetIndex(), TypeString);
+                break;
+            }
             case ESIR::Opcode::Jump:
             case ESIR::Opcode::Branch:
             case ESIR::Opcode::CallJS:

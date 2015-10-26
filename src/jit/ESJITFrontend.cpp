@@ -399,9 +399,13 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(UnaryPlus);
             break;
         case UnaryTypeOfOpcode:
-            goto unsupported;
+        {
+            INIT_BYTECODE(UnaryTypeOf);
+            ESIR* typeOfIR = TypeOfIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1);
+            currentBlock->push(typeOfIR);
             NEXT_BYTECODE(UnaryTypeOf);
             break;
+        }
         case UnaryDeleteOpcode:
             goto unsupported;
             NEXT_BYTECODE(UnaryDelete);

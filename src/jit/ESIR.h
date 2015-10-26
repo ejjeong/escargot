@@ -1028,6 +1028,15 @@ private:
         : UnaryExpressionIR(ESIR::Opcode::UnaryMinus, targetIndex, sourceIndex) { }
 };
 
+class TypeOfIR : public UnaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_1(TypeOf, int);
+
+private:
+    TypeOfIR(int targetIndex, int sourceIndex)
+        : UnaryExpressionIR(ESIR::Opcode::TypeOf, targetIndex, sourceIndex) { }
+};
+
 class ReturnWithValueIR : public ESIR {
 public:
     DECLARE_STATIC_GENERATOR_1(ReturnWithValue, int)

@@ -66,7 +66,7 @@ class CodeBlock;
     F(LogicalNot, 1, 1, 0, 1) \
     F(UnaryMinus, 1, 1, 0, 1) \
     F(UnaryPlus, 1, 1, 0, 0) \
-    F(UnaryTypeOf, 1, 1, 0, 0) \
+    F(UnaryTypeOf, 1, 1, 0, 1) \
     F(UnaryDelete, 1, 1, 0, 0) \
     F(UnaryVoid, 1, 1, 0, 0) \
     F(ToNumber, 1, 1, 0, 1) \
