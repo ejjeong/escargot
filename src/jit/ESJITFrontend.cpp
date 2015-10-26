@@ -459,6 +459,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         }
         case GetObjectOpcode:
         case GetObjectAndPushObjectOpcode:
+        case GetObjectWithPeekingOpcode:
         {
             GetObject* bytecode = (GetObject*)currentCode;
             ByteCodeExtraData* extraData = &codeBlock->m_extraData[bytecodeCounter];
@@ -481,10 +482,6 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(GetObject);
             break;
         }
-        case GetObjectWithPeekingOpcode:
-            goto unsupported;
-            NEXT_BYTECODE(GetObjectWithPeeking);
-            break;
         case GetObjectPreComputedCaseOpcode:
         case GetObjectPreComputedCaseAndPushObjectOpcode:
         {

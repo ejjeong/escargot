@@ -652,7 +652,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
         ESValue* property = (ESValue *)((size_t)stack - sizeof(ESValue));
         ESValue* willBeObject = (ESValue *)((size_t)stack - sizeof(ESValue) * 2);
-        push<ESValue>(stack, topOfStack, getObjectOperation(willBeObject, property, globalObject));
+        ESValue value = getObjectOperation(willBeObject, property, globalObject);
+        push<ESValue>(stack, topOfStack, value);
+#ifdef ENABLE_ESJIT
+        code->m_profile.addProfile(value);
+#endif
         executeNextCode<GetObjectWithPeeking>(programCounter);
         NEXT_INSTRUCTION();
     }

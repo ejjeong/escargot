@@ -83,7 +83,7 @@ class CodeBlock;
     F(GetObjectAndPushObject, 2, 2, 0, 1) \
     F(GetObjectSlowMode, 1, 2, 0, 0) \
     F(GetObjectAndPushObjectSlowMode, 2, 2, 0, 0) \
-    F(GetObjectWithPeeking, 1, 0, 2, 0) \
+    F(GetObjectWithPeeking, 1, 0, 2, 1) \
     F(GetObjectWithPeekingSlowMode, 1, 0, 2, 0) \
     F(GetObjectPreComputedCase, 1, 1, 0, 1) \
     F(GetObjectPreComputedCaseAndPushObject, 2, 1, 0, 1) \
@@ -1487,6 +1487,9 @@ public:
     {
         printf("GetObjectWithPeeking <>\n");
     }
+#endif
+#ifdef ENABLE_ESJIT
+    ProfileData m_profile;
 #endif
 };
 
