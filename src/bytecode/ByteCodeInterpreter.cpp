@@ -666,8 +666,12 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         GetObjectWithPeekingPreComputedCase* code = (GetObjectWithPeekingPreComputedCase*)currentCode;
 
         ESValue* willBeObject = peek<ESValue>(stack, bp);
-        push<ESValue>(stack, topOfStack, getObjectPreComputedCaseOperationWithNeverInline(willBeObject, code->m_propertyValue, globalObject,
-                        &code->m_cachedhiddenClassChain, &code->m_cachedIndex));
+        ESValue value = getObjectPreComputedCaseOperationWithNeverInline(willBeObject, code->m_propertyValue, globalObject,
+                        &code->m_cachedhiddenClassChain, &code->m_cachedIndex);
+        push<ESValue>(stack, topOfStack, value);
+#ifdef ENABLE_ESJIT
+        code->m_profile.addProfile(value);
+#endif
         executeNextCode<GetObjectWithPeekingPreComputedCase>(programCounter);
         NEXT_INSTRUCTION();
     }

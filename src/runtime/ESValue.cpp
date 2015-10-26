@@ -718,6 +718,14 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                         }
                         break;
                     }
+                    case GetObjectWithPeekingPreComputedCaseOpcode: {
+                        reinterpret_cast<GetObjectWithPeekingPreComputedCase*>(currentCode)->m_profile.updateProfiledType();
+                        if (reinterpret_cast<GetObjectWithPeekingPreComputedCase*>(currentCode)->m_profile.getType().isBottomType()) {
+                            compileNextTime = true;
+                            LOG_VJ("> Cannot Compile JIT Function due to GetObjectWithPeekingPreComputedCase(idx %u) is not profiled yet\n", (unsigned)idx);
+                        }
+                        break;
+                    }
                     case GetObjectPreComputedCaseAndPushObjectOpcode: {
                         reinterpret_cast<GetObjectPreComputedCaseAndPushObject*>(currentCode)->m_profile.updateProfiledType();
                         if (reinterpret_cast<GetObjectPreComputedCaseAndPushObject*>(currentCode)->m_profile.getType().isBottomType()) {

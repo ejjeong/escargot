@@ -71,7 +71,7 @@ class CodeBlock;
     F(UnaryVoid, 1, 1, 0, 0) \
     F(ToNumber, 1, 1, 0, 1) \
     F(Increment, 1, 1, 0, 1) \
-    F(Decrement, 1, 1, 0, 1) \
+    F(Decrement, 1, 1, 0, 0) \
 \
     /*object, array*/ \
     F(CreateObject, 1, 0, 0, 0) \
@@ -89,7 +89,7 @@ class CodeBlock;
     F(GetObjectPreComputedCaseAndPushObject, 2, 1, 0, 1) \
     F(GetObjectPreComputedCaseSlowMode, 1, 1, 0, 0) \
     F(GetObjectPreComputedCaseAndPushObjectSlowMode, 2, 1, 0, 0) \
-    F(GetObjectWithPeekingPreComputedCase, 1, 0, 1, 0) \
+    F(GetObjectWithPeekingPreComputedCase, 1, 0, 1, 1) \
     F(GetObjectWithPeekingPreComputedCaseSlowMode, 1, 0, 1, 0) \
     F(SetObject, 1, 3, 0, 1) \
     F(SetObjectSlowMode, 1, 3, 0, 0) \
@@ -1605,6 +1605,9 @@ public:
     {
         printf("GetObjectWithPeekingPreComputedCase <>\n");
     }
+#endif
+#ifdef ENABLE_ESJIT
+    ProfileData m_profile;
 #endif
 };
 
