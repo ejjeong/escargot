@@ -318,7 +318,10 @@ bool NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteC
 #ifndef NDEBUG
         if (ESVMInstance::currentInstance()->m_verboseJIT) {
             JIT_LOG(in, "Expected below-typed value, but got this value");
-            JIT_LOG(in, getESIRTypeName(type.type()));
+            JIT_LOG(in, type.getESIRTypeName());
+            JIT_LOG(typeOfESPtr, "ESPointer Type : ");
+            LIns* index = m_out->insImmI(currentByteCodeIndex);
+            JIT_LOG(index, "currentByteCodeIndex = ");
         }
 #endif
         generateOSRExit(currentByteCodeIndex);
@@ -376,6 +379,25 @@ bool NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteC
 #else
         return false;
 #endif
+    } else if (type.isNumberType()) {
+#ifdef ESCARGOT_64
+        LIns* quadValue = m_out->ins1(LIR_dasq, in);
+        LIns* maskedValue = m_out->ins2(LIR_andq, quadValue, m_intTagQ);
+        LIns* checkIfNotNumber = m_out->ins2(LIR_eqq, maskedValue, m_zeroQ);
+        LIns* jumpIfNumber = m_out->insBranch(LIR_jf, checkIfNotNumber, nullptr);
+#ifndef NDEBUG
+        if (ESVMInstance::currentInstance()->m_verboseJIT) {
+            JIT_LOG(in, "Expected number value, but got this value");
+            LIns* index = m_out->insImmI(currentByteCodeIndex);
+            JIT_LOG(index, "currentByteCodeIndex = ");
+        }
+#endif
+        generateOSRExit(currentByteCodeIndex);
+        LIns* normalPath = m_out->ins0(LIR_label);
+        jumpIfNumber->setTarget(normalPath);
+#else
+        return false;
+#endif
     } else {
         return false;
     }
@@ -430,10 +452,19 @@ LIns* NativeGenerator::boxESValue(LIns* unboxedValue, Type type)
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
+    } else if (type.isNumberType()) {
+        ASSERT(unboxedValue->isQ());
+#ifdef ESCARGOT_64
+        boxedValueInDouble = m_out->ins1(LIR_qasd, unboxedValue);
+#else
+        RELEASE_ASSERT_NOT_REACHED();
+#endif
     } else {
+#ifndef NDEBUG
         std::cout << "Unsupported type in NativeGenerator::boxESValue() : ";
         type.dump(std::cout);
         std::cout << std::endl;
+#endif
         RELEASE_ASSERT_NOT_REACHED();
     }
     ASSERT(boxedValueInDouble->isD());
@@ -486,13 +517,102 @@ LIns* NativeGenerator::unboxESValue(LIns* boxedValue, Type type)
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
+    } else if (type.isNumberType()) {
+#ifdef ESCARGOT_64
+        unboxedValue = m_out->ins1(LIR_dasq, boxedValue);
+        ASSERT(unboxedValue->isQ());
+#else
+        RELEASE_ASSERT_NOT_REACHED();
+#endif
     } else {
+#ifndef NDEBUG
         std::cout << "Unsupported type in NativeGenerator::unboxESValue() : ";
         type.dump(std::cout);
         std::cout << std::endl;
+#endif
         RELEASE_ASSERT_NOT_REACHED();
     }
     return unboxedValue;
+}
+
+LIns* NativeGenerator::getDoubleDynamic(LIns* in, Type type)
+{
+    LIns* ret;
+    if (type.isInt32Type()) {
+        ASSERT(in->isI());
+        ret = m_out->ins1(LIR_i2d, in);
+    } else if (type.isDoubleType()) {
+        ASSERT(in->isD());
+        ret = in; // do nothing
+    } else {
+        ASSERT(type.isNumberType());
+#ifdef ESCARGOT_64
+        ASSERT(in->isQ());
+        LIns* phi = m_out->insAlloc(sizeof(double));
+        LIns* maskedValue = m_out->ins2(LIR_andq, in, m_intTagQ);
+
+        LIns* checkIfInt = m_out->ins2(LIR_eqq, maskedValue, m_intTagQ);
+        LIns* jumpIfDouble = m_out->insBranch(LIR_jf, checkIfInt, nullptr);
+
+        LIns* intPath = m_out->ins0(LIR_label);
+        LIns* untaggedIntValue = m_out->ins2(LIR_subq, in, m_intTagQ);
+        LIns* doubleValue = m_out->ins1(LIR_q2d, untaggedIntValue);
+        m_out->insStore(LIR_std, doubleValue, phi, 0, 1);
+
+        LIns* doublePath = m_out->ins0(LIR_label);
+        jumpIfDouble->setTarget(doublePath);
+        LIns* untaggedDoubleValue = m_out->ins2(LIR_subq, in, m_doubleEncodeOffsetQ);
+        LIns* doubleValue2 = m_out->ins1(LIR_qasd, untaggedDoubleValue);
+        m_out->insStore(LIR_std, doubleValue2, phi, 0, 1);
+
+        ret = m_out->insLoad(LIR_ldd, phi, 0, 1, LOAD_NORMAL);
+#else
+        RELEASE_ASSERT_NOT_REACHED();
+#endif
+    }
+
+    ASSERT(ret->isD());
+    return ret;
+}
+
+LIns* NativeGenerator::getInt32Dynamic(LIns* in, Type type)
+{
+    LIns* ret;
+    if (type.isDoubleType()) {
+        ASSERT(in->isD());
+        ret = m_out->ins1(LIR_d2i, in);
+    } else if (type.isInt32Type()) {
+        ASSERT(in->isI());
+        ret = in; // do nothing;
+    } else {
+        ASSERT(in->isQ());
+        ASSERT(type.isNumberType());
+#ifdef ESCARGOT_64
+        ASSERT(in->isQ());
+        LIns* phi = m_out->insAlloc(sizeof(int));
+        LIns* maskedValue = m_out->ins2(LIR_andq, in, m_intTagQ);
+
+        LIns* checkIfInt = m_out->ins2(LIR_eqq, maskedValue, m_intTagQ);
+        LIns* jumpIfDouble = m_out->insBranch(LIR_jf, checkIfInt, nullptr);
+
+        LIns* intPath = m_out->ins0(LIR_label);
+        LIns* untaggedValue = m_out->ins2(LIR_subq, in, m_intTagQ);
+        LIns* intValue = m_out->ins1(LIR_q2i, untaggedValue);
+        m_out->insStore(LIR_sti, in, phi, 0, 1);
+
+        LIns* doublePath = m_out->ins0(LIR_label);
+        jumpIfDouble->setTarget(doublePath);
+        LIns* untaggedDoubleValue = m_out->ins2(LIR_subq, in, m_doubleEncodeOffsetQ);
+        LIns* intValue2 = m_out->ins1(LIR_q2i, untaggedDoubleValue);
+        m_out->insStore(LIR_sti, intValue2, phi, 0, 1);
+
+        ret = m_out->insLoad(LIR_ldd, phi, 0, 1, LOAD_NORMAL);
+#else
+        RELEASE_ASSERT_NOT_REACHED();
+#endif
+    }
+    ASSERT(ret->isI());
+    return ret;
 }
 
 LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
@@ -567,11 +687,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(DoublePlus);
         INIT_BINARY_ESIR(DoublePlus);
-        if (leftType.isInt32Type())
-            left = m_out->ins1(LIR_i2d, left);
-        if (rightType.isInt32Type())
-            right = m_out->ins1(LIR_i2d, right);
-        ASSERT(left->isD() && right->isD());
+        left = getDoubleDynamic(left, leftType);
+        right = getDoubleDynamic(right, rightType);
         return m_out->ins2(LIR_addd, left, right);
     }
     case ESIR::Opcode::StringPlus:
@@ -611,11 +728,9 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 
         if (leftType.isInt32Type() && rightType.isInt32Type())
             return m_out->ins2(LIR_subi, left, right);
-        else if (leftType.hasNumberFlag() && rightType.hasNumberFlag()) {
-            if (leftType.isInt32Type())
-                left = m_out->ins1(LIR_i2d, left);
-            if (rightType.isInt32Type())
-                right = m_out->ins1(LIR_i2d, right);
+        else if (leftType.isNumberType() && rightType.isNumberType()) {
+            left = getDoubleDynamic(left, leftType);
+            right = getDoubleDynamic(right, rightType);
             return m_out->ins2(LIR_subd, left, right);
         }
         else {
@@ -652,11 +767,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(DoubleMultiply);
         INIT_BINARY_ESIR(DoubleMultiply);
-        if (leftType.isInt32Type())
-            left = m_out->ins1(LIR_i2d, left);
-        if (rightType.isInt32Type())
-            right = m_out->ins1(LIR_i2d, right);
-        ASSERT(left->isD() && right->isD());
+        left = getDoubleDynamic(left, leftType);
+        right = getDoubleDynamic(right, rightType);
         return m_out->ins2(LIR_muld, left, right);
     }
     case ESIR::Opcode::GenericMultiply:
@@ -668,11 +780,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(DoubleDivision);
         INIT_BINARY_ESIR(DoubleDivision);
-        if (leftType.isInt32Type())
-            left = m_out->ins1(LIR_i2d, left);
-        if (rightType.isInt32Type())
-            right = m_out->ins1(LIR_i2d, right);
-        ASSERT(left->isD() && right->isD());
+        left = getDoubleDynamic(left, leftType);
+        right = getDoubleDynamic(right, rightType);
         return m_out->ins2(LIR_divd, left, right);
     }
     case ESIR::Opcode::GenericDivision:
@@ -695,11 +804,9 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(DoubleMod);
         INIT_BINARY_ESIR(DoubleMod);
-        if (leftType.isInt32Type())
-            left = m_out->ins1(LIR_i2d, left);
-        if (rightType.isInt32Type())
-            right = m_out->ins1(LIR_i2d, right);
-        ASSERT(left->isD() && right->isD());
+        left = getDoubleDynamic(left, leftType);
+        right = getDoubleDynamic(right, rightType);
+
         //FIXME: consider minus left
         /*
         left = m_out->ins1(LIR_absd, left);
@@ -732,11 +839,9 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(BitwiseOr);
         INIT_BINARY_ESIR(BitwiseOr);
-        if (leftType.hasNumberFlag() && rightType.hasNumberFlag()) {
-            if (leftType.isDoubleType())
-                left = m_out->ins1(LIR_d2i, left);
-            if (rightType.isDoubleType())
-                right = m_out->ins1(LIR_d2i, right);
+        if (leftType.isNumberType() && rightType.isNumberType()) {
+            left = getInt32Dynamic(left, leftType);
+            right = getInt32Dynamic(right, rightType);
             return m_out->ins2(LIR_ori, left, right);
         } else {
             CALL_BINARY_ESIR(BitwiseOr, bitwiseOrOpCallInfo);
@@ -747,11 +852,9 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(BitwiseXor);
         INIT_BINARY_ESIR(BitwiseXor);
-        if (leftType.hasNumberFlag() && rightType.hasNumberFlag()) {
-            if (leftType.isDoubleType())
-                left = m_out->ins1(LIR_d2i, left);
-            if (rightType.isDoubleType())
-                right = m_out->ins1(LIR_d2i, right);
+        if (leftType.isNumberType() && rightType.isNumberType()) {
+            left = getInt32Dynamic(left, leftType);
+            right = getInt32Dynamic(right, rightType);
             return m_out->ins2(LIR_xori, left, right);
         } else {
             CALL_BINARY_ESIR(BitwiseXor, bitwiseXorOpCallInfo);
@@ -836,18 +939,12 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(GreaterThan);
         INIT_BINARY_ESIR(GreaterThan);
-        if (leftType.hasNumberFlag() && rightType.hasNumberFlag()) {
+        if (leftType.isNumberType() && rightType.isNumberType()) {
             if (leftType.isInt32Type() && rightType.isInt32Type())
                 return m_out->ins2(LIR_gti, left, right);
             else {
-                if (leftType.isInt32Type()) {
-                    ASSERT(left->isI());
-                    left = m_out->ins1(LIR_i2d, left);
-                }
-                if (rightType.isInt32Type()) {
-                    ASSERT(right->isI());
-                    right = m_out->ins1(LIR_i2d, right);
-                }
+                left = getDoubleDynamic(left, leftType);
+                right = getDoubleDynamic(right, rightType);
                 return m_out->ins2(LIR_gtd, left, right);
             }
         }
@@ -869,11 +966,9 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_BINARY_ESIR(LessThan);
         if (leftType.isInt32Type() && rightType.isInt32Type())
             return m_out->ins2(LIR_lti, left, right);
-        else if (leftType.hasNumberFlag() && rightType.hasNumberFlag()) {
-            if (leftType.isInt32Type())
-                left = m_out->ins1(LIR_i2d, left);
-            if (rightType.isInt32Type())
-                right = m_out->ins1(LIR_i2d, right);
+        else if (leftType.isNumberType() && rightType.isNumberType()) {
+            left = getDoubleDynamic(left, leftType);
+            right = getDoubleDynamic(right, rightType);
             return m_out->ins2(LIR_ltd, left, right);
         }
         else if (leftType.isUndefinedType() || rightType.isUndefinedType())
@@ -907,11 +1002,9 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(SignedRightShift);
         INIT_BINARY_ESIR(SignedRightShift);
-        if (leftType.hasNumberFlag() && rightType.hasNumberFlag()) {
-            if (leftType.isDoubleType())
-                left = m_out->ins1(LIR_d2i, left);
-            if (rightType.isDoubleType())
-                right = m_out->ins1(LIR_d2i, right);
+        if (leftType.isNumberType() && rightType.isNumberType()) {
+            left = getInt32Dynamic(left, leftType);
+            right = getInt32Dynamic(right, rightType);
             return m_out->ins2(LIR_rshi, left, right);
         }
         else {
@@ -923,11 +1016,9 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(UnsignedRightShift);
         INIT_BINARY_ESIR(UnsignedRightShift);
-        if (leftType.hasNumberFlag() && rightType.hasNumberFlag()) {
-            if (leftType.isDoubleType())
-                left = m_out->ins1(LIR_d2i, left);
-            if (rightType.isDoubleType())
-                right = m_out->ins1(LIR_d2i, right);
+        if (leftType.isNumberType() && rightType.isNumberType()) {
+            left = getInt32Dynamic(left, leftType);
+            right = getInt32Dynamic(right, rightType);
             return m_out->ins2(LIR_rshui, left, right);
         }
         else {
@@ -1562,7 +1653,7 @@ bool NativeGenerator::nanojitCodegen(ESVMInstance* instance)
             if (ir->returnsESValue()) {
                 Type type = m_graph->getOperandType(ir->m_targetIndex);
                 if (!generateTypeCheck(generatedLIns, type, ir->m_targetIndex)) {
-                    LOG_VJ("Cannot generate type check code for type 0x%x in ESJIT Backend\n", type.type());
+                    LOG_VJ("Cannot generate type check code for type %s(0x%x) in ESJIT Backend\n", type.getESIRTypeName(), type.type());
                     return false;
                 }
                 generatedLIns = unboxESValue(generatedLIns, type);

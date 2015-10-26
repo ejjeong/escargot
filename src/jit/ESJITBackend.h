@@ -46,6 +46,9 @@ private:
     nanojit::LIns* boxESValue(nanojit::LIns* value, Type type);
     nanojit::LIns* unboxESValue(nanojit::LIns* value, Type type);
 
+    nanojit::LIns* getDoubleDynamic(nanojit::LIns* in, Type type);
+    nanojit::LIns* getInt32Dynamic(nanojit::LIns* in, Type type);
+
     ESGraph* m_graph;
     std::vector<nanojit::LIns*, gc_allocator<nanojit::LIns*> > m_tmpToLInsMapping;
 
