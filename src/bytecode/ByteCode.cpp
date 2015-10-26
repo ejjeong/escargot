@@ -34,6 +34,51 @@ void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, B
     data->m_registerDecrementCount = popCountFromOpcode(code, op);
     context.m_baseRegisterCount = context.m_baseRegisterCount + data->m_registerIncrementCount - data->m_registerDecrementCount;
     ASSERT(context.m_baseRegisterCount>=0);
+
+    if(op == InitObjectOpcode) {
+        int peekCount = peekCountFromOpcode(code, op);
+        ASSERT(peekCount == 1);
+        for(int i = 0; i < data->m_registerDecrementCount ; i ++) {
+            int c = context.m_ssaComputeStack.back();
+            context.m_ssaComputeStack.pop_back();
+            data->m_sourceIndexes.push_back(c);
+        }
+
+        data->m_sourceIndexes.push_back(context.m_ssaComputeStack.back());
+    } else {
+        int peekCount = peekCountFromOpcode(code, op);
+        ASSERT(!peekCount || !data->m_registerDecrementCount);
+        auto iter = context.m_ssaComputeStack.end();
+        for(int i = 0; i < peekCount ; i ++) {
+            iter --;
+            int c = *iter;
+            data->m_sourceIndexes.push_back(c);
+        }
+
+        for(int i = 0; i < data->m_registerDecrementCount ; i ++) {
+            int c = context.m_ssaComputeStack.back();
+            context.m_ssaComputeStack.pop_back();
+            data->m_sourceIndexes.push_back(c);
+        }
+    }
+
+
+    std::reverse(data->m_sourceIndexes.begin(), data->m_sourceIndexes.end());
+
+    if(data->m_registerIncrementCount == 0) {
+    } else if(data->m_registerIncrementCount == 1) {
+        int c = context.m_currentSSARegisterCount++;
+        context.m_ssaComputeStack.push_back(c);
+        data->m_targetIndex0 = c;
+    } else {
+        ASSERT(data->m_registerIncrementCount == 2);
+        int c = context.m_currentSSARegisterCount++;
+        context.m_ssaComputeStack.push_back(c);
+        data->m_targetIndex0 = c;
+        c = context.m_currentSSARegisterCount++;
+        context.m_ssaComputeStack.push_back(c);
+        data->m_targetIndex1 = c;
+    }
 }
 
 ByteCode::ByteCode(Opcode code) {
@@ -70,6 +115,7 @@ CodeBlock* generateByteCode(Node* node)
     }
 #endif
 
+    context.cleanupSSARegisterCount();
 #ifdef ENABLE_ESJIT
     //Fill temp register size for future
     block->m_tempRegisterSize = context.getCurrentNodeIndex();
@@ -93,7 +139,7 @@ unsigned char popCountFromOpcode(ByteCode* code, Opcode opcode)
         NewFunctionCall* c = (NewFunctionCall*)code;
         return c->m_argmentCount + 1/* function */;
     }
-#define FETCH_POP_COUNT_BYTE_CODE(code, pushCount, popCount, JITSupported) \
+#define FETCH_POP_COUNT_BYTE_CODE(code, pushCount, popCount, peekCount, JITSupported) \
     case code##Opcode: \
         ASSERT(popCount != -1); \
         return popCount;
@@ -112,12 +158,25 @@ unsigned char pushCountFromOpcode(ByteCode* code, Opcode opcode)
         } else
             return 0;
     }
-#define FETCH_PUSH_COUNT_BYTE_CODE(code, pushCount, popCount, JITSupported) \
+#define FETCH_PUSH_COUNT_BYTE_CODE(code, pushCount, popCount, peekCount, JITSupported) \
 case code##Opcode: \
     ASSERT(pushCount != -1); \
     return pushCount;
     switch(opcode) {
     FOR_EACH_BYTECODE_OP(FETCH_PUSH_COUNT_BYTE_CODE);
+    default:
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+}
+
+unsigned char peekCountFromOpcode(ByteCode* code, Opcode opcode)
+{
+#define FETCH_PEEK_COUNT_BYTE_CODE(code, pushCount, popCount, peekCount, JITSupported) \
+case code##Opcode: \
+    ASSERT(peekCount != -1); \
+    return peekCount;
+    switch(opcode) {
+    FOR_EACH_BYTECODE_OP(FETCH_PEEK_COUNT_BYTE_CODE);
     default:
         RELEASE_ASSERT_NOT_REACHED();
     }
@@ -145,7 +204,23 @@ void dumpBytecode(CodeBlock* codeBlock)
         else
             printf("%u\t\t%p\t(nodeinfo null)\t\t",(unsigned)idx, currentCode);
 
-        printf("regIndex[%d,+%d,-%d]\t\t", ex->m_baseRegisterIndex, ex->m_registerIncrementCount, ex->m_registerDecrementCount);
+        printf("IdxInfo[%d,+%d,-%d]\t", ex->m_baseRegisterIndex, ex->m_registerIncrementCount, ex->m_registerDecrementCount);
+        printf("ssa->[");
+
+        if(ex->m_targetIndex0 != -1) {
+            printf("t: %d,", ex->m_targetIndex0);
+        }
+
+        if(ex->m_targetIndex1 != -1) {
+            printf("t2: %d,", ex->m_targetIndex1);
+        }
+
+        for(int i = 0; i < ex->m_sourceIndexes.size() ; i ++) {
+            printf("s: %d,", ex->m_sourceIndexes[i]);
+        }
+        printf("]");
+
+        printf("\t");
 
         Opcode opcode = codeBlock->m_extraData[bytecodeCounter].m_opcode;
         bytecodeCounter++;
@@ -162,7 +237,7 @@ void dumpBytecode(CodeBlock* codeBlock)
             printf("] ");
         }
         switch(opcode) {
-#define DUMP_BYTE_CODE(code, pushCount, popCount, JITSupported) \
+#define DUMP_BYTE_CODE(code, pushCount, popCount, peekCount, JITSupported) \
         case code##Opcode:\
         codeBlock->getSSAIndex(currentCount)->dump(); \
         currentCode->dump(); \
@@ -176,7 +251,7 @@ void dumpBytecode(CodeBlock* codeBlock)
         };
 #else // ENABLE_ESJIT
         switch(opcode) {
-#define DUMP_BYTE_CODE(code, pushCount, popCount, JITSupported) \
+#define DUMP_BYTE_CODE(code, pushCount, popCount, peekCount, JITSupported) \
         case code##Opcode:\
         currentCode->dump(); \
         idx += sizeof (code); \
@@ -204,7 +279,7 @@ void dumpUnsupported(CodeBlock* block)
     while(&code[idx] < end) {
         Opcode opcode = block->m_extraData[bytecodeCounter].m_opcode;
         switch(opcode) {
-        #define DECLARE_EXECUTE_NEXTCODE(opcode, pushCount, popCount, JITSupported) \
+        #define DECLARE_EXECUTE_NEXTCODE(opcode, pushCount, popCount, peekCount, JITSupported) \
         case opcode##Opcode: \
             if (!JITSupported) { \
                 auto result = names.insert(std::pair<std::string, size_t>(std::string(#opcode), 1)); \

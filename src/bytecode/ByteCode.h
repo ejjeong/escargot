@@ -15,131 +15,131 @@ class Node;
 class ByteCode;
 class CodeBlock;
 
-///<OpcodeName, PushCount, PopCount, JITSupported>
+///<OpcodeName, PushCount, PopCount, PeekCount, JITSupported>
 #define FOR_EACH_BYTECODE_OP(F) \
-    F(Push, 1, 0, 1) \
-    F(PopExpressionStatement, 0, 1, 1) \
-    F(Pop, 0, 1, 1) \
-    F(PushIntoTempStack, 0, 1, 1) \
-    F(PopFromTempStack, 1, 0, 1) \
-    F(LoadStackPointer, 0, 0, 1) \
-    F(CheckStackPointer, 0, 0, 1) \
+    F(Push, 1, 0, 0, 1) \
+    F(PopExpressionStatement, 0, 1, 0, 1) \
+    F(Pop, 0, 1, 0, 1) \
+    F(PushIntoTempStack, 0, 1, 0, 1) \
+    F(PopFromTempStack, 1, 0, 0, 1) \
+    F(LoadStackPointer, 0, 0, 0, 1) \
+    F(CheckStackPointer, 0, 0, 0, 1) \
 \
-    F(GetById, 1, 0, 1) \
-    F(GetByIdWithoutException, 1, 0, 0) \
-    F(GetByIndex, 1, 0, 1) \
-    F(GetByGlobalIndex, 1, 0, 1) \
-    F(GetByIndexWithActivation, 1, 0, 1) \
-    F(GetArgumentsObject, 1, 0, 0) \
-    F(SetById, 0, 0, 1) \
-    F(SetByIndex, 0, 0, 1) \
-    F(SetByGlobalIndex, 0, 0, 1) \
-    F(SetByIndexWithActivation, 0, 0, 1) \
-    F(SetArgumentsObject, 0, 0, 0) \
-    F(CreateBinding, 0, 0, 0) \
+    F(GetById, 1, 0, 0, 1) \
+    F(GetByIdWithoutException, 1, 0, 0, 0) \
+    F(GetByIndex, 1, 0, 0, 1) \
+    F(GetByGlobalIndex, 1, 0, 0, 1) \
+    F(GetByIndexWithActivation, 1, 0, 0, 1) \
+    F(GetArgumentsObject, 1, 0, 0, 0) \
+    F(SetById, 0, 0, 1, 1) \
+    F(SetByIndex, 0, 0, 1, 1) \
+    F(SetByGlobalIndex, 0, 0, 1, 1) \
+    F(SetByIndexWithActivation, 0, 0, 1, 1) \
+    F(SetArgumentsObject, 0, 0, 1, 0) \
+    F(CreateBinding, 0, 0, 0, 0) \
 \
     /*binary expressions*/ \
-    F(Equal, 1, 2, 1) \
-    F(NotEqual, 1, 2, 0) \
-    F(StrictEqual, 1, 2, 1) \
-    F(NotStrictEqual, 1, 2, 0) \
-    F(BitwiseAnd, 1, 2, 1) \
-    F(BitwiseOr, 1, 2, 1) \
-    F(BitwiseXor, 1, 2, 1) \
-    F(LeftShift, 1, 2, 1) \
-    F(SignedRightShift, 1, 2, 1) \
-    F(UnsignedRightShift, 1, 2, 1) \
-    F(LessThan, 1, 2, 1) \
-    F(LessThanOrEqual, 1, 2, 1) \
-    F(GreaterThan, 1, 2, 1) \
-    F(GreaterThanOrEqual, 1, 2, 1) \
-    F(Plus, 1, 2, 1) \
-    F(Minus, 1, 2, 1) \
-    F(Multiply, 1, 2, 1) \
-    F(Division, 1, 2, 1) \
-    F(Mod, 1, 2, 1) \
-    F(StringIn, 1, 2, 0) \
-    F(InstanceOf, 1, 2, 0) \
+    F(Equal, 1, 2, 0, 1) \
+    F(NotEqual, 1, 2, 0, 0) \
+    F(StrictEqual, 1, 2, 0, 1) \
+    F(NotStrictEqual, 1, 2, 0, 0) \
+    F(BitwiseAnd, 1, 2, 0, 1) \
+    F(BitwiseOr, 1, 2, 0, 1) \
+    F(BitwiseXor, 1, 2, 0, 1) \
+    F(LeftShift, 1, 2, 0, 1) \
+    F(SignedRightShift, 1, 2, 0, 1) \
+    F(UnsignedRightShift, 1, 2, 0, 1) \
+    F(LessThan, 1, 2, 0, 1) \
+    F(LessThanOrEqual, 1, 2, 0, 1) \
+    F(GreaterThan, 1, 2, 0, 1) \
+    F(GreaterThanOrEqual, 1, 2, 0, 1) \
+    F(Plus, 1, 2, 0, 1) \
+    F(Minus, 1, 2, 0, 1) \
+    F(Multiply, 1, 2, 0, 1) \
+    F(Division, 1, 2, 0, 1) \
+    F(Mod, 1, 2, 0, 1) \
+    F(StringIn, 1, 2, 0, 0) \
+    F(InstanceOf, 1, 2, 0, 0) \
 \
     /*unary expressions*/ \
-    F(BitwiseNot, 1, 1, 1) \
-    F(LogicalNot, 1, 1, 0) \
-    F(UnaryMinus, 1, 1, 1) \
-    F(UnaryPlus, 1, 1, 0) \
-    F(UnaryTypeOf, 1, 1, 0) \
-    F(UnaryDelete, 1, 1, 0) \
-    F(UnaryVoid, 1, 1, 0) \
-    F(ToNumber, 1, 1, 1) \
-    F(Increment, 1, 1, 1) \
-    F(Decrement, 1, 1, 1) \
+    F(BitwiseNot, 1, 1, 0, 1) \
+    F(LogicalNot, 1, 1, 0, 0) \
+    F(UnaryMinus, 1, 1, 0, 1) \
+    F(UnaryPlus, 1, 1, 0, 0) \
+    F(UnaryTypeOf, 1, 1, 0, 0) \
+    F(UnaryDelete, 1, 1, 0, 0) \
+    F(UnaryVoid, 1, 1, 0, 0) \
+    F(ToNumber, 1, 1, 0, 1) \
+    F(Increment, 1, 1, 0, 1) \
+    F(Decrement, 1, 1, 0, 1) \
 \
     /*object, array*/ \
-    F(CreateObject, 1, 0, 0) \
-    F(CreateArray, 1, 0, 1) \
-    F(InitObject, 0, 2, 1) \
-    F(SetObjectPropertySetter, 0, 2, 0) \
-    F(SetObjectPropertyGetter, 0, 2, 0) \
-    F(GetObject, 1, 2, 1) \
-    F(GetObjectAndPushObject, 2, 2, 1) \
-    F(GetObjectSlowMode, 1, 2, 1) \
-    F(GetObjectAndPushObjectSlowMode, 2, 2, 0) \
-    F(GetObjectWithPeeking, 1, 0, 0) \
-    F(GetObjectWithPeekingSlowMode, 1, 0, 0) \
-    F(GetObjectPreComputedCase, 1, 1, 1) \
-    F(GetObjectPreComputedCaseAndPushObject, 2, 1, 1) \
-    F(GetObjectPreComputedCaseSlowMode, 1, 1, 0) \
-    F(GetObjectPreComputedCaseAndPushObjectSlowMode, 2, 1, 0) \
-    F(GetObjectWithPeekingPreComputedCase, 1, 0, 0) \
-    F(GetObjectWithPeekingPreComputedCaseSlowMode, 1, 0, 0) \
-    F(SetObject, 1, 3, 1) \
-    F(SetObjectSlowMode, 1, 3, 0) \
-    F(SetObjectPreComputedCase, 1, 2, 1) \
-    F(SetObjectPreComputedCaseSlowMode, 1, 2, 0) \
+    F(CreateObject, 1, 0, 0, 0) \
+    F(CreateArray, 1, 0, 0, 1) \
+    F(InitObject, 0, 2, 1, 1) \
+    F(SetObjectPropertySetter, 0, 2, 0, 0) \
+    F(SetObjectPropertyGetter, 0, 2, 0, 0) \
+    F(GetObject, 1, 2, 0, 1) \
+    F(GetObjectAndPushObject, 2, 2, 0, 1) \
+    F(GetObjectSlowMode, 1, 2, 0, 0) \
+    F(GetObjectAndPushObjectSlowMode, 2, 2, 0, 0) \
+    F(GetObjectWithPeeking, 1, 0, 2, 0) \
+    F(GetObjectWithPeekingSlowMode, 1, 0, 2, 0) \
+    F(GetObjectPreComputedCase, 1, 1, 0, 1) \
+    F(GetObjectPreComputedCaseAndPushObject, 2, 1, 0, 1) \
+    F(GetObjectPreComputedCaseSlowMode, 1, 1, 0, 0) \
+    F(GetObjectPreComputedCaseAndPushObjectSlowMode, 2, 1, 0, 0) \
+    F(GetObjectWithPeekingPreComputedCase, 1, 0, 2, 0) \
+    F(GetObjectWithPeekingPreComputedCaseSlowMode, 1, 0, 2, 0) \
+    F(SetObject, 1, 3, 0, 1) \
+    F(SetObjectSlowMode, 1, 3, 0, 0) \
+    F(SetObjectPreComputedCase, 1, 2, 0, 1) \
+    F(SetObjectPreComputedCaseSlowMode, 1, 2, 0, 0) \
 \
     /*function*/\
-    F(CreateFunction, -1, 0, 0) \
-    F(ExecuteNativeFunction, 0, 0, 0) \
-    F(CallFunction, 1, -1, 1) \
-    F(CallFunctionWithReceiver, 1, -1, 1) \
-    F(CallEvalFunction, 1, -1, 0) \
-    F(CallBoundFunction, 0, 0, 0) \
-    F(NewFunctionCall, 1, -1, 1) \
-    F(ReturnFunction, 0, 0, 1) \
-    F(ReturnFunctionWithValue, 0, 1, 1) \
+    F(CreateFunction, -1, 0, 0, 0) \
+    F(ExecuteNativeFunction, 0, 0, 0, 0) \
+    F(CallFunction, 1, -1, 0, 1) \
+    F(CallFunctionWithReceiver, 1, -1, 0, 1) \
+    F(CallEvalFunction, 1, -1, 0, 0) \
+    F(CallBoundFunction, 0, 0, 0, 0) \
+    F(NewFunctionCall, 1, -1, 0, 1) \
+    F(ReturnFunction, 0, 0, 0, 1) \
+    F(ReturnFunctionWithValue, 0, 1, 0, 1) \
 \
     /* control flow */ \
-    F(Jump, 0, 0, 1) \
-    F(JumpComplexCase, 0, 0, 0) \
-    F(JumpIfTopOfStackValueIsFalse, 0, 1, 1) \
-    F(JumpIfTopOfStackValueIsTrue, 0, 1, 1) \
-    F(JumpAndPopIfTopOfStackValueIsTrue, 0, 1, 1) \
-    F(JumpIfTopOfStackValueIsFalseWithPeeking, 0, 0, 0) \
-    F(JumpIfTopOfStackValueIsTrueWithPeeking, 0, 0, 1) \
-    F(DuplicateTopOfStackValue, 1, 0, 1) \
-    F(LoopStart, 0, 0, 1) \
+    F(Jump, 0, 0, 0, 1) \
+    F(JumpComplexCase, 0, 0, 0, 0) \
+    F(JumpIfTopOfStackValueIsFalse, 0, 1, 0, 1) \
+    F(JumpIfTopOfStackValueIsTrue, 0, 1, 0, 1) \
+    F(JumpAndPopIfTopOfStackValueIsTrue, 0, 1, 0, 1) \
+    F(JumpIfTopOfStackValueIsFalseWithPeeking, 0, 0, 1, 0) \
+    F(JumpIfTopOfStackValueIsTrueWithPeeking, 0, 0, 1, 1) \
+    F(DuplicateTopOfStackValue, 1, 0, 1, 1) \
+    F(LoopStart, 0, 0, 0, 1) \
 \
     /*try-catch*/ \
-    F(Try, 0, 0, 0) \
-    F(TryCatchBodyEnd, 0, 0, 0) \
-    F(Throw, 0, 1, 0) \
-    F(FinallyEnd, 0, 0, 0) \
+    F(Try, 0, 0, 0, 0) \
+    F(TryCatchBodyEnd, 0, 0, 0, 0) \
+    F(Throw, 0, 1, 0, 0) \
+    F(FinallyEnd, 0, 0, 0, 0) \
 \
     /*phi*/ \
-    F(AllocPhi, 0, 0, 1) \
-    F(StorePhi, 0, 0, 1) \
-    F(LoadPhi, 0, 0, 1) \
+    F(AllocPhi, 0, 0, 0, 1) \
+    F(StorePhi, 0, 0, 0, 1) \
+    F(LoadPhi, 0, 0, 0, 1) \
 \
     /*etc*/ \
-    F(This, 1, 0, 1) \
-    F(EnumerateObject, 1, 0, 0) \
-    F(EnumerateObjectKey, 0, 0, 0) \
-    F(PrintSpAndBp, 0, 0, 0) \
+    F(This, 1, 0, 0, 1) \
+    F(EnumerateObject, 1, 0, 0, 0) \
+    F(EnumerateObjectKey, 0, 0, 1, 0) \
+    F(PrintSpAndBp, 0, 0, 0, 0) \
 \
-    F(End, 0, 0, 1)
+    F(End, 0, 0, 0, 1)
 
 
 enum Opcode {
-#define DECLARE_BYTECODE(name, pushCount, popCount, JITSupported) name##Opcode,
+#define DECLARE_BYTECODE(name, pushCount, popCount, peekCount, JITSupported) name##Opcode,
     FOR_EACH_BYTECODE_OP(DECLARE_BYTECODE)
 #undef DECLARE_BYTECODE
     OpcodeKindEnd
@@ -152,12 +152,13 @@ struct OpcodeTable {
 
 unsigned char popCountFromOpcode(ByteCode* code, Opcode opcode);
 unsigned char pushCountFromOpcode(ByteCode* code, Opcode opcode);
+unsigned char peekCountFromOpcode(ByteCode* code, Opcode opcode);
 
 #ifndef NDEBUG
 inline const char* getByteCodeName(Opcode opcode)
 {
     switch (opcode) {
-        #define RETURN_BYTECODE_NAME(name, pushCount, popCount, JITSupported) case name##Opcode: return #name;
+        #define RETURN_BYTECODE_NAME(name, pushCount, popCount, peekCount, JITSupported) case name##Opcode: return #name;
         FOR_EACH_BYTECODE_OP(RETURN_BYTECODE_NAME)
         #undef  RETURN_BYTECODE_NAME
         default: RELEASE_ASSERT_NOT_REACHED();
@@ -167,20 +168,23 @@ inline const char* getByteCodeName(Opcode opcode)
 
 struct ByteCodeGenerateContext {
     ByteCodeGenerateContext()
-        : m_offsetToBasePointer(0)
+        : m_baseRegisterCount(0)
+        , m_currentSSARegisterCount(0)
+        , m_offsetToBasePointer(0)
         , m_positionToContinue(0)
         , m_tryStatementScopeCount(0)
 #ifdef ENABLE_ESJIT
         , m_currentNodeIndex(0)
 #endif
     {
-        m_baseRegisterCount = 0;
         m_inCallingExpressionScope = false;
         m_isHeadOfMemberExpression = false;
     }
 
     ByteCodeGenerateContext(const ByteCodeGenerateContext& contextBefore)
         : m_baseRegisterCount(contextBefore.m_baseRegisterCount)
+        , m_currentSSARegisterCount(contextBefore.m_currentSSARegisterCount)
+        , m_ssaComputeStack(contextBefore.m_ssaComputeStack)
         , m_inCallingExpressionScope(contextBefore.m_inCallingExpressionScope)
         , m_offsetToBasePointer(0)
         , m_tryStatementScopeCount(contextBefore.m_tryStatementScopeCount)
@@ -199,6 +203,7 @@ struct ByteCodeGenerateContext {
         ASSERT(m_labeledBreakStatmentPositions.size() == 0);
         ASSERT(m_labeledContinueStatmentPositions.size() == 0);
         ASSERT(m_complexCaseStatementPositions.size() == 0);
+        ASSERT(m_currentSSARegisterCount == -1);
 #ifdef ENABLE_ESJIT
         ASSERT(m_currentNodeIndex == std::numeric_limits<unsigned>::max());
 #endif
@@ -213,6 +218,10 @@ struct ByteCodeGenerateContext {
         ctx.m_complexCaseStatementPositions.insert(m_complexCaseStatementPositions.begin(), m_complexCaseStatementPositions.end());
         ctx.m_offsetToBasePointer = m_offsetToBasePointer;
         ctx.m_positionToContinue = m_positionToContinue;
+        ctx.m_currentSSARegisterCount = m_currentSSARegisterCount;
+        ctx.m_ssaComputeStack = m_ssaComputeStack;
+
+        m_currentSSARegisterCount = -1;
         m_breakStatementPositions.clear();
         m_continueStatementPositions.clear();
         m_labeledBreakStatmentPositions.clear();
@@ -224,6 +233,11 @@ struct ByteCodeGenerateContext {
         m_currentNodeIndex = std::numeric_limits<unsigned>::max();
 #endif
 #endif
+    }
+
+    void cleanupSSARegisterCount()
+    {
+        m_currentSSARegisterCount = -1;
     }
 
 #ifdef ENABLE_ESJIT
@@ -293,6 +307,8 @@ struct ByteCodeGenerateContext {
     ALWAYS_INLINE void morphJumpPositionIntoComplexCase(CodeBlock* cb,size_t codePos);
 
     int m_baseRegisterCount;
+    int m_currentSSARegisterCount;
+    std::vector<int> m_ssaComputeStack;
 
     bool m_inCallingExpressionScope;
     bool m_isHeadOfMemberExpression;
@@ -347,15 +363,20 @@ public:
 struct ByteCodeExtraData {
     Opcode m_opcode;
     int m_baseRegisterIndex;
-    int m_registerIncrementCount; //stack push
-    int m_registerDecrementCount; //stack pop
+    int m_registerIncrementCount; //stack push count
+    int m_registerDecrementCount; //stack pop count
 
+    int m_targetIndex0;
+    int m_targetIndex1;
+    std::vector<int> m_sourceIndexes;
     ByteCodeExtraData()
     {
         m_opcode = (Opcode)0;
         m_baseRegisterIndex = 0;
         m_registerIncrementCount = 0;
         m_registerDecrementCount = 0;
+        m_targetIndex0 = -1;
+        m_targetIndex1 = -1;
     }
 };
 
@@ -2502,7 +2523,7 @@ inline void iterateByteCode(CodeBlock* codeBlock, void (*fn)(CodeBlock* block, u
         fn(codeBlock, idx, (ByteCode *)ptr, code);
         idx++;
         switch(code) {
-#define ADD_BYTECODE_SIZE(name, pushCount, popCount, JITSupported) case name##Opcode: ptr += sizeof(name); break;
+#define ADD_BYTECODE_SIZE(name, pushCount, popCount, peekCount, JITSupported) case name##Opcode: ptr += sizeof(name); break;
         FOR_EACH_BYTECODE_OP(ADD_BYTECODE_SIZE)
         default:
             RELEASE_ASSERT_NOT_REACHED();

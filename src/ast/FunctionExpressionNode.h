@@ -51,6 +51,7 @@ public:
 #endif
         codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb, false), context, this);
 
+        newContext.cleanupSSARegisterCount();
 #ifdef ENABLE_ESJIT
         newContext.dumpCurrentNodeIndex();
 #endif

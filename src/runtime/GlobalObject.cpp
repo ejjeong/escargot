@@ -325,6 +325,7 @@ void GlobalObject::installFunction()
             codeBlock->m_tempRegisterSize = context.getCurrentNodeIndex();
 #endif
             codeBlock->pushCode(ReturnFunction(), context, functionDeclAST);
+            context.cleanupSSARegisterCount();
 #ifdef ENABLE_ESJIT
             context.dumpCurrentNodeIndex();
 #endif
@@ -338,6 +339,7 @@ void GlobalObject::installFunction()
         } else
             function = ESFunctionObject::create(scope, codeBlock, ESString::create(u"anonymous"));
 
+        context.cleanupSSARegisterCount();
 #ifdef ENABLE_ESJIT
         context.dumpCurrentNodeIndex();
 #endif
@@ -431,6 +433,7 @@ void GlobalObject::installFunction()
         prototype->set__proto__(instance->globalObject()->object()->protoType());
         function->setProtoType(prototype);
 
+        context.cleanupSSARegisterCount();
 #ifdef ENABLE_ESJIT
         //NOTE
         //The binded function has only one bytecode what is CallBoundFunction

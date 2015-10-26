@@ -33,7 +33,9 @@ private:
         ASSERT(ins);
         m_tmpToLInsMapping[irIndex] = ins;
     }
-    nanojit::LIns* getTmpMapping(size_t irIndex) {
+
+    nanojit::LIns* getTmpMapping(size_t irIndex)
+    {
         // printf("= tmpMap[%lu]\n", irIndex);
         ASSERT(irIndex < m_tmpToLInsMapping.size());
         ASSERT(m_tmpToLInsMapping[irIndex]);

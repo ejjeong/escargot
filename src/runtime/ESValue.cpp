@@ -733,7 +733,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                     if (compileNextTime) break;
 
                     switch(opcode) {
-                        #define DECLARE_EXECUTE_NEXTCODE(opcode, pushCount, popCount, JITSupported) \
+                        #define DECLARE_EXECUTE_NEXTCODE(opcode, pushCount, popCount, peekCount, JITSupported) \
                         case opcode##Opcode: \
                             if (!JITSupported) { \
                                 dontJIT = true; \
@@ -811,7 +811,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                            }
 
                         switch(opcode) {
-                            #define DECLARE_EXECUTE_NEXTCODE(code, pushCount, popCount, JITSupported) \
+                            #define DECLARE_EXECUTE_NEXTCODE(code, pushCount, popCount, peekCount, JITSupported) \
                                                 case code##Opcode: \
                                                     idx += sizeof (code); \
                                                     bytecodeCounter++; \
