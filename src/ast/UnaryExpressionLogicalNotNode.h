@@ -17,7 +17,9 @@ public:
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_argument->generateExpressionByteCode(codeBlock, context);
+        updateNodeIndex(context);
         codeBlock->pushCode(LogicalNot(), context, this);
+        WRITE_LAST_INDEX(m_nodeIndex, m_argument->nodeIndex(), -1);
     }
 
 protected:

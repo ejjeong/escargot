@@ -379,9 +379,13 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         }
         case LogicalNotOpcode:
-            goto unsupported;
+        {
+            INIT_BYTECODE(LogicalNot);
+            ESIR* logicalNotIR = LogicalNotIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1);
+            currentBlock->push(logicalNotIR);
             NEXT_BYTECODE(LogicalNot);
             break;
+        }
         case UnaryMinusOpcode:
         {
             INIT_BYTECODE(UnaryMinus);

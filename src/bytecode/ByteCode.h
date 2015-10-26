@@ -63,7 +63,7 @@ class CodeBlock;
 \
     /*unary expressions*/ \
     F(BitwiseNot, 1, 1, 0, 1) \
-    F(LogicalNot, 1, 1, 0, 0) \
+    F(LogicalNot, 1, 1, 0, 1) \
     F(UnaryMinus, 1, 1, 0, 1) \
     F(UnaryPlus, 1, 1, 0, 0) \
     F(UnaryTypeOf, 1, 1, 0, 0) \

@@ -72,6 +72,12 @@ inline ESValueInDouble bitwiseNotOp(ESValueInDouble valueInDouble)
     return ESValue::toRawDouble(ESValue(~value.toInt32()));
 }
 
+inline ESValueInDouble logicalNotOp(ESValueInDouble valueInDouble)
+{
+    ESValue value = ESValue::fromRawDouble(valueInDouble);
+    return ESValue::toRawDouble(ESValue(!value.toBoolean()));
+}
+
 inline ESValueInDouble leftShiftOp(ESValueInDouble leftInDouble, ESValueInDouble rightInDouble)
 {
     ESValue left = ESValue::fromRawDouble(leftInDouble);

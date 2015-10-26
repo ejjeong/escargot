@@ -1010,6 +1010,15 @@ private:
         : UnaryExpressionIR(ESIR::Opcode::BitwiseNot, targetIndex, sourceIndex) { }
 };
 
+class LogicalNotIR : public UnaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_1(LogicalNot, int);
+
+private:
+    LogicalNotIR(int targetIndex, int sourceIndex)
+        : UnaryExpressionIR(ESIR::Opcode::LogicalNot, targetIndex, sourceIndex) { }
+};
+
 class UnaryMinusIR : public UnaryExpressionIR {
 public:
     DECLARE_STATIC_GENERATOR_1(UnaryMinus, int);

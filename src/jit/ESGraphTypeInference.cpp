@@ -167,6 +167,7 @@ bool ESGraphTypeInference::run(ESGraph* graph)
             case ESIR::Opcode::BitwiseNot:
                 graph->setOperandType(ir->targetIndex(), TypeInt32);
                 break;
+            case ESIR::Opcode::LogicalNot:
             case ESIR::Opcode::Equal:
             case ESIR::Opcode::NotEqual:
             case ESIR::Opcode::StrictEqual:

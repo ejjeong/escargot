@@ -46,6 +46,7 @@ CallInfo leftShiftOpCallInfo = CI(leftShiftOp, CallInfo::typeSig2(ARGTYPE_D, ARG
 CallInfo signedRightShiftOpCallInfo = CI(signedRightShiftOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 CallInfo unsignedRightShiftOpCallInfo = CI(unsignedRightShiftOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 CallInfo bitwiseNotOpCallInfo = CI(bitwiseNotOp, CallInfo::typeSig1(ARGTYPE_D, ARGTYPE_D));
+CallInfo logicalNotOpCallInfo = CI(logicalNotOp, CallInfo::typeSig1(ARGTYPE_D, ARGTYPE_D));
 CallInfo equalOpCallInfo = CI(equalOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 CallInfo strictEqualOpCallInfo = CI(strictEqualOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 CallInfo lessThanOpCallInfo = CI(lessThanOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
@@ -1348,10 +1349,26 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_UNARY_ESIR(BitwiseNot);
         if (valueType.isInt32Type())
             return m_out->ins1(LIR_noti, value);
-        if (valueType.isDoubleType())
+        else if (valueType.isDoubleType())
             return m_out->ins1(LIR_noti, m_out->ins1(LIR_d2i, value));
         else {
             CALL_UNARY_ESIR(BitwiseNot, bitwiseNotOpCallInfo);
+            return unboxedResult;
+        }
+    }
+    case ESIR::Opcode::LogicalNot:
+    {
+        INIT_ESIR(LogicalNot);
+        INIT_UNARY_ESIR(LogicalNot);
+        if (valueType.isNullType() || valueType.isUndefinedType())
+            return m_true;
+        else if (valueType.isInt32Type()) {
+            return m_out->ins2(LIR_eqi, m_zeroI, value);
+        }
+        else if (valueType.isBooleanType())
+            return m_out->ins2(LIR_xori, value, m_oneI);
+        else {
+            CALL_UNARY_ESIR(LogicalNot, logicalNotOpCallInfo);
             return unboxedResult;
         }
     }
