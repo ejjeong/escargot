@@ -25,7 +25,7 @@ bool ESGraphTypeInference::run(ESGraph* graph)
             case ESIR::Opcode::ConstantESValue:
             {
                 INIT_ESIR(ConstantESValue);
-                graph->setOperandType(ir->targetIndex(), Type::getType(irConstantESValue->value()));
+                graph->setOperandType(ir->targetIndex(), Type::getType(ESValue::fromRawDouble(irConstantESValue->value())));
                 break;
             }
             case ESIR::Opcode::ConstantInt:
@@ -33,6 +33,9 @@ bool ESGraphTypeInference::run(ESGraph* graph)
                 break;
             case ESIR::Opcode::ConstantDouble:
                 graph->setOperandType(ir->targetIndex(), TypeDouble);
+                break;
+            case ESIR::Opcode::ConstantPointer:
+                graph->setOperandType(ir->targetIndex(), TypePointer);
                 break;
             case ESIR::Opcode::ConstantBoolean:
                 graph->setOperandType(ir->targetIndex(), TypeBoolean);

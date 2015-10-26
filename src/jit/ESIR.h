@@ -200,22 +200,22 @@ protected:
 
 class ConstantESValueIR : public ESIR {
 public:
-    DECLARE_STATIC_GENERATOR_1(ConstantESValue, ESValue)
+    DECLARE_STATIC_GENERATOR_1(ConstantESValue, double)
 
 #ifndef NDEBUG
     virtual void dump(std::ostream& out)
     {
         out << "tmp" << m_targetIndex << ": ";
         ESIR::dump(out);
-        out << " constant " << m_value.toString()->utf8Data();
+        out << " constant " << ESValue::fromRawDouble(m_value).toString()->utf8Data();
     }
 #endif
-    ESValue value() { return m_value; }
+    double value() { return m_value; }
 
 private:
-    ConstantESValueIR(int target, ESValue value)
+    ConstantESValueIR(int target, double value)
         : ESIR(ESIR::Opcode::ConstantESValue, target), m_value(value) { }
-    ESValue m_value;
+    double m_value;
 };
 
 class ConstantIntIR : public ESIR {

@@ -424,9 +424,9 @@ LIns* NativeGenerator::boxESValue(LIns* unboxedValue, Type type)
         RELEASE_ASSERT_NOT_REACHED();
 #endif
     } else if (type.isUndefinedType() || type.isNullType()) {
-        ASSERT(unboxedValue->isQ());
+        ASSERT(unboxedValue->isD());
 #ifdef ESCARGOT_64
-        boxedValueInDouble = m_out->ins1(LIR_qasd, unboxedValue);
+        boxedValueInDouble =unboxedValue;
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
@@ -481,8 +481,8 @@ LIns* NativeGenerator::unboxESValue(LIns* boxedValue, Type type)
 #endif
     } else if (type.isUndefinedType() || type.isNullType()) {
 #ifdef ESCARGOT_64
-        unboxedValue = m_out->ins1(LIR_dasq, boxedValue);
-        ASSERT(unboxedValue->isQ());
+        unboxedValue = boxedValue;
+        ASSERT(unboxedValue->isD());
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
@@ -509,7 +509,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     case ESIR::Opcode::ConstantESValue:
     {
         INIT_ESIR(ConstantESValue);
-        return m_out->insImmQ(irConstantESValue->value().asRawData());
+        return m_out->insImmD(irConstantESValue->value());
     }
     case ESIR::Opcode::ConstantInt:
     {
