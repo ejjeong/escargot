@@ -43,7 +43,8 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
 
         // Update BasicBlock information
         // TODO: find a better way to this (e.g. using AST, write information to bytecode..)
-        if (ESBasicBlock* generatedBlock = basicBlockMapping[idx]) {
+        if (basicBlockMapping.find(idx) != basicBlockMapping.end()) {
+            ESBasicBlock* generatedBlock = basicBlockMapping[idx];
             if (currentBlock != generatedBlock && !currentBlock->endsWithJumpOrBranch()) {
                 currentBlock->addChild(generatedBlock);
                 generatedBlock->addParent(currentBlock);
