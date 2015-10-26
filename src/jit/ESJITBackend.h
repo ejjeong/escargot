@@ -49,7 +49,6 @@ private:
     ESGraph* m_graph;
     std::vector<nanojit::LIns*, gc_allocator<nanojit::LIns*> > m_tmpToLInsMapping;
 
-    nanojit::LIns* m_stackPtr;
     nanojit::LIns* m_instance;
     nanojit::LIns* m_context;
     nanojit::LIns* m_globalObject;

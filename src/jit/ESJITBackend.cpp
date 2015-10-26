@@ -96,7 +96,6 @@ CallInfo logPointerCallInfo = CI(jitLogPointerOperation, CallInfo::typeSig2(ARGT
 NativeGenerator::NativeGenerator(ESGraph* graph)
     : m_graph(graph),
     m_tmpToLInsMapping(graph->tempRegisterSize()),
-    m_stackPtr(nullptr),
     m_instance(nullptr),
     m_context(nullptr),
     m_alloc(new Allocator()),
@@ -1074,7 +1073,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(GetVar);
         if(irGetVar->varUpIndex() == 0) {
-            return m_out->insLoad(LIR_ldd, m_stackPtr, irGetVar->varIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
+            LIns* cachedDeclarativeEnvironmentRecordESValue = m_out->insLoad(LIR_ldp, m_context, ExecutionContext::offsetofcachedDeclarativeEnvironmentRecordESValue(), 1, LOAD_NORMAL);
+            return m_out->insLoad(LIR_ldd, cachedDeclarativeEnvironmentRecordESValue, irGetVar->varIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
         } else {
             //inline ESValueInDouble getByIndexWithActivationOp(ExecutionContext* ec, int32_t upCount, int32_t index)
             LIns* args[] = {m_out->insImmI(irGetVar->varIndex()), m_out->insImmI(irGetVar->varUpIndex()), m_context};
@@ -1090,7 +1090,6 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             LIns* context = m_out->insLoad(LIR_ldp, m_instance, ESVMInstance::offsetOfCurrentExecutionContext(), 1, LOAD_NORMAL);
             LIns* cachedDeclarativeEnvironmentRecordESValue = m_out->insLoad(LIR_ldp, context, ExecutionContext::offsetofcachedDeclarativeEnvironmentRecordESValue(), 1, LOAD_NORMAL);
             m_out->insStore(LIR_std, boxedSource, cachedDeclarativeEnvironmentRecordESValue, irSetVar->localVarIndex() * sizeof(ESValue), 1);
-            m_out->insStore(LIR_std, boxedSource, m_stackPtr, irSetVar->localVarIndex() * sizeof(ESValue), 1);
         } else {
             //inline void setByIndexWithActivationOp(ExecutionContext* ec, int32_t upCount, int32_t index, ESValueInDouble val)
             LIns* args[] = {boxedSource, m_out->insImmI(irSetVar->localVarIndex()), m_out->insImmI(irSetVar->upVarIndex()), m_context};
@@ -1508,7 +1507,6 @@ bool NativeGenerator::nanojitCodegen(ESVMInstance* instance)
         m_out->insParam(i, 1);
     m_instance = m_out->insImmP(instance);
     m_context = m_out->insLoad(LIR_ldp, m_instance, ESVMInstance::offsetOfCurrentExecutionContext(), 1, LOAD_NORMAL); // FIXME generate this only if really needed
-    m_stackPtr = m_out->insAlloc(m_graph->tempRegisterSize() * sizeof(ESValue));
     m_globalObject = m_out->insLoad(LIR_ldp, m_instance, ESVMInstance::offsetOfGlobalObject(), 1, LOAD_NORMAL); // FIXME generate this only if really needed
 
 #ifdef ESCARGOT_64
