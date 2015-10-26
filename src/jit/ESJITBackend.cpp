@@ -115,9 +115,9 @@ NativeGenerator::NativeGenerator(ESGraph* graph)
 
     // Default Writer Pipeline
     m_out = new ValidateWriter(m_out, m_buf->printer, "[validate]");
+    m_out = new LirWriter(m_out);
+
     // Selectable Writer Pipeline
-    if (ESVMInstance::currentInstance()->m_useLirWriter)
-        m_out = new LirWriter(m_out);
     if (ESVMInstance::currentInstance()->m_useVerboseWriter)
         m_out = new VerboseWriter(*m_alloc, m_out, m_buf->printer, &m_lc, "[verbose]");
     if (ESVMInstance::currentInstance()->m_useExprFilter)

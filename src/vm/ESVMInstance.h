@@ -138,7 +138,6 @@ public:
     bool m_reportUnsupportedOpcode;
     bool m_reportCompiledFunction;
     bool m_reportOSRExitedFunction;
-    bool m_useLirWriter;
     bool m_useVerboseWriter;
     bool m_useExprFilter;
     bool m_useCseFilter;

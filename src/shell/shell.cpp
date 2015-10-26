@@ -70,9 +70,6 @@ int main(int argc, char* argv[])
             if(strcmp(argv[i], "-e") == 0) {
                 ES->m_dumpExecuteByteCode = true;
             }
-            if(strcmp(argv[i], "-uselir") == 0) {
-                ES->m_useLirWriter = true;
-            }
             if(strcmp(argv[i], "-usever") == 0) {
                 ES->m_useVerboseWriter = true;
             }
