@@ -16,12 +16,35 @@ public:
 
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
+#ifdef ENABLE_ESJIT
+        codeBlock->pushCode(AllocPhi(), context, this);
+        int allocPhiIndex = context.lastUsedSSAIndex();
+        int srcIndex0 = -1;
+        int srcIndex1 = -1;
+#endif
         m_left->generateExpressionByteCode(codeBlock, context);
+        int savedBaseRegisterCounter = context.m_baseRegisterCount;
+
+#ifdef ENABLE_ESJIT
+        codeBlock->pushCode(StorePhi(allocPhiIndex), context, this);
+        srcIndex0 = context.lastUsedSSAIndex();
+#endif
+
         codeBlock->pushCode<JumpIfTopOfStackValueIsFalseWithPeeking>(JumpIfTopOfStackValueIsFalseWithPeeking(SIZE_MAX), context, this);
         size_t pos = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsFalseWithPeeking>();
         codeBlock->pushCode(Pop(), context, this);
         m_right->generateExpressionByteCode(codeBlock, context);
+
+#ifdef ENABLE_ESJIT
+        codeBlock->pushCode(StorePhi(allocPhiIndex), context, this);
+        srcIndex1 = context.lastUsedSSAIndex();
+#endif
         codeBlock->peekCode<JumpIfTopOfStackValueIsFalseWithPeeking>(pos)->m_jumpPosition = codeBlock->currentCodeSize();
+        context.m_baseRegisterCount = savedBaseRegisterCounter;
+#ifdef ENABLE_ESJIT
+        codeBlock->pushCode(LoadPhi(allocPhiIndex, srcIndex0, srcIndex1), context, this);
+        context.m_ssaComputeStack.back() = context.lastUsedSSAIndex();
+#endif
     }
 
 protected:
