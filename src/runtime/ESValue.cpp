@@ -789,7 +789,8 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                 result = ESValue::fromRawDouble(jitFunction(instance));
                 // printf("JIT Result %s\n", result.toString()->utf8Data());
                 if (ec.inOSRExit()) {
-                    LOG_VJ("> OSR Exit from function %s (codeBlock %p)! Disabling JIT from now on\n", functionName, fn->codeBlock());
+                    fn->codeBlock()->m_osrExitCount++;
+                    LOG_VJ("> OSR Exit from function %s (codeBlock %p), exit count %zu\n", functionName, fn->codeBlock(), fn->codeBlock()->m_osrExitCount);
 #ifndef NDEBUG
                     if (ESVMInstance::currentInstance()->m_reportOSRExitedFunction) {
                         printf("%s ", fn->codeBlock()->m_nonAtomicId ? (fn->codeBlock()->m_nonAtomicId->utf8Data()):"(anonymous)");
@@ -823,8 +824,11 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                                                     break;
                            }
                        }
-                    fn->codeBlock()->m_cachedJITFunction = nullptr;
-                    fn->codeBlock()->m_dontJIT = true; // Fixme(JMP): We have to compile  to JIT code again when gathering enough type data
+                    if (fn->codeBlock()->m_osrExitCount > 0) {
+                        LOG_VJ("Too many exits; Disable JIT for function %s (codeBlock %p) from now on\n", functionName, fn->codeBlock());
+                        fn->codeBlock()->m_cachedJITFunction = nullptr;
+                        fn->codeBlock()->m_dontJIT = true; // Fixme(JMP): We have to compile to JIT code again when gathering enough type data
+                    }
                     result = interpret(instance, fn->codeBlock(), idx, maxStackPos);
                     fn->codeBlock()->m_executeCount++;
                 }

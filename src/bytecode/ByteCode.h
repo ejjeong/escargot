@@ -2313,6 +2313,7 @@ public:
     size_t m_tempRegisterSize;
     size_t m_executionCount;
     size_t m_executeCount;
+    size_t m_osrExitCount;
     size_t m_threshold;
 #else
 #define WRITE_LAST_INDEX(a, b, c)

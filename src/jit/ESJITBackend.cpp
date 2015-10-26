@@ -270,6 +270,8 @@ void NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteC
 #ifndef NDEBUG
         if (ESVMInstance::currentInstance()->m_verboseJIT) {
             JIT_LOG(in, "Expected Double-typed value, but got this value");
+            LIns* index = m_out->insImmI(currentByteCodeIndex);
+            JIT_LOG(index, "currentByteCodeIndex = ");
         }
 #endif
         generateOSRExit(currentByteCodeIndex);

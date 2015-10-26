@@ -1230,7 +1230,7 @@ public:
     {
         out << "tmp" << m_targetIndex << ": ";
         ESIR::dump(out);
-        out << "CreateArray(" << m_keyCount << ")";
+        out << "(" << m_keyCount << ")";
     }
 #endif
 
