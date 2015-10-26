@@ -92,7 +92,7 @@ bool ESGraphTypeInference::run(ESGraph* graph)
                 Type rightType = graph->getOperandType(irMinus->rightIndex());
 
                 // FIXME : Question> need to seperate IR? (e.g. DoubleMinus, Int32Minus)
-                if (leftType.isNumberType() && rightType.isNumberType()) {
+                if (leftType.hasNumberFlag() && rightType.hasNumberFlag()) {
                     if (leftType.isInt32Type() && rightType.isInt32Type())
                         graph->setOperandType(ir->targetIndex(), TypeInt32);
                     else

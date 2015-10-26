@@ -610,7 +610,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 
         if (leftType.isInt32Type() && rightType.isInt32Type())
             return m_out->ins2(LIR_subi, left, right);
-        else if (leftType.isNumberType() && rightType.isNumberType()) {
+        else if (leftType.hasNumberFlag() && rightType.hasNumberFlag()) {
             if (leftType.isInt32Type())
                 left = m_out->ins1(LIR_i2d, left);
             if (rightType.isInt32Type())
@@ -731,7 +731,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(BitwiseOr);
         INIT_BINARY_ESIR(BitwiseOr);
-        if (leftType.isNumberType() && rightType.isNumberType()) {
+        if (leftType.hasNumberFlag() && rightType.hasNumberFlag()) {
             if (leftType.isDoubleType())
                 left = m_out->ins1(LIR_d2i, left);
             if (rightType.isDoubleType())
@@ -746,7 +746,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(BitwiseXor);
         INIT_BINARY_ESIR(BitwiseXor);
-        if (leftType.isNumberType() && rightType.isNumberType()) {
+        if (leftType.hasNumberFlag() && rightType.hasNumberFlag()) {
             if (leftType.isDoubleType())
                 left = m_out->ins1(LIR_d2i, left);
             if (rightType.isDoubleType())
@@ -835,7 +835,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(GreaterThan);
         INIT_BINARY_ESIR(GreaterThan);
-        if (leftType.isNumberType() && rightType.isNumberType()) {
+        if (leftType.hasNumberFlag() && rightType.hasNumberFlag()) {
             if (leftType.isInt32Type() && rightType.isInt32Type())
                 return m_out->ins2(LIR_gti, left, right);
             else {
@@ -868,7 +868,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_BINARY_ESIR(LessThan);
         if (leftType.isInt32Type() && rightType.isInt32Type())
             return m_out->ins2(LIR_lti, left, right);
-        else if (leftType.isNumberType() && rightType.isNumberType()) {
+        else if (leftType.hasNumberFlag() && rightType.hasNumberFlag()) {
             if (leftType.isInt32Type())
                 left = m_out->ins1(LIR_i2d, left);
             if (rightType.isInt32Type())
@@ -906,7 +906,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(SignedRightShift);
         INIT_BINARY_ESIR(SignedRightShift);
-        if (leftType.isNumberType() && rightType.isNumberType()) {
+        if (leftType.hasNumberFlag() && rightType.hasNumberFlag()) {
             if (leftType.isDoubleType())
                 left = m_out->ins1(LIR_d2i, left);
             if (rightType.isDoubleType())
@@ -922,7 +922,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(UnsignedRightShift);
         INIT_BINARY_ESIR(UnsignedRightShift);
-        if (leftType.isNumberType() && rightType.isNumberType()) {
+        if (leftType.hasNumberFlag() && rightType.hasNumberFlag()) {
             if (leftType.isDoubleType())
                 left = m_out->ins1(LIR_d2i, left);
             if (rightType.isDoubleType())

@@ -132,7 +132,7 @@ public:
 #define DECLARE_IS_TYPE(type, unused) \
     bool is##type##Type() \
     { \
-        return Type##type == TypeBottom ? m_type == TypeBottom : (m_type & Type##type) == m_type; \
+        return m_type == Type##type; \
     }
     FOR_EACH_ESIR_TYPES(DECLARE_IS_TYPE)
 #undef DECLARE_IS_TYPE
@@ -141,14 +141,6 @@ public:
     bool has##type##Flag() \
     { \
         return (m_type & Type##type) != 0; \
-    }
-    FOR_EACH_ESIR_TYPES(DECLARE_HAS_FLAG)
-#undef DECLARE_HAS_FLAG
-
-#define DECLARE_HAS_FLAG(type, unused) \
-    bool has##type##FlagOnly() \
-    { \
-        return m_type == Type##type; \
     }
     FOR_EACH_ESIR_TYPES(DECLARE_HAS_FLAG)
 #undef DECLARE_HAS_FLAG
