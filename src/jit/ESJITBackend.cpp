@@ -1196,7 +1196,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_ESIR(SetGlobalVarGeneric);
 
         LIns* source = getTmpMapping(irSetGlobalVarGeneric->sourceIndex());
-        LIns* boxedSource = boxESValue(source, m_graph->getOperandType(irSetGlobalVarGeneric->m_targetIndex));
+        LIns* boxedSource = boxESValue(source, m_graph->getOperandType(irSetGlobalVarGeneric->sourceIndex()));
         LIns* byteCode = m_out->insImmP(irSetGlobalVarGeneric->byteCode());
         LIns* args[] = {boxedSource, byteCode, m_globalObject};
 
