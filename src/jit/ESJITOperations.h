@@ -261,6 +261,16 @@ inline ESValueInDouble createArr(int keyCount) {
     return ESValue::toRawDouble(arrObj);
 }
 
+inline ESValueInDouble createFunction(ExecutionContext* ec, ByteCode* bytecode) {
+    CreateFunction* code = (CreateFunction*)bytecode;
+    ASSERT(((size_t)code->m_codeBlock % sizeof(size_t)) == 0);
+    ESFunctionObject* function = ESFunctionObject::create(ec->environment(), code->m_codeBlock, code->m_nonAtomicName == NULL ? strings->emptyString.string() : code->m_nonAtomicName, code->m_codeBlock->m_params.size());
+    function->set(strings->name.string(), code->m_nonAtomicName);
+    if(code->m_isDeclaration)
+        ec->environment()->record()->setMutableBinding(code->m_name, function, false);
+    return ESValue::toRawDouble(ESValue((ESPointer*)function));
+}
+
 inline ESValueInDouble equalOp(ESValueInDouble left, ESValueInDouble right)
 {
     ESValue leftVal = ESValue::fromRawDouble(left);

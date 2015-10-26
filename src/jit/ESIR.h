@@ -83,6 +83,7 @@ class ESBasicBlock;
     F(LoopStart, ) \
     F(Jump, ) \
     F(Branch, ) \
+    F(CreateFunction, ReturnsESValue) \
     F(CallJS, ReturnsESValue) \
     F(CallNewJS, ReturnsESValue) \
     F(CallEval, ReturnsESValue) \
@@ -1096,6 +1097,26 @@ private:
     int m_operandIndex;
     ESBasicBlock* m_trueBlock;
     ESBasicBlock* m_falseBlock;
+};
+
+class CreateFunctionIR : public ESIR {
+public:
+    DECLARE_STATIC_GENERATOR_1(CreateFunction, ByteCode*);
+
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+        out << " " << ((escargot::CreateFunction*) m_originalByteCode)->m_name.string()->utf8Data();
+    }
+#endif
+    ByteCode* originalByteCode() { return m_originalByteCode; }
+
+private:
+    CreateFunctionIR(int targetIndex, ByteCode* originalByteCode)
+        : ESIR(ESIR::Opcode::CreateFunction, targetIndex), m_originalByteCode(originalByteCode) { }
+    ByteCode* m_originalByteCode;
 };
 
 class CallJSIR : public ESIR {

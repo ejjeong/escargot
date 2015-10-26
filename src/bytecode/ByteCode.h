@@ -97,7 +97,7 @@ class CodeBlock;
     F(SetObjectPreComputedCaseSlowMode, 1, 2, 0, 0) \
 \
     /*function*/\
-    F(CreateFunction, -1, 0, 0, 0) \
+    F(CreateFunction, -1, 0, 0, 1) \
     F(ExecuteNativeFunction, 0, 0, 0, 0) \
     F(CallFunction, 1, -1, 0, 1) \
     F(CallFunctionWithReceiver, 1, -1, 0, 1) \

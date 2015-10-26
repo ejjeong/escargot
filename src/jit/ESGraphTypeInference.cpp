@@ -204,6 +204,12 @@ bool ESGraphTypeInference::run(ESGraph* graph)
                 graph->setOperandType(irTypeOf->targetIndex(), TypeString);
                 break;
             }
+            case ESIR::Opcode::CreateFunction:
+            {
+                INIT_ESIR(CreateFunction);
+                graph->setOperandType(irCreateFunction->targetIndex(), TypeFunctionObject);
+                break;
+            }
             case ESIR::Opcode::Jump:
             case ESIR::Opcode::Branch:
             case ESIR::Opcode::CallJS:

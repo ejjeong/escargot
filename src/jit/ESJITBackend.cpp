@@ -68,6 +68,7 @@ CallInfo ESObjectSetOpCallInfo = CI(ESObjectSetOp, CallInfo::typeSig3(ARGTYPE_D,
 CallInfo generateToStringCallInfo = CI(generateToString, CallInfo::typeSig1(ARGTYPE_P, ARGTYPE_D));
 CallInfo concatTwoStringsCallInfo = CI(concatTwoStrings, CallInfo::typeSig2(ARGTYPE_P, ARGTYPE_P, ARGTYPE_P));
 CallInfo createArrayCallInfo = CI(createArr, CallInfo::typeSig1(ARGTYPE_D, ARGTYPE_I));
+CallInfo createFunctionCallInfo = CI(createFunction, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_P, ARGTYPE_P));
 
 #ifndef NDEBUG
 CallInfo logIntCallInfo = CI(jitLogIntOperation, CallInfo::typeSig2(ARGTYPE_V, ARGTYPE_I, ARGTYPE_P));
@@ -965,6 +966,13 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             return jumpFalse;
         } else
             RELEASE_ASSERT_NOT_REACHED();
+    }
+    case ESIR::Opcode::CreateFunction:
+    {
+        INIT_ESIR(CreateFunction);
+        LIns* bytecode = m_out->insImmP(irCreateFunction->originalByteCode());
+        LIns* args[] = {bytecode, m_context};
+        return m_out->insCall(&createFunctionCallInfo, args);;
     }
     case ESIR::Opcode::CallJS:
     {

@@ -506,9 +506,13 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         }
         case CreateFunctionOpcode:
-            goto unsupported;
-            NEXT_BYTECODE(ExecuteNativeFunction);
+        {
+            INIT_BYTECODE(CreateFunction);
+            CreateFunctionIR* createFunctionIR = CreateFunctionIR::create(extraData->m_targetIndex0, bytecode);
+            currentBlock->push(createFunctionIR);
+            NEXT_BYTECODE(CreateFunction);
             break;
+        }
         case CallFunctionOpcode:
         {
             INIT_BYTECODE(CallFunction);
