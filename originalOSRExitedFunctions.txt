@@ -1,52 +1,52 @@
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-cube.js
-CreateP CalcNormal CalcCross MMulti VMulti VMulti2 Translate RotateX RotateY RotateZ 
+CalcNormal VMulti2 MMulti VMulti Translate RotateX RotateY RotateZ 
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-morph.js
 morph 
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-raytrace.js
-createVector sub cross normalise lengthVector dot Triangle transformMatrix scale add scalev (anonymous) 
+lengthVector normalise dot Triangle createVector cross scale sub add (anonymous) scalev 
 ===> test/SunSpider/tests/sunspider-1.0.2/access-binary-trees.js
-TreeNode bottomUpTree 
+TreeNode 
 ===> test/SunSpider/tests/sunspider-1.0.2/access-fannkuch.js
 
 ===> test/SunSpider/tests/sunspider-1.0.2/access-nbody.js
-Body (anonymous) Sun Jupiter Saturn Uranus Neptune NBodySystem (anonymous) 
+Body (anonymous) NBodySystem 
 ===> test/SunSpider/tests/sunspider-1.0.2/access-nsieve.js
-nsieve 
+
 ===> test/SunSpider/tests/sunspider-1.0.2/bitops-3bit-bits-in-byte.js
-fast3bitlookup 
+
 ===> test/SunSpider/tests/sunspider-1.0.2/bitops-bits-in-byte.js
-bitsinbyte 
+
 ===> test/SunSpider/tests/sunspider-1.0.2/bitops-bitwise-and.js
 
 ===> test/SunSpider/tests/sunspider-1.0.2/bitops-nsieve-bits.js
 
 ===> test/SunSpider/tests/sunspider-1.0.2/controlflow-recursive.js
-ack fib tak 
+
 ===> test/SunSpider/tests/sunspider-1.0.2/crypto-aes.js
-SubWord RotWord SubBytes ShiftRows MixColumns Cipher (anonymous) (anonymous) 
+Cipher 
 ===> test/SunSpider/tests/sunspider-1.0.2/crypto-md5.js
-safe_add md5_ff md5_cmn bit_rol md5_gg md5_hh md5_ii 
+md5_ff md5_cmn safe_add md5_gg md5_hh md5_ii 
 ===> test/SunSpider/tests/sunspider-1.0.2/crypto-sha1.js
-safe_add rol sha1_ft sha1_kt 
+safe_add 
 ===> test/SunSpider/tests/sunspider-1.0.2/date-format-tofte.js
-arrayExists 
+
 ===> test/SunSpider/tests/sunspider-1.0.2/date-format-xparb.js
-(anonymous) (anonymous) 
+(anonymous) 
 ===> test/SunSpider/tests/sunspider-1.0.2/math-cordic.js
 FIXED FLOAT cordicsincos 
 ===> test/SunSpider/tests/sunspider-1.0.2/math-partial-sums.js
 partial 
 ===> test/SunSpider/tests/sunspider-1.0.2/math-spectral-norm.js
-A AtAu Au Atu spectralnorm 
+Au Atu spectralnorm 
 ===> test/SunSpider/tests/sunspider-1.0.2/regexp-dna.js
 
 ===> test/SunSpider/tests/sunspider-1.0.2/string-base64.js
 
 ===> test/SunSpider/tests/sunspider-1.0.2/string-fasta.js
-rand 
+
 ===> test/SunSpider/tests/sunspider-1.0.2/string-tagcloud.js
-(anonymous) (anonymous) 
+(anonymous) 
 ===> test/SunSpider/tests/sunspider-1.0.2/string-unpack-code.js
-(anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) 
+
 ===> test/SunSpider/tests/sunspider-1.0.2/string-validate-input.js
-addResult 
+

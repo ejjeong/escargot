@@ -762,9 +762,6 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                         LOG_VJ("> Compilation successful for function %s (codeBlock %p)! Cache jit function %p\n", functionName, fn->codeBlock(), jitFunction);
 #ifndef NDEBUG
                         if (ESVMInstance::currentInstance()->m_reportCompiledFunction) {
-                            if (ESVMInstance::currentInstance()->m_compiledFunctions == 0) {
-                                printf("<<<< Compiled Functions >>>>\n");
-                            }
                             printf("%s ", fn->codeBlock()->m_nonAtomicId ? (fn->codeBlock()->m_nonAtomicId->utf8Data()):"(anonymous)");
                             ESVMInstance::currentInstance()->m_compiledFunctions++;
                         }
@@ -793,6 +790,12 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                 // printf("JIT Result %s\n", result.toString()->utf8Data());
                 if (ec.inOSRExit()) {
                     LOG_VJ("> OSR Exit from function %s (codeBlock %p)! Disabling JIT from now on\n", functionName, fn->codeBlock());
+#ifndef NDEBUG
+                    if (ESVMInstance::currentInstance()->m_reportOSRExitedFunction) {
+                        printf("%s ", fn->codeBlock()->m_nonAtomicId ? (fn->codeBlock()->m_nonAtomicId->utf8Data()):"(anonymous)");
+                        ESVMInstance::currentInstance()->m_osrExitedFunctions++;
+                    }
+#endif
                     int32_t tmpIndex = result.asInt32();
                     char* code = fn->codeBlock()->m_code.data();
                     size_t idx = 0;

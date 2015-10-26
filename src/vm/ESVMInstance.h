@@ -137,11 +137,13 @@ public:
     bool m_verboseJIT;
     bool m_reportUnsupportedOpcode;
     bool m_reportCompiledFunction;
+    bool m_reportOSRExitedFunction;
     bool m_useLirWriter;
     bool m_useVerboseWriter;
     bool m_useExprFilter;
     bool m_useCseFilter;
     int m_compiledFunctions;
+    int m_osrExitedFunctions;
 #endif
     bool m_profile;
 

@@ -51,3 +51,4 @@ memps
 escargot.asm
 escargot.elf
 compiledFunctions.txt
+osrExitedFunctions.txt

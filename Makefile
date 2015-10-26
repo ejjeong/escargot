@@ -208,6 +208,8 @@ check-jit:
 	make jit.debug -j8
 	./run-Sunspider-jit.sh -rcf > compiledFunctions.txt
 	vimdiff compiledFunctions.txt originalCompiledFunctions.txt
+	./run-Sunspider-jit.sh -rof > osrExitedFunctions.txt
+	vimdiff osrExitedFunctions.txt originalOSRExitedFunctions.txt
 
 tidy:
 	./tools/check-webkit-style `find src/ -name "*.cpp" -o -name "*.h"`> error_report 2>& 1

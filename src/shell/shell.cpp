@@ -91,6 +91,9 @@ int main(int argc, char* argv[])
             if(strcmp(argv[i], "-rcf") == 0) {
                 ES->m_reportCompiledFunction = true;
             }
+            if(strcmp(argv[i], "-rof") == 0) {
+                ES->m_reportOSRExitedFunction = true;
+            }
 #endif
             if(strcmp(argv[i], "-p") == 0) {
                 ES->m_profile = true;
@@ -105,15 +108,12 @@ int main(int argc, char* argv[])
                 fclose(fp);
                 escargot::ESStringData source(str.c_str());
                 try{
-#ifndef NDEBUG
-                    if(ES->m_reportCompiledFunction) {
-                        printf("%s\n", argv[i]);
-                        ES->m_compiledFunctions = 0;
-                    }
-#endif
                     escargot::ESValue ret = ES->evaluate(source);
 #ifndef NDEBUG
                     if(ES->m_reportCompiledFunction) {
+                        printf("\n");
+                    }
+                    if(ES->m_reportOSRExitedFunction) {
                         printf("\n");
                     }
 #endif
