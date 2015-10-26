@@ -468,9 +468,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             if (codeBlock->m_extraData[bytecodeCounter].m_registerIncrementCount == 1)
                 graph->setOperandStackPos(extraData->m_targetIndex0, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
             else if (codeBlock->m_extraData[bytecodeCounter].m_registerIncrementCount == 2) {
-                //FIXME this operation(extraData->m_targetIndex0 - 1) is not pretty
-                currentBlock->push(MoveIR::create(extraData->m_targetIndex1, extraData->m_targetIndex0 - 1));
-                //////////////////////////////////
+                currentBlock->push(MoveIR::create(extraData->m_targetIndex1, extraData->m_sourceIndexes[0]));
                 graph->setOperandStackPos(extraData->m_targetIndex0, codeBlock->m_extraData[bytecodeCounter].m_baseRegisterIndex);
                 graph->setOperandStackPos(extraData->m_targetIndex1, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
             }
@@ -493,9 +491,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             if (codeBlock->m_extraData[bytecodeCounter].m_registerIncrementCount == 1)
                 graph->setOperandStackPos(extraData->m_targetIndex0, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
             else if (codeBlock->m_extraData[bytecodeCounter].m_registerIncrementCount == 2) {
-                //FIXME this operation(extraData->m_targetIndex0 - 1) is not pretty
-                currentBlock->push(MoveIR::create(extraData->m_targetIndex1, extraData->m_targetIndex0 - 1));
-                //////////////////////////////////
+                currentBlock->push(MoveIR::create(extraData->m_targetIndex1, extraData->m_sourceIndexes[0]));
                 graph->setOperandStackPos(extraData->m_targetIndex0, codeBlock->m_extraData[bytecodeCounter].m_baseRegisterIndex);
                 graph->setOperandStackPos(extraData->m_targetIndex1, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
             }
