@@ -289,13 +289,12 @@ bool ESGraphTypeInference::run(ESGraph* graph)
                 break;
             }
             case ESIR::Opcode::CreateArray:
-            case ESIR::Opcode::InitObject:
             {
-                InitObjectIR* irInitObject = static_cast<InitObjectIR*>(ir);
-                Type setType = graph->getOperandType(irInitObject->sourceIndex());
-                graph->setOperandType(ir->targetIndex(), setType);
+                graph->setOperandType(ir->targetIndex(), Type(TypeArrayObject));
                 break;
             }
+            case ESIR::Opcode::InitObject:
+                break;
             case ESIR::Opcode::AllocPhi:
                 break;
             case ESIR::Opcode::StorePhi:
