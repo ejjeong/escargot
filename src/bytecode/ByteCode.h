@@ -71,7 +71,7 @@ class CodeBlock;
     F(UnaryVoid, 1, 1, 0, 0) \
     F(ToNumber, 1, 1, 0, 1) \
     F(Increment, 1, 1, 0, 1) \
-    F(Decrement, 1, 1, 0, 0) \
+    F(Decrement, 1, 1, 0, 1) \
 \
     /*object, array*/ \
     F(CreateObject, 1, 0, 0, 0) \

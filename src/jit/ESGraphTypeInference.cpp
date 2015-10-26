@@ -88,6 +88,18 @@ bool ESGraphTypeInference::run(ESGraph* graph)
                     RELEASE_ASSERT_NOT_REACHED();
                 break;
             }
+            case ESIR::Opcode::Decrement:
+            {
+                INIT_ESIR(Decrement);
+                Type srcType = graph->getOperandType(irDecrement->sourceIndex());
+                if (srcType.isInt32Type())
+                    graph->setOperandType(ir->targetIndex(), TypeInt32);
+                else if (srcType.isDoubleType())
+                    graph->setOperandType(ir->targetIndex(), TypeDouble);
+                else
+                    RELEASE_ASSERT_NOT_REACHED();
+                break;
+            }
             case ESIR::Opcode::Minus:
             {
                 INIT_ESIR(Minus);

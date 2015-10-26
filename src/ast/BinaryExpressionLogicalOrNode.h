@@ -23,7 +23,6 @@ public:
         int srcIndex1 = -1;
 #endif
         m_left->generateExpressionByteCode(codeBlock, context);
-        int savedBaseRegisterCounter = context.m_baseRegisterCount;
 
 #ifdef ENABLE_ESJIT
         codeBlock->pushCode(StorePhi(allocPhiIndex), context, this);
@@ -39,7 +38,6 @@ public:
         srcIndex1 = context.lastUsedSSAIndex();
 #endif
         codeBlock->peekCode<JumpIfTopOfStackValueIsTrueWithPeeking>(pos)->m_jumpPosition = codeBlock->currentCodeSize();
-        context.m_baseRegisterCount = savedBaseRegisterCounter;
 #ifdef ENABLE_ESJIT
         codeBlock->pushCode(LoadPhi(allocPhiIndex, srcIndex0, srcIndex1), context, this);
         context.m_ssaComputeStack.back() = context.lastUsedSSAIndex();
