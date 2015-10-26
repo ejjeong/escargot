@@ -387,15 +387,13 @@ public:
 
     void addProfile(ESValue value)
     {
-        //mergeType(); // it would be too slow
         m_value = value;
     }
     void updateProfiledType()
     {
         // TODO what happens if this function is called multiple times?
-        //m_type.mergeType(ESJIT::Type::getType(m_value));
-        //TODO implement multiple type
-        m_type = ESJIT::Type::getType(m_value);
+        m_type.mergeType(ESJIT::Type::getType(m_value));
+
         // TODO if m_type is function, profile function address
         // if m_value is not set to undefined, profiled type will be updated again
         // m_value = ESValue();

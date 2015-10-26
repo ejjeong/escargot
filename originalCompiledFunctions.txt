@@ -3,7 +3,7 @@ CreateP CalcNormal CalcCross MMulti VMulti VMulti2 Translate RotateX RotateY Rot
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-morph.js
 morph 
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-raytrace.js
-createVector sub cross normalise lengthVector dot Triangle transformMatrix scale add scalev (anonymous) 
+createVector sub cross normalise lengthVector dot transformMatrix scale add scalev (anonymous) (anonymous) 
 ===> test/SunSpider/tests/sunspider-1.0.2/access-binary-trees.js
 TreeNode bottomUpTree 
 ===> test/SunSpider/tests/sunspider-1.0.2/access-fannkuch.js

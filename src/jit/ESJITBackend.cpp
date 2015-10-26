@@ -212,7 +212,7 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
     return m_out->ins1(LIR_retd, boxedIndex);
 }
 
-void NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteCodeIndex)
+bool NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteCodeIndex)
 {
     ASSERT(in->isD());
 #ifndef NDEBUG
@@ -236,7 +236,7 @@ void NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteC
         LIns* normalPath = m_out->ins0(LIR_label);
         jumpIfBoolean->setTarget(normalPath);
 #else
-        RELEASE_ASSERT_NOT_REACHED();
+        return false;
 #endif
     } else if (type.isInt32Type()) {
 #ifdef ESCARGOT_64
@@ -255,7 +255,7 @@ void NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteC
         LIns* normalPath = m_out->ins0(LIR_label);
         jumpIfInt->setTarget(normalPath);
 #else
-        RELEASE_ASSERT_NOT_REACHED();
+        return false;
 #endif
     } else if (type.isDoubleType()) {
 #ifdef ESCARGOT_64
@@ -278,7 +278,7 @@ void NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteC
         LIns* normalPath = m_out->ins0(LIR_label);
         jumpIfDouble->setTarget(normalPath);
 #else
-        RELEASE_ASSERT_NOT_REACHED();
+        return false;
 #endif
     } else if (type.isObjectType() || type.isArrayObjectType() || type.isStringType() || type.isFunctionObjectType()) {
 #ifdef ESCARGOT_64
@@ -308,7 +308,7 @@ void NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteC
         else if (type.isArrayObjectType())
             mask = m_out->insImmQ(ESPointer::Type::ESArrayObject);
         else
-            RELEASE_ASSERT_NOT_REACHED();
+            return false;
         LIns* typeOfESPtr = m_out->insLoad(LIR_ldq, quadValue, ESPointer::offsetOfType(), 1, LOAD_NORMAL);
         LIns* esPointerMaskedValue = m_out->ins2(LIR_andq, typeOfESPtr, mask);
         LIns* checkIfFlagIdentical = m_out->ins2(LIR_eqq, esPointerMaskedValue, mask);
@@ -322,9 +322,8 @@ void NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteC
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath2 = m_out->ins0(LIR_label);
         jumpIfFlagIdentical->setTarget(normalPath2);
-
 #else
-        RELEASE_ASSERT_NOT_REACHED();
+        return false;
 #endif
     } else if (type.isPointerType()) {
 #ifdef ESCARGOT_64
@@ -341,7 +340,7 @@ void NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteC
         LIns* normalPath = m_out->ins0(LIR_label);
         jumpIfPointer->setTarget(normalPath);
 #else
-        RELEASE_ASSERT_NOT_REACHED();
+        return false;
 #endif
     } else if (type.isUndefinedType()) {
 #ifdef ESCARGOT_64
@@ -357,7 +356,7 @@ void NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteC
         LIns* normalPath = m_out->ins0(LIR_label);
         jumpIfUndefined->setTarget(normalPath);
 #else
-        RELEASE_ASSERT_NOT_REACHED();
+        return false;
 #endif
     } else if (type.isNullType()) {
 #ifdef ESCARGOT_64
@@ -373,16 +372,14 @@ void NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteC
         LIns* normalPath = m_out->ins0(LIR_label);
         jumpIfNull->setTarget(normalPath);
 #else
-        RELEASE_ASSERT_NOT_REACHED();
+        return false;
 #endif
     } else {
-        std::cout << "Unsupported type in NativeGenerator::generateTypeCheck() : ";
-        type.dump(std::cout);
-        std::cout << std::endl;
-        RELEASE_ASSERT_NOT_REACHED();
+        return false;
     }
 #ifndef NDEBUG
     m_out->insComment("'= typecheck ended ='");
+    return true;
 #endif
 }
 
@@ -1521,7 +1518,10 @@ bool NativeGenerator::nanojitCodegen(ESVMInstance* instance)
             }
             if (ir->returnsESValue()) {
                 Type type = m_graph->getOperandType(ir->m_targetIndex);
-                generateTypeCheck(generatedLIns, type, ir->m_targetIndex);
+                if (!generateTypeCheck(generatedLIns, type, ir->m_targetIndex)) {
+                    LOG_VJ("Cannot generate type check code for type 0x%x in ESJIT Backend\n", type.type());
+                    return false;
+                }
                 generatedLIns = unboxESValue(generatedLIns, type);
             }
             if (ir->m_targetIndex >= 0) {
