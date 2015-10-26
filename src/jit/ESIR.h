@@ -874,6 +874,15 @@ private:
         : BinaryExpressionIR(ESIR::Opcode::Equal, targetIndex, leftIndex, rightIndex) { }
 };
 
+class NotEqualIR : public BinaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(NotEqual, int, int);
+
+private:
+    NotEqualIR(int targetIndex, int leftIndex, int rightIndex)
+        : BinaryExpressionIR(ESIR::Opcode::NotEqual, targetIndex, leftIndex, rightIndex) { }
+};
+
 class StrictEqualIR : public BinaryExpressionIR {
 public:
     DECLARE_STATIC_GENERATOR_2(StrictEqual, int, int);
@@ -881,6 +890,15 @@ public:
 private:
     StrictEqualIR(int targetIndex, int leftIndex, int rightIndex)
         : BinaryExpressionIR(ESIR::Opcode::StrictEqual, targetIndex, leftIndex, rightIndex) { }
+};
+
+class NotStrictEqualIR : public BinaryExpressionIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(NotStrictEqual, int, int);
+
+private:
+    NotStrictEqualIR(int targetIndex, int leftIndex, int rightIndex)
+        : BinaryExpressionIR(ESIR::Opcode::NotStrictEqual, targetIndex, leftIndex, rightIndex) { }
 };
 
 class GreaterThanIR : public BinaryExpressionIR {

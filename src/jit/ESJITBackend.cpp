@@ -763,6 +763,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(Equal);
         INIT_BINARY_ESIR(Equal);
+
         bool isLeftUndefinedOrNull = leftType.isNullType() || leftType.isUndefinedType();
         bool isRightUndefinedOrNull = rightType.isNullType() || rightType.isUndefinedType();
         if (leftType.isInt32Type() && rightType.isInt32Type())
@@ -776,27 +777,61 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             return unboxedResult;
         }
     }
+    case ESIR::Opcode::NotEqual:
+    {
+        INIT_ESIR(NotEqual);
+        INIT_BINARY_ESIR(NotEqual);
+
+        LIns* ret;
+        bool isLeftUndefinedOrNull = leftType.isNullType() || leftType.isUndefinedType();
+        bool isRightUndefinedOrNull = rightType.isNullType() || rightType.isUndefinedType();
+        if (leftType.isInt32Type() && rightType.isInt32Type())
+            ret = m_out->ins2(LIR_eqi, left, right);
+        else if (isLeftUndefinedOrNull && isRightUndefinedOrNull)
+            ret = m_true;
+        else if (isLeftUndefinedOrNull || isRightUndefinedOrNull)
+            ret = m_false;
+        else {
+            CALL_BINARY_ESIR(NotEqual, equalOpCallInfo);
+            ret = unboxedResult;
+        }
+
+        return m_out->ins2(LIR_xori, ret, m_oneI);
+    }
     case ESIR::Opcode::StrictEqual:
     {
         INIT_ESIR(StrictEqual);
-        LIns* left = getTmpMapping(irStrictEqual->leftIndex());
-        LIns* right = getTmpMapping(irStrictEqual->rightIndex());
-        Type leftType = m_graph->getOperandType(irStrictEqual->leftIndex());
-        Type rightType = m_graph->getOperandType(irStrictEqual->rightIndex());
+        INIT_BINARY_ESIR(StrictEqual);
+
         if (leftType != rightType) {
-          return m_false;
+            return m_false;
         } else {
-          if (leftType.isInt32Type() || leftType.isBooleanType()) {
-              return m_out->ins2(LIR_eqi, left, right);
-          } else {
-              LIns* boxedLeft = boxESValue(left, leftType);
-              LIns* boxedRight = boxESValue(right, rightType);
-              LIns* args[] = {boxedRight, boxedLeft};
-              LIns* boxedResult = m_out->insCall(&strictEqualOpCallInfo, args);
-              LIns* unboxedResult = unboxESValue(boxedResult, TypeBoolean);
-              return unboxedResult;
-          }
+            if (leftType.isInt32Type() || leftType.isBooleanType()) {
+                return m_out->ins2(LIR_eqi, left, right);
+            } else {
+                CALL_BINARY_ESIR(StrictEqual, strictEqualOpCallInfo);
+                return unboxedResult;
+            }
         }
+    }
+    case ESIR::Opcode::NotStrictEqual:
+    {
+        INIT_ESIR(NotStrictEqual);
+        INIT_BINARY_ESIR(NotStrictEqual);
+
+        LIns* ret;
+        if (leftType != rightType) {
+            ret = m_false;
+        } else {
+            if (leftType.isInt32Type() || leftType.isBooleanType()) {
+                ret = m_out->ins2(LIR_eqi, left, right);
+            } else {
+                CALL_BINARY_ESIR(NotStrictEqual, strictEqualOpCallInfo);
+                ret = unboxedResult;
+            }
+        }
+
+        return m_out->ins2(LIR_xori, ret, m_oneI);
     }
     case ESIR::Opcode::GreaterThan:
     {

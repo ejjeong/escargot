@@ -219,9 +219,13 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         }
         case NotEqualOpcode:
-            goto unsupported;
+        {
+            INIT_BYTECODE(NotEqual);
+            ESIR* notEqualIR = NotEqualIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
+            currentBlock->push(notEqualIR);
             NEXT_BYTECODE(NotEqual);
             break;
+        }
         case StrictEqualOpcode:
         {
             INIT_BYTECODE(StrictEqual);
@@ -231,9 +235,13 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         }
         case NotStrictEqualOpcode:
-            goto unsupported;
+        {
+            INIT_BYTECODE(NotStrictEqual);
+            ESIR* notStrictEqualIR = NotStrictEqualIR::create(ssaIndex->m_targetIndex, ssaIndex->m_srcIndex1, ssaIndex->m_srcIndex2);
+            currentBlock->push(notStrictEqualIR);
             NEXT_BYTECODE(NotStrictEqual);
             break;
+        }
         case BitwiseAndOpcode:
         {
             INIT_BYTECODE(BitwiseAnd);

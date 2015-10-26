@@ -40,9 +40,9 @@ class CodeBlock;
 \
     /*binary expressions*/ \
     F(Equal, 1, 2, 0, 1) \
-    F(NotEqual, 1, 2, 0, 0) \
+    F(NotEqual, 1, 2, 0, 1) \
     F(StrictEqual, 1, 2, 0, 1) \
-    F(NotStrictEqual, 1, 2, 0, 0) \
+    F(NotStrictEqual, 1, 2, 0, 1) \
     F(BitwiseAnd, 1, 2, 0, 1) \
     F(BitwiseOr, 1, 2, 0, 1) \
     F(BitwiseXor, 1, 2, 0, 1) \
