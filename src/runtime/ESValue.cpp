@@ -806,10 +806,11 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                     while (&code[idx] < end) {
                         ByteCode* currentCode = (ByteCode *)(&code[idx]);
                         Opcode opcode = fn->codeBlock()->m_extraData[bytecodeCounter].m_opcode;
-                        if (fn->codeBlock()->getSSAIndex(bytecodeCounter)->m_targetIndex == tmpIndex) {
+                        ByteCodeExtraData* extraData = &fn->codeBlock()->m_extraData[bytecodeCounter];
+                        if (extraData->m_targetIndex0 == tmpIndex) {
                             maxStackPos = ec.getStackPos();
                             break;
-                           }
+                        }
 
                         switch(opcode) {
                             #define DECLARE_EXECUTE_NEXTCODE(code, pushCount, popCount, peekCount, JITSupported) \

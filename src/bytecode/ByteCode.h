@@ -89,8 +89,8 @@ class CodeBlock;
     F(GetObjectPreComputedCaseAndPushObject, 2, 1, 0, 1) \
     F(GetObjectPreComputedCaseSlowMode, 1, 1, 0, 0) \
     F(GetObjectPreComputedCaseAndPushObjectSlowMode, 2, 1, 0, 0) \
-    F(GetObjectWithPeekingPreComputedCase, 1, 0, 2, 0) \
-    F(GetObjectWithPeekingPreComputedCaseSlowMode, 1, 0, 2, 0) \
+    F(GetObjectWithPeekingPreComputedCase, 1, 0, 1, 0) \
+    F(GetObjectWithPeekingPreComputedCaseSlowMode, 1, 0, 1, 0) \
     F(SetObject, 1, 3, 0, 1) \
     F(SetObjectSlowMode, 1, 3, 0, 0) \
     F(SetObjectPreComputedCase, 1, 2, 0, 1) \
@@ -173,9 +173,6 @@ struct ByteCodeGenerateContext {
         , m_offsetToBasePointer(0)
         , m_positionToContinue(0)
         , m_tryStatementScopeCount(0)
-#ifdef ENABLE_ESJIT
-        , m_currentNodeIndex(0)
-#endif
     {
         m_inCallingExpressionScope = false;
         m_isHeadOfMemberExpression = false;
@@ -188,9 +185,6 @@ struct ByteCodeGenerateContext {
         , m_inCallingExpressionScope(contextBefore.m_inCallingExpressionScope)
         , m_offsetToBasePointer(0)
         , m_tryStatementScopeCount(contextBefore.m_tryStatementScopeCount)
-#ifdef ENABLE_ESJIT
-        , m_currentNodeIndex(contextBefore.m_currentNodeIndex)
-#endif
     {
         m_isHeadOfMemberExpression = false;
     }
@@ -204,9 +198,6 @@ struct ByteCodeGenerateContext {
         ASSERT(m_labeledContinueStatmentPositions.size() == 0);
         ASSERT(m_complexCaseStatementPositions.size() == 0);
         ASSERT(m_currentSSARegisterCount == -1);
-#ifdef ENABLE_ESJIT
-        ASSERT(m_currentNodeIndex == std::numeric_limits<unsigned>::max());
-#endif
     }
 
     void propagateInformationTo(ByteCodeGenerateContext& ctx)
@@ -227,29 +218,12 @@ struct ByteCodeGenerateContext {
         m_labeledBreakStatmentPositions.clear();
         m_labeledContinueStatmentPositions.clear();
         m_complexCaseStatementPositions.clear();
-#ifdef ENABLE_ESJIT
-        ctx.m_currentNodeIndex = m_currentNodeIndex;
-#ifndef NDEBUG
-        m_currentNodeIndex = std::numeric_limits<unsigned>::max();
-#endif
-#endif
     }
 
     void cleanupSSARegisterCount()
     {
         m_currentSSARegisterCount = -1;
     }
-
-#ifdef ENABLE_ESJIT
-
-    ALWAYS_INLINE void dumpCurrentNodeIndex()
-    {
-#ifndef NDEBUG
-        m_currentNodeIndex = std::numeric_limits<unsigned>::max();
-#endif
-    }
-
-#endif
 
     void pushBreakPositions(size_t pos)
     {
@@ -306,6 +280,11 @@ struct ByteCodeGenerateContext {
     ALWAYS_INLINE void consumeLabeledContinuePositions(CodeBlock* cb, size_t position, ESString* lbl);
     ALWAYS_INLINE void morphJumpPositionIntoComplexCase(CodeBlock* cb,size_t codePos);
 
+    ALWAYS_INLINE int lastUsedSSAIndex()
+    {
+        return m_currentSSARegisterCount - 1;
+    }
+
     int m_baseRegisterCount;
     int m_currentSSARegisterCount;
     std::vector<int> m_ssaComputeStack;
@@ -324,21 +303,6 @@ struct ByteCodeGenerateContext {
     //code position, tryStatement count
     int m_tryStatementScopeCount;
     std::map<size_t, size_t> m_complexCaseStatementPositions;
-
-#ifdef ENABLE_ESJIT
-    ALWAYS_INLINE unsigned getCurrentNodeIndex()
-    {
-        return m_currentNodeIndex;
-    }
-
-    ALWAYS_INLINE void setCurrentNodeIndex(unsigned index)
-    {
-        m_currentNodeIndex = index;
-    }
-
-    unsigned m_currentNodeIndex;
-#endif
-
 };
 
 class ByteCode {
@@ -404,25 +368,6 @@ protected:
     ESValue m_value;
 };
 
-class SSAIndex {
-public:
-    inline void set(int targetIndex = -1, int srcIndex1 = -1, int srcIndex2 = -1)
-    {
-        m_targetIndex = targetIndex;
-        m_srcIndex1 = srcIndex1;
-        m_srcIndex2 = srcIndex2;
-    }
-#ifndef NDEBUG
-    void dump()
-    {
-        printf("[%3d %3d %3d] ", m_targetIndex, m_srcIndex1, m_srcIndex2);
-    }
-#endif
-
-    int m_targetIndex;
-    int m_srcIndex1;
-    int m_srcIndex2;
-};
 #endif
 
 #ifdef NDEBUG
@@ -1417,27 +1362,16 @@ public:
 
 class InitObject : public ByteCode {
 public:
-#ifndef ENABLE_ESJIT
     InitObject()
         : ByteCode(InitObjectOpcode)
     {
     }
-#endif
-#ifdef ENABLE_ESJIT
-    InitObject(int arrayIndex)
-        : ByteCode(InitObjectOpcode), m_arrayIndex(arrayIndex)
-    {
-    }
-#endif
 
 #ifndef NDEBUG
     virtual void dump()
     {
         printf("InitObject <>\n");
     }
-#endif
-#ifdef ENABLE_ESJIT
-    int m_arrayIndex;
 #endif
 };
 
@@ -2073,10 +2007,10 @@ public:
 
 class StorePhi : public ByteCode {
 public:
-    StorePhi()
+    StorePhi(int allocIndex)
         : ByteCode(StorePhiOpcode)
     {
-
+        m_allocIndex = allocIndex;
     }
 
 #ifndef NDEBUG
@@ -2085,14 +2019,18 @@ public:
         printf("StorePhi <>\n");
     }
 #endif
+
+    int m_allocIndex;
 };
 
 class LoadPhi : public ByteCode {
 public:
-    LoadPhi()
+    LoadPhi(int allocIndex, int srcIndex0, int srcIndex1)
         : ByteCode(LoadPhiOpcode)
     {
-
+        m_allocIndex = allocIndex;
+        m_srcIndex0 = srcIndex0;
+        m_srcIndex1 = srcIndex1;
     }
 
 #ifndef NDEBUG
@@ -2101,6 +2039,10 @@ public:
         printf("LoadPhi <>\n");
     }
 #endif
+
+    int m_allocIndex;
+    int m_srcIndex0;
+    int m_srcIndex1;
 };
 
 class This : public ByteCode {
@@ -2283,28 +2225,12 @@ public:
     bool m_isStrict;
     bool m_isFunctionExpression;
 
-
 #ifndef NDEBUG
     InternalAtomicString m_id;
     ESString* m_nonAtomicId;
 #endif
 
 #ifdef ENABLE_ESJIT
-#define WRITE_LAST_INDEX(a, b, c) codeBlock->writeLastSSAIndex(a, b, c)
-public:
-    void writeLastSSAIndex(int targetIndex = -1, int src1 = -1, int src2 = -1) { m_SSAIndexes.back().set(targetIndex, src1, src2); }
-    SSAIndex* getSSAIndex(int bytecodeIndex) { return &m_SSAIndexes[bytecodeIndex]; }
-    void writeFunctionCallInfo(int calleeIndex, int receiverIndex, int argumentCountIndex, int argumentIndexes[])
-    {
-        m_functionCallInfos.push_back(calleeIndex);
-        m_functionCallInfos.push_back(receiverIndex);
-        m_functionCallInfos.push_back(argumentCountIndex);
-        for (size_t i = 0; i < argumentCountIndex; i++)
-            m_functionCallInfos.push_back(argumentIndexes[i]);
-    }
-
-    std::vector<SSAIndex> m_SSAIndexes;
-    std::vector<int> m_functionCallInfos;
     typedef ESValueInDouble (*JITFunction)(ESVMInstance*);
     JITFunction m_cachedJITFunction;
     bool m_dontJIT;
@@ -2313,8 +2239,6 @@ public:
     size_t m_executeCount;
     size_t m_osrExitCount;
     size_t m_threshold;
-#else
-#define WRITE_LAST_INDEX(a, b, c)
 #endif
 
 private:
@@ -2435,9 +2359,6 @@ void CodeBlock::pushCode(const CodeType& code, ByteCodeGenerateContext& context,
     m_extraData.push_back(extraData);
 
     m_requiredStackSizeInESValueSize = std::max(m_requiredStackSizeInESValueSize, (unsigned)context.m_baseRegisterCount);
-#ifdef ENABLE_ESJIT
-    m_SSAIndexes.push_back(SSAIndex());
-#endif
 }
 
 inline void CodeBlock::pushCode(const ExecuteNativeFunction& code)

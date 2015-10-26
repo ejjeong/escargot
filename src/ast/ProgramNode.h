@@ -18,9 +18,6 @@ public:
 
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-#ifdef ENABLE_ESJIT
-        context.setCurrentNodeIndex(0);
-#endif
         for(unsigned i = 0; i < m_body.size() ; i ++) {
             m_body[i]->generateStatementByteCode(codeBlock, context);
 #ifndef NDEBUG

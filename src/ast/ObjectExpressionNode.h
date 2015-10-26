@@ -33,11 +33,8 @@ public:
             p->value()->generateExpressionByteCode(codeBlock, context);
 
             if(p->kind() == PropertyNode::Kind::Init) {
-#ifndef ENABLE_ESJIT
                 codeBlock->pushCode(InitObject(), context, this);
-#else
-                codeBlock->pushCode(InitObject(-1), context, this);
-#endif
+
             } else if(p->kind() == PropertyNode::Kind::Get) {
                 codeBlock->pushCode(SetObjectPropertyGetter(), context, this);
             } else {

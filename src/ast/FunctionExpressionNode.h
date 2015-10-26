@@ -28,7 +28,7 @@ public:
         ByteCodeGenerateContext newContext;
         m_body->generateStatementByteCode(cb, newContext);
 #ifdef ENABLE_ESJIT
-        cb->m_tempRegisterSize = newContext.getCurrentNodeIndex();
+        cb->m_tempRegisterSize = newContext.m_currentSSARegisterCount;
 #endif
         cb->pushCode(ReturnFunction(), newContext, this);
 #ifndef NDEBUG
@@ -52,9 +52,6 @@ public:
         codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb, false), context, this);
 
         newContext.cleanupSSARegisterCount();
-#ifdef ENABLE_ESJIT
-        newContext.dumpCurrentNodeIndex();
-#endif
     }
 
 

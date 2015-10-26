@@ -18,24 +18,12 @@ public:
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_callee->generateExpressionByteCode(codeBlock, context);
-        updateNodeIndex(context);
 
-#ifdef ENABLE_ESJIT
-        int* argumentIndexes = (int*)alloca(sizeof(int) * m_arguments.size());
-#endif
         for(unsigned i = 0; i < m_arguments.size() ; i ++) {
             m_arguments[i]->generateExpressionByteCode(codeBlock, context);
-#ifdef ENABLE_ESJIT
-            argumentIndexes[i] = m_arguments[i]->nodeIndex();
-#endif
         }
 
-        updateNodeIndex(context);
         codeBlock->pushCode(NewFunctionCall(m_arguments.size()), context, this);
-        WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
-#ifdef ENABLE_ESJIT
-        codeBlock->writeFunctionCallInfo(m_callee->nodeIndex(), -1, m_arguments.size(), argumentIndexes);
-#endif
     }
 
 protected:

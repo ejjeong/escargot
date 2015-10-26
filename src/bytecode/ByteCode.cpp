@@ -35,49 +35,65 @@ void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, B
     context.m_baseRegisterCount = context.m_baseRegisterCount + data->m_registerIncrementCount - data->m_registerDecrementCount;
     ASSERT(context.m_baseRegisterCount>=0);
 
-    if(op == InitObjectOpcode) {
-        int peekCount = peekCountFromOpcode(code, op);
-        ASSERT(peekCount == 1);
-        for(int i = 0; i < data->m_registerDecrementCount ; i ++) {
-            int c = context.m_ssaComputeStack.back();
-            context.m_ssaComputeStack.pop_back();
-            data->m_sourceIndexes.push_back(c);
-        }
 
-        data->m_sourceIndexes.push_back(context.m_ssaComputeStack.back());
+    if(op == AllocPhiOpcode) {
+        data->m_targetIndex0 = context.m_currentSSARegisterCount++;
+    } else if(op == StorePhiOpcode) {
+        data->m_sourceIndexes.push_back(((StorePhi *)code)->m_allocIndex);
+        data->m_sourceIndexes.push_back(context.m_currentSSARegisterCount - 1);
+        data->m_targetIndex0 = context.m_currentSSARegisterCount++;
+    } else if(op == LoadPhiOpcode) {
+        data->m_sourceIndexes.push_back(((LoadPhi *)code)->m_allocIndex);
+        data->m_sourceIndexes.push_back(((LoadPhi *)code)->m_srcIndex0);
+        data->m_sourceIndexes.push_back(((LoadPhi *)code)->m_srcIndex1);
+        data->m_targetIndex0 = context.m_currentSSARegisterCount++;
     } else {
-        int peekCount = peekCountFromOpcode(code, op);
-        ASSERT(!peekCount || !data->m_registerDecrementCount);
-        auto iter = context.m_ssaComputeStack.end();
-        for(int i = 0; i < peekCount ; i ++) {
-            iter --;
-            int c = *iter;
-            data->m_sourceIndexes.push_back(c);
+        //normal path
+        if(op == InitObjectOpcode) {
+            //peek, pop both are exist case
+            int peekCount = peekCountFromOpcode(code, op);
+            ASSERT(peekCount == 1);
+            for(int i = 0; i < data->m_registerDecrementCount ; i ++) {
+                int c = context.m_ssaComputeStack.back();
+                context.m_ssaComputeStack.pop_back();
+                data->m_sourceIndexes.push_back(c);
+            }
+
+            data->m_sourceIndexes.push_back(context.m_ssaComputeStack.back());
+        } else {
+            //normal path
+            int peekCount = peekCountFromOpcode(code, op);
+            ASSERT(!peekCount || !data->m_registerDecrementCount);
+            auto iter = context.m_ssaComputeStack.end();
+            for(int i = 0; i < peekCount ; i ++) {
+                iter --;
+                int c = *iter;
+                data->m_sourceIndexes.push_back(c);
+            }
+
+            for(int i = 0; i < data->m_registerDecrementCount ; i ++) {
+                int c = context.m_ssaComputeStack.back();
+                context.m_ssaComputeStack.pop_back();
+                data->m_sourceIndexes.push_back(c);
+            }
         }
 
-        for(int i = 0; i < data->m_registerDecrementCount ; i ++) {
-            int c = context.m_ssaComputeStack.back();
-            context.m_ssaComputeStack.pop_back();
-            data->m_sourceIndexes.push_back(c);
+        std::reverse(data->m_sourceIndexes.begin(), data->m_sourceIndexes.end());
+
+        if(data->m_registerIncrementCount == 0) {
+        } else if(data->m_registerIncrementCount == 1) {
+            int c = context.m_currentSSARegisterCount++;
+            context.m_ssaComputeStack.push_back(c);
+            data->m_targetIndex0 = c;
+        } else {
+            ASSERT(data->m_registerIncrementCount == 2);
+            int c = context.m_currentSSARegisterCount++;
+            context.m_ssaComputeStack.push_back(c);
+            data->m_targetIndex0 = c;
+            c = context.m_currentSSARegisterCount++;
+            context.m_ssaComputeStack.push_back(c);
+            data->m_targetIndex1 = c;
         }
-    }
-
-
-    std::reverse(data->m_sourceIndexes.begin(), data->m_sourceIndexes.end());
-
-    if(data->m_registerIncrementCount == 0) {
-    } else if(data->m_registerIncrementCount == 1) {
-        int c = context.m_currentSSARegisterCount++;
-        context.m_ssaComputeStack.push_back(c);
-        data->m_targetIndex0 = c;
-    } else {
-        ASSERT(data->m_registerIncrementCount == 2);
-        int c = context.m_currentSSARegisterCount++;
-        context.m_ssaComputeStack.push_back(c);
-        data->m_targetIndex0 = c;
-        c = context.m_currentSSARegisterCount++;
-        context.m_ssaComputeStack.push_back(c);
-        data->m_targetIndex1 = c;
     }
 }
 
@@ -118,8 +134,8 @@ CodeBlock* generateByteCode(Node* node)
     context.cleanupSSARegisterCount();
 #ifdef ENABLE_ESJIT
     //Fill temp register size for future
-    block->m_tempRegisterSize = context.getCurrentNodeIndex();
-    context.dumpCurrentNodeIndex();
+    block->m_tempRegisterSize = context.m_currentSSARegisterCount;
+    context.cleanupSSARegisterCount();
 #endif
     return block;
 }
@@ -226,30 +242,6 @@ void dumpBytecode(CodeBlock* codeBlock)
         bytecodeCounter++;
         ASSERT(opcode == currentCode->m_orgOpcode);
 
-#ifdef ENABLE_ESJIT
-        if (opcode == CallFunctionOpcode || opcode == NewFunctionCallOpcode) {
-            int calleeIndex = codeBlock->m_functionCallInfos[callInfoIndex++];
-            int receiverIndex = codeBlock->m_functionCallInfos[callInfoIndex++];
-            int argumentCount = codeBlock->m_functionCallInfos[callInfoIndex++];
-            printf("[%3d,%3d,%3d", calleeIndex, receiverIndex, argumentCount);
-            for (int i=0; i<argumentCount; i++)
-                printf(",%3d", codeBlock->m_functionCallInfos[callInfoIndex++]);
-            printf("] ");
-        }
-        switch(opcode) {
-#define DUMP_BYTE_CODE(code, pushCount, popCount, peekCount, JITSupported) \
-        case code##Opcode:\
-        codeBlock->getSSAIndex(currentCount)->dump(); \
-        currentCode->dump(); \
-        idx += sizeof (code); \
-        continue;
-        FOR_EACH_BYTECODE_OP(DUMP_BYTE_CODE)
-#undef  DUMP_BYTE_CODE
-        default:
-            RELEASE_ASSERT_NOT_REACHED();
-            break;
-        };
-#else // ENABLE_ESJIT
         switch(opcode) {
 #define DUMP_BYTE_CODE(code, pushCount, popCount, peekCount, JITSupported) \
         case code##Opcode:\
@@ -262,7 +254,6 @@ void dumpBytecode(CodeBlock* codeBlock)
             RELEASE_ASSERT_NOT_REACHED();
             break;
         };
-#endif // ENABLE_ESJIT
     }
     printf("dumpBytecode...<<<<<<<<<<<<<<<<<<<<<<\n");
 }

@@ -1080,7 +1080,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(SetVar);
         LIns* source = getTmpMapping(irSetVar->sourceIndex());
-        LIns* boxedSource = boxESValue(source, m_graph->getOperandType(irSetVar->m_targetIndex));
+        LIns* boxedSource = boxESValue(source, m_graph->getOperandType(irSetVar->sourceIndex()));
         if(irSetVar->upVarIndex() == 0) {
             LIns* cachedDeclarativeEnvironmentRecordESValue = m_out->insLoad(LIR_ldp, m_context, ExecutionContext::offsetofcachedDeclarativeEnvironmentRecordESValue(), 1, LOAD_NORMAL);
             m_out->insStore(LIR_std, boxedSource, cachedDeclarativeEnvironmentRecordESValue, irSetVar->localVarIndex() * sizeof(ESValue), 1);
@@ -1144,7 +1144,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_ESIR(SetVarGeneric);
 
         LIns* source = getTmpMapping(irSetVarGeneric->sourceIndex());
-        LIns* boxedSource = boxESValue(source, m_graph->getOperandType(irSetVarGeneric->m_targetIndex));
+        LIns* boxedSource = boxESValue(source, m_graph->getOperandType(irSetVarGeneric->sourceIndex()));
 
         LIns* bytecode = m_out->insImmP(irSetVarGeneric->originalPutByIdByteCode());
         LIns* cachedIdentifierCacheInvalidationCheckCount = m_out->insLoad(LIR_ldi, bytecode, offsetof(SetById, m_identifierCacheInvalidationCheckCount), 1, LOAD_NORMAL);
@@ -1414,7 +1414,12 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_ESIR(LoadPhi);
         LIns* phi = getTmpMapping(irLoadPhi->allocPhiIndex());
 
-        Type consequentType = m_graph->getOperandType(irLoadPhi->consequentIndex());
+        //TODO use type of srcIndex1
+        //currently, if typeof srcIndex0 and srcIndex1 are diffrent,
+        //complie will failed in ESGraphTypeInference.cpp
+        Type consequentType = m_graph->getOperandType(irLoadPhi->srcIndex0());
+
+        //TODO implement another types
         if (consequentType.isInt32Type())
             return m_out->insLoad(LIR_ldi, phi, 0, 1, LOAD_NORMAL);
         else

@@ -308,8 +308,13 @@ bool ESGraphTypeInference::run(ESGraph* graph)
             case ESIR::Opcode::LoadPhi:
             {
                 INIT_ESIR(LoadPhi);
-                Type consequentType = graph->getOperandType(irLoadPhi->consequentIndex());
-                graph->setOperandType(ir->targetIndex(), consequentType);
+                Type src0Type = graph->getOperandType(irLoadPhi->srcIndex0());
+                Type src1Type = graph->getOperandType(irLoadPhi->srcIndex1());
+                if(src0Type != src1Type) {
+                    //TODO
+                    goto unsupported;
+                }
+                graph->setOperandType(ir->targetIndex(), src0Type);
                 break;
             }
             default:

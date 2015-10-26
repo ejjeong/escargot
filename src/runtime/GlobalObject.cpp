@@ -322,13 +322,10 @@ void GlobalObject::installFunction()
             codeBlock->m_isStrict = functionDeclAST->isStrict();
             functionDeclAST->body()->generateStatementByteCode(codeBlock, context);
 #ifdef ENABLE_ESJIT
-            codeBlock->m_tempRegisterSize = context.getCurrentNodeIndex();
+            codeBlock->m_tempRegisterSize = context.m_currentSSARegisterCount;
 #endif
             codeBlock->pushCode(ReturnFunction(), context, functionDeclAST);
             context.cleanupSSARegisterCount();
-#ifdef ENABLE_ESJIT
-            context.dumpCurrentNodeIndex();
-#endif
             escargot::InternalAtomicStringVector params = functionDeclAST->params();
         }
         escargot::ESFunctionObject* function;
@@ -340,9 +337,6 @@ void GlobalObject::installFunction()
             function = ESFunctionObject::create(scope, codeBlock, ESString::create(u"anonymous"));
 
         context.cleanupSSARegisterCount();
-#ifdef ENABLE_ESJIT
-        context.dumpCurrentNodeIndex();
-#endif
 
         ESObject* prototype = ESObject::create();
         prototype->set__proto__(instance->globalObject()->object()->protoType());
@@ -434,12 +428,9 @@ void GlobalObject::installFunction()
         function->setProtoType(prototype);
 
         context.cleanupSSARegisterCount();
-#ifdef ENABLE_ESJIT
         //NOTE
         //The binded function has only one bytecode what is CallBoundFunction
         //so we should not try JIT for binded function.
-        context.dumpCurrentNodeIndex();
-#endif
         return function;
     }, ESString::create(u"bind")));
 

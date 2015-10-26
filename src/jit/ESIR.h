@@ -529,7 +529,7 @@ private:
 
 class GetObjectIR : public ESIR {
 public:
-    DECLARE_STATIC_GENERATOR_3(GetObject, int, int, escargot::GetObject *);
+    DECLARE_STATIC_GENERATOR_4(GetObject, int, int, int, escargot::GetObject *);
 
 #ifndef NDEBUG
     virtual void dump(std::ostream& out)
@@ -541,17 +541,19 @@ public:
 #endif
 
     int objectIndex() { return m_objectIndex; }
+    int receiverIndex() { return m_objectIndex; }
     int propertyIndex() { return m_propertyIndex; }
 
 private:
-    GetObjectIR(int targetIndex, int objectIndex, int propertyIndex, escargot::GetObject* b)
+    GetObjectIR(int targetIndex, int targetIndex1, int objectIndex, int propertyIndex, escargot::GetObject* b)
         : ESIR(ESIR::Opcode::GetObject, targetIndex),
           m_objectIndex(objectIndex),
+          m_receiverIndex(targetIndex1),
           m_propertyIndex(propertyIndex),
           m_byteCode(b) { }
 
-    int m_cachedIndex;
     int m_objectIndex;
+    int m_receiverIndex;
     int m_propertyIndex;
     escargot::GetObject* m_byteCode;
 };
@@ -569,20 +571,19 @@ public:
     }
 #endif
 
-    int cachedIndex() { return m_cachedIndex; }
     int targetIndex() { return m_targetIndex; }
     int objectIndex() { return m_objectIndex; }
     GetObjectPreComputedCase* byteCode() { return m_byteCode; }
 
 private:
-    GetObjectPreComputedIR(int targetIndex, int objectIndex, int cachedIndex, GetObjectPreComputedCase* b)
+    GetObjectPreComputedIR(int targetIndex, int targetIndex1, int objectIndex, GetObjectPreComputedCase* b)
         : ESIR(ESIR::Opcode::GetObjectPreComputed, targetIndex),
           m_objectIndex(objectIndex),
-          m_cachedIndex(cachedIndex),
+          m_receiverIndex(targetIndex1),
           m_byteCode(b) { }
 
     int m_objectIndex;
-    int m_cachedIndex;
+    int m_receiverIndex;
     GetObjectPreComputedCase* m_byteCode;
 };
 
@@ -654,7 +655,6 @@ public:
 #endif
 
     ESHiddenClass* cachedHiddenClass() { return m_cachedHiddenClass; }
-    size_t cachedIndex() { return m_cachedIndex; }
     int objectIndex() { return m_objectIndex; }
     int propertyIndex() { return m_propertyIndex; }
     int sourceIndex() { return m_sourceIndex; }
@@ -664,9 +664,13 @@ private:
         : ESIR(ESIR::Opcode::SetObject, targetIndex),
           m_objectIndex(objectIndex),
           m_propertyIndex(propertyIndex),
-          m_sourceIndex(sourceIndex) { }
+          m_sourceIndex(sourceIndex) {
+        if(objectIndex == 23) {
+            puts("asfd");
+        }
+
+    }
     ESHiddenClass* m_cachedHiddenClass;
-    int m_cachedIndex;
     int m_objectIndex;
     int m_propertyIndex;
     int m_sourceIndex;
@@ -1234,10 +1238,11 @@ private:
 
 class LoadPhiIR : public ESIR {
 public:
-    DECLARE_STATIC_GENERATOR_2(LoadPhi, int, int)
+    DECLARE_STATIC_GENERATOR_3(LoadPhi, int, int, int)
 
     int allocPhiIndex() { return m_allocPhiIndex; }
-    int consequentIndex() { return m_consequentIndex; }
+    int srcIndex0() { return m_srcIndex0; }
+    int srcIndex1() { return m_srcIndex1; }
 
 #ifndef NDEBUG
     virtual void dump(std::ostream& out)
@@ -1249,10 +1254,11 @@ public:
 #endif
 
 private:
-    LoadPhiIR(int targetIndex, int allocPhiIndex, int consequentIndex)
-        : ESIR(ESIR::Opcode::LoadPhi, targetIndex), m_allocPhiIndex(allocPhiIndex), m_consequentIndex(consequentIndex) { }
+    LoadPhiIR(int targetIndex, int allocPhiIndex, int srcIndex0, int srcIndex1)
+        : ESIR(ESIR::Opcode::LoadPhi, targetIndex), m_allocPhiIndex(allocPhiIndex), m_srcIndex0(srcIndex0), m_srcIndex1(srcIndex1) { }
     int m_allocPhiIndex;
-    int m_consequentIndex;
+    int m_srcIndex0;
+    int m_srcIndex1;
 };
 
 class CreateArrayIR : public ESIR {

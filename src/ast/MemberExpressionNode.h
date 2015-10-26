@@ -44,35 +44,27 @@ public:
                     codeBlock->pushCode(GetObjectPreComputedCaseAndPushObjectSlowMode(((IdentifierNode *)m_property)->name().string()), context, this);
                 else
                     codeBlock->pushCode(GetObjectPreComputedCaseSlowMode(((IdentifierNode *)m_property)->name().string()), context, this);
-                updateNodeIndex(context);
-                WRITE_LAST_INDEX(m_nodeIndex, m_object->nodeIndex(), m_nodeIndex - 1);
             } else {
                 m_property->generateExpressionByteCode(codeBlock, context);
-                updateNodeIndex(context);
                 if(context.m_inCallingExpressionScope && prevHead)
                     codeBlock->pushCode(GetObjectAndPushObjectSlowMode(), context, this);
                 else
                     codeBlock->pushCode(GetObjectSlowMode(), context, this);
-                WRITE_LAST_INDEX(m_nodeIndex, m_object->nodeIndex(), m_property->nodeIndex());
             }
             return ;
         }
         if(isPreComputedCase()) {
             ASSERT(m_property->type() == NodeType::Identifier);
-            updateNodeIndex(context);
             if(context.m_inCallingExpressionScope && prevHead)
                 codeBlock->pushCode(GetObjectPreComputedCaseAndPushObject(((IdentifierNode *)m_property)->name().string()), context, this);
             else
                 codeBlock->pushCode(GetObjectPreComputedCase(((IdentifierNode *)m_property)->name().string()), context, this);
-            WRITE_LAST_INDEX(m_nodeIndex, m_object->nodeIndex(), -1);
         } else {
             m_property->generateExpressionByteCode(codeBlock, context);
-            updateNodeIndex(context);
             if(context.m_inCallingExpressionScope && prevHead)
                 codeBlock->pushCode(GetObjectAndPushObject(), context, this);
             else
                 codeBlock->pushCode(GetObject(), context, this);
-            WRITE_LAST_INDEX(m_nodeIndex, m_object->nodeIndex(), m_property->nodeIndex());
         }
     }
 
@@ -84,21 +76,15 @@ public:
                 ASSERT(m_property->type() == NodeType::Identifier);
                 codeBlock->pushCode(SetObjectPreComputedCaseSlowMode(((IdentifierNode *)m_property)->name().string()), context, this);
             } else {
-                updateNodeIndex(context);
                 codeBlock->pushCode(SetObjectSlowMode(), context, this);
-                WRITE_LAST_INDEX(m_nodeIndex, m_object->nodeIndex(), m_property->nodeIndex());
             }
             return ;
         }
         if(isPreComputedCase()) {
             ASSERT(m_property->type() == NodeType::Identifier);
-            updateNodeIndex(context);
             codeBlock->pushCode(SetObjectPreComputedCase(((IdentifierNode *)m_property)->name().string()), context, this);
-            WRITE_LAST_INDEX(m_nodeIndex, m_object->nodeIndex(), sourceIndex);
         } else {
-            updateNodeIndex(context);
             codeBlock->pushCode(SetObject(), context, this);
-            WRITE_LAST_INDEX(m_nodeIndex, m_object->nodeIndex(), m_property->nodeIndex());
         }
     }
 
@@ -129,10 +115,6 @@ public:
             codeBlock->pushCode(GetObjectWithPeeking(), context, this);
         }
     }
-#ifdef ENABLE_ESJIT
-    int objectIndex() { return m_object->nodeIndex(); }
-    int propertyIndex() { return m_property->nodeIndex(); }
-#endif
 protected:
     Node* m_object; //object: Expression;
     Node* m_property; //property: Identifier | Expression;

@@ -21,7 +21,8 @@ public:
         m_canUseGlobalFastAccess = false;
         m_globalFastAccessIndex = SIZE_MAX;
     }
-    IdentifierNode* clone() {
+    IdentifierNode* clone()
+    {
         IdentifierNode* nd = new IdentifierNode(m_name);
         nd->m_sourceLocation = m_sourceLocation;
         return nd;
@@ -37,33 +38,25 @@ public:
 #endif
             } else {
                 if(m_fastAccessUpIndex == 0) {
-                    updateNodeIndex(context);
                     codeBlock->pushCode(GetByIndex(m_fastAccessIndex), context, this);
-                    WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
 #ifndef NDEBUG
                     codeBlock->peekCode<GetByIndex>(codeBlock->lastCodePosition<GetByIndex>())->m_name = m_name;
 #endif
                 } else {
-                    updateNodeIndex(context);
                     codeBlock->pushCode(GetByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), context, this);
-                    WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
 #ifndef NDEBUG
                     codeBlock->peekCode<GetByIndexWithActivation>(codeBlock->lastCodePosition<GetByIndexWithActivation>())->m_name = m_name;
 #endif
                 }
             }
         } else if(m_canUseGlobalFastAccess) {
-            updateNodeIndex(context);
             codeBlock->pushCode(GetByGlobalIndex(m_globalFastAccessIndex, m_name.string()), context, this);
-            WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
         } else {
-            updateNodeIndex(context);
             if(m_name == strings->arguments) {
                 codeBlock->pushCode(GetArgumentsObject(), context, this);
             } else {
                 codeBlock->pushCode(GetById(m_name), context, this);
             }
-            WRITE_LAST_INDEX(m_nodeIndex, -1, -1);
         }
     }
 
