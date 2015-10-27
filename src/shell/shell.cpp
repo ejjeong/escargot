@@ -92,6 +92,12 @@ int main(int argc, char* argv[])
                 ES->m_reportOSRExitedFunction = true;
             }
 #endif
+            if(strcmp(argv[i], "-jt") == 0) {
+                ES->m_jitThreshold = atoi(argv[++i]);
+            }
+            if(strcmp(argv[i], "-ot") == 0) {
+                ES->m_osrExitThreshold = atoi(argv[++i]);
+            }
             if(strcmp(argv[i], "-p") == 0) {
                 ES->m_profile = true;
             }

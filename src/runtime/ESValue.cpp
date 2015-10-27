@@ -839,9 +839,9 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                                                 default:
                                                     RELEASE_ASSERT_NOT_REACHED();
                                                     break;
-                           }
-                       }
-                    if (fn->codeBlock()->m_osrExitCount > 0) {
+                        }
+                    }
+                    if (fn->codeBlock()->m_osrExitCount >= ESVMInstance::currentInstance()->m_osrExitThreshold) {
                         LOG_VJ("Too many exits; Disable JIT for function %s (codeBlock %p) from now on\n", functionName, fn->codeBlock());
                         fn->codeBlock()->m_cachedJITFunction = nullptr;
                         fn->codeBlock()->m_dontJIT = true; // Fixme(JMP): We have to compile to JIT code again when gathering enough type data

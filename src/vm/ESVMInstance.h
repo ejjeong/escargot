@@ -141,9 +141,11 @@ public:
     bool m_useVerboseWriter;
     bool m_useExprFilter;
     bool m_useCseFilter;
-    int m_compiledFunctions;
-    int m_osrExitedFunctions;
+    size_t m_compiledFunctions;
+    size_t m_osrExitedFunctions;
 #endif
+    size_t m_jitThreshold;
+    size_t m_osrExitThreshold;
     bool m_profile;
 
 protected:

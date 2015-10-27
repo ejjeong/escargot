@@ -13,7 +13,7 @@ CodeBlock::CodeBlock(bool isBuiltInFunction)
 #ifdef ENABLE_ESJIT
     m_cachedJITFunction = nullptr;
     m_executeCount = 0;
-    m_threshold = 1;
+    m_threshold = ESVMInstance::currentInstance()->m_jitThreshold;
 #endif
     if(!isBuiltInFunction) {
         ESVMInstance::currentInstance()->globalObject()->registerCodeBlock(this);

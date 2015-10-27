@@ -20,6 +20,8 @@ ESVMInstance::ESVMInstance()
     m_verboseJIT = false;
     m_reportUnsupportedOpcode = false;
 #endif
+    m_jitThreshold = 1;
+    m_osrExitThreshold = 1;
     enter();
 
     m_scriptParser = new(GC) ScriptParser();
