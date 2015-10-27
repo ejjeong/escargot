@@ -319,6 +319,12 @@ inline ESValueInDouble lessThanOp(ESValueInDouble left, ESValueInDouble right)
     return ESValue::toRawDouble(ret);
 }
 
+inline void throwOp(ESValueInDouble err)
+{
+    ESValue error = ESValue::fromRawDouble(err);
+    throw error;
+}
+
 #if 0
 ALWAYS_INLINE ESValueInDouble resolveNonDataProperty(ESObject* object, ESPointer* hiddenClassIdxData)
 {

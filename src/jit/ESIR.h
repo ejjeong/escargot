@@ -127,6 +127,8 @@ class ESBasicBlock;
     F(GetProperty, ReturnsESValue) \
     F(SetProperty, ) \
     \
+    F(Throw, ) \
+    \
     /* TODO: ArrayExpression Throw [Var|Fn][Decl|Expr] */ \
 
 #define FOR_EACH_ESIR_FLAGS(F) \
@@ -1085,6 +1087,26 @@ private:
     ReturnWithValueIR(int targetIndex, int returnIndex)
         : ESIR(ESIR::Opcode::ReturnWithValue, targetIndex), m_returnIndex(returnIndex) { }
     int m_returnIndex;
+};
+
+class ThrowIR : public ESIR {
+public:
+    DECLARE_STATIC_GENERATOR_1(Throw, int);
+
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << ": ";
+        ESIR::dump(out);
+        out << " tmp" << m_sourceIndex;
+    }
+#endif
+    int sourceIndex() { return m_sourceIndex; }
+
+private:
+    ThrowIR(int targetIndex, int sourceIndex)
+        : ESIR(ESIR::Opcode::Throw, targetIndex), m_sourceIndex(sourceIndex) { }
+    int m_sourceIndex;
 };
 
 class JumpIR : public ESIR {

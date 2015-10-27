@@ -770,9 +770,13 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         }
         case ThrowOpcode:
-            goto unsupported;
+        {
+            INIT_BYTECODE(Throw);
+            ThrowIR* throwIR = ThrowIR::create(extraData->m_targetIndex0, extraData->m_sourceIndexes[0]);
+            currentBlock->push(throwIR);
             NEXT_BYTECODE(Throw);
             break;
+        }
         case AllocPhiOpcode:
         {
             INIT_BYTECODE(AllocPhi);

@@ -73,6 +73,7 @@ CallInfo createObjectCallInfo = CI(createObject, CallInfo::typeSig1(ARGTYPE_D, A
 CallInfo createArrayCallInfo = CI(createArr, CallInfo::typeSig1(ARGTYPE_D, ARGTYPE_I));
 CallInfo createFunctionCallInfo = CI(createFunction, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_P, ARGTYPE_P));
 CallInfo initObjectCallInfo = CI(initObject, CallInfo::typeSig3(ARGTYPE_V, ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
+CallInfo throwCallInfo = CI(throwOp, CallInfo::typeSig1(ARGTYPE_V, ARGTYPE_D));
 
 #ifndef NDEBUG
 CallInfo logIntCallInfo = CI(jitLogIntOperation, CallInfo::typeSig2(ARGTYPE_V, ARGTYPE_I, ARGTYPE_P));
@@ -1044,6 +1045,14 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             irJump->targetBlock()->addJumpOrBranchSource(jump);
         }
         return jump;
+    }
+    case ESIR::Opcode::Throw:
+    {
+        INIT_ESIR(Throw);
+        LIns* source = getTmpMapping(irThrow->sourceIndex());
+        LIns* boxedSource = boxESValue(source, m_graph->getOperandType(irThrow->sourceIndex()));
+        LIns* args[] = {boxedSource};
+        return m_out->insCall(&throwCallInfo, args);
     }
     case ESIR::Opcode::Branch:
     {
