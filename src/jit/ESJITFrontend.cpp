@@ -108,11 +108,21 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         }
         case PushIntoTempStackOpcode:
+        {
+            INIT_BYTECODE(PushIntoTempStack);
+            MoveIR* moveIR = MoveIR::create(extraData->m_targetIndex0, extraData->m_sourceIndexes[0]);
+            currentBlock->push(moveIR);
             NEXT_BYTECODE(PushIntoTempStack);
             break;
+        }
         case PopFromTempStackOpcode:
+        {
+            INIT_BYTECODE(PopFromTempStack);
+            MoveIR* moveIR = MoveIR::create(extraData->m_targetIndex0, extraData->m_sourceIndexes[0]);
+            currentBlock->push(moveIR);
             NEXT_BYTECODE(PopFromTempStack);
             break;
+        }
         case GetByIdOpcode:
         {
             INIT_BYTECODE(GetById);
