@@ -1524,7 +1524,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* phi = getTmpMapping(irStorePhi->allocPhiIndex());
 
         Type srcType = m_graph->getOperandType(irStorePhi->sourceIndex());
-        if (srcType.isInt32Type())
+        if (srcType.isInt32Type() || srcType.isBooleanType())
             return m_out->insStore(LIR_sti, source, phi, 0 , 1);
         else
             return nullptr;
@@ -1540,7 +1540,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         Type consequentType = m_graph->getOperandType(irLoadPhi->srcIndex0());
 
         //TODO implement another types
-        if (consequentType.isInt32Type())
+        if (consequentType.isInt32Type() || consequentType.isBooleanType())
             return m_out->insLoad(LIR_ldi, phi, 0, 1, LOAD_NORMAL);
         else
             return nullptr;
