@@ -29,7 +29,10 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
     size_t callInfoIndex = 0;
     char* code = codeBlock->m_code.data();
 
+    GC_disable();
     std::map<int, ESBasicBlock*> basicBlockMapping;
+    //TODO
+    //std::unordered_map<int, ESBasicBlock*, std::hash<int>, std::equal_to<int>, gc_allocator<std::pair<const int, ESBasicBlock *> > > basicBlockMapping;
 
     ESBasicBlock *entryBlock = ESBasicBlock::create(graph);
     basicBlockMapping[idx] = entryBlock;
@@ -44,7 +47,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         // Update BasicBlock information
         // TODO: find a better way to this (e.g. using AST, write information to bytecode..)
         if (basicBlockMapping.find(idx) != basicBlockMapping.end()) {
-            ESBasicBlock* generatedBlock = basicBlockMapping[idx];
+            ESBasicBlock* generatedBlock = basicBlockMapping.find(idx)->second;
             if (currentBlock != generatedBlock && !currentBlock->endsWithJumpOrBranch()) {
                 currentBlock->addChild(generatedBlock);
                 generatedBlock->addParent(currentBlock);
@@ -83,15 +86,15 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
                 literal = ConstantDoubleIR::create(extraData->m_targetIndex0, bytecode->m_value.asDouble());
             } else if (bytecode->m_value.isBoolean()) {
                 literal = ConstantBooleanIR::create(extraData->m_targetIndex0, bytecode->m_value.asBoolean());
+            } else if (bytecode->m_value.isNull() || bytecode->m_value.isUndefined() || bytecode->m_value.isEmpty()) {
+                literal = ConstantESValueIR::create(extraData->m_targetIndex0, ESValue::toRawDouble(bytecode->m_value));
             } else if (bytecode->m_value.isESPointer()) {
                 ESPointer* p = bytecode->m_value.asESPointer();
                 if (p->isESString())
                     literal = ConstantStringIR::create(extraData->m_targetIndex0, bytecode->m_value.asESString());
                 else
                     literal = ConstantPointerIR::create(extraData->m_targetIndex0, bytecode->m_value.asESPointer());
-            } else if (bytecode->m_value.isNull() || bytecode->m_value.isUndefined()) {
-                literal = ConstantESValueIR::create(extraData->m_targetIndex0, ESValue::toRawDouble(bytecode->m_value));
-            } else
+            }else
                 goto unsupported;
             currentBlock->push(literal);
             NEXT_BYTECODE(Push);
@@ -762,13 +765,13 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         }
         case LoopStartOpcode:
-        {
-            INIT_BYTECODE(LoopStart);
-            ESBasicBlock* loopBlock = ESBasicBlock::create(graph);
-            basicBlockMapping[idx + sizeof(LoopStart)] = loopBlock;
-            NEXT_BYTECODE(LoopStart);
-            break;
-        }
+       {
+           INIT_BYTECODE(LoopStart);
+           ESBasicBlock* loopBlock = ESBasicBlock::create(graph);
+           basicBlockMapping[idx + sizeof(LoopStart)] = loopBlock;
+           NEXT_BYTECODE(LoopStart);
+           break;
+       }
         case ThrowOpcode:
         {
             INIT_BYTECODE(Throw);
@@ -833,10 +836,12 @@ postprocess:
     if (ESVMInstance::currentInstance()->m_verboseJIT)
         graph->dump(std::cout);
 #endif
+    GC_enable();
     return graph;
 
 unsupported:
     LOG_VJ("Unsupported case in ByteCode %s (idx %zu) (while parsing in FrontEnd)\n", getByteCodeName(codeBlock->m_extraData[bytecodeCounter].m_opcode), idx);
+    GC_enable();
     return nullptr;
 }
 

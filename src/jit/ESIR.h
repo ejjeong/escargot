@@ -116,6 +116,7 @@ class ESBasicBlock;
     F(SetObject, ) \
     F(SetObjectPreComputed, ) \
     F(GetArrayObject, ReturnsESValue) \
+    F(GetStringByIndex, ReturnsESValue) \
     F(SetArrayObject, ) \
     F(GetScoped, ReturnsESValue) \
     F(SetScoped, ) \
@@ -639,6 +640,31 @@ private:
     int m_propertyIndex;
 };
 
+class GetStringByIndexIR : public ESIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(GetStringByIndex, int, int);
+
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+        out << " tmp" << m_objectIndex << "[tmp" << m_propertyIndex << "]";
+    }
+#endif
+
+    int objectIndex() { return m_objectIndex; }
+    int propertyIndex() { return m_propertyIndex; }
+
+private:
+    GetStringByIndexIR(int targetIndex, int objectIndex, int propertyIndex)
+        : ESIR(ESIR::Opcode::GetArrayObject, targetIndex),
+          m_objectIndex(objectIndex),
+          m_propertyIndex(propertyIndex){ }
+    int m_objectIndex;
+    int m_propertyIndex;
+};
+
 class SetArrayObjectIR : public ESIR {
 public:
     DECLARE_STATIC_GENERATOR_3(SetArrayObject, int, int, int);
@@ -669,7 +695,6 @@ private:
 
 class SetObjectIR : public ESIR {
 public:
-    //DECLARE_STATIC_GENERATOR_3(SetObject, ESHiddenClass*, size_t, int);
     DECLARE_STATIC_GENERATOR_3(SetObject, int, int, int);
 
 #ifndef NDEBUG
@@ -692,10 +717,6 @@ private:
           m_objectIndex(objectIndex),
           m_propertyIndex(propertyIndex),
           m_sourceIndex(sourceIndex) {
-        if(objectIndex == 23) {
-            puts("asfd");
-        }
-
     }
     ESHiddenClass* m_cachedHiddenClass;
     int m_objectIndex;

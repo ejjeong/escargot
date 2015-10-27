@@ -1069,7 +1069,13 @@ typedef std::vector<::escargot::ESValue, gc_allocator<::escargot::ESValue> > ESV
 class ESValueVector : public ESValueVectorStd {
 public:
     ESValueVector(size_t siz)
-        : ESValueVectorStd(siz) { }
+        : ESValueVectorStd(siz) {
+
+    }
+
+#ifdef ENABLE_ESJIT
+    static size_t offsetOfData() { return offsetof(ESValueVector, _M_impl._M_start); }
+#endif
 };
 
 class ESHiddenClass : public gc {
@@ -1525,9 +1531,8 @@ public:
 
 #ifdef ENABLE_ESJIT
     static size_t offsetOfVectorData() { return offsetof(ESArrayObject, m_vector); }
-#endif
-#ifdef ENABLE_ESJIT
     static size_t offsetOfLength() { return offsetof(ESArrayObject, m_length); }
+    static size_t offsetOfIsFastMode() { return offsetof(ESArrayObject, m_fastmode); }
 #endif
 
 protected:

@@ -247,13 +247,16 @@ bool ESGraphTypeInference::run(ESGraph* graph)
             {
                 INIT_ESIR(GetObject);
                 Type objectType = graph->getOperandType(irGetObject->objectIndex());
+                Type propertyType = graph->getOperandType(irGetObject->propertyIndex());
                 if (objectType.isArrayObjectType()) {
-                    //GetArrayObjectIR* getArrayObjectIR = GetArrayObjectIR::create(irGetObject->targetIndex(), irGetObject->objectIndex(), irGetObject->propertyIndex());
-                    //block->replace(j, getArrayObjectIR);
-                } else if (objectType.isObjectType()) {
-                    // do nothing
+                    if(propertyType.isInt32Type()) {
+                        GetArrayObjectIR* getArrayObjectIR = GetArrayObjectIR::create(irGetObject->targetIndex(), irGetObject->objectIndex(), irGetObject->propertyIndex());
+                        block->replace(j, getArrayObjectIR);
+                    }
+                } else if (objectType.isStringType()) {
+                    //GetStringByIndexIR* newIR = GetStringByIndexIR::create(irGetObject->targetIndex(), irGetObject->objectIndex(), irGetObject->propertyIndex());
+                    //block->replace(j, newIR);
                 } else {
-                    RELEASE_ASSERT_NOT_REACHED();
                 }
                 break;
             }
@@ -264,12 +267,9 @@ bool ESGraphTypeInference::run(ESGraph* graph)
                 graph->setOperandType(ir->targetIndex(), srcType);
                 Type objectType = graph->getOperandType(irSetObject->objectIndex());
                 if (objectType.isArrayObjectType()) {
-                    //SetArrayObjectIR* setArrayObjectIR = SetArrayObjectIR::create(irSetObject->targetIndex(), irSetObject->objectIndex(), irSetObject->propertyIndex(), irSetObject->sourceIndex());
-                    //block->replace(j, setArrayObjectIR);
-                } else if (objectType.isObjectType()) {
-                    // do nothing
+                    SetArrayObjectIR* setArrayObjectIR = SetArrayObjectIR::create(irSetObject->targetIndex(), irSetObject->objectIndex(), irSetObject->propertyIndex(), irSetObject->sourceIndex());
+                    block->replace(j, setArrayObjectIR);
                 } else {
-                    RELEASE_ASSERT_NOT_REACHED();
                 }
                 break;
             }
@@ -290,21 +290,18 @@ bool ESGraphTypeInference::run(ESGraph* graph)
             {
                 SetVarIR* irSetVar = static_cast<SetVarIR*>(ir);
                 Type setType = graph->getOperandType(irSetVar->sourceIndex());
-                graph->setOperandType(ir->targetIndex(), setType);
                 break;
             }
             case ESIR::Opcode::SetVarGeneric:
             {
                 INIT_ESIR(SetVarGeneric);
                 Type setType = graph->getOperandType(irSetVarGeneric->sourceIndex());
-                graph->setOperandType(ir->targetIndex(), setType);
                 break;
             }
             case ESIR::Opcode::SetGlobalVarGeneric:
             {
                 INIT_ESIR(SetGlobalVarGeneric);
                 Type setType = graph->getOperandType(irSetGlobalVarGeneric->sourceIndex());
-                graph->setOperandType(ir->targetIndex(), setType);
                 break;
             }
             case ESIR::Opcode::CreateObject:

@@ -125,22 +125,6 @@ inline ESValueInDouble typeOfOp(ESValueInDouble valueInDouble)
     return ESValue::toRawDouble(typeOfOperation(&value));
 }
 
-inline ESValueInDouble ESObjectSetOp(ESValueInDouble obj, ESValueInDouble property, ESValueInDouble source)
-{
-    ESValue objVal = ESValue::fromRawDouble(obj);
-    if (objVal.isESPointer()) {
-        ESPointer* objP = objVal.asESPointer();
-        if (objP->isESArrayObject()) {
-            ESArrayObject* arrObj = objP->asESArrayObject();
-
-            ESValue propVal = ESValue::fromRawDouble(property);
-            ESValue srcVal = ESValue::fromRawDouble(source);
-            arrObj->set(propVal.asInt32(), srcVal);
-        }
-    }
-    return source;
-}
-
 inline ESValueInDouble getObjectOp(ESValueInDouble willBeObject, ESValueInDouble property, GlobalObject* globalObject)
 {
     ESValue obj = ESValue::fromRawDouble(willBeObject);
@@ -347,25 +331,34 @@ ALWAYS_INLINE ESValueInDouble resolveNonDataProperty(ESObject* object, size_t id
 #ifndef NDEBUG
 inline void jitLogIntOperation(int arg, const char* msg)
 {
-    if (!ESVMInstance::currentInstance()->m_reportCompiledFunction)
+    if (!ESVMInstance::currentInstance()->m_reportCompiledFunction) {
         printf("[JIT_LOG] %s : int 0x%x\n", msg, bitwise_cast<unsigned>(arg));
+        fflush(stdout);
+    }
 }
 inline void jitLogDoubleOperation(ESValueInDouble arg, const char* msg)
 {
-    if (!ESVMInstance::currentInstance()->m_reportCompiledFunction)
+    if (!ESVMInstance::currentInstance()->m_reportCompiledFunction) {
         printf("[JIT_LOG] %s : double 0x%lx\n", msg, bitwise_cast<uint64_t>(arg));
+        fflush(stdout);
+    }
 }
 inline void jitLogPointerOperation(void* arg, const char* msg)
 {
-    if (!ESVMInstance::currentInstance()->m_reportCompiledFunction)
+    if (!ESVMInstance::currentInstance()->m_reportCompiledFunction) {
         printf("[JIT_LOG] %s : pointer 0x%lx\n", msg, bitwise_cast<uint64_t>(arg));
+        fflush(stdout);
+    }
 }
 inline void jitLogStringOperation(const char* arg, const char* msg)
 {
-    if (!ESVMInstance::currentInstance()->m_reportCompiledFunction)
+    if (!ESVMInstance::currentInstance()->m_reportCompiledFunction) {
         printf("[JIT_LOG] %s : string %s\n", msg, arg);
+        fflush(stdout);
+    }
 }
 #endif
+
 
 }
 

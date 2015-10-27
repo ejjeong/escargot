@@ -46,6 +46,10 @@ int main(int argc, char* argv[])
     ASSERT(val->isHeapObject());
     ASSERT(obj->get("obj")->toHeapObject()->isESUndefined());
      */
+#ifndef NDEBUG
+    setbuf(stdout, NULL);
+    setbuf(stderr, NULL);
+#endif
     escargot::ESVMInstance* ES = new escargot::ESVMInstance();
     ES->enter();
     if(argc == 1) {

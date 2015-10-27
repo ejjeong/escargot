@@ -58,6 +58,7 @@ public:
         m_jumpOrBranchSources.push_back(source);
     }
 
+
 #ifndef NDEBUG
     void dump(std::ostream& out);
 #endif
@@ -71,7 +72,7 @@ private:
     ESIRVector m_instructions;
     size_t m_index;
     nanojit::LIns* m_label;
-    std::vector<nanojit::LIns*, pointer_free_allocator<nanojit::LIns*> > m_jumpOrBranchSources;
+    std::vector<nanojit::LIns*> m_jumpOrBranchSources;
     ESBasicBlock* m_dominanceFrontier;
 };
 
@@ -90,7 +91,11 @@ public:
 
     int tempRegisterSize();
     size_t operandsSize() { return m_operands.size(); }
-    void setOperandType(int index, Type type) { m_operands[index].setType(type); }
+    void setOperandType(int index, Type type)
+    {
+        ASSERT(index != -1);
+        m_operands[index].setType(type);
+    }
     void mergeOperandType(int index, Type type) { m_operands[index].mergeType(type); }
     Type getOperandType(int index) { return m_operands[index].getType(); }
     void setOperandStackPos(int index, unsigned stackPos)

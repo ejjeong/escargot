@@ -66,7 +66,6 @@ CallInfo getObjectOpCallInfo = CI(getObjectOp, CallInfo::typeSig3(ARGTYPE_D, ARG
 CallInfo getObjectPreComputedCaseOpCallInfo = CI(getObjectPreComputedCaseOp, CallInfo::typeSig3(ARGTYPE_D, ARGTYPE_D, ARGTYPE_P, ARGTYPE_P));
 CallInfo setObjectOpCallInfo = CI(setObjectOp, CallInfo::typeSig3(ARGTYPE_V, ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 CallInfo setObjectPreComputedCaseOpCallInfo = CI(setObjectPreComputedOp, CallInfo::typeSig4(ARGTYPE_V, ARGTYPE_D, ARGTYPE_P, ARGTYPE_P, ARGTYPE_D));
-CallInfo ESObjectSetOpCallInfo = CI(ESObjectSetOp, CallInfo::typeSig3(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 CallInfo generateToStringCallInfo = CI(generateToString, CallInfo::typeSig1(ARGTYPE_P, ARGTYPE_D));
 CallInfo concatTwoStringsCallInfo = CI(concatTwoStrings, CallInfo::typeSig2(ARGTYPE_P, ARGTYPE_P, ARGTYPE_P));
 CallInfo createObjectCallInfo = CI(createObject, CallInfo::typeSig1(ARGTYPE_D, ARGTYPE_I));
@@ -158,24 +157,31 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
     bool isPrevBlock = false;
     bool isDone = false;
     unsigned writeCount = 0;
-    bool* writeFlags;
+    bool* writeFlags = NULL;
     for (int i = m_graph->basicBlockSize() - 1; i >= 0; i--) {
         ESBasicBlock* block = m_graph->basicBlock(i);
         if (!isPrevBlock && block->instructionSize() > 0 && block->instruction(0)->targetIndex() <= currentByteCodeIndex) {
             int j = block->instructionSize() - 1;
-            unsigned maxStackPos;
+            int maxStackPos = -1;
             if (!isPrevBlock) {
                 for (; j >= 0; j--) {
                     if (block->instruction(j)->targetIndex() == currentByteCodeIndex) {
                         if (j == 0)
                             maxStackPos = 0;
                         else {
-                            j--;
-                            unsigned followPopCount = m_graph->getFollowPopCountOf(block->instruction(j)->targetIndex());
-                            maxStackPos = m_graph->getOperandStackPos(block->instruction(j)->targetIndex()) - followPopCount;
-                            writeFlags = (bool *)alloca(maxStackPos);
-                            memset(writeFlags, 0, maxStackPos * sizeof(bool));
-                           }
+                            while (true) {
+                                j--;
+                                if(j < 0)
+                                    break;
+                                if(block->instruction(j)->targetIndex() != -1) {
+                                    unsigned followPopCount = m_graph->getFollowPopCountOf(block->instruction(j)->targetIndex());
+                                    maxStackPos = m_graph->getOperandStackPos(block->instruction(j)->targetIndex()) - followPopCount;
+                                    writeFlags = (bool *) alloca(maxStackPos);
+                                    memset(writeFlags, 0, maxStackPos * sizeof(bool));
+                                    break;
+                                }
+                            }
+                        }
                         break;
                     }
                 }
@@ -1264,7 +1270,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(GetGlobalVarGeneric);
         LIns* byteCode = m_out->insImmP(irGetGlobalVarGeneric->byteCode());
-        LIns* args[] = {byteCode, m_globalObject};
+        LIns* globalObject = m_out->insLoad(LIR_ldp, m_instance, ESVMInstance::offsetOfGlobalObject(), 1, LOAD_NORMAL);
+        LIns* args[] = {byteCode, globalObject};
         return m_out->insCall(&getByGlobalIndexOpCallInfo, args);
     }
     case ESIR::Opcode::SetVarGeneric:
@@ -1330,12 +1337,6 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_ESIR(GetObject);
         LIns* obj = boxESValue(getTmpMapping(irGetObject->objectIndex()), m_graph->getOperandType(irGetObject->objectIndex()));
         LIns* property = boxESValue(getTmpMapping(irGetObject->propertyIndex()), m_graph->getOperandType(irGetObject->propertyIndex()));
-        /*
-        if (irGetObject->cachedIndex() < SIZE_MAX) {
-            size_t gapToHiddenClassData = escargot::ESObject::offsetOfHiddenClassData();
-            LIns* hiddenClassData = m_out->insLoad(LIR_ldd, obj, gapToHiddenClassData, 1, LOAD_NORMAL);
-            return m_out->insLoad(LIR_ldd, hiddenClassData, irGetObject->cachedIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
-        }*/
         LIns* args[] = {m_globalObject, property, obj};
         return m_out->insCall(&getObjectOpCallInfo, args);
     }
@@ -1358,60 +1359,132 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     case ESIR::Opcode::GetArrayObject:
     {
         INIT_ESIR(GetArrayObject);
+
         LIns* obj = getTmpMapping(irGetArrayObject->objectIndex());
-        LIns* length  = m_out->insLoad(LIR_ldi, obj, ESArrayObject::offsetOfLength(), 1, LOAD_NORMAL);
         LIns* key = getTmpMapping(irGetArrayObject->propertyIndex());
         ASSERT(m_graph->getOperandType(irGetArrayObject->objectIndex()).isArrayObjectType());
         Type keyType = m_graph->getOperandType(irGetArrayObject->propertyIndex());
-            if (keyType.isInt32Type()) {
-                size_t gapToVector = escargot::ESArrayObject::offsetOfVectorData();
-                LIns* vectorData = m_out->insLoad(LIR_ldd, obj, gapToVector, 1, LOAD_NORMAL);
-                LIns* ESValueSize = m_out->insImmI(sizeof(ESValue));
-                LIns* offset = m_out->ins2(LIR_muli, key, ESValueSize);
-                LIns* newBase = m_out->ins2(LIR_addd, vectorData, offset);
-                return m_out->insLoad(LIR_ldd, newBase, 0, 1, LOAD_NORMAL);
-                // TODO-JY : Beloq code cause access-nsieve bad result
-                // int32_t gapToVector = (int32_t) escargot::ESArrayObject::offsetOfVectorData();
-                // LIns* vectorData = m_out->insLoad(LIR_ldp, obj, gapToVector, 1, LOAD_NORMAL);
-                // return m_out->insLoad(LIR_ldd, vectorData, irGetArrayObject->propertyIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
-             } else
-                 RELEASE_ASSERT_NOT_REACHED();
+        if(false) {//keyType.isInt32Type()) {
+            LIns* length = m_out->insLoad(LIR_ldi, obj, ESArrayObject::offsetOfLength(), 1, LOAD_NORMAL);
+            LIns* phi = m_out->insAlloc(sizeof(ESValue));
+
+            //length-check
+            //idx >= 0
+            LIns* checkLessThanZero = m_out->ins2(LIR_lti, key, m_out->insImmI(0));
+            LIns* jumpLessThanZero = m_out->insBranch(LIR_jt, checkLessThanZero, nullptr);
+
+            //idx < length
+            LIns* checkGretherOrEqualThanLength = m_out->ins2(LIR_gei, key, length);
+            LIns* jumpGretherOrEqualThanLength = m_out->insBranch(LIR_jt, checkGretherOrEqualThanLength, nullptr);
+
+            //TODO check fastMode
+            //LIns* fastMode = m_out->insLoad(LIR_ldc2i, obj, ESArrayObject::offsetOfIsFastMode(), 1, LOAD_NORMAL);
+
+            //read vector
+            size_t gapToVector = escargot::ESArrayObject::offsetOfVectorData();
+            size_t gatToVectorData = ESValueVector::offsetOfData();
+            LIns* vector = m_out->insLoad(LIR_ldp, obj, gapToVector, 1, LOAD_NORMAL);
+            LIns* vectorData = m_out->ins2(LIR_addp, vector, m_out->insImmP((void *)gatToVectorData));
+            LIns* ESValueSize = m_out->insImmI(sizeof(ESValue));
+            LIns* offset = m_out->ins2(LIR_muli, key, ESValueSize);
+            LIns* offsetAsPointer = m_out->ins1(LIR_i2q, offset);
+            LIns* newBase = m_out->ins2(LIR_addp, vectorData, offsetAsPointer);
+            LIns* loadedValue = m_out->insLoad(LIR_ldd, newBase, 0, 1, LOAD_NORMAL);
+            LIns* loadedValueAsQuad = m_out->ins1(LIR_dasq, loadedValue);
+
+            //not empty
+            LIns* checkEmpty = m_out->ins2(LIR_eqq, loadedValueAsQuad, m_emptyQ);
+            LIns* jumpIfEmpty = m_out->insBranch(LIR_jt, checkEmpty, nullptr);
+            m_out->insStore(LIR_std, loadedValue, phi, 0 , 1);
+            LIns* gotoEnd = m_out->insBranch(LIR_j, nullptr, nullptr);
+
+
+            //error path
+            LIns* errorEnd = m_out->ins0(LIR_label);
+            jumpIfEmpty->setTarget(errorEnd);
+            jumpLessThanZero->setTarget(errorEnd);
+            jumpGretherOrEqualThanLength->setTarget(errorEnd);
+            LIns* undefinedAsDouble  = m_out->ins1(LIR_qasd, m_undefinedQ);
+            m_out->insStore(LIR_std, undefinedAsDouble, phi, 0 , 1);
+
+            //end
+            LIns* end = m_out->ins0(LIR_label);
+            gotoEnd->setTarget(end);
+
+            return m_out->insLoad(LIR_ldd, phi, 0, 0);
+            // TODO-JY : Beloq code cause access-nsieve bad result
+            // int32_t gapToVector = (int32_t) escargot::ESArrayObject::offsetOfVectorData();
+            // LIns* vectorData = m_out->insLoad(LIR_ldp, obj, gapToVector, 1, LOAD_NORMAL);
+            // return m_out->insLoad(LIR_ldd, vectorData, irGetArrayObject->propertyIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
+        }
+        else {
+            LIns* obj = boxESValue(getTmpMapping(irGetArrayObject->objectIndex()), m_graph->getOperandType(irGetArrayObject->objectIndex()));
+            LIns* property = boxESValue(getTmpMapping(irGetArrayObject->propertyIndex()), m_graph->getOperandType(irGetArrayObject->propertyIndex()));
+            LIns* args[] = {m_globalObject, property, obj};
+            return m_out->insCall(&getObjectOpCallInfo, args);
+        }
+
+        RELEASE_ASSERT_NOT_REACHED();
     }
     case ESIR::Opcode::SetArrayObject:
     {
         INIT_ESIR(SetArrayObject);
 
-        LIns* obj = boxESValue(getTmpMapping(irSetArrayObject->objectIndex()) , m_graph->getOperandType(irSetArrayObject->objectIndex()));
-        LIns* prop = getTmpMapping(irSetArrayObject->propertyIndex());
-        LIns* source = getTmpMapping(irSetArrayObject->sourceIndex());
-
-        Type objType = m_graph->getOperandType(irSetArrayObject->objectIndex());
         Type propType = m_graph->getOperandType(irSetArrayObject->propertyIndex());
-        Type sourceType = m_graph->getOperandType(irSetArrayObject->sourceIndex());
 
         if (propType.isInt32Type()) {
-            if (sourceType.isBooleanType()) {
-                LIns* boxedProp = boxESValue(prop, TypeInt32);
-                LIns* boxedSrc = boxESValue(source, TypeBoolean);
-                LIns* args[] = {boxedSrc, boxedProp, obj};
-                return m_out->insCall(&ESObjectSetOpCallInfo, args);
-            } else if (sourceType.isInt32Type()) {
-                LIns* boxedProp = boxESValue(prop, TypeInt32);
-                LIns* boxedSrc = boxESValue(source, TypeInt32);
-                LIns* args[] = {boxedSrc, boxedProp, obj};
-                return m_out->insCall(&ESObjectSetOpCallInfo, args);
-            } else if (sourceType.isDoubleType()) {
-                LIns* boxedProp = boxESValue(prop, TypeInt32);
-                LIns* boxedSrc = boxESValue(source, TypeDouble);
-                LIns* args[] = {boxedSrc, boxedProp, obj};
-                return m_out->insCall(&ESObjectSetOpCallInfo, args);
-            } else {
-                LIns* boxedProp = boxESValue(prop, TypeInt32);
-                LIns* args[] = {source, boxedProp, obj};
-                return m_out->insCall(&ESObjectSetOpCallInfo, args);
+            LIns* obj = getTmpMapping(irSetArrayObject->objectIndex());
+            LIns* key = getTmpMapping(irSetArrayObject->propertyIndex());
+            LIns* boxedSource = boxESValue(getTmpMapping(irSetArrayObject->sourceIndex()), m_graph->getOperandType(irSetArrayObject->sourceIndex()));
+
+            LIns* length = m_out->insLoad(LIR_ldi, obj, ESArrayObject::offsetOfLength(), 1, LOAD_NORMAL);
+
+            //length-check
+            //idx >= 0
+            LIns* checkLessThanZero = m_out->ins2(LIR_lti, key, m_out->insImmI(0));
+            LIns* jumpLessThanZero = m_out->insBranch(LIR_jt, checkLessThanZero, nullptr);
+
+            //idx < length
+            LIns* checkGretherOrEqualThanLength = m_out->ins2(LIR_gei, key, length);
+            LIns* jumpGretherOrEqualThanLength = m_out->insBranch(LIR_jt, checkGretherOrEqualThanLength, nullptr);
+
+            //TODO check fastMode
+            //LIns* fastMode = m_out->insLoad(LIR_ldc2i, obj, ESArrayObject::offsetOfIsFastMode(), 1, LOAD_NORMAL);
+
+            //write vector
+            size_t gapToVector = escargot::ESArrayObject::offsetOfVectorData();
+            size_t gatToVectorData = ESValueVector::offsetOfData();
+            LIns* vector = m_out->insLoad(LIR_ldp, obj, gapToVector, 1, LOAD_NORMAL);
+            LIns* vectorData = m_out->ins2(LIR_addp, vector, m_out->insImmP((void *)gatToVectorData));
+            LIns* ESValueSize = m_out->insImmI(sizeof(ESValue));
+            LIns* offset = m_out->ins2(LIR_muli, key, ESValueSize);
+            LIns* offsetAsPointer = m_out->ins1(LIR_i2q, offset);
+            LIns* newBase = m_out->ins2(LIR_addp, vectorData, offsetAsPointer);
+            m_out->insStore(LIR_std, boxedSource , newBase, 0, 1);
+            LIns* gotoEnd = m_out->insBranch(LIR_j, nullptr, nullptr);
+
+            //error path
+            LIns* errorEnd = m_out->ins0(LIR_label);
+            jumpLessThanZero->setTarget(errorEnd);
+            jumpGretherOrEqualThanLength->setTarget(errorEnd);
+            {
+                LIns* obj = boxESValue(getTmpMapping(irSetArrayObject->objectIndex()), m_graph->getOperandType(irSetArrayObject->objectIndex()));
+                LIns* property = boxESValue(getTmpMapping(irSetArrayObject->propertyIndex()), m_graph->getOperandType(irSetArrayObject->propertyIndex()));
+                LIns* source = boxESValue(getTmpMapping(irSetArrayObject->sourceIndex()), m_graph->getOperandType(irSetArrayObject->sourceIndex()));
+                LIns* args[] = {source, property, obj};
+                m_out->insCall(&setObjectOpCallInfo, args);
             }
-        } else
-            return nullptr;
+            //end
+            LIns* end = m_out->ins0(LIR_label);
+            gotoEnd->setTarget(end);
+        } else {
+            LIns* obj = boxESValue(getTmpMapping(irSetArrayObject->objectIndex()), m_graph->getOperandType(irSetArrayObject->objectIndex()));
+            LIns* property = boxESValue(getTmpMapping(irSetArrayObject->propertyIndex()), m_graph->getOperandType(irSetArrayObject->propertyIndex()));
+            LIns* source = boxESValue(getTmpMapping(irSetArrayObject->sourceIndex()), m_graph->getOperandType(irSetArrayObject->sourceIndex()));
+            LIns* args[] = {source, property, obj};
+            m_out->insCall(&setObjectOpCallInfo, args);
+        }
+        return getTmpMapping(irSetArrayObject->sourceIndex());
     }
     case ESIR::Opcode::SetObject:
     {
@@ -1608,7 +1681,13 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* ESValueSize = m_out->insImmI(sizeof(ESValue));
         LIns* offset = m_out->ins2(LIR_muli, key, ESValueSize);
         LIns* offsetP = m_out->ins1(LIR_i2q, offset);
-        LIns* vectorData = m_out->insLoad(LIR_ldp, obj, ESArrayObject::offsetOfVectorData(), 1, LOAD_NORMAL);
+
+        size_t gapToVector = escargot::ESArrayObject::offsetOfVectorData();
+        size_t gatToVectorData = ESValueVector::offsetOfData();
+        LIns* vector = m_out->insLoad(LIR_ldp, obj, gapToVector, 1, LOAD_NORMAL);
+        LIns* vectorData = m_out->ins2(LIR_addp, vector, m_out->insImmP((void *)gatToVectorData));
+
+        //LIns* vectorData = m_out->insLoad(LIR_ldp, obj, ESArrayObject::offsetOfVectorData(), 1, LOAD_NORMAL);
         LIns* valuePtr = m_out->ins2(LIR_addp, vectorData, offsetP);
         LIns* asInt32 = m_out->insLoad(LIR_ldq, valuePtr, ESValue::offsetOfAsInt64(), 1, LOAD_NORMAL);
         LIns* checkEmptyValue = m_out->ins2(LIR_eqq, asInt32, m_zeroQ);
@@ -1714,6 +1793,8 @@ bool NativeGenerator::nanojitCodegen(ESVMInstance* instance)
             block->m_jumpOrBranchSources[j]->setTarget(block->getLabel());
     }
 
+
+
     SideExit* exit = new SideExit();
     memset(exit, 0, sizeof(SideExit));
     exit->from = m_f;
@@ -1732,6 +1813,7 @@ bool NativeGenerator::nanojitCodegen(ESVMInstance* instance)
         printf("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
     }
 #endif
+
 
     return true;
 }

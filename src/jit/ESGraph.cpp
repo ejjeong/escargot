@@ -6,6 +6,8 @@
 #include "ESIR.h"
 #include "bytecode/ByteCode.h"
 
+#include "nanojit.h"
+
 namespace escargot {
 namespace ESJIT {
 
@@ -100,6 +102,7 @@ void ESGraph::dump(std::ostream& out, const char* msg)
     out << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
     out << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 }
+
 #endif
 
 }}
