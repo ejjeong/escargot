@@ -5,7 +5,7 @@ morph
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-raytrace.js
 lengthVector normalise dot createVector cross normaliseVector subVector addVector scale sub (anonymous) add scaleVector (anonymous) scalev 
 ===> test/SunSpider/tests/sunspider-1.0.2/access-binary-trees.js
-TreeNode 
+TreeNode (anonymous) 
 ===> test/SunSpider/tests/sunspider-1.0.2/access-fannkuch.js
 
 ===> test/SunSpider/tests/sunspider-1.0.2/access-nbody.js

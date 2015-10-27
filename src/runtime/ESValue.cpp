@@ -750,6 +750,14 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                          }
                          break;
                     }
+                    case CallFunctionWithReceiverOpcode: {
+                         reinterpret_cast<CallFunctionWithReceiver*>(currentCode)->m_profile.updateProfiledType();
+                         if (reinterpret_cast<CallFunctionWithReceiver*>(currentCode)->m_profile.getType().isBottomType()) {
+                            compileNextTime = true;
+                            LOG_VJ("> Cannot Compile JIT Function due to CallFunctionWithReceiver(idx %u) is not profiled yet\n", (unsigned)idx);
+                         }
+                         break;
+                    }
                     default:
                         break;
                     }
