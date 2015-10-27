@@ -638,7 +638,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
             const char* functionName = fn->codeBlock()->m_nonAtomicId ? (fn->codeBlock()->m_nonAtomicId->utf8Data()):"(anonymous)";
 #endif
             ESJIT::JITFunction jitFunction = fn->codeBlock()->m_cachedJITFunction;
-            if (!jitFunction && !fn->codeBlock()->m_dontJIT && fn->codeBlock()->m_executeCount >= fn->codeBlock()->m_threshold) {
+            if (!jitFunction && !fn->codeBlock()->m_dontJIT && fn->codeBlock()->m_executeCount >= fn->codeBlock()->m_jitThreshold) {
                 LOG_VJ("==========Trying JIT Compile for function %s... (codeBlock %p)==========\n", functionName, fn->codeBlock());
                 size_t idx = 0;
                 size_t bytecodeCounter = 0;
@@ -804,9 +804,9 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                         fn->codeBlock()->m_dontJIT = true;
                     }
                 } else {
-                    size_t threshold = fn->codeBlock()->m_threshold;
+                    size_t threshold = fn->codeBlock()->m_jitThreshold;
                     LOG_VJ("> Doubling JIT compilation threshold from %d to %d for function %s\n", threshold, threshold*2, functionName);
-                    fn->codeBlock()->m_threshold *= 2;
+                    fn->codeBlock()->m_jitThreshold *= 2;
                 }
             }
 

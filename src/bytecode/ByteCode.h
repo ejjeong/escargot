@@ -2245,10 +2245,9 @@ public:
     JITFunction m_cachedJITFunction;
     bool m_dontJIT;
     size_t m_tempRegisterSize;
-    size_t m_executionCount;
     size_t m_executeCount;
     size_t m_osrExitCount;
-    size_t m_threshold;
+    size_t m_jitThreshold;
 #endif
 
 private:
