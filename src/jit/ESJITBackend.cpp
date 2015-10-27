@@ -442,7 +442,7 @@ LIns* NativeGenerator::boxESValue(LIns* unboxedValue, Type type)
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
-    } else if (type.isObjectType() || type.isArrayObjectType() || type.isStringType() || type.isFunctionObjectType()) {
+    } else if (type.isPointerType()) {
         ASSERT(unboxedValue->isP());
 #ifdef ESCARGOT_64
         // "pointer" : a quad on 64-bit machines
@@ -507,7 +507,7 @@ LIns* NativeGenerator::unboxESValue(LIns* boxedValue, Type type)
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
-    } else if (type.isObjectType() || type.isArrayObjectType() || type.isStringType() || type.isFunctionObjectType()) {
+    } else if (type.isPointerType()) {
 #ifdef ESCARGOT_64
         // "pointer" : a quad on 64-bit machines
         unboxedValue = m_out->ins1(LIR_dasq, boxedValue);
