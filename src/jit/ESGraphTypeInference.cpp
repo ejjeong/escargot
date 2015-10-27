@@ -219,7 +219,8 @@ bool ESGraphTypeInference::run(ESGraph* graph)
             case ESIR::Opcode::CreateFunction:
             {
                 INIT_ESIR(CreateFunction);
-                graph->setOperandType(irCreateFunction->targetIndex(), TypeFunctionObject);
+                if (irCreateFunction->targetIndex() >= 0)
+                    graph->setOperandType(irCreateFunction->targetIndex(), TypeFunctionObject);
                 break;
             }
             case ESIR::Opcode::Jump:
