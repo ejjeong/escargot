@@ -15,7 +15,7 @@ ifeq ($(OS),Linux)
   NPROCS:=$(shell grep -c ^processor /proc/cpuinfo)
 endif
 ifeq ($(OS),Darwin) # Assume Mac OS X
-  NPROCS:=$(shell system_profiler | awk '/Number Of CPUs/{print $4}{next;}')
+  NPROCS:=$(shell sysctl -n machdep.cpu.thread_count)
 endif
 
 ifeq ($(HOST),)
@@ -170,13 +170,13 @@ $(BUILDDIR)/%.o: %.c
 	$(CC) -MM $(CFLAGS) -MT $@ $< > $(BUILDDIR)/$*.d
 
 full:
-	BUILDDIR=out/jit/debug make jit.debug -j 32
+	BUILDDIR=out/jit/debug make jit.debug -j$(NPROCS)
 	ln -sf out/jit/debug/$(BIN) $(BIN).jd
-	BUILDDIR=out/jit/release make jit.release -j 32
+	BUILDDIR=out/jit/release make jit.release -j$(NPROCS)
 	ln -sf out/jit/release/$(BIN) $(BIN).jr
-	BUILDDIR=out/interpreter/debug make interpreter.debug -j 32
+	BUILDDIR=out/interpreter/debug make interpreter.debug -j$(NPROCS)
 	ln -sf out/interpreter/debug/$(BIN) $(BIN).id
-	BUILDDIR=out/interpreter/release make interpreter.release -j 32
+	BUILDDIR=out/interpreter/release make interpreter.release -j$(NPROCS)
 	ln -sf out/interpreter/release/$(BIN) $(BIN).ir
 
 clean:
@@ -203,11 +203,11 @@ asm:
 # Targets : tests
 
 check-jit:
-	make jit.release -j8
+	make jit.release -j$(NPROCS)
 	make run-sunspider
-	make interpreter.release -j8
+	make interpreter.release -j$(NPROCS)
 	make run-sunspider
-	make jit.debug -j8
+	make jit.debug -j$(NPROCS)
 	./run-Sunspider-jit.sh -rcf > compiledFunctions.txt
 	vimdiff compiledFunctions.txt originalCompiledFunctions.txt
 	./run-Sunspider-jit.sh -rof > osrExitedFunctions.txt
