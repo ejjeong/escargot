@@ -51,14 +51,19 @@ void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, B
     } else if(op == PushIntoTempStackOpcode) {
         data->m_targetIndex0 = context.m_currentSSARegisterCount++;
         data->m_sourceIndexes.push_back(context.m_ssaComputeStack.back());
+        context.m_ssaComputeStack.pop_back();
     } else if(op == PopFromTempStackOpcode) {
+        int val = -1;
         for(unsigned i = m_extraData.size() - 1; ; i --) {
             if(m_extraData[i].m_codePosition == ((PopFromTempStack *)code)->m_pushCodePosition) {
-                data->m_sourceIndexes.push_back(m_extraData[i].m_targetIndex0);
+                val = m_extraData[i].m_targetIndex0;
+                data->m_sourceIndexes.push_back(val);
                 break;
             }
         }
+        ASSERT(val != -1);
         data->m_targetIndex0 = context.m_currentSSARegisterCount++;
+        context.m_ssaComputeStack.push_back(val);
     } else {
         //normal path
         if(op == InitObjectOpcode) {
