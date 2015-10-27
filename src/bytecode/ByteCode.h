@@ -74,7 +74,7 @@ class CodeBlock;
     F(Decrement, 1, 1, 0, 1) \
 \
     /*object, array*/ \
-    F(CreateObject, 1, 0, 0, 0) \
+    F(CreateObject, 1, 0, 0, 1) \
     F(CreateArray, 1, 0, 0, 1) \
     F(InitObject, 0, 2, 1, 1) \
     F(SetObjectPropertySetter, 0, 2, 0, 0) \

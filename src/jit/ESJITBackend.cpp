@@ -67,8 +67,10 @@ CallInfo setObjectPreComputedCaseOpCallInfo = CI(setObjectPreComputedOp, CallInf
 CallInfo ESObjectSetOpCallInfo = CI(ESObjectSetOp, CallInfo::typeSig3(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 CallInfo generateToStringCallInfo = CI(generateToString, CallInfo::typeSig1(ARGTYPE_P, ARGTYPE_D));
 CallInfo concatTwoStringsCallInfo = CI(concatTwoStrings, CallInfo::typeSig2(ARGTYPE_P, ARGTYPE_P, ARGTYPE_P));
+CallInfo createObjectCallInfo = CI(createObject, CallInfo::typeSig1(ARGTYPE_D, ARGTYPE_I));
 CallInfo createArrayCallInfo = CI(createArr, CallInfo::typeSig1(ARGTYPE_D, ARGTYPE_I));
 CallInfo createFunctionCallInfo = CI(createFunction, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_P, ARGTYPE_P));
+CallInfo initObjectCallInfo = CI(initObject, CallInfo::typeSig3(ARGTYPE_V, ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 
 #ifndef NDEBUG
 CallInfo logIntCallInfo = CI(jitLogIntOperation, CallInfo::typeSig2(ARGTYPE_V, ARGTYPE_I, ARGTYPE_P));
@@ -1534,6 +1536,13 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         else
             return nullptr;
     }
+    case ESIR::Opcode::CreateObject:
+    {
+        INIT_ESIR(CreateObject);
+        LIns* keyCount = m_out->insImmI(irCreateObject->keyCount());
+        LIns* args[] = {keyCount};
+        return m_out->insCall(&createObjectCallInfo, args);
+    }
     case ESIR::Opcode::CreateArray:
     {
         INIT_ESIR(CreateArray);
@@ -1544,6 +1553,17 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     case ESIR::Opcode::InitObject:
     {
         INIT_ESIR(InitObject);
+        LIns* boxedObj = boxESValue(getTmpMapping(irInitObject->objectIndex()), m_graph->getOperandType(irInitObject->objectIndex()));
+        LIns* boxedKey = boxESValue(getTmpMapping(irInitObject->keyIndex()), m_graph->getOperandType(irInitObject->keyIndex()));
+        LIns* boxedVal = boxESValue(getTmpMapping(irInitObject->sourceIndex()), m_graph->getOperandType(irInitObject->sourceIndex()));
+        LIns* args[] = {boxedVal, boxedKey, boxedObj};
+        return m_out->insCall(&initObjectCallInfo, args);
+    }
+    case ESIR::Opcode::InitArrayObject:
+    {
+        INIT_ESIR(InitArrayObject);
+        InitArrayObjectIR* irInitObject = irInitArrayObject;
+        // TODO : Check fast mode. If not, call runtime function
         LIns* obj = getTmpMapping(irInitObject->objectIndex());
         if (obj->isI())
             obj = m_out->ins1(LIR_i2q, obj);
@@ -1554,7 +1574,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* invalidIndexValue = m_out->insImmI(ESValue::ESInvalidIndexValue);
         LIns* checkInvalidIndex = m_out->ins2(LIR_eqi, key, invalidIndexValue);
         LIns* jf1 = m_out->insBranch(LIR_jf, checkInvalidIndex, nullptr);
-        JIT_LOG(key, "InitObject: key is invalid(Too Big)");
+        JIT_LOG(key, "InitArrayObject: key is invalid(Too Big)");
+        // TODO : If key is invalid, call runtime function
 
         LIns* label1 = m_out->ins0(LIR_label);
         jf1->setTarget(label1);
@@ -1562,7 +1583,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* length  = m_out->insLoad(LIR_ldi, obj, ESArrayObject::offsetOfLength(), 1, LOAD_NORMAL);
         LIns* checkBound = m_out->ins2(LIR_gti, key, length);
         LIns* jf2 = m_out->insBranch(LIR_jf, checkBound, nullptr);
-        JIT_LOG(key, "InitObject: bound error ");
+        JIT_LOG(key, "InitArrayObject: bound error ");
 
         LIns* label2 = m_out->ins0(LIR_label);
         jf2->setTarget(label2);
@@ -1574,7 +1595,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* asInt32 = m_out->insLoad(LIR_ldq, valuePtr, ESValue::offsetOfAsInt64(), 1, LOAD_NORMAL);
         LIns* checkEmptyValue = m_out->ins2(LIR_eqq, asInt32, m_zeroQ);
         LIns* jf3 = m_out->insBranch(LIR_jt, checkEmptyValue, nullptr);
-        JIT_LOG(key, "InitObject: NonEmptyValue ");
+        JIT_LOG(key, "InitArrayObject: NonEmptyValue ");
 
         LIns* label3 = m_out->ins0(LIR_label);
         jf3->setTarget(label3);

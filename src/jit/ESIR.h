@@ -97,8 +97,10 @@ class ESBasicBlock;
     F(AllocPhi, ) \
     F(StorePhi, ) \
     F(LoadPhi, ) \
+    F(CreateObject, ReturnsESValue) \
     F(CreateArray, ReturnsESValue) \
     F(InitObject, ) \
+    F(InitArrayObject, ) \
     \
     /* For-in statement */ \
     F(GetEnumarablePropertyLength, ) \
@@ -1282,6 +1284,27 @@ private:
     int m_srcIndex1;
 };
 
+class CreateObjectIR : public ESIR {
+public:
+    DECLARE_STATIC_GENERATOR_1(CreateObject, int)
+
+    int keyCount() { return m_keyCount; }
+
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+        out << "(" << m_keyCount << ")";
+    }
+#endif
+
+private:
+    CreateObjectIR(int targetIndex, int keyCount)
+        : ESIR(ESIR::Opcode::CreateObject, targetIndex), m_keyCount(keyCount) { }
+    int m_keyCount;
+};
+
 class CreateArrayIR : public ESIR {
 public:
     DECLARE_STATIC_GENERATOR_1(CreateArray, int)
@@ -1323,6 +1346,31 @@ public:
 private:
     InitObjectIR(int targetIndex, int objectIndex, int keyIndex, int sourceIndex)
         : ESIR(ESIR::Opcode::InitObject, targetIndex), m_objectIndex(objectIndex), m_keyIndex(keyIndex), m_sourceIndex(sourceIndex) { }
+    int m_objectIndex;
+    int m_keyIndex;
+    int m_sourceIndex;
+};
+
+class InitArrayObjectIR : public ESIR {
+public:
+    DECLARE_STATIC_GENERATOR_3(InitArrayObject, int, int, int)
+
+    int objectIndex() { return m_objectIndex; }
+    int keyIndex() { return m_keyIndex; }
+    int sourceIndex() { return m_sourceIndex; }
+
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+        out << " tmp" << m_objectIndex << "[tmp" << m_keyIndex << "] = tmp" << m_sourceIndex;
+    }
+#endif
+
+private:
+    InitArrayObjectIR(int targetIndex, int objectIndex, int keyIndex, int sourceIndex)
+        : ESIR(ESIR::Opcode::InitArrayObject, targetIndex), m_objectIndex(objectIndex), m_keyIndex(keyIndex), m_sourceIndex(sourceIndex) { }
     int m_objectIndex;
     int m_keyIndex;
     int m_sourceIndex;

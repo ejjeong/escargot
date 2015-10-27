@@ -256,9 +256,21 @@ inline ESValueInDouble newOp(ESVMInstance* instance, GlobalObject* globalObject,
 //     return ret.asBoolean();
 // }
 
+inline ESValueInDouble createObject(int keyCount) {
+    ESObject* obj = ESObject::create((size_t)keyCount + 1);
+    return ESValue::toRawDouble(obj);
+}
+
 inline ESValueInDouble createArr(int keyCount) {
     ESArrayObject* arrObj = ESArrayObject::create(keyCount);
     return ESValue::toRawDouble(arrObj);
+}
+
+inline void initObject(ESValueInDouble objectIndouble, ESValueInDouble keyInDouble, ESValueInDouble valueInDouble) {
+    ESObject* object = ESValue::fromRawDouble(objectIndouble).asESPointer()->asESObject();
+    ESValue key = ESValue::fromRawDouble(keyInDouble);
+    ESValue value = ESValue::fromRawDouble(valueInDouble);
+    object->set(key, value);
 }
 
 inline ESValueInDouble createFunction(ExecutionContext* ec, ByteCode* bytecode) {

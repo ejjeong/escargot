@@ -446,9 +446,13 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         }
         case CreateObjectOpcode:
-            goto unsupported;
+        {
+            INIT_BYTECODE(CreateObject);
+            CreateObjectIR* createObjectIR = CreateObjectIR::create(extraData->m_targetIndex0, bytecode->m_keyCount);
+            currentBlock->push(createObjectIR);
             NEXT_BYTECODE(CreateObject);
             break;
+        }
         case CreateArrayOpcode:
         {
             INIT_BYTECODE(CreateArray);
@@ -463,7 +467,12 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case InitObjectOpcode:
         {
             INIT_BYTECODE(InitObject);
-            InitObjectIR* initObjectIR = InitObjectIR::create(extraData->m_targetIndex0, extraData->m_sourceIndexes[0], extraData->m_sourceIndexes[1], extraData->m_sourceIndexes[2]);
+            Type objectType = graph->getOperandType(extraData->m_sourceIndexes[0]);
+            ESIR* initObjectIR;
+            if (objectType.isArrayObjectType())
+                initObjectIR = InitArrayObjectIR::create(extraData->m_targetIndex0, extraData->m_sourceIndexes[0], extraData->m_sourceIndexes[1], extraData->m_sourceIndexes[2]);
+            else
+                initObjectIR = InitObjectIR::create(extraData->m_targetIndex0, extraData->m_sourceIndexes[0], extraData->m_sourceIndexes[1], extraData->m_sourceIndexes[2]);
             currentBlock->push(initObjectIR);
             NEXT_BYTECODE(InitObject);
             break;
