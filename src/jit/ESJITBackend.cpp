@@ -957,7 +957,11 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_BINARY_ESIR(GreaterThanOrEqual);
         if (leftType.isInt32Type() && rightType.isInt32Type())
             return m_out->ins2(LIR_gei, left, right);
-        else
+        else if (leftType.isNumberType() && rightType.isNumberType()) {
+            left = getDoubleDynamic(left, leftType);
+            right = getDoubleDynamic(right, rightType);
+            return m_out->ins2(LIR_ged, left, right);
+        } else
             return nullptr;
     }
     case ESIR::Opcode::LessThan:

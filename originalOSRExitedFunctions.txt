@@ -1,5 +1,5 @@
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-cube.js
-CalcNormal VMulti2 MMulti VMulti Translate 
+CalcNormal VMulti2 MMulti VMulti Translate DrawLine Loop 
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-morph.js
 morph 
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-raytrace.js
