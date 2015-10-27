@@ -101,8 +101,6 @@ CallInfo logPointerCallInfo = CI(jitLogPointerOperation, CallInfo::typeSig2(ARGT
 NativeGenerator::NativeGenerator(ESGraph* graph)
     : m_graph(graph),
     m_tmpToLInsMapping(graph->tempRegisterSize()),
-    m_instance(nullptr),
-    m_context(nullptr),
     m_alloc(new Allocator()),
     m_codeAlloc(new CodeAlloc(&m_config)),
     m_assm(new Assembler(*m_codeAlloc, *m_alloc, *m_alloc, &m_lc, m_config)),
@@ -152,7 +150,7 @@ NativeGenerator::~NativeGenerator()
 
 LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
 {
-    m_out->insStore(LIR_sti, m_oneI, m_context, ExecutionContext::offsetofInOSRExit(), 1);
+    m_out->insStore(LIR_sti, m_oneI, contextIns(), ExecutionContext::offsetofInOSRExit(), 1);
 
     bool isPrevBlock = false;
     bool isDone = false;
@@ -199,21 +197,21 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
                     if (lIns) {
                         LIns* boxedLIns = boxESValue(lIns, type);
                         int bufOffset = (stackPos-1) * sizeof(ESValue);
-                        LIns* stackBuf = m_out->insLoad(LIR_ldp, m_context, ExecutionContext::offsetofStackBuf(), 1, LOAD_NORMAL);
+                        LIns* stackBuf = m_out->insLoad(LIR_ldp, contextIns(), ExecutionContext::offsetofStackBuf(), 1, LOAD_NORMAL);
                         m_out->insStore(LIR_std, boxedLIns, stackBuf, bufOffset, 1);
                         writeFlags[stackPos - 1] = true;
                         writeCount++;
                        }
                     if (writeCount == maxStackPos) {
                         LIns* maxStackPosLIns = m_out->insImmI(maxStackPos);
-                        m_out->insStore(LIR_sti, maxStackPosLIns, m_context, ExecutionContext::offsetofStackPos(), 1);
+                        m_out->insStore(LIR_sti, maxStackPosLIns, contextIns(), ExecutionContext::offsetofStackPos(), 1);
                         isDone = true;
                         break;
                     }
                 }
             } else {
                 LIns* maxStackPosLIns = m_out->insImmI(maxStackPos);
-                m_out->insStore(LIR_sti, maxStackPosLIns, m_context, ExecutionContext::offsetofStackPos(), 1);
+                m_out->insStore(LIR_sti, maxStackPosLIns, contextIns(), ExecutionContext::offsetofStackPos(), 1);
                 isDone = true;
             }
             if (isDone) break;
@@ -624,6 +622,21 @@ LIns* NativeGenerator::getInt32Dynamic(LIns* in, Type type)
     }
     ASSERT(ret->isI());
     return ret;
+}
+
+nanojit::LIns* NativeGenerator::instanceIns()
+{
+    return m_out->insImmP(ESVMInstance::currentInstance());
+}
+
+nanojit::LIns* NativeGenerator::contextIns()
+{
+    return m_out->insLoad(LIR_ldp, instanceIns(), ESVMInstance::offsetOfCurrentExecutionContext(), 1, LOAD_NORMAL);
+}
+
+nanojit::LIns* NativeGenerator::globalObjectIns()
+{
+    return m_out->insImmP(ESVMInstance::currentInstance()->globalObject());
 }
 
 LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
@@ -1085,7 +1098,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(CreateFunction);
         LIns* bytecode = m_out->insImmP(irCreateFunction->originalByteCode());
-        LIns* args[] = {bytecode, m_context};
+        LIns* args[] = {bytecode, contextIns()};
         return m_out->insCall(&createFunctionCallInfo, args);;
     }
     case ESIR::Opcode::CallJS:
@@ -1106,7 +1119,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
                 LIns* boxedArgument = boxESValue(argument, m_graph->getOperandType(irCallJS->argumentIndex(i)));
                 m_out->insStore(LIR_std, boxedArgument, arguments, i * sizeof(ESValue), 1);
             }
-            LIns* args[] = {m_false, argumentCount, arguments, boxedCallee, m_instance};
+            LIns* args[] = {m_false, argumentCount, arguments, boxedCallee, instanceIns()};
             LIns* boxedResult = m_out->insCall(&esFunctionObjectCallCallInfo, args);
             return boxedResult;
         } else {
@@ -1117,7 +1130,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
                 LIns* boxedArgument = boxESValue(argument, m_graph->getOperandType(irCallJS->argumentIndex(i)));
                 m_out->insStore(LIR_std, boxedArgument, arguments, i * sizeof(ESValue), 1);
             }
-            LIns* args[] = {m_false, argumentCount, arguments, boxedReceiver, boxedCallee, m_instance};
+            LIns* args[] = {m_false, argumentCount, arguments, boxedReceiver, boxedCallee, instanceIns()};
             LIns* boxedResult = m_out->insCall(&esFunctionObjectCallWithReceiverCallInfo, args);
             return boxedResult;
         }
@@ -1139,7 +1152,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             LIns* boxedArgument = boxESValue(argument, m_graph->getOperandType(irCallNewJS->argumentIndex(i)));
             m_out->insStore(LIR_std, boxedArgument, arguments, i * sizeof(ESValue), 1);
         }
-        LIns* args[] = {argumentCount, arguments, boxedCallee, m_globalObject, m_instance};
+        LIns* args[] = {argumentCount, arguments, boxedCallee, globalObjectIns(), instanceIns()};
         LIns* boxedResult = m_out->insCall(&newOpCallInfo, args);
         return boxedResult;
     }
@@ -1173,7 +1186,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 #endif
         LIns* jumpIfThisValueisNotEmpty = m_out->insBranch(LIR_jf, checkIfThisValueisEmpty, nullptr);
 
-        LIns* args[] = {m_context};
+        LIns* args[] = {contextIns()};
         LIns* resolvedThisValue = m_out->insCall(&contextResolveThisBindingCallInfo, args);
         m_out->insStore(LIR_std, resolvedThisValue, m_thisValueP, 0 , 1);
 
@@ -1186,7 +1199,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     case ESIR::Opcode::GetArgument:
     {
         INIT_ESIR(GetArgument);
-        LIns* arguments = m_out->insLoad(LIR_ldp, m_context, ExecutionContext::offsetOfArguments(), 1, LOAD_NORMAL);
+        LIns* arguments = m_out->insLoad(LIR_ldp, contextIns(), ExecutionContext::offsetOfArguments(), 1, LOAD_NORMAL);
         LIns* argument = m_out->insLoad(LIR_ldd, arguments, irGetArgument->argumentIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
         // JIT_LOG(argument, "Read this argument");
         return argument;
@@ -1195,11 +1208,11 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(GetVar);
         if(irGetVar->varUpIndex() == 0) {
-            LIns* cachedDeclarativeEnvironmentRecordESValue = m_out->insLoad(LIR_ldp, m_context, ExecutionContext::offsetofcachedDeclarativeEnvironmentRecordESValue(), 1, LOAD_NORMAL);
+            LIns* cachedDeclarativeEnvironmentRecordESValue = m_out->insLoad(LIR_ldp, contextIns(), ExecutionContext::offsetofcachedDeclarativeEnvironmentRecordESValue(), 1, LOAD_NORMAL);
             return m_out->insLoad(LIR_ldd, cachedDeclarativeEnvironmentRecordESValue, irGetVar->varIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
         } else {
             //inline ESValueInDouble getByIndexWithActivationOp(ExecutionContext* ec, int32_t upCount, int32_t index)
-            LIns* args[] = {m_out->insImmI(irGetVar->varIndex()), m_out->insImmI(irGetVar->varUpIndex()), m_context};
+            LIns* args[] = {m_out->insImmI(irGetVar->varIndex()), m_out->insImmI(irGetVar->varUpIndex()), contextIns()};
             return m_out->insCall(&getByIndexWithActivationOpCallInfo, args);
         }
     }
@@ -1209,12 +1222,12 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* source = getTmpMapping(irSetVar->sourceIndex());
         LIns* boxedSource = boxESValue(source, m_graph->getOperandType(irSetVar->sourceIndex()));
         if(irSetVar->upVarIndex() == 0) {
-            LIns* context = m_out->insLoad(LIR_ldp, m_instance, ESVMInstance::offsetOfCurrentExecutionContext(), 1, LOAD_NORMAL);
+            LIns* context = contextIns();
             LIns* cachedDeclarativeEnvironmentRecordESValue = m_out->insLoad(LIR_ldp, context, ExecutionContext::offsetofcachedDeclarativeEnvironmentRecordESValue(), 1, LOAD_NORMAL);
             m_out->insStore(LIR_std, boxedSource, cachedDeclarativeEnvironmentRecordESValue, irSetVar->localVarIndex() * sizeof(ESValue), 1);
         } else {
             //inline void setByIndexWithActivationOp(ExecutionContext* ec, int32_t upCount, int32_t index, ESValueInDouble val)
-            LIns* args[] = {boxedSource, m_out->insImmI(irSetVar->localVarIndex()), m_out->insImmI(irSetVar->upVarIndex()), m_context};
+            LIns* args[] = {boxedSource, m_out->insImmI(irSetVar->localVarIndex()), m_out->insImmI(irSetVar->upVarIndex()), contextIns()};
             m_out->insCall(&getByIndexWithActivationOpCallInfo, args);
         }
         return source;
@@ -1223,7 +1236,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(GetVarGenericWithoutException);
         LIns* bytecode = m_out->insImmP(irGetVarGenericWithoutException->originalGetByIdByteCode());
-        LIns* args[] = {bytecode, m_context, m_instance};
+        LIns* args[] = {bytecode, contextIns(), instanceIns()};
         return m_out->insCall(&getByIdWithoutExceptionOpCallInfo, args);
     }
     case ESIR::Opcode::GetVarGeneric:
@@ -1231,7 +1244,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_ESIR(GetVarGeneric);
         LIns* bytecode = m_out->insImmP(irGetVarGeneric->originalGetByIdByteCode());
         LIns* cachedIdentifierCacheInvalidationCheckCount = m_out->insLoad(LIR_ldi, bytecode, offsetof(GetById, m_identifierCacheInvalidationCheckCount), 1, LOAD_NORMAL);
-        LIns* instanceIdentifierCacheInvalidationCheckCount = m_out->insLoad(LIR_ldi, m_instance, ESVMInstance::offsetOfIdentifierCacheInvalidationCheckCount(), 1, LOAD_NORMAL);
+        LIns* instanceIdentifierCacheInvalidationCheckCount = m_out->insLoad(LIR_ldi, instanceIns(), ESVMInstance::offsetOfIdentifierCacheInvalidationCheckCount(), 1, LOAD_NORMAL);
         LIns* cachedSlot = m_out->insLoad(LIR_ldp, bytecode, offsetof(GetById, m_cachedSlot), 1, LOAD_NORMAL);
         LIns* phi = m_out->insAlloc(sizeof(ESValue));
         LIns* checkIfCacheHit = m_out->ins2(LIR_eqi, instanceIdentifierCacheInvalidationCheckCount, cachedIdentifierCacheInvalidationCheckCount);
@@ -1239,7 +1252,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 
         LIns* slowPath = m_out->ins0(LIR_label);
 #if 1
-        LIns* args[] = {bytecode, m_context};
+        LIns* args[] = {bytecode, contextIns()};
         LIns* resolvedSlot = m_out->insCall(&contextResolveBindingCallInfo, args);
         LIns* resolvedResult = m_out->insLoad(LIR_ldd, resolvedSlot, 0, 1, LOAD_NORMAL);
         m_out->insStore(LIR_std, resolvedResult, phi, 0 , 1);
@@ -1270,7 +1283,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(GetGlobalVarGeneric);
         LIns* byteCode = m_out->insImmP(irGetGlobalVarGeneric->byteCode());
-        LIns* globalObject = m_out->insLoad(LIR_ldp, m_instance, ESVMInstance::offsetOfGlobalObject(), 1, LOAD_NORMAL);
+        LIns* globalObject = globalObjectIns();
         LIns* args[] = {byteCode, globalObject};
         return m_out->insCall(&getByGlobalIndexOpCallInfo, args);
     }
@@ -1283,12 +1296,12 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 
         LIns* bytecode = m_out->insImmP(irSetVarGeneric->originalPutByIdByteCode());
         LIns* cachedIdentifierCacheInvalidationCheckCount = m_out->insLoad(LIR_ldi, bytecode, offsetof(SetById, m_identifierCacheInvalidationCheckCount), 1, LOAD_NORMAL);
-        LIns* instanceIdentifierCacheInvalidationCheckCount = m_out->insLoad(LIR_ldi, m_instance, ESVMInstance::offsetOfIdentifierCacheInvalidationCheckCount(), 1, LOAD_NORMAL);
+        LIns* instanceIdentifierCacheInvalidationCheckCount = m_out->insLoad(LIR_ldi, instanceIns(), ESVMInstance::offsetOfIdentifierCacheInvalidationCheckCount(), 1, LOAD_NORMAL);
         LIns* checkIfCacheHit = m_out->ins2(LIR_eqi, instanceIdentifierCacheInvalidationCheckCount, cachedIdentifierCacheInvalidationCheckCount);
         LIns* jumpIfCacheHit = m_out->insBranch(LIR_jt, checkIfCacheHit, nullptr);
 #if 1
         //JIT_LOG(bytecode, "SetVarGeneric Cache Miss");
-        LIns* args[] = {bytecode, m_context};
+        LIns* args[] = {bytecode, contextIns()};
         LIns* resolvedSlot = m_out->insCall(&setVarContextResolveBindingCallInfo, args);
         LIns* checkIfSlotIsNull = m_out->ins2(LIR_eqp, resolvedSlot, m_zeroP);
         LIns* jumpIfSlotIsNull = m_out->insBranch(LIR_jt, checkIfSlotIsNull, nullptr);
@@ -1302,7 +1315,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* labelDeclareVariable = m_out->ins0(LIR_label);
         jumpIfSlotIsNull->setTarget(labelDeclareVariable);
         //JIT_LOG(bytecode, "SetVarGeneric Cache Miss->resolveBinding->emptySlot");
-        LIns* args2[] = {boxedSource, bytecode, m_globalObject, m_context};
+        LIns* args2[] = {boxedSource, bytecode, globalObjectIns(), contextIns()};
         m_out->insCall(&setVarDefineDataPropertyCallInfo, args2);
         LIns* jumpToEnd2 = m_out->insBranch(LIR_j, nullptr, nullptr);
 #else
@@ -1327,7 +1340,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* source = getTmpMapping(irSetGlobalVarGeneric->sourceIndex());
         LIns* boxedSource = boxESValue(source, m_graph->getOperandType(irSetGlobalVarGeneric->sourceIndex()));
         LIns* byteCode = m_out->insImmP(irSetGlobalVarGeneric->byteCode());
-        LIns* args[] = {boxedSource, byteCode, m_globalObject};
+        LIns* args[] = {boxedSource, byteCode, globalObjectIns()};
 
         m_out->insCall(&setByGlobalIndexOpCallInfo, args);
         return source;
@@ -1337,7 +1350,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_ESIR(GetObject);
         LIns* obj = boxESValue(getTmpMapping(irGetObject->objectIndex()), m_graph->getOperandType(irGetObject->objectIndex()));
         LIns* property = boxESValue(getTmpMapping(irGetObject->propertyIndex()), m_graph->getOperandType(irGetObject->propertyIndex()));
-        LIns* args[] = {m_globalObject, property, obj};
+        LIns* args[] = {globalObjectIns(), property, obj};
         return m_out->insCall(&getObjectOpCallInfo, args);
     }
     case ESIR::Opcode::GetObjectPreComputed:
@@ -1352,7 +1365,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_ESIR(GetObjectPreComputed);
         LIns* obj = getTmpMapping(irGetObjectPreComputed->objectIndex());
         LIns* boxedObj = boxESValue(obj, m_graph->getOperandType(irGetObjectPreComputed->objectIndex()));
-        LIns* globalObject = m_out->insLoad(LIR_ldp, m_instance, ESVMInstance::offsetOfGlobalObject(), 1, LOAD_NORMAL);
+        LIns* globalObject = globalObjectIns();
         LIns* args[] = {m_out->insImmP(irGetObjectPreComputed->byteCode()), globalObject, boxedObj};
         return m_out->insCall(&getObjectPreComputedCaseOpCallInfo, args);
     }
@@ -1364,7 +1377,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* key = getTmpMapping(irGetArrayObject->propertyIndex());
         ASSERT(m_graph->getOperandType(irGetArrayObject->objectIndex()).isArrayObjectType());
         Type keyType = m_graph->getOperandType(irGetArrayObject->propertyIndex());
-        if(false) {//keyType.isInt32Type()) {
+        if(keyType.isInt32Type()) {
             LIns* length = m_out->insLoad(LIR_ldi, obj, ESArrayObject::offsetOfLength(), 1, LOAD_NORMAL);
             LIns* phi = m_out->insAlloc(sizeof(ESValue));
 
@@ -1420,7 +1433,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         else {
             LIns* obj = boxESValue(getTmpMapping(irGetArrayObject->objectIndex()), m_graph->getOperandType(irGetArrayObject->objectIndex()));
             LIns* property = boxESValue(getTmpMapping(irGetArrayObject->propertyIndex()), m_graph->getOperandType(irGetArrayObject->propertyIndex()));
-            LIns* args[] = {m_globalObject, property, obj};
+            LIns* args[] = {globalObjectIns(), property, obj};
             return m_out->insCall(&getObjectOpCallInfo, args);
         }
 
@@ -1504,7 +1517,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* obj = boxESValue(getTmpMapping(irSetObjectPreComputed->objectIndex()), m_graph->getOperandType(irSetObjectPreComputed->objectIndex()));
         LIns* source = getTmpMapping(irSetObjectPreComputed->sourceIndex());
         LIns* boxedSource = boxESValue(source, m_graph->getOperandType(irSetObjectPreComputed->targetIndex()));
-        LIns* args[] = {boxedSource, m_out->insImmP(irSetObjectPreComputed->byteCode()), m_globalObject, obj};
+        LIns* args[] = {boxedSource, m_out->insImmP(irSetObjectPreComputed->byteCode()), globalObjectIns(), obj};
         m_out->insCall(&setObjectPreComputedCaseOpCallInfo, args);
         return source;
     }
@@ -1726,9 +1739,6 @@ bool NativeGenerator::nanojitCodegen(ESVMInstance* instance)
     m_out->ins0(LIR_start);
     for (int i = 0; i < nanojit::NumSavedRegs; ++i)
         m_out->insParam(i, 1);
-    m_instance = m_out->insImmP(instance);
-    m_context = m_out->insLoad(LIR_ldp, m_instance, ESVMInstance::offsetOfCurrentExecutionContext(), 1, LOAD_NORMAL); // FIXME generate this only if really needed
-    m_globalObject = m_out->insLoad(LIR_ldp, m_instance, ESVMInstance::offsetOfGlobalObject(), 1, LOAD_NORMAL); // FIXME generate this only if really needed
 
 #ifdef ESCARGOT_64
     m_tagMaskQ = m_out->insImmQ(TagMask);

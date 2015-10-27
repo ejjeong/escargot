@@ -20,6 +20,7 @@ bool ESJITCompiler::compile(ESVMInstance* instance)
     if (!(m_graph = generateIRFromByteCode(m_codeBlock)))
         return false;
 
+
     unsigned long time2 = ESVMInstance::currentInstance()->tickCount();
     if (!optimizeIR(m_graph))
         return false;

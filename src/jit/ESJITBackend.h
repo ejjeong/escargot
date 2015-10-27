@@ -5,7 +5,6 @@
 
 #include "ESIRType.h"
 #include "nanojit.h"
-#include <vector>
 
 namespace escargot {
 
@@ -50,11 +49,11 @@ private:
     nanojit::LIns* getInt32Dynamic(nanojit::LIns* in, Type type);
 
     ESGraph* m_graph;
-    std::vector<nanojit::LIns*, gc_allocator<nanojit::LIns*> > m_tmpToLInsMapping;
+    std::vector<nanojit::LIns*> m_tmpToLInsMapping;
 
-    nanojit::LIns* m_instance;
-    nanojit::LIns* m_context;
-    nanojit::LIns* m_globalObject;
+    nanojit::LIns* instanceIns();
+    nanojit::LIns* contextIns();
+    nanojit::LIns* globalObjectIns();
 
     nanojit::LogControl m_lc;
     nanojit::Config m_config;
