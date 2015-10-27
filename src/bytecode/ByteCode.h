@@ -121,7 +121,7 @@ class CodeBlock;
     /*try-catch*/ \
     F(Try, 0, 0, 0, 0) \
     F(TryCatchBodyEnd, 0, 0, 0, 0) \
-    F(Throw, 0, 1, 0, 0) \
+    F(Throw, 0, 1, 0, 1) \
     F(FinallyEnd, 0, 0, 0, 0) \
 \
     /*phi*/ \
