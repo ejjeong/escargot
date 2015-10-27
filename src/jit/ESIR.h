@@ -121,6 +121,7 @@ class ESBasicBlock;
     F(SetScoped, ) \
     F(GetVarGeneric, ReturnsESValue) \
     F(SetVarGeneric, ) \
+    F(GetVarGenericWithoutException, ReturnsESValue) \
     F(GetGlobalVarGeneric, ReturnsESValue) \
     F(SetGlobalVarGeneric, ) \
     F(GetProperty, ReturnsESValue) \
@@ -430,6 +431,27 @@ private:
     int m_localVarIndex;
     int m_upVarIndex;
     int m_sourceIndex;
+};
+
+class GetVarGenericWithoutExceptionIR : public ESIR {
+public:
+    DECLARE_STATIC_GENERATOR_1(GetVarGenericWithoutException, ByteCode*)
+
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+
+        out << " " << ((GetById*) m_originalGetByIdByteCode)->m_name.string()->utf8Data();
+    }
+#endif
+    ByteCode* originalGetByIdByteCode() { return m_originalGetByIdByteCode; }
+
+private:
+    GetVarGenericWithoutExceptionIR(int targetIndex, ByteCode* originalGetByIdByteCode)
+        : ESIR(ESIR::Opcode::GetVarGenericWithoutException, targetIndex), m_originalGetByIdByteCode(originalGetByIdByteCode) { }
+    ByteCode* m_originalGetByIdByteCode;
 };
 
 class GetVarGenericIR : public ESIR {

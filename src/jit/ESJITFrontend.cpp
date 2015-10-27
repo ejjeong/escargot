@@ -133,6 +133,16 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(GetById);
             break;
         }
+        case GetByIdWithoutExceptionOpcode:
+        {
+            INIT_BYTECODE(GetByIdWithoutException);
+            ESIR* getVarWithoutException = GetVarGenericWithoutExceptionIR::create(extraData->m_targetIndex0, bytecode);
+            currentBlock->push(getVarWithoutException);
+            bytecode->m_profile.updateProfiledType();
+            graph->setOperandType(extraData->m_targetIndex0, bytecode->m_profile.getType());
+            NEXT_BYTECODE(GetByIdWithoutException);
+            break;
+        }
         case GetByGlobalIndexOpcode:
         {
             INIT_BYTECODE(GetByGlobalIndex);

@@ -37,6 +37,8 @@ CallInfo setByIndexWithActivationOpCallInfo = CI(setByIndexWithActivationOp, Cal
 CallInfo getByGlobalIndexOpCallInfo = CI(getByGlobalIndexOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_P, ARGTYPE_P));
 CallInfo setByGlobalIndexOpCallInfo = CI(setByGlobalIndexOp, CallInfo::typeSig3(ARGTYPE_V, ARGTYPE_P, ARGTYPE_P, ARGTYPE_D));
 
+CallInfo getByIdWithoutExceptionOpCallInfo = CI(getByIdWithoutExceptionOp, CallInfo::typeSig3(ARGTYPE_D, ARGTYPE_P, ARGTYPE_P, ARGTYPE_P));
+
 /* CallInfo: Binary/Unary operations */
 CallInfo plusOpCallInfo = CI(plusOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 CallInfo minusOpCallInfo = CI(minusOp, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
@@ -1201,6 +1203,13 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             m_out->insCall(&getByIndexWithActivationOpCallInfo, args);
         }
         return source;
+    }
+    case ESIR::Opcode::GetVarGenericWithoutException:
+    {
+        INIT_ESIR(GetVarGenericWithoutException);
+        LIns* bytecode = m_out->insImmP(irGetVarGenericWithoutException->originalGetByIdByteCode());
+        LIns* args[] = {bytecode, m_context, m_instance};
+        return m_out->insCall(&getByIdWithoutExceptionOpCallInfo, args);
     }
     case ESIR::Opcode::GetVarGeneric:
     {

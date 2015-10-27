@@ -240,6 +240,7 @@ bool ESGraphTypeInference::run(ESGraph* graph)
             case ESIR::Opcode::GetArgument:
             case ESIR::Opcode::GetVar:
             case ESIR::Opcode::GetVarGeneric:
+            case ESIR::Opcode::GetVarGenericWithoutException:
             case ESIR::Opcode::GetGlobalVarGeneric:
                 break;
             case ESIR::Opcode::GetObject:

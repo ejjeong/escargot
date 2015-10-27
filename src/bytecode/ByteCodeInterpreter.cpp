@@ -916,9 +916,21 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         GetById* code = (GetById*)currentCode;
         try {
+#ifndef ENABLE_ESJIT
             push<ESValue>(stack, topOfStack, getByIdOperationWithNoInline(instance, ec, code));
+#else
+            ESValue* value = getByIdOperationWithNoInline(instance, ec, code);
+            push<ESValue>(stack, topOfStack, value);
+            code->m_profile.addProfile(*value);
+#endif
         } catch(...) {
-            push<ESValue>(stack, topOfStack, ESValue(ESValue::ESEmptyValue));
+#ifndef ENABLE_ESJIT
+            push<ESValue>(stack, topOfStack, ESValue());
+#else
+            ESValue value = ESValue();
+            push<ESValue>(stack, topOfStack, value);
+            code->m_profile.addProfile(value);
+#endif
         }
         executeNextCode<GetById>(programCounter);
         NEXT_INSTRUCTION();

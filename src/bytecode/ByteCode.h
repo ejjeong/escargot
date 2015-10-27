@@ -26,7 +26,7 @@ class CodeBlock;
     F(CheckStackPointer, 0, 0, 0, 1) \
 \
     F(GetById, 1, 0, 0, 1) \
-    F(GetByIdWithoutException, 1, 0, 0, 0) \
+    F(GetByIdWithoutException, 1, 0, 0, 1) \
     F(GetByIndex, 1, 0, 0, 1) \
     F(GetByGlobalIndex, 1, 0, 0, 1) \
     F(GetByIndexWithActivation, 1, 0, 0, 1) \

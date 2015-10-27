@@ -34,6 +34,17 @@ inline void setByIndexWithActivationOp(ExecutionContext* ec, int32_t upCount, in
     *env->record()->toDeclarativeEnvironmentRecord()->bindingValueForActivationMode((unsigned)index) = ESValue::fromRawDouble(val);
 }
 
+inline ESValueInDouble getByIdWithoutExceptionOp(ESVMInstance* instance, ExecutionContext* ec, ByteCode* bytecode)
+{
+    GetById* code = (GetById*)bytecode;
+    try {
+        ESValue* res = getByIdOperation(instance, ec, code);
+        return ESValue::toRawDouble(*res);
+    } catch (...) {
+        return ESValue::toRawDouble(ESValue());
+    }
+}
+
 inline ESValueInDouble plusOp(ESValueInDouble left, ESValueInDouble right)
 {
     ESValue leftVal = ESValue::fromRawDouble(left);
