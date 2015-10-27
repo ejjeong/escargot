@@ -30,11 +30,12 @@ public:
         m_argument->generateReferenceResolvedAddressByteCode(codeBlock, context);
         codeBlock->pushCode(ToNumber(), context, this);
         codeBlock->pushCode(DuplicateTopOfStackValue(), context, this);
+        size_t pushPos = codeBlock->currentCodeSize();
         codeBlock->pushCode(PushIntoTempStack(), context, this);
         codeBlock->pushCode(Increment(), context, this);
         m_argument->generatePutByteCode(codeBlock, context);
         codeBlock->pushCode(Pop(), context, this);
-        codeBlock->pushCode(PopFromTempStack(), context, this);
+        codeBlock->pushCode(PopFromTempStack(pushPos), context, this);
     }
 protected:
     ExpressionNode* m_argument;

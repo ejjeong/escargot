@@ -40,9 +40,10 @@ public:
         size_t continuePosition = codeBlock->currentCodeSize();
         codeBlock->pushCode(EnumerateObjectKey(), newContext, this);
 
+        size_t pushPos = codeBlock->currentCodeSize();
         codeBlock->pushCode(PushIntoTempStack(), newContext, this);
         m_left->generateResolveAddressByteCode(codeBlock, newContext);
-        codeBlock->pushCode(PopFromTempStack(), newContext, this);
+        codeBlock->pushCode(PopFromTempStack(pushPos), newContext, this);
         m_left->generatePutByteCode(codeBlock, newContext);
         codeBlock->pushCode(Pop(), newContext, this);
 

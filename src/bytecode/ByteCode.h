@@ -326,6 +326,7 @@ public:
 
 struct ByteCodeExtraData {
     Opcode m_opcode;
+    size_t m_codePosition;
     int m_baseRegisterIndex;
     int m_registerIncrementCount; //stack push count
     int m_registerDecrementCount; //stack pop count
@@ -336,6 +337,7 @@ struct ByteCodeExtraData {
     ByteCodeExtraData()
     {
         m_opcode = (Opcode)0;
+        m_codePosition = SIZE_MAX;
         m_baseRegisterIndex = 0;
         m_registerIncrementCount = 0;
         m_registerDecrementCount = 0;
@@ -431,10 +433,10 @@ public:
 
 class PopFromTempStack : public ByteCode {
 public:
-    PopFromTempStack()
+    PopFromTempStack(size_t pushPos)
         : ByteCode(PopFromTempStackOpcode)
     {
-
+        m_pushCodePosition = pushPos;
     }
 #ifndef NDEBUG
     virtual void dump()
@@ -442,6 +444,8 @@ public:
         printf("PopFromTempStack <>\n");
     }
 #endif
+
+    size_t m_pushCodePosition;
 };
 
 class PopExpressionStatement : public ByteCode {

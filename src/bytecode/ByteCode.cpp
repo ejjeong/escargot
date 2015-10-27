@@ -29,6 +29,7 @@ CodeBlock::~CodeBlock()
 void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, ByteCodeGenerateContext& context)
 {
     Opcode op = (Opcode)(size_t)code->m_opcodeInAddress;
+    data->m_codePosition = m_code.size();
     data->m_baseRegisterIndex = context.m_baseRegisterCount;
     data->m_registerIncrementCount = pushCountFromOpcode(code, op);
     data->m_registerDecrementCount = popCountFromOpcode(code, op);
@@ -46,6 +47,17 @@ void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, B
         data->m_sourceIndexes.push_back(((LoadPhi *)code)->m_allocIndex);
         data->m_sourceIndexes.push_back(((LoadPhi *)code)->m_srcIndex0);
         data->m_sourceIndexes.push_back(((LoadPhi *)code)->m_srcIndex1);
+        data->m_targetIndex0 = context.m_currentSSARegisterCount++;
+    } else if(op == PushIntoTempStackOpcode) {
+        data->m_targetIndex0 = context.m_currentSSARegisterCount++;
+        data->m_sourceIndexes.push_back(context.m_ssaComputeStack.back());
+    } else if(op == PopFromTempStackOpcode) {
+        for(unsigned i = m_extraData.size() - 1; ; i --) {
+            if(m_extraData[i].m_codePosition == ((PopFromTempStack *)code)->m_pushCodePosition) {
+                data->m_sourceIndexes.push_back(m_extraData[i].m_targetIndex0);
+                break;
+            }
+        }
         data->m_targetIndex0 = context.m_currentSSARegisterCount++;
     } else {
         //normal path
