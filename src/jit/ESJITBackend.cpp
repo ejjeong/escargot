@@ -1782,7 +1782,8 @@ bool NativeGenerator::nanojitCodegen(ESVMInstance* instance)
 #endif
                 return false;
             }
-            if (ir->returnsESValue()) {
+            if (ir->returnsESValue() && ir->m_targetIndex >= 0) {
+                // Even if IR has "returnsESValue" tag, there is a possibility that it has invalid targetIndex (e.g. CreateFunction)
                 Type type = m_graph->getOperandType(ir->m_targetIndex);
                 if (!generateTypeCheck(generatedLIns, type, ir->m_targetIndex)) {
                     LOG_VJ("Cannot generate type check code for type %s(0x%x) in ESJIT Backend\n", type.getESIRTypeName(), type.type());
