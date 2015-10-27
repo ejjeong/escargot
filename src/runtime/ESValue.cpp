@@ -734,6 +734,14 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                         }
                         break;
                     }
+                    case ThisOpcode: {
+                        reinterpret_cast<This*>(currentCode)->m_profile.updateProfiledType();
+                        if (reinterpret_cast<This*>(currentCode)->m_profile.getType().isBottomType()) {
+                            compileNextTime = true;
+                            LOG_VJ("> Cannot Compile JIT Function due to This(idx %u) is not profiled yet\n", (unsigned)idx);
+                        }
+                        break;
+                    }
                     case CallFunctionOpcode: {
                          reinterpret_cast<CallFunction*>(currentCode)->m_profile.updateProfiledType();
                          if (reinterpret_cast<CallFunction*>(currentCode)->m_profile.getType().isBottomType()) {
