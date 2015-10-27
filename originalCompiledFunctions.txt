@@ -1,5 +1,5 @@
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-cube.js
-CreateP CalcNormal CalcCross MMulti VMulti VMulti2 Translate RotateX RotateY RotateZ 
+CreateP CalcNormal CalcCross MMulti VMulti VMulti2 Translate RotateX RotateY RotateZ Loop 
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-morph.js
 morph 
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-raytrace.js
