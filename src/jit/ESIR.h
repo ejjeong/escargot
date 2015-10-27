@@ -1228,6 +1228,32 @@ protected:
         : CallJSIR(targetIndex, calleeIndex, receiverIndex, argumentCount, argumentIndexes) { m_opcode = ESIR::Opcode::CallNewJS; }
 };
 
+class CallEvalIR : public ESIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(CallEval, int, int*);
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+        out << " argumentCount " << m_argumentIndexes.size() << " :";
+        for (size_t i=0; i<m_argumentIndexes.size(); i++)
+            out << ", tmp" << m_argumentIndexes[i];
+    }
+#endif
+    int argumentIndex(size_t idx) { return m_argumentIndexes[idx]; }
+    int argumentCount() { return m_argumentIndexes.size(); }
+
+protected:
+    CallEvalIR(int targetIndex, int argumentCount, int* argumentIndexes)
+        : ESIR(ESIR::Opcode::CallEval, targetIndex), m_argumentIndexes(argumentCount)
+    {
+        for (int i=0; i<argumentCount; i++)
+            m_argumentIndexes[i] = argumentIndexes[i];
+    }
+    std::vector<int, gc_allocator<int> > m_argumentIndexes;
+};
+
 class ReturnIR : public ESIR {
 public:
     DECLARE_STATIC_GENERATOR_0(Return);

@@ -62,6 +62,7 @@ CallInfo setVarDefineDataPropertyCallInfo = CI(setVarDefineDataProperty, CallInf
 CallInfo esFunctionObjectCallCallInfo = CI(esFunctionObjectCall, CallInfo::typeSig5(ARGTYPE_D, ARGTYPE_P, ARGTYPE_D, ARGTYPE_P, ARGTYPE_I, ARGTYPE_I));
 CallInfo esFunctionObjectCallWithReceiverCallInfo = CI(esFunctionObjectCallWithReceiver, CallInfo::typeSig6(ARGTYPE_D, ARGTYPE_P, ARGTYPE_D, ARGTYPE_D, ARGTYPE_P, ARGTYPE_I, ARGTYPE_I));
 CallInfo newOpCallInfo = CI(newOp, CallInfo::typeSig5(ARGTYPE_D, ARGTYPE_P, ARGTYPE_P, ARGTYPE_D, ARGTYPE_P, ARGTYPE_I));
+CallInfo evalCallCallInfo = CI(evalCall, CallInfo::typeSig4(ARGTYPE_D, ARGTYPE_P, ARGTYPE_P, ARGTYPE_I, ARGTYPE_P));
 CallInfo getObjectOpCallInfo = CI(getObjectOp, CallInfo::typeSig3(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D, ARGTYPE_P));
 CallInfo getObjectPreComputedCaseOpCallInfo = CI(getObjectPreComputedCaseOp, CallInfo::typeSig3(ARGTYPE_D, ARGTYPE_D, ARGTYPE_P, ARGTYPE_P));
 CallInfo setObjectOpCallInfo = CI(setObjectOp, CallInfo::typeSig3(ARGTYPE_V, ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
@@ -1154,6 +1155,25 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         }
         LIns* args[] = {argumentCount, arguments, boxedCallee, globalObjectIns(), instanceIns()};
         LIns* boxedResult = m_out->insCall(&newOpCallInfo, args);
+        return boxedResult;
+    }
+    case ESIR::Opcode::CallEval:
+    {
+        INIT_ESIR(CallEval);
+        LIns* arguments;
+        if (irCallEval->argumentCount() > 0) {
+            arguments = m_out->insAlloc(irCallEval->argumentCount() * sizeof(ESValue));
+        } else {
+            arguments = m_out->insImmP(0);
+        }
+        LIns* argumentCount = m_out->insImmI(irCallEval->argumentCount());
+        for (size_t i = 0; i < irCallEval->argumentCount(); i++) {
+            LIns* argument = getTmpMapping(irCallEval->argumentIndex(i));
+            LIns* boxedArgument = boxESValue(argument, m_graph->getOperandType(irCallEval->argumentIndex(i)));
+            m_out->insStore(LIR_std, boxedArgument, arguments, i * sizeof(ESValue), 1);
+        }
+        LIns* args[] = {arguments, argumentCount, contextIns(), instanceIns()};
+        LIns* boxedResult = m_out->insCall(&evalCallCallInfo, args);
         return boxedResult;
     }
     case ESIR::Opcode::Return:

@@ -595,6 +595,20 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             NEXT_BYTECODE(NewFunctionCall);
             break;
         }
+        case CallEvalFunctionOpcode:
+        {
+            INIT_BYTECODE(CallEvalFunction);
+            int argumentCount = extraData->m_sourceIndexes.size();
+            int* argumentIndexes = (int*) alloca (sizeof(int) * argumentCount);
+            for (int i = 0; i < argumentCount; i++)
+                argumentIndexes[i] = extraData->m_sourceIndexes[i];
+            CallEvalIR* callEvalIR = CallEvalIR::create(extraData->m_targetIndex0, argumentCount, argumentIndexes);
+            currentBlock->push(callEvalIR);
+            bytecode->m_profile.updateProfiledType();
+            graph->setOperandType(extraData->m_targetIndex0, bytecode->m_profile.getType());
+            NEXT_BYTECODE(CallEvalFunction);
+            break;
+        }
         case ReturnFunctionOpcode:
         {
             INIT_BYTECODE(ReturnFunction);

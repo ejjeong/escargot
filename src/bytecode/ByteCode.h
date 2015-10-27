@@ -1812,7 +1812,9 @@ public:
         printf("CallEvalFunction <>\n");
     }
 #endif
-
+#ifdef ENABLE_ESJIT
+    ProfileData m_profile;
+#endif
 };
 
 class CallBoundFunction : public ByteCode {

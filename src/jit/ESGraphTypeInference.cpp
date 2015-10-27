@@ -227,6 +227,7 @@ bool ESGraphTypeInference::run(ESGraph* graph)
             case ESIR::Opcode::Branch:
             case ESIR::Opcode::CallJS:
             case ESIR::Opcode::CallNewJS:
+            case ESIR::Opcode::CallEval:
             case ESIR::Opcode::Return:
             case ESIR::Opcode::ReturnWithValue:
                 break;

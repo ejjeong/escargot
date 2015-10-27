@@ -216,6 +216,24 @@ inline ESValueInDouble esFunctionObjectCallWithReceiver(ESVMInstance* instance,
     return ESValue::toRawDouble(ret);
 }
 
+inline ESValueInDouble evalCall(ESVMInstance* instance, ExecutionContext* ec, size_t argc, ESValue* arguments)
+{
+    ESValue callee = *ec->resolveBinding(strings->eval);
+    if(callee.isESPointer() && (void *)callee.asESPointer() == (void *)instance->globalObject()->eval()) {
+        ESObject* receiver = instance->globalObject();
+        ESValue ret = instance->runOnEvalContext([instance, &arguments, &argc](){
+            ESValue ret;
+            if(argc)
+                ret = instance->evaluate(const_cast<u16string &>(arguments[0].asESString()->string()), false);
+            return ret;
+        }, true);
+        return ESValue::toRawDouble(ret);
+    } else {
+        ESObject* receiver = instance->globalObject();
+        return ESValue::toRawDouble(ESFunctionObject::call(instance, callee, receiver, arguments, argc, false));
+    }
+}
+
 inline ESString* generateToString(ESValueInDouble rawValue)
 {
     ESValue value = ESValue::fromRawDouble(rawValue);

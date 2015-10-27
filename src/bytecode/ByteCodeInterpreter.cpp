@@ -1094,7 +1094,9 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             ESObject* receiver = instance->globalObject();
             push<ESValue>(stack, topOfStack, ESFunctionObject::call(instance, callee, receiver, arguments, argc, false));
         }
-
+#ifdef ENABLE_ESJIT
+        code->m_profile.addProfile(*peek<ESValue>(stack, bp));
+#endif
         executeNextCode<CallEvalFunction>(programCounter);
         NEXT_INSTRUCTION();
     }
