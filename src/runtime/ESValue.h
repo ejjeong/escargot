@@ -1648,6 +1648,10 @@ public:
         m_stringData = str;
     }
 
+#ifdef ENABLE_ESJIT
+    static size_t offsetOfStringData() { return offsetof(ESStringObject, m_stringData); }
+#endif
+
 private:
     ::escargot::ESString* m_stringData;
 };

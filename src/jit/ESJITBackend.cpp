@@ -1414,12 +1414,44 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         //for 64-bit
         //TODO add ifdef
 
-        if(m_graph->getOperandType(irGetObjectPreComputed->objectIndex()).isObjectType()) {
+        if(m_graph->getOperandType(irGetObjectPreComputed->objectIndex()).isArrayObjectType()) {
+            if(*irGetObjectPreComputed->byteCode()->m_propertyValue == *strings->length.string()) {
+                LIns* obj = getTmpMapping(irGetObjectPreComputed->objectIndex());
+                LIns* length = m_out->insLoad(LIR_ldi, obj, ESArrayObject::offsetOfLength(), 1, LOAD_NORMAL);
+                return boxESValue(length, Type(TypeInt32));
+            }
+        }
+
+        bool isStringCase = false;
+        LIns* objFromOutSide = NULL;
+        if(m_graph->getOperandType(irGetObjectPreComputed->objectIndex()).isStringType()) {
+            if(*irGetObjectPreComputed->byteCode()->m_propertyValue == *strings->length.string()) {
+                LIns* obj = getTmpMapping(irGetObjectPreComputed->objectIndex());
+                //load m_string from ESString*
+                LIns* stringData = m_out->insLoad(LIR_ldp, obj, ESString::offsetOfStringData(), 1, LOAD_NORMAL);
+                //read length
+                LIns* length = m_out->ins1(LIR_q2i, m_out->insLoad(LIR_ldq, stringData, ESStringData::offsetOfLength(), 1, LOAD_NORMAL));
+                return boxESValue(length, Type(TypeInt32));
+            }
+
+            LIns* obj = getTmpMapping(irGetObjectPreComputed->objectIndex());
+            objFromOutSide = m_out->insImmP(ESVMInstance::currentInstance()->globalObject()->stringObjectProxy());
+            m_out->insStore(LIR_stp, obj, objFromOutSide, 0, 1);
+            isStringCase = true;
+        }
+
+
+        if(m_graph->getOperandType(irGetObjectPreComputed->objectIndex()).isObjectType() || isStringCase) {
             LIns* result = m_out->insAlloc(sizeof(ESValue));
 
             //check proto chain
             LIns* obj = getTmpMapping(irGetObjectPreComputed->objectIndex());
             LIns* orgObj = getTmpMapping(irGetObjectPreComputed->objectIndex());
+
+            if(objFromOutSide) {
+                orgObj = obj = objFromOutSide;
+            }
+
             std::vector<LIns*> lblsToFallback;
             LIns* proto = obj;
             for(int i = 0; i < irGetObjectPreComputed->byteCode()->m_cachedhiddenClassChain.size() ; i ++) {
@@ -1454,6 +1486,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
                     LIns* hiddenClassData = m_out->insLoad(LIR_ldp, obj, gapToHiddenClassData, 1, LOAD_NORMAL);
                     LIns* readResult = m_out->insLoad(LIR_ldd, hiddenClassData, irGetObjectPreComputed->byteCode()->m_cachedIndex * sizeof(ESValue), 1, LOAD_NORMAL);
                     m_out->insStore(LIR_std, readResult, result, 0, 1);
+                    //JIT_LOG(readResult, "inline cache works");
                 } else {
                     //call callback
                     LIns* args[] = {m_out->insImmP((void *)irGetObjectPreComputed->byteCode()->m_cachedIndex), orgObj, obj};
