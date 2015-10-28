@@ -6,6 +6,13 @@ cp test/SunSpider/resources/sunspider-standalone-driver.orig.js test/SunSpider/r
 if [[ $1 == duk* ]]; then
   cmd="./test/bin/duk_v1.3.0"
   tc="duktape"
+elif [[ $1 == v8.full* ]]; then
+  cmd="./test/bin/d8"
+  args="--nocrankshaft"
+  tc="v8"
+  if [[ $2 == time ]]; then
+      cp test/SunSpider/resources/sunspider-standalone-driver-v8.js test/SunSpider/resources/sunspider-standalone-driver.js
+  fi
 elif [[ $1 == v8* ]]; then
   cmd="./test/bin/d8"
   tc="v8"
