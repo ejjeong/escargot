@@ -80,9 +80,11 @@ public:
     static size_t offsetofInOSRExit() { return offsetof(ExecutionContext, m_inOSRExit); }
     static size_t offsetofStackBuf() { return offsetof(ExecutionContext, m_stackBuf); }
     static size_t offsetofStackPos() { return offsetof(ExecutionContext, m_stackPos); }
-    static size_t offsetofcachedDeclarativeEnvironmentRecordESValue() {
+    static size_t offsetofcachedDeclarativeEnvironmentRecordESValue()
+    {
         return offsetof(ExecutionContext, m_cachedDeclarativeEnvironmentRecord);
     }
+    static size_t offsetOfEnvironment() { return offsetof(ExecutionContext, m_variableEnvironment); }
 #pragma GCC diagnostic pop
 #endif
 

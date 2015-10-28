@@ -1237,8 +1237,22 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             return m_out->insLoad(LIR_ldd, cachedDeclarativeEnvironmentRecordESValue, irGetVar->varIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
         } else {
             //inline ESValueInDouble getByIndexWithActivationOp(ExecutionContext* ec, int32_t upCount, int32_t index)
-            LIns* args[] = {m_out->insImmI(irGetVar->varIndex()), m_out->insImmI(irGetVar->varUpIndex()), contextIns()};
-            return m_out->insCall(&getByIndexWithActivationOpCallInfo, args);
+            //LIns* args[] = {m_out->insImmI(irGetVar->varIndex()), m_out->insImmI(irGetVar->varUpIndex()), contextIns()};
+            //return m_out->insCall(&getByIndexWithActivationOpCallInfo, args);
+
+            LIns* ecIns = contextIns();
+
+            //TODO
+            // if with statement are implemented, we should load re-implement loading env loading source
+            LIns* envIns = m_out->insLoad(LIR_ldp, ecIns, ExecutionContext::offsetOfEnvironment(), 1, LOAD_NORMAL);
+
+            for(int i = 0; i < irGetVar->varUpIndex(); i ++) {
+                envIns = m_out->insLoad(LIR_ldp, envIns, LexicalEnvironment::offsetofOuterEnvironment(), 1, LOAD_NORMAL);
+            }
+
+            LIns* record = m_out->insLoad(LIR_ldp, envIns, LexicalEnvironment::offsetofRecord(), 1, LOAD_NORMAL);
+            LIns* vectorDataPointer = m_out->insLoad(LIR_ldp, record, (DeclarativeEnvironmentRecord::offsetofActivationData() + ESIdentifierVector::offsetofData()), 1, LOAD_NORMAL);
+            return m_out->insLoad(LIR_ldd, vectorDataPointer, sizeof(ESIdentifierVectorStdItem) * irGetVar->varIndex() + sizeof(InternalAtomicString), 1, LOAD_NORMAL);
         }
     }
     case ESIR::Opcode::SetVar:
@@ -1251,9 +1265,19 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             LIns* cachedDeclarativeEnvironmentRecordESValue = m_out->insLoad(LIR_ldp, context, ExecutionContext::offsetofcachedDeclarativeEnvironmentRecordESValue(), 1, LOAD_NORMAL);
             m_out->insStore(LIR_std, boxedSource, cachedDeclarativeEnvironmentRecordESValue, irSetVar->localVarIndex() * sizeof(ESValue), 1);
         } else {
-            //inline void setByIndexWithActivationOp(ExecutionContext* ec, int32_t upCount, int32_t index, ESValueInDouble val)
-            LIns* args[] = {boxedSource, m_out->insImmI(irSetVar->localVarIndex()), m_out->insImmI(irSetVar->upVarIndex()), contextIns()};
-            m_out->insCall(&getByIndexWithActivationOpCallInfo, args);
+            LIns* ecIns = contextIns();
+
+            //TODO
+            // if with statement are implemented, we should load re-implement loading env loading source
+            LIns* envIns = m_out->insLoad(LIR_ldp, ecIns, ExecutionContext::offsetOfEnvironment(), 1, LOAD_NORMAL);
+
+            for(int i = 0; i < irSetVar->upVarIndex(); i ++) {
+                envIns = m_out->insLoad(LIR_ldp, envIns, LexicalEnvironment::offsetofOuterEnvironment(), 1, LOAD_NORMAL);
+            }
+
+            LIns* record = m_out->insLoad(LIR_ldp, envIns, LexicalEnvironment::offsetofRecord(), 1, LOAD_NORMAL);
+            LIns* vectorDataPointer = m_out->insLoad(LIR_ldp, record, (DeclarativeEnvironmentRecord::offsetofActivationData() + ESIdentifierVector::offsetofData()), 1, LOAD_NORMAL);
+            m_out->insStore(LIR_std, boxedSource, vectorDataPointer, sizeof(ESIdentifierVectorStdItem) * irSetVar->localVarIndex() + sizeof(InternalAtomicString), 1);
         }
         return source;
     }
@@ -1420,9 +1444,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 
             //read vector
             size_t gapToVector = escargot::ESArrayObject::offsetOfVectorData();
-            size_t gatToVectorData = ESValueVector::offsetOfData();
-            LIns* vector = m_out->insLoad(LIR_ldp, obj, gapToVector, 1, LOAD_NORMAL);
-            LIns* vectorData = m_out->ins2(LIR_addp, vector, m_out->insImmP((void *)gatToVectorData));
+            size_t gapToVectorData = ESValueVector::offsetOfData() + gapToVector;
+            LIns* vectorData = m_out->insLoad(LIR_ldp, obj, gapToVectorData, 1, LOAD_NORMAL);
             LIns* ESValueSize = m_out->insImmI(sizeof(ESValue));
             LIns* offset = m_out->ins2(LIR_muli, key, ESValueSize);
             LIns* offsetAsPointer = m_out->ins1(LIR_i2q, offset);

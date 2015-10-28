@@ -14,19 +14,23 @@ class ObjectEnvironmentRecord;
 class ESObject;
 class GlobalObject;
 
-typedef std::unordered_map<InternalAtomicString, ::escargot::ESValue,
-            std::hash<InternalAtomicString>,std::equal_to<InternalAtomicString>,
-            gc_allocator<std::pair<const InternalAtomicString, ::escargot::ESValue> > > ESIdentifierMapStd;
+typedef std::pair<InternalAtomicString, ::escargot::ESValue> ESIdentifierVectorStdItem;
+typedef std::vector<ESIdentifierVectorStdItem,
+        gc_allocator<ESIdentifierVectorStdItem> > ESIdentifierVectorStd;
 
-typedef std::vector<std::pair<InternalAtomicString, ::escargot::ESValue>,
-        gc_allocator<std::pair<InternalAtomicString, ::escargot::ESValue> > > ESIdentifierVectorStd;
-
-class ESIdentifierMap : public ESIdentifierMapStd, public gc {
+class ESIdentifierVector : public ESIdentifierVectorStd {
 public:
-    ESIdentifierMap(size_t siz = 0)
-        : ESIdentifierMapStd(siz) { }
+    ESIdentifierVector()
+        : ESIdentifierVectorStd() { }
 
+#ifdef ENABLE_ESJIT
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Winvalid-offsetof"
+    static size_t offsetofData() { return offsetof(ESIdentifierVector, _M_impl._M_start); }
+#pragma GCC diagnostic pop
+#endif
 };
+
 
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-lexical-environments
 class LexicalEnvironment : public gc {
@@ -49,6 +53,14 @@ public:
 
     //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-newfunctionenvironment
     static LexicalEnvironment* newFunctionEnvironment(ESValue arguments[], const size_t& argumentCount, ESFunctionObject* function);
+
+#ifdef ENABLE_ESJIT
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Winvalid-offsetof"
+    static size_t offsetofOuterEnvironment() { return offsetof(LexicalEnvironment, m_outerEnvironment); }
+    static size_t offsetofRecord() { return offsetof(LexicalEnvironment, m_record); }
+#pragma GCC diagnostic pop
+#endif
 
 protected:
     EnvironmentRecord* m_record;
@@ -308,13 +320,20 @@ public:
         return false;
     }
 
+#ifdef ENABLE_ESJIT
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Winvalid-offsetof"
+    static size_t offsetofActivationData() { return offsetof(DeclarativeEnvironmentRecord, m_activationData); }
+#pragma GCC diagnostic pop
+#endif
+
 protected:
     bool m_needsActivation;
 
     ESValue* m_vectorData;
     InternalAtomicStringVector* m_innerIdentifiers;
 
-    ESIdentifierVectorStd m_activationData;
+    ESIdentifierVector m_activationData;
 };
 
 //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-global-environment-records
