@@ -1074,6 +1074,12 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
                 LIns* ins = insToExtendLife->at(i);
                 if (ins->isP())
                     m_out->ins1(LIR_livep, ins);
+                else if (ins->isD())
+                    m_out->ins1(LIR_lived, ins);
+                else if (ins->isI())
+                    m_out->ins1(LIR_livei, ins);
+                else
+                    RELEASE_ASSERT_NOT_REACHED();
             }
             insToExtendLife->clear();
         } else {
