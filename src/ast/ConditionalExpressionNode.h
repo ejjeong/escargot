@@ -42,7 +42,9 @@ public:
         size_t jumpPosForEndOfConsequence = codeBlock->lastCodePosition<Jump>();
 
         jumpForTestIsFalse->m_jumpPosition = codeBlock->currentCodeSize();
+#ifdef ENABLE_ESJIT
         context.m_ssaComputeStack.pop_back();
+#endif
         context.m_baseRegisterCount = savedBaseRegisterCounter;
         m_alternate->generateExpressionByteCode(codeBlock, context);
 

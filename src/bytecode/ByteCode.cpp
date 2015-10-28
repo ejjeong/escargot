@@ -36,7 +36,7 @@ void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, B
     context.m_baseRegisterCount = context.m_baseRegisterCount + data->m_registerIncrementCount - data->m_registerDecrementCount;
     ASSERT(context.m_baseRegisterCount>=0);
 
-
+#ifdef ENABLE_ESJIT
     if(op == AllocPhiOpcode) {
         data->m_targetIndex0 = context.m_currentSSARegisterCount++;
     } else if(op == StorePhiOpcode) {
@@ -112,6 +112,7 @@ void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, B
             data->m_targetIndex1 = c;
         }
     }
+#endif
 }
 
 ByteCode::ByteCode(Opcode code) {
@@ -148,7 +149,6 @@ CodeBlock* generateByteCode(Node* node)
     }
 #endif
 
-    context.cleanupSSARegisterCount();
 #ifdef ENABLE_ESJIT
     //Fill temp register size for future
     block->m_tempRegisterSize = context.m_currentSSARegisterCount;
@@ -238,6 +238,7 @@ void dumpBytecode(CodeBlock* codeBlock)
             printf("%u\t\t%p\t(nodeinfo null)\t\t",(unsigned)idx, currentCode);
 
         printf("IdxInfo[%d,+%d,-%d]\t", ex->m_baseRegisterIndex, ex->m_registerIncrementCount, ex->m_registerDecrementCount);
+#ifdef ENABLE_ESJIT
         printf("ssa->[");
 
         if(ex->m_targetIndex0 != -1) {
@@ -252,7 +253,7 @@ void dumpBytecode(CodeBlock* codeBlock)
             printf("s: %d,", ex->m_sourceIndexes[i]);
         }
         printf("]");
-
+#endif
         printf("\t");
 
         Opcode opcode = codeBlock->m_extraData[bytecodeCounter].m_opcode;

@@ -169,7 +169,9 @@ inline const char* getByteCodeName(Opcode opcode)
 struct ByteCodeGenerateContext {
     ByteCodeGenerateContext()
         : m_baseRegisterCount(0)
+#ifdef ENABLE_ESJIT
         , m_currentSSARegisterCount(0)
+#endif
         , m_offsetToBasePointer(0)
         , m_positionToContinue(0)
         , m_tryStatementScopeCount(0)
@@ -180,8 +182,10 @@ struct ByteCodeGenerateContext {
 
     ByteCodeGenerateContext(const ByteCodeGenerateContext& contextBefore)
         : m_baseRegisterCount(contextBefore.m_baseRegisterCount)
+#ifdef ENABLE_ESJIT
         , m_currentSSARegisterCount(contextBefore.m_currentSSARegisterCount)
         , m_ssaComputeStack(contextBefore.m_ssaComputeStack)
+#endif
         , m_inCallingExpressionScope(contextBefore.m_inCallingExpressionScope)
         , m_offsetToBasePointer(0)
         , m_tryStatementScopeCount(contextBefore.m_tryStatementScopeCount)
@@ -197,7 +201,9 @@ struct ByteCodeGenerateContext {
         ASSERT(m_labeledBreakStatmentPositions.size() == 0);
         ASSERT(m_labeledContinueStatmentPositions.size() == 0);
         ASSERT(m_complexCaseStatementPositions.size() == 0);
+#ifdef ENABLE_ESJIT
         ASSERT(m_currentSSARegisterCount == -1);
+#endif
     }
 
     void propagateInformationTo(ByteCodeGenerateContext& ctx)
@@ -209,10 +215,14 @@ struct ByteCodeGenerateContext {
         ctx.m_complexCaseStatementPositions.insert(m_complexCaseStatementPositions.begin(), m_complexCaseStatementPositions.end());
         ctx.m_offsetToBasePointer = m_offsetToBasePointer;
         ctx.m_positionToContinue = m_positionToContinue;
+#ifdef ENABLE_ESJIT
         ctx.m_currentSSARegisterCount = m_currentSSARegisterCount;
         ctx.m_ssaComputeStack = m_ssaComputeStack;
+#endif
 
+#ifdef ENABLE_ESJIT
         m_currentSSARegisterCount = -1;
+#endif
         m_breakStatementPositions.clear();
         m_continueStatementPositions.clear();
         m_labeledBreakStatmentPositions.clear();
@@ -220,10 +230,12 @@ struct ByteCodeGenerateContext {
         m_complexCaseStatementPositions.clear();
     }
 
+#ifdef ENABLE_ESJIT
     void cleanupSSARegisterCount()
     {
         m_currentSSARegisterCount = -1;
     }
+#endif
 
     void pushBreakPositions(size_t pos)
     {
@@ -279,15 +291,18 @@ struct ByteCodeGenerateContext {
     ALWAYS_INLINE void consumeContinuePositions(CodeBlock* cb, size_t position);
     ALWAYS_INLINE void consumeLabeledContinuePositions(CodeBlock* cb, size_t position, ESString* lbl);
     ALWAYS_INLINE void morphJumpPositionIntoComplexCase(CodeBlock* cb,size_t codePos);
-
+#ifdef ENABLE_ESJIT
     ALWAYS_INLINE int lastUsedSSAIndex()
     {
         return m_currentSSARegisterCount - 1;
     }
+#endif
 
     int m_baseRegisterCount;
+#ifdef ENABLE_ESJIT
     int m_currentSSARegisterCount;
     std::vector<int> m_ssaComputeStack;
+#endif
 
     bool m_inCallingExpressionScope;
     bool m_isHeadOfMemberExpression;
@@ -331,9 +346,11 @@ struct ByteCodeExtraData {
     int m_registerIncrementCount; //stack push count
     int m_registerDecrementCount; //stack pop count
 
+#ifdef ENABLE_ESJIT
     int m_targetIndex0;
     int m_targetIndex1;
     std::vector<int> m_sourceIndexes;
+#endif
     ByteCodeExtraData()
     {
         m_opcode = (Opcode)0;
@@ -341,8 +358,10 @@ struct ByteCodeExtraData {
         m_baseRegisterIndex = 0;
         m_registerIncrementCount = 0;
         m_registerDecrementCount = 0;
+#ifdef ENABLE_ESJIT
         m_targetIndex0 = -1;
         m_targetIndex1 = -1;
+#endif
     }
 };
 

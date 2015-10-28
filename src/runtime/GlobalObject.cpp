@@ -325,7 +325,9 @@ void GlobalObject::installFunction()
             codeBlock->m_tempRegisterSize = context.m_currentSSARegisterCount;
 #endif
             codeBlock->pushCode(ReturnFunction(), context, functionDeclAST);
+#ifdef ENABLE_ESJIT
             context.cleanupSSARegisterCount();
+#endif
             escargot::InternalAtomicStringVector params = functionDeclAST->params();
         }
         escargot::ESFunctionObject* function;
@@ -335,9 +337,9 @@ void GlobalObject::installFunction()
             function->initialize(scope, codeBlock);
         } else
             function = ESFunctionObject::create(scope, codeBlock, ESString::create(u"anonymous"));
-
+#ifdef ENABLE_ESJIT
         context.cleanupSSARegisterCount();
-
+#endif
         ESObject* prototype = ESObject::create();
         prototype->set__proto__(instance->globalObject()->object()->protoType());
         function->setProtoType(prototype);
@@ -426,8 +428,9 @@ void GlobalObject::installFunction()
         ESObject* prototype = ESObject::create();
         prototype->set__proto__(instance->globalObject()->object()->protoType());
         function->setProtoType(prototype);
-
+#ifdef ENABLE_ESJIT
         context.cleanupSSARegisterCount();
+#endif
         //NOTE
         //The binded function has only one bytecode what is CallBoundFunction
         //so we should not try JIT for binded function.
