@@ -29,9 +29,9 @@ safe_add md5_ff md5_cmn bit_rol md5_gg md5_hh md5_ii
 ===> test/SunSpider/tests/sunspider-1.0.2/crypto-sha1.js
 safe_add rol sha1_ft sha1_kt 
 ===> test/SunSpider/tests/sunspider-1.0.2/date-format-tofte.js
-arrayExists l F g 
+arrayExists l F A g 
 ===> test/SunSpider/tests/sunspider-1.0.2/date-format-xparb.js
-(anonymous) (anonymous) (anonymous) (anonymous) 
+(anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) 
 ===> test/SunSpider/tests/sunspider-1.0.2/math-cordic.js
 FIXED FLOAT cordicsincos 
 ===> test/SunSpider/tests/sunspider-1.0.2/math-partial-sums.js
@@ -47,6 +47,6 @@ rand
 ===> test/SunSpider/tests/sunspider-1.0.2/string-tagcloud.js
 (anonymous) (anonymous) 
 ===> test/SunSpider/tests/sunspider-1.0.2/string-unpack-code.js
-(anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) 
+(anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) 
 ===> test/SunSpider/tests/sunspider-1.0.2/string-validate-input.js
 makeName addResult makeNumber 

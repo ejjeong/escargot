@@ -1224,8 +1224,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     case ESIR::Opcode::GetArgument:
     {
         INIT_ESIR(GetArgument);
-        LIns* arguments = m_out->insLoad(LIR_ldp, contextIns(), ExecutionContext::offsetOfArguments(), 1, LOAD_NORMAL);
-        LIns* argument = m_out->insLoad(LIR_ldd, arguments, irGetArgument->argumentIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
+        LIns* cachedDeclarativeEnvironmentRecordESValue = m_out->insLoad(LIR_ldp, contextIns(), ExecutionContext::offsetofcachedDeclarativeEnvironmentRecordESValue(), 1, LOAD_NORMAL);
+        LIns* argument = m_out->insLoad(LIR_ldd, cachedDeclarativeEnvironmentRecordESValue, irGetArgument->argumentIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
         // JIT_LOG(argument, "Read this argument");
         return argument;
     }
@@ -1670,7 +1670,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         if (srcType.isInt32Type() || srcType.isBooleanType())
             return m_out->insStore(LIR_sti, source, phi, 0 , 1);
         else if (srcType.isObjectType() || srcType.isArrayObjectType() || srcType.isStringType() || srcType.isFunctionObjectType())
-            return m_out->insStore(LIR_stq, source, phi, 0 , 1);
+            return m_out->insStore(LIR_stp, source, phi, 0 , 1);
         else
             return nullptr;
     }

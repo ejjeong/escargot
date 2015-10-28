@@ -31,7 +31,7 @@ safe_add
 ===> test/SunSpider/tests/sunspider-1.0.2/date-format-tofte.js
 
 ===> test/SunSpider/tests/sunspider-1.0.2/date-format-xparb.js
-(anonymous) (anonymous) (anonymous) 
+(anonymous) (anonymous) (anonymous) (anonymous) 
 ===> test/SunSpider/tests/sunspider-1.0.2/math-cordic.js
 FIXED FLOAT cordicsincos 
 ===> test/SunSpider/tests/sunspider-1.0.2/math-partial-sums.js
