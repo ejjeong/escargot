@@ -360,12 +360,12 @@ ALWAYS_INLINE uint32_t ESValue::toIndex() const
     }
 }
 
-inline double ESValue::toRawDouble(ESValue value)
+inline ESValueInDouble ESValue::toRawDouble(ESValue value)
 {
-    return bitwise_cast<double>(value.u.asInt64);
+    return bitwise_cast<ESValueInDouble>(value.u.asInt64);
 }
 
-ALWAYS_INLINE ESValue ESValue::fromRawDouble(double value)
+ALWAYS_INLINE ESValue ESValue::fromRawDouble(ESValueInDouble value)
 {
     ESValue val;
     val.u.asInt64 = bitwise_cast<uint64_t>(value);

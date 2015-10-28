@@ -61,7 +61,11 @@ union ValueDescriptor {
 #define CellPayloadOffset PayloadOffset
 #endif
 
+#if ESCARGOT_64
+typedef uint64_t ESValueInDouble;
+#else
 typedef double ESValueInDouble;
+#endif
 
 class ESValue {
 public:
