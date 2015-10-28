@@ -1669,6 +1669,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         Type srcType = m_graph->getOperandType(irStorePhi->sourceIndex());
         if (srcType.isInt32Type() || srcType.isBooleanType())
             return m_out->insStore(LIR_sti, source, phi, 0 , 1);
+        else if (srcType.isObjectType() || srcType.isArrayObjectType() || srcType.isStringType() || srcType.isFunctionObjectType())
+            return m_out->insStore(LIR_stq, source, phi, 0 , 1);
         else
             return nullptr;
     }
@@ -1685,6 +1687,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         //TODO implement another types
         if (consequentType.isInt32Type() || consequentType.isBooleanType())
             return m_out->insLoad(LIR_ldi, phi, 0, 1, LOAD_NORMAL);
+        else if (consequentType.isObjectType() || consequentType.isArrayObjectType() || consequentType.isStringType() || consequentType.isFunctionObjectType())
+            return m_out->insLoad(LIR_ldq, phi, 0, 1, LOAD_NORMAL);
         else
             return nullptr;
     }
