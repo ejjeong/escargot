@@ -1203,6 +1203,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(GetThis);
 
+        /*
 #ifdef ESCARGOT_64
         LIns* m_cachedThisValue = m_out->insLoad(LIR_ldq, m_thisValueP, 0, 1, LOAD_NORMAL);
         LIns* checkIfThisValueisEmpty = m_out->ins2(LIR_eqq, m_cachedThisValue, m_emptyQ);
@@ -1210,9 +1211,11 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         RELEASE_ASSERT_NOT_REACHED();
 #endif
         LIns* jumpIfThisValueisNotEmpty = m_out->insBranch(LIR_jf, checkIfThisValueisEmpty, nullptr);
-
+*/
         LIns* args[] = {contextIns()};
         LIns* resolvedThisValue = m_out->insCall(&contextResolveThisBindingCallInfo, args);
+        return resolvedThisValue;
+        /*
         m_out->insStore(LIR_std, resolvedThisValue, m_thisValueP, 0 , 1);
 
         LIns* thisValueIsValid = m_out->ins0(LIR_label);
@@ -1220,6 +1223,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 
         m_out->ins0(LIR_label);
         return m_out->insLoad(LIR_ldd, m_thisValueP, 0, 1, LOAD_NORMAL);
+        */
     }
     case ESIR::Opcode::GetArgument:
     {
