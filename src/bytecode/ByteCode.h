@@ -101,7 +101,7 @@ class CodeBlock;
     F(ExecuteNativeFunction, 0, 0, 0, 0) \
     F(CallFunction, 1, -1, 0, 1) \
     F(CallFunctionWithReceiver, 1, -1, 0, 1) \
-    F(CallEvalFunction, 1, -1, 0, 0) \
+    F(CallEvalFunction, 1, -1, 0, 1) \
     F(CallBoundFunction, 0, 0, 0, 0) \
     F(NewFunctionCall, 1, -1, 0, 1) \
     F(ReturnFunction, 0, 0, 0, 1) \
