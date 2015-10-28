@@ -9,7 +9,7 @@ TreeNode (anonymous)
 ===> test/SunSpider/tests/sunspider-1.0.2/access-fannkuch.js
 
 ===> test/SunSpider/tests/sunspider-1.0.2/access-nbody.js
-Body (anonymous) (anonymous) NBodySystem (anonymous) 
+Body (anonymous) NBodySystem (anonymous) (anonymous) 
 ===> test/SunSpider/tests/sunspider-1.0.2/access-nsieve.js
 nsieve 
 ===> test/SunSpider/tests/sunspider-1.0.2/bitops-3bit-bits-in-byte.js
