@@ -305,6 +305,7 @@ ESStringData::ESStringData(double number)
         buf++;
     }
 
+    m_length = u16string::length();
 }
 
 uint32_t ESString::tryToUseAsIndex()

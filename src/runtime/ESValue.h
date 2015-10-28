@@ -496,29 +496,34 @@ public:
     ESStringData()
     {
         m_hashData.m_isHashInited =  false;
+        m_length = 0;
     }
 
     ESStringData(const u16string& src)
             : u16string(src)
     {
         m_hashData.m_isHashInited =  false;
+        m_length = src.length();
     }
 
     ESStringData(u16string&& src)
         : u16string(std::move(src))
     {
         m_hashData.m_isHashInited =  false;
+        m_length = u16string::length();
     }
 
     ESStringData(std::u16string& src)
     {
         assign(src.begin(), src.end());
         m_hashData.m_isHashInited =  false;
+        m_length = u16string::length();
     }
 
     explicit ESStringData(int number)
         : ESStringData((double)number)
     {
+        m_length = u16string::length();
     }
 
     explicit ESStringData(double number);
@@ -527,16 +532,23 @@ public:
         : u16string({c})
     {
         m_hashData.m_isHashInited =  false;
+        m_length = u16string::length();
     }
 
     ESStringData(const char* s)
         : u16string(std::move(utf8ToUtf16(s, strlen(s))))
     {
         m_hashData.m_isHashInited =  false;
+        m_length = u16string::length();
     }
 
     ESStringData(const ESStringData& s) = delete;
     void operator =(const ESStringData& s) = delete;
+
+    ALWAYS_INLINE size_t length() const
+    {
+        return m_length;
+    }
 
     ALWAYS_INLINE const char16_t* data() const
     {
@@ -558,6 +570,12 @@ public:
         }
     }
 
+#ifdef ENABLE_ESJIT
+    //static size_t offsetOfData() { return offsetof(ESStringData, _M_dataplus._M_p); }
+    static size_t offsetOfData() { return 0; }
+    static size_t offsetOfLength() { return offsetof(ESStringData, m_length); }
+#endif
+
 protected:
 #pragma pack(push, 1)
 #ifdef ESCARGOT_64
@@ -572,6 +590,7 @@ protected:
     } m_hashData;
 #endif
 #pragma pack(pop)
+    size_t m_length;
 };
 
 
@@ -736,6 +755,11 @@ public:
         printf("%s\n",utf8Data());
     }
 #endif
+
+#ifdef ENABLE_ESJIT
+    static size_t offsetOfStringData() { return offsetof(ESString, m_string); }
+#endif
+
 protected:
     ESStringData* m_string;
 };

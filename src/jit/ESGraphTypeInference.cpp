@@ -256,8 +256,10 @@ bool ESGraphTypeInference::run(ESGraph* graph)
                         block->replace(j, getArrayObjectIR);
                     }
                 } else if (objectType.isStringType()) {
-                    //GetStringByIndexIR* newIR = GetStringByIndexIR::create(irGetObject->targetIndex(), irGetObject->objectIndex(), irGetObject->propertyIndex());
-                    //block->replace(j, newIR);
+                    if(propertyType.isInt32Type()) {
+                        GetStringByIndexIR* newIR = GetStringByIndexIR::create(irGetObject->targetIndex(), irGetObject->objectIndex(), irGetObject->propertyIndex());
+                        block->replace(j, newIR);
+                    }
                 } else {
                 }
                 break;
@@ -268,9 +270,12 @@ bool ESGraphTypeInference::run(ESGraph* graph)
                 Type srcType = graph->getOperandType(irSetObject->sourceIndex());
                 graph->setOperandType(ir->targetIndex(), srcType);
                 Type objectType = graph->getOperandType(irSetObject->objectIndex());
+                Type propertyType = graph->getOperandType(irSetObject->propertyIndex());
                 if (objectType.isArrayObjectType()) {
-                    SetArrayObjectIR* setArrayObjectIR = SetArrayObjectIR::create(irSetObject->targetIndex(), irSetObject->objectIndex(), irSetObject->propertyIndex(), irSetObject->sourceIndex());
-                    block->replace(j, setArrayObjectIR);
+                    if(propertyType.isInt32Type()) {
+                        SetArrayObjectIR* setArrayObjectIR = SetArrayObjectIR::create(irSetObject->targetIndex(), irSetObject->objectIndex(), irSetObject->propertyIndex(), irSetObject->sourceIndex());
+                        block->replace(j, setArrayObjectIR);
+                    }
                 } else {
                 }
                 break;

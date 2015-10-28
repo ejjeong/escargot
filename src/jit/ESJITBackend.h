@@ -74,6 +74,7 @@ private:
     nanojit::LIns* m_undefinedQ;
     nanojit::LIns* m_nullQ;
     nanojit::LIns* m_emptyQ;
+    nanojit::LIns* m_emptyD;
     nanojit::LIns* m_zeroQ;
 #endif
     nanojit::LIns* m_zeroD;

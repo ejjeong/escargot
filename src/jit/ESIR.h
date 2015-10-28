@@ -658,7 +658,7 @@ public:
 
 private:
     GetStringByIndexIR(int targetIndex, int objectIndex, int propertyIndex)
-        : ESIR(ESIR::Opcode::GetArrayObject, targetIndex),
+        : ESIR(ESIR::Opcode::GetStringByIndex, targetIndex),
           m_objectIndex(objectIndex),
           m_propertyIndex(propertyIndex){ }
     int m_objectIndex;

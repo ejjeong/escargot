@@ -40,6 +40,14 @@ public:
 
     ALWAYS_INLINE friend bool operator == (const InternalAtomicString& a,const InternalAtomicString& b);
     ALWAYS_INLINE friend bool operator != (const InternalAtomicString& a,const InternalAtomicString& b);
+
+#ifdef ENABLE_ESJIT
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Winvalid-offsetof"
+    static size_t offsetOfString() { return offsetof(InternalAtomicString, m_string); }
+#pragma GCC diagnostic pop
+#endif
+
 protected:
     ESString* m_string;
 };
