@@ -139,6 +139,11 @@ inline ESValueInDouble getObjectPreComputedCaseOp(ESValueInDouble willBeObject, 
             &bytecode->m_cachedhiddenClassChain, &bytecode->m_cachedIndex));
 }
 
+inline ESValueInDouble getObjectPreComputedCaseOpLastPart(ESObject* protoObj, ESObject* orgObj, void* idx)
+{
+    return ESValue::toRawDouble(protoObj->hiddenClass()->read(protoObj, orgObj, (size_t)idx));
+}
+
 inline void setObjectOp(ESValueInDouble willBeObject, ESValueInDouble property, ESValueInDouble value)
 {
     ESValue obj = ESValue::fromRawDouble(willBeObject);

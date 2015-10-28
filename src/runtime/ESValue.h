@@ -1200,6 +1200,11 @@ class ESHiddenClassChain : public ESHiddenClassChainStd {
 public:
     ESHiddenClassChain()
         : ESHiddenClassChainStd() { }
+
+#ifdef ENABLE_ESJIT
+    static size_t offsetOfData() { return offsetof(ESHiddenClassChain, _M_impl._M_start); }
+    static size_t offsetOfDataEnd() { return offsetof(ESHiddenClassChain, _M_impl._M_finish); }
+#endif
 };
 
 class ESObject : public ESPointer {

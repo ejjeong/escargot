@@ -65,6 +65,7 @@ CallInfo newOpCallInfo = CI(newOp, CallInfo::typeSig5(ARGTYPE_D, ARGTYPE_P, ARGT
 CallInfo evalCallCallInfo = CI(evalCall, CallInfo::typeSig4(ARGTYPE_D, ARGTYPE_P, ARGTYPE_P, ARGTYPE_I, ARGTYPE_P));
 CallInfo getObjectOpCallInfo = CI(getObjectOp, CallInfo::typeSig3(ARGTYPE_D, ARGTYPE_D, ARGTYPE_D, ARGTYPE_P));
 CallInfo getObjectPreComputedCaseOpCallInfo = CI(getObjectPreComputedCaseOp, CallInfo::typeSig3(ARGTYPE_D, ARGTYPE_D, ARGTYPE_P, ARGTYPE_P));
+CallInfo getObjectPreComputedCaseLastPartOpCallInfo = CI(getObjectPreComputedCaseOpLastPart, CallInfo::typeSig3(ARGTYPE_D, ARGTYPE_P, ARGTYPE_P, ARGTYPE_Q));
 CallInfo setObjectOpCallInfo = CI(setObjectOp, CallInfo::typeSig3(ARGTYPE_V, ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 CallInfo setObjectPreComputedCaseOpCallInfo = CI(setObjectPreComputedOp, CallInfo::typeSig4(ARGTYPE_V, ARGTYPE_D, ARGTYPE_P, ARGTYPE_P, ARGTYPE_D));
 CallInfo generateToStringCallInfo = CI(generateToString, CallInfo::typeSig1(ARGTYPE_P, ARGTYPE_D));
@@ -1408,19 +1409,88 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     }
     case ESIR::Opcode::GetObjectPreComputed:
     {
-        /*
-        if (irGetObjectPreComputed->cachedIndex() < SIZE_MAX) {
-            size_t gapToHiddenClassData = escargot::ESObject::offsetOfHiddenClassData();
-            LIns* hiddenClassData = m_out->insLoad(LIR_ldd, obj, gapToHiddenClassData, 1, LOAD_NORMAL);
-            return m_out->insLoad(LIR_ldd, hiddenClassData, irGetObjectPreComputed->cachedIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
-        }
-        */
         INIT_ESIR(GetObjectPreComputed);
-        LIns* obj = getTmpMapping(irGetObjectPreComputed->objectIndex());
-        LIns* boxedObj = boxESValue(obj, m_graph->getOperandType(irGetObjectPreComputed->objectIndex()));
-        LIns* globalObject = globalObjectIns();
-        LIns* args[] = {m_out->insImmP(irGetObjectPreComputed->byteCode()), globalObject, boxedObj};
-        return m_out->insCall(&getObjectPreComputedCaseOpCallInfo, args);
+
+        //for 64-bit
+        //TODO add ifdef
+
+        if(m_graph->getOperandType(irGetObjectPreComputed->objectIndex()).isObjectType()) {
+            LIns* result = m_out->insAlloc(sizeof(ESValue));
+
+            //check proto chain
+            LIns* obj = getTmpMapping(irGetObjectPreComputed->objectIndex());
+            LIns* orgObj = getTmpMapping(irGetObjectPreComputed->objectIndex());
+            std::vector<LIns*> lblsToFallback;
+            LIns* proto = obj;
+            for(int i = 0; i < irGetObjectPreComputed->byteCode()->m_cachedhiddenClassChain.size() ; i ++) {
+                if(i != 0)
+                    obj = proto;
+                LIns* savedHiddenClass = m_out->insImmP(irGetObjectPreComputed->byteCode()->m_cachedhiddenClassChain[i]);
+                LIns* hiddenClass = m_out->insLoad(LIR_ldp, obj, escargot::ESObject::offsetOfHiddenClass(), 1, LOAD_NORMAL);
+                LIns* checkHiddenClass = m_out->ins2(LIR_eqp, hiddenClass, savedHiddenClass);
+                LIns* jumpToFallBackIfHiddenClassIsNotSame = m_out->insBranch(LIR_jf, checkHiddenClass, nullptr);
+                lblsToFallback.push_back(jumpToFallBackIfHiddenClassIsNotSame);
+
+                proto = m_out->insLoad(LIR_ldq, obj, ESObject::offsetOf__proto__(), 1, LOAD_NORMAL);
+                LIns* maskedValue = m_out->ins2(LIR_andq, proto, m_tagMaskQ);
+                LIns* checkTagged = m_out->ins2(LIR_eqq, maskedValue, m_zeroQ);
+                LIns* jumpIfPointer = m_out->insBranch(LIR_jf, checkTagged, nullptr);
+                lblsToFallback.push_back(jumpIfPointer);
+            }
+
+            //read
+            /*
+            //for debug
+            LIns* args[] = {m_out->insImmP((void *)irGetObjectPreComputed->byteCode()->m_cachedIndex), orgObj, obj};
+            LIns* readResult = m_out->insCall(&getObjectPreComputedCaseLastPartOpCallInfo, args);
+            m_out->insStore(LIR_std, readResult, result, 0, 1);
+            */
+
+            if(irGetObjectPreComputed->byteCode()->m_cachedIndex == SIZE_MAX) {
+                m_out->insStore(LIR_std, m_out->ins1(LIR_qasd, m_undefinedQ), result, 0, 1);
+            } else {
+                if(irGetObjectPreComputed->byteCode()->m_cachedhiddenClassChain.back()->propertyInfo(irGetObjectPreComputed->byteCode()->m_cachedIndex).m_flags.m_isDataProperty) {
+                    size_t gapToHiddenClassData = escargot::ESObject::offsetOfHiddenClassData() + ESValueVector::offsetOfData();
+                    LIns* hiddenClassData = m_out->insLoad(LIR_ldp, obj, gapToHiddenClassData, 1, LOAD_NORMAL);
+                    LIns* readResult = m_out->insLoad(LIR_ldd, hiddenClassData, irGetObjectPreComputed->byteCode()->m_cachedIndex * sizeof(ESValue), 1, LOAD_NORMAL);
+                    m_out->insStore(LIR_std, readResult, result, 0, 1);
+                } else {
+                    //call callback
+                    LIns* args[] = {m_out->insImmP((void *)irGetObjectPreComputed->byteCode()->m_cachedIndex), orgObj, obj};
+                    LIns* readResult = m_out->insCall(&getObjectPreComputedCaseLastPartOpCallInfo, args);
+                    m_out->insStore(LIR_std, readResult, result, 0, 1);
+                }
+
+            }
+
+            LIns* gotoEnd = m_out->insBranch(LIR_j, nullptr, nullptr);
+
+            {
+                LIns* fallbackPath = m_out->ins0(LIR_label);
+
+                for(int i = 0; i < lblsToFallback.size() ; i ++) {
+                    lblsToFallback[i]->setTarget(fallbackPath);
+                }
+
+                LIns* obj = getTmpMapping(irGetObjectPreComputed->objectIndex());
+                LIns* boxedObj = boxESValue(obj, m_graph->getOperandType(irGetObjectPreComputed->objectIndex()));
+                LIns* globalObject = globalObjectIns();
+                LIns* args[] = {m_out->insImmP(irGetObjectPreComputed->byteCode()), globalObject, boxedObj};
+                LIns* fallbackResult = m_out->insCall(&getObjectPreComputedCaseOpCallInfo, args);
+                m_out->insStore(LIR_std, fallbackResult, result, 0, 1);
+            }
+
+            LIns* end = m_out->ins0(LIR_label);
+            gotoEnd->setTarget(end);
+
+            return m_out->insLoad(LIR_ldd, result, 0, 1);
+        } else {
+            LIns* obj = getTmpMapping(irGetObjectPreComputed->objectIndex());
+            LIns* boxedObj = boxESValue(obj, m_graph->getOperandType(irGetObjectPreComputed->objectIndex()));
+            LIns* globalObject = globalObjectIns();
+            LIns* args[] = {m_out->insImmP(irGetObjectPreComputed->byteCode()), globalObject, boxedObj};
+            return m_out->insCall(&getObjectPreComputedCaseOpCallInfo, args);
+        }
     }
     case ESIR::Opcode::GetArrayObject:
     {
