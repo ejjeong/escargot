@@ -676,6 +676,11 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_ESIR(ConstantString);
         return m_out->insImmP(irConstantString->value());
     }
+    case ESIR::Opcode::ConstantPointer:
+    {
+        INIT_ESIR(ConstantPointer);
+        return m_out->insImmP(irConstantPointer->value());
+    }
     #define INIT_BINARY_ESIR(opcode) \
         Type leftType = m_graph->getOperandType(ir##opcode->leftIndex()); \
         Type rightType = m_graph->getOperandType(ir##opcode->rightIndex()); \
