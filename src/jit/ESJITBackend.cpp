@@ -75,7 +75,9 @@ CallInfo createArrayCallInfo = CI(createArr, CallInfo::typeSig1(ARGTYPE_D, ARGTY
 CallInfo createFunctionCallInfo = CI(createFunction, CallInfo::typeSig2(ARGTYPE_D, ARGTYPE_P, ARGTYPE_P));
 CallInfo initObjectCallInfo = CI(initObject, CallInfo::typeSig3(ARGTYPE_V, ARGTYPE_D, ARGTYPE_D, ARGTYPE_D));
 CallInfo throwCallInfo = CI(throwOp, CallInfo::typeSig1(ARGTYPE_V, ARGTYPE_D));
-
+CallInfo getEnumerablObjectCallInfo = CI(getEnumerablObject, CallInfo::typeSig1(ARGTYPE_P, ARGTYPE_D));
+CallInfo keySizeCallInfo = CI(keySize, CallInfo::typeSig1(ARGTYPE_I, ARGTYPE_P));
+CallInfo getEnumerationKeyCallInfo = CI(getEnumerationKey, CallInfo::typeSig1(ARGTYPE_D, ARGTYPE_P));
 #ifndef NDEBUG
 CallInfo logIntCallInfo = CI(jitLogIntOperation, CallInfo::typeSig2(ARGTYPE_V, ARGTYPE_I, ARGTYPE_P));
 CallInfo logDoubleCallInfo = CI(jitLogDoubleOperation, CallInfo::typeSig2(ARGTYPE_V, ARGTYPE_D, ARGTYPE_P));
@@ -1067,6 +1069,13 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* jump = m_out->insBranch(LIR_jt, m_true, nullptr);
         if (LIns* label = irJump->targetBlock()->getLabel()) {
             jump->setTarget(label);
+            std::vector<LIns*>* insToExtendLife = irJump->InsToExtendLife();
+            for (int i = 0; i < insToExtendLife->size(); i++) {
+                LIns* ins = insToExtendLife->at(i);
+                if (ins->isP())
+                    m_out->ins1(LIR_livep, ins);
+            }
+            insToExtendLife->clear();
         } else {
             irJump->targetBlock()->addJumpOrBranchSource(jump);
         }
@@ -1199,6 +1208,36 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(Move);
         return getTmpMapping(irMove->sourceIndex());
+    }
+    case ESIR::Opcode::GetEnumerablObject:
+    {
+        INIT_ESIR(GetEnumerablObject);
+        LIns* enumerableObject = getTmpMapping(irGetEnumerablObject->sourceIndex());
+        LIns* boxedEnumerableObject = boxESValue(enumerableObject, TypeObject);
+        LIns* args[] = {boxedEnumerableObject};
+        LIns* ret = m_out->insCall(&getEnumerablObjectCallInfo, args);
+        irGetEnumerablObject->getJumpIR()->addInsToExtendLife(ret);
+        return ret;
+    }
+
+    case ESIR::Opcode::Enumerate:
+    {
+        INIT_ESIR(Enumerate);
+        LIns* data = getTmpMapping(irEnumerate->sourceIndex());
+        LIns* args[] = {data};
+        LIns* keySize = m_out->insCall(&keySizeCallInfo, args);
+        LIns* index = m_out->insLoad(LIR_ldi, data, offsetof(EnumerateObjectData, m_idx), 1, LOAD_NORMAL);
+        LIns* isLastKey = m_out->ins2(LIR_eqi, index, keySize);
+        LIns* jumpIfLast = m_out->insBranch(LIR_jt, isLastKey, nullptr);
+        if (LIns* label = irEnumerate->forEndBlock()->getLabel()) {
+            jumpIfLast->setTarget(label);
+        } else {
+            irEnumerate->forEndBlock()->addJumpOrBranchSource(jumpIfLast);
+        }
+        LIns* addOneToIndex = m_out->ins2(LIR_addi, index, m_oneI);
+        LIns* storeToIndex = m_out->insStore(LIR_sti, addOneToIndex, data, offsetof(EnumerateObjectData, m_idx), 1);
+        LIns* key = m_out->insCall(&getEnumerationKeyCallInfo, args);
+        return key;
     }
     case ESIR::Opcode::GetThis:
     {

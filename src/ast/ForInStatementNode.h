@@ -37,6 +37,9 @@ public:
         size_t exit2Pos = codeBlock->lastCodePosition<JumpAndPopIfTopOfStackValueIsTrue>();
 
         codeBlock->pushCode(EnumerateObject(), newContext, this);
+#ifdef ENABLE_ESJIT
+        codeBlock->pushCode(LoopStart(), newContext, this);
+#endif
         size_t continuePosition = codeBlock->currentCodeSize();
         codeBlock->pushCode(EnumerateObjectKey(), newContext, this);
 

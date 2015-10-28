@@ -5,8 +5,9 @@
 
 #include "ESIRType.h"
 
-namespace escargot {
+#include "nanojit.h"
 
+namespace escargot {
 class ByteCode;
 
 namespace ESJIT {
@@ -103,8 +104,8 @@ class ESBasicBlock;
     F(InitArrayObject, ) \
     \
     /* For-in statement */ \
-    F(GetEnumarablePropertyLength, ) \
-    F(GetEnumerablePropertyNames, ) \
+    F(GetEnumerablObject, ) \
+    F(Enumerate, ReturnsESValue) \
     \
     /* [Get/Set][Variable|Property] */ \
     F(GetThis, ReturnsESValue) \
@@ -348,6 +349,55 @@ private:
     ToNumberIR(int targetIndex, int sourceIndex)
         : ESIR(ESIR::Opcode::ToNumber, targetIndex), m_sourceIndex(sourceIndex) { }
     int m_sourceIndex;
+};
+class JumpIR;
+class GetEnumerablObjectIR : public ESIR {
+public:
+    DECLARE_STATIC_GENERATOR_1(GetEnumerablObject, int);
+
+    int sourceIndex() { return m_sourceIndex; }
+    void setJumpIR(JumpIR* jumpIR)
+    {
+        m_jumpIR = jumpIR;
+    }
+    JumpIR* getJumpIR()
+    {
+        return m_jumpIR;
+    }
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+    }
+#endif
+
+private:
+    GetEnumerablObjectIR(int targetIndex, int sourceIndex)
+        : ESIR(ESIR::Opcode::GetEnumerablObject, targetIndex), m_sourceIndex(sourceIndex), m_jumpIR(nullptr) { }
+    int m_sourceIndex;
+    JumpIR* m_jumpIR;
+};
+
+class EnumerateIR : public ESIR {
+public:
+    DECLARE_STATIC_GENERATOR_2(Enumerate, int, ESBasicBlock*);
+
+    ESBasicBlock* forEndBlock() { return m_forEndBlock; }
+    int sourceIndex() { return m_sourceIndex; }
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+    }
+#endif
+
+private:
+    EnumerateIR(int targetIndex, int sourceIndex, ESBasicBlock* forEndBlock)
+        : ESIR(ESIR::Opcode::Enumerate, targetIndex), m_sourceIndex(sourceIndex), m_forEndBlock(forEndBlock) { }
+    int m_sourceIndex;
+    ESBasicBlock* m_forEndBlock;
 };
 
 class GetThisIR : public ESIR {
@@ -1142,11 +1192,14 @@ public:
     virtual void dump(std::ostream& out);
 #endif
     ESBasicBlock* targetBlock() { return m_targetBlock; }
+    std::vector<nanojit::LIns*>* InsToExtendLife() { return &lirs; }
+    void addInsToExtendLife(nanojit::LIns* lins) { lirs.push_back(lins); }
 
 private:
     JumpIR(int targetIndex, ESBasicBlock* targetBlock)
         : ESIR(ESIR::Opcode::Jump, targetIndex), m_targetBlock(targetBlock) { }
     ESBasicBlock* m_targetBlock;
+    std::vector<nanojit::LIns*> lirs;
 };
 
 class BranchIR : public ESIR {

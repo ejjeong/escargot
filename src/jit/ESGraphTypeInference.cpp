@@ -238,6 +238,12 @@ bool ESGraphTypeInference::run(ESGraph* graph)
                 graph->setOperandType(ir->targetIndex(), srcType);
                 break;
             }
+            case ESIR::Opcode::GetEnumerablObject:
+            {
+                graph->setOperandType(ir->targetIndex(), TypeObject);
+                break;
+            }
+            case ESIR::Opcode::Enumerate:
             case ESIR::Opcode::GetThis:
             case ESIR::Opcode::GetArgument:
             case ESIR::Opcode::GetVar:

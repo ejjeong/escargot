@@ -1060,17 +1060,18 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         EnumerateObjectKey* code = (EnumerateObjectKey*)currentCode;
         EnumerateObjectData* data = (EnumerateObjectData *)peek<ESValue>(stack, bp)->asESPointer();
 
-        while(1) {
-            if(data->m_keys.size() == data->m_idx) {
-                programCounter = jumpTo(codeBuffer, code->m_forInEnd);
-                NEXT_INSTRUCTION();
-            }
-
-            data->m_idx++;
-            push<ESValue>(stack, topOfStack, data->m_keys[data->m_idx - 1]);
-            executeNextCode<EnumerateObjectKey>(programCounter);
-            NEXT_INSTRUCTION();
+        if(data->m_keys.size() == data->m_idx) {
+          programCounter = jumpTo(codeBuffer, code->m_forInEnd);
+          NEXT_INSTRUCTION();
         }
+
+        data->m_idx++;
+        push<ESValue>(stack, topOfStack, data->m_keys[data->m_idx - 1]);
+#ifdef ENABLE_ESJIT
+        code->m_profile.addProfile(data->m_keys[data->m_idx - 1]);
+#endif
+        executeNextCode<EnumerateObjectKey>(programCounter);
+        NEXT_INSTRUCTION();
     }
 
     CallEvalFunctionOpcodeLbl:

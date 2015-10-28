@@ -332,6 +332,20 @@ inline void throwOp(ESValueInDouble err)
     throw error;
 }
 
+inline ESPointer* getEnumerablObject(ESValueInDouble value) {
+    ESObject* obj = ESValue::fromRawDouble(value).toObject();
+    return (ESPointer *)executeEnumerateObject(obj);
+}
+
+inline int keySize(EnumerateObjectData* data) {
+    return data->m_keys.size();
+}
+
+inline ESValueInDouble getEnumerationKey(EnumerateObjectData* data) {
+    ESValue value = data->m_keys[data->m_idx - 1];
+    return ESValue::toRawDouble(value);
+}
+
 #if 0
 ALWAYS_INLINE ESValueInDouble resolveNonDataProperty(ESObject* object, ESPointer* hiddenClassIdxData)
 {

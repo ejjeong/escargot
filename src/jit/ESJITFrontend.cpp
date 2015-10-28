@@ -33,6 +33,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
     std::map<int, ESBasicBlock*> basicBlockMapping;
     //TODO
     //std::unordered_map<int, ESBasicBlock*, std::hash<int>, std::equal_to<int>, gc_allocator<std::pair<const int, ESBasicBlock *> > > basicBlockMapping;
+    std::map<int, ESIR*> backWordJumpMapping;
 
     ESBasicBlock *entryBlock = ESBasicBlock::create(graph);
     basicBlockMapping[idx] = entryBlock;
@@ -635,9 +636,20 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
                 currentBlock->addChild(targetBlock);
             } else
                 targetBlock = ESBasicBlock::create(graph, currentBlock, true);
+
             JumpIR* jumpIR = JumpIR::create(extraData->m_targetIndex0, targetBlock);
             currentBlock->push(jumpIR);
             basicBlockMapping[bytecode->m_jumpPosition] = targetBlock;
+
+            if (bytecode->m_jumpPosition < idx) {
+                if (backWordJumpMapping.find(bytecode->m_jumpPosition) != backWordJumpMapping.end()) {
+                    // FIXME: fno-rtti : can't be ir any other than GetEnumerableObjectIR??
+                    // GetEnumerablObjectIR* getEnumerablObjectIR = dynamic_cast<GetEnumerablObjectIR*>(backWordJumpMapping[bytecode->m_jumpPosition]);
+                    GetEnumerablObjectIR* getEnumerablObjectIR = (GetEnumerablObjectIR*)backWordJumpMapping[bytecode->m_jumpPosition];
+                    getEnumerablObjectIR->setJumpIR(jumpIR);
+                }
+            }
+
             NEXT_BYTECODE(Jump);
             break;
         }
@@ -829,8 +841,34 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         }
         case EnumerateObjectOpcode:
+        {
+            INIT_BYTECODE(EnumerateObject);
+            GetEnumerablObjectIR* getEnumerablObjectIR = GetEnumerablObjectIR::create(extraData->m_targetIndex0, extraData->m_sourceIndexes[0]);
+            currentBlock->push(getEnumerablObjectIR);
+            backWordJumpMapping[idx + sizeof(EnumerateObject) + sizeof(ByteCode)] = getEnumerablObjectIR;
+            NEXT_BYTECODE(EnumerateObject);
+            break;
+        }
         case EnumerateObjectKeyOpcode:
-            goto unsupported;
+        {
+            INIT_BYTECODE(EnumerateObjectKey);
+
+            std::map<int, ESBasicBlock*>::iterator findIter;
+            ESBasicBlock* forEndBlock;
+            if((findIter = basicBlockMapping.find(bytecode->m_forInEnd)) != basicBlockMapping.end()) {
+                forEndBlock = basicBlockMapping[bytecode->m_forInEnd];
+            } else {
+                forEndBlock = ESBasicBlock::create(graph, currentBlock, true);
+                basicBlockMapping[bytecode->m_forInEnd] = forEndBlock;
+            }
+
+            bytecode->m_profile.updateProfiledType();
+            graph->setOperandType(extraData->m_targetIndex0, bytecode->m_profile.getType());
+            EnumerateIR* enumerateIR = EnumerateIR::create(extraData->m_targetIndex0, extraData->m_sourceIndexes[0], forEndBlock);
+            currentBlock->push(enumerateIR);
+            NEXT_BYTECODE(EnumerateObjectKey);
+            break;
+        }
         case PrintSpAndBpOpcode:
             goto unsupported;
         case EndOpcode:
