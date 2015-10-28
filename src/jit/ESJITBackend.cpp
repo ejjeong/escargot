@@ -1098,7 +1098,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             }
             return jumpFalse;
         } else
-            RELEASE_ASSERT_NOT_REACHED();
+            return nullptr;
     }
     case ESIR::Opcode::CreateFunction:
     {
@@ -1232,7 +1232,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     case ESIR::Opcode::GetVar:
     {
         INIT_ESIR(GetVar);
-        if(irGetVar->varUpIndex() == 0) {
+        if(irGetVar->varUpIndex() == 0 && !irGetVar->needsActivation()) {
             LIns* cachedDeclarativeEnvironmentRecordESValue = m_out->insLoad(LIR_ldp, contextIns(), ExecutionContext::offsetofcachedDeclarativeEnvironmentRecordESValue(), 1, LOAD_NORMAL);
             return m_out->insLoad(LIR_ldd, cachedDeclarativeEnvironmentRecordESValue, irGetVar->varIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
         } else {
@@ -1260,7 +1260,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_ESIR(SetVar);
         LIns* source = getTmpMapping(irSetVar->sourceIndex());
         LIns* boxedSource = boxESValue(source, m_graph->getOperandType(irSetVar->sourceIndex()));
-        if(irSetVar->upVarIndex() == 0) {
+        if(irSetVar->upVarIndex() == 0 && !irSetVar->needsActivation()) {
             LIns* context = contextIns();
             LIns* cachedDeclarativeEnvironmentRecordESValue = m_out->insLoad(LIR_ldp, context, ExecutionContext::offsetofcachedDeclarativeEnvironmentRecordESValue(), 1, LOAD_NORMAL);
             m_out->insStore(LIR_std, boxedSource, cachedDeclarativeEnvironmentRecordESValue, irSetVar->localVarIndex() * sizeof(ESValue), 1);

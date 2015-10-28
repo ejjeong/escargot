@@ -164,7 +164,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
                 ESIR* getArgument = GetArgumentIR::create(extraData->m_targetIndex0, bytecode->m_index);
                 currentBlock->push(getArgument);
             } else {
-                ESIR* getVar = GetVarIR::create(extraData->m_targetIndex0, bytecode->m_index, 0);
+                ESIR* getVar = GetVarIR::create(extraData->m_targetIndex0, bytecode->m_index, 0, false);
                 currentBlock->push(getVar);
             }
             bytecode->m_profile.updateProfiledType();
@@ -175,7 +175,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case GetByIndexWithActivationOpcode:
         {
             INIT_BYTECODE(GetByIndexWithActivation);
-            ESIR* getVar = GetVarIR::create(extraData->m_targetIndex0, bytecode->m_index, bytecode->m_upIndex);
+            ESIR* getVar = GetVarIR::create(extraData->m_targetIndex0, bytecode->m_index, bytecode->m_upIndex, true);
             currentBlock->push(getVar);
             bytecode->m_profile.updateProfiledType();
             graph->setOperandType(extraData->m_targetIndex0, bytecode->m_profile.getType());
@@ -193,7 +193,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case SetByIndexOpcode:
         {
             INIT_BYTECODE(SetByIndex);
-            ESIR* setVar = SetVarIR::create(extraData->m_targetIndex0, bytecode->m_index, 0, extraData->m_sourceIndexes[0]);
+            ESIR* setVar = SetVarIR::create(extraData->m_targetIndex0, bytecode->m_index, 0, extraData->m_sourceIndexes[0], false);
             currentBlock->push(setVar);
             NEXT_BYTECODE(SetByIndex);
             break;
@@ -201,7 +201,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case SetByIndexWithActivationOpcode:
         {
             INIT_BYTECODE(SetByIndexWithActivation);
-            ESIR* setVar = SetVarIR::create(extraData->m_targetIndex0, bytecode->m_index, bytecode->m_upIndex, extraData->m_sourceIndexes[0]);
+            ESIR* setVar = SetVarIR::create(extraData->m_targetIndex0, bytecode->m_index, bytecode->m_upIndex, extraData->m_sourceIndexes[0], true);
             currentBlock->push(setVar);
             NEXT_BYTECODE(SetByIndexWithActivation);
             break;

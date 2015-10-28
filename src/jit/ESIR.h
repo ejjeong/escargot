@@ -390,7 +390,7 @@ private:
 
 class GetVarIR : public ESIR {
 public:
-    DECLARE_STATIC_GENERATOR_2(GetVar, int, int)
+    DECLARE_STATIC_GENERATOR_3(GetVar, int, int, bool)
 
 #ifndef NDEBUG
     virtual void dump(std::ostream& out)
@@ -403,17 +403,19 @@ public:
 
     int varIndex() { return m_varIndex; }
     int varUpIndex() { return m_varUpIndex; }
+    bool needsActivation() { return m_needsActivation; }
 
 private:
-    GetVarIR(int targetIndex, int varIndex, int varUpIndex)
-        : ESIR(ESIR::Opcode::GetVar, targetIndex), m_varIndex(varIndex) , m_varUpIndex(varUpIndex) { }
+    GetVarIR(int targetIndex, int varIndex, int varUpIndex, bool needsActivation)
+        : ESIR(ESIR::Opcode::GetVar, targetIndex), m_varIndex(varIndex) , m_varUpIndex(varUpIndex), m_needsActivation(needsActivation) { }
     int m_varIndex;
     int m_varUpIndex;
+    bool m_needsActivation;
 };
 
 class SetVarIR : public ESIR {
 public:
-    DECLARE_STATIC_GENERATOR_3(SetVar, int, int, int);
+    DECLARE_STATIC_GENERATOR_4(SetVar, int, int, int, bool);
 
 #ifndef NDEBUG
     virtual void dump(std::ostream& out)
@@ -427,13 +429,15 @@ public:
     int localVarIndex() { return m_localVarIndex; }
     int upVarIndex() { return m_upVarIndex; }
     int sourceIndex() { return m_sourceIndex; }
+    bool needsActivation() { return m_needsActivation; }
 
 private:
-    SetVarIR(int targetIndex, int localVarIndex, int upVarIndex, int sourceIndex)
-        : ESIR(ESIR::Opcode::SetVar, targetIndex), m_localVarIndex(localVarIndex), m_upVarIndex(upVarIndex), m_sourceIndex(sourceIndex) { }
+    SetVarIR(int targetIndex, int localVarIndex, int upVarIndex, int sourceIndex, bool needsActivation)
+        : ESIR(ESIR::Opcode::SetVar, targetIndex), m_localVarIndex(localVarIndex), m_upVarIndex(upVarIndex), m_sourceIndex(sourceIndex), m_needsActivation(needsActivation) { }
     int m_localVarIndex;
     int m_upVarIndex;
     int m_sourceIndex;
+    bool m_needsActivation;
 };
 
 class GetVarGenericWithoutExceptionIR : public ESIR {
