@@ -1,15 +1,15 @@
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-cube.js
-CalcNormal VMulti2 MMulti VMulti Translate DrawLine Loop 
+MMulti VMulti VMulti2 Translate Loop CalcNormal 
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-morph.js
 morph 
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-raytrace.js
-lengthVector normalise dot createVector cross normaliseVector subVector addVector scale sub (anonymous) add scaleVector (anonymous) scalev 
+createVector lengthVector cross normaliseVector subVector normalise addVector scale dot sub (anonymous) add scaleVector (anonymous) scalev 
 ===> test/SunSpider/tests/sunspider-1.0.2/access-binary-trees.js
 TreeNode (anonymous) 
 ===> test/SunSpider/tests/sunspider-1.0.2/access-fannkuch.js
 
 ===> test/SunSpider/tests/sunspider-1.0.2/access-nbody.js
-Body (anonymous) NBodySystem (anonymous) (anonymous) 
+Body (anonymous) 
 ===> test/SunSpider/tests/sunspider-1.0.2/access-nsieve.js
 
 ===> test/SunSpider/tests/sunspider-1.0.2/bitops-3bit-bits-in-byte.js
@@ -33,11 +33,11 @@ safe_add
 ===> test/SunSpider/tests/sunspider-1.0.2/date-format-xparb.js
 (anonymous) (anonymous) (anonymous) (anonymous) 
 ===> test/SunSpider/tests/sunspider-1.0.2/math-cordic.js
-FIXED FLOAT cordicsincos 
+FIXED 
 ===> test/SunSpider/tests/sunspider-1.0.2/math-partial-sums.js
 partial 
 ===> test/SunSpider/tests/sunspider-1.0.2/math-spectral-norm.js
-Au Atu spectralnorm 
+Au 
 ===> test/SunSpider/tests/sunspider-1.0.2/regexp-dna.js
 
 ===> test/SunSpider/tests/sunspider-1.0.2/string-base64.js
