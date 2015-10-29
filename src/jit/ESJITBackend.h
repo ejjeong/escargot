@@ -51,10 +51,6 @@ private:
     ESGraph* m_graph;
     std::vector<nanojit::LIns*> m_tmpToLInsMapping;
 
-    nanojit::LIns* instanceIns();
-    nanojit::LIns* contextIns();
-    nanojit::LIns* globalObjectIns();
-
     nanojit::LogControl m_lc;
     nanojit::Config m_config;
     nanojit::Allocator* m_alloc;
@@ -84,6 +80,9 @@ private:
     nanojit::LIns* m_true;
     nanojit::LIns* m_false;
     nanojit::LIns* m_thisValueP;
+    nanojit::LIns* m_instanceP;
+    nanojit::LIns* m_contextP;
+    nanojit::LIns* m_globalObjectP;
 };
 
 JITFunction generateNativeFromIR(ESGraph* graph, ESVMInstance* instance);
