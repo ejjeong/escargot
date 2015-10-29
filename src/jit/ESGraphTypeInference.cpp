@@ -125,7 +125,7 @@ bool ESGraphTypeInference::run(ESGraph* graph)
                     // int32 * int32 = int32 (or Double -> OSR Exit)
                     ESIR* int32MultiplyIR = Int32MultiplyIR::create(irGenericMultiply->targetIndex(), irGenericMultiply->leftIndex(), irGenericMultiply->rightIndex());
                     block->replace(j, int32MultiplyIR);
-                    graph->setOperandType(irGenericMultiply->targetIndex(), TypeInt32);
+                    graph->setOperandType(irGenericMultiply->targetIndex(), TypeDouble);
                 } else if (leftType.isNumberType() && rightType.isNumberType()) {
                     // int32 * Double  = Double
                     // Double * int32  = Double

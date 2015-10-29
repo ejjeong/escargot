@@ -43,6 +43,8 @@ using namespace nanojit;
 #endif
 
 /* CallInfo */
+CallInfo workaroundForSavingDoubleCallInfo = CI(workaroundForSavingDouble, CallInfo::typeSig1(ARGTYPE_E, ARGTYPE_D));
+
 CallInfo getByIndexWithActivationOpCallInfo = CI(getByIndexWithActivationOp, CallInfo::typeSig3(ARGTYPE_E, ARGTYPE_P, ARGTYPE_I, ARGTYPE_I));
 CallInfo setByIndexWithActivationOpCallInfo = CI(setByIndexWithActivationOp, CallInfo::typeSig4(ARGTYPE_V, ARGTYPE_P, ARGTYPE_I, ARGTYPE_I, ARGTYPE_E));
 
@@ -303,7 +305,10 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
         LIns* inAsInt = unboxESValue(in, Type(TypeInt32));
         //JIT_LOG(in, "int input");
         LIns* inAsDouble = m_out->ins1(LIR_i2d, inAsInt);
-        LIns* doubleESValue = boxESValue(inAsDouble, Type(TypeDouble));
+
+        LIns* doubleQuadUnboxedValue = m_out->ins1(LIR_dasq, inAsDouble);
+        LIns* doubleBoxedValue = m_out->ins2(LIR_addq, doubleQuadUnboxedValue, m_doubleEncodeOffsetQ);
+        LIns* doubleESValue = doubleBoxedValue;
         //JIT_LOG(doubleESValue, "out esvalue");
         m_out->insStore(LIR_ste, doubleESValue, result, 0, 1);
         //convert end. jump to normal path
@@ -475,9 +480,34 @@ LIns* NativeGenerator::boxESValue(LIns* unboxedValue, Type type)
     } else if (type.isDoubleType()) {
         ASSERT(unboxedValue->isD());
 #ifdef ESCARGOT_64
-        LIns* quadUnboxedValue = m_out->ins1(LIR_dasq, unboxedValue);
-        LIns* boxedValue = m_out->ins2(LIR_addq, quadUnboxedValue, m_doubleEncodeOffsetQ);
-        boxedValueInDouble = boxedValue;
+        //LIns* args[] = { unboxedValue };
+        //boxedValueInDouble = m_out->insCall(&workaroundForSavingDoubleCallInfo, args);
+        LIns* result = m_out->insAlloc(sizeof(ESValue));
+
+        LIns* intResult = m_out->ins1(LIR_d2i, unboxedValue);
+        LIns* revertToDobule = m_out->ins1(LIR_i2d, intResult);
+
+        //LIns* doubleQuadUnboxedValue = m_out->ins1(LIR_dasq, unboxedValue);
+        //LIns* doubleBoxedValue = m_out->ins2(LIR_addq, doubleQuadUnboxedValue, m_doubleEncodeOffsetQ);
+        //boxedValueInDouble = doubleBoxedValue;
+
+        LIns* checkSame = m_out->ins2(LIR_eqd, revertToDobule, unboxedValue);
+        LIns* jumpIfSame = m_out->insBranch(LIR_jt, checkSame, (LIns *)nullptr); //if int, jump
+
+        LIns* doubleQuadUnboxedValue = m_out->ins1(LIR_dasq, unboxedValue);
+        LIns* doubleBoxedValue = m_out->ins2(LIR_addq, doubleQuadUnboxedValue, m_doubleEncodeOffsetQ);
+        //boxedValueInDouble = doubleBoxedValue;
+        m_out->insStore(LIR_stq, doubleBoxedValue, result, 0, 1);
+        LIns* gotoEnd = m_out->insBranch(LIR_j, nullptr, (LIns *)nullptr);
+
+        LIns* convertToInt = m_out->ins0(LIR_label);
+        jumpIfSame->setTarget(convertToInt);
+        LIns* intESValue = boxESValue(intResult, Type(TypeInt32));
+        m_out->insStore(LIR_stq, intESValue, result, 0, 1);
+
+        LIns* end = m_out->ins0(LIR_label);
+        gotoEnd->setTarget(end);
+        boxedValueInDouble = m_out->insLoad(LIR_lde, result, 0, 1, LOAD_NORMAL);
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
@@ -745,7 +775,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* labelOverflow = m_out->ins0(LIR_label);
         int32Result->setTarget(labelOverflow);
 
-        //JIT_LOG(int32Result, "Int32Plus : Result is not int32");
+        JIT_LOG(int32Result, "Int32Plus : Result is not int32");
         generateOSRExit(irInt32Plus->targetIndex());
 
         LIns* labelNoOverflow = m_out->ins0(LIR_label);
@@ -818,17 +848,25 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_BINARY_ESIR(Int32Multiply);
 #if 1
         ASSERT(left->isI() && right->isI());
+        /*
         LIns* int32Result = m_out->insBranchJov(LIR_muljovi, left, right, (LIns*)nullptr);
         LIns* jumpAlways = m_out->insBranch(LIR_j, nullptr, (LIns*)nullptr);
+        LIns* int32Result = m_out->insBranchJov(LIR_muljovi, left, right, nullptr);
+        LIns* jumpAlways = m_out->insBranch(LIR_j, nullptr, nullptr);
         LIns* labelOverflow = m_out->ins0(LIR_label);
         int32Result->setTarget(labelOverflow);
 
-        //JIT_LOG(int32Result, "Int32Multiply : Result is not int32");
+        JIT_LOG(int32Result, "Int32Multiply : Result is not int32");
         generateOSRExit(irInt32Multiply->targetIndex());
 
         LIns* labelNoOverflow = m_out->ins0(LIR_label);
         jumpAlways->setTarget(labelNoOverflow);
         return int32Result;
+        */
+        LIns* doubleA = m_out->ins1(LIR_i2d, left);
+        LIns* doubleB = m_out->ins1(LIR_i2d, right);
+
+        return m_out->ins2(LIR_muld, doubleA, doubleB);
 #else
         return m_out->ins2(LIR_muli, left, right);
 #endif

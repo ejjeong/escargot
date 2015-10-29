@@ -6,6 +6,11 @@
 
 namespace escargot {
 
+inline ESValueInDouble workaroundForSavingDouble(double d)
+{
+    return ESValue::toRawDouble(ESValue(d));
+}
+
 inline ESValueInDouble getByGlobalIndexOp(GlobalObject* globalObject, GetByGlobalIndex* code)
 {
     return ESValue::toRawDouble(getByGlobalIndexOperation(globalObject, code));
@@ -378,10 +383,10 @@ inline void jitLogIntOperation(int arg, const char* msg)
         fflush(stdout);
     }
 }
-inline void jitLogDoubleOperation(ESValueInDouble arg, const char* msg)
+inline void jitLogDoubleOperation(double arg, const char* msg)
 {
     if (!ESVMInstance::currentInstance()->m_reportCompiledFunction) {
-        printf("[JIT_LOG] %s : double 0x%lx\n", msg, bitwise_cast<uint64_t>(arg));
+        printf("[JIT_LOG] %s : double 0x%lx(%lf)\n", msg, bitwise_cast<uint64_t>(arg), arg);
         fflush(stdout);
     }
 }
