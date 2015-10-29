@@ -346,6 +346,11 @@ inline ESValueInDouble getEnumerationKey(EnumerateObjectData* data) {
     return ESValue::toRawDouble(value);
 }
 
+inline bool toBoolean(ESValueInDouble value) {
+    ESValue valueToBoolean = ESValue::fromRawDouble(value);
+    return valueToBoolean.toBoolean();
+}
+
 #if 0
 ALWAYS_INLINE ESValueInDouble resolveNonDataProperty(ESObject* object, ESPointer* hiddenClassIdxData)
 {

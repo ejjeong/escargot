@@ -90,6 +90,7 @@ CallInfo throwCallInfo = CI(throwOp, CallInfo::typeSig1(ARGTYPE_V, ARGTYPE_E));
 CallInfo getEnumerablObjectCallInfo = CI(getEnumerablObject, CallInfo::typeSig1(ARGTYPE_P, ARGTYPE_E));
 CallInfo keySizeCallInfo = CI(keySize, CallInfo::typeSig1(ARGTYPE_I, ARGTYPE_P));
 CallInfo getEnumerationKeyCallInfo = CI(getEnumerationKey, CallInfo::typeSig1(ARGTYPE_E, ARGTYPE_P));
+CallInfo toBooleanCallInfo = CI(toBoolean, CallInfo::typeSig1(ARGTYPE_I, ARGTYPE_E));
 #ifndef NDEBUG
 CallInfo logIntCallInfo = CI(jitLogIntOperation, CallInfo::typeSig2(ARGTYPE_V, ARGTYPE_I, ARGTYPE_P));
 CallInfo logDoubleCallInfo = CI(jitLogDoubleOperation, CallInfo::typeSig2(ARGTYPE_V, ARGTYPE_D, ARGTYPE_P));
@@ -1127,23 +1128,30 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     case ESIR::Opcode::Branch:
     {
         INIT_ESIR(Branch);
-        //TODO implement other type
-        if(m_graph->getOperandType(irBranch->operandIndex()).isInt32Type()
-                || m_graph->getOperandType(irBranch->operandIndex()).isBooleanType()
-                ) {
-            LIns* condition = getTmpMapping(irBranch->operandIndex());
-            LIns* compare = m_out->ins2(LIR_eqi, condition, m_false);
-            LIns* jumpTrue = m_out->insBranch(LIR_jf, compare, nullptr);
-            LIns* jumpFalse = m_out->insBranch(LIR_j, nullptr, nullptr);
-            if (LIns* label = irBranch->falseBlock()->getLabel()) {
-                jumpFalse->setTarget(label);
-            } else {
-                irBranch->trueBlock()->addJumpOrBranchSource(jumpTrue);
-                irBranch->falseBlock()->addJumpOrBranchSource(jumpFalse);
-            }
-            return jumpFalse;
-        } else
-            return nullptr;
+        //TODO implement double type : can't deal with NaN using eqd
+        LIns* condition = getTmpMapping(irBranch->operandIndex());
+        Type conditionType = m_graph->getOperandType(irBranch->operandIndex());
+        LIns* compare = nullptr;
+        if(conditionType.isInt32Type() || conditionType.isBooleanType()) {
+            compare = m_out->ins2(LIR_eqi, condition, m_zeroI);
+        } else if (conditionType.isUndefinedType() || conditionType.isNullType()) {
+            compare = m_oneI;
+        } else {
+            LIns* boxedValue = boxESValue(condition, conditionType);
+            LIns* args[] = {boxedValue};
+            LIns* toBoolean = m_out->insCall(&toBooleanCallInfo, args);
+            compare = m_out->ins2(LIR_eqi, toBoolean, m_zeroI);
+        }
+
+        LIns* jumpTrue = m_out->insBranch(LIR_jf, compare, nullptr);
+        LIns* jumpFalse = m_out->insBranch(LIR_j, nullptr, nullptr);
+        if (LIns* label = irBranch->falseBlock()->getLabel()) {
+            jumpFalse->setTarget(label);
+        } else {
+            irBranch->trueBlock()->addJumpOrBranchSource(jumpTrue);
+            irBranch->falseBlock()->addJumpOrBranchSource(jumpFalse);
+        }
+        return jumpFalse;
     }
     case ESIR::Opcode::CreateFunction:
     {

@@ -131,8 +131,8 @@ class CodeBlock;
 \
     /*etc*/ \
     F(This, 1, 0, 0, 1) \
-    F(EnumerateObject, 1, 0, 1, 1) \
-    F(EnumerateObjectKey, 1, 0, 1, 1) \
+    F(EnumerateObject, 1, 0, 1, 0) \
+    F(EnumerateObjectKey, 1, 0, 1, 0) \
     F(PrintSpAndBp, 0, 0, 0, 0) \
 \
     F(End, 0, 0, 0, 1)

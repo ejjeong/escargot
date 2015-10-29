@@ -47,6 +47,6 @@ rand
 ===> test/SunSpider/tests/sunspider-1.0.2/string-tagcloud.js
 (anonymous) (anonymous) 
 ===> test/SunSpider/tests/sunspider-1.0.2/string-unpack-code.js
-(anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) 
+(anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) 
 ===> test/SunSpider/tests/sunspider-1.0.2/string-validate-input.js
 makeName addResult makeNumber 
