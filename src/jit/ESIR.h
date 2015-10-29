@@ -142,14 +142,14 @@ FOR_EACH_ESIR_FLAGS(DECLARE_ESIR_FLAGS)
 #undef DECLARE_ESIR_FLAGS
 
 class ESIR;
-typedef std::vector<ESIR*, gc_allocator<ESIR *> > ESIRVectorStd;
+typedef std::vector<ESIR*> ESIRVectorStd;
 
-class ESIRVector : public ESIRVectorStd, public gc {
+class ESIRVector : public ESIRVectorStd {
 
 };
 
 // FIXME find a better allocator
-class ESIR : public gc {
+class ESIR {
     friend class NativeGenerator;
 public:
     typedef enum {
@@ -181,27 +181,32 @@ protected:
 
 #define DECLARE_STATIC_GENERATOR_0(opcode) \
     static opcode##IR* create(unsigned target) { \
-        return new opcode##IR(target); \
+        void* p = malloc(sizeof(opcode##IR)); \
+        return new (p)opcode##IR(target); \
     }
 
 #define DECLARE_STATIC_GENERATOR_1(opcode, Type1) \
     static opcode##IR* create(unsigned target, Type1 operand1) { \
-        return new opcode##IR(target, operand1); \
+        void* p = malloc(sizeof(opcode##IR)); \
+        return new (p)opcode##IR(target, operand1); \
     }
 
 #define DECLARE_STATIC_GENERATOR_2(opcode, Type1, Type2) \
     static opcode##IR* create(unsigned target, Type1 operand1, Type2 operand2) { \
-        return new opcode##IR(target, operand1, operand2); \
+        void* p = malloc(sizeof(opcode##IR)); \
+        return new (p)opcode##IR(target, operand1, operand2); \
     }
 
 #define DECLARE_STATIC_GENERATOR_3(opcode, Type1, Type2, Type3) \
     static opcode##IR* create(unsigned target, Type1 operand1, Type2 operand2, Type3 operand3) { \
-        return new opcode##IR(target, operand1, operand2, operand3); \
+        void* p = malloc(sizeof(opcode##IR)); \
+        return new (p)opcode##IR(target, operand1, operand2, operand3); \
     }
 
 #define DECLARE_STATIC_GENERATOR_4(opcode, Type1, Type2, Type3, Type4) \
     static opcode##IR* create(unsigned target, Type1 operand1, Type2 operand2, Type3 operand3, Type4 operand4) { \
-        return new opcode##IR(target, operand1, operand2, operand3, operand4); \
+        void* p = malloc(sizeof(opcode##IR)); \
+        return new (p)opcode##IR(target, operand1, operand2, operand3, operand4); \
     }
 
 

@@ -29,7 +29,6 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
     size_t callInfoIndex = 0;
     char* code = codeBlock->m_code.data();
 
-    GC_disable();
     std::map<int, ESBasicBlock*> basicBlockMapping;
     //TODO
     //std::unordered_map<int, ESBasicBlock*, std::hash<int>, std::equal_to<int>, gc_allocator<std::pair<const int, ESBasicBlock *> > > basicBlockMapping;
@@ -888,12 +887,10 @@ postprocess:
     if (ESVMInstance::currentInstance()->m_verboseJIT)
         graph->dump(std::cout);
 #endif
-    GC_enable();
     return graph;
 
 unsupported:
     LOG_VJ("Unsupported case in ByteCode %s (idx %zu) (while parsing in FrontEnd)\n", getByteCodeName(codeBlock->m_extraData[bytecodeCounter].m_opcode), idx);
-    GC_enable();
     return nullptr;
 }
 

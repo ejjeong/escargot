@@ -22,18 +22,20 @@ class ESIR;
 class ESGraph;
 class ESBasicBlock;
 
+typedef std::vector<ESBasicBlock*> ESBasicBlockVectorNoGC;
 typedef std::vector<ESBasicBlock*, gc_allocator<ESBasicBlock *> > ESBasicBlockVectorStd;
 
 class ESBasicBlockVector : public ESBasicBlockVectorStd, public gc {
 
 };
 
-class ESBasicBlock : public gc {
+class ESBasicBlock {
     friend class NativeGenerator;
 public:
     static ESBasicBlock* create(ESGraph* graph, ESBasicBlock* parentBlock = nullptr, bool setIndexLater = false)
     {
-        ESBasicBlock* newBlock = new ESBasicBlock(graph, parentBlock, setIndexLater);
+        void* p = malloc(sizeof(ESBasicBlock));
+        ESBasicBlock* newBlock = new(p) ESBasicBlock(graph, parentBlock, setIndexLater);
         return newBlock;
     }
 
@@ -42,8 +44,8 @@ public:
     size_t instructionSize() { return m_instructions.size(); }
     ESIR* instruction(size_t index) { return m_instructions[index]; }
 
-    ESBasicBlockVector* parents() { return &m_parents; }
-    ESBasicBlockVector* children() { return &m_children; }
+    ESBasicBlockVectorNoGC* parents() { return &m_parents; }
+    ESBasicBlockVectorNoGC* children() { return &m_children; }
     void addParent(ESBasicBlock* parent) { m_parents.push_back(parent); }
     void addChild(ESBasicBlock* child) { m_children.push_back(child); }
 
@@ -67,8 +69,8 @@ private:
     ESBasicBlock(ESGraph* graph, ESBasicBlock* parentBlock, bool setIndexLater);
 
     ESGraph* m_graph;
-    ESBasicBlockVector m_parents;
-    ESBasicBlockVector m_children;
+    ESBasicBlockVectorNoGC m_parents;
+    ESBasicBlockVectorNoGC m_children;
     ESIRVector m_instructions;
     size_t m_index;
     nanojit::LIns* m_label;
