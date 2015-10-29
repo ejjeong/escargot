@@ -23,6 +23,7 @@ jit.debug: CXXFLAGS += -DNJ_VERBOSE
 ####################################
 CXXFLAGS += -DESCARGOT
 CXXFLAGS += -Ithird_party/nanojit/
+CXXFLAGS += -Isrc/jit/
 CXXFLAGS += -DFEATURE_NANOJIT
 
 #CXXFLAGS += -DAVMPLUS_VERBOSE

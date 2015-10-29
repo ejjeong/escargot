@@ -6,7 +6,17 @@
 
 #ifndef __nanojit_LIR__
 #define __nanojit_LIR__
+#ifdef ENABLE_ESJIT
+#include "ESGraph.h"
+namespace escargot {
 
+namespace ESJIT {
+
+class ESBasicBlock;
+}
+
+}
+#endif
 namespace nanojit
 {
     enum LOpcode
@@ -1734,6 +1744,7 @@ NanoStaticAssert(LIR_start == 0 && LIR_sentinel <= 256); // It's ok if LIR_senti
     {
     public:
         LirWriter *out;
+        std::vector<LIns*> defaultInsToExtendLife;
 
         LirWriter(LirWriter* out)
             : out(out) {}
@@ -1761,8 +1772,13 @@ NanoStaticAssert(LIR_start == 0 && LIR_sentinel <= 256); // It's ok if LIR_senti
             return out->insGuardXov(v, a, b, gr);
         }
         virtual LIns* insBranch(LOpcode v, LIns* condition, LIns* to) {
+            ASSERT(!to);
             return out->insBranch(v, condition, to);
         }
+#ifdef ENABLE_ESJIT
+        virtual LIns* insBranch(LOpcode v, LIns* condition, escargot::ESJIT::ESBasicBlock* targetBlock);
+        virtual LIns* insSetLabel(LIns* jump, escargot::ESJIT::ESBasicBlock* targetBlock);
+#endif
         virtual LIns* insBranchJov(LOpcode v, LIns* a, LIns* b, LIns* to) {
             return out->insBranchJov(v, a, b, to);
         }

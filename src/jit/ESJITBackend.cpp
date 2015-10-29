@@ -256,7 +256,7 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
         LIns* maskedValue = m_out->ins2(LIR_orq, quadValue, m_booleanTagQ);
         LIns* maskedValue2 = m_out->ins2(LIR_subq, quadValue, m_booleanTagQ);
         LIns* checkIfBoolean = m_out->ins2(LIR_leuq, maskedValue2, m_out->insImmQ(1));
-        LIns* jumpIfBoolean = m_out->insBranch(LIR_jt, checkIfBoolean, nullptr);
+        LIns* jumpIfBoolean = m_out->insBranch(LIR_jt, checkIfBoolean, (LIns*)nullptr);
 #ifndef NDEBUG
         if (ESVMInstance::currentInstance()->m_verboseJIT) {
             JIT_LOG(in, "Expected Boolean-typed value, but got this value");
@@ -275,7 +275,7 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
         LIns* quadValue = in;
         LIns* maskedValue = m_out->ins2(LIR_andq, quadValue, m_intTagQ);
         LIns* checkIfInt = m_out->ins2(LIR_eqq, maskedValue, m_intTagQ);
-        LIns* jumpIfInt = m_out->insBranch(LIR_jt, checkIfInt, nullptr);
+        LIns* jumpIfInt = m_out->insBranch(LIR_jt, checkIfInt, (LIns*)nullptr);
 #ifndef NDEBUG
         if (ESVMInstance::currentInstance()->m_verboseJIT) {
             JIT_LOG(in, "Expected Int-typed value, but got this value");
@@ -295,10 +295,10 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
         LIns* quadValue = in;
         LIns* maskedValue = m_out->ins2(LIR_andq, quadValue, m_intTagQ);
         LIns* checkIfNotNumber = m_out->ins2(LIR_eqq, maskedValue, m_zeroQ);
-        LIns* exitIfNotNumber = m_out->insBranch(LIR_jt, checkIfNotNumber, nullptr);
+        LIns* exitIfNotNumber = m_out->insBranch(LIR_jt, checkIfNotNumber, (LIns*)nullptr);
         m_out->insStore(LIR_ste, in, result, 0, 1);
         LIns* checkIfInt = m_out->ins2(LIR_eqq, maskedValue, m_intTagQ);
-        LIns* jumpIfDouble = m_out->insBranch(LIR_jf, checkIfInt, nullptr);
+        LIns* jumpIfDouble = m_out->insBranch(LIR_jf, checkIfInt, (LIns*)nullptr);
         //in is int. convert int to double
         LIns* inAsInt = unboxESValue(in, Type(TypeInt32));
         //JIT_LOG(in, "int input");
@@ -307,7 +307,7 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
         //JIT_LOG(doubleESValue, "out esvalue");
         m_out->insStore(LIR_ste, doubleESValue, result, 0, 1);
         //convert end. jump to normal path
-        LIns* jumpToNormalPath = m_out->insBranch(LIR_j, nullptr, nullptr);
+        LIns* jumpToNormalPath = m_out->insBranch(LIR_j, nullptr, (LIns*)nullptr);
         LIns* exitPath = m_out->ins0(LIR_label);
         exitIfNotNumber->setTarget(exitPath);
 
@@ -331,7 +331,7 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
         LIns* quadValue = in;
         LIns* maskedValue = m_out->ins2(LIR_andq, quadValue, m_tagMaskQ);
         LIns* checkIfNotTagged = m_out->ins2(LIR_eqq, maskedValue, m_zeroQ);
-        LIns* jumpIfPointer = m_out->insBranch(LIR_jt, checkIfNotTagged, nullptr);
+        LIns* jumpIfPointer = m_out->insBranch(LIR_jt, checkIfNotTagged, (LIns*)nullptr);
 #ifndef NDEBUG
         if (ESVMInstance::currentInstance()->m_verboseJIT) {
             JIT_LOG(in, "Expected Pointer-typed value, but got this value");
@@ -358,7 +358,7 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
         LIns* typeOfESPtr = m_out->insLoad(LIR_lde, quadValue, ESPointer::offsetOfType(), 1, LOAD_NORMAL);
         LIns* esPointerMaskedValue = m_out->ins2(LIR_andq, typeOfESPtr, mask);
         LIns* checkIfFlagIdentical = m_out->ins2(LIR_eqq, esPointerMaskedValue, mask);
-        LIns* jumpIfFlagIdentical = m_out->insBranch(LIR_jt, checkIfFlagIdentical, nullptr);
+        LIns* jumpIfFlagIdentical = m_out->insBranch(LIR_jt, checkIfFlagIdentical, (LIns*)nullptr);
 #ifndef NDEBUG
         if (ESVMInstance::currentInstance()->m_verboseJIT) {
             JIT_LOG(in, "Expected below-typed value, but got this value");
@@ -379,7 +379,7 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
         LIns* quadValue = in;
         LIns* maskedValue = m_out->ins2(LIR_andq, quadValue, m_tagMaskQ);
         LIns* checkIfNotTagged = m_out->ins2(LIR_eqq, maskedValue, m_zeroQ);
-        LIns* jumpIfPointer = m_out->insBranch(LIR_jt, checkIfNotTagged, nullptr);
+        LIns* jumpIfPointer = m_out->insBranch(LIR_jt, checkIfNotTagged, (LIns*)nullptr);
 #ifndef NDEBUG
         if (ESVMInstance::currentInstance()->m_verboseJIT) {
             JIT_LOG(in, "Expected Pointer-typed value, but got this value");
@@ -395,7 +395,7 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
 #ifdef ESCARGOT_64
         LIns* quadValue = in;
         LIns* checkIfUndefined = m_out->ins2(LIR_eqq, quadValue, m_undefinedQ);
-        LIns* jumpIfUndefined = m_out->insBranch(LIR_jt, checkIfUndefined, nullptr);
+        LIns* jumpIfUndefined = m_out->insBranch(LIR_jt, checkIfUndefined, (LIns*)nullptr);
 #ifndef NDEBUG
         if (ESVMInstance::currentInstance()->m_verboseJIT) {
             JIT_LOG(in, "Expected undefined value, but got this value");
@@ -411,7 +411,7 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
 #ifdef ESCARGOT_64
         LIns* quadValue = in;
         LIns* checkIfNull = m_out->ins2(LIR_eqq, quadValue, m_nullQ);
-        LIns* jumpIfNull = m_out->insBranch(LIR_jt, checkIfNull, nullptr);
+        LIns* jumpIfNull = m_out->insBranch(LIR_jt, checkIfNull, (LIns*)nullptr);
 #ifndef NDEBUG
         if (ESVMInstance::currentInstance()->m_verboseJIT) {
             JIT_LOG(in, "Expected null value, but got this value");
@@ -428,7 +428,7 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
         LIns* quadValue = in;
         LIns* maskedValue = m_out->ins2(LIR_andq, quadValue, m_intTagQ);
         LIns* checkIfNotNumber = m_out->ins2(LIR_eqq, maskedValue, m_zeroQ);
-        LIns* jumpIfNumber = m_out->insBranch(LIR_jf, checkIfNotNumber, nullptr);
+        LIns* jumpIfNumber = m_out->insBranch(LIR_jf, checkIfNotNumber, (LIns*)nullptr);
 #ifndef NDEBUG
         if (ESVMInstance::currentInstance()->m_verboseJIT) {
             JIT_LOG(in, "Expected number value, but got this value");
@@ -605,7 +605,7 @@ LIns* NativeGenerator::getDoubleDynamic(LIns* in, Type type)
         LIns* maskedValue = m_out->ins2(LIR_andq, in, m_intTagQ);
 
         LIns* checkIfInt = m_out->ins2(LIR_eqq, maskedValue, m_intTagQ);
-        LIns* jumpIfDouble = m_out->insBranch(LIR_jf, checkIfInt, nullptr);
+        LIns* jumpIfDouble = m_out->insBranch(LIR_jf, checkIfInt, (LIns*)nullptr);
 
         LIns* intPath = m_out->ins0(LIR_label);
         LIns* untaggedIntValue = m_out->ins2(LIR_subq, in, m_intTagQ);
@@ -646,7 +646,7 @@ LIns* NativeGenerator::getInt32Dynamic(LIns* in, Type type)
         LIns* maskedValue = m_out->ins2(LIR_andq, in, m_intTagQ);
 
         LIns* checkIfInt = m_out->ins2(LIR_eqq, maskedValue, m_intTagQ);
-        LIns* jumpIfDouble = m_out->insBranch(LIR_jf, checkIfInt, nullptr);
+        LIns* jumpIfDouble = m_out->insBranch(LIR_jf, checkIfInt, (LIns*)nullptr);
 
         LIns* intPath = m_out->ins0(LIR_label);
         LIns* untaggedValue = m_out->ins2(LIR_subq, in, m_intTagQ);
@@ -740,8 +740,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_BINARY_ESIR(Int32Plus);
         ASSERT(leftType.isInt32Type() && rightType.isInt32Type());
         ASSERT(left->isI() && right->isI());
-        LIns* int32Result = m_out->insBranchJov(LIR_addjovi, left, right, nullptr);
-        LIns* jumpAlways = m_out->insBranch(LIR_j, nullptr, nullptr);
+        LIns* int32Result = m_out->insBranchJov(LIR_addjovi, left, right, (LIns*)nullptr);
+        LIns* jumpAlways = m_out->insBranch(LIR_j, nullptr, (LIns*)nullptr);
         LIns* labelOverflow = m_out->ins0(LIR_label);
         int32Result->setTarget(labelOverflow);
 
@@ -818,8 +818,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_BINARY_ESIR(Int32Multiply);
 #if 1
         ASSERT(left->isI() && right->isI());
-        LIns* int32Result = m_out->insBranchJov(LIR_muljovi, left, right, nullptr);
-        LIns* jumpAlways = m_out->insBranch(LIR_j, nullptr, nullptr);
+        LIns* int32Result = m_out->insBranchJov(LIR_muljovi, left, right, (LIns*)nullptr);
+        LIns* jumpAlways = m_out->insBranch(LIR_j, nullptr, (LIns*)nullptr);
         LIns* labelOverflow = m_out->ins0(LIR_label);
         int32Result->setTarget(labelOverflow);
 
@@ -1103,28 +1103,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     case ESIR::Opcode::Jump:
     {
         INIT_ESIR(Jump);
-        LIns* jump = m_out->insBranch(LIR_jt, m_true, nullptr);
-        if (LIns* label = irJump->targetBlock()->getLabel()) {
-            jump->setTarget(label);
-            std::vector<LIns*>* insToExtendLife = irJump->InsToExtendLife();
-            for (int i = 0; i < insToExtendLife->size(); i++) {
-                LIns* ins = insToExtendLife->at(i);
-                if (ins->isP())
-                    m_out->ins1(LIR_livep, ins);
-                else if (ins->isD())
-                    m_out->ins1(LIR_lived, ins);
-                else if (ins->isI())
-                    m_out->ins1(LIR_livei, ins);
-                else
-                    RELEASE_ASSERT_NOT_REACHED();
-            }
-            m_out->ins1(LIR_livep, m_thisValueP);
-            m_out->ins1(LIR_livep, m_contextP);
-            insToExtendLife->clear();
-        } else {
-            irJump->targetBlock()->addJumpOrBranchSource(jump);
-        }
-        return jump;
+        return m_out->insBranch(LIR_jt, m_true, irJump->targetBlock());
     }
     case ESIR::Opcode::Throw:
     {
@@ -1152,16 +1131,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             compare = m_out->ins2(LIR_eqi, toBoolean, m_zeroI);
         }
 
-        LIns* jumpTrue = m_out->insBranch(LIR_jf, compare, nullptr);
-        LIns* jumpFalse = m_out->insBranch(LIR_j, nullptr, nullptr);
-        if (LIns* label = irBranch->falseBlock()->getLabel()) {
-            jumpFalse->setTarget(label);
-            m_out->ins1(LIR_livep, m_thisValueP);
-            m_out->ins1(LIR_livep, m_contextP);
-        } else {
-            irBranch->trueBlock()->addJumpOrBranchSource(jumpTrue);
-            irBranch->falseBlock()->addJumpOrBranchSource(jumpFalse);
-        }
+        LIns* jumpTrue = m_out->insBranch(LIR_jf, compare, irBranch->trueBlock());
+        LIns* jumpFalse = m_out->insBranch(LIR_j, nullptr, irBranch->falseBlock());
         return jumpFalse;
     }
     case ESIR::Opcode::CreateFunction:
@@ -1270,7 +1241,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* boxedEnumerableObject = boxESValue(enumerableObject, TypeObject);
         LIns* args[] = {boxedEnumerableObject};
         LIns* ret = m_out->insCall(&getEnumerablObjectCallInfo, args);
-        irGetEnumerablObject->getJumpIR()->addInsToExtendLife(ret);
+        irGetEnumerablObject->getJumpIR()->targetBlock()->addInsToExtendLife(ret);
         return ret;
     }
 
@@ -1282,14 +1253,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* keySize = m_out->insCall(&keySizeCallInfo, args);
         LIns* index = m_out->insLoad(LIR_ldi, data, offsetof(EnumerateObjectData, m_idx), 1, LOAD_NORMAL);
         LIns* isLastKey = m_out->ins2(LIR_eqi, index, keySize);
-        LIns* jumpIfLast = m_out->insBranch(LIR_jt, isLastKey, nullptr);
-        if (LIns* label = irEnumerate->forEndBlock()->getLabel()) {
-            jumpIfLast->setTarget(label);
-            m_out->ins1(LIR_livep, m_thisValueP);
-            m_out->ins1(LIR_livep, m_contextP);
-        } else {
-            irEnumerate->forEndBlock()->addJumpOrBranchSource(jumpIfLast);
-        }
+        LIns* jumpIfLast = m_out->insBranch(LIR_jt, isLastKey, irEnumerate->forEndBlock());
         LIns* addOneToIndex = m_out->ins2(LIR_addi, index, m_oneI);
         LIns* storeToIndex = m_out->insStore(LIR_sti, addOneToIndex, data, offsetof(EnumerateObjectData, m_idx), 1);
         LIns* key = m_out->insCall(&getEnumerationKeyCallInfo, args);
@@ -1306,7 +1270,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
-        LIns* jumpIfThisValueisNotEmpty = m_out->insBranch(LIR_jf, checkIfThisValueisEmpty, nullptr);
+        LIns* jumpIfThisValueisNotEmpty = m_out->insBranch(LIR_jf, checkIfThisValueisEmpty, (LIns*)nullptr);
 */
         LIns* args[] = {m_contextP};
         LIns* resolvedThisValue = m_out->insCall(&contextResolveThisBindingCallInfo, args);
@@ -1397,7 +1361,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* cachedSlot = m_out->insLoad(LIR_ldp, bytecode, offsetof(GetById, m_cachedSlot), 1, LOAD_NORMAL);
         LIns* phi = m_out->insAlloc(sizeof(ESValue));
         LIns* checkIfCacheHit = m_out->ins2(LIR_eqi, instanceIdentifierCacheInvalidationCheckCount, cachedIdentifierCacheInvalidationCheckCount);
-        LIns* jumpIfCacheHit = m_out->insBranch(LIR_jt, checkIfCacheHit, nullptr);
+        LIns* jumpIfCacheHit = m_out->insBranch(LIR_jt, checkIfCacheHit, (LIns*)nullptr);
 
         LIns* slowPath = m_out->ins0(LIR_label);
 #if 1
@@ -1408,7 +1372,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 
         LIns* cachingLookuped = m_out->insStore(LIR_ste, resolvedResult, cachedSlot, 0, 1);
         LIns* storeCheckCount = m_out->insStore(LIR_sti, instanceIdentifierCacheInvalidationCheckCount, bytecode, offsetof(GetById, m_identifierCacheInvalidationCheckCount), 1);
-        LIns* jumpToJoin = m_out->insBranch(LIR_j, nullptr, nullptr);
+        LIns* jumpToJoin = m_out->insBranch(LIR_j, nullptr, (LIns*)nullptr);
 #else
         JIT_LOG(cachedIdentifierCacheInvalidationCheckCount, "GetVarGeneric Cache Miss");
         generateOSRExit(irGetVarGeneric->targetIndex());
@@ -1454,26 +1418,26 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* cachedIdentifierCacheInvalidationCheckCount = m_out->insLoad(LIR_ldi, bytecode, offsetof(SetById, m_identifierCacheInvalidationCheckCount), 1, LOAD_NORMAL);
         LIns* instanceIdentifierCacheInvalidationCheckCount = m_out->insLoad(LIR_ldi, m_instanceP, ESVMInstance::offsetOfIdentifierCacheInvalidationCheckCount(), 1, LOAD_NORMAL);
         LIns* checkIfCacheHit = m_out->ins2(LIR_eqi, instanceIdentifierCacheInvalidationCheckCount, cachedIdentifierCacheInvalidationCheckCount);
-        LIns* jumpIfCacheHit = m_out->insBranch(LIR_jt, checkIfCacheHit, nullptr);
+        LIns* jumpIfCacheHit = m_out->insBranch(LIR_jt, checkIfCacheHit, (LIns*)nullptr);
 #if 1
         //JIT_LOG(bytecode, "SetVarGeneric Cache Miss");
         LIns* args[] = {bytecode, m_contextP};
         LIns* resolvedSlot = m_out->insCall(&setVarContextResolveBindingCallInfo, args);
         LIns* checkIfSlotIsNull = m_out->ins2(LIR_eqp, resolvedSlot, m_zeroP);
-        LIns* jumpIfSlotIsNull = m_out->insBranch(LIR_jt, checkIfSlotIsNull, nullptr);
+        LIns* jumpIfSlotIsNull = m_out->insBranch(LIR_jt, checkIfSlotIsNull, (LIns*)nullptr);
 
         //JIT_LOG(bytecode, "SetVarGeneric Cache Miss->resolveBinding->validSlot");
         m_out->insStore(LIR_stp, resolvedSlot, bytecode, offsetof(SetById, m_cachedSlot), 1);
         m_out->insStore(LIR_sti, instanceIdentifierCacheInvalidationCheckCount, bytecode, offsetof(SetById, m_identifierCacheInvalidationCheckCount), 1);
         m_out->insStore(LIR_ste, boxedSource, resolvedSlot, 0, 1);
-        LIns* jumpToEnd1 = m_out->insBranch(LIR_j, nullptr, nullptr);
+        LIns* jumpToEnd1 = m_out->insBranch(LIR_j, nullptr, (LIns*)nullptr);
 
         LIns* labelDeclareVariable = m_out->ins0(LIR_label);
         jumpIfSlotIsNull->setTarget(labelDeclareVariable);
         //JIT_LOG(bytecode, "SetVarGeneric Cache Miss->resolveBinding->emptySlot");
         LIns* args2[] = {boxedSource, bytecode, m_globalObjectP, m_contextP};
         m_out->insCall(&setVarDefineDataPropertyCallInfo, args2);
-        LIns* jumpToEnd2 = m_out->insBranch(LIR_j, nullptr, nullptr);
+        LIns* jumpToEnd2 = m_out->insBranch(LIR_j, nullptr, (LIns*)nullptr);
 #else
         JIT_LOG(bytecode, "SetVarGeneric Cache Miss");
         generateOSRExit(irSetVarGeneric->m_targetIndex);
@@ -1569,13 +1533,13 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
                 LIns* savedHiddenClass = m_out->insImmP(irGetObjectPreComputed->byteCode()->m_cachedhiddenClassChain[i]);
                 LIns* hiddenClass = m_out->insLoad(LIR_ldp, obj, escargot::ESObject::offsetOfHiddenClass(), 1, LOAD_NORMAL);
                 LIns* checkHiddenClass = m_out->ins2(LIR_eqp, hiddenClass, savedHiddenClass);
-                LIns* jumpToFallBackIfHiddenClassIsNotSame = m_out->insBranch(LIR_jf, checkHiddenClass, nullptr);
+                LIns* jumpToFallBackIfHiddenClassIsNotSame = m_out->insBranch(LIR_jf, checkHiddenClass, (LIns*)nullptr);
                 lblsToFallback.push_back(jumpToFallBackIfHiddenClassIsNotSame);
 
                 proto = m_out->insLoad(LIR_lde, obj, ESObject::offsetOf__proto__(), 1, LOAD_NORMAL);
                 LIns* maskedValue = m_out->ins2(LIR_andq, proto, m_tagMaskQ);
                 LIns* checkTagged = m_out->ins2(LIR_eqq, maskedValue, m_zeroQ);
-                LIns* jumpIfPointer = m_out->insBranch(LIR_jf, checkTagged, nullptr);
+                LIns* jumpIfPointer = m_out->insBranch(LIR_jf, checkTagged, (LIns*)nullptr);
                 lblsToFallback.push_back(jumpIfPointer);
             }
 
@@ -1605,7 +1569,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 
             }
 
-            LIns* gotoEnd = m_out->insBranch(LIR_j, nullptr, nullptr);
+            LIns* gotoEnd = m_out->insBranch(LIR_j, nullptr, (LIns*)nullptr);
 
             {
                 LIns* fallbackPath = m_out->ins0(LIR_label);
@@ -1661,11 +1625,11 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             //length-check
             //idx >= 0
             LIns* checkLessThanZero = m_out->ins2(LIR_lti, key, m_out->insImmI(0));
-            LIns* jumpLessThanZero = m_out->insBranch(LIR_jt, checkLessThanZero, nullptr);
+            LIns* jumpLessThanZero = m_out->insBranch(LIR_jt, checkLessThanZero, (LIns*)nullptr);
 
             //idx < length
             LIns* checkGretherOrEqualThanLength = m_out->ins2(LIR_gei, key, length);
-            LIns* jumpGretherOrEqualThanLength = m_out->insBranch(LIR_jt, checkGretherOrEqualThanLength, nullptr);
+            LIns* jumpGretherOrEqualThanLength = m_out->insBranch(LIR_jt, checkGretherOrEqualThanLength, (LIns*)nullptr);
 
             //TODO check fastMode
             //LIns* fastMode = m_out->insLoad(LIR_ldc2i, obj, ESArrayObject::offsetOfIsFastMode(), 1, LOAD_NORMAL);
@@ -1682,9 +1646,9 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 
             //not empty
             LIns* checkEmpty = m_out->ins2(LIR_eqq, loadedValue, m_emptyQ);
-            LIns* jumpIfEmpty = m_out->insBranch(LIR_jt, checkEmpty, nullptr);
+            LIns* jumpIfEmpty = m_out->insBranch(LIR_jt, checkEmpty, (LIns*)nullptr);
             m_out->insStore(LIR_ste, loadedValue, phi, 0 , 1);
-            LIns* gotoEnd = m_out->insBranch(LIR_j, nullptr, nullptr);
+            LIns* gotoEnd = m_out->insBranch(LIR_j, nullptr, (LIns*)nullptr);
 
 
             //error path
@@ -1741,11 +1705,11 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             //length-check
             //idx >= 0
             LIns* checkLessThanZero = m_out->ins2(LIR_lti, key, m_out->insImmI(0));
-            LIns* jumpLessThanZero = m_out->insBranch(LIR_jt, checkLessThanZero, nullptr);
+            LIns* jumpLessThanZero = m_out->insBranch(LIR_jt, checkLessThanZero, (LIns*)nullptr);
 
             //idx < length
             LIns* checkGretherOrEqualThanLength = m_out->ins2(LIR_gei, key, length);
-            LIns* jumpGretherOrEqualThanLength = m_out->insBranch(LIR_jt, checkGretherOrEqualThanLength, nullptr);
+            LIns* jumpGretherOrEqualThanLength = m_out->insBranch(LIR_jt, checkGretherOrEqualThanLength, (LIns*)nullptr);
 
             //TODO check fastMode
             //LIns* fastMode = m_out->insLoad(LIR_ldc2i, obj, ESArrayObject::offsetOfIsFastMode(), 1, LOAD_NORMAL);
@@ -1759,7 +1723,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             LIns* offsetAsPointer = m_out->ins1(LIR_i2q, offset);
             LIns* newBase = m_out->ins2(LIR_addp, vectorData, offsetAsPointer);
             m_out->insStore(LIR_ste, boxedSource , newBase, 0, 1);
-            LIns* gotoEnd = m_out->insBranch(LIR_j, nullptr, nullptr);
+            LIns* gotoEnd = m_out->insBranch(LIR_j, nullptr, (LIns*)nullptr);
 
             //error path
             LIns* errorEnd = m_out->ins0(LIR_label);
@@ -1816,16 +1780,16 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             //LIns* checkNULL = m_out->ins2(LIR_eqp, stringData, m_out->insImmP(0));
 
             //jump to fallback path if m_string is NULL
-            //LIns* jumpToFallbackIfNull = m_out->insBranch(LIR_jt, checkNULL, nullptr);
+            //LIns* jumpToFallbackIfNull = m_out->insBranch(LIR_jt, checkNULL, (LIns*)nullptr);
 
             //check key >= 0
             LIns* checkLessThanZero = m_out->ins2(LIR_lti, key, m_out->insImmI(0));
-            LIns* jumpLessThanZero = m_out->insBranch(LIR_jt, checkLessThanZero, nullptr);
+            LIns* jumpLessThanZero = m_out->insBranch(LIR_jt, checkLessThanZero, (LIns*)nullptr);
 
             //check key < length
             LIns* length = m_out->insLoad(LIR_lde, stringData, ESStringData::offsetOfLength(), 1, LOAD_NORMAL);
             LIns* checkGretherOrEqualThanLength = m_out->ins2(LIR_gei, key, m_out->ins1(LIR_q2i, length));
-            LIns* jumpGretherOrEqualThanLength = m_out->insBranch(LIR_jt, checkGretherOrEqualThanLength, nullptr);
+            LIns* jumpGretherOrEqualThanLength = m_out->insBranch(LIR_jt, checkGretherOrEqualThanLength, (LIns*)nullptr);
 
             //read data of m_string
             LIns* stringDataPointer = m_out->insLoad(LIR_ldp, stringData, ESStringData::offsetOfData(), 1, LOAD_NORMAL);
@@ -1840,7 +1804,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             //test
             //if(LIKELY(char < ESCARGOT_ASCII_TABLE_MAX)) {
             LIns* checkASCII = m_out->ins2(LIR_gei, stringPiece, m_out->insImmI(ESCARGOT_ASCII_TABLE_MAX));
-            LIns* jumpIfNotASCII = m_out->insBranch(LIR_jt, checkASCII, nullptr);
+            LIns* jumpIfNotASCII = m_out->insBranch(LIR_jt, checkASCII, (LIns*)nullptr);
 
             //return strings->asciiTable[c].string();
             LIns* pointerOfAsciiTable = m_out->insImmP(strings->asciiTable);
@@ -1851,7 +1815,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             m_out->insStore(LIR_ste, stringResultAsQuad, result, 0, 1);
 
             //operation end. go to end path
-            LIns* gotoOperationEnd = m_out->insBranch(LIR_j, nullptr, nullptr);
+            LIns* gotoOperationEnd = m_out->insBranch(LIR_j, nullptr, (LIns*)nullptr);
 
             {
                 LIns* fallbackPath = m_out->ins0(LIR_label);
@@ -2060,7 +2024,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 
         LIns* invalidIndexValue = m_out->insImmI(ESValue::ESInvalidIndexValue);
         LIns* checkInvalidIndex = m_out->ins2(LIR_eqi, key, invalidIndexValue);
-        LIns* jf1 = m_out->insBranch(LIR_jf, checkInvalidIndex, nullptr);
+        LIns* jf1 = m_out->insBranch(LIR_jf, checkInvalidIndex, (LIns*)nullptr);
         JIT_LOG(key, "InitArrayObject: key is invalid(Too Big)");
         // TODO : If key is invalid, call runtime function
 
@@ -2069,7 +2033,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 
         LIns* length  = m_out->insLoad(LIR_ldi, obj, ESArrayObject::offsetOfLength(), 1, LOAD_NORMAL);
         LIns* checkBound = m_out->ins2(LIR_gti, key, length);
-        LIns* jf2 = m_out->insBranch(LIR_jf, checkBound, nullptr);
+        LIns* jf2 = m_out->insBranch(LIR_jf, checkBound, (LIns*)nullptr);
         JIT_LOG(key, "InitArrayObject: bound error ");
 
         LIns* label2 = m_out->ins0(LIR_label);
@@ -2087,7 +2051,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* valuePtr = m_out->ins2(LIR_addp, vectorData, offsetP);
         LIns* asInt32 = m_out->insLoad(LIR_lde, valuePtr, ESValue::offsetOfAsInt64(), 1, LOAD_NORMAL);
         LIns* checkEmptyValue = m_out->ins2(LIR_eqq, asInt32, m_zeroQ);
-        LIns* jf3 = m_out->insBranch(LIR_jt, checkEmptyValue, nullptr);
+        LIns* jf3 = m_out->insBranch(LIR_jt, checkEmptyValue, (LIns*)nullptr);
         JIT_LOG(key, "InitArrayObject: NonEmptyValue ");
 
         LIns* label3 = m_out->ins0(LIR_label);
@@ -2146,6 +2110,8 @@ bool NativeGenerator::nanojitCodegen(ESVMInstance* instance)
     m_instanceP = m_out->insImmP(ESVMInstance::currentInstance());
     m_contextP = m_out->insLoad(LIR_ldp, m_instanceP, ESVMInstance::offsetOfCurrentExecutionContext(), 1, LOAD_NORMAL);
     m_globalObjectP = m_out->insImmP(ESVMInstance::currentInstance()->globalObject());
+    m_out->defaultInsToExtendLife.push_back(m_thisValueP);
+    m_out->defaultInsToExtendLife.push_back(m_contextP);
 
 #ifdef ESCARGOT_64
     m_out->insStore(LIR_ste, m_emptyQ, m_thisValueP, 0, 1);

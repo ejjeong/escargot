@@ -7,6 +7,10 @@
 
 #include "nanojit.h"
 
+namespace nanojit {
+class LIns;
+}
+
 namespace escargot {
 class ByteCode;
 
@@ -142,11 +146,7 @@ FOR_EACH_ESIR_FLAGS(DECLARE_ESIR_FLAGS)
 #undef DECLARE_ESIR_FLAGS
 
 class ESIR;
-typedef std::vector<ESIR*> ESIRVectorStd;
-
-class ESIRVector : public ESIRVectorStd {
-
-};
+class ESIRVector;
 
 // FIXME find a better allocator
 class ESIR {
@@ -1197,14 +1197,11 @@ public:
     virtual void dump(std::ostream& out);
 #endif
     ESBasicBlock* targetBlock() { return m_targetBlock; }
-    std::vector<nanojit::LIns*>* InsToExtendLife() { return &lirs; }
-    void addInsToExtendLife(nanojit::LIns* lins) { lirs.push_back(lins); }
 
 private:
     JumpIR(int targetIndex, ESBasicBlock* targetBlock)
         : ESIR(ESIR::Opcode::Jump, targetIndex), m_targetBlock(targetBlock) { }
     ESBasicBlock* m_targetBlock;
-    std::vector<nanojit::LIns*> lirs;
 };
 
 class BranchIR : public ESIR {

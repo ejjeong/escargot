@@ -1654,6 +1654,48 @@ namespace nanojit
         }
         return out->insLoad(op, base, off, accSet, loadQual);
     }
+#ifdef ENABLE_ESJIT
+    LIns* LirWriter::insSetLabel(LIns* jump, escargot::ESJIT::ESBasicBlock* targetBlock) {
+        if (!targetBlock)
+            return jump;
+
+        if (LIns* label = targetBlock->getLabel()) {
+            jump->setTarget(label);
+            std::vector<LIns*>* insToExtendLife = targetBlock->getInsToExtendLife();
+            for (int i = 0; i < insToExtendLife->size(); i++) {
+                LIns* ins = insToExtendLife->at(i);
+                if (ins->isP())
+                    ins1(LIR_livep, ins);
+                else if (ins->isD())
+                    ins1(LIR_lived, ins);
+                else if (ins->isI())
+                    ins1(LIR_livei, ins);
+                else
+                    RELEASE_ASSERT_NOT_REACHED();
+            }
+            for (auto& ins :  defaultInsToExtendLife) {
+                if (ins->isP())
+                    ins1(LIR_livep, ins);
+                else if (ins->isD())
+                    ins1(LIR_lived, ins);
+                else if (ins->isI())
+                    ins1(LIR_livei, ins);
+                else
+                    RELEASE_ASSERT_NOT_REACHED();
+            }
+            insToExtendLife->clear();
+        } else {
+            targetBlock->addJumpOrBranchSource(jump);
+        }
+
+        return jump;
+    }
+
+    LIns* LirWriter::insBranch(LOpcode v, LIns* condition, escargot::ESJIT::ESBasicBlock* targetBlock) {
+        LIns* jump = insBranch(v, condition, (LIns*)nullptr);
+        return insSetLabel(jump, targetBlock);
+    }
+#endif
 
     LIns* LirWriter::insStore(LIns* value, LIns* base, int32_t d, AccSet accSet)
     {

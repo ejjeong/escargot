@@ -21,11 +21,16 @@ namespace ESJIT {
 class ESIR;
 class ESGraph;
 class ESBasicBlock;
+typedef std::vector<ESIR*> ESIRVectorStd;
+
+class ESIRVector : public ESIRVectorStd {
+
+};
 
 typedef std::vector<ESBasicBlock*> ESBasicBlockVectorNoGC;
 typedef std::vector<ESBasicBlock*, gc_allocator<ESBasicBlock *> > ESBasicBlockVectorStd;
 
-class ESBasicBlockVector : public ESBasicBlockVectorStd, public gc {
+class ESBasicBlockVector : public ESBasicBlockVectorStd {
 
 };
 
@@ -60,6 +65,14 @@ public:
         m_jumpOrBranchSources.push_back(source);
     }
 
+    void addInsToExtendLife(nanojit::LIns* ins) {
+        m_insToExtendLife.push_back(ins);
+    }
+
+    std::vector<nanojit::LIns*>* getInsToExtendLife() {
+        return &m_insToExtendLife;
+    }
+
 
 #ifndef NDEBUG
     void dump(std::ostream& out);
@@ -76,6 +89,7 @@ private:
     nanojit::LIns* m_label;
     std::vector<nanojit::LIns*> m_jumpOrBranchSources;
     ESBasicBlock* m_dominanceFrontier;
+    std::vector<nanojit::LIns*> m_insToExtendLife;
 };
 
 class ESGraph : public gc {
