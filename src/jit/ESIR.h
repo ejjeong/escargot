@@ -146,12 +146,15 @@ const uint32_t flag = 0x1 << shift;
 FOR_EACH_ESIR_FLAGS(DECLARE_ESIR_FLAGS)
 #undef DECLARE_ESIR_FLAGS
 
-class ESIR;
-
 // FIXME find a better allocator
-class ESIR : public gc {
+class ESIR {
     friend class NativeGenerator;
 public:
+    virtual ~ESIR()
+    {
+
+    }
+
     typedef enum {
         #define DECLARE_IR(name, unused) name,
         FOR_EACH_ESIR_OP(DECLARE_IR)
@@ -1289,7 +1292,7 @@ protected:
     }
     int m_calleeIndex;
     int m_receiverIndex;
-    std::vector<int, gc_allocator<int> > m_argumentIndexes;
+    std::vector<int> m_argumentIndexes;
 };
 
 class CallNewJSIR : public CallJSIR {
@@ -1324,7 +1327,7 @@ protected:
         for (int i=0; i<argumentCount; i++)
             m_argumentIndexes[i] = argumentIndexes[i];
     }
-    std::vector<int, gc_allocator<int> > m_argumentIndexes;
+    std::vector<int> m_argumentIndexes;
 };
 
 class ReturnIR : public ESIR {
@@ -1377,7 +1380,7 @@ public:
 private:
     PhiIR(int targetIndex)
         : ESIR(ESIR::Opcode::Phi, targetIndex) { }
-    std::vector<int, gc_allocator<int> > m_argumentIndexes;
+    std::vector<int> m_argumentIndexes;
 };
 
 class AllocPhiIR : public ESIR {

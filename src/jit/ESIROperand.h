@@ -10,7 +10,7 @@ class CodeBlock;
 namespace escargot {
 namespace ESJIT {
 
-class ESIROperand : public gc {
+class ESIROperand {
 public:
     void setType(Type& type) { m_type = type; }
     void mergeType(Type& type) { m_type.mergeType(type); }

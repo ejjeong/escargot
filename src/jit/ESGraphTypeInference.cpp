@@ -60,15 +60,15 @@ bool ESGraphTypeInference::run(ESGraph* graph)
                 if (leftType.isInt32Type() && rightType.isInt32Type()) {
                     ESIR* int32PlusIR = Int32PlusIR::create(irGenericPlus->targetIndex(), irGenericPlus->leftIndex(), irGenericPlus->rightIndex());
                     block->replace(j, int32PlusIR);
-                    graph->setOperandType(irGenericPlus->targetIndex(), TypeInt32);
+                    graph->setOperandType(int32PlusIR->targetIndex(), TypeInt32);
                 } else if (leftType.isNumberType() && rightType.isNumberType()) {
                     ESIR* doublePlusIR = DoublePlusIR::create(irGenericPlus->targetIndex(), irGenericPlus->leftIndex(), irGenericPlus->rightIndex());
                     block->replace(j, doublePlusIR);
-                    graph->setOperandType(irGenericPlus->targetIndex(), TypeDouble);
+                    graph->setOperandType(doublePlusIR->targetIndex(), TypeDouble);
                 } else if (leftType.isStringType() || rightType.isStringType()) {
                     ESIR* stringPlusIR = StringPlusIR::create(irGenericPlus->targetIndex(), irGenericPlus->leftIndex(), irGenericPlus->rightIndex());
                     block->replace(j, stringPlusIR);
-                    graph->setOperandType(irGenericPlus->targetIndex(), TypeString);
+                    graph->setOperandType(stringPlusIR->targetIndex(), TypeString);
                 } else {
                     printf("Unhandled GenericPlus case in ESGraphTypeInference (block %zu instruction %zu)\n", i, j);
                     RELEASE_ASSERT_NOT_REACHED();
@@ -124,14 +124,14 @@ bool ESGraphTypeInference::run(ESGraph* graph)
                     // int32 * int32 = int32 (or Double -> OSR Exit)
                     ESIR* int32MultiplyIR = Int32MultiplyIR::create(irGenericMultiply->targetIndex(), irGenericMultiply->leftIndex(), irGenericMultiply->rightIndex());
                     block->replace(j, int32MultiplyIR);
-                    graph->setOperandType(irGenericMultiply->targetIndex(), TypeDouble);
+                    graph->setOperandType(int32MultiplyIR->targetIndex(), TypeDouble);
                 } else if (leftType.isNumberType() && rightType.isNumberType()) {
                     // int32 * Double  = Double
                     // Double * int32  = Double
                     // Double * Double = Double
                     ESIR* doubleMultiplyIR = DoubleMultiplyIR::create(irGenericMultiply->targetIndex(), irGenericMultiply->leftIndex(), irGenericMultiply->rightIndex());
                     block->replace(j, doubleMultiplyIR);
-                    graph->setOperandType(irGenericMultiply->targetIndex(), TypeDouble);
+                    graph->setOperandType(doubleMultiplyIR->targetIndex(), TypeDouble);
                 } else {
                     // FIXME
                     // Handle unusual case of multiply
@@ -147,7 +147,7 @@ bool ESGraphTypeInference::run(ESGraph* graph)
                 if (leftType.isNumberType() && rightType.isNumberType()) {
                     ESIR* doubleDivisionIR = DoubleDivisionIR::create(irGenericDivision->targetIndex(), irGenericDivision->leftIndex(), irGenericDivision->rightIndex());
                     block->replace(j, doubleDivisionIR);
-                    graph->setOperandType(irGenericDivision->targetIndex(), TypeDouble);
+                    graph->setOperandType(doubleDivisionIR->targetIndex(), TypeDouble);
                 } else {
                     // FIXME
                     // Handle unusual case of division
@@ -163,11 +163,11 @@ bool ESGraphTypeInference::run(ESGraph* graph)
                 if (leftType.isInt32Type() && rightType.isInt32Type()) {
                     ESIR* int32ModIR = Int32ModIR::create(irGenericMod->targetIndex(), irGenericMod->leftIndex(), irGenericMod->rightIndex());
                     block->replace(j, int32ModIR);
-                    graph->setOperandType(irGenericMod->targetIndex(), TypeInt32);
+                    graph->setOperandType(int32ModIR->targetIndex(), TypeInt32);
                 } else if (leftType.isNumberType() && rightType.isNumberType()) {
                     ESIR* doubleModIR = DoubleModIR::create(irGenericMod->targetIndex(), irGenericMod->leftIndex(), irGenericMod->rightIndex());
                     block->replace(j, doubleModIR);
-                    graph->setOperandType(irGenericMod->targetIndex(), TypeDouble);
+                    graph->setOperandType(doubleModIR->targetIndex(), TypeDouble);
                 } else {
                     // FIXME
                     // Handle unusual case of division
