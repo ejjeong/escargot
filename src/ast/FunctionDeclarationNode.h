@@ -25,7 +25,6 @@ public:
         CodeBlock* cb = CodeBlock::create();
         cb->m_innerIdentifiers = std::move(m_innerIdentifiers);
         cb->m_needsActivation = m_needsActivation;
-        cb->m_nonAtomicParams = std::move(m_nonAtomicParams);
         cb->m_params = std::move(m_params);
         cb->m_isStrict = m_isStrict;
 

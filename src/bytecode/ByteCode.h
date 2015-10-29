@@ -2250,7 +2250,6 @@ public:
     //because CodeBlock is gc_cleanup!
 
     InternalAtomicStringVector m_params; //params: [ Pattern ];
-    ESStringVector m_nonAtomicParams;
     InternalAtomicStringVector m_innerIdentifiers;
     unsigned m_requiredStackSizeInESValueSize;
 

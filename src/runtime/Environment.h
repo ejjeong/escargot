@@ -216,10 +216,7 @@ public:
         m_needsActivation = false;
         m_vectorData = vectorBuffer;
         m_innerIdentifiers = innerIdentifiers;
-        size_t siz = m_innerIdentifiers->size();
-        for(unsigned i = 0; i < siz ; i ++) {
-            m_vectorData[i] = ESValue();
-        }
+        std::fill(vectorBuffer, &vectorBuffer[innerIdentifiers->size()], ESValue());
     }
 
     DeclarativeEnvironmentRecord(const InternalAtomicStringVector& innerIdentifiers = InternalAtomicStringVector())
@@ -241,7 +238,7 @@ public:
 
     virtual ESValue* hasBinding(const InternalAtomicString& atomicName)
     {
-        if(UNLIKELY(m_needsActivation)) {
+        if(m_needsActivation) {
             size_t siz = m_activationData.size();
             for(unsigned i = 0; i < siz ; i ++) {
                 if(m_activationData[i].first == atomicName) {
@@ -264,7 +261,7 @@ public:
     virtual void setMutableBinding(const InternalAtomicString& name, const ESValue& V, bool mustNotThrowTypeErrorExecption)
     {
         //TODO mustNotThrowTypeErrorExecption
-        if(UNLIKELY(m_needsActivation)) {
+        if(m_needsActivation) {
             size_t siz = m_activationData.size();
             for(unsigned i = 0; i < siz ; i ++) {
                 if(m_activationData[i].first == name) {

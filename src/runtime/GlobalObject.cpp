@@ -317,7 +317,6 @@ void GlobalObject::installFunction()
             ByteCodeGenerateContext context;
             codeBlock->m_innerIdentifiers = std::move(functionDeclAST->innerIdentifiers());
             codeBlock->m_needsActivation = functionDeclAST->needsActivation();
-            codeBlock->m_nonAtomicParams = std::move(functionDeclAST->nonAtomicParams());
             codeBlock->m_params = std::move(functionDeclAST->params());
             codeBlock->m_isStrict = functionDeclAST->isStrict();
             functionDeclAST->body()->generateStatementByteCode(codeBlock, context);

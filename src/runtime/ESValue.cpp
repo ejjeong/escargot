@@ -573,12 +573,12 @@ ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctio
         }
     }
 
-    ((FunctionEnvironmentRecord *)ESVMInstance->currentExecutionContext()->environment()->record())->bindThisValue(receiver);
-    DeclarativeEnvironmentRecord* functionRecord = ESVMInstance->currentExecutionContext()->environment()->record()->toDeclarativeEnvironmentRecord();
+    ExecutionContext* currentExecutionContext = ESVMInstance->currentExecutionContext();
+    ((FunctionEnvironmentRecord *)currentExecutionContext->environment()->record())->bindThisValue(receiver);
+    DeclarativeEnvironmentRecord* functionRecord = currentExecutionContext->environment()->record()->toDeclarativeEnvironmentRecord();
 
     if(UNLIKELY(fn->codeBlock()->m_needsActivation)) {
         const InternalAtomicStringVector& params = fn->codeBlock()->m_params;
-        const ESStringVector& nonAtomicParams = fn->codeBlock()->m_nonAtomicParams;
         for(unsigned i = 0; i < params.size() ; i ++) {
             if(i < argumentCount) {
                 *functionRecord->bindingValueForActivationMode(i) = arguments[i];
@@ -589,15 +589,14 @@ ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctio
             *functionRecord->bindingValueForActivationMode(params.size()) = ESValue(fn);
     } else {
         const InternalAtomicStringVector& params = fn->codeBlock()->m_params;
-        const ESStringVector& nonAtomicParams = fn->codeBlock()->m_nonAtomicParams;
-        for(unsigned i = 0; i < params.size() ; i ++) {
-            if(i < argumentCount) {
-                ESVMInstance->currentExecutionContext()->cachedDeclarativeEnvironmentRecordESValue()[i] = arguments[i];
-            }
+        ESValue* buf = currentExecutionContext->cachedDeclarativeEnvironmentRecordESValue();
+        memcpy(buf, arguments, sizeof(ESValue) * (std::min(params.size(), argumentCount)));
+        if(argumentCount < params.size()) {
+            std::fill(&buf[argumentCount], &buf[params.size()], ESValue());
         }
         // if FunctionExpressionNode has own name, should bind own name
         if (fn->codeBlock()->m_isFunctionExpression && fn->name()->length())
-            ESVMInstance->currentExecutionContext()->cachedDeclarativeEnvironmentRecordESValue()[params.size()] = ESValue(fn);
+            buf[params.size()] = ESValue(fn);
     }
 }
 

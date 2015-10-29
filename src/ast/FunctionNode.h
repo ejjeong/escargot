@@ -17,9 +17,6 @@ public:
         m_id = id;
         m_nonAtomicId = id.string();
         m_params = params;
-        for(unsigned i = 0 ; i < m_params.size() ; i ++) {
-            m_nonAtomicParams.push_back(ESString::create(m_params[i].data()));
-        }
         m_body = body;
         m_isGenerator = isGenerator;
         m_isExpression = isExpression;
@@ -30,7 +27,6 @@ public:
     }
 
     ALWAYS_INLINE const InternalAtomicStringVector& params() { return m_params; }
-    ALWAYS_INLINE const ESStringVector& nonAtomicParams() { return m_nonAtomicParams; }
     ALWAYS_INLINE Node* body() { return m_body; }
     ALWAYS_INLINE const InternalAtomicString& id() { return m_id; }
     ALWAYS_INLINE ESString* nonAtomicId() { return m_nonAtomicId; }
@@ -55,7 +51,6 @@ protected:
     InternalAtomicString m_id; //id: Identifier;
     ESString* m_nonAtomicId; //id: Identifier;
     InternalAtomicStringVector m_params; //params: [ Pattern ];
-    ESStringVector m_nonAtomicParams;
     InternalAtomicStringVector m_innerIdentifiers;
     //defaults: [ Expression ];
     //rest: Identifier | null;
