@@ -94,7 +94,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
                     literal = ConstantStringIR::create(extraData->m_targetIndex0, bytecode->m_value.asESString());
                 else
                     literal = ConstantPointerIR::create(extraData->m_targetIndex0, bytecode->m_value.asESPointer());
-            }else
+            } else
                 goto unsupported;
             currentBlock->push(literal);
             NEXT_BYTECODE(Push);
@@ -890,6 +890,14 @@ postprocess:
     return graph;
 
 unsupported:
+    for (size_t i = 0; i < graph->basicBlockSize(); i++) {
+        ESBasicBlock* block = graph->basicBlock(i);
+        for (size_t j = 0; j < block->instructionSize(); j++) {
+            ESIR* ir = block->instruction(j);
+            free(ir);
+        }
+        free(block);
+    }
     LOG_VJ("Unsupported case in ByteCode %s (idx %zu) (while parsing in FrontEnd)\n", getByteCodeName(codeBlock->m_extraData[bytecodeCounter].m_opcode), idx);
     return nullptr;
 }
