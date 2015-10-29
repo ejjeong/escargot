@@ -3,7 +3,7 @@
 
 #ifdef ENABLE_ESJIT
 
-#include "ESIR.h"
+#include "ESJIT.h"
 #include "ESIROperand.h"
 
 namespace nanojit {
@@ -21,29 +21,31 @@ namespace ESJIT {
 class ESIR;
 class ESGraph;
 class ESBasicBlock;
+
 typedef std::vector<ESIR*> ESIRVectorStd;
 
 class ESIRVector : public ESIRVectorStd {
 
 };
 
-typedef std::vector<ESBasicBlock*, gc_allocator<ESBasicBlock *> > ESBasicBlockVectorStd;
+typedef std::vector<ESBasicBlock*> ESBasicBlockVectorStd;
 
 class ESBasicBlockVector : public ESBasicBlockVectorStd {
 
 };
 
-class ESBasicBlock : public gc {
+class ESBasicBlock : public gc_cleanup {
     friend class NativeGenerator;
 public:
     static ESBasicBlock* create(ESGraph* graph, ESBasicBlock* parentBlock = nullptr, bool setIndexLater = false)
     {
+        //ESBasicBlock* newBlock = new(ESJITAllocator::alloc(sizeof (ESBasicBlock))) ESBasicBlock(graph, parentBlock, setIndexLater);
         ESBasicBlock* newBlock = new ESBasicBlock(graph, parentBlock, setIndexLater);
         return newBlock;
     }
 
     void push(ESIR* ir) { m_instructions.push_back(ir); }
-    void replace(size_t index, ESIR* ir) { ASSERT(index <= instructionSize()); m_instructions[index] = ir; }
+    void replace(size_t index, ESIR* ir);
     size_t instructionSize() { return m_instructions.size(); }
     ESIR* instruction(size_t index) { return m_instructions[index]; }
 
@@ -90,13 +92,14 @@ private:
     std::vector<nanojit::LIns*> m_insToExtendLife;
 };
 
-class ESGraph : public gc {
+class ESGraph : public gc_cleanup {
     friend class NativeGenerator;
 public:
     static ESGraph* create(CodeBlock* codeBlock)
     {
         ASSERT(codeBlock);
         // FIXME no bdwgc
+        //return new(ESJITAllocator::alloc(sizeof (ESGraph))) ESGraph(codeBlock);
         return new ESGraph(codeBlock);
     }
     size_t basicBlockSize() { return m_basicBlocks.size(); }
@@ -134,7 +137,7 @@ private:
 
     ESBasicBlockVector m_basicBlocks;
     CodeBlock* m_codeBlock;
-    std::vector<ESIROperand, gc_allocator<ESIROperand> > m_operands;
+    std::vector<ESIROperand> m_operands;
     unsigned m_lastStackPosSettingTargetIndex;
 };
 

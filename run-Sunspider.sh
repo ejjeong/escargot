@@ -1,5 +1,5 @@
 #!/bin/bash
-for ((i=0;i<1;i++)); do
+for ((i=0;i<10;i++)); do
 	cd test/SunSpider/
 	./run.sh
 	cd ../../

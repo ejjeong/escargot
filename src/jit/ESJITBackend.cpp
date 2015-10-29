@@ -1653,6 +1653,11 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* key = getTmpMapping(irGetArrayObject->propertyIndex());
         ASSERT(m_graph->getOperandType(irGetArrayObject->objectIndex()).isArrayObjectType());
         Type keyType = m_graph->getOperandType(irGetArrayObject->propertyIndex());
+
+        if(keyType.isDoubleType()) {
+            //TODO if double not has decimal part, convert into int32 value
+        }
+
         if(keyType.isInt32Type()) {
             LIns* length = m_out->insLoad(LIR_ldi, obj, ESArrayObject::offsetOfLength(), 1, LOAD_NORMAL);
             LIns* phi = m_out->insAlloc(sizeof(ESValue));
