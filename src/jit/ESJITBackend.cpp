@@ -1410,10 +1410,17 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     case ESIR::Opcode::GetGlobalVarGeneric:
     {
         INIT_ESIR(GetGlobalVarGeneric);
+        /*
+        //code for debug
         LIns* byteCode = m_out->insImmP(irGetGlobalVarGeneric->byteCode());
         LIns* globalObject = globalObjectIns();
         LIns* args[] = {byteCode, globalObject};
         return m_out->insCall(&getByGlobalIndexOpCallInfo, args);
+        */
+        size_t gapToHiddenClassData = escargot::ESObject::offsetOfHiddenClassData() + ESValueVector::offsetOfData();
+        LIns* hiddenClassData = m_out->insLoad(LIR_ldp, globalObjectIns(), gapToHiddenClassData, 1, LOAD_NORMAL);
+        LIns* readResult = m_out->insLoad(LIR_lde, hiddenClassData, irGetGlobalVarGeneric->byteCode()->m_index * sizeof(ESValue), 1, LOAD_NORMAL);
+        return readResult;
     }
     case ESIR::Opcode::SetVarGeneric:
     {
@@ -1464,13 +1471,20 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     case ESIR::Opcode::SetGlobalVarGeneric:
     {
         INIT_ESIR(SetGlobalVarGeneric);
-
+        //code for debug
+        /*
         LIns* source = getTmpMapping(irSetGlobalVarGeneric->sourceIndex());
         LIns* boxedSource = boxESValue(source, m_graph->getOperandType(irSetGlobalVarGeneric->sourceIndex()));
         LIns* byteCode = m_out->insImmP(irSetGlobalVarGeneric->byteCode());
         LIns* args[] = {boxedSource, byteCode, globalObjectIns()};
-
         m_out->insCall(&setByGlobalIndexOpCallInfo, args);
+        */
+        LIns* source = getTmpMapping(irSetGlobalVarGeneric->sourceIndex());
+        LIns* boxedSource = boxESValue(source, m_graph->getOperandType(irSetGlobalVarGeneric->sourceIndex()));
+        size_t gapToHiddenClassData = escargot::ESObject::offsetOfHiddenClassData() + ESValueVector::offsetOfData();
+        LIns* hiddenClassData = m_out->insLoad(LIR_ldp, globalObjectIns(), gapToHiddenClassData, 1, LOAD_NORMAL);
+        //virtual LIns* insStore(LOpcode op, LIns* value, LIns* base, int32_t d, AccSet accSet) {
+        m_out->insStore(LIR_ste, boxedSource, hiddenClassData, irSetGlobalVarGeneric->byteCode()->m_index * sizeof(ESValue), 1);
         return source;
     }
     case ESIR::Opcode::GetObject:

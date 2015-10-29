@@ -1086,7 +1086,14 @@ struct ESHiddenClassPropertyInfo {
 typedef std::unordered_map<::escargot::ESString*, size_t,
                 std::hash<ESString*>,std::equal_to<ESString*>,
                 gc_allocator< std::pair<const ::escargot::ESString*, size_t> > > ESHiddenClassPropertyIndexHashMapInfoStd;
-typedef std::vector<::escargot::ESHiddenClassPropertyInfo, gc_allocator<::escargot::ESHiddenClassPropertyInfo> > ESHiddenClassPropertyInfoStd;
+typedef std::vector<::escargot::ESHiddenClassPropertyInfo, gc_allocator<::escargot::ESHiddenClassPropertyInfo> > ESHiddenClassPropertyInfoVectorStd;
+
+class ESHiddenClassPropertyInfoVector : public ESHiddenClassPropertyInfoVectorStd {
+public:
+#ifdef ENABLE_ESJIT
+    static size_t offsetOfData() { return offsetof(ESHiddenClassPropertyInfoVector, _M_impl._M_start); }
+#endif
+};
 
 typedef std::unordered_map<ESString*, ::escargot::ESHiddenClass **,
                 std::hash<ESString*>,std::equal_to<ESString*>,
@@ -1145,7 +1152,7 @@ public:
         return m_propertyInfo[idx];
     }
 
-    const ESHiddenClassPropertyInfoStd& propertyInfo()
+    const ESHiddenClassPropertyInfoVector& propertyInfo()
     {
         return m_propertyInfo;
     }
@@ -1173,6 +1180,7 @@ public:
 
 #ifdef ENABLE_ESJIT
     static size_t offsetOfFlags() { return offsetof(ESHiddenClass, m_flags); }
+    static size_t offsetOfPropertyInfo() { return offsetof(ESHiddenClass, m_propertyInfo); }
 #endif
 
 private:
@@ -1187,7 +1195,7 @@ private:
     }
 
     ESHiddenClassPropertyIndexHashMapInfoStd m_propertyIndexHashMapInfo;
-    ESHiddenClassPropertyInfoStd m_propertyInfo;
+    ESHiddenClassPropertyInfoVector m_propertyInfo;
     ESHiddenClassTransitionDataStd m_transitionData;
 
     struct {
