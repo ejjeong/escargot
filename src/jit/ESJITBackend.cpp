@@ -139,15 +139,15 @@ NativeGenerator::NativeGenerator(ESGraph* graph)
     // Selectable Writer Pipeline
     if (ESVMInstance::currentInstance()->m_useVerboseWriter)
         m_out = new VerboseWriter(*m_alloc, m_out, m_buf->printer, &m_lc, "[verbose]");
-    if (ESVMInstance::currentInstance()->m_useExprFilter)
-        m_out = new ExprFilter(m_out);
-    if (ESVMInstance::currentInstance()->m_useCseFilter)
-        m_out = new CseFilter(m_out, 1, *m_alloc);
 
 #else
     m_lc.lcbits = 0;
 #endif
 
+    if (ESVMInstance::currentInstance()->m_useExprFilter)
+        m_out = new ExprFilter(m_out);
+    if (ESVMInstance::currentInstance()->m_useCseFilter)
+        m_out = new CseFilter(m_out, 1, *m_alloc);
     m_f->lirbuf = m_buf;
 }
 
@@ -240,7 +240,7 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
     return m_out->ins1(LIR_rete, boxedIndex);
 }
 
-bool NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteCodeIndex)
+nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteCodeIndex)
 {
 #ifdef ESCARGOT_64
     ASSERT(in->isQ());
@@ -268,7 +268,7 @@ bool NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteC
         LIns* normalPath = m_out->ins0(LIR_label);
         jumpIfBoolean->setTarget(normalPath);
 #else
-        return false;
+        return nullptr;
 #endif
     } else if (type.isInt32Type()) {
 #ifdef ESCARGOT_64
@@ -287,18 +287,30 @@ bool NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteC
         LIns* normalPath = m_out->ins0(LIR_label);
         jumpIfInt->setTarget(normalPath);
 #else
-        return false;
+        return nullptr;
 #endif
     } else if (type.isDoubleType()) {
 #ifdef ESCARGOT_64
+        LIns* result = m_out->insAlloc(sizeof(ESValue));
         LIns* quadValue = in;
         LIns* maskedValue = m_out->ins2(LIR_andq, quadValue, m_intTagQ);
         LIns* checkIfNotNumber = m_out->ins2(LIR_eqq, maskedValue, m_zeroQ);
         LIns* exitIfNotNumber = m_out->insBranch(LIR_jt, checkIfNotNumber, nullptr);
+        m_out->insStore(LIR_ste, in, result, 0, 1);
         LIns* checkIfInt = m_out->ins2(LIR_eqq, maskedValue, m_intTagQ);
         LIns* jumpIfDouble = m_out->insBranch(LIR_jf, checkIfInt, nullptr);
+        //in is int. convert int to double
+        LIns* inAsInt = unboxESValue(in, Type(TypeInt32));
+        //JIT_LOG(in, "int input");
+        LIns* inAsDouble = m_out->ins1(LIR_i2d, inAsInt);
+        LIns* doubleESValue = boxESValue(inAsDouble, Type(TypeDouble));
+        //JIT_LOG(doubleESValue, "out esvalue");
+        m_out->insStore(LIR_ste, doubleESValue, result, 0, 1);
+        //convert end. jump to normal path
+        LIns* jumpToNormalPath = m_out->insBranch(LIR_j, nullptr, nullptr);
         LIns* exitPath = m_out->ins0(LIR_label);
         exitIfNotNumber->setTarget(exitPath);
+
 #ifndef NDEBUG
         if (ESVMInstance::currentInstance()->m_verboseJIT) {
             JIT_LOG(in, "Expected Double-typed value, but got this value");
@@ -309,8 +321,10 @@ bool NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteC
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out->ins0(LIR_label);
         jumpIfDouble->setTarget(normalPath);
+        jumpToNormalPath->setTarget(normalPath);
+        return m_out->insLoad(LIR_lde, result, 0, 1, LOAD_NORMAL);
 #else
-        return false;
+        return nullptr;
 #endif
     } else if (type.isObjectType() || type.isArrayObjectType() || type.isStringType() || type.isFunctionObjectType()) {
 #ifdef ESCARGOT_64
@@ -340,7 +354,7 @@ bool NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteC
         else if (type.isArrayObjectType())
             mask = m_out->insImmQ(ESPointer::Type::ESArrayObject);
         else
-            return false;
+            return nullptr;
         LIns* typeOfESPtr = m_out->insLoad(LIR_lde, quadValue, ESPointer::offsetOfType(), 1, LOAD_NORMAL);
         LIns* esPointerMaskedValue = m_out->ins2(LIR_andq, typeOfESPtr, mask);
         LIns* checkIfFlagIdentical = m_out->ins2(LIR_eqq, esPointerMaskedValue, mask);
@@ -358,7 +372,7 @@ bool NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteC
         LIns* normalPath2 = m_out->ins0(LIR_label);
         jumpIfFlagIdentical->setTarget(normalPath2);
 #else
-        return false;
+        return nullptr;
 #endif
     } else if (type.isPointerType()) {
 #ifdef ESCARGOT_64
@@ -375,7 +389,7 @@ bool NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteC
         LIns* normalPath = m_out->ins0(LIR_label);
         jumpIfPointer->setTarget(normalPath);
 #else
-        return false;
+        return nullptr;
 #endif
     } else if (type.isUndefinedType()) {
 #ifdef ESCARGOT_64
@@ -391,7 +405,7 @@ bool NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteC
         LIns* normalPath = m_out->ins0(LIR_label);
         jumpIfUndefined->setTarget(normalPath);
 #else
-        return false;
+        return nullptr;
 #endif
     } else if (type.isNullType()) {
 #ifdef ESCARGOT_64
@@ -407,7 +421,7 @@ bool NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteC
         LIns* normalPath = m_out->ins0(LIR_label);
         jumpIfNull->setTarget(normalPath);
 #else
-        return false;
+        return nullptr;
 #endif
     } else if (type.isNumberType()) {
 #ifdef ESCARGOT_64
@@ -426,15 +440,15 @@ bool NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteC
         LIns* normalPath = m_out->ins0(LIR_label);
         jumpIfNumber->setTarget(normalPath);
 #else
-        return false;
+        return nullptr;
 #endif
     } else {
-        return false;
+        return nullptr;
     }
 #ifndef NDEBUG
     m_out->insComment("'= typecheck ended ='");
-    return true;
 #endif
+    return in;
 }
 
 LIns* NativeGenerator::boxESValue(LIns* unboxedValue, Type type)
@@ -725,11 +739,18 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_ESIR(Int32Plus);
         INIT_BINARY_ESIR(Int32Plus);
         ASSERT(leftType.isInt32Type() && rightType.isInt32Type());
-#if 1
-        return m_out->ins2(LIR_addi, left, right);
-#else
-        LIns* add = m_out->insBranchJov(LIR_addjovi, left, right, nullptr;);
-#endif
+        ASSERT(left->isI() && right->isI());
+        LIns* int32Result = m_out->insBranchJov(LIR_addjovi, left, right, nullptr);
+        LIns* jumpAlways = m_out->insBranch(LIR_j, nullptr, nullptr);
+        LIns* labelOverflow = m_out->ins0(LIR_label);
+        int32Result->setTarget(labelOverflow);
+
+        //JIT_LOG(int32Result, "Int32Plus : Result is not int32");
+        generateOSRExit(irInt32Plus->targetIndex());
+
+        LIns* labelNoOverflow = m_out->ins0(LIR_label);
+        jumpAlways->setTarget(labelNoOverflow);
+        return int32Result;
     }
     case ESIR::Opcode::DoublePlus:
     {
@@ -774,9 +795,10 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_ESIR(Minus);
         INIT_BINARY_ESIR(Minus);
 
-        if (leftType.isInt32Type() && rightType.isInt32Type())
+        if (leftType.isInt32Type() && rightType.isInt32Type()) {
+            //TODO implement overflow, underflow
             return m_out->ins2(LIR_subi, left, right);
-        else if (leftType.isNumberType() && rightType.isNumberType()) {
+        } else if (leftType.isNumberType() && rightType.isNumberType()) {
             left = getDoubleDynamic(left, leftType);
             right = getDoubleDynamic(right, rightType);
             return m_out->ins2(LIR_subd, left, right);
@@ -801,7 +823,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* labelOverflow = m_out->ins0(LIR_label);
         int32Result->setTarget(labelOverflow);
 
-        JIT_LOG(int32Result, "Int32Multiply : Result is not int32");
+        //JIT_LOG(int32Result, "Int32Multiply : Result is not int32");
         generateOSRExit(irInt32Multiply->targetIndex());
 
         LIns* labelNoOverflow = m_out->ins0(LIR_label);
@@ -2151,7 +2173,8 @@ bool NativeGenerator::nanojitCodegen(ESVMInstance* instance)
             if (ir->returnsESValue() && ir->m_targetIndex >= 0) {
                 // Even if IR has "returnsESValue" tag, there is a possibility that it has invalid targetIndex (e.g. CreateFunction)
                 Type type = m_graph->getOperandType(ir->m_targetIndex);
-                if (!generateTypeCheck(generatedLIns, type, ir->m_targetIndex)) {
+                generatedLIns = generateTypeCheck(generatedLIns, type, ir->m_targetIndex);
+                if (!generatedLIns) {
                     LOG_VJ("Cannot generate type check code for type %s(0x%x) in ESJIT Backend\n", type.getESIRTypeName(), type.type());
                     return false;
                 }

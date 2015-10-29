@@ -138,11 +138,11 @@ public:
     bool m_reportCompiledFunction;
     bool m_reportOSRExitedFunction;
     bool m_useVerboseWriter;
-    bool m_useExprFilter;
-    bool m_useCseFilter;
     size_t m_compiledFunctions;
     size_t m_osrExitedFunctions;
 #endif
+    bool m_useExprFilter;
+    bool m_useCseFilter;
     size_t m_jitThreshold;
     size_t m_osrExitThreshold;
     bool m_profile;
