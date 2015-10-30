@@ -71,6 +71,10 @@ public:
         return &m_insToExtendLife;
     }
 
+    ESGraph* graph()
+    {
+        return m_graph;
+    }
 
 #ifndef NDEBUG
     void dump(std::ostream& out);

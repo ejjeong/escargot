@@ -15,6 +15,12 @@ bool optimizeIR(ESGraph* graph)
         LOG_VJ("Failed to run SSAConversion\n");
         return false;
     }
+
+    if (!ESGraphTypeModifier::run(graph)) {
+        LOG_VJ("Failed to run GraphTypeModifier\n");
+        return false;
+    }
+
     if (!ESGraphTypeInference::run(graph)) {
         LOG_VJ("Failed to run TypeInference\n");
         return false;

@@ -1096,6 +1096,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_BINARY_ESIR(LessThanOrEqual);
         if (leftType.isInt32Type() && rightType.isInt32Type())
             return m_out->ins2(LIR_lei, left, right);
+        if (leftType.isDoubleType() && rightType.isDoubleType())
+            return m_out->ins2(LIR_led, left, right);
         else
             return nullptr;
     }

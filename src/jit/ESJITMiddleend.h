@@ -57,6 +57,11 @@ public:
     static bool run(ESGraph* graph);
 };
 
+class ESGraphTypeModifier : ESGraphOptimization {
+public:
+    static bool run(ESGraph* graph);
+};
+
 bool optimizeIR(ESGraph* graph);
 
 }}
