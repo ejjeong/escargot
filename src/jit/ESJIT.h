@@ -114,6 +114,34 @@ inline bool operator!=(const CustomAllocator<T1>&, const CustomAllocator<T2>&)
     return false;
 }
 
+class ESJITAlloc {
+  public:
+    inline void* operator new( size_t size )
+    {
+        return ESJITAllocator::alloc(size);
+    }
+    inline void* operator new( size_t size, void *p )
+    {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+    inline void operator delete( void* obj )
+    {
+
+    }
+    inline void* operator new[]( size_t size )
+    {
+        return ESJITAllocator::alloc(size);
+    }
+    inline void* operator new[]( size_t size, void *p )
+    {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+    inline void operator delete[]( void*, void* )
+    {
+
+    }
+};
+
 class ESJITCompiler {
 public:
     ESJITCompiler(CodeBlock* codeBlock)

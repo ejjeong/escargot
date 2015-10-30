@@ -18,6 +18,7 @@ ESBasicBlock::ESBasicBlock(ESGraph* graph, ESBasicBlock* parentBlock, bool setIn
     if (setIndexLater) {
         m_index = SIZE_MAX;
     } else {
+        m_index = 0;
         int tmp = graph->basicBlockSize();
         for (int i = graph->basicBlockSize() - 1; i >= 0; i--) {
             int blockIndex = graph->basicBlock(i)->index();
@@ -26,6 +27,7 @@ ESBasicBlock::ESBasicBlock(ESGraph* graph, ESBasicBlock* parentBlock, bool setIn
                 break;
             }
         }
+        ASSERT(m_index != 0);
         graph->push(this);
     }
 

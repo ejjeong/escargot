@@ -49,7 +49,7 @@ private:
     nanojit::LIns* getInt32Dynamic(nanojit::LIns* in, Type type);
 
     ESGraph* m_graph;
-    std::vector<nanojit::LIns*> m_tmpToLInsMapping;
+    std::vector<nanojit::LIns*, CustomAllocator<nanojit::LIns*> > m_tmpToLInsMapping;
 
     nanojit::LogControl m_lc;
     nanojit::Config m_config;
