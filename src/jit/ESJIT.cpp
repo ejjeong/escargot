@@ -16,9 +16,11 @@ namespace ESJIT {
 
 bool ESJITCompiler::compile(ESVMInstance* instance)
 {
+    GC_disable();
     unsigned long time1 = ESVMInstance::currentInstance()->tickCount();
     if (!(m_graph = generateIRFromByteCode(m_codeBlock)))
         return false;
+
 
     unsigned long time2 = ESVMInstance::currentInstance()->tickCount();
     if (!optimizeIR(m_graph))
@@ -32,33 +34,22 @@ bool ESJITCompiler::compile(ESVMInstance* instance)
     if (ESVMInstance::currentInstance()->m_profile)
         printf("JIT Compilation Took %lfms, %lfms, %lfms each for FE, ME, BE\n",
                 (time2-time1)/1000.0, (time3-time2)/1000.0, (time4-time3)/1000.0);
+    GC_enable();
 
     return true;
 }
 
 void ESJITCompiler::finalize()
 {
-    if (!m_graph) return;
-    for (size_t i = 0; i < m_graph->basicBlockSize(); i++) {
-        ESBasicBlock* block = m_graph->basicBlock(i);
-        for (size_t j = 0; j < block->instructionSize(); j++) {
-            ESIR* ir = block->instruction(j);
-            free(ir);
-        }
-        free(block);
-    }
-
     delete m_graph;
 }
 
 JITFunction JITCompile(CodeBlock* codeBlock, ESVMInstance* instance)
 {
     ESJITCompiler jitFunction(codeBlock);
-    GC_disable();
-    bool res = jitFunction.compile(instance);
+    if (!jitFunction.compile(instance))
+        return nullptr;
     jitFunction.finalize();
-    GC_enable();
-    if (!res) return nullptr;
     return jitFunction.native();
 }
 

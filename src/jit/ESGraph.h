@@ -28,7 +28,7 @@ class ESIRVector : public ESIRVectorStd {
 };
 
 typedef std::vector<ESBasicBlock*> ESBasicBlockVectorNoGC;
-typedef std::vector<ESBasicBlock*, pointer_free_allocator<ESBasicBlock *> > ESBasicBlockVectorStd;
+typedef std::vector<ESBasicBlock*, gc_allocator<ESBasicBlock *> > ESBasicBlockVectorStd;
 
 class ESBasicBlockVector : public ESBasicBlockVectorStd {
 

@@ -2195,6 +2195,11 @@ bool NativeGenerator::nanojitCodegen(ESVMInstance* instance)
         ESBasicBlock* block = m_graph->basicBlock(i);
         for (size_t j = 0; j < block->m_jumpOrBranchSources.size(); j++)
             block->m_jumpOrBranchSources[j]->setTarget(block->getLabel());
+        for (size_t j = 0; j < block->instructionSize(); j++) {
+            ESIR* ir = block->instruction(j);
+            free(ir);
+        }
+        free(block);
     }
 
 
