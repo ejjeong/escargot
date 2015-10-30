@@ -4,6 +4,7 @@
 #ifdef ENABLE_ESJIT
 
 #include "ESIRType.h"
+#include "ESJIT.h"
 
 #include "nanojit.h"
 
@@ -150,11 +151,6 @@ FOR_EACH_ESIR_FLAGS(DECLARE_ESIR_FLAGS)
 class ESIR {
     friend class NativeGenerator;
 public:
-    virtual ~ESIR()
-    {
-
-    }
-
     typedef enum {
         #define DECLARE_IR(name, unused) name,
         FOR_EACH_ESIR_OP(DECLARE_IR)
@@ -184,27 +180,27 @@ protected:
 
 #define DECLARE_STATIC_GENERATOR_0(opcode) \
     static opcode##IR* create(unsigned target) { \
-        return new opcode##IR(target); \
+        return new (ESJITAllocator::alloc(sizeof(opcode##IR)))opcode##IR(target); \
     }
 
 #define DECLARE_STATIC_GENERATOR_1(opcode, Type1) \
     static opcode##IR* create(unsigned target, Type1 operand1) { \
-        return new opcode##IR(target, operand1); \
+        return new (ESJITAllocator::alloc(sizeof(opcode##IR)))opcode##IR(target, operand1); \
     }
 
 #define DECLARE_STATIC_GENERATOR_2(opcode, Type1, Type2) \
     static opcode##IR* create(unsigned target, Type1 operand1, Type2 operand2) { \
-        return new opcode##IR(target, operand1, operand2); \
+        return new (ESJITAllocator::alloc(sizeof(opcode##IR)))opcode##IR(target, operand1, operand2); \
     }
 
 #define DECLARE_STATIC_GENERATOR_3(opcode, Type1, Type2, Type3) \
     static opcode##IR* create(unsigned target, Type1 operand1, Type2 operand2, Type3 operand3) { \
-        return new opcode##IR(target, operand1, operand2, operand3); \
+        return new (ESJITAllocator::alloc(sizeof(opcode##IR)))opcode##IR(target, operand1, operand2, operand3); \
     }
 
 #define DECLARE_STATIC_GENERATOR_4(opcode, Type1, Type2, Type3, Type4) \
     static opcode##IR* create(unsigned target, Type1 operand1, Type2 operand2, Type3 operand3, Type4 operand4) { \
-        return new opcode##IR(target, operand1, operand2, operand3, operand4); \
+        return new (ESJITAllocator::alloc(sizeof(opcode##IR)))opcode##IR(target, operand1, operand2, operand3, operand4); \
     }
 
 
@@ -1292,7 +1288,7 @@ protected:
     }
     int m_calleeIndex;
     int m_receiverIndex;
-    std::vector<int> m_argumentIndexes;
+    std::vector<int, CustomAllocator<int> > m_argumentIndexes;
 };
 
 class CallNewJSIR : public CallJSIR {
@@ -1327,7 +1323,7 @@ protected:
         for (int i=0; i<argumentCount; i++)
             m_argumentIndexes[i] = argumentIndexes[i];
     }
-    std::vector<int> m_argumentIndexes;
+    std::vector<int, CustomAllocator<int> > m_argumentIndexes;
 };
 
 class ReturnIR : public ESIR {
@@ -1380,7 +1376,7 @@ public:
 private:
     PhiIR(int targetIndex)
         : ESIR(ESIR::Opcode::Phi, targetIndex) { }
-    std::vector<int> m_argumentIndexes;
+    std::vector<int, CustomAllocator<int> > m_argumentIndexes;
 };
 
 class AllocPhiIR : public ESIR {
@@ -1542,51 +1538,6 @@ private:
     int m_keyIndex;
     int m_sourceIndex;
 };
-
-#if 0
-class BitwiseAndIR : public ESIR {
-public:
-    static BitwiseAndIR* create(ESIR* left, ESIR* right) { return new BitwiseAndIR(left, right); }
-
-private:
-    BitwiseAndIR(ESIR* left, ESIR* right)
-        : ESIR(ESIR::Opcode::BitwiseAnd), m_left(left), m_right(right) { }
-    ESIR* m_left;
-    ESIR* m_right;
-};
-
-class EqualIR : public ESIR {
-public:
-    DECLARE_STATIC_GENERATOR_2(Equal, ESIR*, ESIR*);
-
-private:
-    EqualIR(ESIR* left, ESIR* right)
-        : ESIR(ESIR::Opcode::Equal), m_left(left), m_right(right) { }
-    ESIR* m_left;
-    ESIR* m_right;
-};
-
-class ReturnIR : public ESIR {
-public:
-    DECLARE_STATIC_GENERATOR_1(Return, ESIR*);
-
-private:
-    ReturnIR(ESIR* returnValue)
-        : ESIR(ESIR::Opcode::Return), m_returnValue(returnValue) { }
-    ESIR* m_returnValue;
-};
-
-class OSRExitIR : public ESIR {
-public:
-    DECLARE_STATIC_GENERATOR_1(OSRExit, ESIR*);
-
-private:
-    OSRExitIR(ESIR* exitNumber)
-        : ESIR(ESIR::Opcode::OSRExit), m_exitNumber(exitNumber) { }
-    ESIR* m_exitNumber;
-};
-
-#endif
 
 }}
 #endif

@@ -16,31 +16,14 @@ namespace ESJIT {
 
 std::vector<ESJITAllocatorMemoryFragment> ESJITAllocator::m_allocatedMemorys;
 
-void* ESJITAllocator::alloc(size_t size)
+void ESJITAllocator::allocSlow()
 {
-    const unsigned FragmentBufferSize = 10240;
-    size_t currentFragmentRemain;
-
-    if(UNLIKELY(!m_allocatedMemorys.size())) {
-        currentFragmentRemain = 0;
-    } else {
-        currentFragmentRemain = m_allocatedMemorys.back().m_totalSize - m_allocatedMemorys.back().m_currentUsage;
-    }
-
-    if(currentFragmentRemain < size) {
-        ESJITAllocatorMemoryFragment f;
-        f.m_buffer = malloc(FragmentBufferSize);
-        f.m_currentUsage = 0;
-        f.m_totalSize = FragmentBufferSize;
-        m_allocatedMemorys.push_back(f);
-        currentFragmentRemain = FragmentBufferSize;
-    }
-
-    ASSERT(currentFragmentRemain > size);
-    //alloc
-    void* buf = &((char *)m_allocatedMemorys.back().m_buffer)[m_allocatedMemorys.back().m_currentUsage];
-    m_allocatedMemorys.back().m_currentUsage += size;
-    return buf;
+    const unsigned s_fragmentBufferSize = 10240;
+    ESJITAllocatorMemoryFragment f;
+    f.m_buffer = malloc(s_fragmentBufferSize);
+    f.m_currentUsage = 0;
+    f.m_totalSize = s_fragmentBufferSize;
+    m_allocatedMemorys.push_back(f);
 }
 
 void ESJITAllocator::freeAll()
@@ -50,7 +33,6 @@ void ESJITAllocator::freeAll()
     }
     m_allocatedMemorys.clear();
 }
-
 
 bool ESJITCompiler::compile(ESVMInstance* instance)
 {
@@ -75,17 +57,11 @@ bool ESJITCompiler::compile(ESVMInstance* instance)
     return true;
 }
 
-void ESJITCompiler::finalize()
-{
-    //delete m_graph;
-}
-
 JITFunction JITCompile(CodeBlock* codeBlock, ESVMInstance* instance)
 {
     ESJITCompiler jitFunction(codeBlock);
     if (!jitFunction.compile(instance))
         return nullptr;
-    jitFunction.finalize();
     return jitFunction.native();
 }
 

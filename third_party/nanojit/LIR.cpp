@@ -6,6 +6,10 @@
 
 #include "nanojit.h"
 
+#ifdef ENABLE_ESJIT
+#include "ESJIT.h"
+#endif
+
 namespace nanojit
 {
 #ifndef ESCARGOT
@@ -1661,7 +1665,7 @@ namespace nanojit
 
         if (LIns* label = targetBlock->getLabel()) {
             jump->setTarget(label);
-            std::vector<LIns*>* insToExtendLife = targetBlock->getInsToExtendLife();
+            std::vector<LIns*, ::escargot::ESJIT::CustomAllocator<LIns*> >* insToExtendLife = targetBlock->getInsToExtendLife();
             for (int i = 0; i < insToExtendLife->size(); i++) {
                 LIns* ins = insToExtendLife->at(i);
                 if (ins->isP())

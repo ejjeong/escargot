@@ -22,30 +22,25 @@ class ESIR;
 class ESGraph;
 class ESBasicBlock;
 
-typedef std::vector<ESIR*> ESIRVectorStd;
+typedef std::vector<ESIR*, CustomAllocator<ESIR*> > ESIRVector;
+typedef std::vector<ESBasicBlock*, CustomAllocator<ESBasicBlock*> > ESBasicBlockVector;
 
-class ESIRVector : public ESIRVectorStd {
-
-};
-
-typedef std::vector<ESBasicBlock*> ESBasicBlockVectorStd;
-
-class ESBasicBlockVector : public ESBasicBlockVectorStd {
-
-};
-
-class ESBasicBlock : public gc_cleanup {
+class ESBasicBlock {
     friend class NativeGenerator;
 public:
     static ESBasicBlock* create(ESGraph* graph, ESBasicBlock* parentBlock = nullptr, bool setIndexLater = false)
     {
-        //ESBasicBlock* newBlock = new(ESJITAllocator::alloc(sizeof (ESBasicBlock))) ESBasicBlock(graph, parentBlock, setIndexLater);
-        ESBasicBlock* newBlock = new ESBasicBlock(graph, parentBlock, setIndexLater);
+        ESBasicBlock* newBlock = new(ESJITAllocator::alloc(sizeof (ESBasicBlock))) ESBasicBlock(graph, parentBlock, setIndexLater);
         return newBlock;
     }
 
     void push(ESIR* ir) { m_instructions.push_back(ir); }
-    void replace(size_t index, ESIR* ir);
+    void replace(size_t index, ESIR* ir)
+    {
+        ASSERT(index <= instructionSize());
+        m_instructions[index] = ir;
+    }
+
     size_t instructionSize() { return m_instructions.size(); }
     ESIR* instruction(size_t index) { return m_instructions[index]; }
 
@@ -69,7 +64,7 @@ public:
         m_insToExtendLife.push_back(ins);
     }
 
-    std::vector<nanojit::LIns*>* getInsToExtendLife() {
+    std::vector<nanojit::LIns*, CustomAllocator<nanojit::LIns*> >* getInsToExtendLife() {
         return &m_insToExtendLife;
     }
 
@@ -91,20 +86,18 @@ private:
     ESIRVector m_instructions;
     size_t m_index;
     nanojit::LIns* m_label;
-    std::vector<nanojit::LIns*> m_jumpOrBranchSources;
+    std::vector<nanojit::LIns*, CustomAllocator<nanojit::LIns*> > m_jumpOrBranchSources;
     ESBasicBlock* m_dominanceFrontier;
-    std::vector<nanojit::LIns*> m_insToExtendLife;
+    std::vector<nanojit::LIns*, CustomAllocator<nanojit::LIns*> > m_insToExtendLife;
 };
 
-class ESGraph : public gc_cleanup {
+class ESGraph {
     friend class NativeGenerator;
 public:
     static ESGraph* create(CodeBlock* codeBlock)
     {
         ASSERT(codeBlock);
-        // FIXME no bdwgc
-        //return new(ESJITAllocator::alloc(sizeof (ESGraph))) ESGraph(codeBlock);
-        return new ESGraph(codeBlock);
+        return new(ESJITAllocator::alloc(sizeof (ESGraph))) ESGraph(codeBlock);
     }
     size_t basicBlockSize() { return m_basicBlocks.size(); }
     ESBasicBlock* basicBlock(size_t index) { return m_basicBlocks[index]; }
@@ -141,7 +134,7 @@ private:
 
     ESBasicBlockVector m_basicBlocks;
     CodeBlock* m_codeBlock;
-    std::vector<ESIROperand> m_operands;
+    std::vector<ESIROperand, CustomAllocator<ESIROperand> > m_operands;
     unsigned m_lastStackPosSettingTargetIndex;
 };
 
