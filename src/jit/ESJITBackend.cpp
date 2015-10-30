@@ -89,7 +89,7 @@ CallInfo createArrayCallInfo = CI(createArr, CallInfo::typeSig1(ARGTYPE_E, ARGTY
 CallInfo createFunctionCallInfo = CI(createFunction, CallInfo::typeSig2(ARGTYPE_E, ARGTYPE_P, ARGTYPE_P));
 CallInfo initObjectCallInfo = CI(initObject, CallInfo::typeSig3(ARGTYPE_V, ARGTYPE_E, ARGTYPE_E, ARGTYPE_E));
 CallInfo throwCallInfo = CI(throwOp, CallInfo::typeSig1(ARGTYPE_V, ARGTYPE_E));
-CallInfo getEnumerablObjectCallInfo = CI(getEnumerablObject, CallInfo::typeSig1(ARGTYPE_P, ARGTYPE_E));
+CallInfo getEnumerablObjectDataCallInfo = CI(getEnumerablObjectData, CallInfo::typeSig1(ARGTYPE_P, ARGTYPE_E));
 CallInfo keySizeCallInfo = CI(keySize, CallInfo::typeSig1(ARGTYPE_I, ARGTYPE_P));
 CallInfo getEnumerationKeyCallInfo = CI(getEnumerationKey, CallInfo::typeSig1(ARGTYPE_E, ARGTYPE_P));
 CallInfo toBooleanCallInfo = CI(toBoolean, CallInfo::typeSig1(ARGTYPE_I, ARGTYPE_E));
@@ -171,16 +171,15 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
 {
     m_out->insStore(LIR_sti, m_oneI, m_contextP, ExecutionContext::offsetofInOSRExit(), 1);
 
-    bool isPrevBlock = false;
     bool isDone = false;
     unsigned writeCount = 0;
     bool* writeFlags = NULL;
+    int maxStackPos = -1;
     for (int i = m_graph->basicBlockSize() - 1; i >= 0; i--) {
         ESBasicBlock* block = m_graph->basicBlock(i);
-        if (!isPrevBlock && block->instructionSize() > 0 && block->instruction(0)->targetIndex() <= currentByteCodeIndex) {
+        if (block->instructionSize() > 0 && block->instruction(0)->targetIndex() <= currentByteCodeIndex) {
             int j = block->instructionSize() - 1;
-            int maxStackPos = -1;
-            if (!isPrevBlock) {
+            if (maxStackPos == -1) {
                 for (; j >= 0; j--) {
                     if (block->instruction(j)->targetIndex() == currentByteCodeIndex) {
                         if (j == 0)
@@ -202,7 +201,6 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
                         break;
                     }
                 }
-                isPrevBlock = true;
               }
 
             if (maxStackPos > 0) {
@@ -1274,15 +1272,15 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_ESIR(Move);
         return getTmpMapping(irMove->sourceIndex());
     }
-    case ESIR::Opcode::GetEnumerablObject:
+    case ESIR::Opcode::GetEnumerablObjectData:
     {
-        INIT_ESIR(GetEnumerablObject);
-        LIns* enumerableObject = getTmpMapping(irGetEnumerablObject->sourceIndex());
-        LIns* boxedEnumerableObject = boxESValue(enumerableObject, TypeObject);
-        LIns* args[] = {boxedEnumerableObject};
-        LIns* ret = m_out->insCall(&getEnumerablObjectCallInfo, args);
-        irGetEnumerablObject->getJumpIR()->targetBlock()->addInsToExtendLife(ret);
-        return ret;
+        INIT_ESIR(GetEnumerablObjectData);
+        LIns* enumerableObjectData = getTmpMapping(irGetEnumerablObjectData->sourceIndex());
+        LIns* boxedEnumerableObjectData = boxESValue(enumerableObjectData, TypeObject);
+        LIns* args[] = {boxedEnumerableObjectData};
+        LIns* data = m_out->insCall(&getEnumerablObjectDataCallInfo, args);
+        irGetEnumerablObjectData->getJumpIR()->targetBlock()->addInsToExtendLife(data);
+        return data;
     }
     case ESIR::Opcode::CheckIfKeyIsLast:
     {
@@ -1294,10 +1292,10 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* isLastKey = m_out->ins2(LIR_eqi, index, keySize);
         return isLastKey;
     }
-    case ESIR::Opcode::Enumerate:
+    case ESIR::Opcode::GetEnumerateKey:
     {
-        INIT_ESIR(Enumerate);
-        LIns* data = getTmpMapping(irEnumerate->sourceIndex());
+        INIT_ESIR(GetEnumerateKey);
+        LIns* data = getTmpMapping(irGetEnumerateKey->sourceIndex());
         LIns* args[] = {data};
         LIns* index = m_out->insLoad(LIR_ldi, data, offsetof(EnumerateObjectData, m_idx), 1, LOAD_NORMAL);
         LIns* addOneToIndex = m_out->ins2(LIR_addi, index, m_oneI);

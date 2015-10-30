@@ -653,9 +653,9 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
                 if (backWordJumpMapping.find(bytecode->m_jumpPosition) != backWordJumpMapping.end()) {
                     // FIXME: fno-rtti : can't be ir any other than GetEnumerableObjectIR??
                     // GetEnumerablObjectIR* getEnumerablObjectIR = dynamic_cast<GetEnumerablObjectIR*>(backWordJumpMapping[bytecode->m_jumpPosition]);
-                    GetEnumerablObjectIR* getEnumerablObjectIR = (GetEnumerablObjectIR*)backWordJumpMapping[bytecode->m_jumpPosition];
-                    getEnumerablObjectIR->setJumpIR(jumpIR);
-                }
+                    GetEnumerablObjectDataIR* getEnumerablObjectDataIR = (GetEnumerablObjectDataIR*)backWordJumpMapping[bytecode->m_jumpPosition];
+                    getEnumerablObjectDataIR->setJumpIR(jumpIR);
+                  }
             }
 
             NEXT_BYTECODE(Jump);
@@ -851,9 +851,9 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case EnumerateObjectOpcode:
         {
             INIT_BYTECODE(EnumerateObject);
-            GetEnumerablObjectIR* getEnumerablObjectIR = GetEnumerablObjectIR::create(extraData->m_targetIndex0, extraData->m_sourceIndexes[0]);
-            currentBlock->push(getEnumerablObjectIR);
-            backWordJumpMapping[idx + sizeof(EnumerateObject) + sizeof(LoopStart)] = getEnumerablObjectIR;
+            GetEnumerablObjectDataIR* getEnumerablObjectDataIR = GetEnumerablObjectDataIR::create(extraData->m_targetIndex0, extraData->m_sourceIndexes[0]);
+            currentBlock->push(getEnumerablObjectDataIR);
+            backWordJumpMapping[idx + sizeof(EnumerateObject) + sizeof(LoopStart)] = getEnumerablObjectDataIR;
             NEXT_BYTECODE(EnumerateObject);
             break;
         }
@@ -870,8 +870,8 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             INIT_BYTECODE(EnumerateObjectKey);
             bytecode->m_profile.updateProfiledType();
             graph->setOperandType(extraData->m_targetIndex0, bytecode->m_profile.getType());
-            EnumerateIR* enumerateIR = EnumerateIR::create(extraData->m_targetIndex0, extraData->m_sourceIndexes[0]);
-            currentBlock->push(enumerateIR);
+            GetEnumerateKeyIR* getEnumerateKeyIR = GetEnumerateKeyIR::create(extraData->m_targetIndex0, extraData->m_sourceIndexes[0]);
+            currentBlock->push(getEnumerateKeyIR);
             NEXT_BYTECODE(EnumerateObjectKey);
             break;
         }

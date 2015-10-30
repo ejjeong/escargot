@@ -337,7 +337,7 @@ inline void throwOp(ESValueInDouble err)
     throw error;
 }
 
-inline ESPointer* getEnumerablObject(ESValueInDouble value) {
+inline ESPointer* getEnumerablObjectData(ESValueInDouble value) {
     ESObject* obj = ESValue::fromRawDouble(value).toObject();
     return (ESPointer *)executeEnumerateObject(obj);
 }

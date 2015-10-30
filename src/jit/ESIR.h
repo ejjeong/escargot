@@ -108,9 +108,9 @@ class ESBasicBlock;
     F(InitArrayObject, ) \
     \
     /* For-in statement */ \
-    F(GetEnumerablObject, ) \
+    F(GetEnumerablObjectData, ) \
     F(CheckIfKeyIsLast, ) \
-    F(Enumerate, ReturnsESValue) \
+    F(GetEnumerateKey, ReturnsESValue) \
     \
     /* [Get/Set][Variable|Property] */ \
     F(GetThis, ReturnsESValue) \
@@ -351,9 +351,9 @@ private:
     int m_sourceIndex;
 };
 class JumpIR;
-class GetEnumerablObjectIR : public ESIR {
+class GetEnumerablObjectDataIR : public ESIR {
 public:
-    DECLARE_STATIC_GENERATOR_1(GetEnumerablObject, int);
+    DECLARE_STATIC_GENERATOR_1(GetEnumerablObjectData, int);
 
     int sourceIndex() { return m_sourceIndex; }
     void setJumpIR(JumpIR* jumpIR)
@@ -373,8 +373,8 @@ public:
 #endif
 
 private:
-    GetEnumerablObjectIR(int targetIndex, int sourceIndex)
-        : ESIR(ESIR::Opcode::GetEnumerablObject, targetIndex), m_sourceIndex(sourceIndex), m_jumpIR(nullptr) { }
+    GetEnumerablObjectDataIR(int targetIndex, int sourceIndex)
+        : ESIR(ESIR::Opcode::GetEnumerablObjectData, targetIndex), m_sourceIndex(sourceIndex), m_jumpIR(nullptr) { }
     int m_sourceIndex;
     JumpIR* m_jumpIR;
 };
@@ -389,6 +389,7 @@ public:
     {
         out << "tmp" << m_targetIndex << ": ";
         ESIR::dump(out);
+        out << " object(tmp" << m_sourceIndex << ")";
     }
 #endif
 
@@ -398,9 +399,9 @@ private:
     int m_sourceIndex;
 };
 
-class EnumerateIR : public ESIR {
+class GetEnumerateKeyIR : public ESIR {
 public:
-    DECLARE_STATIC_GENERATOR_1(Enumerate, int);
+    DECLARE_STATIC_GENERATOR_1(GetEnumerateKey, int);
 
     int sourceIndex() { return m_sourceIndex; }
 #ifndef NDEBUG
@@ -408,12 +409,13 @@ public:
     {
         out << "tmp" << m_targetIndex << ": ";
         ESIR::dump(out);
+        out << " object(tmp" << m_sourceIndex << ")";
     }
 #endif
 
 private:
-    EnumerateIR(int targetIndex, int sourceIndex)
-        : ESIR(ESIR::Opcode::Enumerate, targetIndex), m_sourceIndex(sourceIndex) { }
+    GetEnumerateKeyIR(int targetIndex, int sourceIndex)
+        : ESIR(ESIR::Opcode::GetEnumerateKey, targetIndex), m_sourceIndex(sourceIndex) { }
     int m_sourceIndex;
 };
 
