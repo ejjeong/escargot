@@ -131,8 +131,9 @@ class CodeBlock;
 \
     /*etc*/ \
     F(This, 1, 0, 0, 1) \
-    F(EnumerateObject, 1, 0, 1, 0) \
-    F(EnumerateObjectKey, 1, 0, 1, 0) \
+    F(EnumerateObject, 1, 1, 0, 1) \
+    F(CheckIfKeyIsLast, 1, 0, 1, 1) \
+    F(EnumerateObjectKey, 1, 0, 1, 1) \
     F(PrintSpAndBp, 0, 0, 0, 0) \
 \
     F(End, 0, 0, 0, 1)
@@ -2112,6 +2113,22 @@ public:
 
 };
 
+class CheckIfKeyIsLast : public ByteCode {
+public:
+    CheckIfKeyIsLast()
+        : ByteCode(CheckIfKeyIsLastOpcode)
+    {
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("CheckIfKeyIsLast <>\n");
+    }
+#endif
+
+};
+
 class EnumerateObjectKey : public ByteCode {
 public:
     EnumerateObjectKey()
@@ -2125,7 +2142,6 @@ public:
         printf("EnumerateObjectKey <>\n");
     }
 #endif
-    size_t m_forInEnd;
 #ifdef ENABLE_ESJIT
     ProfileData m_profile;
 #endif

@@ -109,6 +109,7 @@ class ESBasicBlock;
     \
     /* For-in statement */ \
     F(GetEnumerablObject, ) \
+    F(CheckIfKeyIsLast, ) \
     F(Enumerate, ReturnsESValue) \
     \
     /* [Get/Set][Variable|Property] */ \
@@ -378,11 +379,10 @@ private:
     JumpIR* m_jumpIR;
 };
 
-class EnumerateIR : public ESIR {
+class CheckIfKeyIsLastIR : public ESIR {
 public:
-    DECLARE_STATIC_GENERATOR_2(Enumerate, int, ESBasicBlock*);
+    DECLARE_STATIC_GENERATOR_1(CheckIfKeyIsLast, int);
 
-    ESBasicBlock* forEndBlock() { return m_forEndBlock; }
     int sourceIndex() { return m_sourceIndex; }
 #ifndef NDEBUG
     virtual void dump(std::ostream& out)
@@ -393,10 +393,28 @@ public:
 #endif
 
 private:
-    EnumerateIR(int targetIndex, int sourceIndex, ESBasicBlock* forEndBlock)
-        : ESIR(ESIR::Opcode::Enumerate, targetIndex), m_sourceIndex(sourceIndex), m_forEndBlock(forEndBlock) { }
+    CheckIfKeyIsLastIR(int targetIndex, int sourceIndex)
+        : ESIR(ESIR::Opcode::CheckIfKeyIsLast, targetIndex), m_sourceIndex(sourceIndex) { }
     int m_sourceIndex;
-    ESBasicBlock* m_forEndBlock;
+};
+
+class EnumerateIR : public ESIR {
+public:
+    DECLARE_STATIC_GENERATOR_1(Enumerate, int);
+
+    int sourceIndex() { return m_sourceIndex; }
+#ifndef NDEBUG
+    virtual void dump(std::ostream& out)
+    {
+        out << "tmp" << m_targetIndex << ": ";
+        ESIR::dump(out);
+    }
+#endif
+
+private:
+    EnumerateIR(int targetIndex, int sourceIndex)
+        : ESIR(ESIR::Opcode::Enumerate, targetIndex), m_sourceIndex(sourceIndex) { }
+    int m_sourceIndex;
 };
 
 class GetThisIR : public ESIR {

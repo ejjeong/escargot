@@ -853,26 +853,24 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             INIT_BYTECODE(EnumerateObject);
             GetEnumerablObjectIR* getEnumerablObjectIR = GetEnumerablObjectIR::create(extraData->m_targetIndex0, extraData->m_sourceIndexes[0]);
             currentBlock->push(getEnumerablObjectIR);
-            backWordJumpMapping[idx + sizeof(EnumerateObject) + sizeof(ByteCode)] = getEnumerablObjectIR;
+            backWordJumpMapping[idx + sizeof(EnumerateObject) + sizeof(LoopStart)] = getEnumerablObjectIR;
             NEXT_BYTECODE(EnumerateObject);
+            break;
+        }
+        case CheckIfKeyIsLastOpcode:
+        {
+            INIT_BYTECODE(CheckIfKeyIsLast);
+            CheckIfKeyIsLastIR* checkIfKeyIsLastIR = CheckIfKeyIsLastIR::create(extraData->m_targetIndex0, extraData->m_sourceIndexes[0]);
+            currentBlock->push(checkIfKeyIsLastIR);
+            NEXT_BYTECODE(CheckIfKeyIsLast);
             break;
         }
         case EnumerateObjectKeyOpcode:
         {
             INIT_BYTECODE(EnumerateObjectKey);
-
-            std::map<int, ESBasicBlock*>::iterator findIter;
-            ESBasicBlock* forEndBlock;
-            if((findIter = basicBlockMapping.find(bytecode->m_forInEnd)) != basicBlockMapping.end()) {
-                forEndBlock = basicBlockMapping[bytecode->m_forInEnd];
-            } else {
-                forEndBlock = ESBasicBlock::create(graph, currentBlock, true);
-                basicBlockMapping[bytecode->m_forInEnd] = forEndBlock;
-            }
-
             bytecode->m_profile.updateProfiledType();
             graph->setOperandType(extraData->m_targetIndex0, bytecode->m_profile.getType());
-            EnumerateIR* enumerateIR = EnumerateIR::create(extraData->m_targetIndex0, extraData->m_sourceIndexes[0], forEndBlock);
+            EnumerateIR* enumerateIR = EnumerateIR::create(extraData->m_targetIndex0, extraData->m_sourceIndexes[0]);
             currentBlock->push(enumerateIR);
             NEXT_BYTECODE(EnumerateObjectKey);
             break;

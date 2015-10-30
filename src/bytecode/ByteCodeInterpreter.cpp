@@ -1055,16 +1055,18 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         NEXT_INSTRUCTION();
     }
 
+    CheckIfKeyIsLastOpcodeLbl:
+    {
+        EnumerateObjectData* data = (EnumerateObjectData *)peek<ESValue>(stack, bp)->asESPointer();
+        push<ESValue>(stack, topOfStack, ESValue(data->m_keys.size() == data->m_idx));
+        executeNextCode<CheckIfKeyIsLast>(programCounter);
+        NEXT_INSTRUCTION();
+    }
+
     EnumerateObjectKeyOpcodeLbl:
     {
         EnumerateObjectKey* code = (EnumerateObjectKey*)currentCode;
         EnumerateObjectData* data = (EnumerateObjectData *)peek<ESValue>(stack, bp)->asESPointer();
-
-        if(data->m_keys.size() == data->m_idx) {
-          programCounter = jumpTo(codeBuffer, code->m_forInEnd);
-          NEXT_INSTRUCTION();
-        }
-
         data->m_idx++;
         push<ESValue>(stack, topOfStack, data->m_keys[data->m_idx - 1]);
 #ifdef ENABLE_ESJIT

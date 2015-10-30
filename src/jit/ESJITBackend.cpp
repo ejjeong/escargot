@@ -1284,16 +1284,22 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         irGetEnumerablObject->getJumpIR()->targetBlock()->addInsToExtendLife(ret);
         return ret;
     }
-
+    case ESIR::Opcode::CheckIfKeyIsLast:
+    {
+        INIT_ESIR(CheckIfKeyIsLast);
+        LIns* data = getTmpMapping(irCheckIfKeyIsLast->sourceIndex());
+        LIns* args[] = {data};
+        LIns* keySize = m_out->insCall(&keySizeCallInfo, args);
+        LIns* index = m_out->insLoad(LIR_ldi, data, offsetof(EnumerateObjectData, m_idx), 1, LOAD_NORMAL);
+        LIns* isLastKey = m_out->ins2(LIR_eqi, index, keySize);
+        return isLastKey;
+    }
     case ESIR::Opcode::Enumerate:
     {
         INIT_ESIR(Enumerate);
         LIns* data = getTmpMapping(irEnumerate->sourceIndex());
         LIns* args[] = {data};
-        LIns* keySize = m_out->insCall(&keySizeCallInfo, args);
         LIns* index = m_out->insLoad(LIR_ldi, data, offsetof(EnumerateObjectData, m_idx), 1, LOAD_NORMAL);
-        LIns* isLastKey = m_out->ins2(LIR_eqi, index, keySize);
-        LIns* jumpIfLast = m_out->insBranch(LIR_jt, isLastKey, irEnumerate->forEndBlock());
         LIns* addOneToIndex = m_out->ins2(LIR_addi, index, m_oneI);
         LIns* storeToIndex = m_out->insStore(LIR_sti, addOneToIndex, data, offsetof(EnumerateObjectData, m_idx), 1);
         LIns* key = m_out->insCall(&getEnumerationKeyCallInfo, args);

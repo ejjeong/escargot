@@ -243,6 +243,12 @@ bool ESGraphTypeInference::run(ESGraph* graph)
                 break;
             }
             case ESIR::Opcode::Enumerate:
+                break;
+            case ESIR::Opcode::CheckIfKeyIsLast:
+            {
+                graph->setOperandType(ir->targetIndex(), TypeBoolean);
+                break;
+            }
             case ESIR::Opcode::GetThis:
             case ESIR::Opcode::GetArgument:
             case ESIR::Opcode::GetVar:

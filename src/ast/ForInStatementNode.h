@@ -41,6 +41,9 @@ public:
         codeBlock->pushCode(LoopStart(), newContext, this);
 #endif
         size_t continuePosition = codeBlock->currentCodeSize();
+        codeBlock->pushCode(CheckIfKeyIsLast(), newContext, this);
+        codeBlock->pushCode(JumpAndPopIfTopOfStackValueIsTrue(SIZE_MAX), newContext, this);
+        size_t exit3Pos = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsTrue>();
         codeBlock->pushCode(EnumerateObjectKey(), newContext, this);
 
         size_t pushPos = codeBlock->currentCodeSize();
@@ -56,8 +59,7 @@ public:
         size_t forInEnd = codeBlock->currentCodeSize();
         //codeBlock->pushCode(EnumerateObjectEnd(), this);
         codeBlock->pushCode(Pop(), newContext, this);
-        ASSERT(codeBlock->peekCode<EnumerateObjectKey>(continuePosition)->m_orgOpcode == EnumerateObjectKeyOpcode);
-        codeBlock->peekCode<EnumerateObjectKey>(continuePosition)->m_forInEnd = forInEnd;
+        ASSERT(codeBlock->peekCode<CheckIfKeyIsLast>(continuePosition)->m_orgOpcode == CheckIfKeyIsLastOpcode);
 
         newContext.consumeBreakPositions(codeBlock, forInEnd);
         newContext.consumeContinuePositions(codeBlock, continuePosition);
@@ -69,6 +71,7 @@ public:
         size_t exitPos = codeBlock->currentCodeSize();
         codeBlock->peekCode<JumpAndPopIfTopOfStackValueIsTrue>(exit1Pos)->m_jumpPosition = exitPos;
         codeBlock->peekCode<JumpAndPopIfTopOfStackValueIsTrue>(exit2Pos)->m_jumpPosition = exitPos;
+        codeBlock->peekCode<JumpIfTopOfStackValueIsTrue>(exit3Pos)->m_jumpPosition = exitPos;
 
         codeBlock->peekCode<Jump>(jPos)->m_jumpPosition = codeBlock->currentCodeSize();
 
