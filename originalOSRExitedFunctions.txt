@@ -1,15 +1,15 @@
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-cube.js
-MMulti VMulti VMulti2 Translate Loop CalcNormal 
+VMulti2 MMulti VMulti Translate 
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-morph.js
-morph 
+
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-raytrace.js
-createVector lengthVector cross normaliseVector subVector normalise addVector scale dot sub (anonymous) add scaleVector (anonymous) scalev 
+createVector cross subVector sub (anonymous) (anonymous) 
 ===> test/SunSpider/tests/sunspider-1.0.2/access-binary-trees.js
 TreeNode (anonymous) 
 ===> test/SunSpider/tests/sunspider-1.0.2/access-fannkuch.js
 
 ===> test/SunSpider/tests/sunspider-1.0.2/access-nbody.js
-Body (anonymous) 
+
 ===> test/SunSpider/tests/sunspider-1.0.2/access-nsieve.js
 
 ===> test/SunSpider/tests/sunspider-1.0.2/bitops-3bit-bits-in-byte.js
@@ -23,7 +23,7 @@ Body (anonymous)
 ===> test/SunSpider/tests/sunspider-1.0.2/controlflow-recursive.js
 
 ===> test/SunSpider/tests/sunspider-1.0.2/crypto-aes.js
-KeyExpansion Cipher AddRoundKey 
+
 ===> test/SunSpider/tests/sunspider-1.0.2/crypto-md5.js
 md5_ff md5_cmn safe_add md5_gg md5_hh md5_ii 
 ===> test/SunSpider/tests/sunspider-1.0.2/crypto-sha1.js
@@ -35,9 +35,9 @@ safe_add
 ===> test/SunSpider/tests/sunspider-1.0.2/math-cordic.js
 FIXED 
 ===> test/SunSpider/tests/sunspider-1.0.2/math-partial-sums.js
-partial 
+
 ===> test/SunSpider/tests/sunspider-1.0.2/math-spectral-norm.js
-Au 
+
 ===> test/SunSpider/tests/sunspider-1.0.2/regexp-dna.js
 
 ===> test/SunSpider/tests/sunspider-1.0.2/string-base64.js
