@@ -257,7 +257,7 @@ bool ESGraphTypeInference::run(ESGraph* graph)
                 Type objectType = graph->getOperandType(irGetObject->objectIndex());
                 Type propertyType = graph->getOperandType(irGetObject->propertyIndex());
                 if (objectType.isArrayObjectType()) {
-                    if(propertyType.isInt32Type()) {
+                    if(propertyType.isInt32Type() || propertyType.isDoubleType()) {
                         GetArrayObjectIR* getArrayObjectIR = GetArrayObjectIR::create(irGetObject->targetIndex(), irGetObject->objectIndex(), irGetObject->propertyIndex());
                         block->replace(j, getArrayObjectIR);
                     }
@@ -278,7 +278,7 @@ bool ESGraphTypeInference::run(ESGraph* graph)
                 Type objectType = graph->getOperandType(irSetObject->objectIndex());
                 Type propertyType = graph->getOperandType(irSetObject->propertyIndex());
                 if (objectType.isArrayObjectType()) {
-                    if(propertyType.isInt32Type()) {
+                    if(propertyType.isInt32Type() || propertyType.isDoubleType()) {
                         SetArrayObjectIR* setArrayObjectIR = SetArrayObjectIR::create(irSetObject->targetIndex(), irSetObject->objectIndex(), irSetObject->propertyIndex(), irSetObject->sourceIndex());
                         block->replace(j, setArrayObjectIR);
                     }

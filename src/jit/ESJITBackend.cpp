@@ -1655,65 +1655,86 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* key = getTmpMapping(irGetArrayObject->propertyIndex());
         ASSERT(m_graph->getOperandType(irGetArrayObject->objectIndex()).isArrayObjectType());
         Type keyType = m_graph->getOperandType(irGetArrayObject->propertyIndex());
-        if(keyType.isInt32Type()) {
-            LIns* length = m_out->insLoad(LIR_ldi, obj, ESArrayObject::offsetOfLength(), 1, LOAD_NORMAL);
-            LIns* phi = m_out->insAlloc(sizeof(ESValue));
+        ASSERT(keyType.isDoubleType() || keyType.isInt32Type());
+        LIns* gotoEndInDoublePath = nullptr;
 
-            //FIXME in ecmascript, range of index is 0~2^32-1
-            //use uint32_t for indexing
+        LIns* phi = m_out->insAlloc(sizeof(ESValue));
+        if(keyType.isDoubleType()) {
+            //if key is int
+            LIns* toInt = m_out->ins1(LIR_d2i, key);
+            LIns* toDouble = m_out->ins1(LIR_i2d, toInt);
 
-            //length-check
-            //idx >= 0
-            LIns* checkLessThanZero = m_out->ins2(LIR_lti, key, m_out->insImmI(0));
-            LIns* jumpLessThanZero = m_out->insBranch(LIR_jt, checkLessThanZero, (LIns*)nullptr);
+            LIns* checkInt = m_out->ins2(LIR_eqd, key, toDouble);
+            LIns* jumpIfInt = m_out->insBranch(LIR_jt, checkInt, (LIns *)nullptr);
 
-            //idx < length
-            LIns* checkGretherOrEqualThanLength = m_out->ins2(LIR_gei, key, length);
-            LIns* jumpGretherOrEqualThanLength = m_out->insBranch(LIR_jt, checkGretherOrEqualThanLength, (LIns*)nullptr);
+            //if key is not int call fallback
+            LIns* fallback = m_out->ins0(LIR_label);
+            LIns* obj = boxESValue(getTmpMapping(irGetArrayObject->objectIndex()), m_graph->getOperandType(irGetArrayObject->objectIndex()));
+            LIns* property = boxESValue(getTmpMapping(irGetArrayObject->propertyIndex()), m_graph->getOperandType(irGetArrayObject->propertyIndex()));
+            LIns* args[] = {m_globalObjectP, property, obj};
+            LIns* ret = m_out->insCall(&getObjectOpCallInfo, args);
+            m_out->insStore(LIR_ste, ret, phi, 0 , 1);
+            gotoEndInDoublePath = m_out->insBranch(LIR_j, nullptr, (LIns *)nullptr);
 
-            //TODO check fastMode
-            //LIns* fastMode = m_out->insLoad(LIR_ldc2i, obj, ESArrayObject::offsetOfIsFastMode(), 1, LOAD_NORMAL);
-
-            //read vector
-            size_t gapToVector = escargot::ESArrayObject::offsetOfVectorData();
-            size_t gapToVectorData = ESValueVector::offsetOfData() + gapToVector;
-            LIns* vectorData = m_out->insLoad(LIR_ldp, obj, gapToVectorData, 1, LOAD_NORMAL);
-            LIns* ESValueSize = m_out->insImmI(sizeof(ESValue));
-            LIns* offset = m_out->ins2(LIR_muli, key, ESValueSize);
-            LIns* offsetAsPointer = m_out->ins1(LIR_i2q, offset);
-            LIns* newBase = m_out->ins2(LIR_addp, vectorData, offsetAsPointer);
-            LIns* loadedValue = m_out->insLoad(LIR_lde, newBase, 0, 1, LOAD_NORMAL);
-
-            //not empty
-            LIns* checkEmpty = m_out->ins2(LIR_eqq, loadedValue, m_emptyQ);
-            LIns* jumpIfEmpty = m_out->insBranch(LIR_jt, checkEmpty, (LIns*)nullptr);
-            m_out->insStore(LIR_ste, loadedValue, phi, 0 , 1);
-            LIns* gotoEnd = m_out->insBranch(LIR_j, nullptr, (LIns*)nullptr);
-
-
-            //error path
-            LIns* errorEnd = m_out->ins0(LIR_label);
-            jumpIfEmpty->setTarget(errorEnd);
-            jumpLessThanZero->setTarget(errorEnd);
-            jumpGretherOrEqualThanLength->setTarget(errorEnd);
-            LIns* undefinedAsDouble  = m_undefinedQ;
-            m_out->insStore(LIR_ste, undefinedAsDouble, phi, 0 , 1);
-
-            //end
-            LIns* end = m_out->ins0(LIR_label);
-            gotoEnd->setTarget(end);
-
-            return m_out->insLoad(LIR_lde, phi, 0, 0);
-            // TODO-JY : Beloq code cause access-nsieve bad result
-            // int32_t gapToVector = (int32_t) escargot::ESArrayObject::offsetOfVectorData();
-            // LIns* vectorData = m_out->insLoad(LIR_ldp, obj, gapToVector, 1, LOAD_NORMAL);
-            // return m_out->insLoad(LIR_lde, vectorData, irGetArrayObject->propertyIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
-        }
-        else {
-            RELEASE_ASSERT_NOT_REACHED();
+            LIns* fastPath = m_out->ins0(LIR_label);
+            jumpIfInt->setTarget(fastPath);
+            key = toInt;
         }
 
-        RELEASE_ASSERT_NOT_REACHED();
+        ASSERT(key->isI());
+        LIns* length = m_out->insLoad(LIR_ldi, obj, ESArrayObject::offsetOfLength(), 1, LOAD_NORMAL);
+
+        //FIXME in ecmascript, range of index is 0~2^32-1
+        //use uint32_t for indexing
+
+        //length-check
+        //idx >= 0
+        LIns* checkLessThanZero = m_out->ins2(LIR_lti, key, m_out->insImmI(0));
+        LIns* jumpLessThanZero = m_out->insBranch(LIR_jt, checkLessThanZero, (LIns*)nullptr);
+
+        //idx < length
+        LIns* checkGretherOrEqualThanLength = m_out->ins2(LIR_gei, key, length);
+        LIns* jumpGretherOrEqualThanLength = m_out->insBranch(LIR_jt, checkGretherOrEqualThanLength, (LIns*)nullptr);
+
+        //TODO check fastMode
+        //LIns* fastMode = m_out->insLoad(LIR_ldc2i, obj, ESArrayObject::offsetOfIsFastMode(), 1, LOAD_NORMAL);
+
+        //read vector
+        size_t gapToVector = escargot::ESArrayObject::offsetOfVectorData();
+        size_t gapToVectorData = ESValueVector::offsetOfData() + gapToVector;
+        LIns* vectorData = m_out->insLoad(LIR_ldp, obj, gapToVectorData, 1, LOAD_NORMAL);
+        LIns* ESValueSize = m_out->insImmI(sizeof(ESValue));
+        LIns* offset = m_out->ins2(LIR_muli, key, ESValueSize);
+        LIns* offsetAsPointer = m_out->ins1(LIR_i2q, offset);
+        LIns* newBase = m_out->ins2(LIR_addp, vectorData, offsetAsPointer);
+        LIns* loadedValue = m_out->insLoad(LIR_lde, newBase, 0, 1, LOAD_NORMAL);
+
+        //not empty
+        LIns* checkEmpty = m_out->ins2(LIR_eqq, loadedValue, m_emptyQ);
+        LIns* jumpIfEmpty = m_out->insBranch(LIR_jt, checkEmpty, (LIns*)nullptr);
+        m_out->insStore(LIR_ste, loadedValue, phi, 0 , 1);
+        LIns* gotoEnd = m_out->insBranch(LIR_j, nullptr, (LIns*)nullptr);
+
+
+        //error path
+        LIns* errorEnd = m_out->ins0(LIR_label);
+        jumpIfEmpty->setTarget(errorEnd);
+        jumpLessThanZero->setTarget(errorEnd);
+        jumpGretherOrEqualThanLength->setTarget(errorEnd);
+        LIns* undefinedAsDouble  = m_undefinedQ;
+        m_out->insStore(LIR_ste, undefinedAsDouble, phi, 0 , 1);
+
+        //end
+        LIns* end = m_out->ins0(LIR_label);
+        if(gotoEndInDoublePath)
+            gotoEndInDoublePath->setTarget(end);
+        gotoEnd->setTarget(end);
+
+        return m_out->insLoad(LIR_lde, phi, 0, 0);
+        // TODO-JY : Beloq code cause access-nsieve bad result
+        // int32_t gapToVector = (int32_t) escargot::ESArrayObject::offsetOfVectorData();
+        // LIns* vectorData = m_out->insLoad(LIR_ldp, obj, gapToVector, 1, LOAD_NORMAL);
+        // return m_out->insLoad(LIR_lde, vectorData, irGetArrayObject->propertyIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
 #else
         RELEASE_ASSERT_NOT_REACHED();
 #endif
@@ -1732,56 +1753,75 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 #ifdef ESCARGOT_64
         Type propType = m_graph->getOperandType(irSetArrayObject->propertyIndex());
 
-        if (propType.isInt32Type()) {
-            LIns* obj = getTmpMapping(irSetArrayObject->objectIndex());
-            LIns* key = getTmpMapping(irSetArrayObject->propertyIndex());
-            LIns* boxedSource = boxESValue(getTmpMapping(irSetArrayObject->sourceIndex()), m_graph->getOperandType(irSetArrayObject->sourceIndex()));
+        LIns* obj = getTmpMapping(irSetArrayObject->objectIndex());
+        LIns* key = getTmpMapping(irSetArrayObject->propertyIndex());
+        LIns* boxedSource = boxESValue(getTmpMapping(irSetArrayObject->sourceIndex()), m_graph->getOperandType(irSetArrayObject->sourceIndex()));
+        LIns* gotoEndInDoublePath = nullptr;
 
-            LIns* length = m_out->insLoad(LIR_ldi, obj, ESArrayObject::offsetOfLength(), 1, LOAD_NORMAL);
+        Type keyType = m_graph->getOperandType(irSetArrayObject->propertyIndex());
+        ASSERT(keyType.isDoubleType() || keyType.isInt32Type());
+        if(keyType.isDoubleType()) {
+            //if key is int
+            LIns* toInt = m_out->ins1(LIR_d2i, key);
+            LIns* toDouble = m_out->ins1(LIR_i2d, toInt);
 
-            //FIXME in ecmascript, range of index is 0~2^32-1
-            //use uint32_t for indexing
+            LIns* checkInt = m_out->ins2(LIR_eqd, key, toDouble);
+            LIns* jumpIfInt = m_out->insBranch(LIR_jt, checkInt, (LIns *)nullptr);
 
-            //length-check
-            //idx >= 0
-            LIns* checkLessThanZero = m_out->ins2(LIR_lti, key, m_out->insImmI(0));
-            LIns* jumpLessThanZero = m_out->insBranch(LIR_jt, checkLessThanZero, (LIns*)nullptr);
+            //if key is not int call fallback
+            gotoEndInDoublePath = m_out->insBranch(LIR_j, nullptr, (LIns *)nullptr);
 
-            //idx < length
-            LIns* checkGretherOrEqualThanLength = m_out->ins2(LIR_gei, key, length);
-            LIns* jumpGretherOrEqualThanLength = m_out->insBranch(LIR_jt, checkGretherOrEqualThanLength, (LIns*)nullptr);
-
-            //TODO check fastMode
-            //LIns* fastMode = m_out->insLoad(LIR_ldc2i, obj, ESArrayObject::offsetOfIsFastMode(), 1, LOAD_NORMAL);
-
-            //write vector
-            size_t gapToVector = escargot::ESArrayObject::offsetOfVectorData();
-            size_t gatToVectorData = ESValueVector::offsetOfData();
-            LIns* vectorData = m_out->insLoad(LIR_ldp, obj, gapToVector + gatToVectorData, 1, LOAD_NORMAL);
-            LIns* ESValueSize = m_out->insImmI(sizeof(ESValue));
-            LIns* offset = m_out->ins2(LIR_muli, key, ESValueSize);
-            LIns* offsetAsPointer = m_out->ins1(LIR_i2q, offset);
-            LIns* newBase = m_out->ins2(LIR_addp, vectorData, offsetAsPointer);
-            m_out->insStore(LIR_ste, boxedSource , newBase, 0, 1);
-            LIns* gotoEnd = m_out->insBranch(LIR_j, nullptr, (LIns*)nullptr);
-
-            //error path
-            LIns* errorEnd = m_out->ins0(LIR_label);
-            jumpLessThanZero->setTarget(errorEnd);
-            jumpGretherOrEqualThanLength->setTarget(errorEnd);
-            {
-                LIns* obj = boxESValue(getTmpMapping(irSetArrayObject->objectIndex()), m_graph->getOperandType(irSetArrayObject->objectIndex()));
-                LIns* property = boxESValue(getTmpMapping(irSetArrayObject->propertyIndex()), m_graph->getOperandType(irSetArrayObject->propertyIndex()));
-                LIns* source = boxESValue(getTmpMapping(irSetArrayObject->sourceIndex()), m_graph->getOperandType(irSetArrayObject->sourceIndex()));
-                LIns* args[] = {source, property, obj};
-                m_out->insCall(&setObjectOpCallInfo, args);
-            }
-            //end
-            LIns* end = m_out->ins0(LIR_label);
-            gotoEnd->setTarget(end);
-        } else {
-            RELEASE_ASSERT_NOT_REACHED();
+            LIns* fastPath = m_out->ins0(LIR_label);
+            jumpIfInt->setTarget(fastPath);
+            key = toInt;
         }
+
+        ASSERT(key->isI());
+        LIns* length = m_out->insLoad(LIR_ldi, obj, ESArrayObject::offsetOfLength(), 1, LOAD_NORMAL);
+
+        //FIXME in ecmascript, range of index is 0~2^32-1
+        //use uint32_t for indexing
+
+        //length-check
+        //idx >= 0
+        LIns* checkLessThanZero = m_out->ins2(LIR_lti, key, m_out->insImmI(0));
+        LIns* jumpLessThanZero = m_out->insBranch(LIR_jt, checkLessThanZero, (LIns*)nullptr);
+
+        //idx < length
+        LIns* checkGretherOrEqualThanLength = m_out->ins2(LIR_gei, key, length);
+        LIns* jumpGretherOrEqualThanLength = m_out->insBranch(LIR_jt, checkGretherOrEqualThanLength, (LIns*)nullptr);
+
+        //TODO check fastMode
+        //LIns* fastMode = m_out->insLoad(LIR_ldc2i, obj, ESArrayObject::offsetOfIsFastMode(), 1, LOAD_NORMAL);
+
+        //write vector
+        size_t gapToVector = escargot::ESArrayObject::offsetOfVectorData();
+        size_t gatToVectorData = ESValueVector::offsetOfData();
+        LIns* vectorData = m_out->insLoad(LIR_ldp, obj, gapToVector + gatToVectorData, 1, LOAD_NORMAL);
+        LIns* ESValueSize = m_out->insImmI(sizeof(ESValue));
+        LIns* offset = m_out->ins2(LIR_muli, key, ESValueSize);
+        LIns* offsetAsPointer = m_out->ins1(LIR_i2q, offset);
+        LIns* newBase = m_out->ins2(LIR_addp, vectorData, offsetAsPointer);
+        m_out->insStore(LIR_ste, boxedSource , newBase, 0, 1);
+        LIns* gotoEnd = m_out->insBranch(LIR_j, nullptr, (LIns*)nullptr);
+
+        //error path
+        LIns* errorEnd = m_out->ins0(LIR_label);
+        jumpLessThanZero->setTarget(errorEnd);
+        jumpGretherOrEqualThanLength->setTarget(errorEnd);
+        if(gotoEndInDoublePath)
+            gotoEndInDoublePath->setTarget(errorEnd);
+        {
+            LIns* obj = boxESValue(getTmpMapping(irSetArrayObject->objectIndex()), m_graph->getOperandType(irSetArrayObject->objectIndex()));
+            LIns* property = boxESValue(getTmpMapping(irSetArrayObject->propertyIndex()), m_graph->getOperandType(irSetArrayObject->propertyIndex()));
+            LIns* source = boxESValue(getTmpMapping(irSetArrayObject->sourceIndex()), m_graph->getOperandType(irSetArrayObject->sourceIndex()));
+            LIns* args[] = {source, property, obj};
+            m_out->insCall(&setObjectOpCallInfo, args);
+        }
+        //end
+        LIns* end = m_out->ins0(LIR_label);
+        gotoEnd->setTarget(end);
+
         return getTmpMapping(irSetArrayObject->sourceIndex());
 #else
         RELEASE_ASSERT_NOT_REACHED();
