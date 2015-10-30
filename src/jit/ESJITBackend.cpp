@@ -1307,7 +1307,6 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(GetThis);
 
-        /*
 #ifdef ESCARGOT_64
         LIns* m_cachedThisValue = m_out->insLoad(LIR_lde, m_thisValueP, 0, 1, LOAD_NORMAL);
         LIns* checkIfThisValueisEmpty = m_out->ins2(LIR_eqq, m_cachedThisValue, m_emptyQ);
@@ -1315,11 +1314,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         RELEASE_ASSERT_NOT_REACHED();
 #endif
         LIns* jumpIfThisValueisNotEmpty = m_out->insBranch(LIR_jf, checkIfThisValueisEmpty, (LIns*)nullptr);
-*/
         LIns* args[] = {m_contextP};
         LIns* resolvedThisValue = m_out->insCall(&contextResolveThisBindingCallInfo, args);
-        return resolvedThisValue;
-        /*
         m_out->insStore(LIR_ste, resolvedThisValue, m_thisValueP, 0 , 1);
 
         LIns* thisValueIsValid = m_out->ins0(LIR_label);
@@ -1327,13 +1323,11 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 
         m_out->ins0(LIR_label);
         return m_out->insLoad(LIR_lde, m_thisValueP, 0, 1, LOAD_NORMAL);
-        */
     }
     case ESIR::Opcode::GetArgument:
     {
         INIT_ESIR(GetArgument);
-        LIns* cachedDeclarativeEnvironmentRecordESValue = m_out->insLoad(LIR_ldp, m_contextP, ExecutionContext::offsetofcachedDeclarativeEnvironmentRecordESValue(), 1, LOAD_NORMAL);
-        LIns* argument = m_out->insLoad(LIR_lde, cachedDeclarativeEnvironmentRecordESValue, irGetArgument->argumentIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
+        LIns* argument = m_out->insLoad(LIR_lde, m_cachedDeclarativeEnvironmentRecordESValueP, irGetArgument->argumentIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
         // JIT_LOG(argument, "Read this argument");
         return argument;
     }
@@ -1341,8 +1335,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         INIT_ESIR(GetVar);
         if(irGetVar->varUpIndex() == 0 && !irGetVar->needsActivation()) {
-            LIns* cachedDeclarativeEnvironmentRecordESValue = m_out->insLoad(LIR_ldp, m_contextP, ExecutionContext::offsetofcachedDeclarativeEnvironmentRecordESValue(), 1, LOAD_NORMAL);
-            return m_out->insLoad(LIR_lde, cachedDeclarativeEnvironmentRecordESValue, irGetVar->varIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
+            return m_out->insLoad(LIR_lde, m_cachedDeclarativeEnvironmentRecordESValueP, irGetVar->varIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
         } else {
             //inline ESValueInDouble getByIndexWithActivationOp(ExecutionContext* ec, int32_t upCount, int32_t index)
             //LIns* args[] = {m_out->insImmI(irGetVar->varIndex()), m_out->insImmI(irGetVar->varUpIndex()), m_contextP};
@@ -1369,9 +1362,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* source = getTmpMapping(irSetVar->sourceIndex());
         LIns* boxedSource = boxESValue(source, m_graph->getOperandType(irSetVar->sourceIndex()));
         if(irSetVar->upVarIndex() == 0 && !irSetVar->needsActivation()) {
-            LIns* context = m_contextP;
-            LIns* cachedDeclarativeEnvironmentRecordESValue = m_out->insLoad(LIR_ldp, context, ExecutionContext::offsetofcachedDeclarativeEnvironmentRecordESValue(), 1, LOAD_NORMAL);
-            m_out->insStore(LIR_ste, boxedSource, cachedDeclarativeEnvironmentRecordESValue, irSetVar->localVarIndex() * sizeof(ESValue), 1);
+            m_out->insStore(LIR_ste, boxedSource, m_cachedDeclarativeEnvironmentRecordESValueP, irSetVar->localVarIndex() * sizeof(ESValue), 1);
         } else {
             LIns* ecIns = m_contextP;
 
@@ -2196,9 +2187,11 @@ bool NativeGenerator::nanojitCodegen(ESVMInstance* instance)
     m_thisValueP = m_out->insAlloc(sizeof(ESValue));
     m_instanceP = m_out->insImmP(ESVMInstance::currentInstance());
     m_contextP = m_out->insLoad(LIR_ldp, m_instanceP, ESVMInstance::offsetOfCurrentExecutionContext(), 1, LOAD_NORMAL);
+    m_cachedDeclarativeEnvironmentRecordESValueP = m_out->insLoad(LIR_ldp, m_contextP, ExecutionContext::offsetofcachedDeclarativeEnvironmentRecordESValue(), 1, LOAD_NORMAL);
     m_globalObjectP = m_out->insImmP(ESVMInstance::currentInstance()->globalObject());
     m_out->defaultInsToExtendLife.push_back(m_thisValueP);
     m_out->defaultInsToExtendLife.push_back(m_contextP);
+    m_out->defaultInsToExtendLife.push_back(m_cachedDeclarativeEnvironmentRecordESValueP);
 
 #ifdef ESCARGOT_64
     m_out->insStore(LIR_ste, m_emptyQ, m_thisValueP, 0, 1);

@@ -83,6 +83,7 @@ private:
     nanojit::LIns* m_instanceP;
     nanojit::LIns* m_contextP;
     nanojit::LIns* m_globalObjectP;
+    nanojit::LIns* m_cachedDeclarativeEnvironmentRecordESValueP;
 };
 
 JITFunction generateNativeFromIR(ESGraph* graph, ESVMInstance* instance);

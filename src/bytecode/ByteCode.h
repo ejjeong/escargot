@@ -148,7 +148,6 @@ enum Opcode {
 
 struct OpcodeTable {
     void* m_table[OpcodeKindEnd];
-    std::unordered_map<void*, Opcode> m_reverseTable;
 };
 
 unsigned char popCountFromOpcode(ByteCode* code, Opcode opcode);
@@ -321,6 +320,40 @@ struct ByteCodeGenerateContext {
     std::map<size_t, size_t> m_complexCaseStatementPositions;
 };
 
+#ifdef ENABLE_ESJIT
+
+class ProfileData {
+public:
+    ProfileData() : m_type(ESJIT::TypeBottom), m_value(ESValue(ESValue::ESEmptyValueTag::ESEmptyValue)) { }
+
+    void addProfile(const ESValue& value)
+    {
+        m_value = value;
+    }
+    void updateProfiledType()
+    {
+        // TODO what happens if this function is called multiple times?
+        m_type.mergeType(ESJIT::Type::getType(m_value));
+
+        // TODO if m_type is function, profile function address
+        // if m_value is not set to undefined, profiled type will be updated again
+        // m_value = ESValue();
+    }
+    ESJIT::Type& getType() { return m_type; }
+protected:
+    ESJIT::Type m_type;
+    ESValue m_value;
+};
+
+class JITProfileTarget {
+public:
+    ProfileData m_profile;
+};
+
+#else
+class JITProfileTarget {
+};
+#endif
 class ByteCode {
 public:
     ByteCode(Opcode code);
@@ -365,32 +398,6 @@ struct ByteCodeExtraData {
 #endif
     }
 };
-
-#ifdef ENABLE_ESJIT
-class ProfileData {
-public:
-    ProfileData() : m_type(ESJIT::TypeBottom), m_value(ESValue(ESValue::ESEmptyValueTag::ESEmptyValue)) { }
-
-    void addProfile(const ESValue& value)
-    {
-        m_value = value;
-    }
-    void updateProfiledType()
-    {
-        // TODO what happens if this function is called multiple times?
-        m_type.mergeType(ESJIT::Type::getType(m_value));
-
-        // TODO if m_type is function, profile function address
-        // if m_value is not set to undefined, profiled type will be updated again
-        // m_value = ESValue();
-    }
-    ESJIT::Type& getType() { return m_type; }
-protected:
-    ESJIT::Type m_type;
-    ESValue m_value;
-};
-
-#endif
 
 #ifdef NDEBUG
 ASSERT_STATIC(sizeof(ByteCode) == sizeof(size_t), "sizeof(ByteCode) should be == sizeof(size_t)");
@@ -516,7 +523,7 @@ public:
 #endif
 };
 
-class GetById : public ByteCode {
+class GetById : public ByteCode, public JITProfileTarget {
 public:
     GetById(const InternalAtomicString& name)
         : ByteCode(GetByIdOpcode)
@@ -536,12 +543,9 @@ public:
         printf("GetById <%s>\n", m_name.string()->utf8Data());
     }
 #endif
-#ifdef ENABLE_ESJIT
-    ProfileData m_profile;
-#endif
 };
 
-class GetByIdWithoutException : public ByteCode {
+class GetByIdWithoutException : public ByteCode, public JITProfileTarget {
 public:
     GetByIdWithoutException(const InternalAtomicString& name)
         : ByteCode(GetByIdWithoutExceptionOpcode)
@@ -562,14 +566,11 @@ public:
         printf("GetByIdWithoutException <%s>\n",m_name.string()->utf8Data());
     }
 #endif
-#ifdef ENABLE_ESJIT
-    ProfileData m_profile;
-#endif
 };
 
 ASSERT_STATIC(sizeof(GetById) == sizeof(GetByIdWithoutException), "");
 
-class GetByIndex : public ByteCode {
+class GetByIndex : public ByteCode, public JITProfileTarget {
 public:
     GetByIndex(size_t index)
         : ByteCode(GetByIndexOpcode)
@@ -585,12 +586,9 @@ public:
         printf("GetByIndex <%s, %u>\n", m_name->utf8Data(),  (unsigned)m_index);
     }
 #endif
-#ifdef ENABLE_ESJIT
-    ProfileData m_profile;
-#endif
 };
 
-class GetByGlobalIndex : public ByteCode {
+class GetByGlobalIndex : public ByteCode, public JITProfileTarget {
 public:
     GetByGlobalIndex(size_t index, ESString* name)
         : ByteCode(GetByGlobalIndexOpcode)
@@ -607,12 +605,9 @@ public:
         printf("GetByGlobalIndex <%s, %u>\n", m_name->utf8Data(),  (unsigned)m_index);
     }
 #endif
-#ifdef ENABLE_ESJIT
-    ProfileData m_profile;
-#endif
 };
 
-class GetByIndexWithActivation : public ByteCode {
+class GetByIndexWithActivation : public ByteCode, public JITProfileTarget {
 public:
     GetByIndexWithActivation(size_t fastAccessIndex, size_t fastAccessUpIndex)
         : ByteCode(GetByIndexWithActivationOpcode)
@@ -629,9 +624,6 @@ public:
     {
         printf("GetByIndexWithActivation <%s, %u, %u>\n", m_name->utf8Data(), (unsigned)m_index, (unsigned)m_upIndex);
     }
-#endif
-#ifdef ENABLE_ESJIT
-    ProfileData m_profile;
 #endif
 };
 
@@ -1363,7 +1355,7 @@ public:
 #endif
 };
 
-class CreateArray : public ByteCode {
+class CreateArray : public ByteCode, public JITProfileTarget {
 public:
     CreateArray(size_t keyCount)
         : ByteCode(CreateArrayOpcode)
@@ -1378,9 +1370,6 @@ public:
     {
         printf("CreateArray <%u>\n",(unsigned)m_keyCount);
     }
-#endif
-#ifdef ENABLE_ESJIT
-    ProfileData m_profile;
 #endif
 };
 
@@ -1429,7 +1418,7 @@ public:
 #endif
 };
 
-class GetObject : public ByteCode {
+class GetObject : public ByteCode, public JITProfileTarget {
 public:
     GetObject(Opcode code = GetObjectOpcode)
         : ByteCode(code)
@@ -1442,12 +1431,9 @@ public:
         printf("GetObject <>\n");
     }
 #endif
-#ifdef ENABLE_ESJIT
-    ProfileData m_profile;
-#endif
 };
 
-class GetObjectAndPushObject : public ByteCode {
+class GetObjectAndPushObject : public ByteCode, public JITProfileTarget {
 public:
     GetObjectAndPushObject(Opcode code = GetObjectAndPushObjectOpcode)
         : ByteCode(code)
@@ -1459,9 +1445,6 @@ public:
     {
         printf("GetObjectAndPushObject <>\n");
     }
-#endif
-#ifdef ENABLE_ESJIT
-    ProfileData m_profile;
 #endif
 };
 
@@ -1499,7 +1482,7 @@ public:
 
 ASSERT_STATIC(sizeof(GetObjectAndPushObject) == sizeof(GetObjectAndPushObjectSlowMode),"");
 
-class GetObjectWithPeeking : public ByteCode {
+class GetObjectWithPeeking : public ByteCode, public JITProfileTarget {
 public:
     GetObjectWithPeeking(Opcode code = GetObjectWithPeekingOpcode)
         : ByteCode(code)
@@ -1511,9 +1494,6 @@ public:
     {
         printf("GetObjectWithPeeking <>\n");
     }
-#endif
-#ifdef ENABLE_ESJIT
-    ProfileData m_profile;
 #endif
 };
 
@@ -1533,7 +1513,7 @@ public:
 
 ASSERT_STATIC(sizeof(GetObjectWithPeeking) == sizeof(GetObjectWithPeekingSlowMode),"");
 
-class GetObjectPreComputedCase : public ByteCode {
+class GetObjectPreComputedCase : public ByteCode, public JITProfileTarget {
 public:
     GetObjectPreComputedCase(const ESValue& v, Opcode code = GetObjectPreComputedCaseOpcode)
         : ByteCode(code)
@@ -1551,12 +1531,9 @@ public:
     ESString* m_propertyValue;
     ESHiddenClassChain m_cachedhiddenClassChain;
     size_t m_cachedIndex;
-#ifdef ENABLE_ESJIT
-    ProfileData m_profile;
-#endif
 };
 
-class GetObjectPreComputedCaseAndPushObject : public ByteCode {
+class GetObjectPreComputedCaseAndPushObject : public ByteCode, public JITProfileTarget {
 public:
     GetObjectPreComputedCaseAndPushObject(const ESValue& v, Opcode code = GetObjectPreComputedCaseAndPushObjectOpcode)
         : ByteCode(code)
@@ -1574,9 +1551,6 @@ public:
     ESString* m_propertyValue;
     ESHiddenClassChain m_cachedhiddenClassChain;
     size_t m_cachedIndex;
-#ifdef ENABLE_ESJIT
-    ProfileData m_profile;
-#endif
 };
 
 ASSERT_STATIC(sizeof(GetObjectPreComputedCase) == sizeof(GetObjectPreComputedCaseAndPushObject),"");
@@ -1611,7 +1585,7 @@ public:
 
 ASSERT_STATIC(sizeof(GetObjectPreComputedCaseAndPushObject) == sizeof(GetObjectPreComputedCaseAndPushObjectSlowMode),"");
 
-class GetObjectWithPeekingPreComputedCase : public ByteCode {
+class GetObjectWithPeekingPreComputedCase : public ByteCode, public JITProfileTarget  {
 public:
     GetObjectWithPeekingPreComputedCase(const ESValue& v, Opcode code = GetObjectWithPeekingPreComputedCaseOpcode)
         : ByteCode(code)
@@ -1629,9 +1603,6 @@ public:
     {
         printf("GetObjectWithPeekingPreComputedCase <>\n");
     }
-#endif
-#ifdef ENABLE_ESJIT
-    ProfileData m_profile;
 #endif
 };
 
@@ -1772,7 +1743,7 @@ public:
     NativeFunctionType m_fn;
 };
 
-class CallFunction : public ByteCode {
+class CallFunction : public ByteCode, public JITProfileTarget  {
 public:
     CallFunction(unsigned argumentCount)
         : ByteCode(CallFunctionOpcode)
@@ -1789,12 +1760,9 @@ public:
     }
 #endif
 
-#ifdef ENABLE_ESJIT
-    ProfileData m_profile;
-#endif
 };
 
-class CallFunctionWithReceiver : public ByteCode {
+class CallFunctionWithReceiver : public ByteCode, public JITProfileTarget  {
 public:
     CallFunctionWithReceiver(unsigned argumentCount)
         : ByteCode(CallFunctionWithReceiverOpcode)
@@ -1811,12 +1779,9 @@ public:
     }
 #endif
 
-#ifdef ENABLE_ESJIT
-    ProfileData m_profile;
-#endif
 };
 
-class CallEvalFunction : public ByteCode {
+class CallEvalFunction : public ByteCode, public JITProfileTarget  {
 public:
     CallEvalFunction(unsigned argumentCount)
         : ByteCode(CallEvalFunctionOpcode)
@@ -1831,9 +1796,6 @@ public:
     {
         printf("CallEvalFunction <>\n");
     }
-#endif
-#ifdef ENABLE_ESJIT
-    ProfileData m_profile;
 #endif
 };
 
@@ -1857,7 +1819,7 @@ public:
 #endif
 };
 
-class NewFunctionCall : public ByteCode {
+class NewFunctionCall : public ByteCode, public JITProfileTarget  {
 public:
     NewFunctionCall(unsigned argumentCount)
         : ByteCode(NewFunctionCallOpcode)
@@ -1873,9 +1835,6 @@ public:
     }
 #endif
 
-#ifdef ENABLE_ESJIT
-    ProfileData m_profile;
-#endif
 };
 
 class ReturnFunction : public ByteCode {
@@ -2077,7 +2036,7 @@ public:
     int m_srcIndex1;
 };
 
-class This : public ByteCode {
+class This : public ByteCode, public JITProfileTarget {
 public:
     This()
         : ByteCode(ThisOpcode)
@@ -2092,9 +2051,6 @@ public:
     }
 #endif
 
-#ifdef ENABLE_ESJIT
-    ProfileData m_profile;
-#endif
 };
 
 class EnumerateObject : public ByteCode {
@@ -2129,7 +2085,7 @@ public:
 
 };
 
-class EnumerateObjectKey : public ByteCode {
+class EnumerateObjectKey : public ByteCode, public JITProfileTarget {
 public:
     EnumerateObjectKey()
         : ByteCode(EnumerateObjectKeyOpcode)
@@ -2141,9 +2097,6 @@ public:
     {
         printf("EnumerateObjectKey <>\n");
     }
-#endif
-#ifdef ENABLE_ESJIT
-    ProfileData m_profile;
 #endif
 
 };
