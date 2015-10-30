@@ -83,18 +83,26 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             ESIR* literal;
             if (bytecode->m_value.isInt32()) {
                 literal = ConstantIntIR::create(extraData->m_targetIndex0, bytecode->m_value.asInt32());
+                graph->setOperandType(extraData->m_targetIndex0, TypeInt32);
             } else if (bytecode->m_value.isDouble()) {
                 literal = ConstantDoubleIR::create(extraData->m_targetIndex0, bytecode->m_value.asDouble());
+                graph->setOperandType(extraData->m_targetIndex0, TypeDouble);
             } else if (bytecode->m_value.isBoolean()) {
                 literal = ConstantBooleanIR::create(extraData->m_targetIndex0, bytecode->m_value.asBoolean());
+                graph->setOperandType(extraData->m_targetIndex0, TypeBoolean);
             } else if (bytecode->m_value.isNull() || bytecode->m_value.isUndefined() || bytecode->m_value.isEmpty()) {
                 literal = ConstantESValueIR::create(extraData->m_targetIndex0, ESValue::toRawDouble(bytecode->m_value));
+                graph->setOperandType(extraData->m_targetIndex0, Type::getType(bytecode->m_value));
             } else if (bytecode->m_value.isESPointer()) {
                 ESPointer* p = bytecode->m_value.asESPointer();
-                if (p->isESString())
+                if (p->isESString()) {
                     literal = ConstantStringIR::create(extraData->m_targetIndex0, bytecode->m_value.asESString());
-                else
+                    graph->setOperandType(extraData->m_targetIndex0, TypeString);
+                }
+                else {
                     literal = ConstantPointerIR::create(extraData->m_targetIndex0, bytecode->m_value.asESPointer());
+                    graph->setOperandType(extraData->m_targetIndex0, TypePointer);
+                }
             }else
                 goto unsupported;
             currentBlock->push(literal);

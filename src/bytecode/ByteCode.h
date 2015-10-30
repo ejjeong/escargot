@@ -370,7 +370,7 @@ class ProfileData {
 public:
     ProfileData() : m_type(ESJIT::TypeBottom), m_value(ESValue(ESValue::ESEmptyValueTag::ESEmptyValue)) { }
 
-    void addProfile(ESValue value)
+    void addProfile(const ESValue& value)
     {
         m_value = value;
     }

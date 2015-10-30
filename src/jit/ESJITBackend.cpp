@@ -2103,6 +2103,9 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         Type srcType = m_graph->getOperandType(irInitObject->sourceIndex());
 
         LIns* invalidIndexValue = m_out->insImmI(ESValue::ESInvalidIndexValue);
+        //FIXME
+        if(key->isD())
+            key = m_out->ins1(LIR_d2i, key);
         LIns* checkInvalidIndex = m_out->ins2(LIR_eqi, key, invalidIndexValue);
         LIns* jf1 = m_out->insBranch(LIR_jf, checkInvalidIndex, (LIns*)nullptr);
         JIT_LOG(key, "InitArrayObject: key is invalid(Too Big)");

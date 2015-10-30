@@ -11,16 +11,21 @@ namespace ESJIT {
 
 bool ESGraphTypeModifier::run(ESGraph* graph)
 {
-    bool hasDouble = false;
+    unsigned doubleCnt = 0;
+    unsigned intCnt = 0;
     for (size_t i = 0; i < graph->operandsSize(); i++) {
         Type tp = graph->getOperandType(i);
         if(tp.isDoubleType()) {
-            hasDouble = true;
-            break;
+            doubleCnt ++;
+        }
+        else if(tp.isInt32Type()) {
+            intCnt++;
         }
     }
 
-    if(hasDouble) {
+    //printf("%f\n",(float)doubleCnt / (float)(intCnt + doubleCnt));
+    //if( (float)doubleCnt / (float)(intCnt + doubleCnt) > 0.1f) {
+    if(doubleCnt) {
         for (size_t i = 0; i < graph->operandsSize(); i++) {
             Type tp = graph->getOperandType(i);
             if(tp.isInt32Type()) {
