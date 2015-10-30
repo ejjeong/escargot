@@ -27,7 +27,6 @@ ESBasicBlock::ESBasicBlock(ESGraph* graph, ESBasicBlock* parentBlock, bool setIn
                 break;
             }
         }
-        ASSERT(m_index != 0);
         graph->push(this);
     }
 
