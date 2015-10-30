@@ -16,7 +16,6 @@ namespace ESJIT {
 
 bool ESJITCompiler::compile(ESVMInstance* instance)
 {
-    GC_disable();
     unsigned long time1 = ESVMInstance::currentInstance()->tickCount();
     if (!(m_graph = generateIRFromByteCode(m_codeBlock)))
         return false;
@@ -34,7 +33,6 @@ bool ESJITCompiler::compile(ESVMInstance* instance)
     if (ESVMInstance::currentInstance()->m_profile)
         printf("JIT Compilation Took %lfms, %lfms, %lfms each for FE, ME, BE\n",
                 (time2-time1)/1000.0, (time3-time2)/1000.0, (time4-time3)/1000.0);
-    GC_enable();
 
     return true;
 }
