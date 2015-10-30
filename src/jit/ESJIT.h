@@ -17,22 +17,6 @@ class ESGraph;
 
 typedef ESValueInDouble (*JITFunction)(ESVMInstance*);
 
-struct ESJITAllocatorMemoryFragment {
-    void* m_buffer;
-    size_t m_currentUsage;
-    size_t m_totalSize;
-};
-
-//TODO implmenet multi-thread support
-class ESJITAllocator {
-public:
-    static void* alloc(size_t size);
-    static void freeAll();
-private:
-    static std::vector<ESJITAllocatorMemoryFragment> m_allocatedMemorys;
-};
-
-
 class ESJITCompiler {
 public:
     ESJITCompiler(CodeBlock* codeBlock)

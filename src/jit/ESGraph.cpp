@@ -49,13 +49,6 @@ bool ESBasicBlock::endsWithJumpOrBranch()
     }
 }
 
-void ESBasicBlock::replace(size_t index, ESIR* ir)
-{
-    ASSERT(index <= instructionSize());
-    delete m_instructions[index];
-    m_instructions[index] = ir;
-}
-
 #ifndef NDEBUG
 void ESBasicBlock::dump(std::ostream& out)
 {
