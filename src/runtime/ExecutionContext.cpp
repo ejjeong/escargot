@@ -29,9 +29,9 @@ ESValue* ExecutionContext::resolveBinding(const InternalAtomicString& atomicName
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
     LexicalEnvironment* env = environment();
 
-    while(env) {
+    while (env) {
         ESValue* slot = env->record()->hasBinding(atomicName);
-        if(slot)
+        if (slot)
             return slot;
         env = env->outerEnvironment();
     }
@@ -44,9 +44,9 @@ ESValue* ExecutionContext::resolveArgumentsObjectBinding()
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
     LexicalEnvironment* env = environment();
 
-    while(env) {
+    while (env) {
         ESValue* slot = env->record()->hasBindingForArgumentsObject();
-        if(slot)
+        if (slot)
             return slot;
         env = env->outerEnvironment();
     }
@@ -64,9 +64,9 @@ ESValue ExecutionContext::resolveThisBinding()
 LexicalEnvironment* ExecutionContext::getThisEnvironment()
 {
     LexicalEnvironment* lex = environment();
-    while(true) {
+    while (true) {
         bool exists = lex->record()->hasThisBinding();
-        if(exists)
+        if (exists)
             break;
         lex = lex->outerEnvironment();
     }
@@ -75,5 +75,6 @@ LexicalEnvironment* ExecutionContext::getThisEnvironment()
 }
 
 }
+
 
 

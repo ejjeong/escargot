@@ -38,10 +38,10 @@ public:
 #ifndef NDEBUG
         cb->m_id = m_id;
         cb->m_nonAtomicId = m_nonAtomicId;
-        if(ESVMInstance::currentInstance()->m_dumpByteCode) {
+        if (ESVMInstance::currentInstance()->m_dumpByteCode) {
             char* code = cb->m_code.data();
             ByteCode* currentCode = (ByteCode *)(&code[0]);
-            if(currentCode->m_orgOpcode != ExecuteNativeFunctionOpcode) {
+            if (currentCode->m_orgOpcode != ExecuteNativeFunctionOpcode) {
                 cb->m_nonAtomicId = m_nonAtomicId;
                 dumpBytecode(cb);
             }
@@ -49,7 +49,7 @@ public:
         if (ESVMInstance::currentInstance()->m_reportUnsupportedOpcode) {
             char* code = cb->m_code.data();
             ByteCode* currentCode = (ByteCode *)(&code[0]);
-            if(currentCode->m_orgOpcode != ExecuteNativeFunctionOpcode) {
+            if (currentCode->m_orgOpcode != ExecuteNativeFunctionOpcode) {
                 dumpUnsupported(cb);
             }
         }
@@ -66,5 +66,6 @@ protected:
 }
 
 #endif
+
 
 

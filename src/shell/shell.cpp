@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
 #endif
     escargot::ESVMInstance* ES = new escargot::ESVMInstance();
     ES->enter();
-    if(argc == 1) {
+    if (argc == 1) {
         while (true) {
             char buf[512];
             printf("shell> ");
@@ -66,50 +66,50 @@ int main(int argc, char* argv[])
             }
         }
     } else {
-        for(int i = 1; i < argc; i ++) {
+        for (int i = 1; i < argc; i ++) {
 #ifndef NDEBUG
-            if(strcmp(argv[i], "-d") == 0) {
+            if (strcmp(argv[i], "-d") == 0) {
                 ES->m_dumpByteCode = true;
             }
-            if(strcmp(argv[i], "-e") == 0) {
+            if (strcmp(argv[i], "-e") == 0) {
                 ES->m_dumpExecuteByteCode = true;
             }
-            if(strcmp(argv[i], "-usever") == 0) {
+            if (strcmp(argv[i], "-usever") == 0) {
                 ES->m_useVerboseWriter = true;
             }
-            if(strcmp(argv[i], "-useexp") == 0) {
+            if (strcmp(argv[i], "-useexp") == 0) {
                 ES->m_useExprFilter = true;
             }
-            if(strcmp(argv[i], "-usecse") == 0) {
+            if (strcmp(argv[i], "-usecse") == 0) {
                 ES->m_useCseFilter = true;
             }
-            if(strcmp(argv[i], "-vj") == 0) {
+            if (strcmp(argv[i], "-vj") == 0) {
                 ES->m_verboseJIT = true;
             }
-            if(strcmp(argv[i], "-us") == 0) {
+            if (strcmp(argv[i], "-us") == 0) {
                 ES->m_reportUnsupportedOpcode = true;
             }
-            if(strcmp(argv[i], "-rcf") == 0) {
+            if (strcmp(argv[i], "-rcf") == 0) {
                 ES->m_reportCompiledFunction = true;
             }
-            if(strcmp(argv[i], "-rof") == 0) {
+            if (strcmp(argv[i], "-rof") == 0) {
                 ES->m_reportOSRExitedFunction = true;
             }
 #endif
-            if(strcmp(argv[i], "-jt") == 0) {
+            if (strcmp(argv[i], "-jt") == 0) {
                 ES->m_jitThreshold = atoi(argv[++i]);
             }
-            if(strcmp(argv[i], "-ot") == 0) {
+            if (strcmp(argv[i], "-ot") == 0) {
                 ES->m_osrExitThreshold = atoi(argv[++i]);
             }
-            if(strcmp(argv[i], "-p") == 0) {
+            if (strcmp(argv[i], "-p") == 0) {
                 ES->m_profile = true;
             }
             FILE *fp = fopen(argv[i],"r");
-            if(fp) {
+            if (fp) {
                 std::string str;
                 char buf[512];
-                while(fgets(buf, sizeof buf, fp) != NULL) {
+                while (fgets(buf, sizeof buf, fp) != NULL) {
                     str += buf;
                 }
                 fclose(fp);
@@ -117,10 +117,10 @@ int main(int argc, char* argv[])
                 try{
                     escargot::ESValue ret = ES->evaluate(source);
 #ifndef NDEBUG
-                    if(ES->m_reportCompiledFunction) {
+                    if (ES->m_reportCompiledFunction) {
                         printf("\n");
                     }
-                    if(ES->m_reportOSRExitedFunction) {
+                    if (ES->m_reportOSRExitedFunction) {
                         printf("\n");
                     }
 #endif
@@ -131,7 +131,7 @@ int main(int argc, char* argv[])
                 }
             }
 
-            if(strcmp(argv[i], "--shell") == 0) {
+            if (strcmp(argv[i], "--shell") == 0) {
                 while (true) {
                     char buf[512];
                     printf("shell> ");
@@ -153,5 +153,6 @@ int main(int argc, char* argv[])
     ES->exit();
     return 0;
 }
+
 
 

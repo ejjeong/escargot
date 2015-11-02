@@ -18,7 +18,7 @@ public:
 
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        for(unsigned i = 0; i < m_body.size() ; i ++) {
+        for (unsigned i = 0; i < m_body.size() ; i ++) {
             m_body[i]->generateStatementByteCode(codeBlock, context);
 #ifndef NDEBUG
             codeBlock->pushCode(CheckStackPointer(this->m_sourceLocation.m_lineNumber), context, this);
@@ -41,5 +41,6 @@ protected:
 }
 
 #endif
+
 
 

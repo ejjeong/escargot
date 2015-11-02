@@ -30,13 +30,13 @@ public:
     {
         size_t currentFragmentRemain;
 
-        if(UNLIKELY(!m_allocatedMemorys.size())) {
+        if (UNLIKELY(!m_allocatedMemorys.size())) {
             currentFragmentRemain = 0;
         } else {
             currentFragmentRemain = m_allocatedMemorys.back().m_totalSize - m_allocatedMemorys.back().m_currentUsage;
         }
 
-        if(currentFragmentRemain < size) {
+        if (currentFragmentRemain < size) {
             allocSlow();
             currentFragmentRemain = s_fragmentBufferSize;
         }
@@ -177,5 +177,6 @@ void logVerboseJIT(const char* fmt...);
 }
 #endif
 #endif
+
 
 

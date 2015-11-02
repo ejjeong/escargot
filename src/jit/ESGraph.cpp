@@ -41,7 +41,7 @@ bool ESBasicBlock::endsWithJumpOrBranch()
     if (m_instructions.empty())
     return false;
     ESIR* ir = m_instructions.back();
-    switch(ir->opcode()) {
+    switch (ir->opcode()) {
     case ESIR::Opcode::Jump:
     case ESIR::Opcode::Branch:
         return true;
@@ -108,5 +108,6 @@ void ESGraph::dump(std::ostream& out, const char* msg)
 
 }}
 #endif
+
 
 

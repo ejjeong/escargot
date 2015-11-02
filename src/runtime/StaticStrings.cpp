@@ -6,7 +6,7 @@ namespace escargot {
 void Strings::initStaticStrings(ESVMInstance* instance)
 {
     emptyString = InternalAtomicString(instance, u"");
-    for(unsigned i = 0; i < ESCARGOT_ASCII_TABLE_MAX ; i ++) {
+    for (unsigned i = 0; i < ESCARGOT_ASCII_TABLE_MAX ; i ++) {
         ESString* str = ESString::create((char16_t)i);
         asciiTable[i] = InternalAtomicString(instance, str->string());
     }
@@ -19,7 +19,7 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     arguments =  InternalAtomicString(instance, u"arguments");
     __proto__ =  InternalAtomicString(instance, u"__proto__");
 
-    for(unsigned i = 0; i < ESCARGOT_STRINGS_NUMBERS_MAX ; i ++) {
+    for (unsigned i = 0; i < ESCARGOT_STRINGS_NUMBERS_MAX ; i ++) {
         ESString* str = ESString::create((int)i);
         numbers[i] = InternalAtomicString(str->data());
     }
@@ -123,5 +123,6 @@ void Strings::initStaticStrings(ESVMInstance* instance)
 Strings* strings;
 
 }
+
 
 

@@ -26,7 +26,7 @@ public:
             size_t start = codeBlock->currentCodeSize();
             m_init->generateExpressionByteCode(codeBlock, newContext);
             size_t end = codeBlock->currentCodeSize();
-            if(start != end)
+            if (start != end)
                 codeBlock->pushCode(Pop(), newContext, this);
         }
 
@@ -36,7 +36,7 @@ public:
 
         size_t forStart = codeBlock->currentCodeSize();
 
-        if(m_test) {
+        if (m_test) {
             m_test->generateExpressionByteCode(codeBlock, newContext);
         } else {
             codeBlock->pushCode(Push(ESValue(true)), newContext, this);
@@ -48,7 +48,7 @@ public:
         m_body->generateStatementByteCode(codeBlock, newContext);
 
         size_t updatePosition = codeBlock->currentCodeSize();
-        if(m_update) {
+        if (m_update) {
             m_update->generateExpressionByteCode(codeBlock, newContext);
             codeBlock->pushCode(Pop(), newContext, this);
         }
@@ -73,5 +73,6 @@ protected:
 }
 
 #endif
+
 
 

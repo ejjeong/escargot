@@ -18,7 +18,7 @@ public:
 
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        if(!m_alternate) {
+        if (!m_alternate) {
             m_test->generateExpressionByteCode(codeBlock, context);
             codeBlock->pushCode(JumpIfTopOfStackValueIsFalse(SIZE_MAX), context, this);
             size_t jPos = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsFalse>();
@@ -51,5 +51,6 @@ protected:
 }
 
 #endif
+
 
 

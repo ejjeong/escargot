@@ -21,30 +21,30 @@ ESValue ESValue::toPrimitiveSlowCase(PrimitiveTypeHint preferredType) const
     ESObject* obj = asESPointer()->asESObject();
     if (preferredType == PrimitiveTypeHint::PreferString) {
         ESValue toString = obj->get(ESValue(strings->toString.string()));
-        if(toString.isESPointer() && toString.asESPointer()->isESFunctionObject()) {
+        if (toString.isESPointer() && toString.asESPointer()->isESFunctionObject()) {
             ESValue str = ESFunctionObject::call(ESVMInstance::currentInstance(), toString, obj, NULL, 0, false);
-            if(str.isPrimitive())
+            if (str.isPrimitive())
                 return str;
         }
 
         ESValue valueOf = obj->get(ESValue(strings->valueOf.string()));
-        if(valueOf.isESPointer() && valueOf.asESPointer()->isESFunctionObject()) {
+        if (valueOf.isESPointer() && valueOf.asESPointer()->isESFunctionObject()) {
             ESValue val = ESFunctionObject::call(ESVMInstance::currentInstance(), valueOf, obj, NULL, 0, false);
-            if(val.isPrimitive())
+            if (val.isPrimitive())
                 return val;
         }
     } else { // preferNumber
         ESValue valueOf = obj->get(ESValue(strings->valueOf.string()));
-        if(valueOf.isESPointer() && valueOf.asESPointer()->isESFunctionObject()) {
+        if (valueOf.isESPointer() && valueOf.asESPointer()->isESFunctionObject()) {
             ESValue val = ESFunctionObject::call(ESVMInstance::currentInstance(), valueOf, obj, NULL, 0, false);
-            if(val.isPrimitive())
+            if (val.isPrimitive())
                 return val;
         }
 
         ESValue toString = obj->get(ESValue(strings->toString.string()));
-        if(toString.isESPointer() && toString.asESPointer()->isESFunctionObject()) {
+        if (toString.isESPointer() && toString.asESPointer()->isESFunctionObject()) {
             ESValue str = ESFunctionObject::call(ESVMInstance::currentInstance(), toString, obj, NULL, 0, false);
-            if(str.isPrimitive())
+            if (str.isPrimitive())
                 return str;
         }
     }
@@ -54,17 +54,17 @@ ESValue ESValue::toPrimitiveSlowCase(PrimitiveTypeHint preferredType) const
 ESString* ESValue::toStringSlowCase() const
 {
     ASSERT(!isESString());
-    if(isInt32()) {
+    if (isInt32()) {
         int num = asInt32();
-        if(num >= 0 && num < ESCARGOT_STRINGS_NUMBERS_MAX)
+        if (num >= 0 && num < ESCARGOT_STRINGS_NUMBERS_MAX)
             return strings->numbers[num].string();
         return ESString::create(num);
-    } else if(isNumber()) {
+    } else if (isNumber()) {
         double d = asNumber();
         if (std::isnan(d))
             return strings->NaN.string();
         if (std::isinf(d)) {
-            if(std::signbit(d))
+            if (std::signbit(d))
                 return strings->NegativeInfinity.string();
             else
                 return strings->Infinity.string();
@@ -75,12 +75,12 @@ ESString* ESValue::toStringSlowCase() const
             d = 0;
 
         return ESString::create(d);
-    } else if(isUndefined()) {
+    } else if (isUndefined()) {
         return strings->undefined.string();
-    } else if(isNull()) {
+    } else if (isNull()) {
         return strings->null.string();
-    } else if(isBoolean()) {
-        if(asBoolean())
+    } else if (isBoolean()) {
+        if (asBoolean())
             return strings->stringTrue.string();
         else
             return strings->stringFalse.string();
@@ -97,7 +97,7 @@ bool ESValue::abstractEqualsToSlowCase(const ESValue& val)
 
         if (std::isnan(a) || std::isnan(b))
             return false;
-        else if(a == b)
+        else if (a == b)
             return true;
 
         return false;
@@ -138,7 +138,7 @@ bool ESValue::abstractEqualsToSlowCase(const ESValue& val)
             ESPointer* o = asESPointer();
             ESPointer* comp = val.asESPointer();
 
-            if(o->isESString() && comp->isESString())
+            if (o->isESString() && comp->isESString())
                 return *o->asESString() == *comp->asESString();
             return equalsTo(val);
         }
@@ -244,13 +244,13 @@ ESStringData::ESStringData(double number)
 {
     m_hashData.m_isHashInited =  false;
 
-    if(number == 0) {
+    if (number == 0) {
         operator += ('0');
         return ;
     }
     const int flags = UNIQUE_ZERO | EMIT_POSITIVE_EXPONENT_SIGN;
     bool sign = false;
-    if(number < 0) {
+    if (number < 0) {
         sign = true;
         number = -number;
     }
@@ -267,15 +267,15 @@ ESStringData::ESStringData(double number)
     int decimal_point;
     double_conversion::Vector<char> vector(decimal_rep, kDecimalRepCapacity);
     bool fast_worked = FastDtoa(number, double_conversion::FAST_DTOA_SHORTEST, 0, vector, &decimal_rep_length, &decimal_point);
-    if(!fast_worked) {
+    if (!fast_worked) {
         BignumDtoa(number, double_conversion::BIGNUM_DTOA_SHORTEST, 0, vector, &decimal_rep_length, &decimal_point);
         vector[decimal_rep_length] = '\0';
     }
 
     /*    reserve(decimal_rep_length + sign ? 1 : 0);
-    if(sign)
+    if (sign)
     operator +=('-');
-    for(unsigned i = 0; i < decimal_rep_length ; i ++) {
+    for (unsigned i = 0; i < decimal_rep_length ; i ++) {
     operator +=(decimal_rep[i]);
     }*/
 
@@ -297,10 +297,10 @@ ESStringData::ESStringData(double number)
             &builder);
     }
 
-    if(sign)
+    if (sign)
         operator += ('-');
     char* buf = builder.Finalize();
-    while(*buf) {
+    while (*buf) {
         operator += (*buf);
         buf++;
     }
@@ -313,16 +313,16 @@ uint32_t ESString::tryToUseAsIndex()
     const u16string& s = string();
     bool allOfCharIsDigit = true;
     uint32_t number = 0;
-    for(unsigned i = 0; i < s.length() ; i ++) {
+    for (unsigned i = 0; i < s.length() ; i ++) {
         char16_t c = s[i];
-        if(c < '0' || c > '9') {
+        if (c < '0' || c > '9') {
             allOfCharIsDigit = false;
             break;
         } else {
             number = number*10 + (c-'0');
         }
     }
-    if(allOfCharIsDigit) {
+    if (allOfCharIsDigit) {
         return number;
     }
     return ESValue::ESInvalidIndexValue;
@@ -331,9 +331,9 @@ uint32_t ESString::tryToUseAsIndex()
 ESString* ESString::substring(int from, int to) const
 {
     ASSERT(0 <= from && from <= to && to <= (int)length());
-    if(UNLIKELY(m_string == NULL)) {
+    if (UNLIKELY(m_string == NULL)) {
         escargot::ESRopeString* rope = (escargot::ESRopeString *)this;
-        if(to - from == 1) {
+        if (to - from == 1) {
             int len_left = rope->m_left->length();
             char16_t c;
             if (to <= len_left) {
@@ -341,7 +341,7 @@ ESString* ESString::substring(int from, int to) const
             } else {
                 c = rope->m_left->stringData()->c_str()[from - len_left];
             }
-            if(c < ESCARGOT_ASCII_TABLE_MAX) {
+            if (c < ESCARGOT_ASCII_TABLE_MAX) {
                 return strings->asciiTable[c].string();
             }
         }
@@ -371,8 +371,8 @@ ESString* ESString::substring(int from, int to) const
         }
         ensureNormalString();
     }
-    if(to - from == 1) {
-        if(string()[from] < ESCARGOT_ASCII_TABLE_MAX) {
+    if (to - from == 1) {
+        if (string()[from] < ESCARGOT_ASCII_TABLE_MAX) {
             return strings->asciiTable[string()[from]].string();
         }
     }
@@ -401,7 +401,7 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
     }
 
     bool isGlobal = option & ESRegExpObject::Option::Global;
-    if(!byteCode) {
+    if (!byteCode) {
         JSC::Yarr::ErrorCode yarrError;
         JSC::Yarr::YarrPattern yarrPattern(*regexSource, option & ESRegExpObject::Option::IgnoreCase, option & ESRegExpObject::Option::MultiLine, &yarrError);
         if (yarrError) {
@@ -411,7 +411,7 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
         WTF::BumpPointerAllocator *bumpAlloc = ESVMInstance::currentInstance()->bumpPointerAllocator();
         JSC::Yarr::OwnPtr<JSC::Yarr::BytecodePattern> ownedBytecode = JSC::Yarr::byteCompileEscargot(yarrPattern, bumpAlloc);
         byteCode = ownedBytecode.leakPtr();
-        if(esptr->isESRegExpObject()) {
+        if (esptr->isESRegExpObject()) {
             esptr->asESRegExpObject()->setBytecodePattern(byteCode);
         }
     }
@@ -419,7 +419,7 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
     unsigned subPatternNum = byteCode->m_body->m_numSubpatterns;
     matchResult.m_subPatternNum = (int) subPatternNum;
     size_t length = m_string->length();
-    if(length) {
+    if (length) {
         size_t start = startIndex;
         unsigned result = 0;
         const char16_t *chars = m_string->data();
@@ -428,35 +428,35 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
         do {
             start = outputBuf[1];
             memset(outputBuf,-1,sizeof (unsigned) * 2 * (subPatternNum + 1));
-            if(start >= length)
+            if (start >= length)
                 break;
             result = JSC::Yarr::interpret(NULL, byteCode, chars, length, start, outputBuf);
-            if(result != JSC::Yarr::offsetNoMatch) {
-                if(UNLIKELY(testOnly)) {
+            if (result != JSC::Yarr::offsetNoMatch) {
+                if (UNLIKELY(testOnly)) {
                     return true;
                 }
                 std::vector<ESString::RegexMatchResult::RegexMatchResultPiece> piece;
                 piece.reserve(subPatternNum + 1);
 
-                for(unsigned i = 0; i < subPatternNum + 1 ; i ++) {
+                for (unsigned i = 0; i < subPatternNum + 1 ; i ++) {
                     ESString::RegexMatchResult::RegexMatchResultPiece p;
                     p.m_start = outputBuf[i*2];
                     p.m_end = outputBuf[i*2 + 1];
                     piece.push_back(p);
                 }
                 matchResult.m_matchResults.push_back(std::move(piece));
-                if(!isGlobal)
+                if (!isGlobal)
                     break;
-                if(start == outputBuf[1]) {
+                if (start == outputBuf[1]) {
                     outputBuf[1]++;
-                    if(outputBuf[1] > length) {
+                    if (outputBuf[1] > length) {
                         break;
                     }
                 }
             } else {
                 break;
             }
-        } while(result != JSC::Yarr::offsetNoMatch);
+        } while (result != JSC::Yarr::offsetNoMatch);
     }
     return matchResult.m_matchResults.size();
 }
@@ -517,7 +517,7 @@ void ESRegExpObject::setSource(escargot::ESString* src)
 }
 void ESRegExpObject::setOption(const Option& option)
 {
-    if(((m_option & ESRegExpObject::Option::MultiLine) != (option & ESRegExpObject::Option::MultiLine)) ||
+    if (((m_option & ESRegExpObject::Option::MultiLine) != (option & ESRegExpObject::Option::MultiLine)) ||
         ((m_option & ESRegExpObject::Option::IgnoreCase) != (option & ESRegExpObject::Option::IgnoreCase))
         ) {
         m_bytecodePattern = NULL;
@@ -565,8 +565,8 @@ ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctio
     newEC->setStrictMode(strict);
 
     // http://www.ecma-international.org/ecma-262/6.0/#sec-ordinarycallbindthis
-    if(!strict) {
-        if(receiver.isUndefinedOrNull()) {
+    if (!strict) {
+        if (receiver.isUndefinedOrNull()) {
             receiver = ESVMInstance->globalObject();
         } else {
             receiver = receiver.toObject();
@@ -577,10 +577,10 @@ ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctio
     ((FunctionEnvironmentRecord *)currentExecutionContext->environment()->record())->bindThisValue(receiver);
     DeclarativeEnvironmentRecord* functionRecord = currentExecutionContext->environment()->record()->toDeclarativeEnvironmentRecord();
 
-    if(UNLIKELY(fn->codeBlock()->m_needsActivation)) {
+    if (UNLIKELY(fn->codeBlock()->m_needsActivation)) {
         const InternalAtomicStringVector& params = fn->codeBlock()->m_params;
-        for(unsigned i = 0; i < params.size() ; i ++) {
-            if(i < argumentCount) {
+        for (unsigned i = 0; i < params.size() ; i ++) {
+            if (i < argumentCount) {
                 *functionRecord->bindingValueForActivationMode(i) = arguments[i];
             }
         }
@@ -591,7 +591,7 @@ ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctio
         const InternalAtomicStringVector& params = fn->codeBlock()->m_params;
         ESValue* buf = currentExecutionContext->cachedDeclarativeEnvironmentRecordESValue();
         memcpy(buf, arguments, sizeof(ESValue) * (std::min(params.size(), argumentCount)));
-        if(argumentCount < params.size()) {
+        if (argumentCount < params.size()) {
             std::fill(&buf[argumentCount], &buf[params.size()], ESValue());
         }
         // if FunctionExpressionNode has own name, should bind own name
@@ -610,16 +610,16 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
 #endif
     ESJIT::JITFunction jitFunction = fn->codeBlock()->m_cachedJITFunction;
 
-    if(!jitFunction && !fn->codeBlock()->m_dontJIT) {
+    if (!jitFunction && !fn->codeBlock()->m_dontJIT) {
 
         // update profile data
         char* code = fn->codeBlock()->m_code.data();
         size_t siz = fn->codeBlock()->m_byteCodeIndexesHaveToProfile.size();
-        for(unsigned i = 0; i < siz ; i ++) {
+        for (unsigned i = 0; i < siz ; i ++) {
             size_t pos = fn->codeBlock()->m_extraData[fn->codeBlock()->m_byteCodeIndexesHaveToProfile[i]].m_codePosition;
             ByteCode* currentCode = (ByteCode *)&code[pos];
             Opcode opcode = fn->codeBlock()->m_extraData[fn->codeBlock()->m_byteCodeIndexesHaveToProfile[i]].m_opcode;
-            switch(opcode) {
+            switch (opcode) {
             case GetByIdOpcode: {
                 reinterpret_cast<GetById*>(currentCode)->m_profile.updateProfiledType();
                 break;
@@ -677,7 +677,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
             }
         }
 
-        if(fn->codeBlock()->m_executeCount >= fn->codeBlock()->m_jitThreshold) {
+        if (fn->codeBlock()->m_executeCount >= fn->codeBlock()->m_jitThreshold) {
             LOG_VJ("==========Trying JIT Compile for function %s... (codeBlock %p)==========\n", functionName, fn->codeBlock());
             size_t idx = 0;
             size_t bytecodeCounter = 0;
@@ -689,9 +689,9 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
                 ByteCode* currentCode;
                 bool compileNextTime = false;
                 char* end = &fn->codeBlock()->m_code.data()[fn->codeBlock()->m_code.size()];
-                while(&code[idx] < end) {
+                while (&code[idx] < end) {
                     Opcode opcode = fn->codeBlock()->m_extraData[bytecodeCounter].m_opcode;
-                    switch(opcode) {
+                    switch (opcode) {
 #define DECLARE_EXECUTE_NEXTCODE(opcode, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
                     case opcode##Opcode: \
                         if (!JITSupported) { \
@@ -719,13 +719,13 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
             bool compileNextTime = false;
             // check profile data
             char* code = fn->codeBlock()->m_code.data();
-            for(unsigned i = 0; i < fn->codeBlock()->m_byteCodeIndexesHaveToProfile.size() ; i ++) {
+            for (unsigned i = 0; i < fn->codeBlock()->m_byteCodeIndexesHaveToProfile.size() ; i ++) {
                 size_t pos = fn->codeBlock()->m_extraData[fn->codeBlock()->m_byteCodeIndexesHaveToProfile[i]].m_codePosition;
                 Opcode opcode = fn->codeBlock()->m_extraData[fn->codeBlock()->m_byteCodeIndexesHaveToProfile[i]].m_opcode;
                 ByteCode* currentCode = (ByteCode *)&code[pos];
-                switch(opcode) {
+                switch (opcode) {
                 case GetByIdOpcode: {
-                    if(reinterpret_cast<GetById*>(currentCode)->m_profile.getType().isBottomType()) {
+                    if (reinterpret_cast<GetById*>(currentCode)->m_profile.getType().isBottomType()) {
                         LOG_VJ("> Cannot Compile JIT Function due to idx %u is not profiled yet\n", (unsigned)pos);
                         compileNextTime = true;
                         break;
@@ -733,7 +733,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
                     break;
                 }
                 case GetByIndexOpcode: {
-                    if(reinterpret_cast<GetByIndex*>(currentCode)->m_profile.getType().isBottomType()) {
+                    if (reinterpret_cast<GetByIndex*>(currentCode)->m_profile.getType().isBottomType()) {
                         LOG_VJ("> Cannot Compile JIT Function due to idx %u is not profiled yet\n", (unsigned)pos);
                         compileNextTime = true;
                         break;
@@ -741,7 +741,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
                     break;
                 }
                 case GetByIndexWithActivationOpcode: {
-                    if(reinterpret_cast<GetByIndexWithActivation*>(currentCode)->m_profile.getType().isBottomType()) {
+                    if (reinterpret_cast<GetByIndexWithActivation*>(currentCode)->m_profile.getType().isBottomType()) {
                         LOG_VJ("> Cannot Compile JIT Function due to idx %u is not profiled yet\n", (unsigned)pos);
                         compileNextTime = true;
                         break;
@@ -749,7 +749,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
                     break;
                 }
                 case GetByGlobalIndexOpcode: {
-                    if(reinterpret_cast<GetByGlobalIndex*>(currentCode)->m_profile.getType().isBottomType()) {
+                    if (reinterpret_cast<GetByGlobalIndex*>(currentCode)->m_profile.getType().isBottomType()) {
                         LOG_VJ("> Cannot Compile JIT Function due to idx %u is not profiled yet\n", (unsigned)pos);
                         compileNextTime = true;
                         break;
@@ -757,7 +757,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
                     break;
                 }
                 case GetObjectOpcode: {
-                    if(reinterpret_cast<GetObject*>(currentCode)->m_profile.getType().isBottomType()) {
+                    if (reinterpret_cast<GetObject*>(currentCode)->m_profile.getType().isBottomType()) {
                         LOG_VJ("> Cannot Compile JIT Function due to idx %u is not profiled yet\n", (unsigned)pos);
                         compileNextTime = true;
                         break;
@@ -765,7 +765,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
                     break;
                 }
                 case GetObjectAndPushObjectOpcode: {
-                    if(reinterpret_cast<GetObjectAndPushObject*>(currentCode)->m_profile.getType().isBottomType()) {
+                    if (reinterpret_cast<GetObjectAndPushObject*>(currentCode)->m_profile.getType().isBottomType()) {
                         LOG_VJ("> Cannot Compile JIT Function due to idx %u is not profiled yet\n", (unsigned)pos);
                         compileNextTime = true;
                         break;
@@ -773,7 +773,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
                     break;
                 }
                 case GetObjectWithPeekingOpcode: {
-                    if(reinterpret_cast<GetObjectWithPeeking*>(currentCode)->m_profile.getType().isBottomType()) {
+                    if (reinterpret_cast<GetObjectWithPeeking*>(currentCode)->m_profile.getType().isBottomType()) {
                         LOG_VJ("> Cannot Compile JIT Function due to idx %u is not profiled yet\n", (unsigned)pos);
                         compileNextTime = true;
                         break;
@@ -781,7 +781,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
                     break;
                 }
                 case GetObjectPreComputedCaseOpcode: {
-                    if(reinterpret_cast<GetObjectPreComputedCase*>(currentCode)->m_profile.getType().isBottomType()) {
+                    if (reinterpret_cast<GetObjectPreComputedCase*>(currentCode)->m_profile.getType().isBottomType()) {
                         LOG_VJ("> Cannot Compile JIT Function due to idx %u is not profiled yet\n", (unsigned)pos);
                         compileNextTime = true;
                         break;
@@ -789,7 +789,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
                     break;
                 }
                 case GetObjectWithPeekingPreComputedCaseOpcode: {
-                    if(reinterpret_cast<GetObjectWithPeekingPreComputedCase*>(currentCode)->m_profile.getType().isBottomType()) {
+                    if (reinterpret_cast<GetObjectWithPeekingPreComputedCase*>(currentCode)->m_profile.getType().isBottomType()) {
                         LOG_VJ("> Cannot Compile JIT Function due to idx %u is not profiled yet\n", (unsigned)pos);
                         compileNextTime = true;
                         break;
@@ -797,7 +797,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
                     break;
                 }
                 case GetObjectPreComputedCaseAndPushObjectOpcode: {
-                    if(reinterpret_cast<GetObjectPreComputedCaseAndPushObject*>(currentCode)->m_profile.getType().isBottomType()) {
+                    if (reinterpret_cast<GetObjectPreComputedCaseAndPushObject*>(currentCode)->m_profile.getType().isBottomType()) {
                         LOG_VJ("> Cannot Compile JIT Function due to idx %u is not profiled yet\n", (unsigned)pos);
                         compileNextTime = true;
                         break;
@@ -805,7 +805,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
                     break;
                 }
                 case ThisOpcode: {
-                    if(reinterpret_cast<This*>(currentCode)->m_profile.getType().isBottomType()) {
+                    if (reinterpret_cast<This*>(currentCode)->m_profile.getType().isBottomType()) {
                         LOG_VJ("> Cannot Compile JIT Function due to idx %u is not profiled yet\n", (unsigned)pos);
                         compileNextTime = true;
                         break;
@@ -813,7 +813,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
                     break;
                 }
                 case CallFunctionOpcode: {
-                    if(reinterpret_cast<CallFunction*>(currentCode)->m_profile.getType().isBottomType()) {
+                    if (reinterpret_cast<CallFunction*>(currentCode)->m_profile.getType().isBottomType()) {
                         LOG_VJ("> Cannot Compile JIT Function due to idx %u is not profiled yet\n", (unsigned)pos);
                         compileNextTime = true;
                         break;
@@ -821,7 +821,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
                     break;
                 }
                 case CallFunctionWithReceiverOpcode: {
-                    if(reinterpret_cast<CallFunctionWithReceiver*>(currentCode)->m_profile.getType().isBottomType()) {
+                    if (reinterpret_cast<CallFunctionWithReceiver*>(currentCode)->m_profile.getType().isBottomType()) {
                         LOG_VJ("> Cannot Compile JIT Function due to idx %u is not profiled yet\n", (unsigned)pos);
                         compileNextTime = true;
                         break;
@@ -890,7 +890,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
                     break;
                 }
 
-                switch(opcode) {
+                switch (opcode) {
 #define DECLARE_EXECUTE_NEXTCODE(code, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
                 case code##Opcode: \
                     idx += sizeof (code); \
@@ -930,12 +930,12 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
 ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, const ESValue& receiverInput, ESValue arguments[], const size_t& argumentCount, bool isNewExpression)
 {
     ESValue result(ESValue::ESForceUninitialized);
-    if(LIKELY(callee.isESPointer() && callee.asESPointer()->isESFunctionObject())) {
+    if (LIKELY(callee.isESPointer() && callee.asESPointer()->isESFunctionObject())) {
         ESValue receiver = receiverInput;
         ExecutionContext* currentContext = instance->currentExecutionContext();
         ESFunctionObject* fn = callee.asESPointer()->asESFunctionObject();
 
-        if(UNLIKELY(fn->codeBlock()->m_needsActivation)) {
+        if (UNLIKELY(fn->codeBlock()->m_needsActivation)) {
             instance->m_currentExecutionContext = new ExecutionContext(LexicalEnvironment::newFunctionEnvironment(arguments, argumentCount, fn), true, isNewExpression,
                 currentContext,
                 arguments, argumentCount);
@@ -1042,7 +1042,7 @@ void ESDateObject::setTimeValue(int year, int month, int date, int hour, int min
 
 void ESDateObject::resolveCache()
 {
-    if(m_isCacheDirty) {
+    if (m_isCacheDirty) {
         memcpy(&m_cachedTM, ESVMInstance::currentInstance()->computeLocalTime(m_time), sizeof (tm));
         m_isCacheDirty = false;
     }
@@ -1217,5 +1217,6 @@ bool ESTypedArrayObjectWrapper::set(int key, ESValue val)
 
 
 }
+
 
 

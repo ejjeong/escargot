@@ -22,7 +22,7 @@ public:
         try {
             v = m_argument->executeExpression(instance);
         } catch(const ESValue& e) {
-            if((m_argument->type() == Identifier) && e.isESPointer() && e.asESPointer()->isESObject() && e.asESPointer()->asESObject()->constructor() == ESValue(instance->globalObject()->referenceError())) {
+            if ((m_argument->type() == Identifier) && e.isESPointer() && e.asESPointer()->isESObject() && e.asESPointer()->asESObject()->constructor() == ESValue(instance->globalObject()->referenceError())) {
 
             } else {
                 throw e;
@@ -50,5 +50,6 @@ public:
 }
 
 #endif
+
 
 

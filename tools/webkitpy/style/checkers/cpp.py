@@ -1746,6 +1746,11 @@ def check_spacing(file_extension, clean_lines, line_number, error):
                     error(line_number, 'whitespace/comments', 4,
                           'Should have a space between // and comment')
 
+    # A pet peeve of mine: no spaces after an if, while, switch, or for
+    matched = search(r' (if\(|for\(|while\(|switch\()', line)
+    if matched:
+        error(line_number, 'whitespace/parens', 5,
+              'Missing space before ( in %s' % matched.group(1))
 """
     # Before nixing comments, check if the line is blank for no good
     # reason.  This includes the first line after a block is opened, and

@@ -15,14 +15,14 @@ CodeBlock::CodeBlock(bool isBuiltInFunction)
     m_executeCount = 0;
     m_jitThreshold = ESVMInstance::currentInstance()->m_jitThreshold;
 #endif
-    if(!isBuiltInFunction) {
+    if (!isBuiltInFunction) {
         ESVMInstance::currentInstance()->globalObject()->registerCodeBlock(this);
     }
 }
 
 CodeBlock::~CodeBlock()
 {
-    if(!m_isBuiltInFunction)
+    if (!m_isBuiltInFunction)
         ESVMInstance::currentInstance()->globalObject()->unregisterCodeBlock(this);
 }
 
@@ -37,25 +37,25 @@ void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, B
     ASSERT(context.m_baseRegisterCount>=0);
 
 #ifdef ENABLE_ESJIT
-    if(op == AllocPhiOpcode) {
+    if (op == AllocPhiOpcode) {
         data->m_targetIndex0 = context.m_currentSSARegisterCount++;
-    } else if(op == StorePhiOpcode) {
+    } else if (op == StorePhiOpcode) {
         data->m_sourceIndexes.push_back(((StorePhi *)code)->m_allocIndex);
         data->m_sourceIndexes.push_back(context.m_currentSSARegisterCount - 1);
         data->m_targetIndex0 = context.m_currentSSARegisterCount++;
-    } else if(op == LoadPhiOpcode) {
+    } else if (op == LoadPhiOpcode) {
         data->m_sourceIndexes.push_back(((LoadPhi *)code)->m_allocIndex);
         data->m_sourceIndexes.push_back(((LoadPhi *)code)->m_srcIndex0);
         data->m_sourceIndexes.push_back(((LoadPhi *)code)->m_srcIndex1);
         data->m_targetIndex0 = context.m_currentSSARegisterCount++;
-    } else if(op == PushIntoTempStackOpcode) {
+    } else if (op == PushIntoTempStackOpcode) {
         data->m_targetIndex0 = context.m_currentSSARegisterCount++;
         data->m_sourceIndexes.push_back(context.m_ssaComputeStack.back());
         context.m_ssaComputeStack.pop_back();
-    } else if(op == PopFromTempStackOpcode) {
+    } else if (op == PopFromTempStackOpcode) {
         int val = -1;
-        for(unsigned i = m_extraData.size() - 1; ; i --) {
-            if(m_extraData[i].m_codePosition == ((PopFromTempStack *)code)->m_pushCodePosition) {
+        for (unsigned i = m_extraData.size() - 1; ; i --) {
+            if (m_extraData[i].m_codePosition == ((PopFromTempStack *)code)->m_pushCodePosition) {
                 val = m_extraData[i].m_targetIndex0;
                 data->m_sourceIndexes.push_back(val);
                 break;
@@ -66,11 +66,11 @@ void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, B
         context.m_ssaComputeStack.push_back(val);
     } else {
         // normal path
-        if(op == InitObjectOpcode) {
+        if (op == InitObjectOpcode) {
             // peek, pop both are exist case
             int peekCount = peekCountFromOpcode(code, op);
             ASSERT(peekCount == 1);
-            for(int i = 0; i < data->m_registerDecrementCount ; i ++) {
+            for (int i = 0; i < data->m_registerDecrementCount ; i ++) {
                 int c = context.m_ssaComputeStack.back();
                 context.m_ssaComputeStack.pop_back();
                 data->m_sourceIndexes.push_back(c);
@@ -82,13 +82,13 @@ void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, B
             int peekCount = peekCountFromOpcode(code, op);
             ASSERT(!peekCount || !data->m_registerDecrementCount);
             auto iter = context.m_ssaComputeStack.end();
-            for(int i = 0; i < peekCount ; i ++) {
+            for (int i = 0; i < peekCount ; i ++) {
                 iter --;
                 int c = *iter;
                 data->m_sourceIndexes.push_back(c);
             }
 
-            for(int i = 0; i < data->m_registerDecrementCount ; i ++) {
+            for (int i = 0; i < data->m_registerDecrementCount ; i ++) {
                 int c = context.m_ssaComputeStack.back();
                 context.m_ssaComputeStack.pop_back();
                 data->m_sourceIndexes.push_back(c);
@@ -97,8 +97,8 @@ void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, B
 
         std::reverse(data->m_sourceIndexes.begin(), data->m_sourceIndexes.end());
 
-        if(data->m_registerIncrementCount == 0) {
-        } else if(data->m_registerIncrementCount == 1) {
+        if (data->m_registerIncrementCount == 0) {
+        } else if (data->m_registerIncrementCount == 1) {
             int c = context.m_currentSSARegisterCount++;
             context.m_ssaComputeStack.push_back(c);
             data->m_targetIndex0 = c;
@@ -121,19 +121,19 @@ void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, B
         haveToProfile = hasProfileData; \
         canJIT = JITSupported; \
     break;
-    switch(op) {
+    switch (op) {
         FOR_EACH_BYTECODE_OP(FETCH_DATA_BYTE_CODE);
     default:
         RELEASE_ASSERT_NOT_REACHED();
     }
 
 #ifdef NDEBUG
-    if(!canJIT) {
+    if (!canJIT) {
         m_dontJIT = true;
     }
 #endif
 
-    if(haveToProfile) {
+    if (haveToProfile) {
         m_byteCodeIndexesHaveToProfile.push_back(m_extraData.size());
     }
 #endif
@@ -164,10 +164,10 @@ CodeBlock* generateByteCode(Node* node)
     // unsigned long end = ESVMInstance::tickCount();
     // printf("generate code takes %lfms\n",(end-start)/1000.0);
 #ifndef NDEBUG
-    if(ESVMInstance::currentInstance()->m_dumpByteCode) {
+    if (ESVMInstance::currentInstance()->m_dumpByteCode) {
         char* code = block->m_code.data();
         ByteCode* currentCode = (ByteCode *)(&code[0]);
-        if(currentCode->m_orgOpcode != ExecuteNativeFunctionOpcode) {
+        if (currentCode->m_orgOpcode != ExecuteNativeFunctionOpcode) {
             dumpBytecode(block);
         }
     }
@@ -183,16 +183,16 @@ CodeBlock* generateByteCode(Node* node)
 
 unsigned char popCountFromOpcode(ByteCode* code, Opcode opcode)
 {
-    if(opcode == CallFunctionOpcode) {
+    if (opcode == CallFunctionOpcode) {
         CallFunction* c = (CallFunction*)code;
         return c->m_argmentCount + 1/* function */;
-    } if(opcode == CallFunctionWithReceiverOpcode) {
+    } if (opcode == CallFunctionWithReceiverOpcode) {
         CallFunctionWithReceiver* c = (CallFunctionWithReceiver*)code;
         return c->m_argmentCount + 1/* receiver */ + 1/* function */;
-    } else if(opcode == CallEvalFunctionOpcode) {
+    } else if (opcode == CallEvalFunctionOpcode) {
         CallEvalFunction* c = (CallEvalFunction*)code;
         return c->m_argmentCount;
-    } else if(opcode == NewFunctionCallOpcode) {
+    } else if (opcode == NewFunctionCallOpcode) {
         NewFunctionCall* c = (NewFunctionCall*)code;
         return c->m_argmentCount + 1/* function */;
     }
@@ -200,7 +200,7 @@ unsigned char popCountFromOpcode(ByteCode* code, Opcode opcode)
     case code##Opcode: \
         ASSERT(popCount != -1); \
         return popCount;
-    switch(opcode) {
+    switch (opcode) {
         FOR_EACH_BYTECODE_OP(FETCH_POP_COUNT_BYTE_CODE);
     default:
         RELEASE_ASSERT_NOT_REACHED();
@@ -209,8 +209,8 @@ unsigned char popCountFromOpcode(ByteCode* code, Opcode opcode)
 
 unsigned char pushCountFromOpcode(ByteCode* code, Opcode opcode)
 {
-    if(opcode == CreateFunctionOpcode) {
-        if(((CreateFunction *)code)->m_codeBlock->m_isFunctionExpression) {
+    if (opcode == CreateFunctionOpcode) {
+        if (((CreateFunction *)code)->m_codeBlock->m_isFunctionExpression) {
             return 1;
         } else
             return 0;
@@ -219,7 +219,7 @@ unsigned char pushCountFromOpcode(ByteCode* code, Opcode opcode)
     case code##Opcode: \
         ASSERT(pushCount != -1); \
         return pushCount;
-    switch(opcode) {
+    switch (opcode) {
         FOR_EACH_BYTECODE_OP(FETCH_PUSH_COUNT_BYTE_CODE);
     default:
         RELEASE_ASSERT_NOT_REACHED();
@@ -232,7 +232,7 @@ unsigned char peekCountFromOpcode(ByteCode* code, Opcode opcode)
     case code##Opcode: \
         ASSERT(peekCount != -1); \
         return peekCount;
-    switch(opcode) {
+    switch (opcode) {
         FOR_EACH_BYTECODE_OP(FETCH_PEEK_COUNT_BYTE_CODE);
     default:
         RELEASE_ASSERT_NOT_REACHED();
@@ -252,11 +252,11 @@ void dumpBytecode(CodeBlock* codeBlock)
 #endif
     char* code = codeBlock->m_code.data();
     char* end = &codeBlock->m_code.data()[codeBlock->m_code.size()];
-    while(&code[idx] < end) {
+    while (&code[idx] < end) {
         ByteCode* currentCode = (ByteCode *)(&code[idx]);
         unsigned currentCount = bytecodeCounter;
         ByteCodeExtraData* ex = &codeBlock->m_extraData[currentCount];
-        if(currentCode->m_node)
+        if (currentCode->m_node)
             printf("%u\t\t%p\t(nodeinfo %d)\t\t",(unsigned)idx, currentCode, (int)currentCode->m_node->sourceLocation().m_lineNumber);
         else
             printf("%u\t\t%p\t(nodeinfo null)\t\t",(unsigned)idx, currentCode);
@@ -265,15 +265,15 @@ void dumpBytecode(CodeBlock* codeBlock)
 #ifdef ENABLE_ESJIT
         printf("ssa->[");
 
-        if(ex->m_targetIndex0 != -1) {
+        if (ex->m_targetIndex0 != -1) {
             printf("t: %d,", ex->m_targetIndex0);
         }
 
-        if(ex->m_targetIndex1 != -1) {
+        if (ex->m_targetIndex1 != -1) {
             printf("t2: %d,", ex->m_targetIndex1);
         }
 
-        for(int i = 0; i < ex->m_sourceIndexes.size() ; i ++) {
+        for (int i = 0; i < ex->m_sourceIndexes.size() ; i ++) {
             printf("s: %d,", ex->m_sourceIndexes[i]);
         }
         printf("]");
@@ -284,7 +284,7 @@ void dumpBytecode(CodeBlock* codeBlock)
         bytecodeCounter++;
         ASSERT(opcode == currentCode->m_orgOpcode);
 
-        switch(opcode) {
+        switch (opcode) {
 #define DUMP_BYTE_CODE(code, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
         case code##Opcode:\
             currentCode->dump(); \
@@ -309,9 +309,9 @@ void dumpUnsupported(CodeBlock* block)
     char* code = block->m_code.data();
     char* end = &block->m_code.data()[block->m_code.size()];
     std::map<std::string, size_t> names;
-    while(&code[idx] < end) {
+    while (&code[idx] < end) {
         Opcode opcode = block->m_extraData[bytecodeCounter].m_opcode;
-        switch(opcode) {
+        switch (opcode) {
 #define DECLARE_EXECUTE_NEXTCODE(opcode, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
         case opcode##Opcode: \
             if (!JITSupported) { \
@@ -334,5 +334,6 @@ void dumpUnsupported(CodeBlock* block)
 }
 #endif
 }
+
 
 

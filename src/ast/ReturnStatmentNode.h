@@ -16,7 +16,7 @@ public:
 
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        if(m_argument) {
+        if (m_argument) {
             m_argument->generateExpressionByteCode(codeBlock, context);
             codeBlock->pushCode(ReturnFunctionWithValue(), context, this);
         } else {
@@ -30,5 +30,6 @@ protected:
 }
 
 #endif
+
 
 

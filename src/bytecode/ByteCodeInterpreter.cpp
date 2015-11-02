@@ -7,7 +7,7 @@ namespace escargot {
 
 ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter, unsigned maxStackPos)
 {
-    if(codeBlock == NULL) {
+    if (codeBlock == NULL) {
 #define REGISTER_TABLE(opcode, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
         instance->opcodeTable()->m_table[opcode##Opcode] = &&opcode##OpcodeLbl;
         FOR_EACH_BYTECODE_OP(REGISTER_TABLE);
@@ -60,10 +60,10 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     ASSERT(((size_t)currentCode % sizeof(size_t)) == 0);
 
 #ifndef NDEBUG
-    if(instance->m_dumpExecuteByteCode) {
+    if (instance->m_dumpExecuteByteCode) {
         size_t tt = (size_t)currentCode;
         ASSERT(tt % sizeof(size_t) == 0);
-        if(currentCode->m_node)
+        if (currentCode->m_node)
             printf("execute %p %u \t(nodeinfo %d)\t",currentCode, (unsigned)(programCounter-(size_t)codeBuffer), (int)currentCode->m_node->sourceLocation().m_lineNumber);
         else
             printf("execute %p %u \t(nodeinfo null)\t",currentCode, (unsigned)(programCounter-(size_t)codeBuffer));
@@ -157,7 +157,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         GetByIndexWithActivation* code = (GetByIndexWithActivation*)currentCode;
         LexicalEnvironment* env = ec->environment();
-        for(unsigned i = 0; i < code->m_upIndex; i ++) {
+        for (unsigned i = 0; i < code->m_upIndex; i ++) {
             env = env->outerEnvironment();
         }
         ASSERT(env->record()->isDeclarativeEnvironmentRecord());
@@ -202,12 +202,12 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             // asdf = 2
             ESValue* slot = ec->resolveBinding(code->m_name);
 
-            if(LIKELY(slot != NULL)) {
+            if (LIKELY(slot != NULL)) {
                 code->m_cachedSlot = slot;
                 code->m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
                 *code->m_cachedSlot = *value;
             } else {
-                if(!ec->isStrictMode()) {
+                if (!ec->isStrictMode()) {
                     globalObject->defineDataProperty(code->m_name.string(), true, true, true, *value);
                 } else {
                     u16string err_msg;
@@ -241,7 +241,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         SetByIndexWithActivation* code = (SetByIndexWithActivation*)currentCode;
         LexicalEnvironment* env = ec->environment();
-        for(unsigned i = 0; i < code->m_upIndex; i ++) {
+        for (unsigned i = 0; i < code->m_upIndex; i ++) {
             env = env->outerEnvironment();
         }
         ASSERT(env->record()->isDeclarativeEnvironmentRecord());
@@ -362,7 +362,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* right = pop<ESValue>(stack, bp);
         ESValue* left = pop<ESValue>(stack, bp);
         ESValue r = abstractRelationalComparison(*left, *right, true);
-        if(r.isUndefined())
+        if (r.isUndefined())
             push<ESValue>(stack, topOfStack, ESValue(false));
         else
             push<ESValue>(stack, topOfStack, r);
@@ -375,7 +375,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* right = pop<ESValue>(stack, bp);
         ESValue* left = pop<ESValue>(stack, bp);
         ESValue r = abstractRelationalComparison(*right, *left, false);
-        if(r == ESValue(true) || r.isUndefined())
+        if (r == ESValue(true) || r.isUndefined())
             push<ESValue>(stack, topOfStack, ESValue(false));
         else
             push<ESValue>(stack, topOfStack, ESValue(true));
@@ -388,7 +388,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* right = pop<ESValue>(stack, bp);
         ESValue* left = pop<ESValue>(stack, bp);
         ESValue r = abstractRelationalComparison(*right, *left, false);
-        if(r.isUndefined())
+        if (r.isUndefined())
             push<ESValue>(stack, topOfStack, ESValue(false));
         else
             push<ESValue>(stack, topOfStack, r);
@@ -401,7 +401,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* right = pop<ESValue>(stack, bp);
         ESValue* left = pop<ESValue>(stack, bp);
         ESValue r = abstractRelationalComparison(*left, *right, true);
-        if(r == ESValue(true) || r.isUndefined())
+        if (r == ESValue(true) || r.isUndefined())
             push<ESValue>(stack, topOfStack, ESValue(false));
         else
             push<ESValue>(stack, topOfStack, ESValue(true));
@@ -458,9 +458,9 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* src = pop<ESValue>(stack, bp);
         ESValue ret(ESValue::ESForceUninitialized);
-        if(src->isInt32()) {
+        if (src->isInt32()) {
             int32_t a = src->asInt32();
-            if(a == std::numeric_limits<int32_t>::max())
+            if (a == std::numeric_limits<int32_t>::max())
                 ret = ESValue(ESValue::EncodeAsDouble, ((double)a) + 1);
             else
                 ret = ESValue(a + 1);
@@ -476,9 +476,9 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* src = pop<ESValue>(stack, bp);
         ESValue ret(ESValue::ESForceUninitialized);
-        if(src->isInt32()) {
+        if (src->isInt32()) {
             int32_t a = src->asInt32();
-            if(a == std::numeric_limits<int32_t>::min())
+            if (a == std::numeric_limits<int32_t>::min())
                 ret = ESValue(ESValue::EncodeAsDouble, ((double)a) - 1);
             else
                 ret = ESValue(a - 1);
@@ -521,7 +521,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     ToNumberOpcodeLbl:
     {
         ESValue* v = peek<ESValue>(stack, bp);
-        if(!v->isNumber()) {
+        if (!v->isNumber()) {
             v = pop<ESValue>(stack, bp);
             push<ESValue>(stack, topOfStack, ESValue(v->toNumber()));
         }
@@ -531,7 +531,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
     ThisOpcodeLbl:
     {
-        if(UNLIKELY(thisValue.isEmpty())) {
+        if (UNLIKELY(thisValue.isEmpty())) {
             thisValue = ec->resolveThisBinding();
         }
 #ifdef ENABLE_ESJIT
@@ -690,7 +690,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         CreateFunction* code = (CreateFunction*)currentCode;
         ASSERT(((size_t)code->m_codeBlock % sizeof(size_t)) == 0);
         ESFunctionObject* function = ESFunctionObject::create(ec->environment(), code->m_codeBlock, code->m_nonAtomicName == NULL ? strings->emptyString.string() : code->m_nonAtomicName, code->m_codeBlock->m_params.size());
-        if(code->m_isDeclaration) { // FD
+        if (code->m_isDeclaration) { // FD
             function->set(strings->name.string(), code->m_nonAtomicName);
             ec->environment()->record()->setMutableBinding(code->m_name, function, false);
         }
@@ -770,7 +770,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         JumpIfTopOfStackValueIsFalse* code = (JumpIfTopOfStackValueIsFalse *)currentCode;
         ESValue* top = pop<ESValue>(stack, bp);
         ASSERT(code->m_jumpPosition != SIZE_MAX);
-        if(!top->toBoolean())
+        if (!top->toBoolean())
             programCounter = jumpTo(codeBuffer, code->m_jumpPosition);
         else
             executeNextCode<JumpIfTopOfStackValueIsFalse>(programCounter);
@@ -782,7 +782,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         JumpIfTopOfStackValueIsTrue* code = (JumpIfTopOfStackValueIsTrue *)currentCode;
         ESValue* top = pop<ESValue>(stack, bp);
         ASSERT(code->m_jumpPosition != SIZE_MAX);
-        if(top->toBoolean())
+        if (top->toBoolean())
             programCounter = jumpTo(codeBuffer, code->m_jumpPosition);
         else
             executeNextCode<JumpIfTopOfStackValueIsTrue>(programCounter);
@@ -794,7 +794,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         JumpAndPopIfTopOfStackValueIsTrue* code = (JumpAndPopIfTopOfStackValueIsTrue *)currentCode;
         ESValue* top = pop<ESValue>(stack, bp);
         ASSERT(code->m_jumpPosition != SIZE_MAX);
-        if(top->toBoolean()) {
+        if (top->toBoolean()) {
             programCounter = jumpTo(codeBuffer, code->m_jumpPosition);
             pop<ESValue>(stack, bp);
         }
@@ -808,7 +808,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         JumpIfTopOfStackValueIsFalseWithPeeking* code = (JumpIfTopOfStackValueIsFalseWithPeeking *)currentCode;
         ESValue* top = peek<ESValue>(stack, bp);
         ASSERT(code->m_jumpPosition != SIZE_MAX);
-        if(!top->toBoolean())
+        if (!top->toBoolean())
             programCounter = jumpTo(codeBuffer, code->m_jumpPosition);
         else
             executeNextCode<JumpIfTopOfStackValueIsFalseWithPeeking>(programCounter);
@@ -820,7 +820,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         JumpIfTopOfStackValueIsTrueWithPeeking* code = (JumpIfTopOfStackValueIsTrueWithPeeking *)currentCode;
         ESValue* top = peek<ESValue>(stack, bp);
         ASSERT(code->m_jumpPosition != SIZE_MAX);
-        if(top->toBoolean())
+        if (top->toBoolean())
             programCounter = jumpTo(codeBuffer, code->m_jumpPosition);
         else
             executeNextCode<JumpIfTopOfStackValueIsTrueWithPeeking>(programCounter);
@@ -853,7 +853,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     UnaryDeleteOpcodeLbl:
     {
         UnaryDelete* code = (UnaryDelete*)currentCode;
-        if(code->m_isDeleteObjectKey) {
+        if (code->m_isDeleteObjectKey) {
             ESValue* key = pop<ESValue>(stack, bp);
             ESValue* obj = pop<ESValue>(stack, bp);
             bool res = obj->toObject()->deleteProperty(*key);
@@ -973,20 +973,20 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
     FinallyEndOpcodeLbl:
     {
-        if(ec->tryOrCatchBodyResult().isEmpty()) {
+        if (ec->tryOrCatchBodyResult().isEmpty()) {
             executeNextCode<FinallyEnd>(programCounter);
             NEXT_INSTRUCTION();
         } else {
             ASSERT(ec->tryOrCatchBodyResult().asESPointer()->isESControlFlowRecord());
             ESControlFlowRecord* record = ec->tryOrCatchBodyResult().asESPointer()->asESControlFlowRecord();
             int32_t dupCnt = record->value2().asInt32();
-            if(dupCnt <= 1) {
-                if(record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsReturn) {
+            if (dupCnt <= 1) {
+                if (record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsReturn) {
                     ESValue ret = record->value();
                     ec->tryOrCatchBodyResult() = ESValue(ESValue::ESEmptyValue);
                     // TODO sp check
                     return ret;
-                } else if(record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsThrow) {
+                } else if (record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsThrow) {
                     ESValue val = record->value();
                     ec->tryOrCatchBodyResult() = ESValue(ESValue::ESEmptyValue);
                     throw val;
@@ -1060,11 +1060,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* arguments = (ESValue *)stack;
 
         ESValue callee = *ec->resolveBinding(strings->eval);
-        if(callee.isESPointer() && (void *)callee.asESPointer() == (void *)globalObject->eval()) {
+        if (callee.isESPointer() && (void *)callee.asESPointer() == (void *)globalObject->eval()) {
             ESObject* receiver = instance->globalObject();
             ESValue ret = instance->runOnEvalContext([instance, &arguments, &argc](){
                 ESValue ret;
-                if(argc)
+                if (argc)
                     ret = instance->evaluate(const_cast<u16string &>(arguments[0].asESString()->string()), false);
                 return ret;
             }, true);
@@ -1196,7 +1196,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* key = pop<ESValue>(stack, bp);
         ESObject* obj = peek<ESValue>(stack, bp)->asESPointer()->asESObject();
         ESString* keyString = key->toString();
-        if(obj->hasOwnProperty(keyString)) {
+        if (obj->hasOwnProperty(keyString)) {
             // TODO check property is accessor property
             // TODO check accessor already exists
             obj->accessorData(keyString)->setJSSetter(value->asESPointer()->asESFunctionObject());
@@ -1213,7 +1213,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* key = pop<ESValue>(stack, bp);
         ESObject* obj = peek<ESValue>(stack, bp)->asESPointer()->asESObject();
         ESString* keyString = key->toString();
-        if(obj->hasOwnProperty(keyString)) {
+        if (obj->hasOwnProperty(keyString)) {
             // TODO check property is accessor property
             // TODO check accessor already exists
             obj->accessorData(keyString)->setJSGetter(value->asESPointer()->asESFunctionObject());
@@ -1233,5 +1233,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 }
 
 }
+
 
 

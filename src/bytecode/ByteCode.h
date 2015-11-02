@@ -263,26 +263,26 @@ struct ByteCodeGenerateContext {
     void registerJumpPositionsToComplexCase()
     {
         ASSERT(m_tryStatementScopeCount);
-        for(unsigned i = 0 ; i < m_breakStatementPositions.size() ; i ++) {
-            if(m_complexCaseStatementPositions.find(m_breakStatementPositions[i]) == m_complexCaseStatementPositions.end()) {
+        for (unsigned i = 0 ; i < m_breakStatementPositions.size() ; i ++) {
+            if (m_complexCaseStatementPositions.find(m_breakStatementPositions[i]) == m_complexCaseStatementPositions.end()) {
                 m_complexCaseStatementPositions.insert(std::make_pair(m_breakStatementPositions[i], m_tryStatementScopeCount));
             }
         }
 
-        for(unsigned i = 0 ; i < m_continueStatementPositions.size() ; i ++) {
-            if(m_complexCaseStatementPositions.find(m_continueStatementPositions[i]) == m_complexCaseStatementPositions.end()) {
+        for (unsigned i = 0 ; i < m_continueStatementPositions.size() ; i ++) {
+            if (m_complexCaseStatementPositions.find(m_continueStatementPositions[i]) == m_complexCaseStatementPositions.end()) {
                 m_complexCaseStatementPositions.insert(std::make_pair(m_continueStatementPositions[i], m_tryStatementScopeCount));
             }
         }
 
-        for(unsigned i = 0 ; i < m_labeledBreakStatmentPositions.size() ; i ++) {
-            if(m_complexCaseStatementPositions.find(m_labeledBreakStatmentPositions[i].second) == m_complexCaseStatementPositions.end()) {
+        for (unsigned i = 0 ; i < m_labeledBreakStatmentPositions.size() ; i ++) {
+            if (m_complexCaseStatementPositions.find(m_labeledBreakStatmentPositions[i].second) == m_complexCaseStatementPositions.end()) {
                 m_complexCaseStatementPositions.insert(std::make_pair(m_labeledBreakStatmentPositions[i].second, m_tryStatementScopeCount));
             }
         }
 
-        for(unsigned i = 0 ; i < m_labeledContinueStatmentPositions.size() ; i ++) {
-            if(m_complexCaseStatementPositions.find(m_labeledContinueStatmentPositions[i].second) == m_complexCaseStatementPositions.end()) {
+        for (unsigned i = 0 ; i < m_labeledContinueStatmentPositions.size() ; i ++) {
+            if (m_complexCaseStatementPositions.find(m_labeledContinueStatmentPositions[i].second) == m_complexCaseStatementPositions.end()) {
                 m_complexCaseStatementPositions.insert(std::make_pair(m_labeledContinueStatmentPositions[i].second, m_tryStatementScopeCount));
             }
         }
@@ -417,11 +417,11 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        if(m_value.isEmpty())
+        if (m_value.isEmpty())
             printf("Push <Empty>\n");
-        else if(m_value.isESString()) {
+        else if (m_value.isESString()) {
             ESString* str = m_value.asESString();
-            if(str->length() > 30) {
+            if (str->length() > 30) {
                 printf("Push <%s>\n", str->substring(0, 30)->utf8Data());
             } else
                 printf("Push <%s>\n", m_value.toString()->utf8Data());
@@ -2258,7 +2258,7 @@ ALWAYS_INLINE void push(void*& stk, void* topOfStack, const Type& ptr)
     stk = (void *)(((size_t)stk) + sizeof(Type));
 
 #ifndef NDEBUG
-    if(stk > topOfStack) {
+    if (stk > topOfStack) {
         puts("stackoverflow!!!");
         ASSERT_NOT_REACHED();
     }
@@ -2274,7 +2274,7 @@ ALWAYS_INLINE void push(void*& stk, void* topOfStack, Type* ptr)
     stk = (void *)(((size_t)stk) + sizeof(Type));
 
 #ifndef NDEBUG
-    if(stk > topOfStack) {
+    if (stk > topOfStack) {
         puts("stackoverflow!!!");
         ASSERT_NOT_REACHED();
     }
@@ -2286,7 +2286,7 @@ template <typename Type>
 ALWAYS_INLINE Type* pop(void*& stk, void* bp)
 {
 #ifndef NDEBUG
-    if(((size_t)stk) - sizeof (Type) < ((size_t)bp)) {
+    if (((size_t)stk) - sizeof (Type) < ((size_t)bp)) {
         ASSERT_NOT_REACHED();
     }
 #endif
@@ -2305,7 +2305,7 @@ ALWAYS_INLINE Type* peek(void* stk, void* bp)
 template <typename Type>
 ALWAYS_INLINE void sub(void*& stk, void* bp, size_t offsetToBasePointer)
 {
-    if(((size_t)stk) - offsetToBasePointer * sizeof(Type) < ((size_t)bp)) {
+    if (((size_t)stk) - offsetToBasePointer * sizeof(Type) < ((size_t)bp)) {
         ASSERT_NOT_REACHED();
     }
     stk = (void *)(((size_t)stk) - offsetToBasePointer * sizeof(Type));
@@ -2377,8 +2377,8 @@ inline void CodeBlock::pushCode(const ExecuteNativeFunction& code)
 
 ALWAYS_INLINE void ByteCodeGenerateContext::consumeLabeledContinuePositions(CodeBlock* cb, size_t position, ESString* lbl)
 {
-    for(size_t i = 0; i < m_labeledContinueStatmentPositions.size(); i ++) {
-        if(*m_labeledContinueStatmentPositions[i].first == *lbl) {
+    for (size_t i = 0; i < m_labeledContinueStatmentPositions.size(); i ++) {
+        if (*m_labeledContinueStatmentPositions[i].first == *lbl) {
             Jump* shouldBeJump = cb->peekCode<Jump>(m_labeledContinueStatmentPositions[i].second);
             ASSERT(shouldBeJump->m_orgOpcode == JumpOpcode);
             shouldBeJump->m_jumpPosition = position;
@@ -2391,7 +2391,7 @@ ALWAYS_INLINE void ByteCodeGenerateContext::consumeLabeledContinuePositions(Code
 
 ALWAYS_INLINE void ByteCodeGenerateContext::consumeBreakPositions(CodeBlock* cb, size_t position)
 {
-    for(size_t i = 0; i < m_breakStatementPositions.size(); i ++) {
+    for (size_t i = 0; i < m_breakStatementPositions.size(); i ++) {
         Jump* shouldBeJump = cb->peekCode<Jump>(m_breakStatementPositions[i]);
         ASSERT(shouldBeJump->m_orgOpcode == JumpOpcode);
         shouldBeJump->m_jumpPosition = position;
@@ -2403,8 +2403,8 @@ ALWAYS_INLINE void ByteCodeGenerateContext::consumeBreakPositions(CodeBlock* cb,
 
 ALWAYS_INLINE void ByteCodeGenerateContext::consumeLabeledBreakPositions(CodeBlock* cb, size_t position, ESString* lbl)
 {
-    for(size_t i = 0; i < m_labeledBreakStatmentPositions.size(); i ++) {
-        if(*m_labeledBreakStatmentPositions[i].first == *lbl) {
+    for (size_t i = 0; i < m_labeledBreakStatmentPositions.size(); i ++) {
+        if (*m_labeledBreakStatmentPositions[i].first == *lbl) {
             Jump* shouldBeJump = cb->peekCode<Jump>(m_labeledBreakStatmentPositions[i].second);
             ASSERT(shouldBeJump->m_orgOpcode == JumpOpcode);
             shouldBeJump->m_jumpPosition = position;
@@ -2417,7 +2417,7 @@ ALWAYS_INLINE void ByteCodeGenerateContext::consumeLabeledBreakPositions(CodeBlo
 
 ALWAYS_INLINE void ByteCodeGenerateContext::consumeContinuePositions(CodeBlock* cb, size_t position)
 {
-    for(size_t i = 0; i < m_continueStatementPositions.size(); i ++) {
+    for (size_t i = 0; i < m_continueStatementPositions.size(); i ++) {
         Jump* shouldBeJump = cb->peekCode<Jump>(m_continueStatementPositions[i]);
         ASSERT(shouldBeJump->m_orgOpcode == JumpOpcode);
         shouldBeJump->m_jumpPosition = position;
@@ -2430,7 +2430,7 @@ ALWAYS_INLINE void ByteCodeGenerateContext::consumeContinuePositions(CodeBlock* 
 ALWAYS_INLINE void ByteCodeGenerateContext::morphJumpPositionIntoComplexCase(CodeBlock* cb,size_t codePos)
 {
     auto iter = m_complexCaseStatementPositions.find(codePos);
-    if(iter != m_complexCaseStatementPositions.end()) {
+    if (iter != m_complexCaseStatementPositions.end()) {
         JumpComplexCase j(cb->peekCode<Jump>(codePos), iter->second);
         memcpy(cb->m_code.data() + codePos, &j, sizeof(JumpComplexCase));
         m_complexCaseStatementPositions.erase(iter);
@@ -2443,11 +2443,11 @@ inline void iterateByteCode(CodeBlock* codeBlock, void (*fn)(CodeBlock* block, u
     unsigned idx = 0;
     char* end = &codeBlock->m_code.data()[codeBlock->m_code.size()];
 
-    while(ptr <= end) {
+    while (ptr <= end) {
         Opcode code = codeBlock->m_extraData[idx].m_opcode;
         fn(codeBlock, idx, (ByteCode *)ptr, code);
         idx++;
-        switch(code) {
+        switch (code) {
 #define ADD_BYTECODE_SIZE(name, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
         case name##Opcode: \
             ptr += sizeof(name); \
@@ -2462,5 +2462,6 @@ inline void iterateByteCode(CodeBlock* codeBlock, void (*fn)(CodeBlock* block, u
 }
 
 #endif
+
 
 

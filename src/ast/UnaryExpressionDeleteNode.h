@@ -19,7 +19,7 @@ public:
         if (m_argument->type() == NodeType::MemberExpression) {
             MemberExpressionNode* mem = (MemberExpressionNode*) m_argument;
             mem->generateExpressionByteCode(codeBlock, context);
-            if(mem->isPreComputedCase()) {
+            if (mem->isPreComputedCase()) {
                 ESValue v = codeBlock->peekCode<GetObjectPreComputedCase>(codeBlock->lastCodePosition<GetObjectPreComputedCase>())->m_propertyValue;
                 codeBlock->popLastCode<GetObjectPreComputedCase>();
                 codeBlock->pushCode(Push(v), context, this);
@@ -41,5 +41,6 @@ protected:
 }
 
 #endif
+
 
 

@@ -21,7 +21,7 @@ bool ESGraphSSAConversion::run(ESGraph* graph)
         for (size_t j = 0; j < block->instructionSize(); j++) {
             ESIR* ir = block->instruction(j);
 #if 0
-            switch(ir->opcode()) {
+            switch (ir->opcode()) {
             case SetVar:
                 block->dominanceFrontier()->addPhi(ir);
             }
@@ -37,5 +37,6 @@ bool ESGraphSSAConversion::run(ESGraph* graph)
 
 }}
 #endif
+
 
 

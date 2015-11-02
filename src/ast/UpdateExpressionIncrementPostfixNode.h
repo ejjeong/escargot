@@ -18,7 +18,7 @@ public:
 
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        if(m_isSimpleCase) {
+        if (m_isSimpleCase) {
             m_argument->generateResolveAddressByteCode(codeBlock, context);
             m_argument->generateReferenceResolvedAddressByteCode(codeBlock, context);
             codeBlock->pushCode(ToNumber(), context, this);
@@ -45,5 +45,6 @@ protected:
 }
 
 #endif
+
 
 

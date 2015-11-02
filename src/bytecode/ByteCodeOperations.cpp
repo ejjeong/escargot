@@ -32,13 +32,13 @@ NEVER_INLINE ESValue plusOperationSlowCase(const ESValue& left, const ESValue& r
     // All native ECMAScript objects except Date objects handle the absence of a hint as if the hint Number were given;
     // Date objects handle the absence of a hint as if the hint String were given.
     // Host objects may handle the absence of a hint in some other manner.
-    if(left.isESPointer() && left.asESPointer()->isESDateObject()) {
+    if (left.isESPointer() && left.asESPointer()->isESDateObject()) {
         lval = left.toPrimitive(ESValue::PreferString);
     } else {
         lval = left.toPrimitive();
     }
 
-    if(right.isESPointer() && right.asESPointer()->isESDateObject()) {
+    if (right.isESPointer() && right.asESPointer()->isESDateObject()) {
         rval = right.toPrimitive(ESValue::PreferString);
     } else {
         rval = right.toPrimitive();
@@ -71,7 +71,7 @@ NEVER_INLINE ESValue modOperation(const ESValue& left, const ESValue& right)
         else if (isinf(rvalue))
             ret = ESValue(lvalue);
         else if (lvalue == 0.0) {
-            if(std::signbit(lvalue))
+            if (std::signbit(lvalue))
                 ret = ESValue(ESValue::EncodeAsDouble, -0.0);
             else
                 ret = ESValue(0);
@@ -82,7 +82,7 @@ NEVER_INLINE ESValue modOperation(const ESValue& left, const ESValue& right)
             rvalue = std::abs(rvalue);
             int d = lvalue / rvalue;
             double r = lvalue - (d * rvalue);
-            if(isLNeg)
+            if (isLNeg)
                 r = -r;
             ret = ESValue(r);
         }
@@ -95,7 +95,7 @@ NEVER_INLINE ESValue abstractRelationalComparisonSlowCase(const ESValue& left, c
 {
     ESValue lval(ESValue::ESForceUninitialized);
     ESValue rval(ESValue::ESForceUninitialized);
-    if(leftFirst) {
+    if (leftFirst) {
         lval = left.toPrimitive();
         rval = right.toPrimitive();
     } else {
@@ -104,7 +104,7 @@ NEVER_INLINE ESValue abstractRelationalComparisonSlowCase(const ESValue& left, c
     }
 
     // http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5
-    if(lval.isInt32() && rval.isInt32()) {
+    if (lval.isInt32() && rval.isInt32()) {
         return ESValue(lval.asInt32() < rval.asInt32());
     } else if (lval.isESString() && rval.isESString()) {
         return ESValue(lval.toString()->string() < rval.toString()->string());
@@ -113,21 +113,21 @@ NEVER_INLINE ESValue abstractRelationalComparisonSlowCase(const ESValue& left, c
         double n2 = rval.toNumber();
         bool sign1 = std::signbit(n1);
         bool sign2 = std::signbit(n2);
-        if(isnan(n1) || isnan(n2)) {
+        if (isnan(n1) || isnan(n2)) {
             return ESValue();
-        } else if(n1 == n2) {
+        } else if (n1 == n2) {
             return ESValue(false);
-        } else if(n1 == 0.0 && n2 == 0.0 && sign2) {
+        } else if (n1 == 0.0 && n2 == 0.0 && sign2) {
             return ESValue(false);
-        } else if(n1 == 0.0 && n2 == 0.0 && sign1) {
+        } else if (n1 == 0.0 && n2 == 0.0 && sign1) {
             return ESValue(false);
-        } else if(isinf(n1) && !sign1) {
+        } else if (isinf(n1) && !sign1) {
             return ESValue(false);
-        } else if(isinf(n2) && !sign2) {
+        } else if (isinf(n2) && !sign2) {
             return ESValue(true);
-        } else if(isinf(n2) && sign2) {
+        } else if (isinf(n2) && sign2) {
             return ESValue(false);
-        } else if(isinf(n1) && sign1) {
+        } else if (isinf(n1) && sign1) {
             return ESValue(true);
         } else {
             return ESValue(n1 < n2);
@@ -137,13 +137,13 @@ NEVER_INLINE ESValue abstractRelationalComparisonSlowCase(const ESValue& left, c
 
 NEVER_INLINE ESValue getObjectOperationSlowCase(ESValue* willBeObject, ESValue* property, GlobalObject* globalObject)
 {
-    if(LIKELY(willBeObject->isESPointer())) {
-        if(willBeObject->asESPointer()->isESString()) {
+    if (LIKELY(willBeObject->isESPointer())) {
+        if (willBeObject->asESPointer()->isESString()) {
             uint32_t idx = property->toIndex();
-            if(idx != ESValue::ESInvalidIndexValue) {
-                if(LIKELY(idx < willBeObject->asESString()->length())) {
+            if (idx != ESValue::ESInvalidIndexValue) {
+                if (LIKELY(idx < willBeObject->asESString()->length())) {
                     char16_t c = willBeObject->asESString()->string().data()[idx];
-                    if(LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
+                    if (LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
                         return strings->asciiTable[c].string();
                     } else {
                         return ESString::create(c);
@@ -152,7 +152,7 @@ NEVER_INLINE ESValue getObjectOperationSlowCase(ESValue* willBeObject, ESValue* 
                 return willBeObject->toObject()->get(*property);
             } else {
                 ESString* val = property->toString();
-                if(*val == *strings->length) {
+                if (*val == *strings->length) {
                     return ESValue(willBeObject->asESString()->length());
                 }
                 ESValue ret = globalObject->stringObjectProxy()->get(val);
@@ -163,7 +163,7 @@ NEVER_INLINE ESValue getObjectOperationSlowCase(ESValue* willBeObject, ESValue* 
             return willBeObject->asESPointer()->asESObject()->get(*property);
         }
     } else {
-        if(willBeObject->isNumber()) {
+        if (willBeObject->isNumber()) {
             globalObject->numberObjectProxy()->setNumberData(willBeObject->asNumber());
             return globalObject->numberObjectProxy()->get(*property);
         }
@@ -180,15 +180,15 @@ NEVER_INLINE ESValue getObjectPreComputedCaseOperationWithNeverInline(ESValue* w
 NEVER_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue* property, GlobalObject* globalObject)
 {
     ASSERT(ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty());
-    if(willBeObject->isESPointer()) {
-        if(willBeObject->asESPointer()->isESArrayObject()) {
+    if (willBeObject->isESPointer()) {
+        if (willBeObject->asESPointer()->isESArrayObject()) {
             return willBeObject->toObject()->get(*property);
-        } else if(willBeObject->asESPointer()->isESString()) {
+        } else if (willBeObject->asESPointer()->isESString()) {
             uint32_t idx = property->toIndex();
-            if(idx != ESValue::ESInvalidIndexValue) {
-                if(LIKELY(idx < willBeObject->asESString()->length())) {
+            if (idx != ESValue::ESInvalidIndexValue) {
+                if (LIKELY(idx < willBeObject->asESString()->length())) {
                     char16_t c = willBeObject->asESString()->string().data()[idx];
-                    if(LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
+                    if (LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
                         return strings->asciiTable[c].string();
                     } else {
                         return ESString::create(c);
@@ -197,7 +197,7 @@ NEVER_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue* 
                 return willBeObject->toObject()->get(*property);
             } else {
                 ESString* val = property->toString();
-                if(*val == *strings->length) {
+                if (*val == *strings->length) {
                     return ESValue(willBeObject->asESString()->length());
                 }
                 globalObject->stringObjectProxy()->setStringData(willBeObject->asESString());
@@ -210,7 +210,7 @@ NEVER_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue* 
         }
     } else {
         // number
-        if(willBeObject->isNumber()) {
+        if (willBeObject->isNumber()) {
             globalObject->numberObjectProxy()->setNumberData(willBeObject->asNumber());
             return globalObject->numberObjectProxy()->get(*property);
         }
@@ -220,21 +220,21 @@ NEVER_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue* 
 
 NEVER_INLINE void throwObjectWriteError()
 {
-    if(ESVMInstance::currentInstance()->currentExecutionContext()->isStrictMode())
+    if (ESVMInstance::currentInstance()->currentExecutionContext()->isStrictMode())
         throw ESValue(TypeError::create());
 }
 
 NEVER_INLINE void setObjectOperationSlowMode(ESValue* willBeObject, ESValue* property, const ESValue& value)
 {
     ASSERT(ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty());
-    if(!willBeObject->toObject()->set(*property, value)) {
+    if (!willBeObject->toObject()->set(*property, value)) {
         throwObjectWriteError();
     }
 }
 
 NEVER_INLINE void setObjectOperationSlowCase(ESValue* willBeObject, ESValue* property, const ESValue& value)
 {
-    if(!willBeObject->toObject()->set(*property, value)) {
+    if (!willBeObject->toObject()->set(*property, value)) {
         throwObjectWriteError();
     }
 }
@@ -253,20 +253,20 @@ NEVER_INLINE void setObjectOperationExpandLengthCase(ESArrayObject* arr, uint32_
 
 NEVER_INLINE void setObjectPreComputedCaseOperationSlowCase(ESValue* willBeObject, ESString* keyString, const ESValue& value)
 {
-    if(!willBeObject->toObject()->set(keyString, value)) {
+    if (!willBeObject->toObject()->set(keyString, value)) {
         throwObjectWriteError();
     }
 }
 
 NEVER_INLINE bool instanceOfOperation(ESValue* lval, ESValue* rval)
 {
-    if(rval->isESPointer() && rval->asESPointer()->isESFunctionObject() && lval->isESPointer() && lval->asESPointer()->isESObject()) {
+    if (rval->isESPointer() && rval->asESPointer()->isESFunctionObject() && lval->isESPointer() && lval->asESPointer()->isESObject()) {
         ESFunctionObject* C = rval->asESPointer()->asESFunctionObject();
         ESValue P = C->protoType();
         ESValue O = lval->asESPointer()->asESObject()->__proto__();
-        if(P.isESPointer() && P.asESPointer()->isESObject()) {
+        if (P.isESPointer() && P.asESPointer()->isESObject()) {
             while (!O.isUndefinedOrNull()) {
-                if(P == O) {
+                if (P == O) {
                     return true;
                 }
                 O = O.asESPointer()->asESObject()->__proto__();
@@ -281,20 +281,20 @@ NEVER_INLINE bool instanceOfOperation(ESValue* lval, ESValue* rval)
 
 NEVER_INLINE ESValue typeOfOperation(ESValue* v)
 {
-    if(v->isUndefined() || v->isEmpty())
+    if (v->isUndefined() || v->isEmpty())
         return strings->undefined.string();
-    else if(v->isNull())
+    else if (v->isNull())
         return strings->object.string();
-    else if(v->isBoolean())
+    else if (v->isBoolean())
         return strings->boolean.string();
-    else if(v->isNumber())
+    else if (v->isNumber())
         return strings->number.string();
-    else if(v->isESString())
+    else if (v->isESString())
         return strings->string.string();
     else {
         ASSERT(v->isESPointer());
         ESPointer* p = v->asESPointer();
-        if(p->isESFunctionObject()) {
+        if (p->isESFunctionObject()) {
             return strings->function.string();
         } else {
             return strings->object.string();
@@ -304,7 +304,7 @@ NEVER_INLINE ESValue typeOfOperation(ESValue* v)
 
 NEVER_INLINE ESValue newOperation(ESVMInstance* instance, GlobalObject* globalObject, ESValue fn, ESValue* arguments, size_t argc)
 {
-    if(!fn.isESPointer() || !fn.asESPointer()->isESFunctionObject())
+    if (!fn.isESPointer() || !fn.asESPointer()->isESFunctionObject())
         throw ESValue(TypeError::create(ESString::create(u"constructor is not an function object")));
     ESFunctionObject* function = fn.asESPointer()->asESFunctionObject();
     ESObject* receiver;
@@ -356,7 +356,7 @@ NEVER_INLINE ESValue newOperation(ESVMInstance* instance, GlobalObject* globalOb
         receiver = ESObject::create();
     }
 
-    if(function->protoType().isObject())
+    if (function->protoType().isObject())
         receiver->set__proto__(function->protoType());
     else
         receiver->set__proto__(ESObject::create());
@@ -372,12 +372,12 @@ NEVER_INLINE bool inOperation(ESValue* obj, ESValue* key)
 {
     bool result = false;
     ESValue target = obj->toObject();
-    while(true) {
-        if(!target.isObject()) {
+    while (true) {
+        if (!target.isObject()) {
             break;
         }
         result = target.asESPointer()->asESObject()->hasOwnProperty(*key);
-        if(result)
+        if (result)
             break;
         target = target.asESPointer()->asESObject()->__proto__();
     }
@@ -391,7 +391,7 @@ NEVER_INLINE void tryOperation(ESVMInstance* instance, CodeBlock* codeBlock, cha
     ExecutionContext* backupedEC = ec;
     try {
         ESValue ret = interpret(instance, codeBlock, resolveProgramCounter(codeBuffer, programCounter + sizeof(Try)));
-        if(!ret.isEmpty()) {
+        if (!ret.isEmpty()) {
             ec->tryOrCatchBodyResult() = ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsReturn, ret, ESValue((int32_t)code->m_tryDupCount));
         }
     } catch(const ESValue& err) {
@@ -404,10 +404,10 @@ NEVER_INLINE void tryOperation(ESVMInstance* instance, CodeBlock* codeBlock, cha
         try{
             ESValue ret = interpret(instance, codeBlock, code->m_catchPosition);
             instance->currentExecutionContext()->setEnvironment(oldEnv);
-            if(ret.isEmpty()) {
-                if(!ec->tryOrCatchBodyResult().isEmpty() && ec->tryOrCatchBodyResult().isESPointer() && ec->tryOrCatchBodyResult().asESPointer()->isESControlFlowRecord()) {
+            if (ret.isEmpty()) {
+                if (!ec->tryOrCatchBodyResult().isEmpty() && ec->tryOrCatchBodyResult().isESPointer() && ec->tryOrCatchBodyResult().asESPointer()->isESControlFlowRecord()) {
                     ESControlFlowRecord* record = ec->tryOrCatchBodyResult().asESPointer()->asESControlFlowRecord();
-                    if(record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsThrow) {
+                    if (record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsThrow) {
                         ec->tryOrCatchBodyResult() = ESValue(ESValue::ESEmptyValue);
                     }
                 }
@@ -431,31 +431,31 @@ NEVER_INLINE EnumerateObjectData* executeEnumerateObject(ESObject* obj)
     bool shouldSearchProto = false;
     ESValue proto = target->__proto__();
 
-    while(proto.isESPointer() && proto.asESPointer()->isESObject()) {
+    while (proto.isESPointer() && proto.asESPointer()->isESObject()) {
         target = proto.asESPointer()->asESObject();
         target->enumeration([&shouldSearchProto](ESValue key) {
             shouldSearchProto = true;
         });
 
-        if(shouldSearchProto) {
+        if (shouldSearchProto) {
             break;
         }
         proto = target->__proto__();
     }
 
     target = obj;
-    if(shouldSearchProto) {
+    if (shouldSearchProto) {
         std::unordered_set<ESString*, std::hash<ESString*>, std::equal_to<ESString*>, gc_allocator<ESString *> > keyStringSet;
         target->enumeration([&data, &keyStringSet](ESValue key) {
             data->m_keys.push_back(key);
             keyStringSet.insert(key.toString());
         });
         proto = target->__proto__();
-        while(proto.isESPointer() && proto.asESPointer()->isESObject()) {
+        while (proto.isESPointer() && proto.asESPointer()->isESObject()) {
             target = proto.asESPointer()->asESObject();
             target->enumeration([&data, &keyStringSet](ESValue key) {
                 ESString* str = key.toString();
-                if(keyStringSet.find(str) != keyStringSet.end()) {
+                if (keyStringSet.find(str) != keyStringSet.end()) {
                     data->m_keys.push_back(key);
                     keyStringSet.insert(str);
                 }
@@ -472,5 +472,6 @@ NEVER_INLINE EnumerateObjectData* executeEnumerateObject(ESObject* obj)
 }
 
 }
+
 
 

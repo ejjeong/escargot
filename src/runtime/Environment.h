@@ -225,7 +225,7 @@ public:
         m_innerIdentifiers = NULL;
         m_needsActivation = true;
         m_activationData.reserve(innerIdentifiers.size());
-        for(unsigned i = 0; i < innerIdentifiers.size() ; i ++) {
+        for (unsigned i = 0; i < innerIdentifiers.size() ; i ++) {
             m_activationData.push_back(std::make_pair(innerIdentifiers[i], ESValue()));
         }
     }
@@ -238,18 +238,18 @@ public:
 
     virtual ESValue* hasBinding(const InternalAtomicString& atomicName)
     {
-        if(m_needsActivation) {
+        if (m_needsActivation) {
             size_t siz = m_activationData.size();
-            for(unsigned i = 0; i < siz ; i ++) {
-                if(m_activationData[i].first == atomicName) {
+            for (unsigned i = 0; i < siz ; i ++) {
+                if (m_activationData[i].first == atomicName) {
                     return &m_activationData[i].second;
                 }
             }
 
             return NULL;
         } else {
-            for(unsigned i = 0; i < m_innerIdentifiers->size() ; i ++) {
-                if((*m_innerIdentifiers)[i] == atomicName) {
+            for (unsigned i = 0; i < m_innerIdentifiers->size() ; i ++) {
+                if ((*m_innerIdentifiers)[i] == atomicName) {
                     return &m_vectorData[i];
                 }
             }
@@ -261,16 +261,16 @@ public:
     virtual void setMutableBinding(const InternalAtomicString& name, const ESValue& V, bool mustNotThrowTypeErrorExecption)
     {
         // TODO mustNotThrowTypeErrorExecption
-        if(m_needsActivation) {
+        if (m_needsActivation) {
             size_t siz = m_activationData.size();
-            for(unsigned i = 0; i < siz ; i ++) {
-                if(m_activationData[i].first == name) {
+            for (unsigned i = 0; i < siz ; i ++) {
+                if (m_activationData[i].first == name) {
                     m_activationData[i].second = V;
                 }
             }
         } else {
-            for(unsigned i = 0; i < m_innerIdentifiers->size() ; i ++) {
-                if((*m_innerIdentifiers)[i] == name) {
+            for (unsigned i = 0; i < m_innerIdentifiers->size() ; i ++) {
+                if ((*m_innerIdentifiers)[i] == name) {
                     m_vectorData[i] = V;
                     return ;
                 }
@@ -293,13 +293,13 @@ public:
     virtual ESValue getBindingValue(const InternalAtomicString& name, bool ignoreReferenceErrorException)
     {
     // TODO ignoreReferenceErrorException
-    if(UNLIKELY(m_needsActivation)) {
+    if (UNLIKELY(m_needsActivation)) {
     auto iter = m_mapData->find(name);
     ASSERT(iter != m_mapData->end());
     return iter->second.value();
     } else {
-    for(unsigned i = 0; i < m_usedCount ; i ++) {
-    if(m_vectorData[i].first == name) {
+    for (unsigned i = 0; i < m_usedCount ; i ++) {
+    if (m_vectorData[i].first == name) {
     return &m_vectorData[i].second;
     }
     }
@@ -417,15 +417,15 @@ public:
 
     virtual ESValue* hasBindingForArgumentsObject()
     {
-        if(m_argumentsObject.isEmpty()) {
+        if (m_argumentsObject.isEmpty()) {
             ESObject* argumentsObject = ESObject::create();
             m_argumentsObject = argumentsObject;
             unsigned i = 0;
             argumentsObject->set(strings->length.string(), ESValue(m_argumentCount));
-            for(; i < m_argumentCount && i < ESCARGOT_STRINGS_NUMBERS_MAX ; i ++) {
+            for (; i < m_argumentCount && i < ESCARGOT_STRINGS_NUMBERS_MAX ; i ++) {
                 argumentsObject->set(strings->numbers[i].string(), m_arguments[i]);
             }
-            for( ; i < m_argumentCount ; i ++) {
+            for ( ; i < m_argumentCount ; i ++) {
                 argumentsObject->set(ESString::create((int)i), m_arguments[i]);
             }
         }
@@ -457,5 +457,6 @@ protected:
 
 }
 #endif
+
 
 

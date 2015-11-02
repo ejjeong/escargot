@@ -30,7 +30,7 @@ namespace escargot {
 
     void EnvironmentRecord::createMutableBindingForAST(const InternalAtomicString& atomicName,bool canDelete)
     {
-        if(UNLIKELY(isGlobalEnvironmentRecord())) {
+        if (UNLIKELY(isGlobalEnvironmentRecord())) {
             toGlobalEnvironmentRecord()->createGlobalVarBinding(atomicName, canDelete);
         } else {
             createMutableBinding(atomicName, canDelete);
@@ -42,8 +42,8 @@ namespace escargot {
         // TODO canDelete
         ASSERT(m_needsActivation);
         size_t siz = m_activationData.size();
-        for(unsigned i = 0; i < siz ; i ++) {
-            if(m_activationData[i].first == name) {
+        for (unsigned i = 0; i < siz ; i ++) {
+            if (m_activationData[i].first == name) {
                 return ;
             }
         }
@@ -54,7 +54,7 @@ namespace escargot {
     // $8.1.1.4.12
     bool GlobalEnvironmentRecord::hasVarDeclaration(const InternalAtomicString& name)
     {
-        if( std::find(m_varNames.begin(), m_varNames.end(), name) != m_varNames.end() )
+        if ( std::find(m_varNames.begin(), m_varNames.end(), name) != m_varNames.end() )
         return true;
         return false;
     }
@@ -80,7 +80,7 @@ namespace escargot {
         /*
         ESObject* globalObj = m_objectRecord->bindingObject();
         ESSlot* pd = globalObj->find(name);
-        if(pd == NULL)
+        if (pd == NULL)
         return globalObj->isExtensible();
 
         if (pd->isConfigurable() == true)
@@ -102,7 +102,7 @@ namespace escargot {
             m_objectRecord->createMutableBinding(name, canDelete);
             m_objectRecord->initializeBinding(name, ESValue());
         }
-        if( std::find(m_varNames.begin(), m_varNames.end(), name) == m_varNames.end() )
+        if ( std::find(m_varNames.begin(), m_varNames.end(), name) == m_varNames.end() )
         m_varNames.push_back(name);
     }
 
@@ -110,7 +110,7 @@ namespace escargot {
     void GlobalEnvironmentRecord::createGlobalFunctionBinding(const InternalAtomicString& name, const ESValue& V, bool canDelete) {
         ESObject* globalObj = m_objectRecord->bindingObject();
         globalObj->defineDataProperty(name.string(), true, true, canDelete, V);
-        if( std::find(m_varNames.begin(), m_varNames.end(), name) == m_varNames.end() )
+        if ( std::find(m_varNames.begin(), m_varNames.end(), name) == m_varNames.end() )
         m_varNames.push_back(name);
     }
 
@@ -122,21 +122,21 @@ namespace escargot {
     // $8.1.1.4.1
     ESValue* GlobalEnvironmentRecord::hasBinding(const InternalAtomicString& atomicName) {
         ESValue* ret = m_declarativeRecord->hasBinding(atomicName);
-        if(ret)
+        if (ret)
             return ret;
         return m_objectRecord->hasBinding(atomicName);
     }
 
     // $8.1.1.4.2
     void GlobalEnvironmentRecord::createMutableBinding(const InternalAtomicString& name, bool canDelete) {
-        if( m_declarativeRecord->hasBinding(name) )
+        if ( m_declarativeRecord->hasBinding(name) )
             throw "TypeError";
         m_declarativeRecord->createMutableBinding(name, canDelete);
     }
 
     // $8.1.1.4.4
     void GlobalEnvironmentRecord::initializeBinding(const InternalAtomicString& name, const ESValue& V) {
-        if( m_declarativeRecord->hasBinding(name))
+        if ( m_declarativeRecord->hasBinding(name))
             m_declarativeRecord->initializeBinding(name, V);
         else {
             ASSERT(m_objectRecord->hasBinding(name));
@@ -149,7 +149,7 @@ namespace escargot {
     /*
     ESValue GlobalEnvironmentRecord::getBindingValue(const InternalAtomicString& name, bool ignoreReferenceErrorException) {
     // FIXME
-    // if( m_declarativeRecord->hasBinding(name) )
+    // if ( m_declarativeRecord->hasBinding(name) )
     // return m_declarativeRecord->getBindingValue(name, ignoreReferenceErrorException);
     // else {
     // return m_objectRecord->getBindingValue(name, ignoreReferenceErrorException);
@@ -160,7 +160,7 @@ namespace escargot {
 // $8.1.1.4.5
 // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-global-environment-records-setmutablebinding-n-v-s
 void GlobalEnvironmentRecord::setMutableBinding(const InternalAtomicString& name, const ESValue& V, bool S) {
-    if( m_declarativeRecord->hasBinding(name)) {
+    if ( m_declarativeRecord->hasBinding(name)) {
         m_declarativeRecord->setMutableBinding(name, V, S);
     } else {
         m_objectRecord->setMutableBinding(name, V, S);
@@ -191,7 +191,7 @@ void FunctionEnvironmentRecord::bindThisValue(const ESValue& V)
 {
 #ifndef NDEBUG
     ASSERT(m_thisBindingStatus != Initialized);
-    if(m_thisBindingStatus == Lexical)
+    if (m_thisBindingStatus == Lexical)
         throw ReferenceError::create();
     m_thisBindingStatus = Initialized;
 #endif
@@ -202,12 +202,13 @@ ESValue FunctionEnvironmentRecord::getThisBinding()
 {
 #ifndef NDEBUG
     ASSERT(m_thisBindingStatus != Lexical);
-    if(m_thisBindingStatus == Uninitialized)
+    if (m_thisBindingStatus == Uninitialized)
         throw ReferenceError::create();
 #endif
     return m_thisValue;
 }
 
 }
+
 
 

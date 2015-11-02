@@ -30,14 +30,14 @@ public:
 
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        if(m_canUseFastAccess) {
-            if(codeBlock->m_needsActivation) {
+        if (m_canUseFastAccess) {
+            if (codeBlock->m_needsActivation) {
                 codeBlock->pushCode(GetByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), context, this);
 #ifndef NDEBUG
                 codeBlock->peekCode<GetByIndexWithActivation>(codeBlock->lastCodePosition<GetByIndexWithActivation>())->m_name = m_name;
 #endif
             } else {
-                if(m_fastAccessUpIndex == 0) {
+                if (m_fastAccessUpIndex == 0) {
                     codeBlock->pushCode(GetByIndex(m_fastAccessIndex), context, this);
 #ifndef NDEBUG
                     codeBlock->peekCode<GetByIndex>(codeBlock->lastCodePosition<GetByIndex>())->m_name = m_name;
@@ -49,10 +49,10 @@ public:
 #endif
                 }
             }
-        } else if(m_canUseGlobalFastAccess) {
+        } else if (m_canUseGlobalFastAccess) {
             codeBlock->pushCode(GetByGlobalIndex(m_globalFastAccessIndex, m_name.string()), context, this);
         } else {
-            if(m_name == strings->arguments) {
+            if (m_name == strings->arguments) {
                 codeBlock->pushCode(GetArgumentsObject(), context, this);
             } else {
                 codeBlock->pushCode(GetById(m_name), context, this);
@@ -72,19 +72,19 @@ public:
 
     virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context, int sourceIndex = -1)
     {
-        if(m_canUseFastAccess) {
-            if(codeBlock->m_needsActivation) {
+        if (m_canUseFastAccess) {
+            if (codeBlock->m_needsActivation) {
                 codeBlock->pushCode(SetByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), context, this);
             } else {
-                if(m_fastAccessUpIndex == 0) {
+                if (m_fastAccessUpIndex == 0) {
                     codeBlock->pushCode(SetByIndex(m_fastAccessIndex), context, this);
                 } else
                     codeBlock->pushCode(SetByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), context, this);
             }
-        } else if(m_canUseGlobalFastAccess) {
+        } else if (m_canUseGlobalFastAccess) {
             codeBlock->pushCode(SetByGlobalIndex(m_globalFastAccessIndex, m_name.string()), context, this);
         } else {
-            if(m_name == strings->arguments) {
+            if (m_name == strings->arguments) {
                 codeBlock->pushCode(SetArgumentsObject(), context, this);
             } else {
                 codeBlock->pushCode(SetById(m_name), context, this);
@@ -149,5 +149,6 @@ protected:
 }
 
 #endif
+
 
 

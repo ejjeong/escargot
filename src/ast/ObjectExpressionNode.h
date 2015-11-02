@@ -21,9 +21,9 @@ public:
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         codeBlock->pushCode(CreateObject(m_properties.size()), context, this);
-        for(unsigned i = 0; i < m_properties.size() ; i ++) {
+        for (unsigned i = 0; i < m_properties.size() ; i ++) {
             PropertyNode* p = m_properties[i];
-            if(p->key()->type() == NodeType::Identifier) {
+            if (p->key()->type() == NodeType::Identifier) {
                 codeBlock->pushCode(Push(((IdentifierNode* )p->key())->name().string()), context, this);
             } else {
                 ASSERT(p->key()->type() == NodeType::Literal);
@@ -32,10 +32,10 @@ public:
 
             p->value()->generateExpressionByteCode(codeBlock, context);
 
-            if(p->kind() == PropertyNode::Kind::Init) {
+            if (p->kind() == PropertyNode::Kind::Init) {
                 codeBlock->pushCode(InitObject(), context, this);
 
-            } else if(p->kind() == PropertyNode::Kind::Get) {
+            } else if (p->kind() == PropertyNode::Kind::Get) {
                 codeBlock->pushCode(SetObjectPropertyGetter(), context, this);
             } else {
                 ASSERT(p->kind() == PropertyNode::Kind::Set);
@@ -50,5 +50,6 @@ protected:
 }
 
 #endif
+
 
 

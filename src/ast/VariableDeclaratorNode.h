@@ -22,7 +22,7 @@ public:
     {
         ASSERT(m_id->type() == NodeType::Identifier);
         ASSERT(m_init == NULL);
-        if(!((IdentifierNode *)m_id)->canUseFastAccess())
+        if (!((IdentifierNode *)m_id)->canUseFastAccess())
             codeBlock->pushCode(CreateBinding(((IdentifierNode *)m_id)->name()), context, this);
     }
 
@@ -44,5 +44,6 @@ typedef std::vector<Node *, gc_allocator<Node *>> VariableDeclaratorVector;
 }
 
 #endif
+
 
 

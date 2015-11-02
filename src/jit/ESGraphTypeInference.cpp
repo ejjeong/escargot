@@ -19,7 +19,7 @@ bool ESGraphTypeInference::run(ESGraph* graph)
         ESBasicBlock* block = graph->basicBlock(i);
         for (size_t j = 0; j < block->instructionSize(); j++) {
             ESIR* ir = block->instruction(j);
-            switch(ir->opcode()) {
+            switch (ir->opcode()) {
 #define INIT_ESIR(opcode) \
                 opcode##IR* ir##opcode = static_cast<opcode##IR*>(ir);
             case ESIR::Opcode::ConstantESValue:
@@ -30,7 +30,7 @@ bool ESGraphTypeInference::run(ESGraph* graph)
             case ESIR::Opcode::ConstantInt:
             {
                 INIT_ESIR(ConstantInt);
-                if(graph->getOperandType(irConstantInt->targetIndex()).isDoubleType())
+                if (graph->getOperandType(irConstantInt->targetIndex()).isDoubleType())
                     block->replace(j, ConstantDoubleIR::create(irConstantInt->targetIndex(),(double) irConstantInt->value()));
                 break;
             }
@@ -262,12 +262,12 @@ bool ESGraphTypeInference::run(ESGraph* graph)
                 Type objectType = graph->getOperandType(irGetObject->objectIndex());
                 Type propertyType = graph->getOperandType(irGetObject->propertyIndex());
                 if (objectType.isArrayObjectType()) {
-                    if(propertyType.isInt32Type() || propertyType.isDoubleType()) {
+                    if (propertyType.isInt32Type() || propertyType.isDoubleType()) {
                         GetArrayObjectIR* getArrayObjectIR = GetArrayObjectIR::create(irGetObject->targetIndex(), irGetObject->objectIndex(), irGetObject->propertyIndex());
                         block->replace(j, getArrayObjectIR);
                     }
                 } else if (objectType.isStringType()) {
-                    if(propertyType.isInt32Type()) {
+                    if (propertyType.isInt32Type()) {
                         GetStringByIndexIR* newIR = GetStringByIndexIR::create(irGetObject->targetIndex(), irGetObject->objectIndex(), irGetObject->propertyIndex());
                         block->replace(j, newIR);
                     }
@@ -283,7 +283,7 @@ bool ESGraphTypeInference::run(ESGraph* graph)
                 Type objectType = graph->getOperandType(irSetObject->objectIndex());
                 Type propertyType = graph->getOperandType(irSetObject->propertyIndex());
                 if (objectType.isArrayObjectType()) {
-                    if(propertyType.isInt32Type() || propertyType.isDoubleType()) {
+                    if (propertyType.isInt32Type() || propertyType.isDoubleType()) {
                         SetArrayObjectIR* setArrayObjectIR = SetArrayObjectIR::create(irSetObject->targetIndex(), irSetObject->objectIndex(), irSetObject->propertyIndex(), irSetObject->sourceIndex());
                         block->replace(j, setArrayObjectIR);
                     }
@@ -349,7 +349,7 @@ bool ESGraphTypeInference::run(ESGraph* graph)
                 INIT_ESIR(LoadPhi);
                 Type src0Type = graph->getOperandType(irLoadPhi->srcIndex0());
                 Type src1Type = graph->getOperandType(irLoadPhi->srcIndex1());
-                if(src0Type != src1Type) {
+                if (src0Type != src1Type) {
                     // TODO
                     goto unsupported;
                 }
@@ -381,5 +381,6 @@ bool ESGraphTypeInference::run(ESGraph* graph)
 
 }}
 #endif
+
 
 

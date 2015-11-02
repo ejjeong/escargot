@@ -26,7 +26,7 @@ public:
         m_discriminant->generateExpressionByteCode(codeBlock, newContext);
 
         std::vector<size_t> jumpCodePerCaseNodePosition;
-        for(unsigned i = 0; i < m_casesB.size() ; i ++) {
+        for (unsigned i = 0; i < m_casesB.size() ; i ++) {
             SwitchCaseNode* caseNode = (SwitchCaseNode*) m_casesB[i];
             codeBlock->pushCode(DuplicateTopOfStackValue(), newContext, this);
             caseNode->m_test->generateExpressionByteCode(codeBlock, newContext);
@@ -34,7 +34,7 @@ public:
             jumpCodePerCaseNodePosition.push_back(codeBlock->currentCodeSize());
             codeBlock->pushCode(JumpAndPopIfTopOfStackValueIsTrue(SIZE_MAX), newContext, this);
         }
-        for(unsigned i = 0; i < m_casesA.size() ; i ++) {
+        for (unsigned i = 0; i < m_casesA.size() ; i ++) {
             SwitchCaseNode* caseNode = (SwitchCaseNode*) m_casesA[i];
             codeBlock->pushCode(DuplicateTopOfStackValue(), newContext, this);
             caseNode->m_test->generateExpressionByteCode(codeBlock, newContext);
@@ -48,16 +48,16 @@ public:
         codeBlock->pushCode(Jump(SIZE_MAX), newContext, this);
 
         size_t caseIdx = 0;
-        for(unsigned i = 0; i < m_casesB.size() ; i ++) {
+        for (unsigned i = 0; i < m_casesB.size() ; i ++) {
             SwitchCaseNode* caseNode = (SwitchCaseNode*) m_casesB[i];
             codeBlock->peekCode<JumpAndPopIfTopOfStackValueIsTrue>(jumpCodePerCaseNodePosition[caseIdx++])->m_jumpPosition = codeBlock->currentCodeSize();
             caseNode->generateStatementByteCode(codeBlock, newContext);
         }
-        if(m_default) {
+        if (m_default) {
             codeBlock->peekCode<Jump>(jmpToDefault)->m_jumpPosition = codeBlock->currentCodeSize();
             m_default->generateStatementByteCode(codeBlock, newContext);
         }
-        for(unsigned i = 0; i < m_casesA.size() ; i ++) {
+        for (unsigned i = 0; i < m_casesA.size() ; i ++) {
             SwitchCaseNode* caseNode = (SwitchCaseNode*) m_casesA[i];
             codeBlock->peekCode<JumpAndPopIfTopOfStackValueIsTrue>(jumpCodePerCaseNodePosition[caseIdx++])->m_jumpPosition = codeBlock->currentCodeSize();
             caseNode->generateStatementByteCode(codeBlock, newContext);
@@ -67,7 +67,7 @@ public:
         newContext.m_positionToContinue = context.m_positionToContinue;
         newContext.propagateInformationTo(context);
 
-        if(!m_default) {
+        if (!m_default) {
             codeBlock->peekCode<Jump>(jmpToDefault)->m_jumpPosition = codeBlock->currentCodeSize();
         }
     }
@@ -83,5 +83,6 @@ protected:
 }
 
 #endif
+
 
 

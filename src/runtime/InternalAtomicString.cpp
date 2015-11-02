@@ -25,7 +25,7 @@ void InternalAtomicString::init(ESVMInstance* instance, const u16string& src)
 {
     ASSERT(instance);
     auto iter = instance->m_atomicStringMap.find(src);
-    if(iter == instance->m_atomicStringMap.end()) {
+    if (iter == instance->m_atomicStringMap.end()) {
         ESString* newData = ESString::create(src);
         instance->m_atomicStringMap.insert(std::make_pair(src, newData));
         m_string = newData;
@@ -35,5 +35,6 @@ void InternalAtomicString::init(ESVMInstance* instance, const u16string& src)
 }
 
 }
+
 
 

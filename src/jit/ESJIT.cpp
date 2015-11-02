@@ -28,7 +28,7 @@ void ESJITAllocator::allocSlow()
 
 void ESJITAllocator::freeAll()
 {
-    for(unsigned i = 0 ; i < m_allocatedMemorys.size() ; i ++) {
+    for (unsigned i = 0 ; i < m_allocatedMemorys.size() ; i ++) {
         free(m_allocatedMemorys[i].m_buffer);
     }
     m_allocatedMemorys.clear();
@@ -81,5 +81,6 @@ void logVerboseJIT(const char* format...)
 
 }}
 #endif
+
 
 

@@ -52,7 +52,7 @@ public:
     size_t argumentCount() { return m_argumentCount; }
     ESValue readArgument(size_t idx)
     {
-        if(idx < argumentCount()) {
+        if (idx < argumentCount()) {
             return m_arguments[idx];
         } else {
             return ESValue();
@@ -116,5 +116,6 @@ public:
 }
 
 #endif
+
 
 

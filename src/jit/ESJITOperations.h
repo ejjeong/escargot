@@ -24,7 +24,7 @@ inline void setByGlobalIndexOp(GlobalObject* globalObject, SetByGlobalIndex* cod
 inline ESValueInDouble getByIndexWithActivationOp(ExecutionContext* ec, int32_t upCount, int32_t index)
 {
     LexicalEnvironment* env = ec->environment();
-    for(int i = 0; i < upCount; i ++) {
+    for (int i = 0; i < upCount; i ++) {
         env = env->outerEnvironment();
     }
     return ESValue::toRawDouble(*env->record()->toDeclarativeEnvironmentRecord()->bindingValueForActivationMode((unsigned)index));
@@ -33,7 +33,7 @@ inline ESValueInDouble getByIndexWithActivationOp(ExecutionContext* ec, int32_t 
 inline void setByIndexWithActivationOp(ExecutionContext* ec, int32_t upCount, int32_t index, ESValueInDouble val)
 {
     LexicalEnvironment* env = ec->environment();
-    for(int i = 0; i < upCount; i ++) {
+    for (int i = 0; i < upCount; i ++) {
         env = env->outerEnvironment();
     }
     *env->record()->toDeclarativeEnvironmentRecord()->bindingValueForActivationMode((unsigned)index) = ESValue::fromRawDouble(val);
@@ -188,7 +188,7 @@ inline void setVarDefineDataProperty(ExecutionContext* ec, GlobalObject* globalO
     SetById* code = (SetById*)currentCode;
     ESValue value = ESValue::fromRawDouble(rawValue);
 
-    if(!ec->isStrictMode()) {
+    if (!ec->isStrictMode()) {
         globalObj->defineDataProperty(code->m_name.string(), true, true, true, value);
     } else {
         u16string err_msg;
@@ -229,11 +229,11 @@ inline ESValueInDouble esFunctionObjectCallWithReceiver(ESVMInstance* instance,
 inline ESValueInDouble evalCall(ESVMInstance* instance, ExecutionContext* ec, size_t argc, ESValue* arguments)
 {
     ESValue callee = *ec->resolveBinding(strings->eval);
-    if(callee.isESPointer() && (void *)callee.asESPointer() == (void *)instance->globalObject()->eval()) {
+    if (callee.isESPointer() && (void *)callee.asESPointer() == (void *)instance->globalObject()->eval()) {
         ESObject* receiver = instance->globalObject();
         ESValue ret = instance->runOnEvalContext([instance, &arguments, &argc](){
             ESValue ret;
-            if(argc)
+            if (argc)
             ret = instance->evaluate(const_cast<u16string &>(arguments[0].asESString()->string()), false);
             return ret;
         }, true);
@@ -301,7 +301,7 @@ inline ESValueInDouble createFunction(ExecutionContext* ec, ByteCode* bytecode) 
     ASSERT(((size_t)code->m_codeBlock % sizeof(size_t)) == 0);
     ESFunctionObject* function = ESFunctionObject::create(ec->environment(), code->m_codeBlock, code->m_nonAtomicName == NULL ? strings->emptyString.string() : code->m_nonAtomicName, code->m_codeBlock->m_params.size());
     function->set(strings->name.string(), code->m_nonAtomicName);
-    if(code->m_isDeclaration)
+    if (code->m_isDeclaration)
         ec->environment()->record()->setMutableBinding(code->m_name, function, false);
     return ESValue::toRawDouble(ESValue((ESPointer*)function));
 }
@@ -410,5 +410,6 @@ inline void jitLogStringOperation(const char* arg, const char* msg)
 }
 
 #endif
+
 
 

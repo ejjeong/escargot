@@ -19,9 +19,9 @@ public:
 
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        if(m_callee->type() == NodeType::Identifier) {
-            if(((IdentifierNode *)m_callee)->name() == InternalAtomicString(u"eval")) {
-                for(unsigned i = 0; i < m_arguments.size() ; i ++) {
+        if (m_callee->type() == NodeType::Identifier) {
+            if (((IdentifierNode *)m_callee)->name() == InternalAtomicString(u"eval")) {
+                for (unsigned i = 0; i < m_arguments.size() ; i ++) {
                     m_arguments[i]->generateExpressionByteCode(codeBlock, context);
                 }
                 codeBlock->pushCode(CallEvalFunction(m_arguments.size()), context, this);
@@ -34,11 +34,11 @@ public:
         m_callee->generateExpressionByteCode(codeBlock, context);
         context.m_inCallingExpressionScope = prevInCallingExpressionScope;
 
-        for(unsigned i = 0; i < m_arguments.size() ; i ++) {
+        for (unsigned i = 0; i < m_arguments.size() ; i ++) {
             m_arguments[i]->generateExpressionByteCode(codeBlock, context);
         }
 
-        if(!m_callee->isMemberExpresion()) {
+        if (!m_callee->isMemberExpresion()) {
             codeBlock->pushCode(CallFunction(m_arguments.size()), context, this);
         } else {
             codeBlock->pushCode(CallFunctionWithReceiver(m_arguments.size()), context, this);
@@ -54,5 +54,6 @@ protected:
 }
 
 #endif
+
 
 

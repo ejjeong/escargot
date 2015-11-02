@@ -19,7 +19,7 @@ public:
     {
         m_callee->generateExpressionByteCode(codeBlock, context);
 
-        for(unsigned i = 0; i < m_arguments.size() ; i ++) {
+        for (unsigned i = 0; i < m_arguments.size() ; i ++) {
             m_arguments[i]->generateExpressionByteCode(codeBlock, context);
         }
 
@@ -34,5 +34,6 @@ protected:
 }
 
 #endif
+
 
 

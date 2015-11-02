@@ -40,7 +40,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
     ByteCode* currentCode;
 
     char* end = &codeBlock->m_code.data()[codeBlock->m_code.size()];
-    while(&code[idx] < end) {
+    while (&code[idx] < end) {
         currentCode = (ByteCode *)(&code[idx]);
         Opcode opcode = codeBlock->m_extraData[bytecodeCounter].m_opcode;
 
@@ -75,7 +75,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
 #define NEXT_BYTECODE(ByteCode) \
         idx += sizeof(ByteCode); \
         bytecodeCounter++;
-        switch(opcode) {
+        switch (opcode) {
         case PushOpcode:
         {
             INIT_BYTECODE(Push);
@@ -664,14 +664,14 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
 
             std::map<int, ESBasicBlock*>::iterator findIter;
             ESBasicBlock* trueBlock, *falseBlock;
-            if((findIter = basicBlockMapping.find(idx + sizeof(JumpIfTopOfStackValueIsFalse))) != basicBlockMapping.end()) {
+            if ((findIter = basicBlockMapping.find(idx + sizeof(JumpIfTopOfStackValueIsFalse))) != basicBlockMapping.end()) {
                 trueBlock = basicBlockMapping[idx + sizeof(JumpIfTopOfStackValueIsFalse)];
             } else {
                 trueBlock = ESBasicBlock::create(graph, currentBlock);
                 basicBlockMapping[idx + sizeof(JumpIfTopOfStackValueIsFalse)] = trueBlock;
             }
 
-            if((findIter = basicBlockMapping.find(bytecode->m_jumpPosition)) != basicBlockMapping.end()) {
+            if ((findIter = basicBlockMapping.find(bytecode->m_jumpPosition)) != basicBlockMapping.end()) {
                 falseBlock = basicBlockMapping[bytecode->m_jumpPosition];
             } else {
                 falseBlock = ESBasicBlock::create(graph, currentBlock, true);
@@ -690,14 +690,14 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
 
             std::map<int, ESBasicBlock*>::iterator findIter;
             ESBasicBlock* trueBlock, *falseBlock;
-            if((findIter = basicBlockMapping.find(idx + sizeof(JumpIfTopOfStackValueIsTrue))) != basicBlockMapping.end()) {
+            if ((findIter = basicBlockMapping.find(idx + sizeof(JumpIfTopOfStackValueIsTrue))) != basicBlockMapping.end()) {
                 falseBlock = basicBlockMapping[idx + sizeof(JumpIfTopOfStackValueIsTrue)];
             } else {
                 falseBlock = ESBasicBlock::create(graph, currentBlock);
                 basicBlockMapping[idx + sizeof(JumpIfTopOfStackValueIsTrue)] = falseBlock;
             }
 
-            if((findIter = basicBlockMapping.find(bytecode->m_jumpPosition)) != basicBlockMapping.end()) {
+            if ((findIter = basicBlockMapping.find(bytecode->m_jumpPosition)) != basicBlockMapping.end()) {
                 trueBlock = basicBlockMapping[bytecode->m_jumpPosition];
             } else {
                 trueBlock = ESBasicBlock::create(graph, currentBlock, true);
@@ -716,14 +716,14 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
 
             std::map<int, ESBasicBlock*>::iterator findIter;
             ESBasicBlock* trueBlock, *falseBlock;
-            if((findIter = basicBlockMapping.find(idx + sizeof(JumpIfTopOfStackValueIsFalseWithPeeking))) != basicBlockMapping.end()) {
+            if ((findIter = basicBlockMapping.find(idx + sizeof(JumpIfTopOfStackValueIsFalseWithPeeking))) != basicBlockMapping.end()) {
                 trueBlock = basicBlockMapping[idx + sizeof(JumpIfTopOfStackValueIsFalseWithPeeking)];
             } else {
                 trueBlock = ESBasicBlock::create(graph, currentBlock);
                 basicBlockMapping[idx + sizeof(JumpIfTopOfStackValueIsFalseWithPeeking)] = trueBlock;
             }
 
-            if((findIter = basicBlockMapping.find(bytecode->m_jumpPosition)) != basicBlockMapping.end()) {
+            if ((findIter = basicBlockMapping.find(bytecode->m_jumpPosition)) != basicBlockMapping.end()) {
                 falseBlock = basicBlockMapping[bytecode->m_jumpPosition];
             } else {
                 falseBlock = ESBasicBlock::create(graph, currentBlock, true);
@@ -742,14 +742,14 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
 
             std::map<int, ESBasicBlock*>::iterator findIter;
             ESBasicBlock* trueBlock, *falseBlock;
-            if((findIter = basicBlockMapping.find(idx + sizeof(JumpIfTopOfStackValueIsTrueWithPeeking))) != basicBlockMapping.end()) {
+            if ((findIter = basicBlockMapping.find(idx + sizeof(JumpIfTopOfStackValueIsTrueWithPeeking))) != basicBlockMapping.end()) {
                 falseBlock = basicBlockMapping[idx + sizeof(JumpIfTopOfStackValueIsTrueWithPeeking)];
             } else {
                 falseBlock = ESBasicBlock::create(graph, currentBlock);
                 basicBlockMapping[idx + sizeof(JumpIfTopOfStackValueIsTrueWithPeeking)] = falseBlock;
             }
 
-            if((findIter = basicBlockMapping.find(bytecode->m_jumpPosition)) != basicBlockMapping.end()) {
+            if ((findIter = basicBlockMapping.find(bytecode->m_jumpPosition)) != basicBlockMapping.end()) {
                 trueBlock = basicBlockMapping[bytecode->m_jumpPosition];
             } else {
                 trueBlock = ESBasicBlock::create(graph, currentBlock, true);
@@ -768,14 +768,14 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
 
             std::map<int, ESBasicBlock*>::iterator findIter;
             ESBasicBlock* trueBlock, *falseBlock;
-            if((findIter = basicBlockMapping.find(idx + sizeof(JumpAndPopIfTopOfStackValueIsTrue))) != basicBlockMapping.end()) {
+            if ((findIter = basicBlockMapping.find(idx + sizeof(JumpAndPopIfTopOfStackValueIsTrue))) != basicBlockMapping.end()) {
                 falseBlock = basicBlockMapping[idx + sizeof(JumpAndPopIfTopOfStackValueIsTrue)];
             } else {
                 falseBlock = ESBasicBlock::create(graph, currentBlock);
                 basicBlockMapping[idx + sizeof(JumpAndPopIfTopOfStackValueIsTrue)] = falseBlock;
             }
 
-            if((findIter = basicBlockMapping.find(bytecode->m_jumpPosition)) != basicBlockMapping.end()) {
+            if ((findIter = basicBlockMapping.find(bytecode->m_jumpPosition)) != basicBlockMapping.end()) {
                 trueBlock = basicBlockMapping[bytecode->m_jumpPosition];
             } else {
                 trueBlock = ESBasicBlock::create(graph, currentBlock, true);
@@ -901,5 +901,6 @@ unsupported:
 
 }}
 #endif
+
 
 

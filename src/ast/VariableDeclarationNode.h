@@ -17,10 +17,10 @@ public:
 
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        for(unsigned i = 0; i < m_declarations.size() ; i ++) {
-            if(m_declarations[i]->type() == NodeType::VariableDeclarator) {
+        for (unsigned i = 0; i < m_declarations.size() ; i ++) {
+            if (m_declarations[i]->type() == NodeType::VariableDeclarator) {
                 m_declarations[i]->generateStatementByteCode(codeBlock, context);
-            } else if(m_declarations[i]->type() == NodeType::AssignmentExpressionSimple) {
+            } else if (m_declarations[i]->type() == NodeType::AssignmentExpressionSimple) {
                 m_declarations[i]->generateExpressionByteCode(codeBlock, context);
                 codeBlock->pushCode(Pop(), context, this);
             } else {
@@ -31,12 +31,12 @@ public:
 
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        for(unsigned i = 0; i < m_declarations.size() ; i ++) {
-            if(m_declarations[i]->type() == NodeType::VariableDeclarator) {
+        for (unsigned i = 0; i < m_declarations.size() ; i ++) {
+            if (m_declarations[i]->type() == NodeType::VariableDeclarator) {
                 m_declarations[i]->generateStatementByteCode(codeBlock, context);
-            } else if(m_declarations[i]->type() == NodeType::AssignmentExpressionSimple) {
+            } else if (m_declarations[i]->type() == NodeType::AssignmentExpressionSimple) {
                 m_declarations[i]->generateExpressionByteCode(codeBlock, context);
-                if(i < m_declarations.size() - 1)
+                if (i < m_declarations.size() - 1)
                     codeBlock->pushCode(Pop(), context, this);
             } else {
                 RELEASE_ASSERT_NOT_REACHED();
@@ -53,5 +53,6 @@ protected:
 }
 
 #endif
+
 
 

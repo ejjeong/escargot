@@ -567,7 +567,7 @@ public:
 
     ALWAYS_INLINE void initHash() const
     {
-        if(!m_hashData.m_isHashInited) {
+        if (!m_hashData.m_isHashInited) {
             m_hashData.m_isHashInited = true;
             std::hash<std::basic_string<char16_t> > hashFn;
             m_hashData.m_hashData = hashFn((std::basic_string<char16_t> &)*this);
@@ -696,7 +696,7 @@ protected:
     void wcharData(const Func& fn)
     {
         wchar_t* buf = (wchar_t *)alloca(sizeof(wchar_t) * (length()+1));
-        for(unsigned i = 0 ; i < (unsigned)length() ; i ++) {
+        for (unsigned i = 0 ; i < (unsigned)length() ; i ++) {
             buf[i] = data()[i];
         }
         buf[length()] = 0;
@@ -709,9 +709,9 @@ protected:
     {
         const u16string& s = string();
         bool allOfCharIsDigit = true;
-        for(unsigned i = 0; i < s.length() ; i ++) {
+        for (unsigned i = 0; i < s.length() ; i ++) {
             char16_t c = s[i];
-            if(c < '0' || c > '9') {
+            if (c < '0' || c > '9') {
                 allOfCharIsDigit = false;
                 break;
             }
@@ -783,11 +783,11 @@ ALWAYS_INLINE bool operator == (const ESString& a,const ESString& b)
     const ESStringData* dataA = a.stringData();
     const ESStringData* dataB = b.stringData();
 
-    if(dataA == dataB)
+    if (dataA == dataB)
         return true;
 
-    if(dataA->length() == dataB->length()) {
-        if(dataA->hashValue() == dataB->hashValue()) {
+    if (dataA->length() == dataB->length()) {
+        if (dataA->hashValue() == dataB->hashValue()) {
             return *dataA == *dataB;
         }
     }
@@ -847,7 +847,7 @@ public:
     ESStringData* stringData() {
 #ifndef NDEBUG
         ASSERT(m_type & ESPointer::ESRopeString);
-        if(m_string) {
+        if (m_string) {
             ASSERT(m_contentLength == 0);
         }
 #endif
@@ -913,14 +913,14 @@ ALWAYS_INLINE ESString* ESString::concatTwoStrings(ESString* lstr, ESString* rst
 
 ALWAYS_INLINE void ESString::ensureNormalString() const
 {
-    if(UNLIKELY(m_string == NULL)) {
+    if (UNLIKELY(m_string == NULL)) {
         const_cast<ESString *>(this)->asESRopeString()->convertIntoNormalString();
     }
 }
 
 ALWAYS_INLINE const char16_t* ESString::data() const
 {
-    if(UNLIKELY(m_string == NULL)) {
+    if (UNLIKELY(m_string == NULL)) {
         ensureNormalString();
     }
     return m_string->data();
@@ -928,7 +928,7 @@ ALWAYS_INLINE const char16_t* ESString::data() const
 
 ALWAYS_INLINE const u16string& ESString::string() const
 {
-    if(UNLIKELY(m_string == NULL)) {
+    if (UNLIKELY(m_string == NULL)) {
         ensureNormalString();
     }
     return static_cast<const u16string&>(*m_string);
@@ -936,7 +936,7 @@ ALWAYS_INLINE const u16string& ESString::string() const
 
 ALWAYS_INLINE const ESStringData* ESString::stringData() const
 {
-    if(UNLIKELY(m_string == NULL)) {
+    if (UNLIKELY(m_string == NULL)) {
         return const_cast<ESString *>(this)->asESRopeString()->stringData();
     }
     return m_string;
@@ -944,7 +944,7 @@ ALWAYS_INLINE const ESStringData* ESString::stringData() const
 
 ALWAYS_INLINE int ESString::length() const
 {
-    if(UNLIKELY(m_string == NULL)) {
+    if (UNLIKELY(m_string == NULL)) {
         escargot::ESRopeString* rope = (escargot::ESRopeString *)this;
         return rope->contentLength();
     }
@@ -967,7 +967,7 @@ template<> struct equal_to<escargot::ESString *>
 {
     bool operator()(escargot::ESString * const &a, escargot::ESString * const &b) const
     {
-        if(a == b) {
+        if (a == b) {
             return true;
         }
         return a->string() == b->string();
@@ -1122,7 +1122,7 @@ public:
     size_t findProperty(const ESString* name)
     {
         auto iter = m_propertyIndexHashMapInfo.find(const_cast<ESString *>(name));
-        if(iter == m_propertyIndexHashMapInfo.end())
+        if (iter == m_propertyIndexHashMapInfo.end())
         return SIZE_MAX;
         return iter->second;
     }
@@ -1464,7 +1464,7 @@ public:
     ESValue fastPop()
     {
         ASSERT(isFastmode());
-        if(m_length == 0)
+        if (m_length == 0)
             return ESValue();
         ESValue ret = m_vector[m_vector.size() - 1];
         setLength(length() - 1);
@@ -1513,7 +1513,7 @@ public:
 
         ESValue* dataPtr = m_vector.data();
         for (uint32_t i = 0; i < len; i++) {
-            if(dataPtr[i] != ESValue(ESValue::ESEmptyValue))
+            if (dataPtr[i] != ESValue(ESValue::ESEmptyValue))
                 ESObject::set(ESValue(i).toString(), dataPtr[i]);
         }
         m_vector.clear();
@@ -1530,7 +1530,7 @@ public:
         if (newLength < m_length) {
             m_vector.resize(newLength);
         } else if (m_fastmode && newLength > m_length) {
-            if(m_vector.capacity() < newLength) {
+            if (m_vector.capacity() < newLength) {
                 size_t reservedSpace = std::min(MAX_FASTMODE_SIZE, newLength*2);
                 m_vector.reserve(reservedSpace);
             }
@@ -2057,5 +2057,6 @@ protected:
 #include "ESValueInlines.h"
 
 #endif
+
 
 

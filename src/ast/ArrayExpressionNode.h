@@ -20,7 +20,7 @@ public:
         codeBlock->pushCode(CreateArray(len), context, this);
         for (unsigned i = 0; i < len; i++) {
             codeBlock->pushCode(Push(ESValue(i)), context, this);
-            if(m_elements[i]) {
+            if (m_elements[i]) {
                 m_elements[i]->generateExpressionByteCode(codeBlock, context);
             }
             else {
@@ -36,5 +36,6 @@ protected:
 }
 
 #endif
+
 
 

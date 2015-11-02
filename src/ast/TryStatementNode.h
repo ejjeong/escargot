@@ -29,7 +29,7 @@ public:
 
         codeBlock->pushCode(TryCatchBodyEnd(), context, this);
         size_t catchPos = codeBlock->currentCodeSize();
-        if(m_handler) {
+        if (m_handler) {
             m_handler->generateStatementByteCode(codeBlock, context);
         }
         codeBlock->pushCode(TryCatchBodyEnd(), context, this);
@@ -40,12 +40,12 @@ public:
         size_t endPos = codeBlock->currentCodeSize();
         codeBlock->peekCode<Try>(pos)->m_catchPosition = catchPos;
         codeBlock->peekCode<Try>(pos)->m_statementEndPosition = endPos;
-        if(m_handler) {
+        if (m_handler) {
             codeBlock->peekCode<Try>(pos)->m_name = m_handler->param()->name();
         } else {
             codeBlock->peekCode<Try>(pos)->m_name = strings->emptyString;
         }
-        if(m_finalizer)
+        if (m_finalizer)
             m_finalizer->generateStatementByteCode(codeBlock, context);
         codeBlock->pushCode(FinallyEnd(), context, this);
     }
@@ -60,5 +60,6 @@ protected:
 }
 
 #endif
+
 
 

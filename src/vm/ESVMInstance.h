@@ -70,7 +70,7 @@ public:
     ALWAYS_INLINE void invalidateIdentifierCacheCheckCount()
     {
         m_identifierCacheInvalidationCheckCount ++;
-        if(UNLIKELY(m_identifierCacheInvalidationCheckCount == std::numeric_limits<unsigned>::max())) {
+        if (UNLIKELY(m_identifierCacheInvalidationCheckCount == std::numeric_limits<unsigned>::max())) {
             m_identifierCacheInvalidationCheckCount = 0;
         }
     }
@@ -209,5 +209,6 @@ ESValue ESVMInstance::runOnEvalContext(const F& f, bool isDirectCall)
 }
 
 #endif
+
 
 
