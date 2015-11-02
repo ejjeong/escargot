@@ -9,13 +9,13 @@ class FunctionDeclarationNode : public FunctionNode {
 public:
     friend class ScriptParser;
     FunctionDeclarationNode(const InternalAtomicString& id, InternalAtomicStringVector&& params, Node* body, bool isGenerator, bool isExpression, bool isStrict)
-            : FunctionNode(NodeType::FunctionDeclaration, id, std::move(params), body, isGenerator, isExpression, isStrict)
+        : FunctionNode(NodeType::FunctionDeclaration, id, std::move(params), body, isGenerator, isExpression, isStrict)
     {
         m_isExpression = false;
     }
 
     FunctionDeclarationNode(ESString* id, InternalAtomicStringVector&& params, Node* body, bool isGenerator, bool isExpression, bool isStrict)
-            : FunctionNode(NodeType::FunctionDeclaration, id->data(), std::move(params), body, isGenerator, isExpression, isStrict)
+        : FunctionNode(NodeType::FunctionDeclaration, id->data(), std::move(params), body, isGenerator, isExpression, isStrict)
     {
         m_isExpression = false;
     }
@@ -44,7 +44,7 @@ public:
             if(currentCode->m_orgOpcode != ExecuteNativeFunctionOpcode) {
                 cb->m_nonAtomicId = m_nonAtomicId;
                 dumpBytecode(cb);
-              }
+            }
         }
         if (ESVMInstance::currentInstance()->m_reportUnsupportedOpcode) {
             char* code = cb->m_code.data();
@@ -66,3 +66,4 @@ protected:
 }
 
 #endif
+

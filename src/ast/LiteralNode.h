@@ -9,7 +9,7 @@ namespace escargot {
 class LiteralNode : public Node {
 public:
     LiteralNode(ESValue value)
-            : Node(NodeType::Literal)
+        : Node(NodeType::Literal)
     {
         m_value = value;
     }
@@ -32,3 +32,4 @@ protected:
 }
 
 #endif
+

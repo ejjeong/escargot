@@ -13,52 +13,52 @@ class ESGraphOptimization {
 };
 
 class ESGraphSSAConversion : ESGraphOptimization {
-public:
+    public:
     static bool run(ESGraph* graph);
 };
 
 class ESGraphTypeInference : ESGraphOptimization {
-public:
+    public:
     static bool run(ESGraph* graph);
 };
 
 class ESGraphSimplification : ESGraphOptimization {
-public:
+    public:
     static bool run(ESGraph* graph);
 };
 
 class ESGraphLoadElimiation : ESGraphOptimization {
-public:
+    public:
     static bool run(ESGraph* graph);
 };
 
 class ESGraphTypeCheckHoisting : ESGraphOptimization {
-public:
+    public:
     static bool run(ESGraph* graph);
 };
 
 class ESGraphLoopInvariantCodeMotion : ESGraphOptimization {
-public:
+    public:
     static bool run(ESGraph* graph);
 };
 
 class ESGraphDeadCodeEliminiation : ESGraphOptimization {
-public:
+    public:
     static bool run(ESGraph* graph);
 };
 
 class ESGraphCommonSubexpressionElimination : ESGraphOptimization {
-public:
+    public:
     static bool run(ESGraph* graph);
 };
 
 class ESGraphGlobalValueNumbering : ESGraphOptimization {
-public:
+    public:
     static bool run(ESGraph* graph);
 };
 
 class ESGraphTypeModifier : ESGraphOptimization {
-public:
+    public:
     static bool run(ESGraph* graph);
 };
 
@@ -67,3 +67,4 @@ bool optimizeIR(ESGraph* graph);
 }}
 #endif
 #endif
+

@@ -14,10 +14,10 @@ class LexicalEnvironment;
 class ExecutionContext : public gc {
 public:
     ExecutionContext(LexicalEnvironment* varEnv, bool needsActivation, bool isNewExpression,
-            ExecutionContext* callerContext,
-            ESValue* arguments = NULL, size_t argumentsCount = 0,
-            ESValue* cachedDeclarativeEnvironmentRecord = NULL
-            );
+        ExecutionContext* callerContext,
+        ESValue* arguments = NULL, size_t argumentsCount = 0,
+        ESValue* cachedDeclarativeEnvironmentRecord = NULL
+        );
     ALWAYS_INLINE LexicalEnvironment* environment()
     {
         //TODO
@@ -89,7 +89,7 @@ public:
 #endif
 
     ESValue& tryOrCatchBodyResult() { return m_tryOrCatchBodyResult; }
-private:
+    private:
     bool m_needsActivation;
     bool m_isNewExpression;
     bool m_isStrict;
@@ -116,3 +116,4 @@ private:
 }
 
 #endif
+

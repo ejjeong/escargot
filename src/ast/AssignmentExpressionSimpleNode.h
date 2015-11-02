@@ -14,7 +14,7 @@ public:
     friend class ScriptParser;
 
     AssignmentExpressionSimpleNode(Node* left, Node* right)
-            : ExpressionNode(NodeType::AssignmentExpressionSimple)
+        : ExpressionNode(NodeType::AssignmentExpressionSimple)
     {
         m_left = left;
         m_right = right;
@@ -35,3 +35,4 @@ protected:
 }
 
 #endif
+

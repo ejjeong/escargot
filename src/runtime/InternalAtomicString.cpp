@@ -35,3 +35,4 @@ void InternalAtomicString::init(ESVMInstance* instance, const u16string& src)
 }
 
 }
+

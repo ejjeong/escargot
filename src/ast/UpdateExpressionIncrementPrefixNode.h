@@ -10,7 +10,7 @@ public:
     friend class ScriptParser;
 
     UpdateExpressionIncrementPrefixNode(Node *argument)
-            : ExpressionNode(NodeType::UpdateExpressionIncrementPrefix)
+        : ExpressionNode(NodeType::UpdateExpressionIncrementPrefix)
     {
         m_argument = (ExpressionNode*)argument;
     }
@@ -30,3 +30,4 @@ protected:
 }
 
 #endif
+

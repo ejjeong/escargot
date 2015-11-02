@@ -10,7 +10,7 @@ public:
     friend class ScriptParser;
 
     BinaryExpressionDivisionNode(Node *left, Node* right)
-            : ExpressionNode(NodeType::BinaryExpressionDivison)
+        : ExpressionNode(NodeType::BinaryExpressionDivison)
     {
         m_left = (ExpressionNode*)left;
         m_right = (ExpressionNode*)right;
@@ -31,3 +31,4 @@ protected:
 }
 
 #endif
+

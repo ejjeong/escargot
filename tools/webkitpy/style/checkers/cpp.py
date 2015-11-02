@@ -2738,45 +2738,44 @@ def check_style(clean_lines, line_number, file_extension, class_state, file_stat
         error(line_number, 'whitespace/end_of_line', 4,
               'Line ends in whitespace.  Consider deleting these extra spaces.')
 
-    if (cleansed_line.count(';') > 1
-        # for loops are allowed two ;'s (and may run over two lines).
-        and cleansed_line.find('for') == -1
-        and (get_previous_non_blank_line(clean_lines, line_number)[0].find('for') == -1
-             or get_previous_non_blank_line(clean_lines, line_number)[0].find(';') != -1)
+#WY    if (cleansed_line.count(';') > 1
+#        # for loops are allowed two ;'s (and may run over two lines).
+#        and cleansed_line.find('for') == -1
+#        and (get_previous_non_blank_line(clean_lines, line_number)[0].find('for') == -1
+#             or get_previous_non_blank_line(clean_lines, line_number)[0].find(';') != -1)
         # It's ok to have many commands in a switch case that fits in 1 line
-        and not ((cleansed_line.find('case ') != -1
-                  or cleansed_line.find('default:') != -1)
-                 and cleansed_line.find('break;') != -1)
+#        and not ((cleansed_line.find('case ') != -1
+#                  or cleansed_line.find('default:') != -1)
+#                 and cleansed_line.find('break;') != -1)
         # Also it's ok to have many commands in trivial single-line accessors in class definitions.
-        and not (match(r'.*\(.*\).*{.*.}', line)
-                 and class_state.classinfo_stack
-                 and line.count('{') == line.count('}'))
-        and not cleansed_line.startswith('#define ')
+#        and not (match(r'.*\(.*\).*{.*.}', line)
+#                 and class_state.classinfo_stack
+#                 and line.count('{') == line.count('}'))
+#        and not cleansed_line.startswith('#define ')
         # It's ok to use use WTF_MAKE_NONCOPYABLE and WTF_MAKE_FAST_ALLOCATED macros in 1 line
-        and not (cleansed_line.find("WTF_MAKE_NONCOPYABLE") != -1
-                 and cleansed_line.find("WTF_MAKE_FAST_ALLOCATED") != -1)):
-        error(line_number, 'whitespace/newline', 4,
-              'More than one command on the same line')
-
-    if cleansed_line.strip().endswith('||') or cleansed_line.strip().endswith(' &&'):
-        error(line_number, 'whitespace/operators', 4,
-              'Boolean expressions that span multiple lines should have their '
-              'operators on the left side of the line instead of the right side.')
+#        and not (cleansed_line.find("WTF_MAKE_NONCOPYABLE") != -1
+#                 and cleansed_line.find("WTF_MAKE_FAST_ALLOCATED") != -1)):
+#        error(line_number, 'whitespace/newline', 4,
+#              'More than one command on the same line')
+#WY    if cleansed_line.strip().endswith('||') or cleansed_line.strip().endswith(' &&'):
+#        error(line_number, 'whitespace/operators', 4,
+#              'Boolean expressions that span multiple lines should have their '
+#              'operators on the left side of the line instead of the right side.')
 
     # Some more style checks
-    check_namespace_indentation(clean_lines, line_number, file_extension, file_state, error)
-    check_directive_indentation(clean_lines, line_number, file_state, error)
+#WY    check_namespace_indentation(clean_lines, line_number, file_extension, file_state, error)
+#WY    check_directive_indentation(clean_lines, line_number, file_state, error)
 #    check_using_std(clean_lines, line_number, file_state, error)
-    check_using_namespace(clean_lines, line_number, file_extension, error)
-    check_max_min_macros(clean_lines, line_number, file_state, error)
+#WY    check_using_namespace(clean_lines, line_number, file_extension, error)
+#WY    check_max_min_macros(clean_lines, line_number, file_state, error)
 #    check_wtf_move(clean_lines, line_number, file_state, error)
 #    check_ctype_functions(clean_lines, line_number, file_state, error)
-    check_switch_indentation(clean_lines, line_number, error)
-    check_braces(clean_lines, line_number, error)
+#WY    check_switch_indentation(clean_lines, line_number, error)
+#WY    check_braces(clean_lines, line_number, error)
 #    check_exit_statement_simplifications(clean_lines, line_number, error)
-    check_spacing(file_extension, clean_lines, line_number, error)
-    check_member_initialization_list(clean_lines, line_number, error)
-    check_check(clean_lines, line_number, error)
+#WY    check_spacing(file_extension, clean_lines, line_number, error)
+#WY    check_member_initialization_list(clean_lines, line_number, error)
+#WY    check_check(clean_lines, line_number, error)
 #    check_for_comparisons_to_zero(clean_lines, line_number, error)
 #    check_for_null(clean_lines, line_number, file_state, error)
     check_indentation_amount(clean_lines, line_number, error)
@@ -3770,10 +3769,10 @@ def _process_lines(filename, file_extension, lines, error, min_confidence):
 
     # We check here rather than inside process_line so that we see raw
     # lines rather than "cleaned" lines.
-    check_for_unicode_replacement_characters(lines, error)
+#WY    check_for_unicode_replacement_characters(lines, error)
 
-    check_for_missing_new_line_at_eof(lines, error)
-    check_for_extra_new_line_at_eof(lines, error)
+#WY    check_for_missing_new_line_at_eof(lines, error)
+#WY    check_for_extra_new_line_at_eof(lines, error)
 
 
 class CppChecker(object):

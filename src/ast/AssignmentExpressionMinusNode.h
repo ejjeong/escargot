@@ -13,7 +13,7 @@ public:
     friend class ScriptParser;
 
     AssignmentExpressionMinusNode(Node* left, Node* right)
-            : ExpressionNode(NodeType::AssignmentExpressionMinus)
+        : ExpressionNode(NodeType::AssignmentExpressionMinus)
     {
         m_left = left;
         m_right = right;
@@ -36,3 +36,4 @@ protected:
 }
 
 #endif
+

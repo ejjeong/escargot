@@ -9,15 +9,15 @@ namespace escargot {
 // The result is unspecified if x is infinite or NaN, or if the rounded
 // integer value is outside the range of type int.
 ALWAYS_INLINE int FastD2I(double x) {
-  return static_cast<int32_t>(x);
+    return static_cast<int32_t>(x);
 }
 
 
 ALWAYS_INLINE double FastI2D(int x) {
-  // There is no rounding involved in converting an integer to a
-  // double, so this code should compile to a few instructions without
-  // any FPU pipeline stalls.
-  return static_cast<double>(x);
+    // There is no rounding involved in converting an integer to a
+    // double, so this code should compile to a few instructions without
+    // any FPU pipeline stalls.
+    return static_cast<double>(x);
 }
 
 //==============================================================================
@@ -136,7 +136,7 @@ inline ESObject* ESValue::toObject() const
     ESFunctionObject* function;
     ESObject* object;
     if (LIKELY(isESPointer() && asESPointer()->isESObject())) {
-       return asESPointer()->asESObject();
+        return asESPointer()->asESObject();
     } else if (isNumber()) {
         object = ESNumberObject::create(toNumber());
     } else if (isBoolean()) {
@@ -207,7 +207,7 @@ inline double ESValue::toNumberSlowCase() const
 
         //A StringNumericLiteral that is empty or contains only white space is converted to +0.
         if(data->length() == 0)
-            return 0;
+        return 0;
 
         data->wcharData([&val, &data](const wchar_t* buf, unsigned size){
             wchar_t* end;
@@ -225,7 +225,7 @@ inline double ESValue::toNumberSlowCase() const
                 if(isOnlyWhiteSpace) {
                     val = 0;
                 } else
-                    val = std::numeric_limits<double>::quiet_NaN();
+                val = std::numeric_limits<double>::quiet_NaN();
             }
         });
         return val;
@@ -783,7 +783,7 @@ ALWAYS_INLINE void ESPropertyAccessorData::setValue(::escargot::ESObject* obj, c
         ASSERT(!m_nativeSetter);
         ESValue arg[] = {value};
         ESFunctionObject::call(ESVMInstance::currentInstance(), m_jsSetter,
-            obj ,arg, 1, false);
+        obj ,arg, 1, false);
     }
 }
 
@@ -801,7 +801,7 @@ ALWAYS_INLINE ESHiddenClass* ESHiddenClass::removeProperty(size_t idx)
             if(idx != i) {
                 size_t d;
                 ret = ret->defineProperty(m_propertyInfo[i].m_name, m_propertyInfo[i].m_flags.m_isDataProperty
-                        , m_propertyInfo[i].m_flags.m_isWritable, m_propertyInfo[i].m_flags.m_isEnumerable, m_propertyInfo[i].m_flags.m_isConfigurable);
+                , m_propertyInfo[i].m_flags.m_isWritable, m_propertyInfo[i].m_flags.m_isEnumerable, m_propertyInfo[i].m_flags.m_isConfigurable);
             }
         }
 
@@ -814,7 +814,7 @@ ALWAYS_INLINE ESHiddenClass* ESHiddenClass::removeProperty(size_t idx)
                 if(idx != i) {
                     size_t d;
                     ret = ret->defineProperty(m_propertyInfo[i].m_name, m_propertyInfo[i].m_flags.m_isDataProperty
-                            , m_propertyInfo[i].m_flags.m_isWritable, m_propertyInfo[i].m_flags.m_isEnumerable, m_propertyInfo[i].m_flags.m_isConfigurable);
+                    , m_propertyInfo[i].m_flags.m_isWritable, m_propertyInfo[i].m_flags.m_isEnumerable, m_propertyInfo[i].m_flags.m_isConfigurable);
                 }
             }
             return ret;
@@ -1043,7 +1043,7 @@ inline void ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
     }
 
     if(UNLIKELY(m_flags.m_isGlobalObject))
-        ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
+    ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
 
     escargot::ESString* keyString = key.toString();
     if(m_flags.m_isEverSetAsPrototypeObject && keyString->hasOnlyDigit()) {
@@ -1080,7 +1080,7 @@ inline void ESObject::defineAccessorProperty(const escargot::ESValue& key,ESProp
     }
 
     if(UNLIKELY(m_flags.m_isGlobalObject))
-        ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
+    ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
 
     escargot::ESString* keyString = key.toString();
     if(m_flags.m_isEverSetAsPrototypeObject && keyString->hasOnlyDigit()) {
@@ -1233,9 +1233,9 @@ ALWAYS_INLINE ESValue ESObject::getOwnProperty(escargot::ESValue key)
 ALWAYS_INLINE const int32_t ESObject::length()
 {
     if (LIKELY(isESArrayObject()))
-        return asESArrayObject()->length();
+    return asESArrayObject()->length();
     else
-        return get(strings->length.string()).toInteger();
+    return get(strings->length.string()).toInteger();
 }
 ALWAYS_INLINE ESValue ESObject::pop()
 {
@@ -1253,7 +1253,7 @@ ALWAYS_INLINE ESValue ESObject::pop()
 ALWAYS_INLINE void ESObject::eraseValues(int idx, int cnt)
 {
     if (LIKELY(isESArrayObject()))
-        asESArrayObject()->eraseValues(idx, cnt);
+    asESArrayObject()->eraseValues(idx, cnt);
     else {
         for (int k = 0, i = idx; i < length() && k < cnt; i++, k++) {
             set(ESValue(i), get(ESValue(i+cnt)));
@@ -1287,16 +1287,16 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
                 while(true) {
                     if(!target.isObject()) {
                         break;
-                       }
+                    }
                     if(target.asESPointer()->asESObject()->hiddenClass()->hasIndexedReadOnlyProperty()) {
                         size_t t = target.asESPointer()->asESObject()->hiddenClass()->findProperty(key.toString());
                         if(t != SIZE_MAX) {
                             if(!target.asESPointer()->asESObject()->hiddenClass()->m_propertyInfo[t].m_flags.m_isWritable)
-                                return false;
-                            }
-                       }
+                            return false;
+                        }
+                    }
                     target = target.asESPointer()->asESObject()->__proto__();
-                  }
+                }
                 asESArrayObject()->m_vector[idx] = val;
                 return true;
             }
@@ -1387,76 +1387,77 @@ ALWAYS_INLINE void ESObject::enumeration(Functor t)
 
 template<>
 inline ESTypedArrayObject<Int8Adaptor>::ESTypedArrayObject(TypedArrayType arraytype,
-                   ESPointer::Type type)
-       : ESTypedArrayObjectWrapper(arraytype,
-                                   (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->int8ArrayPrototype())
+ESPointer::Type type)
+    : ESTypedArrayObjectWrapper(arraytype,
+        (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->int8ArrayPrototype())
 {
 }
 
 template<>
 inline ESTypedArrayObject<Int16Adaptor>::ESTypedArrayObject(TypedArrayType arraytype,
-                   ESPointer::Type type)
-       : ESTypedArrayObjectWrapper(arraytype,
-                                   (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->int16ArrayPrototype())
+ESPointer::Type type)
+    : ESTypedArrayObjectWrapper(arraytype,
+        (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->int16ArrayPrototype())
 {
 }
 
 template<>
 inline ESTypedArrayObject<Int32Adaptor>::ESTypedArrayObject(TypedArrayType arraytype,
-                   ESPointer::Type type)
-       : ESTypedArrayObjectWrapper(arraytype,
-                                   (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->int32ArrayPrototype())
+    ESPointer::Type type)
+    : ESTypedArrayObjectWrapper(arraytype,
+        (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->int32ArrayPrototype())
 {
 }
 
 template<>
 inline ESTypedArrayObject<Uint8Adaptor>::ESTypedArrayObject(TypedArrayType arraytype,
-                   ESPointer::Type type)
-       : ESTypedArrayObjectWrapper(arraytype,
-                                   (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->uint8ArrayPrototype())
+    ESPointer::Type type)
+    : ESTypedArrayObjectWrapper(arraytype,
+        (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->uint8ArrayPrototype())
 {
 }
 
 template<>
 inline ESTypedArrayObject<Uint16Adaptor>::ESTypedArrayObject(TypedArrayType arraytype,
-                   ESPointer::Type type)
-       : ESTypedArrayObjectWrapper(arraytype,
-                                   (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->uint16ArrayPrototype())
+    ESPointer::Type type)
+    : ESTypedArrayObjectWrapper(arraytype,
+        (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->uint16ArrayPrototype())
 {
 }
 
 template<>
 inline ESTypedArrayObject<Uint32Adaptor>::ESTypedArrayObject(TypedArrayType arraytype,
-                   ESPointer::Type type)
-       : ESTypedArrayObjectWrapper(arraytype,
-                                   (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->uint32ArrayPrototype())
+    ESPointer::Type type)
+    : ESTypedArrayObjectWrapper(arraytype,
+        (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->uint32ArrayPrototype())
 {
 }
 
 template<>
 inline ESTypedArrayObject<Uint8ClampedAdaptor>::ESTypedArrayObject(TypedArrayType arraytype,
-                   ESPointer::Type type)
-       : ESTypedArrayObjectWrapper(arraytype,
-                                   (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->uint8ClampedArrayPrototype())
+    ESPointer::Type type)
+    : ESTypedArrayObjectWrapper(arraytype,
+        (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->uint8ClampedArrayPrototype())
 {
 }
 
 template<>
 inline ESTypedArrayObject<Float32Adaptor>::ESTypedArrayObject(TypedArrayType arraytype,
-                   ESPointer::Type type)
-       : ESTypedArrayObjectWrapper(arraytype,
-                                   (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->float32ArrayPrototype())
+    ESPointer::Type type)
+    : ESTypedArrayObjectWrapper(arraytype,
+        (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->float32ArrayPrototype())
 {
 }
 
 template<>
 inline ESTypedArrayObject<Float64Adaptor>::ESTypedArrayObject(TypedArrayType arraytype,
-                   ESPointer::Type type)
-       : ESTypedArrayObjectWrapper(arraytype,
-                                   (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->float64ArrayPrototype())
+    ESPointer::Type type)
+    : ESTypedArrayObjectWrapper(arraytype,
+        (Type)(Type::ESObject | Type::ESTypedArrayObject), ESVMInstance::currentInstance()->globalObject()->float64ArrayPrototype())
 {
 }
 
 }
 
 #endif
+

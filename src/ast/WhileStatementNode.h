@@ -10,7 +10,7 @@ class WhileStatementNode : public StatementNode {
 public:
     friend class ScriptParser;
     WhileStatementNode(Node *test, Node *body)
-            : StatementNode(NodeType::WhileStatement)
+        : StatementNode(NodeType::WhileStatement)
     {
         m_test = (ExpressionNode*) test;
         m_body = (StatementNode*) body;
@@ -50,3 +50,4 @@ protected:
 }
 
 #endif
+

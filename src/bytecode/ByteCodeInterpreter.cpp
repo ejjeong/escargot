@@ -15,7 +15,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     }
 
 #define NEXT_INSTRUCTION() \
-        goto NextInstruction
+    goto NextInstruction
 
     ExecutionContext* ec = instance->currentExecutionContext();
 
@@ -250,8 +250,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         NEXT_INSTRUCTION();
     }
 
-
-
     CreateBindingOpcodeLbl:
     {
         CreateBinding* code = (CreateBinding*)currentCode;
@@ -264,7 +262,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* right = pop<ESValue>(stack, bp);
         ESValue* left = pop<ESValue>(stack, bp);
-
         push<ESValue>(stack, topOfStack, ESValue(left->abstractEqualsTo(*right)));
         executeNextCode<Equal>(programCounter);
         NEXT_INSTRUCTION();
@@ -390,7 +387,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* right = pop<ESValue>(stack, bp);
         ESValue* left = pop<ESValue>(stack, bp);
-
         ESValue r = abstractRelationalComparison(*right, *left, false);
         if(r.isUndefined())
             push<ESValue>(stack, topOfStack, ESValue(false));
@@ -404,7 +400,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* right = pop<ESValue>(stack, bp);
         ESValue* left = pop<ESValue>(stack, bp);
-
         ESValue r = abstractRelationalComparison(*left, *right, true);
         if(r == ESValue(true) || r.isUndefined())
             push<ESValue>(stack, topOfStack, ESValue(false));
@@ -436,7 +431,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* right = pop<ESValue>(stack, bp);
         ESValue* left = pop<ESValue>(stack, bp);
-
         push<ESValue>(stack, topOfStack, ESValue(left->toNumber() * right->toNumber()));
         executeNextCode<Multiply>(programCounter);
         NEXT_INSTRUCTION();
@@ -463,7 +457,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     IncrementOpcodeLbl:
     {
         ESValue* src = pop<ESValue>(stack, bp);
-
         ESValue ret(ESValue::ESForceUninitialized);
         if(src->isInt32()) {
             int32_t a = src->asInt32();
@@ -532,7 +525,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             v = pop<ESValue>(stack, bp);
             push<ESValue>(stack, topOfStack, ESValue(v->toNumber()));
         }
-
         executeNextCode<ToNumber>(programCounter);
         NEXT_INSTRUCTION();
     }
@@ -600,7 +592,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     GetObjectAndPushObjectOpcodeLbl:
     {
         GetObject* code = (GetObject*)currentCode;
-
         ESValue* property = pop<ESValue>(stack, bp);
         ESValue willBeObject = *pop<ESValue>(stack, bp);
         ESValue value = getObjectOperation(&willBeObject, property, globalObject);
@@ -618,7 +609,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         GetObjectPreComputedCase* code = (GetObjectPreComputedCase*)currentCode;
         ESValue* willBeObject = pop<ESValue>(stack, bp);
         ESValue value = getObjectPreComputedCaseOperation(willBeObject, code->m_propertyValue, globalObject,
-                &code->m_cachedhiddenClassChain, &code->m_cachedIndex);
+            &code->m_cachedhiddenClassChain, &code->m_cachedIndex);
         push<ESValue>(stack, topOfStack, value);
 #ifdef ENABLE_ESJIT
         code->m_profile.addProfile(value);
@@ -632,7 +623,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         GetObjectPreComputedCaseAndPushObject* code = (GetObjectPreComputedCaseAndPushObject*)currentCode;
         ESValue willBeObject = *pop<ESValue>(stack, bp);
         ESValue value = getObjectPreComputedCaseOperation(&willBeObject, code->m_propertyValue, globalObject,
-                &code->m_cachedhiddenClassChain, &code->m_cachedIndex);
+            &code->m_cachedhiddenClassChain, &code->m_cachedIndex);
         push<ESValue>(stack, topOfStack, value);
         push<ESValue>(stack, topOfStack, willBeObject);
 #ifdef ENABLE_ESJIT
@@ -645,7 +636,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     GetObjectWithPeekingOpcodeLbl:
     {
         GetObjectWithPeeking* code = (GetObjectWithPeeking*)currentCode;
-
         ESValue* property = (ESValue *)((size_t)stack - sizeof(ESValue));
         ESValue* willBeObject = (ESValue *)((size_t)stack - sizeof(ESValue) * 2);
         ESValue value = getObjectOperation(willBeObject, property, globalObject);
@@ -660,10 +650,9 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     GetObjectWithPeekingPreComputedCaseOpcodeLbl:
     {
         GetObjectWithPeekingPreComputedCase* code = (GetObjectWithPeekingPreComputedCase*)currentCode;
-
         ESValue* willBeObject = peek<ESValue>(stack, bp);
         ESValue value = getObjectPreComputedCaseOperationWithNeverInline(willBeObject, code->m_propertyValue, globalObject,
-                        &code->m_cachedhiddenClassChain, &code->m_cachedIndex);
+            &code->m_cachedhiddenClassChain, &code->m_cachedIndex);
         push<ESValue>(stack, topOfStack, value);
 #ifdef ENABLE_ESJIT
         code->m_profile.addProfile(value);
@@ -690,7 +679,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue value = *pop<ESValue>(stack, bp);
         ESValue* willBeObject = pop<ESValue>(stack, bp);
         setObjectPreComputedCaseOperation(willBeObject, code->m_propertyValue, value, &code->m_cachedhiddenClassChain
-                , &code->m_cachedIndex, &code->m_hiddenClassWillBe);
+            , &code->m_cachedIndex, &code->m_hiddenClassWillBe);
         push<ESValue>(stack, topOfStack, value);
         executeNextCode<SetObjectPreComputedCase>(programCounter);
         NEXT_INSTRUCTION();
@@ -764,7 +753,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         Jump* code = (Jump *)currentCode;
         ASSERT(code->m_jumpPosition != SIZE_MAX);
-
         programCounter = jumpTo(codeBuffer, code->m_jumpPosition);
         NEXT_INSTRUCTION();
     }
@@ -811,7 +799,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             pop<ESValue>(stack, bp);
         }
         else
-            executeNextCode<JumpAndPopIfTopOfStackValueIsTrue>(programCounter);
+        executeNextCode<JumpAndPopIfTopOfStackValueIsTrue>(programCounter);
         NEXT_INSTRUCTION();
     }
 
@@ -873,7 +861,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         } else {
             //TODO
         }
-
         executeNextCode<UnaryDelete>(programCounter);
         NEXT_INSTRUCTION();
     }
@@ -882,7 +869,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* res = pop<ESValue>(stack, bp);
         push<ESValue>(stack, topOfStack, ESValue());
-
         executeNextCode<UnaryVoid>(programCounter);
         NEXT_INSTRUCTION();
     }
@@ -891,7 +877,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* obj = pop<ESValue>(stack, bp);
         ESValue* key = pop<ESValue>(stack, bp);
-
         push<ESValue>(stack, topOfStack, ESValue(inOperation(obj, key)));
         executeNextCode<StringIn>(programCounter);
         NEXT_INSTRUCTION();
@@ -901,9 +886,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* rval = pop<ESValue>(stack, bp);
         ESValue* lval = pop<ESValue>(stack, bp);
-
         push<ESValue>(stack, topOfStack, ESValue(instanceOfOperation(lval, rval)));
-
         executeNextCode<StringIn>(programCounter);
         NEXT_INSTRUCTION();
     }
@@ -946,8 +929,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         if (stack != bp) {
             printf("Stack is not equal to Base Point at the end of statement (%ld)\n", byteCode->m_lineNumber);
             RELEASE_ASSERT_NOT_REACHED();
-         }
-
+        }
         executeNextCode<CheckStackPointer>(programCounter);
         NEXT_INSTRUCTION();
     }
@@ -955,7 +937,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     PrintSpAndBpOpcodeLbl:
     {
         printf("SP = %p, BP = %p\n", stack, bp);
-
         executeNextCode<PrintSpAndBp>(programCounter);
         NEXT_INSTRUCTION();
     }
@@ -1015,7 +996,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                     ec->tryOrCatchBodyResult() = ESValue(ESValue::ESEmptyValue);
                     NEXT_INSTRUCTION();
                 }
-
             } else {
                 dupCnt--;
                 record->setValue2(ESValue((int32_t)dupCnt));
@@ -1142,11 +1122,8 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     GetObjectWithPeekingPreComputedCaseSlowModeOpcodeLbl:
     {
         GetObjectWithPeekingPreComputedCaseSlowMode* code = (GetObjectWithPeekingPreComputedCaseSlowMode*)currentCode;
-
         ESValue* willBeObject = pop<ESValue>(stack, bp);
-
         stack = (void *)(((size_t)stack) + sizeof(ESValue) * 1);
-
         ESValue v(code->m_propertyValue);
         push<ESValue>(stack, topOfStack, getObjectOperationSlowMode(willBeObject, &v, globalObject));
         executeNextCode<GetObjectWithPeekingPreComputedCaseSlowMode>(programCounter);
@@ -1177,10 +1154,8 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     GetObjectWithPeekingSlowModeOpcodeLbl:
     {
         GetObjectWithPeekingSlowMode* code = (GetObjectWithPeekingSlowMode*)currentCode;
-
         ESValue* property = pop<ESValue>(stack, bp);
         ESValue* willBeObject = pop<ESValue>(stack, bp);
-
         stack = (void *)(((size_t)stack) + sizeof(ESValue) * 2);
         push<ESValue>(stack, topOfStack, getObjectOperationSlowMode(willBeObject, property, globalObject));
         executeNextCode<GetObjectWithPeekingSlowMode>(programCounter);
@@ -1190,7 +1165,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     GetObjectSlowModeOpcodeLbl:
     {
         GetObjectSlowMode* code = (GetObjectSlowMode*)currentCode;
-
         ESValue* property = pop<ESValue>(stack, bp);
         ESValue* willBeObject = pop<ESValue>(stack, bp);
         push<ESValue>(stack, topOfStack, getObjectOperationSlowMode(willBeObject, property, globalObject));
@@ -1201,7 +1175,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     GetObjectAndPushObjectSlowModeOpcodeLbl:
     {
         GetObjectAndPushObjectSlowMode* code = (GetObjectAndPushObjectSlowMode*)currentCode;
-
         ESValue* property = pop<ESValue>(stack, bp);
         ESValue willBeObject = *pop<ESValue>(stack, bp);
         push<ESValue>(stack, topOfStack, getObjectOperationSlowMode(&willBeObject, property, globalObject));
@@ -1222,7 +1195,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* value = pop<ESValue>(stack, bp);
         ESValue* key = pop<ESValue>(stack, bp);
         ESObject* obj = peek<ESValue>(stack, bp)->asESPointer()->asESObject();
-
         ESString* keyString = key->toString();
         if(obj->hasOwnProperty(keyString)) {
             //TODO check property is accessor property
@@ -1240,7 +1212,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue* value = pop<ESValue>(stack, bp);
         ESValue* key = pop<ESValue>(stack, bp);
         ESObject* obj = peek<ESValue>(stack, bp)->asESPointer()->asESObject();
-
         ESString* keyString = key->toString();
         if(obj->hasOwnProperty(keyString)) {
             //TODO check property is accessor property
@@ -1262,3 +1233,4 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 }
 
 }
+

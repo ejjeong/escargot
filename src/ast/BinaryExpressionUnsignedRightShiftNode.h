@@ -8,7 +8,7 @@ namespace escargot {
 class BinaryExpressionUnsignedRightShiftNode : public ExpressionNode {
 public:
     BinaryExpressionUnsignedRightShiftNode(Node *left, Node* right)
-            : ExpressionNode(NodeType::BinaryExpressionUnsignedRightShift)
+        : ExpressionNode(NodeType::BinaryExpressionUnsignedRightShift)
     {
         m_left = (ExpressionNode*)left;
         m_right = (ExpressionNode*)right;
@@ -28,3 +28,4 @@ protected:
 }
 
 #endif
+

@@ -18,8 +18,8 @@ public:
     {
         if(m_argument->type() == Identifier && !((IdentifierNode *)m_argument)->canUseFastAccess()) {
             codeBlock->pushCode(GetByIdWithoutException(
-                    ((IdentifierNode *)m_argument)->name()
-                    ), context, this);
+                ((IdentifierNode *)m_argument)->name()
+                ), context, this);
         } else
             m_argument->generateExpressionByteCode(codeBlock, context);
         codeBlock->pushCode(UnaryTypeOf(), context, this);
@@ -32,3 +32,4 @@ protected:
 }
 
 #endif
+

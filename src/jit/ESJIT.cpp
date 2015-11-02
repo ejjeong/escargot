@@ -52,7 +52,7 @@ bool ESJITCompiler::compile(ESVMInstance* instance)
 
     if (ESVMInstance::currentInstance()->m_profile)
         printf("JIT Compilation Took %lfms, %lfms, %lfms each for FE, ME, BE\n",
-                (time2-time1)/1000.0, (time3-time2)/1000.0, (time4-time3)/1000.0);
+            (time2-time1)/1000.0, (time3-time2)/1000.0, (time4-time3)/1000.0);
 
     return true;
 }
@@ -81,3 +81,4 @@ void logVerboseJIT(const char* format...)
 
 }}
 #endif
+

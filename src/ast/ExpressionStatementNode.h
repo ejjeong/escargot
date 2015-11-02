@@ -10,7 +10,7 @@ class ExpressionStatementNode : public StatementNode {
 public:
     friend class ScriptParser;
     ExpressionStatementNode(Node* expression)
-            : StatementNode(NodeType::ExpressionStatement)
+        : StatementNode(NodeType::ExpressionStatement)
     {
         m_expression = expression;
     }
@@ -30,3 +30,4 @@ protected:
 }
 
 #endif
+

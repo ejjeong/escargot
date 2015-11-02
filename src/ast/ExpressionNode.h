@@ -13,7 +13,7 @@ typedef std::vector<Node *, gc_allocator<Node *>> ArgumentVector;
 class ExpressionNode : public Node {
 public:
     ExpressionNode(NodeType type)
-            : Node(type)
+        : Node(type)
     {
     }
 protected:
@@ -24,3 +24,4 @@ typedef std::vector<Node *, gc_allocator<Node *>> ExpressionNodeVector;
 }
 
 #endif
+

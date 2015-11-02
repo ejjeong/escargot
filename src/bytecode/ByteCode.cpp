@@ -117,12 +117,12 @@ void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, B
     bool canJIT = false;
 
 #define FETCH_DATA_BYTE_CODE(code, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
-case code##Opcode: \
-    haveToProfile = hasProfileData; \
-    canJIT = JITSupported; \
+    case code##Opcode: \
+        haveToProfile = hasProfileData; \
+        canJIT = JITSupported; \
     break;
     switch(op) {
-    FOR_EACH_BYTECODE_OP(FETCH_DATA_BYTE_CODE);
+        FOR_EACH_BYTECODE_OP(FETCH_DATA_BYTE_CODE);
     default:
         RELEASE_ASSERT_NOT_REACHED();
     }
@@ -201,9 +201,9 @@ unsigned char popCountFromOpcode(ByteCode* code, Opcode opcode)
         ASSERT(popCount != -1); \
         return popCount;
     switch(opcode) {
-    FOR_EACH_BYTECODE_OP(FETCH_POP_COUNT_BYTE_CODE);
+        FOR_EACH_BYTECODE_OP(FETCH_POP_COUNT_BYTE_CODE);
     default:
-            RELEASE_ASSERT_NOT_REACHED();
+        RELEASE_ASSERT_NOT_REACHED();
     }
 }
 
@@ -216,11 +216,11 @@ unsigned char pushCountFromOpcode(ByteCode* code, Opcode opcode)
             return 0;
     }
 #define FETCH_PUSH_COUNT_BYTE_CODE(code, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
-case code##Opcode: \
-    ASSERT(pushCount != -1); \
-    return pushCount;
+    case code##Opcode: \
+        ASSERT(pushCount != -1); \
+        return pushCount;
     switch(opcode) {
-    FOR_EACH_BYTECODE_OP(FETCH_PUSH_COUNT_BYTE_CODE);
+        FOR_EACH_BYTECODE_OP(FETCH_PUSH_COUNT_BYTE_CODE);
     default:
         RELEASE_ASSERT_NOT_REACHED();
     }
@@ -229,11 +229,11 @@ case code##Opcode: \
 unsigned char peekCountFromOpcode(ByteCode* code, Opcode opcode)
 {
 #define FETCH_PEEK_COUNT_BYTE_CODE(code, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
-case code##Opcode: \
-    ASSERT(peekCount != -1); \
-    return peekCount;
+    case code##Opcode: \
+        ASSERT(peekCount != -1); \
+        return peekCount;
     switch(opcode) {
-    FOR_EACH_BYTECODE_OP(FETCH_PEEK_COUNT_BYTE_CODE);
+        FOR_EACH_BYTECODE_OP(FETCH_PEEK_COUNT_BYTE_CODE);
     default:
         RELEASE_ASSERT_NOT_REACHED();
     }
@@ -287,10 +287,10 @@ void dumpBytecode(CodeBlock* codeBlock)
         switch(opcode) {
 #define DUMP_BYTE_CODE(code, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
         case code##Opcode:\
-        currentCode->dump(); \
-        idx += sizeof (code); \
-        continue;
-        FOR_EACH_BYTECODE_OP(DUMP_BYTE_CODE)
+            currentCode->dump(); \
+            idx += sizeof (code); \
+            continue;
+            FOR_EACH_BYTECODE_OP(DUMP_BYTE_CODE)
 #undef  DUMP_BYTE_CODE
         default:
             RELEASE_ASSERT_NOT_REACHED();
@@ -312,7 +312,7 @@ void dumpUnsupported(CodeBlock* block)
     while(&code[idx] < end) {
         Opcode opcode = block->m_extraData[bytecodeCounter].m_opcode;
         switch(opcode) {
-        #define DECLARE_EXECUTE_NEXTCODE(opcode, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
+#define DECLARE_EXECUTE_NEXTCODE(opcode, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
         case opcode##Opcode: \
             if (!JITSupported) { \
                 auto result = names.insert(std::pair<std::string, size_t>(std::string(#opcode), 1)); \
@@ -322,8 +322,8 @@ void dumpUnsupported(CodeBlock* block)
             idx += sizeof (opcode); \
             bytecodeCounter++; \
             break;
-        FOR_EACH_BYTECODE_OP(DECLARE_EXECUTE_NEXTCODE);
-        #undef DECLARE_EXECUTE_NEXTCODE
+            FOR_EACH_BYTECODE_OP(DECLARE_EXECUTE_NEXTCODE);
+#undef DECLARE_EXECUTE_NEXTCODE
         case OpcodeKindEnd:
             break;
         }
@@ -334,3 +334,4 @@ void dumpUnsupported(CodeBlock* block)
 }
 #endif
 }
+

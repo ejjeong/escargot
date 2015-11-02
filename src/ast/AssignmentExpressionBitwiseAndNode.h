@@ -13,7 +13,7 @@ public:
     friend class ScriptParser;
 
     AssignmentExpressionBitwiseAndNode(Node* left, Node* right)
-            : ExpressionNode(NodeType::AssignmentExpressionBitwiseAnd)
+        : ExpressionNode(NodeType::AssignmentExpressionBitwiseAnd)
     {
         m_left = left;
         m_right = right;
@@ -35,3 +35,4 @@ protected:
 }
 
 #endif
+

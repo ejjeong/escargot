@@ -9,7 +9,7 @@ class BreakStatementNode : public StatementNode {
 public:
     friend class ScriptParser;
     BreakStatementNode()
-            : StatementNode(NodeType::BreakStatement)
+        : StatementNode(NodeType::BreakStatement)
     {
     }
 
@@ -23,3 +23,4 @@ public:
 }
 
 #endif
+

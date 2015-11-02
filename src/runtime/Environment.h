@@ -16,7 +16,7 @@ class GlobalObject;
 
 typedef std::pair<InternalAtomicString, ::escargot::ESValue> ESIdentifierVectorStdItem;
 typedef std::vector<ESIdentifierVectorStdItem,
-        gc_allocator<ESIdentifierVectorStdItem> > ESIdentifierVectorStd;
+    gc_allocator<ESIdentifierVectorStdItem> > ESIdentifierVectorStd;
 
 class ESIdentifierVector : public ESIdentifierVectorStd {
 public:
@@ -106,7 +106,7 @@ public:
     }
 
     /*virtual ESValue getBindingValue(const InternalAtomicString& name, bool ignoreReferenceErrorException)
-    {
+        {
         RELEASE_ASSERT_NOT_REACHED();
     }*/
 
@@ -183,9 +183,9 @@ public:
     /*
     ESValue getBindingValue(const InternalAtomicString& name, bool ignoreReferenceErrorException)
     {
-        return m_bindingObject->get(name);
+    return m_bindingObject->get(name);
     }
-    */
+     */
     bool deleteBinding(const InternalAtomicString& name)
     {
         return false;
@@ -292,20 +292,20 @@ public:
     /*
     virtual ESValue getBindingValue(const InternalAtomicString& name, bool ignoreReferenceErrorException)
     {
-        //TODO ignoreReferenceErrorException
-        if(UNLIKELY(m_needsActivation)) {
-            auto iter = m_mapData->find(name);
-            ASSERT(iter != m_mapData->end());
-            return iter->second.value();
-        } else {
-            for(unsigned i = 0; i < m_usedCount ; i ++) {
-                if(m_vectorData[i].first == name) {
-                    return &m_vectorData[i].second;
-                }
-            }
-            RELEASE_ASSERT_NOT_REACHED();
-        }
-    }*/
+    //TODO ignoreReferenceErrorException
+    if(UNLIKELY(m_needsActivation)) {
+    auto iter = m_mapData->find(name);
+    ASSERT(iter != m_mapData->end());
+    return iter->second.value();
+    } else {
+    for(unsigned i = 0; i < m_usedCount ; i ++) {
+    if(m_vectorData[i].first == name) {
+    return &m_vectorData[i].second;
+    }
+    }
+    RELEASE_ASSERT_NOT_REACHED();
+    }
+}*/
 
     virtual bool isDeclarativeEnvironmentRecord()
     {
@@ -386,13 +386,13 @@ public:
     FunctionEnvironmentRecord(ESValue arguments[], const size_t& argumentCount, ESValue* vectorBuffer, InternalAtomicStringVector* innerIdentifiers)
         : DeclarativeEnvironmentRecord(vectorBuffer, innerIdentifiers)
         , m_argumentsObject(ESValue::ESEmptyValue)
-    {
+{
 #ifndef NDEBUG
         m_thisBindingStatus = Uninitialized;
 #endif
         m_arguments = arguments;
         m_argumentCount = argumentCount;
-    }
+}
 
     //m_needsActivation = true
     FunctionEnvironmentRecord(ESValue arguments[], const size_t& argumentCount, const InternalAtomicStringVector& innerIdentifiers = InternalAtomicStringVector())
@@ -452,8 +452,9 @@ protected:
 class ModuleEnvironmentRecord : public DeclarativeEnvironmentRecord {
 protected:
 };
-*/
+ */
 
 
 }
 #endif
+

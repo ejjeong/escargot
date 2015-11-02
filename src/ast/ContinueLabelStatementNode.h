@@ -9,7 +9,7 @@ class ContinueLabelStatementNode : public StatementNode {
 public:
     friend class ScriptParser;
     ContinueLabelStatementNode(size_t upIndex, ESString* label)
-            : StatementNode(NodeType::ContinueLabelStatement)
+        : StatementNode(NodeType::ContinueLabelStatement)
     {
         m_upIndex = upIndex;
         m_label = label;
@@ -29,3 +29,4 @@ protected:
 }
 
 #endif
+

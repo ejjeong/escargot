@@ -10,7 +10,7 @@ class SequenceExpressionNode : public ExpressionNode {
 public:
     friend class ScriptParser;
     SequenceExpressionNode(ExpressionNodeVector&& expressions)
-            : ExpressionNode(NodeType::SequenceExpression)
+        : ExpressionNode(NodeType::SequenceExpression)
     {
         m_expressions = expressions;
     }
@@ -21,7 +21,7 @@ public:
             m_expressions[i]->generateExpressionByteCode(codeBlock, context);
             if (i < m_expressions.size() - 1)
                 codeBlock->pushCode(Pop(), context, this);
-         }
+        }
     }
 
 protected:
@@ -31,3 +31,4 @@ protected:
 }
 
 #endif
+

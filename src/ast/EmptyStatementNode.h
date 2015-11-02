@@ -9,7 +9,7 @@ namespace escargot {
 class EmptyStatementNode : public StatementNode {
 public:
     EmptyStatementNode()
-            : StatementNode(NodeType::EmptyStatement)
+        : StatementNode(NodeType::EmptyStatement)
     {
     }
 
@@ -22,3 +22,4 @@ protected:
 }
 
 #endif
+

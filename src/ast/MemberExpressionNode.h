@@ -12,7 +12,7 @@ public:
     friend class ScriptParser;
     friend class UnaryExpressionDeleteNode;
     MemberExpressionNode(Node* object, Node* property, bool computed)
-            : ExpressionNode(NodeType::MemberExpression)
+        : ExpressionNode(NodeType::MemberExpression)
     {
         m_object = object;
         m_property = property;
@@ -125,3 +125,4 @@ protected:
 }
 
 #endif
+

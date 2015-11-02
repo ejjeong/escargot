@@ -25,16 +25,17 @@ bool ESGraphTypeModifier::run(ESGraph* graph)
     //printf("%f\n",(float)doubleCnt / (float)(intCnt + doubleCnt));
     //if((float)doubleCnt / (float)(intCnt + doubleCnt) > 0.1f) {
     //if(doubleCnt) {
-    if(0) {
-        for (size_t i = 0; i < graph->operandsSize(); i++) {
-            Type tp = graph->getOperandType(i);
-            if(tp.isInt32Type()) {
-                graph->setOperandType(i, Type(TypeDouble));
+        if(0) {
+            for (size_t i = 0; i < graph->operandsSize(); i++) {
+                Type tp = graph->getOperandType(i);
+                if(tp.isInt32Type()) {
+                    graph->setOperandType(i, Type(TypeDouble));
+                }
             }
         }
+        return true;
     }
-    return true;
-}
 
 }}
 #endif
+

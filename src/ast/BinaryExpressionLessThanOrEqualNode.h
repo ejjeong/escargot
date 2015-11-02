@@ -10,7 +10,7 @@ public:
     friend class ScriptParser;
 
     BinaryExpressionLessThanOrEqualNode(Node *left, Node* right)
-            : ExpressionNode(NodeType::BinaryExpressionLessThanOrEqual)
+        : ExpressionNode(NodeType::BinaryExpressionLessThanOrEqual)
     {
         m_left = (ExpressionNode*)left;
         m_right = (ExpressionNode*)right;
@@ -31,3 +31,4 @@ protected:
 }
 
 #endif
+

@@ -12,7 +12,7 @@ class IdentifierNode : public Node {
 public:
     friend class ScriptParser;
     IdentifierNode(const InternalAtomicString& name)
-            : Node(NodeType::Identifier)
+        : Node(NodeType::Identifier)
     {
         m_name = name;
         m_canUseFastAccess = false;
@@ -149,3 +149,4 @@ protected:
 }
 
 #endif
+

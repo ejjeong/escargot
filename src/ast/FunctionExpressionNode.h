@@ -9,7 +9,7 @@ class FunctionExpressionNode : public FunctionNode {
 public:
     friend class ScriptParser;
     FunctionExpressionNode(const InternalAtomicString& id, InternalAtomicStringVector&& params, Node* body,bool isGenerator, bool isExpression, bool isStrict)
-            : FunctionNode(NodeType::FunctionExpression, id, std::move(params), body, isGenerator, isExpression, isStrict)
+        : FunctionNode(NodeType::FunctionExpression, id, std::move(params), body, isGenerator, isExpression, isStrict)
     {
         m_isGenerator = false;
         m_isExpression = true;
@@ -31,15 +31,15 @@ public:
 #endif
         cb->pushCode(ReturnFunction(), newContext, this);
 #ifndef NDEBUG
-    if(ESVMInstance::currentInstance()->m_dumpByteCode) {
-        char* code = cb->m_code.data();
-        ByteCode* currentCode = (ByteCode *)(&code[0]);
-        if(currentCode->m_orgOpcode != ExecuteNativeFunctionOpcode) {
-            if (m_nonAtomicId)
+        if(ESVMInstance::currentInstance()->m_dumpByteCode) {
+            char* code = cb->m_code.data();
+            ByteCode* currentCode = (ByteCode *)(&code[0]);
+            if(currentCode->m_orgOpcode != ExecuteNativeFunctionOpcode) {
+                if (m_nonAtomicId)
                 cb->m_nonAtomicId = m_nonAtomicId;
-            dumpBytecode(cb);
+                dumpBytecode(cb);
+            }
         }
-    }
         if (ESVMInstance::currentInstance()->m_reportUnsupportedOpcode) {
             char* code = cb->m_code.data();
             ByteCode* currentCode = (ByteCode *)(&code[0]);
@@ -63,3 +63,4 @@ protected:
 }
 
 #endif
+

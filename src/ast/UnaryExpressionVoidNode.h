@@ -13,7 +13,8 @@ public:
     {
         m_argument = argument;
     }
-/*
+
+    /*
     ESValue executeExpression(ESVMInstance* instance)
     {
         //www.ecma-international.org/ecma-262/6.0/index.html#sec-unary-minus-operator
@@ -35,16 +36,18 @@ public:
     }
     */
 
+
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_argument->generateExpressionByteCode(codeBlock, context);
         codeBlock->pushCode(UnaryVoid(), context, this);
     }
 
-protected:
+    protected:
     Node* m_argument;
 };
 
 }
 
 #endif
+

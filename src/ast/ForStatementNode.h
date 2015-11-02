@@ -10,7 +10,7 @@ class ForStatementNode : public StatementNode {
 public:
     friend class ScriptParser;
     ForStatementNode(Node *init, Node *test, Node *update, Node *body)
-            : StatementNode(NodeType::ForStatement)
+        : StatementNode(NodeType::ForStatement)
     {
         m_init = (ExpressionNode*) init;
         m_test = (ExpressionNode*) test;
@@ -73,3 +73,4 @@ protected:
 }
 
 #endif
+

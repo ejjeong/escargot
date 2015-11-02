@@ -4,7 +4,7 @@
 
 int main(int argc, char* argv[])
 {
-/*    test* ptr = new test;
+    /*    test* ptr = new test;
     char* pool = (char *)GC_malloc(1024);
     memcpy(pool + 16, &ptr, 8);
     ptr = nullptr;
@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
     */
     //GC_malloc(32);
     //GC_disable();
-/*
+    /*
     //ESValue test
     escargot::ESValue* u= escargot::undefined;
     escargot::ESValue* n = escargot::null;
@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 
     escargot::Smi* s = escargot::Smi::fromInt(2);
     ASSERT(s->toSmi()->value() == 2);
-*/
+    */
     //ESObject & gc_allocator test
     /*
     escargot::ESObject* obj = escargot::ESObject::create();
@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
     escargot::ESValue* val = obj->get("obj");
     ASSERT(val->isHeapObject());
     ASSERT(obj->get("obj")->toHeapObject()->isESUndefined());
-     */
+    */
 #ifndef NDEBUG
     setbuf(stdout, NULL);
     setbuf(stderr, NULL);
@@ -153,3 +153,4 @@ int main(int argc, char* argv[])
     ES->exit();
     return 0;
 }
+

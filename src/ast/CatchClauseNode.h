@@ -10,10 +10,10 @@ namespace escargot {
 
 //interface CatchClause <: Node {
 class CatchClauseNode : public Node {
-public:
+    public:
     friend class ScriptParser;
     CatchClauseNode(Node *param, Node *guard, Node *body)
-            : Node(NodeType::CatchClause)
+        : Node(NodeType::CatchClause)
     {
         m_param = (IdentifierNode*) param;
         m_guard = (ExpressionNode*) guard;
@@ -29,7 +29,7 @@ public:
         return m_param;
     }
 
-protected:
+    protected:
     IdentifierNode* m_param;
     ExpressionNode* m_guard;
     BlockStatementNode* m_body;
@@ -40,3 +40,4 @@ typedef std::vector<Node *, gc_allocator<CatchClauseNode *>> CatchClauseNodeVect
 }
 
 #endif
+

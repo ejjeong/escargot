@@ -9,7 +9,7 @@ class ContinueStatementNode : public StatementNode {
 public:
     friend class ScriptParser;
     ContinueStatementNode()
-            : StatementNode(NodeType::ContinueStatement)
+        : StatementNode(NodeType::ContinueStatement)
     {
     }
 
@@ -23,3 +23,4 @@ public:
 }
 
 #endif
+

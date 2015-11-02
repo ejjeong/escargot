@@ -9,7 +9,7 @@ class ReturnStatmentNode : public StatementNode {
 public:
     friend class ScriptParser;
     ReturnStatmentNode(Node* argument)
-            : StatementNode(NodeType::ReturnStatement)
+        : StatementNode(NodeType::ReturnStatement)
     {
         m_argument = argument;
     }
@@ -30,3 +30,4 @@ protected:
 }
 
 #endif
+

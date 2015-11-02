@@ -10,7 +10,7 @@ class BlockStatementNode : public StatementNode {
 public:
     friend class ScriptParser;
     BlockStatementNode(StatementNodeVector&& body)
-            : StatementNode(NodeType::BlockStatement)
+        : StatementNode(NodeType::BlockStatement)
     {
         m_body = body;
     }
@@ -24,10 +24,11 @@ public:
     }
 
 protected:
-    StatementNodeVector m_body;// body: [ Statement ];
+    StatementNodeVector m_body; // body: [ Statement ];
 };
 
 
 }
 
 #endif
+

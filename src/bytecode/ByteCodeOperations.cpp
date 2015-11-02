@@ -172,7 +172,7 @@ NEVER_INLINE ESValue getObjectOperationSlowCase(ESValue* willBeObject, ESValue* 
 }
 
 NEVER_INLINE ESValue getObjectPreComputedCaseOperationWithNeverInline(ESValue* willBeObject, ESString* property, GlobalObject* globalObject
-        ,ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex)
+,ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex)
 {
     return getObjectPreComputedCaseOperation(willBeObject, property, globalObject, cachedHiddenClassChain, cachedHiddenClassIndex);
 }
@@ -472,3 +472,4 @@ NEVER_INLINE EnumerateObjectData* executeEnumerateObject(ESObject* obj)
 }
 
 }
+

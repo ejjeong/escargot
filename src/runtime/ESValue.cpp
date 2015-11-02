@@ -147,98 +147,98 @@ bool ESValue::abstractEqualsToSlowCase(const ESValue& val)
 }
 
 enum Flags {
-  NO_FLAGS = 0,
-  EMIT_POSITIVE_EXPONENT_SIGN = 1,
-  EMIT_TRAILING_DECIMAL_POINT = 2,
-  EMIT_TRAILING_ZERO_AFTER_POINT = 4,
-  UNIQUE_ZERO = 8
+    NO_FLAGS = 0,
+    EMIT_POSITIVE_EXPONENT_SIGN = 1,
+    EMIT_TRAILING_DECIMAL_POINT = 2,
+    EMIT_TRAILING_ZERO_AFTER_POINT = 4,
+    UNIQUE_ZERO = 8
 };
 
 void CreateDecimalRepresentation(
-        int flags_,
+    int flags_,
     const char* decimal_digits,
     int length,
     int decimal_point,
     int digits_after_point,
     double_conversion::StringBuilder* result_builder) {
-  // Create a representation that is padded with zeros if needed.
-  if (decimal_point <= 0) {
-      // "0.00000decimal_rep".
-    result_builder->AddCharacter('0');
-    if (digits_after_point > 0) {
-      result_builder->AddCharacter('.');
-      result_builder->AddPadding('0', -decimal_point);
-      ASSERT(length <= digits_after_point - (-decimal_point));
-      result_builder->AddSubstring(decimal_digits, length);
-      int remaining_digits = digits_after_point - (-decimal_point) - length;
-      result_builder->AddPadding('0', remaining_digits);
+    // Create a representation that is padded with zeros if needed.
+    if (decimal_point <= 0) {
+        // "0.00000decimal_rep".
+        result_builder->AddCharacter('0');
+        if (digits_after_point > 0) {
+            result_builder->AddCharacter('.');
+            result_builder->AddPadding('0', -decimal_point);
+            ASSERT(length <= digits_after_point - (-decimal_point));
+            result_builder->AddSubstring(decimal_digits, length);
+            int remaining_digits = digits_after_point - (-decimal_point) - length;
+            result_builder->AddPadding('0', remaining_digits);
+        }
+    } else if (decimal_point >= length) {
+        // "decimal_rep0000.00000" or "decimal_rep.0000"
+        result_builder->AddSubstring(decimal_digits, length);
+        result_builder->AddPadding('0', decimal_point - length);
+        if (digits_after_point > 0) {
+            result_builder->AddCharacter('.');
+            result_builder->AddPadding('0', digits_after_point);
+        }
+    } else {
+        // "decima.l_rep000"
+        ASSERT(digits_after_point > 0);
+        result_builder->AddSubstring(decimal_digits, decimal_point);
+        result_builder->AddCharacter('.');
+        ASSERT(length - decimal_point <= digits_after_point);
+        result_builder->AddSubstring(&decimal_digits[decimal_point],
+        length - decimal_point);
+        int remaining_digits = digits_after_point - (length - decimal_point);
+        result_builder->AddPadding('0', remaining_digits);
     }
-  } else if (decimal_point >= length) {
-    // "decimal_rep0000.00000" or "decimal_rep.0000"
-    result_builder->AddSubstring(decimal_digits, length);
-    result_builder->AddPadding('0', decimal_point - length);
-    if (digits_after_point > 0) {
-      result_builder->AddCharacter('.');
-      result_builder->AddPadding('0', digits_after_point);
+    if (digits_after_point == 0) {
+        if ((flags_ & EMIT_TRAILING_DECIMAL_POINT) != 0) {
+            result_builder->AddCharacter('.');
+        }
+        if ((flags_ & EMIT_TRAILING_ZERO_AFTER_POINT) != 0) {
+            result_builder->AddCharacter('0');
+        }
     }
-  } else {
-    // "decima.l_rep000"
-    ASSERT(digits_after_point > 0);
-    result_builder->AddSubstring(decimal_digits, decimal_point);
-    result_builder->AddCharacter('.');
-    ASSERT(length - decimal_point <= digits_after_point);
-    result_builder->AddSubstring(&decimal_digits[decimal_point],
-                                 length - decimal_point);
-    int remaining_digits = digits_after_point - (length - decimal_point);
-    result_builder->AddPadding('0', remaining_digits);
-  }
-  if (digits_after_point == 0) {
-    if ((flags_ & EMIT_TRAILING_DECIMAL_POINT) != 0) {
-      result_builder->AddCharacter('.');
-    }
-    if ((flags_ & EMIT_TRAILING_ZERO_AFTER_POINT) != 0) {
-      result_builder->AddCharacter('0');
-    }
-  }
 }
 
 void CreateExponentialRepresentation(
-        int flags_,
-        const char* decimal_digits,
-        int length,
-        int exponent,
-        double_conversion::StringBuilder* result_builder) {
-      ASSERT(length != 0);
-      result_builder->AddCharacter(decimal_digits[0]);
-      if (length != 1) {
+    int flags_,
+    const char* decimal_digits,
+    int length,
+    int exponent,
+    double_conversion::StringBuilder* result_builder) {
+    ASSERT(length != 0);
+    result_builder->AddCharacter(decimal_digits[0]);
+    if (length != 1) {
         result_builder->AddCharacter('.');
         result_builder->AddSubstring(&decimal_digits[1], length-1);
-      }
-      result_builder->AddCharacter('e');
-      if (exponent < 0) {
+    }
+    result_builder->AddCharacter('e');
+    if (exponent < 0) {
         result_builder->AddCharacter('-');
         exponent = -exponent;
-      } else {
+    } else {
         if ((flags_ & EMIT_POSITIVE_EXPONENT_SIGN) != 0) {
-          result_builder->AddCharacter('+');
+            result_builder->AddCharacter('+');
         }
-      }
-      if (exponent == 0) {
+    }
+    if (exponent == 0) {
         result_builder->AddCharacter('0');
         return;
-      }
-      ASSERT(exponent < 1e4);
-      const int kMaxExponentLength = 5;
-      char buffer[kMaxExponentLength + 1];
-      buffer[kMaxExponentLength] = '\0';
-      int first_char_pos = kMaxExponentLength;
-      while (exponent > 0) {
+    }
+    ASSERT(exponent < 1e4);
+    const int kMaxExponentLength = 5;
+    char buffer[kMaxExponentLength + 1];
+    buffer[kMaxExponentLength] = '\0';
+    int first_char_pos = kMaxExponentLength;
+    while (exponent > 0) {
         buffer[--first_char_pos] = '0' + (exponent % 10);
         exponent /= 10;
-      }
-      result_builder->AddSubstring(&buffer[first_char_pos],
-                                   kMaxExponentLength - first_char_pos);
     }
+    result_builder->AddSubstring(&buffer[first_char_pos],
+    kMaxExponentLength - first_char_pos);
+}
 
 ESStringData::ESStringData(double number)
 {
@@ -272,11 +272,11 @@ ESStringData::ESStringData(double number)
         vector[decimal_rep_length] = '\0';
     }
 
-/*    reserve(decimal_rep_length + sign ? 1 : 0);
+    /*    reserve(decimal_rep_length + sign ? 1 : 0);
     if(sign)
-        operator +=('-');
+    operator +=('-');
     for(unsigned i = 0; i < decimal_rep_length ; i ++) {
-        operator +=(decimal_rep[i]);
+    operator +=(decimal_rep[i]);
     }*/
 
     const int bufferLength = 128;
@@ -288,13 +288,13 @@ ESStringData::ESStringData(double number)
     const int decimal_in_shortest_high_ = 21;
     if ((decimal_in_shortest_low_ <= exponent) &&
         (exponent < decimal_in_shortest_high_)) {
-      CreateDecimalRepresentation(flags, decimal_rep, decimal_rep_length,
-                                  decimal_point,
-                                  double_conversion::Max(0, decimal_rep_length - decimal_point),
-                                  &builder);
+        CreateDecimalRepresentation(flags, decimal_rep, decimal_rep_length,
+            decimal_point,
+            double_conversion::Max(0, decimal_rep_length - decimal_point),
+            &builder);
     } else {
-      CreateExponentialRepresentation(flags, decimal_rep, decimal_rep_length, exponent,
-              &builder);
+        CreateExponentialRepresentation(flags, decimal_rep, decimal_rep_length, exponent,
+            &builder);
     }
 
     if(sign)
@@ -518,8 +518,8 @@ void ESRegExpObject::setSource(escargot::ESString* src)
 void ESRegExpObject::setOption(const Option& option)
 {
     if(((m_option & ESRegExpObject::Option::MultiLine) != (option & ESRegExpObject::Option::MultiLine)) ||
-            ((m_option & ESRegExpObject::Option::IgnoreCase) != (option & ESRegExpObject::Option::IgnoreCase))
-            ) {
+        ((m_option & ESRegExpObject::Option::IgnoreCase) != (option & ESRegExpObject::Option::IgnoreCase))
+        ) {
         m_bytecodePattern = NULL;
     }
     m_option = option;
@@ -586,7 +586,7 @@ ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctio
         }
         // if FunctionExpressionNode has own name, should bind own name
         if (fn->codeBlock()->m_isFunctionExpression && fn->name()->length())
-            *functionRecord->bindingValueForActivationMode(params.size()) = ESValue(fn);
+        *functionRecord->bindingValueForActivationMode(params.size()) = ESValue(fn);
     } else {
         const InternalAtomicStringVector& params = fn->codeBlock()->m_params;
         ESValue* buf = currentExecutionContext->cachedDeclarativeEnvironmentRecordESValue();
@@ -665,12 +665,12 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
                 break;
             }
             case CallFunctionOpcode: {
-                 reinterpret_cast<CallFunction*>(currentCode)->m_profile.updateProfiledType();
-                 break;
+                reinterpret_cast<CallFunction*>(currentCode)->m_profile.updateProfiledType();
+                break;
             }
             case CallFunctionWithReceiverOpcode: {
-                 reinterpret_cast<CallFunctionWithReceiver*>(currentCode)->m_profile.updateProfiledType();
-                 break;
+                reinterpret_cast<CallFunctionWithReceiver*>(currentCode)->m_profile.updateProfiledType();
+                break;
             }
             default:
                 break;
@@ -683,7 +683,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
             size_t bytecodeCounter = 0;
             bool dontJIT = false;
             //check jit support for debug
-    #ifndef NDEBUG
+#ifndef NDEBUG
             {
                 char* code = fn->codeBlock()->m_code.data();
                 ByteCode* currentCode;
@@ -692,20 +692,20 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
                 while(&code[idx] < end) {
                     Opcode opcode = fn->codeBlock()->m_extraData[bytecodeCounter].m_opcode;
                     switch(opcode) {
-                        #define DECLARE_EXECUTE_NEXTCODE(opcode, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
-                        case opcode##Opcode: \
-                            if (!JITSupported) { \
-                                dontJIT = true; \
-                                LOG_VJ("> Unsupported ByteCode %s (idx %u). Stop trying JIT.\n", #opcode, (unsigned)idx); \
-                                break; \
-                            } \
-                            idx += sizeof (opcode); \
-                            bytecodeCounter++; \
-                            break;
+#define DECLARE_EXECUTE_NEXTCODE(opcode, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
+                    case opcode##Opcode: \
+                        if (!JITSupported) { \
+                            dontJIT = true; \
+                            LOG_VJ("> Unsupported ByteCode %s (idx %u). Stop trying JIT.\n", #opcode, (unsigned)idx); \
+                            break; \
+                        } \
+                        idx += sizeof (opcode); \
+                        bytecodeCounter++; \
+                        break;
                         FOR_EACH_BYTECODE_OP(DECLARE_EXECUTE_NEXTCODE);
-                        #undef DECLARE_EXECUTE_NEXTCODE
-                        case OpcodeKindEnd:
-                            break;
+#undef DECLARE_EXECUTE_NEXTCODE
+                    case OpcodeKindEnd:
+                        break;
                     }
 
                     if (dontJIT) {
@@ -715,7 +715,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
                     }
                 }
             }
-    #endif
+#endif
             bool compileNextTime = false;
             //check profile data
             char* code = fn->codeBlock()->m_code.data();
@@ -840,12 +840,12 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
                 jitFunction = reinterpret_cast<ESJIT::JITFunction>(ESJIT::JITCompile(fn->codeBlock(), instance));
                 if (jitFunction) {
                     LOG_VJ("> Compilation successful for function %s (codeBlock %p)! Cache jit function %p\n", functionName, fn->codeBlock(), jitFunction);
-    #ifndef NDEBUG
+#ifndef NDEBUG
                     if (ESVMInstance::currentInstance()->m_reportCompiledFunction) {
                         printf("%s ", fn->codeBlock()->m_nonAtomicId ? (fn->codeBlock()->m_nonAtomicId->utf8Data()):"(anonymous)");
                         ESVMInstance::currentInstance()->m_compiledFunctions++;
                     }
-    #endif
+#endif
                     fn->codeBlock()->m_cachedJITFunction = jitFunction;
                 } else {
                     LOG_VJ("> Compilation failed! disable jit compilation for function %s (codeBlock %p) from now on\n", functionName, fn->codeBlock());
@@ -891,16 +891,16 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
                 }
 
                 switch(opcode) {
-                    #define DECLARE_EXECUTE_NEXTCODE(code, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
-                                        case code##Opcode: \
-                                            idx += sizeof (code); \
-                                            bytecodeCounter++; \
-                                            continue;
-                                        FOR_EACH_BYTECODE_OP(DECLARE_EXECUTE_NEXTCODE);
-                    #undef DECLARE_EXECUTE_NEXTCODE
-                                        default:
-                                            RELEASE_ASSERT_NOT_REACHED();
-                                            break;
+#define DECLARE_EXECUTE_NEXTCODE(code, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
+                case code##Opcode: \
+                    idx += sizeof (code); \
+                    bytecodeCounter++; \
+                    continue;
+                    FOR_EACH_BYTECODE_OP(DECLARE_EXECUTE_NEXTCODE);
+#undef DECLARE_EXECUTE_NEXTCODE
+                default:
+                    RELEASE_ASSERT_NOT_REACHED();
+                    break;
                 }
             }
             if (fn->codeBlock()->m_osrExitCount >= ESVMInstance::currentInstance()->m_osrExitThreshold) {
@@ -937,8 +937,8 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
 
         if(UNLIKELY(fn->codeBlock()->m_needsActivation)) {
             instance->m_currentExecutionContext = new ExecutionContext(LexicalEnvironment::newFunctionEnvironment(arguments, argumentCount, fn), true, isNewExpression,
-                    currentContext,
-                    arguments, argumentCount);
+                currentContext,
+                arguments, argumentCount);
             functionCallerInnerProcess(instance->m_currentExecutionContext, fn, receiver, arguments, argumentCount, instance);
             //ESVMInstance->invalidateIdentifierCacheCheckCount();
             //execute;
@@ -951,9 +951,9 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
         } else {
             ESValue* storage = (::escargot::ESValue *)alloca(sizeof(::escargot::ESValue) * fn->m_codeBlock->m_innerIdentifiers.size());
             FunctionEnvironmentRecord envRec(
-                    arguments, argumentCount,
-                    storage,
-                    &fn->m_codeBlock->m_innerIdentifiers);
+                arguments, argumentCount,
+                storage,
+                &fn->m_codeBlock->m_innerIdentifiers);
 
             //envRec.m_functionObject = fn;
             //envRec.m_newTarget = receiver;
@@ -979,26 +979,26 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
 }
 
 ESDateObject::ESDateObject(ESPointer::Type type)
-       : ESObject((Type)(Type::ESObject | Type::ESDateObject), ESVMInstance::currentInstance()->globalObject()->datePrototype())
+: ESObject((Type)(Type::ESObject | Type::ESDateObject), ESVMInstance::currentInstance()->globalObject()->datePrototype())
 {
     m_isCacheDirty = true;
 }
 
 void ESDateObject::parseYmdhmsToDate(struct tm* timeinfo, int year, int month, int date, int hour, int minute, int second) {
-      char buffer[255];
-      snprintf(buffer, 255, "%d-%d-%d-%d-%d-%d", year, month, date, hour, minute, second);
-      strptime(buffer, "%Y-%m-%d-%H-%M-%S", timeinfo);
+    char buffer[255];
+    snprintf(buffer, 255, "%d-%d-%d-%d-%d-%d", year, month, date, hour, minute, second);
+    strptime(buffer, "%Y-%m-%d-%H-%M-%S", timeinfo);
 }
 
 void ESDateObject::parseStringToDate(struct tm* timeinfo, escargot::ESString* istr) {
-      int len = istr->length();
-      char* buffer = (char*)istr->utf8Data();
-      if (isalpha(buffer[0])) {
-          strptime(buffer, "%B %d %Y %H:%M:%S %z", timeinfo);
-      } else if (isdigit(buffer[0])) {
-          strptime(buffer, "%m/%d/%Y %H:%M:%S", timeinfo);
-      }
-      GC_free(buffer);
+    int len = istr->length();
+    char* buffer = (char*)istr->utf8Data();
+    if (isalpha(buffer[0])) {
+        strptime(buffer, "%B %d %Y %H:%M:%S %z", timeinfo);
+    } else if (isdigit(buffer[0])) {
+        strptime(buffer, "%m/%d/%Y %H:%M:%S", timeinfo);
+    }
+    GC_free(buffer);
 }
 
 const double hoursPerDay = 24.0;
@@ -1014,10 +1014,10 @@ const double msPerMonth = 2592000000.0;
 static inline double ymdhmsToSeconds(long year, int mon, int day, int hour, int minute, double second)
 {
     double days = (day - 32075)
-        + floor(1461 * (year + 4800.0 + (mon - 14) / 12) / 4)
-        + 367 * (mon - 2 - (mon - 14) / 12 * 12) / 12
-        - floor(3 * ((year + 4900.0 + (mon - 14) / 12) / 100) / 4)
-        - 2440588;
+    + floor(1461 * (year + 4800.0 + (mon - 14) / 12) / 4)
+    + 367 * (mon - 2 - (mon - 14) / 12 * 12) / 12
+    - floor(3 * ((year + 4900.0 + (mon - 14) / 12) / 100) / 4)
+    - 2440588;
     return ((days * hoursPerDay + hour) * minutesPerHour + minute) * secondsPerMinute + second;
 }
 
@@ -1118,7 +1118,7 @@ ESBooleanObject::ESBooleanObject(bool value)
 }
 
 ESErrorObject::ESErrorObject(escargot::ESString* message)
-       : ESObject((Type)(Type::ESObject | Type::ESErrorObject), ESVMInstance::currentInstance()->globalObject()->errorPrototype())
+    : ESObject((Type)(Type::ESObject | Type::ESErrorObject), ESVMInstance::currentInstance()->globalObject()->errorPrototype())
 {
     set(strings->message, message);
     set(strings->name, strings->Error.string());
@@ -1162,7 +1162,7 @@ ESArrayBufferObject::ESArrayBufferObject(ESPointer::Type type)
 }
 
 ESArrayBufferView::ESArrayBufferView(ESPointer::Type type, ESValue __proto__)
-       : ESObject((Type)(Type::ESObject | Type::ESArrayBufferView | type), __proto__)
+    : ESObject((Type)(Type::ESObject | Type::ESArrayBufferView | type), __proto__)
 {
 }
 
@@ -1217,3 +1217,4 @@ bool ESTypedArrayObjectWrapper::set(int key, ESValue val)
 
 
 }
+

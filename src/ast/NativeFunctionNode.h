@@ -10,7 +10,7 @@ typedef std::function<ESValue (ESVMInstance*)> NativeFunctionNodeFunctionType;
 class NativeFunctionNode : public Node {
 public:
     NativeFunctionNode(NativeFunctionNodeFunctionType&& fn)
-            : Node(NodeType::NativeFunction)
+        : Node(NodeType::NativeFunction)
     {
         m_nativeFunction = fn;
     }
@@ -22,3 +22,4 @@ protected:
 }
 
 #endif
+

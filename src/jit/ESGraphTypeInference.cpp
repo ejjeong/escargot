@@ -20,7 +20,7 @@ bool ESGraphTypeInference::run(ESGraph* graph)
         for (size_t j = 0; j < block->instructionSize(); j++) {
             ESIR* ir = block->instruction(j);
             switch(ir->opcode()) {
-            #define INIT_ESIR(opcode) \
+#define INIT_ESIR(opcode) \
                 opcode##IR* ir##opcode = static_cast<opcode##IR*>(ir);
             case ESIR::Opcode::ConstantESValue:
             {
@@ -365,9 +365,9 @@ bool ESGraphTypeInference::run(ESGraph* graph)
             }
             }
             continue;
-unsupported:
-            LOG_VJ("Unsupported case in TypeInference (IR %s)\n", ir->getOpcodeName());
-            return false;
+            unsupported:
+                LOG_VJ("Unsupported case in TypeInference (IR %s)\n", ir->getOpcodeName());
+                return false;
         }
     }
 
@@ -381,3 +381,4 @@ unsupported:
 
 }}
 #endif
+

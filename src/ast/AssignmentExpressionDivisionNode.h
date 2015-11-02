@@ -13,7 +13,7 @@ public:
     friend class ScriptParser;
 
     AssignmentExpressionDivisionNode(Node* left, Node* right)
-            : ExpressionNode(NodeType::AssignmentExpressionDivision)
+        : ExpressionNode(NodeType::AssignmentExpressionDivision)
     {
         m_left = left;
         m_right = right;
@@ -36,3 +36,4 @@ protected:
 }
 
 #endif
+

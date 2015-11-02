@@ -11,9 +11,9 @@ namespace ESJIT {
 const char* ESIR::getOpcodeName()
 {
     switch (m_opcode) {
-        #define RETURN_OPCODE_NAME(name, unused) case ESIR::name: return #name;
+#define RETURN_OPCODE_NAME(name, unused) case ESIR::name: return #name;
         FOR_EACH_ESIR_OP(RETURN_OPCODE_NAME)
-        #undef  RETURN_OPCODE_NAME
+#undef  RETURN_OPCODE_NAME
         default: RELEASE_ASSERT_NOT_REACHED();
     }
 }
@@ -22,9 +22,9 @@ uint32_t ESIR::getFlags()
 {
     auto getFlag = [] (uint32_t flag = 0) -> uint32_t { return flag; };
     switch (m_opcode) {
-        #define RETURN_ESIR_FLAG(name, flag) case ESIR::name: return getFlag(flag);
+#define RETURN_ESIR_FLAG(name, flag) case ESIR::name: return getFlag(flag);
         FOR_EACH_ESIR_OP(RETURN_ESIR_FLAG)
-        #undef  RETURN_ESIR_FLAG
+#undef  RETURN_ESIR_FLAG
         default: RELEASE_ASSERT_NOT_REACHED();
     }
 }
@@ -58,3 +58,4 @@ void JumpIR::dump(std::ostream& out)
 
 }}
 #endif
+

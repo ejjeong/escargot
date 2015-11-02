@@ -22,18 +22,19 @@ bool ESGraphSSAConversion::run(ESGraph* graph)
             ESIR* ir = block->instruction(j);
 #if 0
             switch(ir->opcode()) {
-                case SetVar:
-                    block->dominanceFrontier()->addPhi(ir);
+            case SetVar:
+                block->dominanceFrontier()->addPhi(ir);
             }
 #endif
         }
     }
 #ifndef NDEBUG
     // if (ESVMInstance::currentInstance()->m_verboseJIT)
-        // graph->dump(std::cout, "After running SSA conversion");
+    // graph->dump(std::cout, "After running SSA conversion");
 #endif
     return true;
 }
 
 }}
 #endif
+

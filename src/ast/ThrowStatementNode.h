@@ -10,7 +10,7 @@ class ThrowStatementNode : public StatementNode {
 public:
     friend class ScriptParser;
     ThrowStatementNode(Node *argument)
-            : StatementNode(NodeType::ThrowStatement)
+        : StatementNode(NodeType::ThrowStatement)
     {
         m_argument = argument;
     }
@@ -29,3 +29,4 @@ protected:
 }
 
 #endif
+

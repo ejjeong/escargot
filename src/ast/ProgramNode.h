@@ -10,7 +10,7 @@ class ProgramNode : public Node {
 public:
     friend class ScriptParser;
     ProgramNode(StatementNodeVector&& body, bool isStrict)
-            : Node(NodeType::Program)
+        : Node(NodeType::Program)
     {
         m_body = body;
         m_isStrict = isStrict;
@@ -21,7 +21,7 @@ public:
         for(unsigned i = 0; i < m_body.size() ; i ++) {
             m_body[i]->generateStatementByteCode(codeBlock, context);
 #ifndef NDEBUG
-        codeBlock->pushCode(CheckStackPointer(this->m_sourceLocation.m_lineNumber), context, this);
+            codeBlock->pushCode(CheckStackPointer(this->m_sourceLocation.m_lineNumber), context, this);
 #endif
         }
         codeBlock->pushCode(End(), context, this);
@@ -41,3 +41,4 @@ protected:
 }
 
 #endif
+

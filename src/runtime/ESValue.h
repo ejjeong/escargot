@@ -5,7 +5,7 @@
 
 namespace JSC {
 namespace Yarr {
-    class BytecodePattern;
+class BytecodePattern;
 }
 }
 
@@ -189,31 +189,31 @@ public:
 
     // This value is 2^48, used to encode doubles such that the encoded value will begin
     // with a 16-bit pattern within the range 0x0001..0xFFFE.
-    #define DoubleEncodeOffset 0x1000000000000ll
+#define DoubleEncodeOffset 0x1000000000000ll
     // If all bits in the mask are set, this indicates an integer number,
     // if any but not all are set this value is a double precision number.
-    #define TagTypeNumber 0xffff000000000000ll
+#define TagTypeNumber 0xffff000000000000ll
 
     // All non-numeric (bool, null, undefined) immediates have bit 2 set.
-    #define TagBitTypeOther 0x2ll
-    #define TagBitBool      0x4ll
-    #define TagBitUndefined 0x8ll
+#define TagBitTypeOther 0x2ll
+#define TagBitBool      0x4ll
+#define TagBitUndefined 0x8ll
     // Combined integer value for non-numeric immediates.
-    #define ValueFalse     (TagBitTypeOther | TagBitBool | false)
-    #define ValueTrue      (TagBitTypeOther | TagBitBool | true)
-    #define ValueUndefined (TagBitTypeOther | TagBitUndefined)
-    #define ValueNull      (TagBitTypeOther)
+#define ValueFalse     (TagBitTypeOther | TagBitBool | false)
+#define ValueTrue      (TagBitTypeOther | TagBitBool | true)
+#define ValueUndefined (TagBitTypeOther | TagBitUndefined)
+#define ValueNull      (TagBitTypeOther)
 
     // TagMask is used to check for all types of immediate values (either number or 'other').
-    #define TagMask (TagTypeNumber | TagBitTypeOther)
+#define TagMask (TagTypeNumber | TagBitTypeOther)
 
     // These special values are never visible to JavaScript code; Empty is used to represent
     // Array holes, and for uninitialized ESValues. Deleted is used in hash table code.
     // These values would map to cell types in the ESValue encoding, but not valid GC cell
     // pointer should have either of these values (Empty is null, deleted is at an invalid
     // alignment for a GC cell, and in the zero page).
-    #define ValueEmpty   0x0ll
-    #define ValueDeleted 0x4ll
+#define ValueEmpty   0x0ll
+#define ValueDeleted 0x4ll
 #endif
 
 #ifdef ENABLE_ESJIT
@@ -255,13 +255,13 @@ public:
         TypeMask = 0xffff
     };
 
-protected:
+    protected:
     ESPointer(Type type)
     {
         m_type = type;
     }
 
-public:
+    public:
     ALWAYS_INLINE int type()
     {
         return m_type;
@@ -488,7 +488,7 @@ public:
     static size_t offsetOfType() { return offsetof(ESPointer, m_type); }
 #endif
 
-protected:
+    protected:
     // 0x******@@
     // * -> Data
     // @ -> tag
@@ -504,7 +504,7 @@ public:
     }
 
     ESStringData(const u16string& src)
-            : u16string(src)
+        : u16string(src)
     {
         m_hashData.m_isHashInited =  false;
         m_length = src.length();
@@ -602,54 +602,54 @@ class ESString : public ESPointer {
     friend class ESScriptParser;
 protected:
     ESString(ESStringData* data)
-        : ESPointer(Type::ESString)
+    : ESPointer(Type::ESString)
     {
         m_string = data;
     }
 
     ESString(const u16string& src)
-        : ESPointer(Type::ESString)
+    : ESPointer(Type::ESString)
     {
         m_string = new(GC) ESStringData(src);
     }
 
     ESString(u16string&& src)
-        : ESPointer(Type::ESString)
+    : ESPointer(Type::ESString)
     {
         m_string = new(GC) ESStringData(std::move(src));
     }
 
     ESString(std::u16string& src)
-        : ESPointer(Type::ESString)
+    : ESPointer(Type::ESString)
     {
         m_string = new(GC) ESStringData(src);
     }
 
 
     ESString(int number)
-        : ESPointer(Type::ESString)
+    : ESPointer(Type::ESString)
     {
         m_string = new(GC) ESStringData(number);
     }
 
     ESString(double number)
-        : ESPointer(Type::ESString)
+    : ESPointer(Type::ESString)
     {
         m_string = new(GC) ESStringData(number);
     }
 
     ESString(char16_t number)
-        : ESPointer(Type::ESString)
+    : ESPointer(Type::ESString)
     {
         m_string = new(GC) ESStringData(number);
     }
 
     ESString(const char* str)
-        : ESPointer(Type::ESString)
+    : ESPointer(Type::ESString)
     {
         m_string = new(GC) ESStringData(str);
     }
-public:
+    public:
     static ESString* create(u16string&& src)
     {
         return new ESString(std::move(src));
@@ -895,10 +895,10 @@ ALWAYS_INLINE ESString* ESString::concatTwoStrings(ESString* lstr, ESString* rst
 {
     int llen = lstr->length();
     if (llen == 0)
-        return rstr;
+    return rstr;
     int rlen = rstr->length();
     if (rlen == 0)
-        return lstr;
+    return lstr;
 
     if (UNLIKELY(llen + rlen >= (int)ESRopeString::ESRopeStringCreateMinLimit)) {
         return ESRopeString::createAndConcat(lstr, rstr);
@@ -1084,27 +1084,27 @@ struct ESHiddenClassPropertyInfo {
 };
 
 typedef std::unordered_map<::escargot::ESString*, size_t,
-                std::hash<ESString*>,std::equal_to<ESString*>,
-                gc_allocator< std::pair<const ::escargot::ESString*, size_t> > > ESHiddenClassPropertyIndexHashMapInfoStd;
+std::hash<ESString*>,std::equal_to<ESString*>,
+gc_allocator< std::pair<const ::escargot::ESString*, size_t> > > ESHiddenClassPropertyIndexHashMapInfoStd;
 typedef std::vector<::escargot::ESHiddenClassPropertyInfo, gc_allocator<::escargot::ESHiddenClassPropertyInfo> > ESHiddenClassPropertyInfoVectorStd;
 
 class ESHiddenClassPropertyInfoVector : public ESHiddenClassPropertyInfoVectorStd {
-public:
+    public:
 #ifdef ENABLE_ESJIT
     static size_t offsetOfData() { return offsetof(ESHiddenClassPropertyInfoVector, _M_impl._M_start); }
 #endif
 };
 
 typedef std::unordered_map<ESString*, ::escargot::ESHiddenClass **,
-                std::hash<ESString*>,std::equal_to<ESString*>,
-                gc_allocator<std::pair<const ESString*, std::pair<::escargot::ESHiddenClass *, ::escargot::ESHiddenClass **> > > > ESHiddenClassTransitionDataStd;
+std::hash<ESString*>,std::equal_to<ESString*>,
+gc_allocator<std::pair<const ESString*, std::pair<::escargot::ESHiddenClass *, ::escargot::ESHiddenClass **> > > > ESHiddenClassTransitionDataStd;
 
 typedef std::vector<::escargot::ESValue, gc_allocator<::escargot::ESValue> > ESValueVectorStd;
 
 class ESValueVector : public ESValueVectorStd {
 public:
     ESValueVector(size_t siz)
-        : ESValueVectorStd(siz) {
+    : ESValueVectorStd(siz) {
 
     }
 
@@ -1123,7 +1123,7 @@ public:
     {
         auto iter = m_propertyIndexHashMapInfo.find(const_cast<ESString *>(name));
         if(iter == m_propertyIndexHashMapInfo.end())
-            return SIZE_MAX;
+        return SIZE_MAX;
         return iter->second;
     }
 
@@ -1185,7 +1185,7 @@ public:
 
 private:
     ESHiddenClass()
-        : m_transitionData(4)
+    : m_transitionData(4)
     {
         m_flags.m_isVectorMode = true;
         m_flags.m_forceNonVectorMode = false;
@@ -1211,7 +1211,7 @@ typedef std::vector<ESHiddenClass*, pointer_free_allocator<ESHiddenClass*> > ESH
 class ESHiddenClassChain : public ESHiddenClassChainStd {
 public:
     ESHiddenClassChain()
-        : ESHiddenClassChainStd() { }
+    : ESHiddenClassChainStd() { }
 
 #ifdef ENABLE_ESJIT
     static size_t offsetOfData() { return offsetof(ESHiddenClassChain, _M_impl._M_start); }
@@ -1223,7 +1223,7 @@ class ESObject : public ESPointer {
     friend class ESHiddenClass;
     friend class ESFunctionObject;
     friend ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ::escargot::ESString* keyString, const ESValue& value
-            , ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex, ESHiddenClass** hiddenClassWillBe);
+    , ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex, ESHiddenClass** hiddenClassWillBe);
 protected:
     ESObject(ESPointer::Type type, ESValue __proto__, size_t initialKeyCount = 6);
 public:
@@ -1236,14 +1236,14 @@ public:
     inline void defineDataProperty(const escargot::ESValue& key, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true, const ESValue& initalValue = ESValue());
     inline void defineAccessorProperty(const escargot::ESValue& key,ESPropertyAccessorData* data, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true);
     inline void defineAccessorProperty(const escargot::ESValue& key,ESValue (*getter)(::escargot::ESObject* obj),
-                void (*setter)(::escargot::ESObject* obj, const ESValue& value),
-                bool isWritable, bool isEnumerable, bool isConfigurable)
+    void (*setter)(::escargot::ESObject* obj, const ESValue& value),
+    bool isWritable, bool isEnumerable, bool isConfigurable)
     {
         defineAccessorProperty(key, new ESPropertyAccessorData(getter, setter), isWritable, isEnumerable, isConfigurable);
     }
     inline void defineAccessorProperty(escargot::ESString* key,ESValue (*getter)(::escargot::ESObject* obj),
-                void (*setter)(::escargot::ESObject* obj, const ESValue& value),
-                bool isWritable, bool isEnumerable, bool isConfigurable)
+    void (*setter)(::escargot::ESObject* obj, const ESValue& value),
+    bool isWritable, bool isEnumerable, bool isConfigurable)
     {
         defineAccessorProperty(key, new ESPropertyAccessorData(getter, setter), isWritable, isEnumerable, isConfigurable);
     }
@@ -1500,7 +1500,7 @@ public:
 
     bool shouldConvertToSlowMode(unsigned i) {
         if (m_fastmode && i > MAX_FASTMODE_SIZE)
-            return true;
+        return true;
         return false;
     }
 
@@ -1876,8 +1876,8 @@ struct Float64Adaptor: TypedArrayAdaptor<double, TypedArrayType::Float64Array> {
 class ESTypedArrayObjectWrapper : public ESArrayBufferView {
 protected:
     ESTypedArrayObjectWrapper(TypedArrayType arraytype, ESPointer::Type type, ESValue __proto__)
-       : ESArrayBufferView(type, __proto__),
-         m_arraytype(arraytype)
+        : ESArrayBufferView(type, __proto__),
+    m_arraytype(arraytype)
     {
     }
 public:
@@ -1888,11 +1888,11 @@ public:
         case TypedArrayType::Uint8Array:
         case TypedArrayType::Uint8ClampedArray:
             return 1;
-        case TypedArrayType::Int16Array:
+            case TypedArrayType::Int16Array:
         case TypedArrayType::Uint16Array:
             return 2;
         case TypedArrayType::Int32Array:
-        case TypedArrayType::Uint32Array:
+            case TypedArrayType::Uint32Array:
         case TypedArrayType::Float32Array:
             return 4;
         case TypedArrayType::Float64Array:
@@ -1916,7 +1916,7 @@ public:
     ALWAYS_INLINE TypedArrayType arraytype() { return m_arraytype; }
     /*
     ALWAYS_INLINE void setArraytype(TypedArrayType t) {
-        m_arraytype = t;
+    m_arraytype = t;
     }
     */
 
@@ -1931,7 +1931,7 @@ public:
 
 protected:
     inline ESTypedArrayObject(TypedArrayType arraytype,
-                       ESPointer::Type type = ESPointer::Type::ESTypedArrayObject);
+    ESPointer::Type type = ESPointer::Type::ESTypedArrayObject);
 
 public:
     static ESTypedArrayObject* create()
@@ -1969,7 +1969,7 @@ typedef ESTypedArrayObject<Float64Adaptor> ESFloat64Array;
 class ESDataViewObject : public ESArrayBufferView {
 protected:
     ESDataViewObject(ESPointer::Type type = ESPointer::Type::ESDataViewObject)
-           : ESArrayBufferView((Type)(Type::ESObject | Type::ESDataViewObject), ESValue()) //TODO set __proto__ properly
+        : ESArrayBufferView((Type)(Type::ESObject | Type::ESDataViewObject), ESValue()) //TODO set __proto__ properly
     {
         //TODO
         RELEASE_ASSERT_NOT_REACHED();
@@ -1991,14 +1991,14 @@ public:
     };
 protected:
     ESControlFlowRecord(const ControlFlowReason& reason, const ESValue& value)
-           : ESPointer(ESPointer::ESControlFlowRecord)
+        : ESPointer(ESPointer::ESControlFlowRecord)
     {
         m_reason = reason;
         m_value = value;
     }
 
     ESControlFlowRecord(const ControlFlowReason& reason, const ESValue& value, const ESValue& value2)
-           : ESPointer(ESPointer::ESControlFlowRecord)
+        : ESPointer(ESPointer::ESControlFlowRecord)
     {
         m_reason = reason;
         m_value = value;
@@ -2057,3 +2057,4 @@ protected:
 #include "ESValueInlines.h"
 
 #endif
+

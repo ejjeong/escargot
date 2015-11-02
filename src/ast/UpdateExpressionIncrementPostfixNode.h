@@ -10,7 +10,7 @@ public:
     friend class ScriptParser;
 
     UpdateExpressionIncrementPostfixNode(Node *argument)
-            : ExpressionNode(NodeType::UpdateExpressionIncrementPostfix)
+        : ExpressionNode(NodeType::UpdateExpressionIncrementPostfix)
     {
         m_argument = (ExpressionNode*)argument;
         m_isSimpleCase = false;
@@ -45,3 +45,4 @@ protected:
 }
 
 #endif
+

@@ -9,7 +9,7 @@ class BreakLabelStatementNode : public StatementNode {
 public:
     friend class ScriptParser;
     BreakLabelStatementNode(size_t upIndex, ESString* label)
-            : StatementNode(NodeType::BreakLabelStatement)
+        : StatementNode(NodeType::BreakLabelStatement)
     {
         m_upIndex = upIndex;
         m_label = label;
@@ -29,3 +29,4 @@ protected:
 }
 
 #endif
+

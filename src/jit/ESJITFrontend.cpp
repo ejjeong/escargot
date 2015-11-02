@@ -12,17 +12,17 @@ namespace escargot {
 namespace ESJIT {
 
 #define DECLARE_BYTECODE_LENGTH(bytecode, pushCount, popCount, peekCount, JITSupported, hasProfileData) const int bytecode##Length = sizeof(bytecode);
-    FOR_EACH_BYTECODE_OP(DECLARE_BYTECODE_LENGTH)
+FOR_EACH_BYTECODE_OP(DECLARE_BYTECODE_LENGTH)
 #undef DECLARE_BYTECODE_LENGTH
 
 ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
 {
     ESGraph* graph = ESGraph::create(codeBlock);
 
-//#ifndef NDEBUG
-//    if (ESVMInstance::currentInstance()->m_verboseJIT)
-//        dumpBytecode(codeBlock);
-//#endif
+    //#ifndef NDEBUG
+    //    if (ESVMInstance::currentInstance()->m_verboseJIT)
+    //        dumpBytecode(codeBlock);
+    //#endif
 
     size_t idx = 0;
     size_t bytecodeCounter = 0;
@@ -51,7 +51,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             if (currentBlock != generatedBlock && !currentBlock->endsWithJumpOrBranch()) {
                 currentBlock->addChild(generatedBlock);
                 generatedBlock->addParent(currentBlock);
-              }
+            }
             currentBlock = generatedBlock;
             if (currentBlock->index() == SIZE_MAX) {
                 for (int i = graph->basicBlockSize() - 1; i >= 0; i--) {
@@ -60,21 +60,21 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
                         currentBlock->setIndexLater(blockIndex + 1);
                         graph->push(currentBlock);
                         break;
-                       }
-                  }
-              }
+                    }
+                }
+            }
         }
         // printf("parse idx %lu with BasicBlock %lu\n", idx, currentBlock->index());
 
 #define INIT_BYTECODE(ByteCode) \
-            ByteCode* bytecode = (ByteCode*)currentCode; \
-            ByteCodeExtraData* extraData = &codeBlock->m_extraData[bytecodeCounter]; \
-            ASSERT(codeBlock->m_extraData[bytecodeCounter].m_registerIncrementCount < 2); \
-            if (codeBlock->m_extraData[bytecodeCounter].m_targetIndex0 >= 0 && codeBlock->m_extraData[bytecodeCounter].m_registerIncrementCount == 1) \
+        ByteCode* bytecode = (ByteCode*)currentCode; \
+        ByteCodeExtraData* extraData = &codeBlock->m_extraData[bytecodeCounter]; \
+        ASSERT(codeBlock->m_extraData[bytecodeCounter].m_registerIncrementCount < 2); \
+        if (codeBlock->m_extraData[bytecodeCounter].m_targetIndex0 >= 0 && codeBlock->m_extraData[bytecodeCounter].m_registerIncrementCount == 1) \
             graph->setOperandStackPos(codeBlock->m_extraData[bytecodeCounter].m_targetIndex0, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
 #define NEXT_BYTECODE(ByteCode) \
-            idx += sizeof(ByteCode); \
-            bytecodeCounter++;
+        idx += sizeof(ByteCode); \
+        bytecodeCounter++;
         switch(opcode) {
         case PushOpcode:
         {
@@ -538,7 +538,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             bytecode->m_profile.updateProfiledType();
             graph->setOperandType(extraData->m_targetIndex0, bytecode->m_profile.getType());
             GetObjectPreComputedIR* getObjectPreComputedIR = GetObjectPreComputedIR::create(extraData->m_targetIndex0, extraData->m_targetIndex1, extraData->m_sourceIndexes[0],
-                    bytecode);
+            bytecode);
             currentBlock->push(getObjectPreComputedIR);
             NEXT_BYTECODE(GetObjectPreComputedCase);
             break;
@@ -652,7 +652,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
                     // GetEnumerablObjectIR* getEnumerablObjectIR = dynamic_cast<GetEnumerablObjectIR*>(backWordJumpMapping[bytecode->m_jumpPosition]);
                     GetEnumerablObjectDataIR* getEnumerablObjectDataIR = (GetEnumerablObjectDataIR*)backWordJumpMapping[bytecode->m_jumpPosition];
                     getEnumerablObjectDataIR->setJumpIR(jumpIR);
-                  }
+                }
             }
 
             NEXT_BYTECODE(Jump);
@@ -796,13 +796,13 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             break;
         }
         case LoopStartOpcode:
-       {
-           INIT_BYTECODE(LoopStart);
-           ESBasicBlock* loopBlock = ESBasicBlock::create(graph);
-           basicBlockMapping[idx + sizeof(LoopStart)] = loopBlock;
-           NEXT_BYTECODE(LoopStart);
-           break;
-       }
+        {
+            INIT_BYTECODE(LoopStart);
+            ESBasicBlock* loopBlock = ESBasicBlock::create(graph);
+            basicBlockMapping[idx + sizeof(LoopStart)] = loopBlock;
+            NEXT_BYTECODE(LoopStart);
+            break;
+        }
         case ThrowOpcode:
         {
             INIT_BYTECODE(Throw);
@@ -821,19 +821,19 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         }
         case StorePhiOpcode:
         {
-           INIT_BYTECODE(StorePhi);
-           StorePhiIR* storePhiIR = StorePhiIR::create(extraData->m_targetIndex0, extraData->m_sourceIndexes[1], extraData->m_sourceIndexes[0]);
-           currentBlock->push(storePhiIR);
-           NEXT_BYTECODE(StorePhi);
-           break;
+            INIT_BYTECODE(StorePhi);
+            StorePhiIR* storePhiIR = StorePhiIR::create(extraData->m_targetIndex0, extraData->m_sourceIndexes[1], extraData->m_sourceIndexes[0]);
+            currentBlock->push(storePhiIR);
+            NEXT_BYTECODE(StorePhi);
+            break;
         }
         case LoadPhiOpcode:
         {
-           INIT_BYTECODE(LoadPhi);
-           LoadPhiIR* loadPhiIR = LoadPhiIR::create(extraData->m_targetIndex0, extraData->m_sourceIndexes[0], extraData->m_sourceIndexes[1], extraData->m_sourceIndexes[2]);
-           currentBlock->push(loadPhiIR);
-           NEXT_BYTECODE(LoadPhi);
-           break;
+            INIT_BYTECODE(LoadPhi);
+            LoadPhiIR* loadPhiIR = LoadPhiIR::create(extraData->m_targetIndex0, extraData->m_sourceIndexes[0], extraData->m_sourceIndexes[1], extraData->m_sourceIndexes[2]);
+            currentBlock->push(loadPhiIR);
+            NEXT_BYTECODE(LoadPhi);
+            break;
         }
         case ThisOpcode:
         {
@@ -901,3 +901,4 @@ unsupported:
 
 }}
 #endif
+

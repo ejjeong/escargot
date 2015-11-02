@@ -15,7 +15,7 @@ class Node;
 class ByteCode;
 class CodeBlock;
 
-///<OpcodeName, PushCount, PopCount, PeekCount, JITSupported, HasProfileData>
+    ///<OpcodeName, PushCount, PopCount, PeekCount, JITSupported, HasProfileData>
 #define FOR_EACH_BYTECODE_OP(F) \
     F(Push, 1, 0, 0, 1, 0) \
     F(PopExpressionStatement, 0, 1, 0, 1, 0) \
@@ -24,7 +24,7 @@ class CodeBlock;
     F(PopFromTempStack, 1, 0, 0, 1, 0) \
     F(LoadStackPointer, 0, 0, 0, 1, 0) \
     F(CheckStackPointer, 0, 0, 0, 1, 0) \
-\
+    \
     F(GetById, 1, 0, 0, 1, 1) \
     F(GetByIdWithoutException, 1, 0, 0, 1, 1) \
     F(GetByIndex, 1, 0, 0, 1, 1) \
@@ -37,8 +37,8 @@ class CodeBlock;
     F(SetByIndexWithActivation, 0, 0, 1, 1, 0) \
     F(SetArgumentsObject, 0, 0, 1, 0, 0) \
     F(CreateBinding, 0, 0, 0, 0, 0) \
-\
-    /*binary expressions*/ \
+    \
+    /*binary expressions*/\
     F(Equal, 1, 2, 0, 1, 0) \
     F(NotEqual, 1, 2, 0, 1, 0) \
     F(StrictEqual, 1, 2, 0, 1, 0) \
@@ -60,8 +60,8 @@ class CodeBlock;
     F(Mod, 1, 2, 0, 1, 0) \
     F(StringIn, 1, 2, 0, 0, 0) \
     F(InstanceOf, 1, 2, 0, 0, 0) \
-\
-    /*unary expressions*/ \
+    \
+    /*unary expressions*/\
     F(BitwiseNot, 1, 1, 0, 1, 0) \
     F(LogicalNot, 1, 1, 0, 1, 0) \
     F(UnaryMinus, 1, 1, 0, 1, 0) \
@@ -72,8 +72,8 @@ class CodeBlock;
     F(ToNumber, 1, 1, 0, 1, 0) \
     F(Increment, 1, 1, 0, 1, 0) \
     F(Decrement, 1, 1, 0, 1, 0) \
-\
-    /*object, array*/ \
+    \
+    /*object, array*/\
     F(CreateObject, 1, 0, 0, 1, 0) \
     F(CreateArray, 1, 0, 0, 1, 0) \
     F(InitObject, 0, 2, 1, 1, 0) \
@@ -95,7 +95,7 @@ class CodeBlock;
     F(SetObjectSlowMode, 1, 3, 0, 0, 0) \
     F(SetObjectPreComputedCase, 1, 2, 0, 1, 0) \
     F(SetObjectPreComputedCaseSlowMode, 1, 2, 0, 0, 0) \
-\
+    \
     /*function*/\
     F(CreateFunction, -1, 0, 0, 1, 0) \
     F(ExecuteNativeFunction, 0, 0, 0, 0, 0) \
@@ -106,8 +106,8 @@ class CodeBlock;
     F(NewFunctionCall, 1, -1, 0, 1, 1) \
     F(ReturnFunction, 0, 0, 0, 1, 0) \
     F(ReturnFunctionWithValue, 0, 1, 0, 1, 0) \
-\
-    /* control flow */ \
+    \
+    /* control flow */\
     F(Jump, 0, 0, 0, 1, 0) \
     F(JumpComplexCase, 0, 0, 0, 0, 0) \
     F(JumpIfTopOfStackValueIsFalse, 0, 1, 0, 1, 0) \
@@ -117,25 +117,25 @@ class CodeBlock;
     F(JumpIfTopOfStackValueIsTrueWithPeeking, 0, 0, 1, 1, 0) \
     F(DuplicateTopOfStackValue, 1, 0, 1, 1, 0) \
     F(LoopStart, 0, 0, 0, 1, 0) \
-\
-    /*try-catch*/ \
+    \
+    /*try-catch*/\
     F(Try, 0, 0, 0, 0, 0) \
     F(TryCatchBodyEnd, 0, 0, 0, 0, 0) \
     F(Throw, 0, 1, 0, 1, 0) \
     F(FinallyEnd, 0, 0, 0, 0, 0) \
-\
-    /*phi*/ \
+    \
+    /*phi*/\
     F(AllocPhi, 0, 0, 0, 1, 0) \
     F(StorePhi, 0, 0, 0, 1, 0) \
     F(LoadPhi, 0, 0, 0, 1, 0) \
-\
-    /*etc*/ \
+    \
+    /*etc*/\
     F(This, 1, 0, 0, 1, 1) \
     F(EnumerateObject, 1, 1, 0, 1, 0) \
     F(CheckIfKeyIsLast, 1, 0, 1, 1, 0) \
     F(EnumerateObjectKey, 1, 0, 1, 1, 1) \
     F(PrintSpAndBp, 0, 0, 0, 0, 0) \
-\
+    \
     F(End, 0, 0, 0, 1, 0)
 
 
@@ -158,10 +158,13 @@ unsigned char peekCountFromOpcode(ByteCode* code, Opcode opcode);
 inline const char* getByteCodeName(Opcode opcode)
 {
     switch (opcode) {
-        #define RETURN_BYTECODE_NAME(name, pushCount, popCount, peekCount, JITSupported, hasProfileData) case name##Opcode: return #name;
+#define RETURN_BYTECODE_NAME(name, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
+    case name##Opcode: \
+        return #name; \
         FOR_EACH_BYTECODE_OP(RETURN_BYTECODE_NAME)
-        #undef  RETURN_BYTECODE_NAME
-        default: RELEASE_ASSERT_NOT_REACHED();
+#undef  RETURN_BYTECODE_NAME
+    default:
+        RELEASE_ASSERT_NOT_REACHED();
     }
 }
 #endif
@@ -444,7 +447,7 @@ public:
 };
 
 class PushIntoTempStack : public ByteCode {
-public:
+    public:
     PushIntoTempStack()
         : ByteCode(PushIntoTempStackOpcode)
     {
@@ -546,7 +549,7 @@ public:
 };
 
 class GetByIdWithoutException : public ByteCode, public JITProfileTarget {
-public:
+    public:
     GetByIdWithoutException(const InternalAtomicString& name)
         : ByteCode(GetByIdWithoutExceptionOpcode)
         , m_name(name)
@@ -1065,7 +1068,7 @@ public:
         printf("Increment <>\n");
     }
 #endif
-private:
+    private:
 };
 
 class Decrement : public ByteCode {
@@ -1892,7 +1895,7 @@ public:
         : ByteCode(JumpComplexCaseOpcode)
     {
         m_controlFlowRecord = ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsJump,
-                (ESPointer *)jmp->m_jumpPosition, ESValue((int32_t)tryDupCount));
+        (ESPointer *)jmp->m_jumpPosition, ESValue((int32_t)tryDupCount));
 #ifndef NDEBUG
         m_node = jmp->m_node;
 #endif
@@ -2303,7 +2306,7 @@ template <typename Type>
 ALWAYS_INLINE void sub(void*& stk, void* bp, size_t offsetToBasePointer)
 {
     if(((size_t)stk) - offsetToBasePointer * sizeof(Type) < ((size_t)bp)) {
-            ASSERT_NOT_REACHED();
+        ASSERT_NOT_REACHED();
     }
     stk = (void *)(((size_t)stk) - offsetToBasePointer * sizeof(Type));
 }
@@ -2445,8 +2448,11 @@ inline void iterateByteCode(CodeBlock* codeBlock, void (*fn)(CodeBlock* block, u
         fn(codeBlock, idx, (ByteCode *)ptr, code);
         idx++;
         switch(code) {
-#define ADD_BYTECODE_SIZE(name, pushCount, popCount, peekCount, JITSupported, hasProfileData) case name##Opcode: ptr += sizeof(name); break;
-        FOR_EACH_BYTECODE_OP(ADD_BYTECODE_SIZE)
+#define ADD_BYTECODE_SIZE(name, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
+        case name##Opcode: \
+            ptr += sizeof(name); \
+            break; \
+            FOR_EACH_BYTECODE_OP(ADD_BYTECODE_SIZE)
         default:
             RELEASE_ASSERT_NOT_REACHED();
         }
@@ -2456,3 +2462,4 @@ inline void iterateByteCode(CodeBlock* codeBlock, void (*fn)(CodeBlock* block, u
 }
 
 #endif
+

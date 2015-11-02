@@ -8,7 +8,7 @@ namespace escargot {
 class BinaryExpressionMultiplyNode : public ExpressionNode {
 public:
     BinaryExpressionMultiplyNode(Node *left, Node* right)
-            : ExpressionNode(NodeType::BinaryExpressionMultiply)
+        : ExpressionNode(NodeType::BinaryExpressionMultiply)
     {
         m_left = (ExpressionNode*)left;
         m_right = (ExpressionNode*)right;
@@ -28,3 +28,4 @@ protected:
 }
 
 #endif
+

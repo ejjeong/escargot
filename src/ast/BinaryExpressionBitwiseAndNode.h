@@ -10,7 +10,7 @@ public:
     friend class ScriptParser;
 
     BinaryExpressionBitwiseAndNode(Node *left, Node* right)
-            : ExpressionNode(NodeType::BinaryExpressionBitwiseAnd)
+        : ExpressionNode(NodeType::BinaryExpressionBitwiseAnd)
     {
         m_left = (ExpressionNode*)left;
         m_right = (ExpressionNode*)right;
@@ -30,3 +30,4 @@ protected:
 }
 
 #endif
+

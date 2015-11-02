@@ -9,7 +9,7 @@ class NewExpressionNode : public ExpressionNode {
 public:
     friend class ScriptParser;
     NewExpressionNode(Node* callee, ArgumentVector&& arguments)
-            : ExpressionNode(NodeType::NewExpression)
+        : ExpressionNode(NodeType::NewExpression)
     {
         m_callee = callee;
         m_arguments = arguments;
@@ -34,3 +34,4 @@ protected:
 }
 
 #endif
+

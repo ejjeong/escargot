@@ -8,7 +8,7 @@ namespace escargot {
 class EmptyNode : public Node {
 public:
     EmptyNode()
-            : Node(NodeType::Empty)
+        : Node(NodeType::Empty)
     {
     }
 
@@ -23,3 +23,4 @@ protected:
 }
 
 #endif
+

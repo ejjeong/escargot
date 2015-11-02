@@ -10,7 +10,7 @@ class VariableDeclarationNode : public DeclarationNode {
 public:
     friend class ScriptParser;
     VariableDeclarationNode(VariableDeclaratorVector&& decl)
-            : DeclarationNode(VariableDeclaration)
+        : DeclarationNode(VariableDeclaration)
     {
         m_declarations = decl;
     }
@@ -53,3 +53,4 @@ protected:
 }
 
 #endif
+

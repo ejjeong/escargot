@@ -12,12 +12,12 @@ public:
     friend class ScriptParser;
     TryStatementNode(Node *block, Node *handler, CatchClauseNodeVector&& guardedHandlers,  Node *finalizer)
         : StatementNode(NodeType::TryStatement)
-      {
-          m_block = (BlockStatementNode*) block;
-          m_handler = (CatchClauseNode*) handler;
-          m_guardedHandlers = guardedHandlers;
-          m_finalizer = (BlockStatementNode*) finalizer;
-      }
+    {
+        m_block = (BlockStatementNode*) block;
+        m_handler = (CatchClauseNode*) handler;
+        m_guardedHandlers = guardedHandlers;
+        m_finalizer = (BlockStatementNode*) finalizer;
+    }
 
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
@@ -60,3 +60,4 @@ protected:
 }
 
 #endif
+

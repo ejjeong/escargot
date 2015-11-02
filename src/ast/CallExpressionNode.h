@@ -11,7 +11,7 @@ class CallExpressionNode : public ExpressionNode {
 public:
     friend class ScriptParser;
     CallExpressionNode(Node* callee, ArgumentVector&& arguments)
-            : ExpressionNode(NodeType::CallExpression)
+        : ExpressionNode(NodeType::CallExpression)
     {
         m_callee = callee;
         m_arguments = arguments;
@@ -47,10 +47,11 @@ public:
     }
 
 protected:
-    Node* m_callee;//callee: Expression;
+    Node* m_callee; //callee: Expression;
     ArgumentVector m_arguments; //arguments: [ Expression ];
 };
 
 }
 
 #endif
+

@@ -11,7 +11,7 @@ class SwitchStatementNode : public StatementNode {
 public:
     friend class ScriptParser;
     SwitchStatementNode(Node* discriminant, StatementNodeVector&& casesA, Node* deflt, StatementNodeVector&& casesB, bool lexical)
-            : StatementNode(NodeType::SwitchStatement)
+        : StatementNode(NodeType::SwitchStatement)
     {
         m_discriminant = (ExpressionNode*) discriminant;
         m_casesA = casesA;
@@ -83,3 +83,4 @@ protected:
 }
 
 #endif
+

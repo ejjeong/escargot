@@ -38,9 +38,9 @@ ESVMInstance::ESVMInstance()
 
     /*
     GC_set_on_collection_event([](GC_EventType type){
-        if(type == GC_EVENT_RECLAIM_END && ESVMInstance::currentInstance()) {
-            ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
-        }
+    if(type == GC_EVENT_RECLAIM_END && ESVMInstance::currentInstance()) {
+    ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
+    }
     });
     */
 
@@ -69,9 +69,9 @@ ESVMInstance::ESVMInstance()
     });
 
     m_initialHiddenClassForObject.m_propertyIndexHashMapInfo.insert(std::make_pair(
-            m_strings.__proto__,
-            0
-            ));
+    m_strings.__proto__,
+    0
+    ));
     m_initialHiddenClassForObject.m_propertyInfo.push_back(ESHiddenClassPropertyInfo(m_strings.__proto__.string(), false, true, false, false));
 
     // $19.2.4 Function Instances
@@ -180,36 +180,36 @@ void ESVMInstance::printValue(ESValue val)
                 bool isFirst = true;
                 o->asESObject()->enumeration([&str, &isFirst, o, &toString](escargot::ESValue key) {
                     if(!isFirst)
-                        str.append(", ");
+                    str.append(", ");
                     str.append(key.toString()->utf8Data());
                     str.append(": ");
                     str.append(o->asESObject()->getOwnProperty(key).toString()->utf8Data());
                     //toString(slot.value(o->asESObject()));
                     isFirst = false;
-                    });
+                });
                 str.append("]");
             } else if(o->isESErrorObject()) {
                 str.append(v.toString()->utf8Data());
             } else if(o->isESObject()) {
                 if(o->asESObject()->get(ESValue(currentInstance()->strings().constructor)).isESPointer() && o->asESObject()->get(ESValue(currentInstance()->strings().constructor)).asESPointer()->isESObject())
-                    str.append(o->asESObject()->get(ESValue(currentInstance()->strings().constructor)).asESPointer()->asESObject()->get(ESValue(currentInstance()->strings().name)).toString()->utf8Data());
-                str.append(" {");
+                str.append(o->asESObject()->get(ESValue(currentInstance()->strings().constructor)).asESPointer()->asESObject()->get(ESValue(currentInstance()->strings().name)).toString()->utf8Data());
+            str.append(" {");
                 bool isFirst = true;
                 o->asESObject()->enumeration([&str, &isFirst, o, &toString](escargot::ESValue key) {
                     if(!isFirst)
-                        str.append(", ");
-                        str.append(key.toString()->utf8Data());
-                        str.append(": ");
-                        str.append(o->asESObject()->getOwnProperty(key).toString()->utf8Data());
-                        //toString(slot.value(o->asESObject()));
-                        isFirst = false;
-                    });
+                    str.append(", ");
+                    str.append(key.toString()->utf8Data());
+                    str.append(": ");
+                    str.append(o->asESObject()->getOwnProperty(key).toString()->utf8Data());
+                    //toString(slot.value(o->asESObject()));
+                    isFirst = false;
+                });
                 if(o->isESStringObject()) {
                     str.append(", [[PrimitiveValue]]: \"");
                     str.append(o->asESStringObject()->stringData()->utf8Data());
                     str.append("\"");
                 }
-                str.append("}");
+                    str.append("}");
             } else {
                 RELEASE_ASSERT_NOT_REACHED();
             }
@@ -225,3 +225,4 @@ void ESVMInstance::printValue(ESValue val)
 }
 
 }
+

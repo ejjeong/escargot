@@ -11,8 +11,8 @@ namespace escargot {
 class FunctionNode : public Node {
 public:
     FunctionNode(NodeType type ,const InternalAtomicString& id, InternalAtomicStringVector&& params,
-            Node* body,bool isGenerator, bool isExpression, bool isStrict)
-            : Node(type)
+        Node* body,bool isGenerator, bool isExpression, bool isStrict)
+        : Node(type)
     {
         m_id = id;
         m_nonAtomicId = id.string();
@@ -67,3 +67,4 @@ protected:
 }
 
 #endif
+

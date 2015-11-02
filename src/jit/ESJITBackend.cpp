@@ -28,7 +28,7 @@ using namespace nanojit;
 
 #define CI(name, args) \
     {(uintptr_t) (&name), args, nanojit::ABI_CDECL, /*isPure*/0, ACCSET_STORE_ANY \
-     DEBUG_ONLY_NAME(name)}
+        DEBUG_ONLY_NAME(name)}
 
 #ifdef ESCARGOT_64
 #define ARGTYPE_E ARGTYPE_Q
@@ -188,7 +188,7 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
                             while (true) {
                                 j--;
                                 if(j < 0)
-                                    break;
+                                break;
                                 if(block->instruction(j)->targetIndex() != -1) {
                                     unsigned followPopCount = m_graph->getFollowPopCountOf(block->instruction(j)->targetIndex());
                                     maxStackPos = m_graph->getOperandStackPos(block->instruction(j)->targetIndex()) - followPopCount;
@@ -201,7 +201,7 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
                         break;
                     }
                 }
-              }
+            }
 
             if (maxStackPos > 0) {
                 for (; j >= 0; j--) {
@@ -218,7 +218,7 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
                         m_out->insStore(LIR_ste, boxedLIns, stackBuf, bufOffset, 1);
                         writeFlags[stackPos - 1] = true;
                         writeCount++;
-                       }
+                    }
                     if (writeCount == maxStackPos) {
                         LIns* maxStackPosLIns = m_out->insImmI(maxStackPos);
                         m_out->insStore(LIR_sti, maxStackPosLIns, m_contextP, ExecutionContext::offsetofStackPos(), 1);
@@ -262,7 +262,7 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
             JIT_LOG(in, "Expected Boolean-typed value, but got this value");
             LIns* index = m_out->insImmI(currentByteCodeIndex);
             JIT_LOG(index, "currentByteCodeIndex = ");
-         }
+        }
 #endif
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out->ins0(LIR_label);
@@ -281,7 +281,7 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
             JIT_LOG(in, "Expected Int-typed value, but got this value");
             LIns* index = m_out->insImmI(currentByteCodeIndex);
             JIT_LOG(index, "currentByteCodeIndex = ");
-         }
+        }
 #endif
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out->ins0(LIR_label);
@@ -700,11 +700,11 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 {
     switch(ir->opcode()) {
 #ifndef NDEBUG
-    #define INIT_ESIR(opcode) \
+#define INIT_ESIR(opcode) \
         opcode##IR* ir##opcode = static_cast<opcode##IR*>(ir); \
         m_out->insComment("# # # # # # # # Opcode " #opcode " # # # # # # # # #");
 #else
-    #define INIT_ESIR(opcode) \
+#define INIT_ESIR(opcode) \
         opcode##IR* ir##opcode = static_cast<opcode##IR*>(ir);
 #endif
     case ESIR::Opcode::ConstantESValue:
@@ -741,22 +741,22 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         INIT_ESIR(ConstantPointer);
         return m_out->insImmP(irConstantPointer->value());
     }
-    #define INIT_BINARY_ESIR(opcode) \
+#define INIT_BINARY_ESIR(opcode) \
         Type leftType = m_graph->getOperandType(ir##opcode->leftIndex()); \
         Type rightType = m_graph->getOperandType(ir##opcode->rightIndex()); \
         LIns* left = getTmpMapping(ir##opcode->leftIndex()); \
         LIns* right = getTmpMapping(ir##opcode->rightIndex());
-    #define CALL_BINARY_ESIR(opcode, callInfo) \
+#define CALL_BINARY_ESIR(opcode, callInfo) \
         LIns* boxedLeft = boxESValue(left, leftType); \
         LIns* boxedRight = boxESValue(right, rightType); \
         LIns* args[] = {boxedRight, boxedLeft}; \
         LIns* boxedResult = m_out->insCall(&callInfo, args); \
         Type expectedType = m_graph->getOperandType(ir##opcode->m_targetIndex); \
         LIns* unboxedResult = unboxESValue(boxedResult, expectedType);
-    #define INIT_UNARY_ESIR(opcode) \
+#define INIT_UNARY_ESIR(opcode) \
         Type valueType = m_graph->getOperandType(ir##opcode->sourceIndex()); \
         LIns* value = getTmpMapping(ir##opcode->sourceIndex());
-    #define CALL_UNARY_ESIR(opcode, callInfo) \
+#define CALL_UNARY_ESIR(opcode, callInfo) \
         LIns* boxedValue = boxESValue(value, valueType); \
         LIns* args[] = {boxedValue}; \
         LIns* boxedResult = m_out->insCall(&callInfo, args); \
@@ -1055,7 +1055,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             }
         }
         else
-            return nullptr;
+        return nullptr;
     }
     case ESIR::Opcode::GreaterThanOrEqual:
     {
@@ -1420,7 +1420,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 #if 1
         LIns* pathJoin = m_out->ins0(LIR_label);
         jumpToJoin->setTarget(pathJoin);
-//        LIns* ret = m_out->ins3(LIR_cmovd, checkIfCacheHit, cachedResult, resolvedResult);
+        //        LIns* ret = m_out->ins3(LIR_cmovd, checkIfCacheHit, cachedResult, resolvedResult);
         LIns* ret = m_out->insLoad(LIR_lde, phi, 0, 1, LOAD_NORMAL);
         return ret;
 #else
@@ -1643,7 +1643,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* property = boxESValue(getTmpMapping(irGetArrayObject->propertyIndex()), m_graph->getOperandType(irGetArrayObject->propertyIndex()));
         LIns* args[] = {m_globalObjectP, property, obj};
         return m_out->insCall(&getObjectOpCallInfo, args);
-         */
+        */
 
 #ifdef ESCARGOT_64
         LIns* obj = getTmpMapping(irGetArrayObject->objectIndex());
@@ -1805,7 +1805,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         jumpLessThanZero->setTarget(errorEnd);
         jumpGretherOrEqualThanLength->setTarget(errorEnd);
         if(gotoEndInDoublePath)
-            gotoEndInDoublePath->setTarget(errorEnd);
+        gotoEndInDoublePath->setTarget(errorEnd);
         {
             LIns* obj = boxESValue(getTmpMapping(irSetArrayObject->objectIndex()), m_graph->getOperandType(irSetArrayObject->objectIndex()));
             LIns* property = boxESValue(getTmpMapping(irSetArrayObject->propertyIndex()), m_graph->getOperandType(irSetArrayObject->propertyIndex()));
@@ -1836,12 +1836,12 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             /*
             code for debug
             {
-                LIns* obj = boxESValue(getTmpMapping(irGetStringByIndex->objectIndex()), m_graph->getOperandType(irGetStringByIndex->objectIndex()));
-                LIns* property = boxESValue(getTmpMapping(irGetStringByIndex->propertyIndex()), m_graph->getOperandType(irGetStringByIndex->propertyIndex()));
-                LIns* args[] = {m_globalObjectP, property, obj};
-                m_out->insCall(&getObjectOpCallInfo, args);
+            LIns* obj = boxESValue(getTmpMapping(irGetStringByIndex->objectIndex()), m_graph->getOperandType(irGetStringByIndex->objectIndex()));
+            LIns* property = boxESValue(getTmpMapping(irGetStringByIndex->propertyIndex()), m_graph->getOperandType(irGetStringByIndex->propertyIndex()));
+            LIns* args[] = {m_globalObjectP, property, obj};
+            m_out->insCall(&getObjectOpCallInfo, args);
             }
-             */
+            */
 
             LIns* result = m_out->insAlloc(sizeof (ESValue));
 
@@ -2135,7 +2135,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         LIns* label3 = m_out->ins0(LIR_label);
         jf3->setTarget(label3);
 
-//        LIns* proto = m_out->insLoad(LIR_lde, obj, ESObject::offsetOf__proto__(), 1, LOAD_NORMAL);
+        //        LIns* proto = m_out->insLoad(LIR_lde, obj, ESObject::offsetOf__proto__(), 1, LOAD_NORMAL);
         // ToDo(JMP) : ReadOnly Check
 
         LIns* boxedSrc = boxESValue(source, srcType);
@@ -2149,7 +2149,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     {
         return nullptr;
     }
-    #undef INIT_ESIR
+#undef INIT_ESIR
     }
 }
 
@@ -2293,7 +2293,7 @@ JITFunction generateNativeFromIR(ESGraph* graph, ESVMInstance* instance)
     unsigned long time3 = ESVMInstance::currentInstance()->tickCount();
     if (ESVMInstance::currentInstance()->m_profile)
         printf("JIT Compilation Took %lfms, %lfms each for nanojit/native generation\n",
-                (time2-time1)/1000.0, (time3-time2)/1000.0);
+            (time2-time1)/1000.0, (time3-time2)/1000.0);
 
     return function;
 }
@@ -2456,3 +2456,4 @@ int nanoJITTest()
 
 }}
 #endif
+

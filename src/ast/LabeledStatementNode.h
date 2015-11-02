@@ -9,7 +9,7 @@ class LabeledStatementNode : public StatementNode {
 public:
     friend class ScriptParser;
     LabeledStatementNode(StatementNode* statementNode, ESString* label)
-            : StatementNode(NodeType::LabeledStatement)
+        : StatementNode(NodeType::LabeledStatement)
     {
         m_statementNode = statementNode;
         m_label = label;
@@ -34,3 +34,4 @@ protected:
 }
 
 #endif
+

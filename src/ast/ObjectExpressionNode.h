@@ -13,7 +13,7 @@ class ObjectExpressionNode : public ExpressionNode {
 public:
     friend class ScriptParser;
     ObjectExpressionNode(PropertiesNodeVector&& properties)
-            : ExpressionNode(NodeType::ObjectExpression)
+        : ExpressionNode(NodeType::ObjectExpression)
     {
         m_properties = properties;
     }
@@ -50,3 +50,4 @@ protected:
 }
 
 #endif
+

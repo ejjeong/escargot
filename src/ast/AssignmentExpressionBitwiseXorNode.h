@@ -13,7 +13,7 @@ public:
     friend class ScriptParser;
 
     AssignmentExpressionBitwiseXorNode(Node* left, Node* right)
-            : ExpressionNode(NodeType::AssignmentExpressionBitwiseXor)
+        : ExpressionNode(NodeType::AssignmentExpressionBitwiseXor)
     {
         m_left = left;
         m_right = right;
@@ -36,3 +36,4 @@ protected:
 }
 
 #endif
+

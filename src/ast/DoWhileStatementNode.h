@@ -10,7 +10,7 @@ class DoWhileStatementNode : public StatementNode {
 public:
     friend class ScriptParser;
     DoWhileStatementNode(Node *test, Node *body)
-            : StatementNode(NodeType::DoWhileStatement)
+        : StatementNode(NodeType::DoWhileStatement)
     {
         m_test = (ExpressionNode*) test;
         m_body = (StatementNode*) body;
@@ -45,3 +45,4 @@ protected:
 }
 
 #endif
+

@@ -8,7 +8,7 @@ namespace escargot {
 class ThisExpressionNode : public ExpressionNode {
 public:
     ThisExpressionNode()
-            : ExpressionNode(NodeType::ThisExpression) { }
+        : ExpressionNode(NodeType::ThisExpression) { }
 
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
@@ -21,3 +21,4 @@ protected:
 }
 
 #endif
+

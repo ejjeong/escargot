@@ -31,7 +31,7 @@ public:
             // TODO
         } else {
             RELEASE_ASSERT_NOT_REACHED();
-         }
+        }
     }
 
 protected:
@@ -41,3 +41,4 @@ protected:
 }
 
 #endif
+

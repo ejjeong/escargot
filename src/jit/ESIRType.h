@@ -30,7 +30,7 @@ namespace ESJIT {
     F(Top,            ~0x0)
 
 #define DECLARE_TYPE_CONSTANT(type, encoding) \
-const uint64_t Type##type = encoding;
+        const uint64_t Type##type = encoding;
 FOR_EACH_ESIR_TYPES(DECLARE_TYPE_CONSTANT)
 #undef DECLARE_TYPE_CONSTANT
 
@@ -93,7 +93,7 @@ public:
                 LOG_VJ("WARNING: Reading type of unhandled ESValue '%s'. Returning Top.\n", value.toString()->utf8Data());
                 return TypePointer;
             }
-         }
+        }
         else {
             LOG_VJ("WARNING: Reading type of unhandled ESValue '%s'. Returning Top.\n", value.toString()->utf8Data());
             return TypeTop;
@@ -115,11 +115,11 @@ public:
     {
         if (m_type == TypeBottom)
             return "Bottom";
-        #define DECLARE_ESIR_TYPE_NAME_STRING(type, offset) \
+#define DECLARE_ESIR_TYPE_NAME_STRING(type, offset) \
         if (is##type##Type()) \
             return #type;
         FOR_EACH_ESIR_TYPES(DECLARE_ESIR_TYPE_NAME_STRING)
-        #undef DECLARE_ESIR_TYPE_NAME_STRING
+#undef DECLARE_ESIR_TYPE_NAME_STRING
         return "Unknown";
     }
 
@@ -154,3 +154,4 @@ COMPILE_ASSERT((sizeof (Type)) == (sizeof (uint64_t)), sizeof ESJIT::Type should
 }}
 #endif
 #endif
+

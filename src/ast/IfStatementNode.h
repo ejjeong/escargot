@@ -9,7 +9,7 @@ class IfStatementNode : public StatementNode {
 public:
     friend class ScriptParser;
     IfStatementNode(Node *test, Node *consequente, Node *alternate)
-            : StatementNode(NodeType::IfStatement)
+        : StatementNode(NodeType::IfStatement)
     {
         m_test = (ExpressionNode*) test;
         m_consequente = (StatementNode*) consequente;
@@ -51,3 +51,4 @@ protected:
 }
 
 #endif
+

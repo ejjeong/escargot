@@ -12,7 +12,7 @@ class VariableDeclaratorNode : public Node {
 public:
     friend class ScriptParser;
     VariableDeclaratorNode(Node* id,ExpressionNode* init=NULL)
-            : Node(NodeType::VariableDeclarator)
+        : Node(NodeType::VariableDeclarator)
     {
         m_id = id;
         m_init = init;
@@ -44,3 +44,4 @@ typedef std::vector<Node *, gc_allocator<Node *>> VariableDeclaratorVector;
 }
 
 #endif
+

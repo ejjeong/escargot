@@ -8,7 +8,7 @@ namespace escargot {
 class BinaryExpressionMinusNode : public ExpressionNode {
 public:
     BinaryExpressionMinusNode(Node *left, Node* right)
-            : ExpressionNode(NodeType::BinaryExpressionMinus)
+        : ExpressionNode(NodeType::BinaryExpressionMinus)
     {
         m_left = (ExpressionNode*)left;
         m_right = (ExpressionNode*)right;
@@ -29,3 +29,4 @@ protected:
 }
 
 #endif
+

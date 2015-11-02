@@ -13,7 +13,7 @@ public:
     friend class ScriptParser;
 
     AssignmentExpressionUnsignedShiftNode(Node* left, Node* right)
-            : ExpressionNode(NodeType::AssignmentExpressionUnsignedRightShift)
+        : ExpressionNode(NodeType::AssignmentExpressionUnsignedRightShift)
     {
         m_left = left;
         m_right = right;
@@ -36,3 +36,4 @@ protected:
 }
 
 #endif
+

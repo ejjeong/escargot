@@ -14,7 +14,7 @@ public:
     };
 
     PropertyNode(Node* key, Node* value, Kind kind)
-            : Node(NodeType::Property)
+        : Node(NodeType::Property)
     {
         m_key = key;
         m_value = value;
@@ -45,3 +45,4 @@ protected:
 }
 
 #endif
+

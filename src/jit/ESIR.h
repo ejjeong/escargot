@@ -21,7 +21,7 @@ class NativeGenerator;
 class ESBasicBlock;
 
 #define FOR_EACH_ESIR_OP(F) \
-    /* Typed constant variables */ \
+    /* Typed constant variables */\
     F(ConstantESValue, ) \
     F(ConstantInt, ) \
     F(ConstantDouble, ) \
@@ -29,13 +29,13 @@ class ESBasicBlock;
     F(ConstantBoolean, ) \
     F(ConstantString, ) \
     \
-    /* Type conversions */ \
+    /* Type conversions */\
     F(ToNumber, ) \
     F(ToString, ) \
     F(ToInt32, ) \
     F(ToBoolean, ) \
     \
-    /* From BinaryExpression */ \
+    /* From BinaryExpression */\
     F(Int32Plus, ) \
     F(DoublePlus, ) \
     F(StringPlus, ) \
@@ -74,7 +74,7 @@ class ESBasicBlock;
     F(In, ) \
     F(InstanceOf, ) \
     \
-    /* From UnaryExpression */ \
+    /* From UnaryExpression */\
     F(BitwiseNot, ) \
     F(LogicalNot, ) \
     \
@@ -85,7 +85,7 @@ class ESBasicBlock;
     F(TypeOf, ) \
     F(Void, ) \
     \
-    /* Control Flow */ \
+    /* Control Flow */\
     F(LoopStart, ) \
     F(Jump, ) \
     F(Branch, ) \
@@ -108,12 +108,12 @@ class ESBasicBlock;
     F(InitObject, ) \
     F(InitArrayObject, ) \
     \
-    /* For-in statement */ \
+    /* For-in statement */\
     F(GetEnumerablObjectData, ) \
     F(CheckIfKeyIsLast, ) \
     F(GetEnumerateKey, ReturnsESValue) \
     \
-    /* [Get/Set][Variable|Property] */ \
+    /* [Get/Set][Variable|Property] */\
     F(GetThis, ReturnsESValue) \
     F(GetArgument, ReturnsESValue) \
     F(GetVar, ReturnsESValue) \
@@ -137,14 +137,14 @@ class ESBasicBlock;
     \
     F(Throw, ) \
     \
-    /* TODO: ArrayExpression Throw [Var|Fn][Decl|Expr] */ \
+    /* TODO: ArrayExpression Throw [Var|Fn][Decl|Expr] */\
 
 #define FOR_EACH_ESIR_FLAGS(F) \
     F(ReturnsESValue, 0) \
 
 #define DECLARE_ESIR_FLAGS(flag, shift) \
-const uint32_t flag = 0x1 << shift;
-FOR_EACH_ESIR_FLAGS(DECLARE_ESIR_FLAGS)
+    const uint32_t flag = 0x1 << shift;
+    FOR_EACH_ESIR_FLAGS(DECLARE_ESIR_FLAGS)
 #undef DECLARE_ESIR_FLAGS
 
 // FIXME find a better allocator
@@ -152,9 +152,9 @@ class ESIR : public ESJITAlloc {
     friend class NativeGenerator;
 public:
     typedef enum {
-        #define DECLARE_IR(name, unused) name,
+#define DECLARE_IR(name, unused) name,
         FOR_EACH_ESIR_OP(DECLARE_IR)
-        #undef DECLARE_IR
+#undef DECLARE_IR
         Last
     } Opcode;
     ESIR(Opcode opcode, int target)
@@ -179,29 +179,29 @@ protected:
 };
 
 #define DECLARE_STATIC_GENERATOR_0(opcode) \
-    static opcode##IR* create(unsigned target) { \
-        return new opcode##IR(target); \
-    }
+static opcode##IR* create(unsigned target) { \
+    return new opcode##IR(target); \
+}
 
 #define DECLARE_STATIC_GENERATOR_1(opcode, Type1) \
-    static opcode##IR* create(unsigned target, Type1 operand1) { \
-        return new opcode##IR(target, operand1); \
-    }
+static opcode##IR* create(unsigned target, Type1 operand1) { \
+    return new opcode##IR(target, operand1); \
+}
 
 #define DECLARE_STATIC_GENERATOR_2(opcode, Type1, Type2) \
-    static opcode##IR* create(unsigned target, Type1 operand1, Type2 operand2) { \
-        return new opcode##IR(target, operand1, operand2); \
-    }
+static opcode##IR* create(unsigned target, Type1 operand1, Type2 operand2) { \
+    return new opcode##IR(target, operand1, operand2); \
+}
 
 #define DECLARE_STATIC_GENERATOR_3(opcode, Type1, Type2, Type3) \
-    static opcode##IR* create(unsigned target, Type1 operand1, Type2 operand2, Type3 operand3) { \
-        return new opcode##IR(target, operand1, operand2, operand3); \
-    }
+static opcode##IR* create(unsigned target, Type1 operand1, Type2 operand2, Type3 operand3) { \
+    return new opcode##IR(target, operand1, operand2, operand3); \
+}
 
 #define DECLARE_STATIC_GENERATOR_4(opcode, Type1, Type2, Type3, Type4) \
-    static opcode##IR* create(unsigned target, Type1 operand1, Type2 operand2, Type3 operand3, Type4 operand4) { \
-        return new opcode##IR(target, operand1, operand2, operand3, operand4); \
-    }
+static opcode##IR* create(unsigned target, Type1 operand1, Type2 operand2, Type3 operand3, Type4 operand4) { \
+    return new opcode##IR(target, operand1, operand2, operand3, operand4); \
+}
 
 
 
@@ -647,10 +647,10 @@ public:
 private:
     GetObjectIR(int targetIndex, int targetIndex1, int objectIndex, int propertyIndex, escargot::GetObject* b)
         : ESIR(ESIR::Opcode::GetObject, targetIndex),
-          m_objectIndex(objectIndex),
-          m_receiverIndex(targetIndex1),
-          m_propertyIndex(propertyIndex),
-          m_byteCode(b) { }
+    m_objectIndex(objectIndex),
+    m_receiverIndex(targetIndex1),
+    m_propertyIndex(propertyIndex),
+    m_byteCode(b) { }
 
     int m_objectIndex;
     int m_receiverIndex;
@@ -678,9 +678,9 @@ public:
 private:
     GetObjectPreComputedIR(int targetIndex, int targetIndex1, int objectIndex, GetObjectPreComputedCase* b)
         : ESIR(ESIR::Opcode::GetObjectPreComputed, targetIndex),
-          m_objectIndex(objectIndex),
-          m_receiverIndex(targetIndex1),
-          m_byteCode(b) { }
+    m_objectIndex(objectIndex),
+    m_receiverIndex(targetIndex1),
+    m_byteCode(b) { }
 
     int m_objectIndex;
     int m_receiverIndex;
@@ -706,8 +706,8 @@ public:
 private:
     GetArrayObjectIR(int targetIndex, int objectIndex, int propertyIndex)
         : ESIR(ESIR::Opcode::GetArrayObject, targetIndex),
-          m_objectIndex(objectIndex),
-          m_propertyIndex(propertyIndex){ }
+    m_objectIndex(objectIndex),
+    m_propertyIndex(propertyIndex){ }
     int m_objectIndex;
     int m_propertyIndex;
 };
@@ -731,8 +731,8 @@ public:
 private:
     GetStringByIndexIR(int targetIndex, int objectIndex, int propertyIndex)
         : ESIR(ESIR::Opcode::GetStringByIndex, targetIndex),
-          m_objectIndex(objectIndex),
-          m_propertyIndex(propertyIndex){ }
+    m_objectIndex(objectIndex),
+    m_propertyIndex(propertyIndex){ }
     int m_objectIndex;
     int m_propertyIndex;
 };
@@ -757,9 +757,9 @@ public:
 private:
     SetArrayObjectIR(int targetIndex, int objectIndex, int propertyIndex, int sourceIndex)
         : ESIR(ESIR::Opcode::SetArrayObject, targetIndex),
-          m_objectIndex(objectIndex),
-          m_propertyIndex(propertyIndex),
-          m_sourceIndex(sourceIndex) { }
+    m_objectIndex(objectIndex),
+    m_propertyIndex(propertyIndex),
+    m_sourceIndex(sourceIndex) { }
     int m_objectIndex;
     int m_propertyIndex;
     int m_sourceIndex;
@@ -786,9 +786,9 @@ public:
 private:
     SetObjectIR(int targetIndex, int objectIndex, int propertyIndex, int sourceIndex)
         : ESIR(ESIR::Opcode::SetObject, targetIndex),
-          m_objectIndex(objectIndex),
-          m_propertyIndex(propertyIndex),
-          m_sourceIndex(sourceIndex) {
+    m_objectIndex(objectIndex),
+    m_propertyIndex(propertyIndex),
+    m_sourceIndex(sourceIndex) {
     }
     ESHiddenClass* m_cachedHiddenClass;
     int m_objectIndex;
@@ -816,9 +816,9 @@ public:
 private:
     SetObjectPreComputedIR(int targetIndex, int objectIndex, int sourceIndex, SetObjectPreComputedCase* byteCode)
         : ESIR(ESIR::Opcode::SetObjectPreComputed, targetIndex),
-          m_objectIndex(objectIndex),
-          m_sourceIndex(sourceIndex),
-          m_byteCode(byteCode) { }
+    m_objectIndex(objectIndex),
+    m_sourceIndex(sourceIndex),
+    m_byteCode(byteCode) { }
     int m_objectIndex;
     int m_sourceIndex;
     SetObjectPreComputedCase* m_byteCode;
@@ -1232,7 +1232,7 @@ public:
 private:
     BranchIR(int targetIndex, int operandIndex, ESBasicBlock* trueBlock, ESBasicBlock* falseBlock)
         : ESIR(ESIR::Opcode::Branch, targetIndex), m_operandIndex(operandIndex)
-          , m_trueBlock(trueBlock), m_falseBlock(falseBlock) { }
+        , m_trueBlock(trueBlock), m_falseBlock(falseBlock) { }
     int m_operandIndex;
     ESBasicBlock* m_trueBlock;
     ESBasicBlock* m_falseBlock;
@@ -1318,7 +1318,7 @@ public:
 
 protected:
     CallEvalIR(int targetIndex, int argumentCount, int* argumentIndexes)
-        : ESIR(ESIR::Opcode::CallEval, targetIndex), m_argumentIndexes(argumentCount)
+    : ESIR(ESIR::Opcode::CallEval, targetIndex), m_argumentIndexes(argumentCount)
     {
         for (int i=0; i<argumentCount; i++)
             m_argumentIndexes[i] = argumentIndexes[i];
@@ -1332,7 +1332,7 @@ public:
 
 private:
     ReturnIR(int targetIndex)
-        : ESIR(ESIR::Opcode::Return, targetIndex) { }
+    : ESIR(ESIR::Opcode::Return, targetIndex) { }
 };
 
 class MoveIR : public ESIR {
@@ -1415,8 +1415,8 @@ public:
 private:
     StorePhiIR(int targetIndex, int sourceIndex, int allocPhiIndex)
         : ESIR(ESIR::Opcode::StorePhi, targetIndex),
-          m_sourceIndex(sourceIndex),
-          m_allocPhiIndex(allocPhiIndex) { }
+    m_sourceIndex(sourceIndex),
+    m_allocPhiIndex(allocPhiIndex) { }
 
     int m_sourceIndex;
     int m_allocPhiIndex;
@@ -1542,3 +1542,4 @@ private:
 }}
 #endif
 #endif
+

@@ -161,7 +161,7 @@ ALWAYS_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* propert
 
 //d = {}. d.foo
 ALWAYS_INLINE ESValue getObjectPreComputedCaseOperation(ESValue* willBeObject, ESString* keyString, GlobalObject* globalObject
-        ,ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex)
+,ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex)
 {
     ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty());
     ESObject* obj;
@@ -169,7 +169,7 @@ ALWAYS_INLINE ESValue getObjectPreComputedCaseOperation(ESValue* willBeObject, E
     if(LIKELY(willBeObject->isESPointer())) {
         if(LIKELY(willBeObject->asESPointer()->isESObject())) {
             targetObj = obj = willBeObject->asESPointer()->asESObject();
-GetObjectPreComputedCaseInlineCacheOperation:
+            GetObjectPreComputedCaseInlineCacheOperation:
             size_t cSiz = cachedHiddenClassChain->size();
             bool miss = !cSiz;
             if(!miss) {
@@ -213,7 +213,7 @@ GetObjectPreComputedCaseInlineCacheOperation:
                 if(proto.isObject()) {
                     obj = proto.asESPointer()->asESObject();
                 } else
-                    break;
+                break;
             }
 
             if(*cachedHiddenClassIndex != SIZE_MAX) {
@@ -242,7 +242,7 @@ GetObjectPreComputedCaseInlineCacheOperation:
 }
 
 NEVER_INLINE ESValue getObjectPreComputedCaseOperationWithNeverInline(ESValue* willBeObject, ESString* property, GlobalObject* globalObject
-        ,ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex);
+,ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex);
 
 NEVER_INLINE void throwObjectWriteError();
 
@@ -274,7 +274,7 @@ ALWAYS_INLINE void setObjectOperation(ESValue* willBeObject, ESValue* property, 
 //d = {}. d.foo = 1
 NEVER_INLINE void setObjectPreComputedCaseOperationSlowCase(ESValue* willBeObject, ESString* keyString, const ESValue& value);
 ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESString* keyString, const ESValue& value
-        , ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex, ESHiddenClass** hiddenClassWillBe)
+, ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex, ESHiddenClass** hiddenClassWillBe)
 {
     ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty());
 
@@ -380,3 +380,4 @@ NEVER_INLINE EnumerateObjectData* executeEnumerateObject(ESObject* obj);
 
 }
 #endif
+

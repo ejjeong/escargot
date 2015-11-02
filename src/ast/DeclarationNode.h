@@ -9,7 +9,7 @@ namespace escargot {
 class DeclarationNode : public StatementNode {
 public:
     DeclarationNode(NodeType type)
-            : StatementNode(type)
+        : StatementNode(type)
     {
     }
 protected:
@@ -19,3 +19,4 @@ protected:
 
 
 #endif
+

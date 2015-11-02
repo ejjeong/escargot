@@ -11,7 +11,7 @@ public:
     friend class ScriptParser;
     friend class SwitchStatementNode;
     SwitchCaseNode(Node* test, StatementNodeVector&& consequent)
-            : StatementNode(NodeType::SwitchCase)
+        : StatementNode(NodeType::SwitchCase)
     {
         m_test = (ExpressionNode*) test;
         m_consequent = consequent;
@@ -36,3 +36,4 @@ protected:
 }
 
 #endif
+

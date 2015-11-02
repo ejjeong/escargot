@@ -16,7 +16,7 @@ public:
     };
 
     LogicalExpressionNode(Node *left, Node* right, ESString* oper)
-            : ExpressionNode(NodeType::LogicalExpression)
+        : ExpressionNode(NodeType::LogicalExpression)
     {
         m_left = (ExpressionNode*)left;
         m_right = (ExpressionNode*)right;
@@ -41,3 +41,4 @@ protected:
 }
 
 #endif
+

@@ -10,7 +10,7 @@ class ForInStatementNode : public StatementNode {
 public:
     friend class ScriptParser;
     ForInStatementNode(Node *left, Node *right, Node *body, bool each)
-            : StatementNode(NodeType::ForInStatement)
+        : StatementNode(NodeType::ForInStatement)
     {
         m_left = (ExpressionNode*) left;
         m_right = (ExpressionNode*) right;
@@ -89,3 +89,4 @@ protected:
 }
 
 #endif
+
