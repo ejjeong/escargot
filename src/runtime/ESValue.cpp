@@ -609,180 +609,258 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
     const char* functionName = fn->codeBlock()->m_nonAtomicId ? (fn->codeBlock()->m_nonAtomicId->utf8Data()):"(anonymous)";
 #endif
     ESJIT::JITFunction jitFunction = fn->codeBlock()->m_cachedJITFunction;
-    if (!jitFunction && !fn->codeBlock()->m_dontJIT && fn->codeBlock()->m_executeCount >= fn->codeBlock()->m_jitThreshold) {
-        LOG_VJ("==========Trying JIT Compile for function %s... (codeBlock %p)==========\n", functionName, fn->codeBlock());
-        size_t idx = 0;
-        size_t bytecodeCounter = 0;
+
+    if(!jitFunction && !fn->codeBlock()->m_dontJIT) {
+
+        //update profile data
         char* code = fn->codeBlock()->m_code.data();
-        ByteCode* currentCode;
-        bool compileNextTime = false;
-        bool dontJIT = false;
-        char* end = &fn->codeBlock()->m_code.data()[fn->codeBlock()->m_code.size()];
-        while(&code[idx] < end) {
-            currentCode = (ByteCode *)(&code[idx]);
-            Opcode opcode = fn->codeBlock()->m_extraData[bytecodeCounter].m_opcode;
+        size_t siz = fn->codeBlock()->m_byteCodeIndexesHaveToProfile.size();
+        for(unsigned i = 0; i < siz ; i ++) {
+            size_t pos = fn->codeBlock()->m_extraData[fn->codeBlock()->m_byteCodeIndexesHaveToProfile[i]].m_codePosition;
+            ByteCode* currentCode = (ByteCode *)&code[pos];
+            Opcode opcode = fn->codeBlock()->m_extraData[fn->codeBlock()->m_byteCodeIndexesHaveToProfile[i]].m_opcode;
             switch(opcode) {
             case GetByIdOpcode: {
                 reinterpret_cast<GetById*>(currentCode)->m_profile.updateProfiledType();
-                if (reinterpret_cast<GetById*>(currentCode)->m_profile.getType().isBottomType()) {
-                    compileNextTime = true;
-                    LOG_VJ("> Cannot Compile JIT Function due to GetById(idx %u) is not profiled yet\n", (unsigned)idx);
-                }
                 break;
             }
             case GetByIndexOpcode: {
                 reinterpret_cast<GetByIndex*>(currentCode)->m_profile.updateProfiledType();
-                if (reinterpret_cast<GetByIndex*>(currentCode)->m_profile.getType().isBottomType() ||
-                        reinterpret_cast<GetByIndex*>(currentCode)->m_profile.getType().isUndefinedType()) {
-                    compileNextTime = true;
-                    LOG_VJ("> Cannot Compile JIT Function due to GetByIndex(idx %u) is not profiled yet\n", (unsigned)idx);
-                }
                 break;
             }
             case GetByIndexWithActivationOpcode: {
                 reinterpret_cast<GetByIndexWithActivation*>(currentCode)->m_profile.updateProfiledType();
-                if (reinterpret_cast<GetByIndexWithActivation*>(currentCode)->m_profile.getType().isBottomType() ||
-                        reinterpret_cast<GetByIndexWithActivation*>(currentCode)->m_profile.getType().isUndefinedType()) {
-                    compileNextTime = true;
-                    LOG_VJ("> Cannot Compile JIT Function due to GetByIndexWithActivation(idx %u) is not profiled yet\n", (unsigned)idx);
-                }
                 break;
             }
             case GetByGlobalIndexOpcode: {
                 reinterpret_cast<GetByGlobalIndex*>(currentCode)->m_profile.updateProfiledType();
-                if (reinterpret_cast<GetByGlobalIndex*>(currentCode)->m_profile.getType().isBottomType() ||
-                        reinterpret_cast<GetByGlobalIndex*>(currentCode)->m_profile.getType().isUndefinedType()) {
-                    compileNextTime = true;
-                    LOG_VJ("> Cannot Compile JIT Function due to GetByGlobalIndex(idx %u) is not profiled yet\n", (unsigned)idx);
-                }
                 break;
             }
             case GetObjectOpcode: {
                 reinterpret_cast<GetObject*>(currentCode)->m_profile.updateProfiledType();
-                if (reinterpret_cast<GetObject*>(currentCode)->m_profile.getType().isBottomType()) {
-                    compileNextTime = true;
-                    LOG_VJ("> Cannot Compile JIT Function due to GetObject(idx %u) is not profiled yet\n", (unsigned)idx);
-                }
                 break;
             }
             case GetObjectAndPushObjectOpcode: {
                 reinterpret_cast<GetObjectAndPushObject*>(currentCode)->m_profile.updateProfiledType();
-                if (reinterpret_cast<GetObjectAndPushObject*>(currentCode)->m_profile.getType().isBottomType()) {
-                    compileNextTime = true;
-                    LOG_VJ("> Cannot Compile JIT Function due to GetObjectAndPushObject(idx %u) is not profiled yet\n", (unsigned)idx);
-                }
                 break;
             }
             case GetObjectWithPeekingOpcode: {
                 reinterpret_cast<GetObjectWithPeeking*>(currentCode)->m_profile.updateProfiledType();
-                if (reinterpret_cast<GetObjectWithPeeking*>(currentCode)->m_profile.getType().isBottomType()) {
-                    compileNextTime = true;
-                    LOG_VJ("> Cannot Compile JIT Function due to GetObjectWithPeeking(idx %u) is not profiled yet\n", (unsigned)idx);
-                }
                 break;
             }
             case GetObjectPreComputedCaseOpcode: {
                 reinterpret_cast<GetObjectPreComputedCase*>(currentCode)->m_profile.updateProfiledType();
-                if (reinterpret_cast<GetObjectPreComputedCase*>(currentCode)->m_profile.getType().isBottomType()) {
-                    compileNextTime = true;
-                    LOG_VJ("> Cannot Compile JIT Function due to GetObjectPreComputedCase(idx %u) is not profiled yet\n", (unsigned)idx);
-                }
                 break;
             }
             case GetObjectWithPeekingPreComputedCaseOpcode: {
                 reinterpret_cast<GetObjectWithPeekingPreComputedCase*>(currentCode)->m_profile.updateProfiledType();
-                if (reinterpret_cast<GetObjectWithPeekingPreComputedCase*>(currentCode)->m_profile.getType().isBottomType()) {
-                    compileNextTime = true;
-                    LOG_VJ("> Cannot Compile JIT Function due to GetObjectWithPeekingPreComputedCase(idx %u) is not profiled yet\n", (unsigned)idx);
-                }
                 break;
             }
             case GetObjectPreComputedCaseAndPushObjectOpcode: {
                 reinterpret_cast<GetObjectPreComputedCaseAndPushObject*>(currentCode)->m_profile.updateProfiledType();
-                if (reinterpret_cast<GetObjectPreComputedCaseAndPushObject*>(currentCode)->m_profile.getType().isBottomType()) {
-                    compileNextTime = true;
-                    LOG_VJ("> Cannot Compile JIT Function due to GetObjectPreComputedCaseAndPushObject(idx %u) is not profiled yet\n", (unsigned)idx);
-                }
                 break;
             }
             case ThisOpcode: {
                 reinterpret_cast<This*>(currentCode)->m_profile.updateProfiledType();
-                if (reinterpret_cast<This*>(currentCode)->m_profile.getType().isBottomType()) {
-                    compileNextTime = true;
-                    LOG_VJ("> Cannot Compile JIT Function due to This(idx %u) is not profiled yet\n", (unsigned)idx);
-                }
                 break;
             }
             case CallFunctionOpcode: {
                  reinterpret_cast<CallFunction*>(currentCode)->m_profile.updateProfiledType();
-                 if (reinterpret_cast<CallFunction*>(currentCode)->m_profile.getType().isBottomType()) {
-                    compileNextTime = true;
-                    LOG_VJ("> Cannot Compile JIT Function due to CallFunction(idx %u) is not profiled yet\n", (unsigned)idx);
-                 }
                  break;
             }
             case CallFunctionWithReceiverOpcode: {
                  reinterpret_cast<CallFunctionWithReceiver*>(currentCode)->m_profile.updateProfiledType();
-                 if (reinterpret_cast<CallFunctionWithReceiver*>(currentCode)->m_profile.getType().isBottomType()) {
-                    compileNextTime = true;
-                    LOG_VJ("> Cannot Compile JIT Function due to CallFunctionWithReceiver(idx %u) is not profiled yet\n", (unsigned)idx);
-                 }
                  break;
             }
             default:
                 break;
             }
-
-            if (compileNextTime) break;
-
-            switch(opcode) {
-                #define DECLARE_EXECUTE_NEXTCODE(opcode, pushCount, popCount, peekCount, JITSupported) \
-                case opcode##Opcode: \
-                    if (!JITSupported) { \
-                        dontJIT = true; \
-                        LOG_VJ("> Unsupported ByteCode %s (idx %u). Stop trying JIT.\n", #opcode, (unsigned)idx); \
-                        break; \
-                    } \
-                    idx += sizeof (opcode); \
-                    bytecodeCounter++; \
-                    break;
-                FOR_EACH_BYTECODE_OP(DECLARE_EXECUTE_NEXTCODE);
-                #undef DECLARE_EXECUTE_NEXTCODE
-                case OpcodeKindEnd:
-                    break;
-            }
-
-            if (dontJIT) {
-                fn->codeBlock()->m_dontJIT = true;
-                compileNextTime = true;
-                break;
-            }
         }
 
-        if (!compileNextTime) {
-            GC_disable();
-            jitFunction = reinterpret_cast<ESJIT::JITFunction>(ESJIT::JITCompile(fn->codeBlock(), instance));
-            if (jitFunction) {
-                LOG_VJ("> Compilation successful for function %s (codeBlock %p)! Cache jit function %p\n", functionName, fn->codeBlock(), jitFunction);
-#ifndef NDEBUG
-                if (ESVMInstance::currentInstance()->m_reportCompiledFunction) {
-                    printf("%s ", fn->codeBlock()->m_nonAtomicId ? (fn->codeBlock()->m_nonAtomicId->utf8Data()):"(anonymous)");
-                    ESVMInstance::currentInstance()->m_compiledFunctions++;
+        if(fn->codeBlock()->m_executeCount >= fn->codeBlock()->m_jitThreshold) {
+            LOG_VJ("==========Trying JIT Compile for function %s... (codeBlock %p)==========\n", functionName, fn->codeBlock());
+            size_t idx = 0;
+            size_t bytecodeCounter = 0;
+            bool dontJIT = false;
+            //check jit support for debug
+    #ifndef NDEBUG
+            {
+                char* code = fn->codeBlock()->m_code.data();
+                ByteCode* currentCode;
+                bool compileNextTime = false;
+                char* end = &fn->codeBlock()->m_code.data()[fn->codeBlock()->m_code.size()];
+                while(&code[idx] < end) {
+                    Opcode opcode = fn->codeBlock()->m_extraData[bytecodeCounter].m_opcode;
+                    switch(opcode) {
+                        #define DECLARE_EXECUTE_NEXTCODE(opcode, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
+                        case opcode##Opcode: \
+                            if (!JITSupported) { \
+                                dontJIT = true; \
+                                LOG_VJ("> Unsupported ByteCode %s (idx %u). Stop trying JIT.\n", #opcode, (unsigned)idx); \
+                                break; \
+                            } \
+                            idx += sizeof (opcode); \
+                            bytecodeCounter++; \
+                            break;
+                        FOR_EACH_BYTECODE_OP(DECLARE_EXECUTE_NEXTCODE);
+                        #undef DECLARE_EXECUTE_NEXTCODE
+                        case OpcodeKindEnd:
+                            break;
+                    }
+
+                    if (dontJIT) {
+                        fn->codeBlock()->m_dontJIT = true;
+                        compileNextTime = true;
+                        break;
+                    }
                 }
-#endif
-                fn->codeBlock()->m_cachedJITFunction = jitFunction;
-            } else {
-                LOG_VJ("> Compilation failed! disable jit compilation for function %s (codeBlock %p) from now on\n", functionName, fn->codeBlock());
-                fn->codeBlock()->m_dontJIT = true;
             }
-            ESJIT::ESJITAllocator::freeAll();
-            GC_enable();
-        } else {
-            size_t threshold = fn->codeBlock()->m_jitThreshold;
-            LOG_VJ("> Doubling JIT compilation threshold from %d to %d for function %s\n", threshold, threshold*2, functionName);
-            fn->codeBlock()->m_jitThreshold *= 2;
+    #endif
+            bool compileNextTime = false;
+            //check profile data
+            char* code = fn->codeBlock()->m_code.data();
+            for(unsigned i = 0; i < fn->codeBlock()->m_byteCodeIndexesHaveToProfile.size() ; i ++) {
+                size_t pos = fn->codeBlock()->m_extraData[fn->codeBlock()->m_byteCodeIndexesHaveToProfile[i]].m_codePosition;
+                Opcode opcode = fn->codeBlock()->m_extraData[fn->codeBlock()->m_byteCodeIndexesHaveToProfile[i]].m_opcode;
+                ByteCode* currentCode = (ByteCode *)&code[pos];
+                switch(opcode) {
+                case GetByIdOpcode: {
+                    if(reinterpret_cast<GetById*>(currentCode)->m_profile.getType().isBottomType()) {
+                        LOG_VJ("> Cannot Compile JIT Function due to idx %u is not profiled yet\n", (unsigned)pos);
+                        compileNextTime = true;
+                        break;
+                    }
+                    break;
+                }
+                case GetByIndexOpcode: {
+                    if(reinterpret_cast<GetByIndex*>(currentCode)->m_profile.getType().isBottomType()) {
+                        LOG_VJ("> Cannot Compile JIT Function due to idx %u is not profiled yet\n", (unsigned)pos);
+                        compileNextTime = true;
+                        break;
+                    }
+                    break;
+                }
+                case GetByIndexWithActivationOpcode: {
+                    if(reinterpret_cast<GetByIndexWithActivation*>(currentCode)->m_profile.getType().isBottomType()) {
+                        LOG_VJ("> Cannot Compile JIT Function due to idx %u is not profiled yet\n", (unsigned)pos);
+                        compileNextTime = true;
+                        break;
+                    }
+                    break;
+                }
+                case GetByGlobalIndexOpcode: {
+                    if(reinterpret_cast<GetByGlobalIndex*>(currentCode)->m_profile.getType().isBottomType()) {
+                        LOG_VJ("> Cannot Compile JIT Function due to idx %u is not profiled yet\n", (unsigned)pos);
+                        compileNextTime = true;
+                        break;
+                    }
+                    break;
+                }
+                case GetObjectOpcode: {
+                    if(reinterpret_cast<GetObject*>(currentCode)->m_profile.getType().isBottomType()) {
+                        LOG_VJ("> Cannot Compile JIT Function due to idx %u is not profiled yet\n", (unsigned)pos);
+                        compileNextTime = true;
+                        break;
+                    }
+                    break;
+                }
+                case GetObjectAndPushObjectOpcode: {
+                    if(reinterpret_cast<GetObjectAndPushObject*>(currentCode)->m_profile.getType().isBottomType()) {
+                        LOG_VJ("> Cannot Compile JIT Function due to idx %u is not profiled yet\n", (unsigned)pos);
+                        compileNextTime = true;
+                        break;
+                    }
+                    break;
+                }
+                case GetObjectWithPeekingOpcode: {
+                    if(reinterpret_cast<GetObjectWithPeeking*>(currentCode)->m_profile.getType().isBottomType()) {
+                        LOG_VJ("> Cannot Compile JIT Function due to idx %u is not profiled yet\n", (unsigned)pos);
+                        compileNextTime = true;
+                        break;
+                    }
+                    break;
+                }
+                case GetObjectPreComputedCaseOpcode: {
+                    if(reinterpret_cast<GetObjectPreComputedCase*>(currentCode)->m_profile.getType().isBottomType()) {
+                        LOG_VJ("> Cannot Compile JIT Function due to idx %u is not profiled yet\n", (unsigned)pos);
+                        compileNextTime = true;
+                        break;
+                    }
+                    break;
+                }
+                case GetObjectWithPeekingPreComputedCaseOpcode: {
+                    if(reinterpret_cast<GetObjectWithPeekingPreComputedCase*>(currentCode)->m_profile.getType().isBottomType()) {
+                        LOG_VJ("> Cannot Compile JIT Function due to idx %u is not profiled yet\n", (unsigned)pos);
+                        compileNextTime = true;
+                        break;
+                    }
+                    break;
+                }
+                case GetObjectPreComputedCaseAndPushObjectOpcode: {
+                    if(reinterpret_cast<GetObjectPreComputedCaseAndPushObject*>(currentCode)->m_profile.getType().isBottomType()) {
+                        LOG_VJ("> Cannot Compile JIT Function due to idx %u is not profiled yet\n", (unsigned)pos);
+                        compileNextTime = true;
+                        break;
+                    }
+                    break;
+                }
+                case ThisOpcode: {
+                    if(reinterpret_cast<This*>(currentCode)->m_profile.getType().isBottomType()) {
+                        LOG_VJ("> Cannot Compile JIT Function due to idx %u is not profiled yet\n", (unsigned)pos);
+                        compileNextTime = true;
+                        break;
+                    }
+                    break;
+                }
+                case CallFunctionOpcode: {
+                    if(reinterpret_cast<CallFunction*>(currentCode)->m_profile.getType().isBottomType()) {
+                        LOG_VJ("> Cannot Compile JIT Function due to idx %u is not profiled yet\n", (unsigned)pos);
+                        compileNextTime = true;
+                        break;
+                    }
+                    break;
+                }
+                case CallFunctionWithReceiverOpcode: {
+                    if(reinterpret_cast<CallFunctionWithReceiver*>(currentCode)->m_profile.getType().isBottomType()) {
+                        LOG_VJ("> Cannot Compile JIT Function due to idx %u is not profiled yet\n", (unsigned)pos);
+                        compileNextTime = true;
+                        break;
+                    }
+                    break;
+                }
+                default:
+                    break;
+                }
+
+
+            }
+
+            if (!compileNextTime) {
+                GC_disable();
+                jitFunction = reinterpret_cast<ESJIT::JITFunction>(ESJIT::JITCompile(fn->codeBlock(), instance));
+                if (jitFunction) {
+                    LOG_VJ("> Compilation successful for function %s (codeBlock %p)! Cache jit function %p\n", functionName, fn->codeBlock(), jitFunction);
+    #ifndef NDEBUG
+                    if (ESVMInstance::currentInstance()->m_reportCompiledFunction) {
+                        printf("%s ", fn->codeBlock()->m_nonAtomicId ? (fn->codeBlock()->m_nonAtomicId->utf8Data()):"(anonymous)");
+                        ESVMInstance::currentInstance()->m_compiledFunctions++;
+                    }
+    #endif
+                    fn->codeBlock()->m_cachedJITFunction = jitFunction;
+                } else {
+                    LOG_VJ("> Compilation failed! disable jit compilation for function %s (codeBlock %p) from now on\n", functionName, fn->codeBlock());
+                    fn->codeBlock()->m_dontJIT = true;
+                }
+                ESJIT::ESJITAllocator::freeAll();
+                GC_enable();
+            } else {
+                size_t threshold = fn->codeBlock()->m_jitThreshold;
+                LOG_VJ("> Doubling JIT compilation threshold from %d to %d for function %s\n", threshold, threshold*2, functionName);
+                fn->codeBlock()->m_jitThreshold *= 2;
+            }
         }
     }
+
 
     if (jitFunction) {
         unsigned stackSiz = fn->codeBlock()->m_requiredStackSizeInESValueSize * sizeof(ESValue);
@@ -813,7 +891,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
                 }
 
                 switch(opcode) {
-                    #define DECLARE_EXECUTE_NEXTCODE(code, pushCount, popCount, peekCount, JITSupported) \
+                    #define DECLARE_EXECUTE_NEXTCODE(code, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
                                         case code##Opcode: \
                                             idx += sizeof (code); \
                                             bytecodeCounter++; \
@@ -840,7 +918,6 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
             fn->codeBlock()->m_executeCount++;
         }
     } else {
-        //printf("JIT failed! Execute interpreter\n");
         result = interpret(instance, fn->codeBlock());
         fn->codeBlock()->m_executeCount++;
     }

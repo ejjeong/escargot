@@ -11,7 +11,7 @@
 namespace escargot {
 namespace ESJIT {
 
-#define DECLARE_BYTECODE_LENGTH(bytecode, pushCount, popCount, peekCount, JITSupported) const int bytecode##Length = sizeof(bytecode);
+#define DECLARE_BYTECODE_LENGTH(bytecode, pushCount, popCount, peekCount, JITSupported, hasProfileData) const int bytecode##Length = sizeof(bytecode);
     FOR_EACH_BYTECODE_OP(DECLARE_BYTECODE_LENGTH)
 #undef DECLARE_BYTECODE_LENGTH
 
@@ -478,8 +478,6 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         {
             INIT_BYTECODE(CreateArray);
             CreateArrayIR* createArrayIR = CreateArrayIR::create(extraData->m_targetIndex0, bytecode->m_keyCount);
-            bytecode->m_profile.updateProfiledType();
-            graph->setOperandType(extraData->m_targetIndex0, bytecode->m_profile.getType());
             Type t = graph->getOperandType(extraData->m_targetIndex0);
             currentBlock->push(createArrayIR);
             NEXT_BYTECODE(CreateArray);

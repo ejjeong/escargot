@@ -22,7 +22,7 @@ ESVMInstance::ESVMInstance()
 #endif
     m_useExprFilter = false;
     m_useCseFilter = false;
-    m_jitThreshold = 1;
+    m_jitThreshold = 2;
     m_osrExitThreshold = 1;
     enter();
 

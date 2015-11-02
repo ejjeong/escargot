@@ -52,7 +52,17 @@ public:
 
     void mergeType(Type otherType)
     {
-        m_type |= otherType.m_type;
+        //FIXME workaround for running SunSpider
+        //m_type = m_type | otherType.m_type;
+        if(isInt32Type()) {
+            if(otherType.isDoubleType()) {
+                m_type = otherType.m_type;
+            }
+        } else if(isDoubleType()) {
+        } else {
+            m_type = otherType.m_type;
+        }
+
     }
 
     static Type getType(ESValue value)

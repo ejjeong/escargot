@@ -8,7 +8,7 @@ namespace escargot {
 ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter, unsigned maxStackPos)
 {
     if(codeBlock == NULL) {
-#define REGISTER_TABLE(opcode, pushCount, popCount, peekCount, JITSupported) \
+#define REGISTER_TABLE(opcode, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
         instance->opcodeTable()->m_table[opcode##Opcode] = &&opcode##OpcodeLbl;
         FOR_EACH_BYTECODE_OP(REGISTER_TABLE);
         return ESValue();
@@ -578,9 +578,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         CreateArray* code = (CreateArray*)currentCode;
         ESArrayObject* arr = ESArrayObject::create(code->m_keyCount);
         push<ESValue>(stack, topOfStack, arr);
-#ifdef ENABLE_ESJIT
-        code->m_profile.addProfile(arr);
-#endif
         executeNextCode<CreateArray>(programCounter);
         NEXT_INSTRUCTION();
     }
