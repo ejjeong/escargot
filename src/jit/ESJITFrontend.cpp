@@ -19,10 +19,10 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
 {
     ESGraph* graph = ESGraph::create(codeBlock);
 
-    //#ifndef NDEBUG
-    //    if (ESVMInstance::currentInstance()->m_verboseJIT)
-    //        dumpBytecode(codeBlock);
-    //#endif
+    // #ifndef NDEBUG
+    // if (ESVMInstance::currentInstance()->m_verboseJIT)
+    // dumpBytecode(codeBlock);
+    // #endif
 
     size_t idx = 0;
     size_t bytecodeCounter = 0;
@@ -30,8 +30,8 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
     char* code = codeBlock->m_code.data();
 
     std::map<int, ESBasicBlock*> basicBlockMapping;
-    //TODO
-    //std::unordered_map<int, ESBasicBlock*, std::hash<int>, std::equal_to<int>, gc_allocator<std::pair<const int, ESBasicBlock *> > > basicBlockMapping;
+    // TODO
+    // std::unordered_map<int, ESBasicBlock*, std::hash<int>, std::equal_to<int>, gc_allocator<std::pair<const int, ESBasicBlock *> > > basicBlockMapping;
     std::map<int, ESIR*> backWordJumpMapping;
 
     ESBasicBlock *entryBlock = ESBasicBlock::create(graph);
@@ -901,4 +901,5 @@ unsupported:
 
 }}
 #endif
+
 

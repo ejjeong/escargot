@@ -64,7 +64,7 @@ ALWAYS_INLINE const char * utf16ToUtf8(const char16_t *t)
     return result;
 }
 
-//http://egloos.zum.com/profrog/v/1177107
+// http://egloos.zum.com/profrog/v/1177107
 ALWAYS_INLINE size_t utf8ToUtf16(char* UTF8, char16_t& uc)
 {
     size_t tRequiredSize = 0;
@@ -110,4 +110,5 @@ u16string utf8ToUtf16(const char *s, int length);
 }
 
 #endif
+
 

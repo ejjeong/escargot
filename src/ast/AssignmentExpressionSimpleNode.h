@@ -4,11 +4,11 @@
 #include "ExpressionNode.h"
 #include "PatternNode.h"
 #include "IdentifierNode.h"
-//#include "MemberExpressionNode.h"
+// #include "MemberExpressionNode.h"
 
 namespace escargot {
 
-//An assignment operator expression.
+// An assignment operator expression.
 class AssignmentExpressionSimpleNode : public ExpressionNode {
 public:
     friend class ScriptParser;
@@ -28,11 +28,12 @@ public:
     }
 
 protected:
-    Node* m_left; //left: Pattern;
-    Node* m_right; //right: Expression;
+    Node* m_left; // left: Pattern;
+    Node* m_right; // right: Expression;
 };
 
 }
 
 #endif
+
 

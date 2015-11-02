@@ -17,7 +17,7 @@ public:
     /*
     ESValue executeExpression(ESVMInstance* instance)
     {
-        //www.ecma-international.org/ecma-262/6.0/index.html#sec-unary-minus-operator
+        // www.ecma-international.org/ecma-262/6.0/index.html#sec-unary-minus-operator
         ESValue v;
         try {
             v = m_argument->executeExpression(instance);
@@ -50,4 +50,5 @@ public:
 }
 
 #endif
+
 

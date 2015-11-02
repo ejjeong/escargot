@@ -15,7 +15,7 @@ class Node;
 class ByteCode;
 class CodeBlock;
 
-    ///<OpcodeName, PushCount, PopCount, PeekCount, JITSupported, HasProfileData>
+    // /<OpcodeName, PushCount, PopCount, PeekCount, JITSupported, HasProfileData>
 #define FOR_EACH_BYTECODE_OP(F) \
     F(Push, 1, 0, 0, 1, 0) \
     F(PopExpressionStatement, 0, 1, 0, 1, 0) \
@@ -318,7 +318,7 @@ struct ByteCodeGenerateContext {
     size_t m_offsetToBasePointer;
     // For Label Statement
     size_t m_positionToContinue;
-    //code position, tryStatement count
+    // code position, tryStatement count
     int m_tryStatementScopeCount;
     std::map<size_t, size_t> m_complexCaseStatementPositions;
 };
@@ -380,8 +380,8 @@ struct ByteCodeExtraData {
     Opcode m_opcode;
     size_t m_codePosition;
     int m_baseRegisterIndex;
-    int m_registerIncrementCount; //stack push count
-    int m_registerDecrementCount; //stack pop count
+    int m_registerIncrementCount; // stack push count
+    int m_registerDecrementCount; // stack pop count
 
 #ifdef ENABLE_ESJIT
     int m_targetIndex0;
@@ -2218,10 +2218,10 @@ public:
     std::vector<char, gc_malloc_allocator<char> > m_code;
 
     std::vector<ByteCodeExtraData> m_extraData;
-    //std::vector<ByteCodeExtraData, pointer_free_allocator<ByteCodeExtraData> > -> std::vector<ByteCodeExtraData>
-    //because CodeBlock is gc_cleanup!
+    // std::vector<ByteCodeExtraData, pointer_free_allocator<ByteCodeExtraData> > -> std::vector<ByteCodeExtraData>
+    // because CodeBlock is gc_cleanup!
 
-    InternalAtomicStringVector m_params; //params: [ Pattern ];
+    InternalAtomicStringVector m_params; // params: [ Pattern ];
     InternalAtomicStringVector m_innerIdentifiers;
     unsigned m_requiredStackSizeInESValueSize;
 
@@ -2253,7 +2253,7 @@ private:
 template <typename Type>
 ALWAYS_INLINE void push(void*& stk, void* topOfStack, const Type& ptr)
 {
-    //memcpy(((char *)stk), &ptr, sizeof (Type));
+    // memcpy(((char *)stk), &ptr, sizeof (Type));
     *((Type *)stk) = ptr;
     stk = (void *)(((size_t)stk) + sizeof(Type));
 
@@ -2269,7 +2269,7 @@ ALWAYS_INLINE void push(void*& stk, void* topOfStack, const Type& ptr)
 template <typename Type>
 ALWAYS_INLINE void push(void*& stk, void* topOfStack, Type* ptr)
 {
-    //memcpy(((char *)stk), &ptr, sizeof (Type));
+    // memcpy(((char *)stk), &ptr, sizeof (Type));
     *((Type *)stk) = *ptr;
     stk = (void *)(((size_t)stk) + sizeof(Type));
 
@@ -2351,7 +2351,7 @@ void CodeBlock::pushCode(const CodeType& code, ByteCodeGenerateContext& context,
     }
 #endif
 
-    //record extra Info
+    // record extra Info
     ByteCodeExtraData extraData;
     extraData.m_opcode = (Opcode)(size_t)code.m_opcodeInAddress;
     pushCodeFillExtraData((ByteCode *)&code, &extraData, context);
@@ -2462,4 +2462,5 @@ inline void iterateByteCode(CodeBlock* codeBlock, void (*fn)(CodeBlock* block, u
 }
 
 #endif
+
 

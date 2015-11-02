@@ -46,11 +46,12 @@ public:
 
     VariableDeclaratorVector& declarations() { return m_declarations; }
 protected:
-    VariableDeclaratorVector m_declarations; //declarations: [ VariableDeclarator ];
-    //kind: "var" | "let" | "const";
+    VariableDeclaratorVector m_declarations; // declarations: [ VariableDeclarator ];
+    // kind: "var" | "let" | "const";
 };
 
 }
 
 #endif
+
 

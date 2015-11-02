@@ -27,11 +27,11 @@ NEVER_INLINE ESValue plusOperationSlowCase(const ESValue& left, const ESValue& r
     ESValue lval(ESValue::ESForceUninitialized);
     ESValue rval(ESValue::ESForceUninitialized);
 
-    //http://www.ecma-international.org/ecma-262/5.1/#sec-8.12.8
-    //No hint is provided in the calls to ToPrimitive in steps 5 and 6.
-    //All native ECMAScript objects except Date objects handle the absence of a hint as if the hint Number were given;
-    //Date objects handle the absence of a hint as if the hint String were given.
-    //Host objects may handle the absence of a hint in some other manner.
+    // http://www.ecma-international.org/ecma-262/5.1/#sec-8.12.8
+    // No hint is provided in the calls to ToPrimitive in steps 5 and 6.
+    // All native ECMAScript objects except Date objects handle the absence of a hint as if the hint Number were given;
+    // Date objects handle the absence of a hint as if the hint String were given.
+    // Host objects may handle the absence of a hint in some other manner.
     if(left.isESPointer() && left.asESPointer()->isESDateObject()) {
         lval = left.toPrimitive(ESValue::PreferString);
     } else {
@@ -209,7 +209,7 @@ NEVER_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue* 
             return willBeObject->asESPointer()->asESObject()->get(*property);
         }
     } else {
-        //number
+        // number
         if(willBeObject->isNumber()) {
             globalObject->numberObjectProxy()->setNumberData(willBeObject->asNumber());
             return globalObject->numberObjectProxy()->get(*property);
@@ -472,4 +472,5 @@ NEVER_INLINE EnumerateObjectData* executeEnumerateObject(ESObject* obj)
 }
 
 }
+
 

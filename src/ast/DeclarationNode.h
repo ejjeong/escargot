@@ -5,7 +5,7 @@
 
 namespace escargot {
 
-//Any declaration node. Note that declarations are considered statements; this is because declarations can appear in any statement context in the language recognized by the SpiderMonkey parser.
+// Any declaration node. Note that declarations are considered statements; this is because declarations can appear in any statement context in the language recognized by the SpiderMonkey parser.
 class DeclarationNode : public StatementNode {
 public:
     DeclarationNode(NodeType type)
@@ -19,4 +19,5 @@ protected:
 
 
 #endif
+
 

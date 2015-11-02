@@ -113,7 +113,7 @@ public:
         return m_scriptParser;
     }
 
-    //Function for debug
+    // Function for debug
     static void printValue(ESValue val);
     ALWAYS_INLINE unsigned long tickCount()
     {
@@ -209,4 +209,5 @@ ESValue ESVMInstance::runOnEvalContext(const F& f, bool isDirectCall)
 }
 
 #endif
+
 

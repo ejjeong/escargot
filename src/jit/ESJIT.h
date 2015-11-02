@@ -23,7 +23,7 @@ struct ESJITAllocatorMemoryFragment {
     size_t m_totalSize;
 };
 
-//TODO implmenet multi-thread support
+// TODO implmenet multi-thread support
 class ESJITAllocator {
 public:
     inline static void* alloc(size_t size)
@@ -177,4 +177,5 @@ void logVerboseJIT(const char* fmt...);
 }
 #endif
 #endif
+
 

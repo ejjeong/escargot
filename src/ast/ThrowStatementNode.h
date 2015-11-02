@@ -5,7 +5,7 @@
 
 namespace escargot {
 
-//interface ThrowStatement <: Statement {
+// interface ThrowStatement <: Statement {
 class ThrowStatementNode : public StatementNode {
 public:
     friend class ScriptParser;
@@ -29,4 +29,5 @@ protected:
 }
 
 #endif
+
 

@@ -30,7 +30,7 @@ ESVMInstance::ESVMInstance()
     std::srand(std::time(0));
 
     m_table = new OpcodeTable();
-    //init goto table
+    // init goto table
     interpret(this, NULL, 0);
 
     clock_gettime(CLOCK_REALTIME,&m_cachedTimeOrigin);
@@ -49,7 +49,7 @@ ESVMInstance::ESVMInstance()
     std::setlocale(LC_ALL, "en_US.utf8");
     m_strings.initStaticStrings(this);
 
-    //TODO call destructor
+    // TODO call destructor
     m_bumpPointerAllocator = new(GC) WTF::BumpPointerAllocator();
 
     m_globalFunctionPrototype = NULL;
@@ -150,7 +150,7 @@ const tm* ESVMInstance::computeLocalTime(const timespec& ts)
 {
     time_t t = ts.tv_sec + m_cachedTime->tm_gmtoff;
     return gmtime(&t);
-    //return localtime(&ts.tv_sec);
+    // return localtime(&ts.tv_sec);
 }
 
 void ESVMInstance::printValue(ESValue val)
@@ -184,7 +184,7 @@ void ESVMInstance::printValue(ESValue val)
                     str.append(key.toString()->utf8Data());
                     str.append(": ");
                     str.append(o->asESObject()->getOwnProperty(key).toString()->utf8Data());
-                    //toString(slot.value(o->asESObject()));
+                    // toString(slot.value(o->asESObject()));
                     isFirst = false;
                 });
                 str.append("]");
@@ -201,7 +201,7 @@ void ESVMInstance::printValue(ESValue val)
                     str.append(key.toString()->utf8Data());
                     str.append(": ");
                     str.append(o->asESObject()->getOwnProperty(key).toString()->utf8Data());
-                    //toString(slot.value(o->asESObject()));
+                    // toString(slot.value(o->asESObject()));
                     isFirst = false;
                 });
                 if(o->isESStringObject()) {
@@ -225,4 +225,5 @@ void ESVMInstance::printValue(ESValue val)
 }
 
 }
+
 

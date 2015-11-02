@@ -8,22 +8,22 @@
 
 namespace escargot {
 
-    //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-newfunctionenvironment
-    //$8.1.2.4
+    // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-newfunctionenvironment
+    // $8.1.2.4
     LexicalEnvironment* LexicalEnvironment::newFunctionEnvironment(ESValue arguments[], const size_t& argumentCount, ESFunctionObject* function)
     {
         FunctionEnvironmentRecord* envRec = new FunctionEnvironmentRecord(arguments, argumentCount, function->codeBlock()->m_innerIdentifiers);
 
-        //envRec->m_functionObject = function;
-        //envRec->m_newTarget = newTarget;
+        // envRec->m_functionObject = function;
+        // envRec->m_newTarget = newTarget;
 
         LexicalEnvironment* env = new LexicalEnvironment(envRec, function->outerEnvironment());
-        //TODO
-        //If F’s [[ThisMode]] internal slot is lexical, set envRec.[[thisBindingStatus]] to "lexical".
-        //[[ThisMode]] internal slot is lexical, set envRec.[[thisBindingStatus]] to "lexical".
-        //Let home be the value of F’s [[HomeObject]] internal slot.
-        //Set envRec.[[HomeObject]] to home.
-        //Set envRec.[[NewTarget]] to newTarget.
+        // TODO
+        // If F’s [[ThisMode]] internal slot is lexical, set envRec.[[thisBindingStatus]] to "lexical".
+        // [[ThisMode]] internal slot is lexical, set envRec.[[thisBindingStatus]] to "lexical".
+        // Let home be the value of F’s [[HomeObject]] internal slot.
+        // Set envRec.[[HomeObject]] to home.
+        // Set envRec.[[NewTarget]] to newTarget.
 
         return env;
     }
@@ -39,7 +39,7 @@ namespace escargot {
 
     void DeclarativeEnvironmentRecord::createMutableBinding(const InternalAtomicString& name, bool canDelete)
     {
-        //TODO canDelete
+        // TODO canDelete
         ASSERT(m_needsActivation);
         size_t siz = m_activationData.size();
         for(unsigned i = 0; i < siz ; i ++) {
@@ -51,7 +51,7 @@ namespace escargot {
         ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
     }
 
-    //$8.1.1.4.12
+    // $8.1.1.4.12
     bool GlobalEnvironmentRecord::hasVarDeclaration(const InternalAtomicString& name)
     {
         if( std::find(m_varNames.begin(), m_varNames.end(), name) != m_varNames.end() )
@@ -59,7 +59,7 @@ namespace escargot {
         return false;
     }
 
-    //$8.1.1.4.15
+    // $8.1.1.4.15
     bool GlobalEnvironmentRecord::canDeclareGlobalVar(const InternalAtomicString& name)
     {
         RELEASE_ASSERT_NOT_REACHED();
@@ -73,7 +73,7 @@ namespace escargot {
         */
     }
 
-    //$8.1.1.4.16
+    // $8.1.1.4.16
     bool GlobalEnvironmentRecord::canDeclareGlobalFunction(const InternalAtomicString& name)
     {
         RELEASE_ASSERT_NOT_REACHED();
@@ -92,7 +92,7 @@ namespace escargot {
         return false;
     }
 
-    //$8.1.1.4.17
+    // $8.1.1.4.17
     void GlobalEnvironmentRecord::createGlobalVarBinding(const InternalAtomicString& name, bool canDelete)
     {
         ESObject* globalObj = m_objectRecord->bindingObject();
@@ -106,7 +106,7 @@ namespace escargot {
         m_varNames.push_back(name);
     }
 
-    //$8.1.1.4.18
+    // $8.1.1.4.18
     void GlobalEnvironmentRecord::createGlobalFunctionBinding(const InternalAtomicString& name, const ESValue& V, bool canDelete) {
         ESObject* globalObj = m_objectRecord->bindingObject();
         globalObj->defineDataProperty(name.string(), true, true, canDelete, V);
@@ -114,12 +114,12 @@ namespace escargot {
         m_varNames.push_back(name);
     }
 
-    //$8.1.1.4.11
+    // $8.1.1.4.11
     ESValue GlobalEnvironmentRecord::getThisBinding() {
         return m_objectRecord->bindingObject();
     }
 
-    //$8.1.1.4.1
+    // $8.1.1.4.1
     ESValue* GlobalEnvironmentRecord::hasBinding(const InternalAtomicString& atomicName) {
         ESValue* ret = m_declarativeRecord->hasBinding(atomicName);
         if(ret)
@@ -127,14 +127,14 @@ namespace escargot {
         return m_objectRecord->hasBinding(atomicName);
     }
 
-    //$8.1.1.4.2
+    // $8.1.1.4.2
     void GlobalEnvironmentRecord::createMutableBinding(const InternalAtomicString& name, bool canDelete) {
         if( m_declarativeRecord->hasBinding(name) )
             throw "TypeError";
         m_declarativeRecord->createMutableBinding(name, canDelete);
     }
 
-    //$8.1.1.4.4
+    // $8.1.1.4.4
     void GlobalEnvironmentRecord::initializeBinding(const InternalAtomicString& name, const ESValue& V) {
         if( m_declarativeRecord->hasBinding(name))
             m_declarativeRecord->initializeBinding(name, V);
@@ -145,20 +145,20 @@ namespace escargot {
         m_objectRecord->initializeBinding(name, V);
     }
 
-    //$8.1.1.4.6
+    // $8.1.1.4.6
     /*
     ESValue GlobalEnvironmentRecord::getBindingValue(const InternalAtomicString& name, bool ignoreReferenceErrorException) {
-    //FIXME
-    //if( m_declarativeRecord->hasBinding(name) )
-    //    return m_declarativeRecord->getBindingValue(name, ignoreReferenceErrorException);
-    //else {
-    //    return m_objectRecord->getBindingValue(name, ignoreReferenceErrorException);
-    //}
+    // FIXME
+    // if( m_declarativeRecord->hasBinding(name) )
+    // return m_declarativeRecord->getBindingValue(name, ignoreReferenceErrorException);
+    // else {
+    // return m_objectRecord->getBindingValue(name, ignoreReferenceErrorException);
+    // }
     return m_objectRecord->getBindingValue(name, ignoreReferenceErrorException);
 }*/
 
-//$8.1.1.4.5
-//http://www.ecma-international.org/ecma-262/6.0/index.html#sec-global-environment-records-setmutablebinding-n-v-s
+// $8.1.1.4.5
+// http://www.ecma-international.org/ecma-262/6.0/index.html#sec-global-environment-records-setmutablebinding-n-v-s
 void GlobalEnvironmentRecord::setMutableBinding(const InternalAtomicString& name, const ESValue& V, bool S) {
     if( m_declarativeRecord->hasBinding(name)) {
         m_declarativeRecord->setMutableBinding(name, V, S);
@@ -167,26 +167,26 @@ void GlobalEnvironmentRecord::setMutableBinding(const InternalAtomicString& name
     }
 }
 
-//$8.1.1.2.2
+// $8.1.1.2.2
 void ObjectEnvironmentRecord::createMutableBinding(const InternalAtomicString& name, bool canDelete)
 {
     m_bindingObject->defineDataProperty(name.string(), true, true, canDelete);
 }
 
-//$8.1.1.2.4
+// $8.1.1.2.4
 void ObjectEnvironmentRecord::initializeBinding(const InternalAtomicString& name, const ESValue& V)
 {
     return setMutableBinding(name, V, false);
 }
 
-//$8.1.1.2.5
+// $8.1.1.2.5
 void ObjectEnvironmentRecord::setMutableBinding(const InternalAtomicString& name, const ESValue& V, bool S)
 {
-    //TODO use S
+    // TODO use S
     m_bindingObject->set(name.string(), V);
 }
 
-//http://www.ecma-international.org/ecma-262/6.0/index.html#sec-bindthisvalue
+// http://www.ecma-international.org/ecma-262/6.0/index.html#sec-bindthisvalue
 void FunctionEnvironmentRecord::bindThisValue(const ESValue& V)
 {
 #ifndef NDEBUG
@@ -209,4 +209,5 @@ ESValue FunctionEnvironmentRecord::getThisBinding()
 }
 
 }
+
 

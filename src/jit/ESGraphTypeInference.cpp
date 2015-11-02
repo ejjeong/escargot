@@ -350,7 +350,7 @@ bool ESGraphTypeInference::run(ESGraph* graph)
                 Type src0Type = graph->getOperandType(irLoadPhi->srcIndex0());
                 Type src1Type = graph->getOperandType(irLoadPhi->srcIndex1());
                 if(src0Type != src1Type) {
-                    //TODO
+                    // TODO
                     goto unsupported;
                 }
                 graph->setOperandType(ir->targetIndex(), src0Type);
@@ -360,7 +360,7 @@ bool ESGraphTypeInference::run(ESGraph* graph)
             {
                 printf("ERROR %s not handled in ESGraphTypeInference.\n", ir->getOpcodeName());
                 RELEASE_ASSERT_NOT_REACHED();
-                //for complie
+                // for complie
                 goto unsupported;
             }
             }
@@ -381,4 +381,5 @@ bool ESGraphTypeInference::run(ESGraph* graph)
 
 }}
 #endif
+
 

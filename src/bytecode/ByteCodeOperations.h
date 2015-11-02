@@ -29,8 +29,8 @@ ALWAYS_INLINE ESValue* getByIdOperation(ESVMInstance* instance, ExecutionContext
             err_msg.append(code->m_name.string()->data());
             err_msg.append(u" is not defined");
 
-            //TODO call constructor
-            //ESFunctionObject::call(fn, receiver, &arguments[0], arguments.size(), instance);
+            // TODO call constructor
+            // ESFunctionObject::call(fn, receiver, &arguments[0], arguments.size(), instance);
             receiver->set(strings->message.string(), ESString::create(std::move(err_msg)));
             throw ESValue(receiver);
         }
@@ -124,11 +124,11 @@ ALWAYS_INLINE ESValue minusOperation(const ESValue& left, const ESValue& right)
 
 NEVER_INLINE ESValue modOperation(const ESValue& left, const ESValue& right);
 
-//http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5
+// http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5
 NEVER_INLINE ESValue abstractRelationalComparisonSlowCase(const ESValue& left, const ESValue& right, bool leftFirst);
 ALWAYS_INLINE ESValue abstractRelationalComparison(const ESValue& left, const ESValue& right, bool leftFirst)
 {
-    //consume very fast case
+    // consume very fast case
     if(LIKELY(left.isInt32() && right.isInt32())) {
         return ESValue(left.asInt32() < right.asInt32());
     }
@@ -136,7 +136,7 @@ ALWAYS_INLINE ESValue abstractRelationalComparison(const ESValue& left, const ES
     return abstractRelationalComparisonSlowCase(left, right, leftFirst);
 }
 
-//d = {}. d[0]
+// d = {}. d[0]
 NEVER_INLINE ESValue getObjectOperationSlowCase(ESValue* willBeObject, ESValue* property, GlobalObject* globalObject);
 ALWAYS_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* property, GlobalObject* globalObject)
 {
@@ -159,7 +159,7 @@ ALWAYS_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* propert
     return getObjectOperationSlowCase(willBeObject, property, globalObject);
 }
 
-//d = {}. d.foo
+// d = {}. d.foo
 ALWAYS_INLINE ESValue getObjectPreComputedCaseOperation(ESValue* willBeObject, ESString* keyString, GlobalObject* globalObject
 ,ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex)
 {
@@ -197,7 +197,7 @@ ALWAYS_INLINE ESValue getObjectPreComputedCaseOperation(ESValue* willBeObject, E
                 }
             }
 
-            //cache miss.
+            // cache miss.
             obj = targetObj;
 
             *cachedHiddenClassIndex = SIZE_MAX;
@@ -231,7 +231,7 @@ ALWAYS_INLINE ESValue getObjectPreComputedCaseOperation(ESValue* willBeObject, E
             goto GetObjectPreComputedCaseInlineCacheOperation;
         }
     } else {
-        //number
+        // number
         if(willBeObject->isNumber()) {
             globalObject->numberObjectProxy()->setNumberData(willBeObject->asNumber());
             targetObj = obj = globalObject->numberObjectProxy();
@@ -246,7 +246,7 @@ NEVER_INLINE ESValue getObjectPreComputedCaseOperationWithNeverInline(ESValue* w
 
 NEVER_INLINE void throwObjectWriteError();
 
-//d = {}. d[0] = 1
+// d = {}. d[0] = 1
 NEVER_INLINE void setObjectOperationSlowCase(ESValue* willBeObject, ESValue* property, const ESValue& value);
 NEVER_INLINE void setObjectOperationExpandLengthCase(ESArrayObject* arr, uint32_t idx, const ESValue& value);
 ALWAYS_INLINE void setObjectOperation(ESValue* willBeObject, ESValue* property, const ESValue& value)
@@ -271,7 +271,7 @@ ALWAYS_INLINE void setObjectOperation(ESValue* willBeObject, ESValue* property, 
     setObjectOperationSlowCase(willBeObject, property, value);
 }
 
-//d = {}. d.foo = 1
+// d = {}. d.foo = 1
 NEVER_INLINE void setObjectPreComputedCaseOperationSlowCase(ESValue* willBeObject, ESString* keyString, const ESValue& value);
 ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESString* keyString, const ESValue& value
 , ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex, ESHiddenClass** hiddenClassWillBe)
@@ -283,7 +283,7 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
             ESObject* obj = willBeObject->asESPointer()->asESObject();
             if(*cachedHiddenClassIndex != SIZE_MAX && (*cachedHiddenClassChain)[0] == obj->hiddenClass()) {
                 ASSERT((*cachedHiddenClassChain).size() == 1);
-                //cache hit!
+                // cache hit!
                 if(!obj->hiddenClass()->write(obj, obj, *cachedHiddenClassIndex, value)) {
                     throwObjectWriteError();
                 }
@@ -306,7 +306,7 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
                 }
                 if(!miss) {
                     if((*cachedHiddenClassChain)[cSiz - 1] == obj->hiddenClass()) {
-                        //cache hit!
+                        // cache hit!
                         obj = willBeObject->asESPointer()->asESObject();
                         obj->m_hiddenClassData.push_back(value);
                         obj->m_hiddenClass = *hiddenClassWillBe;
@@ -315,7 +315,7 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
                 }
             }
 
-            //cache miss
+            // cache miss
             *cachedHiddenClassIndex = SIZE_MAX;
             *hiddenClassWillBe = NULL;
             cachedHiddenClassChain->clear();
@@ -323,7 +323,7 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
             obj = willBeObject->asESPointer()->asESObject();
             size_t idx = obj->hiddenClass()->findProperty(keyString);
             if(idx != SIZE_MAX) {
-                //own property
+                // own property
                 *cachedHiddenClassIndex = idx;
                 cachedHiddenClassChain->push_back(obj->hiddenClass());
 
@@ -354,7 +354,7 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
                 ESHiddenClass* before = willBeObject->asESPointer()->asESObject()->hiddenClass();
                 willBeObject->asESPointer()->asESObject()->defineDataProperty(keyString, true, true, true, value);
 
-                //only cache vector mode object.
+                // only cache vector mode object.
                 if(willBeObject->asESPointer()->asESObject()->hiddenClass()->isVectorMode()) {
                     *hiddenClassWillBe = willBeObject->asESPointer()->asESObject()->hiddenClass();
                 } else {
@@ -380,4 +380,5 @@ NEVER_INLINE EnumerateObjectData* executeEnumerateObject(ESObject* obj);
 
 }
 #endif
+
 

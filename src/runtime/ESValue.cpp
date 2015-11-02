@@ -69,8 +69,8 @@ ESString* ESValue::toStringSlowCase() const
             else
                 return strings->Infinity.string();
         }
-        //convert -0.0 into 0.0
-        //in c++, d = -0.0, d == 0.0 is true
+        // convert -0.0 into 0.0
+        // in c++, d = -0.0, d == 0.0 is true
         if (d == 0.0)
             d = 0;
 
@@ -104,32 +104,32 @@ bool ESValue::abstractEqualsToSlowCase(const ESValue& val)
     } else {
         if (isUndefinedOrNull() && val.isUndefinedOrNull()) return true;
 
-        //If Type(x) is Number and Type(y) is String,
+        // If Type(x) is Number and Type(y) is String,
         if (isNumber() && val.isESString()) {
-            //return the result of the comparison x == ToNumber(y).
+            // return the result of the comparison x == ToNumber(y).
             return asNumber() == val.toNumber();
         }
-        //If Type(x) is String and Type(y) is Number,
+        // If Type(x) is String and Type(y) is Number,
         else if (isESString() && val.isNumber()) {
-            //return the result of the comparison ToNumber(x) == y.
+            // return the result of the comparison ToNumber(x) == y.
             return val.asNumber() == toNumber();
         }
-        //If Type(x) is Boolean, return the result of the comparison ToNumber(x) == y.
+        // If Type(x) is Boolean, return the result of the comparison ToNumber(x) == y.
         else if (isBoolean()) {
-            //return the result of the comparison ToNumber(x) == y.
+            // return the result of the comparison ToNumber(x) == y.
             ESValue x(toNumber());
             return x.abstractEqualsTo(val);
         }
-        //If Type(y) is Boolean, return the result of the comparison x == ToNumber(y).
+        // If Type(y) is Boolean, return the result of the comparison x == ToNumber(y).
         else if (val.isBoolean()) {
-            //return the result of the comparison ToNumber(x) == y.
+            // return the result of the comparison ToNumber(x) == y.
             return abstractEqualsTo(ESValue(val.toNumber()));
         }
-        //If Type(x) is either String, Number, or Symbol and Type(y) is Object, then
+        // If Type(x) is either String, Number, or Symbol and Type(y) is Object, then
         else if ((isESString() || isNumber()) && val.isObject()) {
             return abstractEqualsTo(val.toPrimitive());
         }
-        //If Type(x) is Object and Type(y) is either String, Number, or Symbol, then
+        // If Type(x) is Object and Type(y) is either String, Number, or Symbol, then
         else if (isObject() && (val.isESString() || val.isNumber())) {
             return toPrimitive().abstractEqualsTo(val);
         }
@@ -383,7 +383,7 @@ ESString* ESString::substring(int from, int to) const
 
 bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testOnly, size_t startIndex) const
 {
-    //NOTE to build normal string(for rope-string), we should call ensureNormalString();
+    // NOTE to build normal string(for rope-string), we should call ensureNormalString();
     ensureNormalString();
 
     ESRegExpObject::Option option = ESRegExpObject::Option::None;
@@ -495,7 +495,7 @@ ESArrayObject::ESArrayObject(int length)
         setLength(length);
     }
 
-    //defineAccessorProperty(strings->length.string(), ESVMInstance::currentInstance()->arrayLengthAccessorData(), true, false, false);
+    // defineAccessorProperty(strings->length.string(), ESVMInstance::currentInstance()->arrayLengthAccessorData(), true, false, false);
     m_hiddenClass = ESVMInstance::currentInstance()->initialHiddenClassForArrayObject();
     m_hiddenClassData.push_back((ESPointer *)ESVMInstance::currentInstance()->arrayLengthAccessorData());
 }
@@ -533,15 +533,15 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlo
     m_codeBlock = cb;
     m_protoType = ESObject::create(2);
 
-    //m_protoType.asESPointer()->asESObject()->defineDataProperty(strings->constructor.string(), true, false, true, this);
+    // m_protoType.asESPointer()->asESObject()->defineDataProperty(strings->constructor.string(), true, false, true, this);
     m_protoType.asESPointer()->asESObject()->m_hiddenClass = ESVMInstance::currentInstance()->initialHiddenClassForPrototypeObject();
     m_protoType.asESPointer()->asESObject()->m_hiddenClassData.push_back(this);
 
     // $19.2.4 Function Instances
     // these define in ESVMInstance::ESVMInstance()
-    //defineDataProperty(strings->length, false, false, true, ESValue(length));
-    //defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), true, false, false);
-    //defineDataProperty(strings->name.string(), false, false, true, name);
+    // defineDataProperty(strings->length, false, false, true, ESValue(length));
+    // defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), true, false, false);
+    // defineDataProperty(strings->name.string(), false, false, true, name);
     m_hiddenClass = ESVMInstance::currentInstance()->initialHiddenClassForFunctionObject();
     m_hiddenClassData.push_back(ESValue(length));
     m_hiddenClassData.push_back(ESValue((ESPointer *)ESVMInstance::currentInstance()->functionPrototypeAccessorData()));
@@ -564,7 +564,7 @@ ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctio
     bool strict = fn->codeBlock()->shouldUseStrictMode();
     newEC->setStrictMode(strict);
 
-    //http://www.ecma-international.org/ecma-262/6.0/#sec-ordinarycallbindthis
+    // http://www.ecma-international.org/ecma-262/6.0/#sec-ordinarycallbindthis
     if(!strict) {
         if(receiver.isUndefinedOrNull()) {
             receiver = ESVMInstance->globalObject();
@@ -612,7 +612,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
 
     if(!jitFunction && !fn->codeBlock()->m_dontJIT) {
 
-        //update profile data
+        // update profile data
         char* code = fn->codeBlock()->m_code.data();
         size_t siz = fn->codeBlock()->m_byteCodeIndexesHaveToProfile.size();
         for(unsigned i = 0; i < siz ; i ++) {
@@ -682,7 +682,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
             size_t idx = 0;
             size_t bytecodeCounter = 0;
             bool dontJIT = false;
-            //check jit support for debug
+            // check jit support for debug
 #ifndef NDEBUG
             {
                 char* code = fn->codeBlock()->m_code.data();
@@ -717,7 +717,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
             }
 #endif
             bool compileNextTime = false;
-            //check profile data
+            // check profile data
             char* code = fn->codeBlock()->m_code.data();
             for(unsigned i = 0; i < fn->codeBlock()->m_byteCodeIndexesHaveToProfile.size() ; i ++) {
                 size_t pos = fn->codeBlock()->m_extraData[fn->codeBlock()->m_byteCodeIndexesHaveToProfile[i]].m_codePosition;
@@ -940,8 +940,8 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                 currentContext,
                 arguments, argumentCount);
             functionCallerInnerProcess(instance->m_currentExecutionContext, fn, receiver, arguments, argumentCount, instance);
-            //ESVMInstance->invalidateIdentifierCacheCheckCount();
-            //execute;
+            // ESVMInstance->invalidateIdentifierCacheCheckCount();
+            // execute;
 #ifdef ENABLE_ESJIT
             result = executeJIT(fn, instance, *instance->m_currentExecutionContext);
 #else
@@ -955,15 +955,15 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                 storage,
                 &fn->m_codeBlock->m_innerIdentifiers);
 
-            //envRec.m_functionObject = fn;
-            //envRec.m_newTarget = receiver;
+            // envRec.m_functionObject = fn;
+            // envRec.m_newTarget = receiver;
 
             LexicalEnvironment env(&envRec, fn->outerEnvironment());
             ExecutionContext ec(&env, false, isNewExpression, currentContext, arguments, argumentCount, storage);
             instance->m_currentExecutionContext = &ec;
             functionCallerInnerProcess(&ec, fn, receiver, arguments, argumentCount, instance);
-            //ESVMInstance->invalidateIdentifierCacheCheckCount();
-            //execute;
+            // ESVMInstance->invalidateIdentifierCacheCheckCount();
+            // execute;
 #ifdef ENABLE_ESJIT
             result = executeJIT(fn, instance, ec);
 #else
@@ -1101,7 +1101,7 @@ ESStringObject::ESStringObject(escargot::ESString* str)
 {
     m_stringData = str;
 
-    //$21.1.4.1 String.length
+    // $21.1.4.1 String.length
     defineAccessorProperty(strings->length.string(), ESVMInstance::currentInstance()->stringObjectLengthAccessorData(), false, true, false);
 }
 
@@ -1217,4 +1217,5 @@ bool ESTypedArrayObjectWrapper::set(int key, ESValue val)
 
 
 }
+
 

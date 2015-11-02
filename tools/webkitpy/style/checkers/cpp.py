@@ -1718,7 +1718,35 @@ def check_spacing(file_extension, clean_lines, line_number, error):
 
     raw = clean_lines.raw_lines
     line = raw[line_number]
+    # Next, we check for proper spacing with respect to comments.
+    comment_position = line.find('//')
+    if comment_position != -1:
+        # Check if the // may be in quotes.  If so, ignore it
+        # Comparisons made explicit for clarity
+        if (line.count('"', 0, comment_position) - line.count('\\"', 0, comment_position)) % 2 == 0:   # not in quotes
+            # Allow one space before end of line comment.
+            if (not match(r'^\s*$', line[:comment_position])
+                and (comment_position >= 1
+                and ((line[comment_position - 1] not in string.whitespace)
+                     or (comment_position >= 2
+                         and line[comment_position - 2] in string.whitespace)))):
+                error(line_number, 'whitespace/comments', 5,
+                      'One space before end of line comments')
+            # There should always be a space between the // and the comment
+            commentend = comment_position + 2
+            if commentend < len(line) and not line[commentend] == ' ':
+                # but some lines are exceptions -- e.g. if they're big
+                # comment delimiters like:
+                # //----------------------------------------------------------
+                # or they begin with multiple slashes followed by a space:
+                # //////// Header comment
+                matched = (search(r'[=/-]{4,}\s*$', line[commentend:])
+                           or search(r'^/+ ', line[commentend:]))
+                if not matched:
+                    error(line_number, 'whitespace/comments', 4,
+                          'Should have a space between // and comment')
 
+"""
     # Before nixing comments, check if the line is blank for no good
     # reason.  This includes the first line after a block is opened, and
     # blank lines at the end of a function (ie, right before a line like '}').
@@ -1989,7 +2017,7 @@ def check_spacing(file_extension, clean_lines, line_number, error):
           and not search(r'}\s*while', line)):
         error(line_number, 'whitespace/semicolon', 5,
               'Semicolon defining empty statement for this loop. Use { } instead.')
-
+"""
 
 def check_member_initialization_list(clean_lines, line_number, error):
     """ Look for style errors in member initialization list of classes.
@@ -2773,7 +2801,7 @@ def check_style(clean_lines, line_number, file_extension, class_state, file_stat
 #WY    check_switch_indentation(clean_lines, line_number, error)
 #WY    check_braces(clean_lines, line_number, error)
 #    check_exit_statement_simplifications(clean_lines, line_number, error)
-#WY    check_spacing(file_extension, clean_lines, line_number, error)
+    check_spacing(file_extension, clean_lines, line_number, error)
 #WY    check_member_initialization_list(clean_lines, line_number, error)
 #WY    check_check(clean_lines, line_number, error)
 #    check_for_comparisons_to_zero(clean_lines, line_number, error)

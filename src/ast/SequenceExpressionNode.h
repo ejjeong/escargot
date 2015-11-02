@@ -5,7 +5,7 @@
 
 namespace escargot {
 
-//An sequence expression, i.e., a statement consisting of vector of expressions.
+// An sequence expression, i.e., a statement consisting of vector of expressions.
 class SequenceExpressionNode : public ExpressionNode {
 public:
     friend class ScriptParser;
@@ -25,10 +25,11 @@ public:
     }
 
 protected:
-    ExpressionNodeVector m_expressions; //expression: Expression;
+    ExpressionNodeVector m_expressions; // expression: Expression;
 };
 
 }
 
 #endif
+
 

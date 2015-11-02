@@ -55,7 +55,7 @@ inline ESValueInDouble plusOp(ESValueInDouble left, ESValueInDouble right)
     ESValue leftVal = ESValue::fromRawDouble(left);
     ESValue rightVal = ESValue::fromRawDouble(right);
     ESValueInDouble ret = ESValue::toRawDouble(plusOperation(leftVal, rightVal));
-    //printf("plusop %lx = %lx + %lx\n", bitwise_cast<uint64_t>(ret), bitwise_cast<uint64_t>(left), bitwise_cast<uint64_t>(right));
+    // printf("plusop %lx = %lx + %lx\n", bitwise_cast<uint64_t>(ret), bitwise_cast<uint64_t>(left), bitwise_cast<uint64_t>(right));
     return ret;
 }
 
@@ -64,7 +64,7 @@ inline ESValueInDouble minusOp(ESValueInDouble left, ESValueInDouble right)
     ESValue leftVal = ESValue::fromRawDouble(left);
     ESValue rightVal = ESValue::fromRawDouble(right);
     ESValueInDouble ret = ESValue::toRawDouble(minusOperation(leftVal, rightVal));
-    //printf("plusop %lx = %lx + %lx\n", bitwise_cast<uint64_t>(ret), bitwise_cast<uint64_t>(left), bitwise_cast<uint64_t>(right));
+    // printf("plusop %lx = %lx + %lx\n", bitwise_cast<uint64_t>(ret), bitwise_cast<uint64_t>(left), bitwise_cast<uint64_t>(right));
     return ret;
 }
 
@@ -264,19 +264,19 @@ inline ESValueInDouble newOp(ESVMInstance* instance, GlobalObject* globalObject,
 
 // inline bool equalOp(ESValueInDouble left, ESValueInDouble right)
 // {
-//     ESValue leftVal = ESValue::fromRawDouble(left);
-//     ESValue rightVal = ESValue::fromRawDouble(right);
-//     bool ret = leftVal.abstractEqualsTo(rightVal);
-//     return ret;
+// ESValue leftVal = ESValue::fromRawDouble(left);
+// ESValue rightVal = ESValue::fromRawDouble(right);
+// bool ret = leftVal.abstractEqualsTo(rightVal);
+// return ret;
 // }
 
 // inline bool lessThanOp(ESValueInDouble left, ESValueInDouble right)
 // {
-//     ESValue leftVal = ESValue::fromRawDouble(left);
-//     ESValue rightVal = ESValue::fromRawDouble(right);
-//     ESValue ret = abstractRelationalComparison(leftVal, rightVal, true);
-//     if (ret.isUndefined()) return false;
-//     return ret.asBoolean();
+// ESValue leftVal = ESValue::fromRawDouble(left);
+// ESValue rightVal = ESValue::fromRawDouble(right);
+// ESValue ret = abstractRelationalComparison(leftVal, rightVal, true);
+// if (ret.isUndefined()) return false;
+// return ret.asBoolean();
 // }
 
 inline ESValueInDouble createObject(int keyCount) {
@@ -410,4 +410,5 @@ inline void jitLogStringOperation(const char* arg, const char* msg)
 }
 
 #endif
+
 

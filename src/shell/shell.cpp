@@ -10,10 +10,10 @@ int main(int argc, char* argv[])
     ptr = nullptr;
     GC_gcollect();
     */
-    //GC_malloc(32);
-    //GC_disable();
+    // GC_malloc(32);
+    // GC_disable();
     /*
-    //ESValue test
+    // ESValue test
     escargot::ESValue* u= escargot::undefined;
     escargot::ESValue* n = escargot::null;
 
@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
     escargot::Smi* s = escargot::Smi::fromInt(2);
     ASSERT(s->toSmi()->value() == 2);
     */
-    //ESObject & gc_allocator test
+    // ESObject & gc_allocator test
     /*
     escargot::ESObject* obj = escargot::ESObject::create();
     obj->set("asdf",escargot::Smi::fromInt(2));
@@ -153,4 +153,5 @@ int main(int argc, char* argv[])
     ES->exit();
     return 0;
 }
+
 

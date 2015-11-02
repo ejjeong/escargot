@@ -112,7 +112,7 @@ class SourceLocation {
     public:
     size_t m_lineNumber;
     size_t m_lineStart;
-    //TODO
+    // TODO
 };
 
 class Node : public gc {
@@ -175,4 +175,5 @@ protected:
 }
 
 #endif
+
 

@@ -5,7 +5,7 @@
 
 namespace escargot {
 
-//An expression statement, i.e., a statement consisting of a single expression.
+// An expression statement, i.e., a statement consisting of a single expression.
 class ExpressionStatementNode : public StatementNode {
 public:
     friend class ScriptParser;
@@ -24,10 +24,11 @@ public:
     Node* expression() { return m_expression; }
 
 protected:
-    Node* m_expression; //expression: Expression;
+    Node* m_expression; // expression: Expression;
 };
 
 }
 
 #endif
+
 

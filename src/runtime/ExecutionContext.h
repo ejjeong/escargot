@@ -20,33 +20,33 @@ public:
         );
     ALWAYS_INLINE LexicalEnvironment* environment()
     {
-        //TODO
+        // TODO
         return m_variableEnvironment;
     }
 
     ALWAYS_INLINE void setEnvironment(LexicalEnvironment* env)
     {
-        //TODO
+        // TODO
         ASSERT(env);
         m_variableEnvironment = env;
     }
 
-    //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
+    // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
     ESValue* resolveBinding(const InternalAtomicString& atomicName);
 
     ESValue* resolveArgumentsObjectBinding();
 
-    //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvethisbinding
+    // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvethisbinding
     ESValue resolveThisBinding();
     ESObject* resolveThisBindingToObject()
     {
         return resolveThisBinding().toObject();
     }
 
-    //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-getthisenvironment
+    // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-getthisenvironment
     LexicalEnvironment* getThisEnvironment();
 
-    ALWAYS_INLINE bool needsActivation() { return m_needsActivation; } //child & parent AST has eval, with, catch
+    ALWAYS_INLINE bool needsActivation() { return m_needsActivation; } // child & parent AST has eval, with, catch
     ALWAYS_INLINE bool isNewExpression() { return m_isNewExpression; }
     ESValue* arguments() { return m_arguments; }
     size_t argumentCount() { return m_argumentCount; }
@@ -103,7 +103,7 @@ public:
     LexicalEnvironment* m_variableEnvironment;
 
     ESValue* m_cachedDeclarativeEnvironmentRecord;
-    //instance->currentExecutionContext()->environment()->record()->toDeclarativeEnvironmentRecord()
+    // instance->currentExecutionContext()->environment()->record()->toDeclarativeEnvironmentRecord()
 
     ESValue m_tryOrCatchBodyResult;
 #ifdef ENABLE_ESJIT
@@ -116,4 +116,5 @@ public:
 }
 
 #endif
+
 

@@ -5,7 +5,7 @@
 
 namespace escargot {
 
-//A block statement, i.e., a sequence of statements surrounded by braces.
+// A block statement, i.e., a sequence of statements surrounded by braces.
 class BlockStatementNode : public StatementNode {
 public:
     friend class ScriptParser;
@@ -31,4 +31,5 @@ protected:
 }
 
 #endif
+
 

@@ -65,9 +65,9 @@ void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, B
         data->m_targetIndex0 = context.m_currentSSARegisterCount++;
         context.m_ssaComputeStack.push_back(val);
     } else {
-        //normal path
+        // normal path
         if(op == InitObjectOpcode) {
-            //peek, pop both are exist case
+            // peek, pop both are exist case
             int peekCount = peekCountFromOpcode(code, op);
             ASSERT(peekCount == 1);
             for(int i = 0; i < data->m_registerDecrementCount ; i ++) {
@@ -78,7 +78,7 @@ void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, B
 
             data->m_sourceIndexes.push_back(context.m_ssaComputeStack.back());
         } else {
-            //normal path
+            // normal path
             int peekCount = peekCountFromOpcode(code, op);
             ASSERT(!peekCount || !data->m_registerDecrementCount);
             auto iter = context.m_ssaComputeStack.end();
@@ -159,10 +159,10 @@ CodeBlock* generateByteCode(Node* node)
     CodeBlock* block = CodeBlock::create();
 
     ByteCodeGenerateContext context;
-    //unsigned long start = ESVMInstance::tickCount();
+    // unsigned long start = ESVMInstance::tickCount();
     node->generateStatementByteCode(block, context);
-    //unsigned long end = ESVMInstance::tickCount();
-    //printf("generate code takes %lfms\n",(end-start)/1000.0);
+    // unsigned long end = ESVMInstance::tickCount();
+    // printf("generate code takes %lfms\n",(end-start)/1000.0);
 #ifndef NDEBUG
     if(ESVMInstance::currentInstance()->m_dumpByteCode) {
         char* code = block->m_code.data();
@@ -174,7 +174,7 @@ CodeBlock* generateByteCode(Node* node)
 #endif
 
 #ifdef ENABLE_ESJIT
-    //Fill temp register size for future
+    // Fill temp register size for future
     block->m_tempRegisterSize = context.m_currentSSARegisterCount;
     context.cleanupSSARegisterCount();
 #endif
@@ -334,4 +334,5 @@ void dumpUnsupported(CodeBlock* block)
 }
 #endif
 }
+
 

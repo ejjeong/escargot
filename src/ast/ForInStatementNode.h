@@ -57,7 +57,7 @@ public:
 
         codeBlock->pushCode(Jump(continuePosition), newContext, this);
         size_t forInEnd = codeBlock->currentCodeSize();
-        //codeBlock->pushCode(EnumerateObjectEnd(), this);
+        // codeBlock->pushCode(EnumerateObjectEnd(), this);
         codeBlock->pushCode(Pop(), newContext, this);
         ASSERT(codeBlock->peekCode<CheckIfKeyIsLast>(continuePosition)->m_orgOpcode == CheckIfKeyIsLastOpcode);
 
@@ -89,4 +89,5 @@ protected:
 }
 
 #endif
+
 

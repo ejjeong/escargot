@@ -292,8 +292,8 @@ public:
         return m_arrayBufferPrototype;
     }
 
-    //DO NOT USE THIS FUNCTION. THIS IS FOR GLOBAL OBJECT
-    //NOTE rooted ESValue* has short life time.
+    // DO NOT USE THIS FUNCTION. THIS IS FOR GLOBAL OBJECT
+    // NOTE rooted ESValue* has short life time.
     ALWAYS_INLINE ESValue* addressOfProperty(escargot::ESString* key)
     {
         ASSERT(m_flags.m_isGlobalObject);
@@ -393,4 +393,5 @@ public:
 }
 
 #endif
+
 

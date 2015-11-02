@@ -56,11 +56,12 @@ public:
 
 
 protected:
-    ExpressionNodeVector m_defaults; //defaults: [ Expression ];
-    //rest: Identifier | null;
+    ExpressionNodeVector m_defaults; // defaults: [ Expression ];
+    // rest: Identifier | null;
 };
 
 }
 
 #endif
+
 

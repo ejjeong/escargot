@@ -7,7 +7,7 @@ u16string utf8ToUtf16(const char *s, int length)
     u16string ws;
     ws.reserve(length);
     char* pt8 = (char*) s;
-    //wprintf(L"start length:%d\n", length);
+    // wprintf(L"start length:%d\n", length);
     int wlen = 0;
     int idx = 0;
     int decodeLength = 0;
@@ -23,4 +23,5 @@ u16string utf8ToUtf16(const char *s, int length)
 
 
 }
+
 

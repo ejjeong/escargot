@@ -20,9 +20,9 @@ ALWAYS_INLINE double FastI2D(int x) {
     return static_cast<double>(x);
 }
 
-//==============================================================================
-//===common architecture========================================================
-//==============================================================================
+// ==============================================================================
+// ===common architecture========================================================
+// ==============================================================================
 
 template<typename ToType, typename FromType>
 inline ToType bitwise_cast(FromType from)
@@ -164,7 +164,7 @@ ALWAYS_INLINE ESValue ESValue::toPrimitive(PrimitiveTypeHint preferredType) cons
 
 inline double ESValue::toNumber() const
 {
-    //http://www.ecma-international.org/ecma-262/6.0/#sec-tonumber
+    // http://www.ecma-international.org/ecma-262/6.0/#sec-tonumber
 #ifdef ESCARGOT_64
     auto n = u.asInt64 & TagTypeNumber;
     if (LIKELY(n)) {
@@ -205,7 +205,7 @@ inline double ESValue::toNumberSlowCase() const
             data = o->asESStringObject()->stringData();
         }
 
-        //A StringNumericLiteral that is empty or contains only white space is converted to +0.
+        // A StringNumericLiteral that is empty or contains only white space is converted to +0.
         if(data->length() == 0)
         return 0;
 
@@ -216,7 +216,7 @@ inline double ESValue::toNumberSlowCase() const
                 const u16string& str = data->string();
                 bool isOnlyWhiteSpace = true;
                 for(unsigned i = 0; i < str.length() ; i ++) {
-                    //FIXME we shold not use isspace function. implement javascript isspace function.
+                    // FIXME we shold not use isspace function. implement javascript isspace function.
                     if(!isspace(str[i])) {
                         isOnlyWhiteSpace = false;
                         break;
@@ -278,7 +278,7 @@ inline double ESValue::toInteger() const
 // http://www.ecma-international.org/ecma-262/5.1/#sec-9.5
 ALWAYS_INLINE int32_t ESValue::toInt32() const
 {
-    //consume fast case
+    // consume fast case
     if (LIKELY(isInt32()))
         return asInt32();
 
@@ -288,21 +288,21 @@ ALWAYS_INLINE int32_t ESValue::toInt32() const
 // http://www.ecma-international.org/ecma-262/5.1/#sec-9.5
 inline int32_t ESValue::toInt32SlowCase() const
 {
-    //Let number be the result of calling ToNumber on the input argument.
+    // Let number be the result of calling ToNumber on the input argument.
     double num = toNumber();
 
-    //If number is NaN, +0, −0, +∞, or −∞, return +0.
+    // If number is NaN, +0, −0, +∞, or −∞, return +0.
     if(UNLIKELY(isnan(num) || num == 0.0 || isinf(0.0))) {
         return 0;
     }
 
-    //Let posInt be sign(number) * floor(abs(number)).
+    // Let posInt be sign(number) * floor(abs(number)).
     long long int posInt = (num < 0 ? -1 : 1) * std::floor(std::abs(num));
-    //Let int32bit be posInt modulo 232; that is, a finite integer value k of Number type with positive sign
-    //and less than 232 in magnitude such that the mathematical difference of posInt and k is mathematically an integer multiple of 232.
+    // Let int32bit be posInt modulo 232; that is, a finite integer value k of Number type with positive sign
+    // and less than 232 in magnitude such that the mathematical difference of posInt and k is mathematically an integer multiple of 232.
     long long int int32bit = posInt % 0x100000000;
     int res;
-    //If int32bit is greater than or equal to 231, return int32bit − 232, otherwise return int32bit.
+    // If int32bit is greater than or equal to 231, return int32bit − 232, otherwise return int32bit.
     if (int32bit >= 0x80000000)
         res = int32bit - 0x100000000;
     else
@@ -312,23 +312,23 @@ inline int32_t ESValue::toInt32SlowCase() const
 
 inline uint32_t ESValue::toUint32() const
 {
-    //consume fast case
+    // consume fast case
     if (LIKELY(isInt32()))
         return asInt32();
 
-    //Let number be the result of calling ToNumber on the input argument.
+    // Let number be the result of calling ToNumber on the input argument.
     double num = toNumber();
 
-    //If number is NaN, +0, −0, +∞, or −∞, return +0.
+    // If number is NaN, +0, −0, +∞, or −∞, return +0.
     if(UNLIKELY(isnan(num) || num == 0.0 || isinf(0.0))) {
         return 0;
     }
 
-    //Let posInt be sign(number) × floor(abs(number)).
+    // Let posInt be sign(number) × floor(abs(number)).
     long long int posInt = (num < 0 ? -1 : 1) * std::floor(std::abs(num));
 
-    //Let int32bit be posInt modulo 232; that is, a finite integer value k of Number type with positive sign and
-    //less than 232 in magnitude such that the mathematical difference of posInt and k is mathematically an integer multiple of 232.
+    // Let int32bit be posInt modulo 232; that is, a finite integer value k of Number type with positive sign and
+    // less than 232 in magnitude such that the mathematical difference of posInt and k is mathematically an integer multiple of 232.
     long long int int32bit = posInt % 0x100000000;
     return int32bit;
 }
@@ -345,7 +345,7 @@ inline double ESValue::toLength() const
 
 ALWAYS_INLINE bool ESValue::isPrimitive() const
 {
-    //return isUndefined() || isNull() || isNumber() || isESString() || isBoolean();
+    // return isUndefined() || isNull() || isNumber() || isESString() || isBoolean();
     return !isESPointer() || asESPointer()->isESString();
 }
 
@@ -402,11 +402,11 @@ inline bool ESValue::equalsTo(const ESValue& val)
         double b = val.asNumber();
         if (std::isnan(a) || std::isnan(b))
             return false;
-        //we can pass [If x is +0 and y is −0, return true. If x is −0 and y is +0, return true.]
-        //because
-        //double a = -0.0;
-        //double b = 0.0;
-        //a == b; is true
+        // we can pass [If x is +0 and y is −0, return true. If x is −0 and y is +0, return true.]
+        // because
+        // double a = -0.0;
+        // double b = 0.0;
+        // a == b; is true
         return a == b;
     }
 
@@ -426,15 +426,15 @@ inline bool ESValue::equalsTo(const ESValue& val)
     return false;
 }
 
-//==============================================================================
-//===32-bit architecture========================================================
-//==============================================================================
+// ==============================================================================
+// ===32-bit architecture========================================================
+// ==============================================================================
 
 #if ESCARGOT_32
 
 inline ESValue::ESValue()
 {
-    //u.asBits.tag = EmptyValueTag;
+    // u.asBits.tag = EmptyValueTag;
     u.asBits.tag = UndefinedTag;
     u.asBits.payload = 0;
 }
@@ -572,15 +572,15 @@ ALWAYS_INLINE JSCell* ESValue::asESPointer() const
     return reinterpret_cast<ESPointer*>(u.asBits.payload);
 }
 
-//==============================================================================
-//===64-bit architecture========================================================
-//==============================================================================
+// ==============================================================================
+// ===64-bit architecture========================================================
+// ==============================================================================
 
 #else
 
 ALWAYS_INLINE ESValue::ESValue()
 {
-    //u.asInt64 = ValueEmpty;
+    // u.asInt64 = ValueEmpty;
     u.asInt64 = ValueUndefined;
 }
 
@@ -664,7 +664,7 @@ ALWAYS_INLINE bool ESValue::operator!=(const ESValue& other) const
 
 inline bool ESValue::isInt32() const
 {
-    //return (u.asInt64 & TagTypeNumber) == TagTypeNumber;
+    // return (u.asInt64 & TagTypeNumber) == TagTypeNumber;
     ASSERT(sizeof (short) == 2);
     unsigned short* firstByte = (unsigned short *)&u.asInt64;
 #ifdef ESCARGOT_LITTLE_ENDIAN
@@ -709,7 +709,7 @@ inline bool ESValue::isDeleted() const
 
 inline bool ESValue::isNumber() const
 {
-    //return u.asInt64 & TagTypeNumber;
+    // return u.asInt64 & TagTypeNumber;
     ASSERT(sizeof (short) == 2);
     unsigned short* firstByte = (unsigned short *)&u.asInt64;
 #ifdef ESCARGOT_LITTLE_ENDIAN
@@ -721,7 +721,7 @@ inline bool ESValue::isNumber() const
 
 inline bool ESValue::isESString() const
 {
-    //CHECK should we consider isESStringObject in this point?
+    // CHECK should we consider isESStringObject in this point?
     return isESPointer() && asESPointer()->isESString();
 }
 
@@ -790,7 +790,7 @@ ALWAYS_INLINE void ESPropertyAccessorData::setValue(::escargot::ESObject* obj, c
 ALWAYS_INLINE ESHiddenClass* ESHiddenClass::removeProperty(size_t idx)
 {
     ASSERT(idx != SIZE_MAX);
-    //can not delete __proto__
+    // can not delete __proto__
     ASSERT(idx != 0);
     ASSERT(m_propertyInfo[idx].m_flags.m_isConfigurable);
 
@@ -808,7 +808,7 @@ ALWAYS_INLINE ESHiddenClass* ESHiddenClass::removeProperty(size_t idx)
         return ret;
     } else {
         if(!m_flags.m_forceNonVectorMode && m_propertyInfo.size() < ESHiddenClassVectorModeSizeLimit / 2) {
-            //convert into vector mode
+            // convert into vector mode
             ESHiddenClass* ret = ESVMInstance::currentInstance()->initialHiddenClassForObject();
             for(unsigned i = 1 ; i < m_propertyInfo.size() ; i ++) {
                 if(idx != i) {
@@ -834,17 +834,17 @@ ALWAYS_INLINE ESHiddenClass* ESHiddenClass::removeProperty(size_t idx)
             cls->m_flags.m_hasIndexedReadOnlyProperty = m_flags.m_hasIndexedReadOnlyProperty | (!m_propertyInfo[i].m_flags.m_isWritable && m_propertyInfo[i].m_name->hasOnlyDigit());
         }
 
-        //TODO
-        //delete this;
+        // TODO
+        // delete this;
         return cls;
     }
 }
 
-//IS FUNCTION IS FOR GLOBAL OBJECT
+// IS FUNCTION IS FOR GLOBAL OBJECT
 ALWAYS_INLINE ESHiddenClass* ESHiddenClass::removePropertyWithoutIndexChange(size_t idx)
 {
     ASSERT(idx != SIZE_MAX);
-    //can not delete __proto__
+    // can not delete __proto__
     ASSERT(idx != 0);
     ASSERT(m_propertyInfo[idx].m_flags.m_isConfigurable);
     ASSERT(m_flags.m_forceNonVectorMode);
@@ -865,8 +865,8 @@ ALWAYS_INLINE ESHiddenClass* ESHiddenClass::removePropertyWithoutIndexChange(siz
         }
     }
 
-    //TODO
-    //delete this;
+    // TODO
+    // delete this;
     return cls;
 }
 
@@ -1001,7 +1001,7 @@ ALWAYS_INLINE bool ESHiddenClass::write(ESObject* obj, ESObject* originalObject,
 
 inline void ESObject::set__proto__(const ESValue& obj)
 {
-    //for global init
+    // for global init
     if(obj.isEmpty())
         return ;
     ASSERT(obj.isObject() || obj.isUndefinedOrNull());
@@ -1164,7 +1164,7 @@ ALWAYS_INLINE bool ESObject::hasOwnProperty(const escargot::ESValue& key)
     return m_hiddenClass->findProperty(key.toString()) != SIZE_MAX;
 }
 
-//http://www.ecma-international.org/ecma-262/6.0/index.html#sec-get-o-p
+// http://www.ecma-international.org/ecma-262/6.0/index.html#sec-get-o-p
 ALWAYS_INLINE ESValue ESObject::get(escargot::ESValue key)
 {
     ESObject* target = this;
@@ -1258,11 +1258,11 @@ ALWAYS_INLINE void ESObject::eraseValues(int idx, int cnt)
         for (int k = 0, i = idx; i < length() && k < cnt; i++, k++) {
             set(ESValue(i), get(ESValue(i+cnt)));
         }
-        //NOTE: length is set in Array.splice
+        // NOTE: length is set in Array.splice
     }
 }
 
-//http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
+// http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
 ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& val)
 {
     if(isESArrayObject() && asESArrayObject()->isFastmode()) {
@@ -1282,7 +1282,7 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
                 asESArrayObject()->m_vector[idx] = val;
                 return true;
             } else {
-                //if hole, check prototypes.
+                // if hole, check prototypes.
                 ESValue target = __proto__();
                 while(true) {
                     if(!target.isObject()) {
@@ -1460,4 +1460,5 @@ inline ESTypedArrayObject<Float64Adaptor>::ESTypedArrayObject(TypedArrayType arr
 }
 
 #endif
+
 

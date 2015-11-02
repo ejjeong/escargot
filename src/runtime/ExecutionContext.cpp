@@ -26,7 +26,7 @@ ExecutionContext::ExecutionContext(LexicalEnvironment* varEnv, bool needsActivat
 
 ESValue* ExecutionContext::resolveBinding(const InternalAtomicString& atomicName)
 {
-    //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
+    // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
     LexicalEnvironment* env = environment();
 
     while(env) {
@@ -41,7 +41,7 @@ ESValue* ExecutionContext::resolveBinding(const InternalAtomicString& atomicName
 
 ESValue* ExecutionContext::resolveArgumentsObjectBinding()
 {
-    //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
+    // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
     LexicalEnvironment* env = environment();
 
     while(env) {
@@ -54,13 +54,13 @@ ESValue* ExecutionContext::resolveArgumentsObjectBinding()
     RELEASE_ASSERT_NOT_REACHED();
 }
 
-//http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvethisbinding
+// http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvethisbinding
 ESValue ExecutionContext::resolveThisBinding()
 {
     return getThisEnvironment()->record()->getThisBinding();
 }
 
-//http://www.ecma-international.org/ecma-262/6.0/index.html#sec-getthisenvironment
+// http://www.ecma-international.org/ecma-262/6.0/index.html#sec-getthisenvironment
 LexicalEnvironment* ExecutionContext::getThisEnvironment()
 {
     LexicalEnvironment* lex = environment();
@@ -75,4 +75,5 @@ LexicalEnvironment* ExecutionContext::getThisEnvironment()
 }
 
 }
+
 

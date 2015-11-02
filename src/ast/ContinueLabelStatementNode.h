@@ -23,10 +23,11 @@ public:
 
 protected:
     size_t m_upIndex;
-    ESString* m_label; //for debug
+    ESString* m_label; // for debug
 };
 
 }
 
 #endif
+
 

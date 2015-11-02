@@ -5,7 +5,7 @@
 
 namespace escargot {
 
-//An empty statement, i.e., a solitary semicolon.
+// An empty statement, i.e., a solitary semicolon.
 class EmptyStatementNode : public StatementNode {
 public:
     EmptyStatementNode()
@@ -22,4 +22,5 @@ protected:
 }
 
 #endif
+
 

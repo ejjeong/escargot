@@ -8,7 +8,7 @@
 
 namespace escargot {
 
-//interface CatchClause <: Node {
+// interface CatchClause <: Node {
 class CatchClauseNode : public Node {
     public:
     friend class ScriptParser;
@@ -40,4 +40,5 @@ typedef std::vector<Node *, gc_allocator<CatchClauseNode *>> CatchClauseNodeVect
 }
 
 #endif
+
 

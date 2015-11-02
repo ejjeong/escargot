@@ -31,7 +31,7 @@ public:
     ALWAYS_INLINE const InternalAtomicString& id() { return m_id; }
     ALWAYS_INLINE ESString* nonAtomicId() { return m_nonAtomicId; }
 
-    ALWAYS_INLINE bool needsActivation() { return m_needsActivation; } //child & parent AST has eval, with, catch
+    ALWAYS_INLINE bool needsActivation() { return m_needsActivation; } // child & parent AST has eval, with, catch
     ALWAYS_INLINE void setNeedsActivation(bool b) { m_needsActivation = b; }
     ALWAYS_INLINE bool isGenerator() { return m_isGenerator; }
     ALWAYS_INLINE bool isExpression() { return m_isExpression; }
@@ -48,15 +48,15 @@ public:
     FunctionNode* outerFunctionNode() { return m_outerFunctionNode; }
 
 protected:
-    InternalAtomicString m_id; //id: Identifier;
-    ESString* m_nonAtomicId; //id: Identifier;
-    InternalAtomicStringVector m_params; //params: [ Pattern ];
+    InternalAtomicString m_id; // id: Identifier;
+    ESString* m_nonAtomicId; // id: Identifier;
+    InternalAtomicStringVector m_params; // params: [ Pattern ];
     InternalAtomicStringVector m_innerIdentifiers;
-    //defaults: [ Expression ];
-    //rest: Identifier | null;
-    Node* m_body; //body: BlockStatement | Expression;
-    bool m_isGenerator; //generator: boolean;
-    bool m_isExpression; //expression: boolean;
+    // defaults: [ Expression ];
+    // rest: Identifier | null;
+    Node* m_body; // body: BlockStatement | Expression;
+    bool m_isGenerator; // generator: boolean;
+    bool m_isExpression; // expression: boolean;
 
     bool m_needsActivation;
     FunctionNode* m_outerFunctionNode;
@@ -67,4 +67,5 @@ protected:
 }
 
 #endif
+
 

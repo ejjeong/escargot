@@ -52,8 +52,8 @@ public:
 
     void mergeType(Type otherType)
     {
-        //FIXME workaround for running SunSpider
-        //m_type = m_type | otherType.m_type;
+        // FIXME workaround for running SunSpider
+        // m_type = m_type | otherType.m_type;
         if(isInt32Type()) {
             if(otherType.isDoubleType()) {
                 m_type = otherType.m_type;
@@ -154,4 +154,5 @@ COMPILE_ASSERT((sizeof (Type)) == (sizeof (uint64_t)), sizeof ESJIT::Type should
 }}
 #endif
 #endif
+
 

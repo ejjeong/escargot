@@ -51,7 +51,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     ESValue thisValue(ESValue::ESEmptyValue);
     ASSERT(((size_t)stack % sizeof(size_t)) == 0);
     ASSERT(((size_t)tmpStack % sizeof(size_t)) == 0);
-    //resolve programCounter into address
+    // resolve programCounter into address
     programCounter = (size_t)(&codeBuffer[programCounter]);
     ByteCode* currentCode;
 
@@ -197,9 +197,9 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             *code->m_cachedSlot = *value;
         } else {
             ExecutionContext* ec = instance->currentExecutionContext();
-            //TODO
-            //Object.defineProperty(this,"asdf",{value:1}) //this == global
-            //asdf = 2
+            // TODO
+            // Object.defineProperty(this,"asdf",{value:1}) //this == global
+            // asdf = 2
             ESValue* slot = ec->resolveBinding(code->m_name);
 
             if(LIKELY(slot != NULL)) {
@@ -690,11 +690,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         CreateFunction* code = (CreateFunction*)currentCode;
         ASSERT(((size_t)code->m_codeBlock % sizeof(size_t)) == 0);
         ESFunctionObject* function = ESFunctionObject::create(ec->environment(), code->m_codeBlock, code->m_nonAtomicName == NULL ? strings->emptyString.string() : code->m_nonAtomicName, code->m_codeBlock->m_params.size());
-        if(code->m_isDeclaration) { //FD
+        if(code->m_isDeclaration) { // FD
             function->set(strings->name.string(), code->m_nonAtomicName);
             ec->environment()->record()->setMutableBinding(code->m_name, function, false);
         }
-        else {//FE
+        else { // FE
             function->set(strings->name.string(), code->m_nonAtomicName);
             push<ESValue>(stack, topOfStack, function);
         }
@@ -761,7 +761,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         JumpComplexCase* code = (JumpComplexCase*)currentCode;
         ec->tryOrCatchBodyResult() = code->m_controlFlowRecord->clone();
-        //TODO add check stack pointer;
+        // TODO add check stack pointer;
         return ESValue(ESValue::ESEmptyValue);
     }
 
@@ -859,7 +859,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             bool res = obj->toObject()->deleteProperty(*key);
             push<ESValue>(stack, topOfStack, ESValue(res));
         } else {
-            //TODO
+            // TODO
         }
         executeNextCode<UnaryDelete>(programCounter);
         NEXT_INSTRUCTION();
@@ -984,7 +984,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                 if(record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsReturn) {
                     ESValue ret = record->value();
                     ec->tryOrCatchBodyResult() = ESValue(ESValue::ESEmptyValue);
-                    //TODO sp check
+                    // TODO sp check
                     return ret;
                 } else if(record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsThrow) {
                     ESValue val = record->value();
@@ -1197,8 +1197,8 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESObject* obj = peek<ESValue>(stack, bp)->asESPointer()->asESObject();
         ESString* keyString = key->toString();
         if(obj->hasOwnProperty(keyString)) {
-            //TODO check property is accessor property
-            //TODO check accessor already exists
+            // TODO check property is accessor property
+            // TODO check accessor already exists
             obj->accessorData(keyString)->setJSSetter(value->asESPointer()->asESFunctionObject());
         } else {
             obj->defineAccessorProperty(keyString, new ESPropertyAccessorData(NULL, value->asESPointer()->asESFunctionObject()), true, true, true);
@@ -1214,8 +1214,8 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESObject* obj = peek<ESValue>(stack, bp)->asESPointer()->asESObject();
         ESString* keyString = key->toString();
         if(obj->hasOwnProperty(keyString)) {
-            //TODO check property is accessor property
-            //TODO check accessor already exists
+            // TODO check property is accessor property
+            // TODO check accessor already exists
             obj->accessorData(keyString)->setJSGetter(value->asESPointer()->asESFunctionObject());
         } else {
             obj->defineAccessorProperty(keyString, new ESPropertyAccessorData(value->asESPointer()->asESFunctionObject(), NULL), true, true, true);
@@ -1233,4 +1233,5 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 }
 
 }
+
 

@@ -153,22 +153,22 @@ public:
     bool isObject() const;
 
     enum PrimitiveTypeHint { PreferString, PreferNumber };
-    ALWAYS_INLINE ESValue toPrimitive(PrimitiveTypeHint = PreferNumber) const; //$7.1.1 ToPrimitive
+    ALWAYS_INLINE ESValue toPrimitive(PrimitiveTypeHint = PreferNumber) const; // $7.1.1 ToPrimitive
     ESValue toPrimitiveSlowCase(PrimitiveTypeHint = PreferNumber) const;
-    ALWAYS_INLINE bool toBoolean() const; //$7.1.2 ToBoolean
-    ALWAYS_INLINE double toNumber() const; //$7.1.3 ToNumber
-    inline double toNumberSlowCase() const; //$7.1.3 ToNumber
-    inline double toInteger() const; //$7.1.4 ToInteger
-    ALWAYS_INLINE int32_t toInt32() const; //$7.1.5 ToInt32
-    inline int32_t toInt32SlowCase() const; //$7.1.5 ToInt32
-    inline uint32_t toUint32() const; //http://www.ecma-international.org/ecma-262/5.1/#sec-9.6
-    ALWAYS_INLINE ESString* toString() const; //$7.1.12 ToString
-    ESString* toStringSlowCase() const; //$7.1.12 ToString
-    inline ESObject* toObject() const; //$7.1.13 ToObject
-    inline double toLength() const; //$7.1.15 ToLength
+    ALWAYS_INLINE bool toBoolean() const; // $7.1.2 ToBoolean
+    ALWAYS_INLINE double toNumber() const; // $7.1.3 ToNumber
+    inline double toNumberSlowCase() const; // $7.1.3 ToNumber
+    inline double toInteger() const; // $7.1.4 ToInteger
+    ALWAYS_INLINE int32_t toInt32() const; // $7.1.5 ToInt32
+    inline int32_t toInt32SlowCase() const; // $7.1.5 ToInt32
+    inline uint32_t toUint32() const; // http://www.ecma-international.org/ecma-262/5.1/#sec-9.6
+    ALWAYS_INLINE ESString* toString() const; // $7.1.12 ToString
+    ESString* toStringSlowCase() const; // $7.1.12 ToString
+    inline ESObject* toObject() const; // $7.1.13 ToObject
+    inline double toLength() const; // $7.1.15 ToLength
 
     enum { ESInvalidIndexValue = std::numeric_limits<uint32_t>::max() };
-    ALWAYS_INLINE uint32_t toIndex() const; //http://www.ecma-international.org/ecma-262/5.1/#sec-15.4
+    ALWAYS_INLINE uint32_t toIndex() const; // http://www.ecma-international.org/ecma-262/5.1/#sec-15.4
 
     ALWAYS_INLINE ESString* asESString() const;
 
@@ -575,7 +575,7 @@ public:
     }
 
 #ifdef ENABLE_ESJIT
-    //static size_t offsetOfData() { return offsetof(ESStringData, _M_dataplus._M_p); }
+    // static size_t offsetOfData() { return offsetof(ESStringData, _M_dataplus._M_p); }
     static size_t offsetOfData() { return 0; }
     static size_t offsetOfLength() { return offsetof(ESStringData, m_length); }
 #endif
@@ -852,7 +852,7 @@ public:
         }
 #endif
         u16string result;
-        //TODO: should reduce unnecessary append operations in std::string::resize
+        // TODO: should reduce unnecessary append operations in std::string::resize
         result.resize(m_contentLength);
         std::vector<ESString *> queue;
         queue.push_back(m_left);
@@ -1075,7 +1075,7 @@ struct ESHiddenClassPropertyInfo {
 
     struct {
         bool m_isDataProperty:1;
-        //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-property-attributes
+        // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-property-attributes
         bool m_isWritable:1;
         bool m_isEnumerable:1;
         bool m_isConfigurable:1;
@@ -1252,7 +1252,7 @@ public:
     inline void propertyFlags(const ESValue& key, bool& exists, bool& isDataProperty, bool& isWritable, bool& isEnumerable, bool& isConfigurable);
     inline bool hasOwnProperty(const escargot::ESValue& key);
 
-    //$6.1.7.2 Object Internal Methods and Internal Slots
+    // $6.1.7.2 Object Internal Methods and Internal Slots
     bool isExtensible()
     {
         return m_flags.m_isExtensible;
@@ -1276,11 +1276,11 @@ public:
         return (ESPropertyAccessorData *)m_hiddenClassData[idx].asESPointer();
     }
 
-    //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-get-o-p
+    // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-get-o-p
     ALWAYS_INLINE ESValue get(escargot::ESValue key);
     ALWAYS_INLINE ESValue getOwnProperty(escargot::ESValue key);
 
-    //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
+    // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
     ALWAYS_INLINE bool set(const escargot::ESValue& key, const ESValue& val);
     ALWAYS_INLINE bool set(escargot::ESString* key, const ESValue& val)
     {
@@ -1506,7 +1506,7 @@ public:
 
     void convertToSlowMode()
     {
-        //wprintf(L"CONVERT TO SLOW MODE!!!  \n");
+        // wprintf(L"CONVERT TO SLOW MODE!!!  \n");
         m_fastmode = false;
         uint32_t len = length();
         if (len == 0) return;
@@ -1552,7 +1552,7 @@ public:
     void sort()
     {
         RELEASE_ASSERT(isFastmode());
-        //TODO non fast mode sort
+        // TODO non fast mode sort
 
         std::sort(m_vector.begin(), m_vector.end(), [](const ::escargot::ESValue& a, const ::escargot::ESValue& b) -> bool {
             ::escargot::ESString* vala = a.toString();
@@ -1565,7 +1565,7 @@ public:
     void sort(const Comp& c)
     {
         RELEASE_ASSERT(isFastmode());
-        //TODO non fast mode sort
+        // TODO non fast mode sort
 
         std::sort(m_vector.begin(), m_vector.end(),c);
     }
@@ -1634,11 +1634,11 @@ protected:
 
     CodeBlock* m_codeBlock;
     escargot::ESString* m_name;
-    //ESObject functionObject;
-    //HomeObject
-    ////ESObject newTarget
-    //BindThisValue(V);
-    //GetThisBinding();
+    // ESObject functionObject;
+    // HomeObject
+    // //ESObject newTarget
+    // BindThisValue(V);
+    // GetThisBinding();
 };
 
 class ESStringObject : public ESObject {
@@ -1796,29 +1796,29 @@ public:
     ALWAYS_INLINE void* data() { return m_data; }
     ALWAYS_INLINE unsigned bytelength() { return m_bytelength; }
 
-    //$24.1.1.5
+    // $24.1.1.5
     template<typename Type>
     ESValue getValueFromBuffer(unsigned byteindex, TypedArrayType typeVal, int isLittleEndian = -1)
     {
         ASSERT(byteindex >= 0);
         if (isLittleEndian != -1) {
-            //TODO
+            // TODO
             RELEASE_ASSERT_NOT_REACHED();
         }
-        //If isLittleEndian is not present, set isLittleEndian to either true or false.
+        // If isLittleEndian is not present, set isLittleEndian to either true or false.
         void* rawStart = (int8_t*)m_data + byteindex;
         return ESValue( *((Type*) rawStart) );
     }
-    //$24.1.1.6
+    // $24.1.1.6
     template<typename TypeAdaptor>
     bool setValueInBuffer(unsigned byteindex, TypedArrayType typeVal, ESValue val, int isLittleEndian = -1)
     {
         ASSERT(byteindex >= 0);
         if (isLittleEndian != -1) {
-            //TODO
+            // TODO
             RELEASE_ASSERT_NOT_REACHED();
         }
-        //If isLittleEndian is not present, set isLittleEndian to either true or false.
+        // If isLittleEndian is not present, set isLittleEndian to either true or false.
         void* rawStart = (int8_t*)m_data + byteindex;
         *((typename TypeAdaptor::Type*) rawStart) = (typename TypeAdaptor::Type) TypeAdaptor::toNative(val);
         return true;
@@ -1969,9 +1969,9 @@ typedef ESTypedArrayObject<Float64Adaptor> ESFloat64Array;
 class ESDataViewObject : public ESArrayBufferView {
 protected:
     ESDataViewObject(ESPointer::Type type = ESPointer::Type::ESDataViewObject)
-        : ESArrayBufferView((Type)(Type::ESObject | Type::ESDataViewObject), ESValue()) //TODO set __proto__ properly
+        : ESArrayBufferView((Type)(Type::ESObject | Type::ESDataViewObject), ESValue()) // TODO set __proto__ properly
     {
-        //TODO
+        // TODO
         RELEASE_ASSERT_NOT_REACHED();
     }
 
@@ -2057,4 +2057,5 @@ protected:
 #include "ESValueInlines.h"
 
 #endif
+
 

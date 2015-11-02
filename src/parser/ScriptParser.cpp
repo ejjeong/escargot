@@ -50,10 +50,10 @@ namespace escargot {
     {
         Node* node;
         try {
-            //unsigned long start = ESVMInstance::tickCount();
+            // unsigned long start = ESVMInstance::tickCount();
             node = esprima::parse(source);
-            //unsigned long end = ESVMInstance::tickCount();
-            //printf("parse takes %lfms\n",(end-start)/1000.0);
+            // unsigned long end = ESVMInstance::tickCount();
+            // printf("parse takes %lfms\n",(end-start)/1000.0);
         } catch(size_t lineNumber) {
             char temp[512];
             sprintf(temp, "Parse Error %u line", (unsigned)lineNumber);
@@ -84,7 +84,7 @@ namespace escargot {
         bool showedEvalInFunction = false;
         std::unordered_map<InternalAtomicString, unsigned, std::hash<InternalAtomicString>, std::equal_to<InternalAtomicString> > knownGlobalNames;
 
-        //fill GlobalData
+        // fill GlobalData
         if(isForGlobalScope) {
             const ESHiddenClassPropertyInfoVector& info = instance->globalObject()->hiddenClass()->propertyInfo();
             for(unsigned i = 0; i < info.size() ; i ++) {
@@ -117,28 +117,28 @@ namespace escargot {
                     postAnalysisFunction(v[i], identifierStack, nearFunctionNode);
                 }
             } else if(type == NodeType::VariableDeclarator) {
-                //printf("add Identifier %s(var)\n", ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->nonAtomicName()->utf8Data());
+                // printf("add Identifier %s(var)\n", ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->nonAtomicName()->utf8Data());
                 if(identifierInCurrentContext.end() == std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),
                 ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name())) {
                     identifierInCurrentContext.push_back(((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name());
                 }
                 if(nearFunctionNode) {
-                    //local
+                    // local
                     auto iter = std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),
                     ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name());
                     ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->setFastAccessIndex(0, std::distance(identifierInCurrentContext.begin(), iter));
                 } else {
-                    //global
+                    // global
                     if(isForGlobalScope) {
                         knownGlobalNames.insert(std::make_pair(((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name(), knownGlobalNames.size()));
                     }
                 }
             } else if(type == NodeType::FunctionDeclaration) {
-                //TODO
-                //printf("add Identifier %s(fn)\n", ((FunctionDeclarationNode *)currentNode)->nonAtomicId()->utf8Data());
+                // TODO
+                // printf("add Identifier %s(fn)\n", ((FunctionDeclarationNode *)currentNode)->nonAtomicId()->utf8Data());
                 ASSERT(identifierInCurrentContext.end() != std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),
                 ((FunctionDeclarationNode *)currentNode)->id()));
-                //printf("process function body-------------------\n");
+                // printf("process function body-------------------\n");
                 InternalAtomicStringVector newIdentifierVector;
                 InternalAtomicStringVector& vec = ((FunctionExpressionNode *)currentNode)->m_params;
                 for(unsigned i = 0; i < vec.size() ; i ++) {
@@ -151,15 +151,15 @@ namespace escargot {
                 showedEvalInFunction = preShowedEvalInFunction;
                 identifierStack.pop_back();
                 ((FunctionDeclarationNode *)currentNode)->setInnerIdentifiers(std::move(newIdentifierVector));
-                //printf("end of process function body-------------------\n");
+                // printf("end of process function body-------------------\n");
             } else if(type == NodeType::FunctionExpression) {
-                //printf("process function body-------------------\n");
+                // printf("process function body-------------------\n");
                 InternalAtomicStringVector newIdentifierVector;
                 InternalAtomicStringVector& vec = ((FunctionExpressionNode *)currentNode)->m_params;
                 for(unsigned i = 0; i < vec.size() ; i ++) {
                     newIdentifierVector.push_back(vec[i]);
                 }
-                //If it has own name, should bind function name
+                // If it has own name, should bind function name
                 if (((FunctionExpressionNode *)currentNode)->nonAtomicId() != strings->emptyString.string())
                 newIdentifierVector.push_back(((FunctionExpressionNode *)currentNode)->id());
                 ((FunctionExpressionNode *)currentNode)->setOuterFunctionNode(nearFunctionNode);
@@ -169,16 +169,16 @@ namespace escargot {
                 showedEvalInFunction = preShowedEvalInFunction;
                 identifierStack.pop_back();
                 ((FunctionExpressionNode *)currentNode)->setInnerIdentifiers(std::move(newIdentifierVector));
-                //printf("end of process function body-------------------\n");
+                // printf("end of process function body-------------------\n");
             } else if(type == NodeType::Identifier) {
                 if(!shouldWorkAroundIdentifier || showedEvalInFunction) {
                     return ;
                 }
-                //use case
+                // use case
 
                 InternalAtomicString name = ((IdentifierNode *)currentNode)->name();
                 auto iter = identifierInCurrentContext.end();
-                auto riter = identifierInCurrentContext.rbegin();//std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),name);
+                auto riter = identifierInCurrentContext.rbegin(); // std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),name);
                 while(riter != identifierInCurrentContext.rend()) {
                     if(*riter == name) {
                         size_t idx = identifierInCurrentContext.size() - 1 - (riter - identifierInCurrentContext.rbegin());
@@ -188,7 +188,7 @@ namespace escargot {
                     riter ++;
                 }
                 if(identifierInCurrentContext.end() == iter) {
-                    //search top...
+                    // search top...
                     unsigned up = 0;
                     for(int i = identifierStack.size() - 2 ; i >= 0 ; i --) {
                         up++;
@@ -207,7 +207,7 @@ namespace escargot {
                                 size_t idx2 = std::distance(vector->begin(), iter2);
                                 ((IdentifierNode *)currentNode)->setFastAccessIndex(up, idx2);
                             } else {
-                                //fn == global case
+                                // fn == global case
                                 auto iter = knownGlobalNames.find(name);
                                 if(iter != knownGlobalNames.end()) {
                                     ((IdentifierNode *)currentNode)->setGlobalFastAccessIndex(iter->second);
@@ -244,7 +244,7 @@ namespace escargot {
                 postAnalysisFunction(((AssignmentExpressionSimpleNode *)currentNode)->m_right, identifierStack, nearFunctionNode);
                 postAnalysisFunction(((AssignmentExpressionSimpleNode *)currentNode)->m_left, identifierStack, nearFunctionNode);
             } else if(type == NodeType::Literal) {
-                //DO NOTHING
+                // DO NOTHING
             }else if(type == NodeType::ArrayExpression) {
                 ExpressionNodeVector& v = ((ArrayExpressionNode *)currentNode)->m_elements;
                 for(unsigned i = 0; i < v.size() ; i ++) {
@@ -360,7 +360,7 @@ namespace escargot {
                 postAnalysisFunction(((TryStatementNode *)currentNode)->m_block, identifierStack, nearFunctionNode);
                 bool prevShouldWorkAroundIdentifier = shouldWorkAroundIdentifier;
                 shouldWorkAroundIdentifier = false;
-                //postAnalysisFunction(((TryStatementNode *)currentNode)->m_handler, identifierStack, nearFunctionNode);
+                // postAnalysisFunction(((TryStatementNode *)currentNode)->m_handler, identifierStack, nearFunctionNode);
                 shouldWorkAroundIdentifier = prevShouldWorkAroundIdentifier;
                 postAnalysisFunction(((TryStatementNode *)currentNode)->m_finalizer, identifierStack, nearFunctionNode);
             } else if (type == NodeType::CatchClause) {
@@ -420,4 +420,5 @@ namespace escargot {
     }
 
 }
+
 

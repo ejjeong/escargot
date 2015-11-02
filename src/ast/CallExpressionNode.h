@@ -47,11 +47,12 @@ public:
     }
 
 protected:
-    Node* m_callee; //callee: Expression;
-    ArgumentVector m_arguments; //arguments: [ Expression ];
+    Node* m_callee; // callee: Expression;
+    ArgumentVector m_arguments; // arguments: [ Expression ];
 };
 
 }
 
 #endif
+
 

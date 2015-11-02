@@ -7,7 +7,7 @@
 
 namespace escargot {
 
-//interface Identifier <: Node, Expression, Pattern {
+// interface Identifier <: Node, Expression, Pattern {
 class IdentifierNode : public Node {
 public:
     friend class ScriptParser;
@@ -149,4 +149,5 @@ protected:
 }
 
 #endif
+
 

@@ -22,9 +22,9 @@ bool ESGraphTypeModifier::run(ESGraph* graph)
         }
     }
 
-    //printf("%f\n",(float)doubleCnt / (float)(intCnt + doubleCnt));
-    //if((float)doubleCnt / (float)(intCnt + doubleCnt) > 0.1f) {
-    //if(doubleCnt) {
+    // printf("%f\n",(float)doubleCnt / (float)(intCnt + doubleCnt));
+    // if((float)doubleCnt / (float)(intCnt + doubleCnt) > 0.1f) {
+    // if(doubleCnt) {
         if(0) {
             for (size_t i = 0; i < graph->operandsSize(); i++) {
                 Type tp = graph->getOperandType(i);
@@ -38,4 +38,5 @@ bool ESGraphTypeModifier::run(ESGraph* graph)
 
 }}
 #endif
+
 

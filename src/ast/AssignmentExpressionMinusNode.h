@@ -7,7 +7,7 @@
 
 namespace escargot {
 
-//An assignment operator expression.
+// An assignment operator expression.
 class AssignmentExpressionMinusNode : public ExpressionNode {
 public:
     friend class ScriptParser;
@@ -29,11 +29,12 @@ public:
     }
 
 protected:
-    Node* m_left; //left: Pattern;
-    Node* m_right; //right: Expression;
+    Node* m_left; // left: Pattern;
+    Node* m_right; // right: Expression;
 };
 
 }
 
 #endif
+
 

@@ -34,11 +34,12 @@ public:
     }
 
 protected:
-    StatementNodeVector m_body; //body: [ Statement ];
+    StatementNodeVector m_body; // body: [ Statement ];
     bool m_isStrict;
 };
 
 }
 
 #endif
+
 

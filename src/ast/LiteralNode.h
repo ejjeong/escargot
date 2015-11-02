@@ -5,7 +5,7 @@
 
 namespace escargot {
 
-//interface Literal <: Node, Expression {
+// interface Literal <: Node, Expression {
 class LiteralNode : public Node {
 public:
     LiteralNode(ESValue value)
@@ -32,4 +32,5 @@ protected:
 }
 
 #endif
+
 

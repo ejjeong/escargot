@@ -34,8 +34,8 @@ public:
     }
 
 protected:
-    Node* m_id; //id: Pattern;
-    ExpressionNode* m_init; //init: Expression | null;
+    Node* m_id; // id: Pattern;
+    ExpressionNode* m_init; // init: Expression | null;
 };
 
 
@@ -44,4 +44,5 @@ typedef std::vector<Node *, gc_allocator<Node *>> VariableDeclaratorVector;
 }
 
 #endif
+
 

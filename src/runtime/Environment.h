@@ -32,7 +32,7 @@ public:
 };
 
 
-//http://www.ecma-international.org/ecma-262/6.0/index.html#sec-lexical-environments
+// http://www.ecma-international.org/ecma-262/6.0/index.html#sec-lexical-environments
 class LexicalEnvironment : public gc {
 public:
     LexicalEnvironment(EnvironmentRecord* record, LexicalEnvironment* outerEnv)
@@ -51,7 +51,7 @@ public:
         return m_outerEnvironment;
     }
 
-    //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-newfunctionenvironment
+    // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-newfunctionenvironment
     static LexicalEnvironment* newFunctionEnvironment(ESValue arguments[], const size_t& argumentCount, ESFunctionObject* function);
 
 #ifdef ENABLE_ESJIT
@@ -67,7 +67,7 @@ protected:
     LexicalEnvironment* m_outerEnvironment;
 };
 
-//http://www.ecma-international.org/ecma-262/6.0/index.html#sec-environment-records
+// http://www.ecma-international.org/ecma-262/6.0/index.html#sec-environment-records
 class EnvironmentRecord : public gc {
 protected:
     EnvironmentRecord()
@@ -76,7 +76,7 @@ protected:
 public:
     virtual ~EnvironmentRecord() { }
 
-    //return NULL == not exist
+    // return NULL == not exist
     virtual ESValue* hasBinding(const InternalAtomicString& atomicName)
     {
         RELEASE_ASSERT_NOT_REACHED();
@@ -129,7 +129,7 @@ public:
     {
         RELEASE_ASSERT_NOT_REACHED();
     }
-    //WithBaseObject ()
+    // WithBaseObject ()
 
     virtual bool isGlobalEnvironmentRecord()
     {
@@ -171,7 +171,7 @@ public:
     }
     ~ObjectEnvironmentRecord() { }
 
-    //return NULL == not exist
+    // return NULL == not exist
     virtual ESValue* hasBinding(const InternalAtomicString& atomicName)
     {
         return ((GlobalObject *)m_bindingObject)->addressOfProperty(atomicName.string());
@@ -208,7 +208,7 @@ protected:
     ESObject* m_bindingObject;
 };
 
-//http://www.ecma-international.org/ecma-262/6.0/index.html#sec-declarative-environment-records
+// http://www.ecma-international.org/ecma-262/6.0/index.html#sec-declarative-environment-records
 class DeclarativeEnvironmentRecord : public EnvironmentRecord {
 public:
     DeclarativeEnvironmentRecord(ESValue* vectorBuffer, InternalAtomicStringVector* innerIdentifiers)
@@ -260,7 +260,7 @@ public:
     virtual void createMutableBinding(const InternalAtomicString& name, bool canDelete = false);
     virtual void setMutableBinding(const InternalAtomicString& name, const ESValue& V, bool mustNotThrowTypeErrorExecption)
     {
-        //TODO mustNotThrowTypeErrorExecption
+        // TODO mustNotThrowTypeErrorExecption
         if(m_needsActivation) {
             size_t siz = m_activationData.size();
             for(unsigned i = 0; i < siz ; i ++) {
@@ -292,7 +292,7 @@ public:
     /*
     virtual ESValue getBindingValue(const InternalAtomicString& name, bool ignoreReferenceErrorException)
     {
-    //TODO ignoreReferenceErrorException
+    // TODO ignoreReferenceErrorException
     if(UNLIKELY(m_needsActivation)) {
     auto iter = m_mapData->find(name);
     ASSERT(iter != m_mapData->end());
@@ -333,7 +333,7 @@ protected:
     ESIdentifierVector m_activationData;
 };
 
-//http://www.ecma-international.org/ecma-262/6.0/index.html#sec-global-environment-records
+// http://www.ecma-international.org/ecma-262/6.0/index.html#sec-global-environment-records
 class GlobalEnvironmentRecord : public EnvironmentRecord {
 public:
     GlobalEnvironmentRecord(ESObject* globalObject)
@@ -350,13 +350,13 @@ public:
 
     ESValue getThisBinding();
     bool hasVarDeclaration(const InternalAtomicString& name);
-    //bool hasLexicalDeclaration(ESString* name);
+    // bool hasLexicalDeclaration(ESString* name);
     bool hasRestrictedGlobalProperty(const InternalAtomicString& name);
     bool canDeclareGlobalVar(const InternalAtomicString& name);
     bool canDeclareGlobalFunction(const InternalAtomicString& name);
     void createGlobalVarBinding(const InternalAtomicString& name, bool canDelete);
     void createGlobalFunctionBinding(const InternalAtomicString& name, const ESValue& V, bool canDelete);
-    //ESValue getBindingValue(const InternalAtomicString& name, bool ignoreReferenceErrorException);
+    // ESValue getBindingValue(const InternalAtomicString& name, bool ignoreReferenceErrorException);
 
     virtual bool isGlobalEnvironmentRecord()
     {
@@ -376,13 +376,13 @@ protected:
 
 
 
-//http://www.ecma-international.org/ecma-262/6.0/index.html#sec-function-environment-records
+// http://www.ecma-international.org/ecma-262/6.0/index.html#sec-function-environment-records
 class FunctionEnvironmentRecord : public DeclarativeEnvironmentRecord {
     friend class LexicalEnvironment;
     friend class ESFunctionObject;
 public:
 
-    //m_needsActivation = false
+    // m_needsActivation = false
     FunctionEnvironmentRecord(ESValue arguments[], const size_t& argumentCount, ESValue* vectorBuffer, InternalAtomicStringVector* innerIdentifiers)
         : DeclarativeEnvironmentRecord(vectorBuffer, innerIdentifiers)
         , m_argumentsObject(ESValue::ESEmptyValue)
@@ -394,7 +394,7 @@ public:
         m_argumentCount = argumentCount;
 }
 
-    //m_needsActivation = true
+    // m_needsActivation = true
     FunctionEnvironmentRecord(ESValue arguments[], const size_t& argumentCount, const InternalAtomicStringVector& innerIdentifiers = InternalAtomicStringVector())
         : DeclarativeEnvironmentRecord(innerIdentifiers)
         , m_argumentsObject(ESValue::ESEmptyValue)
@@ -411,7 +411,7 @@ public:
     };
     virtual bool hasThisBinding()
     {
-        //we dont use arrow function now. so binding status is alwalys not lexical.
+        // we dont use arrow function now. so binding status is alwalys not lexical.
         return true;
     }
 
@@ -431,14 +431,14 @@ public:
         }
         return &m_argumentsObject;
     }
-    //http://www.ecma-international.org/ecma-262/6.0/index.html#sec-bindthisvalue
+    // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-bindthisvalue
     void bindThisValue(const ESValue& V);
     ESValue getThisBinding();
 
 protected:
     ESValue m_thisValue;
-    //ESFunctionObject* m_functionObject; //TODO
-    //ESValue m_newTarget; //TODO
+    // ESFunctionObject* m_functionObject; //TODO
+    // ESValue m_newTarget; //TODO
     ESValue* m_arguments;
     size_t m_argumentCount;
     ESValue m_argumentsObject;
@@ -448,7 +448,7 @@ protected:
 };
 
 /*
-//http://www.ecma-international.org/ecma-262/6.0/index.html#sec-module-environment-records
+// http://www.ecma-international.org/ecma-262/6.0/index.html#sec-module-environment-records
 class ModuleEnvironmentRecord : public DeclarativeEnvironmentRecord {
 protected:
 };
@@ -457,4 +457,5 @@ protected:
 
 }
 #endif
+
 

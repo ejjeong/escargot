@@ -37,12 +37,13 @@ public:
     }
 
 protected:
-    Node* m_key; //key: Literal | Identifier;
-    Node* m_value; //value: Expression;
-    Kind m_kind; //kind: "init" | "get" | "set";
+    Node* m_key; // key: Literal | Identifier;
+    Node* m_value; // value: Expression;
+    Kind m_kind; // kind: "init" | "get" | "set";
 };
 
 }
 
 #endif
+
 

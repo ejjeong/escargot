@@ -116,8 +116,8 @@ public:
         }
     }
 protected:
-    Node* m_object; //object: Expression;
-    Node* m_property; //property: Identifier | Expression;
+    Node* m_object; // object: Expression;
+    Node* m_property; // property: Identifier | Expression;
 
     bool m_computed;
 };
@@ -125,4 +125,5 @@ protected:
 }
 
 #endif
+
 

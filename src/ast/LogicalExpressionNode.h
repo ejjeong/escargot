@@ -11,8 +11,8 @@ public:
     enum LogicalExpressionOperator {
         // http://www.ecma-international.org/ecma-262/5.1/#sec-11.11
         // Binary Logical Operators
-        LogicalAnd, //"&&"
-        LogicalOr,  //"||"
+        LogicalAnd, // "&&"
+        LogicalOr, // "||"
     };
 
     LogicalExpressionNode(Node *left, Node* right, ESString* oper)
@@ -41,4 +41,5 @@ protected:
 }
 
 #endif
+
 
