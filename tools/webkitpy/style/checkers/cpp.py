@@ -2796,7 +2796,7 @@ def check_style(clean_lines, line_number, file_extension, class_state, file_stat
 #              'operators on the left side of the line instead of the right side.')
 
     # Some more style checks
-#WY    check_namespace_indentation(clean_lines, line_number, file_extension, file_state, error)
+    check_namespace_indentation(clean_lines, line_number, file_extension, file_state, error)
 #WY    check_directive_indentation(clean_lines, line_number, file_state, error)
 #    check_using_std(clean_lines, line_number, file_state, error)
 #WY    check_using_namespace(clean_lines, line_number, file_extension, error)

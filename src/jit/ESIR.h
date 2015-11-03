@@ -144,7 +144,7 @@ class ESBasicBlock;
 
 #define DECLARE_ESIR_FLAGS(flag, shift) \
     const uint32_t flag = 0x1 << shift;
-    FOR_EACH_ESIR_FLAGS(DECLARE_ESIR_FLAGS)
+FOR_EACH_ESIR_FLAGS(DECLARE_ESIR_FLAGS)
 #undef DECLARE_ESIR_FLAGS
 
 // FIXME find a better allocator
