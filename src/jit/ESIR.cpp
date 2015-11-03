@@ -14,7 +14,7 @@ const char* ESIR::getOpcodeName()
 #define RETURN_OPCODE_NAME(name, unused) case ESIR::name: return #name;
         FOR_EACH_ESIR_OP(RETURN_OPCODE_NAME)
 #undef  RETURN_OPCODE_NAME
-        default: RELEASE_ASSERT_NOT_REACHED();
+    default: RELEASE_ASSERT_NOT_REACHED();
     }
 }
 
@@ -25,7 +25,7 @@ uint32_t ESIR::getFlags()
 #define RETURN_ESIR_FLAG(name, flag) case ESIR::name: return getFlag(flag);
         FOR_EACH_ESIR_OP(RETURN_ESIR_FLAG)
 #undef  RETURN_ESIR_FLAG
-        default: RELEASE_ASSERT_NOT_REACHED();
+    default: RELEASE_ASSERT_NOT_REACHED();
     }
 }
 

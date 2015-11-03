@@ -2803,7 +2803,7 @@ def check_style(clean_lines, line_number, file_extension, class_state, file_stat
 #WY    check_max_min_macros(clean_lines, line_number, file_state, error)
 #    check_wtf_move(clean_lines, line_number, file_state, error)
 #    check_ctype_functions(clean_lines, line_number, file_state, error)
-#WY    check_switch_indentation(clean_lines, line_number, error)
+    check_switch_indentation(clean_lines, line_number, error)
 #WY    check_braces(clean_lines, line_number, error)
 #    check_exit_statement_simplifications(clean_lines, line_number, error)
     check_spacing(file_extension, clean_lines, line_number, error)

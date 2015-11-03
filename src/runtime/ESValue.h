@@ -1888,11 +1888,11 @@ public:
         case TypedArrayType::Uint8Array:
         case TypedArrayType::Uint8ClampedArray:
             return 1;
-            case TypedArrayType::Int16Array:
+        case TypedArrayType::Int16Array:
         case TypedArrayType::Uint16Array:
             return 2;
         case TypedArrayType::Int32Array:
-            case TypedArrayType::Uint32Array:
+        case TypedArrayType::Uint32Array:
         case TypedArrayType::Float32Array:
             return 4;
         case TypedArrayType::Float64Array:

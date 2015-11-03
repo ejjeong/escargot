@@ -3011,69 +3011,69 @@ void GlobalObject::somePrototypeObjectDefineIndexedProperty()
             iterateByteCode(m_codeBlocks[i], [](CodeBlock* block, unsigned idx, ByteCode* code, Opcode opcode){
                 switch (opcode) {
                 case GetObjectOpcode:
-                {
-                    GetObjectSlowMode n;
-                    n.assignOpcodeInAddress();
-                    block->m_extraData[idx].m_opcode = GetObjectSlowModeOpcode;
-                    memcpy(code, &n, sizeof(GetObjectSlowMode));
-                    break;
-                }
+                    {
+                        GetObjectSlowMode n;
+                        n.assignOpcodeInAddress();
+                        block->m_extraData[idx].m_opcode = GetObjectSlowModeOpcode;
+                        memcpy(code, &n, sizeof(GetObjectSlowMode));
+                        break;
+                    }
                 case GetObjectAndPushObjectSlowModeOpcode:
-                {
-                    GetObjectAndPushObjectSlowMode n;
-                    n.assignOpcodeInAddress();
-                    block->m_extraData[idx].m_opcode = GetObjectAndPushObjectSlowModeOpcode;
-                    memcpy(code, &n, sizeof(GetObjectAndPushObjectSlowMode));
-                    break;
-                }
+                    {
+                        GetObjectAndPushObjectSlowMode n;
+                        n.assignOpcodeInAddress();
+                        block->m_extraData[idx].m_opcode = GetObjectAndPushObjectSlowModeOpcode;
+                        memcpy(code, &n, sizeof(GetObjectAndPushObjectSlowMode));
+                        break;
+                    }
                 case GetObjectWithPeekingOpcode:
-                {
-                    GetObjectWithPeekingSlowMode n;
-                    n.assignOpcodeInAddress();
-                    block->m_extraData[idx].m_opcode = GetObjectWithPeekingSlowModeOpcode;
-                    memcpy(code, &n, sizeof(GetObjectWithPeekingSlowMode));
-                    break;
-                }
+                    {
+                        GetObjectWithPeekingSlowMode n;
+                        n.assignOpcodeInAddress();
+                        block->m_extraData[idx].m_opcode = GetObjectWithPeekingSlowModeOpcode;
+                        memcpy(code, &n, sizeof(GetObjectWithPeekingSlowMode));
+                        break;
+                    }
                 case GetObjectPreComputedCaseOpcode:
-                {
-                    GetObjectPreComputedCaseSlowMode n(((GetObjectPreComputedCase *)code)->m_propertyValue);
-                    n.assignOpcodeInAddress();
-                    block->m_extraData[idx].m_opcode = GetObjectPreComputedCaseSlowModeOpcode;
-                    memcpy(code, &n, sizeof(GetObjectPreComputedCaseSlowMode));
-                    break;
-                }
+                    {
+                        GetObjectPreComputedCaseSlowMode n(((GetObjectPreComputedCase *)code)->m_propertyValue);
+                        n.assignOpcodeInAddress();
+                        block->m_extraData[idx].m_opcode = GetObjectPreComputedCaseSlowModeOpcode;
+                        memcpy(code, &n, sizeof(GetObjectPreComputedCaseSlowMode));
+                        break;
+                    }
                 case GetObjectPreComputedCaseAndPushObjectOpcode:
-                {
-                    GetObjectPreComputedCaseAndPushObjectSlowMode n(((GetObjectPreComputedCaseAndPushObject *)code)->m_propertyValue);
-                    n.assignOpcodeInAddress();
-                    block->m_extraData[idx].m_opcode = GetObjectPreComputedCaseAndPushObjectSlowModeOpcode;
-                    memcpy(code, &n, sizeof(GetObjectPreComputedCaseAndPushObjectSlowMode));
-                    break;
-                }
+                    {
+                        GetObjectPreComputedCaseAndPushObjectSlowMode n(((GetObjectPreComputedCaseAndPushObject *)code)->m_propertyValue);
+                        n.assignOpcodeInAddress();
+                        block->m_extraData[idx].m_opcode = GetObjectPreComputedCaseAndPushObjectSlowModeOpcode;
+                        memcpy(code, &n, sizeof(GetObjectPreComputedCaseAndPushObjectSlowMode));
+                        break;
+                    }
                 case GetObjectWithPeekingPreComputedCaseOpcode:
-                {
-                    GetObjectWithPeekingPreComputedCaseSlowMode n(((GetObjectWithPeekingPreComputedCase *)code)->m_propertyValue);
-                    n.assignOpcodeInAddress();
-                    block->m_extraData[idx].m_opcode = GetObjectWithPeekingPreComputedCaseSlowModeOpcode;
-                    memcpy(code, &n, sizeof(GetObjectWithPeekingPreComputedCaseSlowMode));
-                    break;
-                }
+                    {
+                        GetObjectWithPeekingPreComputedCaseSlowMode n(((GetObjectWithPeekingPreComputedCase *)code)->m_propertyValue);
+                        n.assignOpcodeInAddress();
+                        block->m_extraData[idx].m_opcode = GetObjectWithPeekingPreComputedCaseSlowModeOpcode;
+                        memcpy(code, &n, sizeof(GetObjectWithPeekingPreComputedCaseSlowMode));
+                        break;
+                    }
                 case SetObjectOpcode:
-                {
-                    SetObjectSlowMode n;
-                    n.assignOpcodeInAddress();
-                    block->m_extraData[idx].m_opcode = SetObjectSlowModeOpcode;
-                    memcpy(code, &n, sizeof(SetObjectSlowMode));
-                    break;
-                }
+                    {
+                        SetObjectSlowMode n;
+                        n.assignOpcodeInAddress();
+                        block->m_extraData[idx].m_opcode = SetObjectSlowModeOpcode;
+                        memcpy(code, &n, sizeof(SetObjectSlowMode));
+                        break;
+                    }
                 case SetObjectPreComputedCaseOpcode:
-                {
-                    SetObjectPreComputedCaseSlowMode n(((SetObjectPreComputedCase *)code)->m_propertyValue);
-                    n.assignOpcodeInAddress();
-                    block->m_extraData[idx].m_opcode = SetObjectPreComputedCaseSlowModeOpcode;
-                    memcpy(code, &n, sizeof(SetObjectPreComputedCaseSlowMode));
-                    break;
-                }
+                    {
+                        SetObjectPreComputedCaseSlowMode n(((SetObjectPreComputedCase *)code)->m_propertyValue);
+                        n.assignOpcodeInAddress();
+                        block->m_extraData[idx].m_opcode = SetObjectPreComputedCaseSlowModeOpcode;
+                        memcpy(code, &n, sizeof(SetObjectPreComputedCaseSlowMode));
+                        break;
+                    }
                 default:;
                 }
             });
