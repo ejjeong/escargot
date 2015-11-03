@@ -10,7 +10,7 @@ public:
     friend class ScriptParser;
 
     UpdateExpressionDecrementPostfixNode(Node *argument)
-    : ExpressionNode(NodeType::UpdateExpressionDecrementPostfix)
+        : ExpressionNode(NodeType::UpdateExpressionDecrementPostfix)
     {
         m_argument = (ExpressionNode*)argument;
         m_isSimpleCase = false;

@@ -207,7 +207,7 @@ inline double ESValue::toNumberSlowCase() const
 
         // A StringNumericLiteral that is empty or contains only white space is converted to +0.
         if (data->length() == 0)
-        return 0;
+            return 0;
 
         data->wcharData([&val, &data](const wchar_t* buf, unsigned size){
             wchar_t* end;
@@ -225,7 +225,7 @@ inline double ESValue::toNumberSlowCase() const
                 if (isOnlyWhiteSpace) {
                     val = 0;
                 } else
-                val = std::numeric_limits<double>::quiet_NaN();
+                    val = std::numeric_limits<double>::quiet_NaN();
             }
         });
         return val;
@@ -783,7 +783,7 @@ ALWAYS_INLINE void ESPropertyAccessorData::setValue(::escargot::ESObject* obj, c
         ASSERT(!m_nativeSetter);
         ESValue arg[] = {value};
         ESFunctionObject::call(ESVMInstance::currentInstance(), m_jsSetter,
-        obj ,arg, 1, false);
+            obj ,arg, 1, false);
     }
 }
 
@@ -801,7 +801,7 @@ ALWAYS_INLINE ESHiddenClass* ESHiddenClass::removeProperty(size_t idx)
             if (idx != i) {
                 size_t d;
                 ret = ret->defineProperty(m_propertyInfo[i].m_name, m_propertyInfo[i].m_flags.m_isDataProperty
-                , m_propertyInfo[i].m_flags.m_isWritable, m_propertyInfo[i].m_flags.m_isEnumerable, m_propertyInfo[i].m_flags.m_isConfigurable);
+                    , m_propertyInfo[i].m_flags.m_isWritable, m_propertyInfo[i].m_flags.m_isEnumerable, m_propertyInfo[i].m_flags.m_isConfigurable);
             }
         }
 
@@ -814,7 +814,7 @@ ALWAYS_INLINE ESHiddenClass* ESHiddenClass::removeProperty(size_t idx)
                 if (idx != i) {
                     size_t d;
                     ret = ret->defineProperty(m_propertyInfo[i].m_name, m_propertyInfo[i].m_flags.m_isDataProperty
-                    , m_propertyInfo[i].m_flags.m_isWritable, m_propertyInfo[i].m_flags.m_isEnumerable, m_propertyInfo[i].m_flags.m_isConfigurable);
+                        , m_propertyInfo[i].m_flags.m_isWritable, m_propertyInfo[i].m_flags.m_isEnumerable, m_propertyInfo[i].m_flags.m_isConfigurable);
                 }
             }
             return ret;
@@ -1043,7 +1043,7 @@ inline void ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
     }
 
     if (UNLIKELY(m_flags.m_isGlobalObject))
-    ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
+        ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
 
     escargot::ESString* keyString = key.toString();
     if (m_flags.m_isEverSetAsPrototypeObject && keyString->hasOnlyDigit()) {
@@ -1080,7 +1080,7 @@ inline void ESObject::defineAccessorProperty(const escargot::ESValue& key,ESProp
     }
 
     if (UNLIKELY(m_flags.m_isGlobalObject))
-    ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
+        ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
 
     escargot::ESString* keyString = key.toString();
     if (m_flags.m_isEverSetAsPrototypeObject && keyString->hasOnlyDigit()) {
@@ -1233,9 +1233,9 @@ ALWAYS_INLINE ESValue ESObject::getOwnProperty(escargot::ESValue key)
 ALWAYS_INLINE const int32_t ESObject::length()
 {
     if (LIKELY(isESArrayObject()))
-    return asESArrayObject()->length();
+        return asESArrayObject()->length();
     else
-    return get(strings->length.string()).toInteger();
+        return get(strings->length.string()).toInteger();
 }
 ALWAYS_INLINE ESValue ESObject::pop()
 {
@@ -1253,7 +1253,7 @@ ALWAYS_INLINE ESValue ESObject::pop()
 ALWAYS_INLINE void ESObject::eraseValues(int idx, int cnt)
 {
     if (LIKELY(isESArrayObject()))
-    asESArrayObject()->eraseValues(idx, cnt);
+        asESArrayObject()->eraseValues(idx, cnt);
     else {
         for (int k = 0, i = idx; i < length() && k < cnt; i++, k++) {
             set(ESValue(i), get(ESValue(i+cnt)));

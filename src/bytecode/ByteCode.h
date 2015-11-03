@@ -447,7 +447,7 @@ public:
 };
 
 class PushIntoTempStack : public ByteCode {
-    public:
+public:
     PushIntoTempStack()
         : ByteCode(PushIntoTempStackOpcode)
     {
@@ -549,7 +549,7 @@ public:
 };
 
 class GetByIdWithoutException : public ByteCode, public JITProfileTarget {
-    public:
+public:
     GetByIdWithoutException(const InternalAtomicString& name)
         : ByteCode(GetByIdWithoutExceptionOpcode)
         , m_name(name)
@@ -1068,7 +1068,7 @@ public:
         printf("Increment <>\n");
     }
 #endif
-    private:
+private:
 };
 
 class Decrement : public ByteCode {
@@ -1895,7 +1895,7 @@ public:
         : ByteCode(JumpComplexCaseOpcode)
     {
         m_controlFlowRecord = ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsJump,
-        (ESPointer *)jmp->m_jumpPosition, ESValue((int32_t)tryDupCount));
+            (ESPointer *)jmp->m_jumpPosition, ESValue((int32_t)tryDupCount));
 #ifndef NDEBUG
         m_node = jmp->m_node;
 #endif

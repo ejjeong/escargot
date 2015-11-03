@@ -255,13 +255,13 @@ public:
         TypeMask = 0xffff
     };
 
-    protected:
+protected:
     ESPointer(Type type)
     {
         m_type = type;
     }
 
-    public:
+public:
     ALWAYS_INLINE int type()
     {
         return m_type;
@@ -488,7 +488,7 @@ public:
     static size_t offsetOfType() { return offsetof(ESPointer, m_type); }
 #endif
 
-    protected:
+protected:
     // 0x******@@
     // * -> Data
     // @ -> tag
@@ -602,54 +602,54 @@ class ESString : public ESPointer {
     friend class ESScriptParser;
 protected:
     ESString(ESStringData* data)
-    : ESPointer(Type::ESString)
+        : ESPointer(Type::ESString)
     {
         m_string = data;
     }
 
     ESString(const u16string& src)
-    : ESPointer(Type::ESString)
+        : ESPointer(Type::ESString)
     {
         m_string = new(GC) ESStringData(src);
     }
 
     ESString(u16string&& src)
-    : ESPointer(Type::ESString)
+        : ESPointer(Type::ESString)
     {
         m_string = new(GC) ESStringData(std::move(src));
     }
 
     ESString(std::u16string& src)
-    : ESPointer(Type::ESString)
+        : ESPointer(Type::ESString)
     {
         m_string = new(GC) ESStringData(src);
     }
 
 
     ESString(int number)
-    : ESPointer(Type::ESString)
+        : ESPointer(Type::ESString)
     {
         m_string = new(GC) ESStringData(number);
     }
 
     ESString(double number)
-    : ESPointer(Type::ESString)
+        : ESPointer(Type::ESString)
     {
         m_string = new(GC) ESStringData(number);
     }
 
     ESString(char16_t number)
-    : ESPointer(Type::ESString)
+        : ESPointer(Type::ESString)
     {
         m_string = new(GC) ESStringData(number);
     }
 
     ESString(const char* str)
-    : ESPointer(Type::ESString)
+        : ESPointer(Type::ESString)
     {
         m_string = new(GC) ESStringData(str);
     }
-    public:
+public:
     static ESString* create(u16string&& src)
     {
         return new ESString(std::move(src));
@@ -895,10 +895,10 @@ ALWAYS_INLINE ESString* ESString::concatTwoStrings(ESString* lstr, ESString* rst
 {
     int llen = lstr->length();
     if (llen == 0)
-    return rstr;
+        return rstr;
     int rlen = rstr->length();
     if (rlen == 0)
-    return lstr;
+        return lstr;
 
     if (UNLIKELY(llen + rlen >= (int)ESRopeString::ESRopeStringCreateMinLimit)) {
         return ESRopeString::createAndConcat(lstr, rstr);
@@ -1084,8 +1084,8 @@ struct ESHiddenClassPropertyInfo {
 };
 
 typedef std::unordered_map<::escargot::ESString*, size_t,
-std::hash<ESString*>,std::equal_to<ESString*>,
-gc_allocator< std::pair<const ::escargot::ESString*, size_t> > > ESHiddenClassPropertyIndexHashMapInfoStd;
+    std::hash<ESString*>,std::equal_to<ESString*>,
+    gc_allocator< std::pair<const ::escargot::ESString*, size_t> > > ESHiddenClassPropertyIndexHashMapInfoStd;
 typedef std::vector<::escargot::ESHiddenClassPropertyInfo, gc_allocator<::escargot::ESHiddenClassPropertyInfo> > ESHiddenClassPropertyInfoVectorStd;
 
 class ESHiddenClassPropertyInfoVector : public ESHiddenClassPropertyInfoVectorStd {
@@ -1104,7 +1104,7 @@ typedef std::vector<::escargot::ESValue, gc_allocator<::escargot::ESValue> > ESV
 class ESValueVector : public ESValueVectorStd {
 public:
     ESValueVector(size_t siz)
-    : ESValueVectorStd(siz) {
+        : ESValueVectorStd(siz) {
 
     }
 
@@ -1123,7 +1123,7 @@ public:
     {
         auto iter = m_propertyIndexHashMapInfo.find(const_cast<ESString *>(name));
         if (iter == m_propertyIndexHashMapInfo.end())
-        return SIZE_MAX;
+            return SIZE_MAX;
         return iter->second;
     }
 
@@ -1185,7 +1185,7 @@ public:
 
 private:
     ESHiddenClass()
-    : m_transitionData(4)
+        : m_transitionData(4)
     {
         m_flags.m_isVectorMode = true;
         m_flags.m_forceNonVectorMode = false;
@@ -1211,7 +1211,7 @@ typedef std::vector<ESHiddenClass*, pointer_free_allocator<ESHiddenClass*> > ESH
 class ESHiddenClassChain : public ESHiddenClassChainStd {
 public:
     ESHiddenClassChain()
-    : ESHiddenClassChainStd() { }
+        : ESHiddenClassChainStd() { }
 
 #ifdef ENABLE_ESJIT
     static size_t offsetOfData() { return offsetof(ESHiddenClassChain, _M_impl._M_start); }
@@ -1223,7 +1223,7 @@ class ESObject : public ESPointer {
     friend class ESHiddenClass;
     friend class ESFunctionObject;
     friend ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ::escargot::ESString* keyString, const ESValue& value
-    , ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex, ESHiddenClass** hiddenClassWillBe);
+        , ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex, ESHiddenClass** hiddenClassWillBe);
 protected:
     ESObject(ESPointer::Type type, ESValue __proto__, size_t initialKeyCount = 6);
 public:
@@ -1236,14 +1236,14 @@ public:
     inline void defineDataProperty(const escargot::ESValue& key, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true, const ESValue& initalValue = ESValue());
     inline void defineAccessorProperty(const escargot::ESValue& key,ESPropertyAccessorData* data, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true);
     inline void defineAccessorProperty(const escargot::ESValue& key,ESValue (*getter)(::escargot::ESObject* obj),
-    void (*setter)(::escargot::ESObject* obj, const ESValue& value),
-    bool isWritable, bool isEnumerable, bool isConfigurable)
+        void (*setter)(::escargot::ESObject* obj, const ESValue& value),
+        bool isWritable, bool isEnumerable, bool isConfigurable)
     {
         defineAccessorProperty(key, new ESPropertyAccessorData(getter, setter), isWritable, isEnumerable, isConfigurable);
     }
     inline void defineAccessorProperty(escargot::ESString* key,ESValue (*getter)(::escargot::ESObject* obj),
-    void (*setter)(::escargot::ESObject* obj, const ESValue& value),
-    bool isWritable, bool isEnumerable, bool isConfigurable)
+        void (*setter)(::escargot::ESObject* obj, const ESValue& value),
+        bool isWritable, bool isEnumerable, bool isConfigurable)
     {
         defineAccessorProperty(key, new ESPropertyAccessorData(getter, setter), isWritable, isEnumerable, isConfigurable);
     }
@@ -1500,7 +1500,7 @@ public:
 
     bool shouldConvertToSlowMode(unsigned i) {
         if (m_fastmode && i > MAX_FASTMODE_SIZE)
-        return true;
+            return true;
         return false;
     }
 
@@ -1877,7 +1877,7 @@ class ESTypedArrayObjectWrapper : public ESArrayBufferView {
 protected:
     ESTypedArrayObjectWrapper(TypedArrayType arraytype, ESPointer::Type type, ESValue __proto__)
         : ESArrayBufferView(type, __proto__),
-    m_arraytype(arraytype)
+        m_arraytype(arraytype)
     {
     }
 public:
@@ -1916,7 +1916,7 @@ public:
     ALWAYS_INLINE TypedArrayType arraytype() { return m_arraytype; }
     /*
     ALWAYS_INLINE void setArraytype(TypedArrayType t) {
-    m_arraytype = t;
+        m_arraytype = t;
     }
     */
 
@@ -1931,7 +1931,7 @@ public:
 
 protected:
     inline ESTypedArrayObject(TypedArrayType arraytype,
-    ESPointer::Type type = ESPointer::Type::ESTypedArrayObject);
+        ESPointer::Type type = ESPointer::Type::ESTypedArrayObject);
 
 public:
     static ESTypedArrayObject* create()

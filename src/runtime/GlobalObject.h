@@ -313,7 +313,7 @@ public:
     void registerCodeBlock(CodeBlock* cb);
     void unregisterCodeBlock(CodeBlock* cb);
 
-    protected:
+protected:
     void initGlobalObject();
     void installObject();
     void installFunction();

@@ -188,7 +188,7 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
                             while (true) {
                                 j--;
                                 if (j < 0)
-                                break;
+                                    break;
                                 if (block->instruction(j)->targetIndex() != -1) {
                                     unsigned followPopCount = m_graph->getFollowPopCountOf(block->instruction(j)->targetIndex());
                                     maxStackPos = m_graph->getOperandStackPos(block->instruction(j)->targetIndex()) - followPopCount;
@@ -1055,7 +1055,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
                 }
             }
             else
-            return nullptr;
+                return nullptr;
         }
     case ESIR::Opcode::GreaterThanOrEqual:
         {
@@ -1805,7 +1805,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             jumpLessThanZero->setTarget(errorEnd);
             jumpGretherOrEqualThanLength->setTarget(errorEnd);
             if (gotoEndInDoublePath)
-            gotoEndInDoublePath->setTarget(errorEnd);
+                gotoEndInDoublePath->setTarget(errorEnd);
             {
                 LIns* obj = boxESValue(getTmpMapping(irSetArrayObject->objectIndex()), m_graph->getOperandType(irSetArrayObject->objectIndex()));
                 LIns* property = boxESValue(getTmpMapping(irSetArrayObject->propertyIndex()), m_graph->getOperandType(irSetArrayObject->propertyIndex()));
@@ -1836,10 +1836,10 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
                 /*
                 code for debug
                 {
-                LIns* obj = boxESValue(getTmpMapping(irGetStringByIndex->objectIndex()), m_graph->getOperandType(irGetStringByIndex->objectIndex()));
-                LIns* property = boxESValue(getTmpMapping(irGetStringByIndex->propertyIndex()), m_graph->getOperandType(irGetStringByIndex->propertyIndex()));
-                LIns* args[] = {m_globalObjectP, property, obj};
-                m_out->insCall(&getObjectOpCallInfo, args);
+                    LIns* obj = boxESValue(getTmpMapping(irGetStringByIndex->objectIndex()), m_graph->getOperandType(irGetStringByIndex->objectIndex()));
+                    LIns* property = boxESValue(getTmpMapping(irGetStringByIndex->propertyIndex()), m_graph->getOperandType(irGetStringByIndex->propertyIndex()));
+                    LIns* args[] = {m_globalObjectP, property, obj};
+                    m_out->insCall(&getObjectOpCallInfo, args);
                 }
                 */
 

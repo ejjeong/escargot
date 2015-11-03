@@ -43,7 +43,7 @@ public:
         codeBlock->pushCode(UnaryVoid(), context, this);
     }
 
-    protected:
+protected:
     Node* m_argument;
 };
 

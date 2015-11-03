@@ -15,7 +15,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     }
 
 #define NEXT_INSTRUCTION() \
-    goto NextInstruction
+            goto NextInstruction
 
     ExecutionContext* ec = instance->currentExecutionContext();
 
@@ -799,7 +799,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             pop<ESValue>(stack, bp);
         }
         else
-        executeNextCode<JumpAndPopIfTopOfStackValueIsTrue>(programCounter);
+            executeNextCode<JumpAndPopIfTopOfStackValueIsTrue>(programCounter);
         NEXT_INSTRUCTION();
     }
 

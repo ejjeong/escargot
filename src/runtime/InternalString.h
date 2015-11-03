@@ -86,21 +86,21 @@ ALWAYS_INLINE size_t utf8ToUtf16(char* UTF8, char16_t& uc)
             tRequiredSize = 2;
         }
         else // Start byte for 3byte
-            if ( 0xE0 == (UTF8[0] & 0xE0) &&
-            0x80 == (UTF8[1] & 0xC0) &&
-            0x80 == (UTF8[2] & 0xC0) )
-            {
-                uc += (UTF8[0] & 0x1F) << 12;
-                uc += (UTF8[1] & 0x3F) << 6;
-                uc += (UTF8[2] & 0x3F) << 0;
-                tRequiredSize = 3;
-            }
-            else
-            {
-                // Invalid case
-                tRequiredSize = 1;
-                RELEASE_ASSERT_NOT_REACHED();
-            }
+        if ( 0xE0 == (UTF8[0] & 0xE0) &&
+        0x80 == (UTF8[1] & 0xC0) &&
+        0x80 == (UTF8[2] & 0xC0) )
+        {
+            uc += (UTF8[0] & 0x1F) << 12;
+            uc += (UTF8[1] & 0x3F) << 6;
+            uc += (UTF8[2] & 0x3F) << 0;
+            tRequiredSize = 3;
+        }
+        else
+        {
+            // Invalid case
+            tRequiredSize = 1;
+            RELEASE_ASSERT_NOT_REACHED();
+        }
 
     return tRequiredSize;
 }

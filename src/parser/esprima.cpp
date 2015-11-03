@@ -396,7 +396,7 @@ struct Curly {
 
 struct ParseContext {
     ParseContext(const escargot::u16string& src)
-    : m_source(src)
+        : m_source(src)
     {
     }
     const escargot::u16string& m_source;
@@ -691,15 +691,15 @@ void skipSingleLineComment(ParseContext* ctx, int offset) {
         }
     }
     /*
-if (extra.comments) {
-    comment = source.slice(start + offset, index);
-    loc.end = {
-        line: lineNumber,
-        column: index - lineStart
-    };
-    addComment('Line', comment, start, index, loc);
-}
-     */
+    if (extra.comments) {
+        comment = source.slice(start + offset, index);
+        loc.end = {
+            line: lineNumber,
+            column: index - lineStart
+        };
+        addComment('Line', comment, start, index, loc);
+    }
+    */
 }
 
 void skipMultiLineComment(ParseContext* ctx) {
@@ -761,7 +761,7 @@ void skipMultiLineComment(ParseContext* ctx) {
         comment = source.slice(start + 2, index);
         addComment('Block', comment, start, index, loc);
     }
-     */
+    */
     tolerateUnexpectedToken();
 }
 
@@ -887,7 +887,7 @@ PassRefPtr<ParseStatus> scanPunctuator(ParseContext* ctx) {
         if (extra.tokenize) {
             extra.openCurlyToken = extra.tokens.length;
         }
-         */
+        */
         ctx->m_curlyStack.push_back(Curly("{\0\0"));
         ++ctx->m_index;
         break;
@@ -1265,7 +1265,7 @@ PassRefPtr<ParseStatus> scanTemplate(ParseContext* ctx) {
         start: start,
         end: index
     };
-     */
+    */
 }
 
 PassRefPtr<ParseStatus> scanHexLiteral(ParseContext* ctx, size_t start) {
@@ -1353,7 +1353,7 @@ PassRefPtr<ParseStatus> scanBinaryLiteral(ParseContext* ctx, size_t start) {
         start: start,
         end: index
     };
-     */
+    */
 }
 
 PassRefPtr<ParseStatus> scanOctalLiteral(ParseContext* ctx, char16_t prefix, size_t start) {
@@ -1892,7 +1892,7 @@ void rearrangeNode(escargot::StatementNodeVector& body)
         }
     }
 
-    /*
+/*
 #ifndef NDEBUG
     puts("----------");
     for (size_t i = 0; i < body.size() ; i ++) {
@@ -1906,7 +1906,7 @@ void rearrangeNode(escargot::StatementNodeVector& body)
     }
     puts("----------");
 #endif
-     */
+ */
 
 #ifndef NDEBUG
     bool findFD = false;
@@ -3108,7 +3108,7 @@ escargot::Node* parseFunctionSourceElements(ParseContext* ctx) {
 
 
 /*
- function validateParam(options, param, name) {
+function validateParam(options, param, name) {
     var key = '$' + name;
     if (strict) {
         if (isRestrictedWord(name)) {
@@ -4078,29 +4078,29 @@ void reinterpretExpressionAsPattern(ParseContext* ctx, escargot::Node* expr) {
     case Syntax.MemberExpression:
     case Syntax.RestElement:
     case Syntax.AssignmentPattern:
-    break;
+        break;
     case Syntax.SpreadElement:
-    expr.type = Syntax.RestElement;
-    reinterpretExpressionAsPattern(expr.argument);
-    break;
+        expr.type = Syntax.RestElement;
+        reinterpretExpressionAsPattern(expr.argument);
+        break;
     case Syntax.ArrayExpression:
-    expr.type = Syntax.ArrayPattern;
-    for (i = 0; i < expr.elements.length; i++) {
-        if (expr.elements[i] !== null) {
-            reinterpretExpressionAsPattern(expr.elements[i]);
+        expr.type = Syntax.ArrayPattern;
+        for (i = 0; i < expr.elements.length; i++) {
+            if (expr.elements[i] !== null) {
+                reinterpretExpressionAsPattern(expr.elements[i]);
+            }
         }
-    }
-    break;
+        break;
     case Syntax.ObjectExpression:
-    expr.type = Syntax.ObjectPattern;
-    for (i = 0; i < expr.properties.length; i++) {
-        reinterpretExpressionAsPattern(expr.properties[i].value);
-    }
-    break;
+        expr.type = Syntax.ObjectPattern;
+        for (i = 0; i < expr.properties.length; i++) {
+            reinterpretExpressionAsPattern(expr.properties[i].value);
+        }
+        break;
     case Syntax.AssignmentExpression:
-    expr.type = Syntax.AssignmentPattern;
-    reinterpretExpressionAsPattern(expr.left);
-    break;
+        expr.type = Syntax.AssignmentPattern;
+        reinterpretExpressionAsPattern(expr.left);
+        break;
     default:
         // Allow other node type for tolerant parsing.
         break;

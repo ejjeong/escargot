@@ -43,7 +43,7 @@
 
 template <class GC_Tp>
 class pointer_free_allocator {
-    public:
+public:
     typedef size_t     size_type;
     typedef ptrdiff_t  difference_type;
     typedef GC_Tp*       pointer;
@@ -113,7 +113,7 @@ inline bool operator!=(const pointer_free_allocator<GC_T1>&, const pointer_free_
 
 template <class GC_Tp>
 class gc_malloc_allocator {
-    public:
+public:
     typedef size_t     size_type;
     typedef ptrdiff_t  difference_type;
     typedef GC_Tp*       pointer;
@@ -301,19 +301,19 @@ inline bool operator!=(const gc_malloc_allocator<GC_T1>&, const gc_malloc_alloca
 #endif
 
 #if defined(__BYTE_ORDER) && __BYTE_ORDER == __BIG_ENDIAN || \
-defined(__BIG_ENDIAN__) || \
-defined(__ARMEB__) || \
-defined(__THUMBEB__) || \
-defined(__AARCH64EB__) || \
-defined(_MIBSEB) || defined(__MIBSEB) || defined(__MIBSEB__)
+    defined(__BIG_ENDIAN__) || \
+    defined(__ARMEB__) || \
+    defined(__THUMBEB__) || \
+    defined(__AARCH64EB__) || \
+    defined(_MIBSEB) || defined(__MIBSEB) || defined(__MIBSEB__)
 #define ESCARGOT_BIG_ENDIAN
 #elif defined(__BYTE_ORDER) && __BYTE_ORDER == __LITTLE_ENDIAN || \
-defined(__LITTLE_ENDIAN__) || \
-defined(__ARMEL__) || \
-defined(__THUMBEL__) || \
-defined(__AARCH64EL__) || \
-defined(_MIPSEL) || defined(__MIPSEL) || defined(__MIPSEL__)
-#define ESCARGOT_LITTLE_ENDIAN
+    defined(__LITTLE_ENDIAN__) || \
+    defined(__ARMEL__) || \
+    defined(__THUMBEL__) || \
+    defined(__AARCH64EL__) || \
+    defined(_MIPSEL) || defined(__MIPSEL) || defined(__MIPSEL__)
+    #define ESCARGOT_LITTLE_ENDIAN
 #else
 #error "I don't know what architecture this is!"
 #endif

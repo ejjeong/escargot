@@ -67,14 +67,14 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         // printf("parse idx %lu with BasicBlock %lu\n", idx, currentBlock->index());
 
 #define INIT_BYTECODE(ByteCode) \
-        ByteCode* bytecode = (ByteCode*)currentCode; \
-        ByteCodeExtraData* extraData = &codeBlock->m_extraData[bytecodeCounter]; \
-        ASSERT(codeBlock->m_extraData[bytecodeCounter].m_registerIncrementCount < 2); \
-        if (codeBlock->m_extraData[bytecodeCounter].m_targetIndex0 >= 0 && codeBlock->m_extraData[bytecodeCounter].m_registerIncrementCount == 1) \
-            graph->setOperandStackPos(codeBlock->m_extraData[bytecodeCounter].m_targetIndex0, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
+            ByteCode* bytecode = (ByteCode*)currentCode; \
+            ByteCodeExtraData* extraData = &codeBlock->m_extraData[bytecodeCounter]; \
+            ASSERT(codeBlock->m_extraData[bytecodeCounter].m_registerIncrementCount < 2); \
+            if (codeBlock->m_extraData[bytecodeCounter].m_targetIndex0 >= 0 && codeBlock->m_extraData[bytecodeCounter].m_registerIncrementCount == 1) \
+                graph->setOperandStackPos(codeBlock->m_extraData[bytecodeCounter].m_targetIndex0, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
 #define NEXT_BYTECODE(ByteCode) \
-        idx += sizeof(ByteCode); \
-        bytecodeCounter++;
+            idx += sizeof(ByteCode); \
+            bytecodeCounter++;
         switch (opcode) {
         case PushOpcode:
             {
@@ -540,7 +540,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
                 bytecode->m_profile.updateProfiledType();
                 graph->setOperandType(extraData->m_targetIndex0, bytecode->m_profile.getType());
                 GetObjectPreComputedIR* getObjectPreComputedIR = GetObjectPreComputedIR::create(extraData->m_targetIndex0, extraData->m_targetIndex1, extraData->m_sourceIndexes[0],
-                bytecode);
+                    bytecode);
                 currentBlock->push(getObjectPreComputedIR);
                 NEXT_BYTECODE(GetObjectPreComputedCase);
                 break;

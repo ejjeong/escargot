@@ -89,7 +89,7 @@ public:
 #endif
 
     ESValue& tryOrCatchBodyResult() { return m_tryOrCatchBodyResult; }
-    private:
+private:
     bool m_needsActivation;
     bool m_isNewExpression;
     bool m_isStrict;

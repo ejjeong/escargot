@@ -141,7 +141,7 @@ inline ESValueInDouble getObjectPreComputedCaseOp(ESValueInDouble willBeObject, 
 {
     ESValue obj = ESValue::fromRawDouble(willBeObject);
     return ESValue::toRawDouble(getObjectPreComputedCaseOperation(&obj, bytecode->m_propertyValue, globalObject,
-    &bytecode->m_cachedhiddenClassChain, &bytecode->m_cachedIndex));
+        &bytecode->m_cachedhiddenClassChain, &bytecode->m_cachedIndex));
 }
 
 inline ESValueInDouble getObjectPreComputedCaseOpLastPart(ESObject* protoObj, ESObject* orgObj, void* idx)
@@ -161,7 +161,7 @@ inline void setObjectPreComputedOp(ESValueInDouble willBeObject, GlobalObject* g
     ESValue obj = ESValue::fromRawDouble(willBeObject);
     ESValue v = ESValue::fromRawDouble(value);
     setObjectPreComputedCaseOperation(&obj, bytecode->m_propertyValue, v,
-    &bytecode->m_cachedhiddenClassChain, &bytecode->m_cachedIndex, &bytecode->m_hiddenClassWillBe);
+        &bytecode->m_cachedhiddenClassChain, &bytecode->m_cachedIndex, &bytecode->m_hiddenClassWillBe);
 }
 
 inline ESValue* contextResolveBinding(ExecutionContext* context, ByteCode* currentCode)
@@ -204,7 +204,7 @@ inline void objectDefineDataProperty(ESObject* object, ESString* key,
 {
     ESValue initialVal = ESValue::fromRawDouble(initial);
     object->defineDataProperty(key, /*isWritable, isEnumarable, isConfigurable,*/
-    true, true, true, initialVal);
+        true, true, true, initialVal);
 }
 
 inline ESValueInDouble esFunctionObjectCall(ESVMInstance* instance,
@@ -212,7 +212,7 @@ inline ESValueInDouble esFunctionObjectCall(ESVMInstance* instance,
 {
     ESValue calleeVal = ESValue::fromRawDouble(callee);
     ESValue ret = ESFunctionObject::call(instance, calleeVal,
-    ESValue(), arguments, argumentCount, isNewExpression);
+        ESValue(), arguments, argumentCount, isNewExpression);
     return ESValue::toRawDouble(ret);
 }
 
@@ -222,7 +222,7 @@ inline ESValueInDouble esFunctionObjectCallWithReceiver(ESVMInstance* instance,
     ESValue calleeVal = ESValue::fromRawDouble(callee);
     ESValue receiverVal = ESValue::fromRawDouble(receiver);
     ESValue ret = ESFunctionObject::call(instance, calleeVal,
-    receiverVal, arguments, argumentCount, isNewExpression);
+        receiverVal, arguments, argumentCount, isNewExpression);
     return ESValue::toRawDouble(ret);
 }
 
@@ -234,7 +234,7 @@ inline ESValueInDouble evalCall(ESVMInstance* instance, ExecutionContext* ec, si
         ESValue ret = instance->runOnEvalContext([instance, &arguments, &argc](){
             ESValue ret;
             if (argc)
-            ret = instance->evaluate(const_cast<u16string &>(arguments[0].asESString()->string()), false);
+                ret = instance->evaluate(const_cast<u16string &>(arguments[0].asESString()->string()), false);
             return ret;
         }, true);
         return ESValue::toRawDouble(ret);

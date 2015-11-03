@@ -272,11 +272,11 @@ ESStringData::ESStringData(double number)
         vector[decimal_rep_length] = '\0';
     }
 
-    /*    reserve(decimal_rep_length + sign ? 1 : 0);
+    /* reserve(decimal_rep_length + sign ? 1 : 0);
     if (sign)
-    operator +=('-');
+        operator +=('-');
     for (unsigned i = 0; i < decimal_rep_length ; i ++) {
-    operator +=(decimal_rep[i]);
+        operator +=(decimal_rep[i]);
     }*/
 
     const int bufferLength = 128;
@@ -288,10 +288,10 @@ ESStringData::ESStringData(double number)
     const int decimal_in_shortest_high_ = 21;
     if ((decimal_in_shortest_low_ <= exponent) &&
         (exponent < decimal_in_shortest_high_)) {
-        CreateDecimalRepresentation(flags, decimal_rep, decimal_rep_length,
-            decimal_point,
-            double_conversion::Max(0, decimal_rep_length - decimal_point),
-            &builder);
+            CreateDecimalRepresentation(flags, decimal_rep, decimal_rep_length,
+                decimal_point,
+                double_conversion::Max(0, decimal_rep_length - decimal_point),
+                &builder);
     } else {
         CreateExponentialRepresentation(flags, decimal_rep, decimal_rep_length, exponent,
             &builder);
@@ -586,7 +586,7 @@ ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctio
         }
         // if FunctionExpressionNode has own name, should bind own name
         if (fn->codeBlock()->m_isFunctionExpression && fn->name()->length())
-        *functionRecord->bindingValueForActivationMode(params.size()) = ESValue(fn);
+            *functionRecord->bindingValueForActivationMode(params.size()) = ESValue(fn);
     } else {
         const InternalAtomicStringVector& params = fn->codeBlock()->m_params;
         ESValue* buf = currentExecutionContext->cachedDeclarativeEnvironmentRecordESValue();
@@ -979,7 +979,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
 }
 
 ESDateObject::ESDateObject(ESPointer::Type type)
-: ESObject((Type)(Type::ESObject | Type::ESDateObject), ESVMInstance::currentInstance()->globalObject()->datePrototype())
+    : ESObject((Type)(Type::ESObject | Type::ESDateObject), ESVMInstance::currentInstance()->globalObject()->datePrototype())
 {
     m_isCacheDirty = true;
 }
@@ -1014,10 +1014,10 @@ const double msPerMonth = 2592000000.0;
 static inline double ymdhmsToSeconds(long year, int mon, int day, int hour, int minute, double second)
 {
     double days = (day - 32075)
-    + floor(1461 * (year + 4800.0 + (mon - 14) / 12) / 4)
-    + 367 * (mon - 2 - (mon - 14) / 12 * 12) / 12
-    - floor(3 * ((year + 4900.0 + (mon - 14) / 12) / 100) / 4)
-    - 2440588;
+        + floor(1461 * (year + 4800.0 + (mon - 14) / 12) / 4)
+        + 367 * (mon - 2 - (mon - 14) / 12 * 12) / 12
+        - floor(3 * ((year + 4900.0 + (mon - 14) / 12) / 100) / 4)
+        - 2440588;
     return ((days * hoursPerDay + hour) * minutesPerHour + minute) * secondsPerMinute + second;
 }
 

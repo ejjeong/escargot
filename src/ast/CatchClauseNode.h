@@ -10,7 +10,7 @@ namespace escargot {
 
 // interface CatchClause <: Node {
 class CatchClauseNode : public Node {
-    public:
+public:
     friend class ScriptParser;
     CatchClauseNode(Node *param, Node *guard, Node *body)
         : Node(NodeType::CatchClause)
@@ -29,7 +29,7 @@ class CatchClauseNode : public Node {
         return m_param;
     }
 
-    protected:
+protected:
     IdentifierNode* m_param;
     ExpressionNode* m_guard;
     BlockStatementNode* m_body;

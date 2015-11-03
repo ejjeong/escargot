@@ -48,7 +48,7 @@ public:
 #pragma GCC diagnostic pop
 #endif
 
-    protected:
+protected:
     ESString* m_string;
 };
 

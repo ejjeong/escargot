@@ -109,7 +109,7 @@ enum NodeType {
 };
 
 class SourceLocation {
-    public:
+public:
     size_t m_lineNumber;
     size_t m_lineStart;
     // TODO

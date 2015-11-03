@@ -12,7 +12,7 @@
 namespace escargot {
 
 GlobalObject::GlobalObject()
-: ESObject(ESPointer::Type::ESObject, ESValue())
+    : ESObject(ESPointer::Type::ESObject, ESValue())
 {
     m_flags.m_isGlobalObject = true;
     m_didSomePrototypeObjectDefineIndexedProperty = false;
@@ -258,7 +258,7 @@ void GlobalObject::initGlobalObject()
                 (65 <= componentString[i] && componentString[i] <= 90) || // uriAlpha - lower case
                 (97 <= componentString[i] && componentString[i] <= 122) || // uriAlpha - lower case
                 (componentString[i]=='-' || componentString[i]=='_' || componentString[i]=='.' || componentString[i]=='!' || componentString[i]=='~' // uriMark
-                || componentString[i]=='*' || componentString[i]=='`' || componentString[i]=='(' || componentString[i]==')') ) {
+                    || componentString[i]=='*' || componentString[i]=='`' || componentString[i]=='(' || componentString[i]==')') ) {
                     escaped.append( &componentString[i], 1);
             } else {
                 escaped.append("%");
@@ -273,7 +273,7 @@ void GlobalObject::initGlobalObject()
     defineDataProperty(ESString::create(u"unescape"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         int argLen = instance->currentExecutionContext()->argumentCount();
         if (argLen == 0)
-        return ESValue();
+            return ESValue();
         std::string str = std::string(instance->currentExecutionContext()->arguments()->asESString()->utf8Data());
         int length = str.length();
         std::string R = "";
@@ -309,9 +309,9 @@ void GlobalObject::installFunction()
                 prefix.append(arg->string());
                 if (i != len-2) prefix.append(u",");
             }
-        prefix.append(u"){");
+            prefix.append(u"){");
             prefix.append(body->string());
-                prefix.append(u"}");
+            prefix.append(u"}");
             Node* programNode = instance->scriptParser()->generateAST(instance, prefix, true);
             FunctionNode* functionDeclAST = static_cast<FunctionNode* >(static_cast<ProgramNode *>(programNode)->body()[1]);
             ByteCodeGenerateContext context;
@@ -335,7 +335,7 @@ void GlobalObject::installFunction()
             function = instance->currentExecutionContext()->resolveThisBindingToObject()->asESFunctionObject();
             function->initialize(scope, codeBlock);
         } else
-        function = ESFunctionObject::create(scope, codeBlock, ESString::create(u"anonymous"));
+            function = ESFunctionObject::create(scope, codeBlock, ESString::create(u"anonymous"));
 #ifdef ENABLE_ESJIT
         context.cleanupSSARegisterCount();
 #endif
@@ -729,7 +729,7 @@ void GlobalObject::installArray()
             array = instance->currentExecutionContext()->resolveThisBindingToObject()->asESArrayObject();
             array->setLength(size);
         } else
-        array = ESArrayObject::create(size);
+            array = ESArrayObject::create(size);
         if (len >= 1) {
             ESValue& val = instance->currentExecutionContext()->arguments()[0];
             if (len > 1 || !val.isInt32()) {
@@ -754,7 +754,7 @@ void GlobalObject::installArray()
         if (LIKELY(thisBinded->isESArrayObject())) {
             auto thisVal = thisBinded->asESArrayObject();
             for (idx = 0; idx < thisVal->length(); idx++)
-            ret->set(idx, thisVal->get(idx));
+                ret->set(idx, thisVal->get(idx));
         } else {
             ASSERT(thisBinded->isESObject());
             ESObject* O = thisBinded->asESObject();
@@ -767,7 +767,7 @@ void GlobalObject::installArray()
                 int len = arr->length();
                 int st = idx;
                 for (; idx < st + len; idx++)
-                ret->set(idx, arr->get(idx - st));
+                    ret->set(idx, arr->get(idx - st));
             } else {
                 ret->set(idx++, argi);
             }
@@ -1029,7 +1029,7 @@ void GlobalObject::installArray()
             thisVal->sort([&arg0, &instance, &thisVal](const ::escargot::ESValue& a, const ::escargot::ESValue& b) -> bool {
                 ESValue arg[2] = { a, b };
                 ESValue ret = ESFunctionObject::call(instance, arg0, thisVal,
-                arg, 2, false);
+                    arg, 2, false);
 
                 double v = ret.toNumber();
                 if (v == 0)
@@ -1270,7 +1270,7 @@ void GlobalObject::installString()
 
         ESValue val;
         if (instance->currentExecutionContext()->argumentCount() > 1)
-        val = instance->currentExecutionContext()->arguments()[1];
+            val = instance->currentExecutionContext()->arguments()[1];
 
         int result;
         if (val.isUndefined()) {
@@ -1371,9 +1371,9 @@ void GlobalObject::installString()
                         if (result.m_matchResults[i][j].m_start == std::numeric_limits<unsigned>::max())
                             RELEASE_ASSERT_NOT_REACHED(); // implement this case
                         arguments[j] = ESString::create(std::move(u16string(
-                        origStr->data() + result.m_matchResults[i][j].m_start
-                        , origStr->data() + result.m_matchResults[i][j].m_end
-                        )));
+                            origStr->data() + result.m_matchResults[i][j].m_start
+                            , origStr->data() + result.m_matchResults[i][j].m_end
+                            )));
                     }
                     arguments[subLen] = ESValue((int)result.m_matchResults[i][0].m_start);
                     arguments[subLen + 1] = origStr;
@@ -1436,7 +1436,7 @@ void GlobalObject::installString()
                                     newThis.push_back(dollarString[j]);
                                 } else if (c == '&') {
                                     newThis.append(origStr->string().begin() + result.m_matchResults[i][0].m_start,
-                                    origStr->string().begin() + result.m_matchResults[i][0].m_end);
+                                        origStr->string().begin() + result.m_matchResults[i][0].m_end);
                                 } else if (c == '`') {
                                     // TODO
                                     RELEASE_ASSERT_NOT_REACHED();
@@ -1448,7 +1448,7 @@ void GlobalObject::installString()
                                     size_t idx = c - '0';
                                     if (idx < result.m_matchResults[i].size()) {
                                         newThis.append(origStr->string().begin() + result.m_matchResults[i][idx].m_start,
-                                        origStr->string().begin() + result.m_matchResults[i][idx].m_end);
+                                            origStr->string().begin() + result.m_matchResults[i][idx].m_end);
                                     } else {
                                         newThis.push_back('$');
                                         newThis.push_back(c);
@@ -1496,8 +1496,8 @@ void GlobalObject::installString()
         ESValue separator = argCount>0 ? instance->currentExecutionContext()->arguments()[0] : ESValue();
         /*
         if (!separator.isUndefinedOrNull()) {
-        ESValue splitter = separator.toObject()
-        RELEASE_ASSERT_NOT_REACHED(); // TODO
+            ESValue splitter = separator.toObject()
+            RELEASE_ASSERT_NOT_REACHED(); // TODO
         }
         */
         if (separator.isESPointer() && separator.asESPointer()->isESRegExpObject()) {
@@ -1613,7 +1613,7 @@ void GlobalObject::installString()
 
             // 14
             if (lim == 0)
-            return arr;
+                return arr;
 
             // 15
             if (separator.isUndefined()) {
@@ -1628,8 +1628,8 @@ void GlobalObject::installString()
                 if (q+r > s)
                     return ESValue(false);
                 for (int i=0; i<r; i++)
-                if (S.data()[q+i] != R.data()[i])
-                    return ESValue(false);
+                    if (S.data()[q+i] != R.data()[i])
+                        return ESValue(false);
                 return ESValue(q+r);
             };
             // 16
@@ -1648,10 +1648,10 @@ void GlobalObject::installString()
             while (q != s) {
                 ESValue e = splitMatch(str->string(), q, R);
                 if (e == ESValue(ESValue::ESFalseTag::ESFalse))
-                q++;
+                    q++;
                 else {
                     if (e.asInt32() == p)
-                    q++;
+                        q++;
                     else {
                         escargot::ESString* T = str->substring(p, q);
                         arr->set(lengthA, ESValue(T));
@@ -1792,7 +1792,7 @@ void GlobalObject::installString()
             if (instance->currentExecutionContext()->arguments()[1].isUndefined()) {
                 end = std::numeric_limits<double>::infinity();
             } else
-            end = instance->currentExecutionContext()->arguments()[1].toInteger();
+                end = instance->currentExecutionContext()->arguments()[1].toInteger();
         } else {
             end = std::numeric_limits<double>::infinity();
         }
@@ -1860,7 +1860,7 @@ void GlobalObject::installDate()
             escargot::ESDateObject* obj = e.asESPointer()->asESDateObject();
             char buffer[512]; // TODO consider buffer-overflow
             sprintf(buffer,"%d-%02d-%02d %02d:%02d:%02d"
-            ,obj->getFullYear(),obj->getMonth() + 1,obj->getDate(),obj->getHours(),obj->getMinutes(),obj->getSeconds());
+                ,obj->getFullYear(),obj->getMonth() + 1,obj->getDate(),obj->getHours(),obj->getMinutes(),obj->getSeconds());
             return ESString::create(buffer);
         } else {
             return strings->emptyString.string();
@@ -2223,7 +2223,7 @@ void GlobalObject::installMath()
             for (unsigned i = 1; i < arg_size; i++) {
                 double value = instance->currentExecutionContext()->arguments()[i].toNumber();
                 if (value > max_value)
-                max_value = value;
+                    max_value = value;
             }
             return ESValue(max_value);
         }
@@ -2347,18 +2347,18 @@ static int itoa(int value, char *sp, int radix)
 
     int sign = (radix == 10 && value < 0);
     if (sign)
-    v = -value;
+        v = -value;
     else
-    v = (unsigned)value;
+        v = (unsigned)value;
 
     while (v || tp == tmp)
     {
         i = v % radix;
         v /= radix; // v/=radix uses less CPU clocks than v=v/radix does
         if (i < 10)
-        *tp++ = i+'0';
+            *tp++ = i+'0';
         else
-        *tp++ = i + 'a' - 10;
+            *tp++ = i + 'a' - 10;
     }
 
     int len = tp - tmp;
@@ -2527,16 +2527,16 @@ void GlobalObject::installBoolean()
         }
         ESValue ret;
         if (val)
-        ret = ESValue(ESValue::ESTrueTag::ESTrue);
+            ret = ESValue(ESValue::ESTrueTag::ESTrue);
         else
-        ret = ESValue(ESValue::ESFalseTag::ESFalse);
+            ret = ESValue(ESValue::ESFalseTag::ESFalse);
 
         if (instance->currentExecutionContext()->isNewExpression() && instance->currentExecutionContext()->resolveThisBindingToObject()->isESBooleanObject()) {
             ::escargot::ESBooleanObject* o = instance->currentExecutionContext()->resolveThisBindingToObject()->asESBooleanObject();
             o->setBooleanData(ret.toBoolean());
             return (o);
         } else // If NewTarget is undefined, return b
-        return (ret);
+            return (ret);
         return ESValue();
     }, strings->Boolean);
     m_boolean->forceNonVectorHiddenClass();
@@ -2806,7 +2806,7 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
                 int offset = 0;
                 ESValue lenVal;
                 if (len >= 2)
-                offset = instance->currentExecutionContext()->arguments()[1].toInt32();
+                    offset = instance->currentExecutionContext()->arguments()[1].toInt32();
                 if (offset < 0) {
                     throw ESValue(RangeError::create(msg));
                 }
@@ -2896,7 +2896,7 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
             escargot::ESArrayObject* tmp = src->asESArrayObject();
             int32_t srcLength = src->get(strings->length.string()).asInt32();
             if (srcLength + offset > targetLength)
-            throw RangeError::create();
+                throw RangeError::create();
 
             int targetByteIndex = offset * targetElementSize + targetByteOffset;
             int k = 0;

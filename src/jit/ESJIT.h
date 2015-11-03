@@ -55,7 +55,7 @@ private:
 
 template<class T>
 class CustomAllocator {
-    public:
+public:
     typedef size_t     size_type;
     typedef ptrdiff_t  difference_type;
     typedef T*       pointer;
@@ -115,7 +115,7 @@ inline bool operator!=(const CustomAllocator<T1>&, const CustomAllocator<T2>&)
 }
 
 class ESJITAlloc {
-    public:
+public:
     inline void* operator new( size_t size )
     {
         return ESJITAllocator::alloc(size);
