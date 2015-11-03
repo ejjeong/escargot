@@ -209,6 +209,3 @@ ESValue FunctionEnvironmentRecord::getThisBinding()
 }
 
 }
-
-
-

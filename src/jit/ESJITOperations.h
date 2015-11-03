@@ -410,6 +410,3 @@ inline void jitLogStringOperation(const char* arg, const char* msg)
 }
 
 #endif
-
-
-

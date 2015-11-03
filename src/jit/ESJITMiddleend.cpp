@@ -40,6 +40,3 @@ bool optimizeIR(ESGraph* graph)
 
 }}
 #endif
-
-
-

@@ -23,6 +23,3 @@ u16string utf8ToUtf16(const char *s, int length)
 
 
 }
-
-
-

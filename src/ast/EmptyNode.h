@@ -23,6 +23,3 @@ protected:
 }
 
 #endif
-
-
-

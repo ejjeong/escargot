@@ -38,6 +38,3 @@ bool ESGraphTypeModifier::run(ESGraph* graph)
 
 }}
 #endif
-
-
-

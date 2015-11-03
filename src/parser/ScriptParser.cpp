@@ -420,6 +420,3 @@ namespace escargot {
     }
 
 }
-
-
-

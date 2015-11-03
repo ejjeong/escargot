@@ -108,6 +108,3 @@ void ESGraph::dump(std::ostream& out, const char* msg)
 
 }}
 #endif
-
-
-

@@ -1460,6 +1460,3 @@ inline ESTypedArrayObject<Float64Adaptor>::ESTypedArrayObject(TypedArrayType arr
 }
 
 #endif
-
-
-

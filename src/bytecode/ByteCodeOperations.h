@@ -380,6 +380,3 @@ NEVER_INLINE EnumerateObjectData* executeEnumerateObject(ESObject* obj);
 
 }
 #endif
-
-
-

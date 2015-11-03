@@ -22,6 +22,3 @@ protected:
 }
 
 #endif
-
-
-

@@ -58,6 +58,3 @@ void JumpIR::dump(std::ostream& out)
 
 }}
 #endif
-
-
-

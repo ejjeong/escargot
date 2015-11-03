@@ -1233,6 +1233,3 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 }
 
 }
-
-
-

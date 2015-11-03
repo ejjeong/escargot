@@ -108,6 +108,3 @@ template<> struct equal_to<escargot::u16string>
 }
 
 #endif
-
-
-

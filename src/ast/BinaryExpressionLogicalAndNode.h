@@ -53,6 +53,3 @@ protected:
 }
 
 #endif
-
-
-

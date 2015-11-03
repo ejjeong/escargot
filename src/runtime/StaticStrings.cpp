@@ -123,6 +123,3 @@ void Strings::initStaticStrings(ESVMInstance* instance)
 Strings* strings;
 
 }
-
-
-

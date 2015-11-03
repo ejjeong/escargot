@@ -154,6 +154,3 @@ COMPILE_ASSERT((sizeof (Type)) == (sizeof (uint64_t)), sizeof ESJIT::Type should
 }}
 #endif
 #endif
-
-
-

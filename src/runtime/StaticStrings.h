@@ -128,6 +128,3 @@ extern Strings* strings;
 }
 
 #endif
-
-
-

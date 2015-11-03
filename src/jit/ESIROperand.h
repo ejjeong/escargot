@@ -39,6 +39,3 @@ private:
 }}
 #endif
 #endif
-
-
-

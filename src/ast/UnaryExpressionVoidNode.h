@@ -50,6 +50,3 @@ public:
 }
 
 #endif
-
-
-

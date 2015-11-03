@@ -209,6 +209,3 @@ ESValue ESVMInstance::runOnEvalContext(const F& f, bool isDirectCall)
 }
 
 #endif
-
-
-

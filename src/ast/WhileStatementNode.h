@@ -50,6 +50,3 @@ protected:
 }
 
 #endif
-
-
-

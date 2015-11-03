@@ -3804,8 +3804,8 @@ def _process_lines(filename, file_extension, lines, error, min_confidence):
     # lines rather than "cleaned" lines.
 #WY    check_for_unicode_replacement_characters(lines, error)
 
-#WY    check_for_missing_new_line_at_eof(lines, error)
-#WY    check_for_extra_new_line_at_eof(lines, error)
+    check_for_missing_new_line_at_eof(lines, error)
+    check_for_extra_new_line_at_eof(lines, error)
 
 
 class CppChecker(object):

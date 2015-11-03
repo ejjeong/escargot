@@ -71,6 +71,3 @@ protected:
 }
 
 #endif
-
-
-

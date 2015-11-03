@@ -1217,6 +1217,3 @@ bool ESTypedArrayObjectWrapper::set(int key, ESValue val)
 
 
 }
-
-
-

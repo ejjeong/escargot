@@ -457,6 +457,3 @@ protected:
 
 }
 #endif
-
-
-

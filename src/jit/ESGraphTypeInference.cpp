@@ -381,6 +381,3 @@ bool ESGraphTypeInference::run(ESGraph* graph)
 
 }}
 #endif
-
-
-

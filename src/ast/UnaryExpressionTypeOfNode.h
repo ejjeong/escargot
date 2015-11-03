@@ -32,6 +32,3 @@ protected:
 }
 
 #endif
-
-
-

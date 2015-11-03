@@ -30,6 +30,3 @@ escargot::Node* parse(const escargot::u16string& source);
 }
 
 #endif
-
-
-

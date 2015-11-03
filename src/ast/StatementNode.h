@@ -19,6 +19,3 @@ typedef std::vector<Node *, gc_allocator<Node *>> StatementNodeVector;
 }
 
 #endif
-
-
-

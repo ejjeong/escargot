@@ -44,6 +44,3 @@ typedef std::vector<Node *, gc_allocator<Node *>> VariableDeclaratorVector;
 }
 
 #endif
-
-
-

@@ -75,6 +75,3 @@ LexicalEnvironment* ExecutionContext::getThisEnvironment()
 }
 
 }
-
-
-

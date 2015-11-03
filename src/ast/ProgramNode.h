@@ -41,6 +41,3 @@ protected:
 }
 
 #endif
-
-
-
