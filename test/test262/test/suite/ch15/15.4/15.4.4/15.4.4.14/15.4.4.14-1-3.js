@@ -21,4 +21,5 @@ function testcase() {
             delete Boolean.prototype.length;
         }
     }
-runTestCase(testcase);
+//runTestCase(testcase);
+print(testcase());
