@@ -13,6 +13,19 @@ elif [[ $1 == v8.full* ]]; then
   if [[ $2 == time ]]; then
       cp test/SunSpider/resources/sunspider-standalone-driver-v8.js test/SunSpider/resources/sunspider-standalone-driver.js
   fi
+elif [[ $1 == v8.4.8.full ]]; then
+  cmd="./test/bin/d8_v4.8.1"
+  args="--nocrankshaft"
+  tc="v8"
+  if [[ $2 == time ]]; then
+      cp test/SunSpider/resources/sunspider-standalone-driver-v8.js test/SunSpider/resources/sunspider-standalone-driver.js
+  fi
+elif [[ $1 == v8.4.8 ]]; then
+  cmd="./test/bin/d8_v4.8.1"
+  tc="v8"
+  if [[ $2 == time ]]; then
+      cp test/SunSpider/resources/sunspider-standalone-driver-v8.js test/SunSpider/resources/sunspider-standalone-driver.js
+  fi
 elif [[ $1 == v8* ]]; then
   cmd="./test/bin/d8"
   tc="v8"
