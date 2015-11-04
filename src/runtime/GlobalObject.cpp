@@ -2625,10 +2625,24 @@ void GlobalObject::installRegExp()
 {
     // create regexp object: $21.2.3 The RegExp Constructor
     m_regexp = ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        escargot::ESRegExpObject* thisVal = instance->currentExecutionContext()->resolveThisBindingToObject()->asESRegExpObject();
+        ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
+        escargot::ESRegExpObject* thisVal;
+        if (thisValue.isUndefined()) {
+            thisVal = ESRegExpObject::create(strings->emptyString.string(), ESRegExpObject::Option::None);
+            thisVal->set__proto__(instance->globalObject()->regexpPrototype());
+        } else {
+            thisVal = thisValue.toObject()->asESRegExpObject();
+        }
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
         if (arg_size > 0) {
-            thisVal->setSource(instance->currentExecutionContext()->arguments()[0].toString());
+            ESValue pattern = instance->currentExecutionContext()->arguments()[0];
+            if (pattern.isESPointer() && pattern.asESPointer()->isESRegExpObject()) {
+                if (instance->currentExecutionContext()->readArgument(1).isUndefined())
+                    return pattern;
+                else
+                    throw ESValue(TypeError::create(ESString::create(u"Cannot supply flags when constructing one RegExp from another")));
+            }
+            thisVal->setSource(pattern.toString());
         }
 
         if (arg_size > 1) {
@@ -2649,7 +2663,7 @@ void GlobalObject::installRegExp()
             }
             thisVal->setOption(option);
         }
-        return ESValue();
+        return ESValue(thisVal);
     }, strings->RegExp);
     m_regexp->forceNonVectorHiddenClass();
 
