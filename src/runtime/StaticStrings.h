@@ -86,6 +86,7 @@ public:
     InternalAtomicString tan;
     InternalAtomicString log;
     InternalAtomicString toString;
+    InternalAtomicString toLocaleString;
     InternalAtomicString stringTrue;
     InternalAtomicString stringFalse;
     InternalAtomicString boolean;

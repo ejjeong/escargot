@@ -470,7 +470,17 @@ void GlobalObject::installObject()
 {
     ::escargot::ESFunctionObject* emptyFunction = m_functionPrototype;
     m_object = ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        return ESValue();
+        int len = instance->currentExecutionContext()->argumentCount();
+        ESValue value;
+        if (len > 0)
+            value = instance->currentExecutionContext()->arguments()[0];
+        if (value.isUndefined() || value.isNull()) {
+            ESObject* object = ESObject::create();
+            object->set__proto__(instance->globalObject()->objectPrototype());
+            return object;
+        } else {
+            return value.toObject();
+        }
     }, strings->Object);
     m_object->forceNonVectorHiddenClass();
     m_object->set__proto__(emptyFunction);
@@ -616,6 +626,12 @@ void GlobalObject::installObject()
         // Return ToObject(this value).
         return instance->currentExecutionContext()->resolveThisBindingToObject();
     }, strings->valueOf));
+
+    // $19.1.3.5 Object.prototype.toLocaleString
+    m_objectPrototype->defineDataProperty(strings->toLocaleString, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        ESObject* thisVal = instance->currentExecutionContext()->resolveThisBindingToObject();
+        return ESValue(ESValue(thisVal).toString());
+    }, strings->toLocaleString));
 
     defineDataProperty(strings->Object, true, false, true, m_object);
 }
