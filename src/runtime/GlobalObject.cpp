@@ -2276,7 +2276,7 @@ void GlobalObject::installMath()
             return ESValue(max_value);
         }
         return ESValue();
-    }, strings->max));
+    }, strings->max, 2));
 
     // initialize math object: $20.2.2.25 Math.min()
     m_math->defineDataProperty(strings->min, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -2293,7 +2293,7 @@ void GlobalObject::installMath()
             return ESValue(min_value);
         }
         return ESValue();
-    }, strings->min));
+    }, strings->min, 2));
 
     // initialize math object: $20.2.2.26 Math.pow()
     m_math->defineDataProperty(strings->pow, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
