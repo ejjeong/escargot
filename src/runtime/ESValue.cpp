@@ -301,7 +301,9 @@ ESStringData::ESStringData(double number)
         buf++;
     }
 
+#ifdef ENABLE_ESJIT
     m_length = u16string::length();
+#endif
 }
 
 uint32_t ESString::tryToUseAsIndex()

@@ -500,34 +500,44 @@ public:
     ESStringData()
     {
         m_hashData.m_isHashInited =  false;
+#ifdef ENABLE_ESJIT
         m_length = 0;
+#endif
     }
 
     ESStringData(const u16string& src)
         : u16string(src)
     {
         m_hashData.m_isHashInited =  false;
+#ifdef ENABLE_ESJIT
         m_length = src.length();
+#endif
     }
 
     ESStringData(u16string&& src)
         : u16string(std::move(src))
     {
         m_hashData.m_isHashInited =  false;
+#ifdef ENABLE_ESJIT
         m_length = u16string::length();
+#endif
     }
 
     ESStringData(std::u16string& src)
     {
         assign(src.begin(), src.end());
         m_hashData.m_isHashInited =  false;
+#ifdef ENABLE_ESJIT
         m_length = u16string::length();
+#endif
     }
 
     explicit ESStringData(int number)
         : ESStringData((double)number)
     {
+#ifdef ENABLE_ESJIT
         m_length = u16string::length();
+#endif
     }
 
     explicit ESStringData(double number);
@@ -536,14 +546,18 @@ public:
         : u16string({c})
     {
         m_hashData.m_isHashInited =  false;
+#ifdef ENABLE_ESJIT
         m_length = u16string::length();
+#endif
     }
 
     ESStringData(const char* s)
         : u16string(std::move(utf8ToUtf16(s, strlen(s))))
     {
         m_hashData.m_isHashInited =  false;
+#ifdef ENABLE_ESJIT
         m_length = u16string::length();
+#endif
     }
 
     ESStringData(const ESStringData& s) = delete;
@@ -551,7 +565,10 @@ public:
 
     ALWAYS_INLINE size_t length() const
     {
+#ifdef ENABLE_ESJIT
         return m_length;
+#endif
+        return u16string::length();
     }
 
     ALWAYS_INLINE const char16_t* data() const
@@ -594,7 +611,9 @@ protected:
     } m_hashData;
 #endif
 #pragma pack(pop)
+#ifdef ENABLE_ESJIT
     size_t m_length;
+#endif
 };
 
 
