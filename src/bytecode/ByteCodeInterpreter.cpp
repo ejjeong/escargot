@@ -693,8 +693,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         if (code->m_isDeclaration) { // FD
             function->set(strings->name.string(), code->m_nonAtomicName);
             ec->environment()->record()->setMutableBinding(code->m_name, function, false);
-        }
-        else { // FE
+        } else { // FE
             function->set(strings->name.string(), code->m_nonAtomicName);
             push<ESValue>(stack, topOfStack, function);
         }
@@ -770,10 +769,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         JumpIfTopOfStackValueIsFalse* code = (JumpIfTopOfStackValueIsFalse *)currentCode;
         ESValue* top = pop<ESValue>(stack, bp);
         ASSERT(code->m_jumpPosition != SIZE_MAX);
-        if (!top->toBoolean())
+        if (!top->toBoolean()) {
             programCounter = jumpTo(codeBuffer, code->m_jumpPosition);
-        else
+        } else {
             executeNextCode<JumpIfTopOfStackValueIsFalse>(programCounter);
+        }
         NEXT_INSTRUCTION();
     }
 
@@ -782,10 +782,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         JumpIfTopOfStackValueIsTrue* code = (JumpIfTopOfStackValueIsTrue *)currentCode;
         ESValue* top = pop<ESValue>(stack, bp);
         ASSERT(code->m_jumpPosition != SIZE_MAX);
-        if (top->toBoolean())
+        if (top->toBoolean()) {
             programCounter = jumpTo(codeBuffer, code->m_jumpPosition);
-        else
+        } else {
             executeNextCode<JumpIfTopOfStackValueIsTrue>(programCounter);
+        }
         NEXT_INSTRUCTION();
     }
 
@@ -797,9 +798,9 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         if (top->toBoolean()) {
             programCounter = jumpTo(codeBuffer, code->m_jumpPosition);
             pop<ESValue>(stack, bp);
-        }
-        else
+        } else {
             executeNextCode<JumpAndPopIfTopOfStackValueIsTrue>(programCounter);
+        }
         NEXT_INSTRUCTION();
     }
 
@@ -808,10 +809,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         JumpIfTopOfStackValueIsFalseWithPeeking* code = (JumpIfTopOfStackValueIsFalseWithPeeking *)currentCode;
         ESValue* top = peek<ESValue>(stack, bp);
         ASSERT(code->m_jumpPosition != SIZE_MAX);
-        if (!top->toBoolean())
+        if (!top->toBoolean()) {
             programCounter = jumpTo(codeBuffer, code->m_jumpPosition);
-        else
+        } else {
             executeNextCode<JumpIfTopOfStackValueIsFalseWithPeeking>(programCounter);
+        }
         NEXT_INSTRUCTION();
     }
 
@@ -820,10 +822,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         JumpIfTopOfStackValueIsTrueWithPeeking* code = (JumpIfTopOfStackValueIsTrueWithPeeking *)currentCode;
         ESValue* top = peek<ESValue>(stack, bp);
         ASSERT(code->m_jumpPosition != SIZE_MAX);
-        if (top->toBoolean())
+        if (top->toBoolean()) {
             programCounter = jumpTo(codeBuffer, code->m_jumpPosition);
-        else
+        } else {
             executeNextCode<JumpIfTopOfStackValueIsTrueWithPeeking>(programCounter);
+        }
         NEXT_INSTRUCTION();
     }
 

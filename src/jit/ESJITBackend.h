@@ -26,7 +26,8 @@ public:
     nanojit::LIns* nanojitCodegen(ESIR* ir);
 
 private:
-    void setTmpMapping(size_t irIndex, nanojit::LIns* ins) {
+    void setTmpMapping(size_t irIndex, nanojit::LIns* ins)
+    {
         // printf("tmpMap[%lu] = %p\n", irIndex, ins);
         ASSERT(irIndex < m_tmpToLInsMapping.size());
         ASSERT(ins);

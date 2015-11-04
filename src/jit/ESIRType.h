@@ -44,8 +44,7 @@ void logVerboseJIT(const char* fmt...);
 #endif
 #endif
 
-class Type
-{
+class Type {
 public:
     Type(uint64_t type = TypeBottom) : m_type(type) { }
     Type(const Type& type) : m_type(type.m_type) { }
@@ -93,8 +92,7 @@ public:
                 LOG_VJ("WARNING: Reading type of unhandled ESValue '%s'. Returning Top.\n", value.toString()->utf8Data());
                 return TypePointer;
             }
-        }
-        else {
+        } else {
             LOG_VJ("WARNING: Reading type of unhandled ESValue '%s'. Returning Top.\n", value.toString()->utf8Data());
             return TypeTop;
         }
@@ -102,11 +100,13 @@ public:
 
     uint64_t type() { return m_type; }
 
-    bool operator==(Type& otherType) {
+    bool operator==(Type& otherType)
+    {
         return m_type == otherType.m_type;
     }
 
-    bool operator!=(Type& otherType) {
+    bool operator!=(Type& otherType)
+    {
         return !operator==(otherType);
     }
 
@@ -123,7 +123,8 @@ public:
         return "Unknown";
     }
 
-    void dump(std::ostream& out) {
+    void dump(std::ostream& out)
+    {
         out << "[Type: 0x" << std::hex << m_type << std::dec;
         out << " : " << getESIRTypeName() << "]";
     }

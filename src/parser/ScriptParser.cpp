@@ -60,7 +60,8 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16strin
         throw ESValue(SyntaxError::create(ESString::create(temp)));
     }
 
-    auto markNeedsActivation = [](FunctionNode* nearFunctionNode) {
+    auto markNeedsActivation = [](FunctionNode* nearFunctionNode)
+    {
         FunctionNode* node = nearFunctionNode;
         while (node) {
             node->setNeedsActivation(true);
@@ -68,7 +69,8 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16strin
         }
     };
 
-    auto updatePostfixNodeChecker = [](Node* node) {
+    auto updatePostfixNodeChecker = [](Node* node)
+    {
         /*
         if (node && node->type() == NodeType::UpdateExpressionDecrementPostfix) {
             ((UpdateExpressionDecrementPostfixNode *)node)->m_isSimpleCase = true;

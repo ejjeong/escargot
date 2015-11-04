@@ -56,15 +56,18 @@ public:
     void setLabel(nanojit::LIns* label) { m_label = label; }
     nanojit::LIns* getLabel() { return m_label; }
 
-    void addJumpOrBranchSource(nanojit::LIns* source) {
+    void addJumpOrBranchSource(nanojit::LIns* source)
+    {
         m_jumpOrBranchSources.push_back(source);
     }
 
-    void addInsToExtendLife(nanojit::LIns* ins) {
+    void addInsToExtendLife(nanojit::LIns* ins)
+    {
         m_insToExtendLife.push_back(ins);
     }
 
-    std::vector<nanojit::LIns*, CustomAllocator<nanojit::LIns*> >* getInsToExtendLife() {
+    std::vector<nanojit::LIns*, CustomAllocator<nanojit::LIns*> >* getInsToExtendLife()
+    {
         return &m_insToExtendLife;
     }
 

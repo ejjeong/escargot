@@ -66,18 +66,15 @@ typedef std::vector<InternalAtomicString, gc_allocator<InternalAtomicString> > I
 
 }
 
-namespace std
-{
-template<> struct hash<escargot::InternalAtomicString>
-{
+namespace std {
+template<> struct hash<escargot::InternalAtomicString> {
     size_t operator()(escargot::InternalAtomicString const &x) const
     {
         return x.string()->hashValue();
     }
 };
 
-template<> struct equal_to<escargot::InternalAtomicString>
-{
+template<> struct equal_to<escargot::InternalAtomicString> {
     bool operator()(escargot::InternalAtomicString const &a, escargot::InternalAtomicString const &b) const
     {
         return a.string() == b.string();
@@ -86,10 +83,8 @@ template<> struct equal_to<escargot::InternalAtomicString>
 
 }
 
-namespace std
-{
-template<> struct hash<escargot::u16string>
-{
+namespace std {
+template<> struct hash<escargot::u16string> {
     size_t operator()(escargot::u16string const &x) const
     {
         std::hash<std::basic_string<char16_t> > hashFn;
@@ -97,8 +92,7 @@ template<> struct hash<escargot::u16string>
     }
 };
 
-template<> struct equal_to<escargot::u16string>
-{
+template<> struct equal_to<escargot::u16string> {
     bool operator()(escargot::u16string const &a, escargot::u16string const &b) const
     {
         return a == b;

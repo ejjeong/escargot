@@ -789,8 +789,7 @@ private:
         : ESIR(ESIR::Opcode::SetObject, targetIndex),
     m_objectIndex(objectIndex),
     m_propertyIndex(propertyIndex),
-    m_sourceIndex(sourceIndex) {
-    }
+    m_sourceIndex(sourceIndex) { }
     ESHiddenClass* m_cachedHiddenClass;
     int m_objectIndex;
     int m_propertyIndex;

@@ -25,7 +25,8 @@ public:
         m_body->generateStatementByteCode(codeBlock, context);
     }
 
-    IdentifierNode* param() {
+    IdentifierNode* param()
+    {
         return m_param;
     }
 

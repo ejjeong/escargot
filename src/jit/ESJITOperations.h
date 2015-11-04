@@ -279,24 +279,28 @@ inline ESValueInDouble newOp(ESVMInstance* instance, GlobalObject* globalObject,
 // return ret.asBoolean();
 // }
 
-inline ESValueInDouble createObject(int keyCount) {
+inline ESValueInDouble createObject(int keyCount)
+{
     ESObject* obj = ESObject::create((size_t)keyCount + 1);
     return ESValue::toRawDouble(obj);
 }
 
-inline ESValueInDouble createArr(int keyCount) {
+inline ESValueInDouble createArr(int keyCount)
+{
     ESArrayObject* arrObj = ESArrayObject::create(keyCount);
     return ESValue::toRawDouble(arrObj);
 }
 
-inline void initObject(ESValueInDouble objectIndouble, ESValueInDouble keyInDouble, ESValueInDouble valueInDouble) {
+inline void initObject(ESValueInDouble objectIndouble, ESValueInDouble keyInDouble, ESValueInDouble valueInDouble)
+{
     ESObject* object = ESValue::fromRawDouble(objectIndouble).asESPointer()->asESObject();
     ESValue key = ESValue::fromRawDouble(keyInDouble);
     ESValue value = ESValue::fromRawDouble(valueInDouble);
     object->set(key, value);
 }
 
-inline ESValueInDouble createFunction(ExecutionContext* ec, ByteCode* bytecode) {
+inline ESValueInDouble createFunction(ExecutionContext* ec, ByteCode* bytecode)
+{
     CreateFunction* code = (CreateFunction*)bytecode;
     ASSERT(((size_t)code->m_codeBlock % sizeof(size_t)) == 0);
     ESFunctionObject* function = ESFunctionObject::create(ec->environment(), code->m_codeBlock, code->m_nonAtomicName == NULL ? strings->emptyString.string() : code->m_nonAtomicName, code->m_codeBlock->m_params.size());
@@ -338,21 +342,25 @@ inline void throwOp(ESValueInDouble err)
     throw error;
 }
 
-inline ESPointer* getEnumerablObjectData(ESValueInDouble value) {
+inline ESPointer* getEnumerablObjectData(ESValueInDouble value)
+{
     ESObject* obj = ESValue::fromRawDouble(value).toObject();
     return (ESPointer *)executeEnumerateObject(obj);
 }
 
-inline int keySize(EnumerateObjectData* data) {
+inline int keySize(EnumerateObjectData* data)
+{
     return data->m_keys.size();
 }
 
-inline ESValueInDouble getEnumerationKey(EnumerateObjectData* data) {
+inline ESValueInDouble getEnumerationKey(EnumerateObjectData* data)
+{
     ESValue value = data->m_keys[data->m_idx - 1];
     return ESValue::toRawDouble(value);
 }
 
-inline bool toBoolean(ESValueInDouble value) {
+inline bool toBoolean(ESValueInDouble value)
+{
     ESValue valueToBoolean = ESValue::fromRawDouble(value);
     return valueToBoolean.toBoolean();
 }

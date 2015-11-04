@@ -8,12 +8,14 @@ namespace escargot {
 // rounding towards zero.
 // The result is unspecified if x is infinite or NaN, or if the rounded
 // integer value is outside the range of type int.
-ALWAYS_INLINE int FastD2I(double x) {
+ALWAYS_INLINE int FastD2I(double x)
+{
     return static_cast<int32_t>(x);
 }
 
 
-ALWAYS_INLINE double FastI2D(int x) {
+ALWAYS_INLINE double FastI2D(int x)
+{
     // There is no rounding involved in converting an integer to a
     // double, so this code should compile to a few instructions without
     // any FPU pipeline stalls.
@@ -1023,8 +1025,7 @@ inline void ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
                 int len = asESArrayObject()->length();
                 if (i == len) {
                     asESArrayObject()->setLength(len+1);
-                }
-                else if (i >= len) {
+                } else if (i >= len) {
                     if (asESArrayObject()->shouldConvertToSlowMode(i))
                         asESArrayObject()->convertToSlowMode();
                     asESArrayObject()->setLength(i+1);

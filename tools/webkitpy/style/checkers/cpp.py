@@ -2401,11 +2401,13 @@ def check_braces(clean_lines, line_number, error):
                   'This { should be at the end of the previous line')
     elif (search(r'\)\s*(((const|override)\s*)*\s*)?{\s*$', line)
           and line.count('(') == line.count(')')
-          and not search(r'\b(if|for|while|switch|NS_ENUM)\b', line)
+          and not search(r'\b(if|for|while|switch|NS_ENUM|catch)\b', line) # WY: add catch clause, too
           and not match(r'\s+[A-Z_][A-Z_0-9]+\b', line)):
         error(line_number, 'whitespace/braces', 4,
               'Place brace on its own line for function definitions.')
 
+    """
+    WY : disabled, one line control clause can use braces
     if (match(r'\s*}\s*(else\s*({\s*)?)?$', line) and line_number > 1):
         # We check if a closed brace has started a line to see if a
         # one line control statement was previous.
@@ -2415,6 +2417,7 @@ def check_braces(clean_lines, line_number, error):
             and search(r'\b(if|for|while|else)\b', previous_line)):
             error(line_number, 'whitespace/braces', 4,
                   'One line control clauses should not use braces.')
+    """
 
     # An else clause should be on the same line as the preceding closing brace.
     if match(r'\s*else\s*', line):
@@ -2433,6 +2436,8 @@ def check_braces(clean_lines, line_number, error):
         error(line_number, 'whitespace/newline', 4,
               'do/while clauses should not be on a single line')
 
+    """
+    WY: disabled
     # Multi line control clauses should use braces. We check the
     # indentation level of the statements.
     if (match(r'^\s*\b(if|for|while|else)\b\s', line)
@@ -2459,6 +2464,7 @@ def check_braces(clean_lines, line_number, error):
             and control_indent < next_line_indent
             and control_indent < after_next_line_indent):
             error(line_number, 'whitespace/braces', 4, 'Multi line control clauses should use braces.')
+    """
 
     # Braces shouldn't be followed by a ; unless they're defining a struct
     # or initializing an array.
@@ -2769,7 +2775,7 @@ def check_style(clean_lines, line_number, file_extension, class_state, file_stat
 #    check_wtf_move(clean_lines, line_number, file_state, error)
 #    check_ctype_functions(clean_lines, line_number, file_state, error)
     check_switch_indentation(clean_lines, line_number, error)
-#WY    check_braces(clean_lines, line_number, error)
+    check_braces(clean_lines, line_number, error)
 #    check_exit_statement_simplifications(clean_lines, line_number, error)
     check_spacing(file_extension, clean_lines, line_number, error)
 #WY    check_member_initialization_list(clean_lines, line_number, error)

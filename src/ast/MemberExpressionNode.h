@@ -24,8 +24,7 @@ public:
         if (!m_computed) {
             ASSERT(m_property->type() == NodeType::Identifier);
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }

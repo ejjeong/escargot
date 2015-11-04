@@ -105,33 +105,28 @@ bool ESValue::abstractEqualsToSlowCase(const ESValue& val)
         if (isUndefinedOrNull() && val.isUndefinedOrNull())
             return true;
 
-        // If Type(x) is Number and Type(y) is String,
         if (isNumber() && val.isESString()) {
+            // If Type(x) is Number and Type(y) is String,
             // return the result of the comparison x == ToNumber(y).
             return asNumber() == val.toNumber();
-        }
-        // If Type(x) is String and Type(y) is Number,
-        else if (isESString() && val.isNumber()) {
+        } else if (isESString() && val.isNumber()) {
+            // If Type(x) is String and Type(y) is Number,
             // return the result of the comparison ToNumber(x) == y.
             return val.asNumber() == toNumber();
-        }
-        // If Type(x) is Boolean, return the result of the comparison ToNumber(x) == y.
-        else if (isBoolean()) {
+        } else if (isBoolean()) {
+            // If Type(x) is Boolean, return the result of the comparison ToNumber(x) == y.
             // return the result of the comparison ToNumber(x) == y.
             ESValue x(toNumber());
             return x.abstractEqualsTo(val);
-        }
-        // If Type(y) is Boolean, return the result of the comparison x == ToNumber(y).
-        else if (val.isBoolean()) {
+        } else if (val.isBoolean()) {
+            // If Type(y) is Boolean, return the result of the comparison x == ToNumber(y).
             // return the result of the comparison ToNumber(x) == y.
             return abstractEqualsTo(ESValue(val.toNumber()));
-        }
-        // If Type(x) is either String, Number, or Symbol and Type(y) is Object, then
-        else if ((isESString() || isNumber()) && val.isObject()) {
+        } else if ((isESString() || isNumber()) && val.isObject()) {
+            // If Type(x) is either String, Number, or Symbol and Type(y) is Object, then
             return abstractEqualsTo(val.toPrimitive());
-        }
-        // If Type(x) is Object and Type(y) is either String, Number, or Symbol, then
-        else if (isObject() && (val.isESString() || val.isNumber())) {
+        } else if (isObject() && (val.isESString() || val.isNumber())) {
+            // If Type(x) is Object and Type(y) is either String, Number, or Symbol, then
             return toPrimitive().abstractEqualsTo(val);
         }
 
@@ -985,13 +980,15 @@ ESDateObject::ESDateObject(ESPointer::Type type)
     m_isCacheDirty = true;
 }
 
-void ESDateObject::parseYmdhmsToDate(struct tm* timeinfo, int year, int month, int date, int hour, int minute, int second) {
+void ESDateObject::parseYmdhmsToDate(struct tm* timeinfo, int year, int month, int date, int hour, int minute, int second)
+{
     char buffer[255];
     snprintf(buffer, 255, "%d-%d-%d-%d-%d-%d", year, month, date, hour, minute, second);
     strptime(buffer, "%Y-%m-%d-%H-%M-%S", timeinfo);
 }
 
-void ESDateObject::parseStringToDate(struct tm* timeinfo, escargot::ESString* istr) {
+void ESDateObject::parseStringToDate(struct tm* timeinfo, escargot::ESString* istr)
+{
     int len = istr->length();
     char* buffer = (char*)istr->utf8Data();
     if (isalpha(buffer[0])) {
@@ -1023,19 +1020,22 @@ static inline double ymdhmsToSeconds(long year, int mon, int day, int hour, int 
 }
 
 
-void ESDateObject::setTimeValue() {
+void ESDateObject::setTimeValue()
+{
     clock_gettime(CLOCK_REALTIME, &m_time);
     m_isCacheDirty = true;
 }
 
-void ESDateObject::setTimeValue(const ESValue str) {
+void ESDateObject::setTimeValue(const ESValue str)
+{
     escargot::ESString* istr = str.toString();
     parseStringToDate(&m_cachedTM, istr);
     m_cachedTM.tm_isdst = true;
     m_time.tv_sec = ymdhmsToSeconds(m_cachedTM.tm_year+1900, m_cachedTM.tm_mon + 1, m_cachedTM.tm_mday, m_cachedTM.tm_hour, m_cachedTM.tm_min, m_cachedTM.tm_sec);
 }
 
-void ESDateObject::setTimeValue(int year, int month, int date, int hour, int minute, int second, int millisecond) {
+void ESDateObject::setTimeValue(int year, int month, int date, int hour, int minute, int second, int millisecond)
+{
     parseYmdhmsToDate(&m_cachedTM, year, month, date, hour, minute, second);
     m_cachedTM.tm_isdst = true;
     m_time.tv_sec = ymdhmsToSeconds(m_cachedTM.tm_year+1900, m_cachedTM.tm_mon + 1, m_cachedTM.tm_mday, m_cachedTM.tm_hour, m_cachedTM.tm_min, m_cachedTM.tm_sec);
@@ -1049,47 +1049,55 @@ void ESDateObject::resolveCache()
     }
 }
 
-int ESDateObject::getDate() {
+int ESDateObject::getDate()
+{
     resolveCache();
     return m_cachedTM.tm_mday;
 }
 
-int ESDateObject::getDay() {
+int ESDateObject::getDay()
+{
     resolveCache();
     return m_cachedTM.tm_wday;
 }
 
-int ESDateObject::getFullYear() {
+int ESDateObject::getFullYear()
+{
     resolveCache();
     return m_cachedTM.tm_year + 1900;
 }
 
-int ESDateObject::getHours() {
+int ESDateObject::getHours()
+{
     resolveCache();
     return m_cachedTM.tm_hour;
 }
 
-int ESDateObject::getMinutes() {
+int ESDateObject::getMinutes()
+{
     resolveCache();
     return m_cachedTM.tm_min;
 }
 
-int ESDateObject::getMonth() {
+int ESDateObject::getMonth()
+{
     resolveCache();
     return m_cachedTM.tm_mon;
 }
 
-int ESDateObject::getSeconds() {
+int ESDateObject::getSeconds()
+{
     resolveCache();
     return m_cachedTM.tm_sec;
 }
 
-int ESDateObject::getTimezoneOffset() {
+int ESDateObject::getTimezoneOffset()
+{
     return ESVMInstance::currentInstance()->timezoneOffset();
-
 }
 
-void ESDateObject::setTime(double t) {
+void ESDateObject::setTime(double t)
+{
     time_t raw_t = (time_t) floor(t);
     m_time.tv_sec = raw_t / 1000;
     m_time.tv_nsec = (raw_t % 10000) * 1000000;

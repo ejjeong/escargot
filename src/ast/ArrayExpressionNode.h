@@ -22,8 +22,7 @@ public:
             codeBlock->pushCode(Push(ESValue(i)), context, this);
             if (m_elements[i]) {
                 m_elements[i]->generateExpressionByteCode(codeBlock, context);
-            }
-            else {
+            } else {
                 codeBlock->pushCode(Push(ESValue(ESValue::ESEmptyValue)), context, this);
             }
             codeBlock->pushCode(InitObject(), context, this);

@@ -367,12 +367,11 @@ public:
 #ifndef NDEBUG
     Opcode m_orgOpcode;
     Node* m_node;
-    virtual void dump() {
+    virtual void dump()
+    {
         ASSERT_NOT_REACHED();
     }
-    virtual ~ByteCode() {
-
-    }
+    virtual ~ByteCode() { }
 #endif
 };
 

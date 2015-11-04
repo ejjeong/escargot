@@ -107,7 +107,8 @@ void GlobalEnvironmentRecord::createGlobalVarBinding(const InternalAtomicString&
 }
 
 // $8.1.1.4.18
-void GlobalEnvironmentRecord::createGlobalFunctionBinding(const InternalAtomicString& name, const ESValue& V, bool canDelete) {
+void GlobalEnvironmentRecord::createGlobalFunctionBinding(const InternalAtomicString& name, const ESValue& V, bool canDelete)
+{
     ESObject* globalObj = m_objectRecord->bindingObject();
     globalObj->defineDataProperty(name.string(), true, true, canDelete, V);
     if (std::find(m_varNames.begin(), m_varNames.end(), name) == m_varNames.end())
@@ -115,12 +116,14 @@ void GlobalEnvironmentRecord::createGlobalFunctionBinding(const InternalAtomicSt
 }
 
 // $8.1.1.4.11
-ESValue GlobalEnvironmentRecord::getThisBinding() {
+ESValue GlobalEnvironmentRecord::getThisBinding()
+{
     return m_objectRecord->bindingObject();
 }
 
 // $8.1.1.4.1
-ESValue* GlobalEnvironmentRecord::hasBinding(const InternalAtomicString& atomicName) {
+ESValue* GlobalEnvironmentRecord::hasBinding(const InternalAtomicString& atomicName)
+{
     ESValue* ret = m_declarativeRecord->hasBinding(atomicName);
     if (ret)
         return ret;
@@ -128,14 +131,16 @@ ESValue* GlobalEnvironmentRecord::hasBinding(const InternalAtomicString& atomicN
 }
 
 // $8.1.1.4.2
-void GlobalEnvironmentRecord::createMutableBinding(const InternalAtomicString& name, bool canDelete) {
+void GlobalEnvironmentRecord::createMutableBinding(const InternalAtomicString& name, bool canDelete)
+{
     if (m_declarativeRecord->hasBinding(name))
         throw "TypeError";
     m_declarativeRecord->createMutableBinding(name, canDelete);
 }
 
 // $8.1.1.4.4
-void GlobalEnvironmentRecord::initializeBinding(const InternalAtomicString& name, const ESValue& V) {
+void GlobalEnvironmentRecord::initializeBinding(const InternalAtomicString& name, const ESValue& V)
+{
     if (m_declarativeRecord->hasBinding(name))
         m_declarativeRecord->initializeBinding(name, V);
     else {
@@ -159,7 +164,8 @@ ESValue GlobalEnvironmentRecord::getBindingValue(const InternalAtomicString& nam
 
 // $8.1.1.4.5
 // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-global-environment-records-setmutablebinding-n-v-s
-void GlobalEnvironmentRecord::setMutableBinding(const InternalAtomicString& name, const ESValue& V, bool S) {
+void GlobalEnvironmentRecord::setMutableBinding(const InternalAtomicString& name, const ESValue& V, bool S)
+{
     if (m_declarativeRecord->hasBinding(name)) {
         m_declarativeRecord->setMutableBinding(name, V, S);
     } else {

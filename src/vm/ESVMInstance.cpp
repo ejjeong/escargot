@@ -156,7 +156,8 @@ const tm* ESVMInstance::computeLocalTime(const timespec& ts)
 void ESVMInstance::printValue(ESValue val)
 {
     std::string str;
-    std::function<void(ESValue v)> toString = [&str, &toString](ESValue v) {
+    std::function<void(ESValue v)> toString = [&str, &toString](ESValue v)
+    {
         if (v.isEmpty()) {
             str.append("[Empty Value]");
         } else if (v.isInt32()) {

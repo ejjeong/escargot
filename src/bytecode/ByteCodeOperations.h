@@ -116,9 +116,9 @@ ALWAYS_INLINE ESValue minusOperation(const ESValue& left, const ESValue& right)
         } else {
             ret = ESValue((int32_t)a);
         }
-    }
-    else
+    } else {
         ret = ESValue(left.toNumber() - right.toNumber());
+    }
     return ret;
 }
 

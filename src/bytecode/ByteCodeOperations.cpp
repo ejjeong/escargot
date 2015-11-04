@@ -75,8 +75,7 @@ NEVER_INLINE ESValue modOperation(const ESValue& left, const ESValue& right)
                 ret = ESValue(ESValue::EncodeAsDouble, -0.0);
             else
                 ret = ESValue(0);
-        }
-        else {
+        } else {
             bool isLNeg = lvalue < 0.0;
             lvalue = std::abs(lvalue);
             rvalue = std::abs(rvalue);
@@ -271,8 +270,7 @@ NEVER_INLINE bool instanceOfOperation(ESValue* lval, ESValue* rval)
                 }
                 O = O.asESPointer()->asESObject()->__proto__();
             }
-        }
-        else {
+        } else {
             throw ReferenceError::create(ESString::create(u""));
         }
     }
@@ -330,9 +328,7 @@ NEVER_INLINE ESValue newOperation(ESVMInstance* instance, GlobalObject* globalOb
         receiver = SyntaxError::create();
     } else if (function == globalObject->rangeError()) {
         receiver = RangeError::create();
-    }
-    // TypedArray
-    else if (function == globalObject->int8Array()) {
+    } else if (function == globalObject->int8Array()) {
         receiver = ESTypedArrayObject<Int8Adaptor>::create();
     } else if (function == globalObject->uint8Array()) {
         receiver = ESTypedArrayObject<Uint8Adaptor>::create();

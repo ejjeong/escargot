@@ -107,8 +107,9 @@ CallInfo logPointerCallInfo = CI(jitLogPointerOperation, CallInfo::typeSig2(ARGT
         JIT_LOG_D(arg, msg); \
     } else if (arg->isP()) { \
         JIT_LOG_P(arg, msg); \
-    } else \
+    } else { \
         RELEASE_ASSERT_NOT_REACHED(); \
+    } \
 }
 #else
 #define JIT_LOG_I(arg, msg)
@@ -833,8 +834,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
                 left = getDoubleDynamic(left, leftType);
                 right = getDoubleDynamic(right, rightType);
                 return m_out->ins2(LIR_subd, left, right);
-            }
-            else {
+            } else {
                 LIns* boxedLeft = boxESValue(left, TypeInt32);
                 LIns* boxedRight = boxESValue(right, TypeInt32);
                 LIns* args[] = {boxedRight, boxedLeft};
@@ -1049,16 +1049,16 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             INIT_ESIR(GreaterThan);
             INIT_BINARY_ESIR(GreaterThan);
             if (leftType.isNumberType() && rightType.isNumberType()) {
-                if (leftType.isInt32Type() && rightType.isInt32Type())
+                if (leftType.isInt32Type() && rightType.isInt32Type()) {
                     return m_out->ins2(LIR_gti, left, right);
-                else {
+                } else {
                     left = getDoubleDynamic(left, leftType);
                     right = getDoubleDynamic(right, rightType);
                     return m_out->ins2(LIR_gtd, left, right);
                 }
-            }
-            else
+            } else {
                 return nullptr;
+            }
         }
     case ESIR::Opcode::GreaterThanOrEqual:
         {
@@ -1070,23 +1070,23 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
                 left = getDoubleDynamic(left, leftType);
                 right = getDoubleDynamic(right, rightType);
                 return m_out->ins2(LIR_ged, left, right);
-            } else
+            } else {
                 return nullptr;
+            }
         }
     case ESIR::Opcode::LessThan:
         {
             INIT_ESIR(LessThan);
             INIT_BINARY_ESIR(LessThan);
-            if (leftType.isInt32Type() && rightType.isInt32Type())
+            if (leftType.isInt32Type() && rightType.isInt32Type()) {
                 return m_out->ins2(LIR_lti, left, right);
-            else if (leftType.isNumberType() && rightType.isNumberType()) {
+            } else if (leftType.isNumberType() && rightType.isNumberType()) {
                 left = getDoubleDynamic(left, leftType);
                 right = getDoubleDynamic(right, rightType);
                 return m_out->ins2(LIR_ltd, left, right);
-            }
-            else if (leftType.isUndefinedType() || rightType.isUndefinedType())
+            } else if (leftType.isUndefinedType() || rightType.isUndefinedType()) {
                 return m_false;
-            else {
+            } else {
                 CALL_BINARY_ESIR(LessThan, lessThanOpCallInfo);
                 return unboxedResult;
             }
@@ -1095,20 +1095,21 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         {
             INIT_ESIR(LessThanOrEqual);
             INIT_BINARY_ESIR(LessThanOrEqual);
-            if (leftType.isInt32Type() && rightType.isInt32Type())
+            if (leftType.isInt32Type() && rightType.isInt32Type()) {
                 return m_out->ins2(LIR_lei, left, right);
-            if (leftType.isDoubleType() && rightType.isDoubleType())
+            } else if (leftType.isDoubleType() && rightType.isDoubleType()) {
                 return m_out->ins2(LIR_led, left, right);
-            else
+            } else {
                 return nullptr;
+            }
         }
     case ESIR::Opcode::LeftShift:
         {
             INIT_ESIR(LeftShift);
             INIT_BINARY_ESIR(LeftShift);
-            if (leftType.isInt32Type() && rightType.isInt32Type())
+            if (leftType.isInt32Type() && rightType.isInt32Type()) {
                 return m_out->ins2(LIR_lshi, left, right);
-            else {
+            } else {
                 CALL_BINARY_ESIR(LeftShift, leftShiftOpCallInfo);
                 return unboxedResult;
             }
@@ -1121,8 +1122,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
                 left = getInt32Dynamic(left, leftType);
                 right = getInt32Dynamic(right, rightType);
                 return m_out->ins2(LIR_rshi, left, right);
-            }
-            else {
+            } else {
                 CALL_BINARY_ESIR(SignedRightShift, signedRightShiftOpCallInfo);
                 return unboxedResult;
             }
@@ -1135,8 +1135,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
                 left = getInt32Dynamic(left, leftType);
                 right = getInt32Dynamic(right, rightType);
                 return m_out->ins2(LIR_rshui, left, right);
-            }
-            else {
+            } else {
                 CALL_BINARY_ESIR(UnsignedRightShift, unsignedRightShiftOpCallInfo);
                 return unboxedResult;
             }
@@ -1947,10 +1946,11 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             INIT_ESIR(ToNumber);
             LIns* source = getTmpMapping(irToNumber->sourceIndex());
             Type srcType = m_graph->getOperandType(irToNumber->sourceIndex());
-            if (srcType.isInt32Type() || srcType.isDoubleType())
+            if (srcType.isInt32Type() || srcType.isDoubleType()) {
                 return source;
-            else
+            } else {
                 return nullptr;
+            }
         }
     case ESIR::Opcode::Increment:
         {
@@ -1977,18 +1977,19 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             } else if (valueType.isDoubleType()) {
                 LIns* one = m_out->insImmD(1);
                 return m_out->ins2(LIR_subd, value, one);
-            } else
+            } else {
                 return nullptr;
+            }
         }
     case ESIR::Opcode::BitwiseNot:
         {
             INIT_ESIR(BitwiseNot);
             INIT_UNARY_ESIR(BitwiseNot);
-            if (valueType.isInt32Type())
+            if (valueType.isInt32Type()) {
                 return m_out->ins1(LIR_noti, value);
-            else if (valueType.isDoubleType())
+            } else if (valueType.isDoubleType()) {
                 return m_out->ins1(LIR_noti, m_out->ins1(LIR_d2i, value));
-            else {
+            } else {
                 CALL_UNARY_ESIR(BitwiseNot, bitwiseNotOpCallInfo);
                 return unboxedResult;
             }
@@ -1997,14 +1998,13 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         {
             INIT_ESIR(LogicalNot);
             INIT_UNARY_ESIR(LogicalNot);
-            if (valueType.isNullType() || valueType.isUndefinedType())
+            if (valueType.isNullType() || valueType.isUndefinedType()) {
                 return m_true;
-            else if (valueType.isInt32Type()) {
+            } else if (valueType.isInt32Type()) {
                 return m_out->ins2(LIR_eqi, m_zeroI, value);
-            }
-            else if (valueType.isBooleanType())
+            } else if (valueType.isBooleanType()) {
                 return m_out->ins2(LIR_xori, value, m_oneI);
-            else {
+            } else {
                 CALL_UNARY_ESIR(LogicalNot, logicalNotOpCallInfo);
                 return unboxedResult;
             }
@@ -2013,12 +2013,13 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         {
             INIT_ESIR(UnaryMinus);
             INIT_UNARY_ESIR(UnaryMinus);
-            if (valueType.isInt32Type())
+            if (valueType.isInt32Type()) {
                 return m_out->ins1(LIR_negi, value);
-            else if (valueType.isDoubleType())
+            } else if (valueType.isDoubleType()) {
                 return m_out->ins1(LIR_negd, value);
-            else
+            } else {
                 return nullptr;
+            }
         }
     case ESIR::Opcode::TypeOf:
         {
@@ -2040,12 +2041,13 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             LIns* phi = getTmpMapping(irStorePhi->allocPhiIndex());
 
             Type srcType = m_graph->getOperandType(irStorePhi->sourceIndex());
-            if (srcType.isInt32Type() || srcType.isBooleanType())
+            if (srcType.isInt32Type() || srcType.isBooleanType()) {
                 return m_out->insStore(LIR_sti, source, phi, 0 , 1);
-            else if (srcType.isObjectType() || srcType.isArrayObjectType() || srcType.isStringType() || srcType.isFunctionObjectType())
+            } else if (srcType.isObjectType() || srcType.isArrayObjectType() || srcType.isStringType() || srcType.isFunctionObjectType()) {
                 return m_out->insStore(LIR_stp, source, phi, 0 , 1);
-            else
+            } else {
                 return nullptr;
+            }
         }
     case ESIR::Opcode::LoadPhi:
         {
@@ -2267,8 +2269,8 @@ bool NativeGenerator::nanojitCodegen(ESVMInstance* instance)
     return true;
 }
 
-JITFunction NativeGenerator::nativeCodegen() {
-
+JITFunction NativeGenerator::nativeCodegen()
+{
     m_assm->compile(m_f, *m_alloc, false verbose_only(, m_f->lirbuf->printer));
     if (m_assm->error() != None) {
         LOG_VJ("nanojit failed to generate native code (Error : ", m_assm->error());

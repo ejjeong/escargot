@@ -139,7 +139,8 @@ void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, B
 #endif
 }
 
-ByteCode::ByteCode(Opcode code) {
+ByteCode::ByteCode(Opcode code)
+{
     m_opcodeInAddress = (void *)(size_t)code;
 #ifndef NDEBUG
     m_orgOpcode = code;

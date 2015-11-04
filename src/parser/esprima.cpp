@@ -430,7 +430,8 @@ struct ParseContext {
 };
 
 
-void throwUnexpectedToken(/*token, message*/) {
+void throwUnexpectedToken(/*token, message*/)
+{
     // throw unexpectedTokenError(token, message);
     throw u"unexpectedTokenError";
 }
@@ -458,7 +459,8 @@ struct OctalToDecimalResult {
     bool octal;
 };
 
-OctalToDecimalResult octalToDecimal(ParseContext* ctx, char16_t ch) {
+OctalToDecimalResult octalToDecimal(ParseContext* ctx, char16_t ch)
+{
     // \0 is not octal escape sequence
     bool octal = (ch != '0');
     int code = ch - '0';
@@ -483,7 +485,8 @@ OctalToDecimalResult octalToDecimal(ParseContext* ctx, char16_t ch) {
     return r;
 }
 
-char16_t scanHexEscape(ParseContext* ctx, char16_t prefix) {
+char16_t scanHexEscape(ParseContext* ctx, char16_t prefix)
+{
     int i, len, ch, code = 0;
 
     len = (prefix == 'u') ? 4 : 2;
@@ -507,7 +510,8 @@ char16_t scanHexEscape(ParseContext* ctx, char16_t prefix) {
 }
 
 
-char16_t scanUnicodeCodePointEscape(ParseContext* ctx) {
+char16_t scanUnicodeCodePointEscape(ParseContext* ctx)
+{
     char16_t ch, code;
 
     ch = ctx->m_source[ctx->m_index];
@@ -543,7 +547,8 @@ char16_t scanUnicodeCodePointEscape(ParseContext* ctx) {
     return fromCodePoint(code);
 }
 
-char16_t codePointAt(ParseContext* ctx, size_t i) {
+char16_t codePointAt(ParseContext* ctx, size_t i)
+{
     char16_t cp, first, second;
 
     cp = ctx->m_source[i];
@@ -558,7 +563,8 @@ char16_t codePointAt(ParseContext* ctx, size_t i) {
     return cp;
 }
 
-std::u16string getComplexIdentifier(ParseContext* ctx) {
+std::u16string getComplexIdentifier(ParseContext* ctx)
+{
     char16_t cp;
     char16_t ch;
     std::u16string id;
@@ -623,7 +629,8 @@ std::u16string getComplexIdentifier(ParseContext* ctx) {
     return id;
 }
 
-std::u16string getIdentifier(ParseContext* ctx) {
+std::u16string getIdentifier(ParseContext* ctx)
+{
     size_t start;
     char16_t ch;
 
@@ -655,7 +662,8 @@ std::u16string getIdentifier(ParseContext* ctx) {
     return ret;
 }
 
-void skipSingleLineComment(ParseContext* ctx, int offset) {
+void skipSingleLineComment(ParseContext* ctx, int offset)
+{
     size_t start;
     char16_t ch, comment;
 
@@ -665,8 +673,8 @@ void skipSingleLineComment(ParseContext* ctx, int offset) {
         start: {
             line: lineNumber,
             column: index - lineStart - offset
-    }
-};*/
+        }
+    };*/
 
     while (ctx->m_index < ctx->m_length) {
         ch = ctx->m_source[ctx->m_index];
@@ -674,14 +682,14 @@ void skipSingleLineComment(ParseContext* ctx, int offset) {
         if (isLineTerminator(ch)) {
             ctx->m_hasLineTerminator = true;
             /*
-        if (extra.comments) {
-        comment = source.slice(start + offset, index - 1);
-        loc.end = {
-        line: lineNumber,
-        column: index - lineStart - 1
-        };
-        addComment('Line', comment, start, index - 1, loc);
-    }*/
+            if (extra.comments) {
+                comment = source.slice(start + offset, index - 1);
+                loc.end = {
+                    line: lineNumber,
+                    column: index - lineStart - 1
+                };
+            addComment('Line', comment, start, index - 1, loc);
+            }*/
             if (ch == 13 && ctx->m_source[ctx->m_index] == 10) {
                 ++ctx->m_index;
             }
@@ -702,7 +710,8 @@ void skipSingleLineComment(ParseContext* ctx, int offset) {
     */
 }
 
-void skipMultiLineComment(ParseContext* ctx) {
+void skipMultiLineComment(ParseContext* ctx)
+{
     size_t start;
     // , loc,
     char16_t ch;
@@ -825,7 +834,8 @@ void skipComment(ParseContext* ctx)
     }
 }
 
-PassRefPtr<ParseStatus> scanIdentifier(ParseContext* ctx) {
+PassRefPtr<ParseStatus> scanIdentifier(ParseContext* ctx)
+{
     size_t start;
     std::u16string id;
     Token type;
@@ -855,7 +865,8 @@ PassRefPtr<ParseStatus> scanIdentifier(ParseContext* ctx) {
 
 // ECMA-262 11.7 Punctuators
 
-PassRefPtr<ParseStatus> scanPunctuator(ParseContext* ctx) {
+PassRefPtr<ParseStatus> scanPunctuator(ParseContext* ctx)
+{
     ParseStatus* token = new ParseStatus(Token::PunctuatorToken, ctx->m_lineNumber, ctx->m_lineStart, ctx->m_index, ctx->m_index);
     /*
     token = {
@@ -967,7 +978,8 @@ PassRefPtr<ParseStatus> scanPunctuator(ParseContext* ctx) {
     return adoptRef(token);
 }
 
-PassRefPtr<ParseStatus> scanStringLiteral(ParseContext* ctx) {
+PassRefPtr<ParseStatus> scanStringLiteral(ParseContext* ctx)
+{
     std::u16string str;
     char16_t quote;
     size_t start;
@@ -1127,7 +1139,8 @@ PassRefPtr<ParseStatus> scanStringLiteral(ParseContext* ctx) {
 }
 
 // ECMA-262 11.8.6 Template Literal Lexical Components
-PassRefPtr<ParseStatus> scanTemplate(ParseContext* ctx) {
+PassRefPtr<ParseStatus> scanTemplate(ParseContext* ctx)
+{
     // var cooked = '', ch, start, rawOffset, terminated, head, tail, restore, unescaped;
     char16_t ch, unescaped;
     bool terminated = false;
@@ -1268,7 +1281,8 @@ PassRefPtr<ParseStatus> scanTemplate(ParseContext* ctx) {
     */
 }
 
-PassRefPtr<ParseStatus> scanHexLiteral(ParseContext* ctx, size_t start) {
+PassRefPtr<ParseStatus> scanHexLiteral(ParseContext* ctx, size_t start)
+{
     std::wstring number;
 
     while (ctx->m_index < ctx->m_length) {
@@ -1308,7 +1322,8 @@ PassRefPtr<ParseStatus> scanHexLiteral(ParseContext* ctx, size_t start) {
     return adoptRef(ps);
 }
 
-PassRefPtr<ParseStatus> scanBinaryLiteral(ParseContext* ctx, size_t start) {
+PassRefPtr<ParseStatus> scanBinaryLiteral(ParseContext* ctx, size_t start)
+{
     char16_t ch;
     std::wstring number;
 
@@ -1356,7 +1371,8 @@ PassRefPtr<ParseStatus> scanBinaryLiteral(ParseContext* ctx, size_t start) {
     */
 }
 
-PassRefPtr<ParseStatus> scanOctalLiteral(ParseContext* ctx, char16_t prefix, size_t start) {
+PassRefPtr<ParseStatus> scanOctalLiteral(ParseContext* ctx, char16_t prefix, size_t start)
+{
     std::wstring number;
     bool octal;
 
@@ -1409,7 +1425,8 @@ PassRefPtr<ParseStatus> scanOctalLiteral(ParseContext* ctx, char16_t prefix, siz
      */
 }
 
-bool isImplicitOctalLiteral(ParseContext* ctx) {
+bool isImplicitOctalLiteral(ParseContext* ctx)
+{
     size_t i;
     char16_t ch;
 
@@ -1428,7 +1445,8 @@ bool isImplicitOctalLiteral(ParseContext* ctx) {
     return true;
 }
 
-PassRefPtr<ParseStatus> scanNumericLiteral(ParseContext* ctx) {
+PassRefPtr<ParseStatus> scanNumericLiteral(ParseContext* ctx)
+{
     std::wstring number;
     number.reserve(32);
     size_t start;
@@ -1618,7 +1636,8 @@ void peek(ParseContext* ctx)
     ctx->m_scanning = false;
 }
 
-ALWAYS_INLINE PassRefPtr<ParseStatus> lex(ParseContext* ctx) {
+ALWAYS_INLINE PassRefPtr<ParseStatus> lex(ParseContext* ctx)
+{
     RefPtr<ParseStatus> token;
     ctx->m_scanning = true;
 
@@ -1650,7 +1669,8 @@ void expect(ParseContext* ctx, value) {
     }
 }
  */
-ALWAYS_INLINE void expect(ParseContext* ctx, const std::u16string& value) {
+ALWAYS_INLINE void expect(ParseContext* ctx, const std::u16string& value)
+{
     RefPtr<ParseStatus> token = lex(ctx);
     // CHECKTHIS. compare value!
     if (token->m_type != Token::PunctuatorToken || token->m_value != value) {
@@ -1658,7 +1678,8 @@ ALWAYS_INLINE void expect(ParseContext* ctx, const std::u16string& value) {
     }
 }
 
-ALWAYS_INLINE void expect(ParseContext* ctx, const char16_t* value) {
+ALWAYS_INLINE void expect(ParseContext* ctx, const char16_t* value)
+{
     RefPtr<ParseStatus> token = lex(ctx);
     // CHECKTHIS. compare value!
     if (token->m_type != Token::PunctuatorToken || token->m_value != value) {
@@ -1666,7 +1687,8 @@ ALWAYS_INLINE void expect(ParseContext* ctx, const char16_t* value) {
     }
 }
 
-ALWAYS_INLINE void expect(ParseContext* ctx, const char16_t& value) {
+ALWAYS_INLINE void expect(ParseContext* ctx, const char16_t& value)
+{
     RefPtr<ParseStatus> token = lex(ctx);
     // CHECKTHIS. compare value!
     if (token->m_type != Token::PunctuatorToken || (token->m_value[0] != value || token->m_value.length() != 1)) {
@@ -1681,7 +1703,8 @@ ALWAYS_INLINE void expect(ParseContext* ctx, const char16_t& value) {
  * to <code>expect(value)</code>
  * @since 2.0
  */
-void expectCommaSeparator(ParseContext* ctx) {
+void expectCommaSeparator(ParseContext* ctx)
+{
     /*
     ParseStatus* token;
     if (extra.errors) {
@@ -1704,14 +1727,16 @@ void expectCommaSeparator(ParseContext* ctx) {
 // Expect the next token to match the specified keyword.
 // If not, an exception will be thrown.
 
-void expectKeyword(ParseContext* ctx, const std::u16string& keyword) {
+void expectKeyword(ParseContext* ctx, const std::u16string& keyword)
+{
     RefPtr<ParseStatus> token = lex(ctx);
     if (token->m_type != Token::KeywordToken || token->m_value != keyword) {
         throwUnexpectedToken();
     }
 }
 
-void expectKeyword(ParseContext* ctx, const char16_t* keyword) {
+void expectKeyword(ParseContext* ctx, const char16_t* keyword)
+{
     RefPtr<ParseStatus> token = lex(ctx);
     if (token->m_type != Token::KeywordToken || token->m_value != keyword) {
         throwUnexpectedToken();
@@ -1720,39 +1745,45 @@ void expectKeyword(ParseContext* ctx, const char16_t* keyword) {
 
 // Return true if the next token matches the specified punctuator.
 
-ALWAYS_INLINE bool match(ParseContext* ctx, const std::u16string& value) {
+ALWAYS_INLINE bool match(ParseContext* ctx, const std::u16string& value)
+{
     return ctx->m_lookahead->m_type == Token::PunctuatorToken && ctx->m_lookahead->m_value == value;
 }
 
-ALWAYS_INLINE bool match(ParseContext* ctx, const char16_t& value) {
+ALWAYS_INLINE bool match(ParseContext* ctx, const char16_t& value)
+{
     return LIKELY(ctx->m_lookahead->m_type == Token::PunctuatorToken && ctx->m_lookahead->m_value.length() == 1 && ctx->m_lookahead->m_value[0] == value);
 }
 
 // Return true if the next token matches the specified keyword
 
-bool matchKeyword(ParseContext* ctx, const std::u16string& keyword) {
+bool matchKeyword(ParseContext* ctx, const std::u16string& keyword)
+{
     return ctx->m_lookahead->m_type == Token::KeywordToken && ctx->m_lookahead->m_value == keyword;
 }
 
-bool matchKeyword(ParseContext* ctx, const char16_t* keyword) {
+bool matchKeyword(ParseContext* ctx, const char16_t* keyword)
+{
     return ctx->m_lookahead->m_type == Token::KeywordToken && ctx->m_lookahead->m_value == keyword;
 }
 
 // Return true if the next token matches the specified contextual keyword
 // (where an identifier is sometimes a keyword depending on the context)
 
-bool matchContextualKeyword(ParseContext* ctx, const std::u16string& keyword) {
+bool matchContextualKeyword(ParseContext* ctx, const std::u16string& keyword)
+{
     return ctx->m_lookahead->m_type == Token::IdentifierToken && ctx->m_lookahead->m_value == keyword;
 }
 
-bool matchContextualKeyword(ParseContext* ctx, const char16_t* keyword) {
+bool matchContextualKeyword(ParseContext* ctx, const char16_t* keyword)
+{
     return ctx->m_lookahead->m_type == Token::IdentifierToken && ctx->m_lookahead->m_value == keyword;
 }
 
 // Return true if the next token is an assignment operator
 
-bool matchAssign(ParseContext* ctx) {
-
+bool matchAssign(ParseContext* ctx)
+{
     if (ctx->m_lookahead->m_type != Token::PunctuatorToken) {
         return false;
     }
@@ -1771,7 +1802,8 @@ bool matchAssign(ParseContext* ctx) {
         op == u"|=";
 }
 
-void consumeSemicolon(ParseContext* ctx) {
+void consumeSemicolon(ParseContext* ctx)
+{
     // Catch the very common case first: immediately a semicolon (U+003B).
     if (ctx->m_source[ctx->m_startIndex] == 0x3B || match(ctx, ';')) {
         lex(ctx);
@@ -1792,7 +1824,8 @@ void consumeSemicolon(ParseContext* ctx) {
     }
 }
 
-escargot::Node* isolateCoverGrammar(ParseContext* ctx, std::function<escargot::Node* (ParseContext* ctx)> parser) {
+escargot::Node* isolateCoverGrammar(ParseContext* ctx, std::function<escargot::Node* (ParseContext* ctx)> parser)
+{
     bool oldIsBindingElement = ctx->m_isBindingElement,
         oldIsAssignmentTarget = ctx->m_isAssignmentTarget;
     RefPtr<ParseStatus> oldFirstCoverInitializedNameError = ctx->m_firstCoverInitializedNameError;
@@ -1810,7 +1843,8 @@ escargot::Node* isolateCoverGrammar(ParseContext* ctx, std::function<escargot::N
     return result;
 }
 
-escargot::Node* inheritCoverGrammar(ParseContext* ctx, std::function<escargot::Node* (ParseContext* ctx)> parser) {
+escargot::Node* inheritCoverGrammar(ParseContext* ctx, std::function<escargot::Node* (ParseContext* ctx)> parser)
+{
     bool oldIsBindingElement = ctx->m_isBindingElement,
         oldIsAssignmentTarget = ctx->m_isAssignmentTarget;
     RefPtr<ParseStatus> oldFirstCoverInitializedNameError = ctx->m_firstCoverInitializedNameError;
@@ -1842,8 +1876,7 @@ escargot::Node* finishLiteralNode(ParseContext* ctx, RefPtr<ParseStatus> ps)
     if (ps->m_type == Token::StringLiteralToken) {
         escargot::u16string estr(ps->m_value.begin(), ps->m_value.end());
         nd = new escargot::LiteralNode(escargot::ESString::create(std::move(estr)));
-    }
-    else if (ps->m_type == Token::NumericLiteralToken) {
+    } else if (ps->m_type == Token::NumericLiteralToken) {
         nd = new escargot::LiteralNode(escargot::ESValue(ps->m_valueNumber));
     } else {
         RELEASE_ASSERT_NOT_REACHED();
@@ -1929,7 +1962,8 @@ escargot::Node* parsePattern(ParseContext* ctx, std::vector<RefPtr<ParseStatus> 
 escargot::Node* parseLeftHandSideExpression(ParseContext* ctx);
 escargot::Node* parseNonComputedProperty(ParseContext* ctx);
 escargot::Node* parsePatternWithDefault(ParseContext* ctx, std::vector<RefPtr<ParseStatus> >& params);
-escargot::Node* parseExpression(ParseContext* ctx) {
+escargot::Node* parseExpression(ParseContext* ctx)
+{
     escargot::Node* expr;
     // ParseStatus* startToken = ctx->m_lookahead;
     escargot::ExpressionNodeVector expressions;
@@ -1958,7 +1992,8 @@ escargot::Node* parseExpression(ParseContext* ctx) {
 
 // ECMA-262 13.2 Block
 
-escargot::Node* parseStatementListItem(ParseContext* ctx) {
+escargot::Node* parseStatementListItem(ParseContext* ctx)
+{
     if (ctx->m_lookahead->m_type == Token::KeywordToken) {
         if (ctx->m_lookahead->m_value == u"function")
             return parseFunctionDeclaration(ctx);
@@ -1988,7 +2023,8 @@ escargot::Node* parseStatementListItem(ParseContext* ctx) {
     return parseStatement(ctx);
 }
 
-escargot::StatementNodeVector parseStatementList(ParseContext* ctx) {
+escargot::StatementNodeVector parseStatementList(ParseContext* ctx)
+{
     escargot::StatementNodeVector list;
     // var list = [];
     while (ctx->m_startIndex < ctx->m_length) {
@@ -2003,7 +2039,8 @@ escargot::StatementNodeVector parseStatementList(ParseContext* ctx) {
     return std::move(list);
 }
 
-escargot::Node* parseBlock(ParseContext* ctx) {
+escargot::Node* parseBlock(ParseContext* ctx)
+{
     // var block, node = new Node();
     escargot::StatementNodeVector body;
     expect(ctx, '{');
@@ -2019,7 +2056,8 @@ escargot::Node* parseBlock(ParseContext* ctx) {
 
 // ECMA-262 13.3.2 Variable Statement
 
-escargot::Node* parseVariableIdentifier(ParseContext* ctx) {
+escargot::Node* parseVariableIdentifier(ParseContext* ctx)
+{
     // var token, node = new Node();
     RefPtr<ParseStatus> token;
 
@@ -2054,7 +2092,8 @@ escargot::Node* parseVariableIdentifier(ParseContext* ctx) {
     return nd;
 }
 
-escargot::VariableDeclaratorNode* parseVariableDeclaration(ParseContext* ctx) {
+escargot::VariableDeclaratorNode* parseVariableDeclaration(ParseContext* ctx)
+{
     // var init = null, id, node = new Node(), params = [];
     escargot::Node* init = nullptr;
     std::vector<RefPtr<ParseStatus> > params;
@@ -2082,7 +2121,8 @@ escargot::VariableDeclaratorNode* parseVariableDeclaration(ParseContext* ctx) {
     return nd;
 }
 
-escargot::VariableDeclaratorVector parseVariableDeclarationList(ParseContext* ctx, bool excludeVariableDeclaratorNode = true) {
+escargot::VariableDeclaratorVector parseVariableDeclarationList(ParseContext* ctx, bool excludeVariableDeclaratorNode = true)
+{
     escargot::VariableDeclaratorVector list;
     // var list = [];
 
@@ -2111,7 +2151,8 @@ escargot::VariableDeclaratorVector parseVariableDeclarationList(ParseContext* ct
     return list;
 }
 
-escargot::Node* parseVariableStatement(ParseContext* ctx /*node*/) {
+escargot::Node* parseVariableStatement(ParseContext* ctx /*node*/)
+{
     escargot::VariableDeclaratorVector declarations;
 
     expectKeyword(ctx, u"var");
@@ -2128,7 +2169,8 @@ escargot::Node* parseVariableStatement(ParseContext* ctx /*node*/) {
 
 // ECMA-262 13.3.1 Let and Const Declarations
 
-escargot::Node* parseLexicalBinding(ParseContext* ctx, escargot::u16string& kind /*options*/) {
+escargot::Node* parseLexicalBinding(ParseContext* ctx, escargot::u16string& kind /*options*/)
+{
     // var init = null, id, node = new Node(), params = [];
 
     std::vector<RefPtr<ParseStatus> > params;
@@ -2181,7 +2223,8 @@ function parseBindingList(kind, options) {
 }
  */
 
-escargot::Node* parseLexicalDeclaration(/*options*/) {
+escargot::Node* parseLexicalDeclaration(/*options*/)
+{
     RELEASE_ASSERT_NOT_REACHED();
     /*
     var kind, declarations, node = new Node();
@@ -2197,7 +2240,8 @@ escargot::Node* parseLexicalDeclaration(/*options*/) {
      */
 }
 
-escargot::Node* parseRestElement(/*params*/) {
+escargot::Node* parseRestElement(/*params*/)
+{
     RELEASE_ASSERT_NOT_REACHED();
     /*
     var param, node = new Node();
@@ -2226,7 +2270,8 @@ escargot::Node* parseRestElement(/*params*/) {
 
 // ECMA-262 13.4 Empty Statement
 
-escargot::Node* parseEmptyStatement(ParseContext* ctx/*node*/) {
+escargot::Node* parseEmptyStatement(ParseContext* ctx/*node*/)
+{
     expect(ctx, ';');
     // return node.finishEmptyStatement();
     escargot::Node* nd = new escargot::EmptyStatementNode();
@@ -2236,7 +2281,8 @@ escargot::Node* parseEmptyStatement(ParseContext* ctx/*node*/) {
 
 // ECMA-262 12.4 Expression Statement
 
-escargot::Node* parseExpressionStatement(ParseContext* ctx/*node*/) {
+escargot::Node* parseExpressionStatement(ParseContext* ctx/*node*/)
+{
     escargot::Node* expr = parseExpression(ctx);
     consumeSemicolon(ctx);
     // return node.finishExpressionStatement(expr);
@@ -2247,7 +2293,8 @@ escargot::Node* parseExpressionStatement(ParseContext* ctx/*node*/) {
 
 // ECMA-262 13.6 If statement
 
-escargot::Node* parseIfStatement(ParseContext* ctx/*node*/) {
+escargot::Node* parseIfStatement(ParseContext* ctx/*node*/)
+{
     escargot::Node* test;
     escargot::Node* consequent;
     escargot::Node* alternate;
@@ -2277,7 +2324,8 @@ escargot::Node* parseIfStatement(ParseContext* ctx/*node*/) {
 
 // ECMA-262 13.7 Iteration Statements
 
-escargot::Node* parseDoWhileStatement(ParseContext* ctx/*node*/) {
+escargot::Node* parseDoWhileStatement(ParseContext* ctx/*node*/)
+{
     bool oldInIteration;
     escargot::Node* body;
     escargot::Node* test;
@@ -2309,7 +2357,8 @@ escargot::Node* parseDoWhileStatement(ParseContext* ctx/*node*/) {
     return nd;
 }
 
-escargot::Node* parseWhileStatement(ParseContext* ctx/*node*/) {
+escargot::Node* parseWhileStatement(ParseContext* ctx/*node*/)
+{
     bool oldInIteration;
     escargot::Node* body;
     escargot::Node* test;
@@ -2335,7 +2384,8 @@ escargot::Node* parseWhileStatement(ParseContext* ctx/*node*/) {
     return nd;
 }
 
-escargot::Node* parseForStatement(ParseContext* ctx/*node*/) {
+escargot::Node* parseForStatement(ParseContext* ctx/*node*/)
+{
     // var init, forIn, initSeq, initStartToken, test, update, left, right, kind, declarations,
     // body, oldInIteration, previousAllowIn = state.allowIn;
     escargot::Node* init;
@@ -2388,35 +2438,7 @@ escargot::Node* parseForStatement(ParseContext* ctx/*node*/) {
                 }
                 expect(ctx, ';');
             }
-        }
-        /*
-        else if (matchKeyword('const') || matchKeyword('let')) {
-            init = new Node();
-            kind = lex().value;
-
-            state.allowIn = false;
-            declarations = parseBindingList(kind, {inFor: true});
-            state.allowIn = previousAllowIn;
-
-            if (declarations.length === 1 && declarations[0].init === null && matchKeyword('in')) {
-                init = init.finishLexicalDeclaration(declarations, kind);
-                lex();
-                left = init;
-                right = parseExpression();
-                init = null;
-            } else if (declarations.length === 1 && declarations[0].init === null && matchContextualKeyword('of')) {
-                init = init.finishLexicalDeclaration(declarations, kind);
-                lex();
-                left = init;
-                right = parseAssignmentExpression();
-                init = null;
-                forIn = false;
-            } else {
-                consumeSemicolon();
-                init = init.finishLexicalDeclaration(declarations, kind);
-            }
-        } */
-        else {
+        } else {
             // ParseStatus* initStartToken = ctx->m_lookahead;
             ctx->m_allowIn = false;
             init = inheritCoverGrammar(ctx, parseAssignmentExpression);
@@ -2509,7 +2531,8 @@ escargot::Node* parseForStatement(ParseContext* ctx/*node*/) {
 
 // ECMA-262 13.8 The continue statement
 
-escargot::Node* parseContinueStatement(ParseContext* ctx/*node*/) {
+escargot::Node* parseContinueStatement(ParseContext* ctx/*node*/)
+{
     // var label = null, key;
 
     expectKeyword(ctx, u"continue");
@@ -2581,7 +2604,8 @@ escargot::Node* parseContinueStatement(ParseContext* ctx/*node*/) {
 
 // ECMA-262 13.9 The break statement
 
-escargot::Node* parseBreakStatement(ParseContext* ctx/*node*/) {
+escargot::Node* parseBreakStatement(ParseContext* ctx/*node*/)
+{
     // var label = null, key;
 
     expectKeyword(ctx, u"break");
@@ -2650,7 +2674,8 @@ escargot::Node* parseBreakStatement(ParseContext* ctx/*node*/) {
 
 // ECMA-262 13.10 The return statement
 
-escargot::Node* parseReturnStatement(ParseContext* ctx/*node*/) {
+escargot::Node* parseReturnStatement(ParseContext* ctx/*node*/)
+{
     escargot::Node* argument = nullptr;
     // var argument = null;
 
@@ -2695,7 +2720,8 @@ escargot::Node* parseReturnStatement(ParseContext* ctx/*node*/) {
 
 // ECMA-262 13.11 The with statement
 
-escargot::Node* parseWithStatement(ParseContext* ctx) {
+escargot::Node* parseWithStatement(ParseContext* ctx)
+{
     /*
     var object, body;
 
@@ -2720,7 +2746,8 @@ escargot::Node* parseWithStatement(ParseContext* ctx) {
 
 // ECMA-262 13.12 The switch statement
 
-escargot::SwitchCaseNode* parseSwitchCase(ParseContext* ctx) {
+escargot::SwitchCaseNode* parseSwitchCase(ParseContext* ctx)
+{
     // var test, consequent = [], statement, node = new Node();
     escargot::Node* test; // , consequent = [], statement, node = new Node();
     escargot::StatementNodeVector consequent;
@@ -2748,7 +2775,8 @@ escargot::SwitchCaseNode* parseSwitchCase(ParseContext* ctx) {
     return nd;
 }
 
-escargot::Node* parseSwitchStatement(ParseContext* ctx/*node*/) {
+escargot::Node* parseSwitchStatement(ParseContext* ctx/*node*/)
+{
     // var discriminant, cases, clause, oldInSwitch, defaultFound;
 
     expectKeyword(ctx, u"switch");
@@ -2807,7 +2835,8 @@ escargot::Node* parseSwitchStatement(ParseContext* ctx/*node*/) {
 
 // ECMA-262 13.14 The throw statement
 
-escargot::Node* parseThrowStatement(ParseContext* ctx/*node*/) {
+escargot::Node* parseThrowStatement(ParseContext* ctx/*node*/)
+{
     escargot::Node* argument;
 
     expectKeyword(ctx, u"throw");
@@ -2829,7 +2858,8 @@ escargot::Node* parseThrowStatement(ParseContext* ctx/*node*/) {
 
 // ECMA-262 13.15 The try statement
 
-escargot::Node* parseCatchClause(ParseContext* ctx/*node*/) {
+escargot::Node* parseCatchClause(ParseContext* ctx/*node*/)
+{
     // var param, params = [], paramMap = {}, key, i, body, node = new Node();
 
 
@@ -2870,7 +2900,8 @@ escargot::Node* parseCatchClause(ParseContext* ctx/*node*/) {
     return nd;
 }
 
-escargot::Node* parseTryStatement(ParseContext* ctx/*node*/) {
+escargot::Node* parseTryStatement(ParseContext* ctx/*node*/)
+{
     // var block, handler = null, finalizer = null;
 
     expectKeyword(ctx, u"try");
@@ -2910,7 +2941,8 @@ function parseDebuggerStatement(node) {
 */
 // 13 Statements
 
-escargot::Node* parseStatement(ParseContext* ctx) {
+escargot::Node* parseStatement(ParseContext* ctx)
+{
     Token type = ctx->m_lookahead->m_type;
     /*
     var type = lookahead.type,
@@ -2933,8 +2965,7 @@ escargot::Node* parseStatement(ParseContext* ctx) {
     if (type == Token::PunctuatorToken) {
         if (ctx->m_lookahead->m_value == u";") {
             return parseEmptyStatement(ctx);
-        }
-        else if (ctx->m_lookahead->m_value == u"(") {
+        } else if (ctx->m_lookahead->m_value == u"(") {
             return parseExpressionStatement(ctx);
         }
     } else if (type == Token::KeywordToken) {
@@ -3006,7 +3037,8 @@ escargot::Node* parseStatement(ParseContext* ctx) {
 
 // ECMA-262 14.1 Function Definition
 
-escargot::Node* parseFunctionSourceElements(ParseContext* ctx) {
+escargot::Node* parseFunctionSourceElements(ParseContext* ctx)
+{
     /*var statement, body = [], token, directive, firstRestricted,
         oldLabelSet, oldInIteration, oldInSwitch, oldInFunctionBody, oldParenthesisCount,
         node = new Node();
@@ -3173,7 +3205,8 @@ function parseParam(options) {
 }
  */
 
-bool parseParam(ParseContext* ctx, escargot::InternalAtomicStringVector& vec/*, options*/) {
+bool parseParam(ParseContext* ctx, escargot::InternalAtomicStringVector& vec/*, options*/)
+{
     // var token, param, params = [], i, def;
 
     RefPtr<ParseStatus> token = ctx->m_lookahead;
@@ -3209,7 +3242,8 @@ bool parseParam(ParseContext* ctx, escargot::InternalAtomicStringVector& vec/*, 
     return !match(ctx, ')');
 }
 
-escargot::InternalAtomicStringVector parseParams(ParseContext* ctx/*, ParseStatus* firstRestricted*/) {
+escargot::InternalAtomicStringVector parseParams(ParseContext* ctx/*, ParseStatus* firstRestricted*/)
+{
     /*
     var options;
 
@@ -3262,7 +3296,8 @@ escargot::InternalAtomicStringVector parseParams(ParseContext* ctx/*, ParseStatu
 }
 
 
-escargot::Node* parseFunctionDeclaration(ParseContext* ctx/*node, identifierIsOptional*/) {
+escargot::Node* parseFunctionDeclaration(ParseContext* ctx/*node, identifierIsOptional*/)
+{
     // var id = null, params = [], defaults = [], body, token, stricted, tmp, firstRestricted, message, previousStrict,
     // isGenerator, previousAllowYield;
 
@@ -3342,7 +3377,8 @@ escargot::Node* parseFunctionDeclaration(ParseContext* ctx/*node, identifierIsOp
     return NULL;
 }
 
-escargot::Node* parseFunctionExpression(ParseContext* ctx) {
+escargot::Node* parseFunctionExpression(ParseContext* ctx)
+{
     /*
     var token, id = null, stricted, firstRestricted, message, tmp,
         params = [], defaults = [], body, previousStrict, node = new Node(),
@@ -3421,7 +3457,8 @@ escargot::Node* parseFunctionExpression(ParseContext* ctx) {
 
 
 /*
-escargot::Node* parseVariableIdentifier(ParseContext* ctx) {
+escargot::Node* parseVariableIdentifier(ParseContext* ctx)
+{
     ParseStatus* token = lex(ctx);
 
     if (token->m_type == Token::KeywordToken && token->m_value == u"yield") {
@@ -3450,7 +3487,8 @@ escargot::Node* parsePattern(ParseContext* ctx, std::vector<RefPtr<ParseStatus> 
 escargot::Node* parseLeftHandSideExpression(ParseContext* ctx);
 escargot::Node* parseNonComputedProperty(ParseContext* ctx);
 
-escargot::Node* parsePatternWithDefault(ParseContext* ctx, std::vector<RefPtr<ParseStatus> >& params) {
+escargot::Node* parsePatternWithDefault(ParseContext* ctx, std::vector<RefPtr<ParseStatus> >& params)
+{
     // RefPtr<ParseStatus> startToken = ctx->m_lookahead;
     escargot::Node* pattern;
     escargot::Node* right;
@@ -3469,7 +3507,8 @@ escargot::Node* parsePatternWithDefault(ParseContext* ctx, std::vector<RefPtr<Pa
     return pattern;
 }
 
-escargot::Node*  parseArrayPattern(ParseContext* ctx, std::vector<RefPtr<ParseStatus> >& params) {
+escargot::Node*  parseArrayPattern(ParseContext* ctx, std::vector<RefPtr<ParseStatus> >& params)
+{
     // var node = new Node(), elements = [], rest, restNode;
     expect(ctx, '[');
     escargot::ExpressionNodeVector elements;
@@ -3502,7 +3541,8 @@ escargot::Node*  parseArrayPattern(ParseContext* ctx, std::vector<RefPtr<ParseSt
 
 // ECMA-262 12.2.5 Array Initializer
 
-escargot::Node* parseArrayInitializer(ParseContext* ctx) {
+escargot::Node* parseArrayInitializer(ParseContext* ctx)
+{
     // var elements = [], node = new Node(), restSpread;
     escargot::ExpressionNodeVector elements;
 
@@ -3544,7 +3584,8 @@ escargot::Node* parseArrayInitializer(ParseContext* ctx) {
     return nd;
 }
 
-escargot::Node* parseObjectPropertyKey(ParseContext* ctx) {
+escargot::Node* parseObjectPropertyKey(ParseContext* ctx)
+{
     // var token, node = new Node(), expr;
 
     RefPtr<ParseStatus> token = lex(ctx);
@@ -3594,7 +3635,8 @@ escargot::Node* parseObjectPropertyKey(ParseContext* ctx) {
     RELEASE_ASSERT_NOT_REACHED();
 }
 
-escargot::PropertyNode* parsePropertyPattern(ParseContext* ctx, std::vector<RefPtr<ParseStatus> >& params) {
+escargot::PropertyNode* parsePropertyPattern(ParseContext* ctx, std::vector<RefPtr<ParseStatus> >& params)
+{
     // var node = new Node(),
     escargot::Node* key; // , keyToken,
     RefPtr<ParseStatus> keyToken;
@@ -3637,7 +3679,8 @@ escargot::PropertyNode* parsePropertyPattern(ParseContext* ctx, std::vector<RefP
     return nd;
 }
 
-escargot::Node* parseObjectPattern(ParseContext* ctx, std::vector<RefPtr<ParseStatus> >& params) {
+escargot::Node* parseObjectPattern(ParseContext* ctx, std::vector<RefPtr<ParseStatus> >& params)
+{
     // var node = new Node(), properties = [];
     escargot::PropertiesNodeVector properties;
     expect(ctx, '{');
@@ -3656,7 +3699,8 @@ escargot::Node* parseObjectPattern(ParseContext* ctx, std::vector<RefPtr<ParseSt
     return nd;
 }
 
-escargot::Node* parsePattern(ParseContext* ctx, std::vector<RefPtr<ParseStatus> >& params) {
+escargot::Node* parsePattern(ParseContext* ctx, std::vector<RefPtr<ParseStatus> >& params)
+{
     if (match(ctx, '[')) {
         return parseArrayPattern(ctx, params);
     } else if (match(ctx, '{')) {
@@ -3671,7 +3715,8 @@ struct ScanRegExpBodyResult {
     std::u16string m_literal;
 };
 
-ScanRegExpBodyResult* scanRegExpBody(ParseContext* ctx) {
+ScanRegExpBodyResult* scanRegExpBody(ParseContext* ctx)
+{
     char16_t ch;
     std::u16string str;
     // , str, classMarker, terminated, body;
@@ -3736,7 +3781,8 @@ struct ScanRegExpFlagsResult {
 };
 
 
-ScanRegExpFlagsResult* scanRegExpFlags(ParseContext* ctx) {
+ScanRegExpFlagsResult* scanRegExpFlags(ParseContext* ctx)
+{
     // var ch, str, flags, restore;
     char16_t ch;
 
@@ -3789,7 +3835,8 @@ ScanRegExpFlagsResult* scanRegExpFlags(ParseContext* ctx) {
     */
 }
 
-PassRefPtr<ParseStatus> scanRegExp(ParseContext* ctx) {
+PassRefPtr<ParseStatus> scanRegExp(ParseContext* ctx)
+{
     ctx->m_scanning = true;
     // var start, body, flags, value;
     size_t start;
@@ -3842,7 +3889,8 @@ PassRefPtr<ParseStatus> scanRegExp(ParseContext* ctx) {
     return adoptRef(ps);
 }
 
-bool lookaheadPropertyName(ParseContext* ctx) {
+bool lookaheadPropertyName(ParseContext* ctx)
+{
     switch (ctx->m_lookahead->m_type) {
     case Token::IdentifierToken:
     case Token::StringLiteralToken:
@@ -3858,7 +3906,8 @@ bool lookaheadPropertyName(ParseContext* ctx) {
     }
 }
 
-escargot::Node* parsePropertyFunction(ParseContext* ctx, escargot::InternalAtomicStringVector& vec/*paramInfo, isGenerator*/) {
+escargot::Node* parsePropertyFunction(ParseContext* ctx, escargot::InternalAtomicStringVector& vec/*paramInfo, isGenerator*/)
+{
     // var previousStrict, body;
 
     ctx->m_isAssignmentTarget = ctx->m_isBindingElement = false;
@@ -3889,7 +3938,8 @@ escargot::Node* parsePropertyFunction(ParseContext* ctx, escargot::InternalAtomi
 // 
 // In order to avoid back tracking, it returns `null` if the position is not a MethodDefinition and the caller
 // is responsible to visit other options.
-escargot::Node* tryParseMethodDefinition(ParseContext* ctx, ParseStatus* token, escargot::Node* key, bool computed) {
+escargot::Node* tryParseMethodDefinition(ParseContext* ctx, ParseStatus* token, escargot::Node* key, bool computed)
+{
     bool previousAllowYield = ctx->m_allowYield;
     // var value, options, methodNode, params,
     // previousAllowYield = state.allowYield;
@@ -3992,7 +4042,8 @@ escargot::Node* tryParseMethodDefinition(ParseContext* ctx, ParseStatus* token, 
     return NULL;
 }
 
-escargot::Node* parseObjectProperty(ParseContext* ctx, bool& hasProto) {
+escargot::Node* parseObjectProperty(ParseContext* ctx, bool& hasProto)
+{
     RefPtr<ParseStatus> token = ctx->m_lookahead;
     // , node = new Node(), computed, key, maybeMethod, proto, value;
     bool proto;
@@ -4058,7 +4109,8 @@ escargot::Node* parseObjectProperty(ParseContext* ctx, bool& hasProto) {
     RELEASE_ASSERT_NOT_REACHED();
 }
 
-escargot::Node* parseObjectInitializer(ParseContext* ctx) {
+escargot::Node* parseObjectInitializer(ParseContext* ctx)
+{
     // var properties = [], hasProto = {value: false}, node = new Node();
     escargot::PropertiesNodeVector properties;
     bool hasProto = false;
@@ -4080,7 +4132,8 @@ escargot::Node* parseObjectInitializer(ParseContext* ctx) {
     return nd;
 }
 
-void reinterpretExpressionAsPattern(ParseContext* ctx, escargot::Node* expr) {
+void reinterpretExpressionAsPattern(ParseContext* ctx, escargot::Node* expr)
+{
     /*
     var i;
     switch (expr.type) {
@@ -4120,7 +4173,8 @@ void reinterpretExpressionAsPattern(ParseContext* ctx, escargot::Node* expr) {
 
 // ECMA-262 12.2.9 Template Literals
 
-void parseTemplateElement(ParseContext* ctx/*, option*/) {
+void parseTemplateElement(ParseContext* ctx/*, option*/)
+{
     RELEASE_ASSERT_NOT_REACHED();
 
     /*
@@ -4137,7 +4191,8 @@ void parseTemplateElement(ParseContext* ctx/*, option*/) {
     */
 }
 
-escargot::Node* parseTemplateLiteral(ParseContext* ctx) {
+escargot::Node* parseTemplateLiteral(ParseContext* ctx)
+{
     RELEASE_ASSERT_NOT_REACHED();
     /*
     var quasi, quasis, expressions, node = new Node();
@@ -4158,7 +4213,8 @@ escargot::Node* parseTemplateLiteral(ParseContext* ctx) {
 
 // ECMA-262 12.2.10 The Grouping Operator
 
-escargot::Node* parseGroupExpression(ParseContext* ctx) {
+escargot::Node* parseGroupExpression(ParseContext* ctx)
+{
     expect(ctx, '(');
 
     if (match(ctx, ')')) {
@@ -4355,7 +4411,8 @@ escargot::Node* parseGroupExpression(ParseContext* ctx) {
 
 // ECMA-262 12.2 Primary Expressions
 
-escargot::Node* parsePrimaryExpression(ParseContext* ctx) {
+escargot::Node* parsePrimaryExpression(ParseContext* ctx)
+{
     // var type, token, expr, node;
     RefPtr<ParseStatus> token;
     escargot::Node* expr;
@@ -4467,7 +4524,8 @@ escargot::Node* parsePrimaryExpression(ParseContext* ctx) {
 
 // ECMA-262 12.3 Left-Hand-Side Expressions
 
-escargot::ArgumentVector parseArguments(ParseContext* ctx) {
+escargot::ArgumentVector parseArguments(ParseContext* ctx)
+{
     // var args = [], expr;
     escargot::Node* expr;
 
@@ -4500,7 +4558,8 @@ escargot::ArgumentVector parseArguments(ParseContext* ctx) {
     return args;
 }
 
-escargot::Node* parseNonComputedProperty(ParseContext* ctx) {
+escargot::Node* parseNonComputedProperty(ParseContext* ctx)
+{
     // var token, node = new Node();
 
     RefPtr<ParseStatus> token = lex(ctx);
@@ -4515,13 +4574,15 @@ escargot::Node* parseNonComputedProperty(ParseContext* ctx) {
     return nd;
 }
 
-escargot::Node* parseNonComputedMember(ParseContext* ctx) {
+escargot::Node* parseNonComputedMember(ParseContext* ctx)
+{
     expect(ctx, '.');
 
     return parseNonComputedProperty(ctx);
 }
 
-escargot::Node* parseComputedMember(ParseContext* ctx) {
+escargot::Node* parseComputedMember(ParseContext* ctx)
+{
     escargot::Node* expr;
 
     expect(ctx, '[');
@@ -4535,7 +4596,8 @@ escargot::Node* parseComputedMember(ParseContext* ctx) {
 
 // ECMA-262 12.3.3 The new Operator
 
-escargot::Node* parseNewExpression(ParseContext* ctx) {
+escargot::Node* parseNewExpression(ParseContext* ctx)
+{
     // var callee, args, node = new Node();
     escargot::Node* callee;
 
@@ -4569,7 +4631,8 @@ escargot::Node* parseNewExpression(ParseContext* ctx) {
 
 // ECMA-262 12.3.4 Function Calls
 
-escargot::Node* parseLeftHandSideExpressionAllowCall(ParseContext* ctx) {
+escargot::Node* parseLeftHandSideExpressionAllowCall(ParseContext* ctx)
+{
     // var quasi, expr, args, property, startToken, ;
     escargot::Node* quasi;
     escargot::Node* expr;
@@ -4631,7 +4694,8 @@ escargot::Node* parseLeftHandSideExpressionAllowCall(ParseContext* ctx) {
 
 // ECMA-262 12.3 Left-Hand-Side Expressions
 
-escargot::Node* parseLeftHandSideExpression(ParseContext* ctx) {
+escargot::Node* parseLeftHandSideExpression(ParseContext* ctx)
+{
     // var quasi, expr, property, startToken;
     // assert(state.allowIn, 'callee of new expression always allow in keyword.');
     ASSERT(ctx->m_allowIn);
@@ -4684,7 +4748,8 @@ escargot::Node* parseLeftHandSideExpression(ParseContext* ctx) {
 
 // ECMA-262 12.4 Postfix Expressions
 
-escargot::Node* parsePostfixExpression(ParseContext* ctx) {
+escargot::Node* parsePostfixExpression(ParseContext* ctx)
+{
     // var expr, token, startToken = lookahead;
     escargot::Node* expr;
 
@@ -4719,7 +4784,8 @@ escargot::Node* parsePostfixExpression(ParseContext* ctx) {
 
 // ECMA-262 12.5 Unary Operators
 
-escargot::Node* parseUnaryExpression(ParseContext* ctx) {
+escargot::Node* parseUnaryExpression(ParseContext* ctx)
+{
     // var token, expr, startToken;
 
     RefPtr<ParseStatus> token;
@@ -4798,8 +4864,8 @@ escargot::Node* parseUnaryExpression(ParseContext* ctx) {
 
 
 
-int binaryPrecedence(ParseContext* ctx, RefPtr<ParseStatus> token, bool allowIn) {
-
+int binaryPrecedence(ParseContext* ctx, RefPtr<ParseStatus> token, bool allowIn)
+{
     if (token->m_type != Token::PunctuatorToken && token->m_type != Token::KeywordToken) {
         return 0;
     }
@@ -4959,7 +5025,8 @@ escargot::Node* finishBinaryExpression(ParseContext* ctx, escargot::Node* left, 
     return nd;
 }
 
-escargot::Node* parseBinaryExpression(ParseContext* ctx) {
+escargot::Node* parseBinaryExpression(ParseContext* ctx)
+{
     // var marker, markers, expr, token, prec, stack, right, operator, left, i;
 
     std::u16string operator_;
@@ -5035,7 +5102,8 @@ escargot::Node* parseBinaryExpression(ParseContext* ctx) {
 
 // ECMA-262 12.13 Conditional Operator
 
-escargot::Node* parseConditionalExpression(ParseContext* ctx) {
+escargot::Node* parseConditionalExpression(ParseContext* ctx)
+{
     // var expr, previousAllowIn, consequent, alternate, startToken;
 
     // RefPtr<ParseStatus> startToken = ctx->m_lookahead;
@@ -5062,7 +5130,8 @@ escargot::Node* parseConditionalExpression(ParseContext* ctx) {
 
 // ECMA-262 14.4 Yield expression
 
-escargot::Node* parseYieldExpression(ParseContext* ctx) {
+escargot::Node* parseYieldExpression(ParseContext* ctx)
+{
     // todo
     RELEASE_ASSERT_NOT_REACHED();
 
@@ -5095,7 +5164,8 @@ escargot::Node* parseYieldExpression(ParseContext* ctx) {
 
 // ECMA-262 12.14 Assignment Operators
 
-escargot::Node* parseAssignmentExpression(ParseContext* ctx) {
+escargot::Node* parseAssignmentExpression(ParseContext* ctx)
+{
     // var token, expr, right, list, startToken;
 
     // RefPtr<ParseStatus> startToken = ctx->m_lookahead;

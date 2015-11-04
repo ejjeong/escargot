@@ -844,7 +844,8 @@ public:
         rope->m_right = rstr;
         return rope;
     }
-    ESStringData* stringData() {
+    ESStringData* stringData()
+    {
 #ifndef NDEBUG
         ASSERT(m_type & ESPointer::ESRopeString);
         if (m_string) {
@@ -953,18 +954,15 @@ ALWAYS_INLINE int ESString::length() const
 
 }
 
-namespace std
-{
-template<> struct hash<escargot::ESString *>
-{
+namespace std {
+template<> struct hash<escargot::ESString *> {
     size_t operator()(escargot::ESString * const &x) const
     {
         return x->stringData()->hashValue();
     }
 };
 
-template<> struct equal_to<escargot::ESString *>
-{
+template<> struct equal_to<escargot::ESString *> {
     bool operator()(escargot::ESString * const &a, escargot::ESString * const &b) const
     {
         if (a == b) {
@@ -1104,9 +1102,7 @@ typedef std::vector<::escargot::ESValue, gc_allocator<::escargot::ESValue> > ESV
 class ESValueVector : public ESValueVectorStd {
 public:
     ESValueVector(size_t siz)
-        : ESValueVectorStd(siz) {
-
-    }
+        : ESValueVectorStd(siz) { }
 
 #ifdef ENABLE_ESJIT
     static size_t offsetOfData() { return offsetof(ESValueVector, _M_impl._M_start); }
@@ -1401,7 +1397,8 @@ public:
     void setTimeValue(const ESValue str);
     void setTimeValue(int year, int month, int date, int hour, int minute, int second, int millisecond);
 
-    double getTimeAsMilisec() {
+    double getTimeAsMilisec()
+    {
         return m_time.tv_sec*1000 + floor(m_time.tv_nsec / 1000000);
     }
 
@@ -1498,7 +1495,8 @@ public:
         setLength(length() - cnt);
     }
 
-    bool shouldConvertToSlowMode(unsigned i) {
+    bool shouldConvertToSlowMode(unsigned i)
+    {
         if (m_fastmode && i > MAX_FASTMODE_SIZE)
             return true;
         return false;
@@ -1852,7 +1850,8 @@ template<typename TypeArg, TypedArrayType type>
 struct TypedArrayAdaptor {
     typedef TypeArg Type;
     static const TypedArrayType typeVal = type;
-    static TypeArg toNative(ESValue val) {
+    static TypeArg toNative(ESValue val)
+    {
         return static_cast<TypeArg>(val.toNumber());
     }
 };

@@ -37,7 +37,8 @@ std::string char2hex(char dec )
     return r;
 }
 
-char hex2char(char first, char second) {
+char hex2char(char first, char second)
+{
     char dig1 = first;
     char dig2 = second;
     if (48 <= dig1 && dig1 <= 57)
@@ -221,8 +222,7 @@ void GlobalObject::initGlobalObject()
         int len = instance->currentExecutionContext()->argumentCount();
         if (len < 1) {
             ret = ESValue(std::numeric_limits<double>::quiet_NaN());
-        }
-        else {
+        } else {
             int radix = 10;
             if (len >= 2)
                 radix = instance->currentExecutionContext()->arguments()[1].toInt32();
@@ -231,8 +231,7 @@ void GlobalObject::initGlobalObject()
             if (radix < 2 || radix > 36) {
                 ret = ESValue(std::numeric_limits<double>::quiet_NaN());
                 return ret;
-            }
-            else {
+            } else {
                 ESValue input = instance->currentExecutionContext()->arguments()[0];
                 escargot::ESString* str = input.toString();
                 // TODO remove leading space
@@ -316,8 +315,7 @@ void GlobalObject::installFunction()
         ByteCodeGenerateContext context;
         if (len == 0) {
             codeBlock->pushCode(End(), context, NULL);
-        }
-        else {
+        } else {
             escargot::ESString* body = instance->currentExecutionContext()->arguments()[len-1].toString();
             u16string prefix = u"function anonymous(";
             for (int i = 0; i < len-1; i++) {
@@ -405,8 +403,7 @@ void GlobalObject::installFunction()
                     for (int i = 0; i < arrlen; i++) {
                         arguments[i] = argArray->get(i);
                     }
-                }
-                else if (instance->currentExecutionContext()->arguments()[1].asESPointer()->isESObject()) {
+                } else if (instance->currentExecutionContext()->arguments()[1].asESPointer()->isESObject()) {
                     escargot::ESObject* obj = instance->currentExecutionContext()->arguments()[1].asESPointer()->asESObject();
                     arrlen = obj->get(strings->length.string()).toInteger();
                     arguments = (ESValue*)alloca(sizeof(ESValue) * arrlen);
@@ -1603,8 +1600,7 @@ void GlobalObject::installString()
                     escargot::ESString* T = str->substring(q, str->length());
                     arr->set(lengthA, ESValue(T));
                     return arr;
-                }
-                else {
+                } else {
                     escargot::ESString* T = str->substring(p, result.m_matchResults[0][0].m_start);
                     arr->set(lengthA, ESValue(T));
                     lengthA++;
@@ -1987,8 +1983,7 @@ void GlobalObject::installDate()
             ESValue arg = instance->currentExecutionContext()->arguments()[0];
             thisObject->asESDateObject()->setTime(arg.toNumber());
             return ESValue();
-        }
-        else {
+        } else {
             double value = std::numeric_limits<double>::quiet_NaN();
             return ESValue(value);
         }
@@ -2385,8 +2380,7 @@ static int itoa(int value, char *sp, int radix)
     else
         v = (unsigned)value;
 
-    while (v || tp == tmp)
-    {
+    while (v || tp == tmp) {
         i = v % radix;
         v /= radix; // v/=radix uses less CPU clocks than v=v/radix does
         if (i < 10)
@@ -2397,8 +2391,7 @@ static int itoa(int value, char *sp, int radix)
 
     int len = tp - tmp;
 
-    if (sign)
-    {
+    if (sign) {
         *sp++ = '-';
         len++;
     }
@@ -2822,19 +2815,17 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
         int len = instance->currentExecutionContext()->argumentCount();
         if (len == 0) {
             obj->allocateTypedArray(0);
-        }
-        else if (len >= 1) {
+        } else if (len >= 1) {
             ESValue& val = instance->currentExecutionContext()->arguments()[0];
-            // $22.2.1.2 %TypedArray%(length)
             if (!val.isObject()) {
+                // $22.2.1.2 %TypedArray%(length)
                 int numlen = val.toNumber();
                 int elemlen = val.toLength();
                 if (numlen != elemlen)
                     throw ESValue(RangeError::create(ESString::create(u"Constructor TypedArray : 1st argument is error")));
                 obj->allocateTypedArray(elemlen);
-            }
-            // $22.2.1.5 %TypedArray%(buffer [, byteOffset [, length] ] )
-            else if (val.isESPointer() && val.asESPointer()->isESArrayBufferObject()) {
+            } else if (val.isESPointer() && val.asESPointer()->isESArrayBufferObject()) {
+                // $22.2.1.5 %TypedArray%(buffer [, byteOffset [, length] ] )
                 escargot::ESString* msg = ESString::create(u"ArrayBuffer length minus the byteOffset is not a multiple of the element size");
                 unsigned elementSize = obj->elementSize();
                 int offset = 0;
