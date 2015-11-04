@@ -45,7 +45,7 @@ inline ESValueInDouble getByIdWithoutExceptionOp(ESVMInstance* instance, Executi
     try {
         ESValue* res = getByIdOperation(instance, ec, code);
         return ESValue::toRawDouble(*res);
-    } catch (...) {
+    } catch(...) {
         return ESValue::toRawDouble(ESValue());
     }
 }
@@ -199,16 +199,16 @@ inline void setVarDefineDataProperty(ExecutionContext* ec, GlobalObject* globalO
 }
 
 inline void objectDefineDataProperty(ESObject* object, ESString* key,
-    /*bool isWritable, bool isEnumarable, bool isConfigurable,*/
+    /*bool isWritable, bool isEnumarable, bool isConfigurable, */
     ESValueInDouble initial)
 {
     ESValue initialVal = ESValue::fromRawDouble(initial);
-    object->defineDataProperty(key, /*isWritable, isEnumarable, isConfigurable,*/
+    object->defineDataProperty(key, /*isWritable, isEnumarable, isConfigurable, */
         true, true, true, initialVal);
 }
 
 inline ESValueInDouble esFunctionObjectCall(ESVMInstance* instance,
-    ESValueInDouble callee,ESValue* arguments, uint32_t argumentCount, int32_t isNewExpression)
+    ESValueInDouble callee, ESValue* arguments, uint32_t argumentCount, int32_t isNewExpression)
 {
     ESValue calleeVal = ESValue::fromRawDouble(callee);
     ESValue ret = ESFunctionObject::call(instance, calleeVal,
@@ -217,7 +217,7 @@ inline ESValueInDouble esFunctionObjectCall(ESVMInstance* instance,
 }
 
 inline ESValueInDouble esFunctionObjectCallWithReceiver(ESVMInstance* instance,
-    ESValueInDouble callee,ESValueInDouble receiver,ESValue* arguments, uint32_t argumentCount, int32_t isNewExpression)
+    ESValueInDouble callee, ESValueInDouble receiver, ESValue* arguments, uint32_t argumentCount, int32_t isNewExpression)
 {
     ESValue calleeVal = ESValue::fromRawDouble(callee);
     ESValue receiverVal = ESValue::fromRawDouble(receiver);
@@ -231,7 +231,7 @@ inline ESValueInDouble evalCall(ESVMInstance* instance, ExecutionContext* ec, si
     ESValue callee = *ec->resolveBinding(strings->eval);
     if (callee.isESPointer() && (void *)callee.asESPointer() == (void *)instance->globalObject()->eval()) {
         ESObject* receiver = instance->globalObject();
-        ESValue ret = instance->runOnEvalContext([instance, &arguments, &argc](){
+        ESValue ret = instance->runOnEvalContext([instance, &arguments, &argc]() {
             ESValue ret;
             if (argc)
                 ret = instance->evaluate(const_cast<u16string &>(arguments[0].asESString()->string()), false);
@@ -327,7 +327,8 @@ inline ESValueInDouble lessThanOp(ESValueInDouble left, ESValueInDouble right)
     ESValue leftVal = ESValue::fromRawDouble(left);
     ESValue rightVal = ESValue::fromRawDouble(right);
     ESValue ret = abstractRelationalComparison(leftVal, rightVal, true);
-    if (ret.isUndefined()) return false;
+    if (ret.isUndefined())
+        return false;
     return ESValue::toRawDouble(ret);
 }
 

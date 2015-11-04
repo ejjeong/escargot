@@ -69,7 +69,7 @@ public:
 
     ALWAYS_INLINE void invalidateIdentifierCacheCheckCount()
     {
-        m_identifierCacheInvalidationCheckCount ++;
+        m_identifierCacheInvalidationCheckCount++;
         if (UNLIKELY(m_identifierCacheInvalidationCheckCount == std::numeric_limits<unsigned>::max())) {
             m_identifierCacheInvalidationCheckCount = 0;
         }
@@ -118,8 +118,8 @@ public:
     ALWAYS_INLINE unsigned long tickCount()
     {
         struct timespec timespec;
-        clock_gettime(CLOCK_MONOTONIC,&timespec);
-        return (unsigned long)(timespec.tv_sec * 1000000L + timespec.tv_nsec/1000);
+        clock_gettime(CLOCK_MONOTONIC, &timespec);
+        return (unsigned long)(timespec.tv_sec * 1000000L + timespec.tv_nsec / 1000);
     }
 
 #ifdef ENABLE_ESJIT

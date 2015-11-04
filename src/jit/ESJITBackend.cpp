@@ -21,7 +21,7 @@ namespace ESJIT {
 using namespace nanojit;
 
 #ifdef DEBUG
-#define DEBUG_ONLY_NAME(name)   ,#name
+#define DEBUG_ONLY_NAME(name)   , #name
 #else
 #define DEBUG_ONLY_NAME(name)
 #endif
@@ -206,9 +206,11 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
             if (maxStackPos > 0) {
                 for (; j >= 0; j--) {
                     ESIR* esir = block->instruction(j);
-                    if (esir->targetIndex() < 0) continue;
+                    if (esir->targetIndex() < 0)
+                        continue;
                     unsigned stackPos = m_graph->getOperandStackPos(esir->targetIndex());
-                    if (!(stackPos > 0 && stackPos <= maxStackPos && !writeFlags[stackPos - 1])) continue;
+                    if (!(stackPos > 0 && stackPos <= maxStackPos && !writeFlags[stackPos - 1]))
+                        continue;
                     Type type = m_graph->getOperandType(esir->targetIndex());
                     LIns* lIns = m_tmpToLInsMapping[esir->targetIndex()];
                     if (lIns) {
@@ -231,7 +233,8 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
                 m_out->insStore(LIR_sti, maxStackPosLIns, m_contextP, ExecutionContext::offsetofStackPos(), 1);
                 isDone = true;
             }
-            if (isDone) break;
+            if (isDone)
+                break;
         }
     }
 
@@ -719,7 +722,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     case ESIR::Opcode::ConstantInt:
         {
             INIT_ESIR(ConstantInt);
-            return  m_out->insImmI(irConstantInt->value());
+            return m_out->insImmI(irConstantInt->value());
         }
     case ESIR::Opcode::ConstantDouble:
         {
@@ -1193,7 +1196,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             }
             LIns* argumentCount = m_out->insImmI(irCallJS->argumentCount());
             if (irCallJS->receiverIndex() == -1) {
-                for (size_t i=0; i<irCallJS->argumentCount(); i++) {
+                for (size_t i = 0; i < irCallJS->argumentCount(); i++) {
                     LIns* argument = getTmpMapping(irCallJS->argumentIndex(i));
                     LIns* boxedArgument = boxESValue(argument, m_graph->getOperandType(irCallJS->argumentIndex(i)));
                     m_out->insStore(LIR_ste, boxedArgument, arguments, i * sizeof(ESValue), 1);
@@ -1204,7 +1207,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             } else {
                 LIns* receiver = getTmpMapping(irCallJS->receiverIndex());
                 LIns* boxedReceiver = boxESValue(receiver,  m_graph->getOperandType(irCallJS->receiverIndex()));
-                for (size_t i=0; i<irCallJS->argumentCount(); i++) {
+                for (size_t i = 0; i < irCallJS->argumentCount(); i++) {
                     LIns* argument = getTmpMapping(irCallJS->argumentIndex(i));
                     LIns* boxedArgument = boxESValue(argument, m_graph->getOperandType(irCallJS->argumentIndex(i)));
                     m_out->insStore(LIR_ste, boxedArgument, arguments, i * sizeof(ESValue), 1);
@@ -1226,7 +1229,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
                 arguments = m_out->insImmP(0);
             }
             LIns* argumentCount = m_out->insImmI(irCallNewJS->argumentCount());
-            for (size_t i=0; i<irCallNewJS->argumentCount(); i++) {
+            for (size_t i = 0; i < irCallNewJS->argumentCount(); i++) {
                 LIns* argument = getTmpMapping(irCallNewJS->argumentIndex(i));
                 LIns* boxedArgument = boxESValue(argument, m_graph->getOperandType(irCallNewJS->argumentIndex(i)));
                 m_out->insStore(LIR_ste, boxedArgument, arguments, i * sizeof(ESValue), 1);
@@ -1843,7 +1846,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
                 }
                 */
 
-                LIns* result = m_out->insAlloc(sizeof (ESValue));
+                LIns* result = m_out->insAlloc(sizeof(ESValue));
 
                 // FIXME in ecmascript, range of index is 0~2^32-1
                 // use uint32_t for indexing
@@ -2246,7 +2249,7 @@ bool NativeGenerator::nanojitCodegen(ESVMInstance* instance)
     exit->from = m_f;
     exit->target = NULL;
 
-    GuardRecord *rec = new GuardRecord();
+    GuardRecord* rec = new GuardRecord();
     memset(rec, 0, sizeof(GuardRecord));
     rec->exit = exit;
     exit->addGuard(rec);
@@ -2293,7 +2296,7 @@ JITFunction generateNativeFromIR(ESGraph* graph, ESVMInstance* instance)
     unsigned long time3 = ESVMInstance::currentInstance()->tickCount();
     if (ESVMInstance::currentInstance()->m_profile)
         printf("JIT Compilation Took %lfms, %lfms each for nanojit/native generation\n",
-            (time2-time1)/1000.0, (time3-time2)/1000.0);
+            (time2-time1) / 1000.0, (time3-time2) / 1000.0);
 
     return function;
 }
@@ -2311,15 +2314,15 @@ JITFunction addDouble()
 #endif
 
     Config config;
-    Allocator *alloc = new Allocator();
-    CodeAlloc *codeAlloc = new CodeAlloc(&config);
-    Assembler *assm = new  Assembler(*codeAlloc, *alloc, *alloc, &lc, config);
-    LirBuffer *buf = new LirBuffer(*alloc);
+    Allocator* alloc = new Allocator();
+    CodeAlloc* codeAlloc = new CodeAlloc(&config);
+    Assembler* assm = new  Assembler(*codeAlloc, *alloc, *alloc, &lc, config);
+    LirBuffer* buf = new LirBuffer(*alloc);
 #ifdef DEBUG
     buf->printer = new LInsPrinter(*alloc, 1);
 #endif
 
-    Fragment *f = new Fragment(NULL verbose_only(, 0));
+    Fragment* f = new Fragment(NULL verbose_only(, 0));
     f->lirbuf = buf;
 
     // Create a LIR writer
@@ -2328,9 +2331,9 @@ JITFunction addDouble()
     // Write a few LIR instructions to the buffer: add the first parameter
     // to the constant 2.
     out.ins0(LIR_start);
-    LIns *two = out.insImmD(2);
-    LIns *firstParam = out.insParam(0, 0);
-    LIns *result = out.ins2(LIR_addd, firstParam, two);
+    LIns* two = out.insImmD(2);
+    LIns* firstParam = out.insParam(0, 0);
+    LIns* result = out.ins2(LIR_addd, firstParam, two);
     out.ins1(LIR_rete, result);
 
     SideExit* exit = new SideExit();
@@ -2338,7 +2341,7 @@ JITFunction addDouble()
     exit->from = f;
     exit->target = NULL;
 
-    GuardRecord *rec = new GuardRecord();
+    GuardRecord* rec = new GuardRecord();
     memset(rec, 0, sizeof(GuardRecord));
     rec->exit = exit;
     exit->addGuard(rec);
@@ -2354,7 +2357,7 @@ JITFunction addDouble()
     printf("Compilation successful.\n");
 
     unsigned long end = ESVMInstance::currentInstance()->tickCount();
-    printf("JIT Compilation Took %lf ms\n",(end-start)/1000.0);
+    printf("JIT Compilation Took %lf ms\n", (end-start) / 1000.0);
 
     return reinterpret_cast<JITFunction>(f->code());
 }
@@ -2373,18 +2376,18 @@ int nanoJITTest()
 
 #if 0
     // Set up the basic Nanojit objects.
-    Allocator *alloc = new VMAllocator();
-    CodeAlloc *codeAlloc = new CodeAlloc();
-    Assembler *assm = new (&gc) Assembler(*codeAlloc, *alloc, &core, &lc);
-    Fragmento *fragmento;
-    LirBuffer *buf = new (*alloc) LirBuffer(*alloc);
+    Allocator* alloc = new VMAllocator();
+    CodeAlloc* codeAlloc = new CodeAlloc();
+    Assembler* assm = new (&gc) Assembler(*codeAlloc, *alloc, &core, &lc);
+    Fragmento* fragmento;
+    LirBuffer* buf = new (*alloc) LirBuffer(*alloc);
 #else
     Config config;
-    Allocator *alloc = new Allocator();
-    CodeAlloc *codeAlloc = new CodeAlloc(&config);
-    Assembler *assm = new Assembler(*codeAlloc, *alloc, *alloc, &lc, config);
+    Allocator* alloc = new Allocator();
+    CodeAlloc* codeAlloc = new CodeAlloc(&config);
+    Assembler* assm = new Assembler(*codeAlloc, *alloc, *alloc, &lc, config);
     // Fragmento *fragmento;
-    LirBuffer *buf = new LirBuffer(*alloc);
+    LirBuffer* buf = new LirBuffer(*alloc);
 #ifdef DEBUG
     buf->printer = new LInsPrinter(*alloc, 1);
 #endif
@@ -2392,11 +2395,11 @@ int nanoJITTest()
 
 #if 0
     // Create a Fragment to hold some native code.
-    Fragment *f = fragmento->getAnchor((void *)0xdeadbeef);
+    Fragment* f = fragmento->getAnchor((void *)0xdeadbeef);
     f->lirbuf = buf;
     f->root = f;
 #else
-    Fragment *f = new Fragment(NULL verbose_only(, 0));
+    Fragment* f = new Fragment(NULL verbose_only(, 0));
     f->lirbuf = buf;
 #endif
 
@@ -2406,19 +2409,19 @@ int nanoJITTest()
     // Write a few LIR instructions to the buffer: add the first parameter
     // to the constant 2.
     out.ins0(LIR_start);
-    LIns *two = out.insImmI(2);
-    LIns *firstParam = out.insParam(0, 0);
-    LIns *result = out.ins2(LIR_addi, firstParam, two);
+    LIns* two = out.insImmI(2);
+    LIns* firstParam = out.insParam(0, 0);
+    LIns* result = out.ins2(LIR_addi, firstParam, two);
     out.ins1(LIR_reti, result);
 
 #if 0
-    // Emit a LIR_loop instruction.  It won't be reached, but there's
+    // Emit a LIR_loop instruction. It won't be reached, but there's
     // an assertion in Nanojit that trips if a fragment doesn't end with
     // a guard (a bug in Nanojit).
-    LIns *rec_ins = out.insSkip(sizeof(GuardRecord) + sizeof(SideExit));
-    GuardRecord *guard = (GuardRecord *) rec_ins->payload();
+    LIns* rec_ins = out.insSkip(sizeof(GuardRecord) + sizeof(SideExit));
+    GuardRecord* guard = (GuardRecord *) rec_ins->payload();
     memset(guard, 0, sizeof(*guard));
-    SideExit *exit = (SideExit *)(guard + 1);
+    SideExit* exit = (SideExit *)(guard + 1);
     guard->exit = exit;
     guard->exit->target = f;
     f->lastIns = out.insGuard(LIR_loop, out.insImm(1), rec_ins);
@@ -2428,7 +2431,7 @@ int nanoJITTest()
     exit->from = f;
     exit->target = NULL;
 
-    GuardRecord *rec = new GuardRecord();
+    GuardRecord* rec = new GuardRecord();
     memset(rec, 0, sizeof(GuardRecord));
     rec->exit = exit;
     exit->addGuard(rec);
@@ -2445,7 +2448,7 @@ int nanoJITTest()
     printf("Compilation successful.\n");
 
     unsigned long end = ESVMInstance::currentInstance()->tickCount();
-    printf("Took %lf ms\n",(end-start)/1000.0);
+    printf("Took %lf ms\n", (end-start) / 1000.0);
 
     typedef int32_t (*AddTwoFn)(int32_t);
     AddTwoFn fn = reinterpret_cast<AddTwoFn>(f->code());

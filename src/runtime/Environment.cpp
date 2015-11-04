@@ -28,7 +28,7 @@ LexicalEnvironment* LexicalEnvironment::newFunctionEnvironment(ESValue arguments
     return env;
 }
 
-void EnvironmentRecord::createMutableBindingForAST(const InternalAtomicString& atomicName,bool canDelete)
+void EnvironmentRecord::createMutableBindingForAST(const InternalAtomicString& atomicName, bool canDelete)
 {
     if (UNLIKELY(isGlobalEnvironmentRecord())) {
         toGlobalEnvironmentRecord()->createGlobalVarBinding(atomicName, canDelete);
@@ -42,9 +42,9 @@ void DeclarativeEnvironmentRecord::createMutableBinding(const InternalAtomicStri
     // TODO canDelete
     ASSERT(m_needsActivation);
     size_t siz = m_activationData.size();
-    for (unsigned i = 0; i < siz ; i ++) {
+    for (unsigned i = 0; i < siz; i ++) {
         if (m_activationData[i].first == name) {
-            return ;
+            return;
         }
     }
     m_activationData.push_back(std::make_pair(name, ESValue()));
@@ -54,7 +54,7 @@ void DeclarativeEnvironmentRecord::createMutableBinding(const InternalAtomicStri
 // $8.1.1.4.12
 bool GlobalEnvironmentRecord::hasVarDeclaration(const InternalAtomicString& name)
 {
-    if ( std::find(m_varNames.begin(), m_varNames.end(), name) != m_varNames.end() )
+    if (std::find(m_varNames.begin(), m_varNames.end(), name) != m_varNames.end())
         return true;
     return false;
 }
@@ -102,7 +102,7 @@ void GlobalEnvironmentRecord::createGlobalVarBinding(const InternalAtomicString&
         m_objectRecord->createMutableBinding(name, canDelete);
         m_objectRecord->initializeBinding(name, ESValue());
     }
-    if ( std::find(m_varNames.begin(), m_varNames.end(), name) == m_varNames.end() )
+    if (std::find(m_varNames.begin(), m_varNames.end(), name) == m_varNames.end())
         m_varNames.push_back(name);
 }
 
@@ -110,7 +110,7 @@ void GlobalEnvironmentRecord::createGlobalVarBinding(const InternalAtomicString&
 void GlobalEnvironmentRecord::createGlobalFunctionBinding(const InternalAtomicString& name, const ESValue& V, bool canDelete) {
     ESObject* globalObj = m_objectRecord->bindingObject();
     globalObj->defineDataProperty(name.string(), true, true, canDelete, V);
-    if ( std::find(m_varNames.begin(), m_varNames.end(), name) == m_varNames.end() )
+    if (std::find(m_varNames.begin(), m_varNames.end(), name) == m_varNames.end())
         m_varNames.push_back(name);
 }
 
@@ -129,14 +129,14 @@ ESValue* GlobalEnvironmentRecord::hasBinding(const InternalAtomicString& atomicN
 
 // $8.1.1.4.2
 void GlobalEnvironmentRecord::createMutableBinding(const InternalAtomicString& name, bool canDelete) {
-    if ( m_declarativeRecord->hasBinding(name) )
+    if (m_declarativeRecord->hasBinding(name))
         throw "TypeError";
     m_declarativeRecord->createMutableBinding(name, canDelete);
 }
 
 // $8.1.1.4.4
 void GlobalEnvironmentRecord::initializeBinding(const InternalAtomicString& name, const ESValue& V) {
-    if ( m_declarativeRecord->hasBinding(name))
+    if (m_declarativeRecord->hasBinding(name))
         m_declarativeRecord->initializeBinding(name, V);
     else {
         ASSERT(m_objectRecord->hasBinding(name));
@@ -160,7 +160,7 @@ ESValue GlobalEnvironmentRecord::getBindingValue(const InternalAtomicString& nam
 // $8.1.1.4.5
 // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-global-environment-records-setmutablebinding-n-v-s
 void GlobalEnvironmentRecord::setMutableBinding(const InternalAtomicString& name, const ESValue& V, bool S) {
-    if ( m_declarativeRecord->hasBinding(name)) {
+    if (m_declarativeRecord->hasBinding(name)) {
         m_declarativeRecord->setMutableBinding(name, V, S);
     } else {
         m_objectRecord->setMutableBinding(name, V, S);

@@ -102,7 +102,8 @@ bool ESValue::abstractEqualsToSlowCase(const ESValue& val)
 
         return false;
     } else {
-        if (isUndefinedOrNull() && val.isUndefinedOrNull()) return true;
+        if (isUndefinedOrNull() && val.isUndefinedOrNull())
+            return true;
 
         // If Type(x) is Number and Type(y) is String,
         if (isNumber() && val.isESString()) {
@@ -246,7 +247,7 @@ ESStringData::ESStringData(double number)
 
     if (number == 0) {
         operator += ('0');
-        return ;
+        return;
     }
     const int flags = UNIQUE_ZERO | EMIT_POSITIVE_EXPONENT_SIGN;
     bool sign = false;
@@ -275,7 +276,7 @@ ESStringData::ESStringData(double number)
     /* reserve(decimal_rep_length + sign ? 1 : 0);
     if (sign)
         operator +=('-');
-    for (unsigned i = 0; i < decimal_rep_length ; i ++) {
+    for (unsigned i = 0; i < decimal_rep_length; i ++) {
         operator +=(decimal_rep[i]);
     }*/
 
@@ -313,7 +314,7 @@ uint32_t ESString::tryToUseAsIndex()
     const u16string& s = string();
     bool allOfCharIsDigit = true;
     uint32_t number = 0;
-    for (unsigned i = 0; i < s.length() ; i ++) {
+    for (unsigned i = 0; i < s.length(); i ++) {
         char16_t c = s[i];
         if (c < '0' || c > '9') {
             allOfCharIsDigit = false;
@@ -422,12 +423,12 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
     if (length) {
         size_t start = startIndex;
         unsigned result = 0;
-        const char16_t *chars = m_string->data();
-        unsigned* outputBuf = (unsigned int*)alloca(sizeof (unsigned) * 2 * (subPatternNum + 1));
+        const char16_t* chars = m_string->data();
+        unsigned* outputBuf = (unsigned int*)alloca(sizeof(unsigned) * 2 * (subPatternNum + 1));
         outputBuf[1] = start;
         do {
             start = outputBuf[1];
-            memset(outputBuf,-1,sizeof (unsigned) * 2 * (subPatternNum + 1));
+            memset(outputBuf, -1, sizeof(unsigned) * 2 * (subPatternNum + 1));
             if (start >= length)
                 break;
             result = JSC::Yarr::interpret(NULL, byteCode, chars, length, start, outputBuf);
@@ -438,7 +439,7 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
                 std::vector<ESString::RegexMatchResult::RegexMatchResultPiece> piece;
                 piece.reserve(subPatternNum + 1);
 
-                for (unsigned i = 0; i < subPatternNum + 1 ; i ++) {
+                for (unsigned i = 0; i < subPatternNum + 1; i ++) {
                     ESString::RegexMatchResult::RegexMatchResultPiece p;
                     p.m_start = outputBuf[i*2];
                     p.m_end = outputBuf[i*2 + 1];
@@ -579,7 +580,7 @@ ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctio
 
     if (UNLIKELY(fn->codeBlock()->m_needsActivation)) {
         const InternalAtomicStringVector& params = fn->codeBlock()->m_params;
-        for (unsigned i = 0; i < params.size() ; i ++) {
+        for (unsigned i = 0; i < params.size(); i ++) {
             if (i < argumentCount) {
                 *functionRecord->bindingValueForActivationMode(i) = arguments[i];
             }
@@ -615,7 +616,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
         // update profile data
         char* code = fn->codeBlock()->m_code.data();
         size_t siz = fn->codeBlock()->m_byteCodeIndexesHaveToProfile.size();
-        for (unsigned i = 0; i < siz ; i ++) {
+        for (unsigned i = 0; i < siz; i ++) {
             size_t pos = fn->codeBlock()->m_extraData[fn->codeBlock()->m_byteCodeIndexesHaveToProfile[i]].m_codePosition;
             ByteCode* currentCode = (ByteCode *)&code[pos];
             Opcode opcode = fn->codeBlock()->m_extraData[fn->codeBlock()->m_byteCodeIndexesHaveToProfile[i]].m_opcode;
@@ -699,7 +700,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
                             LOG_VJ("> Unsupported ByteCode %s (idx %u). Stop trying JIT.\n", #opcode, (unsigned)idx); \
                             break; \
                         } \
-                        idx += sizeof (opcode); \
+                        idx += sizeof(opcode); \
                         bytecodeCounter++; \
                         break;
                         FOR_EACH_BYTECODE_OP(DECLARE_EXECUTE_NEXTCODE);
@@ -719,7 +720,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
             bool compileNextTime = false;
             // check profile data
             char* code = fn->codeBlock()->m_code.data();
-            for (unsigned i = 0; i < fn->codeBlock()->m_byteCodeIndexesHaveToProfile.size() ; i ++) {
+            for (unsigned i = 0; i < fn->codeBlock()->m_byteCodeIndexesHaveToProfile.size(); i ++) {
                 size_t pos = fn->codeBlock()->m_extraData[fn->codeBlock()->m_byteCodeIndexesHaveToProfile[i]].m_codePosition;
                 Opcode opcode = fn->codeBlock()->m_extraData[fn->codeBlock()->m_byteCodeIndexesHaveToProfile[i]].m_opcode;
                 ByteCode* currentCode = (ByteCode *)&code[pos];
@@ -893,7 +894,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
                 switch (opcode) {
 #define DECLARE_EXECUTE_NEXTCODE(code, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
                 case code##Opcode: \
-                    idx += sizeof (code); \
+                    idx += sizeof(code); \
                     bytecodeCounter++; \
                     continue;
                     FOR_EACH_BYTECODE_OP(DECLARE_EXECUTE_NEXTCODE);
@@ -1023,7 +1024,7 @@ static inline double ymdhmsToSeconds(long year, int mon, int day, int hour, int 
 
 
 void ESDateObject::setTimeValue() {
-    clock_gettime(CLOCK_REALTIME,&m_time);
+    clock_gettime(CLOCK_REALTIME, &m_time);
     m_isCacheDirty = true;
 }
 
@@ -1043,7 +1044,7 @@ void ESDateObject::setTimeValue(int year, int month, int date, int hour, int min
 void ESDateObject::resolveCache()
 {
     if (m_isCacheDirty) {
-        memcpy(&m_cachedTM, ESVMInstance::currentInstance()->computeLocalTime(m_time), sizeof (tm));
+        memcpy(&m_cachedTM, ESVMInstance::currentInstance()->computeLocalTime(m_time), sizeof(tm));
         m_isCacheDirty = false;
     }
 }

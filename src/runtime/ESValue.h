@@ -733,9 +733,9 @@ public:
 
     struct RegexMatchResult {
         struct RegexMatchResultPiece {
-            unsigned m_start,m_end;
+            unsigned m_start, m_end;
         };
-        COMPILE_ASSERT((sizeof (RegexMatchResultPiece)) == (sizeof (unsigned) * 2),sizeof_RegexMatchResultPiece_wrong);
+        COMPILE_ASSERT((sizeof(RegexMatchResultPiece)) == (sizeof(unsigned) * 2), sizeof_RegexMatchResultPiece_wrong);
         int m_subPatternNum;
         std::vector< std::vector< RegexMatchResultPiece > > m_matchResults;
     };
@@ -744,19 +744,19 @@ public:
     ESString(const ESString& s) = delete;
     void operator =(const ESString& s) = delete;
 
-    ALWAYS_INLINE friend bool operator == (const ESString& a,const char16_t* b);
-    ALWAYS_INLINE friend bool operator != (const ESString& a,const char16_t* b);
-    ALWAYS_INLINE friend bool operator == (const ESString& a,const ESString& b);
-    ALWAYS_INLINE friend bool operator != (const ESString& a,const ESString& b);
-    ALWAYS_INLINE friend bool operator < (const ESString& a,const ESString& b);
-    ALWAYS_INLINE friend bool operator > (const ESString& a,const ESString& b);
-    ALWAYS_INLINE friend bool operator <= (const ESString& a,const ESString& b);
-    ALWAYS_INLINE friend bool operator >= (const ESString& a,const ESString& b);
+    ALWAYS_INLINE friend bool operator == (const ESString& a, const char16_t* b);
+    ALWAYS_INLINE friend bool operator != (const ESString& a, const char16_t* b);
+    ALWAYS_INLINE friend bool operator == (const ESString& a, const ESString& b);
+    ALWAYS_INLINE friend bool operator != (const ESString& a, const ESString& b);
+    ALWAYS_INLINE friend bool operator < (const ESString& a, const ESString& b);
+    ALWAYS_INLINE friend bool operator > (const ESString& a, const ESString& b);
+    ALWAYS_INLINE friend bool operator <= (const ESString& a, const ESString& b);
+    ALWAYS_INLINE friend bool operator >= (const ESString& a, const ESString& b);
 
 #ifndef NDEBUG
     void show() const
     {
-        printf("%s\n",utf8Data());
+        printf("%s\n", utf8Data());
     }
 #endif
 
@@ -768,17 +768,17 @@ protected:
     ESStringData* m_string;
 };
 
-ALWAYS_INLINE bool operator == (const ESString& a,const char16_t* b)
+ALWAYS_INLINE bool operator == (const ESString& a, const char16_t* b)
 {
     return a.string() == b;
 }
 
-ALWAYS_INLINE bool operator != (const ESString& a,const char16_t* b)
+ALWAYS_INLINE bool operator != (const ESString& a, const char16_t* b)
 {
     return a.string() != b;
 }
 
-ALWAYS_INLINE bool operator == (const ESString& a,const ESString& b)
+ALWAYS_INLINE bool operator == (const ESString& a, const ESString& b)
 {
     const ESStringData* dataA = a.stringData();
     const ESStringData* dataB = b.stringData();
@@ -794,32 +794,32 @@ ALWAYS_INLINE bool operator == (const ESString& a,const ESString& b)
     return false;
 }
 
-ALWAYS_INLINE bool operator != (const ESString& a,const ESString& b)
+ALWAYS_INLINE bool operator != (const ESString& a, const ESString& b)
 {
     return !operator ==(a, b);
 }
 
-ALWAYS_INLINE bool operator < (const ESString& a,const ESString& b)
+ALWAYS_INLINE bool operator < (const ESString& a, const ESString& b)
 {
     return a.string() < b.string();
 }
 
-ALWAYS_INLINE bool operator > (const ESString& a,const ESString& b)
+ALWAYS_INLINE bool operator > (const ESString& a, const ESString& b)
 {
     return a.string() > b.string();
 }
 
-ALWAYS_INLINE bool operator <= (const ESString& a,const ESString& b)
+ALWAYS_INLINE bool operator <= (const ESString& a, const ESString& b)
 {
     return a.string() <= b.string();
 }
 
-ALWAYS_INLINE bool operator >= (const ESString& a,const ESString& b)
+ALWAYS_INLINE bool operator >= (const ESString& a, const ESString& b)
 {
     return a.string() >= b.string();
 }
 
-typedef std::vector<ESString *,gc_allocator<ESString *> > ESStringVector;
+typedef std::vector<ESString *, gc_allocator<ESString *> > ESStringVector;
 
 class ESRopeString : public ESString {
     friend class ESString;
@@ -1084,7 +1084,7 @@ struct ESHiddenClassPropertyInfo {
 };
 
 typedef std::unordered_map<::escargot::ESString*, size_t,
-    std::hash<ESString*>,std::equal_to<ESString*>,
+    std::hash<ESString*>, std::equal_to<ESString*>,
     gc_allocator< std::pair<const ::escargot::ESString*, size_t> > > ESHiddenClassPropertyIndexHashMapInfoStd;
 typedef std::vector<::escargot::ESHiddenClassPropertyInfo, gc_allocator<::escargot::ESHiddenClassPropertyInfo> > ESHiddenClassPropertyInfoVectorStd;
 
@@ -1096,7 +1096,7 @@ class ESHiddenClassPropertyInfoVector : public ESHiddenClassPropertyInfoVectorSt
 };
 
 typedef std::unordered_map<ESString*, ::escargot::ESHiddenClass **,
-std::hash<ESString*>,std::equal_to<ESString*>,
+std::hash<ESString*>, std::equal_to<ESString*>,
 gc_allocator<std::pair<const ESString*, std::pair<::escargot::ESHiddenClass *, ::escargot::ESHiddenClass **> > > > ESHiddenClassTransitionDataStd;
 
 typedef std::vector<::escargot::ESValue, gc_allocator<::escargot::ESValue> > ESValueVectorStd;
@@ -1234,14 +1234,14 @@ public:
         defineDataProperty(name.string(), isWritable, isEnumerable, isConfigurable, initalValue);
     }
     inline void defineDataProperty(const escargot::ESValue& key, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true, const ESValue& initalValue = ESValue());
-    inline void defineAccessorProperty(const escargot::ESValue& key,ESPropertyAccessorData* data, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true);
-    inline void defineAccessorProperty(const escargot::ESValue& key,ESValue (*getter)(::escargot::ESObject* obj),
+    inline void defineAccessorProperty(const escargot::ESValue& key, ESPropertyAccessorData* data, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true);
+    inline void defineAccessorProperty(const escargot::ESValue& key, ESValue (*getter)(::escargot::ESObject* obj),
         void (*setter)(::escargot::ESObject* obj, const ESValue& value),
         bool isWritable, bool isEnumerable, bool isConfigurable)
     {
         defineAccessorProperty(key, new ESPropertyAccessorData(getter, setter), isWritable, isEnumerable, isConfigurable);
     }
-    inline void defineAccessorProperty(escargot::ESString* key,ESValue (*getter)(::escargot::ESObject* obj),
+    inline void defineAccessorProperty(escargot::ESString* key, ESValue (*getter)(::escargot::ESObject* obj),
         void (*setter)(::escargot::ESObject* obj, const ESValue& value),
         bool isWritable, bool isEnumerable, bool isConfigurable)
     {
@@ -1402,7 +1402,7 @@ public:
     void setTimeValue(int year, int month, int date, int hour, int minute, int second, int millisecond);
 
     double getTimeAsMilisec() {
-        return m_time.tv_sec*1000 + floor(m_time.tv_nsec/1000000);
+        return m_time.tv_sec*1000 + floor(m_time.tv_nsec / 1000000);
     }
 
     int getDate();
@@ -1509,7 +1509,8 @@ public:
         // wprintf(L"CONVERT TO SLOW MODE!!!  \n");
         m_fastmode = false;
         uint32_t len = length();
-        if (len == 0) return;
+        if (len == 0)
+            return;
 
         ESValue* dataPtr = m_vector.data();
         for (uint32_t i = 0; i < len; i++) {
@@ -1567,7 +1568,7 @@ public:
         RELEASE_ASSERT(isFastmode());
         // TODO non fast mode sort
 
-        std::sort(m_vector.begin(), m_vector.end(),c);
+        std::sort(m_vector.begin(), m_vector.end(), c);
     }
 
 #ifdef ENABLE_ESJIT
@@ -1784,7 +1785,8 @@ public:
     }
     bool isDetachedBuffer()
     {
-        if (data() == NULL) return true;
+        if (data() == NULL)
+            return true;
         return false;
     }
     void detachArrayBuffer()
@@ -1950,7 +1952,8 @@ public:
     }
     bool set(int key, ESValue val)
     {
-        if (key < 0 || key >= arraylength()) return false;
+        if (key < 0 || key >= arraylength())
+            return false;
         unsigned idxPosition = key * elementSize() + byteoffset();
         escargot::ESArrayBufferObject* b = buffer();
         return b->setValueInBuffer<TypeAdaptor>(idxPosition, arraytype(), val);

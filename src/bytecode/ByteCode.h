@@ -293,7 +293,7 @@ struct ByteCodeGenerateContext {
     ALWAYS_INLINE void consumeLabeledBreakPositions(CodeBlock* cb, size_t position, ESString* lbl);
     ALWAYS_INLINE void consumeContinuePositions(CodeBlock* cb, size_t position);
     ALWAYS_INLINE void consumeLabeledContinuePositions(CodeBlock* cb, size_t position, ESString* lbl);
-    ALWAYS_INLINE void morphJumpPositionIntoComplexCase(CodeBlock* cb,size_t codePos);
+    ALWAYS_INLINE void morphJumpPositionIntoComplexCase(CodeBlock* cb, size_t codePos);
 #ifdef ENABLE_ESJIT
     ALWAYS_INLINE int lastUsedSSAIndex()
     {
@@ -566,7 +566,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("GetByIdWithoutException <%s>\n",m_name.string()->utf8Data());
+        printf("GetByIdWithoutException <%s>\n", m_name.string()->utf8Data());
     }
 #endif
 };
@@ -750,7 +750,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("CreateBinding <%s>\n",m_name.string()->utf8Data());
+        printf("CreateBinding <%s>\n", m_name.string()->utf8Data());
     }
 #endif
 };
@@ -1008,7 +1008,7 @@ public:
 
 class Multiply : public ByteCode {
 public:
-    Multiply ()
+    Multiply()
         : ByteCode(MultiplyOpcode)
     {
 
@@ -1262,7 +1262,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("JumpIfTopOfStackValueIsFalse <%u>\n",(unsigned)m_jumpPosition);
+        printf("JumpIfTopOfStackValueIsFalse <%u>\n", (unsigned)m_jumpPosition);
     }
 #endif
 };
@@ -1280,7 +1280,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("JumpIfTopOfStackValueIsTrue <%u>\n",(unsigned)m_jumpPosition);
+        printf("JumpIfTopOfStackValueIsTrue <%u>\n", (unsigned)m_jumpPosition);
     }
 #endif
 };
@@ -1298,7 +1298,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("JumpAndPopIfTopOfStackValueIsTrue <%u>\n",(unsigned)m_jumpPosition);
+        printf("JumpAndPopIfTopOfStackValueIsTrue <%u>\n", (unsigned)m_jumpPosition);
     }
 #endif
 };
@@ -1317,7 +1317,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("JumpIfTopOfStackValueIsFalseWithPeeking <%u>\n",(unsigned)m_jumpPosition);
+        printf("JumpIfTopOfStackValueIsFalseWithPeeking <%u>\n", (unsigned)m_jumpPosition);
     }
 #endif
 };
@@ -1335,7 +1335,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("JumpIfTopOfStackValueIsTrueWithPeeking <%u>\n",(unsigned)m_jumpPosition);
+        printf("JumpIfTopOfStackValueIsTrueWithPeeking <%u>\n", (unsigned)m_jumpPosition);
     }
 #endif
 };
@@ -1353,7 +1353,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("CreateObject <%u>\n",(unsigned)m_keyCount);
+        printf("CreateObject <%u>\n", (unsigned)m_keyCount);
     }
 #endif
 };
@@ -1371,7 +1371,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("CreateArray <%u>\n",(unsigned)m_keyCount);
+        printf("CreateArray <%u>\n", (unsigned)m_keyCount);
     }
 #endif
 };
@@ -1451,7 +1451,7 @@ public:
 #endif
 };
 
-ASSERT_STATIC(sizeof(GetObject) == sizeof(GetObjectAndPushObject),"");
+ASSERT_STATIC(sizeof(GetObject) == sizeof(GetObjectAndPushObject), "");
 
 class GetObjectSlowMode : public GetObject {
 public:
@@ -1467,7 +1467,7 @@ public:
 #endif
 };
 
-ASSERT_STATIC(sizeof(GetObject) == sizeof(GetObjectSlowMode),"");
+ASSERT_STATIC(sizeof(GetObject) == sizeof(GetObjectSlowMode), "");
 
 class GetObjectAndPushObjectSlowMode : public GetObjectAndPushObject {
 public:
@@ -1483,7 +1483,7 @@ public:
 #endif
 };
 
-ASSERT_STATIC(sizeof(GetObjectAndPushObject) == sizeof(GetObjectAndPushObjectSlowMode),"");
+ASSERT_STATIC(sizeof(GetObjectAndPushObject) == sizeof(GetObjectAndPushObjectSlowMode), "");
 
 class GetObjectWithPeeking : public ByteCode, public JITProfileTarget {
 public:
@@ -1514,7 +1514,7 @@ public:
 #endif
 };
 
-ASSERT_STATIC(sizeof(GetObjectWithPeeking) == sizeof(GetObjectWithPeekingSlowMode),"");
+ASSERT_STATIC(sizeof(GetObjectWithPeeking) == sizeof(GetObjectWithPeekingSlowMode), "");
 
 class GetObjectPreComputedCase : public ByteCode, public JITProfileTarget {
 public:
@@ -1556,7 +1556,7 @@ public:
     size_t m_cachedIndex;
 };
 
-ASSERT_STATIC(sizeof(GetObjectPreComputedCase) == sizeof(GetObjectPreComputedCaseAndPushObject),"");
+ASSERT_STATIC(sizeof(GetObjectPreComputedCase) == sizeof(GetObjectPreComputedCaseAndPushObject), "");
 
 class GetObjectPreComputedCaseSlowMode : public GetObjectPreComputedCase {
 public:
@@ -1586,7 +1586,7 @@ public:
 #endif
 };
 
-ASSERT_STATIC(sizeof(GetObjectPreComputedCaseAndPushObject) == sizeof(GetObjectPreComputedCaseAndPushObjectSlowMode),"");
+ASSERT_STATIC(sizeof(GetObjectPreComputedCaseAndPushObject) == sizeof(GetObjectPreComputedCaseAndPushObjectSlowMode), "");
 
 class GetObjectWithPeekingPreComputedCase : public ByteCode, public JITProfileTarget  {
 public:
@@ -1623,7 +1623,7 @@ public:
 #endif
 };
 
-ASSERT_STATIC(sizeof(GetObjectWithPeekingPreComputedCase) == sizeof(GetObjectWithPeekingPreComputedCaseSlowMode),"");
+ASSERT_STATIC(sizeof(GetObjectWithPeekingPreComputedCase) == sizeof(GetObjectWithPeekingPreComputedCaseSlowMode), "");
 
 class SetObject : public ByteCode {
 public:
@@ -1654,7 +1654,7 @@ public:
 #endif
 };
 
-ASSERT_STATIC(sizeof(SetObject) == sizeof(SetObjectSlowMode),"");
+ASSERT_STATIC(sizeof(SetObject) == sizeof(SetObjectSlowMode), "");
 
 class SetObjectPreComputedCase : public ByteCode {
 public:
@@ -1692,7 +1692,7 @@ public:
 #endif
 };
 
-ASSERT_STATIC(sizeof(SetObjectPreComputedCase) == sizeof(SetObjectPreComputedCaseSlowMode),"");
+ASSERT_STATIC(sizeof(SetObjectPreComputedCase) == sizeof(SetObjectPreComputedCaseSlowMode), "");
 
 struct EnumerateObjectData : public gc {
     EnumerateObjectData()
@@ -2253,7 +2253,7 @@ private:
 template <typename Type>
 ALWAYS_INLINE void push(void*& stk, void* topOfStack, const Type& ptr)
 {
-    // memcpy(((char *)stk), &ptr, sizeof (Type));
+    // memcpy(((char *)stk), &ptr, sizeof(Type));
     *((Type *)stk) = ptr;
     stk = (void *)(((size_t)stk) + sizeof(Type));
 
@@ -2269,7 +2269,7 @@ ALWAYS_INLINE void push(void*& stk, void* topOfStack, const Type& ptr)
 template <typename Type>
 ALWAYS_INLINE void push(void*& stk, void* topOfStack, Type* ptr)
 {
-    // memcpy(((char *)stk), &ptr, sizeof (Type));
+    // memcpy(((char *)stk), &ptr, sizeof(Type));
     *((Type *)stk) = *ptr;
     stk = (void *)(((size_t)stk) + sizeof(Type));
 
@@ -2286,7 +2286,7 @@ template <typename Type>
 ALWAYS_INLINE Type* pop(void*& stk, void* bp)
 {
 #ifndef NDEBUG
-    if (((size_t)stk) - sizeof (Type) < ((size_t)bp)) {
+    if (((size_t)stk) - sizeof(Type) < ((size_t)bp)) {
         ASSERT_NOT_REACHED();
     }
 #endif
@@ -2314,7 +2314,7 @@ ALWAYS_INLINE void sub(void*& stk, void* bp, size_t offsetToBasePointer)
 template <typename CodeType>
 ALWAYS_INLINE void executeNextCode(size_t& programCounter)
 {
-    programCounter += sizeof (CodeType);
+    programCounter += sizeof(CodeType);
 }
 
 ALWAYS_INLINE size_t jumpTo(char* codeBuffer, const size_t& jumpPosition)
@@ -2427,7 +2427,7 @@ ALWAYS_INLINE void ByteCodeGenerateContext::consumeContinuePositions(CodeBlock* 
     m_continueStatementPositions.clear();
 }
 
-ALWAYS_INLINE void ByteCodeGenerateContext::morphJumpPositionIntoComplexCase(CodeBlock* cb,size_t codePos)
+ALWAYS_INLINE void ByteCodeGenerateContext::morphJumpPositionIntoComplexCase(CodeBlock* cb, size_t codePos)
 {
     auto iter = m_complexCaseStatementPositions.find(codePos);
     if (iter != m_complexCaseStatementPositions.end()) {

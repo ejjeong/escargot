@@ -158,7 +158,7 @@ public:
         return reinterpret_cast<DeclarativeEnvironmentRecord*>(this);
     }
 
-    void createMutableBindingForAST(const InternalAtomicString& atomicName,bool canDelete);
+    void createMutableBindingForAST(const InternalAtomicString& atomicName, bool canDelete);
 
 protected:
 };
@@ -177,7 +177,7 @@ public:
         return ((GlobalObject *)m_bindingObject)->addressOfProperty(atomicName.string());
     }
     void createMutableBinding(const InternalAtomicString& name, bool canDelete = false);
-    void createImmutableBinding(const InternalAtomicString& name, bool throwExecptionWhenAccessBeforeInit = false) {}
+    void createImmutableBinding(const InternalAtomicString& name, bool throwExecptionWhenAccessBeforeInit = false) { }
     void initializeBinding(const InternalAtomicString& name,  const ESValue& V);
     void setMutableBinding(const InternalAtomicString& name, const ESValue& V, bool mustNotThrowTypeErrorExecption);
     /*
@@ -225,7 +225,7 @@ public:
         m_innerIdentifiers = NULL;
         m_needsActivation = true;
         m_activationData.reserve(innerIdentifiers.size());
-        for (unsigned i = 0; i < innerIdentifiers.size() ; i ++) {
+        for (unsigned i = 0; i < innerIdentifiers.size(); i ++) {
             m_activationData.push_back(std::make_pair(innerIdentifiers[i], ESValue()));
         }
     }
@@ -240,7 +240,7 @@ public:
     {
         if (m_needsActivation) {
             size_t siz = m_activationData.size();
-            for (unsigned i = 0; i < siz ; i ++) {
+            for (unsigned i = 0; i < siz; i ++) {
                 if (m_activationData[i].first == atomicName) {
                     return &m_activationData[i].second;
                 }
@@ -248,7 +248,7 @@ public:
 
             return NULL;
         } else {
-            for (unsigned i = 0; i < m_innerIdentifiers->size() ; i ++) {
+            for (unsigned i = 0; i < m_innerIdentifiers->size(); i ++) {
                 if ((*m_innerIdentifiers)[i] == atomicName) {
                     return &m_vectorData[i];
                 }
@@ -263,16 +263,16 @@ public:
         // TODO mustNotThrowTypeErrorExecption
         if (m_needsActivation) {
             size_t siz = m_activationData.size();
-            for (unsigned i = 0; i < siz ; i ++) {
+            for (unsigned i = 0; i < siz; i ++) {
                 if (m_activationData[i].first == name) {
                     m_activationData[i].second = V;
                 }
             }
         } else {
-            for (unsigned i = 0; i < m_innerIdentifiers->size() ; i ++) {
+            for (unsigned i = 0; i < m_innerIdentifiers->size(); i ++) {
                 if ((*m_innerIdentifiers)[i] == name) {
                     m_vectorData[i] = V;
-                    return ;
+                    return;
                 }
             }
             RELEASE_ASSERT_NOT_REACHED();
@@ -298,7 +298,7 @@ public:
             ASSERT(iter != m_mapData->end());
             return iter->second.value();
         } else {
-            for (unsigned i = 0; i < m_usedCount ; i ++) {
+            for (unsigned i = 0; i < m_usedCount; i ++) {
                 if (m_vectorData[i].first == name) {
                     return &m_vectorData[i].second;
                 }
@@ -423,10 +423,10 @@ public:
             m_argumentsObject = argumentsObject;
             unsigned i = 0;
             argumentsObject->set(strings->length.string(), ESValue(m_argumentCount));
-            for (; i < m_argumentCount && i < ESCARGOT_STRINGS_NUMBERS_MAX ; i ++) {
+            for (; i < m_argumentCount && i < ESCARGOT_STRINGS_NUMBERS_MAX; i ++) {
                 argumentsObject->set(strings->numbers[i].string(), m_arguments[i]);
             }
-            for ( ; i < m_argumentCount ; i ++) {
+            for (; i < m_argumentCount; i ++) {
                 argumentsObject->set(ESString::create((int)i), m_arguments[i]);
             }
         }

@@ -31,7 +31,7 @@ bool ESGraphTypeInference::run(ESGraph* graph)
                 {
                     INIT_ESIR(ConstantInt);
                     if (graph->getOperandType(irConstantInt->targetIndex()).isDoubleType())
-                        block->replace(j, ConstantDoubleIR::create(irConstantInt->targetIndex(),(double) irConstantInt->value()));
+                        block->replace(j, ConstantDoubleIR::create(irConstantInt->targetIndex(), (double) irConstantInt->value()));
                     break;
                 }
             case ESIR::Opcode::ConstantDouble:

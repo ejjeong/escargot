@@ -33,7 +33,7 @@ ESVMInstance::ESVMInstance()
     // init goto table
     interpret(this, NULL, 0);
 
-    clock_gettime(CLOCK_REALTIME,&m_cachedTimeOrigin);
+    clock_gettime(CLOCK_REALTIME, &m_cachedTimeOrigin);
     m_cachedTime = localtime(&m_cachedTimeOrigin.tv_sec);
 
     /*
@@ -61,7 +61,7 @@ ESVMInstance::ESVMInstance()
     m_object__proto__AccessorData.setSetter([](::escargot::ESObject* self, const ESValue& value) -> void {
         if (value.isESPointer() && value.asESPointer()->isESObject()) {
             self->set__proto__(value.asESPointer()->asESObject());
-        } else if (value.isUndefined()){
+        } else if (value.isUndefined()) {
             self->set__proto__(ESValue());
         } else if (value.isNull()) {
             self->set__proto__(ESValue(ESValue::ESNull));
@@ -87,7 +87,7 @@ ESVMInstance::ESVMInstance()
         return self->asESFunctionObject()->protoType();
     });
 
-    m_functionPrototypeAccessorData.setSetter([](::escargot::ESObject* self, const ESValue& value){
+    m_functionPrototypeAccessorData.setSetter([](::escargot::ESObject* self, const ESValue& value) {
         self->asESFunctionObject()->setProtoType(value);
     });
 
@@ -143,7 +143,7 @@ void ESVMInstance::exit()
 
 int ESVMInstance::timezoneOffset()
 {
-    return -m_cachedTime->tm_gmtoff/60;
+    return -m_cachedTime->tm_gmtoff / 60;
 }
 
 const tm* ESVMInstance::computeLocalTime(const timespec& ts)
@@ -156,7 +156,7 @@ const tm* ESVMInstance::computeLocalTime(const timespec& ts)
 void ESVMInstance::printValue(ESValue val)
 {
     std::string str;
-    std::function<void (ESValue v)> toString = [&str, &toString](ESValue v) {
+    std::function<void(ESValue v)> toString = [&str, &toString](ESValue v) {
         if (v.isEmpty()) {
             str.append("[Empty Value]");
         } else if (v.isInt32()) {
@@ -169,7 +169,7 @@ void ESVMInstance::printValue(ESValue val)
             str.append(v.toString()->utf8Data());
         } else if (v.isBoolean()) {
             str.append(v.toString()->utf8Data());
-        } else if (v.isESPointer()){
+        } else if (v.isESPointer()) {
             ESPointer* o = v.asESPointer();
             if (o->isESString()) {
                 str.append(o->asESString()->utf8Data());

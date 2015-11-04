@@ -34,7 +34,7 @@ void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, B
     data->m_registerIncrementCount = pushCountFromOpcode(code, op);
     data->m_registerDecrementCount = popCountFromOpcode(code, op);
     context.m_baseRegisterCount = context.m_baseRegisterCount + data->m_registerIncrementCount - data->m_registerDecrementCount;
-    ASSERT(context.m_baseRegisterCount>=0);
+    ASSERT(context.m_baseRegisterCount >= 0);
 
 #ifdef ENABLE_ESJIT
     if (op == AllocPhiOpcode) {
@@ -83,7 +83,7 @@ void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, B
             ASSERT(!peekCount || !data->m_registerDecrementCount);
             auto iter = context.m_ssaComputeStack.end();
             for (int i = 0; i < peekCount ; i ++) {
-                iter --;
+                iter--;
                 int c = *iter;
                 data->m_sourceIndexes.push_back(c);
             }
@@ -162,7 +162,7 @@ CodeBlock* generateByteCode(Node* node)
     // unsigned long start = ESVMInstance::tickCount();
     node->generateStatementByteCode(block, context);
     // unsigned long end = ESVMInstance::tickCount();
-    // printf("generate code takes %lfms\n",(end-start)/1000.0);
+    // printf("generate code takes %lfms\n", (end-start)/1000.0);
 #ifndef NDEBUG
     if (ESVMInstance::currentInstance()->m_dumpByteCode) {
         char* code = block->m_code.data();
@@ -257,9 +257,9 @@ void dumpBytecode(CodeBlock* codeBlock)
         unsigned currentCount = bytecodeCounter;
         ByteCodeExtraData* ex = &codeBlock->m_extraData[currentCount];
         if (currentCode->m_node)
-            printf("%u\t\t%p\t(nodeinfo %d)\t\t",(unsigned)idx, currentCode, (int)currentCode->m_node->sourceLocation().m_lineNumber);
+            printf("%u\t\t%p\t(nodeinfo %d)\t\t", (unsigned)idx, currentCode, (int)currentCode->m_node->sourceLocation().m_lineNumber);
         else
-            printf("%u\t\t%p\t(nodeinfo null)\t\t",(unsigned)idx, currentCode);
+            printf("%u\t\t%p\t(nodeinfo null)\t\t", (unsigned)idx, currentCode);
 
         printf("IdxInfo[%d,+%d,-%d]\t", ex->m_baseRegisterIndex, ex->m_registerIncrementCount, ex->m_registerDecrementCount);
 #ifdef ENABLE_ESJIT
@@ -288,7 +288,7 @@ void dumpBytecode(CodeBlock* codeBlock)
 #define DUMP_BYTE_CODE(code, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
         case code##Opcode:\
             currentCode->dump(); \
-            idx += sizeof (code); \
+            idx += sizeof(code); \
             continue;
             FOR_EACH_BYTECODE_OP(DUMP_BYTE_CODE)
 #undef  DUMP_BYTE_CODE
@@ -319,7 +319,7 @@ void dumpUnsupported(CodeBlock* block)
                 if (!result.second) \
                     names[std::string(#opcode)]++; \
             } \
-            idx += sizeof (opcode); \
+            idx += sizeof(opcode); \
             bytecodeCounter++; \
             break;
             FOR_EACH_BYTECODE_OP(DECLARE_EXECUTE_NEXTCODE);
@@ -328,7 +328,7 @@ void dumpUnsupported(CodeBlock* block)
             break;
         }
     }
-    for (auto it=names.begin(); it!=names.end(); ++it)
+    for (auto it = names.begin(); it != names.end(); ++it)
         std::cout << it->first << "(" << it->second << ") ";
     printf("\n");
 }

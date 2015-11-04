@@ -38,8 +38,8 @@ public:
         return string();
     }
 
-    ALWAYS_INLINE friend bool operator == (const InternalAtomicString& a,const InternalAtomicString& b);
-    ALWAYS_INLINE friend bool operator != (const InternalAtomicString& a,const InternalAtomicString& b);
+    ALWAYS_INLINE friend bool operator == (const InternalAtomicString& a, const InternalAtomicString& b);
+    ALWAYS_INLINE friend bool operator != (const InternalAtomicString& a, const InternalAtomicString& b);
 
 #ifdef ENABLE_ESJIT
 #pragma GCC diagnostic push
@@ -52,14 +52,14 @@ protected:
     ESString* m_string;
 };
 
-ALWAYS_INLINE bool operator == (const InternalAtomicString& a,const InternalAtomicString& b)
+ALWAYS_INLINE bool operator == (const InternalAtomicString& a, const InternalAtomicString& b)
 {
     return a.string() == b.string();
 }
 
-ALWAYS_INLINE bool operator != (const InternalAtomicString& a,const InternalAtomicString& b)
+ALWAYS_INLINE bool operator != (const InternalAtomicString& a, const InternalAtomicString& b)
 {
-    return !operator==(a,b);
+    return !operator==(a, b);
 }
 
 typedef std::vector<InternalAtomicString, gc_allocator<InternalAtomicString> > InternalAtomicStringVector;

@@ -51,7 +51,7 @@ public:
                 else
                     codeBlock->pushCode(GetObjectSlowMode(), context, this);
             }
-            return ;
+            return;
         }
         if (isPreComputedCase()) {
             ASSERT(m_property->type() == NodeType::Identifier);
@@ -78,7 +78,7 @@ public:
             } else {
                 codeBlock->pushCode(SetObjectSlowMode(), context, this);
             }
-            return ;
+            return;
         }
         if (isPreComputedCase()) {
             ASSERT(m_property->type() == NodeType::Identifier);
@@ -106,7 +106,7 @@ public:
             } else {
                 codeBlock->pushCode(GetObjectWithPeekingSlowMode(), context, this);
             }
-            return ;
+            return;
         }
         if (isPreComputedCase()) {
             ASSERT(m_property->type() == NodeType::Identifier);

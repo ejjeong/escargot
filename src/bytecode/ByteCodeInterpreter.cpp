@@ -64,9 +64,9 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         size_t tt = (size_t)currentCode;
         ASSERT(tt % sizeof(size_t) == 0);
         if (currentCode->m_node)
-            printf("execute %p %u \t(nodeinfo %d)\t",currentCode, (unsigned)(programCounter-(size_t)codeBuffer), (int)currentCode->m_node->sourceLocation().m_lineNumber);
+            printf("execute %p %u \t(nodeinfo %d)\t", currentCode, (unsigned)(programCounter-(size_t)codeBuffer), (int)currentCode->m_node->sourceLocation().m_lineNumber);
         else
-            printf("execute %p %u \t(nodeinfo null)\t",currentCode, (unsigned)(programCounter-(size_t)codeBuffer));
+            printf("execute %p %u \t(nodeinfo null)\t", currentCode, (unsigned)(programCounter-(size_t)codeBuffer));
         currentCode->dump();
         fflush(stdout);
     }
@@ -198,7 +198,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         } else {
             ExecutionContext* ec = instance->currentExecutionContext();
             // TODO
-            // Object.defineProperty(this,"asdf",{value:1}) //this == global
+            // Object.defineProperty(this, "asdf", {value:1}) //this == global
             // asdf = 2
             ESValue* slot = ec->resolveBinding(code->m_name);
 
@@ -1062,7 +1062,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         ESValue callee = *ec->resolveBinding(strings->eval);
         if (callee.isESPointer() && (void *)callee.asESPointer() == (void *)globalObject->eval()) {
             ESObject* receiver = instance->globalObject();
-            ESValue ret = instance->runOnEvalContext([instance, &arguments, &argc](){
+            ESValue ret = instance->runOnEvalContext([instance, &arguments, &argc]() {
                 ESValue ret;
                 if (argc)
                     ret = instance->evaluate(const_cast<u16string &>(arguments[0].asESString()->string()), false);

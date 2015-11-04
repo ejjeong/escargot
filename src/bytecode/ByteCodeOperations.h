@@ -161,7 +161,7 @@ ALWAYS_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* propert
 
 // d = {}. d.foo
 ALWAYS_INLINE ESValue getObjectPreComputedCaseOperation(ESValue* willBeObject, ESString* keyString, GlobalObject* globalObject
-    ,ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex)
+    , ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex)
 {
     ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty());
     ESObject* obj;
@@ -173,7 +173,7 @@ GetObjectPreComputedCaseInlineCacheOperation:
             size_t cSiz = cachedHiddenClassChain->size();
             bool miss = !cSiz;
             if (!miss) {
-                for (int i = 0; i < cSiz-1 ; i ++) {
+                for (int i = 0; i < cSiz-1; i ++) {
                     if ((*cachedHiddenClassChain)[i] != obj->hiddenClass()) {
                         miss = true;
                         break;
@@ -242,7 +242,7 @@ GetObjectPreComputedCaseInlineCacheOperation:
 }
 
 NEVER_INLINE ESValue getObjectPreComputedCaseOperationWithNeverInline(ESValue* willBeObject, ESString* property, GlobalObject* globalObject
-    ,ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex);
+    , ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex);
 
 NEVER_INLINE void throwObjectWriteError();
 
@@ -260,10 +260,10 @@ ALWAYS_INLINE void setObjectOperation(ESValue* willBeObject, ESValue* property, 
                 if (LIKELY(idx < arr->length())) {
                     ASSERT(idx != ESValue::ESInvalidIndexValue);
                     arr->data()[idx] = value;
-                    return ;
+                    return;
                 } else {
                     setObjectOperationExpandLengthCase(arr, idx, value);
-                    return ;
+                    return;
                 }
             }
         }
@@ -287,7 +287,7 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
                 if (!obj->hiddenClass()->write(obj, obj, *cachedHiddenClassIndex, value)) {
                     throwObjectWriteError();
                 }
-                return ;
+                return;
             } else if (*hiddenClassWillBe) {
                 size_t cSiz = cachedHiddenClassChain->size();
                 bool miss = false;
@@ -310,7 +310,7 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
                         obj = willBeObject->asESPointer()->asESObject();
                         obj->m_hiddenClassData.push_back(value);
                         obj->m_hiddenClass = *hiddenClassWillBe;
-                        return ;
+                        return;
                     }
                 }
             }
@@ -362,7 +362,7 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
                     *hiddenClassWillBe = NULL;
                 }
             }
-            return ;
+            return;
         }
     }
     setObjectPreComputedCaseOperationSlowCase(willBeObject, keyString, value);

@@ -56,19 +56,19 @@ public:
         typedef pointer_free_allocator<GC_Tp1> other;
     };
 
-    pointer_free_allocator() throw() {}
-    pointer_free_allocator(const pointer_free_allocator&) throw() {}
+    pointer_free_allocator() throw() { }
+    pointer_free_allocator(const pointer_free_allocator&) throw() { }
 # if !(GC_NO_MEMBER_TEMPLATES || 0 < _MSC_VER && _MSC_VER <= 1200)
     // MSVC++ 6.0 do not support member templates
     template <class GC_Tp1> pointer_free_allocator
-    (const pointer_free_allocator<GC_Tp1>&) throw() {}
+    (const pointer_free_allocator<GC_Tp1>&) throw() { }
 # endif
-    ~pointer_free_allocator() throw() {}
+    ~pointer_free_allocator() throw() { }
 
     pointer address(reference GC_x) const { return &GC_x; }
     const_pointer address(const_reference GC_x) const { return &GC_x; }
 
-    // GC_n is permitted to be 0.  The C++ standard says nothing about what
+    // GC_n is permitted to be 0. The C++ standard says nothing about what
     // the return value is when GC_n == 0.
     GC_Tp* allocate(size_type GC_n, const void* = 0) {
         return new(PointerFreeGC) GC_Tp[GC_n];
@@ -126,19 +126,19 @@ public:
         typedef gc_malloc_allocator<GC_Tp1> other;
     };
 
-    gc_malloc_allocator() throw() {}
-    gc_malloc_allocator(const gc_malloc_allocator&) throw() {}
+    gc_malloc_allocator() throw() { }
+    gc_malloc_allocator(const gc_malloc_allocator&) throw() { }
 # if !(GC_NO_MEMBER_TEMPLATES || 0 < _MSC_VER && _MSC_VER <= 1200)
     // MSVC++ 6.0 do not support member templates
     template <class GC_Tp1> gc_malloc_allocator
-    (const gc_malloc_allocator<GC_Tp1>&) throw() {}
+    (const gc_malloc_allocator<GC_Tp1>&) throw() { }
 # endif
-    ~gc_malloc_allocator() throw() {}
+    ~gc_malloc_allocator() throw() { }
 
     pointer address(reference GC_x) const { return &GC_x; }
     const_pointer address(const_reference GC_x) const { return &GC_x; }
 
-    // GC_n is permitted to be 0.  The C++ standard says nothing about what
+    // GC_n is permitted to be 0. The C++ standard says nothing about what
     // the return value is when GC_n == 0.
     GC_Tp* allocate(size_type GC_n, const void* = 0) {
         return (GC_Tp *)GC_MALLOC(sizeof(GC_Tp) * GC_n);

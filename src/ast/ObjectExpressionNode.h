@@ -24,10 +24,10 @@ public:
         for (unsigned i = 0; i < m_properties.size() ; i ++) {
             PropertyNode* p = m_properties[i];
             if (p->key()->type() == NodeType::Identifier) {
-                codeBlock->pushCode(Push(((IdentifierNode* )p->key())->name().string()), context, this);
+                codeBlock->pushCode(Push(((IdentifierNode*)p->key())->name().string()), context, this);
             } else {
                 ASSERT(p->key()->type() == NodeType::Literal);
-                codeBlock->pushCode(Push(((LiteralNode* )p->key())->value()), context, this);
+                codeBlock->pushCode(Push(((LiteralNode*)p->key())->value()), context, this);
             }
 
             p->value()->generateExpressionByteCode(codeBlock, context);

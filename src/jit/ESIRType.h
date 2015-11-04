@@ -107,7 +107,7 @@ public:
     }
 
     bool operator!=(Type& otherType) {
-        return ! operator==(otherType);
+        return !operator==(otherType);
     }
 
 #ifndef NDEBUG
@@ -149,7 +149,7 @@ private:
     uint64_t m_type;
 };
 
-COMPILE_ASSERT((sizeof (Type)) == (sizeof (uint64_t)), sizeof ESJIT::Type should be equal to sizeof uint64_t);
+COMPILE_ASSERT((sizeof(Type)) == (sizeof(uint64_t)), sizeof ESJIT::Type should be equal to sizeof uint64_t);
 
 }}
 #endif

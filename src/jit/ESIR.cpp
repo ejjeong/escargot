@@ -31,7 +31,7 @@ uint32_t ESIR::getFlags()
 
 bool ESIR::returnsESValue()
 {
-    return getFlags() & ReturnsESValue;
+    return getFlags() & 1;
 }
 
 #ifndef NDEBUG

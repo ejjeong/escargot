@@ -21,7 +21,7 @@ enum Token {
     TemplateToken = 10
 };
 
-const char16_t *TokenName[] = {
+const char16_t* TokenName[] = {
     u"",
     u"Boolean",
     u"<end>",
@@ -35,7 +35,7 @@ const char16_t *TokenName[] = {
     u"Template",
 };
 
-const char16_t *FnExprTokens[] = {
+const char16_t* FnExprTokens[] = {
     u"(", u"{", u"[", u"in", u"typeof", u"instanceof", u"new",
     u"return", u"case", u"delete", u"throw", u"void",
     // assignment operators
@@ -43,7 +43,7 @@ const char16_t *FnExprTokens[] = {
     u"&=", u"|=", u"^=", u",",
     // binary/unary operators
     u"+", u"-", u"*", u"/", u"%", u"++", u"--", u"<<", u">>", u">>>", u"&",
-    u"|", u"^", u"!", u"~", u"&&", u"||", u"?",u":",u"===", u"==", u">=",
+    u"|", u"^", u"!", u"~", u"&&", u"||", u"?", u":", u"===", u"==", u">=",
     u"<=", u"<", u">", u"!=", u"!=="
 };
 
@@ -412,7 +412,7 @@ struct ParseContext {
     size_t m_length;
     bool m_allowIn;
     bool m_allowYield;
-    std::vector<escargot::ESString *,gc_allocator<escargot::ESString *>> m_labelSet;
+    std::vector<escargot::ESString *, gc_allocator<escargot::ESString *>> m_labelSet;
     bool m_inFunctionBody;
     bool m_inIteration;
     bool m_inSwitch;
@@ -928,17 +928,17 @@ PassRefPtr<ParseStatus> scanPunctuator(ParseContext* ctx) {
         } else {
             // 3-character punctuators.
 
-            if (resultStr.compare(0,3,u"===") == 0 || resultStr.compare(0,3,u"!==") == 0 || resultStr.compare(0,3,u">>>") == 0 ||
-                resultStr.compare(0,3,u"<<=") == 0 || resultStr.compare(0,3,u">>=") == 0) {
+            if (resultStr.compare(0, 3, u"===") == 0 || resultStr.compare(0, 3, u"!==") == 0 || resultStr.compare(0, 3, u">>>") == 0 ||
+                resultStr.compare(0, 3, u"<<=") == 0 || resultStr.compare(0, 3, u">>=") == 0) {
                 ctx->m_index += 3;
                 resultStr.pop_back();
             } else {
                 // 2-character punctuators.
-                if (resultStr.compare(0,2,u"&&") == 0 || resultStr.compare(0,2,u"||") == 0 || resultStr.compare(0,2,u"==") == 0 || resultStr.compare(0,2,u"!=") == 0 ||
-                    resultStr.compare(0,2,u"+=") == 0 || resultStr.compare(0,2,u"-=") == 0 || resultStr.compare(0,2,u"*=") == 0 || resultStr.compare(0,2,u"/=") == 0 ||
-                    resultStr.compare(0,2,u"++") == 0 || resultStr.compare(0,2,u"--") == 0 || resultStr.compare(0,2,u"<<") == 0 || resultStr.compare(0,2,u">>") == 0 ||
-                    resultStr.compare(0,2,u"&=") == 0 || resultStr.compare(0,2,u"|=") == 0 || resultStr.compare(0,2,u"^=") == 0 || resultStr.compare(0,2,u"%=") == 0 ||
-                    resultStr.compare(0,2,u"<=") == 0 || resultStr.compare(0,2,u">=") == 0 || resultStr.compare(0,2,u"=>") == 0 ) {
+                if (resultStr.compare(0, 2, u"&&") == 0 || resultStr.compare(0, 2, u"||") == 0 || resultStr.compare(0, 2, u"==") == 0 || resultStr.compare(0, 2, u"!=") == 0 ||
+                    resultStr.compare(0, 2, u"+=") == 0 || resultStr.compare(0, 2, u"-=") == 0 || resultStr.compare(0, 2, u"*=") == 0 || resultStr.compare(0, 2, u"/=") == 0 ||
+                    resultStr.compare(0, 2, u"++") == 0 || resultStr.compare(0, 2, u"--") == 0 || resultStr.compare(0, 2, u"<<") == 0 || resultStr.compare(0, 2, u">>") == 0 ||
+                    resultStr.compare(0, 2, u"&=") == 0 || resultStr.compare(0, 2, u"|=") == 0 || resultStr.compare(0, 2, u"^=") == 0 || resultStr.compare(0, 2, u"%=") == 0 ||
+                    resultStr.compare(0, 2, u"<=") == 0 || resultStr.compare(0, 2, u">=") == 0 || resultStr.compare(0, 2, u"=>") == 0) {
                     ctx->m_index += 2;
                     resultStr.pop_back();
                     resultStr.pop_back();
@@ -1243,7 +1243,7 @@ PassRefPtr<ParseStatus> scanTemplate(ParseContext* ctx) {
     status->m_type = Token::TemplateToken;
     status->m_value = std::move(cooked);
     // status->m_value_cooked = cooked;
-    // status->m_value_raw = ctx->m_source.substr(start + 1,ctx->m_index - rawOffset - start + 1);
+    // status->m_value_raw = ctx->m_source.substr(start + 1, ctx->m_index - rawOffset - start + 1);
     status->m_head = head;
     status->m_tail = tail;
     status->m_lineNumber = ctx->m_lineNumber;
@@ -1501,7 +1501,7 @@ PassRefPtr<ParseStatus> scanNumericLiteral(ParseContext* ctx) {
         throwUnexpectedToken();
     }
 
-    double ll = wcstod(number.data(),NULL);
+    double ll = wcstod(number.data(), NULL);
 
     ParseStatus* ps = new ParseStatus;
     ps->m_type = Token::NumericLiteralToken;
@@ -1669,7 +1669,7 @@ ALWAYS_INLINE void expect(ParseContext* ctx, const char16_t* value) {
 ALWAYS_INLINE void expect(ParseContext* ctx, const char16_t& value) {
     RefPtr<ParseStatus> token = lex(ctx);
     // CHECKTHIS. compare value!
-    if (token->m_type != Token::PunctuatorToken || (token->m_value[0] != value || token->m_value.length() != 1) ) {
+    if (token->m_type != Token::PunctuatorToken || (token->m_value[0] != value || token->m_value.length() != 1)) {
         throwUnexpectedToken();
     }
 }
@@ -1913,7 +1913,7 @@ void rearrangeNode(escargot::StatementNodeVector& body)
     for (size_t i = 0; i < body.size() ; i ++) {
         if (body[i]->type() == escargot::NodeType::FunctionDeclaration) {
             findFD = true;
-        } else if (findFD && (body[i]->type() == escargot::NodeType::VariableDeclarator)){
+        } else if (findFD && (body[i]->type() == escargot::NodeType::VariableDeclarator)) {
             ASSERT_NOT_REACHED();
         }
     }
@@ -2042,9 +2042,12 @@ escargot::Node* parseVariableIdentifier(ParseContext* ctx) {
             // throwUnexpectedToken(token);
             throwUnexpectedToken();
         }
-    }/* else if (sourceType === 'module' && token.type === Token.Identifier && token.value === 'await') {
+    }
+    /*
+    else if (sourceType === 'module' && token.type === Token.Identifier && token.value === 'await') {
         tolerateUnexpectedToken(token);
-    }*/
+    }
+    */
 
     escargot::Node* nd = new escargot::IdentifierNode(escargot::InternalAtomicString(token->m_value.data()));
     nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
@@ -2055,7 +2058,7 @@ escargot::VariableDeclaratorNode* parseVariableDeclaration(ParseContext* ctx) {
     // var init = null, id, node = new Node(), params = [];
     escargot::Node* init = nullptr;
     std::vector<RefPtr<ParseStatus> > params;
-    escargot::Node* id = parsePattern(ctx,params);
+    escargot::Node* id = parsePattern(ctx, params);
 
     // ECMA-262 12.2.1
     // if (strict && isRestrictedWord(id.name)) {
@@ -2125,11 +2128,11 @@ escargot::Node* parseVariableStatement(ParseContext* ctx /*node*/) {
 
 // ECMA-262 13.3.1 Let and Const Declarations
 
-escargot::Node* parseLexicalBinding(ParseContext* ctx,escargot::u16string& kind /*options*/) {
+escargot::Node* parseLexicalBinding(ParseContext* ctx, escargot::u16string& kind /*options*/) {
     // var init = null, id, node = new Node(), params = [];
 
     std::vector<RefPtr<ParseStatus> > params;
-    escargot::Node* id = parsePattern(ctx,params);
+    escargot::Node* id = parsePattern(ctx, params);
     escargot::Node* init = nullptr;
 
     // ECMA-262 12.2.1
@@ -2385,7 +2388,9 @@ escargot::Node* parseForStatement(ParseContext* ctx/*node*/) {
                 }
                 expect(ctx, ';');
             }
-        }/* else if (matchKeyword('const') || matchKeyword('let')) {
+        }
+        /*
+        else if (matchKeyword('const') || matchKeyword('let')) {
             init = new Node();
             kind = lex().value;
 
@@ -2410,7 +2415,8 @@ escargot::Node* parseForStatement(ParseContext* ctx/*node*/) {
                 consumeSemicolon();
                 init = init.finishLexicalDeclaration(declarations, kind);
             }
-        } */else {
+        } */
+        else {
             // ParseStatus* initStartToken = ctx->m_lookahead;
             ctx->m_allowIn = false;
             init = inheritCoverGrammar(ctx, parseAssignmentExpression);
@@ -2548,8 +2554,8 @@ escargot::Node* parseContinueStatement(ParseContext* ctx/*node*/) {
                 find = true;
                 break;
             }
-            upCount ++;
-            iter ++;
+            upCount++;
+            iter++;
         }
         if (!find) {
             throw u"Error(Messages.UnknownLabel, label.name)";
@@ -2618,8 +2624,8 @@ escargot::Node* parseBreakStatement(ParseContext* ctx/*node*/) {
                 find = true;
                 break;
             }
-            upCount ++;
-            iter ++;
+            upCount++;
+            iter++;
         }
         if (!find) {
             throw u"Error(Messages.UnknownLabel, label.name)";
@@ -2887,7 +2893,7 @@ escargot::Node* parseTryStatement(ParseContext* ctx/*node*/) {
     }
 
     // return node.finishTryStatement(block, handler, finalizer);
-    escargot::Node* nd = new escargot::TryStatementNode(block, handler,escargot::CatchClauseNodeVector(),finalizer);
+    escargot::Node* nd = new escargot::TryStatementNode(block, handler, escargot::CatchClauseNodeVector(), finalizer);
     nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
     return nd;
 }
@@ -2979,7 +2985,7 @@ escargot::Node* parseStatement(ParseContext* ctx) {
             if ((*iter)->string() == key->string()) {
                 throw u"throwError(Messages.Redeclaration, 'Label', expr.name);";
             }
-            iter ++;
+            iter++;
         }
 
         ctx->m_labelSet.push_back(key);
@@ -3022,13 +3028,13 @@ escargot::Node* parseFunctionSourceElements(ParseContext* ctx) {
         if (statement)
             body.push_back(statement);
         ASSERT(statement->type() == escargot::NodeType::ExpressionStatement);
-        if ( ((escargot::ExpressionStatementNode *) statement)->expression()->type() != escargot::NodeType::Literal) {
+        if (((escargot::ExpressionStatementNode *) statement)->expression()->type() != escargot::NodeType::Literal) {
             // this is not directive
             break;
         }
         bool strict = true;
         if (token->m_end - 1 - (token->m_start + 1) == 10) {
-            static const char16_t *s = u"use strict";
+            static const char16_t* s = u"use strict";
             for (size_t i = 0 ; i < 10 ; i ++) {
                 if (s[i] != ctx->m_source[token->m_start + 1 + i]) {
                     strict = false;
@@ -3068,7 +3074,7 @@ escargot::Node* parseFunctionSourceElements(ParseContext* ctx) {
         */
     }
 
-    std::vector<escargot::ESString *,gc_allocator<escargot::ESString *>> oldLabelSet = ctx->m_labelSet;
+    std::vector<escargot::ESString *, gc_allocator<escargot::ESString *>> oldLabelSet = ctx->m_labelSet;
     bool oldInIteration = ctx->m_inIteration;
     bool oldInSwitch = ctx->m_inSwitch;
     bool oldInFunctionBody = ctx->m_inFunctionBody;
@@ -3089,7 +3095,7 @@ escargot::Node* parseFunctionSourceElements(ParseContext* ctx) {
             body.push_back(nd);
     }
 
-    expect(ctx,'}');
+    expect(ctx, '}');
 
     ctx->m_labelSet = oldLabelSet;
     ctx->m_inIteration = oldInIteration;
@@ -3167,7 +3173,7 @@ function parseParam(options) {
 }
  */
 
-bool parseParam(ParseContext* ctx, escargot::InternalAtomicStringVector& vec/*,options*/) {
+bool parseParam(ParseContext* ctx, escargot::InternalAtomicStringVector& vec/*, options*/) {
     // var token, param, params = [], i, def;
 
     RefPtr<ParseStatus> token = ctx->m_lookahead;
@@ -3220,10 +3226,10 @@ escargot::InternalAtomicStringVector parseParams(ParseContext* ctx/*, ParseStatu
 
     if (!match(ctx, ')')) {
         while (ctx->m_startIndex < ctx->m_length) {
-            if (!parseParam(ctx,vec)) {
+            if (!parseParam(ctx, vec)) {
                 break;
             }
-            expect(ctx,',');
+            expect(ctx, ',');
         }
         /*
         options.paramSet = {};
@@ -3236,7 +3242,7 @@ escargot::InternalAtomicStringVector parseParams(ParseContext* ctx/*, ParseStatu
         */
     }
 
-    expect(ctx,')');
+    expect(ctx, ')');
 
     /*
     if (options.defaultCount === 0) {
@@ -3319,7 +3325,7 @@ escargot::Node* parseFunctionDeclaration(ParseContext* ctx/*node, identifierIsOp
     // return node.finishFunctionDeclaration(id, params, defaults, body, isGenerator);
     ASSERT(id->type() == escargot::NodeType::Identifier);
 
-    escargot::Node* nd = new escargot::FunctionDeclarationNode(((escargot::IdentifierNode *)id)->nonAtomicName(), std::move(params),body,isGenerator,false,ctx->m_strict);
+    escargot::Node* nd = new escargot::FunctionDeclarationNode(((escargot::IdentifierNode *)id)->nonAtomicName(), std::move(params), body, isGenerator, false, ctx->m_strict);
     nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
     ctx->m_currentBody->insert(ctx->m_currentBody->begin(), nd);
 
@@ -3636,7 +3642,7 @@ escargot::Node* parseObjectPattern(ParseContext* ctx, std::vector<RefPtr<ParseSt
     escargot::PropertiesNodeVector properties;
     expect(ctx, '{');
 
-    while (!match(ctx,'}')) {
+    while (!match(ctx, '}')) {
         properties.push_back(parsePropertyPattern(ctx, params));
         if (!match(ctx, '}')) {
             expect(ctx, ',');
@@ -3900,13 +3906,17 @@ escargot::Node* tryParseMethodDefinition(ParseContext* ctx, ParseStatus* token, 
 
             ctx->m_allowYield = false;
             escargot::InternalAtomicStringVector vec;
-            escargot::Node* value = parsePropertyFunction(ctx, vec/* {
-                params: [],
-                defaults: [],
-                stricted: null,
-                firstRestricted: null,
-                message: null
-                }, false*/);
+            escargot::Node* value = parsePropertyFunction(ctx, vec
+                /*
+                {
+                    params: [],
+                    defaults: [],
+                    stricted: null,
+                    firstRestricted: null,
+                    message: null
+                }, false
+                */
+                );
             ctx->m_allowYield = previousAllowYield;
 
             // return node.finishProperty('get', key, computed, value, false, false);
@@ -4465,7 +4475,7 @@ escargot::ArgumentVector parseArguments(ParseContext* ctx) {
 
     expect(ctx, '(');
 
-    if (!match(ctx,')')) {
+    if (!match(ctx, ')')) {
         while (ctx->m_startIndex < ctx->m_length) {
             if (match(ctx, u"...")) {
                 /*
@@ -4560,7 +4570,7 @@ escargot::Node* parseNewExpression(ParseContext* ctx) {
 // ECMA-262 12.3.4 Function Calls
 
 escargot::Node* parseLeftHandSideExpressionAllowCall(ParseContext* ctx) {
-    // var quasi, expr, args, property, startToken,;
+    // var quasi, expr, args, property, startToken, ;
     escargot::Node* quasi;
     escargot::Node* expr;
     escargot::Node* property;
@@ -5183,14 +5193,14 @@ escargot::StatementNodeVector parseScriptBody(ParseContext* ctx)
         if (statement)
             body.push_back(statement);
 
-        if ( ((escargot::ExpressionStatementNode *) statement)->expression()->type() != escargot::NodeType::Literal) {
+        if (((escargot::ExpressionStatementNode *) statement)->expression()->type() != escargot::NodeType::Literal) {
             // this is not directive
             break;
         }
 
         bool strict = true;
         if (token->m_end - 1 - (token->m_start + 1) == 10) {
-            static const char16_t *s = u"use strict";
+            static const char16_t* s = u"use strict";
             for (size_t i = 0 ; i < 10 ; i ++) {
                 if (s[i] != ctx->m_source[token->m_start + 1 + i]) {
                     strict = false;

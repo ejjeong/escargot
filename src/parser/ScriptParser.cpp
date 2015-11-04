@@ -40,7 +40,7 @@ void ScriptParser::dumpStats()
 
 #if 0
     if (stat > 10000) {
-        while (true) {}
+        while (true) { }
     }
 #endif
 }
@@ -53,14 +53,14 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16strin
         // unsigned long start = ESVMInstance::tickCount();
         node = esprima::parse(source);
         // unsigned long end = ESVMInstance::tickCount();
-        // printf("parse takes %lfms\n",(end-start)/1000.0);
+        // printf("parse takes %lfms\n", (end-start)/1000.0);
     } catch(size_t lineNumber) {
         char temp[512];
         sprintf(temp, "Parse Error %u line", (unsigned)lineNumber);
         throw ESValue(SyntaxError::create(ESString::create(temp)));
     }
 
-    auto markNeedsActivation = [](FunctionNode* nearFunctionNode){
+    auto markNeedsActivation = [](FunctionNode* nearFunctionNode) {
         FunctionNode* node = nearFunctionNode;
         while (node) {
             node->setNeedsActivation(true);
@@ -68,14 +68,14 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16strin
         }
     };
 
-    auto updatePostfixNodeChecker = [](Node* node){
+    auto updatePostfixNodeChecker = [](Node* node) {
         /*
         if (node && node->type() == NodeType::UpdateExpressionDecrementPostfix) {
-        ((UpdateExpressionDecrementPostfixNode *)node)->m_isSimpleCase = true;
+            ((UpdateExpressionDecrementPostfixNode *)node)->m_isSimpleCase = true;
         }
 
         if (node && node->type() == NodeType::UpdateExpressionIncrementPostfix) {
-        ((UpdateExpressionIncrementPostfixNode *)node)->m_isSimpleCase = true;
+            ((UpdateExpressionIncrementPostfixNode *)node)->m_isSimpleCase = true;
         }
         */
     };
@@ -95,7 +95,7 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16strin
         }
     }
 
-    std::function<void (Node* currentNode,
+    std::function<void(Node* currentNode,
     std::vector<InternalAtomicStringVector *>& identifierStack,
     FunctionNode* nearFunctionNode)>
     postAnalysisFunction = [&postAnalysisFunction, instance, &markNeedsActivation, &shouldWorkAroundIdentifier, &updatePostfixNodeChecker, &showedEvalInFunction, &knownGlobalNames, &isForGlobalScope]
@@ -118,13 +118,13 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16strin
             }
         } else if (type == NodeType::VariableDeclarator) {
             // printf("add Identifier %s(var)\n", ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->nonAtomicName()->utf8Data());
-            if (identifierInCurrentContext.end() == std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),
+            if (identifierInCurrentContext.end() == std::find(identifierInCurrentContext.begin(), identifierInCurrentContext.end(),
             ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name())) {
                 identifierInCurrentContext.push_back(((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name());
             }
             if (nearFunctionNode) {
                 // local
-                auto iter = std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),
+                auto iter = std::find(identifierInCurrentContext.begin(), identifierInCurrentContext.end(),
                 ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name());
                 ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->setFastAccessIndex(0, std::distance(identifierInCurrentContext.begin(), iter));
             } else {
@@ -136,7 +136,7 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16strin
         } else if (type == NodeType::FunctionDeclaration) {
             // TODO
             // printf("add Identifier %s(fn)\n", ((FunctionDeclarationNode *)currentNode)->nonAtomicId()->utf8Data());
-            ASSERT(identifierInCurrentContext.end() != std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),
+            ASSERT(identifierInCurrentContext.end() != std::find(identifierInCurrentContext.begin(), identifierInCurrentContext.end(),
             ((FunctionDeclarationNode *)currentNode)->id()));
             // printf("process function body-------------------\n");
             InternalAtomicStringVector newIdentifierVector;
@@ -172,20 +172,20 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16strin
             // printf("end of process function body-------------------\n");
         } else if (type == NodeType::Identifier) {
             if (!shouldWorkAroundIdentifier || showedEvalInFunction) {
-                return ;
+                return;
             }
             // use case
 
             InternalAtomicString name = ((IdentifierNode *)currentNode)->name();
             auto iter = identifierInCurrentContext.end();
-            auto riter = identifierInCurrentContext.rbegin(); // std::find(identifierInCurrentContext.begin(),identifierInCurrentContext.end(),name);
+            auto riter = identifierInCurrentContext.rbegin(); // std::find(identifierInCurrentContext.begin(), identifierInCurrentContext.end(), name);
             while (riter != identifierInCurrentContext.rend()) {
                 if (*riter == name) {
                     size_t idx = identifierInCurrentContext.size() - 1 - (riter - identifierInCurrentContext.rbegin());
                     iter = identifierInCurrentContext.begin() + idx;
                     break;
                 }
-                riter ++;
+                riter++;
             }
             if (identifierInCurrentContext.end() == iter) {
                 // search top...
@@ -193,7 +193,7 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16strin
                 for (int i = identifierStack.size() - 2 ; i >= 0 ; i --) {
                     up++;
                     InternalAtomicStringVector* vector = identifierStack[i];
-                    auto iter2 = std::find(vector->begin(),vector->end(),name);
+                    auto iter2 = std::find(vector->begin(), vector->end(), name);
                     if (iter2 != vector->end()) {
                         FunctionNode* fn = nearFunctionNode;
                         for (unsigned j = 0; j < up ; j ++) {
@@ -245,7 +245,7 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16strin
             postAnalysisFunction(((AssignmentExpressionSimpleNode *)currentNode)->m_left, identifierStack, nearFunctionNode);
         } else if (type == NodeType::Literal) {
             // DO NOTHING
-        }else if (type == NodeType::ArrayExpression) {
+        } else if (type == NodeType::ArrayExpression) {
             ExpressionNodeVector& v = ((ArrayExpressionNode *)currentNode)->m_elements;
             for (unsigned i = 0; i < v.size() ; i ++) {
                 postAnalysisFunction(v[i], identifierStack, nearFunctionNode);
@@ -257,7 +257,7 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16strin
             }
         } else if (type == NodeType::CallExpression) {
 
-            Node * callee = ((CallExpressionNode *)currentNode)->m_callee;
+            Node* callee = ((CallExpressionNode *)currentNode)->m_callee;
             if (callee) {
                 if (callee->type() == NodeType::Identifier) {
                     if (((IdentifierNode *)callee)->name() == InternalAtomicString(u"eval")) {

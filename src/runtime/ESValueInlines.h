@@ -143,9 +143,9 @@ inline ESObject* ESValue::toObject() const
         object = ESBooleanObject::create(toBoolean());
     } else if (isESString()) {
         object = ESStringObject::create(asESPointer()->asESString());
-    } else if (isNull()){
+    } else if (isNull()) {
         throw ESValue(TypeError::create(ESString::create(u"cannot convert null into object")));
-    } else if (isUndefined()){
+    } else if (isUndefined()) {
         throw ESValue(TypeError::create(ESString::create(u"cannot convert undefined into object")));
     } else {
         RELEASE_ASSERT_NOT_REACHED();
@@ -209,13 +209,13 @@ inline double ESValue::toNumberSlowCase() const
         if (data->length() == 0)
             return 0;
 
-        data->wcharData([&val, &data](const wchar_t* buf, unsigned size){
+        data->wcharData([&val, &data](const wchar_t* buf, unsigned size) {
             wchar_t* end;
             val = wcstod(buf, &end);
             if (end != buf + size) {
                 const u16string& str = data->string();
                 bool isOnlyWhiteSpace = true;
-                for (unsigned i = 0; i < str.length() ; i ++) {
+                for (unsigned i = 0; i < str.length(); i ++) {
                     // FIXME we shold not use isspace function. implement javascript isspace function.
                     if (!isspace(str[i])) {
                         isOnlyWhiteSpace = false;
@@ -665,7 +665,7 @@ ALWAYS_INLINE bool ESValue::operator!=(const ESValue& other) const
 inline bool ESValue::isInt32() const
 {
     // return (u.asInt64 & TagTypeNumber) == TagTypeNumber;
-    ASSERT(sizeof (short) == 2);
+    ASSERT(sizeof(short) == 2);
     unsigned short* firstByte = (unsigned short *)&u.asInt64;
 #ifdef ESCARGOT_LITTLE_ENDIAN
     return firstByte[3] == 0xffff;
@@ -710,7 +710,7 @@ inline bool ESValue::isDeleted() const
 inline bool ESValue::isNumber() const
 {
     // return u.asInt64 & TagTypeNumber;
-    ASSERT(sizeof (short) == 2);
+    ASSERT(sizeof(short) == 2);
     unsigned short* firstByte = (unsigned short *)&u.asInt64;
 #ifdef ESCARGOT_LITTLE_ENDIAN
     return firstByte[3];
@@ -783,7 +783,7 @@ ALWAYS_INLINE void ESPropertyAccessorData::setValue(::escargot::ESObject* obj, c
         ASSERT(!m_nativeSetter);
         ESValue arg[] = {value};
         ESFunctionObject::call(ESVMInstance::currentInstance(), m_jsSetter,
-            obj ,arg, 1, false);
+            obj , arg, 1, false);
     }
 }
 
@@ -797,7 +797,7 @@ ALWAYS_INLINE ESHiddenClass* ESHiddenClass::removeProperty(size_t idx)
     if (m_flags.m_isVectorMode) {
         ESHiddenClass* ret = ESVMInstance::currentInstance()->initialHiddenClassForObject();
         ASSERT(*m_propertyInfo[0].m_name == *strings->__proto__.string());
-        for (unsigned i = 1 ; i < m_propertyInfo.size() ; i ++) {
+        for (unsigned i = 1; i < m_propertyInfo.size(); i ++) {
             if (idx != i) {
                 size_t d;
                 ret = ret->defineProperty(m_propertyInfo[i].m_name, m_propertyInfo[i].m_flags.m_isDataProperty
@@ -810,7 +810,7 @@ ALWAYS_INLINE ESHiddenClass* ESHiddenClass::removeProperty(size_t idx)
         if (!m_flags.m_forceNonVectorMode && m_propertyInfo.size() < ESHiddenClassVectorModeSizeLimit / 2) {
             // convert into vector mode
             ESHiddenClass* ret = ESVMInstance::currentInstance()->initialHiddenClassForObject();
-            for (unsigned i = 1 ; i < m_propertyInfo.size() ; i ++) {
+            for (unsigned i = 1; i < m_propertyInfo.size(); i ++) {
                 if (idx != i) {
                     size_t d;
                     ret = ret->defineProperty(m_propertyInfo[i].m_name, m_propertyInfo[i].m_flags.m_isDataProperty
@@ -822,7 +822,7 @@ ALWAYS_INLINE ESHiddenClass* ESHiddenClass::removeProperty(size_t idx)
         ESHiddenClass* cls = new ESHiddenClass;
         cls->m_flags.m_forceNonVectorMode = m_flags.m_forceNonVectorMode;
         cls->m_flags.m_isVectorMode = false;
-        for (unsigned i = 0 ; i < m_propertyInfo.size() ; i ++) {
+        for (unsigned i = 0; i < m_propertyInfo.size(); i ++) {
             cls->m_propertyInfo.push_back(m_propertyInfo[i]);
             if (i < idx) {
                 cls->m_propertyIndexHashMapInfo.insert(std::make_pair(m_propertyInfo[i].m_name, i));
@@ -853,7 +853,7 @@ ALWAYS_INLINE ESHiddenClass* ESHiddenClass::removePropertyWithoutIndexChange(siz
     ESHiddenClass* cls = new ESHiddenClass;
     cls->m_flags.m_forceNonVectorMode = true;
     cls->m_flags.m_isVectorMode = false;
-    for (unsigned i = 0 ; i < m_propertyInfo.size() ; i ++) {
+    for (unsigned i = 0; i < m_propertyInfo.size(); i ++) {
         if (i == idx) {
             cls->m_propertyInfo.push_back(ESHiddenClassPropertyInfo());
         } else {
@@ -874,7 +874,7 @@ ALWAYS_INLINE ESHiddenClass* ESHiddenClass::morphToNonVectorMode()
 {
     ESHiddenClass* cls = new ESHiddenClass;
     cls->m_flags.m_isVectorMode = false;
-    for (unsigned i = 0 ; i < m_propertyInfo.size() ; i ++) {
+    for (unsigned i = 0; i < m_propertyInfo.size(); i ++) {
         cls->m_propertyIndexHashMapInfo.insert(std::make_pair(m_propertyInfo[i].m_name, i));
     }
     cls->m_propertyInfo.assign(m_propertyInfo.begin(), m_propertyInfo.end());
@@ -901,7 +901,7 @@ ALWAYS_INLINE ESHiddenClass* ESHiddenClass::defineProperty(ESString* name, bool 
         if (m_propertyInfo.size() > ESHiddenClassVectorModeSizeLimit) {
             ESHiddenClass* cls = new ESHiddenClass;
             cls->m_flags.m_isVectorMode = false;
-            for (unsigned i = 0 ; i < m_propertyInfo.size() ; i ++) {
+            for (unsigned i = 0; i < m_propertyInfo.size(); i ++) {
                 cls->m_propertyIndexHashMapInfo.insert(std::make_pair(m_propertyInfo[i].m_name, i));
             }
             cls->m_propertyInfo.assign(m_propertyInfo.begin(), m_propertyInfo.end());
@@ -923,7 +923,7 @@ ALWAYS_INLINE ESHiddenClass* ESHiddenClass::defineProperty(ESString* name, bool 
         char flag = assembleHidenClassPropertyInfoFlags(isData, isWritable, isEnumerable, isConfigurable);
         if (iter == m_transitionData.end()) {
             ESHiddenClass** vec = new(GC) ESHiddenClass*[16];
-            memset(vec, 0, sizeof (ESHiddenClass *) * 16);
+            memset(vec, 0, sizeof(ESHiddenClass *) * 16);
             cls = new ESHiddenClass;
             cls->m_propertyIndexHashMapInfo.insert(m_propertyIndexHashMapInfo.begin(), m_propertyIndexHashMapInfo.end());
             cls->m_propertyIndexHashMapInfo.insert(std::make_pair(name, pid));
@@ -1003,7 +1003,7 @@ inline void ESObject::set__proto__(const ESValue& obj)
 {
     // for global init
     if (obj.isEmpty())
-        return ;
+        return;
     ASSERT(obj.isObject() || obj.isUndefinedOrNull());
     m___proto__ = obj;
     if (m___proto__.isObject()) {
@@ -1029,7 +1029,7 @@ inline void ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
                         asESArrayObject()->convertToSlowMode();
                     asESArrayObject()->setLength(i+1);
                 }
-                return ;
+                return;
             } else {
                 asESArrayObject()->convertToSlowMode();
             }
@@ -1064,7 +1064,7 @@ inline void ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
     }
 }
 
-inline void ESObject::defineAccessorProperty(const escargot::ESValue& key,ESPropertyAccessorData* data, bool isWritable, bool isEnumerable, bool isConfigurable)
+inline void ESObject::defineAccessorProperty(const escargot::ESValue& key, ESPropertyAccessorData* data, bool isWritable, bool isEnumerable, bool isConfigurable)
 {
     if (isESArrayObject() && asESArrayObject()->isFastmode()) {
         uint32_t i = key.toIndex();
@@ -1240,7 +1240,8 @@ ALWAYS_INLINE const int32_t ESObject::length()
 ALWAYS_INLINE ESValue ESObject::pop()
 {
     int len = length();
-    if (len == 0) return ESValue();
+    if (len == 0)
+        return ESValue();
     if (LIKELY(isESArrayObject() && asESArrayObject()->isFastmode()))
         return asESArrayObject()->fastPop();
     else {

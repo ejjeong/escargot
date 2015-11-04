@@ -172,7 +172,7 @@ NEVER_INLINE ESValue getObjectOperationSlowCase(ESValue* willBeObject, ESValue* 
 }
 
 NEVER_INLINE ESValue getObjectPreComputedCaseOperationWithNeverInline(ESValue* willBeObject, ESString* property, GlobalObject* globalObject
-    ,ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex)
+    , ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex)
 {
     return getObjectPreComputedCaseOperation(willBeObject, property, globalObject, cachedHiddenClassChain, cachedHiddenClassIndex);
 }
@@ -315,7 +315,7 @@ NEVER_INLINE ESValue newOperation(ESVMInstance* instance, GlobalObject* globalOb
     } else if (function == globalObject->string()) {
         receiver = ESStringObject::create();
     } else if (function == globalObject->regexp()) {
-        receiver = ESRegExpObject::create(strings->emptyString.string(),ESRegExpObject::Option::None);
+        receiver = ESRegExpObject::create(strings->emptyString.string(), ESRegExpObject::Option::None);
     } else if (function == globalObject->boolean()) {
         receiver = ESBooleanObject::create(false);
     } else if (function == globalObject->number()) {
@@ -401,7 +401,7 @@ NEVER_INLINE void tryOperation(ESVMInstance* instance, CodeBlock* codeBlock, cha
         instance->currentExecutionContext()->setEnvironment(catchEnv);
         instance->currentExecutionContext()->environment()->record()->createMutableBinding(code->m_name);
         instance->currentExecutionContext()->environment()->record()->setMutableBinding(code->m_name, err, false);
-        try{
+        try {
             ESValue ret = interpret(instance, codeBlock, code->m_catchPosition);
             instance->currentExecutionContext()->setEnvironment(oldEnv);
             if (ret.isEmpty()) {

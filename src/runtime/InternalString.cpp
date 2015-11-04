@@ -13,7 +13,7 @@ u16string utf8ToUtf16(const char *s, int length)
     int decodeLength = 0;
     while (decodeLength < length) {
         char16_t wc;
-        wlen = utf8ToUtf16(pt8,wc);
+        wlen = utf8ToUtf16(pt8, wc);
         ws.push_back(wc);
         pt8 += wlen;
         decodeLength += wlen;

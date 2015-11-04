@@ -24,7 +24,7 @@ public:
             codeBlock->pushCode(ToNumber(), context, this);
             codeBlock->pushCode(Increment(), context, this);
             m_argument->generatePutByteCode(codeBlock, context);
-            return ;
+            return;
         }
         m_argument->generateResolveAddressByteCode(codeBlock, context);
         m_argument->generateReferenceResolvedAddressByteCode(codeBlock, context);

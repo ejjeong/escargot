@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
             printf("shell> ");
             fgets(buf, sizeof buf, stdin);
             escargot::ESStringData source(buf);
-            try{
+            try {
                 escargot::ESValue ret = ES->evaluate(source);
                 ES->printValue(ret);
             } catch(const escargot::ESValue& err) {
@@ -105,7 +105,7 @@ int main(int argc, char* argv[])
             if (strcmp(argv[i], "-p") == 0) {
                 ES->m_profile = true;
             }
-            FILE *fp = fopen(argv[i],"r");
+            FILE* fp = fopen(argv[i], "r");
             if (fp) {
                 std::string str;
                 char buf[512];
@@ -114,7 +114,7 @@ int main(int argc, char* argv[])
                 }
                 fclose(fp);
                 escargot::ESStringData source(str.c_str());
-                try{
+                try {
                     escargot::ESValue ret = ES->evaluate(source);
 #ifndef NDEBUG
                     if (ES->m_reportCompiledFunction) {
@@ -137,7 +137,7 @@ int main(int argc, char* argv[])
                     printf("shell> ");
                     fgets(buf, sizeof buf, stdin);
                     escargot::ESStringData source(buf);
-                    try{
+                    try {
                         escargot::ESValue ret = ES->evaluate(source);
                         ES->printValue(ret);
                     } catch(const escargot::ESValue& err) {

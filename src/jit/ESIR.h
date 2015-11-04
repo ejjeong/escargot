@@ -21,121 +21,122 @@ class NativeGenerator;
 class ESBasicBlock;
 
 #define FOR_EACH_ESIR_OP(F) \
+    /* Name, ReturnESValue */\
     /* Typed constant variables */\
-    F(ConstantESValue, ) \
-    F(ConstantInt, ) \
-    F(ConstantDouble, ) \
-    F(ConstantPointer, ) \
-    F(ConstantBoolean, ) \
-    F(ConstantString, ) \
+    F(ConstantESValue, 0) \
+    F(ConstantInt, 0) \
+    F(ConstantDouble, 0) \
+    F(ConstantPointer, 0) \
+    F(ConstantBoolean, 0) \
+    F(ConstantString, 0) \
     \
     /* Type conversions */\
-    F(ToNumber, ) \
-    F(ToString, ) \
-    F(ToInt32, ) \
-    F(ToBoolean, ) \
+    F(ToNumber, 0) \
+    F(ToString, 0) \
+    F(ToInt32, 0) \
+    F(ToBoolean, 0) \
     \
     /* From BinaryExpression */\
-    F(Int32Plus, ) \
-    F(DoublePlus, ) \
-    F(StringPlus, ) \
-    F(GenericPlus, ReturnsESValue) \
-    F(Increment, ) \
-    F(Decrement, ) \
-    F(Minus, ) \
-    F(Int32Multiply, ) \
-    F(DoubleMultiply, ) \
-    F(GenericMultiply, ) \
-    F(DoubleDivision, ) \
-    F(GenericDivision, ) \
-    F(Int32Mod, ) \
-    F(DoubleMod, ) \
-    F(GenericMod, ) \
+    F(Int32Plus, 0) \
+    F(DoublePlus, 0) \
+    F(StringPlus, 0) \
+    F(GenericPlus, 1) \
+    F(Increment, 0) \
+    F(Decrement, 0) \
+    F(Minus, 0) \
+    F(Int32Multiply, 0) \
+    F(DoubleMultiply, 0) \
+    F(GenericMultiply, 0) \
+    F(DoubleDivision, 0) \
+    F(GenericDivision, 0) \
+    F(Int32Mod, 0) \
+    F(DoubleMod, 0) \
+    F(GenericMod, 0) \
     \
-    F(BitwiseAnd, ) \
-    F(BitwiseOr, ) \
-    F(BitwiseXor, ) \
-    F(LogicalAnd, ) \
-    F(LogicalOr, ) \
+    F(BitwiseAnd, 0) \
+    F(BitwiseOr, 0) \
+    F(BitwiseXor, 0) \
+    F(LogicalAnd, 0) \
+    F(LogicalOr, 0) \
     \
-    F(Equal, ) \
-    F(NotEqual, ) \
-    F(StrictEqual, ) \
-    F(NotStrictEqual, ) \
-    F(GreaterThan, ) \
-    F(GreaterThanOrEqual, ) \
-    F(LessThan, ) \
-    F(LessThanOrEqual, ) \
+    F(Equal, 0) \
+    F(NotEqual, 0) \
+    F(StrictEqual, 0) \
+    F(NotStrictEqual, 0) \
+    F(GreaterThan, 0) \
+    F(GreaterThanOrEqual, 0) \
+    F(LessThan, 0) \
+    F(LessThanOrEqual, 0) \
     \
-    F(LeftShift, ) \
-    F(UnsignedRightShift, ) \
-    F(SignedRightShift, ) \
+    F(LeftShift, 0) \
+    F(UnsignedRightShift, 0) \
+    F(SignedRightShift, 0) \
     \
-    F(In, ) \
-    F(InstanceOf, ) \
+    F(In, 0) \
+    F(InstanceOf, 0) \
     \
     /* From UnaryExpression */\
-    F(BitwiseNot, ) \
-    F(LogicalNot, ) \
+    F(BitwiseNot, 0) \
+    F(LogicalNot, 0) \
     \
-    F(UnaryPlus, ) \
-    F(UnaryMinus, ) \
+    F(UnaryPlus, 0) \
+    F(UnaryMinus, 0) \
     \
-    F(Delete, ) \
-    F(TypeOf, ) \
-    F(Void, ) \
+    F(Delete, 0) \
+    F(TypeOf, 0) \
+    F(Void, 0) \
     \
     /* Control Flow */\
-    F(LoopStart, ) \
-    F(Jump, ) \
-    F(Branch, ) \
-    F(CreateFunction, ReturnsESValue) \
-    F(CallJS, ReturnsESValue) \
-    F(CallNewJS, ReturnsESValue) \
-    F(CallEval, ReturnsESValue) \
-    F(CallNative, ReturnsESValue) \
-    F(CallRuntime, ReturnsESValue) \
-    F(Return, ) \
-    F(ReturnWithValue, ) \
-    F(OSRExit, ) \
-    F(Move, ) \
-    F(Phi, ) \
-    F(AllocPhi, ) \
-    F(StorePhi, ) \
-    F(LoadPhi, ) \
-    F(CreateObject, ReturnsESValue) \
-    F(CreateArray, ReturnsESValue) \
-    F(InitObject, ) \
-    F(InitArrayObject, ) \
+    F(LoopStart, 0) \
+    F(Jump, 0) \
+    F(Branch, 0) \
+    F(CreateFunction, 1) \
+    F(CallJS, 1) \
+    F(CallNewJS, 1) \
+    F(CallEval, 1) \
+    F(CallNative, 1) \
+    F(CallRuntime, 1) \
+    F(Return, 0) \
+    F(ReturnWithValue, 0) \
+    F(OSRExit, 0) \
+    F(Move, 0) \
+    F(Phi, 0) \
+    F(AllocPhi, 0) \
+    F(StorePhi, 0) \
+    F(LoadPhi, 0) \
+    F(CreateObject, 1) \
+    F(CreateArray, 1) \
+    F(InitObject, 0) \
+    F(InitArrayObject, 0) \
     \
     /* For-in statement */\
-    F(GetEnumerablObjectData, ) \
-    F(CheckIfKeyIsLast, ) \
-    F(GetEnumerateKey, ReturnsESValue) \
+    F(GetEnumerablObjectData, 0) \
+    F(CheckIfKeyIsLast, 0) \
+    F(GetEnumerateKey, 1) \
     \
     /* [Get/Set][Variable|Property] */\
-    F(GetThis, ReturnsESValue) \
-    F(GetArgument, ReturnsESValue) \
-    F(GetVar, ReturnsESValue) \
-    F(SetVar, ) \
-    F(GetObject, ReturnsESValue)\
-    F(GetObjectPreComputed, ReturnsESValue) \
-    F(SetObject, ) \
-    F(SetObjectPreComputed, ) \
-    F(GetArrayObject, ReturnsESValue) \
-    F(GetStringByIndex, ReturnsESValue) \
-    F(SetArrayObject, ) \
-    F(GetScoped, ReturnsESValue) \
-    F(SetScoped, ) \
-    F(GetVarGeneric, ReturnsESValue) \
-    F(SetVarGeneric, ) \
-    F(GetVarGenericWithoutException, ReturnsESValue) \
-    F(GetGlobalVarGeneric, ReturnsESValue) \
-    F(SetGlobalVarGeneric, ) \
-    F(GetProperty, ReturnsESValue) \
-    F(SetProperty, ) \
+    F(GetThis, 1) \
+    F(GetArgument, 1) \
+    F(GetVar, 1) \
+    F(SetVar, 0) \
+    F(GetObject, 1)\
+    F(GetObjectPreComputed, 1) \
+    F(SetObject, 0) \
+    F(SetObjectPreComputed, 0) \
+    F(GetArrayObject, 1) \
+    F(GetStringByIndex, 1) \
+    F(SetArrayObject, 0) \
+    F(GetScoped, 1) \
+    F(SetScoped, 0) \
+    F(GetVarGeneric, 1) \
+    F(SetVarGeneric, 0) \
+    F(GetVarGenericWithoutException, 1) \
+    F(GetGlobalVarGeneric, 1) \
+    F(SetGlobalVarGeneric, 0) \
+    F(GetProperty, 1) \
+    F(SetProperty, 0) \
     \
-    F(Throw, ) \
+    F(Throw, 0) \
     \
     /* TODO: ArrayExpression Throw [Var|Fn][Decl|Expr] */\
 
@@ -707,7 +708,7 @@ private:
     GetArrayObjectIR(int targetIndex, int objectIndex, int propertyIndex)
         : ESIR(ESIR::Opcode::GetArrayObject, targetIndex),
     m_objectIndex(objectIndex),
-    m_propertyIndex(propertyIndex){ }
+    m_propertyIndex(propertyIndex) { }
     int m_objectIndex;
     int m_propertyIndex;
 };
@@ -732,7 +733,7 @@ private:
     GetStringByIndexIR(int targetIndex, int objectIndex, int propertyIndex)
         : ESIR(ESIR::Opcode::GetStringByIndex, targetIndex),
     m_objectIndex(objectIndex),
-    m_propertyIndex(propertyIndex){ }
+    m_propertyIndex(propertyIndex) { }
     int m_objectIndex;
     int m_propertyIndex;
 };
@@ -1270,7 +1271,7 @@ public:
         out << " callee tmp" << m_calleeIndex;
         out << " receiver tmp" << m_receiverIndex;
         out << " argumentCount " << m_argumentIndexes.size() << " :";
-        for (size_t i=0; i<m_argumentIndexes.size(); i++)
+        for (size_t i = 0; i < m_argumentIndexes.size(); i++)
             out << ", tmp" << m_argumentIndexes[i];
     }
 #endif
@@ -1283,7 +1284,7 @@ protected:
     CallJSIR(int targetIndex, int calleeIndex, int receiverIndex, int argumentCount, int* argumentIndexes)
         : ESIR(ESIR::Opcode::CallJS, targetIndex), m_calleeIndex(calleeIndex), m_receiverIndex(receiverIndex), m_argumentIndexes(argumentCount)
     {
-        for (int i=0; i<argumentCount; i++)
+        for (int i = 0; i < argumentCount; i++)
             m_argumentIndexes[i] = argumentIndexes[i];
     }
     int m_calleeIndex;
@@ -1309,7 +1310,7 @@ public:
         out << "tmp" << m_targetIndex << ": ";
         ESIR::dump(out);
         out << " argumentCount " << m_argumentIndexes.size() << " :";
-        for (size_t i=0; i<m_argumentIndexes.size(); i++)
+        for (size_t i = 0; i < m_argumentIndexes.size(); i++)
             out << ", tmp" << m_argumentIndexes[i];
     }
 #endif
@@ -1320,7 +1321,7 @@ protected:
     CallEvalIR(int targetIndex, int argumentCount, int* argumentIndexes)
     : ESIR(ESIR::Opcode::CallEval, targetIndex), m_argumentIndexes(argumentCount)
     {
-        for (int i=0; i<argumentCount; i++)
+        for (int i = 0; i < argumentCount; i++)
             m_argumentIndexes[i] = argumentIndexes[i];
     }
     std::vector<int, CustomAllocator<int> > m_argumentIndexes;
@@ -1368,7 +1369,7 @@ public:
     {
         out << "tmp" << m_targetIndex << ": ";
         ESIR::dump(out);
-        for (size_t i=0; i<m_argumentIndexes.size(); i++)
+        for (size_t i = 0; i < m_argumentIndexes.size(); i++)
             out << "var " << m_argumentIndexes[i] << ", ";
     }
 #endif

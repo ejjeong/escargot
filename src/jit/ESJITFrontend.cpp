@@ -34,7 +34,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
     // std::unordered_map<int, ESBasicBlock*, std::hash<int>, std::equal_to<int>, gc_allocator<std::pair<const int, ESBasicBlock *> > > basicBlockMapping;
     std::map<int, ESIR*> backWordJumpMapping;
 
-    ESBasicBlock *entryBlock = ESBasicBlock::create(graph);
+    ESBasicBlock* entryBlock = ESBasicBlock::create(graph);
     basicBlockMapping[idx] = entryBlock;
     ESBasicBlock* currentBlock = entryBlock;
     ByteCode* currentCode;
@@ -102,7 +102,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
                         literal = ConstantPointerIR::create(extraData->m_targetIndex0, bytecode->m_value.asESPointer());
                         graph->setOperandType(extraData->m_targetIndex0, TypePointer);
                     }
-                }else
+                } else
                     goto unsupported;
                 currentBlock->push(literal);
                 NEXT_BYTECODE(Push);
@@ -526,7 +526,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
         case GetObjectWithPeekingPreComputedCaseOpcode:
             {
                 GetObjectPreComputedCase* bytecode = (GetObjectPreComputedCase*)currentCode;
-                ByteCodeExtraData * extraData = &codeBlock->m_extraData[bytecodeCounter];
+                ByteCodeExtraData* extraData = &codeBlock->m_extraData[bytecodeCounter];
                 ASSERT(codeBlock->m_extraData[bytecodeCounter].m_registerIncrementCount < 3);
                 if (codeBlock->m_extraData[bytecodeCounter].m_registerIncrementCount == 1)
                     graph->setOperandStackPos(extraData->m_targetIndex0, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
@@ -559,7 +559,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
                 int calleeIndex = extraData->m_sourceIndexes[0];
                 int receiverIndex = -1;
                 int argumentCount = extraData->m_sourceIndexes.size() - 1;
-                int* argumentIndexes = (int*) alloca (sizeof(int) * argumentCount);
+                int* argumentIndexes = (int*) alloca(sizeof(int) * argumentCount);
                 for (int i = 0 ; i < argumentCount ; i ++)
                     argumentIndexes[i] = extraData->m_sourceIndexes[i + 1];
                 CallJSIR* callJSIR = CallJSIR::create(extraData->m_targetIndex0, calleeIndex, receiverIndex, argumentCount, argumentIndexes);
@@ -575,7 +575,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
                 int calleeIndex = extraData->m_sourceIndexes[0];
                 int receiverIndex = extraData->m_sourceIndexes[1];
                 int argumentCount = extraData->m_sourceIndexes.size() - 2;
-                int* argumentIndexes = (int*) alloca (sizeof(int) * argumentCount);
+                int* argumentIndexes = (int*) alloca(sizeof(int) * argumentCount);
                 for (int i = 0; i < argumentCount; i ++)
                     argumentIndexes[i] = extraData->m_sourceIndexes[i + 2];
                 CallJSIR* callJSIR = CallJSIR::create(extraData->m_targetIndex0, calleeIndex, receiverIndex, argumentCount, argumentIndexes);
@@ -591,8 +591,8 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
                 int calleeIndex = extraData->m_sourceIndexes[0];
                 int receiverIndex = -1;
                 int argumentCount = extraData->m_sourceIndexes.size() - 1;
-                int* argumentIndexes = (int*) alloca (sizeof(int) * argumentCount);
-                for (int i=0; i<argumentCount; i++)
+                int* argumentIndexes = (int*) alloca(sizeof(int) * argumentCount);
+                for (int i = 0; i < argumentCount; i++)
                     argumentIndexes[i] = extraData->m_sourceIndexes[i + 1];
                 CallNewJSIR* callNewJSIR = CallNewJSIR::create(extraData->m_targetIndex0, calleeIndex, receiverIndex, argumentCount, argumentIndexes);
                 currentBlock->push(callNewJSIR);
@@ -605,7 +605,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             {
                 INIT_BYTECODE(CallEvalFunction);
                 int argumentCount = extraData->m_sourceIndexes.size();
-                int* argumentIndexes = (int*) alloca (sizeof(int) * argumentCount);
+                int* argumentIndexes = (int*) alloca(sizeof(int) * argumentCount);
                 for (int i = 0; i < argumentCount; i++)
                     argumentIndexes[i] = extraData->m_sourceIndexes[i];
                 CallEvalIR* callEvalIR = CallEvalIR::create(extraData->m_targetIndex0, argumentCount, argumentIndexes);
