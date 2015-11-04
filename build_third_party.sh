@@ -26,12 +26,12 @@ mkdir -p out/x64/debug
 GCCONFFLAGS=" --disable-parallel-mark " # --enable-large-config --enable-cplusplus"
 
 cd out/x86/release
-../../../configure $GCCONFFLAGS --disable-gc-debug CFLAGS='-m32' CXXFLAGS='-m32'
+../../../configure $GCCONFFLAGS --disable-gc-debug CFLAGS='-m32' CXXFLAGS='-m32' LDFLAGS='-m32'
 make -j$NUMPROC
 cd -
 
 cd out/x86/debug
-../../../configure $GCCONFFLAGS CFLAGS='-m32' CXXFLAGS='-m32'
+../../../configure $GCCONFFLAGS CFLAGS='-m32' CXXFLAGS='-m32' LDFLAGS='-m32'
 make -j$NUMPROC
 cd -
 
