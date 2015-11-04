@@ -902,7 +902,8 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
             if (fn->codeBlock()->m_osrExitCount >= ESVMInstance::currentInstance()->m_osrExitThreshold) {
                 LOG_VJ("Too many exits; Disable JIT for function %s (codeBlock %p) from now on\n", functionName, fn->codeBlock());
                 fn->codeBlock()->m_cachedJITFunction = nullptr;
-                fn->codeBlock()->m_dontJIT = true; // Fixme(JMP): We have to compile to JIT code again when gathering enough type data
+                // Fixme(JMP): We have to compile to JIT code again when gathering enough type data
+                fn->codeBlock()->m_dontJIT = true;
 #ifndef NDEBUG
                 if (ESVMInstance::currentInstance()->m_reportOSRExitedFunction) {
                     printf("%s ", fn->codeBlock()->m_nonAtomicId ? (fn->codeBlock()->m_nonAtomicId->utf8Data()):"(anonymous)");
@@ -1163,9 +1164,9 @@ SyntaxError::SyntaxError(escargot::ESString* message)
 }
 
 ESArrayBufferObject::ESArrayBufferObject(ESPointer::Type type)
-    : ESObject((Type)(Type::ESObject | Type::ESArrayBufferObject), ESVMInstance::currentInstance()->globalObject()->arrayBufferPrototype()),
-    m_data(NULL),
-    m_bytelength(0)
+    : ESObject((Type)(Type::ESObject | Type::ESArrayBufferObject), ESVMInstance::currentInstance()->globalObject()->arrayBufferPrototype())
+    , m_data(NULL)
+    , m_bytelength(0)
 {
     set__proto__(ESVMInstance::currentInstance()->globalObject()->arrayBufferPrototype());
 }

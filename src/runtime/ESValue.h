@@ -1877,8 +1877,8 @@ struct Float64Adaptor: TypedArrayAdaptor<double, TypedArrayType::Float64Array> {
 class ESTypedArrayObjectWrapper : public ESArrayBufferView {
 protected:
     ESTypedArrayObjectWrapper(TypedArrayType arraytype, ESPointer::Type type, ESValue __proto__)
-        : ESArrayBufferView(type, __proto__),
-        m_arraytype(arraytype)
+        : ESArrayBufferView(type, __proto__)
+        , m_arraytype(arraytype)
     {
     }
 public:

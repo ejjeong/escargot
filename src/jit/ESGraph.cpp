@@ -74,8 +74,8 @@ void ESBasicBlock::dump(std::ostream& out)
 #endif
 
 ESGraph::ESGraph(CodeBlock* codeBlock)
-    : m_codeBlock(codeBlock),
-    m_operands(m_codeBlock->m_tempRegisterSize)
+    : m_codeBlock(codeBlock)
+    , m_operands(m_codeBlock->m_tempRegisterSize)
 {
 }
 

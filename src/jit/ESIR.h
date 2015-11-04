@@ -647,11 +647,11 @@ public:
 
 private:
     GetObjectIR(int targetIndex, int targetIndex1, int objectIndex, int propertyIndex, escargot::GetObject* b)
-        : ESIR(ESIR::Opcode::GetObject, targetIndex),
-    m_objectIndex(objectIndex),
-    m_receiverIndex(targetIndex1),
-    m_propertyIndex(propertyIndex),
-    m_byteCode(b) { }
+        : ESIR(ESIR::Opcode::GetObject, targetIndex)
+        , m_objectIndex(objectIndex)
+        , m_receiverIndex(targetIndex1)
+        , m_propertyIndex(propertyIndex)
+        , m_byteCode(b) { }
 
     int m_objectIndex;
     int m_receiverIndex;
@@ -678,10 +678,10 @@ public:
 
 private:
     GetObjectPreComputedIR(int targetIndex, int targetIndex1, int objectIndex, GetObjectPreComputedCase* b)
-        : ESIR(ESIR::Opcode::GetObjectPreComputed, targetIndex),
-    m_objectIndex(objectIndex),
-    m_receiverIndex(targetIndex1),
-    m_byteCode(b) { }
+        : ESIR(ESIR::Opcode::GetObjectPreComputed, targetIndex)
+        , m_objectIndex(objectIndex)
+        , m_receiverIndex(targetIndex1)
+        , m_byteCode(b) { }
 
     int m_objectIndex;
     int m_receiverIndex;
@@ -706,9 +706,9 @@ public:
 
 private:
     GetArrayObjectIR(int targetIndex, int objectIndex, int propertyIndex)
-        : ESIR(ESIR::Opcode::GetArrayObject, targetIndex),
-    m_objectIndex(objectIndex),
-    m_propertyIndex(propertyIndex) { }
+        : ESIR(ESIR::Opcode::GetArrayObject, targetIndex)
+        , m_objectIndex(objectIndex)
+        , m_propertyIndex(propertyIndex) { }
     int m_objectIndex;
     int m_propertyIndex;
 };
@@ -731,9 +731,9 @@ public:
 
 private:
     GetStringByIndexIR(int targetIndex, int objectIndex, int propertyIndex)
-        : ESIR(ESIR::Opcode::GetStringByIndex, targetIndex),
-    m_objectIndex(objectIndex),
-    m_propertyIndex(propertyIndex) { }
+        : ESIR(ESIR::Opcode::GetStringByIndex, targetIndex)
+        , m_objectIndex(objectIndex)
+        , m_propertyIndex(propertyIndex) { }
     int m_objectIndex;
     int m_propertyIndex;
 };
@@ -757,10 +757,10 @@ public:
 
 private:
     SetArrayObjectIR(int targetIndex, int objectIndex, int propertyIndex, int sourceIndex)
-        : ESIR(ESIR::Opcode::SetArrayObject, targetIndex),
-    m_objectIndex(objectIndex),
-    m_propertyIndex(propertyIndex),
-    m_sourceIndex(sourceIndex) { }
+        : ESIR(ESIR::Opcode::SetArrayObject, targetIndex)
+        , m_objectIndex(objectIndex)
+        , m_propertyIndex(propertyIndex)
+        , m_sourceIndex(sourceIndex) { }
     int m_objectIndex;
     int m_propertyIndex;
     int m_sourceIndex;
@@ -786,10 +786,10 @@ public:
 
 private:
     SetObjectIR(int targetIndex, int objectIndex, int propertyIndex, int sourceIndex)
-        : ESIR(ESIR::Opcode::SetObject, targetIndex),
-    m_objectIndex(objectIndex),
-    m_propertyIndex(propertyIndex),
-    m_sourceIndex(sourceIndex) { }
+        : ESIR(ESIR::Opcode::SetObject, targetIndex)
+        , m_objectIndex(objectIndex)
+        , m_propertyIndex(propertyIndex)
+        , m_sourceIndex(sourceIndex) { }
     ESHiddenClass* m_cachedHiddenClass;
     int m_objectIndex;
     int m_propertyIndex;
@@ -815,10 +815,10 @@ public:
 
 private:
     SetObjectPreComputedIR(int targetIndex, int objectIndex, int sourceIndex, SetObjectPreComputedCase* byteCode)
-        : ESIR(ESIR::Opcode::SetObjectPreComputed, targetIndex),
-    m_objectIndex(objectIndex),
-    m_sourceIndex(sourceIndex),
-    m_byteCode(byteCode) { }
+        : ESIR(ESIR::Opcode::SetObjectPreComputed, targetIndex)
+        , m_objectIndex(objectIndex)
+        , m_sourceIndex(sourceIndex)
+        , m_byteCode(byteCode) { }
     int m_objectIndex;
     int m_sourceIndex;
     SetObjectPreComputedCase* m_byteCode;
@@ -1318,7 +1318,7 @@ public:
 
 protected:
     CallEvalIR(int targetIndex, int argumentCount, int* argumentIndexes)
-    : ESIR(ESIR::Opcode::CallEval, targetIndex), m_argumentIndexes(argumentCount)
+        : ESIR(ESIR::Opcode::CallEval, targetIndex), m_argumentIndexes(argumentCount)
     {
         for (int i = 0; i < argumentCount; i++)
             m_argumentIndexes[i] = argumentIndexes[i];
@@ -1332,7 +1332,7 @@ public:
 
 private:
     ReturnIR(int targetIndex)
-    : ESIR(ESIR::Opcode::Return, targetIndex) { }
+        : ESIR(ESIR::Opcode::Return, targetIndex) { }
 };
 
 class MoveIR : public ESIR {
@@ -1414,9 +1414,9 @@ public:
 
 private:
     StorePhiIR(int targetIndex, int sourceIndex, int allocPhiIndex)
-        : ESIR(ESIR::Opcode::StorePhi, targetIndex),
-    m_sourceIndex(sourceIndex),
-    m_allocPhiIndex(allocPhiIndex) { }
+        : ESIR(ESIR::Opcode::StorePhi, targetIndex)
+        , m_sourceIndex(sourceIndex)
+        , m_allocPhiIndex(allocPhiIndex) { }
 
     int m_sourceIndex;
     int m_allocPhiIndex;

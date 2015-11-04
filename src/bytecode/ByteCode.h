@@ -327,7 +327,8 @@ struct ByteCodeGenerateContext {
 
 class ProfileData {
 public:
-    ProfileData() : m_type(ESJIT::TypeBottom), m_value(ESValue(ESValue::ESEmptyValueTag::ESEmptyValue)) { }
+    ProfileData()
+        : m_type(ESJIT::TypeBottom), m_value(ESValue(ESValue::ESEmptyValueTag::ESEmptyValue)) { }
 
     void addProfile(const ESValue& value)
     {

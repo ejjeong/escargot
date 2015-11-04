@@ -46,8 +46,10 @@ void logVerboseJIT(const char* fmt...);
 
 class Type {
 public:
-    Type(uint64_t type = TypeBottom) : m_type(type) { }
-    Type(const Type& type) : m_type(type.m_type) { }
+    Type(uint64_t type = TypeBottom)
+        : m_type(type) { }
+    Type(const Type& type)
+        : m_type(type.m_type) { }
 
     void mergeType(Type otherType)
     {
