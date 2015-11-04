@@ -3,7 +3,7 @@ VMulti2 MMulti VMulti Translate
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-morph.js
 
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-raytrace.js
-createVector cross subVector sub (anonymous) (anonymous) 
+createVector cross normaliseVector lengthVector normalise scale dot sub (anonymous) addVector (anonymous) add scaleVector scalev 
 ===> test/SunSpider/tests/sunspider-1.0.2/access-binary-trees.js
 TreeNode (anonymous) 
 ===> test/SunSpider/tests/sunspider-1.0.2/access-fannkuch.js
@@ -33,7 +33,7 @@ safe_add
 ===> test/SunSpider/tests/sunspider-1.0.2/date-format-xparb.js
 (anonymous) (anonymous) (anonymous) (anonymous) 
 ===> test/SunSpider/tests/sunspider-1.0.2/math-cordic.js
-FIXED 
+
 ===> test/SunSpider/tests/sunspider-1.0.2/math-partial-sums.js
 
 ===> test/SunSpider/tests/sunspider-1.0.2/math-spectral-norm.js
