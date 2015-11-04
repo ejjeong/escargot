@@ -608,7 +608,13 @@ void GlobalObject::installObject()
             RELEASE_ASSERT_NOT_REACHED();
         }
         return obj;
-    }, ESString::create(u"create")));
+    }, ESString::create(u"create"), 2));
+
+    // $19.1.2.9 Object.getPrototypeOf
+    m_object->defineDataProperty(strings->getPrototypeOf, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        ESValue O = instance->currentExecutionContext()->readArgument(0);
+        return O.toObject()->__proto__();
+    }, strings->getPrototypeOf));
 
     // $19.1.2.14 Object.keys ( O )
     m_object->defineDataProperty(ESString::create(u"keys"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -626,6 +632,21 @@ void GlobalObject::installObject()
         // Return ToObject(this value).
         return instance->currentExecutionContext()->resolveThisBindingToObject();
     }, strings->valueOf));
+
+    // $19.1.3.3 Object.prototype.isPrototypeOf ( V )
+    m_objectPrototype->defineDataProperty(strings->isPrototypeOf, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        ESValue V = instance->currentExecutionContext()->readArgument(0);
+        if (!V.isObject())
+            return ESValue(false);
+        ESObject* O = instance->currentExecutionContext()->resolveThisBindingToObject();
+        while (true) {
+            V = V.asESPointer()->asESObject()->__proto__();
+            if (V.isNull())
+                return ESValue(false);
+            if (V.equalsTo(O))
+                return ESValue(true);
+        }
+    }, strings->isPrototypeOf));
 
     // $19.1.3.5 Object.prototype.toLocaleString
     m_objectPrototype->defineDataProperty(strings->toLocaleString, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {

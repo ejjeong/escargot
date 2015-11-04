@@ -120,6 +120,8 @@ public:
     InternalAtomicString parse;
     InternalAtomicString stringify;
     InternalAtomicString toJSON;
+    InternalAtomicString getPrototypeOf;
+    InternalAtomicString isPrototypeOf;
 
     void initStaticStrings(ESVMInstance* instance);
 };

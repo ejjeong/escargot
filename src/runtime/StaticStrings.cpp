@@ -119,6 +119,8 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     parse = InternalAtomicString(instance, u"parse");
     stringify = InternalAtomicString(instance, u"stringify");
     toJSON = InternalAtomicString(instance, u"toJSON");
+    getPrototypeOf = InternalAtomicString(instance, u"getPrototypeOf");
+    isPrototypeOf = InternalAtomicString(instance, u"isPrototypeOf");
 }
 
 Strings* strings;
