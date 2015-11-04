@@ -45,6 +45,7 @@ public:
     InternalAtomicString message;
     InternalAtomicString valueOf;
     InternalAtomicString Array;
+    InternalAtomicString isArray;
     InternalAtomicString concat;
     InternalAtomicString forEach;
     InternalAtomicString indexOf;

@@ -797,6 +797,17 @@ void GlobalObject::installArray()
     m_array->forceNonVectorHiddenClass();
     m_arrayPrototype->defineDataProperty(strings->constructor, true, false, true, m_array);
 
+    // $22.1.2.2 Array.isArray(arg)
+    m_array->ESObject::defineDataProperty(strings->isArray, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        if (arglen < 1)
+            return ESValue(ESValue::ESFalseTag::ESFalse);
+        ESValue arg = instance->currentExecutionContext()->arguments()[0];
+        if (arg.isESPointer() && arg.asESPointer()->isESArrayObject())
+            return ESValue(ESValue::ESTrueTag::ESTrue);
+        return ESValue(ESValue::ESFalseTag::ESFalse);
+    }, strings->isArray));
+
     // $22.1.3.1 Array.prototype.concat(...arguments)
     m_arrayPrototype->ESObject::defineDataProperty(strings->concat, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         int arglen = instance->currentExecutionContext()->argumentCount();
