@@ -2443,7 +2443,7 @@ inline void iterateByteCode(CodeBlock* codeBlock, void (*fn)(CodeBlock* block, u
     unsigned idx = 0;
     char* end = &codeBlock->m_code.data()[codeBlock->m_code.size()];
 
-    while (ptr <= end) {
+    while (ptr < end) {
         Opcode code = codeBlock->m_extraData[idx].m_opcode;
         fn(codeBlock, idx, (ByteCode *)ptr, code);
         idx++;
@@ -2451,7 +2451,7 @@ inline void iterateByteCode(CodeBlock* codeBlock, void (*fn)(CodeBlock* block, u
 #define ADD_BYTECODE_SIZE(name, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
         case name##Opcode: \
             ptr += sizeof(name); \
-            break; \
+            break;
             FOR_EACH_BYTECODE_OP(ADD_BYTECODE_SIZE)
         default:
             RELEASE_ASSERT_NOT_REACHED();
