@@ -466,6 +466,62 @@ void GlobalObject::installFunction()
     defineDataProperty(strings->Function, true, false, true, m_function);
 }
 
+inline void definePropertyWithDescriptorObject(ESObject* obj, ESValue& key, ESObject* desc)
+{
+    bool isEnumerable = false;
+    bool isConfigurable = false;
+    bool isWritable = false;
+    // TODO get set
+    ESValue v = desc->get(ESString::create(u"enumerable"));
+    if (!v.isUndefined()) {
+        isEnumerable = v.toBoolean();
+    }
+
+    v = desc->get(ESString::create(u"configurable"));
+    if (!v.isUndefined()) {
+        isConfigurable = v.toBoolean();
+    }
+
+    v = desc->get(ESString::create(u"writable"));
+    if (!v.isUndefined()) {
+        isWritable = v.toBoolean();
+    }
+
+    v = desc->get(ESString::create(u"value"));
+    bool gs = false;
+    ESValue get = desc->get(ESString::create(u"get"));
+    ESValue set = desc->get(ESString::create(u"set"));
+    if (!get.isUndefined() || !set.isUndefined()) {
+        escargot::ESFunctionObject* getter = NULL;
+        escargot::ESFunctionObject* setter = NULL;
+        if (!get.isEmpty() && get.isESPointer() && get.asESPointer()->isESFunctionObject()) {
+            getter = get.asESPointer()->asESFunctionObject();
+        }
+        if (!set.isEmpty() && set.isESPointer() && set.asESPointer()->isESFunctionObject()) {
+            setter = set.asESPointer()->asESFunctionObject();
+        }
+        obj->defineAccessorProperty(key, new ESPropertyAccessorData(getter, setter), isWritable, isEnumerable, isConfigurable);
+    } else {
+        obj->defineDataProperty(key, isWritable, isEnumerable, isConfigurable, v);
+    }
+}
+
+inline ESValue objectDefineProperties(ESValue object, ESValue& properties)
+{
+    if (!object.isObject())
+        throw ESValue(TypeError::create(ESString::create("objectDefineProperties: first argument is not object")));
+    ESObject* props = properties.toObject();
+    props->enumeration([&](ESValue key) {
+        ESValue propertyDesc = props->get(key);
+        if (!propertyDesc.isUndefined()) {
+            if (!propertyDesc.isObject())
+                throw ESValue(TypeError::create(ESString::create("objectDefineProperties: descriptor is not object")));
+            definePropertyWithDescriptorObject(object.asESPointer()->asESObject(), key, propertyDesc.asESPointer()->asESObject());
+        }
+    });
+    return object;
+}
+
 void GlobalObject::installObject()
 {
     ::escargot::ESFunctionObject* emptyFunction = m_functionPrototype;
@@ -534,6 +590,13 @@ void GlobalObject::installObject()
         return ret;
     }, ESString::create(u"hasOwnProperty")));
 
+    // $19.1.2.3 Object.defineProperties ( O, P, Attributes )
+    m_object->defineDataProperty(ESString::create(u"defineProperties"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        ESValue object = instance->currentExecutionContext()->readArgument(0);
+        ESValue properties = instance->currentExecutionContext()->readArgument(0);
+        return objectDefineProperties(object, properties);
+    }, ESString::create(u"defineProperties")));
+
     // $19.1.2.4 Object.defineProperty ( O, P, Attributes )
     // http://www.ecma-international.org/ecma-262/6.0/#sec-object.defineproperty
     m_object->defineDataProperty(ESString::create(u"defineProperty"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -546,42 +609,7 @@ void GlobalObject::installObject()
                 if (!instance->currentExecutionContext()->arguments()[2].isObject())
                     throw ESValue(TypeError::create(ESString::create("Object.defineProperty: 3rd argument is not object")));
                 ESObject* desc = instance->currentExecutionContext()->arguments()[2].toObject();
-                bool isEnumerable = false;
-                bool isConfigurable = false;
-                bool isWritable = false;
-                // TODO get set
-                ESValue v = desc->get(ESString::create(u"enumerable"));
-                if (!v.isUndefined()) {
-                    isEnumerable = v.toBoolean();
-                }
-
-                v = desc->get(ESString::create(u"configurable"));
-                if (!v.isUndefined()) {
-                    isConfigurable = v.toBoolean();
-                }
-
-                v = desc->get(ESString::create(u"writable"));
-                if (!v.isUndefined()) {
-                    isWritable = v.toBoolean();
-                }
-
-                v = desc->get(ESString::create(u"value"));
-                bool gs = false;
-                ESValue get = desc->get(ESString::create(u"get"));
-                ESValue set = desc->get(ESString::create(u"set"));
-                if (!get.isUndefined() || !set.isUndefined()) {
-                    escargot::ESFunctionObject* getter = NULL;
-                    escargot::ESFunctionObject* setter = NULL;
-                    if (!get.isEmpty() && get.isESPointer() && get.asESPointer()->isESFunctionObject()) {
-                        getter = get.asESPointer()->asESFunctionObject();
-                    }
-                    if (!set.isEmpty() && set.isESPointer() && set.asESPointer()->isESFunctionObject()) {
-                        setter = set.asESPointer()->asESFunctionObject();
-                    }
-                    obj->defineAccessorProperty(key, new ESPropertyAccessorData(getter, setter), isWritable, isEnumerable, isConfigurable);
-                } else {
-                    obj->defineDataProperty(key, isWritable, isEnumerable, isConfigurable, v);
-                }
+                definePropertyWithDescriptorObject(obj, key, desc);
             } else {
                 throw ESValue(TypeError::create(ESString::create("Object.defineProperty: 1st argument is not object")));
             }
@@ -604,8 +632,7 @@ void GlobalObject::installObject()
         else
             obj->set__proto__(proto);
         if (!instance->currentExecutionContext()->readArgument(1).isUndefined()) {
-            // TODO
-            RELEASE_ASSERT_NOT_REACHED();
+            return objectDefineProperties(obj, instance->currentExecutionContext()->arguments()[1]);
         }
         return obj;
     }, ESString::create(u"create"), 2));
