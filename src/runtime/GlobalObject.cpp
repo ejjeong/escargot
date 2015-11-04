@@ -1222,7 +1222,9 @@ void GlobalObject::installString()
             return stringObject;
         } else {
             // called as function
-            ESValue value = instance->currentExecutionContext()->readArgument(0);
+            if (instance->currentExecutionContext()->argumentCount() == 0)
+                return strings->emptyString.string();
+            ESValue value = instance->currentExecutionContext()->arguments()[0];
             return value.toString();
         }
         return ESValue();
