@@ -1,9 +1,9 @@
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-cube.js
-CreateP CalcNormal CalcCross MMulti VMulti VMulti2 Translate DrawLine RotateX RotateY RotateZ Loop 
+CreateP CalcNormal CalcCross VMulti VMulti2 MMulti Translate DrawLine RotateX RotateY RotateZ Loop 
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-morph.js
 morph 
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-raytrace.js
-createVector sub cross normalise lengthVector dot normaliseVector subVector transformMatrix scale addVector scaleVector add (anonymous) scalev (anonymous) (anonymous) 
+createVector sub cross normalise lengthVector dot normaliseVector transformMatrix scale addVector (anonymous) scaleVector (anonymous) add scalev (anonymous) (anonymous) 
 ===> test/SunSpider/tests/sunspider-1.0.2/access-binary-trees.js
 TreeNode bottomUpTree (anonymous) 
 ===> test/SunSpider/tests/sunspider-1.0.2/access-fannkuch.js
@@ -23,7 +23,7 @@ bitsinbyte
 ===> test/SunSpider/tests/sunspider-1.0.2/controlflow-recursive.js
 ack fib tak 
 ===> test/SunSpider/tests/sunspider-1.0.2/crypto-aes.js
-SubWord RotWord AddRoundKey SubBytes ShiftRows MixColumns KeyExpansion Cipher escCtrlChars (anonymous) (anonymous) unescCtrlChars 
+SubWord RotWord AddRoundKey SubBytes ShiftRows MixColumns Cipher escCtrlChars (anonymous) KeyExpansion unescCtrlChars (anonymous) 
 ===> test/SunSpider/tests/sunspider-1.0.2/crypto-md5.js
 safe_add md5_ff md5_cmn bit_rol md5_gg md5_hh md5_ii 
 ===> test/SunSpider/tests/sunspider-1.0.2/crypto-sha1.js
@@ -47,6 +47,6 @@ rand
 ===> test/SunSpider/tests/sunspider-1.0.2/string-tagcloud.js
 (anonymous) (anonymous) 
 ===> test/SunSpider/tests/sunspider-1.0.2/string-unpack-code.js
-(anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) 
+(anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) 
 ===> test/SunSpider/tests/sunspider-1.0.2/string-validate-input.js
 makeName addResult makeNumber 
