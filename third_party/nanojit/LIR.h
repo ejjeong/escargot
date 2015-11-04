@@ -7,7 +7,7 @@
 #ifndef __nanojit_LIR__
 #define __nanojit_LIR__
 #ifdef ENABLE_ESJIT
-#include "ESGraph.h"
+#include "jit/ESGraph.h"
 namespace escargot {
 
 namespace ESJIT {

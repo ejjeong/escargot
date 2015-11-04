@@ -4,31 +4,62 @@ BIN=escargot
 # Environments
 #######################################################
 
-HOST=
-OPT=
-ARCH=x64
-
+HOST=linux
+ARCH=#x86,x64
+TYPE=none#interpreter
+MODE=#debug,release
 NPROCS:=1
 OS:=$(shell uname -s)
-
+SHELL:=/bin/bash
 ifeq ($(OS),Linux)
-  NPROCS:=$(shell grep -c ^processor /proc/cpuinfo)
+	NPROCS:=$(shell grep -c ^processor /proc/cpuinfo)
+	SHELL:=/bin/bash
 endif
-ifeq ($(OS),Darwin) # Assume Mac OS X
-  NPROCS:=$(shell sysctl -n machdep.cpu.thread_count)
+ifeq ($(OS),Darwin)
+	NPROCS:=$(shell sysctl -n machdep.cpu.thread_count)
+	SHELL:=/opt/local/bin/bash
 endif
-
-ifeq ($(HOST),)
-	HOST=linux
-endif
-
-$(info host... $(HOST))
 
 ifeq ($(HOST), linux)
 	CC = gcc
 	CXX = g++
 	CXXFLAGS = -std=c++11
-else
+endif
+
+$(info goal... $(MAKECMDGOALS))
+
+ifneq (,$(findstring x86,$(MAKECMDGOALS)))
+	ARCH=x86
+else ifneq (,$(findstring x64,$(MAKECMDGOALS)))
+	ARCH=x64
+endif
+
+ifneq (,$(findstring interpreter,$(MAKECMDGOALS)))
+	TYPE=interpreter
+else ifneq (,$(findstring jit,$(MAKECMDGOALS)))
+	ifneq ($(MAKECMDGOALS), check-jit)
+		TYPE=jit
+	endif
+endif
+
+ifneq (,$(findstring debug,$(MAKECMDGOALS)))
+	MODE=debug
+else ifneq (,$(findstring release,$(MAKECMDGOALS)))
+	MODE=release
+endif
+
+BUILDDIR=out/$(ARCH)/$(TYPE)/$(MODE)
+
+$(info host... $(HOST))
+$(info arch... $(ARCH))
+$(info type... $(TYPE))
+$(info mode... $(MODE))
+$(info build dir... $(BUILDDIR))
+
+ifeq ($(TYPE), intrepreter)
+	CXXFLAGS+=$(CXXFLAGS_INTERPRETER)
+else ifeq ($(TYPE), jit)
+	CXXFLAGS+=$(CXXFLAGS_JIT)
 endif
 
 ifeq ($(ARCH), x64)
@@ -37,19 +68,12 @@ else ifeq ($(ARCH), x86)
 	CXXFLAGS += -DESCARGOT_32=1
 endif
 
-.DEFAULT_GOAL:=jit.debug
-
-ifeq ($(MAKECMDGOALS), jit.debug)
-	BUILDDIR=out/jit/debug
-else ifeq ($(MAKECMDGOALS), jit.release)
-	BUILDDIR=out/jit/release
-else ifeq ($(MAKECMDGOALS), interpreter.debug)
-	BUILDDIR=out/interpreter/debug
-else ifeq ($(MAKECMDGOALS), interpreter.release)
-	BUILDDIR=out/interpreter/release
-else
-	BUILDDIR=out/jit/debug
+ifeq ($(MODE), debug)
+	CXXFLAGS += $(CXXFLAGS_DEBUG)
+else ifeq ($(MODE), release)
+	CXXFLAGS += $(CXXFLAGS_RELEASE)
 endif
+
 
 #######################################################
 # Global build flags
@@ -71,26 +95,66 @@ CXXFLAGS_RELEASE = -O2 -g3 -DNDEBUG -fomit-frame-pointer -frounding-math -fsigna
 CXXFLAGS_JIT = -DENABLE_ESJIT=1
 CXXFLAGS_INTERPRETER =
 
-jit.debug: CXXFLAGS+=$(CXXFLAGS_JIT) $(CXXFLAGS_DEBUG)
-jit.release: CXXFLAGS+=$(CXXFLAGS_JIT) $(CXXFLAGS_RELEASE)
-interpreter.debug: CXXFLAGS+=$(CXXFLAGS_INTERPRETER) $(CXXFLAGS_DEBUG)
-interpreter.release: CXXFLAGS+=$(CXXFLAGS_INTERPRETER) $(CXXFLAGS_RELEASE)
-
 #######################################################
 # Third-party build flags
 #######################################################
 
 # bdwgc
 CXXFLAGS += -Ithird_party/bdwgc/include/
-GCLIBS_DEBUG = third_party/bdwgc/out/debug/.libs/libgc.a #third_party/bdwgc/out/debug/.libs/libgccpp.a
-GCLIBS_RELEASE = third_party/bdwgc/out/release/.libs/libgc.a #third_party/bdwgc/out/release/.libs/libgccpp.a
-jit.debug:           GCLIBS=$(GCLIBS_DEBUG)
-jit.release:         GCLIBS=$(GCLIBS_RELEASE)
-interpreter.debug:   GCLIBS=$(GCLIBS_DEBUG)
-interpreter.release: GCLIBS=$(GCLIBS_RELEASE)
+GCLIBS=third_party/bdwgc/out/$(ARCH)/$(MODE)/.libs/libgc.a
 
-# nanojit
-include third_party/nanojit/Build.mk
+ifneq ($(TYPE),none)
+
+ifneq ($(wildcard $(GCLIBS)),)
+
+else
+$(info gclib not exists. execute build_third_party...)
+$(shell ./build_third_party.sh)
+endif
+
+endif
+
+ifeq ($(TYPE), jit)
+	#include third_party/nanojit/Build.mk
+	####################################
+	# ARCH-dependent settings
+	####################################
+	ifeq ($(ARCH), x64)
+		TARGET_CPU=x86_64
+		CXXFLAGS += -DAVMPLUS_64BIT
+		CXXFLAGS += -DAVMPLUS_AMD64
+		CXXFLAGS += -DAVMPLUS_X64
+		CXXFLAGS += #if defined(_M_AMD64) || defined(_M_X64)
+	endif
+	
+	####################################
+	# target-dependent settings
+	####################################
+	
+	ifeq ($(MODE), debug)
+		CXXFLAGS += -DDEBUG
+		CXXFLAGS += -D_DEBUG
+		CXXFLAGS += -DNJ_VERBOSE
+	endif
+	
+	####################################
+	# Other features
+	####################################
+	CXXFLAGS += -DESCARGOT
+	CXXFLAGS += -Ithird_party/nanojit/
+	CXXFLAGS += -DFEATURE_NANOJIT
+	
+	#CXXFLAGS += -DAVMPLUS_VERBOSE
+	CXXFLAGS += -Wno-error=narrowing
+	
+	####################################
+	# Makefile flags
+	####################################
+	curdir=third_party/nanojit
+	include $(curdir)/manifest.mk
+	SRC_NANOJIT = $(avmplus_CXXSRCS)
+	SRC_NANOJIT += $(curdir)/EscargotBridge.cpp
+endif
 
 # netlib
 CXXFLAGS += -Ithird_party/netlib/
@@ -134,7 +198,9 @@ SRC += $(foreach dir, ./src/vm , $(wildcard $(dir)/*.cpp))
 
 SRC += $(SRC_YARR)
 SRC += $(SRC_ESPRIMA_CPP)
-SRC += $(SRC_NANOJIT)
+ifeq ($(TYPE), jit)
+	SRC += $(SRC_NANOJIT)
+endif
 SRC += $(SRC_DTOA)
 
 OBJS := $(SRC:%.cpp= $(BUILDDIR)/%.o)
@@ -147,13 +213,21 @@ OBJS += $(SRC_C:%.c= $(BUILDDIR)/%.o)
 # pull in dependency info for *existing* .o files
 -include $(OBJS:.o=.d)
 
-jit.debug: $(BUILDDIR)/$(BIN)
+#x86.jit.debug: $(BUILDDIR)/$(BIN)
+#	cp -f $< .
+#x86.jit.release: $(BUILDDIR)/$(BIN)
+#	cp -f $< .
+#x86.interpreter.debug: $(BUILDDIR)/$(BIN)
+#	cp -f $< .
+#x86.interpreter.release: $(BUILDDIR)/$(BIN)
+#	cp -f $< .
+x64.jit.debug: $(BUILDDIR)/$(BIN)
 	cp -f $< .
-jit.release: $(BUILDDIR)/$(BIN)
+x64.jit.release: $(BUILDDIR)/$(BIN)
 	cp -f $< .
-interpreter.debug: $(BUILDDIR)/$(BIN)
+x64.interpreter.debug: $(BUILDDIR)/$(BIN)
 	cp -f $< .
-interpreter.release: $(BUILDDIR)/$(BIN)
+x64.interpreter.release: $(BUILDDIR)/$(BIN)
 	cp -f $< .
 
 $(BUILDDIR)/$(BIN): $(OBJS) $(THIRD_PARTY_LIBS)
@@ -170,27 +244,19 @@ $(BUILDDIR)/%.o: %.c
 	$(CC) -MM $(CFLAGS) -MT $@ $< > $(BUILDDIR)/$*.d
 
 full:
-	BUILDDIR=out/jit/debug make jit.debug -j$(NPROCS)
-	ln -sf out/jit/debug/$(BIN) $(BIN).jd
-	BUILDDIR=out/jit/release make jit.release -j$(NPROCS)
-	ln -sf out/jit/release/$(BIN) $(BIN).jr
-	BUILDDIR=out/interpreter/debug make interpreter.debug -j$(NPROCS)
-	ln -sf out/interpreter/debug/$(BIN) $(BIN).id
-	BUILDDIR=out/interpreter/release make interpreter.release -j$(NPROCS)
-	ln -sf out/interpreter/release/$(BIN) $(BIN).ir
+	make x64.jit.debug -j$(NPROCS)
+	ln -sf out/x64/jit/debug/$(BIN) $(BIN).x64.jd
+	make x64.jit.release -j$(NPROCS)
+	ln -sf out/x64/jit/release/$(BIN) $(BIN).x64.jr
+	make x64.interpreter.debug -j$(NPROCS)
+	ln -sf out/x64/interpreter/debug/$(BIN) $(BIN).x64.id
+	make x64.interpreter.release -j$(NPROCS)
+	ln -sf out/x64/interpreter/release/$(BIN) $(BIN).x64.ir
+
+# Targets : miscellaneous
 
 clean:
 	rm -rf out
-	$(shell find ./src/ -name "*.o" -exec rm {} \;)
-	$(shell find ./src/ -name "*.d" -exec rm {} \;)
-	$(shell find ./third_party/yarr/ -name "*.o" -exec rm {} \;)
-	$(shell find ./third_party/yarr/ -name "*.d" -exec rm {} \;)
-	$(shell find ./third_party/esprima_cpp/ -name "*.o" -exec rm {} \;)
-	$(shell find ./third_party/esprima_cpp/ -name "*.d" -exec rm {} \;)
-	$(shell find ./third_party/nanojit/ -name "*.o" -exec rm {} \;)
-	$(shell find ./third_party/nanojit/ -name "*.d" -exec rm {} \;)
-
-# Targets : miscellaneous
 
 strip:
 	strip $(BIN)
@@ -203,11 +269,11 @@ asm:
 # Targets : tests
 
 check-jit:
-	make jit.release -j$(NPROCS)
+	make x64.jit.release -j$(NPROCS)
 	make run-sunspider
-	make interpreter.release -j$(NPROCS)
+	make x64.interpreter.release -j$(NPROCS)
 	make run-sunspider
-	make jit.debug -j$(NPROCS)
+	make x64.jit.debug -j$(NPROCS)
 	./run-Sunspider-jit.sh -rcf > compiledFunctions.txt
 	vimdiff compiledFunctions.txt originalCompiledFunctions.txt
 	./run-Sunspider-jit.sh -rof > osrExitedFunctions.txt
@@ -231,3 +297,4 @@ run-test262:
 	python tools/packaging/test262.py --command ../../escargot $(OPT) --summary
 
 .PHONY: clean
+.DEFAULT_GOAL:=x64.jit.debug

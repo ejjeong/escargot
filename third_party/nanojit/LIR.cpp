@@ -7,7 +7,7 @@
 #include "nanojit.h"
 
 #ifdef ENABLE_ESJIT
-#include "ESJIT.h"
+#include "jit/ESJIT.h"
 #endif
 
 namespace nanojit

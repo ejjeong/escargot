@@ -11,22 +11,36 @@ NUMPROC=$(grep 'processor' /proc/cpuinfo | wc -l)
 # GC build
 ###########################################################
 cd third_party/bdwgc/
-./autogen.sh
-make distclean
+autoreconf -vif
+automake --add-missing
+#./autogen.sh
+#make distclean
 
-mkdir -p out/release
-mkdir -p out/debug
+rm -rf out
+
+mkdir -p out/x86/release
+mkdir -p out/x86/debug
+mkdir -p out/x64/release
+mkdir -p out/x64/debug
 
 GCCONFFLAGS=" --disable-parallel-mark " # --enable-large-config --enable-cplusplus"
 
-cd out/release
-../../configure $GCCONFFLAGS --disable-gc-debug
+cd out/x86/release
+../../../configure $GCCONFFLAGS --disable-gc-debug CFLAGS='-m32' CXXFLAGS='-m32'
 make -j$NUMPROC
-cd ../..
+cd -
 
-cd out/debug
-../../configure $GCCONFFLAGS
+cd out/x86/debug
+../../../configure $GCCONFFLAGS CFLAGS='-m32' CXXFLAGS='-m32'
 make -j$NUMPROC
-cd ../..
+cd -
 
-cd ../..
+cd out/x64/release
+../../../configure $GCCONFFLAGS --disable-gc-debug
+make -j$NUMPROC
+cd -
+
+cd out/x64/debug
+../../../configure $GCCONFFLAGS
+make -j$NUMPROC
+cd -

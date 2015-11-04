@@ -5,10 +5,9 @@ ESCARGOT
 
     git clone ssh://git@10.251.44.23:7999/escar/escargot.git
     cd escargot
-    ./init_third_party.sh
     ./build_third_party.sh
-    make [interpreter|jit].[debug|release] -j8
-e.g. $ make interpreter.debug
+    make [x86.x64].[interpreter|jit].[debug|release] -j
+e.g. $ make x64.interpreter.debug
 
 # Running
 
