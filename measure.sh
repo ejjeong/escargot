@@ -43,13 +43,13 @@ elif [[ $1 == jsc.jit || $1 == jsc.dfg* ]]; then
   cmd="./test/bin/jsc.jit"
   tc="jsc.jit"
 elif [[ $1 == escargot.interp* ]]; then
-  cmd="./out/interpreter/release/escargot"
+  cmd="./out/x64/interpreter/release/escargot"
   tc="escargot.interp"
 elif [[ $1 == escargot.jit ]]; then
-  cmd="./out/jit/release/escargot"
+  cmd="./out/x64/jit/release/escargot"
   tc="escargot.jit"
 else
-  cmd="./out/x86/interpreter/release/escargot"
+  cmd="./out/x64/interpreter/release/escargot"
   tc="escargot.interp"
 fi
 echo $cmd
