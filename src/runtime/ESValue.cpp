@@ -282,8 +282,8 @@ ESStringData::ESStringData(double number)
     int exponent = decimal_point - 1;
     const int decimal_in_shortest_low_ = -6;
     const int decimal_in_shortest_high_ = 21;
-    if ((decimal_in_shortest_low_ <= exponent) &&
-        (exponent < decimal_in_shortest_high_)) {
+    if ((decimal_in_shortest_low_ <= exponent)
+        && (exponent < decimal_in_shortest_high_)) {
             CreateDecimalRepresentation(flags, decimal_rep, decimal_rep_length,
                 decimal_point,
                 double_conversion::Max(0, decimal_rep_length - decimal_point),
@@ -513,8 +513,8 @@ void ESRegExpObject::setSource(escargot::ESString* src)
 }
 void ESRegExpObject::setOption(const Option& option)
 {
-    if (((m_option & ESRegExpObject::Option::MultiLine) != (option & ESRegExpObject::Option::MultiLine)) ||
-        ((m_option & ESRegExpObject::Option::IgnoreCase) != (option & ESRegExpObject::Option::IgnoreCase))
+    if (((m_option & ESRegExpObject::Option::MultiLine) != (option & ESRegExpObject::Option::MultiLine))
+        || ((m_option & ESRegExpObject::Option::IgnoreCase) != (option & ESRegExpObject::Option::IgnoreCase))
         ) {
         m_bytecodePattern = NULL;
     }

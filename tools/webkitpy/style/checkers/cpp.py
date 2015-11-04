@@ -2742,29 +2742,29 @@ def check_style(clean_lines, line_number, file_extension, class_state, file_stat
         error(line_number, 'whitespace/end_of_line', 4,
               'Line ends in whitespace.  Consider deleting these extra spaces.')
 
-#WY    if (cleansed_line.count(';') > 1
-#        # for loops are allowed two ;'s (and may run over two lines).
-#        and cleansed_line.find('for') == -1
-#        and (get_previous_non_blank_line(clean_lines, line_number)[0].find('for') == -1
-#             or get_previous_non_blank_line(clean_lines, line_number)[0].find(';') != -1)
+    if (cleansed_line.count(';') > 1
+        # for loops are allowed two ;'s (and may run over two lines).
+        and cleansed_line.find('for') == -1
+        and (get_previous_non_blank_line(clean_lines, line_number)[0].find('for') == -1
+             or get_previous_non_blank_line(clean_lines, line_number)[0].find(';') != -1)
         # It's ok to have many commands in a switch case that fits in 1 line
-#        and not ((cleansed_line.find('case ') != -1
-#                  or cleansed_line.find('default:') != -1)
-#                 and cleansed_line.find('break;') != -1)
+        and not ((cleansed_line.find('case ') != -1
+                  or cleansed_line.find('default:') != -1)
+                 and cleansed_line.find('break;') != -1)
         # Also it's ok to have many commands in trivial single-line accessors in class definitions.
-#        and not (match(r'.*\(.*\).*{.*.}', line)
-#                 and class_state.classinfo_stack
-#                 and line.count('{') == line.count('}'))
-#        and not cleansed_line.startswith('#define ')
+        and not (match(r'.*\(.*\).*{.*.}', line)
+                 and class_state.classinfo_stack
+                 and line.count('{') == line.count('}'))
+        and not cleansed_line.startswith('#define ')
         # It's ok to use use WTF_MAKE_NONCOPYABLE and WTF_MAKE_FAST_ALLOCATED macros in 1 line
-#        and not (cleansed_line.find("WTF_MAKE_NONCOPYABLE") != -1
-#                 and cleansed_line.find("WTF_MAKE_FAST_ALLOCATED") != -1)):
-#        error(line_number, 'whitespace/newline', 4,
-#              'More than one command on the same line')
-#WY    if cleansed_line.strip().endswith('||') or cleansed_line.strip().endswith(' &&'):
-#        error(line_number, 'whitespace/operators', 4,
-#              'Boolean expressions that span multiple lines should have their '
-#              'operators on the left side of the line instead of the right side.')
+        and not (cleansed_line.find("WTF_MAKE_NONCOPYABLE") != -1
+                 and cleansed_line.find("WTF_MAKE_FAST_ALLOCATED") != -1)):
+        error(line_number, 'whitespace/newline', 4,
+              'More than one command on the same line')
+    if cleansed_line.strip().endswith('||') or cleansed_line.strip().endswith(' &&'):
+        error(line_number, 'whitespace/operators', 4,
+              'Boolean expressions that span multiple lines should have their '
+              'operators on the left side of the line instead of the right side.')
 
     # Some more style checks
     check_namespace_indentation(clean_lines, line_number, file_extension, file_state, error)

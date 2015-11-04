@@ -154,20 +154,20 @@ ALWAYS_INLINE char16_t fromCodePoint(char16_t cp)
 ALWAYS_INLINE bool isIdentifierStart(char16_t ch)
 {
     // TODO
-    return (ch == 36) || (ch == 95) || // $ (dollar) and _ (underscore)
-        (ch >= 65 && ch <= 90) || // A..Z
-        (ch >= 97 && ch <= 122) || // a..z
-        (ch == 92); // \ (backslash)
+    return (ch == 36) || (ch == 95) // $ (dollar) and _ (underscore)
+        || (ch >= 65 && ch <= 90) // A..Z
+        || (ch >= 97 && ch <= 122) // a..z
+        || (ch == 92); // \ (backslash)
 }
 
 ALWAYS_INLINE bool isIdentifierPart(char16_t ch)
 {
     // TODO
-    return (ch == 36) || (ch == 95) || // $ (dollar) and _ (underscore)
-        (ch >= 65 && ch <= 90) || // A..Z
-        (ch >= 97 && ch <= 122) || // a..z
-        (ch >= 48 && ch <= 57) || // 0..9
-        (ch == 92); // \ (backslash)
+    return (ch == 36) || (ch == 95) // $ (dollar) and _ (underscore)
+        || (ch >= 65 && ch <= 90) // A..Z
+        || (ch >= 97 && ch <= 122) // a..z
+        || (ch >= 48 && ch <= 57) // 0..9
+        || (ch == 92); // \ (backslash)
 }
 
 // ECMA-262 11.6.2.2 Future Reserved Words
@@ -229,18 +229,18 @@ ALWAYS_INLINE bool isKeyword(const std::u16string& id)
     case 2:
         return (id == u"if") || (id == u"in") || (id == u"do");
     case 3:
-        return (id == u"var") || (id == u"for") || (id == u"new") ||
-            (id == u"try") || (id == u"let");
+        return (id == u"var") || (id == u"for") || (id == u"new")
+            || (id == u"try") || (id == u"let");
     case 4:
-        return (id == u"this") || (id == u"else") || (id == u"case") ||
-            (id == u"void") || (id == u"with") || (id == u"enum");
+        return (id == u"this") || (id == u"else") || (id == u"case")
+            || (id == u"void") || (id == u"with") || (id == u"enum");
     case 5:
-        return (id == u"while") || (id == u"break") || (id == u"catch") ||
-            (id == u"throw") || (id == u"const") || (id == u"yield") ||
-            (id == u"class") || (id == u"super");
+        return (id == u"while") || (id == u"break") || (id == u"catch")
+            || (id == u"throw") || (id == u"const") || (id == u"yield")
+            || (id == u"class") || (id == u"super");
     case 6:
-        return (id == u"return") || (id == u"typeof") || (id == u"delete") ||
-            (id == u"switch") || (id == u"export") || (id == u"import");
+        return (id == u"return") || (id == u"typeof") || (id == u"delete")
+            || (id == u"switch") || (id == u"export") || (id == u"import");
     case 7:
         return (id == u"default") || (id == u"finally") || (id == u"extends");
     case 8:
@@ -471,9 +471,9 @@ OctalToDecimalResult octalToDecimal(ParseContext* ctx, char16_t ch)
 
         // 3 digits are only allowed when string starts
         // with 0, 1, 2, 3
-        if (ch >= '0' && ch <= '3' &&
-            ctx->m_index < ctx->m_length &&
-            isOctalDigit(ctx->m_source[ctx->m_index])) {
+        if (ch >= '0' && ch <= '3'
+            && ctx->m_index < ctx->m_length
+            && isOctalDigit(ctx->m_source[ctx->m_index])) {
             code = code * 8 + ctx->m_source[ctx->m_index++] - '0';
         }
     }
@@ -939,17 +939,17 @@ PassRefPtr<ParseStatus> scanPunctuator(ParseContext* ctx)
         } else {
             // 3-character punctuators.
 
-            if (resultStr.compare(0, 3, u"===") == 0 || resultStr.compare(0, 3, u"!==") == 0 || resultStr.compare(0, 3, u">>>") == 0 ||
-                resultStr.compare(0, 3, u"<<=") == 0 || resultStr.compare(0, 3, u">>=") == 0) {
+            if (resultStr.compare(0, 3, u"===") == 0 || resultStr.compare(0, 3, u"!==") == 0 || resultStr.compare(0, 3, u">>>") == 0
+                || resultStr.compare(0, 3, u"<<=") == 0 || resultStr.compare(0, 3, u">>=") == 0) {
                 ctx->m_index += 3;
                 resultStr.pop_back();
             } else {
                 // 2-character punctuators.
-                if (resultStr.compare(0, 2, u"&&") == 0 || resultStr.compare(0, 2, u"||") == 0 || resultStr.compare(0, 2, u"==") == 0 || resultStr.compare(0, 2, u"!=") == 0 ||
-                    resultStr.compare(0, 2, u"+=") == 0 || resultStr.compare(0, 2, u"-=") == 0 || resultStr.compare(0, 2, u"*=") == 0 || resultStr.compare(0, 2, u"/=") == 0 ||
-                    resultStr.compare(0, 2, u"++") == 0 || resultStr.compare(0, 2, u"--") == 0 || resultStr.compare(0, 2, u"<<") == 0 || resultStr.compare(0, 2, u">>") == 0 ||
-                    resultStr.compare(0, 2, u"&=") == 0 || resultStr.compare(0, 2, u"|=") == 0 || resultStr.compare(0, 2, u"^=") == 0 || resultStr.compare(0, 2, u"%=") == 0 ||
-                    resultStr.compare(0, 2, u"<=") == 0 || resultStr.compare(0, 2, u">=") == 0 || resultStr.compare(0, 2, u"=>") == 0) {
+                if (resultStr.compare(0, 2, u"&&") == 0 || resultStr.compare(0, 2, u"||") == 0 || resultStr.compare(0, 2, u"==") == 0 || resultStr.compare(0, 2, u"!=") == 0
+                    || resultStr.compare(0, 2, u"+=") == 0 || resultStr.compare(0, 2, u"-=") == 0 || resultStr.compare(0, 2, u"*=") == 0 || resultStr.compare(0, 2, u"/=") == 0
+                    || resultStr.compare(0, 2, u"++") == 0 || resultStr.compare(0, 2, u"--") == 0 || resultStr.compare(0, 2, u"<<") == 0 || resultStr.compare(0, 2, u">>") == 0
+                    || resultStr.compare(0, 2, u"&=") == 0 || resultStr.compare(0, 2, u"|=") == 0 || resultStr.compare(0, 2, u"^=") == 0 || resultStr.compare(0, 2, u"%=") == 0
+                    || resultStr.compare(0, 2, u"<=") == 0 || resultStr.compare(0, 2, u">=") == 0 || resultStr.compare(0, 2, u"=>") == 0) {
                     ctx->m_index += 2;
                     resultStr.pop_back();
                     resultStr.pop_back();
@@ -1788,18 +1788,18 @@ bool matchAssign(ParseContext* ctx)
         return false;
     }
     const std::u16string& op= ctx->m_lookahead->m_value;
-    return op == u"=" ||
-        op == u"*=" ||
-        op == u"/=" ||
-        op == u"%=" ||
-        op == u"+=" ||
-        op == u"-=" ||
-        op == u"<<=" ||
-        op == u">>=" ||
-        op == u">>>=" ||
-        op == u"&=" ||
-        op == u"^=" ||
-        op == u"|=";
+    return op == u"="
+        || op == u"*="
+        || op == u"/="
+        || op == u"%="
+        || op == u"+="
+        || op == u"-="
+        || op == u"<<="
+        || op == u">>="
+        || op == u">>>="
+        || op == u"&="
+        || op == u"^="
+        || op == u"|=";
 }
 
 void consumeSemicolon(ParseContext* ctx)
@@ -1864,10 +1864,10 @@ escargot::Node* inheritCoverGrammar(ParseContext* ctx, std::function<escargot::N
 
 bool isIdentifierName(ParseStatus* token)
 {
-    return token->m_type == Token::IdentifierToken ||
-        token->m_type == Token::KeywordToken ||
-        token->m_type == Token::BooleanLiteralToken ||
-        token->m_type == Token::NullLiteralToken;
+    return token->m_type == Token::IdentifierToken
+        || token->m_type == Token::KeywordToken
+        || token->m_type == Token::BooleanLiteralToken
+        || token->m_type == Token::NullLiteralToken;
 }
 
 escargot::Node* finishLiteralNode(ParseContext* ctx, RefPtr<ParseStatus> ps)
@@ -1906,8 +1906,8 @@ void rearrangeNode(escargot::StatementNodeVector& body)
 
     size_t firstNormalStatementPlace = SIZE_MAX; // not var, function decl.
     for (size_t i = 0; i < body.size() ; i ++) {
-        if (body[i]->type() != escargot::NodeType::FunctionDeclaration &&
-            body[i]->type() != escargot::NodeType::VariableDeclarator) {
+        if (body[i]->type() != escargot::NodeType::FunctionDeclaration
+            && body[i]->type() != escargot::NodeType::VariableDeclarator) {
             firstNormalStatementPlace = i;
             break;
         }
@@ -2421,8 +2421,8 @@ escargot::Node* parseForStatement(ParseContext* ctx/*node*/)
                 left = ((escargot::VariableDeclaratorNode *)(((escargot::VariableDeclarationNode *)init)->declarations()[0]))->id();
                 right = parseExpression(ctx);
                 init = nullptr;
-            } else if (((escargot::VariableDeclarationNode *)init)->declarations().size() == 1 && ((escargot::VariableDeclaratorNode *)((escargot::VariableDeclarationNode *)init)->declarations()[0])->init() == nullptr &&
-                matchContextualKeyword(ctx, u"of")) {
+            } else if (((escargot::VariableDeclarationNode *)init)->declarations().size() == 1 && ((escargot::VariableDeclaratorNode *)((escargot::VariableDeclarationNode *)init)->declarations()[0])->init() == nullptr
+                && matchContextualKeyword(ctx, u"of")) {
                 lex(ctx);
                 left = init;
                 right = parseAssignmentExpression(ctx);
@@ -4069,8 +4069,8 @@ escargot::Node* parseObjectProperty(ParseContext* ctx, bool& hasProto)
     if (!computed) {
         // proto = (key.type === Syntax.Identifier && key.name === '__proto__') ||
         // (key.type === Syntax.Literal && key.value === '__proto__');
-        proto = (key->type() == escargot::NodeType::Identifier && *((escargot::IdentifierNode *)key)->nonAtomicName() == u"__proto__") ||
-            (key->type() == escargot::NodeType::Literal && ((escargot::LiteralNode *)key)->value().equalsTo(escargot::ESString::create(u"__proto__")));
+        proto = (key->type() == escargot::NodeType::Identifier && *((escargot::IdentifierNode *)key)->nonAtomicName() == u"__proto__")
+            || (key->type() == escargot::NodeType::Literal && ((escargot::LiteralNode *)key)->value().equalsTo(escargot::ESString::create(u"__proto__")));
         if (hasProto && proto) {
             // tolerateError(Messages.DuplicateProtoProperty);
             tolerateError(u"Messages.DuplicateProtoProperty");

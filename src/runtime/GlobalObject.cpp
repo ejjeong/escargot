@@ -267,13 +267,13 @@ void GlobalObject::initGlobalObject()
 
         std::string escaped="";
         for (int i = 0; i < strLen; i++) {
-            if ( (48 <= componentString[i] && componentString[i] <= 57) || // DecimalDigit
-                (65 <= componentString[i] && componentString[i] <= 90) || // uriAlpha - lower case
-                (97 <= componentString[i] && componentString[i] <= 122) || // uriAlpha - lower case
-                (componentString[i] == '-' || componentString[i] == '_' || componentString[i] == '.' ||
-                componentString[i] == '!' || componentString[i] == '~' || // uriMark
-                componentString[i] == '*' || componentString[i] == '`' || componentString[i] == '(' ||
-                componentString[i] == ')') ) {
+            if ((48 <= componentString[i] && componentString[i] <= 57) // DecimalDigit
+                || (65 <= componentString[i] && componentString[i] <= 90) // uriAlpha - lower case
+                || (97 <= componentString[i] && componentString[i] <= 122) // uriAlpha - lower case
+                || (componentString[i] == '-' || componentString[i] == '_' || componentString[i] == '.'
+                || componentString[i] == '!' || componentString[i] == '~' // uriMark
+                || componentString[i] == '*' || componentString[i] == '`' || componentString[i] == '('
+                || componentString[i] == ')')) {
                     escaped.append(&componentString[i], 1);
             } else {
                 escaped.append("%");
@@ -1107,7 +1107,8 @@ void GlobalObject::installArray()
             for (k = start; k < start + deleteCnt; k++) {
                 if (leftInsert > 0) {
                     thisBinded->set(ESValue(k), instance->currentExecutionContext()->arguments()[argIdx]);
-                    leftInsert--; argIdx++;
+                    leftInsert--;
+                    argIdx++;
                 } else {
                     thisBinded->eraseValues(k, start + deleteCnt - k);
                     break;
@@ -1117,7 +1118,9 @@ void GlobalObject::installArray()
                 auto thisArr = thisBinded->asESArrayObject();
                 while (leftInsert > 0) {
                     thisArr->insertValue(k, instance->currentExecutionContext()->arguments()[argIdx]);
-                    leftInsert--; argIdx++; k++;
+                    leftInsert--;
+                    argIdx++;
+                    k++;
                 }
             } else if (leftInsert > 0) {
                 // Move leftInsert steps to right
@@ -2053,7 +2056,7 @@ void GlobalObject::installJSON()
                 auto iter = value.MemberBegin();
                 while (iter != value.MemberEnd()) {
                     obj->defineDataProperty(ESString::create(iter->name.GetString()), true, false, true, fn(iter->value));
-                    iter++;;
+                    iter++;
                 }
                 return obj;
             } else {

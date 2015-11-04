@@ -1180,7 +1180,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             INIT_ESIR(CreateFunction);
             LIns* bytecode = m_out->insImmP(irCreateFunction->originalByteCode());
             LIns* args[] = {bytecode, m_contextP};
-            return m_out->insCall(&createFunctionCallInfo, args);;
+            return m_out->insCall(&createFunctionCallInfo, args);
         }
     case ESIR::Opcode::CallJS:
         {

@@ -20,7 +20,9 @@ const char* ESIR::getOpcodeName()
 
 uint32_t ESIR::getFlags()
 {
-    auto getFlag = [] (uint32_t flag = 0) -> uint32_t { return flag; };
+    auto getFlag = [] (uint32_t flag = 0) -> uint32_t {
+        return flag;
+    };
     switch (m_opcode) {
 #define RETURN_ESIR_FLAG(name, flag) case ESIR::name: return getFlag(flag);
         FOR_EACH_ESIR_OP(RETURN_ESIR_FLAG)
