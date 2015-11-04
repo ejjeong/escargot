@@ -84,6 +84,7 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     tan =  InternalAtomicString(instance, u"tan");
     log =  InternalAtomicString(instance, u"log");
     toString =  InternalAtomicString(instance, u"toString");
+    toLocaleString =  InternalAtomicString(instance, u"toLocaleString");
     boolean = InternalAtomicString(instance, u"boolean");
     number = InternalAtomicString(instance, u"number");
     toFixed =  InternalAtomicString(instance, u"toFixed");
