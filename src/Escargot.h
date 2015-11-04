@@ -34,7 +34,6 @@
 #include <rapidjson/filereadstream.h>
 #include <rapidjson/memorystream.h>
 #include <rapidjson/internal/dtoa.h>
-#include <rapidjson/internal/strtod.h>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 

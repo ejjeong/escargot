@@ -1300,7 +1300,7 @@ PassRefPtr<ParseStatus> scanHexLiteral(ParseContext* ctx, size_t start)
         throwUnexpectedToken();
     }
 
-    long int ll = wcstol(number.data(), NULL, 16);
+    long long int ll = wcstoll(number.data(), NULL, 16);
     ParseStatus* ps = new ParseStatus;
     ps->m_type = Token::NumericLiteralToken;
     // ps->m_value = number.data();
@@ -1348,7 +1348,7 @@ PassRefPtr<ParseStatus> scanBinaryLiteral(ParseContext* ctx, size_t start)
         }
     }
 
-    long int ll = wcstol(number.data(), NULL, 2);
+    long long int ll = wcstoll(number.data(), NULL, 2);
 
     ParseStatus* ps = new ParseStatus;
     ps->m_type = Token::NumericLiteralToken;
@@ -1401,7 +1401,7 @@ PassRefPtr<ParseStatus> scanOctalLiteral(ParseContext* ctx, char16_t prefix, siz
         throwUnexpectedToken();
     }
 
-    long int ll = wcstol(number.data(), NULL, 8);
+    long long int ll = wcstoll(number.data(), NULL, 8);
 
     ParseStatus* ps = new ParseStatus;
     ps->m_type = Token::NumericLiteralToken;

@@ -65,7 +65,9 @@ endif
 ifeq ($(ARCH), x64)
 	CXXFLAGS += -DESCARGOT_64=1
 else ifeq ($(ARCH), x86)
-	CXXFLAGS += -DESCARGOT_32=1
+	#https://gcc.gnu.org/onlinedocs/gcc-4.8.0/gcc/i386-and-x86_002d64-Options.html
+	CXXFLAGS += -DESCARGOT_32=1 -m32  -march=native -mtune=native -mfpmath=sse -msse2 -msse3
+	LDFLAGS += -m32
 endif
 
 ifeq ($(MODE), debug)
@@ -213,14 +215,16 @@ OBJS += $(SRC_C:%.c= $(BUILDDIR)/%.o)
 # pull in dependency info for *existing* .o files
 -include $(OBJS:.o=.d)
 
+.DEFAULT_GOAL:=x64.jit.debug
+
 #x86.jit.debug: $(BUILDDIR)/$(BIN)
 #	cp -f $< .
 #x86.jit.release: $(BUILDDIR)/$(BIN)
 #	cp -f $< .
-#x86.interpreter.debug: $(BUILDDIR)/$(BIN)
-#	cp -f $< .
-#x86.interpreter.release: $(BUILDDIR)/$(BIN)
-#	cp -f $< .
+x86.interpreter.debug: $(BUILDDIR)/$(BIN)
+	cp -f $< .
+x86.interpreter.release: $(BUILDDIR)/$(BIN)
+	cp -f $< .
 x64.jit.debug: $(BUILDDIR)/$(BIN)
 	cp -f $< .
 x64.jit.release: $(BUILDDIR)/$(BIN)
@@ -297,4 +301,3 @@ run-test262:
 	python tools/packaging/test262.py --command ../../escargot $(OPT) --summary
 
 .PHONY: clean
-.DEFAULT_GOAL:=x64.jit.debug

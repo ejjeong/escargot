@@ -930,7 +930,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         CheckStackPointer* byteCode = (CheckStackPointer *)currentCode;
         if (stack != bp) {
-            printf("Stack is not equal to Base Point at the end of statement (%ld)\n", byteCode->m_lineNumber);
+            printf("Stack is not equal to Base Point at the end of statement (%zd)\n", byteCode->m_lineNumber);
             RELEASE_ASSERT_NOT_REACHED();
         }
         executeNextCode<CheckStackPointer>(programCounter);

@@ -49,7 +49,7 @@ elif [[ $1 == escargot.jit ]]; then
   cmd="./out/jit/release/escargot"
   tc="escargot.jit"
 else
-  cmd="./out/interpreter/release/escargot"
+  cmd="./out/x86/interpreter/release/escargot"
   tc="escargot.interp"
 fi
 echo $cmd

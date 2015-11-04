@@ -181,11 +181,10 @@ void ESVMInstance::printValue(ESValue val)
                 bool isFirst = true;
                 o->asESObject()->enumeration([&str, &isFirst, o, &toString](escargot::ESValue key) {
                     if (!isFirst)
-                        str.append(", ");
+                        str.append(",");
                     str.append(key.toString()->utf8Data());
                     str.append(": ");
                     str.append(o->asESObject()->getOwnProperty(key).toString()->utf8Data());
-                    // toString(slot.value(o->asESObject()));
                     isFirst = false;
                 });
                 str.append("]");
@@ -215,7 +214,11 @@ void ESVMInstance::printValue(ESValue val)
                 RELEASE_ASSERT_NOT_REACHED();
             }
         } else {
+#if ESCARGOT_64
             printf("Invalid ESValue Format : 0x%lx\n", v.asRawData());
+#else
+            printf("Invalid ESValue Format : 0x%llx\n", v.asRawData());
+#endif
             ASSERT(false);
         }
     };

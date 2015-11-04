@@ -434,9 +434,13 @@ inline bool ESValue::equalsTo(const ESValue& val)
 
 #if ESCARGOT_32
 
+ALWAYS_INLINE ESValue::ESValue(ESForceUninitializedTag)
+{
+
+}
+
 inline ESValue::ESValue()
 {
-    // u.asBits.tag = EmptyValueTag;
     u.asBits.tag = UndefinedTag;
     u.asBits.payload = 0;
 }
@@ -459,6 +463,12 @@ inline ESValue::ESValue(ESEmptyValueTag)
     u.asBits.payload = 0;
 }
 
+inline ESValue::ESValue(ESDeletedValueTag)
+{
+    u.asBits.tag = DeletedValueTag;
+    u.asBits.payload = 0;
+}
+
 inline ESValue::ESValue(ESTrueTag)
 {
     u.asBits.tag = BooleanTag;
@@ -471,21 +481,29 @@ inline ESValue::ESValue(ESFalseTag)
     u.asBits.payload = 0;
 }
 
+inline ESValue::ESValue(bool b)
+{
+    u.asBits.tag = BooleanTag;
+    u.asBits.payload = b;
+}
+
 inline ESValue::ESValue(ESPointer* ptr)
 {
-    if (ptr)
-        u.asBits.tag = CellTag;
-    else
+    if (LIKELY(ptr != NULL)) {
+        u.asBits.tag = PointerTag;
+    } else {
         u.asBits.tag = EmptyValueTag;
+    }
     u.asBits.payload = reinterpret_cast<int32_t>(ptr);
 }
 
 inline ESValue::ESValue(const ESPointer* ptr)
 {
-    if (ptr)
-        u.asBits.tag = CellTag;
-    else
+    if (LIKELY(ptr != NULL)) {
+        u.asBits.tag = PointerTag;
+    } else {
         u.asBits.tag = EmptyValueTag;
+    }
     u.asBits.payload = reinterpret_cast<int32_t>(const_cast<ESPointer*>(ptr));
 }
 
@@ -502,12 +520,22 @@ inline ESValue::ESValue(int i)
 
 inline bool ESValue::operator==(const ESValue& other) const
 {
-    return u.ptr == other.u.ptr;
+    return u.asInt64 == other.u.asInt64;
 }
 
 inline bool ESValue::operator!=(const ESValue& other) const
 {
-    return u.ptr != other.u.ptr;
+    return u.asInt64 != other.u.asInt64;
+}
+
+inline uint32_t ESValue::tag() const
+{
+    return u.asBits.tag;
+}
+
+inline int32_t ESValue::payload() const
+{
+    return u.asBits.payload;
 }
 
 inline bool ESValue::isInt32() const
@@ -529,7 +557,7 @@ inline int32_t ESValue::asInt32() const
 inline bool ESValue::asBoolean() const
 {
     ASSERT(isBoolean());
-    return tag() == ESValue::ESTrueTag::ESTrue;
+    return u.asBits.payload;
 }
 
 inline double ESValue::asDouble() const
@@ -543,6 +571,11 @@ inline bool ESValue::isEmpty() const
     return tag() == EmptyValueTag;
 }
 
+inline bool ESValue::isDeleted() const
+{
+    return tag() == DeletedValueTag;
+}
+
 inline bool ESValue::isNumber() const
 {
     return isInt32() || isDouble();
@@ -550,39 +583,50 @@ inline bool ESValue::isNumber() const
 
 inline bool ESValue::isESPointer() const
 {
-    return tag() == CellTag;
+    return tag() == PointerTag;
 }
 
 inline bool ESValue::isUndefined() const
 {
-    return tag() == ESUndefinedTag::ESUndefined;
+    return tag() == UndefinedTag;
 }
 
 inline bool ESValue::isNull() const
 {
-    return tag() == ESNullTag::ESNull;
+    return tag() == NullTag;
 }
 
 inline bool ESValue::isBoolean() const
 {
-    return tag() == ESValue::ESFalseTag::ESFalse || tag() == ESValue::ESTrueTag::ESTrue;
+    return tag() == BooleanTag;
 }
 
-ALWAYS_INLINE JSCell* ESValue::asESPointer() const
+ALWAYS_INLINE ESPointer* ESValue::asESPointer() const
 {
     ASSERT(isESPointer());
     return reinterpret_cast<ESPointer*>(u.asBits.payload);
 }
 
+inline bool ESValue::isESString() const
+{
+    return isESPointer() && asESPointer()->isESString();
+}
+
+inline ESString* ESValue::asESString() const
+{
+    ASSERT(isESString());
+    return asESPointer()->asESString();
+}
+
+#else
+
 // ==============================================================================
 // ===64-bit architecture========================================================
 // ==============================================================================
 
-#else
 
 ALWAYS_INLINE ESValue::ESValue()
 {
-    // u.asInt64 = ValueEmpty;
     u.asInt64 = ValueUndefined;
 }
 
@@ -723,7 +767,6 @@ inline bool ESValue::isNumber() const
 
 inline bool ESValue::isESString() const
 {
-    // CHECK should we consider isESStringObject in this point?
     return isESPointer() && asESPointer()->isESString();
 }
 
