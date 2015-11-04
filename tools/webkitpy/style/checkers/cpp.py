@@ -2768,22 +2768,22 @@ def check_style(clean_lines, line_number, file_extension, class_state, file_stat
 
     # Some more style checks
     check_namespace_indentation(clean_lines, line_number, file_extension, file_state, error)
-#WY    check_directive_indentation(clean_lines, line_number, file_state, error)
-#    check_using_std(clean_lines, line_number, file_state, error)
-#WY    check_using_namespace(clean_lines, line_number, file_extension, error)
-#WY    check_max_min_macros(clean_lines, line_number, file_state, error)
-#    check_wtf_move(clean_lines, line_number, file_state, error)
-#    check_ctype_functions(clean_lines, line_number, file_state, error)
+    check_directive_indentation(clean_lines, line_number, file_state, error)
+    check_using_std(clean_lines, line_number, file_state, error)
+    check_using_namespace(clean_lines, line_number, file_extension, error)
+    check_max_min_macros(clean_lines, line_number, file_state, error)
+#WY    check_wtf_move(clean_lines, line_number, file_state, error)
+#WY    check_ctype_functions(clean_lines, line_number, file_state, error)
     check_switch_indentation(clean_lines, line_number, error)
     check_braces(clean_lines, line_number, error)
-#    check_exit_statement_simplifications(clean_lines, line_number, error)
+#WY    check_exit_statement_simplifications(clean_lines, line_number, error)
     check_spacing(file_extension, clean_lines, line_number, error)
 #WY    check_member_initialization_list(clean_lines, line_number, error)
 #WY    check_check(clean_lines, line_number, error)
-#    check_for_comparisons_to_zero(clean_lines, line_number, error)
-#    check_for_null(clean_lines, line_number, file_state, error)
+#WY    check_for_comparisons_to_zero(clean_lines, line_number, error)
+#WY    check_for_null(clean_lines, line_number, file_state, error)
     check_indentation_amount(clean_lines, line_number, error)
-#    check_enum_casing(clean_lines, line_number, enum_state, error)
+#WY    check_enum_casing(clean_lines, line_number, enum_state, error)
 
 
 _RE_PATTERN_INCLUDE_NEW_STYLE = re.compile(r'#(?:include|import) +"[^/]+\.h"')
@@ -3699,8 +3699,8 @@ def process_line(filename, file_extension,
 
     """
     raw_lines = clean_lines.raw_lines
-#    detect_functions(clean_lines, line, function_state, error)
-#    check_for_function_lengths(clean_lines, line, function_state, error)
+#WY    detect_functions(clean_lines, line, function_state, error)
+    check_for_function_lengths(clean_lines, line, function_state, error)
     if search(r'\bNOLINT\b', raw_lines[line]):  # ignore nolint lines
         return
     if match(r'\s*\b__asm\b', raw_lines[line]):  # Ignore asm lines as they format differently.
@@ -3708,15 +3708,15 @@ def process_line(filename, file_extension,
     asm_state.process_line(raw_lines[line])
     if asm_state.is_in_asm():  # Ignore further checks because asm blocks formatted differently.
         return
-#    check_function_definition(filename, file_extension, clean_lines, line, function_state, error)
-#    check_for_leaky_patterns(clean_lines, line, function_state, error)
-#    check_for_multiline_comments_and_strings(clean_lines, line, error)
+    check_function_definition(filename, file_extension, clean_lines, line, function_state, error)
+    check_for_leaky_patterns(clean_lines, line, function_state, error)
+    check_for_multiline_comments_and_strings(clean_lines, line, error)
     check_style(clean_lines, line, file_extension, class_state, file_state, enum_state, error)
-#    check_language(filename, clean_lines, line, file_extension, include_state,
-#                   file_state, error)
-#    check_for_non_standard_constructs(clean_lines, line, class_state, error)
-#    check_posix_threading(clean_lines, line, error)
-#    check_invalid_increment(clean_lines, line, error)
+#WY    check_language(filename, clean_lines, line, file_extension, include_state,
+#WY                   file_state, error)
+    check_for_non_standard_constructs(clean_lines, line, class_state, error)
+    check_posix_threading(clean_lines, line, error)
+    check_invalid_increment(clean_lines, line, error)
 
 
 class _InlineASMState(object):

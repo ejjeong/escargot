@@ -315,7 +315,7 @@ inline bool operator!=(const gc_malloc_allocator<GC_T1>&, const gc_malloc_alloca
     defined(__THUMBEL__) || \
     defined(__AARCH64EL__) || \
     defined(_MIPSEL) || defined(__MIPSEL) || defined(__MIPSEL__)
-    #define ESCARGOT_LITTLE_ENDIAN
+#define ESCARGOT_LITTLE_ENDIAN
 #else
 #error "I don't know what architecture this is!"
 #endif
