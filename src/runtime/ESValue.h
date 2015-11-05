@@ -1646,7 +1646,7 @@ class Node;
 class ESFunctionObject : public ESObject {
 protected:
     ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlock* codeBlock, escargot::ESString* name, unsigned length, bool hasPrototype = true);
-    ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeFunctionType fn, escargot::ESString* name, unsigned length, bool hasPrototype);
+    ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeFunctionType fn, escargot::ESString* name, unsigned length, bool isConstructor);
 public:
     static ESFunctionObject* create(LexicalEnvironment* outerEnvironment, CodeBlock* codeBlock, escargot::ESString* name, unsigned length = 0, bool hasPrototype = true)
     {
@@ -1655,9 +1655,9 @@ public:
     }
 
     // Built-in functions that are not constructors do not have prototype property(ECMA 5.1 $15)
-    static ESFunctionObject* create(LexicalEnvironment* outerEnvironment, const NativeFunctionType& fn, escargot::ESString* name, unsigned length = 0, bool hasPrototype = false)
+    static ESFunctionObject* create(LexicalEnvironment* outerEnvironment, const NativeFunctionType& fn, escargot::ESString* name, unsigned length = 0, bool isConstructor = false)
     {
-        ESFunctionObject* ret = new ESFunctionObject(outerEnvironment, fn, name, length, hasPrototype);
+        ESFunctionObject* ret = new ESFunctionObject(outerEnvironment, fn, name, length, isConstructor);
         return ret;
     }
 
@@ -1686,6 +1686,8 @@ public:
         return m_name;
     }
 
+    bool nonConstructor() { return m_nonConstructor; }
+
     static ESValue call(ESVMInstance* instance, const ESValue& callee, const ESValue& receiver, ESValue arguments[], const size_t& argumentCount, bool isNewExpression);
 protected:
     LexicalEnvironment* m_outerEnvironment;
@@ -1693,6 +1695,7 @@ protected:
 
     CodeBlock* m_codeBlock;
     escargot::ESString* m_name;
+    bool m_nonConstructor;
     // ESObject functionObject;
     // HomeObject
     // //ESObject newTarget

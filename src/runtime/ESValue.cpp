@@ -529,6 +529,7 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlo
     m_name = name;
     m_outerEnvironment = outerEnvironment;
     m_codeBlock = cb;
+    m_nonConstructor = false;
     m_protoType = ESObject::create(2);
 
     // m_protoType.asESPointer()->asESObject()->defineDataProperty(strings->constructor.string(), true, false, true, this);
@@ -552,8 +553,8 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlo
     }
 }
 
-ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeFunctionType fn, escargot::ESString* name, unsigned length, bool hasPrototype)
-    : ESFunctionObject(outerEnvironment, (CodeBlock *)NULL, name, length, hasPrototype)
+ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeFunctionType fn, escargot::ESString* name, unsigned length, bool isConstructor)
+    : ESFunctionObject(outerEnvironment, (CodeBlock *)NULL, name, length, isConstructor)
 {
     m_codeBlock = CodeBlock::create(true);
     m_codeBlock->pushCode(ExecuteNativeFunction(fn));
@@ -561,6 +562,8 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeF
     m_codeBlock->m_dontJIT = true;
 #endif
     m_name = name;
+    if (!isConstructor)
+        m_nonConstructor = true;
 }
 
 ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctionObject* fn, ESValue& receiver, ESValue arguments[], const size_t& argumentCount, ESVMInstance* ESVMInstance)

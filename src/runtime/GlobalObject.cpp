@@ -478,7 +478,7 @@ void GlobalObject::installFunction()
         code.m_boundArguments = (ESValue *)GC_malloc(code.m_boundArgumentsCount * sizeof(ESValue));
         memcpy(code.m_boundArguments, instance->currentExecutionContext()->arguments() + 1, code.m_boundArgumentsCount * sizeof(ESValue));
         cb->pushCode(code, context, NULL);
-        escargot::ESFunctionObject* function = ESFunctionObject::create(NULL, cb, strings->emptyString, std::max((int) code.m_boundTargetFunction->length() - (int) code.m_boundArgumentsCount, 0));
+        escargot::ESFunctionObject* function = ESFunctionObject::create(NULL, cb, strings->emptyString, std::max((int) code.m_boundTargetFunction->length() - (int) code.m_boundArgumentsCount, 0), false);
         function->set__proto__(instance->globalObject()->functionPrototype());
         ESObject* prototype = ESObject::create();
         prototype->set__proto__(instance->globalObject()->object()->protoType());
@@ -792,7 +792,7 @@ void GlobalObject::installError()
             return obj;
         }
     };
-    m_error = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->Error, 1);
+    m_error = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->Error, 1, true);
     m_error->forceNonVectorHiddenClass();
     m_error->set__proto__(m_objectPrototype);
     m_errorPrototype = escargot::ESObject::create();
@@ -818,7 +818,7 @@ void GlobalObject::installError()
     defineDataProperty(strings->Error, true, false, true, m_error);
 
     // ///////////////////////////
-    m_referenceError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->ReferenceError, 1);
+    m_referenceError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->ReferenceError, 1, true);
     m_referenceError->set__proto__(m_errorPrototype);
     m_referenceError->forceNonVectorHiddenClass();
 
@@ -832,7 +832,7 @@ void GlobalObject::installError()
     defineDataProperty(strings->ReferenceError, true, false, true, m_referenceError);
 
     // ///////////////////////////
-    m_typeError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->TypeError, 1);
+    m_typeError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->TypeError, 1, true);
     m_typeError->set__proto__(m_errorPrototype);
     m_typeError->forceNonVectorHiddenClass();
 
@@ -846,7 +846,7 @@ void GlobalObject::installError()
     defineDataProperty(strings->TypeError, true, false, true, m_typeError);
 
     // ///////////////////////////
-    m_rangeError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->RangeError, 1);
+    m_rangeError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->RangeError, 1, true);
     m_rangeError->set__proto__(m_errorPrototype);
     m_rangeError->forceNonVectorHiddenClass();
 
@@ -860,7 +860,7 @@ void GlobalObject::installError()
     defineDataProperty(strings->RangeError, true, false, true, m_rangeError);
 
     // ///////////////////////////
-    m_syntaxError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->SyntaxError, 1);
+    m_syntaxError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->SyntaxError, 1, true);
     m_syntaxError->set__proto__(m_errorPrototype);
     m_syntaxError->forceNonVectorHiddenClass();
 
@@ -874,7 +874,7 @@ void GlobalObject::installError()
     defineDataProperty(strings->SyntaxError, true, false, true, m_syntaxError);
 
     // ///////////////////////////
-    m_uriError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->URIError, 1);
+    m_uriError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->URIError, 1, true);
     m_uriError->set__proto__(m_errorPrototype);
     m_uriError->forceNonVectorHiddenClass();
 

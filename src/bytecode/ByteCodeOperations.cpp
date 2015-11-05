@@ -305,6 +305,12 @@ NEVER_INLINE ESValue newOperation(ESVMInstance* instance, GlobalObject* globalOb
     if (!fn.isESPointer() || !fn.asESPointer()->isESFunctionObject())
         throw ESValue(TypeError::create(ESString::create(u"constructor is not an function object")));
     ESFunctionObject* function = fn.asESPointer()->asESFunctionObject();
+    if (function->nonConstructor()) {
+        u16string str;
+        str.append(function->name()->string());
+        str.append(u" is not a constructor");
+        throw ESValue(TypeError::create(ESString::create(std::move(str))));
+    }
     ESObject* receiver;
     if (function == globalObject->date()) {
         receiver = ESDateObject::create();
