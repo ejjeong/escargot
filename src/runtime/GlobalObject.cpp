@@ -324,7 +324,7 @@ void GlobalObject::initGlobalObject()
         }
 
         return escargot::ESString::create(escaped.c_str());
-    }, ESString::create(u"encodeURIComponent")));
+    }, ESString::create(u"encodeURIComponent"), 1));
 
     // $B.2.1.2 unescape(string)
     defineDataProperty(ESString::create(u"unescape"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
