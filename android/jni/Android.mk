@@ -3,7 +3,7 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 LOCAL_MODULE    := gc
-LOCAL_SRC_FILES := libgc_arm.a
+LOCAL_SRC_FILES := libgc_armv7.a
 
 include $(PREBUILT_STATIC_LIBRARY)
 
@@ -16,19 +16,19 @@ $(warning $(BUILD_MODE))
 
 LOCAL_MODULE    := escargot
 LOCAL_ARM_NEON := true
+LOCAL_ARM_MODE := thumb
 LOCAL_CFLAGS = -std=c++11 -fno-rtti
+LOCAL_CFLAGS += -DESCARGOT_32=1
+LOCAL_CFLAGS += -fno-rtti -fno-math-errno -I$(SRC_PATH)
+LOCAL_CFLAGS += -fdata-sections -ffunction-sections
 
 ifeq ($(BUILD_MODE), debug)
     LOCAL_CFLAGS += -O0 -g3 -D_GLIBCXX_DEBUG -frounding-math -fsignaling-nans -fno-omit-frame-pointer -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable -Wno-invalid-offsetof -Wno-sign-compare -Wno-unused-local-typedefs
 else ifeq ($(BUILD_MODE), release)
-    LOCAL_CFLAGS += -O2 -g3 -DNDEBUG -fomit-frame-pointer -frounding-math -fsignaling-nans
+    LOCAL_CFLAGS += -O2 -g0 -DNDEBUG -fomit-frame-pointer -frounding-math -fsignaling-nans
 else
     $(error mode error)
 endif
-
-LOCAL_CFLAGS += -DESCARGOT_32=1
-LOCAL_CFLAGS += -fno-rtti -fno-math-errno -I$(SRC_PATH)
-LOCAL_CFLAGS += -fdata-sections -ffunction-sections
 
 SRC_PATH=../src
 SRC_THIRD_PARTY=../third_party

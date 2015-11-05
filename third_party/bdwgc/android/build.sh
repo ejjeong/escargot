@@ -13,8 +13,10 @@ autoreconf -vif
 automake --add-missing
 cd android
 
-export CC="arm-linux-androideabi-gcc"
-export PATH=$(ANDROID_NDK_STAND_ALONE)/bin:$PATH
+make distclean
 
-../configure --target=arm-linux-androideabi --with-sysroot=$(ANDROID_NDK_STAND_ALONE) --host=x86_64-unknown-linux-gnu
+export CC="arm-linux-androideabi-gcc"
+export PATH=$ANDROID_NDK_STAND_ALONE/bin:$PATH
+
+../configure --build=arm-linux-androideabi --target=arm-linux-androideabi --with-sysroot=$ANDROID_NDK_STAND_ALONE --host=x86_64-unknown-linux-gnu CFLAGS='-march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=softfp'
 make
