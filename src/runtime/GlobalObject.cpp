@@ -961,7 +961,7 @@ void GlobalObject::installArray()
             ESValue& val = instance->currentExecutionContext()->arguments()[0];
             if (len > 1 || !val.isInt32()) {
                 for (int idx = 0; idx < len; idx++) {
-                    array->set(idx, val);
+                    array->defineDataProperty(ESValue(idx), true, true, true, val);
                     val = instance->currentExecutionContext()->arguments()[idx + 1];
                 }
             }

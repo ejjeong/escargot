@@ -845,7 +845,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* value = pop<ESValue>(stack, bp);
         ESValue* key = pop<ESValue>(stack, bp);
-        peek<ESValue>(stack, bp)->asESPointer()->asESObject()->set(*key, *value);
+        peek<ESValue>(stack, bp)->asESPointer()->asESObject()->defineDataProperty(*key, true, true, true, *value);
         executeNextCode<InitObject>(programCounter);
         NEXT_INSTRUCTION();
     }
