@@ -276,8 +276,14 @@ void GlobalObject::initGlobalObject()
                 || componentString[i] == ')')) {
                     escaped.append(&componentString[i], 1);
             } else {
-                escaped.append("%");
-                escaped.append(char2hex(componentString[i])); // converts char 255 to string "ff"
+                if ((0 <= componentString[i] && componentString[i] <= 0xD7FF)
+                    || (0xDC00 <= componentString[i] && componentString[i] <= 0xFFFF)) {
+                        escaped.append("%");
+                        escaped.append(char2hex(componentString[i])); // converts char 255 to string "ff"
+                } else {
+                    throw ESValue(URIError::create(ESString::create("malformd URI")));
+                }
+
             }
         }
 
@@ -422,7 +428,7 @@ void GlobalObject::installFunction()
     m_functionPrototype->defineDataProperty(ESString::create(u"bind"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue thisVal = instance->currentExecutionContext()->resolveThisBinding();
         if (!thisVal.isESPointer() || !thisVal.asESPointer()->isESFunctionObject()) {
-            throw TypeError::create(ESString::create("this value should be function"));
+            throw ESValue(TypeError::create(ESString::create("this value should be function")));
         }
         CodeBlock* cb = CodeBlock::create();
         ByteCodeGenerateContext context;
@@ -812,6 +818,19 @@ void GlobalObject::installError()
 
     defineDataProperty(strings->SyntaxError, true, false, true, m_syntaxError);
 
+    // ///////////////////////////
+    m_uriError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->URIError);
+    m_uriError->set__proto__(m_errorPrototype);
+    m_uriError->forceNonVectorHiddenClass();
+
+    m_uriErrorPrototype = ESErrorObject::create();
+    m_uriErrorPrototype->forceNonVectorHiddenClass();
+
+    m_uriError->setProtoType(m_uriErrorPrototype);
+
+    m_uriErrorPrototype->defineDataProperty(strings->constructor, true, false, true, m_uriError);
+
+    defineDataProperty(strings->URIError, true, false, true, m_uriError);
 }
 
 void GlobalObject::installArray()

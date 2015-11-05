@@ -71,6 +71,16 @@ public:
         return m_syntaxErrorPrototype;
     }
 
+    ALWAYS_INLINE escargot::ESFunctionObject* uriError()
+    {
+        return m_uriError;
+    }
+
+    ALWAYS_INLINE ESObject* uriErrorPrototype()
+    {
+        return m_uriErrorPrototype;
+    }
+
     ALWAYS_INLINE escargot::ESFunctionObject* regexp()
     {
         return m_regexp;
@@ -361,6 +371,8 @@ protected:
     escargot::ESObject* m_rangeErrorPrototype;
     escargot::ESFunctionObject* m_syntaxError;
     escargot::ESObject* m_syntaxErrorPrototype;
+    escargot::ESFunctionObject* m_uriError;
+    escargot::ESObject* m_uriErrorPrototype;
 
     // Constructor and prototypes for TypedArray
     escargot::ESFunctionObject* m_Int8Array;

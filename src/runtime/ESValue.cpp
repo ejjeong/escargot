@@ -1165,6 +1165,13 @@ SyntaxError::SyntaxError(escargot::ESString* message)
     set__proto__(ESVMInstance::currentInstance()->globalObject()->syntaxErrorPrototype());
 }
 
+URIError::URIError(escargot::ESString* message)
+    : ESErrorObject(message)
+{
+    set(strings->name, strings->URIError.string());
+    set__proto__(ESVMInstance::currentInstance()->globalObject()->uriErrorPrototype());
+}
+
 ESArrayBufferObject::ESArrayBufferObject(ESPointer::Type type)
     : ESObject((Type)(Type::ESObject | Type::ESArrayBufferObject), ESVMInstance::currentInstance()->globalObject()->arrayBufferPrototype())
     , m_data(NULL)

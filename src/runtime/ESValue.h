@@ -1400,6 +1400,16 @@ public:
     }
 };
 
+class URIError : public ESErrorObject {
+protected:
+    URIError(escargot::ESString* message = strings->emptyString.string());
+public:
+    static URIError* create(escargot::ESString* message = strings->emptyString.string())
+    {
+        return new URIError(message);
+    }
+};
+
 class ESDateObject : public ESObject {
 protected:
     ESDateObject(ESPointer::Type type = ESPointer::Type::ESDateObject);

@@ -1904,7 +1904,7 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("JumpComplexCase <%zd, %zd>\n", (size_t)m_controlFlowRecord->value().asESPointer(), (size_t)m_controlFlowRecord->value2().asESPointer());
+        printf("JumpComplexCase <%zd, %zd>\n", (size_t)m_controlFlowRecord->value().asESPointer(), (size_t)m_controlFlowRecord->value2().asInt32());
     }
 #endif
 
@@ -2334,7 +2334,7 @@ void dumpUnsupported(CodeBlock* codeBlock);
 
 ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter = 0, unsigned maxStackPos = 0);
 CodeBlock* generateByteCode(Node* node);
-inline void iterateByteCode(CodeBlock* codeBlock, void (*fn)(CodeBlock* block, unsigned idx, ByteCode* code, Opcode opcode));
+inline void iterateByteCode(CodeBlock* codeBlock, std::function<void (CodeBlock* block, unsigned idx, ByteCode* code, Opcode opcode)> fn);
 
 }
 
@@ -2432,12 +2432,18 @@ ALWAYS_INLINE void ByteCodeGenerateContext::morphJumpPositionIntoComplexCase(Cod
     auto iter = m_complexCaseStatementPositions.find(codePos);
     if (iter != m_complexCaseStatementPositions.end()) {
         JumpComplexCase j(cb->peekCode<Jump>(codePos), iter->second);
+        j.assignOpcodeInAddress();
         memcpy(cb->m_code.data() + codePos, &j, sizeof(JumpComplexCase));
+        iterateByteCode(cb, [codePos](CodeBlock* block, unsigned idx, ByteCode* code, Opcode opcode) {
+            if (codePos == (intptr_t)((char*)code - block->m_code.data())) {
+                block->m_extraData[idx].m_opcode = JumpComplexCaseOpcode;
+            }
+        });
         m_complexCaseStatementPositions.erase(iter);
     }
 }
 
-inline void iterateByteCode(CodeBlock* codeBlock, void (*fn)(CodeBlock* block, unsigned idx, ByteCode* code, Opcode opcode))
+inline void iterateByteCode(CodeBlock* codeBlock, std::function<void (CodeBlock* block, unsigned idx, ByteCode* code, Opcode opcode)> fn)
 {
     char* ptr = codeBlock->m_code.data();
     unsigned idx = 0;
