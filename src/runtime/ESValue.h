@@ -1304,7 +1304,7 @@ public:
 
     ALWAYS_INLINE void set(const escargot::ESValue& key, const ESValue& val, bool throwExpetion);
 
-    ALWAYS_INLINE const int32_t length();
+    ALWAYS_INLINE const uint32_t length();
     ALWAYS_INLINE ESValue pop();
     ALWAYS_INLINE void eraseValues(int, int);
 

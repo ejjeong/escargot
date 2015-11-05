@@ -1196,7 +1196,7 @@ ALWAYS_INLINE bool ESObject::hasOwnProperty(const escargot::ESValue& key)
                     return false;
                 }
             } else {
-                if ((int)idx < asESTypedArrayObjectWrapper()->length()) {
+                if ((uint32_t)idx < asESTypedArrayObjectWrapper()->length()) {
                     return true;
                 } else {
                     return false;
@@ -1274,16 +1274,16 @@ ALWAYS_INLINE ESValue ESObject::getOwnProperty(escargot::ESValue key)
     }
 }
 
-ALWAYS_INLINE const int32_t ESObject::length()
+ALWAYS_INLINE const uint32_t ESObject::length()
 {
     if (LIKELY(isESArrayObject()))
         return asESArrayObject()->length();
     else
-        return get(strings->length.string()).toInteger();
+        return get(strings->length.string()).toUint32();
 }
 ALWAYS_INLINE ESValue ESObject::pop()
 {
-    int len = length();
+    uint32_t len = length();
     if (len == 0) {
         set(strings->length.string(), ESValue(0));
         return ESValue();
@@ -1302,7 +1302,7 @@ ALWAYS_INLINE void ESObject::eraseValues(int idx, int cnt)
     if (LIKELY(isESArrayObject()))
         asESArrayObject()->eraseValues(idx, cnt);
     else {
-        for (int k = 0, i = idx; i < length() && k < cnt; i++, k++) {
+        for (uint32_t k = 0, i = idx; i < length() && k < cnt; i++, k++) {
             set(ESValue(i), get(ESValue(i+cnt)));
         }
         // NOTE: length is set in Array.splice
@@ -1418,7 +1418,7 @@ ALWAYS_INLINE void ESObject::enumeration(Functor t)
     }
 
     if (isESTypedArrayObject()) {
-        for (int i = 0; i < asESTypedArrayObjectWrapper()->length(); i++) {
+        for (uint32_t i = 0; i < asESTypedArrayObjectWrapper()->length(); i++) {
             t(ESValue(i));
         }
     }

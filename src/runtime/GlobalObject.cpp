@@ -921,7 +921,7 @@ void GlobalObject::installArray()
         ESObject* O = instance->currentExecutionContext()->resolveThisBindingToObject();
 
         // Let len be ToLength(Get(O, "length")).
-        int32_t len = O->length();
+        uint32_t len = O->length();
 
         ESValue callbackfn = instance->currentExecutionContext()->readArgument(0);
 
@@ -3035,7 +3035,7 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
             } else if (val.isESPointer() && val.asESPointer()->isESObject()) {
                 // TODO implement 22.2.1.4
                 ESObject* inputObj = val.asESPointer()->asESObject();
-                int32_t length = inputObj->length();
+                uint32_t length = inputObj->length();
                 ASSERT(length >= 0);
                 unsigned elementSize = obj->elementSize();
                 escargot::ESArrayBufferObject *buffer = ESArrayBufferObject::createAndAllocate(length * elementSize);
