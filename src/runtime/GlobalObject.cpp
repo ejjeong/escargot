@@ -637,6 +637,20 @@ void GlobalObject::installObject()
         return obj;
     }, ESString::create(u"create"), 2));
 
+    // $19.1.2.7 Object.getOwnPropertyNames
+    m_object->defineDataProperty(ESString::create(u"getOwnPropertyNames"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        ESValue O = instance->currentExecutionContext()->readArgument(0);
+        if (!O.isObject())
+            return O;
+        ESObject* obj = O.asESPointer()->asESObject();
+        escargot::ESArrayObject* nameList = ESArrayObject::create();
+        obj->enumeration([&nameList](ESValue key) {
+            if (key.isESString())
+                nameList->push(key);
+        });
+        return nameList;
+    }, ESString::create(u"getOwnPropertyNames")));
+
     // $19.1.2.9 Object.getPrototypeOf
     m_object->defineDataProperty(strings->getPrototypeOf, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue O = instance->currentExecutionContext()->readArgument(0);
