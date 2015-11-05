@@ -1289,7 +1289,6 @@ PassRefPtr<ParseStatus> scanHexLiteral(ParseContext* ctx, size_t start)
         if (!isHexDigit(ctx->m_source[ctx->m_index])) {
             break;
         }
-        ASSERT(ctx->m_source[ctx->m_index++] < 128);
         number += ctx->m_source[ctx->m_index++];
     }
 
@@ -1333,7 +1332,6 @@ PassRefPtr<ParseStatus> scanBinaryLiteral(ParseContext* ctx, size_t start)
         if (ch != '0' && ch != '1') {
             break;
         }
-        ASSERT(ctx->m_source[ctx->m_index++] <  128);
         number += ctx->m_source[ctx->m_index++];
     }
 
@@ -1391,7 +1389,6 @@ PassRefPtr<ParseStatus> scanOctalLiteral(ParseContext* ctx, char16_t prefix, siz
         if (!isOctalDigit(ctx->m_source[ctx->m_index])) {
             break;
         }
-        ASSERT(ctx->m_source[ctx->m_index++] < 128);
         number += ctx->m_source[ctx->m_index++];
     }
 
