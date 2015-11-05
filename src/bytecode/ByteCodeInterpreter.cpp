@@ -37,10 +37,14 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     }
 
     void* topOfStack = stackBuf + stackSiz;
+#ifndef ANDROID
     char tmpStackBuf[32];
     void* tmpStack = tmpStackBuf;
+#else
+    void* tmpStack = alloca(32);
+#endif
     void* tmpBp = tmpStack;
-    void* tmpTopOfStack = tmpStackBuf + 32;
+    void* tmpTopOfStack = (void *)((size_t)tmpStack + 32);
     char* codeBuffer = codeBlock->m_code.data();
 #ifdef ENABLE_ESJIT
     size_t numParams = codeBlock->m_params.size();
@@ -79,6 +83,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
     }
 #endif
+
     goto *(currentCode->m_opcodeInAddress);
 
     PushOpcodeLbl:

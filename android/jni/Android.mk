@@ -19,11 +19,11 @@ LOCAL_ARM_NEON := true
 LOCAL_CFLAGS = -std=c++11 -fno-rtti
 
 ifeq ($(BUILD_MODE), debug)
-        LOCAL_CFLAGS += -O0 -g3 -D_GLIBCXX_DEBUG -frounding-math -fsignaling-nans -fno-omit-frame-pointer -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable -Wno-invalid-offsetof -Wno-sign-compare -Wno-unused-local-typedefs
+    LOCAL_CFLAGS += -O0 -g3 -D_GLIBCXX_DEBUG -frounding-math -fsignaling-nans -fno-omit-frame-pointer -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable -Wno-invalid-offsetof -Wno-sign-compare -Wno-unused-local-typedefs
 else ifeq ($(BUILD_MODE), release)
-        LOCAL_CFLAGS += -O2 -g3 -DNDEBUG -fomit-frame-pointer -frounding-math -fsignaling-nans
+    LOCAL_CFLAGS += -O2 -g3 -DNDEBUG -fomit-frame-pointer -frounding-math -fsignaling-nans
 else
-        $(error mode error)
+    $(error mode error)
 endif
 
 LOCAL_CFLAGS += -DESCARGOT_32=1
