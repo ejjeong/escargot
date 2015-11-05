@@ -329,8 +329,9 @@ void dumpUnsupported(CodeBlock* block)
             break;
         }
     }
-    for (auto it = names.begin(); it != names.end(); ++it)
-        std::cout << it->first << "(" << it->second << ") ";
+    for (auto it = names.begin(); it != names.end(); ++it) {
+        printf("%s %zd",it->first.data(), it->second);
+    }
     printf("\n");
 }
 #endif

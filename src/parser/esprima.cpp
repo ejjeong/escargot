@@ -1283,12 +1283,13 @@ PassRefPtr<ParseStatus> scanTemplate(ParseContext* ctx)
 
 PassRefPtr<ParseStatus> scanHexLiteral(ParseContext* ctx, size_t start)
 {
-    std::wstring number;
+    std::string number;
 
     while (ctx->m_index < ctx->m_length) {
         if (!isHexDigit(ctx->m_source[ctx->m_index])) {
             break;
         }
+        ASSERT(ctx->m_source[ctx->m_index++] < 128);
         number += ctx->m_source[ctx->m_index++];
     }
 
@@ -1300,7 +1301,7 @@ PassRefPtr<ParseStatus> scanHexLiteral(ParseContext* ctx, size_t start)
         throwUnexpectedToken();
     }
 
-    long long int ll = wcstoll(number.data(), NULL, 16);
+    long long int ll = strtoll(number.data(), NULL, 16);
     ParseStatus* ps = new ParseStatus;
     ps->m_type = Token::NumericLiteralToken;
     // ps->m_value = number.data();
@@ -1325,13 +1326,14 @@ PassRefPtr<ParseStatus> scanHexLiteral(ParseContext* ctx, size_t start)
 PassRefPtr<ParseStatus> scanBinaryLiteral(ParseContext* ctx, size_t start)
 {
     char16_t ch;
-    std::wstring number;
+    std::string number;
 
     while (ctx->m_index < ctx->m_length) {
         ch = ctx->m_source[ctx->m_index];
         if (ch != '0' && ch != '1') {
             break;
         }
+        ASSERT(ctx->m_source[ctx->m_index++] <  128);
         number += ctx->m_source[ctx->m_index++];
     }
 
@@ -1348,7 +1350,7 @@ PassRefPtr<ParseStatus> scanBinaryLiteral(ParseContext* ctx, size_t start)
         }
     }
 
-    long long int ll = wcstoll(number.data(), NULL, 2);
+    long long int ll = strtoll(number.data(), NULL, 2);
 
     ParseStatus* ps = new ParseStatus;
     ps->m_type = Token::NumericLiteralToken;
@@ -1373,7 +1375,7 @@ PassRefPtr<ParseStatus> scanBinaryLiteral(ParseContext* ctx, size_t start)
 
 PassRefPtr<ParseStatus> scanOctalLiteral(ParseContext* ctx, char16_t prefix, size_t start)
 {
-    std::wstring number;
+    std::string number;
     bool octal;
 
     if (isOctalDigit(prefix)) {
@@ -1389,6 +1391,7 @@ PassRefPtr<ParseStatus> scanOctalLiteral(ParseContext* ctx, char16_t prefix, siz
         if (!isOctalDigit(ctx->m_source[ctx->m_index])) {
             break;
         }
+        ASSERT(ctx->m_source[ctx->m_index++] < 128);
         number += ctx->m_source[ctx->m_index++];
     }
 
@@ -1401,7 +1404,7 @@ PassRefPtr<ParseStatus> scanOctalLiteral(ParseContext* ctx, char16_t prefix, siz
         throwUnexpectedToken();
     }
 
-    long long int ll = wcstoll(number.data(), NULL, 8);
+    long long int ll = strtoll(number.data(), NULL, 8);
 
     ParseStatus* ps = new ParseStatus;
     ps->m_type = Token::NumericLiteralToken;

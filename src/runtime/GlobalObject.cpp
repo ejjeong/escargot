@@ -2500,7 +2500,7 @@ void GlobalObject::installMath()
             } else {
                 return ESValue(0);
             }
-        } else if (isinf(x))
+        } else if (std::isinf(x))
             return ESValue(std::numeric_limits<double>::quiet_NaN());
         return ESValue(tan(x));
     }, strings->tan));
@@ -2634,7 +2634,7 @@ void GlobalObject::installNumber()
                 s = u"-";
                 x = -x;
             }
-            if (isinf(x)) {
+            if (std::isinf(x)) {
                 s += u"Infinity";
                 return escargot::ESString::create(std::move(s));
             }

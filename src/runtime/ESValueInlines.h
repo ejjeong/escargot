@@ -294,7 +294,7 @@ inline int32_t ESValue::toInt32SlowCase() const
     double num = toNumber();
 
     // If number is NaN, +0, −0, +∞, or −∞, return +0.
-    if (UNLIKELY(isnan(num) || num == 0.0 || isinf(0.0))) {
+    if (UNLIKELY(std::isnan(num) || num == 0.0 || std::isinf(0.0))) {
         return 0;
     }
 
@@ -322,7 +322,7 @@ inline uint32_t ESValue::toUint32() const
     double num = toNumber();
 
     // If number is NaN, +0, −0, +∞, or −∞, return +0.
-    if (UNLIKELY(isnan(num) || num == 0.0 || isinf(0.0))) {
+    if (UNLIKELY(std::isnan(num) || num == 0.0 || std::isinf(0.0))) {
         return 0;
     }
 

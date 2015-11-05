@@ -66,9 +66,9 @@ NEVER_INLINE ESValue modOperation(const ESValue& left, const ESValue& right)
         // http://www.ecma-international.org/ecma-262/5.1/#sec-11.5.3
         if (std::isnan(lvalue) || std::isnan(rvalue))
             ret = ESValue(std::numeric_limits<double>::quiet_NaN());
-        else if (isinf(lvalue) || rvalue == 0 || rvalue == -0.0)
+        else if (std::isinf(lvalue) || rvalue == 0 || rvalue == -0.0)
             ret = ESValue(std::numeric_limits<double>::quiet_NaN());
-        else if (isinf(rvalue))
+        else if (std::isinf(rvalue))
             ret = ESValue(lvalue);
         else if (lvalue == 0.0) {
             if (std::signbit(lvalue))
@@ -120,13 +120,13 @@ NEVER_INLINE ESValue abstractRelationalComparisonSlowCase(const ESValue& left, c
             return ESValue(false);
         } else if (n1 == 0.0 && n2 == 0.0 && sign1) {
             return ESValue(false);
-        } else if (isinf(n1) && !sign1) {
+        } else if (std::isinf(n1) && !sign1) {
             return ESValue(false);
-        } else if (isinf(n2) && !sign2) {
+        } else if (std::isinf(n2) && !sign2) {
             return ESValue(true);
-        } else if (isinf(n2) && sign2) {
+        } else if (std::isinf(n2) && sign2) {
             return ESValue(false);
-        } else if (isinf(n1) && sign1) {
+        } else if (std::isinf(n1) && sign1) {
             return ESValue(true);
         } else {
             return ESValue(n1 < n2);
