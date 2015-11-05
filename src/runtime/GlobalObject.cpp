@@ -2610,7 +2610,7 @@ void GlobalObject::installNumber()
         int arglen = instance->currentExecutionContext()->argumentCount();
         if (arglen == 0) {
             return ESValue(round(number)).toString();
-        } else if (arglen == 1) {
+        } else if (arglen >= 1) {
             double digit_d = instance->currentExecutionContext()->arguments()[0].toNumber();
             if (digit_d == 0 || isnan(digit_d)) {
                 return ESValue(round(number)).toString();
@@ -2640,9 +2640,9 @@ void GlobalObject::installNumber()
         int arglen = instance->currentExecutionContext()->argumentCount();
         if (arglen == 0 || instance->currentExecutionContext()->arguments()[0].isUndefined()) {
             return ESValue(number).toString();
-        } else if (arglen == 1) {
+        } else if (arglen >= 1) {
             double x = number;
-            int p = instance->currentExecutionContext()->arguments()[0].toInteger();
+            double p_d = instance->currentExecutionContext()->arguments()[0].toNumber();
             if (isnan(x)) {
                 return strings->NaN.string();
             }
@@ -2655,14 +2655,20 @@ void GlobalObject::installNumber()
                 s += u"Infinity";
                 return escargot::ESString::create(std::move(s));
             }
-
-            if (p < 1 && p > 21) {
+            int p = (int) trunc(p_d);
+            if (p < 1 || p > 21) {
                 throw ESValue(RangeError::create());
             }
 
+            int log10_num = floor(log10(number));
             x = number;
             std::basic_ostringstream<char> stream;
-            stream << "%." << p << "lf";
+            if (log10_num + 1 <= p) {
+                stream << "%" << log10_num + 1 << "." << (p - log10_num - 1) << "lf";
+            } else {
+                x = x / pow(10, log10_num);
+                stream << "%1." << (p - 1) << "lf" << "e+" << log10_num;
+            }
             std::string fstr = stream.str();
             char buf[512];
             sprintf(buf, fstr.c_str(), x);
