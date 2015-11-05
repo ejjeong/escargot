@@ -1614,7 +1614,7 @@ public:
         return ret;
     }
 
-    static ESFunctionObject* create(LexicalEnvironment* outerEnvironment, const NativeFunctionType& fn, escargot::ESString* name, unsigned length = 1)
+    static ESFunctionObject* create(LexicalEnvironment* outerEnvironment, const NativeFunctionType& fn, escargot::ESString* name, unsigned length = 0)
     {
         ESFunctionObject* ret = new ESFunctionObject(outerEnvironment, fn, name, length);
         return ret;

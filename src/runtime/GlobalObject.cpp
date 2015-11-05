@@ -358,7 +358,7 @@ void GlobalObject::installFunction()
         prototype->set__proto__(instance->globalObject()->object()->protoType());
         function->setProtoType(prototype);
         return function;
-    }, strings->Function);
+    }, strings->Function, 1); // $19.2.2.1 Function.length: This is a data property with a value of 1.
     ::escargot::ESFunctionObject* emptyFunction = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         return ESValue();
     }, strings->Function);
@@ -1959,7 +1959,7 @@ void GlobalObject::installDate()
             }
         }
         return ESString::create(u"FixMe: We have to return string with date and time data");
-    }, strings->Date);
+    }, strings->Date, 7); // $20.3.3 Properties of the Date Constructor: the length property is 7.
     m_date->forceNonVectorHiddenClass();
 
     m_datePrototype->defineDataProperty(strings->toString, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
