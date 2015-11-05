@@ -1932,11 +1932,14 @@ void GlobalObject::installString()
             return str;
         } else {
             int len = str->length();
-            int intStart = instance->currentExecutionContext()->arguments()[0].toInteger();
+            double doubleStart = instance->currentExecutionContext()->arguments()[0].toNumber();
             ESValue& end = instance->currentExecutionContext()->arguments()[1];
-            int intEnd = (argCount < 2 || end.isUndefined()) ? len : end.toInteger();
-            int finalStart = std::min(std::max(intStart, 0), len);
-            int finalEnd = std::min(std::max(intEnd, 0), len);
+            double doubleEnd = (argCount < 2 || end.isUndefined()) ? len : end.toNumber();
+            doubleStart = (isnan(doubleStart)) ? 0 : doubleStart;
+            doubleEnd = (isnan(doubleEnd)) ? 0 : doubleEnd;
+
+            double finalStart = (int)trunc(std::min(std::max(doubleStart, 0.0), (double)len));
+            double finalEnd = (int)trunc(std::min(std::max(doubleEnd, 0.0), (double)len));
             int from = std::min(finalStart, finalEnd);
             int to = std::max(finalStart, finalEnd);
             return str->substring(from, to);
@@ -2723,7 +2726,7 @@ void GlobalObject::installNumber()
                 throw ESValue(RangeError::create());
             }
 
-            int log10_num = floor(log10(number));
+            int log10_num = trunc(log10(number));
             x = number;
             std::basic_ostringstream<char> stream;
             if (log10_num + 1 <= p) {
