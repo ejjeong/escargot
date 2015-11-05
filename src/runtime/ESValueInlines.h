@@ -1207,6 +1207,49 @@ inline bool ESObject::deleteProperty(const ESValue& key)
     return true;
 }
 
+ALWAYS_INLINE bool ESObject::hasProperty(const escargot::ESValue& key)
+{
+    ESObject* target = this;
+    escargot::ESString* keyString = NULL;
+    while (true) {
+        if (target->isESArrayObject() && target->asESArrayObject()->isFastmode()) {
+            uint32_t idx = key.toIndex();
+            if (idx != ESValue::ESInvalidIndexValue) {
+                if (LIKELY((int)idx < target->asESArrayObject()->length())) {
+                    ESValue e = target->asESArrayObject()->m_vector[idx];
+                    if (LIKELY(!e.isEmpty()))
+                        return true;
+                    else
+                        return false;
+                }
+                else
+                    return false;
+            }
+        }
+        if (target->isESTypedArrayObject()) {
+            uint32_t idx = key.toIndex();
+            if ((uint32_t)idx < asESTypedArrayObjectWrapper()->length())
+                return true;
+            else
+                return false;
+        }
+
+        if (!keyString) {
+            keyString = key.toString();
+        }
+        size_t t = target->m_hiddenClass->findProperty(keyString);
+        if (t != SIZE_MAX)
+            return true;
+
+        if (target->__proto__().isESPointer() && target->__proto__().asESPointer()->isESObject()) {
+            target = target->__proto__().asESPointer()->asESObject();
+        } else {
+            return false;
+        }
+    }
+}
+
+
 ALWAYS_INLINE bool ESObject::hasOwnProperty(const escargot::ESValue& key)
 {
     if ((isESArrayObject() && asESArrayObject()->isFastmode()) || isESTypedArrayObject()) {

@@ -536,6 +536,8 @@ inline void definePropertyWithDescriptorObject(ESObject* obj, ESValue& key, ESOb
     ESValue get = desc->get(ESString::create(u"get"));
     ESValue set = desc->get(ESString::create(u"set"));
     if (!get.isUndefined() || !set.isUndefined()) {
+        if (isWritable || desc->hasProperty(ESString::create(u"value")))
+            throw ESValue(TypeError::create(ESString::create("Property cannot have [getter|setter] and [value|writable] together")));
         escargot::ESFunctionObject* getter = NULL;
         escargot::ESFunctionObject* setter = NULL;
         if (!get.isEmpty()) {
@@ -562,8 +564,9 @@ inline ESValue objectDefineProperties(ESValue object, ESValue& properties)
         throw ESValue(TypeError::create(ESString::create("objectDefineProperties: first argument is not object")));
     ESObject* props = properties.toObject();
     props->enumeration([&](ESValue key) {
-        ESValue propertyDesc = props->getOwnProperty(key);
-        if (!propertyDesc.isUndefined()) {
+        bool hasKey = props->hasOwnProperty(key);
+        if (hasKey) {
+            ESValue propertyDesc = props->getOwnProperty(key);
             if (!propertyDesc.isObject())
                 throw ESValue(TypeError::create(ESString::create("objectDefineProperties: descriptor is not object")));
             definePropertyWithDescriptorObject(object.asESPointer()->asESObject(), key, propertyDesc.asESPointer()->asESObject());

@@ -1123,7 +1123,7 @@ ESStringObject::ESStringObject(escargot::ESString* str)
     m_stringData = str;
 
     // $21.1.4.1 String.length
-    defineAccessorProperty(strings->length.string(), ESVMInstance::currentInstance()->stringObjectLengthAccessorData(), false, true, false);
+    defineAccessorProperty(strings->length.string(), ESVMInstance::currentInstance()->stringObjectLengthAccessorData(), false, false, false);
 }
 
 ESNumberObject::ESNumberObject(double value)

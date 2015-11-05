@@ -1295,6 +1295,7 @@ public:
 
     inline bool deleteProperty(const ESValue& key);
     inline void propertyFlags(const ESValue& key, bool& exists, bool& isDataProperty, bool& isWritable, bool& isEnumerable, bool& isConfigurable);
+    inline bool hasProperty(const escargot::ESValue& key);
     inline bool hasOwnProperty(const escargot::ESValue& key);
 
     // $6.1.7.2 Object Internal Methods and Internal Slots
