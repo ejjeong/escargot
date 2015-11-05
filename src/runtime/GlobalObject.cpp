@@ -1171,7 +1171,7 @@ void GlobalObject::installArray()
         int arrlen = thisBinded->length();
         if (arrlen >= 0) {
             escargot::ESString* separator;
-            if (arglen == 0) {
+            if (arglen == 0 || instance->currentExecutionContext()->arguments()[0].isUndefined()) {
                 separator = ESString::create(u",");
             } else {
                 separator = instance->currentExecutionContext()->arguments()[0].toString();
