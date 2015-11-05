@@ -1221,8 +1221,7 @@ ALWAYS_INLINE bool ESObject::hasProperty(const escargot::ESValue& key)
                         return true;
                     else
                         return false;
-                }
-                else
+                } else
                     return false;
             }
         }
