@@ -518,7 +518,7 @@ inline ESValue objectDefineProperties(ESValue object, ESValue& properties)
         throw ESValue(TypeError::create(ESString::create("objectDefineProperties: first argument is not object")));
     ESObject* props = properties.toObject();
     props->enumeration([&](ESValue key) {
-        ESValue propertyDesc = props->get(key);
+        ESValue propertyDesc = props->getOwnProperty(key);
         if (!propertyDesc.isUndefined()) {
             if (!propertyDesc.isObject())
                 throw ESValue(TypeError::create(ESString::create("objectDefineProperties: descriptor is not object")));
@@ -577,6 +577,8 @@ void GlobalObject::installObject()
             ret.append(ta_name.toString()->data());
             ret.append(u"]");
             return ESString::create(std::move(ret));
+        } else if (thisVal->isESArgumentsObject()) {
+            return ESString::create(u"[object Arguments]");
         }
         return ESString::create(u"[object Object]");
     }, strings->toString, 0));

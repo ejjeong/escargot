@@ -434,10 +434,10 @@ public:
     virtual ESValue* hasBindingForArgumentsObject()
     {
         if (m_argumentsObject.isEmpty()) {
-            ESObject* argumentsObject = ESObject::create();
+            ESObject* argumentsObject = ESArgumentsObject::create();
             m_argumentsObject = argumentsObject;
             unsigned i = 0;
-            argumentsObject->set(strings->length.string(), ESValue(m_argumentCount));
+            argumentsObject->defineDataProperty(strings->length, true, false, true, ESValue(m_argumentCount));
             for (; i < m_argumentCount && i < ESCARGOT_STRINGS_NUMBERS_MAX; i ++) {
                 argumentsObject->set(strings->numbers[i].string(), m_arguments[i]);
             }

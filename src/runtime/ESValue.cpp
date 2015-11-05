@@ -1240,5 +1240,9 @@ bool ESTypedArrayObjectWrapper::set(int key, ESValue val)
     RELEASE_ASSERT_NOT_REACHED();
 }
 
+ESArgumentsObject::ESArgumentsObject(ESPointer::Type type)
+    : ESObject((Type)(Type::ESObject | Type::ESArgumentsObject), ESVMInstance::currentInstance()->globalObject()->objectPrototype(), 6)
+{
+}
 
 }

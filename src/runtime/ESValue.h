@@ -34,6 +34,7 @@ template<typename TypeArg>
 class ESTypedArrayObject;
 class ESTypedArrayObjectWrapper;
 class ESDataViewObject;
+class ESArgumentsObject;
 class ESControlFlowRecord;
 class CodeBlock;
 
@@ -251,8 +252,9 @@ public:
         ESArrayBufferView = 1 << 12,
         ESTypedArrayObject = 1 << 13,
         ESDataViewObject = 1 << 14,
-        ESControlFlowRecord = 1 << 15,
-        TypeMask = 0xffff
+        ESArgumentsObject = 1 << 15,
+        ESControlFlowRecord = 1 << 16,
+        TypeMask = 0x1ffff
     };
 
 protected:
@@ -469,6 +471,19 @@ public:
         ASSERT(isESDataViewObject());
 #endif
         return reinterpret_cast<::escargot::ESDataViewObject *>(this);
+    }
+
+    ALWAYS_INLINE bool isESArgumentsObject() const
+    {
+        return m_type & Type::ESArgumentsObject;
+    }
+
+    ALWAYS_INLINE ::escargot::ESArgumentsObject* asESArgumentsObject()
+    {
+#ifndef NDEBUG
+        ASSERT(isESArgumentsObject());
+#endif
+        return reinterpret_cast<::escargot::ESArgumentsObject *>(this);
     }
 
     ALWAYS_INLINE bool isESControlFlowRecord() const
@@ -2011,6 +2026,17 @@ public:
     static ESDataViewObject* create()
     {
         return new ESDataViewObject();
+    }
+};
+
+class ESArgumentsObject : public ESObject {
+protected:
+    ESArgumentsObject(ESPointer::Type type = ESPointer::Type::ESArgumentsObject);
+
+public:
+    static ESArgumentsObject* create()
+    {
+        return new ESArgumentsObject();
     }
 };
 
