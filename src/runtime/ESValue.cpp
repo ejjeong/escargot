@@ -1252,14 +1252,24 @@ ESArgumentsObject::ESArgumentsObject(ESPointer::Type type)
 
 void ESPropertyAccessorData::fromPropertyDescriptor(ESObject* obj)
 {
-    if (m_jsGetter)
-        obj->set(ESString::create(u"get"), m_jsGetter);
-    else
-        obj->set(ESString::create(u"get"), ESValue());
-    if (m_jsSetter)
-        obj->set(ESString::create(u"set"), m_jsSetter);
-    else
-        obj->set(ESString::create(u"set"), ESValue());
+    if (m_jsGetter || m_jsSetter) {
+        ASSERT(!m_nativeGetter && !m_nativeSetter);
+        if (m_jsGetter)
+            obj->set(ESString::create(u"get"), m_jsGetter);
+        else
+            obj->set(ESString::create(u"get"), ESValue());
+        if (m_jsSetter)
+            obj->set(ESString::create(u"set"), m_jsSetter);
+        else
+            obj->set(ESString::create(u"set"), ESValue());
+        return;
+    }
+
+    if (m_nativeGetter || m_nativeSetter) {
+        ASSERT(!m_jsGetter && !m_jsSetter);
+        obj->set(ESString::create(u"writable"), ESValue(false));
+        return;
+    }
 }
 
 }

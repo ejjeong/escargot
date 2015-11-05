@@ -262,6 +262,16 @@ void GlobalObject::initGlobalObject()
         return ret;
     }, ESString::create(u"parseInt"), 2));
 
+    // $18.2.6.2 decodeURI
+    defineDataProperty(ESString::create(u"decodeURI"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"decodeURI"), 1));
+
+    // $18.2.6.3 decodeURIComponent(encodedURIComponent)
+    defineDataProperty(ESString::create(u"decodeURIComponent"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"decodeURIComponent"), 1));
+
     // $18.2.6.5 encodeURIComponent(uriComponent)
     defineDataProperty(ESString::create(u"encodeURIComponent"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         int argLen = instance->currentExecutionContext()->argumentCount();
@@ -702,18 +712,23 @@ void GlobalObject::installObject()
         return obj;
     }, ESString::create(u"create"), 2));
 
+    // $19.1.2.5 Object.freeze ( O )
+    m_object->defineDataProperty(ESString::create(u"freeze"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"freeze"), 1));
+
     // $19.1.2.6 Object.getOwnPropertyDescriptor
     m_object->defineDataProperty(ESString::create(u"getOwnPropertyDescriptor"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         size_t argCount = instance->currentExecutionContext()->argumentCount();
         ASSERT(argCount == 2);
 
         ESValue arg0 = instance->currentExecutionContext()->readArgument(0);
-        ASSERT(arg0.isObject());
+        if (!arg0.isObject())
+            throw ESValue(TypeError::create(ESString::create(u"getOwnPropertyDescriptor: first argument is not object")));
         ESObject* obj = arg0.asESPointer()->asESObject();
 
         ESValue arg1 = instance->currentExecutionContext()->readArgument(1);
-        ASSERT(arg1.isESString());
-        escargot::ESString* propertyKey = arg1.asESString();
+        escargot::ESString* propertyKey = arg1.toString();
 
         size_t idx = obj->hiddenClass()->findProperty(propertyKey);
         if (idx != SIZE_MAX) {
@@ -731,7 +746,7 @@ void GlobalObject::installObject()
         } else {
             return ESValue();
         }
-    }, ESString::create(u"getOwnPropertyDescriptor")));
+    }, ESString::create(u"getOwnPropertyDescriptor"), 2));
 
     // $19.1.2.7 Object.getOwnPropertyNames
     m_object->defineDataProperty(ESString::create(u"getOwnPropertyNames"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -761,6 +776,16 @@ void GlobalObject::installObject()
         return ESValue(O.asESPointer()->asESObject()->isExtensible());
     }, ESString::create(u"isExtensible"), 1));
 
+    // $19.1.2.12 Object.isFrozen ( O )
+    m_object->defineDataProperty(ESString::create(u"isFrozen"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"isFrozen"), 1));
+
+    // $19.1.2.13 Object.isSealed ( O )
+    m_object->defineDataProperty(ESString::create(u"isSealed"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"isSealed"), 1));
+
     // $19.1.2.14 Object.keys ( O )
     m_object->defineDataProperty(ESString::create(u"keys"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         // Let obj be ToObject(O).
@@ -771,6 +796,16 @@ void GlobalObject::installObject()
         });
         return arr;
     }, ESString::create(u"keys"), 1));
+
+    // $19.1.2.15 Object.preventExtensions ( O )
+    m_object->defineDataProperty(ESString::create(u"preventExtensions"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"preventExtensions"), 1));
+
+    // $19.1.2.17 Object.seal ( O )
+    m_object->defineDataProperty(ESString::create(u"seal"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"seal"), 1));
 
     // $19.1.3.7 Object.prototype.valueOf ( )
     m_objectPrototype->defineDataProperty(strings->valueOf, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1014,6 +1049,31 @@ void GlobalObject::installArray()
         return ret;
     }, strings->concat, 1));
 
+    // $22.1.3.5 Array.prototype.every
+    m_arrayPrototype->ESObject::defineDataProperty(ESString::create(u"every"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"every"), 1));
+
+    // $22.1.3.6 Array.prototype.fill
+    m_arrayPrototype->ESObject::defineDataProperty(ESString::create(u"fill"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"fill"), 1));
+
+    // $22.1.3.7 Array.prototype.filter
+    m_arrayPrototype->ESObject::defineDataProperty(ESString::create(u"filter"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"filter"), 1));
+
+    // $22.1.3.8 Array.prototype.find
+    m_arrayPrototype->ESObject::defineDataProperty(ESString::create(u"find"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"find"), 1));
+
+    // $22.1.3.9 Array.prototype.findIndex
+    m_arrayPrototype->ESObject::defineDataProperty(ESString::create(u"findIndex"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"findIndex"), 1));
+
     // $22.1.3.10 Array.prototype.forEach()
     m_arrayPrototype->ESObject::defineDataProperty(strings->forEach, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         // Let O be ToObject(this value).
@@ -1113,6 +1173,16 @@ void GlobalObject::installArray()
         return ESString::create(std::move(ret));
     }, strings->join, 1));
 
+    // $22.1.3.13 Array.prototype.keys ( )
+    m_arrayPrototype->ESObject::defineDataProperty(ESString::create(u"keys"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"keys"), 0));
+
+    // $22.1.3.14 Array.prototype.lastIndexOf(searchElement [,fromIndex])
+    m_arrayPrototype->ESObject::defineDataProperty(ESString::create(u"lastIndexOf"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"lastIndexOf"), 1));
+
     // $22.1.3.15 Array.prototype.map(callbackfn[, thisArg])
     m_arrayPrototype->ESObject::defineDataProperty(ESString::create(u"map"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         auto thisBinded = instance->currentExecutionContext()->resolveThisBindingToObject();
@@ -1167,6 +1237,16 @@ void GlobalObject::installArray()
             }
         }
     }, strings->push, 1));
+
+    // $22.1.3.18 Array.prototype.reduce
+    m_arrayPrototype->ESObject::defineDataProperty(ESString::create(u"reduce"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"reduce"), 1));
+
+    // $22.1.3.19 Array.prototype.reduceRight
+    m_arrayPrototype->ESObject::defineDataProperty(ESString::create(u"reduceRight"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"reduceRight"), 1));
 
     // $22.1.3.20 Array.prototype.reverse()
     m_arrayPrototype->ESObject::defineDataProperty(ESString::create(u"reverse"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1268,6 +1348,11 @@ void GlobalObject::installArray()
         return ret;
     }, strings->slice, 2));
 
+    // $22.1.3.23 Array.prototype.some
+    m_arrayPrototype->ESObject::defineDataProperty(ESString::create(u"some"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"some"), 1));
+
     // $22.1.3.24 Array.prototype.sort(comparefn)
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-array.prototype.sort
     m_arrayPrototype->ESObject::defineDataProperty(strings->sort, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1360,6 +1445,11 @@ void GlobalObject::installArray()
         }
         return ret;
     }, strings->splice, 2));
+
+    // $22.1.3.26 Array.prototype.toLocaleString()
+    m_arrayPrototype->ESObject::defineDataProperty(ESString::create(u"toLocaleString"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"toLocaleString"), 0));
 
     // $22.1.3.27 Array.prototype.toString()
     m_arrayPrototype->ESObject::defineDataProperty(strings->toString, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1579,6 +1669,11 @@ void GlobalObject::installString()
         return ESValue(result);
     }, strings->lastIndexOf, 1));
 
+    // $21.1.3.10 String.prototype.localeCompare
+    m_stringPrototype->defineDataProperty(ESString::create(u"localeCompare"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"localeCompare"), 1));
+
     // $21.1.3.11 String.prototype.match(regexp)
     m_stringPrototype->defineDataProperty(ESString::create(u"match"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         escargot::ESString* thisObject = instance->currentExecutionContext()->resolveThisBinding().toString();
@@ -1737,6 +1832,11 @@ void GlobalObject::installString()
         }
         return ESValue();
     }, ESString::create(u"replace"), 2));
+
+    // $21.1.3.15 String.prototype.search
+    m_stringPrototype->defineDataProperty(ESString::create(u"search"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"search"), 1));
 
     // $21.1.3.16 String.prototype.slice(start, end)
     m_stringPrototype->defineDataProperty(strings->slice, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1940,6 +2040,11 @@ void GlobalObject::installString()
         }
     }, ESString::create(u"split"), 2));
 
+    // $21.1.3.18 String.prototype.startsWith
+    m_stringPrototype->defineDataProperty(ESString::create(u"startsWith"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"startsWith"), 1));
+
     // $21.1.3.19 String.prototype.substring(start, end)
     m_stringPrototype->defineDataProperty(ESString::create(u"substring"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue thisObject = instance->currentExecutionContext()->resolveThisBinding();
@@ -1968,6 +2073,11 @@ void GlobalObject::installString()
         return ESValue();
     }, ESString::create(u"substring"), 2));
 
+    // $21.1.3.20 String.prototype.toLocaleLowerCase
+    m_stringPrototype->defineDataProperty(ESString::create(u"toLocalLowerCase"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"toLocaleLowerCase"), 1));
+
     // $21.1.3.22 String.prototype.toLowerCase()
     m_stringPrototype->defineDataProperty(ESString::create(u"toLowerCase"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         escargot::ESString* str = instance->currentExecutionContext()->resolveThisBinding().toString();
@@ -1977,14 +2087,16 @@ void GlobalObject::installString()
         std::transform(newstr.begin(), newstr.end(), newstr.begin(), ::tolower);
         return ESString::create(std::move(newstr));
     }, ESString::create(u"toLowerCase"), 0));
-    m_stringPrototype->defineDataProperty(ESString::create(u"toLocalLowerCase"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+
+    // $21.1.3.21 String.prototype.toLocaleUpperCase
+    m_stringPrototype->defineDataProperty(ESString::create(u"toLocaleLowerCase"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         escargot::ESString* str = instance->currentExecutionContext()->resolveThisBinding().toString();
         int strlen = str->string().length();
         u16string newstr(str->string());
         // TODO use ICU for this operation
         std::transform(newstr.begin(), newstr.end(), newstr.begin(), ::tolower);
         return ESString::create(std::move(newstr));
-    }, ESString::create(u"toLocalLowerCase"), 0));
+    }, ESString::create(u"toLocaleLowerCase"), 0));
 
     // $21.1.3.24 String.prototype.toUpperCase()
     m_stringPrototype->defineDataProperty(ESString::create(u"toUpperCase"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1995,6 +2107,8 @@ void GlobalObject::installString()
         std::transform(newstr.begin(), newstr.end(), newstr.begin(), ::toupper);
         return ESString::create(std::move(newstr));
     }, ESString::create(u"toUpperCase"), 0));
+
+    // $21.1.3.21 String.prototype.toLocaleUpperCase
     m_stringPrototype->defineDataProperty(ESString::create(u"toLocaleUpperCase"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         escargot::ESString* str = instance->currentExecutionContext()->resolveThisBinding().toString();
         int strlen = str->string().length();
@@ -2421,7 +2535,47 @@ void GlobalObject::installMath()
         return ESValue();
     }, strings->abs, 1));
 
-    // initialize math object: $20.2.2.16 Math.ceil()
+    // initialize math object: $20.2.2.2 Math.acos()
+    m_math->defineDataProperty(ESString::create(u"acos"), true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"acos"), 1));
+
+    // initialize math object: $20.2.2.3 Math.acosh()
+    m_math->defineDataProperty(ESString::create(u"acosh"), true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"acosh"), 1));
+
+    // initialize math object: $20.2.2.4 Math.asin()
+    m_math->defineDataProperty(ESString::create(u"asin"), true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"asin"), 1));
+
+    // initialize math object: $20.2.2.5 Math.asinh()
+    m_math->defineDataProperty(ESString::create(u"asinh"), true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"asinh"), 1));
+
+    // initialize math object: $20.2.2.6 Math.atan()
+    m_math->defineDataProperty(ESString::create(u"atan"), true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"atan"), 1));
+
+    // initialize math object: $20.2.2.7 Math.atanh()
+    m_math->defineDataProperty(ESString::create(u"atanh"), true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"atanh"), 1));
+
+    // initialize math object: $20.2.2.8 Math.atan2()
+    m_math->defineDataProperty(ESString::create(u"atan2"), true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"atan2"), 2));
+
+    // initialize math object: $20.2.2.9 Math.cbrt()
+    m_math->defineDataProperty(ESString::create(u"cbrt"), true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"cbrt"), 2));
+
+    // initialize math object: $20.2.2.10 Math.ceil()
     m_math->defineDataProperty(strings->ceil, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
         if (arg_size == 0) {
@@ -2689,6 +2843,11 @@ void GlobalObject::installNumber()
     // initialize numberPrototype object
     m_numberPrototype->set__proto__(m_objectPrototype);
 
+    // $20.1.3.2 Number.prototype.toExponential
+    m_numberPrototype->defineDataProperty(ESString::create(u"toExponential"), true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"toExponential"), 1));
+
     // initialize numberPrototype object: $20.1.3.3 Number.prototype.toFixed(fractionDigits)
     m_numberPrototype->defineDataProperty(strings->toFixed, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         double number = instance->currentExecutionContext()->resolveThisBinding().toNumber();
@@ -2720,6 +2879,12 @@ void GlobalObject::installNumber()
         return ESValue();
     }, strings->toFixed, 1));
 
+    // $20.1.3.4 Number.prototype.toLocaleString
+    m_numberPrototype->defineDataProperty(ESString::create(u"toLocaleString"), true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"toLocaleString"), 0));
+
+    // $20.1.3.5 Number.prototype.toPrecision
     m_numberPrototype->defineDataProperty(strings->toPrecision, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         double number = instance->currentExecutionContext()->resolveThisBinding().toNumber();
         int arglen = instance->currentExecutionContext()->argumentCount();
