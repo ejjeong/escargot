@@ -1055,10 +1055,10 @@ ALWAYS_INLINE bool ESHiddenClass::write(ESObject* obj, ESObject* originalObject,
 
 ALWAYS_INLINE bool ESHiddenClass::write(ESObject* obj, ESObject* originalObject, size_t idx, const ESValue& val)
 {
-    if (UNLIKELY(!m_propertyInfo[idx].m_flags.m_isWritable)) {
-        return false;
-    }
     if (LIKELY(m_propertyInfo[idx].m_flags.m_isDataProperty)) {
+        if (UNLIKELY(!m_propertyInfo[idx].m_flags.m_isWritable)) {
+            return false;
+        }
         obj->m_hiddenClassData[idx] = val;
     } else {
         ESPropertyAccessorData* data = (ESPropertyAccessorData *)obj->m_hiddenClassData[idx].asESPointer();

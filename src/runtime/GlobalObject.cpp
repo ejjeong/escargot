@@ -538,11 +538,17 @@ inline void definePropertyWithDescriptorObject(ESObject* obj, ESValue& key, ESOb
     if (!get.isUndefined() || !set.isUndefined()) {
         escargot::ESFunctionObject* getter = NULL;
         escargot::ESFunctionObject* setter = NULL;
-        if (!get.isEmpty() && get.isESPointer() && get.asESPointer()->isESFunctionObject()) {
-            getter = get.asESPointer()->asESFunctionObject();
+        if (!get.isEmpty()) {
+            if (get.isESPointer() && get.asESPointer()->isESFunctionObject())
+                getter = get.asESPointer()->asESFunctionObject();
+            else if (!get.isUndefined())
+                throw ESValue(TypeError::create(ESString::create("getter must be function")));
         }
-        if (!set.isEmpty() && set.isESPointer() && set.asESPointer()->isESFunctionObject()) {
-            setter = set.asESPointer()->asESFunctionObject();
+        if (!set.isEmpty()) {
+            if (set.isESPointer() && set.asESPointer()->isESFunctionObject())
+                setter = set.asESPointer()->asESFunctionObject();
+            else if (!set.isUndefined())
+                throw ESValue(TypeError::create(ESString::create("setter must be function")));
         }
         obj->defineAccessorProperty(key, new ESPropertyAccessorData(getter, setter), isWritable, isEnumerable, isConfigurable);
     } else {
