@@ -1284,8 +1284,10 @@ ALWAYS_INLINE const int32_t ESObject::length()
 ALWAYS_INLINE ESValue ESObject::pop()
 {
     int len = length();
-    if (len == 0)
+    if (len == 0) {
+        set(strings->length.string(), ESValue(0));
         return ESValue();
+    }
     if (LIKELY(isESArrayObject() && asESArrayObject()->isFastmode()))
         return asESArrayObject()->fastPop();
     else {
