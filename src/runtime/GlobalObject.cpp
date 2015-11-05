@@ -166,7 +166,7 @@ void GlobalObject::initGlobalObject()
             return ret;
         }, false);
         return ret;
-    }, ESString::create(u"eval"));
+    }, ESString::create(u"eval"), 1);
     defineDataProperty(ESString::create(u"eval"), true, false, true, m_eval);
 
     // $18.2.2
@@ -184,7 +184,7 @@ void GlobalObject::initGlobalObject()
                 ret = ESValue(ESValue::ESTrueTag::ESTrue);
         }
         return ret;
-    }, ESString::create(u"isFinite")));
+    }, ESString::create(u"isFinite"), 1));
 
     // $18.2.3
     defineDataProperty(ESString::create(u"isNaN"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -201,7 +201,7 @@ void GlobalObject::initGlobalObject()
                 ret = ESValue(ESValue::ESFalseTag::ESFalse);
         }
         return ret;
-    }, ESString::create(u"isNaN")));
+    }, ESString::create(u"isNaN"), 1));
 
     // $18.2.4 parseFloat(string)
     defineDataProperty(ESString::create(u"parseFloat"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -214,7 +214,7 @@ void GlobalObject::initGlobalObject()
             double f = atof(str->utf8Data());
             return ESValue(f);
         }
-    }, ESString::create(u"parseFloat")));
+    }, ESString::create(u"parseFloat"), 1));
 
     // $18.2.5 parseInt(string, radix)
     defineDataProperty(ESString::create(u"parseInt"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -259,7 +259,7 @@ void GlobalObject::initGlobalObject()
             }
         }
         return ret;
-    }, ESString::create(u"parseInt")));
+    }, ESString::create(u"parseInt"), 2));
 
     // $18.2.6.5 encodeURIComponent(uriComponent)
     defineDataProperty(ESString::create(u"encodeURIComponent"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -343,7 +343,7 @@ void GlobalObject::initGlobalObject()
             }
         }
         return escargot::ESString::create(R.c_str());
-    }, ESString::create(u"unescape")));
+    }, ESString::create(u"unescape"), 1));
 
 }
 
