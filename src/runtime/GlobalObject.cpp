@@ -266,10 +266,11 @@ void GlobalObject::initGlobalObject()
         int argLen = instance->currentExecutionContext()->argumentCount();
         if (argLen == 0)
             return ESValue();
-        std::string componentString = std::string(instance->currentExecutionContext()->arguments()->asESString()->utf8Data());
-        const char16_t* data = instance->currentExecutionContext()->arguments()->asESString()->data();
 
-        int strLen = instance->currentExecutionContext()->arguments()->asESString()->length();
+        escargot::ESString* stringValue = instance->currentExecutionContext()->arguments()->toString();
+        std::string componentString = std::string(stringValue->utf8Data());
+        const char16_t* data = stringValue->data();
+        int strLen = stringValue->length();
 
         std::string escaped="";
         for (int i = 0; i < strLen; i++) {
