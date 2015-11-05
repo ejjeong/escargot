@@ -63,6 +63,7 @@ void GlobalObject::initGlobalObject()
     m_objectPrototype->forceNonVectorHiddenClass();
     m_objectPrototype->set__proto__(ESValue(ESValue::ESNull));
 
+    set__proto__(m_objectPrototype);
     installFunction();
     installObject();
     installArray();
