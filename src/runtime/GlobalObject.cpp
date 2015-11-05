@@ -705,8 +705,22 @@ void GlobalObject::installObject()
         ASSERT(arg1.isESString());
         escargot::ESString* propertyKey = arg1.asESString();
 
-        ESValue desc = obj->getOwnProperty(propertyKey);
-        return escargot::PropertyDescriptor::FromPropertyDescriptor(desc);
+        size_t idx = obj->hiddenClass()->findProperty(propertyKey);
+        if (idx != SIZE_MAX) {
+            ESHiddenClassPropertyInfo& propertyInfo = obj->hiddenClass()->m_propertyInfo[idx];
+            ESObject* ret = ESObject::create();
+            if (propertyInfo.m_flags.m_isDataProperty) {
+                ret->set(ESString::create(u"value"), obj->hiddenClass()->read(obj, obj, idx));
+                ret->set(ESString::create(u"writable"), ESValue(propertyInfo.m_flags.m_isWritable));
+            } else {
+                obj->accessorData(idx)->fromPropertyDescriptor(ret);
+            }
+            ret->set(ESString::create(u"enumerable"), ESValue(propertyInfo.m_flags.m_isEnumerable));
+            ret->set(ESString::create(u"configurable"), ESValue(propertyInfo.m_flags.m_isConfigurable));
+            return ret;
+        } else {
+            return ESValue();
+        }
     }, ESString::create(u"getOwnPropertyDescriptor")));
 
     // $19.1.2.7 Object.getOwnPropertyNames

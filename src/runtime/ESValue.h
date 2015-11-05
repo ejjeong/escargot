@@ -1080,6 +1080,8 @@ public:
         m_jsGetter = getter;
     }
 
+    void fromPropertyDescriptor(ESObject* obj);
+
 protected:
     ESValue (*m_nativeGetter)(::escargot::ESObject* obj);
     void (*m_nativeSetter)(::escargot::ESObject* obj, const ESValue& value);
@@ -1318,6 +1320,11 @@ public:
     ESPropertyAccessorData* accessorData(escargot::ESString* key)
     {
         size_t idx = m_hiddenClass->findProperty(key);
+        return accessorData(idx);
+    }
+
+    ESPropertyAccessorData* accessorData(size_t idx)
+    {
         ASSERT(!m_hiddenClass->propertyInfo(idx).m_flags.m_isDataProperty);
         return (ESPropertyAccessorData *)m_hiddenClassData[idx].asESPointer();
     }
