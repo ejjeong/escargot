@@ -442,7 +442,7 @@ void GlobalObject::installFunction()
         code.m_boundArguments = (ESValue *)GC_malloc(code.m_boundArgumentsCount * sizeof(ESValue));
         memcpy(code.m_boundArguments, instance->currentExecutionContext()->arguments() + 1, code.m_boundArgumentsCount * sizeof(ESValue));
         cb->pushCode(code, context, NULL);
-        escargot::ESFunctionObject* function = ESFunctionObject::create(NULL, cb, strings->emptyString, std::max(code.m_boundTargetFunction->length() - (int) code.m_boundArgumentsCount, 0));
+        escargot::ESFunctionObject* function = ESFunctionObject::create(NULL, cb, strings->emptyString, std::max((int) code.m_boundTargetFunction->length() - (int) code.m_boundArgumentsCount, 0));
         function->set__proto__(instance->globalObject()->functionPrototype());
         ESObject* prototype = ESObject::create();
         prototype->set__proto__(instance->globalObject()->object()->protoType());
@@ -642,6 +642,23 @@ void GlobalObject::installObject()
         }
         return obj;
     }, ESString::create(u"create"), 2));
+
+    // $19.1.2.6 Object.getOwnPropertyDescriptor
+    m_object->defineDataProperty(ESString::create(u"getOwnPropertyDescriptor"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        size_t argCount = instance->currentExecutionContext()->argumentCount();
+        ASSERT(argCount == 2);
+
+        ESValue arg0 = instance->currentExecutionContext()->readArgument(0);
+        ASSERT(arg0.isObject());
+        ESObject* obj = arg0.asESPointer()->asESObject();
+
+        ESValue arg1 = instance->currentExecutionContext()->readArgument(1);
+        ASSERT(arg1.isESString());
+        escargot::ESString* propertyKey = arg1.asESString();
+
+        ESValue desc = obj->getOwnProperty(propertyKey);
+        return escargot::PropertyDescriptor::FromPropertyDescriptor(desc);
+    }, ESString::create(u"getOwnPropertyDescriptor")));
 
     // $19.1.2.7 Object.getOwnPropertyNames
     m_object->defineDataProperty(ESString::create(u"getOwnPropertyNames"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {

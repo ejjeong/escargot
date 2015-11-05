@@ -31,6 +31,21 @@ public:
 #endif
 };
 
+class PropertyDescriptor {
+public:
+    static ESObject* FromPropertyDescriptor(ESValue desc)
+    {
+        ESObject* ret = ESObject::create();
+        if (!desc.isObject()) {
+            ret->set(ESString::create(u"value"), desc);
+            ret->set(ESString::create(u"enumerable"), ESValue(false));
+            ret->set(ESString::create(u"writable"), ESValue(false));
+            ret->set(ESString::create(u"configurable"), ESValue(false));
+            return ret;
+        }
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+};
 
 // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-lexical-environments
 class LexicalEnvironment : public gc {

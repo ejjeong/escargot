@@ -330,7 +330,7 @@ void dumpUnsupported(CodeBlock* block)
         }
     }
     for (auto it = names.begin(); it != names.end(); ++it) {
-        printf("%s %zd",it->first.data(), it->second);
+        printf("%s %zd", it->first.data(), it->second);
     }
     printf("\n");
 }

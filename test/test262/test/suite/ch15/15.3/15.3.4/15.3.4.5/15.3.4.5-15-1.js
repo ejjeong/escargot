@@ -19,6 +19,6 @@ function testcase() {
       desc.hasOwnProperty('get') === false &&
       desc.hasOwnProperty('set') === false) {
     return true;
-  }    
+  }
  }
 runTestCase(testcase);

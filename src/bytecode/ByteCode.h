@@ -2334,7 +2334,7 @@ void dumpUnsupported(CodeBlock* codeBlock);
 
 ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter = 0, unsigned maxStackPos = 0);
 CodeBlock* generateByteCode(Node* node);
-inline void iterateByteCode(CodeBlock* codeBlock, std::function<void (CodeBlock* block, unsigned idx, ByteCode* code, Opcode opcode)> fn);
+inline void iterateByteCode(CodeBlock* codeBlock, std::function<void(CodeBlock* block, unsigned idx, ByteCode* code, Opcode opcode)> fn);
 
 }
 
@@ -2443,7 +2443,7 @@ ALWAYS_INLINE void ByteCodeGenerateContext::morphJumpPositionIntoComplexCase(Cod
     }
 }
 
-inline void iterateByteCode(CodeBlock* codeBlock, std::function<void (CodeBlock* block, unsigned idx, ByteCode* code, Opcode opcode)> fn)
+inline void iterateByteCode(CodeBlock* codeBlock, std::function<void(CodeBlock* block, unsigned idx, ByteCode* code, Opcode opcode)> fn)
 {
     char* ptr = codeBlock->m_code.data();
     unsigned idx = 0;
