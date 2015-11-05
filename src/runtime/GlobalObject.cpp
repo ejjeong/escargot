@@ -2304,6 +2304,9 @@ void GlobalObject::installMath()
             double max_value = instance->currentExecutionContext()->arguments()[0].toNumber();
             for (unsigned i = 1; i < arg_size; i++) {
                 double value = instance->currentExecutionContext()->arguments()[i].toNumber();
+                double qnan = std::numeric_limits<double>::quiet_NaN();
+                if (std::isnan(value))
+                    return ESValue(qnan);
                 if (value > max_value)
                     max_value = value;
             }
@@ -2321,6 +2324,9 @@ void GlobalObject::installMath()
             double min_value = instance->currentExecutionContext()->arguments()[0].toNumber();
             for (unsigned i = 1; i < arg_size; i++) {
                 double value = instance->currentExecutionContext()->arguments()[i].toNumber();
+                double qnan = std::numeric_limits<double>::quiet_NaN();
+                if (std::isnan(value))
+                    return ESValue(qnan);
                 if (value < min_value)
                 min_value = value;
             }
