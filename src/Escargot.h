@@ -22,6 +22,10 @@
 #include <clocale>
 #include <cwchar>
 
+#ifdef ENABLE_ESJIT
+#include <iostream>
+#endif
+
 #include <time.h>
 #include <unistd.h>
 #include <sys/types.h>
