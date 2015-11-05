@@ -283,6 +283,15 @@ check-jit:
 	./run-Sunspider-jit.sh -rof > osrExitedFunctions.txt
 	vimdiff osrExitedFunctions.txt originalOSRExitedFunctions.txt
 
+check:
+	make x64.interpreter.release -j$(NPROCS)
+	make run-sunspider
+	make run-octane
+	make x64.interpreter.debug -j$(NPROCS)
+	make run-sunspider
+	make check-jit
+	make tidy
+
 tidy:
 	./tools/check-webkit-style `find src/ -name "*.cpp" -o -name "*.h"`> error_report 2>& 1
 
