@@ -870,7 +870,7 @@ void GlobalObject::installArray()
         } else {
         }
         return array;
-    }, strings->Array);
+    }, strings->Array, 1);
     m_array->forceNonVectorHiddenClass();
     m_arrayPrototype->defineDataProperty(strings->constructor, true, false, true, m_array);
 
@@ -883,7 +883,7 @@ void GlobalObject::installArray()
         if (arg.isESPointer() && arg.asESPointer()->isESArrayObject())
             return ESValue(ESValue::ESTrueTag::ESTrue);
         return ESValue(ESValue::ESFalseTag::ESFalse);
-    }, strings->isArray));
+    }, strings->isArray, 1));
 
     // $22.1.3.1 Array.prototype.concat(...arguments)
     m_arrayPrototype->ESObject::defineDataProperty(strings->concat, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -913,7 +913,7 @@ void GlobalObject::installArray()
             }
         }
         return ret;
-    }, strings->concat));
+    }, strings->concat, 1));
 
     // $22.1.3.10 Array.prototype.forEach()
     m_arrayPrototype->ESObject::defineDataProperty(strings->forEach, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -948,7 +948,7 @@ void GlobalObject::installArray()
             k++;
         }
         return ESValue();
-    }, strings->forEach));
+    }, strings->forEach, 1));
 
     // $22.1.3.11 Array.prototype.indexOf()
     m_arrayPrototype->ESObject::defineDataProperty(strings->indexOf, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -988,7 +988,7 @@ void GlobalObject::installArray()
             }
         }
         return ESValue(ret);
-    }, strings->indexOf));
+    }, strings->indexOf, 1));
 
     // $22.1.3.12 Array.prototype.join(separator)
     m_arrayPrototype->ESObject::defineDataProperty(strings->join, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1012,7 +1012,7 @@ void GlobalObject::installArray()
             }
         }
         return ESString::create(std::move(ret));
-    }, strings->join));
+    }, strings->join, 1));
 
     // $22.1.3.15 Array.prototype.map(callbackfn[, thisArg])
     m_arrayPrototype->ESObject::defineDataProperty(ESString::create(u"map"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1031,13 +1031,13 @@ void GlobalObject::installArray()
             ret->set(idx, ESFunctionObject::call(instance, arg.asESPointer()->asESFunctionObject(), instance->globalObject(), &tmpValue, 1, false));
         }
         return ret;
-    }, ESString::create(u"map")));
+    }, ESString::create(u"map"), 1));
 
     // $22.1.3.16 Array.prototype.pop ( )
     m_arrayPrototype->ESObject::defineDataProperty(strings->pop, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         auto thisBinded = instance->currentExecutionContext()->resolveThisBindingToObject();
         return thisBinded->pop();
-    }, strings->pop));
+    }, strings->pop, 0));
 
     // $22.1.3.17 Array.prototype.push(item)
     m_arrayPrototype->ESObject::defineDataProperty(strings->push, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1067,7 +1067,7 @@ void GlobalObject::installArray()
                 return ret;
             }
         }
-    }, strings->push));
+    }, strings->push, 1));
 
     // $22.1.3.20 Array.prototype.reverse()
     m_arrayPrototype->ESObject::defineDataProperty(ESString::create(u"reverse"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1104,7 +1104,7 @@ void GlobalObject::installArray()
             lower++;
         }
         return O;
-    }, ESString::create(u"reverse")));
+    }, ESString::create(u"reverse"), 0));
 
     // $22.1.3.21 Array.prototype.shift ( )
     m_arrayPrototype->ESObject::defineDataProperty(strings->shift, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1133,7 +1133,7 @@ void GlobalObject::installArray()
         O->deleteProperty(ESValue(len - 1)); // 10
         O->set(strings->length, ESValue(len - 1)); // 12
         return first;
-    }, strings->shift));
+    }, strings->shift, 0));
 
     // $22.1.3.22 Array.prototype.slice(start, end)
     m_arrayPrototype->ESObject::defineDataProperty(strings->slice, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1167,7 +1167,7 @@ void GlobalObject::installArray()
             ret->set(i-start, thisBinded->get(ESValue(i)));
         }
         return ret;
-    }, strings->slice));
+    }, strings->slice, 2));
 
     // $22.1.3.24 Array.prototype.sort(comparefn)
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-array.prototype.sort
@@ -1197,7 +1197,7 @@ void GlobalObject::installArray()
         }
 
         return thisVal;
-    }, strings->sort));
+    }, strings->sort, 1));
 
     // $22.1.3.25 Array.prototype.splice(start, deleteCount, ...items)
     m_arrayPrototype->ESObject::defineDataProperty(strings->splice, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1260,7 +1260,7 @@ void GlobalObject::installArray()
                 thisBinded->set(strings->length, ESValue(arrlen - deleteCnt + insertCnt));
         }
         return ret;
-    }, strings->splice));
+    }, strings->splice, 2));
 
     // $22.1.3.27 Array.prototype.toString()
     m_arrayPrototype->ESObject::defineDataProperty(strings->toString, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1271,7 +1271,7 @@ void GlobalObject::installArray()
             toString = instance->globalObject()->objectPrototype()->get(strings->toString.string());
         }
         return ESFunctionObject::call(instance, toString, thisBinded, NULL, 0, false);
-    }, strings->toString));
+    }, strings->toString, 0));
 
     // $22.1.3.28 Array.prototype.unshift(...items)
     m_arrayPrototype->ESObject::defineDataProperty(ESString::create(u"unshift"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1305,7 +1305,7 @@ void GlobalObject::installArray()
 
         O->set(strings->length.string(), ESValue(len + argCount));
         return ESValue(len + argCount);
-    }, ESString::create(u"unshift")));
+    }, ESString::create(u"unshift"), 1));
 
     m_arrayPrototype->ESObject::set(strings->length, ESValue(0));
     m_arrayPrototype->set__proto__(m_objectPrototype);
