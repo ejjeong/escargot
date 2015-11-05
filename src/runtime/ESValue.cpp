@@ -551,6 +551,7 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlo
         m_hiddenClassData.push_back(ESValue(length));
         m_hiddenClassData.push_back(ESValue(name));
     }
+    m_is_bound_func = false;
 }
 
 ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeFunctionType fn, escargot::ESString* name, unsigned length, bool isConstructor)
@@ -564,6 +565,7 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeF
     m_name = name;
     if (!isConstructor)
         m_nonConstructor = true;
+    m_is_bound_func = false;
 }
 
 ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctionObject* fn, ESValue& receiver, ESValue arguments[], const size_t& argumentCount, ESVMInstance* ESVMInstance)

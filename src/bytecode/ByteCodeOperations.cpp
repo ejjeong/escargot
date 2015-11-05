@@ -311,6 +311,11 @@ NEVER_INLINE ESValue newOperation(ESVMInstance* instance, GlobalObject* globalOb
         str.append(u" is not a constructor");
         throw ESValue(TypeError::create(ESString::create(std::move(str))));
     }
+    CallBoundFunction* callBoundFunctionCode = nullptr;
+    if (function->isBoundFunc()) {
+        callBoundFunctionCode = function->codeBlock()->peekCode<CallBoundFunction>(0);
+        function = callBoundFunctionCode->m_boundTargetFunction;
+    }
     ESObject* receiver;
     if (function == globalObject->date()) {
         receiver = ESDateObject::create();
@@ -363,7 +368,15 @@ NEVER_INLINE ESValue newOperation(ESVMInstance* instance, GlobalObject* globalOb
     else
         receiver->set__proto__(ESObject::create());
 
-    ESValue res = ESFunctionObject::call(instance, fn, receiver, arguments, argc, true);
+    ESValue res;
+    if (callBoundFunctionCode) {
+        size_t argc = callBoundFunctionCode->m_boundArgumentsCount + instance->currentExecutionContext()->argumentCount();
+        ESValue* mergedArguments = (ESValue *)alloca(sizeof(ESValue) * argc);
+        memcpy(mergedArguments, callBoundFunctionCode->m_boundArguments, sizeof(ESValue) * callBoundFunctionCode->m_boundArgumentsCount);
+        memcpy(mergedArguments + callBoundFunctionCode->m_boundArgumentsCount, instance->currentExecutionContext()->arguments(), sizeof(ESValue) * instance->currentExecutionContext()->argumentCount());
+        res = ESFunctionObject::call(instance, callBoundFunctionCode->m_boundTargetFunction, callBoundFunctionCode->m_boundThis, mergedArguments, argc, false);
+    } else
+        res = ESFunctionObject::call(instance, fn, receiver, arguments, argc, true);
     if (res.isObject())
         return res;
     else

@@ -481,10 +481,20 @@ void GlobalObject::installFunction()
         memcpy(code.m_boundArguments, instance->currentExecutionContext()->arguments() + 1, code.m_boundArgumentsCount * sizeof(ESValue));
         cb->pushCode(code, context, NULL);
         escargot::ESFunctionObject* function = ESFunctionObject::create(NULL, cb, strings->emptyString, std::max((int) code.m_boundTargetFunction->length() - (int) code.m_boundArgumentsCount, 0), false);
+        function->setBoundFunc();
         function->set__proto__(instance->globalObject()->functionPrototype());
         ESObject* prototype = ESObject::create();
         prototype->set__proto__(instance->globalObject()->object()->protoType());
         function->setProtoType(prototype);
+
+        escargot::ESFunctionObject* throwerForGet = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+            throw ESValue(TypeError::create(ESString::create("Type error")));
+        }, ESString::create(u"get"), 1);
+        escargot::ESFunctionObject* throwerForSet = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+            throw ESValue(TypeError::create(ESString::create("Type error")));
+        }, ESString::create(u"set"), 1);
+        function->defineAccessorProperty(ESString::create(u"caller"), new ESPropertyAccessorData(throwerForGet, throwerForSet), true, false, false);
+        function->defineAccessorProperty(ESString::create(u"arguments"), new ESPropertyAccessorData(throwerForGet, throwerForSet), true, false, false);
 #ifdef ENABLE_ESJIT
         context.cleanupSSARegisterCount();
 #endif
@@ -742,6 +752,14 @@ void GlobalObject::installObject()
         ESValue O = instance->currentExecutionContext()->readArgument(0);
         return O.toObject()->__proto__();
     }, strings->getPrototypeOf, 1));
+
+    // $19.1.2.9 Object.isExtensible( O )
+    m_object->defineDataProperty(ESString::create(u"isExtensible"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        ESValue O = instance->currentExecutionContext()->readArgument(0);
+        if (!O.isObject())
+            return ESValue(false);
+        return ESValue(O.asESPointer()->asESObject()->isExtensible());
+    }, ESString::create(u"isExtensible"), 1));
 
     // $19.1.2.14 Object.keys ( O )
     m_object->defineDataProperty(ESString::create(u"keys"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {

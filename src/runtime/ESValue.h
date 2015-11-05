@@ -1695,6 +1695,14 @@ public:
     }
 
     bool nonConstructor() { return m_nonConstructor; }
+    void setBoundFunc()
+    {
+        m_is_bound_func = true;
+    }
+    bool isBoundFunc()
+    {
+        return m_is_bound_func;
+    }
 
     static ESValue call(ESVMInstance* instance, const ESValue& callee, const ESValue& receiver, ESValue arguments[], const size_t& argumentCount, bool isNewExpression);
 protected:
@@ -1704,6 +1712,7 @@ protected:
     CodeBlock* m_codeBlock;
     escargot::ESString* m_name;
     bool m_nonConstructor;
+    bool m_is_bound_func;
     // ESObject functionObject;
     // HomeObject
     // //ESObject newTarget
