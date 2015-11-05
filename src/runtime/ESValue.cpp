@@ -523,7 +523,7 @@ void ESRegExpObject::setOption(const Option& option)
     m_option = option;
 }
 
-ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlock* cb, escargot::ESString* name, unsigned length)
+ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlock* cb, escargot::ESString* name, unsigned length, bool hasPrototype)
     : ESObject((Type)(Type::ESObject | Type::ESFunctionObject), ESVMInstance::currentInstance()->globalFunctionPrototype(), 4)
 {
     m_name = name;
@@ -540,14 +540,20 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlo
     // defineDataProperty(strings->length, false, false, true, ESValue(length));
     // defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), true, false, false);
     // defineDataProperty(strings->name.string(), false, false, true, name);
-    m_hiddenClass = ESVMInstance::currentInstance()->initialHiddenClassForFunctionObject();
-    m_hiddenClassData.push_back(ESValue(length));
-    m_hiddenClassData.push_back(ESValue((ESPointer *)ESVMInstance::currentInstance()->functionPrototypeAccessorData()));
-    m_hiddenClassData.push_back(ESValue(name));
+    if (hasPrototype) {
+        m_hiddenClass = ESVMInstance::currentInstance()->initialHiddenClassForFunctionObject();
+        m_hiddenClassData.push_back(ESValue(length));
+        m_hiddenClassData.push_back(ESValue((ESPointer *)ESVMInstance::currentInstance()->functionPrototypeAccessorData()));
+        m_hiddenClassData.push_back(ESValue(name));
+    } else {
+        m_hiddenClass = ESVMInstance::currentInstance()->initialHiddenClassForFunctionObjectWithoutPrototype();
+        m_hiddenClassData.push_back(ESValue(length));
+        m_hiddenClassData.push_back(ESValue(name));
+    }
 }
 
-ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeFunctionType fn, escargot::ESString* name, unsigned length)
-    : ESFunctionObject(outerEnvironment, (CodeBlock *)NULL, name, length)
+ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeFunctionType fn, escargot::ESString* name, unsigned length, bool hasPrototype)
+    : ESFunctionObject(outerEnvironment, (CodeBlock *)NULL, name, length, hasPrototype)
 {
     m_codeBlock = CodeBlock::create(true);
     m_codeBlock->pushCode(ExecuteNativeFunction(fn));

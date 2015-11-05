@@ -98,6 +98,11 @@ public:
         return m_initialHiddenClassForFunctionObject;
     }
 
+    ALWAYS_INLINE ESHiddenClass* initialHiddenClassForFunctionObjectWithoutPrototype()
+    {
+        return m_initialHiddenClassForFunctionObjectWithoutPrototype;
+    }
+
     ALWAYS_INLINE ESHiddenClass* initialHiddenClassForPrototypeObject()
     {
         return m_initialHiddenClassForPrototypeObject;
@@ -164,6 +169,7 @@ protected:
 
     ESHiddenClass m_initialHiddenClassForObject;
     ESHiddenClass* m_initialHiddenClassForFunctionObject;
+    ESHiddenClass* m_initialHiddenClassForFunctionObjectWithoutPrototype;
     ESHiddenClass* m_initialHiddenClassForPrototypeObject;
     ESHiddenClass* m_initialHiddenClassForArrayObject;
 

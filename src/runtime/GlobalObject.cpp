@@ -364,7 +364,7 @@ void GlobalObject::installFunction()
         prototype->set__proto__(instance->globalObject()->object()->protoType());
         function->setProtoType(prototype);
         return function;
-    }, strings->Function, 1); // $19.2.2.1 Function.length: This is a data property with a value of 1.
+    }, strings->Function, 1, true); // $19.2.2.1 Function.length: This is a data property with a value of 1.
     ::escargot::ESFunctionObject* emptyFunction = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         return ESValue();
     }, strings->Function);
@@ -543,7 +543,7 @@ void GlobalObject::installObject()
         } else {
             return value.toObject();
         }
-    }, strings->Object);
+    }, strings->Object, 1, true);
     m_object->forceNonVectorHiddenClass();
     m_object->set__proto__(emptyFunction);
     m_object->setProtoType(m_objectPrototype);
@@ -887,7 +887,7 @@ void GlobalObject::installArray()
         } else {
         }
         return array;
-    }, strings->Array, 1);
+    }, strings->Array, 1, true);
     m_array->forceNonVectorHiddenClass();
     m_arrayPrototype->defineDataProperty(strings->constructor, true, false, true, m_array);
 
@@ -1354,7 +1354,7 @@ void GlobalObject::installString()
             return value.toString();
         }
         return ESValue();
-    }, strings->String);
+    }, strings->String, 1, true);
     m_string->forceNonVectorHiddenClass();
 
     m_stringPrototype = ESStringObject::create();
@@ -2032,7 +2032,7 @@ void GlobalObject::installDate()
             }
         }
         return ESString::create(u"FixMe: We have to return string with date and time data");
-    }, strings->Date, 7); // $20.3.3 Properties of the Date Constructor: the length property is 7.
+    }, strings->Date, 7, true); // $20.3.3 Properties of the Date Constructor: the length property is 7.
     m_date->forceNonVectorHiddenClass();
 
     m_datePrototype->defineDataProperty(strings->toString, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -2574,7 +2574,7 @@ void GlobalObject::installNumber()
         } else {
             return ESValue(instance->currentExecutionContext()->readArgument(0).toNumber());
         }
-    }, strings->Number);
+    }, strings->Number, 1, true);
     m_number->forceNonVectorHiddenClass();
 
     // create numberPrototype object
@@ -2740,7 +2740,7 @@ void GlobalObject::installBoolean()
         } else // If NewTarget is undefined, return b
             return (ret);
         return ESValue();
-    }, strings->Boolean);
+    }, strings->Boolean, 1, true);
     m_boolean->forceNonVectorHiddenClass();
 
     // create booleanPrototype object
@@ -2820,7 +2820,7 @@ void GlobalObject::installRegExp()
             thisVal->setOption(option);
         }
         return ESValue(thisVal);
-    }, strings->RegExp);
+    }, strings->RegExp, 2, true);
     m_regexp->forceNonVectorHiddenClass();
 
     // create regexpPrototype object
@@ -2953,7 +2953,7 @@ void GlobalObject::installArrayBuffer()
             obj->allocateArrayBuffer(elemlen);
         }
         return obj;
-    }, strings->ArrayBuffer);
+    }, strings->ArrayBuffer, 1, true);
     m_arrayBuffer->forceNonVectorHiddenClass();
 
     // $22.2.3.2
@@ -3070,7 +3070,7 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
             ASSERT(obj->arraylength() < 210000000);
         }
         return obj;
-    }, ta_name);
+    }, ta_name, 3, true);
 
     ta_constructor->forceNonVectorHiddenClass();
 
