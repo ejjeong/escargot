@@ -1346,20 +1346,26 @@ void GlobalObject::installString()
     // $21.1.3.1 String.prototype.charAt(pos)
     m_stringPrototype->defineDataProperty(ESString::create(u"charAt"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         const u16string& str = instance->currentExecutionContext()->resolveThisBinding().toString()->string();
-        if (instance->currentExecutionContext()->argumentCount() > 0) {
-            int position = instance->currentExecutionContext()->arguments()[0].toInteger();
-            if (LIKELY(0 <= position && position < (int)str.length())) {
-                char16_t c = str[position];
-                if (LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
-                    return strings->asciiTable[c].string();
-                } else {
-                    return ESString::create(c);
-                }
-            } else {
-                return strings->emptyString.string();
-            }
+        int position;
+        if (instance->currentExecutionContext()->argumentCount() == 0) {
+            position = 0;
+        } else if (instance->currentExecutionContext()->argumentCount() > 0) {
+            position = instance->currentExecutionContext()->arguments()[0].toInteger();
+        } else {
+            return ESValue(strings->emptyString.string());
         }
-        return ESValue(strings->emptyString.string());
+
+        if (LIKELY(0 <= position && position < (int)str.length())) {
+            char16_t c = str[position];
+            if (LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
+                return strings->asciiTable[c].string();
+            } else {
+                return ESString::create(c);
+            }
+        } else {
+            return strings->emptyString.string();
+        }
+        RELEASE_ASSERT_NOT_REACHED();
     }, ESString::create(u"charAt")));
 
     // $21.1.3.2 String.prototype.charCodeAt(pos)
