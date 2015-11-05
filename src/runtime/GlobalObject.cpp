@@ -689,6 +689,23 @@ void GlobalObject::installObject()
         }
     }, strings->isPrototypeOf));
 
+    // $19.1.3.4 Object.prototype.propertyIsEnumerable ( V )
+    m_objectPrototype->defineDataProperty(strings->propertyIsEnumerable, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        // TODO toPropertyKey
+        ESValue key = instance->currentExecutionContext()->readArgument(0);
+        ESObject* O = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (!O->hasOwnProperty(key))
+            return ESValue(false);
+        if ((O->isESArrayObject() && O->asESArrayObject()->isFastmode()) || O->isESTypedArrayObject()) {
+            // In fast mode, it was already checked in O->hasOwnProperty.
+            return ESValue(true);
+        }
+        size_t t = O->hiddenClass()->findProperty(key.toString());
+        if (O->hiddenClass()->m_propertyInfo[t].m_flags.m_isEnumerable)
+            return ESValue(true);
+        return ESValue(false);
+    }, strings->propertyIsEnumerable));
+
     // $19.1.3.5 Object.prototype.toLocaleString
     m_objectPrototype->defineDataProperty(strings->toLocaleString, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisVal = instance->currentExecutionContext()->resolveThisBindingToObject();

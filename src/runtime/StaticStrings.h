@@ -123,6 +123,7 @@ public:
     InternalAtomicString toJSON;
     InternalAtomicString getPrototypeOf;
     InternalAtomicString isPrototypeOf;
+    InternalAtomicString propertyIsEnumerable;
 
     void initStaticStrings(ESVMInstance* instance);
 };

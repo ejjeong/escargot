@@ -122,6 +122,7 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     toJSON = InternalAtomicString(instance, u"toJSON");
     getPrototypeOf = InternalAtomicString(instance, u"getPrototypeOf");
     isPrototypeOf = InternalAtomicString(instance, u"isPrototypeOf");
+    propertyIsEnumerable = InternalAtomicString(instance, u"propertyIsEnumerable");
 }
 
 Strings* strings;
