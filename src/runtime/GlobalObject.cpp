@@ -2505,11 +2505,27 @@ void GlobalObject::installNumber()
         if (arglen == 0) {
             return ESValue(round(number)).toString();
         } else if (arglen == 1) {
-            int digit = instance->currentExecutionContext()->arguments()[0].toInteger();
-            int shift = pow(10, digit);
-            return ESValue(round(number*shift) / shift).toString();
-        }
+            double digit_d = instance->currentExecutionContext()->arguments()[0].toNumber();
+            if (digit_d == 0 || isnan(digit_d)) {
+                return ESValue(round(number)).toString();
+            }
+            int digit = (int) trunc(digit_d);
+            if (digit < 0 || digit > 20) {
+                throw ESValue(RangeError::create());
+            }
+            if (isnan(number)) {
+                return strings->NaN.string();
+            } else if (number >= pow(10, 21)) {
+                return ESValue(round(number)).toString();
+            }
 
+            std::basic_ostringstream<char> stream;
+            stream << "%." << digit << "lf";
+            std::string fstr = stream.str();
+            char buf[512];
+            sprintf(buf, fstr.c_str(), number);
+            return ESValue(ESString::create(buf));
+        }
         return ESValue();
     }, strings->toFixed));
 
