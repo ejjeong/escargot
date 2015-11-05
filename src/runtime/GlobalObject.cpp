@@ -964,6 +964,20 @@ void GlobalObject::installError()
     m_uriErrorPrototype->defineDataProperty(strings->constructor, true, false, true, m_uriError);
 
     defineDataProperty(strings->URIError, true, false, true, m_uriError);
+
+    // ///////////////////////////
+    m_evalError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->EvalError, 1, true);
+    m_evalError->set__proto__(m_errorPrototype);
+    m_evalError->forceNonVectorHiddenClass();
+
+    m_evalErrorPrototype = ESErrorObject::create();
+    m_evalErrorPrototype->forceNonVectorHiddenClass();
+
+    m_evalError->setProtoType(m_evalErrorPrototype);
+
+    m_evalErrorPrototype->defineDataProperty(strings->constructor, true, false, true, m_evalError);
+
+    defineDataProperty(strings->EvalError, true, false, true, m_evalError);
 }
 
 void GlobalObject::installArray()

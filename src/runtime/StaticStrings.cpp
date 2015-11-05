@@ -44,6 +44,7 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     RangeError =  InternalAtomicString(instance, u"RangeError");
     SyntaxError =  InternalAtomicString(instance, u"SyntaxError");
     URIError =  InternalAtomicString(instance, u"URIError");
+    EvalError =  InternalAtomicString(instance, u"EvalError");
     forEach =  InternalAtomicString(instance, u"forEach");
     isArray = InternalAtomicString(instance, u"isArray");
     concat = InternalAtomicString(instance, u"concat");

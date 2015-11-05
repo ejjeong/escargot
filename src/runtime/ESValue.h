@@ -1448,6 +1448,16 @@ public:
     }
 };
 
+class EvalError : public ESErrorObject {
+protected:
+    EvalError(escargot::ESString* message = strings->emptyString.string());
+public:
+    static EvalError* create(escargot::ESString* message = strings->emptyString.string())
+    {
+        return new EvalError(message);
+    }
+};
+
 class ESDateObject : public ESObject {
 protected:
     ESDateObject(ESPointer::Type type = ESPointer::Type::ESDateObject);

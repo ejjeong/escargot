@@ -373,6 +373,8 @@ protected:
     escargot::ESObject* m_syntaxErrorPrototype;
     escargot::ESFunctionObject* m_uriError;
     escargot::ESObject* m_uriErrorPrototype;
+    escargot::ESFunctionObject* m_evalError;
+    escargot::ESObject* m_evalErrorPrototype;
 
     // Constructor and prototypes for TypedArray
     escargot::ESFunctionObject* m_Int8Array;

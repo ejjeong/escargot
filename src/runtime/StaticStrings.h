@@ -43,6 +43,7 @@ public:
     InternalAtomicString RangeError;
     InternalAtomicString SyntaxError;
     InternalAtomicString URIError;
+    InternalAtomicString EvalError;
     InternalAtomicString message;
     InternalAtomicString valueOf;
     InternalAtomicString Array;
