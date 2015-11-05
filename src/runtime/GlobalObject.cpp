@@ -267,27 +267,59 @@ void GlobalObject::initGlobalObject()
         if (argLen == 0)
             return ESValue();
         std::string componentString = std::string(instance->currentExecutionContext()->arguments()->asESString()->utf8Data());
-        int strLen = componentString.length();
+        const char16_t* data = instance->currentExecutionContext()->arguments()->asESString()->data();
+
+        int strLen = instance->currentExecutionContext()->arguments()->asESString()->length();
 
         std::string escaped="";
         for (int i = 0; i < strLen; i++) {
-            if ((48 <= componentString[i] && componentString[i] <= 57) // DecimalDigit
-                || (65 <= componentString[i] && componentString[i] <= 90) // uriAlpha - lower case
-                || (97 <= componentString[i] && componentString[i] <= 122) // uriAlpha - lower case
-                || (componentString[i] == '-' || componentString[i] == '_' || componentString[i] == '.'
-                || componentString[i] == '!' || componentString[i] == '~' // uriMark
-                || componentString[i] == '*' || componentString[i] == '`' || componentString[i] == '('
-                || componentString[i] == ')')) {
-                    escaped.append(&componentString[i], 1);
-            } else {
-                if ((0 <= componentString[i] && componentString[i] <= 0xD7FF)
-                    || (0xDC00 <= componentString[i] && componentString[i] <= 0xFFFF)) {
-                        escaped.append("%");
-                        escaped.append(char2hex(componentString[i])); // converts char 255 to string "ff"
+            if ((48 <= data[i] && data[i] <= 57) // DecimalDigit
+                || (65 <= data[i] && data[i] <= 90) // uriAlpha - lower case
+                || (97 <= data[i] && data[i] <= 122) // uriAlpha - lower case
+                || (data[i] == '-' || data[i] == '_' || data[i] == '.' // uriMark
+                || data[i] == '!' || data[i] == '~'
+                || data[i] == '*' || data[i] == '\'' || data[i] == '('
+                || data[i] == ')'))  {
+                escaped.append(&componentString[i], 1);
+            } else if (0 <= data[i] && data[i] < 0x007F) {
+                escaped.append("%");
+                escaped.append(char2hex(data[i]));
+            } else if (0x0080 <= data[i] && data[i] <= 0x07FF) {
+                escaped.append("%");
+                escaped.append(char2hex(0x00C0 + (data[i] & 0x07C0) / 0x0040));
+                escaped.append("%");
+                escaped.append(char2hex(0x0080 + (data[i] & 0x003F)));
+            } else if ((0x0800 <= data[i] && data[i] <= 0xD7FF)
+                || (0xE000 <= data[i] && data[i] <= 0xFFFF)) {
+                escaped.append("%");
+                escaped.append(char2hex(0x00E0 + (data[i] & 0xF000) / 0x1000));
+                escaped.append("%");
+                escaped.append(char2hex(0x0080 + (data[i] & 0x0FC0) / 0x0040));
+                escaped.append("%");
+                escaped.append(char2hex(0x0080 + (data[i] & 0x003F)));
+            } else if (0xD800 <= data[i] && data[i] <= 0xDBFF) {
+                if (i + 1 == strLen) {
+                    throw ESValue(URIError::create(ESString::create("malformed URI")));
                 } else {
-                    throw ESValue(URIError::create(ESString::create("malformd URI")));
+                    if (0xDC00 <= data[i + 1] && data[i + 1] <= 0xDFFF) {
+                        int index = (data[i] - 0xD800) * 0x400 + (data[i + 1] - 0xDC00) + 0x10000;
+                        escaped.append("%");
+                        escaped.append(char2hex(0x00F0 + (index & 0x1C0000) / 0x40000));
+                        escaped.append("%");
+                        escaped.append(char2hex(0x0080 + (index & 0x3F000) / 0x1000));
+                        escaped.append("%");
+                        escaped.append(char2hex(0x0080 + (index & 0x0FC0) / 0x0040));
+                        escaped.append("%");
+                        escaped.append(char2hex(0x0080 + (index & 0x003F)));
+                        i++;
+                    } else {
+                        throw ESValue(URIError::create(ESString::create("malformed URI")));
+                    }
                 }
-
+            } else if (0xDC00 <= data[i] && data[i] <= 0xDFFF) {
+                throw ESValue(URIError::create(ESString::create("malformed URI")));
+            } else {
+                RELEASE_ASSERT_NOT_REACHED();
             }
         }
 
