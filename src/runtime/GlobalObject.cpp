@@ -992,11 +992,12 @@ void GlobalObject::installArray()
         if (LIKELY(thisBinded->isESArrayObject())) {
             auto thisVal = thisBinded->asESArrayObject();
             for (idx = 0; idx < thisVal->length(); idx++)
-                ret->set(idx, thisVal->get(idx));
+                ret->defineDataProperty(ESValue(idx), true, true, true, thisVal->get(idx));
         } else {
             ASSERT(thisBinded->isESObject());
             ESObject* O = thisBinded->asESObject();
-            ret->set(idx++, ESValue(O));
+            ret->defineDataProperty(ESValue(idx), true, true, true, ESValue(O));
+            idx++;
         }
         for (int i = 0; i < arglen; i++) {
             ESValue& argi = instance->currentExecutionContext()->arguments()[i];
