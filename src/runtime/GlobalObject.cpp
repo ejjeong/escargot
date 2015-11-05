@@ -367,7 +367,7 @@ void GlobalObject::installFunction()
     }, strings->Function, 1, true); // $19.2.2.1 Function.length: This is a data property with a value of 1.
     ::escargot::ESFunctionObject* emptyFunction = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         return ESValue();
-    }, strings->Function);
+    }, strings->Function, 1);
     m_function->forceNonVectorHiddenClass();
 
     m_functionPrototype = emptyFunction;
@@ -391,7 +391,7 @@ void GlobalObject::installFunction()
         }
         u16string ret;
         return ESString::create(std::move(ret));
-    }, strings->toString));
+    }, strings->toString, 0));
 
     // $19.2.3.1 Function.prototype.apply(thisArg, argArray)
     m_functionPrototype->defineDataProperty(ESString::create(u"apply"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -422,7 +422,7 @@ void GlobalObject::installFunction()
         }
 
         return ESFunctionObject::call(instance, thisVal, thisArg, arguments, arrlen, false);
-    }, ESString::create(u"apply")));
+    }, ESString::create(u"apply"), 2));
 
     // 19.2.3.2 Function.prototype.bind (thisArg , ...args)
     m_functionPrototype->defineDataProperty(ESString::create(u"bind"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -454,7 +454,7 @@ void GlobalObject::installFunction()
         // The binded function has only one bytecode what is CallBoundFunction
         // so we should not try JIT for binded function.
         return function;
-    }, ESString::create(u"bind")));
+    }, ESString::create(u"bind"), 1));
 
     // 19.2.3.3 Function.prototype.call (thisArg , ...args)
     m_functionPrototype->defineDataProperty(ESString::create(u"call"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -467,7 +467,7 @@ void GlobalObject::installFunction()
         }
 
         return ESFunctionObject::call(instance, thisVal, thisArg, arguments, arglen, false);
-    }, ESString::create(u"call")));
+    }, ESString::create(u"call"), 1));
 
     defineDataProperty(strings->Function, true, false, true, m_function);
 }
@@ -579,7 +579,7 @@ void GlobalObject::installObject()
             return ESString::create(std::move(ret));
         }
         return ESString::create(u"[object Object]");
-    }, strings->toString));
+    }, strings->toString, 0));
 
     // $19.1.3.2 Object.prototype.hasOwnProperty(V)
     m_objectPrototype->defineDataProperty(ESString::create(u"hasOwnProperty"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -594,14 +594,14 @@ void GlobalObject::installObject()
         escargot::ESString* keyString = key;
         ret = ESValue(thisVal->asESObject()->hasOwnProperty(keyString));
         return ret;
-    }, ESString::create(u"hasOwnProperty")));
+    }, ESString::create(u"hasOwnProperty"), 1));
 
     // $19.1.2.3 Object.defineProperties ( O, P, Attributes )
     m_object->defineDataProperty(ESString::create(u"defineProperties"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue object = instance->currentExecutionContext()->readArgument(0);
         ESValue properties = instance->currentExecutionContext()->readArgument(0);
         return objectDefineProperties(object, properties);
-    }, ESString::create(u"defineProperties")));
+    }, ESString::create(u"defineProperties"), 2));
 
     // $19.1.2.4 Object.defineProperty ( O, P, Attributes )
     // http://www.ecma-international.org/ecma-262/6.0/#sec-object.defineproperty
@@ -623,7 +623,7 @@ void GlobalObject::installObject()
             throw ESValue(TypeError::create(ESString::create("Object.defineProperty: # of arguments < 3")));
         }
         return ESValue();
-    }, ESString::create(u"defineProperty")));
+    }, ESString::create(u"defineProperty"), 3));
 
     // $19.1.2.2 Object.create ( O [ , Properties ] )
     // http://www.ecma-international.org/ecma-262/6.0/#sec-object.defineproperty
@@ -672,13 +672,13 @@ void GlobalObject::installObject()
                 nameList->push(key);
         });
         return nameList;
-    }, ESString::create(u"getOwnPropertyNames")));
+    }, ESString::create(u"getOwnPropertyNames"), 1));
 
     // $19.1.2.9 Object.getPrototypeOf
     m_object->defineDataProperty(strings->getPrototypeOf, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue O = instance->currentExecutionContext()->readArgument(0);
         return O.toObject()->__proto__();
-    }, strings->getPrototypeOf));
+    }, strings->getPrototypeOf, 1));
 
     // $19.1.2.14 Object.keys ( O )
     m_object->defineDataProperty(ESString::create(u"keys"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -689,7 +689,7 @@ void GlobalObject::installObject()
             arr->push(key);
         });
         return arr;
-    }, ESString::create(u"keys")));
+    }, ESString::create(u"keys"), 1));
 
     // $19.1.3.7 Object.prototype.valueOf ( )
     m_objectPrototype->defineDataProperty(strings->valueOf, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -710,7 +710,7 @@ void GlobalObject::installObject()
             if (V.equalsTo(O))
                 return ESValue(true);
         }
-    }, strings->isPrototypeOf));
+    }, strings->isPrototypeOf, 0));
 
     // $19.1.3.4 Object.prototype.propertyIsEnumerable ( V )
     m_objectPrototype->defineDataProperty(strings->propertyIsEnumerable, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -727,13 +727,13 @@ void GlobalObject::installObject()
         if (O->hiddenClass()->m_propertyInfo[t].m_flags.m_isEnumerable)
             return ESValue(true);
         return ESValue(false);
-    }, strings->propertyIsEnumerable));
+    }, strings->propertyIsEnumerable, 1));
 
     // $19.1.3.5 Object.prototype.toLocaleString
     m_objectPrototype->defineDataProperty(strings->toLocaleString, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisVal = instance->currentExecutionContext()->resolveThisBindingToObject();
         return ESValue(ESValue(thisVal).toString());
-    }, strings->toLocaleString));
+    }, strings->toLocaleString, 0));
 
     defineDataProperty(strings->Object, true, false, true, m_object);
 }
@@ -754,7 +754,7 @@ void GlobalObject::installError()
             return obj;
         }
     };
-    m_error = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->Error);
+    m_error = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->Error, 1);
     m_error->forceNonVectorHiddenClass();
     m_error->set__proto__(m_objectPrototype);
     m_errorPrototype = escargot::ESObject::create();
@@ -774,13 +774,13 @@ void GlobalObject::installError()
 
         return ESString::create(std::move(ret));
         RELEASE_ASSERT_NOT_REACHED();
-    }, strings->toString);
+    }, strings->toString, 0);
     m_errorPrototype->defineDataProperty(strings->toString, true, false, true, toString);
 
     defineDataProperty(strings->Error, true, false, true, m_error);
 
     // ///////////////////////////
-    m_referenceError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->ReferenceError);
+    m_referenceError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->ReferenceError, 1);
     m_referenceError->set__proto__(m_errorPrototype);
     m_referenceError->forceNonVectorHiddenClass();
 
@@ -794,7 +794,7 @@ void GlobalObject::installError()
     defineDataProperty(strings->ReferenceError, true, false, true, m_referenceError);
 
     // ///////////////////////////
-    m_typeError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->TypeError);
+    m_typeError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->TypeError, 1);
     m_typeError->set__proto__(m_errorPrototype);
     m_typeError->forceNonVectorHiddenClass();
 
@@ -808,7 +808,7 @@ void GlobalObject::installError()
     defineDataProperty(strings->TypeError, true, false, true, m_typeError);
 
     // ///////////////////////////
-    m_rangeError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->RangeError);
+    m_rangeError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->RangeError, 1);
     m_rangeError->set__proto__(m_errorPrototype);
     m_rangeError->forceNonVectorHiddenClass();
 
@@ -822,7 +822,7 @@ void GlobalObject::installError()
     defineDataProperty(strings->RangeError, true, false, true, m_rangeError);
 
     // ///////////////////////////
-    m_syntaxError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->SyntaxError);
+    m_syntaxError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->SyntaxError, 1);
     m_syntaxError->set__proto__(m_errorPrototype);
     m_syntaxError->forceNonVectorHiddenClass();
 
@@ -836,7 +836,7 @@ void GlobalObject::installError()
     defineDataProperty(strings->SyntaxError, true, false, true, m_syntaxError);
 
     // ///////////////////////////
-    m_uriError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->URIError);
+    m_uriError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->URIError, 1);
     m_uriError->set__proto__(m_errorPrototype);
     m_uriError->forceNonVectorHiddenClass();
 
@@ -1369,7 +1369,7 @@ void GlobalObject::installString()
             }
         }
         return instance->currentExecutionContext()->resolveThisBinding().toString();
-    }, strings->toString));
+    }, strings->toString, 0));
 
     m_string->set__proto__(m_functionPrototype); // empty Function
     m_string->setProtoType(m_stringPrototype);
@@ -1394,7 +1394,7 @@ void GlobalObject::installString()
             return ESString::create(std::move(elements));
         }
         return ESValue();
-    }, ESString::create(u"fromCharCode")));
+    }, ESString::create(u"fromCharCode"), 1));
 
     // $21.1.3.1 String.prototype.charAt(pos)
     m_stringPrototype->defineDataProperty(ESString::create(u"charAt"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1419,7 +1419,7 @@ void GlobalObject::installString()
             return strings->emptyString.string();
         }
         RELEASE_ASSERT_NOT_REACHED();
-    }, ESString::create(u"charAt")));
+    }, ESString::create(u"charAt"), 1));
 
     // $21.1.3.2 String.prototype.charCodeAt(pos)
     m_stringPrototype->defineDataProperty(ESString::create(u"charCodeAt"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1431,7 +1431,7 @@ void GlobalObject::installString()
         else
             ret = ESValue(str[position]);
         return ret;
-    }, ESString::create(u"charCodeAt")));
+    }, ESString::create(u"charCodeAt"), 1));
 
     // $21.1.3.4 String.prototype.concat(...args)
     m_stringPrototype->defineDataProperty(strings->concat, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1442,7 +1442,7 @@ void GlobalObject::installString()
             ret = ESString::concatTwoStrings(ret, arg);
         }
         return ret;
-    }, strings->concat));
+    }, strings->concat, 1));
 
     // $21.1.3.8 String.prototype.indexOf(searchString[, position])
     m_stringPrototype->defineDataProperty(strings->indexOf, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1467,7 +1467,7 @@ void GlobalObject::installString()
             result = str.find(searchStr->string(), start);
         }
         return ESValue(result);
-    }, strings->indexOf));
+    }, strings->indexOf, 1));
 
     // $21.1.3.9 String.prototype.lastIndexOf ( searchString [ , position ] )
     m_stringPrototype->defineDataProperty(strings->lastIndexOf, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1495,7 +1495,7 @@ void GlobalObject::installString()
         }
 
         return ESValue(result);
-    }, strings->lastIndexOf));
+    }, strings->lastIndexOf, 1));
 
     // $21.1.3.11 String.prototype.match(regexp)
     m_stringPrototype->defineDataProperty(ESString::create(u"match"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1522,7 +1522,7 @@ void GlobalObject::installString()
                 return ESValue(ESValue::ESNull);
         }
         return ret;
-    }, ESString::create(u"match")));
+    }, ESString::create(u"match"), 1));
 
     // $21.1.3.14 String.prototype.replace(searchValue, replaceValue)
     m_stringPrototype->defineDataProperty(ESString::create(u"replace"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1654,7 +1654,7 @@ void GlobalObject::installString()
             }
         }
         return ESValue();
-    }, ESString::create(u"replace")));
+    }, ESString::create(u"replace"), 2));
 
     // $21.1.3.16 String.prototype.slice(start, end)
     m_stringPrototype->defineDataProperty(strings->slice, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1669,7 +1669,7 @@ void GlobalObject::installString()
         int span = std::max(to-from, 0);
         escargot::ESString* ret = ESString::create(str.substr(from, from+span-1));
         return ret;
-    }, strings->slice));
+    }, strings->slice, 2));
 
     // $21.1.3.17 String.prototype.split(separator, limit)
     m_stringPrototype->defineDataProperty(ESString::create(u"split"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1856,7 +1856,7 @@ void GlobalObject::installString()
             // 21, 22
             return arr;
         }
-    }, ESString::create(u"split")));
+    }, ESString::create(u"split"), 2));
 
     // $21.1.3.19 String.prototype.substring(start, end)
     m_stringPrototype->defineDataProperty(ESString::create(u"substring"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1881,7 +1881,7 @@ void GlobalObject::installString()
 
 
         return ESValue();
-    }, ESString::create(u"substring")));
+    }, ESString::create(u"substring"), 2));
 
     // $21.1.3.22 String.prototype.toLowerCase()
     m_stringPrototype->defineDataProperty(ESString::create(u"toLowerCase"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1891,7 +1891,7 @@ void GlobalObject::installString()
         // TODO use ICU for this operation
         std::transform(newstr.begin(), newstr.end(), newstr.begin(), ::tolower);
         return ESString::create(std::move(newstr));
-    }, ESString::create(u"toLowerCase")));
+    }, ESString::create(u"toLowerCase"), 0));
     m_stringPrototype->defineDataProperty(ESString::create(u"toLocalLowerCase"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         escargot::ESString* str = instance->currentExecutionContext()->resolveThisBinding().toString();
         int strlen = str->string().length();
@@ -1899,7 +1899,7 @@ void GlobalObject::installString()
         // TODO use ICU for this operation
         std::transform(newstr.begin(), newstr.end(), newstr.begin(), ::tolower);
         return ESString::create(std::move(newstr));
-    }, ESString::create(u"toLocalLowerCase")));
+    }, ESString::create(u"toLocalLowerCase"), 0));
 
     // $21.1.3.24 String.prototype.toUpperCase()
     m_stringPrototype->defineDataProperty(ESString::create(u"toUpperCase"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1909,7 +1909,7 @@ void GlobalObject::installString()
         // TODO use ICU for this operation
         std::transform(newstr.begin(), newstr.end(), newstr.begin(), ::toupper);
         return ESString::create(std::move(newstr));
-    }, ESString::create(u"toUpperCase")));
+    }, ESString::create(u"toUpperCase"), 0));
     m_stringPrototype->defineDataProperty(ESString::create(u"toLocaleUpperCase"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         escargot::ESString* str = instance->currentExecutionContext()->resolveThisBinding().toString();
         int strlen = str->string().length();
@@ -1917,7 +1917,7 @@ void GlobalObject::installString()
         // TODO use ICU for this operation
         std::transform(newstr.begin(), newstr.end(), newstr.begin(), ::toupper);
         return ESString::create(std::move(newstr));
-    }, ESString::create(u"toLocaleUpperCase")));
+    }, ESString::create(u"toLocaleUpperCase"), 0));
 
     // $21.1.3.25 String.prototype.trim()
     m_stringPrototype->defineDataProperty(ESString::create(u"trim"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1941,7 +1941,7 @@ void GlobalObject::installString()
         }
 
         return ESString::create(std::move(newstr));
-    }, ESString::create(u"trim")));
+    }, ESString::create(u"trim"), 0));
 
     // $21.1.3.26 String.prototype.valueOf ( )
     m_stringPrototype->defineDataProperty(strings->valueOf, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1960,7 +1960,7 @@ void GlobalObject::installString()
             return thisValue.asESPointer()->asESStringObject()->stringData();
         }
         throw ESValue(TypeError::create(ESString::create("String.prototyep.valueOf: this is not String")));
-    }, strings->valueOf));
+    }, strings->valueOf, 0));
 
 
     // $B.2.3.1 String.prototype.substr (start, length)
@@ -1986,7 +1986,7 @@ void GlobalObject::installString()
         if (resultLength <= 0)
             return strings->emptyString.string();
         return str->substring(intStart, intStart + resultLength);
-    }, ESString::create(u"substr")));
+    }, ESString::create(u"substr"), 2));
 
     m_stringObjectProxy = ESStringObject::create();
     m_stringObjectProxy->set__proto__(m_string->protoType());
@@ -2048,7 +2048,7 @@ void GlobalObject::installDate()
         } else {
             return strings->emptyString.string();
         }
-    }, strings->toString));
+    }, strings->toString, 0));
 
     m_date->setProtoType(m_datePrototype);
 
@@ -2062,70 +2062,70 @@ void GlobalObject::installDate()
         clock_gettime(CLOCK_REALTIME, &nowTime);
         double ret = nowTime.tv_sec*1000 + floor(nowTime.tv_nsec / 1000000);
         return ESValue(ret);
-    }, ESString::create(u"now")));
+    }, ESString::create(u"now"), 0));
 
     // $20.3.4.2 Date.prototype.getDate()
     m_datePrototype->defineDataProperty(strings->getDate, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
         int ret = thisObject->asESDateObject()->getDate();
         return ESValue(ret);
-    }, strings->getDate));
+    }, strings->getDate, 0));
 
     // $20.3.4.3 Date.prototype.getDay()
     m_datePrototype->defineDataProperty(strings->getDay, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
         int ret = thisObject->asESDateObject()->getDay();
         return ESValue(ret);
-    }, strings->getDay));
+    }, strings->getDay, 0));
 
     // $20.3.4.4 Date.prototype.getFullYear()
     m_datePrototype->defineDataProperty(strings->getFullYear, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
         int ret = thisObject->asESDateObject()->getFullYear();
         return ESValue(ret);
-    }, strings->getFullYear));
+    }, strings->getFullYear, 0));
 
     // $20.3.4.5 Date.prototype.getHours()
     m_datePrototype->defineDataProperty(strings->getHours, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
         int ret = thisObject->asESDateObject()->getHours();
         return ESValue(ret);
-    }, strings->getHours));
+    }, strings->getHours, 0));
 
     // $20.3.4.7 Date.prototype.getMinutes()
     m_datePrototype->defineDataProperty(strings->getMinutes, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
         int ret = thisObject->asESDateObject()->getMinutes();
         return ESValue(ret);
-    }, strings->getMinutes));
+    }, strings->getMinutes, 0));
 
     // $20.3.4.8 Date.prototype.getMonth()
     m_datePrototype->defineDataProperty(strings->getMonth, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
         int ret = thisObject->asESDateObject()->getMonth();
         return ESValue(ret);
-    }, strings->getMonth));
+    }, strings->getMonth, 0));
 
     // $20.3.4.9 Date.prototype.getSeconds()
     m_datePrototype->defineDataProperty(strings->getSeconds, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
         int ret = thisObject->asESDateObject()->getSeconds();
         return ESValue(ret);
-    }, strings->getSeconds));
+    }, strings->getSeconds, 0));
 
     // $20.3.4.10 Date.prototype.getTime()
     m_datePrototype->defineDataProperty(strings->getTime, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
         double ret = thisObject->asESDateObject()->getTimeAsMilisec();
         return ESValue(ret);
-    }, strings->getTime));
+    }, strings->getTime, 0));
 
     // $20.3.4.11 Date.prototype.getTimezoneOffset()
     m_datePrototype->defineDataProperty(strings->getTimezoneOffset, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
         int ret = thisObject->asESDateObject()->getTimezoneOffset();
         return ESValue(ret);
-    }, strings->getTimezoneOffset));
+    }, strings->getTimezoneOffset, 0));
 
     // $20.3.4.27 Date.prototype.setTime()
     m_datePrototype->defineDataProperty(strings->setTime, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -2141,14 +2141,14 @@ void GlobalObject::installDate()
             return ESValue(value);
         }
         return ESValue();
-    }, strings->setTime));
+    }, strings->setTime, 1));
 
     // $44 Date.prototype.valueOf()
     m_datePrototype->defineDataProperty(strings->valueOf, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
         double ret = thisObject->asESDateObject()->getTimeAsMilisec();
         return ESValue(ret);
-    }, strings->getTime));
+    }, strings->valueOf, 0));
 }
 
 void GlobalObject::installJSON()
@@ -2214,7 +2214,7 @@ void GlobalObject::installJSON()
             }
         };
         return fn(jsonDocument);
-    }, strings->parse));
+    }, strings->parse, 2));
 
     // $24.3.2 JSON.stringify(value[, replacer[, space ]])
     m_json->defineDataProperty(strings->stringify, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -2296,7 +2296,7 @@ void GlobalObject::installJSON()
             root.Accept(writer);
             return ESString::create(buf.GetString());
         }
-    }, strings->stringify));
+    }, strings->stringify, 3));
 }
 
 void GlobalObject::installMath()
@@ -2334,7 +2334,7 @@ void GlobalObject::installMath()
             return ESValue(value);
         }
         return ESValue();
-    }, strings->abs));
+    }, strings->abs, 1));
 
     // initialize math object: $20.2.2.16 Math.ceil()
     m_math->defineDataProperty(strings->ceil, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -2349,7 +2349,7 @@ void GlobalObject::installMath()
         }
 
         return ESValue();
-    }, strings->ceil));
+    }, strings->ceil, 1));
 
     // initialize math object: $20.2.2.12 Math.cos()
     m_math->defineDataProperty(strings->cos, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -2363,7 +2363,7 @@ void GlobalObject::installMath()
             return ESValue(value);
         }
         return ESValue();
-    }, strings->cos));
+    }, strings->cos, 1));
 
     // initialize math object: $20.2.2.16 Math.floor()
     m_math->defineDataProperty(strings->floor, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -2378,7 +2378,7 @@ void GlobalObject::installMath()
         }
 
         return ESValue();
-    }, strings->floor));
+    }, strings->floor, 1));
 
     // initialize math object: $20.2.2.20 Math.log()
     m_math->defineDataProperty(strings->log, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -2392,7 +2392,7 @@ void GlobalObject::installMath()
             return ESValue(value);
         }
         return ESValue();
-    }, strings->log));
+    }, strings->log, 1));
 
     // initialize math object: $20.2.2.24 Math.max()
     m_math->defineDataProperty(strings->max, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -2449,13 +2449,13 @@ void GlobalObject::installMath()
         }
 
         return ESValue();
-    }, strings->pow));
+    }, strings->pow, 2));
 
     // initialize math object: $20.2.2.27 Math.random()
     m_math->defineDataProperty(strings->random, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         double rand = (double) std::rand() / RAND_MAX;
         return ESValue(rand);
-    }, strings->random));
+    }, strings->random, 0));
 
     // initialize math object: $20.2.2.28 Math.round()
     m_math->defineDataProperty(strings->round, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -2470,7 +2470,7 @@ void GlobalObject::installMath()
         }
 
         return ESValue();
-    }, strings->round));
+    }, strings->round, 1));
 
     // initialize math object: $20.2.2.30 Math.sin()
     m_math->defineDataProperty(strings->sin, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -2484,7 +2484,7 @@ void GlobalObject::installMath()
             return ESValue(value);
         }
         return ESValue();
-    }, strings->sin));
+    }, strings->sin, 1));
 
     // initialize math object: $20.2.2.32 Math.sqrt()
     m_math->defineDataProperty(strings->sqrt, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -2498,7 +2498,7 @@ void GlobalObject::installMath()
             return ESValue(value);
         }
         return ESValue();
-    }, strings->sqrt));
+    }, strings->sqrt, 1));
 
     // initialize math object: $20.2.2.33 Math.tan()
     m_math->defineDataProperty(strings->tan, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -2520,7 +2520,7 @@ void GlobalObject::installMath()
         } else if (std::isinf(x))
             return ESValue(std::numeric_limits<double>::quiet_NaN());
         return ESValue(tan(x));
-    }, strings->tan));
+    }, strings->tan, 1));
 
     // add math to global object
     defineDataProperty(strings->Math, true, false, true, m_math);
@@ -2633,7 +2633,7 @@ void GlobalObject::installNumber()
             return ESValue(ESString::create(buf));
         }
         return ESValue();
-    }, strings->toFixed));
+    }, strings->toFixed, 1));
 
     m_numberPrototype->defineDataProperty(strings->toPrecision, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         double number = instance->currentExecutionContext()->resolveThisBinding().toNumber();
@@ -2670,7 +2670,7 @@ void GlobalObject::installNumber()
         }
 
         return ESValue();
-    }, strings->toPrecision));
+    }, strings->toPrecision, 1));
 
     // initialize numberPrototype object: $20.1.3.6 Number.prototype.toString()
     m_numberPrototype->defineDataProperty(strings->toString, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -2690,7 +2690,7 @@ void GlobalObject::installNumber()
             return (ESString::create(buffer));
         }
         return ESValue();
-    }, strings->toString));
+    }, strings->toString, 1));
 
     // $20.1.3.26 Number.prototype.valueOf ( )
     m_numberPrototype->defineDataProperty(strings->valueOf, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -2709,7 +2709,7 @@ void GlobalObject::installNumber()
             return ESValue(thisValue.asESPointer()->asESNumberObject()->numberData());
         }
         throw ESValue(TypeError::create(ESString::create("Number.prototype.valueOf: this is not number")));
-    }, strings->valueOf));
+    }, strings->valueOf, 0));
 
     // add number to global object
     defineDataProperty(strings->Number, true, false, true, m_number);
@@ -2760,7 +2760,7 @@ void GlobalObject::installBoolean()
     m_booleanPrototype->defineDataProperty(strings->toString, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         escargot::ESBooleanObject* thisVal = instance->currentExecutionContext()->resolveThisBindingToObject()->asESBooleanObject();
         return (ESValue(thisVal->booleanData()).toString());
-    }, strings->toString));
+    }, strings->toString, 0));
 
     // initialize booleanPrototype object: $19.3.3.3 Boolean.prototype.valueOf()
     m_booleanPrototype->defineDataProperty(strings->valueOf, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -2771,7 +2771,7 @@ void GlobalObject::installBoolean()
             return ESValue(thisValue.asESPointer()->asESBooleanObject()->booleanData());
         }
         throw ESValue(TypeError::create(strings->emptyString));
-    }, strings->valueOf));
+    }, strings->valueOf, 0));
 
     // add number to global object
     defineDataProperty(strings->Boolean, true, false, true, m_boolean);
@@ -2868,7 +2868,7 @@ void GlobalObject::installRegExp()
             return (ESValue(testResult));
         }
         return ESValue(false);
-    }, strings->test));
+    }, strings->test, 1));
 
     // 21.2.5.2 RegExp.prototype.exec( string )
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-regexp.prototype.test
@@ -2921,7 +2921,7 @@ void GlobalObject::installRegExp()
         } else {
             return ESValue(ESValue::ESNull);
         }
-    }, strings->exec));
+    }, strings->exec, 1));
 
     // add regexp to global object
     defineDataProperty(strings->RegExp, true, false, true, m_regexp);
