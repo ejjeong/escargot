@@ -211,6 +211,7 @@ inline double ESValue::toNumberSlowCase() const
         if (data->length() == 0)
             return 0;
 
+#ifndef ANDROID
         data->wcharData([&val, &data](const wchar_t* buf, unsigned size) {
             wchar_t* end;
             val = wcstod(buf, &end);
@@ -230,6 +231,28 @@ inline double ESValue::toNumberSlowCase() const
                     val = std::numeric_limits<double>::quiet_NaN();
             }
         });
+
+#else
+        char* end;
+        NullableUTF8String s = data->toNullableUTF8String();
+        const char* buf = s.m_buffer;
+        val = strtod(buf, &end);
+        if (end != buf + s.m_bufferSize-1) {
+            const u16string& str = data->string();
+            bool isOnlyWhiteSpace = true;
+            for (unsigned i = 0; i < str.length(); i ++) {
+                // FIXME we shold not use isspace function. implement javascript isspace function.
+                if (!isspace(str[i])) {
+                    isOnlyWhiteSpace = false;
+                    break;
+                }
+            }
+            if (isOnlyWhiteSpace) {
+                val = 0;
+            } else
+                val = std::numeric_limits<double>::quiet_NaN();
+        }
+#endif
         return val;
     } else {
         return toPrimitive().toNumber();

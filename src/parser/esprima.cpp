@@ -1447,7 +1447,7 @@ bool isImplicitOctalLiteral(ParseContext* ctx)
 
 PassRefPtr<ParseStatus> scanNumericLiteral(ParseContext* ctx)
 {
-    std::wstring number;
+    std::string number;
     number.reserve(32);
     size_t start;
     char16_t ch;
@@ -1519,7 +1519,7 @@ PassRefPtr<ParseStatus> scanNumericLiteral(ParseContext* ctx)
         throwUnexpectedToken();
     }
 
-    double ll = wcstod(number.data(), NULL);
+    double ll = strtod(number.data(), NULL);
 
     ParseStatus* ps = new ParseStatus;
     ps->m_type = Token::NumericLiteralToken;

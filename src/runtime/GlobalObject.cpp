@@ -247,10 +247,14 @@ void GlobalObject::initGlobalObject()
                 }
 
                 // TODO stripPrefix
-                long int ll;
+                int64_t ll;
+#ifndef ANDROID
                 str->wcharData([&ll, &radix](wchar_t* data, size_t len) {
-                    ll = wcstol(data, NULL, radix);
+                    ll = wcstoll(data, NULL, radix);
                 });
+#else
+                ll = strtoll(str->utf8Data(), NULL, radix);
+#endif
                 return ESValue((double)ll);
             }
         }
@@ -1669,7 +1673,7 @@ void GlobalObject::installString()
         int from = (intStart < 0) ? std::max(len+intStart, 0) : std::min(intStart, len);
         int to = (intEnd < 0) ? std::max(len+intEnd, 0) : std::min(intEnd, len);
         int span = std::max(to-from, 0);
-        escargot::ESString* ret = ESString::create(str.substr(from, from+span-1));
+        escargot::ESString* ret = ESString::create(u16string(str.begin()+from, str.begin()+from+span));
         return ret;
     }, strings->slice, 2));
 

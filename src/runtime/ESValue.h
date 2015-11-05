@@ -631,6 +631,10 @@ protected:
 #endif
 };
 
+struct NullableUTF8String {
+    const char* m_buffer;
+    size_t m_bufferSize;
+};
 
 class ESString : public ESPointer {
     friend class ESScriptParser;
@@ -721,14 +725,25 @@ public:
 
     static ESString* concatTwoStrings(ESString* lstr, ESString* rstr);
 
-    ALWAYS_INLINE const char* utf8Data() const
+    const char* utf8Data() const
     {
         return utf16ToUtf8(data());
+    }
+
+    NullableUTF8String toNullableUTF8String()
+    {
+        size_t len;
+        NullableUTF8String str;
+        str.m_buffer = utf16ToUtf8(data(), &str.m_bufferSize);
+        return str;
     }
 
     template <typename Func>
     void wcharData(const Func& fn)
     {
+#ifdef ANDROID
+        RELEASE_ASSERT_NOT_REACHED();
+#endif
         wchar_t* buf = (wchar_t *)alloca(sizeof(wchar_t) * (length()+1));
         for (unsigned i = 0 ; i < (unsigned)length() ; i ++) {
             buf[i] = data()[i];

@@ -36,7 +36,7 @@ ALWAYS_INLINE size_t utf16ToUtf8(char16_t uc, char* UTF8)
     return tRequiredSize;
 }
 
-ALWAYS_INLINE const char * utf16ToUtf8(const char16_t *t)
+inline const char * utf16ToUtf8(const char16_t *t, size_t* bufferSize = NULL)
 {
     unsigned strLength = 0;
     const char16_t* pt = t;
@@ -48,6 +48,8 @@ ALWAYS_INLINE const char * utf16ToUtf8(const char16_t *t)
     }
 
     char* result = (char *)GC_malloc_atomic(strLength + 1);
+    if (bufferSize)
+        *bufferSize = strLength + 1;
     pt = t;
     unsigned currentPosition = 0;
 
