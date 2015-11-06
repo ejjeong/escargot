@@ -677,7 +677,12 @@ void GlobalObject::installObject()
 
     // Object.prototype.toString
     m_objectPrototype->defineDataProperty(strings->toString, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        ESObject* thisVal = instance->currentExecutionContext()->resolveThisBindingToObject();
+        ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
+        if (thisValue.isUndefined())
+            return ESString::create(u"[object Undefined]");
+        if (thisValue.isNull())
+            return ESString::create(u"[object Null]");
+        ESObject* thisVal = thisValue.toObject();
         if (thisVal->isESArrayObject()) {
             return ESString::create(u"[object Array]");
         } else if (thisVal->isESStringObject()) {
