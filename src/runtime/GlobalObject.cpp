@@ -1236,19 +1236,15 @@ void GlobalObject::installArray()
         } else {
             ASSERT(thisBinded->isESObject());
             ESObject* O = thisBinded->asESObject();
-            int len = O->get(strings->length.string()).toInt32();
-            int argCount = instance->currentExecutionContext()->argumentCount();
-            if (len+argCount > std::pow(2, 53)-1) {
-                throw ESValue(TypeError::create(ESString::create("Array.prototype.push: length is too large")));
-            } else {
-                for (int i = 0; i < argCount; i++) {
-                    ESValue& val = instance->currentExecutionContext()->arguments()[i];
-                    O->set(ESString::create(len + i), val);
-                }
-                ESValue ret = ESValue(len + argCount);
-                O->set(strings->length, ret);
-                return ret;
+            uint64_t len = O->get(strings->length.string()).toUint32();
+            uint64_t argCount = instance->currentExecutionContext()->argumentCount();
+            for (int i = 0; i < argCount; i++) {
+                ESValue& val = instance->currentExecutionContext()->arguments()[i];
+                O->set(ESString::create(double(len + i)), val);
             }
+            ESValue ret = ESValue(double(len + argCount));
+            O->set(strings->length, ret);
+            return ret;
         }
     }, strings->push, 1));
 
