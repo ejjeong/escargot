@@ -1744,9 +1744,17 @@ public:
         return m_stringData;
     }
 
-    ALWAYS_INLINE void setStringData(::escargot::ESString* str)
+    ALWAYS_INLINE void setStringData(::escargot::ESString* str, bool defineIndexedCharacterProperties)
     {
         m_stringData = str;
+        if (defineIndexedCharacterProperties) {
+            for (size_t i = 0; i < str->length(); i++) {
+                if (str->data()[i] < ESCARGOT_ASCII_TABLE_MAX)
+                    defineDataProperty(ESValue(i), false, true, false, strings->asciiTable[str->data()[i]].string());
+                else
+                    defineDataProperty(ESValue(i), false, true, false, ESString::create(str->data()[i]));
+            }
+        }
     }
 
 #ifdef ENABLE_ESJIT

@@ -199,7 +199,7 @@ NEVER_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue* 
                 if (*val == *strings->length) {
                     return ESValue(willBeObject->asESString()->length());
                 }
-                globalObject->stringObjectProxy()->setStringData(willBeObject->asESString());
+                globalObject->stringObjectProxy()->setStringData(willBeObject->asESString(), false);
                 ESValue ret = globalObject->stringObjectProxy()->get(val);
                 return ret;
             }

@@ -1122,7 +1122,7 @@ void ESDateObject::setTime(double t)
 ESStringObject::ESStringObject(escargot::ESString* str)
     : ESObject((Type)(Type::ESObject | Type::ESStringObject), ESVMInstance::currentInstance()->globalObject()->stringPrototype())
 {
-    m_stringData = str;
+    setStringData(str, true);
 
     // $21.1.4.1 String.length
     defineAccessorProperty(strings->length.string(), ESVMInstance::currentInstance()->stringObjectLengthAccessorData(), false, false, false);
