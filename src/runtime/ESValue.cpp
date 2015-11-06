@@ -15,6 +15,8 @@
 
 namespace escargot {
 
+ESHiddenClassPropertyInfo dummyPropertyInfo(nullptr, true, false, false, false);
+
 ESValue ESValue::toPrimitiveSlowCase(PrimitiveTypeHint preferredType) const
 {
     ASSERT(!isPrimitive());

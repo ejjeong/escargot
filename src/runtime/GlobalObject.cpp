@@ -720,7 +720,22 @@ void GlobalObject::installObject()
 
     // $19.1.2.5 Object.freeze ( O )
     m_object->defineDataProperty(ESString::create(u"freeze"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        ESValue O = instance->currentExecutionContext()->readArgument(0);
+        if (!O.isObject())
+            throw ESValue(TypeError::create(ESString::create("first parameter is should be object")));
+        ESObject* obj = O.toObject();
+        if (obj->isESArrayObject())
+            obj->asESArrayObject()->convertToSlowMode();
+        obj->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
+            ASSERT(propertyInfo != &dummyPropertyInfo);
+            if (propertyInfo->m_flags.m_isDataProperty)
+                if (propertyInfo->m_flags.m_isWritable)
+                    propertyInfo->m_flags.m_isWritable = false;
+            if (propertyInfo->m_flags.m_isConfigurable)
+                propertyInfo->m_flags.m_isConfigurable = false;
+        });
+        obj->setExtensible(false);
+        return O;
     }, ESString::create(u"freeze"), 1));
 
     // $19.1.2.6 Object.getOwnPropertyDescriptor
@@ -750,7 +765,7 @@ void GlobalObject::installObject()
             throw ESValue(TypeError::create(ESString::create(u"getOwnPropertyNames: first argument is not object")));
         ESObject* obj = O.toObject();
         escargot::ESArrayObject* nameList = ESArrayObject::create();
-        obj->enumerationWithNonEnumerable([&nameList](ESValue key) {
+        obj->enumerationWithNonEnumerable([&nameList](ESValue key, ESHiddenClassPropertyInfo*) {
             if (key.isESString())
                 nameList->push(key);
         });
@@ -775,12 +790,41 @@ void GlobalObject::installObject()
 
     // $19.1.2.12 Object.isFrozen ( O )
     m_object->defineDataProperty(ESString::create(u"isFrozen"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        ESValue O = instance->currentExecutionContext()->readArgument(0);
+        if (!O.isObject())
+            throw ESValue(TypeError::create(ESString::create(u"getOwnPropertyNames: first argument is not object")));
+        ESObject* obj = O.toObject();
+        bool hasWritableConfigurableProperty = false;
+        obj->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
+            if (propertyInfo->m_flags.m_isDataProperty)
+                if (propertyInfo->m_flags.m_isWritable)
+                    hasWritableConfigurableProperty = true;
+            if (propertyInfo->m_flags.m_isConfigurable)
+                hasWritableConfigurableProperty = true;
+        });
+        if (hasWritableConfigurableProperty)
+            return ESValue(false);
+        if (!obj->isExtensible())
+            return ESValue(true);
+        return ESValue(false);
     }, ESString::create(u"isFrozen"), 1));
 
     // $19.1.2.13 Object.isSealed ( O )
     m_object->defineDataProperty(ESString::create(u"isSealed"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        ESValue O = instance->currentExecutionContext()->readArgument(0);
+        if (!O.isObject())
+            throw ESValue(TypeError::create(ESString::create(u"getOwnPropertyNames: first argument is not object")));
+        ESObject* obj = O.toObject();
+        bool hasConfigurableProperty = false;
+        obj->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
+            if (propertyInfo->m_flags.m_isConfigurable)
+                hasConfigurableProperty = true;
+        });
+        if (hasConfigurableProperty)
+            return ESValue(false);
+        if (!obj->isExtensible())
+            return ESValue(true);
+        return ESValue(false);
     }, ESString::create(u"isSealed"), 1));
 
     // $19.1.2.14 Object.keys ( O )
@@ -796,12 +840,29 @@ void GlobalObject::installObject()
 
     // $19.1.2.15 Object.preventExtensions ( O )
     m_object->defineDataProperty(ESString::create(u"preventExtensions"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        ESValue O = instance->currentExecutionContext()->readArgument(0);
+        if (!O.isObject())
+            throw ESValue(TypeError::create(ESString::create(u"getOwnPropertyNames: first argument is not object")));
+        ESObject* obj = O.toObject();
+        obj->setExtensible(false);
+        return O;
     }, ESString::create(u"preventExtensions"), 1));
 
     // $19.1.2.17 Object.seal ( O )
     m_object->defineDataProperty(ESString::create(u"seal"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        ESValue O = instance->currentExecutionContext()->readArgument(0);
+        if (!O.isObject())
+            throw ESValue(TypeError::create(ESString::create(u"getOwnPropertyNames: first argument is not object")));
+        ESObject* obj = O.toObject();
+        if (obj->isESArrayObject())
+            obj->asESArrayObject()->convertToSlowMode();
+        obj->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
+            ASSERT(propertyInfo != &dummyPropertyInfo);
+            if (propertyInfo->m_flags.m_isConfigurable)
+                propertyInfo->m_flags.m_isConfigurable = false;
+        });
+        obj->setExtensible(false);
+        return O;
     }, ESString::create(u"seal"), 1));
 
     // $19.1.3.7 Object.prototype.valueOf ( )

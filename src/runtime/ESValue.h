@@ -1306,6 +1306,11 @@ public:
         return m_flags.m_isExtensible;
     }
 
+    void setExtensible(bool extensible)
+    {
+        m_flags.m_isExtensible = extensible;
+    }
+
     ESHiddenClass* hiddenClass()
     {
         return m_hiddenClass;
