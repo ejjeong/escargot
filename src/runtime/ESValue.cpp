@@ -426,7 +426,7 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
         do {
             start = outputBuf[1];
             memset(outputBuf, -1, sizeof(unsigned) * 2 * (subPatternNum + 1));
-            if (start >= length)
+            if (start > length)
                 break;
             result = JSC::Yarr::interpret(NULL, byteCode, chars, length, start, outputBuf);
             if (result != JSC::Yarr::offsetNoMatch) {
