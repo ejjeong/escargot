@@ -1749,7 +1749,7 @@ void GlobalObject::installString()
             for (unsigned i = 0; i < result.m_matchResults.size() ; i ++) {
                 for (unsigned j = 0; j < result.m_matchResults[i].size() ; j ++) {
                     if (std::numeric_limits<unsigned>::max() == result.m_matchResults[i][j].m_start)
-                        ret->set(idx++, ESValue(strings->emptyString.string()));
+                        ret->set(idx++, ESValue(ESValue::ESUndefined));
                     else
                         ret->set(idx++, ESString::create(std::move(u16string(str + result.m_matchResults[i][j].m_start, str + result.m_matchResults[i][j].m_end))));
                 }
@@ -3253,7 +3253,7 @@ void GlobalObject::installRegExp()
             for (unsigned i = 0; i < result.m_matchResults.size() ; i ++) {
                 for (unsigned j = 0; j < result.m_matchResults[i].size() ; j ++) {
                     if (result.m_matchResults[i][j].m_start == std::numeric_limits<unsigned>::max())
-                        arr->set(idx++, ESValue(strings->emptyString));
+                        arr->set(idx++, ESValue(ESValue::ESUndefined));
                     else
                         arr->set(idx++, ESString::create(std::move(u16string(str + result.m_matchResults[i][j].m_start, str + result.m_matchResults[i][j].m_end))));
                 }
