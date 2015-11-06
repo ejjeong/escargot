@@ -56,6 +56,23 @@ char hex2char(char first, char second)
     return dec;
 }
 
+int parseDigit(char16_t c, int radix)
+{
+    int digit = -1;
+
+    if (c >= '0' && c <= '9')
+        digit = c - '0';
+    else if (c >= 'A' && c <= 'Z')
+        digit = c - 'A' + 10;
+    else if (c >= 'a' && c <= 'z')
+        digit = c - 'a' + 10;
+
+    if (digit >= radix)
+        return -1;
+
+    return digit;
+}
+
 void GlobalObject::initGlobalObject()
 {
     forceNonVectorHiddenClass();
@@ -221,45 +238,81 @@ void GlobalObject::initGlobalObject()
     defineDataProperty(ESString::create(u"parseInt"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue ret;
         int len = instance->currentExecutionContext()->argumentCount();
-        if (len < 1) {
-            ret = ESValue(std::numeric_limits<double>::quiet_NaN());
-        } else {
-            int radix = 10;
-            if (len >= 2)
-                radix = instance->currentExecutionContext()->arguments()[1].toInt32();
-            if (radix == 0)
-                radix = 10;
-            if (radix < 2 || radix > 36) {
-                ret = ESValue(std::numeric_limits<double>::quiet_NaN());
-                return ret;
-            } else {
-                ESValue input = instance->currentExecutionContext()->arguments()[0];
-                escargot::ESString* str = input.toString();
-                // TODO remove leading space
-                // TODO Let sign be 1.
-                // TODO If S is not empty and the first code unit of S is 0x002D (HYPHEN-MINUS), let sign be −1.
-                // TODO If S is not empty and the first code unit of S is 0x002B (PLUS SIGN) or 0x002D (HYPHEN-MINUS), remove the first code unit from S.
-                bool stripPrefix = true;
-                if (radix == 10) {
-                } else if (radix == 16) {
-                    stripPrefix = true;
-                } else {
-                    stripPrefix = false;
-                }
 
-                // TODO stripPrefix
-                int64_t ll;
-#ifndef ANDROID
-                str->wcharData([&ll, &radix](wchar_t* data, size_t len) {
-                    ll = wcstoll(data, NULL, radix);
-                });
-#else
-                ll = strtoll(str->utf8Data(), NULL, radix);
-#endif
-                return ESValue((double)ll);
+        // 1. Let inputString be ToString(string).
+        ESValue input = instance->currentExecutionContext()->arguments()[0];
+        escargot::ESString* s = input.toString();
+        u16string str(s->string());
+        int strLen = str.length();
+        int p = 0;
+
+        // 2. Let S be a newly created substring of inputString consisting of the first character that is not a StrWhiteSpaceChar
+        //    and all characters following that character. (In other words, remove leading white space.)
+        while (p < strLen && (esprima::isWhiteSpace(str.data()[p]) || esprima::isLineTerminator(str.data()[p])))
+            p++;
+
+        // 3. Let sign be 1.
+        // 4. If S is not empty and the first character of S is a minus sign -, let sign be −1.
+        // 5. If S is not empty and the first character of S is a plus sign + or a minus sign -, then remove the first character from S.
+        double sign = 1;
+        if (p < strLen) {
+            if (str.data()[p] == '+')
+                p++;
+            else if (str.data()[p] == '-') {
+                sign = -1;
+                p++;
             }
         }
-        return ret;
+
+        // 6. Let R = ToInt32(radix).
+        // 7. Let stripPrefix be true.
+        // 8. If R ≠ 0, then
+        //    b. If R 16, let stripPrefix be false.
+        // 9. Else, R = 0
+        //    a. Let R = 10.
+        // 10. If stripPrefix is true, then
+        //     a. If the length of S is at least 2 and the first two characters of S are either “0x” or “0X”, then remove the first two characters from S and let R = 16.
+        // 11. If S contains any character that is not a radix-R digit, then let Z be the substring of S consisting of all characters
+        //     before the first such character; otherwise, let Z be S.
+        int radix = 0;
+        if (len >= 2) {
+            radix = instance->currentExecutionContext()->arguments()[1].toInt32();
+        }
+        if ((radix == 0 || radix == 16) && strLen - p >= 2 && str.data()[p] == '0' && (str.data()[p + 1] == 'x' || str.data()[p + 1] == 'X')) {
+            radix = 16;
+            p += 2;
+        }
+        if (radix == 0)
+            radix = 10;
+
+        // 8.a If R < 2 or R > 36, then return NaN.
+        if (radix < 2 || radix > 36)
+            return ESValue(std::numeric_limits<double>::quiet_NaN());
+
+        // 13. Let mathInt be the mathematical integer value that is represented by Z in radix-R notation,
+        //     using the letters AZ and az for digits with values 10 through 35. (However, if R is 10 and Z contains more than 20 significant digits,
+        //     every significant digit after the 20th may be replaced by a 0 digit, at the option of the implementation;
+        //     and if R is not 2, 4, 8, 10, 16, or 32, then mathInt may be an implementation-dependent approximation to the mathematical integer value
+        //     that is represented by Z in radix-R notation.)
+        // 14. Let number be the Number value for mathInt.
+        bool sawDigit = false;
+        double number = 0;
+        while (p < strLen) {
+            int digit = parseDigit(str.data()[p], radix);
+            if (digit == -1)
+                break;
+            sawDigit =true;
+            number *= radix;
+            number += digit;
+            p++;
+        }
+
+        // 12. If Z is empty, return NaN.
+        if (!sawDigit)
+            return ESValue(std::numeric_limits<double>::quiet_NaN());
+
+        // 15. Return sign × number.
+        return ESValue(sign * number);
     }, ESString::create(u"parseInt"), 2));
 
     // $18.2.6.2 decodeURI
