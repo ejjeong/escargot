@@ -61,10 +61,35 @@ class ESString;
     F(getSeconds) \
     F(getTime) \
     F(getTimezoneOffset) \
+    F(getUTCDate) \
     F(getUTCDay) \
     F(getUTCFullYear) \
     F(getUTCHours) \
+    F(getUTCMilliseconds) \
+    F(getUTCMinutes) \
+    F(getUTCMonth) \
+    F(getUTCSeconds) \
+    F(setDate) \
+    F(setFullYear) \
+    F(setHours) \
+    F(setMilliseconds) \
+    F(setMinutes) \
+    F(setMonth) \
+    F(setSeconds) \
     F(setTime) \
+    F(setUTCDate) \
+    F(setUTCFullYear) \
+    F(setUTCHours) \
+    F(setUTCMilliseconds) \
+    F(setUTCMinutes) \
+    F(setUTCMonth) \
+    F(setUTCSeconds) \
+    F(toDateString) \
+    F(toISOString) \
+    F(toLocaleDateString) \
+    F(toLocaleTimeString) \
+    F(toTimeString) \
+    F(toUTCString) \
     F(Math) \
     F(PI) \
     F(E) \
