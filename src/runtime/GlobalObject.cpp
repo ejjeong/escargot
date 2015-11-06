@@ -589,7 +589,7 @@ void GlobalObject::installFunction()
     defineDataProperty(strings->Function, true, false, true, m_function);
 }
 
-inline void definePropertyWithDescriptorObject(ESObject* obj, ESValue& key, ESObject* desc)
+inline bool definePropertyWithDescriptorObject(ESObject* obj, ESValue& key, ESObject* desc)
 {
     bool isEnumerable = false;
     bool isConfigurable = false;
@@ -631,9 +631,9 @@ inline void definePropertyWithDescriptorObject(ESObject* obj, ESValue& key, ESOb
             else if (!set.isUndefined())
                 throw ESValue(TypeError::create(ESString::create("setter must be function")));
         }
-        obj->defineAccessorProperty(key, new ESPropertyAccessorData(getter, setter), isWritable, isEnumerable, isConfigurable);
+        return obj->defineAccessorProperty(key, new ESPropertyAccessorData(getter, setter), isWritable, isEnumerable, isConfigurable);
     } else {
-        obj->defineDataProperty(key, isWritable, isEnumerable, isConfigurable, v);
+        return obj->defineDataProperty(key, isWritable, isEnumerable, isConfigurable, v);
     }
 }
 
@@ -743,7 +743,9 @@ void GlobalObject::installObject()
                 if (!instance->currentExecutionContext()->arguments()[2].isObject())
                     throw ESValue(TypeError::create(ESString::create("Object.defineProperty: 3rd argument is not object")));
                 ESObject* desc = instance->currentExecutionContext()->arguments()[2].toObject();
-                definePropertyWithDescriptorObject(obj, key, desc);
+                bool res = definePropertyWithDescriptorObject(obj, key, desc);
+                if (!res)
+                    throw ESValue(TypeError::create(ESString::create("Object.defineProperty: Cannot define property")));
             } else {
                 throw ESValue(TypeError::create(ESString::create("Object.defineProperty: 1st argument is not object")));
             }
@@ -837,7 +839,7 @@ void GlobalObject::installObject()
     m_object->defineDataProperty(ESString::create(u"isExtensible"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue O = instance->currentExecutionContext()->readArgument(0);
         if (!O.isObject())
-            return ESValue(false);
+            throw ESValue(TypeError::create(ESString::create(u"isExtensible: first argument is not object")));
         return ESValue(O.asESPointer()->asESObject()->isExtensible());
     }, ESString::create(u"isExtensible"), 1));
 

@@ -1083,7 +1083,7 @@ inline void ESObject::set__proto__(const ESValue& obj)
     }
 }
 
-inline void ESObject::defineDataProperty(const escargot::ESValue& key, bool isWritable, bool isEnumerable, bool isConfigurable, const ESValue& initialValue)
+inline bool ESObject::defineDataProperty(const escargot::ESValue& key, bool isWritable, bool isEnumerable, bool isConfigurable, const ESValue& initialValue)
 {
     if (isESArrayObject() && asESArrayObject()->isFastmode()) {
         uint32_t i = key.toIndex();
@@ -1094,10 +1094,12 @@ inline void ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
                     asESArrayObject()->convertToSlowMode();
                 } else {
                     if (i >= len) {
+                        if (UNLIKELY(!isExtensible()))
+                            return false;
                         asESArrayObject()->setLength(i+1);
                     }
                     asESArrayObject()->m_vector[i] = initialValue;
-                    return;
+                    return true;
                 }
             } else {
                 asESArrayObject()->convertToSlowMode();
@@ -1120,6 +1122,8 @@ inline void ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
     }
     size_t oldIdx = m_hiddenClass->findProperty(keyString);
     if (oldIdx == SIZE_MAX) {
+        if (UNLIKELY(!isExtensible()))
+            return false;
         m_hiddenClass = m_hiddenClass->defineProperty(keyString, true, isWritable, isEnumerable, isConfigurable);
         m_hiddenClassData.push_back(initialValue);
         if (isESArrayObject()) {
@@ -1129,6 +1133,7 @@ inline void ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
                     asESArrayObject()->setLength(i+1);
             }
         }
+        return true;
     } else {
         if (!m_hiddenClass->m_propertyInfo[oldIdx].m_flags.m_isConfigurable) {
             throw ESValue(TypeError::create(ESString::create("cannot redefine property")));
@@ -1137,10 +1142,11 @@ inline void ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
         m_hiddenClassData.erase(m_hiddenClassData.begin() + oldIdx);
         m_hiddenClass = m_hiddenClass->defineProperty(keyString, true, isWritable, isEnumerable, isConfigurable);
         m_hiddenClassData.push_back(initialValue);
+        return true;
     }
 }
 
-inline void ESObject::defineAccessorProperty(const escargot::ESValue& key, ESPropertyAccessorData* data, bool isWritable, bool isEnumerable, bool isConfigurable)
+inline bool ESObject::defineAccessorProperty(const escargot::ESValue& key, ESPropertyAccessorData* data, bool isWritable, bool isEnumerable, bool isConfigurable)
 {
     if (isESArrayObject() && asESArrayObject()->isFastmode()) {
         uint32_t i = key.toIndex();
@@ -1164,8 +1170,11 @@ inline void ESObject::defineAccessorProperty(const escargot::ESValue& key, ESPro
     }
     size_t oldIdx = m_hiddenClass->findProperty(keyString);
     if (oldIdx == SIZE_MAX) {
+        if (UNLIKELY(!isExtensible()))
+            return false;
         m_hiddenClass = m_hiddenClass->defineProperty(keyString, false, isWritable, isEnumerable, isConfigurable);
         m_hiddenClassData.push_back((ESPointer *)data);
+        return true;
     } else {
         if (!m_hiddenClass->m_propertyInfo[oldIdx].m_flags.m_isConfigurable) {
             throw ESValue(TypeError::create(ESString::create("cannot redefine property")));
@@ -1174,6 +1183,7 @@ inline void ESObject::defineAccessorProperty(const escargot::ESValue& key, ESPro
         m_hiddenClassData.erase(m_hiddenClassData.begin() + oldIdx);
         m_hiddenClass = m_hiddenClass->defineProperty(keyString, false, isWritable, isEnumerable, isConfigurable);
         m_hiddenClassData.push_back((ESPointer *)data);
+        return true;
     }
 }
 
@@ -1402,6 +1412,8 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
         uint32_t idx = key.toIndex();
         if (idx != ESValue::ESInvalidIndexValue) {
             if (idx >= asESArrayObject()->length()) {
+                if (UNLIKELY(!isExtensible()))
+                    return false;
                 if (asESArrayObject()->shouldConvertToSlowMode(idx)) {
                     asESArrayObject()->convertToSlowMode();
                     asESArrayObject()->setLength(idx + 1);
@@ -1447,6 +1459,8 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
     escargot::ESString* keyString = key.toString();
     size_t idx = m_hiddenClass->findProperty(keyString);
     if (idx == SIZE_MAX) {
+        if (UNLIKELY(!isExtensible()))
+            return false;
         ESValue target = __proto__();
         while (true) {
             if (!target.isObject()) {

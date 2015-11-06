@@ -262,6 +262,8 @@ ALWAYS_INLINE void setObjectOperation(ESValue* willBeObject, ESValue* property, 
                     arr->data()[idx] = value;
                     return;
                 } else {
+                    if (UNLIKELY(!arr->isExtensible()))
+                        return;
                     setObjectOperationExpandLengthCase(arr, idx, value);
                     return;
                 }
@@ -352,10 +354,10 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
 
                 ASSERT(!willBeObject->asESPointer()->asESObject()->hasOwnProperty(keyString));
                 ESHiddenClass* before = willBeObject->asESPointer()->asESObject()->hiddenClass();
-                willBeObject->asESPointer()->asESObject()->defineDataProperty(keyString, true, true, true, value);
+                bool res = willBeObject->asESPointer()->asESObject()->defineDataProperty(keyString, true, true, true, value);
 
                 // only cache vector mode object.
-                if (willBeObject->asESPointer()->asESObject()->hiddenClass()->isVectorMode()) {
+                if (res && willBeObject->asESPointer()->asESObject()->hiddenClass()->isVectorMode()) {
                     *hiddenClassWillBe = willBeObject->asESPointer()->asESObject()->hiddenClass();
                 } else {
                     cachedHiddenClassChain->clear();
