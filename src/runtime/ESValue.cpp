@@ -1257,7 +1257,7 @@ ESArgumentsObject::ESArgumentsObject(ESPointer::Type type)
 {
 }
 
-void ESPropertyAccessorData::fromPropertyDescriptor(ESObject* obj)
+void ESPropertyAccessorData::setGetterAndSetterTo(ESObject* obj)
 {
     if (m_jsGetter || m_jsSetter) {
         ASSERT(!m_nativeGetter && !m_nativeSetter);

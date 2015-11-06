@@ -31,6 +31,45 @@ public:
 #endif
 };
 
+class PropertyDescriptor {
+public:
+    static ESValue FromPropertyDescriptor(ESObject* obj, size_t idx)
+    {
+        const ESHiddenClassPropertyInfo& propertyInfo = obj->hiddenClass()->propertyInfo(idx);
+        ESObject* ret = ESObject::create();
+        if (propertyInfo.m_flags.m_isDataProperty) {
+            ret->set(ESString::create(u"value"), obj->hiddenClass()->read(obj, obj, idx));
+            ret->set(ESString::create(u"writable"), ESValue(propertyInfo.m_flags.m_isWritable));
+        } else {
+            obj->accessorData(idx)->setGetterAndSetterTo(ret);
+        }
+        ret->set(ESString::create(u"enumerable"), ESValue(propertyInfo.m_flags.m_isEnumerable));
+        ret->set(ESString::create(u"configurable"), ESValue(propertyInfo.m_flags.m_isConfigurable));
+        return ret;
+    }
+
+    // For ArrayFastMode
+    static ESValue FromPropertyDescriptor(ESObject* obj, uint32_t index)
+    {
+        if (obj->isESArrayObject() && obj->asESArrayObject()->isFastmode()) {
+            if (index != ESValue::ESInvalidIndexValue) {
+                if (LIKELY((int)index < obj->asESArrayObject()->length())) {
+                    ESValue e = obj->asESArrayObject()->data()[index];
+                    if (LIKELY(!e.isEmpty())) {
+                        ESObject* ret = ESObject::create();
+                        ret->set(ESString::create(u"value"), obj->hiddenClass()->read(obj, obj, index));
+                        ret->set(ESString::create(u"writable"), ESValue(true));
+                        ret->set(ESString::create(u"enumerable"), ESValue(true));
+                        ret->set(ESString::create(u"configurable"), ESValue(true));
+                        return ret;
+                    }
+                }
+            }
+        }
+        return ESValue();
+    }
+};
+
 // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-lexical-environments
 class LexicalEnvironment : public gc {
 public:

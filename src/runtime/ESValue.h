@@ -1080,7 +1080,7 @@ public:
         m_jsGetter = getter;
     }
 
-    void fromPropertyDescriptor(ESObject* obj);
+    void setGetterAndSetterTo(ESObject* obj);
 
 protected:
     ESValue (*m_nativeGetter)(::escargot::ESObject* obj);

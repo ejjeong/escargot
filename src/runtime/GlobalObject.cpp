@@ -737,37 +737,10 @@ void GlobalObject::installObject()
         escargot::ESString* propertyKey = arg1.toString();
 
         size_t idx = obj->hiddenClass()->findProperty(propertyKey);
-        if (idx != SIZE_MAX) {
-            ESHiddenClassPropertyInfo& propertyInfo = obj->hiddenClass()->m_propertyInfo[idx];
-            ESObject* ret = ESObject::create();
-            if (propertyInfo.m_flags.m_isDataProperty) {
-                ret->set(ESString::create(u"value"), obj->hiddenClass()->read(obj, obj, idx));
-                ret->set(ESString::create(u"writable"), ESValue(propertyInfo.m_flags.m_isWritable));
-            } else {
-                obj->accessorData(idx)->fromPropertyDescriptor(ret);
-            }
-            ret->set(ESString::create(u"enumerable"), ESValue(propertyInfo.m_flags.m_isEnumerable));
-            ret->set(ESString::create(u"configurable"), ESValue(propertyInfo.m_flags.m_isConfigurable));
-            return ret;
-        } else {
-            if (obj->isESArrayObject() && obj->asESArrayObject()->isFastmode()) {
-                uint32_t idx = arg1.toIndex();
-                if (idx != ESValue::ESInvalidIndexValue) {
-                    if (LIKELY((int)idx < obj->asESArrayObject()->length())) {
-                        ESValue e = obj->asESArrayObject()->data()[idx];
-                        if (LIKELY(!e.isEmpty())) {
-                            ESObject* ret = ESObject::create();
-                            ret->set(ESString::create(u"value"), obj->hiddenClass()->read(obj, obj, idx));
-                            ret->set(ESString::create(u"writable"), ESValue(true));
-                            ret->set(ESString::create(u"enumerable"), ESValue(true));
-                            ret->set(ESString::create(u"configurable"), ESValue(true));
-                            return ret;
-                        }
-                    }
-                }
-            }
-            return ESValue();
-        }
+        if (idx != SIZE_MAX)
+            return escargot::PropertyDescriptor::FromPropertyDescriptor(obj, idx);
+        else
+            return escargot::PropertyDescriptor::FromPropertyDescriptor(obj, arg1.toIndex());
     }, ESString::create(u"getOwnPropertyDescriptor"), 2));
 
     // $19.1.2.7 Object.getOwnPropertyNames
