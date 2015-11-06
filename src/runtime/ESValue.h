@@ -1620,9 +1620,9 @@ public:
         return m_fastmode;
     }
 
-    const int32_t& length()
+    const uint32_t& length()
     {
-        return (const int32_t &)m_length;
+        return (const uint32_t &)m_length;
     }
 
     void sort()
@@ -1653,7 +1653,7 @@ public:
 #endif
 
 protected:
-    int32_t m_length;
+    uint32_t m_length;
     ESValueVector m_vector;
     bool m_fastmode;
     static const unsigned MAX_FASTMODE_SIZE = 65536;

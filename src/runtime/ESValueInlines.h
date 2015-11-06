@@ -296,8 +296,9 @@ inline double ESValue::toInteger() const
     double d = toNumber();
     if (isnan(d))
         return 0;
-    // TODO check +0, -0, +inf, -inf
-    return d < 0 ? -1 : 1 * std::floor(std::abs(d));
+    if (d == 0 || d == std::numeric_limits<double>::infinity() || d == -std::numeric_limits<double>::infinity())
+        return d;
+    return (d < 0 ? -1 : 1) * std::floor(std::abs(d));
 }
 
 // http://www.ecma-international.org/ecma-262/5.1/#sec-9.5
