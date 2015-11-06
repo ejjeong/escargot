@@ -3048,9 +3048,13 @@ void GlobalObject::installNumber()
             && (instance->currentExecutionContext()->resolveThisBinding().isESPointer() && !instance->currentExecutionContext()->resolveThisBinding().asESPointer()->isESNumberObject()))
             throw ESValue(TypeError::create(ESString::create("Type error, The toString function is not generic; it throws a TypeError exception if its this value is not a Number or a Number object")));
         double number = instance->currentExecutionContext()->resolveThisBinding().toNumber();
+        
+        if (isnan(number) || std::isinf(number)) {
+            return (ESValue(number).toString());
+        }
         int arglen = instance->currentExecutionContext()->argumentCount();
         double radix = 10;
-        if (arglen >= 1) {
+        if (arglen >= 1 && !instance->currentExecutionContext()->arguments()[0].isUndefined()) {
             radix = instance->currentExecutionContext()->arguments()[0].toInteger();
             if (radix < 2 || radix > 36)
                 throw ESValue(RangeError::create(ESString::create(u"String.prototype.toString() radix is not in valid range")));
@@ -3058,10 +3062,19 @@ void GlobalObject::installNumber()
         if (radix == 10)
             return (ESValue(number).toString());
         else {
+            bool minusFlag = (number < 0) ? 1 : 0;
+            number = (number < 0) ? (-1 * number) : number;
             char buffer[256];
-            int len = itoa((int)number, buffer, radix);
+            if (minusFlag) {
+                buffer[0] = '-';
+                int len = itoa((int)number, &buffer[1], radix);
+            } else {
+                int len = itoa((int)number, buffer, radix);
+            }
             return (ESString::create(buffer));
         }
+        // TODO: in case that 'this' is floating point number
+        // TODO: parameter 'null' should throw exception
         return ESValue();
     }, strings->toString, 1));
 
