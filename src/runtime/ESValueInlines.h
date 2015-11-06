@@ -1518,6 +1518,31 @@ ALWAYS_INLINE void ESObject::enumeration(Functor t)
     }
 }
 
+template <typename Functor>
+ALWAYS_INLINE void ESObject::enumerationWithNonEnumerable(Functor t)
+{
+    if (isESArrayObject() && asESArrayObject()->isFastmode()) {
+        for (int i = 0; i < asESArrayObject()->length(); i++) {
+            if (asESArrayObject()->m_vector[i].isEmpty())
+                continue;
+            t(ESValue(i).toString());
+        }
+    }
+
+    if (isESTypedArrayObject()) {
+        for (uint32_t i = 0; i < asESTypedArrayObjectWrapper()->length(); i++) {
+            t(ESValue(i).toString());
+        }
+    }
+
+    auto iter = m_hiddenClass->m_propertyInfo.begin();
+    while (iter != m_hiddenClass->m_propertyInfo.end()) {
+        if (iter->m_name != strings->__proto__)
+            t(ESValue(iter->m_name));
+        iter++;
+    }
+}
+
 template<>
 inline ESTypedArrayObject<Int8Adaptor>::ESTypedArrayObject(TypedArrayType arraytype, ESPointer::Type type)
     : ESTypedArrayObjectWrapper(arraytype,

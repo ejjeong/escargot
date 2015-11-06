@@ -1348,6 +1348,8 @@ public:
 
     template <typename Functor>
     ALWAYS_INLINE void enumeration(Functor t);
+    template <typename Functor>
+    ALWAYS_INLINE void enumerationWithNonEnumerable(Functor t);
 
     ALWAYS_INLINE const ESValue& __proto__()
     {

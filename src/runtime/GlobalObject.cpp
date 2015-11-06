@@ -272,6 +272,11 @@ void GlobalObject::initGlobalObject()
         RELEASE_ASSERT_NOT_REACHED();
     }, ESString::create(u"decodeURIComponent"), 1));
 
+    // $18.2.6.4 encodeURI(uri)
+    defineDataProperty(ESString::create(u"encodeURI"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::create(u"encodeURI"), 1));
+
     // $18.2.6.5 encodeURIComponent(uriComponent)
     defineDataProperty(ESString::create(u"encodeURIComponent"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         int argLen = instance->currentExecutionContext()->argumentCount();
@@ -753,10 +758,10 @@ void GlobalObject::installObject()
     m_object->defineDataProperty(ESString::create(u"getOwnPropertyNames"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue O = instance->currentExecutionContext()->readArgument(0);
         if (!O.isObject())
-            return O;
-        ESObject* obj = O.asESPointer()->asESObject();
+            throw ESValue(TypeError::create(ESString::create(u"getOwnPropertyNames: first argument is not object")));
+        ESObject* obj = O.toObject();
         escargot::ESArrayObject* nameList = ESArrayObject::create();
-        obj->enumeration([&nameList](ESValue key) {
+        obj->enumerationWithNonEnumerable([&nameList](ESValue key) {
             if (key.isESString())
                 nameList->push(key);
         });
@@ -3461,7 +3466,11 @@ void GlobalObject::installRegExp()
 
     // $21.2.5.14 RegExp.prototype.toString
     m_regexpPrototype->defineDataProperty(strings->toString, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        ESValue R = instance->currentExecutionContext()->resolveThisBinding();
+        if (!R.isObject())
+            throw ESValue(TypeError::create(ESString::create(u"RegExp.prototype.toString: \'this\' value is not object type")));
+        // FIXME implement RegExp.flags
+        return ESString::concatTwoStrings(ESString::create(u"/"), R.toObject()->get(strings->source.string()).toString());
     }, strings->toString, 0));
 
     // add regexp to global object

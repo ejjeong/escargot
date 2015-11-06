@@ -557,7 +557,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     ReturnFunctionWithValueOpcodeLbl:
     {
         ESValue* ret = pop<ESValue>(stack, bp);
-        ASSERT(bp == stack);
         return *ret;
     }
 
