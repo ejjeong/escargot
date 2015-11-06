@@ -750,6 +750,22 @@ void GlobalObject::installObject()
             ret->set(ESString::create(u"configurable"), ESValue(propertyInfo.m_flags.m_isConfigurable));
             return ret;
         } else {
+            if (obj->isESArrayObject() && obj->asESArrayObject()->isFastmode()) {
+                uint32_t idx = arg1.toIndex();
+                if (idx != ESValue::ESInvalidIndexValue) {
+                    if (LIKELY((int)idx < obj->asESArrayObject()->length())) {
+                        ESValue e = obj->asESArrayObject()->data()[idx];
+                        if (LIKELY(!e.isEmpty())) {
+                            ESObject* ret = ESObject::create();
+                            ret->set(ESString::create(u"value"), obj->hiddenClass()->read(obj, obj, idx));
+                            ret->set(ESString::create(u"writable"), ESValue(true));
+                            ret->set(ESString::create(u"enumerable"), ESValue(true));
+                            ret->set(ESString::create(u"configurable"), ESValue(true));
+                            return ret;
+                        }
+                    }
+                }
+            }
             return ESValue();
         }
     }, ESString::create(u"getOwnPropertyDescriptor"), 2));
