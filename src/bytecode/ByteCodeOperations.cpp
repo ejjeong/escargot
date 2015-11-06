@@ -370,11 +370,11 @@ NEVER_INLINE ESValue newOperation(ESVMInstance* instance, GlobalObject* globalOb
 
     ESValue res;
     if (callBoundFunctionCode) {
-        size_t argc = callBoundFunctionCode->m_boundArgumentsCount + instance->currentExecutionContext()->argumentCount();
-        ESValue* mergedArguments = (ESValue *)alloca(sizeof(ESValue) * argc);
-        memcpy(mergedArguments, callBoundFunctionCode->m_boundArguments, sizeof(ESValue) * callBoundFunctionCode->m_boundArgumentsCount);
-        memcpy(mergedArguments + callBoundFunctionCode->m_boundArgumentsCount, instance->currentExecutionContext()->arguments(), sizeof(ESValue) * instance->currentExecutionContext()->argumentCount());
-        res = ESFunctionObject::call(instance, callBoundFunctionCode->m_boundTargetFunction, callBoundFunctionCode->m_boundThis, mergedArguments, argc, false);
+        size_t targetFuncArgCount = argc + callBoundFunctionCode->m_boundArgumentsCount;
+        ESValue* targetFuncArgs = (ESValue *)alloca(sizeof(ESValue) * targetFuncArgCount);
+        memcpy(targetFuncArgs, callBoundFunctionCode->m_boundArguments, sizeof(ESValue) * callBoundFunctionCode->m_boundArgumentsCount);
+        memcpy(targetFuncArgs + callBoundFunctionCode->m_boundArgumentsCount, arguments, sizeof(ESValue) * argc);
+        res = ESFunctionObject::call(instance, callBoundFunctionCode->m_boundTargetFunction, receiver, targetFuncArgs, targetFuncArgCount, true);
     } else
         res = ESFunctionObject::call(instance, fn, receiver, arguments, argc, true);
     if (res.isObject())
