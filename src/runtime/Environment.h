@@ -49,7 +49,7 @@ public:
     }
 
     // For ArrayFastMode
-    static ESValue FromPropertyDescriptor(ESObject* obj, uint32_t index)
+    static ESValue FromPropertyDescriptorForArrayFastMode(ESObject* obj, uint32_t index)
     {
         if (obj->isESArrayObject() && obj->asESArrayObject()->isFastmode()) {
             if (index != ESValue::ESInvalidIndexValue) {

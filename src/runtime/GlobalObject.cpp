@@ -740,7 +740,7 @@ void GlobalObject::installObject()
         if (idx != SIZE_MAX)
             return escargot::PropertyDescriptor::FromPropertyDescriptor(obj, idx);
         else
-            return escargot::PropertyDescriptor::FromPropertyDescriptor(obj, arg1.toIndex());
+            return escargot::PropertyDescriptor::FromPropertyDescriptorForArrayFastMode(obj, arg1.toIndex());
     }, ESString::create(u"getOwnPropertyDescriptor"), 2));
 
     // $19.1.2.7 Object.getOwnPropertyNames

@@ -23,7 +23,7 @@ LOCAL_CFLAGS += -fdata-sections -ffunction-sections -frounding-math -fsignaling-
 ifeq ($(BUILD_MODE), debug)
     LOCAL_CFLAGS += -O0 -g3 -D_GLIBCXX_DEBUG -fno-omit-frame-pointer -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable -Wno-invalid-offsetof -Wno-sign-compare -Wno-unused-local-typedefs
 else ifeq ($(BUILD_MODE), release)
-    LOCAL_CFLAGS += -O2 -g3 -DNDEBUG -fno-omit-frame-pointer
+    LOCAL_CFLAGS += -O2 -g0 -DNDEBUG -fomit-frame-pointer
 else
     $(error mode error)
 endif
