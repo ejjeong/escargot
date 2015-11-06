@@ -437,8 +437,7 @@ void GlobalObject::installFunction()
             ret.append(u"() {}");
             return ESString::create(std::move(ret));
         }
-        u16string ret;
-        return ESString::create(std::move(ret));
+        throw ESValue(TypeError::create(ESString::create("Type error")));
     }, strings->toString, 0));
 
     // $19.2.3.1 Function.prototype.apply(thisArg, argArray)
@@ -517,6 +516,8 @@ void GlobalObject::installFunction()
     // 19.2.3.3 Function.prototype.call (thisArg , ...args)
     m_functionPrototype->defineDataProperty(ESString::create(u"call"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         auto thisVal = instance->currentExecutionContext()->resolveThisBindingToObject()->asESFunctionObject();
+        if (!instance->currentExecutionContext()->resolveThisBindingToObject()->isESFunctionObject())
+            throw ESValue(TypeError::create(ESString::create("Type error")));
         int arglen = instance->currentExecutionContext()->argumentCount()-1;
         ESValue& thisArg = instance->currentExecutionContext()->arguments()[0];
         ESValue* arguments = (ESValue*)alloca(sizeof(ESValue) * arglen);
@@ -1586,7 +1587,9 @@ void GlobalObject::installString()
                 return instance->currentExecutionContext()->resolveThisBindingToObject()->asESStringObject()->stringData();
             }
         }
-        return instance->currentExecutionContext()->resolveThisBinding().toString();
+        if (instance->currentExecutionContext()->resolveThisBinding().isESString())
+            return instance->currentExecutionContext()->resolveThisBinding().toString();
+        throw TypeError::create(ESString::create("Type error, The toString function is not generic; it throws a TypeError exception if its this value is not a String or a String object"));
     }, strings->toString, 0));
 
     m_string->set__proto__(m_functionPrototype); // empty Function
@@ -2234,7 +2237,7 @@ void GlobalObject::installString()
         } else if (thisValue.isESPointer() && thisValue.asESPointer()->isESStringObject()) {
             return thisValue.asESPointer()->asESStringObject()->stringData();
         }
-        throw ESValue(TypeError::create(ESString::create("String.prototyep.valueOf: this is not String")));
+        throw ESValue(TypeError::create(ESString::create("Type error, The valueOf function is not generic; it throws a TypeError exception if its this value is not a String or String object.")));
     }, strings->valueOf, 0));
 
 
@@ -3031,6 +3034,9 @@ void GlobalObject::installNumber()
 
     // initialize numberPrototype object: $20.1.3.6 Number.prototype.toString()
     m_numberPrototype->defineDataProperty(strings->toString, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        if (!instance->currentExecutionContext()->resolveThisBinding().isNumber()
+            && (instance->currentExecutionContext()->resolveThisBinding().isESPointer() && !instance->currentExecutionContext()->resolveThisBinding().asESPointer()->isESNumberObject()))
+            throw ESValue(TypeError::create(ESString::create("Type error, The toString function is not generic; it throws a TypeError exception if its this value is not a Number or a Number object")));
         double number = instance->currentExecutionContext()->resolveThisBinding().toNumber();
         int arglen = instance->currentExecutionContext()->argumentCount();
         double radix = 10;
@@ -3065,7 +3071,7 @@ void GlobalObject::installNumber()
         } else if (thisValue.isESPointer() && thisValue.asESPointer()->isESNumberObject()) {
             return ESValue(thisValue.asESPointer()->asESNumberObject()->numberData());
         }
-        throw ESValue(TypeError::create(ESString::create("Number.prototype.valueOf: this is not number")));
+        throw ESValue(TypeError::create(ESString::create("Type error, The valueOf function is not generic; it throws a TypeError exception if its this value is not a Number or a Number object.")));
     }, strings->valueOf, 0));
 
     // add number to global object
