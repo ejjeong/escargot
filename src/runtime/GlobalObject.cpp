@@ -3161,6 +3161,7 @@ void GlobalObject::installRegExp()
         if (!thisObject->isESRegExpObject())
             throw TypeError::create();
         ::escargot::ESRegExpObject* regexp = thisObject->asESRegExpObject();
+        ::escargot::ESArrayObject* arr = ::escargot::ESArrayObject::create();
         int argCount = instance->currentExecutionContext()->argumentCount();
         if (argCount > 0) {
             escargot::ESString* sourceStr = instance->currentExecutionContext()->arguments()[0].toString();
@@ -3180,14 +3181,14 @@ void GlobalObject::installRegExp()
 
             if (!testResult) {
                 regexp->m_lastIndex = 0;
-                return ESValue(ESValue::ESNull);
+                return arr;
             }
 
             if (isGlobal) {
                 // update lastIndex
                 regexp->m_lastIndex = result.m_matchResults[0][0].m_end;
             }
-            ::escargot::ESArrayObject* arr = ::escargot::ESArrayObject::create();
+
             ((ESObject *)arr)->set(ESValue(strings->input), ESValue(sourceStr));
             ((ESObject *)arr)->set(ESValue(strings->index), ESValue(result.m_matchResults[0][0].m_start));
             const char16_t* str = sourceStr->string().data();
