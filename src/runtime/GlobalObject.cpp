@@ -939,7 +939,7 @@ void GlobalObject::installObject()
             if (V.equalsTo(O))
                 return ESValue(true);
         }
-    }, strings->isPrototypeOf, 0));
+    }, strings->isPrototypeOf, 1));
 
     // $19.1.3.4 Object.prototype.propertyIsEnumerable ( V )
     m_objectPrototype->defineDataProperty(strings->propertyIsEnumerable, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
