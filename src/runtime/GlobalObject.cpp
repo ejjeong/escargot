@@ -605,9 +605,9 @@ inline void definePropertyWithDescriptorObject(ESObject* obj, ESValue& key, ESOb
         isConfigurable = v.toBoolean();
     }
 
-    v = desc->get(ESString::create(u"writable"));
-    if (!v.isUndefined()) {
-        isWritable = v.toBoolean();
+    ESValue writable = desc->get(ESString::create(u"writable"));
+    if (!writable.isUndefined()) {
+        isWritable = writable.toBoolean();
     }
 
     v = desc->get(ESString::create(u"value"));
@@ -615,7 +615,7 @@ inline void definePropertyWithDescriptorObject(ESObject* obj, ESValue& key, ESOb
     ESValue get = desc->get(ESString::create(u"get"));
     ESValue set = desc->get(ESString::create(u"set"));
     if (!get.isUndefined() || !set.isUndefined()) {
-        if (isWritable || desc->hasProperty(ESString::create(u"value")))
+        if (!writable.isUndefined() || desc->hasProperty(ESString::create(u"value")))
             throw ESValue(TypeError::create(ESString::create("Property cannot have [getter|setter] and [value|writable] together")));
         escargot::ESFunctionObject* getter = NULL;
         escargot::ESFunctionObject* setter = NULL;
