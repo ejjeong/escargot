@@ -1297,10 +1297,23 @@ ALWAYS_INLINE ESValue ESObject::get(escargot::ESValue key)
                 }
             }
         }
-        if (target->isESTypedArrayObject()) {
+        else if (target->isESTypedArrayObject()) {
             uint32_t idx = key.toIndex();
             if (idx != ESValue::ESInvalidIndexValue) {
                 return target->asESTypedArrayObjectWrapper()->get(idx);
+            }
+        }
+        else if (target->isESStringObject()) {
+            uint32_t idx = key.toIndex();
+            if (idx != ESValue::ESInvalidIndexValue) {
+                if (idx < target->asESStringObject()->stringData()->length()) {
+                    char16_t c = target->asESStringObject()->stringData()->string()[idx];
+                    if (LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
+                        return strings->asciiTable[c].string();
+                    } else {
+                        return ESString::create(c);
+                    }
+                }
             }
         }
 
