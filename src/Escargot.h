@@ -26,6 +26,10 @@
 #include <iostream>
 #endif
 
+#ifdef ANDROID
+#include <sys/resource.h>
+#endif
+
 #include <time.h>
 #include <unistd.h>
 #include <sys/types.h>

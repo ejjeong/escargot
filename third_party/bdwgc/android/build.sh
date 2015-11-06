@@ -18,5 +18,5 @@ make distclean
 export CC="arm-linux-androideabi-gcc"
 export PATH=$ANDROID_NDK_STAND_ALONE/bin:$PATH
 
-../configure --build=arm-linux-androideabi --target=arm-linux-androideabi --with-sysroot=$ANDROID_NDK_STAND_ALONE --host=x86_64-unknown-linux-gnu CFLAGS='-march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=softfp'
+../configure --disable-gc-debug --disable-parallel-mark --build=arm-linux-androideabi --target=arm-linux-androideabi --with-sysroot=$ANDROID_NDK_STAND_ALONE --host=x86_64-unknown-linux-gnu CFLAGS='-march=armv7-a'
 make

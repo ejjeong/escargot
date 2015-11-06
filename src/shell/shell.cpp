@@ -2,6 +2,16 @@
 #include "vm/ESVMInstance.h"
 #include "runtime/ESValue.h"
 
+#ifdef ANDROID
+void __attribute__((optimize("O0"))) fillStack(size_t siz)
+{
+    volatile char a[siz];
+    for (unsigned i = 0 ; i < siz  ; i ++) {
+        a[i] = 0xff;
+    }
+}
+#endif
+
 int main(int argc, char* argv[])
 {
     /*    test* ptr = new test;
@@ -49,6 +59,29 @@ int main(int argc, char* argv[])
 #ifndef NDEBUG
     setbuf(stdout, NULL);
     setbuf(stderr, NULL);
+#endif
+#ifdef ANDROID
+    /*
+    struct rlimit rl;
+    int result = getrlimit(RLIMIT_STACK, &rl);
+    // printf("result %d,current stask Size %d(%p)\n", (int)result, (int)rl.rlim_cur, &result);
+    const rlim_t kStackSize = 16 * 1024 * 1024;   // min stack size = 16 MB
+    if (result == 0)
+    {
+        if (rl.rlim_cur < kStackSize)
+        {
+            rl.rlim_cur = kStackSize;
+            result = setrlimit(RLIMIT_STACK, &rl);
+            if (result != 0) {
+                // fprintf(stdout, "setrlimit returned result = %d\n", result);
+            } else {
+                result = getrlimit(RLIMIT_STACK, &rl);
+                // printf("result2 %d,current stask Size %d(%p)\n", (int)result, (int)rl.rlim_cur, &result);
+            }
+        }
+    }
+    */
+    fillStack(1*1024*1024);
 #endif
     escargot::ESVMInstance* ES = new escargot::ESVMInstance();
     ES->enter();
