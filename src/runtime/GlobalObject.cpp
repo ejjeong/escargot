@@ -1743,8 +1743,24 @@ void GlobalObject::installString()
 
             ((ESObject *)ret)->set(ESValue(strings->input), ESValue(thisObject));
             ((ESObject *)ret)->set(ESValue(strings->index), ESValue(result.m_matchResults[0][0].m_start));
-
             const char16_t* str = thisObject->data();
+
+            // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/match
+            // if global flag is on, match method returns an Array containing all matched substrings
+            if (argument.isESPointer() && argument.asESPointer()->isESRegExpObject()) {
+                escargot::ESRegExpObject* regexp = argument.asESPointer()->asESRegExpObject();
+                if (regexp->option() & ESRegExpObject::Option::Global) {
+                    int idx = 0;
+                    for (unsigned i = 0; i < result.m_matchResults.size() ; i ++) {
+                        if (std::numeric_limits<unsigned>::max() == result.m_matchResults[i][0].m_start)
+                            ret->set(idx++, ESValue(ESValue::ESUndefined));
+                        else
+                            ret->set(idx++, ESString::create(std::move(u16string(str + result.m_matchResults[i][0].m_start, str + result.m_matchResults[i][0].m_end))));
+                    }
+                    return ret;
+                }
+            }
+
             int idx = 0;
             for (unsigned i = 0; i < result.m_matchResults.size() ; i ++) {
                 for (unsigned j = 0; j < result.m_matchResults[i].size() ; j ++) {
