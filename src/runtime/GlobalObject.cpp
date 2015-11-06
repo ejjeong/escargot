@@ -1735,7 +1735,11 @@ void GlobalObject::installString()
             if (argument.isESPointer()) {
                 esptr = argument.asESPointer();
             } else {
-                esptr = argument.toString();
+                if (argument.isUndefined()) {
+                    esptr = ESString::create("(?:)");
+                } else {
+                    esptr = argument.toString();
+                }
             }
 
             ESString::RegexMatchResult result;
@@ -3167,7 +3171,11 @@ void GlobalObject::installRegExp()
                 else
                     throw ESValue(TypeError::create(ESString::create(u"Cannot supply flags when constructing one RegExp from another")));
             }
-            thisVal->setSource(pattern.toString());
+            if (pattern.isUndefined()) {
+                thisVal->setSource(ESString::create("(?:)"));
+            } else {
+                thisVal->setSource(pattern.toString());
+            }
         }
 
         if (arg_size > 1) {
