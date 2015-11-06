@@ -1908,12 +1908,11 @@ void GlobalObject::installString()
                                 } else if (c == '&') {
                                     newThis.append(origStr->string().begin() + result.m_matchResults[i][0].m_start,
                                         origStr->string().begin() + result.m_matchResults[i][0].m_end);
+                                } else if (c == '\'') {
+                                    newThis.append(origStr->string().begin() + result.m_matchResults[i][0].m_end,
+                                        origStr->string().end());
                                 } else if (c == '`') {
-                                    // TODO
-                                    RELEASE_ASSERT_NOT_REACHED();
-                                } else if (c == '`') {
-                                    // TODO
-                                    RELEASE_ASSERT_NOT_REACHED();
+                                    newThis.append(orgString.begin(), orgString.begin() + result.m_matchResults[i][0].m_start);
                                 } else if ('0' <= c && c <= '9') {
                                     // TODO support morethan 2-digits
                                     size_t idx = c - '0';
