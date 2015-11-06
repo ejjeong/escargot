@@ -1361,14 +1361,15 @@ ALWAYS_INLINE ESValue ESObject::pop()
         set(strings->length.string(), ESValue(0));
         return ESValue();
     }
-    if (LIKELY(isESArrayObject() && asESArrayObject()->isFastmode()))
-        return asESArrayObject()->fastPop();
-    else {
-        ESValue ret = get(ESValue(len-1));
-        deleteProperty(ESValue(len-1));
-        set(strings->length.string(), ESValue(len - 1));
-        return ret;
+    if (LIKELY(isESArrayObject() && asESArrayObject()->isFastmode())) {
+        ESValue ret = asESArrayObject()->fastPop();
+        if (!ret.isEmpty())
+            return ret;
     }
+    ESValue ret = get(ESValue(len-1));
+    deleteProperty(ESValue(len-1));
+    set(strings->length.string(), ESValue(len - 1));
+    return ret;
 }
 ALWAYS_INLINE void ESObject::eraseValues(int idx, int cnt)
 {
