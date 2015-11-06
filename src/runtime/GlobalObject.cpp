@@ -1786,7 +1786,13 @@ void GlobalObject::installString()
         escargot::ESArrayObject* ret = ESArrayObject::create(0);
         int argCount = instance->currentExecutionContext()->argumentCount();
         if (argCount > 1) {
-            ESPointer* esptr = instance->currentExecutionContext()->arguments()[0].asESPointer();
+            ESValue argument = instance->currentExecutionContext()->arguments()[0];
+            ESPointer* esptr;
+            if (argument.isESPointer()) {
+                esptr = argument.asESPointer();
+            } else {
+                esptr = argument.toString();
+            }
             escargot::ESString* origStr = thisObject;
             ESString::RegexMatchResult result;
             origStr->match(esptr, result);
