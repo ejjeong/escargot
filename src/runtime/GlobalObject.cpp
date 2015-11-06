@@ -890,7 +890,10 @@ void GlobalObject::installObject()
     // $19.1.2.14 Object.keys ( O )
     m_object->defineDataProperty(ESString::create(u"keys"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         // Let obj be ToObject(O).
-        ESObject* obj = instance->currentExecutionContext()->readArgument(0).toObject();
+        ESValue O = instance->currentExecutionContext()->readArgument(0);
+        if (!O.isObject())
+            throw ESValue(TypeError::create(ESString::create(u"Object.keys: first argument is not object")));
+        ESObject* obj = O.toObject();
         escargot::ESArrayObject* arr = ESArrayObject::create();
         obj->enumeration([&arr](ESValue key) {
             arr->push(key);

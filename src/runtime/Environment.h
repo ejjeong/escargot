@@ -57,7 +57,7 @@ public:
                     ESValue e = obj->asESArrayObject()->data()[index];
                     if (LIKELY(!e.isEmpty())) {
                         ESObject* ret = ESObject::create();
-                        ret->set(ESString::create(u"value"), obj->hiddenClass()->read(obj, obj, index));
+                        ret->set(ESString::create(u"value"), e);
                         ret->set(ESString::create(u"writable"), ESValue(true));
                         ret->set(ESString::create(u"enumerable"), ESValue(true));
                         ret->set(ESString::create(u"configurable"), ESValue(true));
