@@ -1695,9 +1695,23 @@ void GlobalObject::installString()
 
         int argCount = instance->currentExecutionContext()->argumentCount();
         if (argCount > 0) {
-            ESPointer* esptr = instance->currentExecutionContext()->arguments()[0].asESPointer();
+            ESValue argument = instance->currentExecutionContext()->arguments()[0];
+            ESPointer* esptr;
+            if (argument.isESPointer()) {
+                esptr = argument.asESPointer();
+            } else {
+                esptr = argument.toString();
+            }
+
             ESString::RegexMatchResult result;
-            thisObject->match(esptr, result);
+            bool testResult = thisObject->match(esptr, result);
+
+            if (!testResult) {
+                return ESValue(ESValue::ESNull);
+            }
+
+            ((ESObject *)ret)->set(ESValue(strings->input), ESValue(thisObject));
+            ((ESObject *)ret)->set(ESValue(strings->index), ESValue(result.m_matchResults[0][0].m_start));
 
             const char16_t* str = thisObject->data();
             int idx = 0;
