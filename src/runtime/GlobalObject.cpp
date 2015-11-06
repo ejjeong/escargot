@@ -1850,7 +1850,8 @@ void GlobalObject::installString()
                     }
                     arguments[subLen] = ESValue((int)result.m_matchResults[i][0].m_start);
                     arguments[subLen + 1] = origStr;
-                    escargot::ESString* res = ESFunctionObject::call(instance, callee, instance->globalObject(), arguments, subLen + 2, false).toString();
+                    // 21.1.3.14 (11) it should be called with this as undefined
+                    escargot::ESString* res = ESFunctionObject::call(instance, callee, ESValue(ESValue::ESUndefined), arguments, subLen + 2, false).toString();
 
                     newThis.append(res->string());
                     if (i < matchCount - 1) {
