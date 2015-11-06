@@ -787,6 +787,8 @@ void GlobalObject::installObject()
     // $19.1.2.9 Object.getPrototypeOf
     m_object->defineDataProperty(strings->getPrototypeOf, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue O = instance->currentExecutionContext()->readArgument(0);
+        if (!O.isObject())
+            throw ESValue(TypeError::create(ESString::create(u"getPrototypeOf: first argument is not object")));
         return O.toObject()->__proto__();
     }, strings->getPrototypeOf, 1));
 
@@ -894,7 +896,7 @@ void GlobalObject::installError()
     };
     m_error = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->Error, 1, true);
     m_error->forceNonVectorHiddenClass();
-    m_error->set__proto__(m_objectPrototype);
+    m_error->set__proto__(m_functionPrototype);
     m_errorPrototype = escargot::ESObject::create();
     m_error->setProtoType(m_errorPrototype);
     m_errorPrototype->set__proto__(m_objectPrototype);
@@ -919,7 +921,7 @@ void GlobalObject::installError()
 
     // ///////////////////////////
     m_referenceError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->ReferenceError, 1, true);
-    m_referenceError->set__proto__(m_errorPrototype);
+    m_referenceError->set__proto__(m_functionPrototype);
     m_referenceError->forceNonVectorHiddenClass();
 
     m_referenceErrorPrototype = ESErrorObject::create();
@@ -933,7 +935,7 @@ void GlobalObject::installError()
 
     // ///////////////////////////
     m_typeError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->TypeError, 1, true);
-    m_typeError->set__proto__(m_errorPrototype);
+    m_typeError->set__proto__(m_functionPrototype);
     m_typeError->forceNonVectorHiddenClass();
 
     m_typeErrorPrototype = ESErrorObject::create();
@@ -947,7 +949,7 @@ void GlobalObject::installError()
 
     // ///////////////////////////
     m_rangeError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->RangeError, 1, true);
-    m_rangeError->set__proto__(m_errorPrototype);
+    m_rangeError->set__proto__(m_functionPrototype);
     m_rangeError->forceNonVectorHiddenClass();
 
     m_rangeErrorPrototype = ESErrorObject::create();
@@ -961,7 +963,7 @@ void GlobalObject::installError()
 
     // ///////////////////////////
     m_syntaxError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->SyntaxError, 1, true);
-    m_syntaxError->set__proto__(m_errorPrototype);
+    m_syntaxError->set__proto__(m_functionPrototype);
     m_syntaxError->forceNonVectorHiddenClass();
 
     m_syntaxErrorPrototype = ESErrorObject::create();
@@ -975,7 +977,7 @@ void GlobalObject::installError()
 
     // ///////////////////////////
     m_uriError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->URIError, 1, true);
-    m_uriError->set__proto__(m_errorPrototype);
+    m_uriError->set__proto__(m_functionPrototype);
     m_uriError->forceNonVectorHiddenClass();
 
     m_uriErrorPrototype = ESErrorObject::create();
@@ -989,7 +991,7 @@ void GlobalObject::installError()
 
     // ///////////////////////////
     m_evalError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->EvalError, 1, true);
-    m_evalError->set__proto__(m_errorPrototype);
+    m_evalError->set__proto__(m_functionPrototype);
     m_evalError->forceNonVectorHiddenClass();
 
     m_evalErrorPrototype = ESErrorObject::create();

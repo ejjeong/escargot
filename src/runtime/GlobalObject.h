@@ -81,6 +81,16 @@ public:
         return m_uriErrorPrototype;
     }
 
+    ALWAYS_INLINE escargot::ESFunctionObject* evalError()
+    {
+        return m_evalError;
+    }
+
+    ALWAYS_INLINE ESObject* evalErrorPrototype()
+    {
+        return m_evalErrorPrototype;
+    }
+
     ALWAYS_INLINE escargot::ESFunctionObject* regexp()
     {
         return m_regexp;

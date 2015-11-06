@@ -1183,6 +1183,13 @@ URIError::URIError(escargot::ESString* message)
     set__proto__(ESVMInstance::currentInstance()->globalObject()->uriErrorPrototype());
 }
 
+EvalError::EvalError(escargot::ESString* message)
+    : ESErrorObject(message)
+{
+    set(strings->name, strings->EvalError.string());
+    set__proto__(ESVMInstance::currentInstance()->globalObject()->evalErrorPrototype());
+}
+
 ESArrayBufferObject::ESArrayBufferObject(ESPointer::Type type)
     : ESObject((Type)(Type::ESObject | Type::ESArrayBufferObject), ESVMInstance::currentInstance()->globalObject()->arrayBufferPrototype())
     , m_data(NULL)
