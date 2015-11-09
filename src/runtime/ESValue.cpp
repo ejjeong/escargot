@@ -1145,7 +1145,8 @@ ESBooleanObject::ESBooleanObject(bool value)
 ESErrorObject::ESErrorObject(escargot::ESString* message)
     : ESObject((Type)(Type::ESObject | Type::ESErrorObject), ESVMInstance::currentInstance()->globalObject()->errorPrototype())
 {
-    set(strings->message, message);
+    if (message != strings->emptyString.string())
+        set(strings->message, message);
     set(strings->name, strings->Error.string());
     escargot::ESFunctionObject* fn = ESVMInstance::currentInstance()->globalObject()->error();
 }

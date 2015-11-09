@@ -979,14 +979,16 @@ void GlobalObject::installError()
 {
     auto errorFn = [](ESVMInstance* instance) -> ESValue {
         if (instance->currentExecutionContext()->isNewExpression()) {
-            if (instance->currentExecutionContext()->argumentCount()) {
-                instance->currentExecutionContext()->resolveThisBindingToObject()->asESErrorObject()->set(strings->message, instance->currentExecutionContext()->arguments()[0].toString());
+            ESValue message = instance->currentExecutionContext()->readArgument(0);
+            if (!message.isUndefined()) {
+                instance->currentExecutionContext()->resolveThisBindingToObject()->asESErrorObject()->set(strings->message, message.toString());
             }
             return ESValue();
         } else {
             escargot::ESErrorObject* obj = ESErrorObject::create();
-            if (instance->currentExecutionContext()->argumentCount()) {
-                obj->set(strings->message, instance->currentExecutionContext()->arguments()[0].toString());
+            ESValue message = instance->currentExecutionContext()->readArgument(0);
+            if (!message.isUndefined()) {
+                obj->set(strings->message, message.toString());
             }
             return obj;
         }

@@ -1884,8 +1884,8 @@ public:
     void allocateArrayBuffer(unsigned bytelength)
     {
         m_bytelength = bytelength;
-        //FIXME
-        //m_data = new(PointerFreeGC) char[bytelength];
+        // FIXME
+        // m_data = new(PointerFreeGC) char[bytelength];
         m_data = GC_malloc(bytelength);
     }
 
