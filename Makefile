@@ -290,11 +290,13 @@ check-jit:
 
 check:
 	make x64.interpreter.release -j$(NPROCS)
-	make run-sunspider
-	make run-octane
+	make run-sunspider | tee out/sunspider_result
+	make run-octane > out/octane_result
 	make x64.interpreter.debug -j$(NPROCS)
 	make run-sunspider
 	make check-jit
+	cat out/sunspider_result
+	cat out/octane_result
 	make tidy
 
 tidy:
