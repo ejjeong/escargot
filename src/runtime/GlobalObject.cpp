@@ -2441,16 +2441,18 @@ void GlobalObject::installString()
         while (newstr.length()) {
             if (esprima::isWhiteSpace(newstr[0]) || esprima::isLineTerminator(newstr[0])) {
                 newstr.erase(newstr.begin());
+            } else {
+                break;
             }
-            break;
         }
 
         // trim right
         while (newstr.length()) {
             if (esprima::isWhiteSpace(newstr[newstr.length()-1]) || esprima::isLineTerminator(newstr[newstr.length()-1])) {
                 newstr.erase(newstr.end()-1);
+            } else {
+                break;
             }
-            break;
         }
 
         return ESString::create(std::move(newstr));
