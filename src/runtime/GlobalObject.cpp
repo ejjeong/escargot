@@ -2088,7 +2088,12 @@ void GlobalObject::installString()
             int lengthA = 0;
 
             // 8, 9
-            double lim = argCount>1 ? instance->currentExecutionContext()->arguments()[1].toLength() : std::pow(2, 53)-1;
+            double lim;
+            if (instance->currentExecutionContext()->readArgument(1).isUndefined()) {
+                lim = std::pow(2, 53)-1;
+            } else {
+                lim = instance->currentExecutionContext()->readArgument(1).toLength();
+            }
 
             // 10
             int s = str->length();
@@ -2180,7 +2185,12 @@ void GlobalObject::installString()
             int lengthA = 0;
 
             // 8, 9
-            double lim = argCount>1 ? instance->currentExecutionContext()->arguments()[1].toLength() : std::pow(2, 53)-1;
+            double lim;
+            if (instance->currentExecutionContext()->readArgument(1).isUndefined()) {
+                lim = std::pow(2, 53)-1;
+            } else {
+                lim = instance->currentExecutionContext()->readArgument(1).toLength();
+            }
 
             // 10
             int s = str->length();
