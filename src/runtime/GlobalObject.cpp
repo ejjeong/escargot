@@ -1342,6 +1342,7 @@ void GlobalObject::installArray()
             }
             if (ret != -1) {
                 ret = -1;
+                k = len - 1;
                 ESValue& searchElement = instance->currentExecutionContext()->arguments()[0];
                 while (k >= 0) {
                     ESValue kPresent = thisBinded->get(ESValue(k));
