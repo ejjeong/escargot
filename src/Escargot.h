@@ -308,15 +308,20 @@ inline bool operator!=(const gc_malloc_allocator<GC_T1>&, const gc_malloc_alloca
 #define WARN_UNUSED_RETURN
 #endif
 
-#if defined(__BYTE_ORDER) && __BYTE_ORDER == __BIG_ENDIAN || \
+#if defined(__BYTE_ORDER__) && __BYTE_ORDER == __BIG_ENDIAN || \
     defined(__BIG_ENDIAN__) || \
     defined(__ARMEB__) || \
     defined(__THUMBEB__) || \
     defined(__AARCH64EB__) || \
     defined(_MIBSEB) || defined(__MIBSEB) || defined(__MIBSEB__)
 #define ESCARGOT_BIG_ENDIAN
-#elif defined(__BYTE_ORDER) && __BYTE_ORDER == __LITTLE_ENDIAN || \
+#elif defined(__BYTE_ORDER__) && __BYTE_ORDER == __LITTLE_ENDIAN || \
     defined(__LITTLE_ENDIAN__) || \
+    defined(__i386) || \
+    defined(_M_IX86) || \
+    defined(__ia64) || \
+    defined(__ia64__) || \
+    defined(_M_IA64) || \
     defined(__ARMEL__) || \
     defined(__THUMBEL__) || \
     defined(__AARCH64EL__) || \

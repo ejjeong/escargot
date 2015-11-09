@@ -14,7 +14,7 @@ BUILD_TYPE=
 BUILD_MODE=
 
 PS3='Please enter your choice: '
-options=("armeabi-v7a.32bit.debug" "armeabi-v7a.32bit.release")
+options=("armeabi-v7a.32bit.debug" "armeabi-v7a.32bit.release" "all")
 select opt in "${options[@]}"
 do
     case $opt in
@@ -30,6 +30,13 @@ do
             BUILD_ARCH=armeabi-v7a-hard
             BUILD_MODE=release
             echo "you chose choice 2"
+            break
+            ;;
+        "all")
+            BUILD_TYPE=interpreter
+            BUILD_ARCH=
+            BUILD_MODE=
+            echo "you chose choice 3"
             break
             ;;
         *)
