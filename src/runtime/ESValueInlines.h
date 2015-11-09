@@ -1112,6 +1112,13 @@ inline bool ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
             throw ESValue(TypeError::create(ESString::create("cannot redefine property")));
         }
     }
+    if (isESStringObject()) {
+        uint32_t i = key.toIndex();
+        if (i != ESValue::ESInvalidIndexValue && i < asESStringObject()->length()) {
+            // Indexed properties of string object is non-configurable
+            return false;
+        }
+    }
 
     if (UNLIKELY(m_flags.m_isGlobalObject))
         ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
@@ -1160,6 +1167,13 @@ inline bool ESObject::defineAccessorProperty(const escargot::ESValue& key, ESPro
             throw ESValue(TypeError::create(ESString::create("cannot redefine property")));
         }
     }
+    if (isESStringObject()) {
+        uint32_t i = key.toIndex();
+        if (i != ESValue::ESInvalidIndexValue && i < asESStringObject()->length()) {
+            // Indexed properties of string object is non-configurable
+            return false;
+        }
+    }
 
     if (UNLIKELY(m_flags.m_isGlobalObject))
         ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
@@ -1204,6 +1218,14 @@ inline bool ESObject::deleteProperty(const ESValue& key)
         uint32_t i = key.toIndex();
         if (i != ESValue::ESInvalidIndexValue) {
             return true;
+        }
+    }
+    if (isESStringObject()) {
+        uint32_t i = key.toIndex();
+        if (i != ESValue::ESInvalidIndexValue) {
+            if (i < asESStringObject()->length()) {
+                return false;
+            }
         }
     }
 
@@ -1251,6 +1273,11 @@ ALWAYS_INLINE bool ESObject::hasProperty(const escargot::ESValue& key)
             else
                 return false;
         }
+        if (isESStringObject()) {
+            uint32_t idx = key.toIndex();
+            if ((uint32_t)idx < asESStringObject()->length())
+                return true;
+        }
 
         if (!keyString) {
             keyString = key.toString();
@@ -1287,6 +1314,14 @@ ALWAYS_INLINE bool ESObject::hasOwnProperty(const escargot::ESValue& key)
                 }
             }
         } else {
+        }
+    }
+    if (isESStringObject()) {
+        uint32_t idx = key.toIndex();
+        if (idx != ESValue::ESInvalidIndexValue) {
+            if ((uint32_t)idx < asESStringObject()->length()) {
+                return true;
+            }
         }
     }
     return m_hiddenClass->findProperty(key.toString()) != SIZE_MAX;
@@ -1359,6 +1394,14 @@ ALWAYS_INLINE ESValue ESObject::getOwnProperty(escargot::ESValue key)
             return asESTypedArrayObjectWrapper()->get(idx);
         }
     }
+    if (isESStringObject()) {
+        uint32_t idx = key.toIndex();
+        if (idx != ESValue::ESInvalidIndexValue) {
+            if (LIKELY((int)idx < asESStringObject()->length())) {
+                return asESStringObject()->getCharacterAsString(idx);
+            }
+        }
+    }
 
     escargot::ESString* keyString = key.toString();
     size_t t = m_hiddenClass->findProperty(keyString);
@@ -1388,6 +1431,9 @@ ALWAYS_INLINE ESValue ESObject::pop()
         if (!ret.isEmpty())
             return ret;
     }
+    if (isESStringObject()) {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
     ESValue ret = get(ESValue(len-1));
     deleteProperty(ESValue(len-1));
     set(strings->length.string(), ESValue(len - 1));
@@ -1397,7 +1443,10 @@ ALWAYS_INLINE void ESObject::eraseValues(int idx, int cnt)
 {
     if (LIKELY(isESArrayObject()))
         asESArrayObject()->eraseValues(idx, cnt);
-    else {
+    else if (isESStringObject()) {
+        if (idx < asESStringObject()->length())
+            return;
+    } else {
         for (uint32_t k = 0, i = idx; i < length() && k < cnt; i++, k++) {
             set(ESValue(i), get(ESValue(i+cnt)));
         }
@@ -1455,6 +1504,12 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
             return true;
         }
     }
+    if (isESStringObject()) {
+        uint32_t idx = key.toIndex();
+        if (idx != ESValue::ESInvalidIndexValue)
+            if (idx < asESStringObject()->length())
+                return false;
+    }
     array_fastmode_fail:
     escargot::ESString* keyString = key.toString();
     size_t idx = m_hiddenClass->findProperty(keyString);
@@ -1502,6 +1557,9 @@ ALWAYS_INLINE size_t ESObject::keyCount()
     if (isESTypedArrayObject()) {
         siz += asESTypedArrayObjectWrapper()->length();
     }
+    if (isESStringObject()) {
+        siz += asESStringObject()->length();
+    }
     siz += m_hiddenClassData.size();
     return siz;
 }
@@ -1519,6 +1577,12 @@ ALWAYS_INLINE void ESObject::enumeration(Functor t)
 
     if (isESTypedArrayObject()) {
         for (uint32_t i = 0; i < asESTypedArrayObjectWrapper()->length(); i++) {
+            t(ESValue(i).toString());
+        }
+    }
+
+    if (isESStringObject()) {
+        for (int i = 0; i < asESStringObject()->length(); i++) {
             t(ESValue(i).toString());
         }
     }
@@ -1547,6 +1611,22 @@ ALWAYS_INLINE void ESObject::enumerationWithNonEnumerable(Functor t)
     if (isESTypedArrayObject()) {
         for (uint32_t i = 0; i < asESTypedArrayObjectWrapper()->length(); i++) {
             t(ESValue(i).toString(), &dummyPropertyInfo);
+        }
+    }
+
+    if (isESStringObject()) {
+        for (int i = 0; i < asESStringObject()->length(); i++) {
+            ESHiddenClassPropertyInfo propertyInfo;
+            propertyInfo.m_flags.m_isEnumerable = true;
+            propertyInfo.m_flags.m_isDeletedValue = false;
+            t(ESValue(i).toString(), &propertyInfo);
+
+            // temporary propertyInfo should be unchaged
+            ASSERT(propertyInfo.m_flags.m_isDataProperty == true);
+            ASSERT(propertyInfo.m_flags.m_isWritable == false);
+            ASSERT(propertyInfo.m_flags.m_isEnumerable == true);
+            ASSERT(propertyInfo.m_flags.m_isConfigurable == false);
+            ASSERT(propertyInfo.m_flags.m_isDeletedValue == false);
         }
     }
 

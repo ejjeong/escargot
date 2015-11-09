@@ -49,7 +49,7 @@ public:
     }
 
     // For ArrayFastMode
-    static ESValue FromPropertyDescriptorForArrayFastMode(ESObject* obj, uint32_t index)
+    static ESValue FromPropertyDescriptorForIndexedProperties(ESObject* obj, uint32_t index)
     {
         if (obj->isESArrayObject() && obj->asESArrayObject()->isFastmode()) {
             if (index != ESValue::ESInvalidIndexValue) {
@@ -63,6 +63,19 @@ public:
                         ret->set(ESString::create(u"configurable"), ESValue(true));
                         return ret;
                     }
+                }
+            }
+        }
+        if (obj->isESStringObject()) {
+            if (index != ESValue::ESInvalidIndexValue) {
+                if (LIKELY((int)index < obj->asESStringObject()->length())) {
+                    ESValue e = obj->asESStringObject()->getCharacterAsString(index);
+                    ESObject* ret = ESObject::create();
+                    ret->set(ESString::create(u"value"), e);
+                    ret->set(ESString::create(u"writable"), ESValue(false));
+                    ret->set(ESString::create(u"enumerable"), ESValue(true));
+                    ret->set(ESString::create(u"configurable"), ESValue(false));
+                    return ret;
                 }
             }
         }

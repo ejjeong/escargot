@@ -815,7 +815,7 @@ void GlobalObject::installObject()
         if (idx != SIZE_MAX)
             return escargot::PropertyDescriptor::FromPropertyDescriptor(obj, idx);
         else
-            return escargot::PropertyDescriptor::FromPropertyDescriptorForArrayFastMode(obj, arg1.toIndex());
+            return escargot::PropertyDescriptor::FromPropertyDescriptorForIndexedProperties(obj, arg1.toIndex());
     }, ESString::create(u"getOwnPropertyDescriptor"), 2));
 
     // $19.1.2.7 Object.getOwnPropertyNames
@@ -956,7 +956,7 @@ void GlobalObject::installObject()
         ESObject* O = instance->currentExecutionContext()->resolveThisBindingToObject();
         if (!O->hasOwnProperty(key))
             return ESValue(false);
-        if ((O->isESArrayObject() && O->asESArrayObject()->isFastmode()) || O->isESTypedArrayObject()) {
+        if ((O->isESArrayObject() && O->asESArrayObject()->isFastmode()) || O->isESTypedArrayObject() || O->isESStringObject()) {
             // In fast mode, it was already checked in O->hasOwnProperty.
             return ESValue(true);
         }
@@ -1682,10 +1682,10 @@ void GlobalObject::installString()
             ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
             escargot::ESStringObject* stringObject = thisObject->asESStringObject();
             if (instance->currentExecutionContext()->argumentCount() == 0) {
-                stringObject->setStringData(strings->emptyString.string(), true);
+                stringObject->setStringData(strings->emptyString.string());
             } else {
                 ESValue value = instance->currentExecutionContext()->readArgument(0);
-                stringObject->setStringData(value.toString(), true);
+                stringObject->setStringData(value.toString());
             }
             return stringObject;
         } else {

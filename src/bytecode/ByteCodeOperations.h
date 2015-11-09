@@ -226,7 +226,7 @@ GetObjectPreComputedCaseInlineCacheOperation:
             if (*keyString == *strings->length.string()) {
                 return ESValue(willBeObject->asESString()->length());
             }
-            globalObject->stringObjectProxy()->setStringData(willBeObject->asESString(), false);
+            globalObject->stringObjectProxy()->setStringData(willBeObject->asESString());
             targetObj = obj = globalObject->stringObjectProxy();
             goto GetObjectPreComputedCaseInlineCacheOperation;
         }

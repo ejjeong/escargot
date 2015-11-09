@@ -1746,22 +1746,28 @@ public:
         return new ESStringObject(str);
     }
 
+    ALWAYS_INLINE size_t length()
+    {
+        return m_stringData->length();
+    }
+
     ALWAYS_INLINE ::escargot::ESString* stringData()
     {
         return m_stringData;
     }
 
-    ALWAYS_INLINE void setStringData(::escargot::ESString* str, bool defineIndexedCharacterProperties)
+    ALWAYS_INLINE void setStringData(::escargot::ESString* str)
     {
         m_stringData = str;
-        if (defineIndexedCharacterProperties) {
-            for (size_t i = 0; i < str->length(); i++) {
-                if (str->data()[i] < ESCARGOT_ASCII_TABLE_MAX)
-                    defineDataProperty(ESValue(i), false, true, false, strings->asciiTable[str->data()[i]].string());
-                else
-                    defineDataProperty(ESValue(i), false, true, false, ESString::create(str->data()[i]));
-            }
-        }
+    }
+
+    ALWAYS_INLINE ::escargot::ESString* getCharacterAsString(size_t index)
+    {
+        ASSERT(index < m_stringData->length());
+        if (m_stringData->data()[index] < ESCARGOT_ASCII_TABLE_MAX)
+            return strings->asciiTable[m_stringData->data()[index]].string();
+        else
+            return ESString::create(m_stringData->data()[index]);
     }
 
 #ifdef ENABLE_ESJIT
