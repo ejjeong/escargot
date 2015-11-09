@@ -56,7 +56,7 @@ char hex2char(char first, char second)
     return dec;
 }
 
-int parseDigit(char16_t c, int radix)
+static int parseDigit(char16_t c, int radix)
 {
     int digit = -1;
 
@@ -71,6 +71,21 @@ int parseDigit(char16_t c, int radix)
         return -1;
 
     return digit;
+}
+
+static const int SizeOfInfinity = 8;
+
+static bool isInfinity(const UChar* data, const UChar* end)
+{
+    return (end - data) >= SizeOfInfinity
+        && data[0] == 'I'
+        && data[1] == 'n'
+        && data[2] == 'f'
+        && data[3] == 'i'
+        && data[4] == 'n'
+        && data[5] == 'i'
+        && data[6] == 't'
+        && data[7] == 'y';
 }
 
 void GlobalObject::initGlobalObject()
@@ -224,14 +239,72 @@ void GlobalObject::initGlobalObject()
     // $18.2.4 parseFloat(string)
     defineDataProperty(ESString::create(u"parseFloat"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         int len = instance->currentExecutionContext()->argumentCount();
-        if (len < 1) {
+
+        // 1. Let inputString be ToString(string).
+        ESValue input = instance->currentExecutionContext()->arguments()[0];
+        escargot::ESString* s = input.toString();
+        u16string str(s->string());
+        int strLen = str.length();
+
+        if (strLen == 1) {
+            if (isdigit(str.data()[0]))
+                return ESValue(str.data()[0] - '0');
             return ESValue(std::numeric_limits<double>::quiet_NaN());
-        } else {
-            ESValue input = instance->currentExecutionContext()->arguments()[0];
-            escargot::ESString* str = input.toString();
-            double f = atof(str->utf8Data());
-            return ESValue(f);
         }
+
+        // 2, Let trimmedString be a substring of inputString consisting of the leftmost character
+        //    that is not a StrWhiteSpaceChar and all characters to the right of that character.
+        //    (In other words, remove leading white space.)
+        int p = 0;
+        const UChar* data = str.data();
+        const UChar* end = data + strLen;
+
+        for (; data < end; data++) {
+            if (!(esprima::isWhiteSpace(*data) || esprima::isLineTerminator(*data)))
+                break;
+            p++;
+        }
+
+        // empty string
+        if (data == end)
+            return ESValue(std::numeric_limits<double>::quiet_NaN());
+
+        // HexIntegerLiteral
+        if (end - data >= 1 && data[0] == '0' && toupper(data[1]) == 'X')
+            return ESValue(0);
+
+        // 3. If neither trimmedString nor any prefix of trimmedString satisfies the syntax of
+        //    a StrDecimalLiteral (see 9.3.1), return NaN.
+        // 4. Let numberString be the longest prefix of trimmedString, which might be trimmedString itself,
+        //    that satisfies the syntax of a StrDecimalLiteral.
+        // Check the syntax of StrDecimalLiteral
+        switch (*data) {
+        case 'I':
+            if (isInfinity(data, end))
+                return ESValue(std::numeric_limits<double>::infinity());
+            break;
+        case '+':
+            if (isInfinity(data + 1, end))
+                return ESValue(std::numeric_limits<double>::infinity());
+            break;
+        case '-':
+            if (isInfinity(data + 1, end))
+                return ESValue(-std::numeric_limits<double>::infinity());
+            break;
+        }
+
+        escargot::ESString* substr = s->substring(p, strLen);
+        double f = atof(substr->utf8Data());
+        if (f == 0.0 && !isdigit(*data) && !(end - data >= 1 && data[0] == '.' && isdigit(data[1])))
+            return ESValue(std::numeric_limits<double>::quiet_NaN());
+
+        // FIXME: The result of `parseFloat("infinity")` should be NaN because it is wrong number format.
+        //        However, `atof` and `strtod` function return "inf" for this case.
+        if (end - data >= 2 && data[0] == 'i' && data[1] == 'n' && data[2] == 'f')
+            return ESValue(std::numeric_limits<double>::quiet_NaN());
+
+        // 5. Return the Number value for the MV of numberString.
+        return ESValue(f);
     }, ESString::create(u"parseFloat"), 1));
 
     // $18.2.5 parseInt(string, radix)
@@ -244,10 +317,10 @@ void GlobalObject::initGlobalObject()
         escargot::ESString* s = input.toString();
         u16string str(s->string());
         int strLen = str.length();
-        int p = 0;
 
         // 2. Let S be a newly created substring of inputString consisting of the first character that is not a StrWhiteSpaceChar
         //    and all characters following that character. (In other words, remove leading white space.)
+        int p = 0;
         while (p < strLen && (esprima::isWhiteSpace(str.data()[p]) || esprima::isLineTerminator(str.data()[p])))
             p++;
 
