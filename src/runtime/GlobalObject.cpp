@@ -1832,10 +1832,7 @@ void GlobalObject::installString()
 
         double len = S->length();
         double start = std::min(std::max(pos, 0.0), len);
-        int result = S->string().find_last_of(searchStr->string(), start);
-        if (result != -1) {
-            result -= (searchStr->length() - 1);
-        }
+        int result = S->string().rfind(searchStr->string(), start);
 
         return ESValue(result);
     }, strings->lastIndexOf, 1));
