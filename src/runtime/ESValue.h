@@ -1962,7 +1962,8 @@ public:
     template<typename Type>
     ESValue getValueFromBuffer(unsigned byteindex, TypedArrayType typeVal, int isLittleEndian = -1)
     {
-        ASSERT(byteindex >= 0);
+        ASSERT(!isDetachedBuffer());
+        ASSERT(byteindex >= 0 && byteindex + sizeof(Type) <= m_bytelength);
         if (isLittleEndian != -1) {
             // TODO
             RELEASE_ASSERT_NOT_REACHED();
@@ -1975,7 +1976,8 @@ public:
     template<typename TypeAdaptor>
     bool setValueInBuffer(unsigned byteindex, TypedArrayType typeVal, ESValue val, int isLittleEndian = -1)
     {
-        ASSERT(byteindex >= 0);
+        ASSERT(!isDetachedBuffer());
+        ASSERT(byteindex >= 0 && byteindex + sizeof(typename TypeAdaptor::Type) <= m_bytelength);
         if (isLittleEndian != -1) {
             // TODO
             RELEASE_ASSERT_NOT_REACHED();
