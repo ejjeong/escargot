@@ -1,6 +1,6 @@
 #!/bin/bash
 
-make full
+#make full
 tests=("3d-cube" "3d-morph" "3d-raytrace" "access-binary-trees" "access-fannkuch" "access-nbody" "access-nsieve" "bitops-3bit-bits-in-byte" "bitops-bits-in-byte" "bitops-bitwise-and" "bitops-nsieve-bits" "controlflow-recursive" "crypto-aes" "crypto-md5" "crypto-sha1" "date-format-tofte" "date-format-xparb" "math-cordic" "math-partial-sums" "math-spectral-norm" "regexp-dna" "string-base64" "string-fasta" "string-tagcloud" "string-unpack-code" "string-validate-input")
 cp test/SunSpider/resources/sunspider-standalone-driver.orig.js test/SunSpider/resources/sunspider-standalone-driver.js
 if [[ $1 == duk* ]]; then
@@ -43,12 +43,15 @@ elif [[ $1 == jsc.jit || $1 == jsc.dfg* ]]; then
   cmd="./test/bin/jsc.jit"
   tc="jsc.jit"
 elif [[ $1 == escargot.interp* ]]; then
+  make x64.interpreter.release -j8
   cmd="./out/x64/interpreter/release/escargot"
   tc="escargot.interp"
 elif [[ $1 == escargot.jit ]]; then
+  make x64.jit.release -j8
   cmd="./out/x64/jit/release/escargot"
   tc="escargot.jit"
 else
+  make x64.interpreter.release -j8
   cmd="./out/x64/interpreter/release/escargot"
   tc="escargot.interp"
 fi
