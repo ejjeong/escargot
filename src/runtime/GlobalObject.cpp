@@ -2147,13 +2147,17 @@ void GlobalObject::installString()
                     arr->set(lengthA, ESValue(T));
                     return arr;
                 } else {
-                    escargot::ESString* T = str->substring(p, result.m_matchResults[0][0].m_start);
-                    arr->set(lengthA, ESValue(T));
-                    lengthA++;
-                    if ((double)lengthA == lim)
-                        return arr;
-                    p = result.m_matchResults[0][0].m_end;
-                    q = result.m_matchResults[0][0].m_end;
+                    if (e.asInt32() == p) {
+                        q++;
+                    } else {
+                        escargot::ESString* T = str->substring(p, result.m_matchResults[0][0].m_start);
+                        arr->set(lengthA, ESValue(T));
+                        lengthA++;
+                        if ((double)lengthA == lim)
+                            return arr;
+                        p = e.asInt32();
+                        q = p;
+                    }
                 }
             }
 
@@ -3447,6 +3451,12 @@ void GlobalObject::installRegExp()
             thisVal = thisValue.toObject()->asESRegExpObject();
         }
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
+
+        if (arg_size == 0) {
+            thisVal->setSource(ESString::create("(?:)"));
+            return ESValue(thisVal);
+        }
+
         if (arg_size > 0) {
             ESValue pattern = instance->currentExecutionContext()->arguments()[0];
             if (pattern.isESPointer() && pattern.asESPointer()->isESRegExpObject()) {
