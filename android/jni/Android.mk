@@ -35,7 +35,8 @@ LOCAL_CFLAGS += -fno-rtti -fno-math-errno -I$(SRC_PATH)
 LOCAL_CFLAGS += -fdata-sections -ffunction-sections -frounding-math -fsignaling-nans
 
 ifeq ($(BUILD_MODE), debug)
-    LOCAL_CFLAGS += -O0 -g3 -D_GLIBCXX_DEBUG -fno-omit-frame-pointer -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable -Wno-invalid-offsetof -Wno-sign-compare -Wno-unused-local-typedefs
+    LOCAL_CFLAGS += -O0 -g3 -D_GLIBCXX_DEBUG -fno-omit-frame-pointer -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable -Wno-sign-compare -Wno-unused-local-typedefs
+    LOCAL_CXXFLAGS += -Wno-invalid-offsetof
 else ifeq ($(BUILD_MODE), release)
     LOCAL_CFLAGS += -O2 -g0 -DNDEBUG -fomit-frame-pointer
 else

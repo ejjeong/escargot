@@ -734,13 +734,12 @@ ALWAYS_INLINE bool ESValue::operator!=(const ESValue& other) const
 
 inline bool ESValue::isInt32() const
 {
-    // return (u.asInt64 & TagTypeNumber) == TagTypeNumber;
+#ifdef ESCARGOT_LITTLE_ENDIAN
     ASSERT(sizeof(short) == 2);
     unsigned short* firstByte = (unsigned short *)&u.asInt64;
-#ifdef ESCARGOT_LITTLE_ENDIAN
     return firstByte[3] == 0xffff;
 #else
-    return *firstByte == 0xffff;
+    return (u.asInt64 & TagTypeNumber) == TagTypeNumber;
 #endif
 }
 
@@ -779,13 +778,12 @@ inline bool ESValue::isDeleted() const
 
 inline bool ESValue::isNumber() const
 {
-    // return u.asInt64 & TagTypeNumber;
+#ifdef ESCARGOT_LITTLE_ENDIAN
     ASSERT(sizeof(short) == 2);
     unsigned short* firstByte = (unsigned short *)&u.asInt64;
-#ifdef ESCARGOT_LITTLE_ENDIAN
     return firstByte[3];
 #else
-    return firstByte[0];
+    return u.asInt64 & TagTypeNumber;
 #endif
 }
 

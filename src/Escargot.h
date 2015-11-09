@@ -315,6 +315,7 @@ inline bool operator!=(const gc_malloc_allocator<GC_T1>&, const gc_malloc_alloca
     defined(__AARCH64EB__) || \
     defined(_MIBSEB) || defined(__MIBSEB) || defined(__MIBSEB__)
 #define ESCARGOT_BIG_ENDIAN
+// #pragma message "big endian"
 #elif defined(__BYTE_ORDER__) && __BYTE_ORDER == __LITTLE_ENDIAN || \
     defined(__LITTLE_ENDIAN__) || \
     defined(__i386) || \
@@ -327,6 +328,7 @@ inline bool operator!=(const gc_malloc_allocator<GC_T1>&, const gc_malloc_alloca
     defined(__AARCH64EL__) || \
     defined(_MIPSEL) || defined(__MIPSEL) || defined(__MIPSEL__)
 #define ESCARGOT_LITTLE_ENDIAN
+// #pragma message "little endian"
 #else
 #error "I don't know what architecture this is!"
 #endif
