@@ -2052,11 +2052,11 @@ void GlobalObject::installString()
         const u16string& str = instance->currentExecutionContext()->resolveThisBinding().toString()->string();
         int argCount = instance->currentExecutionContext()->argumentCount();
         int len = str.length();
-        int intStart = instance->currentExecutionContext()->arguments()[0].toInteger();
+        double doubleStart = instance->currentExecutionContext()->arguments()[0].toInteger();
         ESValue& end = instance->currentExecutionContext()->arguments()[1];
-        int intEnd = (end.isUndefined() || argCount < 2) ? len : end.toInteger();
-        int from = (intStart < 0) ? std::max(len+intStart, 0) : std::min(intStart, len);
-        int to = (intEnd < 0) ? std::max(len+intEnd, 0) : std::min(intEnd, len);
+        double doubleEnd = (end.isUndefined() || argCount < 2) ? len : end.toInteger();
+        int from = (doubleStart < 0) ? std::max(len+doubleStart, 0.0) : std::min(doubleStart, (double)len);
+        int to = (doubleEnd < 0) ? std::max(len+doubleEnd, 0.0) : std::min(doubleEnd, (double)len);
         int span = std::max(to-from, 0);
         escargot::ESString* ret = ESString::create(u16string(str.begin()+from, str.begin()+from+span));
         return ret;
