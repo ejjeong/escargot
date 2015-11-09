@@ -506,7 +506,7 @@ ESRegExpObject::ESRegExpObject(escargot::ESString* source, const Option& option)
     m_source = source;
     m_option = option;
     m_bytecodePattern = NULL;
-    m_lastIndex = ESValue();
+    m_lastIndex = ESValue(0);
     m_lastExecutedString = NULL;
 
     defineAccessorProperty(strings->lastIndex.string(), [](ESObject* self) -> ESValue {
