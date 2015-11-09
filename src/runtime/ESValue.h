@@ -1710,7 +1710,7 @@ protected:
     uint32_t m_length;
     ESValueVector m_vector;
     bool m_fastmode;
-    static const unsigned MAX_FASTMODE_SIZE = 65536;
+    static const unsigned MAX_FASTMODE_SIZE = 65536 * 2;
 };
 
 class LexicalEnvironment;
