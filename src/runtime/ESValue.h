@@ -1938,9 +1938,8 @@ public:
     void allocateArrayBuffer(unsigned bytelength)
     {
         m_bytelength = bytelength;
-        // FIXME
-        // m_data = new(PointerFreeGC) char[bytelength];
-        m_data = GC_malloc(bytelength);
+        m_data = GC_malloc_atomic(bytelength);
+        memset(m_data, 0, bytelength);
     }
 
     bool isDetachedBuffer()
