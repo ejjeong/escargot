@@ -99,6 +99,8 @@ ESVMInstance::ESVMInstance()
     });
 
     m_arrayLengthAccessorData.setSetter([](::escargot::ESObject* self, const ESValue& value) {
+        if (value.toInt32() < 0)
+            throw ESValue(RangeError::create(ESString::create("Invalid array length, negative sized length\n")));
         self->asESArrayObject()->setLength(value.toInt32());
     });
 

@@ -33,6 +33,37 @@ public:
 
 class PropertyDescriptor {
 public:
+    static bool IsAccessorDescriptor(ESValue desc)
+    {
+        if (desc.isUndefined())
+            return false;
+        ASSERT(desc.isObject());
+        ESObject* obj = desc.asESPointer()->asESObject();
+        if (!obj->hasOwnProperty(ESString::create(u"get")) && !obj->hasOwnProperty(ESString::create(u"set")))
+            return false;
+        return true;
+    }
+
+    static bool IsDataDescriptor(ESValue desc)
+    {
+        if (desc.isUndefined())
+            return false;
+        ASSERT(desc.isObject());
+        ESObject* obj = desc.asESPointer()->asESObject();
+        if (!obj->hasOwnProperty(ESString::create(u"value")) && !obj->hasOwnProperty(ESString::create(u"writable")))
+            return false;
+        return true;
+    }
+
+    static bool IsGenericDescriptor(ESValue desc)
+    {
+        if (desc.isUndefined())
+            return false;
+        if (!IsAccessorDescriptor(desc) && !IsDataDescriptor(desc))
+            return true;
+        return false;
+    }
+
     static ESValue FromPropertyDescriptor(ESObject* obj, size_t idx)
     {
         const ESHiddenClassPropertyInfo& propertyInfo = obj->hiddenClass()->propertyInfo(idx);

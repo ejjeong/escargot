@@ -1206,6 +1206,21 @@ public:
         return m_propertyInfo[idx];
     }
 
+    void setEnumerable(const size_t& idx, bool isEnumerable)
+    {
+        m_propertyInfo[idx].m_flags.m_isEnumerable = isEnumerable;
+    }
+
+    void setConfigurable(const size_t& idx, bool isConfigurable)
+    {
+        m_propertyInfo[idx].m_flags.m_isConfigurable = isConfigurable;
+    }
+
+    void setWritable(const size_t& idx, bool isWritable)
+    {
+        m_propertyInfo[idx].m_flags.m_isWritable = isWritable;
+    }
+
     const ESHiddenClassPropertyInfoVector& propertyInfo()
     {
         return m_propertyInfo;
