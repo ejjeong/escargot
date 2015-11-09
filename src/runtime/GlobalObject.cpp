@@ -2434,7 +2434,11 @@ void GlobalObject::installString()
 
     // $21.1.3.25 String.prototype.trim()
     m_stringPrototype->defineDataProperty(ESString::create(u"trim"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        escargot::ESString* str = instance->currentExecutionContext()->resolveThisBinding().toString();
+        escargot::ESValue val = instance->currentExecutionContext()->resolveThisBinding();
+        if (val.isUndefinedOrNull()) {
+            throw ESValue(TypeError::create(ESString::create(u"String.prototype.trim called null or undefined")));
+        }
+        escargot::ESString* str = val.toString();
         u16string newstr(str->string());
 
         // trim left
