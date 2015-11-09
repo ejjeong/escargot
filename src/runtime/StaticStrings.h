@@ -117,6 +117,7 @@ class ESString;
     F(function) \
     F(RegExp) \
     F(source) \
+    F(lastIndex) \
     F(test) \
     F(exec) \
     F(input) \

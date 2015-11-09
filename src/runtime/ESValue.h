@@ -1881,9 +1881,10 @@ public:
 
     ALWAYS_INLINE Option option() { return m_option; }
     ALWAYS_INLINE const escargot::ESString* source() { return m_source; }
-    ALWAYS_INLINE unsigned lastIndex() { return m_lastIndex; }
+    ALWAYS_INLINE ESValue lastIndex() { return m_lastIndex; }
     void setSource(escargot::ESString* src);
     void setOption(const Option& option);
+    void setLastIndex(const ESValue& lastIndex) { m_lastIndex = lastIndex; }
 
     JSC::Yarr::BytecodePattern* bytecodePattern()
     {
@@ -1901,7 +1902,7 @@ private:
     JSC::Yarr::BytecodePattern* m_bytecodePattern;
     Option m_option;
 
-    unsigned m_lastIndex;
+    ESValue m_lastIndex;
     escargot::ESString* m_lastExecutedString;
 };
 

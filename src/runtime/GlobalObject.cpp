@@ -3621,10 +3621,6 @@ void GlobalObject::installRegExp()
         return self->asESRegExpObject()->source();
     }, nullptr, true, false, false);
 
-    m_regexpPrototype->defineAccessorProperty(escargot::ESString::create(u"lastIndex"), [](ESObject* self) -> ESValue {
-        return ESValue(self->asESRegExpObject()->lastIndex());
-    }, nullptr, true, false, false);
-
     m_regexpPrototype->defineAccessorProperty(escargot::ESString::create(u"ignoreCase"), [](ESObject* self) -> ESValue {
         return ESValue((bool)(self->asESRegExpObject()->option() & ESRegExpObject::Option::IgnoreCase));
     }, nullptr, true, false, false);
@@ -3645,8 +3641,13 @@ void GlobalObject::installRegExp()
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
         ::escargot::ESRegExpObject* regexp = thisObject->asESRegExpObject();
         int argCount = instance->currentExecutionContext()->argumentCount();
-        if (argCount > 0) {
+        if (argCount >= 0) {
             escargot::ESString* sourceStr = instance->currentExecutionContext()->arguments()[0].toString();
+            double lastIndex = regexp->m_lastIndex.toInteger();
+            if (lastIndex < 0 || lastIndex > sourceStr->length()) {
+                regexp->m_lastIndex = ESValue(0);
+                return ESValue(false);
+            }
             ESString::RegexMatchResult result;
             bool testResult = sourceStr->match(thisObject, result, true);
             return (ESValue(testResult));
@@ -3665,28 +3666,28 @@ void GlobalObject::installRegExp()
         int argCount = instance->currentExecutionContext()->argumentCount();
         if (argCount >= 0) {
             escargot::ESString* sourceStr = instance->currentExecutionContext()->readArgument(0).toString();
-            if (sourceStr == regexp->m_lastExecutedString || (regexp->m_lastExecutedString && sourceStr->string() == regexp->m_lastExecutedString->string())) {
-
-            } else {
-                regexp->m_lastIndex = 0;
+            double lastIndex = regexp->m_lastIndex.toInteger();
+            if (lastIndex < 0 || lastIndex > sourceStr->length()) {
+                regexp->m_lastIndex = ESValue(0);
+                return ESValue(ESValue::ESNull);
             }
             regexp->m_lastExecutedString = sourceStr;
             ESString::RegexMatchResult result;
             bool isGlobal = regexp->option() & ESRegExpObject::Option::Global;
             regexp->setOption((ESRegExpObject::Option)(regexp->option() & ~ESRegExpObject::Option::Global));
-            bool testResult = sourceStr->match(thisObject, result, false, regexp->m_lastIndex);
+            bool testResult = sourceStr->match(thisObject, result, false, lastIndex);
             if (isGlobal) {
                 regexp->setOption((ESRegExpObject::Option)(regexp->option() | ESRegExpObject::Option::Global));
             }
 
             if (!testResult) {
-                regexp->m_lastIndex = 0;
+                regexp->m_lastIndex = ESValue(0);
                 return ESValue(ESValue::ESNull);
             }
 
             if (isGlobal) {
                 // update lastIndex
-                regexp->m_lastIndex = result.m_matchResults[0][0].m_end;
+                regexp->m_lastIndex = ESValue(result.m_matchResults[0][0].m_end);
             }
 
             ((ESObject *)arr)->set(ESValue(strings->input), ESValue(sourceStr));

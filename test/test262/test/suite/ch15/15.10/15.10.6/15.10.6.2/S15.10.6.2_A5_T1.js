@@ -39,7 +39,12 @@ for(var index=0; index<__expected.length; index++) {
 	}
 }
 
+print(__executed);
+print(__re.lastIndex);
+
 __executed = __re.exec("aacd22");
+print(__executed);
+print(__re.lastIndex);
 
 //CHECK#5
 if (__executed) {
