@@ -1644,6 +1644,12 @@ public:
     void setLength(unsigned newLength)
     {
         if (m_fastmode) {
+            if (shouldConvertToSlowMode(newLength)) {
+                convertToSlowMode();
+                ESObject::set(strings->length, ESValue(newLength));
+                m_length = newLength;
+                return;
+            }
             if (newLength < m_length) {
                 m_vector.resize(newLength);
             } else if (newLength > m_length) {

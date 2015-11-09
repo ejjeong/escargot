@@ -1476,24 +1476,32 @@ void GlobalObject::installArray()
     // $22.1.3.17 Array.prototype.push(item)
     m_arrayPrototype->ESObject::defineDataProperty(strings->push, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         auto thisBinded = instance->currentExecutionContext()->resolveThisBindingToObject();
+        int argc = instance->currentExecutionContext()->argumentCount();
         if (LIKELY(thisBinded->isESArrayObject())) {
-            int len = instance->currentExecutionContext()->argumentCount();
             auto thisVal = thisBinded->asESArrayObject();
-            for (int i = 0; i < len; i++) {
+            uint32_t len = thisVal->length();
+            bool shouldThrow = false;
+            for (int i = 0; i < argc; i++) {
                 ESValue& val = instance->currentExecutionContext()->arguments()[i];
-                thisVal->push(val);
+                thisVal->asESObject()->set(ESValue(double(len)+i), val);
+                if (len >= UINT_MAX - i) {
+                    shouldThrow = true;
+                }
+            }
+            if (shouldThrow) {
+                thisVal->setLength(UINT_MAX);
+                throw ESValue(RangeError::create());
             }
             return ESValue(thisVal->length());
         } else {
             ASSERT(thisBinded->isESObject());
             ESObject* O = thisBinded->asESObject();
-            uint64_t len = O->get(strings->length.string()).toUint32();
-            uint64_t argCount = instance->currentExecutionContext()->argumentCount();
-            for (int i = 0; i < argCount; i++) {
+            uint32_t len = O->get(strings->length.string()).toUint32();
+            for (int i = 0; i < argc; i++) {
                 ESValue& val = instance->currentExecutionContext()->arguments()[i];
-                O->set(ESString::create(double(len + i)), val);
+                O->set(ESString::create(double(len) + i), val);
             }
-            ESValue ret = ESValue(double(len + argCount));
+            ESValue ret = ESValue(double(len) + argc);
             O->set(strings->length, ret);
             return ret;
         }
