@@ -3639,10 +3639,12 @@ void GlobalObject::installRegExp()
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-regexp.prototype.test
     m_regexpPrototype->defineDataProperty(strings->test, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (!thisObject->isESRegExpObject())
+            throw ESValue(TypeError::create(ESString::create(u"Regexp.prototype.exec : This object is not Regexp object")));
         ::escargot::ESRegExpObject* regexp = thisObject->asESRegExpObject();
         int argCount = instance->currentExecutionContext()->argumentCount();
         if (argCount >= 0) {
-            escargot::ESString* sourceStr = instance->currentExecutionContext()->arguments()[0].toString();
+            escargot::ESString* sourceStr = instance->currentExecutionContext()->readArgument(0).toString();
             double lastIndex = regexp->m_lastIndex.toInteger();
             if (lastIndex < 0 || lastIndex > sourceStr->length()) {
                 regexp->m_lastIndex = ESValue(0);
