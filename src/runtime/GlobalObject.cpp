@@ -3591,7 +3591,9 @@ void GlobalObject::installRegExp()
         if (!R.isObject())
             throw ESValue(TypeError::create(ESString::create(u"RegExp.prototype.toString: \'this\' value is not object type")));
         // FIXME implement RegExp.flags
-        return ESString::concatTwoStrings(ESString::create(u"/"), R.toObject()->get(strings->source.string()).toString());
+        escargot::ESString* ret = ESString::concatTwoStrings(ESString::create(u"/"), R.toObject()->get(strings->source.string()).toString());
+        ret = ESString::concatTwoStrings(ret, ESString::create(u"/"));
+        return ret;
     }, strings->toString, 0));
 
     // add regexp to global object
