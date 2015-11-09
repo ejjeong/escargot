@@ -20,14 +20,14 @@ do
     case $opt in
         "armeabi-v7a.32bit.debug")
             BUILD_TYPE=interpreter
-            BUILD_ARCH=arm
+            BUILD_ARCH=armeabi-v7a-hard
             BUILD_MODE=debug
             echo "you chose choice 1"
             break
             ;;
         "armeabi-v7a.32bit.release")
             BUILD_TYPE=interpreter
-            BUILD_ARCH=arm
+            BUILD_ARCH=armeabi-v7a-hard
             BUILD_MODE=release
             echo "you chose choice 2"
             break

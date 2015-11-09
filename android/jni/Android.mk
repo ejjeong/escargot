@@ -1,22 +1,36 @@
 LOCAL_PATH := $(call my-dir)
 
-#include $(CLEAR_VARS)
-#LOCAL_MODULE    := gc
-#LOCAL_SRC_FILES := libgc_armv7.a
-#include $(PREBUILT_STATIC_LIBRARY)
-
 include $(CLEAR_VARS)
 
-$(warning BUILD_TYPE)
-$(warning $(BUILD_TYPE))
-$(warning BUILD_MODE)
-$(warning $(BUILD_MODE))
+#$(warning BUILD_TYPE)
+#$(warning $(BUILD_TYPE))
+#$(warning BUILD_MODE)
+#$(warning $(BUILD_MODE))
 
 LOCAL_MODULE    := escargot
 LOCAL_ARM_MODE := thumb
 LOCAL_CXXFLAGS = -std=c++11 -fno-rtti
-LOCAL_CFLAGS = 
-LOCAL_CFLAGS += -DESCARGOT_32=1
+LOCAL_CFLAGS =
+
+$(warning TARGET_ARCH)
+$(warning $(TARGET_ARCH))
+ 
+
+ifeq ($(TARGET_ARCH), arm64)
+	LOCAL_CFLAGS += -DESCARGOT_64=1
+else ifeq ($(TARGET_ARCH), x86_64)
+	LOCAL_CFLAGS += -DESCARGOT_64=1
+else ifeq ($(TARGET_ARCH), mips64)
+	LOCAL_CFLAGS += -DESCARGOT_64=1
+else ifeq ($(TARGET_ARCH), arm)
+	LOCAL_CFLAGS += -DESCARGOT_32=1
+else ifeq ($(TARGET_ARCH), x86)
+	LOCAL_CFLAGS += -DESCARGOT_32=1
+else ifeq ($(TARGET_ARCH), mips)
+	LOCAL_CFLAGS += -DESCARGOT_32=1
+endif
+
+
 LOCAL_CFLAGS += -fno-rtti -fno-math-errno -I$(SRC_PATH)
 LOCAL_CFLAGS += -fdata-sections -ffunction-sections -frounding-math -fsignaling-nans
 
@@ -56,11 +70,7 @@ SRCS += $(SRC_THIRD_PARTY)/yarr/YarrInterpreter.cpp
 SRCS += $(SRC_THIRD_PARTY)/yarr/YarrPattern.cpp
 SRCS += $(SRC_THIRD_PARTY)/yarr/YarrSyntaxChecker.cpp
 
-SRCS += $(SRC_THIRD_PARTY)/double_conversion/fast-dtoa.cpp
-SRCS += $(SRC_THIRD_PARTY)/double_conversion/diy-fp.cpp
-SRCS += $(SRC_THIRD_PARTY)/double_conversion/cached-powers.cpp
-SRCS += $(SRC_THIRD_PARTY)/double_conversion/bignum.cpp
-SRCS += $(SRC_THIRD_PARTY)/double_conversion/bignum-dtoa.cpp
+SRCS += $(foreach dir, $(SRC_THIRD_PARTY)/double_conversion , $(wildcard $(dir)/*.cc))
 
 SRCS += $(foreach dir, $(SRC_THIRD_PARTY)/bdwgc , $(wildcard $(dir)/*.c))
 

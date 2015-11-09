@@ -22,18 +22,18 @@
 
 #ifdef NACL
 
-#include <unistd.h>
-#include <sys/time.h>
+# include <unistd.h>
+# include <sys/time.h>
 
-STATIC int GC_nacl_num_gc_threads = 0;
-STATIC __thread int GC_nacl_thread_idx = -1;
-STATIC int GC_nacl_park_threads_now = 0;
-STATIC pthread_t GC_nacl_thread_parker = -1;
+  STATIC int GC_nacl_num_gc_threads = 0;
+  STATIC __thread int GC_nacl_thread_idx = -1;
+  STATIC volatile int GC_nacl_park_threads_now = 0;
+  STATIC volatile pthread_t GC_nacl_thread_parker = -1;
 
-GC_INNER __thread GC_thread GC_nacl_gc_thread_self = NULL;
+  GC_INNER __thread GC_thread GC_nacl_gc_thread_self = NULL;
 
-int GC_nacl_thread_parked[MAX_NACL_GC_THREADS];
-int GC_nacl_thread_used[MAX_NACL_GC_THREADS];
+  volatile int GC_nacl_thread_parked[MAX_NACL_GC_THREADS];
+  int GC_nacl_thread_used[MAX_NACL_GC_THREADS];
 
 #elif defined(GC_OPENBSD_UTHREADS)
 
@@ -202,7 +202,7 @@ STATIC sem_t GC_suspend_ack_sem;
 
 STATIC void GC_suspend_handler_inner(ptr_t sig_arg, void *context);
 
-#ifdef SA_SIGINFO
+#ifndef NO_SA_SIGACTION
   STATIC void GC_suspend_handler(int sig, siginfo_t * info GC_ATTR_UNUSED,
                                  void * context GC_ATTR_UNUSED)
 #else
@@ -216,7 +216,7 @@ STATIC void GC_suspend_handler_inner(ptr_t sig_arg, void *context);
 # else
     /* We believe that in all other cases the full context is already   */
     /* in the signal handler frame.                                     */
-#   ifndef SA_SIGINFO
+#   ifdef NO_SA_SIGACTION
       void *context = 0;
 #   endif
     GC_suspend_handler_inner((ptr_t)(word)sig, context);
@@ -402,6 +402,12 @@ GC_INNER void GC_push_all_stacks(void)
                         (void *)p->id, lo, hi);
 #       endif
         if (0 == lo) ABORT("GC_push_all_stacks: sp not set!");
+        if (p->altstack != NULL && (word)p->altstack <= (word)lo
+            && (word)lo <= (word)p->altstack + p->altstack_size) {
+          hi = p->altstack + p->altstack_size;
+          /* FIXME: Need to scan the normal stack too, but how ? */
+          /* FIXME: Assume stack grows down */
+        }
         GC_push_all_stack_sections(lo, hi, traced_stack_sect);
 #       ifdef STACK_GROWS_UP
           total_size += lo - hi;
@@ -441,7 +447,7 @@ GC_INNER void GC_push_all_stacks(void)
   int GC_stopping_pid = 0;
 #endif
 
-#ifdef PLATFORM_ANDROID
+#ifdef USE_TKILL_ON_ANDROID
   extern int tkill(pid_t tid, int sig); /* from sys/linux-unistd.h */
 
   static int android_thread_kill(pid_t tid, int sig)
@@ -457,7 +463,7 @@ GC_INNER void GC_push_all_stacks(void)
 
     return ret;
   }
-#endif /* PLATFORM_ANDROID */
+#endif /* USE_TKILL_ON_ANDROID */
 
 /* We hold the allocation lock.  Suspend all threads that might */
 /* still be running.  Return the number of suspend signals that */
@@ -466,8 +472,12 @@ STATIC int GC_suspend_all(void)
 {
   int n_live_threads = 0;
   int i;
-
 # ifndef NACL
+#   ifndef USE_TKILL_ON_ANDROID
+      pthread_t thread_id;
+#   else
+      pid_t thread_id;
+#   endif
     GC_thread p;
 #   ifndef GC_OPENBSD_UTHREADS
       int result;
@@ -499,12 +509,17 @@ STATIC int GC_suspend_all(void)
                 if (pthread_stackseg_np(p->id, &stack))
                   ABORT("pthread_stackseg_np failed");
                 p -> stop_info.stack_ptr = (ptr_t)stack.ss_sp - stack.ss_size;
+                if (GC_on_thread_event)
+                  GC_on_thread_event(GC_EVENT_THREAD_SUSPENDED,
+                                     (void *)p->id);
               }
 #           else
-#             ifndef PLATFORM_ANDROID
-                result = pthread_kill(p -> id, GC_sig_suspend);
+#             ifndef USE_TKILL_ON_ANDROID
+                thread_id = p -> id;
+                result = pthread_kill(thread_id, GC_sig_suspend);
 #             else
-                result = android_thread_kill(p -> kernel_id, GC_sig_suspend);
+                thread_id = p -> kernel_id;
+                result = android_thread_kill(thread_id, GC_sig_suspend);
 #             endif
               switch(result) {
                 case ESRCH:
@@ -512,6 +527,10 @@ STATIC int GC_suspend_all(void)
                     n_live_threads--;
                     break;
                 case 0:
+                    if (GC_on_thread_event)
+                      GC_on_thread_event(GC_EVENT_THREAD_SUSPENDED,
+                                         (void *)(word)thread_id);
+                                /* Note: thread_id might be truncated.  */
                     break;
                 default:
                     ABORT_ARG1("pthread_kill failed at suspend",
@@ -552,6 +571,8 @@ STATIC int GC_suspend_all(void)
           num_used++;
           if (GC_nacl_thread_parked[i] == 1) {
             num_threads_parked++;
+            if (GC_on_thread_event)
+              GC_on_thread_event(GC_EVENT_THREAD_SUSPENDED, (void *)(word)i);
           }
         }
       }
@@ -690,8 +711,22 @@ GC_INNER void GC_stop_world(void)
                 NACL_GC_REG_STORAGE_SIZE * sizeof(ptr_t));\
           __asm__ __volatile__ ("add $16, %esp"); \
         } while (0)
+# elif defined(__arm__)
+#   define NACL_STORE_REGS() \
+        do { \
+          __asm__ __volatile__ ("push {r4-r8,r10-r12,lr}"); \
+          __asm__ __volatile__ ("mov r0, %0" \
+                : : "r" (&GC_nacl_gc_thread_self->stop_info.stack_ptr)); \
+          __asm__ __volatile__ ("bic r0, r0, #0xc0000000"); \
+          __asm__ __volatile__ ("str sp, [r0]"); \
+          BCOPY(GC_nacl_gc_thread_self->stop_info.stack_ptr, \
+                GC_nacl_gc_thread_self->stop_info.reg_storage, \
+                NACL_GC_REG_STORAGE_SIZE * sizeof(ptr_t)); \
+          __asm__ __volatile__ ("add sp, sp, #40"); \
+          __asm__ __volatile__ ("bic sp, sp, #0xc0000000"); \
+        } while (0)
 # else
-#   error FIXME for non-amd64/x86 NaCl
+#   error TODO Please port NACL_STORE_REGS
 # endif
 
   GC_API_OSCALL void nacl_pre_syscall_hook(void)
@@ -748,16 +783,28 @@ GC_INNER void GC_stop_world(void)
   STATIC GC_bool GC_nacl_thread_parking_inited = FALSE;
   STATIC pthread_mutex_t GC_nacl_thread_alloc_lock = PTHREAD_MUTEX_INITIALIZER;
 
-  extern void nacl_register_gc_hooks(void (*pre)(void), void (*post)(void));
+  struct nacl_irt_blockhook {
+    int (*register_block_hooks)(void (*pre)(void), void (*post)(void));
+  };
+
+  extern size_t nacl_interface_query(const char *interface_ident,
+                                     void *table, size_t tablesize);
 
   GC_INNER void GC_nacl_initialize_gc_thread(void)
   {
     int i;
-    nacl_register_gc_hooks(nacl_pre_syscall_hook, nacl_post_syscall_hook);
+    static struct nacl_irt_blockhook gc_hook;
+
     pthread_mutex_lock(&GC_nacl_thread_alloc_lock);
     if (!EXPECT(GC_nacl_thread_parking_inited, TRUE)) {
       BZERO(GC_nacl_thread_parked, sizeof(GC_nacl_thread_parked));
       BZERO(GC_nacl_thread_used, sizeof(GC_nacl_thread_used));
+      /* TODO: replace with public 'register hook' function when        */
+      /* available from glibc.                                          */
+      nacl_interface_query("nacl-irt-blockhook-0.1",
+                           &gc_hook, sizeof(gc_hook));
+      gc_hook.register_block_hooks(nacl_pre_syscall_hook,
+                                   nacl_post_syscall_hook);
       GC_nacl_thread_parking_inited = TRUE;
     }
     GC_ASSERT(GC_nacl_num_gc_threads <= MAX_NACL_GC_THREADS);
@@ -797,6 +844,11 @@ GC_INNER void GC_start_world(void)
       register int n_live_threads = 0;
       register int result;
 #   endif
+#   ifndef USE_TKILL_ON_ANDROID
+      pthread_t thread_id;
+#   else
+      pid_t thread_id;
+#   endif
 #   ifdef GC_NETBSD_THREADS_WORKAROUND
       int code;
 #   endif
@@ -823,12 +875,15 @@ GC_INNER void GC_start_world(void)
 #         ifdef GC_OPENBSD_UTHREADS
             if (pthread_resume_np(p -> id) != 0)
               ABORT("pthread_resume_np failed");
+            if (GC_on_thread_event)
+              GC_on_thread_event(GC_EVENT_THREAD_UNSUSPENDED, (void *)p->id);
 #         else
-#           ifndef PLATFORM_ANDROID
-              result = pthread_kill(p -> id, GC_sig_thr_restart);
+#           ifndef USE_TKILL_ON_ANDROID
+              thread_id = p -> id;
+              result = pthread_kill(thread_id, GC_sig_thr_restart);
 #           else
-              result = android_thread_kill(p -> kernel_id,
-                                           GC_sig_thr_restart);
+              thread_id = p -> kernel_id;
+              result = android_thread_kill(thread_id, GC_sig_thr_restart);
 #           endif
             switch(result) {
                 case ESRCH:
@@ -836,6 +891,9 @@ GC_INNER void GC_start_world(void)
                     n_live_threads--;
                     break;
                 case 0:
+                    if (GC_on_thread_event)
+                      GC_on_thread_event(GC_EVENT_THREAD_UNSUSPENDED,
+                                         (void *)(word)thread_id);
                     break;
                 default:
                     ABORT_ARG1("pthread_kill failed at resume",
@@ -863,6 +921,9 @@ GC_INNER void GC_start_world(void)
       GC_log_printf("World starting...\n");
 #   endif
     GC_nacl_park_threads_now = 0;
+    if (GC_on_thread_event)
+      GC_on_thread_event(GC_EVENT_THREAD_UNSUSPENDED, NULL);
+      /* TODO: Send event for every unsuspended thread. */
 # endif
 }
 
@@ -890,7 +951,7 @@ GC_INNER void GC_stop_init(void)
 #   else
       act.sa_flags = 0
 #   endif
-#   ifdef SA_SIGINFO
+#   ifndef NO_SA_SIGACTION
                      | SA_SIGINFO
 #   endif
         ;
@@ -905,7 +966,7 @@ GC_INNER void GC_stop_init(void)
     GC_remove_allowed_signals(&act.sa_mask);
     /* GC_sig_thr_restart is set in the resulting mask. */
     /* It is unmasked by the handler when necessary.    */
-#   ifdef SA_SIGINFO
+#   ifndef NO_SA_SIGACTION
       act.sa_sigaction = GC_suspend_handler;
 #   else
       act.sa_handler = GC_suspend_handler;
@@ -915,7 +976,7 @@ GC_INNER void GC_stop_init(void)
         ABORT("Cannot set SIG_SUSPEND handler");
     }
 
-#   ifdef SA_SIGINFO
+#   ifndef NO_SA_SIGACTION
       act.sa_flags &= ~SA_SIGINFO;
 #   endif
     act.sa_handler = GC_restart_handler;

@@ -163,11 +163,8 @@ CXXFLAGS += -Ithird_party/netlib/
 
 # v8's fast-dtoa
 CXXFLAGS += -Ithird_party/double_conversion/
-SRC_DTOA += third_party/double_conversion/fast-dtoa.cpp
-SRC_DTOA += third_party/double_conversion/diy-fp.cpp
-SRC_DTOA += third_party/double_conversion/cached-powers.cpp
-SRC_DTOA += third_party/double_conversion/bignum.cpp
-SRC_DTOA += third_party/double_conversion/bignum-dtoa.cpp
+SRC_DTOA =
+SRC_DTOA += $(foreach dir, ./third_party/double_conversion , $(wildcard $(dir)/*.cc))
 
 # rapidjson
 CXXFLAGS += -Ithird_party/rapidjson/include/
@@ -203,9 +200,12 @@ SRC += $(SRC_ESPRIMA_CPP)
 ifeq ($(TYPE), jit)
 	SRC += $(SRC_NANOJIT)
 endif
-SRC += $(SRC_DTOA)
+
+SRC_CC =
+SRC_CC += $(SRC_DTOA)
 
 OBJS := $(SRC:%.cpp= $(BUILDDIR)/%.o)
+OBJS += $(SRC_CC:%.cc= $(BUILDDIR)/%.o)
 OBJS += $(SRC_C:%.c= $(BUILDDIR)/%.o)
 
 #######################################################
@@ -238,6 +238,11 @@ $(BUILDDIR)/$(BIN): $(OBJS) $(THIRD_PARTY_LIBS)
 	$(CXX) -o $@ $(OBJS) $(THIRD_PARTY_LIBS) $(LDFLAGS)
 
 $(BUILDDIR)/%.o: %.cpp
+	mkdir -p $(dir $@)
+	$(CXX) -c $(CXXFLAGS) $< -o $@
+	$(CXX) -MM $(CXXFLAGS) -MT $@ $< > $(BUILDDIR)/$*.d
+	
+$(BUILDDIR)/%.o: %.cc
 	mkdir -p $(dir $@)
 	$(CXX) -c $(CXXFLAGS) $< -o $@
 	$(CXX) -MM $(CXXFLAGS) -MT $@ $< > $(BUILDDIR)/$*.d

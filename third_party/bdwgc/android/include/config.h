@@ -4,9 +4,6 @@
 /* Define to recognise all pointers to the interior of objects. */
 #define ALL_INTERIOR_POINTERS 1
 
-/* Define to enable atomic uncollectible allocation. */
-#define ATOMIC_UNCOLLECTABLE 1
-
 /* See doc/README.macros. */
 /* #undef DARWIN_DONT_PARSE_STACK */
 
@@ -30,6 +27,9 @@
 
 /* Define to enable internal debug assertions. */
 /* #undef GC_ASSERTIONS */
+
+/* Define to enable atomic uncollectible allocation. */
+#define GC_ATOMIC_UNCOLLECTABLE 1
 
 /* Define to support Darwin pthreads. */
 /* #undef GC_DARWIN_THREADS */
@@ -98,12 +98,12 @@
 #define GC_VERSION_MAJOR 7
 
 /* The micro version number of this GC release. */
-#define GC_VERSION_MICRO 2
+#define GC_VERSION_MICRO 0
 
 /* The minor version number of this GC release. */
-#define GC_VERSION_MINOR 4
+#define GC_VERSION_MINOR 5
 
-/* Define to support win32-pthreads. */
+/* Define to support pthreads-win32 or winpthreads. */
 /* #undef GC_WIN32_PTHREADS */
 
 /* Define to support Win32 threads. */
@@ -186,7 +186,7 @@
 #define PACKAGE_NAME "gc"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "gc 7.4.2"
+#define PACKAGE_STRING "gc 7.5.0"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "gc"
@@ -195,7 +195,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "7.4.2"
+#define PACKAGE_VERSION "7.5.0"
 
 /* Define to enable parallel marking. */
 /* #undef PARALLEL_MARK */
@@ -249,7 +249,7 @@
 /* #undef USE_WINALLOC */
 
 /* Version number of package */
-#define VERSION "7.4.2"
+#define VERSION "7.5.0"
 
 /* The POSIX feature macro. */
 /* #undef _POSIX_C_SOURCE */

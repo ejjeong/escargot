@@ -38,7 +38,7 @@
 # if defined(MSWIN32) || defined(MSWINCE) || defined(CYGWIN32)
 #   if defined(CYGWIN32) && (__GNUC__ >= 4)
 #     if defined(__clang__)
-        /* As of Cygwin clang3.1, thread-local storage is unsupported.  */
+        /* As of Cygwin clang3.5.2, thread-local storage is unsupported.    */
 #       define USE_PTHREAD_SPECIFIC
 #     else
 #       define USE_COMPILER_TLS
@@ -51,9 +51,10 @@
 # elif (defined(LINUX) && !defined(ARM32) && !defined(AVR32) \
          && (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3)) \
          && !(defined(__clang__) && defined(PLATFORM_ANDROID))) \
-       || (defined(PLATFORM_ANDROID) && defined(ARM32) \
+       || (defined(PLATFORM_ANDROID) && !defined(__clang__) \
+            && defined(ARM32) \
             && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)))
-          /* As of Android NDK r8e, Clang cannot find __tls_get_addr.   */
+          /* As of Android NDK r10e, Clang cannot find __tls_get_addr.  */
 #   define USE_COMPILER_TLS
 # elif defined(GC_DGUX386_THREADS) || defined(GC_OSF1_THREADS) \
        || defined(GC_AIX_THREADS) || defined(GC_DARWIN_THREADS) \
@@ -108,7 +109,9 @@ typedef struct thread_local_freelists {
 # define GC_getspecific pthread_getspecific
 # define GC_setspecific pthread_setspecific
 # define GC_key_create pthread_key_create
-# define GC_remove_specific(key)  /* No need for cleanup on exit. */
+# define GC_remove_specific(key) pthread_setspecific(key, NULL)
+                        /* Explicitly delete the value to stop the TLS  */
+                        /* destructor from being called repeatedly.     */
   typedef pthread_key_t GC_key_t;
 #elif defined(USE_COMPILER_TLS) || defined(USE_WIN32_COMPILER_TLS)
 # define GC_getspecific(x) (x)

@@ -15,13 +15,8 @@ BCC_MAKEFILE: Remove if CMake can generate Makefile for this compiler.
 NT_X64_STATIC_THREADS_MAKEFILE, NT_X64_THREADS_MAKEFILE, digimars.mak,
 gc.mak.)
 
-Makefile.dj: Remove if it is possible to use Makefile.direct (or
-auto-generated Makefile) instead. (Same for EMX_MAKEFILE.)
-
-build_atomic_ops.sh[.cygwin]: Remove if really not needed.
-
 BCC_MAKEFILE, EMX_MAKEFILE, OS2_MAKEFILE, PCR-Makefile, WCC_MAKEFILE,
-SMakefile.amiga, Makefile.dj, digimars.mak: move to "build" folder.
+SMakefile.amiga, digimars.mak: move to "build" folder.
 
 Do type-punning via union (instead of pointer type cast) to enable safe
 '-fstrict-aliasing' compiler optimization option.
@@ -33,8 +28,6 @@ Use madvise() on Unix/Cygwin.
 Use Linux VM pressure notifications to force GC and unmapping.
 
 Filter overlaps in GC_add_roots for Unix (same as for Win32).
-
-Do not resume parallel markers if only 1 core is active at GC mark start.
 
 Enable GC_set_handle_fork(1) for Darwin with GC_dirty_maintained on (both
 single and multi-threaded modes).
