@@ -3714,9 +3714,27 @@ void GlobalObject::installRegExp()
         ESValue R = instance->currentExecutionContext()->resolveThisBinding();
         if (!R.isObject())
             throw ESValue(TypeError::create(ESString::create(u"RegExp.prototype.toString: \'this\' value is not object type")));
-        // FIXME implement RegExp.flags
+
         escargot::ESString* ret = ESString::concatTwoStrings(ESString::create(u"/"), R.toObject()->get(strings->source.string()).toString());
         ret = ESString::concatTwoStrings(ret, ESString::create(u"/"));
+        ESRegExpObject::Option option = R.asESPointer()->asESRegExpObject()->option();
+
+        char flags[5] = {0};
+        int flags_idx = 0;
+        if (option & ESRegExpObject::Option::Global) {
+            flags[flags_idx++] = 'g';
+        }
+        if (option & ESRegExpObject::Option::IgnoreCase) {
+            flags[flags_idx++] = 'i';
+        }
+        if (option & ESRegExpObject::Option::MultiLine) {
+            flags[flags_idx++] = 'm';
+        }
+        if (option & ESRegExpObject::Option::Sticky) {
+            flags[flags_idx++] = 'y';
+        }
+        ret = ESString::concatTwoStrings(ret, ESString::create(flags));
+
         return ret;
     }, strings->toString, 0));
 
