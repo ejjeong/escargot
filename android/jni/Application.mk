@@ -1,3 +1,7 @@
+ifeq ($(BUILD_OBJECT), )
+	BUILD_OBJECT = exe
+endif
+
 ifeq ($(BUILD_MODE), )
 	BUILD_MODE = release
 endif

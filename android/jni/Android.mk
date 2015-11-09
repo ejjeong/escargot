@@ -61,7 +61,9 @@ SRCS += $(foreach dir, $(SRC_PATH)/bytecode , $(wildcard $(dir)/*.cpp))
 SRCS += $(foreach dir, $(SRC_PATH)/jit , $(wildcard $(dir)/*.cpp))
 SRCS += $(foreach dir, $(SRC_PATH)/parser , $(wildcard $(dir)/*.cpp))
 SRCS += $(foreach dir, $(SRC_PATH)/runtime , $(wildcard $(dir)/*.cpp))
-SRCS += $(foreach dir, $(SRC_PATH)/shell , $(wildcard $(dir)/*.cpp))
+ifeq ($(BUILD_OBJ), exe)
+	SRCS += $(foreach dir, $(SRC_PATH)/shell , $(wildcard $(dir)/*.cpp))
+endif
 SRCS += $(foreach dir, $(SRC_PATH)/vm , $(wildcard $(dir)/*.cpp))
 
 SRCS += $(SRC_THIRD_PARTY)/yarr/OSAllocatorPosix.cpp
@@ -76,5 +78,8 @@ SRCS += $(foreach dir, $(SRC_THIRD_PARTY)/double_conversion , $(wildcard $(dir)/
 SRCS += $(foreach dir, $(SRC_THIRD_PARTY)/bdwgc , $(wildcard $(dir)/*.c))
 
 LOCAL_SRC_FILES += $(addprefix ../, $(SRCS))
-
-include $(BUILD_EXECUTABLE)
+ifeq ($(BUILD_OBJ), exe)
+	include $(BUILD_EXECUTABLE)
+else
+	include $(BUILD_SHARED_LIBRARY)
+endif
