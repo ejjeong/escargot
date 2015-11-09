@@ -897,6 +897,8 @@ ALWAYS_INLINE ESHiddenClass* ESHiddenClass::removeProperty(size_t idx)
         cls->m_flags.m_forceNonVectorMode = m_flags.m_forceNonVectorMode;
         cls->m_flags.m_isVectorMode = false;
         for (unsigned i = 0; i < m_propertyInfo.size(); i ++) {
+            if (i == idx)
+                continue;
             cls->m_propertyInfo.push_back(m_propertyInfo[i]);
             if (i < idx) {
                 cls->m_propertyIndexHashMapInfo.insert(std::make_pair(m_propertyInfo[i].m_name, i));
