@@ -294,17 +294,14 @@ void GlobalObject::initGlobalObject()
         }
 
         escargot::ESString* substr = s->substring(p, strLen);
-        double f = atof(substr->utf8Data());
-        if (f == 0.0 && !isdigit(*data) && !(end - data >= 1 && data[0] == '.' && isdigit(data[1])))
+        double number = atof(substr->utf8Data());
+        if (number == 0.0 && !isdigit(*data) && !(end - data >= 1 && data[0] == '.' && isdigit(data[1])))
             return ESValue(std::numeric_limits<double>::quiet_NaN());
-
-        // FIXME: The result of `parseFloat("infinity")` should be NaN because it is wrong number format.
-        //        However, `atof` and `strtod` function return "inf" for this case.
-        if (end - data >= 2 && data[0] == 'i' && data[1] == 'n' && data[2] == 'f')
+        if (number == std::numeric_limits<double>::infinity())
             return ESValue(std::numeric_limits<double>::quiet_NaN());
 
         // 5. Return the Number value for the MV of numberString.
-        return ESValue(f);
+        return ESValue(number);
     }, ESString::create(u"parseFloat"), 1));
 
     // $18.2.5 parseInt(string, radix)
