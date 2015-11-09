@@ -1643,7 +1643,7 @@ void GlobalObject::installArray()
         int len = O->get(strings->length.string()).toLength();
         int argCount = instance->currentExecutionContext()->argumentCount();
         if (argCount > 0) {
-            if (len+argCount > std::pow(2, 53)-1)
+            if (len+argCount > std::pow(2, 32)-1)
                 throw TypeError::create(ESString::create("Array.prototype.unshift: length is too large"));
             int k = len;
             while (k > 0) {
@@ -2092,9 +2092,9 @@ void GlobalObject::installString()
             // 8, 9
             double lim;
             if (instance->currentExecutionContext()->readArgument(1).isUndefined()) {
-                lim = std::pow(2, 53)-1;
+                lim = std::pow(2, 32)-1;
             } else {
-                lim = instance->currentExecutionContext()->readArgument(1).toLength();
+                lim = instance->currentExecutionContext()->readArgument(1).toUint32();
             }
 
             // 10
@@ -2189,9 +2189,9 @@ void GlobalObject::installString()
             // 8, 9
             double lim;
             if (instance->currentExecutionContext()->readArgument(1).isUndefined()) {
-                lim = std::pow(2, 53)-1;
+                lim = std::pow(2, 32)-1;
             } else {
-                lim = instance->currentExecutionContext()->readArgument(1).toLength();
+                lim = instance->currentExecutionContext()->readArgument(1).toUint32();
             }
 
             // 10
