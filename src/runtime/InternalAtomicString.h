@@ -48,6 +48,10 @@ public:
 #pragma GCC diagnostic pop
 #endif
 
+    void clear()
+    {
+        m_string = NULL;
+    }
 protected:
     ESString* m_string;
 };

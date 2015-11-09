@@ -2168,13 +2168,12 @@ public:
 #endif
 };
 
-class CodeBlock : public gc_cleanup {
+class CodeBlock : public gc {
     CodeBlock(bool isBuiltInFunction);
-    ~CodeBlock();
 public:
     static CodeBlock* create(bool isBuiltInFunction = false)
     {
-        return new(GC) CodeBlock(isBuiltInFunction);
+        return new CodeBlock(isBuiltInFunction);
     }
     template <typename CodeType>
     void pushCode(const CodeType& type, ByteCodeGenerateContext& context, Node* node);

@@ -14,16 +14,24 @@ CodeBlock::CodeBlock(bool isBuiltInFunction)
     m_cachedJITFunction = nullptr;
     m_executeCount = 0;
     m_jitThreshold = ESVMInstance::currentInstance()->m_jitThreshold;
+    m_dontJIT = false;
 #endif
     if (!isBuiltInFunction) {
         ESVMInstance::currentInstance()->globalObject()->registerCodeBlock(this);
+        GC_register_finalizer_ignore_self(this, [](void* obj, void* cd) {
+            if (!((CodeBlock *)obj)->m_isBuiltInFunction)
+                ESVMInstance::currentInstance()->globalObject()->unregisterCodeBlock(((CodeBlock *)obj));
+            ((CodeBlock *)obj)->m_code.clear();
+            ((CodeBlock *)obj)->m_params.clear();
+            ((CodeBlock *)obj)->m_innerIdentifiers.clear();
+#ifndef NDEBUG
+            ((CodeBlock *)obj)->m_nonAtomicId = NULL;
+            ((CodeBlock *)obj)->m_id.clear();
+#endif
+        }, NULL, NULL, NULL);
     }
-}
 
-CodeBlock::~CodeBlock()
-{
-    if (!m_isBuiltInFunction)
-        ESVMInstance::currentInstance()->globalObject()->unregisterCodeBlock(this);
+
 }
 
 void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, ByteCodeGenerateContext& context)
