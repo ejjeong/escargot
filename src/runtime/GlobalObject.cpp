@@ -699,6 +699,8 @@ void GlobalObject::installObject()
             return ESString::create(u"[object Date]");
         } else if (thisVal->isESRegExpObject()) {
             return ESString::create(u"[object RegExp]");
+        } else if (thisVal->isESMathObject()) {
+            return ESString::create(u"[object Math]");
         } else if (thisVal->isESTypedArrayObject()) {
             u16string ret = u"[object ";
             ESValue ta_constructor = thisVal->get(strings->constructor.string());
@@ -2891,7 +2893,7 @@ void GlobalObject::installJSON()
 void GlobalObject::installMath()
 {
     // create math object
-    m_math = ::escargot::ESObject::create();
+    m_math = ::escargot::ESMathObject::create();
     m_math->forceNonVectorHiddenClass();
 
     // initialize math object: $20.2.1.6 Math.PI

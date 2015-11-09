@@ -366,7 +366,14 @@ inline bool ESValue::isObject() const
 
 inline double ESValue::toLength() const
 {
-    return toInteger(); // TODO
+    double len = toInteger();
+    if (len <= 0.0) {
+        return 0.0;
+    }
+    if (len > 0 && std::isinf(len)) {
+        return std::pow(2, 53) - 1;
+    }
+    return std::min(len, std::pow(2, 53) - 1);
 }
 
 ALWAYS_INLINE bool ESValue::isPrimitive() const

@@ -362,7 +362,7 @@ protected:
     escargot::ESStringObject* m_stringObjectProxy;
     escargot::ESFunctionObject* m_date;
     escargot::ESDateObject* m_datePrototype;
-    escargot::ESObject* m_math;
+    escargot::ESMathObject* m_math;
     escargot::ESObject* m_json;
     escargot::ESFunctionObject* m_number;
     escargot::ESNumberObject* m_numberPrototype;

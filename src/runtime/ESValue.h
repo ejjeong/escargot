@@ -27,6 +27,7 @@ class ESDateObject;
 class ESVMInstance;
 class ESPointer;
 class ESRegExpObject;
+class ESMathObject;
 // ES6 Typed Array
 class ESArrayBufferObject;
 class ESArrayBufferView;
@@ -247,13 +248,14 @@ public:
         ESDateObject = 1 << 7,
         ESNumberObject = 1 << 8,
         ESRegExpObject = 1 << 9,
-        ESBooleanObject = 1 << 10,
-        ESArrayBufferObject = 1 << 11,
-        ESArrayBufferView = 1 << 12,
-        ESTypedArrayObject = 1 << 13,
-        ESDataViewObject = 1 << 14,
-        ESArgumentsObject = 1 << 15,
-        ESControlFlowRecord = 1 << 16,
+        ESMathObject = 1 << 10,
+        ESBooleanObject = 1 << 11,
+        ESArrayBufferObject = 1 << 12,
+        ESArrayBufferView = 1 << 13,
+        ESTypedArrayObject = 1 << 14,
+        ESDataViewObject = 1 << 15,
+        ESArgumentsObject = 1 << 16,
+        ESControlFlowRecord = 1 << 17,
         TypeMask = 0x1ffff
     };
 
@@ -384,6 +386,11 @@ public:
         ASSERT(isESRegExpObject());
 #endif
         return reinterpret_cast<::escargot::ESRegExpObject *>(this);
+    }
+
+    ALWAYS_INLINE bool isESMathObject() const
+    {
+        return m_type & Type::ESMathObject;
     }
 
     ALWAYS_INLINE bool isESErrorObject() const
@@ -1501,6 +1508,17 @@ private:
     struct timespec m_time;
     struct tm m_cachedTM;
     bool m_isCacheDirty;
+};
+
+class ESMathObject : public ESObject {
+protected:
+    ESMathObject(ESPointer::Type type = ESPointer::Type::ESMathObject);
+public:
+    static ESMathObject* create()
+    {
+        return new ESMathObject();
+    }
+protected:
 };
 
 class ESJSONObject : public ESObject {

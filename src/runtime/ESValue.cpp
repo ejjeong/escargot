@@ -1121,6 +1121,11 @@ void ESDateObject::setTime(double t)
     m_isCacheDirty = true;
 }
 
+ESMathObject::ESMathObject(ESPointer::Type type)
+    : ESObject((Type)(Type::ESObject | Type::ESMathObject), ESVMInstance::currentInstance()->globalObject()->objectPrototype())
+{
+}
+
 ESStringObject::ESStringObject(escargot::ESString* str)
     : ESObject((Type)(Type::ESObject | Type::ESStringObject), ESVMInstance::currentInstance()->globalObject()->stringPrototype())
 {
