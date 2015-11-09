@@ -368,7 +368,8 @@ struct TermChain {
     Vector<TermChain> hotTerms;
 };
 
-struct YarrPattern {
+class YarrPattern : public gc {
+public:
     YarrPattern(const String& pattern, bool ignoreCase, bool multiline, ErrorCode* error);
 
     ~YarrPattern()

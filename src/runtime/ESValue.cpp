@@ -402,14 +402,18 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
 
     bool isGlobal = option & ESRegExpObject::Option::Global;
     if (!byteCode) {
-        JSC::Yarr::ErrorCode yarrError;
-        JSC::Yarr::YarrPattern yarrPattern(*regexSource, option & ESRegExpObject::Option::IgnoreCase, option & ESRegExpObject::Option::MultiLine, &yarrError);
+        JSC::Yarr::ErrorCode yarrError = JSC::Yarr::ErrorCode::NoError;
+        JSC::Yarr::YarrPattern* yarrPattern;
+        if (esptr->isESRegExpObject() && esptr->asESRegExpObject()->yarrPattern())
+            yarrPattern = esptr->asESRegExpObject()->yarrPattern();
+        else
+            yarrPattern = new JSC::Yarr::YarrPattern(*regexSource, option & ESRegExpObject::Option::IgnoreCase, option & ESRegExpObject::Option::MultiLine, &yarrError);
         if (yarrError) {
             matchResult.m_subPatternNum = 0;
             return false;
         }
         WTF::BumpPointerAllocator *bumpAlloc = ESVMInstance::currentInstance()->bumpPointerAllocator();
-        JSC::Yarr::OwnPtr<JSC::Yarr::BytecodePattern> ownedBytecode = JSC::Yarr::byteCompileEscargot(yarrPattern, bumpAlloc);
+        JSC::Yarr::OwnPtr<JSC::Yarr::BytecodePattern> ownedBytecode = JSC::Yarr::byteCompileEscargot(*yarrPattern, bumpAlloc);
         byteCode = ownedBytecode.leakPtr();
         if (esptr->isESRegExpObject()) {
             esptr->asESRegExpObject()->setBytecodePattern(byteCode);
@@ -505,6 +509,7 @@ ESRegExpObject::ESRegExpObject(escargot::ESString* source, const Option& option)
 {
     m_source = source;
     m_option = option;
+    m_yarrPattern = NULL;
     m_bytecodePattern = NULL;
     m_lastIndex = ESValue(0);
     m_lastExecutedString = NULL;
@@ -516,10 +521,15 @@ ESRegExpObject::ESRegExpObject(escargot::ESString* source, const Option& option)
     }, true, false, false);
 }
 
-void ESRegExpObject::setSource(escargot::ESString* src)
+bool ESRegExpObject::setSource(escargot::ESString* src)
 {
     m_bytecodePattern = NULL;
     m_source = src;
+    JSC::Yarr::ErrorCode yarrError;
+    m_yarrPattern = new JSC::Yarr::YarrPattern(src->string(), m_option & ESRegExpObject::Option::IgnoreCase, m_option & ESRegExpObject::Option::MultiLine, &yarrError);
+    if (yarrError)
+        return false;
+    return true;
 }
 void ESRegExpObject::setOption(const Option& option)
 {

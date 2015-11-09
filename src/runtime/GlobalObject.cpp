@@ -3581,7 +3581,9 @@ void GlobalObject::installRegExp()
             if (pattern.isUndefined()) {
                 thisVal->setSource(ESString::create("(?:)"));
             } else {
-                thisVal->setSource(pattern.toString());
+                bool success = thisVal->setSource(pattern.toString());
+                if (!success)
+                    throw ESValue(SyntaxError::create(ESString::create(u"RegExp has invalid source")));
             }
         }
 

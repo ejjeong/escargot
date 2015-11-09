@@ -5,6 +5,7 @@
 
 namespace JSC {
 namespace Yarr {
+class YarrPattern;
 class BytecodePattern;
 }
 }
@@ -1882,9 +1883,14 @@ public:
     ALWAYS_INLINE Option option() { return m_option; }
     ALWAYS_INLINE const escargot::ESString* source() { return m_source; }
     ALWAYS_INLINE ESValue lastIndex() { return m_lastIndex; }
-    void setSource(escargot::ESString* src);
+    bool setSource(escargot::ESString* src);
     void setOption(const Option& option);
     void setLastIndex(const ESValue& lastIndex) { m_lastIndex = lastIndex; }
+
+    JSC::Yarr::YarrPattern* yarrPattern()
+    {
+        return m_yarrPattern;
+    }
 
     JSC::Yarr::BytecodePattern* bytecodePattern()
     {
@@ -1899,6 +1905,7 @@ private:
     ESRegExpObject(escargot::ESString* source, const Option& option);
 
     escargot::ESString* m_source;
+    JSC::Yarr::YarrPattern* m_yarrPattern;
     JSC::Yarr::BytecodePattern* m_bytecodePattern;
     Option m_option;
 
