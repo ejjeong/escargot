@@ -1265,16 +1265,18 @@ void GlobalObject::installArray()
                     } else if (n >= 0) {
                         k = n;
                     } else {
-                        k = len - n * (-1);
-                        if (k < 0)
+                        int tmpk = len - n * (-1);
+                        if (tmpk < 0)
                             k = 0;
+                        else
+                            k = tmpk;
                     }
                 }
             }
             if (ret != -1) {
                 ret = -1;
                 ESValue& searchElement = instance->currentExecutionContext()->arguments()[0];
-                while (k < thisBinded->length()) {
+                while (k < len) {
                     ESValue kPresent = thisBinded->get(ESValue(k));
                     if (searchElement.equalsTo(kPresent)) {
                         ret = k;

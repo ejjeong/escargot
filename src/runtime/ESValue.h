@@ -1610,14 +1610,22 @@ public:
 
     void setLength(unsigned newLength)
     {
-        if (newLength < m_length) {
-            m_vector.resize(newLength);
-        } else if (m_fastmode && newLength > m_length) {
-            if (m_vector.capacity() < newLength) {
-                size_t reservedSpace = std::min(MAX_FASTMODE_SIZE, newLength*2);
-                m_vector.reserve(reservedSpace);
+        if (m_fastmode) {
+            if (newLength < m_length) {
+                m_vector.resize(newLength);
+            } else if (newLength > m_length) {
+                if (m_vector.capacity() < newLength) {
+                    size_t reservedSpace = std::min(MAX_FASTMODE_SIZE, newLength*2);
+                    m_vector.reserve(reservedSpace);
+                }
+                m_vector.resize(newLength, ESValue(ESValue::ESEmptyValue));
             }
-            m_vector.resize(newLength, ESValue(ESValue::ESEmptyValue));
+        } else {
+            if (newLength < m_length) {
+                for (unsigned i = newLength; i < m_length; i++) {
+                    deleteProperty(ESValue(i));
+                }
+            }
         }
         m_length = newLength;
     }
