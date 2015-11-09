@@ -3439,7 +3439,11 @@ void GlobalObject::installRegExp()
         if (thisValue.isUndefined()) {
             thisVal = ESRegExpObject::create(strings->emptyString.string(), ESRegExpObject::Option::None);
             thisVal->set__proto__(instance->globalObject()->regexpPrototype());
+        } else if (thisValue.isESPointer() && thisValue.asESPointer()->isESString()) {
+            thisVal = ESRegExpObject::create(thisValue.asESPointer()->asESString(), ESRegExpObject::Option::None);
+            thisVal->set__proto__(instance->globalObject()->regexpPrototype());
         } else {
+            ASSERT(thisValue.isObject());
             thisVal = thisValue.toObject()->asESRegExpObject();
         }
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
@@ -3532,12 +3536,12 @@ void GlobalObject::installRegExp()
     m_regexpPrototype->defineDataProperty(strings->exec, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
         if (!thisObject->isESRegExpObject())
-            throw TypeError::create();
+            throw ESValue(TypeError::create(ESString::create(u"Regexp.prototype.exec : This object is not Regexp object")));
         ::escargot::ESRegExpObject* regexp = thisObject->asESRegExpObject();
         ::escargot::ESArrayObject* arr = ::escargot::ESArrayObject::create();
         int argCount = instance->currentExecutionContext()->argumentCount();
-        if (argCount > 0) {
-            escargot::ESString* sourceStr = instance->currentExecutionContext()->arguments()[0].toString();
+        if (argCount >= 0) {
+            escargot::ESString* sourceStr = instance->currentExecutionContext()->readArgument(0).toString();
             if (sourceStr == regexp->m_lastExecutedString || (regexp->m_lastExecutedString && sourceStr->string() == regexp->m_lastExecutedString->string())) {
 
             } else {
@@ -3554,7 +3558,7 @@ void GlobalObject::installRegExp()
 
             if (!testResult) {
                 regexp->m_lastIndex = 0;
-                return arr;
+                return ESValue(ESValue::ESNull);
             }
 
             if (isGlobal) {
