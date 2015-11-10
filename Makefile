@@ -103,6 +103,7 @@ CXXFLAGS_INTERPRETER =
 
 # bdwgc
 CXXFLAGS += -Ithird_party/bdwgc/include/
+CXXFLAGS_DEBUG += -DGC_DEBUG
 GCLIBS=third_party/bdwgc/out/$(ARCH)/$(MODE)/.libs/libgc.a
 
 ifneq ($(TYPE),none)

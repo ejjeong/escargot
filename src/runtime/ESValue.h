@@ -1986,7 +1986,7 @@ public:
     void allocateArrayBuffer(unsigned bytelength)
     {
         m_bytelength = bytelength;
-        m_data = GC_malloc_atomic(bytelength);
+        m_data = GC_MALLOC_ATOMIC(bytelength);
         memset(m_data, 0, bytelength);
     }
 

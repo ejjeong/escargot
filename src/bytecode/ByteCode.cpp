@@ -18,7 +18,7 @@ CodeBlock::CodeBlock(bool isBuiltInFunction)
 #endif
     if (!isBuiltInFunction) {
         ESVMInstance::currentInstance()->globalObject()->registerCodeBlock(this);
-        GC_register_finalizer_ignore_self(this, [](void* obj, void* cd) {
+        GC_REGISTER_FINALIZER_IGNORE_SELF(this, [](void* obj, void* cd) {
             if (!((CodeBlock *)obj)->m_isBuiltInFunction)
                 ESVMInstance::currentInstance()->globalObject()->unregisterCodeBlock(((CodeBlock *)obj));
             ((CodeBlock *)obj)->m_code.clear();
@@ -30,8 +30,6 @@ CodeBlock::CodeBlock(bool isBuiltInFunction)
 #endif
         }, NULL, NULL, NULL);
     }
-
-
 }
 
 void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, ByteCodeGenerateContext& context)

@@ -614,7 +614,7 @@ void GlobalObject::installFunction()
             code.m_boundArgumentsCount = instance->currentExecutionContext()->argumentCount() - 1;
         } else
             code.m_boundArgumentsCount = 0;
-        code.m_boundArguments = (ESValue *)GC_malloc(code.m_boundArgumentsCount * sizeof(ESValue));
+        code.m_boundArguments = (ESValue *)GC_MALLOC(code.m_boundArgumentsCount * sizeof(ESValue));
         memcpy(code.m_boundArguments, instance->currentExecutionContext()->arguments() + 1, code.m_boundArgumentsCount * sizeof(ESValue));
         cb->pushCode(code, context, NULL);
         escargot::ESFunctionObject* function = ESFunctionObject::create(NULL, cb, strings->emptyString, std::max((int) code.m_boundTargetFunction->length() - (int) code.m_boundArgumentsCount, 0), false);

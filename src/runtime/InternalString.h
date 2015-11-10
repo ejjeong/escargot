@@ -47,7 +47,7 @@ inline const char * utf16ToUtf8(const char16_t *t, size_t* bufferSize = NULL)
         pt++;
     }
 
-    char* result = (char *)GC_malloc_atomic(strLength + 1);
+    char* result = (char *)GC_MALLOC_ATOMIC(strLength + 1);
     if (bufferSize)
         *bufferSize = strLength + 1;
     pt = t;

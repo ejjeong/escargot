@@ -510,7 +510,7 @@ public:
 #ifndef NDEBUG
         m_thisBindingStatus = Uninitialized;
 #endif
-        m_arguments = (ESValue *)GC_malloc(sizeof(ESValue) * argumentCount);
+        m_arguments = (ESValue *)GC_MALLOC(sizeof(ESValue) * argumentCount);
         memcpy(m_arguments, arguments, sizeof(ESValue) * argumentCount);
         m_argumentCount = argumentCount;
     }
