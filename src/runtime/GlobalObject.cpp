@@ -1616,37 +1616,22 @@ void GlobalObject::installArray()
             if (kPresent == false)
                 throw ESValue(TypeError::create(ESString::create(u"Type Error")));
         }
-        return ESValue();
-#if 0
-        if (LIKELY(thisBinded->isESArrayObject())) {
-            auto thisVal = thisBinded->asESArrayObject();
-            uint32_t len = thisVal->length();
-            bool shouldThrow = false;
-            for (int i = 0; i < argc; i++) {
-                ESValue& val = instance->currentExecutionContext()->arguments()[i];
-                thisVal->asESObject()->set(ESValue(double(len)+i), val);
-                if (len >= UINT_MAX - i) {
-                    shouldThrow = true;
-                }
+        while (k < len) { // 9
+            ESValue Pk = ESValue(k); // 9.a
+            bool kPresent = O->hasProperty(Pk); // 9.b
+            if (kPresent) { // 9.c
+                ESValue kValue = O->get(Pk); // 9.c.i
+                const int fnargc = 4;
+                ESValue* fnargs = (ESValue *)alloca(sizeof(ESValue) * fnargc);
+                fnargs[0] = accumulator;
+                fnargs[1] = kValue;
+                fnargs[2] = ESValue(k);
+                fnargs[3] = O;
+                accumulator = ESFunctionObject::call(ESVMInstance::currentInstance(), callbackfn, ESValue(), fnargs, fnargc, false);
+                k++; // 9.d
             }
-            if (shouldThrow) {
-                thisVal->setLength(UINT_MAX);
-                throw ESValue(RangeError::create());
-            }
-            return ESValue(thisVal->length());
-        } else {
-            ASSERT(thisBinded->isESObject());
-            ESObject* O = thisBinded->asESObject();
-            uint32_t len = O->get(strings->length.string()).toUint32();
-            for (int i = 0; i < argc; i++) {
-                ESValue& val = instance->currentExecutionContext()->arguments()[i];
-                O->set(ESString::create(double(len) + i), val);
-            }
-            ESValue ret = ESValue(double(len) + argc);
-            O->set(strings->length, ret);
-            return ret;
         }
-#endif
+        return accumulator;
     }, ESString::create(u"reduce"), 1));
 
     // $22.1.3.19 Array.prototype.reduceRight
