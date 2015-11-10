@@ -1158,7 +1158,7 @@ ESDateObject::ESDateObject(ESPointer::Type type)
 void ESDateObject::parseYmdhmsToDate(struct tm* timeinfo, int year, int month, int date, int hour, int minute, int second)
 {
     char buffer[255];
-    snprintf(buffer, 255, "%d-%d-%d-%d-%d-%d", year, month, date, hour, minute, second);
+    snprintf(buffer, 255, "%d-%d-%d-%d-%d-%d", year, month + 1, date, hour, minute, second);
     strptime(buffer, "%Y-%m-%d-%H-%M-%S", timeinfo);
 }
 
