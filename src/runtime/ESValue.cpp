@@ -537,9 +537,15 @@ bool ESObject::DefineOwnProperty(ESValue& key, ESObject* desc, bool throwFlag)
         current = O->hiddenClass()->read(O, O, idx);
     else {
         if (O->isESArrayObject() && (descHasEnumerable || descHasWritable || descHasConfigurable)) {
-            O->defineDataProperty(key, descW.isUndefined() ? isWritable : descW.toBoolean(),
-                descE.isUndefined() ? isEnumerable : descE.toBoolean(),
-                descC.isUndefined() ? isConfigurable : descC.toBoolean(), desc->get(ESString::create(u"value")));
+            if (descHasGetter || descHasSetter) {
+                O->defineAccessorProperty(key, new ESPropertyAccessorData(descGet, descSet), descW.isUndefined() ? isWritable : descW.asBoolean(),
+                    descE.isUndefined() ? isEnumerable : descE.asBoolean(),
+                    descC.isUndefined() ? isConfigurable : descC.toBoolean());
+            } else {
+                O->defineDataProperty(key, descW.isUndefined() ? isWritable : descW.toBoolean(),
+                    descE.isUndefined() ? isEnumerable : descE.toBoolean(),
+                    descC.isUndefined() ? isConfigurable : descC.toBoolean(), desc->get(ESString::create(u"value")));
+            }
             return true;
         } else {
             current = O->getOwnProperty(key);
@@ -601,14 +607,16 @@ bool ESObject::DefineOwnProperty(ESValue& key, ESObject* desc, bool throwFlag)
     if (descHasWritable)
         O->hiddenClass()->setWritable(idx, descW.toBoolean());
     if (descHasGetter || descHasSetter) {
-        ESPropertyAccessorData* currentAccessorData = O->accessorData(idx);
         escargot::ESFunctionObject* getter = descGet;
-        if (!descHasGetter && currentAccessorData->getJSGetter()) {
-            getter = currentAccessorData->getJSGetter();
-        }
         escargot::ESFunctionObject* setter = descSet;
-        if (!descHasSetter && currentAccessorData->getJSSetter()) {
-            setter = currentAccessorData->getJSSetter();
+        if (!propertyInfo.m_flags.m_isDataProperty) {
+            ESPropertyAccessorData* currentAccessorData = O->accessorData(idx);
+            if (!descHasGetter && currentAccessorData->getJSGetter()) {
+                getter = currentAccessorData->getJSGetter();
+            }
+            if (!descHasSetter && currentAccessorData->getJSSetter()) {
+                setter = currentAccessorData->getJSSetter();
+            }
         }
         O->defineAccessorProperty(key, new ESPropertyAccessorData(getter, setter),
             descW.isUndefined() ? propertyInfo.m_flags.m_isWritable : descW.toBoolean(),
