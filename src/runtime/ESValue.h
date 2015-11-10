@@ -1089,9 +1089,9 @@ public:
     }
 
     ESFunctionObject* getJSSetter()
-   {
-       return m_jsSetter;
-   }
+    {
+        return m_jsSetter;
+    }
 
     void setJSSetter(ESFunctionObject* setter)
     {
