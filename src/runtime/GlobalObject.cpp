@@ -2540,24 +2540,26 @@ void GlobalObject::installDate()
                     thisObject->setTime(thisObject->getPrimitiveValue());
                 }
             } else {
-                int year = instance->currentExecutionContext()->readArgument(0).toNumber();
-                if (year >= 0 && year <= 99) {
+                double args[7] = {0, 0, 1, 0, 0, 0, 0}; // default value of year, month, date, hour, minute, second, millisecond
+                for (int i = 0; i < arg_size; i++) {
+                    args[i] = instance->currentExecutionContext()->readArgument(i).toNumber();
+                }
+                double year = args[0];
+                double month = args[1];
+                double date = args[2];
+                double hour = args[3];
+                double minute = args[4];
+                double second = args[5];
+                double millisecond = args[6];
+
+                if ((int) year >= 0 && (int) year <= 99) {
                     year += 1900;
                 }
-                int month = instance->currentExecutionContext()->readArgument(1).toNumber();
-                int date;
-                if (instance->currentExecutionContext()->readArgument(2).isUndefined()) {
-                    date = 1;
-                } else {
-                    date = instance->currentExecutionContext()->readArgument(2).toNumber();
+                if (isnan(year) || isnan(month) || isnan(date) || isnan(hour) || isnan(minute) || isnan(second) || isnan(millisecond)) {
+                    thisObject->setPrimitiveValue(std::numeric_limits<double>::quiet_NaN());
+                    return ESString::create(u"Invalid Date");
                 }
-                int hour = instance->currentExecutionContext()->readArgument(3).toNumber();
-                int minute = instance->currentExecutionContext()->readArgument(4).toNumber();
-                int second = instance->currentExecutionContext()->readArgument(5).toNumber();
-                // TODO : have to implement millisecond
-                int millisecond = instance->currentExecutionContext()->readArgument(6).toNumber();
-
-                thisObject->setTimeValue(year, month, date, hour, minute, second, millisecond);
+                thisObject->setTimeValue((int) year, (int) month, (int) date, (int) hour, (int) minute, (int) second, (int) millisecond);
             }
         }
         return ESString::create(u"FixMe: We have to return string with date and time data");
@@ -2847,6 +2849,10 @@ void GlobalObject::installDate()
     // $44 Date.prototype.valueOf()
     m_datePrototype->defineDataProperty(strings->valueOf, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        double primitiveValue = thisObject->asESDateObject()->getPrimitiveValue();
+        if (std::isnan(primitiveValue)) {
+            return ESValue(std::numeric_limits<double>::quiet_NaN());
+        }
         double ret = thisObject->asESDateObject()->getTimeAsMilisec();
         return ESValue(ret);
     }, strings->valueOf, 0));
