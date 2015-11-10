@@ -1583,7 +1583,70 @@ void GlobalObject::installArray()
 
     // $22.1.3.18 Array.prototype.reduce
     m_arrayPrototype->ESObject::defineDataProperty(ESString::create(u"reduce"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        ESObject* O = instance->currentExecutionContext()->resolveThisBindingToObject(); // 1
+        uint32_t len = O->get(strings->length.string()).toUint32(); // 2-3
+        ESValue* argv = instance->currentExecutionContext()->arguments();
+        int argc = instance->currentExecutionContext()->argumentCount();
+        ESValue callbackfn;
+        ESValue initialValue = ESValue();
+        if (argc == 1) {
+            callbackfn   = argv[0];
+        } else if (argc >= 2) {
+            callbackfn   = argv[0];
+            initialValue = argv[1];
+        }
+        if (!callbackfn.isESPointer() || !callbackfn.asESPointer()->isESFunctionObject()) // 4
+            throw ESValue(TypeError::create(ESString::create(u"Type Error")));
+
+        if (len == 0 && initialValue.isUndefined()) // 5
+            throw ESValue(TypeError::create(ESString::create(u"Type Error")));
+        int k = 0; // 6
+        ESValue accumulator;
+        if (!initialValue.isUndefined()) { // 7
+            accumulator = initialValue;
+        } else { // 8
+            bool kPresent = false; // 8.a
+            while (kPresent == false && k < len) { // 8.b
+                ESValue Pk = ESValue(k); // 8.b.i
+                bool kPresent = O->hasProperty(Pk); // 8.b.ii
+                if (kPresent)
+                    accumulator = O->get(Pk); // 8.b.iii.1
+                k++; // 8.b.iv
+            }
+            if (kPresent == false)
+                throw ESValue(TypeError::create(ESString::create(u"Type Error")));
+        }
+        return ESValue();
+#if 0
+        if (LIKELY(thisBinded->isESArrayObject())) {
+            auto thisVal = thisBinded->asESArrayObject();
+            uint32_t len = thisVal->length();
+            bool shouldThrow = false;
+            for (int i = 0; i < argc; i++) {
+                ESValue& val = instance->currentExecutionContext()->arguments()[i];
+                thisVal->asESObject()->set(ESValue(double(len)+i), val);
+                if (len >= UINT_MAX - i) {
+                    shouldThrow = true;
+                }
+            }
+            if (shouldThrow) {
+                thisVal->setLength(UINT_MAX);
+                throw ESValue(RangeError::create());
+            }
+            return ESValue(thisVal->length());
+        } else {
+            ASSERT(thisBinded->isESObject());
+            ESObject* O = thisBinded->asESObject();
+            uint32_t len = O->get(strings->length.string()).toUint32();
+            for (int i = 0; i < argc; i++) {
+                ESValue& val = instance->currentExecutionContext()->arguments()[i];
+                O->set(ESString::create(double(len) + i), val);
+            }
+            ESValue ret = ESValue(double(len) + argc);
+            O->set(strings->length, ret);
+            return ret;
+        }
+#endif
     }, ESString::create(u"reduce"), 1));
 
     // $22.1.3.19 Array.prototype.reduceRight
