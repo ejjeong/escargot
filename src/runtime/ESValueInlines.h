@@ -905,9 +905,9 @@ ALWAYS_INLINE ESHiddenClass* ESHiddenClass::removeProperty(size_t idx)
             } else if (i > idx) {
                 cls->m_propertyIndexHashMapInfo.insert(std::make_pair(m_propertyInfo[i].m_name, i - 1));
             }
-            cls->m_flags.m_hasReadOnlyProperty = m_flags.m_hasReadOnlyProperty | (!m_propertyInfo[i].m_flags.m_isWritable);
-            cls->m_flags.m_hasIndexedProperty = m_flags.m_hasIndexedProperty | m_propertyInfo[i].m_name->hasOnlyDigit();
-            cls->m_flags.m_hasIndexedReadOnlyProperty = m_flags.m_hasIndexedReadOnlyProperty | (!m_propertyInfo[i].m_flags.m_isWritable && m_propertyInfo[i].m_name->hasOnlyDigit());
+            cls->m_flags.m_hasReadOnlyProperty |= (!m_propertyInfo[i].m_flags.m_isWritable);
+            cls->m_flags.m_hasIndexedProperty |= m_propertyInfo[i].m_name->hasOnlyDigit();
+            cls->m_flags.m_hasIndexedReadOnlyProperty |= (!m_propertyInfo[i].m_flags.m_isWritable && m_propertyInfo[i].m_name->hasOnlyDigit());
         }
 
         // TODO
@@ -934,10 +934,12 @@ ALWAYS_INLINE ESHiddenClass* ESHiddenClass::removePropertyWithoutIndexChange(siz
             cls->m_propertyInfo.push_back(ESHiddenClassPropertyInfo());
         } else {
             cls->m_propertyInfo.push_back(m_propertyInfo[i]);
+            if (m_propertyInfo[i].m_flags.m_isDeletedValue)
+                continue;
             cls->m_propertyIndexHashMapInfo.insert(std::make_pair(m_propertyInfo[i].m_name, i));
-            cls->m_flags.m_hasReadOnlyProperty = m_flags.m_hasReadOnlyProperty | (!m_propertyInfo[i].m_flags.m_isWritable);
-            cls->m_flags.m_hasIndexedProperty = m_flags.m_hasIndexedProperty | m_propertyInfo[i].m_name->hasOnlyDigit();
-            cls->m_flags.m_hasIndexedReadOnlyProperty = m_flags.m_hasIndexedReadOnlyProperty | (!m_propertyInfo[i].m_flags.m_isWritable && m_propertyInfo[i].m_name->hasOnlyDigit());
+            cls->m_flags.m_hasReadOnlyProperty |= (!m_propertyInfo[i].m_flags.m_isWritable);
+            cls->m_flags.m_hasIndexedProperty |= m_propertyInfo[i].m_name->hasOnlyDigit();
+            cls->m_flags.m_hasIndexedReadOnlyProperty |= (!m_propertyInfo[i].m_flags.m_isWritable && m_propertyInfo[i].m_name->hasOnlyDigit());
         }
     }
 
