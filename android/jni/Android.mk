@@ -5,7 +5,7 @@ include $(CLEAR_VARS)
 #$(warning BUILD_TYPE)
 #$(warning $(BUILD_TYPE))
 #$(warning BUILD_MODE)
-#$(warning $(BUILD_MODE))
+#$(warning $(BUILD_OBJECT))
 
 LOCAL_MODULE    := escargot
 LOCAL_ARM_MODE := thumb
@@ -52,7 +52,6 @@ LOCAL_CFLAGS += -I$(SRC_THIRD_PARTY)/double_conversion/
 LOCAL_CFLAGS += -I$(SRC_THIRD_PARTY)/netlib/
 LOCAL_CFLAGS += -I$(SRC_THIRD_PARTY)/bdwgc/include/ -DHAVE_CONFIG_H -I$(SRC_THIRD_PARTY)/bdwgc/android/include/ -I$(SRC_THIRD_PARTY)/bdwgc/libatomic_ops/src 
 
-LOCAL_STATIC_LIBRARIES := gc
 LOCAL_SHARED_LIBRARIES += -lpthread
 LOCAL_LDFLAGS += -Wl,--gc-sections
 
@@ -61,7 +60,7 @@ SRCS += $(foreach dir, $(SRC_PATH)/bytecode , $(wildcard $(dir)/*.cpp))
 SRCS += $(foreach dir, $(SRC_PATH)/jit , $(wildcard $(dir)/*.cpp))
 SRCS += $(foreach dir, $(SRC_PATH)/parser , $(wildcard $(dir)/*.cpp))
 SRCS += $(foreach dir, $(SRC_PATH)/runtime , $(wildcard $(dir)/*.cpp))
-ifeq ($(BUILD_OBJ), exe)
+ifeq ($(BUILD_OBJECT), exe)
 	SRCS += $(foreach dir, $(SRC_PATH)/shell , $(wildcard $(dir)/*.cpp))
 endif
 SRCS += $(foreach dir, $(SRC_PATH)/vm , $(wildcard $(dir)/*.cpp))
@@ -78,7 +77,7 @@ SRCS += $(foreach dir, $(SRC_THIRD_PARTY)/double_conversion , $(wildcard $(dir)/
 SRCS += $(foreach dir, $(SRC_THIRD_PARTY)/bdwgc , $(wildcard $(dir)/*.c))
 
 LOCAL_SRC_FILES += $(addprefix ../, $(SRCS))
-ifeq ($(BUILD_OBJ), exe)
+ifeq ($(BUILD_OBJECT), exe)
 	include $(BUILD_EXECUTABLE)
 else
 	include $(BUILD_SHARED_LIBRARY)

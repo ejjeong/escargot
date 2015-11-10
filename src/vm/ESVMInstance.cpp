@@ -14,6 +14,7 @@ __thread ESVMInstance* currentInstance;
 
 ESVMInstance::ESVMInstance()
 {
+    GC_add_roots(this, (void *)(((size_t)this + sizeof(ESVMInstance)) + 1));
 #ifndef NDEBUG
     m_dumpByteCode = false;
     m_dumpExecuteByteCode = false;
