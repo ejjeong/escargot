@@ -220,6 +220,13 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16strin
                 }
                 if (nearFunctionNode)
                     markNeedsActivation(nearFunctionNode->outerFunctionNode());
+                else {
+                    //global case
+                    auto iter = knownGlobalNames.find(name);
+                    if (iter != knownGlobalNames.end()) {
+                        ((IdentifierNode *)currentNode)->setGlobalFastAccessIndex(iter->second);
+                    }
+                }
             } else {
                 if (nearFunctionNode) {
                     size_t idx = std::distance(identifierInCurrentContext.begin(), iter);
