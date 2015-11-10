@@ -1573,32 +1573,43 @@ void GlobalObject::installArray()
     m_arrayPrototype->ESObject::defineDataProperty(strings->slice, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         int arglen = instance->currentExecutionContext()->argumentCount();
         auto thisBinded = instance->currentExecutionContext()->resolveThisBindingToObject();
-        int arrlen = thisBinded->length();
-        int start, end;
+        uint32_t arrlen = thisBinded->length();
+        double relativeStart, relativeEnd;
+        uint32_t k = 0, finalEnd = 0;
         if (arglen < 1) {
-            start = 0;
+            relativeStart = 0;
         } else {
-            start = instance->currentExecutionContext()->arguments()[0].toInteger();
+            relativeStart = instance->currentExecutionContext()->arguments()[0].toInteger();
         }
-        if (start < 0) {
-            start = (arrlen + start > 0) ? arrlen + start : 0;
+        if (relativeStart < 0) {
+            k = (arrlen + relativeStart > 0) ? arrlen + relativeStart : 0;
         } else {
-            start = (start < arrlen) ? start : arrlen;
+            k = (relativeStart < arrlen) ? relativeStart : arrlen;
         }
         if (arglen >= 2) {
-            end = instance->currentExecutionContext()->arguments()[1].toInteger();
+            ESValue end = instance->currentExecutionContext()->arguments()[1];
+            if (end.isUndefined())
+                relativeEnd = arrlen;
+            else
+                relativeEnd = instance->currentExecutionContext()->arguments()[1].toInteger();
         } else {
-            end = arrlen;
+            relativeEnd = arrlen;
         }
-        if (end < 0) {
-            end = (arrlen + end > 0) ? arrlen + end : 0;
+        if (relativeEnd < 0) {
+            finalEnd = (arrlen + relativeEnd > 0) ? arrlen + relativeEnd : 0;
         } else {
-            end = (end < arrlen) ? end : arrlen;
+            finalEnd = (relativeEnd < arrlen) ? relativeEnd : arrlen;
         }
-        int count = (end - start > 0) ? end - start : 0;
-        escargot::ESArrayObject* ret = ESArrayObject::create(count);
-        for (int i = start; i < end; i++) {
-            ret->set(i-start, thisBinded->get(ESValue(i)));
+        uint32_t n = 0;
+        escargot::ESArrayObject* ret = ESArrayObject::create();
+        while (k < finalEnd) {
+            bool kPresent = thisBinded->hasProperty(ESValue(k));
+            if (kPresent) {
+                ESValue kValue = thisBinded->get(ESValue(k));
+                ret->defineDataProperty(ESValue(n), true, true, true, kValue);
+            }
+            k++;
+            n++;
         }
         return ret;
     }, strings->slice, 2));

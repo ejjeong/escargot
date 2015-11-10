@@ -319,7 +319,10 @@ uint32_t ESString::tryToUseAsIndex()
             allOfCharIsDigit = false;
             break;
         } else {
-            number = number*10 + (c-'0');
+            uint32_t cnum = c-'0';
+            if (number > (std::numeric_limits<uint32_t>::max() - cnum) / 10)
+                return ESValue::ESInvalidIndexValue;
+            number = number*10 + cnum;
         }
     }
     if (allOfCharIsDigit) {
