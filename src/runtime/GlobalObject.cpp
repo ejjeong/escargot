@@ -1453,7 +1453,7 @@ void GlobalObject::installArray()
         ESValue* argv = instance->currentExecutionContext()->arguments();
         int argc = instance->currentExecutionContext()->argumentCount();
         ESValue callbackfn;
-        ESValue initialValue = ESValue();
+        ESValue initialValue = ESValue(ESValue::ESEmptyValue);
         if (argc == 1) {
             callbackfn   = argv[0];
         } else if (argc >= 2) {
@@ -1467,13 +1467,13 @@ void GlobalObject::installArray()
             throw ESValue(TypeError::create(ESString::create(u"Type Error")));
         int k = 0; // 6
         ESValue accumulator;
-        if (!initialValue.isUndefined()) { // 7
+        if (!initialValue.isEmpty()) { // 7
             accumulator = initialValue;
         } else { // 8
             bool kPresent = false; // 8.a
             while (kPresent == false && k < len) { // 8.b
                 ESValue Pk = ESValue(k); // 8.b.i
-                bool kPresent = O->hasProperty(Pk); // 8.b.ii
+                kPresent = O->hasProperty(Pk); // 8.b.ii
                 if (kPresent)
                     accumulator = O->get(Pk); // 8.b.iii.1
                 k++; // 8.b.iv
@@ -1493,8 +1493,8 @@ void GlobalObject::installArray()
                 fnargs[2] = ESValue(k);
                 fnargs[3] = O;
                 accumulator = ESFunctionObject::call(ESVMInstance::currentInstance(), callbackfn, ESValue(), fnargs, fnargc, false);
-                k++; // 9.d
             }
+            k++; // 9.d
         }
         return accumulator;
     }, ESString::create(u"reduce"), 1));
