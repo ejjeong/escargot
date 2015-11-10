@@ -1275,9 +1275,9 @@ ALWAYS_INLINE bool ESObject::hasProperty(const escargot::ESValue& key)
                 return true;
             else
                 return false;
-        } else if (isESStringObject()) {
+        } else if (target->isESStringObject()) {
             uint32_t idx = key.toIndex();
-            if ((uint32_t)idx < asESStringObject()->length())
+            if ((uint32_t)idx < target->asESStringObject()->length())
                 return true;
         }
 
