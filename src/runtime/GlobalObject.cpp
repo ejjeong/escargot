@@ -1634,13 +1634,12 @@ void GlobalObject::installArray()
             return ESValue();
         }
         ESValue first = O->get(ESValue(0)); // 6
-        int k = 0; // 8
+        int k = 1; // 8
 
         while (k < len) { // 9
             ESValue from(k);
             ESValue to(k - 1);
-            O->get(from);
-            if (O->hasOwnProperty(from)) { // e
+            if (O->hasProperty(from)) { // e
                 ESValue fromVal = O->get(from);
                 O->set(to, fromVal, true);
             } else {

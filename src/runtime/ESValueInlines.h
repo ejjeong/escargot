@@ -1267,20 +1267,15 @@ ALWAYS_INLINE bool ESObject::hasProperty(const escargot::ESValue& key)
                     ESValue e = target->asESArrayObject()->m_vector[idx];
                     if (LIKELY(!e.isEmpty()))
                         return true;
-                    else
-                        return false;
-                } else
-                    return false;
+                }
             }
-        }
-        if (target->isESTypedArrayObject()) {
+        } else if (target->isESTypedArrayObject()) {
             uint32_t idx = key.toIndex();
             if ((uint32_t)idx < asESTypedArrayObjectWrapper()->length())
                 return true;
             else
                 return false;
-        }
-        if (isESStringObject()) {
+        } else if (isESStringObject()) {
             uint32_t idx = key.toIndex();
             if ((uint32_t)idx < asESStringObject()->length())
                 return true;
