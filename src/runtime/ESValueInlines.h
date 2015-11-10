@@ -1195,6 +1195,13 @@ inline bool ESObject::defineAccessorProperty(const escargot::ESValue& key, ESPro
             return false;
         m_hiddenClass = m_hiddenClass->defineProperty(keyString, false, isWritable, isEnumerable, isConfigurable);
         m_hiddenClassData.push_back((ESPointer *)data);
+        if (isESArrayObject()) {
+            uint32_t i = key.toIndex();
+            if (i != ESValue::ESInvalidIndexValue) {
+                if (i >= asESArrayObject()->length())
+                    asESArrayObject()->setLength(i+1);
+            }
+        }
         return true;
     } else {
         if (!m_hiddenClass->m_propertyInfo[oldIdx].m_flags.m_isConfigurable) {
