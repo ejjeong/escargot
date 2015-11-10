@@ -1790,34 +1790,35 @@ void GlobalObject::installArray()
 
     // $22.1.3.25 Array.prototype.splice(start, deleteCount, ...items)
     m_arrayPrototype->ESObject::defineDataProperty(strings->splice, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        int arglen = instance->currentExecutionContext()->argumentCount();
+        size_t arglen = instance->currentExecutionContext()->argumentCount();
         auto thisBinded = instance->currentExecutionContext()->resolveThisBindingToObject();
-        int arrlen = thisBinded->length();
+        size_t arrlen = thisBinded->length();
         escargot::ESArrayObject* ret = ESArrayObject::create(0);
         if (arglen == 0) {
         } else if (arglen >= 1) {
-            int start = instance->currentExecutionContext()->arguments()[0].toNumber();
-            int deleteCnt = 0, insertCnt = 0;
-            int k;
-            if (start < 0)
-                start = arrlen+start > 0 ? arrlen+start : 0;
+            double relativeStart = instance->currentExecutionContext()->arguments()[0].toInteger();
+            size_t start;
+            size_t deleteCnt = 0, insertCnt = 0;
+            size_t k;
+            if (relativeStart < 0)
+                start = arrlen+relativeStart > 0 ? arrlen+relativeStart : 0;
             else
-                start = start > arrlen ? arrlen : start;
+                start = relativeStart > arrlen ? arrlen : relativeStart;
             if (arglen == 1) {
                 deleteCnt = arrlen - start;
             } else {
                 insertCnt = arglen - 2;
-                int dc = instance->currentExecutionContext()->arguments()[1].toNumber();
+                double dc = instance->currentExecutionContext()->arguments()[1].toInteger();
                 if (dc < 0)
                     dc = 0;
                 deleteCnt = dc > (arrlen-start) ? arrlen-start : dc;
             }
             for (k = 0; k < deleteCnt; k++) {
-                int from = start + k;
+                size_t from = start + k;
                 ret->set(k, thisBinded->get(ESValue(from)));
             }
-            int argIdx = 2;
-            int leftInsert = insertCnt;
+            size_t argIdx = 2;
+            size_t leftInsert = insertCnt;
             for (k = start; k < start + deleteCnt; k++) {
                 if (leftInsert > 0) {
                     thisBinded->set(ESValue(k), instance->currentExecutionContext()->arguments()[argIdx]);
@@ -1838,10 +1839,11 @@ void GlobalObject::installArray()
                 }
             } else if (leftInsert > 0) {
                 // Move leftInsert steps to right
-                for (int i = arrlen - 1; i >= k; i--) {
+                for (size_t i = arrlen - 1; i >= k; i--) {
                     thisBinded->set(ESValue(i + leftInsert), thisBinded->get(ESValue(i)));
+                    if (i == 0) break;
                 }
-                for (int i = k; i < k + leftInsert; i++, argIdx++) {
+                for (size_t i = k; i < k + leftInsert; i++, argIdx++) {
                     thisBinded->set(ESValue(i), instance->currentExecutionContext()->arguments()[argIdx]);
                 }
             }

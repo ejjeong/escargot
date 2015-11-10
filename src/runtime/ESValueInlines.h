@@ -1450,17 +1450,21 @@ ALWAYS_INLINE ESValue ESObject::pop()
 }
 ALWAYS_INLINE void ESObject::eraseValues(int idx, int cnt)
 {
-    if (LIKELY(isESArrayObject()))
+    if (LIKELY(isESArrayObject())) {
         asESArrayObject()->eraseValues(idx, cnt);
-    else if (isESStringObject()) {
+        return;
+    }
+    if (isESStringObject()) {
         if (idx < asESStringObject()->length())
             return;
-    } else {
-        for (uint32_t k = 0, i = idx; i < length() && k < cnt; i++, k++) {
-            set(ESValue(i), get(ESValue(i+cnt)));
-        }
-        // NOTE: length is set in Array.splice
     }
+    for (uint32_t i = idx; i < length(); i++) {
+        if (i+cnt < length())
+            set(ESValue(i), get(ESValue(i+cnt)));
+        else
+            deleteProperty(ESValue(i));
+    }
+    // NOTE: length is set in Array.splice
 }
 
 // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
