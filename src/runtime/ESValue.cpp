@@ -1130,11 +1130,28 @@ int ESDateObject::getTimezoneOffset()
 
 void ESDateObject::setTime(double t)
 {
+    if (isnan(t))
+        return;
+
     time_t raw_t = (time_t) floor(t);
     m_time.tv_sec = raw_t / 1000;
     m_time.tv_nsec = (raw_t % 10000) * 1000000;
 
     m_isCacheDirty = true;
+}
+
+tm* ESDateObject::getGmtTime()
+{
+    if (std::isnan(m_primitiveValue)) {
+        return NULL;
+    } else {
+        time_t raw_t = (time_t) floor(m_primitiveValue);
+        tm* ret = gmtime(&raw_t);
+        int KST = 9; // TODO it's temp
+        ret->tm_gmtoff = KST * 60 * 60;
+        ret->tm_hour = (ret->tm_hour + KST) % 24;
+        return ret;
+    }
 }
 
 ESMathObject::ESMathObject(ESPointer::Type type)

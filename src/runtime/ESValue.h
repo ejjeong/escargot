@@ -1519,11 +1519,28 @@ public:
     int getTimezoneOffset();
     void setTime(double t);
 
+    void setPrimitiveValue(double primitiveVale) { m_primitiveValue = primitiveVale; }
+    double getPrimitiveValue() { return m_primitiveValue; }
+    static double TimeClip(double V)
+    {
+        if (std::isinf(V)) {
+            return std::nan("0");
+        } else if (std::abs(V) > 8.64 * std::pow(10, 15)) {
+            return std::nan("0");
+        } else {
+            return ESValue(V).toInteger();
+        }
+    }
+
+    tm* getGmtTime();
+
+
 private:
     void resolveCache();
     struct timespec m_time;
     struct tm m_cachedTM;
     bool m_isCacheDirty;
+    double m_primitiveValue;
 };
 
 class ESMathObject : public ESObject {

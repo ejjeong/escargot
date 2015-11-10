@@ -2030,20 +2030,17 @@ void GlobalObject::installString()
         const u16string& str = instance->currentExecutionContext()->resolveThisBinding().toString()->string();
         escargot::ESString* searchStr = instance->currentExecutionContext()->readArgument(0).toString();
 
-        ESValue val;
-        if (instance->currentExecutionContext()->argumentCount() > 1)
-            val = instance->currentExecutionContext()->arguments()[1];
-
-        int result;
+        ESValue val = instance->currentExecutionContext()->readArgument(1);
+        int pos;
         if (val.isUndefined()) {
-            result = str.find(searchStr->string());
+            pos = 0;
         } else {
-            double numPos = val.toNumber();
-            int pos = numPos;
-            int len = str.length();
-            int start = std::min(std::max(pos, 0), len);
-            result = str.find(searchStr->string(), start);
+            pos = val.toInteger();
         }
+
+        int len = str.length();
+        int start = std::min(std::max(pos, 0), len);
+        int result = str.find(searchStr->string(), start);
         return ESValue(result);
     }, strings->indexOf, 1));
 
@@ -2660,7 +2657,7 @@ void GlobalObject::installDate()
     m_datePrototype->forceNonVectorHiddenClass();
     m_datePrototype->set__proto__(m_objectPrototype);
 
-    // $20.3.2 The Date Constructor
+    // http://www.ecma-international.org/ecma-262/5.1/#sec-15.9.3
     m_date = ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* proto = instance->globalObject()->datePrototype();
         if (instance->currentExecutionContext()->isNewExpression()) {
@@ -2670,8 +2667,14 @@ void GlobalObject::installDate()
             if (arg_size == 0) {
                 thisObject->setTimeValue();
             } else if (arg_size == 1) {
-                ESValue str = instance->currentExecutionContext()->arguments()[0];
-                thisObject->setTimeValue(str);
+                ESValue v = instance->currentExecutionContext()->arguments()[0].toPrimitive();
+                if (v.isESString()) {
+                    thisObject->setTimeValue(v);
+                } else {
+                    double V = v.toNumber();
+                    thisObject->setPrimitiveValue(ESDateObject::TimeClip(V));
+                    thisObject->setTime(thisObject->getPrimitiveValue());
+                }
             } else {
                 int year = instance->currentExecutionContext()->readArgument(0).toNumber();
                 if (year >= 0 && year <= 99) {
@@ -2703,10 +2706,17 @@ void GlobalObject::installDate()
         ESValue e = instance->currentExecutionContext()->resolveThisBinding();
         if (e.isESPointer() && e.asESPointer()->isESDateObject()) {
             escargot::ESDateObject* obj = e.asESPointer()->asESDateObject();
-            char buffer[512]; // TODO consider buffer-overflow
-            sprintf(buffer, "%d-%02d-%02d %02d:%02d:%02d"
-                , obj->getFullYear(), obj->getMonth() + 1, obj->getDate(), obj->getHours(), obj->getMinutes(), obj->getSeconds());
-            return ESString::create(buffer);
+
+            tm* gmtTime = obj->getGmtTime();
+            if (gmtTime == NULL) {
+                return ESString::create("Invalid Date");
+            } else {
+                char buffer[512];
+                const char *fmt = "%a %b %d %Y %T %Z%z";
+                strftime(buffer, sizeof(buffer), fmt, gmtTime);
+                sprintf(buffer, "%s (%s)", buffer, tzname[0]);
+                return ESString::create(buffer);
+            }
         } else {
             return strings->emptyString.string();
         }
