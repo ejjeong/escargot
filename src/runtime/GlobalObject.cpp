@@ -1841,7 +1841,8 @@ void GlobalObject::installArray()
                 // Move leftInsert steps to right
                 for (size_t i = arrlen - 1; i >= k; i--) {
                     thisBinded->set(ESValue(i + leftInsert), thisBinded->get(ESValue(i)));
-                    if (i == 0) break;
+                    if (i == 0)
+                        break;
                 }
                 for (size_t i = k; i < k + leftInsert; i++, argIdx++) {
                     thisBinded->set(ESValue(i), instance->currentExecutionContext()->arguments()[argIdx]);
@@ -2714,7 +2715,7 @@ void GlobalObject::installDate()
                 return ESString::create("Invalid Date");
             } else {
                 char buffer[512];
-                const char *fmt = "%a %b %d %Y %T %Z%z";
+                const char* fmt = "%a %b %d %Y %T %Z%z";
                 strftime(buffer, sizeof(buffer), fmt, gmtTime);
                 sprintf(buffer, "%s (%s)", buffer, tzname[0]);
                 return ESString::create(buffer);
