@@ -659,141 +659,6 @@ void GlobalObject::installFunction()
     defineDataProperty(strings->Function, true, false, true, m_function);
 }
 
-inline bool DefineOwnProperty(ESObject* obj, ESValue& key, ESObject* desc, bool throwFlag)
-{
-#ifndef ESCARGOT_64
-    bool isEnumerable = false;
-    bool isConfigurable = false;
-    bool isWritable = false;
-    // TODO get set
-    ESValue v = desc->get(ESString::create(u"enumerable"));
-    if (!v.isUndefined()) {
-        isEnumerable = v.toBoolean();
-    }
-
-    v = desc->get(ESString::create(u"configurable"));
-    if (!v.isUndefined()) {
-        isConfigurable = v.toBoolean();
-    }
-
-    ESValue writable = desc->get(ESString::create(u"writable"));
-    if (!writable.isUndefined()) {
-        isWritable = writable.toBoolean();
-    }
-
-    v = desc->get(ESString::create(u"value"));
-    bool gs = false;
-    ESValue get = desc->get(ESString::create(u"get"));
-    ESValue set = desc->get(ESString::create(u"set"));
-    if (!get.isUndefined() || !set.isUndefined()) {
-        if (!writable.isUndefined() || desc->hasProperty(ESString::create(u"value")))
-            throw ESValue(TypeError::create(ESString::create("Property cannot have [getter|setter] and [value|writable] together")));
-        escargot::ESFunctionObject* getter = NULL;
-        escargot::ESFunctionObject* setter = NULL;
-        if (!get.isEmpty()) {
-            if (get.isESPointer() && get.asESPointer()->isESFunctionObject())
-                getter = get.asESPointer()->asESFunctionObject();
-            else if (!get.isUndefined())
-                throw ESValue(TypeError::create(ESString::create("getter must be function")));
-        }
-        if (!set.isEmpty()) {
-            if (set.isESPointer() && set.asESPointer()->isESFunctionObject())
-                setter = set.asESPointer()->asESFunctionObject();
-            else if (!set.isUndefined())
-                throw ESValue(TypeError::create(ESString::create("setter must be function")));
-        }
-        return obj->defineAccessorProperty(key, new ESPropertyAccessorData(getter, setter), isWritable, isEnumerable, isConfigurable);
-    } else {
-        return obj->defineDataProperty(key, isWritable, isEnumerable, isConfigurable, v);
-    }
-#else
-    bool isEnumerable = false;
-    bool isConfigurable = false;
-    bool isWritable = false;
-    escargot::ESFunctionObject* getter = NULL;
-    escargot::ESFunctionObject* setter = NULL;
-
-    // ToPropertyDescriptor : (start) we need to seperate this part
-    ESValue descE = desc->get(ESString::create(u"enumerable"));
-    ESValue descC = desc->get(ESString::create(u"configurable"));
-    ESValue descW = desc->get(ESString::create(u"writable"));
-    ESValue descV = desc->get(ESString::create(u"value"));
-    ESValue descGet = desc->get(ESString::create(u"get"));
-    ESValue descSet = desc->get(ESString::create(u"set"));
-    if (!descGet.isUndefined() || !descSet.isUndefined()) {
-        if (!descGet.isEmpty()) {
-            if (descGet.isESPointer() && descGet.asESPointer()->isESFunctionObject())
-                getter = descGet.asESPointer()->asESFunctionObject();
-            else if (!descGet.isUndefined())
-                throw ESValue(TypeError::create(ESString::create("getter must be function")));
-        }
-        if (!descSet.isEmpty()) {
-            if (descSet.isESPointer() && descSet.asESPointer()->isESFunctionObject())
-                setter = descSet.asESPointer()->asESFunctionObject();
-            else if (!descSet.isUndefined())
-                throw ESValue(TypeError::create(ESString::create("setter must be function")));
-        }
-        if (!descV.isUndefined() || !descW.isUndefined())
-            throw ESValue(TypeError::create(ESString::create("Type error, Property cannot have [getter|setter] and [value|writable] together")));
-    }
-    // ToPropertyDescriptor : (end)
-
-    // 1
-    size_t idx = obj->hiddenClass()->findProperty(key.toString());
-    ESValue current = ESValue();
-    if (idx != SIZE_MAX)
-        current = obj->hiddenClass()->read(obj, obj, idx);
-    else
-        current = obj->getOwnProperty(key);
-
-    // 2
-    bool extensible = obj->isExtensible();
-
-    // 3, 4
-    if (current.isUndefined()) {
-        // 3
-        if (!extensible) {
-            if (throwFlag)
-                throw ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty")));
-            else
-                return false;
-        } else { // 4
-            if (escargot::PropertyDescriptor::IsDataDescriptor(desc) || escargot::PropertyDescriptor::IsGenericDescriptor(desc)) {
-                // Refer to Table 7 of ES 5.1 for default attribute values
-                obj->defineDataProperty(key, descW.isUndefined() ? isWritable : descW.asBoolean(),
-                    descE.isUndefined() ? isEnumerable : descE.asBoolean(),
-                    descC.isUndefined() ? isConfigurable : descC.toBoolean(), descV);
-            } else {
-                ASSERT(escargot::PropertyDescriptor::IsAccessorDescriptor(desc));
-                obj->defineAccessorProperty(key, new ESPropertyAccessorData(getter, setter), descW.isUndefined() ? isWritable : descW.asBoolean(),
-                    descE.isUndefined() ? isEnumerable : descE.asBoolean(),
-                    descC.isUndefined() ? isConfigurable : descC.toBoolean());
-            }
-            return true;
-        }
-    }
-
-    // 12
-    const ESHiddenClassPropertyInfo& propertyInfo = obj->hiddenClass()->propertyInfo(idx);
-    if (!descE.isUndefined())
-        obj->hiddenClass()->setEnumerable(idx, descE.toBoolean());
-    if (!descC.isUndefined())
-        obj->hiddenClass()->setConfigurable(idx, descC.toBoolean());
-    if (!descW.isUndefined())
-        obj->hiddenClass()->setWritable(idx, descW.toBoolean());
-    if (!descV.isUndefined())
-        obj->set(key, descV);
-    if (getter || setter)
-        obj->defineAccessorProperty(key, new ESPropertyAccessorData(getter, setter),
-            descW.isUndefined() ? propertyInfo.m_flags.m_isWritable : descW.toBoolean(),
-            descE.isUndefined() ? propertyInfo.m_flags.m_isEnumerable : descE.toBoolean(),
-            descC.isUndefined() ? propertyInfo.m_flags.m_isConfigurable : descC.toBoolean());
-
-    // 13
-    return true;
-#endif
-}
-
 inline ESValue objectDefineProperties(ESValue object, ESValue& properties)
 {
     if (!object.isObject())
@@ -805,7 +670,7 @@ inline ESValue objectDefineProperties(ESValue object, ESValue& properties)
             ESValue propertyDesc = props->getOwnProperty(key);
             if (!propertyDesc.isObject())
                 throw ESValue(TypeError::create(ESString::create("objectDefineProperties: descriptor is not object")));
-            DefineOwnProperty(object.asESPointer()->asESObject(), key, propertyDesc.asESPointer()->asESObject(), true);
+            object.asESPointer()->asESObject()->DefineOwnProperty(key, propertyDesc.asESPointer()->asESObject(), true);
         }
     });
     return object;
@@ -907,7 +772,7 @@ void GlobalObject::installObject()
                 if (!instance->currentExecutionContext()->arguments()[2].isObject())
                     throw ESValue(TypeError::create(ESString::create("Object.defineProperty: 3rd argument is not object")));
                 ESObject* desc = instance->currentExecutionContext()->arguments()[2].toObject();
-                bool res = DefineOwnProperty(obj, key, desc, true);
+                bool res = obj->DefineOwnProperty(key, desc, true);
                 if (!res)
                     throw ESValue(TypeError::create(ESString::create("Object.defineProperty: Cannot define property")));
             } else {

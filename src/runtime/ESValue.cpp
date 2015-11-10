@@ -485,6 +485,138 @@ ESObject::ESObject(ESPointer::Type type, ESValue __proto__, size_t initialKeyCou
     set__proto__(__proto__);
 }
 
+bool ESObject::DefineOwnProperty(ESValue& key, ESObject* desc, bool throwFlag)
+{
+    ESObject* O = this;
+    bool isEnumerable = false;
+    bool isConfigurable = false;
+    bool isWritable = false;
+
+    // ToPropertyDescriptor : (start) we need to seperate this part
+    bool descHasEnumerable = desc->hasProperty(ESString::create(u"enumerable"));
+    bool descHasConfigurable = desc->hasProperty(ESString::create(u"configurable"));
+    bool descHasWritable = desc->hasProperty(ESString::create(u"writable"));
+    bool descHasValue = desc->hasProperty(ESString::create(u"value"));
+    bool descHasGetter = desc->hasProperty(ESString::create(u"get"));
+    bool descHasSetter = desc->hasProperty(ESString::create(u"set"));
+    ESValue descE = desc->get(ESString::create(u"enumerable"));
+    ESValue descC = desc->get(ESString::create(u"configurable"));
+    ESValue descW = desc->get(ESString::create(u"writable"));
+    escargot::ESFunctionObject* descGet = NULL;
+    escargot::ESFunctionObject* descSet = NULL;
+    if (descHasGetter || descHasSetter) {
+        if (descHasGetter) {
+            ESValue get = desc->get(ESString::create(u"get")); // 8.10.5 ToPropertyDescriptor 7.a
+            if (!(get.isESPointer() && get.asESPointer()->isESFunctionObject()) && !get.isUndefined())
+                throw ESValue(TypeError::create(ESString::create("ToPropertyDescriptor 7.b"))); // 8.10.5 ToPropertyDescriptor 7.b
+            else if (!get.isUndefined())
+                descGet = get.asESPointer()->asESFunctionObject(); // 8.10.5 ToPropertyDescriptor 7.c
+        }
+        if (descHasSetter) {
+            ESValue set = desc->get(ESString::create(u"set"));
+            if (set.isESPointer() && set.asESPointer()->isESFunctionObject())
+                descSet = set.asESPointer()->asESFunctionObject();
+            else if (!set.isUndefined())
+                throw ESValue(TypeError::create(ESString::create("ToPropertyDescriptor 8.b")));
+        }
+        if (descHasValue || !descW.isUndefined())
+            throw ESValue(TypeError::create(ESString::create("Type error, Property cannot have [getter|setter] and [value|writable] together")));
+    }
+    // ToPropertyDescriptor : (end)
+
+    // 1
+    // Our ESObject::getOwnProperty differs from [[GetOwnProperty]] in Spec
+    // Hence, we use OHasCurrent and propertyInfo of current instead of Property Descriptor which is return of [[GetOwnProperty]] here.
+    bool OHasCurrent = true;
+    size_t idx = O->hiddenClass()->findProperty(key.toString());
+    ESValue current = ESValue();
+    if (idx != SIZE_MAX)
+        current = O->hiddenClass()->read(O, O, idx);
+    else {
+        if (O->isESArrayObject() && (descHasEnumerable || descHasWritable || descHasConfigurable)) {
+            O->defineDataProperty(key, descW.isUndefined() ? isWritable : descW.toBoolean(),
+                descE.isUndefined() ? isEnumerable : descE.toBoolean(),
+                descC.isUndefined() ? isConfigurable : descC.toBoolean(), desc->get(ESString::create(u"value")));
+            return true;
+        } else {
+            current = O->getOwnProperty(key);
+            if (current.isUndefined())
+                OHasCurrent = false;
+        }
+    }
+
+    // 2
+    bool extensible = O->isExtensible();
+
+    // 3, 4
+    if (!OHasCurrent) {
+        // 3
+        if (!extensible) {
+            if (throwFlag)
+                throw ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty")));
+            else
+                return false;
+        } else { // 4
+            if (escargot::PropertyDescriptor::IsDataDescriptor(desc) || escargot::PropertyDescriptor::IsGenericDescriptor(desc)) {
+                // Refer to Table 7 of ES 5.1 for default attribute values
+                O->defineDataProperty(key, descW.isUndefined() ? isWritable : descW.toBoolean(),
+                    descE.isUndefined() ? isEnumerable : descE.toBoolean(),
+                    descC.isUndefined() ? isConfigurable : descC.toBoolean(), desc->get(ESString::create(u"value")));
+            } else {
+                ASSERT(escargot::PropertyDescriptor::IsAccessorDescriptor(desc));
+                O->defineAccessorProperty(key, new ESPropertyAccessorData(descGet, descSet), descW.isUndefined() ? isWritable : descW.asBoolean(),
+                    descE.isUndefined() ? isEnumerable : descE.asBoolean(),
+                    descC.isUndefined() ? isConfigurable : descC.toBoolean());
+            }
+            return true;
+        }
+    }
+
+    // 7
+    const ESHiddenClassPropertyInfo& propertyInfo = O->hiddenClass()->propertyInfo(idx);
+    if (!propertyInfo.m_flags.m_isConfigurable) {
+        if (descC.toBoolean()) {
+            if (throwFlag)
+                throw ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty 7.a")));
+            else
+                return false;
+        } else {
+            if (descHasConfigurable && propertyInfo.m_flags.m_isConfigurable != descC.toBoolean())
+                throw ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty 7.b")));
+            else
+                return false;
+        }
+    }
+
+    // 12
+    if (descHasValue)
+        O->set(key, desc->get(ESString::create(u"value")));
+    if (descHasEnumerable)
+        O->hiddenClass()->setEnumerable(idx, descE.toBoolean());
+    if (descHasConfigurable)
+        O->hiddenClass()->setConfigurable(idx, descC.toBoolean());
+    if (descHasWritable)
+        O->hiddenClass()->setWritable(idx, descW.toBoolean());
+    if (descHasGetter || descHasSetter) {
+        ESPropertyAccessorData* currentAccessorData = O->accessorData(idx);
+        escargot::ESFunctionObject* getter = descGet;
+        if (!descHasGetter && currentAccessorData->getJSGetter()) {
+            getter = currentAccessorData->getJSGetter();
+        }
+        escargot::ESFunctionObject* setter = descSet;
+        if (!descHasSetter && currentAccessorData->getJSSetter()) {
+            setter = currentAccessorData->getJSSetter();
+        }
+        O->defineAccessorProperty(key, new ESPropertyAccessorData(getter, setter),
+            descW.isUndefined() ? propertyInfo.m_flags.m_isWritable : descW.toBoolean(),
+            descE.isUndefined() ? propertyInfo.m_flags.m_isEnumerable : descE.toBoolean(),
+            descC.isUndefined() ? propertyInfo.m_flags.m_isConfigurable : descC.toBoolean());
+    }
+
+    // 13
+    return true;
+}
+
 const unsigned ESArrayObject::MAX_FASTMODE_SIZE;
 
 ESArrayObject::ESArrayObject(int length)

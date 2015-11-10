@@ -1064,6 +1064,18 @@ public:
     ALWAYS_INLINE ESValue value(::escargot::ESObject* obj);
     ALWAYS_INLINE void setValue(::escargot::ESObject* obj, const ESValue& value);
 
+    typedef void (*NativeSetterPtr)(::escargot::ESObject* obj, const ESValue& value);
+    NativeSetterPtr getNativeSetter()
+    {
+        return m_nativeSetter;
+    }
+
+    typedef ESValue (*NativeGetterPtr)(::escargot::ESObject* obj);
+    NativeGetterPtr getNativeGetter()
+    {
+        return m_nativeGetter;
+    }
+
     void setSetter(void (*setter)(::escargot::ESObject* obj, const ESValue& value))
     {
         m_nativeSetter = setter;
@@ -1076,10 +1088,20 @@ public:
         m_jsGetter = nullptr;
     }
 
+    ESFunctionObject* getJSSetter()
+   {
+       return m_jsSetter;
+   }
+
     void setJSSetter(ESFunctionObject* setter)
     {
         m_nativeSetter = nullptr;
         m_jsSetter = setter;
+    }
+
+    ESFunctionObject* getJSGetter()
+    {
+        return m_jsGetter;
     }
 
     void setJSGetter(ESFunctionObject* getter)
@@ -1322,6 +1344,8 @@ public:
     inline void propertyFlags(const ESValue& key, bool& exists, bool& isDataProperty, bool& isWritable, bool& isEnumerable, bool& isConfigurable);
     inline bool hasProperty(const escargot::ESValue& key);
     inline bool hasOwnProperty(const escargot::ESValue& key);
+
+    bool DefineOwnProperty(ESValue& key, ESObject* desc, bool throwFlag);
 
     // $6.1.7.2 Object Internal Methods and Internal Slots
     bool isExtensible()
