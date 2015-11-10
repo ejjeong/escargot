@@ -1545,12 +1545,12 @@ public:
 
     void setPrimitiveValue(double primitiveVale) { m_primitiveValue = primitiveVale; }
     double getPrimitiveValue() { return m_primitiveValue; }
-    static double TimeClip(double V)
+    static double timeClip(double V)
     {
         if (std::isinf(V)) {
-            return std::nan("0");
+            return nan("0");
         } else if (std::abs(V) > 8.64 * std::pow(10, 15)) {
-            return std::nan("0");
+            return nan("0");
         } else {
             return ESValue(V).toInteger();
         }

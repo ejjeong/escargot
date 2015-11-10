@@ -2536,7 +2536,7 @@ void GlobalObject::installDate()
                     thisObject->setTimeValue(v);
                 } else {
                     double V = v.toNumber();
-                    thisObject->setPrimitiveValue(ESDateObject::TimeClip(V));
+                    thisObject->setPrimitiveValue(ESDateObject::timeClip(V));
                     thisObject->setTime(thisObject->getPrimitiveValue());
                 }
             } else {
