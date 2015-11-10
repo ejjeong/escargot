@@ -1628,7 +1628,7 @@ void GlobalObject::installArray()
     m_arrayPrototype->ESObject::defineDataProperty(strings->shift, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         int argumentLen = instance->currentExecutionContext()->argumentCount();
         ESObject* O = instance->currentExecutionContext()->resolveThisBindingToObject(); // 1
-        int len = O->get(strings->length.string()).toLength(); // 3
+        int len = O->get(strings->length.string()).toUint32(); // 3
         if (len == 0) { // 5
             O->set(strings->length.string(), ESValue(0), true);
             return ESValue();
