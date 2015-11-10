@@ -1265,6 +1265,7 @@ void GlobalObject::installError()
 void GlobalObject::installArray()
 {
     m_arrayPrototype = ESArrayObject::create(0);
+    m_arrayPrototype->convertToSlowMode();
     m_arrayPrototype->set__proto__(m_objectPrototype);
     m_arrayPrototype->forceNonVectorHiddenClass();
 
@@ -1807,7 +1808,7 @@ void GlobalObject::installArray()
     m_arrayPrototype->ESObject::defineDataProperty(ESString::create(u"unshift"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
 
         ESObject* O = instance->currentExecutionContext()->resolveThisBindingToObject();
-        int len = O->get(strings->length.string()).toLength();
+        uint32_t len = O->get(strings->length.string()).toUint32();
         int argCount = instance->currentExecutionContext()->argumentCount();
         if (argCount > 0) {
             if (len+argCount > std::pow(2, 32)-1)
@@ -1816,7 +1817,7 @@ void GlobalObject::installArray()
             while (k > 0) {
                 ESValue from(k - 1);
                 ESValue to(k + argCount - 1);
-                bool fromPresent = O->hasOwnProperty(from);
+                bool fromPresent = O->hasProperty(from);
                 if (fromPresent) {
                     ESValue fromValue = O->get(from);
                     O->set(to, fromValue, true);
@@ -1826,10 +1827,9 @@ void GlobalObject::installArray()
                 k--;
             }
 
-            int j = 0;
             ESValue* items = instance->currentExecutionContext()->arguments();
-            for (int i = 0; i < argCount; i++) {
-                O->set(ESValue(j), *(items+i), true);
+            for (int j = 0; j < argCount; j++) {
+                O->set(ESValue(j), *(items+j), true);
             }
         }
 
