@@ -55,11 +55,11 @@ ESVMInstance::ESVMInstance()
 
     m_globalFunctionPrototype = NULL;
 
-    m_object__proto__AccessorData.setGetter([](ESObject* obj) -> ESValue {
+    m_object__proto__AccessorData.setGetter([](ESObject* obj, ESObject* originalObj) -> ESValue {
         return obj->__proto__();
     });
 
-    m_object__proto__AccessorData.setSetter([](::escargot::ESObject* self, const ESValue& value) -> void {
+    m_object__proto__AccessorData.setSetter([](::escargot::ESObject* self, ESObject* originalObj, const ESValue& value) -> void {
         if (value.isESPointer() && value.asESPointer()->isESObject()) {
             self->set__proto__(value.asESPointer()->asESObject());
         } else if (value.isUndefined()) {
@@ -87,25 +87,25 @@ ESVMInstance::ESVMInstance()
 
     m_initialHiddenClassForArrayObject = m_initialHiddenClassForObject.defineProperty(m_strings.length, false, true, false, false);
 
-    m_functionPrototypeAccessorData.setGetter([](ESObject* self) -> ESValue {
+    m_functionPrototypeAccessorData.setGetter([](ESObject* self, ESObject* originalObj) -> ESValue {
         return self->asESFunctionObject()->protoType();
     });
 
-    m_functionPrototypeAccessorData.setSetter([](::escargot::ESObject* self, const ESValue& value) {
+    m_functionPrototypeAccessorData.setSetter([](::escargot::ESObject* self, ESObject* originalObj, const ESValue& value) {
         self->asESFunctionObject()->setProtoType(value);
     });
 
-    m_arrayLengthAccessorData.setGetter([](ESObject* self) -> ESValue {
+    m_arrayLengthAccessorData.setGetter([](ESObject* self, ESObject* originalObj) -> ESValue {
         return ESValue(self->asESArrayObject()->length());
     });
 
-    m_arrayLengthAccessorData.setSetter([](::escargot::ESObject* self, const ESValue& value) {
+    m_arrayLengthAccessorData.setSetter([](::escargot::ESObject* self, ESObject* originalObj, const ESValue& value) {
         if (!value.isNumber() || value.toNumber() != value.toUint32())
             throw ESValue(RangeError::create());
         self->asESArrayObject()->setLength(value.toInt32());
     });
 
-    m_stringObjectLengthAccessorData.setGetter([](ESObject* self) -> ESValue {
+    m_stringObjectLengthAccessorData.setGetter([](ESObject* self, ESObject* originalObj) -> ESValue {
         return ESValue(self->asESStringObject()->stringData()->length());
     });
 

@@ -1037,6 +1037,9 @@ template<> struct equal_to<escargot::ESString *> {
 
 namespace escargot {
 
+typedef ESValue (*ESNativeGetter)(::escargot::ESObject* obj, ::escargot::ESObject* originalObj);
+typedef void (*ESNativeSetter)(::escargot::ESObject* obj, ::escargot::ESObject* originalObj, const ESValue& value);
+
 class ESPropertyAccessorData : public gc {
 public:
     ESPropertyAccessorData(ESFunctionObject* getter, ESFunctionObject* setter)
@@ -1046,7 +1049,7 @@ public:
         m_jsGetter = getter;
         m_jsSetter = setter;
     }
-    ESPropertyAccessorData(ESValue (*getter)(::escargot::ESObject* obj), void (*setter)(::escargot::ESObject* obj, const ESValue& value))
+    ESPropertyAccessorData(ESNativeGetter getter, ESNativeSetter setter)
     {
         m_nativeGetter = getter;
         m_nativeSetter = setter;
@@ -1061,28 +1064,26 @@ public:
         m_jsSetter = nullptr;
     }
 
-    ALWAYS_INLINE ESValue value(::escargot::ESObject* obj);
-    ALWAYS_INLINE void setValue(::escargot::ESObject* obj, const ESValue& value);
+    ALWAYS_INLINE ESValue value(::escargot::ESObject* obj, ::escargot::ESObject* originalObj);
+    ALWAYS_INLINE void setValue(::escargot::ESObject* obj, ::escargot::ESObject* originalObj, const ESValue& value);
 
-    typedef void (*NativeSetterPtr)(::escargot::ESObject* obj, const ESValue& value);
-    NativeSetterPtr getNativeSetter()
+    ESNativeSetter getNativeSetter()
     {
         return m_nativeSetter;
     }
 
-    typedef ESValue (*NativeGetterPtr)(::escargot::ESObject* obj);
-    NativeGetterPtr getNativeGetter()
+    ESNativeGetter getNativeGetter()
     {
         return m_nativeGetter;
     }
 
-    void setSetter(void (*setter)(::escargot::ESObject* obj, const ESValue& value))
+    void setSetter(ESNativeSetter setter)
     {
         m_nativeSetter = setter;
         m_jsSetter = nullptr;
     }
 
-    void setGetter(ESValue (*getter)(::escargot::ESObject* obj))
+    void setGetter(ESNativeGetter getter)
     {
         m_nativeGetter = getter;
         m_jsGetter = nullptr;
@@ -1113,8 +1114,8 @@ public:
     void setGetterAndSetterTo(ESObject* obj);
 
 protected:
-    ESValue (*m_nativeGetter)(::escargot::ESObject* obj);
-    void (*m_nativeSetter)(::escargot::ESObject* obj, const ESValue& value);
+    ESNativeGetter m_nativeGetter;
+    ESNativeSetter m_nativeSetter;
     ESFunctionObject* m_jsGetter;
     ESFunctionObject* m_jsSetter;
 };
@@ -1327,14 +1328,13 @@ public:
     }
     inline bool defineDataProperty(const escargot::ESValue& key, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true, const ESValue& initalValue = ESValue());
     inline bool defineAccessorProperty(const escargot::ESValue& key, ESPropertyAccessorData* data, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true);
-    inline bool defineAccessorProperty(const escargot::ESValue& key, ESValue (*getter)(::escargot::ESObject* obj),
-        void (*setter)(::escargot::ESObject* obj, const ESValue& value),
+    inline bool defineAccessorProperty(const escargot::ESValue& key, ESNativeGetter getter, ESNativeSetter setter,
         bool isWritable, bool isEnumerable, bool isConfigurable)
     {
         return defineAccessorProperty(key, new ESPropertyAccessorData(getter, setter), isWritable, isEnumerable, isConfigurable);
     }
-    inline bool defineAccessorProperty(escargot::ESString* key, ESValue (*getter)(::escargot::ESObject* obj),
-        void (*setter)(::escargot::ESObject* obj, const ESValue& value),
+    inline bool defineAccessorProperty(escargot::ESString* key, ESNativeGetter getter,
+        ESNativeSetter setter,
         bool isWritable, bool isEnumerable, bool isConfigurable)
     {
         return defineAccessorProperty(key, new ESPropertyAccessorData(getter, setter), isWritable, isEnumerable, isConfigurable);

@@ -3648,22 +3648,6 @@ void GlobalObject::installRegExp()
     // initialize regexp object
     m_regexp->setProtoType(m_regexpPrototype);
 
-    m_regexpPrototype->defineAccessorProperty(strings->source, [](ESObject* self) -> ESValue {
-        return self->asESRegExpObject()->source();
-    }, nullptr, true, false, false);
-
-    m_regexpPrototype->defineAccessorProperty(escargot::ESString::create(u"ignoreCase"), [](ESObject* self) -> ESValue {
-        return ESValue((bool)(self->asESRegExpObject()->option() & ESRegExpObject::Option::IgnoreCase));
-    }, nullptr, true, false, false);
-
-    m_regexpPrototype->defineAccessorProperty(escargot::ESString::create(u"global"), [](ESObject* self) -> ESValue {
-        return ESValue((bool)(self->asESRegExpObject()->option() & ESRegExpObject::Option::Global));
-    }, nullptr, true, false, false);
-
-    m_regexpPrototype->defineAccessorProperty(escargot::ESString::create(u"multiline"), [](ESObject* self) -> ESValue {
-        return ESValue((bool)(self->asESRegExpObject()->option() & ESRegExpObject::Option::MultiLine));
-    }, nullptr, true, false, false);
-
 
     // 21.2.5.13 RegExp.prototype.test( S )
 
@@ -3804,9 +3788,11 @@ void GlobalObject::installArrayBuffer()
     }, strings->ArrayBuffer, 1, true);
     m_arrayBuffer->forceNonVectorHiddenClass();
 
+    m_arrayBufferPrototype->defineDataProperty(strings->constructor, true, false, true, m_arrayBuffer);
     // $22.2.3.2
-    m_arrayBufferPrototype->defineAccessorProperty(strings->byteLength, [](ESObject* self) -> ESValue {
-        return ESValue(self->asESArrayBufferObject()->bytelength());
+    m_arrayBufferPrototype->defineAccessorProperty(strings->byteLength, [](ESObject* self, ESObject* originalObj) -> ESValue {
+        // FIXME find right object from originalObj
+        return ESValue(originalObj->asESArrayBufferObject()->bytelength());
     }, nullptr, true, false, false);
 
     m_arrayBuffer->set__proto__(m_functionPrototype); // empty Function
@@ -3923,17 +3909,20 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
     ta_constructor->forceNonVectorHiddenClass();
 
     // $22.2.3.2
-    ta_prototype->defineAccessorProperty(strings->byteLength, [](ESObject* self) -> ESValue {
-        return ESValue(self->asESTypedArrayObject<T>()->bytelength());
+    ta_prototype->defineAccessorProperty(strings->byteLength, [](ESObject* self, ESObject* originalObj) -> ESValue {
+        // FIXME find right object from originalObj
+        return ESValue(originalObj->asESTypedArrayObject<T>()->bytelength());
     }, nullptr, true, false, false);
     // $22.2.3.2
-    ta_prototype->defineAccessorProperty(strings->length, [](ESObject* self) -> ESValue {
-        return ESValue(self->asESTypedArrayObject<T>()->arraylength());
+    ta_prototype->defineAccessorProperty(strings->length, [](ESObject* self, ESObject* originalObj) -> ESValue {
+        // FIXME find right object from originalObj
+        return ESValue(originalObj->asESTypedArrayObject<T>()->arraylength());
     }, nullptr, true, false, false);
 
     // TODO add reference
-    ta_prototype->defineAccessorProperty(strings->buffer, [](ESObject* self) -> ESValue {
-        return ESValue(self->asESTypedArrayObject<T>()->buffer());
+    ta_prototype->defineAccessorProperty(strings->buffer, [](ESObject* self, ESObject* originalObj) -> ESValue {
+        // FIXME find right object from originalObj
+        return ESValue(originalObj->asESTypedArrayObject<T>()->buffer());
     }, nullptr, true, false, false);
     // $22.2.3.22 %TypedArray%.prototype.set(overloaded[, offset])
     ta_prototype->ESObject::defineDataProperty(strings->set, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {

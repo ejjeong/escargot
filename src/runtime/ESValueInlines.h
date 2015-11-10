@@ -834,30 +834,30 @@ ALWAYS_INLINE ESPointer* ESValue::asESPointer() const
 
 #endif
 
-ALWAYS_INLINE ESValue ESPropertyAccessorData::value(::escargot::ESObject* obj)
+ALWAYS_INLINE ESValue ESPropertyAccessorData::value(::escargot::ESObject* obj, ::escargot::ESObject* originalObj)
 {
     if (m_nativeGetter) {
         ASSERT(!m_jsGetter);
-        return m_nativeGetter(obj);
+        return m_nativeGetter(obj, originalObj);
     }
     if (m_jsGetter) {
         ASSERT(!m_nativeGetter);
-        return ESFunctionObject::call(ESVMInstance::currentInstance(), m_jsGetter, obj, NULL, 0, false);
+        return ESFunctionObject::call(ESVMInstance::currentInstance(), m_jsGetter, originalObj, NULL, 0, false);
     }
     return ESValue();
 }
 
-ALWAYS_INLINE void ESPropertyAccessorData::setValue(::escargot::ESObject* obj, const ESValue& value)
+ALWAYS_INLINE void ESPropertyAccessorData::setValue(::escargot::ESObject* obj, ::escargot::ESObject* originalObj, const ESValue& value)
 {
     if (m_nativeSetter) {
         ASSERT(!m_jsSetter);
-        m_nativeSetter(obj, value);
+        m_nativeSetter(obj, originalObj, value);
     }
     if (m_jsSetter) {
         ASSERT(!m_nativeSetter);
         ESValue arg[] = {value};
         ESFunctionObject::call(ESVMInstance::currentInstance(), m_jsSetter,
-            obj , arg, 1, false);
+            originalObj , arg, 1, false);
     }
 }
 
@@ -1054,7 +1054,7 @@ ALWAYS_INLINE ESValue ESHiddenClass::read(ESObject* obj, ESObject* originalObjec
         return obj->m_hiddenClassData[idx];
     } else {
         ESPropertyAccessorData* data = (ESPropertyAccessorData *)obj->m_hiddenClassData[idx].asESPointer();
-        return data->value(originalObject);
+        return data->value(obj, originalObject);
     }
 }
 
@@ -1072,7 +1072,7 @@ ALWAYS_INLINE bool ESHiddenClass::write(ESObject* obj, ESObject* originalObject,
         obj->m_hiddenClassData[idx] = val;
     } else {
         ESPropertyAccessorData* data = (ESPropertyAccessorData *)obj->m_hiddenClassData[idx].asESPointer();
-        data->setValue(originalObject, val);
+        data->setValue(obj, originalObject, val);
     }
     return true;
 }

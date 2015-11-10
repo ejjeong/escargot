@@ -657,9 +657,26 @@ ESRegExpObject::ESRegExpObject(escargot::ESString* source, const Option& option)
     m_lastIndex = ESValue(0);
     m_lastExecutedString = NULL;
 
-    defineAccessorProperty(strings->lastIndex.string(), [](ESObject* self) -> ESValue {
+    defineAccessorProperty(strings->source, [](ESObject* self, ESObject* originalObj) -> ESValue {
+        return self->asESRegExpObject()->source();
+    }, nullptr, true, false, false);
+
+    defineAccessorProperty(escargot::ESString::create(u"ignoreCase"), [](ESObject* self, ESObject* originalObj) -> ESValue {
+        return ESValue((bool)(self->asESRegExpObject()->option() & ESRegExpObject::Option::IgnoreCase));
+    }, nullptr, true, false, false);
+
+    defineAccessorProperty(escargot::ESString::create(u"global"), [](ESObject* self, ESObject* originalObj) -> ESValue {
+        return ESValue((bool)(self->asESRegExpObject()->option() & ESRegExpObject::Option::Global));
+    }, nullptr, true, false, false);
+
+    defineAccessorProperty(escargot::ESString::create(u"multiline"), [](ESObject* self, ESObject* originalObj) -> ESValue {
+        return ESValue((bool)(self->asESRegExpObject()->option() & ESRegExpObject::Option::MultiLine));
+    }, nullptr, true, false, false);
+
+    defineAccessorProperty(strings->lastIndex.string(), [](ESObject* self, ESObject* originalObj) -> ESValue {
         return self->asESRegExpObject()->lastIndex();
-    }, [](ESObject* self, const ESValue& index) -> void {
+    }, [](ESObject* self, ESObject* originalObj, const ESValue& index)
+    {
         self->asESRegExpObject()->setLastIndex(index);
     }, true, false, false);
 }
