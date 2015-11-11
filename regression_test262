@@ -24,3 +24,5 @@ for t in $TC; do
     make run-test262 OPT=$t > out/test_262
     cat out/test_262 | grep "\- Failed"
 done
+
+exit 0;
