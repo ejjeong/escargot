@@ -2951,306 +2951,301 @@ void GlobalObject::installJSON()
 
     // $24.3.2 JSON.stringify(value[, replacer[, space ]])
     m_json->defineDataProperty(strings->stringify, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        int argCount = instance->currentExecutionContext()->argumentCount();
-        if (argCount < 1) {
-            return ESValue();
-        } else {
-            // 1, 2, 3
-            ESValue value = instance->currentExecutionContext()->readArgument(0);
-            ESValue replacer = instance->currentExecutionContext()->readArgument(1);
-            ESValue space = instance->currentExecutionContext()->readArgument(2);
-            u16string indent = u"";
-            std::vector<ESValue> stack;
-            std::vector<ESValue> propertyList;
+        // 1, 2, 3
+        ESValue value = instance->currentExecutionContext()->readArgument(0);
+        ESValue replacer = instance->currentExecutionContext()->readArgument(1);
+        ESValue space = instance->currentExecutionContext()->readArgument(2);
+        u16string indent = u"";
+        std::vector<ESValue> stack;
+        std::vector<ESValue> propertyList;
 
-            // 4
-            escargot::ESFunctionObject* replacerFunc = NULL;
-            if (replacer.isObject()) {
-                if (replacer.isESPointer() && replacer.asESPointer()->isESFunctionObject()) {
-                    replacerFunc = replacer.asESPointer()->asESFunctionObject();
-                } else if (replacer.isESPointer() && replacer.asESPointer()->isESArrayObject()) {
-                    escargot::ESArrayObject* arrObject = replacer.asESPointer()->asESArrayObject();
-                    ESValue* data = arrObject->data();
-                    for (uint32_t i = 0; i < arrObject->length(); ++i) {
-                        ESValue item;
-                        if (data[i].isESString()) {
-                            item = data[i];
-                        } else if (data[i].isNumber()) {
+        // 4
+        escargot::ESFunctionObject* replacerFunc = NULL;
+        if (replacer.isObject()) {
+            if (replacer.isESPointer() && replacer.asESPointer()->isESFunctionObject()) {
+                replacerFunc = replacer.asESPointer()->asESFunctionObject();
+            } else if (replacer.isESPointer() && replacer.asESPointer()->isESArrayObject()) {
+                escargot::ESArrayObject* arrObject = replacer.asESPointer()->asESArrayObject();
+                ESValue* data = arrObject->data();
+                for (uint32_t i = 0; i < arrObject->length(); ++i) {
+                    ESValue item;
+                    if (data[i].isESString()) {
+                        item = data[i];
+                    } else if (data[i].isNumber()) {
+                        item = data[i].toString();
+                    } else if (data[i].isObject()) {
+                        if (data[i].isESPointer()
+                            && (data[i].asESPointer()->isESStringObject()
+                                || data[i].asESPointer()->isESNumberObject())) {
                             item = data[i].toString();
-                        } else if (data[i].isObject()) {
-                            if (data[i].isESPointer()
-                                && (data[i].asESPointer()->isESStringObject()
-                                    || data[i].asESPointer()->isESNumberObject())) {
-                                item = data[i].toString();
-                            }
-                        }
-                        if (!item.isUndefined()) {
-                            bool flag = false;
-                            for (auto& v : propertyList) {
-                                if (v == item) {
-                                    flag = true;
-                                    break;
-                                }
-                            }
-
-                            propertyList.push_back(std::move(item));
                         }
                     }
-                }
-            }
+                    if (!item.isUndefined()) {
+                        bool flag = false;
+                        for (auto& v : propertyList) {
+                            if (v == item) {
+                                flag = true;
+                                break;
+                            }
+                        }
 
-            // 5
-            if (space.isObject()) {
-                if (space.isESPointer() && space.asESPointer()->isESNumberObject()) {
-                    space = ESValue(space.toNumber());
-                } else if (space.isESPointer() && space.asESPointer()->isESStringObject()) {
-                    space =space.toString();
-                }
-            }
-
-            // 6, 7, 8
-            u16string gap = u"";
-            if (space.isNumber()) {
-                int space_cnt = std::min(space.toInteger(), 10.0);
-                if (space_cnt >= 1) {
-                    gap.assign(u" ", space_cnt);
-                }
-            } else if (space.isESString()) {
-                if (space.asESString()->length() <= 10) {
-                    gap = u16string(space.asESString()->data());
-                } else {
-                    gap = u16string(space.asESString()->data()).substr(0, 10);
-                }
-            }
-
-            std::function<ESValue(ESValue key, ESObject* holder)> Str;
-            std::function<ESValue(ESValue value)> JA;
-            std::function<ESValue(ESValue value)> JO;
-            std::function<u16string(ESValue value)> Quote;
-
-            Str = [&](ESValue key, ESObject* holder) -> ESValue {
-                ESValue value = holder->get(key);
-                if (value.isObject()) {
-                    ESObject* valObj = value.asESPointer()->asESObject();
-                    ESValue toJson = valObj->get(strings->toJSON.string());
-                    if (toJson.isESPointer() && toJson.asESPointer()->isESFunctionObject()) {
-                        value = ESFunctionObject::call(instance, toJson, value, NULL, 0, false);
+                        propertyList.push_back(std::move(item));
                     }
                 }
+            }
+        }
 
-                if (replacerFunc != NULL) {
-                    ESValue* arguments = (ESValue *)alloca(2 * sizeof(ESValue));
-                    arguments[0] = key;
-                    arguments[1] = value;
-                    value = ESFunctionObject::call(instance, replacerFunc, value, arguments, 2, false);
-                }
+        // 5
+        if (space.isObject()) {
+            if (space.isESPointer() && space.asESPointer()->isESNumberObject()) {
+                space = ESValue(space.toNumber());
+            } else if (space.isESPointer() && space.asESPointer()->isESStringObject()) {
+                space =space.toString();
+            }
+        }
 
-                if (value.isObject()) {
-                    if (value.isESPointer() && value.asESPointer()->isESNumberObject()) {
-                        value = ESValue(value.toNumber());
-                    } else if (value.isESPointer() && value.asESPointer()->isESStringObject()) {
-                        value = ESValue(value.toString());
-                    } else if (value.isESPointer() && value.asESPointer()->isESBooleanObject()) {
-                        value = ESValue(value.asESPointer()->asESBooleanObject()->booleanData());
-                    }
+        // 6, 7, 8
+        u16string gap = u"";
+        if (space.isNumber()) {
+            int space_cnt = std::min(space.toInteger(), 10.0);
+            if (space_cnt >= 1) {
+                gap.assign(u" ", space_cnt);
+            }
+        } else if (space.isESString()) {
+            if (space.asESString()->length() <= 10) {
+                gap = u16string(space.asESString()->data());
+            } else {
+                gap = u16string(space.asESString()->data()).substr(0, 10);
+            }
+        }
+
+        std::function<ESValue(ESValue key, ESObject* holder)> Str;
+        std::function<ESValue(ESValue value)> JA;
+        std::function<ESValue(ESValue value)> JO;
+        std::function<u16string(ESValue value)> Quote;
+
+        Str = [&](ESValue key, ESObject* holder) -> ESValue {
+            ESValue value = holder->get(key);
+            if (value.isObject()) {
+                ESObject* valObj = value.asESPointer()->asESObject();
+                ESValue toJson = valObj->get(strings->toJSON.string());
+                if (toJson.isESPointer() && toJson.asESPointer()->isESFunctionObject()) {
+                    value = ESFunctionObject::call(instance, toJson, value, NULL, 0, false);
                 }
-                if (value.isNull()) {
+            }
+
+            if (replacerFunc != NULL) {
+                ESValue* arguments = (ESValue *)alloca(2 * sizeof(ESValue));
+                arguments[0] = key;
+                arguments[1] = value;
+                value = ESFunctionObject::call(instance, replacerFunc, value, arguments, 2, false);
+            }
+
+            if (value.isObject()) {
+                if (value.isESPointer() && value.asESPointer()->isESNumberObject()) {
+                    value = ESValue(value.toNumber());
+                } else if (value.isESPointer() && value.asESPointer()->isESStringObject()) {
+                    value = ESValue(value.toString());
+                } else if (value.isESPointer() && value.asESPointer()->isESBooleanObject()) {
+                    value = ESValue(value.asESPointer()->asESBooleanObject()->booleanData());
+                }
+            }
+            if (value.isNull()) {
+                return strings->null.string();
+            }
+            if (value.isBoolean()) {
+                return value.asBoolean()? strings->stringTrue.string() : strings->stringFalse.string();
+            }
+            if (value.isESString()) {
+                return ESString::create(Quote(value));
+            }
+            if (value.isNumber()) {
+                double d = value.toNumber();
+                if (isinf(d)) {
                     return strings->null.string();
                 }
-                if (value.isBoolean()) {
-                    return value.asBoolean()? strings->stringTrue.string() : strings->stringFalse.string();
-                }
-                if (value.isESString()) {
-                    return ESString::create(Quote(value));
-                }
-                if (value.isNumber()) {
-                    double d = value.toNumber();
-                    if (isinf(d)) {
-                        return strings->null.string();
-                    }
-                    return ESValue(value.toString());
-                }
-                if (value.isObject()) {
-                    if (!value.isESPointer() || !value.asESPointer()->isESFunctionObject()) {
-                        if (value.isESPointer() && value.asESPointer()->isESArrayObject()) {
-                            return JA(value);
-                        } else {
-                            return JO(value);
-                        }
-                    }
-                }
-
-                return ESValue();
-            };
-
-            Quote = [&](ESValue value) -> u16string {
-                u16string product = u"\"";
-                escargot::ESString* str = value.asESString();
-                const char16_t* data = str->data();
-                int len = str->length();
-
-                for (int i = 0; i < len; ++i) {
-                    char16_t c = data[i];
-
-                    if (c == u'\"' || c == u'\\') {
-                        product.append(u"\\");
-                        product.append(&c, 1);
-                    } else if (c == u'\b') {
-                        product.append(u"\\");
-                        product.append(u"b");
-                    } else if (c == u'\f') {
-                        product.append(u"\\");
-                        product.append(u"f");
-                    } else if (c == u'\n') {
-                        product.append(u"\\");
-                        product.append(u"n");
-                    } else if (c == u'\r') {
-                        product.append(u"\\");
-                        product.append(u"r");
-                    } else if (c == u'\t') {
-                        product.append(u"\\");
-                        product.append(u"t");
-                    } else if (c < u' ') {
-                        product.append(u"\\u");
-                        product.append(codePointTo4digitString(c));
+                return ESValue(value.toString());
+            }
+            if (value.isObject()) {
+                if (!value.isESPointer() || !value.asESPointer()->isESFunctionObject()) {
+                    if (value.isESPointer() && value.asESPointer()->isESArrayObject()) {
+                        return JA(value);
                     } else {
-                        product.append(&c, 1);
+                        return JO(value);
                     }
                 }
-                product.append(u"\"");
-                return product;
-            };
+            }
 
-            JA = [&](ESValue value) -> ESValue {
-                // 1
-                for (auto& v : stack) {
-                    if (v == value) {
-                        return ESValue(TypeError::create(ESString::create(u"JA error")));
-                    }
-                }
-                // 2
-                stack.push_back(value);
-                // 3
-                u16string stepback = indent;
-                // 4
-                std::vector<u16string> partial;
-                // 5
-                escargot::ESArrayObject* arrayObj = value.asESPointer()->asESArrayObject();
-                uint32_t len = arrayObj->length();
-                uint32_t index = 0;
-                // 8
-                while (index < len) {
-                    ESValue strP = Str(ESValue(index).toString(), value.asESPointer()->asESObject());
-                    if (strP.isUndefined()) {
-                        partial.push_back(strings->null.data());
-                    } else {
-                        partial.push_back(strP.asESString()->data());
-                    }
-                    index++;
-                }
-                // 9
-                u16string final;
-                if (partial.size() == 0) {
-                    final = u"[]";
+            return ESValue();
+        };
+
+        Quote = [&](ESValue value) -> u16string {
+            u16string product = u"\"";
+            escargot::ESString* str = value.asESString();
+            const char16_t* data = str->data();
+            int len = str->length();
+
+            for (int i = 0; i < len; ++i) {
+                char16_t c = data[i];
+
+                if (c == u'\"' || c == u'\\') {
+                    product.append(u"\\");
+                    product.append(&c, 1);
+                } else if (c == u'\b') {
+                    product.append(u"\\");
+                    product.append(u"b");
+                } else if (c == u'\f') {
+                    product.append(u"\\");
+                    product.append(u"f");
+                } else if (c == u'\n') {
+                    product.append(u"\\");
+                    product.append(u"n");
+                } else if (c == u'\r') {
+                    product.append(u"\\");
+                    product.append(u"r");
+                } else if (c == u'\t') {
+                    product.append(u"\\");
+                    product.append(u"t");
+                } else if (c < u' ') {
+                    product.append(u"\\u");
+                    product.append(codePointTo4digitString(c));
                 } else {
-                    u16string seperator;
-                    if (gap == u"") {
-                        seperator = u",";
-                    } else {
-                        seperator = u",\n" + indent;
-                    }
-                    final = u"[";
-                    int len = partial.size();
-                    for (int i = 0; i < len; ++i) {
-                        final.append(partial[i]);
-                        if (i < len - 1) {
-                            final.append(u",");
-                        }
-                    }
-                    final.append(u"]");
+                    product.append(&c, 1);
                 }
-                // 11
-                stack.pop_back();
-                // 12
-                indent = stepback;
+            }
+            product.append(u"\"");
+            return product;
+        };
 
-                return ESString::create(final);
-            };
-
-            JO = [&](ESValue value) -> ESValue {
-                // 1
-                for (auto& v : stack) {
-                    if (v == value) {
-                        return ESValue(TypeError::create(ESString::create(u"JO error")));
-                    }
+        JA = [&](ESValue value) -> ESValue {
+            // 1
+            for (auto& v : stack) {
+                if (v == value) {
+                    throw ESValue(TypeError::create(ESString::create(u"JA error")));
                 }
-                // 2
-                stack.push_back(value);
-                // 3
-                u16string stepback = indent;
-                // 4
-                indent = indent + gap;
-                // 5, 6
-                std::vector<ESValue> k;
-                if (propertyList.size() > 0) {
-                    k = propertyList;
+            }
+            // 2
+            stack.push_back(value);
+            // 3
+            u16string stepback = indent;
+            // 4
+            std::vector<u16string> partial;
+            // 5
+            escargot::ESArrayObject* arrayObj = value.asESPointer()->asESArrayObject();
+            uint32_t len = arrayObj->length();
+            uint32_t index = 0;
+            // 8
+            while (index < len) {
+                ESValue strP = Str(ESValue(index).toString(), value.asESPointer()->asESObject());
+                if (strP.isUndefined()) {
+                    partial.push_back(strings->null.data());
                 } else {
-                    value.asESPointer()->asESObject()->enumeration([&](ESValue key) {
-                        k.push_back(key);
-                    });
+                    partial.push_back(strP.asESString()->data());
                 }
-
-                // 7
-                std::vector<u16string> partial;
-                // 8
-                int len = k.size();
-                for (int i = 0; i < len; ++i) {
-                    ESValue strP = Str(k[i], value.asESPointer()->asESObject());
-                    if (!strP.isUndefined()) {
-                        u16string member = Quote(k[i]);
-                        member.append(u":");
-                        if (gap != u"") {
-                            member.append(u" ");
-                        }
-                        member.append(strP.toString()->data());
-                        partial.push_back(std::move(member));
-                    }
-                }
-                // 9
-                u16string final;
-                if (partial.size() == 0) {
-                    final = u"{}";
-                } else {
-                    u16string seperator;
-                    if (gap == u"") {
-                        seperator = u",";
-                    } else {
-                        seperator = u",\n" + indent;
-                    }
-                    final = u"{";
-                    int len = partial.size();
-                    for (int i = 0; i < len; ++i) {
-                        final.append(partial[i]);
-                        if (i < len - 1) {
-                            final.append(u",");
-                        }
-                    }
-                    final.append(u"}");
-                }
-                // 11
-                stack.pop_back();
-                // 12
-                indent = stepback;
-
-                return ESString::create(final);
-            };
-
+                index++;
+            }
             // 9
-            ESValue wrapper = newOperation(instance, instance->globalObject(), instance->globalObject()->object(), NULL, 0);
-            // 10
-            wrapper.asESPointer()->asESObject()->defineDataProperty(ESString::create(u""), true, true, true, value);
-            return Str(ESString::create(u""), wrapper.asESPointer()->asESObject());
-        }
+            u16string final;
+            if (partial.size() == 0) {
+                final = u"[]";
+            } else {
+                u16string seperator;
+                if (gap == u"") {
+                    seperator = u",";
+                } else {
+                    seperator = u",\n" + indent;
+                }
+                final = u"[";
+                int len = partial.size();
+                for (int i = 0; i < len; ++i) {
+                    final.append(partial[i]);
+                    if (i < len - 1) {
+                        final.append(u",");
+                    }
+                }
+                final.append(u"]");
+            }
+            // 11
+            stack.pop_back();
+            // 12
+            indent = stepback;
+
+            return ESString::create(final);
+        };
+
+        JO = [&](ESValue value) -> ESValue {
+            // 1
+            for (auto& v : stack) {
+                if (v == value) {
+                    throw ESValue(TypeError::create(ESString::create(u"JO error")));
+                }
+            }
+            // 2
+            stack.push_back(value);
+            // 3
+            u16string stepback = indent;
+            // 4
+            indent = indent + gap;
+            // 5, 6
+            std::vector<ESValue> k;
+            if (propertyList.size() > 0) {
+                k = propertyList;
+            } else {
+                value.asESPointer()->asESObject()->enumeration([&](ESValue key) {
+                    k.push_back(key);
+                });
+            }
+
+            // 7
+            std::vector<u16string> partial;
+            // 8
+            int len = k.size();
+            for (int i = 0; i < len; ++i) {
+                ESValue strP = Str(k[i], value.asESPointer()->asESObject());
+                if (!strP.isUndefined()) {
+                    u16string member = Quote(k[i]);
+                    member.append(u":");
+                    if (gap != u"") {
+                        member.append(u" ");
+                    }
+                    member.append(strP.toString()->data());
+                    partial.push_back(std::move(member));
+                }
+            }
+            // 9
+            u16string final;
+            if (partial.size() == 0) {
+                final = u"{}";
+            } else {
+                u16string seperator;
+                if (gap == u"") {
+                    seperator = u",";
+                } else {
+                    seperator = u",\n" + indent;
+                }
+                final = u"{";
+                int len = partial.size();
+                for (int i = 0; i < len; ++i) {
+                    final.append(partial[i]);
+                    if (i < len - 1) {
+                        final.append(u",");
+                    }
+                }
+                final.append(u"}");
+            }
+            // 11
+            stack.pop_back();
+            // 12
+            indent = stepback;
+
+            return ESString::create(final);
+        };
+
+        // 9
+        ESValue wrapper = newOperation(instance, instance->globalObject(), instance->globalObject()->object(), NULL, 0);
+        // 10
+        wrapper.asESPointer()->asESObject()->defineDataProperty(ESString::create(u""), true, true, true, value);
+        return Str(ESString::create(u""), wrapper.asESPointer()->asESObject());
     }, strings->stringify, 3));
 }
 
