@@ -1431,7 +1431,10 @@ void GlobalObject::installArray()
         escargot::ESArrayObject* ret = ESArrayObject::create(arrlen);
         for (int idx = 0; idx < arrlen; idx++) {
             ESValue tmpValue(thisBinded->get(ESValue(idx)));
-            ret->set(idx, ESFunctionObject::call(instance, arg.asESPointer()->asESFunctionObject(), instance->globalObject(), &tmpValue, 1, false));
+            ESValue k(idx);
+            ESValue O(thisBinded);
+            ESValue args[] = {tmpValue, k, O};
+            ret->set(idx, ESFunctionObject::call(instance, arg.asESPointer()->asESFunctionObject(), instance->globalObject(), args, 3, false));
         }
         return ret;
     }, ESString::create(u"map"), 1));
