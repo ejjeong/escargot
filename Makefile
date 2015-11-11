@@ -299,6 +299,7 @@ check:
 	cat out/sunspider_result
 	cat out/octane_result
 	make tidy
+	./regression_test262
 
 tidy:
 	./tools/check-webkit-style `find src/ -name "*.cpp" -o -name "*.h"`> error_report 2>& 1
