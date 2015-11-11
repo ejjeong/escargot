@@ -166,61 +166,61 @@ const tm* ESVMInstance::computeLocalTime(const timespec& ts)
 
 void ESVMInstance::printValue(ESValue val)
 {
-    std::string str;
+    u16string str;
     std::function<void(ESValue v)> toString = [&str, &toString](ESValue v)
     {
         if (v.isEmpty()) {
-            str.append("[Empty Value]");
+            str.append(u"[Empty Value]");
         } else if (v.isInt32()) {
-            str.append(v.toString()->utf8Data());
+            str.append(*(v.toString()->utf16Data()));
         } else if (v.isNumber()) {
-            str.append(v.toString()->utf8Data());
+            str.append(*(v.toString()->utf16Data()));
         } else if (v.isUndefined()) {
-            str.append(v.toString()->utf8Data());
+            str.append(*(v.toString()->utf16Data()));
         } else if (v.isNull()) {
-            str.append(v.toString()->utf8Data());
+            str.append(*(v.toString()->utf16Data()));
         } else if (v.isBoolean()) {
-            str.append(v.toString()->utf8Data());
+            str.append(*(v.toString()->utf16Data()));
         } else if (v.isESPointer()) {
             ESPointer* o = v.asESPointer();
             if (o->isESString()) {
-                str.append(o->asESString()->utf8Data());
+                str.append(*(o->asESString()->utf16Data()));
             } else if (o->isESFunctionObject()) {
-                str.append(v.toString()->utf8Data());
+                str.append(*(v.toString()->utf16Data()));
             } else if (o->isESArrayObject()) {
-                str.append("[");
+                str.append(u"[");
                 bool isFirst = true;
                 o->asESObject()->enumeration([&str, &isFirst, o, &toString](escargot::ESValue key) {
                     if (!isFirst)
-                        str.append(",");
-                    str.append(key.toString()->utf8Data());
-                    str.append(": ");
-                    str.append(o->asESObject()->getOwnProperty(key).toString()->utf8Data());
+                        str.append(u",");
+                    str.append(*(key.toString()->utf16Data()));
+                    str.append(u": ");
+                    str.append(*(o->asESObject()->getOwnProperty(key).toString()->utf16Data()));
                     isFirst = false;
                 });
-                str.append("]");
+                str.append(u"]");
             } else if (o->isESErrorObject()) {
-                str.append(v.toString()->utf8Data());
+                str.append(*(v.toString()->utf16Data()));
             } else if (o->isESObject()) {
                 if (o->asESObject()->get(ESValue(currentInstance()->strings().constructor)).isESPointer() && o->asESObject()->get(ESValue(currentInstance()->strings().constructor)).asESPointer()->isESObject())
-                    str.append(o->asESObject()->get(ESValue(currentInstance()->strings().constructor)).asESPointer()->asESObject()->get(ESValue(currentInstance()->strings().name)).toString()->utf8Data());
-                str.append(" {");
+                    str.append(*(o->asESObject()->get(ESValue(currentInstance()->strings().constructor)).asESPointer()->asESObject()->get(ESValue(currentInstance()->strings().name)).toString()->utf16Data()));
+                str.append(u" {");
                 bool isFirst = true;
                 o->asESObject()->enumeration([&str, &isFirst, o, &toString](escargot::ESValue key) {
                     if (!isFirst)
-                        str.append(", ");
-                    str.append(key.toString()->utf8Data());
-                    str.append(": ");
-                    str.append(o->asESObject()->getOwnProperty(key).toString()->utf8Data());
+                        str.append(u", ");
+                    str.append(*(key.toString()->utf16Data()));
+                    str.append(u": ");
+                    str.append(*(o->asESObject()->getOwnProperty(key).toString()->utf16Data()));
                     // toString(slot.value(o->asESObject()));
                     isFirst = false;
                 });
                 if (o->isESStringObject()) {
-                    str.append(", [[PrimitiveValue]]: \"");
-                    str.append(o->asESStringObject()->stringData()->utf8Data());
-                    str.append("\"");
+                    str.append(u", [[PrimitiveValue]]: \"");
+                    str.append(*(o->asESStringObject()->stringData()->utf16Data()));
+                    str.append(u"\"");
                 }
-                str.append("}");
+                str.append(u"}");
             } else {
                 RELEASE_ASSERT_NOT_REACHED();
             }
@@ -235,7 +235,11 @@ void ESVMInstance::printValue(ESValue val)
     };
     toString(val);
 
-    printf("%s\n", str.data());
+    // print one by one character just in case for nullable string such as "\u0002\u0000\u0001"
+    for (char16_t c : str) {
+        printf("%c", c);
+    }
+    printf("\n");
     fflush(stdout);
 }
 

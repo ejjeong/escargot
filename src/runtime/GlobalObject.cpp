@@ -431,7 +431,7 @@ void GlobalObject::initGlobalObject()
             return ESValue();
 
         escargot::ESString* stringValue = instance->currentExecutionContext()->arguments()->toString();
-        std::string componentString = std::string(stringValue->utf8Data());
+        NullableUTF8String componentString = stringValue->toNullableUTF8String();
         const char16_t* data = stringValue->data();
         int strLen = stringValue->length();
 
@@ -444,7 +444,7 @@ void GlobalObject::initGlobalObject()
                 || data[i] == '!' || data[i] == '~'
                 || data[i] == '*' || data[i] == '\'' || data[i] == '('
                 || data[i] == ')'))  {
-                escaped.append(&componentString[i], 1);
+                escaped.append(&componentString.m_buffer[i], 1);
             } else if (0 <= data[i] && data[i] < 0x007F) {
                 escaped.append("%");
                 escaped.append(char2hex(data[i]));
@@ -495,15 +495,15 @@ void GlobalObject::initGlobalObject()
         int argLen = instance->currentExecutionContext()->argumentCount();
         if (argLen == 0)
             return ESValue();
-        std::string str = std::string(instance->currentExecutionContext()->arguments()->asESString()->utf8Data());
-        int length = str.length();
+        NullableUTF8String str = instance->currentExecutionContext()->arguments()->asESString()->toNullableUTF8String();
+        size_t length = str.m_bufferSize;
         std::string R = "";
         for (int i = 0; i < length; i++) {
-            if (str[i] == '%') {
-                R.push_back(hex2char(str[i+1], str[i+2]));
+            if (str.m_buffer[i] == '%') {
+                R.push_back(hex2char(str.m_buffer[i+1], str.m_buffer[i+2]));
                 i = i + 2;
             } else {
-                R.append(&str[i], 1);
+                R.append(&str.m_buffer[i], 1);
             }
         }
         return escargot::ESString::create(R.c_str());

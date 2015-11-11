@@ -744,6 +744,14 @@ public:
         return utf16ToUtf8(data());
     }
 
+    u16string* utf16Data() const
+    {
+        if (UNLIKELY(m_string == NULL)) {
+            ensureNormalString();
+        }
+        return m_string;
+    }
+
     NullableUTF8String toNullableUTF8String()
     {
         size_t len;
