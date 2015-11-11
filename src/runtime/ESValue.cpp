@@ -426,7 +426,7 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
     unsigned subPatternNum = byteCode->m_body->m_numSubpatterns;
     matchResult.m_subPatternNum = (int) subPatternNum;
     size_t length = m_string->length();
-    if (length) {
+    if (length >= 0) {
         size_t start = startIndex;
         unsigned result = 0;
         const char16_t* chars = m_string->data();

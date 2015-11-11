@@ -1986,47 +1986,41 @@ void GlobalObject::installString()
         escargot::ESString* thisObject = instance->currentExecutionContext()->resolveThisBinding().toString();
         escargot::ESArrayObject* ret = ESArrayObject::create(0);
 
-        int argCount = instance->currentExecutionContext()->argumentCount();
-        if (argCount > 0) {
-            ESValue argument = instance->currentExecutionContext()->arguments()[0];
-            ESPointer* esptr;
-            if (argument.isESPointer()) {
-                esptr = argument.asESPointer();
-            } else {
-                if (argument.isUndefined()) {
-                    esptr = ESString::create("(?:)");
-                } else {
-                    esptr = argument.toString();
-                }
+        ESValue argument = instance->currentExecutionContext()->readArgument(0);
+        escargot::ESRegExpObject* regexp;
+        if (argument.isESPointer() && argument.asESPointer()->isESRegExpObject()) {
+            regexp = argument.asESPointer()->asESRegExpObject();
+        } else {
+            ESValue* arguments = (ESValue *)alloca(sizeof(ESValue));
+            arguments[0] = argument;
+            ESValue ret = newOperation(instance, instance->globalObject(), instance->globalObject()->regexp(), arguments, 1);
+            regexp = ret.asESPointer()->asESRegExpObject();
+        }
+
+        bool isGlobal = regexp->option() & ESRegExpObject::Option::Global;
+        ESString::RegexMatchResult result;
+        bool testResult = thisObject->match(regexp, result);
+
+        if (!testResult) {
+            return ESValue(ESValue::ESNull);
+        }
+
+        ((ESObject *)ret)->set(ESValue(strings->input), ESValue(thisObject));
+        ((ESObject *)ret)->set(ESValue(strings->index), ESValue(result.m_matchResults[0][0].m_start));
+        const char16_t* str = thisObject->data();
+
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/match
+        // if global flag is on, match method returns an Array containing all matched substrings
+        if (isGlobal) {
+            int idx = 0;
+            for (unsigned i = 0; i < result.m_matchResults.size() ; i ++) {
+                if (std::numeric_limits<unsigned>::max() == result.m_matchResults[i][0].m_start)
+                    ret->set(idx++, ESValue(ESValue::ESUndefined));
+                else
+                    ret->set(idx++, ESString::create(std::move(u16string(str + result.m_matchResults[i][0].m_start, str + result.m_matchResults[i][0].m_end))));
             }
-
-            ESString::RegexMatchResult result;
-            bool testResult = thisObject->match(esptr, result);
-
-            if (!testResult) {
-                return ESValue(ESValue::ESNull);
-            }
-
-            ((ESObject *)ret)->set(ESValue(strings->input), ESValue(thisObject));
-            ((ESObject *)ret)->set(ESValue(strings->index), ESValue(result.m_matchResults[0][0].m_start));
-            const char16_t* str = thisObject->data();
-
-            // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/match
-            // if global flag is on, match method returns an Array containing all matched substrings
-            if (argument.isESPointer() && argument.asESPointer()->isESRegExpObject()) {
-                escargot::ESRegExpObject* regexp = argument.asESPointer()->asESRegExpObject();
-                if (regexp->option() & ESRegExpObject::Option::Global) {
-                    int idx = 0;
-                    for (unsigned i = 0; i < result.m_matchResults.size() ; i ++) {
-                        if (std::numeric_limits<unsigned>::max() == result.m_matchResults[i][0].m_start)
-                            ret->set(idx++, ESValue(ESValue::ESUndefined));
-                        else
-                            ret->set(idx++, ESString::create(std::move(u16string(str + result.m_matchResults[i][0].m_start, str + result.m_matchResults[i][0].m_end))));
-                    }
-                    return ret;
-                }
-            }
-
+            return ret;
+        } else {
             int idx = 0;
             for (unsigned i = 0; i < result.m_matchResults.size() ; i ++) {
                 for (unsigned j = 0; j < result.m_matchResults[i].size() ; j ++) {
@@ -2038,8 +2032,9 @@ void GlobalObject::installString()
             }
             if (ret->length() == 0)
                 return ESValue(ESValue::ESNull);
+
+            return ret;
         }
-        return ret;
     }, ESString::create(u"match"), 1));
 
     // $21.1.3.14 String.prototype.replace(searchValue, replaceValue)
@@ -3938,52 +3933,47 @@ void GlobalObject::installRegExp()
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
         if (!thisObject->isESRegExpObject())
             throw ESValue(TypeError::create(ESString::create(u"Regexp.prototype.exec : This object is not Regexp object")));
-        ::escargot::ESRegExpObject* regexp = thisObject->asESRegExpObject();
-        ::escargot::ESArrayObject* arr = ::escargot::ESArrayObject::create();
-        int argCount = instance->currentExecutionContext()->argumentCount();
-        if (argCount >= 0) {
-            escargot::ESString* sourceStr = instance->currentExecutionContext()->readArgument(0).toString();
-            double lastIndex = regexp->m_lastIndex.toInteger();
-            if (lastIndex < 0 || lastIndex > sourceStr->length()) {
-                regexp->m_lastIndex = ESValue(0);
-                return ESValue(ESValue::ESNull);
-            }
-            regexp->m_lastExecutedString = sourceStr;
-            ESString::RegexMatchResult result;
-            bool isGlobal = regexp->option() & ESRegExpObject::Option::Global;
-            regexp->setOption((ESRegExpObject::Option)(regexp->option() & ~ESRegExpObject::Option::Global));
-            bool testResult = sourceStr->match(thisObject, result, false, lastIndex);
-            if (isGlobal) {
-                regexp->setOption((ESRegExpObject::Option)(regexp->option() | ESRegExpObject::Option::Global));
-            }
-
-            if (!testResult) {
-                regexp->m_lastIndex = ESValue(0);
-                return ESValue(ESValue::ESNull);
-            }
-
-            if (isGlobal) {
-                // update lastIndex
-                regexp->m_lastIndex = ESValue(result.m_matchResults[0][0].m_end);
-            }
-
-            ((ESObject *)arr)->set(ESValue(strings->input), ESValue(sourceStr));
-            ((ESObject *)arr)->set(ESValue(strings->index), ESValue(result.m_matchResults[0][0].m_start));
-            const char16_t* str = sourceStr->string().data();
-
-            int idx = 0;
-            for (unsigned i = 0; i < result.m_matchResults.size() ; i ++) {
-                for (unsigned j = 0; j < result.m_matchResults[i].size() ; j ++) {
-                    if (result.m_matchResults[i][j].m_start == std::numeric_limits<unsigned>::max())
-                        arr->set(idx++, ESValue(ESValue::ESUndefined));
-                    else
-                        arr->set(idx++, ESString::create(std::move(u16string(str + result.m_matchResults[i][j].m_start, str + result.m_matchResults[i][j].m_end))));
-                }
-            }
-            return arr;
-        } else {
+        escargot::ESRegExpObject* regexp = thisObject->asESRegExpObject();
+        escargot::ESArrayObject* arr = ::escargot::ESArrayObject::create();
+        escargot::ESString* sourceStr = instance->currentExecutionContext()->readArgument(0).toString();
+        double lastIndex = regexp->m_lastIndex.toInteger();
+        if (lastIndex < 0 || lastIndex > sourceStr->length()) {
+            regexp->m_lastIndex = ESValue(0);
             return ESValue(ESValue::ESNull);
         }
+        regexp->m_lastExecutedString = sourceStr;
+        ESString::RegexMatchResult result;
+        bool isGlobal = regexp->option() & ESRegExpObject::Option::Global;
+        regexp->setOption((ESRegExpObject::Option)(regexp->option() & ~ESRegExpObject::Option::Global));
+        bool testResult = sourceStr->match(thisObject, result, false, lastIndex);
+        if (isGlobal) {
+            regexp->setOption((ESRegExpObject::Option)(regexp->option() | ESRegExpObject::Option::Global));
+        }
+
+        if (!testResult) {
+            regexp->m_lastIndex = ESValue(0);
+            return ESValue(ESValue::ESNull);
+        }
+
+        if (isGlobal) {
+            // update lastIndex
+            regexp->m_lastIndex = ESValue(result.m_matchResults[0][0].m_end);
+        }
+
+        ((ESObject *)arr)->set(ESValue(strings->input), ESValue(sourceStr));
+        ((ESObject *)arr)->set(ESValue(strings->index), ESValue(result.m_matchResults[0][0].m_start));
+        const char16_t* str = sourceStr->string().data();
+
+        int idx = 0;
+        for (unsigned i = 0; i < result.m_matchResults.size() ; i ++) {
+            for (unsigned j = 0; j < result.m_matchResults[i].size() ; j ++) {
+                if (result.m_matchResults[i][j].m_start == std::numeric_limits<unsigned>::max())
+                    arr->set(idx++, ESValue(ESValue::ESUndefined));
+                else
+                    arr->set(idx++, ESString::create(std::move(u16string(str + result.m_matchResults[i][j].m_start, str + result.m_matchResults[i][j].m_end))));
+            }
+        }
+        return arr;
     }, strings->exec, 1));
 
     // $21.2.5.14 RegExp.prototype.toString
