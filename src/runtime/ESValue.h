@@ -1423,6 +1423,8 @@ public:
     static size_t offsetOf__proto__() { return offsetof(ESObject, m___proto__); }
 #endif
 protected:
+    void setValueAsProtoType(const ESValue& obj);
+
     ESHiddenClass* m_hiddenClass;
     ESValueVectorStd m_hiddenClassData;
 
@@ -1787,14 +1789,15 @@ public:
         m_codeBlock = codeBlock;
     }
 
-    ALWAYS_INLINE ESValue protoType()
+    ALWAYS_INLINE const ESValue& protoType()
     {
         return m_protoType;
     }
 
-    ALWAYS_INLINE void setProtoType(ESValue obj)
+    ALWAYS_INLINE void setProtoType(const ESValue& obj)
     {
         m_protoType = obj;
+        setValueAsProtoType(obj);
     }
 
     CodeBlock* codeBlock() { return m_codeBlock; }

@@ -488,6 +488,19 @@ ESObject::ESObject(ESPointer::Type type, ESValue __proto__, size_t initialKeyCou
     set__proto__(__proto__);
 }
 
+void ESObject::setValueAsProtoType(const ESValue& obj)
+{
+    if (obj.isObject()) {
+        obj.asESPointer()->asESObject()->m_flags.m_isEverSetAsPrototypeObject = true;
+        if (obj.asESPointer()->isESArrayObject()) {
+            obj.asESPointer()->asESArrayObject()->convertToSlowMode();
+        }
+        if (obj.asESPointer()->asESObject()->hiddenClass()->hasIndexedProperty()) {
+            ESVMInstance::currentInstance()->globalObject()->somePrototypeObjectDefineIndexedProperty();
+        }
+    }
+}
+
 bool ESObject::DefineOwnProperty(ESValue& key, ESObject* desc, bool throwFlag)
 {
     ESObject* O = this;
