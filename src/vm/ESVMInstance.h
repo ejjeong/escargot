@@ -18,7 +18,11 @@ class OpcodeTable;
 class Try;
 class ScriptParser;
 
+#ifndef ANDROID
 extern __thread ESVMInstance* currentInstance;
+#else
+extern ESVMInstance* currentInstance;
+#endif
 
 typedef std::unordered_map<u16string, ESString *,
     std::hash<u16string>, std::equal_to<u16string>,

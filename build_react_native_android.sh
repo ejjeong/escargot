@@ -10,4 +10,4 @@ echo $ANDROID_NDK
 
 cd android
 
-V=1 BUILD_OBJECT=so $ANDROID_NDK/ndk-build -j -B
+TOOL_CHAIN_VERSION=4.8 REACT_NATIVE=1 V=1 BUILD_OBJECT=so $ANDROID_NDK/ndk-build -j -B

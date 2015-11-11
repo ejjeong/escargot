@@ -10,7 +10,12 @@
 
 namespace escargot {
 
+
+#ifndef ANDROID
 __thread ESVMInstance* currentInstance;
+#else
+ESVMInstance* currentInstance;
+#endif
 
 ESVMInstance::ESVMInstance()
 {

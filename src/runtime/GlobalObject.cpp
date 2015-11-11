@@ -3065,7 +3065,7 @@ void GlobalObject::installJSON()
             }
             if (value.isNumber()) {
                 double d = value.toNumber();
-                if (isinf(d)) {
+                if (std::isinf(d)) {
                     return strings->null.string();
                 }
                 return ESValue(value.toString());
