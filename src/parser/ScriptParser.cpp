@@ -221,7 +221,7 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16strin
                 if (nearFunctionNode)
                     markNeedsActivation(nearFunctionNode->outerFunctionNode());
                 else {
-                    //global case
+                    // global case
                     auto iter = knownGlobalNames.find(name);
                     if (iter != knownGlobalNames.end()) {
                         ((IdentifierNode *)currentNode)->setGlobalFastAccessIndex(iter->second);
