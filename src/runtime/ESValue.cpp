@@ -619,8 +619,7 @@ bool ESObject::DefineOwnProperty(ESValue& key, ESObject* desc, bool throwFlag)
     }
 
     // 8, 9, 10, 11
-    ESPropertyAccessorData* currentAccessorData = O->accessorData(idx);
-    bool isCurrentDataDescriptor = propertyInfo.m_flags.m_isDataProperty || currentAccessorData->getNativeGetter() || currentAccessorData->getNativeSetter();
+    bool isCurrentDataDescriptor = propertyInfo.m_flags.m_isDataProperty || O->accessorData(idx)->getNativeGetter() || O->accessorData(idx)->getNativeSetter();
     bool isDescDataDescriptor = escargot::PropertyDescriptor::IsDataDescriptor(desc);
     if (escargot::PropertyDescriptor::IsGenericDescriptor(desc)) { // 8
 
