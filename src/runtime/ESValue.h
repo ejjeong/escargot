@@ -1737,6 +1737,10 @@ public:
         // TODO non fast mode sort
 
         std::sort(m_vector.begin(), m_vector.end(), [](const ::escargot::ESValue& a, const ::escargot::ESValue& b) -> bool {
+            if (a.isEmpty() || a.isUndefined())
+                return false;
+            if (b.isEmpty() || b.isUndefined())
+                return true;
             ::escargot::ESString* vala = a.toString();
             ::escargot::ESString* valb = b.toString();
             return vala->string() < valb->string();

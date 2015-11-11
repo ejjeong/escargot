@@ -1575,7 +1575,7 @@ void GlobalObject::installArray()
     m_arrayPrototype->ESObject::defineDataProperty(strings->shift, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         int argumentLen = instance->currentExecutionContext()->argumentCount();
         ESObject* O = instance->currentExecutionContext()->resolveThisBindingToObject(); // 1
-        int len = O->get(strings->length.string()).toUint32(); // 3
+        uint32_t len = O->get(strings->length.string()).toUint32(); // 3
         if (len == 0) { // 5
             O->set(strings->length.string(), ESValue(0), true);
             return ESValue();
@@ -1659,22 +1659,32 @@ void GlobalObject::installArray()
         auto thisVal = thisBinded->asESArrayObject();
         if (arglen == 0) {
             thisVal->sort();
-        } else {
-            ESValue arg0 = instance->currentExecutionContext()->arguments()[0];
-            thisVal->sort([&arg0, &instance, &thisVal](const ::escargot::ESValue& a, const ::escargot::ESValue& b) -> bool {
-                ESValue arg[2] = { a, b };
-                ESValue ret = ESFunctionObject::call(instance, arg0, thisVal,
-                    arg, 2, false);
-
-                double v = ret.toNumber();
-                if (v == 0)
-                    return false;
-                else if (v < 0)
-                    return true;
-                else
-                    return false;
-            });
+            return thisVal;
         }
+
+        ESValue arg0 = instance->currentExecutionContext()->arguments()[0];
+        if (arg0.isUndefined()) {
+            thisVal->sort();
+            return thisVal;
+        }
+        thisVal->sort([&arg0, &instance, &thisVal](const ::escargot::ESValue& a, const ::escargot::ESValue& b) -> bool {
+            ESValue arg[2] = { a, b };
+            if (a.isEmpty() || a.isUndefined())
+                return false;
+            if (b.isEmpty() || b.isUndefined())
+                return true;
+
+            ESValue ret = ESFunctionObject::call(instance, arg0, ESValue(),
+                arg, 2, false);
+
+            double v = ret.toNumber();
+            if (v == 0)
+                return false;
+            else if (v < 0)
+                return true;
+            else
+                return false;
+        });
 
         return thisVal;
     }, strings->sort, 1));
