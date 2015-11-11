@@ -91,7 +91,7 @@ LDFLAGS += -Wl,--gc-sections
 
 # flags for debug/release
 CXXFLAGS_DEBUG = -O0 -g3 -D_GLIBCXX_DEBUG -frounding-math -fsignaling-nans -fno-omit-frame-pointer -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable -Wno-invalid-offsetof -Wno-sign-compare -Wno-unused-local-typedefs
-CXXFLAGS_RELEASE = -O2 -g3 -DNDEBUG -fomit-frame-pointer -frounding-math -fsignaling-nans
+CXXFLAGS_RELEASE = -O2 -g3 -DNDEBUG -fomit-frame-pointer -frounding-math -fsignaling-nans -Wno-invalid-offsetof
 
 # flags for jit/interpreter
 CXXFLAGS_JIT = -DENABLE_ESJIT=1
@@ -165,7 +165,7 @@ CXXFLAGS += -Ithird_party/netlib/
 # v8's fast-dtoa
 CXXFLAGS += -Ithird_party/double_conversion/
 SRC_DTOA =
-SRC_DTOA += $(foreach dir, ./third_party/double_conversion , $(wildcard $(dir)/*.cc))
+SRC_DTOA += $(foreach dir, third_party/double_conversion , $(wildcard $(dir)/*.cc))
 
 # rapidjson
 CXXFLAGS += -Ithird_party/rapidjson/include/
@@ -187,14 +187,14 @@ THIRD_PARTY_LIBS= $(GCLIBS)
 #######################################################
 
 SRC=
-SRC += $(foreach dir, ./src , $(wildcard $(dir)/*.cpp))
-SRC += $(foreach dir, ./src/ast , $(wildcard $(dir)/*.cpp))
-SRC += $(foreach dir, ./src/bytecode , $(wildcard $(dir)/*.cpp))
-SRC += $(foreach dir, ./src/jit , $(wildcard $(dir)/*.cpp))
-SRC += $(foreach dir, ./src/parser , $(wildcard $(dir)/*.cpp))
-SRC += $(foreach dir, ./src/runtime , $(wildcard $(dir)/*.cpp))
-SRC += $(foreach dir, ./src/shell , $(wildcard $(dir)/*.cpp))
-SRC += $(foreach dir, ./src/vm , $(wildcard $(dir)/*.cpp))
+SRC += $(foreach dir, src , $(wildcard $(dir)/*.cpp))
+SRC += $(foreach dir, src/ast , $(wildcard $(dir)/*.cpp))
+SRC += $(foreach dir, src/bytecode , $(wildcard $(dir)/*.cpp))
+SRC += $(foreach dir, src/jit , $(wildcard $(dir)/*.cpp))
+SRC += $(foreach dir, src/parser , $(wildcard $(dir)/*.cpp))
+SRC += $(foreach dir, src/runtime , $(wildcard $(dir)/*.cpp))
+SRC += $(foreach dir, src/shell , $(wildcard $(dir)/*.cpp))
+SRC += $(foreach dir, src/vm , $(wildcard $(dir)/*.cpp))
 
 SRC += $(SRC_YARR)
 SRC += $(SRC_ESPRIMA_CPP)
@@ -236,22 +236,26 @@ x64.interpreter.release: $(BUILDDIR)/$(BIN)
 	cp -f $< .
 
 $(BUILDDIR)/$(BIN): $(OBJS) $(THIRD_PARTY_LIBS)
-	$(CXX) -o $@ $(OBJS) $(THIRD_PARTY_LIBS) $(LDFLAGS)
+	@echo "[LINK] $@"
+	@$(CXX) -o $@ $(OBJS) $(THIRD_PARTY_LIBS) $(LDFLAGS)
 
 $(BUILDDIR)/%.o: %.cpp
-	mkdir -p $(dir $@)
-	$(CXX) -c $(CXXFLAGS) $< -o $@
-	$(CXX) -MM $(CXXFLAGS) -MT $@ $< > $(BUILDDIR)/$*.d
+	@echo "[CXX] $@"
+	@mkdir -p $(dir $@)
+	@$(CXX) -c $(CXXFLAGS) $< -o $@
+	@$(CXX) -MM $(CXXFLAGS) -MT $@ $< > $(BUILDDIR)/$*.d
 	
 $(BUILDDIR)/%.o: %.cc
-	mkdir -p $(dir $@)
-	$(CXX) -c $(CXXFLAGS) $< -o $@
-	$(CXX) -MM $(CXXFLAGS) -MT $@ $< > $(BUILDDIR)/$*.d
+	@echo "[CXX] $@"
+	@mkdir -p $(dir $@)
+	@$(CXX) -c $(CXXFLAGS) $< -o $@
+	@$(CXX) -MM $(CXXFLAGS) -MT $@ $< > $(BUILDDIR)/$*.d
 
 $(BUILDDIR)/%.o: %.c
-	mkdir -p $(dir $@)
-	$(CC) -c $(CFLAGS) $< -o $@
-	$(CC) -MM $(CFLAGS) -MT $@ $< > $(BUILDDIR)/$*.d
+	@echo "[CC] $@"
+	@mkdir -p $(dir $@)
+	@$(CC) -c $(CFLAGS) $< -o $@
+	@$(CC) -MM $(CFLAGS) -MT $@ $< > $(BUILDDIR)/$*.d
 
 full:
 	make x64.jit.debug -j$(NPROCS)
@@ -290,7 +294,7 @@ check-jit:
 check:
 	make x64.interpreter.release -j$(NPROCS)
 	make run-sunspider | tee out/sunspider_result
-	make run-octane > out/octane_result
+	make run-octane | tee out/octane_result
 	make x64.interpreter.debug -j$(NPROCS)
 	make run-sunspider
 	make check-jit
