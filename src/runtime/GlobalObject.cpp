@@ -1690,7 +1690,7 @@ void GlobalObject::installArray()
             fprintf(stderr, "trying to sort object.....\n");
             uint32_t len = thisObj->get(strings->length.string()).toUint32();
             if (defaultSort) {
-                //thisObj->sort();
+                // thisObj->sort();
             } else {
                 /*
                 thisObj->sort([&comparefn, &instance, &thisVal]

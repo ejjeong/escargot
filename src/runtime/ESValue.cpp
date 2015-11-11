@@ -590,14 +590,14 @@ bool ESObject::DefineOwnProperty(ESValue& key, ESObject* desc, bool throwFlag)
 
     // 6
     const ESHiddenClassPropertyInfo& propertyInfo = O->hiddenClass()->propertyInfo(idx);
-    if ((descHasEnumerable && descE == propertyInfo.m_flags.m_isEnumerable) &&
-        (descHasWritable && descW == propertyInfo.m_flags.m_isWritable) &&
-        (descHasConfigurable && descC == propertyInfo.m_flags.m_isConfigurable) &&
-        (descHasValue && descV == current) &&
-        (descHasGetter && O->get(ESString::create(u"get")).isESPointer() && O->get(ESString::create(u"get")).asESPointer()->isESFunctionObject() &&
-                descGet == O->get(ESString::create(u"get")).asESPointer()->asESFunctionObject()) &&
-        (descHasSetter && O->get(ESString::create(u"set")).isESPointer() && O->get(ESString::create(u"set")).asESPointer()->isESFunctionObject() &&
-                descSet == O->get(ESString::create(u"set")).asESPointer()->asESFunctionObject()))
+    if ((descHasEnumerable && descE == propertyInfo.m_flags.m_isEnumerable)
+        && (descHasWritable && descW == propertyInfo.m_flags.m_isWritable)
+        && (descHasConfigurable && descC == propertyInfo.m_flags.m_isConfigurable)
+        && (descHasValue && descV == current)
+        && (descHasGetter && O->get(ESString::create(u"get")).isESPointer() && O->get(ESString::create(u"get")).asESPointer()->isESFunctionObject()
+            && descGet == O->get(ESString::create(u"get")).asESPointer()->asESFunctionObject())
+        && (descHasSetter && O->get(ESString::create(u"set")).isESPointer() && O->get(ESString::create(u"set")).asESPointer()->isESFunctionObject()
+            && descSet == O->get(ESString::create(u"set")).asESPointer()->asESFunctionObject()))
         return true;
 
 
@@ -1511,7 +1511,7 @@ void ESDateObject::parseStringToDate(struct tm* timeinfo, escargot::ESString* is
     } else if (isdigit(buffer[0])) {
         strptime(buffer, "%m/%d/%Y %H:%M:%S", timeinfo);
     }
-    GC_free(buffer);
+    GC_FREE(buffer);
 }
 
 const double hoursPerDay = 24.0;

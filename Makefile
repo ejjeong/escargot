@@ -103,7 +103,7 @@ CXXFLAGS_INTERPRETER =
 
 # bdwgc
 CXXFLAGS += -Ithird_party/bdwgc/include/
-#CXXFLAGS_DEBUG += -DGC_DEBUG
+CXXFLAGS_DEBUG += -DGC_DEBUG
 GCLIBS=third_party/bdwgc/out/$(ARCH)/$(MODE)/.libs/libgc.a
 
 ifneq ($(TYPE),none)
@@ -280,8 +280,6 @@ asm:
 
 check-jit:
 	make x64.jit.release -j$(NPROCS)
-	make run-sunspider
-	make x64.interpreter.release -j$(NPROCS)
 	make run-sunspider
 	make x64.jit.debug -j$(NPROCS)
 	./run-Sunspider-jit.sh -rcf > compiledFunctions.txt
