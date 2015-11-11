@@ -411,7 +411,7 @@ protected:
     escargot::ESFunctionObject* m_eval;
 
     bool m_didSomePrototypeObjectDefineIndexedProperty;
-    std::vector<CodeBlock*> m_codeBlocks;
+    std::vector<CodeBlock*, gc_allocator<CodeBlock*> > m_codeBlocks;
 };
 
 }
