@@ -3600,7 +3600,8 @@ escargot::Node* parseObjectPropertyKey(ParseContext* ctx)
             tolerateUnexpectedToken();
         }
         {
-            escargot::InternalAtomicString str(token->m_value.data());
+            escargot::u16string src(token->m_value.begin(), token->m_value.end());
+            escargot::InternalAtomicString str(src);
             nd = new escargot::LiteralNode(str.string());
             nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
         }
