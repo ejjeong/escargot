@@ -1750,6 +1750,8 @@ public:
         std::sort(m_vector.begin(), m_vector.end(), c);
     }
 
+    bool DefineOwnProperty(ESValue& key, ESObject* desc, bool throwFlag);
+
 #ifdef ENABLE_ESJIT
     static size_t offsetOfVectorData() { return offsetof(ESArrayObject, m_vector); }
     static size_t offsetOfLength() { return offsetof(ESArrayObject, m_length); }

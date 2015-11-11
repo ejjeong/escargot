@@ -798,7 +798,11 @@ void GlobalObject::installObject()
                 if (!instance->currentExecutionContext()->arguments()[2].isObject())
                     throw ESValue(TypeError::create(ESString::create("Object.defineProperty: 3rd argument is not object")));
                 ESObject* desc = instance->currentExecutionContext()->arguments()[2].toObject();
-                bool res = obj->DefineOwnProperty(key, desc, true);
+                bool res;
+                if (obj->isESArrayObject())
+                    res = obj->asESArrayObject()->DefineOwnProperty(key, desc, true);
+                else
+                    res = obj->DefineOwnProperty(key, desc, true);
                 if (!res)
                     throw ESValue(TypeError::create(ESString::create("Object.defineProperty: Cannot define property")));
             } else {

@@ -48,7 +48,8 @@ public:
     {
         if (desc.isUndefined())
             return false;
-        ASSERT(desc.isObject());
+        if (desc.isPrimitive())
+            return true;
         ESObject* obj = desc.asESPointer()->asESObject();
         if (!obj->hasOwnProperty(ESString::create(u"value")) && !obj->hasOwnProperty(ESString::create(u"writable")))
             return false;
