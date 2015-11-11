@@ -748,15 +748,15 @@ bool ESArrayObject::DefineOwnProperty(ESValue& key, ESObject* desc, bool throwFl
         if (descHasEnumerable)
             newLenDesc->set(ESString::create(u"eunumerable"), descE);
         if (descHasWritable)
-                    newLenDesc->set(ESString::create(u"writable"), descW);
+            newLenDesc->set(ESString::create(u"writable"), descW);
         if (descHasConfigurable)
-                    newLenDesc->set(ESString::create(u"configurable"), descC);
+            newLenDesc->set(ESString::create(u"configurable"), descC);
         if (descHasValue)
-                    newLenDesc->set(ESString::create(u"value"), descV);
+            newLenDesc->set(ESString::create(u"value"), descV);
         if (descHasGetter)
-                    newLenDesc->set(ESString::create(u"get"), descGet);
+            newLenDesc->set(ESString::create(u"get"), descGet);
         if (descHasSetter)
-                    newLenDesc->set(ESString::create(u"set"), descSet);
+            newLenDesc->set(ESString::create(u"set"), descSet);
 
         // c
         uint32_t newLen = descV.toUint32();
@@ -907,7 +907,6 @@ bool ESArrayObject::DefineOwnProperty(ESValue& key, ESObject* desc, bool throwFl
 
     // 12
     if (descHasGetter || descHasSetter) {
-        ESPropertyAccessorData* currentAccessorData = O->accessorData(idx);
         escargot::ESFunctionObject* getter = descGet;
         escargot::ESFunctionObject* setter = descSet;
         if (!propertyInfo.m_flags.m_isDataProperty) {

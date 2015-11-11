@@ -1672,6 +1672,8 @@ public:
     void convertToSlowMode()
     {
         // wprintf(L"CONVERT TO SLOW MODE!!!  \n");
+        if (!m_fastmode)
+            return;
         m_fastmode = false;
         uint32_t len = length();
         if (len == 0)
