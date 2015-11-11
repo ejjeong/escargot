@@ -519,6 +519,7 @@ bool ESObject::DefineOwnProperty(ESValue& key, ESObject* desc, bool throwFlag)
     bool descE = desc->get(ESString::create(u"enumerable")).toBoolean();
     bool descC = desc->get(ESString::create(u"configurable")).toBoolean();
     bool descW = desc->get(ESString::create(u"writable")).toBoolean();
+    ESValue descV = desc->get(ESString::create(u"value"));
     escargot::ESFunctionObject* descGet = NULL;
     escargot::ESFunctionObject* descSet = NULL;
     if (descHasGetter || descHasSetter) {
@@ -571,7 +572,7 @@ bool ESObject::DefineOwnProperty(ESValue& key, ESObject* desc, bool throwFlag)
                 // Refer to Table 7 of ES 5.1 for default attribute values
                 O->defineDataProperty(key, descHasWritable ? descW : isWritable,
                     descHasEnumerable ? descE : isEnumerable,
-                    descHasConfigurable ? descC : isConfigurable, desc->get(ESString::create(u"value")));
+                    descHasConfigurable ? descC : isConfigurable, descV);
             } else {
                 ASSERT(escargot::PropertyDescriptor::IsAccessorDescriptor(desc));
                 O->defineAccessorProperty(key, new ESPropertyAccessorData(descGet, descSet),
@@ -587,8 +588,20 @@ bool ESObject::DefineOwnProperty(ESValue& key, ESObject* desc, bool throwFlag)
     if (!descHasEnumerable && !descHasWritable && !descHasConfigurable && !descHasValue && !descHasGetter && !descHasSetter)
         return true;
 
-    // 7
+    // 6
     const ESHiddenClassPropertyInfo& propertyInfo = O->hiddenClass()->propertyInfo(idx);
+    if ((descHasEnumerable && descE == propertyInfo.m_flags.m_isEnumerable) &&
+        (descHasWritable && descW == propertyInfo.m_flags.m_isWritable) &&
+        (descHasConfigurable && descC == propertyInfo.m_flags.m_isConfigurable) &&
+        (descHasValue && descV == current) &&
+        (descHasGetter && O->get(ESString::create(u"get")).isESPointer() && O->get(ESString::create(u"get")).asESPointer()->isESFunctionObject() &&
+                descGet == O->get(ESString::create(u"get")).asESPointer()->asESFunctionObject()) &&
+        (descHasSetter && O->get(ESString::create(u"set")).isESPointer() && O->get(ESString::create(u"set")).asESPointer()->isESFunctionObject() &&
+                descSet == O->get(ESString::create(u"set")).asESPointer()->asESFunctionObject()))
+        return true;
+
+
+    // 7
     if (!propertyInfo.m_flags.m_isConfigurable) {
         if (descHasConfigurable && descC) {
             if (throwFlag)
@@ -606,17 +619,26 @@ bool ESObject::DefineOwnProperty(ESValue& key, ESObject* desc, bool throwFlag)
     }
 
     // 8, 9, 10, 11
-    bool isCurrentDataDescriptor = escargot::PropertyDescriptor::IsDataDescriptor(current);
+    ESPropertyAccessorData* currentAccessorData = O->accessorData(idx);
+    bool isCurrentDataDescriptor = propertyInfo.m_flags.m_isDataProperty || currentAccessorData->getNativeGetter() || currentAccessorData->getNativeSetter();
     bool isDescDataDescriptor = escargot::PropertyDescriptor::IsDataDescriptor(desc);
     if (escargot::PropertyDescriptor::IsGenericDescriptor(desc)) { // 8
 
-    } if (isCurrentDataDescriptor != isDescDataDescriptor) { // 9
-        if (!propertyInfo.m_flags.m_isConfigurable) {
+    } else if (isCurrentDataDescriptor != isDescDataDescriptor) { // 9
+        if (!propertyInfo.m_flags.m_isConfigurable) { // 9.a
             if (throwFlag)
-                throw ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty 9.a")));
+                throw ESValue(TypeError::create(ESString::create("Object.DefineOwnProperty 9.a")));
             else
                 return false;
         }
+        if (isCurrentDataDescriptor) { // 9.b
+            O->deleteProperty(key);
+            O->defineAccessorProperty(key, new ESPropertyAccessorData(descGet, descSet), descHasWritable ? descW : false, propertyInfo.m_flags.m_isEnumerable, propertyInfo.m_flags.m_isConfigurable);
+        } else { // 9.c
+            O->deleteProperty(key);
+            O->defineDataProperty(key, descHasWritable ? descW : false, propertyInfo.m_flags.m_isEnumerable, propertyInfo.m_flags.m_isConfigurable, descV);
+        }
+        return true;
     } else if (isCurrentDataDescriptor && isDescDataDescriptor) { // 10
         if (!propertyInfo.m_flags.m_isConfigurable) {
             if (!propertyInfo.m_flags.m_isWritable) {
@@ -906,7 +928,7 @@ bool ESArrayObject::DefineOwnProperty(ESValue& key, ESObject* desc, bool throwFl
     if ((escargot::PropertyDescriptor::IsDataDescriptor(current) || isArrayLength) != escargot::PropertyDescriptor::IsDataDescriptor(desc)) {
         if (!propertyInfo.m_flags.m_isConfigurable) {
             if (throwFlag)
-                throw ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty 9.a")));
+                throw ESValue(TypeError::create(ESString::create("ArrayObject.DefineOwnProperty 9.a")));
             else
                 return false;
         }

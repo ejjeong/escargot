@@ -1251,6 +1251,11 @@ public:
         m_propertyInfo[idx].m_flags.m_isWritable = isWritable;
     }
 
+    void setDataProperty(const size_t& idx, bool isDataProperty)
+    {
+        m_propertyInfo[idx].m_flags.m_isDataProperty = isDataProperty;
+    }
+
     const ESHiddenClassPropertyInfoVector& propertyInfo()
     {
         return m_propertyInfo;
