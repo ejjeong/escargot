@@ -1458,6 +1458,11 @@ ESArgumentsObject::ESArgumentsObject(ESPointer::Type type)
 {
 }
 
+ESJSONObject::ESJSONObject(ESPointer::Type type)
+    : ESObject((Type)(Type::ESObject | Type::ESJSONObject), ESVMInstance::currentInstance()->globalObject()->objectPrototype(), 6)
+{
+}
+
 void ESPropertyAccessorData::setGetterAndSetterTo(ESObject* obj)
 {
     if (m_jsGetter || m_jsSetter) {

@@ -723,6 +723,8 @@ void GlobalObject::installObject()
             return ESString::create(u"[object RegExp]");
         } else if (thisVal->isESMathObject()) {
             return ESString::create(u"[object Math]");
+        } else if (thisVal->isESJSONObject()) {
+            return ESString::create(u"[object JSON]");
         } else if (thisVal->isESTypedArrayObject()) {
             u16string ret = u"[object ";
             ESValue ta_constructor = thisVal->get(strings->constructor.string());
@@ -2861,7 +2863,7 @@ void GlobalObject::installDate()
 void GlobalObject::installJSON()
 {
     // create JSON object
-    m_json = ESObject::create();
+    m_json = ESJSONObject::create();
     m_json->forceNonVectorHiddenClass();
     m_json->set__proto__(m_objectPrototype);
     defineDataProperty(strings->JSON, true, false, true, m_json);

@@ -257,6 +257,7 @@ public:
         ESDataViewObject = 1 << 15,
         ESArgumentsObject = 1 << 16,
         ESControlFlowRecord = 1 << 17,
+        ESJSONObject = 1 << 18,
         TypeMask = 0x1ffff
     };
 
@@ -379,6 +380,11 @@ public:
     ALWAYS_INLINE bool isESRegExpObject() const
     {
         return m_type & Type::ESRegExpObject;
+    }
+
+    ALWAYS_INLINE bool isESJSONObject() const
+    {
+        return m_type & Type::ESJSONObject;
     }
 
     ALWAYS_INLINE ::escargot::ESRegExpObject* asESRegExpObject()
@@ -1580,7 +1586,7 @@ protected:
 
 class ESJSONObject : public ESObject {
 protected:
-    ESJSONObject();
+    ESJSONObject(ESPointer::Type type = ESPointer::Type::ESJSONObject);
 public:
     static ESJSONObject* create()
     {
