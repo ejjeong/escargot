@@ -38,7 +38,7 @@ public:
             m_arguments[i]->generateExpressionByteCode(codeBlock, context);
         }
 
-        if (!m_callee->isMemberExpresion()) {
+        if (!findRightAfterExpression(m_callee, NodeType::MemberExpression)) {
             codeBlock->pushCode(CallFunction(m_arguments.size()), context, this);
         } else {
             codeBlock->pushCode(CallFunctionWithReceiver(m_arguments.size()), context, this);

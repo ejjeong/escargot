@@ -24,6 +24,8 @@ public:
         }
     }
 
+    const ExpressionNodeVector& expressions() { return m_expressions; }
+
 protected:
     ExpressionNodeVector m_expressions; // expression: Expression;
 };
