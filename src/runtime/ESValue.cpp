@@ -657,7 +657,22 @@ bool ESObject::DefineOwnProperty(ESValue& key, ESObject* desc, bool throwFlag)
             }
         }
     } else {
-        ASSERT(escargot::PropertyDescriptor::IsAccessorDescriptor(current) && escargot::PropertyDescriptor::IsAccessorDescriptor(desc));
+        ASSERT((!propertyInfo.m_flags.m_isDataProperty && (O->accessorData(idx)->getJSGetter() || O->accessorData(idx)->getJSSetter())) &&
+                escargot::PropertyDescriptor::IsAccessorDescriptor(desc));
+        if (!propertyInfo.m_flags.m_isConfigurable) {
+            if (descHasSetter && (descSet != O->accessorData(idx)->getJSSetter())) {
+                if (throwFlag)
+                    throw ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty 11.a.i")));
+                else
+                    return false;
+            }
+            if (descHasGetter && (descGet != O->accessorData(idx)->getJSGetter())) {
+               if (throwFlag)
+                   throw ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty 11.a.ii")));
+               else
+                   return false;
+            }
+        }
     }
 
     //
@@ -818,7 +833,7 @@ bool ESArrayObject::DefineOwnProperty(ESValue& key, ESObject* desc, bool throwFl
             newWritable = true;
         else {
             newWritable = false;
-            RELEASE_ASSERT_NOT_REACHED();
+            newLenDesc->set(ESString::create(u"writable"), ESValue(true));
         }
 
         // j
@@ -844,9 +859,13 @@ bool ESArrayObject::DefineOwnProperty(ESValue& key, ESObject* desc, bool throwFl
             }
         }
 
-        if (!newWritable)
-            RELEASE_ASSERT_NOT_REACHED();
-
+        // m
+        if (!newWritable) {
+            ESObject* descWritableIsFalse = ESObject::create();
+            descWritableIsFalse->set(ESString::create(u"writable"), ESValue(false));
+            A->asESObject()->DefineOwnProperty(key, descWritableIsFalse, false);
+            return true;
+        }
         return true;
     }
 
