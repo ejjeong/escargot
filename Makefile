@@ -298,8 +298,8 @@ check:
 	make check-jit
 	cat out/sunspider_result
 	cat out/octane_result
-	make tidy
 	./regression_test262
+	make tidy
 
 tidy:
 	./tools/check-webkit-style `find src/ -name "*.cpp" -o -name "*.h"`> error_report 2>& 1

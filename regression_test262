@@ -5,12 +5,22 @@ ARGS=
 
 TC=`cat $TC_FILE | xargs`
 
+TC_INCLUDING_WITH=("15.10.6.2:5" "15.10.6.3:4" "15.5.4.4:2" "15.5.4.7:4" "15.5.4.8:4" "15.5.4.10:3" "15.5.4.11:3" "15.5.4.13:3" "15.5.4.14:4" "15.5.4.15:3")
+
 make x64.interpreter.release -j8
 for t in $TC; do
     if [[ $t == \#* ]]; then
         continue
     fi
     echo $t
+    for check in "${TC_INCLUDING_WITH[@]}"; do
+        KEY="${check%%:*}"
+        VALUE="${check##*:}"
+        if [[ $t == $KEY ]]; then
+            printf " * includes %s 'with statement' tests\n" "$VALUE"
+            break
+        fi
+    done
     make run-test262 OPT=$t > out/test_262
     cat out/test_262 | grep "\- Failed"
 done
@@ -21,6 +31,14 @@ for t in $TC; do
         continue
     fi
     echo $t
+    for check in "${TC_INCLUDING_WITH[@]}"; do
+        KEY="${check%%:*}"
+        VALUE="${check##*:}"
+        if [[ $t == $KEY ]]; then
+            printf " * includes %s 'with statement' tests\n" "$VALUE"
+            break
+        fi
+    done
     make run-test262 OPT=$t > out/test_262
     cat out/test_262 | grep "\- Failed"
 done
