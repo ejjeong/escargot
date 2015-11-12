@@ -549,15 +549,18 @@ bool ESObject::DefineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag)
     if (idx != SIZE_MAX)
         current = O->hiddenClass()->read(O, O, idx);
     else {
-        if (O->isESArrayObject() && (descHasEnumerable || descHasWritable || descHasConfigurable || descHasValue)) {
+        if (O->isESArrayObject() &&
+            (descHasEnumerable || descHasWritable || descHasConfigurable || descHasValue || descHasGetter || descHasSetter) &&
+            O->hasProperty(P)) {
             if (descHasGetter || descHasSetter) {
-                O->defineAccessorProperty(P, new ESPropertyAccessorData(descGet, descSet), descHasWritable ? descW : false,
-                    descHasEnumerable ? descE : false,
-                    descHasConfigurable ? descC : false);
+                O->defineAccessorProperty(P, new ESPropertyAccessorData(descGet, descSet),
+                    descHasWritable ? descW : true,
+                    descHasEnumerable ? descE : true,
+                    descHasConfigurable ? descC : true);
             } else {
-                O->defineDataProperty(P, descHasWritable ? descW : false,
-                    descHasEnumerable ? descE : false,
-                    descHasConfigurable ? descC : false, desc->get(ESString::create(u"value")));
+                O->defineDataProperty(P, descHasWritable ? descW : true,
+                    descHasEnumerable ? descE : true,
+                    descHasConfigurable ? descC : true, desc->get(ESString::create(u"value")));
             }
             return true;
         } else {
@@ -601,16 +604,15 @@ bool ESObject::DefineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag)
 
     // 6
     const ESHiddenClassPropertyInfo& propertyInfo = O->hiddenClass()->propertyInfo(idx);
-    if ((descHasEnumerable && descE == propertyInfo.m_flags.m_isEnumerable)
-        && (descHasWritable && descW == propertyInfo.m_flags.m_isWritable)
-        && (descHasConfigurable && descC == propertyInfo.m_flags.m_isConfigurable)
-        && (descHasValue && descV == current)
-        && (descHasGetter && O->get(ESString::create(u"get")).isESPointer() && O->get(ESString::create(u"get")).asESPointer()->isESFunctionObject()
-            && descGet == O->get(ESString::create(u"get")).asESPointer()->asESFunctionObject())
-        && (descHasSetter && O->get(ESString::create(u"set")).isESPointer() && O->get(ESString::create(u"set")).asESPointer()->isESFunctionObject()
-            && descSet == O->get(ESString::create(u"set")).asESPointer()->asESFunctionObject()))
+    if ((!descHasEnumerable || descE == propertyInfo.m_flags.m_isEnumerable)
+        && (!descHasWritable || descW == propertyInfo.m_flags.m_isWritable)
+        && (!descHasConfigurable || descC == propertyInfo.m_flags.m_isConfigurable)
+        && (!descHasValue || descV.equalsTo(current))
+        && (!descHasGetter|| (O->get(ESString::create(u"get")).isESPointer() && O->get(ESString::create(u"get")).asESPointer()->isESFunctionObject()
+            && descGet == O->get(ESString::create(u"get")).asESPointer()->asESFunctionObject()))
+        && (!descHasSetter || (O->get(ESString::create(u"set")).isESPointer() && O->get(ESString::create(u"set")).asESPointer()->isESFunctionObject()
+            && descSet == O->get(ESString::create(u"set")).asESPointer()->asESFunctionObject())))
         return true;
-
 
     // 7
     if (!propertyInfo.m_flags.m_isConfigurable) {
@@ -877,7 +879,7 @@ bool ESArrayObject::DefineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag
             return true;
         }
         return true;
-    } else if (ESValue(P.toUint32()).toString() == P.toString() && P.toUint32() != 2*32-1) { // 4
+    } else if (ESValue(P.toUint32()).toString()->string() == P.toString()->string() && P.toUint32() != 2*32-1) { // 4
         // 4.a
         uint32_t index = P.toUint32();
 

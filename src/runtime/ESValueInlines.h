@@ -440,7 +440,7 @@ inline bool ESValue::equalsTo(const ESValue& val)
         // double a = -0.0;
         // double b = 0.0;
         // a == b; is true
-        return a == b;
+        return a == b && std::signbit(a) == std::signbit(b);
     }
 
     if (isESPointer()) {
