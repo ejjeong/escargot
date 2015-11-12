@@ -3412,19 +3412,14 @@ void GlobalObject::installMath()
 
     // initialize math object: $20.2.2.19 Math.imul()
     m_math->defineDataProperty(ESString::create(u"imul"), true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        size_t arg_size = instance->currentExecutionContext()->argumentCount();
-        if (arg_size > 2) {
-            ESValue x = instance->currentExecutionContext()->arguments()[0];
-            ESValue y = instance->currentExecutionContext()->arguments()[1];
-            uint32_t a = x.toUint32();
-            uint32_t b = x.toUint32();
-            long long int product = (a*b) % 0x100000000;
-            if (product >= 0x80000000)
-                return ESValue(product - 0x80000000);
-            return ESValue(product);
-        }
-
-        return ESValue();
+        ESValue x = instance->currentExecutionContext()->readArgument(0);
+        ESValue y = instance->currentExecutionContext()->readArgument(1);
+        uint32_t a = x.toUint32();
+        uint32_t b = y.toUint32();
+        uint32_t product = (a*b) % 0x100000000ULL;
+        if (product >= 0x80000000ULL)
+            return ESValue(int(product - 0x100000000ULL));
+        return ESValue(product);
     }, ESString::create(u"imul"), 2));
 
     // initialize math object: $20.2.2.20 Math.log()
