@@ -1096,7 +1096,7 @@ inline bool ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
         uint32_t i = key.toIndex();
         if (i != ESValue::ESInvalidIndexValue) {
             if (isWritable && isEnumerable && isConfigurable) {
-                int len = asESArrayObject()->length();
+                size_t len = asESArrayObject()->length();
                 if (asESArrayObject()->shouldConvertToSlowMode(i)) {
                     asESArrayObject()->convertToSlowMode();
                 } else {
@@ -1270,7 +1270,7 @@ ALWAYS_INLINE bool ESObject::hasProperty(const escargot::ESValue& key)
         if (target->isESArrayObject() && target->asESArrayObject()->isFastmode()) {
             uint32_t idx = key.toIndex();
             if (idx != ESValue::ESInvalidIndexValue) {
-                if (LIKELY((int)idx < target->asESArrayObject()->length())) {
+                if (LIKELY(idx < target->asESArrayObject()->length())) {
                     ESValue e = target->asESArrayObject()->m_vector[idx];
                     if (LIKELY(!e.isEmpty()))
                         return true;
@@ -1308,7 +1308,7 @@ ALWAYS_INLINE bool ESObject::hasOwnProperty(const escargot::ESValue& key)
         uint32_t idx = key.toIndex();
         if (idx != ESValue::ESInvalidIndexValue) {
             if (LIKELY(isESArrayObject())) {
-                if ((int)idx < asESArrayObject()->length() && asESArrayObject()->m_vector[idx] != ESValue(ESValue::ESEmptyValue)) {
+                if (idx < asESArrayObject()->length() && asESArrayObject()->m_vector[idx] != ESValue(ESValue::ESEmptyValue)) {
                     return true;
                 } else {
                     return false;
@@ -1343,7 +1343,7 @@ ALWAYS_INLINE ESValue ESObject::get(escargot::ESValue key)
         if (target->isESArrayObject() && target->asESArrayObject()->isFastmode()) {
             uint32_t idx = key.toIndex();
             if (idx != ESValue::ESInvalidIndexValue) {
-                if (LIKELY((int)idx < target->asESArrayObject()->length())) {
+                if (LIKELY(idx < target->asESArrayObject()->length())) {
                     ESValue e = target->asESArrayObject()->m_vector[idx];
                     if (LIKELY(!e.isEmpty()))
                         return e;
@@ -1388,7 +1388,7 @@ ALWAYS_INLINE ESValue ESObject::getOwnProperty(escargot::ESValue key)
     if (isESArrayObject() && asESArrayObject()->isFastmode()) {
         uint32_t idx = key.toIndex();
         if (idx != ESValue::ESInvalidIndexValue) {
-            if (LIKELY((int)idx < asESArrayObject()->length())) {
+            if (LIKELY(idx < asESArrayObject()->length())) {
                 ESValue e = asESArrayObject()->m_vector[idx];
                 if (LIKELY(!e.isEmpty()))
                     return e;
@@ -1404,7 +1404,7 @@ ALWAYS_INLINE ESValue ESObject::getOwnProperty(escargot::ESValue key)
     if (isESStringObject()) {
         uint32_t idx = key.toIndex();
         if (idx != ESValue::ESInvalidIndexValue) {
-            if (LIKELY((int)idx < asESStringObject()->length())) {
+            if (LIKELY(idx < asESStringObject()->length())) {
                 return asESStringObject()->getCharacterAsString(idx);
             }
         }
@@ -1446,7 +1446,7 @@ ALWAYS_INLINE ESValue ESObject::pop()
     set(strings->length.string(), ESValue(len - 1));
     return ret;
 }
-ALWAYS_INLINE void ESObject::eraseValues(int idx, int cnt)
+ALWAYS_INLINE void ESObject::eraseValues(uint32_t idx, int cnt)
 {
     if (LIKELY(isESArrayObject())) {
         asESArrayObject()->eraseValues(idx, cnt);

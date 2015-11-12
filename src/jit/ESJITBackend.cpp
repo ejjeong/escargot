@@ -178,11 +178,11 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
     int maxStackPos = -1;
     for (int i = m_graph->basicBlockSize() - 1; i >= 0; i--) {
         ESBasicBlock* block = m_graph->basicBlock(i);
-        if (block->instructionSize() > 0 && block->instruction(0)->targetIndex() <= currentByteCodeIndex) {
+        if (block->instructionSize() > 0 && block->instruction(0)->targetIndex() <= (int)currentByteCodeIndex) {
             int j = block->instructionSize() - 1;
             if (maxStackPos == -1) {
                 for (; j >= 0; j--) {
-                    if (block->instruction(j)->targetIndex() == currentByteCodeIndex) {
+                    if (block->instruction(j)->targetIndex() == (int)currentByteCodeIndex) {
                         if (j == 0)
                             maxStackPos = 0;
                         else {
@@ -210,7 +210,7 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
                     if (esir->targetIndex() < 0)
                         continue;
                     unsigned stackPos = m_graph->getOperandStackPos(esir->targetIndex());
-                    if (!(stackPos > 0 && stackPos <= maxStackPos && !writeFlags[stackPos - 1]))
+                    if (!(stackPos > 0 && (int)stackPos <= maxStackPos && !writeFlags[stackPos - 1]))
                         continue;
                     Type type = m_graph->getOperandType(esir->targetIndex());
                     LIns* lIns = m_tmpToLInsMapping[esir->targetIndex()];
@@ -222,7 +222,7 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
                         writeFlags[stackPos - 1] = true;
                         writeCount++;
                     }
-                    if (writeCount == maxStackPos) {
+                    if ((int)writeCount == maxStackPos) {
                         LIns* maxStackPosLIns = m_out->insImmI(maxStackPos);
                         m_out->insStore(LIR_sti, maxStackPosLIns, m_contextP, ExecutionContext::offsetofStackPos(), 1);
                         isDone = true;
@@ -1564,7 +1564,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 
                 std::vector<LIns*> lblsToFallback;
                 LIns* proto = obj;
-                for (int i = 0; i < irGetObjectPreComputed->byteCode()->m_cachedhiddenClassChain.size() ; i ++) {
+                for (size_t i = 0; i < irGetObjectPreComputed->byteCode()->m_cachedhiddenClassChain.size() ; i ++) {
                     if (i != 0)
                         obj = proto;
                     LIns* savedHiddenClass = m_out->insImmP(irGetObjectPreComputed->byteCode()->m_cachedhiddenClassChain[i]);
@@ -1611,7 +1611,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
                 {
                     LIns* fallbackPath = m_out->ins0(LIR_label);
 
-                    for (int i = 0; i < lblsToFallback.size() ; i ++) {
+                    for (size_t i = 0; i < lblsToFallback.size() ; i ++) {
                         lblsToFallback[i]->setTarget(fallbackPath);
                     }
 

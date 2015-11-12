@@ -1276,7 +1276,7 @@ public:
 #endif
     int calleeIndex() { return m_calleeIndex; }
     int receiverIndex() { return m_receiverIndex; }
-    int argumentCount() { return m_argumentIndexes.size(); }
+    size_t argumentCount() { return m_argumentIndexes.size(); }
     int argumentIndex(size_t idx) { return m_argumentIndexes[idx]; }
 
 protected:
@@ -1314,7 +1314,7 @@ public:
     }
 #endif
     int argumentIndex(size_t idx) { return m_argumentIndexes[idx]; }
-    int argumentCount() { return m_argumentIndexes.size(); }
+    size_t argumentCount() { return m_argumentIndexes.size(); }
 
 protected:
     CallEvalIR(int targetIndex, int argumentCount, int* argumentIndexes)

@@ -280,7 +280,7 @@ void dumpBytecode(CodeBlock* codeBlock)
             printf("t2: %d,", ex->m_targetIndex1);
         }
 
-        for (int i = 0; i < ex->m_sourceIndexes.size() ; i ++) {
+        for (size_t i = 0; i < ex->m_sourceIndexes.size() ; i ++) {
             printf("s: %d,", ex->m_sourceIndexes[i]);
         }
         printf("]");

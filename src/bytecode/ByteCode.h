@@ -2434,7 +2434,7 @@ ALWAYS_INLINE void ByteCodeGenerateContext::morphJumpPositionIntoComplexCase(Cod
         j.assignOpcodeInAddress();
         memcpy(cb->m_code.data() + codePos, &j, sizeof(JumpComplexCase));
         iterateByteCode(cb, [codePos](CodeBlock* block, unsigned idx, ByteCode* code, Opcode opcode) {
-            if (codePos == (intptr_t)((char*)code - block->m_code.data())) {
+            if (codePos == (size_t)((char*)code - block->m_code.data())) {
                 block->m_extraData[idx].m_opcode = JumpComplexCaseOpcode;
             }
         });

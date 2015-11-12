@@ -498,7 +498,7 @@ void GlobalObject::initGlobalObject()
         NullableUTF8String str = instance->currentExecutionContext()->arguments()->asESString()->toNullableUTF8String();
         size_t length = str.m_bufferSize;
         std::string R = "";
-        for (int i = 0; i < length; i++) {
+        for (size_t i = 0; i < length; i++) {
             if (str.m_buffer[i] == '%') {
                 R.push_back(hex2char(str.m_buffer[i+1], str.m_buffer[i+2]));
                 i = i + 2;
@@ -1246,10 +1246,10 @@ void GlobalObject::installArray()
 
     // $22.1.3.1 Array.prototype.concat(...arguments)
     m_arrayPrototype->ESObject::defineDataProperty(strings->concat, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        int arglen = instance->currentExecutionContext()->argumentCount();
+        size_t arglen = instance->currentExecutionContext()->argumentCount();
         auto thisBinded = instance->currentExecutionContext()->resolveThisBindingToObject();
         escargot::ESArrayObject* ret = ESArrayObject::create(0);
-        int idx = 0;
+        size_t idx = 0;
         if (LIKELY(thisBinded->isESArrayObject())) {
             auto thisVal = thisBinded->asESArrayObject();
             for (idx = 0; idx < thisVal->length(); idx++)
@@ -1260,12 +1260,12 @@ void GlobalObject::installArray()
             ret->defineDataProperty(ESValue(idx), true, true, true, ESValue(O));
             idx++;
         }
-        for (int i = 0; i < arglen; i++) {
+        for (size_t i = 0; i < arglen; i++) {
             ESValue& argi = instance->currentExecutionContext()->arguments()[i];
             if (argi.isESPointer() && argi.asESPointer()->isESArrayObject()) {
                 escargot::ESArrayObject* arr = argi.asESPointer()->asESArrayObject();
-                int len = arr->length();
-                int st = idx;
+                size_t len = arr->length();
+                size_t st = idx;
                 for (; idx < st + len; idx++)
                     ret->set(idx, arr->get(idx - st));
             } else {
@@ -1319,7 +1319,7 @@ void GlobalObject::installArray()
         ESValue T = instance->currentExecutionContext()->readArgument(1);
 
         // Let k be 0.
-        int32_t k = 0;
+        size_t k = 0;
         while (k < len) {
             // Let Pk be ToString(k).
             ESValue pk(k);
@@ -1532,7 +1532,7 @@ void GlobalObject::installArray()
 
         if (len == 0 && initialValue.isUndefined()) // 5
             throw ESValue(TypeError::create(ESString::create(u"Type Error")));
-        int k = 0; // 6
+        size_t k = 0; // 6
         ESValue accumulator;
         if (!initialValue.isEmpty()) { // 7
             accumulator = initialValue;
@@ -1618,7 +1618,7 @@ void GlobalObject::installArray()
             return ESValue();
         }
         ESValue first = O->get(ESValue(0)); // 6
-        int k = 1; // 8
+        size_t k = 1; // 8
 
         while (k < len) { // 9
             ESValue from(k);
@@ -2602,7 +2602,7 @@ void GlobalObject::installDate()
                 }
             } else {
                 double args[7] = {0, 0, 1, 0, 0, 0, 0}; // default value of year, month, date, hour, minute, second, millisecond
-                for (int i = 0; i < arg_size; i++) {
+                for (size_t i = 0; i < arg_size; i++) {
                     args[i] = instance->currentExecutionContext()->readArgument(i).toNumber();
                 }
                 double year = args[0];

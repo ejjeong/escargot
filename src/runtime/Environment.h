@@ -110,7 +110,7 @@ public:
     {
         if (obj->isESArrayObject() && obj->asESArrayObject()->isFastmode()) {
             if (index != ESValue::ESInvalidIndexValue) {
-                if (LIKELY((int)index < obj->asESArrayObject()->length())) {
+                if (LIKELY(index < obj->asESArrayObject()->length())) {
                     ESValue e = obj->asESArrayObject()->data()[index];
                     if (LIKELY(!e.isEmpty())) {
                         ESObject* ret = ESObject::create();
@@ -125,7 +125,7 @@ public:
         }
         if (obj->isESStringObject()) {
             if (index != ESValue::ESInvalidIndexValue) {
-                if (LIKELY((int)index < obj->asESStringObject()->length())) {
+                if (LIKELY(index < obj->asESStringObject()->length())) {
                     ESValue e = obj->asESStringObject()->getCharacterAsString(index);
                     ESObject* ret = ESObject::create();
                     ret->set(ESString::create(u"value"), e);

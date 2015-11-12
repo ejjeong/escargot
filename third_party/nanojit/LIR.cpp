@@ -1666,7 +1666,7 @@ namespace nanojit
         if (LIns* label = targetBlock->getLabel()) {
             jump->setTarget(label);
             std::vector<LIns*, ::escargot::ESJIT::CustomAllocator<LIns*> >* insToExtendLife = targetBlock->getInsToExtendLife();
-            for (int i = 0; i < insToExtendLife->size(); i++) {
+            for (size_t i = 0; i < insToExtendLife->size(); i++) {
                 LIns* ins = insToExtendLife->at(i);
                 if (ins->isP())
                     ins1(LIR_livep, ins);

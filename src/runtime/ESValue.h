@@ -794,7 +794,7 @@ public:
     ALWAYS_INLINE const char16_t* data() const;
     ALWAYS_INLINE const u16string& string() const;
     ALWAYS_INLINE const ESStringData* stringData() const;
-    ALWAYS_INLINE int length() const;
+    ALWAYS_INLINE size_t length() const;
     ALWAYS_INLINE size_t hashValue() const
     {
         return m_string->hashValue();
@@ -952,7 +952,7 @@ public:
         m_contentLength = 0;
     }
 public:
-    int contentLength()
+    size_t contentLength()
     {
         return m_contentLength;
     }
@@ -960,7 +960,7 @@ public:
 protected:
     ESString* m_left;
     ESString* m_right;
-    unsigned m_contentLength;
+    size_t m_contentLength;
 };
 
 ALWAYS_INLINE ESString* ESString::concatTwoStrings(ESString* lstr, ESString* rstr)
@@ -1014,7 +1014,7 @@ ALWAYS_INLINE const ESStringData* ESString::stringData() const
     return m_string;
 }
 
-ALWAYS_INLINE int ESString::length() const
+ALWAYS_INLINE size_t ESString::length() const
 {
     if (UNLIKELY(m_string == NULL)) {
         escargot::ESRopeString* rope = (escargot::ESRopeString *)this;
@@ -1394,7 +1394,7 @@ public:
 
     ALWAYS_INLINE uint32_t length();
     ALWAYS_INLINE ESValue pop();
-    ALWAYS_INLINE void eraseValues(int, int);
+    ALWAYS_INLINE void eraseValues(uint32_t, int);
 
     template <typename Functor>
     ALWAYS_INLINE void enumeration(Functor t);
@@ -1650,7 +1650,7 @@ public:
         if (m_fastmode) {
             m_vector.erase(m_vector.begin()+idx, m_vector.begin()+idx+cnt);
         } else {
-            for (int k = 0, i = idx; i < length() && k < (int)cnt; i++, k++) {
+            for (size_t k = 0, i = idx; i < length() && k < cnt; i++, k++) {
                 set(i, get(i+cnt));
             }
         }

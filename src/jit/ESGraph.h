@@ -117,7 +117,7 @@ public:
     Type getOperandType(int index) { return m_operands[index].getType(); }
     void setOperandStackPos(int index, unsigned stackPos)
     {
-        ASSERT(index < m_operands.size());
+        ASSERT(index < (int)m_operands.size());
         m_operands[index].setStackPos(stackPos);
         m_lastStackPosSettingTargetIndex = index;
     }

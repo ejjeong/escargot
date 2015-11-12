@@ -170,7 +170,7 @@ ALWAYS_INLINE ESValue getObjectPreComputedCaseOperation(ESValue* willBeObject, E
         if (LIKELY(willBeObject->asESPointer()->isESObject())) {
             targetObj = obj = willBeObject->asESPointer()->asESObject();
 GetObjectPreComputedCaseInlineCacheOperation:
-            size_t cSiz = cachedHiddenClassChain->size();
+            int cSiz = cachedHiddenClassChain->size();
             bool miss = !cSiz;
             if (!miss) {
                 for (int i = 0; i < cSiz-1; i ++) {
@@ -291,7 +291,7 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
                 }
                 return;
             } else if (*hiddenClassWillBe) {
-                size_t cSiz = cachedHiddenClassChain->size();
+                int cSiz = cachedHiddenClassChain->size();
                 bool miss = false;
                 for (int i = 0; i < cSiz - 1; i ++) {
                     if ((*cachedHiddenClassChain)[i] != obj->hiddenClass()) {

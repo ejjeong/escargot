@@ -364,7 +364,7 @@ ESString* ESString::substring(int from, int to) const
                 lstr = ESString::create(std::move(left));
             }
             ESString* rstr = nullptr;
-            if (to == length())
+            if (to == (int)length())
                 rstr = rope->m_right;
             else {
                 u16string right(std::move(rope->m_right->stringData()->substr(0, to - len_left)));
@@ -788,7 +788,7 @@ bool ESArrayObject::DefineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag
     const ESHiddenClassPropertyInfo& oldLePropertyInfo = O->hiddenClass()->propertyInfo(lengthIdx);
 
     // 2
-    int32_t oldLen = oldLenDesc.toInt32();
+    size_t oldLen = oldLenDesc.toUint32();
 
     // 3
     ESValue lenStr = ESString::create(u"length");
