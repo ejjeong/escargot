@@ -866,7 +866,7 @@ ALWAYS_INLINE ESHiddenClass* ESHiddenClass::removeProperty(size_t idx)
     ASSERT(idx != SIZE_MAX);
     // can not delete __proto__
     ASSERT(idx != 0);
-    ASSERT(m_propertyInfo[idx].m_flags.m_isConfigurable);
+//    ASSERT(m_propertyInfo[idx].m_flags.m_isConfigurable);
 
     if (m_flags.m_isVectorMode) {
         ESHiddenClass* ret = ESVMInstance::currentInstance()->initialHiddenClassForObject();
@@ -1072,6 +1072,8 @@ ALWAYS_INLINE bool ESHiddenClass::write(ESObject* obj, ESObject* originalObject,
         }
         obj->m_hiddenClassData[idx] = val;
     } else {
+        if (!obj->accessorData(idx)->getJSGetter() && !obj->accessorData(idx)->getJSSetter() && !m_propertyInfo[idx].m_flags.m_isWritable)
+            return false;
         ESPropertyAccessorData* data = (ESPropertyAccessorData *)obj->m_hiddenClassData[idx].asESPointer();
         data->setValue(obj, originalObject, val);
     }
@@ -1214,7 +1216,7 @@ inline bool ESObject::defineAccessorProperty(const escargot::ESValue& key, ESPro
 }
 
 // $9.1.10
-inline bool ESObject::deleteProperty(const ESValue& key)
+inline bool ESObject::deleteProperty(const ESValue& key, bool forced)
 {
     if (isESArrayObject() && asESArrayObject()->isFastmode()) {
         uint32_t i = key.toIndex();
@@ -1245,7 +1247,7 @@ inline bool ESObject::deleteProperty(const ESValue& key)
     if (idx == SIZE_MAX) // if undefined, return true
         return true;
 
-    if (!m_hiddenClass->m_propertyInfo[idx].m_flags.m_isConfigurable) {
+    if (!m_hiddenClass->m_propertyInfo[idx].m_flags.m_isConfigurable && !forced) {
         return false;
     }
     if (UNLIKELY(m_flags.m_isGlobalObject)) {
