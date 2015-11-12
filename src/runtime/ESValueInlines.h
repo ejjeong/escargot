@@ -440,6 +440,48 @@ inline bool ESValue::equalsTo(const ESValue& val)
         // double a = -0.0;
         // double b = 0.0;
         // a == b; is true
+        return a == b;
+    }
+
+    if (isESPointer()) {
+        ESPointer* o = asESPointer();
+        if (!val.isESPointer())
+            return false;
+        ESPointer* o2 = val.asESPointer();
+        if (o->isESString()) {
+            if (!o2->isESString())
+                return false;
+            return o->asESString()->string() == o2->asESString()->string();
+        }
+        if (o == o2)
+            return o == o2;
+    }
+    return false;
+}
+
+inline bool ESValue::equalsToByTheSameValueAlgorithm(const ESValue& val)
+{
+    if (isUndefined())
+        return val.isUndefined();
+
+    if (isNull())
+        return val.isNull();
+
+    if (isBoolean())
+        return val.isBoolean() && asBoolean() == val.asBoolean();
+
+    if (isNumber()) {
+        if (!val.isNumber())
+            return false;
+        double a = asNumber();
+        double b = val.asNumber();
+        if (std::isnan(a) || std::isnan(b))
+            return false;
+        // we can pass [If x is +0 and y is −0, return true. If x is −0 and y is +0, return true.]
+        // because
+        // double a = -0.0;
+        // double b = 0.0;
+        // a == b; is true
         return a == b && std::signbit(a) == std::signbit(b);
     }
 

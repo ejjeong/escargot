@@ -230,6 +230,7 @@ public:
     ALWAYS_INLINE bool abstractEqualsTo(const ESValue& val);
     bool abstractEqualsToSlowCase(const ESValue& val);
     inline bool equalsTo(const ESValue& val);
+    inline bool equalsToByTheSameValueAlgorithm(const ESValue& val);
 
 };
 
