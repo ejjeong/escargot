@@ -670,8 +670,8 @@ bool ESObject::DefineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag)
             }
         }
     } else {
-        ASSERT((!propertyInfo.m_flags.m_isDataProperty && (O->accessorData(idx)->getJSGetter() || O->accessorData(idx)->getJSSetter())) &&
-                escargot::PropertyDescriptor::IsAccessorDescriptor(desc));
+        ASSERT((!propertyInfo.m_flags.m_isDataProperty && (O->accessorData(idx)->getJSGetter() || O->accessorData(idx)->getJSSetter()))
+            && escargot::PropertyDescriptor::IsAccessorDescriptor(desc));
         if (!propertyInfo.m_flags.m_isConfigurable) {
             if (descHasSetter && (descSet != O->accessorData(idx)->getJSSetter())) {
                 if (throwFlag)
@@ -680,10 +680,10 @@ bool ESObject::DefineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag)
                     return false;
             }
             if (descHasGetter && (descGet != O->accessorData(idx)->getJSGetter())) {
-               if (throwFlag)
-                   throw ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty 11.a.ii")));
-               else
-                   return false;
+                if (throwFlag)
+                    throw ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty 11.a.ii")));
+                else
+                    return false;
             }
         }
     }
@@ -711,10 +711,10 @@ bool ESObject::DefineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag)
     } else {
         O->deleteProperty(P, true);
         O->defineDataProperty(P,
-                    descHasWritable ? descW : propertyInfo.m_flags.m_isWritable,
-                    descHasEnumerable ? descE: propertyInfo.m_flags.m_isEnumerable,
-                    descHasConfigurable ? descC : propertyInfo.m_flags.m_isConfigurable,
-                    descHasValue ? descV : current);
+                descHasWritable ? descW : propertyInfo.m_flags.m_isWritable,
+                descHasEnumerable ? descE: propertyInfo.m_flags.m_isEnumerable,
+                descHasConfigurable ? descC : propertyInfo.m_flags.m_isConfigurable,
+                descHasValue ? descV : current);
     }
 
     // 13
