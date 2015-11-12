@@ -1661,58 +1661,29 @@ void GlobalObject::installArray()
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-array.prototype.sort
     m_arrayPrototype->ESObject::defineDataProperty(strings->sort, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         int arglen = instance->currentExecutionContext()->argumentCount();
-        auto thisObj = instance->currentExecutionContext()->resolveThisBindingToObject();
-        bool defaultSort = false;
-        ESValue comparefn;
+        auto thisO = instance->currentExecutionContext()->resolveThisBindingToObject();
+        ESValue cmpfn;
+        bool defaultSort = (arglen == 0)
+            || (cmpfn = instance->currentExecutionContext()->arguments()[0]).isUndefined();
 
-        if (arglen == 0)
-            defaultSort = true;
-        else {
-            comparefn = instance->currentExecutionContext()->arguments()[0];
-            if (comparefn.isUndefined())
-                defaultSort = true;
-        }
-
-        if (thisObj->isESArrayObject()) {
-            auto thisArr = thisObj->asESArrayObject();
+        thisO->sort([defaultSort, &cmpfn, &instance, &thisO] (
+            const ::escargot::ESValue& a,
+            const ::escargot::ESValue& b) -> bool {
+            if (a.isEmpty() || a.isUndefined())
+                return false;
+            if (b.isEmpty() || b.isUndefined())
+                return true;
+            ESValue arg[2] = { a, b };
             if (defaultSort) {
-                thisArr->sort();
+                ::escargot::ESString* vala = a.toString();
+                ::escargot::ESString* valb = b.toString();
+                return vala->string() < valb->string();
             } else {
-                thisArr->sort([&comparefn, &instance, &thisArr]
-                    (const ::escargot::ESValue& a, const ::escargot::ESValue& b) -> bool {
-                    if (a.isEmpty() || a.isUndefined())
-                        return false;
-                    if (b.isEmpty() || b.isUndefined())
-                        return true;
-                    ESValue arg[2] = { a, b };
-                    ESValue ret = ESFunctionObject::call(
-                        instance, comparefn, ESValue(), arg, 2, false);
-                    return (ret.toNumber() < 0);
-                });
-            }
-            return thisArr;
-        } else {
-            fprintf(stderr, "trying to sort object.....\n");
-            uint32_t len = thisObj->get(strings->length.string()).toUint32();
-            if (defaultSort) {
-                // thisObj->sort();
-            } else {
-                /*
-                thisObj->sort([&comparefn, &instance, &thisVal]
-                    (const ::escargot::ESValue& a, const ::escargot::ESValue& b) -> bool {
-                    if (a.isEmpty() || a.isUndefined())
-                        return false;
-                    if (b.isEmpty() || b.isUndefined())
-                        return true;
-                    ESValue arg[2] = { a, b };
-                    ESValue ret = ESFunctionObject::call(
-                        instance, comparefn, ESValue(), arg, 2, false);
-                    return (ret.toNumber() < 0);
-                });
-                */
-            }
-            return thisObj;
-        }
+                ESValue ret = ESFunctionObject::call(
+                    instance, cmpfn, ESValue(), arg, 2, false);
+                return (ret.toNumber() < 0);
+            } });
+        return thisO;
     }, strings->sort, 1));
 
     // $22.1.3.25 Array.prototype.splice(start, deleteCount, ...items)

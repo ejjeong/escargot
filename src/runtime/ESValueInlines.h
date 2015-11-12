@@ -1647,30 +1647,30 @@ ALWAYS_INLINE void ESObject::enumerationWithNonEnumerable(Functor t)
     }
 }
 
-ALWAYS_INLINE void ESObject::sort()
-{
-    if (isESArrayObject()) {
-        std::sort(asESArrayObject()->m_vector.begin(), asESArrayObject()->m_vector.end(), [](const ::escargot::ESValue& a, const ::escargot::ESValue& b) -> bool {
-            if (a.isEmpty() || a.isUndefined())
-                return false;
-            if (b.isEmpty() || b.isUndefined())
-                return true;
-            ::escargot::ESString* vala = a.toString();
-            ::escargot::ESString* valb = b.toString();
-            return vala->string() < valb->string();
-        });
-    } else {
-        // TODO non fast mode sort
-    }
-}
-
 template <typename Comp>
 ALWAYS_INLINE void ESObject::sort(const Comp& c)
 {
-    if (isESArrayObject()) {
+    if (isESArrayObject() && asESArrayObject()->isFastmode()) {
         std::sort(asESArrayObject()->m_vector.begin(), asESArrayObject()->m_vector.end(), c);
     } else {
-        // TODO non fast mode sort
+        uint32_t len = get(strings->length.string()).toUint32();
+        ESValueVector selected(len);
+        uint32_t n = 0;
+        for (int i = 0; i < len; i++) {
+            if (hasProperty(ESValue(i))) {
+                selected.push_back(get(ESValue(i)));
+                n++;
+            }
+        }
+        std::sort(selected.begin(), selected.end(), c);
+        int i;
+        for (i = 0; i < n; i++) {
+            set(ESValue(i), selected[i]);
+        }
+        while (i != len) {
+            deleteProperty(ESValue(i));
+            i++;
+        }
     }
 }
 

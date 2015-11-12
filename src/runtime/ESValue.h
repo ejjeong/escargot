@@ -1401,7 +1401,6 @@ public:
     template <typename Functor>
     ALWAYS_INLINE void enumerationWithNonEnumerable(Functor t);
 
-    ALWAYS_INLINE void sort();
     template <typename Comp>
     ALWAYS_INLINE void sort(const Comp& c);
 
