@@ -1545,7 +1545,7 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
             ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
         return true;
     } else {
-        return m_hiddenClass->write(this, this, keyString, val);
+        return m_hiddenClass->write(this, this, idx, val);
     }
 }
 
