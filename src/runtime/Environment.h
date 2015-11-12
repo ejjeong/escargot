@@ -78,27 +78,21 @@ public:
             obj->set(ESString::create(u"value"), descSrc->hiddenClass()->read(descSrc, descSrc, idx));
             obj->set(ESString::create(u"writable"), ESValue(propertyInfo.m_flags.m_isWritable));
         } else {
-            descSrc->accessorData(idx)->setGetterAndSetterTo(obj);
-//            if (descSrc->accessorData(idx)->getJSGetter() || descSrc->accessorData(idx)->getJSSetter()) {
-//                obj->defineDataProperty(ESString::create(u"get"), true, true, true, ESValue(2));
-//                obj->defineDataProperty(ESString::create(u"set"), true, true, true, ESValue(2));
-//            } else {
-//                ESObject* getDesc = ESObject::create();
-//                getDesc->set(ESString::create(u"value"), ESValue(2));
-//                getDesc->set(ESString::create(u"writable"), ESValue(true));
-//                getDesc->set(ESString::create(u"enumerable"), ESValue(true));
-//                getDesc->set(ESString::create(u"configurable"), ESValue(true));
-//                ESValue getStr = ESString::create(u"get");
-//                obj->DefineOwnProperty(getStr, getDesc, false);
-//
-//                ESObject* setDesc = ESObject::create();
-//                setDesc->set(ESString::create(u"value"), ESValue(2));
-//                setDesc->set(ESString::create(u"writable"), ESValue(true));
-//                setDesc->set(ESString::create(u"enumerable"), ESValue(true));
-//                setDesc->set(ESString::create(u"configurable"), ESValue(true));
-//                ESValue setStr = ESString::create(u"set");
-//                obj->DefineOwnProperty(setStr, setDesc, false);
-//            }
+            ESObject* getDesc = ESObject::create();
+            getDesc->set(ESString::create(u"value"), descSrc->accessorData(idx)->getJSGetter() ? descSrc->accessorData(idx)->getJSGetter() : ESValue());
+            getDesc->set(ESString::create(u"writable"), ESValue(true));
+            getDesc->set(ESString::create(u"enumerable"), ESValue(true));
+            getDesc->set(ESString::create(u"configurable"), ESValue(true));
+            ESValue getStr = ESString::create(u"get");
+            obj->DefineOwnProperty(getStr, getDesc, false);
+
+            ESObject* setDesc = ESObject::create();
+            setDesc->set(ESString::create(u"value"), descSrc->accessorData(idx)->getJSSetter() ? descSrc->accessorData(idx)->getJSSetter() : ESValue());
+            setDesc->set(ESString::create(u"writable"), ESValue(true));
+            setDesc->set(ESString::create(u"enumerable"), ESValue(true));
+            setDesc->set(ESString::create(u"configurable"), ESValue(true));
+            ESValue setStr = ESString::create(u"set");
+            obj->DefineOwnProperty(setStr, setDesc, false);
         }
         obj->set(ESString::create(u"enumerable"), ESValue(propertyInfo.m_flags.m_isEnumerable));
         obj->set(ESString::create(u"configurable"), ESValue(propertyInfo.m_flags.m_isConfigurable));

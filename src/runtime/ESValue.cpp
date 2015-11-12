@@ -551,7 +551,8 @@ bool ESObject::DefineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag)
     else {
         if (O->isESArrayObject() &&
             (descHasEnumerable || descHasWritable || descHasConfigurable || descHasValue || descHasGetter || descHasSetter) &&
-            O->hasProperty(P)) {
+            O->hasOwnProperty(P)) {
+            current = O->getOwnProperty(P);
             if (descHasGetter || descHasSetter) {
                 O->defineAccessorProperty(P, new ESPropertyAccessorData(descGet, descSet),
                     descHasWritable ? descW : true,
@@ -560,7 +561,7 @@ bool ESObject::DefineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag)
             } else {
                 O->defineDataProperty(P, descHasWritable ? descW : true,
                     descHasEnumerable ? descE : true,
-                    descHasConfigurable ? descC : true, desc->get(ESString::create(u"value")));
+                    descHasConfigurable ? descC : true, descHasValue ? desc->get(ESString::create(u"value")) : current);
             }
             return true;
         } else {
@@ -635,7 +636,6 @@ bool ESObject::DefineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag)
     bool isCurrentDataDescriptor = propertyInfo.m_flags.m_isDataProperty || O->accessorData(idx)->getNativeGetter() || O->accessorData(idx)->getNativeSetter();
     bool isDescDataDescriptor = escargot::PropertyDescriptor::IsDataDescriptor(desc);
     if (escargot::PropertyDescriptor::IsGenericDescriptor(desc)) { // 8
-
     } else if (isCurrentDataDescriptor != isDescDataDescriptor) { // 9
         if (!propertyInfo.m_flags.m_isConfigurable) { // 9.a
             if (throwFlag)
@@ -670,8 +670,7 @@ bool ESObject::DefineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag)
             }
         }
     } else {
-        ASSERT((!propertyInfo.m_flags.m_isDataProperty && (O->accessorData(idx)->getJSGetter() || O->accessorData(idx)->getJSSetter()))
-            && escargot::PropertyDescriptor::IsAccessorDescriptor(desc));
+        ASSERT(!propertyInfo.m_flags.m_isDataProperty && escargot::PropertyDescriptor::IsAccessorDescriptor(desc));
         if (!propertyInfo.m_flags.m_isConfigurable) {
             if (descHasSetter && (descSet != O->accessorData(idx)->getJSSetter())) {
                 if (throwFlag)
