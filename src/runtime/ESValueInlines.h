@@ -1014,8 +1014,9 @@ ALWAYS_INLINE ESHiddenClass* ESHiddenClass::defineProperty(ESString* name, bool 
             vec[(size_t)flag] = cls;
             m_transitionData.insert(std::make_pair(name, vec));
         } else {
-            if (iter->second[(size_t)flag]) {
-                cls = iter->second[(size_t)flag];
+            cls = iter->second[(size_t)flag];
+            if (cls) {
+                ASSERT(flag == cls->m_propertyInfo.back().flags());
             } else {
                 cls = new ESHiddenClass;
                 cls->m_propertyIndexHashMapInfo.insert(m_propertyIndexHashMapInfo.begin(), m_propertyIndexHashMapInfo.end());

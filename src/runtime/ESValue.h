@@ -1209,7 +1209,6 @@ class ESHiddenClass : public gc {
     static const unsigned ESHiddenClassVectorModeSizeLimit = 64;
     friend class ESVMInstance;
     friend class ESObject;
-    friend class GlobalObject;
 public:
     size_t findProperty(const ESString* name)
     {
@@ -1242,26 +1241,6 @@ public:
     const ESHiddenClassPropertyInfo& propertyInfo(const size_t& idx)
     {
         return m_propertyInfo[idx];
-    }
-
-    void setEnumerable(const size_t& idx, bool isEnumerable)
-    {
-        m_propertyInfo[idx].m_flags.m_isEnumerable = isEnumerable;
-    }
-
-    void setConfigurable(const size_t& idx, bool isConfigurable)
-    {
-        m_propertyInfo[idx].m_flags.m_isConfigurable = isConfigurable;
-    }
-
-    void setWritable(const size_t& idx, bool isWritable)
-    {
-        m_propertyInfo[idx].m_flags.m_isWritable = isWritable;
-    }
-
-    void setDataProperty(const size_t& idx, bool isDataProperty)
-    {
-        m_propertyInfo[idx].m_flags.m_isDataProperty = isDataProperty;
     }
 
     const ESHiddenClassPropertyInfoVector& propertyInfo()

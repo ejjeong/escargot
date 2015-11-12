@@ -682,12 +682,14 @@ bool ESObject::DefineOwnProperty(ESValue& key, ESObject* desc, bool throwFlag)
     } else {
         if (descHasValue)
             O->set(key, desc->get(ESString::create(u"value")));
+        /*
         if (descHasEnumerable)
             O->hiddenClass()->setEnumerable(idx, descE);
         if (descHasConfigurable)
             O->hiddenClass()->setConfigurable(idx, descC);
         if (descHasWritable)
             O->hiddenClass()->setWritable(idx, descW);
+            */
     }
 
     // 13
@@ -958,12 +960,14 @@ bool ESArrayObject::DefineOwnProperty(ESValue& key, ESObject* desc, bool throwFl
                     throw ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty cannot change array's length")));
             O->set(key, val);
         }
+        /*
         if (descHasEnumerable)
             O->hiddenClass()->setEnumerable(idx, descE.toBoolean());
         if (descHasConfigurable)
             O->hiddenClass()->setConfigurable(idx, descC.toBoolean());
         if (descHasWritable)
             O->hiddenClass()->setWritable(idx, descW.toBoolean());
+            */
     }
 
     // 13

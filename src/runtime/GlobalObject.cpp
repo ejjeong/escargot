@@ -837,6 +837,7 @@ void GlobalObject::installObject()
         ESValue O = instance->currentExecutionContext()->readArgument(0);
         if (!O.isObject())
             throw ESValue(TypeError::create(ESString::create("first parameter is should be object")));
+        /*
         ESObject* obj = O.toObject();
         if (obj->isESArrayObject())
             obj->asESArrayObject()->convertToSlowMode();
@@ -849,6 +850,7 @@ void GlobalObject::installObject()
                 propertyInfo->m_flags.m_isConfigurable = false;
         });
         obj->setExtensible(false);
+        */
         return O;
     }, ESString::create(u"freeze"), 1));
 
@@ -907,6 +909,7 @@ void GlobalObject::installObject()
         ESValue O = instance->currentExecutionContext()->readArgument(0);
         if (!O.isObject())
             throw ESValue(TypeError::create(ESString::create(u"getOwnPropertyNames: first argument is not object")));
+        /*
         ESObject* obj = O.toObject();
         bool hasWritableConfigurableProperty = false;
         obj->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
@@ -921,6 +924,8 @@ void GlobalObject::installObject()
         if (!obj->isExtensible())
             return ESValue(true);
         return ESValue(false);
+        */
+        return ESValue(true);
     }, ESString::create(u"isFrozen"), 1));
 
     // $19.1.2.13 Object.isSealed ( O )
@@ -1015,7 +1020,7 @@ void GlobalObject::installObject()
             return ESValue(true);
         }
         size_t t = O->hiddenClass()->findProperty(key.toString());
-        if (O->hiddenClass()->m_propertyInfo[t].m_flags.m_isEnumerable)
+        if (O->hiddenClass()->propertyInfo(t).m_flags.m_isEnumerable)
             return ESValue(true);
         return ESValue(false);
     }, strings->propertyIsEnumerable, 1));
