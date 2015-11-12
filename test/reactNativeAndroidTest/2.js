@@ -1,0 +1,1 @@
+print(JSON.stringify(require('BatchedBridge').flushedQueue.apply(null, [])));
