@@ -266,7 +266,7 @@ ALWAYS_INLINE void setObjectOperation(ESValue* willBeObject, ESValue* property, 
                         return;
                     if (idx != ESValue::ESInvalidIndexValue) {
                         setObjectOperationExpandLengthCase(arr, idx, value);
-                        return ;
+                        return;
                     }
                 }
             }
