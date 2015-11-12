@@ -2373,9 +2373,16 @@ namespace nanojit
          }
     }
 
+#ifdef ESCARGOT
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wnarrowing"
+#endif
     static const AVMPLUS_ALIGN16(int64_t) negateMaskD[]  = { 0x8000000000000000LL, 0 };
     static const AVMPLUS_ALIGN16(int32_t) negateMaskF[]  = { 0x80000000, 0, 0, 0 };
     static const AVMPLUS_ALIGN16(int32_t) negateMaskF4[] = { 0x80000000, 0x80000000, 0x80000000, 0x80000000 };
+#ifdef ESCARGOT
+#pragma GCC diagnostic pop
+#endif
 
     void Assembler::asm_neg_abs(LIns *ins) {
         Register rr, ra;

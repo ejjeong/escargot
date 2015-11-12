@@ -89,7 +89,11 @@ int main(int argc, char* argv[])
         while (true) {
             char buf[512];
             printf("shell> ");
-            fgets(buf, sizeof buf, stdin);
+            if (!fgets(buf, sizeof buf, stdin)) {
+                printf("ERROR: Cannot read interactive shell input\n");
+                ES->exit();
+                return 1;
+            }
             escargot::ESStringData source(buf);
             try {
                 escargot::ESValue ret = ES->evaluate(source);
@@ -168,7 +172,11 @@ int main(int argc, char* argv[])
                 while (true) {
                     char buf[512];
                     printf("shell> ");
-                    fgets(buf, sizeof buf, stdin);
+                    if (!fgets(buf, sizeof buf, stdin)) {
+                        printf("ERROR: Cannot read interactive shell input\n");
+                        ES->exit();
+                        return 1;
+                    }
                     escargot::ESStringData source(buf);
                     try {
                         escargot::ESValue ret = ES->evaluate(source);
