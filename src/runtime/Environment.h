@@ -77,7 +77,9 @@ public:
         if (propertyInfo.m_flags.m_isDataProperty || isActualDataProperty) {
             obj->set(ESString::create(u"value"), descSrc->hiddenClass()->read(descSrc, descSrc, idx));
             obj->set(ESString::create(u"writable"), ESValue(propertyInfo.m_flags.m_isWritable));
-        } else {
+        } else if (descSrc->accessorData(idx)->getJSGetter() ||
+            descSrc->accessorData(idx)->getJSSetter() ||
+            (!descSrc->accessorData(idx)->getNativeGetter() && !descSrc->accessorData(idx)->getNativeSetter())) {
             ESObject* getDesc = ESObject::create();
             getDesc->set(ESString::create(u"value"), descSrc->accessorData(idx)->getJSGetter() ? descSrc->accessorData(idx)->getJSGetter() : ESValue());
             getDesc->set(ESString::create(u"writable"), ESValue(true));
@@ -93,6 +95,9 @@ public:
             setDesc->set(ESString::create(u"configurable"), ESValue(true));
             ESValue setStr = ESString::create(u"set");
             obj->DefineOwnProperty(setStr, setDesc, false);
+            obj->set(ESString::create(u"writable"), ESValue(false));
+        } else {
+            descSrc->accessorData(idx)->setGetterAndSetterTo(obj);
         }
         obj->set(ESString::create(u"enumerable"), ESValue(propertyInfo.m_flags.m_isEnumerable));
         obj->set(ESString::create(u"configurable"), ESValue(propertyInfo.m_flags.m_isConfigurable));
