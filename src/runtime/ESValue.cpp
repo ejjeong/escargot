@@ -905,11 +905,7 @@ bool ESArrayObject::DefineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag
 
         // 4.e
         if (index >= oldLen) {
-//            O->set(strings->length, ESValue(index + 1));
             ESObject* oldLenDescAsObject = ESObject::create();
-            oldLenDescAsObject->set(ESString::create(u"writable"), ESValue(oldLePropertyInfo.m_flags.m_isWritable));
-            oldLenDescAsObject->set(ESString::create(u"enumerable"), ESValue(oldLePropertyInfo.m_flags.m_isEnumerable));
-            oldLenDescAsObject->set(ESString::create(u"configurable"), ESValue(oldLePropertyInfo.m_flags.m_isConfigurable));
             oldLenDescAsObject->set(ESString::create(u"value"), ESValue(index + 1));
             A->asESObject()->DefineOwnProperty(lenStr, oldLenDescAsObject, false);
         }
