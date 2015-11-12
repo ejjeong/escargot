@@ -1646,6 +1646,33 @@ ALWAYS_INLINE void ESObject::enumerationWithNonEnumerable(Functor t)
     }
 }
 
+ALWAYS_INLINE void ESObject::sort()
+{
+    if (isESArrayObject()) {
+        std::sort(asESArrayObject()->m_vector.begin(), asESArrayObject()->m_vector.end(), [](const ::escargot::ESValue& a, const ::escargot::ESValue& b) -> bool {
+            if (a.isEmpty() || a.isUndefined())
+                return false;
+            if (b.isEmpty() || b.isUndefined())
+                return true;
+            ::escargot::ESString* vala = a.toString();
+            ::escargot::ESString* valb = b.toString();
+            return vala->string() < valb->string();
+        });
+    } else {
+        // TODO non fast mode sort
+    }
+}
+
+template <typename Comp>
+ALWAYS_INLINE void ESObject::sort(const Comp& c)
+{
+    if (isESArrayObject()) {
+        std::sort(asESArrayObject()->m_vector.begin(), asESArrayObject()->m_vector.end(), c);
+    } else {
+        // TODO non fast mode sort
+    }
+}
+
 template<>
 inline ESTypedArrayObject<Int8Adaptor>::ESTypedArrayObject(TypedArrayType arraytype, ESPointer::Type type)
     : ESTypedArrayObjectWrapper(arraytype,

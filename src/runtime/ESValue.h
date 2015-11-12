@@ -1422,6 +1422,10 @@ public:
     template <typename Functor>
     ALWAYS_INLINE void enumerationWithNonEnumerable(Functor t);
 
+    ALWAYS_INLINE void sort();
+    template <typename Comp>
+    ALWAYS_INLINE void sort(const Comp& c);
+
     ALWAYS_INLINE const ESValue& __proto__()
     {
         return m___proto__;
@@ -1742,31 +1746,6 @@ public:
     const uint32_t& length()
     {
         return (const uint32_t &)m_length;
-    }
-
-    void sort()
-    {
-        RELEASE_ASSERT(isFastmode());
-        // TODO non fast mode sort
-
-        std::sort(m_vector.begin(), m_vector.end(), [](const ::escargot::ESValue& a, const ::escargot::ESValue& b) -> bool {
-            if (a.isEmpty() || a.isUndefined())
-                return false;
-            if (b.isEmpty() || b.isUndefined())
-                return true;
-            ::escargot::ESString* vala = a.toString();
-            ::escargot::ESString* valb = b.toString();
-            return vala->string() < valb->string();
-        });
-    }
-
-    template <typename Comp>
-    void sort(const Comp& c)
-    {
-        RELEASE_ASSERT(isFastmode());
-        // TODO non fast mode sort
-
-        std::sort(m_vector.begin(), m_vector.end(), c);
     }
 
     bool DefineOwnProperty(ESValue& key, ESObject* desc, bool throwFlag);
