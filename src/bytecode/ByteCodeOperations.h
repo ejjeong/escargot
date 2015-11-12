@@ -264,8 +264,10 @@ ALWAYS_INLINE void setObjectOperation(ESValue* willBeObject, ESValue* property, 
                 } else {
                     if (UNLIKELY(!arr->isExtensible()))
                         return;
-                    setObjectOperationExpandLengthCase(arr, idx, value);
-                    return;
+                    if (idx != ESValue::ESInvalidIndexValue) {
+                        setObjectOperationExpandLengthCase(arr, idx, value);
+                        return ;
+                    }
                 }
             }
         }

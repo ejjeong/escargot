@@ -2517,8 +2517,8 @@ this._queue[METHOD_IDS].push(method);
 this._queue[PARAMS].push(params);
 
 var now=new Date().getTime();
-if(global.nativeFlushQueueImmediate && 
-now - this._lastFlush >= MIN_TIME_BETWEEN_FLUSHES_MS){
+if(global.nativeFlushQueueImmediate /*&& 
+now - this._lastFlush >= MIN_TIME_BETWEEN_FLUSHES_MS*/){
 global.nativeFlushQueueImmediate(this._queue);
 this._queue = [[],[],[]];
 this._lastFlush = now;}
