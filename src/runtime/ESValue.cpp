@@ -575,6 +575,8 @@ bool ESObject::DefineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag)
     bool extensible = O->isExtensible();
 
     // 3, 4
+    bool isDescDataDescriptor = escargot::PropertyDescriptor::IsDataDescriptor(desc);
+    bool isDescGenericDescriptor = escargot::PropertyDescriptor::IsGenericDescriptor(desc);
     if (!OHasCurrent) {
         // 3
         if (!extensible) {
@@ -583,7 +585,8 @@ bool ESObject::DefineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag)
             else
                 return false;
         } else { // 4
-            if (escargot::PropertyDescriptor::IsDataDescriptor(desc) || escargot::PropertyDescriptor::IsGenericDescriptor(desc)) {
+//            O->deleteProperty(P);
+            if (isDescDataDescriptor || isDescGenericDescriptor) {
                 // Refer to Table 7 of ES 5.1 for default attribute values
                 O->defineDataProperty(P, descHasWritable ? descW : isWritable,
                     descHasEnumerable ? descE : isEnumerable,
@@ -634,8 +637,7 @@ bool ESObject::DefineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag)
 
     // 8, 9, 10, 11
     bool isCurrentDataDescriptor = propertyInfo.m_flags.m_isDataProperty || O->accessorData(idx)->getNativeGetter() || O->accessorData(idx)->getNativeSetter();
-    bool isDescDataDescriptor = escargot::PropertyDescriptor::IsDataDescriptor(desc);
-    if (escargot::PropertyDescriptor::IsGenericDescriptor(desc)) { // 8
+    if (isDescGenericDescriptor) { // 8
     } else if (isCurrentDataDescriptor != isDescDataDescriptor) { // 9
         if (!propertyInfo.m_flags.m_isConfigurable) { // 9.a
             if (throwFlag)
@@ -690,7 +692,7 @@ bool ESObject::DefineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag)
     //
 
     // 12
-    if (descHasGetter || descHasSetter) {
+    if (descHasGetter || descHasSetter || (!propertyInfo.m_flags.m_isDataProperty && (O->accessorData(idx)->getJSGetter() || O->accessorData(idx)->getJSSetter()))) {
         escargot::ESFunctionObject* getter = descGet;
         escargot::ESFunctionObject* setter = descSet;
         if (!propertyInfo.m_flags.m_isDataProperty) {
