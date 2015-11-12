@@ -21,7 +21,7 @@ ALWAYS_INLINE size_t utf16ToUtf8(char16_t uc, char* UTF8)
             UTF8[2] = (char) '\0';
         }
         tRequiredSize = 2;
-    } else if (uc <= 0xffff) {
+    } else { // uc <= 0xffff
         if (NULL != UTF8) {
             UTF8[0] = (char) (0xe0 + uc / (0x01 << 12));
             UTF8[1] = (char) (0x80 + uc / (0x01 << 6) % (0x01 << 6));
@@ -29,8 +29,6 @@ ALWAYS_INLINE size_t utf16ToUtf8(char16_t uc, char* UTF8)
             UTF8[3] = (char) '\0';
         }
         tRequiredSize = 3;
-    } else {
-        RELEASE_ASSERT_NOT_REACHED();
     }
 
     return tRequiredSize;

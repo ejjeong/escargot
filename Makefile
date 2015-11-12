@@ -84,14 +84,17 @@ endif
 # common flags
 CXXFLAGS += -fno-rtti -fno-math-errno -Isrc/
 CXXFLAGS += -fdata-sections -ffunction-sections
+CXXFLAGS += -frounding-math -fsignaling-nans
+CXXFLAGS += -Wno-invalid-offsetof
 
 LDFLAGS += -lpthread
 # -ltcmalloc_minimal
 LDFLAGS += -Wl,--gc-sections
 
 # flags for debug/release
-CXXFLAGS_DEBUG = -O0 -g3 -D_GLIBCXX_DEBUG -frounding-math -fsignaling-nans -fno-omit-frame-pointer -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable -Wno-invalid-offsetof -Wno-sign-compare -Wno-unused-local-typedefs
-CXXFLAGS_RELEASE = -O2 -g3 -DNDEBUG -fomit-frame-pointer -frounding-math -fsignaling-nans -Wno-invalid-offsetof
+CXXFLAGS_DEBUG = -O0 -g3 -D_GLIBCXX_DEBUG -fno-omit-frame-pointer -Wall -Wextra -Werror
+CXXFLAGS_DEBUG += -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unused-but-set-parameter -Wno-sign-compare -Wno-unused-local-typedefs -Wno-unused-parameter
+CXXFLAGS_RELEASE = -O2 -g3 -DNDEBUG -fomit-frame-pointer
 
 # flags for jit/interpreter
 CXXFLAGS_JIT = -DENABLE_ESJIT=1

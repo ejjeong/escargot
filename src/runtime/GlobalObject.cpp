@@ -445,7 +445,7 @@ void GlobalObject::initGlobalObject()
                 || data[i] == '*' || data[i] == '\'' || data[i] == '('
                 || data[i] == ')'))  {
                 escaped.append(&componentString.m_buffer[i], 1);
-            } else if (0 <= data[i] && data[i] < 0x007F) {
+            } else if (/*0 <= data[i] && */data[i] < 0x007F) {
                 escaped.append("%");
                 escaped.append(char2hex(data[i]));
             } else if (0x0080 <= data[i] && data[i] <= 0x07FF) {
@@ -454,7 +454,7 @@ void GlobalObject::initGlobalObject()
                 escaped.append("%");
                 escaped.append(char2hex(0x0080 + (data[i] & 0x003F)));
             } else if ((0x0800 <= data[i] && data[i] <= 0xD7FF)
-                || (0xE000 <= data[i] && data[i] <= 0xFFFF)) {
+                || (0xE000 <= data[i]/* && data[i] <= 0xFFFF*/)) {
                 escaped.append("%");
                 escaped.append(char2hex(0x00E0 + (data[i] & 0xF000) / 0x1000));
                 escaped.append("%");
@@ -1889,7 +1889,7 @@ void GlobalObject::installString()
         int length = instance->currentExecutionContext()->argumentCount();
         if (length == 1) {
             char16_t c = (char16_t)instance->currentExecutionContext()->arguments()[0].toInteger();
-            if (c >= 0 && c < ESCARGOT_ASCII_TABLE_MAX)
+            if (/*c >= 0 && */c < ESCARGOT_ASCII_TABLE_MAX)
                 return strings->asciiTable[c].string();
             return ESString::create(c);
         } else {

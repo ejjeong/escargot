@@ -1248,7 +1248,7 @@ public:
         return m_propertyInfo;
     }
 
-    const size_t propertyCount()
+    size_t propertyCount()
     {
         return m_propertyInfo.size();
     }
@@ -1392,7 +1392,7 @@ public:
 
     ALWAYS_INLINE void set(const escargot::ESValue& key, const ESValue& val, bool throwExpetion);
 
-    ALWAYS_INLINE const uint32_t length();
+    ALWAYS_INLINE uint32_t length();
     ALWAYS_INLINE ESValue pop();
     ALWAYS_INLINE void eraseValues(int, int);
 

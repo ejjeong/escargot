@@ -1419,7 +1419,7 @@ ALWAYS_INLINE ESValue ESObject::getOwnProperty(escargot::ESValue key)
     }
 }
 
-ALWAYS_INLINE const uint32_t ESObject::length()
+ALWAYS_INLINE uint32_t ESObject::length()
 {
     if (LIKELY(isESArrayObject()))
         return asESArrayObject()->length();

@@ -142,6 +142,8 @@ ALWAYS_INLINE bool isOctalDigit(char16_t ch)
 // ECMA-262 11.6 Identifier Names and Identifiers
 ALWAYS_INLINE char16_t fromCodePoint(char16_t cp)
 {
+    return cp;
+    /*
     if (cp < 0x10000) {
         return cp;
     } else {
@@ -149,6 +151,7 @@ ALWAYS_INLINE char16_t fromCodePoint(char16_t cp)
         // String.fromCharCode(0xD800 + ((cp - 0x10000) >> 10)) +
         // String.fromCharCode(0xDC00 + ((cp - 0x10000) & 1023));
     }
+    */
 }
 
 ALWAYS_INLINE bool isIdentifierStart(char16_t ch)
@@ -540,7 +543,7 @@ char16_t scanUnicodeCodePointEscape(ParseContext* ctx)
         code = code * 16 + c;
     }
 
-    if (code > 0x10FFFF || ch != '}') {
+    if (/*code > 0x10FFFF ||*/ ch != '}') {
         throwUnexpectedToken();
     }
 

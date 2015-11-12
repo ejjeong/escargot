@@ -426,45 +426,43 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
     unsigned subPatternNum = byteCode->m_body->m_numSubpatterns;
     matchResult.m_subPatternNum = (int) subPatternNum;
     size_t length = m_string->length();
-    if (length >= 0) {
-        size_t start = startIndex;
-        unsigned result = 0;
-        const char16_t* chars = m_string->data();
-        unsigned* outputBuf = (unsigned int*)alloca(sizeof(unsigned) * 2 * (subPatternNum + 1));
-        outputBuf[1] = start;
-        do {
-            start = outputBuf[1];
-            memset(outputBuf, -1, sizeof(unsigned) * 2 * (subPatternNum + 1));
-            if (start > length)
-                break;
-            result = JSC::Yarr::interpret(NULL, byteCode, chars, length, start, outputBuf);
-            if (result != JSC::Yarr::offsetNoMatch) {
-                if (UNLIKELY(testOnly)) {
-                    return true;
-                }
-                std::vector<ESString::RegexMatchResult::RegexMatchResultPiece> piece;
-                piece.reserve(subPatternNum + 1);
-
-                for (unsigned i = 0; i < subPatternNum + 1; i ++) {
-                    ESString::RegexMatchResult::RegexMatchResultPiece p;
-                    p.m_start = outputBuf[i*2];
-                    p.m_end = outputBuf[i*2 + 1];
-                    piece.push_back(p);
-                }
-                matchResult.m_matchResults.push_back(std::move(piece));
-                if (!isGlobal)
-                    break;
-                if (start == outputBuf[1]) {
-                    outputBuf[1]++;
-                    if (outputBuf[1] > length) {
-                        break;
-                    }
-                }
-            } else {
-                break;
+    size_t start = startIndex;
+    unsigned result = 0;
+    const char16_t* chars = m_string->data();
+    unsigned* outputBuf = (unsigned int*)alloca(sizeof(unsigned) * 2 * (subPatternNum + 1));
+    outputBuf[1] = start;
+    do {
+        start = outputBuf[1];
+        memset(outputBuf, -1, sizeof(unsigned) * 2 * (subPatternNum + 1));
+        if (start > length)
+            break;
+        result = JSC::Yarr::interpret(NULL, byteCode, chars, length, start, outputBuf);
+        if (result != JSC::Yarr::offsetNoMatch) {
+            if (UNLIKELY(testOnly)) {
+                return true;
             }
-        } while (result != JSC::Yarr::offsetNoMatch);
-    }
+            std::vector<ESString::RegexMatchResult::RegexMatchResultPiece> piece;
+            piece.reserve(subPatternNum + 1);
+
+            for (unsigned i = 0; i < subPatternNum + 1; i ++) {
+                ESString::RegexMatchResult::RegexMatchResultPiece p;
+                p.m_start = outputBuf[i*2];
+                p.m_end = outputBuf[i*2 + 1];
+                piece.push_back(p);
+            }
+            matchResult.m_matchResults.push_back(std::move(piece));
+            if (!isGlobal)
+                break;
+            if (start == outputBuf[1]) {
+                outputBuf[1]++;
+                if (outputBuf[1] > length) {
+                    break;
+                }
+            }
+        } else {
+            break;
+        }
+    } while (result != JSC::Yarr::offsetNoMatch);
     return matchResult.m_matchResults.size();
 }
 
