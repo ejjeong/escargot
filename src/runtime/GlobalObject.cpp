@@ -2949,6 +2949,15 @@ void GlobalObject::installJSON()
         if (jsonDocument.HasParseError()) {
             throw ESValue(SyntaxError::create(ESString::create(u"occur error while parse json")));
         }
+        // FIXME: JSON.parse treats "__proto__" as a regular property name. (test262: ch15/15.12/15.12.2/S15.12.2_A1.js)
+        //        >>> var x1 = JSON.parse('{"__proto__":[]}') // x1.__proto__ = []
+        //        >>> var x2 = JSON.parse('{"__proto__":1}') // x2.__proto__ = 1
+        //        >>> var y1 = {"__proto__":[]} // y1.__proto__ = []
+        //        >>> var y2 = {"__proto__":1} // y2.__proto__ != 1
+        //        >>> Object.getPrototypeOf(x1) == Object.prototype // true
+        //        >>> Object.getPrototypeOf(x2) == Object.prototype // true
+        //        >>> Object.getPrototypeOf(y1) == Object.prototype // false
+        //        >>> Object.getPrototypeOf(y2) == Object.prototype // true
         std::function<ESValue(rapidjson::GenericValue<rapidjson::UTF16<char16_t>>& value)> fn;
         fn = [&](rapidjson::GenericValue<rapidjson::UTF16<char16_t>>& value) -> ESValue {
             if (value.IsBool()) {
@@ -2973,7 +2982,7 @@ void GlobalObject::installJSON()
                 escargot::ESObject* obj = ESObject::create();
                 auto iter = value.MemberBegin();
                 while (iter != value.MemberEnd()) {
-                    obj->defineDataProperty(ESString::create(iter->name.GetString()), true, false, true, fn(iter->value));
+                    obj->defineDataProperty(ESString::create(iter->name.GetString()), true, true, true, fn(iter->value));
                     iter++;
                 }
                 return obj;

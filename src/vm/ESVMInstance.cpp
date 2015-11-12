@@ -60,6 +60,8 @@ ESVMInstance::ESVMInstance()
 
     m_globalFunctionPrototype = NULL;
 
+    // TODO: Object.prototype.__proto__ should be configurable.
+    //       This is defined in ES6. ($B.2.2.1)
     m_object__proto__AccessorData.setGetter([](ESObject* obj, ESObject* originalObj) -> ESValue {
         return obj->__proto__();
     });
