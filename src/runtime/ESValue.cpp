@@ -549,9 +549,9 @@ bool ESObject::DefineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag)
     if (idx != SIZE_MAX)
         current = O->hiddenClass()->read(O, O, idx);
     else {
-        if (O->isESArrayObject() &&
-            (descHasEnumerable || descHasWritable || descHasConfigurable || descHasValue || descHasGetter || descHasSetter) &&
-            O->hasOwnProperty(P)) {
+        if (O->isESArrayObject()
+            && (descHasEnumerable || descHasWritable || descHasConfigurable || descHasValue || descHasGetter || descHasSetter)
+            && O->hasOwnProperty(P)) {
             current = O->getOwnProperty(P);
             if (descHasGetter || descHasSetter) {
                 O->defineAccessorProperty(P, new ESPropertyAccessorData(descGet, descSet),
@@ -612,7 +612,7 @@ bool ESObject::DefineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag)
         && (!descHasWritable || descW == propertyInfo.m_flags.m_isWritable)
         && (!descHasConfigurable || descC == propertyInfo.m_flags.m_isConfigurable)
         && (!descHasValue || ((propertyInfo.m_flags.m_isDataProperty || O->accessorData(idx)->getNativeGetter() || O->accessorData(idx)->getNativeSetter()) && descV.equalsToByTheSameValueAlgorithm(current)))
-        && (!descHasGetter|| (O->get(ESString::create(u"get")).isESPointer() && O->get(ESString::create(u"get")).asESPointer()->isESFunctionObject()
+        && (!descHasGetter || (O->get(ESString::create(u"get")).isESPointer() && O->get(ESString::create(u"get")).asESPointer()->isESFunctionObject()
             && descGet == O->get(ESString::create(u"get")).asESPointer()->asESFunctionObject()))
         && (!descHasSetter || (O->get(ESString::create(u"set")).isESPointer() && O->get(ESString::create(u"set")).asESPointer()->isESFunctionObject()
             && descSet == O->get(ESString::create(u"set")).asESPointer()->asESFunctionObject())))

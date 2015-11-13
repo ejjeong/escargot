@@ -77,9 +77,9 @@ public:
         if (propertyInfo.m_flags.m_isDataProperty || isActualDataProperty) {
             obj->set(ESString::create(u"value"), descSrc->hiddenClass()->read(descSrc, descSrc, idx));
             obj->set(ESString::create(u"writable"), ESValue(propertyInfo.m_flags.m_isWritable));
-        } else if (descSrc->accessorData(idx)->getJSGetter() ||
-            descSrc->accessorData(idx)->getJSSetter() ||
-            (!descSrc->accessorData(idx)->getNativeGetter() && !descSrc->accessorData(idx)->getNativeSetter())) {
+        } else if (descSrc->accessorData(idx)->getJSGetter()
+            || descSrc->accessorData(idx)->getJSSetter()
+            || (!descSrc->accessorData(idx)->getNativeGetter() && !descSrc->accessorData(idx)->getNativeSetter())) {
             ESObject* getDesc = ESObject::create();
             getDesc->set(ESString::create(u"value"), descSrc->accessorData(idx)->getJSGetter() ? descSrc->accessorData(idx)->getJSGetter() : ESValue());
             getDesc->set(ESString::create(u"writable"), ESValue(true));

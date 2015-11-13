@@ -344,8 +344,8 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
                         size_t idx = obj->hiddenClass()->findProperty(keyString);
                         if (idx != SIZE_MAX) {
                             bool isJSAccessorProperty = false;
-                            if (!obj->hiddenClass()->propertyInfo(idx).m_flags.m_isDataProperty &&
-                                (obj->accessorData(idx)->getJSGetter() || obj->accessorData(idx)->getJSSetter()))
+                            if (!obj->hiddenClass()->propertyInfo(idx).m_flags.m_isDataProperty
+                                && (obj->accessorData(idx)->getJSGetter() || obj->accessorData(idx)->getJSSetter()))
                                 isJSAccessorProperty = true;
                             if (!isJSAccessorProperty && !obj->hiddenClass()->propertyInfo(idx).m_flags.m_isWritable) {
                                 *cachedHiddenClassIndex = SIZE_MAX;
