@@ -1537,12 +1537,30 @@ public:
     void setTimeValue();
     void setTimeValue(const ESValue str);
     void setTimeValue(int year, int month, int date, int hour, int minute, int second, int millisecond);
+    void setTimeValueAsNaN()
+    {
+        m_hasVaildDate = false;
+    }
+
+    double timeValueAsDouble()
+    {
+        if (m_hasVaildDate) {
+            return getTimeAsMillisec();
+        } else {
+            return std::numeric_limits<double>::quiet_NaN();
+        }
+    }
 
     double getTimeAsMillisec()
     {
         long tzOffsetAsSec = getTimezoneOffset(); // It returns -28800 in GMT-8 zone
-        return m_time.tv_sec * 1000 + floor(m_time.tv_nsec / 1000000) + tzOffsetAsSec * 1000;
+        double ret = (double)m_time.tv_sec * 1000. + floor((double)m_time.tv_nsec / 1000000.) + (double)tzOffsetAsSec * 1000.;
+        if(ret < 0) {
+            puts("Asdfasdf");
+        }
+        return (double)m_time.tv_sec * 1000. + floor((double)m_time.tv_nsec / 1000000.) + (double)tzOffsetAsSec * 1000.;
     }
+
     int getDate();
     int getDay();
     int getFullYear();
@@ -1553,8 +1571,6 @@ public:
     long getTimezoneOffset();
     void setTime(double t);
 
-    void setPrimitiveValue(double primitiveVale) { m_primitiveValue = primitiveVale; }
-    double getPrimitiveValue() { return m_primitiveValue; }
     static double timeClip(double V)
     {
         if (std::isinf(V)) {
@@ -1574,7 +1590,7 @@ private:
     struct timespec m_time;
     struct tm m_cachedTM;
     bool m_isCacheDirty;
-    double m_primitiveValue;
+    bool m_hasVaildDate;
 
     const double hoursPerDay = 24.0;
     const double minutesPerHour = 60.0;

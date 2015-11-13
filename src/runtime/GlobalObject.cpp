@@ -2597,8 +2597,7 @@ void GlobalObject::installDate()
                     thisObject->setTimeValue(v);
                 } else {
                     double V = v.toNumber();
-                    thisObject->setPrimitiveValue(ESDateObject::timeClip(V));
-                    thisObject->setTime(thisObject->getPrimitiveValue());
+                    thisObject->setTime(ESDateObject::timeClip(V));
                 }
             } else {
                 double args[7] = {0, 0, 1, 0, 0, 0, 0}; // default value of year, month, date, hour, minute, second, millisecond
@@ -2617,7 +2616,7 @@ void GlobalObject::installDate()
                     year += 1900;
                 }
                 if (isnan(year) || isnan(month) || isnan(date) || isnan(hour) || isnan(minute) || isnan(second) || isnan(millisecond)) {
-                    thisObject->setPrimitiveValue(std::numeric_limits<double>::quiet_NaN());
+                    thisObject->setTimeValueAsNaN();
                     return ESString::create(u"Invalid Date");
                 }
                 thisObject->setTimeValue((int) year, (int) month, (int) date, (int) hour, (int) minute, (int) second, (int) millisecond);
@@ -2659,7 +2658,7 @@ void GlobalObject::installDate()
     m_date->defineDataProperty(ESString::create(u"now"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         struct timespec nowTime;
         clock_gettime(CLOCK_REALTIME, &nowTime);
-        double ret = nowTime.tv_sec*1000 + floor(nowTime.tv_nsec / 1000000);
+        double ret = (double)nowTime.tv_sec*1000. + floor((double)nowTime.tv_nsec / 1000000.);
         return ESValue(ret);
     }, ESString::create(u"now"), 0));
 
@@ -2910,12 +2909,8 @@ void GlobalObject::installDate()
     // $44 Date.prototype.valueOf()
     m_datePrototype->defineDataProperty(strings->valueOf, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
-        double primitiveValue = thisObject->asESDateObject()->getPrimitiveValue();
-        if (std::isnan(primitiveValue)) {
-            return ESValue(std::numeric_limits<double>::quiet_NaN());
-        }
-        double ret = thisObject->asESDateObject()->getTimeAsMillisec();
-        return ESValue(ret);
+        double primitiveValue = thisObject->asESDateObject()->timeValueAsDouble();
+        return ESValue(primitiveValue);
     }, strings->valueOf, 0));
 }
 
