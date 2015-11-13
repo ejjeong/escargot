@@ -178,7 +178,7 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
     int maxStackPos = -1;
     for (int i = m_graph->basicBlockSize() - 1; i >= 0; i--) {
         ESBasicBlock* block = m_graph->basicBlock(i);
-        if (block->instructionSize() > 0 && block->instruction(0)->targetIndex() <= (int)currentByteCodeIndex) {
+        if (block->instructionSize() > 0 && block->instruction(0)->targetIndex() >= 0 && block->instruction(0)->targetIndex() <= (int)currentByteCodeIndex) {
             int j = block->instructionSize() - 1;
             if (maxStackPos == -1) {
                 for (; j >= 0; j--) {

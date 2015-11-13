@@ -1,9 +1,9 @@
 #!/bin/bash
 
-BIN_ID=./escargot.id
-BIN_IR=./escargot.ir
-BIN_JD=./escargot.jd
-BIN_JR=./escargot.jr
+BIN_ID=./escargot.x64.id
+BIN_IR=./escargot.x64.ir
+BIN_JD=./escargot.x64.jd
+BIN_JR=./escargot.x64.jr
 
 #TC_FILE=TC.test
 #TC_FILE=TC.sunspider
