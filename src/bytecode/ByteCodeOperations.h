@@ -353,9 +353,6 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
                                 cachedHiddenClassChain->clear();
                                 throwObjectWriteError();
                                 return;
-                            } else {
-                                obj->set(keyString, value);
-                                return;
                             }
                         }
                     }
