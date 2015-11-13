@@ -1531,18 +1531,18 @@ public:
         return new ESDateObject();
     }
 
-    void parseStringToDate(struct tm* timeinfo, escargot::ESString* istr);
+    void parseStringToDate(struct tm* timeinfo, bool* timezoneSet, escargot::ESString* istr);
     void parseYmdhmsToDate(struct tm* timeinfo, int year, int month, int date, int hour, int minute, int second);
 
     void setTimeValue();
     void setTimeValue(const ESValue str);
     void setTimeValue(int year, int month, int date, int hour, int minute, int second, int millisecond);
 
-    double getTimeAsMilisec()
+    double getTimeAsMillisec()
     {
-        return m_time.tv_sec*1000 + floor(m_time.tv_nsec / 1000000);
+        long tzOffsetAsSec = getTimezoneOffset(); // It returns -28800 in GMT-8 zone
+        return m_time.tv_sec * 1000 + floor(m_time.tv_nsec / 1000000) + tzOffsetAsSec * 1000;
     }
-
     int getDate();
     int getDay();
     int getFullYear();
@@ -1550,7 +1550,7 @@ public:
     int getMinutes();
     int getMonth();
     int getSeconds();
-    int getTimezoneOffset();
+    long getTimezoneOffset();
     void setTime(double t);
 
     void setPrimitiveValue(double primitiveVale) { m_primitiveValue = primitiveVale; }
@@ -1575,6 +1575,28 @@ private:
     struct tm m_cachedTM;
     bool m_isCacheDirty;
     double m_primitiveValue;
+
+    const double hoursPerDay = 24.0;
+    const double minutesPerHour = 60.0;
+    const double secondsPerMinute = 60.0;
+    const double secondsPerHour = secondsPerMinute * minutesPerHour;
+    const double msPerSecond = 1000.0;
+    const double msPerMinute = msPerSecond * secondsPerMinute;
+    const double msPerHour = msPerSecond * secondsPerHour;
+    const double msPerDay = msPerHour * hoursPerDay;
+
+    double day(double t) { return floor(t / msPerDay); }
+    double timeWithinDay(double t) { return (int) t % (int) msPerDay; }
+    int daysInYear(long year);
+    int dayFromYear(long year);
+    double timeFromYear(long year) { return msPerDay * dayFromYear(year); }
+    long yearFromTime(double t);
+    int inLeapYear(double t);
+    int dayFromMonth(long year, int month);
+    int monthFromTime(double t);
+    int dateFromTime(double t);
+    double makeDay(long year, int month, int date);
+    double ymdhmsToSeconds(long year, int month, int day, int hour, int minute, double second);
 };
 
 class ESMathObject : public ESObject {

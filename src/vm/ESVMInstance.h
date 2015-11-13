@@ -89,7 +89,7 @@ public:
 
     ALWAYS_INLINE WTF::BumpPointerAllocator* bumpPointerAllocator() { return m_bumpPointerAllocator; };
 
-    int timezoneOffset();
+    long timezoneOffset();
     const tm* computeLocalTime(const timespec& ts);
 
     ALWAYS_INLINE ESHiddenClass* initialHiddenClassForObject()
@@ -189,7 +189,7 @@ protected:
     WTF::BumpPointerAllocator* m_bumpPointerAllocator;
 
     timespec m_cachedTimeOrigin;
-    tm* m_cachedTime;
+    long m_gmtoff;
     tm m_time;
 
 };

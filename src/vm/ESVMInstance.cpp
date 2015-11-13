@@ -40,7 +40,9 @@ ESVMInstance::ESVMInstance()
     interpret(this, NULL, 0);
 
     clock_gettime(CLOCK_REALTIME, &m_cachedTimeOrigin);
-    m_cachedTime = localtime(&m_cachedTimeOrigin.tv_sec);
+    tm* cachedTime = localtime(&m_cachedTimeOrigin.tv_sec);
+    m_gmtoff = -cachedTime->tm_gmtoff;
+
 
     /*
     GC_set_on_collection_event([](GC_EventType type){
@@ -154,14 +156,14 @@ void ESVMInstance::exit()
     escargot::strings = NULL;
 }
 
-int ESVMInstance::timezoneOffset()
+long ESVMInstance::timezoneOffset()
 {
-    return -m_cachedTime->tm_gmtoff / 60;
+    return m_gmtoff;
 }
 
 const tm* ESVMInstance::computeLocalTime(const timespec& ts)
 {
-    time_t t = ts.tv_sec + m_cachedTime->tm_gmtoff;
+    time_t t = ts.tv_sec + m_gmtoff;
     return gmtime(&t);
     // return localtime(&ts.tv_sec);
 }

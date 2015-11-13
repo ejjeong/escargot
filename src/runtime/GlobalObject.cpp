@@ -2730,14 +2730,14 @@ void GlobalObject::installDate()
     // $20.3.4.10 Date.prototype.getTime()
     m_datePrototype->defineDataProperty(strings->getTime, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
-        double ret = thisObject->asESDateObject()->getTimeAsMilisec();
+        double ret = thisObject->asESDateObject()->getTimeAsMillisec();
         return ESValue(ret);
     }, strings->getTime, 0));
 
     // $20.3.4.11 Date.prototype.getTimezoneOffset()
     m_datePrototype->defineDataProperty(strings->getTimezoneOffset, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
-        int ret = thisObject->asESDateObject()->getTimezoneOffset();
+        double ret = thisObject->asESDateObject()->getTimezoneOffset() / 60.0;
         return ESValue(ret);
     }, strings->getTimezoneOffset, 0));
 
@@ -2914,7 +2914,7 @@ void GlobalObject::installDate()
         if (std::isnan(primitiveValue)) {
             return ESValue(std::numeric_limits<double>::quiet_NaN());
         }
-        double ret = thisObject->asESDateObject()->getTimeAsMilisec();
+        double ret = thisObject->asESDateObject()->getTimeAsMillisec();
         return ESValue(ret);
     }, strings->valueOf, 0));
 }

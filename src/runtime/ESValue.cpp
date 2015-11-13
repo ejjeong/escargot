@@ -1450,38 +1450,157 @@ void ESDateObject::parseYmdhmsToDate(struct tm* timeinfo, int year, int month, i
     strptime(buffer, "%Y-%m-%d-%H-%M-%S", timeinfo);
 }
 
-void ESDateObject::parseStringToDate(struct tm* timeinfo, escargot::ESString* istr)
+void ESDateObject::parseStringToDate(struct tm* timeinfo, bool* timezoneSet, escargot::ESString* istr)
 {
     int len = istr->length();
     char* buffer = (char*)istr->utf8Data();
     if (isalpha(buffer[0])) {
         strptime(buffer, "%B %d %Y %H:%M:%S %z", timeinfo);
+        *timezoneSet = true;
     } else if (isdigit(buffer[0])) {
         strptime(buffer, "%m/%d/%Y %H:%M:%S", timeinfo);
     }
     GC_FREE(buffer);
 }
 
-const double hoursPerDay = 24.0;
-const double minutesPerHour = 60.0;
-const double secondsPerHour = 60.0 * 60.0;
-const double secondsPerMinute = 60.0;
-const double msPerSecond = 1000.0;
-const double msPerMinute = 60.0 * 1000.0;
-const double msPerHour = 60.0 * 60.0 * 1000.0;
-const double msPerDay = 24.0 * 60.0 * 60.0 * 1000.0;
-const double msPerMonth = 2592000000.0;
-
-static inline double ymdhmsToSeconds(long year, int mon, int day, int hour, int minute, double second)
+int ESDateObject::daysInYear(long year)
 {
-    double days = (day - 32075)
-        + floor(1461 * (year + 4800.0 + (mon - 14) / 12) / 4)
-        + 367 * (mon - 2 - (mon - 14) / 12 * 12) / 12
-        - floor(3 * ((year + 4900.0 + (mon - 14) / 12) / 100) / 4)
-        - 2440588;
-    return ((days * hoursPerDay + hour) * minutesPerHour + minute) * secondsPerMinute + second;
+    long y = year;
+    if (y % 4 != 0) {
+        return 365;
+    } else if (y % 100 != 0) {
+        return 366;
+    } else if (y % 400 != 0) {
+        return 365;
+    } else { // y % 400 == 0
+        return 366;
+    }
 }
 
+int ESDateObject::dayFromYear(long year) // day number of the first day of year 'y'
+{
+    return 365 * (year - 1970) + floor((year - 1969) / 4) - floor((year - 1901) / 100) + floor((year - 1601) / 400);
+}
+
+long ESDateObject::yearFromTime(double t)
+{
+    long estimate = ceil(t / msPerDay / 365.0);
+    while (timeFromYear(estimate) > t) {
+        estimate--;
+    }
+    return estimate;
+}
+
+int ESDateObject::inLeapYear(double t)
+{
+    int days = daysInYear(yearFromTime(t));
+    if (days == 365) {
+        return 0;
+    } else if (days == 366) {
+        return 1;
+    }
+    RELEASE_ASSERT_NOT_REACHED();
+}
+
+int ESDateObject::dayFromMonth(long year, int month)
+{
+    int ds[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    if (daysInYear(year) == 366) {
+        ds[1] = 29;
+    }
+    int retval = 0;
+    for (int i = 0;  i < month; i++) {
+        retval += ds[i];
+    }
+    return retval;
+}
+
+int ESDateObject::monthFromTime(double t)
+{
+    int dayWithinYear = day(t) - dayFromYear(yearFromTime(t));
+    int leap = inLeapYear(t);
+    if (dayWithinYear < 0) {
+        RELEASE_ASSERT_NOT_REACHED();
+    } else if (dayWithinYear < 31) {
+        return 0;
+    } else if (dayWithinYear < 59 + leap) {
+        return 1;
+    } else if (dayWithinYear < 90 + leap) {
+        return 2;
+    } else if (dayWithinYear < 120 + leap) {
+        return 3;
+    } else if (dayWithinYear < 151 + leap) {
+        return 4;
+    } else if (dayWithinYear < 181 + leap) {
+        return 5;
+    } else if (dayWithinYear < 212 + leap) {
+        return 6;
+    } else if (dayWithinYear < 243 + leap) {
+        return 7;
+    } else if (dayWithinYear < 273 + leap) {
+        return 8;
+    } else if (dayWithinYear < 304 + leap) {
+        return 9;
+    } else if (dayWithinYear < 334 + leap) {
+        return 10;
+    } else if (dayWithinYear < 365 + leap) {
+        return 11;
+    } else {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+}
+
+int ESDateObject::dateFromTime(double t)
+{
+    int dayWithinYear = day(t) - dayFromYear(yearFromTime(t));
+    int leap = inLeapYear(t);
+    int retval = dayWithinYear - leap;
+    switch (monthFromTime(t)) {
+    case 0:
+        return retval + 1 + leap;
+    case 1:
+        return retval - 30 + leap;
+    case 2:
+        return retval - 58;
+    case 3:
+        return retval - 89;
+    case 4:
+        return retval - 119;
+    case 5:
+        return retval - 150;
+    case 6:
+        return retval - 180;
+    case 7:
+        return retval - 211;
+    case 8:
+        return retval - 242;
+    case 9:
+        return retval - 272;
+    case 10:
+        return retval - 303;
+    case 11:
+        return retval - 333;
+    default:
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+}
+
+double ESDateObject::makeDay(long year, int month, int date)
+{
+    // TODO: have to check whether year or month is infinity
+//    if(year == infinity || month == infinity){
+//        return nan;
+//    }
+    long ym = year + floor(month / 12);
+    int mn = month % 12;
+    double t = timeFromYear(ym) + dayFromMonth(ym, mn) * msPerDay;
+    return day(t) + date - 1;
+}
+
+double ESDateObject::ymdhmsToSeconds(long year, int mon, int day, int hour, int minute, double second)
+{
+    return (makeDay(year, mon, day) * msPerDay + (hour * msPerHour + minute * msPerMinute + second * msPerSecond /* + millisecond */)) / 1000.0;
+}
 
 void ESDateObject::setTimeValue()
 {
@@ -1492,16 +1611,23 @@ void ESDateObject::setTimeValue()
 void ESDateObject::setTimeValue(const ESValue str)
 {
     escargot::ESString* istr = str.toString();
-    parseStringToDate(&m_cachedTM, istr);
+    bool timezoneSet = false;
+    parseStringToDate(&m_cachedTM, &timezoneSet, istr);
     m_cachedTM.tm_isdst = true;
-    m_time.tv_sec = ymdhmsToSeconds(m_cachedTM.tm_year+1900, m_cachedTM.tm_mon + 1, m_cachedTM.tm_mday, m_cachedTM.tm_hour, m_cachedTM.tm_min, m_cachedTM.tm_sec);
+    m_time.tv_sec = ymdhmsToSeconds(m_cachedTM.tm_year+1900, m_cachedTM.tm_mon, m_cachedTM.tm_mday, m_cachedTM.tm_hour, m_cachedTM.tm_min, m_cachedTM.tm_sec);
+    if (timezoneSet) {
+        m_time.tv_sec += -m_cachedTM.tm_gmtoff - ESVMInstance::currentInstance()->timezoneOffset();
+    }
 }
 
 void ESDateObject::setTimeValue(int year, int month, int date, int hour, int minute, int second, int millisecond)
 {
-    parseYmdhmsToDate(&m_cachedTM, year, month, date, hour, minute, second);
+    long ym = year + floor(month / 12);
+    int mn = month % 12;
+    parseYmdhmsToDate(&m_cachedTM, ym, mn, date, hour, minute, second);
     m_cachedTM.tm_isdst = true;
-    m_time.tv_sec = ymdhmsToSeconds(m_cachedTM.tm_year+1900, m_cachedTM.tm_mon + 1, m_cachedTM.tm_mday, m_cachedTM.tm_hour, m_cachedTM.tm_min, m_cachedTM.tm_sec);
+    m_time.tv_sec = ymdhmsToSeconds(m_cachedTM.tm_year+1900, m_cachedTM.tm_mon, m_cachedTM.tm_mday, m_cachedTM.tm_hour, m_cachedTM.tm_min, m_cachedTM.tm_sec);
+    m_time.tv_nsec = millisecond * 1000000;
 }
 
 void ESDateObject::resolveCache()
@@ -1554,7 +1680,7 @@ int ESDateObject::getSeconds()
     return m_cachedTM.tm_sec;
 }
 
-int ESDateObject::getTimezoneOffset()
+long ESDateObject::getTimezoneOffset()
 {
     return ESVMInstance::currentInstance()->timezoneOffset();
 }
