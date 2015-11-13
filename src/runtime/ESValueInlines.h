@@ -1574,12 +1574,26 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
             if (!target.isObject()) {
                 break;
             }
-            if (target.asESPointer()->asESObject()->hiddenClass()->hasReadOnlyProperty()) {
-                size_t t = target.asESPointer()->asESObject()->hiddenClass()->findProperty(key.toString());
-                if (t != SIZE_MAX) {
-                    if (!target.asESPointer()->asESObject()->hiddenClass()->m_propertyInfo[t].m_flags.m_isWritable)
+            size_t t = target.asESPointer()->asESObject()->hiddenClass()->findProperty(keyString);
+            if (t != SIZE_MAX) {
+                // http://www.ecma-international.org/ecma-262/5.1/#sec-8.12.5
+                // If IsAccessorDescriptor(desc) is true, then
+                // Let setter be desc.[[Set]] which cannot be undefined.
+                // Call the [[Call]] internal method of setter providing O as the this value and providing V as the sole argument.
+                if (!target.asESPointer()->asESObject()->hiddenClass()->m_propertyInfo[t].m_flags.m_isDataProperty) {
+                    ESPropertyAccessorData* data = target.asESPointer()->asESObject()->accessorData(t);
+                    if (data->isAccessorDescriptor()) {
+                        if (data->getJSSetter()) {
+                            ESValue args[] = {val};
+                            ESFunctionObject::call(ESVMInstance::currentInstance(), data->getJSSetter(), this, args, 1, false);
+                            return true;
+                        }
                         return false;
+                    }
                 }
+
+                if (!target.asESPointer()->asESObject()->hiddenClass()->m_propertyInfo[t].m_flags.m_isWritable)
+                    return false;
             }
             target = target.asESPointer()->asESObject()->__proto__();
         }

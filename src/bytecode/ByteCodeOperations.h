@@ -340,20 +340,34 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
                     obj = proto.asESPointer()->asESObject();
                     cachedHiddenClassChain->push_back(obj->hiddenClass());
 
-                    if (obj->hiddenClass()->hasReadOnlyProperty()) {
-                        size_t idx = obj->hiddenClass()->findProperty(keyString);
-                        if (idx != SIZE_MAX) {
-                            bool isJSAccessorProperty = false;
-                            if (!obj->hiddenClass()->propertyInfo(idx).m_flags.m_isDataProperty
-                                && (obj->accessorData(idx)->getJSGetter() || obj->accessorData(idx)->getJSSetter()))
-                                isJSAccessorProperty = true;
-                            if (!isJSAccessorProperty && !obj->hiddenClass()->propertyInfo(idx).m_flags.m_isWritable) {
+                    size_t idx = obj->hiddenClass()->findProperty(keyString);
+                    if (idx != SIZE_MAX) {
+                        // http://www.ecma-international.org/ecma-262/5.1/#sec-8.12.5
+                        // If IsAccessorDescriptor(desc) is true, then
+                        // Let setter be desc.[[Set]] which cannot be undefined.
+                        // Call the [[Call]] internal method of setter providing O as the this value and providing V as the sole argument.
+                        if (!obj->hiddenClass()->propertyInfo(idx).m_flags.m_isDataProperty) {
+                            ESPropertyAccessorData* data = obj->accessorData(idx);
+                            if (data->isAccessorDescriptor()) {
                                 *cachedHiddenClassIndex = SIZE_MAX;
                                 *hiddenClassWillBe = NULL;
                                 cachedHiddenClassChain->clear();
-                                throwObjectWriteError();
-                                return;
+                                if (data->getJSSetter()) {
+                                    ESValue args[] = {value};
+                                    ESFunctionObject::call(ESVMInstance::currentInstance(), data->getJSSetter(), willBeObject->asESPointer()->asESObject(), args, 1, false);
+                                } else {
+                                    throwObjectWriteError();
+                                    return;
+                                }
                             }
+                        }
+
+                        if (!obj->hiddenClass()->propertyInfo(idx).m_flags.m_isWritable) {
+                            *cachedHiddenClassIndex = SIZE_MAX;
+                            *hiddenClassWillBe = NULL;
+                            cachedHiddenClassChain->clear();
+                            throwObjectWriteError();
+                            return;
                         }
                     }
                     proto = obj->__proto__();

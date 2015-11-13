@@ -1128,6 +1128,12 @@ public:
 
     void setGetterAndSetterTo(ESObject* obj);
 
+    // http://www.ecma-international.org/ecma-262/5.1/#sec-8.10.1
+    bool isAccessorDescriptor()
+    {
+        return m_jsGetter || m_jsSetter;
+    }
+
 protected:
     ESNativeGetter m_nativeGetter;
     ESNativeSetter m_nativeSetter;
