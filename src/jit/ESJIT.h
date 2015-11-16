@@ -166,9 +166,9 @@ void logVerboseJIT(const char* fmt...);
 
 #ifndef LOG_VJ
 #ifndef NDEBUG
-#define LOG_VJ(fmt, ...) ::escargot::ESJIT::logVerboseJIT(fmt, __VA_ARGS__)
+#define LOG_VJ(...) ::escargot::ESJIT::logVerboseJIT(__VA_ARGS__)
 #else
-#define LOG_VJ(fmt, ...)
+#define LOG_VJ(...)
 #endif
 #endif
 

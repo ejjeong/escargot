@@ -14,29 +14,43 @@ BUILD_TYPE=
 BUILD_MODE=
 
 PS3='Please enter your choice: '
-options=("armeabi-v7a.32bit.debug" "armeabi-v7a.32bit.release" "all")
+options=("armeabi-v7a.32bit.interpreter.debug" "armeabi-v7a.32bit.interpreter.release" "armeabi-v7a.32bit.jit.debug" "armeabi-v7a.32bit.jit.release" "all")
 select opt in "${options[@]}"
 do
     case $opt in
-        "armeabi-v7a.32bit.debug")
+        "armeabi-v7a.32bit.interpreter.debug")
             BUILD_TYPE=interpreter
             BUILD_ARCH=armeabi-v7a-hard
             BUILD_MODE=debug
             echo "you chose choice 1"
             break
             ;;
-        "armeabi-v7a.32bit.release")
+        "armeabi-v7a.32bit.interpreter.release")
             BUILD_TYPE=interpreter
             BUILD_ARCH=armeabi-v7a-hard
             BUILD_MODE=release
             echo "you chose choice 2"
             break
             ;;
+        "armeabi-v7a.32bit.jit.debug")
+            BUILD_TYPE=jit
+            BUILD_ARCH=armeabi-v7a-hard
+            BUILD_MODE=debug
+            echo "you chose choice 3"
+            break
+            ;;
+        "armeabi-v7a.32bit.jit.release")
+            BUILD_TYPE=jit
+            BUILD_ARCH=armeabi-v7a-hard
+            BUILD_MODE=release
+            echo "you chose choice 4"
+            break
+            ;;
         "all")
             BUILD_TYPE=interpreter
             BUILD_ARCH=
             BUILD_MODE=
-            echo "you chose choice 3"
+            echo "you chose choice 5"
             break
             ;;
         *)

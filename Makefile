@@ -295,7 +295,7 @@ asm:
 	readelf -a --wide $(BIN) | c++filt > $(BIN).elf
 	vi -O $(BIN).asm $(BIN).elf
 
-# Targets : tests
+# Targets : Regression tests
 
 check-jit:
 	make x64.jit.release -j$(NPROCS)
@@ -321,11 +321,17 @@ check:
 check-lirasm:
 	make x64.jit.debug -j8; \
 	cd test/lirasm; \
-	./testlirc.sh; \
+	./testlirc.sh ../../escargot; \
 	cd ../..; \
 	make x86.jit.debug -j8; \
 	cd test/lirasm; \
-	./testlirc.sh;
+	./testlirc.sh ../../escargot;
+
+check-lirasm-android:
+	adb shell su -e mkdir -p /data/local/tmp/lirasm/tests
+	adb push ./android/obj/local/armeabi-v7a/escargot /data/local/tmp/lirasm/escargot
+	adb push test/lirasm/tests /data/local/tmp/lirasm/tests/
+	cd test/lirasm/; ./testlirc_android.sh
 
 tidy:
 	./tools/check-webkit-style `find src/ -name "*.cpp" -o -name "*.h"`> error_report 2>& 1

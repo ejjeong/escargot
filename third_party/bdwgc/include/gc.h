@@ -1750,7 +1750,8 @@ GC_API int GC_CALL GC_get_force_unmap_on_gcollect(void);
 # pragma weak _etext
 # pragma weak __data_start
 # pragma weak __dso_handle
-  extern int _etext[], __data_start[], __dso_handle[];
+  extern int _etext[], __data_start[];
+  extern void* __dso_handle;
 # pragma weak __end__
   extern int __end__[], _end[];
   /* Explicitly register caller static data roots.  Workaround for      */

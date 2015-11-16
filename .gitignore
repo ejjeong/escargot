@@ -1,5 +1,6 @@
 error_report
 escargot
+escargot.x*
 .project
 .cproject
 .settings
@@ -53,3 +54,5 @@ escargot.elf
 out
 compiledFunctions.txt
 osrExitedFunctions.txt
+android/obj
+android/libs

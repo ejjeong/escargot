@@ -412,7 +412,8 @@ GC_INNER char * GC_get_maps(void)
 #   ifdef PLATFORM_ANDROID
 #     pragma weak _etext
 #     pragma weak __dso_handle
-      extern int _etext[], __dso_handle[];
+      extern int _etext[];
+      extern void* __dso_handle;
 #   endif
 # endif /* LINUX */
 

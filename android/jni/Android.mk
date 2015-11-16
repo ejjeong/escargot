@@ -50,6 +50,61 @@ endif
 SRC_PATH=../src
 SRC_THIRD_PARTY=../third_party
 
+SRCS =
+
+ifeq ($(BUILD_TYPE), jit)
+
+	####################################
+	# ARCH-dependent settings
+	####################################
+
+	ifeq ($(TARGET_ARCH), x64)
+		TARGET_CPU=x86_64
+		LOCAL_CXXFLAGS += -DAVMPLUS_64BIT
+		LOCAL_CXXFLAGS += -DAVMPLUS_AMD64
+		LOCAL_CXXFLAGS += #if defined(_M_AMD64) || defined(_M_X64)
+		SRCS += $(SRC_THIRD_PARTY)/nanojit/NativeX64.cpp
+	else ifeq ($(TARGET_ARCH), x86)
+		TARGET_CPU=i686
+		LOCAL_CXXFLAGS += -DAVMPLUS_32BIT
+		LOCAL_CXXFLAGS += -DAVMPLUS_IA32
+		LOCAL_CXXFLAGS += #if defined(_M_AMD64) || defined(_M_X64)
+		SRCS += $(SRC_THIRD_PARTY)/nanojit/Nativei386.cpp
+	else ifeq($(TARGET_ARCH), arm)
+		TARGET_CPU=arm
+		LOCAL_CXXFLAGS += -mfloat-abi=softfp -mfpu=neon
+		LOCAL_CXXFLAGS += -DAVMPLUS_32BIT
+		LOCAL_CXXFLAGS += -DAVMPLUS_ARM
+		LOCAL_CXXFLAGS += #if defined(_M_AMD64) || defined(_M_X64)
+		SRCS += $(SRC_THIRD_PARTY)/nanojit/NativeARM.cpp
+		#SRCS += $(SRC_THIRD_PARTY)/nanojit/NativeThumb2.cpp
+	endif
+
+	####################################
+	# target-dependent settings
+	####################################
+
+	ifeq ($(BUILD_MODE), debug)
+		LOCAL_CXXFLAGS += -DDEBUG
+		LOCAL_CXXFLAGS += -D_DEBUG
+		LOCAL_CXXFLAGS += -DNJ_VERBOSE
+		LOCAL_CXXFLAGS += -Wno-error=narrowing
+	endif
+
+	####################################
+	# Other features
+	####################################
+
+	LOCAL_CXXFLAGS += -I$(SRC_THIRD_PARTY)/nanojit/
+	LOCAL_CXXFLAGS += -DESCARGOT
+    LOCAL_CXXFLAGS += -DENABLE_ESJIT=1
+	LOCAL_CXXFLAGS += -DFEATURE_NANOJIT
+    LOCAL_CXXFLAGS += -DAVMPLUS_UNIX=1
+    LOCAL_CXXFLAGS += -DANDROID=1
+
+endif
+
+
 LOCAL_CFLAGS += -I$(SRC_THIRD_PARTY)/rapidjson/include/
 LOCAL_CFLAGS += -I$(SRC_THIRD_PARTY)/yarr/
 LOCAL_CFLAGS += -I$(SRC_THIRD_PARTY)/double_conversion/
@@ -63,7 +118,7 @@ endif
 LOCAL_LDLIBS := -llog
 LOCAL_LDFLAGS += -Wl,--gc-sections
 
-SRCS = $(foreach dir, $(SRC_PATH)/ast , $(wildcard $(dir)/*.cpp))
+SRCS += $(foreach dir, $(SRC_PATH)/ast , $(wildcard $(dir)/*.cpp))
 SRCS += $(foreach dir, $(SRC_PATH)/bytecode , $(wildcard $(dir)/*.cpp))
 SRCS += $(foreach dir, $(SRC_PATH)/jit , $(wildcard $(dir)/*.cpp))
 SRCS += $(foreach dir, $(SRC_PATH)/parser , $(wildcard $(dir)/*.cpp))
@@ -79,6 +134,18 @@ SRCS += $(SRC_THIRD_PARTY)/yarr/YarrCanonicalizeUCS2.cpp
 SRCS += $(SRC_THIRD_PARTY)/yarr/YarrInterpreter.cpp
 SRCS += $(SRC_THIRD_PARTY)/yarr/YarrPattern.cpp
 SRCS += $(SRC_THIRD_PARTY)/yarr/YarrSyntaxChecker.cpp
+
+ifeq ($(BUILD_TYPE), jit)
+	SRCS += $(SRC_THIRD_PARTY)/nanojit/Allocator.cpp
+	SRCS += $(SRC_THIRD_PARTY)/nanojit/Assembler.cpp
+	SRCS += $(SRC_THIRD_PARTY)/nanojit/CodeAlloc.cpp
+	SRCS += $(SRC_THIRD_PARTY)/nanojit/Containers.cpp
+	SRCS += $(SRC_THIRD_PARTY)/nanojit/Fragmento.cpp
+	SRCS += $(SRC_THIRD_PARTY)/nanojit/LIR.cpp
+	SRCS += $(SRC_THIRD_PARTY)/nanojit/njconfig.cpp
+	SRCS += $(SRC_THIRD_PARTY)/nanojit/RegAlloc.cpp
+	SRCS += $(SRC_THIRD_PARTY)/nanojit/EscargotBridge.cpp
+endif
 
 SRCS += $(foreach dir, $(SRC_THIRD_PARTY)/double_conversion , $(wildcard $(dir)/*.cc))
 

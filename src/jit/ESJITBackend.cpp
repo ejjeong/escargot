@@ -911,6 +911,9 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         }
     case ESIR::Opcode::Int32Mod:
         {
+#ifdef AVMPLUS_ARM
+            RELEASE_ASSERT_NOT_REACHED();
+#else
             INIT_ESIR(Int32Mod);
             INIT_BINARY_ESIR(Int32Mod);
             ASSERT(left->isI() && right->isI());
@@ -919,6 +922,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             res = m_out->ins2(LIR_muli, res, right);
             res = m_out->ins2(LIR_subi, left, res);
             return res; // e_out.ins2(LIR_modi, left, right);
+#endif
         }
     case ESIR::Opcode::DoubleMod:
         {

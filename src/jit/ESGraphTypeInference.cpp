@@ -162,9 +162,15 @@ bool ESGraphTypeInference::run(ESGraph* graph)
                     Type leftType = graph->getOperandType(irGenericMod->leftIndex());
                     Type rightType = graph->getOperandType(irGenericMod->rightIndex());
                     if (leftType.isInt32Type() && rightType.isInt32Type()) {
+#ifdef AVMPLUS_ARM
                         ESIR* int32ModIR = Int32ModIR::create(irGenericMod->targetIndex(), irGenericMod->leftIndex(), irGenericMod->rightIndex());
                         block->replace(j, int32ModIR);
                         graph->setOperandType(int32ModIR->targetIndex(), TypeInt32);
+#else
+                        ESIR* doubleModIR = DoubleModIR::create(irGenericMod->targetIndex(), irGenericMod->leftIndex(), irGenericMod->rightIndex());
+                        block->replace(j, doubleModIR);
+                        graph->setOperandType(doubleModIR->targetIndex(), TypeDouble);
+#endif
                     } else if (leftType.isNumberType() && rightType.isNumberType()) {
                         ESIR* doubleModIR = DoubleModIR::create(irGenericMod->targetIndex(), irGenericMod->leftIndex(), irGenericMod->rightIndex());
                         block->replace(j, doubleModIR);
