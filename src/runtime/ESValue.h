@@ -755,7 +755,6 @@ public:
 
     NullableUTF8String toNullableUTF8String()
     {
-        size_t len;
         NullableUTF8String str;
         str.m_buffer = utf16ToUtf8(data(), &str.m_bufferSize);
         return str;
@@ -1554,7 +1553,6 @@ public:
     double getTimeAsMillisec()
     {
         long tzOffsetAsSec = getTimezoneOffset(); // It returns -28800 in GMT-8 zone
-        double ret = (double)m_time.tv_sec * 1000. + floor((double)m_time.tv_nsec / 1000000.) + (double)tzOffsetAsSec * 1000.;
         return (double)m_time.tv_sec * 1000. + floor((double)m_time.tv_nsec / 1000000.) + (double)tzOffsetAsSec * 1000.;
     }
 

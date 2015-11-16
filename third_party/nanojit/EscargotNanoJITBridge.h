@@ -51,7 +51,7 @@
 
 #define _nvprof(e,v)
 
-static size_t pagesize = size_t(sysconf(_SC_PAGESIZE));
+extern size_t pagesize;
 
 size_t VMPI_getVMPageSize();
 

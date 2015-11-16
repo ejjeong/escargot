@@ -6,6 +6,9 @@
 
 using namespace JSC::Yarr;
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-variable"
+
 namespace esprima {
 
 enum Token {
@@ -5380,5 +5383,5 @@ escargot::Node* parse(const escargot::u16string& source)
     return NULL;
 }
 
-
 }
+#pragma GCC diagnostic pop // -Wunused-variable

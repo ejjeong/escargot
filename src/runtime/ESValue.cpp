@@ -394,7 +394,6 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
     JSC::Yarr::BytecodePattern* byteCode = NULL;
     ESString* tmpStr;
     if (esptr->isESRegExpObject()) {
-        escargot::ESRegExpObject* o = esptr->asESRegExpObject();
         regexSource = &esptr->asESRegExpObject()->source()->string();
         option = esptr->asESRegExpObject()->option();
         byteCode = esptr->asESRegExpObject()->bytecodePattern();
@@ -746,9 +745,6 @@ bool ESArrayObject::DefineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag
 {
     ESArrayObject* A = this;
     ESObject* O = this;
-    bool isEnumerable = false;
-    bool isConfigurable = false;
-    bool isWritable = false;
 
     // ToPropertyDescriptor : (start) we need to seperate this part
     bool descHasEnumerable = desc->hasProperty(ESString::create(u"enumerable"));
@@ -1144,7 +1140,6 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
 #ifndef NDEBUG
             {
                 char* code = fn->codeBlock()->m_code.data();
-                ByteCode* currentCode;
                 bool compileNextTime = false;
                 char* end = &fn->codeBlock()->m_code.data()[fn->codeBlock()->m_code.size()];
                 while (&code[idx] < end) {
@@ -1340,7 +1335,6 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
             unsigned maxStackPos = 0;
             char* end = &fn->codeBlock()->m_code.data()[fn->codeBlock()->m_code.size()];
             while (&code[idx] < end) {
-                ByteCode* currentCode = (ByteCode *)(&code[idx]);
                 Opcode opcode = fn->codeBlock()->m_extraData[bytecodeCounter].m_opcode;
                 ByteCodeExtraData* extraData = &fn->codeBlock()->m_extraData[bytecodeCounter];
                 if (extraData->m_targetIndex0 == tmpIndex) {
@@ -1453,7 +1447,6 @@ void ESDateObject::parseYmdhmsToDate(struct tm* timeinfo, int year, int month, i
 
 void ESDateObject::parseStringToDate(struct tm* timeinfo, bool* timezoneSet, escargot::ESString* istr)
 {
-    int len = istr->length();
     char* buffer = (char*)istr->utf8Data();
     if (isalpha(buffer[0])) {
         strptime(buffer, "%B %d %Y %H:%M:%S %z", timeinfo);
@@ -1747,7 +1740,6 @@ ESErrorObject::ESErrorObject(escargot::ESString* message)
     if (message != strings->emptyString.string())
         set(strings->message, message);
     set(strings->name, strings->Error.string());
-    escargot::ESFunctionObject* fn = ESVMInstance::currentInstance()->globalObject()->error();
 }
 
 ReferenceError::ReferenceError(escargot::ESString* message)

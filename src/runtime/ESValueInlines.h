@@ -135,7 +135,6 @@ ALWAYS_INLINE ESString* ESValue::toString() const
 
 inline ESObject* ESValue::toObject() const
 {
-    ESFunctionObject* function;
     ESObject* object;
     if (LIKELY(isESPointer() && asESPointer()->isESObject())) {
         return asESPointer()->asESObject();
@@ -915,7 +914,6 @@ ALWAYS_INLINE ESHiddenClass* ESHiddenClass::removeProperty(size_t idx)
         ASSERT(*m_propertyInfo[0].m_name == *strings->__proto__.string());
         for (unsigned i = 1; i < m_propertyInfo.size(); i ++) {
             if (idx != i) {
-                size_t d;
                 ret = ret->defineProperty(m_propertyInfo[i].m_name, m_propertyInfo[i].m_flags.m_isDataProperty
                     , m_propertyInfo[i].m_flags.m_isWritable, m_propertyInfo[i].m_flags.m_isEnumerable, m_propertyInfo[i].m_flags.m_isConfigurable);
             }
@@ -928,7 +926,6 @@ ALWAYS_INLINE ESHiddenClass* ESHiddenClass::removeProperty(size_t idx)
             ESHiddenClass* ret = ESVMInstance::currentInstance()->initialHiddenClassForObject();
             for (unsigned i = 1; i < m_propertyInfo.size(); i ++) {
                 if (idx != i) {
-                    size_t d;
                     ret = ret->defineProperty(m_propertyInfo[i].m_name, m_propertyInfo[i].m_flags.m_isDataProperty
                         , m_propertyInfo[i].m_flags.m_isWritable, m_propertyInfo[i].m_flags.m_isEnumerable, m_propertyInfo[i].m_flags.m_isConfigurable);
                 }

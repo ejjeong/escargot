@@ -374,7 +374,6 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
                 }
 
                 ASSERT(!willBeObject->asESPointer()->asESObject()->hasOwnProperty(keyString));
-                ESHiddenClass* before = willBeObject->asESPointer()->asESObject()->hiddenClass();
                 bool res = willBeObject->asESPointer()->asESObject()->defineDataProperty(keyString, true, true, true, value);
 
                 // only cache vector mode object.

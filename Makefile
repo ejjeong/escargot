@@ -93,7 +93,7 @@ LDFLAGS += -Wl,--gc-sections
 
 # flags for debug/release
 CXXFLAGS_DEBUG = -O0 -g3 -D_GLIBCXX_DEBUG -fno-omit-frame-pointer -Wall -Wextra -Werror
-CXXFLAGS_DEBUG += -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unused-but-set-parameter -Wno-unused-local-typedefs -Wno-unused-parameter
+CXXFLAGS_DEBUG += -Wno-unused-but-set-variable -Wno-unused-but-set-parameter -Wno-unused-parameter
 CXXFLAGS_RELEASE = -O2 -g3 -DNDEBUG -fomit-frame-pointer
 
 # flags for jit/interpreter
@@ -242,19 +242,19 @@ $(BUILDDIR)/$(BIN): $(OBJS) $(THIRD_PARTY_LIBS)
 	@echo "[LINK] $@"
 	@$(CXX) -o $@ $(OBJS) $(THIRD_PARTY_LIBS) $(LDFLAGS)
 
-$(BUILDDIR)/%.o: %.cpp
+$(BUILDDIR)/%.o: %.cpp Makefile
 	@echo "[CXX] $@"
 	@mkdir -p $(dir $@)
 	@$(CXX) -c $(CXXFLAGS) $< -o $@
 	@$(CXX) -MM $(CXXFLAGS) -MT $@ $< > $(BUILDDIR)/$*.d
 	
-$(BUILDDIR)/%.o: %.cc
+$(BUILDDIR)/%.o: %.cc Makefile
 	@echo "[CXX] $@"
 	@mkdir -p $(dir $@)
 	@$(CXX) -c $(CXXFLAGS) $< -o $@
 	@$(CXX) -MM $(CXXFLAGS) -MT $@ $< > $(BUILDDIR)/$*.d
 
-$(BUILDDIR)/%.o: %.c
+$(BUILDDIR)/%.o: %.c Makefile
 	@echo "[CC] $@"
 	@mkdir -p $(dir $@)
 	@$(CC) -c $(CFLAGS) $< -o $@

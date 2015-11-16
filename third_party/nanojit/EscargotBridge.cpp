@@ -1,6 +1,8 @@
 #include "EscargotNanoJITBridge.h"
 #include "nanojit.h"
 
+size_t pagesize = size_t(sysconf(_SC_PAGESIZE));
+
 size_t VMPI_getVMPageSize()
 {
     return pagesize;

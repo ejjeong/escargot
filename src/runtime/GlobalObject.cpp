@@ -262,8 +262,6 @@ void GlobalObject::initGlobalObject()
 
     // $18.2.4 parseFloat(string)
     defineDataProperty(ESString::create(u"parseFloat"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        int len = instance->currentExecutionContext()->argumentCount();
-
         // 1. Let inputString be ToString(string).
         ESValue input = instance->currentExecutionContext()->arguments()[0];
         escargot::ESString* s = input.toString();
@@ -595,7 +593,6 @@ void GlobalObject::installFunction()
     // $19.2.3.1 Function.prototype.apply(thisArg, argArray)
     m_functionPrototype->defineDataProperty(ESString::create(u"apply"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         auto thisVal = instance->currentExecutionContext()->resolveThisBindingToObject()->asESFunctionObject();
-        int arglen = instance->currentExecutionContext()->argumentCount();
         ESValue& thisArg = instance->currentExecutionContext()->arguments()[0];
         int arrlen = 0;
         ESValue* arguments = NULL;
@@ -1610,7 +1607,6 @@ void GlobalObject::installArray()
 
     // $22.1.3.21 Array.prototype.shift ( )
     m_arrayPrototype->ESObject::defineDataProperty(strings->shift, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        int argumentLen = instance->currentExecutionContext()->argumentCount();
         ESObject* O = instance->currentExecutionContext()->resolveThisBindingToObject(); // 1
         uint32_t len = O->get(strings->length.string()).toUint32(); // 3
         if (len == 0) { // 5
@@ -1789,7 +1785,6 @@ void GlobalObject::installArray()
     // $22.1.3.27 Array.prototype.toString()
     m_arrayPrototype->ESObject::defineDataProperty(strings->toString, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         auto thisBinded = instance->currentExecutionContext()->resolveThisBindingToObject();
-        int arrlen = thisBinded->length();
         ESValue toString = thisBinded->get(strings->join.string());
         if (!toString.isESPointer() || !toString.asESPointer()->isESFunctionObject()) {
             toString = instance->globalObject()->objectPrototype()->get(strings->toString.string());
@@ -2063,7 +2058,6 @@ void GlobalObject::installString()
     // $21.1.3.14 String.prototype.replace(searchValue, replaceValue)
     m_stringPrototype->defineDataProperty(ESString::create(u"replace"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         escargot::ESString* thisObject = instance->currentExecutionContext()->resolveThisBinding().toString();
-        escargot::ESArrayObject* ret = ESArrayObject::create(0);
         int argCount = instance->currentExecutionContext()->argumentCount();
         if (argCount > 1) {
             ESValue argument = instance->currentExecutionContext()->arguments()[0];
@@ -2297,7 +2291,7 @@ void GlobalObject::installString()
                 ESValue e = splitMatch(str, q, R);
                 auto prev = R->option();
                 R->setOption((escargot::ESRegExpObject::Option)(prev & ~escargot::ESRegExpObject::Option::Global));
-                bool ret = str->match(R, result, false, (size_t)q);
+                str->match(R, result, false, (size_t)q);
                 R->setOption(prev);
                 if (e == ESValue(ESValue::ESFalseTag::ESFalse)) {
                     if ((double)lengthA == lim)
@@ -2460,7 +2454,6 @@ void GlobalObject::installString()
     // $21.1.3.22 String.prototype.toLowerCase()
     m_stringPrototype->defineDataProperty(ESString::create(u"toLowerCase"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         escargot::ESString* str = instance->currentExecutionContext()->resolveThisBinding().toString();
-        int strlen = str->string().length();
         u16string newstr(str->string());
         // TODO use ICU for this operation
         std::transform(newstr.begin(), newstr.end(), newstr.begin(), ::tolower);
@@ -2470,7 +2463,6 @@ void GlobalObject::installString()
     // $21.1.3.21 String.prototype.toLocaleUpperCase
     m_stringPrototype->defineDataProperty(ESString::create(u"toLocaleLowerCase"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         escargot::ESString* str = instance->currentExecutionContext()->resolveThisBinding().toString();
-        int strlen = str->string().length();
         u16string newstr(str->string());
         // TODO use ICU for this operation
         std::transform(newstr.begin(), newstr.end(), newstr.begin(), ::tolower);
@@ -2480,7 +2472,6 @@ void GlobalObject::installString()
     // $21.1.3.24 String.prototype.toUpperCase()
     m_stringPrototype->defineDataProperty(ESString::create(u"toUpperCase"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         escargot::ESString* str = instance->currentExecutionContext()->resolveThisBinding().toString();
-        int strlen = str->string().length();
         u16string newstr(str->string());
         // TODO use ICU for this operation
         std::transform(newstr.begin(), newstr.end(), newstr.begin(), ::toupper);
@@ -2490,7 +2481,6 @@ void GlobalObject::installString()
     // $21.1.3.21 String.prototype.toLocaleUpperCase
     m_stringPrototype->defineDataProperty(ESString::create(u"toLocaleUpperCase"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         escargot::ESString* str = instance->currentExecutionContext()->resolveThisBinding().toString();
-        int strlen = str->string().length();
         u16string newstr(str->string());
         // TODO use ICU for this operation
         std::transform(newstr.begin(), newstr.end(), newstr.begin(), ::toupper);
@@ -2584,7 +2574,6 @@ void GlobalObject::installDate()
 
     // http://www.ecma-international.org/ecma-262/5.1/#sec-15.9.3
     m_date = ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        ESObject* proto = instance->globalObject()->datePrototype();
         if (instance->currentExecutionContext()->isNewExpression()) {
             escargot::ESDateObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject()->asESDateObject();
 
@@ -3760,9 +3749,9 @@ void GlobalObject::installNumber()
             char buffer[256];
             if (minusFlag) {
                 buffer[0] = '-';
-                int len = itoa((int)number, &buffer[1], radix);
+                itoa((int)number, &buffer[1], radix);
             } else {
-                int len = itoa((int)number, buffer, radix);
+                itoa((int)number, buffer, radix);
             }
             return (ESString::create(buffer));
         }
@@ -4233,7 +4222,6 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
         int targetElementSize = thisVal->elementSize();
         if (!arg0->isESTypedArrayObject()) {
             ESObject* src = arg0->asESObject();
-            escargot::ESArrayObject* tmp = src->asESArrayObject();
             int32_t srcLength = src->get(strings->length.string()).asInt32();
             if (srcLength + offset > targetLength)
                 throw RangeError::create();
@@ -4255,7 +4243,6 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
             escargot::ESArrayBufferObject* srcBuffer = arg0Wrapper->buffer();
             unsigned srcLength = arg0Wrapper->arraylength();
             int srcByteOffset = arg0Wrapper->byteoffset();
-            int srcElementSize = arg0Wrapper->elementSize();
             if (srcLength + offset > targetLength)
                 throw RangeError::create();
             int srcByteIndex = 0;

@@ -2367,7 +2367,6 @@ void CodeBlock::pushCode(const CodeType& code, ByteCodeGenerateContext& context,
 
 inline void CodeBlock::pushCode(const ExecuteNativeFunction& code)
 {
-    Opcode op = (Opcode)(size_t)code.m_opcodeInAddress;
     const_cast<ExecuteNativeFunction &>(code).assignOpcodeInAddress();
 
     char* first = (char *)&code;

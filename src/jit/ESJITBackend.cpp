@@ -244,6 +244,9 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
     return m_out->ins1(LIR_rete, boxedIndex);
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-variable"
+
 nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteCodeIndex)
 {
 #ifdef ESCARGOT_64
@@ -257,9 +260,8 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
     if (type.isBooleanType()) {
 #ifdef ESCARGOT_64
         LIns* quadValue = in;
-        LIns* maskedValue = m_out->ins2(LIR_orq, quadValue, m_booleanTagQ);
-        LIns* maskedValue2 = m_out->ins2(LIR_subq, quadValue, m_booleanTagQ);
-        LIns* checkIfBoolean = m_out->ins2(LIR_leuq, maskedValue2, m_out->insImmQ(1));
+        LIns* maskedValue = m_out->ins2(LIR_subq, quadValue, m_booleanTagQ);
+        LIns* checkIfBoolean = m_out->ins2(LIR_leuq, maskedValue, m_out->insImmQ(1));
         LIns* jumpIfBoolean = m_out->insBranch(LIR_jt, checkIfBoolean, (LIns*)nullptr);
 #ifndef NDEBUG
         if (ESVMInstance::currentInstance()->m_verboseJIT) {
@@ -706,10 +708,12 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 #ifndef NDEBUG
 #define INIT_ESIR(opcode) \
         opcode##IR* ir##opcode = static_cast<opcode##IR*>(ir); \
+        (void)ir##opcode; \
         m_out->insComment("# # # # # # # # Opcode " #opcode " # # # # # # # # #");
 #else
 #define INIT_ESIR(opcode) \
-        opcode##IR* ir##opcode = static_cast<opcode##IR*>(ir);
+        opcode##IR* ir##opcode = static_cast<opcode##IR*>(ir); \
+        (void)ir##opcode;
 #endif
     case ESIR::Opcode::ConstantESValue:
         {
@@ -2157,6 +2161,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 #undef INIT_ESIR
     }
 }
+
+#pragma GCC diagnostic pop // -Wunused-variable
 
 bool NativeGenerator::nanojitCodegen(ESVMInstance* instance)
 {

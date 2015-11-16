@@ -21,7 +21,8 @@ bool ESGraphTypeInference::run(ESGraph* graph)
             ESIR* ir = block->instruction(j);
             switch (ir->opcode()) {
 #define INIT_ESIR(opcode) \
-                opcode##IR* ir##opcode = static_cast<opcode##IR*>(ir);
+                opcode##IR* ir##opcode = static_cast<opcode##IR*>(ir); \
+                (void)ir##opcode;
             case ESIR::Opcode::ConstantESValue:
                 {
                     INIT_ESIR(ConstantESValue);

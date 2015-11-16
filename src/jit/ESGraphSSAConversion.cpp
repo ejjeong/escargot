@@ -19,13 +19,6 @@ bool ESGraphSSAConversion::run(ESGraph* graph)
     for (size_t i = 0; i < graph->basicBlockSize(); i++) {
         ESBasicBlock* block = graph->basicBlock(i);
         for (size_t j = 0; j < block->instructionSize(); j++) {
-            ESIR* ir = block->instruction(j);
-#if 0
-            switch (ir->opcode()) {
-            case SetVar:
-                block->dominanceFrontier()->addPhi(ir);
-            }
-#endif
         }
     }
 #ifndef NDEBUG

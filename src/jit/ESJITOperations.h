@@ -230,7 +230,6 @@ inline ESValueInDouble evalCall(ESVMInstance* instance, ExecutionContext* ec, si
 {
     ESValue callee = *ec->resolveBinding(strings->eval);
     if (callee.isESPointer() && (void *)callee.asESPointer() == (void *)instance->globalObject()->eval()) {
-        ESObject* receiver = instance->globalObject();
         ESValue ret = instance->runOnEvalContext([instance, &arguments, &argc]() {
             ESValue ret;
             if (argc)

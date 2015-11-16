@@ -26,7 +26,6 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
 
     size_t idx = 0;
     size_t bytecodeCounter = 0;
-    size_t callInfoIndex = 0;
     char* code = codeBlock->m_code.data();
 
     std::map<int, ESBasicBlock*> basicBlockMapping;
@@ -69,6 +68,8 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
 #define INIT_BYTECODE(ByteCode) \
             ByteCode* bytecode = (ByteCode*)currentCode; \
             ByteCodeExtraData* extraData = &codeBlock->m_extraData[bytecodeCounter]; \
+            (void)bytecode; \
+            (void)extraData; \
             ASSERT(codeBlock->m_extraData[bytecodeCounter].m_registerIncrementCount < 2); \
             if (codeBlock->m_extraData[bytecodeCounter].m_targetIndex0 >= 0 && codeBlock->m_extraData[bytecodeCounter].m_registerIncrementCount == 1) \
                 graph->setOperandStackPos(codeBlock->m_extraData[bytecodeCounter].m_targetIndex0, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
