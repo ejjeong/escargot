@@ -198,7 +198,7 @@
 #define PACKAGE_VERSION "7.5.0"
 
 /* Define to enable parallel marking. */
-/* #undef PARALLEL_MARK */
+#define PARALLEL_MARK 1
 
 /* If defined, redirect free to this function. */
 /* #undef REDIRECT_FREE */
@@ -230,7 +230,7 @@
 /* #undef SUNOS53_SHARED_LIB */
 
 /* Define to enable thread-local allocation optimization. */
-/* #define THREAD_LOCAL_ALLOC 1 */
+#define THREAD_LOCAL_ALLOC 1
 
 /* Use Unicode (W) variant of Win32 API instead of ASCII (A) one. */
 /* #undef UNICODE */

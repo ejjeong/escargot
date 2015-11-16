@@ -10,7 +10,7 @@ ifeq ($(BUILD_ARCH), )
 	BUILD_ARCH = all
 endif
 
-ifeq ($(REACT_NATIVE), )
+ifeq ($(REACT_NATIVE), 1)
 	BUILD_ARCH = armeabi-v7a x86
 endif
 

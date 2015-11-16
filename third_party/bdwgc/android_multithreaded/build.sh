@@ -11,12 +11,13 @@ echo $ANDROID_NDK_STAND_ALONE
 cd ..
 autoreconf -vif
 automake --add-missing
-cd android
+cd android_multithreaded
 
 make distclean
 
 export CC="arm-linux-androideabi-gcc"
+export LD="arm-linux-androideabi-ld"
 export PATH=$ANDROID_NDK_STAND_ALONE/bin:$PATH
 
-../configure --disable-gc-debug --build=arm-linux-androideabi --target=arm-linux-androideabi --with-sysroot=$ANDROID_NDK_STAND_ALONE --host=x86_64-unknown-linux-gnu CFLAGS='-march=armv7-a'
+../configure --enable-threads=posix --enable-parallel-mark --disable-gc-debug --build=arm-linux-androideabi --target=arm-linux-androideabi --with-sysroot=$ANDROID_NDK_STAND_ALONE --host=x86_64-unknown-linux-gnu CFLAGS=''
 make

@@ -1,5 +1,4 @@
 LOCAL_PATH := $(call my-dir)
-
 include $(CLEAR_VARS)
 
 #$(warning BUILD_TYPE)
@@ -55,10 +54,14 @@ LOCAL_CFLAGS += -I$(SRC_THIRD_PARTY)/rapidjson/include/
 LOCAL_CFLAGS += -I$(SRC_THIRD_PARTY)/yarr/
 LOCAL_CFLAGS += -I$(SRC_THIRD_PARTY)/double_conversion/
 LOCAL_CFLAGS += -I$(SRC_THIRD_PARTY)/netlib/
-LOCAL_CFLAGS += -I$(SRC_THIRD_PARTY)/bdwgc/include/ -DHAVE_CONFIG_H -I$(SRC_THIRD_PARTY)/bdwgc/android/include/ -I$(SRC_THIRD_PARTY)/bdwgc/libatomic_ops/src 
+ifeq ($(REACT_NATIVE), )
+    LOCAL_CFLAGS += -I$(SRC_THIRD_PARTY)/bdwgc/include/ -DHAVE_CONFIG_H -I$(SRC_THIRD_PARTY)/bdwgc/android/include/ -I$(SRC_THIRD_PARTY)/bdwgc/libatomic_ops/src
+else
+    LOCAL_CFLAGS += -I$(SRC_THIRD_PARTY)/bdwgc/include/ -DHAVE_CONFIG_H -I$(SRC_THIRD_PARTY)/bdwgc/android_multithreaded/include/ -I$(SRC_THIRD_PARTY)/bdwgc/libatomic_ops/src   -DGC_THREADS -DGC_PTHREADS -DTHREADS -DLINUX
+endif
 
-LOCAL_SHARED_LIBRARIES += -lpthread
-LOCAL_LDFLAGS += -Wl,--gc-sections -llog
+LOCAL_LDLIBS := -llog
+LOCAL_LDFLAGS += -Wl,--gc-sections
 
 SRCS = $(foreach dir, $(SRC_PATH)/ast , $(wildcard $(dir)/*.cpp))
 SRCS += $(foreach dir, $(SRC_PATH)/bytecode , $(wildcard $(dir)/*.cpp))
@@ -80,6 +83,7 @@ SRCS += $(SRC_THIRD_PARTY)/yarr/YarrSyntaxChecker.cpp
 SRCS += $(foreach dir, $(SRC_THIRD_PARTY)/double_conversion , $(wildcard $(dir)/*.cc))
 
 SRCS += $(foreach dir, $(SRC_THIRD_PARTY)/bdwgc , $(wildcard $(dir)/*.c))
+SRCS += $(foreach dir, $(SRC_THIRD_PARTY)/bdwgc/libatomic_ops/src , $(wildcard $(dir)/*.c))
 
 LOCAL_SRC_FILES += $(addprefix ../, $(SRCS))
 ifeq ($(BUILD_OBJECT), exe)
