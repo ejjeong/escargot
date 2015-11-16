@@ -282,6 +282,14 @@ inline bool operator!=(const gc_malloc_allocator<GC_T1>&, const gc_malloc_alloca
 #include <codecvt>
 #endif
 
+#define ESCARGOT_LOG_ERROR(...) fprintf(stderr, __VA_ARGS__);
+
+#ifdef ANDROID
+#include <android/log.h>
+#undef ESCARGOT_LOG_ERROR
+#define ESCARGOT_LOG_ERROR(...) __android_log_print(ANDROID_LOG_ERROR,"Escargot",__VA_ARGS__)
+#endif
+
 #if defined(NDEBUG)
 #define ASSERT(assertion) ((void)0)
 #define ASSERT_NOT_REACHED() ((void)0)
@@ -297,8 +305,8 @@ inline bool operator!=(const gc_malloc_allocator<GC_T1>&, const gc_malloc_alloca
 #define COMPILE_ASSERT(exp, name) static_assert((exp), #name)
 #endif
 
-#define RELEASE_ASSERT(assertion) do { if (!(assertion)) abort(); } while (0);
-#define RELEASE_ASSERT_NOT_REACHED() do { abort(); } while (0)
+#define RELEASE_ASSERT(assertion) do { if (!(assertion)) { ESCARGOT_LOG_ERROR("RELEASE_ASSERT at %s (%d)\n", __FILE__, __LINE__); abort(); } } while (0);
+#define RELEASE_ASSERT_NOT_REACHED() do { ESCARGOT_LOG_ERROR("RELEASE_ASSERT_NOT_REACHED at %s (%d)\n", __FILE__, __LINE__); abort(); } while (0)
 
 #if !defined(WARN_UNUSED_RETURN) && COMPILER(GCC)
 #define WARN_UNUSED_RETURN __attribute__((__warn_unused_result__))
