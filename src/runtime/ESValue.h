@@ -1722,7 +1722,7 @@ public:
         m_vector.clear();
     }
 
-    void set(int i, const ESValue& val)
+    void set(const uint32_t& i, const ESValue& val)
     {
         ESObject::set(ESValue(i), val);
     }

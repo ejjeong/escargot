@@ -1284,7 +1284,58 @@ void GlobalObject::installArray()
 
     // $22.1.3.7 Array.prototype.filter
     m_arrayPrototype->ESObject::defineDataProperty(ESString::create(u"filter"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        // Array.prototype.filter ( callbackfn [ , thisArg ] )
+
+        // Let O be the result of calling ToObject passing the this value as the argument.
+        ESObject* O = instance->currentExecutionContext()->resolveThisBindingToObject();
+
+        // Let lenValue be the result of calling the [[Get]] internal method of O with the argument "length".
+        // Let len be ToUint32(lenValue).
+        uint32_t len = O->length();
+
+        //If IsCallable(callbackfn) is false, throw a TypeError exception.
+        ESValue callbackfn = instance->currentExecutionContext()->readArgument(0);
+        if (!callbackfn.isESPointer() || !callbackfn.asESPointer()->isESFunctionObject()) {
+            throw ESValue(TypeError::create(ESString::create("Array.prototype.filter callback must be a function")));
+        }
+
+        // If thisArg was supplied, let T be thisArg; else let T be undefined.
+        ESValue T = instance->currentExecutionContext()->readArgument(1);
+
+        // Let A be a new array created as if by the expression new Array() where Array is the standard built-in constructor with that name.
+        escargot::ESArrayObject* A = escargot::ESArrayObject::create(0);
+        // Let k be 0.
+        uint32_t k = 0;
+        // Let to be 0.
+        // uint32_t to = 0;
+
+        while (k < len) {
+            // Let Pk be ToString(k).
+            ESValue pk(k);
+
+            // Let kPresent be the result of calling the [[HasProperty]] internal method of O with argument Pk.
+            bool kPresent = O->hasOwnProperty(pk);
+
+            // If kPresent is true, then
+            if (kPresent) {
+                // Let kValue be the result of calling the [[Get]] internal method of O with argument Pk.
+                ESValue kValue = O->get(pk);
+                // Let selected be the result of calling the [[Call]] internal method of callbackfn with T as the this value and argument list containing kValue, k, and O.
+                ESValue args[] = {kValue, ESValue(k), O};
+                ESValue selected = ESFunctionObject::call(instance, callbackfn, T, args, 3, false);
+
+                if (selected.toBoolean()) {
+                    A->set(k, kValue);
+                    // Increase to by 1.
+                    // to++;
+                }
+            }
+
+            // Increase k by 1.
+            k ++;
+        }
+
+        return A;
     }, ESString::create(u"filter"), 1));
 
     // $22.1.3.8 Array.prototype.find
