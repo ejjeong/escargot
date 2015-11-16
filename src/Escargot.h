@@ -287,7 +287,7 @@ inline bool operator!=(const gc_malloc_allocator<GC_T1>&, const gc_malloc_alloca
 #ifdef ANDROID
 #include <android/log.h>
 #undef ESCARGOT_LOG_ERROR
-#define ESCARGOT_LOG_ERROR(...) __android_log_print(ANDROID_LOG_ERROR,"Escargot",__VA_ARGS__)
+#define ESCARGOT_LOG_ERROR(...) __android_log_print(ANDROID_LOG_ERROR, "Escargot", __VA_ARGS__);
 #endif
 
 #if defined(NDEBUG)
