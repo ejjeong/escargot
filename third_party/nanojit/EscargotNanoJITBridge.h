@@ -51,6 +51,8 @@
 
 #define _nvprof(e,v)
 
+#define FASTCALL
+
 extern size_t pagesize;
 
 size_t VMPI_getVMPageSize();

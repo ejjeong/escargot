@@ -2,6 +2,10 @@
 #include "vm/ESVMInstance.h"
 #include "runtime/ESValue.h"
 
+#ifdef ENABLE_ESJIT
+#include "lirasm.cpp"
+#endif
+
 #ifdef ANDROID
 void __attribute__((optimize("O0"))) fillStack(size_t siz)
 {
@@ -82,6 +86,12 @@ int main(int argc, char* argv[])
     }
     */
     fillStack(1*1024*1024);
+#endif
+#if defined(ENABLE_ESJIT) && !defined(NDEBUG)
+    if (argc >= 2 && strcmp(argv[1], "-a") == 0) {
+        // Assembler Test
+        return lirasm_main(argc-2, &argv[2]);
+    }
 #endif
     escargot::ESVMInstance* ES = new escargot::ESVMInstance();
     ES->enter();

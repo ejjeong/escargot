@@ -273,6 +273,14 @@ full:
 	ln -sf out/x64/interpreter/debug/$(BIN) $(BIN).x64.id
 	make x64.interpreter.release -j$(NPROCS)
 	ln -sf out/x64/interpreter/release/$(BIN) $(BIN).x64.ir
+	make x86.jit.debug -j$(NPROCS)
+	ln -sf out/x86/jit/debug/$(BIN) $(BIN).x86.jd
+	make x86.jit.release -j$(NPROCS)
+	ln -sf out/x86/jit/release/$(BIN) $(BIN).x86.jr
+	make x86.interpreter.debug -j$(NPROCS)
+	ln -sf out/x86/interpreter/debug/$(BIN) $(BIN).x86.id
+	make x86.interpreter.release -j$(NPROCS)
+	ln -sf out/x86/interpreter/release/$(BIN) $(BIN).x86.ir
 
 # Targets : miscellaneous
 
@@ -309,6 +317,15 @@ check:
 	cat out/octane_result
 	./regression_test262
 	make tidy
+
+check-lirasm:
+	make x64.jit.debug -j8; \
+	cd test/lirasm; \
+	./testlirc.sh; \
+	cd ../..; \
+	make x86.jit.debug -j8; \
+	cd test/lirasm; \
+	./testlirc.sh;
 
 tidy:
 	./tools/check-webkit-style `find src/ -name "*.cpp" -o -name "*.h"`> error_report 2>& 1

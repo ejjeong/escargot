@@ -15,7 +15,7 @@ if [ "$1" = "--asm" ]; then
   shift
 fi
 
-LIRASM=$1
+LIRASM="../../escargot -a lirasm"
 if [ $# -gt 1 ]; then
 TESTFLOAT=$2
 else

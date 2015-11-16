@@ -23,7 +23,12 @@
 #include <ctype.h>
 #include <assert.h>
 
+#ifdef ESCARGOT
+#include "nanojit.h"
+#include "EscargotNanoJITBridge.h"
+#else
 #include "nanojit/nanojit.h"
+#endif
 
 using namespace nanojit;
 using namespace std;
@@ -68,6 +73,7 @@ static std::ostream& print_double(double f) {
 
 /* Allocator SPI implementation. */
 
+#ifndef ESCARGOT
 void*
 nanojit::Allocator::allocChunk(size_t nbytes, bool /*fallible*/)
 {
@@ -85,6 +91,7 @@ nanojit::Allocator::freeChunk(void *p) {
 void
 nanojit::Allocator::postReset() {
 }
+#endif
 
 
 struct LasmSideExit : public SideExit {
@@ -94,17 +101,20 @@ struct LasmSideExit : public SideExit {
 
 /* LIR SPI implementation */
 
+#ifndef ESCARGOT
 int
 nanojit::StackFilter::getTop(LIns*)
 {
     return 0;
 }
+#endif
 
 // We lump everything into a single access region for lirasm.
 static const AccSet ACCSET_OTHER = (1 << 0);
 static const uint8_t LIRASM_NUM_USED_ACCS = 1;
 
 #if defined NJ_VERBOSE
+#ifndef ESCARGOT
 void
 nanojit::LInsPrinter::formatGuard(InsBuf *buf, LIns *ins)
 {
@@ -143,8 +153,10 @@ nanojit::LInsPrinter::accNames[] = {
     "?"                                                 //     31 (unused)
 };
 #endif
+#endif
 
 #ifdef DEBUG
+#ifndef ESCARGOT
 void ValidateWriter::checkAccSet(LOpcode op, LIns* base, int32_t disp, AccSet accSet)
 {
     (void)op;
@@ -152,6 +164,7 @@ void ValidateWriter::checkAccSet(LOpcode op, LIns* base, int32_t disp, AccSet ac
     (void)disp;
     NanoAssert(accSet == ACCSET_OTHER);
 }
+#endif
 #endif
 
 typedef int32_t (FASTCALL *RetInt)();
@@ -749,8 +762,13 @@ FragmentAssembler::assemble_jump(bool isCond)
         condition = NULL;
     }
     string name = pop_front(mTokens);
+#ifdef ESCARGOT
+    LIns *ins = mLir->insBranch(mOpcode, condition, (LIns*)NULL);
+    mJumps.push_back(make_pair(name, ins));
+#else
     LIns *ins = mLir->insBranch(mOpcode, condition, NULL);
     mJumps.push_back(make_pair<string, LIns*>(name, ins));
+#endif
     return ins;
 }
 
@@ -930,7 +948,11 @@ FragmentAssembler::assemble_jump_jov()
     string name = mTokens[2];
 
     LIns *ins = mLir->insBranchJov(mOpcode, a, b, NULL);
+#ifdef ESCARGOT
+    mJumps.push_back(make_pair(name, ins));
+#else
     mJumps.push_back(make_pair<string, LIns*>(name, ins));
+#endif
     return ins;
 }
 
@@ -2543,6 +2565,9 @@ FragmentAssembler::assembleRandomFragment(int nIns)
 
 Lirasm::Lirasm(bool verbose, Config& config) :
     mConfig(config),
+#ifdef ESCARGOT
+    mCodeAlloc(&mConfig),
+#endif
     mAssm(mCodeAlloc, mAlloc, mAlloc, &mLogc, mConfig)
 {
     mVerbose = verbose;
@@ -2973,8 +2998,13 @@ executeFragment(const LirasmFragment& fragment, int skip)
     }
 }
 
+#ifdef ESCARGOT
+int
+lirasm_main(int argc, char **argv)
+#else
 int
 main(int argc, char **argv)
+#endif
 {
     CmdLineOptions opts;
     processCmdLine(argc, argv, opts);
@@ -2999,4 +3029,7 @@ main(int argc, char **argv)
         for (i = lasm.mFragments.begin(); i != lasm.mFragments.end(); i++)
             dump_srecords(cout, i->second.fragptr);
     }
+#ifdef ESCARGOT
+    return 0;
+#endif
 }
