@@ -58,7 +58,7 @@ LOCAL_CFLAGS += -I$(SRC_THIRD_PARTY)/netlib/
 LOCAL_CFLAGS += -I$(SRC_THIRD_PARTY)/bdwgc/include/ -DHAVE_CONFIG_H -I$(SRC_THIRD_PARTY)/bdwgc/android/include/ -I$(SRC_THIRD_PARTY)/bdwgc/libatomic_ops/src 
 
 LOCAL_SHARED_LIBRARIES += -lpthread
-LOCAL_LDFLAGS += -Wl,--gc-sections
+LOCAL_LDFLAGS += -Wl,--gc-sections -llog
 
 SRCS = $(foreach dir, $(SRC_PATH)/ast , $(wildcard $(dir)/*.cpp))
 SRCS += $(foreach dir, $(SRC_PATH)/bytecode , $(wildcard $(dir)/*.cpp))
