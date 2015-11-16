@@ -68,8 +68,6 @@ private:
     nanojit::LIns* m_intTagQ;
     nanojit::LIns* m_intTagComplementQ;
     nanojit::LIns* m_doubleEncodeOffsetQ;
-    nanojit::LIns* m_undefinedQ;
-    nanojit::LIns* m_nullQ;
     nanojit::LIns* m_emptyQ;
     nanojit::LIns* m_emptyD;
     nanojit::LIns* m_zeroQ;
@@ -80,6 +78,8 @@ private:
     nanojit::LIns* m_zeroI;
     nanojit::LIns* m_true;
     nanojit::LIns* m_false;
+    nanojit::LIns* m_undefinedE;
+    nanojit::LIns* m_nullE;
     nanojit::LIns* m_thisValueP;
     nanojit::LIns* m_instanceP;
     nanojit::LIns* m_contextP;

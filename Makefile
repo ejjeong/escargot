@@ -129,7 +129,11 @@ ifeq ($(TYPE), jit)
 		TARGET_CPU=x86_64
 		CXXFLAGS += -DAVMPLUS_64BIT
 		CXXFLAGS += -DAVMPLUS_AMD64
-		CXXFLAGS += -DAVMPLUS_X64
+		CXXFLAGS += #if defined(_M_AMD64) || defined(_M_X64)
+	else ifeq ($(ARCH), x86)
+		TARGET_CPU=i686
+		CXXFLAGS += -DAVMPLUS_32BIT
+		CXXFLAGS += -DAVMPLUS_IA32
 		CXXFLAGS += #if defined(_M_AMD64) || defined(_M_X64)
 	endif
 	
@@ -221,10 +225,10 @@ OBJS += $(SRC_C:%.c= $(BUILDDIR)/%.o)
 
 .DEFAULT_GOAL:=x64.jit.debug
 
-#x86.jit.debug: $(BUILDDIR)/$(BIN)
-#	cp -f $< .
-#x86.jit.release: $(BUILDDIR)/$(BIN)
-#	cp -f $< .
+x86.jit.debug: $(BUILDDIR)/$(BIN)
+	cp -f $< .
+x86.jit.release: $(BUILDDIR)/$(BIN)
+	cp -f $< .
 x86.interpreter.debug: $(BUILDDIR)/$(BIN)
 	cp -f $< .
 x86.interpreter.release: $(BUILDDIR)/$(BIN)

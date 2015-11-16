@@ -23,13 +23,13 @@ bitsinbyte
 ===> test/SunSpider/tests/sunspider-1.0.2/controlflow-recursive.js
 ack fib tak 
 ===> test/SunSpider/tests/sunspider-1.0.2/crypto-aes.js
-SubWord RotWord AddRoundKey SubBytes ShiftRows MixColumns Cipher (anonymous) escCtrlChars KeyExpansion (anonymous) unescCtrlChars 
+SubWord RotWord AddRoundKey SubBytes ShiftRows MixColumns Cipher escCtrlChars (anonymous) KeyExpansion (anonymous) unescCtrlChars 
 ===> test/SunSpider/tests/sunspider-1.0.2/crypto-md5.js
 safe_add md5_ff md5_cmn bit_rol md5_gg md5_hh md5_ii 
 ===> test/SunSpider/tests/sunspider-1.0.2/crypto-sha1.js
 safe_add rol sha1_ft sha1_kt 
 ===> test/SunSpider/tests/sunspider-1.0.2/date-format-tofte.js
-arrayExists l F A g 
+arrayExists l F g A 
 ===> test/SunSpider/tests/sunspider-1.0.2/date-format-xparb.js
 (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) 
 ===> test/SunSpider/tests/sunspider-1.0.2/math-cordic.js

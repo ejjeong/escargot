@@ -144,7 +144,7 @@ inline ESValueInDouble getObjectPreComputedCaseOp(ESValueInDouble willBeObject, 
         &bytecode->m_cachedhiddenClassChain, &bytecode->m_cachedIndex));
 }
 
-inline ESValueInDouble getObjectPreComputedCaseOpLastPart(ESObject* protoObj, ESObject* orgObj, void* idx)
+inline ESValueInDouble getObjectPreComputedCaseOpLastPart(ESObject* protoObj, ESObject* orgObj, int idx)
 {
     return ESValue::toRawDouble(protoObj->hiddenClass()->read(protoObj, orgObj, (size_t)idx));
 }
@@ -394,14 +394,14 @@ inline void jitLogIntOperation(int arg, const char* msg)
 inline void jitLogDoubleOperation(double arg, const char* msg)
 {
     if (!ESVMInstance::currentInstance()->m_reportCompiledFunction) {
-        printf("[JIT_LOG] %s : double 0x%lx(%lf)\n", msg, bitwise_cast<uint64_t>(arg), arg);
+        printf("[JIT_LOG] %s : double 0x%jx(%lf)\n", msg, bitwise_cast<uint64_t>(arg), arg);
         fflush(stdout);
     }
 }
 inline void jitLogPointerOperation(void* arg, const char* msg)
 {
     if (!ESVMInstance::currentInstance()->m_reportCompiledFunction) {
-        printf("[JIT_LOG] %s : pointer 0x%lx\n", msg, bitwise_cast<uint64_t>(arg));
+        printf("[JIT_LOG] %s : pointer 0x%jx\n", msg, bitwise_cast<uint64_t>(arg));
         fflush(stdout);
     }
 }
