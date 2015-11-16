@@ -1293,7 +1293,7 @@ void GlobalObject::installArray()
         // Let len be ToUint32(lenValue).
         uint32_t len = O->length();
 
-        //If IsCallable(callbackfn) is false, throw a TypeError exception.
+        // If IsCallable(callbackfn) is false, throw a TypeError exception.
         ESValue callbackfn = instance->currentExecutionContext()->readArgument(0);
         if (!callbackfn.isESPointer() || !callbackfn.asESPointer()->isESFunctionObject()) {
             throw ESValue(TypeError::create(ESString::create("Array.prototype.filter callback must be a function")));
@@ -1332,7 +1332,7 @@ void GlobalObject::installArray()
             }
 
             // Increase k by 1.
-            k ++;
+            k++;
         }
 
         return A;
