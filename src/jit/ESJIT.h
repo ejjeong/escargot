@@ -17,41 +17,7 @@ class ESGraph;
 
 typedef ESValueInDouble (*JITFunction)(ESVMInstance*);
 
-struct ESJITAllocatorMemoryFragment {
-    void* m_buffer;
-    size_t m_currentUsage;
-    size_t m_totalSize;
-};
-
-// TODO implmenet multi-thread support
-class ESJITAllocator {
-public:
-    inline static void* alloc(size_t size)
-    {
-        size_t currentFragmentRemain;
-
-        if (UNLIKELY(!m_allocatedMemorys.size())) {
-            currentFragmentRemain = 0;
-        } else {
-            currentFragmentRemain = m_allocatedMemorys.back().m_totalSize - m_allocatedMemorys.back().m_currentUsage;
-        }
-
-        if (currentFragmentRemain < size) {
-            allocSlow();
-            currentFragmentRemain = s_fragmentBufferSize;
-        }
-
-        ASSERT(currentFragmentRemain >= size);
-        void* buf = &((char *)m_allocatedMemorys.back().m_buffer)[m_allocatedMemorys.back().m_currentUsage];
-        m_allocatedMemorys.back().m_currentUsage += size;
-        return buf;
-    }
-    static void allocSlow();
-    static void freeAll();
-private:
-    static const unsigned s_fragmentBufferSize = 10240;
-    static std::vector<ESJITAllocatorMemoryFragment> m_allocatedMemorys;
-};
+class ESJITAllocator : public ESSimpleAllocator { };
 
 template<class T>
 class CustomAllocator {

@@ -17,6 +17,7 @@ class CodeBlock;
 class OpcodeTable;
 class Try;
 class ScriptParser;
+struct ESSimpleAllocatorMemoryFragment;
 
 #ifndef ANDROID
 extern __thread ESVMInstance* currentInstance;
@@ -34,6 +35,7 @@ class ESVMInstance : public gc_cleanup {
     friend class ESFunctionObject;
     friend class ExpressionStatementNode;
     friend class TryStatementNode;
+    friend class ESSimpleAllocator;
 public:
     ESVMInstance();
     ~ESVMInstance();
@@ -192,7 +194,47 @@ protected:
     long m_gmtoff;
     tm m_time;
 
+    std::vector<ESSimpleAllocatorMemoryFragment> m_allocatedMemorys;
+
 };
+
+struct ESSimpleAllocatorMemoryFragment {
+    void* m_buffer;
+    size_t m_currentUsage;
+    size_t m_totalSize;
+};
+
+// TODO implmenet multi-thread support
+class ESSimpleAllocator {
+public:
+    inline static void* alloc(size_t size)
+    {
+        std::vector<ESSimpleAllocatorMemoryFragment>& allocatedMemorys = ESVMInstance::currentInstance()->m_allocatedMemorys;
+
+        size_t currentFragmentRemain;
+
+        if (UNLIKELY(!allocatedMemorys.size())) {
+            currentFragmentRemain = 0;
+        } else {
+            currentFragmentRemain = allocatedMemorys.back().m_totalSize - allocatedMemorys.back().m_currentUsage;
+        }
+
+        if (currentFragmentRemain < size) {
+            allocSlow();
+            currentFragmentRemain = s_fragmentBufferSize;
+        }
+
+        ASSERT(currentFragmentRemain >= size);
+        void* buf = &((char *)allocatedMemorys.back().m_buffer)[allocatedMemorys.back().m_currentUsage];
+        allocatedMemorys.back().m_currentUsage += size;
+        return buf;
+    }
+    static void allocSlow();
+    static void freeAll();
+private:
+    static const unsigned s_fragmentBufferSize = 10240;
+};
+
 
 }
 

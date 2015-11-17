@@ -14,26 +14,6 @@ class CodeBlock;
 
 namespace ESJIT {
 
-std::vector<ESJITAllocatorMemoryFragment> ESJITAllocator::m_allocatedMemorys;
-
-void ESJITAllocator::allocSlow()
-{
-    const unsigned s_fragmentBufferSize = 10240;
-    ESJITAllocatorMemoryFragment f;
-    f.m_buffer = malloc(s_fragmentBufferSize);
-    f.m_currentUsage = 0;
-    f.m_totalSize = s_fragmentBufferSize;
-    m_allocatedMemorys.push_back(f);
-}
-
-void ESJITAllocator::freeAll()
-{
-    for (unsigned i = 0 ; i < m_allocatedMemorys.size() ; i ++) {
-        free(m_allocatedMemorys[i].m_buffer);
-    }
-    m_allocatedMemorys.clear();
-}
-
 bool ESJITCompiler::compile(ESVMInstance* instance)
 {
     unsigned long time1 = ESVMInstance::currentInstance()->tickCount();

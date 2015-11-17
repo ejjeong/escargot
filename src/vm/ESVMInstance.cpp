@@ -247,4 +247,25 @@ void ESVMInstance::printValue(ESValue val)
     fflush(stdout);
 }
 
+void ESSimpleAllocator::allocSlow()
+{
+    const unsigned s_fragmentBufferSize = 10240;
+    std::vector<ESSimpleAllocatorMemoryFragment>& allocatedMemorys = ESVMInstance::currentInstance()->m_allocatedMemorys;
+    ESSimpleAllocatorMemoryFragment f;
+    f.m_buffer = malloc(s_fragmentBufferSize);
+    f.m_currentUsage = 0;
+    f.m_totalSize = s_fragmentBufferSize;
+    allocatedMemorys.push_back(f);
+}
+
+void ESSimpleAllocator::freeAll()
+{
+    std::vector<ESSimpleAllocatorMemoryFragment>& allocatedMemorys = ESVMInstance::currentInstance()->m_allocatedMemorys;
+    for (unsigned i = 0 ; i < allocatedMemorys.size() ; i ++) {
+        free(allocatedMemorys[i].m_buffer);
+    }
+    allocatedMemorys.clear();
+}
+
+
 }

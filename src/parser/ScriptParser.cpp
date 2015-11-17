@@ -50,9 +50,10 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16strin
 {
     Node* node;
     try {
-        // unsigned long start = ESVMInstance::tickCount();
+        // unsigned long start = ESVMInstance::currentInstance()->tickCount();
         node = esprima::parse(source);
-        // unsigned long end = ESVMInstance::tickCount();
+        // unsigned long end = ESVMInstance::currentInstance()->tickCount();
+        // ESCARGOT_LOG_ERROR("parse takes %lfms\n", (end-start)/1000.0);
         // printf("parse takes %lfms\n", (end-start)/1000.0);
     } catch(size_t lineNumber) {
         char temp[512];
