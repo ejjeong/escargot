@@ -84,6 +84,7 @@ private:
     nanojit::LIns* m_pointerTagI;
     nanojit::LIns* m_emptyValueTagI;
     nanojit::LIns* m_deletedValueTagI;
+    nanojit::LIns* m_lowestTagI;
 #endif
     nanojit::LIns* m_zeroD;
     nanojit::LIns* m_zeroP;
