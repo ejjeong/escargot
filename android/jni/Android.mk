@@ -75,9 +75,10 @@ ifeq ($(BUILD_TYPE), jit)
 		LOCAL_CXXFLAGS += -mfloat-abi=softfp -mfpu=neon
 		LOCAL_CXXFLAGS += -DAVMPLUS_32BIT
 		LOCAL_CXXFLAGS += -DAVMPLUS_ARM
+		#LOCAL_CXXFLAGS += -DTARGET_THUMB2
 		LOCAL_CXXFLAGS += #if defined(_M_AMD64) || defined(_M_X64)
 		SRCS += $(SRC_THIRD_PARTY)/nanojit/NativeARM.cpp
-		#SRCS += $(SRC_THIRD_PARTY)/nanojit/NativeThumb2.cpp
+		SRCS += $(SRC_THIRD_PARTY)/nanojit/NativeThumb2.cpp
 	endif
 
 	####################################

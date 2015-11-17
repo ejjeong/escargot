@@ -269,6 +269,10 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
         LIns* quadValue = in;
         LIns* maskedValue = m_out->ins2(LIR_subq, quadValue, m_booleanTagQ);
         LIns* checkIfBoolean = m_out->ins2(LIR_leuq, maskedValue, m_out->insImmQ(1));
+#else
+        LIns* tag = getTagFromESValue(in);
+        LIns* checkIfBoolean = m_out->ins2(LIR_eqi, tag, m_booleanTagI);
+#endif
         LIns* jumpIfBoolean = m_out->insBranch(LIR_jt, checkIfBoolean, (LIns*)nullptr);
 #ifndef NDEBUG
         if (ESVMInstance::currentInstance()->m_verboseJIT) {
@@ -280,14 +284,15 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out->ins0(LIR_label);
         jumpIfBoolean->setTarget(normalPath);
-#else
-        return nullptr;
-#endif
     } else if (type.isInt32Type()) {
 #ifdef ESCARGOT_64
         LIns* quadValue = in;
         LIns* maskedValue = m_out->ins2(LIR_andq, quadValue, m_intTagQ);
         LIns* checkIfInt = m_out->ins2(LIR_eqq, maskedValue, m_intTagQ);
+#else
+        LIns* tag = getTagFromESValue(in);
+        LIns* checkIfInt = m_out->ins2(LIR_eqi, tag, m_int32TagI);
+#endif
         LIns* jumpIfInt = m_out->insBranch(LIR_jt, checkIfInt, (LIns*)nullptr);
 #ifndef NDEBUG
         if (ESVMInstance::currentInstance()->m_verboseJIT) {
@@ -299,9 +304,6 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out->ins0(LIR_label);
         jumpIfInt->setTarget(normalPath);
-#else
-        return nullptr;
-#endif
     } else if (type.isDoubleType()) {
 #ifdef ESCARGOT_64
         LIns* result = m_out->insAlloc(sizeof(ESValue));
@@ -477,7 +479,7 @@ LIns* NativeGenerator::boxESValue(LIns* unboxedValue, Type type)
         LIns* boxedValue = m_out->ins2(LIR_orq, wideUnboxedValue, m_booleanTagQ);
         boxedValueInDouble = boxedValue;
 #else
-        RELEASE_ASSERT_NOT_REACHED();
+        boxedValueInDouble = boxESValueFromTagAndPayload(m_booleanTagI, unboxedValue);
 #endif
     } else if (type.isInt32Type()) {
         ASSERT(unboxedValue->isI());
@@ -486,8 +488,7 @@ LIns* NativeGenerator::boxESValue(LIns* unboxedValue, Type type)
         LIns* boxedValue = m_out->ins2(LIR_orq, wideUnboxedValue, m_intTagQ);
         boxedValueInDouble = boxedValue;
 #else
-        // FIXME how to build tagged double?
-        boxedValueInDouble = m_out->ins1(LIR_i2d, unboxedValue);
+        boxedValueInDouble = boxESValueFromTagAndPayload(m_int32TagI, unboxedValue);
 #endif
     } else if (type.isDoubleType()) {
         ASSERT(unboxedValue->isD());
@@ -529,16 +530,15 @@ LIns* NativeGenerator::boxESValue(LIns* unboxedValue, Type type)
         // "pointer" : a quad on 64-bit machines
         boxedValueInDouble = unboxedValue;
 #else
-        RELEASE_ASSERT_NOT_REACHED();
+        boxedValueInDouble = boxESValueFromTagAndPayload(m_pointerTagI, unboxedValue);
 #endif
     } else if (type.isUndefinedType() || type.isNullType()) {
 #ifdef ESCARGOT_64
         ASSERT(unboxedValue->isQ());
-        boxedValueInDouble = unboxedValue;
 #else
         ASSERT(unboxedValue->isD());
-        RELEASE_ASSERT_NOT_REACHED();
 #endif
+        boxedValueInDouble = unboxedValue;
     } else if (type.isNumberType()) {
 #ifdef ESCARGOT_64
         ASSERT(unboxedValue->isQ());
@@ -575,19 +575,19 @@ LIns* NativeGenerator::unboxESValue(LIns* boxedValue, Type type)
         LIns* boxedValueInQuad = boxedValue;
         LIns* unboxedValueInQuad = m_out->ins2(LIR_andq, boxedValueInQuad, m_booleanTagComplementQ);
         unboxedValue = m_out->ins1(LIR_q2i, unboxedValueInQuad);
-        ASSERT(unboxedValue->isI());
 #else
-        RELEASE_ASSERT_NOT_REACHED();
+        unboxedValue = getPayloadFromESValue(boxedValue);
 #endif
+        ASSERT(unboxedValue->isI());
     } else if (type.isInt32Type()) {
 #ifdef ESCARGOT_64
         LIns* boxedValueInQuad = boxedValue;
         LIns* unboxedValueInQuad = m_out->ins2(LIR_andq, boxedValueInQuad, m_intTagComplementQ);
         unboxedValue = m_out->ins1(LIR_q2i, unboxedValueInQuad);
-        ASSERT(unboxedValue->isI());
 #else
-        RELEASE_ASSERT_NOT_REACHED();
+        unboxedValue = getPayloadFromESValue(boxedValue);
 #endif
+        ASSERT(unboxedValue->isI());
     } else if (type.isDoubleType()) {
 #ifdef ESCARGOT_64
         LIns* boxedValueInQuad = boxedValue;
@@ -598,13 +598,13 @@ LIns* NativeGenerator::unboxESValue(LIns* boxedValue, Type type)
         RELEASE_ASSERT_NOT_REACHED();
 #endif
     } else if (type.isPointerType()) {
+        // "pointer" : an int on 32-bit machines, a quad on 64-bit machines
 #ifdef ESCARGOT_64
-        // "pointer" : a quad on 64-bit machines
         unboxedValue = boxedValue;
-        ASSERT(unboxedValue->isP());
 #else
-        RELEASE_ASSERT_NOT_REACHED();
+        unboxedValue = getPayloadFromESValue(boxedValue);
 #endif
+        ASSERT(unboxedValue->isP());
     } else if (type.isUndefinedType() || type.isNullType()) {
 #ifdef ESCARGOT_64
         unboxedValue = boxedValue;
@@ -629,6 +629,80 @@ LIns* NativeGenerator::unboxESValue(LIns* boxedValue, Type type)
     }
     return unboxedValue;
 }
+
+#ifndef ESCARGOT_64
+LIns* NativeGenerator::boxESValueFromTagAndPayload(nanojit::LIns* tag, nanojit::LIns* payload)
+{
+    ASSERT(tag->isI());
+    ASSERT(payload->isI());
+    LIns* ret;
+#if NJ_SOFTFLOAT_SUPPORTED
+#ifdef ESCARGOT_LITTLE_ENDIAN
+    ret = m_out->ins2(LIR_ii2d, tag, payload);
+#else
+    ret = m_out->ins2(LIR_ii2d, payload, tag);
+#endif
+#else // NJ_SOFTFLOAT_SUPPORTED
+    LIns* tmp = m_out->insAlloc(sizeof(ESValue));
+#ifdef ESCARGOT_LITTLE_ENDIAN
+    m_out->insStore(LIR_sti, payload, tmp, 0, 1);
+    m_out->insStore(LIR_sti, tag, tmp, sizeof(int32_t), 1);
+#else
+    m_out->insStore(LIR_sti, tag, tmp, 0, 1);
+    m_out->insStore(LIR_sti, payload, tmp, sizeof(int32_t), 1);
+#endif
+    ret = m_out->insLoad(LIR_ldd, tmp, 0, 1, LOAD_NORMAL);
+#endif // NJ_SOFTFLOAT_SUPPORTED
+    ASSERT(ret->isD());
+    return ret;
+}
+
+LIns* NativeGenerator::getTagFromESValue(nanojit::LIns* boxedValue)
+{
+    ASSERT(boxedValue->isD());
+    LIns* ret;
+#if NJ_SOFTFLOAT_SUPPORTED
+#ifdef ESCARGOT_LITTLE_ENDIAN
+    ret = m_out->ins1(LIR_dlo2i, boxedValue);
+#else
+    ret = m_out->ins1(LIR_dhi2i, boxedValue);
+#endif
+#else // NJ_SOFTFLOAT_SUPPORTED
+    LIns* tmp = m_out->insAlloc(sizeof(ESValue));
+    m_out->insStore(LIR_std, boxedValue, tmp, 0, 1);
+#ifdef ESCARGOT_LITTLE_ENDIAN
+    ret = m_out->insLoad(LIR_ldi, tmp, sizeof(int32_t), 1, LOAD_NORMAL);
+#else
+    ret = m_out->insLoad(LIR_ldi, tmp, 0, 1, LOAD_NORMAL);
+#endif
+#endif // NJ_SOFTFLOAT_SUPPORTED
+    ASSERT(ret->isI());
+    return ret;
+}
+
+LIns* NativeGenerator::getPayloadFromESValue(nanojit::LIns* boxedValue)
+{
+    ASSERT(boxedValue->isD());
+    LIns* ret;
+#if NJ_SOFTFLOAT_SUPPORTED
+#ifdef ESCARGOT_LITTLE_ENDIAN
+    ret = m_out->ins1(LIR_dhi2i, boxedValue);
+#else
+    ret = m_out->ins1(LIR_dlo2i, boxedValue);
+#endif
+#else // NJ_SOFTFLOAT_SUPPORTED
+    LIns* tmp = m_out->insAlloc(sizeof(ESValue));
+    m_out->insStore(LIR_std, boxedValue, tmp, 0, 1);
+#ifdef ESCARGOT_LITTLE_ENDIAN
+    ret = m_out->insLoad(LIR_ldi, tmp, 0, 1, LOAD_NORMAL);
+#else
+    ret = m_out->insLoad(LIR_ldi, tmp, sizeof(int32_t), 1, LOAD_NORMAL);
+#endif
+#endif // NJ_SOFTFLOAT_SUPPORTED
+    ASSERT(ret->isI());
+    return ret;
+}
+#endif
 
 LIns* NativeGenerator::getDoubleDynamic(LIns* in, Type type)
 {
@@ -2206,6 +2280,14 @@ bool NativeGenerator::nanojitCodegen(ESVMInstance* instance)
     m_emptyQ = m_out->insImmQ(ValueEmpty);
     m_emptyD = m_out->ins1(LIR_qasd, m_emptyQ);
     m_zeroQ = m_out->insImmQ(0);
+#else
+    m_int32TagI = m_out->insImmI(ESValue::Int32Tag);
+    m_booleanTagI = m_out->insImmI(ESValue::BooleanTag);
+    m_nullTagI = m_out->insImmI(ESValue::NullTag);
+    m_undefinedTagI = m_out->insImmI(ESValue::UndefinedTag);
+    m_pointerTagI = m_out->insImmI(ESValue::PointerTag);
+    m_emptyValueTagI = m_out->insImmI(ESValue::EmptyValueTag);
+    m_deletedValueTagI = m_out->insImmI(ESValue::DeletedValueTag);
 #endif
     m_zeroD = m_out->insImmD(0);
     m_zeroP = m_out->insImmP(0);

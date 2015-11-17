@@ -45,6 +45,11 @@ private:
     nanojit::LIns* generateTypeCheck(nanojit::LIns* in, Type type, size_t currentByteCodeIndex);
     nanojit::LIns* boxESValue(nanojit::LIns* value, Type type);
     nanojit::LIns* unboxESValue(nanojit::LIns* value, Type type);
+#ifndef ESCARGOT_64
+    nanojit::LIns* boxESValueFromTagAndPayload(nanojit::LIns* tag, nanojit::LIns* payload);
+    nanojit::LIns* getTagFromESValue(nanojit::LIns* boxedValue);
+    nanojit::LIns* getPayloadFromESValue(nanojit::LIns* boxedValue);
+#endif
 
     nanojit::LIns* getDoubleDynamic(nanojit::LIns* in, Type type);
     nanojit::LIns* getInt32Dynamic(nanojit::LIns* in, Type type);
@@ -71,6 +76,14 @@ private:
     nanojit::LIns* m_emptyQ;
     nanojit::LIns* m_emptyD;
     nanojit::LIns* m_zeroQ;
+#else
+    nanojit::LIns* m_int32TagI;
+    nanojit::LIns* m_booleanTagI;
+    nanojit::LIns* m_nullTagI;
+    nanojit::LIns* m_undefinedTagI;
+    nanojit::LIns* m_pointerTagI;
+    nanojit::LIns* m_emptyValueTagI;
+    nanojit::LIns* m_deletedValueTagI;
 #endif
     nanojit::LIns* m_zeroD;
     nanojit::LIns* m_zeroP;
