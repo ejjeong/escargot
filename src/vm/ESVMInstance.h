@@ -8,6 +8,12 @@ namespace WTF {
 class BumpPointerAllocator;
 }
 
+#ifdef ENABLE_ESJIT
+namespace nanojit {
+class Allocator;
+}
+#endif
+
 namespace escargot {
 
 class ExecutionContext;
@@ -139,6 +145,8 @@ public:
     static size_t offsetOfCurrentExecutionContext() { return offsetof(ESVMInstance, m_currentExecutionContext); }
     static size_t offsetOfIdentifierCacheInvalidationCheckCount() { return offsetof(ESVMInstance, m_identifierCacheInvalidationCheckCount); }
 #pragma GCC diagnostic pop
+
+    nanojit::Allocator* getDataAllocator() { return m_dataAllocator; }
 #endif
 
 #ifndef NDEBUG
@@ -196,6 +204,9 @@ protected:
 
     std::vector<ESSimpleAllocatorMemoryFragment> m_allocatedMemorys;
 
+#ifdef ENABLE_ESJIT
+    nanojit::Allocator* m_dataAllocator;
+#endif
 };
 
 struct ESSimpleAllocatorMemoryFragment {
