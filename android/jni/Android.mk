@@ -72,7 +72,7 @@ ifeq ($(BUILD_TYPE), jit)
 		SRCS += $(SRC_THIRD_PARTY)/nanojit/Nativei386.cpp
 	else ifeq($(TARGET_ARCH), arm)
 		TARGET_CPU=arm
-		LOCAL_CXXFLAGS += -mfloat-abi=softfp -mfpu=neon
+		LOCAL_CXXFLAGS += -mfpu=neon
 		LOCAL_CXXFLAGS += -DAVMPLUS_32BIT
 		LOCAL_CXXFLAGS += -DAVMPLUS_ARM
 		#LOCAL_CXXFLAGS += -DTARGET_THUMB2

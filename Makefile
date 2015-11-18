@@ -338,7 +338,7 @@ check-lirasm:
 
 check-lirasm-android:
 	adb shell su -e mkdir -p /data/local/tmp/lirasm/tests
-	adb push ./android/obj/local/armeabi-v7a/escargot /data/local/tmp/lirasm/escargot
+	adb push ./android/libs/armeabi-v7a/escargot /data/local/tmp/lirasm/escargot
 	adb push test/lirasm/tests /data/local/tmp/lirasm/tests/
 	cd test/lirasm/; ./testlirc_android.sh
 
