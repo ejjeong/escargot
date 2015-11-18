@@ -1,6 +1,10 @@
 #include "Escargot.h"
 #include "bytecode/ByteCode.h"
 
+#ifdef ENABLE_ESJIT
+#include "nanojit.h"
+#endif
+
 namespace escargot {
 
 CodeBlock::CodeBlock(bool isBuiltInFunction)
@@ -15,6 +19,7 @@ CodeBlock::CodeBlock(bool isBuiltInFunction)
     m_executeCount = 0;
     m_jitThreshold = ESVMInstance::currentInstance()->m_jitThreshold;
     m_dontJIT = false;
+    m_nanoJITDataAllocator = new nanojit::Allocator();
 #endif
     if (!isBuiltInFunction) {
         ESVMInstance::currentInstance()->globalObject()->registerCodeBlock(this);
@@ -27,6 +32,9 @@ CodeBlock::CodeBlock(bool isBuiltInFunction)
 #ifndef NDEBUG
             ((CodeBlock *)obj)->m_nonAtomicId = NULL;
             ((CodeBlock *)obj)->m_id.clear();
+#endif
+#ifdef ENABLE_ESJIT
+            delete ((CodeBlock *)obj)->m_nanoJITDataAllocator;
 #endif
         }, NULL, NULL, NULL);
     }

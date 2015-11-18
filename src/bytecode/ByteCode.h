@@ -9,6 +9,12 @@
 #include "jit/ESIRType.h"
 #endif
 
+#ifdef ENABLE_ESJIT
+namespace nanojit {
+class Allocator;
+}
+#endif
+
 namespace escargot {
 
 class Node;
@@ -2243,6 +2249,7 @@ public:
     size_t m_executeCount;
     size_t m_osrExitCount;
     size_t m_jitThreshold;
+    nanojit::Allocator* m_nanoJITDataAllocator;
 #endif
 
 private:

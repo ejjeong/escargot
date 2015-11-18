@@ -8,10 +8,6 @@
 
 #include "BumpPointerAllocator.h"
 
-#ifdef ENABLE_ESJIT
-#include "nanojit.h"
-#endif
-
 namespace escargot {
 
 
@@ -65,10 +61,6 @@ ESVMInstance::ESVMInstance()
     m_bumpPointerAllocator = new(GC) WTF::BumpPointerAllocator();
 
     m_globalFunctionPrototype = NULL;
-
-#ifdef ENABLE_ESJIT
-    m_dataAllocator = new(PointerFreeGC) nanojit::Allocator();
-#endif
 
     // TODO: Object.prototype.__proto__ should be configurable.
     //       This is defined in ES6. ($B.2.2.1)
