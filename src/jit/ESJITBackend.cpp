@@ -36,12 +36,14 @@ using namespace nanojit;
 #define LIR_ste LIR_stq
 #define LIR_rete LIR_retq
 #define LIR_e2i LIR_q2i
+#define LIR_eqe LIR_eqq
 #else
 #define ARGTYPE_E ARGTYPE_D
 #define LIR_lde LIR_ldd
 #define LIR_ste LIR_std
 #define LIR_rete LIR_retd
 #define LIR_e2i LIR_d2i
+#define LIR_eqe LIR_eqd
 #endif
 
 /* CallInfo */
@@ -803,6 +805,19 @@ LIns* NativeGenerator::getInt32Dynamic(LIns* in, Type type)
     return ret;
 }
 
+LIns* NativeGenerator::getOffsetAsPointer(LIns* in)
+{
+    ASSERT(in->isI());
+    LIns* ret;
+#ifdef ESCARGOT_64
+    ret = m_out->ins1(LIR_i2q, in);
+#else
+    ret = in;
+#endif
+    ASSERT(ret->isP());
+    return ret;
+}
+
 LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 {
     switch (ir->opcode()) {
@@ -1418,14 +1433,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         {
             INIT_ESIR(GetThis);
 
-#ifdef ESCARGOT_64
             LIns* m_cachedThisValue = m_out->insLoad(LIR_lde, m_thisValueP, 0, 1, LOAD_NORMAL);
-            LIns* checkIfThisValueisEmpty = m_out->ins2(LIR_eqq, m_cachedThisValue, m_emptyQ);
-#else
-            return nullptr;
-            RELEASE_ASSERT_NOT_REACHED();
-            LIns* checkIfThisValueisEmpty = nullptr;
-#endif
+            LIns* checkIfThisValueisEmpty = m_out->ins2(LIR_eqe, m_cachedThisValue, m_emptyE);
             LIns* jumpIfThisValueisNotEmpty = m_out->insBranch(LIR_jf, checkIfThisValueisEmpty, (LIns*)nullptr);
             LIns* args[] = {m_contextP};
             LIns* resolvedThisValue = m_out->insCall(&contextResolveThisBindingCallInfo, args);
@@ -1689,11 +1698,13 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
                     LIns* maskedValue = m_out->ins2(LIR_andq, proto, m_tagMaskQ);
                     LIns* checkTagged = m_out->ins2(LIR_eqq, maskedValue, m_zeroQ);
                     LIns* jumpIfPointer = m_out->insBranch(LIR_jf, checkTagged, (LIns*)nullptr);
-                    lblsToFallback.push_back(jumpIfPointer);
 #else
-                    return nullptr;
-                    RELEASE_ASSERT_NOT_REACHED();
+                    LIns* tag = getTagFromESValue(proto);
+                    LIns* checkIfPointer = m_out->ins2(LIR_eqi, tag, m_pointerTagI);
+                    LIns* jumpIfPointer = m_out->insBranch(LIR_jf, checkIfPointer, (LIns*)nullptr);
 #endif
+                    proto = unboxESValue(proto, Type(TypePointer));
+                    lblsToFallback.push_back(jumpIfPointer);
                 }
 
                 // read
@@ -1763,7 +1774,6 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             return m_out->insCall(&getObjectOpCallInfo, args);
             */
 
-#ifdef ESCARGOT_64
             LIns* obj = getTmpMapping(irGetArrayObject->objectIndex());
             LIns* key = getTmpMapping(irGetArrayObject->propertyIndex());
             ASSERT(m_graph->getOperandType(irGetArrayObject->objectIndex()).isArrayObjectType());
@@ -1818,12 +1828,11 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             LIns* vectorData = m_out->insLoad(LIR_ldp, obj, gapToVectorData, 1, LOAD_NORMAL);
             LIns* ESValueSize = m_out->insImmI(sizeof(ESValue));
             LIns* offset = m_out->ins2(LIR_muli, key, ESValueSize);
-            LIns* offsetAsPointer = m_out->ins1(LIR_i2q, offset);
-            LIns* newBase = m_out->ins2(LIR_addp, vectorData, offsetAsPointer);
+            LIns* newBase = m_out->ins2(LIR_addp, vectorData, getOffsetAsPointer(offset));
             LIns* loadedValue = m_out->insLoad(LIR_lde, newBase, 0, 1, LOAD_NORMAL);
 
             // not empty
-            LIns* checkEmpty = m_out->ins2(LIR_eqq, loadedValue, m_emptyQ);
+            LIns* checkEmpty = m_out->ins2(LIR_eqe, loadedValue, m_emptyE);
             LIns* jumpIfEmpty = m_out->insBranch(LIR_jt, checkEmpty, (LIns*)nullptr);
             m_out->insStore(LIR_ste, loadedValue, phi, 0 , 1);
             LIns* gotoEnd = m_out->insBranch(LIR_j, nullptr, (LIns*)nullptr);
@@ -1848,10 +1857,6 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             // int32_t gapToVector = (int32_t) escargot::ESArrayObject::offsetOfVectorData();
             // LIns* vectorData = m_out->insLoad(LIR_ldp, obj, gapToVector, 1, LOAD_NORMAL);
             // return m_out->insLoad(LIR_lde, vectorData, irGetArrayObject->propertyIndex() * sizeof(ESValue), 1, LOAD_NORMAL);
-#else
-            return nullptr;
-            RELEASE_ASSERT_NOT_REACHED();
-#endif
         }
     case ESIR::Opcode::SetArrayObject:
         {
@@ -1864,7 +1869,6 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             LIns* args[] = {source, property, obj};
             m_out->insCall(&setObjectOpCallInfo, args);
             */
-#ifdef ESCARGOT_64
             Type propType = m_graph->getOperandType(irSetArrayObject->propertyIndex());
 
             LIns* obj = getTmpMapping(irSetArrayObject->objectIndex());
@@ -1914,8 +1918,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             LIns* vectorData = m_out->insLoad(LIR_ldp, obj, gapToVector + gatToVectorData, 1, LOAD_NORMAL);
             LIns* ESValueSize = m_out->insImmI(sizeof(ESValue));
             LIns* offset = m_out->ins2(LIR_muli, key, ESValueSize);
-            LIns* offsetAsPointer = m_out->ins1(LIR_i2q, offset);
-            LIns* newBase = m_out->ins2(LIR_addp, vectorData, offsetAsPointer);
+            LIns* newBase = m_out->ins2(LIR_addp, vectorData, getOffsetAsPointer(offset));
             m_out->insStore(LIR_ste, boxedSource , newBase, 0, 1);
             LIns* gotoEnd = m_out->insBranch(LIR_j, nullptr, (LIns*)nullptr);
 
@@ -1937,17 +1940,12 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             gotoEnd->setTarget(end);
 
             return getTmpMapping(irSetArrayObject->sourceIndex());
-#else
-            return nullptr;
-            RELEASE_ASSERT_NOT_REACHED();
-#endif
 
         }
     case ESIR::Opcode::GetStringByIndex:
         {
             INIT_ESIR(GetStringByIndex);
 
-#ifdef ESCARGOT_64
             Type keyType = m_graph->getOperandType(irGetStringByIndex->propertyIndex());
             LIns* obj = getTmpMapping(irGetStringByIndex->objectIndex());
             LIns* key = getTmpMapping(irGetStringByIndex->propertyIndex());
@@ -1982,15 +1980,15 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
                 LIns* jumpLessThanZero = m_out->insBranch(LIR_jt, checkLessThanZero, (LIns*)nullptr);
 
                 // check key < length
-                LIns* length = m_out->insLoad(LIR_lde, stringData, ESStringData::offsetOfLength(), 1, LOAD_NORMAL);
-                LIns* checkGretherOrEqualThanLength = m_out->ins2(LIR_gei, key, m_out->ins1(LIR_q2i, length));
+                LIns* length = m_out->insLoad(LIR_ldi, stringData, ESStringData::offsetOfLength(), 1, LOAD_NORMAL);
+                LIns* checkGretherOrEqualThanLength = m_out->ins2(LIR_gei, key, length);
                 LIns* jumpGretherOrEqualThanLength = m_out->insBranch(LIR_jt, checkGretherOrEqualThanLength, (LIns*)nullptr);
 
                 // read data of m_string
                 LIns* stringDataPointer = m_out->insLoad(LIR_ldp, stringData, ESStringData::offsetOfData(), 1, LOAD_NORMAL);
 
                 // move string pointer
-                stringDataPointer = m_out->ins2(LIR_addp, stringDataPointer, m_out->ins1(LIR_i2q, key));
+                stringDataPointer = m_out->ins2(LIR_addp, stringDataPointer, getOffsetAsPointer(key));
 
                 // read char in m_string
                 // FIXME read as unsigned short!
@@ -2004,10 +2002,10 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
                 // return strings->asciiTable[c].string();
                 LIns* pointerOfAsciiTable = m_out->insImmP(strings->asciiTable);
                 LIns* offset = m_out->ins2(LIR_muli, stringPiece, m_out->insImmI(sizeof(InternalAtomicString)));
-                pointerOfAsciiTable = m_out->ins2(LIR_addp, pointerOfAsciiTable, m_out->ins1(LIR_i2q, offset));
+                pointerOfAsciiTable = m_out->ins2(LIR_addp, pointerOfAsciiTable, getOffsetAsPointer(offset));
                 LIns* stringResult = m_out->insLoad(LIR_ldp, pointerOfAsciiTable, InternalAtomicString::offsetOfString(), 1, LOAD_NORMAL);
-                LIns* stringResultAsQuad = boxESValue(stringResult, Type(TypeString));
-                m_out->insStore(LIR_ste, stringResultAsQuad, result, 0, 1);
+                LIns* boxedStringResult = boxESValue(stringResult, Type(TypeString));
+                m_out->insStore(LIR_ste, boxedStringResult, result, 0, 1);
 
                 // operation end. go to end path
                 LIns* gotoOperationEnd = m_out->insBranch(LIR_j, nullptr, (LIns*)nullptr);
@@ -2033,10 +2031,6 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             } else {
                 RELEASE_ASSERT_NOT_REACHED();
             }
-#else
-            return nullptr;
-            RELEASE_ASSERT_NOT_REACHED();
-#endif
         }
     case ESIR::Opcode::SetObject:
         {
@@ -2182,7 +2176,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             if (consequentType.isInt32Type() || consequentType.isBooleanType())
                 return m_out->insLoad(LIR_ldi, phi, 0, 1, LOAD_NORMAL);
             else if (consequentType.isObjectType() || consequentType.isArrayObjectType() || consequentType.isStringType() || consequentType.isFunctionObjectType())
-                return m_out->insLoad(LIR_lde, phi, 0, 1, LOAD_NORMAL);
+                return m_out->insLoad(LIR_ldp, phi, 0, 1, LOAD_NORMAL);
             else
                 return nullptr;
         }
@@ -2211,13 +2205,11 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         }
     case ESIR::Opcode::InitArrayObject:
         {
-#ifdef ESCARGOT_64
             INIT_ESIR(InitArrayObject);
             InitArrayObjectIR* irInitObject = irInitArrayObject;
             // TODO : Check fast mode. If not, call runtime function
             LIns* obj = getTmpMapping(irInitObject->objectIndex());
-            if (obj->isI())
-                obj = m_out->ins1(LIR_i2q, obj);
+            ASSERT(obj->isP());
             LIns* key = getTmpMapping(irInitObject->keyIndex());
             LIns* source = getTmpMapping(irInitObject->sourceIndex());
             Type srcType = m_graph->getOperandType(irInitObject->sourceIndex());
@@ -2243,7 +2235,6 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             jf2->setTarget(label2);
             LIns* ESValueSize = m_out->insImmI(sizeof(ESValue));
             LIns* offset = m_out->ins2(LIR_muli, key, ESValueSize);
-            LIns* offsetP = m_out->ins1(LIR_i2q, offset);
 
             size_t gapToVector = escargot::ESArrayObject::offsetOfVectorData();
             size_t gatToVectorData = ESValueVector::offsetOfData();
@@ -2251,9 +2242,9 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             LIns* vectorData = m_out->ins2(LIR_addp, vector, m_out->insImmP((void *)gatToVectorData));
 
             // LIns* vectorData = m_out->insLoad(LIR_ldp, obj, ESArrayObject::offsetOfVectorData(), 1, LOAD_NORMAL);
-            LIns* valuePtr = m_out->ins2(LIR_addp, vectorData, offsetP);
+            LIns* valuePtr = m_out->ins2(LIR_addp, vectorData, getOffsetAsPointer(offset));
             LIns* asInt32 = m_out->insLoad(LIR_lde, valuePtr, ESValue::offsetOfAsInt64(), 1, LOAD_NORMAL);
-            LIns* checkEmptyValue = m_out->ins2(LIR_eqq, asInt32, m_zeroQ);
+            LIns* checkEmptyValue = m_out->ins2(LIR_eqe, asInt32, m_emptyE);
             LIns* jf3 = m_out->insBranch(LIR_jt, checkEmptyValue, (LIns*)nullptr);
             JIT_LOG(key, "InitArrayObject: NonEmptyValue ");
 
@@ -2265,14 +2256,9 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 
             LIns* boxedSrc = boxESValue(source, srcType);
             LIns* offset1 = m_out->ins2(LIR_muli, key, ESValueSize);
-            LIns* offset1P = m_out->ins1(LIR_i2q, offset1);
-            LIns* valuePtr1 = m_out->ins2(LIR_addq, vectorData, offset1P);
+            LIns* valuePtr1 = m_out->ins2(LIR_addp, vectorData, getOffsetAsPointer(offset1));
             LIns* ret =  m_out->insStore(LIR_ste, boxedSrc, valuePtr1, 0, 1);
             return source;
-#else
-            return nullptr;
-            RELEASE_ASSERT_NOT_REACHED();
-#endif
         }
     default:
         {
@@ -2296,6 +2282,30 @@ bool NativeGenerator::nanojitCodegen(ESVMInstance* instance)
     for (int i = 0; i < nanojit::NumSavedRegs; ++i)
         m_out->insParam(i, 1);
 
+    m_zeroD = m_out->insImmD(0);
+    m_zeroP = m_out->insImmP(0);
+    m_oneI = m_out->insImmI(1);
+    m_zeroI = m_out->insImmI(0);
+    m_true = m_oneI;
+    m_false = m_zeroI;
+#ifdef ESCARGOT_64
+    m_undefinedE = m_out->insImmQ(ValueUndefined);
+    m_nullE = m_out->insImmQ(ValueNull);
+    m_emptyE = m_out->insImmQ(ValueEmpty);
+#else
+    m_undefinedE = m_out->insImmD(bitwise_cast<double>(ESValue().asRawData()));
+    m_nullE = m_out->insImmD(bitwise_cast<double>(ESValue(ESValue::ESNullTag::ESNull).asRawData()));
+    m_emptyE = m_out->insImmD(bitwise_cast<double>(ESValue(ESValue::ESEmptyValueTag::ESEmptyValue).asRawData()));
+#endif
+    m_thisValueP = m_out->insAlloc(sizeof(ESValue));
+    m_out->insStore(LIR_ste, m_emptyE, m_thisValueP, 0, 1);
+    m_instanceP = m_out->insImmP(ESVMInstance::currentInstance());
+    m_contextP = m_out->insLoad(LIR_ldp, m_instanceP, ESVMInstance::offsetOfCurrentExecutionContext(), 1, LOAD_NORMAL);
+    m_cachedDeclarativeEnvironmentRecordESValueP = m_out->insLoad(LIR_ldp, m_contextP, ExecutionContext::offsetofcachedDeclarativeEnvironmentRecordESValue(), 1, LOAD_NORMAL);
+    m_globalObjectP = m_out->insImmP(ESVMInstance::currentInstance()->globalObject());
+    m_out->defaultInsToExtendLife.push_back(m_thisValueP);
+    m_out->defaultInsToExtendLife.push_back(m_contextP);
+    m_out->defaultInsToExtendLife.push_back(m_cachedDeclarativeEnvironmentRecordESValueP);
 #ifdef ESCARGOT_64
     m_tagMaskQ = m_out->insImmQ(TagMask);
     m_booleanTagQ = m_out->insImmQ(TagBitTypeOther | TagBitBool);
@@ -2303,8 +2313,7 @@ bool NativeGenerator::nanojitCodegen(ESVMInstance* instance)
     m_intTagQ = m_out->insImmQ(TagTypeNumber);
     m_intTagComplementQ = m_out->insImmQ(~TagTypeNumber);
     m_doubleEncodeOffsetQ = m_out->insImmQ(DoubleEncodeOffset);
-    m_emptyQ = m_out->insImmQ(ValueEmpty);
-    m_emptyD = m_out->ins1(LIR_qasd, m_emptyQ);
+    m_emptyD = m_out->ins1(LIR_qasd, m_emptyE);
     m_zeroQ = m_out->insImmQ(0);
 #else
     m_int32TagI = m_out->insImmI(ESValue::Int32Tag);
@@ -2315,31 +2324,6 @@ bool NativeGenerator::nanojitCodegen(ESVMInstance* instance)
     m_emptyValueTagI = m_out->insImmI(ESValue::EmptyValueTag);
     m_deletedValueTagI = m_out->insImmI(ESValue::DeletedValueTag);
     m_lowestTagI = m_out->insImmI(ESValue::LowestTag);
-#endif
-    m_zeroD = m_out->insImmD(0);
-    m_zeroP = m_out->insImmP(0);
-    m_oneI = m_out->insImmI(1);
-    m_zeroI = m_out->insImmI(0);
-    m_true = m_oneI;
-    m_false = m_zeroI;
-#ifdef ESCARGOT_64
-    m_undefinedE = m_out->insImmQ(ValueUndefined);
-    m_nullE = m_out->insImmQ(ValueNull);
-#else
-    m_undefinedE = m_out->insImmD(bitwise_cast<double>(ESValue().asRawData()));
-    m_nullE = m_out->insImmD(bitwise_cast<double>(ESValue(ESValue::ESNullTag::ESNull).asRawData()));
-#endif
-    m_thisValueP = m_out->insAlloc(sizeof(ESValue));
-    m_instanceP = m_out->insImmP(ESVMInstance::currentInstance());
-    m_contextP = m_out->insLoad(LIR_ldp, m_instanceP, ESVMInstance::offsetOfCurrentExecutionContext(), 1, LOAD_NORMAL);
-    m_cachedDeclarativeEnvironmentRecordESValueP = m_out->insLoad(LIR_ldp, m_contextP, ExecutionContext::offsetofcachedDeclarativeEnvironmentRecordESValue(), 1, LOAD_NORMAL);
-    m_globalObjectP = m_out->insImmP(ESVMInstance::currentInstance()->globalObject());
-    m_out->defaultInsToExtendLife.push_back(m_thisValueP);
-    m_out->defaultInsToExtendLife.push_back(m_contextP);
-    m_out->defaultInsToExtendLife.push_back(m_cachedDeclarativeEnvironmentRecordESValueP);
-
-#ifdef ESCARGOT_64
-    m_out->insStore(LIR_ste, m_emptyQ, m_thisValueP, 0, 1);
 #endif
 
     // JIT_LOG(m_true, "Start executing JIT function");

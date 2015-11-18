@@ -54,6 +54,8 @@ private:
     nanojit::LIns* getDoubleDynamic(nanojit::LIns* in, Type type);
     nanojit::LIns* getInt32Dynamic(nanojit::LIns* in, Type type);
 
+    nanojit::LIns* getOffsetAsPointer(nanojit::LIns* in);
+
     ESGraph* m_graph;
     std::vector<nanojit::LIns*, CustomAllocator<nanojit::LIns*> > m_tmpToLInsMapping;
 
@@ -66,6 +68,20 @@ private:
     nanojit::Fragment* m_f;
     nanojit::LirWriter* m_out;
 
+    nanojit::LIns* m_zeroD;
+    nanojit::LIns* m_zeroP;
+    nanojit::LIns* m_oneI;
+    nanojit::LIns* m_zeroI;
+    nanojit::LIns* m_true;
+    nanojit::LIns* m_false;
+    nanojit::LIns* m_undefinedE;
+    nanojit::LIns* m_nullE;
+    nanojit::LIns* m_emptyE;
+    nanojit::LIns* m_thisValueP;
+    nanojit::LIns* m_instanceP;
+    nanojit::LIns* m_contextP;
+    nanojit::LIns* m_globalObjectP;
+    nanojit::LIns* m_cachedDeclarativeEnvironmentRecordESValueP;
 #ifdef ESCARGOT_64
     nanojit::LIns* m_tagMaskQ;
     nanojit::LIns* m_booleanTagQ;
@@ -73,7 +89,6 @@ private:
     nanojit::LIns* m_intTagQ;
     nanojit::LIns* m_intTagComplementQ;
     nanojit::LIns* m_doubleEncodeOffsetQ;
-    nanojit::LIns* m_emptyQ;
     nanojit::LIns* m_emptyD;
     nanojit::LIns* m_zeroQ;
 #else
@@ -86,19 +101,7 @@ private:
     nanojit::LIns* m_deletedValueTagI;
     nanojit::LIns* m_lowestTagI;
 #endif
-    nanojit::LIns* m_zeroD;
-    nanojit::LIns* m_zeroP;
-    nanojit::LIns* m_oneI;
-    nanojit::LIns* m_zeroI;
-    nanojit::LIns* m_true;
-    nanojit::LIns* m_false;
-    nanojit::LIns* m_undefinedE;
-    nanojit::LIns* m_nullE;
-    nanojit::LIns* m_thisValueP;
-    nanojit::LIns* m_instanceP;
-    nanojit::LIns* m_contextP;
-    nanojit::LIns* m_globalObjectP;
-    nanojit::LIns* m_cachedDeclarativeEnvironmentRecordESValueP;
+
 };
 
 JITFunction generateNativeFromIR(ESGraph* graph, ESVMInstance* instance);

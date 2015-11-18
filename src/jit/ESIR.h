@@ -1408,7 +1408,7 @@ public:
     {
         out << "tmp" << m_targetIndex << ": ";
         ESIR::dump(out);
-        out << "tmp" << m_sourceIndex << " to tmp" << m_allocPhiIndex;
+        out << "tmp " << m_sourceIndex << " to tmp" << m_allocPhiIndex;
     }
 #endif
 
@@ -1435,7 +1435,7 @@ public:
     {
         out << "tmp" << m_targetIndex << ": ";
         ESIR::dump(out);
-        out << "tmp" << m_allocPhiIndex;
+        out << " tmp" << m_allocPhiIndex;
     }
 #endif
 
