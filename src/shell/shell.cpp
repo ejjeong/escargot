@@ -165,10 +165,10 @@ int main(int argc, char* argv[])
                     escargot::ESValue ret = ES->evaluate(source);
 #ifndef NDEBUG
                     if (ES->m_reportCompiledFunction) {
-                        printf("\n");
+                        printf("(%zu)\n", escargot::ESVMInstance::currentInstance()->m_compiledFunctions);
                     }
                     if (ES->m_reportOSRExitedFunction) {
-                        printf("\n");
+                        printf("(%zu)\n", escargot::ESVMInstance::currentInstance()->m_osrExitedFunctions);
                     }
 #endif
                 } catch(const escargot::ESValue& err) {

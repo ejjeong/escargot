@@ -1,52 +1,52 @@
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-cube.js
-CreateP CalcNormal CalcCross VMulti VMulti2 MMulti Translate DrawLine RotateX RotateY RotateZ Loop 
+CreateP CalcNormal CalcCross VMulti VMulti2 MMulti Translate DrawLine RotateX RotateY RotateZ Loop (12)
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-morph.js
-morph 
+morph (1)
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-raytrace.js
-createVector sub cross normalise lengthVector dot normaliseVector transformMatrix scale addVector (anonymous) scaleVector (anonymous) add scalev (anonymous) (anonymous) 
+createVector sub cross normalise lengthVector dot normaliseVector transformMatrix scale addVector (anonymous) scaleVector (anonymous) add scalev (anonymous) (anonymous) (17)
 ===> test/SunSpider/tests/sunspider-1.0.2/access-binary-trees.js
-TreeNode bottomUpTree (anonymous) 
+TreeNode bottomUpTree (anonymous) (3)
 ===> test/SunSpider/tests/sunspider-1.0.2/access-fannkuch.js
-
+(0)
 ===> test/SunSpider/tests/sunspider-1.0.2/access-nbody.js
-Body (anonymous) (anonymous) (anonymous) Sun Jupiter Saturn Uranus Neptune NBodySystem (anonymous) 
+Body (anonymous) (anonymous) (anonymous) Sun Jupiter Saturn Uranus Neptune NBodySystem (anonymous) (11)
 ===> test/SunSpider/tests/sunspider-1.0.2/access-nsieve.js
-nsieve 
+nsieve (1)
 ===> test/SunSpider/tests/sunspider-1.0.2/bitops-3bit-bits-in-byte.js
-fast3bitlookup 
+fast3bitlookup (1)
 ===> test/SunSpider/tests/sunspider-1.0.2/bitops-bits-in-byte.js
-bitsinbyte 
+bitsinbyte (1)
 ===> test/SunSpider/tests/sunspider-1.0.2/bitops-bitwise-and.js
-
+(0)
 ===> test/SunSpider/tests/sunspider-1.0.2/bitops-nsieve-bits.js
-
+(0)
 ===> test/SunSpider/tests/sunspider-1.0.2/controlflow-recursive.js
-ack fib tak 
+ack fib tak (3)
 ===> test/SunSpider/tests/sunspider-1.0.2/crypto-aes.js
-SubWord RotWord AddRoundKey SubBytes ShiftRows MixColumns Cipher escCtrlChars (anonymous) KeyExpansion (anonymous) unescCtrlChars 
+SubWord RotWord AddRoundKey SubBytes ShiftRows MixColumns Cipher escCtrlChars (anonymous) KeyExpansion (anonymous) unescCtrlChars (12)
 ===> test/SunSpider/tests/sunspider-1.0.2/crypto-md5.js
-safe_add md5_ff md5_cmn bit_rol md5_gg md5_hh md5_ii 
+safe_add md5_ff md5_cmn bit_rol md5_gg md5_hh md5_ii (7)
 ===> test/SunSpider/tests/sunspider-1.0.2/crypto-sha1.js
-safe_add rol sha1_ft sha1_kt 
+safe_add rol sha1_ft sha1_kt (4)
 ===> test/SunSpider/tests/sunspider-1.0.2/date-format-tofte.js
-arrayExists l F g A 
+arrayExists l F g A (5)
 ===> test/SunSpider/tests/sunspider-1.0.2/date-format-xparb.js
-(anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) 
+(anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (6)
 ===> test/SunSpider/tests/sunspider-1.0.2/math-cordic.js
-FIXED FLOAT cordicsincos 
+FIXED FLOAT cordicsincos (3)
 ===> test/SunSpider/tests/sunspider-1.0.2/math-partial-sums.js
-partial 
+partial (1)
 ===> test/SunSpider/tests/sunspider-1.0.2/math-spectral-norm.js
-A AtAu Au Atu spectralnorm 
+A AtAu Au Atu spectralnorm (5)
 ===> test/SunSpider/tests/sunspider-1.0.2/regexp-dna.js
-
+(0)
 ===> test/SunSpider/tests/sunspider-1.0.2/string-base64.js
-
+(0)
 ===> test/SunSpider/tests/sunspider-1.0.2/string-fasta.js
-rand 
+rand (1)
 ===> test/SunSpider/tests/sunspider-1.0.2/string-tagcloud.js
-(anonymous) (anonymous) 
+(anonymous) (anonymous) (2)
 ===> test/SunSpider/tests/sunspider-1.0.2/string-unpack-code.js
-(anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) 
+(anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (anonymous) (8)
 ===> test/SunSpider/tests/sunspider-1.0.2/string-validate-input.js
-makeName addResult makeNumber 
+makeName addResult makeNumber (3)

@@ -1,52 +1,52 @@
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-cube.js
-VMulti2 MMulti VMulti Translate 
+VMulti2 MMulti VMulti Translate (4)
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-morph.js
-
+(0)
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-raytrace.js
-createVector cross normaliseVector lengthVector normalise scale dot sub (anonymous) addVector (anonymous) add scaleVector scalev 
+createVector cross normaliseVector lengthVector normalise scale dot sub (anonymous) addVector (anonymous) add scaleVector scalev (14)
 ===> test/SunSpider/tests/sunspider-1.0.2/access-binary-trees.js
-TreeNode (anonymous) 
+TreeNode (anonymous) (2)
 ===> test/SunSpider/tests/sunspider-1.0.2/access-fannkuch.js
-
+(0)
 ===> test/SunSpider/tests/sunspider-1.0.2/access-nbody.js
-
+(0)
 ===> test/SunSpider/tests/sunspider-1.0.2/access-nsieve.js
-
+(0)
 ===> test/SunSpider/tests/sunspider-1.0.2/bitops-3bit-bits-in-byte.js
-
+(0)
 ===> test/SunSpider/tests/sunspider-1.0.2/bitops-bits-in-byte.js
-
+(0)
 ===> test/SunSpider/tests/sunspider-1.0.2/bitops-bitwise-and.js
-
+(0)
 ===> test/SunSpider/tests/sunspider-1.0.2/bitops-nsieve-bits.js
-
+(0)
 ===> test/SunSpider/tests/sunspider-1.0.2/controlflow-recursive.js
-
+(0)
 ===> test/SunSpider/tests/sunspider-1.0.2/crypto-aes.js
-
+(0)
 ===> test/SunSpider/tests/sunspider-1.0.2/crypto-md5.js
-md5_ff md5_cmn safe_add md5_gg md5_hh md5_ii 
+md5_ff md5_cmn safe_add md5_gg md5_hh md5_ii (6)
 ===> test/SunSpider/tests/sunspider-1.0.2/crypto-sha1.js
-safe_add 
+safe_add (1)
 ===> test/SunSpider/tests/sunspider-1.0.2/date-format-tofte.js
-
+(0)
 ===> test/SunSpider/tests/sunspider-1.0.2/date-format-xparb.js
-(anonymous) (anonymous) (anonymous) (anonymous) 
+(anonymous) (anonymous) (anonymous) (anonymous) (4)
 ===> test/SunSpider/tests/sunspider-1.0.2/math-cordic.js
-
+(0)
 ===> test/SunSpider/tests/sunspider-1.0.2/math-partial-sums.js
-
+(0)
 ===> test/SunSpider/tests/sunspider-1.0.2/math-spectral-norm.js
-
+(0)
 ===> test/SunSpider/tests/sunspider-1.0.2/regexp-dna.js
-
+(0)
 ===> test/SunSpider/tests/sunspider-1.0.2/string-base64.js
-
+(0)
 ===> test/SunSpider/tests/sunspider-1.0.2/string-fasta.js
-
+(0)
 ===> test/SunSpider/tests/sunspider-1.0.2/string-tagcloud.js
-(anonymous) 
+(anonymous) (1)
 ===> test/SunSpider/tests/sunspider-1.0.2/string-unpack-code.js
-
+(0)
 ===> test/SunSpider/tests/sunspider-1.0.2/string-validate-input.js
-
+(0)
