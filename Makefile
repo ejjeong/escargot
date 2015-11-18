@@ -37,7 +37,7 @@ endif
 ifneq (,$(findstring interpreter,$(MAKECMDGOALS)))
 	TYPE=interpreter
 else ifneq (,$(findstring jit,$(MAKECMDGOALS)))
-	ifneq ($(MAKECMDGOALS), check-jit)
+	ifeq (,$(findstring check-jit,$(MAKECMDGOALS)))
 		TYPE=jit
 	endif
 endif
@@ -297,10 +297,19 @@ asm:
 
 # Targets : Regression tests
 
-check-jit:
+check-jit-64:
 	make x64.jit.release -j$(NPROCS)
 	make run-sunspider
 	make x64.jit.debug -j$(NPROCS)
+	./run-Sunspider-jit.sh -rcf > compiledFunctions.txt
+	vimdiff compiledFunctions.txt originalCompiledFunctions.txt
+	./run-Sunspider-jit.sh -rof > osrExitedFunctions.txt
+	vimdiff osrExitedFunctions.txt originalOSRExitedFunctions.txt
+
+check-jit-32:
+	make x86.jit.release -j$(NPROCS)
+	make run-sunspider
+	make x86.jit.debug -j$(NPROCS)
 	./run-Sunspider-jit.sh -rcf > compiledFunctions.txt
 	vimdiff compiledFunctions.txt originalCompiledFunctions.txt
 	./run-Sunspider-jit.sh -rof > osrExitedFunctions.txt
@@ -312,7 +321,7 @@ check:
 	make run-octane | tee out/octane_result
 	make x64.interpreter.debug -j$(NPROCS)
 	make run-sunspider
-	make check-jit
+	make check-jit-64
 	cat out/sunspider_result
 	cat out/octane_result
 	./regression_test262
