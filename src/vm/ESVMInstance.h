@@ -194,7 +194,7 @@ protected:
     long m_gmtoff;
     tm m_time;
 
-    std::vector<ESSimpleAllocatorMemoryFragment> m_allocatedMemorys;
+    std::vector<ESSimpleAllocatorMemoryFragment, pointer_free_allocator<ESSimpleAllocatorMemoryFragment> > m_allocatedMemorys;
 };
 
 struct ESSimpleAllocatorMemoryFragment {
@@ -208,31 +208,132 @@ class ESSimpleAllocator {
 public:
     inline static void* alloc(size_t size)
     {
-        std::vector<ESSimpleAllocatorMemoryFragment>& allocatedMemorys = ESVMInstance::currentInstance()->m_allocatedMemorys;
+        std::vector<ESSimpleAllocatorMemoryFragment, pointer_free_allocator<ESSimpleAllocatorMemoryFragment> >& allocatedMemorys = ESVMInstance::currentInstance()->m_allocatedMemorys;
 
         size_t currentFragmentRemain;
+        ESSimpleAllocatorMemoryFragment* last = NULL;
 
         if (UNLIKELY(!allocatedMemorys.size())) {
             currentFragmentRemain = 0;
         } else {
             currentFragmentRemain = allocatedMemorys.back().m_totalSize - allocatedMemorys.back().m_currentUsage;
+            last = &allocatedMemorys.back();
         }
 
         if (currentFragmentRemain < size) {
-            allocSlow();
-            currentFragmentRemain = s_fragmentBufferSize;
+            if (size > s_fragmentBufferSize) {
+                ESSimpleAllocatorMemoryFragment f;
+                f.m_buffer = malloc(size);
+                f.m_currentUsage = size;
+                f.m_totalSize = size;
+                allocatedMemorys.push_back(f);
+                return f.m_buffer;
+            } else {
+                allocSlow();
+                currentFragmentRemain = s_fragmentBufferSize;
+                last = &allocatedMemorys.back();
+            }
         }
 
         ASSERT(currentFragmentRemain >= size);
-        void* buf = &((char *)allocatedMemorys.back().m_buffer)[allocatedMemorys.back().m_currentUsage];
-        allocatedMemorys.back().m_currentUsage += size;
+        void* buf = &((char *)last->m_buffer)[last->m_currentUsage];
+        last->m_currentUsage += size;
         return buf;
     }
     static void allocSlow();
     static void freeAll();
 private:
-    static const unsigned s_fragmentBufferSize = 10240;
+    static const unsigned s_fragmentBufferSize = 2048;
 };
+
+class ESSimpleAlloc {
+public:
+    inline void* operator new( size_t size )
+    {
+        return ESSimpleAllocator::alloc(size);
+    }
+    inline void* operator new( size_t size, void *p )
+    {
+        return p;
+    }
+    inline void operator delete( void* obj )
+    {
+
+    }
+    inline void* operator new[]( size_t size )
+    {
+        return ESSimpleAllocator::alloc(size);
+    }
+    inline void* operator new[]( size_t size, void *p )
+    {
+        return p;
+    }
+    inline void operator delete[]( void*, void* )
+    {
+
+    }
+};
+
+template<class T>
+class ESSimpleAllocatorStd {
+public:
+    typedef size_t     size_type;
+    typedef ptrdiff_t  difference_type;
+    typedef T*       pointer;
+    typedef const T* const_pointer;
+    typedef T&       reference;
+    typedef const T& const_reference;
+    typedef T        value_type;
+
+    template <class T2> struct rebind {
+        typedef ESSimpleAllocatorStd<T2> other;
+    };
+
+    ESSimpleAllocatorStd() { }
+    ESSimpleAllocatorStd(const ESSimpleAllocatorStd&) throw() { }
+    template <class T2> ESSimpleAllocatorStd(const ESSimpleAllocatorStd<T2>&) throw() { }
+    ~ESSimpleAllocatorStd() throw() { }
+
+    pointer address(reference GC_x) const { return &GC_x; }
+    const_pointer address(const_reference GC_x) const { return &GC_x; }
+
+    T* allocate(size_type GC_n, const void* = 0)
+    {
+        return static_cast<T*>(ESSimpleAllocator::alloc(GC_n * sizeof(T)));
+    }
+
+    void deallocate(pointer __p, size_type GC_ATTR_UNUSED GC_n) { }
+
+    size_type max_size() const throw() { return size_t(-1) / sizeof(T); }
+
+    void construct(pointer __p, const T& __val) { new(__p) T(__val); }
+    void destroy(pointer __p) { __p->~T(); }
+};
+
+template<>
+class ESSimpleAllocatorStd<void> {
+    typedef size_t      size_type;
+    typedef ptrdiff_t   difference_type;
+    typedef void*       pointer;
+    typedef const void* const_pointer;
+    typedef void        value_type;
+
+    template <class T2> struct rebind {
+        typedef ESSimpleAllocatorStd<T2> other;
+    };
+};
+
+template <class T1, class T2>
+inline bool operator==(const ESSimpleAllocatorStd<T1>&, const ESSimpleAllocatorStd<T2>&)
+{
+    return true;
+}
+
+template <class T1, class T2>
+inline bool operator!=(const ESSimpleAllocatorStd<T1>&, const ESSimpleAllocatorStd<T2>&)
+{
+    return false;
+}
 
 
 }
