@@ -267,24 +267,182 @@ ALWAYS_INLINE char16_t fromCodePoint(char16_t cp)
 ALWAYS_INLINE bool isIdentifierStart(char16_t ch)
 {
     // TODO
-    return (ch == 36) || (ch == 95) // $ (dollar) and _ (underscore)
+    return (ch >= 97 && ch <= 122) // a..z
         || (ch >= 65 && ch <= 90) // A..Z
-        || (ch >= 97 && ch <= 122) // a..z
+        || (ch == 36) || (ch == 95) // $ (dollar) and _ (underscore)
         || (ch == 92); // \ (backslash)
 }
 
 ALWAYS_INLINE bool isIdentifierPart(char16_t ch)
 {
     // TODO
-    return (ch == 36) || (ch == 95) // $ (dollar) and _ (underscore)
+    return (ch >= 97 && ch <= 122) // a..z
         || (ch >= 65 && ch <= 90) // A..Z
-        || (ch >= 97 && ch <= 122) // a..z
         || (ch >= 48 && ch <= 57) // 0..9
+        || (ch == 36) || (ch == 95) // $ (dollar) and _ (underscore)
         || (ch == 92); // \ (backslash)
 }
 
 // typedef std::basic_string<char16_t, std::char_traits<char16_t>, escargot::ESSimpleAllocatorStd<char16_t> > ParserString;
-typedef std::basic_string<char16_t, std::char_traits<char16_t>, std::allocator<char16_t> > ParserString;
+typedef std::basic_string<char16_t, std::char_traits<char16_t>, std::allocator<char16_t> > ParserStringStd;
+
+class ParserString {
+public:
+    ParserString()
+    {
+        m_buffer = NULL;
+        m_length = 0;
+    }
+
+    ParserString(char16_t ch)
+    {
+        m_buffer = NULL;
+        m_length = 0;
+        m_stdString = ch;
+    }
+
+    ParserString(const char16_t* buffer, size_t len)
+    {
+        m_buffer = buffer;
+        m_length = len;
+    }
+
+    ParserString(const ParserString& ps)
+    {
+        m_buffer = ps.m_buffer;
+        m_length = ps.m_length;
+        m_stdString = ps.m_stdString;
+    }
+
+    void operator =(const ParserString& ps)
+    {
+        m_buffer = ps.m_buffer;
+        m_length = ps.m_length;
+        m_stdString = ps.m_stdString;
+    }
+
+    ParserString(const ParserStringStd& ps)
+    {
+        m_buffer = 0;
+        m_length = 0;
+        m_stdString = ps;
+    }
+
+    static const size_t npos = static_cast<size_t>(-1);
+
+    void convertIntoStdString()
+    {
+        if (m_buffer) {
+            m_stdString.assign(m_buffer, m_buffer[m_length]);
+            m_buffer = 0;
+            m_length = 0;
+        } else {
+
+        }
+    }
+
+    size_t find(char16_t c)
+    {
+        if (m_buffer) {
+            for (size_t i = 0; i < m_length ; i ++) {
+                if (m_buffer[i] == c) {
+                    return i;
+                }
+            }
+            return npos;
+        } else {
+            return m_stdString.find(c);
+        }
+    }
+
+    bool operator ==(const char16_t* src) const
+    {
+        if (m_buffer) {
+            for (unsigned i = 0; i < m_length ; i++) {
+                char16_t s = src[i];
+                if (s != m_buffer[i]) {
+                    return false;
+                }
+            }
+            return src[m_length] == 0;
+        } else
+            return m_stdString == src;
+    }
+
+    bool operator ==(const ParserString& src) const
+    {
+        if (m_buffer) {
+            const char16_t* srcBuf = src.m_buffer ? src.m_buffer : src.m_stdString.data();
+            if (m_length != src.m_stdString.length()) {
+                return false;
+            }
+            for (unsigned i = 0; i < m_length ; i++) {
+                char16_t s = srcBuf[i];
+                if (s != m_buffer[i]) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            // FIXME
+            const_cast<ParserString &>(src).convertIntoStdString();
+            return m_stdString == src.m_stdString;
+        }
+    }
+
+    const char16_t* begin() const
+    {
+        if (m_buffer) {
+            return m_buffer;
+        } else
+            return m_stdString.data();
+    }
+
+    const char16_t* end() const
+    {
+        if (m_buffer) {
+            return m_buffer + m_length;
+        } else
+            return m_stdString.data() + m_stdString.length();
+    }
+
+    void operator +=(char16_t src)
+    {
+        convertIntoStdString();
+        m_stdString += src;
+    }
+
+    void assign(const char16_t* start, const char16_t* end)
+    {
+        m_buffer = 0;
+        m_length = 0;
+        m_stdString.assign(start, end);
+    }
+
+    ParserString substr(size_t pos, size_t n)
+    {
+        convertIntoStdString();
+        return ParserString(m_stdString.substr(pos, n));
+    }
+
+    size_t length() const
+    {
+        if (m_buffer)
+            return m_length;
+        return m_stdString.length();
+    }
+
+    char16_t operator[](const size_t& idx) const
+    {
+        if (m_buffer)
+            return m_buffer[idx];
+        return m_stdString[idx];
+    }
+
+    ParserStringStd m_stdString;
+    const char16_t* m_buffer;
+    size_t m_length;
+};
 
 // ECMA-262 11.6.2.2 Future Reserved Words
 
@@ -345,6 +503,11 @@ ALWAYS_INLINE bool isRestrictedWord(const ParserString& id)
     return id == u"eval" || id == u"arguments";
 }
 
+ALWAYS_INLINE bool isRestrictedWord(const escargot::InternalAtomicString& id)
+{
+    return id == escargot::strings->eval || id == escargot::strings->arguments;
+}
+
 
 // ECMA-262 11.6.2.1 Keywords
 
@@ -354,91 +517,98 @@ ALWAYS_INLINE KeywordKind isKeyword(const ParserString& id)
     // 'yield' and 'let' are for compatibility with SpiderMonkey and ES.next.
     // Some others are from future reserved words.
 
+    char16_t first = id[0];
+
     switch (id.length()) {
     case 2:
-        if (id == u"if") {
-            return If;
-        } else if (id == u"do") {
+        if (first == 'i') {
+            if (id == u"if") {
+                return If;
+            } else if (id == u"in") {
+                return In;
+            }
+
+        } else if (first == 'd' && id == u"do") {
             return Do;
-        } else if (id == u"in") {
-            return In;
         }
     case 3:
-        if (id == u"var") {
+        if (first == 'v' && id == u"var") {
             return Var;
-        } else if (id == u"for") {
+        } else if (first == 'f' && id == u"for") {
             return For;
-        } else if (id == u"new") {
+        } else if (first == 'n' && id == u"new") {
             return New;
-        } else if (id == u"try") {
+        } else if (first == 't' && id == u"try") {
             return Try;
-        } else if (id == u"ley") {
+        } else if (first == 'l' && id == u"let") {
             return Let;
         }
     case 4:
-        if (id == u"this") {
+        if (first == 't' && id == u"this") {
             return This;
-        } else if (id == u"else") {
+        } else if (first == 'e' && id == u"else") {
             return Else;
-        } else if (id == u"case") {
+        } else if (first == 'c' && id == u"case") {
             return Case;
-        } else if (id == u"void") {
+        } else if (first == 'v' && id == u"void") {
             return Void;
-        } else if (id == u"with") {
+        } else if (first == 'w' && id == u"with") {
             return With;
-        } else if (id == u"enum") {
+        } else if (first == 'e' && id == u"enum") {
             return Enum;
         }
     case 5:
-        if (id == u"while") {
+        if (first == 'w' && id == u"while") {
             return While;
-        } else if (id == u"break") {
+        } else if (first == 'b' && id == u"break") {
             return Break;
-        } else if (id == u"catch") {
-            return Catch;
-        } else if (id == u"throw") {
+        } else if (first == 'c') {
+            if (id == u"catch") {
+                return Catch;
+            } else if (id == u"const") {
+                return Const;
+            } else if (id == u"class") {
+                return Class;
+            }
+        } else if (first == 't' && id == u"throw") {
             return Throw;
-        } else if (id == u"const") {
-            return Const;
-        } else if (id == u"yield") {
+        } else if (first == 'y' && id == u"yield") {
             return Yield;
-        } else if (id == u"class") {
-            return Class;
-        } else if (id == u"super") {
+        } else if (first == 's' && id == u"super") {
             return Super;
         }
     case 6:
-        if (id == u"return") {
+        if (first == 'r' && id == u"return") {
             return Return;
-        } else if (id == u"typeof") {
+        } else if (first == 't' && id == u"typeof") {
             return Typeof;
-        } else if (id == u"delete") {
+        } else if (first == 'd' && id == u"delete") {
             return Delete;
-        } else if (id == u"switch") {
+        } else if (first == 's' && id == u"switch") {
             return Switch;
-        } else if (id == u"export") {
+        } else if (first == 'e' && id == u"export") {
             return Export;
-        } else if (id == u"import") {
+        } else if (first == 'i' && id == u"import") {
             return Import;
         }
     case 7:
-        if (id == u"default") {
+        if (first == 'd' && id == u"default") {
             return Default;
-        } else if (id == u"finally") {
+        } else if (first == 'f' && id == u"finally") {
             return Finally;
-        } else if (id == u"extends") {
+        } else if (first == 'e' && id == u"extends") {
             return Extends;
         }
     case 8:
-        if (id == u"function") {
+        if (first == 'f' && id == u"function") {
             return Function;
-        } else if (id == u"continue") {
+        } else if (first == 'c' && id == u"continue") {
             return Continue;
-        } else if (id == u"debugger") {
+        } else if (first == 'd' && id == u"debugger") {
             return Debugger;
         }
     case 10:
-        if (id == u"instanceof") {
+        if (first == 'i' && id == u"instanceof") {
             return InstanceofKeyword;
         }
     }
@@ -448,8 +618,8 @@ ALWAYS_INLINE KeywordKind isKeyword(const ParserString& id)
 
 struct ParseStatus;
 
-ParseStatus* psMalloc();
-void psFree(void* p);
+ALWAYS_INLINE ParseStatus* psMalloc();
+ALWAYS_INLINE void psFree(void* p);
 
 struct ParseStatus : public RefCounted<ParseStatus> {
     Token m_type;
@@ -557,11 +727,11 @@ struct ParseStatus : public RefCounted<ParseStatus> {
 };
 
 bool isPSMallocInited = false;
-#define PS_POOL_SIZE 64
+#define PS_POOL_SIZE 256
 ParseStatus* psPool[PS_POOL_SIZE];
 size_t psPoolUsage = 0;
 
-ParseStatus* psMalloc()
+ALWAYS_INLINE ParseStatus* psMalloc()
 {
     if (psPoolUsage == 0) {
         return new (malloc(sizeof (ParseStatus)))ParseStatus;
@@ -571,7 +741,7 @@ ParseStatus* psMalloc()
     return ps;
 }
 
-void psFree(void* p)
+ALWAYS_INLINE void psFree(void* p)
 {
     if (psPoolUsage < PS_POOL_SIZE) {
         psPool[psPoolUsage++] = (ParseStatus *)p;
@@ -767,7 +937,7 @@ ParserString getComplexIdentifier(ParseContext* ctx)
     ParserString id;
 
     cp = codePointAt(ctx, ctx->m_index);
-    id = {fromCodePoint(cp)};
+    id = fromCodePoint(cp);
     ctx->m_index += id.length();
 
     // '\u' (U+005C, U+0075) denotes an escaped character.
@@ -850,13 +1020,9 @@ ParserString getIdentifier(ParseContext* ctx)
         }
     }
 
-    ParserString ret;
-    ret.reserve(ctx->m_index-start);
-
-    for (size_t i = 0; i < ctx->m_index-start; i ++)
-        ret.push_back(ctx->m_source[start + i]);
     // return ctx->m_source.substr(start, ctx->m_index-start);
-    return ret;
+    // return ParserString(&ctx->m_source[start], &ctx->m_source[ctx->m_index]);
+    return ParserString(&ctx->m_source[start], ctx->m_index - start);
 }
 
 void skipSingleLineComment(ParseContext* ctx, int offset)
@@ -1086,11 +1252,11 @@ PassRefPtr<ParseStatus> scanPunctuator(ParseContext* ctx)
     };
      */
     // Check for most common single-character punctuators.
-    char16_t str = ctx->m_source[ctx->m_index];
+    char16_t ch0 = ctx->m_source[ctx->m_index], ch1, ch2, ch3;
     // std::u16string resultStr;
     // resultStr.reserve(4);
     // resultStr += str;
-    switch (str) {
+    switch (ch0) {
     case '(':
         /*
         if (extra.tokenize) {
@@ -1161,143 +1327,180 @@ PassRefPtr<ParseStatus> scanPunctuator(ParseContext* ctx)
         ++ctx->m_index;
         break;
 
-    default:
-        // 4-character punctuator.
-        wchar_t temp[12];
-        temp[0] = ctx->m_source[ctx->m_index + 0];
-        temp[1] = ctx->m_source[ctx->m_index + 1];
-        temp[2] = ctx->m_source[ctx->m_index + 2];
-        temp[3] = ctx->m_source[ctx->m_index + 3];
-
-        if (wcsncmp(temp, L">>>=", 4) == 0) {
-            ctx->m_index += 4;
-            token->m_punctuatorsKind = UnsignedRightShiftEqual;
-        } else {
-            // 3-character punctuators.
-            temp[3] = 0;
-
-            if (wcsncmp(temp, L"===", 3) == 0) {
-                token->m_punctuatorsKind = StrictEqual;
-                ctx->m_index += 3;
-            } else if (wcsncmp(temp, L"!==", 3) == 0) {
-                token->m_punctuatorsKind = NotStrictEqual;
-                ctx->m_index += 3;
-            } else if (wcsncmp(temp, L">>>", 3) == 0) {
-                token->m_punctuatorsKind = UnsignedRightShift;
-                ctx->m_index += 3;
-            } else if (wcsncmp(temp, L"<<=", 3) == 0) {
-                token->m_punctuatorsKind = LeftShiftEqual;
-                ctx->m_index += 3;
-            } else if (wcsncmp(temp, L">>=", 3) == 0) {
+    case '>':
+        ch1 = ctx->m_source[ctx->m_index + 1];
+        if (ch1 == '>') {
+            ch2 = ctx->m_source[ctx->m_index + 2];
+            if (ch2 == '>') {
+                ch3 = ctx->m_source[ctx->m_index + 3];
+                if (ch3 == '=') {
+                    ctx->m_index += 4;
+                    token->m_punctuatorsKind = UnsignedRightShiftEqual;
+                } else {
+                    token->m_punctuatorsKind = UnsignedRightShift;
+                    ctx->m_index += 3;
+                }
+            } else if (ch2 == '=') {
                 token->m_punctuatorsKind = RightShiftEqual;
                 ctx->m_index += 3;
             } else {
-                // 2-character punctuators.
-                temp[2] = 0;
-                if (wcsncmp(temp, L"&&", 2) == 0) {
-                    token->m_punctuatorsKind = LogicalAnd;
-                    ctx->m_index += 2;
-                } else if (wcsncmp(temp, L"||", 2) == 0) {
-                    token->m_punctuatorsKind = LogicalOr;
-                    ctx->m_index += 2;
-                } else if (wcsncmp(temp, L"==", 2) == 0) {
-                    token->m_punctuatorsKind = Equal;
-                    ctx->m_index += 2;
-                } else if (wcsncmp(temp, L"!=", 2) == 0) {
-                    token->m_punctuatorsKind = NotEqual;
-                    ctx->m_index += 2;
-                } else if (wcsncmp(temp, L"+=", 2) == 0) {
-                    token->m_punctuatorsKind = PlusEqual;
-                    ctx->m_index += 2;
-                } else if (wcsncmp(temp, L"-=", 2) == 0) {
-                    token->m_punctuatorsKind = MinusEqual;
-                    ctx->m_index += 2;
-                } else if (wcsncmp(temp, L"*=", 2) == 0) {
-                    token->m_punctuatorsKind = MultiplyEqual;
-                    ctx->m_index += 2;
-                } else if (wcsncmp(temp, L"/=", 2) == 0) {
-                    token->m_punctuatorsKind = DivideEqual;
-                    ctx->m_index += 2;
-                } else if (wcsncmp(temp, L"++", 2) == 0) {
-                    token->m_punctuatorsKind = PlusPlus;
-                    ctx->m_index += 2;
-                } else if (wcsncmp(temp, L"--", 2) == 0) {
-                    token->m_punctuatorsKind = MinusMinus;
-                    ctx->m_index += 2;
-                } else if (wcsncmp(temp, L"<<", 2) == 0) {
-                    token->m_punctuatorsKind = LeftShift;
-                    ctx->m_index += 2;
-                } else if (wcsncmp(temp, L">>", 2) == 0) {
-                    token->m_punctuatorsKind = RightShift;
-                    ctx->m_index += 2;
-                } else if (wcsncmp(temp, L"&=", 2) == 0) {
-                    token->m_punctuatorsKind = BitwiseAndEqual;
-                    ctx->m_index += 2;
-                } else if (wcsncmp(temp, L"|=", 2) == 0) {
-                    token->m_punctuatorsKind = BitwiseOrEqual;
-                    ctx->m_index += 2;
-                } else if (wcsncmp(temp, L"^=", 2) == 0) {
-                    token->m_punctuatorsKind = BitwiseXorEqual;
-                    ctx->m_index += 2;
-                } else if (wcsncmp(temp, L"%=", 2) == 0) {
-                    token->m_punctuatorsKind = ModEqual;
-                    ctx->m_index += 2;
-                } else if (wcsncmp(temp, L"<=", 2) == 0) {
-                    token->m_punctuatorsKind = LeftInequalityEqual;
-                    ctx->m_index += 2;
-                } else if (wcsncmp(temp, L">=", 2) == 0) {
-                    token->m_punctuatorsKind = RightInequalityEqual;
-                    ctx->m_index += 2;
-                } else if (wcsncmp(temp, L"=>", 2) == 0) {
-                    token->m_punctuatorsKind = Arrow;
-                    ctx->m_index += 2;
-                } else {
-                    // 1-character punctuators.
-                    char16_t str = ctx->m_source[ctx->m_index];
-                    temp[1] = 0;
-                    if (str == '<') {
-                        ++ctx->m_index;
-                        token->m_punctuatorsKind = LeftInequality;
-                    } else if (str == '>') {
-                        ++ctx->m_index;
-                        token->m_punctuatorsKind = RightInequality;
-                    } else if (str == '=') {
-                        ++ctx->m_index;
-                        token->m_punctuatorsKind = Substitution;
-                    } else if (str == '!') {
-                        ++ctx->m_index;
-                        token->m_punctuatorsKind = ExclamationMark;
-                    } else if (str == '+') {
-                        ++ctx->m_index;
-                        token->m_punctuatorsKind = Plus;
-                    } else if (str == '-') {
-                        ++ctx->m_index;
-                        token->m_punctuatorsKind = Minus;
-                    } else if (str == '*') {
-                        ++ctx->m_index;
-                        token->m_punctuatorsKind = Multiply;
-                    } else if (str == '%') {
-                        ++ctx->m_index;
-                        token->m_punctuatorsKind = Mod;
-                    } else if (str == '&') {
-                        ++ctx->m_index;
-                        token->m_punctuatorsKind = BitwiseAnd;
-                    } else if (str == '|') {
-                        ++ctx->m_index;
-                        token->m_punctuatorsKind = BitwiseOr;
-                    } else if (str == '^') {
-                        ++ctx->m_index;
-                        token->m_punctuatorsKind = BitwiseXor;
-                    } else if (str == '/') {
-                        ++ctx->m_index;
-                        token->m_punctuatorsKind = Divide;
-                    }
-                }
+                token->m_punctuatorsKind = RightShift;
+                ctx->m_index += 2;
             }
+        } else if (ch1 == '=') {
+            token->m_punctuatorsKind = RightInequalityEqual;
+            ctx->m_index += 2;
+        } else {
+            token->m_punctuatorsKind = RightInequality;
+            ctx->m_index += 1;
         }
-        // for (unsigned i = 0; temp[i] ; i ++) {
-        //     resultStr.push_back((char16_t)temp[i]);
-        // }
+        break;
+    case '<':
+        ch1 = ctx->m_source[ctx->m_index + 1];
+        if (ch1 == '<') {
+            ch2 = ctx->m_source[ctx->m_index + 2];
+            if (ch2 == '=') {
+                token->m_punctuatorsKind = LeftShiftEqual;
+                ctx->m_index += 3;
+            } else {
+                token->m_punctuatorsKind = LeftShift;
+                ctx->m_index += 2;
+            }
+        } else if (ch1 == '=') {
+            token->m_punctuatorsKind = LeftInequalityEqual;
+            ctx->m_index += 2;
+        } else {
+            token->m_punctuatorsKind = LeftInequality;
+            ctx->m_index += 1;
+        }
+        break;
+    case '=':
+        ch1 = ctx->m_source[ctx->m_index + 1];
+        if (ch1 == '=') {
+            ch2 = ctx->m_source[ctx->m_index + 2];
+            if (ch2 == '=') {
+                token->m_punctuatorsKind = StrictEqual;
+                ctx->m_index += 3;
+            } else {
+                token->m_punctuatorsKind = Equal;
+                ctx->m_index += 2;
+            }
+        } else if (ch1 == '>') {
+            token->m_punctuatorsKind = Arrow;
+            ctx->m_index += 2;
+        } else {
+            token->m_punctuatorsKind = Substitution;
+            ctx->m_index += 1;
+        }
+        break;
+    case '!':
+        ch1 = ctx->m_source[ctx->m_index + 1];
+        if (ch1 == '=') {
+            ch2 = ctx->m_source[ctx->m_index + 2];
+            if (ch2 == '=') {
+                token->m_punctuatorsKind = NotStrictEqual;
+                ctx->m_index += 3;
+            } else {
+                token->m_punctuatorsKind = NotEqual;
+                ctx->m_index += 2;
+            }
+        } else {
+            token->m_punctuatorsKind = ExclamationMark;
+            ctx->m_index += 1;
+        }
+        break;
+    case '&':
+        ch1 = ctx->m_source[ctx->m_index + 1];
+        if (ch1 == '&') {
+            token->m_punctuatorsKind = LogicalAnd;
+            ctx->m_index += 2;
+        } else if (ch1 == '=') {
+            token->m_punctuatorsKind = BitwiseAndEqual;
+            ctx->m_index += 2;
+        } else {
+            token->m_punctuatorsKind = BitwiseAnd;
+            ctx->m_index += 1;
+        }
+        break;
+    case '|':
+        ch1 = ctx->m_source[ctx->m_index + 1];
+        if (ch1 == '|') {
+            token->m_punctuatorsKind = LogicalOr;
+            ctx->m_index += 2;
+        } else if (ch1 == '=') {
+            token->m_punctuatorsKind = BitwiseOrEqual;
+            ctx->m_index += 2;
+        } else {
+            token->m_punctuatorsKind = BitwiseOr;
+            ctx->m_index += 1;
+        }
+        break;
+    case '^':
+        ch1 = ctx->m_source[ctx->m_index + 1];
+        if (ch1 == '=') {
+            token->m_punctuatorsKind = BitwiseXorEqual;
+            ctx->m_index += 2;
+        } else {
+            token->m_punctuatorsKind = BitwiseXor;
+            ctx->m_index += 1;
+        }
+        break;
+    case '+':
+        ch1 = ctx->m_source[ctx->m_index + 1];
+        if (ch1 == '+') {
+            token->m_punctuatorsKind = PlusPlus;
+            ctx->m_index += 2;
+        } else if (ch1 == '=') {
+            token->m_punctuatorsKind = PlusEqual;
+            ctx->m_index += 2;
+        } else {
+            token->m_punctuatorsKind = Plus;
+            ctx->m_index += 1;
+        }
+        break;
+    case '-':
+        ch1 = ctx->m_source[ctx->m_index + 1];
+        if (ch1 == '-') {
+            token->m_punctuatorsKind = MinusMinus;
+            ctx->m_index += 2;
+        } else if (ch1 == '=') {
+            token->m_punctuatorsKind = MinusEqual;
+            ctx->m_index += 2;
+        } else {
+            token->m_punctuatorsKind = Minus;
+            ctx->m_index += 1;
+        }
+        break;
+    case '*':
+        ch1 = ctx->m_source[ctx->m_index + 1];
+        if (ch1 == '=') {
+            token->m_punctuatorsKind = MultiplyEqual;
+            ctx->m_index += 2;
+        } else {
+            token->m_punctuatorsKind = Multiply;
+            ctx->m_index += 1;
+        }
+        break;
+    case '/':
+        ch1 = ctx->m_source[ctx->m_index + 1];
+        if (ch1 == '=') {
+            token->m_punctuatorsKind = DivideEqual;
+            ctx->m_index += 2;
+        } else {
+            token->m_punctuatorsKind = Divide;
+            ctx->m_index += 1;
+        }
+        break;
+    case '%':
+        ch1 = ctx->m_source[ctx->m_index + 1];
+        if (ch1 == '=') {
+            token->m_punctuatorsKind = ModEqual;
+            ctx->m_index += 2;
+        } else {
+            token->m_punctuatorsKind = Mod;
+            ctx->m_index += 1;
+        }
+        break;
     }
 
     if (ctx->m_index == token->m_start) {
@@ -1480,7 +1683,7 @@ PassRefPtr<ParseStatus> scanTemplate(ParseContext* ctx)
     bool head = (ctx->m_source[ctx->m_index] == '`');
     size_t rawOffset = 2;
     size_t restore;
-    ParserString cooked;
+    ParserStringStd cooked;
 
     ++ctx->m_index;
 
@@ -1585,7 +1788,7 @@ PassRefPtr<ParseStatus> scanTemplate(ParseContext* ctx)
     ParseStatus* status;
     status = new ParseStatus();
     status->m_type = Token::TemplateToken;
-    status->m_value = std::move(cooked);
+    status->m_value = cooked;
     // status->m_value_cooked = cooked;
     // status->m_value_raw = ctx->m_source.substr(start + 1, ctx->m_index - rawOffset - start + 1);
     status->m_head = head;
@@ -1948,7 +2151,7 @@ ALWAYS_INLINE PassRefPtr<ParseStatus> advance(ParseContext* ctx)
     }
 
     return scanPunctuator(ctx);
-        }
+}
 
 void peek(ParseContext* ctx)
 {
@@ -1969,7 +2172,7 @@ void peek(ParseContext* ctx)
     ctx->m_scanning = false;
 }
 
-ALWAYS_INLINE PassRefPtr<ParseStatus> lex(ParseContext* ctx)
+PassRefPtr<ParseStatus> lex(ParseContext* ctx)
 {
     RefPtr<ParseStatus> token;
     ctx->m_scanning = true;
@@ -2104,7 +2307,7 @@ void consumeSemicolon(ParseContext* ctx)
     }
 }
 
-escargot::Node* isolateCoverGrammar(ParseContext* ctx, escargot::Node* (*parser) (ParseContext* ctx))
+ALWAYS_INLINE escargot::Node* isolateCoverGrammar(ParseContext* ctx, escargot::Node* (*parser) (ParseContext* ctx))
 {
     bool oldIsBindingElement = ctx->m_isBindingElement,
         oldIsAssignmentTarget = ctx->m_isAssignmentTarget;
@@ -2123,7 +2326,7 @@ escargot::Node* isolateCoverGrammar(ParseContext* ctx, escargot::Node* (*parser)
     return result;
 }
 
-escargot::Node* inheritCoverGrammar(ParseContext* ctx, escargot::Node* (*parser) (ParseContext* ctx))
+ALWAYS_INLINE escargot::Node* inheritCoverGrammar(ParseContext* ctx, escargot::Node* (*parser) (ParseContext* ctx))
 {
     bool oldIsBindingElement = ctx->m_isBindingElement,
         oldIsAssignmentTarget = ctx->m_isAssignmentTarget;
@@ -2142,7 +2345,7 @@ escargot::Node* inheritCoverGrammar(ParseContext* ctx, escargot::Node* (*parser)
 }
 
 
-bool isIdentifierName(ParseStatus* token)
+ALWAYS_INLINE bool isIdentifierName(ParseStatus* token)
 {
     return token->m_type == Token::IdentifierToken
         || token->m_type == Token::KeywordToken
@@ -2367,7 +2570,9 @@ escargot::Node* parseVariableIdentifier(ParseContext* ctx)
     }
     */
 
-    escargot::Node* nd = new escargot::IdentifierNode(escargot::InternalAtomicString(token->m_value.data()));
+    auto ll = token;
+    escargot::u16string estr(ll->m_value.begin(), ll->m_value.end());
+    escargot::Node* nd = new escargot::IdentifierNode(escargot::InternalAtomicString(estr));
     nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
     return nd;
 }
@@ -2383,7 +2588,7 @@ escargot::VariableDeclaratorNode* parseVariableDeclaration(ParseContext* ctx)
     // if (strict && isRestrictedWord(id.name)) {
     // TODO: not alawys idenifier node!
     ASSERT(id->type() == escargot::NodeType::Identifier);
-    if (ctx->m_strict && isRestrictedWord(((escargot::IdentifierNode *)id)->nonAtomicName()->data())) {
+    if (ctx->m_strict && isRestrictedWord(((escargot::IdentifierNode *)id)->name())) {
         // tolerateError(Messages.StrictVarName);
         tolerateError(u"Messages.StrictVarName");
     }
@@ -2458,7 +2663,7 @@ escargot::Node* parseLexicalBinding(ParseContext* ctx, escargot::u16string& kind
     escargot::Node* init = nullptr;
 
     // ECMA-262 12.2.1
-    if (ctx->m_strict && isRestrictedWord(((escargot::IdentifierNode *)id)->nonAtomicName()->data())) {
+    if (ctx->m_strict && isRestrictedWord(((escargot::IdentifierNode *)id)->name())) {
         // tolerateError(Messages.StrictVarName);
         tolerateError(u"Messages.StrictVarName");
     }
@@ -3878,9 +4083,8 @@ escargot::Node* parseObjectPropertyKey(ParseContext* ctx)
             tolerateUnexpectedToken();
         }
         {
-            escargot::u16string src(token->m_value.begin(), token->m_value.end());
-            escargot::InternalAtomicString str(src);
-            nd = new escargot::LiteralNode(str.string());
+            escargot::u16string estr(token->m_value.begin(), token->m_value.end());
+            nd = new escargot::LiteralNode(escargot::ESString::create(std::move(estr)));
             nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
         }
         return nd;
@@ -3896,10 +4100,13 @@ escargot::Node* parseObjectPropertyKey(ParseContext* ctx)
     case Token::BooleanLiteralToken:
     case Token::NullLiteralToken:
     case Token::KeywordToken:
-        // return node.finishIdentifier(token.value);
-        nd = new escargot::IdentifierNode(escargot::InternalAtomicString(token->m_value.data()));
-        nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
-        return nd;
+        {
+            // return node.finishIdentifier(token.value);
+            escargot::u16string estr(token->m_value.begin(), token->m_value.end());
+            nd = new escargot::IdentifierNode(escargot::InternalAtomicString(estr));
+            nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
+            return nd;
+        }
     case Token::PunctuatorToken:
         if (token->m_punctuatorsKind == LeftSquareBracket) {
             escargot::Node* expr = isolateCoverGrammar(ctx, parseAssignmentExpression);
@@ -4083,13 +4290,16 @@ ScanRegExpFlagsResult* scanRegExpFlags(ParseContext* ctx)
                 ch = scanHexEscape(ctx, 'u');
                 if (ch) {
                     flags += ch;
-                    for (str += u"\\u"; restore < ctx->m_index; ++restore) {
+                    str += '\\';
+                    str += 'u';
+                    for (; restore < ctx->m_index; ++restore) {
                         str += ctx->m_source[restore];
                     }
                 } else {
                     ctx->m_index = restore;
                     flags += 'u';
-                    str += u"\\u";
+                    str += '\\';
+                    str += 'u';
                 }
                 tolerateUnexpectedToken();
             } else {
@@ -4718,7 +4928,9 @@ escargot::Node* parsePrimaryExpression(ParseContext* ctx)
          if (sourceType === 'module' && lookahead.value === 'await') {
         tolerateUnexpectedToken(lookahead);
         }*/
-        expr = new escargot::IdentifierNode(escargot::InternalAtomicString(lex(ctx)->m_value.data()));
+        auto ll = lex(ctx);
+        escargot::u16string estr(ll->m_value.begin(), ll->m_value.end());
+        expr = new escargot::IdentifierNode(escargot::InternalAtomicString(estr));
         expr->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
         // expr = node.finishIdentifier(lex().value);
     } else if (type == Token::StringLiteralToken || type == Token::NumericLiteralToken) {
@@ -4787,8 +4999,9 @@ escargot::Node* parsePrimaryExpression(ParseContext* ctx)
             f = f | ESRegExpObject::Sticky;
         }
         */
+        escargot::u16string estr(token->m_regexBody.begin(), token->m_regexBody.end());
         expr = new escargot::LiteralNode(escargot::ESRegExpObject::create(
-            escargot::ESString::create(token->m_regexBody.data()), (escargot::ESRegExpObject::Option)f));
+            escargot::ESString::create(std::move(estr)), (escargot::ESRegExpObject::Option)f));
         expr->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
         // parsedNode = new LiteralNode(ESRegExpObject::create(source, (escargot::ESRegExpObject::Option)f, escargot::ESVMInstance::currentInstance()->globalObject()->regexpPrototype()));
     } else if (type == Token::TemplateToken) {
@@ -4848,7 +5061,8 @@ escargot::Node* parseNonComputedProperty(ParseContext* ctx)
     }
 
     // return node.finishIdentifier(token.value);
-    escargot::Node* nd = new escargot::IdentifierNode(escargot::InternalAtomicString(token->m_value.data()));
+    escargot::u16string estr(token->m_value.begin(), token->m_value.end());
+    escargot::Node* nd = new escargot::IdentifierNode(escargot::InternalAtomicString(estr));
     nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
     return nd;
 }
@@ -5037,7 +5251,7 @@ escargot::Node* parsePostfixExpression(ParseContext* ctx)
     if (!ctx->m_hasLineTerminator && ctx->m_lookahead->m_type == Token::PunctuatorToken) {
         if (match(ctx, PlusPlus) || match(ctx, MinusMinus)) {
             // ECMA-262 11.3.1, 11.3.2
-            if (ctx->m_strict && expr->type() == escargot::NodeType::Identifier && isRestrictedWord(((escargot::IdentifierNode *)expr)->nonAtomicName()->data())) {
+            if (ctx->m_strict && expr->type() == escargot::NodeType::Identifier && isRestrictedWord(((escargot::IdentifierNode *)expr)->name())) {
                 tolerateError(u"Messages.StrictLHSPostfix");
             }
 
@@ -5077,7 +5291,7 @@ escargot::Node* parseUnaryExpression(ParseContext* ctx)
         token = lex(ctx);
         expr = inheritCoverGrammar(ctx, parseUnaryExpression);
         // ECMA-262 11.4.4, 11.4.5
-        if (ctx->m_strict && expr->type() == escargot::NodeType::Identifier && isRestrictedWord(((escargot::IdentifierNode *)expr)->nonAtomicName()->data())) {
+        if (ctx->m_strict && expr->type() == escargot::NodeType::Identifier && isRestrictedWord(((escargot::IdentifierNode *)expr)->name())) {
             tolerateError(u"Messages.StrictLHSPrefix");
         }
 
@@ -5140,85 +5354,6 @@ escargot::Node* parseUnaryExpression(ParseContext* ctx)
 
     return expr;
 }
-
-/*
-    if (token->m_value == u"=") {
-        return 0;
-    }
-
-    if (token->m_value == u"||") {
-        return 1;
-    }
-    if (token->m_value == u"&&") {
-        return 2;
-    }
-    if (token->m_value == u"|") {
-        return 3;
-    }
-    if (token->m_value == u"^") {
-        return 4;
-    }
-    if (token->m_value == u"&") {
-        return 5;
-    }
-    if (token->m_value == u"==") {
-        return 6;
-    }
-    if (token->m_value == u"!=") {
-        return 6;
-    }
-    if (token->m_value == u"===") {
-        return 6;
-    }
-    if (token->m_value == u"!==") {
-        return 6;
-    }
-    if (token->m_value == u"instanceof") {
-        return 7;
-    }
-    if (token->m_value == u">") {
-        return 7;
-    }
-    if (token->m_value == u"<") {
-        return 7;
-    }
-    if (token->m_value == u"<=") {
-        return 7;
-    }
-    if (token->m_value == u">=") {
-        return 7;
-    }
-    if (token->m_value == u"in") {
-        return ctx->m_allowIn ? 7 : 0;
-    }
-    if (token->m_value == u"<<") {
-        return 8;
-    }
-    if (token->m_value == u">>") {
-        return 8;
-    }
-    if (token->m_value == u">>>") {
-        return 8;
-    }
-
-    if (token->m_value == u"+") {
-        return 9;
-    }
-    if (token->m_value == u"-") {
-        return 9;
-    }
-
-    if (token->m_value == u"*") {
-        return 11;
-    }
-    if (token->m_value == u"/") {
-        return 11;
-    }
-    if (token->m_value == u"%") {
-        return 11;
-    }
-*/
-
 
 int binaryPrecedence(ParseContext* ctx, RefPtr<ParseStatus> token, bool allowIn)
 {
@@ -5656,7 +5791,7 @@ escargot::Node* parseAssignmentExpression(ParseContext* ctx)
         }
 
         // ECMA-262 11.13.1
-        if (ctx->m_strict && expr->type() == escargot::NodeType::Identifier && isRestrictedWord(((escargot::IdentifierNode *)expr)->nonAtomicName()->data())) {
+        if (ctx->m_strict && expr->type() == escargot::NodeType::Identifier && isRestrictedWord(((escargot::IdentifierNode *)expr)->name())) {
             tolerateUnexpectedToken();
         }
 
