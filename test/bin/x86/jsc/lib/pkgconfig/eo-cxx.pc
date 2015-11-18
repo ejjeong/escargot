@@ -1,0 +1,12 @@
+prefix=/home/chokobole/Workspace/android-jsc/WebKit-r174650/WebKitBuild/Dependencies/Root
+exec_prefix=${prefix}
+libdir=/home/chokobole/Workspace/android-jsc/WebKit-r174650/WebKitBuild/Dependencies/Root/lib
+includedir=${prefix}/include
+
+Name: Eo C++
+Description: C++ bindings for EFL's generic object system.
+Version: 1.11.2
+Requires.private: eina >= 1.11.2  
+Libs.private:  -ldl
+Libs: -L${libdir} -leo
+Cflags: -I${includedir}/efl-1 -I${includedir}/eo-1 -I${includedir}/eo-cxx-1

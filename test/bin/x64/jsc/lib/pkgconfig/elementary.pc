@@ -1,0 +1,17 @@
+prefix=/home/chokobole/Workspace/android-jsc/WebKit-r174650/WebKitBuild/Dependencies/Root
+exec_prefix=${prefix}
+libdir=/home/chokobole/Workspace/android-jsc/WebKit-r174650/WebKitBuild/Dependencies/Root/lib
+includedir=${prefix}/include
+datarootdir=${prefix}/share
+datadir=${datarootdir}
+pkgdatadir=${datarootdir}/elementary
+themes=${pkgdatadir}/themes
+eoincludedir=${datarootdir}/eolian/include
+eolian_flags=-I${eoincludedir}/elementary-1
+
+Name: elementary
+Description: Mobile device touchscreen widget library
+Requires.private: ecore-x >= 1.11.2     eina >= 1.11.2     eet >= 1.11.2     evas >= 1.11.2     ecore >= 1.11.2     ecore-evas >= 1.11.2     ecore-file >= 1.11.2     ecore-input >= 1.11.2     edje >= 1.11.2     eo >= 1.11.2     ethumb_client >= 1.11.2     emotion >= 1.11.2     ecore-imf >= 1.11.2     ecore-con >= 1.11.2     eio >= 1.11.2     eldbus >= 1.11.2     efreet >= 1.11.2     efreet-mime >= 1.11.2     efreet-trash >= 1.11.2     eio >= 1.11.2                eo-cxx >= 1.11.2           eina-cxx >= 1.11.2           evas-cxx >= 1.11.2         
+Version: 1.11.2
+Libs: -L${libdir} -lelementary -lm -L/home/chokobole/Workspace/android-jsc/WebKit-r174650/WebKitBuild/Dependencies/Root/lib -leina -lpthread -leet -levas -lecore -lecore_evas -lecore_file -lecore_input -ledje -leo -lethumb_client -lemotion -lecore_imf -lecore_con -leldbus -lefreet -lefreet_mime -lefreet_trash -leio     
+Cflags: -I${includedir}/elementary-1

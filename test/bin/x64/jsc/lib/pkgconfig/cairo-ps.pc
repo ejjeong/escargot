@@ -1,0 +1,12 @@
+prefix=/home/chokobole/Workspace/android-jsc/WebKit-r174650/WebKitBuild/Dependencies/Root
+exec_prefix=${prefix}
+libdir=/home/chokobole/Workspace/android-jsc/WebKit-r174650/WebKitBuild/Dependencies/Root/lib
+includedir=${prefix}/include
+
+Name: cairo-ps
+Description: PostScript surface backend for cairo graphics library
+Version: 1.12.4
+
+Requires: cairo 
+Libs: -lz 
+Cflags: -I${includedir}/cairo 

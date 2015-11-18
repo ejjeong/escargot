@@ -1,0 +1,12 @@
+prefix=/home/chokobole/Workspace/android-jsc/WebKit-r174650/WebKitBuild/Dependencies/Root
+exec_prefix=${prefix}
+libdir=/home/chokobole/Workspace/android-jsc/WebKit-r174650/WebKitBuild/Dependencies/Root/lib
+includedir=${prefix}/include
+
+Name: Eina C++
+Description: A C++ binding for the Eina library
+Requires.private:  
+Version: 1.11.2
+Libs: -L${libdir} -leina  -lpthread
+Libs.private:  -lm -ldl -ldl  -lrt   
+Cflags: -I${includedir}/efl-1 -I${includedir}/eina-1 -I${includedir}/eina-1/eina -I${includedir}/eina-cxx-1 -I${includedir}/eina-cxx-1/eina-cxx

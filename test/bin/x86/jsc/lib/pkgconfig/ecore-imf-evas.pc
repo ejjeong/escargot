@@ -1,0 +1,11 @@
+prefix=/home/chokobole/Workspace/android-jsc/WebKit-r174650/WebKitBuild/Dependencies/Root
+exec_prefix=${prefix}
+libdir=/home/chokobole/Workspace/android-jsc/WebKit-r174650/WebKitBuild/Dependencies/Root/lib
+includedir=${prefix}/include
+
+Name: ecore-imf-evas
+Description: E core library, IMF Evas module
+Version: 1.11.2
+Requires.private: eina >= 1.11.2 eo >= 1.11.2 evas >= 1.11.2 ecore >= 1.11.2 ecore-imf >= 1.11.2  
+Libs: -L${libdir} -lecore_imf_evas
+Cflags: -I${includedir}/efl-1 -I${includedir}/ecore-imf-evas-1

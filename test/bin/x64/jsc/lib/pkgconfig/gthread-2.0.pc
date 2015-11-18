@@ -1,0 +1,11 @@
+prefix=/home/chokobole/Workspace/android-jsc/WebKit-r174650/WebKitBuild/Dependencies/Root
+exec_prefix=${prefix}
+libdir=/home/chokobole/Workspace/android-jsc/WebKit-r174650/WebKitBuild/Dependencies/Root/lib
+includedir=${prefix}/include
+
+Name: GThread
+Description: Thread support for GLib
+Requires: glib-2.0
+Version: 2.41.2
+Libs: -L${libdir} -lgthread-2.0 -pthread
+Cflags: -pthread

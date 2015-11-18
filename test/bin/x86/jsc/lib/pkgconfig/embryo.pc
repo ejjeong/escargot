@@ -1,0 +1,15 @@
+prefix=/home/chokobole/Workspace/android-jsc/WebKit-r174650/WebKitBuild/Dependencies/Root
+exec_prefix=${prefix}
+libdir=/home/chokobole/Workspace/android-jsc/WebKit-r174650/WebKitBuild/Dependencies/Root/lib
+includedir=${prefix}/include
+datarootdir=${prefix}/share
+datadir=${datarootdir}/efl
+embryoincludedir=${datarootdir}/include
+
+Name: embryo
+Description: A small virtual machine engine and bytecode compiler
+Version: 1.11.2
+Requires.private: eina >= 1.11.2  
+Libs: -L${libdir} -lembryo
+Libs.private:  -lm
+Cflags: -I${includedir}/efl-1 -I${includedir}/embryo-1

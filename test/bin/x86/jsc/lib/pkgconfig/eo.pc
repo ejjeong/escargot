@@ -1,0 +1,16 @@
+prefix=/home/chokobole/Workspace/android-jsc/WebKit-r174650/WebKitBuild/Dependencies/Root
+exec_prefix=${prefix}
+libdir=/home/chokobole/Workspace/android-jsc/WebKit-r174650/WebKitBuild/Dependencies/Root/lib
+includedir=${prefix}/include
+datarootdir=${prefix}/share
+datadir=${datarootdir}
+eoincludedir=${datarootdir}/eolian/include
+eolian_flags=-I${eoincludedir}/eo-1
+
+Name: Eo
+Description: EFL's generic object system library.
+Version: 1.11.2
+Requires.private: eina >= 1.11.2  
+Libs: -L${libdir} -leo
+Libs.private:
+Cflags: -I${includedir}/efl-1 -I${includedir}/eo-1

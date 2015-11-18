@@ -1,0 +1,13 @@
+prefix=/home/chokobole/Workspace/android-jsc/WebKit-r174650/WebKitBuild/Dependencies/Root
+exec_prefix=${prefix}
+libdir=/home/chokobole/Workspace/android-jsc/WebKit-r174650/WebKitBuild/Dependencies/Root/lib
+includedir=${prefix}/include
+
+Name: eldbus
+Description: D-Bus access from Ecore
+Requires.private: dbus-1 eina >= 1.11.2 eo >= 1.11.2 ecore >= 1.11.2  
+Version: 1.11.2
+Libs: -L${libdir} -leldbus
+Libs.private: 
+Cflags: -I${includedir}/efl-1 -I${includedir}/eldbus-1
+

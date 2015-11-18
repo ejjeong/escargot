@@ -1,0 +1,11 @@
+prefix=/home/chokobole/Workspace/android-jsc/WebKit-r174650/WebKitBuild/Dependencies/Root
+exec_prefix=${prefix}
+libdir=/home/chokobole/Workspace/android-jsc/WebKit-r174650/WebKitBuild/Dependencies/Root/lib
+includedir=${prefix}/include
+
+Name: harfbuzz
+Description: Text shaping library
+Version: 0.9.14
+
+Libs: -L${libdir} -lharfbuzz
+Cflags: -I${includedir}/harfbuzz

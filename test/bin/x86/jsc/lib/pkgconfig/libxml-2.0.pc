@@ -1,0 +1,13 @@
+prefix=/home/chokobole/Workspace/android-jsc/WebKit-r174650/WebKitBuild/Dependencies/Root
+exec_prefix=${prefix}
+libdir=/home/chokobole/Workspace/android-jsc/WebKit-r174650/WebKitBuild/Dependencies/Root/lib
+includedir=${prefix}/include
+modules=1
+
+Name: libXML
+Version: 2.9.1
+Description: libXML library version2.
+Requires:
+Libs: -L${libdir} -lxml2
+Libs.private:   -lz  -lm  
+Cflags: -I${includedir}/libxml2 

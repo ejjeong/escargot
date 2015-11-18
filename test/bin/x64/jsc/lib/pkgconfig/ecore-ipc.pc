@@ -1,0 +1,12 @@
+prefix=/home/chokobole/Workspace/android-jsc/WebKit-r174650/WebKitBuild/Dependencies/Root
+exec_prefix=${prefix}
+libdir=/home/chokobole/Workspace/android-jsc/WebKit-r174650/WebKitBuild/Dependencies/Root/lib
+includedir=${prefix}/include
+
+Name: ecore-ipc
+Description: E core library, IPC module
+Requires.private: eina >= 1.11.2 eo >= 1.11.2 ecore >= 1.11.2 ecore-con >= 1.11.2  
+Version: 1.11.2
+Libs: -L${libdir} -lecore_ipc
+Libs.private:  -lm
+Cflags: -I${includedir}/efl-1 -I${includedir}/ecore-ipc-1

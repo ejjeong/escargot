@@ -1,0 +1,11 @@
+prefix=/home/chokobole/Workspace/android-jsc/WebKit-r174650/WebKitBuild/Dependencies/Root
+exec_prefix=${prefix}
+libdir=/home/chokobole/Workspace/android-jsc/WebKit-r174650/WebKitBuild/Dependencies/Root/lib
+includedir=${prefix}/include
+
+Name: Atk
+Description: Accessibility Toolkit
+Version: 2.11.92
+Requires: gobject-2.0
+Libs: -L${libdir} -latk-1.0
+Cflags: -I${includedir}/atk-1.0

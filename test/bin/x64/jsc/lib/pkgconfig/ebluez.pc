@@ -1,0 +1,11 @@
+prefix=/home/chokobole/Workspace/android-jsc/WebKit-r174650/WebKitBuild/Dependencies/Root
+exec_prefix=${prefix}
+libdir=/home/chokobole/Workspace/android-jsc/WebKit-r174650/WebKitBuild/Dependencies/Root/lib
+includedir=${prefix}/include
+
+Name: ebluez
+Description: bluetooth device manager (bluez)
+Requires.private: edbus >= 1.7.5
+Version: 1.7.5
+Libs: -L${libdir} -lebluez
+Cflags: -I${includedir}/e_dbus-1

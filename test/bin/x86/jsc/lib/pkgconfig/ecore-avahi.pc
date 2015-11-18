@@ -1,0 +1,12 @@
+prefix=/home/chokobole/Workspace/android-jsc/WebKit-r174650/WebKitBuild/Dependencies/Root
+exec_prefix=${prefix}
+libdir=/home/chokobole/Workspace/android-jsc/WebKit-r174650/WebKitBuild/Dependencies/Root/lib
+includedir=${prefix}/include
+
+Name: ecore-avahi
+Description: E core library, avahi integration
+Requires.private: avahi-client eo >= 1.11.2 eina >= 1.11.2 ecore >= 1.11.2  
+Version: 1.11.2
+Libs: -L${libdir} -lecore_avahi
+Libs.private: 
+Cflags: -I${includedir}/efl-1 -I${includedir}/efl-1 -I${includedir}/ecore-avahi-1
