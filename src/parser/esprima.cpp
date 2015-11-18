@@ -182,6 +182,53 @@ enum PunctuatorsKind {
     Arrow,
 };
 
+enum KeywordKind {
+    NotKeyword,
+    If,
+    In,
+    Do,
+    Var,
+    For,
+    New,
+    Try,
+    This,
+    Else,
+    Case,
+    Void,
+    With,
+    Enum,
+    While,
+    Break,
+    Catch,
+    Throw,
+    Const,
+    Class,
+    Super,
+    Return,
+    Typeof,
+    Delete,
+    Switch,
+    Export,
+    Import,
+    Default,
+    Finally,
+    Extends,
+    Function,
+    Continue,
+    Debugger,
+    InstanceofKeyword,
+    StrictModeReservedWord,
+    Implements,
+    Interface,
+    Package,
+    Private,
+    Protected,
+    Public,
+    Static,
+    Yield,
+    Let
+};
+
 // TODO handle error
 
 ALWAYS_INLINE bool isDecimalDigit(char16_t ch)
@@ -256,28 +303,41 @@ ALWAYS_INLINE bool isFutureReservedWord(const ParserString& id)
     }
 }
 
-ALWAYS_INLINE bool  isStrictModeReservedWord(const ParserString& id)
+ALWAYS_INLINE KeywordKind isStrictModeReservedWord(const ParserString& id)
 {
-    if (id == u"implements") {
-        return true;
-    } else if (id == u"interface") {
-        return true;
-    } else if (id == u"package") {
-        return true;
-    } else if (id == u"private") {
-        return true;
-    } else if (id == u"protected") {
-        return true;
-    } else if (id == u"public") {
-        return true;
-    } else if (id == u"static") {
-        return true;
-    } else if (id == u"yield") {
-        return true;
-    } else if (id == u"let") {
-        return true;
+    auto len = id.length();
+    if (len == 10) {
+        if (id == u"implements") {
+            return Implements;
+        }
+    } else if (len == 9) {
+        if (id == u"interface") {
+            return Interface;
+        } else if (id == u"protected") {
+            return Protected;
+        }
+    } else if (len == 7) {
+        if (id == u"package") {
+            return Package;
+        } else if (id == u"private") {
+            return Private;
+        }
+    } else if (len == 6) {
+        if (id == u"public") {
+            return Public;
+        } else if (id == u"static") {
+            return Static;
+        }
+    } else if (len == 5) {
+        if (id == u"yield") {
+            return Yield;
+        }
+    } else if (len == 3) {
+        if (id == u"let") {
+            return Let;
+        }
     }
-    return false;
+    return NotKeyword;
 }
 
 ALWAYS_INLINE bool isRestrictedWord(const ParserString& id)
@@ -288,7 +348,7 @@ ALWAYS_INLINE bool isRestrictedWord(const ParserString& id)
 
 // ECMA-262 11.6.2.1 Keywords
 
-ALWAYS_INLINE bool isKeyword(const ParserString& id)
+ALWAYS_INLINE KeywordKind isKeyword(const ParserString& id)
 {
     // 'const' is specialized as Keyword in V8.
     // 'yield' and 'let' are for compatibility with SpiderMonkey and ES.next.
@@ -296,29 +356,94 @@ ALWAYS_INLINE bool isKeyword(const ParserString& id)
 
     switch (id.length()) {
     case 2:
-        return (id == u"if") || (id == u"in") || (id == u"do");
+        if (id == u"if") {
+            return If;
+        } else if (id == u"do") {
+            return Do;
+        } else if (id == u"in") {
+            return In;
+        }
     case 3:
-        return (id == u"var") || (id == u"for") || (id == u"new")
-            || (id == u"try") || (id == u"let");
+        if (id == u"var") {
+            return Var;
+        } else if (id == u"for") {
+            return For;
+        } else if (id == u"new") {
+            return New;
+        } else if (id == u"try") {
+            return Try;
+        } else if (id == u"ley") {
+            return Let;
+        }
     case 4:
-        return (id == u"this") || (id == u"else") || (id == u"case")
-            || (id == u"void") || (id == u"with") || (id == u"enum");
+        if (id == u"this") {
+            return This;
+        } else if (id == u"else") {
+            return Else;
+        } else if (id == u"case") {
+            return Case;
+        } else if (id == u"void") {
+            return Void;
+        } else if (id == u"with") {
+            return With;
+        } else if (id == u"enum") {
+            return Enum;
+        }
     case 5:
-        return (id == u"while") || (id == u"break") || (id == u"catch")
-            || (id == u"throw") || (id == u"const") || (id == u"yield")
-            || (id == u"class") || (id == u"super");
+        if (id == u"while") {
+            return While;
+        } else if (id == u"break") {
+            return Break;
+        } else if (id == u"catch") {
+            return Catch;
+        } else if (id == u"throw") {
+            return Throw;
+        } else if (id == u"const") {
+            return Const;
+        } else if (id == u"yield") {
+            return Yield;
+        } else if (id == u"class") {
+            return Class;
+        } else if (id == u"super") {
+            return Super;
+        }
     case 6:
-        return (id == u"return") || (id == u"typeof") || (id == u"delete")
-            || (id == u"switch") || (id == u"export") || (id == u"import");
+        if (id == u"return") {
+            return Return;
+        } else if (id == u"typeof") {
+            return Typeof;
+        } else if (id == u"delete") {
+            return Delete;
+        } else if (id == u"switch") {
+            return Switch;
+        } else if (id == u"export") {
+            return Export;
+        } else if (id == u"import") {
+            return Import;
+        }
     case 7:
-        return (id == u"default") || (id == u"finally") || (id == u"extends");
+        if (id == u"default") {
+            return Default;
+        } else if (id == u"finally") {
+            return Finally;
+        } else if (id == u"extends") {
+            return Extends;
+        }
     case 8:
-        return (id == u"function") || (id == u"continue") || (id == u"debugger");
+        if (id == u"function") {
+            return Function;
+        } else if (id == u"continue") {
+            return Continue;
+        } else if (id == u"debugger") {
+            return Debugger;
+        }
     case 10:
-        return (id == u"instanceof");
-    default:
-        return false;
+        if (id == u"instanceof") {
+            return InstanceofKeyword;
+        }
     }
+
+    return NotKeyword;
 }
 
 struct ParseStatus;
@@ -347,6 +472,7 @@ struct ParseStatus : public RefCounted<ParseStatus> {
     ParserString m_regexFlag;
 
     PunctuatorsKind m_punctuatorsKind;
+    KeywordKind m_keywordKind;
 
     ~ParseStatus()
     {
@@ -918,9 +1044,10 @@ PassRefPtr<ParseStatus> scanIdentifier(ParseContext* ctx)
 
     // There is no keyword or literal with only one character.
     // Thus, it must be an identifier.
+    KeywordKind kk;
     if (id.length() == 1) {
         type = Token::IdentifierToken;
-    } else if (isKeyword(id)) {
+    } else if ((kk = isKeyword(id)) != NotKeyword) {
         type = Token::KeywordToken;
     } else if (id == u"null") {
         type = Token::NullLiteralToken;
@@ -932,9 +1059,10 @@ PassRefPtr<ParseStatus> scanIdentifier(ParseContext* ctx)
 
     ParseStatus* ps = new ParseStatus(type, std::move(id), ctx->m_lineNumber, ctx->m_lineStart, start, ctx->m_index);
     if (type == KeywordToken) {
-        if (ps->m_value == u"in") {
+        ps->m_keywordKind = kk;
+        if (kk == In) {
             ps->m_punctuatorsKind = InPunctuator;
-        } else if (ps->m_value == u"instanceof") {
+        } else if (kk == InstanceofKeyword) {
             ps->m_punctuatorsKind = InstanceOfPunctuator;
         }
     }
@@ -1769,8 +1897,10 @@ ALWAYS_INLINE PassRefPtr<ParseStatus> advance(ParseContext* ctx)
     if (isIdentifierStart(cp)) {
         RefPtr<ParseStatus> token;
         token = scanIdentifier(ctx);
-        if (ctx->m_strict && isStrictModeReservedWord(token->m_value)) {
+        KeywordKind kk;
+        if (ctx->m_strict && (kk = isStrictModeReservedWord(token->m_value)) != NotKeyword) {
             token->m_type = Token::KeywordToken;
+            token->m_keywordKind = kk;
         }
         return token;
     }
@@ -1864,15 +1994,6 @@ ALWAYS_INLINE PassRefPtr<ParseStatus> lex(ParseContext* ctx)
 
 // Expect the next token to match the specified punctuator.
 // If not, an exception will be thrown.
-/*
-void expect(ParseContext* ctx, value) {
-    ParseStatus* token = lex();
-    if (token->m_type != Token::PunctuatorToken || token->m_value != value) {
-        throwUnexpectedToken(token);
-    }
-}
- */
-
 ALWAYS_INLINE void expect(ParseContext* ctx, PunctuatorsKind kind)
 {
     RefPtr<ParseStatus> token = lex(ctx);
@@ -1881,34 +2002,6 @@ ALWAYS_INLINE void expect(ParseContext* ctx, PunctuatorsKind kind)
         throwUnexpectedToken();
     }
 }
-/*
-ALWAYS_INLINE void expect(ParseContext* ctx, const ParserString& value)
-{
-    RefPtr<ParseStatus> token = lex(ctx);
-    // CHECKTHIS. compare value!
-    if (token->m_type != Token::PunctuatorToken || token->m_value != value) {
-        throwUnexpectedToken();
-    }
-}
-
-ALWAYS_INLINE void expect(ParseContext* ctx, const char16_t* value)
-{
-    RefPtr<ParseStatus> token = lex(ctx);
-    // CHECKTHIS. compare value!
-    if (token->m_type != Token::PunctuatorToken || token->m_value != value) {
-        throwUnexpectedToken();
-    }
-}
-
-ALWAYS_INLINE void expect(ParseContext* ctx, const char16_t& value)
-{
-    RefPtr<ParseStatus> token = lex(ctx);
-    // CHECKTHIS. compare value!
-    if (token->m_type != Token::PunctuatorToken || (token->m_value[0] != value || token->m_value.length() != 1)) {
-        throwUnexpectedToken();
-    }
-}
-*/
 
 /**
  * @name expectCommaSeparator
@@ -1940,19 +2033,10 @@ void expectCommaSeparator(ParseContext* ctx)
 
 // Expect the next token to match the specified keyword.
 // If not, an exception will be thrown.
-
-void expectKeyword(ParseContext* ctx, const ParserString& keyword)
+void expectKeyword(ParseContext* ctx, KeywordKind keyword)
 {
     RefPtr<ParseStatus> token = lex(ctx);
-    if (token->m_type != Token::KeywordToken || token->m_value != keyword) {
-        throwUnexpectedToken();
-    }
-}
-
-void expectKeyword(ParseContext* ctx, const char16_t* keyword)
-{
-    RefPtr<ParseStatus> token = lex(ctx);
-    if (token->m_type != Token::KeywordToken || token->m_value != keyword) {
+    if (token->m_type != Token::KeywordToken || token->m_keywordKind != keyword) {
         throwUnexpectedToken();
     }
 }
@@ -1962,27 +2046,11 @@ ALWAYS_INLINE bool match(ParseContext* ctx, PunctuatorsKind kind)
 {
     return ctx->m_lookahead->m_type == Token::PunctuatorToken && ctx->m_lookahead->m_punctuatorsKind == kind;
 }
-/*
-ALWAYS_INLINE bool match(ParseContext* ctx, const ParserString& value)
-{
-    return ctx->m_lookahead->m_type == Token::PunctuatorToken && ctx->m_lookahead->m_value == value;
-}
 
-ALWAYS_INLINE bool match(ParseContext* ctx, const char16_t& value)
-{
-    return LIKELY(ctx->m_lookahead->m_type == Token::PunctuatorToken && ctx->m_lookahead->m_value.length() == 1 && ctx->m_lookahead->m_value[0] == value);
-}
-*/
 // Return true if the next token matches the specified keyword
-
-bool matchKeyword(ParseContext* ctx, const ParserString& keyword)
+bool matchKeyword(ParseContext* ctx, KeywordKind kk)
 {
-    return ctx->m_lookahead->m_type == Token::KeywordToken && ctx->m_lookahead->m_value == keyword;
-}
-
-bool matchKeyword(ParseContext* ctx, const char16_t* keyword)
-{
-    return ctx->m_lookahead->m_type == Token::KeywordToken && ctx->m_lookahead->m_value == keyword;
+    return ctx->m_lookahead->m_type == Token::KeywordToken && ctx->m_lookahead->m_keywordKind == kk;
 }
 
 // Return true if the next token matches the specified contextual keyword
@@ -2207,7 +2275,7 @@ escargot::Node* parseExpression(ParseContext* ctx)
 escargot::Node* parseStatementListItem(ParseContext* ctx)
 {
     if (ctx->m_lookahead->m_type == Token::KeywordToken) {
-        if (ctx->m_lookahead->m_value == u"function")
+        if (ctx->m_lookahead->m_keywordKind == Function)
             return parseFunctionDeclaration(ctx);
         /*
         switch (lookahead.value) {
@@ -2275,7 +2343,7 @@ escargot::Node* parseVariableIdentifier(ParseContext* ctx)
 
     token = lex(ctx);
 
-    if (token->m_type == Token::KeywordToken && token->m_value == u"yield") {
+    if (token->m_type == Token::KeywordToken && token->m_keywordKind == Yield) {
         /*
         if (strict) {
             tolerateUnexpectedToken(token, Messages.StrictReservedWord);
@@ -2285,7 +2353,7 @@ escargot::Node* parseVariableIdentifier(ParseContext* ctx)
          */
         RELEASE_ASSERT_NOT_REACHED();
     } else if (token->m_type != Token::IdentifierToken) {
-        if (ctx->m_strict && token->m_type == Token::KeywordToken && isStrictModeReservedWord(token->m_value)) {
+        if (ctx->m_strict && token->m_type == Token::KeywordToken && token->m_keywordKind > StrictModeReservedWord) {
             tolerateUnexpectedToken();
             // tolerateUnexpectedToken(token, Messages.StrictReservedWord);
         } else {
@@ -2367,7 +2435,7 @@ escargot::Node* parseVariableStatement(ParseContext* ctx /*node*/)
 {
     escargot::VariableDeclaratorVector declarations;
 
-    expectKeyword(ctx, u"var");
+    expectKeyword(ctx, Var);
 
     declarations = parseVariableDeclarationList(ctx);
 
@@ -2396,7 +2464,7 @@ escargot::Node* parseLexicalBinding(ParseContext* ctx, escargot::u16string& kind
     }
 
     if (kind == u"const") {
-        if (!matchKeyword(ctx, u"in") && !matchContextualKeyword(ctx, u"of")) {
+        if (!matchKeyword(ctx, In) && !matchContextualKeyword(ctx, u"of")) {
             expect(ctx, Substitution);
             init = isolateCoverGrammar(ctx, parseAssignmentExpression);
         }
@@ -2511,7 +2579,7 @@ escargot::Node* parseIfStatement(ParseContext* ctx/*node*/)
     escargot::Node* consequent;
     escargot::Node* alternate;
 
-    expectKeyword(ctx, u"if");
+    expectKeyword(ctx, If);
 
     expect(ctx, LeftParenthesis);
 
@@ -2521,7 +2589,7 @@ escargot::Node* parseIfStatement(ParseContext* ctx/*node*/)
 
     consequent = parseStatement(ctx);
 
-    if (matchKeyword(ctx, u"else")) {
+    if (matchKeyword(ctx, Else)) {
         lex(ctx);
         alternate = parseStatement(ctx);
     } else {
@@ -2542,7 +2610,7 @@ escargot::Node* parseDoWhileStatement(ParseContext* ctx/*node*/)
     escargot::Node* body;
     escargot::Node* test;
 
-    expectKeyword(ctx, u"do");
+    expectKeyword(ctx, Do);
 
     oldInIteration = ctx->m_inIteration;
     ctx->m_inIteration = true;
@@ -2551,7 +2619,7 @@ escargot::Node* parseDoWhileStatement(ParseContext* ctx/*node*/)
 
     ctx->m_inIteration = oldInIteration;
 
-    expectKeyword(ctx, u"while");
+    expectKeyword(ctx, While);
 
     expect(ctx, LeftParenthesis);
 
@@ -2575,7 +2643,7 @@ escargot::Node* parseWhileStatement(ParseContext* ctx/*node*/)
     escargot::Node* body;
     escargot::Node* test;
 
-    expectKeyword(ctx, u"while");
+    expectKeyword(ctx, While);
 
     expect(ctx, LeftParenthesis);
 
@@ -2611,14 +2679,14 @@ escargot::Node* parseForStatement(ParseContext* ctx/*node*/)
     init = test = update = nullptr;
     bool forIn = true;
 
-    expectKeyword(ctx, u"for");
+    expectKeyword(ctx, For);
 
     expect(ctx, LeftParenthesis);
 
     if (match(ctx, SemiColon)) {
         lex(ctx);
     } else {
-        if (matchKeyword(ctx, u"var")) {
+        if (matchKeyword(ctx, Var)) {
             // init = new Node();
             lex(ctx);
 
@@ -2627,7 +2695,7 @@ escargot::Node* parseForStatement(ParseContext* ctx/*node*/)
             init->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
             ctx->m_allowIn = previousAllowIn;
 
-            if (((escargot::VariableDeclarationNode *)init)->declarations().size() == 1 && matchKeyword(ctx, u"in")) {
+            if (((escargot::VariableDeclarationNode *)init)->declarations().size() == 1 && matchKeyword(ctx, In)) {
                 lex(ctx);
                 // left = init;
                 left = ((escargot::VariableDeclaratorNode *)(((escargot::VariableDeclarationNode *)init)->declarations()[0]))->id();
@@ -2656,7 +2724,7 @@ escargot::Node* parseForStatement(ParseContext* ctx/*node*/)
             init = inheritCoverGrammar(ctx, parseAssignmentExpression);
             ctx->m_allowIn = previousAllowIn;
 
-            if (matchKeyword(ctx, u"in")) {
+            if (matchKeyword(ctx, In)) {
                 if (!ctx->m_isAssignmentTarget) {
                     tolerateError(u"Messages.InvalidLHSInForIn");
                 }
@@ -2747,7 +2815,7 @@ escargot::Node* parseContinueStatement(ParseContext* ctx/*node*/)
 {
     // var label = null, key;
 
-    expectKeyword(ctx, u"continue");
+    expectKeyword(ctx, Continue);
 
     // Optimize the most common form: 'continue;'.
     if (ctx->m_source[ctx->m_startIndex] == 0x3B) {
@@ -2820,7 +2888,7 @@ escargot::Node* parseBreakStatement(ParseContext* ctx/*node*/)
 {
     // var label = null, key;
 
-    expectKeyword(ctx, u"break");
+    expectKeyword(ctx, Break);
 
     // Catch the very common case first: immediately a semicolon (U+003B).
     if (ctx->m_source[ctx->m_lastIndex] == 0x3B) {
@@ -2891,7 +2959,7 @@ escargot::Node* parseReturnStatement(ParseContext* ctx/*node*/)
     escargot::Node* argument = nullptr;
     // var argument = null;
 
-    expectKeyword(ctx, u"return");
+    expectKeyword(ctx, Return);
 
     if (!ctx->m_inFunctionBody) {
         // tolerateError(Messages.IllegalReturn);
@@ -2963,17 +3031,17 @@ escargot::SwitchCaseNode* parseSwitchCase(ParseContext* ctx)
     // var test, consequent = [], statement, node = new Node();
     escargot::Node* test; // , consequent = [], statement, node = new Node();
     escargot::StatementNodeVector consequent;
-    if (matchKeyword(ctx, u"default")) {
+    if (matchKeyword(ctx, Default)) {
         lex(ctx);
         test = nullptr;
     } else {
-        expectKeyword(ctx, u"case");
+        expectKeyword(ctx, Case);
         test = parseExpression(ctx);
     }
     expect(ctx, Colon);
 
     while (ctx->m_startIndex < ctx->m_length) {
-        if (match(ctx, RightBrace) || matchKeyword(ctx, u"default") || matchKeyword(ctx, u"case")) {
+        if (match(ctx, RightBrace) || matchKeyword(ctx, Default) || matchKeyword(ctx, Case)) {
             break;
         }
         escargot::Node* statement = parseStatementListItem(ctx);
@@ -2991,7 +3059,7 @@ escargot::Node* parseSwitchStatement(ParseContext* ctx/*node*/)
 {
     // var discriminant, cases, clause, oldInSwitch, defaultFound;
 
-    expectKeyword(ctx, u"switch");
+    expectKeyword(ctx, Switch);
 
     expect(ctx, LeftParenthesis);
 
@@ -3051,7 +3119,7 @@ escargot::Node* parseThrowStatement(ParseContext* ctx/*node*/)
 {
     escargot::Node* argument;
 
-    expectKeyword(ctx, u"throw");
+    expectKeyword(ctx, Throw);
 
     if (ctx->m_hasLineTerminator) {
         throw u"Messages.NewlineAfterThrow";
@@ -3075,7 +3143,7 @@ escargot::Node* parseCatchClause(ParseContext* ctx/*node*/)
     // var param, params = [], paramMap = {}, key, i, body, node = new Node();
 
 
-    expectKeyword(ctx, u"catch");
+    expectKeyword(ctx, Catch);
 
     expect(ctx, LeftParenthesis);
     if (match(ctx, RightParenthesis)) {
@@ -3116,17 +3184,17 @@ escargot::Node* parseTryStatement(ParseContext* ctx/*node*/)
 {
     // var block, handler = null, finalizer = null;
 
-    expectKeyword(ctx, u"try");
+    expectKeyword(ctx, Try);
 
     escargot::Node* block = parseBlock(ctx);
     escargot::Node* handler = nullptr;
     escargot::Node* finalizer = nullptr;
 
-    if (matchKeyword(ctx, u"catch")) {
+    if (matchKeyword(ctx, Catch)) {
         handler = parseCatchClause(ctx);
     }
 
-    if (matchKeyword(ctx, u"finally")) {
+    if (matchKeyword(ctx, Finally)) {
         lex(ctx);
         finalizer = parseBlock(ctx);
     }
@@ -3181,36 +3249,34 @@ escargot::Node* parseStatement(ParseContext* ctx)
             return parseExpressionStatement(ctx);
         }
     } else if (type == Token::KeywordToken) {
-        if (ctx->m_lookahead->m_value == u"break") {
+        if (ctx->m_lookahead->m_keywordKind == Break) {
             return parseBreakStatement(ctx);
-        } else if (ctx->m_lookahead->m_value == u"break") {
-            return parseBreakStatement(ctx);
-        } else if (ctx->m_lookahead->m_value == u"continue") {
+        } else if (ctx->m_lookahead->m_keywordKind == Continue) {
             return parseContinueStatement(ctx);
-        } else if (ctx->m_lookahead->m_value == u"debugger") {
+        } else if (ctx->m_lookahead->m_keywordKind == Debugger) {
             RELEASE_ASSERT_NOT_REACHED();
-        } else if (ctx->m_lookahead->m_value == u"do") {
+        } else if (ctx->m_lookahead->m_keywordKind == Do) {
             return parseDoWhileStatement(ctx);
-        } else if (ctx->m_lookahead->m_value == u"for") {
+        } else if (ctx->m_lookahead->m_keywordKind == For) {
             return parseForStatement(ctx);
-        } else if (ctx->m_lookahead->m_value == u"function") {
+        } else if (ctx->m_lookahead->m_keywordKind == Function) {
             RELEASE_ASSERT_NOT_REACHED();
             return parseFunctionDeclaration(ctx);
-        } else if (ctx->m_lookahead->m_value == u"if") {
+        } else if (ctx->m_lookahead->m_keywordKind == If) {
             return parseIfStatement(ctx);
-        } else if (ctx->m_lookahead->m_value == u"return") {
+        } else if (ctx->m_lookahead->m_keywordKind == Return) {
             return parseReturnStatement(ctx);
-        } else if (ctx->m_lookahead->m_value == u"switch") {
+        } else if (ctx->m_lookahead->m_keywordKind == Switch) {
             return parseSwitchStatement(ctx);
-        } else if (ctx->m_lookahead->m_value == u"throw") {
+        } else if (ctx->m_lookahead->m_keywordKind == Throw) {
             return parseThrowStatement(ctx);
-        } else if (ctx->m_lookahead->m_value == u"try") {
+        } else if (ctx->m_lookahead->m_keywordKind == Try) {
             return parseTryStatement(ctx);
-        } else if (ctx->m_lookahead->m_value == u"var") {
+        } else if (ctx->m_lookahead->m_keywordKind == Var) {
             return parseVariableStatement(ctx);
-        } else if (ctx->m_lookahead->m_value == u"while") {
+        } else if (ctx->m_lookahead->m_keywordKind == While) {
             return parseWhileStatement(ctx);
-        } else if (ctx->m_lookahead->m_value == u"with") {
+        } else if (ctx->m_lookahead->m_keywordKind == With) {
             return parseWithStatement(ctx);
         }
 
@@ -3515,7 +3581,7 @@ escargot::Node* parseFunctionDeclaration(ParseContext* ctx/*node, identifierIsOp
 
     bool previousAllowYield = ctx->m_allowYield;
     RefPtr<ParseStatus> firstRestricted;
-    expectKeyword(ctx, u"function");
+    expectKeyword(ctx, Function);
 
     bool isGenerator = match(ctx, Multiply);
     if (isGenerator) {
@@ -3599,7 +3665,7 @@ escargot::Node* parseFunctionExpression(ParseContext* ctx)
 
     bool previousAllowYield = ctx->m_allowYield;
 
-    expectKeyword(ctx, u"function");
+    expectKeyword(ctx, Function);
 
     bool isGenerator = match(ctx, Multiply);
     if (isGenerator) {
@@ -3611,7 +3677,7 @@ escargot::Node* parseFunctionExpression(ParseContext* ctx)
     RefPtr<ParseStatus> firstRestricted;
     if (!match(ctx, LeftParenthesis)) {
         RefPtr<ParseStatus> token = ctx->m_lookahead;
-        id = (!ctx->m_strict && !isGenerator && matchKeyword(ctx, u"yield")) ? parseNonComputedProperty(ctx) : parseVariableIdentifier(ctx);
+        id = (!ctx->m_strict && !isGenerator && matchKeyword(ctx, Yield)) ? parseNonComputedProperty(ctx) : parseVariableIdentifier(ctx);
         ASSERT(id->type() == escargot::NodeType::Identifier);
         if (ctx->m_strict) {
             if (isRestrictedWord(token->m_value)) {
@@ -4663,20 +4729,20 @@ escargot::Node* parsePrimaryExpression(ParseContext* ctx)
         }
         expr = finishLiteralNode(ctx, lex(ctx));
     } else if (type == Token::KeywordToken) {
-        if (!ctx->m_strict && ctx->m_allowYield && matchKeyword(ctx, u"yield")) {
+        if (!ctx->m_strict && ctx->m_allowYield && matchKeyword(ctx, Yield)) {
             return parseNonComputedProperty(ctx);
         }
         ctx->m_isAssignmentTarget = ctx->m_isBindingElement = false;
-        if (matchKeyword(ctx, u"function")) {
+        if (matchKeyword(ctx, Function)) {
             return parseFunctionExpression(ctx);
         }
-        if (matchKeyword(ctx, u"this")) {
+        if (matchKeyword(ctx, This)) {
             lex(ctx);
             escargot::Node* nd = new escargot::ThisExpressionNode();
             nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
             return nd;
         }
-        if (matchKeyword(ctx, u"class")) {
+        if (matchKeyword(ctx, Class)) {
             RELEASE_ASSERT_NOT_REACHED();
             // return parseClassExpression();
         }
@@ -4814,7 +4880,7 @@ escargot::Node* parseNewExpression(ParseContext* ctx)
     // var callee, args, node = new Node();
     escargot::Node* callee;
 
-    expectKeyword(ctx, u"new");
+    expectKeyword(ctx, New);
 
     if (match(ctx, Period)) {
         lex(ctx);
@@ -4856,7 +4922,7 @@ escargot::Node* parseLeftHandSideExpressionAllowCall(ParseContext* ctx)
     // RefPtr<ParseStatus> startToken = ctx->m_lookahead;
     ctx->m_allowIn = true;
 
-    if (matchKeyword(ctx, u"super") && ctx->m_inFunctionBody) {
+    if (matchKeyword(ctx, Super) && ctx->m_inFunctionBody) {
         RELEASE_ASSERT_NOT_REACHED();
         /*
         expr = new Node();
@@ -4866,7 +4932,7 @@ escargot::Node* parseLeftHandSideExpressionAllowCall(ParseContext* ctx)
             throwUnexpectedToken(lookahead);
         }*/
     } else {
-        expr = inheritCoverGrammar(ctx, matchKeyword(ctx, u"new") ? parseNewExpression : parsePrimaryExpression);
+        expr = inheritCoverGrammar(ctx, matchKeyword(ctx, New) ? parseNewExpression : parsePrimaryExpression);
     }
 
     for (;;) {
@@ -4917,7 +4983,7 @@ escargot::Node* parseLeftHandSideExpression(ParseContext* ctx)
     escargot::Node* property;
     // RefPtr<ParseStatus> startToken = ctx->m_lookahead;
 
-    if (matchKeyword(ctx, u"super") && ctx->m_inFunctionBody) {
+    if (matchKeyword(ctx, Super) && ctx->m_inFunctionBody) {
         RELEASE_ASSERT_NOT_REACHED();
         /*
         expr = new Node();
@@ -4928,7 +4994,7 @@ escargot::Node* parseLeftHandSideExpression(ParseContext* ctx)
         }
         */
     } else {
-        expr = inheritCoverGrammar(ctx, matchKeyword(ctx, u"new") ? parseNewExpression : parsePrimaryExpression);
+        expr = inheritCoverGrammar(ctx, matchKeyword(ctx, New) ? parseNewExpression : parsePrimaryExpression);
     }
 
     for (;;) {
@@ -5044,18 +5110,18 @@ escargot::Node* parseUnaryExpression(ParseContext* ctx)
         }
         expr->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
         ctx->m_isAssignmentTarget = ctx->m_isBindingElement = false;
-    } else if (matchKeyword(ctx, u"delete") || matchKeyword(ctx, u"void") || matchKeyword(ctx, u"typeof")) {
+    } else if (matchKeyword(ctx, Delete) || matchKeyword(ctx, Void) || matchKeyword(ctx, Typeof)) {
         // startToken = ctx->m_lookahead;
         token = lex(ctx);
         expr = inheritCoverGrammar(ctx, parseUnaryExpression);
         // expr = new WrappingNode(startToken).finishUnaryExpression(token.value, expr);
-        if (token->m_value == u"delete") {
+        if (token->m_keywordKind == Delete) {
             expr = new escargot::UnaryExpressionDeleteNode(expr);
             expr->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
-        } else if (token->m_value == u"void") {
+        } else if (token->m_keywordKind == Void) {
             expr = new escargot::UnaryExpressionVoidNode(expr);
             expr->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
-        } else if (token->m_value == u"typeof") {
+        } else if (token->m_keywordKind == Typeof) {
             expr = new escargot::UnaryExpressionTypeOfNode(expr);
             expr->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
         }
@@ -5204,9 +5270,9 @@ int binaryPrecedence(ParseContext* ctx, RefPtr<ParseStatus> token, bool allowIn)
         }
         return 0;
     } else if (token->m_type == Token::KeywordToken) {
-        if (token->m_value == u"in") {
+        if (token->m_keywordKind == In) {
             return ctx->m_allowIn ? 7 : 0;
-        } else if (token->m_value == u"instanceof") {
+        } else if (token->m_keywordKind == InstanceofKeyword) {
             return 7;
         }
     } else {
@@ -5564,7 +5630,7 @@ escargot::Node* parseAssignmentExpression(ParseContext* ctx)
     // RefPtr<ParseStatus> startToken = ctx->m_lookahead;
     RefPtr<ParseStatus> token = ctx->m_lookahead;
 
-    if (!ctx->m_allowYield && matchKeyword(ctx, u"yield")) {
+    if (!ctx->m_allowYield && matchKeyword(ctx, Yield)) {
         return parseYieldExpression(ctx);
     }
 
