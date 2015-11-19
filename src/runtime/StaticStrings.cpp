@@ -12,7 +12,7 @@ void Strings::initStaticStrings(ESVMInstance* instance)
 
     for (unsigned i = 0; i < ESCARGOT_ASCII_TABLE_MAX ; i ++) {
         ESString* str = ESString::create((char16_t)i);
-        asciiTable[i] = InternalAtomicString(instance, str->string());
+        asciiTable[i] = InternalAtomicString(instance, str->string().data(), str->string().length());
     }
 
     for (unsigned i = 0; i < ESCARGOT_STRINGS_NUMBERS_MAX ; i ++) {

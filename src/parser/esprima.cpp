@@ -2571,8 +2571,7 @@ escargot::Node* parseVariableIdentifier(ParseContext* ctx)
     */
 
     auto ll = token;
-    escargot::u16string estr(ll->m_value.begin(), ll->m_value.end());
-    escargot::Node* nd = new escargot::IdentifierNode(escargot::InternalAtomicString(estr));
+    escargot::Node* nd = new escargot::IdentifierNode(escargot::InternalAtomicString(ll->m_value.begin(), ll->m_value.length()));
     nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
     return nd;
 }
@@ -4102,8 +4101,7 @@ escargot::Node* parseObjectPropertyKey(ParseContext* ctx)
     case Token::KeywordToken:
         {
             // return node.finishIdentifier(token.value);
-            escargot::u16string estr(token->m_value.begin(), token->m_value.end());
-            nd = new escargot::IdentifierNode(escargot::InternalAtomicString(estr));
+            nd = new escargot::IdentifierNode(escargot::InternalAtomicString(token->m_value.begin(), token->m_value.length()));
             nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
             return nd;
         }
@@ -4929,8 +4927,7 @@ escargot::Node* parsePrimaryExpression(ParseContext* ctx)
         tolerateUnexpectedToken(lookahead);
         }*/
         auto ll = lex(ctx);
-        escargot::u16string estr(ll->m_value.begin(), ll->m_value.end());
-        expr = new escargot::IdentifierNode(escargot::InternalAtomicString(estr));
+        expr = new escargot::IdentifierNode(escargot::InternalAtomicString(ll->m_value.begin(), ll->m_value.length()));
         expr->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
         // expr = node.finishIdentifier(lex().value);
     } else if (type == Token::StringLiteralToken || type == Token::NumericLiteralToken) {
@@ -5061,8 +5058,7 @@ escargot::Node* parseNonComputedProperty(ParseContext* ctx)
     }
 
     // return node.finishIdentifier(token.value);
-    escargot::u16string estr(token->m_value.begin(), token->m_value.end());
-    escargot::Node* nd = new escargot::IdentifierNode(escargot::InternalAtomicString(estr));
+    escargot::Node* nd = new escargot::IdentifierNode(escargot::InternalAtomicString(token->m_value.begin(), token->m_value.length()));
     nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
     return nd;
 }

@@ -42,7 +42,7 @@ ifeq ($(BUILD_MODE), debug)
     LOCAL_CFLAGS += -O0 -g3 -D_GLIBCXX_DEBUG -fno-omit-frame-pointer -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable -Wno-sign-compare -Wno-unused-local-typedefs
     LOCAL_CXXFLAGS += -Wno-invalid-offsetof
 else ifeq ($(BUILD_MODE), release)
-    LOCAL_CFLAGS += -O2 -g3 -DNDEBUG -fomit-frame-pointer
+    LOCAL_CFLAGS += -O2 -g3 -DNDEBUG -fomit-frame-pointer -finline-limit=300
 else
     $(error mode error)
 endif

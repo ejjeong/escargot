@@ -92,7 +92,7 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16strin
         const ESHiddenClassPropertyInfoVector& info = instance->globalObject()->hiddenClass()->propertyInfo();
         for (unsigned i = 0; i < info.size() ; i ++) {
             if (!info[i].m_flags.m_isDeletedValue) {
-                InternalAtomicString as(instance, info[i].m_name->string());
+                InternalAtomicString as(instance, info[i].m_name->string().data(), info[i].m_name->string().length());
                 knownGlobalNames.insert(std::make_pair(as, i));
             }
         }
