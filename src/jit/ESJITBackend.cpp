@@ -658,7 +658,7 @@ LIns* NativeGenerator::boxESValueFromTagAndPayload(nanojit::LIns* tag, nanojit::
     ASSERT(tag->isI());
     ASSERT(payload->isI());
     LIns* ret;
-#if NJ_SOFTFLOAT_SUPPORTED
+#if 0 // NJ_SOFTFLOAT_SUPPORTED
 #ifdef ESCARGOT_LITTLE_ENDIAN
     ret = m_out->ins2(LIR_ii2d, tag, payload);
 #else
@@ -666,13 +666,8 @@ LIns* NativeGenerator::boxESValueFromTagAndPayload(nanojit::LIns* tag, nanojit::
 #endif
 #else // NJ_SOFTFLOAT_SUPPORTED
     LIns* tmp = m_out->insAlloc(sizeof(ESValue));
-#ifdef ESCARGOT_LITTLE_ENDIAN
     m_out->insStore(LIR_sti, payload, tmp, 0, 1);
     m_out->insStore(LIR_sti, tag, tmp, sizeof(int32_t), 1);
-#else
-    m_out->insStore(LIR_sti, tag, tmp, 0, 1);
-    m_out->insStore(LIR_sti, payload, tmp, sizeof(int32_t), 1);
-#endif
     ret = m_out->insLoad(LIR_ldd, tmp, 0, 1, LOAD_NORMAL);
 #endif // NJ_SOFTFLOAT_SUPPORTED
     ASSERT(ret->isD());
@@ -683,7 +678,7 @@ LIns* NativeGenerator::getTagFromESValue(nanojit::LIns* boxedValue)
 {
     ASSERT(boxedValue->isD());
     LIns* ret;
-#if NJ_SOFTFLOAT_SUPPORTED
+#if 0 // NJ_SOFTFLOAT_SUPPORTED
 #ifdef ESCARGOT_LITTLE_ENDIAN
     ret = m_out->ins1(LIR_dlo2i, boxedValue);
 #else
@@ -692,11 +687,7 @@ LIns* NativeGenerator::getTagFromESValue(nanojit::LIns* boxedValue)
 #else // NJ_SOFTFLOAT_SUPPORTED
     LIns* tmp = m_out->insAlloc(sizeof(ESValue));
     m_out->insStore(LIR_std, boxedValue, tmp, 0, 1);
-#ifdef ESCARGOT_LITTLE_ENDIAN
     ret = m_out->insLoad(LIR_ldi, tmp, sizeof(int32_t), 1, LOAD_NORMAL);
-#else
-    ret = m_out->insLoad(LIR_ldi, tmp, 0, 1, LOAD_NORMAL);
-#endif
 #endif // NJ_SOFTFLOAT_SUPPORTED
     ASSERT(ret->isI());
     return ret;
@@ -706,7 +697,7 @@ LIns* NativeGenerator::getPayloadFromESValue(nanojit::LIns* boxedValue)
 {
     ASSERT(boxedValue->isD());
     LIns* ret;
-#if NJ_SOFTFLOAT_SUPPORTED
+#if 0 // NJ_SOFTFLOAT_SUPPORTED
 #ifdef ESCARGOT_LITTLE_ENDIAN
     ret = m_out->ins1(LIR_dhi2i, boxedValue);
 #else
@@ -715,11 +706,7 @@ LIns* NativeGenerator::getPayloadFromESValue(nanojit::LIns* boxedValue)
 #else // NJ_SOFTFLOAT_SUPPORTED
     LIns* tmp = m_out->insAlloc(sizeof(ESValue));
     m_out->insStore(LIR_std, boxedValue, tmp, 0, 1);
-#ifdef ESCARGOT_LITTLE_ENDIAN
     ret = m_out->insLoad(LIR_ldi, tmp, 0, 1, LOAD_NORMAL);
-#else
-    ret = m_out->insLoad(LIR_ldi, tmp, sizeof(int32_t), 1, LOAD_NORMAL);
-#endif
 #endif // NJ_SOFTFLOAT_SUPPORTED
     ASSERT(ret->isI());
     return ret;
