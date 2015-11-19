@@ -39,7 +39,7 @@ public:
             return false;
         ASSERT(desc.isObject());
         ESObject* obj = desc.asESPointer()->asESObject();
-        if (!obj->hasProperty(ESString::create(u"get")) && !obj->hasProperty(ESString::create(u"set")))
+        if (!obj->hasProperty(strings->get.string()) && !obj->hasProperty(strings->set.string()))
             return false;
         return true;
     }
@@ -51,7 +51,7 @@ public:
         if (desc.isPrimitive())
             return true;
         ESObject* obj = desc.asESPointer()->asESObject();
-        if (!obj->hasOwnProperty(ESString::create(u"value")) && !obj->hasOwnProperty(ESString::create(u"writable")))
+        if (!obj->hasOwnProperty(strings->value.string()) && !obj->hasOwnProperty(strings->writable.string()))
             return false;
         return true;
     }
@@ -75,32 +75,32 @@ public:
         const ESHiddenClassPropertyInfo& propertyInfo = descSrc->hiddenClass()->propertyInfo(idx);
         ESObject* obj = ESObject::create();
         if (propertyInfo.m_flags.m_isDataProperty || isActualDataProperty) {
-            obj->set(ESString::create(u"value"), descSrc->hiddenClass()->read(descSrc, descSrc, idx));
-            obj->set(ESString::create(u"writable"), ESValue(propertyInfo.m_flags.m_isWritable));
+            obj->set(strings->value.string(), descSrc->hiddenClass()->read(descSrc, descSrc, idx));
+            obj->set(strings->writable.string(), ESValue(propertyInfo.m_flags.m_isWritable));
         } else if (descSrc->accessorData(idx)->getJSGetter()
             || descSrc->accessorData(idx)->getJSSetter()
             || (!descSrc->accessorData(idx)->getNativeGetter() && !descSrc->accessorData(idx)->getNativeSetter())) {
             ESObject* getDesc = ESObject::create();
-            getDesc->set(ESString::create(u"value"), descSrc->accessorData(idx)->getJSGetter() ? descSrc->accessorData(idx)->getJSGetter() : ESValue());
-            getDesc->set(ESString::create(u"writable"), ESValue(true));
-            getDesc->set(ESString::create(u"enumerable"), ESValue(true));
-            getDesc->set(ESString::create(u"configurable"), ESValue(true));
-            ESValue getStr = ESString::create(u"get");
-            obj->DefineOwnProperty(getStr, getDesc, false);
+            getDesc->set(strings->value.string(), descSrc->accessorData(idx)->getJSGetter() ? descSrc->accessorData(idx)->getJSGetter() : ESValue());
+            getDesc->set(strings->writable.string(), ESValue(true));
+            getDesc->set(strings->enumerable.string(), ESValue(true));
+            getDesc->set(strings->configurable.string(), ESValue(true));
+            ESValue getStr = strings->get.string();
+            obj->defineOwnProperty(getStr, getDesc, false);
 
             ESObject* setDesc = ESObject::create();
-            setDesc->set(ESString::create(u"value"), descSrc->accessorData(idx)->getJSSetter() ? descSrc->accessorData(idx)->getJSSetter() : ESValue());
-            setDesc->set(ESString::create(u"writable"), ESValue(true));
-            setDesc->set(ESString::create(u"enumerable"), ESValue(true));
-            setDesc->set(ESString::create(u"configurable"), ESValue(true));
-            ESValue setStr = ESString::create(u"set");
-            obj->DefineOwnProperty(setStr, setDesc, false);
-            obj->set(ESString::create(u"writable"), ESValue(false));
+            setDesc->set(strings->value.string(), descSrc->accessorData(idx)->getJSSetter() ? descSrc->accessorData(idx)->getJSSetter() : ESValue());
+            setDesc->set(strings->writable.string(), ESValue(true));
+            setDesc->set(strings->enumerable.string(), ESValue(true));
+            setDesc->set(strings->configurable.string(), ESValue(true));
+            ESValue setStr = strings->set.string();
+            obj->defineOwnProperty(setStr, setDesc, false);
+            obj->set(strings->writable.string(), ESValue(false));
         } else {
             descSrc->accessorData(idx)->setGetterAndSetterTo(obj);
         }
-        obj->set(ESString::create(u"enumerable"), ESValue(propertyInfo.m_flags.m_isEnumerable));
-        obj->set(ESString::create(u"configurable"), ESValue(propertyInfo.m_flags.m_isConfigurable));
+        obj->set(strings->enumerable.string(), ESValue(propertyInfo.m_flags.m_isEnumerable));
+        obj->set(strings->configurable.string(), ESValue(propertyInfo.m_flags.m_isConfigurable));
         return obj;
     }
 
@@ -113,10 +113,10 @@ public:
                     ESValue e = obj->asESArrayObject()->data()[index];
                     if (LIKELY(!e.isEmpty())) {
                         ESObject* ret = ESObject::create();
-                        ret->set(ESString::create(u"value"), e);
-                        ret->set(ESString::create(u"writable"), ESValue(true));
-                        ret->set(ESString::create(u"enumerable"), ESValue(true));
-                        ret->set(ESString::create(u"configurable"), ESValue(true));
+                        ret->set(strings->value.string(), e);
+                        ret->set(strings->writable.string(), ESValue(true));
+                        ret->set(strings->enumerable.string(), ESValue(true));
+                        ret->set(strings->configurable.string(), ESValue(true));
                         return ret;
                     }
                 }
@@ -127,10 +127,10 @@ public:
                 if (LIKELY(index < obj->asESStringObject()->length())) {
                     ESValue e = obj->asESStringObject()->getCharacterAsString(index);
                     ESObject* ret = ESObject::create();
-                    ret->set(ESString::create(u"value"), e);
-                    ret->set(ESString::create(u"writable"), ESValue(false));
-                    ret->set(ESString::create(u"enumerable"), ESValue(true));
-                    ret->set(ESString::create(u"configurable"), ESValue(false));
+                    ret->set(strings->value.string(), e);
+                    ret->set(strings->writable.string(), ESValue(false));
+                    ret->set(strings->enumerable.string(), ESValue(true));
+                    ret->set(strings->configurable.string(), ESValue(false));
                     return ret;
                 }
             }

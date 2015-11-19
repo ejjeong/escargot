@@ -63,6 +63,18 @@ public:
         newContext.propagateInformationTo(context);
     }
 
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
+    {
+        result += 10;
+        if (m_init)
+            m_init->computeRoughCodeBlockSizeInWordSize(result);
+        if (m_test)
+            m_test->computeRoughCodeBlockSizeInWordSize(result);
+        if (m_update)
+            m_update->computeRoughCodeBlockSizeInWordSize(result);
+        m_body->computeRoughCodeBlockSizeInWordSize(result);
+    }
+
 protected:
     ExpressionNode *m_init;
     ExpressionNode *m_test;

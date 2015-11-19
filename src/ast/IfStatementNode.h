@@ -42,6 +42,17 @@ public:
 
     }
 
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
+    {
+        result += 6;
+        if (m_test)
+            m_test->computeRoughCodeBlockSizeInWordSize(result);
+        if (m_consequente)
+            m_consequente->computeRoughCodeBlockSizeInWordSize(result);
+        if (m_alternate)
+            m_alternate->computeRoughCodeBlockSizeInWordSize(result);
+    }
+
 protected:
     ExpressionNode *m_test;
     StatementNode *m_consequente;

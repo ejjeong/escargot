@@ -21,6 +21,12 @@ public:
         codeBlock->pushCode(PopExpressionStatement(), context, this);
     }
 
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
+    {
+        result += 1;
+        m_expression->computeRoughCodeBlockSizeInWordSize(result);
+    }
+
     Node* expression() { return m_expression; }
 
 protected:

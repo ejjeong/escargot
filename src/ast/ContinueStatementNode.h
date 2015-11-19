@@ -18,6 +18,11 @@ public:
         codeBlock->pushCode(Jump(SIZE_MAX), context, this);
         context.pushContinuePositions(codeBlock->lastCodePosition<Jump>());
     }
+
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
+    {
+        result += 2;
+    }
 };
 
 }

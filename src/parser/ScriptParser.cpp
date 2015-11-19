@@ -48,13 +48,13 @@ void ScriptParser::dumpStats()
 
 Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16string& source, bool isForGlobalScope)
 {
-    Node* node;
+    ProgramNode* programNode;
     try {
         // unsigned long start = ESVMInstance::currentInstance()->tickCount();
-        node = esprima::parse(source);
+        programNode = (ProgramNode *)esprima::parse(source);
         // unsigned long end = ESVMInstance::currentInstance()->tickCount();
         // ESCARGOT_LOG_ERROR("parse takes %lfms\n", (end-start)/1000.0);
-        // printf("parse takes %lfms\n", (end-start)/1000.0);
+        // printf("esprima takes %lfms\n", (end-start)/1000.0);
     } catch(size_t lineNumber) {
         char temp[512];
         sprintf(temp, "Parse Error %u line", (unsigned)lineNumber);
@@ -101,12 +101,13 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16strin
     std::function<void(Node* currentNode,
     std::vector<InternalAtomicStringVector *>& identifierStack,
     FunctionNode* nearFunctionNode)>
-    postAnalysisFunction = [&postAnalysisFunction, instance, &markNeedsActivation, &shouldWorkAroundIdentifier, &updatePostfixNodeChecker, &showedEvalInFunction, &knownGlobalNames, &isForGlobalScope]
+    postAnalysisFunction = [&postAnalysisFunction, &programNode, instance, &markNeedsActivation, &shouldWorkAroundIdentifier, &updatePostfixNodeChecker, &showedEvalInFunction, &knownGlobalNames, &isForGlobalScope]
     (Node* currentNode,
     std::vector<InternalAtomicStringVector *>& identifierStack,
     FunctionNode* nearFunctionNode) {
         if (!currentNode)
             return;
+
         NodeType type = currentNode->type();
         InternalAtomicStringVector& identifierInCurrentContext = *identifierStack.back();
         if (type == NodeType::Program) {
@@ -394,8 +395,8 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16strin
     InternalAtomicStringVector identifierInCurrentContext;
     std::vector<InternalAtomicStringVector *> stack;
     stack.push_back(&identifierInCurrentContext);
-    postAnalysisFunction(node, stack, NULL);
-    return node;
+    postAnalysisFunction(programNode, stack, NULL);
+    return programNode;
 }
 
 CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, const escargot::u16string& source, bool isForGlobalScope)
@@ -416,7 +417,7 @@ CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, const escargot::u16
 
     // unsigned long start = ESVMInstance::currentInstance()->tickCount();
     GC_disable();
-    Node* node = generateAST(instance, source, isForGlobalScope);
+    ProgramNode* node = (ProgramNode *)generateAST(instance, source, isForGlobalScope);
     ASSERT(node->type() == Program);
     CodeBlock* cb = generateByteCode(node);
     ESSimpleAllocator::freeAll();

@@ -15,6 +15,12 @@ class ESString;
     F(arguments) \
     F(length) \
     F(__proto__) \
+    F(value) \
+    F(writable) \
+    F(enumerable) \
+    F(configurable) \
+    F(get) \
+    F(set) \
     F(String) \
     F(Number) \
     F(NaN) \
@@ -134,7 +140,6 @@ class ESString;
     F(ArrayBuffer) \
     F(byteLength) \
     F(subarray) \
-    F(set) \
     F(buffer) \
     F(JSON) \
     F(parse) \
@@ -143,6 +148,9 @@ class ESString;
     F(getPrototypeOf) \
     F(isPrototypeOf) \
     F(propertyIsEnumerable) \
+    F(ignoreCase) \
+    F(global) \
+    F(multiline) \
 
 class Strings {
 public:

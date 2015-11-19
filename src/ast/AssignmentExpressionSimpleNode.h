@@ -27,6 +27,12 @@ public:
         m_left->generatePutByteCode(codeBlock, context);
     }
 
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
+    {
+        m_left->computeRoughCodeBlockSizeInWordSize(result);
+        m_right->computeRoughCodeBlockSizeInWordSize(result);
+    }
+
 protected:
     Node* m_left; // left: Pattern;
     Node* m_right; // right: Expression;

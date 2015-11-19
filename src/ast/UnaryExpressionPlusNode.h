@@ -19,6 +19,12 @@ public:
         m_argument->generateExpressionByteCode(codeBlock, context);
         codeBlock->pushCode(UnaryPlus(), context, this);
     }
+
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
+    {
+        result += 1;
+        m_argument->computeRoughCodeBlockSizeInWordSize(result);
+    }
 protected:
     Node* m_argument;
 };

@@ -26,6 +26,12 @@ public:
         context.consumeLabeledContinuePositions(codeBlock, context.m_positionToContinue, m_label);
     }
 
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
+    {
+        result += 6;
+        m_statementNode->computeRoughCodeBlockSizeInWordSize(result);
+    }
+
 protected:
     StatementNode* m_statementNode;
     ESString* m_label;

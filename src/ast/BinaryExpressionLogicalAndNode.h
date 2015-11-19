@@ -45,6 +45,13 @@ public:
 #endif
     }
 
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
+    {
+        result += 6;
+        m_left->computeRoughCodeBlockSizeInWordSize(result);
+        m_right->computeRoughCodeBlockSizeInWordSize(result);
+    }
+
 protected:
     ExpressionNode* m_left;
     ExpressionNode* m_right;

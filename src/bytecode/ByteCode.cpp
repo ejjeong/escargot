@@ -1,14 +1,15 @@
 #include "Escargot.h"
 #include "bytecode/ByteCode.h"
-
+#include "ast/AST.h"
 #ifdef ENABLE_ESJIT
 #include "nanojit.h"
 #endif
 
 namespace escargot {
 
-CodeBlock::CodeBlock(bool isBuiltInFunction)
+CodeBlock::CodeBlock(size_t roughCodeBlockSizeInWordSize, bool isBuiltInFunction)
 {
+    m_code.reserve(roughCodeBlockSizeInWordSize * sizeof(size_t));
     m_needsActivation = false;
     m_isBuiltInFunction = isBuiltInFunction;
     m_isStrict = false;
@@ -169,9 +170,11 @@ void ByteCode::assignOpcodeInAddress()
 }
 
 
-CodeBlock* generateByteCode(Node* node)
+CodeBlock* generateByteCode(ProgramNode* node)
 {
-    CodeBlock* block = CodeBlock::create();
+    size_t dummy;
+    node->computeRoughCodeBlockSizeInWordSize(dummy);
+    CodeBlock* block = CodeBlock::create(node->roughCodeblockSizeInWordSize());
 
     ByteCodeGenerateContext context;
     // unsigned long start = ESVMInstance::tickCount();

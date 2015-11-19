@@ -1349,7 +1349,7 @@ public:
     inline bool hasProperty(const escargot::ESValue& key);
     inline bool hasOwnProperty(const escargot::ESValue& key);
 
-    bool DefineOwnProperty(ESValue& key, ESObject* desc, bool throwFlag);
+    bool defineOwnProperty(ESValue& key, ESObject* desc, bool throwFlag);
 
     // $6.1.7.2 Object Internal Methods and Internal Slots
     bool isExtensible()
@@ -1766,7 +1766,7 @@ public:
         return (const uint32_t &)m_length;
     }
 
-    bool DefineOwnProperty(ESValue& key, ESObject* desc, bool throwFlag);
+    bool defineOwnProperty(ESValue& key, ESObject* desc, bool throwFlag);
 
 #ifdef ENABLE_ESJIT
     static size_t offsetOfVectorData() { return offsetof(ESArrayObject, m_vector); }

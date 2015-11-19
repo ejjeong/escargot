@@ -30,6 +30,11 @@ public:
         return m_param;
     }
 
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
+    {
+        m_body->computeRoughCodeBlockSizeInWordSize(result);
+    }
+
 protected:
     IdentifierNode* m_param;
     ExpressionNode* m_guard;

@@ -694,7 +694,7 @@ inline ESValue objectDefineProperties(ESValue object, ESValue& properties)
             ESValue propertyDesc = props->getOwnProperty(key);
             if (!propertyDesc.isObject())
                 throw ESValue(TypeError::create(ESString::create("objectDefineProperties: descriptor is not object")));
-            object.asESPointer()->asESObject()->DefineOwnProperty(key, propertyDesc.asESPointer()->asESObject(), true);
+            object.asESPointer()->asESObject()->defineOwnProperty(key, propertyDesc.asESPointer()->asESObject(), true);
         }
     });
     return object;
@@ -800,9 +800,9 @@ void GlobalObject::installObject()
                 ESObject* desc = instance->currentExecutionContext()->arguments()[2].toObject();
                 bool res;
                 if (obj->isESArrayObject())
-                    res = obj->asESArrayObject()->DefineOwnProperty(key, desc, true);
+                    res = obj->asESArrayObject()->defineOwnProperty(key, desc, true);
                 else
-                    res = obj->DefineOwnProperty(key, desc, true);
+                    res = obj->defineOwnProperty(key, desc, true);
                 if (!res)
                     throw ESValue(TypeError::create(ESString::create("Object.defineProperty: Cannot define property")));
             } else {

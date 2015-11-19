@@ -43,6 +43,15 @@ public:
             }
         }
     }
+
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
+    {
+        result += 3 + m_properties.size() * 2;
+        for (unsigned i = 0; i < m_properties.size() ; i ++) {
+            PropertyNode* p = m_properties[i];
+            p->value()->computeRoughCodeBlockSizeInWordSize(result);
+        }
+    }
 protected:
     PropertiesNodeVector m_properties;
 };

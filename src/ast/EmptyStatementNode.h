@@ -16,6 +16,10 @@ public:
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
     }
+
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
+    {
+    }
 protected:
 };
 

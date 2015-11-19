@@ -24,6 +24,14 @@ public:
         }
     }
 
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
+    {
+        result += m_expressions.size();
+        for (unsigned i = 0; i < m_expressions.size(); i++) {
+            m_expressions[i]->computeRoughCodeBlockSizeInWordSize(result);
+        }
+    }
+
     const ExpressionNodeVector& expressions() { return m_expressions; }
 
 protected:

@@ -28,6 +28,17 @@ public:
             codeBlock->pushCode(InitObject(), context, this);
         }
     }
+
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
+    {
+        result += m_elements.size() * 2;
+        unsigned len = m_elements.size();
+        for (unsigned i = 0; i < len; i++) {
+            if (m_elements[i]) {
+                m_elements[i]->computeRoughCodeBlockSizeInWordSize(result);
+            }
+        }
+    }
 protected:
     ExpressionNodeVector m_elements;
 };

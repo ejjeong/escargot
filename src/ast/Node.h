@@ -143,7 +143,12 @@ public:
         RELEASE_ASSERT_NOT_REACHED();
     }
 
-    virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context, int sourceIndex = -1)
+    virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
+    {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
     {
         RELEASE_ASSERT_NOT_REACHED();
     }

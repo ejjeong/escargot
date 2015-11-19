@@ -70,7 +70,7 @@ public:
     }
 
 
-    virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context, int sourceIndex = -1)
+    virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         if (m_canUseFastAccess) {
             if (codeBlock->m_needsActivation) {
@@ -90,6 +90,11 @@ public:
                 codeBlock->pushCode(SetById(m_name), context, this);
             }
         }
+    }
+
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
+    {
+        result += 12;
     }
 
     const InternalAtomicString& name()

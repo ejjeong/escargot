@@ -68,7 +68,7 @@ public:
     }
 
 
-    virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context, int sourceIndex = -1)
+    virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         if (ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty()) {
             if (isPreComputedCase()) {
@@ -113,6 +113,13 @@ public:
         } else {
             codeBlock->pushCode(GetObjectWithPeeking(), context, this);
         }
+    }
+
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
+    {
+        result += 32;
+        m_object->computeRoughCodeBlockSizeInWordSize(result);
+        m_property->computeRoughCodeBlockSizeInWordSize(result);
     }
 protected:
     Node* m_object; // object: Expression;

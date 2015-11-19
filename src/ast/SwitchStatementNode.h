@@ -72,6 +72,21 @@ public:
         }
     }
 
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
+    {
+        result += 30;
+        if (m_discriminant)
+            m_discriminant->computeRoughCodeBlockSizeInWordSize(result);
+        if (m_default)
+            m_default->computeRoughCodeBlockSizeInWordSize(result);
+        for (unsigned i = 0; i < m_casesA.size() ; i ++) {
+            m_casesA[i]->computeRoughCodeBlockSizeInWordSize(result);
+        }
+        for (unsigned i = 0; i < m_casesB.size() ; i ++) {
+            m_casesB[i]->computeRoughCodeBlockSizeInWordSize(result);
+        }
+    }
+
 protected:
     ExpressionNode* m_discriminant;
     StatementNodeVector m_casesA;

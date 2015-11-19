@@ -23,6 +23,12 @@ public:
         codeBlock->pushCode(Decrement(), context, this);
         m_argument->generatePutByteCode(codeBlock, context);
     }
+
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
+    {
+        result += 2;
+        m_argument->computeRoughCodeBlockSizeInWordSize(result);
+    }
 protected:
     ExpressionNode* m_argument;
 };

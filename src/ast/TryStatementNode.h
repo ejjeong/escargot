@@ -50,6 +50,16 @@ public:
         codeBlock->pushCode(FinallyEnd(), context, this);
     }
 
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
+    {
+        result += 4;
+        m_block->computeRoughCodeBlockSizeInWordSize(result);
+        if (m_handler)
+            m_handler->computeRoughCodeBlockSizeInWordSize(result);
+        if (m_finalizer)
+            m_finalizer->computeRoughCodeBlockSizeInWordSize(result);
+    }
+
 protected:
     BlockStatementNode *m_block;
     CatchClauseNode *m_handler;

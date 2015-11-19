@@ -20,6 +20,12 @@ public:
         codeBlock->pushCode(LogicalNot(), context, this);
     }
 
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
+    {
+        result += 1;
+        m_argument->computeRoughCodeBlockSizeInWordSize(result);
+    }
+
 protected:
     Node* m_argument;
 };

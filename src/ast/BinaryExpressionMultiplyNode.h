@@ -20,6 +20,13 @@ public:
         m_right->generateExpressionByteCode(codeBlock, context);
         codeBlock->pushCode(Multiply(), context, this);
     }
+
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
+    {
+        result += 1;
+        m_left->computeRoughCodeBlockSizeInWordSize(result);
+        m_right->computeRoughCodeBlockSizeInWordSize(result);
+    }
 protected:
     ExpressionNode* m_left;
     ExpressionNode* m_right;

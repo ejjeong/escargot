@@ -17,7 +17,10 @@ public:
 
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        CodeBlock* cb = CodeBlock::create();
+        size_t myResult = 0;
+        m_body->computeRoughCodeBlockSizeInWordSize(myResult);
+
+        CodeBlock* cb = CodeBlock::create(myResult);
         cb->m_innerIdentifiers = std::move(m_innerIdentifiers);
         cb->m_needsActivation = m_needsActivation;
         cb->m_params = std::move(m_params);
@@ -52,6 +55,11 @@ public:
 #ifdef ENABLE_ESJIT
         newContext.cleanupSSARegisterCount();
 #endif
+    }
+
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
+    {
+        result += 6;
     }
 
 

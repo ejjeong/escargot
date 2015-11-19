@@ -46,6 +46,15 @@ public:
 
     }
 
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
+    {
+        result += 2;
+        m_callee->computeRoughCodeBlockSizeInWordSize(result);
+        for (unsigned i = 0; i < m_arguments.size() ; ++i) {
+            m_arguments[i]->computeRoughCodeBlockSizeInWordSize(result);
+        }
+    }
+
 protected:
     Node* m_callee; // callee: Expression;
     ArgumentVector m_arguments; // arguments: [ Expression ];

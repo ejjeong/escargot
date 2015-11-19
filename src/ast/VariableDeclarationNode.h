@@ -44,6 +44,13 @@ public:
         }
     }
 
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
+    {
+        for (unsigned i = 0; i < m_declarations.size() ; i ++) {
+            m_declarations[i]->computeRoughCodeBlockSizeInWordSize(result);
+        }
+    }
+
     VariableDeclaratorVector& declarations() { return m_declarations; }
 protected:
     VariableDeclaratorVector m_declarations; // declarations: [ VariableDeclarator ];

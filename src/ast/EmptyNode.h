@@ -12,9 +12,8 @@ public:
     {
     }
 
-    ESValue executeExpression(ESVMInstance* instance)
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
     {
-        return ESValue();
     }
 
 protected:

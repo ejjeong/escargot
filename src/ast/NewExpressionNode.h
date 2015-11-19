@@ -26,6 +26,16 @@ public:
         codeBlock->pushCode(NewFunctionCall(m_arguments.size()), context, this);
     }
 
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
+    {
+        result += 3;
+        m_callee->computeRoughCodeBlockSizeInWordSize(result);
+
+        for (unsigned i = 0; i < m_arguments.size() ; i ++) {
+            m_arguments[i]->computeRoughCodeBlockSizeInWordSize(result);
+        }
+    }
+
 protected:
     Node* m_callee;
     ArgumentVector m_arguments;

@@ -62,6 +62,14 @@ public:
 #endif
     }
 
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
+    {
+        result += 6;
+        m_test->computeRoughCodeBlockSizeInWordSize(result);
+        m_consequente->computeRoughCodeBlockSizeInWordSize(result);
+        m_alternate->computeRoughCodeBlockSizeInWordSize(result);
+    }
+
 protected:
     ExpressionNode* m_test;
     ExpressionNode* m_consequente;

@@ -22,6 +22,11 @@ public:
         codeBlock->pushCode(Throw(), context, this);
     }
 
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
+    {
+        result += 1;
+    }
+
 protected:
     Node* m_argument;
 };

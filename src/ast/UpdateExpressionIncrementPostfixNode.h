@@ -37,6 +37,12 @@ public:
         codeBlock->pushCode(Pop(), context, this);
         codeBlock->pushCode(PopFromTempStack(pushPos), context, this);
     }
+
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
+    {
+        result += 7;
+        m_argument->computeRoughCodeBlockSizeInWordSize(result);
+    }
 protected:
     ExpressionNode* m_argument;
     bool m_isSimpleCase;

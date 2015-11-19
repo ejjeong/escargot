@@ -21,6 +21,11 @@ public:
         context.pushLabeledContinuePositions(codeBlock->lastCodePosition<Jump>(), m_label);
     }
 
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
+    {
+        result += 2;
+    }
+
 protected:
     size_t m_upIndex;
     ESString* m_label; // for debug

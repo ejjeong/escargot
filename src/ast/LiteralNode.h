@@ -24,6 +24,11 @@ public:
         codeBlock->pushCode(Push(m_value), context, this);
     }
 
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
+    {
+        result += 3;
+    }
+
     ESValue value() { return m_value; }
 protected:
     ESValue m_value;

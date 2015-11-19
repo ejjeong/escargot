@@ -23,6 +23,13 @@ public:
             m_consequent[i]->generateStatementByteCode(codeBlock, context);
     }
 
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
+    {
+        for (unsigned i = 0; i < m_consequent.size(); i++) {
+            m_consequent[i]->computeRoughCodeBlockSizeInWordSize(result);
+        }
+    }
+
     bool isDefaultNode()
     {
         return !m_test;

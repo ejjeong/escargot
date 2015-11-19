@@ -18,6 +18,7 @@ class Allocator;
 namespace escargot {
 
 class Node;
+class ProgramNode;
 class ByteCode;
 class CodeBlock;
 
@@ -2175,11 +2176,11 @@ public:
 };
 
 class CodeBlock : public gc {
-    CodeBlock(bool isBuiltInFunction);
+    CodeBlock(size_t roughCodeBlockSizeInWordSize, bool isBuiltInFunction);
 public:
-    static CodeBlock* create(bool isBuiltInFunction = false)
+    static CodeBlock* create(size_t roughCodeBlockSizeInWordSize = 0, bool isBuiltInFunction = false)
     {
-        return new CodeBlock(isBuiltInFunction);
+        return new CodeBlock(roughCodeBlockSizeInWordSize, isBuiltInFunction);
     }
     template <typename CodeType>
     void pushCode(const CodeType& type, ByteCodeGenerateContext& context, Node* node);
@@ -2339,7 +2340,7 @@ void dumpUnsupported(CodeBlock* codeBlock);
 #endif
 
 ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter = 0, unsigned maxStackPos = 0);
-CodeBlock* generateByteCode(Node* node);
+CodeBlock* generateByteCode(ProgramNode* node);
 inline void iterateByteCode(CodeBlock* codeBlock, std::function<void(CodeBlock* block, unsigned idx, ByteCode* code, Opcode opcode)> fn);
 
 }

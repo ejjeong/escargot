@@ -26,6 +26,11 @@ public:
             codeBlock->pushCode(CreateBinding(((IdentifierNode *)m_id)->name()), context, this);
     }
 
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
+    {
+        result += 2;
+    }
+
     Node* id() { return m_id; }
     ExpressionNode* init() { return m_init; }
     void clearInit()

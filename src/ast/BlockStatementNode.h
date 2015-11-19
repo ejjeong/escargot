@@ -23,6 +23,13 @@ public:
         }
     }
 
+    virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
+    {
+        for (unsigned i = 0; i < m_body.size() ; ++i) {
+            m_body[i]->computeRoughCodeBlockSizeInWordSize(result);
+        }
+    }
+
 protected:
     StatementNodeVector m_body; // body: [ Statement ];
 };
