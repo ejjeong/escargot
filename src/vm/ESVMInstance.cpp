@@ -229,7 +229,7 @@ void ESVMInstance::printValue(ESValue val)
                 RELEASE_ASSERT_NOT_REACHED();
             }
         } else {
-#if ESCARGOT_64
+#ifdef ESCARGOT_64
             printf("Invalid ESValue Format : 0x%lx\n", v.asRawData());
 #else
             printf("Invalid ESValue Format : 0x%llx\n", v.asRawData());

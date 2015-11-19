@@ -42,7 +42,7 @@ class CodeBlock;
 
 union ValueDescriptor {
     int64_t asInt64;
-#if ESCARGOT_32
+#ifdef ESCARGOT_32
     double asDouble;
 #elif ESCARGOT_64
     ESPointer* ptr;
@@ -58,13 +58,13 @@ union ValueDescriptor {
 #define TagOffset (OBJECT_OFFSETOF(EncodedValueDescriptor, asBits.tag))
 #define PayloadOffset (OBJECT_OFFSETOF(EncodedValueDescriptor, asBits.payload))
 
-#if ESCARGOT_64
+#ifdef ESCARGOT_64
 #define CellPayloadOffset 0
 #else
 #define CellPayloadOffset PayloadOffset
 #endif
 
-#if ESCARGOT_64
+#ifdef ESCARGOT_64
 typedef uint64_t ESValueInDouble;
 #else
 typedef double ESValueInDouble;
@@ -72,7 +72,7 @@ typedef double ESValueInDouble;
 
 class ESValue {
 public:
-#if ESCARGOT_32
+#ifdef ESCARGOT_32
     enum { Int32Tag =        0xffffffff };
     enum { BooleanTag =      0xfffffffe };
     enum { NullTag =         0xfffffffd };
@@ -184,7 +184,7 @@ public:
     static ptrdiff_t offsetOfPayload() { return OBJECT_OFFSETOF(ESValue, u.asBits.payload); }
     static ptrdiff_t offsetOfTag() { return OBJECT_OFFSETOF(ESValue, u.asBits.tag); }
 
-#if ESCARGOT_32
+#ifdef ESCARGOT_32
     uint32_t tag() const;
     int32_t payload() const;
 #elif ESCARGOT_64

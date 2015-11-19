@@ -504,7 +504,7 @@ inline bool ESValue::equalsToByTheSameValueAlgorithm(const ESValue& val)
 // ===32-bit architecture========================================================
 // ==============================================================================
 
-#if ESCARGOT_32
+#ifdef ESCARGOT_32
 
 ALWAYS_INLINE ESValue::ESValue(ESForceUninitializedTag)
 {

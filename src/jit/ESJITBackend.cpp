@@ -1419,9 +1419,14 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
     case ESIR::Opcode::GetThis:
         {
             INIT_ESIR(GetThis);
-
             LIns* m_cachedThisValue = m_out->insLoad(LIR_lde, m_thisValueP, 0, 1, LOAD_NORMAL);
+
+#ifdef ESCARGOT_64
             LIns* checkIfThisValueisEmpty = m_out->ins2(LIR_eqe, m_cachedThisValue, m_emptyE);
+#else
+            LIns* tag = getTagFromESValue(m_cachedThisValue);
+            LIns* checkIfThisValueisEmpty = m_out->ins2(LIR_eqi, tag, m_emptyValueTagI);
+#endif
             LIns* jumpIfThisValueisNotEmpty = m_out->insBranch(LIR_jf, checkIfThisValueisEmpty, (LIns*)nullptr);
             LIns* args[] = {m_contextP};
             LIns* resolvedThisValue = m_out->insCall(&contextResolveThisBindingCallInfo, args);
@@ -1819,7 +1824,12 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             LIns* loadedValue = m_out->insLoad(LIR_lde, newBase, 0, 1, LOAD_NORMAL);
 
             // not empty
+#ifdef ESCARGOT_64
             LIns* checkEmpty = m_out->ins2(LIR_eqe, loadedValue, m_emptyE);
+#else
+            LIns* tag = getTagFromESValue(loadedValue);
+            LIns* checkEmpty = m_out->ins2(LIR_eqi, tag, m_emptyValueTagI);
+#endif
             LIns* jumpIfEmpty = m_out->insBranch(LIR_jt, checkEmpty, (LIns*)nullptr);
             m_out->insStore(LIR_ste, loadedValue, phi, 0 , 1);
             LIns* gotoEnd = m_out->insBranch(LIR_j, nullptr, (LIns*)nullptr);
@@ -2231,7 +2241,12 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             // LIns* vectorData = m_out->insLoad(LIR_ldp, obj, ESArrayObject::offsetOfVectorData(), 1, LOAD_NORMAL);
             LIns* valuePtr = m_out->ins2(LIR_addp, vectorData, getOffsetAsPointer(offset));
             LIns* asInt32 = m_out->insLoad(LIR_lde, valuePtr, ESValue::offsetOfAsInt64(), 1, LOAD_NORMAL);
+#ifdef ESCARGOT_64
             LIns* checkEmptyValue = m_out->ins2(LIR_eqe, asInt32, m_emptyE);
+#else
+            LIns* tag = getTagFromESValue(asInt32);
+            LIns* checkEmptyValue = m_out->ins2(LIR_eqi, tag, m_emptyValueTagI);
+#endif
             LIns* jf3 = m_out->insBranch(LIR_jt, checkEmptyValue, (LIns*)nullptr);
             JIT_LOG(key, "InitArrayObject: NonEmptyValue ");
 
