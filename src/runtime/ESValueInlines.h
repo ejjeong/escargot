@@ -1632,7 +1632,7 @@ template <typename Functor>
 ALWAYS_INLINE void ESObject::enumeration(Functor t)
 {
     if (isESArrayObject() && asESArrayObject()->isFastmode()) {
-        for (int i = 0; i < asESArrayObject()->length(); i++) {
+        for (uint32_t i = 0; i < asESArrayObject()->length(); i++) {
             if (asESArrayObject()->m_vector[i].isEmpty())
                 continue;
             t(ESValue(i).toString());
@@ -1646,7 +1646,7 @@ ALWAYS_INLINE void ESObject::enumeration(Functor t)
     }
 
     if (isESStringObject()) {
-        for (int i = 0; i < asESStringObject()->length(); i++) {
+        for (uint32_t i = 0; i < asESStringObject()->length(); i++) {
             t(ESValue(i).toString());
         }
     }
@@ -1665,7 +1665,7 @@ template <typename Functor>
 ALWAYS_INLINE void ESObject::enumerationWithNonEnumerable(Functor t)
 {
     if (isESArrayObject() && asESArrayObject()->isFastmode()) {
-        for (int i = 0; i < asESArrayObject()->length(); i++) {
+        for (uint32_t i = 0; i < asESArrayObject()->length(); i++) {
             if (asESArrayObject()->m_vector[i].isEmpty())
                 continue;
             t(ESValue(i).toString(), &dummyPropertyInfo);
@@ -1679,7 +1679,7 @@ ALWAYS_INLINE void ESObject::enumerationWithNonEnumerable(Functor t)
     }
 
     if (isESStringObject()) {
-        for (int i = 0; i < asESStringObject()->length(); i++) {
+        for (uint32_t i = 0; i < asESStringObject()->length(); i++) {
             ESHiddenClassPropertyInfo propertyInfo;
             propertyInfo.m_flags.m_isEnumerable = true;
             propertyInfo.m_flags.m_isDeletedValue = false;
@@ -1711,14 +1711,14 @@ ALWAYS_INLINE void ESObject::sort(const Comp& c)
         uint32_t len = get(strings->length.string()).toUint32();
         ESValueVector selected(len);
         uint32_t n = 0;
-        for (int i = 0; i < len; i++) {
+        for (uint32_t i = 0; i < len; i++) {
             if (hasProperty(ESValue(i))) {
                 selected.push_back(get(ESValue(i)));
                 n++;
             }
         }
         std::sort(selected.begin(), selected.end(), c);
-        int i;
+        uint32_t i;
         for (i = 0; i < n; i++) {
             set(ESValue(i), selected[i]);
         }

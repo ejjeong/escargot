@@ -2181,7 +2181,7 @@ public:
 
     ESValue get(int key)
     {
-        if (key >= 0 && key < arraylength()) {
+        if (key >= 0 && (unsigned)key < arraylength()) {
             unsigned idxPosition = key * elementSize() + byteoffset();
             escargot::ESArrayBufferObject* b = buffer();
             return b->getValueFromBuffer<typename TypeAdaptor::Type>(idxPosition, arraytype());
@@ -2190,7 +2190,7 @@ public:
     }
     bool set(int key, ESValue val)
     {
-        if (key < 0 || key >= arraylength())
+        if (key < 0 || (unsigned)key >= arraylength())
             return false;
         unsigned idxPosition = key * elementSize() + byteoffset();
         escargot::ESArrayBufferObject* b = buffer();

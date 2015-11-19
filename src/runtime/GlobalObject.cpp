@@ -4226,7 +4226,7 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
                 obj->setBytelength(length * elementSize);
                 obj->setByteoffset(0);
                 obj->setArraylength(length);
-                for (int32_t i = 0; i < length ; i ++) {
+                for (uint32_t i = 0; i < length ; i ++) {
                     obj->set(i, inputObj->get(ESValue(i)));
                 }
             } else {
@@ -4276,8 +4276,8 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
         int targetElementSize = thisVal->elementSize();
         if (!arg0->isESTypedArrayObject()) {
             ESObject* src = arg0->asESObject();
-            int32_t srcLength = src->get(strings->length.string()).asInt32();
-            if (srcLength + offset > targetLength)
+            uint32_t srcLength = (uint32_t)src->get(strings->length.string()).asInt32();
+            if (srcLength + (uint32_t)offset > targetLength)
                 throw RangeError::create();
 
             int targetByteIndex = offset * targetElementSize + targetByteOffset;
@@ -4297,7 +4297,7 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
             escargot::ESArrayBufferObject* srcBuffer = arg0Wrapper->buffer();
             unsigned srcLength = arg0Wrapper->arraylength();
             int srcByteOffset = arg0Wrapper->byteoffset();
-            if (srcLength + offset > targetLength)
+            if (srcLength + (unsigned)offset > targetLength)
                 throw RangeError::create();
             int srcByteIndex = 0;
             if (srcBuffer == targetBuffer) {
@@ -4306,9 +4306,9 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
             } else {
                 srcByteIndex = srcByteOffset;
             }
-            int targetIndex = offset, srcIndex = 0;
-            int targetByteIndex = offset * targetElementSize + targetByteOffset;
-            int limit = targetByteIndex + targetElementSize * srcLength;
+            unsigned targetIndex = (unsigned)offset, srcIndex = 0;
+            unsigned targetByteIndex = offset * targetElementSize + targetByteOffset;
+            unsigned limit = targetByteIndex + targetElementSize * srcLength;
             if (thisVal->arraytype() != arg0Wrapper->arraytype()) {
                 while (targetIndex < offset + srcLength) {
                     ESValue value = arg0Wrapper->get(srcIndex);
@@ -4329,28 +4329,29 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
     }, strings->set));
     // $22.2.3.26 %TypedArray%.prototype.subarray([begin [, end]])
     ta_prototype->ESObject::defineDataProperty(strings->subarray, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        int arglen = instance->currentExecutionContext()->argumentCount();
+        size_t arglen = instance->currentExecutionContext()->argumentCount();
         auto thisBinded = instance->currentExecutionContext()->resolveThisBindingToObject();
         if (!thisBinded->isESTypedArrayObject())
             throw TypeError::create();
         auto thisVal = thisBinded->asESTypedArrayObjectWrapper();
         escargot::ESArrayBufferObject* buffer = thisVal->buffer();
         unsigned srcLength = thisVal->arraylength();
-        int relativeBegin = 0, beginIndex = 0;
+        int relativeBegin = 0;
+        unsigned beginIndex;
         if (arglen >= 1)
             relativeBegin = instance->currentExecutionContext()->arguments()[0].toInt32();
         if (relativeBegin < 0)
             beginIndex = (srcLength + relativeBegin) > 0 ? (srcLength + relativeBegin) : 0;
         else
-            beginIndex = relativeBegin < srcLength ? relativeBegin : srcLength;
-        int relativeEnd = srcLength, endIndex;
+            beginIndex = (unsigned) relativeBegin < srcLength ? relativeBegin : srcLength;
+        unsigned relativeEnd = srcLength, endIndex;
         if (arglen >= 2)
             relativeEnd = instance->currentExecutionContext()->arguments()[1].toInt32();
         if (relativeEnd < 0)
             endIndex = (srcLength + relativeEnd) > 0 ? (srcLength + relativeEnd) : 0;
         else
             endIndex = relativeEnd < srcLength ? relativeEnd : srcLength;
-        int newLength = 0;
+        unsigned newLength = 0;
         if (endIndex - beginIndex > 0)
             newLength = endIndex - beginIndex;
         int srcByteOffset = thisVal->byteoffset();
