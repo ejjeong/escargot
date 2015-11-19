@@ -21,6 +21,6 @@ adb shell mkdir /data/local/tmp/arm64/escargot/jit
 adb push ./test/bin/arm64 data/local/tmp/arm64
 adb shell mkdir /data/local/tmp/arm32/escargot
 adb push ./android/libs/armeabi-v7a data/local/tmp/arm32/escargot
-adb shell mkdir /data/local/tmp/arm64/escargot
-adb push ./android/libs/arm64-v8a data/local/tmp/arm64/escargot
+#adb shell mkdir /data/local/tmp/arm64/escargot
+#adb push ./android/libs/arm64-v8a data/local/tmp/arm64/escargot
 

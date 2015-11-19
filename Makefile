@@ -317,6 +317,7 @@ check-jit-32:
 
 check-jit-arm:
 	./build_android.sh armeabi-v7a.32bit.jit.release
+	mkdir -p test/bin/arm32/escargot/jit
 	cp ./android/libs/armeabi-v7a/escargot ./test/bin/arm32/escargot/jit/escargot.release
 	./build_android.sh armeabi-v7a.32bit.jit.debug
 	cp ./android/libs/armeabi-v7a/escargot ./test/bin/arm32/escargot/jit/escargot.debug
