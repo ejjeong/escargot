@@ -19,56 +19,56 @@ case $1 in
     BUILD_TYPE=interpreter
     BUILD_ARCH=armeabi-v7a-hard
     BUILD_MODE=debug
-    echo "you chose choice 1" >> chosen.txt
+    echo "you chose choice 1"
     break
     ;;
   "armeabi-v7a.32bit.interpreter.release")
     BUILD_TYPE=interpreter
     BUILD_ARCH=armeabi-v7a-hard
     BUILD_MODE=release
-    echo "you chose choice 2" >> chosen.txt
+    echo "you chose choice 2"
     break
     ;;
   "armeabi-v7a.32bit.jit.debug")
     BUILD_TYPE=jit
     BUILD_ARCH=armeabi-v7a-hard
     BUILD_MODE=debug
-    echo "you chose choice 3" >> chosen.txt
+    echo "you chose choice 3"
     break
     ;;
   "armeabi-v7a.32bit.jit.release")
     BUILD_TYPE=jit
     BUILD_ARCH=armeabi-v7a-hard
     BUILD_MODE=release
-    echo "you chose choice 4" >> chosen.txt
+    echo "you chose choice 4"
     break
     ;;
   "arm64-v8a.64bit.interpreter.debug")
     BUILD_TYPE=interpreter
     BUILD_ARCH=arm64-v8a
     BUILD_MODE=debug
-    echo "you chose choice 5" >> chosen.txt
+    echo "you chose choice 5"
     break
     ;;
   "arm64-v8a.64bit.interpreter.release")
     BUILD_TYPE=interpreter
     BUILD_ARCH=arm64-v8a
     BUILD_MODE=release
-    echo "you chose choice 6" >> chosen.txt
+    echo "you chose choice 6"
     break
     ;;
 #  "arme64-v8a.64bit.jit.debug")
 #    BUILD_TYPE=jit
 #    BUILD_ARCH=arm64-v8a
 #    BUILD_MODE=debug
-#    echo "you chose choice 7" >> chosen.txt
+#    echo "you chose choice 7"
 #    break
 #    ;;
 #  "arm64-v8a.64bit.jit.release")
 #    BUILD_TYPE=jit
 #    BUILD_ARCH=arm64-v8a
 #    BUILD_MODE=release
-#    echo "you chose choice 8" >> chosen.txt
+#    echo "you chose choice 8"
 #    break
 #    ;;
 
@@ -76,7 +76,7 @@ case $1 in
     BUILD_TYPE=interpreter
     BUILD_ARCH=
     BUILD_MODE=
-    echo "you chose choice 9" >> chosen.txt
+    echo "you chose choice 9"
     break
     ;;
   *)
