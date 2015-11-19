@@ -301,19 +301,32 @@ check-jit-64:
 	make x64.jit.release -j$(NPROCS)
 	make run-sunspider
 	make x64.jit.debug -j$(NPROCS)
-	./run-Sunspider-jit.sh -rcf > compiledFunctions.txt
+	./run-Sunspider.sh -rcf > compiledFunctions.txt
 	vimdiff compiledFunctions.txt originalCompiledFunctions.txt
-	./run-Sunspider-jit.sh -rof > osrExitedFunctions.txt
+	./run-Sunspider.sh -rof > osrExitedFunctions.txt
 	vimdiff osrExitedFunctions.txt originalOSRExitedFunctions.txt
 
 check-jit-32:
 	make x86.jit.release -j$(NPROCS)
 	make run-sunspider
 	make x86.jit.debug -j$(NPROCS)
-	./run-Sunspider-jit.sh -rcf > compiledFunctions.txt
+	./run-Sunspider.sh -rcf > compiledFunctions.txt
 	vimdiff compiledFunctions.txt originalCompiledFunctions.txt
-	./run-Sunspider-jit.sh -rof > osrExitedFunctions.txt
+	./run-Sunspider.sh -rof > osrExitedFunctions.txt
 	vimdiff osrExitedFunctions.txt originalOSRExitedFunctions.txt
+
+check-jit-arm:
+	./build_android.sh armeabi-v7a.32bit.jit.release
+	cp ./android/libs/armeabi-v7a/escargot ./test/bin/arm32/escargot/jit/escargot.release
+	./build_android.sh armeabi-v7a.32bit.jit.debug
+	cp ./android/libs/armeabi-v7a/escargot ./test/bin/arm32/escargot/jit/escargot.debug
+	./setup_measure_for_android.sh
+	#./measure_for_android.sh escargot32.jit time > time.arm32.txt
+	adb shell "cd /data/local/tmp ; ./run-Sunspider.sh /data/local/tmp/arm32/escargot/jit/escargot.debug -rcf > compiledFunctions.arm32.txt"
+	adb shell "cd /data/local/tmp ; ./run-Sunspider.sh /data/local/tmp/arm32/escargot/jit/escargot.debug -rof > osrExitedFunctions.arm32.txt"
+	#adb pull /data/local/tmp/time.arm32.txt .
+	adb pull /data/local/tmp/compiledFunctions.arm32.txt .
+	adb pull /data/local/tmp/osrExitedFunctions.arm32.txt .
 
 check:
 	make x64.interpreter.release -j$(NPROCS)

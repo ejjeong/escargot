@@ -13,11 +13,14 @@ elif [[ $1 == jsc32.base ]]; then
   tc="jsc32.baseline"
   ldpath="/data/local/tmp/arm32/jsc/baseline"
 elif [[ $1 == escargot32.interp ]]; then
-  cmd="/data/local/tmp/arm32/escargot/escargot"
+  cmd="/data/local/tmp/arm32/escargot/interp/escargot"
   tc="escargot32.interp"
 elif [[ $1 == escargot.interp ]]; then
-  cmd="/data/local/tmp/arm64/escargot/escargot"
+  cmd="/data/local/tmp/arm64/escargot/interp/escargot"
   tc="escargot.interp"
+elif [[ $1 == escargot32.jit ]]; then
+  cmd="/data/local/tmp/arm32/escargot/jit/escargot.release"
+  tc="escargot32.jit"
 elif [[ $1 == v8.jit ]]; then
   cmd="/data/local/tmp/arm64/v8/d8"
   tc="v8.jit"
