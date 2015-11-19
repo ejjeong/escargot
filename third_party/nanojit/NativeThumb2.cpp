@@ -2844,8 +2844,10 @@ RegAlloc::nHint(LIns* ins)
 void
 Assembler::asm_qjoin(LIns *ins)
 {
+#if defined(ESCARGOT) && defined(NJ_ARM_EABI_HARD_FLOAT)
     int d = findMemFor(ins);
     NanoAssert(d);
+#endif
     LIns* lo = ins->oprnd1();
     LIns* hi = ins->oprnd2();
 
@@ -2854,8 +2856,13 @@ Assembler::asm_qjoin(LIns *ins)
 
     findRegFor2(GpRegs, lo, rlo, GpRegs, hi, rhi);
 
+#if defined(ESCARGOT) && defined(NJ_ARM_EABI_HARD_FLOAT)
+    Register target = prepareResultReg(ins, rmask(D0));
+    FMDRR(target, rlo, rhi);
+#else
     asm_str(rhi, FP, d+4);
     asm_str(rlo, FP, d);
+#endif
 
     freeResourcesOf(ins);
 }
@@ -4567,9 +4574,14 @@ Assembler::asm_qhi(LIns* ins)
 {
     Register rd = prepareResultReg(ins, GpRegs);
     LIns *lhs = ins->oprnd1();
+#if defined(ESCARGOT) && defined(NJ_ARM_EABI_HARD_FLOAT)
+    Register rs = findRegFor(lhs, FpDRegs);
+    FMRS(rd, SReg(FpDRegNum(rs) * 2 + 1));
+#else
     int d = findMemFor(lhs);
 
     asm_ldr(rd, FP, d+4);
+#endif
 
     freeResourcesOf(ins);
 }
@@ -4579,9 +4591,14 @@ Assembler::asm_qlo(LIns* ins)
 {
     Register rd = prepareResultReg(ins, GpRegs);
     LIns *lhs = ins->oprnd1();
+#if defined(ESCARGOT) && defined(NJ_ARM_EABI_HARD_FLOAT)
+    Register rs = findRegFor(lhs, FpDRegs);
+    FMRS(rd, SReg(FpDRegNum(rs) * 2));
+#else
     int d = findMemFor(lhs);
 
     asm_ldr(rd, FP, d);
+#endif
 
     freeResourcesOf(ins);
 }

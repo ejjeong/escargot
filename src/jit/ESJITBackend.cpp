@@ -658,7 +658,7 @@ LIns* NativeGenerator::boxESValueFromTagAndPayload(nanojit::LIns* tag, nanojit::
     ASSERT(tag->isI());
     ASSERT(payload->isI());
     LIns* ret;
-#if 0 // NJ_SOFTFLOAT_SUPPORTED
+#if NJ_SOFTFLOAT_SUPPORTED
 #ifdef ESCARGOT_LITTLE_ENDIAN
     ret = m_out->ins2(LIR_ii2d, tag, payload);
 #else
@@ -678,7 +678,7 @@ LIns* NativeGenerator::getTagFromESValue(nanojit::LIns* boxedValue)
 {
     ASSERT(boxedValue->isD());
     LIns* ret;
-#if 0 // NJ_SOFTFLOAT_SUPPORTED
+#if NJ_SOFTFLOAT_SUPPORTED
 #ifdef ESCARGOT_LITTLE_ENDIAN
     ret = m_out->ins1(LIR_dlo2i, boxedValue);
 #else
@@ -697,7 +697,7 @@ LIns* NativeGenerator::getPayloadFromESValue(nanojit::LIns* boxedValue)
 {
     ASSERT(boxedValue->isD());
     LIns* ret;
-#if 0 // NJ_SOFTFLOAT_SUPPORTED
+#if NJ_SOFTFLOAT_SUPPORTED
 #ifdef ESCARGOT_LITTLE_ENDIAN
     ret = m_out->ins1(LIR_dhi2i, boxedValue);
 #else
