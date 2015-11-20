@@ -85,7 +85,7 @@ int main(int argc, char* argv[])
         }
     }
     */
-    fillStack(1*1024*1024);
+    fillStack(0.2*1024*1024);
 #endif
 #if defined(ENABLE_ESJIT) && !defined(NDEBUG)
     if (argc >= 2 && strcmp(argv[1], "-a") == 0) {

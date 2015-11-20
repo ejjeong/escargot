@@ -529,7 +529,7 @@ class ESStringData : public u16string, public gc {
 public:
     ESStringData()
     {
-        m_hashData.m_isHashInited =  false;
+        initHash();
 #ifdef ENABLE_ESJIT
         m_length = 0;
 #endif
@@ -538,7 +538,7 @@ public:
     ESStringData(const u16string& src)
         : u16string(src)
     {
-        m_hashData.m_isHashInited =  false;
+        initHash();
 #ifdef ENABLE_ESJIT
         m_length = src.length();
 #endif
@@ -547,7 +547,7 @@ public:
     ESStringData(u16string&& src)
         : u16string(std::move(src))
     {
-        m_hashData.m_isHashInited =  false;
+        initHash();
 #ifdef ENABLE_ESJIT
         m_length = u16string::length();
 #endif
@@ -556,7 +556,7 @@ public:
     ESStringData(std::u16string& src)
     {
         assign(src.begin(), src.end());
-        m_hashData.m_isHashInited =  false;
+        initHash();
 #ifdef ENABLE_ESJIT
         m_length = u16string::length();
 #endif
@@ -575,7 +575,7 @@ public:
     explicit ESStringData(char16_t c)
         : u16string({c})
     {
-        m_hashData.m_isHashInited =  false;
+        initHash();
 #ifdef ENABLE_ESJIT
         m_length = u16string::length();
 #endif
@@ -584,7 +584,7 @@ public:
     ESStringData(const char* s)
         : u16string(std::move(utf8ToUtf16(s, strlen(s))))
     {
-        m_hashData.m_isHashInited =  false;
+        initHash();
 #ifdef ENABLE_ESJIT
         m_length = u16string::length();
 #endif
@@ -608,17 +608,13 @@ public:
 
     ALWAYS_INLINE size_t hashValue() const
     {
-        initHash();
         return m_hashData.m_hashData;
     }
 
     ALWAYS_INLINE void initHash() const
     {
-        if (!m_hashData.m_isHashInited) {
-            m_hashData.m_isHashInited = true;
-            std::hash<std::basic_string<char16_t> > hashFn;
-            m_hashData.m_hashData = hashFn((std::basic_string<char16_t> &)*this);
-        }
+        std::hash<std::basic_string<char16_t> > hashFn;
+        m_hashData.m_hashData = hashFn((std::basic_string<char16_t> &)*this);
     }
 
 #ifdef ENABLE_ESJIT
@@ -631,13 +627,11 @@ protected:
 #pragma pack(push, 1)
 #ifdef ESCARGOT_64
     mutable struct {
-        size_t m_hashData:63;
-        bool m_isHashInited:1;
+        size_t m_hashData:64;
     } m_hashData;
 #else
     mutable struct {
-        size_t m_hashData:31;
-        bool m_isHashInited:1;
+        size_t m_hashData:32;
     } m_hashData;
 #endif
 #pragma pack(pop)

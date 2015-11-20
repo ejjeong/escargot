@@ -408,7 +408,11 @@ ALWAYS_INLINE ESValue ESValue::fromRawDouble(ESValueInDouble value)
 ALWAYS_INLINE bool ESValue::abstractEqualsTo(const ESValue& val)
 {
     if (isInt32() && val.isInt32()) {
+#ifdef ESCARGOT_64
         if (u.asInt64 == val.u.asInt64)
+#else
+        if (u.asBits.payload == val.u.asBits.payload)
+#endif
             return true;
         return false;
     } else {
@@ -452,8 +456,7 @@ inline bool ESValue::equalsTo(const ESValue& val)
                 return false;
             return o->asESString()->string() == o2->asESString()->string();
         }
-        if (o == o2)
-            return o == o2;
+        return o == o2;
     }
     return false;
 }

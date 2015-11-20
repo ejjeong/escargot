@@ -2257,14 +2257,52 @@ private:
     void pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, ByteCodeGenerateContext& context);
 };
 
+#ifdef NDEBUG
+template <typename Type>
+ALWAYS_INLINE void push(void*& stk, const Type& ptr)
+{
+    *((Type *)stk) = ptr;
+    stk = (void *)(((size_t)stk) + sizeof(Type));
+}
+
+template <typename Type>
+ALWAYS_INLINE void push(void*& stk, Type* ptr)
+{
+    *((Type *)stk) = *ptr;
+    stk = (void *)(((size_t)stk) + sizeof(Type));
+}
+
+template <typename Type>
+ALWAYS_INLINE Type* pop(void*& stk)
+{
+    stk = (void *)(((size_t)stk) - sizeof(Type));
+    return (Type *)stk;
+}
+
+template <typename Type>
+ALWAYS_INLINE Type* peek(void* stk)
+{
+    void* address = stk;
+    address = (void *)(((size_t)address) - sizeof(Type));
+    return (Type *)address;
+}
+
+template <typename Type>
+ALWAYS_INLINE void sub(void*& stk, size_t offsetToBasePointer)
+{
+    stk = (void *)(((size_t)stk) - offsetToBasePointer * sizeof(Type));
+}
+
+#define PUSH(stk, topOfStack, ptr) push<ESValue>(stk, ptr)
+#define POP(stk, bp) pop<ESValue>(stk)
+#define PEEK(stk, bp) peek<ESValue>(stk)
+#define SUB_STACK(stk, bp, offsetToBasePointer) sub<ESValue>(stk, offsetToBasePointer)
+
+#else
 template <typename Type>
 ALWAYS_INLINE void push(void*& stk, void* topOfStack, const Type& ptr)
 {
-#ifdef ESCARGOT_64
     *((Type *)stk) = ptr;
-#else
-    memcpy(((char *)stk), &ptr, sizeof(Type));
-#endif
     stk = (void *)(((size_t)stk) + sizeof(Type));
 
 #ifndef NDEBUG
@@ -2279,11 +2317,7 @@ ALWAYS_INLINE void push(void*& stk, void* topOfStack, const Type& ptr)
 template <typename Type>
 ALWAYS_INLINE void push(void*& stk, void* topOfStack, Type* ptr)
 {
-#ifdef ESCARGOT_64
     *((Type *)stk) = *ptr;
-#else
-    memcpy(((char *)stk), ptr, sizeof(Type));
-#endif
     stk = (void *)(((size_t)stk) + sizeof(Type));
 
 #ifndef NDEBUG
@@ -2323,6 +2357,16 @@ ALWAYS_INLINE void sub(void*& stk, void* bp, size_t offsetToBasePointer)
     }
     stk = (void *)(((size_t)stk) - offsetToBasePointer * sizeof(Type));
 }
+
+#define PUSH(stk, topOfStack, ptr) push<ESValue>(stk, topOfStack, ptr)
+#define POP(stk, bp) pop<ESValue>(stk, bp)
+#define PEEK(stk, bp) peek<ESValue>(stk, bp)
+#define SUB_STACK(stk, bp, offsetToBasePointer) sub<ESValue>(stk, bp, offsetToBasePointer)
+
+#endif
+
+
+
 
 template <typename CodeType>
 ALWAYS_INLINE void executeNextCode(size_t& programCounter)

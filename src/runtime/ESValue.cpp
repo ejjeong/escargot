@@ -240,10 +240,12 @@ void CreateExponentialRepresentation(
 
 ESStringData::ESStringData(double number)
 {
-    m_hashData.m_isHashInited =  false;
-
     if (number == 0) {
         operator += ('0');
+#ifdef ENABLE_ESJIT
+        m_length = 1;
+#endif
+        initHash();
         return;
     }
     const int flags = UNIQUE_ZERO | EMIT_POSITIVE_EXPONENT_SIGN;
@@ -306,6 +308,7 @@ ESStringData::ESStringData(double number)
 #ifdef ENABLE_ESJIT
     m_length = u16string::length();
 #endif
+    initHash();
 }
 
 uint32_t ESString::tryToUseAsIndex()
