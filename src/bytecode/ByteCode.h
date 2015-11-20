@@ -2345,7 +2345,11 @@ void dumpBytecode(CodeBlock* codeBlock);
 void dumpUnsupported(CodeBlock* codeBlock);
 #endif
 
+#ifdef ENABLE_ESJIT
 ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter = 0, unsigned maxStackPos = 0);
+#else
+ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter = 0);
+#endif
 CodeBlock* generateByteCode(ProgramNode* node);
 inline void iterateByteCode(CodeBlock* codeBlock, std::function<void(CodeBlock* block, unsigned idx, ByteCode* code, Opcode opcode)> fn);
 

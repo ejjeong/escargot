@@ -30,7 +30,11 @@ typedef std::unordered_map<std::pair<const char16_t *, size_t>, ESString *,
     gc_allocator<std::pair<const std::pair<const char16_t *, size_t>, ESString *> > > InternalAtomicStringMap;
 
 class ESVMInstance : public gc_cleanup {
+#ifdef ENABLE_ESJIT
     friend ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter, unsigned maxStackPos);
+#else
+    friend ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter);
+#endif
     friend NEVER_INLINE void tryOperation(ESVMInstance* instance, CodeBlock* codeBlock, char* codeBuffer, ExecutionContext* ec, size_t programCounter, Try* code);
     friend class ESFunctionObject;
     friend class ExpressionStatementNode;

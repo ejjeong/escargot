@@ -5,7 +5,11 @@
 
 namespace escargot {
 
+#ifdef ENABLE_ESJIT
 ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter, unsigned maxStackPos)
+#else
+ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter)
+#endif
 {
     if (codeBlock == NULL) {
 #define REGISTER_TABLE(opcode, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
@@ -23,18 +27,22 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     char* stackBuf;
     void* bp;
     void* stack;
+#ifdef ENABLE_ESJIT
     if (maxStackPos == 0) {
         stackBuf = (char *)alloca(stackSiz);
         bp = stackBuf;
         stack = bp;
     } else {
-#ifdef ENABLE_ESJIT
         size_t offset = maxStackPos*sizeof(ESValue);
         stackBuf = ec->getBp();
         bp = stackBuf;
         stack = (void*)(((size_t)bp) + offset);
-#endif
     }
+#else
+    stackBuf = (char *)alloca(stackSiz);
+    bp = stackBuf;
+    stack = bp;
+#endif
 
     void* topOfStack = stackBuf + stackSiz;
 #ifndef ANDROID
