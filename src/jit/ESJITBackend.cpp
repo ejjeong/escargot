@@ -1460,7 +1460,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 
                 LIns* record = m_out->insLoad(LIR_ldp, envIns, LexicalEnvironment::offsetofRecord(), 1, LOAD_NORMAL);
                 LIns* vectorDataPointer = m_out->insLoad(LIR_ldp, record, (DeclarativeEnvironmentRecord::offsetofActivationData() + ESIdentifierVector::offsetofData()), 1, LOAD_NORMAL);
-                return m_out->insLoad(LIR_lde, vectorDataPointer, sizeof(ESIdentifierVectorStdItem) * irGetVar->varIndex() + sizeof(InternalAtomicString), 1, LOAD_NORMAL);
+                return m_out->insLoad(LIR_lde, vectorDataPointer, sizeof(ESIdentifierVectorStdItem) * irGetVar->varIndex() + offsetof(ESIdentifierVectorStdItem, second), 1, LOAD_NORMAL);
             }
         }
     case ESIR::Opcode::SetVar:
@@ -1483,7 +1483,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 
                 LIns* record = m_out->insLoad(LIR_ldp, envIns, LexicalEnvironment::offsetofRecord(), 1, LOAD_NORMAL);
                 LIns* vectorDataPointer = m_out->insLoad(LIR_ldp, record, (DeclarativeEnvironmentRecord::offsetofActivationData() + ESIdentifierVector::offsetofData()), 1, LOAD_NORMAL);
-                m_out->insStore(LIR_ste, boxedSource, vectorDataPointer, sizeof(ESIdentifierVectorStdItem) * irSetVar->localVarIndex() + sizeof(InternalAtomicString), 1);
+                m_out->insStore(LIR_ste, boxedSource, vectorDataPointer, sizeof(ESIdentifierVectorStdItem) * irSetVar->localVarIndex() + offsetof(ESIdentifierVectorStdItem, second), 1);
             }
             return source;
         }
