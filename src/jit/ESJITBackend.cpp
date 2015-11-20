@@ -245,6 +245,10 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
 
     LIns* bytecode = m_out->insImmI(currentByteCodeIndex);
     LIns* boxedIndex = boxESValue(bytecode, TypeInt32);
+#ifndef NDEBUG
+    if (ESVMInstance::currentInstance()->m_verboseJIT)
+        JIT_LOG(bytecode, "OSR Exit tmp index : ");
+#endif
     return m_out->ins1(LIR_rete, boxedIndex);
 }
 
@@ -272,11 +276,8 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
 #endif
         LIns* jumpIfBoolean = m_out->insBranch(LIR_jt, checkIfBoolean, (LIns*)nullptr);
 #ifndef NDEBUG
-        if (ESVMInstance::currentInstance()->m_verboseJIT) {
+        if (ESVMInstance::currentInstance()->m_verboseJIT)
             JIT_LOG(in, "Expected Boolean-typed value, but got this value");
-            LIns* index = m_out->insImmI(currentByteCodeIndex);
-            JIT_LOG(index, "currentByteCodeIndex = ");
-        }
 #endif
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out->ins0(LIR_label);
@@ -292,11 +293,8 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
 #endif
         LIns* jumpIfInt = m_out->insBranch(LIR_jt, checkIfInt, (LIns*)nullptr);
 #ifndef NDEBUG
-        if (ESVMInstance::currentInstance()->m_verboseJIT) {
+        if (ESVMInstance::currentInstance()->m_verboseJIT)
             JIT_LOG(in, "Expected Int-typed value, but got this value");
-            LIns* index = m_out->insImmI(currentByteCodeIndex);
-            JIT_LOG(index, "currentByteCodeIndex = ");
-        }
 #endif
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out->ins0(LIR_label);
@@ -344,11 +342,8 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
         exitIfNotNumber->setTarget(exitPath);
 
 #ifndef NDEBUG
-        if (ESVMInstance::currentInstance()->m_verboseJIT) {
+        if (ESVMInstance::currentInstance()->m_verboseJIT)
             JIT_LOG(in, "Expected Double-typed value, but got this value");
-            LIns* index = m_out->insImmI(currentByteCodeIndex);
-            JIT_LOG(index, "currentByteCodeIndex = ");
-        }
 #endif
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out->ins0(LIR_label);
@@ -367,11 +362,8 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
         LIns* jumpIfPointer = m_out->insBranch(LIR_jt, checkIfPointer, (LIns*)nullptr);
 #endif
 #ifndef NDEBUG
-        if (ESVMInstance::currentInstance()->m_verboseJIT) {
+        if (ESVMInstance::currentInstance()->m_verboseJIT)
             JIT_LOG(in, "Expected Pointer-typed value, but got this value");
-            LIns* index = m_out->insImmI(currentByteCodeIndex);
-            JIT_LOG(index, "currentByteCodeIndex = ");
-        }
 #endif
         generateOSRExit(currentByteCodeIndex);
 
@@ -398,8 +390,6 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
             JIT_LOG(in, "Expected below-typed value, but got this value");
             JIT_LOG(in, type.getESIRTypeName());
             JIT_LOG(typeOfESPtr, "ESPointer Type : ");
-            LIns* index = m_out->insImmI(currentByteCodeIndex);
-            JIT_LOG(index, "currentByteCodeIndex = ");
         }
 #endif
         generateOSRExit(currentByteCodeIndex);
@@ -417,9 +407,8 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
         LIns* jumpIfPointer = m_out->insBranch(LIR_jt, checkIfPointer, (LIns*)nullptr);
 #endif
 #ifndef NDEBUG
-        if (ESVMInstance::currentInstance()->m_verboseJIT) {
+        if (ESVMInstance::currentInstance()->m_verboseJIT)
             JIT_LOG(in, "Expected Pointer-typed value, but got this value");
-        }
 #endif
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out->ins0(LIR_label);
@@ -434,9 +423,8 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
 #endif
         LIns* jumpIfUndefined = m_out->insBranch(LIR_jt, checkIfUndefined, (LIns*)nullptr);
 #ifndef NDEBUG
-        if (ESVMInstance::currentInstance()->m_verboseJIT) {
+        if (ESVMInstance::currentInstance()->m_verboseJIT)
             JIT_LOG(in, "Expected undefined value, but got this value");
-        }
 #endif
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out->ins0(LIR_label);
@@ -451,9 +439,8 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
 #endif
         LIns* jumpIfNull = m_out->insBranch(LIR_jt, checkIfNull, (LIns*)nullptr);
 #ifndef NDEBUG
-        if (ESVMInstance::currentInstance()->m_verboseJIT) {
+        if (ESVMInstance::currentInstance()->m_verboseJIT)
             JIT_LOG(in, "Expected null value, but got this value");
-        }
 #endif
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out->ins0(LIR_label);
@@ -472,11 +459,8 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
 #endif
         LIns* jumpIfNumber = m_out->insBranch(LIR_jf, checkIfNotNumber, (LIns*)nullptr);
 #ifndef NDEBUG
-        if (ESVMInstance::currentInstance()->m_verboseJIT) {
+        if (ESVMInstance::currentInstance()->m_verboseJIT)
             JIT_LOG(in, "Expected number value, but got this value");
-            LIns* index = m_out->insImmI(currentByteCodeIndex);
-            JIT_LOG(index, "currentByteCodeIndex = ");
-        }
 #endif
         generateOSRExit(currentByteCodeIndex);
         LIns* normalPath = m_out->ins0(LIR_label);

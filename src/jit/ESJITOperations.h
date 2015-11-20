@@ -386,7 +386,7 @@ ALWAYS_INLINE ESValueInDouble resolveNonDataProperty(ESObject* object, size_t id
 inline void jitLogIntOperation(int arg, const char* msg)
 {
     if (!ESVMInstance::currentInstance()->m_reportCompiledFunction) {
-        printf("[JIT_LOG] %s : int 0x%x\n", msg, bitwise_cast<unsigned>(arg));
+        printf("[JIT_LOG] %s : int 0x%x (%d)\n", msg, bitwise_cast<unsigned>(arg), arg);
         fflush(stdout);
     }
 }
