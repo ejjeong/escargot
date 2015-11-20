@@ -2857,7 +2857,7 @@ Assembler::asm_qjoin(LIns *ins)
     findRegFor2(GpRegs, lo, rlo, GpRegs, hi, rhi);
 
 #if defined(ESCARGOT) && defined(NJ_ARM_EABI_HARD_FLOAT)
-    Register target = prepareResultReg(ins, rmask(D0));
+    Register target = prepareResultReg(ins, FpDRegs);
     FMDRR(target, rlo, rhi);
 #else
     asm_str(rhi, FP, d+4);

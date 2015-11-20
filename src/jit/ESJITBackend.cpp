@@ -1007,17 +1007,27 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         }
     case ESIR::Opcode::Int32Mod:
         {
-#ifdef AVMPLUS_ARM
-            RELEASE_ASSERT_NOT_REACHED();
-#else
             INIT_ESIR(Int32Mod);
             INIT_BINARY_ESIR(Int32Mod);
             ASSERT(left->isI() && right->isI());
             ASSERT(leftType.isInt32Type() && rightType.isInt32Type());
+#ifndef AVMPLUS_ARM
             LIns* res = m_out->ins2(LIR_divi, left, right);
             res = m_out->ins2(LIR_muli, res, right);
             res = m_out->ins2(LIR_subi, left, res);
             return res; // e_out.ins2(LIR_modi, left, right);
+#else
+            left = getDoubleDynamic(left, leftType);
+            right = getDoubleDynamic(right, rightType);
+
+            // FIXME: consider minus left
+            LIns* res = m_out->ins2(LIR_divd, left, right);
+            res = m_out->ins1(LIR_d2i, res);
+            res = m_out->ins1(LIR_i2d, res);
+            res = m_out->ins2(LIR_muld, res, right);
+            res = m_out->ins2(LIR_subd, left, res);
+            res = m_out->ins1(LIR_d2i, res);
+            return res;
 #endif
         }
     case ESIR::Opcode::DoubleMod:
