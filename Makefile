@@ -316,12 +316,7 @@ check-jit-32:
 	vimdiff osrExitedFunctions.txt originalOSRExitedFunctions.txt
 
 check-jit-arm:
-	./build_android.sh armeabi-v7a.32bit.jit.release
-	mkdir -p test/bin/arm32/escargot/jit
-	cp ./android/libs/armeabi-v7a/escargot ./test/bin/arm32/escargot/jit/escargot.release
-	./build_android.sh armeabi-v7a.32bit.jit.debug
-	cp ./android/libs/armeabi-v7a/escargot ./test/bin/arm32/escargot/jit/escargot.debug
-	./setup_measure_for_android.sh
+	./setup_measure_for_android.sh build-jit
 	#./measure_for_android.sh escargot32.jit time > time.arm32.txt
 	adb shell "cd /data/local/tmp ; ./run-Sunspider.sh /data/local/tmp/arm32/escargot/jit/escargot.debug -rcf > compiledFunctions.arm32.txt"
 	adb shell "cd /data/local/tmp ; ./run-Sunspider.sh /data/local/tmp/arm32/escargot/jit/escargot.debug -rof > osrExitedFunctions.arm32.txt"

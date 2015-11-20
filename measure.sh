@@ -3,8 +3,13 @@
 #make full
 tests=("3d-cube" "3d-morph" "3d-raytrace" "access-binary-trees" "access-fannkuch" "access-nbody" "access-nsieve" "bitops-3bit-bits-in-byte" "bitops-bits-in-byte" "bitops-bitwise-and" "bitops-nsieve-bits" "controlflow-recursive" "crypto-aes" "crypto-md5" "crypto-sha1" "date-format-tofte" "date-format-xparb" "math-cordic" "math-partial-sums" "math-spectral-norm" "regexp-dna" "string-base64" "string-fasta" "string-tagcloud" "string-unpack-code" "string-validate-input")
 cp test/SunSpider/resources/sunspider-standalone-driver.orig.js test/SunSpider/resources/sunspider-standalone-driver.js
-if [[ $1 == duk* ]]; then
-  cmd="./test/bin/x64/duk/duk_v1.3.0"
+if [[ $1 == duk*32 ]]; then
+  curdir=`pwd`
+  export LD_LIBRARY_PATH="$curdir/test/bin/x86/duk/"
+  cmd="./test/bin/x86/duk/duk"
+  tc="duktape32"
+elif [[ $1 == duk* ]]; then
+  cmd="./test/bin/x64/duk/duk"
   tc="duktape"
 elif [[ $1 == v8* ]]; then
   if [[ $2 == time ]]; then
