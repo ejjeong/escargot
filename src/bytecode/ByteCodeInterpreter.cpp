@@ -108,7 +108,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     PopExpressionStatementOpcodeLbl:
     {
         ESValue* t = pop<ESValue>(stack, bp);
+#ifdef ESCARGOT_64
         *lastExpressionStatementValue = *t;
+#else
+        memcpy(lastExpressionStatementValue, t, sizeof(ESValue));
+#endif
         executeNextCode<PopExpressionStatement>(programCounter);
         NEXT_INSTRUCTION();
     }
@@ -195,7 +199,12 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
         if (LIKELY(code->m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
             ASSERT(ec->resolveBinding(code->m_name) == code->m_cachedSlot);
+#ifdef ESCARGOT_64
             *code->m_cachedSlot = *value;
+#else
+            memcpy(code->m_cachedSlot, value, sizeof(ESValue));
+#endif
+
         } else {
             ExecutionContext* ec = instance->currentExecutionContext();
             // TODO
@@ -233,7 +242,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     SetByIndexOpcodeLbl:
     {
         SetByIndex* code = (SetByIndex*)currentCode;
+#ifdef ESCARGOT_64
         nonActivitionModeLocalValuePointer[code->m_index] = *peek<ESValue>(stack, bp);
+#else
+        memcpy(&nonActivitionModeLocalValuePointer[code->m_index], peek<ESValue>(stack, bp), sizeof(ESValue));
+#endif
         executeNextCode<SetByIndex>(programCounter);
         NEXT_INSTRUCTION();
     }
@@ -246,7 +259,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             env = env->outerEnvironment();
         }
         ASSERT(env->record()->isDeclarativeEnvironmentRecord());
+#ifdef ESCARGOT_64
         *env->record()->toDeclarativeEnvironmentRecord()->bindingValueForActivationMode(code->m_index) = *peek<ESValue>(stack, bp);
+#else
+        memcpy(env->record()->toDeclarativeEnvironmentRecord()->bindingValueForActivationMode(code->m_index), peek<ESValue>(stack, bp), sizeof(ESValue));
+#endif
         executeNextCode<SetByIndexWithActivation>(programCounter);
         NEXT_INSTRUCTION();
     }

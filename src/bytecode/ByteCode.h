@@ -2260,8 +2260,11 @@ private:
 template <typename Type>
 ALWAYS_INLINE void push(void*& stk, void* topOfStack, const Type& ptr)
 {
-    // memcpy(((char *)stk), &ptr, sizeof(Type));
+#ifdef ESCARGOT_64
     *((Type *)stk) = ptr;
+#else
+    memcpy(((char *)stk), &ptr, sizeof(Type));
+#endif
     stk = (void *)(((size_t)stk) + sizeof(Type));
 
 #ifndef NDEBUG
@@ -2276,8 +2279,11 @@ ALWAYS_INLINE void push(void*& stk, void* topOfStack, const Type& ptr)
 template <typename Type>
 ALWAYS_INLINE void push(void*& stk, void* topOfStack, Type* ptr)
 {
-    // memcpy(((char *)stk), &ptr, sizeof(Type));
+#ifdef ESCARGOT_64
     *((Type *)stk) = *ptr;
+#else
+    memcpy(((char *)stk), ptr, sizeof(Type));
+#endif
     stk = (void *)(((size_t)stk) + sizeof(Type));
 
 #ifndef NDEBUG
