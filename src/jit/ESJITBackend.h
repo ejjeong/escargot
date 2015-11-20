@@ -68,29 +68,26 @@ private:
     nanojit::Fragment* m_f;
     nanojit::LirWriter* m_out;
 
-    nanojit::LIns* m_zeroD;
     nanojit::LIns* m_zeroP;
     nanojit::LIns* m_oneI;
     nanojit::LIns* m_zeroI;
     nanojit::LIns* m_true;
     nanojit::LIns* m_false;
-    nanojit::LIns* m_undefinedE;
-    nanojit::LIns* m_nullE;
-    nanojit::LIns* m_emptyE;
-    nanojit::LIns* m_thisValueP;
-    nanojit::LIns* m_instanceP;
-    nanojit::LIns* m_contextP;
-    nanojit::LIns* m_globalObjectP;
-    nanojit::LIns* m_cachedDeclarativeEnvironmentRecordESValueP;
+
 #ifdef ESCARGOT_64
     nanojit::LIns* m_tagMaskQ;
-    nanojit::LIns* m_booleanTagQ;
-    nanojit::LIns* m_booleanTagComplementQ;
     nanojit::LIns* m_intTagQ;
     nanojit::LIns* m_intTagComplementQ;
-    nanojit::LIns* m_doubleEncodeOffsetQ;
+    nanojit::LIns* m_booleanTagQ;
+    nanojit::LIns* m_booleanTagComplementQ;
+    nanojit::LIns* m_nullQ;
+    nanojit::LIns* m_undefinedQ;
+    nanojit::LIns* m_emptyQ;
     nanojit::LIns* m_emptyD;
+    nanojit::LIns* m_doubleEncodeOffsetQ;
     nanojit::LIns* m_zeroQ;
+    nanojit::LIns* undefined() { return m_undefinedQ; }
+    nanojit::LIns* empty() { return m_emptyQ; }
 #else
     nanojit::LIns* m_int32TagI;
     nanojit::LIns* m_booleanTagI;
@@ -100,7 +97,15 @@ private:
     nanojit::LIns* m_emptyValueTagI;
     nanojit::LIns* m_deletedValueTagI;
     nanojit::LIns* m_lowestTagI;
+    nanojit::LIns* undefined() { return m_out->insImmD(bitwise_cast<double>(ESValue().asRawData())); }
+    nanojit::LIns* empty() { return m_out->insImmD(bitwise_cast<double>(ESValue(ESValue::ESEmptyValueTag::ESEmptyValue).asRawData())); }
 #endif
+
+    nanojit::LIns* m_thisValueP;
+    nanojit::LIns* m_instanceP;
+    nanojit::LIns* m_contextP;
+    nanojit::LIns* m_globalObjectP;
+    nanojit::LIns* m_cachedDeclarativeEnvironmentRecordESValueP;
 
 };
 
