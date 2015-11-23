@@ -51,8 +51,8 @@ private:
     nanojit::LIns* getPayloadFromESValue(nanojit::LIns* boxedValue);
 #endif
 
-    nanojit::LIns* getDoubleDynamic(nanojit::LIns* in, Type type);
-    nanojit::LIns* getInt32Dynamic(nanojit::LIns* in, Type type);
+    nanojit::LIns* toDoubleDynamic(nanojit::LIns* in, Type type);
+    nanojit::LIns* toInt32Dynamic(nanojit::LIns* in, Type type); // always truncates
 
     nanojit::LIns* getOffsetAsPointer(nanojit::LIns* in);
 
