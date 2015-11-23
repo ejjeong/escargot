@@ -4,26 +4,6 @@
 
 namespace escargot {
 
-ExecutionContext::ExecutionContext(LexicalEnvironment* varEnv, bool needsActivation, bool isNewExpression,
-    ExecutionContext* callerContext,
-    ESValue* arguments, size_t argumentsCount, ESValue* cachedDeclarativeEnvironmentRecord)
-{
-    ASSERT(varEnv);
-    m_lexicalEnvironment = varEnv;
-    m_variableEnvironment = varEnv;
-    m_callerContext = callerContext;
-    m_needsActivation = needsActivation;
-    m_isNewExpression = isNewExpression;
-    m_arguments = arguments;
-    m_argumentCount = argumentsCount;
-    m_cachedDeclarativeEnvironmentRecord = cachedDeclarativeEnvironmentRecord;
-    m_isStrict = false;
-    m_tryOrCatchBodyResult = ESValue(ESValue::ESEmptyValue);
-#ifdef ENABLE_ESJIT
-    m_inOSRExit = false;
-#endif
-}
-
 ESValue* ExecutionContext::resolveBinding(const InternalAtomicString& atomicName)
 {
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding

@@ -23,6 +23,7 @@ else ifeq ($(TARGET_ARCH), mips64)
 	LOCAL_CFLAGS += -DESCARGOT_64=1
 else ifeq ($(TARGET_ARCH), arm)
 	LOCAL_CFLAGS += -DESCARGOT_32=1
+	LOCAL_ARM_NEON := true
 else ifeq ($(TARGET_ARCH), x86)
 	LOCAL_CFLAGS += -DESCARGOT_32=1
 else ifeq ($(TARGET_ARCH), mips)
@@ -72,7 +73,7 @@ ifeq ($(BUILD_TYPE), jit)
 		SRCS += $(SRC_THIRD_PARTY)/nanojit/Nativei386.cpp
 	else ifeq($(TARGET_ARCH), arm)
 		TARGET_CPU=arm
-		LOCAL_CXXFLAGS += -mfpu=neon
+#		LOCAL_CXXFLAGS += -mfpu=neon #enabled by LOCAL_ARM_NEON := true
 		LOCAL_CXXFLAGS += -DAVMPLUS_32BIT
 		LOCAL_CXXFLAGS += -DAVMPLUS_ARM
 		LOCAL_CXXFLAGS += -DTARGET_THUMB2

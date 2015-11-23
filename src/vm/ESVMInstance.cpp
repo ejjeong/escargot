@@ -44,14 +44,6 @@ ESVMInstance::ESVMInstance()
     m_gmtoff = -cachedTime->tm_gmtoff;
 
 
-    /*
-    GC_set_on_collection_event([](GC_EventType type){
-        if (type == GC_EVENT_RECLAIM_END && ESVMInstance::currentInstance()) {
-            ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
-        }
-    });
-    */
-
     m_identifierCacheInvalidationCheckCount = 0;
 
     std::setlocale(LC_ALL, "en_US.utf8");
@@ -126,9 +118,15 @@ ESVMInstance::ESVMInstance()
 
     m_globalExecutionContext = new ExecutionContext(a, true, false, NULL);
     m_currentExecutionContext = m_globalExecutionContext;
-    exit();
+    GC_set_on_collection_event([](GC_EventType evtType) {
+        if (GC_EVENT_POST_START_WORLD == evtType) {
+            RELEASE_ASSERT(ESVMInstance::currentInstance());
+            ESVMInstance::currentInstance()->globalObject()->pruneCodeBlocks();
+        }
+    });
 
     GC_gcollect();
+    exit();
 }
 
 ESVMInstance::~ESVMInstance()
@@ -137,9 +135,12 @@ ESVMInstance::~ESVMInstance()
 
 ESValue ESVMInstance::evaluate(u16string& source, bool isForGlobalScope)
 {
+    // unsigned long start = ESVMInstance::currentInstance()->tickCount();
     m_lastExpressionStatementValue = ESValue();
     CodeBlock* block = m_scriptParser->parseScript(this, source, isForGlobalScope);
     interpret(this, block);
+    // unsigned long end = ESVMInstance::currentInstance()->tickCount();
+    // printf("ESVMInstance::evaluate takes %lfms\n", (end-start)/1000.0);
     return m_lastExpressionStatementValue;
 }
 

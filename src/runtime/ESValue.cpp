@@ -1396,8 +1396,6 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                 currentContext,
                 arguments, argumentCount);
             functionCallerInnerProcess(instance->m_currentExecutionContext, fn, receiver, arguments, argumentCount, instance);
-            // ESVMInstance->invalidateIdentifierCacheCheckCount();
-            // execute;
 #ifdef ENABLE_ESJIT
             result = executeJIT(fn, instance, *instance->m_currentExecutionContext);
 #else
@@ -1418,8 +1416,6 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
             ExecutionContext ec(&env, false, isNewExpression, currentContext, arguments, argumentCount, storage);
             instance->m_currentExecutionContext = &ec;
             functionCallerInnerProcess(&ec, fn, receiver, arguments, argumentCount, instance);
-            // ESVMInstance->invalidateIdentifierCacheCheckCount();
-            // execute;
 #ifdef ENABLE_ESJIT
             result = executeJIT(fn, instance, ec);
 #else

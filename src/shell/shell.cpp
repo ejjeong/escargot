@@ -11,7 +11,7 @@ void __attribute__((optimize("O0"))) fillStack(size_t siz)
 {
     volatile char a[siz];
     for (unsigned i = 0 ; i < siz  ; i ++) {
-        a[i] = 0xff;
+        a[i] = 0x00;
     }
 }
 #endif
@@ -85,7 +85,7 @@ int main(int argc, char* argv[])
         }
     }
     */
-    fillStack(0.2*1024*1024);
+    fillStack(256*1024);
 #endif
 #if defined(ENABLE_ESJIT) && !defined(NDEBUG)
     if (argc >= 2 && strcmp(argv[1], "-a") == 0) {

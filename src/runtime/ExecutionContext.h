@@ -13,11 +13,28 @@ struct jmpbuf_wrapper {
 class LexicalEnvironment;
 class ExecutionContext : public gc {
 public:
-    ExecutionContext(LexicalEnvironment* varEnv, bool needsActivation, bool isNewExpression,
+    ALWAYS_INLINE ExecutionContext(LexicalEnvironment* varEnv, bool needsActivation, bool isNewExpression,
         ExecutionContext* callerContext,
         ESValue* arguments = NULL, size_t argumentsCount = 0,
         ESValue* cachedDeclarativeEnvironmentRecord = NULL
-        );
+        )
+    {
+        ASSERT(varEnv);
+        m_lexicalEnvironment = varEnv;
+        m_variableEnvironment = varEnv;
+        m_callerContext = callerContext;
+        m_needsActivation = needsActivation;
+        m_isNewExpression = isNewExpression;
+        m_arguments = arguments;
+        m_argumentCount = argumentsCount;
+        m_cachedDeclarativeEnvironmentRecord = cachedDeclarativeEnvironmentRecord;
+        m_isStrict = false;
+        m_tryOrCatchBodyResult = ESValue(ESValue::ESEmptyValue);
+#ifdef ENABLE_ESJIT
+        m_inOSRExit = false;
+#endif
+    }
+
     ALWAYS_INLINE LexicalEnvironment* environment()
     {
         // TODO

@@ -190,7 +190,6 @@ inline double ESValue::toNumber() const
     else {
         return toNumberSlowCase();
     }
-    RELEASE_ASSERT_NOT_REACHED();
 }
 
 inline double ESValue::toNumberSlowCase() const

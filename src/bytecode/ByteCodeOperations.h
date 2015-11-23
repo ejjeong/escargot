@@ -83,6 +83,20 @@ ALWAYS_INLINE ESValue plusOperation(const ESValue& left, const ESValue& right)
 {
     ESValue ret(ESValue::ESForceUninitialized);
     if (left.isInt32() && right.isInt32()) {
+#ifdef ESCARGOT_32
+        int32_t a = left.asInt32();
+        int32_t b = right.asInt32();
+        if (UNLIKELY(a > 0 && b > std::numeric_limits<int32_t>::max() - a)) {
+            // overflow
+            ret = ESValue(ESValue::EncodeAsDouble, (double)a + (double)b);
+        } else if (UNLIKELY(a < 0 && b < std::numeric_limits<int32_t>::min() - a)) {
+            // underflow
+            ret = ESValue(ESValue::EncodeAsDouble, (double)a + (double)b);
+        } else {
+            ret = ESValue(a + b);
+        }
+        return ret;
+#else
         int64_t a = left.asInt32();
         int64_t b = right.asInt32();
         a = a + b;
@@ -93,6 +107,7 @@ ALWAYS_INLINE ESValue plusOperation(const ESValue& left, const ESValue& right)
             ret = ESValue((int32_t)a);
         }
         return ret;
+#endif
     } else if (left.isNumber() && right.isNumber()) {
         ret = ESValue(left.asNumber() + right.asNumber());
         return ret;

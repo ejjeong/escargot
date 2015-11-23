@@ -4380,7 +4380,17 @@ void GlobalObject::unregisterCodeBlock(CodeBlock* cb)
     auto iter = std::find(m_codeBlocks.begin(), m_codeBlocks.end(), cb);
     ASSERT(iter != m_codeBlocks.end());
     m_codeBlocks.erase(iter);
+}
 
+void GlobalObject::pruneCodeBlocks()
+{
+    for (size_t i = 0 ; i < m_codeBlocks.size() ;) {
+        if (GC_is_heap_ptr(m_codeBlocks[i])) {
+            i++;
+        } else {
+            m_codeBlocks.erase(m_codeBlocks.begin() + i);
+        }
+    }
 }
 
 void GlobalObject::somePrototypeObjectDefineIndexedProperty()
