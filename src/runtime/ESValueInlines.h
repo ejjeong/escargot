@@ -259,11 +259,16 @@ inline double ESValue::toNumberSlowCase() const
 
 ALWAYS_INLINE bool ESValue::toBoolean() const
 {
+#ifdef ESCARGOT_32
+    if (LIKELY(isBoolean()))
+        return payload();
+#else
     if (*this == ESValue(true))
         return true;
 
     if (*this == ESValue(false))
         return false;
+#endif
 
     if (isInt32())
         return asInt32();
@@ -312,49 +317,46 @@ ALWAYS_INLINE int32_t ESValue::toInt32() const
 // http://www.ecma-international.org/ecma-262/5.1/#sec-9.5
 inline int32_t ESValue::toInt32SlowCase() const
 {
-    // Let number be the result of calling ToNumber on the input argument.
     double num = toNumber();
+    int64_t bits = bitwise_cast<int64_t>(num);
+    int32_t exp = (static_cast<int32_t>(bits >> 52) & 0x7ff) - 0x3ff;
 
-    // If number is NaN, +0, −0, +∞, or −∞, return +0.
-    if (UNLIKELY(std::isnan(num) || num == 0.0 || std::isinf(0.0))) {
+    // If exponent < 0 there will be no bits to the left of the decimal point
+    // after rounding; if the exponent is > 83 then no bits of precision can be
+    // left in the low 32-bit range of the result (IEEE-754 doubles have 52 bits
+    // of fractional precision).
+    // Note this case handles 0, -0, and all infinte, NaN, & denormal value.
+    if (exp < 0 || exp > 83)
         return 0;
+
+    // Select the appropriate 32-bits from the floating point mantissa.  If the
+    // exponent is 52 then the bits we need to select are already aligned to the
+    // lowest bits of the 64-bit integer representation of tghe number, no need
+    // to shift.  If the exponent is greater than 52 we need to shift the value
+    // left by (exp - 52), if the value is less than 52 we need to shift right
+    // accordingly.
+    int32_t result = (exp > 52)
+        ? static_cast<int32_t>(bits << (exp - 52))
+        : static_cast<int32_t>(bits >> (52 - exp));
+
+    // IEEE-754 double precision values are stored omitting an implicit 1 before
+    // the decimal point; we need to reinsert this now.  We may also the shifted
+    // invalid bits into the result that are not a part of the mantissa (the sign
+    // and exponent bits from the floatingpoint representation); mask these out.
+    if (exp < 32) {
+        int32_t missingOne = 1 << exp;
+        result &= missingOne - 1;
+        result += missingOne;
     }
 
-    // Let posInt be sign(number) * floor(abs(number)).
-    long long int posInt = (num < 0 ? -1 : 1) * std::floor(std::abs(num));
-    // Let int32bit be posInt modulo 232; that is, a finite integer value k of Number type with positive sign
-    // and less than 232 in magnitude such that the mathematical difference of posInt and k is mathematically an integer multiple of 232.
-    long long int int32bit = posInt % 0x100000000;
-    int res;
-    // If int32bit is greater than or equal to 231, return int32bit − 232, otherwise return int32bit.
-    if (int32bit >= 0x80000000)
-        res = int32bit - 0x100000000;
-    else
-        res = int32bit;
-    return res;
+    // If the input value was negative (we could test either 'number' or 'bits',
+    // but testing 'bits' is likely faster) invert the result appropriately.
+    return bits < 0 ? -result : result;
 }
 
-inline uint32_t ESValue::toUint32() const
+ALWAYS_INLINE uint32_t ESValue::toUint32() const
 {
-    // consume fast case
-    if (LIKELY(isInt32()))
-        return asInt32();
-
-    // Let number be the result of calling ToNumber on the input argument.
-    double num = toNumber();
-
-    // If number is NaN, +0, −0, +∞, or −∞, return +0.
-    if (UNLIKELY(std::isnan(num) || num == 0.0 || std::isinf(0.0))) {
-        return 0;
-    }
-
-    // Let posInt be sign(number) × floor(abs(number)).
-    long long int posInt = (num < 0 ? -1 : 1) * std::floor(std::abs(num));
-
-    // Let int32bit be posInt modulo 232; that is, a finite integer value k of Number type with positive sign and
-    // less than 232 in magnitude such that the mathematical difference of posInt and k is mathematically an integer multiple of 232.
-    long long int int32bit = posInt % 0x100000000;
-    return int32bit;
+    return toInt32();
 }
 
 inline bool ESValue::isObject() const

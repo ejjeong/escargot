@@ -486,14 +486,14 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* src = POP(stack, bp);
         ESValue ret(ESValue::ESForceUninitialized);
-        if (src->isInt32()) {
+        if (LIKELY(src->isInt32())) {
             int32_t a = src->asInt32();
-            if (a == std::numeric_limits<int32_t>::max())
+            if (UNLIKELY(a == std::numeric_limits<int32_t>::max()))
                 ret = ESValue(ESValue::EncodeAsDouble, ((double)a) + 1);
             else
                 ret = ESValue(a + 1);
         } else {
-            ret = ESValue(ESValue::EncodeAsDouble, src->asNumber() + 1);
+            ret = ESValue(src->asNumber() + 1);
         }
         PUSH(stack, topOfStack, ret);
         executeNextCode<Increment>(programCounter);
@@ -504,14 +504,14 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* src = POP(stack, bp);
         ESValue ret(ESValue::ESForceUninitialized);
-        if (src->isInt32()) {
+        if (LIKELY(src->isInt32())) {
             int32_t a = src->asInt32();
-            if (a == std::numeric_limits<int32_t>::min())
+            if (UNLIKELY(a == std::numeric_limits<int32_t>::min()))
                 ret = ESValue(ESValue::EncodeAsDouble, ((double)a) - 1);
             else
                 ret = ESValue(a - 1);
         } else {
-            ret = ESValue(ESValue::EncodeAsDouble, src->asNumber() - 1);
+            ret = ESValue(src->asNumber() - 1);
         }
         PUSH(stack, topOfStack, ret);
         executeNextCode<Decrement>(programCounter);
