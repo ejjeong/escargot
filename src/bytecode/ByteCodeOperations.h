@@ -78,14 +78,14 @@ NEVER_INLINE void setByGlobalIndexOperationWithNoInline(GlobalObject* globalObje
 
 NEVER_INLINE ESValue* getByIdOperationWithNoInline(ESVMInstance* instance, ExecutionContext* ec, GetById* code);
 
-NEVER_INLINE ESValue plusOperationSlowCase(const ESValue& left, const ESValue& right);
-ALWAYS_INLINE ESValue plusOperation(const ESValue& left, const ESValue& right)
+NEVER_INLINE ESValue plusOperationSlowCase(ESValue* left, ESValue* right);
+ALWAYS_INLINE ESValue plusOperation(ESValue* left, ESValue* right)
 {
     ESValue ret(ESValue::ESForceUninitialized);
-    if (left.isInt32() && right.isInt32()) {
+    if (left->isInt32() && right->isInt32()) {
 #ifdef ESCARGOT_32
-        int32_t a = left.asInt32();
-        int32_t b = right.asInt32();
+        int32_t a = left->asInt32();
+        int32_t b = right->asInt32();
         if (UNLIKELY(a > 0 && b > std::numeric_limits<int32_t>::max() - a)) {
             // overflow
             ret = ESValue(ESValue::EncodeAsDouble, (double)a + (double)b);
@@ -97,8 +97,8 @@ ALWAYS_INLINE ESValue plusOperation(const ESValue& left, const ESValue& right)
         }
         return ret;
 #else
-        int64_t a = left.asInt32();
-        int64_t b = right.asInt32();
+        int64_t a = left->asInt32();
+        int64_t b = right->asInt32();
         a = a + b;
 
         if (a > std::numeric_limits<int32_t>::max() || a < std::numeric_limits<int32_t>::min()) {
@@ -108,8 +108,8 @@ ALWAYS_INLINE ESValue plusOperation(const ESValue& left, const ESValue& right)
         }
         return ret;
 #endif
-    } else if (left.isNumber() && right.isNumber()) {
-        ret = ESValue(left.asNumber() + right.asNumber());
+    } else if (left->isNumber() && right->isNumber()) {
+        ret = ESValue(left->asNumber() + right->asNumber());
         return ret;
     } else {
         return plusOperationSlowCase(left, right);
@@ -117,13 +117,13 @@ ALWAYS_INLINE ESValue plusOperation(const ESValue& left, const ESValue& right)
 
 }
 
-ALWAYS_INLINE ESValue minusOperation(const ESValue& left, const ESValue& right)
+ALWAYS_INLINE ESValue minusOperation(ESValue* left, ESValue* right)
 {
     // http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.2
     ESValue ret(ESValue::ESForceUninitialized);
-    if (left.isInt32() && right.isInt32()) {
-        int64_t a = left.asInt32();
-        int64_t b = right.asInt32();
+    if (left->isInt32() && right->isInt32()) {
+        int64_t a = left->asInt32();
+        int64_t b = right->asInt32();
         a = a - b;
 
         if (a > std::numeric_limits<int32_t>::max() || a < std::numeric_limits<int32_t>::min()) {
@@ -132,20 +132,20 @@ ALWAYS_INLINE ESValue minusOperation(const ESValue& left, const ESValue& right)
             ret = ESValue((int32_t)a);
         }
     } else {
-        ret = ESValue(left.toNumber() - right.toNumber());
+        ret = ESValue(left->toNumber() - right->toNumber());
     }
     return ret;
 }
 
-NEVER_INLINE ESValue modOperation(const ESValue& left, const ESValue& right);
+NEVER_INLINE ESValue modOperation(ESValue* left, ESValue* right);
 
 // http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5
-NEVER_INLINE ESValue abstractRelationalComparisonSlowCase(const ESValue& left, const ESValue& right, bool leftFirst);
-ALWAYS_INLINE ESValue abstractRelationalComparison(const ESValue& left, const ESValue& right, bool leftFirst)
+NEVER_INLINE ESValue abstractRelationalComparisonSlowCase(ESValue* left, ESValue* right, bool leftFirst);
+ALWAYS_INLINE ESValue abstractRelationalComparison(ESValue* left, ESValue* right, bool leftFirst)
 {
     // consume very fast case
-    if (LIKELY(left.isInt32() && right.isInt32())) {
-        return ESValue(left.asInt32() < right.asInt32());
+    if (LIKELY(left->isInt32() && right->isInt32())) {
+        return ESValue(left->asInt32() < right->asInt32());
     }
 
     return abstractRelationalComparisonSlowCase(left, right, leftFirst);

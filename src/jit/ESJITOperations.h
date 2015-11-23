@@ -54,7 +54,7 @@ inline ESValueInDouble plusOp(ESValueInDouble left, ESValueInDouble right)
 {
     ESValue leftVal = ESValue::fromRawDouble(left);
     ESValue rightVal = ESValue::fromRawDouble(right);
-    ESValueInDouble ret = ESValue::toRawDouble(plusOperation(leftVal, rightVal));
+    ESValueInDouble ret = ESValue::toRawDouble(plusOperation(&leftVal, &rightVal));
     // printf("plusop %lx = %lx + %lx\n", bitwise_cast<uint64_t>(ret), bitwise_cast<uint64_t>(left), bitwise_cast<uint64_t>(right));
     return ret;
 }
@@ -63,7 +63,7 @@ inline ESValueInDouble minusOp(ESValueInDouble left, ESValueInDouble right)
 {
     ESValue leftVal = ESValue::fromRawDouble(left);
     ESValue rightVal = ESValue::fromRawDouble(right);
-    ESValueInDouble ret = ESValue::toRawDouble(minusOperation(leftVal, rightVal));
+    ESValueInDouble ret = ESValue::toRawDouble(minusOperation(&leftVal, &rightVal));
     // printf("plusop %lx = %lx + %lx\n", bitwise_cast<uint64_t>(ret), bitwise_cast<uint64_t>(left), bitwise_cast<uint64_t>(right));
     return ret;
 }
@@ -328,7 +328,7 @@ inline ESValueInDouble lessThanOp(ESValueInDouble left, ESValueInDouble right)
 {
     ESValue leftVal = ESValue::fromRawDouble(left);
     ESValue rightVal = ESValue::fromRawDouble(right);
-    ESValue ret = abstractRelationalComparison(leftVal, rightVal, true);
+    ESValue ret = abstractRelationalComparison(&leftVal, &rightVal, true);
     if (ret.isUndefined())
         return false;
     return ESValue::toRawDouble(ret);

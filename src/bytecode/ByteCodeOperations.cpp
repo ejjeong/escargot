@@ -21,7 +21,7 @@ NEVER_INLINE void setByGlobalIndexOperationWithNoInline(GlobalObject* globalObje
 }
 
 
-NEVER_INLINE ESValue plusOperationSlowCase(const ESValue& left, const ESValue& right)
+NEVER_INLINE ESValue plusOperationSlowCase(ESValue* left, ESValue* right)
 {
     ESValue ret(ESValue::ESForceUninitialized);
     ESValue lval(ESValue::ESForceUninitialized);
@@ -32,17 +32,18 @@ NEVER_INLINE ESValue plusOperationSlowCase(const ESValue& left, const ESValue& r
     // All native ECMAScript objects except Date objects handle the absence of a hint as if the hint Number were given;
     // Date objects handle the absence of a hint as if the hint String were given.
     // Host objects may handle the absence of a hint in some other manner.
-    if (left.isESPointer() && left.asESPointer()->isESDateObject()) {
-        lval = left.toPrimitive(ESValue::PreferString);
+    if (left->isESPointer() && left->asESPointer()->isESDateObject()) {
+        lval = left->toPrimitive(ESValue::PreferString);
     } else {
-        lval = left.toPrimitive();
+        lval = left->toPrimitive();
     }
 
-    if (right.isESPointer() && right.asESPointer()->isESDateObject()) {
-        rval = right.toPrimitive(ESValue::PreferString);
+    if (right->isESPointer() && right->asESPointer()->isESDateObject()) {
+        rval = right->toPrimitive(ESValue::PreferString);
     } else {
-        rval = right.toPrimitive();
+        rval = right->toPrimitive();
     }
+
     if (lval.isESString() || rval.isESString()) {
         ret = ESString::concatTwoStrings(lval.toString(), rval.toString());
     } else {
@@ -52,17 +53,17 @@ NEVER_INLINE ESValue plusOperationSlowCase(const ESValue& left, const ESValue& r
     return ret;
 }
 
-NEVER_INLINE ESValue modOperation(const ESValue& left, const ESValue& right)
+NEVER_INLINE ESValue modOperation(ESValue* left, ESValue* right)
 {
     ESValue ret(ESValue::ESForceUninitialized);
 
     int32_t intLeft;
     int32_t intRight;
-    if (left.isInt32() && ((intLeft = left.asInt32()) > 0) && right.isInt32() && (intRight = right.asInt32())) {
+    if (left->isInt32() && ((intLeft = left->asInt32()) > 0) && right->isInt32() && (intRight = right->asInt32())) {
         ret = ESValue(intLeft % intRight);
     } else {
-        double lvalue = left.toNumber();
-        double rvalue = right.toNumber();
+        double lvalue = left->toNumber();
+        double rvalue = right->toNumber();
         // http://www.ecma-international.org/ecma-262/5.1/#sec-11.5.3
         if (std::isnan(lvalue) || std::isnan(rvalue))
             ret = ESValue(std::numeric_limits<double>::quiet_NaN());
@@ -90,16 +91,16 @@ NEVER_INLINE ESValue modOperation(const ESValue& left, const ESValue& right)
     return ret;
 }
 
-NEVER_INLINE ESValue abstractRelationalComparisonSlowCase(const ESValue& left, const ESValue& right, bool leftFirst)
+NEVER_INLINE ESValue abstractRelationalComparisonSlowCase(ESValue* left, ESValue* right, bool leftFirst)
 {
     ESValue lval(ESValue::ESForceUninitialized);
     ESValue rval(ESValue::ESForceUninitialized);
     if (leftFirst) {
-        lval = left.toPrimitive();
-        rval = right.toPrimitive();
+        lval = left->toPrimitive();
+        rval = right->toPrimitive();
     } else {
-        rval = right.toPrimitive();
-        lval = left.toPrimitive();
+        rval = right->toPrimitive();
+        lval = left->toPrimitive();
     }
 
     // http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5

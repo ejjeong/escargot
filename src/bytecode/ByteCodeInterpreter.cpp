@@ -389,7 +389,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* right = POP(stack, bp);
         ESValue* left = POP(stack, bp);
-        ESValue r = abstractRelationalComparison(*left, *right, true);
+        ESValue r = abstractRelationalComparison(left, right, true);
         if (r.isUndefined())
             PUSH(stack, topOfStack, ESValue(false));
         else
@@ -402,7 +402,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* right = POP(stack, bp);
         ESValue* left = POP(stack, bp);
-        ESValue r = abstractRelationalComparison(*right, *left, false);
+        ESValue r = abstractRelationalComparison(right, left, false);
         if (r == ESValue(true) || r.isUndefined())
             PUSH(stack, topOfStack, ESValue(false));
         else
@@ -415,7 +415,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* right = POP(stack, bp);
         ESValue* left = POP(stack, bp);
-        ESValue r = abstractRelationalComparison(*right, *left, false);
+        ESValue r = abstractRelationalComparison(right, left, false);
         if (r.isUndefined())
             PUSH(stack, topOfStack, ESValue(false));
         else
@@ -428,7 +428,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* right = POP(stack, bp);
         ESValue* left = POP(stack, bp);
-        ESValue r = abstractRelationalComparison(*left, *right, true);
+        ESValue r = abstractRelationalComparison(left, right, true);
         if (r == ESValue(true) || r.isUndefined())
             PUSH(stack, topOfStack, ESValue(false));
         else
@@ -439,8 +439,8 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
     PlusOpcodeLbl:
     {
-        ESValue right = *POP(stack, bp);
-        ESValue left = *POP(stack, bp);
+        ESValue* right = POP(stack, bp);
+        ESValue* left = POP(stack, bp);
         PUSH(stack, topOfStack, plusOperation(left, right));
         executeNextCode<Plus>(programCounter);
         NEXT_INSTRUCTION();
@@ -450,7 +450,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* right = POP(stack, bp);
         ESValue* left = POP(stack, bp);
-        PUSH(stack, topOfStack, minusOperation(*left, *right));
+        PUSH(stack, topOfStack, minusOperation(left, right));
         executeNextCode<Minus>(programCounter);
         NEXT_INSTRUCTION();
     }
@@ -477,7 +477,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* right = POP(stack, bp);
         ESValue* left = POP(stack, bp);
-        PUSH(stack, topOfStack, modOperation(*left, *right));
+        PUSH(stack, topOfStack, modOperation(left, right));
         executeNextCode<Mod>(programCounter);
         NEXT_INSTRUCTION();
     }
