@@ -22,7 +22,7 @@
 #include <clocale>
 #include <cwchar>
 
-#ifdef ENABLE_ESJIT
+#if defined(ENABLE_ESJIT) && !defined(NDEBUG)
 #include <iostream>
 #endif
 

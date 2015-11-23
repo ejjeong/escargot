@@ -2,7 +2,7 @@
 #include "vm/ESVMInstance.h"
 #include "runtime/ESValue.h"
 
-#ifdef ENABLE_ESJIT
+#if defined(ENABLE_ESJIT) && !defined(NDEBUG)
 #include "lirasm.cpp"
 #endif
 
