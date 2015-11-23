@@ -299,7 +299,7 @@ public:
     {
         out << "tmp" << m_targetIndex << ": ";
         ESIR::dump(out);
-        out << " const pointer " << std::hex << bitwise_cast<unsigned>(m_value) << std::dec;
+        out << " const pointer " << std::hex << bitwise_cast<unsigned long>(m_value) << std::dec;
     }
 #endif
 
