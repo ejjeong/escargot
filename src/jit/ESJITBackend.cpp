@@ -1006,7 +1006,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 
             // FIXME: consider minus left
             LIns* res = m_out->ins2(LIR_divd, left, right);
-            res = m_out->ins1(LIR_d2i, res);
+            res = getInt32Dynamic(res, Type(TypeDouble));
             res = m_out->ins1(LIR_i2d, res);
             res = m_out->ins2(LIR_muld, res, right);
             res = m_out->ins2(LIR_subd, left, res);
@@ -1027,7 +1027,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             right = m_out->ins1(LIR_absd, right);
             */
             LIns* res = m_out->ins2(LIR_divd, left, right);
-            res = m_out->ins1(LIR_d2i, res);
+            res = getInt32Dynamic(res, Type(TypeDouble));
             res = m_out->ins1(LIR_i2d, res);
             res = m_out->ins2(LIR_muld, res, right);
             res = m_out->ins2(LIR_subd, left, res);
@@ -1363,6 +1363,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         }
     case ESIR::Opcode::Return:
         {
+            INIT_ESIR(Return);
             return m_out->ins1(LIR_rete, undefined());
         }
     case ESIR::Opcode::ReturnWithValue:
