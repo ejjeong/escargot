@@ -3538,7 +3538,11 @@ void Assembler::asm_d2i(LIns* ins)
 {
     Register tmp = _allocator.allocTempReg(FpSRegs, S0);
     if (ins->isInReg()) {
+#ifdef ESCARGOT
+        Register rt = prepareResultReg(ins, GpRegs);
+#else
         Register rt = ins->getReg();
+#endif
         FMRS(rt, tmp);
     } else {
         // There's no active result register, so store the result directly into
