@@ -6,30 +6,24 @@
 
 namespace escargot {
 
-struct jmpbuf_wrapper {
-    std::jmp_buf m_buffer;
-};
-
 class LexicalEnvironment;
 class ExecutionContext : public gc {
 public:
     ALWAYS_INLINE ExecutionContext(LexicalEnvironment* varEnv, bool needsActivation, bool isNewExpression,
-        ExecutionContext* callerContext,
         ESValue* arguments = NULL, size_t argumentsCount = 0,
         ESValue* cachedDeclarativeEnvironmentRecord = NULL
         )
+            : m_thisValue(ESValue::ESForceUninitialized)
+            , m_tryOrCatchBodyResult(ESValue::ESForceUninitialized)
     {
         ASSERT(varEnv);
-        m_lexicalEnvironment = varEnv;
-        m_variableEnvironment = varEnv;
-        m_callerContext = callerContext;
+        m_environment = varEnv;
         m_needsActivation = needsActivation;
         m_isNewExpression = isNewExpression;
         m_arguments = arguments;
         m_argumentCount = argumentsCount;
         m_cachedDeclarativeEnvironmentRecord = cachedDeclarativeEnvironmentRecord;
         m_isStrict = false;
-        m_tryOrCatchBodyResult = ESValue(ESValue::ESEmptyValue);
 #ifdef ENABLE_ESJIT
         m_inOSRExit = false;
 #endif
@@ -38,14 +32,14 @@ public:
     ALWAYS_INLINE LexicalEnvironment* environment()
     {
         // TODO
-        return m_variableEnvironment;
+        return m_environment;
     }
 
     ALWAYS_INLINE void setEnvironment(LexicalEnvironment* env)
     {
         // TODO
         ASSERT(env);
-        m_variableEnvironment = env;
+        m_environment = env;
     }
 
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
@@ -54,10 +48,17 @@ public:
     ESValue* resolveArgumentsObjectBinding();
 
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvethisbinding
-    ESValue resolveThisBinding();
+    void setThisBinding(const ESValue& v)
+    {
+        m_thisValue = v;
+    }
+    ESValue resolveThisBinding()
+    {
+        return m_thisValue;
+    }
     ESObject* resolveThisBindingToObject()
     {
-        return resolveThisBinding().toObject();
+        return m_thisValue.toObject();
     }
 
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-getthisenvironment
@@ -84,8 +85,6 @@ public:
     bool isStrictMode() { return m_isStrict; }
     void setStrictMode(bool s) { m_isStrict = s; }
 
-    ExecutionContext* callerContext() { return m_callerContext; }
-
 #ifdef ENABLE_ESJIT
     bool inOSRExit() { return m_inOSRExit; }
     char* getBp() { return m_stackBuf; }
@@ -101,7 +100,7 @@ public:
     {
         return offsetof(ExecutionContext, m_cachedDeclarativeEnvironmentRecord);
     }
-    static size_t offsetOfEnvironment() { return offsetof(ExecutionContext, m_variableEnvironment); }
+    static size_t offsetOfEnvironment() { return offsetof(ExecutionContext, m_environment); }
 #pragma GCC diagnostic pop
 #endif
 
@@ -111,17 +110,18 @@ private:
     bool m_isNewExpression;
     bool m_isStrict;
 
-    ExecutionContext* m_callerContext;
-
     ESValue* m_arguments;
     size_t m_argumentCount;
 
-    LexicalEnvironment* m_lexicalEnvironment;
-    LexicalEnvironment* m_variableEnvironment;
+    // TODO
+    // LexicalEnvironment* m_lexicalEnvironment;
+    // LexicalEnvironment* m_variableEnvironment;
+    LexicalEnvironment* m_environment;
 
     ESValue* m_cachedDeclarativeEnvironmentRecord;
     // instance->currentExecutionContext()->environment()->record()->toDeclarativeEnvironmentRecord()
 
+    ESValue m_thisValue;
     ESValue m_tryOrCatchBodyResult;
 #ifdef ENABLE_ESJIT
     bool m_inOSRExit;

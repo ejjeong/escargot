@@ -176,7 +176,7 @@ ALWAYS_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* propert
 
 // d = {}. d.foo
 ALWAYS_INLINE ESValue getObjectPreComputedCaseOperation(ESValue* willBeObject, ESString* keyString, GlobalObject* globalObject
-    , ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex)
+    , ESHiddenClassInlineCache* inlineCache)
 {
     ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty());
     ESObject* obj;
@@ -185,38 +185,44 @@ ALWAYS_INLINE ESValue getObjectPreComputedCaseOperation(ESValue* willBeObject, E
         if (LIKELY(willBeObject->asESPointer()->isESObject())) {
             targetObj = obj = willBeObject->asESPointer()->asESObject();
 GetObjectPreComputedCaseInlineCacheOperation:
-            int cSiz = cachedHiddenClassChain->size();
-            bool miss = !cSiz;
-            if (!miss) {
-                for (int i = 0; i < cSiz-1; i ++) {
-                    if ((*cachedHiddenClassChain)[i] != obj->hiddenClass()) {
-                        miss = true;
-                        break;
+            unsigned currentCacheIndex = 0;
+            const size_t cacheFillCount = inlineCache->m_cache.size();
+            for (;currentCacheIndex < cacheFillCount ; currentCacheIndex++) {
+                const ESHiddenClassInlineCacheData& data = inlineCache->m_cache[currentCacheIndex];
+                const ESHiddenClassChain * const cachedHiddenClassChain = &data.m_cachedhiddenClassChain;
+                const size_t& cachedIndex = data.m_cachedIndex;
+                const size_t cSiz = cachedHiddenClassChain->size() - 1;
+                for (size_t i = 0; i < cSiz; i ++) {
+                    if (UNLIKELY((*cachedHiddenClassChain)[i] != obj->hiddenClass())) {
+                        goto GetObjecPreComputedCacheMiss;
                     }
                     const ESValue& proto = obj->__proto__();
                     if (LIKELY(proto.isObject())) {
                         obj = proto.asESPointer()->asESObject();
                     } else {
-                        miss = true;
-                        break;
+                        goto GetObjecPreComputedCacheMiss;
                     }
                 }
-            }
-            if (!miss) {
-                if ((*cachedHiddenClassChain)[cSiz - 1] == obj->hiddenClass()) {
-                    if (*cachedHiddenClassIndex != SIZE_MAX) {
-                        return obj->hiddenClass()->read(obj, targetObj, *cachedHiddenClassIndex);
+                if (LIKELY((*cachedHiddenClassChain)[cSiz] == obj->hiddenClass())) {
+                    if (cachedIndex != SIZE_MAX) {
+                        return obj->hiddenClass()->read(obj, targetObj, cachedIndex);
                     } else {
                         return ESValue();
                     }
-                }
+                } GetObjecPreComputedCacheMiss: { }
             }
 
             // cache miss.
-            obj = targetObj;
+            inlineCache->m_executeCount++;
+            if (inlineCache->m_cache.size() > 3 || inlineCache->m_executeCount <= 3) {
+                return willBeObject->toObject()->get(keyString);
+            }
 
-            *cachedHiddenClassIndex = SIZE_MAX;
-            cachedHiddenClassChain->clear();
+            obj = targetObj;
+            inlineCache->m_cache.push_back(ESHiddenClassInlineCacheData());
+            ASSERT(&inlineCache->m_cache.back() == &inlineCache->m_cache[currentCacheIndex]);
+            ESHiddenClassChain* cachedHiddenClassChain = &inlineCache->m_cache[currentCacheIndex].m_cachedhiddenClassChain;
+            size_t* cachedHiddenClassIndex = &inlineCache->m_cache[currentCacheIndex].m_cachedIndex;
             while (true) {
                 cachedHiddenClassChain->push_back(obj->hiddenClass());
                 size_t idx = obj->hiddenClass()->findProperty(keyString);
@@ -257,7 +263,7 @@ GetObjectPreComputedCaseInlineCacheOperation:
 }
 
 NEVER_INLINE ESValue getObjectPreComputedCaseOperationWithNeverInline(ESValue* willBeObject, ESString* property, GlobalObject* globalObject
-    , ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex);
+    , ESHiddenClassInlineCache* inlineCache);
 
 NEVER_INLINE void throwObjectWriteError();
 

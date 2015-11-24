@@ -1706,7 +1706,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             }
 
 
-            if (m_graph->getOperandType(irGetObjectPreComputed->objectIndex()).isObjectType() || isStringCase) {
+            if (irGetObjectPreComputed->byteCode()->m_inlineCache.m_cache.size() && (m_graph->getOperandType(irGetObjectPreComputed->objectIndex()).isObjectType() || isStringCase)) {
                 LIns* result = m_out->insAlloc(sizeof(ESValue));
 
                 // check proto chain
@@ -1719,10 +1719,10 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 
                 std::vector<LIns*> lblsToFallback;
                 LIns* proto = obj;
-                for (size_t i = 0; i < irGetObjectPreComputed->byteCode()->m_cachedhiddenClassChain.size() ; i ++) {
+                for (size_t i = 0; i < irGetObjectPreComputed->byteCode()->m_inlineCache.m_cache[0].m_cachedhiddenClassChain.size() ; i ++) {
                     if (i != 0)
                         obj = proto;
-                    LIns* savedHiddenClass = m_out->insImmP(irGetObjectPreComputed->byteCode()->m_cachedhiddenClassChain[i]);
+                    LIns* savedHiddenClass = m_out->insImmP(irGetObjectPreComputed->byteCode()->m_inlineCache.m_cache[0].m_cachedhiddenClassChain[i]);
                     LIns* hiddenClass = m_out->insLoad(LIR_ldp, obj, escargot::ESObject::offsetOfHiddenClass(), 1, LOAD_NORMAL);
                     LIns* checkHiddenClass = m_out->ins2(LIR_eqp, hiddenClass, savedHiddenClass);
                     LIns* jumpToFallBackIfHiddenClassIsNotSame = m_out->insBranch(LIR_jf, checkHiddenClass, (LIns*)nullptr);
@@ -1750,18 +1750,18 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
                 m_out->insStore(LIR_ste, readResult, result, 0, 1);
                 */
 
-                if (irGetObjectPreComputed->byteCode()->m_cachedIndex == SIZE_MAX) {
+                if (irGetObjectPreComputed->byteCode()->m_inlineCache.m_cache[0].m_cachedIndex == SIZE_MAX) {
                     m_out->insStore(LIR_ste, undefined(), result, 0, 1);
                 } else {
-                    if (irGetObjectPreComputed->byteCode()->m_cachedhiddenClassChain.back()->propertyInfo(irGetObjectPreComputed->byteCode()->m_cachedIndex).m_flags.m_isDataProperty) {
+                    if (irGetObjectPreComputed->byteCode()->m_inlineCache.m_cache[0].m_cachedhiddenClassChain.back()->propertyInfo(irGetObjectPreComputed->byteCode()->m_inlineCache.m_cache[0].m_cachedIndex).m_flags.m_isDataProperty) {
                         size_t gapToHiddenClassData = escargot::ESObject::offsetOfHiddenClassData() + ESValueVector::offsetOfData();
                         LIns* hiddenClassData = m_out->insLoad(LIR_ldp, obj, gapToHiddenClassData, 1, LOAD_NORMAL);
-                        LIns* readResult = m_out->insLoad(LIR_lde, hiddenClassData, irGetObjectPreComputed->byteCode()->m_cachedIndex * sizeof(ESValue), 1, LOAD_NORMAL);
+                        LIns* readResult = m_out->insLoad(LIR_lde, hiddenClassData, irGetObjectPreComputed->byteCode()->m_inlineCache.m_cache[0].m_cachedIndex * sizeof(ESValue), 1, LOAD_NORMAL);
                         m_out->insStore(LIR_ste, readResult, result, 0, 1);
                         // JIT_LOG(readResult, "inline cache works");
                     } else {
                         // call callback
-                        LIns* args[] = {m_out->insImmI((int)irGetObjectPreComputed->byteCode()->m_cachedIndex), orgObj, obj};
+                        LIns* args[] = {m_out->insImmI((int)irGetObjectPreComputed->byteCode()->m_inlineCache.m_cache[0].m_cachedIndex), orgObj, obj};
                         LIns* readResult = m_out->insCall(&getObjectPreComputedCaseLastPartOpCallInfo, args);
                         m_out->insStore(LIR_ste, readResult, result, 0, 1);
                     }

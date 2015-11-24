@@ -540,11 +540,11 @@ public:
         return &m_argumentsObject;
     }
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-bindthisvalue
-    void bindThisValue(const ESValue& V);
-    ESValue getThisBinding();
+    // void bindThisValue(const ESValue& V);
+    //  ESValue getThisBinding();
 
 protected:
-    ESValue m_thisValue;
+    // ESValue m_thisValue;
     // ESFunctionObject* m_functionObject; //TODO
     // ESValue m_newTarget; //TODO
     ESValue* m_arguments;

@@ -413,6 +413,26 @@ struct ByteCodeExtraData {
 ASSERT_STATIC(sizeof(ByteCode) == sizeof(size_t), "sizeof(ByteCode) should be == sizeof(size_t)");
 #endif
 
+
+struct ESHiddenClassInlineCacheData {
+    ESHiddenClassInlineCacheData()
+    {
+        m_cachedIndex = SIZE_MAX;
+    }
+
+    ESHiddenClassChain m_cachedhiddenClassChain;
+    size_t m_cachedIndex;
+};
+
+struct ESHiddenClassInlineCache {
+    std::vector<ESHiddenClassInlineCacheData, gc_allocator<ESHiddenClassInlineCacheData> > m_cache;
+    size_t m_executeCount;
+    ESHiddenClassInlineCache()
+    {
+        m_executeCount = 0;
+    }
+};
+
 class Push : public ByteCode {
 public:
     Push(const ESValue& value)
@@ -1529,7 +1549,6 @@ public:
         : ByteCode(code)
     {
         m_propertyValue = v.toString();
-        m_cachedIndex = SIZE_MAX;
     }
 
 #ifndef NDEBUG
@@ -1539,8 +1558,7 @@ public:
     }
 #endif
     ESString* m_propertyValue;
-    ESHiddenClassChain m_cachedhiddenClassChain;
-    size_t m_cachedIndex;
+    ESHiddenClassInlineCache m_inlineCache;
 };
 
 class GetObjectPreComputedCaseAndPushObject : public ByteCode, public JITProfileTarget {
@@ -1549,7 +1567,6 @@ public:
         : ByteCode(code)
     {
         m_propertyValue = v.toString();
-        m_cachedIndex = SIZE_MAX;
     }
 
 #ifndef NDEBUG
@@ -1559,8 +1576,7 @@ public:
     }
 #endif
     ESString* m_propertyValue;
-    ESHiddenClassChain m_cachedhiddenClassChain;
-    size_t m_cachedIndex;
+    ESHiddenClassInlineCache m_inlineCache;
 };
 
 ASSERT_STATIC(sizeof(GetObjectPreComputedCase) == sizeof(GetObjectPreComputedCaseAndPushObject), "");
@@ -1601,12 +1617,10 @@ public:
         : ByteCode(code)
     {
         m_propertyValue = v.toString();
-        m_cachedIndex = SIZE_MAX;
     }
 
     ESString* m_propertyValue;
-    ESHiddenClassChain m_cachedhiddenClassChain;
-    size_t m_cachedIndex;
+    ESHiddenClassInlineCache m_inlineCache;
 
 #ifndef NDEBUG
     virtual void dump()

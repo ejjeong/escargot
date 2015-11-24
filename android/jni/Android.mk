@@ -43,7 +43,7 @@ ifeq ($(BUILD_MODE), debug)
     LOCAL_CFLAGS += -O0 -g3 -D_GLIBCXX_DEBUG -fno-omit-frame-pointer -Wall -Werror -Wno-unused-variable -Wno-unused-but-set-variable -Wno-sign-compare -Wno-unused-local-typedefs
     LOCAL_CXXFLAGS += -Wno-invalid-offsetof
 else ifeq ($(BUILD_MODE), release)
-    LOCAL_CFLAGS += -O2 -g0 -DNDEBUG -fomit-frame-pointer -finline-limit=300
+    LOCAL_CFLAGS += -O2 -g0 -DNDEBUG -fomit-frame-pointer -finline-limit=300 -fno-stack-protector -funswitch-loops
 else
     $(error mode error)
 endif
@@ -127,6 +127,7 @@ SRCS += $(foreach dir, $(SRC_PATH)/parser , $(wildcard $(dir)/*.cpp))
 SRCS += $(foreach dir, $(SRC_PATH)/runtime , $(wildcard $(dir)/*.cpp))
 ifeq ($(BUILD_OBJECT), exe)
 	SRCS += $(foreach dir, $(SRC_PATH)/shell , $(wildcard $(dir)/*.cpp))
+	LOCAL_CFLAGS += -fvisibility=hidden
 endif
 SRCS += $(foreach dir, $(SRC_PATH)/vm , $(wildcard $(dir)/*.cpp))
 

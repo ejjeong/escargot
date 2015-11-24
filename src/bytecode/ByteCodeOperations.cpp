@@ -172,9 +172,9 @@ NEVER_INLINE ESValue getObjectOperationSlowCase(ESValue* willBeObject, ESValue* 
 }
 
 NEVER_INLINE ESValue getObjectPreComputedCaseOperationWithNeverInline(ESValue* willBeObject, ESString* property, GlobalObject* globalObject
-    , ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex)
+    , ESHiddenClassInlineCache* inlineCache)
 {
-    return getObjectPreComputedCaseOperation(willBeObject, property, globalObject, cachedHiddenClassChain, cachedHiddenClassIndex);
+    return getObjectPreComputedCaseOperation(willBeObject, property, globalObject, inlineCache);
 }
 
 NEVER_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue* property, GlobalObject* globalObject)
@@ -408,6 +408,7 @@ NEVER_INLINE void tryOperation(ESVMInstance* instance, CodeBlock* codeBlock, cha
     LexicalEnvironment* oldEnv = ec->environment();
     ExecutionContext* backupedEC = ec;
     try {
+        ec->tryOrCatchBodyResult() = ESValue(ESValue::ESEmptyValue);
         ESValue ret = interpret(instance, codeBlock, resolveProgramCounter(codeBuffer, programCounter + sizeof(Try)));
         if (!ret.isEmpty()) {
             ec->tryOrCatchBodyResult() = ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsReturn, ret, ESValue((int32_t)code->m_tryDupCount));

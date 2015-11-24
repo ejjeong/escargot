@@ -68,7 +68,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     GlobalObject* globalObject = instance->globalObject();
     ESValue* lastExpressionStatementValue = &instance->m_lastExpressionStatementValue;
     ESValue* nonActivitionModeLocalValuePointer = ec->cachedDeclarativeEnvironmentRecordESValue();
-    ESValue thisValue(ESValue::ESEmptyValue);
     ASSERT(((size_t)stack % sizeof(size_t)) == 0);
     ASSERT(((size_t)tmpStack % sizeof(size_t)) == 0);
     // resolve programCounter into address
@@ -559,14 +558,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
     ThisOpcodeLbl:
     {
-        if (UNLIKELY(thisValue.isEmpty())) {
-            thisValue = ec->resolveThisBinding();
-        }
 #ifdef ENABLE_ESJIT
         This* code = (This*)currentCode;
-        code->m_profile.addProfile(thisValue);
+        code->m_profile.addProfile(ec->resolveThisBinding());
 #endif
-        PUSH(stack, topOfStack, thisValue);
+        PUSH(stack, topOfStack, ec->resolveThisBinding());
         executeNextCode<This>(programCounter);
         NEXT_INSTRUCTION();
     }
@@ -583,31 +579,15 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         return *ret;
     }
 
-    CreateObjectOpcodeLbl:
-    {
-        CreateObject* code = (CreateObject*)currentCode;
-        ESObject* obj = ESObject::create(code->m_keyCount + 1);
-        PUSH(stack, topOfStack, obj);
-        executeNextCode<CreateObject>(programCounter);
-        NEXT_INSTRUCTION();
-    }
-
-    CreateArrayOpcodeLbl:
-    {
-        CreateArray* code = (CreateArray*)currentCode;
-        ESArrayObject* arr = ESArrayObject::create(code->m_keyCount);
-        PUSH(stack, topOfStack, arr);
-        executeNextCode<CreateArray>(programCounter);
-        NEXT_INSTRUCTION();
-    }
-
     GetObjectOpcodeLbl:
     {
         ESValue* property = POP(stack, bp);
         ESValue* willBeObject = POP(stack, bp);
+#ifndef ENABLE_ESJIT
+        PUSH(stack, topOfStack, getObjectOperation(willBeObject, property, globalObject));
+#else
         ESValue value = getObjectOperation(willBeObject, property, globalObject);
         PUSH(stack, topOfStack, value);
-#ifdef ENABLE_ESJIT
         GetObject* code = (GetObject*)currentCode;
         code->m_profile.addProfile(value);
 #endif
@@ -619,10 +599,13 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* property = POP(stack, bp);
         ESValue willBeObject = *POP(stack, bp);
+#ifndef ENABLE_ESJIT
+        PUSH(stack, topOfStack, getObjectOperation(&willBeObject, property, globalObject));
+        PUSH(stack, topOfStack, willBeObject);
+#else
         ESValue value = getObjectOperation(&willBeObject, property, globalObject);
         PUSH(stack, topOfStack, value);
         PUSH(stack, topOfStack, willBeObject);
-#ifdef ENABLE_ESJIT
         GetObject* code = (GetObject*)currentCode;
         code->m_profile.addProfile(value);
 #endif
@@ -634,10 +617,13 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         GetObjectPreComputedCase* code = (GetObjectPreComputedCase*)currentCode;
         ESValue* willBeObject = POP(stack, bp);
+#ifndef ENABLE_ESJIT
+        PUSH(stack, topOfStack, getObjectPreComputedCaseOperation(willBeObject, code->m_propertyValue, globalObject,
+            &code->m_inlineCache));
+#else
         ESValue value = getObjectPreComputedCaseOperation(willBeObject, code->m_propertyValue, globalObject,
-            &code->m_cachedhiddenClassChain, &code->m_cachedIndex);
+            &code->m_inlineCache);
         PUSH(stack, topOfStack, value);
-#ifdef ENABLE_ESJIT
         code->m_profile.addProfile(value);
 #endif
         executeNextCode<GetObjectPreComputedCase>(programCounter);
@@ -648,11 +634,15 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         GetObjectPreComputedCaseAndPushObject* code = (GetObjectPreComputedCaseAndPushObject*)currentCode;
         ESValue willBeObject = *POP(stack, bp);
+#ifndef ENABLE_ESJIT
+        PUSH(stack, topOfStack, getObjectPreComputedCaseOperation(&willBeObject, code->m_propertyValue, globalObject,
+            &code->m_inlineCache));
+        PUSH(stack, topOfStack, willBeObject);
+#else
         ESValue value = getObjectPreComputedCaseOperation(&willBeObject, code->m_propertyValue, globalObject,
-            &code->m_cachedhiddenClassChain, &code->m_cachedIndex);
+            &code->m_inlineCache);
         PUSH(stack, topOfStack, value);
         PUSH(stack, topOfStack, willBeObject);
-#ifdef ENABLE_ESJIT
         code->m_profile.addProfile(value);
 #endif
         executeNextCode<GetObjectPreComputedCaseAndPushObject>(programCounter);
@@ -663,9 +653,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* property = (ESValue *)((size_t)stack - sizeof(ESValue));
         ESValue* willBeObject = (ESValue *)((size_t)stack - sizeof(ESValue) * 2);
+#ifndef ENABLE_ESJIT
+        PUSH(stack, topOfStack, getObjectOperation(willBeObject, property, globalObject));
+#else
         ESValue value = getObjectOperation(willBeObject, property, globalObject);
         PUSH(stack, topOfStack, value);
-#ifdef ENABLE_ESJIT
         GetObjectWithPeeking* code = (GetObjectWithPeeking*)currentCode;
         code->m_profile.addProfile(value);
 #endif
@@ -677,10 +669,13 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         GetObjectWithPeekingPreComputedCase* code = (GetObjectWithPeekingPreComputedCase*)currentCode;
         ESValue* willBeObject = PEEK(stack, bp);
+#ifndef ENABLE_ESJIT
+        PUSH(stack, topOfStack, getObjectPreComputedCaseOperationWithNeverInline(willBeObject, code->m_propertyValue, globalObject,
+            &code->m_inlineCache));
+#else
         ESValue value = getObjectPreComputedCaseOperationWithNeverInline(willBeObject, code->m_propertyValue, globalObject,
-            &code->m_cachedhiddenClassChain, &code->m_cachedIndex);
+            &code->m_inlineCache);
         PUSH(stack, topOfStack, value);
-#ifdef ENABLE_ESJIT
         code->m_profile.addProfile(value);
 #endif
         executeNextCode<GetObjectWithPeekingPreComputedCase>(programCounter);
@@ -689,7 +684,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
     SetObjectOpcodeLbl:
     {
-        ESValue value = *POP(stack, bp);
+        const ESValue& value = *POP(stack, bp);
         ESValue* property = POP(stack, bp);
         ESValue* willBeObject = POP(stack, bp);
         setObjectOperation(willBeObject, property, value);
@@ -701,28 +696,12 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     SetObjectPreComputedCaseOpcodeLbl:
     {
         SetObjectPreComputedCase* code = (SetObjectPreComputedCase*)currentCode;
-        ESValue value = *POP(stack, bp);
+        const ESValue& value = *POP(stack, bp);
         ESValue* willBeObject = POP(stack, bp);
         setObjectPreComputedCaseOperation(willBeObject, code->m_propertyValue, value, &code->m_cachedhiddenClassChain
             , &code->m_cachedIndex, &code->m_hiddenClassWillBe);
         PUSH(stack, topOfStack, value);
         executeNextCode<SetObjectPreComputedCase>(programCounter);
-        NEXT_INSTRUCTION();
-    }
-
-    CreateFunctionOpcodeLbl:
-    {
-        CreateFunction* code = (CreateFunction*)currentCode;
-        ASSERT(((size_t)code->m_codeBlock % sizeof(size_t)) == 0);
-        ESFunctionObject* function = ESFunctionObject::create(ec->environment(), code->m_codeBlock, code->m_nonAtomicName == NULL ? strings->emptyString.string() : code->m_nonAtomicName, code->m_codeBlock->m_params.size());
-        if (code->m_isDeclaration) { // FD
-            function->set(strings->name.string(), code->m_nonAtomicName);
-            ec->environment()->record()->setMutableBinding(code->m_name, function, false);
-        } else { // FE
-            function->set(strings->name.string(), code->m_nonAtomicName);
-            PUSH(stack, topOfStack, function);
-        }
-        executeNextCode<CreateFunction>(programCounter);
         NEXT_INSTRUCTION();
     }
 
@@ -732,11 +711,13 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         const unsigned& argc = code->m_argmentCount;
         stack = (void *)((size_t)stack - argc * sizeof(ESValue));
         ESValue* arguments = (ESValue *)stack;
+#ifndef ENABLE_ESJIT
+        PUSH(stack, topOfStack, ESFunctionObject::call(instance, *POP(stack, bp), ESValue(), arguments, argc, false));
+#else
         ESValue result = ESFunctionObject::call(instance, *POP(stack, bp), ESValue(), arguments, argc, false);
-#ifdef ENABLE_ESJIT
         code->m_profile.addProfile(result);
-#endif
         PUSH(stack, topOfStack, result);
+#endif
         executeNextCode<CallFunction>(programCounter);
         NEXT_INSTRUCTION();
     }
@@ -748,28 +729,14 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         stack = (void *)((size_t)stack - argc * sizeof(ESValue));
         ESValue* arguments = (ESValue *)stack;
         ESValue* receiver = POP(stack, bp);
+#ifndef ENABLE_ESJIT
+        PUSH(stack, topOfStack, ESFunctionObject::call(instance, *POP(stack, bp), *receiver, arguments, argc, false));
+#else
         ESValue result = ESFunctionObject::call(instance, *POP(stack, bp), *receiver, arguments, argc, false);
-#ifdef ENABLE_ESJIT
         code->m_profile.addProfile(result);
-#endif
         PUSH(stack, topOfStack, result);
+#endif
         executeNextCode<CallFunctionWithReceiver>(programCounter);
-        NEXT_INSTRUCTION();
-    }
-
-    NewFunctionCallOpcodeLbl:
-    {
-        NewFunctionCall* code = (NewFunctionCall*)currentCode;
-        const unsigned& argc = code->m_argmentCount;
-        stack = (void *)((size_t)stack - argc * sizeof(ESValue));
-        ESValue* arguments = (ESValue *)stack;
-        ESValue fn = *POP(stack, bp);
-        ESValue result = newOperation(instance, globalObject, fn, arguments, argc);
-#ifdef ENABLE_ESJIT
-        code->m_profile.addProfile(result);
-#endif
-        PUSH(stack, topOfStack, result);
-        executeNextCode<NewFunctionCall>(programCounter);
         NEXT_INSTRUCTION();
     }
 
@@ -858,6 +825,58 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     LoopStartOpcodeLbl:
     {
         executeNextCode<LoopStart>(programCounter);
+        NEXT_INSTRUCTION();
+    }
+
+    NewFunctionCallOpcodeLbl:
+    {
+        NewFunctionCall* code = (NewFunctionCall*)currentCode;
+        const unsigned& argc = code->m_argmentCount;
+        stack = (void *)((size_t)stack - argc * sizeof(ESValue));
+        ESValue* arguments = (ESValue *)stack;
+        ESValue fn = *POP(stack, bp);
+#ifndef ENABLE_ESJIT
+        PUSH(stack, topOfStack, newOperation(instance, globalObject, fn, arguments, argc));
+#else
+        ESValue result = newOperation(instance, globalObject, fn, arguments, argc);
+        code->m_profile.addProfile(result);
+        PUSH(stack, topOfStack, result);
+#endif
+        executeNextCode<NewFunctionCall>(programCounter);
+        NEXT_INSTRUCTION();
+    }
+
+    CreateObjectOpcodeLbl:
+    {
+        CreateObject* code = (CreateObject*)currentCode;
+        ESObject* obj = ESObject::create(code->m_keyCount + 1);
+        PUSH(stack, topOfStack, obj);
+        executeNextCode<CreateObject>(programCounter);
+        NEXT_INSTRUCTION();
+    }
+
+    CreateArrayOpcodeLbl:
+    {
+        CreateArray* code = (CreateArray*)currentCode;
+        ESArrayObject* arr = ESArrayObject::create(code->m_keyCount);
+        PUSH(stack, topOfStack, arr);
+        executeNextCode<CreateArray>(programCounter);
+        NEXT_INSTRUCTION();
+    }
+
+    CreateFunctionOpcodeLbl:
+    {
+        CreateFunction* code = (CreateFunction*)currentCode;
+        ASSERT(((size_t)code->m_codeBlock % sizeof(size_t)) == 0);
+        ESFunctionObject* function = ESFunctionObject::create(ec->environment(), code->m_codeBlock, code->m_nonAtomicName == NULL ? strings->emptyString.string() : code->m_nonAtomicName, code->m_codeBlock->m_params.size());
+        if (code->m_isDeclaration) { // FD
+            function->set(strings->name.string(), code->m_nonAtomicName);
+            ec->environment()->record()->setMutableBinding(code->m_name, function, false);
+        } else { // FE
+            function->set(strings->name.string(), code->m_nonAtomicName);
+            PUSH(stack, topOfStack, function);
+        }
+        executeNextCode<CreateFunction>(programCounter);
         NEXT_INSTRUCTION();
     }
 
@@ -1129,7 +1148,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     SetObjectPreComputedCaseSlowModeOpcodeLbl:
     {
         SetObjectPreComputedCaseSlowMode* code = (SetObjectPreComputedCaseSlowMode*)currentCode;
-        ESValue value = *POP(stack, bp);
+        const ESValue& value = *POP(stack, bp);
         ESValue* willBeObject = POP(stack, bp);
         ESValue v(code->m_propertyValue);
         setObjectOperationSlowMode(willBeObject, &v, value);
@@ -1140,7 +1159,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
     SetObjectSlowModeOpcodeLbl:
     {
-        ESValue value = *POP(stack, bp);
+        const ESValue& value = *POP(stack, bp);
         ESValue* property = POP(stack, bp);
         ESValue* willBeObject = POP(stack, bp);
         setObjectOperationSlowMode(willBeObject, property, value);

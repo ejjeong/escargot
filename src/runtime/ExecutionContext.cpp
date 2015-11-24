@@ -33,7 +33,7 @@ ESValue* ExecutionContext::resolveArgumentsObjectBinding()
 
     RELEASE_ASSERT_NOT_REACHED();
 }
-
+/*
 // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvethisbinding
 ESValue ExecutionContext::resolveThisBinding()
 {
@@ -53,5 +53,5 @@ LexicalEnvironment* ExecutionContext::getThisEnvironment()
     return lex;
 
 }
-
+*/
 }

@@ -1018,24 +1018,22 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeF
 
 ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctionObject* fn, const ESValue& receiver, ESValue arguments[], const size_t& argumentCount, ESVMInstance* ESVMInstance)
 {
-    ExecutionContext* currentExecutionContext = ESVMInstance->currentExecutionContext();
-
     bool strict = fn->codeBlock()->shouldUseStrictMode();
     newEC->setStrictMode(strict);
 
     // http://www.ecma-international.org/ecma-262/6.0/#sec-ordinarycallbindthis
     if (!strict) {
         if (receiver.isUndefinedOrNull()) {
-            ((FunctionEnvironmentRecord *)currentExecutionContext->environment()->record())->bindThisValue(ESVMInstance->globalObject());
+            newEC->setThisBinding(ESVMInstance->globalObject());
         } else {
-            ((FunctionEnvironmentRecord *)currentExecutionContext->environment()->record())->bindThisValue(receiver.toObject());
+            newEC->setThisBinding(receiver.toObject());
         }
     } else {
-        ((FunctionEnvironmentRecord *)currentExecutionContext->environment()->record())->bindThisValue(receiver);
+        newEC->setThisBinding(receiver);
     }
 
 
-    DeclarativeEnvironmentRecord* functionRecord = currentExecutionContext->environment()->record()->toDeclarativeEnvironmentRecord();
+    DeclarativeEnvironmentRecord* functionRecord = newEC->environment()->record()->toDeclarativeEnvironmentRecord();
     if (UNLIKELY(fn->codeBlock()->m_needsActivation)) {
         const InternalAtomicStringVector& params = fn->codeBlock()->m_params;
         for (unsigned i = 0; i < params.size(); i ++) {
@@ -1048,7 +1046,7 @@ ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctio
             *functionRecord->bindingValueForActivationMode(params.size()) = ESValue(fn);
     } else {
         const InternalAtomicStringVector& params = fn->codeBlock()->m_params;
-        ESValue* buf = currentExecutionContext->cachedDeclarativeEnvironmentRecordESValue();
+        ESValue* buf = newEC->cachedDeclarativeEnvironmentRecordESValue();
         memcpy(buf, arguments, sizeof(ESValue) * (std::min(params.size(), argumentCount)));
         // if FunctionExpressionNode has own name, should bind own name
         if (fn->codeBlock()->m_isFunctionExpression && fn->name()->length())
@@ -1383,7 +1381,6 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
 
         if (UNLIKELY(fn->codeBlock()->m_needsActivation)) {
             instance->m_currentExecutionContext = new ExecutionContext(LexicalEnvironment::newFunctionEnvironment(arguments, argumentCount, fn), true, isNewExpression,
-                currentContext,
                 arguments, argumentCount);
             functionCallerInnerProcess(instance->m_currentExecutionContext, fn, receiver, arguments, argumentCount, instance);
 #ifdef ENABLE_ESJIT
@@ -1403,7 +1400,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
             // envRec.m_newTarget = receiver;
 
             LexicalEnvironment env(&envRec, fn->outerEnvironment());
-            ExecutionContext ec(&env, false, isNewExpression, currentContext, arguments, argumentCount, storage);
+            ExecutionContext ec(&env, false, isNewExpression, arguments, argumentCount, storage);
             instance->m_currentExecutionContext = &ec;
             functionCallerInnerProcess(&ec, fn, receiver, arguments, argumentCount, instance);
 #ifdef ENABLE_ESJIT

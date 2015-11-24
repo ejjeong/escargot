@@ -116,7 +116,8 @@ ESVMInstance::ESVMInstance()
 
     LexicalEnvironment* a = new LexicalEnvironment(new GlobalEnvironmentRecord(m_globalObject), NULL);
 
-    m_globalExecutionContext = new ExecutionContext(a, true, false, NULL);
+    m_globalExecutionContext = new ExecutionContext(a, true, false);
+    m_globalExecutionContext->setThisBinding(m_globalObject);
     m_currentExecutionContext = m_globalExecutionContext;
     GC_set_on_collection_event([](GC_EventType evtType) {
         if (GC_EVENT_POST_START_WORLD == evtType) {

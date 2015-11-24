@@ -193,6 +193,7 @@ void ObjectEnvironmentRecord::setMutableBinding(const InternalAtomicString& name
 }
 
 // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-bindthisvalue
+/*
 void FunctionEnvironmentRecord::bindThisValue(const ESValue& V)
 {
 #ifndef NDEBUG
@@ -213,5 +214,5 @@ ESValue FunctionEnvironmentRecord::getThisBinding()
 #endif
     return m_thisValue;
 }
-
+*/
 }

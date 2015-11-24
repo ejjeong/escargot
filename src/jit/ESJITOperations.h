@@ -141,7 +141,7 @@ inline ESValueInDouble getObjectPreComputedCaseOp(ESValueInDouble willBeObject, 
 {
     ESValue obj = ESValue::fromRawDouble(willBeObject);
     return ESValue::toRawDouble(getObjectPreComputedCaseOperation(&obj, bytecode->m_propertyValue, globalObject,
-        &bytecode->m_cachedhiddenClassChain, &bytecode->m_cachedIndex));
+        &bytecode->m_inlineCache));
 }
 
 inline ESValueInDouble getObjectPreComputedCaseOpLastPart(ESObject* protoObj, ESObject* orgObj, int idx)
