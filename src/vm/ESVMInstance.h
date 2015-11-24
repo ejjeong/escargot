@@ -128,6 +128,11 @@ public:
         return m_scriptParser;
     }
 
+    ALWAYS_INLINE std::unordered_map<double, ESStringData*, std::hash<double>, std::equal_to<double>, gc_allocator<std::pair<const double, ESString* > > >* dtoaCache()
+    {
+        return &m_dtoaCache;
+    }
+
     // Function for debug
     static void printValue(ESValue val);
     ALWAYS_INLINE unsigned long tickCount()
@@ -199,6 +204,8 @@ protected:
     tm m_time;
 
     std::vector<ESSimpleAllocatorMemoryFragment, pointer_free_allocator<ESSimpleAllocatorMemoryFragment> > m_allocatedMemorys;
+
+    std::unordered_map<double, ESStringData*, std::hash<double>, std::equal_to<double>, gc_allocator<std::pair<const double, ESString* > > > m_dtoaCache;
 };
 
 struct ESSimpleAllocatorMemoryFragment {

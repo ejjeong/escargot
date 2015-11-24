@@ -674,16 +674,11 @@ protected:
 
 
     ESString(int number)
-        : ESPointer(Type::ESString)
+        : ESString((double)number)
     {
-        m_string = new(GC) ESStringData(number);
     }
 
-    ESString(double number)
-        : ESPointer(Type::ESString)
-    {
-        m_string = new(GC) ESStringData(number);
-    }
+    ESString(double number);
 
     ESString(char16_t number)
         : ESPointer(Type::ESString)

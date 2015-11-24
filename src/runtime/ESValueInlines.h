@@ -879,6 +879,19 @@ ALWAYS_INLINE ESPointer* ESValue::asESPointer() const
 
 #endif
 
+inline ESString::ESString(double number)
+    : ESPointer(Type::ESString)
+{
+    auto cache = ESVMInstance::currentInstance()->dtoaCache();
+    auto iter = cache->find(number);
+    if (iter != cache->end()) {
+        m_string = iter->second;
+        return ;
+    }
+    m_string = new(GC) ESStringData(number);
+    cache->insert(std::make_pair(number, m_string));
+}
+
 ALWAYS_INLINE ESValue ESPropertyAccessorData::value(::escargot::ESObject* obj, ::escargot::ESObject* originalObj)
 {
     if (m_nativeGetter) {
