@@ -187,6 +187,7 @@ size_t getMaxStackPos(ESGraph* graph, size_t currentESIRTargetIndex)
                 if (j == 0)
                     return 0;
             } else if (found) {
+                // Return the bytecode of previous IR
                 if (block->instruction(j)->targetIndex() != -1) {
                     unsigned followPopCount = graph->getFollowPopCountOf(ir->targetIndex());
                     ASSERT(graph->getOperandStackPos(ir->targetIndex()) >= followPopCount);

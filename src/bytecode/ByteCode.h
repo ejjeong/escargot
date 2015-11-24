@@ -176,10 +176,6 @@ inline const char* getByteCodeName(Opcode opcode)
 }
 #endif
 
-#if defined(ENABLE_ESJIT) && defined(NDEBUG)
-extern bool isJITEnabledFor[];
-#endif
-
 struct ByteCodeGenerateContext {
     ByteCodeGenerateContext()
         : m_baseRegisterCount(0)
@@ -2416,11 +2412,6 @@ void CodeBlock::pushCode(const CodeType& code, ByteCodeGenerateContext& context,
         CodeType& t = const_cast<CodeType &>(code);
         t.m_node = node;
     }
-#endif
-
-#if defined(ENABLE_ESJIT) && defined(NDEBUG)
-    if (!isJITEnabledFor[(size_t)code.m_opcodeInAddress])
-        m_dontJIT = false;
 #endif
 
     // record extra Info

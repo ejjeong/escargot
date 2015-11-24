@@ -7,15 +7,6 @@
 
 namespace escargot {
 
-#if defined(ENABLE_ESJIT) && defined(NDEBUG)
-bool isJITEnabledFor[] = {
-#define DECLARE_IF_JIT_ENABLED(name, pushCount, popCount, peekCount, JITSupported, hasProfileData) JITSupported,
-FOR_EACH_BYTECODE_OP(DECLARE_IF_JIT_ENABLED)
-#undef DECLARE_IF_JIT_ENABLED
-    0
-};
-#endif
-
 CodeBlock::CodeBlock(size_t roughCodeBlockSizeInWordSize, bool isBuiltInFunction)
 {
     m_code.reserve(roughCodeBlockSizeInWordSize * sizeof(size_t));

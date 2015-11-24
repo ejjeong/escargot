@@ -1137,12 +1137,11 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
             LOG_VJ("==========Trying JIT Compile for function %s... (codeBlock %p)==========\n", functionName, fn->codeBlock());
             size_t idx = 0;
             size_t bytecodeCounter = 0;
-            bool dontJIT = false;
+            bool compileNextTime = false;
             // check jit support for debug
 #ifndef NDEBUG
             {
                 char* code = fn->codeBlock()->m_code.data();
-                bool compileNextTime = false;
                 char* end = &fn->codeBlock()->m_code.data()[fn->codeBlock()->m_code.size()];
                 while (&code[idx] < end) {
                     Opcode opcode = fn->codeBlock()->m_extraData[bytecodeCounter].m_opcode;
@@ -1150,9 +1149,9 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
 #define DECLARE_EXECUTE_NEXTCODE(opcode, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
                     case opcode##Opcode: \
                         if (!JITSupported) { \
-                            dontJIT = true; \
+                            fn->codeBlock()->m_dontJIT = true; \
+                            compileNextTime = true; \
                             LOG_VJ("> Unsupported ByteCode %s (idx %u). Stop trying JIT.\n", #opcode, (unsigned)idx); \
-                            break; \
                         } \
                         idx += sizeof(opcode); \
                         bytecodeCounter++; \
@@ -1162,16 +1161,9 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
                     case OpcodeKindEnd:
                         break;
                     }
-
-                    if (dontJIT) {
-                        fn->codeBlock()->m_dontJIT = true;
-                        compileNextTime = true;
-                        break;
-                    }
                 }
             }
 #endif
-            bool compileNextTime = false;
             // check profile data
             char* code = fn->codeBlock()->m_code.data();
             for (unsigned i = 0; i < fn->codeBlock()->m_byteCodeIndexesHaveToProfile.size(); i ++) {
