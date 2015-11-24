@@ -167,7 +167,7 @@ inline const char* getByteCodeName(Opcode opcode)
     switch (opcode) {
 #define RETURN_BYTECODE_NAME(name, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
     case name##Opcode: \
-        return #name; \
+        return #name; 
         FOR_EACH_BYTECODE_OP(RETURN_BYTECODE_NAME)
 #undef  RETURN_BYTECODE_NAME
     default:
