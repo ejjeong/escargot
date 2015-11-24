@@ -329,10 +329,10 @@ inline int32_t ESValue::toInt32SlowCase() const
     if (exp < 0 || exp > 83)
         return 0;
 
-    // Select the appropriate 32-bits from the floating point mantissa.  If the
+    // Select the appropriate 32-bits from the floating point mantissa. If the
     // exponent is 52 then the bits we need to select are already aligned to the
     // lowest bits of the 64-bit integer representation of tghe number, no need
-    // to shift.  If the exponent is greater than 52 we need to shift the value
+    // to shift. If the exponent is greater than 52 we need to shift the value
     // left by (exp - 52), if the value is less than 52 we need to shift right
     // accordingly.
     int32_t result = (exp > 52)
@@ -340,7 +340,7 @@ inline int32_t ESValue::toInt32SlowCase() const
         : static_cast<int32_t>(bits >> (52 - exp));
 
     // IEEE-754 double precision values are stored omitting an implicit 1 before
-    // the decimal point; we need to reinsert this now.  We may also the shifted
+    // the decimal point; we need to reinsert this now. We may also the shifted
     // invalid bits into the result that are not a part of the mantissa (the sign
     // and exponent bits from the floatingpoint representation); mask these out.
     if (exp < 32) {
@@ -886,7 +886,7 @@ inline ESString::ESString(double number)
     auto iter = cache->find(number);
     if (iter != cache->end()) {
         m_string = iter->second;
-        return ;
+        return;
     }
     m_string = new(GC) ESStringData(number);
     cache->insert(std::make_pair(number, m_string));
