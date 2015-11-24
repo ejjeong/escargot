@@ -388,7 +388,7 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
 #ifndef NDEBUG
         if (ESVMInstance::currentInstance()->m_verboseJIT) {
             JIT_LOG(in, "Expected below-typed value, but got this value");
-            JIT_LOG(in, type.getESIRTypeName());
+            JIT_LOG(mask, type.getESIRTypeName());
             JIT_LOG(typeOfESPtr, "ESPointer Type : ");
         }
 #endif

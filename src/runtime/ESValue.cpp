@@ -1326,7 +1326,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
         ec.setBp(stackBuf);
 
         result = ESValue::fromRawDouble(jitFunction(instance));
-        // printf("JIT Result %s\n", result.toString()->utf8Data());
+        // printf("JIT Result %s (%jx)\n", result.toString()->utf8Data(), result.asRawData());
         if (ec.inOSRExit()) {
             fn->codeBlock()->m_osrExitCount++;
             LOG_VJ("> OSR Exit from function %s (codeBlock %p), exit count %zu\n", functionName, fn->codeBlock(), fn->codeBlock()->m_osrExitCount);
