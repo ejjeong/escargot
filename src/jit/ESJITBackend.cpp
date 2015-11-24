@@ -172,61 +172,65 @@ NativeGenerator::~NativeGenerator()
     delete m_out;
 }
 
-LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
+size_t getMaxStackPos(ESGraph* graph, size_t currentESIRTargetIndex)
+{
+    if (currentESIRTargetIndex == 0)
+        return 0;
+
+    bool found = false;
+    for (int i = graph->basicBlockSize() - 1; i >= 0; i--) {
+        ESBasicBlock* block = graph->basicBlock(i);
+        for (int j = block->instructionSize()-1; j >= 0; j--) {
+            ESIR* ir = block->instruction(j);
+            if (!found && (ir->targetIndex() == (int)currentESIRTargetIndex)) {
+                found = true;
+                if (j == 0)
+                    return 0;
+            } else if (found) {
+                if (block->instruction(j)->targetIndex() != -1) {
+                    unsigned followPopCount = graph->getFollowPopCountOf(ir->targetIndex());
+                    ASSERT(graph->getOperandStackPos(ir->targetIndex()) >= followPopCount);
+                    return graph->getOperandStackPos(ir->targetIndex()) - followPopCount;
+                }
+            }
+        }
+    }
+    RELEASE_ASSERT_NOT_REACHED();
+}
+
+LIns* NativeGenerator::generateOSRExit(size_t currentESIRTargetIndex)
 {
     m_out->insStore(LIR_sti, m_oneI, m_contextP, ExecutionContext::offsetofInOSRExit(), 1);
 
+    size_t maxStackPos = getMaxStackPos(m_graph, currentESIRTargetIndex);
+    bool* writeFlags = (bool*) alloca(maxStackPos);
+    memset(writeFlags, 0, maxStackPos * sizeof(bool));
+
     bool isDone = false;
     unsigned writeCount = 0;
-    bool* writeFlags = NULL;
-    int maxStackPos = -1;
     for (int i = m_graph->basicBlockSize() - 1; i >= 0; i--) {
         ESBasicBlock* block = m_graph->basicBlock(i);
-        if (block->instructionSize() > 0 && block->instruction(0)->targetIndex() >= 0 && block->instruction(0)->targetIndex() <= (int)currentByteCodeIndex) {
+        if (block->instructionSize() > 0 && block->instruction(0)->targetIndex() >= 0 && block->instruction(0)->targetIndex() <= (int)currentESIRTargetIndex) {
             int j = block->instructionSize() - 1;
-            if (maxStackPos == -1) {
-                for (; j >= 0; j--) {
-                    if (block->instruction(j)->targetIndex() == (int)currentByteCodeIndex) {
-                        if (j == 0)
-                            maxStackPos = 0;
-                        else {
-                            while (true) {
-                                j--;
-                                if (j < 0)
-                                    break;
-                                if (block->instruction(j)->targetIndex() != -1) {
-                                    unsigned followPopCount = m_graph->getFollowPopCountOf(block->instruction(j)->targetIndex());
-                                    maxStackPos = m_graph->getOperandStackPos(block->instruction(j)->targetIndex()) - followPopCount;
-                                    writeFlags = (bool *) alloca(maxStackPos);
-                                    memset(writeFlags, 0, maxStackPos * sizeof(bool));
-                                    break;
-                                }
-                            }
-                        }
-                        break;
-                    }
-                }
-            }
-
             if (maxStackPos > 0) {
                 for (; j >= 0; j--) {
                     ESIR* esir = block->instruction(j);
                     if (esir->targetIndex() < 0)
                         continue;
                     unsigned stackPos = m_graph->getOperandStackPos(esir->targetIndex());
-                    if (!(stackPos > 0 && (int)stackPos <= maxStackPos && !writeFlags[stackPos - 1]))
+                    if (!(stackPos > 0 && stackPos <= maxStackPos && !writeFlags[stackPos - 1]))
                         continue;
                     Type type = m_graph->getOperandType(esir->targetIndex());
                     LIns* lIns = m_tmpToLInsMapping[esir->targetIndex()];
                     if (lIns) {
                         LIns* boxedLIns = boxESValue(lIns, type);
-                        int bufOffset = (stackPos-1) * sizeof(ESValue);
+                        size_t bufOffset = (stackPos-1) * sizeof(ESValue);
                         LIns* stackBuf = m_out->insLoad(LIR_ldp, m_contextP, ExecutionContext::offsetofStackBuf(), 1, LOAD_NORMAL);
                         m_out->insStore(LIR_ste, boxedLIns, stackBuf, bufOffset, 1);
                         writeFlags[stackPos - 1] = true;
                         writeCount++;
                     }
-                    if ((int)writeCount == maxStackPos) {
+                    if (writeCount == maxStackPos) {
                         LIns* maxStackPosLIns = m_out->insImmI(maxStackPos);
                         m_out->insStore(LIR_sti, maxStackPosLIns, m_contextP, ExecutionContext::offsetofStackPos(), 1);
                         isDone = true;
@@ -243,7 +247,7 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
         }
     }
 
-    LIns* bytecode = m_out->insImmI(currentByteCodeIndex);
+    LIns* bytecode = m_out->insImmI(currentESIRTargetIndex);
     LIns* boxedIndex = boxESValue(bytecode, TypeInt32);
 #ifndef NDEBUG
     if (ESVMInstance::currentInstance()->m_verboseJIT)
@@ -255,7 +259,7 @@ LIns* NativeGenerator::generateOSRExit(size_t currentByteCodeIndex)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-variable"
 
-nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentByteCodeIndex)
+nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t currentESIRTargetIndex)
 {
 #ifdef ESCARGOT_64
     ASSERT(in->isQ());
@@ -279,7 +283,7 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
         if (ESVMInstance::currentInstance()->m_verboseJIT)
             JIT_LOG(in, "Expected Boolean-typed value, but got this value");
 #endif
-        generateOSRExit(currentByteCodeIndex);
+        generateOSRExit(currentESIRTargetIndex);
         LIns* normalPath = m_out->ins0(LIR_label);
         jumpIfBoolean->setTarget(normalPath);
     } else if (type.isInt32Type()) {
@@ -296,7 +300,7 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
         if (ESVMInstance::currentInstance()->m_verboseJIT)
             JIT_LOG(in, "Expected Int-typed value, but got this value");
 #endif
-        generateOSRExit(currentByteCodeIndex);
+        generateOSRExit(currentESIRTargetIndex);
         LIns* normalPath = m_out->ins0(LIR_label);
         jumpIfInt->setTarget(normalPath);
     } else if (type.isDoubleType()) {
@@ -345,7 +349,7 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
         if (ESVMInstance::currentInstance()->m_verboseJIT)
             JIT_LOG(in, "Expected Double-typed value, but got this value");
 #endif
-        generateOSRExit(currentByteCodeIndex);
+        generateOSRExit(currentESIRTargetIndex);
         LIns* normalPath = m_out->ins0(LIR_label);
         jumpIfDouble->setTarget(normalPath);
         jumpToNormalPath->setTarget(normalPath);
@@ -365,7 +369,7 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
         if (ESVMInstance::currentInstance()->m_verboseJIT)
             JIT_LOG(in, "Expected Pointer-typed value, but got this value");
 #endif
-        generateOSRExit(currentByteCodeIndex);
+        generateOSRExit(currentESIRTargetIndex);
 
         LIns* normalPath = m_out->ins0(LIR_label);
         jumpIfPointer->setTarget(normalPath);
@@ -392,7 +396,7 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
             JIT_LOG(typeOfESPtr, "ESPointer Type : ");
         }
 #endif
-        generateOSRExit(currentByteCodeIndex);
+        generateOSRExit(currentESIRTargetIndex);
         LIns* normalPath2 = m_out->ins0(LIR_label);
         jumpIfFlagIdentical->setTarget(normalPath2);
     } else if (type.isPointerType()) {
@@ -410,7 +414,7 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
         if (ESVMInstance::currentInstance()->m_verboseJIT)
             JIT_LOG(in, "Expected Pointer-typed value, but got this value");
 #endif
-        generateOSRExit(currentByteCodeIndex);
+        generateOSRExit(currentESIRTargetIndex);
         LIns* normalPath = m_out->ins0(LIR_label);
         jumpIfPointer->setTarget(normalPath);
     } else if (type.isUndefinedType()) {
@@ -426,7 +430,7 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
         if (ESVMInstance::currentInstance()->m_verboseJIT)
             JIT_LOG(in, "Expected undefined value, but got this value");
 #endif
-        generateOSRExit(currentByteCodeIndex);
+        generateOSRExit(currentESIRTargetIndex);
         LIns* normalPath = m_out->ins0(LIR_label);
         jumpIfUndefined->setTarget(normalPath);
     } else if (type.isNullType()) {
@@ -442,7 +446,7 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
         if (ESVMInstance::currentInstance()->m_verboseJIT)
             JIT_LOG(in, "Expected null value, but got this value");
 #endif
-        generateOSRExit(currentByteCodeIndex);
+        generateOSRExit(currentESIRTargetIndex);
         LIns* normalPath = m_out->ins0(LIR_label);
         jumpIfNull->setTarget(normalPath);
     } else if (type.isNumberType()) {
@@ -462,7 +466,7 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
         if (ESVMInstance::currentInstance()->m_verboseJIT)
             JIT_LOG(in, "Expected number value, but got this value");
 #endif
-        generateOSRExit(currentByteCodeIndex);
+        generateOSRExit(currentESIRTargetIndex);
         LIns* normalPath = m_out->ins0(LIR_label);
         jumpIfNumber->setTarget(normalPath);
     } else {
