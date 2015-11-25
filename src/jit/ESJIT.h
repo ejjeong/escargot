@@ -15,8 +15,6 @@ namespace ESJIT {
 
 class ESGraph;
 
-typedef ESValueInDouble (*JITFunction)(ESVMInstance*);
-
 class ESJITAllocator : public ESSimpleAllocator { };
 
 template<class T>

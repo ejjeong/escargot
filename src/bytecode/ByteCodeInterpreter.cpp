@@ -240,7 +240,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                     u16string err_msg;
                     err_msg.append(u"assignment to undeclared variable ");
                     err_msg.append(code->m_name.string()->data());
-                    throw ESValue(ReferenceError::create(ESString::create(std::move(err_msg))));
+                    instance->throwError(ESValue(ReferenceError::create(ESString::create(std::move(err_msg)))));
                 }
             }
         }
@@ -941,23 +941,13 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     GetByIdWithoutExceptionOpcodeLbl:
     {
         GetById* code = (GetById*)currentCode;
-        try {
 #ifndef ENABLE_ESJIT
-            PUSH(stack, topOfStack, getByIdOperationWithNoInline(instance, ec, code));
+        PUSH(stack, topOfStack, getByIdOperationWithNoInline(instance, ec, code));
 #else
-            ESValue* value = getByIdOperationWithNoInline(instance, ec, code);
-            PUSH(stack, topOfStack, value);
-            code->m_profile.addProfile(*value);
+        ESValue value = getByIdOperationWithNoInline(instance, ec, code);
+        PUSH(stack, topOfStack, value);
+        code->m_profile.addProfile(value);
 #endif
-        } catch(...) {
-#ifndef ENABLE_ESJIT
-            PUSH(stack, topOfStack, ESValue());
-#else
-            ESValue value = ESValue();
-            PUSH(stack, topOfStack, value);
-            code->m_profile.addProfile(value);
-#endif
-        }
         executeNextCode<GetById>(programCounter);
         NEXT_INSTRUCTION();
     }
@@ -1019,7 +1009,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     ThrowOpcodeLbl:
     {
         ESValue v = *POP(stack, bp);
-        throw v;
+        instance->throwError(v);
     }
 
     FinallyEndOpcodeLbl:
@@ -1040,7 +1030,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                 } else if (record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsThrow) {
                     ESValue val = record->value();
                     ec->tryOrCatchBodyResult() = ESValue(ESValue::ESEmptyValue);
-                    throw val;
+                    instance->throwError(val);
                 } else {
                     ASSERT(record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsJump);
                     programCounter = jumpTo(codeBuffer, (size_t)record->value().asESPointer());

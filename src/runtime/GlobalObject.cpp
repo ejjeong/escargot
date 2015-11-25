@@ -461,7 +461,7 @@ void GlobalObject::initGlobalObject()
                 escaped.append(char2hex(0x0080 + (data[i] & 0x003F)));
             } else if (0xD800 <= data[i] && data[i] <= 0xDBFF) {
                 if (i + 1 == strLen) {
-                    throw ESValue(URIError::create(ESString::create("malformed URI")));
+                    instance->throwError(ESValue(URIError::create(ESString::create("malformed URI"))));
                 } else {
                     if (0xDC00 <= data[i + 1] && data[i + 1] <= 0xDFFF) {
                         int index = (data[i] - 0xD800) * 0x400 + (data[i + 1] - 0xDC00) + 0x10000;
@@ -475,11 +475,11 @@ void GlobalObject::initGlobalObject()
                         escaped.append(char2hex(0x0080 + (index & 0x003F)));
                         i++;
                     } else {
-                        throw ESValue(URIError::create(ESString::create("malformed URI")));
+                        instance->throwError(ESValue(URIError::create(ESString::create("malformed URI"))));
                     }
                 }
             } else if (0xDC00 <= data[i] && data[i] <= 0xDFFF) {
-                throw ESValue(URIError::create(ESString::create("malformed URI")));
+                instance->throwError(ESValue(URIError::create(ESString::create("malformed URI"))));
             } else {
                 RELEASE_ASSERT_NOT_REACHED();
             }
@@ -590,7 +590,8 @@ void GlobalObject::installFunction()
             ret.append(u"() {}");
             return ESString::create(std::move(ret));
         }
-        throw ESValue(TypeError::create(ESString::create("Type error")));
+        instance->throwError(ESValue(TypeError::create(ESString::create("Type error"))));
+        RELEASE_ASSERT_NOT_REACHED();
     }, strings->toString, 0));
 
     // $19.2.3.1 Function.prototype.apply(thisArg, argArray)
@@ -627,7 +628,7 @@ void GlobalObject::installFunction()
     m_functionPrototype->defineDataProperty(ESString::create(u"bind"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue thisVal = instance->currentExecutionContext()->resolveThisBinding();
         if (!thisVal.isESPointer() || !thisVal.asESPointer()->isESFunctionObject()) {
-            throw ESValue(TypeError::create(ESString::create("this value should be function")));
+            instance->throwError(ESValue(TypeError::create(ESString::create("this value should be function"))));
         }
         CodeBlock* cb = CodeBlock::create();
         ByteCodeGenerateContext context;
@@ -649,10 +650,12 @@ void GlobalObject::installFunction()
         function->setProtoType(prototype);
 
         escargot::ESFunctionObject* throwerForGet = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-            throw ESValue(TypeError::create(ESString::create("Type error")));
+            instance->throwError(ESValue(TypeError::create(ESString::create("Type error"))));
+            RELEASE_ASSERT_NOT_REACHED();
         }, ESString::create(u"get"), 1);
         escargot::ESFunctionObject* throwerForSet = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-            throw ESValue(TypeError::create(ESString::create("Type error")));
+            instance->throwError(ESValue(TypeError::create(ESString::create("Type error"))));
+            RELEASE_ASSERT_NOT_REACHED();
         }, ESString::create(u"set"), 1);
         function->defineAccessorProperty(ESString::create(u"caller"), new ESPropertyAccessorData(throwerForGet, throwerForSet), true, false, false);
         function->defineAccessorProperty(ESString::create(u"arguments"), new ESPropertyAccessorData(throwerForGet, throwerForSet), true, false, false);
@@ -669,7 +672,7 @@ void GlobalObject::installFunction()
     m_functionPrototype->defineDataProperty(ESString::create(u"call"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         auto thisVal = instance->currentExecutionContext()->resolveThisBindingToObject()->asESFunctionObject();
         if (!instance->currentExecutionContext()->resolveThisBindingToObject()->isESFunctionObject())
-            throw ESValue(TypeError::create(ESString::create("Type error")));
+            instance->throwError(ESValue(TypeError::create(ESString::create("Type error"))));
         int arglen = instance->currentExecutionContext()->argumentCount()-1;
         ESValue& thisArg = instance->currentExecutionContext()->arguments()[0];
         ESValue* arguments = (ESValue*)alloca(sizeof(ESValue) * arglen);
@@ -686,14 +689,14 @@ void GlobalObject::installFunction()
 inline ESValue objectDefineProperties(ESValue object, ESValue& properties)
 {
     if (!object.isObject())
-        throw ESValue(TypeError::create(ESString::create("objectDefineProperties: first argument is not object")));
+        ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("objectDefineProperties: first argument is not object"))));
     ESObject* props = properties.toObject();
     props->enumeration([&](ESValue key) {
         bool hasKey = props->hasOwnProperty(key);
         if (hasKey) {
             ESValue propertyDesc = props->getOwnProperty(key);
             if (!propertyDesc.isObject())
-                throw ESValue(TypeError::create(ESString::create("objectDefineProperties: descriptor is not object")));
+                ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("objectDefineProperties: descriptor is not object"))));
             object.asESPointer()->asESObject()->defineOwnProperty(key, propertyDesc.asESPointer()->asESObject(), true);
         }
     });
@@ -796,7 +799,7 @@ void GlobalObject::installObject()
                 ESValue key = instance->currentExecutionContext()->arguments()[1].toString();
 
                 if (!instance->currentExecutionContext()->arguments()[2].isObject())
-                    throw ESValue(TypeError::create(ESString::create("Object.defineProperty: 3rd argument is not object")));
+                    instance->throwError(ESValue(TypeError::create(ESString::create("Object.defineProperty: 3rd argument is not object"))));
                 ESObject* desc = instance->currentExecutionContext()->arguments()[2].toObject();
                 bool res;
                 if (obj->isESArrayObject())
@@ -804,12 +807,12 @@ void GlobalObject::installObject()
                 else
                     res = obj->defineOwnProperty(key, desc, true);
                 if (!res)
-                    throw ESValue(TypeError::create(ESString::create("Object.defineProperty: Cannot define property")));
+                    instance->throwError(ESValue(TypeError::create(ESString::create("Object.defineProperty: Cannot define property"))));
             } else {
-                throw ESValue(TypeError::create(ESString::create("Object.defineProperty: 1st argument is not object")));
+                instance->throwError(ESValue(TypeError::create(ESString::create("Object.defineProperty: 1st argument is not object"))));
             }
         } else {
-            throw ESValue(TypeError::create(ESString::create("Object.defineProperty: # of arguments < 3")));
+            instance->throwError(ESValue(TypeError::create(ESString::create("Object.defineProperty: # of arguments < 3"))));
         }
         return ESValue();
     }, ESString::create(u"defineProperty"), 3));
@@ -819,7 +822,7 @@ void GlobalObject::installObject()
     m_object->defineDataProperty(ESString::create(u"create"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue proto = instance->currentExecutionContext()->readArgument(0);
         if (!proto.isObject() && !proto.isNull()) {
-            throw ESValue(TypeError::create(ESString::create("first parameter is should be object")));
+            instance->throwError(ESValue(TypeError::create(ESString::create("first parameter is should be object"))));
         }
         ESObject* obj = ESObject::create();
         if (proto.isNull())
@@ -836,7 +839,7 @@ void GlobalObject::installObject()
     m_object->defineDataProperty(ESString::create(u"freeze"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue O = instance->currentExecutionContext()->readArgument(0);
         if (!O.isObject())
-            throw ESValue(TypeError::create(ESString::create("first parameter is should be object")));
+            instance->throwError(ESValue(TypeError::create(ESString::create("first parameter is should be object"))));
         ESObject* obj = O.toObject();
         if (obj->isESArrayObject())
             obj->asESArrayObject()->convertToSlowMode();
@@ -874,7 +877,7 @@ void GlobalObject::installObject()
 
         ESValue arg0 = instance->currentExecutionContext()->readArgument(0);
         if (!arg0.isObject())
-            throw ESValue(TypeError::create(ESString::create(u"getOwnPropertyDescriptor: first argument is not object")));
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"getOwnPropertyDescriptor: first argument is not object"))));
         ESObject* obj = arg0.asESPointer()->asESObject();
 
         ESValue arg1 = instance->currentExecutionContext()->readArgument(1);
@@ -891,7 +894,7 @@ void GlobalObject::installObject()
     m_object->defineDataProperty(ESString::create(u"getOwnPropertyNames"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue O = instance->currentExecutionContext()->readArgument(0);
         if (!O.isObject())
-            throw ESValue(TypeError::create(ESString::create(u"getOwnPropertyNames: first argument is not object")));
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"getOwnPropertyNames: first argument is not object"))));
         ESObject* obj = O.toObject();
         escargot::ESArrayObject* nameList = ESArrayObject::create();
         obj->enumerationWithNonEnumerable([&nameList](ESValue key, ESHiddenClassPropertyInfo*) {
@@ -905,7 +908,7 @@ void GlobalObject::installObject()
     m_object->defineDataProperty(strings->getPrototypeOf, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue O = instance->currentExecutionContext()->readArgument(0);
         if (!O.isObject())
-            throw ESValue(TypeError::create(ESString::create(u"getPrototypeOf: first argument is not object")));
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"getPrototypeOf: first argument is not object"))));
         return O.toObject()->__proto__();
     }, strings->getPrototypeOf, 1));
 
@@ -913,7 +916,7 @@ void GlobalObject::installObject()
     m_object->defineDataProperty(ESString::create(u"isExtensible"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue O = instance->currentExecutionContext()->readArgument(0);
         if (!O.isObject())
-            throw ESValue(TypeError::create(ESString::create(u"isExtensible: first argument is not object")));
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"isExtensible: first argument is not object"))));
         return ESValue(O.asESPointer()->asESObject()->isExtensible());
     }, ESString::create(u"isExtensible"), 1));
 
@@ -921,7 +924,7 @@ void GlobalObject::installObject()
     m_object->defineDataProperty(ESString::create(u"isFrozen"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue O = instance->currentExecutionContext()->readArgument(0);
         if (!O.isObject())
-            throw ESValue(TypeError::create(ESString::create(u"getOwnPropertyNames: first argument is not object")));
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"getOwnPropertyNames: first argument is not object"))));
         ESObject* obj = O.toObject();
         bool hasWritableConfigurableProperty = false;
         obj->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
@@ -943,7 +946,7 @@ void GlobalObject::installObject()
     m_object->defineDataProperty(ESString::create(u"isSealed"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue O = instance->currentExecutionContext()->readArgument(0);
         if (!O.isObject())
-            throw ESValue(TypeError::create(ESString::create(u"getOwnPropertyNames: first argument is not object")));
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"getOwnPropertyNames: first argument is not object"))));
         ESObject* obj = O.toObject();
         bool hasConfigurableProperty = false;
         obj->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
@@ -962,7 +965,7 @@ void GlobalObject::installObject()
         // Let obj be ToObject(O).
         ESValue O = instance->currentExecutionContext()->readArgument(0);
         if (!O.isObject())
-            throw ESValue(TypeError::create(ESString::create(u"Object.keys: first argument is not object")));
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"Object.keys: first argument is not object"))));
         ESObject* obj = O.toObject();
         escargot::ESArrayObject* arr = ESArrayObject::create();
         obj->enumeration([&arr](ESValue key) {
@@ -975,7 +978,7 @@ void GlobalObject::installObject()
     m_object->defineDataProperty(ESString::create(u"preventExtensions"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue O = instance->currentExecutionContext()->readArgument(0);
         if (!O.isObject())
-            throw ESValue(TypeError::create(ESString::create(u"getOwnPropertyNames: first argument is not object")));
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"getOwnPropertyNames: first argument is not object"))));
         ESObject* obj = O.toObject();
         obj->setExtensible(false);
         return O;
@@ -985,7 +988,7 @@ void GlobalObject::installObject()
     m_object->defineDataProperty(ESString::create(u"seal"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue O = instance->currentExecutionContext()->readArgument(0);
         if (!O.isObject())
-            throw ESValue(TypeError::create(ESString::create(u"getOwnPropertyNames: first argument is not object")));
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"getOwnPropertyNames: first argument is not object"))));
         ESObject* obj = O.toObject();
         if (obj->isESArrayObject())
             obj->asESArrayObject()->convertToSlowMode();
@@ -1299,7 +1302,7 @@ void GlobalObject::installArray()
         // If IsCallable(callbackfn) is false, throw a TypeError exception.
         ESValue callbackfn = instance->currentExecutionContext()->readArgument(0);
         if (!callbackfn.isESPointer() || !callbackfn.asESPointer()->isESFunctionObject()) {
-            throw ESValue(TypeError::create(ESString::create("Array.prototype.filter callback must be a function")));
+            instance->throwError(ESValue(TypeError::create(ESString::create("Array.prototype.filter callback must be a function"))));
         }
 
         // If thisArg was supplied, let T be thisArg; else let T be undefined.
@@ -1363,7 +1366,7 @@ void GlobalObject::installArray()
 
         // If IsCallable(callbackfn) is false, throw a TypeError exception.
         if (!callbackfn.isESPointer() || !callbackfn.asESPointer()->isESFunctionObject()) {
-            throw ESValue(TypeError::create(ESString::create("first parameter of forEach should be function")));
+            instance->throwError(ESValue(TypeError::create(ESString::create("first parameter of forEach should be function"))));
         }
 
         // If thisArg was supplied, let T be thisArg; else let T be undefined.
@@ -1507,10 +1510,10 @@ void GlobalObject::installArray()
         auto thisBinded = instance->currentExecutionContext()->resolveThisBindingToObject();
         int arglen = instance->currentExecutionContext()->argumentCount();
         if (arglen < 1)
-            throw ESValue(TypeError::create(ESString::create("Array.prototype.map: arglen < 1")));
+            instance->throwError(ESValue(TypeError::create(ESString::create("Array.prototype.map: arglen < 1"))));
         ESValue arg = instance->currentExecutionContext()->arguments()[0];
         if (!(arg.isESPointer() && arg.asESPointer()->isESFunctionObject()))
-            throw ESValue(TypeError::create(ESString::create("Array.prototype.map: argument is not Function")));
+            instance->throwError(ESValue(TypeError::create(ESString::create("Array.prototype.map: argument is not Function"))));
 
         int arrlen = thisBinded->length();
         escargot::ESArrayObject* ret = ESArrayObject::create(arrlen);
@@ -1547,7 +1550,7 @@ void GlobalObject::installArray()
             }
             if (shouldThrow) {
                 thisVal->setLength(UINT_MAX);
-                throw ESValue(RangeError::create());
+                instance->throwError(ESValue(RangeError::create()));
             }
             return ESValue(thisVal->length());
         } else {
@@ -1579,10 +1582,10 @@ void GlobalObject::installArray()
             initialValue = argv[1];
         }
         if (!callbackfn.isESPointer() || !callbackfn.asESPointer()->isESFunctionObject()) // 4
-            throw ESValue(TypeError::create(ESString::create(u"Type Error")));
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"Type Error"))));
 
         if (len == 0 && initialValue.isUndefined()) // 5
-            throw ESValue(TypeError::create(ESString::create(u"Type Error")));
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"Type Error"))));
         size_t k = 0; // 6
         ESValue accumulator;
         if (!initialValue.isEmpty()) { // 7
@@ -1597,7 +1600,7 @@ void GlobalObject::installArray()
                 k++; // 8.b.iv
             }
             if (kPresent == false)
-                throw ESValue(TypeError::create(ESString::create(u"Type Error")));
+                instance->throwError(ESValue(TypeError::create(ESString::create(u"Type Error"))));
         }
         while (k < len) { // 9
             ESValue Pk = ESValue(k); // 9.a
@@ -1854,7 +1857,7 @@ void GlobalObject::installArray()
         int argCount = instance->currentExecutionContext()->argumentCount();
         if (argCount > 0) {
             if (len+argCount > std::pow(2, 32)-1)
-                throw TypeError::create(ESString::create("Array.prototype.unshift: length is too large"));
+                instance->throwError(TypeError::create(ESString::create("Array.prototype.unshift: length is too large")));
             int k = len;
             while (k > 0) {
                 ESValue from(k - 1);
@@ -1925,7 +1928,8 @@ void GlobalObject::installString()
         }
         if (instance->currentExecutionContext()->resolveThisBinding().isESString())
             return instance->currentExecutionContext()->resolveThisBinding().toString();
-        throw TypeError::create(ESString::create("Type error, The toString function is not generic; it throws a TypeError exception if its this value is not a String or a String object"));
+        instance->throwError(TypeError::create(ESString::create("Type error, The toString function is not generic; it throws a TypeError exception if its this value is not a String or a String object")));
+        RELEASE_ASSERT_NOT_REACHED();
     }, strings->toString, 0));
 
     m_string->set__proto__(m_functionPrototype); // empty Function
@@ -2005,7 +2009,7 @@ void GlobalObject::installString()
     m_stringPrototype->defineDataProperty(strings->indexOf, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue thisObject = instance->currentExecutionContext()->resolveThisBinding();
         if (thisObject.isUndefinedOrNull())
-            throw ESValue(TypeError::create(ESString::create("String.prototype.indexOf: this is undefined or null")));
+            instance->throwError(ESValue(TypeError::create(ESString::create("String.prototype.indexOf: this is undefined or null"))));
         const u16string& str = instance->currentExecutionContext()->resolveThisBinding().toString()->string();
         escargot::ESString* searchStr = instance->currentExecutionContext()->readArgument(0).toString();
 
@@ -2028,7 +2032,7 @@ void GlobalObject::installString()
         // Let O be RequireObjectCoercible(this value).
         ESValue O = instance->currentExecutionContext()->resolveThisBinding();
         if (O.isUndefinedOrNull())
-            throw ESValue(TypeError::create(ESString::create("String.prototype.lastIndexOf: this is undefined or null")));
+            instance->throwError(ESValue(TypeError::create(ESString::create("String.prototype.lastIndexOf: this is undefined or null"))));
         // Let S be ToString(O).
         escargot::ESString* S = O.toString();
         escargot::ESString* searchStr = instance->currentExecutionContext()->readArgument(0).toString();
@@ -2476,7 +2480,7 @@ void GlobalObject::installString()
     m_stringPrototype->defineDataProperty(ESString::create(u"substring"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue thisObject = instance->currentExecutionContext()->resolveThisBinding();
         if (thisObject.isUndefinedOrNull())
-            throw TypeError::create(ESString::create("String.prototype.substring: this is undefined or null"));
+            instance->throwError(TypeError::create(ESString::create("String.prototype.substring: this is undefined or null")));
         int argCount = instance->currentExecutionContext()->argumentCount();
         escargot::ESString* str = thisObject.toString();
         if (argCount == 0) {
@@ -2545,7 +2549,7 @@ void GlobalObject::installString()
     m_stringPrototype->defineDataProperty(ESString::create(u"trim"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         escargot::ESValue val = instance->currentExecutionContext()->resolveThisBinding();
         if (val.isUndefinedOrNull()) {
-            throw ESValue(TypeError::create(ESString::create(u"String.prototype.trim called null or undefined")));
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"String.prototype.trim called null or undefined"))));
         }
         escargot::ESString* str = val.toString();
         u16string newstr(str->string());
@@ -2587,7 +2591,8 @@ void GlobalObject::installString()
         } else if (thisValue.isESPointer() && thisValue.asESPointer()->isESStringObject()) {
             return thisValue.asESPointer()->asESStringObject()->stringData();
         }
-        throw ESValue(TypeError::create(ESString::create("Type error, The valueOf function is not generic; it throws a TypeError exception if its this value is not a String or String object.")));
+        instance->throwError(ESValue(TypeError::create(ESString::create("Type error, The valueOf function is not generic; it throws a TypeError exception if its this value is not a String or String object."))));
+        RELEASE_ASSERT_NOT_REACHED();
     }, strings->valueOf, 0));
 
 
@@ -2985,7 +2990,7 @@ void GlobalObject::installJSON()
         rapidjson::GenericStringStream<rapidjson::UTF16<char16_t>> stringStream(str->data());
         jsonDocument.ParseStream(stringStream);
         if (jsonDocument.HasParseError()) {
-            throw ESValue(SyntaxError::create(ESString::create(u"occur error while parse json")));
+            instance->throwError(ESValue(SyntaxError::create(ESString::create(u"occur error while parse json"))));
         }
         // FIXME: JSON.parse treats "__proto__" as a regular property name. (test262: ch15/15.12/15.12.2/S15.12.2_A1.js)
         //        >>> var x1 = JSON.parse('{"__proto__":[]}') // x1.__proto__ = []
@@ -3203,7 +3208,7 @@ void GlobalObject::installJSON()
             // 1
             for (auto& v : stack) {
                 if (v == value) {
-                    throw ESValue(TypeError::create(ESString::create(u"JA error")));
+                    instance->throwError(ESValue(TypeError::create(ESString::create(u"JA error"))));
                 }
             }
             // 2
@@ -3259,7 +3264,7 @@ void GlobalObject::installJSON()
             // 1
             for (auto& v : stack) {
                 if (v == value) {
-                    throw ESValue(TypeError::create(ESString::create(u"JO error")));
+                    instance->throwError(ESValue(TypeError::create(ESString::create(u"JO error"))));
                 }
             }
             // 2
@@ -3711,7 +3716,7 @@ void GlobalObject::installNumber()
             }
             int digit = (int) trunc(digit_d);
             if (digit < 0 || digit > 20) {
-                throw ESValue(RangeError::create());
+                instance->throwError(ESValue(RangeError::create()));
             }
             if (isnan(number)) {
                 return strings->NaN.string();
@@ -3757,7 +3762,7 @@ void GlobalObject::installNumber()
             }
             int p = (int) trunc(p_d);
             if (p < 1 || p > 21) {
-                throw ESValue(RangeError::create());
+                instance->throwError(ESValue(RangeError::create()));
             }
 
             int log10_num = trunc(log10(number));
@@ -3782,7 +3787,7 @@ void GlobalObject::installNumber()
     m_numberPrototype->defineDataProperty(strings->toString, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         if (!instance->currentExecutionContext()->resolveThisBinding().isNumber()
             && (instance->currentExecutionContext()->resolveThisBinding().isESPointer() && !instance->currentExecutionContext()->resolveThisBinding().asESPointer()->isESNumberObject()))
-            throw ESValue(TypeError::create(ESString::create("Type error, The toString function is not generic; it throws a TypeError exception if its this value is not a Number or a Number object")));
+            instance->throwError(ESValue(TypeError::create(ESString::create("Type error, The toString function is not generic; it throws a TypeError exception if its this value is not a Number or a Number object"))));
         double number = instance->currentExecutionContext()->resolveThisBinding().toNumber();
         
         if (isnan(number) || std::isinf(number)) {
@@ -3793,7 +3798,7 @@ void GlobalObject::installNumber()
         if (arglen >= 1 && !instance->currentExecutionContext()->arguments()[0].isUndefined()) {
             radix = instance->currentExecutionContext()->arguments()[0].toInteger();
             if (radix < 2 || radix > 36)
-                throw ESValue(RangeError::create(ESString::create(u"String.prototype.toString() radix is not in valid range")));
+                instance->throwError(ESValue(RangeError::create(ESString::create(u"String.prototype.toString() radix is not in valid range"))));
         }
         if (radix == 10)
             return (ESValue(number).toString());
@@ -3830,7 +3835,8 @@ void GlobalObject::installNumber()
         } else if (thisValue.isESPointer() && thisValue.asESPointer()->isESNumberObject()) {
             return ESValue(thisValue.asESPointer()->asESNumberObject()->numberData());
         }
-        throw ESValue(TypeError::create(ESString::create("Type error, The valueOf function is not generic; it throws a TypeError exception if its this value is not a Number or a Number object.")));
+        instance->throwError(ESValue(TypeError::create(ESString::create("Type error, The valueOf function is not generic; it throws a TypeError exception if its this value is not a Number or a Number object."))));
+        RELEASE_ASSERT_NOT_REACHED();
     }, strings->valueOf, 0));
 
     // add number to global object
@@ -3892,7 +3898,8 @@ void GlobalObject::installBoolean()
         } else if (thisValue.isESPointer() && thisValue.asESPointer()->isESBooleanObject()) {
             return ESValue(thisValue.asESPointer()->asESBooleanObject()->booleanData());
         }
-        throw ESValue(TypeError::create(strings->emptyString));
+        instance->throwError(ESValue(TypeError::create(strings->emptyString)));
+        RELEASE_ASSERT_NOT_REACHED();
     }, strings->valueOf, 0));
 
     // add number to global object
@@ -3928,14 +3935,14 @@ void GlobalObject::installRegExp()
                 if (instance->currentExecutionContext()->readArgument(1).isUndefined())
                     return pattern;
                 else
-                    throw ESValue(TypeError::create(ESString::create(u"Cannot supply flags when constructing one RegExp from another")));
+                    instance->throwError(ESValue(TypeError::create(ESString::create(u"Cannot supply flags when constructing one RegExp from another"))));
             }
             if (pattern.isUndefined()) {
                 thisVal->setSource(ESString::create("(?:)"));
             } else {
                 bool success = thisVal->setSource(pattern.toString());
                 if (!success)
-                    throw ESValue(SyntaxError::create(ESString::create(u"RegExp has invalid source")));
+                    instance->throwError(ESValue(SyntaxError::create(ESString::create(u"RegExp has invalid source"))));
             }
         }
 
@@ -3947,26 +3954,26 @@ void GlobalObject::installRegExp()
                 switch (is->data()[i]) {
                 case 'g':
                     if (option & ESRegExpObject::Option::Global)
-                        throw ESValue(SyntaxError::create(ESString::create(u"RegExp has multiple 'g' flags")));
+                        instance->throwError(ESValue(SyntaxError::create(ESString::create(u"RegExp has multiple 'g' flags"))));
                     option = (ESRegExpObject::Option) (option | ESRegExpObject::Option::Global);
                     break;
                 case 'i':
                     if (option & ESRegExpObject::Option::IgnoreCase)
-                        throw ESValue(SyntaxError::create(ESString::create(u"RegExp has multiple 'i' flags")));
+                        instance->throwError(ESValue(SyntaxError::create(ESString::create(u"RegExp has multiple 'i' flags"))));
                     option = (ESRegExpObject::Option) (option | ESRegExpObject::Option::IgnoreCase);
                     break;
                 case 'm':
                     if (option & ESRegExpObject::Option::MultiLine)
-                        throw ESValue(SyntaxError::create(ESString::create(u"RegExp has multiple 'm' flags")));
+                        instance->throwError(ESValue(SyntaxError::create(ESString::create(u"RegExp has multiple 'm' flags"))));
                     option = (ESRegExpObject::Option) (option | ESRegExpObject::Option::MultiLine);
                     break;
                 case 'y':
                     if (option & ESRegExpObject::Option::Sticky)
-                        throw ESValue(SyntaxError::create(ESString::create(u"RegExp has multiple 'y' flags")));
+                        instance->throwError(ESValue(SyntaxError::create(ESString::create(u"RegExp has multiple 'y' flags"))));
                     option = (ESRegExpObject::Option) (option | ESRegExpObject::Option::Sticky);
                     break;
                 default:
-                    throw ESValue(SyntaxError::create(ESString::create(u"RegExp has invalid flag")));
+                    instance->throwError(ESValue(SyntaxError::create(ESString::create(u"RegExp has invalid flag"))));
                 }
             }
             thisVal->setOption(option);
@@ -3992,7 +3999,7 @@ void GlobalObject::installRegExp()
     m_regexpPrototype->defineDataProperty(strings->test, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
         if (!thisObject->isESRegExpObject())
-            throw ESValue(TypeError::create(ESString::create(u"Regexp.prototype.exec : This object is not Regexp object")));
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"Regexp.prototype.exec : This object is not Regexp object"))));
         ::escargot::ESRegExpObject* regexp = thisObject->asESRegExpObject();
         int argCount = instance->currentExecutionContext()->argumentCount();
         if (argCount >= 0) {
@@ -4014,7 +4021,7 @@ void GlobalObject::installRegExp()
     m_regexpPrototype->defineDataProperty(strings->exec, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
         if (!thisObject->isESRegExpObject())
-            throw ESValue(TypeError::create(ESString::create(u"Regexp.prototype.exec : This object is not Regexp object")));
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"Regexp.prototype.exec : This object is not Regexp object"))));
         escargot::ESRegExpObject* regexp = thisObject->asESRegExpObject();
         escargot::ESArrayObject* arr = ::escargot::ESArrayObject::create();
         escargot::ESString* sourceStr = instance->currentExecutionContext()->readArgument(0).toString();
@@ -4062,7 +4069,7 @@ void GlobalObject::installRegExp()
     m_regexpPrototype->defineDataProperty(strings->toString, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue R = instance->currentExecutionContext()->resolveThisBinding();
         if (!R.isObject())
-            throw ESValue(TypeError::create(ESString::create(u"RegExp.prototype.toString: \'this\' value is not object type")));
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"RegExp.prototype.toString: \'this\' value is not object type"))));
 
         escargot::ESString* ret = ESString::concatTwoStrings(ESString::create(u"/"), R.toObject()->get(strings->source.string()).toString());
         ret = ESString::concatTwoStrings(ret, ESString::create(u"/"));
@@ -4102,7 +4109,7 @@ void GlobalObject::installArrayBuffer()
     m_arrayBuffer = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         // if NewTarget is undefined, throw a TypeError
         if (!instance->currentExecutionContext()->isNewExpression())
-            throw ESValue(TypeError::create(ESString::create(u"Constructor ArrayBuffer requires \'new\'")));
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"Constructor ArrayBuffer requires \'new\'"))));
         ASSERT(instance->currentExecutionContext()->resolveThisBindingToObject()->isESArrayBufferObject());
         escargot::ESArrayBufferObject* obj = instance->currentExecutionContext()->resolveThisBindingToObject()->asESArrayBufferObject();
         int len = instance->currentExecutionContext()->argumentCount();
@@ -4113,7 +4120,7 @@ void GlobalObject::installArrayBuffer()
             int numlen = val.toNumber();
             int elemlen = val.toLength();
             if (numlen != elemlen)
-                throw ESValue(TypeError::create(ESString::create(u"Constructor ArrayBuffer : 1st argument is error")));
+                instance->throwError(ESValue(TypeError::create(ESString::create(u"Constructor ArrayBuffer : 1st argument is error"))));
             obj->allocateArrayBuffer(elemlen);
         }
         return obj;
@@ -4164,7 +4171,7 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
     escargot::ESFunctionObject* ta_constructor = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         // if NewTarget is undefined, throw a TypeError
         if (!instance->currentExecutionContext()->isNewExpression())
-            throw ESValue(TypeError::create(ESString::create(u"Constructor TypedArray requires \'new\'")));
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"Constructor TypedArray requires \'new\'"))));
         ASSERT(instance->currentExecutionContext()->resolveThisBindingToObject()->isESTypedArrayObject());
         escargot::ESTypedArrayObject<T>* obj = instance->currentExecutionContext()->resolveThisBindingToObject()->asESTypedArrayObject<T>();
         int len = instance->currentExecutionContext()->argumentCount();
@@ -4177,7 +4184,7 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
                 int numlen = val.toNumber();
                 int elemlen = val.toLength();
                 if (numlen != elemlen)
-                    throw ESValue(RangeError::create(ESString::create(u"Constructor TypedArray : 1st argument is error")));
+                    instance->throwError(ESValue(RangeError::create(ESString::create(u"Constructor TypedArray : 1st argument is error"))));
                 obj->allocateTypedArray(elemlen);
             } else if (val.isESPointer() && val.asESPointer()->isESArrayBufferObject()) {
                 // $22.2.1.5 %TypedArray%(buffer [, byteOffset [, length] ] )
@@ -4188,10 +4195,10 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
                 if (len >= 2)
                     offset = instance->currentExecutionContext()->arguments()[1].toInt32();
                 if (offset < 0) {
-                    throw ESValue(RangeError::create(msg));
+                    instance->throwError(ESValue(RangeError::create(msg)));
                 }
                 if (offset % elementSize != 0) {
-                    throw ESValue(RangeError::create(msg));
+                    instance->throwError(ESValue(RangeError::create(msg)));
                 }
                 escargot::ESArrayBufferObject* buffer = val.asESPointer()->asESArrayBufferObject();
                 unsigned bufferByteLength = buffer->bytelength();
@@ -4201,15 +4208,15 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
                 unsigned newByteLength;
                 if (lenVal.isUndefined()) {
                     if (bufferByteLength % elementSize != 0)
-                        throw ESValue(RangeError::create());
+                        instance->throwError(ESValue(RangeError::create()));
                     newByteLength = bufferByteLength - offset;
                     if (newByteLength < 0)
-                        throw ESValue(RangeError::create(msg));
+                        instance->throwError(ESValue(RangeError::create(msg)));
                 } else {
                     int length = lenVal.toLength();
                     newByteLength = length * elementSize;
                     if (offset + newByteLength > bufferByteLength)
-                        throw ESValue(RangeError::create(msg));
+                        instance->throwError(ESValue(RangeError::create(msg)));
                 }
                 obj->setBuffer(buffer);
                 obj->setBytelength(newByteLength);
@@ -4261,14 +4268,14 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
         int arglen = instance->currentExecutionContext()->argumentCount();
         auto thisBinded = instance->currentExecutionContext()->resolveThisBindingToObject();
         if (!thisBinded->isESTypedArrayObject() || arglen < 1) {
-            throw TypeError::create();
+            instance->throwError(TypeError::create());
         }
         auto thisVal = thisBinded->asESTypedArrayObjectWrapper();
         int offset = 0;
         if (arglen >= 2)
             offset = instance->currentExecutionContext()->arguments()[1].toInt32();
         if (offset < 0)
-            throw TypeError::create();
+            instance->throwError(TypeError::create());
         auto arg0 = instance->currentExecutionContext()->arguments()[0].asESPointer();
         escargot::ESArrayBufferObject* targetBuffer = thisVal->buffer();
         unsigned targetLength = thisVal->arraylength();
@@ -4278,7 +4285,7 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
             ESObject* src = arg0->asESObject();
             uint32_t srcLength = (uint32_t)src->get(strings->length.string()).asInt32();
             if (srcLength + (uint32_t)offset > targetLength)
-                throw RangeError::create();
+                instance->throwError(RangeError::create());
 
             int targetByteIndex = offset * targetElementSize + targetByteOffset;
             int k = 0;
@@ -4298,7 +4305,7 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
             unsigned srcLength = arg0Wrapper->arraylength();
             int srcByteOffset = arg0Wrapper->byteoffset();
             if (srcLength + (unsigned)offset > targetLength)
-                throw RangeError::create();
+                instance->throwError(RangeError::create());
             int srcByteIndex = 0;
             if (srcBuffer == targetBuffer) {
                 // TODO: 24) should clone targetBuffer
@@ -4332,7 +4339,7 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
         size_t arglen = instance->currentExecutionContext()->argumentCount();
         auto thisBinded = instance->currentExecutionContext()->resolveThisBindingToObject();
         if (!thisBinded->isESTypedArrayObject())
-            throw TypeError::create();
+            instance->throwError(TypeError::create());
         auto thisVal = thisBinded->asESTypedArrayObjectWrapper();
         escargot::ESArrayBufferObject* buffer = thisVal->buffer();
         unsigned srcLength = thisVal->arraylength();

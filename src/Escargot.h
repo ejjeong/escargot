@@ -16,6 +16,7 @@
 #include <functional>
 #include <algorithm>
 #include <cmath>
+#include <csetjmp>
 #include <limits>
 #include <locale>
 #include <clocale>
@@ -346,6 +347,16 @@ inline bool operator!=(const gc_malloc_allocator<GC_T1>&, const gc_malloc_alloca
 namespace escargot {
 typedef std::basic_string<char16_t, std::char_traits<char16_t>, pointer_free_allocator<char16_t> > u16string;
 }
+
+#ifdef ENABLE_ESJIT
+namespace escargot { class ESVMInstance; }
+#ifdef ESCARGOT_64
+typedef uint64_t ESValueInDouble;
+#else
+typedef double ESValueInDouble;
+#endif
+extern "C" { typedef ESValueInDouble (*JITFunction)(escargot::ESVMInstance*); }
+#endif
 
 #include "runtime/ESValue.h"
 

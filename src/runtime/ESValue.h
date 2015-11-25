@@ -64,12 +64,6 @@ union ValueDescriptor {
 #define CellPayloadOffset PayloadOffset
 #endif
 
-#ifdef ESCARGOT_64
-typedef uint64_t ESValueInDouble;
-#else
-typedef double ESValueInDouble;
-#endif
-
 class ESValue {
 public:
 #ifdef ESCARGOT_32
@@ -178,8 +172,10 @@ public:
     ALWAYS_INLINE bool isESPointer() const;
     ALWAYS_INLINE ESPointer* asESPointer() const;
 
+#ifdef ENABLE_ESJIT
     static ESValueInDouble toRawDouble(ESValue);
     static ESValue fromRawDouble(ESValueInDouble);
+#endif
 
     static ptrdiff_t offsetOfPayload() { return OBJECT_OFFSETOF(ESValue, u.asBits.payload); }
     static ptrdiff_t offsetOfTag() { return OBJECT_OFFSETOF(ESValue, u.asBits.tag); }

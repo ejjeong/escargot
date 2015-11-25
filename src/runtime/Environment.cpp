@@ -134,7 +134,7 @@ ESValue* GlobalEnvironmentRecord::hasBinding(const InternalAtomicString& atomicN
 void GlobalEnvironmentRecord::createMutableBinding(const InternalAtomicString& name, bool canDelete)
 {
     if (m_declarativeRecord->hasBinding(name))
-        throw "TypeError";
+        ESVMInstance::currentInstance()->throwError(TypeError::create());
     m_declarativeRecord->createMutableBinding(name, canDelete);
 }
 
@@ -199,7 +199,7 @@ void FunctionEnvironmentRecord::bindThisValue(const ESValue& V)
 #ifndef NDEBUG
     ASSERT(m_thisBindingStatus != Initialized);
     if (m_thisBindingStatus == Lexical)
-        throw ReferenceError::create();
+        ESVMInstance::currentInstance()->throwError(ReferenceError::create());
     m_thisBindingStatus = Initialized;
 #endif
     m_thisValue = V;
@@ -210,7 +210,7 @@ ESValue FunctionEnvironmentRecord::getThisBinding()
 #ifndef NDEBUG
     ASSERT(m_thisBindingStatus != Lexical);
     if (m_thisBindingStatus == Uninitialized)
-        throw ReferenceError::create();
+        ESVMInstance::currentInstance()->throwError(ReferenceError::create());
 #endif
     return m_thisValue;
 }

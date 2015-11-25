@@ -4,9 +4,18 @@
 
 namespace escargot {
 
-NEVER_INLINE ESValue* getByIdOperationWithNoInline(ESVMInstance* instance, ExecutionContext* ec, GetById* code)
+NEVER_INLINE ESValue getByIdOperationWithNoInline(ESVMInstance* instance, ExecutionContext* ec, GetById* code)
 {
-    return getByIdOperation(instance, ec, code);
+    std::jmp_buf tryPosition;
+    if (setjmp(instance->registerTryPos(&tryPosition)) == 0) {
+        ESValue ret = *getByIdOperation(instance, ec, code);
+        instance->unregisterTryPos(&tryPosition);
+        return ret;
+    } else {
+        ESValue err = instance->getCatchedError();
+        (void)err;
+        return ESValue();
+    }
 }
 
 NEVER_INLINE ESValue getByGlobalIndexOperationWithNoInline(GlobalObject* globalObject, GetByGlobalIndex* code)
@@ -229,7 +238,7 @@ NEVER_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue* 
 NEVER_INLINE void throwObjectWriteError()
 {
     if (ESVMInstance::currentInstance()->currentExecutionContext()->isStrictMode())
-        throw ESValue(TypeError::create());
+        ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create()));
 }
 
 NEVER_INLINE void setObjectOperationSlowMode(ESValue* willBeObject, ESValue* property, const ESValue& value)
@@ -280,7 +289,7 @@ NEVER_INLINE bool instanceOfOperation(ESValue* lval, ESValue* rval)
                 O = O.asESPointer()->asESObject()->__proto__();
             }
         } else {
-            throw ReferenceError::create(ESString::create(u""));
+            ESVMInstance::currentInstance()->throwError(ReferenceError::create(ESString::create(u"")));
         }
     }
     return false;
@@ -312,13 +321,13 @@ NEVER_INLINE ESValue typeOfOperation(ESValue* v)
 NEVER_INLINE ESValue newOperation(ESVMInstance* instance, GlobalObject* globalObject, ESValue fn, ESValue* arguments, size_t argc)
 {
     if (!fn.isESPointer() || !fn.asESPointer()->isESFunctionObject())
-        throw ESValue(TypeError::create(ESString::create(u"constructor is not an function object")));
+        instance->throwError(ESValue(TypeError::create(ESString::create(u"constructor is not an function object"))));
     ESFunctionObject* function = fn.asESPointer()->asESFunctionObject();
     if (function->nonConstructor()) {
         u16string str;
         str.append(function->name()->string());
         str.append(u" is not a constructor");
-        throw ESValue(TypeError::create(ESString::create(std::move(str))));
+        instance->throwError(ESValue(TypeError::create(ESString::create(std::move(str)))));
     }
     CallBoundFunction* callBoundFunctionCode = nullptr;
     if (function->isBoundFunc()) {
@@ -413,36 +422,47 @@ NEVER_INLINE void tryOperation(ESVMInstance* instance, CodeBlock* codeBlock, cha
 {
     LexicalEnvironment* oldEnv = ec->environment();
     ExecutionContext* backupedEC = ec;
-    try {
+    std::jmp_buf tryPosition;
+    if (setjmp(instance->registerTryPos(&tryPosition)) == 0) {
         ec->tryOrCatchBodyResult() = ESValue(ESValue::ESEmptyValue);
         ESValue ret = interpret(instance, codeBlock, resolveProgramCounter(codeBuffer, programCounter + sizeof(Try)));
         if (!ret.isEmpty()) {
             ec->tryOrCatchBodyResult() = ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsReturn, ret, ESValue((int32_t)code->m_tryDupCount));
         }
-    } catch(const ESValue& err) {
-        instance->invalidateIdentifierCacheCheckCount();
-        instance->m_currentExecutionContext = backupedEC;
-        LexicalEnvironment* catchEnv = new LexicalEnvironment(new DeclarativeEnvironmentRecord(), oldEnv);
-        instance->currentExecutionContext()->setEnvironment(catchEnv);
-        instance->currentExecutionContext()->environment()->record()->createMutableBinding(code->m_name);
-        instance->currentExecutionContext()->environment()->record()->setMutableBinding(code->m_name, err, false);
-        try {
-            ESValue ret = interpret(instance, codeBlock, code->m_catchPosition);
-            instance->currentExecutionContext()->setEnvironment(oldEnv);
-            if (ret.isEmpty()) {
-                if (!ec->tryOrCatchBodyResult().isEmpty() && ec->tryOrCatchBodyResult().isESPointer() && ec->tryOrCatchBodyResult().asESPointer()->isESControlFlowRecord()) {
-                    ESControlFlowRecord* record = ec->tryOrCatchBodyResult().asESPointer()->asESControlFlowRecord();
-                    if (record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsThrow) {
-                        ec->tryOrCatchBodyResult() = ESValue(ESValue::ESEmptyValue);
-                    }
+        instance->unregisterTryPos(&tryPosition);
+    } else {
+        ESValue err = instance->getCatchedError();
+        tryOperationThrowCase(err, oldEnv, backupedEC, instance, codeBlock, codeBuffer, ec, programCounter, code);
+    }
+}
+
+NEVER_INLINE void tryOperationThrowCase(const ESValue& err, LexicalEnvironment* oldEnv, ExecutionContext* backupedEC, ESVMInstance* instance, CodeBlock* codeBlock, char* codeBuffer, ExecutionContext* ec, size_t programCounter, Try* code)
+{
+    instance->invalidateIdentifierCacheCheckCount();
+    instance->m_currentExecutionContext = backupedEC;
+    LexicalEnvironment* catchEnv = new LexicalEnvironment(new DeclarativeEnvironmentRecord(), oldEnv);
+    instance->currentExecutionContext()->setEnvironment(catchEnv);
+    instance->currentExecutionContext()->environment()->record()->createMutableBinding(code->m_name);
+    instance->currentExecutionContext()->environment()->record()->setMutableBinding(code->m_name, err, false);
+    std::jmp_buf tryPosition;
+    if (setjmp(instance->registerTryPos(&tryPosition)) == 0) {
+        ESValue ret = interpret(instance, codeBlock, code->m_catchPosition);
+        instance->currentExecutionContext()->setEnvironment(oldEnv);
+        if (ret.isEmpty()) {
+            if (!ec->tryOrCatchBodyResult().isEmpty() && ec->tryOrCatchBodyResult().isESPointer() && ec->tryOrCatchBodyResult().asESPointer()->isESControlFlowRecord()) {
+                ESControlFlowRecord* record = ec->tryOrCatchBodyResult().asESPointer()->asESControlFlowRecord();
+                if (record->reason() == ESControlFlowRecord::ControlFlowReason::NeedsThrow) {
+                    ec->tryOrCatchBodyResult() = ESValue(ESValue::ESEmptyValue);
                 }
-            } else {
-                ec->tryOrCatchBodyResult() = ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsReturn, ret, ESValue((int32_t)code->m_tryDupCount));
             }
-        } catch(ESValue e) {
-            instance->currentExecutionContext()->setEnvironment(oldEnv);
-            ec->tryOrCatchBodyResult() = ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsThrow, e, ESValue((int32_t)code->m_tryDupCount - 1));
+        } else {
+            ec->tryOrCatchBodyResult() = ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsReturn, ret, ESValue((int32_t)code->m_tryDupCount));
         }
+        instance->unregisterTryPos(&tryPosition);
+    } else {
+        ESValue e = instance->getCatchedError();
+        instance->currentExecutionContext()->setEnvironment(oldEnv);
+        ec->tryOrCatchBodyResult() = ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsThrow, e, ESValue((int32_t)code->m_tryDupCount - 1));
     }
 }
 

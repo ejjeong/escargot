@@ -32,7 +32,8 @@ ALWAYS_INLINE ESValue* getByIdOperation(ESVMInstance* instance, ExecutionContext
             // TODO call constructor
             // ESFunctionObject::call(fn, receiver, &arguments[0], arguments.size(), instance);
             receiver->set(strings->message.string(), ESString::create(std::move(err_msg)));
-            throw ESValue(receiver);
+            instance->throwError(receiver);
+            RELEASE_ASSERT_NOT_REACHED();
         }
     }
 }
@@ -44,7 +45,8 @@ ALWAYS_INLINE ESValue getByGlobalIndexOperation(GlobalObject* globalObject, GetB
     if (UNLIKELY(val.isDeleted())) {
         size_t idx = globalObject->hiddenClass()->findProperty(code->m_name);
         if (UNLIKELY(idx == SIZE_MAX)) {
-            throw ESValue(ReferenceError::create());
+            ESVMInstance::currentInstance()->throwError(ESValue(ReferenceError::create()));
+            RELEASE_ASSERT_NOT_REACHED();
         } else {
             code->m_index = idx;
             return globalObject->hiddenClass()->read(globalObject, globalObject, idx);
@@ -65,7 +67,7 @@ ALWAYS_INLINE void setByGlobalIndexOperation(GlobalObject* globalObject, SetByGl
     } else {
         size_t idx = globalObject->hiddenClass()->findProperty(code->m_name);
         if (UNLIKELY(idx == SIZE_MAX)) {
-            throw ESValue(ReferenceError::create());
+            ESVMInstance::currentInstance()->throwError(ESValue(ReferenceError::create()));
         } else {
             code->m_index = idx;
             globalObject->hiddenClass()->write(globalObject, globalObject, code->m_index, value);
@@ -76,7 +78,7 @@ ALWAYS_INLINE void setByGlobalIndexOperation(GlobalObject* globalObject, SetByGl
 NEVER_INLINE ESValue getByGlobalIndexOperationWithNoInline(GlobalObject* globalObject, GetByGlobalIndex* code);
 NEVER_INLINE void setByGlobalIndexOperationWithNoInline(GlobalObject* globalObject, SetByGlobalIndex* code, const ESValue& value);
 
-NEVER_INLINE ESValue* getByIdOperationWithNoInline(ESVMInstance* instance, ExecutionContext* ec, GetById* code);
+NEVER_INLINE ESValue getByIdOperationWithNoInline(ESVMInstance* instance, ExecutionContext* ec, GetById* code);
 
 NEVER_INLINE ESValue plusOperationSlowCase(ESValue* left, ESValue* right);
 ALWAYS_INLINE ESValue plusOperation(ESValue* left, ESValue* right)
@@ -421,6 +423,7 @@ NEVER_INLINE ESValue typeOfOperation(ESValue* v);
 NEVER_INLINE ESValue newOperation(ESVMInstance* instance, GlobalObject* globalObject, ESValue fn, ESValue* arguments, size_t argc);
 NEVER_INLINE bool inOperation(ESValue* obj, ESValue* key);
 NEVER_INLINE void tryOperation(ESVMInstance* instance, CodeBlock* codeBlock, char* codeBuffer, ExecutionContext* ec, size_t programCounter, Try* code);
+NEVER_INLINE void tryOperationThrowCase(const ESValue& err, LexicalEnvironment* oldEnv, ExecutionContext* backupedEC, ESVMInstance* instance, CodeBlock* codeBlock, char* codeBuffer, ExecutionContext* ec, size_t programCounter, Try* code);
 NEVER_INLINE EnumerateObjectData* executeEnumerateObject(ESObject* obj);
 
 }

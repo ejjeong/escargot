@@ -42,10 +42,12 @@ inline void setByIndexWithActivationOp(ExecutionContext* ec, int32_t upCount, in
 inline ESValueInDouble getByIdWithoutExceptionOp(ESVMInstance* instance, ExecutionContext* ec, ByteCode* bytecode)
 {
     GetById* code = (GetById*)bytecode;
-    try {
+    std::jmp_buf tryPosition;
+    if (setjmp(instance->registerTryPos(&tryPosition)) == 0) {
         ESValue* res = getByIdOperation(instance, ec, code);
+        instance->unregisterTryPos(&tryPosition);
         return ESValue::toRawDouble(*res);
-    } catch(...) {
+    } else {
         return ESValue::toRawDouble(ESValue());
     }
 }
@@ -193,7 +195,7 @@ inline void setVarDefineDataProperty(ExecutionContext* ec, GlobalObject* globalO
         u16string err_msg;
         err_msg.append(u"assignment to undeclared variable ");
         err_msg.append(code->m_name.string()->data());
-        throw ESValue(ReferenceError::create(ESString::create(std::move(err_msg))));
+        ESVMInstance::currentInstance()->throwError(ESValue(ReferenceError::create(ESString::create(std::move(err_msg)))));
     }
 }
 
@@ -337,7 +339,7 @@ inline ESValueInDouble lessThanOp(ESValueInDouble left, ESValueInDouble right)
 inline void throwOp(ESValueInDouble err)
 {
     ESValue error = ESValue::fromRawDouble(err);
-    throw error;
+    ESVMInstance::currentInstance()->throwError(error);
 }
 
 inline ESPointer* getEnumerablObjectData(ESValueInDouble value)

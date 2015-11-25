@@ -43,6 +43,7 @@ ESVMInstance::ESVMInstance()
     tm* cachedTime = localtime(&m_cachedTimeOrigin.tv_sec);
     m_gmtoff = -cachedTime->tm_gmtoff;
 
+    m_error = ESValue(ESValue::ESEmptyValueTag::ESEmptyValue);
 
     m_identifierCacheInvalidationCheckCount = 0;
 
@@ -102,7 +103,7 @@ ESVMInstance::ESVMInstance()
 
     m_arrayLengthAccessorData.setSetter([](::escargot::ESObject* self, ESObject* originalObj, const ESValue& value) {
         if (!value.isNumber() || value.toNumber() != value.toUint32())
-            throw ESValue(RangeError::create());
+            ESVMInstance::currentInstance()->throwError((RangeError::create()));
         self->asESArrayObject()->setLength(value.toInt32());
     });
 

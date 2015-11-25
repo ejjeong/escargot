@@ -50,7 +50,8 @@ ESValue ESValue::toPrimitiveSlowCase(PrimitiveTypeHint preferredType) const
                 return str;
         }
     }
-    throw ESValue(TypeError::create());
+    ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create()));
+    RELEASE_ASSERT_NOT_REACHED();
 }
 
 ESString* ESValue::toStringSlowCase() const
@@ -526,19 +527,19 @@ bool ESObject::defineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag)
         if (descHasGetter) {
             ESValue get = desc->get(strings->get.string()); // 8.10.5 ToPropertyDescriptor 7.a
             if (!(get.isESPointer() && get.asESPointer()->isESFunctionObject()) && !get.isUndefined())
-                throw ESValue(TypeError::create(ESString::create("ToPropertyDescriptor 7.b"))); // 8.10.5 ToPropertyDescriptor 7.b
+                ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("ToPropertyDescriptor 7.b")))); // 8.10.5 ToPropertyDescriptor 7.b
             else if (!get.isUndefined())
                 descGet = get.asESPointer()->asESFunctionObject(); // 8.10.5 ToPropertyDescriptor 7.c
         }
         if (descHasSetter) {
             ESValue set = desc->get(strings->set.string()); // 8.10.5 ToPropertyDescriptor 8.a
             if (!(set.isESPointer() && set.asESPointer()->isESFunctionObject()) && !set.isUndefined())
-                throw ESValue(TypeError::create(ESString::create("ToPropertyDescriptor 8.b"))); // 8.10.5 ToPropertyDescriptor 8.b
+                ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("ToPropertyDescriptor 8.b")))); // 8.10.5 ToPropertyDescriptor 8.b
             else if (!set.isUndefined())
                 descSet = set.asESPointer()->asESFunctionObject(); // 8.10.5 ToPropertyDescriptor 8.c
         }
         if (descHasValue || descHasWritable)
-            throw ESValue(TypeError::create(ESString::create("Type error, Property cannot have [getter|setter] and [value|writable] together")));
+            ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Type error, Property cannot have [getter|setter] and [value|writable] together"))));
     }
     // ToPropertyDescriptor : (end)
 
@@ -583,7 +584,7 @@ bool ESObject::defineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag)
         // 3
         if (!extensible) {
             if (throwFlag)
-                throw ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty")));
+                ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty"))));
             else
                 return false;
         } else { // 4
@@ -624,13 +625,13 @@ bool ESObject::defineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag)
     if (!propertyInfo.m_flags.m_isConfigurable) {
         if (descHasConfigurable && descC) {
             if (throwFlag)
-                throw ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty 7.a")));
+                ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty 7.a"))));
             else
                 return false;
         } else {
             if (descHasEnumerable && propertyInfo.m_flags.m_isEnumerable != descE) {
                 if (throwFlag)
-                    throw ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty 7.b")));
+                    ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty 7.b"))));
                 else
                     return false;
             }
@@ -643,7 +644,7 @@ bool ESObject::defineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag)
     } else if (isCurrentDataDescriptor != isDescDataDescriptor) { // 9
         if (!propertyInfo.m_flags.m_isConfigurable) { // 9.a
             if (throwFlag)
-                throw ESValue(TypeError::create(ESString::create("Object.DefineOwnProperty 9.a")));
+                ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Object.DefineOwnProperty 9.a"))));
             else
                 return false;
         }
@@ -660,13 +661,13 @@ bool ESObject::defineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag)
             if (!propertyInfo.m_flags.m_isWritable) {
                 if (descW) {
                     if (throwFlag)
-                        throw ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty 10.a.i")));
+                        ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty 10.a.i"))));
                     else
                         return false;
                 } else {
                     if (descHasValue && current != desc->get(strings->value.string())) {
                         if (throwFlag)
-                            throw ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty 10.a.ii")));
+                            ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty 10.a.ii"))));
                         else
                             return false;
                     }
@@ -678,13 +679,13 @@ bool ESObject::defineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag)
         if (!propertyInfo.m_flags.m_isConfigurable) {
             if (descHasSetter && (descSet != O->accessorData(idx)->getJSSetter())) {
                 if (throwFlag)
-                    throw ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty 11.a.i")));
+                    ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty 11.a.i"))));
                 else
                     return false;
             }
             if (descHasGetter && (descGet != O->accessorData(idx)->getJSGetter())) {
                 if (throwFlag)
-                    throw ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty 11.a.ii")));
+                    ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Type error, DefineOwnProperty 11.a.ii"))));
                 else
                     return false;
             }
@@ -765,19 +766,19 @@ bool ESArrayObject::defineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag
         if (descHasGetter) {
             ESValue get = desc->get(strings->get.string()); // 8.10.5 ToPropertyDescriptor 7.a
             if (!(get.isESPointer() && get.asESPointer()->isESFunctionObject()) && !get.isUndefined())
-                throw ESValue(TypeError::create(ESString::create("ToPropertyDescriptor 7.b"))); // 8.10.5 ToPropertyDescriptor 7.b
+                ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("ToPropertyDescriptor 7.b")))); // 8.10.5 ToPropertyDescriptor 7.b
             else if (!get.isUndefined())
                 descGet = get.asESPointer()->asESFunctionObject(); // 8.10.5 ToPropertyDescriptor 7.c
         }
         if (descHasSetter) {
             ESValue set = desc->get(strings->set.string()); // 8.10.5 ToPropertyDescriptor 8.a
             if (!(set.isESPointer() && set.asESPointer()->isESFunctionObject()) && !set.isUndefined())
-                throw ESValue(TypeError::create(ESString::create("ToPropertyDescriptor 8.b"))); // 8.10.5 ToPropertyDescriptor 8.b
+                ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("ToPropertyDescriptor 8.b")))); // 8.10.5 ToPropertyDescriptor 8.b
             else if (!set.isUndefined())
                 descSet = set.asESPointer()->asESFunctionObject(); // 8.10.5 ToPropertyDescriptor 8.c
         }
         if (descHasValue || !descW.isUndefined())
-            throw ESValue(TypeError::create(ESString::create("Type error, Property cannot have [getter|setter] and [value|writable] together")));
+            ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Type error, Property cannot have [getter|setter] and [value|writable] together"))));
     }
     // ToPropertyDescriptor : (end)
 
@@ -820,7 +821,7 @@ bool ESArrayObject::defineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag
 
         // 3.d
         if (newLen != descV.toNumber())
-            throw ESValue(RangeError::create(ESString::create("ArrayObject.DefineOwnProperty 3.d")));
+            ESVMInstance::currentInstance()->throwError(ESValue(RangeError::create(ESString::create("ArrayObject.DefineOwnProperty 3.d"))));
 
         // 3.e
         newLenDesc->set(strings->value.string(), ESValue(newLen));
@@ -832,7 +833,7 @@ bool ESArrayObject::defineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag
         // 3.g
         if (!oldLePropertyInfo.m_flags.m_isWritable) {
             if (throwFlag)
-                throw ESValue(TypeError::create(ESString::create("ArrayObject.DefineOwnProperty 3.g")));
+                ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("ArrayObject.DefineOwnProperty 3.g"))));
             else
                 return false;
         }
@@ -865,7 +866,7 @@ bool ESArrayObject::defineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag
                     newLenDesc->set(strings->writable.string(), ESValue(false));
                 A->asESObject()->defineOwnProperty(P, newLenDesc, false);
                 if (throwFlag)
-                    throw ESValue(TypeError::create(ESString::create("ArrayObject.DefineOwnProperty 3.l.iii")));
+                    ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("ArrayObject.DefineOwnProperty 3.l.iii"))));
                 else
                     return false;
             }
@@ -886,7 +887,7 @@ bool ESArrayObject::defineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag
         // 4.b
         if (index >= oldLen && !oldLePropertyInfo.m_flags.m_isWritable) {
             if (throwFlag)
-                throw ESValue(TypeError::create(ESString::create("ArrayObject.DefineOwnProperty 4.b")));
+                ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("ArrayObject.DefineOwnProperty 4.b"))));
             else
                 return false;
         }
@@ -897,7 +898,7 @@ bool ESArrayObject::defineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag
         // 4.d
         if (!succeeded) {
             if (throwFlag)
-                throw ESValue(TypeError::create(ESString::create("ArrayObject.DefineOwnProperty 4.d")));
+                ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("ArrayObject.DefineOwnProperty 4.d"))));
             else
                 return false;
         }
@@ -1062,7 +1063,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
 #ifndef NDEBUG
     const char* functionName = fn->codeBlock()->m_nonAtomicId ? (fn->codeBlock()->m_nonAtomicId->utf8Data()):"(anonymous)";
 #endif
-    ESJIT::JITFunction jitFunction = fn->codeBlock()->m_cachedJITFunction;
+    JITFunction jitFunction = fn->codeBlock()->m_cachedJITFunction;
 
     if (!jitFunction && !fn->codeBlock()->m_dontJIT) {
 
@@ -1282,7 +1283,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
 
             if (!compileNextTime) {
                 GC_disable();
-                jitFunction = reinterpret_cast<ESJIT::JITFunction>(ESJIT::JITCompile(fn->codeBlock(), instance));
+                jitFunction = reinterpret_cast<JITFunction>(ESJIT::JITCompile(fn->codeBlock(), instance));
                 if (jitFunction) {
                     LOG_VJ("> Compilation successful for function %s (codeBlock %p)! Cache jit function %p\n", functionName, fn->codeBlock(), jitFunction);
 #ifndef NDEBUG
@@ -1453,7 +1454,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
             instance->m_currentExecutionContext = currentContext;
         }
     } else {
-        throw ESValue(TypeError::create(ESString::create(u"Callee is not a function object")));
+        instance->throwError(ESValue(TypeError::create(ESString::create(u"Callee is not a function object"))));
     }
 
     return result;

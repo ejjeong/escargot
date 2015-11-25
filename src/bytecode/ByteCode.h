@@ -2258,7 +2258,6 @@ public:
 #endif
 
 #ifdef ENABLE_ESJIT
-    typedef ESValueInDouble (*JITFunction)(ESVMInstance*);
     JITFunction m_cachedJITFunction;
     bool m_dontJIT;
     std::vector<unsigned, pointer_free_allocator<unsigned> > m_byteCodeIndexesHaveToProfile;

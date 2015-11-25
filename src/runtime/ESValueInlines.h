@@ -145,9 +145,9 @@ inline ESObject* ESValue::toObject() const
     } else if (isESString()) {
         object = ESStringObject::create(asESPointer()->asESString());
     } else if (isNull()) {
-        throw ESValue(TypeError::create(ESString::create(u"cannot convert null into object")));
+        ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create(u"cannot convert null into object"))));
     } else if (isUndefined()) {
-        throw ESValue(TypeError::create(ESString::create(u"cannot convert undefined into object")));
+        ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create(u"cannot convert undefined into object"))));
     } else {
         RELEASE_ASSERT_NOT_REACHED();
     }
@@ -393,6 +393,7 @@ ALWAYS_INLINE uint32_t ESValue::toIndex() const
     }
 }
 
+#ifdef ENABLE_ESJIT
 inline ESValueInDouble ESValue::toRawDouble(ESValue value)
 {
     return bitwise_cast<ESValueInDouble>(value.u.asInt64);
@@ -404,6 +405,7 @@ ALWAYS_INLINE ESValue ESValue::fromRawDouble(ESValueInDouble value)
     val.u.asInt64 = bitwise_cast<uint64_t>(value);
     return val;
 }
+#endif
 
 // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-abstract-equality-comparison
 ALWAYS_INLINE bool ESValue::abstractEqualsTo(const ESValue& val)
@@ -1172,7 +1174,7 @@ inline bool ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
     if (isESTypedArrayObject()) {
         uint32_t i = key.toIndex();
         if (i != ESValue::ESInvalidIndexValue) {
-            throw ESValue(TypeError::create(ESString::create("cannot redefine property")));
+            ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("cannot redefine property"))));
         }
     }
     if (isESStringObject()) {
@@ -1206,7 +1208,7 @@ inline bool ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
         return true;
     } else {
         if (!m_hiddenClass->m_propertyInfo[oldIdx].m_flags.m_isConfigurable) {
-            throw ESValue(TypeError::create(ESString::create("cannot redefine property")));
+            ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("cannot redefine property"))));
         }
         m_hiddenClass = m_hiddenClass->removeProperty(oldIdx);
         m_hiddenClassData.erase(m_hiddenClassData.begin() + oldIdx);
@@ -1227,7 +1229,7 @@ inline bool ESObject::defineAccessorProperty(const escargot::ESValue& key, ESPro
     if (isESTypedArrayObject()) {
         uint32_t i = key.toIndex();
         if (i != ESValue::ESInvalidIndexValue) {
-            throw ESValue(TypeError::create(ESString::create("cannot redefine property")));
+            ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("cannot redefine property"))));
         }
     }
     if (isESStringObject()) {
@@ -1261,7 +1263,7 @@ inline bool ESObject::defineAccessorProperty(const escargot::ESValue& key, ESPro
         return true;
     } else {
         if (!m_hiddenClass->m_propertyInfo[oldIdx].m_flags.m_isConfigurable) {
-            throw ESValue(TypeError::create(ESString::create("cannot redefine property")));
+            ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("cannot redefine property"))));
         }
         m_hiddenClass = m_hiddenClass->removeProperty(oldIdx);
         m_hiddenClassData.erase(m_hiddenClassData.begin() + oldIdx);
@@ -1625,7 +1627,7 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
 ALWAYS_INLINE void ESObject::set(const escargot::ESValue& key, const ESValue& val, bool throwExpetion)
 {
     if (!set(key, val) && throwExpetion) {
-        throw ESValue(TypeError::create(ESString::create("Cannot assign to readonly property")));
+        ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Cannot assign to readonly property"))));
     }
 }
 

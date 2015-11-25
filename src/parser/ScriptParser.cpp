@@ -58,7 +58,7 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16strin
     } catch(size_t lineNumber) {
         char temp[512];
         sprintf(temp, "Parse Error %u line", (unsigned)lineNumber);
-        throw ESValue(SyntaxError::create(ESString::create(temp)));
+        ESVMInstance::currentInstance()->throwError(SyntaxError::create(ESString::create(temp)));
     }
 
     auto markNeedsActivation = [](FunctionNode* nearFunctionNode)

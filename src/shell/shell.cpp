@@ -105,10 +105,13 @@ int main(int argc, char* argv[])
                 return 1;
             }
             escargot::ESStringData source(buf);
-            try {
+            std::jmp_buf tryPosition;
+            if (setjmp(ES->registerTryPos(&tryPosition)) == 0) {
                 escargot::ESValue ret = ES->evaluate(source);
                 ES->printValue(ret);
-            } catch(const escargot::ESValue& err) {
+                ES->unregisterTryPos(&tryPosition);
+            } else {
+                escargot::ESValue err = ES->getCatchedError();
                 printf("Uncaught %s\n", err.toString()->utf8Data());
             }
         }
@@ -161,7 +164,8 @@ int main(int argc, char* argv[])
                 }
                 fclose(fp);
                 escargot::ESStringData source(str.c_str());
-                try {
+                std::jmp_buf tryPosition;
+                if (setjmp(ES->registerTryPos(&tryPosition)) == 0) {
                     escargot::ESValue ret = ES->evaluate(source);
 #ifndef NDEBUG
                     if (ES->m_reportCompiledFunction) {
@@ -171,7 +175,9 @@ int main(int argc, char* argv[])
                         printf("(%zu)\n", escargot::ESVMInstance::currentInstance()->m_osrExitedFunctions);
                     }
 #endif
-                } catch(const escargot::ESValue& err) {
+                    ES->unregisterTryPos(&tryPosition);
+                } else {
+                    escargot::ESValue err = ES->getCatchedError();
                     printf("Uncaught %s\n", err.toString()->utf8Data());
                     ES->exit();
                     return 1;
@@ -188,10 +194,13 @@ int main(int argc, char* argv[])
                         return 1;
                     }
                     escargot::ESStringData source(buf);
-                    try {
+                    std::jmp_buf tryPosition;
+                    if (setjmp(ES->registerTryPos(&tryPosition)) == 0) {
                         escargot::ESValue ret = ES->evaluate(source);
                         ES->printValue(ret);
-                    } catch(const escargot::ESValue& err) {
+                        ES->unregisterTryPos(&tryPosition);
+                    } else {
+                        escargot::ESValue err = ES->getCatchedError();
                         printf("Uncaught %s\n", err.toString()->utf8Data());
                     }
                 }

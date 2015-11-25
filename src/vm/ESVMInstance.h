@@ -36,6 +36,7 @@ class ESVMInstance : public gc_cleanup {
     friend ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter);
 #endif
     friend NEVER_INLINE void tryOperation(ESVMInstance* instance, CodeBlock* codeBlock, char* codeBuffer, ExecutionContext* ec, size_t programCounter, Try* code);
+    friend NEVER_INLINE void tryOperationThrowCase(const ESValue& err, LexicalEnvironment* oldEnv, ExecutionContext* backupedEC, ESVMInstance* instance, CodeBlock* codeBlock, char* codeBuffer, ExecutionContext* ec, size_t programCounter, Try* code);
     friend class ESFunctionObject;
     friend class ExpressionStatementNode;
     friend class TryStatementNode;
@@ -142,6 +143,39 @@ public:
         return (unsigned long)(timespec.tv_sec * 1000000L + timespec.tv_nsec / 1000);
     }
 
+    NEVER_INLINE void throwError(const ESValue& error)
+    {
+        ASSERT(m_error.isEmpty());
+        m_error = error;
+        std::jmp_buf* tryPosition = m_tryPositions.back();
+        m_tryPositions.pop_back();
+        std::longjmp(*tryPosition, 1);
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+
+    std::jmp_buf& registerTryPos(std::jmp_buf* arg)
+    {
+        ASSERT(m_error.isEmpty());
+        m_tryPositions.push_back(arg);
+        return *arg;
+    }
+
+    void unregisterTryPos(std::jmp_buf* arg)
+    {
+        ASSERT(m_error.isEmpty());
+        ASSERT(arg == m_tryPositions.back());
+        m_tryPositions.pop_back();
+    }
+    
+    ESValue getCatchedError()
+    {
+        ESValue error = m_error;
+#ifndef NDEBUG
+        m_error = ESValue(ESValue::ESEmptyValueTag::ESEmptyValue);
+#endif
+        return error;
+    }
+
 #ifdef ENABLE_ESJIT
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Winvalid-offsetof"
@@ -202,6 +236,9 @@ protected:
     timespec m_cachedTimeOrigin;
     long m_gmtoff;
     tm m_time;
+
+    std::vector<std::jmp_buf*, pointer_free_allocator<std::jmp_buf*> > m_tryPositions;
+    ESValue m_error;
 
     std::vector<ESSimpleAllocatorMemoryFragment, pointer_free_allocator<ESSimpleAllocatorMemoryFragment> > m_allocatedMemorys;
 
