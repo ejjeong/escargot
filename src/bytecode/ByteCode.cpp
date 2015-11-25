@@ -9,7 +9,9 @@ namespace escargot {
 
 CodeBlock::CodeBlock(size_t roughCodeBlockSizeInWordSize, bool isBuiltInFunction)
 {
-    m_code.reserve(roughCodeBlockSizeInWordSize * sizeof(size_t));
+    m_ast = NULL;
+    if (roughCodeBlockSizeInWordSize)
+        m_code.reserve(roughCodeBlockSizeInWordSize * sizeof(size_t));
     m_needsActivation = false;
     m_isBuiltInFunction = isBuiltInFunction;
     m_isStrict = false;
@@ -155,9 +157,10 @@ void ByteCode::assignOpcodeInAddress()
 
 CodeBlock* generateByteCode(ProgramNode* node)
 {
-    size_t dummy;
-    node->computeRoughCodeBlockSizeInWordSize(dummy);
-    CodeBlock* block = CodeBlock::create(node->roughCodeblockSizeInWordSize());
+    // size_t dummy;
+    // node->computeRoughCodeBlockSizeInWordSize(dummy);
+    // CodeBlock* block = CodeBlock::create(node->roughCodeblockSizeInWordSize());
+    CodeBlock* block = CodeBlock::create(0);
 
     ByteCodeGenerateContext context;
     // unsigned long start = ESVMInstance::tickCount();
@@ -211,10 +214,10 @@ unsigned char popCountFromOpcode(ByteCode* code, Opcode opcode)
 unsigned char pushCountFromOpcode(ByteCode* code, Opcode opcode)
 {
     if (opcode == CreateFunctionOpcode) {
-        if (((CreateFunction *)code)->m_codeBlock->m_isFunctionExpression) {
-            return 1;
-        } else
+        if (((CreateFunction *)code)->m_isDeclaration) {
             return 0;
+        } else
+            return 1;
     }
 #define FETCH_PUSH_COUNT_BYTE_CODE(code, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
     case code##Opcode: \

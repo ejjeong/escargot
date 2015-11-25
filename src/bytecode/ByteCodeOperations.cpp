@@ -177,6 +177,12 @@ NEVER_INLINE ESValue getObjectPreComputedCaseOperationWithNeverInline(ESValue* w
     return getObjectPreComputedCaseOperation(willBeObject, property, globalObject, inlineCache);
 }
 
+NEVER_INLINE void setObjectPreComputedCaseOperationWithNeverInline(ESValue* willBeObject, ESString* keyString, const ESValue& value
+    , ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex, ESHiddenClass** hiddenClassWillBe)
+{
+    return setObjectPreComputedCaseOperation(willBeObject, keyString, value, cachedHiddenClassChain, cachedHiddenClassIndex, hiddenClassWillBe);
+}
+
 NEVER_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue* property, GlobalObject* globalObject)
 {
     ASSERT(ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty());

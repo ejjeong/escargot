@@ -10,6 +10,7 @@ namespace escargot {
 
 class FunctionNode : public Node {
 public:
+    friend ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, const ESValue& receiver, ESValue arguments[], const size_t& argumentCount, bool isNewExpression);
     FunctionNode(NodeType type , const InternalAtomicString& id, InternalAtomicStringVector&& params,
         Node* body, bool isGenerator, bool isExpression, bool isStrict)
             : Node(type)

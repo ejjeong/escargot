@@ -22,9 +22,11 @@ public:
 
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        size_t myResult = 0;
-        m_body->computeRoughCodeBlockSizeInWordSize(myResult);
-        CodeBlock* cb = CodeBlock::create(myResult);
+        // size_t myResult = 0;
+        // m_body->computeRoughCodeBlockSizeInWordSize(myResult);
+        // CodeBlock* cb = CodeBlock::create(myResult);
+        CodeBlock* cb = CodeBlock::create(0);
+#ifdef ESCARGOT_INSTANT_BYTECODE_GENERATION
         cb->m_innerIdentifiers = std::move(m_innerIdentifiers);
         cb->m_needsActivation = m_needsActivation;
         cb->m_params = std::move(m_params);
@@ -59,6 +61,10 @@ public:
         codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb, true), context, this);
 #ifdef ENABLE_ESJIT
         newContext.cleanupSSARegisterCount();
+#endif
+#else
+        cb->m_ast = this;
+        codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb, true), context, this);
 #endif
     }
 

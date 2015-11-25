@@ -1378,19 +1378,61 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
     if (LIKELY(callee.isESPointer() && callee.asESPointer()->isESFunctionObject())) {
         ExecutionContext* currentContext = instance->currentExecutionContext();
         ESFunctionObject* fn = callee.asESPointer()->asESFunctionObject();
+        CodeBlock * const cb = fn->codeBlock();
+#ifndef ESCARGOT_INSTANT_BYTECODE_GENERATION
+        if (UNLIKELY(!cb->m_code.size())) {
+            FunctionNode* node = (FunctionNode *)cb->m_ast;
+            cb->m_innerIdentifiers = std::move(node->m_innerIdentifiers);
+            cb->m_needsActivation = node->m_needsActivation;
+            cb->m_params = std::move(node->m_params);
+            cb->m_isStrict = node->m_isStrict;
+            cb->m_isFunctionExpression = node->isExpression();
 
-        if (UNLIKELY(fn->codeBlock()->m_needsActivation)) {
+            ByteCodeGenerateContext newContext;
+            node->body()->generateStatementByteCode(cb, newContext);
+
+#ifdef ENABLE_ESJIT
+            cb->m_tempRegisterSize = newContext.m_currentSSARegisterCount;
+#endif
+            cb->pushCode(ReturnFunction(), newContext, node);
+            cb->m_ast = NULL;
+
+#ifndef NDEBUG
+            cb->m_id = node->m_id;
+            cb->m_nonAtomicId = node->m_nonAtomicId;
+            if (ESVMInstance::currentInstance()->m_dumpByteCode) {
+                char* code = cb->m_code.data();
+                ByteCode* currentCode = (ByteCode *)(&code[0]);
+                if (currentCode->m_orgOpcode != ExecuteNativeFunctionOpcode) {
+                    cb->m_nonAtomicId = node->m_nonAtomicId;
+                    dumpBytecode(cb);
+                }
+            }
+            if (ESVMInstance::currentInstance()->m_reportUnsupportedOpcode) {
+                char* code = cb->m_code.data();
+                ByteCode* currentCode = (ByteCode *)(&code[0]);
+                if (currentCode->m_orgOpcode != ExecuteNativeFunctionOpcode) {
+                    dumpUnsupported(cb);
+                }
+            }
+#endif
+#ifdef ENABLE_ESJIT
+            newContext.cleanupSSARegisterCount();
+#endif
+        }
+#endif
+        if (UNLIKELY(cb->m_needsActivation)) {
             instance->m_currentExecutionContext = new ExecutionContext(LexicalEnvironment::newFunctionEnvironment(arguments, argumentCount, fn), true, isNewExpression,
                 arguments, argumentCount);
             functionCallerInnerProcess(instance->m_currentExecutionContext, fn, receiver, arguments, argumentCount, instance);
 #ifdef ENABLE_ESJIT
             result = executeJIT(fn, instance, *instance->m_currentExecutionContext);
 #else
-            result = interpret(instance, fn->codeBlock());
+            result = interpret(instance, cb);
 #endif
             instance->m_currentExecutionContext = currentContext;
         } else {
-            ESValue* storage = (::escargot::ESValue *)alloca(sizeof(::escargot::ESValue) * fn->m_codeBlock->m_innerIdentifiers.size());
+            ESValue* storage = (::escargot::ESValue *)alloca(sizeof(::escargot::ESValue) * cb->m_innerIdentifiers.size());
             FunctionEnvironmentRecord envRec(
                 arguments, argumentCount,
                 storage,
@@ -1406,7 +1448,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
 #ifdef ENABLE_ESJIT
             result = executeJIT(fn, instance, ec);
 #else
-            result = interpret(instance, fn->codeBlock());
+            result = interpret(instance, cb);
 #endif
             instance->m_currentExecutionContext = currentContext;
         }

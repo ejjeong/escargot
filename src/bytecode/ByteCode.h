@@ -2236,7 +2236,7 @@ public:
     }
 
     std::vector<char, gc_malloc_allocator<char> > m_code;
-
+    Node* m_ast;
 #ifndef ENABLE_ESJIT
     std::vector<ByteCodeExtraData, pointer_free_allocator<ByteCodeExtraData> > m_extraData;
 #else

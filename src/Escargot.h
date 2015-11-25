@@ -340,6 +340,9 @@ inline bool operator!=(const gc_malloc_allocator<GC_T1>&, const gc_malloc_alloca
 #error "I don't know what architecture this is!"
 #endif
 
+
+// #define ESCARGOT_INSTANT_BYTECODE_GENERATION
+
 namespace escargot {
 typedef std::basic_string<char16_t, std::char_traits<char16_t>, pointer_free_allocator<char16_t> > u16string;
 }
