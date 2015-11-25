@@ -505,6 +505,10 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
                 GetObject* bytecode = (GetObject*)currentCode;
                 ByteCodeExtraData* extraData = &codeBlock->m_extraData[bytecodeCounter];
                 ASSERT(codeBlock->m_extraData[bytecodeCounter].m_registerIncrementCount < 3);
+                bytecode->m_profile.updateProfiledType();
+                graph->setOperandType(extraData->m_targetIndex0, bytecode->m_profile.getType());
+                GetObjectIR* getObjectIR = GetObjectIR::create(extraData->m_targetIndex0, extraData->m_targetIndex1, extraData->m_sourceIndexes[0], extraData->m_sourceIndexes[1], bytecode);
+                currentBlock->push(getObjectIR);
                 if (codeBlock->m_extraData[bytecodeCounter].m_registerIncrementCount == 1)
                     graph->setOperandStackPos(extraData->m_targetIndex0, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
                 else if (codeBlock->m_extraData[bytecodeCounter].m_registerIncrementCount == 2) {
@@ -514,10 +518,6 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
                 } else {
                     RELEASE_ASSERT_NOT_REACHED();
                 }
-                bytecode->m_profile.updateProfiledType();
-                graph->setOperandType(extraData->m_targetIndex0, bytecode->m_profile.getType());
-                GetObjectIR* getObjectIR = GetObjectIR::create(extraData->m_targetIndex0, extraData->m_targetIndex1, extraData->m_sourceIndexes[0], extraData->m_sourceIndexes[1], bytecode);
-                currentBlock->push(getObjectIR);
                 NEXT_BYTECODE(GetObject);
                 break;
             }
@@ -528,6 +528,11 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
                 GetObjectPreComputedCase* bytecode = (GetObjectPreComputedCase*)currentCode;
                 ByteCodeExtraData* extraData = &codeBlock->m_extraData[bytecodeCounter];
                 ASSERT(codeBlock->m_extraData[bytecodeCounter].m_registerIncrementCount < 3);
+                bytecode->m_profile.updateProfiledType();
+                graph->setOperandType(extraData->m_targetIndex0, bytecode->m_profile.getType());
+                GetObjectPreComputedIR* getObjectPreComputedIR = GetObjectPreComputedIR::create(extraData->m_targetIndex0, extraData->m_targetIndex1, extraData->m_sourceIndexes[0],
+                    bytecode);
+                currentBlock->push(getObjectPreComputedIR);
                 if (codeBlock->m_extraData[bytecodeCounter].m_registerIncrementCount == 1) {
                     graph->setOperandStackPos(extraData->m_targetIndex0, codeBlock->m_extraData[bytecodeCounter + 1].m_baseRegisterIndex);
                 } else if (codeBlock->m_extraData[bytecodeCounter].m_registerIncrementCount == 2) {
@@ -537,11 +542,6 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
                 } else {
                     RELEASE_ASSERT_NOT_REACHED();
                 }
-                bytecode->m_profile.updateProfiledType();
-                graph->setOperandType(extraData->m_targetIndex0, bytecode->m_profile.getType());
-                GetObjectPreComputedIR* getObjectPreComputedIR = GetObjectPreComputedIR::create(extraData->m_targetIndex0, extraData->m_targetIndex1, extraData->m_sourceIndexes[0],
-                    bytecode);
-                currentBlock->push(getObjectPreComputedIR);
                 NEXT_BYTECODE(GetObjectPreComputedCase);
                 break;
             }
