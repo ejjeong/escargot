@@ -22,46 +22,46 @@ public:
 
         // CodeBlock* cb = CodeBlock::create(myResult);
         CodeBlock* cb = CodeBlock::create(0);
-#ifdef ESCARGOT_INSTANT_BYTECODE_GENERATION
-        cb->m_innerIdentifiers = std::move(m_innerIdentifiers);
-        cb->m_needsActivation = m_needsActivation;
-        cb->m_params = std::move(m_params);
-        cb->m_isStrict = m_isStrict;
-        cb->m_isFunctionExpression = true;
+        if (context.m_shouldGenereateByteCodeInstantly) {
+            cb->m_innerIdentifiers = std::move(m_innerIdentifiers);
+            cb->m_needsActivation = m_needsActivation;
+            cb->m_params = std::move(m_params);
+            cb->m_isStrict = m_isStrict;
+            cb->m_isFunctionExpression = true;
 
-        ByteCodeGenerateContext newContext;
-        m_body->generateStatementByteCode(cb, newContext);
+            ByteCodeGenerateContext newContext;
+            m_body->generateStatementByteCode(cb, newContext);
 #ifdef ENABLE_ESJIT
-        cb->m_tempRegisterSize = newContext.m_currentSSARegisterCount;
+            cb->m_tempRegisterSize = newContext.m_currentSSARegisterCount;
 #endif
-        cb->pushCode(ReturnFunction(), newContext, this);
+            cb->pushCode(ReturnFunction(), newContext, this);
 #ifndef NDEBUG
-        if (ESVMInstance::currentInstance()->m_dumpByteCode) {
-            char* code = cb->m_code.data();
-            ByteCode* currentCode = (ByteCode *)(&code[0]);
-            if (currentCode->m_orgOpcode != ExecuteNativeFunctionOpcode) {
-                if (m_nonAtomicId)
-                cb->m_nonAtomicId = m_nonAtomicId;
-                dumpBytecode(cb);
+            if (ESVMInstance::currentInstance()->m_dumpByteCode) {
+                char* code = cb->m_code.data();
+                ByteCode* currentCode = (ByteCode *)(&code[0]);
+                if (currentCode->m_orgOpcode != ExecuteNativeFunctionOpcode) {
+                    if (m_nonAtomicId)
+                    cb->m_nonAtomicId = m_nonAtomicId;
+                    dumpBytecode(cb);
+                }
             }
-        }
-        if (ESVMInstance::currentInstance()->m_reportUnsupportedOpcode) {
-            char* code = cb->m_code.data();
-            ByteCode* currentCode = (ByteCode *)(&code[0]);
-            if (currentCode->m_orgOpcode != ExecuteNativeFunctionOpcode) {
-                dumpUnsupported(cb);
+            if (ESVMInstance::currentInstance()->m_reportUnsupportedOpcode) {
+                char* code = cb->m_code.data();
+                ByteCode* currentCode = (ByteCode *)(&code[0]);
+                if (currentCode->m_orgOpcode != ExecuteNativeFunctionOpcode) {
+                    dumpUnsupported(cb);
+                }
             }
-        }
 #endif
-        codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb, false), context, this);
+            codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb, false), context, this);
 #ifdef ENABLE_ESJIT
-        newContext.cleanupSSARegisterCount();
+            newContext.cleanupSSARegisterCount();
 #endif
-#else
-        cb->m_ast = this;
-        cb->m_params = m_params;
-        codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb, false), context, this);
-#endif
+        } else {
+            cb->m_ast = this;
+            cb->m_params = m_params;
+            codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb, false), context, this);
+        }
     }
 
     virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)

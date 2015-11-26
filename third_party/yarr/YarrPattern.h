@@ -100,6 +100,10 @@ struct CharacterClassTable : RefCounted<CharacterClassTable> {
         , m_inverted(inverted)
     {
     }
+
+    ~CharacterClassTable()
+    {
+    }
 };
 
 struct CharacterClass {
@@ -114,7 +118,6 @@ public:
     }
     ~CharacterClass()
     {
-        //delete m_table.get();
     }
     Vector<UChar> m_matches;
     Vector<CharacterRange> m_ranges;

@@ -24,7 +24,9 @@ public:
     IdentifierNode* clone()
     {
         IdentifierNode* nd = new IdentifierNode(m_name);
+#ifndef NDEBUG
         nd->m_sourceLocation = m_sourceLocation;
+#endif
         return nd;
     }
 
@@ -139,6 +141,12 @@ public:
     {
         return m_globalFastAccessIndex;
     }
+
+    virtual bool isIdentifier()
+    {
+        return true;
+    }
+
 
 protected:
     InternalAtomicString m_name;

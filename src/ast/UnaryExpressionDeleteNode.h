@@ -16,7 +16,7 @@ public:
 
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        if (m_argument->type() == NodeType::MemberExpression) {
+        if (m_argument->isMemberExpression()) {
             MemberExpressionNode* mem = (MemberExpressionNode*) m_argument;
             mem->generateExpressionByteCode(codeBlock, context);
             if (mem->isPreComputedCase()) {
@@ -26,7 +26,7 @@ public:
             } else
                 codeBlock->popLastCode<GetObject>();
             codeBlock->pushCode(UnaryDelete(true), context, this);
-        } else if (m_argument->type() == NodeType::Identifier) {
+        } else if (m_argument->isIdentifier()) {
             codeBlock->pushCode(Push(((IdentifierNode *)m_argument)->name().string()), context, this);
             // TODO
         } else {

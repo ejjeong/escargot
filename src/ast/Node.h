@@ -11,7 +11,6 @@ namespace escargot {
 
 class ESVMInstance;
 class ExecutionContext;
-class ESSlot;
 class ScriptParser;
 
 enum NodeType {
@@ -108,12 +107,14 @@ enum NodeType {
     ThrowStatement,
 };
 
+#ifndef NDEBUG
 class SourceLocation {
 public:
     size_t m_lineNumber;
     size_t m_lineStart;
     // TODO
 };
+#endif
 
 class Node : public gc {
     friend class ScriptParser;
@@ -158,18 +159,57 @@ public:
 
     }
 
+#ifndef NDEBUG
     ALWAYS_INLINE void setSourceLocation(size_t lineNum, size_t lineStart)
     {
         m_sourceLocation.m_lineNumber = lineNum;
         m_sourceLocation.m_lineStart = lineStart;
     }
-
     const SourceLocation& sourceLocation() { return m_sourceLocation; }
-
+#else
+    ALWAYS_INLINE void setSourceLocation(size_t lineNum, size_t lineStart)
+    {
+    }
+#endif
     ALWAYS_INLINE const NodeType& type() { return m_nodeType; }
+
+    /*
+    inline void* operator new(size_t size)
+    {
+        printf("%d\n",(int)size);
+        return GC_malloc(size);
+    }
+    */
+
+    virtual bool isIdentifier()
+    {
+        return false;
+    }
+
+    virtual bool isLiteral()
+    {
+        return false;
+    }
+
+    virtual bool isMemberExpression()
+    {
+        return false;
+    }
+
+    virtual bool isVariableDeclarator()
+    {
+        return false;
+    }
+
+    virtual bool isAssignmentExpressionSimple()
+    {
+        return false;
+    }
 protected:
     NodeType m_nodeType;
+#ifndef NDEBUG
     SourceLocation m_sourceLocation;
+#endif
 };
 
 bool findRightAfterExpression(Node* node, NodeType tp);

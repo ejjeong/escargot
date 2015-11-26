@@ -33,6 +33,11 @@ public:
         m_right->computeRoughCodeBlockSizeInWordSize(result);
     }
 
+    virtual bool isAssignmentExpressionSimple()
+    {
+        return true;
+    }
+
 protected:
     Node* m_left; // left: Pattern;
     Node* m_right; // right: Expression;

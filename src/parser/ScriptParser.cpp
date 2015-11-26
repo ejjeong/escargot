@@ -417,12 +417,9 @@ CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, const escargot::u16
     }
 
     // unsigned long start = ESVMInstance::currentInstance()->tickCount();
-    GC_disable();
     ProgramNode* node = (ProgramNode *)generateAST(instance, source, isForGlobalScope);
     ASSERT(node->type() == Program);
-    CodeBlock* cb = generateByteCode(node);
-    ESSimpleAllocator::freeAll();
-    GC_enable();
+    CodeBlock* cb = generateByteCode(node, source.length() > 1024 * 1024 ? false : true);
     // unsigned long end = ESVMInstance::currentInstance()->tickCount();
     // printf("parseScript takes %lfms\n", (end-start)/1000.0);
 

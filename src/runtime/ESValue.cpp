@@ -1380,7 +1380,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
         ExecutionContext* currentContext = instance->currentExecutionContext();
         ESFunctionObject* fn = callee.asESPointer()->asESFunctionObject();
         CodeBlock* const cb = fn->codeBlock();
-#ifndef ESCARGOT_INSTANT_BYTECODE_GENERATION
+
         if (UNLIKELY(!cb->m_code.size())) {
             FunctionNode* node = (FunctionNode *)cb->m_ast;
             cb->m_innerIdentifiers = std::move(node->m_innerIdentifiers);
@@ -1421,7 +1421,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
             newContext.cleanupSSARegisterCount();
 #endif
         }
-#endif
+
         if (UNLIKELY(cb->m_needsActivation)) {
             instance->m_currentExecutionContext = new ExecutionContext(LexicalEnvironment::newFunctionEnvironment(arguments, argumentCount, fn), true, isNewExpression,
                 arguments, argumentCount);

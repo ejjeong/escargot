@@ -20,7 +20,7 @@ public:
 
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        ASSERT(m_id->type() == NodeType::Identifier);
+        ASSERT(m_id->isIdentifier());
         ASSERT(m_init == NULL);
         if (!((IdentifierNode *)m_id)->canUseFastAccess())
             codeBlock->pushCode(CreateBinding(((IdentifierNode *)m_id)->name()), context, this);
@@ -36,6 +36,11 @@ public:
     void clearInit()
     {
         m_init = NULL;
+    }
+
+    virtual bool isVariableDeclarator()
+    {
+        return true;
     }
 
 protected:

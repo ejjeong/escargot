@@ -19,8 +19,8 @@ public:
 
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        if (m_callee->type() == NodeType::Identifier) {
-            if (((IdentifierNode *)m_callee)->name() == InternalAtomicString(u"eval")) {
+        if (m_callee->isIdentifier()) {
+            if (((IdentifierNode *)m_callee)->name() == strings->eval) {
                 for (unsigned i = 0; i < m_arguments.size(); i ++) {
                     m_arguments[i]->generateExpressionByteCode(codeBlock, context);
                 }

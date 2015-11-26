@@ -23,10 +23,10 @@ public:
         codeBlock->pushCode(CreateObject(m_properties.size()), context, this);
         for (unsigned i = 0; i < m_properties.size() ; i ++) {
             PropertyNode* p = m_properties[i];
-            if (p->key()->type() == NodeType::Identifier) {
+            if (p->key()->isIdentifier()) {
                 codeBlock->pushCode(Push(((IdentifierNode*)p->key())->name().string()), context, this);
             } else {
-                ASSERT(p->key()->type() == NodeType::Literal);
+                ASSERT(p->key()->isLiteral());
                 codeBlock->pushCode(Push(((LiteralNode*)p->key())->value()), context, this);
             }
 

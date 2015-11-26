@@ -22,7 +22,7 @@ public:
     bool isPreComputedCase()
     {
         if (!m_computed) {
-            ASSERT(m_property->type() == NodeType::Identifier);
+            ASSERT(m_property->isIdentifier());
             return true;
         } else {
             return false;
@@ -38,7 +38,7 @@ public:
 
         if (ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty()) {
             if (isPreComputedCase()) {
-                ASSERT(m_property->type() == NodeType::Identifier);
+                ASSERT(m_property->isIdentifier());
                 if (context.m_inCallingExpressionScope && prevHead)
                     codeBlock->pushCode(GetObjectPreComputedCaseAndPushObjectSlowMode(((IdentifierNode *)m_property)->name().string()), context, this);
                 else
@@ -53,7 +53,7 @@ public:
             return;
         }
         if (isPreComputedCase()) {
-            ASSERT(m_property->type() == NodeType::Identifier);
+            ASSERT(m_property->isIdentifier());
             if (context.m_inCallingExpressionScope && prevHead)
                 codeBlock->pushCode(GetObjectPreComputedCaseAndPushObject(((IdentifierNode *)m_property)->name().string()), context, this);
             else
@@ -72,7 +72,7 @@ public:
     {
         if (ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty()) {
             if (isPreComputedCase()) {
-                ASSERT(m_property->type() == NodeType::Identifier);
+                ASSERT(m_property->isIdentifier());
                 codeBlock->pushCode(SetObjectPreComputedCaseSlowMode(((IdentifierNode *)m_property)->name().string()), context, this);
             } else {
                 codeBlock->pushCode(SetObjectSlowMode(), context, this);
@@ -80,7 +80,7 @@ public:
             return;
         }
         if (isPreComputedCase()) {
-            ASSERT(m_property->type() == NodeType::Identifier);
+            ASSERT(m_property->isIdentifier());
             codeBlock->pushCode(SetObjectPreComputedCase(((IdentifierNode *)m_property)->name().string()), context, this);
         } else {
             codeBlock->pushCode(SetObject(), context, this);
@@ -100,7 +100,7 @@ public:
     {
         if (ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty()) {
             if (isPreComputedCase()) {
-                ASSERT(m_property->type() == NodeType::Identifier);
+                ASSERT(m_property->isIdentifier());
                 codeBlock->pushCode(GetObjectWithPeekingPreComputedCaseSlowMode(((IdentifierNode *)m_property)->name().string()), context, this);
             } else {
                 codeBlock->pushCode(GetObjectWithPeekingSlowMode(), context, this);
@@ -108,7 +108,7 @@ public:
             return;
         }
         if (isPreComputedCase()) {
-            ASSERT(m_property->type() == NodeType::Identifier);
+            ASSERT(m_property->isIdentifier());
             codeBlock->pushCode(GetObjectWithPeekingPreComputedCase(((IdentifierNode *)m_property)->name().string()), context, this);
         } else {
             codeBlock->pushCode(GetObjectWithPeeking(), context, this);
@@ -120,6 +120,11 @@ public:
         result += 32;
         m_object->computeRoughCodeBlockSizeInWordSize(result);
         m_property->computeRoughCodeBlockSizeInWordSize(result);
+    }
+
+    virtual bool isMemberExpression()
+    {
+        return true;
     }
 protected:
     Node* m_object; // object: Expression;

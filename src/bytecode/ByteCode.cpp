@@ -171,7 +171,7 @@ void ByteCode::assignOpcodeInAddress()
 }
 
 
-CodeBlock* generateByteCode(ProgramNode* node)
+CodeBlock* generateByteCode(ProgramNode* node, bool shouldGenereateBytecodeInstantly)
 {
     // size_t dummy;
     // node->computeRoughCodeBlockSizeInWordSize(dummy);
@@ -179,6 +179,7 @@ CodeBlock* generateByteCode(ProgramNode* node)
     CodeBlock* block = CodeBlock::create(0);
 
     ByteCodeGenerateContext context;
+    context.m_shouldGenereateByteCodeInstantly = shouldGenereateBytecodeInstantly;
     // unsigned long start = ESVMInstance::tickCount();
     node->generateStatementByteCode(block, context);
     // unsigned long end = ESVMInstance::tickCount();

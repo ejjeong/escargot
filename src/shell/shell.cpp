@@ -15,14 +15,13 @@ void __attribute__((optimize("O0"))) fillStack(size_t siz)
     }
 }
 #endif
-
+/*
 #include <malloc.h>
 
 void* gcm(size_t t)
 {
     if (t>1024) {
         printf("gcm %d\n", (int)t);
-        puts("Asfdasdf");
     }
     return GC_malloc(t);
 }
@@ -30,11 +29,9 @@ void* gca(size_t t)
 {
     if (t>1024) {
         printf("gca %d\n", (int)t);
-        puts("asdf");
     }
     return GC_malloc_atomic(t);
 }
-/*
  static void my_init_hook (void);
  static void *my_malloc_hook (size_t, const void *);
  static void my_free_hook (void*, const void *);
@@ -64,8 +61,8 @@ void* gca(size_t t)
    result = malloc (size);
    old_malloc_hook = __malloc_hook;
    old_free_hook = __free_hook;
-   if (size > 1024)
-       printf ("malloc (%u)\n", (unsigned int) size);
+   // if (size > 1024)
+   //    printf ("malloc (%u)(%p)\n", (unsigned int) size, result);
    __malloc_hook = my_malloc_hook;
    __free_hook = my_free_hook;
    return result;
@@ -76,6 +73,7 @@ void* gca(size_t t)
  {
    __malloc_hook = old_malloc_hook;
    __free_hook = old_free_hook;
+   // printf("free %p\n", ptr);
    free (ptr);
    old_malloc_hook = __malloc_hook;
    old_free_hook = __free_hook;
@@ -83,7 +81,6 @@ void* gca(size_t t)
    __free_hook = my_free_hook;
  }
 */
-
 int main(int argc, char* argv[])
 {
     // printf("%d", (int) sizeof(escargot::ByteCodeExtraData));
@@ -155,7 +152,7 @@ int main(int argc, char* argv[])
         }
     }
     */
-    // fillStack(256*1024);
+    fillStack(256*1024);
 #endif
 #if defined(ENABLE_ESJIT) && !defined(NDEBUG)
     if (argc >= 2 && strcmp(argv[1], "-a") == 0) {

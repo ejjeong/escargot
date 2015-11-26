@@ -11,6 +11,11 @@ public:
         : Node(type)
     {
     }
+
+    virtual bool isStatement()
+    {
+        return true;
+    }
 protected:
 };
 

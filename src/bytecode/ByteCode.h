@@ -188,6 +188,7 @@ struct ByteCodeGenerateContext {
     {
         m_inCallingExpressionScope = false;
         m_isHeadOfMemberExpression = false;
+        m_shouldGenereateByteCodeInstantly = true;
     }
 
     ByteCodeGenerateContext(const ByteCodeGenerateContext& contextBefore)
@@ -196,6 +197,7 @@ struct ByteCodeGenerateContext {
         , m_currentSSARegisterCount(contextBefore.m_currentSSARegisterCount)
         , m_ssaComputeStack(contextBefore.m_ssaComputeStack)
 #endif
+        , m_shouldGenereateByteCodeInstantly(contextBefore.m_shouldGenereateByteCodeInstantly)
         , m_inCallingExpressionScope(contextBefore.m_inCallingExpressionScope)
         , m_offsetToBasePointer(0)
         , m_tryStatementScopeCount(contextBefore.m_tryStatementScopeCount)
@@ -314,6 +316,7 @@ struct ByteCodeGenerateContext {
     std::vector<int> m_ssaComputeStack;
 #endif
 
+    bool m_shouldGenereateByteCodeInstantly;
     bool m_inCallingExpressionScope;
     bool m_isHeadOfMemberExpression;
 
@@ -2413,7 +2416,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 #else
 ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter = 0);
 #endif
-CodeBlock* generateByteCode(ProgramNode* node);
+CodeBlock* generateByteCode(ProgramNode* node, bool shouldGenereateBytecodeInstantly = true);
 inline void iterateByteCode(CodeBlock* codeBlock, std::function<void(CodeBlock* block, unsigned idx, ByteCode* code, Opcode opcode)> fn);
 
 }

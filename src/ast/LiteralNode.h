@@ -14,11 +14,6 @@ public:
         m_value = value;
     }
 
-    ESValue executeExpression(ESVMInstance* instance)
-    {
-        return m_value;
-    }
-
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         codeBlock->pushCode(Push(m_value), context, this);
@@ -27,6 +22,11 @@ public:
     virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
     {
         result += 3;
+    }
+
+    virtual bool isLiteral()
+    {
+        return true;
     }
 
     ESValue value() { return m_value; }

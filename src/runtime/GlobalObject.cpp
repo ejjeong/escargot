@@ -4396,6 +4396,8 @@ void GlobalObject::somePrototypeObjectDefineIndexedProperty()
         m_didSomePrototypeObjectDefineIndexedProperty = true;
         for (unsigned i = 0; i < m_codeBlocks.size() ; i ++) {
             // printf("%p..\n", m_codeBlocks[i]);
+            if (m_codeBlocks[i]->m_isBuiltInFunction)
+                continue;
             iterateByteCode(m_codeBlocks[i], [](CodeBlock* block, unsigned idx, ByteCode* code, Opcode opcode) {
                 switch (opcode) {
                 case GetObjectOpcode:
