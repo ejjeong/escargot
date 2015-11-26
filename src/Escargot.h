@@ -46,7 +46,16 @@
 
 #include <gc_cpp.h>
 #include <gc_allocator.h>
+/*
+void* gcm(size_t t);
+void* gca(size_t t);
 
+#undef GC_MALLOC
+#define GC_MALLOC gcm
+
+#undef GC_MALLOC_ATOMIC
+#define GC_MALLOC_ATOMIC gca
+*/
 template <class GC_Tp>
 class pointer_free_allocator {
 public:
@@ -78,7 +87,7 @@ public:
     // the return value is when GC_n == 0.
     GC_Tp* allocate(size_type GC_n, const void* = 0)
     {
-        return new(PointerFreeGC) GC_Tp[GC_n];
+        return (GC_Tp *)GC_MALLOC_ATOMIC(sizeof(GC_Tp) * GC_n);
     }
 
     // __p is not permitted to be a null pointer.

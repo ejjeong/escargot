@@ -4389,17 +4389,6 @@ void GlobalObject::unregisterCodeBlock(CodeBlock* cb)
     m_codeBlocks.erase(iter);
 }
 
-void GlobalObject::pruneCodeBlocks()
-{
-    for (size_t i = 0 ; i < m_codeBlocks.size() ;) {
-        if (GC_is_heap_ptr(m_codeBlocks[i])) {
-            i++;
-        } else {
-            m_codeBlocks.erase(m_codeBlocks.begin() + i);
-        }
-    }
-}
-
 void GlobalObject::somePrototypeObjectDefineIndexedProperty()
 {
     if (!m_didSomePrototypeObjectDefineIndexedProperty) {

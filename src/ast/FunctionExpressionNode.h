@@ -59,6 +59,7 @@ public:
 #endif
 #else
         cb->m_ast = this;
+        cb->m_params = m_params;
         codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb, false), context, this);
 #endif
     }

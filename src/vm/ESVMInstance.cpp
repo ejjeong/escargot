@@ -121,10 +121,6 @@ ESVMInstance::ESVMInstance()
     m_globalExecutionContext->setThisBinding(m_globalObject);
     m_currentExecutionContext = m_globalExecutionContext;
     GC_set_on_collection_event([](GC_EventType evtType) {
-        if (GC_EVENT_POST_START_WORLD == evtType) {
-            RELEASE_ASSERT(ESVMInstance::currentInstance());
-            ESVMInstance::currentInstance()->globalObject()->pruneCodeBlocks();
-        }
     });
 
     GC_gcollect();

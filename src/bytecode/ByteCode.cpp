@@ -22,8 +22,22 @@ CodeBlock::CodeBlock(size_t roughCodeBlockSizeInWordSize, bool isBuiltInFunction
     m_executeCount = 0;
     m_jitThreshold = ESVMInstance::currentInstance()->m_jitThreshold;
     m_dontJIT = false;
-    m_nanoJITDataAllocator = new(PointerFreeGC) nanojit::Allocator();
+    m_nanoJITDataAllocator = new nanojit::Allocator();
 #endif
+
+    if (!isBuiltInFunction) {
+        GC_REGISTER_FINALIZER_NO_ORDER(this, [](void* obj, void* cd) {
+            if (!((CodeBlock *)obj)->m_isBuiltInFunction)
+                ESVMInstance::currentInstance()->globalObject()->unregisterCodeBlock(((CodeBlock *)obj));
+            ((CodeBlock *)obj)->m_code.clear();
+            ((CodeBlock *)obj)->m_extraData.clear();
+#ifdef ENABLE_ESJIT
+            delete ((CodeBlock *)obj)->m_nanoJITDataAllocator;
+            ((CodeBlock *)obj)->m_byteCodeIndexesHaveToProfile.clear();
+#endif
+        }, NULL, NULL, NULL);
+        ESVMInstance::currentInstance()->globalObject()->registerCodeBlock(this);
+    }
 }
 
 void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, ByteCodeGenerateContext& context)

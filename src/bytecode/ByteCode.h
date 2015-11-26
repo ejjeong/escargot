@@ -393,7 +393,7 @@ struct ByteCodeExtraData {
 #ifdef ENABLE_ESJIT
     int m_targetIndex0;
     int m_targetIndex1;
-    std::vector<int, pointer_free_allocator<int> > m_sourceIndexes;
+    std::vector<int> m_sourceIndexes;
 #endif
     ByteCodeExtraData()
     {
@@ -2236,13 +2236,9 @@ public:
     }
 
     std::vector<char, gc_malloc_allocator<char> > m_code;
-    Node* m_ast;
-#ifndef ENABLE_ESJIT
-    std::vector<ByteCodeExtraData, pointer_free_allocator<ByteCodeExtraData> > m_extraData;
-#else
-    std::vector<ByteCodeExtraData, gc_allocator<ByteCodeExtraData> > m_extraData;
-#endif
+    std::vector<ByteCodeExtraData> m_extraData;
 
+    Node* m_ast;
     InternalAtomicStringVector m_params; // params: [ Pattern ];
     InternalAtomicStringVector m_innerIdentifiers;
     unsigned m_requiredStackSizeInESValueSize;
@@ -2260,7 +2256,7 @@ public:
 #ifdef ENABLE_ESJIT
     JITFunction m_cachedJITFunction;
     bool m_dontJIT;
-    std::vector<unsigned, pointer_free_allocator<unsigned> > m_byteCodeIndexesHaveToProfile;
+    std::vector<unsigned> m_byteCodeIndexesHaveToProfile;
     size_t m_tempRegisterSize;
     size_t m_executeCount;
     size_t m_osrExitCount;

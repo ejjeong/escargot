@@ -331,6 +331,7 @@ public:
     ~PatternDisjunction()
     {
         deleteAllValues(m_alternatives);
+        m_alternatives.clear();
     }
 
     PatternAlternative* addNewAlternative()
@@ -368,14 +369,16 @@ struct TermChain {
     Vector<TermChain> hotTerms;
 };
 
-class YarrPattern : public gc {
+class YarrPattern : public gc_cleanup {
 public:
     YarrPattern(const String& pattern, bool ignoreCase, bool multiline, ErrorCode* error);
 
     ~YarrPattern()
     {
         deleteAllValues(m_disjunctions);
+        m_disjunctions.clear();
         deleteAllValues(m_userCharacterClasses);
+        m_userCharacterClasses.clear();
     }
 
     void reset()

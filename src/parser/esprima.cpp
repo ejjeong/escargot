@@ -727,7 +727,7 @@ struct ParseStatus : public RefCounted<ParseStatus> {
 };
 
 bool isPSMallocInited = false;
-#define PS_POOL_SIZE 256
+#define PS_POOL_SIZE 64
 ParseStatus* psPool[PS_POOL_SIZE];
 size_t psPoolUsage = 0;
 

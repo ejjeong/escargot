@@ -332,7 +332,6 @@ public:
 
     void registerCodeBlock(CodeBlock* cb);
     void unregisterCodeBlock(CodeBlock* cb);
-    void pruneCodeBlocks();
 
 protected:
     void initGlobalObject();
