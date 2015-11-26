@@ -211,42 +211,43 @@ LIns* NativeGenerator::generateOSRExit(size_t currentESIRTargetIndex)
     unsigned writeCount = 0;
     for (int i = m_graph->basicBlockSize() - 1; i >= 0; i--) {
         ESBasicBlock* block = m_graph->basicBlock(i);
-        if (block->instructionSize() > 0 && block->instruction(0)->targetIndex() >= 0 && block->instruction(0)->targetIndex() <= (int)currentESIRTargetIndex) {
-            int j = block->instructionSize() - 1;
-            if (maxStackPos > 0) {
-                for (; j >= 0; j--) {
-                    ESIR* esir = block->instruction(j);
-                    if (esir->targetIndex() < 0)
-                        continue;
-                    unsigned stackPos = m_graph->getOperandStackPos(esir->targetIndex());
-                    if (!(stackPos > 0 && stackPos <= maxStackPos && !writeFlags[stackPos - 1]))
-                        continue;
-                    Type type = m_graph->getOperandType(esir->targetIndex());
-                    LIns* lIns = m_tmpToLInsMapping[esir->targetIndex()];
-                    if (lIns) {
-                        LIns* boxedLIns = boxESValue(lIns, type);
-                        size_t bufOffset = (stackPos-1) * sizeof(ESValue);
-                        LIns* stackBuf = m_out->insLoad(LIR_ldp, m_contextP, ExecutionContext::offsetofStackBuf(), 1, LOAD_NORMAL);
-                        m_out->insStore(LIR_ste, boxedLIns, stackBuf, bufOffset, 1);
-                        writeFlags[stackPos - 1] = true;
-                        writeCount++;
-                    }
-                    if (writeCount == maxStackPos) {
-                        LIns* maxStackPosLIns = m_out->insImmI(maxStackPos);
-                        m_out->insStore(LIR_sti, maxStackPosLIns, m_contextP, ExecutionContext::offsetofStackPos(), 1);
-                        isDone = true;
-                        break;
-                    }
+        int j = block->instructionSize() - 1;
+        if (maxStackPos > 0) {
+            for (; j >= 0; j--) {
+                ESIR* esir = block->instruction(j);
+                if (esir->targetIndex() < 0) {
+                    continue;
                 }
-            } else {
-                LIns* maxStackPosLIns = m_out->insImmI(maxStackPos);
-                m_out->insStore(LIR_sti, maxStackPosLIns, m_contextP, ExecutionContext::offsetofStackPos(), 1);
-                isDone = true;
+                unsigned stackPos = m_graph->getOperandStackPos(esir->targetIndex());
+                if (!(stackPos > 0 && stackPos <= maxStackPos && !writeFlags[stackPos - 1])) {
+                    continue;
+                }
+                Type type = m_graph->getOperandType(esir->targetIndex());
+                LIns* lIns = m_tmpToLInsMapping[esir->targetIndex()];
+                if (lIns) {
+                    LIns* boxedLIns = boxESValue(lIns, type);
+                    size_t bufOffset = (stackPos-1) * sizeof(ESValue);
+                    LIns* stackBuf = m_out->insLoad(LIR_ldp, m_contextP, ExecutionContext::offsetofStackBuf(), 1, LOAD_NORMAL);
+                    m_out->insStore(LIR_ste, boxedLIns, stackBuf, bufOffset, 1);
+                    writeFlags[stackPos - 1] = true;
+                    writeCount++;
+                }
+                if (writeCount == maxStackPos) {
+                    LIns* maxStackPosLIns = m_out->insImmI(maxStackPos);
+                    m_out->insStore(LIR_sti, maxStackPosLIns, m_contextP, ExecutionContext::offsetofStackPos(), 1);
+                    isDone = true;
+                    break;
+                }
             }
-            if (isDone)
-                break;
+        } else {
+            LIns* maxStackPosLIns = m_out->insImmI(maxStackPos);
+            m_out->insStore(LIR_sti, maxStackPosLIns, m_contextP, ExecutionContext::offsetofStackPos(), 1);
+            isDone = true;
         }
+        if (isDone)
+            break;
     }
+    ASSERT(writeCount == maxStackPos);
 
     LIns* bytecode = m_out->insImmI(currentESIRTargetIndex);
     LIns* boxedIndex = boxESValue(bytecode, TypeInt32);
