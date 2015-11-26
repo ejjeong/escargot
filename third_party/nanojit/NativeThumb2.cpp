@@ -2844,7 +2844,7 @@ RegAlloc::nHint(LIns* ins)
 void
 Assembler::asm_qjoin(LIns *ins)
 {
-#if defined(ESCARGOT) && defined(NJ_ARM_EABI_HARD_FLOAT)
+#if !defined(ESCARGOT) || !defined(NJ_ARM_EABI_HARD_FLOAT)
     int d = findMemFor(ins);
     NanoAssert(d);
 #endif

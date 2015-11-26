@@ -59,7 +59,7 @@ ifeq ($(BUILD_TYPE), jit)
 	# ARCH-dependent settings
 	####################################
 
-	ifeq ($(TARGET_ARCH), x64)
+	ifeq ($(TARGET_ARCH), x86_64)
 		TARGET_CPU=x86_64
 		LOCAL_CXXFLAGS += -DAVMPLUS_64BIT
 		LOCAL_CXXFLAGS += -DAVMPLUS_AMD64
