@@ -19,5 +19,5 @@ export CC="arm-linux-androideabi-gcc"
 export LD="arm-linux-androideabi-ld"
 export PATH=$ANDROID_NDK_STAND_ALONE/bin:$PATH
 
-../configure --enable-threads=posix --enable-parallel-mark --disable-gc-debug --build=arm-linux-androideabi --target=arm-linux-androideabi --with-sysroot=$ANDROID_NDK_STAND_ALONE --host=x86_64-unknown-linux-gnu CFLAGS=''
+../configure --enable-threads=posix --disable-parallel-mark --disable-gc-debug --build=arm-linux-androideabi --target=arm-linux-androideabi --with-sysroot=$ANDROID_NDK_STAND_ALONE --host=x86_64-unknown-linux-gnu CFLAGS=''
 make

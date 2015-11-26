@@ -198,7 +198,7 @@
 #define PACKAGE_VERSION "7.5.0"
 
 /* Define to enable parallel marking. */
-#define PARALLEL_MARK 1
+/* #undef PARALLEL_MARK 1*/
 
 /* If defined, redirect free to this function. */
 /* #undef REDIRECT_FREE */
