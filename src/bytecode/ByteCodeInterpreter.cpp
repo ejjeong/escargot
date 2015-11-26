@@ -90,7 +90,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         fflush(stdout);
     }
 
-    if (currentCode->m_orgOpcode < 0 || currentCode->m_orgOpcode > OpcodeKindEnd) {
+    if (currentCode->m_orgOpcode > OpcodeKindEnd) {
         printf("Error: unknown opcode\n");
         RELEASE_ASSERT_NOT_REACHED();
     } else {

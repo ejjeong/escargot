@@ -1379,7 +1379,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
     if (LIKELY(callee.isESPointer() && callee.asESPointer()->isESFunctionObject())) {
         ExecutionContext* currentContext = instance->currentExecutionContext();
         ESFunctionObject* fn = callee.asESPointer()->asESFunctionObject();
-        CodeBlock * const cb = fn->codeBlock();
+        CodeBlock* const cb = fn->codeBlock();
 #ifndef ESCARGOT_INSTANT_BYTECODE_GENERATION
         if (UNLIKELY(!cb->m_code.size())) {
             FunctionNode* node = (FunctionNode *)cb->m_ast;

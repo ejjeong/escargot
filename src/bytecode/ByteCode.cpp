@@ -25,19 +25,17 @@ CodeBlock::CodeBlock(size_t roughCodeBlockSizeInWordSize, bool isBuiltInFunction
     m_nanoJITDataAllocator = new nanojit::Allocator();
 #endif
 
-    if (!isBuiltInFunction) {
-        GC_REGISTER_FINALIZER_NO_ORDER(this, [](void* obj, void* cd) {
-            if (!((CodeBlock *)obj)->m_isBuiltInFunction)
-                ESVMInstance::currentInstance()->globalObject()->unregisterCodeBlock(((CodeBlock *)obj));
-            ((CodeBlock *)obj)->m_code.clear();
-            ((CodeBlock *)obj)->m_extraData.clear();
+    GC_REGISTER_FINALIZER_NO_ORDER(this, [] (void* obj, void* cd) {
+        if (ESVMInstance::currentInstance()/* FIXME(add is ESVMInstance destroyed) */)
+            ESVMInstance::currentInstance()->globalObject()->unregisterCodeBlock(((CodeBlock *)obj));
+        ((CodeBlock *)obj)->m_code.clear();
+        ((CodeBlock *)obj)->m_extraData.clear();
 #ifdef ENABLE_ESJIT
-            delete ((CodeBlock *)obj)->m_nanoJITDataAllocator;
-            ((CodeBlock *)obj)->m_byteCodeIndexesHaveToProfile.clear();
+        delete ((CodeBlock *)obj)->m_nanoJITDataAllocator;
+        ((CodeBlock *)obj)->m_byteCodeIndexesHaveToProfile.clear();
 #endif
-        }, NULL, NULL, NULL);
-        ESVMInstance::currentInstance()->globalObject()->registerCodeBlock(this);
-    }
+    }, NULL, NULL, NULL);
+    ESVMInstance::currentInstance()->globalObject()->registerCodeBlock(this);
 }
 
 void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, ByteCodeGenerateContext& context)
@@ -45,9 +43,13 @@ void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, B
     Opcode op = (Opcode)(size_t)code->m_opcodeInAddress;
     data->m_codePosition = m_code.size();
     data->m_baseRegisterIndex = context.m_baseRegisterCount;
-    data->m_registerIncrementCount = pushCountFromOpcode(code, op);
-    data->m_registerDecrementCount = popCountFromOpcode(code, op);
-    context.m_baseRegisterCount = context.m_baseRegisterCount + data->m_registerIncrementCount - data->m_registerDecrementCount;
+    char registerIncrementCount = pushCountFromOpcode(code, op);
+    char registerDecrementCount = popCountFromOpcode(code, op);
+#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
+    data->m_registerIncrementCount = registerIncrementCount;
+    data->m_registerDecrementCount = registerDecrementCount;
+#endif
+    context.m_baseRegisterCount = context.m_baseRegisterCount + registerIncrementCount - registerDecrementCount;
     ASSERT(context.m_baseRegisterCount >= 0);
 
 #ifdef ENABLE_ESJIT
@@ -111,13 +113,13 @@ void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, B
 
         std::reverse(data->m_sourceIndexes.begin(), data->m_sourceIndexes.end());
 
-        if (data->m_registerIncrementCount == 0) {
-        } else if (data->m_registerIncrementCount == 1) {
+        if (registerIncrementCount == 0) {
+        } else if (registerIncrementCount == 1) {
             int c = context.m_currentSSARegisterCount++;
             context.m_ssaComputeStack.push_back(c);
             data->m_targetIndex0 = c;
         } else {
-            ASSERT(data->m_registerIncrementCount == 2);
+            ASSERT(registerIncrementCount == 2);
             int c = context.m_currentSSARegisterCount++;
             context.m_ssaComputeStack.push_back(c);
             data->m_targetIndex0 = c;

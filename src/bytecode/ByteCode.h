@@ -151,7 +151,7 @@ enum Opcode {
     FOR_EACH_BYTECODE_OP(DECLARE_BYTECODE)
 #undef DECLARE_BYTECODE
     OpcodeKindEnd
-};
+} __attribute__((packed));
 
 struct OpcodeTable {
     void* m_table[OpcodeKindEnd];
@@ -383,12 +383,18 @@ public:
 #endif
 };
 
+#ifndef ENABLE_ESJIT
+struct __attribute__((__packed__)) ByteCodeExtraData {
+#else
 struct ByteCodeExtraData {
-    Opcode m_opcode;
+#endif
     size_t m_codePosition;
-    int m_baseRegisterIndex;
-    int m_registerIncrementCount; // stack push count
-    int m_registerDecrementCount; // stack pop count
+    short m_baseRegisterIndex;
+    Opcode m_opcode;
+#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
+    char m_registerIncrementCount; // stack push count
+    char m_registerDecrementCount; // stack pop count
+#endif
 
 #ifdef ENABLE_ESJIT
     int m_targetIndex0;
@@ -400,8 +406,10 @@ struct ByteCodeExtraData {
         m_opcode = (Opcode)0;
         m_codePosition = SIZE_MAX;
         m_baseRegisterIndex = 0;
+#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
         m_registerIncrementCount = 0;
         m_registerDecrementCount = 0;
+#endif
 #ifdef ENABLE_ESJIT
         m_targetIndex0 = -1;
         m_targetIndex1 = -1;

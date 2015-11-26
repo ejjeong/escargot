@@ -20,16 +20,16 @@ void __attribute__((optimize("O0"))) fillStack(size_t siz)
 
 void* gcm(size_t t)
 {
-    if(t>1024) {
-        printf("gcm %d\n",(int)t);
+    if (t>1024) {
+        printf("gcm %d\n", (int)t);
         puts("Asfdasdf");
     }
     return GC_malloc(t);
 }
 void* gca(size_t t)
 {
-    if(t>1024) {
-        printf("gca %d\n",(int)t);
+    if (t>1024) {
+        printf("gca %d\n", (int)t);
         puts("asdf");
     }
     return GC_malloc_atomic(t);
@@ -86,6 +86,7 @@ void* gca(size_t t)
 
 int main(int argc, char* argv[])
 {
+    // printf("%d", (int) sizeof(escargot::ByteCodeExtraData));
     // my_init_hook();
     /*    test* ptr = new test;
     char* pool = (char *)GC_malloc(1024);
@@ -154,7 +155,7 @@ int main(int argc, char* argv[])
         }
     }
     */
-    fillStack(256*1024);
+    // fillStack(256*1024);
 #endif
 #if defined(ENABLE_ESJIT) && !defined(NDEBUG)
     if (argc >= 2 && strcmp(argv[1], "-a") == 0) {
@@ -280,5 +281,7 @@ int main(int argc, char* argv[])
     escargot::ESScriptParser::dumpStats();
 #endif
     ES->exit();
+    // delete ES;
+    // GC_gcollect();
     return 0;
 }

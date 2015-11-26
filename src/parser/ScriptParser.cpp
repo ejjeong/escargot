@@ -396,6 +396,7 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16strin
     std::vector<InternalAtomicStringVector *> stack;
     stack.push_back(&identifierInCurrentContext);
     postAnalysisFunction(programNode, stack, NULL);
+    knownGlobalNames.clear();
     return programNode;
 }
 
