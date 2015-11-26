@@ -29,24 +29,6 @@ struct AlignmentTestStruct
 #define JS_ALIGNMENT_OF(t_) \
   (sizeof(AlignmentTestStruct<t_>) - sizeof(t_))
 
-//#include "jsstr.h"
-//#include "jsprvtd.h"
-//#include "vm/String.h"
-//#include "assembler/wtf/Platform.h"
-//#include "assembler/jit/ExecutableAllocator.h"
-//#include "js/TemplateLib.h"
-
-template <typename T, typename U> struct IsSameType {
-    static const bool value = false;
-};
-
-template <typename T> struct IsSameType<T, T> {
-    static const bool value = true;
-};
-
-#define CRASH RELEASE_ASSERT_NOT_REACHED
-#include "CheckedArithmetic.h"
-
 /*
  * Basic type definitions.
  */

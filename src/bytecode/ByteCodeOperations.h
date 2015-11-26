@@ -85,31 +85,16 @@ ALWAYS_INLINE ESValue plusOperation(ESValue* left, ESValue* right)
 {
     ESValue ret(ESValue::ESForceUninitialized);
     if (left->isInt32() && right->isInt32()) {
-#ifdef ESCARGOT_32
         int32_t a = left->asInt32();
         int32_t b = right->asInt32();
-        if (UNLIKELY(a > 0 && b > std::numeric_limits<int32_t>::max() - a)) {
-            // overflow
-            ret = ESValue(ESValue::EncodeAsDouble, (double)a + (double)b);
-        } else if (UNLIKELY(a < 0 && b < std::numeric_limits<int32_t>::min() - a)) {
-            // underflow
-            ret = ESValue(ESValue::EncodeAsDouble, (double)a + (double)b);
+        int32_t c = right->asInt32();
+        bool result = ArithmeticOperations<int32_t, int32_t, int32_t>::add(a, b, c);
+        if (LIKELY(result)) {
+            ret = ESValue(c);
         } else {
-            ret = ESValue(a + b);
+            ret = ESValue(ESValue::EncodeAsDouble, (double)a + (double)b);
         }
         return ret;
-#else
-        int64_t a = left->asInt32();
-        int64_t b = right->asInt32();
-        a = a + b;
-
-        if (a > std::numeric_limits<int32_t>::max() || a < std::numeric_limits<int32_t>::min()) {
-            ret = ESValue(ESValue::EncodeAsDouble, a);
-        } else {
-            ret = ESValue((int32_t)a);
-        }
-        return ret;
-#endif
     } else if (left->isNumber() && right->isNumber()) {
         ret = ESValue(left->asNumber() + right->asNumber());
         return ret;
@@ -124,15 +109,16 @@ ALWAYS_INLINE ESValue minusOperation(ESValue* left, ESValue* right)
     // http://www.ecma-international.org/ecma-262/5.1/#sec-11.6.2
     ESValue ret(ESValue::ESForceUninitialized);
     if (left->isInt32() && right->isInt32()) {
-        int64_t a = left->asInt32();
-        int64_t b = right->asInt32();
-        a = a - b;
-
-        if (a > std::numeric_limits<int32_t>::max() || a < std::numeric_limits<int32_t>::min()) {
-            ret = ESValue(ESValue::EncodeAsDouble, a);
+        int32_t a = left->asInt32();
+        int32_t b = right->asInt32();
+        int32_t c = right->asInt32();
+        bool result = ArithmeticOperations<int32_t, int32_t, int32_t>::sub(a, b, c);
+        if (LIKELY(result)) {
+            ret = ESValue(c);
         } else {
-            ret = ESValue((int32_t)a);
+            ret = ESValue(ESValue::EncodeAsDouble, (double)a - (double)b);
         }
+        return ret;
     } else {
         ret = ESValue(left->toNumber() - right->toNumber());
     }

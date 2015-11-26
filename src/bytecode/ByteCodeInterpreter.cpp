@@ -458,7 +458,20 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* right = POP(stack, bp);
         ESValue* left = POP(stack, bp);
-        PUSH(stack, topOfStack, ESValue(left->toNumber() * right->toNumber()));
+
+        if (left->isInt32() && right->isInt32()) {
+            int32_t a = left->asInt32();
+            int32_t b = right->asInt32();
+            int32_t c = right->asInt32();
+            bool result = ArithmeticOperations<int32_t, int32_t, int32_t>::multiply(a, b, c);
+            if (LIKELY(result)) {
+                PUSH(stack, topOfStack, ESValue(c));
+            } else {
+                PUSH(stack, topOfStack, ESValue(left->toNumber() * right->toNumber()));
+            }
+        } else {
+            PUSH(stack, topOfStack, ESValue(left->toNumber() * right->toNumber()));
+        }
         executeNextCode<Multiply>(programCounter);
         NEXT_INSTRUCTION();
     }

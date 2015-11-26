@@ -299,6 +299,10 @@ inline bool operator!=(const gc_malloc_allocator<GC_T1>&, const gc_malloc_alloca
 #define ESCARGOT_LOG_ERROR(...) __android_log_print(ANDROID_LOG_ERROR, "Escargot", __VA_ARGS__);
 #endif
 
+#ifndef CRASH
+#define CRASH RELEASE_ASSERT_NOT_REACHED
+#endif
+
 #if defined(NDEBUG)
 #define ASSERT(assertion) ((void)0)
 #define ASSERT_NOT_REACHED() ((void)0)
@@ -365,6 +369,7 @@ typedef double ESValueInDouble;
 extern "C" { typedef ESValueInDouble (*JITFunction)(escargot::ESVMInstance*); }
 #endif
 
+#include "util/CheckedArithmetic.h"
 #include "runtime/ESValue.h"
 
 #endif
