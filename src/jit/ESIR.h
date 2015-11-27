@@ -369,6 +369,7 @@ public:
     {
         out << "tmp" << m_targetIndex << ": ";
         ESIR::dump(out);
+        out << " tmp" << m_sourceIndex;
     }
 #endif
 

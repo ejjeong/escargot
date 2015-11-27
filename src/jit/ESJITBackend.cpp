@@ -1433,7 +1433,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
         {
             INIT_ESIR(GetEnumerablObjectData);
             LIns* enumerableObjectData = getTmpMapping(irGetEnumerablObjectData->sourceIndex());
-            LIns* boxedEnumerableObjectData = boxESValue(enumerableObjectData, TypeObject);
+            LIns* boxedEnumerableObjectData = boxESValue(enumerableObjectData, m_graph->getOperandType(irGetEnumerablObjectData->sourceIndex()));
             LIns* args[] = {boxedEnumerableObjectData};
             LIns* data = m_out->insCall(&getEnumerablObjectDataCallInfo, args);
             irGetEnumerablObjectData->getJumpIR()->targetBlock()->addInsToExtendLife(data);
