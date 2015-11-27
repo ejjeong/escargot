@@ -391,8 +391,10 @@ struct __attribute__((__packed__)) ByteCodeExtraData {
 #else
 struct ByteCodeExtraData {
 #endif
+#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
     size_t m_codePosition;
     short m_baseRegisterIndex;
+#endif
     Opcode m_opcode;
 #if defined(ENABLE_ESJIT) || !defined(NDEBUG)
     char m_registerIncrementCount; // stack push count
@@ -407,8 +409,11 @@ struct ByteCodeExtraData {
     ByteCodeExtraData()
     {
         m_opcode = (Opcode)0;
+#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
         m_codePosition = SIZE_MAX;
         m_baseRegisterIndex = 0;
+#endif
+
 #if defined(ENABLE_ESJIT) || !defined(NDEBUG)
         m_registerIncrementCount = 0;
         m_registerDecrementCount = 0;

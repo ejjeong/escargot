@@ -16,6 +16,8 @@ public:
         m_isSimpleCase = false;
     }
 
+    virtual NodeType type() { return NodeType::UpdateExpressionIncrementPostfix; }
+
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         if (m_isSimpleCase) {

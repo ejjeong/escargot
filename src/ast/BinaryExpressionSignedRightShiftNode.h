@@ -14,6 +14,8 @@ public:
         m_right = (ExpressionNode*)right;
     }
 
+    virtual NodeType type() { return NodeType::BinaryExpressionSignedRightShift; }
+
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_left->generateExpressionByteCode(codeBlock, context);

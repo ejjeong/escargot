@@ -14,6 +14,8 @@ public:
         m_argument = argument;
     }
 
+    virtual NodeType type() { return NodeType::ReturnStatement; }
+
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         if (m_argument) {

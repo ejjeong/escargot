@@ -16,6 +16,8 @@ public:
         m_alternate = (StatementNode*) alternate;
     }
 
+    virtual NodeType type() { return NodeType::IfStatement; }
+
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         if (!m_alternate) {

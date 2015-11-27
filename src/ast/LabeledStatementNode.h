@@ -15,6 +15,8 @@ public:
         m_label = label;
     }
 
+    virtual NodeType type() { return NodeType::LabeledStatement; }
+
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         size_t start = codeBlock->currentCodeSize();

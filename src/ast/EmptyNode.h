@@ -12,6 +12,8 @@ public:
     {
     }
 
+    virtual NodeType type() { return NodeType::Empty; }
+
     virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)
     {
     }

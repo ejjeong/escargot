@@ -14,6 +14,8 @@ public:
         m_argument = argument;
     }
 
+    virtual NodeType type() { return NodeType::UnaryExpressionBitwiseNot; }
+
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_argument->generateExpressionByteCode(codeBlock, context);

@@ -18,6 +18,8 @@ public:
         m_properties = properties;
     }
 
+    virtual NodeType type() { return NodeType::ObjectExpression; }
+
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         codeBlock->pushCode(CreateObject(m_properties.size()), context, this);

@@ -13,6 +13,8 @@ public:
     {
     }
 
+    virtual NodeType type() { return NodeType::EmptyStatement; }
+
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
     }

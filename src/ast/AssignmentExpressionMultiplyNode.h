@@ -19,6 +19,8 @@ public:
         m_right = right;
     }
 
+    virtual NodeType type() { return NodeType::AssignmentExpressionMultiply; }
+
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_left->generateResolveAddressByteCode(codeBlock, context);

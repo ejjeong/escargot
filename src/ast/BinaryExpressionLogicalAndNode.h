@@ -14,6 +14,8 @@ public:
         m_right = (ExpressionNode*)right;
     }
 
+    virtual NodeType type() { return NodeType::BinaryExpressionLogicalAnd; }
+
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
 #ifdef ENABLE_ESJIT

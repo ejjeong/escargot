@@ -15,6 +15,8 @@ public:
         m_declarations = decl;
     }
 
+    virtual NodeType type() { return NodeType::VariableDeclaration; }
+
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         for (unsigned i = 0; i < m_declarations.size() ; i ++) {

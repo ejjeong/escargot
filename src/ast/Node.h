@@ -121,7 +121,9 @@ class Node : public gc {
 protected:
     Node(NodeType type)
     {
+#ifndef NDEBUG
         m_nodeType = type;
+#endif
     }
 public:
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
@@ -171,7 +173,7 @@ public:
     {
     }
 #endif
-    ALWAYS_INLINE const NodeType& type() { return m_nodeType; }
+    virtual NodeType type() { RELEASE_ASSERT_NOT_REACHED(); }
 
     /*
     inline void* operator new(size_t size)
@@ -206,8 +208,8 @@ public:
         return false;
     }
 protected:
-    NodeType m_nodeType;
 #ifndef NDEBUG
+    NodeType m_nodeType;
     SourceLocation m_sourceLocation;
 #endif
 };

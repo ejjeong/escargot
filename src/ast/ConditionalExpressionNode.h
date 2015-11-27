@@ -16,6 +16,8 @@ public:
         m_alternate = (ExpressionNode*) alternate;
     }
 
+    virtual NodeType type() { return NodeType::ConditionalExpression; }
+
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
 #ifdef ENABLE_ESJIT

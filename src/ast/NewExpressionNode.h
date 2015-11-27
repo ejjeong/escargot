@@ -15,6 +15,8 @@ public:
         m_arguments = arguments;
     }
 
+    virtual NodeType type() { return NodeType::NewExpression; }
+
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_callee->generateExpressionByteCode(codeBlock, context);

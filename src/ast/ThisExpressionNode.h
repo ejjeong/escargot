@@ -10,6 +10,8 @@ public:
     ThisExpressionNode()
         : ExpressionNode(NodeType::ThisExpression) { }
 
+    virtual NodeType type() { return NodeType::ThisExpression; }
+
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         codeBlock->pushCode(This(), context, this);

@@ -15,6 +15,8 @@ public:
         m_body = body;
     }
 
+    virtual NodeType type() { return NodeType::BlockStatement; }
+
 
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {

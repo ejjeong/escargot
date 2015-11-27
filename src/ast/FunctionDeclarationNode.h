@@ -20,6 +20,8 @@ public:
         m_isExpression = false;
     }
 
+    virtual NodeType type() { return NodeType::FunctionDeclaration; }
+
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         // size_t myResult = 0;

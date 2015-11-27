@@ -15,6 +15,8 @@ public:
         m_nativeFunction = fn;
     }
 
+    virtual NodeType type() { return NodeType::NativeFunction; }
+
 protected:
     NativeFunctionNodeFunctionType m_nativeFunction;
 };

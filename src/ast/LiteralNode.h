@@ -14,6 +14,8 @@ public:
         m_value = value;
     }
 
+    virtual NodeType type() { return NodeType::Literal; }
+
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         codeBlock->pushCode(Push(m_value), context, this);

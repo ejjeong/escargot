@@ -14,6 +14,8 @@ public:
         m_argument = argument;
     }
 
+    virtual NodeType type() { return NodeType::UnaryExpressionTypeOf; }
+
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         if (m_argument->isIdentifier() && !((IdentifierNode *)m_argument)->canUseFastAccess()) {

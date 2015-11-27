@@ -15,6 +15,8 @@ public:
         m_argument = (ExpressionNode*)argument;
     }
 
+    virtual NodeType type() { return NodeType::UpdateExpressionDecrementPrefix; }
+
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_argument->generateResolveAddressByteCode(codeBlock, context);

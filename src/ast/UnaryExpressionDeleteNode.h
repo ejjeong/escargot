@@ -14,6 +14,9 @@ public:
         m_argument = argument;
     }
 
+    virtual NodeType type() { return NodeType::UnaryExpressionDelete; }
+
+
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         if (m_argument->isMemberExpression()) {

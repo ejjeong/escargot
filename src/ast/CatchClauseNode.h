@@ -20,6 +20,8 @@ public:
         m_body = (BlockStatementNode*) body;
     }
 
+    virtual NodeType type() { return NodeType::CatchClause; }
+
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_body->generateStatementByteCode(codeBlock, context);

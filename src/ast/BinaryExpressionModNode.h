@@ -12,8 +12,9 @@ public:
     {
         m_left = (ExpressionNode*)left;
         m_right = (ExpressionNode*)right;
-
     }
+
+    virtual NodeType type() { return NodeType::BinaryExpressionMod; }
 
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {

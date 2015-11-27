@@ -18,6 +18,8 @@ public:
         m_init = init;
     }
 
+    virtual NodeType type() { return NodeType::VariableDeclarator; }
+
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         ASSERT(m_id->isIdentifier());

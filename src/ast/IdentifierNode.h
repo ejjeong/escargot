@@ -21,6 +21,9 @@ public:
         m_canUseGlobalFastAccess = false;
         m_globalFastAccessIndex = SIZE_MAX;
     }
+
+    virtual NodeType type() { return NodeType::Identifier; }
+
     IdentifierNode* clone()
     {
         IdentifierNode* nd = new IdentifierNode(m_name);

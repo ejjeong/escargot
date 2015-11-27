@@ -19,6 +19,8 @@ public:
         m_finalizer = (BlockStatementNode*) finalizer;
     }
 
+    virtual NodeType type() { return NodeType::TryStatement; }
+
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         context.m_tryStatementScopeCount++;

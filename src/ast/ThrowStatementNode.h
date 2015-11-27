@@ -15,6 +15,8 @@ public:
         m_argument = argument;
     }
 
+    virtual NodeType type() { return NodeType::ThrowStatement; }
+
 
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {

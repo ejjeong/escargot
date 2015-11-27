@@ -20,6 +20,8 @@ public:
         m_lexical = lexical;
     }
 
+    virtual NodeType type() { return NodeType::SwitchStatement; }
+
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         ByteCodeGenerateContext newContext(context);

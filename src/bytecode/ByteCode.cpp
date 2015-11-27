@@ -41,8 +41,10 @@ CodeBlock::CodeBlock(size_t roughCodeBlockSizeInWordSize, bool isBuiltInFunction
 void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, ByteCodeGenerateContext& context)
 {
     Opcode op = (Opcode)(size_t)code->m_opcodeInAddress;
+#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
     data->m_codePosition = m_code.size();
     data->m_baseRegisterIndex = context.m_baseRegisterCount;
+#endif
     char registerIncrementCount = pushCountFromOpcode(code, op);
     char registerDecrementCount = popCountFromOpcode(code, op);
 #if defined(ENABLE_ESJIT) || !defined(NDEBUG)
@@ -51,6 +53,7 @@ void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, B
 #endif
     context.m_baseRegisterCount = context.m_baseRegisterCount + registerIncrementCount - registerDecrementCount;
     ASSERT(context.m_baseRegisterCount >= 0);
+
 
 #ifdef ENABLE_ESJIT
     if (op == AllocPhiOpcode) {

@@ -21,6 +21,8 @@ public:
         m_kind = kind;
     }
 
+    virtual NodeType type() { return NodeType::Property; }
+
     Node* key()
     {
         return m_key;

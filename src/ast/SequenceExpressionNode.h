@@ -15,6 +15,8 @@ public:
         m_expressions = expressions;
     }
 
+    virtual NodeType type() { return NodeType::SequenceExpression; }
+
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         for (unsigned i = 0; i < m_expressions.size(); i++) {

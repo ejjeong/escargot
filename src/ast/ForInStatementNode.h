@@ -18,6 +18,8 @@ public:
         m_each = each;
     }
 
+    virtual NodeType type() { return NodeType::ForInStatement; }
+
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         ByteCodeGenerateContext newContext(context);

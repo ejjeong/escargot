@@ -17,6 +17,8 @@ public:
         m_consequent = consequent;
     }
 
+    virtual NodeType type() { return NodeType::SwitchCase; }
+
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         for (unsigned i = 0; i < m_consequent.size(); i++)

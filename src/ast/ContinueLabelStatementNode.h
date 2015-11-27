@@ -15,6 +15,8 @@ public:
         m_label = label;
     }
 
+    virtual NodeType type() { return NodeType::ContinueLabelStatement; }
+
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         codeBlock->pushCode(Jump(SIZE_MAX), context, this);

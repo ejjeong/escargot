@@ -14,6 +14,8 @@ public:
         m_elements = elements;
     }
 
+    virtual NodeType type() { return NodeType::ArrayExpression; }
+
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         unsigned len = m_elements.size();

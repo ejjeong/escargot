@@ -17,6 +17,8 @@ public:
         m_arguments = arguments;
     }
 
+    virtual NodeType type() { return NodeType::CallExpression; }
+
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         if (m_callee->isIdentifier()) {

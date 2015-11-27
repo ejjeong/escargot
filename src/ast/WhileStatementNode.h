@@ -16,6 +16,9 @@ public:
         m_body = (StatementNode*) body;
     }
 
+
+    virtual NodeType type() { return NodeType::WhileStatement; }
+
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         ByteCodeGenerateContext newContext(context);

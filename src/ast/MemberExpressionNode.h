@@ -19,6 +19,8 @@ public:
         m_computed = computed;
     }
 
+    virtual NodeType type() { return NodeType::MemberExpression; }
+
     bool isPreComputedCase()
     {
         if (!m_computed) {

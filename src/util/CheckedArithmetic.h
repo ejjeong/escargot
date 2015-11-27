@@ -26,8 +26,8 @@
 #ifndef CheckedArithmetic_h
 #define CheckedArithmetic_h
 
-//#include <wtf/Assertions.h>
-//#include <wtf/TypeTraits.h>
+// #include <wtf/Assertions.h>
+// #include <wtf/TypeTraits.h>
 
 #include <limits>
 #include <stdint.h>
@@ -238,7 +238,7 @@ template <typename LHS, typename RHS, typename ResultType> struct ArithmeticOper
         return (lhs ^ rhs) >= 0;
     }
 
-    static inline bool add(LHS lhs, RHS rhs, ResultType& result) WARN_UNUSED_RETURN
+    static inline bool add(LHS lhs, RHS rhs, ResultType& result)
     {
         if (signsMatch(lhs, rhs)) {
             if (lhs >= 0) {
@@ -254,7 +254,7 @@ template <typename LHS, typename RHS, typename ResultType> struct ArithmeticOper
         return true;
     }
 
-    static inline bool sub(LHS lhs, RHS rhs, ResultType& result) WARN_UNUSED_RETURN
+    static inline bool sub(LHS lhs, RHS rhs, ResultType& result)
     {
         if (!signsMatch(lhs, rhs)) {
             if (lhs >= 0) {
@@ -269,7 +269,7 @@ template <typename LHS, typename RHS, typename ResultType> struct ArithmeticOper
         return true;
     }
 
-    static inline bool multiply(LHS lhs, RHS rhs, ResultType& result) WARN_UNUSED_RETURN
+    static inline bool multiply(LHS lhs, RHS rhs, ResultType& result)
     {
         if (signsMatch(lhs, rhs)) {
             if (lhs >= 0) {
@@ -300,7 +300,7 @@ template <typename LHS, typename RHS, typename ResultType> struct ArithmeticOper
 
 template <typename LHS, typename RHS, typename ResultType> struct ArithmeticOperations<LHS, RHS, ResultType, false, false> {
     // LHS and RHS are unsigned types so bounds checks are nice and easy
-    static inline bool add(LHS lhs, RHS rhs, ResultType& result) WARN_UNUSED_RETURN
+    static inline bool add(LHS lhs, RHS rhs, ResultType& result)
     {
         ResultType temp = lhs + rhs;
         if (temp < lhs)
@@ -309,7 +309,7 @@ template <typename LHS, typename RHS, typename ResultType> struct ArithmeticOper
         return true;
     }
 
-    static inline bool sub(LHS lhs, RHS rhs, ResultType& result) WARN_UNUSED_RETURN
+    static inline bool sub(LHS lhs, RHS rhs, ResultType& result)
     {
         ResultType temp = lhs - rhs;
         if (temp > lhs)
@@ -318,7 +318,7 @@ template <typename LHS, typename RHS, typename ResultType> struct ArithmeticOper
         return true;
     }
 
-    static inline bool multiply(LHS lhs, RHS rhs, ResultType& result) WARN_UNUSED_RETURN
+    static inline bool multiply(LHS lhs, RHS rhs, ResultType& result)
     {
         ResultType temp = lhs * rhs;
         if (temp < lhs)
@@ -540,7 +540,7 @@ public:
         return m_value;
     }
     
-    bool safeGet(T& value) const WARN_UNUSED_RETURN
+    bool safeGet(T& value) const
     {
         value = m_value;
         return this->hasOverflowed();

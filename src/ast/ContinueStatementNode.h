@@ -13,6 +13,8 @@ public:
     {
     }
 
+    virtual NodeType type() { return NodeType::ContinueStatement; }
+
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         codeBlock->pushCode(Jump(SIZE_MAX), context, this);

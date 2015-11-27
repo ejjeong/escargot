@@ -15,6 +15,8 @@ public:
         m_expression = expression;
     }
 
+    virtual NodeType type() { return NodeType::ExpressionStatement; }
+
     virtual void generateStatementByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         m_expression->generateExpressionByteCode(codeBlock, context);
