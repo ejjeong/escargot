@@ -29,8 +29,8 @@ class CodeBlock;
     F(Pop, 0, 1, 0, 1, 0) \
     F(PushIntoTempStack, 0, 1, 0, 1, 0) \
     F(PopFromTempStack, 1, 0, 0, 1, 0) \
-    F(LoadStackPointer, 0, 0, 0, 1, 0) \
-    F(CheckStackPointer, 0, 0, 0, 1, 0) \
+    F(LoadStackPointer, 0, 0, 0, 0, 0) \
+    F(CheckStackPointer, 0, 0, 0, 0, 0) \
     \
     F(GetById, 1, 0, 0, 1, 1) \
     F(GetByIdWithoutException, 1, 0, 0, 1, 1) \
