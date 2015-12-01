@@ -4,7 +4,10 @@ BIN_PATH=/system/bin
 cp /data/local/tmp/sunspider/SunSpider/resources/sunspider-standalone-driver.js.bak /data/local/tmp/sunspider/SunSpider/resources/sunspider-standalone-driver.js
 #make full
 tests=("3d-cube" "3d-morph" "3d-raytrace" "access-binary-trees" "access-fannkuch" "access-nbody" "access-nsieve" "bitops-3bit-bits-in-byte" "bitops-bits-in-byte" "bitops-bitwise-and" "bitops-nsieve-bits" "controlflow-recursive" "crypto-aes" "crypto-md5" "crypto-sha1" "date-format-tofte" "date-format-xparb" "math-cordic" "math-partial-sums" "math-spectral-norm" "regexp-dna" "string-base64" "string-fasta" "string-tagcloud" "string-unpack-code" "string-validate-input")
-if [[ $1 == jsc32.interp ]]; then
+if [[ $1 == duk32.interp ]]; then
+  cmd="/data/local/tmp/arm32/duk/duk"
+  tc="duk32"
+elif [[ $1 == jsc32.interp ]]; then
   cmd="/data/local/tmp/arm32/jsc/interp/jsc"
   tc="jsc32.interp"
   ldpath="/data/local/tmp/arm32/jsc/interp"
@@ -48,7 +51,7 @@ elif [[ $1 == v832.full.jit ]]; then
     cp /data/local/tmp/sunspider/SunSpider/resources/sunspider-standalone-driver-d8.js /data/local/tmp/sunspider/SunSpider/resources/sunspider-standalone-driver.js
   fi
 else
-  echo "wrong argument : $1 please choose between [jsc|escargot|v8].[|32].(full)?.[base|interp|jit]"
+  echo "wrong argument : $1 please choose between [jsc|escargot|v8|duk].[|32].(full)?.[base|interp|jit]"
   exit 1
 fi
 
