@@ -591,9 +591,9 @@ template<typename T> inline T* getPtr(const PassOwnPtr<T>& p)
 
 template <typename T> inline void deleteOwnedPtr(T* ptr)
 {
-    typedef char known[sizeof(T) ? 1 : -1];
-    if (sizeof(known))
-        delete ptr;
+    // typedef char known[sizeof(T) ? 1 : -1];
+    // if (sizeof(known))
+    delete ptr;
 }
 
 template<typename T> class PassOwnPtr;

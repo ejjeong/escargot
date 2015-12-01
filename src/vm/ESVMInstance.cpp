@@ -137,6 +137,8 @@ ESValue ESVMInstance::evaluate(u16string& source, bool isForGlobalScope)
     m_lastExpressionStatementValue = ESValue();
     CodeBlock* block = m_scriptParser->parseScript(this, source, isForGlobalScope);
     interpret(this, block);
+    if (!block->m_isCached)
+        delete block;
     // unsigned long end = ESVMInstance::currentInstance()->tickCount();
     // printf("ESVMInstance::evaluate takes %lfms\n", (end-start)/1000.0);
     return m_lastExpressionStatementValue;

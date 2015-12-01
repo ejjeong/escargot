@@ -17,6 +17,7 @@ CodeBlock::CodeBlock(size_t roughCodeBlockSizeInWordSize, bool isBuiltInFunction
     m_isStrict = false;
     m_isFunctionExpression = false;
     m_requiredStackSizeInESValueSize = 0;
+    m_isCached = false;
 #ifdef ENABLE_ESJIT
     m_cachedJITFunction = nullptr;
     m_executeCount = 0;
@@ -25,16 +26,22 @@ CodeBlock::CodeBlock(size_t roughCodeBlockSizeInWordSize, bool isBuiltInFunction
     m_nanoJITDataAllocator = new nanojit::Allocator();
 #endif
 
-    GC_REGISTER_FINALIZER_NO_ORDER(this, [] (void* obj, void* cd) {
+    GC_REGISTER_FINALIZER_NO_ORDER(this, [] (void* _, void* obj) {
         if (ESVMInstance::currentInstance()/* FIXME(add is ESVMInstance destroyed) */)
             ESVMInstance::currentInstance()->globalObject()->unregisterCodeBlock(((CodeBlock *)obj));
         ((CodeBlock *)obj)->m_code.clear();
+        ((CodeBlock *)obj)->m_code.shrink_to_fit();
+        RELEASE_ASSERT(!((CodeBlock *)obj)->m_code.capacity());
         ((CodeBlock *)obj)->m_extraData.clear();
+        ((CodeBlock *)obj)->m_extraData.shrink_to_fit();
+        RELEASE_ASSERT(!((CodeBlock *)obj)->m_extraData.capacity());
 #ifdef ENABLE_ESJIT
         delete ((CodeBlock *)obj)->m_nanoJITDataAllocator;
         ((CodeBlock *)obj)->m_byteCodeIndexesHaveToProfile.clear();
+        ((CodeBlock *)obj)->m_byteCodeIndexesHaveToProfile.shrink_to_fit();
+        RELEASE_ASSERT(!((CodeBlock *)obj)->m_byteCodeIndexesHaveToProfile.capacity());
 #endif
-    }, NULL, NULL, NULL);
+    }, this, NULL, NULL);
     ESVMInstance::currentInstance()->globalObject()->registerCodeBlock(this);
 }
 
@@ -185,6 +192,7 @@ CodeBlock* generateByteCode(ProgramNode* node, bool shouldGenereateBytecodeInsta
     context.m_shouldGenereateByteCodeInstantly = shouldGenereateBytecodeInstantly;
     // unsigned long start = ESVMInstance::tickCount();
     node->generateStatementByteCode(block, context);
+    // printf("codeBlock %d\n", (int)block->m_code.size());
     // unsigned long end = ESVMInstance::tickCount();
     // printf("generate code takes %lfms\n", (end-start)/1000.0);
 #ifndef NDEBUG

@@ -1,6 +1,7 @@
 #include "Escargot.h"
 #include "vm/ESVMInstance.h"
 #include "runtime/ESValue.h"
+#include "ast/AST.h"
 
 #if defined(ENABLE_ESJIT) && !defined(NDEBUG)
 #include "lirasm.cpp"
@@ -83,7 +84,20 @@ void* gca(size_t t)
 */
 int main(int argc, char* argv[])
 {
-    // printf("%d", (int) sizeof(escargot::ByteCodeExtraData));
+    /*
+    static void* root[300000];
+    int j = 0;
+    for(int i = 0; i < 100000; i ++) {
+        root[j++] = malloc(4);
+        root[j++] = malloc(8);
+        root[j++] = malloc(12);
+        // root[j++] = GC_malloc(4);
+        // root[j++] = GC_malloc(8);
+        // root[j++] = GC_malloc(12);
+    }
+    abort();
+    */
+    // printf("%d", (int) sizeof(escargot::ProgramNode));
     // my_init_hook();
     /*    test* ptr = new test;
     char* pool = (char *)GC_malloc(1024);

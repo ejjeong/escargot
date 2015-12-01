@@ -425,8 +425,10 @@ CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, const escargot::u16
 
     if (source.length() < 1024) {
         if (isForGlobalScope) {
+            cb->m_isCached = true;
             m_globalCodeCache.insert(std::make_pair(source, cb));
         } else {
+            cb->m_isCached = true;
             m_nonGlobalCodeCache.insert(std::make_pair(source, cb));
         }
     }

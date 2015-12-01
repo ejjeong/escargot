@@ -730,8 +730,8 @@ const unsigned ESArrayObject::MAX_FASTMODE_SIZE;
 ESArrayObject::ESArrayObject(int length)
     : ESObject((Type)(Type::ESObject | Type::ESArrayObject), ESVMInstance::currentInstance()->globalObject()->arrayPrototype(), 3)
     , m_vector(0)
-    , m_fastmode(true)
 {
+    m_flags.m_isFastMode = true;
     m_length = 0;
     if (length == -1)
         convertToSlowMode();
@@ -978,7 +978,7 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlo
     m_name = name;
     m_outerEnvironment = outerEnvironment;
     m_codeBlock = cb;
-    m_nonConstructor = false;
+    m_flags.m_nonConstructor = false;
     m_protoType = ESObject::create(2);
 
     // m_protoType.asESPointer()->asESObject()->defineDataProperty(strings->constructor.string(), true, false, true, this);
@@ -1000,7 +1000,7 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlo
         m_hiddenClassData.push_back(ESValue(length));
         m_hiddenClassData.push_back(ESValue(name));
     }
-    m_is_bound_func = false;
+    m_flags.m_isBoundFunction = false;
 }
 
 ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeFunctionType fn, escargot::ESString* name, unsigned length, bool isConstructor)
@@ -1013,8 +1013,8 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeF
 #endif
     m_name = name;
     if (!isConstructor)
-        m_nonConstructor = true;
-    m_is_bound_func = false;
+        m_flags.m_nonConstructor = true;
+    m_flags.m_isBoundFunction = false;
 }
 
 ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctionObject* fn, const ESValue& receiver, ESValue arguments[], const size_t& argumentCount, ESVMInstance* ESVMInstance)

@@ -2263,6 +2263,7 @@ public:
     bool m_isBuiltInFunction;
     bool m_isStrict;
     bool m_isFunctionExpression;
+    bool m_isCached;
 
 #ifndef NDEBUG
     InternalAtomicString m_id;

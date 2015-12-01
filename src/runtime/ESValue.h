@@ -1418,10 +1418,19 @@ protected:
 
 #ifdef ESCARGOT_64
     struct {
+        // object
         bool m_isGlobalObject: 1;
         bool m_isExtensible: 1;
         bool m_isEverSetAsPrototypeObject: 1;
-        size_t m_margin: 61;
+
+        // array
+        bool m_isFastMode: 1;
+
+        // function
+        bool m_nonConstructor: 1;
+        bool m_isBoundFunction: 1;
+
+        size_t m_margin: 58;
     } m_flags;
 #endif
 #ifdef ESCARGOT_32
@@ -1429,7 +1438,15 @@ protected:
         bool m_isGlobalObject: 1;
         bool m_isExtensible: 1;
         bool m_isEverSetAsPrototypeObject: 1;
-        size_t m_margin: 29;
+
+        // array
+        bool m_isFastMode: 1;
+
+        // function
+        bool m_nonConstructor: 1;
+        bool m_isBoundFunction: 1;
+
+        size_t m_margin: 26;
     } m_flags;
 #endif
 };
@@ -1658,7 +1675,7 @@ public:
     // Insert 1 element val at idx
     void insertValue(int idx, const ESValue& val)
     {
-        if (m_fastmode) {
+        if (m_flags.m_isFastMode) {
             m_vector.insert(m_vector.begin()+idx, val);
             setLength(length() + 1);
         } else {
@@ -1672,7 +1689,7 @@ public:
     // Erase #cnt elements from idx
     void eraseValues(unsigned idx, unsigned cnt)
     {
-        if (m_fastmode) {
+        if (m_flags.m_isFastMode) {
             m_vector.erase(m_vector.begin()+idx, m_vector.begin()+idx+cnt);
         } else {
             for (size_t k = 0, i = idx; i < length() && k < cnt; i++, k++) {
@@ -1684,7 +1701,7 @@ public:
 
     bool shouldConvertToSlowMode(unsigned i)
     {
-        if (m_fastmode && i > MAX_FASTMODE_SIZE)
+        if (m_flags.m_isFastMode && i > MAX_FASTMODE_SIZE)
             return true;
         return false;
     }
@@ -1692,9 +1709,9 @@ public:
     void convertToSlowMode()
     {
         // wprintf(L"CONVERT TO SLOW MODE!!!  \n");
-        if (!m_fastmode)
+        if (!m_flags.m_isFastMode)
             return;
-        m_fastmode = false;
+        m_flags.m_isFastMode = false;
         uint32_t len = length();
         if (len == 0)
             return;
@@ -1715,7 +1732,7 @@ public:
 
     void setLength(unsigned newLength)
     {
-        if (m_fastmode) {
+        if (m_flags.m_isFastMode) {
             if (shouldConvertToSlowMode(newLength)) {
                 convertToSlowMode();
                 ESObject::set(strings->length, ESValue(newLength));
@@ -1741,9 +1758,9 @@ public:
         m_length = newLength;
     }
 
-    const bool& isFastmode()
+    bool isFastmode()
     {
-        return m_fastmode;
+        return m_flags.m_isFastMode;
     }
 
     const uint32_t& length()
@@ -1756,13 +1773,12 @@ public:
 #ifdef ENABLE_ESJIT
     static size_t offsetOfVectorData() { return offsetof(ESArrayObject, m_vector); }
     static size_t offsetOfLength() { return offsetof(ESArrayObject, m_length); }
-    static size_t offsetOfIsFastMode() { return offsetof(ESArrayObject, m_fastmode); }
+    // static size_t offsetOfIsFastMode() { return offsetof(ESArrayObject, m_flags.m_isFastMode); }
 #endif
 
 protected:
     uint32_t m_length;
     ESValueVector m_vector;
-    bool m_fastmode;
     static const unsigned MAX_FASTMODE_SIZE = 65536 * 2;
 };
 
@@ -1812,14 +1828,14 @@ public:
         return m_name;
     }
 
-    bool nonConstructor() { return m_nonConstructor; }
+    bool nonConstructor() { return m_flags.m_nonConstructor; }
     void setBoundFunc()
     {
-        m_is_bound_func = true;
+        m_flags.m_isBoundFunction = true;
     }
     bool isBoundFunc()
     {
-        return m_is_bound_func;
+        return m_flags.m_isBoundFunction;
     }
 
     static ESValue call(ESVMInstance* instance, const ESValue& callee, const ESValue& receiver, ESValue arguments[], const size_t& argumentCount, bool isNewExpression);
@@ -1829,8 +1845,6 @@ protected:
 
     CodeBlock* m_codeBlock;
     escargot::ESString* m_name;
-    bool m_nonConstructor;
-    bool m_is_bound_func;
     // ESObject functionObject;
     // HomeObject
     // //ESObject newTarget
