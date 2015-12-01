@@ -356,6 +356,8 @@ bool ESGraphTypeInference::run(ESGraph* graph)
                     graph->setOperandType(ir->targetIndex(), src0Type);
                     break;
                 }
+            case ESIR::Opcode::Throw:
+                break;
             default:
                 {
                     printf("ERROR %s not handled in ESGraphTypeInference.\n", ir->getOpcodeName());
