@@ -102,12 +102,12 @@ public:
 
     uint64_t type() { return m_type; }
 
-    bool operator==(Type& otherType)
+    bool operator==(const Type& otherType)
     {
         return m_type == otherType.m_type;
     }
 
-    bool operator!=(Type& otherType)
+    bool operator!=(const Type& otherType)
     {
         return !operator==(otherType);
     }

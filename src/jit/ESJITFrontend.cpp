@@ -814,6 +814,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             {
                 INIT_BYTECODE(AllocPhi);
                 AllocPhiIR* allocPhiIR = AllocPhiIR::create(extraData->m_targetIndex0);
+                graph->setOperandStackPos(extraData->m_targetIndex0, codeBlock->m_extraData[bytecodeCounter].m_baseRegisterIndex);
                 currentBlock->push(allocPhiIR);
                 NEXT_BYTECODE(AllocPhi);
                 break;
@@ -822,6 +823,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             {
                 INIT_BYTECODE(StorePhi);
                 StorePhiIR* storePhiIR = StorePhiIR::create(extraData->m_targetIndex0, extraData->m_sourceIndexes[1], extraData->m_sourceIndexes[0]);
+                graph->setOperandStackPos(extraData->m_targetIndex0, codeBlock->m_extraData[bytecodeCounter].m_baseRegisterIndex);
                 currentBlock->push(storePhiIR);
                 NEXT_BYTECODE(StorePhi);
                 break;
@@ -830,6 +832,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             {
                 INIT_BYTECODE(LoadPhi);
                 LoadPhiIR* loadPhiIR = LoadPhiIR::create(extraData->m_targetIndex0, extraData->m_sourceIndexes[0], extraData->m_sourceIndexes[1], extraData->m_sourceIndexes[2]);
+                graph->setOperandStackPos(extraData->m_targetIndex0, codeBlock->m_extraData[bytecodeCounter].m_baseRegisterIndex);
                 currentBlock->push(loadPhiIR);
                 NEXT_BYTECODE(LoadPhi);
                 break;

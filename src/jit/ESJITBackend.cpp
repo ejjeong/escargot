@@ -223,6 +223,12 @@ LIns* NativeGenerator::generateOSRExit(size_t currentESIRTargetIndex)
                     continue;
                 }
                 Type type = m_graph->getOperandType(esir->targetIndex());
+                // FIXME: Assume that if type is inferred to TypeBottom, it means it's a fake ir
+                // which has a targetIndex but doens't write a real value on the stack,
+                // such as AllocPhi, StorePhi, LoadPhi.
+                if (type == TypeBottom)
+                  continue;
+
                 LIns* lIns = m_tmpToLInsMapping[esir->targetIndex()];
                 if (lIns) {
                     LIns* boxedLIns = boxESValue(lIns, type);
