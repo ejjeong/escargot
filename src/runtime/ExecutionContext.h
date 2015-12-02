@@ -26,6 +26,7 @@ public:
         m_isStrict = false;
 #ifdef ENABLE_ESJIT
         m_inOSRExit = false;
+        m_executeNextByteCode = false;
 #endif
     }
 
@@ -87,6 +88,7 @@ public:
 
 #ifdef ENABLE_ESJIT
     bool inOSRExit() { return m_inOSRExit; }
+    bool executeNextByteCode() { return m_executeNextByteCode; }
     char* getBp() { return m_stackBuf; }
     void setBp(char* bp) { m_stackBuf = bp; }
     unsigned getStackPos() { return m_stackPos; }
@@ -94,6 +96,7 @@ public:
 #pragma GCC diagnostic ignored "-Winvalid-offsetof"
     static size_t offsetOfArguments() { return offsetof(ExecutionContext, m_arguments); }
     static size_t offsetofInOSRExit() { return offsetof(ExecutionContext, m_inOSRExit); }
+    static size_t offsetofExecuteNextByteCode() { return offsetof(ExecutionContext, m_executeNextByteCode); }
     static size_t offsetofStackBuf() { return offsetof(ExecutionContext, m_stackBuf); }
     static size_t offsetofStackPos() { return offsetof(ExecutionContext, m_stackPos); }
     static size_t offsetofcachedDeclarativeEnvironmentRecordESValue()
@@ -125,6 +128,7 @@ private:
     ESValue m_tryOrCatchBodyResult;
 #ifdef ENABLE_ESJIT
     bool m_inOSRExit;
+    bool m_executeNextByteCode;
     unsigned m_stackPos;
     char* m_stackBuf;
 #endif

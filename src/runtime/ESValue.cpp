@@ -1326,13 +1326,22 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
             size_t idx = 0;
             size_t bytecodeCounter = 0;
             unsigned maxStackPos = 0;
+            bool found = false;
             char* end = &fn->codeBlock()->m_code.data()[fn->codeBlock()->m_code.size()];
             while (&code[idx] < end) {
+                if (found) {
+                    break;
+                }
+
                 Opcode opcode = fn->codeBlock()->m_extraData[bytecodeCounter].m_opcode;
                 ByteCodeExtraData* extraData = &fn->codeBlock()->m_extraData[bytecodeCounter];
                 if (extraData->m_targetIndex0 == tmpIndex) {
                     maxStackPos = ec.getStackPos();
-                    break;
+                    if (ec.executeNextByteCode()) {
+                        found = true;
+                    } else {
+                        break;
+                    }
                 }
 
                 switch (opcode) {
@@ -1360,7 +1369,11 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
                 }
 #endif
             }
-            result = interpret(instance, fn->codeBlock(), idx, maxStackPos);
+            if (idx == fn->codeBlock()->m_code.size()) {
+                result = ESValue();
+            } else {
+                result = interpret(instance, fn->codeBlock(), idx, maxStackPos);
+            }
             fn->codeBlock()->m_executeCount++;
         }
     } else {

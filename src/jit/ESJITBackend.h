@@ -39,7 +39,7 @@ private:
         ASSERT(m_tmpToLInsMapping[irIndex]);
         return m_tmpToLInsMapping[irIndex];
     }
-    nanojit::LIns* generateOSRExit(size_t currentByteCodeIndex);
+    nanojit::LIns* generateOSRExit(size_t currentByteCodeIndex, nanojit::LIns* in = nullptr);
     nanojit::LIns* generateTypeCheck(nanojit::LIns* in, Type type, size_t currentByteCodeIndex);
     nanojit::LIns* boxESValue(nanojit::LIns* value, Type type);
     nanojit::LIns* unboxESValue(nanojit::LIns* value, Type type);
