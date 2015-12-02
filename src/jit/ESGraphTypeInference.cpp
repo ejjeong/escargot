@@ -70,6 +70,8 @@ bool ESGraphTypeInference::run(ESGraph* graph)
                         ESIR* stringPlusIR = StringPlusIR::create(irGenericPlus->targetIndex(), irGenericPlus->leftIndex(), irGenericPlus->rightIndex());
                         block->replace(j, stringPlusIR);
                         graph->setOperandType(stringPlusIR->targetIndex(), TypeString);
+                    } else if (leftType.isUndefinedType() || rightType.isUndefinedType()) {
+                        graph->setOperandType(ir->targetIndex(), TypeDouble);
                     } else {
                         printf("Unhandled GenericPlus case in ESGraphTypeInference (block %zu instruction %zu)\n", i, j);
                         RELEASE_ASSERT_NOT_REACHED();
