@@ -19,11 +19,20 @@ class NativeGenerator {
 public:
     NativeGenerator(ESGraph* graph);
     ~NativeGenerator();
+
     bool nanojitCodegen(ESVMInstance* instance);
-    JITFunction nativeCodegen();
-    nanojit::LIns* nanojitCodegen(ESIR* ir);
+    bool nativeCodegen();
+
+    JITFunction nativeCode()
+    {
+        ASSERT(m_succeeded);
+        return reinterpret_cast<JITFunction>(m_f->code());
+    }
+    void setSucceeded() { m_succeeded = true; }
 
 private:
+    nanojit::LIns* nanojitCodegen(ESIR* ir);
+
     void setTmpMapping(size_t irIndex, nanojit::LIns* ins)
     {
         // printf("tmpMap[%lu] = %p\n", irIndex, ins);
@@ -106,6 +115,7 @@ private:
     nanojit::LIns* m_globalObjectP;
     nanojit::LIns* m_cachedDeclarativeEnvironmentRecordESValueP;
 
+    bool m_succeeded;
 };
 
 JITFunction generateNativeFromIR(ESGraph* graph, ESVMInstance* instance);

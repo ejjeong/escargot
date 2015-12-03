@@ -5,8 +5,6 @@
 
 #include "ESIRType.h"
 
-class CodeBlock;
-
 namespace escargot {
 namespace ESJIT {
 
@@ -30,7 +28,6 @@ public:
 #endif
 
 private:
-    CodeBlock* m_codeBlock;
     Type m_type;
     unsigned m_stackPos;
     unsigned m_followingPopCount;

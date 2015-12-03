@@ -45,14 +45,7 @@ void CodeBlock::finalize()
     RELEASE_ASSERT(!m_extraData.capacity());
 #ifdef ENABLE_ESJIT
     removeJITInfo();
-    if (m_codeAlloc) {
-        delete m_codeAlloc;
-        m_codeAlloc = nullptr;
-    }
-    if (m_nanoJITDataAllocator) {
-        delete m_nanoJITDataAllocator;
-        m_nanoJITDataAllocator = nullptr;
-    }
+    removeJITCode();
 #endif
 }
 
@@ -189,6 +182,18 @@ void CodeBlock::removeJITInfo()
     m_byteCodeIndexesHaveToProfile.clear();
     m_byteCodeIndexesHaveToProfile.shrink_to_fit();
     RELEASE_ASSERT(!m_byteCodeIndexesHaveToProfile.capacity());
+}
+
+void CodeBlock::removeJITCode()
+{
+    if (m_codeAlloc) {
+        delete m_codeAlloc;
+        m_codeAlloc = nullptr;
+    }
+    if (m_nanoJITDataAllocator) {
+        delete m_nanoJITDataAllocator;
+        m_nanoJITDataAllocator = nullptr;
+    }
 }
 
 nanojit::CodeAlloc* CodeBlock::codeAlloc()

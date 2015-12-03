@@ -2272,6 +2272,7 @@ public:
 
 #ifdef ENABLE_ESJIT
     void removeJITInfo();
+    void removeJITCode();
     nanojit::CodeAlloc* codeAlloc();
     nanojit::Allocator* nanoJITDataAllocator();
     JITFunction m_cachedJITFunction;

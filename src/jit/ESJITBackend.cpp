@@ -132,6 +132,7 @@ NativeGenerator::NativeGenerator(ESGraph* graph)
     , m_out(new LirBufWriter(m_buf, m_config))
     , m_exit(nullptr)
     , m_rec(nullptr)
+    , m_succeeded(false)
 {
 #ifndef NDEBUG
     if (ESVMInstance::currentInstance()->m_verboseJIT)
@@ -174,6 +175,8 @@ NativeGenerator::~NativeGenerator()
         delete m_exit;
     if (m_rec)
         delete m_rec;
+    if (!m_succeeded)
+        m_graph->codeBlock()->removeJITCode();
 }
 
 size_t getMaxStackPos(ESGraph* graph, size_t currentESIRTargetIndex, bool repeatCurrentBytecode)
@@ -2481,7 +2484,7 @@ bool NativeGenerator::nanojitCodegen(ESVMInstance* instance)
     return true;
 }
 
-JITFunction NativeGenerator::nativeCodegen()
+bool NativeGenerator::nativeCodegen()
 {
     m_assm->compile(m_f, *m_alloc, false verbose_only(, m_f->lirbuf->printer));
     if (m_assm->error() != None) {
@@ -2492,27 +2495,21 @@ JITFunction NativeGenerator::nativeCodegen()
         case BranchTooFar : LOG_VJ("BranchTooFar)\n");  break;
         default: RELEASE_ASSERT_NOT_REACHED();
         }
-        return nullptr;
+        return false;
     }
-
-    return reinterpret_cast<JITFunction>(m_f->code());
+    return true;
 }
 
 JITFunction generateNativeFromIR(ESGraph* graph, ESVMInstance* instance)
 {
     NativeGenerator gen(graph);
 
-    unsigned long time1 = ESVMInstance::currentInstance()->tickCount();
     if (!gen.nanojitCodegen(instance))
         return nullptr;
-    unsigned long time2 = ESVMInstance::currentInstance()->tickCount();
-    JITFunction function = gen.nativeCodegen();
-    unsigned long time3 = ESVMInstance::currentInstance()->tickCount();
-    if (ESVMInstance::currentInstance()->m_profile)
-        printf("JIT Compilation Took %lfms, %lfms each for nanojit/native generation\n",
-            (time2-time1) / 1000.0, (time3-time2) / 1000.0);
-
-    return function;
+    if (!gen.nativeCodegen())
+        return nullptr;
+    gen.setSucceeded();
+    return gen.nativeCode();
 }
 
 JITFunction addDouble()
