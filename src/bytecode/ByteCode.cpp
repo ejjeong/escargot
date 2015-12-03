@@ -23,6 +23,7 @@ CodeBlock::CodeBlock(size_t roughCodeBlockSizeInWordSize, bool isBuiltInFunction
     m_executeCount = 0;
     m_jitThreshold = ESVMInstance::currentInstance()->m_jitThreshold;
     m_dontJIT = false;
+    m_recursionDepth = 0;
     m_codeAlloc = nullptr;
     m_nanoJITDataAllocator = nullptr;
 #endif
@@ -194,6 +195,7 @@ void CodeBlock::removeJITCode()
         delete m_nanoJITDataAllocator;
         m_nanoJITDataAllocator = nullptr;
     }
+    m_cachedJITFunction = nullptr;
 }
 
 nanojit::CodeAlloc* CodeBlock::codeAlloc()

@@ -1321,7 +1321,15 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
         char* stackBuf = (char *)alloca(stackSiz);
         ec.setBp(stackBuf);
 
+        fn->codeBlock()->m_recursionDepth++;
         result = ESValue::fromRawDouble(jitFunction(instance));
+        fn->codeBlock()->m_recursionDepth--;
+        if (UNLIKELY(fn->codeBlock()->m_dontJIT)) {
+            if (!fn->codeBlock()->m_recursionDepth) {
+                fn->codeBlock()->removeJITInfo();
+                fn->codeBlock()->removeJITCode();
+            }
+        }
         // printf("JIT Result %s (%jx)\n", result.toString()->utf8Data(), result.asRawData());
         if (ec.inOSRExit()) {
             fn->codeBlock()->m_osrExitCount++;
@@ -1367,6 +1375,10 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
                 fn->codeBlock()->m_cachedJITFunction = nullptr;
                 // Fixme(JMP): We have to compile to JIT code again when gathering enough type data
                 fn->codeBlock()->m_dontJIT = true;
+                if(!fn->codeBlock()->m_recursionDepth) {
+                    fn->codeBlock()->removeJITInfo();
+                    fn->codeBlock()->removeJITCode();
+                }
 #ifndef NDEBUG
                 if (ESVMInstance::currentInstance()->m_reportOSRExitedFunction) {
                     printf("%s ", fn->codeBlock()->m_nonAtomicId ? (fn->codeBlock()->m_nonAtomicId->utf8Data()):"(anonymous)");

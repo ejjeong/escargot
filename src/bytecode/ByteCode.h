@@ -2277,6 +2277,7 @@ public:
     nanojit::Allocator* nanoJITDataAllocator();
     JITFunction m_cachedJITFunction;
     bool m_dontJIT;
+    size_t m_recursionDepth;
     std::vector<unsigned> m_byteCodeIndexesHaveToProfile;
     size_t m_tempRegisterSize;
     size_t m_executeCount;
