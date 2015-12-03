@@ -28,7 +28,7 @@ public:
             cb->m_params = std::move(m_params);
             cb->m_isStrict = m_isStrict;
 
-            ByteCodeGenerateContext newContext;
+            ByteCodeGenerateContext newContext(cb);
             m_body->generateStatementByteCode(cb, newContext);
 #ifdef ENABLE_ESJIT
             cb->m_tempRegisterSize = newContext.m_currentSSARegisterCount;

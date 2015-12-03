@@ -1069,7 +1069,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
         char* code = fn->codeBlock()->m_code.data();
         size_t siz = fn->codeBlock()->m_byteCodeIndexesHaveToProfile.size();
         for (unsigned i = 0; i < siz; i ++) {
-            size_t pos = fn->codeBlock()->m_extraData[fn->codeBlock()->m_byteCodeIndexesHaveToProfile[i]].m_codePosition;
+            size_t pos = fn->codeBlock()->m_extraData[fn->codeBlock()->m_byteCodeIndexesHaveToProfile[i]].m_decoupledData->m_codePosition;
             ByteCode* currentCode = (ByteCode *)&code[pos];
             Opcode opcode = fn->codeBlock()->m_extraData[fn->codeBlock()->m_byteCodeIndexesHaveToProfile[i]].m_opcode;
             switch (opcode) {
@@ -1164,7 +1164,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
             // check profile data
             char* code = fn->codeBlock()->m_code.data();
             for (unsigned i = 0; i < fn->codeBlock()->m_byteCodeIndexesHaveToProfile.size(); i ++) {
-                size_t pos = fn->codeBlock()->m_extraData[fn->codeBlock()->m_byteCodeIndexesHaveToProfile[i]].m_codePosition;
+                size_t pos = fn->codeBlock()->m_extraData[fn->codeBlock()->m_byteCodeIndexesHaveToProfile[i]].m_decoupledData->m_codePosition;
                 Opcode opcode = fn->codeBlock()->m_extraData[fn->codeBlock()->m_byteCodeIndexesHaveToProfile[i]].m_opcode;
                 ByteCode* currentCode = (ByteCode *)&code[pos];
                 switch (opcode) {
@@ -1294,13 +1294,20 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
                 } else {
                     LOG_VJ("> Compilation failed! disable jit compilation for function %s (codeBlock %p) from now on\n", functionName, fn->codeBlock());
                     fn->codeBlock()->m_dontJIT = true;
+                    fn->codeBlock()->removeJITInfo();
                 }
                 ESJIT::ESJITAllocator::freeAll();
                 GC_enable();
             } else {
                 size_t threshold = fn->codeBlock()->m_jitThreshold;
-                LOG_VJ("> Doubling JIT compilation threshold from %d to %d for function %s\n", threshold, threshold*2, functionName);
-                fn->codeBlock()->m_jitThreshold *= 2;
+                if (threshold > 1024) {
+                    LOG_VJ("> No profile infos. Stop trying JIT.\n", threshold, threshold*2, functionName);
+                    fn->codeBlock()->m_dontJIT = true;
+                    fn->codeBlock()->removeJITInfo();
+                } else {
+                    LOG_VJ("> Doubling JIT compilation threshold from %d to %d for function %s\n", threshold, threshold*2, functionName);
+                    fn->codeBlock()->m_jitThreshold *= 2;
+                }
             }
         }
     }
@@ -1333,7 +1340,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
 
                 Opcode opcode = fn->codeBlock()->m_extraData[bytecodeCounter].m_opcode;
                 ByteCodeExtraData* extraData = &fn->codeBlock()->m_extraData[bytecodeCounter];
-                if (extraData->m_targetIndex0 == tmpIndex) {
+                if (extraData->m_decoupledData->m_targetIndex0 == tmpIndex) {
                     maxStackPos = ec.getStackPos();
                     if (ec.executeNextByteCode()) {
                         found = true;
@@ -1400,7 +1407,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
             cb->m_isStrict = node->m_isStrict;
             cb->m_isFunctionExpression = node->isExpression();
 
-            ByteCodeGenerateContext newContext;
+            ByteCodeGenerateContext newContext(cb);
             node->body()->generateStatementByteCode(cb, newContext);
 
 #ifdef ENABLE_ESJIT

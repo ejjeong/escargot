@@ -31,7 +31,7 @@ public:
             cb->m_isStrict = m_isStrict;
             cb->m_isFunctionExpression = true;
 
-            ByteCodeGenerateContext newContext;
+            ByteCodeGenerateContext newContext(cb);
             m_body->generateStatementByteCode(cb, newContext);
 #ifdef ENABLE_ESJIT
             cb->m_tempRegisterSize = newContext.m_currentSSARegisterCount;

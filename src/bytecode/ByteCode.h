@@ -178,10 +178,12 @@ inline const char* getByteCodeName(Opcode opcode)
 #endif
 
 struct ByteCodeGenerateContext {
-    ByteCodeGenerateContext()
+    ByteCodeGenerateContext(CodeBlock* codeBlock)
         : m_baseRegisterCount(0)
 #ifdef ENABLE_ESJIT
         , m_currentSSARegisterCount(0)
+        , m_codeBlock(codeBlock)
+        , m_isOutermostContext(true)
 #endif
         , m_offsetToBasePointer(0)
         , m_positionToContinue(0)
@@ -190,6 +192,9 @@ struct ByteCodeGenerateContext {
         m_inCallingExpressionScope = false;
         m_isHeadOfMemberExpression = false;
         m_shouldGenereateByteCodeInstantly = true;
+#ifndef ENABLE_ESJIT
+        (void)codeBlock;
+#endif
     }
 
     ByteCodeGenerateContext(const ByteCodeGenerateContext& contextBefore)
@@ -197,6 +202,8 @@ struct ByteCodeGenerateContext {
 #ifdef ENABLE_ESJIT
         , m_currentSSARegisterCount(contextBefore.m_currentSSARegisterCount)
         , m_ssaComputeStack(contextBefore.m_ssaComputeStack)
+        , m_codeBlock(contextBefore.m_codeBlock)
+        , m_isOutermostContext(false)
 #endif
         , m_shouldGenereateByteCodeInstantly(contextBefore.m_shouldGenereateByteCodeInstantly)
         , m_inCallingExpressionScope(contextBefore.m_inCallingExpressionScope)
@@ -207,17 +214,7 @@ struct ByteCodeGenerateContext {
     }
 
 
-    ~ByteCodeGenerateContext()
-    {
-        ASSERT(m_breakStatementPositions.size() == 0);
-        ASSERT(m_continueStatementPositions.size() == 0);
-        ASSERT(m_labeledBreakStatmentPositions.size() == 0);
-        ASSERT(m_labeledContinueStatmentPositions.size() == 0);
-        ASSERT(m_complexCaseStatementPositions.size() == 0);
-#ifdef ENABLE_ESJIT
-        ASSERT(m_currentSSARegisterCount == -1);
-#endif
-    }
+    ALWAYS_INLINE ~ByteCodeGenerateContext();
 
     void propagateInformationTo(ByteCodeGenerateContext& ctx)
     {
@@ -315,6 +312,8 @@ struct ByteCodeGenerateContext {
 #ifdef ENABLE_ESJIT
     int m_currentSSARegisterCount;
     std::vector<int> m_ssaComputeStack;
+    CodeBlock* m_codeBlock;
+    bool m_isOutermostContext;
 #endif
 
     bool m_shouldGenereateByteCodeInstantly;
@@ -387,41 +386,39 @@ public:
 #endif
 };
 
-#ifndef ENABLE_ESJIT
 struct __attribute__((__packed__)) ByteCodeExtraData {
-#else
-struct ByteCodeExtraData {
-#endif
-#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
-    size_t m_codePosition;
-    short m_baseRegisterIndex;
-#endif
     Opcode m_opcode;
 #if defined(ENABLE_ESJIT) || !defined(NDEBUG)
-    char m_registerIncrementCount; // stack push count
-    char m_registerDecrementCount; // stack pop count
+    struct DecoupledData {
+        DecoupledData()
+        {
+            m_codePosition = SIZE_MAX;
+            m_baseRegisterIndex = 0;
+            m_registerIncrementCount = 0;
+            m_registerDecrementCount = 0;
+#ifdef ENABLE_ESJIT
+            m_targetIndex0 = -1;
+            m_targetIndex1 = -1;
+#endif
+        }
+        size_t m_codePosition;
+        short m_baseRegisterIndex;
+        char m_registerIncrementCount; // stack push count
+        char m_registerDecrementCount; // stack pop count
+#ifdef ENABLE_ESJIT
+        int m_targetIndex0;
+        int m_targetIndex1;
+        std::vector<int> m_sourceIndexes;
+#endif
+    };
+    DecoupledData* m_decoupledData;
 #endif
 
-#ifdef ENABLE_ESJIT
-    int m_targetIndex0;
-    int m_targetIndex1;
-    std::vector<int> m_sourceIndexes;
-#endif
     ByteCodeExtraData()
     {
         m_opcode = (Opcode)0;
 #if defined(ENABLE_ESJIT) || !defined(NDEBUG)
-        m_codePosition = SIZE_MAX;
-        m_baseRegisterIndex = 0;
-#endif
-
-#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
-        m_registerIncrementCount = 0;
-        m_registerDecrementCount = 0;
-#endif
-#ifdef ENABLE_ESJIT
-        m_targetIndex0 = -1;
-        m_targetIndex1 = -1;
+        m_decoupledData = new DecoupledData();
 #endif
     }
 };
@@ -2274,6 +2271,7 @@ public:
 #endif
 
 #ifdef ENABLE_ESJIT
+    void removeJITInfo();
     nanojit::CodeAlloc* codeAlloc();
     nanojit::Allocator* nanoJITDataAllocator();
     JITFunction m_cachedJITFunction;
@@ -2467,6 +2465,20 @@ inline void CodeBlock::pushCode(const ExecuteNativeFunction& code)
 
     char* first = (char *)&code;
     m_code.insert(m_code.end(), first, first + sizeof(ExecuteNativeFunction));
+}
+
+ALWAYS_INLINE ByteCodeGenerateContext::~ByteCodeGenerateContext()
+{
+    ASSERT(m_breakStatementPositions.size() == 0);
+    ASSERT(m_continueStatementPositions.size() == 0);
+    ASSERT(m_labeledBreakStatmentPositions.size() == 0);
+    ASSERT(m_labeledContinueStatmentPositions.size() == 0);
+    ASSERT(m_complexCaseStatementPositions.size() == 0);
+#ifdef ENABLE_ESJIT
+    ASSERT(m_currentSSARegisterCount == -1);
+    if (m_isOutermostContext && m_codeBlock->m_dontJIT)
+        m_codeBlock->removeJITInfo();
+#endif
 }
 
 ALWAYS_INLINE void ByteCodeGenerateContext::consumeLabeledContinuePositions(CodeBlock* cb, size_t position, ESString* lbl)

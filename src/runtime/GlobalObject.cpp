@@ -517,7 +517,7 @@ void GlobalObject::installFunction()
     m_function = ESFunctionObject::create(NULL, [](ESVMInstance* instance) -> ESValue {
         int len = instance->currentExecutionContext()->argumentCount();
         CodeBlock* codeBlock = CodeBlock::create();
-        ByteCodeGenerateContext context;
+        ByteCodeGenerateContext context(codeBlock);
         if (len == 0) {
             codeBlock->pushCode(End(), context, NULL);
         } else {
@@ -535,7 +535,7 @@ void GlobalObject::installFunction()
             GC_disable();
             Node* programNode = instance->scriptParser()->generateAST(instance, escargot::ESString::create(std::move(prefix)), true);
             FunctionNode* functionDeclAST = static_cast<FunctionNode* >(static_cast<ProgramNode *>(programNode)->body()[1]);
-            ByteCodeGenerateContext context;
+            ByteCodeGenerateContext context(codeBlock);
             codeBlock->m_innerIdentifiers = std::move(functionDeclAST->innerIdentifiers());
             codeBlock->m_needsActivation = functionDeclAST->needsActivation();
             codeBlock->m_params = std::move(functionDeclAST->params());
@@ -632,7 +632,7 @@ void GlobalObject::installFunction()
             instance->throwError(ESValue(TypeError::create(ESString::create("this value should be function"))));
         }
         CodeBlock* cb = CodeBlock::create();
-        ByteCodeGenerateContext context;
+        ByteCodeGenerateContext context(cb);
         CallBoundFunction code;
         code.m_boundTargetFunction = thisVal.asESPointer()->asESFunctionObject();
         code.m_boundThis = instance->currentExecutionContext()->readArgument(0);
