@@ -11,6 +11,7 @@
 
 #ifdef ENABLE_ESJIT
 namespace nanojit {
+class CodeAlloc;
 class Allocator;
 }
 #endif
@@ -2271,6 +2272,8 @@ public:
 #endif
 
 #ifdef ENABLE_ESJIT
+    nanojit::CodeAlloc* codeAlloc();
+    nanojit::Allocator* nanoJITDataAllocator();
     JITFunction m_cachedJITFunction;
     bool m_dontJIT;
     std::vector<unsigned> m_byteCodeIndexesHaveToProfile;
@@ -2278,6 +2281,7 @@ public:
     size_t m_executeCount;
     size_t m_osrExitCount;
     size_t m_jitThreshold;
+    nanojit::CodeAlloc* m_codeAlloc;
     nanojit::Allocator* m_nanoJITDataAllocator;
 #endif
 

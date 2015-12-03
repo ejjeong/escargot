@@ -23,7 +23,8 @@ CodeBlock::CodeBlock(size_t roughCodeBlockSizeInWordSize, bool isBuiltInFunction
     m_executeCount = 0;
     m_jitThreshold = ESVMInstance::currentInstance()->m_jitThreshold;
     m_dontJIT = false;
-    m_nanoJITDataAllocator = new nanojit::Allocator();
+    m_codeAlloc = nullptr;
+    m_nanoJITDataAllocator = nullptr;
 #endif
 
     GC_REGISTER_FINALIZER_NO_ORDER(this, [] (void* _, void* obj) {
@@ -36,7 +37,10 @@ CodeBlock::CodeBlock(size_t roughCodeBlockSizeInWordSize, bool isBuiltInFunction
         ((CodeBlock *)obj)->m_extraData.shrink_to_fit();
         RELEASE_ASSERT(!((CodeBlock *)obj)->m_extraData.capacity());
 #ifdef ENABLE_ESJIT
-        delete ((CodeBlock *)obj)->m_nanoJITDataAllocator;
+        if (((CodeBlock *)obj)->m_codeAlloc)
+            delete ((CodeBlock *)obj)->m_codeAlloc;
+        if (((CodeBlock *)obj)->m_nanoJITDataAllocator)
+            delete ((CodeBlock *)obj)->m_nanoJITDataAllocator;
         ((CodeBlock *)obj)->m_byteCodeIndexesHaveToProfile.clear();
         ((CodeBlock *)obj)->m_byteCodeIndexesHaveToProfile.shrink_to_fit();
         RELEASE_ASSERT(!((CodeBlock *)obj)->m_byteCodeIndexesHaveToProfile.capacity());
@@ -164,6 +168,22 @@ void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, B
     }
 #endif
 }
+
+#ifdef ENABLE_ESJIT
+nanojit::CodeAlloc* CodeBlock::codeAlloc()
+{
+    if (!m_codeAlloc)
+        m_codeAlloc = new nanojit::CodeAlloc(ESVMInstance::currentInstance()->getJITConfig());
+    return m_codeAlloc;
+}
+
+nanojit::Allocator* CodeBlock::nanoJITDataAllocator()
+{
+    if (!m_nanoJITDataAllocator)
+        m_nanoJITDataAllocator = new nanojit::Allocator();
+    return m_nanoJITDataAllocator;
+}
+#endif
 
 ByteCode::ByteCode(Opcode code)
 {

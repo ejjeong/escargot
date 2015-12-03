@@ -5,6 +5,9 @@
 #include "runtime/ExecutionContext.h"
 #include "runtime/GlobalObject.h"
 #include "bytecode/ByteCode.h"
+#ifdef ENABLE_ESJIT
+#include "nanojit.h"
+#endif
 
 #include "BumpPointerAllocator.h"
 
@@ -44,6 +47,10 @@ ESVMInstance::ESVMInstance()
     m_gmtoff = -cachedTime->tm_gmtoff;
 
     m_error = ESValue(ESValue::ESEmptyValueTag::ESEmptyValue);
+
+#ifdef ENABLE_ESJIT
+    m_JITConfig = new nanojit::Config();
+#endif
 
     m_identifierCacheInvalidationCheckCount = 0;
 
@@ -129,6 +136,9 @@ ESVMInstance::ESVMInstance()
 
 ESVMInstance::~ESVMInstance()
 {
+#ifdef ENABLE_ESJIT
+    delete m_JITConfig;
+#endif
 }
 
 ESValue ESVMInstance::evaluate(u16string& source, bool isForGlobalScope)

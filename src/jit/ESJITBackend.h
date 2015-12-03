@@ -60,7 +60,6 @@ private:
     nanojit::LogControl m_lc;
     nanojit::Config m_config;
     nanojit::Allocator* m_alloc;
-    nanojit::CodeAlloc* m_codeAlloc;
     nanojit::Assembler* m_assm;
     nanojit::LirBuffer* m_buf;
     nanojit::Fragment* m_f;

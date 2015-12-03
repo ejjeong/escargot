@@ -126,8 +126,7 @@ NativeGenerator::NativeGenerator(ESGraph* graph)
     : m_graph(graph)
     , m_tmpToLInsMapping(graph->tempRegisterSize())
     , m_alloc(new Allocator())
-    , m_codeAlloc(new CodeAlloc(&m_config))
-    , m_assm(new Assembler(*m_codeAlloc, *graph->codeBlock()->m_nanoJITDataAllocator, *m_alloc, &m_lc, m_config))
+    , m_assm(new Assembler(*graph->codeBlock()->codeAlloc(), *graph->codeBlock()->nanoJITDataAllocator(), *m_alloc, &m_lc, m_config))
     , m_buf(new LirBuffer(*m_alloc))
     , m_f(new Fragment(NULL verbose_only(, 0)))
     , m_out(new LirBufWriter(m_buf, m_config))
@@ -165,7 +164,6 @@ NativeGenerator::~NativeGenerator()
     delete m_buf->printer;
 #endif
     delete m_alloc;
-    // delete m_codeAlloc;
     delete m_assm;
     delete m_buf;
     delete m_f;
