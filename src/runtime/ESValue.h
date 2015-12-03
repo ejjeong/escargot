@@ -829,7 +829,7 @@ protected:
     }
 
     ESString(char c)
-            : ESPointer(Type::ESString)
+        : ESPointer(Type::ESString)
     {
         m_string = new(GC) ESStringData(c);
     }

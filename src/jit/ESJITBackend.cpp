@@ -2042,12 +2042,10 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 
                 // code for debug
                 // enable this code while string is well implemented
-                {
-                    LIns* obj = boxESValue(getTmpMapping(irGetStringByIndex->objectIndex()), m_graph->getOperandType(irGetStringByIndex->objectIndex()));
-                    LIns* property = boxESValue(getTmpMapping(irGetStringByIndex->propertyIndex()), m_graph->getOperandType(irGetStringByIndex->propertyIndex()));
-                    LIns* args[] = {m_globalObjectP, property, obj};
-                    return m_out->insCall(&getObjectOpCallInfo, args);
-                }
+                LIns* obj = boxESValue(getTmpMapping(irGetStringByIndex->objectIndex()), m_graph->getOperandType(irGetStringByIndex->objectIndex()));
+                LIns* property = boxESValue(getTmpMapping(irGetStringByIndex->propertyIndex()), m_graph->getOperandType(irGetStringByIndex->propertyIndex()));
+                LIns* args[] = {m_globalObjectP, property, obj};
+                return m_out->insCall(&getObjectOpCallInfo, args);
                 /*
                 LIns* result = m_out->insAlloc(sizeof(ESValue));
 
