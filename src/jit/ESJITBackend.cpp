@@ -520,7 +520,7 @@ LIns* NativeGenerator::boxESValue(LIns* unboxedValue, Type type)
     } else if (type.isInt32Type()) {
         ASSERT(unboxedValue->isI());
 #ifdef ESCARGOT_64
-        LIns* wideUnboxedValue = m_out->ins1(LIR_i2q, unboxedValue);
+        LIns* wideUnboxedValue = m_out->ins1(LIR_ui2uq, unboxedValue);
         LIns* boxedValue = m_out->ins2(LIR_orq, wideUnboxedValue, m_intTagQ);
         boxedValueInDouble = boxedValue;
 #else
