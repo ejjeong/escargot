@@ -521,128 +521,269 @@ protected:
     int m_type;
 };
 
-class ESStringData : public u16string, public gc {
+struct NullableUTF8String {
+    NullableUTF8String(const char* buffer, const size_t& bufferSize)
+    {
+        m_buffer = buffer;
+        m_bufferSize = bufferSize;
+    }
+    const char* m_buffer;
+    size_t m_bufferSize;
+};
+
+struct NullableUTF16String {
+    NullableUTF16String(const char16_t* buffer, const size_t& length)
+    {
+        m_buffer = buffer;
+        m_length = length;
+    }
+    const char16_t* m_buffer;
+    size_t m_length;
+};
+
+template <typename T>
+size_t stringHash(const T* s, size_t len, size_t seed = 0)
+{
+    unsigned int hash = seed;
+    for (size_t i = 0 ; i < len ; i ++) {
+        hash = hash * 101  +  s[i];
+    }
+    return hash;
+}
+
+class ESStringData : public gc {
+    friend class ESString;
 public:
-    ESStringData()
+    ESStringData(const ASCIIString& src)
     {
-        initHash();
-#ifdef ENABLE_ESJIT
-        m_length = 0;
-#endif
+        m_string = new(GC) ASCIIString(src);
+        m_data.m_isASCIIString = true;
+        initData();
     }
 
-    ESStringData(const u16string& src)
-        : u16string(src)
+    ESStringData(ASCIIString&& src)
     {
-        initHash();
-#ifdef ENABLE_ESJIT
-        m_length = src.length();
-#endif
+        m_string = new(GC) ASCIIString(src);
+        m_data.m_isASCIIString = true;
+        initData();
     }
 
-    ESStringData(u16string&& src)
-        : u16string(std::move(src))
+    ESStringData(const UTF16String& src)
     {
-        initHash();
-#ifdef ENABLE_ESJIT
-        m_length = u16string::length();
-#endif
+        m_string = new(GC) UTF16String(src);
+        m_data.m_isASCIIString = false;
+        initData();
     }
 
-    ESStringData(std::u16string& src)
+    ESStringData(UTF16String&& src)
     {
-        assign(src.begin(), src.end());
-        initHash();
-#ifdef ENABLE_ESJIT
-        m_length = u16string::length();
-#endif
+        m_string = new(GC) UTF16String(src);
+        m_data.m_isASCIIString = false;
+        initData();
     }
 
     explicit ESStringData(int number)
         : ESStringData((double)number)
     {
-#ifdef ENABLE_ESJIT
-        m_length = u16string::length();
-#endif
     }
 
     explicit ESStringData(double number);
 
     explicit ESStringData(char16_t c)
-        : u16string({c})
     {
-        initHash();
-#ifdef ENABLE_ESJIT
-        m_length = u16string::length();
-#endif
+        m_string = new(GC) UTF16String({c});
+        m_data.m_isASCIIString = false;
+        initData();
+    }
+
+    explicit ESStringData(char c)
+    {
+        m_string = new(GC) ASCIIString({c});
+        m_data.m_isASCIIString = true;
+        initData();
     }
 
     ESStringData(const char* s)
-        : u16string(std::move(utf8ToUtf16(s, strlen(s))))
     {
-        initHash();
-#ifdef ENABLE_ESJIT
-        m_length = u16string::length();
-#endif
+        m_string = new(GC) ASCIIString(s);
+        m_data.m_isASCIIString = true;
+        initData();
     }
 
     ESStringData(const ESStringData& s) = delete;
     void operator =(const ESStringData& s) = delete;
 
-    ALWAYS_INLINE size_t length() const
+    const char* asciiData() const
     {
+        ASSERT(isASCIIString());
+        return asASCIIString()->data();
+    }
+
+    const char16_t* utf16Data() const
+    {
+        ASSERT(!isASCIIString());
+        return asUTF16String()->data();
+    }
+
+    ASCIIString* asASCIIString() const
+    {
+        ASSERT(m_data.m_isASCIIString);
+        return (ASCIIString *)m_string;
+    }
+
+    UTF16String* asUTF16String() const
+    {
+        ASSERT(!m_data.m_isASCIIString);
+        return (UTF16String *)m_string;
+    }
+
+    bool isASCIIString() const
+    {
+        return m_data.m_isASCIIString;
+    }
+
+    char16_t charAt(const size_t& idx) const
+    {
+        if (isASCIIString()) {
+            return (*asASCIIString())[idx];
+        } else {
+            return (*asUTF16String())[idx];
+        }
+    }
+
+    size_t length() const
+    {
+        if (isASCIIString()) {
+            return asASCIIString()->length();
+        } else {
+            return asUTF16String()->length();
+        }
+    }
+
+    size_t hashValue() const
+    {
+        return m_data.m_hashData;
+    }
+
+    NullableUTF8String toNullableUTF8String() const
+    {
+        if (isASCIIString()) {
+            return NullableUTF8String(asASCIIString()->data(), asASCIIString()->length());
+        } else {
+            size_t siz;
+            const char* buf = utf16ToUtf8(asUTF16String()->data(), &siz);
+            return NullableUTF8String(buf, siz);
+        }
+    }
+
+    NullableUTF16String toNullableUTF16String() const
+    {
+        if (isASCIIString()) {
+            size_t s = asASCIIString()->length();
+            char16_t* v = (char16_t *)GC_malloc_atomic(sizeof(char16_t) * s);
+            const char* src = asASCIIString()->data();
+            for (size_t i = 0; i < s ; i ++) {
+                v[i] = src[i];
+            }
+            return NullableUTF16String(v, s);
+        } else {
+            return NullableUTF16String(asUTF16String()->data(), asUTF16String()->length());
+        }
+    }
+
+    UTF16String toUTF16String() const
+    {
+        if (isASCIIString()) {
+            UTF16String str;
+            size_t s = asASCIIString()->length();
+            str.reserve(s);
+            const char* src = asASCIIString()->data();
+            for (size_t i = 0; i < s ; i ++) {
+                str += src[i];
+            }
+            return std::move(str);
+        } else {
+            return *asUTF16String();
+        }
+    }
+
+    // NOTE this function used only debug purpose
+    const char* utf8Data() const
+    {
+        if (isASCIIString()) {
+            return asASCIIString()->data();
+        } else {
+            return utf16ToUtf8(asUTF16String()->data());
+        }
+    }
+
 #ifdef ENABLE_ESJIT
-        return m_length;
-#endif
-        return u16string::length();
-    }
-
-    ALWAYS_INLINE const char16_t* data() const
-    {
-        return u16string::data();
-    }
-
-    ALWAYS_INLINE size_t hashValue() const
-    {
-        return m_hashData.m_hashData;
-    }
-
-    ALWAYS_INLINE void initHash() const
-    {
-        std::hash<std::basic_string<char16_t> > hashFn;
-        m_hashData.m_hashData = hashFn((std::basic_string<char16_t> &)*this);
-    }
-
-#ifdef ENABLE_ESJIT
-    // static size_t offsetOfData() { return offsetof(ESStringData, _M_dataplus._M_p); }
-    static size_t offsetOfData() { return 0; }
     static size_t offsetOfLength() { return offsetof(ESStringData, m_length); }
 #endif
-
 protected:
-#pragma pack(push, 1)
 #ifdef ESCARGOT_64
-    mutable struct {
-        size_t m_hashData:64;
-    } m_hashData;
+    struct {
+        size_t m_hashData:63;
+        bool m_isASCIIString:1;
+    } m_data;
 #else
-    mutable struct {
-        size_t m_hashData:32;
-    } m_hashData;
+    struct {
+        size_t m_hashData:31;
+        bool m_isASCIIString:1;
+    } m_data;
 #endif
-#pragma pack(pop)
-#ifdef ENABLE_ESJIT
+    void* m_string;
     size_t m_length;
+
+#ifndef NDEBUG
+    ASCIIString* m_asciiString;
+    UTF16String* m_utf16String;
 #endif
+
+    void initData()
+    {
+        if (isASCIIString()) {
+            ASCIIString* as = asASCIIString();
+            m_data.m_hashData = stringHash(as->data(), as->length());
+            m_length = as->length();
+        } else {
+            UTF16String* as = asUTF16String();
+            m_data.m_hashData = stringHash(as->data(), as->length());
+            m_length = as->length();
+        }
+
+#ifndef NDEBUG
+        m_asciiString = (ASCIIString*)m_string;
+        m_utf16String = (UTF16String*)m_string;
+#endif
+    }
+
 };
 
-struct NullableUTF8String {
-    const char* m_buffer;
-    size_t m_bufferSize;
-};
+inline bool isAllASCII(const char16_t* buf, const size_t& len)
+{
+    for (unsigned i = 0; i < len ; i ++) {
+        if (buf[i] >= 128) {
+            return false;
+        }
+    }
+    return true;
+}
+
+inline ASCIIString utf16StringToASCIIString(const char16_t* buf, const size_t& len)
+{
+    ASCIIString str;
+    str.reserve(len);
+    for (unsigned i = 0 ; i < len ; i ++) {
+        ASSERT(buf[i] < 128);
+        str += buf[i];
+    }
+    return ASCIIString(std::move(str));
+}
 
 class ESString : public ESPointer {
     friend class ESScriptParser;
+    friend class ESRopeString;
 protected:
     ESString(ESStringData* data)
         : ESPointer(Type::ESString)
@@ -650,24 +791,29 @@ protected:
         m_string = data;
     }
 
-    ESString(const u16string& src)
+    ESString(const UTF16String& src)
         : ESPointer(Type::ESString)
     {
         m_string = new(GC) ESStringData(src);
     }
 
-    ESString(u16string&& src)
+    ESString(UTF16String&& src)
         : ESPointer(Type::ESString)
     {
         m_string = new(GC) ESStringData(std::move(src));
     }
 
-    ESString(std::u16string& src)
+    ESString(const ASCIIString& src)
         : ESPointer(Type::ESString)
     {
         m_string = new(GC) ESStringData(src);
     }
 
+    ESString(ASCIIString&& src)
+        : ESPointer(Type::ESString)
+    {
+        m_string = new(GC) ESStringData(std::move(src));
+    }
 
     ESString(int number)
         : ESString((double)number)
@@ -676,10 +822,16 @@ protected:
 
     ESString(double number);
 
-    ESString(char16_t number)
+    ESString(char16_t c)
         : ESPointer(Type::ESString)
     {
-        m_string = new(GC) ESStringData(number);
+        m_string = new(GC) ESStringData(c);
+    }
+
+    ESString(char c)
+            : ESPointer(Type::ESString)
+    {
+        m_string = new(GC) ESStringData(c);
     }
 
     ESString(const char* str)
@@ -688,17 +840,30 @@ protected:
         m_string = new(GC) ESStringData(str);
     }
 public:
-    static ESString* create(u16string&& src)
+    static ESString* create(ASCIIString&& src)
     {
         return new ESString(std::move(src));
     }
 
-    static ESString* create(const u16string& src)
+    static ESString* create(const ASCIIString& src)
     {
         return new ESString(src);
     }
 
-    static ESString* create(std::u16string& src)
+    static ESString* create(UTF16String&& src)
+    {
+        return new ESString(std::move(src));
+    }
+
+    static ESString* createASCIIStringIfNeeded(UTF16String&& src)
+    {
+        if (isAllASCII(src.data(), src.length())) {
+            return new ESString(utf16StringToASCIIString(src.data(), src.length()));
+        }
+        return new ESString(std::move(src));
+    }
+
+    static ESString* create(const UTF16String& src)
     {
         return new ESString(src);
     }
@@ -713,6 +878,11 @@ public:
         return new ESString(number);
     }
 
+    static ESString* create(char c)
+    {
+        return new ESString(c);
+    }
+
     static ESString* create(char16_t c)
     {
         return new ESString(c);
@@ -723,50 +893,52 @@ public:
         return new ESString(str);
     }
 
+    static ESString* createAtomicString(const char* str);
+
     static ESString* concatTwoStrings(ESString* lstr, ESString* rstr);
 
     const char* utf8Data() const
     {
-        return utf16ToUtf8(data());
+        return stringData()->utf8Data();
     }
 
-    u16string* utf16Data() const
+    NullableUTF8String toNullableUTF8String() const
     {
-        if (UNLIKELY(m_string == NULL)) {
-            ensureNormalString();
-        }
-        return m_string;
+        return stringData()->toNullableUTF8String();
     }
 
-    NullableUTF8String toNullableUTF8String()
+    NullableUTF16String toNullableUTF16String() const
     {
-        NullableUTF8String str;
-        str.m_buffer = utf16ToUtf8(data(), &str.m_bufferSize);
-        return str;
+        return stringData()->toNullableUTF16String();
     }
 
-    template <typename Func>
-    void wcharData(const Func& fn)
+    UTF16String toUTF16String() const
     {
-#ifdef ANDROID
-        RELEASE_ASSERT_NOT_REACHED();
-#endif
-        wchar_t* buf = (wchar_t *)alloca(sizeof(wchar_t) * (length()+1));
-        for (unsigned i = 0 ; i < (unsigned)length() ; i ++) {
-            buf[i] = data()[i];
-        }
-        buf[length()] = 0;
+        return std::move(stringData()->toUTF16String());
+    }
 
-        fn(buf, length());
+    const char* asciiData() const
+    {
+        return stringData()->asciiData();
+    }
+
+    const char16_t* utf16Data() const
+    {
+        return stringData()->utf16Data();
+    }
+
+    char16_t charAt(const size_t& idx) const
+    {
+        return stringData()->charAt(idx);
     }
 
     uint32_t tryToUseAsIndex();
     bool hasOnlyDigit()
     {
-        const u16string& s = string();
         bool allOfCharIsDigit = true;
-        for (unsigned i = 0; i < s.length() ; i ++) {
-            char16_t c = s[i];
+        size_t siz = stringData()->length();
+        for (unsigned i = 0; i < siz ; i ++) {
+            char16_t c = stringData()->charAt(i);
             if (c < '0' || c > '9') {
                 allOfCharIsDigit = false;
                 break;
@@ -776,13 +948,11 @@ public:
     }
 
     ALWAYS_INLINE void ensureNormalString() const;
-    ALWAYS_INLINE const char16_t* data() const;
-    ALWAYS_INLINE const u16string& string() const;
     ALWAYS_INLINE const ESStringData* stringData() const;
     ALWAYS_INLINE size_t length() const;
     ALWAYS_INLINE size_t hashValue() const
     {
-        return m_string->hashValue();
+        return m_string->m_data.m_hashData;
     }
 
     ESString* substring(int from, int to) const;
@@ -800,8 +970,8 @@ public:
     ESString(const ESString& s) = delete;
     void operator =(const ESString& s) = delete;
 
-    ALWAYS_INLINE friend bool operator == (const ESString& a, const char16_t* b);
-    ALWAYS_INLINE friend bool operator != (const ESString& a, const char16_t* b);
+    ALWAYS_INLINE friend bool operator == (const ESString& a, const char* b);
+    ALWAYS_INLINE friend bool operator != (const ESString& a, const char* b);
     ALWAYS_INLINE friend bool operator == (const ESString& a, const ESString& b);
     ALWAYS_INLINE friend bool operator != (const ESString& a, const ESString& b);
     ALWAYS_INLINE friend bool operator < (const ESString& a, const ESString& b);
@@ -824,14 +994,37 @@ protected:
     ESStringData* m_string;
 };
 
-ALWAYS_INLINE bool operator == (const ESString& a, const char16_t* b)
+template <typename T>
+ALWAYS_INLINE bool stringEqual(const T* s, const T* s1, const size_t& len)
 {
-    return a.string() == b;
+    return memcmp(s, s1, sizeof(T) * len) == 0;
 }
 
-ALWAYS_INLINE bool operator != (const ESString& a, const char16_t* b)
+ALWAYS_INLINE bool stringEqual(const char16_t* s, const char* s1, const size_t& len)
 {
-    return a.string() != b;
+    for (size_t i = 0; i < len ; i ++) {
+        if (s[i] != s1[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+ALWAYS_INLINE bool operator == (const ESString& a, const char* b)
+{
+    if (a.length() == strlen(b)) {
+        if (a.stringData()->isASCIIString()) {
+            return stringEqual(a.asciiData(), b, a.length());
+        } else {
+            return stringEqual(a.utf16Data(), b, a.length());
+        }
+    }
+    return false;
+}
+
+ALWAYS_INLINE bool operator != (const ESString& a, const char* b)
+{
+    return !(a == b);
 }
 
 ALWAYS_INLINE bool operator == (const ESString& a, const ESString& b)
@@ -842,9 +1035,21 @@ ALWAYS_INLINE bool operator == (const ESString& a, const ESString& b)
     if (dataA == dataB)
         return true;
 
-    if (dataA->length() == dataB->length()) {
+    size_t lenA = dataA->length();
+    size_t lenB = dataB->length();
+    if (lenA == lenB) {
         if (dataA->hashValue() == dataB->hashValue()) {
-            return *dataA == *dataB;
+            bool a = dataA->isASCIIString();
+            bool b = dataB->isASCIIString();
+            if (a && b) {
+                return stringEqual(dataA->asciiData(), dataB->asciiData(), lenA);
+            } else if (a && !b) {
+                return stringEqual(dataB->utf16Data(), dataA->asciiData(), lenA);
+            } else if (!a && b) {
+                return stringEqual(dataA->utf16Data(), dataB->asciiData(), lenA);
+            } else {
+                return stringEqual(dataA->utf16Data(), dataB->utf16Data(), lenA);
+            }
         }
     }
     return false;
@@ -855,24 +1060,65 @@ ALWAYS_INLINE bool operator != (const ESString& a, const ESString& b)
     return !operator ==(a, b);
 }
 
+template<typename T1, typename T2>
+ALWAYS_INLINE int stringCompare(size_t l1, size_t l2, const T1* c1, const T2* c2)
+{
+    const unsigned lmin = l1 < l2 ? l1 : l2;
+    unsigned pos = 0;
+    while (pos < lmin && *c1 == *c2) {
+        ++c1;
+        ++c2;
+        ++pos;
+    }
+
+    if (pos < lmin)
+        return (c1[0] > c2[0]) ? 1 : -1;
+
+    if (l1 == l2)
+        return 0;
+
+    return (l1 > l2) ? 1 : -1;
+}
+
+ALWAYS_INLINE int stringCompare(const ESString& a, const ESString& b)
+{
+    const ESStringData* dataA = a.stringData();
+    const ESStringData* dataB = b.stringData();
+
+    bool aa = dataA->isASCIIString();
+    bool bb = dataB->isASCIIString();
+    size_t lenA = dataA->length();
+    size_t lenB = dataB->length();
+
+    if (aa && bb) {
+        return stringCompare(lenA, lenB, dataA->asciiData(), dataB->asciiData());
+    } else if (!aa && bb) {
+        return stringCompare(lenA, lenB, dataA->utf16Data(), dataB->asciiData());
+    } else if (aa && !bb) {
+        return stringCompare(lenA, lenB, dataA->asciiData(), dataB->utf16Data());
+    } else {
+        return stringCompare(lenA, lenB, dataA->utf16Data(), dataB->utf16Data());
+    }
+}
+
 ALWAYS_INLINE bool operator < (const ESString& a, const ESString& b)
 {
-    return a.string() < b.string();
+    return stringCompare(a, b) < 0;
 }
 
 ALWAYS_INLINE bool operator > (const ESString& a, const ESString& b)
 {
-    return a.string() > b.string();
+    return stringCompare(a, b) > 0;
 }
 
 ALWAYS_INLINE bool operator <= (const ESString& a, const ESString& b)
 {
-    return a.string() <= b.string();
+    return stringCompare(a, b) <= 0;
 }
 
 ALWAYS_INLINE bool operator >= (const ESString& a, const ESString& b)
 {
-    return a.string() >= b.string();
+    return stringCompare(a, b) >= 0;
 }
 
 typedef std::vector<ESString *, gc_allocator<ESString *> > ESStringVector;
@@ -885,6 +1131,7 @@ protected:
     {
         m_type = m_type | ESPointer::ESRopeString;
         m_contentLength = 0;
+        m_hasNonASCIIChild = false;
     }
 public:
     static const unsigned ESRopeStringCreateMinLimit = 256;
@@ -898,6 +1145,22 @@ public:
         rope->m_contentLength = lstr->length() + rstr->length();
         rope->m_left = lstr;
         rope->m_right = rstr;
+        bool hasNonASCIIChild = false;
+        if (lstr->m_string) {
+            hasNonASCIIChild |= !lstr->m_string->isASCIIString();
+        } else {
+            ASSERT(lstr->isESRopeString());
+            hasNonASCIIChild |= ((ESRopeString *) lstr)->m_hasNonASCIIChild;
+        }
+
+        if (rstr->m_string) {
+            hasNonASCIIChild |= !rstr->m_string->isASCIIString();
+        } else {
+            ASSERT(rstr->isESRopeString());
+            hasNonASCIIChild |= ((ESRopeString *) rstr)->m_hasNonASCIIChild;
+        }
+
+        rope->m_hasNonASCIIChild = hasNonASCIIChild;
         return rope;
     }
     ESStringData* stringData()
@@ -908,26 +1171,55 @@ public:
             ASSERT(m_contentLength == 0);
         }
 #endif
-        u16string result;
-        // TODO: should reduce unnecessary append operations in std::string::resize
-        result.resize(m_contentLength);
-        std::vector<ESString *> queue;
-        queue.push_back(m_left);
-        queue.push_back(m_right);
-        int pos = m_contentLength;
-        while (!queue.empty()) {
-            ESString* cur = queue.back();
-            queue.pop_back();
-            if (cur && cur->isESRopeString() && cur->asESRopeString()->m_contentLength != 0) {
-                ESRopeString* rs = cur->asESRopeString();
-                queue.push_back(rs->m_left);
-                queue.push_back(rs->m_right);
-            } else {
-                pos -= cur->length();
-                memcpy((void*)(result.data() + pos), cur->data(), cur->length() * sizeof(char16_t));
+        if (m_hasNonASCIIChild) {
+            UTF16String result;
+            // TODO: should reduce unnecessary append operations in std::string::resize
+            result.resize(m_contentLength);
+            std::vector<ESString *> queue;
+            queue.push_back(m_left);
+            queue.push_back(m_right);
+            int pos = m_contentLength;
+            while (!queue.empty()) {
+                ESString* cur = queue.back();
+                queue.pop_back();
+                if (cur && cur->isESRopeString() && cur->asESRopeString()->m_contentLength != 0) {
+                    ESRopeString* rs = cur->asESRopeString();
+                    queue.push_back(rs->m_left);
+                    queue.push_back(rs->m_right);
+                } else {
+                    pos -= cur->length();
+                    char16_t* buf = const_cast<char16_t *>(result.data());
+                    const ESStringData* data = cur->stringData();
+                    for (size_t i = 0 ; i < cur->length() ; i ++) {
+                        buf[i + pos] = data->charAt(i);
+                    }
+                }
             }
+            m_string =  new(GC) ESStringData(std::move(result));
+            return m_string;
+        } else {
+            ASCIIString result;
+            // TODO: should reduce unnecessary append operations in std::string::resize
+            result.resize(m_contentLength);
+            std::vector<ESString *> queue;
+            queue.push_back(m_left);
+            queue.push_back(m_right);
+            int pos = m_contentLength;
+            while (!queue.empty()) {
+                ESString* cur = queue.back();
+                queue.pop_back();
+                if (cur && cur->isESRopeString() && cur->asESRopeString()->m_contentLength != 0) {
+                    ESRopeString* rs = cur->asESRopeString();
+                    queue.push_back(rs->m_left);
+                    queue.push_back(rs->m_right);
+                } else {
+                    pos -= cur->length();
+                    memcpy((void*)(result.data() + pos), cur->stringData()->asciiData(), cur->length() * sizeof(char));
+                }
+            }
+            m_string = new(GC) ESStringData(std::move(result));
+            return m_string;
         }
-        return new(GC) ESStringData(std::move(result));
     }
     void convertIntoNormalString()
     {
@@ -951,6 +1243,7 @@ protected:
     ESString* m_left;
     ESString* m_right;
     size_t m_contentLength;
+    bool m_hasNonASCIIChild;
 };
 
 ALWAYS_INLINE ESString* ESString::concatTwoStrings(ESString* lstr, ESString* rstr)
@@ -965,11 +1258,37 @@ ALWAYS_INLINE ESString* ESString::concatTwoStrings(ESString* lstr, ESString* rst
     if (UNLIKELY(llen + rlen >= (int)ESRopeString::ESRopeStringCreateMinLimit)) {
         return ESRopeString::createAndConcat(lstr, rstr);
     } else {
-        u16string str;
-        str.reserve(llen + rlen);
-        str.append(lstr->string());
-        str.append(rstr->string());
-        return ESString::create(std::move(str));
+        bool aa = lstr->stringData()->isASCIIString();
+        bool bb = rstr->stringData()->isASCIIString();
+        if (aa && bb) {
+            ASCIIString str;
+            str.reserve(llen + rlen);
+            str.append(*lstr->stringData()->asASCIIString());
+            str.append(*rstr->stringData()->asASCIIString());
+            return ESString::create(std::move(str));
+        } else if (!aa && bb) {
+            UTF16String str;
+            str.reserve(llen + rlen);
+            str.append(*lstr->stringData()->asUTF16String());
+            for (size_t i = 0 ; i < rstr->length() ; i ++) {
+                str += rstr->stringData()->charAt(i);
+            }
+            return ESString::create(std::move(str));
+        } else if (aa && !bb) {
+            UTF16String str;
+            str.reserve(llen + rlen);
+            for (size_t i = 0 ; i < lstr->length() ; i ++) {
+                str += lstr->stringData()->charAt(i);
+            }
+            str.append(*rstr->stringData()->asUTF16String());
+            return ESString::create(std::move(str));
+        } else {
+            UTF16String str;
+            str.reserve(llen + rlen);
+            str.append(*lstr->stringData()->asUTF16String());
+            str.append(*rstr->stringData()->asUTF16String());
+            return ESString::create(std::move(str));
+        }
     }
 }
 
@@ -978,22 +1297,6 @@ ALWAYS_INLINE void ESString::ensureNormalString() const
     if (UNLIKELY(m_string == NULL)) {
         const_cast<ESString *>(this)->asESRopeString()->convertIntoNormalString();
     }
-}
-
-ALWAYS_INLINE const char16_t* ESString::data() const
-{
-    if (UNLIKELY(m_string == NULL)) {
-        ensureNormalString();
-    }
-    return m_string->data();
-}
-
-ALWAYS_INLINE const u16string& ESString::string() const
-{
-    if (UNLIKELY(m_string == NULL)) {
-        ensureNormalString();
-    }
-    return static_cast<const u16string&>(*m_string);
 }
 
 ALWAYS_INLINE const ESStringData* ESString::stringData() const
@@ -1029,7 +1332,7 @@ template<> struct equal_to<escargot::ESString *> {
         if (a == b) {
             return true;
         }
-        return a->string() == b->string();
+        return *a == *b;
     }
 };
 
@@ -1884,10 +2187,11 @@ public:
     ALWAYS_INLINE ::escargot::ESString* getCharacterAsString(size_t index)
     {
         ASSERT(index < m_stringData->length());
-        if (m_stringData->data()[index] < ESCARGOT_ASCII_TABLE_MAX)
-            return strings->asciiTable[m_stringData->data()[index]].string();
+        char16_t ch = m_stringData->stringData()->charAt(index);
+        if (ch < ESCARGOT_ASCII_TABLE_MAX)
+            return strings->asciiTable[ch].string();
         else
-            return ESString::create(m_stringData->data()[index]);
+            return ESString::create(ch);
     }
 
 #ifdef ENABLE_ESJIT

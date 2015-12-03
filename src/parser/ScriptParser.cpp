@@ -46,7 +46,7 @@ void ScriptParser::dumpStats()
 }
 #endif
 
-Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16string& source, bool isForGlobalScope)
+Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope)
 {
     ProgramNode* programNode;
     try {
@@ -92,7 +92,12 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16strin
         const ESHiddenClassPropertyInfoVector& info = instance->globalObject()->hiddenClass()->propertyInfo();
         for (unsigned i = 0; i < info.size() ; i ++) {
             if (!info[i].m_flags.m_isDeletedValue) {
-                InternalAtomicString as(instance, info[i].m_name->string().data(), info[i].m_name->string().length());
+                InternalAtomicString as;
+                if (info[i].m_name->stringData()->isASCIIString()) {
+                    as = InternalAtomicString(instance, info[i].m_name->stringData()->asciiData(), info[i].m_name->stringData()->length());
+                } else {
+                    as = InternalAtomicString(instance, info[i].m_name->stringData()->utf16Data(), info[i].m_name->stringData()->length());
+                }
                 knownGlobalNames.insert(std::make_pair(as, i));
             }
         }
@@ -318,9 +323,6 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16strin
         } else if (type >= NodeType::BinaryExpressionBitwiseAnd && type <= NodeType::BinaryExpressionUnsignedRightShift) {
             postAnalysisFunction(((BinaryExpressionBitwiseAndNode *)currentNode)->m_right, identifierStack, nearFunctionNode);
             postAnalysisFunction(((BinaryExpressionBitwiseAndNode *)currentNode)->m_left, identifierStack, nearFunctionNode);
-        } else if (type == NodeType::LogicalExpression) {
-            postAnalysisFunction(((LogicalExpressionNode *)currentNode)->m_right, identifierStack, nearFunctionNode);
-            postAnalysisFunction(((LogicalExpressionNode *)currentNode)->m_left, identifierStack, nearFunctionNode);
         } else if (type >= NodeType::UpdateExpressionDecrementPostfix && type <= UpdateExpressionIncrementPrefix) {
             postAnalysisFunction(((UpdateExpressionDecrementPostfixNode *)currentNode)->m_argument, identifierStack, nearFunctionNode);
         } else if (type >= NodeType::UnaryExpressionBitwiseNot && type <= NodeType::UnaryExpressionVoid) {
@@ -400,8 +402,9 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, const escargot::u16strin
     return programNode;
 }
 
-CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, const escargot::u16string& source, bool isForGlobalScope)
+CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope)
 {
+    /*
     if (source.length() < 1024) {
         if (isForGlobalScope) {
             auto iter = m_globalCodeCache.find(source);
@@ -415,14 +418,14 @@ CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, const escargot::u16
             }
         }
     }
-
+     */
     // unsigned long start = ESVMInstance::currentInstance()->tickCount();
     ProgramNode* node = (ProgramNode *)generateAST(instance, source, isForGlobalScope);
     ASSERT(node->type() == Program);
-    CodeBlock* cb = generateByteCode(node, source.length() > 1024 * 1024 ? false : true);
+    CodeBlock* cb = generateByteCode(node, source->length() > 1024 * 1024 ? false : true);
     // unsigned long end = ESVMInstance::currentInstance()->tickCount();
     // printf("parseScript takes %lfms\n", (end-start)/1000.0);
-
+    /*
     if (source.length() < 1024) {
         if (isForGlobalScope) {
             cb->m_isCached = true;
@@ -432,6 +435,7 @@ CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, const escargot::u16
             m_nonGlobalCodeCache.insert(std::make_pair(source, cb));
         }
     }
+    */
 
     return cb;
 }

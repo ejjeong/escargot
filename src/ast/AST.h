@@ -66,7 +66,6 @@
 #include "DoWhileStatementNode.h"
 #include "LabeledStatementNode.h"
 #include "LiteralNode.h"
-#include "LogicalExpressionNode.h"
 #include "MemberExpressionNode.h"
 #include "NativeFunctionNode.h"
 #include "NewExpressionNode.h"

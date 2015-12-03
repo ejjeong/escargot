@@ -145,9 +145,9 @@ inline ESObject* ESValue::toObject() const
     } else if (isESString()) {
         object = ESStringObject::create(asESPointer()->asESString());
     } else if (isNull()) {
-        ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create(u"cannot convert null into object"))));
+        ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("cannot convert null into object"))));
     } else if (isUndefined()) {
-        ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create(u"cannot convert undefined into object"))));
+        ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("cannot convert undefined into object"))));
     } else {
         RELEASE_ASSERT_NOT_REACHED();
     }
@@ -209,38 +209,24 @@ inline double ESValue::toNumberSlowCase() const
         if (data->length() == 0)
             return 0;
 
-#ifndef ANDROID
-        data->wcharData([&val, &data](const wchar_t* buf, unsigned size) {
-            wchar_t* end;
-            val = wcstod(buf, &end);
-            if (end != buf + size) {
-                const u16string& str = data->string();
-                bool isOnlyWhiteSpace = true;
-                for (unsigned i = 0; i < str.length(); i ++) {
-                    // FIXME we shold not use isspace function. implement javascript isspace function.
-                    if (!isspace(str[i])) {
-                        isOnlyWhiteSpace = false;
-                        break;
-                    }
-                }
-                if (isOnlyWhiteSpace) {
-                    val = 0;
-                } else
-                    val = std::numeric_limits<double>::quiet_NaN();
-            }
-        });
-
-#else
         char* end;
-        NullableUTF8String s = data->toNullableUTF8String();
-        const char* buf = s.m_buffer;
+        char* buf = (char*)alloca(data->length() + 1);
+        size_t len = data->length();
+        for (unsigned i = 0; i < len ; i ++) {
+            char16_t c = data->charAt(i);
+            if (c >= 128)
+                c = 0;
+            buf[i] = c;
+        }
+        buf[len] = 0;
         val = strtod(buf, &end);
-        if (end != buf + s.m_bufferSize-1) {
-            const u16string& str = data->string();
+        if (end != buf + len) {
             bool isOnlyWhiteSpace = true;
-            for (unsigned i = 0; i < str.length(); i ++) {
+            size_t s = data->length();
+            const ESStringData * stringData = data->stringData();
+            for (unsigned i = 0; i < s; i ++) {
                 // FIXME we shold not use isspace function. implement javascript isspace function.
-                if (!isspace(str[i])) {
+                if (!isspace(stringData->charAt(i))) {
                     isOnlyWhiteSpace = false;
                     break;
                 }
@@ -250,7 +236,6 @@ inline double ESValue::toNumberSlowCase() const
             } else
                 val = std::numeric_limits<double>::quiet_NaN();
         }
-#endif
         return val;
     } else {
         return toPrimitive().toNumber();
@@ -457,7 +442,7 @@ inline bool ESValue::equalsTo(const ESValue& val)
         if (o->isESString()) {
             if (!o2->isESString())
                 return false;
-            return o->asESString()->string() == o2->asESString()->string();
+            return *o->asESString() == *o2->asESString();
         }
         return o == o2;
     }
@@ -498,7 +483,7 @@ inline bool ESValue::equalsToByTheSameValueAlgorithm(const ESValue& val)
         if (o->isESString()) {
             if (!o2->isESString())
                 return false;
-            return o->asESString()->string() == o2->asESString()->string();
+            return *o->asESString() == *o2->asESString();
         }
         if (o == o2)
             return o == o2;
@@ -892,6 +877,12 @@ inline ESString::ESString(double number)
     }
     m_string = new(GC) ESStringData(number);
     cache->insert(std::make_pair(number, m_string));
+}
+
+inline ESString* ESString::createAtomicString(const char* str)
+{
+    InternalAtomicString as(str);
+    return as.string();
 }
 
 ALWAYS_INLINE ESValue ESPropertyAccessorData::value(::escargot::ESObject* obj, ::escargot::ESObject* originalObj)
@@ -1336,7 +1327,7 @@ ALWAYS_INLINE bool ESObject::hasProperty(const escargot::ESValue& key)
             }
         } else if (target->isESTypedArrayObject()) {
             uint32_t idx = key.toIndex();
-            if ((uint32_t)idx < target->asESTypedArrayObjectWrapper()->length())
+            if (idx != ESValue::ESInvalidIndexValue && (uint32_t)idx < target->asESTypedArrayObjectWrapper()->length())
                 return true;
         } else if (target->isESStringObject()) {
             uint32_t idx = key.toIndex();
@@ -1400,28 +1391,23 @@ ALWAYS_INLINE ESValue ESObject::get(escargot::ESValue key)
     while (true) {
         if (target->isESArrayObject() && target->asESArrayObject()->isFastmode()) {
             uint32_t idx = key.toIndex();
-            if (idx != ESValue::ESInvalidIndexValue) {
-                if (LIKELY(idx < target->asESArrayObject()->length())) {
-                    ESValue e = target->asESArrayObject()->m_vector[idx];
-                    if (LIKELY(!e.isEmpty()))
-                        return e;
-                }
+            if (LIKELY(idx < target->asESArrayObject()->length())) {
+                ESValue e = target->asESArrayObject()->m_vector[idx];
+                if (LIKELY(!e.isEmpty()))
+                    return e;
             }
         } else if (target->isESTypedArrayObject()) {
             uint32_t idx = key.toIndex();
-            if (idx != ESValue::ESInvalidIndexValue) {
+            if (idx != ESValue::ESInvalidIndexValue)
                 return target->asESTypedArrayObjectWrapper()->get(idx);
-            }
         } else if (target->isESStringObject()) {
             uint32_t idx = key.toIndex();
-            if (idx != ESValue::ESInvalidIndexValue) {
-                if (idx < target->asESStringObject()->stringData()->length()) {
-                    char16_t c = target->asESStringObject()->stringData()->string()[idx];
-                    if (LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
-                        return strings->asciiTable[c].string();
-                    } else {
-                        return ESString::create(c);
-                    }
+            if (idx < target->asESStringObject()->stringData()->length()) {
+                char16_t c = target->asESStringObject()->stringData()->stringData()->charAt(idx);
+                if (LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
+                    return strings->asciiTable[c].string();
+                } else {
+                    return ESString::create(c);
                 }
             }
         }

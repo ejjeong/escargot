@@ -239,7 +239,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                 } else {
                     u16string err_msg;
                     err_msg.append(u"assignment to undeclared variable ");
-                    err_msg.append(code->m_name.string()->data());
+                    err_msg.append(code->m_name.string()->toNullableUTF16String().m_buffer);
                     instance->throwError(ESValue(ReferenceError::create(ESString::create(std::move(err_msg)))));
                 }
             }
@@ -1117,9 +1117,12 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         if (callee.isESPointer() && (void *)callee.asESPointer() == (void *)globalObject->eval()) {
             ESValue ret = instance->runOnEvalContext([instance, &arguments, &argc]() {
                 ESValue ret;
-                if (argc)
-                    ret = instance->evaluate(const_cast<u16string &>(arguments[0].asESString()->string()), false);
-                return ret;
+                if (argc && arguments[0].isESString())
+                    return instance->evaluate((arguments[0].asESString()), false);
+                else if (argc == 0)
+                    return ESValue();
+                else
+                    return arguments[0];
             }, true);
             PUSH(stack, topOfStack, ret);
         } else {

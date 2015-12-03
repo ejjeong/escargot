@@ -31,7 +31,7 @@ make -j$NUMPROC
 cd -
 
 cd out/x86/debug
-../../../configure $GCCONFFLAGS CFLAGS='-m32' CXXFLAGS='-m32' LDFLAGS='-m32'
+../../../configure $GCCONFFLAGS CFLAGS='-m32 -g3' CXXFLAGS='-m32' LDFLAGS='-m32' --enable-debug
 make -j$NUMPROC
 cd -
 
@@ -41,6 +41,6 @@ make -j$NUMPROC
 cd -
 
 cd out/x64/debug
-../../../configure $GCCONFFLAGS
+../../../configure $GCCONFFLAGS --enable-debug CFLAGS='-g3'
 make -j$NUMPROC
 cd -

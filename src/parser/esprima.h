@@ -26,7 +26,7 @@ ALWAYS_INLINE bool isLineTerminator(char16_t ch)
     return (ch == 0x0A) || (ch == 0x0D) || (ch == 0x2028) || (ch == 0x2029);
 }
 
-escargot::Node* parse(const escargot::u16string& source);
+escargot::Node* parse(escargot::ESString* source);
 
 }
 

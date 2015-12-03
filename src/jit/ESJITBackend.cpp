@@ -2040,16 +2040,15 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             LIns* key = getTmpMapping(irGetStringByIndex->propertyIndex());
             if (keyType.isInt32Type()) {
 
-                /*
-                code for debug
+                // code for debug
+                // enable this code while string is well implemented
                 {
                     LIns* obj = boxESValue(getTmpMapping(irGetStringByIndex->objectIndex()), m_graph->getOperandType(irGetStringByIndex->objectIndex()));
                     LIns* property = boxESValue(getTmpMapping(irGetStringByIndex->propertyIndex()), m_graph->getOperandType(irGetStringByIndex->propertyIndex()));
                     LIns* args[] = {m_globalObjectP, property, obj};
-                    m_out->insCall(&getObjectOpCallInfo, args);
+                    return m_out->insCall(&getObjectOpCallInfo, args);
                 }
-                */
-
+                /*
                 LIns* result = m_out->insAlloc(sizeof(ESValue));
 
                 // FIXME in ecmascript, range of index is 0~2^32-1
@@ -2117,6 +2116,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
                 LIns* end = m_out->ins0(LIR_label);
                 gotoOperationEnd->setTarget(end);
                 return m_out->insLoad(LIR_lde, result, 0, 1, LOAD_NORMAL);
+                */
             } else {
                 RELEASE_ASSERT_NOT_REACHED();
             }

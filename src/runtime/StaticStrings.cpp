@@ -11,13 +11,13 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     stringFalse = InternalAtomicString(instance, u"false");
 
     for (unsigned i = 0; i < ESCARGOT_ASCII_TABLE_MAX ; i ++) {
-        ESString* str = ESString::create((char16_t)i);
-        asciiTable[i] = InternalAtomicString(instance, str->string().data(), str->string().length());
+        ESString* str = ESString::create((char)i);
+        asciiTable[i] = InternalAtomicString(instance, str->asciiData(), str->length());
     }
 
     for (unsigned i = 0; i < ESCARGOT_STRINGS_NUMBERS_MAX ; i ++) {
         ESString* str = ESString::create((int)i);
-        numbers[i] = InternalAtomicString(str->data());
+        numbers[i] = InternalAtomicString(str->asciiData());
     }
 
 #define INIT_STATIC_STRING(name) name = InternalAtomicString(instance, u"" #name);

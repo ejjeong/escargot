@@ -116,7 +116,7 @@ NEVER_INLINE ESValue abstractRelationalComparisonSlowCase(ESValue* left, ESValue
     if (lval.isInt32() && rval.isInt32()) {
         return ESValue(lval.asInt32() < rval.asInt32());
     } else if (lval.isESString() && rval.isESString()) {
-        return ESValue(lval.toString()->string() < rval.toString()->string());
+        return ESValue(*lval.toString() < *rval.toString());
     } else {
         double n1 = lval.toNumber();
         double n2 = rval.toNumber();
@@ -151,7 +151,7 @@ NEVER_INLINE ESValue getObjectOperationSlowCase(ESValue* willBeObject, ESValue* 
             uint32_t idx = property->toIndex();
             if (idx != ESValue::ESInvalidIndexValue) {
                 if (LIKELY(idx < willBeObject->asESString()->length())) {
-                    char16_t c = willBeObject->asESString()->string().data()[idx];
+                    char16_t c = willBeObject->asESString()->stringData()->charAt(idx);
                     if (LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
                         return strings->asciiTable[c].string();
                     } else {
@@ -202,7 +202,7 @@ NEVER_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue* 
             uint32_t idx = property->toIndex();
             if (idx != ESValue::ESInvalidIndexValue) {
                 if (LIKELY(idx < willBeObject->asESString()->length())) {
-                    char16_t c = willBeObject->asESString()->string().data()[idx];
+                    char16_t c = willBeObject->asESString()->stringData()->charAt(idx);
                     if (LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
                         return strings->asciiTable[c].string();
                     } else {
@@ -324,8 +324,8 @@ NEVER_INLINE ESValue newOperation(ESVMInstance* instance, GlobalObject* globalOb
         instance->throwError(ESValue(TypeError::create(ESString::create(u"constructor is not an function object"))));
     ESFunctionObject* function = fn.asESPointer()->asESFunctionObject();
     if (function->nonConstructor()) {
-        u16string str;
-        str.append(function->name()->string());
+        UTF16String str;
+        str.append(function->name()->toNullableUTF16String().m_buffer);
         str.append(u" is not a constructor");
         instance->throwError(ESValue(TypeError::create(ESString::create(std::move(str)))));
     }

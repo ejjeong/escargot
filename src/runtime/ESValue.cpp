@@ -242,11 +242,9 @@ void CreateExponentialRepresentation(
 ESStringData::ESStringData(double number)
 {
     if (number == 0) {
-        operator += ('0');
-#ifdef ENABLE_ESJIT
-        m_length = 1;
-#endif
-        initHash();
+        m_string = new(GC) ASCIIString({'0'});
+        m_data.m_isASCIIString = true;
+        initData();
         return;
     }
     const int flags = UNIQUE_ZERO | EMIT_POSITIVE_EXPONENT_SIGN;
@@ -298,39 +296,62 @@ ESStringData::ESStringData(double number)
             &builder);
     }
 
+    m_string = new(GC) ASCIIString();
+    ASCIIString* as = (ASCIIString*)m_string;
     if (sign)
-        operator += ('-');
+        (*as) += '-';
     char* buf = builder.Finalize();
     while (*buf) {
-        operator += (*buf);
+        (*as) += *buf;
         buf++;
     }
 
-#ifdef ENABLE_ESJIT
-    m_length = u16string::length();
-#endif
-    initHash();
+    m_data.m_isASCIIString = true;
+    initData();
 }
 
 uint32_t ESString::tryToUseAsIndex()
 {
-    const u16string& s = string();
-    bool allOfCharIsDigit = true;
-    uint32_t number = 0;
-    for (unsigned i = 0; i < s.length(); i ++) {
-        char16_t c = s[i];
-        if (c < '0' || c > '9') {
-            allOfCharIsDigit = false;
-            break;
-        } else {
-            uint32_t cnum = c-'0';
-            if (number > (std::numeric_limits<uint32_t>::max() - cnum) / 10)
-                return ESValue::ESInvalidIndexValue;
-            number = number*10 + cnum;
+    if (stringData()->isASCIIString()) {
+        bool allOfCharIsDigit = true;
+        uint32_t number = 0;
+        size_t len = length();
+        const char* data = stringData()->asciiData();
+        for (unsigned i = 0; i < len; i ++) {
+            char c = data[i];
+            if (c < '0' || c > '9') {
+                allOfCharIsDigit = false;
+                break;
+            } else {
+                uint32_t cnum = c-'0';
+                if (number > (std::numeric_limits<uint32_t>::max() - cnum) / 10)
+                    return ESValue::ESInvalidIndexValue;
+                number = number*10 + cnum;
+            }
         }
-    }
-    if (allOfCharIsDigit) {
-        return number;
+        if (allOfCharIsDigit) {
+            return number;
+        }
+    } else {
+        bool allOfCharIsDigit = true;
+        uint32_t number = 0;
+        size_t len = length();
+        const char16_t* data = stringData()->utf16Data();
+        for (unsigned i = 0; i < len; i ++) {
+            char16_t c = data[i];
+            if (c < '0' || c > '9') {
+                allOfCharIsDigit = false;
+                break;
+            } else {
+                uint32_t cnum = c-'0';
+                if (number > (std::numeric_limits<uint32_t>::max() - cnum) / 10)
+                    return ESValue::ESInvalidIndexValue;
+                number = number*10 + cnum;
+            }
+        }
+        if (allOfCharIsDigit) {
+            return number;
+        }
     }
     return ESValue::ESInvalidIndexValue;
 }
@@ -338,53 +359,22 @@ uint32_t ESString::tryToUseAsIndex()
 ESString* ESString::substring(int from, int to) const
 {
     ASSERT(0 <= from && from <= to && to <= (int)length());
-    if (UNLIKELY(m_string == NULL)) {
-        escargot::ESRopeString* rope = (escargot::ESRopeString *)this;
-        if (to - from == 1) {
-            int len_left = rope->m_left->length();
-            char16_t c;
-            if (to <= len_left) {
-                c = rope->m_left->stringData()->c_str()[from];
-            } else {
-                c = rope->m_left->stringData()->c_str()[from - len_left];
-            }
-            if (c < ESCARGOT_ASCII_TABLE_MAX) {
-                return strings->asciiTable[c].string();
-            }
-        }
-        int len_left = rope->m_left->length();
-        if (to <= len_left) {
-            u16string ret(std::move(rope->m_left->stringData()->substr(from, to-from)));
-            return ESString::create(std::move(ret));
-        } else if (len_left <= from) {
-            u16string ret(std::move(rope->m_right->stringData()->substr(from - len_left, to-from)));
-            return ESString::create(std::move(ret));
-        } else {
-            ESString* lstr = nullptr;
-            if (from == 0)
-                lstr = rope->m_left;
-            else {
-                u16string left(std::move(rope->m_left->stringData()->substr(from, len_left - from)));
-                lstr = ESString::create(std::move(left));
-            }
-            ESString* rstr = nullptr;
-            if (to == (int)length())
-                rstr = rope->m_right;
-            else {
-                u16string right(std::move(rope->m_right->stringData()->substr(0, to - len_left)));
-                rstr = ESString::create(std::move(right));
-            }
-            return ESRopeString::createAndConcat(lstr, rstr);
-        }
-        ensureNormalString();
-    }
+    ensureNormalString();
     if (to - from == 1) {
-        if (string()[from] < ESCARGOT_ASCII_TABLE_MAX) {
-            return strings->asciiTable[string()[from]].string();
+        char16_t c;
+        c = stringData()->charAt(from);
+        if (c < ESCARGOT_ASCII_TABLE_MAX) {
+            return strings->asciiTable[c].string();
+        } else {
+            return ESString::create(c);
         }
     }
-    u16string ret(std::move(m_string->substr(from, to-from)));
-    return ESString::create(std::move(ret));
+
+    if (stringData()->isASCIIString()) {
+        return ESString::create(stringData()->asASCIIString()->substr(from, to-from));
+    } else {
+        return ESString::create(stringData()->asUTF16String()->substr(from, to-from));
+    }
 }
 
 
@@ -394,16 +384,17 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
     ensureNormalString();
 
     ESRegExpObject::Option option = ESRegExpObject::Option::None;
-    const u16string* regexSource;
+    UTF16String regexSource;
     JSC::Yarr::BytecodePattern* byteCode = NULL;
     ESString* tmpStr;
     if (esptr->isESRegExpObject()) {
-        regexSource = &esptr->asESRegExpObject()->source()->string();
+        if (!esptr->asESRegExpObject()->yarrPattern())
+            regexSource = esptr->asESRegExpObject()->source()->toUTF16String();
         option = esptr->asESRegExpObject()->option();
         byteCode = esptr->asESRegExpObject()->bytecodePattern();
     } else {
         tmpStr = ESValue(esptr).toString();
-        regexSource = tmpStr->stringData();
+        regexSource = tmpStr->toUTF16String();
     }
 
     bool isGlobal = option & ESRegExpObject::Option::Global;
@@ -413,7 +404,7 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
         if (esptr->isESRegExpObject() && esptr->asESRegExpObject()->yarrPattern())
             yarrPattern = esptr->asESRegExpObject()->yarrPattern();
         else
-            yarrPattern = new JSC::Yarr::YarrPattern(*regexSource, option & ESRegExpObject::Option::IgnoreCase, option & ESRegExpObject::Option::MultiLine, &yarrError);
+            yarrPattern = new JSC::Yarr::YarrPattern(regexSource, option & ESRegExpObject::Option::IgnoreCase, option & ESRegExpObject::Option::MultiLine, &yarrError);
         if (yarrError) {
             matchResult.m_subPatternNum = 0;
             return false;
@@ -431,7 +422,11 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
     size_t length = m_string->length();
     size_t start = startIndex;
     unsigned result = 0;
-    const char16_t* chars = m_string->data();
+    const void* chars;
+    if (m_string->isASCIIString())
+        chars = m_string->asciiData();
+    else
+        chars = m_string->utf16Data();
     unsigned* outputBuf = (unsigned int*)alloca(sizeof(unsigned) * 2 * (subPatternNum + 1));
     outputBuf[1] = start;
     do {
@@ -439,7 +434,10 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
         memset(outputBuf, -1, sizeof(unsigned) * 2 * (subPatternNum + 1));
         if (start > length)
             break;
-        result = JSC::Yarr::interpret(NULL, byteCode, chars, length, start, outputBuf);
+        if (m_string->isASCIIString())
+            result = JSC::Yarr::interpret(NULL, byteCode, (const char *)chars, length, start, outputBuf);
+        else
+            result = JSC::Yarr::interpret(NULL, byteCode, (const char16_t *)chars, length, start, outputBuf);
         if (result != JSC::Yarr::offsetNoMatch) {
             if (UNLIKELY(testOnly)) {
                 return true;
@@ -795,7 +793,7 @@ bool ESArrayObject::defineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag
 
     // 3
     ESValue lenStr = strings->length.string();
-    if (P.toString()->string() == u"length") {
+    if (*P.toString() == *strings->length.string()) {
         ESValue descV = desc->get(strings->value.string());
         // 3.a
         if (!descHasValue) {
@@ -880,7 +878,7 @@ bool ESArrayObject::defineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag
             return true;
         }
         return true;
-    } else if (ESValue(P.toUint32()).toString()->string() == P.toString()->string() && P.toUint32() != 2*32-1) { // 4
+    } else if (*ESValue(P.toUint32()).toString() == *P.toString() && P.toUint32() != 2*32-1) { // 4
         // 4.a
         uint32_t index = P.toUint32();
 
@@ -957,7 +955,7 @@ bool ESRegExpObject::setSource(escargot::ESString* src)
     m_bytecodePattern = NULL;
     m_source = src;
     JSC::Yarr::ErrorCode yarrError;
-    m_yarrPattern = new JSC::Yarr::YarrPattern(src->string(), m_option & ESRegExpObject::Option::IgnoreCase, m_option & ESRegExpObject::Option::MultiLine, &yarrError);
+    m_yarrPattern = new JSC::Yarr::YarrPattern(src->toUTF16String(), m_option & ESRegExpObject::Option::IgnoreCase, m_option & ESRegExpObject::Option::MultiLine, &yarrError);
     if (yarrError)
         return false;
     return true;
@@ -1467,7 +1465,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
             instance->m_currentExecutionContext = currentContext;
         }
     } else {
-        instance->throwError(ESValue(TypeError::create(ESString::create(u"Callee is not a function object"))));
+        instance->throwError(ESValue(TypeError::create(ESString::create("Callee is not a function object"))));
     }
 
     return result;
@@ -1489,14 +1487,13 @@ void ESDateObject::parseYmdhmsToDate(struct tm* timeinfo, int year, int month, i
 
 void ESDateObject::parseStringToDate(struct tm* timeinfo, bool* timezoneSet, escargot::ESString* istr)
 {
-    char* buffer = (char*)istr->utf8Data();
+    char* buffer = (char*)istr->toNullableUTF8String().m_buffer;
     if (isalpha(buffer[0])) {
         strptime(buffer, "%B %d %Y %H:%M:%S %z", timeinfo);
         *timezoneSet = true;
     } else if (isdigit(buffer[0])) {
         strptime(buffer, "%m/%d/%Y %H:%M:%S", timeinfo);
     }
-    GC_FREE(buffer);
 }
 
 int ESDateObject::daysInYear(long year)

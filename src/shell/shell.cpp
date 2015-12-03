@@ -185,10 +185,10 @@ int main(int argc, char* argv[])
                 ES->exit();
                 return 1;
             }
-            escargot::ESStringData source(buf);
+            escargot::ESString* str = escargot::ESString::create(buf);
             std::jmp_buf tryPosition;
             if (setjmp(ES->registerTryPos(&tryPosition)) == 0) {
-                escargot::ESValue ret = ES->evaluate(source);
+                escargot::ESValue ret = ES->evaluate(str);
                 ES->printValue(ret);
                 ES->unregisterTryPos(&tryPosition);
             } else {
@@ -238,13 +238,13 @@ int main(int argc, char* argv[])
             }
             FILE* fp = fopen(argv[i], "r");
             if (fp) {
-                std::string str;
+                escargot::ASCIIString str;
                 char buf[512];
                 while (fgets(buf, sizeof buf, fp) != NULL) {
                     str += buf;
                 }
                 fclose(fp);
-                escargot::ESStringData source(str.c_str());
+                escargot::ESString* source = escargot::ESString::create(std::move(str));
                 std::jmp_buf tryPosition;
                 if (setjmp(ES->registerTryPos(&tryPosition)) == 0) {
                     escargot::ESValue ret = ES->evaluate(source);
@@ -274,10 +274,10 @@ int main(int argc, char* argv[])
                         ES->exit();
                         return 1;
                     }
-                    escargot::ESStringData source(buf);
+                    escargot::ESString* str = escargot::ESString::create(buf);
                     std::jmp_buf tryPosition;
                     if (setjmp(ES->registerTryPos(&tryPosition)) == 0) {
-                        escargot::ESValue ret = ES->evaluate(source);
+                        escargot::ESValue ret = ES->evaluate(str);
                         ES->printValue(ret);
                         ES->unregisterTryPos(&tryPosition);
                     } else {

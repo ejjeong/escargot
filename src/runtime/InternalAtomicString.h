@@ -24,10 +24,10 @@ public:
     InternalAtomicString(ESVMInstance* instance,  const char16_t* src);
     InternalAtomicString(ESVMInstance* instance,  const char16_t* src, size_t len);
 
-    ALWAYS_INLINE const char16_t* data() const
-    {
-        return string()->data();
-    }
+    InternalAtomicString(const char* src);
+    InternalAtomicString(const char* src, size_t len);
+    InternalAtomicString(ESVMInstance* instance,  const char* src);
+    InternalAtomicString(ESVMInstance* instance,  const char* src, size_t len);
 
     ALWAYS_INLINE ESString* string() const
     {

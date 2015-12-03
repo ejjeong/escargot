@@ -4,6 +4,8 @@
 namespace escargot {
 class ESString;
 
+// TODO implement utf-16, 4-bytes case
+
 ALWAYS_INLINE size_t utf16ToUtf8(char16_t uc, char* UTF8)
 {
     size_t tRequiredSize = 0;

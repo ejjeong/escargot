@@ -192,9 +192,9 @@ inline void setVarDefineDataProperty(ExecutionContext* ec, GlobalObject* globalO
     if (!ec->isStrictMode()) {
         globalObj->defineDataProperty(code->m_name.string(), true, true, true, value);
     } else {
-        u16string err_msg;
+        UTF16String err_msg;
         err_msg.append(u"assignment to undeclared variable ");
-        err_msg.append(code->m_name.string()->data());
+        err_msg.append(code->m_name.string()->toUTF16String());
         ESVMInstance::currentInstance()->throwError(ESValue(ReferenceError::create(ESString::create(std::move(err_msg)))));
     }
 }
@@ -234,7 +234,7 @@ inline ESValueInDouble evalCall(ESVMInstance* instance, ExecutionContext* ec, si
         ESValue ret = instance->runOnEvalContext([instance, &arguments, &argc]() {
             ESValue ret;
             if (argc)
-                ret = instance->evaluate(const_cast<u16string &>(arguments[0].asESString()->string()), false);
+                ret = instance->evaluate(arguments[0].asESString(), false);
             return ret;
         }, true);
         return ESValue::toRawDouble(ret);

@@ -141,7 +141,7 @@ ESVMInstance::~ESVMInstance()
 #endif
 }
 
-ESValue ESVMInstance::evaluate(u16string& source, bool isForGlobalScope)
+ESValue ESVMInstance::evaluate(ESString* source, bool isForGlobalScope)
 {
     // unsigned long start = ESVMInstance::currentInstance()->tickCount();
     m_lastExpressionStatementValue = ESValue();
@@ -187,52 +187,52 @@ void ESVMInstance::printValue(ESValue val)
         if (v.isEmpty()) {
             str.append(u"[Empty Value]");
         } else if (v.isInt32()) {
-            str.append(*(v.toString()->utf16Data()));
+            str.append((v.toString()->toUTF16String()));
         } else if (v.isNumber()) {
-            str.append(*(v.toString()->utf16Data()));
+            str.append((v.toString()->toUTF16String()));
         } else if (v.isUndefined()) {
-            str.append(*(v.toString()->utf16Data()));
+            str.append((v.toString()->toUTF16String()));
         } else if (v.isNull()) {
-            str.append(*(v.toString()->utf16Data()));
+            str.append((v.toString()->toUTF16String()));
         } else if (v.isBoolean()) {
-            str.append(*(v.toString()->utf16Data()));
+            str.append((v.toString()->toUTF16String()));
         } else if (v.isESPointer()) {
             ESPointer* o = v.asESPointer();
             if (o->isESString()) {
-                str.append(*(o->asESString()->utf16Data()));
+                str.append((o->asESString()->toUTF16String()));
             } else if (o->isESFunctionObject()) {
-                str.append(*(v.toString()->utf16Data()));
+                str.append((v.toString()->toUTF16String()));
             } else if (o->isESArrayObject()) {
                 str.append(u"[");
                 bool isFirst = true;
                 o->asESObject()->enumeration([&str, &isFirst, o, &toString](escargot::ESValue key) {
                     if (!isFirst)
                         str.append(u",");
-                    str.append(*(key.toString()->utf16Data()));
+                    str.append((key.toString()->toUTF16String()));
                     str.append(u": ");
-                    str.append(*(o->asESObject()->getOwnProperty(key).toString()->utf16Data()));
+                    str.append((o->asESObject()->getOwnProperty(key).toString()->toUTF16String()));
                     isFirst = false;
                 });
                 str.append(u"]");
             } else if (o->isESErrorObject()) {
-                str.append(*(v.toString()->utf16Data()));
+                str.append((v.toString()->toUTF16String()));
             } else if (o->isESObject()) {
                 if (o->asESObject()->get(ESValue(currentInstance()->strings().constructor)).isESPointer() && o->asESObject()->get(ESValue(currentInstance()->strings().constructor)).asESPointer()->isESObject())
-                    str.append(*(o->asESObject()->get(ESValue(currentInstance()->strings().constructor)).asESPointer()->asESObject()->get(ESValue(currentInstance()->strings().name)).toString()->utf16Data()));
+                    str.append((o->asESObject()->get(ESValue(currentInstance()->strings().constructor)).asESPointer()->asESObject()->get(ESValue(currentInstance()->strings().name)).toString()->toUTF16String()));
                 str.append(u" {");
                 bool isFirst = true;
                 o->asESObject()->enumeration([&str, &isFirst, o, &toString](escargot::ESValue key) {
                     if (!isFirst)
                         str.append(u", ");
-                    str.append(*(key.toString()->utf16Data()));
+                    str.append((key.toString()->toUTF16String()));
                     str.append(u": ");
-                    str.append(*(o->asESObject()->getOwnProperty(key).toString()->utf16Data()));
+                    str.append((o->asESObject()->getOwnProperty(key).toString()->toUTF16String()));
                     // toString(slot.value(o->asESObject()));
                     isFirst = false;
                 });
                 if (o->isESStringObject()) {
                     str.append(u", [[PrimitiveValue]]: \"");
-                    str.append(*(o->asESStringObject()->stringData()->utf16Data()));
+                    str.append((o->asESStringObject()->stringData()->toUTF16String()));
                     str.append(u"\"");
                 }
                 str.append(u"}");
