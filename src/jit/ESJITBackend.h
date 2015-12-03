@@ -64,6 +64,8 @@ private:
     nanojit::LirBuffer* m_buf;
     nanojit::Fragment* m_f;
     nanojit::LirWriter* m_out;
+    nanojit::SideExit* m_exit;
+    nanojit::GuardRecord* m_rec;
 
     nanojit::LIns* m_zeroP;
     nanojit::LIns* m_oneI;

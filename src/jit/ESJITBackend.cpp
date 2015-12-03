@@ -130,6 +130,8 @@ NativeGenerator::NativeGenerator(ESGraph* graph)
     , m_buf(new LirBuffer(*m_alloc))
     , m_f(new Fragment(NULL verbose_only(, 0)))
     , m_out(new LirBufWriter(m_buf, m_config))
+    , m_exit(nullptr)
+    , m_rec(nullptr)
 {
 #ifndef NDEBUG
     if (ESVMInstance::currentInstance()->m_verboseJIT)
@@ -168,6 +170,10 @@ NativeGenerator::~NativeGenerator()
     delete m_buf;
     delete m_f;
     delete m_out;
+    if (m_exit)
+        delete m_exit;
+    if (m_rec)
+        delete m_rec;
 }
 
 size_t getMaxStackPos(ESGraph* graph, size_t currentESIRTargetIndex, bool repeatCurrentBytecode)
@@ -2437,17 +2443,17 @@ bool NativeGenerator::nanojitCodegen(ESVMInstance* instance)
 
 
 
-    SideExit* exit = new SideExit();
-    memset(exit, 0, sizeof(SideExit));
-    exit->from = m_f;
-    exit->target = NULL;
+    m_exit = new SideExit();
+    memset(m_exit, 0, sizeof(SideExit));
+    m_exit->from = m_f;
+    m_exit->target = NULL;
 
-    GuardRecord* rec = new GuardRecord();
-    memset(rec, 0, sizeof(GuardRecord));
-    rec->exit = exit;
-    exit->addGuard(rec);
+    m_rec = new GuardRecord();
+    memset(m_rec, 0, sizeof(GuardRecord));
+    m_rec->exit = m_exit;
+    m_exit->addGuard(m_rec);
 
-    m_f->lastIns = m_out->insGuard(LIR_x, nullptr, rec);
+    m_f->lastIns = m_out->insGuard(LIR_x, nullptr, m_rec);
 
 #ifndef NDEBUG
     if (ESVMInstance::currentInstance()->m_useVerboseWriter) {
