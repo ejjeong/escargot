@@ -362,7 +362,7 @@ run-sunspider:
 
 run-octane:
 	cd test/octane/; \
-	../../escargot run_escargot_test.js
+	../../escargot run.js
 
 run-test262:
 	cd test/test262/; \
