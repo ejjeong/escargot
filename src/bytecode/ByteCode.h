@@ -2209,11 +2209,12 @@ public:
 class CodeBlock : public gc {
     CodeBlock(size_t roughCodeBlockSizeInWordSize, bool isBuiltInFunction);
 public:
-    ~CodeBlock();
     static CodeBlock* create(size_t roughCodeBlockSizeInWordSize = 0, bool isBuiltInFunction = false)
     {
         return new CodeBlock(roughCodeBlockSizeInWordSize, isBuiltInFunction);
     }
+    void finalize();
+
     template <typename CodeType>
     void pushCode(const CodeType& type, ByteCodeGenerateContext& context, Node* node);
     inline void pushCode(const ExecuteNativeFunction& code);
@@ -2273,7 +2274,6 @@ public:
 #endif
 
 #ifdef ENABLE_ESJIT
-    void finalizeJITCode();
     nanojit::CodeAlloc* codeAlloc();
     nanojit::Allocator* nanoJITDataAllocator();
     JITFunction m_cachedJITFunction;
