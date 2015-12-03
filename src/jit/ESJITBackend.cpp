@@ -418,10 +418,27 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
             mask = m_out->insImmI(ESPointer::Type::ESArrayObject);
         else
             return nullptr;
+
         LIns* typeOfESPtr = m_out->insLoad(LIR_ldi, unboxESValue(in, TypePointer), ESPointer::offsetOfType(), 1, LOAD_NORMAL);
-        LIns* esPointerMaskedValue = m_out->ins2(LIR_andi, typeOfESPtr, mask);
-        LIns* checkIfFlagIdentical = m_out->ins2(LIR_eqi, esPointerMaskedValue, mask);
-        LIns* jumpIfFlagIdentical = m_out->insBranch(LIR_jt, checkIfFlagIdentical, (LIns*)nullptr);
+        LIns* jumpIfFlagIdentical;
+        if (type.isStringType()) {
+            LIns* mask2 = m_out->insImmI(ESPointer::Type::ESRopeString);
+            LIns* esPointerMaskedValue1 = m_out->ins2(LIR_andi, typeOfESPtr, mask);
+            LIns* checkIfFlagIdentical1 = m_out->ins2(LIR_eqi, esPointerMaskedValue1, mask);
+            LIns* jumpIfNotString = m_out->insBranch(LIR_jf, checkIfFlagIdentical1, (LIns*)nullptr);
+
+            // skip in case of RopeString
+            LIns* esPointerMaskedValue2 = m_out->ins2(LIR_andi, typeOfESPtr, mask2);
+            LIns* checkIfFlagIdentical2 = m_out->ins2(LIR_eqi, esPointerMaskedValue2, mask2);
+
+            jumpIfFlagIdentical = m_out->insBranch(LIR_jf, checkIfFlagIdentical2, (LIns*)nullptr);
+            LIns* nonStringPath0 = m_out->ins0(LIR_label);
+            jumpIfNotString->setTarget(nonStringPath0);
+        } else {
+            LIns* esPointerMaskedValue = m_out->ins2(LIR_andi, typeOfESPtr, mask);
+            LIns* checkIfFlagIdentical = m_out->ins2(LIR_eqi, esPointerMaskedValue, mask);
+            jumpIfFlagIdentical = m_out->insBranch(LIR_jt, checkIfFlagIdentical, (LIns*)nullptr);
+        }
 #ifndef NDEBUG
         if (ESVMInstance::currentInstance()->m_verboseJIT) {
             JIT_LOG(in, "Expected below-typed value, but got this value");

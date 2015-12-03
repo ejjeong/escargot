@@ -936,6 +936,11 @@ public:
         m_right = nullptr;
         m_contentLength = 0;
     }
+
+#ifdef ENABLE_ESJIT
+    static size_t offsetOfContentLength() { return offsetof(ESRopeString, m_contentLength); }
+#endif
+
 public:
     size_t contentLength()
     {

@@ -85,7 +85,11 @@ public:
             if (p->isESArrayObject()) {
                 return TypeArrayObject;
             } else if (p->isESString()) {
-                return TypeString;
+                if (p->isESRopeString()){
+                    return TypeRopeString;
+                } else {
+                    return TypeString;
+                }
             } else if (p->isESFunctionObject()) {
                 return TypeFunctionObject;
             } else if (p->isESObject()) {
