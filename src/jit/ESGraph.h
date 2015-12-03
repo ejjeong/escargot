@@ -25,7 +25,7 @@ class ESBasicBlock;
 typedef std::vector<ESIR*, CustomAllocator<ESIR*> > ESIRVector;
 typedef std::vector<ESBasicBlock*, CustomAllocator<ESBasicBlock*> > ESBasicBlockVector;
 
-class ESBasicBlock : public ESJITAllocator {
+class ESBasicBlock : public ESJITAlloc {
     friend class NativeGenerator;
 public:
     static ESBasicBlock* create(ESGraph* graph, ESBasicBlock* parentBlock = nullptr, bool setIndexLater = false)
@@ -94,7 +94,7 @@ private:
     std::vector<nanojit::LIns*, CustomAllocator<nanojit::LIns*> > m_insToExtendLife;
 };
 
-class ESGraph : public ESJITAllocator {
+class ESGraph : public ESJITAlloc {
     friend class NativeGenerator;
 public:
     static ESGraph* create(CodeBlock* codeBlock)
