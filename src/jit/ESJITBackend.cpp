@@ -170,7 +170,12 @@ NativeGenerator::~NativeGenerator()
     delete m_assm;
     delete m_buf;
     delete m_f;
-    delete m_out;
+    LirWriter* ptr = m_out;
+    while (ptr) {
+        m_out = m_out->out;
+        delete ptr;
+        ptr = m_out;
+    }
     if (m_exit)
         delete m_exit;
     if (m_rec)
