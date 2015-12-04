@@ -108,8 +108,8 @@ public:
 
 class ESJITCompiler {
 public:
-    ESJITCompiler(CodeBlock* codeBlock)
-        : m_codeBlock(codeBlock), m_graph(nullptr), m_native(nullptr) { }
+    ESJITCompiler(CodeBlock* codeBlock);
+    ~ESJITCompiler();
 
     bool compile(ESVMInstance* instance);
     void finalize();
@@ -122,6 +122,7 @@ private:
     CodeBlock* m_codeBlock;
     ESGraph* m_graph;
     JITFunction m_native;
+    unsigned long m_startTime;
 };
 
 JITFunction JITCompile(CodeBlock* codeBlock, ESVMInstance* instance);

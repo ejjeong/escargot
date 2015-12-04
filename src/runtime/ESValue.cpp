@@ -1280,7 +1280,6 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
             }
 
             if (!compileNextTime) {
-                GC_disable();
                 jitFunction = reinterpret_cast<JITFunction>(ESJIT::JITCompile(fn->codeBlock(), instance));
                 if (jitFunction) {
                     LOG_VJ("> Compilation successful for function %s (codeBlock %p)! Cache jit function %p\n", functionName, fn->codeBlock(), jitFunction);
@@ -1296,8 +1295,6 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
                     fn->codeBlock()->m_dontJIT = true;
                     fn->codeBlock()->removeJITInfo();
                 }
-                ESJIT::ESJITAllocator::freeAll();
-                GC_enable();
             } else {
                 size_t threshold = fn->codeBlock()->m_jitThreshold;
                 if (threshold > 1024) {

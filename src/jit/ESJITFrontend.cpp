@@ -903,7 +903,6 @@ postprocess:
 
 unsupported:
     LOG_VJ("Unsupported case in ByteCode %s (idx %zu) (while parsing in FrontEnd)\n", getByteCodeName(codeBlock->m_extraData[bytecodeCounter].m_opcode), idx);
-    GC_enable();
     return nullptr;
 }
 
