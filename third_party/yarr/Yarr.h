@@ -30,6 +30,8 @@
 #ifndef yarr_Yarr_h
 #define yarr_Yarr_h
 
+#define YARR_8BIT_CHAR_SUPPORT 1
+
 #include <limits.h>
 #include "YarrInterpreter.h"
 #include "YarrPattern.h"

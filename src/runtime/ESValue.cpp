@@ -384,17 +384,16 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
     ensureNormalString();
 
     ESRegExpObject::Option option = ESRegExpObject::Option::None;
-    UTF16String regexSource;
+    const ESString* regexSource;
     JSC::Yarr::BytecodePattern* byteCode = NULL;
     ESString* tmpStr;
     if (esptr->isESRegExpObject()) {
-        if (!esptr->asESRegExpObject()->yarrPattern())
-            regexSource = esptr->asESRegExpObject()->source()->toUTF16String();
+        regexSource = esptr->asESRegExpObject()->source();
         option = esptr->asESRegExpObject()->option();
         byteCode = esptr->asESRegExpObject()->bytecodePattern();
     } else {
         tmpStr = ESValue(esptr).toString();
-        regexSource = tmpStr->toUTF16String();
+        regexSource = tmpStr;
     }
 
     bool isGlobal = option & ESRegExpObject::Option::Global;
@@ -404,7 +403,7 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
         if (esptr->isESRegExpObject() && esptr->asESRegExpObject()->yarrPattern())
             yarrPattern = esptr->asESRegExpObject()->yarrPattern();
         else
-            yarrPattern = new JSC::Yarr::YarrPattern(regexSource, option & ESRegExpObject::Option::IgnoreCase, option & ESRegExpObject::Option::MultiLine, &yarrError);
+            yarrPattern = new JSC::Yarr::YarrPattern(*regexSource, option & ESRegExpObject::Option::IgnoreCase, option & ESRegExpObject::Option::MultiLine, &yarrError);
         if (yarrError) {
             matchResult.m_subPatternNum = 0;
             return false;
@@ -955,7 +954,7 @@ bool ESRegExpObject::setSource(escargot::ESString* src)
     m_bytecodePattern = NULL;
     m_source = src;
     JSC::Yarr::ErrorCode yarrError;
-    m_yarrPattern = new JSC::Yarr::YarrPattern(src->toUTF16String(), m_option & ESRegExpObject::Option::IgnoreCase, m_option & ESRegExpObject::Option::MultiLine, &yarrError);
+    m_yarrPattern = new JSC::Yarr::YarrPattern(*src, m_option & ESRegExpObject::Option::IgnoreCase, m_option & ESRegExpObject::Option::MultiLine, &yarrError);
     if (yarrError)
         return false;
     return true;

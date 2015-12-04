@@ -1947,7 +1947,7 @@ PassOwnPtr<BytecodePattern> byteCompileEscargot(YarrPattern& pattern, BumpPointe
 {
     return ByteCompiler(pattern).compile(allocator);
 }
-
+/*
 unsigned interpret(void *cx, BytecodePattern* bytecode, const String& input, unsigned start, unsigned* output)
 {
 #if YARR_8BIT_CHAR_SUPPORT
@@ -1956,7 +1956,7 @@ unsigned interpret(void *cx, BytecodePattern* bytecode, const String& input, uns
 #endif
     return Interpreter<UChar>(cx, bytecode, output, input.data(), input.length(), start).interpret();
 }
-
+*/
 unsigned interpret(void *cx, BytecodePattern* bytecode, const LChar* input, unsigned length, unsigned start, unsigned* output)
 {
     return Interpreter<LChar>(cx, bytecode, output, input, length, start).interpret();

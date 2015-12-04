@@ -36,8 +36,7 @@ struct AlignmentTestStruct
 #define JS_EXPORT_PRIVATE
 #define WTF_MAKE_FAST_ALLOCATED
 #define NO_RETURN_DUE_TO_ASSERT
-typedef escargot::UTF16String String;
-typedef escargot::UTF16String UString;
+typedef escargot::ESString String;
 typedef char16_t UChar;
 typedef char LChar;
 

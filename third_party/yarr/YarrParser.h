@@ -200,11 +200,16 @@ private:
         : m_delegate(delegate)
         , m_backReferenceLimit(backReferenceLimit)
         , m_err(NoError)
-        , m_data(pattern.data())
+        , m_data(NULL)
         , m_size(pattern.length())
         , m_index(0)
         , m_parenthesesNestingDepth(0)
     {
+        if (pattern.is8Bit()) {
+            m_data = (const CharType *)pattern.characters8();
+        } else {
+            m_data = (const CharType *)pattern.characters16();
+        }
     }
 
     /*

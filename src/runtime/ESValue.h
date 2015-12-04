@@ -935,7 +935,30 @@ public:
         return stringData()->utf16Data();
     }
 
+    // for yarr
+    bool is8Bit() const
+    {
+        return stringData()->isASCIIString();
+    }
+
+    const char* characters8() const
+    {
+        ASSERT(is8Bit());
+        return toNullableUTF8String().m_buffer;
+    }
+
+    const char16_t* characters16() const
+    {
+        ASSERT(!is8Bit());
+        return toNullableUTF16String().m_buffer;
+    }
+
     char16_t charAt(const size_t& idx) const
+    {
+        return stringData()->charAt(idx);
+    }
+
+    char16_t operator[](const size_t& idx) const
     {
         return stringData()->charAt(idx);
     }
@@ -971,7 +994,7 @@ public:
         };
         COMPILE_ASSERT((sizeof(RegexMatchResultPiece)) == (sizeof(unsigned) * 2), sizeof_RegexMatchResultPiece_wrong);
         int m_subPatternNum;
-        std::vector< std::vector< RegexMatchResultPiece > > m_matchResults;
+        std::vector<std::vector<RegexMatchResultPiece> > m_matchResults;
     };
     bool match(ESPointer* esptr, RegexMatchResult& result, bool testOnly = false, size_t startIndex = 0) const;
 
@@ -1142,7 +1165,7 @@ protected:
         m_hasNonASCIIChild = false;
     }
 public:
-    static const unsigned ESRopeStringCreateMinLimit = 256;
+    static const unsigned ESRopeStringCreateMinLimit = 16;
     static ESRopeString* create()
     {
         return new ESRopeString();
@@ -1254,7 +1277,7 @@ protected:
     bool m_hasNonASCIIChild;
 };
 
-ALWAYS_INLINE ESString* ESString::concatTwoStrings(ESString* lstr, ESString* rstr)
+inline ESString* ESString::concatTwoStrings(ESString* lstr, ESString* rstr)
 {
     int llen = lstr->length();
     if (llen == 0)
