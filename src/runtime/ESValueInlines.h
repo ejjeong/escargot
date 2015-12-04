@@ -882,6 +882,15 @@ inline ESString::ESString(double number)
     // cache->insert(std::make_pair(number, m_string));
 }
 
+inline ESString* ESString::create(const char* str)
+{
+    unsigned l = strlen(str);
+    if (l == 1 && str[0] < 128) {
+        return strings->asciiTable[str[0]].string();
+    } else
+        return new ESString(str);
+}
+
 inline ESString* ESString::createAtomicString(const char* str)
 {
     InternalAtomicString as(str);

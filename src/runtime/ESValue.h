@@ -603,13 +603,6 @@ public:
         initData();
     }
 
-    ESStringData(const char* s)
-    {
-        m_string = new(GC) ASCIIString(s);
-        m_data.m_isASCIIString = true;
-        initData();
-    }
-
     ESStringData(const ESStringData& s) = delete;
     void operator =(const ESStringData& s) = delete;
 
@@ -834,11 +827,6 @@ protected:
         m_string = new(GC) ESStringData(c);
     }
 
-    ESString(const char* str)
-        : ESPointer(Type::ESString)
-    {
-        m_string = new(GC) ESStringData(str);
-    }
 public:
     static ESString* create(ASCIIString&& src)
     {
@@ -896,11 +884,7 @@ public:
         return new ESString(c);
     }
 
-    static ESString* create(const char* str)
-    {
-        return new ESString(str);
-    }
-
+    static ESString* create(const char* str);
     static ESString* createAtomicString(const char* str);
 
     static ESString* concatTwoStrings(ESString* lstr, ESString* rstr);
@@ -1165,7 +1149,7 @@ protected:
         m_hasNonASCIIChild = false;
     }
 public:
-    static const unsigned ESRopeStringCreateMinLimit = 16;
+    static const unsigned ESRopeStringCreateMinLimit = 256;
     static ESRopeString* create()
     {
         return new ESRopeString();
