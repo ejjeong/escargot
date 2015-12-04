@@ -36,28 +36,24 @@ ALWAYS_INLINE size_t utf16ToUtf8(char16_t uc, char* UTF8)
     return tRequiredSize;
 }
 
-inline const char * utf16ToUtf8(const char16_t *t, size_t* bufferSize = NULL)
+inline const char * utf16ToUtf8(const char16_t *t, const size_t& len, size_t* bufferSize = NULL)
 {
     unsigned strLength = 0;
-    const char16_t* pt = t;
     char buffer[MB_CUR_MAX];
-    while (*pt) {
-        int length = utf16ToUtf8(*pt, buffer);
+    for (size_t i = 0; i < len ; i ++) {
+        int length = utf16ToUtf8(t[i], buffer);
         strLength += length;
-        pt++;
     }
 
     char* result = (char *)GC_MALLOC_ATOMIC(strLength + 1);
     if (bufferSize)
         *bufferSize = strLength + 1;
-    pt = t;
     unsigned currentPosition = 0;
 
-    while (*pt) {
-        int length = utf16ToUtf8(*pt, buffer);
+    for (size_t i = 0; i < len ; i ++) {
+        int length = utf16ToUtf8(t[i], buffer);
         memcpy(&result[currentPosition], buffer, length);
         currentPosition += length;
-        pt++;
     }
     result[strLength] = 0;
 

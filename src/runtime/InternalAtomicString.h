@@ -7,6 +7,7 @@ class ESVMInstance;
 
 class InternalAtomicString {
 protected:
+    void init(ESVMInstance* instance, const char* src, size_t len);
     void init(ESVMInstance* instance, const char16_t* src, size_t len);
 public:
     ALWAYS_INLINE InternalAtomicString()
@@ -214,19 +215,19 @@ inline size_t hashBytes(const void* ptr, size_t len, size_t seed)
 #endif
 
 namespace std {
-template<> struct hash<std::pair<const char16_t *, size_t> > {
-    size_t operator()(std::pair<const char16_t *, size_t> const &x) const
+template<> struct hash<std::pair<const char *, size_t> > {
+    size_t operator()(std::pair<const char *, size_t> const &x) const
     {
         size_t seed = static_cast<size_t>(0xc70f6907UL);
-        return hashBytes(x.first, x.second * sizeof(char16_t), seed);
+        return hashBytes(x.first, x.second * sizeof(char), seed);
     }
 };
 
-template<> struct equal_to<std::pair<const char16_t *, size_t> > {
-    bool operator()(std::pair<const char16_t *, size_t> const &a, std::pair<const char16_t *, size_t> const &b) const
+template<> struct equal_to<std::pair<const char *, size_t> > {
+    bool operator()(std::pair<const char *, size_t> const &a, std::pair<const char *, size_t> const &b) const
     {
         if (a.second == b.second) {
-            return memcmp(a.first, b.first, sizeof(char16_t) * a.second) == 0;
+            return memcmp(a.first, b.first, sizeof(char) * a.second) == 0;
         }
         return false;
     }

@@ -31,9 +31,9 @@ extern __thread ESVMInstance* currentInstance;
 extern ESVMInstance* currentInstance;
 #endif
 
-typedef std::unordered_map<std::pair<const char16_t *, size_t>, ESString *,
-    std::hash<std::pair<const char16_t *, size_t> >, std::equal_to<std::pair<const char16_t *, size_t> >,
-    gc_allocator<std::pair<const std::pair<const char16_t *, size_t>, ESString *> > > InternalAtomicStringMap;
+typedef std::unordered_map<std::pair<const char *, size_t>, ESString *,
+    std::hash<std::pair<const char *, size_t> >, std::equal_to<std::pair<const char *, size_t> >,
+    gc_allocator<std::pair<const std::pair<const char *, size_t>, ESString *> > > InternalAtomicStringMap;
 
 class ESVMInstance : public gc_cleanup {
 #ifdef ENABLE_ESJIT

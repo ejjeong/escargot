@@ -35,55 +35,56 @@ InternalAtomicString::InternalAtomicString(ESVMInstance* instance, const char16_
     init(instance, src, len);
 }
 
-template <typename T>
-static void toUTF16(const char* src, size_t len, T fn)
-{
-    char16_t* out = (char16_t *)alloca(len * sizeof(char16_t));
-    for (unsigned i = 0; i < len ; i ++) {
-        out[i] = src[i];
-    }
-    fn(out, len);
-}
-
 InternalAtomicString::InternalAtomicString(const char* src)
 {
     size_t len = strlenT(src);
-    toUTF16(src, len, [&](char16_t* buf, unsigned len) {
-        init(ESVMInstance::currentInstance(), buf, len);
-    });
+    init(ESVMInstance::currentInstance(), src, len);
 
 }
 
 InternalAtomicString::InternalAtomicString(const char* src, size_t len)
 {
-    toUTF16(src, len, [&](char16_t* buf, unsigned len) {
-        init(ESVMInstance::currentInstance(), buf, len);
-    });
+    init(ESVMInstance::currentInstance(), src, len);
 }
 
 InternalAtomicString::InternalAtomicString(ESVMInstance* instance,  const char* src)
 {
     size_t len = strlenT(src);
-    toUTF16(src, len, [&](char16_t* buf, unsigned len) {
-        init(instance, buf, len);
-    });
+    init(instance, src, len);
 }
 
 InternalAtomicString::InternalAtomicString(ESVMInstance* instance, const char* src, size_t len)
 {
-    toUTF16(src, len, [&](char16_t* buf, unsigned len) {
-        init(instance, buf, len);
-    });
+    init(instance, src, len);
 }
 
-void InternalAtomicString::init(ESVMInstance* instance, const char16_t* src, size_t len)
+
+void InternalAtomicString::init(ESVMInstance* instance, const char* src, size_t len)
 {
     ASSERT(instance);
     auto iter = instance->m_atomicStringMap.find(std::make_pair(src, len));
     if (iter == instance->m_atomicStringMap.end()) {
-        u16string s(src, &src[len]);
+        ASCIIString s(src, &src[len]);
         ESString* newData = ESString::create(std::move(s));
-        instance->m_atomicStringMap.insert(std::make_pair(std::make_pair(newData->utf16Data(), len), newData));
+        instance->m_atomicStringMap.insert(std::make_pair(std::make_pair(newData->asciiData(), len), newData));
+        m_string = newData;
+    } else {
+        m_string = iter->second;
+    }
+}
+
+
+void InternalAtomicString::init(ESVMInstance* instance, const char16_t* src, size_t u16len)
+{
+    ASSERT(instance);
+    size_t siz;
+    const char* buf = utf16ToUtf8(src, u16len, &siz);
+    siz--;
+    auto iter = instance->m_atomicStringMap.find(std::make_pair(buf, siz));
+    if (iter == instance->m_atomicStringMap.end()) {
+        UTF16String s(src, &src[u16len]);
+        ESString* newData = ESString::create(std::move(s));
+        instance->m_atomicStringMap.insert(std::make_pair(std::make_pair(buf, siz), newData));
         m_string = newData;
     } else {
         m_string = iter->second;

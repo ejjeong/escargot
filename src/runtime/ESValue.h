@@ -671,8 +671,8 @@ public:
             return NullableUTF8String(asASCIIString()->data(), asASCIIString()->length());
         } else {
             size_t siz;
-            const char* buf = utf16ToUtf8(asUTF16String()->data(), &siz);
-            return NullableUTF8String(buf, siz);
+            const char* buf = utf16ToUtf8(asUTF16String()->data(), asUTF16String()->length(), &siz);
+            return NullableUTF8String(buf, siz - 1);
         }
     }
 
@@ -713,7 +713,7 @@ public:
         if (isASCIIString()) {
             return asASCIIString()->data();
         } else {
-            return utf16ToUtf8(asUTF16String()->data());
+            return utf16ToUtf8(asUTF16String()->data(), asUTF16String()->length());
         }
     }
 
