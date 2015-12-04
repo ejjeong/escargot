@@ -126,6 +126,9 @@ public:
     void increaseFollowingPopCountOf(int index) { m_operands[index].increaseFollowingPopCount(); }
     unsigned getFollowPopCountOf(int index) { return m_operands[index].getFollowingPopCount(); }
 
+    void setOperandUsed(int index) { m_operands[index].setUsed(); }
+    bool getOperandUsed(int index) { return m_operands[index].used(); }
+
     CodeBlock* codeBlock() { return m_codeBlock; }
 
 #ifndef NDEBUG

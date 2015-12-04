@@ -72,7 +72,9 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
             (void)extraData; \
             ASSERT(codeBlock->m_extraData[bytecodeCounter].m_decoupledData->m_registerIncrementCount < 2); \
             if (codeBlock->m_extraData[bytecodeCounter].m_decoupledData->m_targetIndex0 >= 0 && codeBlock->m_extraData[bytecodeCounter].m_decoupledData->m_registerIncrementCount == 1) \
-                graph->setOperandStackPos(codeBlock->m_extraData[bytecodeCounter].m_decoupledData->m_targetIndex0, codeBlock->m_extraData[bytecodeCounter + 1].m_decoupledData->m_baseRegisterIndex);
+                graph->setOperandStackPos(codeBlock->m_extraData[bytecodeCounter].m_decoupledData->m_targetIndex0, codeBlock->m_extraData[bytecodeCounter + 1].m_decoupledData->m_baseRegisterIndex); \
+            for (auto it = extraData->m_decoupledData->m_sourceIndexes.begin(); it != extraData->m_decoupledData->m_sourceIndexes.end(); it++) \
+                graph->setOperandUsed(*it);
 #define NEXT_BYTECODE(ByteCode) \
             idx += sizeof(ByteCode); \
             bytecodeCounter++;
@@ -505,6 +507,8 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
                 GetObject* bytecode = (GetObject*)currentCode;
                 ByteCodeExtraData* extraData = &codeBlock->m_extraData[bytecodeCounter];
                 ASSERT(codeBlock->m_extraData[bytecodeCounter].m_decoupledData->m_registerIncrementCount < 3);
+                for (auto it = extraData->m_decoupledData->m_sourceIndexes.begin(); it != extraData->m_decoupledData->m_sourceIndexes.end(); it++)
+                    graph->setOperandUsed(*it);
                 bytecode->m_profile.updateProfiledType();
                 graph->setOperandType(extraData->m_decoupledData->m_targetIndex0, bytecode->m_profile.getType());
                 GetObjectIR* getObjectIR = GetObjectIR::create(extraData->m_decoupledData->m_targetIndex0, extraData->m_decoupledData->m_targetIndex1, extraData->m_decoupledData->m_sourceIndexes[0], extraData->m_decoupledData->m_sourceIndexes[1], bytecode);
@@ -528,6 +532,8 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
                 GetObjectPreComputedCase* bytecode = (GetObjectPreComputedCase*)currentCode;
                 ByteCodeExtraData* extraData = &codeBlock->m_extraData[bytecodeCounter];
                 ASSERT(codeBlock->m_extraData[bytecodeCounter].m_decoupledData->m_registerIncrementCount < 3);
+                for (auto it = extraData->m_decoupledData->m_sourceIndexes.begin(); it != extraData->m_decoupledData->m_sourceIndexes.end(); it++)
+                    graph->setOperandUsed(*it);
                 bytecode->m_profile.updateProfiledType();
                 graph->setOperandType(extraData->m_decoupledData->m_targetIndex0, bytecode->m_profile.getType());
                 GetObjectPreComputedIR* getObjectPreComputedIR = GetObjectPreComputedIR::create(extraData->m_decoupledData->m_targetIndex0, extraData->m_decoupledData->m_targetIndex1, extraData->m_decoupledData->m_sourceIndexes[0], bytecode);

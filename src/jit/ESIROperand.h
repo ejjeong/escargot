@@ -17,6 +17,8 @@ public:
     unsigned getStackPos() { return m_stackPos; }
     void increaseFollowingPopCount() { m_followingPopCount++; }
     unsigned getFollowingPopCount() { return m_followingPopCount; }
+    void setUsed() { m_used = true; }
+    bool used() { return m_used; }
 
 #ifndef NDEBUG
     friend std::ostream& operator<< (std::ostream& os, const ESIROperand& op);
@@ -24,6 +26,7 @@ public:
     {
         out << "tmp" << index << " ";
         m_type.dump(out);
+        out << " (used:" << m_used << ")";
     }
 #endif
 
@@ -31,6 +34,7 @@ private:
     Type m_type;
     unsigned m_stackPos;
     unsigned m_followingPopCount;
+    bool m_used;
 };
 
 }}

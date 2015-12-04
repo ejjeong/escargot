@@ -2436,7 +2436,7 @@ bool NativeGenerator::nanojitCodegen(ESVMInstance* instance)
 #endif
                 return false;
             }
-            if (ir->returnsESValue() && ir->m_targetIndex >= 0) {
+            if (ir->returnsESValue() && ir->m_targetIndex >= 0 && m_graph->getOperandUsed(ir->m_targetIndex)) {
                 // Even if IR has "returnsESValue" tag, there is a possibility that it has invalid targetIndex (e.g. CreateFunction)
                 Type type = m_graph->getOperandType(ir->m_targetIndex);
                 generatedLIns = generateTypeCheck(generatedLIns, type, ir->m_targetIndex);
