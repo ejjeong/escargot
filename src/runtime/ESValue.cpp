@@ -1301,7 +1301,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
             } else {
                 size_t threshold = fn->codeBlock()->m_jitThreshold;
                 if (threshold > 1024) {
-                    LOG_VJ("> No profile infos. Stop trying JIT.\n", threshold, threshold*2, functionName);
+                    LOG_VJ("> No profile infos. Stop trying JIT for function %s.\n", functionName);
                     fn->codeBlock()->m_dontJIT = true;
                     fn->codeBlock()->removeJITInfo();
                 } else {
@@ -1324,12 +1324,6 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
         fn->codeBlock()->m_recursionDepth++;
         result = ESValue::fromRawDouble(jitFunction(instance));
         fn->codeBlock()->m_recursionDepth--;
-        if (UNLIKELY(fn->codeBlock()->m_dontJIT)) {
-            if (!fn->codeBlock()->m_recursionDepth) {
-                fn->codeBlock()->removeJITInfo();
-                fn->codeBlock()->removeJITCode();
-            }
-        }
         // printf("JIT Result %s (%jx)\n", result.toString()->utf8Data(), result.asRawData());
         if (ec.inOSRExit()) {
             fn->codeBlock()->m_osrExitCount++;
@@ -1375,7 +1369,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
                 fn->codeBlock()->m_cachedJITFunction = nullptr;
                 // Fixme(JMP): We have to compile to JIT code again when gathering enough type data
                 fn->codeBlock()->m_dontJIT = true;
-                if(!fn->codeBlock()->m_recursionDepth) {
+                if (!fn->codeBlock()->m_recursionDepth) {
                     fn->codeBlock()->removeJITInfo();
                     fn->codeBlock()->removeJITCode();
                 }
@@ -1392,6 +1386,12 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
                 result = interpret(instance, fn->codeBlock(), idx, maxStackPos);
             }
             fn->codeBlock()->m_executeCount++;
+        }
+        if (UNLIKELY(fn->codeBlock()->m_dontJIT)) {
+            if (!fn->codeBlock()->m_recursionDepth) {
+                fn->codeBlock()->removeJITInfo();
+                fn->codeBlock()->removeJITCode();
+            }
         }
     } else {
         result = interpret(instance, fn->codeBlock());

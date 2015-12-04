@@ -47,6 +47,7 @@ void CodeBlock::finalize()
 #ifdef ENABLE_ESJIT
     removeJITInfo();
     removeJITCode();
+    ASSERT(m_recursionDepth == 0);
 #endif
 }
 
