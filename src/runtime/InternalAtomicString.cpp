@@ -39,7 +39,6 @@ InternalAtomicString::InternalAtomicString(const char* src)
 {
     size_t len = strlenT(src);
     init(ESVMInstance::currentInstance(), src, len);
-
 }
 
 InternalAtomicString::InternalAtomicString(const char* src, size_t len)
@@ -77,6 +76,14 @@ void InternalAtomicString::init(ESVMInstance* instance, const char* src, size_t 
 void InternalAtomicString::init(ESVMInstance* instance, const char16_t* src, size_t u16len)
 {
     ASSERT(instance);
+    if (isAllASCII(src, u16len)) {
+        char* abuf = (char *)alloca(u16len);
+        for (unsigned i = 0 ; i < u16len ; i ++) {
+            abuf[i] = src[i];
+        }
+        init(instance, abuf, u16len);
+        return;
+    }
     size_t siz;
     const char* buf = utf16ToUtf8(src, u16len, &siz);
     siz--;

@@ -356,7 +356,6 @@ inline bool operator!=(const gc_malloc_allocator<GC_T1>&, const gc_malloc_alloca
 
 
 namespace escargot {
-typedef std::basic_string<char16_t, std::char_traits<char16_t>, pointer_free_allocator<char16_t> > u16string;
 typedef std::basic_string<char16_t, std::char_traits<char16_t>, pointer_free_allocator<char16_t> > UTF16String;
 typedef std::basic_string<char, std::char_traits<char>, pointer_free_allocator<char> > ASCIIString;
 }

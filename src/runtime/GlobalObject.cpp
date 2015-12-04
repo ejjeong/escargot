@@ -19,9 +19,9 @@ GlobalObject::GlobalObject()
     m_didSomePrototypeObjectDefineIndexedProperty = false;
 }
 
-u16string codePointTo4digitString(int codepoint)
+UTF16String codePointTo4digitString(int codepoint)
 {
-    u16string ret;
+    UTF16String ret;
     int d = 16 * 16* 16;
     for (int i = 0; i < 4; ++i) {
         if (codepoint >= d) {
@@ -584,7 +584,7 @@ void GlobalObject::installFunction()
     m_functionPrototype->defineDataProperty(strings->toString, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         // FIXME
         if (instance->currentExecutionContext()->resolveThisBindingToObject()->isESFunctionObject()) {
-            u16string ret;
+            UTF16String ret;
             ret = u"function ";
             escargot::ESFunctionObject* fn = instance->currentExecutionContext()->resolveThisBindingToObject()->asESFunctionObject();
             ret.append(fn->name()->toUTF16String());
@@ -1440,7 +1440,7 @@ void GlobalObject::installArray()
     m_arrayPrototype->ESObject::defineDataProperty(strings->join, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         int arglen = instance->currentExecutionContext()->argumentCount();
         auto thisBinded = instance->currentExecutionContext()->resolveThisBindingToObject();
-        u16string ret;
+        UTF16String ret;
         int arrlen = thisBinded->length();
         if (arrlen >= 0) {
             escargot::ESString* separator;
@@ -1947,7 +1947,7 @@ void GlobalObject::installString()
                 return strings->asciiTable[c].string();
             return ESString::create(c);
         } else {
-            u16string elements;
+            UTF16String elements;
             elements.resize(length);
             char16_t* data = const_cast<char16_t *>(elements.data());
             for (int i = 0; i < length ; i ++) {
@@ -2170,7 +2170,7 @@ void GlobalObject::installString()
                     for (unsigned j = 0; j < (unsigned)subLen ; j ++) {
                         if (result.m_matchResults[i][j].m_start == std::numeric_limits<unsigned>::max())
                             RELEASE_ASSERT_NOT_REACHED(); // implement this case
-                        arguments[j] = ESString::create(std::move(u16string(
+                        arguments[j] = ESString::create(std::move(UTF16String(
                             orgString.data() + result.m_matchResults[i][j].m_start
                             , orgString.data() + result.m_matchResults[i][j].m_end
                             )));
@@ -2194,23 +2194,23 @@ void GlobalObject::installString()
                 UTF16String replaceStringU16 = replaceString->toUTF16String();
                 UTF16String newThis;
                 newThis.reserve(orgString.size());
-                if (replaceStringU16.find('$') == u16string::npos) {
+                if (replaceStringU16.find('$') == UTF16String::npos) {
                     // flat replace
                     int32_t matchCount = result.m_matchResults.size();
                     if ((unsigned)replaceString->length() > ESRopeString::ESRopeStringCreateMinLimit) {
                         // create Rope string
-                        u16string append(orgString, 0, result.m_matchResults[0][0].m_start);
+                        UTF16String append(orgString, 0, result.m_matchResults[0][0].m_start);
                         escargot::ESString* newStr = ESString::create(std::move(append));
                         escargot::ESString* appendStr = nullptr;
                         for (int32_t i = 0; i < matchCount ; i ++) {
                             newStr = escargot::ESString::concatTwoStrings(newStr, replaceString);
                             if (i < matchCount - 1) {
-                                u16string append2(orgString, result.m_matchResults[i][0].m_end, result.m_matchResults[i + 1][0].m_start - result.m_matchResults[i][0].m_end);
+                                UTF16String append2(orgString, result.m_matchResults[i][0].m_end, result.m_matchResults[i + 1][0].m_start - result.m_matchResults[i][0].m_end);
                                 appendStr = ESString::create(std::move(append2));
                                 newStr = escargot::ESString::concatTwoStrings(newStr, appendStr);
                             }
                         }
-                        u16string append2(orgString, result.m_matchResults[matchCount - 1][0].m_end);
+                        UTF16String append2(orgString, result.m_matchResults[matchCount - 1][0].m_end);
                         appendStr = ESString::create(std::move(append2));
                         newStr = escargot::ESString::concatTwoStrings(newStr, appendStr);
                         return newStr;
@@ -2433,7 +2433,7 @@ void GlobalObject::installString()
             int p = 0;
 
             // 12, 13
-            UTF16String R = separator.toString()->toUTF16String();
+            escargot::ESString* R = separator.toString();
 
             // 14
             if (lim == 0)
@@ -2446,21 +2446,20 @@ void GlobalObject::installString()
             }
 
             // 16
-            auto splitMatch = [] (const UTF16String& S, int q, const u16string& R) -> ESValue {
-                int s = S.length();
-                int r = R.length();
+            auto splitMatch = [] (escargot::ESString* S, int q, escargot::ESString* R) -> ESValue {
+                int s = S->length();
+                int r = R->length();
                 if (q + r > s)
                     return ESValue(false);
                 for (int i = 0; i < r; i++)
-                    if (S.data()[q+i] != R.data()[i])
+                    if (S->charAt(q+i) != R->charAt(i))
                         return ESValue(false);
                 return ESValue(q+r);
             };
 
-            UTF16String strU16 = str->toUTF16String();
             // 16
             if (s == 0) {
-                ESValue z = splitMatch(strU16, 0, R);
+                ESValue z = splitMatch(str, 0, R);
                 if (z != ESValue(false))
                     return arr;
                 arr->set(0, str);
@@ -2472,7 +2471,7 @@ void GlobalObject::installString()
 
             // 18
             while (q != s) {
-                ESValue e = splitMatch(strU16, q, R);
+                ESValue e = splitMatch(str, q, R);
                 if (e == ESValue(ESValue::ESFalseTag::ESFalse))
                     q++;
                 else {
@@ -3058,7 +3057,7 @@ void GlobalObject::installJSON()
         // FIXME spec says we should we ECMAScript parser instead of json parser
         /*
         // FIXME json parser can not parse this form
-        u16string src;
+        UTF16String src;
         src.append(u"(");
         src.append(str->string());
         src.append(u") ;");
@@ -3384,7 +3383,7 @@ void GlobalObject::installJSON()
             if (partial.size() == 0) {
                 final = u"{}";
             } else {
-                u16string seperator;
+                UTF16String seperator;
                 if (gap == u"") {
                     seperator = u",";
                 } else {
@@ -3831,7 +3830,7 @@ void GlobalObject::installNumber()
             if (isnan(x)) {
                 return strings->NaN.string();
             }
-            u16string s;
+            UTF16String s;
             if (x < 0) {
                 s = u"-";
                 x = -x;

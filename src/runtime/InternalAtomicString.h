@@ -89,24 +89,6 @@ template<> struct equal_to<escargot::InternalAtomicString> {
 
 }
 
-namespace std {
-template<> struct hash<escargot::u16string> {
-    size_t operator()(escargot::u16string const &x) const
-    {
-        std::hash<std::basic_string<char16_t> > hashFn;
-        return hashFn((const std::basic_string<char16_t> &)x);
-    }
-};
-
-template<> struct equal_to<escargot::u16string> {
-    bool operator()(escargot::u16string const &a, escargot::u16string const &b) const
-    {
-        return a == b;
-    }
-};
-
-}
-
 // this hash function is borrow from https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B-v3/libsupc%2B%2B/hash_bytes.cc
 
 inline std::size_t unaligned_load(const char* p)

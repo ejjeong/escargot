@@ -16,13 +16,11 @@ public:
 #endif
 
 private:
-    /*
-    std::unordered_map<u16string, CodeBlock* , std::hash<u16string>, std::equal_to<u16string>,
-    gc_allocator<std::pair<u16string, CodeBlock *> > > m_nonGlobalCodeCache;
+    std::unordered_map<ESString*, CodeBlock* , std::hash<ESString*>, std::equal_to<ESString*>,
+    gc_allocator<std::pair<ESString*, CodeBlock *> > > m_nonGlobalCodeCache;
 
-    std::unordered_map<u16string, CodeBlock* , std::hash<u16string>, std::equal_to<u16string>,
-    gc_allocator<std::pair<u16string, CodeBlock *> > > m_globalCodeCache;
-    */
+    std::unordered_map<ESString*, CodeBlock* , std::hash<ESString*>, std::equal_to<ESString*>,
+    gc_allocator<std::pair<ESString*, CodeBlock *> > > m_globalCodeCache;
 };
 
 }

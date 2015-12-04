@@ -237,7 +237,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                 if (!ec->isStrictMode()) {
                     globalObject->defineDataProperty(code->m_name.string(), true, true, true, *value);
                 } else {
-                    u16string err_msg;
+                    UTF16String err_msg;
                     err_msg.append(u"assignment to undeclared variable ");
                     err_msg.append(code->m_name.string()->toNullableUTF16String().m_buffer);
                     instance->throwError(ESValue(ReferenceError::create(ESString::create(std::move(err_msg)))));

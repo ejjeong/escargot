@@ -181,7 +181,7 @@ const tm* ESVMInstance::computeLocalTime(const timespec& ts)
 
 void ESVMInstance::printValue(ESValue val)
 {
-    u16string str;
+    UTF16String str;
     std::function<void(ESValue v)> toString = [&str, &toString](ESValue v)
     {
         if (v.isEmpty()) {

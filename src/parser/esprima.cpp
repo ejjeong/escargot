@@ -284,19 +284,7 @@ ALWAYS_INLINE bool isIdentifierPart(char16_t ch)
 }
 
 // typedef std::basic_string<char16_t, std::char_traits<char16_t>, escargot::ESSimpleAllocatorStd<char16_t> > ParserString;
-typedef std::basic_string<char16_t, std::char_traits<char16_t>, std::allocator<char16_t> > ParserString;
-
-ParserString makeParserString(escargot::ESString* str, size_t start, size_t len)
-{
-    ParserString ret;
-    ret.reserve(len);
-    for (size_t i = 0; i < len ; i ++) {
-        ret += str->stringData()->charAt(i + start);
-    }
-    return ret;
-}
-
-/*
+typedef std::basic_string<char16_t, std::char_traits<char16_t>, std::allocator<char16_t> > ParserStringStd;
 
 class ParserString {
 public:
@@ -313,17 +301,12 @@ public:
         m_stdString = ch;
     }
 
-    ParserString(const char16_t* buffer, size_t len)
-    {
-        m_buffer = buffer;
-        m_length = len;
-    }
-
     ParserString(const ParserString& ps)
     {
         m_buffer = ps.m_buffer;
         m_length = ps.m_length;
         m_stdString = ps.m_stdString;
+        m_isASCIIString = ps.m_isASCIIString;
     }
 
     void operator =(const ParserString& ps)
@@ -331,6 +314,7 @@ public:
         m_buffer = ps.m_buffer;
         m_length = ps.m_length;
         m_stdString = ps.m_stdString;
+        m_isASCIIString = ps.m_isASCIIString;
     }
 
     ParserString(const ParserStringStd& ps)
@@ -345,7 +329,15 @@ public:
     void convertIntoStdString()
     {
         if (m_buffer) {
-            m_stdString.assign(m_buffer, m_buffer[m_length]);
+            if (m_isASCIIString) {
+                m_stdString.clear();
+                m_stdString.shrink_to_fit();
+                m_stdString.reserve(m_length);
+                for (size_t i = 0; i < m_length; i ++)
+                    m_stdString += (char16_t)bufferAsASCIIBuffer()[i];
+            } else {
+                m_stdString.assign(bufferAsUTF16Buffer(), &bufferAsUTF16Buffer()[m_length]);
+            }
             m_buffer = 0;
             m_length = 0;
         } else {
@@ -357,7 +349,7 @@ public:
     {
         if (m_buffer) {
             for (size_t i = 0; i < m_length ; i ++) {
-                if (m_buffer[i] == c) {
+                if (operator[](i) == c) {
                     return i;
                 }
             }
@@ -372,7 +364,7 @@ public:
         if (m_buffer) {
             for (unsigned i = 0; i < m_length ; i++) {
                 char16_t s = src[i];
-                if (s != m_buffer[i]) {
+                if (s != operator[](i)) {
                     return false;
                 }
             }
@@ -384,13 +376,12 @@ public:
     bool operator ==(const ParserString& src) const
     {
         if (m_buffer) {
-            const char16_t* srcBuf = src.m_buffer ? src.m_buffer : src.m_stdString.data();
-            if (m_length != src.m_stdString.length()) {
+            if (m_length != src.length()) {
                 return false;
             }
             for (unsigned i = 0; i < m_length ; i++) {
-                char16_t s = srcBuf[i];
-                if (s != m_buffer[i]) {
+                char16_t s = src[i];
+                if (s != operator[](i)) {
                     return false;
                 }
             }
@@ -402,20 +393,30 @@ public:
         }
     }
 
-    const char16_t* begin() const
+    escargot::ESString* toESString()
     {
         if (m_buffer) {
-            return m_buffer;
-        } else
-            return m_stdString.data();
+            if (m_isASCIIString) {
+                return escargot::ESString::create(std::move(escargot::ASCIIString(bufferAsASCIIBuffer(), m_length)));
+            } else {
+                return escargot::ESString::createASCIIStringIfNeeded(bufferAsUTF16Buffer(), m_length);
+            }
+        } else {
+            return escargot::ESString::createASCIIStringIfNeeded(std::move(escargot::UTF16String(m_stdString.begin(), m_stdString.end())));
+        }
     }
 
-    const char16_t* end() const
+    escargot::InternalAtomicString toInternalAtomicString()
     {
         if (m_buffer) {
-            return m_buffer + m_length;
-        } else
-            return m_stdString.data() + m_stdString.length();
+            if (m_isASCIIString) {
+                return escargot::InternalAtomicString(bufferAsASCIIBuffer(), m_length);
+            } else {
+                return escargot::InternalAtomicString(bufferAsUTF16Buffer(), m_length);
+            }
+        } else {
+            return escargot::InternalAtomicString(m_stdString.data(), m_stdString.length());
+        }
     }
 
     void operator +=(char16_t src)
@@ -446,16 +447,46 @@ public:
 
     char16_t operator[](const size_t& idx) const
     {
-        if (m_buffer)
-            return m_buffer[idx];
+        if (m_buffer) {
+            if (m_isASCIIString)
+                return bufferAsASCIIBuffer()[idx];
+            else
+                return bufferAsUTF16Buffer()[idx];
+        }
         return m_stdString[idx];
     }
 
+    const char* bufferAsASCIIBuffer() const
+    {
+        ASSERT(m_isASCIIString);
+        return (const char*)m_buffer;
+    }
+
+    const char16_t* bufferAsUTF16Buffer() const
+    {
+        ASSERT(!m_isASCIIString);
+        return (const char16_t*)m_buffer;
+    }
+
     ParserStringStd m_stdString;
-    const char16_t* m_buffer;
+    bool m_isASCIIString;
+    const void* m_buffer;
     size_t m_length;
 };
-*/
+
+ParserString makeParserString(escargot::ESString* str, size_t start, size_t len)
+{
+    ParserString ret;
+    if (str->stringData()->isASCIIString()) {
+        ret.m_buffer = str->toNullableUTF8String().m_buffer + start;
+        ret.m_isASCIIString = true;
+    } else {
+        ret.m_buffer = str->toNullableUTF16String().m_buffer + start;
+        ret.m_isASCIIString = false;
+    }
+    ret.m_length = len;
+    return ret;
+}
 
 // ECMA-262 11.6.2.2 Future Reserved Words
 
@@ -1267,7 +1298,7 @@ PassRefPtr<ParseStatus> scanPunctuator(ParseContext* ctx)
      */
     // Check for most common single-character punctuators.
     char16_t ch0 = ctx->m_sourceString->stringData()->charAt(ctx->m_index), ch1, ch2, ch3;
-    // std::u16string resultStr;
+    // std::UTF16String resultStr;
     // resultStr.reserve(4);
     // resultStr += str;
     switch (ch0) {
@@ -1728,7 +1759,7 @@ PassRefPtr<ParseStatus> scanTemplate(ParseContext* ctx)
     bool head = (ctx->m_sourceString->stringData()->charAt(ctx->m_index) == '`');
     size_t rawOffset = 2;
     size_t restore;
-    ParserString cooked;
+    ParserStringStd cooked;
 
     ++ctx->m_index;
 
@@ -2402,8 +2433,7 @@ escargot::Node* finishLiteralNode(ParseContext* ctx, RefPtr<ParseStatus> ps)
 {
     escargot::LiteralNode* nd;
     if (ps->m_type == Token::StringLiteralToken) {
-        escargot::UTF16String estr(ps->m_value.begin(), ps->m_value.end());
-        nd = new escargot::LiteralNode(escargot::ESString::createASCIIStringIfNeeded(std::move(estr)));
+        nd = new escargot::LiteralNode(ps->m_value.toESString());
     } else if (ps->m_type == Token::NumericLiteralToken) {
         nd = new escargot::LiteralNode(escargot::ESValue(ps->m_valueNumber));
     } else {
@@ -2616,7 +2646,7 @@ escargot::Node* parseVariableIdentifier(ParseContext* ctx)
     */
 
     auto ll = token;
-    escargot::Node* nd = new escargot::IdentifierNode(escargot::InternalAtomicString(ll->m_value.data(), ll->m_value.length()));
+    escargot::Node* nd = new escargot::IdentifierNode(ll->m_value.toInternalAtomicString());
     nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
     return nd;
 }
@@ -2698,7 +2728,7 @@ escargot::Node* parseVariableStatement(ParseContext* ctx /*node*/)
 
 // ECMA-262 13.3.1 Let and Const Declarations
 
-escargot::Node* parseLexicalBinding(ParseContext* ctx, escargot::u16string& kind /*options*/)
+escargot::Node* parseLexicalBinding(ParseContext* ctx, escargot::UTF16String& kind /*options*/)
 {
     // var init = null, id, node = new Node(), params = [];
 
@@ -3616,7 +3646,7 @@ escargot::Node* parseFunctionSourceElements(ParseContext* ctx)
 
         // directive = source.slice(token.start + 1, token.end - 1);
         /*
-        escargot::u16string directive = ctx->m_source.substr(token->m_start + 1,
+        escargot::UTF16String directive = ctx->m_source.substr(token->m_start + 1,
             token->m_end - 1 - (token->m_start + 1));
         // directive = source.slice(token.start + 1, token.end - 1);
         if (directive == u"use strict") {
@@ -4127,8 +4157,7 @@ escargot::Node* parseObjectPropertyKey(ParseContext* ctx)
             tolerateUnexpectedToken();
         }
         {
-            escargot::u16string estr(token->m_value.begin(), token->m_value.end());
-            nd = new escargot::LiteralNode(escargot::ESString::create(std::move(estr)));
+            nd = new escargot::LiteralNode(token->m_value.toESString());
             nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
         }
         return nd;
@@ -4146,7 +4175,7 @@ escargot::Node* parseObjectPropertyKey(ParseContext* ctx)
     case Token::KeywordToken:
         {
             // return node.finishIdentifier(token.value);
-            nd = new escargot::IdentifierNode(escargot::InternalAtomicString(token->m_value.data(), token->m_value.length()));
+            nd = new escargot::IdentifierNode(token->m_value.toInternalAtomicString());
             nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
             return nd;
         }
@@ -4972,7 +5001,7 @@ escargot::Node* parsePrimaryExpression(ParseContext* ctx)
         tolerateUnexpectedToken(lookahead);
         }*/
         auto ll = lex(ctx);
-        expr = new escargot::IdentifierNode(escargot::InternalAtomicString(ll->m_value.data(), ll->m_value.length()));
+        expr = new escargot::IdentifierNode(ll->m_value.toInternalAtomicString());
         expr->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
         // expr = node.finishIdentifier(lex().value);
     } else if (type == Token::StringLiteralToken || type == Token::NumericLiteralToken) {
@@ -5041,9 +5070,7 @@ escargot::Node* parsePrimaryExpression(ParseContext* ctx)
             f = f | ESRegExpObject::Sticky;
         }
         */
-        escargot::u16string estr(token->m_regexBody.begin(), token->m_regexBody.end());
-        expr = new escargot::LiteralNode(escargot::ESRegExpObject::create(
-            escargot::ESString::create(std::move(estr)), (escargot::ESRegExpObject::Option)f));
+        expr = new escargot::LiteralNode(escargot::ESRegExpObject::create(token->m_regexBody.toESString(), (escargot::ESRegExpObject::Option)f));
         expr->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
         // parsedNode = new LiteralNode(ESRegExpObject::create(source, (escargot::ESRegExpObject::Option)f, escargot::ESVMInstance::currentInstance()->globalObject()->regexpPrototype()));
     } else if (type == Token::TemplateToken) {
@@ -5103,7 +5130,7 @@ escargot::Node* parseNonComputedProperty(ParseContext* ctx)
     }
 
     // return node.finishIdentifier(token.value);
-    escargot::Node* nd = new escargot::IdentifierNode(escargot::InternalAtomicString(token->m_value.data(), token->m_value.length()));
+    escargot::Node* nd = new escargot::IdentifierNode(token->m_value.toInternalAtomicString());
     nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
     return nd;
 }
@@ -5927,7 +5954,7 @@ escargot::StatementNodeVector parseScriptBody(ParseContext* ctx)
         }
 
         /*
-        escargot::u16string directive = ctx->m_source.substr(token->m_start + 1,
+        escargot::UTF16String directive = ctx->m_source.substr(token->m_start + 1,
             token->m_end - 1 - (token->m_start + 1));
         // directive = source.slice(token.start + 1, token.end - 1);
         if (directive == u"use strict") {

@@ -276,7 +276,7 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
             Node* callee = ((CallExpressionNode *)currentNode)->m_callee;
             if (callee) {
                 if (callee->type() == NodeType::Identifier) {
-                    if (((IdentifierNode *)callee)->name() == InternalAtomicString(u"eval")) {
+                    if (((IdentifierNode *)callee)->name() == strings->eval.string()) {
                         markNeedsActivation(nearFunctionNode);
                         showedEvalInFunction = true;
                     }
@@ -404,8 +404,7 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
 
 CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope)
 {
-    /*
-    if (source.length() < 1024) {
+    if (source->length() < 1024) {
         if (isForGlobalScope) {
             auto iter = m_globalCodeCache.find(source);
             if (iter != m_globalCodeCache.end()) {
@@ -418,15 +417,15 @@ CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString*
             }
         }
     }
-     */
+
     // unsigned long start = ESVMInstance::currentInstance()->tickCount();
     ProgramNode* node = (ProgramNode *)generateAST(instance, source, isForGlobalScope);
     ASSERT(node->type() == Program);
     CodeBlock* cb = generateByteCode(node, source->length() > 1024 * 1024 ? false : true);
     // unsigned long end = ESVMInstance::currentInstance()->tickCount();
     // printf("parseScript takes %lfms\n", (end-start)/1000.0);
-    /*
-    if (source.length() < 1024) {
+
+    if (source->length() < 1024) {
         if (isForGlobalScope) {
             cb->m_isCached = true;
             m_globalCodeCache.insert(std::make_pair(source, cb));
@@ -435,7 +434,6 @@ CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString*
             m_nonGlobalCodeCache.insert(std::make_pair(source, cb));
         }
     }
-    */
 
     return cb;
 }

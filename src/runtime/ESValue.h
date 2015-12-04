@@ -855,6 +855,14 @@ public:
         return new ESString(std::move(src));
     }
 
+    static ESString* createASCIIStringIfNeeded(const char16_t* src, size_t len)
+    {
+        if (isAllASCII(src, len)) {
+            return new ESString(utf16StringToASCIIString(src, len));
+        }
+        return new ESString(std::move(UTF16String(src, &src[len])));
+    }
+
     static ESString* createASCIIStringIfNeeded(UTF16String&& src)
     {
         if (isAllASCII(src.data(), src.length())) {

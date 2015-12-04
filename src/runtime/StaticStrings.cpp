@@ -5,10 +5,10 @@ namespace escargot {
 
 void Strings::initStaticStrings(ESVMInstance* instance)
 {
-    emptyString = InternalAtomicString(instance, u"");
-    NegativeInfinity = InternalAtomicString(instance, u"-Infinity");
-    stringTrue = InternalAtomicString(instance, u"true");
-    stringFalse = InternalAtomicString(instance, u"false");
+    emptyString = InternalAtomicString(instance, "");
+    NegativeInfinity = InternalAtomicString(instance, "-Infinity");
+    stringTrue = InternalAtomicString(instance, "true");
+    stringFalse = InternalAtomicString(instance, "false");
 
     for (unsigned i = 0; i < ESCARGOT_ASCII_TABLE_MAX ; i ++) {
         ESString* str = ESString::create((char)i);
@@ -20,7 +20,7 @@ void Strings::initStaticStrings(ESVMInstance* instance)
         numbers[i] = InternalAtomicString(str->asciiData());
     }
 
-#define INIT_STATIC_STRING(name) name = InternalAtomicString(instance, u"" #name);
+#define INIT_STATIC_STRING(name) name = InternalAtomicString(instance, "" #name);
     FOR_EACH_STATIC_STRING(INIT_STATIC_STRING)
 #undef INIT_STATIC_STRING
 }
