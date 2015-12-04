@@ -48,6 +48,9 @@ bool ESJITCompiler::compile(ESVMInstance* instance)
 
 JITFunction JITCompile(CodeBlock* codeBlock, ESVMInstance* instance)
 {
+#ifdef NDEBUG
+    codeBlock->fillExtraData();
+#endif
     ESJITCompiler jitFunction(codeBlock);
     if (!jitFunction.compile(instance))
         return nullptr;

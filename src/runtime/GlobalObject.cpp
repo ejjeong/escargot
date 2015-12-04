@@ -519,8 +519,8 @@ void GlobalObject::installFunction()
     m_function = ESFunctionObject::create(NULL, [](ESVMInstance* instance) -> ESValue {
         int len = instance->currentExecutionContext()->argumentCount();
         CodeBlock* codeBlock = CodeBlock::create();
-        ByteCodeGenerateContext context(codeBlock);
         if (len == 0) {
+            ByteCodeGenerateContext context(codeBlock);
             codeBlock->pushCode(End(), context, NULL);
         } else {
             escargot::ESString* body = instance->currentExecutionContext()->arguments()[len-1].toString();
@@ -543,13 +543,7 @@ void GlobalObject::installFunction()
             codeBlock->m_params = std::move(functionDeclAST->params());
             codeBlock->m_isStrict = functionDeclAST->isStrict();
             functionDeclAST->body()->generateStatementByteCode(codeBlock, context);
-#ifdef ENABLE_ESJIT
-            codeBlock->m_tempRegisterSize = context.m_currentSSARegisterCount;
-#endif
             codeBlock->pushCode(ReturnFunction(), context, functionDeclAST);
-#ifdef ENABLE_ESJIT
-            context.cleanupSSARegisterCount();
-#endif
             // escargot::InternalAtomicStringVector params = functionDeclAST->params();
             ESSimpleAllocator::freeAll();
             GC_enable();
@@ -561,9 +555,6 @@ void GlobalObject::installFunction()
             function->initialize(scope, codeBlock);
         } else
             function = ESFunctionObject::create(scope, codeBlock, ESString::createAtomicString("anonymous"));
-#ifdef ENABLE_ESJIT
-        context.cleanupSSARegisterCount();
-#endif
         ESObject* prototype = ESObject::create();
         prototype->set__proto__(instance->globalObject()->object()->protoType());
         function->setProtoType(prototype);
@@ -662,9 +653,6 @@ void GlobalObject::installFunction()
         }, ESString::createAtomicString("set"), 1);
         function->defineAccessorProperty(ESString::createAtomicString("caller"), new ESPropertyAccessorData(throwerForGet, throwerForSet), true, false, false);
         function->defineAccessorProperty(ESString::createAtomicString("arguments"), new ESPropertyAccessorData(throwerForGet, throwerForSet), true, false, false);
-#ifdef ENABLE_ESJIT
-        context.cleanupSSARegisterCount();
-#endif
         // NOTE
         // The binded function has only one bytecode what is CallBoundFunction
         // so we should not try JIT for binded function.

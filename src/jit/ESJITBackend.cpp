@@ -2250,12 +2250,13 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
 
             Type srcType = m_graph->getOperandType(irStorePhi->sourceIndex());
             if (srcType.isInt32Type() || srcType.isBooleanType()) {
-                return m_out->insStore(LIR_sti, source, phi, 0 , 1);
+                m_out->insStore(LIR_sti, source, phi, 0 , 1);
             } else if (srcType.isObjectType() || srcType.isArrayObjectType() || srcType.isStringType() || srcType.isFunctionObjectType()) {
-                return m_out->insStore(LIR_stp, source, phi, 0 , 1);
+                m_out->insStore(LIR_stp, source, phi, 0 , 1);
             } else {
                 return nullptr;
             }
+            return source;
         }
     case ESIR::Opcode::LoadPhi:
         {

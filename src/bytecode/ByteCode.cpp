@@ -51,42 +51,98 @@ void CodeBlock::finalize()
     RELEASE_ASSERT(!m_extraData.capacity());
 }
 
-void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, ByteCodeGenerateContext& context)
+void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, ByteCodeGenerateContext& context, size_t codePosition, size_t bytecodeCount)
 {
     Opcode op = (Opcode)(size_t)code->m_opcodeInAddress;
-#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
-    data->m_decoupledData->m_codePosition = m_code.size();
-    data->m_decoupledData->m_baseRegisterIndex = context.m_baseRegisterCount;
-#endif
     char registerIncrementCount = pushCountFromOpcode(code, op);
     char registerDecrementCount = popCountFromOpcode(code, op);
-#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
-    data->m_decoupledData->m_registerIncrementCount = registerIncrementCount;
-    data->m_decoupledData->m_registerDecrementCount = registerDecrementCount;
-#endif
     context.m_baseRegisterCount = context.m_baseRegisterCount + registerIncrementCount - registerDecrementCount;
     ASSERT(context.m_baseRegisterCount >= 0);
 
+#ifdef ENABLE_ESJIT
+    bool haveToProfile = false;
+    bool canJIT = false;
+
+#define FETCH_DATA_BYTE_CODE(code, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
+    case code##Opcode: \
+        haveToProfile = hasProfileData; \
+        canJIT = JITSupported; \
+    break;
+    switch (op) {
+        FOR_EACH_BYTECODE_OP(FETCH_DATA_BYTE_CODE);
+    default:
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+
+#ifdef NDEBUG
+    if (!canJIT) {
+        m_dontJIT = true;
+    }
+#endif
+
+    if (haveToProfile) {
+        m_byteCodePositionsHaveToProfile.push_back(codePosition);
+        m_byteCodeIndexesHaveToProfile.push_back(bytecodeCount);
+    }
+#endif
+}
+
+#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
+void CodeBlock::fillExtraData(ByteCode* code, ByteCodeExtraData* data, ExtraDataGenerateContext& context, size_t codePosition, size_t bytecodeCount)
+{
+    Opcode op = data->m_opcode;
+#if defined(ENABLE_ESJIT) && defined(NDEBUG)
+    if (data->m_decoupledData == nullptr)
+        data->m_decoupledData = new ByteCodeExtraData::DecoupledData();
+#endif
+    ASSERT(data->m_decoupledData);
+    ASSERT(data->m_decoupledData->m_codePosition == SIZE_MAX);
+    char registerIncrementCount = pushCountFromOpcode(code, op);
+    char registerDecrementCount = popCountFromOpcode(code, op);
+    data->m_decoupledData->m_codePosition = codePosition;
+    data->m_decoupledData->m_baseRegisterIndex = context.m_baseRegisterCount;
+    data->m_decoupledData->m_registerIncrementCount = registerIncrementCount;
+    data->m_decoupledData->m_registerDecrementCount = registerDecrementCount;
+    context.m_baseRegisterCount = context.m_baseRegisterCount + registerIncrementCount - registerDecrementCount;
+    ASSERT(context.m_baseRegisterCount >= 0);
 
 #ifdef ENABLE_ESJIT
     if (op == AllocPhiOpcode) {
         data->m_decoupledData->m_targetIndex0 = context.m_currentSSARegisterCount++;
+        context.m_phiIndexToAllocIndexMapping[((AllocPhi *)code)->m_phiIndex] = data->m_decoupledData->m_targetIndex0;
     } else if (op == StorePhiOpcode) {
-        data->m_decoupledData->m_sourceIndexes.push_back(((StorePhi *)code)->m_allocIndex);
+        size_t allocIndex = context.m_phiIndexToAllocIndexMapping[((StorePhi *)code)->m_phiIndex];
+        bool consumeSource = ((StorePhi *)code)->m_consumeSource;
+        bool isConsequent = ((StorePhi *)code)->m_isConsequent;
+        std::pair<int, int>& storeIndexes = context.m_phiIndexToStoreIndexMapping[((StorePhi *)code)->m_phiIndex];
+        data->m_decoupledData->m_sourceIndexes.push_back(allocIndex);
         data->m_decoupledData->m_sourceIndexes.push_back(context.m_currentSSARegisterCount - 1);
         data->m_decoupledData->m_targetIndex0 = context.m_currentSSARegisterCount++;
+        if (isConsequent)
+            storeIndexes.first = data->m_decoupledData->m_targetIndex0;
+        else
+            storeIndexes.second = data->m_decoupledData->m_targetIndex0;
+        if (consumeSource)
+            context.m_ssaComputeStack.pop_back();
     } else if (op == LoadPhiOpcode) {
-        data->m_decoupledData->m_sourceIndexes.push_back(((LoadPhi *)code)->m_allocIndex);
-        data->m_decoupledData->m_sourceIndexes.push_back(((LoadPhi *)code)->m_srcIndex0);
-        data->m_decoupledData->m_sourceIndexes.push_back(((LoadPhi *)code)->m_srcIndex1);
-        data->m_decoupledData->m_targetIndex0 = context.m_currentSSARegisterCount++;
+        size_t allocIndex = context.m_phiIndexToAllocIndexMapping[((LoadPhi *)code)->m_phiIndex];
+        size_t srcIndex0 = context.m_phiIndexToStoreIndexMapping[((LoadPhi *)code)->m_phiIndex].first;
+        size_t srcIndex1 = context.m_phiIndexToStoreIndexMapping[((LoadPhi *)code)->m_phiIndex].second;
+        int targetIndex = context.m_currentSSARegisterCount++;
+        data->m_decoupledData->m_sourceIndexes.push_back(allocIndex);
+        data->m_decoupledData->m_sourceIndexes.push_back(srcIndex0);
+        data->m_decoupledData->m_sourceIndexes.push_back(srcIndex1);
+        data->m_decoupledData->m_targetIndex0 = targetIndex;
+        context.m_ssaComputeStack.push_back(targetIndex);
+    } else if (op == FakePopOpcode) {
+        context.m_baseRegisterCount--;
     } else if (op == PushIntoTempStackOpcode) {
         data->m_decoupledData->m_targetIndex0 = context.m_currentSSARegisterCount++;
         data->m_decoupledData->m_sourceIndexes.push_back(context.m_ssaComputeStack.back());
         context.m_ssaComputeStack.pop_back();
     } else if (op == PopFromTempStackOpcode) {
         int val = -1;
-        for (unsigned i = m_extraData.size() - 1; ; i --) {
+        for (unsigned i = bytecodeCount - 1; ; i --) {
             if (m_extraData[i].m_decoupledData->m_codePosition == ((PopFromTempStack *)code)->m_pushCodePosition) {
                 val = m_extraData[i].m_decoupledData->m_targetIndex0;
                 data->m_decoupledData->m_sourceIndexes.push_back(val);
@@ -144,32 +200,42 @@ void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, B
             data->m_decoupledData->m_targetIndex1 = c;
         }
     }
-
-    bool haveToProfile = false;
-    bool canJIT = false;
-
-#define FETCH_DATA_BYTE_CODE(code, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
-    case code##Opcode: \
-        haveToProfile = hasProfileData; \
-        canJIT = JITSupported; \
-    break;
-    switch (op) {
-        FOR_EACH_BYTECODE_OP(FETCH_DATA_BYTE_CODE);
-    default:
-        RELEASE_ASSERT_NOT_REACHED();
-    }
-
-#ifdef NDEBUG
-    if (!canJIT) {
-        m_dontJIT = true;
-    }
-#endif
-
-    if (haveToProfile) {
-        m_byteCodeIndexesHaveToProfile.push_back(m_extraData.size());
-    }
+    if (op == EndOpcode)
+        ASSERT(context.m_ssaComputeStack.size() == 0);
 #endif
 }
+
+void CodeBlock::fillExtraData()
+{
+    ExtraDataGenerateContext context(this);
+    size_t idx = 0;
+    size_t bytecodeCounter = 0;
+    char* code = m_code.data();
+    char* end = &m_code.data()[m_code.size()];
+    while (&code[idx] < end) {
+        ByteCode* currentCode = (ByteCode *)(&code[idx]);
+        unsigned currentCount = bytecodeCounter;
+        ByteCodeExtraData* ex = &m_extraData[currentCount];
+        Opcode opcode = m_extraData[bytecodeCounter].m_opcode;
+        bytecodeCounter++;
+
+        fillExtraData(currentCode, ex, context, idx, bytecodeCounter);
+
+        ASSERT(opcode == currentCode->m_orgOpcode);
+        switch (opcode) {
+#define NEXT_BYTE_CODE(code, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
+        case code##Opcode:\
+            idx += sizeof(code); \
+            continue;
+            FOR_EACH_BYTECODE_OP(NEXT_BYTE_CODE)
+#undef  NEXT_BYTE_CODE
+        default:
+            RELEASE_ASSERT_NOT_REACHED();
+            break;
+        };
+    }
+}
+#endif
 
 #ifdef ENABLE_ESJIT
 void CodeBlock::removeJITInfo()
@@ -184,6 +250,9 @@ void CodeBlock::removeJITInfo()
     m_byteCodeIndexesHaveToProfile.clear();
     m_byteCodeIndexesHaveToProfile.shrink_to_fit();
     RELEASE_ASSERT(!m_byteCodeIndexesHaveToProfile.capacity());
+    m_byteCodePositionsHaveToProfile.clear();
+    m_byteCodePositionsHaveToProfile.shrink_to_fit();
+    RELEASE_ASSERT(!m_byteCodePositionsHaveToProfile.capacity());
 }
 
 void CodeBlock::removeJITCode()
@@ -244,21 +313,7 @@ CodeBlock* generateByteCode(ProgramNode* node, bool shouldGenereateBytecodeInsta
     // printf("codeBlock %d\n", (int)block->m_code.size());
     // unsigned long end = ESVMInstance::tickCount();
     // printf("generate code takes %lfms\n", (end-start)/1000.0);
-#ifndef NDEBUG
-    if (ESVMInstance::currentInstance()->m_dumpByteCode) {
-        char* code = block->m_code.data();
-        ByteCode* currentCode = (ByteCode *)(&code[0]);
-        if (currentCode->m_orgOpcode != ExecuteNativeFunctionOpcode) {
-            dumpBytecode(block);
-        }
-    }
-#endif
 
-#ifdef ENABLE_ESJIT
-    // Fill temp register size for future
-    block->m_tempRegisterSize = context.m_currentSSARegisterCount;
-    context.cleanupSSARegisterCount();
-#endif
     return block;
 }
 

@@ -10,6 +10,12 @@ namespace ESJIT {
 
 class ESIROperand {
 public:
+    ESIROperand()
+        : m_stackPos(0)
+        , m_followingPopCount(0)
+        , m_used(false)
+    {
+    }
     void setType(Type& type) { m_type = type; }
     void mergeType(Type& type) { m_type.mergeType(type); }
     Type getType() { return m_type; }

@@ -122,6 +122,11 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
                 NEXT_BYTECODE(Pop);
                 break;
             }
+        case FakePopOpcode:
+            {
+                NEXT_BYTECODE(FakePop);
+                break;
+            }
         case PushIntoTempStackOpcode:
             {
                 INIT_BYTECODE(PushIntoTempStack);

@@ -6,15 +6,12 @@
 
 #ifndef __nanojit_LIR__
 #define __nanojit_LIR__
-#ifdef ENABLE_ESJIT
+#ifdef ESCARGOT
 #include "jit/ESGraph.h"
 namespace escargot {
-
 namespace ESJIT {
-
 class ESBasicBlock;
 }
-
 }
 #endif
 namespace nanojit
@@ -1744,7 +1741,9 @@ NanoStaticAssert(LIR_start == 0 && LIR_sentinel <= 256); // It's ok if LIR_senti
     {
     public:
         LirWriter *out;
+#ifdef ESCARGOT
         std::vector<LIns*> defaultInsToExtendLife;
+#endif
 
         LirWriter(LirWriter* out)
             : out(out) {}
@@ -1772,10 +1771,12 @@ NanoStaticAssert(LIR_start == 0 && LIR_sentinel <= 256); // It's ok if LIR_senti
             return out->insGuardXov(v, a, b, gr);
         }
         virtual LIns* insBranch(LOpcode v, LIns* condition, LIns* to) {
+#ifdef ESCARGOT
             ASSERT(!to);
+#endif
             return out->insBranch(v, condition, to);
         }
-#ifdef ENABLE_ESJIT
+#ifdef ESCARGOT
         virtual LIns* insBranch(LOpcode v, LIns* condition, escargot::ESJIT::ESBasicBlock* targetBlock);
         virtual LIns* insSetLabel(LIns* jump, escargot::ESJIT::ESBasicBlock* targetBlock);
 #endif

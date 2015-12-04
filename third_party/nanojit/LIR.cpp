@@ -1658,7 +1658,7 @@ namespace nanojit
         }
         return out->insLoad(op, base, off, accSet, loadQual);
     }
-#ifdef ENABLE_ESJIT
+#ifdef ESCARGOT
     LIns* LirWriter::insSetLabel(LIns* jump, escargot::ESJIT::ESBasicBlock* targetBlock) {
         if (!targetBlock)
             return jump;
@@ -1677,7 +1677,7 @@ namespace nanojit
                 else
                     RELEASE_ASSERT_NOT_REACHED();
             }
-            for (auto& ins :  defaultInsToExtendLife) {
+            for (auto& ins : defaultInsToExtendLife) {
                 if (ins->isP())
                     ins1(LIR_livep, ins);
                 else if (ins->isD())

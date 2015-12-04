@@ -1387,7 +1387,7 @@ public:
 #ifndef NDEBUG
     virtual void dump(std::ostream& out)
     {
-        out << "tmp" << m_targetIndex << ": ";
+        out << " tmp" << m_targetIndex << ": ";
         ESIR::dump(out);
     }
 #endif
@@ -1409,7 +1409,7 @@ public:
     {
         out << "tmp" << m_targetIndex << ": ";
         ESIR::dump(out);
-        out << "tmp " << m_sourceIndex << " to tmp" << m_allocPhiIndex;
+        out << " tmp" << m_sourceIndex << " to tmp" << m_allocPhiIndex;
     }
 #endif
 

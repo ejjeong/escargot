@@ -1067,7 +1067,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
         char* code = fn->codeBlock()->m_code.data();
         size_t siz = fn->codeBlock()->m_byteCodeIndexesHaveToProfile.size();
         for (unsigned i = 0; i < siz; i ++) {
-            size_t pos = fn->codeBlock()->m_extraData[fn->codeBlock()->m_byteCodeIndexesHaveToProfile[i]].m_decoupledData->m_codePosition;
+            size_t pos = fn->codeBlock()->m_byteCodePositionsHaveToProfile[i];
             ByteCode* currentCode = (ByteCode *)&code[pos];
             Opcode opcode = fn->codeBlock()->m_extraData[fn->codeBlock()->m_byteCodeIndexesHaveToProfile[i]].m_opcode;
             switch (opcode) {
@@ -1162,7 +1162,7 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
             // check profile data
             char* code = fn->codeBlock()->m_code.data();
             for (unsigned i = 0; i < fn->codeBlock()->m_byteCodeIndexesHaveToProfile.size(); i ++) {
-                size_t pos = fn->codeBlock()->m_extraData[fn->codeBlock()->m_byteCodeIndexesHaveToProfile[i]].m_decoupledData->m_codePosition;
+                size_t pos = fn->codeBlock()->m_byteCodePositionsHaveToProfile[i];
                 Opcode opcode = fn->codeBlock()->m_extraData[fn->codeBlock()->m_byteCodeIndexesHaveToProfile[i]].m_opcode;
                 ByteCode* currentCode = (ByteCode *)&code[pos];
                 switch (opcode) {
@@ -1273,8 +1273,6 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
                 default:
                     break;
                 }
-
-
             }
 
             if (!compileNextTime) {
@@ -1417,23 +1415,12 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
             ByteCodeGenerateContext newContext(cb);
             node->body()->generateStatementByteCode(cb, newContext);
 
-#ifdef ENABLE_ESJIT
-            cb->m_tempRegisterSize = newContext.m_currentSSARegisterCount;
-#endif
             cb->pushCode(ReturnFunction(), newContext, node);
             cb->m_ast = NULL;
 
 #ifndef NDEBUG
             cb->m_id = node->m_id;
             cb->m_nonAtomicId = node->m_nonAtomicId;
-            if (ESVMInstance::currentInstance()->m_dumpByteCode) {
-                char* code = cb->m_code.data();
-                ByteCode* currentCode = (ByteCode *)(&code[0]);
-                if (currentCode->m_orgOpcode != ExecuteNativeFunctionOpcode) {
-                    cb->m_nonAtomicId = node->m_nonAtomicId;
-                    dumpBytecode(cb);
-                }
-            }
             if (ESVMInstance::currentInstance()->m_reportUnsupportedOpcode) {
                 char* code = cb->m_code.data();
                 ByteCode* currentCode = (ByteCode *)(&code[0]);
@@ -1441,9 +1428,6 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                     dumpUnsupported(cb);
                 }
             }
-#endif
-#ifdef ENABLE_ESJIT
-            newContext.cleanupSSARegisterCount();
 #endif
         }
 

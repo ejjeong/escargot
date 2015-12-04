@@ -116,6 +116,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         NEXT_INSTRUCTION();
     }
 
+    FakePopOpcodeLbl:
+    {
+        executeNextCode<FakePop>(programCounter);
+        NEXT_INSTRUCTION();
+    }
     DuplicateTopOfStackValueOpcodeLbl:
     {
         PUSH(stack, topOfStack, PEEK(stack, bp));

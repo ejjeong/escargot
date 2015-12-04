@@ -28,6 +28,7 @@ class CodeBlock;
     F(Push, 1, 0, 0, 1, 0) \
     F(PopExpressionStatement, 0, 1, 0, 1, 0) \
     F(Pop, 0, 1, 0, 1, 0) \
+    F(FakePop, 0, 0, 0, 1, 0) \
     F(PushIntoTempStack, 0, 1, 0, 1, 0) \
     F(PopFromTempStack, 1, 0, 0, 1, 0) \
     F(LoadStackPointer, 0, 0, 0, 0, 0) \
@@ -180,14 +181,14 @@ inline const char* getByteCodeName(Opcode opcode)
 struct ByteCodeGenerateContext {
     ByteCodeGenerateContext(CodeBlock* codeBlock)
         : m_baseRegisterCount(0)
-#ifdef ENABLE_ESJIT
-        , m_currentSSARegisterCount(0)
         , m_codeBlock(codeBlock)
         , m_isOutermostContext(true)
-#endif
         , m_offsetToBasePointer(0)
         , m_positionToContinue(0)
         , m_tryStatementScopeCount(0)
+#ifdef ENABLE_ESJIT
+        , m_phiIndex(0)
+#endif
     {
         m_inCallingExpressionScope = false;
         m_isHeadOfMemberExpression = false;
@@ -199,16 +200,15 @@ struct ByteCodeGenerateContext {
 
     ByteCodeGenerateContext(const ByteCodeGenerateContext& contextBefore)
         : m_baseRegisterCount(contextBefore.m_baseRegisterCount)
-#ifdef ENABLE_ESJIT
-        , m_currentSSARegisterCount(contextBefore.m_currentSSARegisterCount)
-        , m_ssaComputeStack(contextBefore.m_ssaComputeStack)
         , m_codeBlock(contextBefore.m_codeBlock)
         , m_isOutermostContext(false)
-#endif
         , m_shouldGenereateByteCodeInstantly(contextBefore.m_shouldGenereateByteCodeInstantly)
         , m_inCallingExpressionScope(contextBefore.m_inCallingExpressionScope)
         , m_offsetToBasePointer(0)
         , m_tryStatementScopeCount(contextBefore.m_tryStatementScopeCount)
+#ifdef ENABLE_ESJIT
+        , m_phiIndex(contextBefore.m_phiIndex)
+#endif
     {
         m_isHeadOfMemberExpression = false;
     }
@@ -226,26 +226,15 @@ struct ByteCodeGenerateContext {
         ctx.m_offsetToBasePointer = m_offsetToBasePointer;
         ctx.m_positionToContinue = m_positionToContinue;
 #ifdef ENABLE_ESJIT
-        ctx.m_currentSSARegisterCount = m_currentSSARegisterCount;
-        ctx.m_ssaComputeStack = m_ssaComputeStack;
+        ctx.m_phiIndex = m_phiIndex;
 #endif
 
-#ifdef ENABLE_ESJIT
-        m_currentSSARegisterCount = -1;
-#endif
         m_breakStatementPositions.clear();
         m_continueStatementPositions.clear();
         m_labeledBreakStatmentPositions.clear();
         m_labeledContinueStatmentPositions.clear();
         m_complexCaseStatementPositions.clear();
     }
-
-#ifdef ENABLE_ESJIT
-    void cleanupSSARegisterCount()
-    {
-        m_currentSSARegisterCount = -1;
-    }
-#endif
 
     void pushBreakPositions(size_t pos)
     {
@@ -301,20 +290,11 @@ struct ByteCodeGenerateContext {
     ALWAYS_INLINE void consumeContinuePositions(CodeBlock* cb, size_t position);
     ALWAYS_INLINE void consumeLabeledContinuePositions(CodeBlock* cb, size_t position, ESString* lbl);
     ALWAYS_INLINE void morphJumpPositionIntoComplexCase(CodeBlock* cb, size_t codePos);
-#ifdef ENABLE_ESJIT
-    ALWAYS_INLINE int lastUsedSSAIndex()
-    {
-        return m_currentSSARegisterCount - 1;
-    }
-#endif
 
     int m_baseRegisterCount;
-#ifdef ENABLE_ESJIT
-    int m_currentSSARegisterCount;
-    std::vector<int> m_ssaComputeStack;
+
     CodeBlock* m_codeBlock;
     bool m_isOutermostContext;
-#endif
 
     bool m_shouldGenereateByteCodeInstantly;
     bool m_inCallingExpressionScope;
@@ -331,7 +311,39 @@ struct ByteCodeGenerateContext {
     // code position, tryStatement count
     int m_tryStatementScopeCount;
     std::map<size_t, size_t> m_complexCaseStatementPositions;
+#ifdef ENABLE_ESJIT
+    // For AllocPhi, StorePhi, LoadPhi
+    size_t m_phiIndex;
+#endif
 };
+
+#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
+struct ExtraDataGenerateContext {
+    inline ExtraDataGenerateContext(CodeBlock* codeBlock);
+    inline ~ExtraDataGenerateContext();
+
+#ifdef ENABLE_ESJIT
+    void cleanupSSARegisterCount()
+    {
+        m_currentSSARegisterCount = -1;
+    }
+
+    ALWAYS_INLINE int lastUsedSSAIndex()
+    {
+        return m_currentSSARegisterCount - 1;
+    }
+#endif
+
+    CodeBlock* m_codeBlock;
+    int m_baseRegisterCount;
+#ifdef ENABLE_ESJIT
+    int m_currentSSARegisterCount;
+    std::vector<int> m_ssaComputeStack;
+    std::vector<int> m_phiIndexToAllocIndexMapping;
+    std::vector<std::pair<int, int> > m_phiIndexToStoreIndexMapping;
+#endif
+};
+#endif
 
 #ifdef ENABLE_ESJIT
 
@@ -417,8 +429,10 @@ struct __attribute__((__packed__)) ByteCodeExtraData {
     ByteCodeExtraData()
     {
         m_opcode = (Opcode)0;
-#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
+#ifndef NDEBUG
         m_decoupledData = new DecoupledData();
+#elif defined(ENABLE_ESJIT)
+        m_decoupledData = nullptr;
 #endif
     }
 };
@@ -483,6 +497,21 @@ public:
     virtual void dump()
     {
         printf("Pop <>\n");
+    }
+#endif
+};
+
+class FakePop : public ByteCode {
+public:
+    FakePop()
+        : ByteCode(FakePopOpcode)
+    {
+
+    }
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("FakePop <>\n");
     }
 #endif
 };
@@ -2020,58 +2049,60 @@ public:
 
 class AllocPhi : public ByteCode {
 public:
-    AllocPhi()
+    AllocPhi(size_t phiIndex)
         : ByteCode(AllocPhiOpcode)
     {
-
+        m_phiIndex = phiIndex;
     }
 
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("AllocPhi <>\n");
+        printf("AllocPhi <%zu>\n", m_phiIndex);
     }
 #endif
+
+    size_t m_phiIndex;
 };
 
 class StorePhi : public ByteCode {
 public:
-    StorePhi(int allocIndex)
+    StorePhi(size_t phiIndex, bool consumeSource, bool isConsequent)
         : ByteCode(StorePhiOpcode)
     {
-        m_allocIndex = allocIndex;
+        m_phiIndex = phiIndex;
+        m_consumeSource = consumeSource;
+        m_isConsequent = isConsequent;
     }
 
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("StorePhi <>\n");
+        printf("StorePhi <%zu>\n", m_phiIndex);
     }
 #endif
 
-    int m_allocIndex;
+    size_t m_phiIndex;
+    bool m_consumeSource;
+    bool m_isConsequent;
 };
 
 class LoadPhi : public ByteCode {
 public:
-    LoadPhi(int allocIndex, int srcIndex0, int srcIndex1)
+    LoadPhi(size_t phiIndex)
         : ByteCode(LoadPhiOpcode)
     {
-        m_allocIndex = allocIndex;
-        m_srcIndex0 = srcIndex0;
-        m_srcIndex1 = srcIndex1;
+        m_phiIndex = phiIndex;
     }
 
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("LoadPhi <>\n");
+        printf("LoadPhi <%zu>\n", m_phiIndex);
     }
 #endif
 
-    int m_allocIndex;
-    int m_srcIndex0;
-    int m_srcIndex1;
+    size_t m_phiIndex;
 };
 
 class This : public ByteCode, public JITProfileTarget {
@@ -2279,7 +2310,9 @@ public:
     bool m_dontJIT;
     size_t m_recursionDepth;
     std::vector<unsigned> m_byteCodeIndexesHaveToProfile;
+    std::vector<unsigned> m_byteCodePositionsHaveToProfile;
     size_t m_tempRegisterSize;
+    size_t m_phiSize;
     size_t m_executeCount;
     size_t m_osrExitCount;
     size_t m_jitThreshold;
@@ -2287,8 +2320,14 @@ public:
     nanojit::Allocator* m_nanoJITDataAllocator;
 #endif
 
+#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
+    void fillExtraData();
+#endif
 private:
-    void pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, ByteCodeGenerateContext& context);
+    void pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, ByteCodeGenerateContext& context, size_t codePosition, size_t bytecodeCount);
+#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
+    void fillExtraData(ByteCode* code, ByteCodeExtraData* data, ExtraDataGenerateContext& context, size_t codePosition, size_t bytecodeCount);
+#endif
 };
 
 #ifdef NDEBUG
@@ -2449,7 +2488,7 @@ void CodeBlock::pushCode(const CodeType& code, ByteCodeGenerateContext& context,
     // record extra Info
     ByteCodeExtraData extraData;
     extraData.m_opcode = (Opcode)(size_t)code.m_opcodeInAddress;
-    pushCodeFillExtraData((ByteCode *)&code, &extraData, context);
+    pushCodeFillExtraData((ByteCode *)&code, &extraData, context, m_code.size(), m_extraData.size());
 
     const_cast<CodeType &>(code).assignOpcodeInAddress();
 
@@ -2477,11 +2516,43 @@ ALWAYS_INLINE ByteCodeGenerateContext::~ByteCodeGenerateContext()
     ASSERT(m_labeledContinueStatmentPositions.size() == 0);
     ASSERT(m_complexCaseStatementPositions.size() == 0);
 #ifdef ENABLE_ESJIT
-    ASSERT(m_currentSSARegisterCount == -1);
+    m_codeBlock->m_phiSize = m_phiIndex;
     if (m_isOutermostContext && m_codeBlock->m_dontJIT)
         m_codeBlock->removeJITInfo();
 #endif
+#ifndef NDEBUG
+    if (m_isOutermostContext) {
+        m_codeBlock->fillExtraData();
+        if (ESVMInstance::currentInstance()->m_dumpByteCode) {
+            char* code = m_codeBlock->m_code.data();
+            ByteCode* currentCode = (ByteCode *)(&code[0]);
+            if (currentCode->m_orgOpcode != ExecuteNativeFunctionOpcode) {
+                dumpBytecode(m_codeBlock);
+            }
+        }
+    }
+#endif
 }
+
+#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
+inline ExtraDataGenerateContext::ExtraDataGenerateContext(CodeBlock* codeBlock)
+    : m_codeBlock(codeBlock)
+    , m_baseRegisterCount(0)
+#ifdef ENABLE_ESJIT
+    , m_currentSSARegisterCount(0)
+    , m_phiIndexToAllocIndexMapping(codeBlock->m_phiSize)
+    , m_phiIndexToStoreIndexMapping(codeBlock->m_phiSize)
+#endif
+{
+}
+
+inline ExtraDataGenerateContext::~ExtraDataGenerateContext()
+{
+#ifdef ENABLE_ESJIT
+    m_codeBlock->m_tempRegisterSize = m_currentSSARegisterCount;
+#endif
+}
+#endif
 
 ALWAYS_INLINE void ByteCodeGenerateContext::consumeLabeledContinuePositions(CodeBlock* cb, size_t position, ESString* lbl)
 {

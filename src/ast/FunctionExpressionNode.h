@@ -33,20 +33,9 @@ public:
 
             ByteCodeGenerateContext newContext(cb);
             m_body->generateStatementByteCode(cb, newContext);
-#ifdef ENABLE_ESJIT
-            cb->m_tempRegisterSize = newContext.m_currentSSARegisterCount;
-#endif
             cb->pushCode(ReturnFunction(), newContext, this);
 #ifndef NDEBUG
-            if (ESVMInstance::currentInstance()->m_dumpByteCode) {
-                char* code = cb->m_code.data();
-                ByteCode* currentCode = (ByteCode *)(&code[0]);
-                if (currentCode->m_orgOpcode != ExecuteNativeFunctionOpcode) {
-                    if (m_nonAtomicId)
-                    cb->m_nonAtomicId = m_nonAtomicId;
-                    dumpBytecode(cb);
-                }
-            }
+            cb->m_nonAtomicId = m_nonAtomicId;
             if (ESVMInstance::currentInstance()->m_reportUnsupportedOpcode) {
                 char* code = cb->m_code.data();
                 ByteCode* currentCode = (ByteCode *)(&code[0]);
@@ -56,9 +45,6 @@ public:
             }
 #endif
             codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb, false), context, this);
-#ifdef ENABLE_ESJIT
-            newContext.cleanupSSARegisterCount();
-#endif
         } else {
             cb->m_ast = this;
             cb->m_params = m_params;

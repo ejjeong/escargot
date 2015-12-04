@@ -20,14 +20,11 @@ public:
 
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-#ifdef ENABLE_ESJIT
-        codeBlock->pushCode(AllocPhi(), context, this);
-        int allocPhiIndex = context.lastUsedSSAIndex();
-        int srcIndex0 = -1;
-        int srcIndex1 = -1;
-#endif
-
         m_test->generateExpressionByteCode(codeBlock, context);
+#ifdef ENABLE_ESJIT
+        size_t phiIndex = context.m_phiIndex++;
+        codeBlock->pushCode(AllocPhi(phiIndex), context, this);
+#endif
         codeBlock->pushCode(JumpIfTopOfStackValueIsFalse(SIZE_MAX), context, this);
 
         size_t jumpPosForTestIsFalse = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsFalse>();
@@ -35,8 +32,7 @@ public:
         m_consequente->generateExpressionByteCode(codeBlock, context);
 
 #ifdef ENABLE_ESJIT
-        codeBlock->pushCode(StorePhi(allocPhiIndex), context, this);
-        srcIndex0 = context.lastUsedSSAIndex();
+        codeBlock->pushCode(StorePhi(phiIndex, true, true), context, this);
 #endif
 
         codeBlock->pushCode(Jump(SIZE_MAX), context, this);
@@ -44,23 +40,21 @@ public:
         size_t jumpPosForEndOfConsequence = codeBlock->lastCodePosition<Jump>();
 
         jumpForTestIsFalse->m_jumpPosition = codeBlock->currentCodeSize();
-#ifdef ENABLE_ESJIT
-        context.m_ssaComputeStack.pop_back();
-#endif
         context.m_baseRegisterCount = savedBaseRegisterCounter;
+#ifdef ENABLE_ESJIT
+        codeBlock->pushCode(FakePop(), context, this);
+#endif
         m_alternate->generateExpressionByteCode(codeBlock, context);
 
 #ifdef ENABLE_ESJIT
-        codeBlock->pushCode(StorePhi(allocPhiIndex), context, this);
-        srcIndex1 = context.lastUsedSSAIndex();
+        codeBlock->pushCode(StorePhi(phiIndex, true, false), context, this);
 #endif
 
         Jump* jumpForEndOfConsequence = codeBlock->peekCode<Jump>(jumpPosForEndOfConsequence);
         jumpForEndOfConsequence->m_jumpPosition = codeBlock->currentCodeSize();
 
 #ifdef ENABLE_ESJIT
-        codeBlock->pushCode(LoadPhi(allocPhiIndex, srcIndex0, srcIndex1), context, this);
-        context.m_ssaComputeStack.back() = context.lastUsedSSAIndex();
+        codeBlock->pushCode(LoadPhi(phiIndex), context, this);
 #endif
     }
 
