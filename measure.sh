@@ -30,7 +30,7 @@ elif [[ $1 == v8* ]]; then
     cmd="./test/bin/x86/v8/d8"
     tc="v832"
   else
-    echo "choose one between ([escargot|jsc|v8](32)?.(full)?.[interp|jit|base])|duk"
+    echo "choose one between ([escargot|jsc|v8](32)?.(full)?.[interp|jit|full.jit])|duk"
     exit 1
   fi
 elif [[ $1 == jsc.interp* ]]; then
@@ -38,20 +38,32 @@ elif [[ $1 == jsc.interp* ]]; then
   export LD_LIBRARY_PATH="$curdir/test/bin/x64/jsc/lib:$curdir/test/bin/x64/jsc/libicu"
   cmd="./test/bin/x64/jsc/interp/jsc"
   tc="jsc.interp"
-elif [[ $1 == jsc.base* ]]; then
+elif [[ $1 == jsc.jit ]]; then
+  curdir=`pwd`
+  export LD_LIBRARY_PATH="$curdir/test/bin/x86/jsc/lib:$curdir/test/bin/x86/jsc/libicu"
+  cmd="./test/bin/x64/jsc/baseline/jsc"
+  tc="jsc.jit"
+elif [[ $1 == jsc.full.jit ]]; then
   curdir=`pwd`
   export LD_LIBRARY_PATH="$curdir/test/bin/x64/jsc/lib:$curdir/test/bin/x64/jsc/libicu"
   cmd="./test/bin/x64/jsc/baseline/jsc"
+  args="--useDFGJIT=false"
   tc="jsc.baselineJIT"
 elif [[ $1 == jsc32.interp* ]]; then
   curdir=`pwd`
   export LD_LIBRARY_PATH="$curdir/test/bin/x86/jsc/lib:$curdir/test/bin/x86/jsc/libicu"
   cmd="./test/bin/x86/jsc/interp/jsc"
   tc="jsc32.interp"
-elif [[ $1 == jsc32.base* ]]; then
+elif [[ $1 == jsc32.jit ]]; then
   curdir=`pwd`
   export LD_LIBRARY_PATH="$curdir/test/bin/x86/jsc/lib:$curdir/test/bin/x86/jsc/libicu"
   cmd="./test/bin/x86/jsc/baseline/jsc"
+  tc="jsc32.jit"
+elif [[ $1 == jsc32.full.jit ]]; then
+  curdir=`pwd`
+  export LD_LIBRARY_PATH="$curdir/test/bin/x86/jsc/lib:$curdir/test/bin/x86/jsc/libicu"
+  cmd="./test/bin/x86/jsc/baseline/jsc"
+  args="--useDFGJIT=false"
   tc="jsc32.baselineJIT"
 elif [[ $1 == escargot.interp* ]]; then
   make x64.interpreter.release -j8
@@ -142,6 +154,7 @@ else
     echo $(echo -e $summem | awk '{s+=$1;if(NR==1||max<$1){max=$1};if(NR==1||($1!="" && $1<min)){min=$1}} END {printf("Avg. MaxPSS: %.4f", (s-max-min)/8)}')
     echo $t $(echo -e $summem | awk '{s+=$1;if(NR==1||max<$1){max=$1};if(NR==1||($1!="" && $1<min)){min=$1}} END {printf(": %.4f", (s-max-min)/8)}') >> tmp
   done
+  cat tmp | awk '{s+=$3} END {print s/26}' >> tmp
   cat tmp
   cat tmp > test/out/memory.res
   rm tmp
