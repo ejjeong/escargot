@@ -300,6 +300,7 @@ asm:
 check-jit-64:
 	make x64.jit.release -j$(NPROCS)
 	make run-sunspider
+	make run-octane
 	make x64.jit.debug -j$(NPROCS)
 	./run-Sunspider.sh -rcf > compiledFunctions.txt
 	vimdiff compiledFunctions.txt originalCompiledFunctions.txt
@@ -309,6 +310,7 @@ check-jit-64:
 check-jit-32:
 	make x86.jit.release -j$(NPROCS)
 	make run-sunspider
+	make run-octane
 	make x86.jit.debug -j$(NPROCS)
 	./run-Sunspider.sh -rcf > compiledFunctions.txt
 	vimdiff compiledFunctions.txt originalCompiledFunctions.txt
