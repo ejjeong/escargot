@@ -885,8 +885,8 @@ inline ESString::ESString(double number)
 inline ESString* ESString::create(const char* str)
 {
     unsigned l = strlen(str);
-    if (l == 1 && str[0] < 128) {
-        return strings->asciiTable[str[0]].string();
+    if (l == 1) {
+        return strings->asciiTable[(size_t)str[0]].string();
     } else
         return new ESString(str);
 }
