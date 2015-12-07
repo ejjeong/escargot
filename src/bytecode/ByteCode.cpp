@@ -41,14 +41,14 @@ void CodeBlock::finalize()
     m_code.clear();
     m_code.shrink_to_fit();
     RELEASE_ASSERT(!m_code.capacity());
-    m_extraData.clear();
-    m_extraData.shrink_to_fit();
-    RELEASE_ASSERT(!m_extraData.capacity());
 #ifdef ENABLE_ESJIT
     removeJITInfo();
     removeJITCode();
     ASSERT(m_recursionDepth == 0);
 #endif
+    m_extraData.clear();
+    m_extraData.shrink_to_fit();
+    RELEASE_ASSERT(!m_extraData.capacity());
 }
 
 void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, ByteCodeGenerateContext& context)
