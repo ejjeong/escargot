@@ -330,7 +330,7 @@ inline ESValueInDouble lessThanOp(ESValueInDouble left, ESValueInDouble right)
 {
     ESValue leftVal = ESValue::fromRawDouble(left);
     ESValue rightVal = ESValue::fromRawDouble(right);
-    ESValue ret = abstractRelationalComparison(&leftVal, &rightVal, true);
+    ESValue ret = ESValue(abstractRelationalComparison(&leftVal, &rightVal, true));
     if (ret.isUndefined())
         return false;
     return ESValue::toRawDouble(ret);
