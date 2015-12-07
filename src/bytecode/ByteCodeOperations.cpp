@@ -100,7 +100,7 @@ NEVER_INLINE ESValue modOperation(ESValue* left, ESValue* right)
     return ret;
 }
 
-NEVER_INLINE ESValue abstractRelationalComparisonSlowCase(ESValue* left, ESValue* right, bool leftFirst)
+NEVER_INLINE bool abstractRelationalComparisonSlowCase(ESValue* left, ESValue* right, bool leftFirst)
 {
     ESValue lval(ESValue::ESForceUninitialized);
     ESValue rval(ESValue::ESForceUninitialized);
@@ -114,33 +114,36 @@ NEVER_INLINE ESValue abstractRelationalComparisonSlowCase(ESValue* left, ESValue
 
     // http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5
     if (lval.isInt32() && rval.isInt32()) {
-        return ESValue(lval.asInt32() < rval.asInt32());
+        return lval.asInt32() < rval.asInt32();
     } else if (lval.isESString() && rval.isESString()) {
-        return ESValue(*lval.toString() < *rval.toString());
+        return *lval.asESPointer()->asESString() < *rval.asESPointer()->asESString();
     } else {
         double n1 = lval.toNumber();
         double n2 = rval.toNumber();
-        bool sign1 = std::signbit(n1);
-        bool sign2 = std::signbit(n2);
-        if (isnan(n1) || isnan(n2)) {
-            return ESValue();
-        } else if (n1 == n2) {
-            return ESValue(false);
-        } else if (n1 == 0.0 && n2 == 0.0 && sign2) {
-            return ESValue(false);
-        } else if (n1 == 0.0 && n2 == 0.0 && sign1) {
-            return ESValue(false);
-        } else if (std::isinf(n1) && !sign1) {
-            return ESValue(false);
-        } else if (std::isinf(n2) && !sign2) {
-            return ESValue(true);
-        } else if (std::isinf(n2) && sign2) {
-            return ESValue(false);
-        } else if (std::isinf(n1) && sign1) {
-            return ESValue(true);
-        } else {
-            return ESValue(n1 < n2);
-        }
+        return n1 < n2;
+    }
+}
+
+NEVER_INLINE bool abstractRelationalComparisonOrEqualSlowCase(ESValue* left, ESValue* right, bool leftFirst)
+{
+    ESValue lval(ESValue::ESForceUninitialized);
+    ESValue rval(ESValue::ESForceUninitialized);
+    if (leftFirst) {
+        lval = left->toPrimitive();
+        rval = right->toPrimitive();
+    } else {
+        rval = right->toPrimitive();
+        lval = left->toPrimitive();
+    }
+
+    if (lval.isInt32() && rval.isInt32()) {
+        return lval.asInt32() <= rval.asInt32();
+    } else if (lval.isESString() && rval.isESString()) {
+        return *lval.asESPointer()->asESString() <= *rval.asESPointer()->asESString();
+    } else {
+        double n1 = lval.toNumber();
+        double n2 = rval.toNumber();
+        return n1 <= n2;
     }
 }
 

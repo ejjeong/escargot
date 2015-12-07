@@ -128,15 +128,34 @@ ALWAYS_INLINE ESValue minusOperation(ESValue* left, ESValue* right)
 NEVER_INLINE ESValue modOperation(ESValue* left, ESValue* right);
 
 // http://www.ecma-international.org/ecma-262/5.1/#sec-11.8.5
-NEVER_INLINE ESValue abstractRelationalComparisonSlowCase(ESValue* left, ESValue* right, bool leftFirst);
-ALWAYS_INLINE ESValue abstractRelationalComparison(ESValue* left, ESValue* right, bool leftFirst)
+NEVER_INLINE bool abstractRelationalComparisonSlowCase(ESValue* left, ESValue* right, bool leftFirst);
+ALWAYS_INLINE bool abstractRelationalComparison(ESValue* left, ESValue* right, bool leftFirst)
 {
     // consume very fast case
     if (LIKELY(left->isInt32() && right->isInt32())) {
-        return ESValue(left->asInt32() < right->asInt32());
+        return left->asInt32() < right->asInt32();
+    }
+
+    if (LIKELY(left->isNumber() && right->isNumber())) {
+        return left->asNumber() < right->asNumber();
     }
 
     return abstractRelationalComparisonSlowCase(left, right, leftFirst);
+}
+
+NEVER_INLINE bool abstractRelationalComparisonOrEqualSlowCase(ESValue* left, ESValue* right, bool leftFirst);
+ALWAYS_INLINE bool abstractRelationalComparisonOrEqual(ESValue* left, ESValue* right, bool leftFirst)
+{
+    // consume very fast case
+    if (LIKELY(left->isInt32() && right->isInt32())) {
+        return left->asInt32() <= right->asInt32();
+    }
+
+    if (LIKELY(left->isNumber() && right->isNumber())) {
+        return left->asNumber() <= right->asNumber();
+    }
+
+    return abstractRelationalComparisonOrEqualSlowCase(left, right, leftFirst);
 }
 
 // d = {}. d[0]

@@ -388,11 +388,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* right = POP(stack, bp);
         ESValue* left = POP(stack, bp);
-        ESValue r = abstractRelationalComparison(left, right, true);
-        if (r.isUndefined())
-            PUSH(stack, topOfStack, ESValue(false));
+        bool r = abstractRelationalComparison(left, right, true);
+        if (r)
+            PUSH(stack, topOfStack, ESValue(true));
         else
-            PUSH(stack, topOfStack, r);
+            PUSH(stack, topOfStack, ESValue(false));
         executeNextCode<LessThan>(programCounter);
         NEXT_INSTRUCTION();
     }
@@ -401,11 +401,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* right = POP(stack, bp);
         ESValue* left = POP(stack, bp);
-        ESValue r = abstractRelationalComparison(right, left, false);
-        if (r == ESValue(true) || r.isUndefined())
-            PUSH(stack, topOfStack, ESValue(false));
-        else
+        bool r = abstractRelationalComparisonOrEqual(left, right, true);
+        if (r)
             PUSH(stack, topOfStack, ESValue(true));
+        else
+            PUSH(stack, topOfStack, ESValue(false));
         executeNextCode<LessThanOrEqual>(programCounter);
         NEXT_INSTRUCTION();
     }
@@ -414,11 +414,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* right = POP(stack, bp);
         ESValue* left = POP(stack, bp);
-        ESValue r = abstractRelationalComparison(right, left, false);
-        if (r.isUndefined())
-            PUSH(stack, topOfStack, ESValue(false));
+        bool r = abstractRelationalComparison(right, left, false);
+        if (r)
+            PUSH(stack, topOfStack, ESValue(true));
         else
-            PUSH(stack, topOfStack, r);
+            PUSH(stack, topOfStack, ESValue(false));
         executeNextCode<GreaterThan>(programCounter);
         NEXT_INSTRUCTION();
     }
@@ -427,11 +427,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* right = POP(stack, bp);
         ESValue* left = POP(stack, bp);
-        ESValue r = abstractRelationalComparison(left, right, true);
-        if (r == ESValue(true) || r.isUndefined())
-            PUSH(stack, topOfStack, ESValue(false));
-        else
+        bool r = abstractRelationalComparisonOrEqual(right, left, false);
+        if (r)
             PUSH(stack, topOfStack, ESValue(true));
+        else
+            PUSH(stack, topOfStack, ESValue(false));
         executeNextCode<GreaterThanOrEqual>(programCounter);
         NEXT_INSTRUCTION();
     }
