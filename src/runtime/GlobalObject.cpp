@@ -46,11 +46,11 @@ std::string char2hex(char dec )
 {
     char dig1 = (dec&0xF0)>>4;
     char dig2 = (dec&0x0F);
-    if (0 <= dig1 && dig1 <= 9)
+    if (dig1 <= 9)
         dig1 += 48; // 0, 48inascii
     if (10 <= dig1 && dig1 <=15)
         dig1 += 65-10; // a, 97inascii
-    if (0 <= dig2 && dig2 <= 9)
+    if (dig2 <= 9)
         dig2 += 48;
     if (10 <= dig2 && dig2 <=15)
         dig2 += 65-10;
