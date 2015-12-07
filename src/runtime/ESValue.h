@@ -1683,7 +1683,7 @@ public:
     void forceNonVectorHiddenClass()
     {
         if (m_hiddenClass->m_flags.m_forceNonVectorMode)
-            return ;
+            return;
         m_hiddenClass = m_hiddenClass->forceNonVectorMode();
     }
 
