@@ -239,10 +239,10 @@ void CreateExponentialRepresentation(
     kMaxExponentLength - first_char_pos);
 }
 
-ESStringData::ESStringData(double number)
+ESStringDataASCII::ESStringDataASCII(double number)
 {
     if (number == 0) {
-        m_string = new(GC) ASCIIString({'0'});
+        append({'0'});
         m_data.m_isASCIIString = true;
         initData();
         return;
@@ -295,9 +295,8 @@ ESStringData::ESStringData(double number)
         CreateExponentialRepresentation(flags, decimal_rep, decimal_rep_length, exponent,
             &builder);
     }
-
-    m_string = new(GC) ASCIIString();
-    ASCIIString* as = (ASCIIString*)m_string;
+    m_data.m_isASCIIString = true;
+    ASCIIString* as = (ASCIIString*)asASCIIString();
     if (sign)
         (*as) += '-';
     char* buf = builder.Finalize();
@@ -305,8 +304,6 @@ ESStringData::ESStringData(double number)
         (*as) += *buf;
         buf++;
     }
-
-    m_data.m_isASCIIString = true;
     initData();
 }
 

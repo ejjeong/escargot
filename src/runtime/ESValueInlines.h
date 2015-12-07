@@ -878,7 +878,7 @@ inline ESString::ESString(double number)
         return;
     }
     */
-    m_string = new(GC) ESStringData(number);
+    m_string = new(GC) ESStringDataASCII(number);
     // cache->insert(std::make_pair(number, m_string));
 }
 

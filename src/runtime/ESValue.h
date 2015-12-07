@@ -551,58 +551,14 @@ size_t stringHash(const T* s, size_t len, size_t seed = 0)
     return hash;
 }
 
+class ESStringDataASCII;
+class ESStringDataUTF16;
+
 class ESStringData : public gc {
     friend class ESString;
+protected:
+    ESStringData() { }
 public:
-    ESStringData(const ASCIIString& src)
-    {
-        m_string = new(GC) ASCIIString(src);
-        m_data.m_isASCIIString = true;
-        initData();
-    }
-
-    ESStringData(ASCIIString&& src)
-    {
-        m_string = new(GC) ASCIIString(src);
-        m_data.m_isASCIIString = true;
-        initData();
-    }
-
-    ESStringData(const UTF16String& src)
-    {
-        m_string = new(GC) UTF16String(src);
-        m_data.m_isASCIIString = false;
-        initData();
-    }
-
-    ESStringData(UTF16String&& src)
-    {
-        m_string = new(GC) UTF16String(src);
-        m_data.m_isASCIIString = false;
-        initData();
-    }
-
-    explicit ESStringData(int number)
-        : ESStringData((double)number)
-    {
-    }
-
-    explicit ESStringData(double number);
-
-    explicit ESStringData(char16_t c)
-    {
-        m_string = new(GC) UTF16String({c});
-        m_data.m_isASCIIString = false;
-        initData();
-    }
-
-    explicit ESStringData(char c)
-    {
-        m_string = new(GC) ASCIIString({c});
-        m_data.m_isASCIIString = true;
-        initData();
-    }
-
     ESStringData(const ESStringData& s) = delete;
     void operator =(const ESStringData& s) = delete;
 
@@ -621,13 +577,13 @@ public:
     ASCIIString* asASCIIString() const
     {
         ASSERT(m_data.m_isASCIIString);
-        return (ASCIIString *)m_string;
+        return (ASCIIString *)(this + 1);
     }
 
     UTF16String* asUTF16String() const
     {
         ASSERT(!m_data.m_isASCIIString);
-        return (UTF16String *)m_string;
+        return (UTF16String *)(this + 1);
     }
 
     bool isASCIIString() const
@@ -725,9 +681,9 @@ protected:
         bool m_isASCIIString:1;
     } m_data;
 #endif
-    void* m_string;
+#ifdef ENABLE_ESJIT
     size_t m_length;
-
+#endif
 #ifndef NDEBUG
     ASCIIString* m_asciiString;
     UTF16String* m_utf16String;
@@ -738,19 +694,76 @@ protected:
         if (isASCIIString()) {
             ASCIIString* as = asASCIIString();
             m_data.m_hashData = stringHash(as->data(), as->length());
+#ifdef ENABLE_ESJIT
             m_length = as->length();
+#endif
         } else {
             UTF16String* as = asUTF16String();
             m_data.m_hashData = stringHash(as->data(), as->length());
+#ifdef ENABLE_ESJIT
             m_length = as->length();
+#endif
         }
 
 #ifndef NDEBUG
-        m_asciiString = (ASCIIString*)m_string;
-        m_utf16String = (UTF16String*)m_string;
+        m_asciiString = (ASCIIString*)(this + 1);
+        m_utf16String = (UTF16String*)(this + 1);
 #endif
     }
 
+};
+
+class ESStringDataASCII : public ESStringData, public ASCIIString {
+public:
+    ESStringDataASCII(const ASCIIString& src)
+        : ASCIIString(src)
+    {
+        m_data.m_isASCIIString = true;
+        initData();
+    }
+
+    ESStringDataASCII(ASCIIString&& src)
+        : ASCIIString(src)
+    {
+        m_data.m_isASCIIString = true;
+        initData();
+    }
+
+    explicit ESStringDataASCII(int number)
+        : ESStringDataASCII((double)number)
+    {
+    }
+
+    explicit ESStringDataASCII(double number);
+    explicit ESStringDataASCII(char c)
+        : ASCIIString({c})
+    {
+        m_data.m_isASCIIString = true;
+        initData();
+    }
+};
+
+class ESStringDataUTF16 : public ESStringData, public UTF16String {
+public:
+    ESStringDataUTF16(const UTF16String& src)
+        : UTF16String(src)
+    {
+        m_data.m_isASCIIString = false;
+        initData();
+    }
+
+    ESStringDataUTF16(UTF16String&& src)
+        : UTF16String(src)
+    {
+        m_data.m_isASCIIString = false;
+        initData();
+    }
+    explicit ESStringDataUTF16(char16_t c)
+        : UTF16String({c})
+    {
+        m_data.m_isASCIIString = false;
+        initData();
+    }
 };
 
 inline bool isAllASCII(const char16_t* buf, const size_t& len)
@@ -787,25 +800,25 @@ protected:
     ESString(const UTF16String& src)
         : ESPointer(Type::ESString)
     {
-        m_string = new(GC) ESStringData(src);
+        m_string = new(GC) ESStringDataUTF16(src);
     }
 
     ESString(UTF16String&& src)
         : ESPointer(Type::ESString)
     {
-        m_string = new(GC) ESStringData(std::move(src));
+        m_string = new(GC) ESStringDataUTF16(std::move(src));
     }
 
     ESString(const ASCIIString& src)
         : ESPointer(Type::ESString)
     {
-        m_string = new(GC) ESStringData(src);
+        m_string = new(GC) ESStringDataASCII(src);
     }
 
     ESString(ASCIIString&& src)
         : ESPointer(Type::ESString)
     {
-        m_string = new(GC) ESStringData(std::move(src));
+        m_string = new(GC) ESStringDataASCII(std::move(src));
     }
 
     ESString(int number)
@@ -818,13 +831,13 @@ protected:
     ESString(char16_t c)
         : ESPointer(Type::ESString)
     {
-        m_string = new(GC) ESStringData(c);
+        m_string = new(GC) ESStringDataUTF16(c);
     }
 
     ESString(char c)
         : ESPointer(Type::ESString)
     {
-        m_string = new(GC) ESStringData(c);
+        m_string = new(GC) ESStringDataASCII(c);
     }
 
 public:
@@ -1215,7 +1228,7 @@ public:
                     }
                 }
             }
-            m_string =  new(GC) ESStringData(std::move(result));
+            m_string =  new(GC) ESStringDataUTF16(std::move(result));
             return m_string;
         } else {
             ASCIIString result;
@@ -1237,7 +1250,7 @@ public:
                     memcpy((void*)(result.data() + pos), cur->stringData()->asciiData(), cur->length() * sizeof(char));
                 }
             }
-            m_string = new(GC) ESStringData(std::move(result));
+            m_string = new(GC) ESStringDataASCII(std::move(result));
             return m_string;
         }
     }
