@@ -672,13 +672,13 @@ public:
 protected:
 #ifdef ESCARGOT_64
     struct {
-        size_t m_hashData:63;
         bool m_isASCIIString:1;
+        size_t m_hashData:63;
     } m_data;
 #else
     struct {
-        size_t m_hashData:31;
         bool m_isASCIIString:1;
+        size_t m_hashData:31;
     } m_data;
 #endif
 #ifdef ENABLE_ESJIT
@@ -996,7 +996,7 @@ public:
         };
         COMPILE_ASSERT((sizeof(RegexMatchResultPiece)) == (sizeof(unsigned) * 2), sizeof_RegexMatchResultPiece_wrong);
         int m_subPatternNum;
-        std::vector<std::vector<RegexMatchResultPiece> > m_matchResults;
+        std::vector<std::vector<RegexMatchResultPiece, pointer_free_allocator<RegexMatchResultPiece> >, gc_allocator<std::vector<RegexMatchResultPiece, pointer_free_allocator<RegexMatchResultPiece> >> > m_matchResults;
     };
     bool match(ESPointer* esptr, RegexMatchResult& result, bool testOnly = false, size_t startIndex = 0) const;
 

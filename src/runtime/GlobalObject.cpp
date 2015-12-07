@@ -99,17 +99,17 @@ static int parseDigit(char16_t c, int radix)
 
 static const int SizeOfInfinity = 8;
 
-static bool isInfinity(const UChar* data, const UChar* end)
+static bool isInfinity(ESString* str, unsigned p, unsigned length)
 {
-    return (end - data) >= SizeOfInfinity
-        && data[0] == 'I'
-        && data[1] == 'n'
-        && data[2] == 'f'
-        && data[3] == 'i'
-        && data[4] == 'n'
-        && data[5] == 'i'
-        && data[6] == 't'
-        && data[7] == 'y';
+    return (length - p) >= SizeOfInfinity
+        && str->charAt(p) == 'I'
+        && str->charAt(p + 1) == 'n'
+        && str->charAt(p + 2) == 'f'
+        && str->charAt(p + 3) == 'i'
+        && str->charAt(p + 4) == 'n'
+        && str->charAt(p + 5) == 'i'
+        && str->charAt(p + 6) == 't'
+        && str->charAt(p + 7) == 'y';
 }
 
 void GlobalObject::initGlobalObject()
@@ -273,26 +273,25 @@ void GlobalObject::initGlobalObject()
         }
 
         // FIXME we should not create string in this place
-        UTF16String str(s->toUTF16String());
         // 2, Let trimmedString be a substring of inputString consisting of the leftmost character
         //    that is not a StrWhiteSpaceChar and all characters to the right of that character.
         //    (In other words, remove leading white space.)
-        int p = 0;
-        const UChar* data = str.data();
-        const UChar* end = data + strLen;
+        unsigned p = 0;
+        unsigned len = s->length();
 
-        for (; data < end; data++) {
-            if (!(esprima::isWhiteSpace(*data) || esprima::isLineTerminator(*data)))
+        for (; p < len; p++) {
+            char16_t c = s->charAt(p);
+            if (!(esprima::isWhiteSpace(c) || esprima::isLineTerminator(c)))
                 break;
-            p++;
         }
 
         // empty string
-        if (data == end)
+        if (p == len)
             return ESValue(std::numeric_limits<double>::quiet_NaN());
 
+        char16_t ch = s->charAt(p);
         // HexIntegerLiteral
-        if (end - data >= 1 && data[0] == '0' && toupper(data[1]) == 'X')
+        if (len - p > 1 && ch == '0' && toupper(s->charAt(p + 1)) == 'X')
             return ESValue(0);
 
         // 3. If neither trimmedString nor any prefix of trimmedString satisfies the syntax of
@@ -300,24 +299,24 @@ void GlobalObject::initGlobalObject()
         // 4. Let numberString be the longest prefix of trimmedString, which might be trimmedString itself,
         //    that satisfies the syntax of a StrDecimalLiteral.
         // Check the syntax of StrDecimalLiteral
-        switch (*data) {
+        switch (ch) {
         case 'I':
-            if (isInfinity(data, end))
+            if (isInfinity(s, p, len))
                 return ESValue(std::numeric_limits<double>::infinity());
             break;
         case '+':
-            if (isInfinity(data + 1, end))
+            if (isInfinity(s, p + 1, len))
                 return ESValue(std::numeric_limits<double>::infinity());
             break;
         case '-':
-            if (isInfinity(data + 1, end))
+            if (isInfinity(s, p + 1, len))
                 return ESValue(-std::numeric_limits<double>::infinity());
             break;
         }
 
-        escargot::ESString* substr = s->substring(p, strLen);
-        double number = atof(substr->utf8Data());
-        if (number == 0.0 && !isdigit(*data) && !(end - data >= 1 && data[0] == '.' && isdigit(data[1])))
+        NullableUTF8String u8Str = s->substring(p, len)->toNullableUTF8String();
+        double number = atof(u8Str.m_buffer);
+        if (number == 0.0 && !isdigit(ch) && !(len - p >= 1 && ch == '.' && isdigit(s->charAt(p + 1))))
             return ESValue(std::numeric_limits<double>::quiet_NaN());
         if (number == std::numeric_limits<double>::infinity())
             return ESValue(std::numeric_limits<double>::quiet_NaN());
@@ -334,23 +333,26 @@ void GlobalObject::initGlobalObject()
         // 1. Let inputString be ToString(string).
         ESValue input = instance->currentExecutionContext()->arguments()[0];
         escargot::ESString* s = input.toString();
-        UTF16String str(s->toUTF16String());
-        int strLen = str.length();
 
         // 2. Let S be a newly created substring of inputString consisting of the first character that is not a StrWhiteSpaceChar
         //    and all characters following that character. (In other words, remove leading white space.)
-        int p = 0;
-        while (p < strLen && (esprima::isWhiteSpace(str.data()[p]) || esprima::isLineTerminator(str.data()[p])))
-            p++;
+        unsigned p = 0;
+        unsigned strLen = s->length();
+
+        for (; p < strLen; p++) {
+            char16_t c = s->charAt(p);
+            if (!(esprima::isWhiteSpace(c) || esprima::isLineTerminator(c)))
+                break;
+        }
 
         // 3. Let sign be 1.
         // 4. If S is not empty and the first character of S is a minus sign -, let sign be −1.
         // 5. If S is not empty and the first character of S is a plus sign + or a minus sign -, then remove the first character from S.
         double sign = 1;
         if (p < strLen) {
-            if (str.data()[p] == '+')
+            if (s->charAt(p) == '+')
                 p++;
-            else if (str.data()[p] == '-') {
+            else if (s->charAt(p) == '-') {
                 sign = -1;
                 p++;
             }
@@ -370,7 +372,7 @@ void GlobalObject::initGlobalObject()
         if (len >= 2) {
             radix = instance->currentExecutionContext()->arguments()[1].toInt32();
         }
-        if ((radix == 0 || radix == 16) && strLen - p >= 2 && str.data()[p] == '0' && (str.data()[p + 1] == 'x' || str.data()[p + 1] == 'X')) {
+        if ((radix == 0 || radix == 16) && strLen - p >= 2 && s->charAt(p) == '0' && (s->charAt(p + 1) == 'x' || s->charAt(p + 1) == 'X')) {
             radix = 16;
             p += 2;
         }
@@ -390,10 +392,10 @@ void GlobalObject::initGlobalObject()
         bool sawDigit = false;
         double number = 0;
         while (p < strLen) {
-            int digit = parseDigit(str.data()[p], radix);
+            int digit = parseDigit(s->charAt(p), radix);
             if (digit == -1)
                 break;
-            sawDigit =true;
+            sawDigit = true;
             number *= radix;
             number += digit;
             p++;
@@ -2084,7 +2086,6 @@ void GlobalObject::installString()
     // $21.1.3.11 String.prototype.match(regexp)
     m_stringPrototype->defineDataProperty(ESString::createAtomicString("match"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         escargot::ESString* thisObject = instance->currentExecutionContext()->resolveThisBinding().toString();
-        escargot::ESArrayObject* ret = ESArrayObject::create(0);
 
         ESValue argument = instance->currentExecutionContext()->readArgument(0);
         escargot::ESRegExpObject* regexp;
@@ -2105,9 +2106,9 @@ void GlobalObject::installString()
             return ESValue(ESValue::ESNull);
         }
 
+        escargot::ESArrayObject* ret = ESArrayObject::create(0);
         ((ESObject *)ret)->set(ESValue(strings->input), ESValue(thisObject));
         ((ESObject *)ret)->set(ESValue(strings->index), ESValue(result.m_matchResults[0][0].m_start));
-        NullableUTF16String str = thisObject->toNullableUTF16String();
 
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/match
         // if global flag is on, match method returns an Array containing all matched substrings
@@ -2117,7 +2118,7 @@ void GlobalObject::installString()
                 if (std::numeric_limits<unsigned>::max() == result.m_matchResults[i][0].m_start)
                     ret->set(idx++, ESValue(ESValue::ESUndefined));
                 else
-                    ret->set(idx++, ESString::create(std::move(UTF16String(str.m_buffer + result.m_matchResults[i][0].m_start, str.m_buffer + result.m_matchResults[i][0].m_end))));
+                    ret->set(idx++, thisObject->substring(result.m_matchResults[i][0].m_start, result.m_matchResults[i][0].m_end));
             }
             return ret;
         } else {
@@ -2127,7 +2128,7 @@ void GlobalObject::installString()
                     if (std::numeric_limits<unsigned>::max() == result.m_matchResults[i][j].m_start)
                         ret->set(idx++, ESValue(ESValue::ESUndefined));
                     else
-                        ret->set(idx++, ESString::create(std::move(UTF16String(str.m_buffer + result.m_matchResults[i][j].m_start, str.m_buffer + result.m_matchResults[i][j].m_end))));
+                        ret->set(idx++, thisObject->substring(result.m_matchResults[i][j].m_start, result.m_matchResults[i][j].m_end));
                 }
             }
             if (ret->length() == 0)
@@ -2155,16 +2156,16 @@ void GlobalObject::installString()
             if (result.m_matchResults.size() == 0) {
                 return origStr;
             }
+
             auto stringAppend = [](UTF16String& dst, escargot::ESString* src, size_t s, size_t e)
             {
                 if (!src->isASCIIString()) {
                     dst.append(&src->stringData()->asUTF16String()->data()[s], &src->stringData()->asUTF16String()->data()[e]);
                 } else {
-                    for (unsigned i = s; i < e; i ++) {
-                        dst += src->charAt(i);
-                    }
+                    dst.append(&src->stringData()->asASCIIString()->data()[s], &src->stringData()->asASCIIString()->data()[e]);
                 }
             };
+
             ESValue replaceValue = instance->currentExecutionContext()->arguments()[1];
             if (replaceValue.isESPointer() && replaceValue.asESPointer()->isESFunctionObject()) {
                 uint32_t matchCount = result.m_matchResults.size();
@@ -4151,7 +4152,6 @@ void GlobalObject::installRegExp()
 
         ((ESObject *)arr)->set(ESValue(strings->input), ESValue(sourceStr));
         ((ESObject *)arr)->set(ESValue(strings->index), ESValue(result.m_matchResults[0][0].m_start));
-        UTF16String str = sourceStr->toUTF16String();
 
         int idx = 0;
         for (unsigned i = 0; i < result.m_matchResults.size() ; i ++) {
@@ -4159,7 +4159,7 @@ void GlobalObject::installRegExp()
                 if (result.m_matchResults[i][j].m_start == std::numeric_limits<unsigned>::max())
                     arr->set(idx++, ESValue(ESValue::ESUndefined));
                 else
-                    arr->set(idx++, ESString::create(std::move(UTF16String(str.data() + result.m_matchResults[i][j].m_start, str.data() + result.m_matchResults[i][j].m_end))));
+                    arr->set(idx++, sourceStr->substring(result.m_matchResults[i][j].m_start, result.m_matchResults[i][j].m_end));
             }
         }
         return arr;

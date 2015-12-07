@@ -438,7 +438,7 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
             if (UNLIKELY(testOnly)) {
                 return true;
             }
-            std::vector<ESString::RegexMatchResult::RegexMatchResultPiece> piece;
+            std::vector<ESString::RegexMatchResult::RegexMatchResultPiece, pointer_free_allocator<ESString::RegexMatchResult::RegexMatchResultPiece> > piece;
             piece.reserve(subPatternNum + 1);
 
             for (unsigned i = 0; i < subPatternNum + 1; i ++) {
