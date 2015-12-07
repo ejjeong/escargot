@@ -1,13 +1,10 @@
-BUILDDIR=./build
-HOST=linux
-include $(BUILDDIR)/Toolchain.mk
-
 BIN=escargot
 
 #######################################################
 # Environments
 #######################################################
 
+HOST=linux
 ARCH=#x86,x64
 TYPE=none#interpreter
 MODE=#debug,release
@@ -15,72 +12,68 @@ NPROCS:=1
 OS:=$(shell uname -s)
 SHELL:=/bin/bash
 ifeq ($(OS),Linux)
-  NPROCS:=$(shell grep -c ^processor /proc/cpuinfo)
-  SHELL:=/bin/bash
+	NPROCS:=$(shell grep -c ^processor /proc/cpuinfo)
+	SHELL:=/bin/bash
 endif
 ifeq ($(OS),Darwin)
-  NPROCS:=$(shell sysctl -n machdep.cpu.thread_count)
-  SHELL:=/opt/local/bin/bash
+	NPROCS:=$(shell sysctl -n machdep.cpu.thread_count)
+	SHELL:=/opt/local/bin/bash
+endif
+
+ifeq ($(HOST), linux)
+	CC = gcc
+	CXX = g++
+	CXXFLAGS = -std=c++11
 endif
 
 $(info goal... $(MAKECMDGOALS))
 
 ifneq (,$(findstring x86,$(MAKECMDGOALS)))
-  ARCH=x86
+	ARCH=x86
 else ifneq (,$(findstring x64,$(MAKECMDGOALS)))
-  ARCH=x64
-else ifneq (,$(findstring arm,$(MAKECMDGOALS)))
-  ARCH=arm
+	ARCH=x64
 endif
 
 ifneq (,$(findstring interpreter,$(MAKECMDGOALS)))
-  TYPE=interpreter
+	TYPE=interpreter
 else ifneq (,$(findstring jit,$(MAKECMDGOALS)))
-  ifeq (,$(findstring check-jit,$(MAKECMDGOALS)))
-    TYPE=jit
-  endif
+	ifeq (,$(findstring check-jit,$(MAKECMDGOALS)))
+		TYPE=jit
+	endif
 endif
 
 ifneq (,$(findstring debug,$(MAKECMDGOALS)))
-  MODE=debug
+	MODE=debug
 else ifneq (,$(findstring release,$(MAKECMDGOALS)))
-  MODE=release
+	MODE=release
 endif
 
-ifeq ($(HOST), linux)
-  OUTDIR=out/$(ARCH)/$(TYPE)/$(MODE)
-else ifeq ($(HOST), tizen)
-  OUTDIR=out/tizen_$(ARCH)/$(TYPE)/$(MODE)
-endif
+BUILDDIR=out/$(ARCH)/$(TYPE)/$(MODE)
 
 $(info host... $(HOST))
 $(info arch... $(ARCH))
 $(info type... $(TYPE))
 $(info mode... $(MODE))
-$(info build dir... $(OUTDIR))
+$(info build dir... $(BUILDDIR))
 
 ifeq ($(TYPE), intrepreter)
-  CPPFLAGS+=$(CXXFLAGS_INTERPRETER)
+	CXXFLAGS+=$(CXXFLAGS_INTERPRETER)
 else ifeq ($(TYPE), jit)
-  CPPFLAGS+=$(CXXFLAGS_JIT)
+	CXXFLAGS+=$(CXXFLAGS_JIT)
 endif
 
 ifeq ($(ARCH), x64)
-  CPPFLAGS += -DESCARGOT_64=1
+	CXXFLAGS += -DESCARGOT_64=1
 else ifeq ($(ARCH), x86)
-  #https://gcc.gnu.org/onlinedocs/gcc-4.8.0/gcc/i386-and-x86_002d64-Options.html
-  CPPFLAGS += -DESCARGOT_32=1 -m32  -march=native -mtune=native -mfpmath=sse -msse2 -msse3
-  LDFLAGS += -m32
-else ifeq ($(ARCH), arm)
-  CPPFLAGS += -DESCARGOT_32=1 -march=armv7-a
-else
-CPPFLAGS += -DESCARGOT_32=1 -march=armv7-a
+	#https://gcc.gnu.org/onlinedocs/gcc-4.8.0/gcc/i386-and-x86_002d64-Options.html
+	CXXFLAGS += -DESCARGOT_32=1 -m32  -march=native -mtune=native -mfpmath=sse -msse2 -msse3
+	LDFLAGS += -m32
 endif
 
 ifeq ($(MODE), debug)
-  CPPFLAGS += $(CXXFLAGS_DEBUG)
+	CXXFLAGS += $(CXXFLAGS_DEBUG)
 else ifeq ($(MODE), release)
-  CPPFLAGS += $(CXXFLAGS_RELEASE)
+	CXXFLAGS += $(CXXFLAGS_RELEASE)
 endif
 
 
@@ -92,41 +85,28 @@ endif
 CXXFLAGS += -fno-rtti -fno-math-errno -Isrc/
 CXXFLAGS += -fdata-sections -ffunction-sections
 CXXFLAGS += -frounding-math -fsignaling-nans
-CXXFLAGS += -Wno-invalid-offsetof #-fvisibility=hidden
+CXXFLAGS += -Wno-invalid-offsetof -fvisibility=hidden
 
-ifeq ($(HOST), tizen)
-  CPPFLAGS += --sysroot=$(TIZEN_SYSROOT)
-endif
-
-# Shared Library
-SONAME  = libescargot.so
-CPPFLAGS += -fPIC -DHAVE_CONFIG_H -Ithird_party/bdwgc/libatomic_ops/src -Ithird_party/bdwgc/out/$(ARCH)/$(MODE)/include
-SRC_C += $(foreach dir, third_party/bdwgc , $(wildcard $(dir)/*.c))
-
-LDFLAGS += -lpthread -ldl
+LDFLAGS += -lpthread
 # -ltcmalloc_minimal
-#LDFLAGS += -Wl,--gc-sections
-
-ifeq ($(HOST), tizen)
-  LDFLAGS += --sysroot=$(TIZEN_SYSROOT)
-endif
+LDFLAGS += -Wl,--gc-sections
 
 # flags for debug/release
-CPPFLAGS_DEBUG = -O0 -g3 -D_GLIBCXX_DEBUG -fno-omit-frame-pointer -Wall -Wextra -Werror
-CPPFLAGS_DEBUG += -Wno-unused-but-set-variable -Wno-unused-but-set-parameter -Wno-unused-parameter
-CPPFLAGS_RELEASE = -O2 -g3 -DNDEBUG -fomit-frame-pointer -fno-stack-protector -funswitch-loops -Wno-deprecated-declarations
+CXXFLAGS_DEBUG = -O0 -g3 -D_GLIBCXX_DEBUG -fno-omit-frame-pointer -Wall -Wextra -Werror
+CXXFLAGS_DEBUG += -Wno-unused-but-set-variable -Wno-unused-but-set-parameter -Wno-unused-parameter
+CXXFLAGS_RELEASE = -O2 -g3 -DNDEBUG -fomit-frame-pointer -fno-stack-protector -funswitch-loops -Wno-deprecated-declarations
 
 # flags for jit/interpreter
-CPPFLAGS_JIT = -DENABLE_ESJIT=1
-CPPFLAGS_INTERPRETER =
+CXXFLAGS_JIT = -DENABLE_ESJIT=1
+CXXFLAGS_INTERPRETER =
 
 #######################################################
 # Third-party build flags
 #######################################################
 
 # bdwgc
-CPPFLAGS += -Ithird_party/bdwgc/include/
-CPPFLAGS_DEBUG += -DGC_DEBUG
+CXXFLAGS += -Ithird_party/bdwgc/include/
+CXXFLAGS_DEBUG += -DGC_DEBUG
 GCLIBS=third_party/bdwgc/out/$(ARCH)/$(MODE)/.libs/libgc.a
 
 ifneq ($(TYPE),none)
@@ -141,72 +121,64 @@ endif
 endif
 
 ifeq ($(TYPE), jit)
-  #include third_party/nanojit/Build.mk
-  ####################################
-  # ARCH-dependent settings
-  ####################################
-  ifeq ($(ARCH), x64)
-    TARGET_CPU=x86_64
-    CPPFLAGS += -DAVMPLUS_64BIT
-    CPPFLAGS += -DAVMPLUS_AMD64
-    CPPFLAGS += #if defined(_M_AMD64) || defined(_M_X64)
-  else ifeq ($(ARCH), x86)
-    TARGET_CPU=i686
-    CPPFLAGS += -DAVMPLUS_32BIT
-    CPPFLAGS += -DAVMPLUS_IA32
-    CPPFLAGS += #if defined(_M_AMD64) || defined(_M_X64)
-  else ifeq ($(ARCH), arm)
-    TARGET_CPU=arm
-    # CPPFLAGS += -mfpu=neon #enabled by LOCAL_ARM_NEON := true
-    CPPFLAGS += -DAVMPLUS_32BIT
-    CPPFLAGS += -DAVMPLUS_ARM
-    CPPFLAGS += -DTARGET_THUMB2
-    CPPFLAGS += #if defined(_M_AMD64) || defined(_M_X64)
-    SRCS += $(SRC_THIRD_PARTY)/nanojit/NativeARM.cpp
-    SRCS += $(SRC_THIRD_PARTY)/nanojit/NativeThumb2.cpp
-  endif
-  ####################################
-  # target-dependent settings
-  ####################################
- 
-  ifeq ($(MODE), debug)
-    CPPFLAGS += -DDEBUG
-    CPPFLAGS += -D_DEBUG
-    CPPFLAGS += -DNJ_VERBOSE
-  endif
-
-  ####################################
-  # Other features
-  ####################################
-  CPPFLAGS += -DESCARGOT
-  CPPFLAGS += -Ithird_party/nanojit/
-  CPPFLAGS += -DFEATURE_NANOJIT
-
-  #CPPFLAGS += -DAVMPLUS_VERBOSE
-  CPPFLAGS += -Wno-error=narrowing
-
-  ####################################
-  # Makefile flags
-  ####################################
-  curdir=third_party/nanojit
-  include $(curdir)/manifest.mk
-  SRC_NANOJIT = $(avmplus_CXXSRCS)
-  SRC_NANOJIT += $(curdir)/EscargotBridge.cpp
+	#include third_party/nanojit/Build.mk
+	####################################
+	# ARCH-dependent settings
+	####################################
+	ifeq ($(ARCH), x64)
+		TARGET_CPU=x86_64
+		CXXFLAGS += -DAVMPLUS_64BIT
+		CXXFLAGS += -DAVMPLUS_AMD64
+		CXXFLAGS += #if defined(_M_AMD64) || defined(_M_X64)
+	else ifeq ($(ARCH), x86)
+		TARGET_CPU=i686
+		CXXFLAGS += -DAVMPLUS_32BIT
+		CXXFLAGS += -DAVMPLUS_IA32
+		CXXFLAGS += #if defined(_M_AMD64) || defined(_M_X64)
+	endif
+	
+	####################################
+	# target-dependent settings
+	####################################
+	
+	ifeq ($(MODE), debug)
+		CXXFLAGS += -DDEBUG
+		CXXFLAGS += -D_DEBUG
+		CXXFLAGS += -DNJ_VERBOSE
+	endif
+	
+	####################################
+	# Other features
+	####################################
+	CXXFLAGS += -DESCARGOT
+	CXXFLAGS += -Ithird_party/nanojit/
+	CXXFLAGS += -DFEATURE_NANOJIT
+	
+	#CXXFLAGS += -DAVMPLUS_VERBOSE
+	CXXFLAGS += -Wno-error=narrowing
+	
+	####################################
+	# Makefile flags
+	####################################
+	curdir=third_party/nanojit
+	include $(curdir)/manifest.mk
+	SRC_NANOJIT = $(avmplus_CXXSRCS)
+	SRC_NANOJIT += $(curdir)/EscargotBridge.cpp
 endif
 
 # netlib
-CPPFLAGS += -Ithird_party/netlib/
+CXXFLAGS += -Ithird_party/netlib/
 
 # v8's fast-dtoa
-CPPFLAGS += -Ithird_party/double_conversion/
+CXXFLAGS += -Ithird_party/double_conversion/
 SRC_DTOA =
 SRC_DTOA += $(foreach dir, third_party/double_conversion , $(wildcard $(dir)/*.cc))
 
 # rapidjson
-CPPFLAGS += -Ithird_party/rapidjson/include/
+CXXFLAGS += -Ithird_party/rapidjson/include/
 
 # yarr
-CPPFLAGS += -Ithird_party/yarr/
+CXXFLAGS += -Ithird_party/yarr/
 SRC_YARR += third_party/yarr/OSAllocatorPosix.cpp
 SRC_YARR += third_party/yarr/PageBlock.cpp
 SRC_YARR += third_party/yarr/YarrCanonicalizeUCS2.cpp
@@ -234,15 +206,15 @@ SRC += $(foreach dir, src/vm , $(wildcard $(dir)/*.cpp))
 SRC += $(SRC_YARR)
 SRC += $(SRC_ESPRIMA_CPP)
 ifeq ($(TYPE), jit)
-  SRC += $(SRC_NANOJIT)
+	SRC += $(SRC_NANOJIT)
 endif
 
 SRC_CC =
 SRC_CC += $(SRC_DTOA)
 
-OBJS := $(SRC:%.cpp= $(OUTDIR)/%.o)
-OBJS += $(SRC_CC:%.cc= $(OUTDIR)/%.o)
-OBJS += $(SRC_C:%.c= $(OUTDIR)/%.o)
+OBJS := $(SRC:%.cpp= $(BUILDDIR)/%.o)
+OBJS += $(SRC_CC:%.cc= $(BUILDDIR)/%.o)
+OBJS += $(SRC_C:%.c= $(BUILDDIR)/%.o)
 
 #######################################################
 # Targets
@@ -253,54 +225,44 @@ OBJS += $(SRC_C:%.c= $(OUTDIR)/%.o)
 
 .DEFAULT_GOAL:=x64.jit.debug
 
-x86.jit.debug: $(OUTDIR)/$(BIN)
+x86.jit.debug: $(BUILDDIR)/$(BIN)
 	cp -f $< .
-x86.jit.release: $(OUTDIR)/$(BIN)
+x86.jit.release: $(BUILDDIR)/$(BIN)
 	cp -f $< .
-x86.interpreter.debug: $(OUTDIR)/$(BIN)
+x86.interpreter.debug: $(BUILDDIR)/$(BIN)
 	cp -f $< .
-x86.interpreter.release: $(OUTDIR)/$(BIN)
+x86.interpreter.release: $(BUILDDIR)/$(BIN)
 	cp -f $< .
-x64.jit.debug: $(OUTDIR)/$(BIN)
+x64.jit.debug: $(BUILDDIR)/$(BIN)
 	cp -f $< .
-x64.jit.release: $(OUTDIR)/$(BIN)
+x64.jit.release: $(BUILDDIR)/$(BIN)
 	cp -f $< .
-x64.interpreter.debug: $(OUTDIR)/$(BIN)
+x64.interpreter.debug: $(BUILDDIR)/$(BIN)
 	cp -f $< .
-x64.interpreter.release: $(OUTDIR)/$(BIN)
+x64.interpreter.release: $(BUILDDIR)/$(BIN)
 	cp -f $< .
-arm.jit.debug: $(OUTDIR)/$(BIN)
-	cp -f $< .
-arm.jit.release: $(OUTDIR)/$(BIN)
-	cp -f $< .
-arm.interpreter.debug: $(OUTDIR)/$(BIN)
-	cp -f $< .
-arm.interpreter.release: $(OUTDIR)/$(BIN)
-	cp -f $< .
-arm.interpreter.release.shared: $(OBJS)
-	$(CXX) -shared -Wl,-soname,$(SONAME) -o $(SONAME) $(OBJS) $(LDFLAGS)
 
-$(OUTDIR)/$(BIN): $(OBJS) $(THIRD_PARTY_LIBS)
+$(BUILDDIR)/$(BIN): $(OBJS) $(THIRD_PARTY_LIBS)
 	@echo "[LINK] $@"
 	@$(CXX) -o $@ $(OBJS) $(THIRD_PARTY_LIBS) $(LDFLAGS)
 
-$(OUTDIR)/%.o: %.cpp Makefile
+$(BUILDDIR)/%.o: %.cpp Makefile
 	@echo "[CXX] $@"
 	@mkdir -p $(dir $@)
-	@$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) $< -o $@
-	@$(CXX) -MM $(CPPFLAGS) $(CXXFLAGS) -MT $@ $< > $(OUTDIR)/$*.d
+	@$(CXX) -c $(CXXFLAGS) $< -o $@
+	@$(CXX) -MM $(CXXFLAGS) -MT $@ $< > $(BUILDDIR)/$*.d
 	
-$(OUTDIR)/%.o: %.cc Makefile
+$(BUILDDIR)/%.o: %.cc Makefile
 	@echo "[CXX] $@"
 	@mkdir -p $(dir $@)
-	@$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) $< -o $@
-	@$(CXX) -MM $(CPPFLAGS) $(CXXFLAGS) -MT $@ $< > $(OUTDIR)/$*.d
+	@$(CXX) -c $(CXXFLAGS) $< -o $@
+	@$(CXX) -MM $(CXXFLAGS) -MT $@ $< > $(BUILDDIR)/$*.d
 
-$(OUTDIR)/%.o: %.c Makefile
+$(BUILDDIR)/%.o: %.c Makefile
 	@echo "[CC] $@"
 	@mkdir -p $(dir $@)
-	@$(CC) -c $(CPPFLAGS) $(CFLAGS) $< -o $@
-	@$(CC) -MM $(CPPFLAGS) $(CFLAGS) -MT $@ $< > $(OUTDIR)/$*.d
+	@$(CC) -c $(CFLAGS) $< -o $@
+	@$(CC) -MM $(CFLAGS) -MT $@ $< > $(BUILDDIR)/$*.d
 
 full:
 	make x64.jit.debug -j$(NPROCS)
