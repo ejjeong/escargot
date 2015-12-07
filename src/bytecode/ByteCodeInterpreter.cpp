@@ -388,11 +388,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* right = POP(stack, bp);
         ESValue* left = POP(stack, bp);
-        bool r = abstractRelationalComparison(left, right, true);
-        if (r)
-            PUSH(stack, topOfStack, ESValue(true));
-        else
-            PUSH(stack, topOfStack, ESValue(false));
+        PUSH(stack, topOfStack, ESValue(abstractRelationalComparison(left, right, true)));
         executeNextCode<LessThan>(programCounter);
         NEXT_INSTRUCTION();
     }
@@ -401,11 +397,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* right = POP(stack, bp);
         ESValue* left = POP(stack, bp);
-        bool r = abstractRelationalComparisonOrEqual(left, right, true);
-        if (r)
-            PUSH(stack, topOfStack, ESValue(true));
-        else
-            PUSH(stack, topOfStack, ESValue(false));
+        PUSH(stack, topOfStack, ESValue(abstractRelationalComparisonOrEqual(left, right, true)));
         executeNextCode<LessThanOrEqual>(programCounter);
         NEXT_INSTRUCTION();
     }
@@ -414,11 +406,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* right = POP(stack, bp);
         ESValue* left = POP(stack, bp);
-        bool r = abstractRelationalComparison(right, left, false);
-        if (r)
-            PUSH(stack, topOfStack, ESValue(true));
-        else
-            PUSH(stack, topOfStack, ESValue(false));
+        PUSH(stack, topOfStack, ESValue(abstractRelationalComparison(right, left, false)));
         executeNextCode<GreaterThan>(programCounter);
         NEXT_INSTRUCTION();
     }
@@ -427,11 +415,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         ESValue* right = POP(stack, bp);
         ESValue* left = POP(stack, bp);
-        bool r = abstractRelationalComparisonOrEqual(right, left, false);
-        if (r)
-            PUSH(stack, topOfStack, ESValue(true));
-        else
-            PUSH(stack, topOfStack, ESValue(false));
+        PUSH(stack, topOfStack, ESValue(abstractRelationalComparisonOrEqual(right, left, false)));
         executeNextCode<GreaterThanOrEqual>(programCounter);
         NEXT_INSTRUCTION();
     }
