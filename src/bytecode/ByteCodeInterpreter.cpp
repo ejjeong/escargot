@@ -497,6 +497,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     IncrementOpcodeLbl:
     {
         ESValue* src = POP(stack, bp);
+        ASSERT(src->isNumber());
         ESValue ret(ESValue::ESForceUninitialized);
         if (LIKELY(src->isInt32())) {
             int32_t a = src->asInt32();
@@ -505,7 +506,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             else
                 ret = ESValue(a + 1);
         } else {
-            ret = ESValue(src->asNumber() + 1);
+            ret = ESValue(src->asDouble() + 1);
         }
         PUSH(stack, topOfStack, ret);
         executeNextCode<Increment>(programCounter);
@@ -515,6 +516,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     DecrementOpcodeLbl:
     {
         ESValue* src = POP(stack, bp);
+        ASSERT(src->isNumber());
         ESValue ret(ESValue::ESForceUninitialized);
         if (LIKELY(src->isInt32())) {
             int32_t a = src->asInt32();
@@ -523,7 +525,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             else
                 ret = ESValue(a - 1);
         } else {
-            ret = ESValue(src->asNumber() - 1);
+            ret = ESValue(src->asDouble() - 1);
         }
         PUSH(stack, topOfStack, ret);
         executeNextCode<Decrement>(programCounter);

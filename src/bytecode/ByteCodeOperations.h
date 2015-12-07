@@ -24,7 +24,7 @@ ALWAYS_INLINE ESValue* getByIdOperation(ESVMInstance* instance, ExecutionContext
             return code->m_cachedSlot;
         } else {
             ReferenceError* receiver = ReferenceError::create();
-            std::vector<ESValue> arguments;
+            std::vector<ESValue, gc_allocator<ESValue> > arguments;
             UTF16String err_msg;
             err_msg.append(code->m_name.string()->toNullableUTF16String().m_buffer);
             err_msg.append(u" is not defined");

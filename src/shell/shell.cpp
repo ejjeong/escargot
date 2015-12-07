@@ -84,6 +84,7 @@ void* gca(size_t t)
 */
 int main(int argc, char* argv[])
 {
+    // printf("%d", sizeof (escargot::ESHiddenClassPropertyInfo));
     /*
     static void* root[300000];
     int j = 0;

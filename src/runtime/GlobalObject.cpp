@@ -842,6 +842,7 @@ void GlobalObject::installObject()
         if (!O.isObject())
             instance->throwError(ESValue(TypeError::create(ESString::create("first parameter is should be object"))));
         ESObject* obj = O.toObject();
+        obj->forceNonVectorHiddenClass();
         if (obj->isESArrayObject())
             obj->asESArrayObject()->convertToSlowMode();
         std::vector<std::pair<ESValue, ESHiddenClassPropertyInfo*> > writableOrconfigurableProperties;
@@ -991,6 +992,7 @@ void GlobalObject::installObject()
         if (!O.isObject())
             instance->throwError(ESValue(TypeError::create(ESString::create(u"getOwnPropertyNames: first argument is not object"))));
         ESObject* obj = O.toObject();
+        obj->forceNonVectorHiddenClass();
         if (obj->isESArrayObject())
             obj->asESArrayObject()->convertToSlowMode();
         std::vector<std::pair<ESValue, ESHiddenClassPropertyInfo*> > configurableProperties;
@@ -2155,8 +2157,12 @@ void GlobalObject::installString()
             }
             auto stringAppend = [](UTF16String& dst, escargot::ESString* src, size_t s, size_t e)
             {
-                for (unsigned i = s; i < e; i ++) {
-                    dst += src->charAt(i);
+                if (!src->isASCIIString()) {
+                    dst.append(&src->stringData()->asUTF16String()->data()[s], &src->stringData()->asUTF16String()->data()[e]);
+                } else {
+                    for (unsigned i = s; i < e; i ++) {
+                        dst += src->charAt(i);
+                    }
                 }
             };
             ESValue replaceValue = instance->currentExecutionContext()->arguments()[1];

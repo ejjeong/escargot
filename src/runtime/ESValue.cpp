@@ -734,6 +734,8 @@ ESArrayObject::ESArrayObject(int length)
         convertToSlowMode();
     else if (length > 0) {
         setLength(length);
+    } else {
+        m_vector.reserve(6);
     }
 
     // defineAccessorProperty(strings->length.string(), ESVMInstance::currentInstance()->arrayLengthAccessorData(), true, false, false);

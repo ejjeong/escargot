@@ -919,6 +919,11 @@ public:
         return stringData()->utf16Data();
     }
 
+    bool isASCIIString() const
+    {
+        return stringData()->isASCIIString();
+    }
+
     // for yarr
     bool is8Bit() const
     {
@@ -1493,7 +1498,7 @@ struct ESHiddenClassPropertyInfo {
 
 typedef std::unordered_map<::escargot::ESString*, size_t,
     std::hash<ESString*>, std::equal_to<ESString*>,
-    gc_allocator< std::pair<const ::escargot::ESString*, size_t> > > ESHiddenClassPropertyIndexHashMapInfoStd;
+    gc_allocator<std::pair<const ::escargot::ESString*, size_t> > > ESHiddenClassPropertyIndexHashMapInfoStd;
 typedef std::vector<::escargot::ESHiddenClassPropertyInfo, gc_allocator<::escargot::ESHiddenClassPropertyInfo> > ESHiddenClassPropertyInfoVectorStd;
 
 class ESHiddenClassPropertyInfoVector : public ESHiddenClassPropertyInfoVectorStd {
@@ -1505,7 +1510,7 @@ class ESHiddenClassPropertyInfoVector : public ESHiddenClassPropertyInfoVectorSt
 
 typedef std::unordered_map<ESString*, ::escargot::ESHiddenClass **,
 std::hash<ESString*>, std::equal_to<ESString*>,
-gc_allocator<std::pair<const ESString*, std::pair<::escargot::ESHiddenClass *, ::escargot::ESHiddenClass **> > > > ESHiddenClassTransitionDataStd;
+gc_allocator<std::pair<ESString*, ::escargot::ESHiddenClass **> > > ESHiddenClassTransitionDataStd;
 
 typedef std::vector<::escargot::ESValue, gc_allocator<::escargot::ESValue> > ESValueVectorStd;
 
@@ -1677,7 +1682,8 @@ public:
 
     void forceNonVectorHiddenClass()
     {
-        ASSERT(!m_hiddenClass->m_flags.m_forceNonVectorMode);
+        if (m_hiddenClass->m_flags.m_forceNonVectorMode)
+            return ;
         m_hiddenClass = m_hiddenClass->forceNonVectorMode();
     }
 
@@ -2034,6 +2040,7 @@ public:
         // wprintf(L"CONVERT TO SLOW MODE!!!  \n");
         if (!m_flags.m_isFastMode)
             return;
+        forceNonVectorHiddenClass();
         m_flags.m_isFastMode = false;
         uint32_t len = length();
         if (len == 0)
@@ -2066,7 +2073,7 @@ public:
                 m_vector.resize(newLength);
             } else if (newLength > m_length) {
                 if (m_vector.capacity() < newLength) {
-                    size_t reservedSpace = std::min(MAX_FASTMODE_SIZE, newLength*2);
+                    size_t reservedSpace = std::min(MAX_FASTMODE_SIZE, (unsigned)(newLength*1.5f));
                     m_vector.reserve(reservedSpace);
                 }
                 m_vector.resize(newLength, ESValue(ESValue::ESEmptyValue));
