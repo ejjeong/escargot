@@ -4498,7 +4498,9 @@ void GlobalObject::somePrototypeObjectDefineIndexedProperty()
                     {
                         GetObjectSlowMode n;
                         n.assignOpcodeInAddress();
+#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
                         block->m_extraData[idx].m_opcode = GetObjectSlowModeOpcode;
+#endif
                         memcpy(code, &n, sizeof(GetObjectSlowMode));
                         break;
                     }
@@ -4506,7 +4508,9 @@ void GlobalObject::somePrototypeObjectDefineIndexedProperty()
                     {
                         GetObjectAndPushObjectSlowMode n;
                         n.assignOpcodeInAddress();
+#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
                         block->m_extraData[idx].m_opcode = GetObjectAndPushObjectSlowModeOpcode;
+#endif
                         memcpy(code, &n, sizeof(GetObjectAndPushObjectSlowMode));
                         break;
                     }
@@ -4514,7 +4518,9 @@ void GlobalObject::somePrototypeObjectDefineIndexedProperty()
                     {
                         GetObjectWithPeekingSlowMode n;
                         n.assignOpcodeInAddress();
+#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
                         block->m_extraData[idx].m_opcode = GetObjectWithPeekingSlowModeOpcode;
+#endif
                         memcpy(code, &n, sizeof(GetObjectWithPeekingSlowMode));
                         break;
                     }
@@ -4522,7 +4528,9 @@ void GlobalObject::somePrototypeObjectDefineIndexedProperty()
                     {
                         GetObjectPreComputedCaseSlowMode n(((GetObjectPreComputedCase *)code)->m_propertyValue);
                         n.assignOpcodeInAddress();
+#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
                         block->m_extraData[idx].m_opcode = GetObjectPreComputedCaseSlowModeOpcode;
+#endif
                         memcpy(code, &n, sizeof(GetObjectPreComputedCaseSlowMode));
                         break;
                     }
@@ -4530,7 +4538,9 @@ void GlobalObject::somePrototypeObjectDefineIndexedProperty()
                     {
                         GetObjectPreComputedCaseAndPushObjectSlowMode n(((GetObjectPreComputedCaseAndPushObject *)code)->m_propertyValue);
                         n.assignOpcodeInAddress();
+#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
                         block->m_extraData[idx].m_opcode = GetObjectPreComputedCaseAndPushObjectSlowModeOpcode;
+#endif
                         memcpy(code, &n, sizeof(GetObjectPreComputedCaseAndPushObjectSlowMode));
                         break;
                     }
@@ -4538,7 +4548,9 @@ void GlobalObject::somePrototypeObjectDefineIndexedProperty()
                     {
                         GetObjectWithPeekingPreComputedCaseSlowMode n(((GetObjectWithPeekingPreComputedCase *)code)->m_propertyValue);
                         n.assignOpcodeInAddress();
+#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
                         block->m_extraData[idx].m_opcode = GetObjectWithPeekingPreComputedCaseSlowModeOpcode;
+#endif
                         memcpy(code, &n, sizeof(GetObjectWithPeekingPreComputedCaseSlowMode));
                         break;
                     }
@@ -4546,7 +4558,9 @@ void GlobalObject::somePrototypeObjectDefineIndexedProperty()
                     {
                         SetObjectSlowMode n;
                         n.assignOpcodeInAddress();
+#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
                         block->m_extraData[idx].m_opcode = SetObjectSlowModeOpcode;
+#endif
                         memcpy(code, &n, sizeof(SetObjectSlowMode));
                         break;
                     }
@@ -4554,7 +4568,9 @@ void GlobalObject::somePrototypeObjectDefineIndexedProperty()
                     {
                         SetObjectPreComputedCaseSlowMode n(((SetObjectPreComputedCase *)code)->m_propertyValue);
                         n.assignOpcodeInAddress();
+#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
                         block->m_extraData[idx].m_opcode = SetObjectPreComputedCaseSlowModeOpcode;
+#endif
                         memcpy(code, &n, sizeof(SetObjectPreComputedCaseSlowMode));
                         break;
                     }

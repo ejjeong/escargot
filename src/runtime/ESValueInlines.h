@@ -925,12 +925,12 @@ ALWAYS_INLINE void ESPropertyAccessorData::setValue(::escargot::ESObject* obj, :
     }
 }
 
-ALWAYS_INLINE ESHiddenClass* ESHiddenClass::removeProperty(size_t idx)
+inline ESHiddenClass* ESHiddenClass::removeProperty(size_t idx)
 {
     ASSERT(idx != SIZE_MAX);
     // can not delete __proto__
     ASSERT(idx != 0);
-//    ASSERT(m_propertyInfo[idx].m_flags.m_isConfigurable);
+    // ASSERT(m_propertyInfo[idx].m_flags.m_isConfigurable);
 
     if (m_flags.m_isVectorMode) {
         ESHiddenClass* ret = ESVMInstance::currentInstance()->initialHiddenClassForObject();
@@ -941,7 +941,6 @@ ALWAYS_INLINE ESHiddenClass* ESHiddenClass::removeProperty(size_t idx)
                     , m_propertyInfo[i].m_flags.m_isWritable, m_propertyInfo[i].m_flags.m_isEnumerable, m_propertyInfo[i].m_flags.m_isConfigurable);
             }
         }
-
         return ret;
     } else {
         if (!m_flags.m_forceNonVectorMode && m_propertyInfo.size() < ESHiddenClassVectorModeSizeLimit / 2) {
@@ -982,7 +981,7 @@ ALWAYS_INLINE ESHiddenClass* ESHiddenClass::removeProperty(size_t idx)
 }
 
 // IS FUNCTION IS FOR GLOBAL OBJECT
-ALWAYS_INLINE ESHiddenClass* ESHiddenClass::removePropertyWithoutIndexChange(size_t idx)
+inline ESHiddenClass* ESHiddenClass::removePropertyWithoutIndexChange(size_t idx)
 {
     ASSERT(idx != SIZE_MAX);
     // can not delete __proto__
@@ -1014,7 +1013,7 @@ ALWAYS_INLINE ESHiddenClass* ESHiddenClass::removePropertyWithoutIndexChange(siz
     return cls;
 }
 
-ALWAYS_INLINE ESHiddenClass* ESHiddenClass::morphToNonVectorMode()
+inline ESHiddenClass* ESHiddenClass::morphToNonVectorMode()
 {
     ESHiddenClass* cls = new ESHiddenClass;
     cls->m_flags.m_isVectorMode = false;
@@ -1032,14 +1031,14 @@ ALWAYS_INLINE ESHiddenClass* ESHiddenClass::morphToNonVectorMode()
     return cls;
 }
 
-ALWAYS_INLINE ESHiddenClass* ESHiddenClass::forceNonVectorMode()
+inline ESHiddenClass* ESHiddenClass::forceNonVectorMode()
 {
     ESHiddenClass* cls = morphToNonVectorMode();
     cls->m_flags.m_forceNonVectorMode = true;
     return cls;
 }
 
-ALWAYS_INLINE ESHiddenClass* ESHiddenClass::defineProperty(ESString* name, bool isData, bool isWritable, bool isEnumerable, bool isConfigurable)
+inline ESHiddenClass* ESHiddenClass::defineProperty(ESString* name, bool isData, bool isWritable, bool isEnumerable, bool isConfigurable)
 {
     ASSERT(findProperty(name) == SIZE_MAX);
     if (m_flags.m_isVectorMode) {

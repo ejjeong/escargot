@@ -63,7 +63,8 @@ public:
         return escargot::currentInstance;
     }
 
-    ALWAYS_INLINE OpcodeTable* opcodeTable() { return m_table; }
+    ALWAYS_INLINE OpcodeTable* opcodeTable() { return m_opcodeTable; }
+    ALWAYS_INLINE std::unordered_map<void *, unsigned char>& opcodeResverseTable() { return m_opcodeReverseTable; }
     ALWAYS_INLINE Strings& strings() { return m_strings; }
 
     template <typename F>
@@ -214,7 +215,9 @@ protected:
     ExecutionContext* m_currentExecutionContext;
     GlobalObject* m_globalObject;
 
-    OpcodeTable* m_table;
+    OpcodeTable* m_opcodeTable;
+    std::unordered_map<void *, unsigned char> m_opcodeReverseTable;
+
 
     friend class InternalAtomicString;
     friend class InternalAtomicStringData;

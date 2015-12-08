@@ -38,6 +38,7 @@ void CodeBlock::finalize()
 {
     if (ESVMInstance::currentInstance()/* FIXME(add is ESVMInstance destroyed) */)
         ESVMInstance::currentInstance()->globalObject()->unregisterCodeBlock(this);
+
     m_code.clear();
     m_code.shrink_to_fit();
     RELEASE_ASSERT(!m_code.capacity());
@@ -46,12 +47,18 @@ void CodeBlock::finalize()
     removeJITCode();
     ASSERT(m_recursionDepth == 0);
 #endif
+#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
     m_extraData.clear();
     m_extraData.shrink_to_fit();
     RELEASE_ASSERT(!m_extraData.capacity());
+#endif
 }
 
+#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
 void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, ByteCodeGenerateContext& context, size_t codePosition, size_t bytecodeCount)
+#else
+void CodeBlock::pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, ByteCodeGenerateContext& context, size_t codePosition)
+#endif
 {
     Opcode op = (Opcode)(size_t)code->m_opcodeInAddress;
     char registerIncrementCount = pushCountFromOpcode(code, op);

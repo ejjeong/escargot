@@ -1563,15 +1563,15 @@ public:
         }
     }
 
-    ALWAYS_INLINE ESHiddenClass* defineProperty(ESString* name, bool isData, bool isWritable, bool isEnumerable, bool isConfigurable);
-    ALWAYS_INLINE ESHiddenClass* removeProperty(ESString* name)
+    inline ESHiddenClass* defineProperty(ESString* name, bool isData, bool isWritable, bool isEnumerable, bool isConfigurable);
+    inline ESHiddenClass* removeProperty(ESString* name)
     {
         return removeProperty(findProperty(name));
     }
-    ALWAYS_INLINE ESHiddenClass* removeProperty(size_t idx);
-    ALWAYS_INLINE ESHiddenClass* removePropertyWithoutIndexChange(size_t idx);
-    ALWAYS_INLINE ESHiddenClass* morphToNonVectorMode();
-    ALWAYS_INLINE ESHiddenClass* forceNonVectorMode();
+    inline ESHiddenClass* removeProperty(size_t idx);
+    inline ESHiddenClass* removePropertyWithoutIndexChange(size_t idx);
+    inline ESHiddenClass* morphToNonVectorMode();
+    inline ESHiddenClass* forceNonVectorMode();
     bool isVectorMode()
     {
         return m_flags.m_isVectorMode;

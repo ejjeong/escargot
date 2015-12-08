@@ -38,7 +38,7 @@ ESVMInstance::ESVMInstance()
     m_scriptParser = new(GC) ScriptParser();
     std::srand(std::time(0));
 
-    m_table = new(PointerFreeGC) OpcodeTable();
+    m_opcodeTable = new(PointerFreeGC) OpcodeTable();
     // init goto table
     interpret(this, NULL, 0);
 

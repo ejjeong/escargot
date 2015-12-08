@@ -2260,16 +2260,20 @@ public:
         return m_code.size() - sizeof(CodeType);
     }
 
+#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
     Opcode lastCode()
     {
         return m_extraData[m_extraData.size() - 1].m_opcode;
     }
+#endif
 
     template <typename CodeType>
     void popLastCode()
     {
         m_code.resize(m_code.size() - sizeof(CodeType));
+#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
         m_extraData.erase(m_extraData.end() - 1);
+#endif
     }
 
     size_t currentCodeSize()
@@ -2283,7 +2287,9 @@ public:
     }
 
     std::vector<char, gc_malloc_allocator<char> > m_code;
+#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
     std::vector<ByteCodeExtraData> m_extraData;
+#endif
 
     Node* m_ast;
     InternalAtomicStringVector m_params; // params: [ Pattern ];
@@ -2324,7 +2330,11 @@ public:
     void fillExtraData();
 #endif
 private:
+#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
     void pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, ByteCodeGenerateContext& context, size_t codePosition, size_t bytecodeCount);
+#else
+    void pushCodeFillExtraData(ByteCode* code, ByteCodeExtraData* data, ByteCodeGenerateContext& context, size_t codePosition);
+#endif
 #if defined(ENABLE_ESJIT) || !defined(NDEBUG)
     void fillExtraData(ByteCode* code, ByteCodeExtraData* data, ExtraDataGenerateContext& context, size_t codePosition, size_t bytecodeCount);
 #endif
@@ -2488,15 +2498,20 @@ void CodeBlock::pushCode(const CodeType& code, ByteCodeGenerateContext& context,
     // record extra Info
     ByteCodeExtraData extraData;
     extraData.m_opcode = (Opcode)(size_t)code.m_opcodeInAddress;
+#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
     pushCodeFillExtraData((ByteCode *)&code, &extraData, context, m_code.size(), m_extraData.size());
+#else
+    pushCodeFillExtraData((ByteCode *)&code, &extraData, context, m_code.size());
+#endif
 
     const_cast<CodeType &>(code).assignOpcodeInAddress();
 
     char* first = (char *)&code;
     m_code.insert(m_code.end(), first, first + sizeof(CodeType));
 
+#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
     m_extraData.push_back(extraData);
-
+#endif
     m_requiredStackSizeInESValueSize = std::max(m_requiredStackSizeInESValueSize, (unsigned)context.m_baseRegisterCount);
 }
 
@@ -2613,11 +2628,13 @@ ALWAYS_INLINE void ByteCodeGenerateContext::morphJumpPositionIntoComplexCase(Cod
         JumpComplexCase j(cb->peekCode<Jump>(codePos), iter->second);
         j.assignOpcodeInAddress();
         memcpy(cb->m_code.data() + codePos, &j, sizeof(JumpComplexCase));
+#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
         iterateByteCode(cb, [codePos](CodeBlock* block, unsigned idx, ByteCode* code, Opcode opcode) {
             if (codePos == (size_t)((char*)code - block->m_code.data())) {
                 block->m_extraData[idx].m_opcode = JumpComplexCaseOpcode;
             }
         });
+#endif
         m_complexCaseStatementPositions.erase(iter);
     }
 }
@@ -2627,9 +2644,12 @@ inline void iterateByteCode(CodeBlock* codeBlock, std::function<void(CodeBlock* 
     char* ptr = codeBlock->m_code.data();
     unsigned idx = 0;
     char* end = &codeBlock->m_code.data()[codeBlock->m_code.size()];
-
     while (ptr < end) {
+#if defined(ENABLE_ESJIT) || !defined(NDEBUG)
         Opcode code = codeBlock->m_extraData[idx].m_opcode;
+#else
+        Opcode code = (escargot::Opcode)ESVMInstance::currentInstance()->opcodeResverseTable()[((ByteCode *)ptr)->m_opcodeInAddress];
+#endif
         fn(codeBlock, idx, (ByteCode *)ptr, code);
         idx++;
         switch (code) {
