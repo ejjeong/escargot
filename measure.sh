@@ -91,7 +91,8 @@ testpath="./test/SunSpider/tests/sunspider-1.0.2/"
 mkdir -p test/out
 rm test/out/*.out -f
 num=$(date +%y%m%d_%H_%M_%S)
-memresfile=$(echo 'test/out/'$tc'_x86_mem_'$num'.res')
+curdir=`pwd`;
+memresfile=$(echo $curdir'/test/out/'$tc'_mem_'$num'.res')
 
 function measure(){
   finalcmd=$1" "$2" "$3
@@ -120,6 +121,32 @@ if [[ $2 == test262 ]]; then
   eval $run
  # python tools/packaging/test262.py --command ../../$cmd $3
   cd ../..
+  exit 1;
+fi
+
+if [[ $2 == octane ]]; then
+  if [[ $3 == memory ]]; then
+    outfile=$(echo "../out/"$1"_octane_memory.out")
+    cd test/octane
+    ../../$cmd $args run.js &
+    PID=$!
+    (while [ "$PID" ]; do
+      [ -f "/proc/$PID/smaps" ] || { exit 1;};
+      ../bin/memps -p $PID 2> /dev/null
+      echo \"=========\"$PID; sleep 0.0001;
+     done ) >> $outfile &
+      sleep 340s;
+      echo "==========" >> $memresfile
+      MAXV=`cat $outfile | grep 'PSS:' | sed -e 's/,//g' | awk '{ if(max < $2) max=$2} END { print max}'`
+      MAXR=`cat $outfile | grep 'RSS:' | sed -e 's/,//g' | awk '{ if(max < $2) max=$2} END { print max}'`
+      echo 'MaxPSS:'$MAXV', MaxRSS:'$MAXR >> $memresfile
+      echo $MAXV
+    cd -
+    exit 1;
+  fi
+  cd test/octane
+  ../../$cmd $args run.js
+  cd -
   exit 1;
 fi
 
