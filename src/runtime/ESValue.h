@@ -1512,6 +1512,9 @@ struct ESHiddenClassPropertyInfo {
 typedef std::unordered_map<::escargot::ESString*, size_t,
     std::hash<ESString*>, std::equal_to<ESString*>,
     gc_allocator<std::pair<const ::escargot::ESString*, size_t> > > ESHiddenClassPropertyIndexHashMapInfoStd;
+
+class ESHiddenClassPropertyIndexHashMapInfo : public ESHiddenClassPropertyIndexHashMapInfoStd, public gc { };
+
 typedef std::vector<::escargot::ESHiddenClassPropertyInfo, gc_allocator<::escargot::ESHiddenClassPropertyInfo> > ESHiddenClassPropertyInfoVectorStd;
 
 class ESHiddenClassPropertyInfoVector : public ESHiddenClassPropertyInfoVectorStd {
@@ -1544,10 +1547,20 @@ class ESHiddenClass : public gc {
 public:
     size_t findProperty(const ESString* name)
     {
-        auto iter = m_propertyIndexHashMapInfo.find(const_cast<ESString *>(name));
-        if (iter == m_propertyIndexHashMapInfo.end())
+        if (m_flags.m_isVectorMode) {
+            size_t siz = m_propertyInfo.size();
+            for (size_t i = 0 ; i < siz ; i ++) {
+                if (*m_propertyInfo[i].m_name == *name)
+                    return i;
+            }
             return SIZE_MAX;
-        return iter->second;
+        } else {
+            ASSERT(m_propertyIndexHashMapInfo);
+            auto iter = m_propertyIndexHashMapInfo->find(const_cast<ESString *>(name));
+            if (iter == m_propertyIndexHashMapInfo->end())
+                return SIZE_MAX;
+            return iter->second;
+        }
     }
 
     ALWAYS_INLINE ESHiddenClass* defineProperty(ESString* name, bool isData, bool isWritable, bool isEnumerable, bool isConfigurable);
@@ -1615,9 +1628,10 @@ private:
         m_flags.m_hasReadOnlyProperty = false;
         m_flags.m_hasIndexedProperty = false;
         m_flags.m_hasIndexedReadOnlyProperty = false;
+        m_propertyIndexHashMapInfo = NULL;
     }
 
-    ESHiddenClassPropertyIndexHashMapInfoStd m_propertyIndexHashMapInfo;
+    ESHiddenClassPropertyIndexHashMapInfo* m_propertyIndexHashMapInfo;
     ESHiddenClassPropertyInfoVector m_propertyInfo;
     ESHiddenClassTransitionDataStd m_transitionData;
 

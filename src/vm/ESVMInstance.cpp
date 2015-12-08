@@ -78,10 +78,10 @@ ESVMInstance::ESVMInstance()
         }
     });
 
-    m_initialHiddenClassForObject.m_propertyIndexHashMapInfo.insert(std::make_pair(
-        m_strings.__proto__,
-        0
-        ));
+    // m_initialHiddenClassForObject.m_propertyIndexHashMapInfo.insert(std::make_pair(
+    //     m_strings.__proto__,
+    //     0
+    //     ));
     m_initialHiddenClassForObject.m_propertyInfo.push_back(ESHiddenClassPropertyInfo(m_strings.__proto__.string(), false, true, false, false));
 
     // $19.2.4 Function Instances
