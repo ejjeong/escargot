@@ -2162,7 +2162,13 @@ void GlobalObject::installString()
                 if (!src->isASCIIString()) {
                     dst.append(&src->stringData()->asUTF16String()->data()[s], &src->stringData()->asUTF16String()->data()[e]);
                 } else {
-                    dst.append(&src->stringData()->asASCIIString()->data()[s], &src->stringData()->asASCIIString()->data()[e]);
+                    const char* data = src->stringData()->asASCIIString()->data();
+                    size_t o = dst.length();
+                    size_t len = e - s;
+                    dst.resize(o + len);
+                    for (unsigned i = 0 ; i < len ; i ++) {
+                        dst[i + o] = data[s + i];
+                    }
                 }
             };
 

@@ -1538,7 +1538,7 @@ public:
 };
 
 class ESHiddenClass : public gc {
-    static const unsigned ESHiddenClassVectorModeSizeLimit = 64;
+    static const unsigned ESHiddenClassVectorModeSizeLimit = 32;
     friend class ESVMInstance;
     friend class ESObject;
 public:
