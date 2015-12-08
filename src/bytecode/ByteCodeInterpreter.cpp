@@ -5,13 +5,32 @@
 
 namespace escargot {
 
+
+NEVER_INLINE void registerOpcode(ESVMInstance* instance, Opcode opcode, const char* opcodeName, void* opcodeAddress)
+{
+    static std::unordered_set<void *> labelAddressChecker;
+
+    if (labelAddressChecker.find(opcodeAddress) != labelAddressChecker.end()) {
+        ESCARGOT_LOG_ERROR("%s\n", opcodeName);
+        RELEASE_ASSERT_NOT_REACHED();
+    }
+
+    labelAddressChecker.insert(opcodeAddress);
+    instance->opcodeTable()->m_table[opcode] = opcodeAddress;
+    instance->opcodeResverseTable().insert(std::make_pair(opcodeAddress, opcode));
+
+    if (opcode == EndOpcode) {
+        labelAddressChecker.clear();
+    }
+}
+
 #ifdef ENABLE_ESJIT
 ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter, unsigned maxStackPos)
 #else
 ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter)
 #endif
 {
-    if (codeBlock == NULL) {
+    if (UNLIKELY(codeBlock == NULL)) {
         goto RegisterOpcodes;
     }
     {
@@ -1277,13 +1296,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
     {
         std::unordered_set<void *> labelAddressChecker;
 #define REGISTER_TABLE(opcode, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
-        if (labelAddressChecker.find(&&opcode##OpcodeLbl) != labelAddressChecker.end()) { \
-            ESCARGOT_LOG_ERROR("%s\n", #opcode); \
-            RELEASE_ASSERT_NOT_REACHED(); \
-        } \
-        labelAddressChecker.insert(&&opcode##OpcodeLbl); \
-        instance->opcodeTable()->m_table[opcode##Opcode] = &&opcode##OpcodeLbl; \
-        instance->opcodeResverseTable().insert(std::make_pair(&&opcode##OpcodeLbl, opcode##Opcode));
+        registerOpcode(instance, opcode##Opcode, #opcode, &&opcode##OpcodeLbl);
 
         FOR_EACH_BYTECODE_OP(REGISTER_TABLE);
         return ESValue();
