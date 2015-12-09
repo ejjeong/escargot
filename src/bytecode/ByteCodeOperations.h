@@ -38,40 +38,25 @@ ALWAYS_INLINE ESValue* getByIdOperation(ESVMInstance* instance, ExecutionContext
     }
 }
 
+NEVER_INLINE ESValue getByGlobalIndexOperationSlowCase(GlobalObject* globalObject, GetByGlobalIndex* code);
 ALWAYS_INLINE ESValue getByGlobalIndexOperation(GlobalObject* globalObject, GetByGlobalIndex* code)
 {
-    ESValue val = globalObject->hiddenClass()->read(globalObject, globalObject, code->m_index);
     ASSERT(code->m_orgOpcode == GetByGlobalIndexOpcode);
-    if (UNLIKELY(val.isDeleted())) {
-        size_t idx = globalObject->hiddenClass()->findProperty(code->m_name);
-        if (UNLIKELY(idx == SIZE_MAX)) {
-            ESVMInstance::currentInstance()->throwError(ESValue(ReferenceError::create()));
-            RELEASE_ASSERT_NOT_REACHED();
-        } else {
-            code->m_index = idx;
-            return globalObject->hiddenClass()->read(globalObject, globalObject, idx);
-        }
-    } else {
-        ASSERT(globalObject->hiddenClass()->findProperty(code->m_name) == code->m_index);
-        return val;
+    ASSERT(globalObject->hiddenClass()->findProperty(code->m_name) == code->m_index);
+    if (UNLIKELY(code->m_index == SIZE_MAX)) {
+        getByGlobalIndexOperationSlowCase(globalObject, code);
     }
+    return globalObject->hiddenClass()->read(globalObject, globalObject, code->m_index);
 }
 
+NEVER_INLINE void setByGlobalIndexOperationSlowCase(GlobalObject* globalObject, SetByGlobalIndex* code, const ESValue& value);
 ALWAYS_INLINE void setByGlobalIndexOperation(GlobalObject* globalObject, SetByGlobalIndex* code, const ESValue& value)
 {
-    const ESHiddenClassPropertyInfo& info = globalObject->hiddenClass()->propertyInfo(code->m_index);
-    ASSERT(code->m_orgOpcode == SetByGlobalIndexOpcode);
-    if (LIKELY(!info.m_flags.m_isDeletedValue)) {
-        ASSERT(globalObject->hiddenClass()->findProperty(code->m_name) == code->m_index);
-        globalObject->hiddenClass()->write(globalObject, globalObject, code->m_index, value);
+    ASSERT(globalObject->hiddenClass()->findProperty(code->m_name) == code->m_index);
+    if (UNLIKELY(code->m_index == SIZE_MAX)) {
+        setByGlobalIndexOperationSlowCase(globalObject, code, value);
     } else {
-        size_t idx = globalObject->hiddenClass()->findProperty(code->m_name);
-        if (UNLIKELY(idx == SIZE_MAX)) {
-            ESVMInstance::currentInstance()->throwError(ESValue(ReferenceError::create()));
-        } else {
-            code->m_index = idx;
-            globalObject->hiddenClass()->write(globalObject, globalObject, code->m_index, value);
-        }
+        globalObject->hiddenClass()->write(globalObject, globalObject, code->m_index, value);
     }
 }
 

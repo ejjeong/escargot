@@ -330,6 +330,9 @@ public:
     }
     void somePrototypeObjectDefineIndexedProperty();
 
+    void propertyDeleted(size_t idx);
+    void propertyDefined(size_t newIndex, escargot::ESString* name);
+
     void registerCodeBlock(CodeBlock* cb);
     void unregisterCodeBlock(CodeBlock* cb);
 

@@ -4483,6 +4483,70 @@ void GlobalObject::unregisterCodeBlock(CodeBlock* cb)
         m_codeBlocks.erase(iter);
 }
 
+void GlobalObject::propertyDeleted(size_t idx)
+{
+    for (unsigned i = 0; i < m_codeBlocks.size() ; i ++) {
+        if (m_codeBlocks[i]->m_isBuiltInFunction)
+            continue;
+        iterateByteCode(m_codeBlocks[i], [&idx](CodeBlock* block, unsigned idx, ByteCode* code, Opcode opcode) {
+            switch (opcode) {
+            case GetByGlobalIndexOpcode:
+                {
+                    if (((GetByGlobalIndex *)code)->m_index == idx) {
+                        ((GetByGlobalIndex *)code)->m_index = SIZE_MAX;
+                    }
+                    break;
+                }
+            case SetByGlobalIndexOpcode:
+                {
+                    if (((SetByGlobalIndex *)code)->m_index == idx) {
+                        ((SetByGlobalIndex *)code)->m_index = SIZE_MAX;
+                    }
+                    break;
+                }
+            default: { }
+            }
+        });
+    }
+}
+
+void GlobalObject::propertyDefined(size_t newIndex, escargot::ESString* name)
+{
+    bool isRedefined = false;
+    for (size_t i = 0; i < m_hiddenClass->propertyCount(); i ++) {
+        if (m_hiddenClass->propertyInfo(i).m_flags.m_isDeletedValue && *m_hiddenClass->propertyInfo(i).m_name == *name) {
+            isRedefined = true;
+            break;
+        }
+    }
+
+    if (isRedefined) {
+        for (unsigned i = 0; i < m_codeBlocks.size() ; i ++) {
+            if (m_codeBlocks[i]->m_isBuiltInFunction)
+                continue;
+            iterateByteCode(m_codeBlocks[i], [name, newIndex](CodeBlock* block, unsigned idx, ByteCode* code, Opcode opcode) {
+                switch (opcode) {
+                case GetByGlobalIndexOpcode:
+                    {
+                        if (*name == *((GetByGlobalIndex *)code)->m_name) {
+                            ((GetByGlobalIndex *)code)->m_index = newIndex;
+                        }
+                        break;
+                    }
+                case SetByGlobalIndexOpcode:
+                    {
+                        if (*name == *((SetByGlobalIndex *)code)->m_name) {
+                            ((SetByGlobalIndex *)code)->m_index = newIndex;
+                        }
+                        break;
+                    }
+                default: { }
+                }
+            });
+        }
+    }
+}
+
 void GlobalObject::somePrototypeObjectDefineIndexedProperty()
 {
     if (!m_didSomePrototypeObjectDefineIndexedProperty) {

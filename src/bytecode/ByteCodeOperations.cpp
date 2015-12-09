@@ -29,6 +29,26 @@ NEVER_INLINE void setByGlobalIndexOperationWithNoInline(GlobalObject* globalObje
     setByGlobalIndexOperation(globalObject, code, value);
 }
 
+NEVER_INLINE ESValue getByGlobalIndexOperationSlowCase(GlobalObject* globalObject, GetByGlobalIndex* code)
+{
+    UTF16String str;
+    str.append(code->m_name->toUTF16String());
+    str.append(u"is not defined");
+    ESVMInstance::currentInstance()->throwError(ESValue(ReferenceError::create(ESString::create(std::move(str)))));
+    RELEASE_ASSERT_NOT_REACHED();
+}
+
+NEVER_INLINE void setByGlobalIndexOperationSlowCase(GlobalObject* globalObject, SetByGlobalIndex* code, const ESValue& value)
+{
+    ASSERT(globalObject->hiddenClass()->findProperty(code->m_name) == SIZE_MAX);
+    if (ESVMInstance::currentInstance()->currentExecutionContext()->isStrictMode()) {
+        ESVMInstance::currentInstance()->throwError(ESValue(ReferenceError::create()));
+        RELEASE_ASSERT_NOT_REACHED();
+    } else {
+        globalObject->defineDataProperty(InternalAtomicString(code->m_name->toNullableUTF8String().m_buffer, code->m_name->toNullableUTF8String().m_bufferSize), true, true, true, value);
+    }
+}
+
 
 NEVER_INLINE ESValue plusOperationSlowCase(ESValue* left, ESValue* right)
 {

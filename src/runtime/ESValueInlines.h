@@ -997,6 +997,7 @@ inline ESHiddenClass* ESHiddenClass::removePropertyWithoutIndexChange(size_t idx
     for (unsigned i = 0; i < m_propertyInfo.size(); i ++) {
         if (i == idx) {
             cls->m_propertyInfo.push_back(ESHiddenClassPropertyInfo());
+            cls->m_propertyInfo.back().m_name = m_propertyInfo[i].m_name;
         } else {
             cls->m_propertyInfo.push_back(m_propertyInfo[i]);
             if (m_propertyInfo[i].m_flags.m_isDeletedValue)
@@ -1189,9 +1190,6 @@ inline bool ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
         }
     }
 
-    if (UNLIKELY(m_flags.m_isGlobalObject))
-        ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
-
     escargot::ESString* keyString = key.toString();
     if (m_flags.m_isEverSetAsPrototypeObject && keyString->hasOnlyDigit()) {
         ESVMInstance::currentInstance()->globalObject()->somePrototypeObjectDefineIndexedProperty();
@@ -1202,6 +1200,10 @@ inline bool ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
             return false;
         m_hiddenClass = m_hiddenClass->defineProperty(keyString, true, isWritable, isEnumerable, isConfigurable);
         m_hiddenClassData.push_back(initialValue);
+        if (UNLIKELY(m_flags.m_isGlobalObject)) {
+            ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
+            ESVMInstance::currentInstance()->globalObject()->propertyDefined(m_hiddenClassData.size() - 1, keyString);
+        }
         if (isESArrayObject()) {
             uint32_t i = key.toIndex();
             if (i != ESValue::ESInvalidIndexValue) {
@@ -1218,6 +1220,10 @@ inline bool ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
         m_hiddenClassData.erase(m_hiddenClassData.begin() + oldIdx);
         m_hiddenClass = m_hiddenClass->defineProperty(keyString, true, isWritable, isEnumerable, isConfigurable);
         m_hiddenClassData.push_back(initialValue);
+        if (UNLIKELY(m_flags.m_isGlobalObject)) {
+            ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
+            ESVMInstance::currentInstance()->globalObject()->propertyDefined(m_hiddenClassData.size() - 1, keyString);
+        }
         return true;
     }
 }
@@ -1264,6 +1270,10 @@ inline bool ESObject::defineAccessorProperty(const escargot::ESValue& key, ESPro
                     asESArrayObject()->setLength(i+1);
             }
         }
+        if (UNLIKELY(m_flags.m_isGlobalObject)) {
+            ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
+            ESVMInstance::currentInstance()->globalObject()->propertyDefined(m_hiddenClassData.size() - 1, keyString);
+        }
         return true;
     } else {
         if (!m_hiddenClass->m_propertyInfo[oldIdx].m_flags.m_isConfigurable) {
@@ -1273,6 +1283,10 @@ inline bool ESObject::defineAccessorProperty(const escargot::ESValue& key, ESPro
         m_hiddenClassData.erase(m_hiddenClassData.begin() + oldIdx);
         m_hiddenClass = m_hiddenClass->defineProperty(keyString, false, isWritable, isEnumerable, isConfigurable);
         m_hiddenClassData.push_back((ESPointer *)data);
+        if (UNLIKELY(m_flags.m_isGlobalObject)) {
+            ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
+            ESVMInstance::currentInstance()->globalObject()->propertyDefined(m_hiddenClassData.size() - 1, keyString);
+        }
         return true;
     }
 }
@@ -1316,6 +1330,7 @@ inline bool ESObject::deleteProperty(const ESValue& key, bool forced)
         ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
         m_hiddenClass = m_hiddenClass->removePropertyWithoutIndexChange(idx);
         m_hiddenClassData[idx] = ESValue(ESValue::ESDeletedValue);
+        ESVMInstance::currentInstance()->globalObject()->propertyDeleted(idx);
     } else {
         m_hiddenClass = m_hiddenClass->removeProperty(idx);
         m_hiddenClassData.erase(m_hiddenClassData.begin() + idx);

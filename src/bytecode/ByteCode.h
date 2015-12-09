@@ -671,6 +671,7 @@ public:
     }
     size_t m_index;
     ESString* m_name;
+    ESHiddenClass* m_hiddenClassOfGlobalObject;
 
 #ifndef NDEBUG
     virtual void dump()
