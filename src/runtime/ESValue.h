@@ -1167,7 +1167,7 @@ protected:
         m_hasNonASCIIChild = false;
     }
 public:
-    static const unsigned ESRopeStringCreateMinLimit = 256;
+    static const unsigned ESRopeStringCreateMinLimit = 32;
     static ESRopeString* create()
     {
         return new ESRopeString();

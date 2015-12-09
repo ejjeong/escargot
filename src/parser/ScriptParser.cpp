@@ -127,12 +127,12 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
             }
         } else if (type == NodeType::VariableDeclarator) {
             // printf("add Identifier %s(var)\n", ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->nonAtomicName()->utf8Data());
-            if (identifierInCurrentContext.end() == std::find(identifierInCurrentContext.begin(), identifierInCurrentContext.end(),
-            ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name())) {
-                identifierInCurrentContext.push_back(((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name());
-            }
             if (nearFunctionNode) {
                 // local
+                if (identifierInCurrentContext.end() == std::find(identifierInCurrentContext.begin(), identifierInCurrentContext.end(),
+                ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name())) {
+                    identifierInCurrentContext.push_back(((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name());
+                }
                 auto iter = std::find(identifierInCurrentContext.begin(), identifierInCurrentContext.end(),
                 ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name());
                 ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->setFastAccessIndex(0, std::distance(identifierInCurrentContext.begin(), iter));
@@ -145,8 +145,9 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
         } else if (type == NodeType::FunctionDeclaration) {
             // TODO
             // printf("add Identifier %s(fn)\n", ((FunctionDeclarationNode *)currentNode)->nonAtomicId()->utf8Data());
-            ASSERT(identifierInCurrentContext.end() != std::find(identifierInCurrentContext.begin(), identifierInCurrentContext.end(),
-            ((FunctionDeclarationNode *)currentNode)->id()));
+            if (nearFunctionNode) {
+                ASSERT(identifierInCurrentContext.end() != std::find(identifierInCurrentContext.begin(), identifierInCurrentContext.end(), ((FunctionDeclarationNode *)currentNode)->id()));
+            }
             // printf("process function body-------------------\n");
             InternalAtomicStringVector newIdentifierVector;
             InternalAtomicStringVector& vec = ((FunctionExpressionNode *)currentNode)->m_params;
@@ -184,7 +185,6 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
                 return;
             }
             // use case
-
             InternalAtomicString name = ((IdentifierNode *)currentNode)->name();
             auto iter = identifierInCurrentContext.end();
             auto riter = identifierInCurrentContext.rbegin(); // std::find(identifierInCurrentContext.begin(), identifierInCurrentContext.end(), name);
@@ -199,35 +199,31 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
             if (identifierInCurrentContext.end() == iter) {
                 // search top...
                 unsigned up = 0;
+                bool finded = false;
                 for (int i = identifierStack.size() - 2 ; i >= 0 ; i --) {
                     up++;
                     InternalAtomicStringVector* vector = identifierStack[i];
                     auto iter2 = std::find(vector->begin(), vector->end(), name);
                     if (iter2 != vector->end()) {
+                        finded = true;
+#ifndef NDEBUG
                         FunctionNode* fn = nearFunctionNode;
                         for (unsigned j = 0; j < up ; j ++) {
                             fn = fn->outerFunctionNode();
                         }
-                        if (fn) {
-                            /*printf("outer function of this function  needs capture! -> because fn...%s iden..%s\n",
-                            fn->nonAtomicId()->utf8Data(),
-                            ((IdentifierNode *)currentNode)->nonAtomicName()->utf8Data());
-                            */
-                            size_t idx2 = std::distance(vector->begin(), iter2);
-                            ((IdentifierNode *)currentNode)->setFastAccessIndex(up, idx2);
-                        } else {
-                            // fn == global case
-                            auto iter = knownGlobalNames.find(name);
-                            if (iter != knownGlobalNames.end()) {
-                                ((IdentifierNode *)currentNode)->setGlobalFastAccessIndex(iter->second);
-                            }
-                        }
+                        ASSERT(fn);
+                        /*printf("outer function of this function  needs capture! -> because fn...%s iden..%s\n",
+                        fn->nonAtomicId()->utf8Data(),
+                        ((IdentifierNode *)currentNode)->nonAtomicName()->utf8Data());
+                        */
+#endif
+                        markNeedsActivation(nearFunctionNode->outerFunctionNode());
+                        size_t idx2 = std::distance(vector->begin(), iter2);
+                        ((IdentifierNode *)currentNode)->setFastAccessIndex(up, idx2);
                         break;
                     }
                 }
-                if (nearFunctionNode)
-                    markNeedsActivation(nearFunctionNode->outerFunctionNode());
-                else {
+                if (!finded) {
                     // global case
                     auto iter = knownGlobalNames.find(name);
                     if (iter != knownGlobalNames.end()) {
