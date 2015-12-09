@@ -238,36 +238,9 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                 ASSERT(ec->resolveBinding(code->m_name) == code->m_cachedSlot);
                 *code->m_cachedSlot = *value;
             } else {
-                ExecutionContext* ec = instance->currentExecutionContext();
-                // TODO
-                // Object.defineProperty(this, "asdf", {value:1}) //this == global
-                // asdf = 2
-                ESValue* slot = ec->resolveBinding(code->m_name);
-
-                if (LIKELY(slot != NULL)) {
-                    code->m_cachedSlot = slot;
-                    code->m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
-                    *code->m_cachedSlot = *value;
-                } else {
-                    if (!ec->isStrictMode()) {
-                        globalObject->defineDataProperty(code->m_name.string(), true, true, true, *value);
-                    } else {
-                        UTF16String err_msg;
-                        err_msg.append(u"assignment to undeclared variable ");
-                        err_msg.append(code->m_name.string()->toNullableUTF16String().m_buffer);
-                        instance->throwError(ESValue(ReferenceError::create(ESString::create(std::move(err_msg)))));
-                    }
-                }
+                setByIdSlowCase(instance, globalObject, code, value);
             }
             executeNextCode<SetById>(programCounter);
-            NEXT_INSTRUCTION();
-        }
-
-        SetByGlobalIndexOpcodeLbl:
-        {
-            SetByGlobalIndex* code = (SetByGlobalIndex*)currentCode;
-            setByGlobalIndexOperation(globalObject, code, *PEEK(stack, bp));
-            executeNextCode<SetByGlobalIndex>(programCounter);
             NEXT_INSTRUCTION();
         }
 
@@ -289,6 +262,14 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             ASSERT(env->record()->isDeclarativeEnvironmentRecord());
             *env->record()->toDeclarativeEnvironmentRecord()->bindingValueForActivationMode(code->m_index) = *PEEK(stack, bp);
             executeNextCode<SetByIndexWithActivation>(programCounter);
+            NEXT_INSTRUCTION();
+        }
+
+        SetByGlobalIndexOpcodeLbl:
+        {
+            SetByGlobalIndex* code = (SetByGlobalIndex*)currentCode;
+            setByGlobalIndexOperation(globalObject, code, *PEEK(stack, bp));
+            executeNextCode<SetByGlobalIndex>(programCounter);
             NEXT_INSTRUCTION();
         }
 
@@ -570,17 +551,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             NEXT_INSTRUCTION();
         }
 
-        ThisOpcodeLbl:
-        {
-#ifdef ENABLE_ESJIT
-            This* code = (This*)currentCode;
-            code->m_profile.addProfile(ec->resolveThisBinding());
-#endif
-            PUSH(stack, topOfStack, ec->resolveThisBinding());
-            executeNextCode<This>(programCounter);
-            NEXT_INSTRUCTION();
-        }
-
         ReturnFunctionOpcodeLbl:
         {
             ASSERT(bp == stack);
@@ -591,6 +561,18 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         {
             ESValue* ret = POP(stack, bp);
             return *ret;
+        }
+
+
+        ThisOpcodeLbl:
+        {
+#ifdef ENABLE_ESJIT
+            This* code = (This*)currentCode;
+            code->m_profile.addProfile(ec->resolveThisBinding());
+#endif
+            PUSH(stack, topOfStack, ec->resolveThisBinding());
+            executeNextCode<This>(programCounter);
+            NEXT_INSTRUCTION();
         }
 
         GetObjectOpcodeLbl:
@@ -836,12 +818,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             NEXT_INSTRUCTION();
         }
 
-        LoopStartOpcodeLbl:
-        {
-            executeNextCode<LoopStart>(programCounter);
-            NEXT_INSTRUCTION();
-        }
-
         NewFunctionCallOpcodeLbl:
         {
             NewFunctionCall* code = (NewFunctionCall*)currentCode;
@@ -920,7 +896,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                 bool res = obj->toObject()->deleteProperty(*key);
                 PUSH(stack, topOfStack, ESValue(res));
             } else {
-                bool res =globalObject->deleteProperty(code->m_name);
+                bool res = globalObject->deleteProperty(code->m_name);
                 PUSH(stack, topOfStack, ESValue(res));
             }
             executeNextCode<UnaryDelete>(programCounter);
@@ -972,28 +948,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             LoadStackPointer* code = (LoadStackPointer *)currentCode;
             SUB_STACK(stack, bp, code->m_offsetToBasePointer);
             executeNextCode<LoadStackPointer>(programCounter);
-            NEXT_INSTRUCTION();
-        }
-
-        CheckStackPointerOpcodeLbl:
-        {
-            CheckStackPointer* byteCode = (CheckStackPointer *)currentCode;
-#ifndef NDEBUG
-            if (stack != bp) {
-                printf("Stack is not equal to Base Point at the end of statement (%zd)\n", byteCode->m_lineNumber);
-                RELEASE_ASSERT_NOT_REACHED();
-            }
-#endif
-            executeNextCode<CheckStackPointer>(programCounter);
-            NEXT_INSTRUCTION();
-        }
-
-        PrintSpAndBpOpcodeLbl:
-        {
-#ifndef NDEBUG
-            printf("SP = %p, BP = %p\n", stack, bp);
-#endif
-            executeNextCode<PrintSpAndBp>(programCounter);
             NEXT_INSTRUCTION();
         }
 
@@ -1278,17 +1232,45 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             NEXT_INSTRUCTION();
         }
 
+        LoopStartOpcodeLbl:
+        {
+            executeNextCode<LoopStart>(programCounter);
+            NEXT_INSTRUCTION();
+        }
+
         FakePopOpcodeLbl:
         {
             executeNextCode<FakePop>(programCounter);
             NEXT_INSTRUCTION();
         }
 
-
         EndOpcodeLbl:
         {
             ASSERT(stack == bp);
             return ESValue(ESValue::ESDeletedValue);
+        }
+
+
+        CheckStackPointerOpcodeLbl:
+        {
+            CheckStackPointer* byteCode = (CheckStackPointer *)currentCode;
+#ifndef NDEBUG
+            if (stack != bp) {
+                printf("Stack is not equal to Base Point at the end of statement (%zd)\n", byteCode->m_lineNumber);
+                RELEASE_ASSERT_NOT_REACHED();
+            }
+#endif
+            executeNextCode<CheckStackPointer>(programCounter);
+            NEXT_INSTRUCTION();
+        }
+
+        PrintSpAndBpOpcodeLbl:
+        {
+#ifndef NDEBUG
+            printf("SP = %p, BP = %p\n", stack, bp);
+#endif
+            executeNextCode<PrintSpAndBp>(programCounter);
+            NEXT_INSTRUCTION();
         }
 
     }

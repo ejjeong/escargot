@@ -1272,7 +1272,7 @@ public:
 
 class UnaryDelete : public ByteCode {
 public:
-    UnaryDelete(bool isDeleteObjectKey, ESString* name=nullptr)
+    UnaryDelete(bool isDeleteObjectKey, ESString* name = nullptr)
         : ByteCode(UnaryDeleteOpcode)
     {
         m_isDeleteObjectKey = isDeleteObjectKey;

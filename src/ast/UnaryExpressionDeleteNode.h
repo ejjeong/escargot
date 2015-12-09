@@ -21,13 +21,10 @@ public:
     {
         if (m_argument->isMemberExpression()) {
             MemberExpressionNode* mem = (MemberExpressionNode*) m_argument;
-            mem->generateExpressionByteCode(codeBlock, context);
             if (mem->isPreComputedCase()) {
-                ESValue v = codeBlock->peekCode<GetObjectPreComputedCase>(codeBlock->lastCodePosition<GetObjectPreComputedCase>())->m_propertyValue;
-                codeBlock->popLastCode<GetObjectPreComputedCase>();
-                codeBlock->pushCode(Push(v), context, this);
-            } else
-                codeBlock->popLastCode<GetObject>();
+                codeBlock->pushCode(Push(mem->propertyName().string()), context, this);
+            }
+            mem->generateResolveAddressByteCode(codeBlock, context);
             codeBlock->pushCode(UnaryDelete(true), context, this);
         } else if (m_argument->isIdentifier()) {
             codeBlock->pushCode(UnaryDelete(false, ((IdentifierNode *)m_argument)->name().string()), context, this);

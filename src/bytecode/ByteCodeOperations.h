@@ -38,6 +38,7 @@ ALWAYS_INLINE ESValue* getByIdOperation(ESVMInstance* instance, ExecutionContext
     }
 }
 
+NEVER_INLINE void setByIdSlowCase(ESVMInstance* instance, GlobalObject* globalObject, SetById* code, ESValue* value);
 NEVER_INLINE ESValue getByGlobalIndexOperationSlowCase(GlobalObject* globalObject, GetByGlobalIndex* code);
 ALWAYS_INLINE ESValue getByGlobalIndexOperation(GlobalObject* globalObject, GetByGlobalIndex* code)
 {

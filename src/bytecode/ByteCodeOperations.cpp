@@ -18,6 +18,30 @@ NEVER_INLINE ESValue getByIdOperationWithNoInline(ESVMInstance* instance, Execut
     }
 }
 
+NEVER_INLINE void setByIdSlowCase(ESVMInstance* instance, GlobalObject* globalObject, SetById* code, ESValue* value)
+{
+    ExecutionContext* ec = instance->currentExecutionContext();
+    // TODO
+    // Object.defineProperty(this, "asdf", {value:1}) //this == global
+    // asdf = 2
+    ESValue* slot = ec->resolveBinding(code->m_name);
+
+    if (LIKELY(slot != NULL)) {
+        code->m_cachedSlot = slot;
+        code->m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
+        *code->m_cachedSlot = *value;
+    } else {
+        if (!ec->isStrictMode()) {
+            globalObject->defineDataProperty(code->m_name.string(), true, true, true, *value);
+        } else {
+            UTF16String err_msg;
+            err_msg.append(u"assignment to undeclared variable ");
+            err_msg.append(code->m_name.string()->toNullableUTF16String().m_buffer);
+            instance->throwError(ESValue(ReferenceError::create(ESString::create(std::move(err_msg)))));
+        }
+    }
+}
+
 NEVER_INLINE ESValue getByGlobalIndexOperationWithNoInline(GlobalObject* globalObject, GetByGlobalIndex* code)
 {
     return getByGlobalIndexOperation(globalObject, code);

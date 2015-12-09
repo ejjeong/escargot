@@ -31,6 +31,13 @@ public:
         }
     }
 
+    InternalAtomicString propertyName()
+    {
+        ASSERT(isPreComputedCase());
+        ASSERT(m_property->isIdentifier());
+        return ((IdentifierNode *)m_property)->name();
+    }
+
 
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
