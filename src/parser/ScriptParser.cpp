@@ -228,6 +228,9 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
                     auto iter = knownGlobalNames.find(name);
                     if (iter != knownGlobalNames.end()) {
                         ((IdentifierNode *)currentNode)->setGlobalFastAccessIndex(iter->second);
+                    } else {
+                        if (nearFunctionNode)
+                            markNeedsActivation(nearFunctionNode->outerFunctionNode());
                     }
                 }
             } else {
