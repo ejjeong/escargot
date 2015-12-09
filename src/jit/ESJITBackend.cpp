@@ -222,7 +222,7 @@ LIns* NativeGenerator::generateOSRExit(size_t currentESIRTargetIndex, nanojit::L
     // Because there's some bytecode that results in a different value depending on the context
     size_t maxStackPos;
     if (in == nullptr) {
-        m_out->insStore(LIR_sti, m_oneI, m_contextP, ExecutionContext::offsetofExecuteNextByteCode(), 0);
+        m_out->insStore(LIR_sti, m_zeroI, m_contextP, ExecutionContext::offsetofExecuteNextByteCode(), 1);
         maxStackPos = getMaxStackPos(m_graph, currentESIRTargetIndex, false);
     } else {
         m_out->insStore(LIR_sti, m_oneI, m_contextP, ExecutionContext::offsetofExecuteNextByteCode(), 1);
