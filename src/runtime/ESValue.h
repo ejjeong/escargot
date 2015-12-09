@@ -1349,6 +1349,7 @@ ALWAYS_INLINE size_t ESString::length() const
     return m_string->length();
 }
 
+
 }
 
 namespace std {

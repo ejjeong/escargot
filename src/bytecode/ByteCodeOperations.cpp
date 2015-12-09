@@ -55,10 +55,10 @@ NEVER_INLINE void setByGlobalIndexOperationWithNoInline(GlobalObject* globalObje
 
 NEVER_INLINE ESValue getByGlobalIndexOperationSlowCase(GlobalObject* globalObject, GetByGlobalIndex* code)
 {
-    UTF16String str;
-    str.append(code->m_name->toUTF16String());
-    str.append(u"is not defined");
-    ESVMInstance::currentInstance()->throwError(ESValue(ReferenceError::create(ESString::create(std::move(str)))));
+    ESStringBuilder builder;
+    builder.appendString(code->m_name);
+    builder.appendString("is not defined");
+    ESVMInstance::currentInstance()->throwError(ESValue(ReferenceError::create(builder.finalize())));
     RELEASE_ASSERT_NOT_REACHED();
 }
 

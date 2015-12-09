@@ -524,18 +524,20 @@ void GlobalObject::installFunction()
             codeBlock->pushCode(End(), context, NULL);
         } else {
             escargot::ESString* body = instance->currentExecutionContext()->arguments()[len-1].toString();
-            UTF16String prefix = u"function anonymous(";
+            ESStringBuilder builder;
+            builder.appendString("function anonymous(");
             for (int i = 0; i < len-1; i++) {
                 escargot::ESString* arg = instance->currentExecutionContext()->arguments()[i].toString();
-                prefix.append(arg->toUTF16String());
-                if (i != len-2)
-                    prefix.append(u",");
+                builder.appendString(arg);
+                if (i != len-2) {
+                    builder.appendString(strings->asciiTable[(size_t)','].string());
+                }
             }
-            prefix.append(u"){");
-            prefix.append(body->toUTF16String());
-            prefix.append(u"}");
+            builder.appendString("){");
+            builder.appendString(body);
+            builder.appendString("}");
             GC_disable();
-            Node* programNode = instance->scriptParser()->generateAST(instance, escargot::ESString::create(std::move(prefix)), true);
+            Node* programNode = instance->scriptParser()->generateAST(instance, builder.finalize(), true);
             FunctionNode* functionDeclAST = static_cast<FunctionNode* >(static_cast<ProgramNode *>(programNode)->body()[1]);
             ByteCodeGenerateContext context(codeBlock);
             codeBlock->m_innerIdentifiers = std::move(functionDeclAST->innerIdentifiers());
@@ -577,12 +579,12 @@ void GlobalObject::installFunction()
     m_functionPrototype->defineDataProperty(strings->toString, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         // FIXME
         if (instance->currentExecutionContext()->resolveThisBindingToObject()->isESFunctionObject()) {
-            UTF16String ret;
-            ret = u"function ";
             escargot::ESFunctionObject* fn = instance->currentExecutionContext()->resolveThisBindingToObject()->asESFunctionObject();
-            ret.append(fn->name()->toUTF16String());
-            ret.append(u"() {}");
-            return ESString::create(std::move(ret));
+            ESStringBuilder builder;
+            builder.appendString("function ");
+            builder.appendString(fn->name());
+            builder.appendString("() {}");
+            return builder.finalize();
         }
         instance->throwError(ESValue(TypeError::create(ESString::create("Type error"))));
         RELEASE_ASSERT_NOT_REACHED();
@@ -1090,13 +1092,11 @@ void GlobalObject::installError()
         // FIXME this is wrong
         ESValue v(instance->currentExecutionContext()->resolveThisBindingToObject());
         ESPointer* o = v.asESPointer();
-        UTF16String ret;
-        ret.append(o->asESObject()->get(ESValue(ESString::create(u"name"))).toString()->toUTF16String());
-        ret.append(u": ");
-        ret.append(o->asESObject()->get(ESValue(ESString::create(u"message"))).toString()->toUTF16String());
-
-        return ESString::create(std::move(ret));
-        RELEASE_ASSERT_NOT_REACHED();
+        ESStringBuilder builder;
+        builder.appendString(o->asESObject()->get(ESValue(ESString::create(u"name"))).toString());
+        builder.appendString(": ");
+        builder.appendString(o->asESObject()->get(ESValue(ESString::create(u"message"))).toString());
+        return builder.finalize();
     }, strings->toString, 0);
     m_errorPrototype->defineDataProperty(strings->toString, true, false, true, toString);
 
@@ -1432,24 +1432,23 @@ void GlobalObject::installArray()
     m_arrayPrototype->ESObject::defineDataProperty(strings->join, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         int arglen = instance->currentExecutionContext()->argumentCount();
         auto thisBinded = instance->currentExecutionContext()->resolveThisBindingToObject();
-        UTF16String ret;
-        int arrlen = thisBinded->length();
-        if (arrlen >= 0) {
-            escargot::ESString* separator;
-            if (arglen == 0 || instance->currentExecutionContext()->arguments()[0].isUndefined()) {
-                separator = ESString::create(u",");
-            } else {
-                separator = instance->currentExecutionContext()->arguments()[0].toString();
-            }
-            for (int i = 0; i < arrlen; i++) {
-                ESValue elemi = thisBinded->get(ESValue(i));
-                if (i != 0)
-                    ret.append(separator->toUTF16String());
-                if (!elemi.isUndefinedOrNull())
-                    ret.append(elemi.toString()->toUTF16String());
-            }
+        size_t arrlen = thisBinded->length();
+        ESStringBuilder builder;
+        escargot::ESString* separator;
+        if (arglen == 0 || instance->currentExecutionContext()->arguments()[0].isUndefined()) {
+            separator = strings->asciiTable[(size_t)','].string();
+        } else {
+            separator = instance->currentExecutionContext()->arguments()[0].toString();
         }
-        return ESString::create(std::move(ret));
+
+        for (size_t i = 0; i < arrlen; i++) {
+            ESValue elemi = thisBinded->get(ESValue(i));
+            if (i != 0)
+                builder.appendString(separator);
+            if (!elemi.isUndefinedOrNull())
+                builder.appendString(elemi.toString());
+        }
+        return builder.finalize();
     }, strings->join, 1));
 
     // $22.1.3.13 Array.prototype.keys ( )
@@ -1935,7 +1934,7 @@ void GlobalObject::installString()
         int length = instance->currentExecutionContext()->argumentCount();
         if (length == 1) {
             char16_t c = (char16_t)instance->currentExecutionContext()->arguments()[0].toInteger();
-            if (/*c >= 0 && */c < ESCARGOT_ASCII_TABLE_MAX)
+            if (c < ESCARGOT_ASCII_TABLE_MAX)
                 return strings->asciiTable[c].string();
             return ESString::create(c);
         } else {
@@ -1945,7 +1944,7 @@ void GlobalObject::installString()
             for (int i = 0; i < length ; i ++) {
                 data[i] = {(char16_t)instance->currentExecutionContext()->arguments()[i].toInteger()};
             }
-            return ESString::create(std::move(elements));
+            return ESString::createASCIIStringIfNeeded(std::move(elements));
         }
         return ESValue();
     }, ESString::createAtomicString("fromCharCode"), 1));
@@ -2145,6 +2144,7 @@ void GlobalObject::installString()
                 return origStr;
             }
 
+            /*
             auto stringAppend = [](UTF16String& dst, escargot::ESString* src, size_t s, size_t e)
             {
                 if (!src->isASCIIString()) {
@@ -2159,15 +2159,17 @@ void GlobalObject::installString()
                     }
                 }
             };
-
+             */
             ESValue replaceValue = instance->currentExecutionContext()->arguments()[1];
             if (replaceValue.isESPointer() && replaceValue.asESPointer()->isESFunctionObject()) {
                 uint32_t matchCount = result.m_matchResults.size();
                 ESValue callee = replaceValue.asESPointer()->asESFunctionObject();
 
-                UTF16String newThis;
-                newThis.reserve(origStr->length());
-                stringAppend(newThis, origStr, 0, result.m_matchResults[0][0].m_start);
+                ESStringBuilder builer;
+                // UTF16String newThis;
+                // newThis.reserve(origStr->length());
+                builer.appendSubString(origStr, 0, result.m_matchResults[0][0].m_start);
+                // stringAppend(newThis, origStr, 0, result.m_matchResults[0][0].m_start);
 
                 for (uint32_t i = 0; i < matchCount ; i ++) {
                     int subLen = result.m_matchResults[i].size();
@@ -2176,23 +2178,28 @@ void GlobalObject::installString()
                         if (result.m_matchResults[i][j].m_start == std::numeric_limits<unsigned>::max())
                             RELEASE_ASSERT_NOT_REACHED(); // implement this case
 
-                        UTF16String argStr;
-                        argStr.reserve(result.m_matchResults[i][j].m_end - result.m_matchResults[i][j].m_start);
-                        stringAppend(argStr, origStr, result.m_matchResults[i][j].m_start, result.m_matchResults[i][j].m_end);
-                        arguments[j] = ESString::create(std::move(argStr));
+                        ESStringBuilder argStrBuilder;
+                        // UTF16String argStr;
+                        // argStr.reserve(result.m_matchResults[i][j].m_end - result.m_matchResults[i][j].m_start);
+                        // stringAppend(argStr, origStr, result.m_matchResults[i][j].m_start, result.m_matchResults[i][j].m_end);
+                        argStrBuilder.appendSubString(origStr, result.m_matchResults[i][j].m_start, result.m_matchResults[i][j].m_end);
+                        arguments[j] = argStrBuilder.finalize();
                     }
                     arguments[subLen] = ESValue((int)result.m_matchResults[i][0].m_start);
                     arguments[subLen + 1] = origStr;
                     // 21.1.3.14 (11) it should be called with this as undefined
                     escargot::ESString* res = ESFunctionObject::call(instance, callee, ESValue(ESValue::ESUndefined), arguments, subLen + 2, false).toString();
-                    stringAppend(newThis, res, 0, res->length());
+                    builer.appendSubString(res, 0, res->length());
+                    // stringAppend(newThis, res, 0, res->length());
 
                     if (i < matchCount - 1) {
-                        stringAppend(newThis, origStr, result.m_matchResults[i][0].m_end, result.m_matchResults[i + 1][0].m_start);
+                        builer.appendSubString(origStr, result.m_matchResults[i][0].m_end, result.m_matchResults[i + 1][0].m_start);
+                        // stringAppend(newThis, origStr, result.m_matchResults[i][0].m_end, result.m_matchResults[i + 1][0].m_start);
                     }
                 }
-                stringAppend(newThis, origStr, result.m_matchResults[matchCount - 1][0].m_end, origStr->length());
-                escargot::ESString* resultString = ESString::create(std::move(newThis));
+                builer.appendSubString(origStr, result.m_matchResults[matchCount - 1][0].m_end, origStr->length());
+                // stringAppend(newThis, origStr, result.m_matchResults[matchCount - 1][0].m_end, origStr->length());
+                escargot::ESString* resultString = builer.finalize();
                 return resultString;
             } else {
                 escargot::ESString* replaceString = replaceValue.toString();
@@ -2205,85 +2212,62 @@ void GlobalObject::installString()
                     }
                 }
 
-                UTF16String newThis;
-                newThis.reserve(origStr->length());
+                // UTF16String newThis;
+                // newThis.reserve(origStr->length());
+                ESStringBuilder builder;
                 if (hasDollar) {
                     // flat replace
                     int32_t matchCount = result.m_matchResults.size();
-                    if ((unsigned)replaceString->length() > ESRopeString::ESRopeStringCreateMinLimit) {
-                        // create Rope string
-                        UTF16String append;
-                        append.reserve(result.m_matchResults[0][0].m_start);
-                        stringAppend(append, origStr, 0, result.m_matchResults[0][0].m_start);
-
-                        escargot::ESString* newStr = ESString::create(std::move(append));
-                        escargot::ESString* appendStr = nullptr;
-                        for (int32_t i = 0; i < matchCount ; i ++) {
-                            newStr = escargot::ESString::concatTwoStrings(newStr, replaceString);
-                            if (i < matchCount - 1) {
-                                UTF16String append2;
-                                append2.reserve(result.m_matchResults[i + 1][0].m_start - result.m_matchResults[i][0].m_end);
-                                // UTF16String& dst, escargot::ESString* src, size_t s, size_t e
-                                stringAppend(append2, origStr, result.m_matchResults[i][0].m_end, result.m_matchResults[i + 1][0].m_start);
-                                appendStr = ESString::create(std::move(append2));
-                                newStr = escargot::ESString::concatTwoStrings(newStr, appendStr);
-                            }
-                        }
-                        UTF16String append2;
-                        stringAppend(append2, origStr, result.m_matchResults[matchCount - 1][0].m_end, origStr->length());
-                        appendStr = ESString::create(std::move(append2));
-                        newStr = escargot::ESString::concatTwoStrings(newStr, appendStr);
-                        return newStr;
-                    }
-                    stringAppend(newThis, origStr, 0, result.m_matchResults[0][0].m_start);
+                    builder.appendSubString(origStr, 0, result.m_matchResults[0][0].m_start);
+                    // stringAppend(newThis, origStr, 0, result.m_matchResults[0][0].m_start);
                     for (int32_t i = 0; i < matchCount ; i ++) {
                         escargot::ESString* res = replaceString;
-                        newThis.append(res->toUTF16String());
+                        builder.appendString(res);
+                        // newThis.append(res->toUTF16String());
                         if (i < matchCount - 1) {
-                            stringAppend(newThis, origStr, result.m_matchResults[i][0].m_end, result.m_matchResults[i + 1][0].m_start);
+                            builder.appendSubString(origStr, result.m_matchResults[i][0].m_end, result.m_matchResults[i + 1][0].m_start);
                         }
                     }
-                    stringAppend(newThis, origStr, result.m_matchResults[matchCount - 1][0].m_end, origStr->length());
+                    builder.appendSubString(origStr, result.m_matchResults[matchCount - 1][0].m_end, origStr->length());
                 } else {
                     // dollar replace
                     int32_t matchCount = result.m_matchResults.size();
-
-                    // UTF16String origStrU16 = origStr->toUTF16String();
-                    stringAppend(newThis, origStr, 0, result.m_matchResults[0][0].m_start);
+                    builder.appendSubString(origStr, 0, result.m_matchResults[0][0].m_start);
+                    // stringAppend(newThis, origStr, 0, result.m_matchResults[0][0].m_start);
                     for (int32_t i = 0; i < matchCount ; i ++) {
                         for (unsigned j = 0; j < replaceString->length() ; j ++) {
                             if (replaceString->charAt(j) == '$' && (j + 1) < replaceString->length()) {
                                 char16_t c = replaceString->charAt(j + 1);
                                 if (c == '$') {
-                                    newThis.push_back(replaceString->charAt(j));
+                                    builder.appendChar(replaceString->charAt(j));
                                 } else if (c == '&') {
-                                    stringAppend(newThis, origStr, result.m_matchResults[i][0].m_start, result.m_matchResults[i][0].m_end);
+                                    builder.appendSubString(origStr, result.m_matchResults[i][0].m_start, result.m_matchResults[i][0].m_end);
                                 } else if (c == '\'') {
-                                    stringAppend(newThis, origStr, result.m_matchResults[i][0].m_end, origStr->length());
+                                    builder.appendSubString(origStr, result.m_matchResults[i][0].m_end, origStr->length());
                                 } else if (c == '`') {
-                                    stringAppend(newThis, origStr, result.m_matchResults[i][0].m_start, origStr->length());
+                                    builder.appendSubString(origStr, result.m_matchResults[i][0].m_start, origStr->length());
                                 } else if ('0' <= c && c <= '9') {
                                     // TODO support morethan 2-digits
                                     size_t idx = c - '0';
                                     if (idx < result.m_matchResults[i].size()) {
-                                        stringAppend(newThis, origStr, result.m_matchResults[i][idx].m_start, result.m_matchResults[i][idx].m_end);
+                                        builder.appendSubString(origStr, result.m_matchResults[i][idx].m_start, result.m_matchResults[i][idx].m_end);
                                     } else {
-                                        newThis.push_back('$');
-                                        newThis.push_back(c);
+                                        builder.appendChar('$');
+                                        builder.appendChar(c);
                                     }
                                 }
                                 j++;
                             } else {
-                                newThis.push_back(replaceString->charAt(j));
+                                builder.appendChar(replaceString->charAt(j));
                             }
                         }
                         if (i < matchCount - 1) {
-                            stringAppend(newThis, origStr, result.m_matchResults[i][0].m_end, result.m_matchResults[i + 1][0].m_start);
+                            builder.appendSubString(origStr, result.m_matchResults[i][0].m_end, result.m_matchResults[i + 1][0].m_start);
                         }
                     }
-                    stringAppend(newThis, origStr, result.m_matchResults[matchCount - 1][0].m_end, origStr->length());
+                    builder.appendSubString(origStr, result.m_matchResults[matchCount - 1][0].m_end, origStr->length());
                 }
-                escargot::ESString* resultString = ESString::create(std::move(newThis));
+                escargot::ESString* resultString = builder.finalize();
                 return resultString;
             }
         }
