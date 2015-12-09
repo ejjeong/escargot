@@ -207,6 +207,7 @@ void CodeBlock::fillExtraData(ByteCode* code, ByteCodeExtraData* data, ExtraData
             data->m_decoupledData->m_targetIndex1 = c;
         }
     }
+
     if (op == EndOpcode)
         ASSERT(context.m_ssaComputeStack.size() == 0);
 #endif
@@ -338,6 +339,9 @@ unsigned char popCountFromOpcode(ByteCode* code, Opcode opcode)
     } else if (opcode == NewFunctionCallOpcode) {
         NewFunctionCall* c = (NewFunctionCall*)code;
         return c->m_argmentCount + 1/* function */;
+    } else if (opcode == UnaryDeleteOpcode) {
+        UnaryDelete* c = (UnaryDelete*)code;
+        return c->m_isDeleteObjectKey? 2 : 0;
     }
 #define FETCH_POP_COUNT_BYTE_CODE(code, pushCount, popCount, peekCount, JITSupported, hasProfileData) \
     case code##Opcode: \

@@ -30,8 +30,7 @@ public:
                 codeBlock->popLastCode<GetObject>();
             codeBlock->pushCode(UnaryDelete(true), context, this);
         } else if (m_argument->isIdentifier()) {
-            codeBlock->pushCode(Push(((IdentifierNode *)m_argument)->name().string()), context, this);
-            // TODO
+            codeBlock->pushCode(UnaryDelete(false, ((IdentifierNode *)m_argument)->name().string()), context, this);
         } else {
             RELEASE_ASSERT_NOT_REACHED();
         }

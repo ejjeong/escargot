@@ -1,11 +1,11 @@
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-cube.js
-VMulti2 MMulti VMulti Translate (4)
+MMulti VMulti VMulti2 Translate (4)
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-morph.js
 (0)
 ===> test/SunSpider/tests/sunspider-1.0.2/3d-raytrace.js
-createVector cross normaliseVector lengthVector normalise scale dot sub (anonymous) addVector (anonymous) add scaleVector scalev (14)
+createVector cross normaliseVector lengthVector normalise scale dot sub  addVector  add scaleVector scalev (14)
 ===> test/SunSpider/tests/sunspider-1.0.2/access-binary-trees.js
-TreeNode (anonymous) (2)
+TreeNode  (2)
 ===> test/SunSpider/tests/sunspider-1.0.2/access-fannkuch.js
 (0)
 ===> test/SunSpider/tests/sunspider-1.0.2/access-nbody.js
@@ -31,7 +31,7 @@ safe_add (1)
 ===> test/SunSpider/tests/sunspider-1.0.2/date-format-tofte.js
 (0)
 ===> test/SunSpider/tests/sunspider-1.0.2/date-format-xparb.js
-(anonymous) (anonymous) (anonymous) (anonymous) (4)
+    (4)
 ===> test/SunSpider/tests/sunspider-1.0.2/math-cordic.js
 (0)
 ===> test/SunSpider/tests/sunspider-1.0.2/math-partial-sums.js
@@ -45,8 +45,8 @@ safe_add (1)
 ===> test/SunSpider/tests/sunspider-1.0.2/string-fasta.js
 (0)
 ===> test/SunSpider/tests/sunspider-1.0.2/string-tagcloud.js
-(anonymous) (1)
+ (1)
 ===> test/SunSpider/tests/sunspider-1.0.2/string-unpack-code.js
 (0)
 ===> test/SunSpider/tests/sunspider-1.0.2/string-validate-input.js
-(0)
+addResult (1)

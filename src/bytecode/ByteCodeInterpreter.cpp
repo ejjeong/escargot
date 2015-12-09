@@ -920,7 +920,8 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                 bool res = obj->toObject()->deleteProperty(*key);
                 PUSH(stack, topOfStack, ESValue(res));
             } else {
-                // TODO
+                bool res =globalObject->deleteProperty(code->m_name);
+                PUSH(stack, topOfStack, ESValue(res));
             }
             executeNextCode<UnaryDelete>(programCounter);
             NEXT_INSTRUCTION();

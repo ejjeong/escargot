@@ -76,7 +76,7 @@ class CodeBlock;
     F(UnaryMinus, 1, 1, 0, 1, 0) \
     F(UnaryPlus, 1, 1, 0, 0, 0) \
     F(UnaryTypeOf, 1, 1, 0, 1, 0) \
-    F(UnaryDelete, 1, 1, 0, 0, 0) \
+    F(UnaryDelete, 1, -1, 0, 0, 0) \
     F(UnaryVoid, 1, 1, 0, 0, 0) \
     F(ToNumber, 1, 1, 0, 1, 0) \
     F(Increment, 1, 1, 0, 1, 0) \
@@ -1271,13 +1271,15 @@ public:
 
 class UnaryDelete : public ByteCode {
 public:
-    UnaryDelete(bool isDeleteObjectKey)
+    UnaryDelete(bool isDeleteObjectKey, ESString* name=nullptr)
         : ByteCode(UnaryDeleteOpcode)
     {
         m_isDeleteObjectKey = isDeleteObjectKey;
+        m_name = name;
     }
 
     bool m_isDeleteObjectKey;
+    ESString* m_name;
 
 #ifndef NDEBUG
     virtual void dump()
