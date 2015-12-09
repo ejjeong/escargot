@@ -44,8 +44,194 @@
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 
+// #define PROFILE_MASSIF
+
+#ifndef PROFILE_MASSIF
+
 #include <gc_cpp.h>
 #include <gc_allocator.h>
+
+#else
+#undef GC_MALLOC
+#define GC_MALLOC(X) malloc(X)
+
+#undef GC_MALLOC_ATOMIC
+#define GC_MALLOC_ATOMIC(X) malloc(X)
+
+#undef GC_FREE
+#define GC_FREE(X) free(X);
+
+inline void GC_gcollect() { }
+inline void GC_enable() { }
+inline void GC_disable() { }
+
+inline void GC_add_roots(void *b, void *e) { }
+template <typename T>
+inline void GC_set_on_collection_event(T) { }
+typedef int GC_EventType;
+
+#ifndef __PTRDIFF_TYPE__
+#define __PTRDIFF_TYPE__ long int
+#endif
+typedef __PTRDIFF_TYPE__ ptrdiff_t;
+
+#define GC_ATTR_UNUSED
+
+enum GCPlacement {
+    UseGC,
+    GC = UseGC,
+    NoGC,
+    PointerFreeGC,
+};
+
+/**
+ * Instances of classes derived from "gc" will be allocated in the collected
+ * heap by default, unless an explicit NoGC placement is specified.
+ */
+class gc {
+public:
+    inline void* operator new(size_t size);
+    inline void* operator new(size_t size, GCPlacement gcp);
+    inline void* operator new(size_t size, void* p);
+    // Must be redefined here, since the other overloadings hide
+    // the global definition.
+    inline void operator delete(void* obj);
+
+};
+
+/**
+ * Instances of classes derived from "gc_cleanup" will be allocated
+ * in the collected heap by default.  When the collector discovers
+ * an inaccessible object derived from "gc_cleanup" or containing
+ * a member derived from "gc_cleanup", its destructors will be invoked.
+ */
+class gc_cleanup: virtual public gc {
+public:
+    inline gc_cleanup() { }
+    inline virtual ~gc_cleanup() { }
+
+};
+
+inline void* operator new(size_t size, GCPlacement gcp)
+{
+    switch (gcp) {
+    case UseGC:
+        return GC_MALLOC(size);
+    case PointerFreeGC:
+        return GC_MALLOC_ATOMIC(size);
+    case NoGC:
+    default:
+        return malloc(size);
+    }
+}
+
+inline void* operator new[](size_t size, GCPlacement gcp)
+{
+    return GC_MALLOC(size);
+}
+
+inline void* gc::operator new(size_t size)
+{
+    return GC_MALLOC(size);
+}
+
+inline void* gc::operator new(size_t size, GCPlacement gcp)
+{
+    switch (gcp) {
+    case UseGC:
+        return GC_MALLOC(size);
+    case PointerFreeGC:
+        return GC_MALLOC_ATOMIC(size);
+    case NoGC:
+    default:
+        return malloc(size);
+    }
+}
+
+inline void* gc::operator new(size_t /* size */, void* p)
+{
+    return p;
+}
+
+inline void gc::operator delete(void* obj)
+{
+    GC_FREE(obj);
+}
+
+# define GC_REGISTER_FINALIZER_NO_ORDER(p, f, d, of, od)
+
+template <class GC_Tp>
+class gc_allocator {
+public:
+    typedef size_t size_type;
+    typedef ptrdiff_t difference_type;
+    typedef GC_Tp* pointer;
+    typedef const GC_Tp* const_pointer;
+    typedef GC_Tp& reference;
+    typedef const GC_Tp& const_reference;
+    typedef GC_Tp value_type;
+
+    template <class GC_Tp1> struct rebind {
+        typedef gc_allocator<GC_Tp1> other;
+    };
+
+    gc_allocator() throw() { }
+    gc_allocator(const gc_allocator&) throw() { }
+# if !(GC_NO_MEMBER_TEMPLATES || 0 < _MSC_VER && _MSC_VER <= 1200)
+    // MSVC++ 6.0 do not support member templates
+    template <class GC_Tp1> gc_allocator
+    (const gc_allocator<GC_Tp1>&) throw() { }
+# endif
+    ~gc_allocator() throw() { }
+
+    pointer address(reference GC_x) const {return &GC_x;}
+    const_pointer address(const_reference GC_x) const {return &GC_x;}
+
+    // GC_n is permitted to be 0. The C++ standard says nothing about what
+    // the return value is when GC_n == 0.
+    GC_Tp* allocate(size_type GC_n, const void* = 0)
+    {
+        return (GC_Tp *)GC_MALLOC_ATOMIC(sizeof(GC_Tp) * GC_n);
+    }
+
+    // __p is not permitted to be a null pointer.
+    void deallocate(pointer __p, size_type GC_ATTR_UNUSED GC_n)
+    {   GC_FREE(__p);}
+
+    size_type max_size() const throw()
+    {   return size_t(-1) / sizeof(GC_Tp);}
+
+    void construct(pointer __p, const GC_Tp& __val) {new(__p) GC_Tp(__val);}
+    void destroy(pointer __p) {__p->~GC_Tp();}
+};
+
+template<>
+class gc_allocator<void> {
+    typedef size_t size_type;
+    typedef ptrdiff_t difference_type;
+    typedef void* pointer;
+    typedef const void* const_pointer;
+    typedef void value_type;
+
+    template <class GC_Tp1> struct rebind {
+        typedef gc_allocator<GC_Tp1> other;
+    };
+};
+
+template <class GC_T1, class GC_T2>
+inline bool operator==(const gc_allocator<GC_T1>&, const gc_allocator<GC_T2>&)
+{
+    return true;
+}
+
+template <class GC_T1, class GC_T2>
+inline bool operator!=(const gc_allocator<GC_T1>&, const gc_allocator<GC_T2>&)
+{
+    return false;
+}
+
+#endif
+
 /*
 void* gcm(size_t t);
 void* gca(size_t t);
@@ -56,6 +242,8 @@ void* gca(size_t t);
 #undef GC_MALLOC_ATOMIC
 #define GC_MALLOC_ATOMIC gca
 */
+
+
 template <class GC_Tp>
 class pointer_free_allocator {
 public:

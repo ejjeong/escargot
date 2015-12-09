@@ -629,7 +629,7 @@ public:
     {
         if (isASCIIString()) {
             size_t s = asASCIIString()->length();
-            char16_t* v = (char16_t *)GC_malloc_atomic(sizeof(char16_t) * s);
+            char16_t* v = (char16_t *)GC_MALLOC_ATOMIC(sizeof(char16_t) * s);
             const char* src = asASCIIString()->data();
             for (size_t i = 0; i < s ; i ++) {
                 v[i] = src[i];
