@@ -36,10 +36,12 @@ adb shell mkdir -p /data/local/tmp/arm32/jsc/interp
 adb shell mkdir -p /data/local/tmp/arm32/jsc/baseline
 adb shell mkdir -p /data/local/tmp/arm32/escargot/interp
 adb shell mkdir -p /data/local/tmp/arm32/escargot/jit
+adb shell mkdir -p /data/local/tmp/arm32/duk
 adb push test/bin/arm32 data/local/tmp/arm32
 adb shell mkdir -p /data/local/tmp/arm64/v8
 adb shell mkdir -p /data/local/tmp/arm64/escargot/interp
 adb shell mkdir -p /data/local/tmp/arm64/escargot/jit
+adb shell mkdir -p /data/local/tmp/arm64/duk
 adb push ./test/bin/arm64 data/local/tmp/arm64
 adb push ./android/libs/armeabi-v7a data/local/tmp/arm32/escargot
 #adb shell mkdir /data/local/tmp/arm64/escargot
