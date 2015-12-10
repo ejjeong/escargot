@@ -1734,8 +1734,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             bool isStringCase = false;
             LIns* objFromOutSide = NULL;
             if (m_graph->getOperandType(irGetObjectPreComputed->objectIndex()).isStringType()) {
-                if (*irGetObjectPreComputed->byteCode()->m_propertyValue == *strings->length.string() &&
-                        m_graph->getOperandType(irGetObjectPreComputed->objectIndex()).isSimpleStringType()) {
+                if (*irGetObjectPreComputed->byteCode()->m_propertyValue == *strings->length.string()
+                    && m_graph->getOperandType(irGetObjectPreComputed->objectIndex()).isSimpleStringType()) {
                     LIns* obj = getTmpMapping(irGetObjectPreComputed->objectIndex());
                     // load m_string from ESString*
                     LIns* stringData = m_out->insLoad(LIR_ldp, obj, ESString::offsetOfStringData(), 1, LOAD_NORMAL);
@@ -1751,8 +1751,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             }
 
 
-            if (irGetObjectPreComputed->byteCode()->m_inlineCache.m_cache.size() &&
-                    (m_graph->getOperandType(irGetObjectPreComputed->objectIndex()).isObjectType() || isStringCase)) {
+            if (irGetObjectPreComputed->byteCode()->m_inlineCache.m_cache.size()
+                && (m_graph->getOperandType(irGetObjectPreComputed->objectIndex()).isObjectType() || isStringCase)) {
                 LIns* result = m_out->insAlloc(sizeof(ESValue));
 
                 // check proto chain
