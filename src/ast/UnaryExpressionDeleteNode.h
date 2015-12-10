@@ -21,10 +21,10 @@ public:
     {
         if (m_argument->isMemberExpression()) {
             MemberExpressionNode* mem = (MemberExpressionNode*) m_argument;
+            mem->generateResolveAddressByteCode(codeBlock, context);
             if (mem->isPreComputedCase()) {
                 codeBlock->pushCode(Push(mem->propertyName().string()), context, this);
             }
-            mem->generateResolveAddressByteCode(codeBlock, context);
             codeBlock->pushCode(UnaryDelete(true), context, this);
         } else if (m_argument->isIdentifier()) {
             codeBlock->pushCode(UnaryDelete(false, ((IdentifierNode *)m_argument)->name().string()), context, this);
