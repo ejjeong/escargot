@@ -42,7 +42,7 @@ UTF16String codePointTo4digitString(int codepoint)
     return ret;
 }
 
-std::string char2hex(char dec )
+ASCIIString char2hex(char dec )
 {
     char dig1 = (dec&0xF0)>>4;
     char dig2 = (dec&0x0F);
@@ -55,7 +55,7 @@ std::string char2hex(char dec )
     if (10 <= dig2 && dig2 <=15)
         dig2 += 65-10;
 
-    std::string r;
+    ASCIIString r;
     r.append(&dig1, 1);
     r.append(&dig2, 1);
     return r;
@@ -432,42 +432,41 @@ void GlobalObject::initGlobalObject()
 
         escargot::ESString* stringValue = instance->currentExecutionContext()->arguments()->toString();
         NullableUTF8String componentString = stringValue->toNullableUTF8String();
-        NullableUTF16String u16Str = stringValue->toNullableUTF16String();
-        const char16_t* data = u16Str.m_buffer;
-        int strLen = u16Str.m_length;
+        int strLen = stringValue->length();
 
-        std::string escaped="";
+        ASCIIString escaped;
         for (int i = 0; i < strLen; i++) {
-            if ((48 <= data[i] && data[i] <= 57) // DecimalDigit
-                || (65 <= data[i] && data[i] <= 90) // uriAlpha - lower case
-                || (97 <= data[i] && data[i] <= 122) // uriAlpha - lower case
-                || (data[i] == '-' || data[i] == '_' || data[i] == '.' // uriMark
-                || data[i] == '!' || data[i] == '~'
-                || data[i] == '*' || data[i] == '\'' || data[i] == '('
-                || data[i] == ')'))  {
+            char16_t t = stringValue->charAt(i);
+            if ((48 <= t && t <= 57) // DecimalDigit
+                || (65 <= t && t <= 90) // uriAlpha - lower case
+                || (97 <= t && t <= 122) // uriAlpha - lower case
+                || (t == '-' || t == '_' || t == '.' // uriMark
+                || t == '!' || t == '~'
+                || t == '*' || t == '\'' || t == '('
+                || t == ')'))  {
                 escaped.append(&componentString.m_buffer[i], 1);
-            } else if (/*0 <= data[i] && */data[i] < 0x007F) {
+            } else if (t < 0x007F) {
                 escaped.append("%");
-                escaped.append(char2hex(data[i]));
-            } else if (0x0080 <= data[i] && data[i] <= 0x07FF) {
+                escaped.append(char2hex(t));
+            } else if (0x0080 <= t && t <= 0x07FF) {
                 escaped.append("%");
-                escaped.append(char2hex(0x00C0 + (data[i] & 0x07C0) / 0x0040));
+                escaped.append(char2hex(0x00C0 + (t & 0x07C0) / 0x0040));
                 escaped.append("%");
-                escaped.append(char2hex(0x0080 + (data[i] & 0x003F)));
-            } else if ((0x0800 <= data[i] && data[i] <= 0xD7FF)
-                || (0xE000 <= data[i]/* && data[i] <= 0xFFFF*/)) {
+                escaped.append(char2hex(0x0080 + (t & 0x003F)));
+            } else if ((0x0800 <= t && t <= 0xD7FF)
+                || (0xE000 <= t/* && t <= 0xFFFF*/)) {
                 escaped.append("%");
-                escaped.append(char2hex(0x00E0 + (data[i] & 0xF000) / 0x1000));
+                escaped.append(char2hex(0x00E0 + (t & 0xF000) / 0x1000));
                 escaped.append("%");
-                escaped.append(char2hex(0x0080 + (data[i] & 0x0FC0) / 0x0040));
+                escaped.append(char2hex(0x0080 + (t & 0x0FC0) / 0x0040));
                 escaped.append("%");
-                escaped.append(char2hex(0x0080 + (data[i] & 0x003F)));
-            } else if (0xD800 <= data[i] && data[i] <= 0xDBFF) {
+                escaped.append(char2hex(0x0080 + (t & 0x003F)));
+            } else if (0xD800 <= t && t <= 0xDBFF) {
                 if (i + 1 == strLen) {
                     instance->throwError(ESValue(URIError::create(ESString::create("malformed URI"))));
                 } else {
-                    if (0xDC00 <= data[i + 1] && data[i + 1] <= 0xDFFF) {
-                        int index = (data[i] - 0xD800) * 0x400 + (data[i + 1] - 0xDC00) + 0x10000;
+                    if (0xDC00 <= stringValue->charAt(i + 1) && stringValue->charAt(i + 1) <= 0xDFFF) {
+                        int index = (t - 0xD800) * 0x400 + (stringValue->charAt(i + 1) - 0xDC00) + 0x10000;
                         escaped.append("%");
                         escaped.append(char2hex(0x00F0 + (index & 0x1C0000) / 0x40000));
                         escaped.append("%");
@@ -481,14 +480,14 @@ void GlobalObject::initGlobalObject()
                         instance->throwError(ESValue(URIError::create(ESString::create("malformed URI"))));
                     }
                 }
-            } else if (0xDC00 <= data[i] && data[i] <= 0xDFFF) {
+            } else if (0xDC00 <= t && t <= 0xDFFF) {
                 instance->throwError(ESValue(URIError::create(ESString::create("malformed URI"))));
             } else {
                 RELEASE_ASSERT_NOT_REACHED();
             }
         }
 
-        return escargot::ESString::create(escaped.c_str());
+        return escargot::ESString::create(std::move(escaped));
     }, ESString::createAtomicString("encodeURIComponent"), 1));
 
     // $B.2.1.2 unescape(string)
@@ -498,7 +497,7 @@ void GlobalObject::initGlobalObject()
             return ESValue();
         NullableUTF8String str = instance->currentExecutionContext()->arguments()->asESString()->toNullableUTF8String();
         size_t length = str.m_bufferSize;
-        std::string R = "";
+        ASCIIString R = "";
         for (size_t i = 0; i < length; i++) {
             if (str.m_buffer[i] == '%') {
                 R.push_back(hex2char(str.m_buffer[i+1], str.m_buffer[i+2]));
@@ -507,7 +506,7 @@ void GlobalObject::initGlobalObject()
                 R.append(&str.m_buffer[i], 1);
             }
         }
-        return escargot::ESString::create(R.c_str());
+        return escargot::ESString::create(std::move(R));
     }, ESString::createAtomicString("unescape"), 1));
 
 }
@@ -2021,9 +2020,9 @@ void GlobalObject::installString()
         if (strData->isASCIIString() && searchStrData->isASCIIString())
             result = strData->asASCIIString()->find(*searchStrData->asASCIIString(), start);
         else if (strData->isASCIIString() && !searchStrData->isASCIIString())
-            result = strData->toUTF16String().find(searchStrData->toUTF16String(), start);
+            result = str->find(searchStr, start);
         else if (!strData->isASCIIString() && searchStrData->isASCIIString())
-            result = strData->toUTF16String().find(searchStrData->toUTF16String(), start);
+            result = str->find(searchStr, start);
         else
             result = strData->asUTF16String()->find(*searchStrData->asUTF16String(), start);
         return ESValue(result);
@@ -2056,9 +2055,9 @@ void GlobalObject::installString()
         if (strData->isASCIIString() && searchStrData->isASCIIString())
             result = strData->asASCIIString()->rfind(*searchStrData->asASCIIString(), start);
         else if (strData->isASCIIString() && !searchStrData->isASCIIString())
-            result = strData->toUTF16String().rfind(searchStrData->toUTF16String(), start);
+            result = S->rfind(searchStr, start);
         else if (!strData->isASCIIString() && searchStrData->isASCIIString())
-            result = strData->toUTF16String().rfind(searchStrData->toUTF16String(), start);
+            result = S->rfind(searchStr, start);
         else
             result = strData->asUTF16String()->rfind(*searchStrData->asUTF16String(), start);
 
@@ -2188,7 +2187,7 @@ void GlobalObject::installString()
                 }
 
                 ESStringBuilder builder;
-                if (hasDollar) {
+                if (!hasDollar) {
                     // flat replace
                     int32_t matchCount = result.m_matchResults.size();
                     builder.appendSubString(origStr, 0, result.m_matchResults[0][0].m_start);
@@ -2215,7 +2214,7 @@ void GlobalObject::installString()
                                 } else if (c == '\'') {
                                     builder.appendSubString(origStr, result.m_matchResults[i][0].m_end, origStr->length());
                                 } else if (c == '`') {
-                                    builder.appendSubString(origStr, result.m_matchResults[i][0].m_start, origStr->length());
+                                    builder.appendSubString(origStr, 0, result.m_matchResults[i][0].m_start);
                                 } else if ('0' <= c && c <= '9') {
                                     // TODO support morethan 2-digits
                                     size_t idx = c - '0';
@@ -3800,13 +3799,13 @@ void GlobalObject::installNumber()
             if (isnan(x)) {
                 return strings->NaN.string();
             }
-            UTF16String s;
+            ASCIIString s;
             if (x < 0) {
-                s = u"-";
+                s = "-";
                 x = -x;
             }
             if (std::isinf(x)) {
-                s += u"Infinity";
+                s += "Infinity";
                 return escargot::ESString::create(std::move(s));
             }
             int p = (int) trunc(p_d);

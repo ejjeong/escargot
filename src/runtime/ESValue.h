@@ -988,6 +988,63 @@ public:
         return m_string->m_data.m_hashData;
     }
 
+    size_t find(ESString* str, size_t pos = 0)
+    {
+        const size_t srcStrLen = str->length();
+        const size_t size = length();
+        // const _CharT* __data = _M_data();
+
+        if (srcStrLen == 0)
+            return pos <= size ? pos : -1;
+
+        if (srcStrLen <= size) {
+            const ESStringData* thisStringData = stringData();
+            const ESStringData* srcStringData = str->stringData();
+
+            for (; pos <= size - srcStrLen; ++pos) {
+                if (thisStringData->charAt(pos) == srcStringData->charAt(0)) {
+                    bool same = true;
+                    for (size_t k = 1; k < srcStrLen; k++) {
+                        if (thisStringData->charAt(pos + k) != srcStringData->charAt(k)) {
+                            same = false;
+                            break;
+                        }
+                    }
+                    if (same)
+                        return pos;
+                }
+            }
+        }
+        return -1;
+    }
+
+    size_t rfind(ESString* str, size_t pos = 0)
+    {
+        const size_t srcStrLen = str->length();
+        const size_t size = length();
+        // const _CharT* __data = _M_data();
+
+        if (srcStrLen == 0)
+            return pos <= size ? pos : -1;
+
+        if (srcStrLen <= size) {
+            const ESStringData* thisStringData = stringData();
+            const ESStringData* srcStringData = str->stringData();
+
+            do {
+                bool same = true;
+                for (size_t k = 0; k < srcStrLen; k++) {
+                    if (thisStringData->charAt(pos + k) != srcStringData->charAt(k)) {
+                        same = false;
+                        break;
+                    }
+                }
+                if (same)
+                    return pos;
+            } while (pos-- > 0);
+        }
+        return -1;
+    }
     ESString* substring(int from, int to) const;
 
     struct RegexMatchResult {
