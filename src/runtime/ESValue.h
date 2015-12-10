@@ -1336,52 +1336,6 @@ protected:
     bool m_hasNonASCIIChild;
 };
 
-inline ESString* ESString::concatTwoStrings(ESString* lstr, ESString* rstr)
-{
-    int llen = lstr->length();
-    if (llen == 0)
-        return rstr;
-    int rlen = rstr->length();
-    if (rlen == 0)
-        return lstr;
-
-    if (UNLIKELY(llen + rlen >= (int)ESRopeString::ESRopeStringCreateMinLimit)) {
-        return ESRopeString::createAndConcat(lstr, rstr);
-    } else {
-        bool aa = lstr->stringData()->isASCIIString();
-        bool bb = rstr->stringData()->isASCIIString();
-        if (aa && bb) {
-            ASCIIString str;
-            str.reserve(llen + rlen);
-            str.append(*lstr->stringData()->asASCIIString());
-            str.append(*rstr->stringData()->asASCIIString());
-            return ESString::create(std::move(str));
-        } else if (!aa && bb) {
-            UTF16String str;
-            str.reserve(llen + rlen);
-            str.append(*lstr->stringData()->asUTF16String());
-            for (size_t i = 0 ; i < rstr->length() ; i ++) {
-                str += rstr->stringData()->charAt(i);
-            }
-            return ESString::create(std::move(str));
-        } else if (aa && !bb) {
-            UTF16String str;
-            str.reserve(llen + rlen);
-            for (size_t i = 0 ; i < lstr->length() ; i ++) {
-                str += lstr->stringData()->charAt(i);
-            }
-            str.append(*rstr->stringData()->asUTF16String());
-            return ESString::create(std::move(str));
-        } else {
-            UTF16String str;
-            str.reserve(llen + rlen);
-            str.append(*lstr->stringData()->asUTF16String());
-            str.append(*rstr->stringData()->asUTF16String());
-            return ESString::create(std::move(str));
-        }
-    }
-}
-
 ALWAYS_INLINE void ESString::ensureNormalString() const
 {
     if (UNLIKELY(m_string == NULL)) {
@@ -2564,8 +2518,8 @@ public:
         setBuffer(ESArrayBufferObject::createAndAllocate(m_bytelength));
     }
 
-    ESValue get(int key);
-    bool set(int key, ESValue val);
+    ESValue get(uint32_t key);
+    bool set(uint32_t key, ESValue val);
     ALWAYS_INLINE unsigned arraylength() { return m_arraylength; }
     ALWAYS_INLINE void setArraylength(unsigned length) { m_arraylength = length; }
     ALWAYS_INLINE TypedArrayType arraytype() { return m_arraytype; }
@@ -2594,18 +2548,18 @@ public:
         return new ESTypedArrayObject(TypeAdaptor::typeVal);
     }
 
-    ESValue get(int key)
+    ESValue get(uint32_t key)
     {
-        if (key >= 0 && (unsigned)key < arraylength()) {
+        if ((unsigned)key < arraylength()) {
             unsigned idxPosition = key * elementSize() + byteoffset();
             escargot::ESArrayBufferObject* b = buffer();
             return b->getValueFromBuffer<typename TypeAdaptor::Type>(idxPosition, arraytype());
         }
         return ESValue();
     }
-    bool set(int key, ESValue val)
+    bool set(uint32_t key, ESValue val)
     {
-        if (key < 0 || (unsigned)key >= arraylength())
+        if ((unsigned)key >= arraylength())
             return false;
         unsigned idxPosition = key * elementSize() + byteoffset();
         escargot::ESArrayBufferObject* b = buffer();

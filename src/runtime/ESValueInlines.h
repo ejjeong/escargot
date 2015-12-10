@@ -1581,11 +1581,8 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
     }
     if (isESTypedArrayObject()) {
         uint32_t idx = key.toIndex();
-        if (idx != ESValue::ESInvalidIndexValue) {
-            if (idx < asESTypedArrayObjectWrapper()->length())
-                asESTypedArrayObjectWrapper()->set(idx, val);
-            return true;
-        }
+        asESTypedArrayObjectWrapper()->set(idx, val);
+        return true;
     }
     if (isESStringObject()) {
         uint32_t idx = key.toIndex();
@@ -1918,6 +1915,25 @@ protected:
     size_t m_contentLength;
     bool m_isASCIIString;
 };
+
+inline ESString* ESString::concatTwoStrings(ESString* lstr, ESString* rstr)
+{
+    int llen = lstr->length();
+    if (llen == 0)
+        return rstr;
+    int rlen = rstr->length();
+    if (rlen == 0)
+        return lstr;
+
+    if (UNLIKELY(llen + rlen >= (int)ESRopeString::ESRopeStringCreateMinLimit)) {
+        return ESRopeString::createAndConcat(lstr, rstr);
+    } else {
+        ESStringBuilder builder;
+        builder.appendString(lstr);
+        builder.appendString(rstr);
+        return builder.finalize();
+    }
+}
 
 }
 

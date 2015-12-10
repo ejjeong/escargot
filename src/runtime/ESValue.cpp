@@ -1834,7 +1834,7 @@ ESArrayBufferView::ESArrayBufferView(ESPointer::Type type, ESValue __proto__)
 {
 }
 
-ESValue ESTypedArrayObjectWrapper::get(int key)
+ESValue ESTypedArrayObjectWrapper::get(uint32_t key)
 {
     switch (m_arraytype) {
     case TypedArrayType::Int8Array:
@@ -1858,7 +1858,7 @@ ESValue ESTypedArrayObjectWrapper::get(int key)
     }
     RELEASE_ASSERT_NOT_REACHED();
 }
-bool ESTypedArrayObjectWrapper::set(int key, ESValue val)
+bool ESTypedArrayObjectWrapper::set(uint32_t key, ESValue val)
 {
     switch (m_arraytype) {
     case TypedArrayType::Int8Array:

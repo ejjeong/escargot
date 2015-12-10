@@ -149,19 +149,25 @@ NEVER_INLINE ESValue getObjectOperationSlowCase(ESValue* willBeObject, ESValue* 
 ALWAYS_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* property, GlobalObject* globalObject)
 {
     ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty());
-    if (LIKELY(willBeObject->isESPointer() && willBeObject->asESPointer()->isESArrayObject())) {
-        ESArrayObject* arr = willBeObject->asESPointer()->asESArrayObject();
-        if (LIKELY(arr->isFastmode())) {
-            uint32_t idx = property->toIndex();
-            if (LIKELY(idx < arr->length())) {
-                ASSERT(idx != ESValue::ESInvalidIndexValue);
-                const ESValue& v = arr->data()[idx];
-                if (LIKELY(!v.isEmpty())) {
-                    return v;
-                } else {
-                    return ESValue();
+    if (LIKELY(willBeObject->isESPointer())) {
+        if (LIKELY(willBeObject->asESPointer()->isESArrayObject())) {
+            ESArrayObject* arr = willBeObject->asESPointer()->asESArrayObject();
+            if (LIKELY(arr->isFastmode())) {
+                uint32_t idx = property->toIndex();
+                if (LIKELY(idx < arr->length())) {
+                    ASSERT(idx != ESValue::ESInvalidIndexValue);
+                    const ESValue& v = arr->data()[idx];
+                    if (LIKELY(!v.isEmpty())) {
+                        return v;
+                    } else {
+                        return ESValue();
+                    }
                 }
             }
+        } else if (willBeObject->asESPointer()->isESTypedArrayObject()) {
+            uint32_t idx = property->toIndex();
+            ESTypedArrayObjectWrapper* arr = willBeObject->asESPointer()->asESTypedArrayObjectWrapper();
+            return arr->get(idx);
         }
     }
     return getObjectOperationSlowCase(willBeObject, property, globalObject);
@@ -284,6 +290,10 @@ ALWAYS_INLINE void setObjectOperation(ESValue* willBeObject, ESValue* property, 
                     }
                 }
             }
+        } else if (willBeObject->asESPointer()->isESTypedArrayObject()) {
+            uint32_t idx = property->toIndex();
+            willBeObject->asESPointer()->asESTypedArrayObjectWrapper()->set(idx, value);
+            return;
         }
     }
     setObjectOperationSlowCase(willBeObject, property, value);
