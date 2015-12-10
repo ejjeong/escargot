@@ -15,8 +15,9 @@ namespace ESJIT {
     F(Undefined,      0x1 << 5) \
     F(Empty,          0x1 << 6) \
     F(Deleted,        0x1 << 7) \
-    F(String,         0x1 << 8) \
+    F(SimpleString,   0x1 << 8) \
     F(RopeString,     0x1 << 9) \
+    F(String,         TypeSimpleString | TypeRopeString) \
     F(FunctionObject, 0x1 << 10) \
     F(ArrayObject,    0x1 << 11) \
     F(StringObject,   0x1 << 12) \
@@ -88,7 +89,7 @@ public:
                 if (p->isESRopeString()) {
                     return TypeRopeString;
                 } else {
-                    return TypeString;
+                    return TypeSimpleString;
                 }
             } else if (p->isESFunctionObject()) {
                 return TypeFunctionObject;

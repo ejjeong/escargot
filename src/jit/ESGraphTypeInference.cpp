@@ -215,7 +215,7 @@ bool ESGraphTypeInference::run(ESGraph* graph)
             case ESIR::Opcode::TypeOf:
                 {
                     INIT_ESIR(TypeOf);
-                    graph->setOperandType(irTypeOf->targetIndex(), TypeString);
+                    graph->setOperandType(irTypeOf->targetIndex(), TypeSimpleString);
                     break;
                 }
             case ESIR::Opcode::CreateFunction:

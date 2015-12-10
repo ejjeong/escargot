@@ -395,7 +395,7 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
         jumpIfDouble->setTarget(normalPath);
         jumpToNormalPath->setTarget(normalPath);
         return m_out->insLoad(LIR_lde, result, 0, 1, LOAD_NORMAL);
-    } else if (type.isObjectType() || type.isArrayObjectType() || type.isStringType() || type.isFunctionObjectType()) {
+    } else if (type.isPointerType()) {
 #ifdef ESCARGOT_64
         LIns* quadValue = in;
         LIns* maskedValue = m_out->ins2(LIR_andq, quadValue, m_tagMaskQ);
@@ -415,8 +415,11 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
         LIns* normalPath = m_out->ins0(LIR_label);
         jumpIfPointer->setTarget(normalPath);
 
+        // the order should be : narrow type -> general type
         LIns* mask;
-        if (type.isStringType())
+        if (type.isRopeStringType())
+            mask = m_out->insImmI(ESPointer::Type::ESRopeString);
+        else if (type.isStringType())
             mask = m_out->insImmI(ESPointer::Type::ESString);
         else if (type.isObjectType())
             mask = m_out->insImmI(ESPointer::Type::ESObject);
@@ -428,25 +431,9 @@ nanojit::LIns* NativeGenerator::generateTypeCheck(LIns* in, Type type, size_t cu
             return nullptr;
 
         LIns* typeOfESPtr = m_out->insLoad(LIR_ldi, unboxESValue(in, TypePointer), ESPointer::offsetOfType(), 1, LOAD_NORMAL);
-        LIns* jumpIfFlagIdentical;
-        if (type.isStringType()) {
-            LIns* mask2 = m_out->insImmI(ESPointer::Type::ESRopeString);
-            LIns* esPointerMaskedValue1 = m_out->ins2(LIR_andi, typeOfESPtr, mask);
-            LIns* checkIfFlagIdentical1 = m_out->ins2(LIR_eqi, esPointerMaskedValue1, mask);
-            LIns* jumpIfNotString = m_out->insBranch(LIR_jf, checkIfFlagIdentical1, (LIns*)nullptr);
-
-            // skip in case of RopeString
-            LIns* esPointerMaskedValue2 = m_out->ins2(LIR_andi, typeOfESPtr, mask2);
-            LIns* checkIfFlagIdentical2 = m_out->ins2(LIR_eqi, esPointerMaskedValue2, mask2);
-
-            jumpIfFlagIdentical = m_out->insBranch(LIR_jf, checkIfFlagIdentical2, (LIns*)nullptr);
-            LIns* nonStringPath0 = m_out->ins0(LIR_label);
-            jumpIfNotString->setTarget(nonStringPath0);
-        } else {
-            LIns* esPointerMaskedValue = m_out->ins2(LIR_andi, typeOfESPtr, mask);
-            LIns* checkIfFlagIdentical = m_out->ins2(LIR_eqi, esPointerMaskedValue, mask);
-            jumpIfFlagIdentical = m_out->insBranch(LIR_jt, checkIfFlagIdentical, (LIns*)nullptr);
-        }
+        LIns* esPointerMaskedValue = m_out->ins2(LIR_andi, typeOfESPtr, mask);
+        LIns* checkIfFlagIdentical = m_out->ins2(LIR_eqi, esPointerMaskedValue, mask);
+        LIns* jumpIfFlagIdentical = m_out->insBranch(LIR_jt, checkIfFlagIdentical, (LIns*)nullptr);
 #ifndef NDEBUG
         if (ESVMInstance::currentInstance()->m_verboseJIT) {
             JIT_LOG(in, "Expected below-typed value, but got this value");
@@ -1747,7 +1734,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             bool isStringCase = false;
             LIns* objFromOutSide = NULL;
             if (m_graph->getOperandType(irGetObjectPreComputed->objectIndex()).isStringType()) {
-                if (*irGetObjectPreComputed->byteCode()->m_propertyValue == *strings->length.string()) {
+                if (*irGetObjectPreComputed->byteCode()->m_propertyValue == *strings->length.string() &&
+                        m_graph->getOperandType(irGetObjectPreComputed->objectIndex()).isSimpleStringType()) {
                     LIns* obj = getTmpMapping(irGetObjectPreComputed->objectIndex());
                     // load m_string from ESString*
                     LIns* stringData = m_out->insLoad(LIR_ldp, obj, ESString::offsetOfStringData(), 1, LOAD_NORMAL);
@@ -1763,7 +1751,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             }
 
 
-            if (irGetObjectPreComputed->byteCode()->m_inlineCache.m_cache.size() && (m_graph->getOperandType(irGetObjectPreComputed->objectIndex()).isObjectType() || isStringCase)) {
+            if (irGetObjectPreComputed->byteCode()->m_inlineCache.m_cache.size() &&
+                    (m_graph->getOperandType(irGetObjectPreComputed->objectIndex()).isObjectType() || isStringCase)) {
                 LIns* result = m_out->insAlloc(sizeof(ESValue));
 
                 // check proto chain
@@ -2049,7 +2038,8 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             if (keyType.isInt32Type()) {
 
                 // code for debug
-                // enable this code while string is well implemented
+                // FIXME enable this code while string is well implemented
+                // FIXME Consider RopeStringType
                 LIns* obj = boxESValue(getTmpMapping(irGetStringByIndex->objectIndex()), m_graph->getOperandType(irGetStringByIndex->objectIndex()));
                 LIns* property = boxESValue(getTmpMapping(irGetStringByIndex->propertyIndex()), m_graph->getOperandType(irGetStringByIndex->propertyIndex()));
                 LIns* args[] = {m_globalObjectP, property, obj};
@@ -2251,7 +2241,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             Type srcType = m_graph->getOperandType(irStorePhi->sourceIndex());
             if (srcType.isInt32Type() || srcType.isBooleanType()) {
                 m_out->insStore(LIR_sti, source, phi, 0 , ACCSET_ALL);
-            } else if (srcType.isObjectType() || srcType.isArrayObjectType() || srcType.isStringType() || srcType.isFunctionObjectType()) {
+            } else if (srcType.isPointerType()) {
                 m_out->insStore(LIR_stp, source, phi, 0 , ACCSET_ALL);
             } else {
                 return nullptr;
@@ -2271,7 +2261,7 @@ LIns* NativeGenerator::nanojitCodegen(ESIR* ir)
             // TODO implement another types
             if (consequentType.isInt32Type() || consequentType.isBooleanType())
                 return m_out->insLoad(LIR_ldi, phi, 0, 1, LOAD_NORMAL);
-            else if (consequentType.isObjectType() || consequentType.isArrayObjectType() || consequentType.isStringType() || consequentType.isFunctionObjectType())
+            else if (consequentType.isPointerType())
                 return m_out->insLoad(LIR_ldp, phi, 0, 1, LOAD_NORMAL);
             else
                 return nullptr;

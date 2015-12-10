@@ -99,7 +99,7 @@ ESGraph* generateIRFromByteCode(CodeBlock* codeBlock)
                     ESPointer* p = bytecode->m_value.asESPointer();
                     if (p->isESString()) {
                         literal = ConstantStringIR::create(extraData->m_decoupledData->m_targetIndex0, bytecode->m_value.asESString());
-                        graph->setOperandType(extraData->m_decoupledData->m_targetIndex0, TypeString);
+                        graph->setOperandType(extraData->m_decoupledData->m_targetIndex0, TypeSimpleString);
                     } else {
                         literal = ConstantPointerIR::create(extraData->m_decoupledData->m_targetIndex0, bytecode->m_value.asESPointer());
                         graph->setOperandType(extraData->m_decoupledData->m_targetIndex0, TypePointer);
