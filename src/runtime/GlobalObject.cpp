@@ -3009,6 +3009,62 @@ void GlobalObject::installDate()
     }, strings->valueOf, 0));
 }
 
+template <typename CharType, typename JSONCharType>
+ESValue parseJSON(const CharType* data)
+{
+    rapidjson::GenericDocument<JSONCharType> jsonDocument;
+
+    // FIXME(ksh8281) javascript string is not null-terminated string
+    rapidjson::GenericStringStream<JSONCharType> stringStream(data);
+    jsonDocument.ParseStream(stringStream);
+    if (jsonDocument.HasParseError()) {
+        ESVMInstance::currentInstance()->throwError(ESValue(SyntaxError::create(ESString::create(u"occur error while parse json"))));
+    }
+    // FIXME: JSON.parse treats "__proto__" as a regular property name. (test262: ch15/15.12/15.12.2/S15.12.2_A1.js)
+    //        >>> var x1 = JSON.parse('{"__proto__":[]}') // x1.__proto__ = []
+    //        >>> var x2 = JSON.parse('{"__proto__":1}') // x2.__proto__ = 1
+    //        >>> var y1 = {"__proto__":[]} // y1.__proto__ = []
+    //        >>> var y2 = {"__proto__":1} // y2.__proto__ != 1
+    //        >>> Object.getPrototypeOf(x1) == Object.prototype // true
+    //        >>> Object.getPrototypeOf(x2) == Object.prototype // true
+    //        >>> Object.getPrototypeOf(y1) == Object.prototype // false
+    //        >>> Object.getPrototypeOf(y2) == Object.prototype // true
+    std::function<ESValue(rapidjson::GenericValue<JSONCharType>& value)> fn;
+    fn = [&fn](rapidjson::GenericValue<JSONCharType>& value) -> ESValue {
+        if (value.IsBool()) {
+            return ESValue(value.GetBool());
+        } else if (value.IsInt()) {
+            return ESValue(value.GetInt());
+        } else if (value.IsDouble()) {
+            return ESValue(value.GetDouble());
+        } else if (value.IsNull()) {
+            return ESValue(ESValue::ESNull);
+        } else if (value.IsString()) {
+            return ESString::create(value.GetString());
+        } else if (value.IsArray()) {
+            escargot::ESArrayObject* arr = ESArrayObject::create();
+            auto iter = value.Begin();
+            while (iter != value.End()) {
+                arr->push(fn(*iter));
+                iter++;
+            }
+            return arr;
+        } else if (value.IsObject()) {
+            escargot::ESObject* obj = ESObject::create();
+            auto iter = value.MemberBegin();
+            while (iter != value.MemberEnd()) {
+                obj->defineDataProperty(ESString::create(iter->name.GetString()), true, true, true, fn(iter->value));
+                iter++;
+            }
+            return obj;
+        } else {
+            RELEASE_ASSERT_NOT_REACHED();
+        }
+    };
+
+    return fn(jsonDocument);
+}
+
 void GlobalObject::installJSON()
 {
     // create JSON object
@@ -3030,58 +3086,11 @@ void GlobalObject::installJSON()
         src.append(str->string());
         src.append(u") ;");
         */
-
-        rapidjson::GenericDocument<rapidjson::UTF16<char16_t>> jsonDocument;
-
-        // FIXME(ksh8281) javascript string is not null-terminated string
-        UTF16String s = str->toUTF16String();
-        rapidjson::GenericStringStream<rapidjson::UTF16<char16_t>> stringStream(s.data());
-        jsonDocument.ParseStream(stringStream);
-        if (jsonDocument.HasParseError()) {
-            instance->throwError(ESValue(SyntaxError::create(ESString::create(u"occur error while parse json"))));
+        if (str->isASCIIString()) {
+            return parseJSON<char, rapidjson::UTF8<char>>(str->toNullableUTF8String().m_buffer);
+        } else {
+            return parseJSON<char16_t, rapidjson::UTF16<char16_t>>(str->stringData()->asUTF16String()->data());
         }
-        // FIXME: JSON.parse treats "__proto__" as a regular property name. (test262: ch15/15.12/15.12.2/S15.12.2_A1.js)
-        //        >>> var x1 = JSON.parse('{"__proto__":[]}') // x1.__proto__ = []
-        //        >>> var x2 = JSON.parse('{"__proto__":1}') // x2.__proto__ = 1
-        //        >>> var y1 = {"__proto__":[]} // y1.__proto__ = []
-        //        >>> var y2 = {"__proto__":1} // y2.__proto__ != 1
-        //        >>> Object.getPrototypeOf(x1) == Object.prototype // true
-        //        >>> Object.getPrototypeOf(x2) == Object.prototype // true
-        //        >>> Object.getPrototypeOf(y1) == Object.prototype // false
-        //        >>> Object.getPrototypeOf(y2) == Object.prototype // true
-        std::function<ESValue(rapidjson::GenericValue<rapidjson::UTF16<char16_t>>& value)> fn;
-        fn = [&](rapidjson::GenericValue<rapidjson::UTF16<char16_t>>& value) -> ESValue {
-            if (value.IsBool()) {
-                return ESValue(value.GetBool());
-            } else if (value.IsInt()) {
-                return ESValue(value.GetInt());
-            } else if (value.IsDouble()) {
-                return ESValue(value.GetDouble());
-            } else if (value.IsNull()) {
-                return ESValue(ESValue::ESNull);
-            } else if (value.IsString()) {
-                return ESString::create(value.GetString());
-            } else if (value.IsArray()) {
-                escargot::ESArrayObject* arr = ESArrayObject::create();
-                auto iter = value.Begin();
-                while (iter != value.End()) {
-                    arr->push(fn(*iter));
-                    iter++;
-                }
-                return arr;
-            } else if (value.IsObject()) {
-                escargot::ESObject* obj = ESObject::create();
-                auto iter = value.MemberBegin();
-                while (iter != value.MemberEnd()) {
-                    obj->defineDataProperty(ESString::create(iter->name.GetString()), true, true, true, fn(iter->value));
-                    iter++;
-                }
-                return obj;
-            } else {
-                RELEASE_ASSERT_NOT_REACHED();
-            }
-        };
-        return fn(jsonDocument);
     }, strings->parse, 2));
 
     // $24.3.2 JSON.stringify(value[, replacer[, space ]])
@@ -3192,7 +3201,7 @@ void GlobalObject::installJSON()
                 return value.asBoolean()? strings->stringTrue.string() : strings->stringFalse.string();
             }
             if (value.isESString()) {
-                return ESString::create(Quote(value));
+                return ESString::createASCIIStringIfNeeded(std::move(Quote(value)));
             }
             if (value.isNumber()) {
                 double d = value.toNumber();
@@ -3304,7 +3313,7 @@ void GlobalObject::installJSON()
             // 12
             indent = stepback;
 
-            return ESString::create(final);
+            return ESString::createASCIIStringIfNeeded(std::move(final));
         };
 
         JO = [&](ESValue value) -> ESValue {
@@ -3372,7 +3381,7 @@ void GlobalObject::installJSON()
             // 12
             indent = stepback;
 
-            return ESString::create(final);
+            return ESString::createASCIIStringIfNeeded(std::move(final));
         };
 
         // 9
