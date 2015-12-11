@@ -59,7 +59,7 @@
 #define GC_MALLOC_ATOMIC(X) malloc(X)
 
 #undef GC_FREE
-#define GC_FREE(X) free(X);
+#define GC_FREE(X) X;
 
 inline void GC_gcollect() { }
 inline void GC_enable() { }

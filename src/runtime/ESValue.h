@@ -980,7 +980,6 @@ public:
         return allOfCharIsDigit;
     }
 
-    ALWAYS_INLINE void ensureNormalString() const;
     ALWAYS_INLINE const ESStringData* stringData() const;
     ALWAYS_INLINE size_t length() const;
     ALWAYS_INLINE size_t hashValue() const
@@ -1286,6 +1285,9 @@ public:
                 }
             }
             m_string =  new(GC) ESStringDataUTF16(std::move(result));
+            m_left = nullptr;
+            m_right = nullptr;
+            m_contentLength = 0;
             return m_string;
         } else {
             ASCIIString result;
@@ -1308,15 +1310,11 @@ public:
                 }
             }
             m_string = new(GC) ESStringDataASCII(std::move(result));
+            m_left = nullptr;
+            m_right = nullptr;
+            m_contentLength = 0;
             return m_string;
         }
-    }
-    void convertIntoNormalString()
-    {
-        m_string = stringData();
-        m_left = nullptr;
-        m_right = nullptr;
-        m_contentLength = 0;
     }
 
 #ifdef ENABLE_ESJIT
@@ -1335,13 +1333,6 @@ protected:
     size_t m_contentLength;
     bool m_hasNonASCIIChild;
 };
-
-ALWAYS_INLINE void ESString::ensureNormalString() const
-{
-    if (UNLIKELY(m_string == NULL)) {
-        const_cast<ESString *>(this)->asESRopeString()->convertIntoNormalString();
-    }
-}
 
 ALWAYS_INLINE const ESStringData* ESString::stringData() const
 {

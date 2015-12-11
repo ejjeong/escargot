@@ -356,7 +356,6 @@ uint32_t ESString::tryToUseAsIndex()
 ESString* ESString::substring(int from, int to) const
 {
     ASSERT(0 <= from && from <= to && to <= (int)length());
-    ensureNormalString();
     if (to - from == 1) {
         char16_t c;
         c = stringData()->charAt(from);
@@ -377,9 +376,6 @@ ESString* ESString::substring(int from, int to) const
 
 bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testOnly, size_t startIndex) const
 {
-    // NOTE to build normal string(for rope-string), we should call ensureNormalString();
-    ensureNormalString();
-
     ESRegExpObject::Option option = ESRegExpObject::Option::None;
     const ESString* regexSource;
     JSC::Yarr::BytecodePattern* byteCode = NULL;
@@ -415,14 +411,14 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
 
     unsigned subPatternNum = byteCode->m_body->m_numSubpatterns;
     matchResult.m_subPatternNum = (int) subPatternNum;
-    size_t length = m_string->length();
+    size_t length = stringData()->length();
     size_t start = startIndex;
     unsigned result = 0;
     const void* chars;
-    if (m_string->isASCIIString())
-        chars = m_string->asciiData();
+    if (stringData()->isASCIIString())
+        chars = stringData()->asciiData();
     else
-        chars = m_string->utf16Data();
+        chars = stringData()->utf16Data();
     unsigned* outputBuf = (unsigned int*)alloca(sizeof(unsigned) * 2 * (subPatternNum + 1));
     outputBuf[1] = start;
     do {
@@ -430,7 +426,7 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
         memset(outputBuf, -1, sizeof(unsigned) * 2 * (subPatternNum + 1));
         if (start > length)
             break;
-        if (m_string->isASCIIString())
+        if (stringData()->isASCIIString())
             result = JSC::Yarr::interpret(NULL, byteCode, (const char *)chars, length, start, outputBuf);
         else
             result = JSC::Yarr::interpret(NULL, byteCode, (const char16_t *)chars, length, start, outputBuf);
