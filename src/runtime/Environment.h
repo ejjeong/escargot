@@ -467,14 +467,11 @@ public:
         : DeclarativeEnvironmentRecord(buf, idLen)
         , m_argumentsObject(ESValue::ESEmptyValue)
     {
+#ifndef NDEBUG
         m_needsToPrepareGenerateArgumentsObject = needsToPrepareGenerateArgumentsObject;
-        if (needsToPrepareGenerateArgumentsObject) {
-            m_arguments = arguments;
-            m_argumentCount = argumentCount;
-        } else {
-            m_arguments = NULL;
-            m_argumentCount = argumentCount;
-        }
+#endif
+        if (needsToPrepareGenerateArgumentsObject)
+            generateArgumentsObject(arguments, argumentCount);
     }
 
     // heap storage
@@ -482,15 +479,26 @@ public:
         : DeclarativeEnvironmentRecord(innerIdentifiers)
         , m_argumentsObject(ESValue::ESEmptyValue)
     {
+#ifndef NDEBUG
         m_needsToPrepareGenerateArgumentsObject = needsToPrepareGenerateArgumentsObject;
-        if (needsToPrepareGenerateArgumentsObject) {
-            m_arguments = (ESValue *)GC_MALLOC(sizeof(ESValue) * argumentCount);
-            memcpy(m_arguments, arguments, sizeof(ESValue) * argumentCount);
-            m_argumentCount = argumentCount;
-        } else {
-            m_arguments = NULL;
-            m_argumentCount = argumentCount;
+#endif
+        if (needsToPrepareGenerateArgumentsObject)
+            generateArgumentsObject(arguments, argumentCount);
+    }
+
+    void generateArgumentsObject(ESValue arguments[], const size_t& argumentCount)
+    {
+        ESObject* argumentsObject = ESArgumentsObject::create();
+        unsigned i = 0;
+        argumentsObject->defineDataProperty(strings->length, true, false, true, ESValue(argumentCount));
+        for (; i < argumentCount && i < ESCARGOT_STRINGS_NUMBERS_MAX; i ++) {
+            argumentsObject->set(strings->numbers[i].string(), arguments[i]);
         }
+        for (; i < argumentCount; i ++) {
+            argumentsObject->set(ESString::create((int)i), arguments[i]);
+        }
+
+        m_argumentsObject = argumentsObject;
     }
 
     virtual bool hasThisBinding()
@@ -502,18 +510,6 @@ public:
     virtual ESValue* hasBindingForArgumentsObject()
     {
         ASSERT(m_needsToPrepareGenerateArgumentsObject);
-        if (m_argumentsObject.isEmpty()) {
-            ESObject* argumentsObject = ESArgumentsObject::create();
-            m_argumentsObject = argumentsObject;
-            unsigned i = 0;
-            argumentsObject->defineDataProperty(strings->length, true, false, true, ESValue(m_argumentCount));
-            for (; i < m_argumentCount && i < ESCARGOT_STRINGS_NUMBERS_MAX; i ++) {
-                argumentsObject->set(strings->numbers[i].string(), m_arguments[i]);
-            }
-            for (; i < m_argumentCount; i ++) {
-                argumentsObject->set(ESString::create((int)i), m_arguments[i]);
-            }
-        }
         return &m_argumentsObject;
     }
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-bindthisvalue
@@ -524,9 +520,9 @@ protected:
     // ESValue m_thisValue;
     // ESFunctionObject* m_functionObject; //TODO
     // ESValue m_newTarget; //TODO
+#ifndef NDEBUG
     bool m_needsToPrepareGenerateArgumentsObject;
-    ESValue* m_arguments;
-    size_t m_argumentCount;
+#endif
     ESValue m_argumentsObject;
 };
 

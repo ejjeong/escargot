@@ -13,7 +13,6 @@ namespace escargot {
 LexicalEnvironment* LexicalEnvironment::newFunctionEnvironment(bool needsToPrepareGenerateArgumentsObject, ESValue arguments[], const size_t& argumentCount, ESFunctionObject* function)
 {
     FunctionEnvironmentRecord* envRec = new FunctionEnvironmentRecord(needsToPrepareGenerateArgumentsObject, arguments, argumentCount, function->codeBlock()->m_innerIdentifiers);
-
     // envRec->m_functionObject = function;
     // envRec->m_newTarget = newTarget;
 
