@@ -27,7 +27,7 @@ inline ESValueInDouble getByIndexWithActivationOp(ExecutionContext* ec, int32_t 
     for (int i = 0; i < upCount; i ++) {
         env = env->outerEnvironment();
     }
-    return ESValue::toRawDouble(*env->record()->toDeclarativeEnvironmentRecord()->bindingValueForActivationMode((unsigned)index));
+    return ESValue::toRawDouble(*env->record()->toDeclarativeEnvironmentRecord()->bindingValueForHeapAllocatedData((unsigned)index));
 }
 
 inline void setByIndexWithActivationOp(ExecutionContext* ec, int32_t upCount, int32_t index, ESValueInDouble val)
@@ -36,7 +36,7 @@ inline void setByIndexWithActivationOp(ExecutionContext* ec, int32_t upCount, in
     for (int i = 0; i < upCount; i ++) {
         env = env->outerEnvironment();
     }
-    *env->record()->toDeclarativeEnvironmentRecord()->bindingValueForActivationMode((unsigned)index) = ESValue::fromRawDouble(val);
+    *env->record()->toDeclarativeEnvironmentRecord()->bindingValueForHeapAllocatedData((unsigned)index) = ESValue::fromRawDouble(val);
 }
 
 inline ESValueInDouble getByIdWithoutExceptionOp(ESVMInstance* instance, ExecutionContext* ec, ByteCode* bytecode)
@@ -305,8 +305,17 @@ inline ESValueInDouble createFunction(ExecutionContext* ec, ByteCode* bytecode)
     ASSERT(((size_t)code->m_codeBlock % sizeof(size_t)) == 0);
     ESFunctionObject* function = ESFunctionObject::create(ec->environment(), code->m_codeBlock, code->m_nonAtomicName == NULL ? strings->emptyString.string() : code->m_nonAtomicName, code->m_codeBlock->m_params.size());
     function->set(strings->name.string(), code->m_nonAtomicName);
-    if (code->m_isDeclaration)
-        ec->environment()->record()->setMutableBinding(code->m_name, function, false);
+    if (code->m_isDeclaration) {
+        if (code->m_idIndex == std::numeric_limits<size_t>::max()) {
+            ec->environment()->record()->setMutableBinding(code->m_name, function, false);
+        } else {
+            if (ec->environment()->record()->toDeclarativeEnvironmentRecord()->useHeapAllocatedStorage()) {
+                *ec->environment()->record()->toDeclarativeEnvironmentRecord()->bindingValueForHeapAllocatedData(code->m_idIndex) = function;
+            } else {
+                *ec->environment()->record()->toDeclarativeEnvironmentRecord()->bindingValueForStackAllocatedData(code->m_idIndex) = function;
+            }
+        }
+    }
     return ESValue::toRawDouble(ESValue((ESPointer*)function));
 }
 

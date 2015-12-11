@@ -36,7 +36,7 @@ public:
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         if (m_canUseFastAccess) {
-            if (codeBlock->m_needsActivation) {
+            if (codeBlock->m_needsHeapAllocatedVariableStorage) {
                 codeBlock->pushCode(GetByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), context, this);
 #ifndef NDEBUG
                 codeBlock->peekCode<GetByIndexWithActivation>(codeBlock->lastCodePosition<GetByIndexWithActivation>())->m_name = m_name;
@@ -78,7 +78,7 @@ public:
     virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         if (m_canUseFastAccess) {
-            if (codeBlock->m_needsActivation) {
+            if (codeBlock->m_needsHeapAllocatedVariableStorage) {
                 codeBlock->pushCode(SetByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), context, this);
             } else {
                 if (m_fastAccessUpIndex == 0) {

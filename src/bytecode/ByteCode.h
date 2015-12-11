@@ -1774,13 +1774,14 @@ struct EnumerateObjectData : public gc {
 
 class CreateFunction : public ByteCode {
 public:
-    CreateFunction(InternalAtomicString name, ESString* nonAtomicName, CodeBlock* codeBlock, bool isDecl)
+    CreateFunction(InternalAtomicString name, ESString* nonAtomicName, CodeBlock* codeBlock, bool isDecl, size_t idIndex)
         : ByteCode(CreateFunctionOpcode)
         , m_name(name)
     {
         m_nonAtomicName = nonAtomicName;
         m_codeBlock = codeBlock;
         m_isDeclaration = isDecl;
+        m_idIndex = idIndex;
     }
 
 #ifndef NDEBUG
@@ -1793,6 +1794,7 @@ public:
     ESString* m_nonAtomicName;
     CodeBlock* m_codeBlock;
     bool m_isDeclaration;
+    size_t m_idIndex;
 };
 
 class ExecuteNativeFunction : public ByteCode {
@@ -2297,9 +2299,12 @@ public:
     Node* m_ast;
     InternalAtomicStringVector m_params; // params: [ Pattern ];
     InternalAtomicStringVector m_innerIdentifiers;
+    unsigned m_innerIdentifiersSize;
     unsigned m_requiredStackSizeInESValueSize;
 
     bool m_needsActivation;
+    bool m_needsHeapAllocatedVariableStorage;
+    bool m_needsToPrepareGenerateArgumentsObject;
     bool m_isBuiltInFunction;
     bool m_isStrict;
     bool m_isFunctionExpression;

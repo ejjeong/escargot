@@ -159,7 +159,7 @@ public:
     }
 
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-newfunctionenvironment
-    static LexicalEnvironment* newFunctionEnvironment(ESValue arguments[], const size_t& argumentCount, ESFunctionObject* function);
+    static LexicalEnvironment* newFunctionEnvironment(bool needsToPrepareGenerateArgumentsObject, ESValue arguments[], const size_t& argumentCount, ESFunctionObject* function);
 
 #ifdef ENABLE_ESJIT
 #pragma GCC diagnostic push
@@ -318,22 +318,18 @@ protected:
 // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-declarative-environment-records
 class DeclarativeEnvironmentRecord : public EnvironmentRecord {
 public:
-    DeclarativeEnvironmentRecord(ESValue* vectorBuffer, InternalAtomicStringVector* innerIdentifiers)
+    DeclarativeEnvironmentRecord(ESValue* stackAllocatedData, size_t innerIdentifierSize)
     {
-        m_needsActivation = false;
-        m_vectorData = vectorBuffer;
-        m_innerIdentifiers = innerIdentifiers;
-        std::fill(vectorBuffer, &vectorBuffer[innerIdentifiers->size()], ESValue());
+        m_stackAllocatedData = stackAllocatedData;
+        std::fill(stackAllocatedData, &stackAllocatedData[innerIdentifierSize], ESValue());
     }
 
     DeclarativeEnvironmentRecord(const InternalAtomicStringVector& innerIdentifiers = InternalAtomicStringVector())
     {
-        m_vectorData = NULL;
-        m_innerIdentifiers = NULL;
-        m_needsActivation = true;
-        m_activationData.reserve(innerIdentifiers.size());
+        m_stackAllocatedData = NULL;
+        m_heapAllocatedData.reserve(innerIdentifiers.size());
         for (unsigned i = 0; i < innerIdentifiers.size(); i ++) {
-            m_activationData.push_back(std::make_pair(innerIdentifiers[i], ESValue()));
+            m_heapAllocatedData.push_back(std::make_pair(innerIdentifiers[i], ESValue()));
         }
     }
 
@@ -341,23 +337,14 @@ public:
     {
     }
 
-    InternalAtomicStringVector* innerIdentifiers() { return m_innerIdentifiers; }
-
     virtual ESValue* hasBinding(const InternalAtomicString& atomicName)
     {
-        if (m_needsActivation) {
-            size_t siz = m_activationData.size();
-            for (unsigned i = 0; i < siz; i ++) {
-                if (m_activationData[i].first == atomicName) {
-                    return &m_activationData[i].second;
-                }
-            }
-
+        if (m_stackAllocatedData) {
             return NULL;
         } else {
-            for (unsigned i = 0; i < m_innerIdentifiers->size(); i ++) {
-                if ((*m_innerIdentifiers)[i] == atomicName) {
-                    return &m_vectorData[i];
+            for (unsigned i = 0; i < m_heapAllocatedData.size(); i ++) {
+                if (m_heapAllocatedData[i].first == atomicName) {
+                    return &m_heapAllocatedData[i].second;
                 }
             }
             return NULL;
@@ -368,52 +355,36 @@ public:
     virtual void setMutableBinding(const InternalAtomicString& name, const ESValue& V, bool mustNotThrowTypeErrorExecption)
     {
         // TODO mustNotThrowTypeErrorExecption
-        if (m_needsActivation) {
-            size_t siz = m_activationData.size();
+        if (!m_stackAllocatedData) {
+            size_t siz = m_heapAllocatedData.size();
             for (unsigned i = 0; i < siz; i ++) {
-                if (m_activationData[i].first == name) {
-                    m_activationData[i].second = V;
+                if (m_heapAllocatedData[i].first == name) {
+                    m_heapAllocatedData[i].second = V;
                 }
             }
         } else {
-            for (unsigned i = 0; i < m_innerIdentifiers->size(); i ++) {
-                if ((*m_innerIdentifiers)[i] == name) {
-                    m_vectorData[i] = V;
-                    return;
-                }
-            }
             RELEASE_ASSERT_NOT_REACHED();
         }
     }
 
-    ESValue* bindingValueForNonActivationMode(size_t idx)
+    ESValue bindingValue(size_t t)
     {
-        return &m_vectorData[idx];
-    }
-
-    ESValue* bindingValueForActivationMode(size_t idx)
-    {
-        return &m_activationData[idx].second;
-    }
-
-    /*
-    virtual ESValue getBindingValue(const InternalAtomicString& name, bool ignoreReferenceErrorException)
-    {
-        // TODO ignoreReferenceErrorException
-        if (UNLIKELY(m_needsActivation)) {
-            auto iter = m_mapData->find(name);
-            ASSERT(iter != m_mapData->end());
-            return iter->second.value();
+        if (m_stackAllocatedData) {
+            return m_stackAllocatedData[t];
         } else {
-            for (unsigned i = 0; i < m_usedCount; i ++) {
-                if (m_vectorData[i].first == name) {
-                    return &m_vectorData[i].second;
-                }
-            }
-            RELEASE_ASSERT_NOT_REACHED();
+            return m_heapAllocatedData[t].second;
         }
     }
-    */
+
+    ESValue* bindingValueForStackAllocatedData(size_t idx)
+    {
+        return &m_stackAllocatedData[idx];
+    }
+
+    ESValue* bindingValueForHeapAllocatedData(size_t idx)
+    {
+        return &m_heapAllocatedData[idx].second;
+    }
 
     virtual bool isDeclarativeEnvironmentRecord()
     {
@@ -425,20 +396,21 @@ public:
         return false;
     }
 
+    bool useHeapAllocatedStorage()
+    {
+        return !m_stackAllocatedData;
+    }
+
 #ifdef ENABLE_ESJIT
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Winvalid-offsetof"
-    static size_t offsetofActivationData() { return offsetof(DeclarativeEnvironmentRecord, m_activationData); }
+    static size_t offsetofActivationData() { return offsetof(DeclarativeEnvironmentRecord, m_heapAllocatedData); }
 #pragma GCC diagnostic pop
 #endif
 
 protected:
-    bool m_needsActivation;
-
-    ESValue* m_vectorData;
-    InternalAtomicStringVector* m_innerIdentifiers;
-
-    ESIdentifierVector m_activationData;
+    ESValue* m_stackAllocatedData;
+    ESIdentifierVector m_heapAllocatedData;
 };
 
 // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-global-environment-records
@@ -490,33 +462,37 @@ class FunctionEnvironmentRecord : public DeclarativeEnvironmentRecord {
     friend class ESFunctionObject;
 public:
 
-    // m_needsActivation = false
-    FunctionEnvironmentRecord(ESValue arguments[], const size_t& argumentCount, ESValue* vectorBuffer, InternalAtomicStringVector* innerIdentifiers)
-        : DeclarativeEnvironmentRecord(vectorBuffer, innerIdentifiers)
+    // stack storage
+    FunctionEnvironmentRecord(bool needsToPrepareGenerateArgumentsObject, ESValue arguments[], const size_t& argumentCount, ESValue* buf, size_t idLen)
+        : DeclarativeEnvironmentRecord(buf, idLen)
         , m_argumentsObject(ESValue::ESEmptyValue)
     {
-#ifndef NDEBUG
-        m_thisBindingStatus = Uninitialized;
-#endif
-        m_arguments = arguments;
-        m_argumentCount = argumentCount;
+        m_needsToPrepareGenerateArgumentsObject = needsToPrepareGenerateArgumentsObject;
+        if (needsToPrepareGenerateArgumentsObject) {
+            m_arguments = arguments;
+            m_argumentCount = argumentCount;
+        } else {
+            m_arguments = NULL;
+            m_argumentCount = argumentCount;
+        }
     }
 
-    // m_needsActivation = true
-    FunctionEnvironmentRecord(ESValue arguments[], const size_t& argumentCount, const InternalAtomicStringVector& innerIdentifiers = InternalAtomicStringVector())
+    // heap storage
+    FunctionEnvironmentRecord(bool needsToPrepareGenerateArgumentsObject, ESValue arguments[], const size_t& argumentCount, const InternalAtomicStringVector& innerIdentifiers = InternalAtomicStringVector())
         : DeclarativeEnvironmentRecord(innerIdentifiers)
         , m_argumentsObject(ESValue::ESEmptyValue)
     {
-#ifndef NDEBUG
-        m_thisBindingStatus = Uninitialized;
-#endif
-        m_arguments = (ESValue *)GC_MALLOC(sizeof(ESValue) * argumentCount);
-        memcpy(m_arguments, arguments, sizeof(ESValue) * argumentCount);
-        m_argumentCount = argumentCount;
+        m_needsToPrepareGenerateArgumentsObject = needsToPrepareGenerateArgumentsObject;
+        if (needsToPrepareGenerateArgumentsObject) {
+            m_arguments = (ESValue *)GC_MALLOC(sizeof(ESValue) * argumentCount);
+            memcpy(m_arguments, arguments, sizeof(ESValue) * argumentCount);
+            m_argumentCount = argumentCount;
+        } else {
+            m_arguments = NULL;
+            m_argumentCount = argumentCount;
+        }
     }
-    enum ThisBindingStatus {
-        Lexical, Initialized, Uninitialized
-    };
+
     virtual bool hasThisBinding()
     {
         // we dont use arrow function now. so binding status is alwalys not lexical.
@@ -525,6 +501,7 @@ public:
 
     virtual ESValue* hasBindingForArgumentsObject()
     {
+        ASSERT(m_needsToPrepareGenerateArgumentsObject);
         if (m_argumentsObject.isEmpty()) {
             ESObject* argumentsObject = ESArgumentsObject::create();
             m_argumentsObject = argumentsObject;
@@ -547,12 +524,10 @@ protected:
     // ESValue m_thisValue;
     // ESFunctionObject* m_functionObject; //TODO
     // ESValue m_newTarget; //TODO
+    bool m_needsToPrepareGenerateArgumentsObject;
     ESValue* m_arguments;
     size_t m_argumentCount;
     ESValue m_argumentsObject;
-#ifndef NDEBUG
-    ThisBindingStatus m_thisBindingStatus;
-#endif
 };
 
 /*

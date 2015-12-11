@@ -9,7 +9,7 @@ namespace escargot {
 class LexicalEnvironment;
 class ExecutionContext : public gc {
 public:
-    ALWAYS_INLINE ExecutionContext(LexicalEnvironment* varEnv, bool needsActivation, bool isNewExpression,
+    ALWAYS_INLINE ExecutionContext(LexicalEnvironment* varEnv, bool isNewExpression,
         ESValue* arguments = NULL, size_t argumentsCount = 0,
         ESValue* cachedDeclarativeEnvironmentRecord = NULL
         )
@@ -18,7 +18,6 @@ public:
     {
         ASSERT(varEnv);
         m_environment = varEnv;
-        m_needsActivation = needsActivation;
         m_isNewExpression = isNewExpression;
         m_arguments = arguments;
         m_argumentCount = argumentsCount;
@@ -65,7 +64,6 @@ public:
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-getthisenvironment
     LexicalEnvironment* getThisEnvironment();
 
-    ALWAYS_INLINE bool needsActivation() { return m_needsActivation; } // child & parent AST has eval, with, catch
     ALWAYS_INLINE bool isNewExpression() { return m_isNewExpression; }
     ESValue* arguments() { return m_arguments; }
     size_t argumentCount() { return m_argumentCount; }
@@ -109,7 +107,6 @@ public:
 
     ESValue& tryOrCatchBodyResult() { return m_tryOrCatchBodyResult; }
 private:
-    bool m_needsActivation;
     bool m_isNewExpression;
     bool m_isStrict;
 

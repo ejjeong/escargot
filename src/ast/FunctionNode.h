@@ -22,9 +22,12 @@ public:
         m_isGenerator = isGenerator;
         m_isExpression = isExpression;
         m_needsActivation = false;
+        m_needsHeapAllocatedVariableStorage = false;
+        m_needsToPrepareGenerateArgumentsObject = false;
         m_outerFunctionNode = NULL;
         m_isStrict = isStrict;
         m_isExpression = false;
+        m_functionIdIndex = -1;
     }
 
     ALWAYS_INLINE const InternalAtomicStringVector& params() { return m_params; }
@@ -34,9 +37,15 @@ public:
 
     ALWAYS_INLINE bool needsActivation() { return m_needsActivation; } // child & parent AST has eval, with, catch
     ALWAYS_INLINE void setNeedsActivation(bool b) { m_needsActivation = b; }
+    ALWAYS_INLINE bool needsHeapAllocatedVariableStorage() { return m_needsHeapAllocatedVariableStorage; }
+    ALWAYS_INLINE void setNeedsHeapAllocatedVariableStorage(bool b) { m_needsHeapAllocatedVariableStorage = b; }
+    ALWAYS_INLINE bool needsToPrepareGenerateArgumentsObject() { return m_needsToPrepareGenerateArgumentsObject; }
+    ALWAYS_INLINE void setNeedsToPrepareGenerateArgumentsObject(bool b) { m_needsToPrepareGenerateArgumentsObject = b; }
     ALWAYS_INLINE bool isGenerator() { return m_isGenerator; }
     ALWAYS_INLINE bool isExpression() { return m_isExpression; }
     ALWAYS_INLINE bool isStrict() { return m_isStrict; }
+
+
 
     void setInnerIdentifiers(InternalAtomicStringVector&& vec)
     {
@@ -60,9 +69,13 @@ protected:
     bool m_isExpression; // expression: boolean;
 
     bool m_needsActivation;
+    bool m_needsHeapAllocatedVariableStorage;
+    bool m_needsToPrepareGenerateArgumentsObject;
     FunctionNode* m_outerFunctionNode;
 
     bool m_isStrict;
+
+    size_t m_functionIdIndex;
 };
 
 }

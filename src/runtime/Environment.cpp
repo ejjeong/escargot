@@ -10,9 +10,9 @@ namespace escargot {
 
 // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-newfunctionenvironment
 // $8.1.2.4
-LexicalEnvironment* LexicalEnvironment::newFunctionEnvironment(ESValue arguments[], const size_t& argumentCount, ESFunctionObject* function)
+LexicalEnvironment* LexicalEnvironment::newFunctionEnvironment(bool needsToPrepareGenerateArgumentsObject, ESValue arguments[], const size_t& argumentCount, ESFunctionObject* function)
 {
-    FunctionEnvironmentRecord* envRec = new FunctionEnvironmentRecord(arguments, argumentCount, function->codeBlock()->m_innerIdentifiers);
+    FunctionEnvironmentRecord* envRec = new FunctionEnvironmentRecord(needsToPrepareGenerateArgumentsObject, arguments, argumentCount, function->codeBlock()->m_innerIdentifiers);
 
     // envRec->m_functionObject = function;
     // envRec->m_newTarget = newTarget;
@@ -40,14 +40,14 @@ void EnvironmentRecord::createMutableBindingForAST(const InternalAtomicString& a
 void DeclarativeEnvironmentRecord::createMutableBinding(const InternalAtomicString& name, bool canDelete)
 {
     // TODO canDelete
-    ASSERT(m_needsActivation);
-    size_t siz = m_activationData.size();
+    ASSERT(!m_stackAllocatedData);
+    size_t siz = m_heapAllocatedData.size();
     for (unsigned i = 0; i < siz; i ++) {
-        if (m_activationData[i].first == name) {
+        if (m_heapAllocatedData[i].first == name) {
             return;
         }
     }
-    m_activationData.push_back(std::make_pair(name, ESValue()));
+    m_heapAllocatedData.push_back(std::make_pair(name, ESValue()));
     ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
 }
 

@@ -535,19 +535,18 @@ void GlobalObject::installFunction()
             builder.appendString("){");
             builder.appendString(body);
             builder.appendString("}");
-            GC_disable();
             Node* programNode = instance->scriptParser()->generateAST(instance, builder.finalize(), true);
             FunctionNode* functionDeclAST = static_cast<FunctionNode* >(static_cast<ProgramNode *>(programNode)->body()[1]);
             ByteCodeGenerateContext context(codeBlock);
+            codeBlock->m_innerIdentifiersSize = functionDeclAST->innerIdentifiers().size();
+            codeBlock->m_needsToPrepareGenerateArgumentsObject = functionDeclAST->needsToPrepareGenerateArgumentsObject();
+            codeBlock->m_needsHeapAllocatedVariableStorage = functionDeclAST->needsHeapAllocatedVariableStorage();
             codeBlock->m_innerIdentifiers = std::move(functionDeclAST->innerIdentifiers());
             codeBlock->m_needsActivation = functionDeclAST->needsActivation();
             codeBlock->m_params = std::move(functionDeclAST->params());
             codeBlock->m_isStrict = functionDeclAST->isStrict();
             functionDeclAST->body()->generateStatementByteCode(codeBlock, context);
             codeBlock->pushCode(ReturnFunction(), context, functionDeclAST);
-            // escargot::InternalAtomicStringVector params = functionDeclAST->params();
-            ESSimpleAllocator::freeAll();
-            GC_enable();
         }
         escargot::ESFunctionObject* function;
         LexicalEnvironment* scope = instance->globalExecutionContext()->environment();

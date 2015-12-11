@@ -23,7 +23,11 @@ public:
         // CodeBlock* cb = CodeBlock::create(myResult);
         CodeBlock* cb = CodeBlock::create(0);
         if (context.m_shouldGenereateByteCodeInstantly) {
-            cb->m_innerIdentifiers = std::move(m_innerIdentifiers);
+            cb->m_innerIdentifiersSize = m_innerIdentifiers.size();
+            if (m_needsHeapAllocatedVariableStorage)
+                cb->m_innerIdentifiers = std::move(m_innerIdentifiers);
+            cb->m_needsToPrepareGenerateArgumentsObject = m_needsToPrepareGenerateArgumentsObject;
+            cb->m_needsHeapAllocatedVariableStorage = m_needsHeapAllocatedVariableStorage;
             cb->m_needsActivation = m_needsActivation;
             cb->m_params = std::move(m_params);
             cb->m_isStrict = m_isStrict;
@@ -42,11 +46,11 @@ public:
                 }
             }
 #endif
-            codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb, true), context, this);
+            codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb, true, m_functionIdIndex), context, this);
         } else {
             cb->m_ast = this;
             cb->m_params = m_params;
-            codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb, true), context, this);
+            codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb, true, m_functionIdIndex), context, this);
         }
     }
 

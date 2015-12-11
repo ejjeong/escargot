@@ -70,6 +70,15 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
         }
     };
 
+    auto markNeedsHeapAllocatedVariableStorage = [](FunctionNode* nearFunctionNode)
+    {
+        FunctionNode* node = nearFunctionNode;
+        while (node) {
+            node->setNeedsHeapAllocatedVariableStorage(true);
+            node = node->outerFunctionNode();
+        }
+    };
+
     auto updatePostfixNodeChecker = [](Node* node)
     {
         /*
@@ -106,7 +115,7 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
     std::function<void(Node* currentNode,
     std::vector<InternalAtomicStringVector *>& identifierStack,
     FunctionNode* nearFunctionNode)>
-    postAnalysisFunction = [&postAnalysisFunction, &programNode, instance, &markNeedsActivation, &shouldWorkAroundIdentifier, &updatePostfixNodeChecker, &showedEvalInFunction, &knownGlobalNames, &isForGlobalScope]
+    postAnalysisFunction = [&postAnalysisFunction, &programNode, instance, &markNeedsActivation, &markNeedsHeapAllocatedVariableStorage, &shouldWorkAroundIdentifier, &updatePostfixNodeChecker, &showedEvalInFunction, &knownGlobalNames, &isForGlobalScope]
     (Node* currentNode,
     std::vector<InternalAtomicStringVector *>& identifierStack,
     FunctionNode* nearFunctionNode) {
@@ -133,9 +142,11 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
                 ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name())) {
                     identifierInCurrentContext.push_back(((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name());
                 }
-                auto iter = std::find(identifierInCurrentContext.begin(), identifierInCurrentContext.end(),
-                ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name());
-                ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->setFastAccessIndex(0, std::distance(identifierInCurrentContext.begin(), iter));
+                if (shouldWorkAroundIdentifier && !showedEvalInFunction) {
+                    auto iter = std::find(identifierInCurrentContext.begin(), identifierInCurrentContext.end(),
+                    ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name());
+                    ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->setFastAccessIndex(0, std::distance(identifierInCurrentContext.begin(), iter));
+                }
             } else {
                 // global
                 if (isForGlobalScope) {
@@ -147,6 +158,9 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
             // printf("add Identifier %s(fn)\n", ((FunctionDeclarationNode *)currentNode)->nonAtomicId()->utf8Data());
             if (nearFunctionNode) {
                 ASSERT(identifierInCurrentContext.end() != std::find(identifierInCurrentContext.begin(), identifierInCurrentContext.end(), ((FunctionDeclarationNode *)currentNode)->id()));
+                auto iter = std::find(identifierInCurrentContext.begin(), identifierInCurrentContext.end(), ((FunctionDeclarationNode *)currentNode)->id());
+                size_t idx = std::distance(identifierInCurrentContext.begin(), iter);
+                ((FunctionDeclarationNode *)currentNode)->m_functionIdIndex = idx;
             }
             // printf("process function body-------------------\n");
             InternalAtomicStringVector newIdentifierVector;
@@ -186,6 +200,16 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
             }
             // use case
             InternalAtomicString name = ((IdentifierNode *)currentNode)->name();
+
+            if (name == strings->arguments) {
+                auto iter = std::find(identifierInCurrentContext.begin(), identifierInCurrentContext.end(), name);
+                if (iter == identifierInCurrentContext.end()) {
+                    if (nearFunctionNode) {
+                        nearFunctionNode->setNeedsToPrepareGenerateArgumentsObject(true);
+                        return;
+                    }
+                }
+            }
             auto iter = identifierInCurrentContext.end();
             auto riter = identifierInCurrentContext.rbegin(); // std::find(identifierInCurrentContext.begin(), identifierInCurrentContext.end(), name);
             while (riter != identifierInCurrentContext.rend()) {
@@ -206,17 +230,15 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
                     auto iter2 = std::find(vector->begin(), vector->end(), name);
                     if (iter2 != vector->end()) {
                         finded = true;
-#ifndef NDEBUG
                         FunctionNode* fn = nearFunctionNode;
                         for (unsigned j = 0; j < up ; j ++) {
                             fn = fn->outerFunctionNode();
                         }
-                        ASSERT(fn);
+                        fn->setNeedsHeapAllocatedVariableStorage(true);
                         /*printf("outer function of this function  needs capture! -> because fn...%s iden..%s\n",
                         fn->nonAtomicId()->utf8Data(),
                         ((IdentifierNode *)currentNode)->nonAtomicName()->utf8Data());
                         */
-#endif
                         markNeedsActivation(nearFunctionNode->outerFunctionNode());
                         size_t idx2 = std::distance(vector->begin(), iter2);
                         ((IdentifierNode *)currentNode)->setFastAccessIndex(up, idx2);
@@ -277,6 +299,7 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
                 if (callee->type() == NodeType::Identifier) {
                     if (((IdentifierNode *)callee)->name() == strings->eval.string()) {
                         markNeedsActivation(nearFunctionNode);
+                        markNeedsHeapAllocatedVariableStorage(nearFunctionNode);
                         showedEvalInFunction = true;
                     }
                 }
@@ -369,19 +392,18 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
             postAnalysisFunction(((ReturnStatmentNode *)currentNode)->m_argument, identifierStack, nearFunctionNode);
         } else if (type == NodeType::EmptyStatement) {
         } else if (type == NodeType::TryStatement) {
+            markNeedsActivation(nearFunctionNode);
+            markNeedsHeapAllocatedVariableStorage(nearFunctionNode);
             postAnalysisFunction(((TryStatementNode *)currentNode)->m_block, identifierStack, nearFunctionNode);
             bool prevShouldWorkAroundIdentifier = shouldWorkAroundIdentifier;
             shouldWorkAroundIdentifier = false;
-            // postAnalysisFunction(((TryStatementNode *)currentNode)->m_handler, identifierStack, nearFunctionNode);
+            postAnalysisFunction(((TryStatementNode *)currentNode)->m_handler, identifierStack, nearFunctionNode);
             shouldWorkAroundIdentifier = prevShouldWorkAroundIdentifier;
             postAnalysisFunction(((TryStatementNode *)currentNode)->m_finalizer, identifierStack, nearFunctionNode);
         } else if (type == NodeType::CatchClause) {
-            RELEASE_ASSERT_NOT_REACHED();
-            /*
             postAnalysisFunction(((CatchClauseNode *)currentNode)->m_param, identifierStack, nearFunctionNode);
             postAnalysisFunction(((CatchClauseNode *)currentNode)->m_guard, identifierStack, nearFunctionNode);
             postAnalysisFunction(((CatchClauseNode *)currentNode)->m_body, identifierStack, nearFunctionNode);
-            */
         } else if (type == NodeType::ThrowStatement) {
             postAnalysisFunction(((ThrowStatementNode *)currentNode)->m_argument, identifierStack, nearFunctionNode);
         } else if (type == NodeType::LabeledStatement) {

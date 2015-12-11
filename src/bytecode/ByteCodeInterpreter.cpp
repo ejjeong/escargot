@@ -183,7 +183,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         GetByIndexOpcodeLbl:
         {
             GetByIndex* code = (GetByIndex*)currentCode;
-            ASSERT(code->m_index < ec->environment()->record()->toDeclarativeEnvironmentRecord()->innerIdentifiers()->size());
 #ifndef ENABLE_ESJIT
             PUSH(stack, topOfStack, &nonActivitionModeLocalValuePointer[code->m_index]);
 #else
@@ -203,11 +202,12 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                 env = env->outerEnvironment();
             }
             ASSERT(env->record()->isDeclarativeEnvironmentRecord());
+            ASSERT(env->record()->toDeclarativeEnvironmentRecord()->useHeapAllocatedStorage());
 
 #ifndef ENABLE_ESJIT
-            PUSH(stack, topOfStack, env->record()->toDeclarativeEnvironmentRecord()->bindingValueForActivationMode(code->m_index));
+            PUSH(stack, topOfStack, env->record()->toDeclarativeEnvironmentRecord()->bindingValue(code->m_index));
 #else
-            ESValue v = *env->record()->toDeclarativeEnvironmentRecord()->bindingValueForActivationMode(code->m_index);
+            ESValue v = env->record()->toDeclarativeEnvironmentRecord()->bindingValue(code->m_index);
             PUSH(stack, topOfStack, v);
             code->m_profile.addProfile(v);
 #endif
@@ -260,7 +260,8 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                 env = env->outerEnvironment();
             }
             ASSERT(env->record()->isDeclarativeEnvironmentRecord());
-            *env->record()->toDeclarativeEnvironmentRecord()->bindingValueForActivationMode(code->m_index) = *PEEK(stack, bp);
+            ASSERT(env->record()->toDeclarativeEnvironmentRecord()->useHeapAllocatedStorage());
+            *env->record()->toDeclarativeEnvironmentRecord()->bindingValueForHeapAllocatedData(code->m_index) = *PEEK(stack, bp);
             executeNextCode<SetByIndexWithActivation>(programCounter);
             NEXT_INSTRUCTION();
         }
@@ -861,7 +862,15 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             ESFunctionObject* function = ESFunctionObject::create(ec->environment(), code->m_codeBlock, code->m_nonAtomicName == NULL ? strings->emptyString.string() : code->m_nonAtomicName, code->m_codeBlock->m_params.size());
             if (code->m_isDeclaration) { // FD
                 function->set(strings->name.string(), code->m_nonAtomicName);
-                ec->environment()->record()->setMutableBinding(code->m_name, function, false);
+                if (code->m_idIndex == std::numeric_limits<size_t>::max()) {
+                    ec->environment()->record()->setMutableBinding(code->m_name, function, false);
+                } else {
+                    if (ec->environment()->record()->toDeclarativeEnvironmentRecord()->useHeapAllocatedStorage()) {
+                        *ec->environment()->record()->toDeclarativeEnvironmentRecord()->bindingValueForHeapAllocatedData(code->m_idIndex) = function;
+                    } else {
+                        *ec->environment()->record()->toDeclarativeEnvironmentRecord()->bindingValueForStackAllocatedData(code->m_idIndex) = function;
+                    }
+                }
             } else { // FE
                 function->set(strings->name.string(), code->m_nonAtomicName);
                 PUSH(stack, topOfStack, function);

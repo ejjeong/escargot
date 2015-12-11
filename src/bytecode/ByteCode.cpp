@@ -13,6 +13,7 @@ CodeBlock::CodeBlock(size_t roughCodeBlockSizeInWordSize, bool isBuiltInFunction
     if (roughCodeBlockSizeInWordSize)
         m_code.reserve(roughCodeBlockSizeInWordSize * sizeof(size_t));
     m_needsActivation = false;
+    m_needsHeapAllocatedVariableStorage = false;
     m_isBuiltInFunction = isBuiltInFunction;
     m_isStrict = false;
     m_isFunctionExpression = false;

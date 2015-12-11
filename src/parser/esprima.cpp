@@ -488,6 +488,8 @@ ParserString makeParserString(escargot::ESString* str, size_t start, size_t len)
     return ret;
 }
 
+
+
 // ECMA-262 11.6.2.2 Future Reserved Words
 
 ALWAYS_INLINE bool isFutureReservedWord(const ParserString& id)
@@ -841,6 +843,28 @@ struct ParseContext {
     escargot::StatementNodeVector* m_currentBody;
 };
 
+// VariableDeclaratorNode
+void addDeclToCurrentContext(ParseContext* ctx, escargot::VariableDeclarationNode* node)
+{
+    auto vec = node->declarations();
+    escargot::VariableDeclaratorVector newDecl;
+    for (unsigned i = 0; i < vec.size(); i++) {
+        if (vec[i]->isVariableDeclarator()) {
+            RELEASE_ASSERT(((escargot::VariableDeclaratorNode*)vec[i])->id()->isIdentifier());
+            newDecl.push_back(new escargot::VariableDeclaratorNode(new escargot::IdentifierNode(((escargot::IdentifierNode *)((escargot::VariableDeclaratorNode*)vec[i])->id())->name()), NULL));
+        }
+    }
+    if (newDecl.size()) {
+        escargot::VariableDeclarationNode* newNode = new escargot::VariableDeclarationNode(std::move(newDecl));
+        ctx->m_currentBody->insert(ctx->m_currentBody->begin(), newNode);
+    }
+}
+
+void addDeclToCurrentContext(ParseContext* ctx, escargot::VariableDeclaratorNode* node)
+{
+    RELEASE_ASSERT(node->id()->isIdentifier());
+    ctx->m_currentBody->insert(ctx->m_currentBody->begin(), new escargot::VariableDeclaratorNode(new escargot::IdentifierNode(((escargot::IdentifierNode *)node->id())->name()), NULL));
+}
 
 void throwUnexpectedToken(/*token, message*/)
 {
@@ -2687,7 +2711,8 @@ escargot::VariableDeclaratorVector parseVariableDeclarationList(ParseContext* ct
 
     do {
         escargot::VariableDeclaratorNode* node = parseVariableDeclaration(ctx);
-        ctx->m_currentBody->insert(ctx->m_currentBody->begin(), node);
+        // ctx->m_currentBody->insert(ctx->m_currentBody->begin(), node);
+        addDeclToCurrentContext(ctx, node);
         if (!excludeVariableDeclaratorNode)
             list.push_back(node);
         if (node->init()) {
