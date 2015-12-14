@@ -82,8 +82,89 @@ void* gca(size_t t)
    __free_hook = my_free_hook;
  }
 */
+
+#ifdef PROFILE_MASSIF
+std::unordered_map<void*, void*> g_addressTable;
+std::vector<void *> g_freeList;
+
+void unregisterGCAddress(void* address)
+{
+    // ASSERT(g_addressTable.find(address) != g_addressTable.end());
+    if (g_addressTable.find(address) != g_addressTable.end()) {
+        auto iter = g_addressTable.find(address);
+        free(iter->second);
+        g_addressTable.erase(iter);
+    }
+}
+
+void registerGCAddress(void* address, size_t siz)
+{
+    if (g_addressTable.find(address) != g_addressTable.end()) {
+        unregisterGCAddress(address);
+    }
+    g_addressTable[address] = malloc(siz);
+}
+
+void* GC_malloc_hook(size_t siz)
+{
+    void* ptr;
+#ifdef NDEBUG
+    ptr = GC_malloc(siz);
+#else
+    ptr = GC_malloc(siz);
+#endif
+    registerGCAddress(ptr, siz);
+    return ptr;
+}
+void* GC_malloc_atomic_hook(size_t siz)
+{
+    void* ptr;
+#ifdef NDEBUG
+    ptr = GC_malloc_atomic(siz);
+#else
+    ptr = GC_malloc_atomic(siz);
+#endif
+    registerGCAddress(ptr, siz);
+    return ptr;
+}
+
+void GC_free_hook(void* address)
+{
+#ifdef NDEBUG
+    GC_free(address);
+#else
+    GC_free(address);
+#endif
+    unregisterGCAddress(address);
+}
+
+
+#endif
+
 int main(int argc, char* argv[])
 {
+#ifdef PROFILE_MASSIF
+    GC_is_valid_displacement_print_proc = [](void* ptr) {
+        g_freeList.push_back(ptr);
+    };
+    GC_set_on_collection_event([](GC_EventType evtType) {
+        if (GC_EVENT_PRE_START_WORLD == evtType) {
+            auto iter = g_addressTable.begin();
+            while (iter != g_addressTable.end()) {
+                GC_is_valid_displacement(iter->first);
+                iter++;
+                GC_is_heap_ptr()
+            }
+
+            for (unsigned i = 0; i < g_freeList.size(); i ++) {
+                unregisterGCAddress(g_freeList[i]);
+            }
+
+            g_freeList.clear();
+        }
+    });
+#endif
+
     // printf("%d", sizeof (escargot::ESHiddenClassPropertyInfo));
     /*
     static void* root[300000];

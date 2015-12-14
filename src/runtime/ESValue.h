@@ -255,7 +255,8 @@ public:
         ESArgumentsObject = 1 << 16,
         ESControlFlowRecord = 1 << 17,
         ESJSONObject = 1 << 18,
-        TypeMask = 0x1ffff
+        TypeMask = 0x1ffff,
+        TotalNumberOfTypes = 18
     };
 
 protected:
@@ -264,6 +265,22 @@ protected:
         m_type = type;
     }
 
+    ALWAYS_INLINE void setFlagInTypeStorage(bool v, unsigned place)
+    {
+        ASSERT(place < (31 - TotalNumberOfTypes ));
+        if (v) {
+            m_type = m_type | (v << (TotalNumberOfTypes + 1 + place));
+        } else {
+            m_type = m_type & ~(1 << (TotalNumberOfTypes + 1 + place));
+        }
+
+    }
+
+    ALWAYS_INLINE bool flagInTypeStorage(unsigned place)
+    {
+        ASSERT(place < (31 - TotalNumberOfTypes));
+        return m_type & (1 << (TotalNumberOfTypes + 1 + place));
+    }
 public:
     ALWAYS_INLINE int type()
     {
@@ -800,25 +817,25 @@ protected:
     ESString(const UTF16String& src)
         : ESPointer(Type::ESString)
     {
-        m_string = new(GC) ESStringDataUTF16(src);
+        m_string = new ESStringDataUTF16(src);
     }
 
     ESString(UTF16String&& src)
         : ESPointer(Type::ESString)
     {
-        m_string = new(GC) ESStringDataUTF16(std::move(src));
+        m_string = new ESStringDataUTF16(std::move(src));
     }
 
     ESString(const ASCIIString& src)
         : ESPointer(Type::ESString)
     {
-        m_string = new(GC) ESStringDataASCII(src);
+        m_string = new ESStringDataASCII(src);
     }
 
     ESString(ASCIIString&& src)
         : ESPointer(Type::ESString)
     {
-        m_string = new(GC) ESStringDataASCII(std::move(src));
+        m_string = new ESStringDataASCII(std::move(src));
     }
 
     ESString(int number)
@@ -831,13 +848,13 @@ protected:
     ESString(char16_t c)
         : ESPointer(Type::ESString)
     {
-        m_string = new(GC) ESStringDataUTF16(c);
+        m_string = new ESStringDataUTF16(c);
     }
 
     ESString(char c)
         : ESPointer(Type::ESString)
     {
-        m_string = new(GC) ESStringDataASCII(c);
+        m_string = new ESStringDataASCII(c);
     }
 
 public:
@@ -1220,10 +1237,10 @@ protected:
     {
         m_type = m_type | ESPointer::ESRopeString;
         m_contentLength = 0;
-        m_hasNonASCIIChild = false;
+        setFlagInTypeStorage(false, 0);
     }
 public:
-    static const unsigned ESRopeStringCreateMinLimit = 32;
+    static const unsigned ESRopeStringCreateMinLimit = 64;
     static ESRopeString* create()
     {
         return new ESRopeString();
@@ -1239,17 +1256,17 @@ public:
             hasNonASCIIChild |= !lstr->m_string->isASCIIString();
         } else {
             ASSERT(lstr->isESRopeString());
-            hasNonASCIIChild |= ((ESRopeString *) lstr)->m_hasNonASCIIChild;
+            hasNonASCIIChild |= ((ESRopeString *) lstr)->flagInTypeStorage(0);
         }
 
         if (rstr->m_string) {
             hasNonASCIIChild |= !rstr->m_string->isASCIIString();
         } else {
             ASSERT(rstr->isESRopeString());
-            hasNonASCIIChild |= ((ESRopeString *) rstr)->m_hasNonASCIIChild;
+            hasNonASCIIChild |= ((ESRopeString *) rstr)->flagInTypeStorage(0);
         }
 
-        rope->m_hasNonASCIIChild = hasNonASCIIChild;
+        rope->setFlagInTypeStorage(hasNonASCIIChild, 0);
         return rope;
     }
     ESStringData* stringData()
@@ -1260,7 +1277,7 @@ public:
             ASSERT(m_contentLength == 0);
         }
 #endif
-        if (m_hasNonASCIIChild) {
+        if (flagInTypeStorage(0)) {
             UTF16String result;
             // TODO: should reduce unnecessary append operations in std::string::resize
             result.resize(m_contentLength);
@@ -1284,7 +1301,7 @@ public:
                     }
                 }
             }
-            m_string =  new(GC) ESStringDataUTF16(std::move(result));
+            m_string =  new ESStringDataUTF16(std::move(result));
             m_left = nullptr;
             m_right = nullptr;
             m_contentLength = 0;
@@ -1309,7 +1326,7 @@ public:
                     memcpy((void*)(result.data() + pos), cur->stringData()->asciiData(), cur->length() * sizeof(char));
                 }
             }
-            m_string = new(GC) ESStringDataASCII(std::move(result));
+            m_string = new ESStringDataASCII(std::move(result));
             m_left = nullptr;
             m_right = nullptr;
             m_contentLength = 0;
@@ -1331,7 +1348,6 @@ protected:
     ESString* m_left;
     ESString* m_right;
     size_t m_contentLength;
-    bool m_hasNonASCIIChild;
 };
 
 ALWAYS_INLINE const ESStringData* ESString::stringData() const
@@ -1550,7 +1566,7 @@ class ESHiddenClass : public gc {
 public:
     size_t findProperty(const ESString* name)
     {
-        if (m_flags.m_isVectorMode) {
+        if (LIKELY(m_propertyIndexHashMapInfo == NULL)) {
             size_t siz = m_propertyInfo.size();
             for (size_t i = 0 ; i < siz ; i ++) {
                 if (*m_propertyInfo[i].m_name == *name)

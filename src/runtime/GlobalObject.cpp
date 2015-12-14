@@ -1936,13 +1936,11 @@ void GlobalObject::installString()
                 return strings->asciiTable[c].string();
             return ESString::create(c);
         } else {
-            UTF16String elements;
-            elements.resize(length);
-            char16_t* data = const_cast<char16_t *>(elements.data());
+            ESStringBuilder builder;
             for (int i = 0; i < length ; i ++) {
-                data[i] = {(char16_t)instance->currentExecutionContext()->arguments()[i].toInteger()};
+                builder.appendChar((char16_t)instance->currentExecutionContext()->arguments()[i].toInteger());
             }
-            return ESString::createASCIIStringIfNeeded(std::move(elements));
+            return builder.finalize();
         }
         return ESValue();
     }, ESString::createAtomicString("fromCharCode"), 1));
@@ -3201,7 +3199,7 @@ void GlobalObject::installJSON()
                 return value.asBoolean()? strings->stringTrue.string() : strings->stringFalse.string();
             }
             if (value.isESString()) {
-                return ESString::createASCIIStringIfNeeded(std::move(Quote(value)));
+                return ESString::create(std::move(Quote(value)));
             }
             if (value.isNumber()) {
                 double d = value.toNumber();
@@ -3313,7 +3311,7 @@ void GlobalObject::installJSON()
             // 12
             indent = stepback;
 
-            return ESString::createASCIIStringIfNeeded(std::move(final));
+            return ESString::create(std::move(final));
         };
 
         JO = [&](ESValue value) -> ESValue {
@@ -3381,7 +3379,7 @@ void GlobalObject::installJSON()
             // 12
             indent = stepback;
 
-            return ESString::createASCIIStringIfNeeded(std::move(final));
+            return ESString::create(std::move(final));
         };
 
         // 9

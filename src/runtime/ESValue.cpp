@@ -1412,10 +1412,6 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
             cb->m_isStrict = node->m_isStrict;
             cb->m_isFunctionExpression = node->isExpression();
 
-            if (node->id() == "PDFPageProxy_getViewport") {
-                puts("asdfg");
-            }
-
             ByteCodeGenerateContext newContext(cb);
             node->body()->generateStatementByteCode(cb, newContext);
 

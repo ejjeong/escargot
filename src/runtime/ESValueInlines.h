@@ -878,7 +878,7 @@ inline ESString::ESString(double number)
         return;
     }
     */
-    m_string = new(GC) ESStringDataASCII(number);
+    m_string = new ESStringDataASCII(number);
     // cache->insert(std::make_pair(number, m_string));
 }
 
@@ -1068,7 +1068,7 @@ inline ESHiddenClass* ESHiddenClass::defineProperty(ESString* name, bool isData,
         size_t pid = m_propertyInfo.size();
         char flag = assembleHidenClassPropertyInfoFlags(isData, isWritable, isEnumerable, isConfigurable);
         if (iter == m_transitionData.end()) {
-            ESHiddenClass** vec = new(GC) ESHiddenClass*[16];
+            ESHiddenClass** vec = (escargot::ESHiddenClass**)GC_malloc(sizeof(ESHiddenClass*) * 16);
             memset(vec, 0, sizeof(ESHiddenClass *) * 16);
             cls = new ESHiddenClass;
             cls->m_propertyInfo.assign(m_propertyInfo.begin(), m_propertyInfo.end());

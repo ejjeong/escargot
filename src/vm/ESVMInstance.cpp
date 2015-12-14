@@ -127,9 +127,6 @@ ESVMInstance::ESVMInstance()
     m_globalExecutionContext = new ExecutionContext(a, false);
     m_globalExecutionContext->setThisBinding(m_globalObject);
     m_currentExecutionContext = m_globalExecutionContext;
-    GC_set_on_collection_event([](GC_EventType evtType) {
-    });
-
     GC_gcollect();
     exit();
 }
