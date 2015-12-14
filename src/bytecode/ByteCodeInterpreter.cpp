@@ -1053,7 +1053,12 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         CheckIfKeyIsLastOpcodeLbl:
         {
             EnumerateObjectData* data = (EnumerateObjectData *)PEEK(stack, bp)->asESPointer();
-            PUSH(stack, topOfStack, ESValue(data->m_keys.size() == data->m_idx));
+            bool result = data->m_keys.size() == data->m_idx;
+            if (result) {
+                data->m_keys.clear();
+                data->m_keys.shrink_to_fit();
+            }
+            PUSH(stack, topOfStack, ESValue(result));
             executeNextCode<CheckIfKeyIsLast>(programCounter);
             NEXT_INSTRUCTION();
         }
