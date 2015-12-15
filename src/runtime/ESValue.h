@@ -265,22 +265,6 @@ protected:
         m_type = type;
     }
 
-    ALWAYS_INLINE void setFlagInTypeStorage(bool v, unsigned place)
-    {
-        ASSERT(place < (31 - TotalNumberOfTypes ));
-        if (v) {
-            m_type = m_type | (v << (TotalNumberOfTypes + 1 + place));
-        } else {
-            m_type = m_type & ~(1 << (TotalNumberOfTypes + 1 + place));
-        }
-
-    }
-
-    ALWAYS_INLINE bool flagInTypeStorage(unsigned place)
-    {
-        ASSERT(place < (31 - TotalNumberOfTypes));
-        return m_type & (1 << (TotalNumberOfTypes + 1 + place));
-    }
 public:
     ALWAYS_INLINE int type()
     {
@@ -1237,7 +1221,7 @@ protected:
     {
         m_type = m_type | ESPointer::ESRopeString;
         m_contentLength = 0;
-        setFlagInTypeStorage(false, 0);
+        m_hasNonASCIIString = false;
     }
 public:
     static const unsigned ESRopeStringCreateMinLimit = 64;
@@ -1256,17 +1240,17 @@ public:
             hasNonASCIIChild |= !lstr->m_string->isASCIIString();
         } else {
             ASSERT(lstr->isESRopeString());
-            hasNonASCIIChild |= ((ESRopeString *) lstr)->flagInTypeStorage(0);
+            hasNonASCIIChild |= ((ESRopeString *) lstr)->m_hasNonASCIIString;
         }
 
         if (rstr->m_string) {
             hasNonASCIIChild |= !rstr->m_string->isASCIIString();
         } else {
             ASSERT(rstr->isESRopeString());
-            hasNonASCIIChild |= ((ESRopeString *) rstr)->flagInTypeStorage(0);
+            hasNonASCIIChild |= ((ESRopeString *) rstr)->m_hasNonASCIIString;
         }
 
-        rope->setFlagInTypeStorage(hasNonASCIIChild, 0);
+        rope->m_hasNonASCIIString = hasNonASCIIChild;
         return rope;
     }
     ESStringData* stringData()
@@ -1277,7 +1261,7 @@ public:
             ASSERT(m_contentLength == 0);
         }
 #endif
-        if (flagInTypeStorage(0)) {
+        if (m_hasNonASCIIString) {
             UTF16String result;
             // TODO: should reduce unnecessary append operations in std::string::resize
             result.resize(m_contentLength);
@@ -1348,6 +1332,7 @@ protected:
     ESString* m_left;
     ESString* m_right;
     size_t m_contentLength;
+    bool m_hasNonASCIIString;
 };
 
 ALWAYS_INLINE const ESStringData* ESString::stringData() const

@@ -144,7 +144,8 @@ void GC_free_hook(void* address)
 int main(int argc, char* argv[])
 {
 #ifdef PROFILE_MASSIF
-    GC_is_valid_displacement_print_proc = [](void* ptr) {
+    GC_is_valid_displacement_print_proc = [](void* ptr)
+    {
         g_freeList.push_back(ptr);
     };
     GC_set_on_collection_event([](GC_EventType evtType) {

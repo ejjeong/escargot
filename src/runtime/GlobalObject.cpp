@@ -1936,11 +1936,13 @@ void GlobalObject::installString()
                 return strings->asciiTable[c].string();
             return ESString::create(c);
         } else {
-            ESStringBuilder builder;
+            UTF16String elements;
+            elements.resize(length);
+            char16_t* data = const_cast<char16_t *>(elements.data());
             for (int i = 0; i < length ; i ++) {
-                builder.appendChar((char16_t)instance->currentExecutionContext()->arguments()[i].toInteger());
+                data[i] = {(char16_t)instance->currentExecutionContext()->arguments()[i].toInteger()};
             }
-            return builder.finalize();
+            return ESString::createASCIIStringIfNeeded(std::move(elements));
         }
         return ESValue();
     }, ESString::createAtomicString("fromCharCode"), 1));

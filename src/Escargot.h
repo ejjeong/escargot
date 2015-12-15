@@ -69,8 +69,7 @@ void GC_free_hook(void* address);
 #define GC_FREE(X) GC_free_hook(X)
 
 #undef GC_REGISTER_FINALIZER_NO_ORDER
-# define GC_REGISTER_FINALIZER_NO_ORDER(p, f, d, of, od) \
-  GC_register_finalizer_no_order(p, f, d, of, od)
+#define GC_REGISTER_FINALIZER_NO_ORDER(p, f, d, of, od) GC_register_finalizer_no_order(p, f, d, of, od)
 
 #include <gc_cpp.h>
 #include <gc_allocator.h>
