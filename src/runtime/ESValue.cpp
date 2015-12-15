@@ -1900,9 +1900,10 @@ bool ESTypedArrayObjectWrapper::set(uint32_t key, ESValue val)
     RELEASE_ASSERT_NOT_REACHED();
 }
 
-ESArgumentsObject::ESArgumentsObject(ESPointer::Type type)
+ESArgumentsObject::ESArgumentsObject()
     : ESObject((Type)(Type::ESObject | Type::ESArgumentsObject), ESVMInstance::currentInstance()->globalObject()->objectPrototype(), 6)
 {
+    forceNonVectorHiddenClass();
 }
 
 ESJSONObject::ESJSONObject(ESPointer::Type type)

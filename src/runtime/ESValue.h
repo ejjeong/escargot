@@ -1567,6 +1567,33 @@ public:
         }
     }
 
+    void appendHashMapInfo(bool force = false)
+    {
+        if (m_propertyIndexHashMapInfo) {
+            size_t idx = m_propertyInfo.size() - 1;
+            m_propertyIndexHashMapInfo->insert(std::make_pair(m_propertyInfo[idx].m_name, idx));
+        } else {
+            fillHashMapInfo(force);
+        }
+    }
+
+    void fillHashMapInfo(bool force = false)
+    {
+        if (force || m_propertyInfo.size() > 32) {
+            if (m_propertyIndexHashMapInfo) {
+                m_propertyIndexHashMapInfo->clear();
+            } else {
+                m_propertyIndexHashMapInfo = new ESHiddenClassPropertyIndexHashMapInfo();
+            }
+
+            for (unsigned i = 0; i < m_propertyInfo.size(); i ++) {
+                m_propertyIndexHashMapInfo->insert(std::make_pair(m_propertyInfo[i].m_name, i));
+            }
+
+            ASSERT(m_propertyIndexHashMapInfo->size() == m_propertyInfo.size());
+        }
+    }
+
     inline ESHiddenClass* defineProperty(ESString* name, bool isData, bool isWritable, bool isEnumerable, bool isConfigurable);
     inline ESHiddenClass* removeProperty(ESString* name)
     {
@@ -1711,11 +1738,14 @@ public:
         return m_hiddenClass;
     }
 
-    void forceNonVectorHiddenClass()
+    void forceNonVectorHiddenClass(bool forceFillHiddenClassInfo = false)
     {
         if (m_hiddenClass->m_flags.m_forceNonVectorMode)
             return;
         m_hiddenClass = m_hiddenClass->forceNonVectorMode();
+        if (forceFillHiddenClassInfo) {
+            m_hiddenClass->fillHashMapInfo(true);
+        }
     }
 
     ESPropertyAccessorData* accessorData(escargot::ESString* key)
@@ -2586,13 +2616,14 @@ public:
 
 class ESArgumentsObject : public ESObject {
 protected:
-    ESArgumentsObject(ESPointer::Type type = ESPointer::Type::ESArgumentsObject);
+    ESArgumentsObject();
 
 public:
     static ESArgumentsObject* create()
     {
         return new ESArgumentsObject();
     }
+
 };
 
 class ESControlFlowRecord : public ESPointer {

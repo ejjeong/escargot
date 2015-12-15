@@ -460,45 +460,60 @@ protected:
 class FunctionEnvironmentRecord : public DeclarativeEnvironmentRecord {
     friend class LexicalEnvironment;
     friend class ESFunctionObject;
+    struct ArgumentsObjectData : public gc {
+        ESValue* m_arguments;
+        size_t m_argumentsCount;
+        ESValue m_argumentsObject;
+    };
 public:
 
     // stack storage
     FunctionEnvironmentRecord(bool needsToPrepareGenerateArgumentsObject, ESValue arguments[], const size_t& argumentCount, ESValue* buf, size_t idLen)
         : DeclarativeEnvironmentRecord(buf, idLen)
-        , m_argumentsObject(ESValue::ESEmptyValue)
     {
 #ifndef NDEBUG
         m_needsToPrepareGenerateArgumentsObject = needsToPrepareGenerateArgumentsObject;
 #endif
-        if (needsToPrepareGenerateArgumentsObject)
-            generateArgumentsObject(arguments, argumentCount);
+        if (needsToPrepareGenerateArgumentsObject) {
+            prepareToGenereateArgumentsObject(arguments, argumentCount);
+        }
     }
 
     // heap storage
     FunctionEnvironmentRecord(bool needsToPrepareGenerateArgumentsObject, ESValue arguments[], const size_t& argumentCount, const InternalAtomicStringVector& innerIdentifiers = InternalAtomicStringVector())
         : DeclarativeEnvironmentRecord(innerIdentifiers)
-        , m_argumentsObject(ESValue::ESEmptyValue)
     {
 #ifndef NDEBUG
         m_needsToPrepareGenerateArgumentsObject = needsToPrepareGenerateArgumentsObject;
 #endif
         if (needsToPrepareGenerateArgumentsObject)
-            generateArgumentsObject(arguments, argumentCount);
+            prepareToGenereateArgumentsObject(arguments, argumentCount);
     }
 
-    void generateArgumentsObject(ESValue arguments[], const size_t& argumentCount)
+    void prepareToGenereateArgumentsObject(ESValue arguments[], const size_t& argumentCount)
     {
+        m_argumentsObjectData = new ArgumentsObjectData;
+        m_argumentsObjectData->m_arguments = arguments;
+        m_argumentsObjectData->m_argumentsCount = argumentCount;
+        m_argumentsObjectData->m_argumentsObject = ESValue(ESValue::ESEmptyValue);
+    }
+
+    ESValue* argumentsObject()
+    {
+        if (!m_argumentsObjectData->m_argumentsObject.isEmpty())
+            return &m_argumentsObjectData->m_argumentsObject;
         ESObject* argumentsObject = ESArgumentsObject::create();
+        m_argumentsObjectData->m_argumentsObject = argumentsObject;
         unsigned i = 0;
-        argumentsObject->defineDataProperty(strings->length, true, false, true, ESValue(argumentCount));
-        for (; i < argumentCount && i < ESCARGOT_STRINGS_NUMBERS_MAX; i ++) {
-            argumentsObject->set(strings->numbers[i].string(), arguments[i]);
+        argumentsObject->defineDataProperty(strings->length, true, false, true, ESValue(m_argumentsObjectData->m_argumentsCount));
+        for (; i < m_argumentsObjectData->m_argumentsCount && i < ESCARGOT_STRINGS_NUMBERS_MAX; i ++) {
+            argumentsObject->set(strings->numbers[i].string(), m_argumentsObjectData->m_arguments[i]);
         }
-        for (; i < argumentCount; i ++) {
-            argumentsObject->set(ESString::create((int)i), arguments[i]);
+        for (; i < m_argumentsObjectData->m_argumentsCount; i ++) {
+            argumentsObject->set(ESString::create((int)i), m_argumentsObjectData->m_arguments[i]);
         }
 
-        m_argumentsObject = argumentsObject;
+        return &m_argumentsObjectData->m_argumentsObject;
     }
 
     virtual bool hasThisBinding()
@@ -510,7 +525,7 @@ public:
     virtual ESValue* hasBindingForArgumentsObject()
     {
         ASSERT(m_needsToPrepareGenerateArgumentsObject);
-        return &m_argumentsObject;
+        return argumentsObject();
     }
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-bindthisvalue
     // void bindThisValue(const ESValue& V);
@@ -523,7 +538,7 @@ protected:
 #ifndef NDEBUG
     bool m_needsToPrepareGenerateArgumentsObject;
 #endif
-    ESValue m_argumentsObject;
+    ArgumentsObjectData* m_argumentsObjectData;
 };
 
 /*
