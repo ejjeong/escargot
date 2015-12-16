@@ -842,12 +842,12 @@ ALWAYS_INLINE bool ESValue::isESPointer() const
     return !(u.asInt64 & TagMask);
 }
 
-ALWAYS_INLINE  bool ESValue::isUndefined() const
+ALWAYS_INLINE bool ESValue::isUndefined() const
 {
     return u.asInt64 == ValueUndefined;
 }
 
-ALWAYS_INLINE  bool ESValue::isNull() const
+ALWAYS_INLINE bool ESValue::isNull() const
 {
     return u.asInt64 == ValueNull;
 }

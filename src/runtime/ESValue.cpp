@@ -1477,11 +1477,11 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                     ExecutionContext ec(&env, isNewExpression, arguments, argumentCount, storage);
                     instance->m_currentExecutionContext = &ec;
                     functionCallerInnerProcess(&ec, fn, receiver, arguments, argumentCount, instance);
-    #ifdef ENABLE_ESJIT
+#ifdef ENABLE_ESJIT
                     result = executeJIT(fn, instance, ec);
-    #else
+#else
                     result = interpret(instance, cb);
-    #endif
+#endif
                     instance->m_currentExecutionContext = currentContext;
                 } else {
                     FunctionEnvironmentRecord envRec(
@@ -1491,11 +1491,11 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
                     ExecutionContext ec(&env, isNewExpression, arguments, argumentCount, storage);
                     instance->m_currentExecutionContext = &ec;
                     functionCallerInnerProcess(&ec, fn, receiver, arguments, argumentCount, instance);
-    #ifdef ENABLE_ESJIT
+#ifdef ENABLE_ESJIT
                     result = executeJIT(fn, instance, ec);
-    #else
+#else
                     result = interpret(instance, cb);
-    #endif
+#endif
                     instance->m_currentExecutionContext = currentContext;
                 }
             }
