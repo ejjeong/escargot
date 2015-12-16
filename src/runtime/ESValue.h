@@ -133,9 +133,9 @@ public:
     ALWAYS_INLINE bool isEmpty() const;
     bool isDeleted() const;
     bool isFunction() const;
-    bool isUndefined() const;
-    bool isNull() const;
-    bool isUndefinedOrNull() const
+    ALWAYS_INLINE bool isUndefined() const;
+    ALWAYS_INLINE bool isNull() const;
+    ALWAYS_INLINE bool isUndefinedOrNull() const
     {
         return isUndefined() || isNull();
     }
@@ -1224,7 +1224,7 @@ protected:
         m_hasNonASCIIString = false;
     }
 public:
-    static const unsigned ESRopeStringCreateMinLimit = 64;
+    static const unsigned ESRopeStringCreateMinLimit = 256;
     static ESRopeString* create()
     {
         return new ESRopeString();

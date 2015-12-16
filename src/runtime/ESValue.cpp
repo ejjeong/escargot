@@ -1445,11 +1445,18 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
         } else {
             ESValue* storage = (::escargot::ESValue *)alloca(sizeof(::escargot::ESValue) * cb->m_innerIdentifiersSize);
             if (cb->m_needsActivation) {
-                FunctionEnvironmentRecord* envRec = new FunctionEnvironmentRecord(
-                    cb->m_needsToPrepareGenerateArgumentsObject,
-                    arguments, argumentCount,
-                    storage,
-                    cb->m_innerIdentifiersSize);
+                FunctionEnvironmentRecord* envRec;
+                if (UNLIKELY(cb->m_needsToPrepareGenerateArgumentsObject)) {
+                    envRec = new FunctionEnvironmentRecordWithArgumentsObject(
+                        arguments, argumentCount,
+                        storage,
+                        cb->m_innerIdentifiersSize);
+                } else {
+                    envRec = new FunctionEnvironmentRecord(
+                        storage,
+                        cb->m_innerIdentifiersSize);
+                }
+
                 LexicalEnvironment* env = new LexicalEnvironment(envRec, fn->outerEnvironment());
                 ExecutionContext* ec = new ExecutionContext(env, isNewExpression, arguments, argumentCount, storage);
                 instance->m_currentExecutionContext = ec;
@@ -1461,21 +1468,36 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
 #endif
                 instance->m_currentExecutionContext = currentContext;
             } else {
-                FunctionEnvironmentRecord envRec(
-                    cb->m_needsToPrepareGenerateArgumentsObject,
-                    arguments, argumentCount,
-                    storage,
-                    cb->m_innerIdentifiersSize);
-                LexicalEnvironment env(&envRec, fn->outerEnvironment());
-                ExecutionContext ec(&env, isNewExpression, arguments, argumentCount, storage);
-                instance->m_currentExecutionContext = &ec;
-                functionCallerInnerProcess(&ec, fn, receiver, arguments, argumentCount, instance);
-#ifdef ENABLE_ESJIT
-                result = executeJIT(fn, instance, ec);
-#else
-                result = interpret(instance, cb);
-#endif
-                instance->m_currentExecutionContext = currentContext;
+                if (UNLIKELY(cb->m_needsToPrepareGenerateArgumentsObject)) {
+                    FunctionEnvironmentRecordWithArgumentsObject envRec(
+                        arguments, argumentCount,
+                        storage,
+                        cb->m_innerIdentifiersSize);
+                    LexicalEnvironment env(&envRec, fn->outerEnvironment());
+                    ExecutionContext ec(&env, isNewExpression, arguments, argumentCount, storage);
+                    instance->m_currentExecutionContext = &ec;
+                    functionCallerInnerProcess(&ec, fn, receiver, arguments, argumentCount, instance);
+    #ifdef ENABLE_ESJIT
+                    result = executeJIT(fn, instance, ec);
+    #else
+                    result = interpret(instance, cb);
+    #endif
+                    instance->m_currentExecutionContext = currentContext;
+                } else {
+                    FunctionEnvironmentRecord envRec(
+                        storage,
+                        cb->m_innerIdentifiersSize);
+                    LexicalEnvironment env(&envRec, fn->outerEnvironment());
+                    ExecutionContext ec(&env, isNewExpression, arguments, argumentCount, storage);
+                    instance->m_currentExecutionContext = &ec;
+                    functionCallerInnerProcess(&ec, fn, receiver, arguments, argumentCount, instance);
+    #ifdef ENABLE_ESJIT
+                    result = executeJIT(fn, instance, ec);
+    #else
+                    result = interpret(instance, cb);
+    #endif
+                    instance->m_currentExecutionContext = currentContext;
+                }
             }
         }
 
@@ -1903,7 +1925,6 @@ bool ESTypedArrayObjectWrapper::set(uint32_t key, ESValue val)
 ESArgumentsObject::ESArgumentsObject()
     : ESObject((Type)(Type::ESObject | Type::ESArgumentsObject), ESVMInstance::currentInstance()->globalObject()->objectPrototype(), 6)
 {
-    forceNonVectorHiddenClass();
 }
 
 ESJSONObject::ESJSONObject(ESPointer::Type type)

@@ -460,60 +460,17 @@ protected:
 class FunctionEnvironmentRecord : public DeclarativeEnvironmentRecord {
     friend class LexicalEnvironment;
     friend class ESFunctionObject;
-    struct ArgumentsObjectData : public gc {
-        ESValue* m_arguments;
-        size_t m_argumentsCount;
-        ESValue m_argumentsObject;
-    };
 public:
-
     // stack storage
-    FunctionEnvironmentRecord(bool needsToPrepareGenerateArgumentsObject, ESValue arguments[], const size_t& argumentCount, ESValue* buf, size_t idLen)
+    FunctionEnvironmentRecord(ESValue* buf, size_t idLen)
         : DeclarativeEnvironmentRecord(buf, idLen)
     {
-#ifndef NDEBUG
-        m_needsToPrepareGenerateArgumentsObject = needsToPrepareGenerateArgumentsObject;
-#endif
-        if (needsToPrepareGenerateArgumentsObject) {
-            prepareToGenereateArgumentsObject(arguments, argumentCount);
-        }
     }
 
     // heap storage
-    FunctionEnvironmentRecord(bool needsToPrepareGenerateArgumentsObject, ESValue arguments[], const size_t& argumentCount, const InternalAtomicStringVector& innerIdentifiers = InternalAtomicStringVector())
+    FunctionEnvironmentRecord(const InternalAtomicStringVector& innerIdentifiers = InternalAtomicStringVector())
         : DeclarativeEnvironmentRecord(innerIdentifiers)
     {
-#ifndef NDEBUG
-        m_needsToPrepareGenerateArgumentsObject = needsToPrepareGenerateArgumentsObject;
-#endif
-        if (needsToPrepareGenerateArgumentsObject)
-            prepareToGenereateArgumentsObject(arguments, argumentCount);
-    }
-
-    void prepareToGenereateArgumentsObject(ESValue arguments[], const size_t& argumentCount)
-    {
-        m_argumentsObjectData = new ArgumentsObjectData;
-        m_argumentsObjectData->m_arguments = arguments;
-        m_argumentsObjectData->m_argumentsCount = argumentCount;
-        m_argumentsObjectData->m_argumentsObject = ESValue(ESValue::ESEmptyValue);
-    }
-
-    ESValue* argumentsObject()
-    {
-        if (!m_argumentsObjectData->m_argumentsObject.isEmpty())
-            return &m_argumentsObjectData->m_argumentsObject;
-        ESObject* argumentsObject = ESArgumentsObject::create();
-        m_argumentsObjectData->m_argumentsObject = argumentsObject;
-        unsigned i = 0;
-        argumentsObject->defineDataProperty(strings->length, true, false, true, ESValue(m_argumentsObjectData->m_argumentsCount));
-        for (; i < m_argumentsObjectData->m_argumentsCount && i < ESCARGOT_STRINGS_NUMBERS_MAX; i ++) {
-            argumentsObject->set(strings->numbers[i].string(), m_argumentsObjectData->m_arguments[i]);
-        }
-        for (; i < m_argumentsObjectData->m_argumentsCount; i ++) {
-            argumentsObject->set(ESString::create((int)i), m_argumentsObjectData->m_arguments[i]);
-        }
-
-        return &m_argumentsObjectData->m_argumentsObject;
     }
 
     virtual bool hasThisBinding()
@@ -521,24 +478,59 @@ public:
         // we dont use arrow function now. so binding status is alwalys not lexical.
         return true;
     }
-
-    virtual ESValue* hasBindingForArgumentsObject()
-    {
-        ASSERT(m_needsToPrepareGenerateArgumentsObject);
-        return argumentsObject();
-    }
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-bindthisvalue
     // void bindThisValue(const ESValue& V);
-    //  ESValue getThisBinding();
+    // ESValue getThisBinding();
 
 protected:
     // ESValue m_thisValue;
     // ESFunctionObject* m_functionObject; //TODO
     // ESValue m_newTarget; //TODO
-#ifndef NDEBUG
-    bool m_needsToPrepareGenerateArgumentsObject;
-#endif
-    ArgumentsObjectData* m_argumentsObjectData;
+};
+
+class FunctionEnvironmentRecordWithArgumentsObject : public FunctionEnvironmentRecord {
+public:
+    // stack storage
+    FunctionEnvironmentRecordWithArgumentsObject(ESValue arguments[], const size_t& argumentCount, ESValue* buf, size_t idLen)
+        : FunctionEnvironmentRecord(buf, idLen)
+        , m_argumentsObject(ESValue::ESEmptyValue)
+    {
+        m_arguments = arguments;
+        m_argumentsCount = argumentCount;
+    }
+
+    // heap storage
+    FunctionEnvironmentRecordWithArgumentsObject(ESValue arguments[], const size_t& argumentCount, const InternalAtomicStringVector& innerIdentifiers = InternalAtomicStringVector())
+        : FunctionEnvironmentRecord(innerIdentifiers)
+        , m_argumentsObject(ESValue::ESEmptyValue)
+    {
+        m_arguments = arguments;
+        m_argumentsCount = argumentCount;
+    }
+
+    virtual ESValue* hasBindingForArgumentsObject()
+    {
+        if (LIKELY(!m_argumentsObject.isEmpty()))
+            return &m_argumentsObject;
+
+        ESObject* argumentsObject = ESArgumentsObject::create();
+        m_argumentsObject = argumentsObject;
+        unsigned i = 0;
+        argumentsObject->defineDataProperty(strings->length, true, false, true, ESValue(m_argumentsCount));
+        for (; i < m_argumentsCount && i < ESCARGOT_STRINGS_NUMBERS_MAX; i ++) {
+            argumentsObject->set(strings->numbers[i].string(), m_arguments[i]);
+        }
+        for (; i < m_argumentsCount; i ++) {
+            argumentsObject->set(ESString::create((int)i), m_arguments[i]);
+        }
+
+        return &m_argumentsObject;
+    }
+
+protected:
+    ESValue* m_arguments;
+    size_t m_argumentsCount;
+    ESValue m_argumentsObject;
 };
 
 /*

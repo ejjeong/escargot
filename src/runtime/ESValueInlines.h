@@ -649,12 +649,12 @@ inline bool ESValue::isESPointer() const
     return tag() == PointerTag;
 }
 
-inline bool ESValue::isUndefined() const
+ALWAYS_INLINE bool ESValue::isUndefined() const
 {
     return tag() == UndefinedTag;
 }
 
-inline bool ESValue::isNull() const
+ALWAYS_INLINE bool ESValue::isNull() const
 {
     return tag() == NullTag;
 }
@@ -837,17 +837,17 @@ inline ESString* ESValue::asESString() const
     return asESPointer()->asESString();
 }
 
-inline bool ESValue::isESPointer() const
+ALWAYS_INLINE bool ESValue::isESPointer() const
 {
     return !(u.asInt64 & TagMask);
 }
 
-inline bool ESValue::isUndefined() const
+ALWAYS_INLINE  bool ESValue::isUndefined() const
 {
     return u.asInt64 == ValueUndefined;
 }
 
-inline bool ESValue::isNull() const
+ALWAYS_INLINE  bool ESValue::isNull() const
 {
     return u.asInt64 == ValueNull;
 }
@@ -1036,6 +1036,7 @@ inline ESHiddenClass* ESHiddenClass::defineProperty(ESString* name, bool isData,
         if (m_propertyInfo.size() > ESHiddenClassVectorModeSizeLimit) {
             ESHiddenClass* cls = new ESHiddenClass;
             cls->m_flags.m_isVectorMode = false;
+            cls->m_propertyInfo.reserve(m_propertyInfo.size() + 1);
             cls->m_propertyInfo.assign(m_propertyInfo.begin(), m_propertyInfo.end());
             size_t resultIndex = cls->m_propertyInfo.size();
             cls->m_propertyInfo.push_back(ESHiddenClassPropertyInfo(name, isData, isWritable, isEnumerable, isConfigurable));
@@ -1056,6 +1057,7 @@ inline ESHiddenClass* ESHiddenClass::defineProperty(ESString* name, bool isData,
             ESHiddenClass** vec = (escargot::ESHiddenClass**)GC_malloc(sizeof(ESHiddenClass*) * 16);
             memset(vec, 0, sizeof(ESHiddenClass *) * 16);
             cls = new ESHiddenClass;
+            cls->m_propertyInfo.reserve(m_propertyInfo.size() + 1);
             cls->m_propertyInfo.assign(m_propertyInfo.begin(), m_propertyInfo.end());
             cls->m_propertyInfo.push_back(ESHiddenClassPropertyInfo(name, isData, isWritable, isEnumerable, isConfigurable));
 
@@ -1070,6 +1072,7 @@ inline ESHiddenClass* ESHiddenClass::defineProperty(ESString* name, bool isData,
                 ASSERT(flag == cls->m_propertyInfo.back().flags());
             } else {
                 cls = new ESHiddenClass;
+                cls->m_propertyInfo.reserve(m_propertyInfo.size() + 1);
                 cls->m_propertyInfo.assign(m_propertyInfo.begin(), m_propertyInfo.end());
                 cls->m_propertyInfo.push_back(ESHiddenClassPropertyInfo(name, isData, isWritable, isEnumerable, isConfigurable));
 
