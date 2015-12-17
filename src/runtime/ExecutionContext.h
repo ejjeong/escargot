@@ -9,20 +9,17 @@ namespace escargot {
 class LexicalEnvironment;
 class ExecutionContext : public gc {
 public:
-    ALWAYS_INLINE ExecutionContext(LexicalEnvironment* varEnv, bool isNewExpression,
-        ESValue* arguments = NULL, size_t argumentsCount = 0,
-        ESValue* cachedDeclarativeEnvironmentRecord = NULL
-        )
+    ALWAYS_INLINE ExecutionContext(LexicalEnvironment* varEnv, bool isNewExpression, bool isStrictMode,
+        ESValue* arguments = NULL, size_t argumentsCount = 0)
             : m_thisValue(ESValue::ESForceUninitialized)
             , m_tryOrCatchBodyResult(ESValue::ESForceUninitialized)
     {
         ASSERT(varEnv);
+        m_flags.m_isNewExpression = isNewExpression;
+        m_flags.m_isStrict = isStrictMode;
         m_environment = varEnv;
-        m_isNewExpression = isNewExpression;
         m_arguments = arguments;
         m_argumentCount = argumentsCount;
-        m_cachedDeclarativeEnvironmentRecord = cachedDeclarativeEnvironmentRecord;
-        m_isStrict = false;
 #ifdef ENABLE_ESJIT
         m_inOSRExit = false;
         m_executeNextByteCode = false;
@@ -64,7 +61,7 @@ public:
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-getthisenvironment
     LexicalEnvironment* getThisEnvironment();
 
-    ALWAYS_INLINE bool isNewExpression() { return m_isNewExpression; }
+    ALWAYS_INLINE bool isNewExpression() { return m_flags.m_isNewExpression; }
     ESValue* arguments() { return m_arguments; }
     size_t argumentCount() { return m_argumentCount; }
     ESValue readArgument(size_t idx)
@@ -76,13 +73,7 @@ public:
         }
     }
 
-    ESValue* cachedDeclarativeEnvironmentRecordESValue()
-    {
-        return m_cachedDeclarativeEnvironmentRecord;
-    }
-
-    bool isStrictMode() { return m_isStrict; }
-    void setStrictMode(bool s) { m_isStrict = s; }
+    bool isStrictMode() { return m_flags.m_isStrict; }
 
 #ifdef ENABLE_ESJIT
     bool inOSRExit() { return m_inOSRExit; }
@@ -97,18 +88,17 @@ public:
     static size_t offsetofExecuteNextByteCode() { return offsetof(ExecutionContext, m_executeNextByteCode); }
     static size_t offsetofStackBuf() { return offsetof(ExecutionContext, m_stackBuf); }
     static size_t offsetofStackPos() { return offsetof(ExecutionContext, m_stackPos); }
-    static size_t offsetofcachedDeclarativeEnvironmentRecordESValue()
-    {
-        return offsetof(ExecutionContext, m_cachedDeclarativeEnvironmentRecord);
-    }
     static size_t offsetOfEnvironment() { return offsetof(ExecutionContext, m_environment); }
 #pragma GCC diagnostic pop
 #endif
 
     ESValue& tryOrCatchBodyResult() { return m_tryOrCatchBodyResult; }
 private:
-    bool m_isNewExpression;
-    bool m_isStrict;
+    struct {
+        bool m_isNewExpression;
+        bool m_isStrict;
+    } m_flags;
+
 
     ESValue* m_arguments;
     size_t m_argumentCount;
@@ -117,9 +107,6 @@ private:
     // LexicalEnvironment* m_lexicalEnvironment;
     // LexicalEnvironment* m_variableEnvironment;
     LexicalEnvironment* m_environment;
-
-    ESValue* m_cachedDeclarativeEnvironmentRecord;
-    // instance->currentExecutionContext()->environment()->record()->toDeclarativeEnvironmentRecord()
 
     ESValue m_thisValue;
     ESValue m_tryOrCatchBodyResult;

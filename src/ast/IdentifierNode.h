@@ -15,11 +15,12 @@ public:
         : Node(NodeType::Identifier)
     {
         m_name = name;
-        m_canUseFastAccess = false;
+        m_flags.m_canUseFastAccess = false;
+        m_flags.m_canUseGlobalFastAccess = false;
+        m_flags.m_isFastAccessIndexIndicatesHeapIndex = false;
+        m_flags.m_onlySearchGlobal = false;
         m_fastAccessIndex = SIZE_MAX;
         m_fastAccessUpIndex = SIZE_MAX;
-        m_canUseGlobalFastAccess = false;
-        m_globalFastAccessIndex = SIZE_MAX;
     }
 
     virtual NodeType type() { return NodeType::Identifier; }
@@ -35,32 +36,39 @@ public:
 
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        if (m_canUseFastAccess) {
-            if (codeBlock->m_needsHeapAllocatedVariableStorage) {
-                codeBlock->pushCode(GetByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), context, this);
+        if (canUseFastAccess()) {
+            if (m_fastAccessUpIndex) {
+                if (m_flags.m_isFastAccessIndexIndicatesHeapIndex) {
+                    codeBlock->pushCode(GetByIndexInUpperContextHeap(m_fastAccessIndex, m_fastAccessUpIndex), context, this);
 #ifndef NDEBUG
-                codeBlock->peekCode<GetByIndexWithActivation>(codeBlock->lastCodePosition<GetByIndexWithActivation>())->m_name = m_name;
+                    codeBlock->peekCode<GetByIndexInUpperContextHeap>(codeBlock->lastCodePosition<GetByIndexInUpperContextHeap>())->m_name = m_name;
 #endif
+                } else {
+                    codeBlock->pushCode(GetByIndexInUpperContext(m_fastAccessIndex, m_fastAccessUpIndex), context, this);
+#ifndef NDEBUG
+                    codeBlock->peekCode<GetByIndexInUpperContext>(codeBlock->lastCodePosition<GetByIndexInUpperContext>())->m_name = m_name;
+#endif
+                }
             } else {
-                if (m_fastAccessUpIndex == 0) {
+                if (m_flags.m_isFastAccessIndexIndicatesHeapIndex) {
+                    codeBlock->pushCode(GetByIndexInHeap(m_fastAccessIndex), context, this);
+#ifndef NDEBUG
+                    codeBlock->peekCode<GetByIndexInHeap>(codeBlock->lastCodePosition<GetByIndexInHeap>())->m_name = m_name;
+#endif
+                } else {
                     codeBlock->pushCode(GetByIndex(m_fastAccessIndex), context, this);
 #ifndef NDEBUG
                     codeBlock->peekCode<GetByIndex>(codeBlock->lastCodePosition<GetByIndex>())->m_name = m_name;
 #endif
-                } else {
-                    codeBlock->pushCode(GetByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), context, this);
-#ifndef NDEBUG
-                    codeBlock->peekCode<GetByIndexWithActivation>(codeBlock->lastCodePosition<GetByIndexWithActivation>())->m_name = m_name;
-#endif
                 }
             }
-        } else if (m_canUseGlobalFastAccess) {
-            codeBlock->pushCode(GetByGlobalIndex(m_globalFastAccessIndex, m_name.string()), context, this);
+        } else if (canUseGlobalFastAccess()) {
+            codeBlock->pushCode(GetByGlobalIndex(m_fastAccessIndex, m_name.string()), context, this);
         } else {
             if (m_name == strings->arguments) {
                 codeBlock->pushCode(GetArgumentsObject(), context, this);
             } else {
-                codeBlock->pushCode(GetById(m_name), context, this);
+                codeBlock->pushCode(GetById(m_name, m_flags.m_onlySearchGlobal), context, this);
             }
         }
     }
@@ -74,25 +82,27 @@ public:
         generateExpressionByteCode(codeBlock, context);
     }
 
-
     virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        if (m_canUseFastAccess) {
-            if (codeBlock->m_needsHeapAllocatedVariableStorage) {
-                codeBlock->pushCode(SetByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), context, this);
+        if (canUseFastAccess()) {
+            if (m_fastAccessUpIndex) {
+                if (m_flags.m_isFastAccessIndexIndicatesHeapIndex)
+                    codeBlock->pushCode(SetByIndexInUpperContextHeap(m_fastAccessIndex, m_fastAccessUpIndex), context, this);
+                else
+                    codeBlock->pushCode(SetByIndexInUpperContext(m_fastAccessIndex, m_fastAccessUpIndex), context, this);
             } else {
-                if (m_fastAccessUpIndex == 0) {
+                if (m_flags.m_isFastAccessIndexIndicatesHeapIndex)
+                    codeBlock->pushCode(SetByIndexInHeap(m_fastAccessIndex), context, this);
+                else
                     codeBlock->pushCode(SetByIndex(m_fastAccessIndex), context, this);
-                } else
-                    codeBlock->pushCode(SetByIndexWithActivation(m_fastAccessIndex, m_fastAccessUpIndex), context, this);
             }
-        } else if (m_canUseGlobalFastAccess) {
-            codeBlock->pushCode(SetByGlobalIndex(m_globalFastAccessIndex, m_name.string()), context, this);
+        } else if (canUseGlobalFastAccess()) {
+            codeBlock->pushCode(SetByGlobalIndex(m_fastAccessIndex, m_name.string()), context, this);
         } else {
             if (m_name == strings->arguments) {
                 codeBlock->pushCode(SetArgumentsObject(), context, this);
             } else {
-                codeBlock->pushCode(SetById(m_name), context, this);
+                codeBlock->pushCode(SetById(m_name, m_flags.m_onlySearchGlobal), context, this);
             }
         }
     }
@@ -114,14 +124,29 @@ public:
 
     void setFastAccessIndex(size_t upIndex, size_t index)
     {
-        m_canUseFastAccess = true;
+        m_flags.m_canUseFastAccess = true;
         m_fastAccessIndex = index;
         m_fastAccessUpIndex = upIndex;
     }
 
     bool canUseFastAccess()
     {
-        return m_canUseFastAccess;
+        return m_flags.m_canUseFastAccess;
+    }
+
+    bool canUseGlobalFastAccess()
+    {
+        return m_flags.m_canUseGlobalFastAccess;
+    }
+
+    void dontUseFastAccess()
+    {
+        m_flags.m_canUseFastAccess = false;
+    }
+
+    bool onlySearchGlobal()
+    {
+        return m_flags.m_onlySearchGlobal;
     }
 
     size_t fastAccessIndex()
@@ -136,13 +161,14 @@ public:
 
     void setGlobalFastAccessIndex(size_t index)
     {
-        m_canUseGlobalFastAccess = true;
-        m_globalFastAccessIndex = index;
+        m_flags.m_canUseGlobalFastAccess = true;
+        m_fastAccessIndex = index;
     }
 
     size_t globalFastAccessIndex()
     {
-        return m_globalFastAccessIndex;
+        ASSERT(m_flags.m_canUseGlobalFastAccess);
+        return m_fastAccessIndex;
     }
 
     virtual bool isIdentifier()
@@ -153,13 +179,14 @@ public:
 
 protected:
     InternalAtomicString m_name;
-
-    bool m_canUseFastAccess;
     size_t m_fastAccessIndex;
     size_t m_fastAccessUpIndex;
-
-    bool m_canUseGlobalFastAccess;
-    size_t m_globalFastAccessIndex;
+    struct {
+        bool m_canUseFastAccess:1;
+        bool m_canUseGlobalFastAccess:1;
+        bool m_isFastAccessIndexIndicatesHeapIndex:1;
+        bool m_onlySearchGlobal:1;
+    } m_flags;
 };
 
 }

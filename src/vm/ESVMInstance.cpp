@@ -124,7 +124,7 @@ ESVMInstance::ESVMInstance()
 
     LexicalEnvironment* a = new LexicalEnvironment(new GlobalEnvironmentRecord(m_globalObject), NULL);
 
-    m_globalExecutionContext = new ExecutionContext(a, false);
+    m_globalExecutionContext = new ExecutionContext(a, false, false);
     m_globalExecutionContext->setThisBinding(m_globalObject);
     m_currentExecutionContext = m_globalExecutionContext;
     GC_gcollect();

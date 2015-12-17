@@ -22,59 +22,103 @@ public:
         m_isGenerator = isGenerator;
         m_isExpression = isExpression;
         m_needsActivation = false;
-        m_needsHeapAllocatedVariableStorage = false;
+        m_needsHeapAllocatedExecutionContext = false;
         m_needsToPrepareGenerateArgumentsObject = false;
+        m_needsComplexParameterCopy = false;
         m_outerFunctionNode = NULL;
         m_isStrict = isStrict;
         m_isExpression = false;
         m_functionIdIndex = -1;
+        m_functionIdIndexNeedsHeapAllocation = true;
     }
 
     ALWAYS_INLINE const InternalAtomicStringVector& params() { return m_params; }
+    ALWAYS_INLINE FunctionParametersInfoVector& paramsInformation() { return m_paramsInformation; }
     ALWAYS_INLINE Node* body() { return m_body; }
     ALWAYS_INLINE const InternalAtomicString& id() { return m_id; }
     ALWAYS_INLINE ESString* nonAtomicId() { return m_nonAtomicId; }
-
-    ALWAYS_INLINE bool needsActivation() { return m_needsActivation; } // child & parent AST has eval, with, catch
-    ALWAYS_INLINE void setNeedsActivation(bool b) { m_needsActivation = b; }
-    ALWAYS_INLINE bool needsHeapAllocatedVariableStorage() { return m_needsHeapAllocatedVariableStorage; }
-    ALWAYS_INLINE void setNeedsHeapAllocatedVariableStorage(bool b) { m_needsHeapAllocatedVariableStorage = b; }
+    ALWAYS_INLINE size_t stackAllocatedIdentifiersCount() { return m_stackAllocatedIdentifiersCount; }
+    ALWAYS_INLINE bool needsActivation() { return m_needsActivation; } // child & parent AST has eval, with
+    ALWAYS_INLINE void setNeedsActivation()
+    {
+        m_needsActivation = true;
+        setNeedsHeapAllocatedExecutionContext();
+    }
+    ALWAYS_INLINE bool needsHeapAllocatedExecutionContext() { return m_needsHeapAllocatedExecutionContext; }
+    ALWAYS_INLINE void setNeedsHeapAllocatedExecutionContext() { m_needsHeapAllocatedExecutionContext = true; }
     ALWAYS_INLINE bool needsToPrepareGenerateArgumentsObject() { return m_needsToPrepareGenerateArgumentsObject; }
-    ALWAYS_INLINE void setNeedsToPrepareGenerateArgumentsObject(bool b) { m_needsToPrepareGenerateArgumentsObject = b; }
+    ALWAYS_INLINE void setNeedsToPrepareGenerateArgumentsObject() { m_needsToPrepareGenerateArgumentsObject = true; }
+    ALWAYS_INLINE bool needsComplexParameterCopy() { return m_needsComplexParameterCopy; }
     ALWAYS_INLINE bool isGenerator() { return m_isGenerator; }
     ALWAYS_INLINE bool isExpression() { return m_isExpression; }
     ALWAYS_INLINE bool isStrict() { return m_isStrict; }
+    ALWAYS_INLINE unsigned argumentCount() { return m_params.size(); }
 
 
-
-    void setInnerIdentifiers(InternalAtomicStringVector&& vec)
+    void setInnerIdentifierInfo(InnerIdentifierInfoVector&& vec)
     {
         m_innerIdentifiers = vec;
     }
 
-    InternalAtomicStringVector& innerIdentifiers() { return m_innerIdentifiers; }
+    InnerIdentifierInfoVector& innerIdentifiers() { return m_innerIdentifiers; }
+    InternalAtomicStringVector& heapAllocatedIdentifiers() { return m_heapAllocatedIdentifiers; }
 
     void setOuterFunctionNode(FunctionNode* o) { m_outerFunctionNode = o; }
     FunctionNode* outerFunctionNode() { return m_outerFunctionNode; }
 
+    void generateInformationForCodeBlock()
+    {
+        size_t siz = m_params.size();
+        m_paramsInformation.resize(siz);
+        size_t heapCount = 0;
+        size_t stackCount = 0;
+        for (size_t i = 0; i < siz; i ++) {
+            bool isHeap = m_innerIdentifiers[i].m_flags.m_isHeapAllocated;
+            m_paramsInformation[i].m_isHeapAllocated = isHeap;
+            if (isHeap) {
+                m_paramsInformation[i].m_index = i - stackCount;
+                m_needsComplexParameterCopy = true;
+                heapCount++;
+            } else {
+                m_paramsInformation[i].m_index = i - heapCount;
+                stackCount++;
+            }
+        }
+
+        m_stackAllocatedIdentifiersCount = 0;
+        siz = m_innerIdentifiers.size();
+        for (size_t i = 0; i < siz; i ++) {
+            if (m_innerIdentifiers[i].m_flags.m_isHeapAllocated) {
+                m_heapAllocatedIdentifiers.push_back(m_innerIdentifiers[i].m_name);
+            } else {
+                m_stackAllocatedIdentifiersCount++;
+            }
+        }
+    }
 protected:
     InternalAtomicString m_id; // id: Identifier;
     ESString* m_nonAtomicId; // id: Identifier;
     InternalAtomicStringVector m_params; // params: [ Pattern ];
-    InternalAtomicStringVector m_innerIdentifiers;
+    InnerIdentifierInfoVector m_innerIdentifiers;
+
+    size_t m_stackAllocatedIdentifiersCount;
+    InternalAtomicStringVector m_heapAllocatedIdentifiers;
+    FunctionParametersInfoVector m_paramsInformation;
     // defaults: [ Expression ];
     // rest: Identifier | null;
     Node* m_body; // body: BlockStatement | Expression;
     bool m_isGenerator; // generator: boolean;
     bool m_isExpression; // expression: boolean;
 
-    bool m_needsActivation;
-    bool m_needsHeapAllocatedVariableStorage;
+    bool m_needsActivation; // child & parent AST has eval, with
+    bool m_needsHeapAllocatedExecutionContext;
+    bool m_needsComplexParameterCopy; // parameters are captured
     bool m_needsToPrepareGenerateArgumentsObject;
     FunctionNode* m_outerFunctionNode;
 
     bool m_isStrict;
 
+    bool m_functionIdIndexNeedsHeapAllocation;
     size_t m_functionIdIndex;
 };
 

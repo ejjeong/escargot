@@ -23,6 +23,7 @@ class CodeBlock;
 class OpcodeTable;
 class Try;
 class ScriptParser;
+class ESIdentifierVector;
 struct ESSimpleAllocatorMemoryFragment;
 
 #ifndef ANDROID
@@ -39,10 +40,10 @@ class ESVMInstance : public gc_cleanup {
 #ifdef ENABLE_ESJIT
     friend ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter, unsigned maxStackPos);
 #else
-    friend ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter);
+    friend ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter, ESValue* stackStorage, ESIdentifierVector* heapStorage);
 #endif
-    friend NEVER_INLINE void tryOperation(ESVMInstance* instance, CodeBlock* codeBlock, char* codeBuffer, ExecutionContext* ec, size_t programCounter, Try* code);
-    friend NEVER_INLINE void tryOperationThrowCase(const ESValue& err, LexicalEnvironment* oldEnv, ExecutionContext* backupedEC, ESVMInstance* instance, CodeBlock* codeBlock, char* codeBuffer, ExecutionContext* ec, size_t programCounter, Try* code);
+    friend NEVER_INLINE void tryOperation(ESVMInstance* instance, CodeBlock* codeBlock, char* codeBuffer, ExecutionContext* ec, size_t programCounter, Try* code, ESValue* stackStorage, ESIdentifierVector* heapStorage);
+    friend NEVER_INLINE void tryOperationThrowCase(const ESValue& err, LexicalEnvironment* oldEnv, ExecutionContext* backupedEC, ESVMInstance* instance, CodeBlock* codeBlock, char* codeBuffer, ExecutionContext* ec, size_t programCounter, Try* code, ESValue* stackStorage, ESIdentifierVector* heapStorage);
     friend class ESFunctionObject;
     friend class ExpressionStatementNode;
     friend class TryStatementNode;

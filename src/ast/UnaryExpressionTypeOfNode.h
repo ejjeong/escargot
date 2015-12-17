@@ -20,7 +20,8 @@ public:
     {
         if (m_argument->isIdentifier() && !((IdentifierNode *)m_argument)->canUseFastAccess()) {
             codeBlock->pushCode(GetByIdWithoutException(
-                ((IdentifierNode *)m_argument)->name()
+                ((IdentifierNode *)m_argument)->name(),
+                ((IdentifierNode *)m_argument)->onlySearchGlobal()
                 ), context, this);
         } else
             m_argument->generateExpressionByteCode(codeBlock, context);

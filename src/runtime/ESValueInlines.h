@@ -659,7 +659,7 @@ ALWAYS_INLINE bool ESValue::isNull() const
     return tag() == NullTag;
 }
 
-inline bool ESValue::isBoolean() const
+ALWAYS_INLINE bool ESValue::isBoolean() const
 {
     return tag() == BooleanTag;
 }
@@ -852,7 +852,7 @@ ALWAYS_INLINE bool ESValue::isNull() const
     return u.asInt64 == ValueNull;
 }
 
-inline bool ESValue::isBoolean() const
+ALWAYS_INLINE bool ESValue::isBoolean() const
 {
     return u.asInt64 == ValueTrue || u.asInt64 == ValueFalse;
 }

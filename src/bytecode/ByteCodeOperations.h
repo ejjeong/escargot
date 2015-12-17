@@ -14,7 +14,11 @@ ALWAYS_INLINE ESValue* getByIdOperation(ESVMInstance* instance, ExecutionContext
 #endif
         return code->m_cachedSlot;
     } else {
-        ESValue* slot = ec->resolveBinding(code->m_name);
+        ESValue* slot;
+        if (code->m_onlySearchGlobal)
+            slot = instance->globalObject()->addressOfProperty(code->m_name.string());
+        else
+            slot = ec->resolveBinding(code->m_name);
         if (LIKELY(slot != NULL)) {
             code->m_cachedSlot = slot;
             code->m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
@@ -433,8 +437,8 @@ NEVER_INLINE bool instanceOfOperation(ESValue* lval, ESValue* rval);
 NEVER_INLINE ESValue typeOfOperation(ESValue* v);
 NEVER_INLINE ESValue newOperation(ESVMInstance* instance, GlobalObject* globalObject, ESValue fn, ESValue* arguments, size_t argc);
 NEVER_INLINE bool inOperation(ESValue* obj, ESValue* key);
-NEVER_INLINE void tryOperation(ESVMInstance* instance, CodeBlock* codeBlock, char* codeBuffer, ExecutionContext* ec, size_t programCounter, Try* code);
-NEVER_INLINE void tryOperationThrowCase(const ESValue& err, LexicalEnvironment* oldEnv, ExecutionContext* backupedEC, ESVMInstance* instance, CodeBlock* codeBlock, char* codeBuffer, ExecutionContext* ec, size_t programCounter, Try* code);
+NEVER_INLINE void tryOperation(ESVMInstance* instance, CodeBlock* codeBlock, char* codeBuffer, ExecutionContext* ec, size_t programCounter, Try* code, ESValue* stackStorage, ESIdentifierVector* heapStorage);
+NEVER_INLINE void tryOperationThrowCase(const ESValue& err, LexicalEnvironment* oldEnv, ExecutionContext* backupedEC, ESVMInstance* instance, CodeBlock* codeBlock, char* codeBuffer, ExecutionContext* ec, size_t programCounter, Try* code, ESValue* stackStorage, ESIdentifierVector* heapStorage);
 NEVER_INLINE EnumerateObjectData* executeEnumerateObject(ESObject* obj);
 
 }

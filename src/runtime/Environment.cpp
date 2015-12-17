@@ -8,31 +8,6 @@
 
 namespace escargot {
 
-// http://www.ecma-international.org/ecma-262/6.0/index.html#sec-newfunctionenvironment
-// $8.1.2.4
-LexicalEnvironment* LexicalEnvironment::newFunctionEnvironment(bool needsToPrepareGenerateArgumentsObject, ESValue arguments[], const size_t& argumentCount, ESFunctionObject* function)
-{
-    FunctionEnvironmentRecord* envRec;
-    if (UNLIKELY(!needsToPrepareGenerateArgumentsObject)) {
-        envRec = new FunctionEnvironmentRecord(function->codeBlock()->m_innerIdentifiers);
-    } else {
-        envRec = new FunctionEnvironmentRecordWithArgumentsObject(arguments, argumentCount, function->codeBlock()->m_innerIdentifiers);
-    }
-
-    // envRec->m_functionObject = function;
-    // envRec->m_newTarget = newTarget;
-
-    LexicalEnvironment* env = new LexicalEnvironment(envRec, function->outerEnvironment());
-    // TODO
-    // If F’s [[ThisMode]] internal slot is lexical, set envRec.[[thisBindingStatus]] to "lexical".
-    // [[ThisMode]] internal slot is lexical, set envRec.[[thisBindingStatus]] to "lexical".
-    // Let home be the value of F’s [[HomeObject]] internal slot.
-    // Set envRec.[[HomeObject]] to home.
-    // Set envRec.[[NewTarget]] to newTarget.
-
-    return env;
-}
-
 void EnvironmentRecord::createMutableBindingForAST(const InternalAtomicString& atomicName, bool canDelete)
 {
     if (UNLIKELY(isGlobalEnvironmentRecord())) {
@@ -45,7 +20,6 @@ void EnvironmentRecord::createMutableBindingForAST(const InternalAtomicString& a
 void DeclarativeEnvironmentRecord::createMutableBinding(const InternalAtomicString& name, bool canDelete)
 {
     // TODO canDelete
-    ASSERT(!m_stackAllocatedData);
     size_t siz = m_heapAllocatedData.size();
     for (unsigned i = 0; i < siz; i ++) {
         if (m_heapAllocatedData[i].first == name) {

@@ -24,7 +24,12 @@ NEVER_INLINE void setByIdSlowCase(ESVMInstance* instance, GlobalObject* globalOb
     // TODO
     // Object.defineProperty(this, "asdf", {value:1}) //this == global
     // asdf = 2
-    ESValue* slot = ec->resolveBinding(code->m_name);
+    ESValue* slot;
+
+    if (code->m_onlySearchGlobal)
+        slot = instance->globalObject()->addressOfProperty(code->m_name.string());
+    else
+        slot = ec->resolveBinding(code->m_name);
 
     if (LIKELY(slot != NULL)) {
         code->m_cachedSlot = slot;
@@ -465,25 +470,25 @@ NEVER_INLINE bool inOperation(ESValue* obj, ESValue* key)
     return result;
 }
 
-NEVER_INLINE void tryOperation(ESVMInstance* instance, CodeBlock* codeBlock, char* codeBuffer, ExecutionContext* ec, size_t programCounter, Try* code)
+NEVER_INLINE void tryOperation(ESVMInstance* instance, CodeBlock* codeBlock, char* codeBuffer, ExecutionContext* ec, size_t programCounter, Try* code, ESValue* stackStorage, ESIdentifierVector* heapStorage)
 {
     LexicalEnvironment* oldEnv = ec->environment();
     ExecutionContext* backupedEC = ec;
     std::jmp_buf tryPosition;
     if (setjmp(instance->registerTryPos(&tryPosition)) == 0) {
         ec->tryOrCatchBodyResult() = ESValue(ESValue::ESEmptyValue);
-        ESValue ret = interpret(instance, codeBlock, resolveProgramCounter(codeBuffer, programCounter + sizeof(Try)));
+        ESValue ret = interpret(instance, codeBlock, resolveProgramCounter(codeBuffer, programCounter + sizeof(Try)), stackStorage, heapStorage);
         if (!ret.isEmpty()) {
             ec->tryOrCatchBodyResult() = ESControlFlowRecord::create(ESControlFlowRecord::ControlFlowReason::NeedsReturn, ret, ESValue((int32_t)code->m_tryDupCount));
         }
         instance->unregisterTryPos(&tryPosition);
     } else {
         ESValue err = instance->getCatchedError();
-        tryOperationThrowCase(err, oldEnv, backupedEC, instance, codeBlock, codeBuffer, ec, programCounter, code);
+        tryOperationThrowCase(err, oldEnv, backupedEC, instance, codeBlock, codeBuffer, ec, programCounter, code, stackStorage, heapStorage);
     }
 }
 
-NEVER_INLINE void tryOperationThrowCase(const ESValue& err, LexicalEnvironment* oldEnv, ExecutionContext* backupedEC, ESVMInstance* instance, CodeBlock* codeBlock, char* codeBuffer, ExecutionContext* ec, size_t programCounter, Try* code)
+NEVER_INLINE void tryOperationThrowCase(const ESValue& err, LexicalEnvironment* oldEnv, ExecutionContext* backupedEC, ESVMInstance* instance, CodeBlock* codeBlock, char* codeBuffer, ExecutionContext* ec, size_t programCounter, Try* code, ESValue* stackStorage, ESIdentifierVector* heapStorage)
 {
     instance->invalidateIdentifierCacheCheckCount();
     instance->m_currentExecutionContext = backupedEC;
@@ -493,7 +498,7 @@ NEVER_INLINE void tryOperationThrowCase(const ESValue& err, LexicalEnvironment* 
     instance->currentExecutionContext()->environment()->record()->setMutableBinding(code->m_name, err, false);
     std::jmp_buf tryPosition;
     if (setjmp(instance->registerTryPos(&tryPosition)) == 0) {
-        ESValue ret = interpret(instance, codeBlock, code->m_catchPosition);
+        ESValue ret = interpret(instance, codeBlock, code->m_catchPosition, stackStorage, heapStorage);
         instance->currentExecutionContext()->setEnvironment(oldEnv);
         if (ret.isEmpty()) {
             if (!ec->tryOrCatchBodyResult().isEmpty() && ec->tryOrCatchBodyResult().isESPointer() && ec->tryOrCatchBodyResult().asESPointer()->isESControlFlowRecord()) {

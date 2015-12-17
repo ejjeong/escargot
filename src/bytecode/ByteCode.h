@@ -35,15 +35,19 @@ class CodeBlock;
     F(CheckStackPointer, 0, 0, 0, 0, 0) \
     \
     F(GetById, 1, 0, 0, 1, 1) \
-    F(GetByIdWithoutException, 1, 0, 0, 1, 1) \
-    F(GetByIndex, 1, 0, 0, 1, 1) \
-    F(GetByGlobalIndex, 1, 0, 0, 1, 1) \
-    F(GetByIndexWithActivation, 1, 0, 0, 1, 1) \
-    F(GetArgumentsObject, 1, 0, 0, 0, 0) \
     F(SetById, 0, 0, 1, 1, 0) \
-    F(SetByIndex, 0, 0, 1, 1, 0) \
+    F(GetByIdWithoutException, 1, 0, 0, 1, 1) \
+    F(GetByGlobalIndex, 1, 0, 0, 1, 1) \
     F(SetByGlobalIndex, 0, 0, 1, 1, 0) \
-    F(SetByIndexWithActivation, 0, 0, 1, 1, 0) \
+    F(GetByIndex, 1, 0, 0, 1, 1) \
+    F(SetByIndex, 0, 0, 1, 1, 0) \
+    F(GetByIndexInHeap, 1, 0, 0, 1, 1) \
+    F(SetByIndexInHeap, 0, 0, 1, 1, 0) \
+    F(GetByIndexInUpperContext, 1, 0, 0, 1, 1) \
+    F(SetByIndexInUpperContext, 0, 0, 1, 1, 0) \
+    F(GetByIndexInUpperContextHeap, 1, 0, 0, 1, 1) \
+    F(SetByIndexInUpperContextHeap, 0, 0, 1, 1, 0) \
+    F(GetArgumentsObject, 1, 0, 0, 0, 0) \
     F(SetArgumentsObject, 0, 0, 1, 0, 0) \
     F(CreateBinding, 0, 0, 0, 0, 0) \
     \
@@ -598,9 +602,10 @@ public:
 
 class GetById : public ByteCode, public JITProfileTarget {
 public:
-    GetById(const InternalAtomicString& name)
+    GetById(const InternalAtomicString& name, bool onlySearchGlobal)
         : ByteCode(GetByIdOpcode)
         , m_name(name)
+        , m_onlySearchGlobal(onlySearchGlobal)
     {
         m_identifierCacheInvalidationCheckCount = std::numeric_limits<unsigned>::max();
         m_cachedSlot = NULL;
@@ -609,6 +614,7 @@ public:
 
     unsigned m_identifierCacheInvalidationCheckCount;
     ESValue* m_cachedSlot;
+    bool m_onlySearchGlobal;
 
 #ifndef NDEBUG
     virtual void dump()
@@ -620,7 +626,7 @@ public:
 
 class GetByIdWithoutException : public ByteCode, public JITProfileTarget {
 public:
-    GetByIdWithoutException(const InternalAtomicString& name)
+    GetByIdWithoutException(const InternalAtomicString& name, bool onlySearchGlobal)
         : ByteCode(GetByIdWithoutExceptionOpcode)
         , m_name(name)
     {
@@ -632,6 +638,7 @@ public:
 
     unsigned m_identifierCacheInvalidationCheckCount;
     ESValue* m_cachedSlot;
+    bool m_onlySearchGlobal;
 
 #ifndef NDEBUG
     virtual void dump()
@@ -661,6 +668,24 @@ public:
 #endif
 };
 
+class GetByIndexInHeap : public ByteCode, public JITProfileTarget {
+public:
+    GetByIndexInHeap(size_t index)
+        : ByteCode(GetByIndexInHeapOpcode)
+    {
+        m_index = index;
+    }
+    size_t m_index;
+
+#ifndef NDEBUG
+    ESString* m_name;
+    virtual void dump()
+    {
+        printf("GetByIndexInHeap <%s, %u>\n", m_name->utf8Data(),  (unsigned)m_index);
+    }
+#endif
+};
+
 class GetByGlobalIndex : public ByteCode, public JITProfileTarget {
 public:
     GetByGlobalIndex(size_t index, ESString* name)
@@ -681,10 +706,10 @@ public:
 #endif
 };
 
-class GetByIndexWithActivation : public ByteCode, public JITProfileTarget {
+class GetByIndexInUpperContext : public ByteCode, public JITProfileTarget {
 public:
-    GetByIndexWithActivation(size_t fastAccessIndex, size_t fastAccessUpIndex)
-        : ByteCode(GetByIndexWithActivationOpcode)
+    GetByIndexInUpperContext(size_t fastAccessIndex, size_t fastAccessUpIndex)
+        : ByteCode(GetByIndexInUpperContextOpcode)
     {
         m_index = fastAccessIndex;
         m_upIndex = fastAccessUpIndex;
@@ -696,7 +721,27 @@ public:
     ESString* m_name;
     virtual void dump()
     {
-        printf("GetByIndexWithActivation <%s, %u, %u>\n", m_name->utf8Data(), (unsigned)m_index, (unsigned)m_upIndex);
+        printf("GetByIndexInUpperContext <%s, %u, %u>\n", m_name->utf8Data(), (unsigned)m_index, (unsigned)m_upIndex);
+    }
+#endif
+};
+
+class GetByIndexInUpperContextHeap : public ByteCode, public JITProfileTarget {
+public:
+    GetByIndexInUpperContextHeap(size_t fastAccessIndex, size_t fastAccessUpIndex)
+        : ByteCode(GetByIndexInUpperContextHeapOpcode)
+    {
+        m_index = fastAccessIndex;
+        m_upIndex = fastAccessUpIndex;
+    }
+    size_t m_index;
+    size_t m_upIndex;
+
+#ifndef NDEBUG
+    ESString* m_name;
+    virtual void dump()
+    {
+        printf("GetByIndexInUpperContextHeap <%s, %u, %u>\n", m_name->utf8Data(), (unsigned)m_index, (unsigned)m_upIndex);
     }
 #endif
 };
@@ -718,9 +763,10 @@ public:
 
 class SetById : public ByteCode {
 public:
-    SetById(const InternalAtomicString& name, Opcode code = SetByIdOpcode)
-        : ByteCode(code)
+    SetById(const InternalAtomicString& name, bool onlySearchGlobal)
+        : ByteCode(SetByIdOpcode)
         , m_name(name)
+        , m_onlySearchGlobal(onlySearchGlobal)
     {
         m_identifierCacheInvalidationCheckCount = std::numeric_limits<unsigned>::max();
         m_cachedSlot = NULL;
@@ -730,6 +776,7 @@ public:
 
     unsigned m_identifierCacheInvalidationCheckCount;
     ESValue* m_cachedSlot;
+    bool m_onlySearchGlobal;
 
 #ifndef NDEBUG
     virtual void dump()
@@ -756,6 +803,24 @@ public:
 #endif
 };
 
+class SetByIndexInHeap : public ByteCode {
+public:
+    SetByIndexInHeap(size_t index, Opcode code = SetByIndexInHeapOpcode)
+        : ByteCode(code)
+    {
+        m_index = index;
+    }
+    size_t m_index;
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("SetByIndexInHeap <%u>\n", (unsigned)m_index);
+    }
+#endif
+};
+
+
 class SetByGlobalIndex : public ByteCode {
 public:
     SetByGlobalIndex(size_t index, ESString* name)
@@ -775,9 +840,9 @@ public:
 #endif
 };
 
-class SetByIndexWithActivation : public ByteCode {
+class SetByIndexInUpperContext : public ByteCode {
 public:
-    SetByIndexWithActivation(size_t fastAccessIndex, size_t fastAccessUpIndex, Opcode code = SetByIndexWithActivationOpcode)
+    SetByIndexInUpperContext(size_t fastAccessIndex, size_t fastAccessUpIndex, Opcode code = SetByIndexInUpperContextOpcode)
         : ByteCode(code)
     {
         m_index = fastAccessIndex;
@@ -789,7 +854,26 @@ public:
 #ifndef NDEBUG
     virtual void dump()
     {
-        printf("SetByIndexWithActivation <%u, %u>\n", (unsigned)m_index, (unsigned)m_upIndex);
+        printf("SetByIndexInUpperContext <%u, %u>\n", (unsigned)m_index, (unsigned)m_upIndex);
+    }
+#endif
+};
+
+class SetByIndexInUpperContextHeap : public ByteCode {
+public:
+    SetByIndexInUpperContextHeap(size_t fastAccessIndex, size_t fastAccessUpIndex, Opcode code = SetByIndexInUpperContextHeapOpcode)
+        : ByteCode(code)
+    {
+        m_index = fastAccessIndex;
+        m_upIndex = fastAccessUpIndex;
+    }
+    size_t m_index;
+    size_t m_upIndex;
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("SetByIndexInUpperContextHeap <%u, %u>\n", (unsigned)m_index, (unsigned)m_upIndex);
     }
 #endif
 };
@@ -1774,7 +1858,7 @@ struct EnumerateObjectData : public gc {
 
 class CreateFunction : public ByteCode {
 public:
-    CreateFunction(InternalAtomicString name, ESString* nonAtomicName, CodeBlock* codeBlock, bool isDecl, size_t idIndex)
+    CreateFunction(InternalAtomicString name, ESString* nonAtomicName, CodeBlock* codeBlock, bool isDecl, size_t idIndex, bool isIdIndexOnHeapStorage)
         : ByteCode(CreateFunctionOpcode)
         , m_name(name)
     {
@@ -1782,6 +1866,7 @@ public:
         m_codeBlock = codeBlock;
         m_isDeclaration = isDecl;
         m_idIndex = idIndex;
+        m_isIdIndexOnHeapStorage = isIdIndexOnHeapStorage;
     }
 
 #ifndef NDEBUG
@@ -1794,6 +1879,7 @@ public:
     ESString* m_nonAtomicName;
     CodeBlock* m_codeBlock;
     bool m_isDeclaration;
+    bool m_isIdIndexOnHeapStorage;
     size_t m_idIndex;
 };
 
@@ -2288,7 +2374,7 @@ public:
 
     bool shouldUseStrictMode()
     {
-        return m_isStrict || m_isBuiltInFunction;
+        return m_isStrict;
     }
 
     std::vector<char, gc_malloc_allocator<char> > m_code;
@@ -2297,19 +2383,25 @@ public:
 #endif
 
     Node* m_ast;
-    InternalAtomicStringVector m_params; // params: [ Pattern ];
-    InternalAtomicStringVector m_innerIdentifiers;
-    unsigned m_innerIdentifiersSize;
-    unsigned m_requiredStackSizeInESValueSize;
 
-    bool m_needsActivation;
-    bool m_needsHeapAllocatedVariableStorage;
-    bool m_needsToPrepareGenerateArgumentsObject;
-    bool m_isBuiltInFunction;
+    size_t m_stackAllocatedIdentifiersCount;
+    InternalAtomicStringVector m_heapAllocatedIdentifiers;
+    FunctionParametersInfoVector m_paramsInformation;
+
+    unsigned m_requiredStackSizeInESValueSize;
+    unsigned m_argumentCount;
+
+    bool m_hasCode;
     bool m_isStrict;
     bool m_isFunctionExpression;
+    bool m_needsHeapAllocatedExecutionContext;
+    bool m_needsComplexParameterCopy; // parameters are captured
+    bool m_needsToPrepareGenerateArgumentsObject;
+    bool m_isBuiltInFunction;
     bool m_isCached;
 
+    bool m_isFunctionExpressionNameHeapAllocated;
+    size_t m_functionExpressionNameIndex;
 #ifndef NDEBUG
     InternalAtomicString m_id;
     ESString* m_nonAtomicId;
@@ -2483,7 +2575,7 @@ void dumpUnsupported(CodeBlock* codeBlock);
 #ifdef ENABLE_ESJIT
 ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter = 0, unsigned maxStackPos = 0);
 #else
-ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter = 0);
+ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter = 0, ESValue* stackStorage = NULL, ESIdentifierVector* heapStorage = NULL);
 #endif
 CodeBlock* generateByteCode(ProgramNode* node, bool shouldGenereateBytecodeInstantly = true);
 inline void iterateByteCode(CodeBlock* codeBlock, std::function<void(CodeBlock* block, unsigned idx, ByteCode* code, Opcode opcode)> fn);

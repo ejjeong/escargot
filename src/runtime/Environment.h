@@ -18,6 +18,27 @@ typedef std::pair<InternalAtomicString, ::escargot::ESValue> ESIdentifierVectorS
 typedef std::vector<ESIdentifierVectorStdItem,
     gc_allocator<ESIdentifierVectorStdItem> > ESIdentifierVectorStd;
 
+struct InnerIdentifierInfo {
+    InternalAtomicString m_name;
+    struct {
+        bool m_isHeapAllocated:1;
+    } m_flags;
+
+    InnerIdentifierInfo(InternalAtomicString name)
+        : m_name(name)
+    {
+        m_flags.m_isHeapAllocated = false;
+    }
+};
+
+struct FunctionParametersInfo {
+    bool m_isHeapAllocated;
+    size_t m_index;
+};
+
+typedef std::vector<InnerIdentifierInfo, gc_allocator<InnerIdentifierInfo> > InnerIdentifierInfoVector;
+typedef std::vector<FunctionParametersInfo, gc_allocator<FunctionParametersInfo> > FunctionParametersInfoVector;
+
 class ESIdentifierVector : public ESIdentifierVectorStd {
 public:
     ESIdentifierVector()
@@ -142,7 +163,7 @@ public:
 // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-lexical-environments
 class LexicalEnvironment : public gc {
 public:
-    LexicalEnvironment(EnvironmentRecord* record, LexicalEnvironment* outerEnv)
+    ALWAYS_INLINE LexicalEnvironment(EnvironmentRecord* record, LexicalEnvironment* outerEnv)
         : m_record(record)
         , m_outerEnvironment(outerEnv)
     {
@@ -159,7 +180,7 @@ public:
     }
 
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-newfunctionenvironment
-    static LexicalEnvironment* newFunctionEnvironment(bool needsToPrepareGenerateArgumentsObject, ESValue arguments[], const size_t& argumentCount, ESFunctionObject* function);
+    static LexicalEnvironment* newFunctionEnvironment(bool needsToPrepareGenerateArgumentsObject, ESValue* stackAllocatedStorage, size_t stackAllocatedStorageSize, const InternalAtomicStringVector& innerIdentifiers, ESValue arguments[], const size_t& argumentCount, ESFunctionObject* function);
 
 #ifdef ENABLE_ESJIT
 #pragma GCC diagnostic push
@@ -190,7 +211,7 @@ public:
     }
     virtual ESValue* hasBindingForArgumentsObject()
     {
-        RELEASE_ASSERT_NOT_REACHED();
+        return NULL;
     }
     virtual void createMutableBinding(const InternalAtomicString& name, bool canDelete = false)
     {
@@ -318,18 +339,16 @@ protected:
 // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-declarative-environment-records
 class DeclarativeEnvironmentRecord : public EnvironmentRecord {
 public:
-    DeclarativeEnvironmentRecord(ESValue* stackAllocatedData, size_t innerIdentifierSize)
+    ALWAYS_INLINE DeclarativeEnvironmentRecord(ESValue* stackAllocatedData = 0, size_t stackAllocatedSize = 0, const InternalAtomicStringVector& innerIdentifiers = InternalAtomicStringVector())
     {
         m_stackAllocatedData = stackAllocatedData;
-        std::fill(stackAllocatedData, &stackAllocatedData[innerIdentifierSize], ESValue());
-    }
+        std::fill(stackAllocatedData, &stackAllocatedData[stackAllocatedSize], ESValue());
 
-    DeclarativeEnvironmentRecord(const InternalAtomicStringVector& innerIdentifiers = InternalAtomicStringVector())
-    {
-        m_stackAllocatedData = NULL;
-        m_heapAllocatedData.reserve(innerIdentifiers.size());
-        for (unsigned i = 0; i < innerIdentifiers.size(); i ++) {
-            m_heapAllocatedData.push_back(std::make_pair(innerIdentifiers[i], ESValue()));
+        if (innerIdentifiers.size()) {
+            m_heapAllocatedData.reserve(innerIdentifiers.size());
+            for (unsigned i = 0; i < innerIdentifiers.size(); i ++) {
+                m_heapAllocatedData.push_back(std::make_pair(innerIdentifiers[i], ESValue()));
+            }
         }
     }
 
@@ -339,41 +358,26 @@ public:
 
     virtual ESValue* hasBinding(const InternalAtomicString& atomicName)
     {
-        if (m_stackAllocatedData) {
-            return NULL;
-        } else {
-            for (unsigned i = 0; i < m_heapAllocatedData.size(); i ++) {
-                if (m_heapAllocatedData[i].first == atomicName) {
-                    return &m_heapAllocatedData[i].second;
-                }
+        for (unsigned i = 0; i < m_heapAllocatedData.size(); i ++) {
+            if (m_heapAllocatedData[i].first == atomicName) {
+                return &m_heapAllocatedData[i].second;
             }
-            return NULL;
         }
+        return NULL;
     }
 
     virtual void createMutableBinding(const InternalAtomicString& name, bool canDelete = false);
     virtual void setMutableBinding(const InternalAtomicString& name, const ESValue& V, bool mustNotThrowTypeErrorExecption)
     {
         // TODO mustNotThrowTypeErrorExecption
-        if (!m_stackAllocatedData) {
-            size_t siz = m_heapAllocatedData.size();
-            for (unsigned i = 0; i < siz; i ++) {
-                if (m_heapAllocatedData[i].first == name) {
-                    m_heapAllocatedData[i].second = V;
-                }
+        size_t siz = m_heapAllocatedData.size();
+        for (unsigned i = 0; i < siz; i ++) {
+            if (m_heapAllocatedData[i].first == name) {
+                m_heapAllocatedData[i].second = V;
+                return;
             }
-        } else {
-            RELEASE_ASSERT_NOT_REACHED();
         }
-    }
-
-    ESValue bindingValue(size_t t)
-    {
-        if (m_stackAllocatedData) {
-            return m_stackAllocatedData[t];
-        } else {
-            return m_heapAllocatedData[t].second;
-        }
+        RELEASE_ASSERT_NOT_REACHED();
     }
 
     ESValue* bindingValueForStackAllocatedData(size_t idx)
@@ -386,6 +390,11 @@ public:
         return &m_heapAllocatedData[idx].second;
     }
 
+    ESIdentifierVector& heapAllocatedData()
+    {
+        return m_heapAllocatedData;
+    }
+
     virtual bool isDeclarativeEnvironmentRecord()
     {
         return true;
@@ -394,11 +403,6 @@ public:
     virtual bool hasThisBinding()
     {
         return false;
-    }
-
-    bool useHeapAllocatedStorage()
-    {
-        return !m_stackAllocatedData;
     }
 
 #ifdef ENABLE_ESJIT
@@ -461,15 +465,8 @@ class FunctionEnvironmentRecord : public DeclarativeEnvironmentRecord {
     friend class LexicalEnvironment;
     friend class ESFunctionObject;
 public:
-    // stack storage
-    FunctionEnvironmentRecord(ESValue* buf, size_t idLen)
-        : DeclarativeEnvironmentRecord(buf, idLen)
-    {
-    }
-
-    // heap storage
-    FunctionEnvironmentRecord(const InternalAtomicStringVector& innerIdentifiers = InternalAtomicStringVector())
-        : DeclarativeEnvironmentRecord(innerIdentifiers)
+    ALWAYS_INLINE FunctionEnvironmentRecord(ESValue* stackAllocatedData = 0, size_t stackAllocatedSize = 0, const InternalAtomicStringVector& innerIdentifiers = InternalAtomicStringVector())
+        : DeclarativeEnvironmentRecord(stackAllocatedData, stackAllocatedSize, innerIdentifiers)
     {
     }
 
@@ -490,18 +487,8 @@ protected:
 
 class FunctionEnvironmentRecordWithArgumentsObject : public FunctionEnvironmentRecord {
 public:
-    // stack storage
-    FunctionEnvironmentRecordWithArgumentsObject(ESValue arguments[], const size_t& argumentCount, ESValue* buf, size_t idLen)
-        : FunctionEnvironmentRecord(buf, idLen)
-        , m_argumentsObject(ESValue::ESEmptyValue)
-    {
-        m_arguments = arguments;
-        m_argumentsCount = argumentCount;
-    }
-
-    // heap storage
-    FunctionEnvironmentRecordWithArgumentsObject(ESValue arguments[], const size_t& argumentCount, const InternalAtomicStringVector& innerIdentifiers = InternalAtomicStringVector())
-        : FunctionEnvironmentRecord(innerIdentifiers)
+    ALWAYS_INLINE FunctionEnvironmentRecordWithArgumentsObject(ESValue arguments[], const size_t& argumentCount, ESValue* stackAllocatedData = 0, size_t stackAllocatedSize = 0, const InternalAtomicStringVector& innerIdentifiers = InternalAtomicStringVector())
+        : FunctionEnvironmentRecord(stackAllocatedData, stackAllocatedSize, innerIdentifiers)
         , m_argumentsObject(ESValue::ESEmptyValue)
     {
         m_arguments = arguments;
@@ -540,6 +527,29 @@ protected:
 };
 */
 
+
+// http://www.ecma-international.org/ecma-262/6.0/index.html#sec-newfunctionenvironment
+// $8.1.2.4
+ALWAYS_INLINE LexicalEnvironment* LexicalEnvironment::newFunctionEnvironment(bool needsToPrepareGenerateArgumentsObject, ESValue* stackAllocatedStorage, size_t stackAllocatedStorageSize, const InternalAtomicStringVector& innerIdentifiers, ESValue arguments[], const size_t& argumentCount, ESFunctionObject* function)
+{
+    FunctionEnvironmentRecord* envRec;
+    if (UNLIKELY(!needsToPrepareGenerateArgumentsObject)) {
+        envRec = new FunctionEnvironmentRecord(stackAllocatedStorage, stackAllocatedStorageSize, innerIdentifiers);
+    } else {
+        envRec = new FunctionEnvironmentRecordWithArgumentsObject(arguments, argumentCount, stackAllocatedStorage, stackAllocatedStorageSize, innerIdentifiers);
+    }
+
+    // envRec->m_functionObject = function;
+    // envRec->m_newTarget = newTarget;
+    LexicalEnvironment* env = new LexicalEnvironment(envRec, function->outerEnvironment());
+    // TODO
+    // If F’s [[ThisMode]] internal slot is lexical, set envRec.[[thisBindingStatus]] to "lexical".
+    // [[ThisMode]] internal slot is lexical, set envRec.[[thisBindingStatus]] to "lexical".
+    // Let home be the value of F’s [[HomeObject]] internal slot.
+    // Set envRec.[[HomeObject]] to home.
+    // Set envRec.[[NewTarget]] to newTarget.
+    return env;
+}
 
 }
 #endif

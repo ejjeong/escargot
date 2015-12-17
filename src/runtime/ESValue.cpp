@@ -999,7 +999,11 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeF
     : ESFunctionObject(outerEnvironment, (CodeBlock *)NULL, name, length, isConstructor)
 {
     m_codeBlock = CodeBlock::create(0, true);
+    m_codeBlock->m_hasCode = true;
     m_codeBlock->pushCode(ExecuteNativeFunction(fn));
+#ifndef NDEBUG
+    m_codeBlock->m_nonAtomicId = name;
+#endif
 #ifdef ENABLE_ESJIT
     m_codeBlock->m_dontJIT = true;
 #endif
@@ -1007,44 +1011,6 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeF
     if (!isConstructor)
         m_flags.m_nonConstructor = true;
     m_flags.m_isBoundFunction = false;
-}
-
-ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctionObject* fn, const ESValue& receiver, ESValue arguments[], const size_t& argumentCount, ESVMInstance* ESVMInstance)
-{
-    bool strict = fn->codeBlock()->shouldUseStrictMode();
-    newEC->setStrictMode(strict);
-
-    // http://www.ecma-international.org/ecma-262/6.0/#sec-ordinarycallbindthis
-    if (!strict) {
-        if (receiver.isUndefinedOrNull()) {
-            newEC->setThisBinding(ESVMInstance->globalObject());
-        } else {
-            newEC->setThisBinding(receiver.toObject());
-        }
-    } else {
-        newEC->setThisBinding(receiver);
-    }
-
-
-    DeclarativeEnvironmentRecord* functionRecord = newEC->environment()->record()->toDeclarativeEnvironmentRecord();
-    if (UNLIKELY(fn->codeBlock()->m_needsHeapAllocatedVariableStorage)) {
-        const InternalAtomicStringVector& params = fn->codeBlock()->m_params;
-        for (unsigned i = 0; i < params.size(); i ++) {
-            if (i < argumentCount) {
-                *functionRecord->bindingValueForHeapAllocatedData(i) = arguments[i];
-            }
-        }
-        // if FunctionExpressionNode has own name, should bind own name
-        if (fn->codeBlock()->m_isFunctionExpression && fn->name()->length())
-            *functionRecord->bindingValueForHeapAllocatedData(params.size()) = ESValue(fn);
-    } else {
-        const InternalAtomicStringVector& params = fn->codeBlock()->m_params;
-        ESValue* buf = newEC->cachedDeclarativeEnvironmentRecordESValue();
-        memcpy(buf, arguments, sizeof(ESValue) * (std::min(params.size(), argumentCount)));
-        // if FunctionExpressionNode has own name, should bind own name
-        if (fn->codeBlock()->m_isFunctionExpression && fn->name()->length())
-            buf[params.size()] = ESValue(fn);
-    }
 }
 
 #ifdef ENABLE_ESJIT
@@ -1392,6 +1358,47 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
 
 #endif
 
+ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctionObject* fn, CodeBlock* cb, DeclarativeEnvironmentRecord* functionRecord, ESValue* stackStorage, const ESValue& receiver, ESValue arguments[], const size_t& argumentCount, ESVMInstance* ESVMInstance)
+{
+    // http://www.ecma-international.org/ecma-262/6.0/#sec-ordinarycallbindthis
+    if (!newEC->isStrictMode()) {
+        if (receiver.isUndefinedOrNull()) {
+            newEC->setThisBinding(ESVMInstance->globalObject());
+        } else {
+            newEC->setThisBinding(receiver.toObject());
+        }
+    } else {
+        newEC->setThisBinding(receiver);
+    }
+
+    // if FunctionExpressionNode has own name, should bind own name
+    if (cb->m_isFunctionExpression && cb->m_functionExpressionNameIndex != SIZE_MAX) {
+        if (cb->m_isFunctionExpressionNameHeapAllocated) {
+            *functionRecord->bindingValueForHeapAllocatedData(cb->m_functionExpressionNameIndex) = fn->name();
+        } else {
+            stackStorage[cb->m_functionExpressionNameIndex] = fn->name();
+        }
+    }
+
+    const FunctionParametersInfoVector& info = cb->m_paramsInformation;
+    size_t siz = std::min(argumentCount, info.size());
+    if (UNLIKELY(cb->m_needsComplexParameterCopy)) {
+        for (size_t i = 0; i < siz; i ++) {
+            if (info[i].m_isHeapAllocated) {
+                *functionRecord->bindingValueForHeapAllocatedData(info[i].m_index) = arguments[i];
+            } else {
+                stackStorage[info[i].m_index] = arguments[i];
+            }
+        }
+    } else {
+        for (size_t i = 0; i < siz; i ++) {
+            stackStorage[i] = arguments[i];
+        }
+    }
+
+}
+
+
 ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, const ESValue& receiver, ESValue arguments[], const size_t& argumentCount, bool isNewExpression)
 {
     ESValue result(ESValue::ESForceUninitialized);
@@ -1400,18 +1407,22 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
         ESFunctionObject* fn = callee.asESPointer()->asESFunctionObject();
         CodeBlock* const cb = fn->codeBlock();
 
-        if (UNLIKELY(!cb->m_code.size())) {
+        if (UNLIKELY(!cb->m_hasCode)) {
             FunctionNode* node = (FunctionNode *)cb->m_ast;
-            cb->m_innerIdentifiersSize = node->innerIdentifiers().size();
-            if (node->m_needsHeapAllocatedVariableStorage)
-                cb->m_innerIdentifiers = std::move(node->innerIdentifiers());
-            cb->m_needsToPrepareGenerateArgumentsObject = node->needsToPrepareGenerateArgumentsObject();
-            cb->m_needsHeapAllocatedVariableStorage = node->needsHeapAllocatedVariableStorage();
-            cb->m_needsActivation = node->needsActivation();
-            cb->m_params = std::move(node->m_params);
+            cb->m_stackAllocatedIdentifiersCount = node->m_stackAllocatedIdentifiersCount;
+            cb->m_heapAllocatedIdentifiers = std::move(node->m_heapAllocatedIdentifiers);
+            cb->m_paramsInformation = std::move(node->m_paramsInformation);
+            cb->m_needsHeapAllocatedExecutionContext = node->m_needsHeapAllocatedExecutionContext;
+            cb->m_needsToPrepareGenerateArgumentsObject = node->m_needsToPrepareGenerateArgumentsObject;
+            cb->m_needsComplexParameterCopy = node->m_needsComplexParameterCopy;
+            // cb->m_params = std::move(m_params);
+            // FIXME copy params if needs future
             cb->m_isStrict = node->m_isStrict;
             cb->m_isFunctionExpression = node->isExpression();
-
+            cb->m_argumentCount = node->m_params.size();
+            cb->m_hasCode = true;
+            cb->m_functionExpressionNameIndex = node->m_functionIdIndex;
+            cb->m_isFunctionExpressionNameHeapAllocated = node->m_functionIdIndexNeedsHeapAllocation;
             ByteCodeGenerateContext newContext(cb);
             node->body()->generateStatementByteCode(cb, newContext);
 
@@ -1431,76 +1442,50 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
 #endif
         }
 
-        if (cb->m_needsHeapAllocatedVariableStorage) {
-            ASSERT(cb->m_needsActivation);
-            instance->m_currentExecutionContext = new ExecutionContext(LexicalEnvironment::newFunctionEnvironment(cb->m_needsToPrepareGenerateArgumentsObject, arguments, argumentCount, fn), isNewExpression,
-                arguments, argumentCount);
-            functionCallerInnerProcess(instance->m_currentExecutionContext, fn, receiver, arguments, argumentCount, instance);
+        ESValue* stackStorage = (::escargot::ESValue *)alloca(sizeof(::escargot::ESValue) * cb->m_stackAllocatedIdentifiersCount);
+        if (cb->m_needsHeapAllocatedExecutionContext) {
+            auto FE = LexicalEnvironment::newFunctionEnvironment(cb->m_needsToPrepareGenerateArgumentsObject,
+                stackStorage, cb->m_stackAllocatedIdentifiersCount, cb->m_heapAllocatedIdentifiers, arguments, argumentCount, fn);
+            instance->m_currentExecutionContext = new ExecutionContext(FE, isNewExpression, cb->shouldUseStrictMode(), arguments, argumentCount);
+            FunctionEnvironmentRecord* record = (FunctionEnvironmentRecord *)FE->record();
+            functionCallerInnerProcess(instance->m_currentExecutionContext, fn, cb, record, stackStorage, receiver, arguments, argumentCount, instance);
+
 #ifdef ENABLE_ESJIT
             result = executeJIT(fn, instance, *instance->m_currentExecutionContext);
 #else
-            result = interpret(instance, cb);
+            result = interpret(instance, cb, 0, stackStorage, &record->heapAllocatedData());
 #endif
             instance->m_currentExecutionContext = currentContext;
         } else {
-            ESValue* storage = (::escargot::ESValue *)alloca(sizeof(::escargot::ESValue) * cb->m_innerIdentifiersSize);
-            if (cb->m_needsActivation) {
-                FunctionEnvironmentRecord* envRec;
-                if (UNLIKELY(cb->m_needsToPrepareGenerateArgumentsObject)) {
-                    envRec = new FunctionEnvironmentRecordWithArgumentsObject(
-                        arguments, argumentCount,
-                        storage,
-                        cb->m_innerIdentifiersSize);
-                } else {
-                    envRec = new FunctionEnvironmentRecord(
-                        storage,
-                        cb->m_innerIdentifiersSize);
-                }
-
-                LexicalEnvironment* env = new LexicalEnvironment(envRec, fn->outerEnvironment());
-                ExecutionContext* ec = new ExecutionContext(env, isNewExpression, arguments, argumentCount, storage);
-                instance->m_currentExecutionContext = ec;
-                functionCallerInnerProcess(ec, fn, receiver, arguments, argumentCount, instance);
+            if (UNLIKELY(cb->m_needsToPrepareGenerateArgumentsObject)) {
+                FunctionEnvironmentRecordWithArgumentsObject envRec(
+                    arguments, argumentCount,
+                    stackStorage, cb->m_stackAllocatedIdentifiersCount, cb->m_heapAllocatedIdentifiers);
+                LexicalEnvironment env(&envRec, fn->outerEnvironment());
+                ExecutionContext ec(&env, isNewExpression, cb->shouldUseStrictMode(), arguments, argumentCount);
+                instance->m_currentExecutionContext = &ec;
+                functionCallerInnerProcess(&ec, fn, cb, &envRec, stackStorage, receiver, arguments, argumentCount, instance);
 #ifdef ENABLE_ESJIT
-                result = executeJIT(fn, instance, *ec);
+                result = executeJIT(fn, instance, ec);
 #else
-                result = interpret(instance, cb);
+                result = interpret(instance, cb, 0, stackStorage, &envRec.heapAllocatedData());
 #endif
                 instance->m_currentExecutionContext = currentContext;
             } else {
-                if (UNLIKELY(cb->m_needsToPrepareGenerateArgumentsObject)) {
-                    FunctionEnvironmentRecordWithArgumentsObject envRec(
-                        arguments, argumentCount,
-                        storage,
-                        cb->m_innerIdentifiersSize);
-                    LexicalEnvironment env(&envRec, fn->outerEnvironment());
-                    ExecutionContext ec(&env, isNewExpression, arguments, argumentCount, storage);
-                    instance->m_currentExecutionContext = &ec;
-                    functionCallerInnerProcess(&ec, fn, receiver, arguments, argumentCount, instance);
+                FunctionEnvironmentRecord envRec(
+                    stackStorage, cb->m_stackAllocatedIdentifiersCount, cb->m_heapAllocatedIdentifiers);
+                LexicalEnvironment env(&envRec, fn->outerEnvironment());
+                ExecutionContext ec(&env, isNewExpression, cb->shouldUseStrictMode(), arguments, argumentCount);
+                instance->m_currentExecutionContext = &ec;
+                functionCallerInnerProcess(&ec, fn, cb, &envRec, stackStorage, receiver, arguments, argumentCount, instance);
 #ifdef ENABLE_ESJIT
-                    result = executeJIT(fn, instance, ec);
+                result = executeJIT(fn, instance, ec);
 #else
-                    result = interpret(instance, cb);
+                result = interpret(instance, cb, 0, stackStorage, &envRec.heapAllocatedData());
 #endif
-                    instance->m_currentExecutionContext = currentContext;
-                } else {
-                    FunctionEnvironmentRecord envRec(
-                        storage,
-                        cb->m_innerIdentifiersSize);
-                    LexicalEnvironment env(&envRec, fn->outerEnvironment());
-                    ExecutionContext ec(&env, isNewExpression, arguments, argumentCount, storage);
-                    instance->m_currentExecutionContext = &ec;
-                    functionCallerInnerProcess(&ec, fn, receiver, arguments, argumentCount, instance);
-#ifdef ENABLE_ESJIT
-                    result = executeJIT(fn, instance, ec);
-#else
-                    result = interpret(instance, cb);
-#endif
-                    instance->m_currentExecutionContext = currentContext;
-                }
+                instance->m_currentExecutionContext = currentContext;
             }
         }
-
     } else {
         instance->throwError(ESValue(TypeError::create(ESString::create("Callee is not a function object"))));
     }

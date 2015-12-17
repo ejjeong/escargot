@@ -23,14 +23,17 @@ public:
         // CodeBlock* cb = CodeBlock::create(myResult);
         CodeBlock* cb = CodeBlock::create(0);
         if (context.m_shouldGenereateByteCodeInstantly) {
-            cb->m_innerIdentifiersSize = m_innerIdentifiers.size();
-            if (m_needsHeapAllocatedVariableStorage)
-                cb->m_innerIdentifiers = std::move(m_innerIdentifiers);
+            cb->m_stackAllocatedIdentifiersCount = m_stackAllocatedIdentifiersCount;
+            cb->m_heapAllocatedIdentifiers = std::move(m_heapAllocatedIdentifiers);
+            cb->m_paramsInformation = std::move(m_paramsInformation);
+            cb->m_needsHeapAllocatedExecutionContext = m_needsHeapAllocatedExecutionContext;
             cb->m_needsToPrepareGenerateArgumentsObject = m_needsToPrepareGenerateArgumentsObject;
-            cb->m_needsHeapAllocatedVariableStorage = m_needsHeapAllocatedVariableStorage;
-            cb->m_needsActivation = m_needsActivation;
-            cb->m_params = std::move(m_params);
+            cb->m_needsComplexParameterCopy = m_needsComplexParameterCopy;
+            // cb->m_params = std::move(m_params);
+            // FIXME copy params if needs future
             cb->m_isStrict = m_isStrict;
+            cb->m_argumentCount = m_params.size();
+            cb->m_hasCode = true;
 
             ByteCodeGenerateContext newContext(cb);
             m_body->generateStatementByteCode(cb, newContext);
@@ -46,11 +49,10 @@ public:
                 }
             }
 #endif
-            codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb, true, m_functionIdIndex), context, this);
+            codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb, true, m_functionIdIndex, m_functionIdIndexNeedsHeapAllocation), context, this);
         } else {
             cb->m_ast = this;
-            cb->m_params = m_params;
-            codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb, true, m_functionIdIndex), context, this);
+            codeBlock->pushCode(CreateFunction(m_id, m_nonAtomicId, cb, true, m_functionIdIndex, m_functionIdIndexNeedsHeapAllocation), context, this);
         }
     }
 

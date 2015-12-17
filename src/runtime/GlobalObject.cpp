@@ -538,13 +538,19 @@ void GlobalObject::installFunction()
             Node* programNode = instance->scriptParser()->generateAST(instance, builder.finalize(), true);
             FunctionNode* functionDeclAST = static_cast<FunctionNode* >(static_cast<ProgramNode *>(programNode)->body()[1]);
             ByteCodeGenerateContext context(codeBlock);
-            codeBlock->m_innerIdentifiersSize = functionDeclAST->innerIdentifiers().size();
+
+            codeBlock->m_stackAllocatedIdentifiersCount = functionDeclAST->stackAllocatedIdentifiersCount();
+            codeBlock->m_heapAllocatedIdentifiers = std::move(functionDeclAST->heapAllocatedIdentifiers());
+            codeBlock->m_paramsInformation = std::move(functionDeclAST->paramsInformation());
+            codeBlock->m_needsHeapAllocatedExecutionContext = functionDeclAST->needsHeapAllocatedExecutionContext();
             codeBlock->m_needsToPrepareGenerateArgumentsObject = functionDeclAST->needsToPrepareGenerateArgumentsObject();
-            codeBlock->m_needsHeapAllocatedVariableStorage = functionDeclAST->needsHeapAllocatedVariableStorage();
-            codeBlock->m_innerIdentifiers = std::move(functionDeclAST->innerIdentifiers());
-            codeBlock->m_needsActivation = functionDeclAST->needsActivation();
-            codeBlock->m_params = std::move(functionDeclAST->params());
+            codeBlock->m_needsComplexParameterCopy = functionDeclAST->needsComplexParameterCopy();
+            // FIXME copy params if needs future
+            // codeBlock->m_params = std::move(functionDeclAST->params());
             codeBlock->m_isStrict = functionDeclAST->isStrict();
+            codeBlock->m_argumentCount = functionDeclAST->argumentCount();
+            codeBlock->m_hasCode = true;
+
             functionDeclAST->body()->generateStatementByteCode(codeBlock, context);
             codeBlock->pushCode(ReturnFunction(), context, functionDeclAST);
         }
@@ -636,6 +642,7 @@ void GlobalObject::installFunction()
         code.m_boundArguments = (ESValue *)GC_MALLOC(code.m_boundArgumentsCount * sizeof(ESValue));
         memcpy(code.m_boundArguments, instance->currentExecutionContext()->arguments() + 1, code.m_boundArgumentsCount * sizeof(ESValue));
         cb->pushCode(code, context, NULL);
+        cb->m_hasCode = true;
         escargot::ESFunctionObject* function = ESFunctionObject::create(NULL, cb, strings->emptyString, std::max((int) code.m_boundTargetFunction->length() - (int) code.m_boundArgumentsCount, 0), false);
         function->setBoundFunc();
         function->set__proto__(instance->globalObject()->functionPrototype());
@@ -664,14 +671,14 @@ void GlobalObject::installFunction()
         auto thisVal = instance->currentExecutionContext()->resolveThisBindingToObject()->asESFunctionObject();
         if (!instance->currentExecutionContext()->resolveThisBindingToObject()->isESFunctionObject())
             instance->throwError(ESValue(TypeError::create(ESString::create("Type error"))));
-        int arglen = instance->currentExecutionContext()->argumentCount()-1;
-        ESValue& thisArg = instance->currentExecutionContext()->arguments()[0];
-        ESValue* arguments = (ESValue*)alloca(sizeof(ESValue) * arglen);
-        for (int i = 0; i < arglen; i++) {
-            arguments[i] = instance->currentExecutionContext()->arguments()[i + 1];
+        size_t arglen = instance->currentExecutionContext()->argumentCount();
+        ESValue thisArg = instance->currentExecutionContext()->readArgument(0);
+        ESValue* arguments = (ESValue*)alloca(sizeof(ESValue) * (arglen - 1));
+        for (size_t i = 1; i < arglen; i++) {
+            arguments[i - 1] = instance->currentExecutionContext()->arguments()[i];
         }
 
-        return ESFunctionObject::call(instance, thisVal, thisArg, arguments, arglen, false);
+        return ESFunctionObject::call(instance, thisVal, thisArg, arguments, arglen - 1, false);
     }, ESString::createAtomicString("call"), 1));
 
     defineDataProperty(strings->Function, true, false, true, m_function);

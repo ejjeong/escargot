@@ -12,13 +12,22 @@ CodeBlock::CodeBlock(size_t roughCodeBlockSizeInWordSize, bool isBuiltInFunction
     m_ast = NULL;
     if (roughCodeBlockSizeInWordSize)
         m_code.reserve(roughCodeBlockSizeInWordSize * sizeof(size_t));
-    m_needsActivation = false;
-    m_needsHeapAllocatedVariableStorage = false;
+    m_stackAllocatedIdentifiersCount = 0;
     m_isBuiltInFunction = isBuiltInFunction;
     m_isStrict = false;
+    if (isBuiltInFunction) {
+        m_isStrict = true;
+    }
     m_isFunctionExpression = false;
     m_requiredStackSizeInESValueSize = 0;
+    m_argumentCount = 0;
     m_isCached = false;
+    m_hasCode = false;
+    m_needsHeapAllocatedExecutionContext = false;
+    m_needsComplexParameterCopy = false;
+    m_needsToPrepareGenerateArgumentsObject = false;
+    m_isFunctionExpressionNameHeapAllocated = false;
+    m_functionExpressionNameIndex = SIZE_MAX;
 #ifdef ENABLE_ESJIT
     m_cachedJITFunction = nullptr;
     m_executeCount = 0;
