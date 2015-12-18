@@ -1224,7 +1224,7 @@ protected:
         m_hasNonASCIIString = false;
     }
 public:
-    static const unsigned ESRopeStringCreateMinLimit = 256;
+    static const unsigned ESRopeStringCreateMinLimit = 24;
     static ESRopeString* create()
     {
         return new ESRopeString();
@@ -1549,7 +1549,7 @@ class ESHiddenClass : public gc {
     friend class ESVMInstance;
     friend class ESObject;
 public:
-    size_t findProperty(const ESString* name)
+    ALWAYS_INLINE size_t findProperty(const ESString* name)
     {
         if (LIKELY(m_propertyIndexHashMapInfo == NULL)) {
             size_t siz = m_propertyInfo.size();

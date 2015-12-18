@@ -1810,6 +1810,7 @@ inline ESTypedArrayObject<Float64Adaptor>::ESTypedArrayObject(TypedArrayType arr
 {
 }
 
+#define ESStringBuilderInlineStorageMax 12
 
 class ESStringBuilder {
     struct ESStringBuilderPiece {
@@ -1826,14 +1827,18 @@ class ESStringBuilder {
         if (!str->isASCIIString()) {
             m_isASCIIString = false;
         }
-        m_contentLength = e - s;
-        m_pieces.push_back(piece);
+        m_contentLength += e - s;
+        if (m_piecesInlineStorageUsage < ESStringBuilderInlineStorageMax) {
+            m_piecesInlineStorage[m_piecesInlineStorageUsage++] = piece;
+        } else
+            m_pieces.push_back(piece);
     }
 public:
     ESStringBuilder()
     {
         m_isASCIIString = true;
         m_contentLength = 0;
+        m_piecesInlineStorageUsage = 0;
     }
 
     void appendString(const char* str)
@@ -1864,18 +1869,25 @@ public:
     {
         if (m_isASCIIString) {
             ASCIIString ret;
-            ret.reserve(m_contentLength);
+            ret.resize(m_contentLength);
+
+            size_t currentLength = 0;
+            for (size_t i = 0; i < m_piecesInlineStorageUsage; i ++) {
+                const ESStringData* data = m_piecesInlineStorage[i].m_string->stringData();
+                const ASCIIString& str = *data->asASCIIString();
+                size_t s = m_piecesInlineStorage[i].m_start;
+                size_t e = m_piecesInlineStorage[i].m_end;
+                memcpy((void *)(ret.data() + currentLength), &str[s], e - s);
+                currentLength += e - s;
+            }
 
             for (size_t i = 0; i < m_pieces.size(); i ++) {
                 const ESStringData* data = m_pieces[i].m_string->stringData();
-                if (data->isASCIIString()) {
-                    const ASCIIString& str = *data->asASCIIString();
-                    ret.append(&str[m_pieces[i].m_start], &str[m_pieces[i].m_end]);
-                } else {
-                    const UTF16String& str = *data->asUTF16String();
-                    ret.append(&str[m_pieces[i].m_start], &str[m_pieces[i].m_end]);
-                }
-
+                const ASCIIString& str = *data->asASCIIString();
+                size_t s = m_pieces[i].m_start;
+                size_t e = m_pieces[i].m_end;
+                memcpy((void *)(ret.data() + currentLength), &str[s], e - s);
+                currentLength += e - s;
             }
 
             return ESString::create(std::move(ret));
@@ -1883,6 +1895,17 @@ public:
             UTF16String ret;
             ret.reserve(m_contentLength);
 
+            for (size_t i = 0; i < m_piecesInlineStorageUsage; i ++) {
+                const ESStringData* data = m_piecesInlineStorage[i].m_string->stringData();
+                if (data->isASCIIString()) {
+                    const ASCIIString& str = *data->asASCIIString();
+                    ret.append(&str[m_piecesInlineStorage[i].m_start], &str[m_piecesInlineStorage[i].m_end]);
+                } else {
+                    const UTF16String& str = *data->asUTF16String();
+                    ret.append(&str[m_piecesInlineStorage[i].m_start], &str[m_piecesInlineStorage[i].m_end]);
+                }
+            }
+
             for (size_t i = 0; i < m_pieces.size(); i ++) {
                 const ESStringData* data = m_pieces[i].m_string->stringData();
                 if (data->isASCIIString()) {
@@ -1892,13 +1915,15 @@ public:
                     const UTF16String& str = *data->asUTF16String();
                     ret.append(&str[m_pieces[i].m_start], &str[m_pieces[i].m_end]);
                 }
-
             }
+
             return ESString::create(std::move(ret));
         }
     }
 
 protected:
+    ESStringBuilderPiece m_piecesInlineStorage[ESStringBuilderInlineStorageMax];
+    size_t m_piecesInlineStorageUsage;
     std::vector<ESStringBuilderPiece, gc_allocator<ESStringBuilderPiece> > m_pieces;
     size_t m_contentLength;
     bool m_isASCIIString;
