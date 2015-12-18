@@ -43,8 +43,6 @@ class CodeBlock;
     F(SetByIndex, 0, 0, 1, 1, 0) \
     F(GetByIndexInHeap, 1, 0, 0, 1, 1) \
     F(SetByIndexInHeap, 0, 0, 1, 1, 0) \
-    F(GetByIndexInUpperContext, 1, 0, 0, 1, 1) \
-    F(SetByIndexInUpperContext, 0, 0, 1, 1, 0) \
     F(GetByIndexInUpperContextHeap, 1, 0, 0, 1, 1) \
     F(SetByIndexInUpperContextHeap, 0, 0, 1, 1, 0) \
     F(GetArgumentsObject, 1, 0, 0, 0, 0) \
@@ -696,32 +694,11 @@ public:
     }
     size_t m_index;
     ESString* m_name;
-    ESHiddenClass* m_hiddenClassOfGlobalObject;
 
 #ifndef NDEBUG
     virtual void dump()
     {
         printf("GetByGlobalIndex <%s, %u>\n", m_name->utf8Data(),  (unsigned)m_index);
-    }
-#endif
-};
-
-class GetByIndexInUpperContext : public ByteCode, public JITProfileTarget {
-public:
-    GetByIndexInUpperContext(size_t fastAccessIndex, size_t fastAccessUpIndex)
-        : ByteCode(GetByIndexInUpperContextOpcode)
-    {
-        m_index = fastAccessIndex;
-        m_upIndex = fastAccessUpIndex;
-    }
-    size_t m_index;
-    size_t m_upIndex;
-
-#ifndef NDEBUG
-    ESString* m_name;
-    virtual void dump()
-    {
-        printf("GetByIndexInUpperContext <%s, %u, %u>\n", m_name->utf8Data(), (unsigned)m_index, (unsigned)m_upIndex);
     }
 #endif
 };
@@ -836,25 +813,6 @@ public:
     virtual void dump()
     {
         printf("SetByGlobalIndex <%u>\n", (unsigned)m_index);
-    }
-#endif
-};
-
-class SetByIndexInUpperContext : public ByteCode {
-public:
-    SetByIndexInUpperContext(size_t fastAccessIndex, size_t fastAccessUpIndex, Opcode code = SetByIndexInUpperContextOpcode)
-        : ByteCode(code)
-    {
-        m_index = fastAccessIndex;
-        m_upIndex = fastAccessUpIndex;
-    }
-    size_t m_index;
-    size_t m_upIndex;
-
-#ifndef NDEBUG
-    virtual void dump()
-    {
-        printf("SetByIndexInUpperContext <%u, %u>\n", (unsigned)m_index, (unsigned)m_upIndex);
     }
 #endif
 };

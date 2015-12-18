@@ -12,14 +12,14 @@ public:
     ALWAYS_INLINE ExecutionContext(LexicalEnvironment* varEnv, bool isNewExpression, bool isStrictMode,
         ESValue* arguments = NULL, size_t argumentsCount = 0)
             : m_thisValue(ESValue::ESForceUninitialized)
-            , m_tryOrCatchBodyResult(ESValue::ESForceUninitialized)
+            , m_tryOrCatchBodyResultOrArgumentsInfo(ESValue::ESForceUninitialized)
     {
         ASSERT(varEnv);
-        m_flags.m_isNewExpression = isNewExpression;
-        m_flags.m_isStrict = isStrictMode;
+        m_data.m_isNewExpression = isNewExpression;
+        m_data.m_isStrict = isStrictMode;
         m_environment = varEnv;
-        m_arguments = arguments;
-        m_argumentCount = argumentsCount;
+        m_tryOrCatchBodyResultOrArgumentsInfo = (ESPointer *)arguments;
+        m_data.m_argumentCount = argumentsCount;
 #ifdef ENABLE_ESJIT
         m_inOSRExit = false;
         m_executeNextByteCode = false;
@@ -49,10 +49,12 @@ public:
     {
         m_thisValue = v;
     }
+
     ESValue resolveThisBinding()
     {
         return m_thisValue;
     }
+
     ESObject* resolveThisBindingToObject()
     {
         return m_thisValue.toObject();
@@ -61,19 +63,21 @@ public:
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-getthisenvironment
     LexicalEnvironment* getThisEnvironment();
 
-    ALWAYS_INLINE bool isNewExpression() { return m_flags.m_isNewExpression; }
-    ESValue* arguments() { return m_arguments; }
-    size_t argumentCount() { return m_argumentCount; }
+    ALWAYS_INLINE bool isNewExpression() { return m_data.m_isNewExpression; }
+
+    // NOTE this argument information is for nativeFunctions. do not use this interpreter of jit
+    ESValue* arguments() { return (ESValue *)m_tryOrCatchBodyResultOrArgumentsInfo.asESPointer(); }
+    size_t argumentCount() { return m_data.m_argumentCount; }
     ESValue readArgument(size_t idx)
     {
         if (idx < argumentCount()) {
-            return m_arguments[idx];
+            return arguments()[idx];
         } else {
             return ESValue();
         }
     }
 
-    bool isStrictMode() { return m_flags.m_isStrict; }
+    bool isStrictMode() { return m_data.m_isStrict; }
 
 #ifdef ENABLE_ESJIT
     bool inOSRExit() { return m_inOSRExit; }
@@ -92,16 +96,13 @@ public:
 #pragma GCC diagnostic pop
 #endif
 
-    ESValue& tryOrCatchBodyResult() { return m_tryOrCatchBodyResult; }
+    ESValue& tryOrCatchBodyResult() { return m_tryOrCatchBodyResultOrArgumentsInfo; }
 private:
     struct {
         bool m_isNewExpression;
         bool m_isStrict;
-    } m_flags;
-
-
-    ESValue* m_arguments;
-    size_t m_argumentCount;
+        uint16_t m_argumentCount;
+    } m_data;
 
     // TODO
     // LexicalEnvironment* m_lexicalEnvironment;
@@ -109,7 +110,7 @@ private:
     LexicalEnvironment* m_environment;
 
     ESValue m_thisValue;
-    ESValue m_tryOrCatchBodyResult;
+    ESValue m_tryOrCatchBodyResultOrArgumentsInfo;
 #ifdef ENABLE_ESJIT
     bool m_inOSRExit;
     bool m_executeNextByteCode;

@@ -38,17 +38,11 @@ public:
     {
         if (canUseFastAccess()) {
             if (m_fastAccessUpIndex) {
-                if (m_flags.m_isFastAccessIndexIndicatesHeapIndex) {
-                    codeBlock->pushCode(GetByIndexInUpperContextHeap(m_fastAccessIndex, m_fastAccessUpIndex), context, this);
+                ASSERT(m_flags.m_isFastAccessIndexIndicatesHeapIndex);
+                codeBlock->pushCode(GetByIndexInUpperContextHeap(m_fastAccessIndex, m_fastAccessUpIndex), context, this);
 #ifndef NDEBUG
-                    codeBlock->peekCode<GetByIndexInUpperContextHeap>(codeBlock->lastCodePosition<GetByIndexInUpperContextHeap>())->m_name = m_name;
+                codeBlock->peekCode<GetByIndexInUpperContextHeap>(codeBlock->lastCodePosition<GetByIndexInUpperContextHeap>())->m_name = m_name;
 #endif
-                } else {
-                    codeBlock->pushCode(GetByIndexInUpperContext(m_fastAccessIndex, m_fastAccessUpIndex), context, this);
-#ifndef NDEBUG
-                    codeBlock->peekCode<GetByIndexInUpperContext>(codeBlock->lastCodePosition<GetByIndexInUpperContext>())->m_name = m_name;
-#endif
-                }
             } else {
                 if (m_flags.m_isFastAccessIndexIndicatesHeapIndex) {
                     codeBlock->pushCode(GetByIndexInHeap(m_fastAccessIndex), context, this);
@@ -86,10 +80,8 @@ public:
     {
         if (canUseFastAccess()) {
             if (m_fastAccessUpIndex) {
-                if (m_flags.m_isFastAccessIndexIndicatesHeapIndex)
-                    codeBlock->pushCode(SetByIndexInUpperContextHeap(m_fastAccessIndex, m_fastAccessUpIndex), context, this);
-                else
-                    codeBlock->pushCode(SetByIndexInUpperContext(m_fastAccessIndex, m_fastAccessUpIndex), context, this);
+                ASSERT(m_flags.m_isFastAccessIndexIndicatesHeapIndex);
+                codeBlock->pushCode(SetByIndexInUpperContextHeap(m_fastAccessIndex, m_fastAccessUpIndex), context, this);
             } else {
                 if (m_flags.m_isFastAccessIndexIndicatesHeapIndex)
                     codeBlock->pushCode(SetByIndexInHeap(m_fastAccessIndex), context, this);

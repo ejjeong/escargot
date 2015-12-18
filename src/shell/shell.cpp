@@ -165,8 +165,7 @@ int main(int argc, char* argv[])
         }
     });
 #endif
-
-    // printf("%d", sizeof (escargot::ESHiddenClassPropertyInfo));
+    // printf("%d", sizeof (escargot::ExecutionContext));
     /*
     static void* root[300000];
     int j = 0;

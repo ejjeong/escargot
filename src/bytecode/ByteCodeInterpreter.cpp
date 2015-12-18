@@ -209,26 +209,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             NEXT_INSTRUCTION();
         }
 
-        GetByIndexInUpperContextOpcodeLbl:
-        {
-            GetByIndexInUpperContext* code = (GetByIndexInUpperContext*)currentCode;
-            LexicalEnvironment* env = ec->environment();
-            for (unsigned i = 0; i < code->m_upIndex; i ++) {
-                env = env->outerEnvironment();
-            }
-            ASSERT(env->record()->isDeclarativeEnvironmentRecord());
-
-#ifndef ENABLE_ESJIT
-            PUSH(stack, topOfStack, *env->record()->toDeclarativeEnvironmentRecord()->bindingValueForStackAllocatedData(code->m_index));
-#else
-            ESValue v = *env->record()->toDeclarativeEnvironmentRecord()->bindingValueForStackAllocatedData(code->m_index);
-            PUSH(stack, topOfStack, v);
-            code->m_profile.addProfile(v);
-#endif
-            executeNextCode<GetByIndexInUpperContext>(programCounter);
-            NEXT_INSTRUCTION();
-        }
-
         GetByIndexInUpperContextHeapOpcodeLbl:
         {
             GetByIndexInUpperContextHeap* code = (GetByIndexInUpperContextHeap*)currentCode;
@@ -291,19 +271,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             SetByIndexInHeap* code = (SetByIndexInHeap*)currentCode;
             (*heapAllocatedHeapValue)[code->m_index].second = *PEEK(stack, bp);
             executeNextCode<SetByIndexInHeap>(programCounter);
-            NEXT_INSTRUCTION();
-        }
-
-        SetByIndexInUpperContextOpcodeLbl:
-        {
-            SetByIndexInUpperContext* code = (SetByIndexInUpperContext*)currentCode;
-            LexicalEnvironment* env = ec->environment();
-            for (unsigned i = 0; i < code->m_upIndex; i ++) {
-                env = env->outerEnvironment();
-            }
-            ASSERT(env->record()->isDeclarativeEnvironmentRecord());
-            *env->record()->toDeclarativeEnvironmentRecord()->bindingValueForStackAllocatedData(code->m_index) = *PEEK(stack, bp);
-            executeNextCode<SetByIndexInUpperContext>(programCounter);
             NEXT_INSTRUCTION();
         }
 
