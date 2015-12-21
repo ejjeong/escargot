@@ -95,6 +95,7 @@ endif
 #######################################################
 
 # common flags
+CXXFLAGS += -DENABLE_CODECACHE -DENABLE_DTOACACHE
 CXXFLAGS += -fno-rtti -fno-math-errno -Isrc/
 CXXFLAGS += -fdata-sections -ffunction-sections
 CXXFLAGS += -frounding-math -fsignaling-nans

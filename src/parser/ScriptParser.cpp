@@ -691,6 +691,7 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
 
 CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope)
 {
+#ifdef ENABLE_CODECACHE
     if (source->length() < 1024) {
         if (isForGlobalScope) {
             auto iter = m_globalCodeCache.find(source);
@@ -704,6 +705,7 @@ CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString*
             }
         }
     }
+#endif
 
     // unsigned long start = ESVMInstance::currentInstance()->tickCount();
     ProgramNode* node = (ProgramNode *)generateAST(instance, source, isForGlobalScope);
@@ -711,7 +713,7 @@ CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString*
     CodeBlock* cb = generateByteCode(node, source->length() > 1024 * 1024 ? false : true);
     // unsigned long end = ESVMInstance::currentInstance()->tickCount();
     // printf("parseScript takes %lfms\n", (end-start)/1000.0);
-
+#ifdef ENABLE_CODECACHE
     if (source->length() < 1024) {
         if (isForGlobalScope) {
             cb->m_isCached = true;
@@ -721,7 +723,7 @@ CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString*
             m_nonGlobalCodeCache.insert(std::make_pair(source, cb));
         }
     }
-
+#endif
     return cb;
 }
 

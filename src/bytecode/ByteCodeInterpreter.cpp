@@ -986,8 +986,10 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             CallBoundFunction* code = (CallBoundFunction*)currentCode;
             size_t argc = code->m_boundArgumentsCount + instance->currentExecutionContext()->argumentCount();
             ESValue* mergedArguments = (ESValue *)alloca(sizeof(ESValue) * argc);
-            memcpy(mergedArguments, code->m_boundArguments, sizeof(ESValue) * code->m_boundArgumentsCount);
-            memcpy(mergedArguments + code->m_boundArgumentsCount, instance->currentExecutionContext()->arguments(), sizeof(ESValue) * instance->currentExecutionContext()->argumentCount());
+            if (code->m_boundArgumentsCount)
+                memcpy(mergedArguments, code->m_boundArguments, sizeof(ESValue) * code->m_boundArgumentsCount);
+            if (instance->currentExecutionContext()->argumentCount())
+                memcpy(mergedArguments + code->m_boundArgumentsCount, instance->currentExecutionContext()->arguments(), sizeof(ESValue) * instance->currentExecutionContext()->argumentCount());
             return ESFunctionObject::call(instance, code->m_boundTargetFunction, code->m_boundThis, mergedArguments, argc, false);
         }
 

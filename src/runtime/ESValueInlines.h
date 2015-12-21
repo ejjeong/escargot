@@ -869,17 +869,18 @@ ALWAYS_INLINE ESPointer* ESValue::asESPointer() const
 inline ESString::ESString(double number)
     : ESPointer(Type::ESString)
 {
-    // FIXME dtoa cache disabled
-    /*
+#ifdef ENABLE_DTOACACHE
     auto cache = ESVMInstance::currentInstance()->dtoaCache();
     auto iter = cache->find(number);
     if (iter != cache->end()) {
         m_string = iter->second;
         return;
     }
-    */
+#endif
     m_string = new ESStringDataASCII(number);
-    // cache->insert(std::make_pair(number, m_string));
+#ifdef ENABLE_DTOACACHE
+    cache->insert(std::make_pair(number, m_string));
+#endif
 }
 
 inline ESString* ESString::create(const char* str)
