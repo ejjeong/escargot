@@ -470,6 +470,7 @@ ESObject::ESObject(ESPointer::Type type, ESValue __proto__, size_t initialKeyCou
     m_flags.m_isExtensible = true;
     m_flags.m_isGlobalObject = false;
     m_flags.m_isEverSetAsPrototypeObject = false;
+    m_flags.m_extraData = 0;
 
     m_hiddenClassData.reserve(initialKeyCount);
     m_hiddenClass = ESVMInstance::currentInstance()->initialHiddenClassForObject();

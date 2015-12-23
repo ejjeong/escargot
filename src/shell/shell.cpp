@@ -154,7 +154,6 @@ int main(int argc, char* argv[])
             while (iter != g_addressTable.end()) {
                 GC_is_valid_displacement(iter->first);
                 iter++;
-                GC_is_heap_ptr()
             }
 
             for (unsigned i = 0; i < g_freeList.size(); i ++) {

@@ -1738,6 +1738,16 @@ public:
         return m_hiddenClass;
     }
 
+    uint16_t extraData()
+    {
+        return m_flags.m_extraData;
+    }
+
+    void setExtraData(uint16_t e)
+    {
+        m_flags.m_extraData = e;
+    }
+
     void forceNonVectorHiddenClass(bool forceFillHiddenClassInfo = false)
     {
         if (m_hiddenClass->m_flags.m_forceNonVectorMode)
@@ -1820,7 +1830,10 @@ protected:
         bool m_nonConstructor: 1;
         bool m_isBoundFunction: 1;
 
-        size_t m_margin: 58;
+        // extra data
+        uint16_t m_extraData: 16;
+
+        size_t m_margin: 42;
     } m_flags;
 #endif
 #ifdef ESCARGOT_32
@@ -1836,7 +1849,10 @@ protected:
         bool m_nonConstructor: 1;
         bool m_isBoundFunction: 1;
 
-        size_t m_margin: 26;
+        // extra data
+        uint16_t m_extraData: 16;
+
+        size_t m_margin: 10;
     } m_flags;
 #endif
 };
