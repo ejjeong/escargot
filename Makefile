@@ -95,7 +95,8 @@ endif
 #######################################################
 
 # common flags
-CXXFLAGS += -DENABLE_CODECACHE -DENABLE_DTOACACHE
+CXXFLAGS += -DENABLE_CODECACHE
+# CXXFLAGS += -DENABLE_DTOACACHE
 CXXFLAGS += -fno-rtti -fno-math-errno -Isrc/
 CXXFLAGS += -fdata-sections -ffunction-sections
 CXXFLAGS += -frounding-math -fsignaling-nans
@@ -144,21 +145,11 @@ CXXFLAGS_INTERPRETER =
 # bdwgc
 CXXFLAGS += -Ithird_party/bdwgc/include/
 CXXFLAGS_DEBUG += -DGC_DEBUG
+
 ifeq ($(OUTPUT), bin)
   GCLIBS=third_party/bdwgc/out/$(ARCH)/$(MODE)/.libs/libgc.a
 else
   GCLIBS=third_party/bdwgc/out/$(ARCH)/$(MODE).shared/.libs/libgc.a
-endif
-
-ifneq ($(TYPE),none)
-
-ifneq ($(wildcard $(GCLIBS)),)
-
-else
-$(info gclib not exists. execute build_third_party...)
-$(shell ./build_third_party.sh)
-endif
-
 endif
 
 ifeq ($(TYPE), jit)
@@ -249,7 +240,9 @@ SRC += $(foreach dir, src/bytecode , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, src/jit , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, src/parser , $(wildcard $(dir)/*.cpp))
 SRC += $(foreach dir, src/runtime , $(wildcard $(dir)/*.cpp))
-SRC += $(foreach dir, src/shell , $(wildcard $(dir)/*.cpp))
+ifeq ($(OUTPUT), bin)
+    SRC += $(foreach dir, src/shell , $(wildcard $(dir)/*.cpp))
+endif
 SRC += $(foreach dir, src/vm , $(wildcard $(dir)/*.cpp))
 
 SRC += $(SRC_YARR)
@@ -272,7 +265,7 @@ OBJS += $(SRC_C:%.c= $(OUTDIR)/%.o)
 # pull in dependency info for *existing* .o files
 -include $(OBJS:.o=.d)
 
-.DEFAULT_GOAL:=x64.jit.debug
+.DEFAULT_GOAL:=x64.interpreter.debug
 
 x86.jit.debug: $(OUTDIR)/$(BIN)
 	cp -f $< .
@@ -289,6 +282,10 @@ x64.jit.release: $(OUTDIR)/$(BIN)
 x64.interpreter.debug: $(OUTDIR)/$(BIN)
 	cp -f $< .
 x64.interpreter.release: $(OUTDIR)/$(BIN)
+	cp -f $< .
+x64.interpreter.debug.shared: $(OUTDIR)/$(LIB)
+	cp -f $< .
+x64.interpreter.release.shared: $(OUTDIR)/$(LIB)
 	cp -f $< .
 arm.jit.debug: $(OUTDIR)/$(BIN)
 	cp -f $< .
