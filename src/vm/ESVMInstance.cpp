@@ -171,7 +171,7 @@ long ESVMInstance::timezoneOffset()
 
 const tm* ESVMInstance::computeLocalTime(const timespec& ts)
 {
-    time_t t = ts.tv_sec + m_gmtoff;
+    time_t t = ts.tv_sec - m_gmtoff;
     return gmtime(&t);
     // return localtime(&ts.tv_sec);
 }
