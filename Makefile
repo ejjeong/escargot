@@ -1,6 +1,5 @@
 BUILDDIR=./build
 HOST=linux
-include $(BUILDDIR)/Toolchain.mk
 
 BIN=escargot
 LIB=libescargot.so
@@ -49,21 +48,31 @@ else ifneq (,$(findstring release,$(MAKECMDGOALS)))
   MODE=release
 endif
 
-ifneq (,$(findstring shared,$(MAKECMDGOALS)))
-	OUTPUT=lib
+ifneq (,$(findstring tizen_wearable_arm,$(MAKECMDGOALS)))
+  HOST=tizen_wearable_arm
+else ifneq (,$(findstring tizen_arm,$(MAKECMDGOALS)))
+  HOST=tizen_arm
+else
 endif
 
-ifeq ($(HOST), linux)
-  OUTDIR=out/$(ARCH)/$(TYPE)/$(MODE)
-else ifeq ($(HOST), tizen)
-  OUTDIR=out/tizen_$(ARCH)/$(TYPE)/$(MODE)
+ifneq (,$(findstring shared,$(MAKECMDGOALS)))
+  OUTPUT=lib
 endif
+
+
+OUTDIR=out/$(ARCH)/$(TYPE)/$(MODE)
+
 
 $(info host... $(HOST))
 $(info arch... $(ARCH))
 $(info type... $(TYPE))
 $(info mode... $(MODE))
 $(info build dir... $(OUTDIR))
+
+
+include $(BUILDDIR)/Toolchain.mk
+
+
 
 ifeq ($(TYPE), intrepreter)
   CXXFLAGS+=$(CXXFLAGS_INTERPRETER)
@@ -79,8 +88,6 @@ else ifeq ($(ARCH), x86)
   LDFLAGS += -m32
 else ifeq ($(ARCH), arm)
   CXXFLAGS += -DESCARGOT_32=1 -march=armv7-a
-else
-CXXFLAGS += -DESCARGOT_32=1 -march=armv7-a
 endif
 
 ifeq ($(MODE), debug)
@@ -95,17 +102,15 @@ endif
 #######################################################
 
 # common flags
-CXXFLAGS += -DENABLE_CODECACHE
-# CXXFLAGS += -DENABLE_DTOACACHE
+ifeq ($(HOST), linux)
+    CXXFLAGS += -DENABLE_CODECACHE
+    # CXXFLAGS += -DENABLE_DTOACACHE
+endif
 CXXFLAGS += -fno-rtti -fno-math-errno -Isrc/
 CXXFLAGS += -fdata-sections -ffunction-sections
 CXXFLAGS += -frounding-math -fsignaling-nans
 CXXFLAGS += -Wno-invalid-offsetof
 BIN_CXXFLAGS += -fvisibility=hidden
-
-ifeq ($(HOST), tizen)
-  CXXFLAGS += --sysroot=$(TIZEN_SYSROOT)
-endif
 
 ifeq ($(OUTPUT), lib)
   CXXFLAGS += -fPIC
@@ -125,14 +130,15 @@ else
   LDFLAGS += $(BIN_LDFLAGS)
 endif
 
-ifeq ($(HOST), tizen)
-  LDFLAGS += --sysroot=$(TIZEN_SYSROOT)
-endif
-
 # flags for debug/release
 CXXFLAGS_DEBUG = -O0 -g3 -D_GLIBCXX_DEBUG -fno-omit-frame-pointer -Wall -Wextra -Werror
 CXXFLAGS_DEBUG += -Wno-unused-but-set-variable -Wno-unused-but-set-parameter -Wno-unused-parameter
 CXXFLAGS_RELEASE = -O2 -g3 -DNDEBUG -fomit-frame-pointer -fno-stack-protector -funswitch-loops -Wno-deprecated-declarations
+
+ifeq ($(HOST), tizen_wearable_arm)
+  CXXFLAGS += -Os -g0 -finline-limit=64
+endif
+
 
 # flags for jit/interpreter
 CXXFLAGS_JIT = -DENABLE_ESJIT=1
@@ -147,9 +153,9 @@ CXXFLAGS += -Ithird_party/bdwgc/include/
 CXXFLAGS_DEBUG += -DGC_DEBUG
 
 ifeq ($(OUTPUT), bin)
-  GCLIBS=third_party/bdwgc/out/$(ARCH)/$(MODE)/.libs/libgc.a
+  GCLIBS=third_party/bdwgc/out/$(HOST)/$(ARCH)/$(MODE)/.libs/libgc.a
 else
-  GCLIBS=third_party/bdwgc/out/$(ARCH)/$(MODE).shared/.libs/libgc.a
+  GCLIBS=third_party/bdwgc/out/$(HOST)/$(ARCH)/$(MODE).shared/.libs/libgc.a
 endif
 
 ifeq ($(TYPE), jit)
@@ -287,15 +293,21 @@ x64.interpreter.debug.shared: $(OUTDIR)/$(LIB)
 	cp -f $< .
 x64.interpreter.release.shared: $(OUTDIR)/$(LIB)
 	cp -f $< .
-arm.jit.debug: $(OUTDIR)/$(BIN)
+#tizen_arm.jit.debug: $(OUTDIR)/$(BIN)
+#	cp -f $< .
+#tizen_arm.jit.release: $(OUTDIR)/$(BIN)
+#	cp -f $< .
+#tizen_arm.interpreter.debug: $(OUTDIR)/$(BIN)
+#	cp -f $< .
+#izen_arm.interpreter.release: $(OUTDIR)/$(BIN)
+#	cp -f $< .
+tizen_arm.interpreter.release.shared: $(OUTDIR)/$(LIB)
 	cp -f $< .
-arm.jit.release: $(OUTDIR)/$(BIN)
-	cp -f $< .
-arm.interpreter.debug: $(OUTDIR)/$(BIN)
-	cp -f $< .
-arm.interpreter.release: $(OUTDIR)/$(BIN)
-	cp -f $< .
-arm.interpreter.release.shared: $(OUTDIR)/$(LIB)
+#tizen_arm.interpreter.debug: $(OUTDIR)/$(BIN)
+#	cp -f $< .
+#tizen_arm.interpreter.release: $(OUTDIR)/$(BIN)
+#	cp -f $< .
+tizen_wearable_arm.interpreter.release.shared: $(OUTDIR)/$(LIB)
 	cp -f $< .
 
 $(OUTDIR)/$(BIN): $(OBJS) $(THIRD_PARTY_LIBS)
