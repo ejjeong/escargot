@@ -1938,21 +1938,22 @@ public:
         return new ESDateObject();
     }
 
-    void parseStringToDate(struct tm* timeinfo, bool* timezoneSet, escargot::ESString* istr);
+    bool parseStringToDate(struct tm* timeinfo, bool* timezoneSet, escargot::ESString* istr);
     void parseYmdhmsToDate(struct tm* timeinfo, int year, int month, int date, int hour, int minute, int second);
 
     void setTimeValue();
+    void setTimeValue(double t);
     void setTimeValue(const ESValue str);
     void setTimeValue(int year, int month, int date, int hour, int minute, int second, int millisecond);
     void setTimeValueAsNaN()
     {
-        m_hasVaildDate = false;
+        m_hasValidDate = false;
     }
 
     double timeValueAsDouble()
     {
-        if (m_hasVaildDate) {
-            return getTimeAsMillisec();
+        if (m_hasValidDate) {
+            return m_primitiveValue;
         } else {
             return std::numeric_limits<double>::quiet_NaN();
         }
@@ -1960,7 +1961,7 @@ public:
 
     double getTimeAsMillisec()
     {
-        long tzOffsetAsSec = getTimezoneOffset(); // It returns -28800 in GMT-8 zone
+        long tzOffsetAsSec = getTimezoneOffset(); // It returns 28800 in GMT-8 zone
         return (double)m_time.tv_sec * 1000. + floor((double)m_time.tv_nsec / 1000000.) + (double)tzOffsetAsSec * 1000.;
     }
 
@@ -1968,11 +1969,14 @@ public:
     int getDay();
     int getFullYear();
     int getHours();
+    int getMilliseconds();
     int getMinutes();
     int getMonth();
     int getSeconds();
     long getTimezoneOffset();
     void setTime(double t);
+    double toUTC(double t);
+    double ymdhmsToSeconds(long year, int month, int day, int hour, int minute, double second);
 
     static double timeClip(double V)
     {
@@ -1992,8 +1996,9 @@ private:
     void resolveCache();
     struct timespec m_time;
     struct tm m_cachedTM;
+    long long m_primitiveValue;
     bool m_isCacheDirty;
-    bool m_hasVaildDate;
+    bool m_hasValidDate;
 
     const double hoursPerDay = 24.0;
     const double minutesPerHour = 60.0;
@@ -2015,7 +2020,6 @@ private:
     int monthFromTime(double t);
     int dateFromTime(double t);
     double makeDay(long year, int month, int date);
-    double ymdhmsToSeconds(long year, int month, int day, int hour, int minute, double second);
 };
 
 class ESMathObject : public ESObject {

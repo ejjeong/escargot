@@ -2699,7 +2699,7 @@ void GlobalObject::installDate()
                     thisObject->setTimeValue(v);
                 } else {
                     double V = v.toNumber();
-                    thisObject->setTime(ESDateObject::timeClip(V));
+                    thisObject->setTimeValue(ESDateObject::timeClip(V));
                 }
             } else {
                 double args[7] = {0, 0, 1, 0, 0, 0, 0}; // default value of year, month, date, hour, minute, second, millisecond
@@ -2734,19 +2734,17 @@ void GlobalObject::installDate()
         ESValue e = instance->currentExecutionContext()->resolveThisBinding();
         if (e.isESPointer() && e.asESPointer()->isESDateObject()) {
             escargot::ESDateObject* obj = e.asESPointer()->asESDateObject();
-
-            tm* gmtTime = obj->getGmtTime();
-            if (gmtTime == NULL) {
-                return ESString::create("Invalid Date");
-            } else {
-                char buffer[512];
-                const char* fmt = "%a %b %d %Y %T %Z%z";
-                strftime(buffer, sizeof(buffer), fmt, gmtTime);
-                sprintf(buffer, "%s (%s)", buffer, tzname[0]);
+            char buffer[512]; // TODO consider buffer-overflow
+            if (!isnan(obj->timeValueAsDouble())) {
+                sprintf(buffer, "%d-%02d-%02d %02d:%02d:%02d %s(GMT%+.1g)"
+                    , obj->getFullYear(), obj->getMonth() + 1, obj->getDate(), obj->getHours(), obj->getMinutes(), obj->getSeconds()
+                    , tzname[0], obj->getTimezoneOffset() / -3600.0);
                 return ESString::create(buffer);
+            } else {
+                return ESString::create(u"Invalid Date"); 
             }
         } else {
-            return strings->emptyString.string();
+            throw ESValue(TypeError::create(ESString::create(u"this is not a Date object")));
         }
     }, strings->toString, 0));
 
@@ -2771,8 +2769,29 @@ void GlobalObject::installDate()
 
     // $20.3.3.4 Date.UTC
     m_date->defineDataProperty(ESString::createAtomicString("UTC"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
-    }, ESString::createAtomicString("UTC"), 2));
+        double args[7] = {0, 0, 1, 0, 0, 0, 0}; // default value of year, month, date, hour, minute, second, millisecond
+        size_t arg_size = instance->currentExecutionContext()->argumentCount();
+        for (size_t i = 0; i < arg_size; i++) {
+            args[i] = instance->currentExecutionContext()->readArgument(i).toNumber();
+        }
+        double year = args[0];
+        double month = args[1];
+        double date = args[2];
+        double hour = args[3];
+        double minute = args[4];
+        double second = args[5];
+        double millisecond = args[6];
+
+        if ((int) year >= 0 && (int) year <= 99) {
+            year += 1900;
+        }
+        if (isnan(year) || isnan(month) || isnan(date) || isnan(hour) || isnan(minute) || isnan(second) || isnan(millisecond)) {
+            return ESString::create(u"Invalid Date");
+        }
+        ESObject* tmp = ESDateObject::create();
+        double t = ESDateObject::timeClip(tmp->asESDateObject()->ymdhmsToSeconds((int) year, (int) month, (int) date, (int) hour, (int) minute, (int) second) + millisecond);
+        return ESValue(t);
+    }, ESString::createAtomicString("UTC"), 7));
 
     // $20.3.4.2 Date.prototype.getDate()
     m_datePrototype->defineDataProperty(strings->getDate, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -2804,7 +2823,9 @@ void GlobalObject::installDate()
 
     // $20.3.4.6 Date.prototype.getMilliseconds()
     m_datePrototype->defineDataProperty(strings->getMilliseconds, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        int ret = thisObject->asESDateObject()->getMilliseconds();
+        return ESValue(ret);
     }, strings->getMilliseconds, 0));
 
     // $20.3.4.7 Date.prototype.getMinutes()
@@ -2928,6 +2949,7 @@ void GlobalObject::installDate()
             return ESValue();
         } else {
             double value = std::numeric_limits<double>::quiet_NaN();
+            thisObject->asESDateObject()->setTimeValueAsNaN();
             return ESValue(value);
         }
         return ESValue();

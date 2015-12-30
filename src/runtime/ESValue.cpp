@@ -1498,7 +1498,7 @@ ESDateObject::ESDateObject(ESPointer::Type type)
     : ESObject((Type)(Type::ESObject | Type::ESDateObject), ESVMInstance::currentInstance()->globalObject()->datePrototype())
 {
     m_isCacheDirty = true;
-    m_hasVaildDate = false;
+    m_hasValidDate = false;
 }
 
 void ESDateObject::parseYmdhmsToDate(struct tm* timeinfo, int year, int month, int date, int hour, int minute, int second)
@@ -1508,14 +1508,18 @@ void ESDateObject::parseYmdhmsToDate(struct tm* timeinfo, int year, int month, i
     strptime(buffer, "%Y-%m-%d-%H-%M-%S", timeinfo);
 }
 
-void ESDateObject::parseStringToDate(struct tm* timeinfo, bool* timezoneSet, escargot::ESString* istr)
+bool ESDateObject::parseStringToDate(struct tm* timeinfo, bool* timezoneSet, escargot::ESString* istr)
 {
     char* buffer = (char*)istr->toNullableUTF8String().m_buffer;
     if (isalpha(buffer[0])) {
         strptime(buffer, "%B %d %Y %H:%M:%S %z", timeinfo);
         *timezoneSet = true;
+        return true;
     } else if (isdigit(buffer[0])) {
         strptime(buffer, "%m/%d/%Y %H:%M:%S", timeinfo);
+        return true;
+    } else {
+        return false;
     }
 }
 
@@ -1660,22 +1664,44 @@ double ESDateObject::ymdhmsToSeconds(long year, int mon, int day, int hour, int 
 
 void ESDateObject::setTimeValue()
 {
-    clock_gettime(CLOCK_REALTIME, &m_time);
+    struct timespec time;
+    clock_gettime(CLOCK_REALTIME, &time);
+    m_primitiveValue = time.tv_sec * 1000 + floor(time.tv_nsec / 1000000);
     m_isCacheDirty = true;
-    m_hasVaildDate = true;
+    m_hasValidDate = true;
 }
 
+void ESDateObject::setTimeValue(double t)
+{
+    if (isnan(t)) {
+        setTimeValueAsNaN();
+        return;
+    }
+
+    m_primitiveValue = floor(t);
+    m_isCacheDirty = true;
+    m_hasValidDate = true;
+}
 void ESDateObject::setTimeValue(const ESValue str)
 {
     escargot::ESString* istr = str.toString();
     bool timezoneSet = false;
-    parseStringToDate(&m_cachedTM, &timezoneSet, istr);
-    m_cachedTM.tm_isdst = true;
-    m_time.tv_sec = ymdhmsToSeconds(m_cachedTM.tm_year+1900, m_cachedTM.tm_mon, m_cachedTM.tm_mday, m_cachedTM.tm_hour, m_cachedTM.tm_min, m_cachedTM.tm_sec);
-    if (timezoneSet) {
-        m_time.tv_sec += -m_cachedTM.tm_gmtoff - ESVMInstance::currentInstance()->timezoneOffset();
+    if (!parseStringToDate(&m_cachedTM, &timezoneSet, istr)) {
+        m_hasValidDate = false;
     }
-    m_hasVaildDate = true;
+    m_cachedTM.tm_isdst = true;
+
+    double primitiveValue = ymdhmsToSeconds(m_cachedTM.tm_year+1900, m_cachedTM.tm_mon, m_cachedTM.tm_mday, m_cachedTM.tm_hour, m_cachedTM.tm_min, m_cachedTM.tm_sec);
+    double primitiveValueAsUTC;
+    if (!timezoneSet) {
+        primitiveValueAsUTC = toUTC(primitiveValue);
+    } else {
+        // FIXME : it ignores timezone now
+        primitiveValueAsUTC = toUTC(primitiveValue);
+    }
+    m_primitiveValue = primitiveValueAsUTC;
+    m_isCacheDirty = false;
+    m_hasValidDate = true;
 }
 
 void ESDateObject::setTimeValue(int year, int month, int date, int hour, int minute, int second, int millisecond)
@@ -1684,15 +1710,21 @@ void ESDateObject::setTimeValue(int year, int month, int date, int hour, int min
     int mn = month % 12;
     parseYmdhmsToDate(&m_cachedTM, ym, mn, date, hour, minute, second);
     m_cachedTM.tm_isdst = true;
-    m_time.tv_sec = ymdhmsToSeconds(m_cachedTM.tm_year+1900, m_cachedTM.tm_mon, m_cachedTM.tm_mday, m_cachedTM.tm_hour, m_cachedTM.tm_min, m_cachedTM.tm_sec);
-    m_time.tv_nsec = millisecond * 1000000;
-    m_hasVaildDate = true;
+    double primitiveValue = ymdhmsToSeconds(m_cachedTM.tm_year+1900, m_cachedTM.tm_mon, m_cachedTM.tm_mday, m_cachedTM.tm_hour, m_cachedTM.tm_min, m_cachedTM.tm_sec) * 1000. + (double) millisecond;
+    double primitiveValueAsUTC = toUTC(primitiveValue);
+
+    m_primitiveValue = primitiveValueAsUTC;
+    m_isCacheDirty = false;
+    m_hasValidDate = true;
 }
 
 void ESDateObject::resolveCache()
 {
+    struct timespec time;
+    time.tv_sec = m_primitiveValue / 1000;
+    time.tv_nsec = (m_primitiveValue % 1000) * 1000000;
     if (m_isCacheDirty) {
-        memcpy(&m_cachedTM, ESVMInstance::currentInstance()->computeLocalTime(m_time), sizeof(tm));
+        memcpy(&m_cachedTM, ESVMInstance::currentInstance()->computeLocalTime(time), sizeof(tm));
         m_isCacheDirty = false;
     }
 }
@@ -1720,7 +1752,10 @@ int ESDateObject::getHours()
     resolveCache();
     return m_cachedTM.tm_hour;
 }
-
+int ESDateObject::getMilliseconds()
+{
+    return (int) (m_primitiveValue % 1000);
+}
 int ESDateObject::getMinutes()
 {
     resolveCache();
@@ -1746,28 +1781,35 @@ long ESDateObject::getTimezoneOffset()
 
 void ESDateObject::setTime(double t)
 {
-    if (isnan(t))
+    /*if (isnan(t)) {
+        setTimeValueAsNaN();
         return;
+    }
 
-    time_t raw_t = (time_t) floor(t);
-    m_time.tv_sec = raw_t / 1000;
-    m_time.tv_nsec = (raw_t % 10000) * 1000000;
+    m_primitiveValue = floor(t);
 
     m_isCacheDirty = true;
+    m_hasValidDate = true; */
+}
+
+double ESDateObject::toUTC(double t)
+{
+    long tzOffsetAsSec = getTimezoneOffset(); // For example, it returns 28800 in GMT-8 zone
+    return t + (double) tzOffsetAsSec * 1000.;
 }
 
 tm* ESDateObject::getGmtTime()
 {
-    if (!m_hasVaildDate) {
-        return NULL;
-    } else {
+//    if (!m_hasValidDate) {
+    return NULL;
+  /*  } else {
         time_t raw_t = (time_t) floor(getTimeAsMillisec());
         tm* ret = gmtime(&raw_t);
         int KST = 9; // TODO it's temp
         ret->tm_gmtoff = KST * 60 * 60;
         ret->tm_hour = (ret->tm_hour + KST) % 24;
         return ret;
-    }
+    } */
 }
 
 ESMathObject::ESMathObject(ESPointer::Type type)
