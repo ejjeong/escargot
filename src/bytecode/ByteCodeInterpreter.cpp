@@ -27,7 +27,7 @@ NEVER_INLINE void registerOpcode(ESVMInstance* instance, Opcode opcode, const ch
 #ifdef ENABLE_ESJIT
 ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter, unsigned maxStackPos)
 #else
-ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter, ESValue* stackStorage, ESIdentifierVector* heapStorage)
+ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter, ESValue* stackStorage, ESValueVector* heapStorage)
 #endif
 {
     if (UNLIKELY(codeBlock == NULL)) {
@@ -83,7 +83,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         GlobalObject* globalObject = instance->globalObject();
         ESValue* lastExpressionStatementValue = &instance->m_lastExpressionStatementValue;
         ESValue* stackAllocatedLocalValuePointer = stackStorage;
-        ESIdentifierVector* heapAllocatedHeapValue = heapStorage;
+        ESValueVector* heapAllocatedHeapValue = heapStorage;
         ASSERT(((size_t)stack % sizeof(size_t)) == 0);
         ASSERT(((size_t)tmpStack % sizeof(size_t)) == 0);
         // resolve programCounter into address
@@ -199,9 +199,9 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         {
             GetByIndexInHeap* code = (GetByIndexInHeap*)currentCode;
 #ifndef ENABLE_ESJIT
-            PUSH(stack, topOfStack, (*heapAllocatedHeapValue)[code->m_index].second);
+            PUSH(stack, topOfStack, (*heapAllocatedHeapValue)[code->m_index]);
 #else
-            ESValue v = (*heapAllocatedHeapValue)[code->m_index].second;
+            ESValue v = (*heapAllocatedHeapValue)[code->m_index];
             PUSH(stack, topOfStack, v);
             code->m_profile.addProfile(v);
 #endif
@@ -269,7 +269,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         SetByIndexInHeapOpcodeLbl:
         {
             SetByIndexInHeap* code = (SetByIndexInHeap*)currentCode;
-            (*heapAllocatedHeapValue)[code->m_index].second = *PEEK(stack, bp);
+            (*heapAllocatedHeapValue)[code->m_index] = *PEEK(stack, bp);
             executeNextCode<SetByIndexInHeap>(programCounter);
             NEXT_INSTRUCTION();
         }

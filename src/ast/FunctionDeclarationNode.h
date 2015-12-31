@@ -29,6 +29,7 @@ public:
             cb->m_needsHeapAllocatedExecutionContext = m_needsHeapAllocatedExecutionContext;
             cb->m_needsToPrepareGenerateArgumentsObject = m_needsToPrepareGenerateArgumentsObject;
             cb->m_needsComplexParameterCopy = m_needsComplexParameterCopy;
+            cb->m_needsActivation = m_needsActivation;
             // cb->m_params = std::move(m_params);
             // FIXME copy params if needs future
             cb->m_isStrict = m_isStrict;

@@ -37,6 +37,7 @@ public:
             cb->m_isFunctionExpression = true;
             cb->m_argumentCount = m_params.size();
             cb->m_hasCode = true;
+            cb->m_needsActivation = m_needsActivation;
             cb->m_functionExpressionNameIndex = m_functionIdIndex;
             cb->m_isFunctionExpressionNameHeapAllocated = m_functionIdIndexNeedsHeapAllocation;
 

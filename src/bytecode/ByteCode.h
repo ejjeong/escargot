@@ -2352,6 +2352,7 @@ public:
     bool m_hasCode;
     bool m_isStrict;
     bool m_isFunctionExpression;
+    bool m_needsActivation;
     bool m_needsHeapAllocatedExecutionContext;
     bool m_needsComplexParameterCopy; // parameters are captured
     bool m_needsToPrepareGenerateArgumentsObject;
@@ -2533,7 +2534,7 @@ void dumpUnsupported(CodeBlock* codeBlock);
 #ifdef ENABLE_ESJIT
 ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter = 0, unsigned maxStackPos = 0);
 #else
-ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter = 0, ESValue* stackStorage = NULL, ESIdentifierVector* heapStorage = NULL);
+ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter = 0, ESValue* stackStorage = NULL, ESValueVector* heapStorage = NULL);
 #endif
 CodeBlock* generateByteCode(ProgramNode* node, bool shouldGenereateBytecodeInstantly = true);
 inline void iterateByteCode(CodeBlock* codeBlock, std::function<void(CodeBlock* block, unsigned idx, ByteCode* code, Opcode opcode)> fn);

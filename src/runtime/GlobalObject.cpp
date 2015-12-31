@@ -542,6 +542,7 @@ void GlobalObject::installFunction()
             codeBlock->m_stackAllocatedIdentifiersCount = functionDeclAST->stackAllocatedIdentifiersCount();
             codeBlock->m_heapAllocatedIdentifiers = std::move(functionDeclAST->heapAllocatedIdentifiers());
             codeBlock->m_paramsInformation = std::move(functionDeclAST->paramsInformation());
+            codeBlock->m_needsActivation = functionDeclAST->needsActivation();
             codeBlock->m_needsHeapAllocatedExecutionContext = functionDeclAST->needsHeapAllocatedExecutionContext();
             codeBlock->m_needsToPrepareGenerateArgumentsObject = functionDeclAST->needsToPrepareGenerateArgumentsObject();
             codeBlock->m_needsComplexParameterCopy = functionDeclAST->needsComplexParameterCopy();

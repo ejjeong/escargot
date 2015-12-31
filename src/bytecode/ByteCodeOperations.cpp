@@ -470,7 +470,7 @@ NEVER_INLINE bool inOperation(ESValue* obj, ESValue* key)
     return result;
 }
 
-NEVER_INLINE void tryOperation(ESVMInstance* instance, CodeBlock* codeBlock, char* codeBuffer, ExecutionContext* ec, size_t programCounter, Try* code, ESValue* stackStorage, ESIdentifierVector* heapStorage)
+NEVER_INLINE void tryOperation(ESVMInstance* instance, CodeBlock* codeBlock, char* codeBuffer, ExecutionContext* ec, size_t programCounter, Try* code, ESValue* stackStorage, ESValueVector* heapStorage)
 {
     LexicalEnvironment* oldEnv = ec->environment();
     ExecutionContext* backupedEC = ec;
@@ -488,11 +488,11 @@ NEVER_INLINE void tryOperation(ESVMInstance* instance, CodeBlock* codeBlock, cha
     }
 }
 
-NEVER_INLINE void tryOperationThrowCase(const ESValue& err, LexicalEnvironment* oldEnv, ExecutionContext* backupedEC, ESVMInstance* instance, CodeBlock* codeBlock, char* codeBuffer, ExecutionContext* ec, size_t programCounter, Try* code, ESValue* stackStorage, ESIdentifierVector* heapStorage)
+NEVER_INLINE void tryOperationThrowCase(const ESValue& err, LexicalEnvironment* oldEnv, ExecutionContext* backupedEC, ESVMInstance* instance, CodeBlock* codeBlock, char* codeBuffer, ExecutionContext* ec, size_t programCounter, Try* code, ESValue* stackStorage, ESValueVector* heapStorage)
 {
     instance->invalidateIdentifierCacheCheckCount();
     instance->m_currentExecutionContext = backupedEC;
-    LexicalEnvironment* catchEnv = new LexicalEnvironment(new DeclarativeEnvironmentRecord(), oldEnv);
+    LexicalEnvironment* catchEnv = new LexicalEnvironment(new DeclarativeEnvironmentRecord(0, 0, InternalAtomicStringVector(), true), oldEnv);
     instance->currentExecutionContext()->setEnvironment(catchEnv);
     instance->currentExecutionContext()->environment()->record()->createMutableBinding(code->m_name);
     instance->currentExecutionContext()->environment()->record()->setMutableBinding(code->m_name, err, false);

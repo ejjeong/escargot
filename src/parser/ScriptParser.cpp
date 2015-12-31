@@ -421,7 +421,7 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
                 }
             }
             markNeedsHeapAllocatedExecutionContext(nearFunctionNode);
-            // markNeedsActivation(nearFunctionNode);
+            markNeedsActivation(nearFunctionNode);
             postAnalysisFunction(((TryStatementNode *)currentNode)->m_block, identifierStack, nearFunctionNode);
             postAnalysisFunction(((TryStatementNode *)currentNode)->m_handler, identifierStack, nearFunctionNode);
             postAnalysisFunction(((TryStatementNode *)currentNode)->m_finalizer, identifierStack, nearFunctionNode);

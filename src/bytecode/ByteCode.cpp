@@ -27,6 +27,7 @@ CodeBlock::CodeBlock(size_t roughCodeBlockSizeInWordSize, bool isBuiltInFunction
     m_needsComplexParameterCopy = false;
     m_needsToPrepareGenerateArgumentsObject = false;
     m_isFunctionExpressionNameHeapAllocated = false;
+    m_needsActivation = false;
     m_functionExpressionNameIndex = SIZE_MAX;
 #ifdef ENABLE_ESJIT
     m_cachedJITFunction = nullptr;
