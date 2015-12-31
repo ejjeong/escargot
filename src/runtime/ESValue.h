@@ -1958,13 +1958,7 @@ public:
             return std::numeric_limits<double>::quiet_NaN();
         }
     }
-
-    double getTimeAsMillisec()
-    {
-        long tzOffsetAsSec = getTimezoneOffset(); // It returns 28800 in GMT-8 zone
-        return (double)m_time.tv_sec * 1000. + floor((double)m_time.tv_nsec / 1000000.) + (double)tzOffsetAsSec * 1000.;
-    }
-
+    
     int getDate();
     int getDay();
     int getFullYear();
@@ -1989,16 +1983,12 @@ public:
         }
     }
 
-    tm* getGmtTime();
-
-
 private:
     void resolveCache();
-    struct timespec m_time;
-    struct tm m_cachedTM;
-    long long m_primitiveValue;
+    struct tm m_cachedTM; // it stores time disregarding timezone
+    long long m_primitiveValue; // it stores timevalue regarding timezone
     bool m_isCacheDirty;
-    bool m_hasValidDate;
+    bool m_hasValidDate; // function get***() series (in ESValue.cpp) should check if the timevalue is valid with this flag
 
     const double hoursPerDay = 24.0;
     const double minutesPerHour = 60.0;

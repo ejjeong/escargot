@@ -1673,14 +1673,7 @@ void ESDateObject::setTimeValue()
 
 void ESDateObject::setTimeValue(double t)
 {
-    if (isnan(t)) {
-        setTimeValueAsNaN();
-        return;
-    }
-
-    m_primitiveValue = floor(t);
-    m_isCacheDirty = true;
-    m_hasValidDate = true;
+    setTime(t);
 }
 void ESDateObject::setTimeValue(const ESValue str)
 {
@@ -1688,6 +1681,7 @@ void ESDateObject::setTimeValue(const ESValue str)
     bool timezoneSet = false;
     if (!parseStringToDate(&m_cachedTM, &timezoneSet, istr)) {
         m_hasValidDate = false;
+        return;
     }
     m_cachedTM.tm_isdst = true;
 
@@ -1696,8 +1690,11 @@ void ESDateObject::setTimeValue(const ESValue str)
     if (!timezoneSet) {
         primitiveValueAsUTC = toUTC(primitiveValue);
     } else {
-        // FIXME : it ignores timezone now
-        primitiveValueAsUTC = toUTC(primitiveValue);
+#ifdef __USE_BSD         
+        primitiveValueAsUTC = primitiveValue - m_cachedTM.tm_gmtoff * 60 * 1000;
+#else
+        primitiveValueAsUTC = primitiveValue - m_cachedTM.__tm_gmtoff * 60 * 1000;
+#endif        
     }
     m_primitiveValue = primitiveValueAsUTC;
     m_isCacheDirty = false;
@@ -1781,7 +1778,7 @@ long ESDateObject::getTimezoneOffset()
 
 void ESDateObject::setTime(double t)
 {
-    /*if (isnan(t)) {
+    if (isnan(t)) {
         setTimeValueAsNaN();
         return;
     }
@@ -1789,27 +1786,13 @@ void ESDateObject::setTime(double t)
     m_primitiveValue = floor(t);
 
     m_isCacheDirty = true;
-    m_hasValidDate = true; */
+    m_hasValidDate = true;
 }
 
 double ESDateObject::toUTC(double t)
 {
     long tzOffsetAsSec = getTimezoneOffset(); // For example, it returns 28800 in GMT-8 zone
     return t + (double) tzOffsetAsSec * 1000.;
-}
-
-tm* ESDateObject::getGmtTime()
-{
-//    if (!m_hasValidDate) {
-    return NULL;
-  /*  } else {
-        time_t raw_t = (time_t) floor(getTimeAsMillisec());
-        tm* ret = gmtime(&raw_t);
-        int KST = 9; // TODO it's temp
-        ret->tm_gmtoff = KST * 60 * 60;
-        ret->tm_hour = (ret->tm_hour + KST) % 24;
-        return ret;
-    } */
 }
 
 ESMathObject::ESMathObject(ESPointer::Type type)
