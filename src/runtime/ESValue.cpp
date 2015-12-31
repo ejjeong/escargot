@@ -1512,6 +1512,7 @@ bool ESDateObject::parseStringToDate(struct tm* timeinfo, bool* timezoneSet, esc
 {
     char* buffer = (char*)istr->toNullableUTF8String().m_buffer;
     if (isalpha(buffer[0])) {
+        // FIXME : if %z field is empty, it should be considered as client pc's timezone. not +0000
         strptime(buffer, "%B %d %Y %H:%M:%S %z", timeinfo);
         *timezoneSet = true;
         return true;
@@ -1691,9 +1692,9 @@ void ESDateObject::setTimeValue(const ESValue str)
         primitiveValueAsUTC = toUTC(primitiveValue);
     } else {
 #ifdef __USE_BSD         
-        primitiveValueAsUTC = primitiveValue - m_cachedTM.tm_gmtoff * 60 * 1000;
+        primitiveValueAsUTC = primitiveValue - m_cachedTM.tm_gmtoff * 1000;
 #else
-        primitiveValueAsUTC = primitiveValue - m_cachedTM.__tm_gmtoff * 60 * 1000;
+        primitiveValueAsUTC = primitiveValue - m_cachedTM.__tm_gmtoff * 1000;
 #endif        
     }
     m_primitiveValue = primitiveValueAsUTC;
