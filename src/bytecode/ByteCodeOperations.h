@@ -175,7 +175,7 @@ ALWAYS_INLINE ESValue getObjectOperation(ESValue* willBeObject, ESValue* propert
         } else if (willBeObject->asESPointer()->isESString()) {
             uint32_t idx = property->toIndex();
             if (LIKELY(idx < willBeObject->asESString()->length())) {
-                char16_t c = willBeObject->asESString()->stringData()->charAt(idx);
+                char16_t c = willBeObject->asESString()->charAt(idx);
                 if (LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
                     return strings->asciiTable[c].string();
                 } else {

@@ -267,8 +267,8 @@ void GlobalObject::initGlobalObject()
         size_t strLen = s->length();
 
         if (strLen == 1) {
-            if (isdigit(s->stringData()->charAt(0)))
-                return ESValue(s->stringData()->charAt(0) - '0');
+            if (isdigit(s->charAt(0)))
+                return ESValue(s->charAt(0) - '0');
             return ESValue(std::numeric_limits<double>::quiet_NaN());
         }
 
@@ -1968,7 +1968,7 @@ void GlobalObject::installString()
         }
 
         if (LIKELY(0 <= position && position < (int)str->length())) {
-            char16_t c = str->stringData()->charAt(position);
+            char16_t c = str->charAt(position);
             if (LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
                 return strings->asciiTable[c].string();
             } else {
@@ -2022,16 +2022,14 @@ void GlobalObject::installString()
         int len = str->length();
         int start = std::min(std::max(pos, 0), len);
         int result;
-        const ESStringData* strData = str->stringData();
-        const ESStringData* searchStrData = searchStr->stringData();
-        if (strData->isASCIIString() && searchStrData->isASCIIString())
-            result = strData->asASCIIString()->find(*searchStrData->asASCIIString(), start);
-        else if (strData->isASCIIString() && !searchStrData->isASCIIString())
+        if (str->isASCIIString() && searchStr->isASCIIString())
+            result = str->asASCIIString()->find(*searchStr->asASCIIString(), start);
+        else if (str->isASCIIString() && !searchStr->isASCIIString())
             result = str->find(searchStr, start);
-        else if (!strData->isASCIIString() && searchStrData->isASCIIString())
+        else if (!str->isASCIIString() && searchStr->isASCIIString())
             result = str->find(searchStr, start);
         else
-            result = strData->asUTF16String()->find(*searchStrData->asUTF16String(), start);
+            result = str->asUTF16String()->find(*searchStr->asUTF16String(), start);
         return ESValue(result);
     }, strings->indexOf, 1));
 
@@ -2057,16 +2055,14 @@ void GlobalObject::installString()
         double start = std::min(std::max(pos, 0.0), len);
         int result;
 
-        const ESStringData* strData = S->stringData();
-        const ESStringData* searchStrData = searchStr->stringData();
-        if (strData->isASCIIString() && searchStrData->isASCIIString())
-            result = strData->asASCIIString()->rfind(*searchStrData->asASCIIString(), start);
-        else if (strData->isASCIIString() && !searchStrData->isASCIIString())
+        if (S->isASCIIString() && searchStr->isASCIIString())
+            result = S->asASCIIString()->rfind(*searchStr->asASCIIString(), start);
+        else if (S->isASCIIString() && !searchStr->isASCIIString())
             result = S->rfind(searchStr, start);
-        else if (!strData->isASCIIString() && searchStrData->isASCIIString())
+        else if (!S->isASCIIString() && searchStr->isASCIIString())
             result = S->rfind(searchStr, start);
         else
-            result = strData->asUTF16String()->rfind(*searchStrData->asUTF16String(), start);
+            result = S->asUTF16String()->rfind(*searchStr->asUTF16String(), start);
 
         return ESValue(result);
     }, strings->lastIndexOf, 1));
@@ -2267,10 +2263,10 @@ void GlobalObject::installString()
         int to = (doubleEnd < 0) ? std::max(len+doubleEnd, 0.0) : std::min(doubleEnd, (double)len);
         int span = std::max(to-from, 0);
         escargot::ESString* ret;
-        if (str->stringData()->isASCIIString())
-            ret = ESString::create(std::move(ASCIIString(str->stringData()->asASCIIString()->begin()+from, str->stringData()->asASCIIString()->begin()+from+span)));
+        if (str->isASCIIString())
+            ret = ESString::create(std::move(ASCIIString(str->asASCIIString()->begin()+from, str->asASCIIString()->begin()+from+span)));
         else
-            ret = ESString::create(std::move(UTF16String(str->stringData()->asUTF16String()->begin()+from, str->stringData()->asUTF16String()->begin()+from+span)));
+            ret = ESString::create(std::move(UTF16String(str->asUTF16String()->begin()+from, str->asUTF16String()->begin()+from+span)));
         return ret;
     }, strings->slice, 2));
 
@@ -2517,13 +2513,13 @@ void GlobalObject::installString()
     // $21.1.3.22 String.prototype.toLowerCase()
     m_stringPrototype->defineDataProperty(ESString::createAtomicString("toLowerCase"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         escargot::ESString* str = instance->currentExecutionContext()->resolveThisBinding().toString();
-        if (str->stringData()->isASCIIString()) {
-            ASCIIString newstr(*str->stringData()->asASCIIString());
+        if (str->isASCIIString()) {
+            ASCIIString newstr(*str->asASCIIString());
             // TODO use ICU for this operation
             std::transform(newstr.begin(), newstr.end(), newstr.begin(), ::tolower);
             return ESString::create(std::move(newstr));
         } else {
-            UTF16String newstr(*str->stringData()->asUTF16String());
+            UTF16String newstr(*str->asUTF16String());
             // TODO use ICU for this operation
             std::transform(newstr.begin(), newstr.end(), newstr.begin(), ::tolower);
             return ESString::create(std::move(newstr));
@@ -2533,13 +2529,13 @@ void GlobalObject::installString()
     // $21.1.3.21 String.prototype.toLocaleUpperCase
     m_stringPrototype->defineDataProperty(ESString::createAtomicString("toLocaleLowerCase"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         escargot::ESString* str = instance->currentExecutionContext()->resolveThisBinding().toString();
-        if (str->stringData()->isASCIIString()) {
-            ASCIIString newstr(*str->stringData()->asASCIIString());
+        if (str->isASCIIString()) {
+            ASCIIString newstr(*str->asASCIIString());
             // TODO use ICU for this operation
             std::transform(newstr.begin(), newstr.end(), newstr.begin(), ::tolower);
             return ESString::create(std::move(newstr));
         } else {
-            UTF16String newstr(*str->stringData()->asUTF16String());
+            UTF16String newstr(*str->asUTF16String());
             // TODO use ICU for this operation
             std::transform(newstr.begin(), newstr.end(), newstr.begin(), ::tolower);
             return ESString::create(std::move(newstr));
@@ -2549,13 +2545,13 @@ void GlobalObject::installString()
     // $21.1.3.24 String.prototype.toUpperCase()
     m_stringPrototype->defineDataProperty(ESString::createAtomicString("toUpperCase"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         escargot::ESString* str = instance->currentExecutionContext()->resolveThisBinding().toString();
-        if (str->stringData()->isASCIIString()) {
-            ASCIIString newstr(*str->stringData()->asASCIIString());
+        if (str->isASCIIString()) {
+            ASCIIString newstr(*str->asASCIIString());
             // TODO use ICU for this operation
             std::transform(newstr.begin(), newstr.end(), newstr.begin(), ::toupper);
             return ESString::create(std::move(newstr));
         } else {
-            UTF16String newstr(*str->stringData()->asUTF16String());
+            UTF16String newstr(*str->asUTF16String());
             // TODO use ICU for this operation
             std::transform(newstr.begin(), newstr.end(), newstr.begin(), ::toupper);
             return ESString::create(std::move(newstr));
@@ -2565,13 +2561,13 @@ void GlobalObject::installString()
     // $21.1.3.21 String.prototype.toLocaleUpperCase
     m_stringPrototype->defineDataProperty(ESString::createAtomicString("toLocaleUpperCase"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         escargot::ESString* str = instance->currentExecutionContext()->resolveThisBinding().toString();
-        if (str->stringData()->isASCIIString()) {
-            ASCIIString newstr(*str->stringData()->asASCIIString());
+        if (str->isASCIIString()) {
+            ASCIIString newstr(*str->asASCIIString());
             // TODO use ICU for this operation
             std::transform(newstr.begin(), newstr.end(), newstr.begin(), ::toupper);
             return ESString::create(std::move(newstr));
         } else {
-            UTF16String newstr(*str->stringData()->asUTF16String());
+            UTF16String newstr(*str->asUTF16String());
             // TODO use ICU for this operation
             std::transform(newstr.begin(), newstr.end(), newstr.begin(), ::toupper);
             return ESString::create(std::move(newstr));
@@ -2585,8 +2581,8 @@ void GlobalObject::installString()
             instance->throwError(ESValue(TypeError::create(ESString::create(u"String.prototype.trim called null or undefined"))));
         }
         escargot::ESString* str = val.toString();
-        if (str->stringData()->isASCIIString()) {
-            ASCIIString newstr(*str->stringData()->asASCIIString());
+        if (str->isASCIIString()) {
+            ASCIIString newstr(*str->asASCIIString());
             // trim left
             while (newstr.length()) {
                 if (esprima::isWhiteSpace(newstr[0]) || esprima::isLineTerminator(newstr[0])) {
@@ -3119,7 +3115,7 @@ void GlobalObject::installJSON()
         if (str->isASCIIString()) {
             return parseJSON<char, rapidjson::UTF8<char>>(str->toNullableUTF8String().m_buffer);
         } else {
-            return parseJSON<char16_t, rapidjson::UTF16<char16_t>>(str->stringData()->asUTF16String()->data());
+            return parseJSON<char16_t, rapidjson::UTF16<char16_t>>(str->asUTF16String()->data());
         }
     }, strings->parse, 2));
 

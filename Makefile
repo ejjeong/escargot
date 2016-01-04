@@ -440,6 +440,6 @@ run-octane:
 
 run-test262:
 	cd test/test262/; \
-	python tools/packaging/test262.py --command ../../escargot $(OPT) --summary
+	python tools/packaging/test262.py --command ../../escargot $(OPT) --full-summary
 
 .PHONY: clean

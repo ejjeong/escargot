@@ -91,10 +91,10 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
         for (unsigned i = 0; i < info.size() ; i ++) {
             if (!info[i].m_flags.m_isDeletedValue) {
                 InternalAtomicString as;
-                if (info[i].m_name->stringData()->isASCIIString()) {
-                    as = InternalAtomicString(instance, info[i].m_name->stringData()->asciiData(), info[i].m_name->stringData()->length());
+                if (info[i].m_name->isASCIIString()) {
+                    as = InternalAtomicString(instance, info[i].m_name->asciiData(), info[i].m_name->length());
                 } else {
-                    as = InternalAtomicString(instance, info[i].m_name->stringData()->utf16Data(), info[i].m_name->stringData()->length());
+                    as = InternalAtomicString(instance, info[i].m_name->utf16Data(), info[i].m_name->length());
                 }
                 knownGlobalNames.insert(std::make_pair(as, i));
             }

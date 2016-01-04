@@ -137,7 +137,7 @@ public:
         return m_scriptParser;
     }
 
-    ALWAYS_INLINE std::unordered_map<double, ESStringData*, std::hash<double>, std::equal_to<double>, gc_allocator<std::pair<const double, ESString* > > >* dtoaCache()
+    ALWAYS_INLINE std::unordered_map<double, ESString*, std::hash<double>, std::equal_to<double>, gc_allocator<std::pair<const double, ESString* > > >* dtoaCache()
     {
         return &m_dtoaCache;
     }
@@ -256,7 +256,7 @@ protected:
     nanojit::Config* m_JITConfig;
 #endif
 
-    std::unordered_map<double, ESStringData*, std::hash<double>, std::equal_to<double>, gc_allocator<std::pair<const double, ESString* > > > m_dtoaCache;
+    std::unordered_map<double, ESString*, std::hash<double>, std::equal_to<double>, gc_allocator<std::pair<const double, ESString* > > > m_dtoaCache;
 };
 
 struct ESSimpleAllocatorMemoryFragment {

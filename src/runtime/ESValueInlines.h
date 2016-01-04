@@ -223,10 +223,9 @@ inline double ESValue::toNumberSlowCase() const
         if (end != buf + len) {
             bool isOnlyWhiteSpace = true;
             size_t s = data->length();
-            const ESStringData * stringData = data->stringData();
             for (unsigned i = 0; i < s; i ++) {
                 // FIXME we shold not use isspace function. implement javascript isspace function.
-                if (!isspace(stringData->charAt(i))) {
+                if (!isspace(data->charAt(i))) {
                     isOnlyWhiteSpace = false;
                     break;
                 }
@@ -866,21 +865,20 @@ ALWAYS_INLINE ESPointer* ESValue::asESPointer() const
 
 #endif
 
-inline ESString::ESString(double number)
-    : ESPointer(Type::ESString)
+inline ESString* ESString::create(double number)
 {
 #ifdef ENABLE_DTOACACHE
     auto cache = ESVMInstance::currentInstance()->dtoaCache();
     auto iter = cache->find(number);
     if (iter != cache->end()) {
-        m_string = iter->second;
-        return;
+        return iter->second;
     }
 #endif
-    m_string = new ESStringDataASCII(number);
+    ESString* str = ESString::create(dtoa(number));
 #ifdef ENABLE_DTOACACHE
-    cache->insert(std::make_pair(number, m_string));
+    cache->insert(std::make_pair(number, str));
 #endif
+    return str;
 }
 
 inline ESString* ESString::create(const char* str)
@@ -888,9 +886,10 @@ inline ESString* ESString::create(const char* str)
     unsigned l = strlen(str);
     if (l == 1) {
         return strings->asciiTable[(size_t)str[0]].string();
-    } else
-        return new ESString(str);
+    }
+    return new ESASCIIString(std::move(ASCIIString(str)));
 }
+
 
 inline ESString* ESString::createAtomicString(const char* str)
 {
@@ -1420,7 +1419,7 @@ ALWAYS_INLINE ESValue ESObject::get(escargot::ESValue key)
         } else if (target->isESStringObject()) {
             uint32_t idx = key.toIndex();
             if (idx < target->asESStringObject()->stringData()->length()) {
-                char16_t c = target->asESStringObject()->stringData()->stringData()->charAt(idx);
+                char16_t c = target->asESStringObject()->stringData()->charAt(idx);
                 if (LIKELY(c < ESCARGOT_ASCII_TABLE_MAX)) {
                     return strings->asciiTable[c].string();
                 } else {
@@ -1874,7 +1873,7 @@ public:
 
             size_t currentLength = 0;
             for (size_t i = 0; i < m_piecesInlineStorageUsage; i ++) {
-                const ESStringData* data = m_piecesInlineStorage[i].m_string->stringData();
+                const ESString* data = m_piecesInlineStorage[i].m_string;
                 const ASCIIString& str = *data->asASCIIString();
                 size_t s = m_piecesInlineStorage[i].m_start;
                 size_t e = m_piecesInlineStorage[i].m_end;
@@ -1883,7 +1882,7 @@ public:
             }
 
             for (size_t i = 0; i < m_pieces.size(); i ++) {
-                const ESStringData* data = m_pieces[i].m_string->stringData();
+                const ESString* data = m_pieces[i].m_string;
                 const ASCIIString& str = *data->asASCIIString();
                 size_t s = m_pieces[i].m_start;
                 size_t e = m_pieces[i].m_end;
@@ -1897,7 +1896,7 @@ public:
             ret.reserve(m_contentLength);
 
             for (size_t i = 0; i < m_piecesInlineStorageUsage; i ++) {
-                const ESStringData* data = m_piecesInlineStorage[i].m_string->stringData();
+                const ESString* data = m_piecesInlineStorage[i].m_string;
                 if (data->isASCIIString()) {
                     const ASCIIString& str = *data->asASCIIString();
                     ret.append(&str[m_piecesInlineStorage[i].m_start], &str[m_piecesInlineStorage[i].m_end]);
@@ -1908,7 +1907,7 @@ public:
             }
 
             for (size_t i = 0; i < m_pieces.size(); i ++) {
-                const ESStringData* data = m_pieces[i].m_string->stringData();
+                const ESString* data = m_pieces[i].m_string;
                 if (data->isASCIIString()) {
                     const ASCIIString& str = *data->asASCIIString();
                     ret.append(&str[m_pieces[i].m_start], &str[m_pieces[i].m_end]);

@@ -239,13 +239,12 @@ void CreateExponentialRepresentation(
     kMaxExponentLength - first_char_pos);
 }
 
-ESStringDataASCII::ESStringDataASCII(double number)
+ASCIIString dtoa(double number)
 {
+    ASCIIString str;
     if (number == 0) {
-        append({'0'});
-        m_data.m_isASCIIString = true;
-        initData();
-        return;
+        str.append({'0'});
+        return std::move(str);
     }
     const int flags = UNIQUE_ZERO | EMIT_POSITIVE_EXPONENT_SIGN;
     bool sign = false;
@@ -295,25 +294,23 @@ ESStringDataASCII::ESStringDataASCII(double number)
         CreateExponentialRepresentation(flags, decimal_rep, decimal_rep_length, exponent,
             &builder);
     }
-    m_data.m_isASCIIString = true;
-    ASCIIString* as = (ASCIIString*)asASCIIString();
     if (sign)
-        (*as) += '-';
+        str += '-';
     char* buf = builder.Finalize();
     while (*buf) {
-        (*as) += *buf;
+        str += *buf;
         buf++;
     }
-    initData();
+    return std::move(str);
 }
 
 uint32_t ESString::tryToUseAsIndex()
 {
-    if (stringData()->isASCIIString()) {
+    if (isASCIIString()) {
         bool allOfCharIsDigit = true;
         uint32_t number = 0;
         size_t len = length();
-        const char* data = stringData()->asciiData();
+        const char* data = asciiData();
         for (unsigned i = 0; i < len; i ++) {
             char c = data[i];
             if (c < '0' || c > '9') {
@@ -333,7 +330,7 @@ uint32_t ESString::tryToUseAsIndex()
         bool allOfCharIsDigit = true;
         uint32_t number = 0;
         size_t len = length();
-        const char16_t* data = stringData()->utf16Data();
+        const char16_t* data = utf16Data();
         for (unsigned i = 0; i < len; i ++) {
             char16_t c = data[i];
             if (c < '0' || c > '9') {
@@ -358,7 +355,7 @@ ESString* ESString::substring(int from, int to) const
     ASSERT(0 <= from && from <= to && to <= (int)length());
     if (to - from == 1) {
         char16_t c;
-        c = stringData()->charAt(from);
+        c = charAt(from);
         if (c < ESCARGOT_ASCII_TABLE_MAX) {
             return strings->asciiTable[c].string();
         } else {
@@ -366,10 +363,10 @@ ESString* ESString::substring(int from, int to) const
         }
     }
 
-    if (stringData()->isASCIIString()) {
-        return ESString::create(stringData()->asASCIIString()->substr(from, to-from));
+    if (isASCIIString()) {
+        return ESString::create(asASCIIString()->substr(from, to-from));
     } else {
-        return ESString::create(stringData()->asUTF16String()->substr(from, to-from));
+        return ESString::create(asUTF16String()->substr(from, to-from));
     }
 }
 
@@ -411,14 +408,14 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
 
     unsigned subPatternNum = byteCode->m_body->m_numSubpatterns;
     matchResult.m_subPatternNum = (int) subPatternNum;
-    size_t length = stringData()->length();
+    size_t length = ESString::length();
     size_t start = startIndex;
     unsigned result = 0;
     const void* chars;
-    if (stringData()->isASCIIString())
-        chars = stringData()->asciiData();
+    if (isASCIIString())
+        chars = asciiData();
     else
-        chars = stringData()->utf16Data();
+        chars = utf16Data();
     unsigned* outputBuf = (unsigned int*)alloca(sizeof(unsigned) * 2 * (subPatternNum + 1));
     outputBuf[1] = start;
     do {
@@ -426,7 +423,7 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
         memset(outputBuf, -1, sizeof(unsigned) * 2 * (subPatternNum + 1));
         if (start > length)
             break;
-        if (stringData()->isASCIIString())
+        if (isASCIIString())
             result = JSC::Yarr::interpret(NULL, byteCode, (const char *)chars, length, start, outputBuf);
         else
             result = JSC::Yarr::interpret(NULL, byteCode, (const char16_t *)chars, length, start, outputBuf);

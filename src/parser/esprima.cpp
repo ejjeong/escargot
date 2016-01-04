@@ -477,7 +477,7 @@ public:
 ParserString makeParserString(escargot::ESString* str, size_t start, size_t len)
 {
     ParserString ret;
-    if (str->stringData()->isASCIIString()) {
+    if (str->isASCIIString()) {
         ret.m_buffer = str->toNullableUTF8String().m_buffer + start;
         ret.m_isASCIIString = true;
     } else {
@@ -901,16 +901,16 @@ OctalToDecimalResult octalToDecimal(ParseContext* ctx, char16_t ch)
     bool octal = (ch != '0');
     int code = ch - '0';
 
-    if (ctx->m_index < ctx->m_length && isOctalDigit(ctx->m_sourceString->stringData()->charAt(ctx->m_index))) {
+    if (ctx->m_index < ctx->m_length && isOctalDigit(ctx->m_sourceString->charAt(ctx->m_index))) {
         octal = true;
-        code = code * 8 + ctx->m_sourceString->stringData()->charAt(ctx->m_index++) - '0';
+        code = code * 8 + ctx->m_sourceString->charAt(ctx->m_index++) - '0';
 
         // 3 digits are only allowed when string starts
         // with 0, 1, 2, 3
         if (ch >= '0' && ch <= '3'
             && ctx->m_index < ctx->m_length
-            && isOctalDigit(ctx->m_sourceString->stringData()->charAt(ctx->m_index))) {
-            code = code * 8 + ctx->m_sourceString->stringData()->charAt(ctx->m_index++) - '0';
+            && isOctalDigit(ctx->m_sourceString->charAt(ctx->m_index))) {
+            code = code * 8 + ctx->m_sourceString->charAt(ctx->m_index++) - '0';
         }
     }
 
@@ -927,8 +927,8 @@ char16_t scanHexEscape(ParseContext* ctx, char16_t prefix)
 
     len = (prefix == 'u') ? 4 : 2;
     for (i = 0; i < len; ++i) {
-        if (ctx->m_index < ctx->m_length && isHexDigit(ctx->m_sourceString->stringData()->charAt(ctx->m_index))) {
-            ch = ctx->m_sourceString->stringData()->charAt(ctx->m_index++);
+        if (ctx->m_index < ctx->m_length && isHexDigit(ctx->m_sourceString->charAt(ctx->m_index))) {
+            ch = ctx->m_sourceString->charAt(ctx->m_index++);
             int c;
             if (ch >= '0' && ch <= '9') {
                 c = ch - '0';
@@ -950,7 +950,7 @@ char16_t scanUnicodeCodePointEscape(ParseContext* ctx)
 {
     char16_t ch, code;
 
-    ch = ctx->m_sourceString->stringData()->charAt(ctx->m_index);
+    ch = ctx->m_sourceString->charAt(ctx->m_index);
     code = 0;
 
     // At least, one hex digit is required.
@@ -959,7 +959,7 @@ char16_t scanUnicodeCodePointEscape(ParseContext* ctx)
     }
 
     while (ctx->m_index < ctx->m_length) {
-        ch = ctx->m_sourceString->stringData()->charAt(ctx->m_index++);
+        ch = ctx->m_sourceString->charAt(ctx->m_index++);
         if (!isHexDigit(ch)) {
             break;
         }
@@ -987,9 +987,9 @@ char16_t codePointAt(ParseContext* ctx, size_t i)
 {
     char16_t cp, first, second;
 
-    cp = ctx->m_sourceString->stringData()->charAt(i);
+    cp = ctx->m_sourceString->charAt(i);
     if (cp >= 0xD800 && cp <= 0xDBFF) {
-        second = ctx->m_sourceString->stringData()->charAt(i + 1);
+        second = ctx->m_sourceString->charAt(i + 1);
         if (second >= 0xDC00 && second <= 0xDFFF) {
             first = cp;
             cp = (first - 0xD800) * 0x400 + second - 0xDC00 + 0x10000;
@@ -1011,11 +1011,11 @@ ParserString getComplexIdentifier(ParseContext* ctx)
 
     // '\u' (U+005C, U+0075) denotes an escaped character.
     if (cp == 0x5C) {
-        if (ctx->m_sourceString->stringData()->charAt(ctx->m_index) != 0x75) {
+        if (ctx->m_sourceString->charAt(ctx->m_index) != 0x75) {
             throwUnexpectedToken();
         }
         ++ctx->m_index;
-        if (ctx->m_sourceString->stringData()->charAt(ctx->m_index) == '{') {
+        if (ctx->m_sourceString->charAt(ctx->m_index) == '{') {
             ++ctx->m_index;
             ch = scanUnicodeCodePointEscape(ctx);
         } else {
@@ -1043,11 +1043,11 @@ ParserString getComplexIdentifier(ParseContext* ctx)
         if (cp == 0x5C) {
             // CHECKTHIS id.length() - 1 is right?
             id = id.substr(0, id.length() - 1);
-            if (ctx->m_sourceString->stringData()->charAt(ctx->m_index) != 0x75) {
+            if (ctx->m_sourceString->charAt(ctx->m_index) != 0x75) {
                 throwUnexpectedToken();
             }
             ++ctx->m_index;
-            if (ctx->m_sourceString->stringData()->charAt(ctx->m_index) == '{') {
+            if (ctx->m_sourceString->charAt(ctx->m_index) == '{') {
                 ++ctx->m_index;
                 ch = scanUnicodeCodePointEscape(ctx);
             } else {
@@ -1072,7 +1072,7 @@ ParserString getIdentifier(ParseContext* ctx)
 
     start = ctx->m_index++;
     while (ctx->m_index < ctx->m_length) {
-        ch = ctx->m_sourceString->stringData()->charAt(ctx->m_index);
+        ch = ctx->m_sourceString->charAt(ctx->m_index);
         if (ch == 0x5C) {
             // Blackslash (U+005C) marks Unicode escape sequence.
             ctx->m_index = start;
@@ -1109,7 +1109,7 @@ void skipSingleLineComment(ParseContext* ctx, int offset)
     };*/
 
     while (ctx->m_index < ctx->m_length) {
-        ch = ctx->m_sourceString->stringData()->charAt(ctx->m_index);
+        ch = ctx->m_sourceString->charAt(ctx->m_index);
         ++ctx->m_index;
         if (isLineTerminator(ch)) {
             ctx->m_hasLineTerminator = true;
@@ -1122,7 +1122,7 @@ void skipSingleLineComment(ParseContext* ctx, int offset)
                 };
             addComment('Line', comment, start, index - 1, loc);
             }*/
-            if (ch == 13 && ctx->m_sourceString->stringData()->charAt(ctx->m_index) == 10) {
+            if (ch == 13 && ctx->m_sourceString->charAt(ctx->m_index) == 10) {
                 ++ctx->m_index;
             }
             ++ctx->m_lineNumber;
@@ -1160,9 +1160,9 @@ void skipMultiLineComment(ParseContext* ctx)
     }
      */
     while (ctx->m_index < ctx->m_length) {
-        ch = ctx->m_sourceString->stringData()->charAt(ctx->m_index);
+        ch = ctx->m_sourceString->charAt(ctx->m_index);
         if (isLineTerminator(ch)) {
-            if (ch == 0x0D && ctx->m_sourceString->stringData()->charAt(ctx->m_index + 1) == 0x0A) {
+            if (ch == 0x0D && ctx->m_sourceString->charAt(ctx->m_index + 1) == 0x0A) {
                 ++ctx->m_index;
             }
             ctx->m_hasLineTerminator = true;
@@ -1171,7 +1171,7 @@ void skipMultiLineComment(ParseContext* ctx)
             ctx->m_lineStart = ctx->m_index;
         } else if (ch == 0x2A) {
             // Block comment ends with '*/'.
-            if (ctx->m_sourceString->stringData()->charAt(ctx->m_index + 1) == 0x2F) {
+            if (ctx->m_sourceString->charAt(ctx->m_index + 1) == 0x2F) {
                 ++ctx->m_index;
                 ++ctx->m_index;
                 /*
@@ -1214,21 +1214,21 @@ void skipComment(ParseContext* ctx)
 
     start = (ctx->m_index == 0);
     while (ctx->m_index < ctx->m_length) {
-        ch = ctx->m_sourceString->stringData()->charAt(ctx->m_index);
+        ch = ctx->m_sourceString->charAt(ctx->m_index);
 
         if (isWhiteSpace(ch)) {
             ++ctx->m_index;
         } else if (isLineTerminator(ch)) {
             ctx->m_hasLineTerminator = true;
             ++ctx->m_index;
-            if (ch == 0x0D && ctx->m_sourceString->stringData()->charAt(ctx->m_index) == 0x0A) {
+            if (ch == 0x0D && ctx->m_sourceString->charAt(ctx->m_index) == 0x0A) {
                 ++ctx->m_index;
             }
             ++ctx->m_lineNumber;
             ctx->m_lineStart = ctx->m_index;
             start = true;
         } else if (ch == 0x2F) { // U+002F is '/'
-            ch = ctx->m_sourceString->stringData()->charAt(ctx->m_index + 1);
+            ch = ctx->m_sourceString->charAt(ctx->m_index + 1);
             if (ch == 0x2F) {
                 ++ctx->m_index;
                 ++ctx->m_index;
@@ -1243,7 +1243,7 @@ void skipComment(ParseContext* ctx)
             }
         } else if (start && ch == 0x2D) { // U+002D is '-'
             // U+003E is '>'
-            if ((ctx->m_sourceString->stringData()->charAt(ctx->m_index + 1) == 0x2D) && (ctx->m_sourceString->stringData()->charAt(ctx->m_index + 2) == 0x3E)) {
+            if ((ctx->m_sourceString->charAt(ctx->m_index + 1) == 0x2D) && (ctx->m_sourceString->charAt(ctx->m_index + 2) == 0x3E)) {
                 // '-->' is a single-line comment
                 ctx->m_index += 3;
                 skipSingleLineComment(ctx, 3);
@@ -1251,7 +1251,7 @@ void skipComment(ParseContext* ctx)
                 break;
             }
         } else if (ch == 0x3C) { // U+003C is '<'
-            if (ctx->m_sourceString->stringData()->charAt(ctx->m_index + 1) == '!' && ctx->m_sourceString->stringData()->charAt(ctx->m_index + 2) == '-' && ctx->m_sourceString->stringData()->charAt(ctx->m_index + 3) == '-') {
+            if (ctx->m_sourceString->charAt(ctx->m_index + 1) == '!' && ctx->m_sourceString->charAt(ctx->m_index + 2) == '-' && ctx->m_sourceString->charAt(ctx->m_index + 3) == '-') {
                 ++ctx->m_index; // `<`
                 ++ctx->m_index; // `!`
                 ++ctx->m_index; // `-`
@@ -1275,7 +1275,7 @@ PassRefPtr<ParseStatus> scanIdentifier(ParseContext* ctx)
     start = ctx->m_index;
 
     // Backslash (U+005C) starts an escaped character.
-    id = (ctx->m_sourceString->stringData()->charAt(ctx->m_index) == 0x5C) ? getComplexIdentifier(ctx) : getIdentifier(ctx);
+    id = (ctx->m_sourceString->charAt(ctx->m_index) == 0x5C) ? getComplexIdentifier(ctx) : getIdentifier(ctx);
 
     // There is no keyword or literal with only one character.
     // Thus, it must be an identifier.
@@ -1321,7 +1321,7 @@ PassRefPtr<ParseStatus> scanPunctuator(ParseContext* ctx)
     };
      */
     // Check for most common single-character punctuators.
-    char16_t ch0 = ctx->m_sourceString->stringData()->charAt(ctx->m_index), ch1, ch2, ch3;
+    char16_t ch0 = ctx->m_sourceString->charAt(ctx->m_index), ch1, ch2, ch3;
     // std::UTF16String resultStr;
     // resultStr.reserve(4);
     // resultStr += str;
@@ -1350,7 +1350,7 @@ PassRefPtr<ParseStatus> scanPunctuator(ParseContext* ctx)
     case '.':
         ++ctx->m_index;
         token->m_punctuatorsKind = Period;
-        if (ctx->m_sourceString->stringData()->charAt(ctx->m_index) == '.' && ctx->m_sourceString->stringData()->charAt(ctx->m_index + 1) == '.') {
+        if (ctx->m_sourceString->charAt(ctx->m_index) == '.' && ctx->m_sourceString->charAt(ctx->m_index + 1) == '.') {
             // Spread operator: ...
             ctx->m_index += 2;
             // resultStr = u"...";
@@ -1397,11 +1397,11 @@ PassRefPtr<ParseStatus> scanPunctuator(ParseContext* ctx)
         break;
 
     case '>':
-        ch1 = ctx->m_sourceString->stringData()->charAt(ctx->m_index + 1);
+        ch1 = ctx->m_sourceString->charAt(ctx->m_index + 1);
         if (ch1 == '>') {
-            ch2 = ctx->m_sourceString->stringData()->charAt(ctx->m_index + 2);
+            ch2 = ctx->m_sourceString->charAt(ctx->m_index + 2);
             if (ch2 == '>') {
-                ch3 = ctx->m_sourceString->stringData()->charAt(ctx->m_index + 3);
+                ch3 = ctx->m_sourceString->charAt(ctx->m_index + 3);
                 if (ch3 == '=') {
                     ctx->m_index += 4;
                     token->m_punctuatorsKind = UnsignedRightShiftEqual;
@@ -1425,9 +1425,9 @@ PassRefPtr<ParseStatus> scanPunctuator(ParseContext* ctx)
         }
         break;
     case '<':
-        ch1 = ctx->m_sourceString->stringData()->charAt(ctx->m_index + 1);
+        ch1 = ctx->m_sourceString->charAt(ctx->m_index + 1);
         if (ch1 == '<') {
-            ch2 = ctx->m_sourceString->stringData()->charAt(ctx->m_index + 2);
+            ch2 = ctx->m_sourceString->charAt(ctx->m_index + 2);
             if (ch2 == '=') {
                 token->m_punctuatorsKind = LeftShiftEqual;
                 ctx->m_index += 3;
@@ -1444,9 +1444,9 @@ PassRefPtr<ParseStatus> scanPunctuator(ParseContext* ctx)
         }
         break;
     case '=':
-        ch1 = ctx->m_sourceString->stringData()->charAt(ctx->m_index + 1);
+        ch1 = ctx->m_sourceString->charAt(ctx->m_index + 1);
         if (ch1 == '=') {
-            ch2 = ctx->m_sourceString->stringData()->charAt(ctx->m_index + 2);
+            ch2 = ctx->m_sourceString->charAt(ctx->m_index + 2);
             if (ch2 == '=') {
                 token->m_punctuatorsKind = StrictEqual;
                 ctx->m_index += 3;
@@ -1463,9 +1463,9 @@ PassRefPtr<ParseStatus> scanPunctuator(ParseContext* ctx)
         }
         break;
     case '!':
-        ch1 = ctx->m_sourceString->stringData()->charAt(ctx->m_index + 1);
+        ch1 = ctx->m_sourceString->charAt(ctx->m_index + 1);
         if (ch1 == '=') {
-            ch2 = ctx->m_sourceString->stringData()->charAt(ctx->m_index + 2);
+            ch2 = ctx->m_sourceString->charAt(ctx->m_index + 2);
             if (ch2 == '=') {
                 token->m_punctuatorsKind = NotStrictEqual;
                 ctx->m_index += 3;
@@ -1479,7 +1479,7 @@ PassRefPtr<ParseStatus> scanPunctuator(ParseContext* ctx)
         }
         break;
     case '&':
-        ch1 = ctx->m_sourceString->stringData()->charAt(ctx->m_index + 1);
+        ch1 = ctx->m_sourceString->charAt(ctx->m_index + 1);
         if (ch1 == '&') {
             token->m_punctuatorsKind = LogicalAnd;
             ctx->m_index += 2;
@@ -1492,7 +1492,7 @@ PassRefPtr<ParseStatus> scanPunctuator(ParseContext* ctx)
         }
         break;
     case '|':
-        ch1 = ctx->m_sourceString->stringData()->charAt(ctx->m_index + 1);
+        ch1 = ctx->m_sourceString->charAt(ctx->m_index + 1);
         if (ch1 == '|') {
             token->m_punctuatorsKind = LogicalOr;
             ctx->m_index += 2;
@@ -1505,7 +1505,7 @@ PassRefPtr<ParseStatus> scanPunctuator(ParseContext* ctx)
         }
         break;
     case '^':
-        ch1 = ctx->m_sourceString->stringData()->charAt(ctx->m_index + 1);
+        ch1 = ctx->m_sourceString->charAt(ctx->m_index + 1);
         if (ch1 == '=') {
             token->m_punctuatorsKind = BitwiseXorEqual;
             ctx->m_index += 2;
@@ -1515,7 +1515,7 @@ PassRefPtr<ParseStatus> scanPunctuator(ParseContext* ctx)
         }
         break;
     case '+':
-        ch1 = ctx->m_sourceString->stringData()->charAt(ctx->m_index + 1);
+        ch1 = ctx->m_sourceString->charAt(ctx->m_index + 1);
         if (ch1 == '+') {
             token->m_punctuatorsKind = PlusPlus;
             ctx->m_index += 2;
@@ -1528,7 +1528,7 @@ PassRefPtr<ParseStatus> scanPunctuator(ParseContext* ctx)
         }
         break;
     case '-':
-        ch1 = ctx->m_sourceString->stringData()->charAt(ctx->m_index + 1);
+        ch1 = ctx->m_sourceString->charAt(ctx->m_index + 1);
         if (ch1 == '-') {
             token->m_punctuatorsKind = MinusMinus;
             ctx->m_index += 2;
@@ -1541,7 +1541,7 @@ PassRefPtr<ParseStatus> scanPunctuator(ParseContext* ctx)
         }
         break;
     case '*':
-        ch1 = ctx->m_sourceString->stringData()->charAt(ctx->m_index + 1);
+        ch1 = ctx->m_sourceString->charAt(ctx->m_index + 1);
         if (ch1 == '=') {
             token->m_punctuatorsKind = MultiplyEqual;
             ctx->m_index += 2;
@@ -1551,7 +1551,7 @@ PassRefPtr<ParseStatus> scanPunctuator(ParseContext* ctx)
         }
         break;
     case '/':
-        ch1 = ctx->m_sourceString->stringData()->charAt(ctx->m_index + 1);
+        ch1 = ctx->m_sourceString->charAt(ctx->m_index + 1);
         if (ch1 == '=') {
             token->m_punctuatorsKind = DivideEqual;
             ctx->m_index += 2;
@@ -1561,7 +1561,7 @@ PassRefPtr<ParseStatus> scanPunctuator(ParseContext* ctx)
         }
         break;
     case '%':
-        ch1 = ctx->m_sourceString->stringData()->charAt(ctx->m_index + 1);
+        ch1 = ctx->m_sourceString->charAt(ctx->m_index + 1);
         if (ch1 == '=') {
             token->m_punctuatorsKind = ModEqual;
             ctx->m_index += 2;
@@ -1595,7 +1595,7 @@ PassRefPtr<ParseStatus> scanStringLiteral(ParseContext* ctx)
     size_t smallBufferUsage = 0;
     bool strInited = false;
 
-    quote = ctx->m_sourceString->stringData()->charAt(ctx->m_index);
+    quote = ctx->m_sourceString->charAt(ctx->m_index);
     ASSERT((quote == '\'' || quote == '"'));
 
     start = ctx->m_index;
@@ -1607,18 +1607,18 @@ PassRefPtr<ParseStatus> scanStringLiteral(ParseContext* ctx)
             strInited = true;
         }
 
-        ch = ctx->m_sourceString->stringData()->charAt(ctx->m_index++);
+        ch = ctx->m_sourceString->charAt(ctx->m_index++);
 
         if (ch == quote) {
             quote = '\0';
             break;
         } else if (ch == '\\') {
-            ch = ctx->m_sourceString->stringData()->charAt(ctx->m_index++);
+            ch = ctx->m_sourceString->charAt(ctx->m_index++);
             if (!ch || !isLineTerminator(ch)) {
                 switch (ch) {
                 case 'u':
                 case 'x':
-                    if (ctx->m_sourceString->stringData()->charAt(ctx->m_index) == '{') {
+                    if (ctx->m_sourceString->charAt(ctx->m_index) == '{') {
                         ++ctx->m_index;
                         if (smallBufferUsage < smallBufferMax) {
                             ASSERT(!strInited);
@@ -1706,7 +1706,7 @@ PassRefPtr<ParseStatus> scanStringLiteral(ParseContext* ctx)
                 }
             } else {
                 ++ctx->m_lineNumber;
-                if (ch == '\r' && ctx->m_sourceString->stringData()->charAt(ctx->m_index) == '\n') {
+                if (ch == '\r' && ctx->m_sourceString->charAt(ctx->m_index) == '\n') {
                     ++ctx->m_index;
                 }
                 ctx->m_lineStart = ctx->m_index;
@@ -1714,7 +1714,7 @@ PassRefPtr<ParseStatus> scanStringLiteral(ParseContext* ctx)
         } else if (isLineTerminator(ch)) {
             break;
         } else {
-            if (ctx->m_sourceString->stringData()->isASCIIString()) {
+            if (ctx->m_sourceString->isASCIIString()) {
                 // NOTE this is workaround for support utf-8
                 // ASCII byte
                 if (0 == (ch & 0x80)) {
@@ -1722,14 +1722,14 @@ PassRefPtr<ParseStatus> scanStringLiteral(ParseContext* ctx)
                 } else {
                     // Start byte for 2byte
                     char16_t uc = 0;
-                    char16_t ch2 = ctx->m_sourceString->stringData()->charAt(ctx->m_index++);
+                    char16_t ch2 = ctx->m_sourceString->charAt(ctx->m_index++);
                     if (0xC0 == (ch & 0xE0)
                         && 0x80 == (ch2 & 0xC0) ) {
                         uc += (ch & 0x1F) << 6;
                         uc += (ch2 & 0x3F) << 0;
                         ch = uc;
                     } else { // Start byte for 3byte
-                        char16_t ch3 = ctx->m_sourceString->stringData()->charAt(ctx->m_index++);
+                        char16_t ch3 = ctx->m_sourceString->charAt(ctx->m_index++);
                         if (0xE0 == (ch & 0xE0)
                             && 0x80 == (ch2 & 0xC0)
                             && 0x80 == (ch3 & 0xC0)) {
@@ -1780,7 +1780,7 @@ PassRefPtr<ParseStatus> scanTemplate(ParseContext* ctx)
     bool terminated = false;
     bool tail = false;
     size_t start = ctx->m_index;
-    bool head = (ctx->m_sourceString->stringData()->charAt(ctx->m_index) == '`');
+    bool head = (ctx->m_sourceString->charAt(ctx->m_index) == '`');
     size_t rawOffset = 2;
     size_t restore;
     ParserStringStd cooked;
@@ -1788,14 +1788,14 @@ PassRefPtr<ParseStatus> scanTemplate(ParseContext* ctx)
     ++ctx->m_index;
 
     while (ctx->m_index < ctx->m_length) {
-        ch = ctx->m_sourceString->stringData()->charAt(ctx->m_index++);
+        ch = ctx->m_sourceString->charAt(ctx->m_index++);
         if (ch == '`') {
             rawOffset = 1;
             tail = true;
             terminated = true;
             break;
         } else if (ch == '$') {
-            if (ctx->m_sourceString->stringData()->charAt(ctx->m_index) == '{') {
+            if (ctx->m_sourceString->charAt(ctx->m_index) == '{') {
                 ctx->m_curlyStack.push_back(Curly("${\0"));
                 ++ctx->m_index;
                 terminated = true;
@@ -1803,7 +1803,7 @@ PassRefPtr<ParseStatus> scanTemplate(ParseContext* ctx)
             }
             cooked += ch;
         } else if (ch == '\\') {
-            ch = ctx->m_sourceString->stringData()->charAt(ctx->m_index++);
+            ch = ctx->m_sourceString->charAt(ctx->m_index++);
             if (!isLineTerminator(ch)) {
                 switch (ch) {
                 case 'n':
@@ -1817,7 +1817,7 @@ PassRefPtr<ParseStatus> scanTemplate(ParseContext* ctx)
                     break;
                 case 'u':
                 case 'x':
-                    if (ctx->m_sourceString->stringData()->charAt(ctx->m_index) == '{') {
+                    if (ctx->m_sourceString->charAt(ctx->m_index) == '{') {
                         ++ctx->m_index;
                         cooked += scanUnicodeCodePointEscape(ctx);
                     } else {
@@ -1843,7 +1843,7 @@ PassRefPtr<ParseStatus> scanTemplate(ParseContext* ctx)
 
                 default:
                     if (ch == '0') {
-                        if (isDecimalDigit(ctx->m_sourceString->stringData()->charAt(ctx->m_index))) {
+                        if (isDecimalDigit(ctx->m_sourceString->charAt(ctx->m_index))) {
                             // Illegal: \01 \02 and so on
                             throw u"TemplateOctalLiteral";
                             // throwError(Messages.TemplateOctalLiteral);
@@ -1860,14 +1860,14 @@ PassRefPtr<ParseStatus> scanTemplate(ParseContext* ctx)
                 }
             } else {
                 ++ctx->m_lineNumber;
-                if (ch == '\r' && ctx->m_sourceString->stringData()->charAt(ctx->m_index) == '\n') {
+                if (ch == '\r' && ctx->m_sourceString->charAt(ctx->m_index) == '\n') {
                     ++ctx->m_index;
                 }
                 ctx->m_lineStart = ctx->m_index;
             }
         } else if (isLineTerminator(ch)) {
             ++ctx->m_lineNumber;
-            if (ch == '\r' && ctx->m_sourceString->stringData()->charAt(ctx->m_index) == '\n') {
+            if (ch == '\r' && ctx->m_sourceString->charAt(ctx->m_index) == '\n') {
                 ++ctx->m_index;
             }
             ctx->m_lineStart = ctx->m_index;
@@ -1920,17 +1920,17 @@ PassRefPtr<ParseStatus> scanHexLiteral(ParseContext* ctx, size_t start)
     std::string number;
 
     while (ctx->m_index < ctx->m_length) {
-        if (!isHexDigit(ctx->m_sourceString->stringData()->charAt(ctx->m_index))) {
+        if (!isHexDigit(ctx->m_sourceString->charAt(ctx->m_index))) {
             break;
         }
-        number += ctx->m_sourceString->stringData()->charAt(ctx->m_index++);
+        number += ctx->m_sourceString->charAt(ctx->m_index++);
     }
 
     if (number.length() == 0) {
         throwUnexpectedToken();
     }
 
-    if (isIdentifierStart(ctx->m_sourceString->stringData()->charAt(ctx->m_index))) {
+    if (isIdentifierStart(ctx->m_sourceString->charAt(ctx->m_index))) {
         throwUnexpectedToken();
     }
 
@@ -1962,11 +1962,11 @@ PassRefPtr<ParseStatus> scanBinaryLiteral(ParseContext* ctx, size_t start)
     std::string number;
 
     while (ctx->m_index < ctx->m_length) {
-        ch = ctx->m_sourceString->stringData()->charAt(ctx->m_index);
+        ch = ctx->m_sourceString->charAt(ctx->m_index);
         if (ch != '0' && ch != '1') {
             break;
         }
-        number += ctx->m_sourceString->stringData()->charAt(ctx->m_index++);
+        number += ctx->m_sourceString->charAt(ctx->m_index++);
     }
 
     if (number.length() == 0) {
@@ -1975,7 +1975,7 @@ PassRefPtr<ParseStatus> scanBinaryLiteral(ParseContext* ctx, size_t start)
     }
 
     if (ctx->m_index < ctx->m_length) {
-        ch = ctx->m_sourceString->stringData()->charAt(ctx->m_index);
+        ch = ctx->m_sourceString->charAt(ctx->m_index);
         /* istanbul ignore else */
         if (isIdentifierStart(ch) || isDecimalDigit(ch)) {
             throwUnexpectedToken();
@@ -2012,7 +2012,7 @@ PassRefPtr<ParseStatus> scanOctalLiteral(ParseContext* ctx, char16_t prefix, siz
 
     if (isOctalDigit(prefix)) {
         octal = true;
-        number = '0' + ctx->m_sourceString->stringData()->charAt(ctx->m_index++);
+        number = '0' + ctx->m_sourceString->charAt(ctx->m_index++);
     } else {
         octal = false;
         ++ctx->m_index;
@@ -2020,10 +2020,10 @@ PassRefPtr<ParseStatus> scanOctalLiteral(ParseContext* ctx, char16_t prefix, siz
     }
 
     while (ctx->m_index < ctx->m_length) {
-        if (!isOctalDigit(ctx->m_sourceString->stringData()->charAt(ctx->m_index))) {
+        if (!isOctalDigit(ctx->m_sourceString->charAt(ctx->m_index))) {
             break;
         }
-        number += ctx->m_sourceString->stringData()->charAt(ctx->m_index++);
+        number += ctx->m_sourceString->charAt(ctx->m_index++);
     }
 
     if (!octal && number.length() == 0) {
@@ -2031,7 +2031,7 @@ PassRefPtr<ParseStatus> scanOctalLiteral(ParseContext* ctx, char16_t prefix, siz
         throwUnexpectedToken();
     }
 
-    if (isIdentifierStart(ctx->m_sourceString->stringData()->charAt(ctx->m_index)) || isDecimalDigit(ctx->m_sourceString->stringData()->charAt(ctx->m_index))) {
+    if (isIdentifierStart(ctx->m_sourceString->charAt(ctx->m_index)) || isDecimalDigit(ctx->m_sourceString->charAt(ctx->m_index))) {
         throwUnexpectedToken();
     }
 
@@ -2067,7 +2067,7 @@ bool isImplicitOctalLiteral(ParseContext* ctx)
     // Implicit octal, unless there is a non-octal digit.
     // (Annex B.1.1 on Numeric Literals)
     for (size_t i = ctx->m_index + 1; i < ctx->m_length; ++i) {
-        ch = ctx->m_sourceString->stringData()->charAt(i);
+        ch = ctx->m_sourceString->charAt(i);
         if (ch == '8' || ch == '9') {
             return false;
         }
@@ -2086,14 +2086,14 @@ PassRefPtr<ParseStatus> scanNumericLiteral(ParseContext* ctx)
     size_t start;
     char16_t ch;
 
-    ch = ctx->m_sourceString->stringData()->charAt(ctx->m_index);
+    ch = ctx->m_sourceString->charAt(ctx->m_index);
     ASSERT(isDecimalDigit(ch) || (ch == '.'));
 
     start = ctx->m_index;
 
     if (ch != '.') {
-        number = ctx->m_sourceString->stringData()->charAt(ctx->m_index++);
-        ch = ctx->m_sourceString->stringData()->charAt(ctx->m_index);
+        number = ctx->m_sourceString->charAt(ctx->m_index++);
+        ch = ctx->m_sourceString->charAt(ctx->m_index);
 
         // Hex number starts with '0x'.
         // Octal number starts with '0'.
@@ -2119,37 +2119,37 @@ PassRefPtr<ParseStatus> scanNumericLiteral(ParseContext* ctx)
             }
         }
 
-        while (isDecimalDigit(ctx->m_sourceString->stringData()->charAt(ctx->m_index))) {
-            number += ctx->m_sourceString->stringData()->charAt(ctx->m_index++);
+        while (isDecimalDigit(ctx->m_sourceString->charAt(ctx->m_index))) {
+            number += ctx->m_sourceString->charAt(ctx->m_index++);
         }
-        ch = ctx->m_sourceString->stringData()->charAt(ctx->m_index);
+        ch = ctx->m_sourceString->charAt(ctx->m_index);
     }
 
     if (ch == '.') {
-        number += ctx->m_sourceString->stringData()->charAt(ctx->m_index++);
-        while (isDecimalDigit(ctx->m_sourceString->stringData()->charAt(ctx->m_index))) {
-            number += ctx->m_sourceString->stringData()->charAt(ctx->m_index++);
+        number += ctx->m_sourceString->charAt(ctx->m_index++);
+        while (isDecimalDigit(ctx->m_sourceString->charAt(ctx->m_index))) {
+            number += ctx->m_sourceString->charAt(ctx->m_index++);
         }
-        ch = ctx->m_sourceString->stringData()->charAt(ctx->m_index);
+        ch = ctx->m_sourceString->charAt(ctx->m_index);
     }
 
     if (ch == 'e' || ch == 'E') {
-        number += ctx->m_sourceString->stringData()->charAt(ctx->m_index++);
+        number += ctx->m_sourceString->charAt(ctx->m_index++);
 
-        ch = ctx->m_sourceString->stringData()->charAt(ctx->m_index);
+        ch = ctx->m_sourceString->charAt(ctx->m_index);
         if (ch == '+' || ch == '-') {
-            number += ctx->m_sourceString->stringData()->charAt(ctx->m_index++);
+            number += ctx->m_sourceString->charAt(ctx->m_index++);
         }
-        if (isDecimalDigit(ctx->m_sourceString->stringData()->charAt(ctx->m_index))) {
-            while (isDecimalDigit(ctx->m_sourceString->stringData()->charAt(ctx->m_index))) {
-                number += ctx->m_sourceString->stringData()->charAt(ctx->m_index++);
+        if (isDecimalDigit(ctx->m_sourceString->charAt(ctx->m_index))) {
+            while (isDecimalDigit(ctx->m_sourceString->charAt(ctx->m_index))) {
+                number += ctx->m_sourceString->charAt(ctx->m_index++);
             }
         } else {
             throwUnexpectedToken();
         }
     }
 
-    if (isIdentifierStart(ctx->m_sourceString->stringData()->charAt(ctx->m_index))) {
+    if (isIdentifierStart(ctx->m_sourceString->charAt(ctx->m_index))) {
         throwUnexpectedToken();
     }
 
@@ -2195,7 +2195,7 @@ ALWAYS_INLINE PassRefPtr<ParseStatus> advance(ParseContext* ctx)
         return adoptRef(ps);
     }
 
-    cp = ctx->m_sourceString->stringData()->charAt(ctx->m_index);
+    cp = ctx->m_sourceString->charAt(ctx->m_index);
 
     if (isIdentifierStart(cp)) {
         RefPtr<ParseStatus> token;
@@ -2221,7 +2221,7 @@ ALWAYS_INLINE PassRefPtr<ParseStatus> advance(ParseContext* ctx)
     // Dot (.) U+002E can also start a floating-point number, hence the need
     // to check the next character.
     if (cp == 0x2E) {
-        if (isDecimalDigit(ctx->m_sourceString->stringData()->charAt(ctx->m_index + 1))) {
+        if (isDecimalDigit(ctx->m_sourceString->charAt(ctx->m_index + 1))) {
             return scanNumericLiteral(ctx);
         }
         return scanPunctuator(ctx);
@@ -2388,7 +2388,7 @@ bool matchAssign(ParseContext* ctx)
 void consumeSemicolon(ParseContext* ctx)
 {
     // Catch the very common case first: immediately a semicolon (U+003B).
-    if (ctx->m_sourceString->stringData()->charAt(ctx->m_startIndex) == 0x3B || match(ctx, SemiColon)) {
+    if (ctx->m_sourceString->charAt(ctx->m_startIndex) == 0x3B || match(ctx, SemiColon)) {
         lex(ctx);
         return;
     }
@@ -3122,7 +3122,7 @@ escargot::Node* parseContinueStatement(ParseContext* ctx/*node*/)
     expectKeyword(ctx, Continue);
 
     // Optimize the most common form: 'continue;'.
-    if (ctx->m_sourceString->stringData()->charAt(ctx->m_startIndex) == 0x3B) {
+    if (ctx->m_sourceString->charAt(ctx->m_startIndex) == 0x3B) {
         lex(ctx);
 
         if (!ctx->m_inIteration) {
@@ -3195,7 +3195,7 @@ escargot::Node* parseBreakStatement(ParseContext* ctx/*node*/)
     expectKeyword(ctx, Break);
 
     // Catch the very common case first: immediately a semicolon (U+003B).
-    if (ctx->m_sourceString->stringData()->charAt(ctx->m_lastIndex) == 0x3B) {
+    if (ctx->m_sourceString->charAt(ctx->m_lastIndex) == 0x3B) {
         lex(ctx);
 
         if (!(ctx->m_inIteration || ctx->m_inSwitch)) {
@@ -3271,8 +3271,8 @@ escargot::Node* parseReturnStatement(ParseContext* ctx/*node*/)
     }
 
     // 'return' followed by a space and an identifier is very common.
-    if (ctx->m_sourceString->stringData()->charAt(ctx->m_lastIndex) == 0x20) {
-        if (isIdentifierStart(ctx->m_sourceString->stringData()->charAt(ctx->m_lastIndex))) {
+    if (ctx->m_sourceString->charAt(ctx->m_lastIndex) == 0x20) {
+        if (isIdentifierStart(ctx->m_sourceString->charAt(ctx->m_lastIndex))) {
             argument = parseExpression(ctx);
             consumeSemicolon(ctx);
             escargot::Node* nd = new escargot::ReturnStatmentNode(argument);
@@ -3650,7 +3650,7 @@ escargot::Node* parseFunctionSourceElements(ParseContext* ctx)
         if (token->m_end - 1 - (token->m_start + 1) == 10) {
             static const char16_t* s = u"use strict";
             for (size_t i = 0 ; i < 10 ; i ++) {
-                if (s[i] != ctx->m_sourceString->stringData()->charAt(token->m_start + 1 + i)) {
+                if (s[i] != ctx->m_sourceString->charAt(token->m_start + 1 + i)) {
                     strict = false;
                 }
             }
@@ -4304,18 +4304,18 @@ ScanRegExpBodyResult* scanRegExpBody(ParseContext* ctx)
     ParserString str;
     // , str, classMarker, terminated, body;
 
-    ch = ctx->m_sourceString->stringData()->charAt(ctx->m_index);
+    ch = ctx->m_sourceString->charAt(ctx->m_index);
     // assert(ch === '/', 'Regular expression literal must start with a slash');
     ASSERT(ch == '/');
-    str = ctx->m_sourceString->stringData()->charAt(ctx->m_index++);
+    str = ctx->m_sourceString->charAt(ctx->m_index++);
 
     bool classMarker = false;
     bool terminated = false;
     while (ctx->m_index < ctx->m_length) {
-        ch = ctx->m_sourceString->stringData()->charAt(ctx->m_index++);
+        ch = ctx->m_sourceString->charAt(ctx->m_index++);
         str += ch;
         if (ch == '\\') {
-            ch = ctx->m_sourceString->stringData()->charAt(ctx->m_index++);
+            ch = ctx->m_sourceString->charAt(ctx->m_index++);
             // ECMA-262 7.8.5
             if (isLineTerminator(ch)) {
                 // throwUnexpectedToken(null, Messages.UnterminatedRegExp);
@@ -4373,14 +4373,14 @@ ScanRegExpFlagsResult* scanRegExpFlags(ParseContext* ctx)
     ParserString flags;
     size_t restore;
     while (ctx->m_index < ctx->m_length) {
-        ch = ctx->m_sourceString->stringData()->charAt(ctx->m_index);
+        ch = ctx->m_sourceString->charAt(ctx->m_index);
         if (!isIdentifierPart(ch)) {
             break;
         }
 
         ++ctx->m_index;
         if (ch == '\\' && ctx->m_index < ctx->m_length) {
-            ch = ctx->m_sourceString->stringData()->charAt(ctx->m_index);
+            ch = ctx->m_sourceString->charAt(ctx->m_index);
             if (ch == 'u') {
                 ++ctx->m_index;
                 restore = ctx->m_index;
@@ -4390,7 +4390,7 @@ ScanRegExpFlagsResult* scanRegExpFlags(ParseContext* ctx)
                     str += '\\';
                     str += 'u';
                     for (; restore < ctx->m_index; ++restore) {
-                        str += ctx->m_sourceString->stringData()->charAt(restore);
+                        str += ctx->m_sourceString->charAt(restore);
                     }
                 } else {
                     ctx->m_index = restore;
@@ -5959,7 +5959,7 @@ escargot::StatementNodeVector parseScriptBody(ParseContext* ctx)
         if (token->m_end - 1 - (token->m_start + 1) == 10) {
             static const char16_t* s = u"use strict";
             for (size_t i = 0 ; i < 10 ; i ++) {
-                if (s[i] != ctx->m_sourceString->stringData()->charAt(token->m_start + 1 + i)) {
+                if (s[i] != ctx->m_sourceString->charAt(token->m_start + 1 + i)) {
                     strict = false;
                 }
             }
