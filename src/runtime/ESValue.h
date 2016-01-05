@@ -784,6 +784,7 @@ protected:
         m_data.m_hashData = stringHash(ASCIIString::data(), ASCIIString::length());
     }
 
+    // FIXME
     // for protect string buffer
     // gcc stores buffer of basic_string with special way
     // so we should root buffer manually
@@ -805,6 +806,7 @@ protected:
         m_data.m_hashData = stringHash(UTF16String::data(), UTF16String::length());
     }
 
+    // FIXME
     // for protect string buffer
     // gcc stores buffer of basic_string with special way
     // so we should root buffer manually
