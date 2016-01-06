@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 
 if [ ! -f /proc/cpuinfo ]; then
 	echo "Is this Linux? Cannot find or read /proc/cpuinfo"
@@ -15,9 +16,10 @@ if [ $TIZEN == "1" ]
 then
 	echo "TIZEN_SDK_HOME env is ..."
 	echo $TIZEN_SDK_HOME
-	#TIZEN_SYS_ROOT=$TIZEN_SDK_HOME/platforms/mobile-2.3/rootstraps/mobile-2.3-device.core
-	TIZEN_SYS_ROOT=$TIZEN_SDK_HOME/platforms/tizen-2.4/mobile/rootstraps/mobile-2.4-device.core
-	TIZEN_WEARABLE_SYS_ROOT=$TIZEN_SDK_HOME/platforms/tizen-2.4/wearable/rootstraps/wearable-2.4-device.core/
+	#TIZEN_SYS_ROOT=$TIZEN_SDK_HOME/platforms/mobile-2.3/rootstraps/mobile-2.3-device.core/
+	TIZEN_SYS_ROOT=$TIZEN_SDK_HOME/platforms/tizen-2.4/mobile/rootstraps/mobile-2.4-device.core/
+	TIZEN_WEARABLE_SYS_ROOT=$TIZEN_SDK_HOME/platforms/tizen-2.3.1/wearable/rootstraps/wearable-2.3.1-device.core/
+	TIZEN_TOOLCHAIN=$TIZEN_SDK_HOME/tools/arm-linux-gnueabi-gcc-4.9/
 fi
 
 ###########################################################
@@ -82,12 +84,17 @@ cd -
 if [ $TIZEN == "1" ]
 then
 	cd out/tizen_arm/arm/release.shared
-	../../../../configure $GCCONFFLAGS --disable-gc-debug --with-sysroot=$TIZEN_SYS_ROOT --host=arm-linux-gnueabi CFLAGS='-fPIC -march=armv7-a -O2 -mthumb -finline-limit=64'
+	TCF="-fPIC -march=armv7-a -O2 -mthumb -finline-limit=64 --sysroot="${TIZEN_SYS_ROOT}
+	echo $TCF
+	../../../../configure $GCCONFFLAGS --disable-gc-debug --with-sysroot=$TIZEN_SYS_ROOT --with-cross-host=arm-linux-gnueabi CFLAGS='-fPIC -march=armv7-a -O2 -mthumb -finline-limit=64 --sysroot=/home/ksh8281/tizen-sdk-2.4.r2/platforms/tizen-2.3.1/wearable/rootstraps/wearable-2.3.1-device.core/' CC=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-gcc CXX=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-g++ LD=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-ld
 	make -j$NUMPROC
 	cd -
 
 	cd out/tizen_wearable_arm/arm/release.shared
-	../../../../configure $GCCONFFLAGS --disable-gc-debug --with-sysroot=$TIZEN_WEARABLE_SYS_ROOT --host=arm-linux-gnueabi CFLAGS='-fPIC -march=armv7-a -Os -mthumb -finline-limit=64'
+	TWCF="-fPIC -march=armv7-a -Os -mthumb -finline-limit=64 --sysroot="${TIZEN_WEARABLE_SYS_ROOT}
+	TWCF=''\'$TWCF\'''
+	../../../../configure $GCCONFFLAGS --disable-gc-debug --with-sysroot=$TIZEN_WEARABLE_SYS_ROOT --host=arm-linux-gnueabi CFLAGS='-fPIC -march=armv7-a -Os -g0 -mthumb -finline-limit=64 --sysroot=/home/ksh8281/tizen-sdk-2.4.r2/platforms/tizen-2.3.1/wearable/rootstraps/wearable-2.3.1-device.core/ -DTIZEN_WEARABLE' CC=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-gcc CXX=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-g++ LD=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-ld
+	#../../../../configure $GCCONFFLAGS --disable-gc-debug --with-sysroot=$TIZEN_WEARABLE_SYS_ROOT --host=arm-linux-gnueabi CFLAGS=$TWCF CC=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-gcc CXX=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-g++ LD=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-ld
 	make -j$NUMPROC
 	cd -
 fi
