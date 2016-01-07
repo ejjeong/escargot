@@ -926,8 +926,15 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                 bool res = obj->toObject()->deleteProperty(*key);
                 PUSH(stack, topOfStack, ESValue(res));
             } else {
-                bool res = globalObject->deleteProperty(code->m_name);
-                PUSH(stack, topOfStack, ESValue(res));
+                LexicalEnvironment* env = nullptr;
+                InternalAtomicString str(code->m_name->utf8Data(), code->m_name->length());
+                ESValue* binding = ec->resolveBinding(str, env);
+                if (binding && env->record()->isGlobalEnvironmentRecord()) {
+                    bool res = globalObject->deleteProperty(code->m_name);
+                    PUSH(stack, topOfStack, ESValue(res));
+                } else {
+                    PUSH(stack, topOfStack, ESValue(false));
+                }
             }
             executeNextCode<UnaryDelete>(programCounter);
             NEXT_INSTRUCTION();
