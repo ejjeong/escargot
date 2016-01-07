@@ -1369,12 +1369,12 @@ ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctio
         newEC->setThisBinding(receiver);
     }
 
-    // if FunctionExpressionNode has own name, should bind own name
+    // if FunctionExpressionNode has own name, should bind own function object
     if (cb->m_isFunctionExpression && cb->m_functionExpressionNameIndex != SIZE_MAX) {
         if (cb->m_isFunctionExpressionNameHeapAllocated) {
-            *functionRecord->bindingValueForHeapAllocatedData(cb->m_functionExpressionNameIndex) = fn->name();
+            *functionRecord->bindingValueForHeapAllocatedData(cb->m_functionExpressionNameIndex) = ESValue(fn);
         } else {
-            stackStorage[cb->m_functionExpressionNameIndex] = fn->name();
+            stackStorage[cb->m_functionExpressionNameIndex] = ESValue(fn);
         }
     }
 
