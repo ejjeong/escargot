@@ -1108,8 +1108,27 @@ void GlobalObject::installError()
 
     defineDataProperty(strings->Error, true, false, true, m_error);
 
+#define DECLARE_ERROR_FUNCTION(ErrorType) \
+    auto errorFn##ErrorType = [](ESVMInstance* instance) -> ESValue { \
+        if (instance->currentExecutionContext()->isNewExpression()) { \
+            ESValue message = instance->currentExecutionContext()->readArgument(0); \
+            if (!message.isUndefined()) { \
+                instance->currentExecutionContext()->resolveThisBindingToObject()->asESErrorObject()->set(strings->message, message.toString()); \
+            } \
+            return ESValue(); \
+        } else { \
+            escargot::ESErrorObject* obj = ErrorType::create(); \
+            ESValue message = instance->currentExecutionContext()->readArgument(0); \
+            if (!message.isUndefined()) { \
+                obj->set(strings->message, message.toString()); \
+            } \
+            return obj; \
+        } \
+    };
+
     // ///////////////////////////
-    m_referenceError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->ReferenceError, 1, true);
+    DECLARE_ERROR_FUNCTION(ReferenceError);
+    m_referenceError = ::escargot::ESFunctionObject::create(NULL, errorFnReferenceError, strings->ReferenceError, 1, true);
     m_referenceError->set__proto__(m_functionPrototype);
     m_referenceError->forceNonVectorHiddenClass(true);
 
@@ -1123,7 +1142,8 @@ void GlobalObject::installError()
     defineDataProperty(strings->ReferenceError, true, false, true, m_referenceError);
 
     // ///////////////////////////
-    m_typeError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->TypeError, 1, true);
+    DECLARE_ERROR_FUNCTION(TypeError);
+    m_typeError = ::escargot::ESFunctionObject::create(NULL, errorFnTypeError, strings->TypeError, 1, true);
     m_typeError->set__proto__(m_functionPrototype);
     m_typeError->forceNonVectorHiddenClass(true);
 
@@ -1137,7 +1157,8 @@ void GlobalObject::installError()
     defineDataProperty(strings->TypeError, true, false, true, m_typeError);
 
     // ///////////////////////////
-    m_rangeError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->RangeError, 1, true);
+    DECLARE_ERROR_FUNCTION(RangeError);
+    m_rangeError = ::escargot::ESFunctionObject::create(NULL, errorFnRangeError, strings->RangeError, 1, true);
     m_rangeError->set__proto__(m_functionPrototype);
     m_rangeError->forceNonVectorHiddenClass(true);
 
@@ -1151,7 +1172,8 @@ void GlobalObject::installError()
     defineDataProperty(strings->RangeError, true, false, true, m_rangeError);
 
     // ///////////////////////////
-    m_syntaxError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->SyntaxError, 1, true);
+    DECLARE_ERROR_FUNCTION(SyntaxError);
+    m_syntaxError = ::escargot::ESFunctionObject::create(NULL, errorFnSyntaxError, strings->SyntaxError, 1, true);
     m_syntaxError->set__proto__(m_functionPrototype);
     m_syntaxError->forceNonVectorHiddenClass(true);
 
@@ -1165,7 +1187,8 @@ void GlobalObject::installError()
     defineDataProperty(strings->SyntaxError, true, false, true, m_syntaxError);
 
     // ///////////////////////////
-    m_uriError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->URIError, 1, true);
+    DECLARE_ERROR_FUNCTION(URIError);
+    m_uriError = ::escargot::ESFunctionObject::create(NULL, errorFnURIError, strings->URIError, 1, true);
     m_uriError->set__proto__(m_functionPrototype);
     m_uriError->forceNonVectorHiddenClass(true);
 
@@ -1179,7 +1202,8 @@ void GlobalObject::installError()
     defineDataProperty(strings->URIError, true, false, true, m_uriError);
 
     // ///////////////////////////
-    m_evalError = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->EvalError, 1, true);
+    DECLARE_ERROR_FUNCTION(EvalError);
+    m_evalError = ::escargot::ESFunctionObject::create(NULL, errorFnEvalError, strings->EvalError, 1, true);
     m_evalError->set__proto__(m_functionPrototype);
     m_evalError->forceNonVectorHiddenClass(true);
 
