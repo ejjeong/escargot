@@ -1612,22 +1612,25 @@ protected:
 public:
     static ESObject* create(size_t initialKeyCount = 6);
 
-    inline bool defineDataProperty(InternalAtomicString name, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true, const ESValue& initalValue = ESValue())
+    inline bool defineDataProperty(InternalAtomicString name,
+        bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true, const ESValue& initalValue = ESValue(), bool force = false)
     {
-        return defineDataProperty(name.string(), isWritable, isEnumerable, isConfigurable, initalValue);
+        return defineDataProperty(name.string(), isWritable, isEnumerable, isConfigurable, initalValue, force);
     }
-    inline bool defineDataProperty(const escargot::ESValue& key, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true, const ESValue& initalValue = ESValue());
-    inline bool defineAccessorProperty(const escargot::ESValue& key, ESPropertyAccessorData* data, bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true);
+    inline bool defineDataProperty(const escargot::ESValue& key,
+        bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true, const ESValue& initalValue = ESValue(), bool force = false);
+    inline bool defineAccessorProperty(const escargot::ESValue& key, ESPropertyAccessorData* data,
+        bool isWritable = true, bool isEnumerable = true, bool isConfigurable = true, bool force = false);
     inline bool defineAccessorProperty(const escargot::ESValue& key, ESNativeGetter getter, ESNativeSetter setter,
-        bool isWritable, bool isEnumerable, bool isConfigurable)
+        bool isWritable, bool isEnumerable, bool isConfigurable, bool force = false)
     {
-        return defineAccessorProperty(key, new ESPropertyAccessorData(getter, setter), isWritable, isEnumerable, isConfigurable);
+        return defineAccessorProperty(key, new ESPropertyAccessorData(getter, setter), isWritable, isEnumerable, isConfigurable, force);
     }
     inline bool defineAccessorProperty(escargot::ESString* key, ESNativeGetter getter,
         ESNativeSetter setter,
-        bool isWritable, bool isEnumerable, bool isConfigurable)
+        bool isWritable, bool isEnumerable, bool isConfigurable, bool force = false)
     {
-        return defineAccessorProperty(key, new ESPropertyAccessorData(getter, setter), isWritable, isEnumerable, isConfigurable);
+        return defineAccessorProperty(key, new ESPropertyAccessorData(getter, setter), isWritable, isEnumerable, isConfigurable, force);
     }
 
     inline bool deleteProperty(const ESValue& key, bool forced = false);

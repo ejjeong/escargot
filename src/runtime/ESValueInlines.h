@@ -1141,7 +1141,7 @@ inline void ESObject::set__proto__(const ESValue& obj)
     setValueAsProtoType(obj);
 }
 
-inline bool ESObject::defineDataProperty(const escargot::ESValue& key, bool isWritable, bool isEnumerable, bool isConfigurable, const ESValue& initialValue)
+inline bool ESObject::defineDataProperty(const escargot::ESValue& key, bool isWritable, bool isEnumerable, bool isConfigurable, const ESValue& initialValue, bool force)
 {
     if (isESArrayObject() && asESArrayObject()->isFastmode()) {
         uint32_t i = key.toIndex();
@@ -1152,7 +1152,7 @@ inline bool ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
                     asESArrayObject()->convertToSlowMode();
                 } else {
                     if (i >= len) {
-                        if (UNLIKELY(!isExtensible()))
+                        if (UNLIKELY(!isExtensible() && !force))
                             return false;
                         asESArrayObject()->setLength(i+1);
                     }
@@ -1174,6 +1174,7 @@ inline bool ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
         uint32_t i = key.toIndex();
         if (i != ESValue::ESInvalidIndexValue && i < asESStringObject()->length()) {
             // Indexed properties of string object is non-configurable
+            ASSERT(!force);
             return false;
         }
     }
@@ -1184,7 +1185,7 @@ inline bool ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
     }
     size_t oldIdx = m_hiddenClass->findProperty(keyString);
     if (oldIdx == SIZE_MAX) {
-        if (UNLIKELY(!isExtensible()))
+        if (UNLIKELY(!isExtensible() && !force))
             return false;
         m_hiddenClass = m_hiddenClass->defineProperty(keyString, true, isWritable, isEnumerable, isConfigurable);
         m_hiddenClassData.push_back(initialValue);
@@ -1216,7 +1217,7 @@ inline bool ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
     }
 }
 
-inline bool ESObject::defineAccessorProperty(const escargot::ESValue& key, ESPropertyAccessorData* data, bool isWritable, bool isEnumerable, bool isConfigurable)
+inline bool ESObject::defineAccessorProperty(const escargot::ESValue& key, ESPropertyAccessorData* data, bool isWritable, bool isEnumerable, bool isConfigurable, bool force)
 {
     if (isESArrayObject() && asESArrayObject()->isFastmode()) {
         uint32_t i = key.toIndex();
@@ -1234,6 +1235,7 @@ inline bool ESObject::defineAccessorProperty(const escargot::ESValue& key, ESPro
         uint32_t i = key.toIndex();
         if (i != ESValue::ESInvalidIndexValue && i < asESStringObject()->length()) {
             // Indexed properties of string object is non-configurable
+            ASSERT(!force);
             return false;
         }
     }
@@ -1247,7 +1249,7 @@ inline bool ESObject::defineAccessorProperty(const escargot::ESValue& key, ESPro
     }
     size_t oldIdx = m_hiddenClass->findProperty(keyString);
     if (oldIdx == SIZE_MAX) {
-        if (UNLIKELY(!isExtensible()))
+        if (UNLIKELY(!isExtensible() && !force))
             return false;
         m_hiddenClass = m_hiddenClass->defineProperty(keyString, false, isWritable, isEnumerable, isConfigurable);
         m_hiddenClassData.push_back((ESPointer *)data);
