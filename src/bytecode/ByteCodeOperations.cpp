@@ -552,7 +552,7 @@ NEVER_INLINE EnumerateObjectData* executeEnumerateObject(ESObject* obj)
             target = proto.asESPointer()->asESObject();
             target->enumeration([&data, &keyStringSet](ESValue key) {
                 ESString* str = key.toString();
-                if (keyStringSet.find(str) != keyStringSet.end()) {
+                if (keyStringSet.find(str) == keyStringSet.end()) {
                     data->m_keys.push_back(key);
                     keyStringSet.insert(str);
                 }
