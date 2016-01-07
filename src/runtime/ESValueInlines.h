@@ -1136,6 +1136,8 @@ inline void ESObject::set__proto__(const ESValue& obj)
     // for global init
     if (obj.isEmpty())
         return;
+    if (UNLIKELY(!isExtensible()))
+        return;
     ASSERT(obj.isObject() || obj.isUndefinedOrNull());
     m___proto__ = obj;
     setValueAsProtoType(obj);
