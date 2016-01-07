@@ -90,7 +90,7 @@ then
 	cd -
 
 	cd out/tizen_wearable_arm/arm/release.shared
-	TWCF="-fPIC -march=armv7-a -Os -mthumb -finline-limit=64 --sysroot="${TIZEN_WEARABLE_SYS_ROOT}
+	TWCF="-DTIZEN_WEARABLE -fPIC -march=armv7-a -Os -mthumb -finline-limit=64 --sysroot="${TIZEN_WEARABLE_SYS_ROOT}
 	../../../../configure $GCCONFFLAGS --disable-gc-debug --with-sysroot=$TIZEN_WEARABLE_SYS_ROOT --host=arm-linux-gnueabi CFLAGS="$TWCF" CC=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-gcc CXX=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-g++ LD=$TIZEN_TOOLCHAIN/bin/arm-linux-gnueabi-ld
 	make -j$NUMPROC
 	cd -
