@@ -1892,7 +1892,7 @@ public:
 
     static double timeClip(double V)
     {
-        if (std::isinf(V)) {
+        if (std::isinf(V) || std::isnan(V)) {
             return nan("0");
         } else if (std::abs(V) > 8.64 * std::pow(10, 15)) {
             return nan("0");
