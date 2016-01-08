@@ -1237,15 +1237,22 @@ void GlobalObject::installArray()
     // $22.1.1 Array Constructor
     m_array = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         int len = instance->currentExecutionContext()->argumentCount();
+        bool interpretArgumentsAsElements = false;
         int size = 0;
-        if (len > 1)
+        if (len > 1) {
             size = len;
-        else if (len == 1) {
+            interpretArgumentsAsElements = true;
+        } else if (len == 1) {
             ESValue& val = instance->currentExecutionContext()->arguments()[0];
-            if (val.isInt32()) {
-                size = val.toNumber();
+            if (val.isNumber()) {
+                if (val.equalsTo(ESValue(val.toUint32()))) {
+                    size = val.toNumber();
+                } else {
+                    instance->throwError(ESValue(RangeError::create(ESString::create("Invalid array length"))));
+                }
             } else {
                 size = 1;
+                interpretArgumentsAsElements = true;
             }
         }
         escargot::ESArrayObject* array;
@@ -1254,7 +1261,7 @@ void GlobalObject::installArray()
             array->setLength(size);
         } else
             array = ESArrayObject::create(size);
-        if (len >= 1) {
+        if (interpretArgumentsAsElements) {
             ESValue& val = instance->currentExecutionContext()->arguments()[0];
             if (len > 1 || !val.isInt32()) {
                 for (int idx = 0; idx < len; idx++) {
