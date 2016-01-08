@@ -446,6 +446,7 @@ run-test262:
 run-test262-wearable:
 	ln -sf excludelist.subset.xml test/test262/test/config/excludelist.xml
 	cd test/test262/; \
-	python tools/packaging/test262.py --command ../../escargot $(OPT) --full-summary
+	python tools/packaging/test262.py --command ../../escargot $(OPT) --full-summary | tee ../../test262log.wearable.gen.txt
+	vimdiff test262log.wearable.orig.txt test262log.wearable.gen.txt
 
 .PHONY: clean
