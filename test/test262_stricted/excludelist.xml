@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?> 
-<excludeList>   
-test/suite/ch15/15.4/15.4.4/15.4.4.10/S15.4.4.10_A3_T1.js
-test/suite/ch15/15.4/15.4.4/15.4.4.10/S15.4.4.10_A3_T2.js
-test/suite/ch15/15.4/15.4.4/15.4.4.8/S15.4.4.8_A3_T3.js
-test/suite/ch15/15.5/15.5.4/15.5.4.14/S15.5.4.14_A2_T20.js
-test/suite/ch15/15.5/15.5.4/15.5.4.14/S15.5.4.14_A4_T10.js
-</excludeList>
