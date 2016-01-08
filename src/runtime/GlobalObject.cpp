@@ -1095,14 +1095,24 @@ void GlobalObject::installError()
     m_errorPrototype->forceNonVectorHiddenClass(true);
 
     escargot::ESFunctionObject* toString = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        // FIXME this is wrong
         ESValue v(instance->currentExecutionContext()->resolveThisBindingToObject());
         ESPointer* o = v.asESPointer();
         ESStringBuilder builder;
-        builder.appendString(o->asESObject()->get(ESValue(ESString::create(u"name"))).toString());
-        builder.appendString(": ");
-        builder.appendString(o->asESObject()->get(ESValue(ESString::create(u"message"))).toString());
-        return builder.finalize();
+        ESValue name = o->asESObject()->get(ESValue(ESString::create(u"name")));
+        ESValue message = o->asESObject()->get(ESValue(ESString::create(u"message")));
+        if(name.isUndefined() || name.toString()->length() == 0) { // name is empty
+            if(!(message.isUndefined() || message.toString()->length() == 0)) { // message is not empty
+                builder.appendString(message.toString());
+            }
+            return builder.finalize();
+        } else {
+            builder.appendString(name.toString());
+            if(!(message.isUndefined() || message.toString()->length() == 0)) {
+                builder.appendString(": ");
+                builder.appendString(message.toString());
+            }
+            return builder.finalize();
+        }
     }, strings->toString, 0);
     m_errorPrototype->defineDataProperty(strings->toString, true, false, true, toString);
 
