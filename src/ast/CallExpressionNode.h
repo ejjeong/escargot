@@ -34,11 +34,12 @@ public:
         context.m_inCallingExpressionScope = true;
         context.m_isHeadOfMemberExpression = true;
         m_callee->generateExpressionByteCode(codeBlock, context);
-        context.m_inCallingExpressionScope = prevInCallingExpressionScope;
+        context.m_inCallingExpressionScope = false;
 
         for (unsigned i = 0; i < m_arguments.size(); i ++) {
             m_arguments[i]->generateExpressionByteCode(codeBlock, context);
         }
+        context.m_inCallingExpressionScope = prevInCallingExpressionScope;
 
         if (!findRightAfterExpression(m_callee, NodeType::MemberExpression)) {
             codeBlock->pushCode(CallFunction(m_arguments.size()), context, this);
