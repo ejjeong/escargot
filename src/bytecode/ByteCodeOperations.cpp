@@ -329,6 +329,8 @@ NEVER_INLINE void setObjectPreComputedCaseOperationSlowCase(ESValue* willBeObjec
 
 NEVER_INLINE bool instanceOfOperation(ESValue* lval, ESValue* rval)
 {
+    if (!(rval->isESPointer() && rval->asESPointer()->isESFunctionObject()) || !rval->isObject())
+        ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(strings->emptyString)));
     if (rval->isESPointer() && rval->asESPointer()->isESFunctionObject() && lval->isESPointer() && lval->asESPointer()->isESObject()) {
         ESFunctionObject* C = rval->asESPointer()->asESFunctionObject();
         ESValue P = C->protoType();
@@ -341,7 +343,7 @@ NEVER_INLINE bool instanceOfOperation(ESValue* lval, ESValue* rval)
                 O = O.asESPointer()->asESObject()->__proto__();
             }
         } else {
-            ESVMInstance::currentInstance()->throwError(ReferenceError::create(ESString::create(u"")));
+            ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(strings->emptyString)));
         }
     }
     return false;
@@ -456,6 +458,8 @@ NEVER_INLINE ESValue newOperation(ESVMInstance* instance, GlobalObject* globalOb
 NEVER_INLINE bool inOperation(ESValue* obj, ESValue* key)
 {
     bool result = false;
+    if (!obj->isObject())
+        ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create(u"Type(rval) is not Object"))));
     ESValue target = obj->toObject();
     while (true) {
         if (!target.isObject()) {
