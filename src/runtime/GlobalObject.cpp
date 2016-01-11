@@ -571,6 +571,7 @@ void GlobalObject::installFunction()
         return ESValue();
     }, strings->Function, 1);
     m_function->forceNonVectorHiddenClass(true);
+    m_function->defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), false, false, false);
 
     m_functionPrototype = emptyFunction;
     m_functionPrototype->forceNonVectorHiddenClass(true);
@@ -720,6 +721,7 @@ void GlobalObject::installObject()
     }, strings->Object, 1, true);
     m_object->forceNonVectorHiddenClass(true);
     m_object->set__proto__(emptyFunction);
+    m_object->defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), false, false, false);
     m_object->setProtoType(m_objectPrototype);
     m_objectPrototype->defineDataProperty(strings->constructor, true, false, true, m_object);
 
@@ -1085,7 +1087,7 @@ void GlobalObject::installError()
             return obj;
         }
     };
-    m_error = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->Error, 1, true, true);
+    m_error = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->Error, 1, true);
 
     m_error->forceNonVectorHiddenClass(true);
     m_error->set__proto__(m_functionPrototype);
@@ -1095,6 +1097,8 @@ void GlobalObject::installError()
     m_error->setProtoType(m_errorPrototype);
     m_errorPrototype->set__proto__(m_objectPrototype);
     m_errorPrototype->defineDataProperty(strings->constructor, true, false, true, m_error);
+    m_errorPrototype->defineDataProperty(strings->message, true, false, true, ESString::createAtomicString(""));
+    m_errorPrototype->defineDataProperty(strings->name, true, false, true, ESString::createAtomicString("Error"));
     m_errorPrototype->forceNonVectorHiddenClass(true);
 
     escargot::ESFunctionObject* toString = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -1144,6 +1148,7 @@ void GlobalObject::installError()
     m_referenceError = ::escargot::ESFunctionObject::create(NULL, errorFnReferenceError, strings->ReferenceError, 1, true);
     m_referenceError->set__proto__(m_functionPrototype);
     m_referenceError->forceNonVectorHiddenClass(true);
+    m_referenceError->defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), false, false, false);
 
     m_referenceErrorPrototype = ESErrorObject::create();
     m_referenceErrorPrototype->forceNonVectorHiddenClass(true);
@@ -1159,7 +1164,8 @@ void GlobalObject::installError()
     m_typeError = ::escargot::ESFunctionObject::create(NULL, errorFnTypeError, strings->TypeError, 1, true);
     m_typeError->set__proto__(m_functionPrototype);
     m_typeError->forceNonVectorHiddenClass(true);
-
+    m_typeError->defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), false, false, false);
+    
     m_typeErrorPrototype = ESErrorObject::create();
     m_typeErrorPrototype->forceNonVectorHiddenClass(true);
 
@@ -1174,6 +1180,7 @@ void GlobalObject::installError()
     m_rangeError = ::escargot::ESFunctionObject::create(NULL, errorFnRangeError, strings->RangeError, 1, true);
     m_rangeError->set__proto__(m_functionPrototype);
     m_rangeError->forceNonVectorHiddenClass(true);
+    m_rangeError->defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), false, false, false);
 
     m_rangeErrorPrototype = ESErrorObject::create();
     m_rangeErrorPrototype->forceNonVectorHiddenClass(true);
@@ -1189,6 +1196,7 @@ void GlobalObject::installError()
     m_syntaxError = ::escargot::ESFunctionObject::create(NULL, errorFnSyntaxError, strings->SyntaxError, 1, true);
     m_syntaxError->set__proto__(m_functionPrototype);
     m_syntaxError->forceNonVectorHiddenClass(true);
+    m_syntaxError->defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), false, false, false);
 
     m_syntaxErrorPrototype = ESErrorObject::create();
     m_syntaxErrorPrototype->forceNonVectorHiddenClass(true);
@@ -1204,6 +1212,7 @@ void GlobalObject::installError()
     m_uriError = ::escargot::ESFunctionObject::create(NULL, errorFnURIError, strings->URIError, 1, true);
     m_uriError->set__proto__(m_functionPrototype);
     m_uriError->forceNonVectorHiddenClass(true);
+    m_uriError->defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), false, false, false);
 
     m_uriErrorPrototype = ESErrorObject::create();
     m_uriErrorPrototype->forceNonVectorHiddenClass(true);
@@ -1219,6 +1228,7 @@ void GlobalObject::installError()
     m_evalError = ::escargot::ESFunctionObject::create(NULL, errorFnEvalError, strings->EvalError, 1, true);
     m_evalError->set__proto__(m_functionPrototype);
     m_evalError->forceNonVectorHiddenClass(true);
+    m_evalError->defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), false, false, false);
 
     m_evalErrorPrototype = ESErrorObject::create();
     m_evalErrorPrototype->forceNonVectorHiddenClass(true);
@@ -1277,6 +1287,7 @@ void GlobalObject::installArray()
         return array;
     }, strings->Array, 1, true);
     m_array->forceNonVectorHiddenClass(true);
+    m_array->defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), false, false, false);
     m_arrayPrototype->defineDataProperty(strings->constructor, true, false, true, m_array);
 
     // $22.1.2.2 Array.isArray(arg)
@@ -1956,6 +1967,7 @@ void GlobalObject::installString()
         return ESValue();
     }, strings->String, 1, true);
     m_string->forceNonVectorHiddenClass(true);
+    m_string->defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), false, false, false);
 
     m_stringPrototype = ESStringObject::create();
     m_stringPrototype->forceNonVectorHiddenClass(true);
@@ -2768,6 +2780,7 @@ void GlobalObject::installDate()
         return ESString::create(u"FixMe: We have to return string with date and time data");
     }, strings->Date, 7, true); // $20.3.3 Properties of the Date Constructor: the length property is 7.
     m_date->forceNonVectorHiddenClass(true);
+    m_date->defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), false, false, false);
 
     m_datePrototype->defineDataProperty(strings->toString, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         // http://www.ecma-international.org/ecma-262/5.1/#sec-15.9.5.2
@@ -3796,6 +3809,7 @@ void GlobalObject::installNumber()
         }
     }, strings->Number, 1, true);
     m_number->forceNonVectorHiddenClass(true);
+    m_number->defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), false, false, false);
 
     // create numberPrototype object
     m_numberPrototype = ESNumberObject::create(0.0);
@@ -3996,6 +4010,7 @@ void GlobalObject::installBoolean()
         return ESValue();
     }, strings->Boolean, 1, true);
     m_boolean->forceNonVectorHiddenClass(true);
+    m_boolean->defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), false, false, false);
 
     // create booleanPrototype object
     m_booleanPrototype = ESBooleanObject::create(false);
@@ -4114,6 +4129,7 @@ void GlobalObject::installRegExp()
         return ESValue(thisVal);
     }, strings->RegExp, 2, true);
     m_regexp->forceNonVectorHiddenClass(true);
+    m_regexp->defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), false, false, false);
 
     // create regexpPrototype object
     m_regexpPrototype = ESRegExpObject::create(strings->emptyString, ESRegExpObject::Option::None);
@@ -4258,6 +4274,7 @@ void GlobalObject::installArrayBuffer()
         return obj;
     }, strings->ArrayBuffer, 1, true);
     m_arrayBuffer->forceNonVectorHiddenClass(true);
+    m_arrayBuffer->defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), false, false, false);
 
     m_arrayBufferPrototype->defineDataProperty(strings->constructor, true, false, true, m_arrayBuffer);
     // $22.2.3.2
@@ -4378,6 +4395,7 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
     }, ta_name, 3, true);
 
     ta_constructor->forceNonVectorHiddenClass(true);
+    ta_constructor->defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), false, false, false);
 
     // $22.2.3.2
     ta_prototype->defineAccessorProperty(strings->byteLength, [](ESObject* self, ESObject* originalObj) -> ESValue {
