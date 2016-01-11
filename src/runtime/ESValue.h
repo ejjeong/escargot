@@ -2068,10 +2068,18 @@ public:
                 m_vector.resize(newLength, ESValue(ESValue::ESEmptyValue));
             }
         } else {
-            if (newLength < m_length) {
-                for (unsigned i = newLength; i < m_length; i++) {
-                    deleteProperty(ESValue(i));
-                }
+            unsigned currentLength = m_length;
+            if (newLength < currentLength) {
+                std::vector<unsigned> indexes;
+                enumeration([&](ESValue key) {
+                    uint32_t index = key.toIndex();
+                    if (index != ESValue::ESInvalidIndexValue) {
+                        if (index >= newLength && index < currentLength)
+                            indexes.push_back(index);
+                    }
+                });
+                for (auto index : indexes)
+                    deleteProperty(ESValue(index));
             }
         }
         m_length = newLength;
