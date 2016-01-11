@@ -513,10 +513,10 @@ public:
         unsigned i = 0;
         argumentsObject->defineDataProperty(strings->length, true, false, true, ESValue(m_argumentsCount));
         for (; i < m_argumentsCount && i < ESCARGOT_STRINGS_NUMBERS_MAX; i ++) {
-            argumentsObject->set(strings->numbers[i].string(), m_arguments[i]);
+            argumentsObject->defineDataProperty(strings->numbers[i].string(), true, true, true, m_arguments[i]);
         }
         for (; i < m_argumentsCount; i ++) {
-            argumentsObject->set(ESString::create((int)i), m_arguments[i]);
+            argumentsObject->defineDataProperty(ESString::create((int)i), true, true, true, m_arguments[i]);
         }
         argumentsObject->defineDataProperty(strings->callee, true, false, true, ESValue(m_callee));
 
