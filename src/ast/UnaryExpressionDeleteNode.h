@@ -11,7 +11,7 @@ public:
     UnaryExpressionDeleteNode(Node* argument)
         : ExpressionNode(NodeType::UnaryExpressionDelete)
     {
-        m_argument = argument;
+        m_argument = (ExpressionNode*) argument;
     }
 
     virtual NodeType type() { return NodeType::UnaryExpressionDelete; }
@@ -28,8 +28,12 @@ public:
             codeBlock->pushCode(UnaryDelete(true), context, this);
         } else if (m_argument->isIdentifier()) {
             codeBlock->pushCode(UnaryDelete(false, ((IdentifierNode *)m_argument)->name().string()), context, this);
+        } else if (m_argument->isLiteral()) {
+            codeBlock->pushCode(Push(ESValue(ESValue::ESTrue)), context, this);
         } else {
-            RELEASE_ASSERT_NOT_REACHED();
+            m_argument->generateExpressionByteCode(codeBlock, context);
+            codeBlock->pushCode(Pop(), context, this);
+            codeBlock->pushCode(Push(ESValue(ESValue::ESTrue)), context, this);
         }
     }
 
@@ -40,7 +44,7 @@ public:
     }
 
 protected:
-    Node* m_argument;
+    ExpressionNode* m_argument;
 };
 
 }
