@@ -928,12 +928,20 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             } else {
                 LexicalEnvironment* env = nullptr;
                 InternalAtomicString str(code->m_name->utf8Data(), code->m_name->length());
-                ESValue* binding = ec->resolveBinding(str, env);
-                if (binding && env->record()->isGlobalEnvironmentRecord()) {
-                    bool res = globalObject->deleteProperty(code->m_name);
-                    PUSH(stack, topOfStack, ESValue(res));
+                ESValue* binding;
+                if (UNLIKELY(str == strings->arguments))
+                    binding = ec->resolveArgumentsObjectBinding();
+                else
+                    binding = ec->resolveBinding(str, env);
+                if (binding) {
+                    if (env && env->record()->isGlobalEnvironmentRecord()) {
+                        bool res = globalObject->deleteProperty(code->m_name);
+                        PUSH(stack, topOfStack, ESValue(res));
+                    } else {
+                        PUSH(stack, topOfStack, ESValue(false));
+                    }
                 } else {
-                    PUSH(stack, topOfStack, ESValue(false));
+                    PUSH(stack, topOfStack, ESValue(true));
                 }
             }
             executeNextCode<UnaryDelete>(programCounter);

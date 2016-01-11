@@ -27,7 +27,10 @@ public:
             }
             codeBlock->pushCode(UnaryDelete(true), context, this);
         } else if (m_argument->isIdentifier()) {
-            codeBlock->pushCode(UnaryDelete(false, ((IdentifierNode *)m_argument)->name().string()), context, this);
+            if (((IdentifierNode *)m_argument)->canUseFastAccess())
+                codeBlock->pushCode(Push(ESValue(ESValue::ESFalse)), context, this);
+            else
+                codeBlock->pushCode(UnaryDelete(false, ((IdentifierNode *)m_argument)->name().string()), context, this);
         } else if (m_argument->isLiteral()) {
             codeBlock->pushCode(Push(ESValue(ESValue::ESTrue)), context, this);
         } else {
