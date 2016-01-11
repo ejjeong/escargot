@@ -2379,8 +2379,6 @@ Uncaught Test262 Error: Test case returned non-true value!
 === ch10/10.6/10.6-11-b-1 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 ch10/10.6/10.6-12-1 passed in non-strict mode
 === ch10/10.6/10.6-12-2 failed in non-strict mode ===
@@ -3787,10 +3785,7 @@ ch12/12.6/12.6.3/S12.6.3_A8_T1 failed in non-strict mode as expected
 ch12/12.6/12.6.3/S12.6.3_A8_T2 failed in non-strict mode as expected
 ch12/12.6/12.6.3/S12.6.3_A8_T3 failed in non-strict mode as expected
 ch12/12.6/12.6.4/12.6.4-1 passed in non-strict mode
-=== ch12/12.6/12.6.4/12.6.4-2 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch12/12.6/12.6.4/12.6.4-2 passed in non-strict mode
 ch12/12.6/12.6.4/S12.6.4_A1 passed in non-strict mode
 ch12/12.6/12.6.4/S12.6.4_A14_T2 passed in non-strict mode
 === ch12/12.6/12.6.4/S12.6.4_A15 was expected to fail in non-strict mode, but didn't ===
@@ -8753,8 +8748,6 @@ ch15/15.2/15.2.3/15.2.3.7/15.2.3.7-6-a-170 passed in non-strict mode
 === ch15/15.2/15.2.3/15.2.3.7/15.2.3.7-6-a-171 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 ch15/15.2/15.2.3/15.2.3.7/15.2.3.7-6-a-172 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.7/15.2.3.7-6-a-173 passed in non-strict mode
@@ -8811,20 +8804,14 @@ Uncaught Test262 Error: Test case returned non-true value!
 === ch15/15.2/15.2.3/15.2.3.7/15.2.3.7-6-a-187 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 === ch15/15.2/15.2.3/15.2.3.7/15.2.3.7-6-a-188 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 === ch15/15.2/15.2.3/15.2.3.7/15.2.3.7-6-a-189 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 === ch15/15.2/15.2.3/15.2.3.7/15.2.3.7-6-a-19 failed in non-strict mode ===
 --- output ---
@@ -8837,20 +8824,14 @@ Uncaught Test262 Error: Test case returned non-true value!
 === ch15/15.2/15.2.3/15.2.3.7/15.2.3.7-6-a-191 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 === ch15/15.2/15.2.3/15.2.3.7/15.2.3.7-6-a-192 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 === ch15/15.2/15.2.3/15.2.3.7/15.2.3.7-6-a-193 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 === ch15/15.2/15.2.3/15.2.3.7/15.2.3.7-6-a-194 failed in non-strict mode ===
 --- output ---
@@ -10828,7 +10809,6 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-2-2 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-2-3 failed in non-strict mode ===
@@ -10837,7 +10817,6 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-2-4 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-2-5 failed in non-strict mode ===
@@ -11122,7 +11101,6 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-7-6 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-7-7 failed in non-strict mode ===
@@ -11163,7 +11141,6 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-7-b-15 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-7-b-16 failed in non-strict mode ===
@@ -11212,7 +11189,6 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-7-c-i-11 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-7-c-i-12 failed in non-strict mode ===
@@ -11221,22 +11197,18 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-7-c-i-13 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-7-c-i-14 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-7-c-i-15 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-7-c-i-16 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-7-c-i-17 failed in non-strict mode ===
@@ -11261,12 +11233,10 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-7-c-i-21 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-7-c-i-22 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-7-c-i-23 failed in non-strict mode ===
@@ -11295,7 +11265,6 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-7-c-i-3 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-7-c-i-30 failed in non-strict mode ===
@@ -11308,27 +11277,22 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-7-c-i-4 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-7-c-i-5 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-7-c-i-6 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-7-c-i-7 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-7-c-i-8 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-7-c-i-9 failed in non-strict mode ===
@@ -11537,7 +11501,6 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-8-10 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-8-11 failed in non-strict mode ===
@@ -11554,37 +11517,30 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-8-2 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-8-3 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-8-4 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-8-5 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-8-6 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-8-7 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === ch15/15.4/15.4.4/15.4.4.16/15.4.4.16-8-8 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-0-1 passed in non-strict mode
@@ -11691,7 +11647,6 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-2-2 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-2-3 failed in non-strict mode ===
@@ -11700,7 +11655,6 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-2-4 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-2-5 failed in non-strict mode ===
@@ -11994,7 +11948,6 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-7-6 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-7-8 failed in non-strict mode ===
@@ -12031,7 +11984,6 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-7-b-15 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-7-b-16 failed in non-strict mode ===
@@ -12080,7 +12032,6 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-7-c-i-11 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-7-c-i-12 failed in non-strict mode ===
@@ -12089,22 +12040,18 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-7-c-i-13 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-7-c-i-14 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-7-c-i-15 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-7-c-i-16 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-7-c-i-17 failed in non-strict mode ===
@@ -12129,12 +12076,10 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-7-c-i-21 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-7-c-i-22 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-7-c-i-23 failed in non-strict mode ===
@@ -12163,7 +12108,6 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-7-c-i-3 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-7-c-i-30 failed in non-strict mode ===
@@ -12176,27 +12120,22 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-7-c-i-4 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-7-c-i-5 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-7-c-i-6 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-7-c-i-7 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-7-c-i-8 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-7-c-i-9 failed in non-strict mode ===
@@ -12405,7 +12344,6 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-8-10 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-8-11 failed in non-strict mode ===
@@ -12422,37 +12360,30 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-8-2 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-8-3 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-8-4 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-8-5 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-8-6 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-8-7 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 === ch15/15.4/15.4.4/15.4.4.17/15.4.4.17-8-8 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1778)
 ===
 ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-0-1 passed in non-strict mode
@@ -12468,15 +12399,11 @@ ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-1-2 passed in non-strict mode
 === ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-1-3 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-1-4 passed in non-strict mode
 === ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-1-5 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-1-6 passed in non-strict mode
 ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-1-7 passed in non-strict mode
@@ -12567,8 +12494,6 @@ ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-7-4 passed in non-strict mode
 === ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-7-5 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-7-7 passed in non-strict mode
 ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-7-8 passed in non-strict mode
@@ -12588,8 +12513,6 @@ ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-7-b-14 passed in non-strict mode
 === ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-7-b-15 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-7-b-16 passed in non-strict mode
 ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-7-b-2 passed in non-strict mode
@@ -12599,14 +12522,10 @@ ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-7-b-5 passed in non-strict mode
 === ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-7-b-6 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 === ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-7-b-7 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-7-b-8 passed in non-strict mode
 ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-7-b-9 passed in non-strict mode
@@ -12619,14 +12538,10 @@ ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-7-c-i-14 passed in non-strict mode
 === ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-7-c-i-15 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 === ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-7-c-i-16 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-7-c-i-17 passed in non-strict mode
 ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-7-c-i-18 passed in non-strict mode
@@ -12636,14 +12551,10 @@ ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-7-c-i-20 passed in non-strict mode
 === ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-7-c-i-21 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 === ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-7-c-i-22 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-7-c-i-23 passed in non-strict mode
 ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-7-c-i-25 passed in non-strict mode
@@ -12660,14 +12571,10 @@ ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-7-c-i-6 passed in non-strict mode
 === ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-7-c-i-7 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 === ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-7-c-i-8 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-7-c-i-9 passed in non-strict mode
 ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-7-c-ii-1 passed in non-strict mode
@@ -12694,8 +12601,6 @@ ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-8-1 passed in non-strict mode
 === ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-8-10 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-8-11 passed in non-strict mode
 ch15/15.4/15.4.4/15.4.4.18/15.4.4.18-8-12 passed in non-strict mode
@@ -12916,8 +12821,6 @@ Uncaught Test262 Error: Test case returned non-true value!
 === ch15/15.4/15.4.4/15.4.4.19/15.4.4.19-8-b-11 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 ch15/15.4/15.4.4/15.4.4.19/15.4.4.19-8-b-12 passed in non-strict mode
 ch15/15.4/15.4.4/15.4.4.19/15.4.4.19-8-b-13 passed in non-strict mode
@@ -12928,8 +12831,6 @@ Uncaught Test262 Error: Test case returned non-true value!
 === ch15/15.4/15.4.4/15.4.4.19/15.4.4.19-8-b-15 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 ch15/15.4/15.4.4/15.4.4.19/15.4.4.19-8-b-16 passed in non-strict mode
 ch15/15.4/15.4.4/15.4.4.19/15.4.4.19-8-b-2 passed in non-strict mode
@@ -12942,14 +12843,10 @@ ch15/15.4/15.4.4/15.4.4.19/15.4.4.19-8-b-5 passed in non-strict mode
 === ch15/15.4/15.4.4/15.4.4.19/15.4.4.19-8-b-6 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 === ch15/15.4/15.4.4/15.4.4.19/15.4.4.19-8-b-7 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 === ch15/15.4/15.4.4/15.4.4.19/15.4.4.19-8-b-8 failed in non-strict mode ===
 --- output ---
@@ -12967,23 +12864,17 @@ ch15/15.4/15.4.4/15.4.4.19/15.4.4.19-8-c-i-13 passed in non-strict mode
 === ch15/15.4/15.4.4/15.4.4.19/15.4.4.19-8-c-i-14 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 ch15/15.4/15.4.4/15.4.4.19/15.4.4.19-8-c-i-15 passed in non-strict mode
 === ch15/15.4/15.4.4/15.4.4.19/15.4.4.19-8-c-i-16 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 ch15/15.4/15.4.4/15.4.4.19/15.4.4.19-8-c-i-17 passed in non-strict mode
 ch15/15.4/15.4.4/15.4.4.19/15.4.4.19-8-c-i-18 passed in non-strict mode
 === ch15/15.4/15.4.4/15.4.4.19/15.4.4.19-8-c-i-19 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 ch15/15.4/15.4.4/15.4.4.19/15.4.4.19-8-c-i-2 passed in non-strict mode
 ch15/15.4/15.4.4/15.4.4.19/15.4.4.19-8-c-i-20 passed in non-strict mode
@@ -12991,8 +12882,6 @@ ch15/15.4/15.4.4/15.4.4.19/15.4.4.19-8-c-i-21 passed in non-strict mode
 === ch15/15.4/15.4.4/15.4.4.19/15.4.4.19-8-c-i-22 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 ch15/15.4/15.4.4/15.4.4.19/15.4.4.19-8-c-i-23 passed in non-strict mode
 ch15/15.4/15.4.4/15.4.4.19/15.4.4.19-8-c-i-25 passed in non-strict mode
@@ -13008,8 +12897,6 @@ ch15/15.4/15.4.4/15.4.4.19/15.4.4.19-8-c-i-5 passed in non-strict mode
 === ch15/15.4/15.4.4/15.4.4.19/15.4.4.19-8-c-i-6 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 ch15/15.4/15.4.4/15.4.4.19/15.4.4.19-8-c-i-7 passed in non-strict mode
 ch15/15.4/15.4.4/15.4.4.19/15.4.4.19-8-c-i-8 passed in non-strict mode
@@ -13098,15 +12985,11 @@ ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-1-2 passed in non-strict mode
 === ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-1-3 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-1-4 passed in non-strict mode
 === ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-1-5 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-1-6 passed in non-strict mode
 ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-1-7 passed in non-strict mode
@@ -13120,8 +13003,6 @@ Uncaught Test262 Error: Test case returned non-true value!
 === ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-10-3 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-10-4 passed in non-strict mode
 ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-2-1 passed in non-strict mode
@@ -13275,8 +13156,6 @@ Uncaught Test262 Error: Test case returned non-true value!
 === ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-6 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-7 passed in non-strict mode
 ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-8 passed in non-strict mode
@@ -13289,8 +13168,6 @@ Uncaught Test262 Error: Test case returned non-true value!
 === ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-b-11 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 === ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-b-12 failed in non-strict mode ===
 --- output ---
@@ -13301,8 +13178,6 @@ ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-b-14 passed in non-strict mode
 === ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-b-15 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-b-16 passed in non-strict mode
 === ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-b-2 failed in non-strict mode ===
@@ -13318,8 +13193,6 @@ ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-b-5 passed in non-strict mode
 === ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-b-6 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-b-7 passed in non-strict mode
 ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-b-8 passed in non-strict mode
@@ -13337,26 +13210,18 @@ ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-c-i-12 passed in non-strict mode
 === ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-c-i-13 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 === ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-c-i-14 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 === ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-c-i-15 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 === ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-c-i-16 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 === ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-c-i-17 failed in non-strict mode ===
 --- output ---
@@ -13372,14 +13237,10 @@ ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-c-i-20 passed in non-strict mode
 === ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-c-i-21 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 === ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-c-i-22 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-c-i-23 passed in non-strict mode
 ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-c-i-25 passed in non-strict mode
@@ -13396,8 +13257,6 @@ Uncaught Test262 Error: Test case returned non-true value!
 === ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-c-i-3 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-c-i-30 passed in non-strict mode
 ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-c-i-31 passed in non-strict mode
@@ -13406,20 +13265,14 @@ ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-c-i-5 passed in non-strict mode
 === ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-c-i-6 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 === ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-c-i-7 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 === ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-c-i-8 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
---- errors ---
-some prototype object define indexed property.....
 ===
 ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-c-i-9 passed in non-strict mode
 ch15/15.4/15.4.4/15.4.4.20/15.4.4.20-9-c-ii-1 passed in non-strict mode
@@ -13807,12 +13660,10 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-10-3 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-10-4 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-10-5 failed in non-strict mode ===
@@ -13821,12 +13672,10 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-10-6 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-10-7 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-10-8 failed in non-strict mode ===
@@ -14072,37 +13921,30 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-5-2 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-5-3 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-5-4 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-5-5 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-5-6 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-5-7 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-5-8 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-5-9 failed in non-strict mode ===
@@ -14123,42 +13965,34 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-7-2 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-7-3 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-7-4 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-7-5 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-7-6 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-7-7 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-7-8 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-7-9 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-8-b-1 failed in non-strict mode ===
@@ -14191,32 +14025,26 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-8-b-iii-1-11 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-8-b-iii-1-12 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-8-b-iii-1-13 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-8-b-iii-1-14 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-8-b-iii-1-15 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-8-b-iii-1-16 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-8-b-iii-1-17 failed in non-strict mode ===
@@ -14229,7 +14057,6 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-8-b-iii-1-19 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-8-b-iii-1-2 failed in non-strict mode ===
@@ -14238,17 +14065,14 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-8-b-iii-1-20 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-8-b-iii-1-21 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-8-b-iii-1-22 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-8-b-iii-1-23 failed in non-strict mode ===
@@ -14277,7 +14101,6 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-8-b-iii-1-3 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-8-b-iii-1-30 failed in non-strict mode ===
@@ -14298,27 +14121,22 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-8-b-iii-1-4 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-8-b-iii-1-5 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-8-b-iii-1-6 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-8-b-iii-1-7 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-8-b-iii-1-8 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-8-b-iii-1-9 failed in non-strict mode ===
@@ -14379,7 +14197,6 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-9-6 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-9-7 failed in non-strict mode ===
@@ -14420,7 +14237,6 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-9-b-15 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-9-b-16 failed in non-strict mode ===
@@ -14477,7 +14293,6 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-9-b-28 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-9-b-29 failed in non-strict mode ===
@@ -14526,32 +14341,26 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-9-c-i-11 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-9-c-i-12 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-9-c-i-13 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-9-c-i-14 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-9-c-i-15 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-9-c-i-16 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-9-c-i-17 failed in non-strict mode ===
@@ -14564,7 +14373,6 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-9-c-i-19 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-9-c-i-2 failed in non-strict mode ===
@@ -14573,17 +14381,14 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-9-c-i-20 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-9-c-i-21 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-9-c-i-22 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-9-c-i-23 failed in non-strict mode ===
@@ -14612,7 +14417,6 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-9-c-i-3 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-9-c-i-30 failed in non-strict mode ===
@@ -14633,27 +14437,22 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-9-c-i-4 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-9-c-i-5 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-9-c-i-6 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-9-c-i-7 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-9-c-i-8 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1664)
 ===
 === ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-9-c-i-9 failed in non-strict mode ===
@@ -14802,7 +14601,6 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1878)
 ===
 === ch15/15.4/15.4.4/15.4.4.3/S15.4.4.3_A3_T1 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1878)
 ===
 ch15/15.4/15.4.4/15.4.4.3/S15.4.4.3_A4.1 passed in non-strict mode
@@ -14896,8 +14694,6 @@ Uncaught Test262 Error: #3: var obj = {}; obj.reverse = Array.prototype.reverse;
 === ch15/15.4/15.4.4/15.4.4.8/S15.4.4.8_A4_T1 failed in non-strict mode ===
 --- output ---
 Uncaught Test262 Error: #1: Array.prototype[1] = 1; x = [0]; x.length = 2; x.reverse(); x[0] === 1. Actual: undefined
---- errors ---
-some prototype object define indexed property.....
 ===
 ch15/15.4/15.4.4/15.4.4.8/S15.4.4.8_A4_T2 passed in non-strict mode
 ch15/15.4/15.4.4/15.4.4.8/S15.4.4.8_A5.1 passed in non-strict mode
@@ -16787,7 +16583,6 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === intl402/ch09/9.2/9.2.1_2 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === intl402/ch09/9.2/9.2.1_3 failed in non-strict mode ===
@@ -16824,7 +16619,6 @@ RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === intl402/ch09/9.2/9.2.6_2 failed in non-strict mode ===
 --- errors ---
-some prototype object define indexed property.....
 RELEASE_ASSERT_NOT_REACHED at src/runtime/GlobalObject.cpp (1323)
 ===
 === intl402/ch09/9.2/9.2.6_4 failed in non-strict mode ===
@@ -16918,8 +16712,6 @@ Uncaught ReferenceError: Intl is not defined
 === intl402/ch10/10.2/10.2.2_b failed in non-strict mode ===
 --- output ---
 Uncaught ReferenceError: Intl is not defined
---- errors ---
-some prototype object define indexed property.....
 ===
 === intl402/ch10/10.2/10.2.3_b failed in non-strict mode ===
 --- output ---
@@ -17056,8 +16848,6 @@ Uncaught ReferenceError: Intl is not defined
 === intl402/ch11/11.2/11.2.2_b failed in non-strict mode ===
 --- output ---
 Uncaught ReferenceError: Intl is not defined
---- errors ---
-some prototype object define indexed property.....
 ===
 === intl402/ch11/11.2/11.2.3_b failed in non-strict mode ===
 --- output ---
@@ -17195,8 +16985,6 @@ Uncaught ReferenceError: Intl is not defined
 === intl402/ch12/12.2/12.2.2_b failed in non-strict mode ===
 --- output ---
 Uncaught ReferenceError: Intl is not defined
---- errors ---
-some prototype object define indexed property.....
 ===
 === intl402/ch12/12.2/12.2.3_b failed in non-strict mode ===
 --- errors ---
@@ -17330,8 +17118,8 @@ intl402/ch13/13.3/13.3.3_L15 passed in non-strict mode
 
 === Summary ===
  - Ran 10284 tests
- - Passed 8478 tests (82.4%)
- - Failed 1806 tests (17.6%)
+ - Passed 8479 tests (82.4%)
+ - Failed 1805 tests (17.6%)
 
 Failed tests
   annexB/B.2.1 in non-strict mode
@@ -17387,7 +17175,6 @@ Failed tests
   ch11/11.8/11.8.6/S11.8.6_A6_T2 in non-strict mode
   ch11/11.8/11.8.6/S11.8.6_A6_T4 in non-strict mode
   ch11/11.8/11.8.7/S11.8.7_A3 in non-strict mode
-  ch12/12.6/12.6.4/12.6.4-2 in non-strict mode
   ch13/13.0/S13_A15_T4 in non-strict mode
   ch15/15.1/15.1.3/15.1.3.1/S15.1.3.1_A1.10_T1 in non-strict mode
   ch15/15.1/15.1.3/15.1.3.1/S15.1.3.1_A1.11_T1 in non-strict mode

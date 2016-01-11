@@ -4585,7 +4585,9 @@ void GlobalObject::propertyDefined(size_t newIndex, escargot::ESString* name)
 void GlobalObject::somePrototypeObjectDefineIndexedProperty()
 {
     if (!m_didSomePrototypeObjectDefineIndexedProperty) {
+#ifndef NDEBUG
         fprintf(stderr, "some prototype object define indexed property.....\n");
+#endif
         m_didSomePrototypeObjectDefineIndexedProperty = true;
         for (unsigned i = 0; i < m_codeBlocks.size() ; i ++) {
             // printf("%p..\n", m_codeBlocks[i]);

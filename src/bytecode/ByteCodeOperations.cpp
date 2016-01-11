@@ -543,8 +543,9 @@ NEVER_INLINE EnumerateObjectData* executeEnumerateObject(ESObject* obj)
     target = obj;
     if (shouldSearchProto) {
         std::unordered_set<ESString*, std::hash<ESString*>, std::equal_to<ESString*>, gc_allocator<ESString *> > keyStringSet;
-        target->enumeration([&data, &keyStringSet](ESValue key) {
-            data->m_keys.push_back(key);
+        target->enumerationWithNonEnumerable([&data, &keyStringSet](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
+            if (propertyInfo->m_flags.m_isEnumerable)
+                data->m_keys.push_back(key);
             keyStringSet.insert(key.toString());
         });
         proto = target->__proto__();
