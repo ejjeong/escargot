@@ -4009,8 +4009,15 @@ void GlobalObject::installBoolean()
 
     // initialize booleanPrototype object: $19.3.3.2 Boolean.prototype.toString()
     m_booleanPrototype->defineDataProperty(strings->toString, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        escargot::ESBooleanObject* thisVal = instance->currentExecutionContext()->resolveThisBindingToObject()->asESBooleanObject();
-        return (ESValue(thisVal->booleanData()).toString());
+        ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
+        if (thisValue.isBoolean()) {
+            return ESValue(thisValue.asNumber()).toString();
+        } else if (thisValue.isESPointer() && thisValue.asESPointer()->isESBooleanObject()) {
+            return ESValue(thisValue.asESPointer()->asESBooleanObject()->booleanData()).toString();
+        } else {
+            instance->throwError(ESValue(TypeError::create(strings->emptyString)));
+            RELEASE_ASSERT_NOT_REACHED();
+        }
     }, strings->toString, 0));
 
     // initialize booleanPrototype object: $19.3.3.3 Boolean.prototype.valueOf()

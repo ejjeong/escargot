@@ -15740,24 +15740,11 @@ ch15/15.6/15.6.3/15.6.3.1/S15.6.3.1_A4 passed in non-strict mode
 ch15/15.6/15.6.4/S15.6.4.1_A1 passed in non-strict mode
 ch15/15.6/15.6.4/S15.6.4.2_A1_T1 passed in non-strict mode
 ch15/15.6/15.6.4/S15.6.4.2_A1_T2 passed in non-strict mode
-=== ch15/15.6/15.6.4/S15.6.4.2_A2_T1 failed in non-strict mode ===
-===
-=== ch15/15.6/15.6.4/S15.6.4.2_A2_T2 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #1: Boolean.prototype.toString on not a Boolean object should throw TypeError, not Test262 Error: #1: Boolean.prototype.toString on not a Boolean object should throw TypeError
-===
-=== ch15/15.6/15.6.4/S15.6.4.2_A2_T3 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #1: Boolean.prototype.toString on not a Boolean object should throw TypeError, not Test262 Error: #1: Boolean.prototype.toString on not a Boolean object should throw TypeError
-===
-=== ch15/15.6/15.6.4/S15.6.4.2_A2_T4 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #1: Boolean.prototype.toString on not a Boolean object should throw TypeError, not Test262 Error: #1: Boolean.prototype.toString on not a Boolean object should throw TypeError
-===
-=== ch15/15.6/15.6.4/S15.6.4.2_A2_T5 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #1: Boolean.prototype.toString on not a Boolean object should throw TypeError, not Test262 Error: #1: Boolean.prototype.toString on not a Boolean object should throw TypeError
-===
+ch15/15.6/15.6.4/S15.6.4.2_A2_T1 passed in non-strict mode
+ch15/15.6/15.6.4/S15.6.4.2_A2_T2 passed in non-strict mode
+ch15/15.6/15.6.4/S15.6.4.2_A2_T3 passed in non-strict mode
+ch15/15.6/15.6.4/S15.6.4.2_A2_T4 passed in non-strict mode
+ch15/15.6/15.6.4/S15.6.4.2_A2_T5 passed in non-strict mode
 ch15/15.6/15.6.4/S15.6.4.3_A1_T1 passed in non-strict mode
 ch15/15.6/15.6.4/S15.6.4.3_A1_T2 passed in non-strict mode
 ch15/15.6/15.6.4/S15.6.4.3_A2_T1 passed in non-strict mode
@@ -17349,8 +17336,8 @@ intl402/ch13/13.3/13.3.3_L15 passed in non-strict mode
 
 === Summary ===
  - Ran 10284 tests
- - Passed 8471 tests (82.4%)
- - Failed 1813 tests (17.6%)
+ - Passed 8476 tests (82.4%)
+ - Failed 1808 tests (17.6%)
 
 Failed tests
   annexB/B.2.1 in non-strict mode
@@ -18925,11 +18912,6 @@ Failed tests
   ch15/15.5/15.5.4/15.5.4.9/S15.5.4.9_A1_T1 in non-strict mode
   ch15/15.5/15.5.4/15.5.4.9/S15.5.4.9_A1_T2 in non-strict mode
   ch15/15.6/15.6.3/15.6.3.1/S15.6.3.1_A2 in non-strict mode
-  ch15/15.6/15.6.4/S15.6.4.2_A2_T1 in non-strict mode
-  ch15/15.6/15.6.4/S15.6.4.2_A2_T2 in non-strict mode
-  ch15/15.6/15.6.4/S15.6.4.2_A2_T3 in non-strict mode
-  ch15/15.6/15.6.4/S15.6.4.2_A2_T4 in non-strict mode
-  ch15/15.6/15.6.4/S15.6.4.2_A2_T5 in non-strict mode
   ch15/15.7/15.7.1/S15.7.1.1_A2 in non-strict mode
   ch15/15.7/15.7.3/15.7.3.1/S15.7.3.1_A1_T1 in non-strict mode
   ch15/15.8/15.8.2/15.8.2.13/S15.8.2.13_A7 in non-strict mode
@@ -19168,4 +19150,6 @@ Expected to fail but passed ---
  ch12/12.1/S12.1_A4_T2 in non-strict mode
  ch12/12.6/12.6.4/S12.6.4_A15 in non-strict mode
  ch15/15.2/15.2.4/15.2.4.4/S15.2.4.4_A14 in non-strict mode
+
+Use --full-summary to see output from failed tests
 
