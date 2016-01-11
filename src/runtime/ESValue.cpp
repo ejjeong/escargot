@@ -962,7 +962,7 @@ void ESRegExpObject::setOption(const Option& option)
     m_option = option;
 }
 
-ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlock* cb, escargot::ESString* name, unsigned length, bool hasPrototype)
+ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlock* cb, escargot::ESString* name, unsigned length, bool hasPrototype, bool isBuiltIn)
     : ESObject((Type)(Type::ESObject | Type::ESFunctionObject), ESVMInstance::currentInstance()->globalFunctionPrototype(), 4)
 {
     m_name = name;
@@ -980,7 +980,7 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlo
     // defineDataProperty(strings->length, false, false, true, ESValue(length));
     // defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), true, false, false);
     // defineDataProperty(strings->name.string(), false, false, true, name);
-    if (hasPrototype) {
+    if (hasPrototype && !isBuiltIn) {
         m_hiddenClass = ESVMInstance::currentInstance()->initialHiddenClassForFunctionObject();
         m_hiddenClassData.push_back(ESValue(length));
         m_hiddenClassData.push_back(ESValue((ESPointer *)ESVMInstance::currentInstance()->functionPrototypeAccessorData()));
@@ -993,8 +993,8 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlo
     m_flags.m_isBoundFunction = false;
 }
 
-ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeFunctionType fn, escargot::ESString* name, unsigned length, bool isConstructor)
-    : ESFunctionObject(outerEnvironment, (CodeBlock *)NULL, name, length, isConstructor)
+ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeFunctionType fn, escargot::ESString* name, unsigned length, bool isConstructor, bool isBuiltIn)
+    : ESFunctionObject(outerEnvironment, (CodeBlock *)NULL, name, length, isConstructor, isBuiltIn)
 {
     m_codeBlock = CodeBlock::create(0, true);
     m_codeBlock->m_hasCode = true;

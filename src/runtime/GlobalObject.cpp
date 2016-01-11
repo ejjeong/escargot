@@ -1085,9 +1085,12 @@ void GlobalObject::installError()
             return obj;
         }
     };
-    m_error = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->Error, 1, true);
+    m_error = ::escargot::ESFunctionObject::create(NULL, errorFn, strings->Error, 1, true, true);
+
     m_error->forceNonVectorHiddenClass(true);
     m_error->set__proto__(m_functionPrototype);
+    m_error->defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), false, false, false);
+
     m_errorPrototype = escargot::ESObject::create();
     m_error->setProtoType(m_errorPrototype);
     m_errorPrototype->set__proto__(m_objectPrototype);
@@ -1100,14 +1103,14 @@ void GlobalObject::installError()
         ESStringBuilder builder;
         ESValue name = o->asESObject()->get(ESValue(ESString::create(u"name")));
         ESValue message = o->asESObject()->get(ESValue(ESString::create(u"message")));
-        if(name.isUndefined() || name.toString()->length() == 0) { // name is empty
-            if(!(message.isUndefined() || message.toString()->length() == 0)) { // message is not empty
+        if (name.isUndefined() || name.toString()->length() == 0) { // name is empty
+            if (!(message.isUndefined() || message.toString()->length() == 0)) { // message is not empty
                 builder.appendString(message.toString());
             }
             return builder.finalize();
         } else {
             builder.appendString(name.toString());
-            if(!(message.isUndefined() || message.toString()->length() == 0)) {
+            if (!(message.isUndefined() || message.toString()->length() == 0)) {
                 builder.appendString(": ");
                 builder.appendString(message.toString());
             }
