@@ -13,6 +13,8 @@ class ESString;
     F(constructor) \
     F(name) \
     F(arguments) \
+    F(caller) \
+    F(callee) \
     F(length) \
     F(__proto__) \
     F(value) \

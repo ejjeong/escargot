@@ -1459,7 +1459,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
         } else {
             if (UNLIKELY(cb->m_needsToPrepareGenerateArgumentsObject)) {
                 FunctionEnvironmentRecordWithArgumentsObject envRec(
-                    arguments, argumentCount,
+                    arguments, argumentCount, fn,
                     stackStorage, cb->m_stackAllocatedIdentifiersCount, cb->m_heapAllocatedIdentifiers, cb->m_needsActivation);
                 LexicalEnvironment env(&envRec, fn->outerEnvironment());
                 ExecutionContext ec(&env, isNewExpression, cb->shouldUseStrictMode(), arguments, argumentCount);

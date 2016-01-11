@@ -494,12 +494,13 @@ protected:
 
 class FunctionEnvironmentRecordWithArgumentsObject : public FunctionEnvironmentRecord {
 public:
-    ALWAYS_INLINE FunctionEnvironmentRecordWithArgumentsObject(ESValue arguments[], const size_t& argumentCount, ESValue* stackAllocatedData = 0, size_t stackAllocatedSize = 0, const InternalAtomicStringVector& innerIdentifiers = InternalAtomicStringVector(), bool needsActivation = false)
+    ALWAYS_INLINE FunctionEnvironmentRecordWithArgumentsObject(ESValue arguments[], const size_t& argumentCount, ESFunctionObject* callee, ESValue* stackAllocatedData = 0, size_t stackAllocatedSize = 0, const InternalAtomicStringVector& innerIdentifiers = InternalAtomicStringVector(), bool needsActivation = false)
         : FunctionEnvironmentRecord(stackAllocatedData, stackAllocatedSize, innerIdentifiers, needsActivation)
         , m_argumentsObject(ESValue::ESEmptyValue)
     {
         m_arguments = arguments;
         m_argumentsCount = argumentCount;
+        m_callee = callee;
     }
 
     virtual ESValue* hasBindingForArgumentsObject()
@@ -517,6 +518,7 @@ public:
         for (; i < m_argumentsCount; i ++) {
             argumentsObject->set(ESString::create((int)i), m_arguments[i]);
         }
+        argumentsObject->defineDataProperty(strings->callee, true, false, true, ESValue(m_callee));
 
         return &m_argumentsObject;
     }
@@ -525,6 +527,7 @@ protected:
     ESValue* m_arguments;
     size_t m_argumentsCount;
     ESValue m_argumentsObject;
+    ESFunctionObject* m_callee;
 };
 
 /*
@@ -543,7 +546,7 @@ ALWAYS_INLINE LexicalEnvironment* LexicalEnvironment::newFunctionEnvironment(boo
     if (UNLIKELY(!needsToPrepareGenerateArgumentsObject)) {
         envRec = new FunctionEnvironmentRecord(stackAllocatedStorage, stackAllocatedStorageSize, innerIdentifiers, needsActivation);
     } else {
-        envRec = new FunctionEnvironmentRecordWithArgumentsObject(arguments, argumentCount, stackAllocatedStorage, stackAllocatedStorageSize, innerIdentifiers, needsActivation);
+        envRec = new FunctionEnvironmentRecordWithArgumentsObject(arguments, argumentCount, function, stackAllocatedStorage, stackAllocatedStorageSize, innerIdentifiers, needsActivation);
     }
 
     // envRec->m_functionObject = function;
