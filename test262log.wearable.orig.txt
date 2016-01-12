@@ -3771,10 +3771,7 @@ ch13/13.0/S13_A13_T3 passed in non-strict mode
 ch13/13.0/S13_A15_T1 passed in non-strict mode
 ch13/13.0/S13_A15_T2 passed in non-strict mode
 ch13/13.0/S13_A15_T3 passed in non-strict mode
-=== ch13/13.0/S13_A15_T4 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #1: __func(42,42,42) === "object". Actual: __func(42,42,42)===undefined
-===
+ch13/13.0/S13_A15_T4 passed in non-strict mode
 ch13/13.0/S13_A15_T5 passed in non-strict mode
 ch13/13.0/S13_A17_T1 passed in non-strict mode
 ch13/13.0/S13_A17_T2 passed in non-strict mode
@@ -16927,8 +16924,8 @@ intl402/ch13/13.3/13.3.3_L15 passed in non-strict mode
 
 === Summary ===
  - Ran 10284 tests
- - Passed 8544 tests (83.1%)
- - Failed 1740 tests (16.9%)
+ - Passed 8545 tests (83.1%)
+ - Failed 1739 tests (16.9%)
 
 Failed tests
   annexB/B.2.1 in non-strict mode
@@ -16955,7 +16952,6 @@ Failed tests
   ch09/9.7/S9.7_A2.1 in non-strict mode
   ch10/10.6/10.6-10-c-ii-1 in non-strict mode
   ch10/10.6/10.6-10-c-ii-2 in non-strict mode
-  ch13/13.0/S13_A15_T4 in non-strict mode
   ch15/15.1/15.1.3/15.1.3.1/S15.1.3.1_A1.10_T1 in non-strict mode
   ch15/15.1/15.1.3/15.1.3.1/S15.1.3.1_A1.11_T1 in non-strict mode
   ch15/15.1/15.1.3/15.1.3.1/S15.1.3.1_A1.11_T2 in non-strict mode

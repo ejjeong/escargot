@@ -135,7 +135,7 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
                     iter++;
                 }
                 if (identifierInCurrentContext.end() == iter) {
-                    identifierInCurrentContext.push_back(((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name());
+                    identifierInCurrentContext.push_back(InnerIdentifierInfo(((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->name(), InnerIdentifierInfo::Origin::VariableDeclarator));
                     iter = identifierInCurrentContext.end() - 1;
                 }
                 if (shouldWorkAroundIdentifier) {
@@ -160,7 +160,7 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
                     iter++;
                 }
                 if (identifierInCurrentContext.end() == iter) {
-                    identifierInCurrentContext.push_back(name);
+                    identifierInCurrentContext.push_back(InnerIdentifierInfo(name, InnerIdentifierInfo::Origin::FunctionDeclaration));
                 }
             }
 
@@ -168,7 +168,7 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
             InnerIdentifierInfoVector* newIdentifierVector = &((FunctionDeclarationNode *)currentNode)->m_innerIdentifiers;
             InternalAtomicStringVector& vec = ((FunctionDeclarationNode *)currentNode)->m_params;
             for (unsigned i = 0; i < vec.size() ; i ++) {
-                newIdentifierVector->push_back(vec[i]);
+                newIdentifierVector->push_back(InnerIdentifierInfo(vec[i], InnerIdentifierInfo::Origin::Parameter));
             }
             ((FunctionDeclarationNode *)currentNode)->setOuterFunctionNode(nearFunctionNode);
             identifierStack.push_back(newIdentifierVector);
@@ -182,7 +182,7 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
             InnerIdentifierInfoVector* newIdentifierVector = &((FunctionExpressionNode *)currentNode)->m_innerIdentifiers;
             InternalAtomicStringVector& vec = ((FunctionExpressionNode *)currentNode)->m_params;
             for (unsigned i = 0; i < vec.size(); i ++) {
-                newIdentifierVector->push_back(vec[i]);
+                newIdentifierVector->push_back(InnerIdentifierInfo(vec[i], InnerIdentifierInfo::Origin::Parameter));
             }
             // If it has own name, should bind function name
             if (((FunctionExpressionNode *)currentNode)->id().string()->length()) {
@@ -199,7 +199,7 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
                 }
 
                 if (!hasAlready) {
-                    newIdentifierVector->push_back(name);
+                    newIdentifierVector->push_back(InnerIdentifierInfo(name, InnerIdentifierInfo::Origin::FunctionExpression));
                     ((FunctionExpressionNode *)currentNode)->m_functionIdIndex = vec.size();
                 }
             }
@@ -217,8 +217,10 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
             if (name == strings->arguments) {
                 auto iter = identifierInCurrentContext.begin();
                 while (iter != identifierInCurrentContext.end()) {
-                    if (iter->m_name == strings->arguments)
-                        break;
+                    if (iter->m_name == strings->arguments) {
+                        if (iter->m_flags.m_origin != InnerIdentifierInfo::Origin::VariableDeclarator)
+                            break;
+                    }
                     iter++;
                 }
                 if (iter == identifierInCurrentContext.end()) {
@@ -228,6 +230,7 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
                     }
                 }
             }
+
             auto riter = identifierInCurrentContext.rbegin(); // std::find(identifierInCurrentContext.begin(), identifierInCurrentContext.end(), name);
             size_t idx = 0;
             while (riter != identifierInCurrentContext.rend()) {

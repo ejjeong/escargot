@@ -19,10 +19,13 @@ public:
     virtual void generateExpressionByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         if (m_argument->isIdentifier() && !((IdentifierNode *)m_argument)->canUseFastAccess()) {
-            codeBlock->pushCode(GetByIdWithoutException(
-                ((IdentifierNode *)m_argument)->name(),
-                ((IdentifierNode *)m_argument)->onlySearchGlobal()
-                ), context, this);
+            if (((IdentifierNode *)m_argument)->name() == strings->arguments)
+                codeBlock->pushCode(GetArgumentsObject(), context, this);
+            else
+                codeBlock->pushCode(GetByIdWithoutException(
+                    ((IdentifierNode *)m_argument)->name(),
+                    ((IdentifierNode *)m_argument)->onlySearchGlobal()
+                    ), context, this);
         } else
             m_argument->generateExpressionByteCode(codeBlock, context);
         codeBlock->pushCode(UnaryTypeOf(), context, this);

@@ -20,14 +20,17 @@ typedef std::vector<ESIdentifierVectorStdItem,
 
 struct InnerIdentifierInfo {
     InternalAtomicString m_name;
+    enum Origin { Parameter, FunctionDeclaration, FunctionExpression, VariableDeclarator };
     struct {
         bool m_isHeapAllocated:1;
+        Origin m_origin:2;
     } m_flags;
 
-    InnerIdentifierInfo(InternalAtomicString name)
+    InnerIdentifierInfo(InternalAtomicString name, Origin origin)
         : m_name(name)
     {
         m_flags.m_isHeapAllocated = false;
+        m_flags.m_origin = origin;
     }
 };
 
