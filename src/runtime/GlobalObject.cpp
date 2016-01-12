@@ -759,10 +759,13 @@ inline ESValue objectDefineProperties(ESValue object, ESValue& properties)
     props->enumeration([&](ESValue key) {
         bool hasKey = props->hasOwnProperty(key);
         if (hasKey) {
-            ESValue propertyDesc = props->getOwnProperty(key);
+            ESValue propertyDesc = props->get(key);
             if (!propertyDesc.isObject())
                 ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("objectDefineProperties: descriptor is not object"))));
-            object.asESPointer()->asESObject()->defineOwnProperty(key, propertyDesc.asESPointer()->asESObject(), true);
+            if (object.toObject()->isESArrayObject())
+                object.asESPointer()->asESArrayObject()->defineOwnProperty(key, propertyDesc.asESPointer()->asESObject(), true);
+            else
+                object.asESPointer()->asESObject()->defineOwnProperty(key, propertyDesc.asESPointer()->asESObject(), true);
         }
     });
     return object;
@@ -851,7 +854,7 @@ void GlobalObject::installObject()
     // $19.1.2.3 Object.defineProperties ( O, P, Attributes )
     m_object->defineDataProperty(ESString::createAtomicString("defineProperties"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue object = instance->currentExecutionContext()->readArgument(0);
-        ESValue properties = instance->currentExecutionContext()->readArgument(0);
+        ESValue properties = instance->currentExecutionContext()->readArgument(1);
         return objectDefineProperties(object, properties);
     }, ESString::createAtomicString("defineProperties"), 2));
 
