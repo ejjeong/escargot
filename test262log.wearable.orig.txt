@@ -2284,10 +2284,7 @@ ch09/9.6/S9.6_A3.1_T3 passed in non-strict mode
 ch09/9.6/S9.6_A3.1_T4 passed in non-strict mode
 ch09/9.6/S9.6_A3.2_T1 passed in non-strict mode
 ch09/9.7/S9.7_A1 passed in non-strict mode
-=== ch09/9.7/S9.7_A2.1 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #7: String.fromCharCode(4294967295).charCodeAt(0) === 65535. Actual: 0
-===
+ch09/9.7/S9.7_A2.1 passed in non-strict mode
 ch09/9.7/S9.7_A2.2 passed in non-strict mode
 ch09/9.7/S9.7_A3.1_T1 passed in non-strict mode
 ch09/9.7/S9.7_A3.1_T2 passed in non-strict mode
@@ -13144,8 +13141,8 @@ intl402/ch13/13.3/13.3.3_L15 passed in non-strict mode
 
 === Summary ===
  - Ran 10284 tests
- - Passed 9805 tests (95.3%)
- - Failed 479 tests (4.7%)
+ - Passed 9806 tests (95.4%)
+ - Failed 478 tests (4.6%)
 
 Failed tests
   annexB/B.2.1 in non-strict mode
@@ -13169,7 +13166,6 @@ Failed tests
   ch09/9.3/9.3.1/S9.3.1_A2 in non-strict mode
   ch09/9.3/9.3.1/S9.3.1_A3_T1 in non-strict mode
   ch09/9.3/9.3.1/S9.3.1_A3_T2 in non-strict mode
-  ch09/9.7/S9.7_A2.1 in non-strict mode
   ch15/15.1/15.1.3/15.1.3.1/S15.1.3.1_A1.10_T1 in non-strict mode
   ch15/15.1/15.1.3/15.1.3.1/S15.1.3.1_A1.11_T1 in non-strict mode
   ch15/15.1/15.1.3/15.1.3.1/S15.1.3.1_A1.11_T2 in non-strict mode

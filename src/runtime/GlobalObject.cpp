@@ -2225,7 +2225,7 @@ void GlobalObject::installString()
     m_string->defineDataProperty(ESString::createAtomicString("fromCharCode"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         int length = instance->currentExecutionContext()->argumentCount();
         if (length == 1) {
-            char16_t c = (char16_t)instance->currentExecutionContext()->arguments()[0].toInteger();
+            char16_t c = instance->currentExecutionContext()->arguments()[0].toUint32() & 0xFFFF;
             if (c < ESCARGOT_ASCII_TABLE_MAX)
                 return strings->asciiTable[c].string();
             return ESString::create(c);
