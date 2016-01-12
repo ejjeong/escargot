@@ -1740,7 +1740,56 @@ void GlobalObject::installArray()
 
     // $22.1.3.19 Array.prototype.reduceRight
     m_arrayPrototype->ESObject::defineDataProperty(ESString::createAtomicString("reduceRight"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        ESObject* O = instance->currentExecutionContext()->resolveThisBindingToObject(); // 1
+        uint32_t len = O->get(strings->length.string()).toUint32(); // 2-3
+        ESValue* argv = instance->currentExecutionContext()->arguments();
+        int argc = instance->currentExecutionContext()->argumentCount();
+        ESValue callbackfn;
+        ESValue initialValue = ESValue(ESValue::ESEmptyValue);
+        if (argc == 1) {
+            callbackfn   = argv[0];
+        } else if (argc >= 2) {
+            callbackfn   = argv[0];
+            initialValue = argv[1];
+        }
+        if (!callbackfn.isESPointer() || !callbackfn.asESPointer()->isESFunctionObject()) // 4
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"Type Error"))));
+
+        if (len == 0 && initialValue.isUndefined()) // 5
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"Type Error"))));
+        int k = len - 1; // 6
+        ESValue accumulator;
+        if (!initialValue.isEmpty()) { // 7
+            accumulator = initialValue;
+        } else { // 8
+            bool kPresent = false; // 8.a
+            while (kPresent == false && k >= 0) { // 8.b
+                ESValue Pk = ESValue(k); // 8.b.i
+                kPresent = O->hasProperty(Pk); // 8.b.ii
+                if (kPresent)
+                    accumulator = O->get(Pk); // 8.b.iii.1
+                k--; // 8.b.iv
+            }
+            if (kPresent == false)
+                instance->throwError(ESValue(TypeError::create(ESString::create(u"Type Error"))));
+        }
+        while (k >= 0) { // 9
+            ESValue Pk = ESValue(k); // 9.a
+            bool kPresent = O->hasProperty(Pk); // 9.b
+            if (kPresent) { // 9.c
+                ESValue kValue = O->get(Pk); // 9.c.i
+                const int fnargc = 4;
+                ESValue* fnargs = (ESValue *)alloca(sizeof(ESValue) * fnargc);
+                fnargs[0] = accumulator;
+                fnargs[1] = kValue;
+                fnargs[2] = ESValue(k);
+                fnargs[3] = O;
+                accumulator = ESFunctionObject::call(ESVMInstance::currentInstance(), callbackfn, ESValue(), fnargs, fnargc, false);
+            }
+            k--; // 9.d
+        }
+        return accumulator;
+
     }, ESString::createAtomicString("reduceRight"), 1));
 
     // $22.1.3.20 Array.prototype.reverse()
