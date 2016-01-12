@@ -421,7 +421,72 @@ void GlobalObject::initGlobalObject()
 
     // $18.2.6.4 encodeURI(uri)
     defineDataProperty(ESString::createAtomicString("encodeURI"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        int argLen = instance->currentExecutionContext()->argumentCount();
+        if (argLen == 0)
+            return ESValue();
+
+        escargot::ESString* stringValue = instance->currentExecutionContext()->arguments()->toString();
+        NullableUTF8String componentString = stringValue->toNullableUTF8String();
+        int strLen = stringValue->length();
+
+        ASCIIString escaped;
+        for (int i = 0; i < strLen; i++) {
+            char16_t t = stringValue->charAt(i);
+            if ((48 <= t && t <= 57) // DecimalDigit
+                || (65 <= t && t <= 90) // uriAlpha - lower case
+                || (97 <= t && t <= 122) // uriAlpha - lower case
+                || (t == '-' || t == '_' || t == '.' // uriMark
+                || t == '!' || t == '~'
+                || t == '*' || t == '\'' || t == '('
+                || t == ')')
+                || (t == ';' || t == '/' || t == '?' // uriReserved
+                || t == ':' || t == '@' || t == '&'
+                || t == '=' || t == '+' || t == '$'
+                || t == ',')
+                || t == '#') { // special case
+                escaped.append(&componentString.m_buffer[i], 1);
+            } else if (t < 0x007F) {
+                escaped.append("%");
+                escaped.append(char2hex(t));
+            } else if (0x0080 <= t && t <= 0x07FF) {
+                escaped.append("%");
+                escaped.append(char2hex(0x00C0 + (t & 0x07C0) / 0x0040));
+                escaped.append("%");
+                escaped.append(char2hex(0x0080 + (t & 0x003F)));
+            } else if ((0x0800 <= t && t <= 0xD7FF)
+                || (0xE000 <= t/* && t <= 0xFFFF*/)) {
+                escaped.append("%");
+                escaped.append(char2hex(0x00E0 + (t & 0xF000) / 0x1000));
+                escaped.append("%");
+                escaped.append(char2hex(0x0080 + (t & 0x0FC0) / 0x0040));
+                escaped.append("%");
+                escaped.append(char2hex(0x0080 + (t & 0x003F)));
+            } else if (0xD800 <= t && t <= 0xDBFF) {
+                if (i + 1 == strLen) {
+                    instance->throwError(ESValue(URIError::create(ESString::create("malformed URI"))));
+                } else {
+                    if (0xDC00 <= stringValue->charAt(i + 1) && stringValue->charAt(i + 1) <= 0xDFFF) {
+                        int index = (t - 0xD800) * 0x400 + (stringValue->charAt(i + 1) - 0xDC00) + 0x10000;
+                        escaped.append("%");
+                        escaped.append(char2hex(0x00F0 + (index & 0x1C0000) / 0x40000));
+                        escaped.append("%");
+                        escaped.append(char2hex(0x0080 + (index & 0x3F000) / 0x1000));
+                        escaped.append("%");
+                        escaped.append(char2hex(0x0080 + (index & 0x0FC0) / 0x0040));
+                        escaped.append("%");
+                        escaped.append(char2hex(0x0080 + (index & 0x003F)));
+                        i++;
+                    } else {
+                        instance->throwError(ESValue(URIError::create(ESString::create("malformed URI"))));
+                    }
+                }
+            } else if (0xDC00 <= t && t <= 0xDFFF) {
+                instance->throwError(ESValue(URIError::create(ESString::create("malformed URI"))));
+            } else {
+                RELEASE_ASSERT_NOT_REACHED();
+            }
+        }
+        return escargot::ESString::create(std::move(escaped));
     }, ESString::createAtomicString("encodeURI"), 1));
 
     // $18.2.6.5 encodeURIComponent(uriComponent)
