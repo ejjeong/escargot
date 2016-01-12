@@ -39,6 +39,7 @@ class ESDataViewObject;
 class ESArgumentsObject;
 class ESControlFlowRecord;
 class CodeBlock;
+class FunctionEnvironmentRecordWithArgumentsObject;
 
 union ValueDescriptor {
     int64_t asInt64;
@@ -1296,8 +1297,8 @@ template<> struct equal_to<escargot::ESString *> {
 
 namespace escargot {
 
-typedef ESValue (*ESNativeGetter)(::escargot::ESObject* obj, ::escargot::ESObject* originalObj);
-typedef void (*ESNativeSetter)(::escargot::ESObject* obj, ::escargot::ESObject* originalObj, const ESValue& value);
+typedef ESValue (*ESNativeGetter)(::escargot::ESObject* obj, ::escargot::ESObject* originalObj, ::escargot::ESString* propertyName);
+typedef void (*ESNativeSetter)(::escargot::ESObject* obj, ::escargot::ESObject* originalObj, ::escargot::ESString* propertyName, const ESValue& value);
 
 class ESPropertyAccessorData : public gc {
 public:
@@ -1323,8 +1324,8 @@ public:
         m_jsSetter = nullptr;
     }
 
-    ALWAYS_INLINE ESValue value(::escargot::ESObject* obj, ::escargot::ESObject* originalObj);
-    ALWAYS_INLINE void setValue(::escargot::ESObject* obj, ::escargot::ESObject* originalObj, const ESValue& value);
+    ALWAYS_INLINE ESValue value(::escargot::ESObject* obj, ::escargot::ESObject* originalObj, ::escargot::ESString* propertyName);
+    ALWAYS_INLINE void setValue(::escargot::ESObject* obj, ::escargot::ESObject* originalObj, ::escargot::ESString* propertyName, const ESValue& value);
 
     ESNativeSetter getNativeSetter()
     {
@@ -1525,11 +1526,11 @@ public:
         return m_flags.m_isVectorMode;
     }
 
-    ALWAYS_INLINE ESValue read(ESObject* obj, ESObject* originalObject, ESString* name);
-    ALWAYS_INLINE ESValue read(ESObject* obj, ESObject* originalObject, size_t index);
+    ALWAYS_INLINE ESValue read(ESObject* obj, ESObject* originalObject, ESString* propertyName, ESString* name);
+    ALWAYS_INLINE ESValue read(ESObject* obj, ESObject* originalObject, ESString* propertyName, size_t index);
 
-    ALWAYS_INLINE bool write(ESObject* obj, ESObject* originalObject, ESString* name, const ESValue& val);
-    ALWAYS_INLINE bool write(ESObject* obj, ESObject* originalObject, size_t index, const ESValue& val);
+    ALWAYS_INLINE bool write(ESObject* obj, ESObject* originalObject, ESString* propertyName, ESString* name, const ESValue& val);
+    ALWAYS_INLINE bool write(ESObject* obj, ESObject* originalObject, ESString* propertyName, size_t index, const ESValue& val);
 
     const ESHiddenClassPropertyInfo& propertyInfo(const size_t& idx)
     {
@@ -2554,14 +2555,18 @@ public:
 
 class ESArgumentsObject : public ESObject {
 protected:
-    ESArgumentsObject();
+    ESArgumentsObject(FunctionEnvironmentRecordWithArgumentsObject* environment);
 
 public:
-    static ESArgumentsObject* create()
+    static ESArgumentsObject* create(FunctionEnvironmentRecordWithArgumentsObject* environment)
     {
-        return new ESArgumentsObject();
+        return new ESArgumentsObject(environment);
     }
 
+    FunctionEnvironmentRecordWithArgumentsObject* environment() { return m_environment; }
+
+private:
+    FunctionEnvironmentRecordWithArgumentsObject* m_environment;
 };
 
 class ESControlFlowRecord : public ESPointer {

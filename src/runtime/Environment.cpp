@@ -205,4 +205,51 @@ ESValue FunctionEnvironmentRecord::getThisBinding()
     return m_thisValue;
 }
 */
+
+ESArgumentsObject* FunctionEnvironmentRecordWithArgumentsObject::createArgumentsObject()
+{
+    ESArgumentsObject* argumentsObject = ESArgumentsObject::create(this);
+    argumentsObject->defineDataProperty(strings->length, true, false, true, ESValue(m_argumentsCount));
+
+    CodeBlock* codeBlock = m_callee->codeBlock();
+    unsigned i = 0;
+    for (; i < m_argumentsCount; i ++) {
+        ESString* propertyName;
+        if (i < ESCARGOT_STRINGS_NUMBERS_MAX)
+            propertyName = strings->numbers[i].string();
+        else
+            propertyName = ESString::create((int)i);
+
+        if (i < codeBlock->m_paramsInformation.size()) {
+            ESPropertyAccessorData* argumentsObjectAccessorData = new ESPropertyAccessorData([](ESObject* self, ESObject* originalObj, ESString* propertyName) -> ESValue {
+                uint32_t i = ESValue(propertyName).toIndex();
+                ASSERT(i != ESValue::ESInvalidIndexValue);
+                ESArgumentsObject* argumentsObject = self->asESArgumentsObject();
+                FunctionEnvironmentRecordWithArgumentsObject* environment = argumentsObject->environment();
+                FunctionParametersInfo& info = environment->m_callee->codeBlock()->m_paramsInformation[i];
+                if (info.m_isHeapAllocated)
+                    return *environment->bindingValueForHeapAllocatedData(i);
+                else
+                    return *environment->bindingValueForStackAllocatedData(i);
+            }, [](ESObject* self, ESObject* originalObj, ESString* propertyName, const ESValue& val) -> void {
+                uint32_t i = ESValue(propertyName).toIndex();
+                ASSERT(i != ESValue::ESInvalidIndexValue);
+                ESArgumentsObject* argumentsObject = self->asESArgumentsObject();
+                FunctionEnvironmentRecordWithArgumentsObject* environment = argumentsObject->environment();
+                FunctionParametersInfo& info = environment->m_callee->codeBlock()->m_paramsInformation[i];
+                if (info.m_isHeapAllocated)
+                    *environment->bindingValueForHeapAllocatedData(i) = val;
+                else
+                    *environment->bindingValueForStackAllocatedData(i) = val;
+            });
+            argumentsObject->defineAccessorProperty(strings->numbers[i].string(), argumentsObjectAccessorData, true, true, true);
+        } else {
+            argumentsObject->defineDataProperty(propertyName, true, true, true, m_arguments[i]);
+        }
+    }
+    argumentsObject->defineDataProperty(strings->callee, true, false, true, ESValue(m_callee));
+
+    return argumentsObject;
+}
+
 }

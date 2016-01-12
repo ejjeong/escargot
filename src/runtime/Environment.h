@@ -90,7 +90,7 @@ public:
     }
 
     // ES5.1 8.10.4 FromPropertyDescriptor
-    static ESValue FromPropertyDescriptor(ESObject* descSrc, size_t idx)
+    static ESValue FromPropertyDescriptor(ESObject* descSrc, ESString* propertyName, size_t idx)
     {
         bool isActualDataProperty = false;
         if (descSrc->isESArrayObject() && idx == 1) {
@@ -99,7 +99,7 @@ public:
         const ESHiddenClassPropertyInfo& propertyInfo = descSrc->hiddenClass()->propertyInfo(idx);
         ESObject* obj = ESObject::create();
         if (propertyInfo.m_flags.m_isDataProperty || isActualDataProperty) {
-            obj->set(strings->value.string(), descSrc->hiddenClass()->read(descSrc, descSrc, idx));
+            obj->set(strings->value.string(), descSrc->hiddenClass()->read(descSrc, descSrc, propertyName, idx));
             obj->set(strings->writable.string(), ESValue(propertyInfo.m_flags.m_isWritable));
         } else if (descSrc->accessorData(idx)->getJSGetter()
             || descSrc->accessorData(idx)->getJSSetter()
@@ -511,18 +511,7 @@ public:
         if (LIKELY(!m_argumentsObject.isEmpty()))
             return &m_argumentsObject;
 
-        ESObject* argumentsObject = ESArgumentsObject::create();
-        m_argumentsObject = argumentsObject;
-        unsigned i = 0;
-        argumentsObject->defineDataProperty(strings->length, true, false, true, ESValue(m_argumentsCount));
-        for (; i < m_argumentsCount && i < ESCARGOT_STRINGS_NUMBERS_MAX; i ++) {
-            argumentsObject->defineDataProperty(strings->numbers[i].string(), true, true, true, m_arguments[i]);
-        }
-        for (; i < m_argumentsCount; i ++) {
-            argumentsObject->defineDataProperty(ESString::create((int)i), true, true, true, m_arguments[i]);
-        }
-        argumentsObject->defineDataProperty(strings->callee, true, false, true, ESValue(m_callee));
-
+        m_argumentsObject = createArgumentsObject();
         return &m_argumentsObject;
     }
 
@@ -531,6 +520,10 @@ protected:
     size_t m_argumentsCount;
     ESValue m_argumentsObject;
     ESFunctionObject* m_callee;
+
+private:
+    // http://www.ecma-international.org/ecma-262/5.1/#sec-10.6
+    ESArgumentsObject* createArgumentsObject();
 };
 
 /*

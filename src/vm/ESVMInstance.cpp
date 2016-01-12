@@ -64,11 +64,11 @@ ESVMInstance::ESVMInstance()
 
     // TODO: Object.prototype.__proto__ should be configurable.
     //       This is defined in ES6. ($B.2.2.1)
-    m_object__proto__AccessorData.setGetter([](ESObject* obj, ESObject* originalObj) -> ESValue {
+    m_object__proto__AccessorData.setGetter([](ESObject* obj, ESObject* originalObj, ESString* propertyName) -> ESValue {
         return obj->__proto__();
     });
 
-    m_object__proto__AccessorData.setSetter([](::escargot::ESObject* self, ESObject* originalObj, const ESValue& value) -> void {
+    m_object__proto__AccessorData.setSetter([](::escargot::ESObject* self, ESObject* originalObj, ESString* propertyName, const ESValue& value) -> void {
         if (value.isESPointer() && value.asESPointer()->isESObject()) {
             self->set__proto__(value.asESPointer()->asESObject());
         } else if (value.isUndefined()) {
@@ -96,25 +96,25 @@ ESVMInstance::ESVMInstance()
 
     m_initialHiddenClassForArrayObject = m_initialHiddenClassForObject.defineProperty(m_strings.length, false, true, false, false);
 
-    m_functionPrototypeAccessorData.setGetter([](ESObject* self, ESObject* originalObj) -> ESValue {
+    m_functionPrototypeAccessorData.setGetter([](ESObject* self, ESObject* originalObj, ESString* propertyName) -> ESValue {
         return self->asESFunctionObject()->protoType();
     });
 
-    m_functionPrototypeAccessorData.setSetter([](::escargot::ESObject* self, ESObject* originalObj, const ESValue& value) {
+    m_functionPrototypeAccessorData.setSetter([](::escargot::ESObject* self, ESObject* originalObj, ESString* propertyName, const ESValue& value) {
         self->asESFunctionObject()->setProtoType(value);
     });
 
-    m_arrayLengthAccessorData.setGetter([](ESObject* self, ESObject* originalObj) -> ESValue {
+    m_arrayLengthAccessorData.setGetter([](ESObject* self, ESObject* originalObj, ESString* propertyName) -> ESValue {
         return ESValue(self->asESArrayObject()->length());
     });
 
-    m_arrayLengthAccessorData.setSetter([](::escargot::ESObject* self, ESObject* originalObj, const ESValue& value) {
+    m_arrayLengthAccessorData.setSetter([](::escargot::ESObject* self, ESObject* originalObj, ESString* propertyName, const ESValue& value) {
         if (!value.isNumber() || value.toNumber() != value.toUint32())
             ESVMInstance::currentInstance()->throwError((RangeError::create()));
         self->asESArrayObject()->setLength(value.toInt32());
     });
 
-    m_stringObjectLengthAccessorData.setGetter([](ESObject* self, ESObject* originalObj) -> ESValue {
+    m_stringObjectLengthAccessorData.setGetter([](ESObject* self, ESObject* originalObj, ESString* propertyName) -> ESValue {
         return ESValue(self->asESStringObject()->stringData()->length());
     });
 

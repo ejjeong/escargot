@@ -226,6 +226,13 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
                 if (iter == identifierInCurrentContext.end()) {
                     if (nearFunctionNode) {
                         nearFunctionNode->setNeedsToPrepareGenerateArgumentsObject();
+                        for (size_t i = 0; i < nearFunctionNode->innerIdentifiers().size(); i ++) {
+                            InnerIdentifierInfo& info = nearFunctionNode->innerIdentifiers()[i];
+                            if (info.m_flags.m_origin == InnerIdentifierInfo::Origin::Parameter)
+                                info.m_flags.m_isHeapAllocated = true;
+                        }
+                        markNeedsHeapAllocatedExecutionContext(nearFunctionNode);
+
                         return;
                     }
                 }

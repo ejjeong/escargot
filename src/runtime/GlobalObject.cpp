@@ -952,7 +952,7 @@ void GlobalObject::installObject()
 
         size_t idx = obj->hiddenClass()->findProperty(propertyKey);
         if (idx != SIZE_MAX)
-            return escargot::PropertyDescriptor::FromPropertyDescriptor(obj, idx);
+            return escargot::PropertyDescriptor::FromPropertyDescriptor(obj, propertyKey, idx);
         else
             return escargot::PropertyDescriptor::FromPropertyDescriptorForIndexedProperties(obj, arg1.toIndex());
     }, ESString::createAtomicString("getOwnPropertyDescriptor"), 2));
@@ -4343,7 +4343,7 @@ void GlobalObject::installArrayBuffer()
 
     m_arrayBufferPrototype->defineDataProperty(strings->constructor, true, false, true, m_arrayBuffer);
     // $22.2.3.2
-    m_arrayBufferPrototype->defineAccessorProperty(strings->byteLength, [](ESObject* self, ESObject* originalObj) -> ESValue {
+    m_arrayBufferPrototype->defineAccessorProperty(strings->byteLength, [](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName) -> ESValue {
         // FIXME find right object from originalObj
         return ESValue(originalObj->asESArrayBufferObject()->bytelength());
     }, nullptr, true, false, false);
@@ -4463,18 +4463,18 @@ ESFunctionObject* GlobalObject::installTypedArray(escargot::ESString* ta_name)
     ta_constructor->defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), false, false, false);
 
     // $22.2.3.2
-    ta_prototype->defineAccessorProperty(strings->byteLength, [](ESObject* self, ESObject* originalObj) -> ESValue {
+    ta_prototype->defineAccessorProperty(strings->byteLength, [](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName) -> ESValue {
         // FIXME find right object from originalObj
         return ESValue(originalObj->asESTypedArrayObject<T>()->bytelength());
     }, nullptr, true, false, false);
     // $22.2.3.2
-    ta_prototype->defineAccessorProperty(strings->length, [](ESObject* self, ESObject* originalObj) -> ESValue {
+    ta_prototype->defineAccessorProperty(strings->length, [](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName) -> ESValue {
         // FIXME find right object from originalObj
         return ESValue(originalObj->asESTypedArrayObject<T>()->arraylength());
     }, nullptr, true, false, false);
 
     // TODO add reference
-    ta_prototype->defineAccessorProperty(strings->buffer, [](ESObject* self, ESObject* originalObj) -> ESValue {
+    ta_prototype->defineAccessorProperty(strings->buffer, [](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName) -> ESValue {
         // FIXME find right object from originalObj
         return ESValue(originalObj->asESTypedArrayObject<T>()->buffer());
     }, nullptr, true, false, false);

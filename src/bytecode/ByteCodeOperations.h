@@ -51,7 +51,7 @@ ALWAYS_INLINE ESValue getByGlobalIndexOperation(GlobalObject* globalObject, GetB
     if (UNLIKELY(code->m_index == SIZE_MAX)) {
         getByGlobalIndexOperationSlowCase(globalObject, code);
     }
-    return globalObject->hiddenClass()->read(globalObject, globalObject, code->m_index);
+    return globalObject->hiddenClass()->read(globalObject, globalObject, code->m_name, code->m_index);
 }
 
 NEVER_INLINE void setByGlobalIndexOperationSlowCase(GlobalObject* globalObject, SetByGlobalIndex* code, const ESValue& value);
@@ -61,7 +61,7 @@ ALWAYS_INLINE void setByGlobalIndexOperation(GlobalObject* globalObject, SetByGl
     if (UNLIKELY(code->m_index == SIZE_MAX)) {
         setByGlobalIndexOperationSlowCase(globalObject, code, value);
     } else {
-        globalObject->hiddenClass()->write(globalObject, globalObject, code->m_index, value);
+        globalObject->hiddenClass()->write(globalObject, globalObject, code->m_name, code->m_index, value);
     }
 }
 
@@ -218,7 +218,7 @@ GetObjectPreComputedCaseInlineCacheOperation:
                 }
                 if (LIKELY((*cachedHiddenClassChain)[cSiz] == obj->hiddenClass())) {
                     if (cachedIndex != SIZE_MAX) {
-                        return obj->hiddenClass()->read(obj, targetObj, cachedIndex);
+                        return obj->hiddenClass()->read(obj, targetObj, keyString, cachedIndex);
                     } else {
                         return ESValue();
                     }
@@ -251,7 +251,7 @@ GetObjectPreComputedCaseInlineCacheOperation:
             }
 
             if (*cachedHiddenClassIndex != SIZE_MAX) {
-                return obj->hiddenClass()->read(obj, targetObj, *cachedHiddenClassIndex);
+                return obj->hiddenClass()->read(obj, targetObj, keyString, *cachedHiddenClassIndex);
             } else {
                 return ESValue();
             }
@@ -328,7 +328,7 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
             if (*cachedHiddenClassIndex != SIZE_MAX && (*cachedHiddenClassChain)[0] == obj->hiddenClass()) {
                 ASSERT((*cachedHiddenClassChain).size() == 1);
                 // cache hit!
-                if (!obj->hiddenClass()->write(obj, obj, *cachedHiddenClassIndex, value)) {
+                if (!obj->hiddenClass()->write(obj, obj, keyString, *cachedHiddenClassIndex, value)) {
                     throwObjectWriteError();
                 }
                 return;
@@ -371,7 +371,7 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
                 *cachedHiddenClassIndex = idx;
                 cachedHiddenClassChain->push_back(obj->hiddenClass());
 
-                if (!obj->hiddenClass()->write(obj, obj, idx, value))
+                if (!obj->hiddenClass()->write(obj, obj, keyString, idx, value))
                     throwObjectWriteError();
             } else {
                 cachedHiddenClassChain->push_back(obj->hiddenClass());

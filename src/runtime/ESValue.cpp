@@ -538,7 +538,7 @@ bool ESObject::defineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag)
     size_t idx = O->hiddenClass()->findProperty(P.toString());
     ESValue current = ESValue();
     if (idx != SIZE_MAX)
-        current = O->hiddenClass()->read(O, O, idx);
+        current = O->hiddenClass()->read(O, O, P.toString(), idx);
     else {
         if (O->isESArrayObject()
             && (descHasEnumerable || descHasWritable || descHasConfigurable || descHasValue || descHasGetter || descHasSetter)
@@ -918,25 +918,25 @@ ESRegExpObject::ESRegExpObject(escargot::ESString* source, const Option& option)
     m_lastIndex = ESValue(0);
     m_lastExecutedString = NULL;
 
-    defineAccessorProperty(strings->source, [](ESObject* self, ESObject* originalObj) -> ESValue {
+    defineAccessorProperty(strings->source, [](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName) -> ESValue {
         return self->asESRegExpObject()->source();
     }, nullptr, true, false, false);
 
-    defineAccessorProperty(strings->ignoreCase, [](ESObject* self, ESObject* originalObj) -> ESValue {
+    defineAccessorProperty(strings->ignoreCase, [](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName) -> ESValue {
         return ESValue((bool)(self->asESRegExpObject()->option() & ESRegExpObject::Option::IgnoreCase));
     }, nullptr, true, false, false);
 
-    defineAccessorProperty(strings->global, [](ESObject* self, ESObject* originalObj) -> ESValue {
+    defineAccessorProperty(strings->global, [](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName) -> ESValue {
         return ESValue((bool)(self->asESRegExpObject()->option() & ESRegExpObject::Option::Global));
     }, nullptr, true, false, false);
 
-    defineAccessorProperty(strings->multiline, [](ESObject* self, ESObject* originalObj) -> ESValue {
+    defineAccessorProperty(strings->multiline, [](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName) -> ESValue {
         return ESValue((bool)(self->asESRegExpObject()->option() & ESRegExpObject::Option::MultiLine));
     }, nullptr, true, false, false);
 
-    defineAccessorProperty(strings->lastIndex, [](ESObject* self, ESObject* originalObj) -> ESValue {
+    defineAccessorProperty(strings->lastIndex, [](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName) -> ESValue {
         return self->asESRegExpObject()->lastIndex();
-    }, [](ESObject* self, ESObject* originalObj, const ESValue& index)
+    }, [](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName, const ESValue& index)
     {
         self->asESRegExpObject()->setLastIndex(index);
     }, true, false, false);
@@ -1933,8 +1933,9 @@ bool ESTypedArrayObjectWrapper::set(uint32_t key, ESValue val)
     RELEASE_ASSERT_NOT_REACHED();
 }
 
-ESArgumentsObject::ESArgumentsObject()
+ESArgumentsObject::ESArgumentsObject(FunctionEnvironmentRecordWithArgumentsObject* environment)
     : ESObject((Type)(Type::ESObject | Type::ESArgumentsObject), ESVMInstance::currentInstance()->globalObject()->objectPrototype(), 6)
+    , m_environment(environment)
 {
 }
 
