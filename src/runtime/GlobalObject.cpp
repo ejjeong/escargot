@@ -1399,7 +1399,50 @@ void GlobalObject::installArray()
 
     // $22.1.3.5 Array.prototype.every
     m_arrayPrototype->ESObject::defineDataProperty(ESString::createAtomicString("every"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+
+        // Let O be the result of calling ToObject passing the this value as the argument.
+        ESObject* O = instance->currentExecutionContext()->resolveThisBindingToObject();
+
+        // Let lenValue be the result of calling the [[Get]] internal method of O with the argument "length".
+        // Let len be ToUint32(lenValue).
+        uint32_t len = O->length();
+
+        // If IsCallable(callbackfn) is false, throw a TypeError exception.
+        ESValue callbackfn = instance->currentExecutionContext()->readArgument(0);
+        if (!callbackfn.isESPointer() || !callbackfn.asESPointer()->isESFunctionObject()) {
+            instance->throwError(ESValue(TypeError::create(ESString::create("Array.prototype.filter callback must be a function"))));
+        }
+
+        // If thisArg was supplied, let T be thisArg; else let T be undefined.
+        ESValue T = instance->currentExecutionContext()->readArgument(1);
+
+        // Let k be 0.
+        uint32_t k = 0;
+
+        while (k < len) {
+            // Let Pk be ToString(k).
+            ESValue pk(k);
+
+            // Let kPresent be the result of calling the [[HasProperty]] internal method of O with argument Pk.
+            bool kPresent = O->hasProperty(pk);
+
+            // If kPresent is true, then
+            if (kPresent) {
+                // Let kValue be the result of calling the [[Get]] internal method of O with argument Pk.
+                ESValue kValue = O->get(pk);
+                // Let testResult be the result of calling the [[Call]] internal method of callbackfn with T as the this value and argument list containing kValue, k, and O.
+                ESValue args[] = {kValue, ESValue(k), O};
+                ESValue testResult = ESFunctionObject::call(instance, callbackfn, T, args, 3, false);
+
+                if (!testResult.toBoolean()) {
+                    return ESValue(false);
+                }
+            }
+
+            // Increase k by 1.
+            k++;
+        }
+        return ESValue(true);
     }, ESString::createAtomicString("every"), 1));
 
     // $22.1.3.6 Array.prototype.fill
@@ -1432,14 +1475,14 @@ void GlobalObject::installArray()
         // Let k be 0.
         uint32_t k = 0;
         // Let to be 0.
-        // uint32_t to = 0;
+        uint32_t to = 0;
 
         while (k < len) {
             // Let Pk be ToString(k).
             ESValue pk(k);
 
             // Let kPresent be the result of calling the [[HasProperty]] internal method of O with argument Pk.
-            bool kPresent = O->hasOwnProperty(pk);
+            bool kPresent = O->hasProperty(pk);
 
             // If kPresent is true, then
             if (kPresent) {
@@ -1450,9 +1493,9 @@ void GlobalObject::installArray()
                 ESValue selected = ESFunctionObject::call(instance, callbackfn, T, args, 3, false);
 
                 if (selected.toBoolean()) {
-                    A->set(k, kValue);
+                    A->set(to, kValue);
                     // Increase to by 1.
-                    // to++;
+                    to++;
                 }
             }
 
@@ -1497,9 +1540,9 @@ void GlobalObject::installArray()
             // Let Pk be ToString(k).
             ESValue pk(k);
             // Let kPresent be HasProperty(O, Pk).
-            bool kPresent = O->hasOwnProperty(pk);
+            bool kPresent = O->hasProperty(pk);
             if (kPresent) {
-                ESValue kValue = O->getOwnProperty(pk);
+                ESValue kValue = O->get(pk);
                 ESValue arguments[3] = {kValue, pk, O};
                 ESFunctionObject::call(instance, callbackfn, T, arguments, 3, false);
             }
@@ -1625,24 +1668,51 @@ void GlobalObject::installArray()
 
     // $22.1.3.15 Array.prototype.map(callbackfn[, thisArg])
     m_arrayPrototype->ESObject::defineDataProperty(ESString::createAtomicString("map"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        auto thisBinded = instance->currentExecutionContext()->resolveThisBindingToObject();
-        int arglen = instance->currentExecutionContext()->argumentCount();
-        if (arglen < 1)
-            instance->throwError(ESValue(TypeError::create(ESString::create("Array.prototype.map: arglen < 1"))));
-        ESValue arg = instance->currentExecutionContext()->arguments()[0];
-        if (!(arg.isESPointer() && arg.asESPointer()->isESFunctionObject()))
-            instance->throwError(ESValue(TypeError::create(ESString::create("Array.prototype.map: argument is not Function"))));
 
-        int arrlen = thisBinded->length();
-        escargot::ESArrayObject* ret = ESArrayObject::create(arrlen);
-        for (int idx = 0; idx < arrlen; idx++) {
-            ESValue tmpValue(thisBinded->get(ESValue(idx)));
-            ESValue k(idx);
-            ESValue O(thisBinded);
-            ESValue args[] = {tmpValue, k, O};
-            ret->set(idx, ESFunctionObject::call(instance, arg.asESPointer()->asESFunctionObject(), instance->globalObject(), args, 3, false));
+        // Let O be the result of calling ToObject passing the this value as the argument.
+        ESObject* O = instance->currentExecutionContext()->resolveThisBindingToObject();
+
+        // Let lenValue be the result of calling the [[Get]] internal method of O with the argument "length".
+        // Let len be ToUint32(lenValue).
+        uint32_t len = O->length();
+
+        // If IsCallable(callbackfn) is false, throw a TypeError exception.
+        ESValue callbackfn = instance->currentExecutionContext()->readArgument(0);
+        if (!callbackfn.isESPointer() || !callbackfn.asESPointer()->isESFunctionObject()) {
+            instance->throwError(ESValue(TypeError::create(ESString::create("Array.prototype.filter callback must be a function"))));
         }
-        return ret;
+
+        // If thisArg was supplied, let T be thisArg; else let T be undefined.
+        ESValue T = instance->currentExecutionContext()->readArgument(1);
+
+        // Let A be a new array created as if by the expression new Array() where Array is the standard built-in constructor with that name.
+        escargot::ESArrayObject* A = escargot::ESArrayObject::create(0);
+        // Let k be 0.
+        uint32_t k = 0;
+
+        while (k < len) {
+            // Let Pk be ToString(k).
+            ESValue pk(k);
+
+            // Let kPresent be the result of calling the [[HasProperty]] internal method of O with argument Pk.
+            bool kPresent = O->hasProperty(pk);
+
+            // If kPresent is true, then
+            if (kPresent) {
+                // Let kValue be the result of calling the [[Get]] internal method of O with argument Pk.
+                ESValue kValue = O->get(pk);
+                // Let mappedValue be the result of calling the [[Call]] internal method of callbackfn with T as the this value and argument list containing kValue, k, and O.
+                ESValue args[] = {kValue, ESValue(k), O};
+                ESValue mappedValue = ESFunctionObject::call(instance, callbackfn, T, args, 3, false);
+
+                A->set(k, mappedValue);
+            }
+
+            // Increase k by 1.
+            k++;
+        }
+
+        return A;
     }, ESString::createAtomicString("map"), 1));
 
     // $22.1.3.16 Array.prototype.pop ( )
@@ -1903,7 +1973,50 @@ void GlobalObject::installArray()
 
     // $22.1.3.23 Array.prototype.some
     m_arrayPrototype->ESObject::defineDataProperty(ESString::createAtomicString("some"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+
+        // Let O be the result of calling ToObject passing the this value as the argument.
+        ESObject* O = instance->currentExecutionContext()->resolveThisBindingToObject();
+
+        // Let lenValue be the result of calling the [[Get]] internal method of O with the argument "length".
+        // Let len be ToUint32(lenValue).
+        uint32_t len = O->length();
+
+        // If IsCallable(callbackfn) is false, throw a TypeError exception.
+        ESValue callbackfn = instance->currentExecutionContext()->readArgument(0);
+        if (!callbackfn.isESPointer() || !callbackfn.asESPointer()->isESFunctionObject()) {
+            instance->throwError(ESValue(TypeError::create(ESString::create("Array.prototype.filter callback must be a function"))));
+        }
+
+        // If thisArg was supplied, let T be thisArg; else let T be undefined.
+        ESValue T = instance->currentExecutionContext()->readArgument(1);
+
+        // Let k be 0.
+        uint32_t k = 0;
+
+        while (k < len) {
+            // Let Pk be ToString(k).
+            ESValue pk(k);
+
+            // Let kPresent be the result of calling the [[HasProperty]] internal method of O with argument Pk.
+            bool kPresent = O->hasProperty(pk);
+
+            // If kPresent is true, then
+            if (kPresent) {
+                // Let kValue be the result of calling the [[Get]] internal method of O with argument Pk.
+                ESValue kValue = O->get(pk);
+                // Let testResult be the result of calling the [[Call]] internal method of callbackfn with T as the this value and argument list containing kValue, k, and O.
+                ESValue args[] = {kValue, ESValue(k), O};
+                ESValue testResult = ESFunctionObject::call(instance, callbackfn, T, args, 3, false);
+
+                if (testResult.toBoolean()) {
+                    return ESValue(true);
+                }
+            }
+
+            // Increase k by 1.
+            k++;
+        }
+        return ESValue(false);
     }, ESString::createAtomicString("some"), 1));
 
     // $22.1.3.24 Array.prototype.sort(comparefn)
