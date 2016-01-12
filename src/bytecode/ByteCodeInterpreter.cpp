@@ -1143,7 +1143,11 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
         GetArgumentsObjectOpcodeLbl:
         {
-            PUSH(stack, topOfStack, ec->resolveArgumentsObjectBinding());
+            ESValue* argumentsBinding = ec->resolveArgumentsObjectBinding();
+            if (argumentsBinding)
+                PUSH(stack, topOfStack, argumentsBinding);
+            else
+                PUSH(stack, topOfStack, ESValue());
             executeNextCode<GetArgumentsObject>(programCounter);
             NEXT_INSTRUCTION();
         }

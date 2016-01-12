@@ -46,7 +46,9 @@ ESValue* ExecutionContext::resolveArgumentsObjectBinding()
         env = env->outerEnvironment();
     }
 
-    RELEASE_ASSERT_NOT_REACHED();
+    // TODO ASSERT this is eval context
+    // RELEASE_ASSERT_NOT_REACHED();
+    return NULL;
 }
 /*
 // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvethisbinding
