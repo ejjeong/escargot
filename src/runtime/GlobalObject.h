@@ -375,7 +375,7 @@ protected:
     escargot::ESFunctionObject* m_regexp;
     escargot::ESRegExpObject* m_regexpPrototype;
     escargot::ESFunctionObject* m_error;
-    escargot::ESObject* m_errorPrototype;
+    escargot::ESErrorObject* m_errorPrototype;
     escargot::ESFunctionObject* m_referenceError;
     escargot::ESObject* m_referenceErrorPrototype;
     escargot::ESFunctionObject* m_typeError;

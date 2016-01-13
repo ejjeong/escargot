@@ -1368,7 +1368,7 @@ void GlobalObject::installError()
     m_error->set__proto__(m_functionPrototype);
     m_error->defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), false, false, false);
 
-    m_errorPrototype = escargot::ESObject::create();
+    m_errorPrototype = escargot::ESErrorObject::create();
     m_error->setProtoType(m_errorPrototype);
     m_errorPrototype->set__proto__(m_objectPrototype);
     m_errorPrototype->defineDataProperty(strings->constructor, true, false, true, m_error);
