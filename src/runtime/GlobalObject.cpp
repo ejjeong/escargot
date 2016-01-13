@@ -1838,36 +1838,41 @@ void GlobalObject::installArray()
     // $22.1.3.14 Array.prototype.lastIndexOf(searchElement [,fromIndex])
     m_arrayPrototype->ESObject::defineDataProperty(ESString::createAtomicString("lastIndexOf"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         auto thisBinded = instance->currentExecutionContext()->resolveThisBindingToObject();
-        int len = thisBinded->length();
-        int ret = 0;
+        uint32_t len = thisBinded->length();
+        double ret = 0;
         if (len == 0)
             ret = -1;
         else {
-            int n = 0, k = 0;
+            double n = 0;
+            int64_t k = 0;
+
             if (instance->currentExecutionContext()->argumentCount() >= 2) {
                 const ESValue& fromIndex = instance->currentExecutionContext()->arguments()[1];
                 if (!fromIndex.isUndefined()) {
-                    n = fromIndex.asInt32();
-                    if (n >= len) {
-                        ret = -1;
-                    } else if (n >= 0) {
-                        k = n;
-                    } else {
-                        k = len - n * (-1);
-                        if (k < 0)
-                            k = 0;
-                    }
+                    n = fromIndex.toInteger();
                 }
+            } else {
+                n = len - 1;
             }
+
+            if (n >= 0) {
+                k = (n > len - 1) ? len - 1 : n;
+            } else {
+                k = len;
+                k -= (-1) * n;
+            }
+
             if (ret != -1) {
                 ret = -1;
-                k = len - 1;
                 ESValue& searchElement = instance->currentExecutionContext()->arguments()[0];
                 while (k >= 0) {
-                    ESValue kPresent = thisBinded->get(ESValue(k));
-                    if (searchElement.equalsTo(kPresent)) {
-                        ret = k;
-                        break;
+                    bool kPresent = thisBinded->hasProperty(ESValue(k));
+                    if (kPresent) {
+                        ESValue elementK = thisBinded->get(ESValue(k));
+                        if (searchElement.equalsTo(elementK)) {
+                            ret = k;
+                            break;
+                        }
                     }
                     k--;
                 }
