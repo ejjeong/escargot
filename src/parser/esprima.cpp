@@ -244,7 +244,7 @@ ALWAYS_INLINE bool isHexDigit(char16_t ch)
 
 ALWAYS_INLINE bool isOctalDigit(char16_t ch)
 {
-    return (ch >= '0' && ch < '9'); // 0..9
+    return (ch >= '0' && ch < '8'); // 0..7
 }
 
 
@@ -2012,7 +2012,8 @@ PassRefPtr<ParseStatus> scanOctalLiteral(ParseContext* ctx, char16_t prefix, siz
 
     if (isOctalDigit(prefix)) {
         octal = true;
-        number = '0' + ctx->m_sourceString->charAt(ctx->m_index++);
+        number += "0";
+        number += ctx->m_sourceString->charAt(ctx->m_index++);
     } else {
         octal = false;
         ++ctx->m_index;
