@@ -638,10 +638,10 @@ bool ESObject::defineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag)
         }
         if (isCurrentDataDescriptor) { // 9.b
             O->deleteProperty(P);
-            O->defineAccessorProperty(P, new ESPropertyAccessorData(descGet, descSet), descHasWritable ? descW : false, propertyInfo.m_flags.m_isEnumerable, propertyInfo.m_flags.m_isConfigurable, true);
+            O->defineAccessorProperty(P, new ESPropertyAccessorData(descGet, descSet), descHasWritable ? descW : false, descHasEnumerable ? descE : propertyInfo.m_flags.m_isEnumerable, descHasConfigurable ? descC : propertyInfo.m_flags.m_isConfigurable, true);
         } else { // 9.c
             O->deleteProperty(P);
-            O->defineDataProperty(P, descHasWritable ? descW : false, propertyInfo.m_flags.m_isEnumerable, propertyInfo.m_flags.m_isConfigurable, descV, true);
+            O->defineDataProperty(P, descHasWritable ? descW : false, descHasEnumerable ? descE : propertyInfo.m_flags.m_isEnumerable, descHasConfigurable ? descC : propertyInfo.m_flags.m_isConfigurable, descV, true);
         }
         return true;
     } else if (isCurrentDataDescriptor && isDescDataDescriptor) { // 10
