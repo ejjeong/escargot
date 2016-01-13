@@ -2157,14 +2157,8 @@ ch08/8.12/8.12.8/S8.12.8_A1 passed in non-strict mode
 ch08/8.12/8.12.8/S8.12.8_A2 passed in non-strict mode
 ch08/8.12/8.12.8/S8.12.8_A3 passed in non-strict mode
 ch08/8.12/8.12.8/S8.12.8_A4 passed in non-strict mode
-=== ch08/8.12/8.12.9/8.12.9-9-b-i_1 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
-=== ch08/8.12/8.12.9/8.12.9-9-b-i_2 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch08/8.12/8.12.9/8.12.9-9-b-i_1 passed in non-strict mode
+ch08/8.12/8.12.9/8.12.9-9-b-i_2 passed in non-strict mode
 ch08/8.12/8.12.9/8.12.9-9-c-i_1 passed in non-strict mode
 ch08/8.12/8.12.9/8.12.9-9-c-i_2 passed in non-strict mode
 ch08/8.2/S8.2_A1_T1 passed in non-strict mode
@@ -12857,8 +12851,8 @@ intl402/ch13/13.3/13.3.3_L15 passed in non-strict mode
 
 === Summary ===
  - Ran 10219 tests
- - Passed 9837 tests (96.3%)
- - Failed 382 tests (3.7%)
+ - Passed 9839 tests (96.3%)
+ - Failed 380 tests (3.7%)
 
 Failed tests
   annexB/B.2.1 in non-strict mode
@@ -12877,8 +12871,6 @@ Failed tests
   ch07/7.8/7.8.4/S7.8.4_A4.2_T6 in non-strict mode
   ch07/7.8/7.8.4/S7.8.4_A4.2_T7 in non-strict mode
   ch07/7.8/7.8.4/S7.8.4_A4.2_T8 in non-strict mode
-  ch08/8.12/8.12.9/8.12.9-9-b-i_1 in non-strict mode
-  ch08/8.12/8.12.9/8.12.9-9-b-i_2 in non-strict mode
   ch09/9.3/9.3.1/S9.3.1_A2 in non-strict mode
   ch09/9.3/9.3.1/S9.3.1_A3_T1 in non-strict mode
   ch09/9.3/9.3.1/S9.3.1_A3_T2 in non-strict mode

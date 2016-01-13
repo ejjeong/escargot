@@ -119,7 +119,6 @@ public:
             setDesc->set(strings->configurable.string(), ESValue(true));
             ESValue setStr = strings->set.string();
             obj->defineOwnProperty(setStr, setDesc, false);
-            obj->set(strings->writable.string(), ESValue(false));
         } else {
             descSrc->accessorData(idx)->setGetterAndSetterTo(obj);
         }
