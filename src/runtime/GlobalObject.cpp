@@ -416,7 +416,105 @@ void GlobalObject::initGlobalObject()
 
     // $18.2.6.3 decodeURIComponent(encodedURIComponent)
     defineDataProperty(ESString::createAtomicString("decodeURIComponent"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        int argLen = instance->currentExecutionContext()->argumentCount();
+        if (argLen == 0)
+            return ESValue();
+
+        escargot::ESString* stringValue = instance->currentExecutionContext()->arguments()->toString();
+        NullableUTF8String componentString = stringValue->toNullableUTF8String();
+        int strLen = stringValue->length();
+
+        UTF16String unescaped;
+        for (int i = 0; i < strLen; i++) {
+            char16_t t = stringValue->charAt(i);
+            if (t != '%') {
+                unescaped.append(&t, 1);
+            } else {
+                // int start = i;
+                if (i+2 >= strLen)
+                    instance->throwError(ESValue(URIError::create(ESString::create("malformed URI"))));
+                char16_t next = stringValue->charAt(i+1);    
+                char16_t nextnext = stringValue->charAt(i+2);    
+                if (!((48 <= next && next <= 57) || (65 <= next && next <= 70) || (97 <= next && next <= 102))) // hex digit check
+                    instance->throwError(ESValue(URIError::create(ESString::create("malformed URI"))));
+                if (!((48 <= nextnext && nextnext <= 57) || (65 <= nextnext && nextnext <= 70) || (97 <= nextnext && nextnext <= 102)))
+                    instance->throwError(ESValue(URIError::create(ESString::create("malformed URI"))));
+
+                unsigned char b = (((next & 0x10) ? (next & 0xf) : ((next & 0xf) + 9)) << 4)
+                    | ((nextnext & 0x10) ? (nextnext & 0xf) : ((nextnext & 0xf) + 9));
+
+                i += 2;
+
+                if (!(b & 0x80)) {
+                    // let C be the character with code unit value B.
+                    // if C is not in reservedSet, then let S be the String containing only the character C.
+                    // else, C is in reservedSet, Let S be the substring of string from position start to position k included.
+                    const char16_t c = b & 0x7f;
+                    unescaped.append(&c, 1);
+                } else { // most significant bit in b is 1
+                    unsigned char b_tmp = b;
+                    int n = 1;
+                    while (n < 5) {
+                        b_tmp <<= 1;
+                        if ((b_tmp & 0x80) == 0) {
+                            break;
+                        }
+                        n++;                              
+                    }
+                    if (n == 1 || n == 5) {
+                        instance->throwError(ESValue(URIError::create(ESString::create("malformed URI"))));
+                    }
+                    unsigned char octets[4];
+                    octets[0] = b;
+                    if (i + (3 * (n - 1)) >= strLen) {
+                        instance->throwError(ESValue(URIError::create(ESString::create("malformed URI"))));
+                    }
+
+                    int j = 1;
+                    while (j < n) {
+                        i++;
+                        if (stringValue->charAt(i) != '%') {
+                            instance->throwError(ESValue(URIError::create(ESString::create("malformed URI"))));
+                        }
+                        next = stringValue->charAt(i+1);    
+                        nextnext = stringValue->charAt(i+2);    
+                        if (!((48 <= next && next <= 57) || (65 <= next && next <= 70) || (97 <= next && next <= 102))) // hex digit check
+                            instance->throwError(ESValue(URIError::create(ESString::create("malformed URI"))));
+                        if (!((48 <= nextnext && nextnext <= 57) || (65 <= nextnext && nextnext <= 70) || (97 <= nextnext && nextnext <= 102)))
+                            instance->throwError(ESValue(URIError::create(ESString::create("malformed URI"))));
+
+                        b = (((next & 0x10) ? (next & 0xf) : ((next & 0xf) + 9)) << 4)
+                            | ((nextnext & 0x10) ? (nextnext & 0xf) : ((nextnext & 0xf) + 9));
+
+                        if ((b & 0xC0) != 0x80) {
+                            instance->throwError(ESValue(URIError::create(ESString::create("malformed URI"))));
+                        }
+    
+                        i += 2;
+                        octets[j] = b;
+                        j++;
+                    }
+                    unsigned int v;
+                    if (n == 2) {
+                        v = (octets[0] & 0x1F) << 6 | (octets[1] & 0x3F);
+                    } else if (n == 3) {
+                        v = (octets[0] & 0x0F) << 12 | (octets[1] & 0x3F) << 6 | (octets[2] & 0x3F);
+                    } else if (n == 4) {
+                        v = (octets[0] & 0x07) << 18 | (octets[1] & 0x3F) << 12 | (octets[2] & 0x3F) << 6 | (octets[3] & 0x3F);
+                    }
+                    if (v >= 0x10000) {
+                        const char16_t l = (((v - 0x10000) & 0x3ff) + 0xdc00);
+                        const char16_t h = ((((v - 0x10000) >> 10) & 0x3ff) + 0xd800);
+                        unescaped.append(&l, 1);
+                        unescaped.append(&h, 1);
+                    } else {
+                        const char16_t l = v & 0xFFFF;
+                        unescaped.append(&l, 1);
+                    }
+                }
+            } 
+        }
+        return escargot::ESString::create(std::move(unescaped));
     }, ESString::createAtomicString("decodeURIComponent"), 1));
 
     // $18.2.6.4 encodeURI(uri)
