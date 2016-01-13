@@ -1526,7 +1526,7 @@ void GlobalObject::installArray()
     m_array = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         int len = instance->currentExecutionContext()->argumentCount();
         bool interpretArgumentsAsElements = false;
-        int size = 0;
+        unsigned int size = 0;
         if (len > 1) {
             size = len;
             interpretArgumentsAsElements = true;
