@@ -1217,6 +1217,8 @@ Excluded: S15.10.6.3_A2_T4
 Excluded: S15.10.6.3_A2_T5
 Excluded: S15.11.1.1_A1_T1
 Excluded: S15.11.2.1_A1_T1
+Excluded: 15.2.3.3-4-187
+Excluded: 15.2.3.3-4-188
 Excluded: S15.2.3.4_A1_T1
 Excluded: S15.3.1_A1_T1
 Excluded: S15.3.2.1_A1_T1
@@ -1232,6 +1234,12 @@ Excluded: S15.3.2.1_A1_T6
 Excluded: S15.3.2.1_A1_T7
 Excluded: S15.3.2.1_A1_T8
 Excluded: S15.3.2.1_A1_T9
+Excluded: S15.3.2.1_A2_T1
+Excluded: S15.3.2.1_A2_T2
+Excluded: S15.3.2.1_A2_T3
+Excluded: S15.3.2.1_A2_T4
+Excluded: S15.3.2.1_A2_T5
+Excluded: S15.3.2.1_A2_T6
 Excluded: S15.3.2.1_A3_T1
 Excluded: S15.3.2.1_A3_T10
 Excluded: S15.3.2.1_A3_T11
@@ -1250,10 +1258,13 @@ Excluded: S15.3.2.1_A3_T9
 Excluded: 15.3.2.1-10-4gs
 Excluded: 15.3.2.1-10-6gs
 Excluded: 15.3.2.1-11-1-s
+Excluded: 15.3.2.1-11-1
 Excluded: 15.3.2.1-11-2-s
 Excluded: 15.3.2.1-11-3-s
+Excluded: 15.3.2.1-11-3
 Excluded: 15.3.2.1-11-4-s
 Excluded: 15.3.2.1-11-5-s
+Excluded: 15.3.2.1-11-5
 Excluded: 15.3.2.1-11-6-s
 Excluded: 15.3.2.1-11-7-s
 Excluded: 15.3.2.1-11-8-s
@@ -1261,35 +1272,88 @@ Excluded: 15.3.2.1-11-9-s
 Excluded: 15.3.4.3-1-s
 Excluded: 15.3.4.3-2-s
 Excluded: 15.3.4.3-3-s
+Excluded: S15.3.4.3_A3_T1
 Excluded: S15.3.4.3_A3_T10
+Excluded: S15.3.4.3_A3_T2
+Excluded: S15.3.4.3_A3_T3
+Excluded: S15.3.4.3_A3_T4
+Excluded: S15.3.4.3_A3_T5
+Excluded: S15.3.4.3_A3_T7
 Excluded: S15.3.4.3_A3_T9
+Excluded: S15.3.4.3_A5_T1
 Excluded: S15.3.4.3_A5_T2
+Excluded: S15.3.4.3_A5_T7
 Excluded: S15.3.4.3_A5_T8
+Excluded: S15.3.4.3_A7_T1
+Excluded: S15.3.4.3_A7_T10
 Excluded: S15.3.4.3_A7_T2
+Excluded: S15.3.4.3_A7_T3
 Excluded: S15.3.4.3_A7_T4
+Excluded: S15.3.4.3_A7_T5
+Excluded: S15.3.4.3_A7_T6
+Excluded: S15.3.4.3_A7_T7
+Excluded: S15.3.4.3_A7_T8
+Excluded: S15.3.4.3_A7_T9
+Excluded: S15.3.4.3_A8_T4
 Excluded: S15.3.4.3_A8_T5
+Excluded: S15.3.4.3_A8_T6
 Excluded: 15.3.4.4-1-s
 Excluded: 15.3.4.4-2-s
 Excluded: 15.3.4.4-3-s
+Excluded: S15.3.4.4_A3_T1
 Excluded: S15.3.4.4_A3_T10
+Excluded: S15.3.4.4_A3_T2
+Excluded: S15.3.4.4_A3_T3
+Excluded: S15.3.4.4_A3_T4
+Excluded: S15.3.4.4_A3_T5
+Excluded: S15.3.4.4_A3_T7
 Excluded: S15.3.4.4_A3_T9
+Excluded: S15.3.4.4_A5_T1
 Excluded: S15.3.4.4_A5_T2
+Excluded: S15.3.4.4_A5_T7
 Excluded: S15.3.4.4_A5_T8
+Excluded: S15.3.4.4_A6_T1
+Excluded: S15.3.4.4_A6_T10
 Excluded: S15.3.4.4_A6_T2
+Excluded: S15.3.4.4_A6_T3
 Excluded: S15.3.4.4_A6_T4
+Excluded: S15.3.4.4_A6_T5
+Excluded: S15.3.4.4_A6_T6
+Excluded: S15.3.4.4_A6_T7
+Excluded: S15.3.4.4_A6_T8
+Excluded: S15.3.4.4_A6_T9
+Excluded: S15.3.4.4_A7_T4
 Excluded: S15.3.4.4_A7_T5
+Excluded: S15.3.4.4_A7_T6
 Excluded: 15.3.5-1gs
 Excluded: 15.3.5-2gs
 Excluded: S15.3.5.1_A1_T1
+Excluded: S15.3.5.1_A1_T2
 Excluded: S15.3.5.1_A1_T3
 Excluded: S15.3.5.1_A2_T1
+Excluded: S15.3.5.1_A2_T2
 Excluded: S15.3.5.1_A2_T3
 Excluded: S15.3.5.1_A3_T1
+Excluded: S15.3.5.1_A3_T2
 Excluded: S15.3.5.1_A3_T3
 Excluded: S15.3.5.1_A4_T1
+Excluded: S15.3.5.1_A4_T2
 Excluded: S15.3.5.1_A4_T3
 Excluded: S15.3.5.2_A1_T1
+Excluded: S15.3.5.2_A1_T2
+Excluded: S15.3.5.3_A1_T1
+Excluded: S15.3.5.3_A1_T2
+Excluded: S15.3.5.3_A1_T3
+Excluded: S15.3.5.3_A1_T4
+Excluded: S15.3.5.3_A1_T5
+Excluded: S15.3.5.3_A1_T6
+Excluded: S15.3.5.3_A1_T7
+Excluded: S15.3.5.3_A1_T8
+Excluded: S15.3.5.3_A2_T5
+Excluded: S15.3.5.3_A3_T1
+Excluded: S15.3.5_A2_T1
 Excluded: S15.3.5_A2_T2
+Excluded: S15.3.5_A3_T1
 Excluded: S15.3.5_A3_T2
 Excluded: 15.3.5.4_2-10gs
 Excluded: 15.3.5.4_2-11gs
@@ -1405,6 +1469,7 @@ Excluded: S15.5.4.11_A12
 Excluded: S15.5.4.11_A1_T10
 Excluded: S15.5.4.11_A1_T11
 Excluded: S15.5.4.11_A1_T12
+Excluded: S15.5.4.11_A1_T6
 Excluded: S15.5.4.12_A1_T10
 Excluded: S15.5.4.12_A1_T11
 Excluded: S15.5.4.12_A1_T12
@@ -5295,8 +5360,6 @@ ch15/15.2/15.2.3/15.2.3.3/15.2.3.3-4-183 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.3/15.2.3.3-4-184 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.3/15.2.3.3-4-185 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.3/15.2.3.3-4-186 passed in non-strict mode
-ch15/15.2/15.2.3/15.2.3.3/15.2.3.3-4-187 passed in non-strict mode
-ch15/15.2/15.2.3/15.2.3.3/15.2.3.3-4-188 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.3/15.2.3.3-4-189 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.3/15.2.3.3-4-19 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.3/15.2.3.3-4-190 passed in non-strict mode
@@ -7791,16 +7854,7 @@ ch15/15.3/S15.3_A3_T3 passed in non-strict mode
 ch15/15.3/S15.3_A3_T4 passed in non-strict mode
 ch15/15.3/S15.3_A3_T5 passed in non-strict mode
 ch15/15.3/S15.3_A3_T6 passed in non-strict mode
-ch15/15.3/15.3.2/S15.3.2.1_A2_T1 passed in non-strict mode
-ch15/15.3/15.3.2/S15.3.2.1_A2_T2 passed in non-strict mode
-ch15/15.3/15.3.2/S15.3.2.1_A2_T3 passed in non-strict mode
-ch15/15.3/15.3.2/S15.3.2.1_A2_T4 passed in non-strict mode
-ch15/15.3/15.3.2/S15.3.2.1_A2_T5 passed in non-strict mode
-ch15/15.3/15.3.2/S15.3.2.1_A2_T6 passed in non-strict mode
 ch15/15.3/15.3.2/S15.3.2_A1 passed in non-strict mode
-ch15/15.3/15.3.2/15.3.2.1/15.3.2.1-11-1 passed in non-strict mode
-ch15/15.3/15.3.2/15.3.2.1/15.3.2.1-11-3 passed in non-strict mode
-ch15/15.3/15.3.2/15.3.2.1/15.3.2.1-11-5 passed in non-strict mode
 ch15/15.3/15.3.3/S15.3.3_A1 passed in non-strict mode
 ch15/15.3/15.3.3/S15.3.3_A2_T1 passed in non-strict mode
 ch15/15.3/15.3.3/S15.3.3_A2_T2 passed in non-strict mode
@@ -7841,42 +7895,19 @@ ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A1_T1 passed in non-strict mode
 ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A1_T2 passed in non-strict mode
 ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A2_T1 passed in non-strict mode
 ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A2_T2 passed in non-strict mode
-=== ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A3_T1 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #1: If thisArg is null or undefined, the called function is passed the global object as the this value
-===
-ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A3_T2 passed in non-strict mode
-ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A3_T3 passed in non-strict mode
-ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A3_T4 passed in non-strict mode
-=== ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A3_T5 failed in non-strict mode ===
-===
 ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A3_T6 passed in non-strict mode
-ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A3_T7 passed in non-strict mode
 ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A3_T8 passed in non-strict mode
-ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A5_T1 passed in non-strict mode
 ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A5_T3 passed in non-strict mode
 ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A5_T4 passed in non-strict mode
 ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A5_T5 passed in non-strict mode
 ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A5_T6 passed in non-strict mode
-ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A5_T7 passed in non-strict mode
 === ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A6_T2 failed in non-strict mode ===
 ===
 === ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A6_T3 failed in non-strict mode ===
 ===
-ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A7_T1 passed in non-strict mode
-ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A7_T10 passed in non-strict mode
-ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A7_T3 passed in non-strict mode
-ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A7_T5 passed in non-strict mode
-ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A7_T6 passed in non-strict mode
-ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A7_T7 passed in non-strict mode
-ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A7_T8 passed in non-strict mode
-ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A7_T9 passed in non-strict mode
 ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A8_T1 passed in non-strict mode
 ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A8_T2 passed in non-strict mode
 ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A8_T3 passed in non-strict mode
-ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A8_T4 passed in non-strict mode
-=== ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A8_T6 failed in non-strict mode ===
-===
 ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A9 passed in non-strict mode
 ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A10 passed in non-strict mode
 ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A11 passed in non-strict mode
@@ -7889,33 +7920,15 @@ ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A1_T1 passed in non-strict mode
 ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A1_T2 passed in non-strict mode
 ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A2_T1 passed in non-strict mode
 ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A2_T2 passed in non-strict mode
-ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A3_T1 passed in non-strict mode
-ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A3_T2 passed in non-strict mode
-ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A3_T3 passed in non-strict mode
-ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A3_T4 passed in non-strict mode
-ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A3_T5 passed in non-strict mode
 ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A3_T6 passed in non-strict mode
-ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A3_T7 passed in non-strict mode
 ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A3_T8 passed in non-strict mode
-ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A5_T1 passed in non-strict mode
 ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A5_T3 passed in non-strict mode
 ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A5_T4 passed in non-strict mode
 ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A5_T5 passed in non-strict mode
 ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A5_T6 passed in non-strict mode
-ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A5_T7 passed in non-strict mode
-ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A6_T1 passed in non-strict mode
-ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A6_T10 passed in non-strict mode
-ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A6_T3 passed in non-strict mode
-ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A6_T5 passed in non-strict mode
-ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A6_T6 passed in non-strict mode
-ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A6_T7 passed in non-strict mode
-ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A6_T8 passed in non-strict mode
-ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A6_T9 passed in non-strict mode
 ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A7_T1 passed in non-strict mode
 ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A7_T2 passed in non-strict mode
 ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A7_T3 passed in non-strict mode
-ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A7_T4 passed in non-strict mode
-ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A7_T6 passed in non-strict mode
 ch15/15.3/15.3.4/15.3.4.4/S15.3.4.4_A9 passed in non-strict mode
 ch15/15.3/15.3.4/15.3.4.5/15.3.4.5-0-1 passed in non-strict mode
 ch15/15.3/15.3.4/15.3.4.5/15.3.4.5-0-2 passed in non-strict mode
@@ -8015,43 +8028,11 @@ ch15/15.3/15.3.4/15.3.4.5.2/15.3.4.5.2-4-6 passed in non-strict mode
 ch15/15.3/15.3.4/15.3.4.5.2/15.3.4.5.2-4-7 passed in non-strict mode
 ch15/15.3/15.3.4/15.3.4.5.2/15.3.4.5.2-4-8 passed in non-strict mode
 ch15/15.3/15.3.4/15.3.4.5.2/15.3.4.5.2-4-9 passed in non-strict mode
-=== ch15/15.3/15.3.5/S15.3.5.1_A1_T2 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #2: The value of the length property is usually an integer that indicates the "typical" number of arguments expected by the function
-===
-=== ch15/15.3/15.3.5/S15.3.5.1_A2_T2 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #3: the length property has the attributes { DontDelete }
-===
-=== ch15/15.3/15.3.5/S15.3.5.1_A3_T2 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #4: the length property has the attributes { ReadOnly }
-===
-ch15/15.3/15.3.5/S15.3.5.1_A4_T2 passed in non-strict mode
-ch15/15.3/15.3.5/S15.3.5.2_A1_T2 passed in non-strict mode
-ch15/15.3/15.3.5/S15.3.5.3_A1_T1 passed in non-strict mode
-ch15/15.3/15.3.5/S15.3.5.3_A1_T2 passed in non-strict mode
-ch15/15.3/15.3.5/S15.3.5.3_A1_T3 passed in non-strict mode
-ch15/15.3/15.3.5/S15.3.5.3_A1_T4 passed in non-strict mode
-ch15/15.3/15.3.5/S15.3.5.3_A1_T5 passed in non-strict mode
-ch15/15.3/15.3.5/S15.3.5.3_A1_T6 passed in non-strict mode
-ch15/15.3/15.3.5/S15.3.5.3_A1_T7 passed in non-strict mode
-ch15/15.3/15.3.5/S15.3.5.3_A1_T8 passed in non-strict mode
 ch15/15.3/15.3.5/S15.3.5.3_A2_T2 passed in non-strict mode
-=== ch15/15.3/15.3.5/S15.3.5.3_A2_T5 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #2: instance.constructor === FACTORY
-===
 ch15/15.3/15.3.5/S15.3.5.3_A2_T6 passed in non-strict mode
-ch15/15.3/15.3.5/S15.3.5.3_A3_T1 passed in non-strict mode
 ch15/15.3/15.3.5/S15.3.5.3_A3_T2 passed in non-strict mode
 ch15/15.3/15.3.5/S15.3.5_A1_T1 passed in non-strict mode
 ch15/15.3/15.3.5/S15.3.5_A1_T2 passed in non-strict mode
-ch15/15.3/15.3.5/S15.3.5_A2_T1 passed in non-strict mode
-=== ch15/15.3/15.3.5/S15.3.5_A3_T1 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #2: every function instance has a [[Construct]] property
-===
 ch15/15.4/S15.4_A1.1_T1 passed in non-strict mode
 ch15/15.4/S15.4_A1.1_T10 passed in non-strict mode
 ch15/15.4/S15.4_A1.1_T2 passed in non-strict mode
@@ -10643,7 +10624,6 @@ ch15/15.5/15.5.4/15.5.4.11/S15.5.4.11_A1_T2 passed in non-strict mode
 ch15/15.5/15.5.4/15.5.4.11/S15.5.4.11_A1_T4 passed in non-strict mode
 === ch15/15.5/15.5.4/15.5.4.11/S15.5.4.11_A1_T5 failed in non-strict mode ===
 ===
-ch15/15.5/15.5.4/15.5.4.11/S15.5.4.11_A1_T6 passed in non-strict mode
 ch15/15.5/15.5.4/15.5.4.11/S15.5.4.11_A1_T7 passed in non-strict mode
 ch15/15.5/15.5.4/15.5.4.11/S15.5.4.11_A1_T8 passed in non-strict mode
 ch15/15.5/15.5.4/15.5.4.11/S15.5.4.11_A1_T9 passed in non-strict mode
@@ -12876,9 +12856,9 @@ intl402/ch13/13.3/13.3.2_L15 passed in non-strict mode
 intl402/ch13/13.3/13.3.3_L15 passed in non-strict mode
 
 === Summary ===
- - Ran 10284 tests
- - Passed 9894 tests (96.2%)
- - Failed 390 tests (3.8%)
+ - Ran 10219 tests
+ - Passed 9837 tests (96.3%)
+ - Failed 382 tests (3.7%)
 
 Failed tests
   annexB/B.2.1 in non-strict mode
@@ -12938,16 +12918,8 @@ Failed tests
   ch15/15.2/15.2.3/15.2.3.7/15.2.3.7-6-a-287 in non-strict mode
   ch15/15.2/15.2.3/15.2.3.7/15.2.3.7-6-a-288 in non-strict mode
   ch15/15.2/15.2.3/15.2.3.7/15.2.3.7-6-a-289 in non-strict mode
-  ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A3_T1 in non-strict mode
-  ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A3_T5 in non-strict mode
   ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A6_T2 in non-strict mode
   ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A6_T3 in non-strict mode
-  ch15/15.3/15.3.4/15.3.4.3/S15.3.4.3_A8_T6 in non-strict mode
-  ch15/15.3/15.3.5/S15.3.5.1_A1_T2 in non-strict mode
-  ch15/15.3/15.3.5/S15.3.5.1_A2_T2 in non-strict mode
-  ch15/15.3/15.3.5/S15.3.5.1_A3_T2 in non-strict mode
-  ch15/15.3/15.3.5/S15.3.5.3_A2_T5 in non-strict mode
-  ch15/15.3/15.3.5/S15.3.5_A3_T1 in non-strict mode
   ch15/15.4/15.4.2/15.4.2.2/S15.4.2.2_A2.1_T1 in non-strict mode
   ch15/15.4/15.4.4/15.4.4.15/15.4.4.15-2-1 in non-strict mode
   ch15/15.4/15.4.4/15.4.4.15/15.4.4.15-3-12 in non-strict mode
