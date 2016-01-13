@@ -662,6 +662,10 @@ bool ESObject::defineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag)
                 }
             }
         }
+        if (UNLIKELY(O->isESArgumentsObject())) { // ES6.0 $9.4.4.2
+            bool res = O->set(P, descV);
+            ASSERT(res);
+        }
     } else {
         ASSERT(!propertyInfo.m_flags.m_isDataProperty && escargot::PropertyDescriptor::IsAccessorDescriptor(desc));
         if (!propertyInfo.m_flags.m_isConfigurable) {
