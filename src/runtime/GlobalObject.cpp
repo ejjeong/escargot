@@ -3946,51 +3946,51 @@ void GlobalObject::installMath()
 
     // initialize math object: $20.2.2.1 Math.abs()
     m_math->defineDataProperty(strings->abs, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        size_t arg_size = instance->currentExecutionContext()->argumentCount();
-        if (arg_size == 0) {
-            double value = std::numeric_limits<double>::quiet_NaN();
-            return ESValue(value);
-        } else {
-            ESValue arg = instance->currentExecutionContext()->arguments()[0];
-            double value = std::abs(arg.toNumber());
-            return ESValue(value);
-        }
-        return ESValue();
+        ESValue x = instance->currentExecutionContext()->readArgument(0);
+        return ESValue(std::abs(x.toNumber()));
     }, strings->abs, 1));
 
     // initialize math object: $20.2.2.2 Math.acos()
     m_math->defineDataProperty(ESString::createAtomicString("acos"), true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        ESValue x = instance->currentExecutionContext()->readArgument(0);
+        return ESValue(acos(x.toNumber()));
     }, ESString::createAtomicString("acos"), 1));
 
     // initialize math object: $20.2.2.3 Math.acosh()
     m_math->defineDataProperty(ESString::createAtomicString("acosh"), true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        ESValue x = instance->currentExecutionContext()->readArgument(0);
+        return ESValue(acosh(x.toNumber()));
     }, ESString::createAtomicString("acosh"), 1));
 
     // initialize math object: $20.2.2.4 Math.asin()
     m_math->defineDataProperty(ESString::createAtomicString("asin"), true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        ESValue x = instance->currentExecutionContext()->readArgument(0);
+        return ESValue(asin(x.toNumber()));
     }, ESString::createAtomicString("asin"), 1));
 
     // initialize math object: $20.2.2.5 Math.asinh()
     m_math->defineDataProperty(ESString::createAtomicString("asinh"), true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        ESValue x = instance->currentExecutionContext()->readArgument(0);
+        return ESValue(asinh(x.toNumber()));
     }, ESString::createAtomicString("asinh"), 1));
 
     // initialize math object: $20.2.2.6 Math.atan()
     m_math->defineDataProperty(ESString::createAtomicString("atan"), true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        ESValue x = instance->currentExecutionContext()->readArgument(0);
+        return ESValue(atan(x.toNumber()));
     }, ESString::createAtomicString("atan"), 1));
 
     // initialize math object: $20.2.2.7 Math.atanh()
     m_math->defineDataProperty(ESString::createAtomicString("atanh"), true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        ESValue x = instance->currentExecutionContext()->readArgument(0);
+        return ESValue(atanh(x.toNumber()));
     }, ESString::createAtomicString("atanh"), 1));
 
     // initialize math object: $20.2.2.8 Math.atan2()
     m_math->defineDataProperty(ESString::createAtomicString("atan2"), true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        ESValue x = instance->currentExecutionContext()->readArgument(0);
+        ESValue y = instance->currentExecutionContext()->readArgument(1);
+        return ESValue(atan2(x.toNumber(), y.toNumber()));
     }, ESString::createAtomicString("atan2"), 2));
 
     // initialize math object: $20.2.2.9 Math.cbrt()
@@ -4000,51 +4000,26 @@ void GlobalObject::installMath()
 
     // initialize math object: $20.2.2.10 Math.ceil()
     m_math->defineDataProperty(strings->ceil, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        size_t arg_size = instance->currentExecutionContext()->argumentCount();
-        if (arg_size == 0) {
-            double value = std::numeric_limits<double>::quiet_NaN();
-            return ESValue(value);
-        } else {
-            ESValue arg = instance->currentExecutionContext()->arguments()[0];
-            double value = ceil(arg.toNumber());
-            return ESValue(value);
-        }
-
-        return ESValue();
+        ESValue x = instance->currentExecutionContext()->readArgument(0);
+        return ESValue(ceil(x.toNumber()));
     }, strings->ceil, 1));
 
     // initialize math object: $20.2.2.12 Math.cos()
     m_math->defineDataProperty(strings->cos, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        size_t arg_size = instance->currentExecutionContext()->argumentCount();
-        if (arg_size == 0) {
-            double value = std::numeric_limits<double>::quiet_NaN();
-            return ESValue(value);
-        } else {
-            ESValue arg = instance->currentExecutionContext()->arguments()[0];
-            double value = cos(arg.toNumber());
-            return ESValue(value);
-        }
-        return ESValue();
+        ESValue x = instance->currentExecutionContext()->readArgument(0);
+        return ESValue(cos(x.toNumber()));
     }, strings->cos, 1));
 
     // initialize math object: $20.2.2.14 Math.exp()
     m_math->defineDataProperty(ESString::createAtomicString("exp"), true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        ESValue x = instance->currentExecutionContext()->readArgument(0);
+        return ESValue(exp(x.toNumber()));
     }, ESString::createAtomicString("exp"), 1));
 
     // initialize math object: $20.2.2.16 Math.floor()
     m_math->defineDataProperty(strings->floor, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        size_t arg_size = instance->currentExecutionContext()->argumentCount();
-        if (arg_size == 0) {
-            double value = std::numeric_limits<double>::quiet_NaN();
-            return ESValue(value);
-        } else {
-            ESValue arg = instance->currentExecutionContext()->arguments()[0];
-            double value = floor(arg.toNumber());
-            return ESValue(value);
-        }
-
-        return ESValue();
+        ESValue x = instance->currentExecutionContext()->readArgument(0);
+        return ESValue(floor(x.toNumber()));
     }, strings->floor, 1));
 
     // initialize math object: $20.2.2.19 Math.imul()
@@ -4061,16 +4036,8 @@ void GlobalObject::installMath()
 
     // initialize math object: $20.2.2.20 Math.log()
     m_math->defineDataProperty(strings->log, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        size_t arg_size = instance->currentExecutionContext()->argumentCount();
-        if (arg_size == 0) {
-            double value = std::numeric_limits<double>::quiet_NaN();
-            return ESValue(value);
-        } else {
-            ESValue arg = instance->currentExecutionContext()->arguments()[0];
-            double value = log(arg.toNumber());
-            return ESValue(value);
-        }
-        return ESValue();
+        ESValue x = instance->currentExecutionContext()->readArgument(0);
+        return ESValue(log(x.toNumber()));
     }, strings->log, 1));
 
     // initialize math object: $20.2.2.24 Math.max()
@@ -4116,18 +4083,9 @@ void GlobalObject::installMath()
 
     // initialize math object: $20.2.2.26 Math.pow()
     m_math->defineDataProperty(strings->pow, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        size_t arg_size = instance->currentExecutionContext()->argumentCount();
-        if (arg_size < 2) {
-            double value = std::numeric_limits<double>::quiet_NaN();
-            return ESValue(value);
-        } else {
-            ESValue arg1 = instance->currentExecutionContext()->arguments()[0];
-            ESValue arg2 = instance->currentExecutionContext()->arguments()[1];
-            double value = pow(arg1.toNumber(), arg2.toNumber());
-            return ESValue(value);
-        }
-
-        return ESValue();
+        ESValue x = instance->currentExecutionContext()->readArgument(0);
+        ESValue y = instance->currentExecutionContext()->readArgument(1);
+        return ESValue(pow(x.toNumber(), y.toNumber()));
     }, strings->pow, 2));
 
     // initialize math object: $20.2.2.27 Math.random()
@@ -4138,45 +4096,20 @@ void GlobalObject::installMath()
 
     // initialize math object: $20.2.2.28 Math.round()
     m_math->defineDataProperty(strings->round, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        size_t arg_size = instance->currentExecutionContext()->argumentCount();
-        if (arg_size == 0) {
-            double value = std::numeric_limits<double>::quiet_NaN();
-            return ESValue(value);
-        } else {
-            ESValue arg = instance->currentExecutionContext()->arguments()[0];
-            double value = round(arg.toNumber());
-            return ESValue(value);
-        }
-
-        return ESValue();
+        ESValue x = instance->currentExecutionContext()->readArgument(0);
+        return ESValue(round(x.toNumber()));
     }, strings->round, 1));
 
     // initialize math object: $20.2.2.30 Math.sin()
     m_math->defineDataProperty(strings->sin, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        size_t arg_size = instance->currentExecutionContext()->argumentCount();
-        if (arg_size == 0) {
-            double value = std::numeric_limits<double>::quiet_NaN();
-            return ESValue(value);
-        } else {
-            ESValue arg = instance->currentExecutionContext()->arguments()[0];
-            double value = sin(arg.toNumber());
-            return ESValue(value);
-        }
-        return ESValue();
+        ESValue x = instance->currentExecutionContext()->readArgument(0);
+        return ESValue(sin(x.toNumber()));
     }, strings->sin, 1));
 
     // initialize math object: $20.2.2.32 Math.sqrt()
     m_math->defineDataProperty(strings->sqrt, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        size_t arg_size = instance->currentExecutionContext()->argumentCount();
-        if (arg_size == 0) {
-            double value = std::numeric_limits<double>::quiet_NaN();
-            return ESValue(value);
-        } else {
-            ESValue arg = instance->currentExecutionContext()->arguments()[0];
-            double value = sqrt(arg.toNumber());
-            return ESValue(value);
-        }
-        return ESValue();
+        ESValue x = instance->currentExecutionContext()->readArgument(0);
+        return ESValue(sqrt(x.toNumber()));
     }, strings->sqrt, 1));
 
     // initialize math object: $20.2.2.33 Math.tan()
