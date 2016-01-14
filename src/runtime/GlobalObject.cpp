@@ -510,8 +510,8 @@ void GlobalObject::initGlobalObject()
                     if (v >= 0x10000) {
                         const char16_t l = (((v - 0x10000) & 0x3ff) + 0xdc00);
                         const char16_t h = ((((v - 0x10000) >> 10) & 0x3ff) + 0xd800);
-                        unescaped.append(&l, 1);
                         unescaped.append(&h, 1);
+                        unescaped.append(&l, 1);
                     } else {
                         const char16_t l = v & 0xFFFF;
                         unescaped.append(&l, 1);
@@ -614,8 +614,8 @@ void GlobalObject::initGlobalObject()
                     if (v >= 0x10000) {
                         const char16_t l = (((v - 0x10000) & 0x3ff) + 0xdc00);
                         const char16_t h = ((((v - 0x10000) >> 10) & 0x3ff) + 0xd800);
-                        unescaped.append(&l, 1);
                         unescaped.append(&h, 1);
+                        unescaped.append(&l, 1);
                     } else {
                         const char16_t l = v & 0xFFFF;
                         unescaped.append(&l, 1);
@@ -651,7 +651,7 @@ void GlobalObject::initGlobalObject()
                 || t == '=' || t == '+' || t == '$'
                 || t == ',')
                 || t == '#') { // special case
-                escaped.append(&componentString.m_buffer[i], 1);
+                escaped.append(1, stringValue->charAt(i));
             } else if (t < 0x007F) {
                 escaped.append("%");
                 escaped.append(char2hex(t));
@@ -716,7 +716,7 @@ void GlobalObject::initGlobalObject()
                 || t == '!' || t == '~'
                 || t == '*' || t == '\'' || t == '('
                 || t == ')'))  {
-                escaped.append(&componentString.m_buffer[i], 1);
+                escaped.append(1, stringValue->charAt(i));
             } else if (t < 0x007F) {
                 escaped.append("%");
                 escaped.append(char2hex(t));
