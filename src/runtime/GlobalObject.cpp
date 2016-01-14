@@ -4083,9 +4083,11 @@ void GlobalObject::installMath()
 
     // initialize math object: $20.2.2.26 Math.pow()
     m_math->defineDataProperty(strings->pow, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        ESValue x = instance->currentExecutionContext()->readArgument(0);
-        ESValue y = instance->currentExecutionContext()->readArgument(1);
-        return ESValue(pow(x.toNumber(), y.toNumber()));
+        double x = instance->currentExecutionContext()->readArgument(0).toNumber();
+        double y = instance->currentExecutionContext()->readArgument(1).toNumber();
+        if (UNLIKELY(std::abs(x) == 1 && std::isinf(y)))
+            return ESValue(std::numeric_limits<double>::quiet_NaN());
+        return ESValue(pow(x, y));
     }, strings->pow, 2));
 
     // initialize math object: $20.2.2.27 Math.random()
@@ -4096,8 +4098,11 @@ void GlobalObject::installMath()
 
     // initialize math object: $20.2.2.28 Math.round()
     m_math->defineDataProperty(strings->round, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        ESValue x = instance->currentExecutionContext()->readArgument(0);
-        return ESValue(round(x.toNumber()));
+        double x = instance->currentExecutionContext()->readArgument(0).toNumber();
+        if (x > -0.5)
+            return ESValue(round(x));
+        else
+            return ESValue(floor(x+0.5));
     }, strings->round, 1));
 
     // initialize math object: $20.2.2.30 Math.sin()

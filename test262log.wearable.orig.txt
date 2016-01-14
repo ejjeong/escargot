@@ -11198,14 +11198,8 @@ ch15/15.8/15.8.2/15.8.2.13/S15.8.2.13_A3 passed in non-strict mode
 ch15/15.8/15.8.2/15.8.2.13/S15.8.2.13_A4 passed in non-strict mode
 ch15/15.8/15.8.2/15.8.2.13/S15.8.2.13_A5 passed in non-strict mode
 ch15/15.8/15.8.2/15.8.2.13/S15.8.2.13_A6 passed in non-strict mode
-=== ch15/15.8/15.8.2/15.8.2.13/S15.8.2.13_A7 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #1: isNaN(Math.pow(-1, Infinity)) === false
-===
-=== ch15/15.8/15.8.2/15.8.2.13/S15.8.2.13_A8 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #1: isNaN(Math.pow(-1, -Infinity)) === false
-===
+ch15/15.8/15.8.2/15.8.2.13/S15.8.2.13_A7 passed in non-strict mode
+ch15/15.8/15.8.2/15.8.2.13/S15.8.2.13_A8 passed in non-strict mode
 ch15/15.8/15.8.2/15.8.2.13/S15.8.2.13_A9 passed in non-strict mode
 ch15/15.8/15.8.2/15.8.2.14/S15.8.2.14_A1 passed in non-strict mode
 ch15/15.8/15.8.2/15.8.2.15/S15.8.2.15_A1 passed in non-strict mode
@@ -11213,14 +11207,8 @@ ch15/15.8/15.8.2/15.8.2.15/S15.8.2.15_A2 passed in non-strict mode
 ch15/15.8/15.8.2/15.8.2.15/S15.8.2.15_A3 passed in non-strict mode
 ch15/15.8/15.8.2/15.8.2.15/S15.8.2.15_A4 passed in non-strict mode
 ch15/15.8/15.8.2/15.8.2.15/S15.8.2.15_A5 passed in non-strict mode
-=== ch15/15.8/15.8.2/15.8.2.15/S15.8.2.15_A6 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #2: 'x = -1.5; Math.round(x) !== Math.floor(x + 0.5)'
-===
-=== ch15/15.8/15.8.2/15.8.2.15/S15.8.2.15_A7 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #2: 'Math.round(-0.5) !== -0'
-===
+ch15/15.8/15.8.2/15.8.2.15/S15.8.2.15_A6 passed in non-strict mode
+ch15/15.8/15.8.2/15.8.2.15/S15.8.2.15_A7 passed in non-strict mode
 ch15/15.8/15.8.2/15.8.2.16/S15.8.2.16_A1 passed in non-strict mode
 ch15/15.8/15.8.2/15.8.2.16/S15.8.2.16_A3 passed in non-strict mode
 ch15/15.8/15.8.2/15.8.2.16/S15.8.2.16_A4 passed in non-strict mode
@@ -12429,8 +12417,8 @@ intl402/ch13/13.3/13.3.3_L15 passed in non-strict mode
 
 === Summary ===
  - Ran 10219 tests
- - Passed 9978 tests (97.6%)
- - Failed 238 tests (2.4%)
+ - Passed 9985 tests (97.7%)
+ - Failed 234 tests (2.3%)
 
 Failed tests
   annexB/B.2.1 in non-strict mode
@@ -12485,10 +12473,6 @@ Failed tests
   ch15/15.5/15.5.4/15.5.4.9/S15.5.4.9_A1_T1 in non-strict mode
   ch15/15.5/15.5.4/15.5.4.9/S15.5.4.9_A1_T2 in non-strict mode
   ch15/15.7/15.7.1/S15.7.1.1_A2 in non-strict mode
-  ch15/15.8/15.8.2/15.8.2.13/S15.8.2.13_A7 in non-strict mode
-  ch15/15.8/15.8.2/15.8.2.13/S15.8.2.13_A8 in non-strict mode
-  ch15/15.8/15.8.2/15.8.2.15/S15.8.2.15_A6 in non-strict mode
-  ch15/15.8/15.8.2/15.8.2.15/S15.8.2.15_A7 in non-strict mode
   ch15/15.9/15.9.1/15.9.1.15/15.9.1.15-1 in non-strict mode
   ch15/15.9/15.9.2/S15.9.2.1_A2 in non-strict mode
   ch15/15.9/15.9.3/S15.9.3.1_A5_T1 in non-strict mode
