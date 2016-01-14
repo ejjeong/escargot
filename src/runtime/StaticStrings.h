@@ -98,6 +98,9 @@ class ESString;
     F(toLocaleTimeString) \
     F(toTimeString) \
     F(toUTCString) \
+    F(getYear) \
+    F(setYear) \
+    F(toGMTString) \
     F(Math) \
     F(PI) \
     F(E) \
@@ -130,6 +133,7 @@ class ESString;
     F(exec) \
     F(input) \
     F(index) \
+    F(compile) \
     F(Int8Array) \
     F(Int16Array) \
     F(Int32Array) \

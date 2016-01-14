@@ -762,6 +762,11 @@ void GlobalObject::initGlobalObject()
         return escargot::ESString::create(std::move(escaped));
     }, ESString::createAtomicString("encodeURIComponent"), 1));
 
+    // $B.2.1.1 escape(string)
+    defineDataProperty(ESString::createAtomicString("escape"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, ESString::createAtomicString("escape"), 1));
+
     // $B.2.1.2 unescape(string)
     defineDataProperty(ESString::createAtomicString("unescape"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         int argLen = instance->currentExecutionContext()->argumentCount();
@@ -3536,6 +3541,21 @@ void GlobalObject::installDate()
         double primitiveValue = thisObject->asESDateObject()->timeValueAsDouble();
         return ESValue(primitiveValue);
     }, strings->valueOf, 0));
+
+    // $B.2.4.1 Date.prototype.getYear()
+    m_datePrototype->defineDataProperty(strings->getYear, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, strings->getYear, 0));
+
+    // $B.2.4.2 Date.prototype.setYear()
+    m_datePrototype->defineDataProperty(strings->setYear, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, strings->setYear, 1));
+
+    // $B.2.4.3 Date.prototype.toGMTString()
+    m_datePrototype->defineDataProperty(strings->toGMTString, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, strings->toGMTString, 1));
 }
 
 template <typename CharType, typename JSONCharType>
@@ -4625,6 +4645,11 @@ void GlobalObject::installRegExp()
 
         return ret;
     }, strings->toString, 0));
+
+    // $21.2.5.14 RegExp.prototype.compile
+    m_regexpPrototype->defineDataProperty(strings->compile, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        RELEASE_ASSERT_NOT_REACHED();
+    }, strings->compile, 0));
 
     // add regexp to global object
     defineDataProperty(strings->RegExp, true, false, true, m_regexp);
