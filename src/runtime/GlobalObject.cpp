@@ -871,28 +871,32 @@ void GlobalObject::installFunction()
     // $19.2.3.1 Function.prototype.apply(thisArg, argArray)
     m_functionPrototype->defineDataProperty(ESString::createAtomicString("apply"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         auto thisVal = instance->currentExecutionContext()->resolveThisBindingToObject()->asESFunctionObject();
-        ESValue& thisArg = instance->currentExecutionContext()->arguments()[0];
-        int arrlen = 0;
-        ESValue* arguments = NULL;
-        if (instance->currentExecutionContext()->argumentCount() > 1) {
-            if (instance->currentExecutionContext()->arguments()[1].isESPointer()) {
-                if (instance->currentExecutionContext()->arguments()[1].asESPointer()->isESArrayObject()) {
-                    escargot::ESArrayObject* argArray = instance->currentExecutionContext()->arguments()[1].asESPointer()->asESArrayObject();
-                    arrlen = argArray->length();
-                    arguments = (ESValue*)alloca(sizeof(ESValue) * arrlen);
-                    for (int i = 0; i < arrlen; i++) {
-                        arguments[i] = argArray->get(i);
-                    }
-                } else if (instance->currentExecutionContext()->arguments()[1].asESPointer()->isESObject()) {
-                    escargot::ESObject* obj = instance->currentExecutionContext()->arguments()[1].asESPointer()->asESObject();
-                    arrlen = obj->get(strings->length.string()).toInteger();
-                    arguments = (ESValue*)alloca(sizeof(ESValue) * arrlen);
-                    for (int i = 0; i < arrlen; i++) {
-                        arguments[i] = obj->get(ESValue(i));
-                    }
+        ESValue thisArg = instance->currentExecutionContext()->readArgument(0);
+        ESValue argArray = instance->currentExecutionContext()->readArgument(1);
+        int arrlen;
+        ESValue* arguments;
+        if (argArray.isUndefinedOrNull()) {
+            // do nothing
+            arrlen = 0;
+            arguments = nullptr;
+        } else if (argArray.isObject()) {
+            if (argArray.asESPointer()->isESArrayObject()) {
+                escargot::ESArrayObject* argArrayObj = argArray.asESPointer()->asESArrayObject();
+                arrlen = argArrayObj->length();
+                arguments = (ESValue*)alloca(sizeof(ESValue) * arrlen);
+                for (int i = 0; i < arrlen; i++) {
+                    arguments[i] = argArrayObj->get(i);
+                }
+            } else {
+                escargot::ESObject* obj = argArray.asESPointer()->asESObject();
+                arrlen = obj->get(strings->length.string()).toInteger();
+                arguments = (ESValue*)alloca(sizeof(ESValue) * arrlen);
+                for (int i = 0; i < arrlen; i++) {
+                    arguments[i] = obj->get(ESValue(i));
                 }
             }
-
+        } else {
+            instance->throwError(ESValue(TypeError::create(ESString::create("argArray is not object in Function.prototype.apply"))));
         }
 
         return ESFunctionObject::call(instance, thisVal, thisArg, arguments, arrlen, false);
