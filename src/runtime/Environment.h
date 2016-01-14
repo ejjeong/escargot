@@ -120,7 +120,7 @@ public:
             ESValue setStr = strings->set.string();
             obj->defineOwnProperty(setStr, setDesc, false);
         } else {
-            descSrc->accessorData(idx)->setGetterAndSetterTo(obj);
+            descSrc->accessorData(idx)->setGetterAndSetterTo(obj, &propertyInfo);
         }
         obj->set(strings->enumerable.string(), ESValue(propertyInfo.m_flags.m_isEnumerable));
         obj->set(strings->configurable.string(), ESValue(propertyInfo.m_flags.m_isConfigurable));

@@ -924,19 +924,19 @@ ESRegExpObject::ESRegExpObject(escargot::ESString* source, const Option& option)
 
     defineAccessorProperty(strings->source, [](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName) -> ESValue {
         return self->asESRegExpObject()->source();
-    }, nullptr, true, false, false);
+    }, nullptr, false, false, false);
 
     defineAccessorProperty(strings->ignoreCase, [](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName) -> ESValue {
         return ESValue((bool)(self->asESRegExpObject()->option() & ESRegExpObject::Option::IgnoreCase));
-    }, nullptr, true, false, false);
+    }, nullptr, false, false, false);
 
     defineAccessorProperty(strings->global, [](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName) -> ESValue {
         return ESValue((bool)(self->asESRegExpObject()->option() & ESRegExpObject::Option::Global));
-    }, nullptr, true, false, false);
+    }, nullptr, false, false, false);
 
     defineAccessorProperty(strings->multiline, [](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName) -> ESValue {
         return ESValue((bool)(self->asESRegExpObject()->option() & ESRegExpObject::Option::MultiLine));
-    }, nullptr, true, false, false);
+    }, nullptr, false, false, false);
 
     defineAccessorProperty(strings->lastIndex, [](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName) -> ESValue {
         return self->asESRegExpObject()->lastIndex();
@@ -1948,7 +1948,7 @@ ESJSONObject::ESJSONObject(ESPointer::Type type)
 {
 }
 
-void ESPropertyAccessorData::setGetterAndSetterTo(ESObject* obj)
+void ESPropertyAccessorData::setGetterAndSetterTo(ESObject* obj, const ESHiddenClassPropertyInfo* propertyInfo)
 {
     if (m_jsGetter || m_jsSetter) {
         ASSERT(!m_nativeGetter && !m_nativeSetter);
@@ -1965,7 +1965,7 @@ void ESPropertyAccessorData::setGetterAndSetterTo(ESObject* obj)
 
     if (m_nativeGetter || m_nativeSetter) {
         ASSERT(!m_jsGetter && !m_jsSetter);
-        obj->set(strings->writable.string(), ESValue(false));
+        obj->set(strings->writable.string(), ESValue(propertyInfo->m_flags.m_isWritable));
         return;
     }
 }

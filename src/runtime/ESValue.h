@@ -40,6 +40,7 @@ class ESArgumentsObject;
 class ESControlFlowRecord;
 class CodeBlock;
 class FunctionEnvironmentRecordWithArgumentsObject;
+class ESHiddenClassPropertyInfo;
 
 union ValueDescriptor {
     int64_t asInt64;
@@ -1371,7 +1372,7 @@ public:
         m_jsGetter = getter;
     }
 
-    void setGetterAndSetterTo(ESObject* obj);
+    void setGetterAndSetterTo(ESObject* obj, const ESHiddenClassPropertyInfo* propertyInfo);
 
     // http://www.ecma-international.org/ecma-262/5.1/#sec-8.10.1
     bool isAccessorDescriptor()
