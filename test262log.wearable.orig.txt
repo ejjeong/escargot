@@ -1,3 +1,14 @@
+Excluded: Sbp_12.5_A9_T3
+Excluded: Sbp_12.6.1_A13_T3
+Excluded: Sbp_12.6.2_A13_T3
+Excluded: Sbp_12.6.4_A13_T3
+Excluded: Sbp_7.8.4_A6.1_T4
+Excluded: Sbp_7.8.4_A6.2_T1
+Excluded: Sbp_7.8.4_A6.2_T2
+Excluded: Sbp_7.9_A9_T3
+Excluded: Sbp_7.9_A9_T4
+Excluded: Sbp_A10_T1
+Excluded: Sbp_A10_T2
 Excluded: Sbp_A1_T1
 Excluded: Sbp_A2_T1
 Excluded: Sbp_A2_T2
@@ -1504,6 +1515,159 @@ Excluded: S15.5.4.8_A4_T1
 Excluded: S15.5.4.8_A4_T2
 Excluded: S15.5.4.8_A4_T4
 Excluded: S15.5.5.1_A4
+Excluded: 6.2.2_a
+Excluded: 6.2.2_b
+Excluded: 6.2.2_c
+Excluded: 6.2.3
+Excluded: 6.2.4
+Excluded: 6.3.1_a
+Excluded: 6.3.1_b
+Excluded: 6.4_a
+Excluded: 6.4_b
+Excluded: 6.4_c
+Excluded: 8.0
+Excluded: 8.0_L15
+Excluded: 9.1_a
+Excluded: 9.1_b
+Excluded: 9.2.1_1
+Excluded: 9.2.1_2
+Excluded: 9.2.1_3
+Excluded: 9.2.1_4
+Excluded: 9.2.1_8_c_ii
+Excluded: 9.2.1_8_c_vi
+Excluded: 9.2.2
+Excluded: 9.2.3_5
+Excluded: 9.2.5_11_g_ii_2
+Excluded: 9.2.5_6
+Excluded: 9.2.6_2
+Excluded: 9.2.6_4
+Excluded: 9.2.6_4_b
+Excluded: 9.2.6_4_c
+Excluded: 9.2.8_1_c
+Excluded: 9.2.8_4
+Excluded: 10.1.1_1
+Excluded: 10.1.1_10
+Excluded: 10.1.1_11
+Excluded: 10.1.1_13
+Excluded: 10.1.1_19_b
+Excluded: 10.1.1_19_c
+Excluded: 10.1.1_20
+Excluded: 10.1.1_23
+Excluded: 10.1.1_6
+Excluded: 10.1.1_a
+Excluded: 10.1.2.1_4
+Excluded: 10.1.2_a
+Excluded: 10.1.3
+Excluded: 10.1_L15
+Excluded: 10.2.1
+Excluded: 10.2.2_L15
+Excluded: 10.2.2_a
+Excluded: 10.2.2_b
+Excluded: 10.2.3_b
+Excluded: 10.3.1
+Excluded: 10.3.2_1_a_L15
+Excluded: 10.3.2_1_c
+Excluded: 10.3.2_CS_a
+Excluded: 10.3.2_CS_b_NN
+Excluded: 10.3.2_CS_c_NN
+Excluded: 10.3.2_CS_d_NN
+Excluded: 10.3.2_L15
+Excluded: 10.3.3
+Excluded: 10.3.3_L15
+Excluded: 10.3_L15
+Excluded: 10.3_a
+Excluded: 10.3_b
+Excluded: 10.4_a
+Excluded: 11.1.1_1
+Excluded: 11.1.1_15
+Excluded: 11.1.1_17
+Excluded: 11.1.1_19
+Excluded: 11.1.1_20_c
+Excluded: 11.1.1_21
+Excluded: 11.1.1_32
+Excluded: 11.1.1_34
+Excluded: 11.1.1_6
+Excluded: 11.1.1_7
+Excluded: 11.1.1_a
+Excluded: 11.1.2.1_4
+Excluded: 11.1.2
+Excluded: 11.1.3
+Excluded: 11.1_L15
+Excluded: 11.2.1
+Excluded: 11.2.2_L15
+Excluded: 11.2.2_a
+Excluded: 11.2.2_b
+Excluded: 11.2.3_b
+Excluded: 11.3.1
+Excluded: 11.3.2_1_a_L15
+Excluded: 11.3.2_1_a_ii
+Excluded: 11.3.2_1_c
+Excluded: 11.3.2_FN_1
+Excluded: 11.3.2_FN_2
+Excluded: 11.3.2_FN_3_b
+Excluded: 11.3.2_FN_3_e
+Excluded: 11.3.2_L15
+Excluded: 11.3.2_TRF
+Excluded: 11.3.2_TRP
+Excluded: 11.3.3
+Excluded: 11.3.3_L15
+Excluded: 11.3_L15
+Excluded: 11.3_a
+Excluded: 11.3_b
+Excluded: 11.4_a
+Excluded: 12.1.1_1
+Excluded: 12.1.1_18
+Excluded: 12.1.1_22
+Excluded: 12.1.1_23
+Excluded: 12.1.1_25
+Excluded: 12.1.1_5
+Excluded: 12.1.1_6
+Excluded: 12.1.1_TDTO
+Excluded: 12.1.1_a
+Excluded: 12.1.2.1_4
+Excluded: 12.1.2
+Excluded: 12.1.3
+Excluded: 12.1_L15
+Excluded: 12.2.1
+Excluded: 12.2.2_L15
+Excluded: 12.2.2_a
+Excluded: 12.2.2_b
+Excluded: 12.2.3_b
+Excluded: 12.2.3_c
+Excluded: 12.3.1
+Excluded: 12.3.2_1_a_L15
+Excluded: 12.3.2_1_c
+Excluded: 12.3.2_FDT_1
+Excluded: 12.3.2_FDT_7_a_iv
+Excluded: 12.3.2_L15
+Excluded: 12.3.2_TLT_2
+Excluded: 12.3.3
+Excluded: 12.3.3_L15
+Excluded: 12.3_L15
+Excluded: 12.3_a
+Excluded: 12.3_b
+Excluded: 12.4_a
+Excluded: 13.1.1_1
+Excluded: 13.1.1_2
+Excluded: 13.1.1_3_1
+Excluded: 13.1.1_3_2
+Excluded: 13.1.1_6_1
+Excluded: 13.1.1_6_2
+Excluded: 13.1.1_7
+Excluded: 13.1.1_L15
+Excluded: 13.2.1_1
+Excluded: 13.2.1_4_1
+Excluded: 13.2.1_4_2
+Excluded: 13.2.1_5
+Excluded: 13.2.1_L15
+Excluded: 13.3.0_1
+Excluded: 13.3.0_2
+Excluded: 13.3.0_6_1
+Excluded: 13.3.0_6_2
+Excluded: 13.3.0_7
+Excluded: 13.3.1_L15
+Excluded: 13.3.2_L15
+Excluded: 13.3.3_L15
 === annexB/B.2.1 failed in non-strict mode ===
 --- output ---
 Uncaught TypeError: cannot convert undefined into object
@@ -1543,17 +1707,6 @@ Uncaught Test262 Error: #1: typeof Date.prototype.toGMTString === "function". Ac
 --- output ---
 Uncaught TypeError: cannot convert undefined into object
 ===
-bestPractice/Sbp_12.5_A9_T3 failed in non-strict mode as expected
-bestPractice/Sbp_12.6.1_A13_T3 failed in non-strict mode as expected
-bestPractice/Sbp_12.6.2_A13_T3 failed in non-strict mode as expected
-bestPractice/Sbp_12.6.4_A13_T3 failed in non-strict mode as expected
-bestPractice/Sbp_7.8.4_A6.1_T4 failed in non-strict mode as expected
-bestPractice/Sbp_7.8.4_A6.2_T1 failed in non-strict mode as expected
-bestPractice/Sbp_7.8.4_A6.2_T2 failed in non-strict mode as expected
-bestPractice/Sbp_7.9_A9_T3 passed in non-strict mode
-bestPractice/Sbp_7.9_A9_T4 passed in non-strict mode
-bestPractice/Sbp_A10_T1 passed in non-strict mode
-bestPractice/Sbp_A10_T2 passed in non-strict mode
 ch06/6.1 passed in non-strict mode
 ch07/7.2/S7.2_A2.1_T2 passed in non-strict mode
 ch07/7.2/S7.2_A2.2_T2 passed in non-strict mode
@@ -11820,605 +11973,11 @@ ch15/15.9/15.9.5/15.9.5.9/S15.9.5.9_A2_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.9/S15.9.5.9_A3_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.9/S15.9.5.9_A3_T2 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.9/S15.9.5.9_A3_T3 passed in non-strict mode
-=== intl402/ch06/6.2/6.2.2_a failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch06/6.2/6.2.2_b failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch06/6.2/6.2.2_c failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch06/6.2/6.2.3 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch06/6.2/6.2.4 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch06/6.3/6.3.1_a failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch06/6.3/6.3.1_b failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: Invalid currency code '' was rejected with wrong error ReferenceError.
-===
-=== intl402/ch06/6.4/6.4_a failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch06/6.4/6.4_b failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: Invalid time zone name  was rejected with wrong error ReferenceError.
-===
-=== intl402/ch06/6.4/6.4_c failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: Time zone name Etc/GMT was rejected with wrong error ReferenceError.
-===
-=== intl402/ch08/8.0/8.0 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch08/8.0/8.0_L15 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: Object being tested is undefined.
-===
-=== intl402/ch09/9.1/9.1_a failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch09/9.1/9.1_b failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch09/9.2/9.2.1_1 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch09/9.2/9.2.1_2 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch09/9.2/9.2.1_3 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch09/9.2/9.2.1_4 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch09/9.2/9.2.1_8_c_ii failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch09/9.2/9.2.1_8_c_vi failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch09/9.2/9.2.2 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch09/9.2/9.2.3_5 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch09/9.2/9.2.5_11_g_ii_2 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch09/9.2/9.2.5_6 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch09/9.2/9.2.6_2 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch09/9.2/9.2.6_4 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch09/9.2/9.2.6_4_b failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch09/9.2/9.2.6_4_c failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch09/9.2/9.2.8_1_c failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch09/9.2/9.2.8_4 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.1/10.1.1_1 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.1/10.1.1_10 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.1/10.1.1_11 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.1/10.1.1_13 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.1/10.1.1_19_b failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.1/10.1.1_19_c failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.1/10.1.1_20 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.1/10.1.1_23 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.1/10.1.1_6 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.1/10.1.1_a failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.1/10.1.2.1_4 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.1/10.1.2_a failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.1/10.1.3 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.1/10.1_L15 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.2/10.2.1 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.2/10.2.2_L15 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.2/10.2.2_a failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.2/10.2.2_b failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.2/10.2.3_b failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.3/10.3.1 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.3/10.3.2_1_a_L15 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.3/10.3.2_1_c failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.3/10.3.2_CS_a failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.3/10.3.2_CS_b_NN failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.3/10.3.2_CS_c_NN failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.3/10.3.2_CS_d_NN failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.3/10.3.2_L15 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.3/10.3.3 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.3/10.3.3_L15 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.3/10.3_L15 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.3/10.3_a failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.3/10.3_b failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch10/10.4/10.4_a failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.1/11.1.1_1 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.1/11.1.1_15 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.1/11.1.1_17 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.1/11.1.1_19 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.1/11.1.1_20_c failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.1/11.1.1_21 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.1/11.1.1_32 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.1/11.1.1_34 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.1/11.1.1_6 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.1/11.1.1_7 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.1/11.1.1_a failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.1/11.1.2.1_4 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.1/11.1.2 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.1/11.1.3 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.1/11.1_L15 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.2/11.2.1 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.2/11.2.2_L15 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.2/11.2.2_a failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.2/11.2.2_b failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.2/11.2.3_b failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.3/11.3.1 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.3/11.3.2_1_a_L15 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.3/11.3.2_1_a_ii failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.3/11.3.2_1_c failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.3/11.3.2_FN_1 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.3/11.3.2_FN_2 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.3/11.3.2_FN_3_b failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-intl402/ch11/11.3/11.3.2_FN_3_e passed in non-strict mode
-=== intl402/ch11/11.3/11.3.2_L15 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.3/11.3.2_TRF failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.3/11.3.2_TRP failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.3/11.3.3 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.3/11.3.3_L15 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.3/11.3_L15 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.3/11.3_a failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.3/11.3_b failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch11/11.4/11.4_a failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch12/12.1/12.1.1_1 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch12/12.1/12.1.1_18 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch12/12.1/12.1.1_22 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch12/12.1/12.1.1_23 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch12/12.1/12.1.1_25 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch12/12.1/12.1.1_5 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch12/12.1/12.1.1_6 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch12/12.1/12.1.1_TDTO failed in non-strict mode ===
---- errors ---
-
-===
-=== intl402/ch12/12.1/12.1.1_a failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch12/12.1/12.1.2.1_4 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch12/12.1/12.1.2 failed in non-strict mode ===
---- errors ---
-
-===
-=== intl402/ch12/12.1/12.1.3 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch12/12.1/12.1_L15 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch12/12.2/12.2.1 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch12/12.2/12.2.2_L15 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch12/12.2/12.2.2_a failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch12/12.2/12.2.2_b failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch12/12.2/12.2.3_b failed in non-strict mode ===
---- errors ---
-
-===
-=== intl402/ch12/12.2/12.2.3_c failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch12/12.3/12.3.1 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch12/12.3/12.3.2_1_a_L15 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch12/12.3/12.3.2_1_c failed in non-strict mode ===
---- errors ---
-
-===
-=== intl402/ch12/12.3/12.3.2_FDT_1 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch12/12.3/12.3.2_FDT_7_a_iv failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch12/12.3/12.3.2_L15 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch12/12.3/12.3.2_TLT_2 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch12/12.3/12.3.3 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch12/12.3/12.3.3_L15 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch12/12.3/12.3_L15 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch12/12.3/12.3_a failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch12/12.3/12.3_b failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch12/12.4/12.4_a failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch13/13.1/13.1.1_1 failed in non-strict mode ===
---- errors ---
-
-===
-=== intl402/ch13/13.1/13.1.1_2 failed in non-strict mode ===
---- errors ---
-
-===
-=== intl402/ch13/13.1/13.1.1_3_1 failed in non-strict mode ===
---- errors ---
-
-===
-=== intl402/ch13/13.1/13.1.1_3_2 failed in non-strict mode ===
---- errors ---
-
-===
-=== intl402/ch13/13.1/13.1.1_6_1 failed in non-strict mode ===
---- errors ---
-
-===
-=== intl402/ch13/13.1/13.1.1_6_2 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch13/13.1/13.1.1_7 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-intl402/ch13/13.1/13.1.1_L15 passed in non-strict mode
-=== intl402/ch13/13.2/13.2.1_1 failed in non-strict mode ===
---- errors ---
-
-===
-=== intl402/ch13/13.2/13.2.1_4_1 failed in non-strict mode ===
---- errors ---
-
-===
-=== intl402/ch13/13.2/13.2.1_4_2 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch13/13.2/13.2.1_5 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-intl402/ch13/13.2/13.2.1_L15 passed in non-strict mode
-=== intl402/ch13/13.3/13.3.0_1 failed in non-strict mode ===
---- errors ---
-
-===
-=== intl402/ch13/13.3/13.3.0_2 failed in non-strict mode ===
---- errors ---
-
-===
-=== intl402/ch13/13.3/13.3.0_6_1 failed in non-strict mode ===
---- errors ---
-
-===
-=== intl402/ch13/13.3/13.3.0_6_2 failed in non-strict mode ===
---- output ---
-Uncaught ReferenceError: Intl is not defined
-===
-=== intl402/ch13/13.3/13.3.0_7 failed in non-strict mode ===
---- errors ---
-
-===
-intl402/ch13/13.3/13.3.1_L15 passed in non-strict mode
-intl402/ch13/13.3/13.3.2_L15 passed in non-strict mode
-intl402/ch13/13.3/13.3.3_L15 passed in non-strict mode
 
 === Summary ===
- - Ran 10219 tests
- - Passed 9985 tests (97.7%)
- - Failed 234 tests (2.3%)
+ - Ran 10055 tests
+ - Passed 9968 tests (99.1%)
+ - Failed 87 tests (0.9%)
 
 Failed tests
   annexB/B.2.1 in non-strict mode
@@ -12505,153 +12064,6 @@ Failed tests
   ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-7 in non-strict mode
   ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-8 in non-strict mode
   ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-9 in non-strict mode
-  intl402/ch06/6.2/6.2.2_a in non-strict mode
-  intl402/ch06/6.2/6.2.2_b in non-strict mode
-  intl402/ch06/6.2/6.2.2_c in non-strict mode
-  intl402/ch06/6.2/6.2.3 in non-strict mode
-  intl402/ch06/6.2/6.2.4 in non-strict mode
-  intl402/ch06/6.3/6.3.1_a in non-strict mode
-  intl402/ch06/6.3/6.3.1_b in non-strict mode
-  intl402/ch06/6.4/6.4_a in non-strict mode
-  intl402/ch06/6.4/6.4_b in non-strict mode
-  intl402/ch06/6.4/6.4_c in non-strict mode
-  intl402/ch08/8.0/8.0 in non-strict mode
-  intl402/ch08/8.0/8.0_L15 in non-strict mode
-  intl402/ch09/9.1/9.1_a in non-strict mode
-  intl402/ch09/9.1/9.1_b in non-strict mode
-  intl402/ch09/9.2/9.2.1_1 in non-strict mode
-  intl402/ch09/9.2/9.2.1_2 in non-strict mode
-  intl402/ch09/9.2/9.2.1_3 in non-strict mode
-  intl402/ch09/9.2/9.2.1_4 in non-strict mode
-  intl402/ch09/9.2/9.2.1_8_c_ii in non-strict mode
-  intl402/ch09/9.2/9.2.1_8_c_vi in non-strict mode
-  intl402/ch09/9.2/9.2.2 in non-strict mode
-  intl402/ch09/9.2/9.2.3_5 in non-strict mode
-  intl402/ch09/9.2/9.2.5_11_g_ii_2 in non-strict mode
-  intl402/ch09/9.2/9.2.5_6 in non-strict mode
-  intl402/ch09/9.2/9.2.6_2 in non-strict mode
-  intl402/ch09/9.2/9.2.6_4 in non-strict mode
-  intl402/ch09/9.2/9.2.6_4_b in non-strict mode
-  intl402/ch09/9.2/9.2.6_4_c in non-strict mode
-  intl402/ch09/9.2/9.2.8_1_c in non-strict mode
-  intl402/ch09/9.2/9.2.8_4 in non-strict mode
-  intl402/ch10/10.1/10.1.1_1 in non-strict mode
-  intl402/ch10/10.1/10.1.1_10 in non-strict mode
-  intl402/ch10/10.1/10.1.1_11 in non-strict mode
-  intl402/ch10/10.1/10.1.1_13 in non-strict mode
-  intl402/ch10/10.1/10.1.1_19_b in non-strict mode
-  intl402/ch10/10.1/10.1.1_19_c in non-strict mode
-  intl402/ch10/10.1/10.1.1_20 in non-strict mode
-  intl402/ch10/10.1/10.1.1_23 in non-strict mode
-  intl402/ch10/10.1/10.1.1_6 in non-strict mode
-  intl402/ch10/10.1/10.1.1_a in non-strict mode
-  intl402/ch10/10.1/10.1.2.1_4 in non-strict mode
-  intl402/ch10/10.1/10.1.2_a in non-strict mode
-  intl402/ch10/10.1/10.1.3 in non-strict mode
-  intl402/ch10/10.1/10.1_L15 in non-strict mode
-  intl402/ch10/10.2/10.2.1 in non-strict mode
-  intl402/ch10/10.2/10.2.2_L15 in non-strict mode
-  intl402/ch10/10.2/10.2.2_a in non-strict mode
-  intl402/ch10/10.2/10.2.2_b in non-strict mode
-  intl402/ch10/10.2/10.2.3_b in non-strict mode
-  intl402/ch10/10.3/10.3.1 in non-strict mode
-  intl402/ch10/10.3/10.3.2_1_a_L15 in non-strict mode
-  intl402/ch10/10.3/10.3.2_1_c in non-strict mode
-  intl402/ch10/10.3/10.3.2_CS_a in non-strict mode
-  intl402/ch10/10.3/10.3.2_CS_b_NN in non-strict mode
-  intl402/ch10/10.3/10.3.2_CS_c_NN in non-strict mode
-  intl402/ch10/10.3/10.3.2_CS_d_NN in non-strict mode
-  intl402/ch10/10.3/10.3.2_L15 in non-strict mode
-  intl402/ch10/10.3/10.3.3 in non-strict mode
-  intl402/ch10/10.3/10.3.3_L15 in non-strict mode
-  intl402/ch10/10.3/10.3_L15 in non-strict mode
-  intl402/ch10/10.3/10.3_a in non-strict mode
-  intl402/ch10/10.3/10.3_b in non-strict mode
-  intl402/ch10/10.4/10.4_a in non-strict mode
-  intl402/ch11/11.1/11.1.1_1 in non-strict mode
-  intl402/ch11/11.1/11.1.1_15 in non-strict mode
-  intl402/ch11/11.1/11.1.1_17 in non-strict mode
-  intl402/ch11/11.1/11.1.1_19 in non-strict mode
-  intl402/ch11/11.1/11.1.1_20_c in non-strict mode
-  intl402/ch11/11.1/11.1.1_21 in non-strict mode
-  intl402/ch11/11.1/11.1.1_32 in non-strict mode
-  intl402/ch11/11.1/11.1.1_34 in non-strict mode
-  intl402/ch11/11.1/11.1.1_6 in non-strict mode
-  intl402/ch11/11.1/11.1.1_7 in non-strict mode
-  intl402/ch11/11.1/11.1.1_a in non-strict mode
-  intl402/ch11/11.1/11.1.2.1_4 in non-strict mode
-  intl402/ch11/11.1/11.1.2 in non-strict mode
-  intl402/ch11/11.1/11.1.3 in non-strict mode
-  intl402/ch11/11.1/11.1_L15 in non-strict mode
-  intl402/ch11/11.2/11.2.1 in non-strict mode
-  intl402/ch11/11.2/11.2.2_L15 in non-strict mode
-  intl402/ch11/11.2/11.2.2_a in non-strict mode
-  intl402/ch11/11.2/11.2.2_b in non-strict mode
-  intl402/ch11/11.2/11.2.3_b in non-strict mode
-  intl402/ch11/11.3/11.3.1 in non-strict mode
-  intl402/ch11/11.3/11.3.2_1_a_L15 in non-strict mode
-  intl402/ch11/11.3/11.3.2_1_a_ii in non-strict mode
-  intl402/ch11/11.3/11.3.2_1_c in non-strict mode
-  intl402/ch11/11.3/11.3.2_FN_1 in non-strict mode
-  intl402/ch11/11.3/11.3.2_FN_2 in non-strict mode
-  intl402/ch11/11.3/11.3.2_FN_3_b in non-strict mode
-  intl402/ch11/11.3/11.3.2_L15 in non-strict mode
-  intl402/ch11/11.3/11.3.2_TRF in non-strict mode
-  intl402/ch11/11.3/11.3.2_TRP in non-strict mode
-  intl402/ch11/11.3/11.3.3 in non-strict mode
-  intl402/ch11/11.3/11.3.3_L15 in non-strict mode
-  intl402/ch11/11.3/11.3_L15 in non-strict mode
-  intl402/ch11/11.3/11.3_a in non-strict mode
-  intl402/ch11/11.3/11.3_b in non-strict mode
-  intl402/ch11/11.4/11.4_a in non-strict mode
-  intl402/ch12/12.1/12.1.1_1 in non-strict mode
-  intl402/ch12/12.1/12.1.1_18 in non-strict mode
-  intl402/ch12/12.1/12.1.1_22 in non-strict mode
-  intl402/ch12/12.1/12.1.1_23 in non-strict mode
-  intl402/ch12/12.1/12.1.1_25 in non-strict mode
-  intl402/ch12/12.1/12.1.1_5 in non-strict mode
-  intl402/ch12/12.1/12.1.1_6 in non-strict mode
-  intl402/ch12/12.1/12.1.1_TDTO in non-strict mode
-  intl402/ch12/12.1/12.1.1_a in non-strict mode
-  intl402/ch12/12.1/12.1.2.1_4 in non-strict mode
-  intl402/ch12/12.1/12.1.2 in non-strict mode
-  intl402/ch12/12.1/12.1.3 in non-strict mode
-  intl402/ch12/12.1/12.1_L15 in non-strict mode
-  intl402/ch12/12.2/12.2.1 in non-strict mode
-  intl402/ch12/12.2/12.2.2_L15 in non-strict mode
-  intl402/ch12/12.2/12.2.2_a in non-strict mode
-  intl402/ch12/12.2/12.2.2_b in non-strict mode
-  intl402/ch12/12.2/12.2.3_b in non-strict mode
-  intl402/ch12/12.2/12.2.3_c in non-strict mode
-  intl402/ch12/12.3/12.3.1 in non-strict mode
-  intl402/ch12/12.3/12.3.2_1_a_L15 in non-strict mode
-  intl402/ch12/12.3/12.3.2_1_c in non-strict mode
-  intl402/ch12/12.3/12.3.2_FDT_1 in non-strict mode
-  intl402/ch12/12.3/12.3.2_FDT_7_a_iv in non-strict mode
-  intl402/ch12/12.3/12.3.2_L15 in non-strict mode
-  intl402/ch12/12.3/12.3.2_TLT_2 in non-strict mode
-  intl402/ch12/12.3/12.3.3 in non-strict mode
-  intl402/ch12/12.3/12.3.3_L15 in non-strict mode
-  intl402/ch12/12.3/12.3_L15 in non-strict mode
-  intl402/ch12/12.3/12.3_a in non-strict mode
-  intl402/ch12/12.3/12.3_b in non-strict mode
-  intl402/ch12/12.4/12.4_a in non-strict mode
-  intl402/ch13/13.1/13.1.1_1 in non-strict mode
-  intl402/ch13/13.1/13.1.1_2 in non-strict mode
-  intl402/ch13/13.1/13.1.1_3_1 in non-strict mode
-  intl402/ch13/13.1/13.1.1_3_2 in non-strict mode
-  intl402/ch13/13.1/13.1.1_6_1 in non-strict mode
-  intl402/ch13/13.1/13.1.1_6_2 in non-strict mode
-  intl402/ch13/13.1/13.1.1_7 in non-strict mode
-  intl402/ch13/13.2/13.2.1_1 in non-strict mode
-  intl402/ch13/13.2/13.2.1_4_1 in non-strict mode
-  intl402/ch13/13.2/13.2.1_4_2 in non-strict mode
-  intl402/ch13/13.2/13.2.1_5 in non-strict mode
-  intl402/ch13/13.3/13.3.0_1 in non-strict mode
-  intl402/ch13/13.3/13.3.0_2 in non-strict mode
-  intl402/ch13/13.3/13.3.0_6_1 in non-strict mode
-  intl402/ch13/13.3/13.3.0_6_2 in non-strict mode
-  intl402/ch13/13.3/13.3.0_7 in non-strict mode
 
 Expected to fail but passed ---
  ch12/12.1/S12.1_A4_T2 in non-strict mode
