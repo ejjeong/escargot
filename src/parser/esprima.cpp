@@ -1696,11 +1696,13 @@ PassRefPtr<ParseStatus> scanStringLiteral(ParseContext* ctx)
                         } else
                             str += octToDec.code;
                     } else {
-                        if (smallBufferUsage < smallBufferMax) {
-                            ASSERT(!strInited);
-                            smallBuffer[smallBufferUsage++] = ch;
-                        } else
-                            str += ch;
+                        // this code below doesn't work correctly with 2(or more) bytes chars
+                        // if (smallBufferUsage < smallBufferMax) {
+                        //     ASSERT(!strInited);
+                        //     smallBuffer[smallBufferUsage++] = ch;
+                        // } else
+                        //     str += ch;
+                        goto commonASCII;
                     }
                     break;
                 }
@@ -1714,6 +1716,7 @@ PassRefPtr<ParseStatus> scanStringLiteral(ParseContext* ctx)
         } else if (isLineTerminator(ch)) {
             break;
         } else {
+commonASCII:
             if (ctx->m_sourceString->isASCIIString()) {
                 // NOTE this is workaround for support utf-8
                 // ASCII byte
@@ -1730,17 +1733,40 @@ PassRefPtr<ParseStatus> scanStringLiteral(ParseContext* ctx)
                         ch = uc;
                     } else { // Start byte for 3byte
                         char16_t ch3 = ctx->m_sourceString->charAt(ctx->m_index++);
-                        if (0xE0 == (ch & 0xE0)
+                        if (0xE0 == (ch & 0xF0)
                             && 0x80 == (ch2 & 0xC0)
                             && 0x80 == (ch3 & 0xC0)) {
                             uc += (ch & 0x1F) << 12;
                             uc += (ch2 & 0x3F) << 6;
                             uc += (ch3 & 0x3F) << 0;
                             ch = uc;
-                        } else {
-                            // TODO support 4-byte case
-                            // Invalid case
-                            RELEASE_ASSERT_NOT_REACHED();
+                        } else { // support 4-byte case
+                            char16_t ch4 = ctx->m_sourceString->charAt(ctx->m_index++);
+                            if (0xF0 == (ch & 0xF8)
+                                && 0x80 == (ch2 & 0xC0)
+                                && 0x80 == (ch3 & 0xC0)
+                                && 0x80 == (ch4 & 0xC0)) {
+                                char16_t u = (ch & 0x07) << 2 | (ch2 & 0x30) >> 4;
+                                char16_t uc0 = 0;
+                                uc0 += 0xD8 << 8;
+                                uc0 += (u-1) << 6;
+                                uc0 += (ch2 & 0x0F) << 2;
+                                uc0 += (ch3 & 0x30) >> 4;
+
+                                if (smallBufferUsage < smallBufferMax) {
+                                    ASSERT(!strInited);
+                                    smallBuffer[smallBufferUsage++] = uc0;
+                                } else {
+                                    str += uc0;
+                                }
+
+                                uc += 0xDC << 8;
+                                uc += (ch3 & 0x0F) << 6;
+                                uc += (ch4 & 0x3F) << 0;
+                                ch = uc;
+                            } else { // invalid case
+                                RELEASE_ASSERT_NOT_REACHED();
+                            }
                         }
                     }
                 }
