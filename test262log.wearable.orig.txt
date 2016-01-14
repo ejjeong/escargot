@@ -6532,18 +6532,12 @@ ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-354-1 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-354-10 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-354-11 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-354-12 passed in non-strict mode
-=== ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-354-13 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-354-13 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-354-15 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-354-16 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-354-2 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-354-3 passed in non-strict mode
-=== ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-354-4 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-354-4 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-354-6 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-354-7 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-354-8 passed in non-strict mode
@@ -6556,16 +6550,10 @@ ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-359 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-36 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-360-1 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-360-2 passed in non-strict mode
-=== ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-360-3 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-360-3 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-360-5 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-360-6 passed in non-strict mode
-=== ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-360-7 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-360-7 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-360 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-361 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-362 passed in non-strict mode
@@ -6757,19 +6745,13 @@ ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-531-1 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-531-10 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-531-11 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-531-12 passed in non-strict mode
-=== ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-531-13 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-531-13 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-531-15 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-531-16 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-531-17 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-531-2 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-531-3 passed in non-strict mode
-=== ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-531-4 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-531-4 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-531-6 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-531-7 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-531-8 passed in non-strict mode
@@ -6782,16 +6764,10 @@ ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-536 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-537 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-538-1 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-538-2 passed in non-strict mode
-=== ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-538-3 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-538-3 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-538-5 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-538-6 passed in non-strict mode
-=== ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-538-7 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-538-7 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-538 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-539 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-54 passed in non-strict mode
@@ -7423,10 +7399,7 @@ ch15/15.2/15.2.3/15.2.3.7/15.2.3.7-6-a-236 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.7/15.2.3.7-6-a-237 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.7/15.2.3.7-6-a-238 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.7/15.2.3.7-6-a-239 passed in non-strict mode
-=== ch15/15.2/15.2.3/15.2.3.7/15.2.3.7-6-a-24 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch15/15.2/15.2.3/15.2.3.7/15.2.3.7-6-a-24 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.7/15.2.3.7-6-a-240 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.7/15.2.3.7-6-a-241 passed in non-strict mode
 ch15/15.2/15.2.3/15.2.3.7/15.2.3.7-6-a-242 passed in non-strict mode
@@ -12654,8 +12627,8 @@ intl402/ch13/13.3/13.3.3_L15 passed in non-strict mode
 
 === Summary ===
  - Ran 10219 tests
- - Passed 9906 tests (96.9%)
- - Failed 313 tests (3.1%)
+ - Passed 9915 tests (97.0%)
+ - Failed 304 tests (3.0%)
 
 Failed tests
   annexB/B.2.1 in non-strict mode
@@ -12678,15 +12651,6 @@ Failed tests
   ch15/15.10/15.10.2/15.10.2.12/S15.10.2.12_A1_T1 in non-strict mode
   ch15/15.10/15.10.2/15.10.2.12/S15.10.2.12_A2_T1 in non-strict mode
   ch15/15.12/15.12.2/S15.12.2_A1 in non-strict mode
-  ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-354-13 in non-strict mode
-  ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-354-4 in non-strict mode
-  ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-360-3 in non-strict mode
-  ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-360-7 in non-strict mode
-  ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-531-13 in non-strict mode
-  ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-531-4 in non-strict mode
-  ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-538-3 in non-strict mode
-  ch15/15.2/15.2.3/15.2.3.6/15.2.3.6-4-538-7 in non-strict mode
-  ch15/15.2/15.2.3/15.2.3.7/15.2.3.7-6-a-24 in non-strict mode
   ch15/15.4/15.4.4/15.4.4.19/15.4.4.19-8-3 in non-strict mode
   ch15/15.4/15.4.4/15.4.4.19/15.4.4.19-8-4 in non-strict mode
   ch15/15.4/15.4.4/15.4.4.19/15.4.4.19-8-5 in non-strict mode

@@ -1215,7 +1215,7 @@ inline bool ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
         }
         return true;
     } else {
-        if (!m_hiddenClass->m_propertyInfo[oldIdx].m_flags.m_isConfigurable) {
+        if (!m_hiddenClass->m_propertyInfo[oldIdx].m_flags.m_isConfigurable && !force) {
             ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("cannot redefine property"))));
         }
         m_hiddenClass = m_hiddenClass->removeProperty(oldIdx);
@@ -1279,7 +1279,7 @@ inline bool ESObject::defineAccessorProperty(const escargot::ESValue& key, ESPro
         }
         return true;
     } else {
-        if (!m_hiddenClass->m_propertyInfo[oldIdx].m_flags.m_isConfigurable) {
+        if (!m_hiddenClass->m_propertyInfo[oldIdx].m_flags.m_isConfigurable && !force) {
             ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("cannot redefine property"))));
         }
         m_hiddenClass = m_hiddenClass->removeProperty(oldIdx);
@@ -1411,7 +1411,7 @@ ALWAYS_INLINE bool ESObject::hasOwnProperty(const escargot::ESValue& key)
             }
         }
     }
-    return m_hiddenClass->findProperty(key.toString()) != SIZE_MAX;
+    return m_hiddenClass->findPropertyCheckDeleted(key.toString()) != SIZE_MAX;
 }
 
 // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-get-o-p
@@ -1448,7 +1448,9 @@ ALWAYS_INLINE ESValue ESObject::get(escargot::ESValue key)
         }
         size_t t = target->m_hiddenClass->findProperty(keyString);
         if (t != SIZE_MAX) {
-            return target->m_hiddenClass->read(target, this, keyString, t);
+            ESValue ret = target->m_hiddenClass->read(target, this, keyString, t);
+            if (!UNLIKELY(ret.isDeleted()))
+                return ret;
         }
         if (target->__proto__().isESPointer() && target->__proto__().asESPointer()->isESObject()) {
             target = target->__proto__().asESPointer()->asESObject();

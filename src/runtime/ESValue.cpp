@@ -703,14 +703,14 @@ bool ESObject::defineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag)
         O->defineAccessorProperty(P, new ESPropertyAccessorData(getter, setter),
             descHasWritable ? descW : propertyInfo.m_flags.m_isWritable,
             descHasEnumerable ? descE: propertyInfo.m_flags.m_isEnumerable,
-            descHasConfigurable ? descC : propertyInfo.m_flags.m_isConfigurable);
+            descHasConfigurable ? descC : propertyInfo.m_flags.m_isConfigurable, true);
     } else {
         O->deleteProperty(P, true);
         O->defineDataProperty(P,
             descHasWritable ? descW : propertyInfo.m_flags.m_isWritable,
             descHasEnumerable ? descE: propertyInfo.m_flags.m_isEnumerable,
             descHasConfigurable ? descC : propertyInfo.m_flags.m_isConfigurable,
-            descHasValue ? descV : current);
+            descHasValue ? descV : current, true);
     }
 
     // 13

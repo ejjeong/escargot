@@ -304,7 +304,11 @@ public:
     // return NULL == not exist
     virtual ESValue* hasBinding(const InternalAtomicString& atomicName)
     {
-        return ((GlobalObject *)m_bindingObject)->addressOfProperty(atomicName.string());
+        ESValue* addressOfProperty = ((GlobalObject *)m_bindingObject)->addressOfProperty(atomicName.string());
+        if (addressOfProperty && !addressOfProperty->isDeleted())
+            return addressOfProperty;
+        else
+            return nullptr;
     }
     void createMutableBinding(const InternalAtomicString& name, bool canDelete = false);
     void createImmutableBinding(const InternalAtomicString& name, bool throwExecptionWhenAccessBeforeInit = false) { }

@@ -1480,6 +1480,24 @@ public:
             auto iter = m_propertyIndexHashMapInfo->find(const_cast<ESString *>(name));
             if (iter == m_propertyIndexHashMapInfo->end())
                 return SIZE_MAX;
+            return iter->second;
+        }
+    }
+
+    ALWAYS_INLINE size_t findPropertyCheckDeleted(const ESString* name)
+    {
+        if (LIKELY(m_propertyIndexHashMapInfo == NULL)) {
+            size_t siz = m_propertyInfo.size();
+            for (size_t i = 0 ; i < siz ; i ++) {
+                if (*m_propertyInfo[i].m_name == *name)
+                    return i;
+            }
+            return SIZE_MAX;
+        } else {
+            ASSERT(m_propertyIndexHashMapInfo);
+            auto iter = m_propertyIndexHashMapInfo->find(const_cast<ESString *>(name));
+            if (iter == m_propertyIndexHashMapInfo->end())
+                return SIZE_MAX;
             if (m_propertyInfo[iter->second].m_flags.m_isDeletedValue)
                 return SIZE_MAX;
             return iter->second;
