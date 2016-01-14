@@ -3416,12 +3416,12 @@ void GlobalObject::installDate()
     // $20.3.4.21 Date.prototype.setFullYear()
     m_datePrototype->defineDataProperty(strings->setFullYear, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RELEASE_ASSERT_NOT_REACHED();
-    }, strings->setFullYear, 1));
+    }, strings->setFullYear, 3));
 
     // $20.3.4.22 Date.prototype.setHours()
     m_datePrototype->defineDataProperty(strings->setHours, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RELEASE_ASSERT_NOT_REACHED();
-    }, strings->setHours, 1));
+    }, strings->setHours, 4));
 
     // $20.3.4.23 Date.prototype.setMilliseconds()
     m_datePrototype->defineDataProperty(strings->setMilliseconds, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -3431,17 +3431,17 @@ void GlobalObject::installDate()
     // $20.3.4.24 Date.prototype.setMinutes()
     m_datePrototype->defineDataProperty(strings->setMinutes, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RELEASE_ASSERT_NOT_REACHED();
-    }, strings->setMinutes, 1));
+    }, strings->setMinutes, 3));
 
     // $20.3.4.25 Date.prototype.setMonth()
     m_datePrototype->defineDataProperty(strings->setMonth, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RELEASE_ASSERT_NOT_REACHED();
-    }, strings->setMonth, 1));
+    }, strings->setMonth, 2));
 
     // $20.3.4.26 Date.prototype.setSeconds()
     m_datePrototype->defineDataProperty(strings->setSeconds, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RELEASE_ASSERT_NOT_REACHED();
-    }, strings->setSeconds, 1));
+    }, strings->setSeconds, 2));
 
     // $20.3.4.27 Date.prototype.setTime()
     m_datePrototype->defineDataProperty(strings->setTime, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -3468,12 +3468,12 @@ void GlobalObject::installDate()
     // $20.3.4.29 Date.prototype.setUTCFullYear()
     m_datePrototype->defineDataProperty(strings->setUTCFullYear, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RELEASE_ASSERT_NOT_REACHED();
-    }, strings->setUTCFullYear, 1));
+    }, strings->setUTCFullYear, 3));
 
     // $20.3.4.30 Date.prototype.setUTCHours()
     m_datePrototype->defineDataProperty(strings->setUTCHours, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RELEASE_ASSERT_NOT_REACHED();
-    }, strings->setUTCHours, 1));
+    }, strings->setUTCHours, 4));
 
     // $20.3.4.31 Date.prototype.setUTCMilliseconds()
     m_datePrototype->defineDataProperty(strings->setUTCMilliseconds, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -3483,17 +3483,17 @@ void GlobalObject::installDate()
     // $20.3.4.32 Date.prototype.setUTCMinutes()
     m_datePrototype->defineDataProperty(strings->setUTCMinutes, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RELEASE_ASSERT_NOT_REACHED();
-    }, strings->setUTCMinutes, 1));
+    }, strings->setUTCMinutes, 3));
 
     // $20.3.4.33 Date.prototype.setUTCMonth()
     m_datePrototype->defineDataProperty(strings->setUTCMonth, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RELEASE_ASSERT_NOT_REACHED();
-    }, strings->setUTCMonth, 1));
+    }, strings->setUTCMonth, 2));
 
     // $20.3.4.34 Date.prototype.setUTCSeconds()
     m_datePrototype->defineDataProperty(strings->setUTCSeconds, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         RELEASE_ASSERT_NOT_REACHED();
-    }, strings->setUTCSeconds, 1));
+    }, strings->setUTCSeconds, 2));
 
     // $20.3.4.35 Date.prototype.toDateString()
     m_datePrototype->defineDataProperty(strings->toDateString, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
