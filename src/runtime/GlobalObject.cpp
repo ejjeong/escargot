@@ -1707,7 +1707,7 @@ void GlobalObject::installArray()
                 ESValue selected = ESFunctionObject::call(instance, callbackfn, T, args, 3, false);
 
                 if (selected.toBoolean()) {
-                    A->set(to, kValue);
+                    A->defineDataProperty(ESValue(to), true, true, true, kValue);
                     // Increase to by 1.
                     to++;
                 }
@@ -1905,7 +1905,7 @@ void GlobalObject::installArray()
         ESValue T = instance->currentExecutionContext()->readArgument(1);
 
         // Let A be a new array created as if by the expression new Array() where Array is the standard built-in constructor with that name.
-        escargot::ESArrayObject* A = escargot::ESArrayObject::create(0);
+        escargot::ESArrayObject* A = escargot::ESArrayObject::create(len);
         // Let k be 0.
         uint32_t k = 0;
 
@@ -1924,7 +1924,7 @@ void GlobalObject::installArray()
                 ESValue args[] = {kValue, ESValue(k), O};
                 ESValue mappedValue = ESFunctionObject::call(instance, callbackfn, T, args, 3, false);
 
-                A->set(k, mappedValue);
+                A->defineDataProperty(pk, true, true, true, mappedValue);
             }
 
             // Increase k by 1.
