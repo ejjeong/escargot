@@ -349,7 +349,7 @@ public:
         : m_heapAllocatedData(innerIdentifiers.size())
     {
         if (UNLIKELY(needsActivation)) {
-            m_innerIdentifiers = new InternalAtomicStringVector(innerIdentifiers);
+            m_innerIdentifiers = new (GC) InternalAtomicStringVector(innerIdentifiers);
         } else {
             m_stackAllocatedData = stackAllocatedData;
             std::fill(stackAllocatedData, &stackAllocatedData[stackAllocatedSize], ESValue());
