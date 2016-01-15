@@ -109,9 +109,9 @@ ESVMInstance::ESVMInstance()
     });
 
     m_arrayLengthAccessorData.setSetter([](::escargot::ESObject* self, ESObject* originalObj, ESString* propertyName, const ESValue& value) {
-        if (!value.isNumber() || value.toNumber() != value.toUint32())
+        if (value.toNumber() != value.toUint32())
             ESVMInstance::currentInstance()->throwError((RangeError::create()));
-        self->asESArrayObject()->setLength(value.toInt32());
+        self->asESArrayObject()->setLength(value.toUint32());
     });
 
     m_stringObjectLengthAccessorData.setGetter([](ESObject* self, ESObject* originalObj, ESString* propertyName) -> ESValue {

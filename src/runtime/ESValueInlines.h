@@ -1634,6 +1634,12 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
 
         if (UNLIKELY(m_flags.m_isGlobalObject))
             ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
+        if (UNLIKELY(isESArrayObject())) {
+            uint32_t index = key.toIndex();
+            uint32_t oldLen = asESArrayObject()->length();
+            if (index != ESValue::ESInvalidIndexValue && index > oldLen)
+                asESArrayObject()->setLength(index+1);
+        }
         return true;
     } else {
         return m_hiddenClass->write(this, this, keyString, idx, val);
