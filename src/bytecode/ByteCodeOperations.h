@@ -399,6 +399,8 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
                                     throwObjectWriteError();
                                     return;
                                 }
+                            } else if (data->getNativeSetter()) {
+                                data->setValue(obj, willBeObject->asESPointer()->asESObject(), keyString, value);
                             }
                         }
 

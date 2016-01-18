@@ -1666,6 +1666,9 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
                             return true;
                         }
                         return false;
+                    } else if (data->getNativeSetter()) {
+                        data->setValue(target.asESPointer()->asESObject(), this, keyString, val);
+                        return true;
                     }
                 }
 
