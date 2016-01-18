@@ -797,7 +797,9 @@ void GlobalObject::installFunction()
         CodeBlock* codeBlock = CodeBlock::create();
         if (len == 0) {
             ByteCodeGenerateContext context(codeBlock);
+            codeBlock->pushCode(ReturnFunction(), context, NULL);
             codeBlock->pushCode(End(), context, NULL);
+            codeBlock->m_hasCode = true;
         } else {
             escargot::ESString* body = instance->currentExecutionContext()->arguments()[len-1].toString();
             ESStringBuilder builder;
