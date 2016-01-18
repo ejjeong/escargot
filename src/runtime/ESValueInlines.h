@@ -976,14 +976,22 @@ ALWAYS_INLINE void ESPropertyAccessorData::setValue(::escargot::ESObject* obj, :
 inline ESHiddenClass* ESHiddenClass::removeProperty(size_t idx)
 {
     ASSERT(idx != SIZE_MAX);
-    // can not delete __proto__
-    ASSERT(idx != 0);
     // ASSERT(m_propertyInfo[idx].m_flags.m_isConfigurable);
 
     if (m_flags.m_isVectorMode) {
-        ESHiddenClass* ret = ESVMInstance::currentInstance()->initialHiddenClassForObject();
+        ESHiddenClass* ret;
         ASSERT(*m_propertyInfo[0].m_name == *strings->__proto__.string());
-        for (unsigned i = 1; i < m_propertyInfo.size(); i ++) {
+        unsigned i;
+        if (idx == 0) {
+            // Deleting __proto__
+            ret = new ESHiddenClass;
+            i = 0;
+        } else {
+            // Deleting ordinary property
+            ret = ESVMInstance::currentInstance()->initialHiddenClassForObject();
+            i = 1;
+        }
+        for (; i < m_propertyInfo.size(); i ++) {
             if (idx != i) {
                 ret = ret->defineProperty(m_propertyInfo[i].m_name, m_propertyInfo[i].m_flags.m_isDataProperty
                     , m_propertyInfo[i].m_flags.m_isWritable, m_propertyInfo[i].m_flags.m_isEnumerable, m_propertyInfo[i].m_flags.m_isConfigurable);

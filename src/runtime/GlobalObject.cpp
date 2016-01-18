@@ -3655,7 +3655,7 @@ ESValue parseJSON(const CharType* data)
             escargot::ESObject* obj = ESObject::create();
             auto iter = value.MemberBegin();
             while (iter != value.MemberEnd()) {
-                obj->defineDataProperty(ESString::create(iter->name.GetString()), true, true, true, fn(iter->value));
+                obj->defineDataProperty(ESString::create(iter->name.GetString()), true, true, true, fn(iter->value), true);
                 iter++;
             }
             return obj;

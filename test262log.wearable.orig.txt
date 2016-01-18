@@ -4923,10 +4923,7 @@ ch15/15.12/15.12.2/15.12.2-2-6 passed in non-strict mode
 ch15/15.12/15.12.2/15.12.2-2-7 passed in non-strict mode
 ch15/15.12/15.12.2/15.12.2-2-8 passed in non-strict mode
 ch15/15.12/15.12.2/15.12.2-2-9 passed in non-strict mode
-=== ch15/15.12/15.12.2/S15.12.2_A1 failed in non-strict mode ===
---- output ---
-Uncaught TypeError: cannot redefine property
-===
+ch15/15.12/15.12.2/S15.12.2_A1 passed in non-strict mode
 ch15/15.12/15.12.3/15.12.3-0-1 passed in non-strict mode
 ch15/15.12/15.12.3/15.12.3-0-2 passed in non-strict mode
 ch15/15.12/15.12.3/15.12.3-0-3 passed in non-strict mode
@@ -11841,13 +11838,12 @@ ch15/15.9/15.9.5/15.9.5.9/S15.9.5.9_A3_T3 passed in non-strict mode
 
 === Summary ===
  - Ran 10055 tests
- - Passed 10013 tests (99.6%)
- - Failed 42 tests (0.4%)
+ - Passed 10014 tests (99.6%)
+ - Failed 41 tests (0.4%)
 
 Failed tests
   ch07/7.6/S7.6_A4.2_T1 in non-strict mode
   ch07/7.6/S7.6_A4.2_T2 in non-strict mode
-  ch15/15.12/15.12.2/S15.12.2_A1 in non-strict mode
   ch15/15.4/15.4.4/15.4.4.3/S15.4.4.3_A1_T1 in non-strict mode
   ch15/15.4/15.4.4/15.4.4.3/S15.4.4.3_A3_T1 in non-strict mode
   ch15/15.5/15.5.4/15.5.4.11/S15.5.4.11_A1_T5 in non-strict mode
