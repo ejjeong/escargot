@@ -31,7 +31,7 @@ public:
             }
         }
         bool prevInCallingExpressionScope = context.m_inCallingExpressionScope;
-        if (m_callee->isMemberExpresion()) {
+        if (m_callee->isMemberExpression()) {
             context.m_inCallingExpressionScope = true;
             context.m_isHeadOfMemberExpression = true;
         }
@@ -43,7 +43,7 @@ public:
         }
         context.m_inCallingExpressionScope = prevInCallingExpressionScope;
 
-        if (!m_callee->isMemberExpresion()) {
+        if (!m_callee->isMemberExpression()) {
             codeBlock->pushCode(CallFunction(m_arguments.size()), context, this);
         } else {
             codeBlock->pushCode(CallFunctionWithReceiver(m_arguments.size()), context, this);

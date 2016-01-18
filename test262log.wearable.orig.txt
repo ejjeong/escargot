@@ -10168,14 +10168,8 @@ ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-9-c-ii-5 passed in non-strict mode
 ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-9-c-ii-7 passed in non-strict mode
 ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-9-c-ii-8 passed in non-strict mode
 ch15/15.4/15.4.4/15.4.4.22/15.4.4.22-9-c-ii-9 passed in non-strict mode
-=== ch15/15.4/15.4.4/15.4.4.3/S15.4.4.3_A1_T1 failed in non-strict mode ===
---- errors ---
-
-===
-=== ch15/15.4/15.4.4/15.4.4.3/S15.4.4.3_A3_T1 failed in non-strict mode ===
---- errors ---
-
-===
+ch15/15.4/15.4.4/15.4.4.3/S15.4.4.3_A1_T1 passed in non-strict mode
+ch15/15.4/15.4.4/15.4.4.3/S15.4.4.3_A3_T1 passed in non-strict mode
 ch15/15.4/15.4.4/15.4.4.3/S15.4.4.3_A4.1 passed in non-strict mode
 ch15/15.4/15.4.4/15.4.4.3/S15.4.4.3_A4.2 passed in non-strict mode
 ch15/15.4/15.4.4/15.4.4.3/S15.4.4.3_A4.3 passed in non-strict mode
@@ -11838,14 +11832,12 @@ ch15/15.9/15.9.5/15.9.5.9/S15.9.5.9_A3_T3 passed in non-strict mode
 
 === Summary ===
  - Ran 10055 tests
- - Passed 10017 tests (99.6%)
- - Failed 38 tests (0.4%)
+ - Passed 10019 tests (99.6%)
+ - Failed 36 tests (0.4%)
 
 Failed tests
   ch07/7.6/S7.6_A4.2_T1 in non-strict mode
   ch07/7.6/S7.6_A4.2_T2 in non-strict mode
-  ch15/15.4/15.4.4/15.4.4.3/S15.4.4.3_A1_T1 in non-strict mode
-  ch15/15.4/15.4.4/15.4.4.3/S15.4.4.3_A3_T1 in non-strict mode
   ch15/15.5/15.5.4/15.5.4.11/S15.5.4.11_A1_T5 in non-strict mode
   ch15/15.5/15.5.4/15.5.4.12/S15.5.4.12_A1.1_T1 in non-strict mode
   ch15/15.5/15.5.4/15.5.4.12/S15.5.4.12_A1_T1 in non-strict mode

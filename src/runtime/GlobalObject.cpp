@@ -2339,9 +2339,43 @@ void GlobalObject::installArray()
     }, strings->splice, 2));
 
     // $22.1.3.26 Array.prototype.toLocaleString()
-    m_arrayPrototype->ESObject::defineDataProperty(ESString::createAtomicString("toLocaleString"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
-    }, ESString::createAtomicString("toLocaleString"), 0));
+    m_arrayPrototype->ESObject::defineDataProperty(strings->toLocaleString, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        ESObject* array = instance->currentExecutionContext()->resolveThisBindingToObject();
+        size_t len = array->get(strings->length.string()).toUint32();
+        escargot::ESString* separator = strings->asciiTable[(size_t)','].string();
+        if (len == 0)
+            return ESValue(strings->emptyString.string());
+        ::escargot::ESString* R;
+        ESValue firstElement = array->get(ESValue(0));
+        if (firstElement.isUndefinedOrNull())
+            R = strings->emptyString.string();
+        else {
+            ::escargot::ESObject* elementObj = firstElement.toObject();
+            ESValue func = elementObj->get(strings->toLocaleString.string());
+            if (!func.isESPointer() || !func.asESPointer()->isESFunctionObject())
+                instance->throwError(TypeError::create(ESString::create("toLocaleString is not callable")));
+            R = ESFunctionObject::call(instance, func, elementObj, NULL, 0, false).toString();
+        }
+
+        size_t k = 1;
+        ::escargot::ESString* S;
+        while (k < len) {
+            S = ESString::concatTwoStrings(R, separator);
+            ESValue nextElement = array->get(ESValue(k));
+            if (nextElement.isUndefinedOrNull())
+                R = strings->emptyString.string();
+            else {
+                ::escargot::ESObject* elementObj = nextElement.toObject();
+                ESValue func = elementObj->get(strings->toLocaleString.string());
+                if (!func.isESPointer() || !func.asESPointer()->isESFunctionObject())
+                    instance->throwError(TypeError::create(ESString::create("toLocaleString is not callable")));
+                R = ESFunctionObject::call(instance, func, elementObj, NULL, 0, false).toString();
+            }
+            R = ESString::concatTwoStrings(S, R);
+            k++;
+        }
+        return ESValue(R);
+    }, strings->toLocaleString, 0));
 
     // $22.1.3.27 Array.prototype.toString()
     m_arrayPrototype->ESObject::defineDataProperty(strings->toString, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {

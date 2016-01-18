@@ -156,11 +156,6 @@ public:
         RELEASE_ASSERT_NOT_REACHED();
     }
 
-    bool isMemberExpresion()
-    {
-        return m_nodeType == NodeType::MemberExpression;
-    }
-
     virtual ~Node()
     {
 
