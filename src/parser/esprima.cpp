@@ -4698,6 +4698,8 @@ escargot::Node* parseObjectProperty(ParseContext* ctx, bool& hasProto)
         escargot::Node* nd = new escargot::PropertyNode(key, value, escargot::PropertyNode::Kind::Init);
         nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
         return nd;
+    } else {
+        throwUnexpectedToken();
     }
 
     if (token->m_type == Token::IdentifierToken) {
