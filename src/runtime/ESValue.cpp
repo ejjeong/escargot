@@ -1511,20 +1511,79 @@ void ESDateObject::parseYmdhmsToDate(struct tm* timeinfo, int year, int month, i
     strptime(buffer, "%Y-%m-%d-%H-%M-%S", timeinfo);
 }
 
-bool ESDateObject::parseStringToDate(struct tm* timeinfo, bool* timezoneSet, escargot::ESString* istr)
+double ESDateObject::parseStringToDate(escargot::ESString* istr)
 {
+    struct tm timeinfo;
+    double primitiveValue = 0.0;
+    timeinfo.tm_mday = 1; // set special initial case for mday. if we don't initialize it, it would be set to 0
+
     char* buffer = (char*)istr->toNullableUTF8String().m_buffer;
-    if (isalpha(buffer[0])) {
-        // FIXME : if %z field is empty, it should be considered as client pc's timezone. not +0000
-        strptime(buffer, "%B %d %Y %H:%M:%S %z", timeinfo);
-        *timezoneSet = true;
-        return true;
-    } else if (isdigit(buffer[0])) {
-        strptime(buffer, "%m/%d/%Y %H:%M:%S", timeinfo);
-        return true;
-    } else {
-        return false;
+    char* parse_returned;
+    size_t fmt_length = istr->length();
+
+    parse_returned = strptime(buffer, "%Y", &timeinfo); // Date format with UTC timezone
+    if (buffer + fmt_length == parse_returned) {
+        primitiveValue = ymdhmsToSeconds(timeinfo.tm_year+1900, 0, 1, 0, 0, 0);
+        return primitiveValue;
     }
+
+    parse_returned = strptime(buffer, "%B %d %Y %H:%M:%S %z", &timeinfo); // Date format with specific timezone
+    if (buffer + fmt_length == parse_returned) { 
+        primitiveValue = ymdhmsToSeconds(timeinfo.tm_year+1900, timeinfo.tm_mon, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
+#ifdef __USE_BSD
+        primitiveValue = primitiveValue - timeinfo.tm_gmtoff * 1000;
+#else
+        primitiveValue = primitiveValue - timeinfo.__tm_gmtoff * 1000;
+#endif
+        return primitiveValue;
+    }
+
+    parse_returned = strptime(buffer, "%A %B %d %Y %H:%M:%S GMT", &timeinfo); // Date format with specific timezone
+    if (parse_returned) { // consider as "%A %B %d %Y %H:%M:%S GMT+9 (KST)" like format
+        // TODO : consider of setting daylightsaving flag (timeinfo->tm_isdst)
+        timeinfo.tm_gmtoff = 1 * 60 * 60; // 1 hour
+        if (*parse_returned == '-') {
+            timeinfo.tm_gmtoff *= -1;
+        }
+        parse_returned++;
+        int tz = *parse_returned - '0';
+        if (*(parse_returned+1) != ' ') {
+            tz *= 10;
+            tz += *(parse_returned+1) - '0';
+            timeinfo.tm_gmtoff *= tz;
+        } else {
+            timeinfo.tm_gmtoff *= tz;
+        }
+//        if (buffer + fmt_length == parse_returned) { 
+            primitiveValue = ymdhmsToSeconds(timeinfo.tm_year+1900, timeinfo.tm_mon, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
+#ifdef __USE_BSD
+            primitiveValue = primitiveValue - timeinfo.tm_gmtoff * 1000;
+#else
+            primitiveValue = primitiveValue - timeinfo.__tm_gmtoff * 1000;
+#endif
+            return primitiveValue;
+//        }
+    }
+
+    parse_returned = strptime(buffer, "%Y-%m-%dT%H:%M:%S.", &timeinfo); // Date format with UTC timezone
+    if (buffer + fmt_length == parse_returned + 3) { // for milliseconds part
+        primitiveValue = ymdhmsToSeconds(timeinfo.tm_year+1900, timeinfo.tm_mon, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
+        return primitiveValue;
+    }
+
+    parse_returned = strptime(buffer, "%Y-%m-%dT%H:%M:%S.", &timeinfo); // Date format with UTC timezone
+    if (buffer + fmt_length == parse_returned + 4) { // for milliseconds part and 'Z' part
+        primitiveValue = ymdhmsToSeconds(timeinfo.tm_year+1900, timeinfo.tm_mon, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
+        return primitiveValue;
+    }
+
+    parse_returned = strptime(buffer, "%m/%d/%Y %H:%M:%S", &timeinfo); // Date format with local timezone
+    if (buffer + fmt_length == parse_returned) {
+        primitiveValue = ymdhmsToSeconds(timeinfo.tm_year+1900, timeinfo.tm_mon, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
+        primitiveValue = toUTC(primitiveValue);
+        return primitiveValue;
+    }
+    return std::numeric_limits<double>::quiet_NaN();    
 }
 
 int ESDateObject::daysInYear(long year)
@@ -1684,12 +1743,24 @@ void ESDateObject::setTimeValue(double t)
 void ESDateObject::setTimeValue(const ESValue str)
 {
     escargot::ESString* istr = str.toString();
-    bool timezoneSet = false;
+
+    double primitiveValue = parseStringToDate(istr);
+    if (isnan(primitiveValue)) {
+        setTimeValueAsNaN();
+    } else {
+        m_primitiveValue = primitiveValue;
+        if (m_primitiveValue <= 8640000000000000 && m_primitiveValue >= -8640000000000000) {
+            m_isCacheDirty = true;
+            m_hasValidDate = true;
+        } else {
+            setTimeValueAsNaN();
+        }       
+    }
+/*    bool timezoneSet = false;
     if (!parseStringToDate(&m_cachedTM, &timezoneSet, istr)) {
         m_hasValidDate = false;
         return;
     }
-    m_cachedTM.tm_isdst = true;
 
     double primitiveValue = ymdhmsToSeconds(m_cachedTM.tm_year+1900, m_cachedTM.tm_mon, m_cachedTM.tm_mday, m_cachedTM.tm_hour, m_cachedTM.tm_min, m_cachedTM.tm_sec);
     double primitiveValueAsUTC;
@@ -1709,6 +1780,7 @@ void ESDateObject::setTimeValue(const ESValue str)
     } else {
         setTimeValueAsNaN();
     }
+    */
 }
 
 void ESDateObject::setTimeValue(int year, int month, int date, int hour, int minute, int second, int millisecond)

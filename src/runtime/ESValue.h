@@ -1878,8 +1878,8 @@ public:
         return new ESDateObject();
     }
 
-    bool parseStringToDate(struct tm* timeinfo, bool* timezoneSet, escargot::ESString* istr);
-    void parseYmdhmsToDate(struct tm* timeinfo, int year, int month, int date, int hour, int minute, int second);
+    static double parseStringToDate(escargot::ESString* istr);
+    static void parseYmdhmsToDate(struct tm* timeinfo, int year, int month, int date, int hour, int minute, int second);
 
     void setTimeValue();
     void setTimeValue(double t);
@@ -1910,7 +1910,7 @@ public:
     int getMinutes();
     int getMonth();
     int getSeconds();
-    long getTimezoneOffset();
+    static long getTimezoneOffset();
     void setTime(double t);
     int getUTCDate();
     int getUTCDay();
@@ -1920,8 +1920,8 @@ public:
     int getUTCMinutes();
     int getUTCMonth();
     int getUTCSeconds();
-    double toUTC(double t);
-    double ymdhmsToSeconds(long year, int month, int day, int hour, int minute, double second);
+    static double toUTC(double t);
+    static double ymdhmsToSeconds(long year, int month, int day, int hour, int minute, double second);
 
     static double timeClip(double V)
     {
@@ -1941,26 +1941,26 @@ private:
     bool m_isCacheDirty;
     bool m_hasValidDate; // function get***() series (in ESValue.cpp) should check if the timevalue is valid with this flag
 
-    const double hoursPerDay = 24.0;
-    const double minutesPerHour = 60.0;
-    const double secondsPerMinute = 60.0;
-    const double secondsPerHour = secondsPerMinute * minutesPerHour;
-    const double msPerSecond = 1000.0;
-    const double msPerMinute = msPerSecond * secondsPerMinute;
-    const double msPerHour = msPerSecond * secondsPerHour;
-    const double msPerDay = msPerHour * hoursPerDay;
+    static constexpr double hoursPerDay = 24.0;
+    static constexpr double minutesPerHour = 60.0;
+    static constexpr double secondsPerMinute = 60.0;
+    static constexpr double secondsPerHour = secondsPerMinute * minutesPerHour;
+    static constexpr double msPerSecond = 1000.0;
+    static constexpr double msPerMinute = msPerSecond * secondsPerMinute;
+    static constexpr double msPerHour = msPerSecond * secondsPerHour;
+    static constexpr double msPerDay = msPerHour * hoursPerDay;
 
-    double day(long long t) { return floor(t / msPerDay); }
-    double timeWithinDay(long long t) { return (int) t % (int) msPerDay; }
-    int daysInYear(long year);
-    int dayFromYear(long year);
-    double timeFromYear(long year) { return msPerDay * dayFromYear(year); }
-    long yearFromTime(long long t);
-    int inLeapYear(long long t);
-    int dayFromMonth(long year, int month);
-    int monthFromTime(long long t);
-    int dateFromTime(long long t);
-    double makeDay(long year, int month, int date);
+    static double day(long long t) { return floor(t / msPerDay); }
+    static double timeWithinDay(long long t) { return (int) t % (int) msPerDay; }
+    static int daysInYear(long year);
+    static int dayFromYear(long year);
+    static double timeFromYear(long year) { return msPerDay * dayFromYear(year); }
+    static long yearFromTime(long long t);
+    static int inLeapYear(long long t);
+    static int dayFromMonth(long year, int month);
+    static int monthFromTime(long long t);
+    static int dateFromTime(long long t);
+    static double makeDay(long year, int month, int date);
 };
 
 class ESMathObject : public ESObject {

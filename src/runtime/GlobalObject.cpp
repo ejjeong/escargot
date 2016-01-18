@@ -3230,47 +3230,45 @@ void GlobalObject::installDate()
         escargot::ESDateObject* thisObject;
         if (instance->currentExecutionContext()->isNewExpression()) {
             thisObject = instance->currentExecutionContext()->resolveThisBindingToObject()->asESDateObject();
-        } else {
-            thisObject = (escargot::ESDateObject*)GC_MALLOC(sizeof(escargot::ESDateObject));
-        }
-
-        size_t arg_size = instance->currentExecutionContext()->argumentCount();
-        if (arg_size == 0) {
-            thisObject->setTimeValue();
-        } else if (arg_size == 1) {
-            ESValue v = instance->currentExecutionContext()->arguments()[0].toPrimitive();
-            if (v.isESString()) {
-                thisObject->setTimeValue(v);
+            
+            size_t arg_size = instance->currentExecutionContext()->argumentCount();
+            if (arg_size == 0) {
+                thisObject->setTimeValue();
+            } else if (arg_size == 1) {
+                ESValue v = instance->currentExecutionContext()->arguments()[0].toPrimitive();
+                if (v.isESString()) {
+                    thisObject->setTimeValue(v);
+                } else {
+                    double V = v.toNumber();
+                    thisObject->setTimeValue(ESDateObject::timeClip(V));
+                }
             } else {
-                double V = v.toNumber();
-                thisObject->setTimeValue(ESDateObject::timeClip(V));
-            }
-        } else {
-            double args[7] = {0, 0, 1, 0, 0, 0, 0}; // default value of year, month, date, hour, minute, second, millisecond
-            for (size_t i = 0; i < arg_size; i++) {
-                args[i] = instance->currentExecutionContext()->readArgument(i).toNumber();
-            }
-            double year = args[0];
-            double month = args[1];
-            double date = args[2];
-            double hour = args[3];
-            double minute = args[4];
-            double second = args[5];
-            double millisecond = args[6];
+                double args[7] = {0, 0, 1, 0, 0, 0, 0}; // default value of year, month, date, hour, minute, second, millisecond
+                for (size_t i = 0; i < arg_size; i++) {
+                    args[i] = instance->currentExecutionContext()->readArgument(i).toNumber();
+                }
+                double year = args[0];
+                double month = args[1];
+                double date = args[2];
+                double hour = args[3];
+                double minute = args[4];
+                double second = args[5];
+                double millisecond = args[6];
 
-            if ((int) year >= 0 && (int) year <= 99) {
-                year += 1900;
+                if ((int) year >= 0 && (int) year <= 99) {
+                    year += 1900;
+                }
+                if (isnan(year) || isnan(month) || isnan(date) || isnan(hour) || isnan(minute) || isnan(second) || isnan(millisecond)) {
+                    thisObject->setTimeValueAsNaN();
+                    return ESString::create(u"Invalid Date");
+                }
+                thisObject->setTimeValue((int) year, (int) month, (int) date, (int) hour, (int) minute, (int) second, (int) millisecond);
             }
-            if (isnan(year) || isnan(month) || isnan(date) || isnan(hour) || isnan(minute) || isnan(second) || isnan(millisecond)) {
-                thisObject->setTimeValueAsNaN();
-                return ESString::create(u"Invalid Date");
-            }
-            thisObject->setTimeValue((int) year, (int) month, (int) date, (int) hour, (int) minute, (int) second, (int) millisecond);
-        }
 
-        if (instance->currentExecutionContext()->isNewExpression()) {
             return thisObject->toFullString();
         } else {
+            thisObject = (escargot::ESDateObject*)GC_MALLOC(sizeof(escargot::ESDateObject));
+            thisObject->setTimeValue();
             escargot::ESString* retval = thisObject->toFullString();
             GC_FREE(thisObject);
             return retval;
@@ -3279,18 +3277,13 @@ void GlobalObject::installDate()
     m_date->forceNonVectorHiddenClass(true);
     m_date->defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), false, false, false);
 
+    // http://www.ecma-international.org/ecma-262/5.1/#sec-15.9.5.2
     m_datePrototype->defineDataProperty(strings->toString, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        // http://www.ecma-international.org/ecma-262/5.1/#sec-15.9.5.2
-        // TODO
         ESValue e = instance->currentExecutionContext()->resolveThisBinding();
         if (e.isESPointer() && e.asESPointer()->isESDateObject()) {
             escargot::ESDateObject* obj = e.asESPointer()->asESDateObject();
-            char buffer[512]; // TODO consider buffer-overflow
             if (!isnan(obj->timeValueAsDouble())) {
-                sprintf(buffer, "%d-%02d-%02d %02d:%02d:%02d %s(GMT%+.1g)"
-                    , obj->getFullYear(), obj->getMonth() + 1, obj->getDate(), obj->getHours(), obj->getMinutes(), obj->getSeconds()
-                    , tzname[0], obj->getTimezoneOffset() / -3600.0);
-                return ESString::create(buffer);
+                return obj->toFullString();
             } else {
                 return ESString::create(u"Invalid Date"); 
             }
@@ -3315,6 +3308,12 @@ void GlobalObject::installDate()
 
     // $20.3.3.2 Date.parse()
     m_date->defineDataProperty(ESString::createAtomicString("parse"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        ESValue v = instance->currentExecutionContext()->arguments()[0].toPrimitive();
+        if (v.isESString()) {
+            return ESValue(ESDateObject::parseStringToDate(v.asESString()));
+        } else {
+            instance->throwError(ESValue(TypeError::create()));
+        }
         RELEASE_ASSERT_NOT_REACHED();
     }, ESString::createAtomicString("parse"), 1));
 

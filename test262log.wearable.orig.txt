@@ -10960,10 +10960,7 @@ ch15/15.5/15.5.4/15.5.4.6/S15.5.4.6_A9 passed in non-strict mode
 ch15/15.5/15.5.4/15.5.4.7/S15.5.4.7_A10 passed in non-strict mode
 ch15/15.5/15.5.4/15.5.4.7/S15.5.4.7_A11 passed in non-strict mode
 ch15/15.5/15.5.4/15.5.4.7/S15.5.4.7_A1_T1 passed in non-strict mode
-=== ch15/15.5/15.5.4/15.5.4.7/S15.5.4.7_A1_T11 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #1: __instance = new Date(0); __instance.indexOf = String.prototype.indexOf;  (__instance.getTimezoneOffset()>0 ? __instance.indexOf('31') : __instance.indexOf('01')) === 8. Actual: 5
-===
+ch15/15.5/15.5.4/15.5.4.7/S15.5.4.7_A1_T11 passed in non-strict mode
 ch15/15.5/15.5.4/15.5.4.7/S15.5.4.7_A1_T12 passed in non-strict mode
 ch15/15.5/15.5.4/15.5.4.7/S15.5.4.7_A1_T2 passed in non-strict mode
 ch15/15.5/15.5.4/15.5.4.7/S15.5.4.7_A1_T4 passed in non-strict mode
@@ -11376,15 +11373,9 @@ ch15/15.8/15.8.2/15.8.2.9/S15.8.2.9_A4 passed in non-strict mode
 ch15/15.8/15.8.2/15.8.2.9/S15.8.2.9_A5 passed in non-strict mode
 ch15/15.8/15.8.2/15.8.2.9/S15.8.2.9_A6 passed in non-strict mode
 ch15/15.8/15.8.2/15.8.2.9/S15.8.2.9_A7 passed in non-strict mode
-=== ch15/15.9/15.9.1/15.9.1.15/15.9.1.15-1 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch15/15.9/15.9.1/15.9.1.15/15.9.1.15-1 passed in non-strict mode
 ch15/15.9/15.9.2/S15.9.2.1_A1 passed in non-strict mode
-=== ch15/15.9/15.9.2/S15.9.2.1_A2 failed in non-strict mode ===
---- errors ---
-
-===
+ch15/15.9/15.9.2/S15.9.2.1_A2 passed in non-strict mode
 ch15/15.9/15.9.3/S15.9.3.1_A1_T1 passed in non-strict mode
 ch15/15.9/15.9.3/S15.9.3.1_A1_T2 passed in non-strict mode
 ch15/15.9/15.9.3/S15.9.3.1_A1_T3 passed in non-strict mode
@@ -11831,8 +11822,8 @@ ch15/15.9/15.9.5/15.9.5.9/S15.9.5.9_A3_T3 passed in non-strict mode
 
 === Summary ===
  - Ran 10055 tests
- - Passed 10020 tests (99.7%)
- - Failed 35 tests (0.3%)
+ - Passed 10023 tests (99.7%)
+ - Failed 32 tests (0.3%)
 
 Failed tests
   ch07/7.6/S7.6_A4.2_T1 in non-strict mode
@@ -11857,13 +11848,10 @@ Failed tests
   ch15/15.5/15.5.4/15.5.4.12/S15.5.4.12_A2_T7 in non-strict mode
   ch15/15.5/15.5.4/15.5.4.12/S15.5.4.12_A3_T1 in non-strict mode
   ch15/15.5/15.5.4/15.5.4.12/S15.5.4.12_A3_T2 in non-strict mode
-  ch15/15.5/15.5.4/15.5.4.7/S15.5.4.7_A1_T11 in non-strict mode
   ch15/15.5/15.5.4/15.5.4.9/15.5.4.9_3 in non-strict mode
   ch15/15.5/15.5.4/15.5.4.9/15.5.4.9_CE in non-strict mode
   ch15/15.5/15.5.4/15.5.4.9/S15.5.4.9_A1_T1 in non-strict mode
   ch15/15.5/15.5.4/15.5.4.9/S15.5.4.9_A1_T2 in non-strict mode
-  ch15/15.9/15.9.1/15.9.1.15/15.9.1.15-1 in non-strict mode
-  ch15/15.9/15.9.2/S15.9.2.1_A2 in non-strict mode
   ch15/15.9/15.9.3/S15.9.3.1_A5_T1 in non-strict mode
   ch15/15.9/15.9.3/S15.9.3.1_A5_T2 in non-strict mode
   ch15/15.9/15.9.3/S15.9.3.1_A5_T3 in non-strict mode
