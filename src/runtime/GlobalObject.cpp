@@ -4262,7 +4262,10 @@ void GlobalObject::installNumber()
                 instance->currentExecutionContext()->resolveThisBindingToObject()->asESNumberObject()->setNumberData(instance->currentExecutionContext()->readArgument(0).toNumber());
             return instance->currentExecutionContext()->resolveThisBinding();
         } else {
-            return ESValue(instance->currentExecutionContext()->readArgument(0).toNumber());
+            if (instance->currentExecutionContext()->argumentCount())
+                return ESValue(instance->currentExecutionContext()->arguments()[0].toNumber());
+            else
+                return ESValue(0);
         }
     }, strings->Number, 1, true);
     m_number->forceNonVectorHiddenClass(true);

@@ -11102,10 +11102,7 @@ ch15/15.6/15.6.4/S15.6.4.3_A2_T5 passed in non-strict mode
 ch15/15.6/15.6.4/S15.6.4_A1 passed in non-strict mode
 ch15/15.6/15.6.4/S15.6.4_A2 passed in non-strict mode
 ch15/15.7/15.7.1/S15.7.1.1_A1 passed in non-strict mode
-=== ch15/15.7/15.7.1/S15.7.1.1_A2 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #2: Number() === 0, actual is NaN
-===
+ch15/15.7/15.7.1/S15.7.1.1_A2 passed in non-strict mode
 ch15/15.7/15.7.2/S15.7.2.1_A1 passed in non-strict mode
 ch15/15.7/15.7.2/S15.7.2.1_A2 passed in non-strict mode
 ch15/15.7/15.7.2/S15.7.2.1_A3 passed in non-strict mode
@@ -11850,8 +11847,8 @@ ch15/15.9/15.9.5/15.9.5.9/S15.9.5.9_A3_T3 passed in non-strict mode
 
 === Summary ===
  - Ran 10055 tests
- - Passed 10010 tests (99.6%)
- - Failed 45 tests (0.4%)
+ - Passed 10011 tests (99.6%)
+ - Failed 44 tests (0.4%)
 
 Failed tests
   ch07/7.6/S7.6_A4.2_T1 in non-strict mode
@@ -11887,7 +11884,6 @@ Failed tests
   ch15/15.5/15.5.4/15.5.4.9/15.5.4.9_CE in non-strict mode
   ch15/15.5/15.5.4/15.5.4.9/S15.5.4.9_A1_T1 in non-strict mode
   ch15/15.5/15.5.4/15.5.4.9/S15.5.4.9_A1_T2 in non-strict mode
-  ch15/15.7/15.7.1/S15.7.1.1_A2 in non-strict mode
   ch15/15.9/15.9.1/15.9.1.15/15.9.1.15-1 in non-strict mode
   ch15/15.9/15.9.2/S15.9.2.1_A2 in non-strict mode
   ch15/15.9/15.9.3/S15.9.3.1_A5_T1 in non-strict mode
