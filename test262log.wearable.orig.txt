@@ -4351,18 +4351,12 @@ ch15/15.10/15.10.2/15.10.2.11/S15.10.2.11_A1_T6 passed in non-strict mode
 ch15/15.10/15.10.2/15.10.2.11/S15.10.2.11_A1_T7 passed in non-strict mode
 ch15/15.10/15.10.2/15.10.2.11/S15.10.2.11_A1_T8 passed in non-strict mode
 ch15/15.10/15.10.2/15.10.2.11/S15.10.2.11_A1_T9 passed in non-strict mode
-=== ch15/15.10/15.10.2/15.10.2.12/S15.10.2.12_A1_T1 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #64: Error matching character class s for BOM (feff)
-===
+ch15/15.10/15.10.2/15.10.2.12/S15.10.2.12_A1_T1 passed in non-strict mode
 ch15/15.10/15.10.2/15.10.2.12/S15.10.2.12_A1_T2 passed in non-strict mode
 ch15/15.10/15.10.2/15.10.2.12/S15.10.2.12_A1_T3 passed in non-strict mode
 ch15/15.10/15.10.2/15.10.2.12/S15.10.2.12_A1_T4 passed in non-strict mode
 ch15/15.10/15.10.2/15.10.2.12/S15.10.2.12_A1_T5 passed in non-strict mode
-=== ch15/15.10/15.10.2/15.10.2.12/S15.10.2.12_A2_T1 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #64: Error matching character class S for BOM (feff)
-===
+ch15/15.10/15.10.2/15.10.2.12/S15.10.2.12_A2_T1 passed in non-strict mode
 ch15/15.10/15.10.2/15.10.2.12/S15.10.2.12_A2_T2 passed in non-strict mode
 ch15/15.10/15.10.2/15.10.2.12/S15.10.2.12_A2_T3 passed in non-strict mode
 ch15/15.10/15.10.2/15.10.2.12/S15.10.2.12_A2_T4 passed in non-strict mode
@@ -11847,14 +11841,12 @@ ch15/15.9/15.9.5/15.9.5.9/S15.9.5.9_A3_T3 passed in non-strict mode
 
 === Summary ===
  - Ran 10055 tests
- - Passed 10011 tests (99.6%)
- - Failed 44 tests (0.4%)
+ - Passed 10013 tests (99.6%)
+ - Failed 42 tests (0.4%)
 
 Failed tests
   ch07/7.6/S7.6_A4.2_T1 in non-strict mode
   ch07/7.6/S7.6_A4.2_T2 in non-strict mode
-  ch15/15.10/15.10.2/15.10.2.12/S15.10.2.12_A1_T1 in non-strict mode
-  ch15/15.10/15.10.2/15.10.2.12/S15.10.2.12_A2_T1 in non-strict mode
   ch15/15.12/15.12.2/S15.12.2_A1 in non-strict mode
   ch15/15.4/15.4.4/15.4.4.3/S15.4.4.3_A1_T1 in non-strict mode
   ch15/15.4/15.4.4/15.4.4.3/S15.4.4.3_A3_T1 in non-strict mode

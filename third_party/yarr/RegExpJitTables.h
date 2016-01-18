@@ -2665,6 +2665,7 @@ CharacterClass* spacesCreateEscargot()
     characterClass->m_ranges.append(CharacterRange(0x09, 0x0d));
     characterClass->m_matches.append(0x20);
     characterClass->m_matchesUnicode.append(0x00a0);
+    characterClass->m_matchesUnicode.append(0xfeff);
     characterClass->m_matchesUnicode.append(0x1680);
     characterClass->m_matchesUnicode.append(0x180e);
     characterClass->m_rangesUnicode.append(CharacterRange(0x2000, 0x200a));
