@@ -2791,6 +2791,30 @@ void GlobalObject::installString()
 
     // $21.1.3.15 String.prototype.search
     m_stringPrototype->defineDataProperty(ESString::createAtomicString("search"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        escargot::ESString* origStr = instance->currentExecutionContext()->resolveThisBinding().toString();
+        int argCount = instance->currentExecutionContext()->argumentCount();
+        ESValue argument;
+        if (argCount == 0) {
+            argument = ESString::create("");
+        } else {
+            argument = instance->currentExecutionContext()->arguments()[0];
+        }
+        ESPointer* esptr;
+        if (argument.isESPointer()) {
+            esptr = argument.asESPointer();
+        } else {
+            esptr = argument.toString();
+        }
+        
+        ESString::RegexMatchResult result;
+        origStr->match(esptr, result);
+        if (result.m_matchResults.size() != 0) {
+            return ESValue(result.m_matchResults[0][0].m_start);
+        } else {
+            return ESValue(-1);
+        }
+
+
         RELEASE_ASSERT_NOT_REACHED();
     }, ESString::createAtomicString("search"), 1));
 
