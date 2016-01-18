@@ -3191,44 +3191,54 @@ void GlobalObject::installDate()
 
     // http://www.ecma-international.org/ecma-262/5.1/#sec-15.9.3
     m_date = ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        escargot::ESDateObject* thisObject;
         if (instance->currentExecutionContext()->isNewExpression()) {
-            escargot::ESDateObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject()->asESDateObject();
-
-            size_t arg_size = instance->currentExecutionContext()->argumentCount();
-            if (arg_size == 0) {
-                thisObject->setTimeValue();
-            } else if (arg_size == 1) {
-                ESValue v = instance->currentExecutionContext()->arguments()[0].toPrimitive();
-                if (v.isESString()) {
-                    thisObject->setTimeValue(v);
-                } else {
-                    double V = v.toNumber();
-                    thisObject->setTimeValue(ESDateObject::timeClip(V));
-                }
-            } else {
-                double args[7] = {0, 0, 1, 0, 0, 0, 0}; // default value of year, month, date, hour, minute, second, millisecond
-                for (size_t i = 0; i < arg_size; i++) {
-                    args[i] = instance->currentExecutionContext()->readArgument(i).toNumber();
-                }
-                double year = args[0];
-                double month = args[1];
-                double date = args[2];
-                double hour = args[3];
-                double minute = args[4];
-                double second = args[5];
-                double millisecond = args[6];
-
-                if ((int) year >= 0 && (int) year <= 99) {
-                    year += 1900;
-                }
-                if (isnan(year) || isnan(month) || isnan(date) || isnan(hour) || isnan(minute) || isnan(second) || isnan(millisecond)) {
-                    thisObject->setTimeValueAsNaN();
-                    return ESString::create(u"Invalid Date");
-                }
-                thisObject->setTimeValue((int) year, (int) month, (int) date, (int) hour, (int) minute, (int) second, (int) millisecond);
-            }
+            thisObject = instance->currentExecutionContext()->resolveThisBindingToObject()->asESDateObject();
+        } else {
+            thisObject = (escargot::ESDateObject*)GC_MALLOC(sizeof(escargot::ESDateObject));
         }
-        return ESString::create(u"FixMe: We have to return string with date and time data");
+
+        size_t arg_size = instance->currentExecutionContext()->argumentCount();
+        if (arg_size == 0) {
+            thisObject->setTimeValue();
+        } else if (arg_size == 1) {
+            ESValue v = instance->currentExecutionContext()->arguments()[0].toPrimitive();
+            if (v.isESString()) {
+                thisObject->setTimeValue(v);
+            } else {
+                double V = v.toNumber();
+                thisObject->setTimeValue(ESDateObject::timeClip(V));
+            }
+        } else {
+            double args[7] = {0, 0, 1, 0, 0, 0, 0}; // default value of year, month, date, hour, minute, second, millisecond
+            for (size_t i = 0; i < arg_size; i++) {
+                args[i] = instance->currentExecutionContext()->readArgument(i).toNumber();
+            }
+            double year = args[0];
+            double month = args[1];
+            double date = args[2];
+            double hour = args[3];
+            double minute = args[4];
+            double second = args[5];
+            double millisecond = args[6];
+
+            if ((int) year >= 0 && (int) year <= 99) {
+                year += 1900;
+            }
+            if (isnan(year) || isnan(month) || isnan(date) || isnan(hour) || isnan(minute) || isnan(second) || isnan(millisecond)) {
+                thisObject->setTimeValueAsNaN();
+                return ESString::create(u"Invalid Date");
+            }
+            thisObject->setTimeValue((int) year, (int) month, (int) date, (int) hour, (int) minute, (int) second, (int) millisecond);
+        }
+
+        if (instance->currentExecutionContext()->isNewExpression()) {
+            return thisObject->toFullString();
+        } else {
+            escargot::ESString* retval = thisObject->toFullString();
+            GC_FREE(thisObject);
+            return retval;
+        }
     }, strings->Date, 7, true); // $20.3.3 Properties of the Date Constructor: the length property is 7.
     m_date->forceNonVectorHiddenClass(true);
     m_date->defineAccessorProperty(strings->prototype.string(), ESVMInstance::currentInstance()->functionPrototypeAccessorData(), false, false, false);
@@ -3415,7 +3425,34 @@ void GlobalObject::installDate()
 
     // $20.3.4.21 Date.prototype.setFullYear()
     m_datePrototype->defineDataProperty(strings->setFullYear, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        escargot::ESDateObject* thisDateObject = thisObject->asESDateObject();
+        size_t arg_size = instance->currentExecutionContext()->argumentCount();
+        double args[3] = {0, (double) thisDateObject->getMonth(), (double) thisDateObject->getDate()};
+
+        if (arg_size < 1) {
+            thisDateObject->setTimeValueAsNaN();
+            return ESValue(thisDateObject->timeValueAsDouble());
+        }
+        if (isnan(thisDateObject->timeValueAsDouble())) {
+            thisDateObject->setTime(0);
+        }
+        
+        for (size_t i = 0; i < arg_size; i++) {
+            args[i] = instance->currentExecutionContext()->readArgument(i).toNumber();
+            if (i >= 3)
+                break;
+        }
+        
+        if (isnan(args[0]) || isnan(args[1]) || isnan(args[2])) {
+            thisDateObject->setTimeValueAsNaN();
+            return ESValue(thisDateObject->timeValueAsDouble());
+        }
+
+        thisDateObject->setTimeValue((int) args[0], (int) args[1], (int) args[2], thisDateObject->getHours(), thisDateObject->getMinutes()
+            , thisDateObject->getSeconds(), thisDateObject->getMilliseconds());
+
+        return ESValue(thisDateObject->timeValueAsDouble());
     }, strings->setFullYear, 3));
 
     // $20.3.4.22 Date.prototype.setHours()
@@ -3502,6 +3539,22 @@ void GlobalObject::installDate()
 
     // $20.3.4.36 Date.prototype.toISOString
     m_datePrototype->defineDataProperty(strings->toISOString, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (thisObject->isESDateObject()) {
+            escargot::ESDateObject* thisDateObject = thisObject->asESDateObject();        
+
+            char buffer[512];
+            if (!isnan(thisDateObject->timeValueAsDouble())) {
+                snprintf(buffer, 512, "%d-%02d-%02dT%02d:%02d:%02d.%03dZ"
+                    , thisDateObject->getUTCFullYear(), thisDateObject->getUTCMonth() + 1, thisDateObject->getUTCDate()
+                    , thisDateObject->getUTCHours(), thisDateObject->getUTCMinutes(), thisDateObject->getUTCSeconds(), thisDateObject->getUTCMilliseconds());
+                return ESString::create(buffer);
+            } else {
+                instance->throwError(ESValue(RangeError::create()));
+            }
+        } else {
+            instance->throwError(ESValue(TypeError::create()));
+        }      
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->toISOString, 0));
 

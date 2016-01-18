@@ -1898,7 +1898,10 @@ public:
             return std::numeric_limits<double>::quiet_NaN();
         }
     }
-    
+
+    escargot::ESString* toDateString();
+    escargot::ESString* toTimeString();
+    escargot::ESString* toFullString();
     int getDate();
     int getDay();
     int getFullYear();
@@ -1909,6 +1912,14 @@ public:
     int getSeconds();
     long getTimezoneOffset();
     void setTime(double t);
+    int getUTCDate();
+    int getUTCDay();
+    int getUTCFullYear();
+    int getUTCHours();
+    int getUTCMilliseconds();
+    int getUTCMinutes();
+    int getUTCMonth();
+    int getUTCSeconds();
     double toUTC(double t);
     double ymdhmsToSeconds(long year, int month, int day, int hour, int minute, double second);
 
@@ -1939,16 +1950,16 @@ private:
     const double msPerHour = msPerSecond * secondsPerHour;
     const double msPerDay = msPerHour * hoursPerDay;
 
-    double day(double t) { return floor(t / msPerDay); }
-    double timeWithinDay(double t) { return (int) t % (int) msPerDay; }
+    double day(long long t) { return floor(t / msPerDay); }
+    double timeWithinDay(long long t) { return (int) t % (int) msPerDay; }
     int daysInYear(long year);
     int dayFromYear(long year);
     double timeFromYear(long year) { return msPerDay * dayFromYear(year); }
-    long yearFromTime(double t);
-    int inLeapYear(double t);
+    long yearFromTime(long long t);
+    int inLeapYear(long long t);
     int dayFromMonth(long year, int month);
-    int monthFromTime(double t);
-    int dateFromTime(double t);
+    int monthFromTime(long long t);
+    int dateFromTime(long long t);
     double makeDay(long year, int month, int date);
 };
 

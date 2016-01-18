@@ -11405,8 +11405,8 @@ ch15/15.8/15.8.2/15.8.2.9/S15.8.2.9_A5 passed in non-strict mode
 ch15/15.8/15.8.2/15.8.2.9/S15.8.2.9_A6 passed in non-strict mode
 ch15/15.8/15.8.2/15.8.2.9/S15.8.2.9_A7 passed in non-strict mode
 === ch15/15.9/15.9.1/15.9.1.15/15.9.1.15-1 failed in non-strict mode ===
---- errors ---
-
+--- output ---
+Uncaught Test262 Error: Test case returned non-true value!
 ===
 ch15/15.9/15.9.2/S15.9.2.1_A1 passed in non-strict mode
 === ch15/15.9/15.9.2/S15.9.2.1_A2 failed in non-strict mode ===
@@ -11708,60 +11708,42 @@ ch15/15.9/15.9.5/15.9.5.3/S15.9.5.3_A3_T3 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.30/S15.9.5.30_A1_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.30/S15.9.5.30_A1_T2 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.30/S15.9.5.30_A1_T3 passed in non-strict mode
-=== ch15/15.9/15.9.5/15.9.5.30/S15.9.5.30_A2_T1 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #2: The "length" property of the setSeconds is 2
-===
+ch15/15.9/15.9.5/15.9.5.30/S15.9.5.30_A2_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.30/S15.9.5.30_A3_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.30/S15.9.5.30_A3_T2 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.30/S15.9.5.30_A3_T3 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.31/S15.9.5.31_A1_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.31/S15.9.5.31_A1_T2 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.31/S15.9.5.31_A1_T3 passed in non-strict mode
-=== ch15/15.9/15.9.5/15.9.5.31/S15.9.5.31_A2_T1 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #2: The "length" property of the setUTCSeconds is 2
-===
+ch15/15.9/15.9.5/15.9.5.31/S15.9.5.31_A2_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.31/S15.9.5.31_A3_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.31/S15.9.5.31_A3_T2 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.31/S15.9.5.31_A3_T3 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.32/S15.9.5.32_A1_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.32/S15.9.5.32_A1_T2 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.32/S15.9.5.32_A1_T3 passed in non-strict mode
-=== ch15/15.9/15.9.5/15.9.5.32/S15.9.5.32_A2_T1 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #2: The "length" property of the setMinutes is 3
-===
+ch15/15.9/15.9.5/15.9.5.32/S15.9.5.32_A2_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.32/S15.9.5.32_A3_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.32/S15.9.5.32_A3_T2 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.32/S15.9.5.32_A3_T3 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.33/S15.9.5.33_A1_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.33/S15.9.5.33_A1_T2 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.33/S15.9.5.33_A1_T3 passed in non-strict mode
-=== ch15/15.9/15.9.5/15.9.5.33/S15.9.5.33_A2_T1 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #2: The "length" property of the setUTCMinutes is 3
-===
+ch15/15.9/15.9.5/15.9.5.33/S15.9.5.33_A2_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.33/S15.9.5.33_A3_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.33/S15.9.5.33_A3_T2 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.33/S15.9.5.33_A3_T3 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.34/S15.9.5.34_A1_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.34/S15.9.5.34_A1_T2 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.34/S15.9.5.34_A1_T3 passed in non-strict mode
-=== ch15/15.9/15.9.5/15.9.5.34/S15.9.5.34_A2_T1 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #2: The "length" property of the setHours is 4
-===
+ch15/15.9/15.9.5/15.9.5.34/S15.9.5.34_A2_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.34/S15.9.5.34_A3_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.34/S15.9.5.34_A3_T2 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.34/S15.9.5.34_A3_T3 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.35/S15.9.5.35_A1_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.35/S15.9.5.35_A1_T2 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.35/S15.9.5.35_A1_T3 passed in non-strict mode
-=== ch15/15.9/15.9.5/15.9.5.35/S15.9.5.35_A2_T1 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #2: The "length" property of the setUTCHours is 4
-===
+ch15/15.9/15.9.5/15.9.5.35/S15.9.5.35_A2_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.35/S15.9.5.35_A3_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.35/S15.9.5.35_A3_T2 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.35/S15.9.5.35_A3_T3 passed in non-strict mode
@@ -11782,20 +11764,14 @@ ch15/15.9/15.9.5/15.9.5.37/S15.9.5.37_A3_T3 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.38/S15.9.5.38_A1_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.38/S15.9.5.38_A1_T2 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.38/S15.9.5.38_A1_T3 passed in non-strict mode
-=== ch15/15.9/15.9.5/15.9.5.38/S15.9.5.38_A2_T1 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #2: The "length" property of the setMonth is 2
-===
+ch15/15.9/15.9.5/15.9.5.38/S15.9.5.38_A2_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.38/S15.9.5.38_A3_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.38/S15.9.5.38_A3_T2 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.38/S15.9.5.38_A3_T3 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.39/S15.9.5.39_A1_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.39/S15.9.5.39_A1_T2 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.39/S15.9.5.39_A1_T3 passed in non-strict mode
-=== ch15/15.9/15.9.5/15.9.5.39/S15.9.5.39_A2_T1 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #2: The "length" property of the setUTCMonth is 2
-===
+ch15/15.9/15.9.5/15.9.5.39/S15.9.5.39_A2_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.39/S15.9.5.39_A3_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.39/S15.9.5.39_A3_T2 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.39/S15.9.5.39_A3_T3 passed in non-strict mode
@@ -11806,27 +11782,18 @@ ch15/15.9/15.9.5/15.9.5.4/S15.9.5.4_A2_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.4/S15.9.5.4_A3_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.4/S15.9.5.4_A3_T2 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.4/S15.9.5.4_A3_T3 passed in non-strict mode
-=== ch15/15.9/15.9.5/15.9.5.40/15.9.5.40_1 failed in non-strict mode ===
---- errors ---
-
-===
+ch15/15.9/15.9.5/15.9.5.40/15.9.5.40_1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.40/S15.9.5.40_A1_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.40/S15.9.5.40_A1_T2 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.40/S15.9.5.40_A1_T3 passed in non-strict mode
-=== ch15/15.9/15.9.5/15.9.5.40/S15.9.5.40_A2_T1 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #2: The "length" property of the setFullYear is 3
-===
+ch15/15.9/15.9.5/15.9.5.40/S15.9.5.40_A2_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.40/S15.9.5.40_A3_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.40/S15.9.5.40_A3_T2 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.40/S15.9.5.40_A3_T3 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.41/S15.9.5.41_A1_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.41/S15.9.5.41_A1_T2 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.41/S15.9.5.41_A1_T3 passed in non-strict mode
-=== ch15/15.9/15.9.5/15.9.5.41/S15.9.5.41_A2_T1 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #2: The "length" property of the setUTCFullYear is 3
-===
+ch15/15.9/15.9.5/15.9.5.41/S15.9.5.41_A2_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.41/S15.9.5.41_A3_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.41/S15.9.5.41_A3_T2 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.41/S15.9.5.41_A3_T3 passed in non-strict mode
@@ -11837,60 +11804,21 @@ ch15/15.9/15.9.5/15.9.5.42/S15.9.5.42_A2_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.42/S15.9.5.42_A3_T1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.42/S15.9.5.42_A3_T2 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.42/S15.9.5.42_A3_T3 passed in non-strict mode
-=== ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-10 failed in non-strict mode ===
---- errors ---
-
-===
-=== ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-11 failed in non-strict mode ===
---- errors ---
-
-===
-=== ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-12 failed in non-strict mode ===
---- errors ---
-
-===
-=== ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-13 failed in non-strict mode ===
---- errors ---
-
-===
-=== ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-14 failed in non-strict mode ===
---- errors ---
-
-===
-=== ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-15 failed in non-strict mode ===
---- errors ---
-
-===
-=== ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-16 failed in non-strict mode ===
---- errors ---
-
-===
+ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-10 passed in non-strict mode
+ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-11 passed in non-strict mode
+ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-12 passed in non-strict mode
+ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-13 passed in non-strict mode
+ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-14 passed in non-strict mode
+ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-15 passed in non-strict mode
+ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-16 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-2 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-3 passed in non-strict mode
-=== ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-4 failed in non-strict mode ===
---- errors ---
-
-===
-=== ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-5 failed in non-strict mode ===
---- errors ---
-
-===
-=== ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-6 failed in non-strict mode ===
---- errors ---
-
-===
-=== ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-7 failed in non-strict mode ===
---- errors ---
-
-===
-=== ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-8 failed in non-strict mode ===
---- errors ---
-
-===
-=== ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-9 failed in non-strict mode ===
---- errors ---
-
-===
+ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-4 passed in non-strict mode
+ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-5 passed in non-strict mode
+ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-6 passed in non-strict mode
+ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-7 passed in non-strict mode
+ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-8 passed in non-strict mode
+ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-9 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.44/15.9.5.44-0-1 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.44/15.9.5.44-0-2 passed in non-strict mode
 ch15/15.9/15.9.5/15.9.5.5/S15.9.5.5_A1_T1 passed in non-strict mode
@@ -11931,8 +11859,8 @@ ch15/15.9/15.9.5/15.9.5.9/S15.9.5.9_A3_T3 passed in non-strict mode
 
 === Summary ===
  - Ran 10055 tests
- - Passed 9983 tests (99.3%)
- - Failed 72 tests (0.7%)
+ - Passed 10007 tests (99.5%)
+ - Failed 48 tests (0.5%)
 
 Failed tests
   ch07/7.6/S7.6_A4.2_T1 in non-strict mode
@@ -11980,30 +11908,6 @@ Failed tests
   ch15/15.9/15.9.3/S15.9.3.1_A5_T4 in non-strict mode
   ch15/15.9/15.9.3/S15.9.3.1_A5_T5 in non-strict mode
   ch15/15.9/15.9.3/S15.9.3.1_A5_T6 in non-strict mode
-  ch15/15.9/15.9.5/15.9.5.30/S15.9.5.30_A2_T1 in non-strict mode
-  ch15/15.9/15.9.5/15.9.5.31/S15.9.5.31_A2_T1 in non-strict mode
-  ch15/15.9/15.9.5/15.9.5.32/S15.9.5.32_A2_T1 in non-strict mode
-  ch15/15.9/15.9.5/15.9.5.33/S15.9.5.33_A2_T1 in non-strict mode
-  ch15/15.9/15.9.5/15.9.5.34/S15.9.5.34_A2_T1 in non-strict mode
-  ch15/15.9/15.9.5/15.9.5.35/S15.9.5.35_A2_T1 in non-strict mode
-  ch15/15.9/15.9.5/15.9.5.38/S15.9.5.38_A2_T1 in non-strict mode
-  ch15/15.9/15.9.5/15.9.5.39/S15.9.5.39_A2_T1 in non-strict mode
-  ch15/15.9/15.9.5/15.9.5.40/15.9.5.40_1 in non-strict mode
-  ch15/15.9/15.9.5/15.9.5.40/S15.9.5.40_A2_T1 in non-strict mode
-  ch15/15.9/15.9.5/15.9.5.41/S15.9.5.41_A2_T1 in non-strict mode
-  ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-10 in non-strict mode
-  ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-11 in non-strict mode
-  ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-12 in non-strict mode
-  ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-13 in non-strict mode
-  ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-14 in non-strict mode
-  ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-15 in non-strict mode
-  ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-16 in non-strict mode
-  ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-4 in non-strict mode
-  ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-5 in non-strict mode
-  ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-6 in non-strict mode
-  ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-7 in non-strict mode
-  ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-8 in non-strict mode
-  ch15/15.9/15.9.5/15.9.5.43/15.9.5.43-0-9 in non-strict mode
 
 Expected to fail but passed ---
  ch12/12.1/S12.1_A4_T2 in non-strict mode
