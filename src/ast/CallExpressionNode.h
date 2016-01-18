@@ -31,8 +31,10 @@ public:
             }
         }
         bool prevInCallingExpressionScope = context.m_inCallingExpressionScope;
-        context.m_inCallingExpressionScope = true;
-        context.m_isHeadOfMemberExpression = true;
+        if (m_callee->isMemberExpresion()) {
+            context.m_inCallingExpressionScope = true;
+            context.m_isHeadOfMemberExpression = true;
+        }
         m_callee->generateExpressionByteCode(codeBlock, context);
         context.m_inCallingExpressionScope = false;
 
@@ -41,7 +43,7 @@ public:
         }
         context.m_inCallingExpressionScope = prevInCallingExpressionScope;
 
-        if (!findRightAfterExpression(m_callee, NodeType::MemberExpression)) {
+        if (!m_callee->isMemberExpresion()) {
             codeBlock->pushCode(CallFunction(m_arguments.size()), context, this);
         } else {
             codeBlock->pushCode(CallFunctionWithReceiver(m_arguments.size()), context, this);

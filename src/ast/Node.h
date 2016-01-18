@@ -156,6 +156,11 @@ public:
         RELEASE_ASSERT_NOT_REACHED();
     }
 
+    bool isMemberExpresion()
+    {
+        return m_nodeType == NodeType::MemberExpression;
+    }
+
     virtual ~Node()
     {
 
@@ -213,8 +218,6 @@ protected:
     SourceLocation m_sourceLocation;
 #endif
 };
-
-bool findRightAfterExpression(Node* node, NodeType tp);
 
 }
 

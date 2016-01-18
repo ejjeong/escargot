@@ -7789,7 +7789,7 @@ ch15/15.2/15.2.4/15.2.4.4/S15.2.4.4_A10 passed in non-strict mode
 ch15/15.2/15.2.4/15.2.4.4/S15.2.4.4_A11 passed in non-strict mode
 ch15/15.2/15.2.4/15.2.4.4/S15.2.4.4_A12 failed in non-strict mode as expected
 ch15/15.2/15.2.4/15.2.4.4/S15.2.4.4_A13 failed in non-strict mode as expected
-=== ch15/15.2/15.2.4/15.2.4.4/S15.2.4.4_A14 was expected to fail in non-strict mode, but didn't ===
+ch15/15.2/15.2.4/15.2.4.4/S15.2.4.4_A14 failed in non-strict mode as expected
 ch15/15.2/15.2.4/15.2.4.4/S15.2.4.4_A15 failed in non-strict mode as expected
 ch15/15.2/15.2.4/15.2.4.4/S15.2.4.4_A1_T1 passed in non-strict mode
 ch15/15.2/15.2.4/15.2.4.4/S15.2.4.4_A1_T2 passed in non-strict mode
@@ -11838,8 +11838,8 @@ ch15/15.9/15.9.5/15.9.5.9/S15.9.5.9_A3_T3 passed in non-strict mode
 
 === Summary ===
  - Ran 10055 tests
- - Passed 10016 tests (99.6%)
- - Failed 39 tests (0.4%)
+ - Passed 10017 tests (99.6%)
+ - Failed 38 tests (0.4%)
 
 Failed tests
   ch07/7.6/S7.6_A4.2_T1 in non-strict mode
@@ -11880,9 +11880,6 @@ Failed tests
   ch15/15.9/15.9.3/S15.9.3.1_A5_T4 in non-strict mode
   ch15/15.9/15.9.3/S15.9.3.1_A5_T5 in non-strict mode
   ch15/15.9/15.9.3/S15.9.3.1_A5_T6 in non-strict mode
-
-Expected to fail but passed ---
- ch15/15.2/15.2.4/15.2.4.4/S15.2.4.4_A14 in non-strict mode
 
 Use --full-summary to see output from failed tests
 
