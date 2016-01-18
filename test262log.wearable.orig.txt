@@ -2394,10 +2394,7 @@ ch09/9.3/9.3.1/S9.3.1_A16 passed in non-strict mode
 ch09/9.3/9.3.1/S9.3.1_A17 passed in non-strict mode
 ch09/9.3/9.3.1/S9.3.1_A18 passed in non-strict mode
 ch09/9.3/9.3.1/S9.3.1_A19 passed in non-strict mode
-=== ch09/9.3/9.3.1/S9.3.1_A2 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #1.1: Number("\u0009\u000C\u0020\u00A0\u000B\u000A\u000D\u2028\u2029\u1680\u180E\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000") === 0. Actual: NaN
-===
+ch09/9.3/9.3.1/S9.3.1_A2 passed in non-strict mode
 ch09/9.3/9.3.1/S9.3.1_A20 passed in non-strict mode
 ch09/9.3/9.3.1/S9.3.1_A21 passed in non-strict mode
 ch09/9.3/9.3.1/S9.3.1_A22 passed in non-strict mode
@@ -2411,14 +2408,8 @@ ch09/9.3/9.3.1/S9.3.1_A29 passed in non-strict mode
 ch09/9.3/9.3.1/S9.3.1_A30 passed in non-strict mode
 ch09/9.3/9.3.1/S9.3.1_A31 passed in non-strict mode
 ch09/9.3/9.3.1/S9.3.1_A32 passed in non-strict mode
-=== ch09/9.3/9.3.1/S9.3.1_A3_T1 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #1: Number("\u0009\u000C\u0020\u00A0\u000B\u000A\u000D\u2028\u2029\u1680\u180E\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000") === Number("")
-===
-=== ch09/9.3/9.3.1/S9.3.1_A3_T2 failed in non-strict mode ===
---- output ---
-Uncaught Test262 Error: #1: Number("\u0009\u000C\u0020\u00A0\u000B"+"\u000A\u000D\u2028\u2029\u1680\u180E\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000") === Number("")
-===
+ch09/9.3/9.3.1/S9.3.1_A3_T1 passed in non-strict mode
+ch09/9.3/9.3.1/S9.3.1_A3_T2 passed in non-strict mode
 ch09/9.3/9.3.1/S9.3.1_A4_T1 passed in non-strict mode
 ch09/9.3/9.3.1/S9.3.1_A4_T2 passed in non-strict mode
 ch09/9.3/9.3.1/S9.3.1_A5_T1 passed in non-strict mode
@@ -11859,15 +11850,12 @@ ch15/15.9/15.9.5/15.9.5.9/S15.9.5.9_A3_T3 passed in non-strict mode
 
 === Summary ===
  - Ran 10055 tests
- - Passed 10007 tests (99.5%)
- - Failed 48 tests (0.5%)
+ - Passed 10010 tests (99.6%)
+ - Failed 45 tests (0.4%)
 
 Failed tests
   ch07/7.6/S7.6_A4.2_T1 in non-strict mode
   ch07/7.6/S7.6_A4.2_T2 in non-strict mode
-  ch09/9.3/9.3.1/S9.3.1_A2 in non-strict mode
-  ch09/9.3/9.3.1/S9.3.1_A3_T1 in non-strict mode
-  ch09/9.3/9.3.1/S9.3.1_A3_T2 in non-strict mode
   ch15/15.10/15.10.2/15.10.2.12/S15.10.2.12_A1_T1 in non-strict mode
   ch15/15.10/15.10.2/15.10.2.12/S15.10.2.12_A2_T1 in non-strict mode
   ch15/15.12/15.12.2/S15.12.2_A1 in non-strict mode

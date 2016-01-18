@@ -222,7 +222,7 @@ inline double ESValue::toNumberSlowCase() const
 
         char* end;
         char* buf = (char*)alloca(data->length() + 1);
-        size_t len = data->length();
+        const size_t len = data->length();
         for (unsigned i = 0; i < len ; i ++) {
             char16_t c = data->charAt(i);
             if (c >= 128)
@@ -232,17 +232,54 @@ inline double ESValue::toNumberSlowCase() const
         buf[len] = 0;
         val = strtod(buf, &end);
         if (end != buf + len) {
-            bool isOnlyWhiteSpace = true;
-            size_t s = data->length();
-            for (unsigned i = 0; i < s; i ++) {
-                // FIXME we shold not use isspace function. implement javascript isspace function.
-                if (!isspace(data->charAt(i))) {
-                    isOnlyWhiteSpace = false;
+            auto isSpace = [] (char16_t c) -> bool {
+                switch (c) {
+                    case 0x0009: case 0x000A: case 0x000B: case 0x000C:
+                    case 0x000D: case 0x0020: case 0x00A0: case 0x1680:
+                    case 0x180E: case 0x2000: case 0x2001: case 0x2002:
+                    case 0x2003: case 0x2004: case 0x2005: case 0x2006:
+                    case 0x2007: case 0x2008: case 0x2009: case 0x200A:
+                    case 0x2028: case 0x2029: case 0x202F: case 0x205F:
+                    case 0x3000:
+                        return true;
+                    default:
+                        return false;
+                }
+            };
+
+            unsigned ptr = 0;
+            enum State { Initial, ReadingNumber, DoneReadingNumber, Invalid };
+            State state = State::Initial;
+            for (unsigned i = 0; i < len; i ++) {
+                switch (state) {
+                case Initial:
+                    if (isSpace(data->charAt(i)))
+                        break;
+                    else
+                        state = State::ReadingNumber;
+                case ReadingNumber:
+                    if (isSpace(data->charAt(i)))
+                        state = State::DoneReadingNumber;
+                    else {
+                        char16_t c = data->charAt(i);
+                        if (c >= 128)
+                            c = 0;
+                        buf[ptr++] = c;
+                    }
+                    break;
+                case DoneReadingNumber:
+                    if (!isSpace(data->charAt(i)))
+                        state = State::Invalid;
+                    break;
+                case Invalid:
                     break;
                 }
             }
-            if (isOnlyWhiteSpace) {
-                val = 0;
+            if (state != State::Invalid) {
+                buf[ptr] = 0;
+                val = strtod(buf, &end);
+                if (end != buf + ptr)
+                    val = std::numeric_limits<double>::quiet_NaN();
             } else
                 val = std::numeric_limits<double>::quiet_NaN();
         }
