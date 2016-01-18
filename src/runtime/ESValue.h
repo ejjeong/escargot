@@ -2147,7 +2147,7 @@ class Node;
 class ESFunctionObject : public ESObject {
 protected:
     ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlock* codeBlock, escargot::ESString* name, unsigned length, bool hasPrototype = true, bool isBuiltIn = false);
-    ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeFunctionType fn, escargot::ESString* name, unsigned length, bool isConstructor);
+    ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeFunctionType fn, escargot::ESString* name, unsigned length, bool isConstructor, bool isBuiltIn = true);
 public:
     static ESFunctionObject* create(LexicalEnvironment* outerEnvironment, CodeBlock* codeBlock, escargot::ESString* name, unsigned length = 0, bool hasPrototype = true)
     {
@@ -2156,9 +2156,9 @@ public:
     }
 
     // Built-in functions that are not constructors do not have prototype property(ECMA 5.1 $15)
-    static ESFunctionObject* create(LexicalEnvironment* outerEnvironment, const NativeFunctionType& fn, escargot::ESString* name, unsigned length = 0, bool isConstructor = false)
+    static ESFunctionObject* create(LexicalEnvironment* outerEnvironment, const NativeFunctionType& fn, escargot::ESString* name, unsigned length = 0, bool isConstructor = false, bool isBuiltIn = true)
     {
-        ESFunctionObject* ret = new ESFunctionObject(outerEnvironment, fn, name, length, isConstructor);
+        ESFunctionObject* ret = new ESFunctionObject(outerEnvironment, fn, name, length, isConstructor, isBuiltIn);
         return ret;
     }
 

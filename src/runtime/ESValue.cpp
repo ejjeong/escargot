@@ -997,8 +997,8 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlo
     m_flags.m_isBoundFunction = false;
 }
 
-ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeFunctionType fn, escargot::ESString* name, unsigned length, bool isConstructor)
-    : ESFunctionObject(outerEnvironment, (CodeBlock *)NULL, name, length, isConstructor, true)
+ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeFunctionType fn, escargot::ESString* name, unsigned length, bool isConstructor, bool isBuiltIn)
+    : ESFunctionObject(outerEnvironment, (CodeBlock *)NULL, name, length, isConstructor, isBuiltIn)
 {
     m_codeBlock = CodeBlock::create(0, true);
     m_codeBlock->m_hasCode = true;
