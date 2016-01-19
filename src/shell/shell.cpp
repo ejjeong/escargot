@@ -325,7 +325,7 @@ int main(int argc, char* argv[])
                     str += buf;
                 }
                 fclose(fp);
-                escargot::ESString* source = escargot::ESString::create(std::move(str));
+                escargot::ESString* source = escargot::ESString::createUTF16StringIfNeeded(std::move(str));
                 std::jmp_buf tryPosition;
                 if (setjmp(ES->registerTryPos(&tryPosition)) == 0) {
                     escargot::ESValue ret = ES->evaluate(source);

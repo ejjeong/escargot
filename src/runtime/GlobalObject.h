@@ -320,6 +320,8 @@ public:
         size_t ret = m_hiddenClass->findProperty(key);
         if (ret == SIZE_MAX)
             return NULL;
+        if (m_hiddenClassData[ret].isDeleted())
+            return NULL;
         ASSERT(m_hiddenClass->propertyInfo(ret).m_flags.m_isDataProperty);
         return &m_hiddenClassData[ret];
     }

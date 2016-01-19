@@ -554,6 +554,16 @@ size_t stringHash(const T* s, size_t len, size_t seed = 0)
     return hash;
 }
 
+inline bool isAllASCII(const char* buf, const size_t& len)
+{
+    for (unsigned i = 0; i < len ; i ++) {
+        if ((buf[i] & 0x80) != 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
 inline bool isAllASCII(const char16_t* buf, const size_t& len)
 {
     for (unsigned i = 0; i < len ; i ++) {
@@ -562,6 +572,53 @@ inline bool isAllASCII(const char16_t* buf, const size_t& len)
         }
     }
     return true;
+}
+
+static const char32_t offsetsFromUTF8[6] = { 0x00000000UL, 0x00003080UL, 0x000E2080UL, 0x03C82080UL, static_cast<char32_t>(0xFA082080UL), static_cast<char32_t>(0x82082080UL) };
+
+inline char32_t readUTF8Sequence(const char*& sequence)
+{
+    unsigned length;
+    const char sch = *sequence;
+    if ((sch & 0x80) == 0)         length = 1;
+    else if ((sch & 0xE0) == 0xC0) length = 2;
+    else if ((sch & 0xF0) == 0xE0) length = 3;
+    else if ((sch & 0xF8) == 0xF0) length = 4;
+    else { RELEASE_ASSERT_NOT_REACHED(); }
+
+    char32_t ch = 0;
+    switch (length) {
+        case 6: ch += static_cast<unsigned char>(*sequence++); ch <<= 6; // FALLTHROUGH;
+        case 5: ch += static_cast<unsigned char>(*sequence++); ch <<= 6; // FALLTHROUGH;
+        case 4: ch += static_cast<unsigned char>(*sequence++); ch <<= 6; // FALLTHROUGH;
+        case 3: ch += static_cast<unsigned char>(*sequence++); ch <<= 6; // FALLTHROUGH;
+        case 2: ch += static_cast<unsigned char>(*sequence++); ch <<= 6; // FALLTHROUGH;
+        case 1: ch += static_cast<unsigned char>(*sequence++);
+    }
+    return ch - offsetsFromUTF8[length - 1];
+}
+
+inline UTF16String utf8StringToUTF16String(const char* buf, const size_t& len)
+{
+    UTF16String str;
+    const char* source = buf;
+    while (source < buf + len) {
+        char32_t ch = readUTF8Sequence(source);
+        if (((uint32_t)(ch)<=0xffff)) { // BMP
+            if ((((ch)&0xfffff800)==0xd800)) { // SURROGATE
+                str += 0xFFFD;
+            } else {
+                str += ch; // normal case
+            }
+        } else if (((uint32_t)((ch)-0x10000)<=0xfffff)) { // SUPPLEMENTARY
+            str += (char16_t)(((ch)>>10)+0xd7c0);   // LEAD
+            str += (char16_t)(((ch)&0x3ff)|0xdc00); // TRAIL
+        } else {
+            str += 0xFFFD;
+        }
+    }
+
+    return UTF16String(std::move(str));
 }
 
 inline ASCIIString utf16StringToASCIIString(const char16_t* buf, const size_t& len)
@@ -603,6 +660,22 @@ public:
             return ESString::create(utf16StringToASCIIString(src.data(), src.length()));
         }
         return ESString::create(std::move(src));
+    }
+
+    static ESString* createUTF16StringIfNeeded(const char* src, size_t len)
+    {
+        if (isAllASCII(src, len)) {
+            return ESString::create(std::move(ASCIIString(src, &src[len])));
+        }
+        return ESString::create(utf8StringToUTF16String(src, len));
+    }
+
+    static ESString* createUTF16StringIfNeeded(ASCIIString&& src)
+    {
+        if (isAllASCII(src.data(), src.length())) {
+            return ESString::create(std::move(src));
+        }
+        return ESString::create(utf8StringToUTF16String(src.data(), src.length()));
     }
 
     static ESString* create(const UTF16String& src);
