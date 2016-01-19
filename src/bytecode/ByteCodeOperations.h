@@ -395,12 +395,17 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
                                 if (data->getJSSetter()) {
                                     ESValue args[] = {value};
                                     ESFunctionObject::call(ESVMInstance::currentInstance(), data->getJSSetter(), willBeObject->asESPointer()->asESObject(), args, 1, false);
+                                    return;
                                 } else {
                                     throwObjectWriteError();
                                     return;
                                 }
                             } else if (data->getNativeSetter()) {
+                                *cachedHiddenClassIndex = SIZE_MAX;
+                                *hiddenClassWillBe = NULL;
+                                cachedHiddenClassChain->clear();
                                 data->setValue(obj, willBeObject->asESPointer()->asESObject(), keyString, value);
+                                return;
                             }
                         }
 
