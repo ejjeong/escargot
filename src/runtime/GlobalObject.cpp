@@ -2612,7 +2612,9 @@ void GlobalObject::installString()
 
     // $21.1.3.10 String.prototype.localeCompare
     m_stringPrototype->defineDataProperty(ESString::createAtomicString("localeCompare"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        ::escargot::ESString* S = instance->currentExecutionContext()->resolveThisBinding().toString();
+        ::escargot::ESString* That = instance->currentExecutionContext()->readArgument(0).toString();
+        return ESValue(stringCompare(*S, *That));
     }, ESString::createAtomicString("localeCompare"), 1));
 
     // $21.1.3.11 String.prototype.match(regexp)
