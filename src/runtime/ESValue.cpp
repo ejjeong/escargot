@@ -1731,7 +1731,7 @@ void ESDateObject::setTimeValue()
 {
     struct timespec time;
     clock_gettime(CLOCK_REALTIME, &time);
-    m_primitiveValue = time.tv_sec * 1000 + floor(time.tv_nsec / 1000000);
+    m_primitiveValue = time.tv_sec * (long long) 1000 + floor(time.tv_nsec / 1000000);
     m_isCacheDirty = true;
     m_hasValidDate = true;
 }
