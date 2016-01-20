@@ -1523,13 +1523,13 @@ double ESDateObject::parseStringToDate(escargot::ESString* istr)
 
     parse_returned = strptime(buffer, "%Y", &timeinfo); // Date format with UTC timezone
     if (buffer + fmt_length == parse_returned) {
-        primitiveValue = ymdhmsToSeconds(timeinfo.tm_year+1900, 0, 1, 0, 0, 0);
+        primitiveValue = ymdhmsToSeconds(timeinfo.tm_year+1900, 0, 1, 0, 0, 0) * 1000.;
         return primitiveValue;
     }
 
     parse_returned = strptime(buffer, "%B %d %Y %H:%M:%S %z", &timeinfo); // Date format with specific timezone
     if (buffer + fmt_length == parse_returned) { 
-        primitiveValue = ymdhmsToSeconds(timeinfo.tm_year+1900, timeinfo.tm_mon, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
+        primitiveValue = ymdhmsToSeconds(timeinfo.tm_year+1900, timeinfo.tm_mon, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec) * 1000.;
 #ifdef __USE_BSD
         primitiveValue = primitiveValue - timeinfo.tm_gmtoff * 1000;
 #else
@@ -1555,7 +1555,7 @@ double ESDateObject::parseStringToDate(escargot::ESString* istr)
             timeinfo.tm_gmtoff *= tz;
         }
 //        if (buffer + fmt_length == parse_returned) { 
-            primitiveValue = ymdhmsToSeconds(timeinfo.tm_year+1900, timeinfo.tm_mon, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
+            primitiveValue = ymdhmsToSeconds(timeinfo.tm_year+1900, timeinfo.tm_mon, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec) * 1000.;
 #ifdef __USE_BSD
             primitiveValue = primitiveValue - timeinfo.tm_gmtoff * 1000;
 #else
@@ -1567,19 +1567,19 @@ double ESDateObject::parseStringToDate(escargot::ESString* istr)
 
     parse_returned = strptime(buffer, "%Y-%m-%dT%H:%M:%S.", &timeinfo); // Date format with UTC timezone
     if (buffer + fmt_length == parse_returned + 3) { // for milliseconds part
-        primitiveValue = ymdhmsToSeconds(timeinfo.tm_year+1900, timeinfo.tm_mon, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
+        primitiveValue = ymdhmsToSeconds(timeinfo.tm_year+1900, timeinfo.tm_mon, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec) * 1000.;
         return primitiveValue;
     }
 
     parse_returned = strptime(buffer, "%Y-%m-%dT%H:%M:%S.", &timeinfo); // Date format with UTC timezone
     if (buffer + fmt_length == parse_returned + 4) { // for milliseconds part and 'Z' part
-        primitiveValue = ymdhmsToSeconds(timeinfo.tm_year+1900, timeinfo.tm_mon, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
+        primitiveValue = ymdhmsToSeconds(timeinfo.tm_year+1900, timeinfo.tm_mon, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec) * 1000.;
         return primitiveValue;
     }
 
     parse_returned = strptime(buffer, "%m/%d/%Y %H:%M:%S", &timeinfo); // Date format with local timezone
     if (buffer + fmt_length == parse_returned) {
-        primitiveValue = ymdhmsToSeconds(timeinfo.tm_year+1900, timeinfo.tm_mon, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
+        primitiveValue = ymdhmsToSeconds(timeinfo.tm_year+1900, timeinfo.tm_mon, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec) * 1000.;
         primitiveValue = toUTC(primitiveValue);
         return primitiveValue;
     }

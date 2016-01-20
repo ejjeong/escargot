@@ -3658,7 +3658,9 @@ void GlobalObject::installDate()
 
     // $B.2.4.1 Date.prototype.getYear()
     m_datePrototype->defineDataProperty(strings->getYear, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        int ret = thisObject->asESDateObject()->getFullYear() - 1900;
+        return ESValue(ret);
     }, strings->getYear, 0));
 
     // $B.2.4.2 Date.prototype.setYear()
