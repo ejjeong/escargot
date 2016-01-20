@@ -1739,14 +1739,8 @@ ch07/7.6/S7.6_A1.3_T2 passed in non-strict mode
 ch07/7.6/S7.6_A2.1_T4 passed in non-strict mode
 ch07/7.6/S7.6_A4.1_T1 passed in non-strict mode
 ch07/7.6/S7.6_A4.1_T2 passed in non-strict mode
-=== ch07/7.6/S7.6_A4.2_T1 failed in non-strict mode ===
---- output ---
-Uncaught SyntaxError: Parse Error 2216 line
-===
-=== ch07/7.6/S7.6_A4.2_T2 failed in non-strict mode ===
---- output ---
-Uncaught SyntaxError: Parse Error 2216 line
-===
+ch07/7.6/S7.6_A4.2_T1 passed in non-strict mode
+ch07/7.6/S7.6_A4.2_T2 passed in non-strict mode
 ch07/7.6/S7.6_A4.3_T1 passed in non-strict mode
 ch07/7.6/7.6.1/7.6.1-1-1 passed in non-strict mode
 ch07/7.6/7.6.1/7.6.1-1-10 passed in non-strict mode
@@ -11750,12 +11744,10 @@ ch15/15.9/15.9.5/15.9.5.9/S15.9.5.9_A3_T3 passed in non-strict mode
 
 === Summary ===
  - Ran 10055 tests
- - Passed 10047 tests (99.9%)
- - Failed 8 tests (0.1%)
+ - Passed 10049 tests (99.9%)
+ - Failed 6 tests (0.1%)
 
 Failed tests
-  ch07/7.6/S7.6_A4.2_T1 in non-strict mode
-  ch07/7.6/S7.6_A4.2_T2 in non-strict mode
   ch15/15.9/15.9.3/S15.9.3.1_A5_T1 in non-strict mode
   ch15/15.9/15.9.3/S15.9.3.1_A5_T2 in non-strict mode
   ch15/15.9/15.9.3/S15.9.3.1_A5_T3 in non-strict mode
