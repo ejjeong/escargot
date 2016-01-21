@@ -1,16 +1,6 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
 #ifndef yarr_wtfbridge_h
 #define yarr_wtfbridge_h
 
-/*
- * WTF compatibility layer. This file provides various type and data
- * definitions for use by Yarr.
- */
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -28,13 +18,6 @@ struct AlignmentTestStruct
 #define JS_ALIGNMENT_OF(t_) \
   (sizeof(AlignmentTestStruct<t_>) - sizeof(t_))
 
-/*
- * Basic type definitions.
- */
-
-#define JS_EXPORT_PRIVATE
-#define WTF_MAKE_FAST_ALLOCATED
-#define NO_RETURN_DUE_TO_ASSERT
 typedef escargot::ESString String;
 typedef char16_t UChar;
 typedef char LChar;
@@ -182,7 +165,6 @@ inline void adopted(RefCountedBase* object)
 #endif
 
 template<typename T> class RefCounted : public RefCountedBase {
-    //WTF_MAKE_NONCOPYABLE(RefCounted); WTF_MAKE_FAST_ALLOCATED;
 public:
     void deref()
     {
@@ -760,7 +742,6 @@ class Ref {
 enum HashTableDeletedValueType { HashTableDeletedValue };
 
  template<typename T> class RefPtr {
-     //WTF_MAKE_FAST_ALLOCATED;
  public:
      ALWAYS_INLINE RefPtr() : m_ptr(nullptr) { }
      ALWAYS_INLINE RefPtr(T* ptr) : m_ptr(ptr) { refIfNotNull(ptr); }
@@ -1053,16 +1034,13 @@ dataLog(const char *fmt, ...)
 } /* namespace JSC */
 
 namespace WTF {
-/*
- * Sentinel value used in Yarr.
- */
-const size_t notFound = size_t(-1);
-
+const size_t notFound = static_cast<size_t>(-1);
 }
 
 #define JS_EXPORT_PRIVATE
-
 #define WTF_EXPORT_PRIVATE
+#define WTF_MAKE_FAST_ALLOCATED
+#define NO_RETURN_DUE_TO_ASSERT
 
 #define PLATFORM(WTF_FEATURE) (defined WTF_PLATFORM_##WTF_FEATURE  && WTF_PLATFORM_##WTF_FEATURE)
 #define CPU(WTF_FEATURE) (defined WTF_CPU_##WTF_FEATURE  && WTF_CPU_##WTF_FEATURE)
