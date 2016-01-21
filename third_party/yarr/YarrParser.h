@@ -27,9 +27,13 @@
 #define YarrParser_h
 
 #include "Yarr.h"
+#ifndef ESCARGOT
 #include <wtf/ASCIICType.h>
 #include <wtf/text/WTFString.h>
 #include <wtf/unicode/Unicode.h>
+#else
+#include "ASCIICType.h"
+#endif
 
 namespace JSC { namespace Yarr {
 
@@ -232,11 +236,20 @@ private:
         : m_delegate(delegate)
         , m_backReferenceLimit(backReferenceLimit)
         , m_err(NoError)
+#ifndef ESCARGOT
         , m_data(pattern.getCharacters<CharType>())
+#endif
         , m_size(pattern.length())
         , m_index(0)
         , m_parenthesesNestingDepth(0)
     {
+#ifdef ESCARGOT
+        if (pattern.is8Bit()) {
+            m_data = (const CharType *)pattern.characters8();
+        } else {
+            m_data = (const CharType *)pattern.characters16();
+        }
+#endif
     }
 
     /*

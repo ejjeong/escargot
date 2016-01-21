@@ -7,7 +7,6 @@
 #include "parser/ScriptParser.h"
 #include "bytecode/ByteCodeOperations.h"
 
-#include "Yarr.h"
 #include "parser/esprima.h"
 
 namespace escargot {

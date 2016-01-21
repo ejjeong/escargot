@@ -21,6 +21,7 @@
 #include <locale>
 #include <clocale>
 #include <cwchar>
+#include <climits>
 
 #if defined(ENABLE_ESJIT) && !defined(NDEBUG)
 #include <iostream>

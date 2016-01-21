@@ -23,7 +23,9 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef ESCARGOT
 #include "config.h"
+#endif
 #include "PageBlock.h"
 
 #if OS(UNIX)

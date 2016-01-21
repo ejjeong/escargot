@@ -29,7 +29,11 @@
 #ifndef WTF_ASCIICType_h
 #define WTF_ASCIICType_h
 
+#ifndef ESCARGOT
 #include <wtf/Assertions.h>
+#else
+#include "wtfbridge.h"
+#endif
 
 // The behavior of many of the functions in the <ctype.h> header is dependent
 // on the current locale. But in the WebKit project, all uses of those functions

@@ -27,11 +27,15 @@
 #ifndef YarrPattern_h
 #define YarrPattern_h
 
+#ifndef ESCARGOT
 #include <wtf/CheckedArithmetic.h>
 #include <wtf/RefCounted.h>
 #include <wtf/Vector.h>
 #include <wtf/text/WTFString.h>
 #include <wtf/unicode/Unicode.h>
+#else
+#include "wtfbridge.h"
+#endif
 
 namespace JSC { namespace Yarr {
 
@@ -185,6 +189,18 @@ struct PatternTerm {
         quantityType = QuantifierFixedCount;
         quantityCount = 1;
     }
+
+#ifdef ESCARGOT
+    PatternTerm()
+        : type(TypePatternCharacter)
+        , m_capture(false)
+        , m_invert(false)
+    {
+        patternCharacter = 0;
+        quantityType = QuantifierFixedCount;
+        quantityCount = 1;
+    }
+#endif
     
     static PatternTerm ForwardReference()
     {
@@ -278,6 +294,9 @@ public:
     ~PatternDisjunction()
     {
         deleteAllValues(m_alternatives);
+#ifdef ESCARGOT
+        m_alternatives.clear();
+#endif
     }
 
     PatternAlternative* addNewAlternative()
@@ -315,13 +334,19 @@ struct TermChain {
     Vector<TermChain> hotTerms;
 };
 
-struct YarrPattern {
+struct YarrPattern : public gc_cleanup {
     JS_EXPORT_PRIVATE YarrPattern(const String& pattern, bool ignoreCase, bool multiline, const char** error);
 
     ~YarrPattern()
     {
         deleteAllValues(m_disjunctions);
+#ifdef ESCARGOT
+        m_disjunctions.clear();
+#endif
         deleteAllValues(m_userCharacterClasses);
+#ifdef ESCARGOT
+        m_userCharacterClasses.clear();
+#endif
     }
 
     void reset()

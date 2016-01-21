@@ -106,6 +106,7 @@ ifeq ($(HOST), linux)
     CXXFLAGS += -DENABLE_CODECACHE
     # CXXFLAGS += -DENABLE_DTOACACHE
 endif
+CXXFLAGS += -DESCARGOT
 CXXFLAGS += -fno-rtti -fno-math-errno -Isrc/
 CXXFLAGS += -fdata-sections -ffunction-sections
 CXXFLAGS += -frounding-math -fsignaling-nans
@@ -230,7 +231,6 @@ SRC_YARR += third_party/yarr/PageBlock.cpp
 SRC_YARR += third_party/yarr/YarrCanonicalizeUCS2.cpp
 SRC_YARR += third_party/yarr/YarrInterpreter.cpp
 SRC_YARR += third_party/yarr/YarrPattern.cpp
-SRC_YARR += third_party/yarr/YarrSyntaxChecker.cpp
 
 # Common
 THIRD_PARTY_LIBS= $(GCLIBS)

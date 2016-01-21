@@ -26,12 +26,18 @@
 #ifndef PageAllocation_h
 #define PageAllocation_h
 
+#ifndef ESCARGOT
 #include <wtf/Assertions.h>
 #include <wtf/OSAllocator.h>
 #include <wtf/PageBlock.h>
 #include <wtf/UnusedParam.h>
 #include <wtf/VMTags.h>
 #include <algorithm>
+#else
+#include "OSAllocator.h"
+#include "PageBlock.h"
+#include "VMTags.h"
+#endif
 
 #if OS(DARWIN)
 #include <mach/mach_init.h>

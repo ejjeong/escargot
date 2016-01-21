@@ -23,6 +23,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef ESCARGOT
 #include "config.h"
 #include "OSAllocator.h"
 
@@ -31,6 +32,10 @@
 #include <sys/mman.h>
 #include <wtf/Assertions.h>
 #include <wtf/UnusedParam.h>
+#else
+#include "OSAllocator.h"
+#include "PageAllocation.h"
+#endif
 
 namespace WTF {
 

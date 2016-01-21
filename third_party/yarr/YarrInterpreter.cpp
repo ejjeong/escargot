@@ -24,15 +24,22 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef ESCARGOT
 #include "config.h"
+#endif
 #include "YarrInterpreter.h"
 
 #include "Yarr.h"
 #include "YarrCanonicalizeUCS2.h"
+#ifndef ESCARGOT
 #include <wtf/BumpPointerAllocator.h>
 #include <wtf/DataLog.h>
 #include <wtf/text/CString.h>
 #include <wtf/text/WTFString.h>
+#else
+#include "ASCIICType.h"
+#include "BumpPointerAllocator.h"
+#endif
 
 #ifndef NDEBUG
 #include <stdio.h>
@@ -160,6 +167,9 @@ public:
     ParenthesesDisjunctionContext* allocParenthesesDisjunctionContext(ByteDisjunction* disjunction, unsigned* output, ByteTerm& term)
     {
         size_t size = sizeof(ParenthesesDisjunctionContext) - sizeof(unsigned) + (term.atom.parenthesesDisjunction->m_numSubpatterns << 1) * sizeof(unsigned) + sizeof(DisjunctionContext) - sizeof(uintptr_t) + disjunction->m_frameSize * sizeof(uintptr_t);
+#ifdef ESCARGOT
+        size = JS_ROUNDUP(size, JS_ALIGNMENT_OF(ParenthesesDisjunctionContext));
+#endif
         allocatorPool = allocatorPool->ensureCapacity(size);
         if (!allocatorPool)
             CRASH();
@@ -1472,6 +1482,10 @@ class ByteCompiler {
             , savedAlternativeIndex(savedAlternativeIndex)
         {
         }
+
+#ifdef ESCARGOT
+        ParenthesesStackEntry() { }
+#endif
     };
 
 public:
@@ -1487,7 +1501,11 @@ public:
         emitDisjunction(m_pattern.m_body);
         regexEnd();
 
+#ifndef ESCARGOT
         return adoptPtr(new BytecodePattern(m_bodyDisjunction.release(), m_allParenthesesInfo, m_pattern, allocator));
+#else
+        return adoptPtr(new(PointerFreeGC) BytecodePattern(m_bodyDisjunction.release(), m_allParenthesesInfo, Ref<YarrPattern>(m_pattern), allocator));
+#endif
     }
 
     void checkInput(unsigned count)
@@ -1720,6 +1738,9 @@ public:
         unsigned numSubpatterns = lastSubpatternId - subpatternId + 1;
         ByteDisjunction* parenthesesDisjunction = new ByteDisjunction(numSubpatterns, callFrameSize);
 
+#ifdef ESCARGOT
+        parenthesesDisjunction->terms.reserve(endTerm - beginTerm + 1);
+#endif
         parenthesesDisjunction->terms.append(ByteTerm::SubpatternBegin());
         for (unsigned termInParentheses = beginTerm + 1; termInParentheses < endTerm; ++termInParentheses)
             parenthesesDisjunction->terms.append(m_bodyDisjunction->terms[termInParentheses]);

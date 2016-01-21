@@ -27,8 +27,10 @@
 #define YarrInterpreter_h
 
 #include "YarrPattern.h"
+#ifndef ESCARGOT
 #include <wtf/PassOwnPtr.h>
 #include <wtf/unicode/Unicode.h>
+#endif
 
 namespace WTF {
 class BumpPointerAllocator;
@@ -197,6 +199,10 @@ struct ByteTerm {
         inputPosition = inputPos;
     }
 
+#ifdef ESCARGOT
+    ByteTerm() { }
+#endif
+
     static ByteTerm BOL(int inputPos)
     {
         ByteTerm term(TypeAssertionBOL);
@@ -334,10 +340,14 @@ public:
     unsigned m_frameSize;
 };
 
-struct BytecodePattern {
+struct BytecodePattern : public gc_cleanup {
     WTF_MAKE_FAST_ALLOCATED;
 public:
+#ifndef ESCARGOT
     BytecodePattern(PassOwnPtr<ByteDisjunction> body, Vector<ByteDisjunction*> allParenthesesInfo, YarrPattern& pattern, BumpPointerAllocator* allocator)
+#else
+    BytecodePattern(PassOwnPtr<ByteDisjunction> body, Vector<ByteDisjunction*> &allParenthesesInfo, YarrPattern& pattern, BumpPointerAllocator* allocator)
+#endif
         : m_body(body)
         , m_ignoreCase(pattern.m_ignoreCase)
         , m_multiline(pattern.m_multiline)
@@ -346,12 +356,16 @@ public:
         newlineCharacterClass = pattern.newlineCharacterClass();
         wordcharCharacterClass = pattern.wordcharCharacterClass();
 
-        m_allParenthesesInfo.append(allParenthesesInfo);
-        m_userCharacterClasses.append(pattern.m_userCharacterClasses);
+        ASSERT(m_allParenthesesInfo.size() == 0);
+        m_allParenthesesInfo.swap(allParenthesesInfo);
+        ASSERT(m_userCharacterClasses.size() == 0);
+        m_userCharacterClasses.swap(pattern.m_userCharacterClasses);
+#ifndef ESCARGOT
         // 'Steal' the YarrPattern's CharacterClasses!  We clear its
         // array, so that it won't delete them on destruction.  We'll
         // take responsibility for that.
         pattern.m_userCharacterClasses.clear();
+#endif
     }
 
     ~BytecodePattern()

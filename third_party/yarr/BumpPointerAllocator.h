@@ -26,9 +26,14 @@
 #ifndef BumpPointerAllocator_h
 #define BumpPointerAllocator_h
 
+#ifndef ESCARGOT
 #include <algorithm>
 #include <wtf/PageAllocation.h>
 #include <wtf/PageBlock.h>
+#else
+#include "PageAllocation.h"
+#include "PageBlock.h"
+#endif
 
 namespace WTF {
 

@@ -26,9 +26,14 @@
 #ifndef OSAllocator_h
 #define OSAllocator_h
 
+#ifndef ESCARGOT
 #include <algorithm>
 #include <wtf/UnusedParam.h>
 #include <wtf/VMTags.h>
+#else
+#include "wtfbridge.h"
+#include "VMTags.h"
+#endif
 
 namespace WTF {
 
@@ -36,10 +41,12 @@ class OSAllocator {
 public:
     enum Usage {
         UnknownUsage = -1,
+#ifndef ESCARGOT
         FastMallocPages = VM_TAG_FOR_TCMALLOC_MEMORY,
         JSGCHeapPages = VM_TAG_FOR_COLLECTOR_MEMORY,
         JSVMStackPages = VM_TAG_FOR_REGISTERFILE_MEMORY,
         JSJITCodePages = VM_TAG_FOR_EXECUTABLEALLOCATOR_MEMORY,
+#endif
     };
 
     // These methods are symmetric; reserveUncommitted allocates VM in an uncommitted state,

@@ -15,7 +15,6 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include "Escargot.h"
-#define WTF_OS_UNIX 1
 #define JS_HOWMANY(x,y) (((x)+(y)-1)/(y))
 #define JS_ROUNDUP(x,y) (JS_HOWMANY(x,y)*(y))
 template <class T>
@@ -39,8 +38,6 @@ struct AlignmentTestStruct
 typedef escargot::ESString String;
 typedef char16_t UChar;
 typedef char LChar;
-
-#include "PageAllocation.h"
 
 enum TextCaseSensitivity {
     TextCaseSensitive,
@@ -986,7 +983,7 @@ class Vector {
 
     template <size_t M>
     void append(const Vector<T,M> &v) {
-        impl.append(v.impl);
+        impl.insert(impl.end(), v.impl.begin(), v.impl.end());
     }
 
     void insert(size_t i, const T& t) {
@@ -1064,5 +1061,22 @@ const size_t notFound = size_t(-1);
 }
 
 #define JS_EXPORT_PRIVATE
+
+#define WTF_EXPORT_PRIVATE
+
+#define PLATFORM(WTF_FEATURE) (defined WTF_PLATFORM_##WTF_FEATURE  && WTF_PLATFORM_##WTF_FEATURE)
+#define CPU(WTF_FEATURE) (defined WTF_CPU_##WTF_FEATURE  && WTF_CPU_##WTF_FEATURE)
+#define HAVE(WTF_FEATURE) (defined HAVE_##WTF_FEATURE  && HAVE_##WTF_FEATURE)
+#define OS(WTF_FEATURE) (defined WTF_OS_##WTF_FEATURE  && WTF_OS_##WTF_FEATURE)
+#define USE(WTF_FEATURE) (defined WTF_USE_##WTF_FEATURE  && WTF_USE_##WTF_FEATURE)
+#define ENABLE(WTF_FEATURE) (defined ENABLE_##WTF_FEATURE  && ENABLE_##WTF_FEATURE)
+
+#if ESCARGOT_64
+#define WTF_CPU_X86_64 1
+#endif
+#define WTF_OS_LINUX 1
+#define WTF_OS_UNIX 1
+#define HAVE_ERRNO_H 1
+#define HAVE_MMAP 1
 
 #endif /* yarr_wtfbridge_h */

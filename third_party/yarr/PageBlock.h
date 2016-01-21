@@ -26,6 +26,10 @@
 #ifndef PageBlock_h
 #define PageBlock_h
 
+#ifdef ESCARGOT
+#include "wtfbridge.h"
+#endif
+
 namespace WTF {
 
 WTF_EXPORT_PRIVATE size_t pageSize();

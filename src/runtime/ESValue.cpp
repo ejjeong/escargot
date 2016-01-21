@@ -388,7 +388,7 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
 
     bool isGlobal = option & ESRegExpObject::Option::Global;
     if (!byteCode) {
-        JSC::Yarr::ErrorCode yarrError = JSC::Yarr::ErrorCode::NoError;
+        const char* yarrError = nullptr;
         JSC::Yarr::YarrPattern* yarrPattern;
         if (esptr->isESRegExpObject() && esptr->asESRegExpObject()->yarrPattern())
             yarrPattern = esptr->asESRegExpObject()->yarrPattern();
@@ -399,7 +399,7 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
             return false;
         }
         WTF::BumpPointerAllocator *bumpAlloc = ESVMInstance::currentInstance()->bumpPointerAllocator();
-        JSC::Yarr::OwnPtr<JSC::Yarr::BytecodePattern> ownedBytecode = JSC::Yarr::byteCompileEscargot(*yarrPattern, bumpAlloc);
+        JSC::Yarr::OwnPtr<JSC::Yarr::BytecodePattern> ownedBytecode = JSC::Yarr::byteCompile(*yarrPattern, bumpAlloc);
         byteCode = ownedBytecode.leakPtr();
         if (esptr->isESRegExpObject()) {
             esptr->asESRegExpObject()->setBytecodePattern(byteCode);
@@ -424,9 +424,9 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
         if (start > length)
             break;
         if (isASCIIString())
-            result = JSC::Yarr::interpret(NULL, byteCode, (const char *)chars, length, start, outputBuf);
+            result = JSC::Yarr::interpret(byteCode, (const char *)chars, length, start, outputBuf);
         else
-            result = JSC::Yarr::interpret(NULL, byteCode, (const char16_t *)chars, length, start, outputBuf);
+            result = JSC::Yarr::interpret(byteCode, (const char16_t *)chars, length, start, outputBuf);
         if (result != JSC::Yarr::offsetNoMatch) {
             if (UNLIKELY(testOnly)) {
                 return true;
@@ -950,7 +950,7 @@ bool ESRegExpObject::setSource(escargot::ESString* src)
 {
     m_bytecodePattern = NULL;
     m_source = src;
-    JSC::Yarr::ErrorCode yarrError;
+    const char* yarrError = nullptr;
     m_yarrPattern = new JSC::Yarr::YarrPattern(*src, m_option & ESRegExpObject::Option::IgnoreCase, m_option & ESRegExpObject::Option::MultiLine, &yarrError);
     if (yarrError)
         return false;
