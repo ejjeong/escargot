@@ -1,6 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
+/*
  * Copyright (C) 2009 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,16 +23,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
  */
 
-#ifndef yarr_VMTags_h
-#define yarr_VMTags_h
+#ifndef VMTags_h
+#define VMTags_h
 
 // On Mac OS X, the VM subsystem allows tagging memory requested from mmap and vm_map
 // in order to aid tools that inspect system memory use. 
-#if WTF_OS_DARWIN
+#if OS(DARWIN)
 
 #include <mach/vm_statistics.h>
-
-#if !defined(TARGETING_TIGER)
 
 #if defined(VM_MEMORY_TCMALLOC)
 #define VM_TAG_FOR_TCMALLOC_MEMORY VM_MAKE_TAG(VM_MEMORY_TCMALLOC)
@@ -53,19 +49,6 @@
 #else
 #define VM_TAG_FOR_REGISTERFILE_MEMORY VM_MAKE_TAG(65)
 #endif // defined(VM_MEMORY_JAVASCRIPT_JIT_REGISTER_FILE)
-
-#else // !defined(TARGETING_TIGER)
-
-// mmap on Tiger fails with tags that work on Leopard, so fall
-// back to Tiger-compatible tags (that also work on Leopard)
-// when targeting Tiger.
-#define VM_TAG_FOR_TCMALLOC_MEMORY -1
-#define VM_TAG_FOR_EXECUTABLEALLOCATOR_MEMORY -1
-#define VM_TAG_FOR_REGISTERFILE_MEMORY -1
-
-#endif // !defined(TARGETING_TIGER)
-
-// Tags for vm_map and vm_allocate work on both Tiger and Leopard.
 
 #if defined(VM_MEMORY_JAVASCRIPT_CORE)
 #define VM_TAG_FOR_COLLECTOR_MEMORY VM_MAKE_TAG(VM_MEMORY_JAVASCRIPT_CORE)
@@ -89,4 +72,4 @@
 
 #endif // OS(DARWIN)
 
-#endif /* yarr_VMTags_h */
+#endif // VMTags_h

@@ -1,6 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
+/*
  * Copyright (C) 2009, 2010 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,12 +23,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
  */
 
-#ifndef yarr_YarrInterpreter_h
-#define yarr_YarrInterpreter_h
-
-//#include "jscntxt.h"
+#ifndef YarrInterpreter_h
+#define YarrInterpreter_h
 
 #include "YarrPattern.h"
+#include <wtf/PassOwnPtr.h>
+#include <wtf/unicode/Unicode.h>
 
 namespace WTF {
 class BumpPointerAllocator;
@@ -73,7 +71,7 @@ struct ByteTerm {
         TypeParentheticalAssertionEnd,
         TypeCheckInput,
         TypeUncheckInput,
-        TypeDotStarEnclosure
+        TypeDotStarEnclosure,
     } type;
     union {
         struct {
@@ -197,11 +195,6 @@ struct ByteTerm {
         atom.quantityType = QuantifierFixedCount;
         atom.quantityCount = 1;
         inputPosition = inputPos;
-    }
-
-    // For js::Vector. Does not create a valid object.
-    ByteTerm()
-    {
     }
 
     static ByteTerm BOL(int inputPos)
@@ -341,10 +334,10 @@ public:
     unsigned m_frameSize;
 };
 
-struct BytecodePattern : public gc_cleanup {
+struct BytecodePattern {
     WTF_MAKE_FAST_ALLOCATED;
 public:
-    BytecodePattern(PassOwnPtr<ByteDisjunction> body, Vector<ByteDisjunction*> &allParenthesesInfo, YarrPattern& pattern, BumpPointerAllocator* allocator)
+    BytecodePattern(PassOwnPtr<ByteDisjunction> body, Vector<ByteDisjunction*> allParenthesesInfo, YarrPattern& pattern, BumpPointerAllocator* allocator)
         : m_body(body)
         , m_ignoreCase(pattern.m_ignoreCase)
         , m_multiline(pattern.m_multiline)
@@ -353,17 +346,12 @@ public:
         newlineCharacterClass = pattern.newlineCharacterClass();
         wordcharCharacterClass = pattern.wordcharCharacterClass();
 
-        // Trick: 'Steal' the YarrPattern's ParenthesesInfo!
-        // The input vector isn't used afterwards anymore,
-        // that way we don't have to copy the input.
-        ASSERT(m_allParenthesesInfo.size() == 0);
-        m_allParenthesesInfo.swap(allParenthesesInfo);
-
-        // Trick: 'Steal' the YarrPattern's CharacterClasses!
-        // The input vector isn't used afterwards anymore,
-        // that way we don't have to copy the input.
-        ASSERT(m_userCharacterClasses.size() == 0);
-        m_userCharacterClasses.swap(pattern.m_userCharacterClasses);
+        m_allParenthesesInfo.append(allParenthesesInfo);
+        m_userCharacterClasses.append(pattern.m_userCharacterClasses);
+        // 'Steal' the YarrPattern's CharacterClasses!  We clear its
+        // array, so that it won't delete them on destruction.  We'll
+        // take responsibility for that.
+        pattern.m_userCharacterClasses.clear();
     }
 
     ~BytecodePattern()
@@ -387,11 +375,11 @@ private:
     Vector<CharacterClass*> m_userCharacterClasses;
 };
 
-JS_EXPORT_PRIVATE PassOwnPtr<BytecodePattern> byteCompileEscargot(YarrPattern&, BumpPointerAllocator*);
-JS_EXPORT_PRIVATE unsigned interpret(void *cx, BytecodePattern*, const String& input, unsigned start, unsigned* output);
-unsigned interpret(void *cx, BytecodePattern*, const LChar* input, unsigned length, unsigned start, unsigned* output);
-unsigned interpret(void *cx, BytecodePattern*, const UChar* input, unsigned length, unsigned start, unsigned* output);
+JS_EXPORT_PRIVATE PassOwnPtr<BytecodePattern> byteCompile(YarrPattern&, BumpPointerAllocator*);
+JS_EXPORT_PRIVATE unsigned interpret(BytecodePattern*, const String& input, unsigned start, unsigned* output);
+unsigned interpret(BytecodePattern*, const LChar* input, unsigned length, unsigned start, unsigned* output);
+unsigned interpret(BytecodePattern*, const UChar* input, unsigned length, unsigned start, unsigned* output);
 
 } } // namespace JSC::Yarr
 
-#endif /* yarr_YarrInterpreter_h */
+#endif // YarrInterpreter_h

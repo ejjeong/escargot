@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * ***** BEGIN LICENSE BLOCK *****
+/*
  * Copyright (C) 2010 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,16 +21,14 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
- *
- * ***** END LICENSE BLOCK ***** */
+ */
 
-#ifndef yarr_OSAllocator_h
-#define yarr_OSAllocator_h
+#ifndef OSAllocator_h
+#define OSAllocator_h
 
-#include <stdlib.h>
-#include "wtfbridge.h"
-//#include "assembler/wtf/VMTags.h"
-//#include "assembler/wtf/Assertions.h"
+#include <algorithm>
+#include <wtf/UnusedParam.h>
+#include <wtf/VMTags.h>
 
 namespace WTF {
 
@@ -41,17 +36,17 @@ class OSAllocator {
 public:
     enum Usage {
         UnknownUsage = -1,
-        //FastMallocPages = VM_TAG_FOR_TCMALLOC_MEMORY,
-        //JSGCHeapPages = VM_TAG_FOR_COLLECTOR_MEMORY,
-        //JSVMStackPages = VM_TAG_FOR_REGISTERFILE_MEMORY,
-        //JSJITCodePages = VM_TAG_FOR_EXECUTABLEALLOCATOR_MEMORY
+        FastMallocPages = VM_TAG_FOR_TCMALLOC_MEMORY,
+        JSGCHeapPages = VM_TAG_FOR_COLLECTOR_MEMORY,
+        JSVMStackPages = VM_TAG_FOR_REGISTERFILE_MEMORY,
+        JSJITCodePages = VM_TAG_FOR_EXECUTABLEALLOCATOR_MEMORY,
     };
 
     // These methods are symmetric; reserveUncommitted allocates VM in an uncommitted state,
     // releaseDecommitted should be called on a region of VM allocated by a single reservation,
     // the memory must all currently be in a decommitted state.
-    static void* reserveUncommitted(size_t, Usage = UnknownUsage, bool writable = true, bool executable = false);
-    static void releaseDecommitted(void*, size_t);
+    static void* reserveUncommitted(size_t, Usage = UnknownUsage, bool writable = true, bool executable = false, bool includesGuardPages = false);
+    WTF_EXPORT_PRIVATE static void releaseDecommitted(void*, size_t);
 
     // These methods are symmetric; they commit or decommit a region of VM (uncommitted VM should
     // never be accessed, since the OS may not have attached physical memory for these regions).
@@ -62,7 +57,7 @@ public:
     // These methods are symmetric; reserveAndCommit allocates VM in an committed state,
     // decommitAndRelease should be called on a region of VM allocated by a single reservation,
     // the memory must all currently be in a committed state.
-    static void* reserveAndCommit(size_t, Usage = UnknownUsage, bool writable = true, bool executable = false);
+    WTF_EXPORT_PRIVATE static void* reserveAndCommit(size_t, Usage = UnknownUsage, bool writable = true, bool executable = false, bool includesGuardPages = false);
     static void decommitAndRelease(void* base, size_t size);
 
     // These methods are akin to reserveAndCommit/decommitAndRelease, above - however rather than
@@ -70,6 +65,12 @@ public:
     // specified.
     static void* reserveAndCommit(size_t reserveSize, size_t commitSize, Usage = UnknownUsage, bool writable = true, bool executable = false);
     static void decommitAndRelease(void* releaseBase, size_t releaseSize, void* decommitBase, size_t decommitSize);
+
+    // Reallocate an existing, committed allocation.
+    // The prior allocation must be fully comitted, and the new size will also be fully committed.
+    // This interface is provided since it may be possible to optimize this operation on some platforms.
+    template<typename T>
+    static T* reallocateCommitted(T*, size_t oldSize, size_t newSize, Usage = UnknownUsage, bool writable = true, bool executable = false);
 };
 
 inline void* OSAllocator::reserveAndCommit(size_t reserveSize, size_t commitSize, Usage usage, bool writable, bool executable)
@@ -82,11 +83,13 @@ inline void* OSAllocator::reserveAndCommit(size_t reserveSize, size_t commitSize
 inline void OSAllocator::decommitAndRelease(void* releaseBase, size_t releaseSize, void* decommitBase, size_t decommitSize)
 {
     ASSERT(decommitBase >= releaseBase && (static_cast<char*>(decommitBase) + decommitSize) <= (static_cast<char*>(releaseBase) + releaseSize));
-#if WTF_OS_WINCE || WTF_OS_SYMBIAN
+#if OS(WINCE)
     // On most platforms we can actually skip this final decommit; releasing the VM will
     // implicitly decommit any physical memory in the region. This is not true on WINCE.
-    // On Symbian, this makes implementation simpler and better aligned with the RChunk API
     decommit(decommitBase, decommitSize);
+#else
+    UNUSED_PARAM(decommitBase);
+    UNUSED_PARAM(decommitSize);
 #endif
     releaseDecommitted(releaseBase, releaseSize);
 }
@@ -96,8 +99,17 @@ inline void OSAllocator::decommitAndRelease(void* base, size_t size)
     decommitAndRelease(base, size, base, size);
 }
 
+template<typename T>
+inline T* OSAllocator::reallocateCommitted(T* oldBase, size_t oldSize, size_t newSize, Usage usage, bool writable, bool executable)
+{
+    void* newBase = reserveAndCommit(newSize, usage, writable, executable);
+    memcpy(newBase, oldBase, std::min(oldSize, newSize));
+    decommitAndRelease(oldBase, oldSize);
+    return static_cast<T*>(newBase);
+}
+
 } // namespace WTF
 
 using WTF::OSAllocator;
 
-#endif /* yarr_OSAllocator_h */
+#endif // OSAllocator_h

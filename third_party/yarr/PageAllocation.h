@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * ***** BEGIN LICENSE BLOCK *****
+/*
  * Copyright (C) 2010 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,44 +21,33 @@
  * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
- *
- * ***** END LICENSE BLOCK ***** */
+ */
 
-#ifndef yarr_PageAllocation_h
-#define yarr_PageAllocation_h
+#ifndef PageAllocation_h
+#define PageAllocation_h
 
-#include "wtfbridge.h"
-#include "OSAllocator.h"
-#include "PageBlock.h"
-//#include "assembler/wtf/VMTags.h"
+#include <wtf/Assertions.h>
+#include <wtf/OSAllocator.h>
+#include <wtf/PageBlock.h>
+#include <wtf/UnusedParam.h>
+#include <wtf/VMTags.h>
+#include <algorithm>
 
-#define WTF_HAVE_ERRNO_H 1
-#define WTF_HAVE_MMAP 1
-
-#if WTF_OS_DARWIN
+#if OS(DARWIN)
 #include <mach/mach_init.h>
 #include <mach/vm_map.h>
 #endif
 
-#if WTF_OS_HAIKU
-#include <OS.h>
-#endif
-
-#if WTF_OS_WINDOWS
+#if OS(WINDOWS)
 #include <malloc.h>
 #include <windows.h>
 #endif
 
-#if WTF_OS_SYMBIAN
-#include <e32hal.h>
-#include <e32std.h>
-#endif
-
-#if WTF_HAVE_ERRNO_H
+#if HAVE(ERRNO_H)
 #include <errno.h>
 #endif
 
-#if WTF_HAVE_MMAP
+#if HAVE(MMAP)
 #include <sys/mman.h>
 #include <unistd.h>
 #endif
@@ -122,7 +108,7 @@ public:
 
 private:
     PageAllocation(void* base, size_t size)
-        : PageBlock(base, size)
+        : PageBlock(base, size, false)
     {
     }
 };
@@ -131,4 +117,4 @@ private:
 
 using WTF::PageAllocation;
 
-#endif /* yarr_PageAllocation_h */
+#endif // PageAllocation_h

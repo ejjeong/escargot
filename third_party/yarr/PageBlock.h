@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * ***** BEGIN LICENSE BLOCK *****
+/*
  * Copyright (C) 2010 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,18 +21,15 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
- *
- * ***** END LICENSE BLOCK ***** */
+ */
 
-#ifndef yarr_PageBlock_h
-#define yarr_PageBlock_h
-
-#include <stdint.h>
-#include <stddef.h>
+#ifndef PageBlock_h
+#define PageBlock_h
 
 namespace WTF {
 
-size_t pageSize();
+WTF_EXPORT_PRIVATE size_t pageSize();
+WTF_EXPORT_PRIVATE size_t pageMask();
 inline bool isPageAligned(void* address) { return !(reinterpret_cast<intptr_t>(address) & (pageSize() - 1)); }
 inline bool isPageAligned(size_t size) { return !(size & (pageSize() - 1)); }
 inline bool isPowerOfTwo(size_t size) { return !(size & (size - 1)); }
@@ -44,12 +38,12 @@ class PageBlock {
 public:
     PageBlock();
     PageBlock(const PageBlock&);
-    PageBlock(void*, size_t);
+    PageBlock(void*, size_t, bool hasGuardPages);
     
     void* base() const { return m_base; }
     size_t size() const { return m_size; }
 
-    operator bool() const { return !!m_base; }
+    operator bool() const { return !!m_realBase; }
 
     bool contains(void* containedBase, size_t containedSize)
     {
@@ -58,24 +52,28 @@ public:
     }
 
 private:
+    void* m_realBase;
     void* m_base;
     size_t m_size;
 };
 
 inline PageBlock::PageBlock()
-    : m_base(0)
+    : m_realBase(0)
+    , m_base(0)
     , m_size(0)
 {
 }
 
 inline PageBlock::PageBlock(const PageBlock& other)
-    : m_base(other.m_base)
+    : m_realBase(other.m_realBase)
+    , m_base(other.m_base)
     , m_size(other.m_size)
 {
 }
 
-inline PageBlock::PageBlock(void* base, size_t size)
-    : m_base(base)
+inline PageBlock::PageBlock(void* base, size_t size, bool hasGuardPages)
+    : m_realBase(base)
+    , m_base(static_cast<char*>(base) + ((base && hasGuardPages) ? pageSize() : 0))
     , m_size(size)
 {
 }
@@ -87,4 +85,4 @@ using WTF::isPageAligned;
 using WTF::isPageAligned;
 using WTF::isPowerOfTwo;
 
-#endif /* yarr_PageBlock_h */
+#endif // PageBlock_h

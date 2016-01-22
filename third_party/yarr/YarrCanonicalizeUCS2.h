@@ -1,6 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
+/*
  * Copyright (C) 2012 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,11 +23,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
  */
 
-#ifndef yarr_YarrCanonicalizeUCS2_h
-#define yarr_YarrCanonicalizeUCS2_h
+#ifndef YarrCanonicalizeUCS2_H
+#define YarrCanonicalizeUCS2_H
 
 #include <stdint.h>
-#include "wtfbridge.h"
+#include <wtf/unicode/Unicode.h>
 
 namespace JSC { namespace Yarr {
 
@@ -42,12 +40,12 @@ enum UCS2CanonicalizationType {
     CanonicalizeRangeLo,              // Value is positive delta to pair, E.g. 0x41 has value 0x20, -> 0x61.
     CanonicalizeRangeHi,              // Value is positive delta to pair, E.g. 0x61 has value 0x20, -> 0x41.
     CanonicalizeAlternatingAligned,   // Aligned consequtive pair, e.g. 0x1f4,0x1f5.
-    CanonicalizeAlternatingUnaligned  // Unaligned consequtive pair, e.g. 0x241,0x242.
+    CanonicalizeAlternatingUnaligned, // Unaligned consequtive pair, e.g. 0x241,0x242.
 };
 struct UCS2CanonicalizationRange { uint16_t begin, end, value, type; };
 extern const size_t UCS2_CANONICALIZATION_RANGES;
-extern const uint16_t* const characterSetInfo[];
-extern const UCS2CanonicalizationRange rangeInfo[];
+extern uint16_t* characterSetInfo[];
+extern UCS2CanonicalizationRange rangeInfo[];
 
 // This table is similar to the full rangeInfo table, however this maps from UCS2 codepoints to
 // the set of Latin1 codepoints that could match.
@@ -55,21 +53,21 @@ enum LatinCanonicalizationType {
     CanonicalizeLatinSelf,     // This character is in the Latin1 range, but has no canonical equivalent in the range.
     CanonicalizeLatinMask0x20, // One of a pair of characters, under the mask 0x20.
     CanonicalizeLatinOther,    // This character is not in the Latin1 range, but canonicalizes to another that is.
-    CanonicalizeLatinInvalid   // Cannot match against Latin1 input.
+    CanonicalizeLatinInvalid,  // Cannot match against Latin1 input.
 };
 struct LatinCanonicalizationRange { uint16_t begin, end, value, type; };
 extern const size_t LATIN_CANONICALIZATION_RANGES;
-extern const LatinCanonicalizationRange latinRangeInfo[];
+extern LatinCanonicalizationRange latinRangeInfo[];
 
 // This searches in log2 time over ~364 entries, so should typically result in 8 compares.
-inline const UCS2CanonicalizationRange* rangeInfoFor(UChar ch)
+inline UCS2CanonicalizationRange* rangeInfoFor(UChar ch)
 {
-    const UCS2CanonicalizationRange* info = rangeInfo;
+    UCS2CanonicalizationRange* info = rangeInfo;
     size_t entries = UCS2_CANONICALIZATION_RANGES;
 
     while (true) {
         size_t candidate = entries >> 1;
-        const UCS2CanonicalizationRange* candidateInfo = info + candidate;
+        UCS2CanonicalizationRange* candidateInfo = info + candidate;
         if (ch < candidateInfo->begin)
             entries = candidate;
         else if (ch <= candidateInfo->end)
@@ -82,7 +80,7 @@ inline const UCS2CanonicalizationRange* rangeInfoFor(UChar ch)
 }
 
 // Should only be called for characters that have one canonically matching value.
-inline UChar getCanonicalPair(const UCS2CanonicalizationRange* info, UChar ch)
+inline UChar getCanonicalPair(UCS2CanonicalizationRange* info, UChar ch)
 {
     ASSERT(ch >= info->begin && ch <= info->end);
     switch (info->type) {
@@ -110,12 +108,12 @@ inline bool isCanonicallyUnique(UChar ch)
 // Returns true if values are equal, under the canonicalization rules.
 inline bool areCanonicallyEquivalent(UChar a, UChar b)
 {
-    const UCS2CanonicalizationRange* info = rangeInfoFor(a);
+    UCS2CanonicalizationRange* info = rangeInfoFor(a);
     switch (info->type) {
     case CanonicalizeUnique:
         return a == b;
     case CanonicalizeSet: {
-        for (const uint16_t* set = characterSetInfo[info->value]; (a = *set); ++set) {
+        for (uint16_t* set = characterSetInfo[info->value]; (a = *set); ++set) {
             if (a == b)
                 return true;
         }
@@ -137,4 +135,4 @@ inline bool areCanonicallyEquivalent(UChar a, UChar b)
 
 } } // JSC::Yarr
 
-#endif /* yarr_YarrCanonicalizeUCS2_h */
+#endif

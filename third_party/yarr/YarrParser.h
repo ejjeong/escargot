@@ -1,6 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
+/*
  * Copyright (C) 2009 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,18 +23,23 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
  */
 
-#ifndef yarr_YarrParser_h
-#define yarr_YarrParser_h
+#ifndef YarrParser_h
+#define YarrParser_h
 
 #include "Yarr.h"
+#include <wtf/ASCIICType.h>
+#include <wtf/text/WTFString.h>
+#include <wtf/unicode/Unicode.h>
 
 namespace JSC { namespace Yarr {
+
+#define REGEXP_ERROR_PREFIX "Invalid regular expression: "
 
 enum BuiltInCharacterClassID {
     DigitClassID,
     SpaceClassID,
     WordClassID,
-    NewlineClassID
+    NewlineClassID,
 };
 
 // The Parser class should not be used directly - only via the Yarr::parse() method.
@@ -44,7 +47,22 @@ template<class Delegate, typename CharType>
 class Parser {
 private:
     template<class FriendDelegate>
-    friend ErrorCode parse(FriendDelegate&, const String& pattern, unsigned backReferenceLimit);
+    friend const char* parse(FriendDelegate&, const String& pattern, unsigned backReferenceLimit);
+
+    enum ErrorCode {
+        NoError,
+        PatternTooLarge,
+        QuantifierOutOfOrder,
+        QuantifierWithoutAtom,
+        QuantifierTooLarge,
+        MissingParentheses,
+        ParenthesesUnmatched,
+        ParenthesesTypeInvalid,
+        CharacterClassUnmatched,
+        CharacterClassOutOfOrder,
+        EscapeUnterminated,
+        NumberOfErrorCodes
+    };
 
     /*
      * CharacterClassParserDelegate:
@@ -125,6 +143,13 @@ private:
                 m_state = Empty;
                 return;
 
+                // See coment in atomBuiltInCharacterClass below.
+                // This too is technically an error, per ECMA-262, and again we
+                // we chose to allow this.  Note a subtlely here that while we
+                // diverge from the spec's definition of CharacterRange we do
+                // remain in compliance with the grammar.  For example, consider
+                // the expression /[\d-a-z]/.  We comply with the grammar in
+                // this case by not allowing a-z to be matched as a range.
             case AfterCharacterClassHyphen:
                 m_delegate.atomCharacterClassAtom(ch);
                 m_state = Empty;
@@ -150,11 +175,18 @@ private:
                 m_delegate.atomCharacterClassBuiltIn(classID, invert);
                 return;
 
+                // If we hit either of these cases, we have an invalid range that
+                // looks something like /[x-\d]/ or /[\d-\d]/.
+                // According to ECMA-262 this should be a syntax error, but
+                // empirical testing shows this to break teh webz.  Instead we
+                // comply with to the ECMA-262 grammar, and assume the grammar to
+                // have matched the range correctly, but tweak our interpretation
+                // of CharacterRange.  Effectively we implicitly handle the hyphen
+                // as if it were escaped, e.g. /[\w-_]/ is treated as /[\w\-_]/.
             case CachedCharacterHyphen:
-                // Error! We have a range that looks like [x-\d]. We require
-                // the end of the range to be a single character.
-                m_err = CharacterClassInvalidRange;
-                return;
+                m_delegate.atomCharacterClassAtom(m_character);
+                m_delegate.atomCharacterClassAtom('-');
+                // fall through
             case AfterCharacterClassHyphen:
                 m_delegate.atomCharacterClassBuiltIn(classID, invert);
                 m_state = Empty;
@@ -191,7 +223,7 @@ private:
             CachedCharacter,
             CachedCharacterHyphen,
             AfterCharacterClass,
-            AfterCharacterClassHyphen
+            AfterCharacterClassHyphen,
         } m_state;
         UChar m_character;
     };
@@ -200,16 +232,11 @@ private:
         : m_delegate(delegate)
         , m_backReferenceLimit(backReferenceLimit)
         , m_err(NoError)
-        , m_data(NULL)
+        , m_data(pattern.getCharacters<CharType>())
         , m_size(pattern.length())
         , m_index(0)
         , m_parenthesesNestingDepth(0)
     {
-        if (pattern.is8Bit()) {
-            m_data = (const CharType *)pattern.characters8();
-        } else {
-            m_data = (const CharType *)pattern.characters16();
-        }
     }
 
     /*
@@ -306,9 +333,7 @@ private:
             if (!inCharacterClass) {
                 ParseState state = saveState();
 
-                unsigned backReference;
-                if (!consumeNumber(backReference))
-                    break; 
+                unsigned backReference = consumeNumber();
                 if (backReference <= m_backReferenceLimit) {
                     delegate.atomBackReference(backReference);
                     break;
@@ -614,19 +639,11 @@ private:
 
                 consume();
                 if (peekIsDigit()) {
-                    unsigned min;
-                    if (!consumeNumber(min))
-                        break;
-
+                    unsigned min = consumeNumber();
                     unsigned max = min;
-                    if (tryConsume(',')) {
-                        if (peekIsDigit()) {
-                            if (!consumeNumber(max))
-                                break;
-                        } else {
-                            max = quantifyInfinite;
-                        }
-                    }
+                    
+                    if (tryConsume(','))
+                        max = peekIsDigit() ? consumeNumber() : quantifyInfinite;
 
                     if (tryConsume('}')) {
                         if (min <= max)
@@ -660,7 +677,7 @@ private:
      * This method calls parseTokens() to parse over the input and converts any
      * error code to a const char* for a result.
      */
-    ErrorCode parse()
+    const char* parse()
     {
         if (m_size > MAX_PATTERN_SIZE)
             m_err = PatternTooLarge;
@@ -668,7 +685,22 @@ private:
             parseTokens();
         ASSERT(atEndOfPattern() || m_err);
 
-        return m_err;
+        // The order of this array must match the ErrorCode enum.
+        static const char* errorMessages[NumberOfErrorCodes] = {
+            0, // NoError
+            REGEXP_ERROR_PREFIX "regular expression too large",
+            REGEXP_ERROR_PREFIX "numbers out of order in {} quantifier",
+            REGEXP_ERROR_PREFIX "nothing to repeat",
+            REGEXP_ERROR_PREFIX "number too large in {} quantifier",
+            REGEXP_ERROR_PREFIX "missing )",
+            REGEXP_ERROR_PREFIX "unmatched parentheses",
+            REGEXP_ERROR_PREFIX "unrecognized character after (?",
+            REGEXP_ERROR_PREFIX "missing terminating ] for character class",
+            REGEXP_ERROR_PREFIX "range out of order in character class",
+            REGEXP_ERROR_PREFIX "\\ at end of pattern"
+        };
+
+        return errorMessages[m_err];
     }
 
     // Misc helper functions:
@@ -720,19 +752,15 @@ private:
         return consume() - '0';
     }
 
-    bool consumeNumber(unsigned &accum)
+    unsigned consumeNumber()
     {
-        accum = consumeDigit();
-        while (peekIsDigit()) {
-            unsigned newValue = accum * 10 + peekDigit();
-            if (newValue < accum) { /* Overflow check. */
-                m_err = QuantifierTooLarge;
-                return false;
-            }
-            accum = newValue;
+        unsigned n = consumeDigit();
+        // check for overflow.
+        for (unsigned newValue; peekIsDigit() && ((newValue = n * 10 + peekDigit()) >= n); ) {
+            n = newValue;
             consume();
         }
-        return true;
+        return n;
     }
 
     unsigned consumeOctal()
@@ -840,15 +868,13 @@ private:
  */
 
 template<class Delegate>
-ErrorCode parse(Delegate& delegate, const String& pattern, unsigned backReferenceLimit = quantifyInfinite)
+const char* parse(Delegate& delegate, const String& pattern, unsigned backReferenceLimit = quantifyInfinite)
 {
-#ifdef YARR_8BIT_CHAR_SUPPORT
     if (pattern.is8Bit())
         return Parser<Delegate, LChar>(delegate, pattern, backReferenceLimit).parse();
-#endif
     return Parser<Delegate, UChar>(delegate, pattern, backReferenceLimit).parse();
 }
 
 } } // namespace JSC::Yarr
 
-#endif /* yarr_YarrParser_h */
+#endif // YarrParser_h

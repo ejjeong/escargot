@@ -1,6 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
+/*
  * Copyright (C) 2009 Apple Inc. All rights reserved.
  * Copyright (C) 2010 Peter Varga (pvarga@inf.u-szeged.hu), University of Szeged
  *
@@ -26,55 +24,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
  */
 
-#ifndef yarr_YarrPattern_h
-#define yarr_YarrPattern_h
+#ifndef YarrPattern_h
+#define YarrPattern_h
 
-#include "wtfbridge.h"
-#include "ASCIICType.h"
+#include <wtf/CheckedArithmetic.h>
+#include <wtf/RefCounted.h>
+#include <wtf/Vector.h>
+#include <wtf/text/WTFString.h>
+#include <wtf/unicode/Unicode.h>
 
 namespace JSC { namespace Yarr {
 
 struct PatternDisjunction;
-
-enum ErrorCode {
-    NoError,
-    PatternTooLarge,
-    QuantifierOutOfOrder,
-    QuantifierWithoutAtom,
-    QuantifierTooLarge,
-    MissingParentheses,
-    ParenthesesUnmatched,
-    ParenthesesTypeInvalid,
-    CharacterClassUnmatched,
-    CharacterClassOutOfOrder,
-    CharacterClassInvalidRange,
-    EscapeUnterminated,
-    NumberOfErrorCodes
-};
-
-static inline const char* errorMessage(ErrorCode code)
-{
-
-#define REGEXP_ERROR_PREFIX "Invalid regular expression: "
-   // The order of this array must match the ErrorCode enum.
-   static const char* errorMessages[NumberOfErrorCodes] = {
-       0, // NoError
-       REGEXP_ERROR_PREFIX "regular expression too large",
-       REGEXP_ERROR_PREFIX "numbers out of order in {} quantifier",
-       REGEXP_ERROR_PREFIX "nothing to repeat",
-       REGEXP_ERROR_PREFIX "number too large in {} quantifier",
-       REGEXP_ERROR_PREFIX "missing )",
-       REGEXP_ERROR_PREFIX "unmatched parentheses",
-       REGEXP_ERROR_PREFIX "unrecognized character after (?",
-       REGEXP_ERROR_PREFIX "missing terminating ] for character class",
-       REGEXP_ERROR_PREFIX "character class out of order"
-       REGEXP_ERROR_PREFIX "range out of order in character class",
-       REGEXP_ERROR_PREFIX "\\ at end of pattern"
-   };
-#undef REGEXP_ERROR_PREFIX
-
-   return errorMessages[code];
-}
 
 struct CharacterRange {
     UChar begin;
@@ -95,13 +56,10 @@ struct CharacterClassTable : RefCounted<CharacterClassTable> {
         return adoptRef(new CharacterClassTable(table, inverted));
     }
 
+private:
     CharacterClassTable(const char* table, bool inverted)
         : m_table(table)
         , m_inverted(inverted)
-    {
-    }
-
-    ~CharacterClassTable()
     {
     }
 };
@@ -116,9 +74,6 @@ public:
         : m_table(table)
     {
     }
-    ~CharacterClass()
-    {
-    }
     Vector<UChar> m_matches;
     Vector<CharacterRange> m_ranges;
     Vector<UChar> m_matchesUnicode;
@@ -129,7 +84,7 @@ public:
 enum QuantifierType {
     QuantifierFixedCount,
     QuantifierGreedy,
-    QuantifierNonGreedy
+    QuantifierNonGreedy,
 };
 
 struct PatternTerm {
@@ -143,7 +98,7 @@ struct PatternTerm {
         TypeForwardReference,
         TypeParenthesesSubpattern,
         TypeParentheticalAssertion,
-        TypeDotStarEnclosure
+        TypeDotStarEnclosure,
     } type;
     bool m_capture :1;
     bool m_invert :1;
@@ -227,17 +182,6 @@ struct PatternTerm {
     {
         anchors.bolAnchor = bolAnchor;
         anchors.eolAnchor = eolAnchor;
-        quantityType = QuantifierFixedCount;
-        quantityCount = 1;
-    }
-
-    // No-argument constructor for js::Vector.
-    PatternTerm()
-        : type(PatternTerm::TypePatternCharacter)
-        , m_capture(false)
-        , m_invert(false)
-    {
-        patternCharacter = 0;
         quantityType = QuantifierFixedCount;
         quantityCount = 1;
     }
@@ -334,7 +278,6 @@ public:
     ~PatternDisjunction()
     {
         deleteAllValues(m_alternatives);
-        m_alternatives.clear();
     }
 
     PatternAlternative* addNewAlternative()
@@ -355,13 +298,13 @@ public:
 // (please to be calling newlineCharacterClass() et al on your
 // friendly neighborhood YarrPattern instance to get nicely
 // cached copies).
-CharacterClass* newlineCreateEscargot();
-CharacterClass* digitsCreateEscargot();
-CharacterClass* spacesCreateEscargot();
-CharacterClass* wordcharCreateEscargot();
-CharacterClass* nondigitsCreateEscargot();
-CharacterClass* nonspacesCreateEscargot();
-CharacterClass* nonwordcharCreateEscargot();
+CharacterClass* newlineCreate();
+CharacterClass* digitsCreate();
+CharacterClass* spacesCreate();
+CharacterClass* wordcharCreate();
+CharacterClass* nondigitsCreate();
+CharacterClass* nonspacesCreate();
+CharacterClass* nonwordcharCreate();
 
 struct TermChain {
     TermChain(PatternTerm term)
@@ -372,16 +315,13 @@ struct TermChain {
     Vector<TermChain> hotTerms;
 };
 
-class YarrPattern : public gc_cleanup {
-public:
-    YarrPattern(const String& pattern, bool ignoreCase, bool multiline, ErrorCode* error);
+struct YarrPattern {
+    JS_EXPORT_PRIVATE YarrPattern(const String& pattern, bool ignoreCase, bool multiline, const char** error);
 
     ~YarrPattern()
     {
         deleteAllValues(m_disjunctions);
-        m_disjunctions.clear();
         deleteAllValues(m_userCharacterClasses);
-        m_userCharacterClasses.clear();
     }
 
     void reset()
@@ -414,43 +354,43 @@ public:
     CharacterClass* newlineCharacterClass()
     {
         if (!newlineCached)
-            m_userCharacterClasses.append(newlineCached = newlineCreateEscargot());
+            m_userCharacterClasses.append(newlineCached = newlineCreate());
         return newlineCached;
     }
     CharacterClass* digitsCharacterClass()
     {
         if (!digitsCached)
-            m_userCharacterClasses.append(digitsCached = digitsCreateEscargot());
+            m_userCharacterClasses.append(digitsCached = digitsCreate());
         return digitsCached;
     }
     CharacterClass* spacesCharacterClass()
     {
         if (!spacesCached)
-            m_userCharacterClasses.append(spacesCached = spacesCreateEscargot());
+            m_userCharacterClasses.append(spacesCached = spacesCreate());
         return spacesCached;
     }
     CharacterClass* wordcharCharacterClass()
     {
         if (!wordcharCached)
-            m_userCharacterClasses.append(wordcharCached = wordcharCreateEscargot());
+            m_userCharacterClasses.append(wordcharCached = wordcharCreate());
         return wordcharCached;
     }
     CharacterClass* nondigitsCharacterClass()
     {
         if (!nondigitsCached)
-            m_userCharacterClasses.append(nondigitsCached = nondigitsCreateEscargot());
+            m_userCharacterClasses.append(nondigitsCached = nondigitsCreate());
         return nondigitsCached;
     }
     CharacterClass* nonspacesCharacterClass()
     {
         if (!nonspacesCached)
-            m_userCharacterClasses.append(nonspacesCached = nonspacesCreateEscargot());
+            m_userCharacterClasses.append(nonspacesCached = nonspacesCreate());
         return nonspacesCached;
     }
     CharacterClass* nonwordcharCharacterClass()
     {
         if (!nonwordcharCached)
-            m_userCharacterClasses.append(nonwordcharCached = nonwordcharCreateEscargot());
+            m_userCharacterClasses.append(nonwordcharCached = nonwordcharCreate());
         return nonwordcharCached;
     }
 
@@ -465,7 +405,7 @@ public:
     Vector<CharacterClass*> m_userCharacterClasses;
 
 private:
-    ErrorCode compile(const String& patternString);
+    const char* compile(const String& patternString);
 
     CharacterClass* newlineCached;
     CharacterClass* digitsCached;
@@ -478,4 +418,4 @@ private:
 
 } } // namespace JSC::Yarr
 
-#endif /* yarr_YarrPattern_h */
+#endif // YarrPattern_h

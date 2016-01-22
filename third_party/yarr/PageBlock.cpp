@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * ***** BEGIN LICENSE BLOCK *****
+/*
  * Copyright (C) 2010 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,43 +21,33 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
- *
- * ***** END LICENSE BLOCK ***** */
+ */
 
+#include "config.h"
 #include "PageBlock.h"
-#include "wtfbridge.h"
-//#include "wtf/Assertions.h"
 
-#if WTF_OS_UNIX && !WTF_OS_SYMBIAN
+#if OS(UNIX)
 #include <unistd.h>
 #endif
 
-#if WTF_OS_WINDOWS
+#if OS(WINDOWS)
 #include <malloc.h>
 #include <windows.h>
-#endif
-
-#if WTF_OS_SYMBIAN
-#include <e32hal.h>
-#include <e32std.h>
-#endif
-
-#if WTF_OS_OS2
-#include <stdlib.h>
 #endif
 
 namespace WTF {
 
 static size_t s_pageSize;
+static size_t s_pageMask;
 
-#if (WTF_OS_UNIX && !WTF_OS_SYMBIAN) || WTF_OS_OS2
+#if OS(UNIX)
 
 inline size_t systemPageSize()
 {
     return getpagesize();
 }
 
-#elif WTF_OS_WINDOWS
+#elif OS(WINDOWS)
 
 inline size_t systemPageSize()
 {
@@ -71,15 +58,6 @@ inline size_t systemPageSize()
     return size;
 }
 
-#elif WTF_OS_SYMBIAN
-
-inline size_t systemPageSize()
-{
-    static TInt page_size = 0;
-    UserHal::PageSizeInBytes(page_size);
-    return page_size;
-}
-
 #endif
 
 size_t pageSize()
@@ -88,6 +66,13 @@ size_t pageSize()
         s_pageSize = systemPageSize();
     ASSERT(isPowerOfTwo(s_pageSize));
     return s_pageSize;
+}
+
+size_t pageMask()
+{
+    if (!s_pageMask)
+        s_pageMask = ~(pageSize() - 1);
+    return s_pageMask;
 }
 
 } // namespace WTF

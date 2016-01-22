@@ -1,6 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
+/*
  * Copyright (C) 2009 Apple Inc. All rights reserved.
  * Copyright (C) 2010 Peter Varga (pvarga@inf.u-szeged.hu), University of Szeged
  *
@@ -26,11 +24,19 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "config.h"
 #include "YarrInterpreter.h"
 
 #include "Yarr.h"
 #include "YarrCanonicalizeUCS2.h"
-#include "BumpPointerAllocator.h"
+#include <wtf/BumpPointerAllocator.h>
+#include <wtf/DataLog.h>
+#include <wtf/text/CString.h>
+#include <wtf/text/WTFString.h>
+
+#ifndef NDEBUG
+#include <stdio.h>
+#endif
 
 using namespace WTF;
 
@@ -154,7 +160,6 @@ public:
     ParenthesesDisjunctionContext* allocParenthesesDisjunctionContext(ByteDisjunction* disjunction, unsigned* output, ByteTerm& term)
     {
         size_t size = sizeof(ParenthesesDisjunctionContext) - sizeof(unsigned) + (term.atom.parenthesesDisjunction->m_numSubpatterns << 1) * sizeof(unsigned) + sizeof(DisjunctionContext) - sizeof(uintptr_t) + disjunction->m_frameSize * sizeof(uintptr_t);
-        size = JS_ROUNDUP(size, JS_ALIGNMENT_OF(ParenthesesDisjunctionContext));
         allocatorPool = allocatorPool->ensureCapacity(size);
         if (!allocatorPool)
             CRASH();
@@ -739,11 +744,7 @@ public:
                     // inputPosition, but for repeats other than fixed these values should be
                     // the same anyway! (We don't pre-check for greedy or non-greedy matches.)
                     ASSERT((&term - term.atom.parenthesesWidth)->type == ByteTerm::TypeParenthesesSubpatternOnceBegin);
-
-		    // Disabled, see bug 808478
-#if 0
                     ASSERT((&term - term.atom.parenthesesWidth)->inputPosition == term.inputPosition);
-#endif
                     unsigned subpatternId = term.atom.subpatternId;
                     output[subpatternId << 1] = input.getPos() + term.inputPosition;
                 }
@@ -1119,10 +1120,6 @@ public:
     matchAgain:
         ASSERT(context->term < static_cast<int>(disjunction->terms.size()));
 
-        // Prevent jank resulting from getting stuck in Yarr for a long time.
-        //if (!JS_CHECK_OPERATION_LIMIT(this->cx))
-        //    return JSRegExpErrorInternal;
-
         switch (currentTerm().type) {
         case ByteTerm::TypeSubpatternBegin:
             MATCH_NEXT();
@@ -1280,10 +1277,6 @@ public:
 
     backtrack:
         ASSERT(context->term < static_cast<int>(disjunction->terms.size()));
-
-        // Prevent jank resulting from getting stuck in Yarr for a long time.
-        //if (!JS_CHECK_OPERATION_LIMIT(this->cx))
-        //    return JSRegExpErrorInternal;
 
         switch (currentTerm().type) {
         case ByteTerm::TypeSubpatternBegin:
@@ -1451,9 +1444,8 @@ public:
         return output[0];
     }
 
-    Interpreter(void *cx, BytecodePattern* pattern, unsigned* output, const CharType* input, unsigned length, unsigned start)
-        : cx(cx)
-        , pattern(pattern)
+    Interpreter(BytecodePattern* pattern, unsigned* output, const CharType* input, unsigned length, unsigned start)
+        : pattern(pattern)
         , output(output)
         , input(input, start, length)
         , allocatorPool(0)
@@ -1462,7 +1454,6 @@ public:
     }
 
 private:
-    void *cx;
     BytecodePattern* pattern;
     unsigned* output;
     InputStream input;
@@ -1476,10 +1467,6 @@ class ByteCompiler {
     struct ParenthesesStackEntry {
         unsigned beginTerm;
         unsigned savedAlternativeIndex;
-		
-        // For js::Vector. Does not create a valid object.
-        ParenthesesStackEntry() { }
-
         ParenthesesStackEntry(unsigned beginTerm, unsigned savedAlternativeIndex/*, unsigned subpatternId, bool capture = false*/)
             : beginTerm(beginTerm)
             , savedAlternativeIndex(savedAlternativeIndex)
@@ -1500,7 +1487,7 @@ public:
         emitDisjunction(m_pattern.m_body);
         regexEnd();
 
-        return adoptPtr(new(PointerFreeGC) BytecodePattern(m_bodyDisjunction.release(), m_allParenthesesInfo, Ref<YarrPattern>(m_pattern), allocator));
+        return adoptPtr(new BytecodePattern(m_bodyDisjunction.release(), m_allParenthesesInfo, m_pattern, allocator));
     }
 
     void checkInput(unsigned count)
@@ -1663,7 +1650,7 @@ public:
 #ifndef NDEBUG
     void dumpDisjunction(ByteDisjunction* disjunction)
     {
-        dataLog("ByteDisjunction(%p):\n\t", (void *)disjunction);
+        dataLog("ByteDisjunction(%p):\n\t", disjunction);
         for (unsigned i = 0; i < disjunction->terms.size(); ++i)
             dataLog("{ %d } ", disjunction->terms[i].type);
         dataLog("\n");
@@ -1733,7 +1720,6 @@ public:
         unsigned numSubpatterns = lastSubpatternId - subpatternId + 1;
         ByteDisjunction* parenthesesDisjunction = new ByteDisjunction(numSubpatterns, callFrameSize);
 
-        parenthesesDisjunction->terms.reserve(endTerm - beginTerm + 1);
         parenthesesDisjunction->terms.append(ByteTerm::SubpatternBegin());
         for (unsigned termInParentheses = beginTerm + 1; termInParentheses < endTerm; ++termInParentheses)
             parenthesesDisjunction->terms.append(m_bodyDisjunction->terms[termInParentheses]);
@@ -1943,38 +1929,36 @@ private:
     Vector<ByteDisjunction*> m_allParenthesesInfo;
 };
 
-PassOwnPtr<BytecodePattern> byteCompileEscargot(YarrPattern& pattern, BumpPointerAllocator* allocator)
+PassOwnPtr<BytecodePattern> byteCompile(YarrPattern& pattern, BumpPointerAllocator* allocator)
 {
     return ByteCompiler(pattern).compile(allocator);
 }
-/*
-unsigned interpret(void *cx, BytecodePattern* bytecode, const String& input, unsigned start, unsigned* output)
+
+unsigned interpret(BytecodePattern* bytecode, const String& input, unsigned start, unsigned* output)
 {
-#if YARR_8BIT_CHAR_SUPPORT
     if (input.is8Bit())
-        return Interpreter<LChar>(cx, bytecode, output, input.characters8(), input.length(), start).interpret();
-#endif
-    return Interpreter<UChar>(cx, bytecode, output, input.data(), input.length(), start).interpret();
-}
-*/
-unsigned interpret(void *cx, BytecodePattern* bytecode, const LChar* input, unsigned length, unsigned start, unsigned* output)
-{
-    return Interpreter<LChar>(cx, bytecode, output, input, length, start).interpret();
+        return Interpreter<LChar>(bytecode, output, input.characters8(), input.length(), start).interpret();
+    return Interpreter<UChar>(bytecode, output, input.characters16(), input.length(), start).interpret();
 }
 
-unsigned interpret(void *cx, BytecodePattern* bytecode, const UChar* input, unsigned length, unsigned start, unsigned* output)
+unsigned interpret(BytecodePattern* bytecode, const LChar* input, unsigned length, unsigned start, unsigned* output)
 {
-    return Interpreter<UChar>(cx, bytecode, output, input, length, start).interpret();
+    return Interpreter<LChar>(bytecode, output, input, length, start).interpret();
+}
+
+unsigned interpret(BytecodePattern* bytecode, const UChar* input, unsigned length, unsigned start, unsigned* output)
+{
+    return Interpreter<UChar>(bytecode, output, input, length, start).interpret();
 }
 
 // These should be the same for both UChar & LChar.
-//COMPILE_ASSERT(sizeof(Interpreter<UChar>::BackTrackInfoPatternCharacter) == (YarrStackSpaceForBackTrackInfoPatternCharacter * sizeof(uintptr_t)), CheckYarrStackSpaceForBackTrackInfoPatternCharacter);
-//COMPILE_ASSERT(sizeof(Interpreter<UChar>::BackTrackInfoCharacterClass) == (YarrStackSpaceForBackTrackInfoCharacterClass * sizeof(uintptr_t)), CheckYarrStackSpaceForBackTrackInfoCharacterClass);
-//COMPILE_ASSERT(sizeof(Interpreter<UChar>::BackTrackInfoBackReference) == (YarrStackSpaceForBackTrackInfoBackReference * sizeof(uintptr_t)), CheckYarrStackSpaceForBackTrackInfoBackReference);
-//COMPILE_ASSERT(sizeof(Interpreter<UChar>::BackTrackInfoAlternative) == (YarrStackSpaceForBackTrackInfoAlternative * sizeof(uintptr_t)), CheckYarrStackSpaceForBackTrackInfoAlternative);
-//COMPILE_ASSERT(sizeof(Interpreter<UChar>::BackTrackInfoParentheticalAssertion) == (YarrStackSpaceForBackTrackInfoParentheticalAssertion * sizeof(uintptr_t)), CheckYarrStackSpaceForBackTrackInfoParentheticalAssertion);
-//COMPILE_ASSERT(sizeof(Interpreter<UChar>::BackTrackInfoParenthesesOnce) == (YarrStackSpaceForBackTrackInfoParenthesesOnce * sizeof(uintptr_t)), CheckYarrStackSpaceForBackTrackInfoParenthesesOnce);
-//COMPILE_ASSERT(sizeof(Interpreter<UChar>::BackTrackInfoParentheses) == (YarrStackSpaceForBackTrackInfoParentheses * sizeof(uintptr_t)), CheckYarrStackSpaceForBackTrackInfoParentheses);
+COMPILE_ASSERT(sizeof(Interpreter<UChar>::BackTrackInfoPatternCharacter) == (YarrStackSpaceForBackTrackInfoPatternCharacter * sizeof(uintptr_t)), CheckYarrStackSpaceForBackTrackInfoPatternCharacter);
+COMPILE_ASSERT(sizeof(Interpreter<UChar>::BackTrackInfoCharacterClass) == (YarrStackSpaceForBackTrackInfoCharacterClass * sizeof(uintptr_t)), CheckYarrStackSpaceForBackTrackInfoCharacterClass);
+COMPILE_ASSERT(sizeof(Interpreter<UChar>::BackTrackInfoBackReference) == (YarrStackSpaceForBackTrackInfoBackReference * sizeof(uintptr_t)), CheckYarrStackSpaceForBackTrackInfoBackReference);
+COMPILE_ASSERT(sizeof(Interpreter<UChar>::BackTrackInfoAlternative) == (YarrStackSpaceForBackTrackInfoAlternative * sizeof(uintptr_t)), CheckYarrStackSpaceForBackTrackInfoAlternative);
+COMPILE_ASSERT(sizeof(Interpreter<UChar>::BackTrackInfoParentheticalAssertion) == (YarrStackSpaceForBackTrackInfoParentheticalAssertion * sizeof(uintptr_t)), CheckYarrStackSpaceForBackTrackInfoParentheticalAssertion);
+COMPILE_ASSERT(sizeof(Interpreter<UChar>::BackTrackInfoParenthesesOnce) == (YarrStackSpaceForBackTrackInfoParenthesesOnce * sizeof(uintptr_t)), CheckYarrStackSpaceForBackTrackInfoParenthesesOnce);
+COMPILE_ASSERT(sizeof(Interpreter<UChar>::BackTrackInfoParentheses) == (YarrStackSpaceForBackTrackInfoParentheses * sizeof(uintptr_t)), CheckYarrStackSpaceForBackTrackInfoParentheses);
 
 
 } }

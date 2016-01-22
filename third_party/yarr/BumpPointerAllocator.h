@@ -1,7 +1,4 @@
-/* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
- * vim: set ts=8 sts=4 et sw=4 tw=99:
- *
- * ***** BEGIN LICENSE BLOCK *****
+/*
  * Copyright (C) 2010 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,23 +21,18 @@
  * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
- *
- * ***** END LICENSE BLOCK ***** */
+ */
 
-#ifndef yarr_BumpPointerAllocator_h
-#define yarr_BumpPointerAllocator_h
+#ifndef BumpPointerAllocator_h
+#define BumpPointerAllocator_h
 
-#include "PageAllocation.h"
+#include <algorithm>
+#include <wtf/PageAllocation.h>
+#include <wtf/PageBlock.h>
 
 namespace WTF {
 
-#if WTF_CPU_SPARC
-#define MINIMUM_BUMP_POOL_SIZE 0x2000
-#elif WTF_CPU_IA64
-#define MINIMUM_BUMP_POOL_SIZE 0x4000
-#else
 #define MINIMUM_BUMP_POOL_SIZE 0x1000
-#endif
 
 class BumpPointerPool {
 public:
@@ -96,18 +88,6 @@ public:
         return deallocCrossPool(this, position);
     }
 
-    size_t sizeOfNonHeapData() const
-    {
-        ASSERT(!m_previous);
-        size_t n = 0;
-        const BumpPointerPool *curr = this;
-        while (curr) {
-            n += m_allocation.size();
-            curr = curr->m_next;
-        }
-        return n;
-    }
-
 private:
     // Placement operator new, returns the last 'size' bytes of allocation for use as this.
     void* operator new(size_t size, const PageAllocation& allocation)
@@ -132,7 +112,7 @@ private:
         if (minimumCapacity < sizeof(BumpPointerPool))
             return 0;
 
-        size_t poolSize = MINIMUM_BUMP_POOL_SIZE;
+        size_t poolSize = std::max(static_cast<size_t>(MINIMUM_BUMP_POOL_SIZE), WTF::pageSize());
         while (poolSize < minimumCapacity) {
             poolSize <<= 1;
             // The following if check relies on MINIMUM_BUMP_POOL_SIZE being a power of 2!
@@ -143,7 +123,7 @@ private:
 
         PageAllocation allocation = PageAllocation::allocate(poolSize);
         if (!!allocation)
-            return new(allocation) BumpPointerPool(allocation);
+            return new (allocation) BumpPointerPool(allocation);
         return 0;
     }
 
@@ -261,11 +241,6 @@ public:
             m_head->shrink();
     }
 
-    size_t sizeOfNonHeapData() const
-    {
-        return m_head ? m_head->sizeOfNonHeapData() : 0;
-    }
-
 private:
     BumpPointerPool* m_head;
 };
@@ -274,4 +249,4 @@ private:
 
 using WTF::BumpPointerAllocator;
 
-#endif /* yarr_BumpPointerAllocator_h */
+#endif // BumpPointerAllocator_h
