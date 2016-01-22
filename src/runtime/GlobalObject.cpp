@@ -877,7 +877,10 @@ void GlobalObject::installFunction()
 
     // $19.2.3.1 Function.prototype.apply(thisArg, argArray)
     m_functionPrototype->defineDataProperty(ESString::createAtomicString("apply"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        auto thisVal = instance->currentExecutionContext()->resolveThisBindingToObject()->asESFunctionObject();
+        ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
+        if (!thisValue.isESPointer() || !thisValue.asESPointer()->isESFunctionObject())
+            instance->throwError(ESValue(TypeError::create(ESString::create("Function.prototype.apply: Not a function object"))));
+        auto thisVal = thisValue.asESPointer()->asESFunctionObject();
         ESValue thisArg = instance->currentExecutionContext()->readArgument(0);
         ESValue argArray = instance->currentExecutionContext()->readArgument(1);
         int arrlen;
@@ -4552,7 +4555,7 @@ void GlobalObject::installBoolean()
     m_booleanPrototype->defineDataProperty(strings->toString, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
         if (thisValue.isBoolean()) {
-            return ESValue(thisValue.asNumber()).toString();
+            return ESValue(thisValue.toString());
         } else if (thisValue.isESPointer() && thisValue.asESPointer()->isESBooleanObject()) {
             return ESValue(thisValue.asESPointer()->asESBooleanObject()->booleanData()).toString();
         } else {
@@ -4565,7 +4568,7 @@ void GlobalObject::installBoolean()
     m_booleanPrototype->defineDataProperty(strings->valueOf, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
         if (thisValue.isBoolean()) {
-            return ESValue(thisValue.asNumber());
+            return ESValue(thisValue);
         } else if (thisValue.isESPointer() && thisValue.asESPointer()->isESBooleanObject()) {
             return ESValue(thisValue.asESPointer()->asESBooleanObject()->booleanData());
         }
