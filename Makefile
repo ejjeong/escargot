@@ -121,6 +121,7 @@ else
 endif
 
 LDFLAGS += -lpthread
+LDFLAGS += -lrt
 SHARED_LDFLAGS += -ldl
 # -ltcmalloc_minimal
 BIN_LDFLAGS += -Wl,--gc-sections
@@ -307,6 +308,8 @@ tizen_arm.interpreter.release.shared: $(OUTDIR)/$(LIB)
 #	cp -f $< .
 #tizen_arm.interpreter.release: $(OUTDIR)/$(BIN)
 #	cp -f $< .
+tizen_wearable_arm.interpreter.release: $(OUTDIR)/$(BIN)
+	cp -f $< .
 tizen_wearable_arm.interpreter.release.shared: $(OUTDIR)/$(LIB)
 	cp -f $< .
 
