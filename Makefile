@@ -452,4 +452,8 @@ run-test262-wearable:
 	python tools/packaging/test262.py --command ../../escargot $(OPT) --summary | sed 's/RELEASE_ASSERT_NOT_REACHED.*//g' | tee ../../test262log.wearable.gen.txt
 	vimdiff test262log.wearable.orig.txt test262log.wearable.gen.txt
 
+run-jsc-mozilla:     
+        cd test/JavaScriptCore/mozilla/; \
+        perl jsDriver.pl -e escargot -s ../../../../
+
 .PHONY: clean
