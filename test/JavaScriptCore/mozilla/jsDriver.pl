@@ -527,7 +527,7 @@ sub usage {
      "(-e|--engine) <type> ...  Specify the type of engine(s) to test.\n" .
      "                          <type> is one or more of\n" .
      "                          (squirrelfish|smopt|smdebug|lcopt|lcdebug|xpcshell|" .
-     "rhino|rhinoi|rhinoms|rhinomsi|rhino9|rhinoms9).\n" .
+     "rhino|rhinoi|rhinoms|rhinomsi|rhino9|rhinoms9|escargot).\n" .
      "(-f|--file) <file>        Redirect output to file named <file>.\n" .
      "                          (default is " .
      "results-<engine-type>-<date-stamp>.html)\n" .
@@ -601,7 +601,10 @@ sub get_engine_command {
         $retval = &get_ep_engine_command;
     } elsif ($opt_engine_type eq "squirrelfish") {
         &dd ("getting squirrelfish engine command.");
-        $retval = &get_squirrelfish_engine_command;        
+        $retval = &get_squirrelfish_engine_command;
+    } elsif ($opt_engine_type eq "escargot") {
+        &dd ("getting escargot engine command.");
+        $retval = &get_escargot_engine_command;
     } else {
         die ("Unknown engine type selected, '$opt_engine_type'.\n");
     }
@@ -694,6 +697,25 @@ sub get_squirrelfish_engine_command {
     
     return $retval;
 }
+
+#
+# get the shell command used to run escargot
+#
+sub get_escargot_engine_command {
+    my $retval;
+
+    if ($opt_shell_path) {
+        # FIXME: Quoting the path this way won't work with paths with quotes in
+        # them. A better fix would be to use the multi-parameter version of
+        # open(), but that doesn't work on ActiveState Perl.
+        $retval = "\"" . $opt_shell_path . "\"";
+    } else {
+        die "Please specify a full path to the escargot testing engine";
+    }
+
+    return $retval;
+}
+
 
 #
 # get the shell command used to run spidermonkey
