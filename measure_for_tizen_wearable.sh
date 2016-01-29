@@ -150,8 +150,8 @@ else
     sum=$(($sum - $pssmax - $pssmin))
     average=$(($sum / 8))
     echo 'average : '$average
-    echo $t': '$average  >> tmp
-    averagetotal=$averagetotal'\n'$t': '$average
+    echo $t' : '$average  >> tmp
+    averagetotal=$averagetotal'\n'$t' : '$average
   done
   echo $averagetotal
   cat tmp
