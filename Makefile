@@ -453,7 +453,7 @@ run-test262-wearable:
 	vimdiff test262log.wearable.orig.txt test262log.wearable.gen.txt
 
 run-jsc-mozilla:     
-        cd test/JavaScriptCore/mozilla/; \
+	cd test/JavaScriptCore/mozilla/; \
         perl jsDriver.pl -e escargot -s ../../../../
 
 .PHONY: clean
