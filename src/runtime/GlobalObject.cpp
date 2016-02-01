@@ -179,10 +179,42 @@ void GlobalObject::initGlobalObject()
                 });
             }
         }
-        return ESValue();
+        instance->throwError(TypeError::create());
     }, ESString::createAtomicString("load"));
     set(ESString::createAtomicString("load"), loadFunction);
-    set(ESString::createAtomicString("run"), loadFunction);
+
+    auto runFunction = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        timeval tv;
+        gettimeofday(&tv, 0);
+        long long int ms = tv.tv_sec * 1000 + tv.tv_usec / 1000;
+
+        if (instance->currentExecutionContext()->argumentCount()) {
+            ESValue& val = instance->currentExecutionContext()->arguments()[0];
+            escargot::ESString* str = val.toString();
+            FILE* fp = fopen(str->utf8Data(), "r");
+            if (fp) {
+                fseek(fp, 0L, SEEK_END);
+                size_t sz = ftell(fp);
+                fseek(fp, 0L, SEEK_SET);
+                ASCIIString str;
+                str.reserve(sz+2);
+                static char buf[4096];
+                while (fgets(buf, sizeof buf, fp) != NULL) {
+                    str += buf;
+                }
+                fclose(fp);
+
+                instance->runOnGlobalContext([instance, &str]() {
+                    return instance->evaluate(escargot::ESString::create(std::move(str)));
+                });
+                gettimeofday(&tv, 0);
+                long long int timeSpent = tv.tv_sec * 1000 + tv.tv_usec / 1000 - ms;
+                return ESValue(timeSpent);
+            }
+        }
+        instance->throwError(TypeError::create());
+    }, ESString::createAtomicString("run"));
+    set(ESString::createAtomicString("run"), runFunction);
 
     auto readFunction = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         if (instance->currentExecutionContext()->argumentCount()) {
