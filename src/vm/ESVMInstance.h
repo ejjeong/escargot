@@ -69,13 +69,14 @@ public:
     ALWAYS_INLINE Strings& strings() { return m_strings; }
 
     template <typename F>
-    void runOnGlobalContext(const F& f)
+    ESValue runOnGlobalContext(const F& f)
     {
         ExecutionContext* ctx = m_currentExecutionContext;
         m_currentExecutionContext = m_globalExecutionContext;
         invalidateIdentifierCacheCheckCount();
-        f();
+        ESValue ret = f();
         m_currentExecutionContext = ctx;
+        return ret;
     }
 
     template <typename F>

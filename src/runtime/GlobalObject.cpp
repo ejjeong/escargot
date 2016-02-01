@@ -174,8 +174,8 @@ void GlobalObject::initGlobalObject()
                     str += buf;
                 }
                 fclose(fp);
-                instance->runOnGlobalContext([instance, &str]() {
-                    instance->evaluate(escargot::ESString::create(std::move(str)));
+                return instance->runOnGlobalContext([instance, &str]() {
+                    return instance->evaluate(escargot::ESString::create(std::move(str)));
                 });
             }
         }
