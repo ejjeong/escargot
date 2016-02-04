@@ -26,7 +26,7 @@ var Octane2Suites = [
     {name: "delta-blue", category: "Throughput", files: ["deltablue.js"]},
     {name: "crypto", category: "Throughput", files: ["crypto.js"]},
     {name: "proto-raytracer", category: "Throughput", files: ["raytrace.js"]},
-//    {name: "earley-boyer", category: "Throughput", files: ["earley-boyer.js"]},
+    {name: "earley-boyer", category: "Throughput", files: ["earley-boyer.js"]},
     {name: "regexp-2010", category: "Throughput", files: ["regexp.js"]},
     {name: "splay", category: "Throughput", latency: true, files:["splay.js"]},
     {name: "navier-stokes", category: "Throughput", files: ["navier-stokes.js"]},
