@@ -24,6 +24,7 @@
 for (var i = 0; i < SimplePayload.length; ++i) {
     var name = SimplePayload[i].name;
     JetStream.addPlan({
+        ancestor: "simple",
         name: name,
         benchmarks: [{
             name: name,

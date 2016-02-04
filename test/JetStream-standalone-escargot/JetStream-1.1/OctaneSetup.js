@@ -46,6 +46,7 @@ for (var i = 0; i < OctaneSuites.length; ++i) {
     code += "</script>";
     
     JetStream.addPlan({
+        ancestor: "Octane",
         name: suite.name,
         benchmarks: myBenchmarks,
         code: code
