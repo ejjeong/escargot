@@ -180,6 +180,7 @@ void GlobalObject::initGlobalObject()
             }
         }
         instance->throwError(TypeError::create());
+        RELEASE_ASSERT_NOT_REACHED();
     }, ESString::createAtomicString("load"));
     set(ESString::createAtomicString("load"), loadFunction);
 
@@ -213,6 +214,7 @@ void GlobalObject::initGlobalObject()
             }
         }
         instance->throwError(TypeError::create());
+        RELEASE_ASSERT_NOT_REACHED();
     }, ESString::createAtomicString("run"));
     set(ESString::createAtomicString("run"), runFunction);
 
