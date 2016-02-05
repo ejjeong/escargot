@@ -456,4 +456,9 @@ run-jsc-mozilla:
 	cd test/JavaScriptCore/mozilla/; \
         perl jsDriver.pl -e escargot -s ../../../../
 
+run-jetstream:
+	cd test/JetStream-standalone-escargot/JetStream-1.1/; \
+        ./run.sh ../../../escargot; \
+		python parsingResults.py jetstream-result-raw.res;
+
 .PHONY: clean
