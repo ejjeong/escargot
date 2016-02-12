@@ -461,4 +461,8 @@ run-jetstream:
         ./run.sh ../../../escargot; \
 		python parsingResults.py jetstream-result-raw.res;
 
+run-jsc-stress:
+	cd test/JavaScriptCore/stress/; \
+	./stress_test.sh;
+
 .PHONY: clean
