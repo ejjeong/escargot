@@ -1363,14 +1363,14 @@ ESValue executeJIT(ESFunctionObject* fn, ESVMInstance* instance, ExecutionContex
 ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctionObject* fn, CodeBlock* cb, DeclarativeEnvironmentRecord* functionRecord, ESValue* stackStorage, const ESValue& receiver, ESValue arguments[], const size_t& argumentCount, ESVMInstance* ESVMInstance)
 {
     // http://www.ecma-international.org/ecma-262/6.0/#sec-ordinarycallbindthis
-    if (!newEC->isStrictMode()) {
+    if (newEC->isStrictMode() || cb->m_isBuiltInFunction) {
+        newEC->setThisBinding(receiver);
+    } else {
         if (receiver.isUndefinedOrNull()) {
             newEC->setThisBinding(ESVMInstance->globalObject());
         } else {
             newEC->setThisBinding(receiver.toObject());
         }
-    } else {
-        newEC->setThisBinding(receiver);
     }
 
     // if FunctionExpressionNode has own name, should bind own function object

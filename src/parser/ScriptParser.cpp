@@ -51,7 +51,7 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
     ProgramNode* programNode;
     try {
         // unsigned long start = ESVMInstance::currentInstance()->tickCount();
-        programNode = (ProgramNode *)esprima::parse(source);
+        programNode = (ProgramNode *)esprima::parse(source, instance->currentExecutionContext()->isStrictMode());
         // unsigned long end = ESVMInstance::currentInstance()->tickCount();
         // ESCARGOT_LOG_ERROR("parse takes %lfms\n", (end-start)/1000.0);
         // printf("esprima takes %lfms\n", (end-start)/1000.0);

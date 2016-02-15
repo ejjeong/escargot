@@ -6061,7 +6061,7 @@ escargot::Node* parseProgram(ParseContext* ctx)
     return node;
 }
 
-escargot::Node* parse(escargot::ESString* source)
+escargot::Node* parse(escargot::ESString* source, bool strict)
 {
     ParseContext ctx(source);
     ctx.m_index = 0;
@@ -6077,7 +6077,7 @@ escargot::Node* parse(escargot::ESString* source)
     ctx.m_inIteration = false;
     ctx.m_inSwitch = false;
     ctx.m_lastCommentStart = -1;
-    ctx.m_strict = false;
+    ctx.m_strict = strict;
     ctx.m_scanning = false;
     ctx.m_isAssignmentTarget = false;
     ctx.m_isBindingElement = false;

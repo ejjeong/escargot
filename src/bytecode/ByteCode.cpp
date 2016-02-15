@@ -15,9 +15,6 @@ CodeBlock::CodeBlock(size_t roughCodeBlockSizeInWordSize, bool isBuiltInFunction
     m_stackAllocatedIdentifiersCount = 0;
     m_isBuiltInFunction = isBuiltInFunction;
     m_isStrict = false;
-    if (isBuiltInFunction) {
-        m_isStrict = true;
-    }
     m_isFunctionExpression = false;
     m_requiredStackSizeInESValueSize = 0;
     m_argumentCount = 0;
