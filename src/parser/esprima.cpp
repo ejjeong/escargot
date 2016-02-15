@@ -2675,14 +2675,13 @@ escargot::Node* parseVariableIdentifier(ParseContext* ctx)
     token = lex(ctx);
 
     if (token->m_type == Token::KeywordToken && token->m_keywordKind == Yield) {
-        /*
-        if (strict) {
-            tolerateUnexpectedToken(token, Messages.StrictReservedWord);
-        } if (!state.allowYield) {
-            throwUnexpectedToken(token);
+        if (ctx->m_strict) {
+            //tolerateUnexpectedToken(token, Messages.StrictReservedWord);
+            tolerateUnexpectedToken();
+        } if (!ctx->m_allowYield) {
+            //throwUnexpectedToken(token);
+            throwUnexpectedToken();
         }
-         */
-        RELEASE_ASSERT_NOT_REACHED();
     } else if (token->m_type != Token::IdentifierToken) {
         if (ctx->m_strict && token->m_type == Token::KeywordToken && token->m_keywordKind > StrictModeReservedWord) {
             tolerateUnexpectedToken();
