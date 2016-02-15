@@ -800,37 +800,16 @@ ch07/7.8/7.8.1/S7.8.1_A1_T1 passed in non-strict mode
 ch07/7.8/7.8.1/S7.8.1_A1_T2 passed in non-strict mode
 ch07/7.8/7.8.2/S7.8.2_A1_T1 passed in non-strict mode
 ch07/7.8/7.8.2/S7.8.2_A1_T2 passed in non-strict mode
-=== ch07/7.8/7.8.3/7.8.3-1-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch07/7.8/7.8.3/7.8.3-1-s passed in strict mode
 ch07/7.8/7.8.3/7.8.3-1gs failed in strict mode as expected
-=== ch07/7.8/7.8.3/7.8.3-2-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch07/7.8/7.8.3/7.8.3-2-s passed in strict mode
 ch07/7.8/7.8.3/7.8.3-2gs failed in strict mode as expected
-=== ch07/7.8/7.8.3/7.8.3-3-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch07/7.8/7.8.3/7.8.3-3-s passed in strict mode
 === ch07/7.8/7.8.3/7.8.3-3gs was expected to fail in strict mode, but didn't ===
-=== ch07/7.8/7.8.3/7.8.3-4-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
-=== ch07/7.8/7.8.3/7.8.3-5-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
-=== ch07/7.8/7.8.3/7.8.3-6-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
-=== ch07/7.8/7.8.3/7.8.3-7-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch07/7.8/7.8.3/7.8.3-4-s passed in strict mode
+ch07/7.8/7.8.3/7.8.3-5-s passed in strict mode
+ch07/7.8/7.8.3/7.8.3-6-s passed in strict mode
+ch07/7.8/7.8.3/7.8.3-7-s passed in strict mode
 ch07/7.8/7.8.3/S7.8.3_A1.1_T1 passed in non-strict mode
 ch07/7.8/7.8.3/S7.8.3_A1.1_T2 passed in non-strict mode
 ch07/7.8/7.8.3/S7.8.3_A1.2_T1 passed in non-strict mode
@@ -12276,17 +12255,10 @@ ch15/15.9/15.9.5/15.9.5.9/S15.9.5.9_A3_T3 passed in non-strict mode
 
 === Summary ===
  - Ran 11338 tests
- - Passed 11125 tests (98.1%)
- - Failed 213 tests (1.9%)
+ - Passed 11132 tests (98.2%)
+ - Failed 206 tests (1.8%)
 
 Failed tests
-  ch07/7.8/7.8.3/7.8.3-1-s in strict mode
-  ch07/7.8/7.8.3/7.8.3-2-s in strict mode
-  ch07/7.8/7.8.3/7.8.3-3-s in strict mode
-  ch07/7.8/7.8.3/7.8.3-4-s in strict mode
-  ch07/7.8/7.8.3/7.8.3-5-s in strict mode
-  ch07/7.8/7.8.3/7.8.3-6-s in strict mode
-  ch07/7.8/7.8.3/7.8.3-7-s in strict mode
   ch08/8.7/8.7.2/8.7.2-4-s in strict mode
   ch08/8.7/8.7.2/8.7.2-5-s in strict mode
   ch10/10.2/10.2.1/10.2.1.1/10.2.1.1.3/10.2.1.1.3-4-16-s in strict mode

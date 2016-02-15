@@ -2035,6 +2035,9 @@ PassRefPtr<ParseStatus> scanBinaryLiteral(ParseContext* ctx, size_t start)
 
 PassRefPtr<ParseStatus> scanOctalLiteral(ParseContext* ctx, char16_t prefix, size_t start)
 {
+    if (ctx->m_strict)
+        throwUnexpectedToken();
+
     std::string number;
     bool octal;
 
