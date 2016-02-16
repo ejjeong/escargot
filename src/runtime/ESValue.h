@@ -1453,6 +1453,8 @@ public:
         return m_jsGetter || m_jsSetter;
     }
 
+    void throwErrorIfStrictMode();
+
 protected:
     ESNativeGetter m_nativeGetter;
     ESNativeSetter m_nativeSetter;

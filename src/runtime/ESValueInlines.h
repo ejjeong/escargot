@@ -964,13 +964,17 @@ ALWAYS_INLINE void ESPropertyAccessorData::setValue(::escargot::ESObject* obj, :
     if (m_nativeSetter) {
         ASSERT(!m_jsSetter);
         m_nativeSetter(obj, originalObj, propertyName, value);
+        return;
     }
     if (m_jsSetter) {
         ASSERT(!m_nativeSetter);
         ESValue arg[] = {value};
         ESFunctionObject::call(ESVMInstance::currentInstance(), m_jsSetter,
             originalObj , arg, 1, false);
+        return;
     }
+    if (m_jsGetter)
+        throwErrorIfStrictMode();
 }
 
 inline ESHiddenClass* ESHiddenClass::removeProperty(size_t idx)

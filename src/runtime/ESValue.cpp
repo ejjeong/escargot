@@ -2167,4 +2167,10 @@ void ESPropertyAccessorData::setGetterAndSetterTo(ESObject* obj, const ESHiddenC
     }
 }
 
+void ESPropertyAccessorData::throwErrorIfStrictMode()
+{
+    if (ESVMInstance::currentInstance()->currentExecutionContext()->isStrictMode())
+        ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create(""))));
+}
+
 }
