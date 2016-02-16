@@ -63,7 +63,7 @@ function TestCase( n, d, e, a ) {
     this.passed = getTestCaseResult( this.expect, this.actual );
 }
 function startTest() {
-    version(110);
+//    version(110);
 
     if ( BUGNUMBER ) {
             writeLineToLog ("BUGNUMBER: " + BUGNUMBER );

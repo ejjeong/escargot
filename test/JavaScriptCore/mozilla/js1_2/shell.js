@@ -32,7 +32,7 @@ var FAILED = " FAILED! expected: ";
 
 startTest();
 
-    version(120);
+    //version(120);
 
 function test() {
     for ( tc=0; tc < testcases.length; tc++ ) {
@@ -67,7 +67,7 @@ function TestCase( n, d, e, a ) {
     this.passed = getTestCaseResult( this.expect, this.actual );
 }
 function startTest() {
-    version(120);
+    //version(120);
 
     if ( BUGNUMBER ) {
         writeLineToLog ("BUGNUMBER: " + BUGNUMBER );

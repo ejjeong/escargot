@@ -71,6 +71,7 @@ function TestCase( n, d, e, a ) {
     }
 }
 function startTest() {
+/*
     if ( version ) {
         //  JavaScript 1.3 is supposed to be compliant ecma version 1.0
         if ( VERSION == "ECMA_1" ) {
@@ -86,7 +87,7 @@ function startTest() {
             version ( 110 );
         }
     }
-
+*/
 
     // for ecma version 2.0, we will leave the javascript version to
     // the default ( for now ).
