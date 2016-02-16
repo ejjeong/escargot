@@ -454,7 +454,7 @@ run-test262-wearable:
 
 run-jsc-mozilla:     
 	cd test/JavaScriptCore/mozilla/; \
-        perl jsDriver.pl -e escargot -s ../../../../
+        perl jsDriver.pl -e escargot -s ../../../escargot
 
 run-jetstream:
 	cd test/JetStream-standalone-escargot/JetStream-1.1/; \
