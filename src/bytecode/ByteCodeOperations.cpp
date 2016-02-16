@@ -290,7 +290,7 @@ NEVER_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue* 
 NEVER_INLINE void throwObjectWriteError()
 {
     if (ESVMInstance::currentInstance()->currentExecutionContext()->isStrictMode())
-        ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create()));
+        ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Attempt to assign to readonly property"))));
 }
 
 NEVER_INLINE void setObjectOperationSlowMode(ESValue* willBeObject, ESValue* property, const ESValue& value)

@@ -422,6 +422,8 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
 
                 ASSERT(!willBeObject->asESPointer()->asESObject()->hasOwnProperty(keyString));
                 bool res = willBeObject->asESPointer()->asESObject()->defineDataProperty(keyString, true, true, true, value);
+                if (!res)
+                    throwObjectWriteError();
 
                 // only cache vector mode object.
                 if (res && willBeObject->asESPointer()->asESObject()->hiddenClass()->isVectorMode()) {

@@ -959,22 +959,21 @@ ALWAYS_INLINE ESValue ESPropertyAccessorData::value(::escargot::ESObject* obj, :
     return ESValue();
 }
 
-ALWAYS_INLINE void ESPropertyAccessorData::setValue(::escargot::ESObject* obj, ::escargot::ESObject* originalObj, ESString* propertyName, const ESValue& value)
+ALWAYS_INLINE bool ESPropertyAccessorData::setValue(::escargot::ESObject* obj, ::escargot::ESObject* originalObj, ESString* propertyName, const ESValue& value)
 {
     if (m_nativeSetter) {
         ASSERT(!m_jsSetter);
         m_nativeSetter(obj, originalObj, propertyName, value);
-        return;
+        return true;
     }
     if (m_jsSetter) {
         ASSERT(!m_nativeSetter);
         ESValue arg[] = {value};
         ESFunctionObject::call(ESVMInstance::currentInstance(), m_jsSetter,
             originalObj , arg, 1, false);
-        return;
+        return true;
     }
-    if (m_jsGetter)
-        throwErrorIfStrictMode();
+    return false;
 }
 
 inline ESHiddenClass* ESHiddenClass::removeProperty(size_t idx)
@@ -1186,7 +1185,7 @@ ALWAYS_INLINE bool ESHiddenClass::write(ESObject* obj, ESObject* originalObject,
         if (!obj->accessorData(idx)->getJSGetter() && !obj->accessorData(idx)->getJSSetter() && !m_propertyInfo[idx].m_flags.m_isWritable)
             return false;
         ESPropertyAccessorData* data = (ESPropertyAccessorData *)obj->m_hiddenClassData[idx].asESPointer();
-        data->setValue(obj, originalObject, propertyName, val);
+        return data->setValue(obj, originalObject, propertyName, val);
     }
     return true;
 }

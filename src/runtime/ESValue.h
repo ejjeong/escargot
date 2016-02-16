@@ -1399,7 +1399,7 @@ public:
     }
 
     ALWAYS_INLINE ESValue value(::escargot::ESObject* obj, ::escargot::ESObject* originalObj, ::escargot::ESString* propertyName);
-    ALWAYS_INLINE void setValue(::escargot::ESObject* obj, ::escargot::ESObject* originalObj, ::escargot::ESString* propertyName, const ESValue& value);
+    ALWAYS_INLINE bool setValue(::escargot::ESObject* obj, ::escargot::ESObject* originalObj, ::escargot::ESString* propertyName, const ESValue& value);
 
     ESNativeSetter getNativeSetter()
     {
@@ -1452,8 +1452,6 @@ public:
     {
         return m_jsGetter || m_jsSetter;
     }
-
-    void throwErrorIfStrictMode();
 
 protected:
     ESNativeGetter m_nativeGetter;
