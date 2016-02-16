@@ -5,6 +5,8 @@
 
 namespace escargot {
 
+NEVER_INLINE void throwObjectWriteError();
+
 ALWAYS_INLINE ESValue* getByIdOperation(ESVMInstance* instance, ExecutionContext* ec, GetById* code)
 {
     if (LIKELY(code->m_identifierCacheInvalidationCheckCount == instance->identifierCacheInvalidationCheckCount())) {
@@ -61,7 +63,8 @@ ALWAYS_INLINE void setByGlobalIndexOperation(GlobalObject* globalObject, SetByGl
     if (UNLIKELY(code->m_index == SIZE_MAX)) {
         setByGlobalIndexOperationSlowCase(globalObject, code, value);
     } else {
-        globalObject->hiddenClass()->write(globalObject, globalObject, code->m_name, code->m_index, value);
+        if (!globalObject->hiddenClass()->write(globalObject, globalObject, code->m_name, code->m_index, value))
+            throwObjectWriteError();
     }
 }
 
@@ -277,8 +280,6 @@ GetObjectPreComputedCaseInlineCacheOperation:
 
 NEVER_INLINE ESValue getObjectPreComputedCaseOperationWithNeverInline(ESValue* willBeObject, ESString* property, GlobalObject* globalObject
     , ESHiddenClassInlineCache* inlineCache);
-
-NEVER_INLINE void throwObjectWriteError();
 
 // d = {}. d[0] = 1
 NEVER_INLINE void setObjectOperationSlowCase(ESValue* willBeObject, ESValue* property, const ESValue& value);
