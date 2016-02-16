@@ -2679,10 +2679,10 @@ escargot::Node* parseVariableIdentifier(ParseContext* ctx)
 
     if (token->m_type == Token::KeywordToken && token->m_keywordKind == Yield) {
         if (ctx->m_strict) {
-            //tolerateUnexpectedToken(token, Messages.StrictReservedWord);
+            // tolerateUnexpectedToken(token, Messages.StrictReservedWord);
             tolerateUnexpectedToken();
         } if (!ctx->m_allowYield) {
-            //throwUnexpectedToken(token);
+            // throwUnexpectedToken(token);
             throwUnexpectedToken();
         }
     } else if (token->m_type != Token::IdentifierToken) {

@@ -469,6 +469,8 @@ ESObject::ESObject(ESPointer::Type type, ESValue __proto__, size_t initialKeyCou
     m_flags.m_isEverSetAsPrototypeObject = false;
     m_flags.m_extraData = 0;
 
+    m_extraPointerData = NULL;
+
     m_hiddenClassData.reserve(initialKeyCount);
     m_hiddenClass = ESVMInstance::currentInstance()->initialHiddenClassForObject();
 

@@ -580,20 +580,37 @@ inline char32_t readUTF8Sequence(const char*& sequence)
 {
     unsigned length;
     const char sch = *sequence;
-    if ((sch & 0x80) == 0)         length = 1;
-    else if ((sch & 0xE0) == 0xC0) length = 2;
-    else if ((sch & 0xF0) == 0xE0) length = 3;
-    else if ((sch & 0xF8) == 0xF0) length = 4;
-    else { RELEASE_ASSERT_NOT_REACHED(); }
+    if ((sch & 0x80) == 0)
+        length = 1;
+    else if ((sch & 0xE0) == 0xC0)
+        length = 2;
+    else if ((sch & 0xF0) == 0xE0)
+        length = 3;
+    else if ((sch & 0xF8) == 0xF0)
+        length = 4;
+    else {
+        RELEASE_ASSERT_NOT_REACHED();
+    }
 
     char32_t ch = 0;
     switch (length) {
-        case 6: ch += static_cast<unsigned char>(*sequence++); ch <<= 6; // FALLTHROUGH;
-        case 5: ch += static_cast<unsigned char>(*sequence++); ch <<= 6; // FALLTHROUGH;
-        case 4: ch += static_cast<unsigned char>(*sequence++); ch <<= 6; // FALLTHROUGH;
-        case 3: ch += static_cast<unsigned char>(*sequence++); ch <<= 6; // FALLTHROUGH;
-        case 2: ch += static_cast<unsigned char>(*sequence++); ch <<= 6; // FALLTHROUGH;
-        case 1: ch += static_cast<unsigned char>(*sequence++);
+    case 6:
+        ch += static_cast<unsigned char>(*sequence++);
+        ch <<= 6; // FALLTHROUGH;
+    case 5:
+        ch += static_cast<unsigned char>(*sequence++);
+        ch <<= 6; // FALLTHROUGH;
+    case 4:
+        ch += static_cast<unsigned char>(*sequence++);
+        ch <<= 6; // FALLTHROUGH;
+    case 3:
+        ch += static_cast<unsigned char>(*sequence++);
+        ch <<= 6; // FALLTHROUGH;
+    case 2:
+        ch += static_cast<unsigned char>(*sequence++);
+        ch <<= 6; // FALLTHROUGH;
+    case 1:
+        ch += static_cast<unsigned char>(*sequence++);
     }
     return ch - offsetsFromUTF8[length - 1];
 }
@@ -604,15 +621,15 @@ inline UTF16String utf8StringToUTF16String(const char* buf, const size_t& len)
     const char* source = buf;
     while (source < buf + len) {
         char32_t ch = readUTF8Sequence(source);
-        if (((uint32_t)(ch)<=0xffff)) { // BMP
-            if ((((ch)&0xfffff800)==0xd800)) { // SURROGATE
+        if (((uint32_t)(ch) <= 0xffff)) { // BMP
+            if ((((ch) & 0xfffff800) == 0xd800)) { // SURROGATE
                 str += 0xFFFD;
             } else {
                 str += ch; // normal case
             }
-        } else if (((uint32_t)((ch)-0x10000)<=0xfffff)) { // SUPPLEMENTARY
-            str += (char16_t)(((ch)>>10)+0xd7c0);   // LEAD
-            str += (char16_t)(((ch)&0x3ff)|0xdc00); // TRAIL
+        } else if (((uint32_t)((ch) - 0x10000) <= 0xfffff)) { // SUPPLEMENTARY
+            str += (char16_t)(((ch) >> 10) + 0xd7c0); // LEAD
+            str += (char16_t)(((ch) & 0x3ff) | 0xdc00); // TRAIL
         } else {
             str += 0xFFFD;
         }
@@ -1751,14 +1768,25 @@ public:
         return m_hiddenClass;
     }
 
-    uint16_t extraData()
+    uint32_t extraData()
     {
         return m_flags.m_extraData;
     }
 
-    void setExtraData(uint16_t e)
+    // NOTE extraData has 24-bit length
+    void setExtraData(uint32_t e)
     {
         m_flags.m_extraData = e;
+    }
+
+    void* extraPointerData()
+    {
+        return m_extraPointerData;
+    }
+
+    void setExtraPointerData(void* e)
+    {
+        m_extraPointerData = e;
     }
 
     void forceNonVectorHiddenClass(bool forceFillHiddenClassInfo = false)
@@ -1829,6 +1857,7 @@ protected:
 
     ESValue m___proto__;
 
+    void* m_extraPointerData;
 #ifdef ESCARGOT_64
     struct {
         // object
@@ -1844,9 +1873,9 @@ protected:
         bool m_isBoundFunction: 1;
 
         // extra data
-        uint16_t m_extraData: 16;
+        uint32_t m_extraData: 24;
 
-        size_t m_margin: 42;
+        size_t m_margin: 34;
     } m_flags;
 #endif
 #ifdef ESCARGOT_32
@@ -1863,9 +1892,9 @@ protected:
         bool m_isBoundFunction: 1;
 
         // extra data
-        uint16_t m_extraData: 16;
+        uint32_t m_extraData: 24;
 
-        size_t m_margin: 10;
+        size_t m_margin: 2;
     } m_flags;
 #endif
 };
