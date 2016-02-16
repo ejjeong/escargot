@@ -79,6 +79,7 @@ public:
     }
 
     bool isStrictMode() { return m_data.m_isStrict; }
+    void setStrictMode(bool strict) { m_data.m_isStrict = strict; };
 
 #ifdef ENABLE_ESJIT
     bool inOSRExit() { return m_inOSRExit; }

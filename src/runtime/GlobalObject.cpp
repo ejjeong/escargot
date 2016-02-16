@@ -174,9 +174,7 @@ void GlobalObject::initGlobalObject()
                     str += buf;
                 }
                 fclose(fp);
-                return instance->runOnGlobalContext([instance, &str]() {
-                    return instance->evaluate(escargot::ESString::create(std::move(str)));
-                });
+                return instance->evaluate(escargot::ESString::create(std::move(str)));
             }
         }
         instance->throwError(TypeError::create());
@@ -205,9 +203,7 @@ void GlobalObject::initGlobalObject()
                 }
                 fclose(fp);
 
-                instance->runOnGlobalContext([instance, &str]() {
-                    return instance->evaluate(escargot::ESString::create(std::move(str)));
-                });
+                instance->evaluate(escargot::ESString::create(std::move(str)));
                 gettimeofday(&tv, 0);
                 long long int timeSpent = tv.tv_sec * 1000 + tv.tv_usec / 1000 - ms;
                 return ESValue(timeSpent);
@@ -246,15 +242,11 @@ void GlobalObject::initGlobalObject()
 
     // Function Properties of the Global Object
     m_eval = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        ESValue argument = instance->currentExecutionContext()->arguments()[0];
+        ESValue argument = instance->currentExecutionContext()->readArgument(0);
         if (!argument.isESString()) {
             return argument;
         }
-        ESValue ret = instance->runOnEvalContext([instance, &argument]() {
-            ESValue ret = instance->evaluate(argument.asESString(), true);
-            return ret;
-        }, false);
-        return ret;
+        return instance->evaluateEval(argument.asESString(), false);
     }, ESString::createAtomicString("eval"), 1);
     defineDataProperty(ESString::createAtomicString("eval"), true, false, true, m_eval);
 

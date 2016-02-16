@@ -9,8 +9,8 @@ class Node;
 
 class ScriptParser {
 public:
-    Node* generateAST(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope);
-    CodeBlock* parseScript(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope);
+    Node* generateAST(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope, bool strictFromOutside = false);
+    CodeBlock* parseScript(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope, bool strictFromOutside = false);
 #ifdef ESCARGOT_PROFILE
     static void dumpStats();
 #endif

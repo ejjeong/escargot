@@ -51,7 +51,8 @@ class ESVMInstance : public gc_cleanup {
 public:
     ESVMInstance();
     ~ESVMInstance();
-    ESValue evaluate(ESString* source, bool isForGlobalScope = true);
+    ESValue evaluate(ESString* source);
+    ESValue evaluateEval(ESString* source, bool isDirectCall);
 
     ALWAYS_INLINE ExecutionContext* currentExecutionContext() { return m_currentExecutionContext; }
     ALWAYS_INLINE ExecutionContext* globalExecutionContext() { return m_globalExecutionContext; }
@@ -67,20 +68,6 @@ public:
     ALWAYS_INLINE OpcodeTable* opcodeTable() { return m_opcodeTable; }
     ALWAYS_INLINE std::unordered_map<void *, unsigned char>& opcodeResverseTable() { return m_opcodeReverseTable; }
     ALWAYS_INLINE Strings& strings() { return m_strings; }
-
-    template <typename F>
-    ESValue runOnGlobalContext(const F& f)
-    {
-        ExecutionContext* ctx = m_currentExecutionContext;
-        m_currentExecutionContext = m_globalExecutionContext;
-        invalidateIdentifierCacheCheckCount();
-        ESValue ret = f();
-        m_currentExecutionContext = ctx;
-        return ret;
-    }
-
-    template <typename F>
-    ESValue runOnEvalContext(const F& f, bool isDirectCall);
 
     ALWAYS_INLINE const unsigned& identifierCacheInvalidationCheckCount()
     {
@@ -402,25 +389,5 @@ inline bool operator!=(const ESSimpleAllocatorStd<T1>&, const ESSimpleAllocatorS
 }
 
 #include "runtime/ExecutionContext.h"
-
-namespace escargot {
-
-template <typename F>
-ESValue ESVMInstance::runOnEvalContext(const F& f, bool isDirectCall)
-{
-    ExecutionContext* ctx = m_currentExecutionContext;
-    ESValue ret;
-    if (!ctx || !isDirectCall) {
-        m_currentExecutionContext = m_globalExecutionContext;
-        ret = f();
-    } else {
-        ret = f();
-    }
-    m_currentExecutionContext = ctx;
-    invalidateIdentifierCacheCheckCount();
-    return ret;
-}
-
-}
 
 #endif

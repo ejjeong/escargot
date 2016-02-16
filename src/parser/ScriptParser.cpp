@@ -46,12 +46,12 @@ void ScriptParser::dumpStats()
 }
 #endif
 
-Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope)
+Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope, bool strictFromOutside)
 {
     ProgramNode* programNode;
     try {
         // unsigned long start = ESVMInstance::currentInstance()->tickCount();
-        programNode = (ProgramNode *)esprima::parse(source, instance->currentExecutionContext()->isStrictMode());
+        programNode = (ProgramNode *)esprima::parse(source, strictFromOutside);
         // unsigned long end = ESVMInstance::currentInstance()->tickCount();
         // ESCARGOT_LOG_ERROR("parse takes %lfms\n", (end-start)/1000.0);
         // printf("esprima takes %lfms\n", (end-start)/1000.0);
@@ -699,7 +699,7 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
     return programNode;
 }
 
-CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope)
+CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope, bool strictFromOutside)
 {
 #ifdef ENABLE_CODECACHE
     if (source->length() < 1024) {
@@ -718,7 +718,7 @@ CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString*
 #endif
 
     // unsigned long start = ESVMInstance::currentInstance()->tickCount();
-    ProgramNode* node = (ProgramNode *)generateAST(instance, source, isForGlobalScope);
+    ProgramNode* node = (ProgramNode *)generateAST(instance, source, isForGlobalScope, strictFromOutside);
     ASSERT(node->type() == Program);
     CodeBlock* cb = generateByteCode(node, source->length() > 1024 * 1024 ? false : true);
     // unsigned long end = ESVMInstance::currentInstance()->tickCount();

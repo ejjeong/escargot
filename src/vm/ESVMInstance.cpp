@@ -138,16 +138,62 @@ ESVMInstance::~ESVMInstance()
 #endif
 }
 
-ESValue ESVMInstance::evaluate(ESString* source, bool isForGlobalScope)
+ESValue ESVMInstance::evaluate(ESString* source)
 {
     // unsigned long start = ESVMInstance::currentInstance()->tickCount();
+
+    ExecutionContext* oldContext = m_currentExecutionContext;
+    m_currentExecutionContext = m_globalExecutionContext;
+    bool oldContextIsStrictMode = oldContext->isStrictMode();
+
+    CodeBlock* block = m_scriptParser->parseScript(this, source, true);
+    if (block->shouldUseStrictMode())
+        m_currentExecutionContext->setStrictMode(true);
+
     m_lastExpressionStatementValue = ESValue();
-    CodeBlock* block = m_scriptParser->parseScript(this, source, isForGlobalScope);
     interpret(this, block);
     if (!block->m_isCached)
         block->finalize();
+
     // unsigned long end = ESVMInstance::currentInstance()->tickCount();
     // printf("ESVMInstance::evaluate takes %lfms\n", (end-start)/1000.0);
+
+    m_currentExecutionContext = oldContext;
+    m_currentExecutionContext->setStrictMode(oldContextIsStrictMode);
+    return m_lastExpressionStatementValue;
+}
+
+ESValue ESVMInstance::evaluateEval(ESString* source, bool isDirectCall)
+{
+    ExecutionContext* oldContext = m_currentExecutionContext;
+    bool oldContextIsStrictMode = oldContext->isStrictMode();
+
+    bool strictFromOutside = m_currentExecutionContext->isStrictMode() && isDirectCall;
+    CodeBlock* block = m_scriptParser->parseScript(this, source, false, strictFromOutside);
+    bool isStrictCode = block->shouldUseStrictMode();
+
+    if (!m_currentExecutionContext || !isDirectCall) {
+        // $ES5 10.4.2.1. Use global execution context
+        m_currentExecutionContext = m_globalExecutionContext;
+    } else {
+        // $ES5 10.4.2.2. Use calling execution context
+    }
+
+    m_lastExpressionStatementValue = ESValue();
+    if (isStrictCode) {
+        // $ES5 10.4.2.3. Use new environment
+        block->m_hasCode = true;
+        block->m_needsActivation = true; // FIXME modify parser to generate fastindex codes for evals
+        block->m_needsHeapAllocatedExecutionContext = true;
+        ESFunctionObject* callee = ESFunctionObject::create(m_currentExecutionContext->environment(), block, strings().emptyString);
+        ESFunctionObject::call(this, callee, m_currentExecutionContext->resolveThisBinding(), nullptr, 0, false);
+    } else {
+        interpret(this, block);
+    }
+    if (!block->m_isCached)
+        block->finalize();
+    m_currentExecutionContext = oldContext;
+    m_currentExecutionContext->setStrictMode(oldContextIsStrictMode);
     return m_lastExpressionStatementValue;
 }
 

@@ -805,7 +805,7 @@ ch07/7.8/7.8.3/7.8.3-1gs failed in strict mode as expected
 ch07/7.8/7.8.3/7.8.3-2-s passed in strict mode
 ch07/7.8/7.8.3/7.8.3-2gs failed in strict mode as expected
 ch07/7.8/7.8.3/7.8.3-3-s passed in strict mode
-=== ch07/7.8/7.8.3/7.8.3-3gs was expected to fail in strict mode, but didn't ===
+ch07/7.8/7.8.3/7.8.3-3gs failed in strict mode as expected
 ch07/7.8/7.8.3/7.8.3-4-s passed in strict mode
 ch07/7.8/7.8.3/7.8.3-5-s passed in strict mode
 ch07/7.8/7.8.3/7.8.3-6-s passed in strict mode
@@ -1282,7 +1282,7 @@ ch08/8.7/S8.7_A7 passed in non-strict mode
 ch08/8.7/8.7.2/8.7.2-1-s passed in strict mode
 ch08/8.7/8.7.2/8.7.2-2-s passed in strict mode
 ch08/8.7/8.7.2/8.7.2-3-1-s passed in strict mode
-=== ch08/8.7/8.7.2/8.7.2-3-a-1gs was expected to fail in strict mode, but didn't ===
+ch08/8.7/8.7.2/8.7.2-3-a-1gs failed in strict mode as expected
 ch08/8.7/8.7.2/8.7.2-3-a-2gs failed in strict mode as expected
 ch08/8.7/8.7.2/8.7.2-3-s passed in strict mode
 ch08/8.7/8.7.2/8.7.2-4-s passed in strict mode
@@ -1519,14 +1519,8 @@ ch10/10.4/10.4.2/10.4.2-3-c-1-s passed in strict mode
 ch10/10.4/10.4.2/10.4.2-3-c-2-s passed in strict mode
 ch10/10.4/10.4.2/10.4.2.1-1gs failed in strict mode as expected
 ch10/10.4/10.4.2/10.4.2.1-2-s passed in strict mode
-=== ch10/10.4/10.4.2/10.4.2.1-4-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
-=== ch10/10.4/10.4.2/S10.4.2.1_A1 failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Strict indirect eval leaked a top level declaration
-===
+ch10/10.4/10.4.2/10.4.2.1-4-s passed in strict mode
+ch10/10.4/10.4.2/S10.4.2.1_A1 passed in strict mode
 ch10/10.4/10.4.2/S10.4.2_A1.1_T1 passed in non-strict mode
 ch10/10.4/10.4.2/S10.4.2_A1.1_T10 passed in non-strict mode
 ch10/10.4/10.4.2/S10.4.2_A1.1_T11 passed in non-strict mode
@@ -2087,7 +2081,7 @@ ch11/11.13/11.13.1/11.13.1-4-27-s passed in non-strict mode
 ch11/11.13/11.13.1/11.13.1-4-28-s passed in strict mode
 ch11/11.13/11.13.1/11.13.1-4-28gs failed in strict mode as expected
 ch11/11.13/11.13.1/11.13.1-4-29-s passed in strict mode
-=== ch11/11.13/11.13.1/11.13.1-4-29gs was expected to fail in strict mode, but didn't ===
+ch11/11.13/11.13.1/11.13.1-4-29gs failed in strict mode as expected
 ch11/11.13/11.13.1/11.13.1-4-3-s passed in strict mode
 ch11/11.13/11.13.1/11.13.1-4-30-s passed in strict mode
 ch11/11.13/11.13.1/11.13.1-4-31-s passed in strict mode
@@ -12168,13 +12162,11 @@ ch15/15.9/15.9.5/15.9.5.9/S15.9.5.9_A3_T3 passed in non-strict mode
 
 === Summary ===
  - Ran 11338 tests
- - Passed 11161 tests (98.4%)
- - Failed 177 tests (1.6%)
+ - Passed 11166 tests (98.5%)
+ - Failed 172 tests (1.5%)
 
 Failed tests
   ch10/10.4/10.4.2/10.4.2-2-c-1 in non-strict mode
-  ch10/10.4/10.4.2/10.4.2.1-4-s in strict mode
-  ch10/10.4/10.4.2/S10.4.2.1_A1 in strict mode
   ch10/10.4/10.4.3/10.4.3-1-104 in strict mode
   ch10/10.4/10.4.3/10.4.3-1-106 in strict mode
   ch10/10.6/10.6-10-c-ii-1-s in strict mode
@@ -12324,10 +12316,7 @@ Failed tests
   ch15/15.9/15.9.3/S15.9.3.1_A5_T6 in non-strict mode
 
 Expected to fail but passed ---
- ch07/7.8/7.8.3/7.8.3-3gs in strict mode
- ch08/8.7/8.7.2/8.7.2-3-a-1gs in strict mode
  ch10/10.6/10.6-2gs in strict mode
- ch11/11.13/11.13.1/11.13.1-4-29gs in strict mode
  ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-11gs in strict mode
  ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-13gs in strict mode
  ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-15gs in strict mode

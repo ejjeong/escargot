@@ -1120,15 +1120,13 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 
             ESValue callee = *ec->resolveBinding(strings->eval);
             if (callee.isESPointer() && (void *)callee.asESPointer() == (void *)globalObject->eval()) {
-                ESValue ret = instance->runOnEvalContext([instance, &arguments, &argc]() {
-                    ESValue ret;
-                    if (argc && arguments[0].isESString())
-                        return instance->evaluate((arguments[0].asESString()), false);
-                    else if (argc == 0)
-                        return ESValue();
+                ESValue ret;
+                if (argc > 0) {
+                    if (arguments[0].isESString())
+                        ret = instance->evaluateEval((arguments[0].asESString()), true);
                     else
-                        return arguments[0];
-                }, true);
+                        ret = arguments[0];
+                }
                 PUSH(stack, topOfStack, ret);
             } else {
                 ESObject* receiver = instance->globalObject();
