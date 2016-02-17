@@ -2448,18 +2448,9 @@ ch11/11.4/11.4.1/11.4.1-2-6 passed in non-strict mode
 ch11/11.4/11.4.1/11.4.1-3-1 passed in non-strict mode
 ch11/11.4/11.4.1/11.4.1-3-2 passed in non-strict mode
 ch11/11.4/11.4.1/11.4.1-3-3 passed in non-strict mode
-=== ch11/11.4/11.4.1/11.4.1-3-a-1-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
-=== ch11/11.4/11.4.1/11.4.1-4-a-1-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
-=== ch11/11.4/11.4.1/11.4.1-4-a-2-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch11/11.4/11.4.1/11.4.1-3-a-1-s passed in strict mode
+ch11/11.4/11.4.1/11.4.1-4-a-1-s passed in strict mode
+ch11/11.4/11.4.1/11.4.1-4-a-2-s passed in strict mode
 ch11/11.4/11.4.1/11.4.1-4-a-3-s passed in strict mode
 ch11/11.4/11.4.1/11.4.1-4-a-4-s passed in strict mode
 ch11/11.4/11.4.1/11.4.1-4.a-1 passed in non-strict mode
@@ -2472,22 +2463,13 @@ ch11/11.4/11.4.1/11.4.1-4.a-15 passed in non-strict mode
 ch11/11.4/11.4.1/11.4.1-4.a-16 passed in non-strict mode
 ch11/11.4/11.4.1/11.4.1-4.a-17 passed in non-strict mode
 ch11/11.4/11.4.1/11.4.1-4.a-2 passed in non-strict mode
-=== ch11/11.4/11.4.1/11.4.1-4.a-3-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch11/11.4/11.4.1/11.4.1-4.a-3-s passed in strict mode
 ch11/11.4/11.4.1/11.4.1-4.a-3 passed in non-strict mode
 ch11/11.4/11.4.1/11.4.1-4.a-4 passed in non-strict mode
 ch11/11.4/11.4.1/11.4.1-4.a-7 passed in non-strict mode
-=== ch11/11.4/11.4.1/11.4.1-4.a-8-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch11/11.4/11.4.1/11.4.1-4.a-8-s passed in strict mode
 ch11/11.4/11.4.1/11.4.1-4.a-8 passed in non-strict mode
-=== ch11/11.4/11.4.1/11.4.1-4.a-9-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch11/11.4/11.4.1/11.4.1-4.a-9-s passed in strict mode
 ch11/11.4/11.4.1/11.4.1-4.a-9 passed in non-strict mode
 ch11/11.4/11.4.1/11.4.1-5-1 passed in non-strict mode
 ch11/11.4/11.4.1/11.4.1-5-2 passed in non-strict mode
@@ -2569,10 +2551,7 @@ Uncaught Test262 Error: Test case returned non-true value!
 Uncaught ReferenceError
 ===
 ch11/11.4/11.4.1/11.4.1-5-a-27-s passed in strict mode
-=== ch11/11.4/11.4.1/11.4.1-5-a-28-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch11/11.4/11.4.1/11.4.1-5-a-28-s passed in strict mode
 === ch11/11.4/11.4.1/11.4.1-5-a-3-s failed in strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
@@ -2602,10 +2581,7 @@ Uncaught Test262 Error: Test case returned non-true value!
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
 ===
-=== ch11/11.4/11.4.1/11.4.4-4.a-3-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch11/11.4/11.4.1/11.4.4-4.a-3-s passed in strict mode
 ch11/11.4/11.4.1/S11.4.1_A1 passed in non-strict mode
 ch11/11.4/11.4.1/S11.4.1_A2.1 passed in non-strict mode
 ch11/11.4/11.4.1/S11.4.1_A2.2_T1 passed in non-strict mode
@@ -2614,10 +2590,7 @@ ch11/11.4/11.4.1/S11.4.1_A3.1 passed in non-strict mode
 ch11/11.4/11.4.1/S11.4.1_A3.2 passed in non-strict mode
 ch11/11.4/11.4.1/S11.4.1_A3.3 passed in non-strict mode
 ch11/11.4/11.4.1/S11.4.1_A4 passed in non-strict mode
-=== ch11/11.4/11.4.1/S11.4.1_A5 failed in strict mode ===
---- output ---
-Uncaught Test262 Error: #2: Strict delete returned false
-===
+ch11/11.4/11.4.1/S11.4.1_A5 passed in strict mode
 ch11/11.4/11.4.2/S11.4.2_A1 passed in non-strict mode
 ch11/11.4/11.4.2/S11.4.2_A2_T1 passed in non-strict mode
 ch11/11.4/11.4.2/S11.4.2_A2_T2 failed in non-strict mode as expected
@@ -12057,8 +12030,8 @@ ch15/15.9/15.9.5/15.9.5.9/S15.9.5.9_A3_T3 passed in non-strict mode
 
 === Summary ===
  - Ran 11338 tests
- - Passed 11202 tests (98.8%)
- - Failed 136 tests (1.2%)
+ - Passed 11211 tests (98.9%)
+ - Failed 127 tests (1.1%)
 
 Failed tests
   ch10/10.4/10.4.2/10.4.2-2-c-1 in non-strict mode
@@ -12073,12 +12046,6 @@ Failed tests
   ch11/11.1/11.1.5/11.1.5_4-4-d-2 in non-strict mode
   ch11/11.1/11.1.5/11.1.5_4-4-d-3 in non-strict mode
   ch11/11.1/11.1.5/11.1.5_4-4-d-4 in non-strict mode
-  ch11/11.4/11.4.1/11.4.1-3-a-1-s in strict mode
-  ch11/11.4/11.4.1/11.4.1-4-a-1-s in strict mode
-  ch11/11.4/11.4.1/11.4.1-4-a-2-s in strict mode
-  ch11/11.4/11.4.1/11.4.1-4.a-3-s in strict mode
-  ch11/11.4/11.4.1/11.4.1-4.a-8-s in strict mode
-  ch11/11.4/11.4.1/11.4.1-4.a-9-s in strict mode
   ch11/11.4/11.4.1/11.4.1-5-a-1-s in strict mode
   ch11/11.4/11.4.1/11.4.1-5-a-10-s in strict mode
   ch11/11.4/11.4.1/11.4.1-5-a-11-s in strict mode
@@ -12098,7 +12065,6 @@ Failed tests
   ch11/11.4/11.4.1/11.4.1-5-a-24-s in strict mode
   ch11/11.4/11.4.1/11.4.1-5-a-25-s in strict mode
   ch11/11.4/11.4.1/11.4.1-5-a-26-s in strict mode
-  ch11/11.4/11.4.1/11.4.1-5-a-28-s in strict mode
   ch11/11.4/11.4.1/11.4.1-5-a-3-s in strict mode
   ch11/11.4/11.4.1/11.4.1-5-a-4-s in strict mode
   ch11/11.4/11.4.1/11.4.1-5-a-5-s in strict mode
@@ -12106,8 +12072,6 @@ Failed tests
   ch11/11.4/11.4.1/11.4.1-5-a-7-s in strict mode
   ch11/11.4/11.4.1/11.4.1-5-a-8-s in strict mode
   ch11/11.4/11.4.1/11.4.1-5-a-9-s in strict mode
-  ch11/11.4/11.4.1/11.4.4-4.a-3-s in strict mode
-  ch11/11.4/11.4.1/S11.4.1_A5 in strict mode
   ch12/12.2/12.2.1/12.2.1-21-s in strict mode
   ch13/13.1/13.1-10-s in strict mode
   ch13/13.1/13.1-23-s in strict mode

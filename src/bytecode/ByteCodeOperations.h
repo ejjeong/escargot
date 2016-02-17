@@ -5,7 +5,7 @@
 
 namespace escargot {
 
-NEVER_INLINE void throwObjectWriteError();
+NEVER_INLINE void throwObjectWriteError(const char* msg = "Attempt to assign to readonly property");
 
 ALWAYS_INLINE ESValue* getByIdOperation(ESVMInstance* instance, ExecutionContext* ec, GetById* code)
 {
