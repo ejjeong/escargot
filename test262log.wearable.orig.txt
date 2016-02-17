@@ -1820,28 +1820,16 @@ Uncaught ReferenceError: s1 is not defined
 --- output ---
 Uncaught ReferenceError: s1 is not defined
 ===
-=== ch11/11.1/11.1.5/11.1.5-1-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch11/11.1/11.1.5/11.1.5-1-s passed in strict mode
 ch11/11.1/11.1.5/11.1.5-1gs failed in strict mode as expected
-=== ch11/11.1/11.1.5/11.1.5-2-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch11/11.1/11.1.5/11.1.5-2-s passed in strict mode
 ch11/11.1/11.1.5/11.1.5-2gs failed in strict mode as expected
-=== ch11/11.1/11.1.5/11.1.5-3-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch11/11.1/11.1.5/11.1.5-3-s passed in strict mode
 === ch11/11.1/11.1.5/11.1.5-4-4-a-1-s failed in strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
 ===
-=== ch11/11.1/11.1.5/11.1.5-4-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch11/11.1/11.1.5/11.1.5-4-s passed in strict mode
 ch11/11.1/11.1.5/11.1.5_3-3-1 passed in non-strict mode
 ch11/11.1/11.1.5/11.1.5_4-4-a-2 passed in non-strict mode
 ch11/11.1/11.1.5/11.1.5_4-4-a-3 passed in non-strict mode
@@ -3366,15 +3354,9 @@ ch12/12.14/S12.14_A9_T2 passed in non-strict mode
 ch12/12.14/S12.14_A9_T3 passed in non-strict mode
 ch12/12.14/S12.14_A9_T4 passed in non-strict mode
 ch12/12.14/S12.14_A9_T5 passed in non-strict mode
-=== ch12/12.14/12.14.1/12.14.1-1-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch12/12.14/12.14.1/12.14.1-1-s passed in strict mode
 ch12/12.14/12.14.1/12.14.1-1gs failed in strict mode as expected
-=== ch12/12.14/12.14.1/12.14.1-2-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch12/12.14/12.14.1/12.14.1-2-s passed in strict mode
 ch12/12.14/12.14.1/12.14.1-3-s passed in strict mode
 ch12/12.14/12.14.1/12.14.1-4-s passed in strict mode
 ch12/12.14/12.14.1/12.14.1-5-s passed in strict mode
@@ -3697,10 +3679,7 @@ ch13/13.0/S13_A8_T2 passed in non-strict mode
 ch13/13.0/S13_A9 passed in non-strict mode
 ch13/13.1/13.1-1-1 passed in non-strict mode
 ch13/13.1/13.1-1-2 passed in non-strict mode
-=== ch13/13.1/13.1-1-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch13/13.1/13.1-1-s passed in strict mode
 === ch13/13.1/13.1-10-s failed in strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
@@ -3710,47 +3689,20 @@ ch13/13.1/13.1-12-s passed in strict mode
 ch13/13.1/13.1-13-s passed in strict mode
 ch13/13.1/13.1-13gs failed in strict mode as expected
 ch13/13.1/13.1-14-s passed in strict mode
-=== ch13/13.1/13.1-15-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
-=== ch13/13.1/13.1-16-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
-=== ch13/13.1/13.1-17-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
-=== ch13/13.1/13.1-18-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
-=== ch13/13.1/13.1-19-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch13/13.1/13.1-15-s passed in strict mode
+ch13/13.1/13.1-16-s passed in strict mode
+ch13/13.1/13.1-17-s passed in strict mode
+ch13/13.1/13.1-18-s passed in strict mode
+ch13/13.1/13.1-19-s passed in strict mode
 ch13/13.1/13.1-1gs failed in strict mode as expected
 ch13/13.1/13.1-2-1 passed in non-strict mode
 ch13/13.1/13.1-2-2 passed in non-strict mode
 ch13/13.1/13.1-2-5 passed in non-strict mode
 ch13/13.1/13.1-2-6 passed in non-strict mode
-=== ch13/13.1/13.1-2-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
-=== ch13/13.1/13.1-20-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
-=== ch13/13.1/13.1-21-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
-=== ch13/13.1/13.1-22-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch13/13.1/13.1-2-s passed in strict mode
+ch13/13.1/13.1-20-s passed in strict mode
+ch13/13.1/13.1-21-s passed in strict mode
+ch13/13.1/13.1-22-s passed in strict mode
 === ch13/13.1/13.1-23-s failed in strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
@@ -3784,10 +3736,7 @@ ch13/13.1/13.1-3-2 passed in non-strict mode
 === ch13/13.1/13.1-3-7 failed in non-strict mode ===
 ===
 ch13/13.1/13.1-3-8 passed in non-strict mode
-=== ch13/13.1/13.1-3-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch13/13.1/13.1-3-s passed in strict mode
 === ch13/13.1/13.1-30-s failed in strict mode ===
 --- output ---
 Uncaught Test262 Error: Test case returned non-true value!
@@ -3813,10 +3762,7 @@ ch13/13.1/13.1-36-s passed in strict mode
 ch13/13.1/13.1-37-s passed in strict mode
 ch13/13.1/13.1-38-s passed in strict mode
 ch13/13.1/13.1-39-s passed in strict mode
-=== ch13/13.1/13.1-4-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch13/13.1/13.1-4-s passed in strict mode
 ch13/13.1/13.1-40-s passed in strict mode
 ch13/13.1/13.1-41-s passed in strict mode
 ch13/13.1/13.1-42-s passed in strict mode
@@ -12111,18 +12057,14 @@ ch15/15.9/15.9.5/15.9.5.9/S15.9.5.9_A3_T3 passed in non-strict mode
 
 === Summary ===
  - Ran 11338 tests
- - Passed 11184 tests (98.6%)
- - Failed 154 tests (1.4%)
+ - Passed 11202 tests (98.8%)
+ - Failed 136 tests (1.2%)
 
 Failed tests
   ch10/10.4/10.4.2/10.4.2-2-c-1 in non-strict mode
   ch11/11.1/11.1.5/11.1.5-0-1 in non-strict mode
   ch11/11.1/11.1.5/11.1.5-0-2 in non-strict mode
-  ch11/11.1/11.1.5/11.1.5-1-s in strict mode
-  ch11/11.1/11.1.5/11.1.5-2-s in strict mode
-  ch11/11.1/11.1.5/11.1.5-3-s in strict mode
   ch11/11.1/11.1.5/11.1.5-4-4-a-1-s in strict mode
-  ch11/11.1/11.1.5/11.1.5-4-s in strict mode
   ch11/11.1/11.1.5/11.1.5_4-4-b-1 in non-strict mode
   ch11/11.1/11.1.5/11.1.5_4-4-b-2 in non-strict mode
   ch11/11.1/11.1.5/11.1.5_4-4-c-1 in non-strict mode
@@ -12166,20 +12108,8 @@ Failed tests
   ch11/11.4/11.4.1/11.4.1-5-a-9-s in strict mode
   ch11/11.4/11.4.1/11.4.4-4.a-3-s in strict mode
   ch11/11.4/11.4.1/S11.4.1_A5 in strict mode
-  ch12/12.14/12.14.1/12.14.1-1-s in strict mode
-  ch12/12.14/12.14.1/12.14.1-2-s in strict mode
   ch12/12.2/12.2.1/12.2.1-21-s in strict mode
-  ch13/13.1/13.1-1-s in strict mode
   ch13/13.1/13.1-10-s in strict mode
-  ch13/13.1/13.1-15-s in strict mode
-  ch13/13.1/13.1-16-s in strict mode
-  ch13/13.1/13.1-17-s in strict mode
-  ch13/13.1/13.1-18-s in strict mode
-  ch13/13.1/13.1-19-s in strict mode
-  ch13/13.1/13.1-2-s in strict mode
-  ch13/13.1/13.1-20-s in strict mode
-  ch13/13.1/13.1-21-s in strict mode
-  ch13/13.1/13.1-22-s in strict mode
   ch13/13.1/13.1-23-s in strict mode
   ch13/13.1/13.1-24-s in strict mode
   ch13/13.1/13.1-25-s in strict mode
@@ -12188,13 +12118,11 @@ Failed tests
   ch13/13.1/13.1-28-s in strict mode
   ch13/13.1/13.1-29-s in strict mode
   ch13/13.1/13.1-3-7 in non-strict mode
-  ch13/13.1/13.1-3-s in strict mode
   ch13/13.1/13.1-30-s in strict mode
   ch13/13.1/13.1-31-s in strict mode
   ch13/13.1/13.1-32-s in strict mode
   ch13/13.1/13.1-33-s in strict mode
   ch13/13.1/13.1-34-s in strict mode
-  ch13/13.1/13.1-4-s in strict mode
   ch13/13.1/13.1-5-s in strict mode
   ch13/13.1/13.1-6-s in strict mode
   ch13/13.1/13.1-7-s in strict mode

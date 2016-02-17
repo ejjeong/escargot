@@ -3500,12 +3500,9 @@ escargot::Node* parseCatchClause(ParseContext* ctx/*node*/)
     }
 
     // ECMA-262 12.14.1
-    // TODO
-    /*
-    if (ctx->m_strict && isRestrictedWord(param.name)) {
-        tolerateError(Messages.StrictCatchVariable);
+    if (ctx->m_strict && isRestrictedWord(((escargot::IdentifierNode*)param)->name())) {
+        tolerateError(u"Messages.StrictCatchVariable");
     }
-    */
 
     expect(ctx, RightParenthesis);
     escargot::Node* body = parseBlock(ctx);
@@ -3835,6 +3832,13 @@ bool parseParam(ParseContext* ctx, escargot::InternalAtomicStringVector& vec/*, 
 
     std::vector<RefPtr<ParseStatus> > params;
     escargot::Node* param = parsePatternWithDefault(ctx, params);
+
+    if (ctx->m_strict) {
+        if (isRestrictedWord(((escargot::IdentifierNode*)param)->name())) {
+            // tolerateUnexpectedToken(token, Messages.StrictFunctionName);
+            tolerateUnexpectedToken();
+        }
+    }
 
     /*
     for (i = 0; i < params.length; i++) {
