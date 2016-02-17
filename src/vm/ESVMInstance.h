@@ -90,6 +90,8 @@ public:
     ALWAYS_INLINE ESFunctionObject* globalFunctionPrototype() { return m_globalFunctionPrototype; }
     ALWAYS_INLINE void setGlobalFunctionPrototype(ESFunctionObject* o) { m_globalFunctionPrototype = o; }
 
+    ALWAYS_INLINE ESPropertyAccessorData* throwerAccessorData() { return &m_throwerAccessorData; }
+
     ALWAYS_INLINE WTF::BumpPointerAllocator* bumpPointerAllocator() { return m_bumpPointerAllocator; };
 
     long timezoneOffset();
@@ -227,6 +229,8 @@ protected:
     ESPropertyAccessorData m_stringObjectLengthAccessorData;
 
     ESFunctionObject* m_globalFunctionPrototype;
+
+    ESPropertyAccessorData m_throwerAccessorData;
 
     ESValue m_lastExpressionStatementValue;
 

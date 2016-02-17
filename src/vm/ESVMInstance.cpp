@@ -118,9 +118,15 @@ ESVMInstance::ESVMInstance()
         return ESValue(self->asESStringObject()->stringData()->length());
     });
 
-
     m_globalObject = new GlobalObject();
     m_globalObject->initGlobalObject();
+
+    ESFunctionObject* thrower = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        instance->throwError(ESValue(TypeError::create(ESString::create("Type error"))));
+        RELEASE_ASSERT_NOT_REACHED();
+    }, strings().emptyString, 1);
+    m_throwerAccessorData.setJSSetter(thrower);
+    m_throwerAccessorData.setJSGetter(thrower);
 
     LexicalEnvironment* a = new LexicalEnvironment(new GlobalEnvironmentRecord(m_globalObject), NULL);
 

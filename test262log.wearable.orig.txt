@@ -1773,46 +1773,19 @@ ch10/10.6/10.6-13-1 passed in non-strict mode
 ch10/10.6/10.6-13-a-1 passed in non-strict mode
 ch10/10.6/10.6-13-a-2 passed in non-strict mode
 ch10/10.6/10.6-13-a-3 passed in non-strict mode
-=== ch10/10.6/10.6-13-b-1-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
-=== ch10/10.6/10.6-13-b-2-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
-=== ch10/10.6/10.6-13-b-3-s failed in strict mode ===
---- output ---
-Uncaught TypeError: cannot convert undefined into object
-===
-=== ch10/10.6/10.6-13-c-1-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch10/10.6/10.6-13-b-1-s passed in strict mode
+ch10/10.6/10.6-13-b-2-s passed in strict mode
+ch10/10.6/10.6-13-b-3-s passed in strict mode
+ch10/10.6/10.6-13-c-1-s passed in strict mode
 ch10/10.6/10.6-13-c-2-s passed in strict mode
-=== ch10/10.6/10.6-13-c-3-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
-=== ch10/10.6/10.6-14-1-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
-=== ch10/10.6/10.6-14-b-1-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
-=== ch10/10.6/10.6-14-b-4-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch10/10.6/10.6-13-c-3-s passed in strict mode
+ch10/10.6/10.6-14-1-s passed in strict mode
+ch10/10.6/10.6-14-b-1-s passed in strict mode
+ch10/10.6/10.6-14-b-4-s passed in strict mode
 ch10/10.6/10.6-14-c-1-s passed in strict mode
-=== ch10/10.6/10.6-14-c-4-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch10/10.6/10.6-14-c-4-s passed in strict mode
 ch10/10.6/10.6-1gs passed in strict mode
-=== ch10/10.6/10.6-2gs was expected to fail in strict mode, but didn't ===
+ch10/10.6/10.6-2gs failed in strict mode as expected
 ch10/10.6/10.6-5-1 passed in non-strict mode
 ch10/10.6/10.6-6-1 passed in non-strict mode
 ch10/10.6/10.6-6-2 passed in non-strict mode
@@ -12162,8 +12135,8 @@ ch15/15.9/15.9.5/15.9.5.9/S15.9.5.9_A3_T3 passed in non-strict mode
 
 === Summary ===
  - Ran 11338 tests
- - Passed 11166 tests (98.5%)
- - Failed 172 tests (1.5%)
+ - Passed 11176 tests (98.6%)
+ - Failed 162 tests (1.4%)
 
 Failed tests
   ch10/10.4/10.4.2/10.4.2-2-c-1 in non-strict mode
@@ -12171,15 +12144,6 @@ Failed tests
   ch10/10.4/10.4.3/10.4.3-1-106 in strict mode
   ch10/10.6/10.6-10-c-ii-1-s in strict mode
   ch10/10.6/10.6-10-c-ii-2-s in strict mode
-  ch10/10.6/10.6-13-b-1-s in strict mode
-  ch10/10.6/10.6-13-b-2-s in strict mode
-  ch10/10.6/10.6-13-b-3-s in strict mode
-  ch10/10.6/10.6-13-c-1-s in strict mode
-  ch10/10.6/10.6-13-c-3-s in strict mode
-  ch10/10.6/10.6-14-1-s in strict mode
-  ch10/10.6/10.6-14-b-1-s in strict mode
-  ch10/10.6/10.6-14-b-4-s in strict mode
-  ch10/10.6/10.6-14-c-4-s in strict mode
   ch11/11.1/11.1.5/11.1.5-0-1 in non-strict mode
   ch11/11.1/11.1.5/11.1.5-0-2 in non-strict mode
   ch11/11.1/11.1.5/11.1.5-1-s in strict mode
@@ -12316,7 +12280,6 @@ Failed tests
   ch15/15.9/15.9.3/S15.9.3.1_A5_T6 in non-strict mode
 
 Expected to fail but passed ---
- ch10/10.6/10.6-2gs in strict mode
  ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-11gs in strict mode
  ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-13gs in strict mode
  ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-15gs in strict mode

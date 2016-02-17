@@ -247,7 +247,13 @@ ESArgumentsObject* FunctionEnvironmentRecordWithArgumentsObject::createArguments
             argumentsObject->defineDataProperty(propertyName, true, true, true, m_arguments[i]);
         }
     }
-    argumentsObject->defineDataProperty(strings->callee, true, false, true, ESValue(m_callee));
+    if (!m_callee->codeBlock()->shouldUseStrictMode()) {
+        argumentsObject->defineDataProperty(strings->callee, true, false, true, ESValue(m_callee));
+    } else {
+        ESPropertyAccessorData* throwerAccessorData = ESVMInstance::currentInstance()->throwerAccessorData();
+        argumentsObject->defineAccessorProperty(strings->caller.string(), throwerAccessorData, false, false, false);
+        argumentsObject->defineAccessorProperty(strings->callee.string(), throwerAccessorData, false, false, false);
+    }
 
     return argumentsObject;
 }
