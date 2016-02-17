@@ -1750,15 +1750,9 @@ ch10/10.5/10.5-7-b-1-s passed in strict mode
 ch10/10.5/10.5-7-b-2-s passed in strict mode
 ch10/10.5/10.5-7-b-3-s passed in strict mode
 ch10/10.5/10.5-7-b-4-s passed in strict mode
-=== ch10/10.6/10.6-10-c-ii-1-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch10/10.6/10.6-10-c-ii-1-s passed in strict mode
 ch10/10.6/10.6-10-c-ii-1 passed in non-strict mode
-=== ch10/10.6/10.6-10-c-ii-2-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch10/10.6/10.6-10-c-ii-2-s passed in strict mode
 ch10/10.6/10.6-10-c-ii-2 passed in non-strict mode
 ch10/10.6/10.6-11-b-1 passed in non-strict mode
 ch10/10.6/10.6-12-1 passed in non-strict mode
@@ -12129,13 +12123,11 @@ ch15/15.9/15.9.5/15.9.5.9/S15.9.5.9_A3_T3 passed in non-strict mode
 
 === Summary ===
  - Ran 11338 tests
- - Passed 11178 tests (98.6%)
- - Failed 160 tests (1.4%)
+ - Passed 11180 tests (98.6%)
+ - Failed 158 tests (1.4%)
 
 Failed tests
   ch10/10.4/10.4.2/10.4.2-2-c-1 in non-strict mode
-  ch10/10.6/10.6-10-c-ii-1-s in strict mode
-  ch10/10.6/10.6-10-c-ii-2-s in strict mode
   ch11/11.1/11.1.5/11.1.5-0-1 in non-strict mode
   ch11/11.1/11.1.5/11.1.5-0-2 in non-strict mode
   ch11/11.1/11.1.5/11.1.5-1-s in strict mode

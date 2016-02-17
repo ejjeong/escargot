@@ -212,6 +212,8 @@ ESArgumentsObject* FunctionEnvironmentRecordWithArgumentsObject::createArguments
     argumentsObject->defineDataProperty(strings->length, true, false, true, ESValue(m_argumentsCount));
 
     CodeBlock* codeBlock = m_callee->codeBlock();
+    bool strict = codeBlock->shouldUseStrictMode();
+
     unsigned i = 0;
     for (; i < m_argumentsCount; i ++) {
         ESString* propertyName;
@@ -220,7 +222,7 @@ ESArgumentsObject* FunctionEnvironmentRecordWithArgumentsObject::createArguments
         else
             propertyName = ESString::create((int)i);
 
-        if (i < codeBlock->m_paramsInformation.size()) {
+        if (i < codeBlock->m_paramsInformation.size() && !strict) {
             ESPropertyAccessorData* argumentsObjectAccessorData = new ESPropertyAccessorData([](ESObject* self, ESObject* originalObj, ESString* propertyName) -> ESValue {
                 uint32_t i = ESValue(propertyName).toIndex();
                 ASSERT(i != ESValue::ESInvalidIndexValue);
@@ -247,7 +249,7 @@ ESArgumentsObject* FunctionEnvironmentRecordWithArgumentsObject::createArguments
             argumentsObject->defineDataProperty(propertyName, true, true, true, m_arguments[i]);
         }
     }
-    if (!m_callee->codeBlock()->shouldUseStrictMode()) {
+    if (!strict) {
         argumentsObject->defineDataProperty(strings->callee, true, false, true, ESValue(m_callee));
     } else {
         ESPropertyAccessorData* throwerAccessorData = ESVMInstance::currentInstance()->throwerAccessorData();
