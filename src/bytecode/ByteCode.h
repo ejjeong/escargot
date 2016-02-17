@@ -133,6 +133,7 @@ class CodeBlock;
     F(Try, 0, 0, 0, 0, 0) \
     F(TryCatchBodyEnd, 0, 0, 0, 0, 0) \
     F(Throw, 0, 1, 0, 1, 0) \
+    F(ThrowStatic, 0, 0, 0, 0, 0) \
     F(FinallyEnd, 0, 0, 0, 0, 0) \
     \
     /*phi*/\
@@ -2233,6 +2234,26 @@ public:
         printf("Throw <>\n");
     }
 #endif
+};
+
+class ThrowStatic : public ByteCode {
+public:
+    ThrowStatic(ESErrorObject::Code code, ESString* msg)
+        : ByteCode(ThrowStaticOpcode)
+        , m_code(code), m_msg(msg)
+    {
+
+    }
+
+#ifndef NDEBUG
+    virtual void dump()
+    {
+        printf("ThrowStatic <%s, %d>\n", m_msg->utf8Data(), m_code);
+    }
+#endif
+
+    ESErrorObject::Code m_code;
+    ESString* m_msg;
 };
 
 class FinallyEnd : public ByteCode {

@@ -138,7 +138,7 @@ public:
 
     virtual void generateResolveAddressByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        RELEASE_ASSERT_NOT_REACHED();
+        codeBlock->pushCode(ThrowStatic(ESErrorObject::Code::ReferenceError, ESString::create("Left side of assignment is not a reference.")), context, this);
     }
 
     virtual void generateReferenceResolvedAddressByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
@@ -148,7 +148,7 @@ public:
 
     virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        RELEASE_ASSERT_NOT_REACHED();
+        codeBlock->pushCode(ThrowStatic(ESErrorObject::Code::ReferenceError, ESString::create("Invalid assignment.")), context, this);
     }
 
     virtual void computeRoughCodeBlockSizeInWordSize(size_t& result)

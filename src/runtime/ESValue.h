@@ -1907,6 +1907,16 @@ public:
     {
         return new ESErrorObject(message);
     }
+
+    enum Code {
+        ReferenceError,
+        TypeError,
+        SyntaxError,
+        RangeError,
+        URIError,
+        EvalError
+    };
+
 protected:
 };
 

@@ -1030,6 +1030,17 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             instance->throwError(v);
         }
 
+        ThrowStaticOpcodeLbl:
+        {
+            ThrowStatic* code = (ThrowStatic*) currentCode;
+            switch (code->m_code) {
+            case ESErrorObject::Code::ReferenceError:
+                instance->throwError(ReferenceError::create(code->m_msg));
+            default:
+                instance->throwError(ESErrorObject::create());
+            }
+        }
+
         FinallyEndOpcodeLbl:
         {
             if (ec->tryOrCatchBodyResult().isEmpty()) {

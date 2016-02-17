@@ -3061,7 +3061,7 @@ escargot::Node* parseForStatement(ParseContext* ctx/*node*/)
 
             if (matchKeyword(ctx, In)) {
                 if (!ctx->m_isAssignmentTarget) {
-                    tolerateError(u"Messages.InvalidLHSInForIn");
+                    //tolerateError(u"Messages.InvalidLHSInForIn");
                 }
 
                 lex(ctx);
@@ -3071,7 +3071,7 @@ escargot::Node* parseForStatement(ParseContext* ctx/*node*/)
                 init = nullptr;
             } else if (matchContextualKeyword(ctx, u"of")) {
                 if (!ctx->m_isAssignmentTarget) {
-                    tolerateError(u"Messages.InvalidLHSInForLoop");
+                    //tolerateError(u"Messages.InvalidLHSInForLoop");
                 }
 
                 lex(ctx);
@@ -5382,7 +5382,7 @@ escargot::Node* parsePostfixExpression(ParseContext* ctx)
             }
 
             if (!ctx->m_isAssignmentTarget) {
-                tolerateError(u"Messages.InvalidLHSInAssignment");
+                //tolerateError(u"Messages.InvalidLHSInAssignment");
             }
 
             ctx->m_isAssignmentTarget = ctx->m_isBindingElement = false;
@@ -5422,7 +5422,7 @@ escargot::Node* parseUnaryExpression(ParseContext* ctx)
         }
 
         if (!ctx->m_isAssignmentTarget) {
-            tolerateError(u"Messages.InvalidLHSInAssignment");
+            //tolerateError(u"Messages.InvalidLHSInAssignment");
         }
         // expr = new WrappingNode(startToken).finishUnaryExpression(token.value, expr);
         // expr = new escargot::UnaryExpressionNode(expr, escargot::ESString::create(token->m_value.data()));
@@ -5913,7 +5913,7 @@ escargot::Node* parseAssignmentExpression(ParseContext* ctx)
 
     if (matchAssign(ctx)) {
         if (!ctx->m_isAssignmentTarget) {
-            tolerateError(u"Messages.InvalidLHSInAssignment");
+            //tolerateError(u"Messages.InvalidLHSInAssignment");
         }
 
         // ECMA-262 11.13.1
