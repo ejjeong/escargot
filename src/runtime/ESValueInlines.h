@@ -946,11 +946,12 @@ inline ESString* ESString::createAtomicString(const char* str)
 }
 
 
-ALWAYS_INLINE ESValue ESPropertyAccessorData::value(::escargot::ESObject* obj, ::escargot::ESObject* originalObj, ESString* propertyName)
+ALWAYS_INLINE ESValue ESPropertyAccessorData::value(::escargot::ESObject* obj, ESValue originalObj, ESString* propertyName)
 {
     if (m_nativeGetter) {
         ASSERT(!m_jsGetter);
-        return m_nativeGetter(obj, originalObj, propertyName);
+        ASSERT(originalObj.isObject());
+        return m_nativeGetter(obj, originalObj.asESPointer()->asESObject(), propertyName);
     }
     if (m_jsGetter) {
         ASSERT(!m_nativeGetter);
@@ -959,11 +960,12 @@ ALWAYS_INLINE ESValue ESPropertyAccessorData::value(::escargot::ESObject* obj, :
     return ESValue();
 }
 
-ALWAYS_INLINE bool ESPropertyAccessorData::setValue(::escargot::ESObject* obj, ::escargot::ESObject* originalObj, ESString* propertyName, const ESValue& value)
+ALWAYS_INLINE bool ESPropertyAccessorData::setValue(::escargot::ESObject* obj, ESValue originalObj, ESString* propertyName, const ESValue& value)
 {
     if (m_nativeSetter) {
         ASSERT(!m_jsSetter);
-        m_nativeSetter(obj, originalObj, propertyName, value);
+        ASSERT(originalObj.isObject());
+        m_nativeSetter(obj, originalObj.asESPointer()->asESObject(), propertyName, value);
         return true;
     }
     if (m_jsSetter) {
@@ -1154,12 +1156,12 @@ inline ESHiddenClass* ESHiddenClass::defineProperty(ESString* name, bool isData,
     }
 }
 
-ALWAYS_INLINE ESValue ESHiddenClass::read(ESObject* obj, ESObject* originalObject, ESString* propertyName, ESString* name)
+ALWAYS_INLINE ESValue ESHiddenClass::read(ESObject* obj, ESValue originalObject, ESString* propertyName, ESString* name)
 {
     return read(obj, originalObject, propertyName, findProperty(name));
 }
 
-ALWAYS_INLINE ESValue ESHiddenClass::read(ESObject* obj, ESObject* originalObject, ESString* propertyName, size_t idx)
+ALWAYS_INLINE ESValue ESHiddenClass::read(ESObject* obj, ESValue originalObject, ESString* propertyName, size_t idx)
 {
     if (LIKELY(m_propertyInfo[idx].m_flags.m_isDataProperty)) {
         return obj->m_hiddenClassData[idx];
@@ -1169,12 +1171,12 @@ ALWAYS_INLINE ESValue ESHiddenClass::read(ESObject* obj, ESObject* originalObjec
     }
 }
 
-ALWAYS_INLINE bool ESHiddenClass::write(ESObject* obj, ESObject* originalObject, ESString* propertyName, ESString* name, const ESValue& val)
+ALWAYS_INLINE bool ESHiddenClass::write(ESObject* obj, ESValue originalObject, ESString* propertyName, ESString* name, const ESValue& val)
 {
     return write(obj, originalObject, propertyName, findProperty(name), val);
 }
 
-ALWAYS_INLINE bool ESHiddenClass::write(ESObject* obj, ESObject* originalObject, ESString* propertyName, size_t idx, const ESValue& val)
+ALWAYS_INLINE bool ESHiddenClass::write(ESObject* obj, ESValue originalObject, ESString* propertyName, size_t idx, const ESValue& val)
 {
     if (LIKELY(m_propertyInfo[idx].m_flags.m_isDataProperty)) {
         if (UNLIKELY(!m_propertyInfo[idx].m_flags.m_isWritable)) {
@@ -1463,7 +1465,7 @@ ALWAYS_INLINE bool ESObject::hasOwnProperty(const escargot::ESValue& key)
 }
 
 // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-get-o-p
-ALWAYS_INLINE ESValue ESObject::get(escargot::ESValue key)
+ALWAYS_INLINE ESValue ESObject::get(escargot::ESValue key, escargot::ESValue* receiver)
 {
     ESObject* target = this;
     escargot::ESString* keyString = NULL;
@@ -1496,7 +1498,10 @@ ALWAYS_INLINE ESValue ESObject::get(escargot::ESValue key)
         }
         size_t t = target->m_hiddenClass->findProperty(keyString);
         if (t != SIZE_MAX) {
-            ESValue ret = target->m_hiddenClass->read(target, this, keyString, t);
+            ESValue receiverVal(this);
+            if (receiver)
+                receiverVal = *receiver;
+            ESValue ret = target->m_hiddenClass->read(target, receiverVal, keyString, t);
             if (!UNLIKELY(ret.isDeleted()))
                 return ret;
         }
@@ -1591,7 +1596,7 @@ ALWAYS_INLINE void ESObject::eraseValues(uint32_t idx, int cnt)
 }
 
 // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
-ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& val)
+ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& val, escargot::ESValue* receiver)
 {
     if (isESArrayObject() && asESArrayObject()->isFastmode()) {
         uint32_t idx = key.toIndex();
@@ -1662,15 +1667,18 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
                 // Call the [[Call]] internal method of setter providing O as the this value and providing V as the sole argument.
                 if (!target.asESPointer()->asESObject()->hiddenClass()->m_propertyInfo[t].m_flags.m_isDataProperty) {
                     ESPropertyAccessorData* data = target.asESPointer()->asESObject()->accessorData(t);
+                    ESValue receiverVal(this);
+                    if (receiver)
+                        receiverVal = *receiver;
                     if (data->isAccessorDescriptor()) {
                         if (data->getJSSetter()) {
                             ESValue args[] = {val};
-                            ESFunctionObject::call(ESVMInstance::currentInstance(), data->getJSSetter(), this, args, 1, false);
+                            ESFunctionObject::call(ESVMInstance::currentInstance(), data->getJSSetter(), receiverVal, args, 1, false);
                             return true;
                         }
                         return false;
                     } else if (data->getNativeSetter()) {
-                        data->setValue(target.asESPointer()->asESObject(), this, keyString, val);
+                        data->setValue(target.asESPointer()->asESObject(), receiverVal, keyString, val);
                         return true;
                     }
                 }
@@ -1697,9 +1705,9 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
     }
 }
 
-ALWAYS_INLINE void ESObject::set(const escargot::ESValue& key, const ESValue& val, bool throwExpetion)
+ALWAYS_INLINE void ESObject::set(const escargot::ESValue& key, const ESValue& val, bool throwExpetion, escargot::ESValue* receiver)
 {
-    if (!set(key, val) && throwExpetion) {
+    if (!set(key, val, receiver) && throwExpetion) {
         ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Cannot assign to readonly property"))));
     }
 }

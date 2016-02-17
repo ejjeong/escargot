@@ -221,7 +221,7 @@ GetObjectPreComputedCaseInlineCacheOperation:
                 }
                 if (LIKELY((*cachedHiddenClassChain)[cSiz] == obj->hiddenClass())) {
                     if (cachedIndex != SIZE_MAX) {
-                        return obj->hiddenClass()->read(obj, targetObj, keyString, cachedIndex);
+                        return obj->hiddenClass()->read(obj, *willBeObject, keyString, cachedIndex);
                     } else {
                         return ESValue();
                     }
@@ -231,7 +231,7 @@ GetObjectPreComputedCaseInlineCacheOperation:
             // cache miss.
             inlineCache->m_executeCount++;
             if (inlineCache->m_cache.size() > 3 || inlineCache->m_executeCount <= 3) {
-                return willBeObject->toObject()->get(keyString);
+                return willBeObject->toObject()->get(keyString, willBeObject);
             }
 
             obj = targetObj;
@@ -254,7 +254,7 @@ GetObjectPreComputedCaseInlineCacheOperation:
             }
 
             if (*cachedHiddenClassIndex != SIZE_MAX) {
-                return obj->hiddenClass()->read(obj, targetObj, keyString, *cachedHiddenClassIndex);
+                return obj->hiddenClass()->read(obj, *willBeObject, keyString, *cachedHiddenClassIndex);
             } else {
                 return ESValue();
             }
@@ -274,7 +274,7 @@ GetObjectPreComputedCaseInlineCacheOperation:
             targetObj = obj = globalObject->numberObjectProxy();
             goto GetObjectPreComputedCaseInlineCacheOperation;
         }
-        return willBeObject->toObject()->get(keyString);
+        return willBeObject->toObject()->get(keyString, willBeObject);
     }
 }
 

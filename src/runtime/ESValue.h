@@ -1415,8 +1415,8 @@ public:
         m_jsSetter = nullptr;
     }
 
-    ALWAYS_INLINE ESValue value(::escargot::ESObject* obj, ::escargot::ESObject* originalObj, ::escargot::ESString* propertyName);
-    ALWAYS_INLINE bool setValue(::escargot::ESObject* obj, ::escargot::ESObject* originalObj, ::escargot::ESString* propertyName, const ESValue& value);
+    ALWAYS_INLINE ESValue value(::escargot::ESObject* obj, ESValue originalObj, ::escargot::ESString* propertyName);
+    ALWAYS_INLINE bool setValue(::escargot::ESObject* obj, ESValue originalObj, ::escargot::ESString* propertyName, const ESValue& value);
 
     ESNativeSetter getNativeSetter()
     {
@@ -1635,11 +1635,11 @@ public:
         return m_flags.m_isVectorMode;
     }
 
-    ALWAYS_INLINE ESValue read(ESObject* obj, ESObject* originalObject, ESString* propertyName, ESString* name);
-    ALWAYS_INLINE ESValue read(ESObject* obj, ESObject* originalObject, ESString* propertyName, size_t index);
+    ALWAYS_INLINE ESValue read(ESObject* obj, ESValue originalObject, ESString* propertyName, ESString* name);
+    ALWAYS_INLINE ESValue read(ESObject* obj, ESValue originalObject, ESString* propertyName, size_t index);
 
-    ALWAYS_INLINE bool write(ESObject* obj, ESObject* originalObject, ESString* propertyName, ESString* name, const ESValue& val);
-    ALWAYS_INLINE bool write(ESObject* obj, ESObject* originalObject, ESString* propertyName, size_t index, const ESValue& val);
+    ALWAYS_INLINE bool write(ESObject* obj, ESValue originalObject, ESString* propertyName, ESString* name, const ESValue& val);
+    ALWAYS_INLINE bool write(ESObject* obj, ESValue originalObject, ESString* propertyName, size_t index, const ESValue& val);
 
     const ESHiddenClassPropertyInfo& propertyInfo(const size_t& idx)
     {
@@ -1812,17 +1812,17 @@ public:
     }
 
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-get-o-p
-    ALWAYS_INLINE ESValue get(escargot::ESValue key);
+    ALWAYS_INLINE ESValue get(escargot::ESValue key, escargot::ESValue* receiver = nullptr);
     ALWAYS_INLINE ESValue getOwnProperty(escargot::ESValue key);
 
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
-    ALWAYS_INLINE bool set(const escargot::ESValue& key, const ESValue& val);
-    ALWAYS_INLINE bool set(escargot::ESString* key, const ESValue& val)
+    ALWAYS_INLINE bool set(const escargot::ESValue& key, const ESValue& val, escargot::ESValue* receiver = nullptr);
+    ALWAYS_INLINE bool set(escargot::ESString* key, const ESValue& val, escargot::ESValue* receiver = nullptr)
     {
-        return set(ESValue(key), val);
+        return set(ESValue(key), val, receiver);
     }
 
-    ALWAYS_INLINE void set(const escargot::ESValue& key, const ESValue& val, bool throwExpetion);
+    ALWAYS_INLINE void set(const escargot::ESValue& key, const ESValue& val, bool throwExpetion, escargot::ESValue* receiver = nullptr);
 
     ALWAYS_INLINE uint32_t length();
     ALWAYS_INLINE ESValue pop();

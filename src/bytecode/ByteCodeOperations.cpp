@@ -210,7 +210,7 @@ NEVER_INLINE ESValue getObjectOperationSlowCase(ESValue* willBeObject, ESValue* 
                         return ESString::create(c);
                     }
                 }
-                return willBeObject->toObject()->get(*property);
+                return willBeObject->toObject()->get(*property, willBeObject);
             } else {
                 ESString* val = property->toString();
                 if (*val == *strings->length) {
@@ -228,7 +228,7 @@ NEVER_INLINE ESValue getObjectOperationSlowCase(ESValue* willBeObject, ESValue* 
             globalObject->numberObjectProxy()->setNumberData(willBeObject->asNumber());
             return globalObject->numberObjectProxy()->get(*property);
         }
-        return willBeObject->toObject()->get(*property);
+        return willBeObject->toObject()->get(*property, willBeObject);
     }
 }
 
@@ -261,7 +261,7 @@ NEVER_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue* 
                         return ESString::create(c);
                     }
                 }
-                return willBeObject->toObject()->get(*property);
+                return willBeObject->toObject()->get(*property, willBeObject);
             } else {
                 ESString* val = property->toString();
                 if (*val == *strings->length) {
@@ -272,7 +272,7 @@ NEVER_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue* 
                 return ret;
             }
         } else if (willBeObject->asESPointer()->isESStringObject()) {
-            return willBeObject->toObject()->get(*property);
+            return willBeObject->toObject()->get(*property, willBeObject);
         } else {
             ASSERT(willBeObject->asESPointer()->isESObject());
             return willBeObject->asESPointer()->asESObject()->get(*property);
@@ -281,9 +281,9 @@ NEVER_INLINE ESValue getObjectOperationSlowMode(ESValue* willBeObject, ESValue* 
         // number
         if (willBeObject->isNumber()) {
             globalObject->numberObjectProxy()->setNumberData(willBeObject->asNumber());
-            return globalObject->numberObjectProxy()->get(*property);
+            return globalObject->numberObjectProxy()->get(*property, willBeObject);
         }
-        return willBeObject->toObject()->get(*property);
+        return willBeObject->toObject()->get(*property, willBeObject);
     }
 }
 
@@ -296,14 +296,14 @@ NEVER_INLINE void throwObjectWriteError()
 NEVER_INLINE void setObjectOperationSlowMode(ESValue* willBeObject, ESValue* property, const ESValue& value)
 {
     ASSERT(ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty());
-    if (!willBeObject->toObject()->set(*property, value)) {
+    if (!willBeObject->toObject()->set(*property, value, willBeObject)) {
         throwObjectWriteError();
     }
 }
 
 NEVER_INLINE void setObjectOperationSlowCase(ESValue* willBeObject, ESValue* property, const ESValue& value)
 {
-    if (!willBeObject->toObject()->set(*property, value)) {
+    if (!willBeObject->toObject()->set(*property, value, willBeObject)) {
         throwObjectWriteError();
     }
 }
@@ -322,7 +322,7 @@ NEVER_INLINE void setObjectOperationExpandLengthCase(ESArrayObject* arr, uint32_
 
 NEVER_INLINE void setObjectPreComputedCaseOperationSlowCase(ESValue* willBeObject, ESString* keyString, const ESValue& value)
 {
-    if (!willBeObject->toObject()->set(keyString, value)) {
+    if (!willBeObject->toObject()->set(keyString, value, willBeObject)) {
         throwObjectWriteError();
     }
 }
