@@ -3838,6 +3838,8 @@ bool parseParam(ParseContext* ctx, escargot::InternalAtomicStringVector& vec/*, 
             // tolerateUnexpectedToken(token, Messages.StrictFunctionName);
             tolerateUnexpectedToken();
         }
+        if (std::find(vec.begin(), vec.end(), ((escargot::IdentifierNode*)param)->name()) != vec.end())
+            tolerateUnexpectedToken();
     }
 
     /*
