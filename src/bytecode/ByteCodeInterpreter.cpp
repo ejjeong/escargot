@@ -930,6 +930,8 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                     throwObjectWriteError("Unable to delete property");
                 PUSH(stack, topOfStack, ESValue(res));
             } else {
+                if (ec->isStrictMode())
+                    ESVMInstance::currentInstance()->throwError(ESValue(SyntaxError::create(ESString::create("Unable to delete variable in strict mode"))));
                 LexicalEnvironment* env = nullptr;
                 InternalAtomicString str(code->m_name->utf8Data(), code->m_name->length());
                 ESValue* binding;
@@ -945,8 +947,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                         PUSH(stack, topOfStack, ESValue(false));
                     }
                 } else {
-                    if (ec->isStrictMode())
-                        instance->throwError(SyntaxError::create(ESString::create("Cannot delete un-resolvable reference in strict mode")));
                     PUSH(stack, topOfStack, ESValue(true));
                 }
             }
