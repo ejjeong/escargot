@@ -465,4 +465,8 @@ run-jsc-stress:
 	cd test/JavaScriptCore/stress/; \
 	./stress_test.sh;
 
+run-spidermonkey:
+	cd test/SpiderMonkey/; \
+	perl jsDriver.pl -e escargot -s ../../escargot
+
 .PHONY: clean
