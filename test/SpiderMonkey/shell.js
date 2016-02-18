@@ -378,6 +378,7 @@ function enterFunc (funcName)
  * This generator will always produce a value, n, where
  * 0 <= n <= 255
  */
+/*
 function *XorShiftGenerator(seed, size) {
     let x = seed;
     for (let i = 0; i < size; i++) {
@@ -387,10 +388,11 @@ function *XorShiftGenerator(seed, size) {
         yield x % 256;
     }
 }
-
+*/
 /*
  * Yield every permutation of the elements in some iterable.
  */
+/*
 function *Permutations(items) {
     if (items.length == 0) {
         yield [];
@@ -405,7 +407,7 @@ function *Permutations(items) {
         }
     }
 }
-
+*/
 /*
  * Pops the top funcName off the call stack.  funcName is optional, and can be
  * used to check push-pop balance.
