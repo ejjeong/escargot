@@ -996,6 +996,10 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlo
         m_hiddenClassData.push_back(ESValue(length));
         m_hiddenClassData.push_back(ESValue(name));
     }
+    if (cb && cb->shouldUseStrictMode()) {
+        defineAccessorProperty(strings->arguments.string(), ESVMInstance::currentInstance()->throwerAccessorData(), false, false, false);
+        defineAccessorProperty(strings->caller.string(), ESVMInstance::currentInstance()->throwerAccessorData(), false, false, false);
+    }
     m_flags.m_isBoundFunction = false;
 }
 

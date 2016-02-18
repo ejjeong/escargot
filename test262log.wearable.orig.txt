@@ -3631,111 +3631,45 @@ ch13/13.1/13.1-8-s passed in strict mode
 ch13/13.1/13.1-8gs failed in strict mode as expected
 ch13/13.1/13.1-9-s passed in strict mode
 ch13/13.2/13.2-1-s passed in strict mode
-=== ch13/13.2/13.2-10-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch13/13.2/13.2-10-s passed in strict mode
 ch13/13.2/13.2-11-s passed in strict mode
 ch13/13.2/13.2-12-s passed in strict mode
-=== ch13/13.2/13.2-13-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
-=== ch13/13.2/13.2-14-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch13/13.2/13.2-13-s passed in strict mode
+ch13/13.2/13.2-14-s passed in strict mode
 ch13/13.2/13.2-15-1 passed in non-strict mode
 ch13/13.2/13.2-15-s passed in strict mode
 ch13/13.2/13.2-16-s passed in strict mode
 ch13/13.2/13.2-17-1 passed in non-strict mode
-=== ch13/13.2/13.2-17-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch13/13.2/13.2-17-s passed in strict mode
 ch13/13.2/13.2-18-1 passed in non-strict mode
-=== ch13/13.2/13.2-18-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch13/13.2/13.2-18-s passed in strict mode
 ch13/13.2/13.2-19-b-3gs failed in strict mode as expected
 ch13/13.2/13.2-19-s passed in strict mode
-=== ch13/13.2/13.2-2-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch13/13.2/13.2-2-s passed in strict mode
 ch13/13.2/13.2-20-s passed in strict mode
-=== ch13/13.2/13.2-21-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
-=== ch13/13.2/13.2-22-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch13/13.2/13.2-21-s passed in strict mode
+ch13/13.2/13.2-22-s passed in strict mode
 ch13/13.2/13.2-23-s passed in strict mode
 ch13/13.2/13.2-24-s passed in strict mode
-=== ch13/13.2/13.2-25-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
-=== ch13/13.2/13.2-26-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch13/13.2/13.2-25-s passed in strict mode
+ch13/13.2/13.2-26-s passed in strict mode
 ch13/13.2/13.2-27-s passed in strict mode
 ch13/13.2/13.2-28-s passed in strict mode
-=== ch13/13.2/13.2-29-s failed in strict mode ===
---- output ---
-Uncaught TypeError: cannot convert undefined into object
-===
+ch13/13.2/13.2-29-s passed in strict mode
 ch13/13.2/13.2-3-s passed in strict mode
-=== ch13/13.2/13.2-30-s failed in strict mode ===
---- output ---
-Uncaught TypeError: cannot convert undefined into object
-===
-=== ch13/13.2/13.2-31-s failed in strict mode ===
---- output ---
-Uncaught TypeError: cannot convert undefined into object
-===
-=== ch13/13.2/13.2-32-s failed in strict mode ===
---- output ---
-Uncaught TypeError: cannot convert undefined into object
-===
-=== ch13/13.2/13.2-33-s failed in strict mode ===
---- output ---
-Uncaught TypeError: cannot convert undefined into object
-===
-=== ch13/13.2/13.2-34-s failed in strict mode ===
---- output ---
-Uncaught TypeError: cannot convert undefined into object
-===
-=== ch13/13.2/13.2-35-s failed in strict mode ===
---- output ---
-Uncaught TypeError: cannot convert undefined into object
-===
-=== ch13/13.2/13.2-36-s failed in strict mode ===
---- output ---
-Uncaught TypeError: cannot convert undefined into object
-===
-=== ch13/13.2/13.2-4-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
-=== ch13/13.2/13.2-5-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
-=== ch13/13.2/13.2-6-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch13/13.2/13.2-30-s passed in strict mode
+ch13/13.2/13.2-31-s passed in strict mode
+ch13/13.2/13.2-32-s passed in strict mode
+ch13/13.2/13.2-33-s passed in strict mode
+ch13/13.2/13.2-34-s passed in strict mode
+ch13/13.2/13.2-35-s passed in strict mode
+ch13/13.2/13.2-36-s passed in strict mode
+ch13/13.2/13.2-4-s passed in strict mode
+ch13/13.2/13.2-5-s passed in strict mode
+ch13/13.2/13.2-6-s passed in strict mode
 ch13/13.2/13.2-7-s passed in strict mode
 ch13/13.2/13.2-8-s passed in strict mode
-=== ch13/13.2/13.2-9-s failed in strict mode ===
---- output ---
-Uncaught Test262 Error: Test case returned non-true value!
-===
+ch13/13.2/13.2-9-s passed in strict mode
 ch13/13.2/S13.2.1_A1_T1 passed in non-strict mode
 ch13/13.2/S13.2.1_A4_T1 passed in non-strict mode
 ch13/13.2/S13.2.1_A4_T2 passed in non-strict mode
@@ -3786,7 +3720,7 @@ ch13/13.2/S13.2.2_A8_T3 passed in non-strict mode
 ch13/13.2/S13.2.2_A9 passed in non-strict mode
 === ch13/13.2/S13.2.3_A1 failed in strict mode ===
 --- output ---
-Uncaught TypeError: cannot convert undefined into object
+Uncaught Test262 Error: #5: caller's getter not poisoned with same poison
 ===
 ch13/13.2/S13.2_A1_T1 passed in non-strict mode
 ch13/13.2/S13.2_A1_T2 passed in non-strict mode
@@ -8052,26 +7986,26 @@ Uncaught Test262 Error: #2: every function instance has a [[Construct]] property
 Uncaught Test262 Error: #2: every function instance has a [[Construct]] property
 ===
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-10gs failed in non-strict mode as expected
-=== ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-11gs was expected to fail in strict mode, but didn't ===
+ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-11gs failed in strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-12gs passed in non-strict mode
-=== ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-13gs was expected to fail in strict mode, but didn't ===
+ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-13gs failed in strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-14gs passed in non-strict mode
-=== ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-15gs was expected to fail in strict mode, but didn't ===
+ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-15gs failed in strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-16gs failed in non-strict mode as expected
-=== ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-17gs was expected to fail in strict mode, but didn't ===
+ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-17gs failed in strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-18gs failed in non-strict mode as expected
-=== ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-19gs was expected to fail in strict mode, but didn't ===
-=== ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-1gs was expected to fail in strict mode, but didn't ===
+ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-19gs failed in strict mode as expected
+ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-1gs failed in strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-20gs failed in non-strict mode as expected
-=== ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-21gs was expected to fail in strict mode, but didn't ===
-=== ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-22gs was expected to fail in strict mode, but didn't ===
-=== ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-23gs was expected to fail in strict mode, but didn't ===
-=== ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-24gs was expected to fail in strict mode, but didn't ===
-=== ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-25gs was expected to fail in strict mode, but didn't ===
-=== ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-26gs was expected to fail in strict mode, but didn't ===
-=== ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-27gs was expected to fail in strict mode, but didn't ===
-=== ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-28gs was expected to fail in strict mode, but didn't ===
-=== ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-29gs was expected to fail in strict mode, but didn't ===
+ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-21gs failed in strict mode as expected
+ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-22gs failed in strict mode as expected
+ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-23gs failed in strict mode as expected
+ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-24gs failed in strict mode as expected
+ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-25gs failed in strict mode as expected
+ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-26gs failed in strict mode as expected
+ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-27gs failed in strict mode as expected
+ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-28gs failed in strict mode as expected
+ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-29gs failed in strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-2gs failed in non-strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-30gs failed in non-strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-31gs failed in non-strict mode as expected
@@ -8083,7 +8017,7 @@ ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-36gs failed in non-strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-37gs failed in non-strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-38gs failed in non-strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-39gs failed in non-strict mode as expected
-=== ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-3gs was expected to fail in strict mode, but didn't ===
+ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-3gs failed in strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-40gs failed in non-strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-41gs failed in non-strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-42gs failed in non-strict mode as expected
@@ -8092,20 +8026,20 @@ ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-44gs failed in non-strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-45gs failed in non-strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-46gs failed in non-strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-47gs failed in non-strict mode as expected
-=== ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-48gs was expected to fail in strict mode, but didn't ===
+ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-48gs failed in strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-49gs failed in non-strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-4gs failed in non-strict mode as expected
-=== ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-50gs was expected to fail in strict mode, but didn't ===
+ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-50gs failed in strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-51gs failed in non-strict mode as expected
-=== ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-52gs was expected to fail in strict mode, but didn't ===
+ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-52gs failed in strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-53gs failed in non-strict mode as expected
-=== ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-54gs was expected to fail in strict mode, but didn't ===
+ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-54gs failed in strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-55gs failed in non-strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-56gs failed in non-strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-57gs failed in non-strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-58gs failed in non-strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-59gs failed in non-strict mode as expected
-=== ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-5gs was expected to fail in strict mode, but didn't ===
+ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-5gs failed in strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-60gs failed in non-strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-61gs failed in non-strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-62gs failed in non-strict mode as expected
@@ -8127,7 +8061,7 @@ ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-76gs passed in non-strict mode
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-77gs passed in non-strict mode
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-78gs passed in non-strict mode
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-79gs passed in non-strict mode
-=== ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-7gs was expected to fail in strict mode, but didn't ===
+ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-7gs failed in strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-80gs passed in non-strict mode
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-81gs passed in non-strict mode
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-82gs passed in non-strict mode
@@ -8147,7 +8081,7 @@ ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-94gs failed in non-strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-95gs failed in non-strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-96gs failed in non-strict mode as expected
 ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-97gs failed in non-strict mode as expected
-=== ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-9gs was expected to fail in strict mode, but didn't ===
+ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-9gs failed in strict mode as expected
 ch15/15.4/S15.4_A1.1_T1 passed in non-strict mode
 ch15/15.4/S15.4_A1.1_T10 passed in non-strict mode
 ch15/15.4/S15.4_A1.1_T2 passed in non-strict mode
@@ -11898,8 +11832,8 @@ ch15/15.9/15.9.5/15.9.5.9/S15.9.5.9_A3_T3 passed in non-strict mode
 
 === Summary ===
  - Ran 11338 tests
- - Passed 11255 tests (99.3%)
- - Failed 83 tests (0.7%)
+ - Passed 11300 tests (99.7%)
+ - Failed 38 tests (0.3%)
 
 Failed tests
   ch10/10.4/10.4.2/10.4.2-2-c-1 in non-strict mode
@@ -11916,28 +11850,6 @@ Failed tests
   ch11/11.1/11.1.5/11.1.5_4-4-d-4 in non-strict mode
   ch12/12.2/12.2.1/12.2.1-21-s in strict mode
   ch13/13.1/13.1-3-7 in non-strict mode
-  ch13/13.2/13.2-10-s in strict mode
-  ch13/13.2/13.2-13-s in strict mode
-  ch13/13.2/13.2-14-s in strict mode
-  ch13/13.2/13.2-17-s in strict mode
-  ch13/13.2/13.2-18-s in strict mode
-  ch13/13.2/13.2-2-s in strict mode
-  ch13/13.2/13.2-21-s in strict mode
-  ch13/13.2/13.2-22-s in strict mode
-  ch13/13.2/13.2-25-s in strict mode
-  ch13/13.2/13.2-26-s in strict mode
-  ch13/13.2/13.2-29-s in strict mode
-  ch13/13.2/13.2-30-s in strict mode
-  ch13/13.2/13.2-31-s in strict mode
-  ch13/13.2/13.2-32-s in strict mode
-  ch13/13.2/13.2-33-s in strict mode
-  ch13/13.2/13.2-34-s in strict mode
-  ch13/13.2/13.2-35-s in strict mode
-  ch13/13.2/13.2-36-s in strict mode
-  ch13/13.2/13.2-4-s in strict mode
-  ch13/13.2/13.2-5-s in strict mode
-  ch13/13.2/13.2-6-s in strict mode
-  ch13/13.2/13.2-9-s in strict mode
   ch13/13.2/S13.2.3_A1 in strict mode
   ch15/15.3/15.3.2/S15.3.2.1_A3_T1 in non-strict mode
   ch15/15.3/15.3.2/S15.3.2.1_A3_T3 in non-strict mode
@@ -11962,31 +11874,6 @@ Failed tests
   ch15/15.9/15.9.3/S15.9.3.1_A5_T4 in non-strict mode
   ch15/15.9/15.9.3/S15.9.3.1_A5_T5 in non-strict mode
   ch15/15.9/15.9.3/S15.9.3.1_A5_T6 in non-strict mode
-
-Expected to fail but passed ---
- ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-11gs in strict mode
- ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-13gs in strict mode
- ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-15gs in strict mode
- ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-17gs in strict mode
- ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-19gs in strict mode
- ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-1gs in strict mode
- ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-21gs in strict mode
- ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-22gs in strict mode
- ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-23gs in strict mode
- ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-24gs in strict mode
- ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-25gs in strict mode
- ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-26gs in strict mode
- ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-27gs in strict mode
- ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-28gs in strict mode
- ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-29gs in strict mode
- ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-3gs in strict mode
- ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-48gs in strict mode
- ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-50gs in strict mode
- ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-52gs in strict mode
- ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-54gs in strict mode
- ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-5gs in strict mode
- ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-7gs in strict mode
- ch15/15.3/15.3.5/15.3.5.4/15.3.5.4_2-9gs in strict mode
 
 Use --full-summary to see output from failed tests
 
