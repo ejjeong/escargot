@@ -2,8 +2,8 @@
 #define ObjectExpressionNode_h
 
 #include "ExpressionNode.h"
-#include "PropertyNode.h"
 #include "IdentifierNode.h"
+#include "PropertyNode.h"
 
 namespace escargot {
 
@@ -25,12 +25,7 @@ public:
         codeBlock->pushCode(CreateObject(m_properties.size()), context, this);
         for (unsigned i = 0; i < m_properties.size() ; i ++) {
             PropertyNode* p = m_properties[i];
-            if (p->key()->isIdentifier()) {
-                codeBlock->pushCode(Push(((IdentifierNode*)p->key())->name().string()), context, this);
-            } else {
-                ASSERT(p->key()->isLiteral());
-                codeBlock->pushCode(Push(((LiteralNode*)p->key())->value()), context, this);
-            }
+            codeBlock->pushCode(Push(p->keyString()), context, this);
 
             p->value()->generateExpressionByteCode(codeBlock, context);
 

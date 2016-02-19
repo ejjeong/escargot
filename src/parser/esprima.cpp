@@ -4740,9 +4740,26 @@ escargot::Node* parseObjectInitializer(ParseContext* ctx)
     escargot::PropertiesNodeVector properties;
     bool hasProto = false;
     expect(ctx, LeftBrace);
+    std::unordered_map<escargot::ESString*, escargot::PropertyNode::Kind> keyStrings;
 
     while (!match(ctx, RightBrace)) {
-        properties.push_back((escargot::PropertyNode *)parseObjectProperty(ctx, hasProto));
+        escargot::PropertyNode* p = (escargot::PropertyNode *)parseObjectProperty(ctx, hasProto);
+        escargot::ESString* keyString = p->keyString();
+        auto previous = keyStrings.find(keyString);
+        if (previous != keyStrings.end()) {
+            if (ctx->m_strict && (previous->second == escargot::PropertyNode::Kind::Init) && (p->kind() == escargot::PropertyNode::Kind::Init))
+                tolerateUnexpectedToken();
+            if ((previous->second == escargot::PropertyNode::Kind::Init) && (p->kind() != escargot::PropertyNode::Kind::Init))
+                tolerateUnexpectedToken();
+            if ((previous->second != escargot::PropertyNode::Kind::Init) && (p->kind() == escargot::PropertyNode::Kind::Init))
+                tolerateUnexpectedToken();
+            if (((previous->second == escargot::PropertyNode::Kind::Get) && (p->kind() == escargot::PropertyNode::Kind::Get))
+                || ((previous->second == escargot::PropertyNode::Kind::Set) && (p->kind() == escargot::PropertyNode::Kind::Set)))
+                tolerateUnexpectedToken();
+        }
+        keyStrings.insert(std::make_pair(keyString, p->kind()));
+
+        properties.push_back(p);
 
         if (!match(ctx, RightBrace)) {
             expectCommaSeparator(ctx);

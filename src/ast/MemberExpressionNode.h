@@ -2,7 +2,6 @@
 #define MemberExpressionNode_h
 
 #include "ExpressionNode.h"
-#include "PropertyNode.h"
 #include "IdentifierNode.h"
 
 namespace escargot {

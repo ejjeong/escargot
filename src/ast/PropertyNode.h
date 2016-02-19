@@ -28,6 +28,16 @@ public:
         return m_key;
     }
 
+    ESString* keyString()
+    {
+        if (m_key->isIdentifier()) {
+            return ((IdentifierNode*)m_key)->name().string();
+        } else {
+            ASSERT(m_key->isLiteral());
+            return ((LiteralNode*)m_key)->value().toString();
+        }
+    }
+
     Node* value()
     {
         return m_value;
