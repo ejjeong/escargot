@@ -1932,11 +1932,7 @@ void ESDateObject::setTime(double t)
 
 int ESDateObject::getUTCDate()
 {
-    if (m_hasValidDate) {
-        return dateFromTime(m_primitiveValue);
-    } else {
-        return std::numeric_limits<double>::quiet_NaN();
-    }
+    return dateFromTime(m_primitiveValue);
 }
 
 int ESDateObject::getUTCDay()
@@ -1946,54 +1942,30 @@ int ESDateObject::getUTCDay()
 
 int ESDateObject::getUTCFullYear()
 {
-    if (m_hasValidDate) {
-        return yearFromTime(m_primitiveValue);
-    } else {
-        return std::numeric_limits<double>::quiet_NaN();
-    }
+    return yearFromTime(m_primitiveValue);
 }
 
 int ESDateObject::getUTCHours()
 {
-    if (m_hasValidDate) {
-        return (long long) floor(m_primitiveValue / msPerHour) % (int) hoursPerDay;
-    } else {
-        return std::numeric_limits<double>::quiet_NaN();
-    }
+    return (long long) floor(m_primitiveValue / msPerHour) % (int) hoursPerDay;
 }
 int ESDateObject::getUTCMilliseconds()
 {
-    if (m_hasValidDate) {
-        return m_primitiveValue % (int) msPerSecond;
-    } else {
-        return std::numeric_limits<double>::quiet_NaN();
-    }
+    return m_primitiveValue % (int) msPerSecond;
 }
 int ESDateObject::getUTCMinutes()
 {
-    if (m_hasValidDate) {
-        return (long long) floor(m_primitiveValue / msPerMinute) % (int) minutesPerHour;
-    } else {
-        return std::numeric_limits<double>::quiet_NaN();
-    }
+    return (long long) floor(m_primitiveValue / msPerMinute) % (int) minutesPerHour;
 }
 
 int ESDateObject::getUTCMonth()
 {
-    if (m_hasValidDate) {
-        return monthFromTime(m_primitiveValue);
-    } else {
-        return std::numeric_limits<double>::quiet_NaN();
-    }
+    return monthFromTime(m_primitiveValue);
 }
 
 int ESDateObject::getUTCSeconds()
 {
-    if (m_hasValidDate) {
-        return (long long) floor(m_primitiveValue / msPerSecond) % (int) secondsPerMinute;
-    } else {
-        return std::numeric_limits<double>::quiet_NaN();
-    }
+    return (long long) floor(m_primitiveValue / msPerSecond) % (int) secondsPerMinute;
 }
 
 double ESDateObject::toUTC(double t)

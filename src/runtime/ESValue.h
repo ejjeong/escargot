@@ -2002,6 +2002,11 @@ public:
         m_hasValidDate = false;
     }
 
+    inline bool isValid()
+    {
+        return m_hasValidDate;
+    }
+
     double timeValueAsDouble()
     {
         if (m_hasValidDate) {

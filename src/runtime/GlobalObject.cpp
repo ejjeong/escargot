@@ -3400,57 +3400,81 @@ void GlobalObject::installDate()
     // $20.3.4.2 Date.prototype.getDate()
     m_datePrototype->defineDataProperty(strings->getDate, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
-        int ret = thisObject->asESDateObject()->getDate();
-        return ESValue(ret);
+        if (thisObject->asESDateObject()->isValid()) {
+            return ESValue(thisObject->asESDateObject()->getDate());
+        } else {
+            return ESValue(std::numeric_limits<double>::quiet_NaN());
+        }
     }, strings->getDate, 0));
 
     // $20.3.4.3 Date.prototype.getDay()
     m_datePrototype->defineDataProperty(strings->getDay, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
-        int ret = thisObject->asESDateObject()->getDay();
-        return ESValue(ret);
+        if (thisObject->asESDateObject()->isValid()) {
+            return ESValue(thisObject->asESDateObject()->getDay());
+        } else {
+            return ESValue(std::numeric_limits<double>::quiet_NaN());
+        }
     }, strings->getDay, 0));
 
     // $20.3.4.4 Date.prototype.getFullYear()
     m_datePrototype->defineDataProperty(strings->getFullYear, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
-        int ret = thisObject->asESDateObject()->getFullYear();
-        return ESValue(ret);
+        if (thisObject->asESDateObject()->isValid()) {
+            return ESValue(thisObject->asESDateObject()->getFullYear());
+        } else {
+            return ESValue(std::numeric_limits<double>::quiet_NaN());
+        }
     }, strings->getFullYear, 0));
 
     // $20.3.4.5 Date.prototype.getHours()
     m_datePrototype->defineDataProperty(strings->getHours, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
-        int ret = thisObject->asESDateObject()->getHours();
-        return ESValue(ret);
+        if (thisObject->asESDateObject()->isValid()) {
+            return ESValue(thisObject->asESDateObject()->getHours());
+        } else {
+            return ESValue(std::numeric_limits<double>::quiet_NaN());
+        }
     }, strings->getHours, 0));
 
     // $20.3.4.6 Date.prototype.getMilliseconds()
     m_datePrototype->defineDataProperty(strings->getMilliseconds, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
-        int ret = thisObject->asESDateObject()->getMilliseconds();
-        return ESValue(ret);
+        if (thisObject->asESDateObject()->isValid()) {
+            return ESValue(thisObject->asESDateObject()->getMilliseconds());
+        } else {
+            return ESValue(std::numeric_limits<double>::quiet_NaN());
+        }
     }, strings->getMilliseconds, 0));
 
     // $20.3.4.7 Date.prototype.getMinutes()
     m_datePrototype->defineDataProperty(strings->getMinutes, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
-        int ret = thisObject->asESDateObject()->getMinutes();
-        return ESValue(ret);
+        if (thisObject->asESDateObject()->isValid()) {
+            return ESValue(thisObject->asESDateObject()->getMinutes());
+        } else {
+            return ESValue(std::numeric_limits<double>::quiet_NaN());
+        }
     }, strings->getMinutes, 0));
 
     // $20.3.4.8 Date.prototype.getMonth()
     m_datePrototype->defineDataProperty(strings->getMonth, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
-        int ret = thisObject->asESDateObject()->getMonth();
-        return ESValue(ret);
+        if (thisObject->asESDateObject()->isValid()) {
+            return ESValue(thisObject->asESDateObject()->getMonth());
+        } else {
+            return ESValue(std::numeric_limits<double>::quiet_NaN());
+        }
     }, strings->getMonth, 0));
 
     // $20.3.4.9 Date.prototype.getSeconds()
     m_datePrototype->defineDataProperty(strings->getSeconds, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
-        int ret = thisObject->asESDateObject()->getSeconds();
-        return ESValue(ret);
+        if (thisObject->asESDateObject()->isValid()) {
+            return ESValue(thisObject->asESDateObject()->getSeconds());
+        } else {
+            return ESValue(std::numeric_limits<double>::quiet_NaN());
+        }
     }, strings->getSeconds, 0));
 
     // $20.3.4.10 Date.prototype.getTime()
@@ -3469,7 +3493,12 @@ void GlobalObject::installDate()
 
     // $20.3.4.12 Date.prototype.getUTCDate()
     m_datePrototype->defineDataProperty(strings->getUTCDate, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (thisObject->asESDateObject()->isValid()) {
+            return ESValue(thisObject->asESDateObject()->getUTCDate());
+        } else {
+            return ESValue(std::numeric_limits<double>::quiet_NaN());
+        }
     }, strings->getUTCDate, 0));
 
     // $20.3.4.13 Date.prototype.getUTCDay()
@@ -3479,32 +3508,62 @@ void GlobalObject::installDate()
 
     // $20.3.4.14 Date.prototype.getUTCFullYear()
     m_datePrototype->defineDataProperty(strings->getUTCFullYear, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (thisObject->asESDateObject()->isValid()) {
+            return ESValue(thisObject->asESDateObject()->getUTCFullYear());
+        } else {
+            return ESValue(std::numeric_limits<double>::quiet_NaN());
+        }
     }, strings->getUTCFullYear, 0));
 
     // $20.3.4.15 Date.prototype.getUTCHours()
     m_datePrototype->defineDataProperty(strings->getUTCHours, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (thisObject->asESDateObject()->isValid()) {
+            return ESValue(thisObject->asESDateObject()->getUTCHours());
+        } else {
+            return ESValue(std::numeric_limits<double>::quiet_NaN());
+        }
     }, strings->getUTCHours, 0));
 
     // $20.3.4.16 Date.prototype.getUTCMilliseconds()
     m_datePrototype->defineDataProperty(strings->getUTCMilliseconds, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (thisObject->asESDateObject()->isValid()) {
+            return ESValue(thisObject->asESDateObject()->getUTCMilliseconds());
+        } else {
+            return ESValue(std::numeric_limits<double>::quiet_NaN());
+        }
     }, strings->getUTCMilliseconds, 0));
 
     // $20.3.4.17 Date.prototype.getUTCMinutes()
     m_datePrototype->defineDataProperty(strings->getUTCMinutes, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (thisObject->asESDateObject()->isValid()) {
+            return ESValue(thisObject->asESDateObject()->getUTCMinutes());
+        } else {
+            return ESValue(std::numeric_limits<double>::quiet_NaN());
+        }
     }, strings->getUTCMinutes, 0));
 
     // $20.3.4.18 Date.prototype.getUTCMonth()
     m_datePrototype->defineDataProperty(strings->getUTCMonth, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (thisObject->asESDateObject()->isValid()) {
+            return ESValue(thisObject->asESDateObject()->getUTCMonth());
+        } else {
+            return ESValue(std::numeric_limits<double>::quiet_NaN());
+        }
     }, strings->getUTCMonth, 0));
 
     // $20.3.4.19 Date.prototype.getUTCSeconds()
     m_datePrototype->defineDataProperty(strings->getUTCSeconds, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (thisObject->asESDateObject()->isValid()) {
+            return ESValue(thisObject->asESDateObject()->getUTCSeconds());
+        } else {
+            return ESValue(std::numeric_limits<double>::quiet_NaN());
+        }
     }, strings->getUTCSeconds, 0));
 
     // $20.3.4.20 Date.prototype.setDate()
