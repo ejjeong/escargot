@@ -628,6 +628,7 @@ public:
     GetByIdWithoutException(const InternalAtomicString& name, bool onlySearchGlobal)
         : ByteCode(GetByIdWithoutExceptionOpcode)
         , m_name(name)
+        , m_onlySearchGlobal(onlySearchGlobal)
     {
         m_identifierCacheInvalidationCheckCount = std::numeric_limits<unsigned>::max();
         m_cachedSlot = NULL;

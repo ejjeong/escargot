@@ -329,11 +329,12 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
         } else if (type == NodeType::CallExpression) {
 
             Node* callee = ((CallExpressionNode *)currentNode)->m_callee;
+            bool isEval = false;
             if (callee) {
                 if (callee->type() == NodeType::Identifier) {
                     if (((IdentifierNode *)callee)->name() == strings->eval.string()) {
                         markNeedsActivation(nearFunctionNode);
-                        shouldWorkAroundIdentifier = true;
+                        isEval = true;
                     }
                 }
             }
@@ -343,6 +344,8 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
             for (unsigned i = 0; i < v.size() ; i ++) {
                 postAnalysisFunction(v[i], identifierStack, nearFunctionNode);
             }
+            if (isEval)
+                shouldWorkAroundIdentifier = false;
         } else if (type == NodeType::SequenceExpression) {
             ExpressionNodeVector& v = ((SequenceExpressionNode *)currentNode)->m_expressions;
             for (unsigned i = 0; i < v.size() ; i ++) {

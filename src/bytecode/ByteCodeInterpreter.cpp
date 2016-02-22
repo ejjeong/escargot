@@ -299,6 +299,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         {
             CreateBinding* code = (CreateBinding*)currentCode;
             ec->environment()->record()->createMutableBindingForAST(code->m_name, false);
+            ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
             executeNextCode<CreateBinding>(programCounter);
             NEXT_INSTRUCTION();
         }
@@ -898,6 +899,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                 function->set(strings->name.string(), code->m_nonAtomicName);
                 PUSH(stack, topOfStack, function);
             }
+            ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
             executeNextCode<CreateFunction>(programCounter);
             NEXT_INSTRUCTION();
         }
