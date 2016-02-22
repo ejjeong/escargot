@@ -826,7 +826,7 @@ void GlobalObject::installFunction()
             codeBlock->pushCode(End(), context, NULL);
             codeBlock->m_hasCode = true;
         } else {
-            escargot::ESString* body = instance->currentExecutionContext()->arguments()[len-1].toString();
+
             ESStringBuilder builder;
             builder.appendString("function anonymous(");
             for (int i = 0; i < len-1; i++) {
@@ -837,6 +837,7 @@ void GlobalObject::installFunction()
                 }
             }
             builder.appendString("){");
+            escargot::ESString* body = instance->currentExecutionContext()->arguments()[len-1].toString();
             builder.appendString(body);
             builder.appendString("}");
             Node* programNode = instance->scriptParser()->generateAST(instance, builder.finalize(), true);
