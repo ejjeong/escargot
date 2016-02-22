@@ -295,7 +295,7 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
                             // probably we can assume getById only for global object.
                             // so we don't needed HeapAllocatedExecutionContext in this place
                             // markNeedsHeapAllocatedExecutionContext(nearFunctionNode->outerFunctionNode());
-                            if (!nearFunctionNode->needsActivation()) {
+                            if (!nearFunctionNode->needsActivation() && isForGlobalScope) {
                                 ((IdentifierNode *)currentNode)->m_flags.m_onlySearchGlobal = true;
                             }
                         }
