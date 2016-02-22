@@ -964,16 +964,8 @@ void GlobalObject::installFunction()
         prototype->set__proto__(instance->globalObject()->object()->protoType());
         function->setProtoType(prototype);
 
-        escargot::ESFunctionObject* throwerForGet = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-            instance->throwError(ESValue(TypeError::create(ESString::create("Type error"))));
-            RELEASE_ASSERT_NOT_REACHED();
-        }, ESString::createAtomicString("get"), 1);
-        escargot::ESFunctionObject* throwerForSet = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-            instance->throwError(ESValue(TypeError::create(ESString::create("Type error"))));
-            RELEASE_ASSERT_NOT_REACHED();
-        }, ESString::createAtomicString("set"), 1);
-        function->defineAccessorProperty(ESString::createAtomicString("caller"), new ESPropertyAccessorData(throwerForGet, throwerForSet), true, false, false);
-        function->defineAccessorProperty(ESString::createAtomicString("arguments"), new ESPropertyAccessorData(throwerForGet, throwerForSet), true, false, false);
+        function->defineAccessorProperty(ESString::createAtomicString("caller"), instance->throwerAccessorData(), true, false, false);
+        function->defineAccessorProperty(ESString::createAtomicString("arguments"), instance->throwerAccessorData(), true, false, false);
         // NOTE
         // The binded function has only one bytecode what is CallBoundFunction
         // so we should not try JIT for binded function.
