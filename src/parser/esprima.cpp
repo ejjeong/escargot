@@ -3983,6 +3983,23 @@ escargot::Node* parseFunctionDeclaration(ParseContext* ctx/*node, identifierIsOp
     nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
     ctx->m_currentBody->insert(ctx->m_currentBody->begin(), nd);
 
+    if (ctx->m_strict) {
+        escargot::FunctionDeclarationNode* fd = static_cast<escargot::FunctionDeclarationNode *>(nd);
+        const escargot::InternalAtomicStringVector& params = fd->params();
+        escargot::InternalAtomicStringVector::const_iterator it = params.begin();
+        for (escargot::InternalAtomicString param: params) {
+
+            if (isRestrictedWord(param)) {
+                // tolerateUnexpectedToken(token, Messages.StrictFunctionName);
+                tolerateUnexpectedToken();
+            }
+
+            it++;
+            if (std::find(it, params.end(), param) != params.end())
+                tolerateUnexpectedToken();
+        }
+    }
+
     escargot::IdentifierNode* idNode = new escargot::IdentifierNode(((escargot::IdentifierNode *)id)->name());
     idNode->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
     escargot::VariableDeclaratorNode* v = new escargot::VariableDeclaratorNode(
