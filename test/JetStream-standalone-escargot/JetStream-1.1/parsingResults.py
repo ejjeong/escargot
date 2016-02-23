@@ -10,7 +10,7 @@ def print_formatted(result):
 # argv[0] : res file name
 def main(argv):
     resfile = open(argv[0], 'r');
-    li = [[0 for i in range(39)] for j in range(1)];
+    li = [[0 for i in range(10)] for j in range(39)];
     result = [[0 for i in range(2)] for j in range(39)];
     i = 0;
 
@@ -22,14 +22,30 @@ def main(argv):
             line = resfile.readline();
 
         benchmarkName = line.split(':')[0][0:-1];
-        if(benchmarkName == savedNames[i]):
-            result[i][0] = benchmarkName;
-            result[i][1] = int(float(line.split(':')[-1][1:]));
-        else:
-            result[i][0] = savedNames[i];
-            result[i][1] = "NaN";
-
+        if(benchmarkName in savedNames):
+            j = 0;
+            while True:
+                if(li[savedNames.index(benchmarkName)][j] == 0):
+                    li[savedNames.index(benchmarkName)][j] = int(float(line.split(':')[-1][1:]));
+                    break;
+                else:
+                    j+=1;
+        
         i+=1;
+
+    for i in range(0, 39):
+        addValue = 0;
+        for j in range(0, 10):
+            if(li[i][j] != 0):
+                addValue += li[i][j];
+            else:
+                break;
+        if(j != 0):
+            result[i][1] = addValue / j;
+        else:
+            result[i][1] = "NaN";
+        result[i][0] = savedNames[i];
+        
     print_formatted(result);
 
     resfile.close();

@@ -11,13 +11,22 @@ echo "" > $OUTFILE_WITH_TIME;
 if [[ $PATH_TO_ENGINE = *"escargot" ]]; then
     while [ $i -lt 37 ]; do
         cat ./runOnePlan.js | sed -e 's/arguments\[0\]/'$i'/g' > runOnePlan_for_escargot.js
-        $PATH_TO_ENGINE ./runOnePlan_for_escargot.js > tmp;
-        if [[ i -eq 27 || i -eq 30 ]]; then
-#            tail -2 tmp;
-            tail -2 tmp >> $OUTFILE_WITH_TIME;
+        if [[ $i -lt 11 ]]; then
+            k=0;
+            while [ $k -lt 10 ]; do
+                $PATH_TO_ENGINE ./runOnePlan_for_escargot.js > tmp;
+                tail -1 tmp >> $OUTFILE_WITH_TIME;
+                k=$(( k + 1 ))
+            done
         else
-#            tail -1 tmp;
-            tail -1 tmp >> $OUTFILE_WITH_TIME;
+            $PATH_TO_ENGINE ./runOnePlan_for_escargot.js > tmp;
+            if [[ i -eq 27 || i -eq 30 ]]; then
+    #            tail -2 tmp;
+                tail -2 tmp >> $OUTFILE_WITH_TIME;
+            else
+    #            tail -1 tmp;
+                tail -1 tmp >> $OUTFILE_WITH_TIME;
+            fi
         fi
         i=$(( i + 1 ))
     done
