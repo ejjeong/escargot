@@ -76,6 +76,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Takes too long (and Slowdown)</escargot-skip>
       <files>optpeep.js</files>
     </default>
   </test>

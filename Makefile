@@ -471,4 +471,9 @@ run-spidermonkey:
 	perl jsDriver.pl -e escargot -s ../../escargot -l ./js1* \
 	eprl jsDriver.pl -e escargot -s ../../escargot -l ./Intl \
 
+run-chakracore:
+	cd test/chakracore/; \
+	./run.sh ../../escargot $(OPT) | tee chakracorelog.gen.txt; \
+	vimdiff chakracorelog.orig.txt chakracorelog.gen.txt
+
 .PHONY: clean

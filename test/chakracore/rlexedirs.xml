@@ -32,6 +32,7 @@
 </dir>
 <dir>
   <default>
+    <escargot-skip>Not in scope</escargot-skip>
     <files>LetConst</files>
   </default>
 </dir>
@@ -232,6 +233,7 @@
 </dir>
 <dir>
   <default>
+    <escargot-skip>Not in scope (es6)</escargot-skip>
     <files>es6</files>
   </default>
 </dir>
@@ -254,54 +256,63 @@
 </dir>
 <dir>
   <default>
+    <escargot-skip>Not in scope</escargot-skip>
     <files>AsmJs</files>
     <tags>exclude_serialized,exclude_arm,exclude_arm64,require_backend</tags>
   </default>
 </dir>
 <dir>
   <default>
+    <escargot-skip>Not in scope</escargot-skip>
     <files>AsmJsFloat</files>
     <tags>exclude_serialized,exclude_arm,exclude_arm64,require_backend</tags>
   </default>
 </dir>
 <dir>
   <default>
+    <escargot-skip>Not in scope</escargot-skip>
     <files>AsmJsParser</files>
     <tags>exclude_serialized,exclude_arm,exclude_arm64,require_backend</tags>
   </default>
 </dir>
 <dir>
   <default>
+    <escargot-skip>Not in scope</escargot-skip>
     <files>SIMD.float32x4</files>
     <tags>exclude_arm,exclude_arm64,require_backend</tags>
   </default>
 </dir>
 <dir>
   <default>
+    <escargot-skip>Not in scope</escargot-skip>
     <files>SIMD.int32x4</files>
     <tags>exclude_arm,exclude_arm64,require_backend</tags>
   </default>
 </dir>
 <dir>
   <default>
+    <escargot-skip>Not in scope</escargot-skip>
     <files>SIMD.int8x16</files>
     <tags>exclude_arm,exclude_arm64,require_backend</tags>
   </default>
 </dir>
 <dir>
   <default>
+    <escargot-skip>Not in scope</escargot-skip>
     <files>SIMD.float32x4.asmjs</files>
     <tags>exclude_arm,exclude_arm64,require_backend</tags>
   </default>
 </dir>
 <dir>
   <default>
+    <escargot-skip>Not in scope</escargot-skip>
     <files>SIMD.int32x4.asmjs</files>
     <tags>exclude_arm,exclude_arm64,require_backend</tags>
   </default>
 </dir>
 <dir>
   <default>
+    <escargot-skip>Not in scope</escargot-skip>
     <files>SIMD.workloads.asmjs</files>
     <tags>exclude_serialized,exclude_arm,exclude_arm64,require_backend</tags>
   </default>

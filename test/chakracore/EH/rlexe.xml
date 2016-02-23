@@ -22,6 +22,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Takes too long (and Slowdown)</escargot-skip>
       <files>oos2.js</files>
     </default>
   </test>
@@ -75,12 +76,14 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Takes too long (and Slowdown)</escargot-skip>
       <files>so.js</files>
       <baseline>so.baseline</baseline>
     </default>
   </test>
   <test>
     <default>
+      <escargot-skip>Takes too long (and Slowdown)</escargot-skip>
       <files>newso.js</files>
       <baseline>newso.baseline</baseline>
     </default>

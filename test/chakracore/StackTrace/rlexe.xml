@@ -74,6 +74,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Takes too long</escargot-skip>
       <tags>StackTrace</tags>
       <files>StackTraceLimitOOS.js</files>
       <baseline>StackTraceLimitOOS.baseline</baseline>
@@ -82,6 +83,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Takes too long</escargot-skip>
       <tags>StackTrace,exclude_ship</tags>
       <files>StackTraceLimitOOS.js</files>
       <compile-flags>-ExtendedErrorStackForTestHost -on:interruptprobe</compile-flags>
