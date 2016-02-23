@@ -1,8 +1,8 @@
-IIFE-es6-default-parameters.js
+// IIFE-es6-default-parameters.js // ES6
 IIFE-function-name-captured.js
-activation-sink-default-value-tdz-error.js
+// activation-sink-default-value-tdz-error.js // ES6 'let'
 activation-sink-default-value.js
-activation-sink-osrexit-default-value-tdz-error.js
+// activation-sink-osrexit-default-value-tdz-error.js // ES6 'let'
 activation-sink-osrexit-default-value.js
 activation-sink-osrexit.js
 activation-sink.js
