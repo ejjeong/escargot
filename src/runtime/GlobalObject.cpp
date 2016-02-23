@@ -866,10 +866,10 @@ void GlobalObject::installFunction()
             function = instance->currentExecutionContext()->resolveThisBindingToObject()->asESFunctionObject();
             function->initialize(scope, codeBlock);
         } else
-            function = ESFunctionObject::create(scope, codeBlock, ESString::createAtomicString("anonymous"));
+            function = ESFunctionObject::create(scope, codeBlock, ESString::createAtomicString("anonymous"), codeBlock->m_argumentCount);
         ESObject* prototype = ESObject::create();
         prototype->set__proto__(instance->globalObject()->object()->protoType());
-        function->setProtoType(prototype);
+        //function->setProtoType(prototype);
         return function;
     }, strings->Function, 1, true); // $19.2.2.1 Function.length: This is a data property with a value of 1.
     ::escargot::ESFunctionObject* emptyFunction = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
