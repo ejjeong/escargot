@@ -41,7 +41,7 @@ public:
             cb->m_functionExpressionNameIndex = m_functionIdIndex;
             cb->m_isFunctionExpressionNameHeapAllocated = m_functionIdIndexNeedsHeapAllocation;
 
-            ByteCodeGenerateContext newContext(cb);
+            ByteCodeGenerateContext newContext(cb, false);
             m_body->generateStatementByteCode(cb, newContext);
             cb->pushCode(ReturnFunction(), newContext, this);
 #ifndef NDEBUG

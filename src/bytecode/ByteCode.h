@@ -182,9 +182,10 @@ inline const char* getByteCodeName(Opcode opcode)
 #endif
 
 struct ByteCodeGenerateContext {
-    ByteCodeGenerateContext(CodeBlock* codeBlock)
+    ByteCodeGenerateContext(CodeBlock* codeBlock, bool isGlobalScope)
         : m_baseRegisterCount(0)
         , m_codeBlock(codeBlock)
+        , m_isGlobalScope(isGlobalScope)
         , m_isOutermostContext(true)
         , m_offsetToBasePointer(0)
         , m_positionToContinue(0)
@@ -204,6 +205,7 @@ struct ByteCodeGenerateContext {
     ByteCodeGenerateContext(const ByteCodeGenerateContext& contextBefore)
         : m_baseRegisterCount(contextBefore.m_baseRegisterCount)
         , m_codeBlock(contextBefore.m_codeBlock)
+        , m_isGlobalScope(contextBefore.m_isGlobalScope)
         , m_isOutermostContext(false)
         , m_shouldGenereateByteCodeInstantly(contextBefore.m_shouldGenereateByteCodeInstantly)
         , m_inCallingExpressionScope(contextBefore.m_inCallingExpressionScope)
@@ -297,6 +299,7 @@ struct ByteCodeGenerateContext {
     int m_baseRegisterCount;
 
     CodeBlock* m_codeBlock;
+    bool m_isGlobalScope;
     bool m_isOutermostContext;
 
     bool m_shouldGenereateByteCodeInstantly;

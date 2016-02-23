@@ -181,6 +181,7 @@ ESValue ESVMInstance::evaluateEval(ESString* source, bool isDirectCall)
     if (!m_currentExecutionContext || !isDirectCall) {
         // $ES5 10.4.2.1. Use global execution context
         m_currentExecutionContext = m_globalExecutionContext;
+        m_currentExecutionContext->setStrictMode(isStrictCode);
     } else {
         // $ES5 10.4.2.2. Use calling execution context
     }

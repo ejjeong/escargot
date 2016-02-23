@@ -334,6 +334,8 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
                 if (callee->type() == NodeType::Identifier) {
                     if (((IdentifierNode *)callee)->name() == strings->eval.string()) {
                         markNeedsActivation(nearFunctionNode);
+                        if (nearFunctionNode)
+                            nearFunctionNode->setNeedsToPrepareGenerateArgumentsObject();
                         isEval = true;
                     }
                 }

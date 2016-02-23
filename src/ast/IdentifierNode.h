@@ -59,7 +59,7 @@ public:
         } else if (canUseGlobalFastAccess()) {
             codeBlock->pushCode(GetByGlobalIndex(m_fastAccessIndex, m_name.string()), context, this);
         } else {
-            if (m_name == strings->arguments) {
+            if (m_name == strings->arguments && !context.m_isGlobalScope) {
                 codeBlock->pushCode(GetArgumentsObject(), context, this);
             } else {
                 codeBlock->pushCode(GetById(m_name, m_flags.m_onlySearchGlobal), context, this);
@@ -91,7 +91,7 @@ public:
         } else if (canUseGlobalFastAccess()) {
             codeBlock->pushCode(SetByGlobalIndex(m_fastAccessIndex, m_name.string()), context, this);
         } else {
-            if (m_name == strings->arguments) {
+            if (m_name == strings->arguments && !context.m_isGlobalScope) {
                 codeBlock->pushCode(SetArgumentsObject(), context, this);
             } else {
                 codeBlock->pushCode(SetById(m_name, m_flags.m_onlySearchGlobal), context, this);

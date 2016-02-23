@@ -821,7 +821,7 @@ void GlobalObject::installFunction()
         int len = instance->currentExecutionContext()->argumentCount();
         CodeBlock* codeBlock = CodeBlock::create();
         if (len == 0) {
-            ByteCodeGenerateContext context(codeBlock);
+            ByteCodeGenerateContext context(codeBlock, false);
             codeBlock->pushCode(ReturnFunction(), context, NULL);
             codeBlock->pushCode(End(), context, NULL);
             codeBlock->m_hasCode = true;
@@ -842,7 +842,7 @@ void GlobalObject::installFunction()
             builder.appendString("}");
             Node* programNode = instance->scriptParser()->generateAST(instance, builder.finalize(), true);
             FunctionNode* functionDeclAST = static_cast<FunctionNode* >(static_cast<ProgramNode *>(programNode)->body()[1]);
-            ByteCodeGenerateContext context(codeBlock);
+            ByteCodeGenerateContext context(codeBlock, false);
 
             codeBlock->m_stackAllocatedIdentifiersCount = functionDeclAST->stackAllocatedIdentifiersCount();
             codeBlock->m_heapAllocatedIdentifiers = std::move(functionDeclAST->heapAllocatedIdentifiers());
@@ -945,7 +945,7 @@ void GlobalObject::installFunction()
             instance->throwError(ESValue(TypeError::create(ESString::create("this value should be function"))));
         }
         CodeBlock* cb = CodeBlock::create();
-        ByteCodeGenerateContext context(cb);
+        ByteCodeGenerateContext context(cb, false);
         CallBoundFunction code;
         code.m_boundTargetFunction = thisVal.asESPointer()->asESFunctionObject();
         code.m_boundThis = instance->currentExecutionContext()->readArgument(0);

@@ -3259,8 +3259,7 @@ ch12/12.2/12.2.1/12.2.1-19-s passed in strict mode
 ch12/12.2/12.2.1/12.2.1-1gs failed in strict mode as expected
 ch12/12.2/12.2.1/12.2.1-2-s passed in strict mode
 ch12/12.2/12.2.1/12.2.1-20-s passed in strict mode
-=== ch12/12.2/12.2.1/12.2.1-21-s failed in strict mode ===
-===
+ch12/12.2/12.2.1/12.2.1-21-s passed in strict mode
 ch12/12.2/12.2.1/12.2.1-22-s passed in strict mode
 ch12/12.2/12.2.1/12.2.1-23-s passed in strict mode
 ch12/12.2/12.2.1/12.2.1-24-s passed in strict mode
@@ -3572,8 +3571,7 @@ ch13/13.1/13.1-28-s passed in strict mode
 ch13/13.1/13.1-29-s passed in strict mode
 ch13/13.1/13.1-3-1 passed in non-strict mode
 ch13/13.1/13.1-3-2 passed in non-strict mode
-=== ch13/13.1/13.1-3-7 failed in non-strict mode ===
-===
+ch13/13.1/13.1-3-7 passed in non-strict mode
 ch13/13.1/13.1-3-8 passed in non-strict mode
 ch13/13.1/13.1-3-s passed in strict mode
 ch13/13.1/13.1-30-s passed in strict mode
@@ -11746,12 +11744,10 @@ ch15/15.9/15.9.5/15.9.5.9/S15.9.5.9_A3_T3 passed in non-strict mode
 
 === Summary ===
  - Ran 11338 tests
- - Passed 11330 tests (99.9%)
- - Failed 8 tests (0.1%)
+ - Passed 11332 tests (99.9%)
+ - Failed 6 tests (0.1%)
 
 Failed tests
-  ch12/12.2/12.2.1/12.2.1-21-s in strict mode
-  ch13/13.1/13.1-3-7 in non-strict mode
   ch15/15.9/15.9.3/S15.9.3.1_A5_T1 in non-strict mode
   ch15/15.9/15.9.3/S15.9.3.1_A5_T2 in non-strict mode
   ch15/15.9/15.9.3/S15.9.3.1_A5_T3 in non-strict mode

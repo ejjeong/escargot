@@ -884,7 +884,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             ESFunctionObject* function = ESFunctionObject::create(ec->environment(), code->m_codeBlock, code->m_nonAtomicName == NULL ? strings->emptyString.string() : code->m_nonAtomicName, code->m_codeBlock->m_argumentCount);
             if (code->m_isDeclaration) { // FD
                 function->set(strings->name.string(), code->m_nonAtomicName);
-                if (UNLIKELY(code->m_name == strings->arguments)) {
+                if (UNLIKELY(code->m_name == strings->arguments && !ec->environment()->record()->isGlobalEnvironmentRecord())) {
                     *ec->resolveArgumentsObjectBinding() = function;
                 } if (code->m_idIndex == std::numeric_limits<size_t>::max()) {
                     ec->environment()->record()->setMutableBinding(code->m_name, function, false);
@@ -937,7 +937,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                 LexicalEnvironment* env = nullptr;
                 InternalAtomicString str(code->m_name->utf8Data(), code->m_name->length());
                 ESValue* binding;
-                if (UNLIKELY(str == strings->arguments))
+                if (UNLIKELY(str == strings->arguments && !ec->environment()->record()->isGlobalEnvironmentRecord()))
                     binding = ec->resolveArgumentsObjectBinding();
                 else
                     binding = ec->resolveBinding(str, env);

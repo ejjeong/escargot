@@ -1433,7 +1433,7 @@ ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, co
             cb->m_isFunctionExpressionNameHeapAllocated = node->m_functionIdIndexNeedsHeapAllocation;
             cb->m_needsActivation = node->m_needsActivation;
 
-            ByteCodeGenerateContext newContext(cb);
+            ByteCodeGenerateContext newContext(cb, false);
             node->body()->generateStatementByteCode(cb, newContext);
 
             cb->pushCode(ReturnFunction(), newContext, node);

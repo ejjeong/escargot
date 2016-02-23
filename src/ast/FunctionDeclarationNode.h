@@ -36,7 +36,7 @@ public:
             cb->m_argumentCount = m_params.size();
             cb->m_hasCode = true;
 
-            ByteCodeGenerateContext newContext(cb);
+            ByteCodeGenerateContext newContext(cb, false);
             m_body->generateStatementByteCode(cb, newContext);
             cb->pushCode(ReturnFunction(), newContext, this);
 #ifndef NDEBUG

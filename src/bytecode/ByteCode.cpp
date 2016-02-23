@@ -322,7 +322,7 @@ CodeBlock* generateByteCode(ProgramNode* node, bool shouldGenereateBytecodeInsta
     // CodeBlock* block = CodeBlock::create(node->roughCodeblockSizeInWordSize());
     CodeBlock* block = CodeBlock::create(0);
 
-    ByteCodeGenerateContext context(block);
+    ByteCodeGenerateContext context(block, true);
     context.m_shouldGenereateByteCodeInstantly = shouldGenereateBytecodeInstantly;
     // unsigned long start = ESVMInstance::tickCount();
     node->generateStatementByteCode(block, context);
