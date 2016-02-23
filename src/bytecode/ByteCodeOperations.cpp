@@ -573,4 +573,43 @@ NEVER_INLINE EnumerateObjectData* executeEnumerateObject(ESObject* obj)
     return data;
 }
 
+NEVER_INLINE bool deleteBindingOperation(UnaryDelete* code, ExecutionContext* ec, GlobalObject* globalObject)
+{
+    if (ec->isStrictMode())
+        ESVMInstance::currentInstance()->throwError(ESValue(SyntaxError::create(ESString::create("Unable to delete variable in strict mode"))));
+    LexicalEnvironment* env = nullptr;
+    InternalAtomicString str(code->m_name->utf8Data(), code->m_name->length());
+    ESValue* binding;
+    if (UNLIKELY(str == strings->arguments && !ec->environment()->record()->isGlobalEnvironmentRecord()))
+        binding = ec->resolveArgumentsObjectBinding();
+    else
+        binding = ec->resolveBinding(str, env);
+    if (binding) {
+        if (env && env->record()->isGlobalEnvironmentRecord()) {
+            bool res = globalObject->deleteProperty(code->m_name);
+            return res;
+        } else {
+            return false;
+        }
+    } else {
+        return true;
+    }
+}
+
+NEVER_INLINE void initializeFunctionDeclaration(CreateFunction* code, ExecutionContext* ec, ESFunctionObject* function)
+{
+    function->set(strings->name.string(), code->m_nonAtomicName);
+    if (UNLIKELY(code->m_name == strings->arguments && !ec->environment()->record()->isGlobalEnvironmentRecord())) {
+        *ec->resolveArgumentsObjectBinding() = function;
+    } if (code->m_idIndex == std::numeric_limits<size_t>::max()) {
+        ec->environment()->record()->setMutableBinding(code->m_name, function, false);
+    } else {
+        if (code->m_isIdIndexOnHeapStorage) {
+            *ec->environment()->record()->toDeclarativeEnvironmentRecord()->bindingValueForHeapAllocatedData(code->m_idIndex) = function;
+        } else {
+            *ec->environment()->record()->toDeclarativeEnvironmentRecord()->bindingValueForStackAllocatedData(code->m_idIndex) = function;
+        }
+    }
+}
+
 }

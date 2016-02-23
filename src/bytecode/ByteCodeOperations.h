@@ -450,6 +450,8 @@ NEVER_INLINE bool inOperation(ESValue* obj, ESValue* key);
 NEVER_INLINE void tryOperation(ESVMInstance* instance, CodeBlock* codeBlock, char* codeBuffer, ExecutionContext* ec, size_t programCounter, Try* code, ESValue* stackStorage, ESValueVector* heapStorage);
 NEVER_INLINE void tryOperationThrowCase(const ESValue& err, LexicalEnvironment* oldEnv, ExecutionContext* backupedEC, ESVMInstance* instance, CodeBlock* codeBlock, char* codeBuffer, ExecutionContext* ec, size_t programCounter, Try* code, ESValue* stackStorage, ESValueVector* heapStorage);
 NEVER_INLINE EnumerateObjectData* executeEnumerateObject(ESObject* obj);
+NEVER_INLINE bool deleteBindingOperation(UnaryDelete* code, ExecutionContext* ec, GlobalObject* globalObject);
+NEVER_INLINE void initializeFunctionDeclaration(CreateFunction* code, ExecutionContext* ec, ESFunctionObject* function);
 
 }
 #endif

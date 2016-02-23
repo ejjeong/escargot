@@ -883,18 +883,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             ASSERT(((size_t)code->m_codeBlock % sizeof(size_t)) == 0);
             ESFunctionObject* function = ESFunctionObject::create(ec->environment(), code->m_codeBlock, code->m_nonAtomicName == NULL ? strings->emptyString.string() : code->m_nonAtomicName, code->m_codeBlock->m_argumentCount);
             if (code->m_isDeclaration) { // FD
-                function->set(strings->name.string(), code->m_nonAtomicName);
-                if (UNLIKELY(code->m_name == strings->arguments && !ec->environment()->record()->isGlobalEnvironmentRecord())) {
-                    *ec->resolveArgumentsObjectBinding() = function;
-                } if (code->m_idIndex == std::numeric_limits<size_t>::max()) {
-                    ec->environment()->record()->setMutableBinding(code->m_name, function, false);
-                } else {
-                    if (code->m_isIdIndexOnHeapStorage) {
-                        *ec->environment()->record()->toDeclarativeEnvironmentRecord()->bindingValueForHeapAllocatedData(code->m_idIndex) = function;
-                    } else {
-                        *ec->environment()->record()->toDeclarativeEnvironmentRecord()->bindingValueForStackAllocatedData(code->m_idIndex) = function;
-                    }
-                }
+                initializeFunctionDeclaration(code, ec, function);
             } else { // FE
                 function->set(strings->name.string(), code->m_nonAtomicName);
                 PUSH(stack, topOfStack, function);
@@ -932,25 +921,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                     throwObjectWriteError("Unable to delete property");
                 PUSH(stack, topOfStack, ESValue(res));
             } else {
-                if (ec->isStrictMode())
-                    ESVMInstance::currentInstance()->throwError(ESValue(SyntaxError::create(ESString::create("Unable to delete variable in strict mode"))));
-                LexicalEnvironment* env = nullptr;
-                InternalAtomicString str(code->m_name->utf8Data(), code->m_name->length());
-                ESValue* binding;
-                if (UNLIKELY(str == strings->arguments && !ec->environment()->record()->isGlobalEnvironmentRecord()))
-                    binding = ec->resolveArgumentsObjectBinding();
-                else
-                    binding = ec->resolveBinding(str, env);
-                if (binding) {
-                    if (env && env->record()->isGlobalEnvironmentRecord()) {
-                        bool res = globalObject->deleteProperty(code->m_name);
-                        PUSH(stack, topOfStack, ESValue(res));
-                    } else {
-                        PUSH(stack, topOfStack, ESValue(false));
-                    }
-                } else {
-                    PUSH(stack, topOfStack, ESValue(true));
-                }
+                PUSH(stack, topOfStack, ESValue(deleteBindingOperation(code, ec, globalObject)));
             }
             executeNextCode<UnaryDelete>(programCounter);
             NEXT_INSTRUCTION();
