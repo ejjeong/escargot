@@ -102,11 +102,11 @@
 [102] // branch-may-exit-due-to-object-or-other-use-kind.js // JSC 'makeMasquerader()' ..... Excluded
 [103] // bug-131764.js // ES6 spread '...' ..... Excluded
 [104] builtin-function-is-construct-type-none.js ..... Fail (Uncaught Error: bad error: TypeError: forEach is not a constructor)
-[105] cached-prototype-setter.js ..... Fail (Uncaught TypeError: Callee is not a function object)
+[105] cached-prototype-setter.js ..... Fail (Uncaught Error: FAIL: 'x' setter was not called.)
 [106] call-forward-varargs-for-inlined-escaped-arguments.js ..... Succ
 [107] call-varargs-from-inlined-code-with-odd-number-of-arguments.js ..... Succ
 [108] call-varargs-from-inlined-code.js ..... Succ
-[109] call-varargs-length-effects.js ..... Fail (Uncaught TypeError: Callee is not a function object)
+[109] call-varargs-length-effects.js ..... Succ
 [110] // call-varargs-with-different-arguments-length-after-warmup.js // ES6 spread '...' ..... Excluded
 [111] capture-escape-and-throw.js ..... Succ
 [112] captured-arguments-variable.js ..... Succ
@@ -201,12 +201,12 @@
 [201] exception-in-to-property-key-should-be-handled-early.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4678))
 [202] exit-after-int32-to-double.js ..... Succ
 [203] exit-after-int52-to-double.js ..... Succ
-[204] exit-after-int52-to-value.js ..... Fail (Uncaught TypeError: Callee is not a function object)
+[204] exit-after-int52-to-value.js ..... Succ
 [205] exit-after-llvm-folds-large-int-constant.js ..... Succ
 [206] exit-from-ftl-when-caller-passed-extra-args-then-use-function-dot-arguments.js ..... Fail (Uncaught TypeError: cannot convert undefined into object)
 [207] exit-from-ftl-with-arity-check-fail.js ..... Succ
-[208] exit-from-getter.js ..... Fail (Uncaught TypeError: Callee is not a function object)
-[209] exit-from-setter.js ..... Fail (Uncaught TypeError: Callee is not a function object)
+[208] exit-from-getter.js ..... Succ
+[209] exit-from-setter.js ..... Succ
 [210] fiat-double-to-int52-then-exit-not-int52.js ..... Succ
 [211] fiat-double-to-int52-then-fail-to-fold.js ..... Succ
 [212] fiat-double-to-int52-then-fold.js ..... Fail (Uncaught TypeError: Callee is not a function object)
@@ -281,7 +281,7 @@
 [281] // ftl-library-inlining-loops.js // ES6 DataView ..... Excluded
 [282] ftl-library-inlining-random.js ..... Succ
 [283] ftl-library-substring.js ..... Succ
-[284] ftl-putbyid.js ..... Fail (Uncaught TypeError: Callee is not a function object)
+[284] ftl-putbyid.js ..... Succ
 [285] ftl-putbyiddirect.js ..... Succ
 [286] ftl-reallocatepropertystorage.js ..... Succ
 [287] ftl-switch-string-slow-duplicate-cases.js ..... Succ
@@ -296,9 +296,9 @@
 [296] generational-opaque-roots.js ..... Fail (Uncaught ReferenceError: Root is not defined)
 [297] get-argument-by-val-in-inlined-varargs-call-out-of-bounds.js ..... Succ
 [298] get-argument-by-val-safe-in-inlined-varargs-call-out-of-bounds.js ..... Succ
-[299] get-by-id-throw-from-getter-through-optimized-code.js ..... Fail (Uncaught TypeError: Callee is not a function object)
-[300] get-by-id-throw-from-unexpected-getter-through-optimized-code-that-does-not-exit.js ..... Fail (Uncaught Error: didn't throw or threw wrong exception: TypeError: Callee is not a function object)
-[301] get-by-id-throw-from-unexpected-getter-through-optimized-code.js ..... Fail (Uncaught Error: didn't throw or threw wrong exception: TypeError: Callee is not a function object)
+[299] get-by-id-throw-from-getter-through-optimized-code.js ..... Succ
+[300] get-by-id-throw-from-unexpected-getter-through-optimized-code-that-does-not-exit.js ..... Succ
+[301] get-by-id-throw-from-unexpected-getter-through-optimized-code.js ..... Succ
 [302] get-by-id-untyped.js ..... Succ
 [303] get-by-val-double-predicted-int.js ..... Succ
 [304] // get-by-val-on-undecided-array-type.js // ES6 const ..... Excluded
@@ -334,8 +334,8 @@
 [334] get-stack-identity-due-to-sinking.js ..... Succ
 [335] get-stack-mapping-with-dead-get-stack.js ..... Fail (Uncaught TypeError: cannot convert undefined into object)
 [336] get-stack-mapping.js ..... Fail (Uncaught TypeError: cannot convert undefined into object)
-[337] getter-arity.js ..... Fail (Uncaught TypeError: Callee is not a function object)
-[338] getter.js ..... Fail (Uncaught TypeError: Callee is not a function object)
+[337] getter-arity.js ..... Succ
+[338] getter.js ..... Succ
 [339] global-environment-does-not-trap-unscopables.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (3359))
 [340] // global-lexical-let-no-rhs.js // ES6 let ..... Excluded
 [341] // global-lexical-redeclare-variable.js // ES6 let ..... Excluded
@@ -467,7 +467,7 @@ Uncaught Wrong error: Should not have gotten here.)
 [459] // modules-syntax-error.js // ES6 '=>' ..... Excluded
 [460] modules-syntax.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
 [461] mul-boolean-exit.js ..... Succ
-[462] multi-get-by-offset-dce.js ..... Fail (Uncaught TypeError: Callee is not a function object)
+[462] multi-get-by-offset-dce.js ..... Succ
 [463] multi-get-by-offset-hoist-around-structure-check.js ..... Succ
 [464] multi-get-by-offset-proto-and-self.js ..... Succ
 [465] multi-get-by-offset-self-or-proto.js ..... Succ
@@ -478,10 +478,10 @@ Uncaught Wrong error: Should not have gotten here.)
 [470] nan-equal-untyped.js ..... Succ
 [471] nan-equal.js ..... Succ
 [472] new-array-dead.js ..... Succ
-[473] new-array-storage-array-with-size.js ..... Fail (Uncaught TypeError: Callee is not a function object)
+[473] new-array-storage-array-with-size.js ..... Succ
 [474] new-array-then-exit.js ..... Succ
 [475] new-array-with-size-throw-exception-and-tear-off-arguments.js ..... Succ
-[476] new-array-with-size-with-bad-time.js ..... Fail (Uncaught TypeError: Callee is not a function object)
+[476] new-array-with-size-with-bad-time.js ..... Fail (Uncaught Error: setter not called.)
 [477] new-contiguous-array-with-size.js ..... Succ
 [478] new-double-array-with-size.js ..... Succ
 [479] new-function-expression-has-structures.js ..... Succ
@@ -527,18 +527,18 @@ Uncaught Wrong error: Should not have gotten here.)
 [519] plus-boolean-or-int.js ..... Succ
 [520] poly-call-exit-this.js ..... Succ
 [521] poly-call-exit.js ..... Succ
-[522] poly-call-stub-in-getter-stub.js ..... Fail (Uncaught TypeError: Callee is not a function object)
-[523] poly-chain-getter.js ..... Fail (Uncaught TypeError: Callee is not a function object)
-[524] poly-chain-setter.js ..... Fail (Uncaught TypeError: Callee is not a function object)
-[525] poly-chain-then-getter.js ..... Fail (Uncaught TypeError: Callee is not a function object)
-[526] poly-chain-then-setter.js ..... Fail (Uncaught TypeError: Callee is not a function object)
-[527] poly-getter-combo.js ..... Fail (Uncaught TypeError: Callee is not a function object)
-[528] poly-getter-then-chain.js ..... Fail (Uncaught TypeError: Callee is not a function object)
-[529] poly-getter-then-self.js ..... Fail (Uncaught TypeError: Callee is not a function object)
-[530] poly-self-getter.js ..... Fail (Uncaught TypeError: Callee is not a function object)
-[531] poly-self-then-getter.js ..... Fail (Uncaught TypeError: Callee is not a function object)
-[532] poly-setter-combo.js ..... Fail (Uncaught TypeError: Callee is not a function object)
-[533] poly-setter-then-self.js ..... Fail (Uncaught TypeError: Callee is not a function object)
+[522] poly-call-stub-in-getter-stub.js ..... Succ
+[523] poly-chain-getter.js ..... Succ
+[524] poly-chain-setter.js ..... Fail (Uncaught TypeError: Type error, DefineOwnProperty 11.a.ii)
+[525] poly-chain-then-getter.js ..... Succ
+[526] poly-chain-then-setter.js ..... Fail (Uncaught TypeError: Type error, DefineOwnProperty 11.a.ii)
+[527] poly-getter-combo.js ..... Succ
+[528] poly-getter-then-chain.js ..... Succ
+[529] poly-getter-then-self.js ..... Succ
+[530] poly-self-getter.js ..... Succ
+[531] poly-self-then-getter.js ..... Succ
+[532] poly-setter-combo.js ..... Fail (Uncaught TypeError: Type error, DefineOwnProperty 11.a.ii)
+[533] poly-setter-then-self.js ..... Fail (Uncaught TypeError: Type error, DefineOwnProperty 11.a.ii)
 [534] polymorphic-prototype-accesses.js ..... Succ
 [535] prop-type-boolean-then-string.js ..... Succ
 [536] prop-type-int32-then-string.js ..... Succ
@@ -556,10 +556,10 @@ Uncaught Wrong error: Should not have gotten here.)
 [548] // prop-type-symbol-then-string.js // ES6 Symbol ..... Excluded
 [549] property-name-enumerator-should-not-look-into-indexed-values-when-it-is-a-dictionary.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
 [550] proto-setter.js ..... Fail (Uncaught TypeError: cannot redefine property)
-[551] prototype-getter.js ..... Fail (Uncaught TypeError: Callee is not a function object)
+[551] prototype-getter.js ..... Succ
 [552] // proxy-inline-cache.js // ES6 Proxy ..... Excluded
 [553] prune-multi-put-by-offset-replace-or-transition-variant.js ..... Succ
-[554] put-by-id-build-list-order-recurse.js ..... Fail (Uncaught TypeError: Callee is not a function object)
+[554] put-by-id-build-list-order-recurse.js ..... Fail (Uncaught TypeError: Type error, DefineOwnProperty 7.a)
 [555] put-by-id-direct-should-be-done-for-non-index-property.js ..... Fail (Uncaught SyntaxError: Parse Error 35 line)
 [556] put-by-id-on-new-object-after-prototype-transition-non-strict.js ..... Succ
 [557] put-by-id-on-new-object-after-prototype-transition-strict.js ..... Succ
@@ -575,8 +575,8 @@ Uncaught Wrong error: Should not have gotten here.)
 [567] put-local-conservative.js ..... Succ
 [568] // raise-error-in-iterator-close.js // ES6 for ... of ..... Excluded
 [569] real-forward-varargs-for-inlined-escaped-arguments.js ..... Succ
-[570] recurse-infinitely-on-getter.js ..... Fail (Uncaught TypeError: Callee is not a function object)
-[571] recursive_property_redefine_during_inline_caching.js ..... Fail (Uncaught TypeError: Callee is not a function object)
+[570] // recurse-infinitely-on-getter.js // TODO timeout ..... Excluded
+[571] recursive_property_redefine_during_inline_caching.js ..... Fail (Uncaught TypeError: Object.DefineOwnProperty 9.a)
 [572] redundant-add-overflow-checks.js ..... Succ
 [573] redundant-array-bounds-checks-addition-skip-first.js ..... Succ
 [574] redundant-array-bounds-checks-addition.js ..... Succ
@@ -610,14 +610,14 @@ Uncaught Wrong error: Should not have gotten here.)
 [602] rest-elements.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
 [603] retry-cache-later.js ..... Succ
 [604] runtime-array.js ..... Fail (Uncaught ReferenceError: createRuntimeArray is not defined)
-[605] runtime-throw-through-optimized-code.js ..... Fail (Uncaught TypeError: Callee is not a function object)
+[605] runtime-throw-through-optimized-code.js ..... Succ
 [606] scoped-arguments-array-length.js ..... Succ
 [607] scoped-then-direct-arguments-get-by-val-in-baseline.js ..... Succ
 [608] // set-constructor-adder.js // ES6 Set ..... Excluded
 [609] // set-constructor.js // ES6 for ... of ..... Excluded
 [610] // set-iterators-next.js // ES6 for ... of ..... Excluded
 [611] set-same-prototype.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
-[612] setter.js ..... Fail (Uncaught TypeError: Callee is not a function object)
+[612] setter.js ..... Succ
 [613] simple-polyvariant-call-inlining-example.js ..... Succ
 [614] simple-polyvariant-get-by-id-inlining-example.js ..... Succ
 [615] simple-polyvariant-put-by-id-inlining-example.js ..... Succ
@@ -641,7 +641,7 @@ Uncaught Wrong error: Should not have gotten here.)
 [633] sink_checkstructure.js ..... Fail (Uncaught TypeError: Callee is not a function object)
 [634] slightly-more-difficult-to-fold-reflective-arguments-access.js ..... Succ
 [635] sort-array-with-undecided.js ..... Succ
-[636] sparse-array-entry-update-144067.js ..... Fail (Uncaught TypeError: Callee is not a function object)
+[636] sparse-array-entry-update-144067.js ..... Succ
 [637] sparse-map-non-overlapping.js ..... Succ
 [638] sparse-map-non-skip-getter-overriding.js ..... Fail (Uncaught SyntaxError: Parse Error 12 line)
 [639] sparse-map-non-skip.js ..... Succ
@@ -783,11 +783,11 @@ Uncaught Wrong error: Should not have gotten here.)
 [775] // weak-set-constructor-adder.js // ES6 WeakSet ..... Excluded
 [776] // weak-set-constructor.js // ES6 for ... of ..... Excluded
 [777] weird-equality-folding-cases.js ..... Succ
-[778] weird-getter-counter.js ..... Fail (Uncaught TypeError: Callee is not a function object)
+[778] weird-getter-counter.js ..... Succ
 [779] weird-put-stack-varargs.js ..... Fail (Uncaught TypeError: cannot convert undefined into object)
 [780] weird-setter-counter-syntactic.js ..... Succ
-[781] weird-setter-counter.js ..... Fail (Uncaught TypeError: Callee is not a function object)
+[781] weird-setter-counter.js ..... Fail (Uncaught TypeError: Type error, DefineOwnProperty 11.a.ii)
 All      :  781
-Excluded :  192
-Succeed  :  430
-Failed   :  159
+Excluded :  193
+Succeed  :  455
+Failed   :  133
