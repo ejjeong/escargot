@@ -431,7 +431,7 @@ make-large-string.js
 make-rope-2.js
 make-rope-3.js
 many-sunken-locals.js
-map-constructor-adder.js
+// map-constructor-adder.js // ES6 Map
 // map-constructor.js // ES6 for ... of
 // map-iterators-next.js // ES6 for ... of
 materialize-past-butterfly-allocation.js
@@ -605,7 +605,7 @@ runtime-array.js
 runtime-throw-through-optimized-code.js
 scoped-arguments-array-length.js
 scoped-then-direct-arguments-get-by-val-in-baseline.js
-set-constructor-adder.js
+// set-constructor-adder.js // ES6 Set
 // set-constructor.js // ES6 for ... of
 // set-iterators-next.js // ES6 for ... of
 set-same-prototype.js
@@ -759,20 +759,20 @@ varargs-too-few-arguments.js
 varargs-varargs-closure-inlined-exit.js
 varargs-varargs-inlined-exit-strict-mode.js
 varargs-varargs-inlined-exit.js
-wasm-arithmetic-float32.js
-wasm-arithmetic-float64.js
-wasm-arithmetic-int32.js
-wasm-calls.js
-wasm-comma.js
-wasm-control-flow.js
-wasm-globals.js
-wasm-linear-memory.js
-wasm-locals.js
-wasm-relational.js
-wasm-type-conversion.js
-weak-map-constructor-adder.js
+// wasm-arithmetic-float32.js // web assembly
+// wasm-arithmetic-float64.js // web assembly
+// wasm-arithmetic-int32.js // web assembly
+// wasm-calls.js // web assembly
+// wasm-comma.js // web assembly
+// wasm-control-flow.js // web assembly
+// wasm-globals.js // web assembly
+// wasm-linear-memory.js // web assembly
+// wasm-locals.js // web assembly
+// wasm-relational.js // web assembly
+// wasm-type-conversion.js // web assembly
+// weak-map-constructor-adder.js // ES6 WeakMap
 // weak-map-constructor.js // ES6 for ... of
-weak-set-constructor-adder.js
+// weak-set-constructor-adder.js // ES6 WeakSet
 // weak-set-constructor.js // ES6 for ... of
 weird-equality-folding-cases.js
 weird-getter-counter.js

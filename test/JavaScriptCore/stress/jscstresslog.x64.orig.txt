@@ -232,7 +232,7 @@
 ---------> test 232  :  fold-based-on-int32-proof.js ......... Succ
 ---------> test 233  :  fold-load-varargs-arity-check-fail-barely.js ......... Succ
 ---------> test 234  :  fold-load-varargs-arity-check-fail.js ......... Succ
----------> test 235  :  fold-multi-get-by-offset-to-get-by-offset-with-watchpoint.js ......... Fail (Uncaught ReferenceError: effectful42 is not defined)
+---------> test 235  :  fold-multi-get-by-offset-to-get-by-offset-with-watchpoint.js ......... Fail (Uncaught ReferenceError: reoptimizationRetryCount is not defined)
 ---------> test 236  :  fold-multi-get-by-offset-to-get-by-offset-without-folding-the-structure-check-new.js ......... Fail (Uncaught ReferenceError: isFinalTier is not defined)
 ---------> test 237  :  fold-multi-get-by-offset-to-get-by-offset-without-folding-the-structure-check.js ......... Succ
 ---------> test 238  :  fold-multi-get-by-offset-to-get-by-offset.js ......... Fail (Uncaught ReferenceError: reoptimizationRetryCount is not defined)
@@ -295,7 +295,7 @@
 ---------> test 295  :  fuzz-bug-16399949.js ......... Succ
 ---------> test 296  :  generational-opaque-roots.js ......... Fail (Uncaught ReferenceError: Root is not defined)
 ---------> test 297  :  get-argument-by-val-in-inlined-varargs-call-out-of-bounds.js ......... Succ
----------> test 298  :  get-argument-by-val-safe-in-inlined-varargs-call-out-of-bounds.js ......... Fail (Uncaught ReferenceError: effectful42 is not defined)
+---------> test 298  :  get-argument-by-val-safe-in-inlined-varargs-call-out-of-bounds.js ......... Succ
 ---------> test 299  :  get-by-id-throw-from-getter-through-optimized-code.js ......... Fail (Uncaught TypeError: Callee is not a function object)
 ---------> test 300  :  get-by-id-throw-from-unexpected-getter-through-optimized-code-that-does-not-exit.js ......... Fail (Uncaught Error: didn't throw or threw wrong exception: TypeError: Callee is not a function object)
 ---------> test 301  :  get-by-id-throw-from-unexpected-getter-through-optimized-code.js ......... Fail (Uncaught Error: didn't throw or threw wrong exception: TypeError: Callee is not a function object)
@@ -319,8 +319,8 @@
 (EXCLUDED) test 319  :  // get-by-val-with-symbol-exit.js // ES6 Symbol
 (EXCLUDED) test 320  :  // get-by-val-with-symbol-getter.js // ES6 Symbol
 (EXCLUDED) test 321  :  // get-by-val-with-symbol.js // ES6 Symbol
----------> test 322  :  get-declared-unpassed-argument-in-direct-arguments.js ......... Fail (Uncaught ReferenceError: effectful42 is not defined)
----------> test 323  :  get-declared-unpassed-argument-in-scoped-arguments.js ......... Fail (Uncaught ReferenceError: effectful42 is not defined)
+---------> test 322  :  get-declared-unpassed-argument-in-direct-arguments.js ......... Succ
+---------> test 323  :  get-declared-unpassed-argument-in-scoped-arguments.js ......... Succ
 ---------> test 324  :  get-local-elimination.js ......... Succ
 ---------> test 325  :  get-my-argument-by-val-creates-arguments.js ......... Succ
 ---------> test 326  :  get-my-argument-by-val-for-inlined-escaped-arguments.js ......... Succ
@@ -332,8 +332,8 @@
 ---------> test 332  :  get-my-argument-by-val-wrap-around-no-warm-up.js ......... Succ
 ---------> test 333  :  get-my-argument-by-val-wrap-around.js ......... Succ
 ---------> test 334  :  get-stack-identity-due-to-sinking.js ......... Succ
----------> test 335  :  get-stack-mapping-with-dead-get-stack.js ......... Fail (Uncaught ReferenceError: effectful42 is not defined)
----------> test 336  :  get-stack-mapping.js ......... Fail (Uncaught ReferenceError: effectful42 is not defined)
+---------> test 335  :  get-stack-mapping-with-dead-get-stack.js ......... Fail (Uncaught TypeError: cannot convert undefined into object)
+---------> test 336  :  get-stack-mapping.js ......... Fail (Uncaught TypeError: cannot convert undefined into object)
 ---------> test 337  :  getter-arity.js ......... Fail (Uncaught TypeError: Callee is not a function object)
 ---------> test 338  :  getter.js ......... Fail (Uncaught TypeError: Callee is not a function object)
 ---------> test 339  :  global-environment-does-not-trap-unscopables.js ......... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (3359))
@@ -363,7 +363,7 @@
 ---------> test 363  :  inline-call-varargs-and-call.js ......... Succ
 ---------> test 364  :  inline-call-varargs.js ......... Succ
 ---------> test 365  :  inline-closure-call.js ......... Succ
----------> test 366  :  inline-llint-with-switch.js ......... Fail (Uncaught ReferenceError: effectful42 is not defined)
+---------> test 366  :  inline-llint-with-switch.js ......... Succ
 ---------> test 367  :  inline-varargs-get-arguments.js ......... Fail (Uncaught TypeError: cannot convert undefined into object)
 ---------> test 368  :  inlined-constructor-this-liveness.js ......... Succ
 ---------> test 369  :  inlined-function-this-liveness.js ......... Succ
@@ -439,7 +439,7 @@ Uncaught Wrong error: Should not have gotten here.)
 ---------> test 431  :  make-rope-2.js ......... Succ
 ---------> test 432  :  make-rope-3.js ......... Succ
 ---------> test 433  :  many-sunken-locals.js ......... Succ
----------> test 434  :  map-constructor-adder.js ......... Fail (Uncaught ReferenceError: Map is not defined)
+(EXCLUDED) test 434  :  // map-constructor-adder.js // ES6 Map
 (EXCLUDED) test 435  :  // map-constructor.js // ES6 for ... of
 (EXCLUDED) test 436  :  // map-iterators-next.js // ES6 for ... of
 ---------> test 437  :  materialize-past-butterfly-allocation.js ......... Succ
@@ -518,8 +518,8 @@ Uncaught Wrong error: Should not have gotten here.)
 ---------> test 510  :  other-is-object-or-null.js ......... Succ
 ---------> test 511  :  pathname-resolve.js ......... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
 ---------> test 512  :  phantom-arguments-set-local-then-exit-in-same-block.js ......... Succ
----------> test 513  :  phantom-direct-arguments-clobber-argument-count.js ......... Fail (Uncaught ReferenceError: effectful42 is not defined)
----------> test 514  :  phantom-direct-arguments-clobber-callee.js ......... Fail (Uncaught ReferenceError: effectful42 is not defined)
+---------> test 513  :  phantom-direct-arguments-clobber-argument-count.js ......... Succ
+---------> test 514  :  phantom-direct-arguments-clobber-callee.js ......... Succ
 ---------> test 515  :  phantom-inadequacy.js ......... Succ
 ---------> test 516  :  phantom-local-captured-but-not-flushed-to-ssa.js ......... Succ
 ---------> test 517  :  plus-boolean-exit.js ......... Succ
@@ -612,8 +612,8 @@ Uncaught Wrong error: Should not have gotten here.)
 ---------> test 604  :  runtime-array.js ......... Fail (Uncaught ReferenceError: createRuntimeArray is not defined)
 ---------> test 605  :  runtime-throw-through-optimized-code.js ......... Fail (Uncaught TypeError: Callee is not a function object)
 ---------> test 606  :  scoped-arguments-array-length.js ......... Succ
----------> test 607  :  scoped-then-direct-arguments-get-by-val-in-baseline.js ......... Fail (Uncaught ReferenceError: effectful42 is not defined)
----------> test 608  :  set-constructor-adder.js ......... Fail (Uncaught ReferenceError: Set is not defined)
+---------> test 607  :  scoped-then-direct-arguments-get-by-val-in-baseline.js ......... Succ
+(EXCLUDED) test 608  :  // set-constructor-adder.js // ES6 Set
 (EXCLUDED) test 609  :  // set-constructor.js // ES6 for ... of
 (EXCLUDED) test 610  :  // set-iterators-next.js // ES6 for ... of
 ---------> test 611  :  set-same-prototype.js ......... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
@@ -715,7 +715,7 @@ Uncaught Wrong error: Should not have gotten here.)
 (EXCLUDED) test 707  :  // try-catch-getter-as-get-by-id.js // ES6 let
 (EXCLUDED) test 708  :  // try-catch-setter-as-put-by-id.js // ES6 let
 (EXCLUDED) test 709  :  // try-catch-stub-routine-replaced.js // ES6 let
----------> test 710  :  type-of-functions-and-objects.js ......... Fail (Uncaught ReferenceError: Map is not defined)
+---------> test 710  :  type-of-functions-and-objects.js ......... Succ
 ---------> test 711  :  typed-array-byte-offset.js ......... Fail (Uncaught Error: bad result for fast typed array: undefined)
 ---------> test 712  :  typed-array-get-by-val-profiling.js ......... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
 ---------> test 713  :  typed-array-put-by-val-profiling.js ......... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
@@ -767,20 +767,20 @@ Uncaught Wrong error: Should not have gotten here.)
 ---------> test 759  :  varargs-varargs-closure-inlined-exit.js ......... Succ
 ---------> test 760  :  varargs-varargs-inlined-exit-strict-mode.js ......... Succ
 ---------> test 761  :  varargs-varargs-inlined-exit.js ......... Succ
----------> test 762  :  wasm-arithmetic-float32.js ......... Fail (Uncaught SyntaxError: Parse Error 1 line)
----------> test 763  :  wasm-arithmetic-float64.js ......... Fail (Uncaught SyntaxError: Parse Error 1 line)
----------> test 764  :  wasm-arithmetic-int32.js ......... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4881))
----------> test 765  :  wasm-calls.js ......... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4939))
----------> test 766  :  wasm-comma.js ......... Fail (Uncaught SyntaxError: Parse Error 1 line)
----------> test 767  :  wasm-control-flow.js ......... Fail (Uncaught ReferenceError: doContinue is not defined)
----------> test 768  :  wasm-globals.js ......... Fail (Uncaught SyntaxError: Parse Error 1 line)
----------> test 769  :  wasm-linear-memory.js ......... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4881))
----------> test 770  :  wasm-locals.js ......... Fail (Uncaught SyntaxError: Parse Error 1 line)
----------> test 771  :  wasm-relational.js ......... Fail (Uncaught SyntaxError: Parse Error 1 line)
----------> test 772  :  wasm-type-conversion.js ......... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4881))
----------> test 773  :  weak-map-constructor-adder.js ......... Fail (Uncaught ReferenceError: WeakMap is not defined)
+(EXCLUDED) test 762  :  // wasm-arithmetic-float32.js // web assembly
+(EXCLUDED) test 763  :  // wasm-arithmetic-float64.js // web assembly
+(EXCLUDED) test 764  :  // wasm-arithmetic-int32.js // web assembly
+(EXCLUDED) test 765  :  // wasm-calls.js // web assembly
+(EXCLUDED) test 766  :  // wasm-comma.js // web assembly
+(EXCLUDED) test 767  :  // wasm-control-flow.js // web assembly
+(EXCLUDED) test 768  :  // wasm-globals.js // web assembly
+(EXCLUDED) test 769  :  // wasm-linear-memory.js // web assembly
+(EXCLUDED) test 770  :  // wasm-locals.js // web assembly
+(EXCLUDED) test 771  :  // wasm-relational.js // web assembly
+(EXCLUDED) test 772  :  // wasm-type-conversion.js // web assembly
+(EXCLUDED) test 773  :  // weak-map-constructor-adder.js // ES6 WeakMap
 (EXCLUDED) test 774  :  // weak-map-constructor.js // ES6 for ... of
----------> test 775  :  weak-set-constructor-adder.js ......... Fail (Uncaught ReferenceError: WeakSet is not defined)
+(EXCLUDED) test 775  :  // weak-set-constructor-adder.js // ES6 WeakSet
 (EXCLUDED) test 776  :  // weak-set-constructor.js // ES6 for ... of
 ---------> test 777  :  weird-equality-folding-cases.js ......... Succ
 ---------> test 778  :  weird-getter-counter.js ......... Fail (Uncaught TypeError: Callee is not a function object)
@@ -788,6 +788,6 @@ Uncaught Wrong error: Should not have gotten here.)
 ---------> test 780  :  weird-setter-counter-syntactic.js ......... Succ
 ---------> test 781  :  weird-setter-counter.js ......... Fail (Uncaught TypeError: Callee is not a function object)
 All      :  781
-Excluded :  168
-Succeed  :  394
-Failed   :  219
+Excluded :  183
+Succeed  :  402
+Failed   :  196

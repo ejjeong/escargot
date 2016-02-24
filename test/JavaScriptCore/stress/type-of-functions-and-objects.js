@@ -69,9 +69,9 @@ function test() {
     testValue(null, "object");
     testValue(void 0, "other");
     testValue(42.5, "other");
-    testValue(Map, "function");
+    //testValue(Map, "function"); // escargot: es6 not implemented yet
     testValue(Date, "function");
-    testValue(Map.prototype, "object");
+    //testValue(Map.prototype, "object"); // escargot: es6 not implemented yet
     
     if (!errors.length)
         return;

@@ -48,6 +48,10 @@ function OSRExit() {
 
 }
 
+function effectful42() {
+    return 42;
+}
+
 /*
 
 function hasCustomProperties(o){
