@@ -392,7 +392,7 @@ inverted-additive-subsumption.js
 // is-undefined-jettison-on-masquerader.js // JSC 'makeMasquerader()'
 // is-undefined-masquerader.js // JSC 'makeMasquerader()'
 // iterator-functions.js // ES6 Symbol
-iterator-names.js
+// iterator-names.js // ES6 Symbol
 // iterator-prototype.js // ES6 Symbol
 // iterator-return-beyond-multiple-iteration-scopes.js // ES6 for ... of
 // iterators-shape.js // ES6 Symbol
@@ -437,7 +437,7 @@ many-sunken-locals.js
 materialize-past-butterfly-allocation.js
 materialize-past-put-structure.js
 math-abs-positive.js
-math-clz32-basics.js
+// math-clz32-basics.js // ES6 Math.clz32()
 math-log-basics.js
 math-log-with-constants.js
 math-pow-basics.js
@@ -455,9 +455,9 @@ max-boolean-exit.js
 misc-is-object-or-null.js
 // modify-map-during-iteration.js // ES6 for ... of
 // modify-set-during-iteration.js // ES6 for ... of
-// modules-syntax-error-with-names.js // ES6 '=>'
-// modules-syntax-error.js // ES6 '=>'
-modules-syntax.js
+// modules-syntax-error-with-names.js // ES6 module
+// modules-syntax-error.js // ES6 module
+// modules-syntax.js // ES6 module
 mul-boolean-exit.js
 multi-get-by-offset-dce.js
 multi-get-by-offset-hoist-around-structure-check.js

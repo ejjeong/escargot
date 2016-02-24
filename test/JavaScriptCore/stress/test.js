@@ -86,6 +86,8 @@ Object.defineProperty(Object.prototype, "__defineSetter__", {
     enumerable : false
 });
 
+Number.isNaN = function(arg) { return isNaN(arg); };
+
 /*
 
 function hasCustomProperties(o){
