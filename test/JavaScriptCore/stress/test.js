@@ -64,6 +64,10 @@ function reoptimizationRetryCount() {
     return 0; // escargot do not use jit or reoptimization
 }
 
+function noDFG() {
+    // escargot do not use jit or reoptimization
+}
+
 function predictInt32() {
     // escargot do not use jit or reoptimization
 }

@@ -35,7 +35,7 @@ function runTest() {
     for (var j = 0; j < 50; j++) {
         var objs = [];
 
-        let numberOfObjects = 200;
+        var numberOfObjects = 200;
         for (var k = 0; k < numberOfObjects; k++) { 
             var obj = { };
 

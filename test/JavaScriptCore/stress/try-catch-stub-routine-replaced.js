@@ -22,8 +22,8 @@ function hello() { return 20; }
 noInline(hello);
 
 function foo(o) {
-    let baz = hello();
-    let v;
+    var baz = hello();
+    var v;
     try {
         v = o.f;
         v = o.f;
@@ -38,7 +38,7 @@ noInline(foo);
 
 var objChain = {f: 40};
 var fakeOut = {x: 30, f: 100};
-for (let i = 0; i < 1000; i++)
+for (var i = 0; i < 1000; i++)
     foo(i % 2 ? objChain : fakeOut);
 
 var i;

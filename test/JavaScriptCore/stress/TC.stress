@@ -62,7 +62,7 @@ arrayify-fires-watchpoint.js
 arrayify-structure-bad-test.js
 arrayify-to-structure-contradiction.js
 // arrow-function-token-is-not-keyword.js // ES6 '=>'
-// arrowfunction-activation-sink-osrexit-default-value-tdz-error.js // ES6 'let'
+// arrowfunction-activation-sink-osrexit-default-value-tdz-error.js // ES6 '=>'
 // arrowfunction-activation-sink-osrexit-default-value.js // ES6 '=>'
 // arrowfunction-activation-sink-osrexit.js // ES6 '=>'
 // arrowfunction-activation-sink.js // ES6 '=>'
@@ -110,9 +110,9 @@ call-varargs-length-effects.js
 // call-varargs-with-different-arguments-length-after-warmup.js // ES6 spread '...'
 capture-escape-and-throw.js
 captured-arguments-variable.js
-// class-syntax-block-scoping.js // ES6 'const'
-// class-syntax-definition-semantics.js // ES6 'let'
-// class-syntax-derived-default-constructor.js // ES6 spread '...'
+// class-syntax-block-scoping.js // ES6 class
+// class-syntax-definition-semantics.js // ES6 class
+// class-syntax-derived-default-constructor.js // ES6 class
 // class-syntax-no-loop-tdz.js // ES6 class
 // class-syntax-no-tdz-in-catch.js // ES6 class
 // class-syntax-no-tdz-in-conditional.js // ES6 class
@@ -130,9 +130,9 @@ cloned-arguments-get-by-val-double-array.js
 closure-call-exit.js
 compare-eq-object-or-other-to-object.js
 compare-eq-object-to-object-or-other.js
-// compare-eq-on-null-and-undefined-non-peephole.js // ES6 'let'
-// compare-eq-on-null-and-undefined-optimized-in-constant-folding.js // ES6 'let'
-// compare-eq-on-null-and-undefined.js // ES6 'let'
+compare-eq-on-null-and-undefined-non-peephole.js
+compare-eq-on-null-and-undefined-optimized-in-constant-folding.js
+compare-eq-on-null-and-undefined.js
 compare-strict-eq-integer-to-misc.js
 // computed-accessor-parsing.js // ES6 class
 // computed-accessor.js // ES6 class
@@ -168,7 +168,7 @@ dead-uint32-to-number.js
 dead-value-with-mov-hint-in-another-block.js
 destructuring-assignment-accepts-iterables.js
 dfg-create-arguments-inline-alloc.js
-// dfg-exception-try-catch-in-constructor-with-inlined-throw.js // ES6 let
+dfg-exception-try-catch-in-constructor-with-inlined-throw.js
 dfg-put-by-val-direct-with-edge-numbers.js
 dfg-rare-data.js
 dfg-tail-calls.js
@@ -591,7 +591,7 @@ regress-132147.js
 regress-135155.js
 regress-141489.js
 regress-141883.js
-// regress-148564.js // ES6 let
+regress-148564.js
 remove-phantom-after-setlocal.js
 repeat-put-to-scope-global-with-same-value-watchpoint-invalidate.js
 repeated-arity-check-fail.js
@@ -702,11 +702,11 @@ tricky-inferred-infinite-loop-that-uses-captured-variables-and-creates-the-activ
 tricky-infinite-loop-that-uses-captured-variables-and-creates-the-activation-outside-the-loop.js
 tricky-infinite-loop-that-uses-captured-variables.js
 trivially-foldable-reflective-arguments-access.js
-// try-catch-custom-getter-as-get-by-id.js // ES6 let
-// try-catch-getter-as-get-by-id-register-restoration.js // ES6 let
-// try-catch-getter-as-get-by-id.js // ES6 let
-// try-catch-setter-as-put-by-id.js // ES6 let
-// try-catch-stub-routine-replaced.js // ES6 let
+// try-catch-custom-getter-as-get-by-id.js // JSC 'createCustomGetterObject()'
+try-catch-getter-as-get-by-id-register-restoration.js
+try-catch-getter-as-get-by-id.js
+try-catch-setter-as-put-by-id.js
+try-catch-stub-routine-replaced.js
 type-of-functions-and-objects.js
 typed-array-byte-offset.js
 typed-array-get-by-val-profiling.js

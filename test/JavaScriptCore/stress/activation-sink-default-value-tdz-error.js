@@ -18,14 +18,14 @@ noInline(shouldThrowTDZ);
 function bar(f) { f(10); }
 
 function foo(b) {
-    let result = 0;
+    var result = 0;
     var set = function (x) { result = x; }
     var cap = function() { return tdzPerpetrator; }
     if (b) {
         bar(set);
         return tdzPerpetrator;
     }
-    let tdzPerpetrator;
+    var tdzPerpetrator;
     return result;
 }
 

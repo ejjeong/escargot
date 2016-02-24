@@ -3,7 +3,7 @@ function assert(b) {
 }
 noInline(assert);
 
-let i;
+var i;
 var o1 = createCustomGetterObject();
 o1.shouldThrow = false;
 
@@ -46,7 +46,7 @@ for (i = 0; i < 1000; i++)
     foo(i);
 
 i = -1000;
-for (let j = 0; j < 1000; j++) {
+for (var j = 0; j < 1000; j++) {
     if (j > 10)
         o1.shouldThrow = true;
     foo(i);

@@ -11,7 +11,7 @@ function unreachableCodeTest() {
 }
 noInline(unreachableCodeTest);
 
-for (let i = 0; i < 1e4; ++i) {
+for (var i = 0; i < 1e4; ++i) {
     if (!unreachableCodeTest())
         throw "Failed unreachableCodeTest() with i = " + i;
 }
@@ -27,8 +27,8 @@ function inlinedComparedToUndefined(a) {
 
 // Warmup. Litter the profile with every types.
 function warmupInlineFunctions() {
-    let returnValue = 0;
-    for (let i = 0; i < 1e4; ++i) {
+    var returnValue = 0;
+    for (var i = 0; i < 1e4; ++i) {
         returnValue += inlinedCompareToNull("foo");
         returnValue += inlinedCompareToNull(null);
         returnValue += inlinedCompareToNull(Math);
@@ -65,6 +65,6 @@ function testInlineFunctions(undefinedArg, nullArg) {
 }
 noInline(testInlineFunctions);
 
-for (let i = 0; i < 1e4; ++i) {
+for (var i = 0; i < 1e4; ++i) {
     testInlineFunctions(undefined, null);
 }

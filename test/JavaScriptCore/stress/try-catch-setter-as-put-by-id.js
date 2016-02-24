@@ -5,7 +5,7 @@ function assert(b) {
 noInline(assert);
 
 
-let i;
+var i;
 var o1 = { 
     set f(v) {
         if (i === -1000)
@@ -35,8 +35,8 @@ function bar(i) {
 noInline(bar);
 
 function foo(i) {
-    let o = bar(i);
-    let v = o.x;
+    var o = bar(i);
+    var v = o.x;
     try {
         o.f = v;
     } catch(e) {
@@ -50,5 +50,5 @@ for (i = 0; i < 1000; i++)
     foo(i);
 
 i = -1000;
-for (let j = 0; j < 1000; j++)
+for (var j = 0; j < 1000; j++)
     foo(i);

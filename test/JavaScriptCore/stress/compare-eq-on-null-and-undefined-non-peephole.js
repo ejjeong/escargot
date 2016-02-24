@@ -12,7 +12,7 @@ function useForMath(undefinedArgument, nullArgument, polymorphicArgument) {
 noInline(useForMath);
 
 function testUseForMath() {
-    for (let i = 0; i < 1e4; ++i) {
+    for (var i = 0; i < 1e4; ++i) {
         var value = useForMath(undefined, null, 5);
         if (value != 8)
             throw "Failed useForMath(undefined, null, 5), value = " + value + " with i = " + i;

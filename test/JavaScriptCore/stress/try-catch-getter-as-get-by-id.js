@@ -4,7 +4,7 @@ function assert(b) {
 noInline(assert);
 
 
-let i;
+var i;
 var o1 = { 
     get f() {
         if (i === -1000)
@@ -49,5 +49,5 @@ for (i = 0; i < 1000; i++)
     foo(i);
 
 i = -1000;
-for (let j = 0; j < 1000; j++)
+for (var j = 0; j < 1000; j++)
     foo(i);

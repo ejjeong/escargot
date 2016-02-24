@@ -21,7 +21,7 @@ noInline(Foo);
 
 
 for (var i = 1; i < 1000; i++) {
-    let value = new Foo(i % 3 === 0);
+    var value = new Foo(i % 3 === 0);
     if (i % 3 === 0 && value.value !==  "Error: blah!")
         throw new Error("bad value: " + value.value);
 }

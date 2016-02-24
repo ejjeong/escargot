@@ -62,7 +62,7 @@
 [62] arrayify-structure-bad-test.js ..... Succ
 [63] arrayify-to-structure-contradiction.js ..... Succ
 [64] // arrow-function-token-is-not-keyword.js // ES6 '=>' ..... Excluded
-[65] // arrowfunction-activation-sink-osrexit-default-value-tdz-error.js // ES6 'let' ..... Excluded
+[65] // arrowfunction-activation-sink-osrexit-default-value-tdz-error.js // ES6 '=>' ..... Excluded
 [66] // arrowfunction-activation-sink-osrexit-default-value.js // ES6 '=>' ..... Excluded
 [67] // arrowfunction-activation-sink-osrexit.js // ES6 '=>' ..... Excluded
 [68] // arrowfunction-activation-sink.js // ES6 '=>' ..... Excluded
@@ -110,9 +110,9 @@
 [110] // call-varargs-with-different-arguments-length-after-warmup.js // ES6 spread '...' ..... Excluded
 [111] capture-escape-and-throw.js ..... Succ
 [112] captured-arguments-variable.js ..... Succ
-[113] // class-syntax-block-scoping.js // ES6 'const' ..... Excluded
-[114] // class-syntax-definition-semantics.js // ES6 'let' ..... Excluded
-[115] // class-syntax-derived-default-constructor.js // ES6 spread '...' ..... Excluded
+[113] // class-syntax-block-scoping.js // ES6 class ..... Excluded
+[114] // class-syntax-definition-semantics.js // ES6 class ..... Excluded
+[115] // class-syntax-derived-default-constructor.js // ES6 class ..... Excluded
 [116] // class-syntax-no-loop-tdz.js // ES6 class ..... Excluded
 [117] // class-syntax-no-tdz-in-catch.js // ES6 class ..... Excluded
 [118] // class-syntax-no-tdz-in-conditional.js // ES6 class ..... Excluded
@@ -130,9 +130,9 @@
 [130] closure-call-exit.js ..... Succ
 [131] compare-eq-object-or-other-to-object.js ..... Succ
 [132] compare-eq-object-to-object-or-other.js ..... Succ
-[133] // compare-eq-on-null-and-undefined-non-peephole.js // ES6 'let' ..... Excluded
-[134] // compare-eq-on-null-and-undefined-optimized-in-constant-folding.js // ES6 'let' ..... Excluded
-[135] // compare-eq-on-null-and-undefined.js // ES6 'let' ..... Excluded
+[133] compare-eq-on-null-and-undefined-non-peephole.js ..... Succ
+[134] compare-eq-on-null-and-undefined-optimized-in-constant-folding.js ..... Succ
+[135] compare-eq-on-null-and-undefined.js ..... Succ
 [136] compare-strict-eq-integer-to-misc.js ..... Succ
 [137] // computed-accessor-parsing.js // ES6 class ..... Excluded
 [138] // computed-accessor.js // ES6 class ..... Excluded
@@ -168,7 +168,7 @@
 [168] dead-value-with-mov-hint-in-another-block.js ..... Succ
 [169] destructuring-assignment-accepts-iterables.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
 [170] dfg-create-arguments-inline-alloc.js ..... Succ
-[171] // dfg-exception-try-catch-in-constructor-with-inlined-throw.js // ES6 let ..... Excluded
+[171] dfg-exception-try-catch-in-constructor-with-inlined-throw.js ..... Succ
 [172] dfg-put-by-val-direct-with-edge-numbers.js ..... Fail (Uncaught TypeError: cannot convert undefined into object)
 [173] dfg-rare-data.js ..... Succ
 [174] dfg-tail-calls.js ..... Fail (Uncaught Error)
@@ -599,7 +599,7 @@ Uncaught Wrong error: Should not have gotten here.)
 [591] regress-135155.js ..... Succ
 [592] regress-141489.js ..... Succ
 [593] regress-141883.js ..... Succ
-[594] // regress-148564.js // ES6 let ..... Excluded
+[594] regress-148564.js ..... Succ
 [595] remove-phantom-after-setlocal.js ..... Succ
 [596] repeat-put-to-scope-global-with-same-value-watchpoint-invalidate.js ..... Succ
 [597] repeated-arity-check-fail.js ..... Succ
@@ -710,11 +710,11 @@ Uncaught Wrong error: Should not have gotten here.)
 [702] tricky-infinite-loop-that-uses-captured-variables-and-creates-the-activation-outside-the-loop.js ..... Succ
 [703] tricky-infinite-loop-that-uses-captured-variables.js ..... Succ
 [704] trivially-foldable-reflective-arguments-access.js ..... Succ
-[705] // try-catch-custom-getter-as-get-by-id.js // ES6 let ..... Excluded
-[706] // try-catch-getter-as-get-by-id-register-restoration.js // ES6 let ..... Excluded
-[707] // try-catch-getter-as-get-by-id.js // ES6 let ..... Excluded
-[708] // try-catch-setter-as-put-by-id.js // ES6 let ..... Excluded
-[709] // try-catch-stub-routine-replaced.js // ES6 let ..... Excluded
+[705] // try-catch-custom-getter-as-get-by-id.js // JSC 'createCustomGetterObject()' ..... Excluded
+[706] try-catch-getter-as-get-by-id-register-restoration.js ..... Succ
+[707] try-catch-getter-as-get-by-id.js ..... Succ
+[708] try-catch-setter-as-put-by-id.js ..... Succ
+[709] try-catch-stub-routine-replaced.js ..... Succ
 [710] type-of-functions-and-objects.js ..... Succ
 [711] typed-array-byte-offset.js ..... Fail (Uncaught Error: bad result for fast typed array: undefined)
 [712] typed-array-get-by-val-profiling.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
@@ -788,6 +788,6 @@ Uncaught Wrong error: Should not have gotten here.)
 [780] weird-setter-counter-syntactic.js ..... Succ
 [781] weird-setter-counter.js ..... Fail (Uncaught TypeError: Type error, DefineOwnProperty 11.a.ii)
 All      :  781
-Excluded :  213
-Succeed  :  455
+Excluded :  204
+Succeed  :  464
 Failed   :  113

@@ -7,7 +7,7 @@ function compareConstants()
 }
 noInline(compareConstants);
 
-for (let i = 0; i < 1e4; ++i) {
+for (var i = 0; i < 1e4; ++i) {
     if (!compareConstants())
         throw "Failed to compareConstants().";
 }
@@ -36,7 +36,7 @@ function compareConstantsAndDynamicValues()
 }
 noInline(compareConstantsAndDynamicValues);
 
-for (let i = 1e4; i--;) {
+for (var i = 1e4; i--;) {
     if (!compareConstantsAndDynamicValues())
         throw "Failed compareConstantsAndDynamicValues()";
 }
@@ -51,7 +51,7 @@ function compareDynamicValues()
 }
 noInline(compareDynamicValues);
 
-for (let i = 0; i < 1e4; ++i) {
+for (var i = 0; i < 1e4; ++i) {
     if (!compareDynamicValues())
         throw "Failed compareDynamicValues()";
 }
@@ -59,13 +59,13 @@ for (let i = 0; i < 1e4; ++i) {
 
 function compareDynamicValueToItself()
 {
-    const value1 = opaqueNull();
-    const value2 = opaqueUndefined();
+    var value1 = opaqueNull();
+    var value2 = opaqueUndefined();
     return value1 == value1 && value2 == value2;
 }
 noInline(compareDynamicValueToItself);
 
-for (let i = 0; i < 1e4; ++i) {
+for (var i = 0; i < 1e4; ++i) {
     if (!compareDynamicValueToItself())
         throw "Failed compareDynamicValueToItself()";
 }
@@ -76,26 +76,26 @@ for (let i = 0; i < 1e4; ++i) {
 
 function arrayTesting()
 {
-    let returnValue = true;
+    var returnValue = true;
 
-    const array1 = new Array(2);
-    for (let i = 0; i < 3; ++i) {
+    var array1 = new Array(2);
+    for (var i = 0; i < 3; ++i) {
         returnValue = returnValue && (array1[i] == null);
         returnValue = returnValue && (null == array1[i]);
         returnValue = returnValue && (array1[i] == undefined);
         returnValue = returnValue && (undefined == array1[i]);
     }
 
-    const array2 = new Array(2);
-    for (let i = 0; i < 2; ++i) {
+    var array2 = new Array(2);
+    for (var i = 0; i < 2; ++i) {
         returnValue = returnValue && (array2[i] == opaqueNull());
         returnValue = returnValue && (opaqueNull() == array2[i]);
         returnValue = returnValue && (array2[i] == opaqueUndefined());
         returnValue = returnValue && (opaqueUndefined() == array2[i]);
     }
 
-    const array3 = new Array(2);
-    for (let i = 0; i < 3; ++i) {
+    var array3 = new Array(2);
+    for (var i = 0; i < 3; ++i) {
         returnValue = returnValue && (array3[i] == array3[i]);
         returnValue = returnValue && (array1[i] == array3[i]);
         returnValue = returnValue && (array3[i] == array1[i]);
@@ -108,7 +108,7 @@ function arrayTesting()
 }
 noInline(arrayTesting);
 
-for (let i = 0; i < 1e4; ++i) {
+for (var i = 0; i < 1e4; ++i) {
     if (!arrayTesting())
         throw "Failed arrayTesting()";
 }
@@ -122,13 +122,13 @@ function opaqueCompare1(a, b) {
 noInline(opaqueCompare1);
 
 function testNullComparatorUpdate() {
-    for (let i = 0; i < 1e4; ++i) {
+    for (var i = 0; i < 1e4; ++i) {
         if (!opaqueCompare1(null, null))
             throw "Failed opaqueCompare1(null, null)"
     }
 
     // Let's change types
-    for (let i = 0; i < 1e4; ++i) {
+    for (var i = 0; i < 1e4; ++i) {
         if (opaqueCompare1("foo", null))
             throw "Failed opaqueCompare1(\"foo\", null)"
     }
@@ -141,13 +141,13 @@ function opaqueCompare2(a, b) {
 noInline(opaqueCompare2);
 
 function testUndefinedComparatorUpdate() {
-    for (let i = 0; i < 1e4; ++i) {
+    for (var i = 0; i < 1e4; ++i) {
         if (!opaqueCompare2(undefined, undefined))
             throw "Failed opaqueCompare2(undefined, undefined)"
     }
 
     // Let's change types
-    for (let i = 0; i < 1e4; ++i) {
+    for (var i = 0; i < 1e4; ++i) {
         if (!opaqueCompare2("bar", "bar"))
             throw "Failed opaqueCompare2(\"bar\", \"bar\")"
     }
@@ -160,13 +160,13 @@ function opaqueCompare3(a, b) {
 noInline(opaqueCompare3);
 
 function testNullAndUndefinedComparatorUpdate() {
-    for (let i = 0; i < 1e4; ++i) {
+    for (var i = 0; i < 1e4; ++i) {
         if (!opaqueCompare3(undefined, null) || !opaqueCompare2(null, undefined))
             throw "Failed opaqueCompare2(undefined/null, undefined/null)"
     }
 
     // Let's change types
-    for (let i = 0; i < 1e4; ++i) {
+    for (var i = 0; i < 1e4; ++i) {
         if (opaqueCompare3(undefined, "bar"))
             throw "Failed opaqueCompare3(undefined, \"bar\")"
     }
