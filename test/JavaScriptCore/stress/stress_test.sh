@@ -15,11 +15,11 @@ while read t
 do
     if [[ $t == "//"* ]]
     then
-        echo "(EXCLUDED)" test $i " : " $t;
+        echo [$i] $t..... Excluded;
         let i=i+1;
         EX_TC=$(($EX_TC+1));
     else
-        echo -n "--------->" test $i " : " $t "......... ";
+        echo -n [$i] $t..... ;
         let i=i+1;
         OUTPUT_MSG=$($BIN_ID $TEST $t 2>&1)
         if [[ `echo $?` == "0" ]]
