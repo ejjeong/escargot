@@ -186,14 +186,14 @@ empty_eos_regex_split.js
 // equality-type-checking.js // JSC 'addressOf()'
 // equals-masquerader.js // JSC 'makeMasquerader()'
 es6-default-parameters.js
-// es6-for-of-loop-exception.js // ES6 const
+// es6-for-of-loop-exception.js // ES6 for ... of
 escape-object-in-diamond-then-exit.js
 eval-script-contains-null-character.js
 eval-that-is-not-eval.js
 exception-dfg-inlined-frame-not-strict-equal.js
 exception-dfg-not-strict-equal.js
 exception-dfg-operation-read-value.js
-// exception-dfg-throw-from-catch-block.js // ES6 const
+exception-dfg-throw-from-catch-block.js
 exception-effect-strcat.js
 exception-in-strcat-string-overflow.js
 exception-in-strcat.js

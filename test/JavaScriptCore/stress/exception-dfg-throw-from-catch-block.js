@@ -34,7 +34,7 @@ function foo(b) {
         assert(exception);
 }
 
-const NUM_LOOPS = 1000;
+var NUM_LOOPS = 1000;
 for (var i = 0; i < NUM_LOOPS; i++) {
     foo(i === NUM_LOOPS - 1);
 }
