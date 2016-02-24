@@ -15,20 +15,20 @@ while read t
 do
     if [[ $t == "//"* ]]
     then
-        echo [$i] $t..... Excluded;
+        echo [$i] $t ..... Excluded;
         let i=i+1;
         EX_TC=$(($EX_TC+1));
     else
-        echo -n [$i] $t..... ;
+        echo -n [$i] $t .....;
         let i=i+1;
         OUTPUT_MSG=$($BIN_ID $TEST $t 2>&1)
         if [[ `echo $?` == "0" ]]
         then
             SUCC_TC=$(($SUCC_TC+1));
-            echo "Succ"
+            echo " Succ"
         else
             FAIL_TC=$(($FAIL_TC+1));
-            echo "Fail ($OUTPUT_MSG)"
+            echo " Fail ($OUTPUT_MSG)"
         fi
     fi
     ALL_TC=$(($ALL_TC+1));
