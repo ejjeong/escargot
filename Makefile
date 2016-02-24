@@ -476,4 +476,8 @@ run-chakracore:
 	./run.sh ../../escargot $(OPT) | tee chakracorelog.gen.txt; \
 	vimdiff chakracorelog.orig.txt chakracorelog.gen.txt
 
+run-v8-test:
+	make x64.interpreter.release -j$(NPROCS); \
+	./test/v8/tool/run-tests.py --quickcheck --no-presubmit --no-variants --arch-and-mode=x64.release mjsunit | tee mjsunit.gen.txt
+
 .PHONY: clean
