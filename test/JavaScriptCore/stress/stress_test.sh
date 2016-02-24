@@ -1,5 +1,7 @@
 #!/bin/bash
 
+TEST_PREFIX=$1
+
 BIN_ID=../../../escargot
 TEST=test.js
 TC_FILE=TC.stress
@@ -13,8 +15,9 @@ FAIL_TC=0;
 #cat $TC_FILE |
 while read t
 do
-    if [[ $t == "//"* ]]
-    then
+    if [[ $t != "$TEST_PREFIX"* ]]; then
+        let i=i+1;
+    else if [[ $t == "//"* ]]; then
         echo [$i] $t ..... Excluded;
         let i=i+1;
         EX_TC=$(($EX_TC+1));
@@ -30,6 +33,7 @@ do
             FAIL_TC=$(($FAIL_TC+1));
             echo " Fail ($OUTPUT_MSG)"
         fi
+    fi
     fi
     ALL_TC=$(($ALL_TC+1));
 done < $TC_FILE;

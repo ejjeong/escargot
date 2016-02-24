@@ -52,6 +52,10 @@ function effectful42() {
     return 42;
 }
 
+function fiatInt52(arg) {
+    return arg;
+}
+
 /*
 
 function hasCustomProperties(o){

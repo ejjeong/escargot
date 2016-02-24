@@ -153,13 +153,13 @@
 [153] custom-iterators.js ..... Fail ()
 [154] dead-access-to-captured-variable-preceded-by-a-live-store-in-function-with-multiple-basic-blocks.js ..... Succ
 [155] dead-access-to-captured-variable-preceded-by-a-live-store.js ..... Succ
-[156] dead-fiat-double-to-int52-then-exit-not-int52.js ..... Fail (Uncaught ReferenceError: fiatInt52 is not defined)
-[157] dead-fiat-double-to-int52.js ..... Fail (Uncaught ReferenceError: fiatInt52 is not defined)
-[158] dead-fiat-int32-to-int52.js ..... Fail (Uncaught ReferenceError: fiatInt52 is not defined)
-[159] dead-fiat-value-to-int52-double-path.js ..... Fail (Uncaught ReferenceError: fiatInt52 is not defined)
-[160] dead-fiat-value-to-int52-then-exit-not-double.js ..... Fail (Uncaught ReferenceError: fiatInt52 is not defined)
-[161] dead-fiat-value-to-int52-then-exit-not-int52.js ..... Fail (Uncaught ReferenceError: fiatInt52 is not defined)
-[162] dead-fiat-value-to-int52.js ..... Fail (Uncaught ReferenceError: fiatInt52 is not defined)
+[156] dead-fiat-double-to-int52-then-exit-not-int52.js ..... Succ
+[157] dead-fiat-double-to-int52.js ..... Succ
+[158] dead-fiat-int32-to-int52.js ..... Succ
+[159] dead-fiat-value-to-int52-double-path.js ..... Succ
+[160] dead-fiat-value-to-int52-then-exit-not-double.js ..... Succ
+[161] dead-fiat-value-to-int52-then-exit-not-int52.js ..... Succ
+[162] dead-fiat-value-to-int52.js ..... Succ
 [163] dead-get-closure-var.js ..... Succ
 [164] dead-int32-to-double.js ..... Succ
 [165] dead-osr-entry-value.js ..... Succ
@@ -207,17 +207,17 @@
 [207] exit-from-ftl-with-arity-check-fail.js ..... Succ
 [208] exit-from-getter.js ..... Fail (Uncaught TypeError: Callee is not a function object)
 [209] exit-from-setter.js ..... Fail (Uncaught TypeError: Callee is not a function object)
-[210] fiat-double-to-int52-then-exit-not-int52.js ..... Fail (Uncaught ReferenceError: fiatInt52 is not defined)
-[211] fiat-double-to-int52-then-fail-to-fold.js ..... Fail (Uncaught ReferenceError: fiatInt52 is not defined)
-[212] fiat-double-to-int52-then-fold.js ..... Fail (Uncaught ReferenceError: fiatInt52 is not defined)
-[213] fiat-double-to-int52.js ..... Fail (Uncaught ReferenceError: fiatInt52 is not defined)
-[214] fiat-int32-to-int52.js ..... Fail (Uncaught ReferenceError: fiatInt52 is not defined)
-[215] fiat-value-to-int52-double-path.js ..... Fail (Uncaught ReferenceError: fiatInt52 is not defined)
-[216] fiat-value-to-int52-then-exit-not-double.js ..... Fail (Uncaught ReferenceError: fiatInt52 is not defined)
-[217] fiat-value-to-int52-then-exit-not-int52.js ..... Fail (Uncaught ReferenceError: fiatInt52 is not defined)
-[218] fiat-value-to-int52-then-fail-to-fold.js ..... Fail (Uncaught ReferenceError: fiatInt52 is not defined)
-[219] fiat-value-to-int52-then-fold.js ..... Fail (Uncaught ReferenceError: fiatInt52 is not defined)
-[220] fiat-value-to-int52.js ..... Fail (Uncaught ReferenceError: fiatInt52 is not defined)
+[210] fiat-double-to-int52-then-exit-not-int52.js ..... Succ
+[211] fiat-double-to-int52-then-fail-to-fold.js ..... Succ
+[212] fiat-double-to-int52-then-fold.js ..... Fail (Uncaught TypeError: Callee is not a function object)
+[213] fiat-double-to-int52.js ..... Succ
+[214] fiat-int32-to-int52.js ..... Succ
+[215] fiat-value-to-int52-double-path.js ..... Succ
+[216] fiat-value-to-int52-then-exit-not-double.js ..... Succ
+[217] fiat-value-to-int52-then-exit-not-int52.js ..... Succ
+[218] fiat-value-to-int52-then-fail-to-fold.js ..... Succ
+[219] fiat-value-to-int52-then-fold.js ..... Succ
+[220] fiat-value-to-int52.js ..... Succ
 [221] flatten-oversize-dictionary-object.js ..... Succ
 [222] float32-array-nan-inlined.js ..... Fail (Uncaught Error: bad result for 4294901760: 1, but expected: NaN; loaded 0 from the array)
 [223] float32-array-nan.js ..... Fail (Uncaught Error: bad result for 4294901760: 1, but expected: NaN; loaded 0 from the array)
@@ -789,5 +789,5 @@ Uncaught Wrong error: Should not have gotten here.)
 [781] weird-setter-counter.js ..... Fail (Uncaught TypeError: Callee is not a function object)
 All      :  781
 Excluded :  183
-Succeed  :  402
-Failed   :  196
+Succeed  :  419
+Failed   :  179
