@@ -450,7 +450,7 @@ run-test262-wearable:
 	ln -sf excludelist.subset.xml test/test262/test/config/excludelist.xml
 	cd test/test262/; \
 	python tools/packaging/test262.py --command ../../escargot $(OPT) --summary | sed 's/RELEASE_ASSERT_NOT_REACHED.*//g' | tee test262log.wearable.gen.txt; \
-	vimdiff test262log.wearable.orig.txt test262log.wearable.gen.txt
+	diff test262log.wearable.orig.txt test262log.wearable.gen.txt
 
 run-jsc-mozilla:     
 	cd test/JavaScriptCore/mozilla/; \
@@ -464,7 +464,7 @@ run-jetstream:
 run-jsc-stress:
 	cd test/JavaScriptCore/stress/; \
 		./stress_test.sh | tee jscstresslog.x64.gen.txt; \
-		vimdiff jscstresslog.x64.orig.txt jscstresslog.x64.gen.txt
+		diff jscstresslog.x64.orig.txt jscstresslog.x64.gen.txt
 
 run-spidermonkey:
 	cd test/SpiderMonkey/; \
@@ -475,7 +475,7 @@ run-spidermonkey:
 run-chakracore:
 	cd test/chakracore/; \
 	./run.sh ../../escargot $(OPT) | tee chakracorelog.gen.txt; \
-	vimdiff chakracorelog.orig.txt chakracorelog.gen.txt
+	diff chakracorelog.orig.txt chakracorelog.gen.txt
 
 run-v8-test:
 	make x64.interpreter.release -j$(NPROCS); \
