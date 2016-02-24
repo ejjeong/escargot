@@ -19,14 +19,16 @@ do
         let i=i+1;
         EX_TC=$(($EX_TC+1));
     else
-        echo "--------->" test $i " : " $t;
+        echo -n "--------->" test $i " : " $t "......... ";
         let i=i+1;
-        $BIN_ID $TEST $t
+        OUTPUT_MSG=$($BIN_ID $TEST $t 2>&1)
         if [[ `echo $?` == "0" ]]
         then
             SUCC_TC=$(($SUCC_TC+1));
+            echo "Succ"
         else
             FAIL_TC=$(($FAIL_TC+1));
+            echo "Fail ($OUTPUT_MSG)"
         fi
     fi
     ALL_TC=$(($ALL_TC+1));
