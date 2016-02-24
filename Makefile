@@ -463,7 +463,8 @@ run-jetstream:
 
 run-jsc-stress:
 	cd test/JavaScriptCore/stress/; \
-	./stress_test.sh;
+		./stress_test.sh | tee jscstresslog.x64.gen.txt; \
+		vimdiff jscstresslog.x64.orig.txt jscstresslog.x64.gen.txt
 
 run-spidermonkey:
 	cd test/SpiderMonkey/; \

@@ -14,8 +14,8 @@ add-int52-large-constant-overflow-recovery.js
 add-overflow-recovery.js
 add-overflows-after-not-equal.js
 add-small-constant-overflow-recovery.js
-arguments-bizarre-behavior.js
-arguments-bizarre-behaviour-disable-enumerability.js
+arguments-bizarre-behavior.js // var s in result[2]
+arguments-bizarre-behaviour-disable-enumerability.js// var s in result[2]
 arguments-callee-uninitialized.js
 arguments-captured.js
 arguments-copy-register-array-backing-store.js
@@ -29,22 +29,22 @@ arguments-inlined-exit-strict-mode.js
 arguments-inlined-exit.js
 arguments-interference-cfg.js
 arguments-interference.js
-arguments-iterator.js
+// arguments-iterator.js // ES6 'for ... of'
 arguments-length-always-dont-enum.js
 arith-add-with-constants.js
-arith-modulo-node-behaviors.js
+arith-modulo-node-behaviors.js// -1*0=-0 problem
 arith-mul-with-constants.js
-array-copywithin.js
+// array-copywithin.js // ES6 'for ... of'
 array-fill-put-by-val.js
 array-filter-put-by-val-direct.js
 array-find-does-not-lookup-twice.js
-array-from-abs-and-floor.js
-array-from-put-by-val-direct.js
-array-from-set-length.js
-array-from-with-accessors.js
-array-from-with-iterable.js
-array-from-with-iterator.js
-array-iterators-next-with-call.js
+// array-from-abs-and-floor.js // ES6 Array.from
+// array-from-put-by-val-direct.js // ES6 Array.from
+// array-from-set-length.js // ES6 Array.from
+// array-from-with-accessors.js // ES6 Array.from
+// array-from-with-iterable.js // ES6 Array.from
+// array-from-with-iterator.js // ES6 Array.from
+// array-iterators-next-with-call.js // ES6 'for ... of'
 array-iterators-next.js
 array-length-array-storage-plain-object.js
 array-length-plain-object.js
@@ -61,37 +61,37 @@ array-push.js
 arrayify-fires-watchpoint.js
 arrayify-structure-bad-test.js
 arrayify-to-structure-contradiction.js
-arrow-function-token-is-not-keyword.js
-arrowfunction-activation-sink-osrexit-default-value-tdz-error.js
-arrowfunction-activation-sink-osrexit-default-value.js
-arrowfunction-activation-sink-osrexit.js
-arrowfunction-activation-sink.js
-arrowfunction-bound.js
-arrowfunction-call.js
-arrowfunction-constructor.js
-arrowfunction-lexical-bind-this-1.js
-arrowfunction-lexical-bind-this-2.js
-arrowfunction-lexical-bind-this-3.js
-arrowfunction-lexical-bind-this-4.js
-arrowfunction-lexical-bind-this-5.js
-arrowfunction-lexical-bind-this-6.js
-arrowfunction-lexical-this-activation-sink-osrexit.js
-arrowfunction-lexical-this-activation-sink.js
-arrowfunction-lexical-this-sinking-no-double-allocate.js
-arrowfunction-lexical-this-sinking-osrexit.js
-arrowfunction-lexical-this-sinking-put.js
-arrowfunction-others.js
-arrowfunction-prototype.js
-arrowfunction-run-10-1.js
-arrowfunction-run-10-2.js
-arrowfunction-run-10000-1.js
-arrowfunction-run-10000-2.js
-arrowfunction-sinking-no-double-allocate.js
-arrowfunction-sinking-osrexit.js
-arrowfunction-sinking-put.js
-arrowfunction-tdz.js
-arrowfunction-tostring.js
-arrowfunction-typeof.js
+// arrow-function-token-is-not-keyword.js // ES6 '=>'
+// arrowfunction-activation-sink-osrexit-default-value-tdz-error.js // ES6 'let'
+// arrowfunction-activation-sink-osrexit-default-value.js // ES6 '=>'
+// arrowfunction-activation-sink-osrexit.js // ES6 '=>'
+// arrowfunction-activation-sink.js // ES6 '=>'
+// arrowfunction-bound.js // ES6 '=>'
+// arrowfunction-call.js // ES6 '=>'
+// arrowfunction-constructor.js // ES6 '=>'
+// arrowfunction-lexical-bind-this-1.js // ES6 '=>'
+// arrowfunction-lexical-bind-this-2.js // ES6 '=>'
+// arrowfunction-lexical-bind-this-3.js // ES6 '=>'
+// arrowfunction-lexical-bind-this-4.js // ES6 '=>'
+// arrowfunction-lexical-bind-this-5.js // ES6 '=>'
+// arrowfunction-lexical-bind-this-6.js // ES6 '=>'
+// arrowfunction-lexical-this-activation-sink-osrexit.js // ES6 '=>'
+// arrowfunction-lexical-this-activation-sink.js // ES6 '=>'
+// arrowfunction-lexical-this-sinking-no-double-allocate.js // ES6 '=>'
+// arrowfunction-lexical-this-sinking-osrexit.js // ES6 '=>'
+// arrowfunction-lexical-this-sinking-put.js // ES6 '=>'
+// arrowfunction-others.js // ES6 '=>'
+// arrowfunction-prototype.js // ES6 '=>'
+// arrowfunction-run-10-1.js // ES6 '=>'
+// arrowfunction-run-10-2.js // ES6 '=>'
+// arrowfunction-run-10000-1.js // ES6 '=>'
+// arrowfunction-run-10000-2.js // ES6 '=>'
+// arrowfunction-sinking-no-double-allocate.js // ES6 '=>'
+// arrowfunction-sinking-osrexit.js // ES6 '=>'
+// arrowfunction-sinking-put.js // ES6 '=>'
+// arrowfunction-tdz.js // ES6 '=>'
+// arrowfunction-tostring.js // ES6 '=>'
+// arrowfunction-typeof.js // ES6 '=>'
 assign-argument-in-inlined-call.js
 assign-captured-argument-in-inlined-call.js
 assignment-in-function-call-bracket-node.js
@@ -99,56 +99,56 @@ basic-eden-gc-test.js
 bit-op-value-to-int32-input-liveness.js
 branch-check-int32-on-boolean-to-number-untyped.js
 branch-check-number-on-boolean-to-number-untyped.js
-branch-may-exit-due-to-object-or-other-use-kind.js
-bug-131764.js
+// branch-may-exit-due-to-object-or-other-use-kind.js // JSC 'makeMasquerader()'
+// bug-131764.js // ES6 spread '...'
 builtin-function-is-construct-type-none.js
 cached-prototype-setter.js
 call-forward-varargs-for-inlined-escaped-arguments.js
 call-varargs-from-inlined-code-with-odd-number-of-arguments.js
 call-varargs-from-inlined-code.js
 call-varargs-length-effects.js
-call-varargs-with-different-arguments-length-after-warmup.js
+// call-varargs-with-different-arguments-length-after-warmup.js // ES6 spread '...'
 capture-escape-and-throw.js
 captured-arguments-variable.js
-class-syntax-block-scoping.js
-class-syntax-definition-semantics.js
-class-syntax-derived-default-constructor.js
-class-syntax-no-loop-tdz.js
-class-syntax-no-tdz-in-catch.js
-class-syntax-no-tdz-in-conditional.js
-class-syntax-no-tdz-in-eval.js
-class-syntax-no-tdz-in-loop-no-inline-super.js
-class-syntax-no-tdz-in-loop.js
-class-syntax-no-tdz.js
-class-syntax-tdz-in-catch.js
-class-syntax-tdz-in-conditional.js
-class-syntax-tdz-in-eval.js
-class-syntax-tdz-in-loop.js
-class-syntax-tdz.js
+// class-syntax-block-scoping.js // ES6 'const'
+// class-syntax-definition-semantics.js // ES6 'let'
+// class-syntax-derived-default-constructor.js // ES6 spread '...'
+// class-syntax-no-loop-tdz.js // ES6 class
+// class-syntax-no-tdz-in-catch.js // ES6 class
+// class-syntax-no-tdz-in-conditional.js // ES6 class
+// class-syntax-no-tdz-in-eval.js // ES6 class
+// class-syntax-no-tdz-in-loop-no-inline-super.js // ES6 class
+// class-syntax-no-tdz-in-loop.js // ES6 class
+// class-syntax-no-tdz.js // ES6 class
+// class-syntax-tdz-in-catch.js // ES6 class
+// class-syntax-tdz-in-conditional.js // ES6 class
+// class-syntax-tdz-in-eval.js // ES6 class
+// class-syntax-tdz-in-loop.js // ES6 class
+// class-syntax-tdz.js // ES6 class
 cloned-arguments-get-by-val-double-array.js
 cloned-arguments-should-visit-callee-during-gc.js
 closure-call-exit.js
 compare-eq-object-or-other-to-object.js
 compare-eq-object-to-object-or-other.js
-compare-eq-on-null-and-undefined-non-peephole.js
-compare-eq-on-null-and-undefined-optimized-in-constant-folding.js
-compare-eq-on-null-and-undefined.js
+// compare-eq-on-null-and-undefined-non-peephole.js // ES6 'let'
+// compare-eq-on-null-and-undefined-optimized-in-constant-folding.js // ES6 'let'
+// compare-eq-on-null-and-undefined.js // ES6 'let'
 compare-strict-eq-integer-to-misc.js
-computed-accessor-parsing.js
-computed-accessor.js
-const-and-with-statement.js
-const-exception-handling.js
-const-loop-semantics.js
-const-not-strict-mode.js
-const-semantics.js
-const-tdz.js
-constant-closure-var-with-dynamic-invalidation.js
+// computed-accessor-parsing.js // ES6 class
+// computed-accessor.js // ES6 class
+// const-and-with-statement.js // ES6 const
+// const-exception-handling.js // ES6 const
+// const-loop-semantics.js // ES6 const
+// const-not-strict-mode.js // ES6 const
+// const-semantics.js // ES6 const
+// const-tdz.js // ES6 const
+// constant-closure-var-with-dynamic-invalidation.js // with statement
 constant-folding-osr-exit.js
-construct-forward-varargs-for-inlined-escaped-arguments.js
-construct-varargs-inline-smaller-Foo.js
-construct-varargs-inline.js
-construct-varargs-no-inline.js
-constructor-with-return.js
+// construct-forward-varargs-for-inlined-escaped-arguments.js // ES6 spread '...'
+// construct-varargs-inline-smaller-Foo.js // ES6 spread '...'
+// construct-varargs-inline.js // ES6 spread '...'
+// construct-varargs-no-inline.js // ES6 spread '...'
+// constructor-with-return.js // ES6 Symbol
 create-this-with-callee-variants.js
 custom-iterators.js
 dead-access-to-captured-variable-preceded-by-a-live-store-in-function-with-multiple-basic-blocks.js
@@ -168,32 +168,32 @@ dead-uint32-to-number.js
 dead-value-with-mov-hint-in-another-block.js
 destructuring-assignment-accepts-iterables.js
 dfg-create-arguments-inline-alloc.js
-dfg-exception-try-catch-in-constructor-with-inlined-throw.js
+// dfg-exception-try-catch-in-constructor-with-inlined-throw.js // ES6 let
 dfg-put-by-val-direct-with-edge-numbers.js
 dfg-rare-data.js
 dfg-tail-calls.js
-dfg-to-primitive-pass-symbol.js
+// dfg-to-primitive-pass-symbol.js // ES6 Symbol
 disable-function-dot-arguments.js
 double-as-int32.js
 double-rep-with-non-cell.js
 double-rep-with-null.js
 double-rep-with-undefined.js
-duplicate-computed-accessors.js
+// duplicate-computed-accessors.js // ES6 class
 elidable-new-object-roflcopter-then-exit.js
 elide-new-object-dag-then-exit.js
 empty-function.js
 empty_eos_regex_split.js
 equality-type-checking.js
-equals-masquerader.js
+// equals-masquerader.js // JSC 'makeMasquerader()'
 es6-default-parameters.js
-es6-for-of-loop-exception.js
+// es6-for-of-loop-exception.js // ES6 const
 escape-object-in-diamond-then-exit.js
 eval-script-contains-null-character.js
 eval-that-is-not-eval.js
 exception-dfg-inlined-frame-not-strict-equal.js
 exception-dfg-not-strict-equal.js
 exception-dfg-operation-read-value.js
-exception-dfg-throw-from-catch-block.js
+// exception-dfg-throw-from-catch-block.js // ES6 const
 exception-effect-strcat.js
 exception-in-strcat-string-overflow.js
 exception-in-strcat.js
@@ -301,49 +301,49 @@ get-by-id-throw-from-unexpected-getter-through-optimized-code-that-does-not-exit
 get-by-id-throw-from-unexpected-getter-through-optimized-code.js
 get-by-id-untyped.js
 get-by-val-double-predicted-int.js
-get-by-val-on-undecided-array-type.js
-get-by-val-on-undecided-sane-chain-1.js
-get-by-val-on-undecided-sane-chain-2.js
-get-by-val-on-undecided-sane-chain-3.js
-get-by-val-on-undecided-sane-chain-4.js
-get-by-val-on-undecided-sane-chain-5.js
-get-by-val-on-undecided-sane-chain-6.js
-get-by-val-on-undecided-trivial.js
+// get-by-val-on-undecided-array-type.js // ES6 const
+// get-by-val-on-undecided-sane-chain-1.js // ES6 const
+// get-by-val-on-undecided-sane-chain-2.js // ES6 const
+// get-by-val-on-undecided-sane-chain-3.js // ES6 const
+// get-by-val-on-undecided-sane-chain-4.js // ES6 const
+// get-by-val-on-undecided-sane-chain-5.js // ES6 const
+// get-by-val-on-undecided-sane-chain-6.js // ES6 const
+// get-by-val-on-undecided-trivial.js // ES6 const
 get-by-val-out-of-bounds-basics.js
 get-by-val-with-string-constructor.js
 get-by-val-with-string-exit.js
 get-by-val-with-string-generated.js
 get-by-val-with-string-getter.js
 get-by-val-with-string.js
-get-by-val-with-symbol-constructor.js
-get-by-val-with-symbol-exit.js
-get-by-val-with-symbol-getter.js
-get-by-val-with-symbol.js
+// get-by-val-with-symbol-constructor.js // ES6 Symbol
+// get-by-val-with-symbol-exit.js // ES6 Symbol
+// get-by-val-with-symbol-getter.js // ES6 Symbol
+// get-by-val-with-symbol.js // ES6 Symbol
 get-declared-unpassed-argument-in-direct-arguments.js
 get-declared-unpassed-argument-in-scoped-arguments.js
-get-local-elimination.js
-get-my-argument-by-val-creates-arguments.js
-get-my-argument-by-val-for-inlined-escaped-arguments.js
-get-my-argument-by-val-inlined-no-formal-parameters.js
-get-my-argument-by-val-out-of-bounds-no-warm-up.js
-get-my-argument-by-val-out-of-bounds.js
-get-my-argument-by-val-safe-out-of-bounds.js
-get-my-argument-by-val-safe-wrap-around.js
-get-my-argument-by-val-wrap-around-no-warm-up.js
-get-my-argument-by-val-wrap-around.js
-get-stack-identity-due-to-sinking.js
+ get-local-elimination.js
+ get-my-argument-by-val-creates-arguments.js
+ get-my-argument-by-val-for-inlined-escaped-arguments.js
+ get-my-argument-by-val-inlined-no-formal-parameters.js
+ get-my-argument-by-val-out-of-bounds-no-warm-up.js
+ get-my-argument-by-val-out-of-bounds.js
+ get-my-argument-by-val-safe-out-of-bounds.js
+ get-my-argument-by-val-safe-wrap-around.js
+ get-my-argument-by-val-wrap-around-no-warm-up.js
+ get-my-argument-by-val-wrap-around.js
+ get-stack-identity-due-to-sinking.js
 get-stack-mapping-with-dead-get-stack.js
 get-stack-mapping.js
 getter-arity.js
 getter.js
 global-environment-does-not-trap-unscopables.js
-global-lexical-let-no-rhs.js
-global-lexical-redeclare-variable.js
-global-lexical-redefine-const.js
-global-lexical-var-injection.js
-global-lexical-variable-tdz.js
-global-lexical-variable-unresolved-property.js
-global-lexical-variable-with-statement.js
+// global-lexical-let-no-rhs.js // ES6 let
+// global-lexical-redeclare-variable.js // ES6 let
+// global-lexical-redefine-const.js // ES6 const
+// global-lexical-var-injection.js // ES6 let
+// global-lexical-variable-tdz.js // ES6 let or const
+// global-lexical-variable-unresolved-property.js // ES6 let or const
+// global-lexical-variable-with-statement.js // ES6 let
 goofy-function-reentry-incorrect-inference.js
 has-custom-properties.js
 heap-allocator-allocates-incorrect-size-for-activation.js
@@ -358,7 +358,7 @@ infinite-loop-that-uses-captured-variables-but-they-do-not-escape.js
 infinite-loop-that-uses-captured-variables-with-osr-entry.js
 infinite-loop-that-uses-captured-variables.js
 initialize_functions_after_arguments.js
-injected-numeric-setter-on-prototype.js
+// injected-numeric-setter-on-prototype.js // ES6 Class
 inline-call-that-doesnt-use-all-args.js
 inline-call-varargs-and-call.js
 inline-call-varargs.js
@@ -388,26 +388,26 @@ int52-variable.js
 int8-repeat-out-of-bounds.js
 invalidation-point.js
 inverted-additive-subsumption.js
-is-undefined-exit-on-masquerader.js
-is-undefined-jettison-on-masquerader.js
-is-undefined-masquerader.js
-iterator-functions.js
+// is-undefined-exit-on-masquerader.js // JSC 'makeMasquerader()'
+// is-undefined-jettison-on-masquerader.js // JSC 'makeMasquerader()'
+// is-undefined-masquerader.js // JSC 'makeMasquerader()'
+// iterator-functions.js // ES6 Symbol
 iterator-names.js
-iterator-prototype.js
-iterator-return-beyond-multiple-iteration-scopes.js
-iterators-shape.js
+// iterator-prototype.js // ES6 Symbol
+// iterator-return-beyond-multiple-iteration-scopes.js // ES6 for ... of
+// iterators-shape.js // ES6 Symbol
 jit-cache-poly-replace-then-cache-get-and-fold-then-invalidate.js
 jit-cache-replace-then-cache-get-and-fold-then-invalidate.js
 jit-put-to-scope-global-cache-watchpoint-invalidate.js
 large-regexp.js
-lexical-let-and-with-statement.js
-lexical-let-exception-handling.js
-lexical-let-global-not-captured-variables.js
-lexical-let-loop-semantics.js
-lexical-let-not-strict-mode.js
-lexical-let-semantics.js
-lexical-let-tdz.js
-lexical-scoping-break-continue.js
+// lexical-let-and-with-statement.js // ES6 let
+// lexical-let-exception-handling.js // ES6 let
+// lexical-let-global-not-captured-variables.js // ES6 let
+// lexical-let-loop-semantics.js // ES6 let
+// lexical-let-not-strict-mode.js // ES6 let
+// lexical-let-semantics.js // ES6 let
+// lexical-let-tdz.js // ES6 let
+// lexical-scoping-break-continue.js // ES6 let
 licm-no-pre-header.js
 licm-pre-header-cannot-exit.js
 list.js
@@ -422,7 +422,7 @@ load-varargs-then-inlined-call-and-exit.js
 load-varargs-then-inlined-call-exit-in-foo.js
 load-varargs-then-inlined-call-inlined.js
 load-varargs-then-inlined-call.js
-logical-not-masquerades.js
+// logical-not-masquerades.js // JSC 'makeMasquerader()'
 make-dictionary-repatch.js
 make-large-string-jit-strcat.js
 make-large-string-jit.js
@@ -432,8 +432,8 @@ make-rope-2.js
 make-rope-3.js
 many-sunken-locals.js
 map-constructor-adder.js
-map-constructor.js
-map-iterators-next.js
+// map-constructor.js // ES6 for ... of
+// map-iterators-next.js // ES6 for ... of
 materialize-past-butterfly-allocation.js
 materialize-past-put-structure.js
 math-abs-positive.js
@@ -453,10 +453,10 @@ math-sqrt-basics-disable-architecture-specific-optimizations.js
 math-sqrt-basics.js
 max-boolean-exit.js
 misc-is-object-or-null.js
-modify-map-during-iteration.js
-modify-set-during-iteration.js
-modules-syntax-error-with-names.js
-modules-syntax-error.js
+// modify-map-during-iteration.js // ES6 for ... of
+// modify-set-during-iteration.js // ES6 for ... of
+// modules-syntax-error-with-names.js // ES6 '=>'
+// modules-syntax-error.js // ES6 '=>'
 modules-syntax.js
 mul-boolean-exit.js
 multi-get-by-offset-dce.js
@@ -479,31 +479,31 @@ new-double-array-with-size.js
 new-function-expression-has-structures.js
 new-int32-array-with-size.js
 new-largeish-contiguous-array-with-size.js
-new-target.js
+// new-target.js // ES6 new.target
 new-undecided-array-with-size.js
 no-abc-skippy-loop.js
 no-abc-skippy-paired-loop.js
 non-constructors.js
 not-cell-use.js
-numeric-setter-on-prototype-non-blank-array.js
-numeric-setter-on-prototype.js
-numeric-setter-on-self.js
+// numeric-setter-on-prototype-non-blank-array.js // ES6 Class
+// numeric-setter-on-prototype.js // ES6 Class
+// numeric-setter-on-self.js // ES6 Class
 object-allocation-sinking-with-uninitialized-property-on-one-path.js
 object-assign-enumerable.js
-object-assign-order.js
+// object-assign-order.js // ES6 Symbol
 object-escapes-in-loop.js
-object-freeze-accept-non-object.js
-object-get-own-property-descriptor-perform-to-object.js
-object-get-own-property-names-perform-to-object.js
-object-get-own-property-symbols-perform-to-object.js
+// object-freeze-accept-non-object.js // ES6 Symbol
+// object-get-own-property-descriptor-perform-to-object.js // ES6 for ... of
+// object-get-own-property-names-perform-to-object.js // ES6 for ... of
+// object-get-own-property-symbols-perform-to-object.js // ES6 for ... of
 object-get-own-property-symbols.js
-object-get-prototype-of-perform-to-object.js
-object-is-extensible-accept-non-object.js
-object-is-frozen-accept-non-object.js
-object-is-sealed-accept-non-object.js
-object-keys-perform-to-object.js
-object-prevent-extensions-accept-non-object.js
-object-seal-accept-non-object.js
+// object-get-prototype-of-perform-to-object.js // ES6 for ... of
+// object-is-extensible-accept-non-object.js // ES6 for ... of
+// object-is-frozen-accept-non-object.js // ES6 for ... of
+// object-is-sealed-accept-non-object.js // ES6 for ... of
+// object-keys-perform-to-object.js // ES6 for ... of
+// object-prevent-extensions-accept-non-object.js // ES6 for ... of
+// object-seal-accept-non-object.js // ES6 for ... of
 obviously-elidable-new-object-then-exit.js
 op-push-name-scope-crashes-profiler.js
 operation-get-by-val-default-should-not-called-for-already-optimized-site.js
@@ -544,8 +544,8 @@ prop-type-struct-then-object-opt-fold.js
 prop-type-struct-then-object-opt-multi.js
 prop-type-struct-then-object-opt.js
 prop-type-struct-then-object.js
-prop-type-symbol-then-object.js
-prop-type-symbol-then-string.js
+// prop-type-symbol-then-object.js // ES6 Symbol
+// prop-type-symbol-then-string.js // ES6 Symbol
 property-name-enumerator-should-not-look-into-indexed-values-when-it-is-a-dictionary.js
 proto-setter.js
 prototype-getter.js
@@ -562,10 +562,10 @@ put-by-val-out-of-bounds-basics.js
 put-by-val-with-string-break.js
 put-by-val-with-string-generated.js
 put-by-val-with-string-generic.js
-put-by-val-with-symbol-break.js
-put-by-val-with-symbol-generic.js
+// put-by-val-with-symbol-break.js // ES6 Symbol
+// put-by-val-with-symbol-generic.js // ES6 Symbol
 put-local-conservative.js
-raise-error-in-iterator-close.js
+// raise-error-in-iterator-close.js // ES6 for ... of
 real-forward-varargs-for-inlined-escaped-arguments.js
 recurse-infinitely-on-getter.js
 recursive_property_redefine_during_inline_caching.js
@@ -591,7 +591,7 @@ regress-132147.js
 regress-135155.js
 regress-141489.js
 regress-141883.js
-regress-148564.js
+// regress-148564.js // ES6 let
 remove-phantom-after-setlocal.js
 repeat-put-to-scope-global-with-same-value-watchpoint-invalidate.js
 repeated-arity-check-fail.js
@@ -606,8 +606,8 @@ runtime-throw-through-optimized-code.js
 scoped-arguments-array-length.js
 scoped-then-direct-arguments-get-by-val-in-baseline.js
 set-constructor-adder.js
-set-constructor.js
-set-iterators-next.js
+// set-constructor.js // ES6 for ... of
+// set-iterators-next.js // ES6 for ... of
 set-same-prototype.js
 setter.js
 simple-polyvariant-call-inlining-example.js
@@ -645,25 +645,25 @@ static-getter-descriptors.js
 static-getter-enumeration.js
 static-getter-get.js
 static-getter-in-names.js
-static-getter-names.js
+// static-getter-names.js // ES6 for ... of
 static-getter-put.js
 strict-to-this-int.js
-string-from-code-point.js
+// string-from-code-point.js // ES6 for ... of
 string-ident-to-not-string-var-equality.js
 string-iterators.js
 string-out-of-bounds-negative-proto-value.js
 string-raw.js
 sub-overflows-after-not-equal.js
-super-call-does-not-look-up-constructor.js
+// super-call-does-not-look-up-constructor.js // ES6 Class
 switch-typeof-indirect.js
 switch-typeof-slightly-indirect.js
 switch-typeof.js
-symbol-and-string-constructor.js
-symbol-define-property.js
-symbol-equality.js
-symbol-registry.js
-symbol-seal-and-freeze.js
-symbol-with-json.js
+// symbol-and-string-constructor.js // ES6 Symbol
+// symbol-define-property.js // ES6 Symbol
+// symbol-equality.js // ES6 Symbol
+// symbol-registry.js // ES6 Symbol
+// symbol-seal-and-freeze.js // ES6 Symbol
+// symbol-with-json.js // ES6 Symbol
 tagged-templates-identity.js
 tagged-templates-raw-strings.js
 tagged-templates-syntax.js
@@ -702,11 +702,11 @@ tricky-inferred-infinite-loop-that-uses-captured-variables-and-creates-the-activ
 tricky-infinite-loop-that-uses-captured-variables-and-creates-the-activation-outside-the-loop.js
 tricky-infinite-loop-that-uses-captured-variables.js
 trivially-foldable-reflective-arguments-access.js
-try-catch-custom-getter-as-get-by-id.js
-try-catch-getter-as-get-by-id-register-restoration.js
-try-catch-getter-as-get-by-id.js
-try-catch-setter-as-put-by-id.js
-try-catch-stub-routine-replaced.js
+// try-catch-custom-getter-as-get-by-id.js // ES6 let
+// try-catch-getter-as-get-by-id-register-restoration.js // ES6 let
+// try-catch-getter-as-get-by-id.js // ES6 let
+// try-catch-setter-as-put-by-id.js // ES6 let
+// try-catch-stub-routine-replaced.js // ES6 let
 type-of-functions-and-objects.js
 typed-array-byte-offset.js
 typed-array-get-by-val-profiling.js
@@ -731,7 +731,7 @@ uint32-to-number-fold-constant-with-do-overflow.js
 uint32array-unsigned-load.js
 undefined-access-dictionary-then-proto-change.js
 undefined-access-then-proto-change.js
-unscopables.js
+// unscopables.js // with statement
 untyped-equality.js
 untyped-less-than.js
 use-arguments-as-object-pointer.js
@@ -744,7 +744,7 @@ v8-richards-strict.js
 v8-splay-strict.js
 value-to-int32-undefined-constant.js
 value-to-int32-undefined.js
-values-unscopables.js
+// values-unscopables.js // with statement
 varargs-closure-inlined-exit-strict-mode.js
 varargs-closure-inlined-exit.js
 varargs-exit.js
@@ -771,9 +771,9 @@ wasm-locals.js
 wasm-relational.js
 wasm-type-conversion.js
 weak-map-constructor-adder.js
-weak-map-constructor.js
+// weak-map-constructor.js // ES6 for ... of
 weak-set-constructor-adder.js
-weak-set-constructor.js
+// weak-set-constructor.js // ES6 for ... of
 weird-equality-folding-cases.js
 weird-getter-counter.js
 weird-put-stack-varargs.js
