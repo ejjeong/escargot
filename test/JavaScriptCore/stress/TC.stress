@@ -574,18 +574,18 @@ redundant-array-bounds-checks-addition-skip-first.js
 redundant-array-bounds-checks-addition.js
 redundant-array-bounds-checks-unchecked-addition.js
 redundant-array-bounds-checks.js
-reflect-apply.js
-reflect-define-property.js
-reflect-delete-property.js
-reflect-enumerate.js
-reflect-get-own-property.js
-reflect-get-prototype-of.js
-reflect-get.js
-reflect-has.js
-reflect-is-extensible.js
-reflect-own-keys.js
-reflect-prevent-extensions.js
-reflect-set-prototype-of.js
+// reflect-apply.js // ES6 Reflect
+// reflect-define-property.js // ES6 Reflect
+// reflect-delete-property.js // ES6 Reflect
+// reflect-enumerate.js // ES6 Reflect
+// reflect-get-own-property.js // ES6 Reflect
+// reflect-get-prototype-of.js // ES6 Reflect
+// reflect-get.js // ES6 Reflect
+// reflect-has.js // ES6 Reflect
+// reflect-is-extensible.js // ES6 Reflect
+// reflect-own-keys.js // ES6 Reflect
+// reflect-prevent-extensions.js // ES6 Reflect
+// reflect-set-prototype-of.js // ES6 Reflect
 regexp-matches-array.js
 regress-132147.js
 regress-135155.js

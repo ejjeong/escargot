@@ -582,18 +582,18 @@ Uncaught Wrong error: Should not have gotten here.)
 [574] redundant-array-bounds-checks-addition.js ..... Succ
 [575] redundant-array-bounds-checks-unchecked-addition.js ..... Succ
 [576] redundant-array-bounds-checks.js ..... Succ
-[577] reflect-apply.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4881))
-[578] reflect-define-property.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4881))
-[579] reflect-delete-property.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4881))
-[580] reflect-enumerate.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4881))
-[581] reflect-get-own-property.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4678))
-[582] reflect-get-prototype-of.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4881))
-[583] reflect-get.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4881))
-[584] reflect-has.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4881))
-[585] reflect-is-extensible.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4881))
-[586] reflect-own-keys.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4881))
-[587] reflect-prevent-extensions.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4881))
-[588] reflect-set-prototype-of.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4881))
+[577] // reflect-apply.js // ES6 Reflect ..... Excluded
+[578] // reflect-define-property.js // ES6 Reflect ..... Excluded
+[579] // reflect-delete-property.js // ES6 Reflect ..... Excluded
+[580] // reflect-enumerate.js // ES6 Reflect ..... Excluded
+[581] // reflect-get-own-property.js // ES6 Reflect ..... Excluded
+[582] // reflect-get-prototype-of.js // ES6 Reflect ..... Excluded
+[583] // reflect-get.js // ES6 Reflect ..... Excluded
+[584] // reflect-has.js // ES6 Reflect ..... Excluded
+[585] // reflect-is-extensible.js // ES6 Reflect ..... Excluded
+[586] // reflect-own-keys.js // ES6 Reflect ..... Excluded
+[587] // reflect-prevent-extensions.js // ES6 Reflect ..... Excluded
+[588] // reflect-set-prototype-of.js // ES6 Reflect ..... Excluded
 [589] regexp-matches-array.js ..... Succ
 [590] regress-132147.js ..... Succ
 [591] regress-135155.js ..... Succ
@@ -788,6 +788,6 @@ Uncaught Wrong error: Should not have gotten here.)
 [780] weird-setter-counter-syntactic.js ..... Succ
 [781] weird-setter-counter.js ..... Fail (Uncaught TypeError: Type error, DefineOwnProperty 11.a.ii)
 All      :  781
-Excluded :  201
+Excluded :  213
 Succeed  :  455
-Failed   :  125
+Failed   :  113
