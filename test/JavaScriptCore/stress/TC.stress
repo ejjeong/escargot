@@ -49,7 +49,7 @@ array-iterators-next.js
 array-length-array-storage-plain-object.js
 array-length-plain-object.js
 array-map-put-by-val-direct.js
-array-message-passing.js
+// array-message-passing.js // ES6 DataView
 array-pop-contiguous.js
 array-pop-double-hole.js
 array-pop-double.js
@@ -183,7 +183,7 @@ elidable-new-object-roflcopter-then-exit.js
 elide-new-object-dag-then-exit.js
 empty-function.js
 empty_eos_regex_split.js
-equality-type-checking.js
+// equality-type-checking.js // JSC 'addressOf()'
 // equals-masquerader.js // JSC 'makeMasquerader()'
 es6-default-parameters.js
 // es6-for-of-loop-exception.js // ES6 const
@@ -253,8 +253,8 @@ for-in-delete-during-iteration.js
 for-in-modify-int-loop-var.js
 for-in-modify-string-loop-var.js
 for-in-prototype.js
-for-in-proxy-target-changed-structure.js
-for-in-proxy.js
+// for-in-proxy-target-changed-structure.js // ES6 Proxy
+// for-in-proxy.js // ES6 Proxy
 for-in-shadow-prototype-property.js
 for-in-string.js
 for-in-tests.js
@@ -276,9 +276,9 @@ ftl-gettypedarrayoffset-wasteful.js
 ftl-in-overflow.js
 ftl-library-exception.js
 ftl-library-inline-gettimezoneoffset.js
-ftl-library-inlining-exceptions-dataview.js
+// ftl-library-inlining-exceptions-dataview.js // ES6 DataView
 ftl-library-inlining-exceptions.js
-ftl-library-inlining-loops.js
+// ftl-library-inlining-loops.js // ES6 DataView
 ftl-library-inlining-random.js
 ftl-library-substring.js
 ftl-putbyid.js
@@ -345,10 +345,10 @@ global-environment-does-not-trap-unscopables.js
 // global-lexical-variable-unresolved-property.js // ES6 let or const
 // global-lexical-variable-with-statement.js // ES6 let
 goofy-function-reentry-incorrect-inference.js
-has-custom-properties.js
+// has-custom-properties.js // JSC 'hasCustomProperties()'
 heap-allocator-allocates-incorrect-size-for-activation.js
 ic-throw-through-optimized-code.js
-impure-get-own-property-slot-inline-cache.js
+// impure-get-own-property-slot-inline-cache.js // JSC ImpureGetter
 infer-constant-global-property.js
 infer-constant-property.js
 infer-uninitialized-closure-var.js
@@ -549,7 +549,7 @@ prop-type-struct-then-object.js
 property-name-enumerator-should-not-look-into-indexed-values-when-it-is-a-dictionary.js
 proto-setter.js
 prototype-getter.js
-proxy-inline-cache.js
+// proxy-inline-cache.js // ES6 Proxy
 prune-multi-put-by-offset-replace-or-transition-variant.js
 put-by-id-build-list-order-recurse.js
 put-by-id-direct-should-be-done-for-non-index-property.js

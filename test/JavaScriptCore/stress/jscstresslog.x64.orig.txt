@@ -49,7 +49,7 @@
 [49] array-length-array-storage-plain-object.js ..... Succ
 [50] array-length-plain-object.js ..... Succ
 [51] array-map-put-by-val-direct.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4678))
-[52] array-message-passing.js ..... Fail (Uncaught ReferenceError: DataView is not defined)
+[52] // array-message-passing.js // ES6 DataView ..... Excluded
 [53] array-pop-contiguous.js ..... Succ
 [54] array-pop-double-hole.js ..... Succ
 [55] array-pop-double.js ..... Succ
@@ -183,7 +183,7 @@
 [183] elide-new-object-dag-then-exit.js ..... Succ
 [184] empty-function.js ..... Succ
 [185] empty_eos_regex_split.js ..... Fail (Uncaught Error: 2 = a,)
-[186] equality-type-checking.js ..... Fail (Uncaught ReferenceError: addressOf is not defined)
+[186] // equality-type-checking.js // JSC 'addressOf()' ..... Excluded
 [187] // equals-masquerader.js // JSC 'makeMasquerader()' ..... Excluded
 [188] es6-default-parameters.js ..... Fail (Uncaught SyntaxError: Parse Error 89 line)
 [189] // es6-for-of-loop-exception.js // ES6 const ..... Excluded
@@ -222,7 +222,7 @@
 [222] float32-array-nan-inlined.js ..... Fail (Uncaught Error: bad result for 4294901760: 1, but expected: NaN; loaded 0 from the array)
 [223] float32-array-nan.js ..... Fail (Uncaught Error: bad result for 4294901760: 1, but expected: NaN; loaded 0 from the array)
 [224] float32-array-out-of-bounds.js ..... Succ
-[225] float32-repeat-out-of-bounds.js ..... Fail (Uncaught ReferenceError: reoptimizationRetryCount is not defined)
+[225] float32-repeat-out-of-bounds.js ..... Succ
 [226] float32array-out-of-bounds.js ..... Fail (Uncaught Error: bad result: undefined)
 [227] float64-array-nan-inlined.js ..... Fail (Uncaught Error: bad result for 0, 4294901760: 1, but expected: NaN; loaded 0 from the array)
 [228] float64-array-nan.js ..... Fail (Uncaught Error: bad result for 0, 4294901760: 1, but expected: NaN; loaded 0 from the array)
@@ -232,15 +232,15 @@
 [232] fold-based-on-int32-proof.js ..... Succ
 [233] fold-load-varargs-arity-check-fail-barely.js ..... Succ
 [234] fold-load-varargs-arity-check-fail.js ..... Succ
-[235] fold-multi-get-by-offset-to-get-by-offset-with-watchpoint.js ..... Fail (Uncaught ReferenceError: reoptimizationRetryCount is not defined)
-[236] fold-multi-get-by-offset-to-get-by-offset-without-folding-the-structure-check-new.js ..... Fail (Uncaught ReferenceError: isFinalTier is not defined)
+[235] fold-multi-get-by-offset-to-get-by-offset-with-watchpoint.js ..... Succ
+[236] fold-multi-get-by-offset-to-get-by-offset-without-folding-the-structure-check-new.js ..... Succ
 [237] fold-multi-get-by-offset-to-get-by-offset-without-folding-the-structure-check.js ..... Succ
-[238] fold-multi-get-by-offset-to-get-by-offset.js ..... Fail (Uncaught ReferenceError: reoptimizationRetryCount is not defined)
+[238] fold-multi-get-by-offset-to-get-by-offset.js ..... Succ
 [239] fold-multi-put-by-offset-to-put-by-offset-without-folding-the-structure-check.js ..... Succ
 [240] fold-multi-put-by-offset-to-put-by-offset.js ..... Succ
 [241] fold-profiled-call-to-call.js ..... Succ
-[242] fold-to-double-constant-then-exit.js ..... Fail (Uncaught ReferenceError: isFinalTier is not defined)
-[243] fold-to-int52-constant-then-exit.js ..... Fail (Uncaught ReferenceError: isFinalTier is not defined)
+[242] fold-to-double-constant-then-exit.js ..... Succ
+[243] fold-to-int52-constant-then-exit.js ..... Succ
 [244] fold-to-primitive-in-cfa.js ..... Succ
 [245] fold-to-primitive-to-identity-in-cfa.js ..... Succ
 [246] fold-typed-array-properties.js ..... Fail (Uncaught Error: bad offset (start): undefined)
@@ -253,8 +253,8 @@
 [253] for-in-modify-int-loop-var.js ..... Succ
 [254] for-in-modify-string-loop-var.js ..... Succ
 [255] for-in-prototype.js ..... Succ
-[256] for-in-proxy-target-changed-structure.js ..... Fail (Uncaught ReferenceError: createProxy is not defined)
-[257] for-in-proxy.js ..... Fail (Uncaught ReferenceError: createProxy is not defined)
+[256] // for-in-proxy-target-changed-structure.js // ES6 Proxy ..... Excluded
+[257] // for-in-proxy.js // ES6 Proxy ..... Excluded
 [258] for-in-shadow-prototype-property.js ..... Succ
 [259] for-in-string.js ..... Succ
 [260] for-in-tests.js ..... Fail (Uncaught Error: bad result)
@@ -276,9 +276,9 @@
 [276] ftl-in-overflow.js ..... Succ
 [277] ftl-library-exception.js ..... Fail (Uncaught bad result: false)
 [278] ftl-library-inline-gettimezoneoffset.js ..... Succ
-[279] ftl-library-inlining-exceptions-dataview.js ..... Fail (Uncaught ReferenceError: DataView is not defined)
+[279] // ftl-library-inlining-exceptions-dataview.js // ES6 DataView ..... Excluded
 [280] ftl-library-inlining-exceptions.js ..... Fail (Uncaught bad result: false)
-[281] ftl-library-inlining-loops.js ..... Fail (Uncaught ReferenceError: DataView is not defined)
+[281] // ftl-library-inlining-loops.js // ES6 DataView ..... Excluded
 [282] ftl-library-inlining-random.js ..... Succ
 [283] ftl-library-substring.js ..... Succ
 [284] ftl-putbyid.js ..... Fail (Uncaught TypeError: Callee is not a function object)
@@ -300,7 +300,7 @@
 [300] get-by-id-throw-from-unexpected-getter-through-optimized-code-that-does-not-exit.js ..... Fail (Uncaught Error: didn't throw or threw wrong exception: TypeError: Callee is not a function object)
 [301] get-by-id-throw-from-unexpected-getter-through-optimized-code.js ..... Fail (Uncaught Error: didn't throw or threw wrong exception: TypeError: Callee is not a function object)
 [302] get-by-id-untyped.js ..... Succ
-[303] get-by-val-double-predicted-int.js ..... Fail (Uncaught ReferenceError: predictInt32 is not defined)
+[303] get-by-val-double-predicted-int.js ..... Succ
 [304] // get-by-val-on-undecided-array-type.js // ES6 const ..... Excluded
 [305] // get-by-val-on-undecided-sane-chain-1.js // ES6 const ..... Excluded
 [306] // get-by-val-on-undecided-sane-chain-2.js // ES6 const ..... Excluded
@@ -345,10 +345,10 @@
 [345] // global-lexical-variable-unresolved-property.js // ES6 let or const ..... Excluded
 [346] // global-lexical-variable-with-statement.js // ES6 let ..... Excluded
 [347] goofy-function-reentry-incorrect-inference.js ..... Succ
-[348] has-custom-properties.js ..... Fail (Uncaught ReferenceError: hasCustomProperties is not defined)
+[348] // has-custom-properties.js // JSC 'hasCustomProperties()' ..... Excluded
 [349] heap-allocator-allocates-incorrect-size-for-activation.js ..... Succ
 [350] ic-throw-through-optimized-code.js ..... Succ
-[351] impure-get-own-property-slot-inline-cache.js ..... Fail (Uncaught ReferenceError: createImpureGetter is not defined)
+[351] // impure-get-own-property-slot-inline-cache.js // JSC ImpureGetter ..... Excluded
 [352] infer-constant-global-property.js ..... Succ
 [353] infer-constant-property.js ..... Succ
 [354] infer-uninitialized-closure-var.js ..... Succ
@@ -385,7 +385,7 @@
 [385] int52-force-osr-exit-path.js ..... Succ
 [386] int52-inlined-call-argument.js ..... Succ
 [387] int52-variable.js ..... Succ
-[388] int8-repeat-out-of-bounds.js ..... Fail (Uncaught ReferenceError: reoptimizationRetryCount is not defined)
+[388] int8-repeat-out-of-bounds.js ..... Succ
 [389] invalidation-point.js ..... Succ
 [390] inverted-additive-subsumption.js ..... Succ
 [391] // is-undefined-exit-on-masquerader.js // JSC 'makeMasquerader()' ..... Excluded
@@ -450,7 +450,7 @@ Uncaught Wrong error: Should not have gotten here.)
 [442] math-log-with-constants.js ..... Succ
 [443] math-pow-basics.js ..... Succ
 [444] math-pow-becomes-custom-function.js ..... Succ
-[445] math-pow-coherency.js ..... Fail (Uncaught ReferenceError: isFinalTier is not defined)
+[445] math-pow-coherency.js ..... Succ
 [446] math-pow-integer-exponent-fastpath.js ..... Succ
 [447] math-pow-nan-behaviors.js ..... Fail (Uncaught Error: bad result, Math.pow(i, NaN) = 1 with i = 1)
 [448] math-pow-with-constants.js ..... Fail (Uncaught Error: exponentIsIntegerConstant(2.1) should be 34135823067412.42, was = 34135823067412.465)
@@ -548,7 +548,7 @@ Uncaught Wrong error: Should not have gotten here.)
 [540] prop-type-other-then-string.js ..... Succ
 [541] prop-type-string-then-object.js ..... Succ
 [542] prop-type-struct-or-other-then-string.js ..... Succ
-[543] prop-type-struct-then-object-opt-fold.js ..... Fail (Uncaught ReferenceError: isFinalTier is not defined)
+[543] prop-type-struct-then-object-opt-fold.js ..... Succ
 [544] prop-type-struct-then-object-opt-multi.js ..... Succ
 [545] prop-type-struct-then-object-opt.js ..... Succ
 [546] prop-type-struct-then-object.js ..... Succ
@@ -557,7 +557,7 @@ Uncaught Wrong error: Should not have gotten here.)
 [549] property-name-enumerator-should-not-look-into-indexed-values-when-it-is-a-dictionary.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
 [550] proto-setter.js ..... Fail (Uncaught TypeError: cannot redefine property)
 [551] prototype-getter.js ..... Fail (Uncaught TypeError: Callee is not a function object)
-[552] proxy-inline-cache.js ..... Fail (Uncaught ReferenceError: createProxy is not defined)
+[552] // proxy-inline-cache.js // ES6 Proxy ..... Excluded
 [553] prune-multi-put-by-offset-replace-or-transition-variant.js ..... Succ
 [554] put-by-id-build-list-order-recurse.js ..... Fail (Uncaught TypeError: Callee is not a function object)
 [555] put-by-id-direct-should-be-done-for-non-index-property.js ..... Fail (Uncaught SyntaxError: Parse Error 35 line)
@@ -633,7 +633,7 @@ Uncaught Wrong error: Should not have gotten here.)
 [625] sink-arguments-past-invalid-check.js ..... Succ
 [626] sink-function-past-invalid-check-sneakier.js ..... Succ
 [627] sink-function-past-invalid-check-sneaky.js ..... Succ
-[628] sink-multigetbyoffset.js ..... Fail (Uncaught ReferenceError: isFinalTier is not defined)
+[628] sink-multigetbyoffset.js ..... Succ
 [629] sink-object-past-invalid-check-int32.js ..... Succ
 [630] sink-object-past-invalid-check-sneakier.js ..... Succ
 [631] sink-object-past-invalid-check-sneaky.js ..... Succ
@@ -788,6 +788,6 @@ Uncaught Wrong error: Should not have gotten here.)
 [780] weird-setter-counter-syntactic.js ..... Succ
 [781] weird-setter-counter.js ..... Fail (Uncaught TypeError: Callee is not a function object)
 All      :  781
-Excluded :  183
-Succeed  :  419
-Failed   :  179
+Excluded :  192
+Succeed  :  430
+Failed   :  159

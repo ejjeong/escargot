@@ -56,6 +56,22 @@ function fiatInt52(arg) {
     return arg;
 }
 
+function isFinalTier() {
+    return false; // escargot do not use jit or reoptimization
+}
+
+function reoptimizationRetryCount() {
+    return 0; // escargot do not use jit or reoptimization
+}
+
+function predictInt32() {
+    // escargot do not use jit or reoptimization
+}
+
+function createProxy(arg) {
+    return arg;
+}
+
 /*
 
 function hasCustomProperties(o){
