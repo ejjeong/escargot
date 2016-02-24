@@ -92,7 +92,7 @@
 [92] // arrowfunction-tdz.js // ES6 '=>' ..... Excluded
 [93] // arrowfunction-tostring.js // ES6 '=>' ..... Excluded
 [94] // arrowfunction-typeof.js // ES6 '=>' ..... Excluded
-[95] assign-argument-in-inlined-call.js ..... Fail (Uncaught TypeError: cannot convert undefined into object)
+[95] // assign-argument-in-inlined-call.js // Deprecated function.arguments ..... Excluded
 [96] assign-captured-argument-in-inlined-call.js ..... Succ
 [97] assignment-in-function-call-bracket-node.js ..... Succ
 [98] basic-eden-gc-test.js ..... Succ
@@ -126,7 +126,7 @@
 [126] // class-syntax-tdz-in-loop.js // ES6 class ..... Excluded
 [127] // class-syntax-tdz.js // ES6 class ..... Excluded
 [128] cloned-arguments-get-by-val-double-array.js ..... Succ
-[129] cloned-arguments-should-visit-callee-during-gc.js ..... Fail (Uncaught TypeError: cannot convert undefined into object)
+[129] // cloned-arguments-should-visit-callee-during-gc.js // Deprecated function.arguments ..... Excluded
 [130] closure-call-exit.js ..... Succ
 [131] compare-eq-object-or-other-to-object.js ..... Succ
 [132] compare-eq-object-to-object-or-other.js ..... Succ
@@ -173,7 +173,7 @@
 [173] dfg-rare-data.js ..... Succ
 [174] dfg-tail-calls.js ..... Fail (Uncaught Error)
 [175] // dfg-to-primitive-pass-symbol.js // ES6 Symbol ..... Excluded
-[176] disable-function-dot-arguments.js ..... Fail (Uncaught TypeError: cannot convert undefined into object)
+[176] // disable-function-dot-arguments.js // Deprecated function.arguments ..... Excluded
 [177] double-as-int32.js ..... Succ
 [178] double-rep-with-non-cell.js ..... Succ
 [179] double-rep-with-null.js ..... Succ
@@ -203,7 +203,7 @@
 [203] exit-after-int52-to-double.js ..... Succ
 [204] exit-after-int52-to-value.js ..... Succ
 [205] exit-after-llvm-folds-large-int-constant.js ..... Succ
-[206] exit-from-ftl-when-caller-passed-extra-args-then-use-function-dot-arguments.js ..... Fail (Uncaught TypeError: cannot convert undefined into object)
+[206] // exit-from-ftl-when-caller-passed-extra-args-then-use-function-dot-arguments.js // Deprecated function.arguments ..... Excluded
 [207] exit-from-ftl-with-arity-check-fail.js ..... Succ
 [208] exit-from-getter.js ..... Succ
 [209] exit-from-setter.js ..... Succ
@@ -332,8 +332,8 @@
 [332] get-my-argument-by-val-wrap-around-no-warm-up.js ..... Succ
 [333] get-my-argument-by-val-wrap-around.js ..... Succ
 [334] get-stack-identity-due-to-sinking.js ..... Succ
-[335] get-stack-mapping-with-dead-get-stack.js ..... Fail (Uncaught TypeError: cannot convert undefined into object)
-[336] get-stack-mapping.js ..... Fail (Uncaught TypeError: cannot convert undefined into object)
+[335] // get-stack-mapping-with-dead-get-stack.js // Deprecated function.arguments ..... Excluded
+[336] // get-stack-mapping.js // Deprecated function.arguments ..... Excluded
 [337] getter-arity.js ..... Succ
 [338] getter.js ..... Succ
 [339] global-environment-does-not-trap-unscopables.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (3359))
@@ -364,7 +364,7 @@
 [364] inline-call-varargs.js ..... Succ
 [365] inline-closure-call.js ..... Succ
 [366] inline-llint-with-switch.js ..... Succ
-[367] inline-varargs-get-arguments.js ..... Fail (Uncaught TypeError: cannot convert undefined into object)
+[367] // inline-varargs-get-arguments.js // Deprecated function.arguments ..... Excluded
 [368] inlined-constructor-this-liveness.js ..... Succ
 [369] inlined-function-this-liveness.js ..... Succ
 [370] instanceof-not-cell.js ..... Succ
@@ -784,10 +784,10 @@ Uncaught Wrong error: Should not have gotten here.)
 [776] // weak-set-constructor.js // ES6 for ... of ..... Excluded
 [777] weird-equality-folding-cases.js ..... Succ
 [778] weird-getter-counter.js ..... Succ
-[779] weird-put-stack-varargs.js ..... Fail (Uncaught TypeError: cannot convert undefined into object)
+[779] // weird-put-stack-varargs.js // Deprecated function.arguments ..... Excluded
 [780] weird-setter-counter-syntactic.js ..... Succ
 [781] weird-setter-counter.js ..... Fail (Uncaught TypeError: Type error, DefineOwnProperty 11.a.ii)
 All      :  781
-Excluded :  193
+Excluded :  201
 Succeed  :  455
-Failed   :  133
+Failed   :  125

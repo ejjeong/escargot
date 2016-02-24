@@ -92,7 +92,7 @@ arrayify-to-structure-contradiction.js
 // arrowfunction-tdz.js // ES6 '=>'
 // arrowfunction-tostring.js // ES6 '=>'
 // arrowfunction-typeof.js // ES6 '=>'
-assign-argument-in-inlined-call.js
+// assign-argument-in-inlined-call.js // Deprecated function.arguments
 assign-captured-argument-in-inlined-call.js
 assignment-in-function-call-bracket-node.js
 basic-eden-gc-test.js
@@ -126,7 +126,7 @@ captured-arguments-variable.js
 // class-syntax-tdz-in-loop.js // ES6 class
 // class-syntax-tdz.js // ES6 class
 cloned-arguments-get-by-val-double-array.js
-cloned-arguments-should-visit-callee-during-gc.js
+// cloned-arguments-should-visit-callee-during-gc.js // Deprecated function.arguments
 closure-call-exit.js
 compare-eq-object-or-other-to-object.js
 compare-eq-object-to-object-or-other.js
@@ -173,7 +173,7 @@ dfg-put-by-val-direct-with-edge-numbers.js
 dfg-rare-data.js
 dfg-tail-calls.js
 // dfg-to-primitive-pass-symbol.js // ES6 Symbol
-disable-function-dot-arguments.js
+// disable-function-dot-arguments.js // Deprecated function.arguments
 double-as-int32.js
 double-rep-with-non-cell.js
 double-rep-with-null.js
@@ -203,7 +203,7 @@ exit-after-int32-to-double.js
 exit-after-int52-to-double.js
 exit-after-int52-to-value.js
 exit-after-llvm-folds-large-int-constant.js
-exit-from-ftl-when-caller-passed-extra-args-then-use-function-dot-arguments.js
+// exit-from-ftl-when-caller-passed-extra-args-then-use-function-dot-arguments.js // Deprecated function.arguments
 exit-from-ftl-with-arity-check-fail.js
 exit-from-getter.js
 exit-from-setter.js
@@ -332,8 +332,8 @@ get-declared-unpassed-argument-in-scoped-arguments.js
  get-my-argument-by-val-wrap-around-no-warm-up.js
  get-my-argument-by-val-wrap-around.js
  get-stack-identity-due-to-sinking.js
-get-stack-mapping-with-dead-get-stack.js
-get-stack-mapping.js
+// get-stack-mapping-with-dead-get-stack.js // Deprecated function.arguments
+// get-stack-mapping.js // Deprecated function.arguments
 getter-arity.js
 getter.js
 global-environment-does-not-trap-unscopables.js
@@ -364,7 +364,7 @@ inline-call-varargs-and-call.js
 inline-call-varargs.js
 inline-closure-call.js
 inline-llint-with-switch.js
-inline-varargs-get-arguments.js
+// inline-varargs-get-arguments.js // Deprecated function.arguments
 inlined-constructor-this-liveness.js
 inlined-function-this-liveness.js
 instanceof-not-cell.js
@@ -776,6 +776,6 @@ varargs-varargs-inlined-exit.js
 // weak-set-constructor.js // ES6 for ... of
 weird-equality-folding-cases.js
 weird-getter-counter.js
-weird-put-stack-varargs.js
+// weird-put-stack-varargs.js // Deprecated function.arguments
 weird-setter-counter-syntactic.js
 weird-setter-counter.js
