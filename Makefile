@@ -470,7 +470,7 @@ run-spidermonkey:
 	cd test/SpiderMonkey/; \
 	perl jsDriver.pl -e escargot -s ../../escargot -l ecma_5; \
 	perl jsDriver.pl -e escargot -s ../../escargot -l js1*; \
-	eprl jsDriver.pl -e escargot -s ../../escargot -l Intl 
+	perl jsDriver.pl -e escargot -s ../../escargot -l Intl 
 
 run-chakracore:
 	cd test/chakracore/; \
