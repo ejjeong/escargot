@@ -11,6 +11,9 @@ function DFGTrue() {
     return true;
 }
 
+function debug(msg) {
+    print(msg);
+}
 
 function numberOfDFGCompiles() {}
 function neverInlineFunction() {}

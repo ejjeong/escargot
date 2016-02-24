@@ -7,17 +7,17 @@ var signedArrays = [Int8Array, Int16Array, Int32Array, Float32Array, Float64Arra
 var floatArrays = [Float32Array, Float64Array];
 
 function forEachTypedArray(constructors, testFunction /* , initialValues */ ) {
-    let initialValues = arguments[2];
-    for (let i = 0; i < constructors.length; ++i) {
-        let typedArray = constructors[i];
+    var initialValues = arguments[2];
+    for (var i = 0; i < constructors.length; ++i) {
+        var typedArray = constructors[i];
 
-        let array;
+        var array;
         if (initialValues) {
             array = new typedArray(initialValues);
         } else
             array = new typedArray();
 
-        let testResult = testFunction(array, typedArray)
+        var testResult = testFunction(array, typedArray)
         if (testResult !== true)
             return testResult;
     }
@@ -36,8 +36,8 @@ function hasSameValues(msg, array1, array2) {
         return false;
     }
 
-    let allSame = true;
-    for (let i = 0; i < array1.length; ++i) {
+    var allSame = true;
+    for (var i = 0; i < array1.length; ++i) {
         allSame = allSame && Object.is(array1[i], array2[i]);
     }
 
@@ -50,7 +50,7 @@ function hasSameValues(msg, array1, array2) {
 function testPrototypeFunctionHelper(constructors, name, args, init, result, expectedArray) {
 
     function foo(array, constructor) {
-        let res = eval("array." + name + args);
+        var res = eval("array." + name + args);
 
         if (expectedArray) {
             if (!hasSameValues("array did not change correctly on " + constructor + ",", array, expectedArray))
