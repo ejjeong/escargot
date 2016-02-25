@@ -5284,7 +5284,7 @@ escargot::Node* parseLeftHandSideExpressionAllowCall(ParseContext* ctx)
     ctx->m_allowIn = true;
 
     if (matchKeyword(ctx, Super) && ctx->m_inFunctionBody) {
-        RELEASE_ASSERT_NOT_REACHED();
+        throw u"ES2015 super expression is not supported";
         /*
         expr = new Node();
         lex();
