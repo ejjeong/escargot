@@ -483,7 +483,7 @@ new-largeish-contiguous-array-with-size.js
 new-undecided-array-with-size.js
 no-abc-skippy-loop.js
 no-abc-skippy-paired-loop.js
-non-constructors.js
+// non-constructors.js // ES6 class
 not-cell-use.js
 // numeric-setter-on-prototype-non-blank-array.js // ES6 Class
 // numeric-setter-on-prototype.js // ES6 Class
@@ -508,7 +508,7 @@ obviously-elidable-new-object-then-exit.js
 op-push-name-scope-crashes-profiler.js
 operation-get-by-val-default-should-not-called-for-already-optimized-site.js
 other-is-object-or-null.js
-pathname-resolve.js
+// pathname-resolve.js // ES6 Promise
 phantom-arguments-set-local-then-exit-in-same-block.js
 phantom-direct-arguments-clobber-argument-count.js
 phantom-direct-arguments-clobber-callee.js
@@ -599,7 +599,7 @@ repeated-put-by-id-reallocating-transition.js
 replacement-watchpoint-dictionary.js
 replacement-watchpoint.js
 reserved-word-with-escape.js
-rest-elements.js
+// rest-elements.js // ES6 rest parameter syntax
 retry-cache-later.js
 runtime-array.js
 runtime-throw-through-optimized-code.js
@@ -650,9 +650,9 @@ static-getter-put.js
 strict-to-this-int.js
 // string-from-code-point.js // ES6 for ... of
 string-ident-to-not-string-var-equality.js
-string-iterators.js
+// string-iterators.js // ES6 destructuring
 string-out-of-bounds-negative-proto-value.js
-string-raw.js
+// string-raw.js // ES6 String.raw
 sub-overflows-after-not-equal.js
 // super-call-does-not-look-up-constructor.js // ES6 Class
 switch-typeof-indirect.js
@@ -673,11 +673,11 @@ switch-typeof.js
 tail-call-in-inline-cache.js
 tail-call-no-stack-overflow.js
 // tail-call-recognize.js // Deprecated function.caller
-tail-call-varargs-no-stack-overflow.js
+// tail-call-varargs-no-stack-overflow.js // ES6 spread '...'
 tail-calls-dont-overwrite-live-stack.js
-template-literal-line-terminators.js
-template-literal-syntax.js
-template-literal.js
+// template-literal-line-terminators.js // ES6 Template string
+// template-literal-syntax.js // ES6 Template string
+// template-literal.js // ES6 Template string
 test-spec-misc.js
 throw-from-ftl-call-ic-slow-path-cells.js
 throw-from-ftl-call-ic-slow-path-undefined.js
@@ -726,7 +726,7 @@ typed-array-put-by-val-profiling.js
 // typedarray-slice.js // ES6 TypedArray
 // typedarray-some.js // ES6 TypedArray
 // typedarray-sort.js // ES6 TypedArray
-typeof-symbol.js
+// typeof-symbol.js // ES6 Symbol
 uint32-to-number-fold-constant-with-do-overflow.js
 uint32array-unsigned-load.js
 undefined-access-dictionary-then-proto-change.js

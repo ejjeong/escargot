@@ -15,7 +15,7 @@ function shouldThrow(func, errorMessage) {
     if (!errorThrown)
         throw new Error('not thrown');
     if (String(error) !== errorMessage)
-        throw new Error(`bad error: ${String(error)}`);
+        throw new Error("bad error: " + String(error));
 }
 
 shouldThrow(function () {

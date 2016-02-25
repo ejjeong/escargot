@@ -1,6 +1,6 @@
 function shouldBe(actual, expected) {
     if (actual !== expected)
-        throw new Error(`bad value: ${actual}`);
+        throw new Error("bad value: " + actual);
 }
 
 function shouldThrow(func, errorMessage) {
@@ -15,7 +15,7 @@ function shouldThrow(func, errorMessage) {
     if (!errorThrown)
         throw new Error('not thrown');
     if (String(error) !== errorMessage)
-        throw new Error(`bad error: ${String(error)}`);
+        throw new Error("bad error: " + String(error));
 }
 
 shouldBe(String.raw.name, 'raw');

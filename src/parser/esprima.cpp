@@ -4142,7 +4142,7 @@ escargot::Node*  parseArrayPattern(ParseContext* ctx, std::vector<RefPtr<ParseSt
             if (match(ctx, PeriodPeriodPeriod)) {
                 // TODO implement rest
                 // https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Functions/rest_parameters
-                RELEASE_ASSERT_NOT_REACHED();
+                throw u"ES2015 rest parameter syntax is not supported";
                 break;
             } else {
                 elements.push_back(parsePatternWithDefault(ctx, params));
@@ -4864,7 +4864,7 @@ escargot::Node* parseGroupExpression(ParseContext* ctx)
 
     if (match(ctx, RightParenthesis)) {
         // arrow function
-        RELEASE_ASSERT_NOT_REACHED();
+        throw u"ES2015 arrow function expression is not supported";
     }
 
     RefPtr<ParseStatus> startToken = ctx->m_lookahead;
@@ -5110,7 +5110,7 @@ escargot::Node* parsePrimaryExpression(ParseContext* ctx)
             return nd;
         }
         if (matchKeyword(ctx, Class)) {
-            RELEASE_ASSERT_NOT_REACHED();
+            throw u"ES2015 class feature is not supported";
             // return parseClassExpression();
         }
         // throwUnexpectedToken(lex());

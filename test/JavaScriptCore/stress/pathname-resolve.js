@@ -2,7 +2,7 @@
 // To execute this test, need to specify the JSC_exposeInternalModuleLoader environment variable and execute it on non Windows platform.
 function shouldBe(actual, expected) {
     if (actual !== expected)
-        throw new Error(`bad value: ${String(actual)}`);
+        throw new Error("bad value: " + String(actual));
 }
 
 function shouldResolve(name, referrer, expected)
@@ -51,9 +51,9 @@ Promise.all([
     shouldResolve('./hello/tmp.js', 'C:/home/', 'C:/home/hello/tmp.js'),
     shouldResolve('/tmp.js', 'C:/home/', 'C:/tmp.js'),
 
-    shouldThrow('/tmp.js', '', `Error: Could not resolve the referrer name ''.`),
-    shouldThrow('/tmp.js', 'hello', `Error: Could not resolve the referrer name 'hello'.`),
-    shouldThrow('tmp.js', 'hello', `Error: Could not resolve the referrer name 'hello'.`),
+    shouldThrow('/tmp.js', '', "Error: Could not resolve the referrer name ''."),
+    shouldThrow('/tmp.js', 'hello', "Error: Could not resolve the referrer name 'hello'."),
+    shouldThrow('tmp.js', 'hello', "Error: Could not resolve the referrer name 'hello'."),
 ]).catch(function (e) {
     error = e;
 });

@@ -474,7 +474,7 @@ Uncaught Wrong error: Should not have gotten here.)
 [466] multi-put-by-offset-multiple-transitions.js ..... Succ
 [467] multi-put-by-offset-reallocation-butterfly-cse.js ..... Succ
 [468] multi-put-by-offset-reallocation-cases.js ..... Succ
-[469] mutual-tail-call-no-stack-overflow.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 14 line))
+[469] mutual-tail-call-no-stack-overflow.js ..... Fail (Uncaught Error: not thrown)
 [470] nan-equal-untyped.js ..... Succ
 [471] nan-equal.js ..... Succ
 [472] new-array-dead.js ..... Succ
@@ -491,7 +491,7 @@ Uncaught Wrong error: Should not have gotten here.)
 [483] new-undecided-array-with-size.js ..... Succ
 [484] no-abc-skippy-loop.js ..... Succ
 [485] no-abc-skippy-paired-loop.js ..... Succ
-[486] non-constructors.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 13 line))
+[486] // non-constructors.js // ES6 class ..... Excluded
 [487] not-cell-use.js ..... Succ
 [488] // numeric-setter-on-prototype-non-blank-array.js // ES6 Class ..... Excluded
 [489] // numeric-setter-on-prototype.js // ES6 Class ..... Excluded
@@ -516,7 +516,7 @@ Uncaught Wrong error: Should not have gotten here.)
 [508] op-push-name-scope-crashes-profiler.js ..... Fail (Uncaught ReferenceError: arguments is not defined)
 [509] operation-get-by-val-default-should-not-called-for-already-optimized-site.js ..... Succ
 [510] other-is-object-or-null.js ..... Succ
-[511] pathname-resolve.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 5 line))
+[511] // pathname-resolve.js // ES6 Promise ..... Excluded
 [512] phantom-arguments-set-local-then-exit-in-same-block.js ..... Succ
 [513] phantom-direct-arguments-clobber-argument-count.js ..... Succ
 [514] phantom-direct-arguments-clobber-callee.js ..... Succ
@@ -554,7 +554,7 @@ Uncaught Wrong error: Should not have gotten here.)
 [546] prop-type-struct-then-object.js ..... Succ
 [547] // prop-type-symbol-then-object.js // ES6 Symbol ..... Excluded
 [548] // prop-type-symbol-then-string.js // ES6 Symbol ..... Excluded
-[549] property-name-enumerator-should-not-look-into-indexed-values-when-it-is-a-dictionary.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 3 line))
+[549] property-name-enumerator-should-not-look-into-indexed-values-when-it-is-a-dictionary.js ..... Fail (Uncaught SyntaxError: ES2015 for..of statement is not supported (Parse Error 37 line))
 [550] proto-setter.js ..... Fail (Uncaught TypeError: cannot redefine property)
 [551] prototype-getter.js ..... Succ
 [552] // proxy-inline-cache.js // ES6 Proxy ..... Excluded
@@ -607,7 +607,7 @@ Uncaught Wrong error: Should not have gotten here.)
 [599] replacement-watchpoint-dictionary.js ..... Succ
 [600] replacement-watchpoint.js ..... Succ
 [601] reserved-word-with-escape.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 27 line))
-[602] rest-elements.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 18 line))
+[602] // rest-elements.js // ES6 rest parameter syntax ..... Excluded
 [603] retry-cache-later.js ..... Succ
 [604] runtime-array.js ..... Fail (Uncaught ReferenceError: createRuntimeArray is not defined)
 [605] runtime-throw-through-optimized-code.js ..... Succ
@@ -616,7 +616,7 @@ Uncaught Wrong error: Should not have gotten here.)
 [608] // set-constructor-adder.js // ES6 Set ..... Excluded
 [609] // set-constructor.js // ES6 for ... of ..... Excluded
 [610] // set-iterators-next.js // ES6 for ... of ..... Excluded
-[611] set-same-prototype.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 18 line))
+[611] set-same-prototype.js ..... Fail (Uncaught SyntaxError: ES2015 arrow function expression is not supported (Parse Error 25 line))
 [612] setter.js ..... Succ
 [613] simple-polyvariant-call-inlining-example.js ..... Succ
 [614] simple-polyvariant-get-by-id-inlining-example.js ..... Succ
@@ -648,19 +648,19 @@ Uncaught Wrong error: Should not have gotten here.)
 [640] sparse_splice.js ..... Succ
 [641] static-function-delete.js ..... Succ
 [642] static-function-put.js ..... Succ
-[643] static-getter-delete.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 18 line))
+[643] static-getter-delete.js ..... Fail (Uncaught Error: bad error: TypeError: Attempt to assign to readonly property)
 [644] static-getter-descriptors.js ..... Fail (Uncaught Error: bad value: {"writable":false,"enumerable":false,"configurable":false})
 [645] static-getter-enumeration.js ..... Succ
 [646] static-getter-get.js ..... Succ
 [647] static-getter-in-names.js ..... Fail (Uncaught Error: bad value: ["compile","constructor","exec","global","ignoreCase","lastIndex","multiline","source","test","toString"])
 [648] // static-getter-names.js // ES6 for ... of ..... Excluded
-[649] static-getter-put.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 18 line))
+[649] static-getter-put.js ..... Fail (Uncaught Error: bad error: TypeError: Attempt to assign to readonly property)
 [650] strict-to-this-int.js ..... Succ
 [651] // string-from-code-point.js // ES6 for ... of ..... Excluded
 [652] string-ident-to-not-string-var-equality.js ..... Succ
-[653] string-iterators.js ..... Fail (Uncaught SyntaxError: ES2015 Destructuring assignment syntax is not supported (Parse Error 16 line))
+[653] // string-iterators.js // ES6 destructuring ..... Excluded
 [654] string-out-of-bounds-negative-proto-value.js ..... Succ
-[655] string-raw.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 3 line))
+[655] // string-raw.js // ES6 String.raw ..... Excluded
 [656] sub-overflows-after-not-equal.js ..... Succ
 [657] // super-call-does-not-look-up-constructor.js // ES6 Class ..... Excluded
 [658] switch-typeof-indirect.js ..... Succ
@@ -679,13 +679,13 @@ Uncaught Wrong error: Should not have gotten here.)
 [671] // tagged-templates-this.js // ES6 Template string ..... Excluded
 [672] // tagged-templates.js // ES6 Template string ..... Excluded
 [673] tail-call-in-inline-cache.js ..... Succ
-[674] tail-call-no-stack-overflow.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 14 line))
+[674] tail-call-no-stack-overflow.js ..... Fail (Uncaught Error: not thrown)
 [675] // tail-call-recognize.js // Deprecated function.caller ..... Excluded
-[676] tail-call-varargs-no-stack-overflow.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 14 line))
+[676] // tail-call-varargs-no-stack-overflow.js // ES6 spread '...' ..... Excluded
 [677] tail-calls-dont-overwrite-live-stack.js ..... Fail (Uncaught SyntaxError: ES2015 Spread operator is not supported (Parse Error 24 line))
-[678] template-literal-line-terminators.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 24 line))
-[679] template-literal-syntax.js ..... Fail (Uncaught Error: Bad error: SyntaxError: ES2015 Template string is not supported (Parse Error 1 line))
-[680] template-literal.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 12 line))
+[678] // template-literal-line-terminators.js // ES6 Template string ..... Excluded
+[679] // template-literal-syntax.js // ES6 Template string ..... Excluded
+[680] // template-literal.js // ES6 Template string ..... Excluded
 [681] test-spec-misc.js ..... Succ
 [682] throw-from-ftl-call-ic-slow-path-cells.js ..... Fail (Uncaught Error: bad exception message: Constructor TypedArray requires 'new')
 [683] throw-from-ftl-call-ic-slow-path-undefined.js ..... Fail (Uncaught Error: bad exception message: Constructor TypedArray requires 'new')
@@ -734,7 +734,7 @@ Uncaught Wrong error: Should not have gotten here.)
 [726] // typedarray-slice.js // ES6 TypedArray ..... Excluded
 [727] // typedarray-some.js // ES6 TypedArray ..... Excluded
 [728] // typedarray-sort.js // ES6 TypedArray ..... Excluded
-[729] typeof-symbol.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 4 line))
+[729] // typeof-symbol.js // ES6 Symbol ..... Excluded
 [730] uint32-to-number-fold-constant-with-do-overflow.js ..... Succ
 [731] uint32array-unsigned-load.js ..... Succ
 [732] undefined-access-dictionary-then-proto-change.js ..... Succ
@@ -788,6 +788,6 @@ Uncaught Wrong error: Should not have gotten here.)
 [780] weird-setter-counter-syntactic.js ..... Succ
 [781] weird-setter-counter.js ..... Fail (Uncaught TypeError: Type error, DefineOwnProperty 11.a.ii)
 All      :  781
-Excluded :  237
+Excluded :  247
 Succeed  :  469
-Failed   :  75
+Failed   :  65
