@@ -19,6 +19,7 @@ public:
         m_flags.m_canUseGlobalFastAccess = false;
         m_flags.m_isFastAccessIndexIndicatesHeapIndex = false;
         m_flags.m_onlySearchGlobal = false;
+        m_flags.m_fastAccessIndexIndicatesImmutableBinding = false;
         m_fastAccessIndex = SIZE_MAX;
         m_fastAccessUpIndex = SIZE_MAX;
     }
@@ -79,7 +80,9 @@ public:
     virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
         if (canUseFastAccess()) {
-            if (m_fastAccessUpIndex) {
+            if (fastAccessIndexIndicatesImmutableBinding()) {
+                // do nothing
+            } else if (m_fastAccessUpIndex) {
                 ASSERT(m_flags.m_isFastAccessIndexIndicatesHeapIndex);
                 codeBlock->pushCode(SetByIndexInUpperContextHeap(m_fastAccessIndex, m_fastAccessUpIndex), context, this);
             } else {
@@ -141,6 +144,16 @@ public:
         return m_flags.m_onlySearchGlobal;
     }
 
+    bool fastAccessIndexIndicatesImmutableBinding()
+    {
+        return m_flags.m_fastAccessIndexIndicatesImmutableBinding;
+    }
+
+    void setFastAccessIndexImmutable(bool value)
+    {
+        m_flags.m_fastAccessIndexIndicatesImmutableBinding = value;
+    }
+
     size_t fastAccessIndex()
     {
         return m_fastAccessIndex;
@@ -178,6 +191,7 @@ protected:
         bool m_canUseGlobalFastAccess:1;
         bool m_isFastAccessIndexIndicatesHeapIndex:1;
         bool m_onlySearchGlobal:1;
+        bool m_fastAccessIndexIndicatesImmutableBinding:1;
     } m_flags;
 };
 

@@ -23,6 +23,7 @@ struct InnerIdentifierInfo {
     enum Origin { Parameter, FunctionDeclaration, FunctionExpression, VariableDeclarator };
     struct {
         bool m_isHeapAllocated:1;
+        bool m_bindingIsImmutable:1;
         Origin m_origin:2;
     } m_flags;
 
@@ -30,6 +31,7 @@ struct InnerIdentifierInfo {
         : m_name(name)
     {
         m_flags.m_isHeapAllocated = false;
+        m_flags.m_bindingIsImmutable = false;
         m_flags.m_origin = origin;
     }
 };

@@ -150,7 +150,7 @@
 [150] // construct-varargs-no-inline.js // ES6 spread '...' ..... Excluded
 [151] // constructor-with-return.js // ES6 Symbol ..... Excluded
 [152] create-this-with-callee-variants.js ..... Succ
-[153] custom-iterators.js ..... Fail ()
+[153] // custom-iterators.js // ES6 Symbol ..... Excluded
 [154] dead-access-to-captured-variable-preceded-by-a-live-store-in-function-with-multiple-basic-blocks.js ..... Succ
 [155] dead-access-to-captured-variable-preceded-by-a-live-store.js ..... Succ
 [156] dead-fiat-double-to-int52-then-exit-not-int52.js ..... Succ
@@ -185,7 +185,7 @@
 [185] empty_eos_regex_split.js ..... Fail (Uncaught Error: 2 = a,)
 [186] // equality-type-checking.js // JSC 'addressOf()' ..... Excluded
 [187] // equals-masquerader.js // JSC 'makeMasquerader()' ..... Excluded
-[188] es6-default-parameters.js ..... Fail (Uncaught SyntaxError: Unexpected token (Parse Error 89 line))
+[188] // es6-default-parameters.js // ES6 default parameter ..... Excluded
 [189] // es6-for-of-loop-exception.js // ES6 for ... of ..... Excluded
 [190] escape-object-in-diamond-then-exit.js ..... Succ
 [191] eval-script-contains-null-character.js ..... Succ
@@ -788,6 +788,6 @@ Uncaught Wrong error: Should not have gotten here.)
 [780] weird-setter-counter-syntactic.js ..... Succ
 [781] weird-setter-counter.js ..... Succ
 All      :  781
-Excluded :  247
+Excluded :  249
 Succeed  :  476
-Failed   :  58
+Failed   :  56

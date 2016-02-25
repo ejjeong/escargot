@@ -150,7 +150,7 @@ constant-folding-osr-exit.js
 // construct-varargs-no-inline.js // ES6 spread '...'
 // constructor-with-return.js // ES6 Symbol
 create-this-with-callee-variants.js
-custom-iterators.js
+// custom-iterators.js // ES6 Symbol
 dead-access-to-captured-variable-preceded-by-a-live-store-in-function-with-multiple-basic-blocks.js
 dead-access-to-captured-variable-preceded-by-a-live-store.js
 dead-fiat-double-to-int52-then-exit-not-int52.js
@@ -185,7 +185,7 @@ empty-function.js
 empty_eos_regex_split.js
 // equality-type-checking.js // JSC 'addressOf()'
 // equals-masquerader.js // JSC 'makeMasquerader()'
-es6-default-parameters.js
+// es6-default-parameters.js // ES6 default parameter
 // es6-for-of-loop-exception.js // ES6 for ... of
 escape-object-in-diamond-then-exit.js
 eval-script-contains-null-character.js

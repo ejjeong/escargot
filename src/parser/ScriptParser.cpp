@@ -141,6 +141,7 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
                 if (shouldWorkAroundIdentifier) {
                     auto dis = std::distance(identifierInCurrentContext.begin(), iter);
                     ((IdentifierNode *)((VariableDeclaratorNode *)currentNode)->m_id)->setFastAccessIndex(0, dis);
+                    iter->m_flags.m_bindingIsImmutable = false;
                 }
             } else {
                 // global
@@ -194,6 +195,7 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
                     if ((*newIdentifierVector)[i].m_name == name) {
                         hasAlready = true;
                         ((FunctionExpressionNode *)currentNode)->m_functionIdIndex = i;
+                        (*newIdentifierVector)[i].m_flags.m_bindingIsImmutable = true;
                         break;
                     }
                 }
@@ -201,6 +203,7 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
                 if (!hasAlready) {
                     newIdentifierVector->push_back(InnerIdentifierInfo(name, InnerIdentifierInfo::Origin::FunctionExpression));
                     ((FunctionExpressionNode *)currentNode)->m_functionIdIndex = vec.size();
+                    (*newIdentifierVector)[vec.size()].m_flags.m_bindingIsImmutable = true;
                 }
             }
             ((FunctionExpressionNode *)currentNode)->setOuterFunctionNode(nearFunctionNode);
@@ -273,8 +276,11 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
                         ASSERT(fn->innerIdentifiers()[idx2].m_name == name);
                         fn->innerIdentifiers()[idx2].m_flags.m_isHeapAllocated = true;
                         markNeedsHeapAllocatedExecutionContext(nearFunctionNode->outerFunctionNode());
-                        if (shouldWorkAroundIdentifier)
+                        if (shouldWorkAroundIdentifier) {
                             ((IdentifierNode *)currentNode)->setFastAccessIndex(up, idx2);
+                            if (iter2->m_flags.m_bindingIsImmutable)
+                                ((IdentifierNode *)currentNode)->setFastAccessIndexImmutable(true);
+                        }
                         /*printf("outer function of this function  needs capture! -> because fn...%s iden..%s\n",
                         fn->nonAtomicId()->utf8Data(),
                         ((IdentifierNode *)currentNode)->nonAtomicName()->utf8Data());
@@ -303,8 +309,11 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
                 }
             } else {
                 idx = identifierInCurrentContext.size() - idx - 1;
-                if (shouldWorkAroundIdentifier)
+                if (shouldWorkAroundIdentifier) {
                     ((IdentifierNode *)currentNode)->setFastAccessIndex(0, idx);
+                    if (riter->m_flags.m_bindingIsImmutable)
+                        ((IdentifierNode *)currentNode)->setFastAccessIndexImmutable(true);
+                }
             }
         } else if (type == NodeType::ExpressionStatement) {
             postAnalysisFunction(((ExpressionStatementNode *)currentNode)->m_expression, identifierStack, nearFunctionNode);
