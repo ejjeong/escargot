@@ -145,9 +145,12 @@ void GlobalObject::initGlobalObject()
     set(ESString::createAtomicString("dbgBreak"), brkFunction);
 
     auto printFunction = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        if (instance->currentExecutionContext()->argumentCount()) {
-            ESVMInstance::printValue(instance->currentExecutionContext()->arguments()[0]);
+        for (size_t i = 0; i < instance->currentExecutionContext()->argumentCount(); i++) {
+            if (i != 0)
+                printf(" ");
+            ESVMInstance::printValue(instance->currentExecutionContext()->arguments()[i], false);
         }
+        printf("\n");
         return ESValue();
     }, ESString::createAtomicString("print"));
     set(ESString::createAtomicString("print"), printFunction);

@@ -133,7 +133,7 @@ public:
     }
 
     // Function for debug
-    static void printValue(ESValue val);
+    static void printValue(ESValue val, bool newLine = true);
     ALWAYS_INLINE unsigned long tickCount()
     {
         struct timespec timespec;

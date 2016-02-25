@@ -229,7 +229,7 @@ const tm* ESVMInstance::computeLocalTime(const timespec& ts)
     // return localtime(&ts.tv_sec);
 }
 
-void ESVMInstance::printValue(ESValue val)
+void ESVMInstance::printValue(ESValue val, bool newLine)
 {
     UTF16String str;
     std::function<void(ESValue v)> toString = [&str, &toString](ESValue v)
@@ -304,7 +304,8 @@ void ESVMInstance::printValue(ESValue val)
     for (char16_t c : str) {
         printf("%c", c);
     }
-    printf("\n");
+    if (newLine)
+        printf("\n");
     fflush(stdout);
 }
 
