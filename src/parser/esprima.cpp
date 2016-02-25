@@ -4870,7 +4870,7 @@ escargot::Node* parseGroupExpression(ParseContext* ctx)
     RefPtr<ParseStatus> startToken = ctx->m_lookahead;
     if (match(ctx, PeriodPeriodPeriod)) {
         // rest element
-        RELEASE_ASSERT_NOT_REACHED();
+        throw u"ES2015 rest parameter syntax is not supported";
     }
 
     ctx->m_isBindingElement = true;
@@ -4922,7 +4922,7 @@ escargot::Node* parseGroupExpression(ParseContext* ctx)
 
     if (match(ctx, Arrow)) {
         // arrow function
-        RELEASE_ASSERT_NOT_REACHED();
+        throw u"ES2015 arrow function expression is not supported";
         /*
         if (expr.type === Syntax.Identifier && expr.name === 'yield') {
             return {
