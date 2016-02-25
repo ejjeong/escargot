@@ -711,21 +711,21 @@ type-of-functions-and-objects.js
 typed-array-byte-offset.js
 typed-array-get-by-val-profiling.js
 typed-array-put-by-val-profiling.js
-typedarray-copyWithin.js
-typedarray-every.js
-typedarray-fill.js
-typedarray-filter.js
-typedarray-find.js
-typedarray-findIndex.js
-typedarray-forEach.js
-typedarray-indexOf.js
-typedarray-lastIndexOf.js
-typedarray-map.js
-typedarray-reduce.js
-typedarray-reduceRight.js
-typedarray-slice.js
-typedarray-some.js
-typedarray-sort.js
+// typedarray-copyWithin.js // ES6 TypedArray
+// typedarray-every.js // ES6 TypedArray
+// typedarray-fill.js // ES6 TypedArray
+// typedarray-filter.js // ES6 TypedArray
+// typedarray-find.js // ES6 TypedArray
+// typedarray-findIndex.js // ES6 TypedArray
+// typedarray-forEach.js // ES6 TypedArray
+// typedarray-indexOf.js // ES6 TypedArray
+// typedarray-lastIndexOf.js // ES6 TypedArray
+// typedarray-map.js // ES6 TypedArray
+// typedarray-reduce.js // ES6 TypedArray
+// typedarray-reduceRight.js // ES6 TypedArray
+// typedarray-slice.js // ES6 TypedArray
+// typedarray-some.js // ES6 TypedArray
+// typedarray-sort.js // ES6 TypedArray
 typeof-symbol.js
 uint32-to-number-fold-constant-with-do-overflow.js
 uint32array-unsigned-load.js
