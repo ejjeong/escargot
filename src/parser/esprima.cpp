@@ -2718,7 +2718,8 @@ escargot::VariableDeclaratorNode* parseVariableDeclaration(ParseContext* ctx)
     escargot::Node* id = parsePattern(ctx, params);
 
     // ECMA-262 12.2.1
-    // if (strict && isRestrictedWord(id.name)) {
+    if (id->type() == escargot::NodeType::ObjectExpression)
+        throw u"ES2015 Destructuring assignment syntax is not supported";
     // TODO: not alawys idenifier node!
     ASSERT(id->type() == escargot::NodeType::Identifier);
     if (ctx->m_strict && isRestrictedWord(((escargot::IdentifierNode *)id)->name())) {
@@ -3136,7 +3137,7 @@ escargot::Node* parseForStatement(ParseContext* ctx/*node*/)
             nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
             return nd;
         } else {
-            throw u"ES6 for..of statement is not supported";
+            throw u"ES2015 for..of statement is not supported";
         }
     }
     /*
@@ -4837,7 +4838,7 @@ void parseTemplateElement(ParseContext* ctx/*, option*/)
 
 escargot::Node* parseTemplateLiteral(ParseContext* ctx)
 {
-    throw u"ES6 Template string is not supported";
+    throw u"ES2015 Template string is not supported";
 }
 
 // ECMA-262 12.2.10 The Grouping Operator
@@ -5165,7 +5166,7 @@ escargot::ArgumentVector parseArguments(ParseContext* ctx)
     if (!match(ctx, RightParenthesis)) {
         while (ctx->m_startIndex < ctx->m_length) {
             if (match(ctx, PeriodPeriodPeriod)) {
-                throw u"ES6 Spread operator is not supported";
+                throw u"ES2015 Spread operator is not supported";
             } else {
                 expr = isolateCoverGrammar(ctx, parseAssignmentExpression);
             }
