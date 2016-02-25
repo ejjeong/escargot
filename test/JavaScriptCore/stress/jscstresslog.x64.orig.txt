@@ -529,16 +529,16 @@ Uncaught Wrong error: Should not have gotten here.)
 [521] poly-call-exit.js ..... Succ
 [522] poly-call-stub-in-getter-stub.js ..... Succ
 [523] poly-chain-getter.js ..... Succ
-[524] poly-chain-setter.js ..... Fail (Uncaught TypeError: Type error, DefineOwnProperty 11.a.ii)
+[524] poly-chain-setter.js ..... Succ
 [525] poly-chain-then-getter.js ..... Succ
-[526] poly-chain-then-setter.js ..... Fail (Uncaught TypeError: Type error, DefineOwnProperty 11.a.ii)
+[526] poly-chain-then-setter.js ..... Succ
 [527] poly-getter-combo.js ..... Succ
 [528] poly-getter-then-chain.js ..... Succ
 [529] poly-getter-then-self.js ..... Succ
 [530] poly-self-getter.js ..... Succ
 [531] poly-self-then-getter.js ..... Succ
-[532] poly-setter-combo.js ..... Fail (Uncaught TypeError: Type error, DefineOwnProperty 11.a.ii)
-[533] poly-setter-then-self.js ..... Fail (Uncaught TypeError: Type error, DefineOwnProperty 11.a.ii)
+[532] poly-setter-combo.js ..... Succ
+[533] poly-setter-then-self.js ..... Succ
 [534] polymorphic-prototype-accesses.js ..... Succ
 [535] prop-type-boolean-then-string.js ..... Succ
 [536] prop-type-int32-then-string.js ..... Succ
@@ -559,7 +559,7 @@ Uncaught Wrong error: Should not have gotten here.)
 [551] prototype-getter.js ..... Succ
 [552] // proxy-inline-cache.js // ES6 Proxy ..... Excluded
 [553] prune-multi-put-by-offset-replace-or-transition-variant.js ..... Succ
-[554] put-by-id-build-list-order-recurse.js ..... Fail (Uncaught TypeError: Type error, DefineOwnProperty 7.a)
+[554] put-by-id-build-list-order-recurse.js ..... Succ
 [555] put-by-id-direct-should-be-done-for-non-index-property.js ..... Fail (Uncaught SyntaxError: unexpectedTokenError (Parse Error 35 line))
 [556] put-by-id-on-new-object-after-prototype-transition-non-strict.js ..... Succ
 [557] put-by-id-on-new-object-after-prototype-transition-strict.js ..... Succ
@@ -576,7 +576,7 @@ Uncaught Wrong error: Should not have gotten here.)
 [568] // raise-error-in-iterator-close.js // ES6 for ... of ..... Excluded
 [569] real-forward-varargs-for-inlined-escaped-arguments.js ..... Succ
 [570] // recurse-infinitely-on-getter.js // TODO timeout ..... Excluded
-[571] recursive_property_redefine_during_inline_caching.js ..... Fail (Uncaught TypeError: Object.DefineOwnProperty 9.a)
+[571] recursive_property_redefine_during_inline_caching.js ..... Succ
 [572] redundant-add-overflow-checks.js ..... Succ
 [573] redundant-array-bounds-checks-addition-skip-first.js ..... Succ
 [574] redundant-array-bounds-checks-addition.js ..... Succ
@@ -786,8 +786,8 @@ Uncaught Wrong error: Should not have gotten here.)
 [778] weird-getter-counter.js ..... Succ
 [779] // weird-put-stack-varargs.js // Deprecated function.arguments ..... Excluded
 [780] weird-setter-counter-syntactic.js ..... Succ
-[781] weird-setter-counter.js ..... Fail (Uncaught TypeError: Type error, DefineOwnProperty 11.a.ii)
+[781] weird-setter-counter.js ..... Succ
 All      :  781
 Excluded :  247
-Succeed  :  469
-Failed   :  65
+Succeed  :  476
+Failed   :  58

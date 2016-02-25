@@ -77,12 +77,12 @@ function createProxy(arg) {
 }
 
 Object.defineProperty(Object.prototype, "__defineGetter__", {
-    value : function(prop, func) { Object.defineProperty(this, prop, {get: func}); },
+    value : function(prop, func) { Object.defineProperty(this, prop, {get: func, enumerable : true, configurable : true}); },
     enumerable : false
 });
 
 Object.defineProperty(Object.prototype, "__defineSetter__", {
-    value : function(prop, func) { Object.defineProperty(this, prop, {set: func}); },
+    value : function(prop, func) { Object.defineProperty(this, prop, {set: func, enumerable : true, configurable : true}); },
     enumerable : false
 });
 
