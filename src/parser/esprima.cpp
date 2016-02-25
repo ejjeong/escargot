@@ -5248,7 +5248,7 @@ escargot::Node* parseNewExpression(ParseContext* ctx)
         if (ctx->m_lookahead->m_type == Token::IdentifierToken && ctx->m_lookahead->m_value == u"target") {
             if (ctx->m_inFunctionBody) {
                 lex(ctx);
-                RELEASE_ASSERT_NOT_REACHED();
+                throw u"ES2016 new.target syntax is not supported";
                 // return node.finishMetaProperty('new', 'target');
             }
         }
