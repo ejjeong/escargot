@@ -55,7 +55,7 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
         // unsigned long end = ESVMInstance::currentInstance()->tickCount();
         // ESCARGOT_LOG_ERROR("parse takes %lfms\n", (end-start)/1000.0);
         // printf("esprima takes %lfms\n", (end-start)/1000.0);
-    } catch (const EsprimaError& error) {
+    } catch(const EsprimaError& error) {
         char temp[512];
         sprintf(temp, "%s (Parse Error %zu line)", error.m_message->utf8Data(), error.m_lineNumber);
         ESVMInstance::currentInstance()->throwError(SyntaxError::create(ESString::create(temp)));

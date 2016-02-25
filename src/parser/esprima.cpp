@@ -6111,11 +6111,11 @@ escargot::Node* parse(escargot::ESString* source, bool strict)
     try {
         escargot::Node* node = parseProgram(&ctx);
         return node;
-    } catch (const char16_t* msg) {
+    } catch(const char16_t* msg) {
         throw EsprimaError(ctx.m_lineNumber, escargot::ESString::create(msg));
-    } catch (escargot::ESString* msg) {
+    } catch(escargot::ESString* msg) {
         throw EsprimaError(ctx.m_lineNumber, msg);
-    } catch (...) {
+    } catch(...) {
         RELEASE_ASSERT_NOT_REACHED();
     }
     return NULL;
