@@ -4889,7 +4889,7 @@ escargot::Node* parseGroupExpression(ParseContext* ctx)
 
             if (match(ctx, PeriodPeriodPeriod)) {
                 // rest element
-                RELEASE_ASSERT_NOT_REACHED();
+                throw u"ES2015 rest parameter syntax is not supported";
                 /*
                 if (!isBindingElement) {
                     throwUnexpectedToken(lookahead);
