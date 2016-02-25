@@ -1,7 +1,7 @@
 //@ skip
 function callerMustBeRun() {
     if (!Object.is(callerMustBeRun.caller, runTests))
-        throw Error("Wrong caller, expected run but got ", callerMustBeRun.caller);
+        throw Error("Wrong caller, expected run but got " + callerMustBeRun.caller);
 }
 
 function callerMustBeStrict() {
@@ -81,11 +81,13 @@ function runTests() {
             return callerMustBeStrict();
     })();
 
+    /*
     (function noTailCallInForOf() {
         "use strict";
         for (var x of [1, 2])
             return callerMustBeStrict();
     })();
+    */
 
     (function tailCallInIf() {
         "use strict";

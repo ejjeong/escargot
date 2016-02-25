@@ -638,7 +638,7 @@ Uncaught Wrong error: Should not have gotten here.)
 [630] sink-object-past-invalid-check-sneakier.js ..... Succ
 [631] sink-object-past-invalid-check-sneaky.js ..... Succ
 [632] sink-object-past-invalid-check.js ..... Succ
-[633] sink_checkstructure.js ..... Fail (Uncaught TypeError: Callee is not a function object)
+[633] sink_checkstructure.js ..... Fail (Uncaught Error: expected NaN; FTL produced NaN)
 [634] slightly-more-difficult-to-fold-reflective-arguments-access.js ..... Succ
 [635] sort-array-with-undecided.js ..... Succ
 [636] sparse-array-entry-update-144067.js ..... Succ
@@ -680,7 +680,7 @@ Uncaught Wrong error: Should not have gotten here.)
 [672] tagged-templates.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 38 line))
 [673] tail-call-in-inline-cache.js ..... Succ
 [674] tail-call-no-stack-overflow.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 14 line))
-[675] tail-call-recognize.js ..... Fail (Uncaught SyntaxError: ES2015 for..of statement is not supported (Parse Error 88 line))
+[675] tail-call-recognize.js ..... Fail (Uncaught Error: Wrong caller, expected run but got undefined)
 [676] tail-call-varargs-no-stack-overflow.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 14 line))
 [677] tail-calls-dont-overwrite-live-stack.js ..... Fail (Uncaught SyntaxError: ES2015 Spread operator is not supported (Parse Error 24 line))
 [678] template-literal-line-terminators.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 24 line))

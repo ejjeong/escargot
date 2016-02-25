@@ -86,6 +86,10 @@ Object.defineProperty(Object.prototype, "__defineSetter__", {
     enumerable : false
 });
 
+Object.is = function(a,b) {
+    return a === b;
+}
+
 Number.isNaN = function(arg) { return isNaN(arg); };
 
 /*
