@@ -166,7 +166,7 @@ dead-osr-entry-value.js
 dead-speculating-argument-use.js
 dead-uint32-to-number.js
 dead-value-with-mov-hint-in-another-block.js
-destructuring-assignment-accepts-iterables.js
+// destructuring-assignment-accepts-iterables.js // ES6 destructuring
 dfg-create-arguments-inline-alloc.js
 dfg-exception-try-catch-in-constructor-with-inlined-throw.js
 dfg-put-by-val-direct-with-edge-numbers.js
