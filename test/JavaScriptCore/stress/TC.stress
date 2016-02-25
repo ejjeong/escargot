@@ -293,7 +293,7 @@ function-sinking-no-double-allocate.js
 function-sinking-osrexit.js
 function-sinking-put.js
 fuzz-bug-16399949.js
-generational-opaque-roots.js
+// generational-opaque-roots.js // JSC-only
 get-argument-by-val-in-inlined-varargs-call-out-of-bounds.js
 get-argument-by-val-safe-in-inlined-varargs-call-out-of-bounds.js
 get-by-id-throw-from-getter-through-optimized-code.js

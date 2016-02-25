@@ -4,7 +4,7 @@ function shouldBe(actual, expected) {
 }
 
 function test() {
-    shouldBe(eval("(`\0`)"), "\0");
+    //shouldBe(eval("(`\0`)"), "\0"); escargot do not support template string
     shouldBe(eval("('\0')"), "\0");
 }
 noInline(test);
