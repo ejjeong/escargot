@@ -171,7 +171,7 @@ dfg-create-arguments-inline-alloc.js
 dfg-exception-try-catch-in-constructor-with-inlined-throw.js
 dfg-put-by-val-direct-with-edge-numbers.js
 dfg-rare-data.js
-dfg-tail-calls.js
+// dfg-tail-calls.js // Deprecated function.caller
 // dfg-to-primitive-pass-symbol.js // ES6 Symbol
 // disable-function-dot-arguments.js // Deprecated function.arguments
 double-as-int32.js
@@ -672,7 +672,7 @@ tagged-templates-this.js
 tagged-templates.js
 tail-call-in-inline-cache.js
 tail-call-no-stack-overflow.js
-tail-call-recognize.js
+// tail-call-recognize.js // Deprecated function.caller
 tail-call-varargs-no-stack-overflow.js
 tail-calls-dont-overwrite-live-stack.js
 template-literal-line-terminators.js

@@ -171,7 +171,7 @@
 [171] dfg-exception-try-catch-in-constructor-with-inlined-throw.js ..... Succ
 [172] dfg-put-by-val-direct-with-edge-numbers.js ..... Fail (Uncaught Error: bad value: undefined)
 [173] dfg-rare-data.js ..... Succ
-[174] dfg-tail-calls.js ..... Fail (Uncaught Error)
+[174] // dfg-tail-calls.js // Deprecated function.caller ..... Excluded
 [175] // dfg-to-primitive-pass-symbol.js // ES6 Symbol ..... Excluded
 [176] // disable-function-dot-arguments.js // Deprecated function.arguments ..... Excluded
 [177] double-as-int32.js ..... Succ
@@ -680,7 +680,7 @@ Uncaught Wrong error: Should not have gotten here.)
 [672] tagged-templates.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 38 line))
 [673] tail-call-in-inline-cache.js ..... Succ
 [674] tail-call-no-stack-overflow.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 14 line))
-[675] tail-call-recognize.js ..... Fail (Uncaught Error: Wrong caller, expected run but got undefined)
+[675] // tail-call-recognize.js // Deprecated function.caller ..... Excluded
 [676] tail-call-varargs-no-stack-overflow.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 14 line))
 [677] tail-calls-dont-overwrite-live-stack.js ..... Fail (Uncaught SyntaxError: ES2015 Spread operator is not supported (Parse Error 24 line))
 [678] template-literal-line-terminators.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 24 line))
@@ -788,6 +788,6 @@ Uncaught Wrong error: Should not have gotten here.)
 [780] weird-setter-counter-syntactic.js ..... Succ
 [781] weird-setter-counter.js ..... Fail (Uncaught TypeError: Type error, DefineOwnProperty 11.a.ii)
 All      :  781
-Excluded :  228
+Excluded :  230
 Succeed  :  467
-Failed   :  86
+Failed   :  84
