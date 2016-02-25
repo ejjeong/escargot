@@ -672,12 +672,12 @@ Uncaught Wrong error: Should not have gotten here.)
 [664] // symbol-registry.js // ES6 Symbol ..... Excluded
 [665] // symbol-seal-and-freeze.js // ES6 Symbol ..... Excluded
 [666] // symbol-with-json.js // ES6 Symbol ..... Excluded
-[667] tagged-templates-identity.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 11 line))
-[668] tagged-templates-raw-strings.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 15 line))
-[669] tagged-templates-syntax.js ..... Fail (Uncaught Error: Bad error: SyntaxError: ES2015 Template string is not supported (Parse Error 1 line))
-[670] tagged-templates-template-object.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 39 line))
-[671] tagged-templates-this.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 18 line))
-[672] tagged-templates.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 38 line))
+[667] // tagged-templates-identity.js // ES6 Template string ..... Excluded
+[668] // tagged-templates-raw-strings.js // ES6 Template string ..... Excluded
+[669] // tagged-templates-syntax.js // ES6 Template string ..... Excluded
+[670] // tagged-templates-template-object.js // ES6 Template string ..... Excluded
+[671] // tagged-templates-this.js // ES6 Template string ..... Excluded
+[672] // tagged-templates.js // ES6 Template string ..... Excluded
 [673] tail-call-in-inline-cache.js ..... Succ
 [674] tail-call-no-stack-overflow.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 14 line))
 [675] // tail-call-recognize.js // Deprecated function.caller ..... Excluded
@@ -788,6 +788,6 @@ Uncaught Wrong error: Should not have gotten here.)
 [780] weird-setter-counter-syntactic.js ..... Succ
 [781] weird-setter-counter.js ..... Fail (Uncaught TypeError: Type error, DefineOwnProperty 11.a.ii)
 All      :  781
-Excluded :  231
+Excluded :  237
 Succeed  :  469
-Failed   :  81
+Failed   :  75

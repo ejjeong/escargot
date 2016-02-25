@@ -664,12 +664,12 @@ switch-typeof.js
 // symbol-registry.js // ES6 Symbol
 // symbol-seal-and-freeze.js // ES6 Symbol
 // symbol-with-json.js // ES6 Symbol
-tagged-templates-identity.js
-tagged-templates-raw-strings.js
-tagged-templates-syntax.js
-tagged-templates-template-object.js
-tagged-templates-this.js
-tagged-templates.js
+// tagged-templates-identity.js // ES6 Template string
+// tagged-templates-raw-strings.js // ES6 Template string
+// tagged-templates-syntax.js // ES6 Template string
+// tagged-templates-template-object.js // ES6 Template string
+// tagged-templates-this.js // ES6 Template string
+// tagged-templates.js // ES6 Template string
 tail-call-in-inline-cache.js
 tail-call-no-stack-overflow.js
 // tail-call-recognize.js // Deprecated function.caller
