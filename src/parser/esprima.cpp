@@ -868,10 +868,14 @@ void addDeclToCurrentContext(ParseContext* ctx, escargot::VariableDeclaratorNode
     ctx->m_currentBody->insert(ctx->m_currentBody->begin(), new escargot::VariableDeclaratorNode(new escargot::IdentifierNode(((escargot::IdentifierNode *)node->id())->name()), NULL));
 }
 
-void throwUnexpectedToken(/*token, message*/)
+void throwUnexpectedToken(RefPtr<ParseStatus> token/*token, message*/)
 {
-    // throw unexpectedTokenError(token, message);
-    throw u"unexpectedTokenError";
+    throw escargot::ESString::concatTwoStrings(escargot::ESString::create("Unexpected token"), token->m_value.toESString());
+}
+
+void throwUnexpectedToken(const char16_t* token = u"")
+{
+    throw escargot::ESString::concatTwoStrings(escargot::ESString::create("Unexpected token"), escargot::ESString::create(token));
 }
 
 void tolerateUnexpectedToken(/*token, message*/)
@@ -3132,7 +3136,7 @@ escargot::Node* parseForStatement(ParseContext* ctx/*node*/)
             nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
             return nd;
         } else {
-            RELEASE_ASSERT_NOT_REACHED();
+            throw u"ES6 for..of statement is not supported";
         }
     }
     /*
@@ -3337,26 +3341,7 @@ escargot::Node* parseReturnStatement(ParseContext* ctx/*node*/)
 
 escargot::Node* parseWithStatement(ParseContext* ctx)
 {
-    /*
-    var object, body;
-
-    if (strict) {
-        tolerateError(Messages.StrictModeWith);
-    }
-
-    expectKeyword('with');
-
-    expect('(');
-
-    object = parseExpression();
-
-    expect(')');
-
-    body = parseStatement();
-
-    return node.finishWithStatement(object, body);
-     */
-    RELEASE_ASSERT_NOT_REACHED();
+    throw u"with statement is not supported";
 }
 
 // ECMA-262 13.12 The switch statement
@@ -4852,22 +4837,7 @@ void parseTemplateElement(ParseContext* ctx/*, option*/)
 
 escargot::Node* parseTemplateLiteral(ParseContext* ctx)
 {
-    RELEASE_ASSERT_NOT_REACHED();
-    /*
-    var quasi, quasis, expressions, node = new Node();
-
-    quasi = parseTemplateElement({ head: true });
-    quasis = [ quasi ];
-    expressions = [];
-
-    while (!quasi.tail) {
-        expressions.push(parseExpression());
-        quasi = parseTemplateElement({ head: false });
-        quasis.push(quasi);
-    }
-
-    return node.finishTemplateLiteral(quasis, expressions);
-     */
+    throw u"ES6 Template string is not supported";
 }
 
 // ECMA-262 12.2.10 The Grouping Operator
@@ -5195,12 +5165,7 @@ escargot::ArgumentVector parseArguments(ParseContext* ctx)
     if (!match(ctx, RightParenthesis)) {
         while (ctx->m_startIndex < ctx->m_length) {
             if (match(ctx, PeriodPeriodPeriod)) {
-                /*
-                expr = new Node();
-                lex();
-                expr.finishSpreadElement(isolateCoverGrammar(parseAssignmentExpression));
-                 */
-                RELEASE_ASSERT_NOT_REACHED();
+                throw u"ES6 Spread operator is not supported";
             } else {
                 expr = isolateCoverGrammar(ctx, parseAssignmentExpression);
             }
@@ -6130,8 +6095,12 @@ escargot::Node* parse(escargot::ESString* source, bool strict)
     try {
         escargot::Node* node = parseProgram(&ctx);
         return node;
-    } catch(...) {
-        throw ctx.m_lineNumber;
+    } catch (const char16_t* msg) {
+        throw EsprimaError(ctx.m_lineNumber, escargot::ESString::create(msg));
+    } catch (escargot::ESString* msg) {
+        throw EsprimaError(ctx.m_lineNumber, msg);
+    } catch (...) {
+        RELEASE_ASSERT_NOT_REACHED();
     }
     return NULL;
 }

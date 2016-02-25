@@ -166,7 +166,7 @@
 [166] dead-speculating-argument-use.js ..... Succ
 [167] dead-uint32-to-number.js ..... Succ
 [168] dead-value-with-mov-hint-in-another-block.js ..... Succ
-[169] destructuring-assignment-accepts-iterables.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
+[169] destructuring-assignment-accepts-iterables.js ..... Fail (Uncaught SyntaxError: ES6 Template string is not supported (Parse Error 18 line))
 [170] dfg-create-arguments-inline-alloc.js ..... Succ
 [171] dfg-exception-try-catch-in-constructor-with-inlined-throw.js ..... Succ
 [172] dfg-put-by-val-direct-with-edge-numbers.js ..... Fail (Uncaught TypeError: cannot convert undefined into object)
@@ -185,10 +185,10 @@
 [185] empty_eos_regex_split.js ..... Fail (Uncaught Error: 2 = a,)
 [186] // equality-type-checking.js // JSC 'addressOf()' ..... Excluded
 [187] // equals-masquerader.js // JSC 'makeMasquerader()' ..... Excluded
-[188] es6-default-parameters.js ..... Fail (Uncaught SyntaxError: Parse Error 89 line)
+[188] es6-default-parameters.js ..... Fail (Uncaught SyntaxError: Unexpected token (Parse Error 89 line))
 [189] // es6-for-of-loop-exception.js // ES6 for ... of ..... Excluded
 [190] escape-object-in-diamond-then-exit.js ..... Succ
-[191] eval-script-contains-null-character.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
+[191] eval-script-contains-null-character.js ..... Fail (Uncaught SyntaxError: ES6 Template string is not supported (Parse Error 1 line))
 [192] eval-that-is-not-eval.js ..... Succ
 [193] exception-dfg-inlined-frame-not-strict-equal.js ..... Succ
 [194] exception-dfg-not-strict-equal.js ..... Succ
@@ -197,8 +197,8 @@
 [197] exception-effect-strcat.js ..... Fail (Uncaught Error: did not throw.)
 [198] exception-in-strcat-string-overflow.js ..... Fail (Uncaught Error: did not throw)
 [199] exception-in-strcat.js ..... Succ
-[200] exception-in-to-property-key-should-be-handled-early-in-object-methods.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4678))
-[201] exception-in-to-property-key-should-be-handled-early.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4678))
+[200] exception-in-to-property-key-should-be-handled-early-in-object-methods.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4663))
+[201] exception-in-to-property-key-should-be-handled-early.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4663))
 [202] exit-after-int32-to-double.js ..... Succ
 [203] exit-after-int52-to-double.js ..... Succ
 [204] exit-after-int52-to-value.js ..... Succ
@@ -311,7 +311,7 @@
 [311] // get-by-val-on-undecided-trivial.js // ES6 const ..... Excluded
 [312] get-by-val-out-of-bounds-basics.js ..... Succ
 [313] get-by-val-with-string-constructor.js ..... Succ
-[314] get-by-val-with-string-exit.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4678))
+[314] get-by-val-with-string-exit.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4663))
 [315] get-by-val-with-string-generated.js ..... Succ
 [316] get-by-val-with-string-getter.js ..... Succ
 [317] get-by-val-with-string.js ..... Succ
@@ -336,7 +336,7 @@
 [336] // get-stack-mapping.js // Deprecated function.arguments ..... Excluded
 [337] getter-arity.js ..... Succ
 [338] getter.js ..... Succ
-[339] global-environment-does-not-trap-unscopables.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (3359))
+[339] global-environment-does-not-trap-unscopables.js ..... Fail (Uncaught SyntaxError: with statement is not supported (Parse Error 16 line))
 [340] // global-lexical-let-no-rhs.js // ES6 let ..... Excluded
 [341] // global-lexical-redeclare-variable.js // ES6 let ..... Excluded
 [342] // global-lexical-redefine-const.js // ES6 const ..... Excluded
@@ -474,7 +474,7 @@ Uncaught Wrong error: Should not have gotten here.)
 [466] multi-put-by-offset-multiple-transitions.js ..... Succ
 [467] multi-put-by-offset-reallocation-butterfly-cse.js ..... Succ
 [468] multi-put-by-offset-reallocation-cases.js ..... Succ
-[469] mutual-tail-call-no-stack-overflow.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
+[469] mutual-tail-call-no-stack-overflow.js ..... Fail (Uncaught SyntaxError: ES6 Template string is not supported (Parse Error 14 line))
 [470] nan-equal-untyped.js ..... Succ
 [471] nan-equal.js ..... Succ
 [472] new-array-dead.js ..... Succ
@@ -491,7 +491,7 @@ Uncaught Wrong error: Should not have gotten here.)
 [483] new-undecided-array-with-size.js ..... Succ
 [484] no-abc-skippy-loop.js ..... Succ
 [485] no-abc-skippy-paired-loop.js ..... Succ
-[486] non-constructors.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
+[486] non-constructors.js ..... Fail (Uncaught SyntaxError: ES6 Template string is not supported (Parse Error 13 line))
 [487] not-cell-use.js ..... Succ
 [488] // numeric-setter-on-prototype-non-blank-array.js // ES6 Class ..... Excluded
 [489] // numeric-setter-on-prototype.js // ES6 Class ..... Excluded
@@ -516,7 +516,7 @@ Uncaught Wrong error: Should not have gotten here.)
 [508] op-push-name-scope-crashes-profiler.js ..... Fail (Uncaught ReferenceError: arguments is not defined)
 [509] operation-get-by-val-default-should-not-called-for-already-optimized-site.js ..... Succ
 [510] other-is-object-or-null.js ..... Succ
-[511] pathname-resolve.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
+[511] pathname-resolve.js ..... Fail (Uncaught SyntaxError: ES6 Template string is not supported (Parse Error 5 line))
 [512] phantom-arguments-set-local-then-exit-in-same-block.js ..... Succ
 [513] phantom-direct-arguments-clobber-argument-count.js ..... Succ
 [514] phantom-direct-arguments-clobber-callee.js ..... Succ
@@ -554,13 +554,13 @@ Uncaught Wrong error: Should not have gotten here.)
 [546] prop-type-struct-then-object.js ..... Succ
 [547] // prop-type-symbol-then-object.js // ES6 Symbol ..... Excluded
 [548] // prop-type-symbol-then-string.js // ES6 Symbol ..... Excluded
-[549] property-name-enumerator-should-not-look-into-indexed-values-when-it-is-a-dictionary.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
+[549] property-name-enumerator-should-not-look-into-indexed-values-when-it-is-a-dictionary.js ..... Fail (Uncaught SyntaxError: ES6 Template string is not supported (Parse Error 3 line))
 [550] proto-setter.js ..... Fail (Uncaught TypeError: cannot redefine property)
 [551] prototype-getter.js ..... Succ
 [552] // proxy-inline-cache.js // ES6 Proxy ..... Excluded
 [553] prune-multi-put-by-offset-replace-or-transition-variant.js ..... Succ
 [554] put-by-id-build-list-order-recurse.js ..... Fail (Uncaught TypeError: Type error, DefineOwnProperty 7.a)
-[555] put-by-id-direct-should-be-done-for-non-index-property.js ..... Fail (Uncaught SyntaxError: Parse Error 35 line)
+[555] put-by-id-direct-should-be-done-for-non-index-property.js ..... Fail (Uncaught SyntaxError: unexpectedTokenError (Parse Error 35 line))
 [556] put-by-id-on-new-object-after-prototype-transition-non-strict.js ..... Succ
 [557] put-by-id-on-new-object-after-prototype-transition-strict.js ..... Succ
 [558] put-by-id-strict-build-list-order.js ..... Succ
@@ -606,8 +606,8 @@ Uncaught Wrong error: Should not have gotten here.)
 [598] repeated-put-by-id-reallocating-transition.js ..... Succ
 [599] replacement-watchpoint-dictionary.js ..... Succ
 [600] replacement-watchpoint.js ..... Succ
-[601] reserved-word-with-escape.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
-[602] rest-elements.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
+[601] reserved-word-with-escape.js ..... Fail (Uncaught SyntaxError: ES6 Template string is not supported (Parse Error 27 line))
+[602] rest-elements.js ..... Fail (Uncaught SyntaxError: ES6 Template string is not supported (Parse Error 18 line))
 [603] retry-cache-later.js ..... Succ
 [604] runtime-array.js ..... Fail (Uncaught ReferenceError: createRuntimeArray is not defined)
 [605] runtime-throw-through-optimized-code.js ..... Succ
@@ -616,7 +616,7 @@ Uncaught Wrong error: Should not have gotten here.)
 [608] // set-constructor-adder.js // ES6 Set ..... Excluded
 [609] // set-constructor.js // ES6 for ... of ..... Excluded
 [610] // set-iterators-next.js // ES6 for ... of ..... Excluded
-[611] set-same-prototype.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
+[611] set-same-prototype.js ..... Fail (Uncaught SyntaxError: ES6 Template string is not supported (Parse Error 18 line))
 [612] setter.js ..... Succ
 [613] simple-polyvariant-call-inlining-example.js ..... Succ
 [614] simple-polyvariant-get-by-id-inlining-example.js ..... Succ
@@ -643,24 +643,24 @@ Uncaught Wrong error: Should not have gotten here.)
 [635] sort-array-with-undecided.js ..... Succ
 [636] sparse-array-entry-update-144067.js ..... Succ
 [637] sparse-map-non-overlapping.js ..... Succ
-[638] sparse-map-non-skip-getter-overriding.js ..... Fail (Uncaught SyntaxError: Parse Error 12 line)
+[638] sparse-map-non-skip-getter-overriding.js ..... Fail (Uncaught SyntaxError: unexpectedTokenError (Parse Error 12 line))
 [639] sparse-map-non-skip.js ..... Succ
 [640] sparse_splice.js ..... Succ
 [641] static-function-delete.js ..... Succ
 [642] static-function-put.js ..... Succ
-[643] static-getter-delete.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
+[643] static-getter-delete.js ..... Fail (Uncaught SyntaxError: ES6 Template string is not supported (Parse Error 18 line))
 [644] static-getter-descriptors.js ..... Fail (Uncaught Error: bad value: {"writable":false,"enumerable":false,"configurable":false})
 [645] static-getter-enumeration.js ..... Succ
 [646] static-getter-get.js ..... Succ
 [647] static-getter-in-names.js ..... Fail (Uncaught Error: bad value: ["compile","constructor","exec","global","ignoreCase","lastIndex","multiline","source","test","toString"])
 [648] // static-getter-names.js // ES6 for ... of ..... Excluded
-[649] static-getter-put.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
+[649] static-getter-put.js ..... Fail (Uncaught SyntaxError: ES6 Template string is not supported (Parse Error 18 line))
 [650] strict-to-this-int.js ..... Succ
 [651] // string-from-code-point.js // ES6 for ... of ..... Excluded
 [652] string-ident-to-not-string-var-equality.js ..... Succ
 [653] string-iterators.js ..... Fail (RELEASE_ASSERT at src/parser/esprima.cpp (867))
 [654] string-out-of-bounds-negative-proto-value.js ..... Succ
-[655] string-raw.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
+[655] string-raw.js ..... Fail (Uncaught SyntaxError: ES6 Template string is not supported (Parse Error 3 line))
 [656] sub-overflows-after-not-equal.js ..... Succ
 [657] // super-call-does-not-look-up-constructor.js // ES6 Class ..... Excluded
 [658] switch-typeof-indirect.js ..... Succ
@@ -672,20 +672,20 @@ Uncaught Wrong error: Should not have gotten here.)
 [664] // symbol-registry.js // ES6 Symbol ..... Excluded
 [665] // symbol-seal-and-freeze.js // ES6 Symbol ..... Excluded
 [666] // symbol-with-json.js // ES6 Symbol ..... Excluded
-[667] tagged-templates-identity.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
-[668] tagged-templates-raw-strings.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
-[669] tagged-templates-syntax.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
-[670] tagged-templates-template-object.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4678))
-[671] tagged-templates-this.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4678))
-[672] tagged-templates.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4678))
+[667] tagged-templates-identity.js ..... Fail (Uncaught SyntaxError: ES6 Template string is not supported (Parse Error 11 line))
+[668] tagged-templates-raw-strings.js ..... Fail (Uncaught SyntaxError: ES6 Template string is not supported (Parse Error 15 line))
+[669] tagged-templates-syntax.js ..... Fail (Uncaught Error: Bad error: SyntaxError: ES6 Template string is not supported (Parse Error 1 line))
+[670] tagged-templates-template-object.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4663))
+[671] tagged-templates-this.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4663))
+[672] tagged-templates.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4663))
 [673] tail-call-in-inline-cache.js ..... Succ
-[674] tail-call-no-stack-overflow.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
-[675] tail-call-recognize.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (3135))
-[676] tail-call-varargs-no-stack-overflow.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
-[677] tail-calls-dont-overwrite-live-stack.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (5203))
-[678] template-literal-line-terminators.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
-[679] template-literal-syntax.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
-[680] template-literal.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
+[674] tail-call-no-stack-overflow.js ..... Fail (Uncaught SyntaxError: ES6 Template string is not supported (Parse Error 14 line))
+[675] tail-call-recognize.js ..... Fail (Uncaught SyntaxError: ES6 for..of statement is not supported (Parse Error 88 line))
+[676] tail-call-varargs-no-stack-overflow.js ..... Fail (Uncaught SyntaxError: ES6 Template string is not supported (Parse Error 14 line))
+[677] tail-calls-dont-overwrite-live-stack.js ..... Fail (Uncaught SyntaxError: ES6 Spread operator is not supported (Parse Error 24 line))
+[678] template-literal-line-terminators.js ..... Fail (Uncaught SyntaxError: ES6 Template string is not supported (Parse Error 24 line))
+[679] template-literal-syntax.js ..... Fail (Uncaught Error: Bad error: SyntaxError: ES6 Template string is not supported (Parse Error 1 line))
+[680] template-literal.js ..... Fail (Uncaught SyntaxError: ES6 Template string is not supported (Parse Error 12 line))
 [681] test-spec-misc.js ..... Succ
 [682] throw-from-ftl-call-ic-slow-path-cells.js ..... Fail (Uncaught Error: bad exception message: Constructor TypedArray requires 'new')
 [683] throw-from-ftl-call-ic-slow-path-undefined.js ..... Fail (Uncaught Error: bad exception message: Constructor TypedArray requires 'new')
@@ -702,8 +702,8 @@ Uncaught Wrong error: Should not have gotten here.)
 [694] to-string-on-value-or-string.js ..... Succ
 [695] to-string-on-value.js ..... Succ
 [696] to-this-polymorphic.js ..... Succ
-[697] toprimitive-speculated-types.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4678))
-[698] trailing-comma-in-patterns.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4678))
+[697] toprimitive-speculated-types.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4663))
+[698] trailing-comma-in-patterns.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4663))
 [699] tricky-array-bounds-checks.js ..... Fail (Uncaught Error: bad result for trick: true,5,,1,true)
 [700] tricky-indirectly-inferred-infinite-loop-that-uses-captured-variables-and-creates-the-activation-outside-the-loop.js ..... Succ
 [701] tricky-inferred-infinite-loop-that-uses-captured-variables-and-creates-the-activation-outside-the-loop.js ..... Succ
@@ -717,24 +717,24 @@ Uncaught Wrong error: Should not have gotten here.)
 [709] try-catch-stub-routine-replaced.js ..... Succ
 [710] type-of-functions-and-objects.js ..... Succ
 [711] typed-array-byte-offset.js ..... Fail (Uncaught Error: bad result for fast typed array: undefined)
-[712] typed-array-get-by-val-profiling.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
-[713] typed-array-put-by-val-profiling.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
-[714] typedarray-copyWithin.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (3135))
-[715] typedarray-every.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (3135))
-[716] typedarray-fill.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (3135))
-[717] typedarray-filter.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (3135))
-[718] typedarray-find.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (3135))
-[719] typedarray-findIndex.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (3135))
-[720] typedarray-forEach.js ..... Fail (Uncaught SyntaxError: Parse Error 17 line)
-[721] typedarray-indexOf.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (3135))
-[722] typedarray-lastIndexOf.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (3135))
-[723] typedarray-map.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (3135))
-[724] typedarray-reduce.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (3135))
-[725] typedarray-reduceRight.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (3135))
-[726] typedarray-slice.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (3135))
-[727] typedarray-some.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (3135))
-[728] typedarray-sort.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (3135))
-[729] typeof-symbol.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4855))
+[712] typed-array-get-by-val-profiling.js ..... Fail (Uncaught SyntaxError: ES6 Template string is not supported (Parse Error 7 line))
+[713] typed-array-put-by-val-profiling.js ..... Fail (Uncaught SyntaxError: ES6 Template string is not supported (Parse Error 9 line))
+[714] typedarray-copyWithin.js ..... Fail (Uncaught SyntaxError: ES6 for..of statement is not supported (Parse Error 98 line))
+[715] typedarray-every.js ..... Fail (Uncaught SyntaxError: ES6 for..of statement is not supported (Parse Error 98 line))
+[716] typedarray-fill.js ..... Fail (Uncaught SyntaxError: ES6 for..of statement is not supported (Parse Error 98 line))
+[717] typedarray-filter.js ..... Fail (Uncaught SyntaxError: ES6 for..of statement is not supported (Parse Error 98 line))
+[718] typedarray-find.js ..... Fail (Uncaught SyntaxError: ES6 for..of statement is not supported (Parse Error 98 line))
+[719] typedarray-findIndex.js ..... Fail (Uncaught SyntaxError: ES6 for..of statement is not supported (Parse Error 98 line))
+[720] typedarray-forEach.js ..... Fail (Uncaught SyntaxError: Unexpected token (Parse Error 17 line))
+[721] typedarray-indexOf.js ..... Fail (Uncaught SyntaxError: ES6 for..of statement is not supported (Parse Error 98 line))
+[722] typedarray-lastIndexOf.js ..... Fail (Uncaught SyntaxError: ES6 for..of statement is not supported (Parse Error 98 line))
+[723] typedarray-map.js ..... Fail (Uncaught SyntaxError: ES6 for..of statement is not supported (Parse Error 98 line))
+[724] typedarray-reduce.js ..... Fail (Uncaught SyntaxError: ES6 for..of statement is not supported (Parse Error 98 line))
+[725] typedarray-reduceRight.js ..... Fail (Uncaught SyntaxError: ES6 for..of statement is not supported (Parse Error 98 line))
+[726] typedarray-slice.js ..... Fail (Uncaught SyntaxError: ES6 for..of statement is not supported (Parse Error 98 line))
+[727] typedarray-some.js ..... Fail (Uncaught SyntaxError: ES6 for..of statement is not supported (Parse Error 98 line))
+[728] typedarray-sort.js ..... Fail (Uncaught SyntaxError: ES6 for..of statement is not supported (Parse Error 98 line))
+[729] typeof-symbol.js ..... Fail (Uncaught SyntaxError: ES6 Template string is not supported (Parse Error 4 line))
 [730] uint32-to-number-fold-constant-with-do-overflow.js ..... Succ
 [731] uint32array-unsigned-load.js ..... Succ
 [732] undefined-access-dictionary-then-proto-change.js ..... Succ

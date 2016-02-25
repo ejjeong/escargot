@@ -30,4 +30,12 @@ escargot::Node* parse(escargot::ESString* source, bool strict);
 
 }
 
+struct EsprimaError {
+    EsprimaError(size_t lineNumber, escargot::ESString* message)
+        : m_lineNumber(lineNumber), m_message(message) { }
+
+    size_t m_lineNumber;
+    escargot::ESString* m_message;
+};
+
 #endif
