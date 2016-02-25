@@ -41,7 +41,7 @@ NEVER_INLINE void setByIdSlowCase(ESVMInstance* instance, GlobalObject* globalOb
         } else {
             UTF16String err_msg;
             err_msg.append(u"assignment to undeclared variable ");
-            err_msg.append(code->m_name.string()->toNullableUTF16String().m_buffer);
+            err_msg.append(code->m_name.string()->toUTF16String());
             instance->throwError(ESValue(ReferenceError::create(ESString::create(std::move(err_msg)))));
         }
     }
@@ -379,7 +379,7 @@ NEVER_INLINE ESValue newOperation(ESVMInstance* instance, GlobalObject* globalOb
     ESFunctionObject* function = fn.asESPointer()->asESFunctionObject();
     if (function->nonConstructor()) {
         UTF16String str;
-        str.append(function->name()->toNullableUTF16String().m_buffer);
+        str.append(function->name()->toUTF16String());
         str.append(u" is not a constructor");
         instance->throwError(ESValue(TypeError::create(ESString::create(std::move(str)))));
     }

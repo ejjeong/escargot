@@ -32,7 +32,7 @@ ALWAYS_INLINE ESValue* getByIdOperation(ESVMInstance* instance, ExecutionContext
             ReferenceError* receiver = ReferenceError::create();
             std::vector<ESValue, gc_allocator<ESValue> > arguments;
             UTF16String err_msg;
-            err_msg.append(code->m_name.string()->toNullableUTF16String().m_buffer);
+            err_msg.append(code->m_name.string()->toUTF16String());
             err_msg.append(u" is not defined");
 
             // TODO call constructor

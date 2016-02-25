@@ -14,5 +14,5 @@ function shouldThrow(func, message) {
 for (var i = 0; i < 10000; ++i) {
     shouldThrow(function () {
         new Array.prototype.forEach(function () { });
-    }, "TypeError: function is not a constructor (evaluating 'new Array.prototype.forEach(function () { })')");
+    }, "TypeError: forEach is not a constructor");
 }

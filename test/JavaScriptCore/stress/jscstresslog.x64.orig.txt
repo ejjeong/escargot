@@ -101,7 +101,7 @@
 [101] branch-check-number-on-boolean-to-number-untyped.js ..... Succ
 [102] // branch-may-exit-due-to-object-or-other-use-kind.js // JSC 'makeMasquerader()' ..... Excluded
 [103] // bug-131764.js // ES6 spread '...' ..... Excluded
-[104] builtin-function-is-construct-type-none.js ..... Fail (Uncaught Error: bad error: TypeError: forEach is not a constructor)
+[104] builtin-function-is-construct-type-none.js ..... Succ
 [105] cached-prototype-setter.js ..... Fail (Uncaught Error: FAIL: 'x' setter was not called.)
 [106] call-forward-varargs-for-inlined-escaped-arguments.js ..... Succ
 [107] call-varargs-from-inlined-code-with-odd-number-of-arguments.js ..... Succ
@@ -789,5 +789,5 @@ Uncaught Wrong error: Should not have gotten here.)
 [781] weird-setter-counter.js ..... Fail (Uncaught TypeError: Type error, DefineOwnProperty 11.a.ii)
 All      :  781
 Excluded :  230
-Succeed  :  467
-Failed   :  84
+Succeed  :  468
+Failed   :  83
