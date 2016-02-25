@@ -4558,6 +4558,23 @@ escargot::Node* parsePropertyFunction(ParseContext* ctx, escargot::InternalAtomi
     return nd;
 }
 
+escargot::Node* parsePropertyMethodFunction(ParseContext* ctx, escargot::Node* key)
+{
+    bool previousAllowYield = ctx->m_allowYield;
+    ctx->m_allowYield = false;
+    escargot::InternalAtomicStringVector params = parseParams(ctx);
+    ctx->m_allowYield = previousAllowYield;
+
+    ctx->m_allowYield = false;
+    escargot::InternalAtomicStringVector vec;
+    escargot::Node* method = parsePropertyFunction(ctx, params);
+    ctx->m_allowYield = previousAllowYield;
+
+    escargot::Node* nd = new escargot::PropertyNode(key, method, escargot::PropertyNode::Init);
+    nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
+    return nd;
+}
+
 // This function is to try to parse a MethodDefinition as defined in 14.3. But in the case of object literals,
 // it might be called at a position where there is in fact a short hand identifier pattern or a data property.
 // This can only be determined after we consumed up to the left parentheses.
@@ -4659,9 +4676,7 @@ escargot::Node* tryParseMethodDefinition(ParseContext* ctx, ParseStatus* token, 
     }
 
     if (key && match(ctx, LeftParenthesis)) {
-        // escargot::Node* value = parsePropertyMethodFunction(ctx);
-        // return node.finishProperty('init', key, computed, value, true, false);
-        RELEASE_ASSERT_NOT_REACHED();
+        return parsePropertyMethodFunction(ctx, key);
     }
 
     // Not a MethodDefinition.

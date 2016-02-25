@@ -197,8 +197,8 @@
 [197] exception-effect-strcat.js ..... Fail (Uncaught Error: did not throw.)
 [198] exception-in-strcat-string-overflow.js ..... Fail (Uncaught Error: did not throw)
 [199] exception-in-strcat.js ..... Succ
-[200] exception-in-to-property-key-should-be-handled-early-in-object-methods.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4664))
-[201] exception-in-to-property-key-should-be-handled-early.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4664))
+[200] exception-in-to-property-key-should-be-handled-early-in-object-methods.js ..... Fail (Uncaught Error: bad error: TypeError: cannot convert null into object)
+[201] exception-in-to-property-key-should-be-handled-early.js ..... Fail (Uncaught Error: bad error: TypeError: cannot convert null into object)
 [202] exit-after-int32-to-double.js ..... Succ
 [203] exit-after-int52-to-double.js ..... Succ
 [204] exit-after-int52-to-value.js ..... Succ
@@ -311,7 +311,7 @@
 [311] // get-by-val-on-undecided-trivial.js // ES6 const ..... Excluded
 [312] get-by-val-out-of-bounds-basics.js ..... Succ
 [313] get-by-val-with-string-constructor.js ..... Succ
-[314] get-by-val-with-string-exit.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4664))
+[314] get-by-val-with-string-exit.js ..... Succ
 [315] get-by-val-with-string-generated.js ..... Succ
 [316] get-by-val-with-string-getter.js ..... Succ
 [317] get-by-val-with-string.js ..... Succ
@@ -675,9 +675,9 @@ Uncaught Wrong error: Should not have gotten here.)
 [667] tagged-templates-identity.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 11 line))
 [668] tagged-templates-raw-strings.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 15 line))
 [669] tagged-templates-syntax.js ..... Fail (Uncaught Error: Bad error: SyntaxError: ES2015 Template string is not supported (Parse Error 1 line))
-[670] tagged-templates-template-object.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4664))
-[671] tagged-templates-this.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4664))
-[672] tagged-templates.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4664))
+[670] tagged-templates-template-object.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 39 line))
+[671] tagged-templates-this.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 18 line))
+[672] tagged-templates.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 38 line))
 [673] tail-call-in-inline-cache.js ..... Succ
 [674] tail-call-no-stack-overflow.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 14 line))
 [675] tail-call-recognize.js ..... Fail (Uncaught SyntaxError: ES2015 for..of statement is not supported (Parse Error 88 line))
@@ -702,8 +702,8 @@ Uncaught Wrong error: Should not have gotten here.)
 [694] to-string-on-value-or-string.js ..... Succ
 [695] to-string-on-value.js ..... Succ
 [696] to-this-polymorphic.js ..... Succ
-[697] toprimitive-speculated-types.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4664))
-[698] trailing-comma-in-patterns.js ..... Fail (RELEASE_ASSERT_NOT_REACHED at src/parser/esprima.cpp (4664))
+[697] toprimitive-speculated-types.js ..... Succ
+[698] trailing-comma-in-patterns.js ..... Fail ()
 [699] tricky-array-bounds-checks.js ..... Fail (Uncaught Error: bad result for trick: true,5,,1,true)
 [700] tricky-indirectly-inferred-infinite-loop-that-uses-captured-variables-and-creates-the-activation-outside-the-loop.js ..... Succ
 [701] tricky-inferred-infinite-loop-that-uses-captured-variables-and-creates-the-activation-outside-the-loop.js ..... Succ
@@ -789,5 +789,5 @@ Uncaught Wrong error: Should not have gotten here.)
 [781] weird-setter-counter.js ..... Fail (Uncaught TypeError: Type error, DefineOwnProperty 11.a.ii)
 All      :  781
 Excluded :  212
-Succeed  :  465
-Failed   :  104
+Succeed  :  467
+Failed   :  102
