@@ -8,7 +8,7 @@ function fullGC() {
 }
 
 function DFGTrue() {
-    return true;
+    return false;
 }
 
 function debug(msg) {

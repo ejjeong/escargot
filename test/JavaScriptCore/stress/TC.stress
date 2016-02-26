@@ -546,7 +546,7 @@ prop-type-struct-then-object-opt.js
 prop-type-struct-then-object.js
 // prop-type-symbol-then-object.js // ES6 Symbol
 // prop-type-symbol-then-string.js // ES6 Symbol
-property-name-enumerator-should-not-look-into-indexed-values-when-it-is-a-dictionary.js
+// property-name-enumerator-should-not-look-into-indexed-values-when-it-is-a-dictionary.js // ES6 for ... of, Reflect
 proto-setter.js
 prototype-getter.js
 // proxy-inline-cache.js // ES6 Proxy
@@ -601,7 +601,7 @@ replacement-watchpoint.js
 reserved-word-with-escape.js
 // rest-elements.js // ES6 rest parameter syntax
 retry-cache-later.js
-runtime-array.js
+// runtime-array.js // JSC 'createRuntimeArray()'
 runtime-throw-through-optimized-code.js
 scoped-arguments-array-length.js
 scoped-then-direct-arguments-get-by-val-in-baseline.js

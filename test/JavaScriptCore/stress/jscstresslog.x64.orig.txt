@@ -554,7 +554,7 @@ Uncaught Wrong error: Should not have gotten here.)
 [546] prop-type-struct-then-object.js ..... Succ
 [547] // prop-type-symbol-then-object.js // ES6 Symbol ..... Excluded
 [548] // prop-type-symbol-then-string.js // ES6 Symbol ..... Excluded
-[549] property-name-enumerator-should-not-look-into-indexed-values-when-it-is-a-dictionary.js ..... Fail (Uncaught SyntaxError: ES2015 for..of statement is not supported (Parse Error 37 line))
+[549] // property-name-enumerator-should-not-look-into-indexed-values-when-it-is-a-dictionary.js // ES6 for ... of, Reflect ..... Excluded
 [550] proto-setter.js ..... Fail (Uncaught TypeError: cannot redefine property)
 [551] prototype-getter.js ..... Succ
 [552] // proxy-inline-cache.js // ES6 Proxy ..... Excluded
@@ -609,7 +609,7 @@ Uncaught Wrong error: Should not have gotten here.)
 [601] reserved-word-with-escape.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 27 line))
 [602] // rest-elements.js // ES6 rest parameter syntax ..... Excluded
 [603] retry-cache-later.js ..... Succ
-[604] runtime-array.js ..... Fail (Uncaught ReferenceError: createRuntimeArray is not defined)
+[604] // runtime-array.js // JSC 'createRuntimeArray()' ..... Excluded
 [605] runtime-throw-through-optimized-code.js ..... Succ
 [606] scoped-arguments-array-length.js ..... Succ
 [607] scoped-then-direct-arguments-get-by-val-in-baseline.js ..... Succ
@@ -704,7 +704,7 @@ Uncaught Wrong error: Should not have gotten here.)
 [696] to-this-polymorphic.js ..... Succ
 [697] toprimitive-speculated-types.js ..... Succ
 [698] trailing-comma-in-patterns.js ..... Fail ()
-[699] tricky-array-bounds-checks.js ..... Fail (Uncaught Error: bad result for trick: true,5,,1,true)
+[699] tricky-array-bounds-checks.js ..... Succ
 [700] tricky-indirectly-inferred-infinite-loop-that-uses-captured-variables-and-creates-the-activation-outside-the-loop.js ..... Succ
 [701] tricky-inferred-infinite-loop-that-uses-captured-variables-and-creates-the-activation-outside-the-loop.js ..... Succ
 [702] tricky-infinite-loop-that-uses-captured-variables-and-creates-the-activation-outside-the-loop.js ..... Succ
@@ -788,6 +788,6 @@ Uncaught Wrong error: Should not have gotten here.)
 [780] weird-setter-counter-syntactic.js ..... Succ
 [781] weird-setter-counter.js ..... Succ
 All      :  781
-Excluded :  263
-Succeed  :  481
-Failed   :  37
+Excluded :  265
+Succeed  :  482
+Failed   :  34

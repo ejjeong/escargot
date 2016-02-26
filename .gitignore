@@ -60,3 +60,4 @@ android/obj
 android/libs
 test/chakracore/chakracorelog.gen.txt
 test/chakracore/chakracorelog.verbose.txt
+test/JavaScriptCore/stress/jscstresslog.x64.gen.txt
