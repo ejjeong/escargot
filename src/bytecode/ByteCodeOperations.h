@@ -322,8 +322,9 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
     , ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex, ESHiddenClass** hiddenClassWillBe)
 {
     ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty());
-    std::function<bool (ESObject*, int)> callSetter;
-    callSetter = [&](ESObject* obj, int idx) {
+    std::function<bool(ESObject*, int)> callSetter;
+    callSetter = [&](ESObject* obj, int idx)
+    {
         // http://www.ecma-international.org/ecma-262/5.1/#sec-8.12.5
         // If IsAccessorDescriptor(desc) is true, then
         // Let setter be desc.[[Set]] which cannot be undefined.
