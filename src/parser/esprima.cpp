@@ -3969,7 +3969,8 @@ escargot::Node* parseFunctionDeclaration(ParseContext* ctx/*node, identifierIsOp
     nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
     ctx->m_currentBody->insert(ctx->m_currentBody->begin(), nd);
 
-    if (ctx->m_strict) {
+    // TODO : has to check at Function Expression, too.
+    if (!previousStrict && ctx->m_strict) {
         escargot::FunctionDeclarationNode* fd = static_cast<escargot::FunctionDeclarationNode *>(nd);
         const escargot::InternalAtomicStringVector& params = fd->params();
         escargot::InternalAtomicStringVector::const_iterator it = params.begin();
