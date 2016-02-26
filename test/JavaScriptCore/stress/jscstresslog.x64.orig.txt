@@ -102,7 +102,7 @@
 [102] // branch-may-exit-due-to-object-or-other-use-kind.js // JSC 'makeMasquerader()' ..... Excluded
 [103] // bug-131764.js // ES6 spread '...' ..... Excluded
 [104] builtin-function-is-construct-type-none.js ..... Succ
-[105] cached-prototype-setter.js ..... Fail (Uncaught Error: FAIL: 'x' setter was not called.)
+[105] cached-prototype-setter.js ..... Succ
 [106] call-forward-varargs-for-inlined-escaped-arguments.js ..... Succ
 [107] call-varargs-from-inlined-code-with-odd-number-of-arguments.js ..... Succ
 [108] call-varargs-from-inlined-code.js ..... Succ
@@ -789,5 +789,5 @@ Uncaught Wrong error: Should not have gotten here.)
 [781] weird-setter-counter.js ..... Succ
 All      :  781
 Excluded :  249
-Succeed  :  476
-Failed   :  56
+Succeed  :  477
+Failed   :  55
