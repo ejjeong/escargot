@@ -1604,7 +1604,7 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
             if (idx >= asESArrayObject()->length()) {
                 if (UNLIKELY(!isExtensible()))
                     return false;
-                if (asESArrayObject()->shouldConvertToSlowMode(idx)) {
+                if (asESArrayObject()->shouldConvertToSlowMode(idx + 1)) {
                     asESArrayObject()->convertToSlowMode();
                     asESArrayObject()->setLength(idx + 1);
                     goto array_fastmode_fail;
