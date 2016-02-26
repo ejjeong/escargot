@@ -1355,7 +1355,7 @@ void GlobalObject::installObject()
     // $19.1.3.4 Object.prototype.propertyIsEnumerable ( V )
     m_objectPrototype->defineDataProperty(strings->propertyIsEnumerable, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         // TODO toPropertyKey
-        ESValue key = instance->currentExecutionContext()->readArgument(0);
+        escargot::ESString* key = instance->currentExecutionContext()->readArgument(0).toString();
         ESObject* O = instance->currentExecutionContext()->resolveThisBindingToObject();
         if (!O->hasOwnProperty(key))
             return ESValue(false);
@@ -1363,7 +1363,7 @@ void GlobalObject::installObject()
             // In fast mode, it was already checked in O->hasOwnProperty.
             return ESValue(true);
         }
-        size_t t = O->hiddenClass()->findProperty(key.toString());
+        size_t t = O->hiddenClass()->findProperty(key);
         if (O->hiddenClass()->propertyInfo(t).m_flags.m_isEnumerable)
             return ESValue(true);
         return ESValue(false);

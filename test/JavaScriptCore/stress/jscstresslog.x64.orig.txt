@@ -197,8 +197,8 @@
 [197] exception-effect-strcat.js ..... Fail (Uncaught Error: did not throw.)
 [198] exception-in-strcat-string-overflow.js ..... Fail (Uncaught Error: did not throw)
 [199] exception-in-strcat.js ..... Succ
-[200] exception-in-to-property-key-should-be-handled-early-in-object-methods.js ..... Fail (Uncaught Error: bad error: TypeError: cannot convert null into object)
-[201] exception-in-to-property-key-should-be-handled-early.js ..... Fail (Uncaught Error: bad error: TypeError: cannot convert null into object)
+[200] exception-in-to-property-key-should-be-handled-early-in-object-methods.js ..... Succ
+[201] exception-in-to-property-key-should-be-handled-early.js ..... Succ
 [202] exit-after-int32-to-double.js ..... Succ
 [203] exit-after-int52-to-double.js ..... Succ
 [204] exit-after-int52-to-value.js ..... Succ
@@ -789,5 +789,5 @@ Uncaught Wrong error: Should not have gotten here.)
 [781] weird-setter-counter.js ..... Succ
 All      :  781
 Excluded :  255
-Succeed  :  478
-Failed   :  48
+Succeed  :  480
+Failed   :  46

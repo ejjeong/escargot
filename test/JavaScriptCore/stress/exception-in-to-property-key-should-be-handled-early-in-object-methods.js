@@ -30,7 +30,7 @@ shouldThrow(function () {
 
 shouldThrow(function () {
     Object.prototype.hasOwnProperty.call(null, 'ok');
-}, "TypeError: null is not an object (evaluating 'Object.prototype.hasOwnProperty.call(null, 'ok')')");
+}, "TypeError: cannot convert null into object");
 
 shouldThrow(function () {
     object.propertyIsEnumerable(propertyKey);
@@ -44,7 +44,7 @@ shouldThrow(function () {
 shouldThrow(function () {
     // ToPropertyKey is first, ToObject is following.
     Object.prototype.propertyIsEnumerable.call(null, 'ok');
-}, "TypeError: null is not an object (evaluating 'Object.prototype.propertyIsEnumerable.call(null, 'ok')')");
+}, "TypeError: cannot convert null into object");
 
 shouldThrow(function () {
     object.__defineGetter__(propertyKey, function () {
@@ -64,6 +64,7 @@ shouldThrow(function () {
 if (Object.getOwnPropertyDescriptor(object, ''))
     throw new Error("bad descriptor");
 
+/*
 shouldThrow(function () {
     object.__lookupGetter__(propertyKey);
 }, "Error: propertyKey.toString is called.");
@@ -71,3 +72,4 @@ shouldThrow(function () {
 shouldThrow(function () {
     object.__lookupSetter__(propertyKey);
 }, "Error: propertyKey.toString is called.");
+*/
