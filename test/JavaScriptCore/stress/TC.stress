@@ -243,7 +243,7 @@ fold-to-double-constant-then-exit.js
 fold-to-int52-constant-then-exit.js
 fold-to-primitive-in-cfa.js
 fold-to-primitive-to-identity-in-cfa.js
-fold-typed-array-properties.js
+// fold-typed-array-properties.js // ES6 TypedArray
 for-in-array-mode.js
 for-in-base-reassigned-later-and-change-structure.js
 for-in-base-reassigned-later.js
@@ -271,8 +271,8 @@ ftl-get-my-argument-by-val-inlined.js
 ftl-get-my-argument-by-val.js
 ftl-getmyargumentslength-inline.js
 ftl-getmyargumentslength.js
-ftl-gettypedarrayoffset-simple.js
-ftl-gettypedarrayoffset-wasteful.js
+// ftl-gettypedarrayoffset-simple.js // ES6 TypedArray
+// ftl-gettypedarrayoffset-wasteful.js // ES6 TypedArray
 ftl-in-overflow.js
 ftl-library-exception.js
 ftl-library-inline-gettimezoneoffset.js
@@ -708,9 +708,9 @@ try-catch-getter-as-get-by-id.js
 try-catch-setter-as-put-by-id.js
 try-catch-stub-routine-replaced.js
 type-of-functions-and-objects.js
-typed-array-byte-offset.js
-typed-array-get-by-val-profiling.js
-typed-array-put-by-val-profiling.js
+// typed-array-byte-offset.js // ES6 TypedArray
+// typed-array-get-by-val-profiling.js // ES6 TypedArray
+// typed-array-put-by-val-profiling.js // ES6 TypedArray
 // typedarray-copyWithin.js // ES6 TypedArray
 // typedarray-every.js // ES6 TypedArray
 // typedarray-fill.js // ES6 TypedArray

@@ -243,7 +243,7 @@
 [243] fold-to-int52-constant-then-exit.js ..... Succ
 [244] fold-to-primitive-in-cfa.js ..... Succ
 [245] fold-to-primitive-to-identity-in-cfa.js ..... Succ
-[246] fold-typed-array-properties.js ..... Fail (Uncaught Error: bad offset (start): undefined)
+[246] // fold-typed-array-properties.js // ES6 TypedArray ..... Excluded
 [247] for-in-array-mode.js ..... Succ
 [248] for-in-base-reassigned-later-and-change-structure.js ..... Succ
 [249] for-in-base-reassigned-later.js ..... Succ
@@ -271,8 +271,8 @@
 [271] ftl-get-my-argument-by-val.js ..... Succ
 [272] ftl-getmyargumentslength-inline.js ..... Succ
 [273] ftl-getmyargumentslength.js ..... Succ
-[274] ftl-gettypedarrayoffset-simple.js ..... Fail (Uncaught error)
-[275] ftl-gettypedarrayoffset-wasteful.js ..... Fail (Uncaught error)
+[274] // ftl-gettypedarrayoffset-simple.js // ES6 TypedArray ..... Excluded
+[275] // ftl-gettypedarrayoffset-wasteful.js // ES6 TypedArray ..... Excluded
 [276] ftl-in-overflow.js ..... Succ
 [277] ftl-library-exception.js ..... Fail (Uncaught bad result: false)
 [278] ftl-library-inline-gettimezoneoffset.js ..... Succ
@@ -716,9 +716,9 @@ Uncaught Wrong error: Should not have gotten here.)
 [708] try-catch-setter-as-put-by-id.js ..... Succ
 [709] try-catch-stub-routine-replaced.js ..... Succ
 [710] type-of-functions-and-objects.js ..... Succ
-[711] typed-array-byte-offset.js ..... Fail (Uncaught Error: bad result for fast typed array: undefined)
-[712] typed-array-get-by-val-profiling.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 7 line))
-[713] typed-array-put-by-val-profiling.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 9 line))
+[711] // typed-array-byte-offset.js // ES6 TypedArray ..... Excluded
+[712] // typed-array-get-by-val-profiling.js // ES6 TypedArray ..... Excluded
+[713] // typed-array-put-by-val-profiling.js // ES6 TypedArray ..... Excluded
 [714] // typedarray-copyWithin.js // ES6 TypedArray ..... Excluded
 [715] // typedarray-every.js // ES6 TypedArray ..... Excluded
 [716] // typedarray-fill.js // ES6 TypedArray ..... Excluded
@@ -788,6 +788,6 @@ Uncaught Wrong error: Should not have gotten here.)
 [780] weird-setter-counter-syntactic.js ..... Succ
 [781] weird-setter-counter.js ..... Succ
 All      :  781
-Excluded :  249
+Excluded :  255
 Succeed  :  478
-Failed   :  54
+Failed   :  48
