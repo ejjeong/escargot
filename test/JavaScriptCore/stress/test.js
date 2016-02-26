@@ -90,7 +90,16 @@ Object.is = function(a,b) {
     return a === b;
 }
 
+Object.assign = function(src, target) {
+    for (var it in target) {
+        if (Object.hasOwnProperty(target, it))
+            src[it] = target[it];
+    }
+    return src;
+}
+
 Number.isNaN = function(arg) { return isNaN(arg); };
+Math.fround = function(arg) { return Math.round(arg); };
 
 /*
 

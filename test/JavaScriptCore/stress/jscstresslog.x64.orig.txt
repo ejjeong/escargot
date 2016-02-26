@@ -209,7 +209,7 @@
 [209] exit-from-setter.js ..... Succ
 [210] fiat-double-to-int52-then-exit-not-int52.js ..... Succ
 [211] fiat-double-to-int52-then-fail-to-fold.js ..... Succ
-[212] fiat-double-to-int52-then-fold.js ..... Fail (Uncaught TypeError: Callee is not a function object)
+[212] fiat-double-to-int52-then-fold.js ..... Succ
 [213] fiat-double-to-int52.js ..... Succ
 [214] fiat-int32-to-int52.js ..... Succ
 [215] fiat-value-to-int52-double-path.js ..... Succ
@@ -219,13 +219,13 @@
 [219] fiat-value-to-int52-then-fold.js ..... Succ
 [220] fiat-value-to-int52.js ..... Succ
 [221] flatten-oversize-dictionary-object.js ..... Succ
-[222] float32-array-nan-inlined.js ..... Fail (Uncaught Error: bad result for 4294901760: 1, but expected: NaN; loaded 0 from the array)
-[223] float32-array-nan.js ..... Fail (Uncaught Error: bad result for 4294901760: 1, but expected: NaN; loaded 0 from the array)
-[224] float32-array-out-of-bounds.js ..... Succ
-[225] float32-repeat-out-of-bounds.js ..... Succ
-[226] float32array-out-of-bounds.js ..... Fail (Uncaught Error: bad result: undefined)
-[227] float64-array-nan-inlined.js ..... Fail (Uncaught Error: bad result for 0, 4294901760: 1, but expected: NaN; loaded 0 from the array)
-[228] float64-array-nan.js ..... Fail (Uncaught Error: bad result for 0, 4294901760: 1, but expected: NaN; loaded 0 from the array)
+[222] // float32-array-nan-inlined.js // ES6 TypedArray ..... Excluded
+[223] // float32-array-nan.js // ES6 TypedArray ..... Excluded
+[224] // float32-array-out-of-bounds.js // ES6 TypedArray ..... Excluded
+[225] // float32-repeat-out-of-bounds.js // ES6 TypedArray ..... Excluded
+[226] // float32array-out-of-bounds.js // ES6 TypedArray ..... Excluded
+[227] // float64-array-nan-inlined.js // ES6 TypedArray ..... Excluded
+[228] // float64-array-nan.js ..... Excluded
 [229] fold-based-on-int32-proof-mul-branch.js ..... Succ
 [230] fold-based-on-int32-proof-mul.js ..... Succ
 [231] fold-based-on-int32-proof-or-zero.js ..... Succ
@@ -336,7 +336,7 @@
 [336] // get-stack-mapping.js // Deprecated function.arguments ..... Excluded
 [337] getter-arity.js ..... Succ
 [338] getter.js ..... Succ
-[339] global-environment-does-not-trap-unscopables.js ..... Fail (Uncaught SyntaxError: with statement is not supported (Parse Error 16 line))
+[339] // global-environment-does-not-trap-unscopables.js // ES6 Symbol, with ..... Excluded
 [340] // global-lexical-let-no-rhs.js // ES6 let ..... Excluded
 [341] // global-lexical-redeclare-variable.js // ES6 let ..... Excluded
 [342] // global-lexical-redefine-const.js // ES6 const ..... Excluded
@@ -497,7 +497,7 @@ Uncaught Wrong error: Should not have gotten here.)
 [489] // numeric-setter-on-prototype.js // ES6 Class ..... Excluded
 [490] // numeric-setter-on-self.js // ES6 Class ..... Excluded
 [491] object-allocation-sinking-with-uninitialized-property-on-one-path.js ..... Succ
-[492] object-assign-enumerable.js ..... Fail (Uncaught TypeError: Callee is not a function object)
+[492] object-assign-enumerable.js ..... Succ
 [493] // object-assign-order.js // ES6 Symbol ..... Excluded
 [494] object-escapes-in-loop.js ..... Succ
 [495] // object-freeze-accept-non-object.js // ES6 Symbol ..... Excluded
@@ -788,6 +788,6 @@ Uncaught Wrong error: Should not have gotten here.)
 [780] weird-setter-counter-syntactic.js ..... Succ
 [781] weird-setter-counter.js ..... Succ
 All      :  781
-Excluded :  255
+Excluded :  263
 Succeed  :  480
-Failed   :  46
+Failed   :  38

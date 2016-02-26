@@ -219,13 +219,13 @@ fiat-value-to-int52-then-fail-to-fold.js
 fiat-value-to-int52-then-fold.js
 fiat-value-to-int52.js
 flatten-oversize-dictionary-object.js
-float32-array-nan-inlined.js
-float32-array-nan.js
-float32-array-out-of-bounds.js
-float32-repeat-out-of-bounds.js
-float32array-out-of-bounds.js
-float64-array-nan-inlined.js
-float64-array-nan.js
+// float32-array-nan-inlined.js // ES6 TypedArray
+// float32-array-nan.js // ES6 TypedArray
+// float32-array-out-of-bounds.js // ES6 TypedArray
+// float32-repeat-out-of-bounds.js // ES6 TypedArray
+// float32array-out-of-bounds.js // ES6 TypedArray
+// float64-array-nan-inlined.js // ES6 TypedArray
+// float64-array-nan.js
 fold-based-on-int32-proof-mul-branch.js
 fold-based-on-int32-proof-mul.js
 fold-based-on-int32-proof-or-zero.js
@@ -336,7 +336,7 @@ get-declared-unpassed-argument-in-scoped-arguments.js
 // get-stack-mapping.js // Deprecated function.arguments
 getter-arity.js
 getter.js
-global-environment-does-not-trap-unscopables.js
+// global-environment-does-not-trap-unscopables.js // ES6 Symbol, with
 // global-lexical-let-no-rhs.js // ES6 let
 // global-lexical-redeclare-variable.js // ES6 let
 // global-lexical-redefine-const.js // ES6 const
