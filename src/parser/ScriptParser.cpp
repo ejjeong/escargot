@@ -373,11 +373,7 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
             for (unsigned i = 0; i < v.size() ; i ++) {
                 PropertyNode* p = v[i];
                 postAnalysisFunction(p->value(), identifierStack, nearFunctionNode);
-                if (p->key()->type() == NodeType::Identifier) {
-
-                } else {
-                    postAnalysisFunction(p->key(), identifierStack, nearFunctionNode);
-                }
+                postAnalysisFunction(p->key(), identifierStack, nearFunctionNode);
             }
         } else if (type == NodeType::ConditionalExpression) {
             postAnalysisFunction(((ConditionalExpressionNode *)currentNode)->m_test, identifierStack, nearFunctionNode);

@@ -169,7 +169,7 @@
 [169] // destructuring-assignment-accepts-iterables.js // ES6 destructuring ..... Excluded
 [170] dfg-create-arguments-inline-alloc.js ..... Succ
 [171] dfg-exception-try-catch-in-constructor-with-inlined-throw.js ..... Succ
-[172] dfg-put-by-val-direct-with-edge-numbers.js ..... Fail (Uncaught Error: bad value: undefined)
+[172] dfg-put-by-val-direct-with-edge-numbers.js ..... Succ
 [173] dfg-rare-data.js ..... Succ
 [174] // dfg-tail-calls.js // Deprecated function.caller ..... Excluded
 [175] // dfg-to-primitive-pass-symbol.js // ES6 Symbol ..... Excluded
@@ -789,5 +789,5 @@ Uncaught Wrong error: Should not have gotten here.)
 [781] weird-setter-counter.js ..... Succ
 All      :  781
 Excluded :  263
-Succeed  :  480
-Failed   :  38
+Succeed  :  481
+Failed   :  37

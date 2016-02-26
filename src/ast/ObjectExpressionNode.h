@@ -25,7 +25,11 @@ public:
         codeBlock->pushCode(CreateObject(m_properties.size()), context, this);
         for (unsigned i = 0; i < m_properties.size() ; i ++) {
             PropertyNode* p = m_properties[i];
-            codeBlock->pushCode(Push(p->keyString()), context, this);
+            if (p->key()->isIdentifier()) {
+                p->key()->generateExpressionByteCode(codeBlock, context);
+            } else {
+                codeBlock->pushCode(Push(p->keyString()), context, this);
+            }
 
             p->value()->generateExpressionByteCode(codeBlock, context);
 

@@ -4241,7 +4241,7 @@ escargot::Node* parseObjectPropertyKey(ParseContext* ctx)
     case Token::KeywordToken:
         {
             // return node.finishIdentifier(token.value);
-            nd = new escargot::IdentifierNode(token->m_value.toInternalAtomicString());
+            nd = new escargot::LiteralNode(token->m_value.toESString());
             nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
             return nd;
         }
