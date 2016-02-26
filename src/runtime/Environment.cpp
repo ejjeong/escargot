@@ -24,6 +24,10 @@ void DeclarativeEnvironmentRecord::createMutableBinding(const InternalAtomicStri
     size_t siz = (*m_innerIdentifiers).size();
     for (unsigned i = 0; i < siz; i ++) {
         if ((*m_innerIdentifiers)[i] == name) {
+            if (i == m_mutableIndex) {
+                m_mutableIndex = 0;
+                m_mutableIndex -= 1;
+            }
             return;
         }
     }

@@ -25,16 +25,19 @@ NEVER_INLINE void setByIdSlowCase(ESVMInstance* instance, GlobalObject* globalOb
     // Object.defineProperty(this, "asdf", {value:1}) //this == global
     // asdf = 2
     ESValue* slot;
+    bool isBindingMutable = false;
 
     if (code->m_onlySearchGlobal)
         slot = instance->globalObject()->addressOfProperty(code->m_name.string());
     else
-        slot = ec->resolveBinding(code->m_name);
+        slot = ec->resolveBinding(code->m_name, isBindingMutable);
 
     if (LIKELY(slot != NULL)) {
-        code->m_cachedSlot = slot;
-        code->m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
-        *code->m_cachedSlot = *value;
+        if (LIKELY(!isBindingMutable)) {
+            code->m_cachedSlot = slot;
+            code->m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
+            *code->m_cachedSlot = *value;
+        }
     } else {
         if (!ec->isStrictMode()) {
             globalObject->defineDataProperty(code->m_name.string(), true, true, true, *value);
@@ -496,7 +499,7 @@ NEVER_INLINE void tryOperationThrowCase(const ESValue& err, LexicalEnvironment* 
 {
     instance->invalidateIdentifierCacheCheckCount();
     instance->m_currentExecutionContext = backupedEC;
-    LexicalEnvironment* catchEnv = new LexicalEnvironment(new DeclarativeEnvironmentRecord(0, 0, InternalAtomicStringVector(), true), oldEnv);
+    LexicalEnvironment* catchEnv = new LexicalEnvironment(new DeclarativeEnvironmentRecord(0, 0, InternalAtomicStringVector(), true, SIZE_MAX), oldEnv);
     instance->currentExecutionContext()->setEnvironment(catchEnv);
     instance->currentExecutionContext()->environment()->record()->createMutableBinding(code->m_name);
     instance->currentExecutionContext()->environment()->record()->setMutableBinding(code->m_name, err, false);
