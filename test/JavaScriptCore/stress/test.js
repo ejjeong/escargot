@@ -87,7 +87,11 @@ Object.defineProperty(Object.prototype, "__defineSetter__", {
 });
 
 Object.is = function(a,b) {
-    return a === b;
+    if (a === b)
+        return true;
+    if (isNaN(a) && isNaN(b))
+        return true;
+    return false;
 }
 
 Object.assign = function(src, target) {

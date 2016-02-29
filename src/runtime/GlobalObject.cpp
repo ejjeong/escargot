@@ -161,6 +161,12 @@ void GlobalObject::initGlobalObject()
     }, ESString::createAtomicString("gc"));
     set(ESString::createAtomicString("gc"), gcFunction);
 
+    auto gcHeapSizeFunction = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        unsigned size = GC_get_heap_size();
+        return ESValue(size);
+    }, ESString::createAtomicString("gcHeapSize"));
+    set(ESString::createAtomicString("gcHeapSize"), gcHeapSizeFunction);
+
     auto loadFunction = ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         if (instance->currentExecutionContext()->argumentCount()) {
             ESValue& val = instance->currentExecutionContext()->arguments()[0];

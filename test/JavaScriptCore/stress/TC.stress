@@ -496,7 +496,7 @@ object-escapes-in-loop.js
 // object-get-own-property-descriptor-perform-to-object.js // ES6 for ... of
 // object-get-own-property-names-perform-to-object.js // ES6 for ... of
 // object-get-own-property-symbols-perform-to-object.js // ES6 for ... of
-object-get-own-property-symbols.js
+// object-get-own-property-symbols.js // ES6 Object.getOwnPropertySymbols
 // object-get-prototype-of-perform-to-object.js // ES6 for ... of
 // object-is-extensible-accept-non-object.js // ES6 for ... of
 // object-is-frozen-accept-non-object.js // ES6 for ... of
