@@ -2869,7 +2869,7 @@ void GlobalObject::installString()
         escargot::ESArrayObject* A = ESArrayObject::create(0);
 
         // 4, 5
-        int lengthA = 0;
+        size_t lengthA = 0;
         double lim;
         if (instance->currentExecutionContext()->readArgument(1).isUndefined()) {
             lim = std::pow(2, 32)-1;
@@ -2878,7 +2878,7 @@ void GlobalObject::installString()
         }
 
         // 6, 7
-        int s = S->length(), p = 0;
+        size_t s = S->length(), p = 0;
 
         // 8
         ESValue separator = instance->currentExecutionContext()->readArgument(0);
@@ -2936,7 +2936,7 @@ void GlobalObject::installString()
         }
 
         // 12
-        int q = p;
+        size_t q = p;
 
         // 13
         if (P->isESRegExpObject()) {
@@ -2955,7 +2955,7 @@ void GlobalObject::installString()
                     A->set(lengthA, ESValue(T));
                     return A;
                 } else {
-                    if (e.asInt32() == p) {
+                    if ((size_t)e.asInt32() == p) {
                         q++;
                     } else {
                         if (result.m_matchResults[0][0].m_start >= S->length())
@@ -2978,7 +2978,7 @@ void GlobalObject::installString()
                 if (e == ESValue(ESValue::ESFalseTag::ESFalse))
                     q++;
                 else {
-                    if (e.asInt32() == p)
+                    if ((size_t)e.asInt32() == p)
                         q++;
                     else {
                         if (q >= S->length())
