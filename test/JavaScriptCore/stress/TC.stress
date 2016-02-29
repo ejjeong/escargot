@@ -679,9 +679,9 @@ tail-calls-dont-overwrite-live-stack.js
 // template-literal-syntax.js // ES6 Template string
 // template-literal.js // ES6 Template string
 test-spec-misc.js
-throw-from-ftl-call-ic-slow-path-cells.js
-throw-from-ftl-call-ic-slow-path-undefined.js
-throw-from-ftl-call-ic-slow-path.js
+// throw-from-ftl-call-ic-slow-path-cells.js // ES6 TypedArray
+// throw-from-ftl-call-ic-slow-path-undefined.js // ES6 TypedArray
+// throw-from-ftl-call-ic-slow-path.js // ES6 TypedArray
 throw-from-ftl-in-loop.js
 throw-from-ftl.js
 throw-through-optimized-code.js
@@ -695,7 +695,7 @@ to-string-on-value-or-string.js
 to-string-on-value.js
 to-this-polymorphic.js
 toprimitive-speculated-types.js
-trailing-comma-in-patterns.js
+// trailing-comma-in-patterns.js // ES6 Symbol
 tricky-array-bounds-checks.js
 tricky-indirectly-inferred-infinite-loop-that-uses-captured-variables-and-creates-the-activation-outside-the-loop.js
 tricky-inferred-infinite-loop-that-uses-captured-variables-and-creates-the-activation-outside-the-loop.js

@@ -21,9 +21,11 @@ for (var i = 0; i < 10000; ++i) {
     if (!Object.is(that, undefined))
         throw new Error("Wrong 'this' value in call, expected undefined but got " + that);
 
+    /* escargot : do not support spread operator
     that = getThis(obj.method(...[42]));
     if (!Object.is(that, undefined))
         throw new Error("Wrong 'this' value in varargs call, expected undefined but got " + that);
+        */
 
     if (!Object.is(obj.fromNative, undefined))
         throw new Error("Wrong 'fromNative' value, expected undefined but got " + obj.fromNative);

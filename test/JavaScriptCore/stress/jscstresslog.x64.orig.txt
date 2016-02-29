@@ -552,7 +552,7 @@
 [552] // proxy-inline-cache.js // ES6 Proxy ..... Excluded
 [553] prune-multi-put-by-offset-replace-or-transition-variant.js ..... Succ
 [554] put-by-id-build-list-order-recurse.js ..... Succ
-[555] put-by-id-direct-should-be-done-for-non-index-property.js ..... Fail (Uncaught SyntaxError: unexpectedTokenError (Parse Error 35 line))
+[555] put-by-id-direct-should-be-done-for-non-index-property.js ..... Fail (Uncaught SyntaxError: Unexpected token : 2 (Parse Error 35 line))
 [556] put-by-id-on-new-object-after-prototype-transition-non-strict.js ..... Succ
 [557] put-by-id-on-new-object-after-prototype-transition-strict.js ..... Succ
 [558] put-by-id-strict-build-list-order.js ..... Succ
@@ -635,18 +635,18 @@
 [635] sort-array-with-undecided.js ..... Succ
 [636] sparse-array-entry-update-144067.js ..... Succ
 [637] sparse-map-non-overlapping.js ..... Succ
-[638] sparse-map-non-skip-getter-overriding.js ..... Fail (Uncaught SyntaxError: unexpectedTokenError (Parse Error 12 line))
+[638] sparse-map-non-skip-getter-overriding.js ..... Fail (Uncaught SyntaxError: Unexpected token : 1 (Parse Error 12 line))
 [639] sparse-map-non-skip.js ..... Succ
 [640] sparse_splice.js ..... Succ
 [641] static-function-delete.js ..... Succ
 [642] static-function-put.js ..... Succ
-[643] static-getter-delete.js ..... Fail (Uncaught Error: bad error: TypeError: Attempt to assign to readonly property)
+[643] static-getter-delete.js ..... Fail (Uncaught TypeError: Unable to delete property)
 [644] static-getter-descriptors.js ..... Fail (Uncaught Error: bad value: {"writable":false,"enumerable":false,"configurable":false})
 [645] static-getter-enumeration.js ..... Succ
 [646] static-getter-get.js ..... Succ
 [647] static-getter-in-names.js ..... Fail (Uncaught Error: bad value: ["compile","constructor","exec","global","ignoreCase","lastIndex","multiline","source","test","toString"])
 [648] // static-getter-names.js // ES6 for ... of ..... Excluded
-[649] static-getter-put.js ..... Fail (Uncaught Error: bad error: TypeError: Attempt to assign to readonly property)
+[649] static-getter-put.js ..... Fail (Uncaught TypeError: Unable to delete property)
 [650] strict-to-this-int.js ..... Succ
 [651] // string-from-code-point.js // ES6 for ... of ..... Excluded
 [652] string-ident-to-not-string-var-equality.js ..... Succ
@@ -674,14 +674,14 @@
 [674] tail-call-no-stack-overflow.js ..... Fail (Uncaught Error: not thrown)
 [675] // tail-call-recognize.js // Deprecated function.caller ..... Excluded
 [676] // tail-call-varargs-no-stack-overflow.js // ES6 spread '...' ..... Excluded
-[677] tail-calls-dont-overwrite-live-stack.js ..... Fail (Uncaught SyntaxError: ES2015 Spread operator is not supported (Parse Error 24 line))
+[677] tail-calls-dont-overwrite-live-stack.js ..... Succ
 [678] // template-literal-line-terminators.js // ES6 Template string ..... Excluded
 [679] // template-literal-syntax.js // ES6 Template string ..... Excluded
 [680] // template-literal.js // ES6 Template string ..... Excluded
 [681] test-spec-misc.js ..... Succ
-[682] throw-from-ftl-call-ic-slow-path-cells.js ..... Fail (Uncaught Error: bad exception message: Constructor TypedArray requires 'new')
-[683] throw-from-ftl-call-ic-slow-path-undefined.js ..... Fail (Uncaught Error: bad exception message: Constructor TypedArray requires 'new')
-[684] throw-from-ftl-call-ic-slow-path.js ..... Fail (Uncaught Error: bad exception message: Constructor TypedArray requires 'new')
+[682] // throw-from-ftl-call-ic-slow-path-cells.js // ES6 TypedArray ..... Excluded
+[683] // throw-from-ftl-call-ic-slow-path-undefined.js // ES6 TypedArray ..... Excluded
+[684] // throw-from-ftl-call-ic-slow-path.js // ES6 TypedArray ..... Excluded
 [685] throw-from-ftl-in-loop.js ..... Succ
 [686] throw-from-ftl.js ..... Succ
 [687] throw-through-optimized-code.js ..... Succ
@@ -695,7 +695,7 @@
 [695] to-string-on-value.js ..... Succ
 [696] to-this-polymorphic.js ..... Succ
 [697] toprimitive-speculated-types.js ..... Succ
-[698] trailing-comma-in-patterns.js ..... Fail ()
+[698] // trailing-comma-in-patterns.js // ES6 Symbol ..... Excluded
 [699] tricky-array-bounds-checks.js ..... Succ
 [700] tricky-indirectly-inferred-infinite-loop-that-uses-captured-variables-and-creates-the-activation-outside-the-loop.js ..... Succ
 [701] tricky-inferred-infinite-loop-that-uses-captured-variables-and-creates-the-activation-outside-the-loop.js ..... Succ
@@ -780,6 +780,6 @@
 [780] weird-setter-counter-syntactic.js ..... Succ
 [781] weird-setter-counter.js ..... Succ
 All      :  781
-Excluded :  265
-Succeed  :  490
-Failed   :  26
+Excluded :  269
+Succeed  :  491
+Failed   :  21

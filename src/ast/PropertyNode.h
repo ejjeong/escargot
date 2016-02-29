@@ -48,6 +48,11 @@ public:
         return m_kind;
     }
 
+    bool isValidPropertyNode()
+    {
+        return m_key->isIdentifier() || m_key->isLiteral();
+    }
+
 protected:
     Node* m_key; // key: Literal | Identifier;
     Node* m_value; // value: Expression;

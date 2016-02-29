@@ -870,12 +870,17 @@ void addDeclToCurrentContext(ParseContext* ctx, escargot::VariableDeclaratorNode
 
 void throwUnexpectedToken(RefPtr<ParseStatus> token/*token, message*/)
 {
-    throw escargot::ESString::concatTwoStrings(escargot::ESString::create("Unexpected token"), token->m_value.toESString());
+    throw escargot::ESString::concatTwoStrings(escargot::ESString::create("Unexpected token : "), token->m_value.toESString());
+}
+
+void throwUnexpectedToken(escargot::ESString* token)
+{
+    throw escargot::ESString::concatTwoStrings(escargot::ESString::create("Unexpected token : "), token);
 }
 
 void throwUnexpectedToken(const char16_t* token = u"")
 {
-    throw escargot::ESString::concatTwoStrings(escargot::ESString::create("Unexpected token"), escargot::ESString::create(token));
+    throw escargot::ESString::concatTwoStrings(escargot::ESString::create("Unexpected token : "), escargot::ESString::create(token));
 }
 
 void tolerateUnexpectedToken(/*token, message*/)
@@ -4763,18 +4768,20 @@ escargot::Node* parseObjectInitializer(ParseContext* ctx)
 
     while (!match(ctx, RightBrace)) {
         escargot::PropertyNode* p = (escargot::PropertyNode *)parseObjectProperty(ctx, hasProto);
+        if (!p->isValidPropertyNode())
+            throw u"Object initializer should be either identifier or literal";
         escargot::ESString* keyString = p->keyString();
         auto previous = keyStrings.find(keyString);
         if (previous != keyStrings.end()) {
             if (ctx->m_strict && (previous->second == escargot::PropertyNode::Kind::Init) && (p->kind() == escargot::PropertyNode::Kind::Init))
-                tolerateUnexpectedToken();
+                throwUnexpectedToken(keyString);
             if ((previous->second == escargot::PropertyNode::Kind::Init) && (p->kind() != escargot::PropertyNode::Kind::Init))
-                tolerateUnexpectedToken();
+                throwUnexpectedToken(keyString);
             if ((previous->second != escargot::PropertyNode::Kind::Init) && (p->kind() == escargot::PropertyNode::Kind::Init))
-                tolerateUnexpectedToken();
+                throwUnexpectedToken(keyString);
             if (((previous->second == escargot::PropertyNode::Kind::Get) && (p->kind() == escargot::PropertyNode::Kind::Get))
                 || ((previous->second == escargot::PropertyNode::Kind::Set) && (p->kind() == escargot::PropertyNode::Kind::Set)))
-                tolerateUnexpectedToken();
+                throwUnexpectedToken(keyString);
         }
         keyStrings.insert(std::make_pair(keyString, p->kind()));
 
