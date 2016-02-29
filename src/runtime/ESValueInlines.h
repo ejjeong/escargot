@@ -1146,13 +1146,14 @@ inline ESHiddenClass* ESHiddenClass::defineProperty(ESString* name, bool isData,
         ASSERT(cls->m_propertyInfo.size() - 1 == pid);
         return cls;
     } else {
-        m_propertyInfo.push_back(ESHiddenClassPropertyInfo(name, isData, isWritable, isEnumerable, isConfigurable));
-        m_flags.m_hasReadOnlyProperty = m_flags.m_hasReadOnlyProperty | (!isWritable);
-        m_flags.m_hasIndexedProperty = m_flags.m_hasIndexedProperty | name->hasOnlyDigit();
-        m_flags.m_hasIndexedReadOnlyProperty = m_flags.m_hasIndexedReadOnlyProperty | (!isWritable && name->hasOnlyDigit());
+        ESHiddenClass* cls = m_flags.m_hasEverSetAsPrototypeObjectHiddenClass ? new ESHiddenClass(*this) : this;
+        cls->m_propertyInfo.push_back(ESHiddenClassPropertyInfo(name, isData, isWritable, isEnumerable, isConfigurable));
+        cls->m_flags.m_hasReadOnlyProperty = cls->m_flags.m_hasReadOnlyProperty | (!isWritable);
+        cls->m_flags.m_hasIndexedProperty = cls->m_flags.m_hasIndexedProperty | name->hasOnlyDigit();
+        cls->m_flags.m_hasIndexedReadOnlyProperty = cls->m_flags.m_hasIndexedReadOnlyProperty | (!isWritable && name->hasOnlyDigit());
 
-        appendHashMapInfo();
-        return this;
+        cls->appendHashMapInfo();
+        return cls;
     }
 }
 

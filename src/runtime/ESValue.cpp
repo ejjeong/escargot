@@ -483,6 +483,7 @@ void ESObject::setValueAsProtoType(const ESValue& obj)
 {
     if (obj.isObject()) {
         obj.asESPointer()->asESObject()->m_flags.m_isEverSetAsPrototypeObject = true;
+        obj.asESPointer()->asESObject()->m_hiddenClass->setHasEverSetAsPrototypeObjectHiddenClass();
         if (obj.asESPointer()->isESArrayObject()) {
             obj.asESPointer()->asESArrayObject()->convertToSlowMode();
         }

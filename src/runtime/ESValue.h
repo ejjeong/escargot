@@ -1634,6 +1634,7 @@ public:
     {
         return m_flags.m_isVectorMode;
     }
+    void setHasEverSetAsPrototypeObjectHiddenClass() { m_flags.m_hasEverSetAsPrototypeObjectHiddenClass = true; }
 
     ALWAYS_INLINE ESValue read(ESObject* obj, ESValue originalObject, ESString* propertyName, ESString* name);
     ALWAYS_INLINE ESValue read(ESObject* obj, ESValue originalObject, ESString* propertyName, size_t index);
@@ -1686,7 +1687,17 @@ private:
         m_flags.m_hasReadOnlyProperty = false;
         m_flags.m_hasIndexedProperty = false;
         m_flags.m_hasIndexedReadOnlyProperty = false;
+        m_flags.m_hasEverSetAsPrototypeObjectHiddenClass = false;
         m_propertyIndexHashMapInfo = NULL;
+    }
+
+    ESHiddenClass(const ESHiddenClass& other)
+        : m_propertyIndexHashMapInfo(other.m_propertyIndexHashMapInfo)
+        , m_propertyInfo(std::move(other.m_propertyInfo))
+        , m_transitionData(0)
+    {
+        ASSERT(other.m_flags.m_isVectorMode == false); // this function is currently used only for vector mode
+        m_flags = other.m_flags;
     }
 
     ESHiddenClassPropertyIndexHashMapInfo* m_propertyIndexHashMapInfo;
@@ -1699,6 +1710,7 @@ private:
         bool m_hasReadOnlyProperty:1;
         bool m_hasIndexedProperty:1;
         bool m_hasIndexedReadOnlyProperty:1;
+        bool m_hasEverSetAsPrototypeObjectHiddenClass:1;
     } m_flags;
 };
 
