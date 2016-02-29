@@ -32,7 +32,7 @@ arguments-interference.js
 // arguments-iterator.js // ES6 'for ... of'
 arguments-length-always-dont-enum.js
 arith-add-with-constants.js
-arith-modulo-node-behaviors.js// -1*0=-0 problem
+arith-modulo-node-behaviors.js
 arith-mul-with-constants.js
 // array-copywithin.js // ES6 'for ... of'
 // array-fill-put-by-val.js // ES6 Object syntax
@@ -608,7 +608,7 @@ scoped-then-direct-arguments-get-by-val-in-baseline.js
 // set-constructor-adder.js // ES6 Set
 // set-constructor.js // ES6 for ... of
 // set-iterators-next.js // ES6 for ... of
-set-same-prototype.js
+// set-same-prototype.js // ES6 '=>'
 setter.js
 simple-polyvariant-call-inlining-example.js
 simple-polyvariant-get-by-id-inlining-example.js
@@ -640,13 +640,13 @@ sparse-map-non-skip.js
 sparse_splice.js
 static-function-delete.js
 static-function-put.js
-static-getter-delete.js
-static-getter-descriptors.js
+// static-getter-delete.js // ES6 RegExp.prototype.global is AccessorProperty
+// static-getter-descriptors.js // ES6 RegExp.prototype.global is AccessorProperty
 static-getter-enumeration.js
 static-getter-get.js
-static-getter-in-names.js
+// static-getter-in-names.js // ES6 RegExp.prototype.flags (21.2.5.3)
 // static-getter-names.js // ES6 for ... of
-static-getter-put.js
+// static-getter-put.js // ES6 RegExp.prototype.global is AccessorProperty
 strict-to-this-int.js
 // string-from-code-point.js // ES6 for ... of
 string-ident-to-not-string-var-equality.js

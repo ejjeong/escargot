@@ -32,7 +32,7 @@
 [32] // arguments-iterator.js // ES6 'for ... of' ..... Excluded
 [33] arguments-length-always-dont-enum.js ..... Succ
 [34] arith-add-with-constants.js ..... Succ
-[35] arith-modulo-node-behaviors.js// -1*0=-0 problem ..... Succ
+[35] arith-modulo-node-behaviors.js ..... Fail (Uncaught moduloWithNegativeZeroDividend(-i, 0, 2) failed, returned: 0)
 [36] arith-mul-with-constants.js ..... Succ
 [37] // array-copywithin.js // ES6 'for ... of' ..... Excluded
 [38] // array-fill-put-by-val.js // ES6 Object syntax ..... Excluded
@@ -473,7 +473,7 @@
 [473] new-array-storage-array-with-size.js ..... Succ
 [474] new-array-then-exit.js ..... Succ
 [475] new-array-with-size-throw-exception-and-tear-off-arguments.js ..... Succ
-[476] new-array-with-size-with-bad-time.js ..... Fail ()
+[476] new-array-with-size-with-bad-time.js ..... Fail (Uncaught Error: setter not called.)
 [477] new-contiguous-array-with-size.js ..... Succ
 [478] new-double-array-with-size.js ..... Succ
 [479] new-function-expression-has-structures.js ..... Succ
@@ -608,7 +608,7 @@
 [608] // set-constructor-adder.js // ES6 Set ..... Excluded
 [609] // set-constructor.js // ES6 for ... of ..... Excluded
 [610] // set-iterators-next.js // ES6 for ... of ..... Excluded
-[611] set-same-prototype.js ..... Fail (Uncaught SyntaxError: ES2015 arrow function expression is not supported (Parse Error 25 line))
+[611] // set-same-prototype.js // ES6 '=>' ..... Excluded
 [612] setter.js ..... Succ
 [613] simple-polyvariant-call-inlining-example.js ..... Succ
 [614] simple-polyvariant-get-by-id-inlining-example.js ..... Succ
@@ -640,13 +640,13 @@
 [640] sparse_splice.js ..... Succ
 [641] static-function-delete.js ..... Succ
 [642] static-function-put.js ..... Succ
-[643] static-getter-delete.js ..... Fail (Uncaught TypeError: Unable to delete property)
-[644] static-getter-descriptors.js ..... Fail (Uncaught Error: bad value: {"writable":false,"enumerable":false,"configurable":false})
+[643] // static-getter-delete.js // ES6 RegExp.prototype.global is AccessorProperty ..... Excluded
+[644] // static-getter-descriptors.js // ES6 RegExp.prototype.global is AccessorProperty ..... Excluded
 [645] static-getter-enumeration.js ..... Succ
 [646] static-getter-get.js ..... Succ
-[647] static-getter-in-names.js ..... Fail (Uncaught Error: bad value: ["compile","constructor","exec","global","ignoreCase","lastIndex","multiline","source","test","toString"])
+[647] // static-getter-in-names.js // ES6 RegExp.prototype.flags (21.2.5.3) ..... Excluded
 [648] // static-getter-names.js // ES6 for ... of ..... Excluded
-[649] static-getter-put.js ..... Fail (Uncaught TypeError: Unable to delete property)
+[649] // static-getter-put.js // ES6 RegExp.prototype.global is AccessorProperty ..... Excluded
 [650] strict-to-this-int.js ..... Succ
 [651] // string-from-code-point.js // ES6 for ... of ..... Excluded
 [652] string-ident-to-not-string-var-equality.js ..... Succ
@@ -780,6 +780,6 @@
 [780] weird-setter-counter-syntactic.js ..... Succ
 [781] weird-setter-counter.js ..... Succ
 All      :  781
-Excluded :  270
-Succeed  :  494
-Failed   :  17
+Excluded :  275
+Succeed  :  493
+Failed   :  13

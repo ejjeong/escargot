@@ -929,17 +929,9 @@ ESRegExpObject::ESRegExpObject(escargot::ESString* source, const Option& option)
         return self->asESRegExpObject()->source();
     }, nullptr, false, false, false);
 
-    defineAccessorProperty(strings->ignoreCase, [](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName) -> ESValue {
-        return ESValue((bool)(self->asESRegExpObject()->option() & ESRegExpObject::Option::IgnoreCase));
-    }, nullptr, false, false, false);
-
-    defineAccessorProperty(strings->global, [](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName) -> ESValue {
-        return ESValue((bool)(self->asESRegExpObject()->option() & ESRegExpObject::Option::Global));
-    }, nullptr, false, false, false);
-
-    defineAccessorProperty(strings->multiline, [](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName) -> ESValue {
-        return ESValue((bool)(self->asESRegExpObject()->option() & ESRegExpObject::Option::MultiLine));
-    }, nullptr, false, false, false);
+    defineDataProperty(strings->ignoreCase, false, false, false, ESValue((bool)(m_option & ESRegExpObject::Option::IgnoreCase)));
+    defineDataProperty(strings->global, false, false, false, ESValue((bool)(m_option & ESRegExpObject::Option::Global)));
+    defineDataProperty(strings->multiline, false, false, false, ESValue((bool)(m_option & ESRegExpObject::Option::MultiLine)));
 
     defineAccessorProperty(strings->lastIndex, [](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName) -> ESValue {
         return self->asESRegExpObject()->lastIndex();
