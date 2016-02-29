@@ -1267,6 +1267,8 @@ inline bool ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
         return true;
     } else {
         if (!m_hiddenClass->m_propertyInfo[oldIdx].m_flags.m_isConfigurable && !force) {
+            if (oldIdx == 0) // for __proto__
+                return false;
             ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("cannot redefine property"))));
         }
         m_hiddenClass = m_hiddenClass->removeProperty(oldIdx);
@@ -1331,6 +1333,8 @@ inline bool ESObject::defineAccessorProperty(const escargot::ESValue& key, ESPro
         return true;
     } else {
         if (!m_hiddenClass->m_propertyInfo[oldIdx].m_flags.m_isConfigurable && !force) {
+            if (oldIdx == 0) // for __proto__
+                return false;
             ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("cannot redefine property"))));
         }
         m_hiddenClass = m_hiddenClass->removeProperty(oldIdx);

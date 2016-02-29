@@ -547,7 +547,7 @@
 [547] // prop-type-symbol-then-object.js // ES6 Symbol ..... Excluded
 [548] // prop-type-symbol-then-string.js // ES6 Symbol ..... Excluded
 [549] // property-name-enumerator-should-not-look-into-indexed-values-when-it-is-a-dictionary.js // ES6 for ... of, Reflect ..... Excluded
-[550] proto-setter.js ..... Fail (Uncaught TypeError: cannot redefine property)
+[550] proto-setter.js ..... Succ
 [551] prototype-getter.js ..... Succ
 [552] // proxy-inline-cache.js // ES6 Proxy ..... Excluded
 [553] prune-multi-put-by-offset-replace-or-transition-variant.js ..... Succ
@@ -781,5 +781,5 @@
 [781] weird-setter-counter.js ..... Succ
 All      :  781
 Excluded :  269
-Succeed  :  491
-Failed   :  21
+Succeed  :  492
+Failed   :  20
