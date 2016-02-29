@@ -530,6 +530,7 @@ NEVER_INLINE EnumerateObjectData* executeEnumerateObject(ESObject* obj)
     EnumerateObjectData* data = new EnumerateObjectData();
     data->m_object = obj;
     data->m_keys.reserve(obj->keyCount());
+    data->m_hiddenClass = obj->hiddenClass();
 
     ESObject* target = obj;
     bool shouldSearchProto = false;

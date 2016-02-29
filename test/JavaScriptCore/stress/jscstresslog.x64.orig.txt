@@ -249,7 +249,7 @@
 [249] for-in-base-reassigned-later.js ..... Succ
 [250] for-in-base-reassigned.js ..... Succ
 [251] for-in-capture-string-loop-var.js ..... Succ
-[252] for-in-delete-during-iteration.js ..... Fail (Uncaught Error: bad result)
+[252] for-in-delete-during-iteration.js ..... Succ
 [253] for-in-modify-int-loop-var.js ..... Succ
 [254] for-in-modify-string-loop-var.js ..... Succ
 [255] for-in-prototype.js ..... Succ
@@ -473,12 +473,12 @@
 [473] new-array-storage-array-with-size.js ..... Succ
 [474] new-array-then-exit.js ..... Succ
 [475] new-array-with-size-throw-exception-and-tear-off-arguments.js ..... Succ
-[476] new-array-with-size-with-bad-time.js ..... Fail (Uncaught Error: setter not called.)
+[476] new-array-with-size-with-bad-time.js ..... Fail ()
 [477] new-contiguous-array-with-size.js ..... Succ
 [478] new-double-array-with-size.js ..... Succ
 [479] new-function-expression-has-structures.js ..... Succ
 [480] new-int32-array-with-size.js ..... Succ
-[481] new-largeish-contiguous-array-with-size.js ..... Fail (Uncaught Error: heap too big before forced GC: 13901824)
+[481] new-largeish-contiguous-array-with-size.js ..... Fail (Uncaught Error: heap too big before forced GC: 10391552)
 [482] // new-target.js // ES6 new.target ..... Excluded
 [483] new-undecided-array-with-size.js ..... Succ
 [484] no-abc-skippy-loop.js ..... Succ
@@ -781,5 +781,5 @@
 [781] weird-setter-counter.js ..... Succ
 All      :  781
 Excluded :  270
-Succeed  :  493
-Failed   :  18
+Succeed  :  494
+Failed   :  17

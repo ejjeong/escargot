@@ -1081,6 +1081,40 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         CheckIfKeyIsLastOpcodeLbl:
         {
             EnumerateObjectData* data = (EnumerateObjectData *)PEEK(stack, bp)->asESPointer();
+            if (data->m_object->isESArrayObject() && data->m_object->asESArrayObject()->isFastmode()) {
+                while (LIKELY(data->m_idx < data->m_keys.size())) {
+                    uint32_t idx = data->m_keys[data->m_idx].toIndex();
+                    if (idx == ESValue::ESInvalidIndexValue || idx >= data->m_object->asESArrayObject()->length())
+                        break;
+
+                    ESValue e = data->m_object->asESArrayObject()->data()[idx];
+                    if (UNLIKELY(e.isEmpty())) {
+                        data->m_idx++;
+                        idx = data->m_keys[data->m_idx].toIndex();
+                    } else
+                        break;
+                }
+            }
+
+            if (data->m_object->hiddenClass() != data->m_hiddenClass) {
+                POP(stack, bp);
+                EnumerateObjectData* newData = executeEnumerateObject(data->m_object);
+                std::vector<ESValue, gc_allocator<ESValue> > differenceKeys;
+                for (ESValue& key : newData->m_keys) {
+                    if (std::find(data->m_keys.begin(), data->m_keys.begin() + data->m_idx, key) == data->m_keys.begin() + data->m_idx) {
+                        // If a property that has not yet been visited during enumeration is deleted, then it will not be visited.
+                        if (std::find(data->m_keys.begin() + data->m_idx, data->m_keys.end(), key) != data->m_keys.end()) {
+                            // If new properties are added to the object being enumerated during enumeration,
+                            // the newly added properties are not guaranteed to be visited in the active enumeration.
+                            differenceKeys.push_back(key);
+                        }
+                    }
+                }
+                data = newData;
+                data->m_keys = differenceKeys;
+                PUSH(stack, topOfStack, ESValue((ESPointer *)data));
+            }
+
             PUSH(stack, topOfStack, ESValue(data->m_keys.size() == data->m_idx));
             executeNextCode<CheckIfKeyIsLast>(programCounter);
             NEXT_INSTRUCTION();
