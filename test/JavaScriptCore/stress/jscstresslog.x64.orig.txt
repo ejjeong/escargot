@@ -194,8 +194,8 @@
 [194] exception-dfg-not-strict-equal.js ..... Succ
 [195] exception-dfg-operation-read-value.js ..... Succ
 [196] exception-dfg-throw-from-catch-block.js ..... Succ
-[197] exception-effect-strcat.js ..... Fail (Uncaught Error: did not throw.)
-[198] exception-in-strcat-string-overflow.js ..... Fail (Uncaught Error: did not throw)
+[197] exception-effect-strcat.js ..... Succ
+[198] exception-in-strcat-string-overflow.js ..... Succ
 [199] exception-in-strcat.js ..... Succ
 [200] exception-in-to-property-key-should-be-handled-early-in-object-methods.js ..... Succ
 [201] exception-in-to-property-key-should-be-handled-early.js ..... Succ
@@ -424,18 +424,10 @@
 [424] load-varargs-then-inlined-call.js ..... Succ
 [425] // logical-not-masquerades.js // JSC 'makeMasquerader()' ..... Excluded
 [426] make-dictionary-repatch.js ..... Succ
-[427] make-large-string-jit-strcat.js ..... Fail (Should not have gotten here.
-String length: 4294967295
-Uncaught Wrong error: Should not have gotten here.)
-[428] make-large-string-jit.js ..... Fail (Should not have gotten here.
-String length: 2147483648
-Uncaught Wrong error: Should not have gotten here.)
-[429] make-large-string-strcat.js ..... Fail (Should not have gotten here.
-String length: 4294967295
-Uncaught Wrong error: Should not have gotten here.)
-[430] make-large-string.js ..... Fail (Should not have gotten here.
-String length: 2147483648
-Uncaught Wrong error: Should not have gotten here.)
+[427] make-large-string-jit-strcat.js ..... Succ
+[428] make-large-string-jit.js ..... Succ
+[429] make-large-string-strcat.js ..... Succ
+[430] make-large-string.js ..... Succ
 [431] make-rope-2.js ..... Succ
 [432] make-rope-3.js ..... Succ
 [433] many-sunken-locals.js ..... Succ
@@ -789,5 +781,5 @@ Uncaught Wrong error: Should not have gotten here.)
 [781] weird-setter-counter.js ..... Succ
 All      :  781
 Excluded :  265
-Succeed  :  483
-Failed   :  33
+Succeed  :  489
+Failed   :  27

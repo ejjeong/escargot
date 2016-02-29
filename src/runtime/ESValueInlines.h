@@ -2021,6 +2021,9 @@ inline ESString* ESString::concatTwoStrings(ESString* lstr, ESString* rstr)
     if (rlen == 0)
         return lstr;
 
+    if (llen > std::numeric_limits<std::int32_t>::max() - rlen)
+        ESVMInstance::currentInstance()->throwError(ESValue(RangeError::create(ESString::create("Out of memory"))));
+
     if (UNLIKELY(llen + rlen >= (int)ESRopeString::ESRopeStringCreateMinLimit)) {
         return ESRopeString::createAndConcat(lstr, rstr);
     } else {
