@@ -322,37 +322,6 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
     , ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex, ESHiddenClass** hiddenClassWillBe)
 {
     ASSERT(!ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty());
-    std::function<bool(ESObject*, int)> callSetter;
-    callSetter = [&](ESObject* obj, int idx)
-    {
-        // http://www.ecma-international.org/ecma-262/5.1/#sec-8.12.5
-        // If IsAccessorDescriptor(desc) is true, then
-        // Let setter be desc.[[Set]] which cannot be undefined.
-        // Call the [[Call]] internal method of setter providing O as the this value and providing V as the sole argument.
-        if (!obj->hiddenClass()->propertyInfo(idx).m_flags.m_isDataProperty) {
-            ESPropertyAccessorData* data = obj->accessorData(idx);
-            if (data->isAccessorDescriptor()) {
-                *cachedHiddenClassIndex = SIZE_MAX;
-                *hiddenClassWillBe = NULL;
-                cachedHiddenClassChain->clear();
-                if (data->getJSSetter()) {
-                    ESValue args[] = {value};
-                    ESFunctionObject::call(ESVMInstance::currentInstance(), data->getJSSetter(), willBeObject->asESPointer()->asESObject(), args, 1, false);
-                    return true;
-                } else {
-                    throwObjectWriteError();
-                    return true;
-                }
-            } else if (data->getNativeSetter()) {
-                *cachedHiddenClassIndex = SIZE_MAX;
-                *hiddenClassWillBe = NULL;
-                cachedHiddenClassChain->clear();
-                data->setValue(obj, willBeObject->asESPointer()->asESObject(), keyString, value);
-                return true;
-            }
-        }
-        return false;
-    };
     if (LIKELY(willBeObject->isESPointer())) {
         if (LIKELY(willBeObject->asESPointer()->isESObject())) {
             ESObject* obj = willBeObject->asESPointer()->asESObject();
@@ -382,20 +351,6 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
                 if (!miss) {
                     if ((*cachedHiddenClassChain)[cSiz - 1] == obj->hiddenClass()) {
                         // cache hit!
-                        size_t idx = obj->hiddenClass()->findProperty(keyString);
-                        if (idx != SIZE_MAX) {
-                            if (callSetter(obj, idx))
-                                return;
-
-                            if (!obj->hiddenClass()->propertyInfo(idx).m_flags.m_isWritable) {
-                                *cachedHiddenClassIndex = SIZE_MAX;
-                                *hiddenClassWillBe = NULL;
-                                cachedHiddenClassChain->clear();
-                                throwObjectWriteError();
-                                return;
-                            }
-                        }
-
                         obj = willBeObject->asESPointer()->asESObject();
                         obj->m_hiddenClassData.push_back(value);
                         obj->m_hiddenClass = *hiddenClassWillBe;
@@ -427,8 +382,32 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
 
                     size_t idx = obj->hiddenClass()->findProperty(keyString);
                     if (idx != SIZE_MAX) {
-                        if (callSetter(obj, idx))
-                            return;
+                        // http://www.ecma-international.org/ecma-262/5.1/#sec-8.12.5
+                        // If IsAccessorDescriptor(desc) is true, then
+                        // Let setter be desc.[[Set]] which cannot be undefined.
+                        // Call the [[Call]] internal method of setter providing O as the this value and providing V as the sole argument.
+                        if (!obj->hiddenClass()->propertyInfo(idx).m_flags.m_isDataProperty) {
+                            ESPropertyAccessorData* data = obj->accessorData(idx);
+                            if (data->isAccessorDescriptor()) {
+                                *cachedHiddenClassIndex = SIZE_MAX;
+                                *hiddenClassWillBe = NULL;
+                                cachedHiddenClassChain->clear();
+                                if (data->getJSSetter()) {
+                                    ESValue args[] = {value};
+                                    ESFunctionObject::call(ESVMInstance::currentInstance(), data->getJSSetter(), willBeObject->asESPointer()->asESObject(), args, 1, false);
+                                    return;
+                                } else {
+                                    throwObjectWriteError();
+                                    return;
+                                }
+                            } else if (data->getNativeSetter()) {
+                                *cachedHiddenClassIndex = SIZE_MAX;
+                                *hiddenClassWillBe = NULL;
+                                cachedHiddenClassChain->clear();
+                                data->setValue(obj, willBeObject->asESPointer()->asESObject(), keyString, value);
+                                return;
+                            }
+                        }
 
                         if (!obj->hiddenClass()->propertyInfo(idx).m_flags.m_isWritable) {
                             *cachedHiddenClassIndex = SIZE_MAX;
@@ -438,7 +417,6 @@ ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ESSt
                             return;
                         }
                     }
-
                     proto = obj->__proto__();
                 }
 
