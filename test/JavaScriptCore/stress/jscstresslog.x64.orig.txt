@@ -505,7 +505,7 @@
 [505] // object-prevent-extensions-accept-non-object.js // ES6 for ... of ..... Excluded
 [506] // object-seal-accept-non-object.js // ES6 for ... of ..... Excluded
 [507] obviously-elidable-new-object-then-exit.js ..... Succ
-[508] op-push-name-scope-crashes-profiler.js ..... Fail (Uncaught ReferenceError: arguments is not defined)
+[508] op-push-name-scope-crashes-profiler.js ..... Succ
 [509] operation-get-by-val-default-should-not-called-for-already-optimized-site.js ..... Succ
 [510] other-is-object-or-null.js ..... Succ
 [511] // pathname-resolve.js // ES6 Promise ..... Excluded
@@ -781,5 +781,5 @@
 [781] weird-setter-counter.js ..... Succ
 All      :  781
 Excluded :  265
-Succeed  :  489
-Failed   :  27
+Succeed  :  490
+Failed   :  26

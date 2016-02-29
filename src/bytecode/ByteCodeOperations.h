@@ -17,18 +17,25 @@ ALWAYS_INLINE ESValue* getByIdOperation(ESVMInstance* instance, ExecutionContext
         return code->m_cachedSlot;
     } else {
         ESValue* slot;
+        LexicalEnvironment* env = nullptr;
         if (code->m_onlySearchGlobal)
             slot = instance->globalObject()->addressOfProperty(code->m_name.string());
-        else
-            slot = ec->resolveBinding(code->m_name);
+        else {
+            slot = ec->resolveBinding(code->m_name, env);
+        }
         if (LIKELY(slot != NULL)) {
-            code->m_cachedSlot = slot;
-            code->m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
+            if (code->m_onlySearchGlobal || env->record()->isGlobalEnvironmentRecord()) {
+                code->m_cachedSlot = slot;
+                code->m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
+            }
 #ifdef ENABLE_ESJIT
-            code->m_profile.addProfile(*code->m_cachedSlot);
+            code->m_profile.addProfile(*slot);
 #endif
-            return code->m_cachedSlot;
+            return slot;
         } else {
+            if (code->m_name == strings->arguments)
+                if (ESValue* ret = ec->resolveArgumentsObjectBinding())
+                    return ret;
             ReferenceError* receiver = ReferenceError::create();
             std::vector<ESValue, gc_allocator<ESValue> > arguments;
             UTF16String err_msg;
