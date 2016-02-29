@@ -2899,7 +2899,7 @@ void GlobalObject::installString()
             return A;
         }
 
-        std::function<ESValue (escargot::ESString*, int, escargot::ESPointer*)> splitMatch;
+        std::function<ESValue(escargot::ESString*, int, escargot::ESPointer*)> splitMatch;
         if (P->isESRegExpObject()) {
             splitMatch = [] (escargot::ESString* S, int q, escargot::ESPointer* P) -> ESValue {
                 escargot::ESRegExpObject* R = P->asESRegExpObject();
