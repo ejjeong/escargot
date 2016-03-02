@@ -530,6 +530,8 @@ NEVER_INLINE EnumerateObjectData* executeEnumerateObject(ESObject* obj)
     EnumerateObjectData* data = new EnumerateObjectData();
     data->m_object = obj;
     data->m_keys.reserve(obj->keyCount());
+    std::vector<ESValue, gc_allocator<ESValue> > nonIntKeys;
+    nonIntKeys.reserve(obj->keyCount());
 
     ESObject* target = obj;
     bool shouldSearchProto = false;
@@ -550,19 +552,30 @@ NEVER_INLINE EnumerateObjectData* executeEnumerateObject(ESObject* obj)
     target = obj;
     if (shouldSearchProto) {
         std::unordered_set<ESString*, std::hash<ESString*>, std::equal_to<ESString*>, gc_allocator<ESString *> > keyStringSet;
-        target->enumerationWithNonEnumerable([&data, &keyStringSet](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
-            if (propertyInfo->m_flags.m_isEnumerable)
-                data->m_keys.push_back(key);
+        target->enumerationWithNonEnumerable([&data, &nonIntKeys, &keyStringSet](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
+            if (propertyInfo->m_flags.m_isEnumerable) {
+                uint32_t index = key.toIndex();
+                if (index != ESValue::ESInvalidIndexValue) {
+                    data->m_keys.push_back(key);
+                } else {
+                    nonIntKeys.push_back(key);
+                }
+            }
             keyStringSet.insert(key.toString());
         });
         data->m_hiddenClassChain.push_back(target->hiddenClass());
         proto = target->__proto__();
         while (proto.isESPointer() && proto.asESPointer()->isESObject()) {
             target = proto.asESPointer()->asESObject();
-            target->enumeration([&data, &keyStringSet](ESValue key) {
+            target->enumeration([&data, &nonIntKeys, &keyStringSet](ESValue key) {
                 ESString* str = key.toString();
                 if (keyStringSet.find(str) == keyStringSet.end()) {
-                    data->m_keys.push_back(key);
+                    uint32_t index = key.toIndex();
+                    if (index != ESValue::ESInvalidIndexValue) {
+                        data->m_keys.push_back(key);
+                    } else {
+                        nonIntKeys.push_back(key);
+                    }
                     keyStringSet.insert(str);
                 }
             });
@@ -570,11 +583,21 @@ NEVER_INLINE EnumerateObjectData* executeEnumerateObject(ESObject* obj)
             proto = target->__proto__();
         }
     } else {
-        target->enumeration([&data](ESValue key) {
-            data->m_keys.push_back(key);
+        target->enumeration([&data, &nonIntKeys](ESValue key) {
+            uint32_t index = key.toIndex();
+            if (index != ESValue::ESInvalidIndexValue) {
+                data->m_keys.push_back(key);
+            } else {
+                nonIntKeys.push_back(key);
+            }
         });
         data->m_hiddenClassChain.push_back(target->hiddenClass());
     }
+
+    std::sort(data->m_keys.begin(), data->m_keys.end(), [](ESValue i, ESValue j) {
+        return i.toInt32() < j.toInt32();
+    });
+    data->m_keys.insert(data->m_keys.end(), nonIntKeys.begin(), nonIntKeys.end());
 
     return data;
 }
