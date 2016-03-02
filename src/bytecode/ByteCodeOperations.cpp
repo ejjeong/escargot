@@ -530,7 +530,6 @@ NEVER_INLINE EnumerateObjectData* executeEnumerateObject(ESObject* obj)
     EnumerateObjectData* data = new EnumerateObjectData();
     data->m_object = obj;
     data->m_keys.reserve(obj->keyCount());
-    data->m_hiddenClass = obj->hiddenClass();
 
     ESObject* target = obj;
     bool shouldSearchProto = false;
@@ -556,6 +555,7 @@ NEVER_INLINE EnumerateObjectData* executeEnumerateObject(ESObject* obj)
                 data->m_keys.push_back(key);
             keyStringSet.insert(key.toString());
         });
+        data->m_hiddenClassChain.push_back(target->hiddenClass());
         proto = target->__proto__();
         while (proto.isESPointer() && proto.asESPointer()->isESObject()) {
             target = proto.asESPointer()->asESObject();
@@ -566,12 +566,14 @@ NEVER_INLINE EnumerateObjectData* executeEnumerateObject(ESObject* obj)
                     keyStringSet.insert(str);
                 }
             });
+            data->m_hiddenClassChain.push_back(target->hiddenClass());
             proto = target->__proto__();
         }
     } else {
         target->enumeration([&data](ESValue key) {
             data->m_keys.push_back(key);
         });
+        data->m_hiddenClassChain.push_back(target->hiddenClass());
     }
 
     return data;

@@ -1814,7 +1814,7 @@ struct EnumerateObjectData : public gc {
         m_idx = 0;
     }
 
-    ESHiddenClass* m_hiddenClass;
+    ESHiddenClassChainStd m_hiddenClassChain;
     ESObject* m_object;
     unsigned m_idx;
     std::vector<ESValue, gc_allocator<ESValue> > m_keys;

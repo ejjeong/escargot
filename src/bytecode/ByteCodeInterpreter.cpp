@@ -1095,7 +1095,22 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                 }
             }
 
-            if (data->m_object->hiddenClass() != data->m_hiddenClass) {
+            bool shouldUpdateEnumerateObjectData = false;
+            ESObject* obj = data->m_object;
+            for (ESHiddenClass* hc : data->m_hiddenClassChain) {
+                if (hc != obj->hiddenClass()) {
+                    shouldUpdateEnumerateObjectData = true;
+                    break;
+                }
+                ESValue val = obj->__proto__();
+                if (val.isESPointer() && val.asESPointer()->isESObject()) {
+                    obj = val.asESPointer()->asESObject();
+                } else {
+                    break;
+                }
+            }
+
+            if (shouldUpdateEnumerateObjectData) {
                 POP(stack, bp);
                 EnumerateObjectData* newData = executeEnumerateObject(data->m_object);
                 std::vector<ESValue, gc_allocator<ESValue> > differenceKeys;
@@ -1110,7 +1125,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                     }
                 }
                 data = newData;
-                data->m_keys = differenceKeys;
+                data->m_keys = std::move(differenceKeys);
                 PUSH(stack, topOfStack, ESValue((ESPointer *)data));
             }
 
