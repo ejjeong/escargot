@@ -399,7 +399,7 @@ NEVER_INLINE ESValue newOperation(ESVMInstance* instance, GlobalObject* globalOb
     } else if (function == globalObject->string()) {
         receiver = ESStringObject::create();
     } else if (function == globalObject->regexp()) {
-        receiver = ESRegExpObject::create(strings->emptyString.string(), ESRegExpObject::Option::None);
+        receiver = ESRegExpObject::create(strings->emptyString.string());
     } else if (function == globalObject->boolean()) {
         receiver = ESBooleanObject::create(false);
     } else if (function == globalObject->number()) {

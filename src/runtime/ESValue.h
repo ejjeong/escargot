@@ -2431,6 +2431,11 @@ public:
         MultiLine = 1 << 2,
         Sticky = 1 << 3,
     };
+    static ESRegExpObject* create(escargot::ESString* source)
+    {
+        ESRegExpObject* ret = new ESRegExpObject(source);
+        return ret;
+    }
     static ESRegExpObject* create(escargot::ESString* source, const Option& option)
     {
         ESRegExpObject* ret = new ESRegExpObject(source, option);
@@ -2459,6 +2464,7 @@ private:
     {
         m_bytecodePattern = pattern;
     }
+    ESRegExpObject(escargot::ESString* source);
     ESRegExpObject(escargot::ESString* source, const Option& option);
 
     escargot::ESString* m_source;
