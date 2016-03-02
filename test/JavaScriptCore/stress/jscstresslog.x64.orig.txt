@@ -473,7 +473,7 @@
 [473] new-array-storage-array-with-size.js ..... Succ
 [474] new-array-then-exit.js ..... Succ
 [475] new-array-with-size-throw-exception-and-tear-off-arguments.js ..... Succ
-[476] new-array-with-size-with-bad-time.js ..... Fail ()
+[476] new-array-with-size-with-bad-time.js ..... Succ
 [477] new-contiguous-array-with-size.js ..... Succ
 [478] new-double-array-with-size.js ..... Succ
 [479] new-function-expression-has-structures.js ..... Succ
@@ -781,5 +781,5 @@
 [781] weird-setter-counter.js ..... Succ
 All      :  781
 Excluded :  270
-Succeed  :  494
-Failed   :  17
+Succeed  :  495
+Failed   :  16

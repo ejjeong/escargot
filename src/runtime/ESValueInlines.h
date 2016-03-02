@@ -1603,6 +1603,34 @@ ALWAYS_INLINE void ESObject::eraseValues(uint32_t idx, int cnt)
 // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
 ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& val, escargot::ESValue* receiver)
 {
+    enum class CallStatus { Success, Fail, None };
+
+    auto callSetter = [&](ESObject* obj, int t)
+    {
+        // http://www.ecma-international.org/ecma-262/5.1/#sec-8.12.5
+        // If IsAccessorDescriptor(desc) is true, then
+        // Let setter be desc.[[Set]] which cannot be undefined.
+        // Call the [[Call]] internal method of setter providing O as the this value and providing V as the sole argument.
+        if (!obj->hiddenClass()->m_propertyInfo[t].m_flags.m_isDataProperty) {
+            ESPropertyAccessorData* data = obj->accessorData(t);
+            ESValue receiverVal(this);
+            if (receiver)
+                receiverVal = *receiver;
+            if (data->isAccessorDescriptor()) {
+                if (data->getJSSetter()) {
+                    ESValue args[] = {val};
+                    ESFunctionObject::call(ESVMInstance::currentInstance(), data->getJSSetter(), receiverVal, args, 1, false);
+                    return CallStatus::Success;
+                }
+                return CallStatus::Fail;
+            } else if (data->getNativeSetter()) {
+                data->setValue(obj, receiverVal, key.toString(), val);
+                return CallStatus::Success;
+            }
+        }
+        return CallStatus::None;
+    };
+
     if (isESArrayObject() && asESArrayObject()->isFastmode()) {
         uint32_t idx = key.toIndex();
         if (idx != ESValue::ESInvalidIndexValue) {
@@ -1628,11 +1656,18 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
                     if (!target.isObject()) {
                         break;
                     }
-                    if (target.asESPointer()->asESObject()->hiddenClass()->hasIndexedReadOnlyProperty()) {
+                    ESObject* obj = target.asESPointer()->asESObject();
+                    if (obj->hiddenClass()->hasIndexedReadOnlyProperty()) {
                         size_t t = target.asESPointer()->asESObject()->hiddenClass()->findProperty(key.toString());
                         if (t != SIZE_MAX) {
+                            CallStatus callStatus = callSetter(obj, t);
+                            if (callStatus == CallStatus::Success)
+                                return true;
+                            else if (callStatus == CallStatus::Fail)
+                                return false;
+
                             if (!target.asESPointer()->asESObject()->hiddenClass()->m_propertyInfo[t].m_flags.m_isWritable)
-                            return false;
+                                return false;
                         }
                     }
                     target = target.asESPointer()->asESObject()->__proto__();
@@ -1664,29 +1699,14 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
             if (!target.isObject()) {
                 break;
             }
-            size_t t = target.asESPointer()->asESObject()->hiddenClass()->findProperty(keyString);
+            ESObject* obj = target.asESPointer()->asESObject();
+            size_t t = obj->hiddenClass()->findProperty(keyString);
             if (t != SIZE_MAX) {
-                // http://www.ecma-international.org/ecma-262/5.1/#sec-8.12.5
-                // If IsAccessorDescriptor(desc) is true, then
-                // Let setter be desc.[[Set]] which cannot be undefined.
-                // Call the [[Call]] internal method of setter providing O as the this value and providing V as the sole argument.
-                if (!target.asESPointer()->asESObject()->hiddenClass()->m_propertyInfo[t].m_flags.m_isDataProperty) {
-                    ESPropertyAccessorData* data = target.asESPointer()->asESObject()->accessorData(t);
-                    ESValue receiverVal(this);
-                    if (receiver)
-                        receiverVal = *receiver;
-                    if (data->isAccessorDescriptor()) {
-                        if (data->getJSSetter()) {
-                            ESValue args[] = {val};
-                            ESFunctionObject::call(ESVMInstance::currentInstance(), data->getJSSetter(), receiverVal, args, 1, false);
-                            return true;
-                        }
-                        return false;
-                    } else if (data->getNativeSetter()) {
-                        data->setValue(target.asESPointer()->asESObject(), receiverVal, keyString, val);
-                        return true;
-                    }
-                }
+                CallStatus callStatus = callSetter(obj, t);
+                if (callStatus == CallStatus::Success)
+                    return true;
+                else if (callStatus == CallStatus::Fail)
+                    return false;
 
                 if (!target.asESPointer()->asESObject()->hiddenClass()->m_propertyInfo[t].m_flags.m_isWritable)
                     return false;
