@@ -444,7 +444,7 @@
 [444] math-pow-becomes-custom-function.js ..... Succ
 [445] math-pow-coherency.js ..... Succ
 [446] math-pow-integer-exponent-fastpath.js ..... Succ
-[447] math-pow-nan-behaviors.js ..... Fail (Uncaught Error: bad result, Math.pow(i, NaN) = 1 with i = 1)
+[447] math-pow-nan-behaviors.js ..... Succ
 [448] math-pow-with-constants.js ..... Fail (Uncaught Error: exponentIsIntegerConstant(2.1) should be 34135823067412.42, was = 34135823067412.465)
 [449] math-pow-with-never-NaN-exponent.js ..... Succ
 [450] math-round-arith-rounding-mode.js ..... Succ
@@ -478,7 +478,7 @@
 [478] new-double-array-with-size.js ..... Succ
 [479] new-function-expression-has-structures.js ..... Succ
 [480] new-int32-array-with-size.js ..... Succ
-[481] new-largeish-contiguous-array-with-size.js ..... Fail (Uncaught Error: heap too big after forced GC)
+[481] new-largeish-contiguous-array-with-size.js ..... Fail (Uncaught Error: heap too big before forced GC)
 [482] // new-target.js // ES6 new.target ..... Excluded
 [483] new-undecided-array-with-size.js ..... Succ
 [484] no-abc-skippy-loop.js ..... Succ
@@ -781,5 +781,5 @@
 [781] weird-setter-counter.js ..... Succ
 All      :  781
 Excluded :  269
-Succeed  :  501
-Failed   :  11
+Succeed  :  502
+Failed   :  10
