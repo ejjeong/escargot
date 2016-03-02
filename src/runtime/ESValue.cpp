@@ -726,7 +726,8 @@ ESArrayObject::ESArrayObject(int length)
     : ESObject((Type)(Type::ESObject | Type::ESArrayObject), ESVMInstance::currentInstance()->globalObject()->arrayPrototype(), 3)
     , m_vector(0)
 {
-    m_flags.m_isFastMode = true;
+    if (!ESVMInstance::currentInstance()->globalObject()->didSomePrototypeObjectDefineIndexedProperty())
+        m_flags.m_isFastMode = true;
     m_length = 0;
     if (length == -1)
         convertToSlowMode();

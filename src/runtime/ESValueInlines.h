@@ -1244,9 +1244,6 @@ inline bool ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
     }
 
     escargot::ESString* keyString = key.toString();
-    if (m_flags.m_isEverSetAsPrototypeObject && keyString->hasOnlyDigit()) {
-        ESVMInstance::currentInstance()->globalObject()->somePrototypeObjectDefineIndexedProperty();
-    }
     size_t oldIdx = m_hiddenClass->findProperty(keyString);
     if (oldIdx == SIZE_MAX) {
         if (UNLIKELY(!isExtensible() && !force))
@@ -1507,8 +1504,10 @@ ALWAYS_INLINE ESValue ESObject::get(escargot::ESValue key, escargot::ESValue* re
             if (receiver)
                 receiverVal = *receiver;
             ESValue ret = target->m_hiddenClass->read(target, receiverVal, keyString, t);
-            if (!UNLIKELY(ret.isDeleted()))
-                return ret;
+            if (!UNLIKELY(ret.isDeleted())) {
+                if (LIKELY(!ret.isEmpty()))
+                    return ret;
+            }
         }
         if (target->__proto__().isESPointer() && target->__proto__().asESPointer()->isESObject()) {
             target = target->__proto__().asESPointer()->asESObject();
@@ -1701,7 +1700,7 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
         if (UNLIKELY(isESArrayObject())) {
             uint32_t index = key.toIndex();
             uint32_t oldLen = asESArrayObject()->length();
-            if (index != ESValue::ESInvalidIndexValue && index > oldLen)
+            if (index != ESValue::ESInvalidIndexValue && index >= oldLen)
                 asESArrayObject()->setLength(index+1);
         }
         return true;
