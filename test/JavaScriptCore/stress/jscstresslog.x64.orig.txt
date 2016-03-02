@@ -274,10 +274,10 @@
 [274] // ftl-gettypedarrayoffset-simple.js // ES6 TypedArray ..... Excluded
 [275] // ftl-gettypedarrayoffset-wasteful.js // ES6 TypedArray ..... Excluded
 [276] ftl-in-overflow.js ..... Succ
-[277] ftl-library-exception.js ..... Fail (Uncaught bad result: false)
+[277] ftl-library-exception.js ..... Succ
 [278] ftl-library-inline-gettimezoneoffset.js ..... Succ
 [279] // ftl-library-inlining-exceptions-dataview.js // ES6 DataView ..... Excluded
-[280] ftl-library-inlining-exceptions.js ..... Fail (Uncaught bad result: false)
+[280] ftl-library-inlining-exceptions.js ..... Succ
 [281] // ftl-library-inlining-loops.js // ES6 DataView ..... Excluded
 [282] ftl-library-inlining-random.js ..... Succ
 [283] ftl-library-substring.js ..... Succ
@@ -781,5 +781,5 @@
 [781] weird-setter-counter.js ..... Succ
 All      :  781
 Excluded :  269
-Succeed  :  499
-Failed   :  13
+Succeed  :  501
+Failed   :  11

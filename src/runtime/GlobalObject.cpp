@@ -3339,6 +3339,9 @@ void GlobalObject::installDate()
     // $20.3.4.2 Date.prototype.getDate()
     m_datePrototype->defineDataProperty(strings->getDate, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (!thisObject->isESDateObject()) {
+            instance->throwError(ESValue(TypeError::create(ESString::create("Date.prototype.getDate : This object is not Date object"))));
+        }
         if (thisObject->asESDateObject()->isValid()) {
             return ESValue(thisObject->asESDateObject()->getDate());
         } else {
@@ -3349,6 +3352,9 @@ void GlobalObject::installDate()
     // $20.3.4.3 Date.prototype.getDay()
     m_datePrototype->defineDataProperty(strings->getDay, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (!thisObject->isESDateObject()) {
+            instance->throwError(ESValue(TypeError::create(ESString::create("Date.prototype.getDay : This object is not Date object"))));
+        }
         if (thisObject->asESDateObject()->isValid()) {
             return ESValue(thisObject->asESDateObject()->getDay());
         } else {
@@ -3359,6 +3365,9 @@ void GlobalObject::installDate()
     // $20.3.4.4 Date.prototype.getFullYear()
     m_datePrototype->defineDataProperty(strings->getFullYear, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (!thisObject->isESDateObject()) {
+            instance->throwError(ESValue(TypeError::create(ESString::create("Date.prototype.getFullYear : This object is not Date object"))));
+        }
         if (thisObject->asESDateObject()->isValid()) {
             return ESValue(thisObject->asESDateObject()->getFullYear());
         } else {
@@ -3369,6 +3378,9 @@ void GlobalObject::installDate()
     // $20.3.4.5 Date.prototype.getHours()
     m_datePrototype->defineDataProperty(strings->getHours, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (!thisObject->isESDateObject()) {
+            instance->throwError(ESValue(TypeError::create(ESString::create("Date.prototype.getHours : This object is not Date object"))));
+        }
         if (thisObject->asESDateObject()->isValid()) {
             return ESValue(thisObject->asESDateObject()->getHours());
         } else {
@@ -3379,6 +3391,9 @@ void GlobalObject::installDate()
     // $20.3.4.6 Date.prototype.getMilliseconds()
     m_datePrototype->defineDataProperty(strings->getMilliseconds, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (!thisObject->isESDateObject()) {
+            instance->throwError(ESValue(TypeError::create(ESString::create("Date.prototype.getMilliseconds : This object is not Date object"))));
+        }
         if (thisObject->asESDateObject()->isValid()) {
             return ESValue(thisObject->asESDateObject()->getMilliseconds());
         } else {
@@ -3389,6 +3404,9 @@ void GlobalObject::installDate()
     // $20.3.4.7 Date.prototype.getMinutes()
     m_datePrototype->defineDataProperty(strings->getMinutes, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (!thisObject->isESDateObject()) {
+            instance->throwError(ESValue(TypeError::create(ESString::create("Date.prototype.getMinutes : This object is not Date object"))));
+        }
         if (thisObject->asESDateObject()->isValid()) {
             return ESValue(thisObject->asESDateObject()->getMinutes());
         } else {
@@ -3399,6 +3417,9 @@ void GlobalObject::installDate()
     // $20.3.4.8 Date.prototype.getMonth()
     m_datePrototype->defineDataProperty(strings->getMonth, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (!thisObject->isESDateObject()) {
+            instance->throwError(ESValue(TypeError::create(ESString::create("Date.prototype.getMonth : This object is not Date object"))));
+        }
         if (thisObject->asESDateObject()->isValid()) {
             return ESValue(thisObject->asESDateObject()->getMonth());
         } else {
@@ -3409,6 +3430,9 @@ void GlobalObject::installDate()
     // $20.3.4.9 Date.prototype.getSeconds()
     m_datePrototype->defineDataProperty(strings->getSeconds, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (!thisObject->isESDateObject()) {
+            instance->throwError(ESValue(TypeError::create(ESString::create("Date.prototype.getSeconds : This object is not Date object"))));
+        }
         if (thisObject->asESDateObject()->isValid()) {
             return ESValue(thisObject->asESDateObject()->getSeconds());
         } else {
@@ -3419,6 +3443,9 @@ void GlobalObject::installDate()
     // $20.3.4.10 Date.prototype.getTime()
     m_datePrototype->defineDataProperty(strings->getTime, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (!thisObject->isESDateObject()) {
+            instance->throwError(ESValue(TypeError::create(ESString::create("Date.prototype.getTime : This object is not Date object"))));
+        }
         double primitiveValue = thisObject->asESDateObject()->timeValueAsDouble();
         return ESValue(primitiveValue);
     }, strings->getTime, 0));
@@ -3426,6 +3453,9 @@ void GlobalObject::installDate()
     // $20.3.4.11 Date.prototype.getTimezoneOffset()
     m_datePrototype->defineDataProperty(strings->getTimezoneOffset, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (!thisObject->isESDateObject()) {
+            instance->throwError(ESValue(TypeError::create(ESString::create("Date.prototype.getTimezoneOffset : This object is not Date object"))));
+        }
         double ret = thisObject->asESDateObject()->getTimezoneOffset() / 60.0;
         return ESValue(ret);
     }, strings->getTimezoneOffset, 0));
@@ -3433,6 +3463,9 @@ void GlobalObject::installDate()
     // $20.3.4.12 Date.prototype.getUTCDate()
     m_datePrototype->defineDataProperty(strings->getUTCDate, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (!thisObject->isESDateObject()) {
+            instance->throwError(ESValue(TypeError::create(ESString::create("Date.prototype.getUTCDate : This object is not Date object"))));
+        }
         if (thisObject->asESDateObject()->isValid()) {
             return ESValue(thisObject->asESDateObject()->getUTCDate());
         } else {
@@ -3448,6 +3481,9 @@ void GlobalObject::installDate()
     // $20.3.4.14 Date.prototype.getUTCFullYear()
     m_datePrototype->defineDataProperty(strings->getUTCFullYear, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (!thisObject->isESDateObject()) {
+            instance->throwError(ESValue(TypeError::create(ESString::create("Date.prototype.getUTCFullYear : This object is not Date object"))));
+        }
         if (thisObject->asESDateObject()->isValid()) {
             return ESValue(thisObject->asESDateObject()->getUTCFullYear());
         } else {
@@ -3458,6 +3494,9 @@ void GlobalObject::installDate()
     // $20.3.4.15 Date.prototype.getUTCHours()
     m_datePrototype->defineDataProperty(strings->getUTCHours, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (!thisObject->isESDateObject()) {
+            instance->throwError(ESValue(TypeError::create(ESString::create("Date.prototype.getUTCHours : This object is not Date object"))));
+        }
         if (thisObject->asESDateObject()->isValid()) {
             return ESValue(thisObject->asESDateObject()->getUTCHours());
         } else {
@@ -3468,6 +3507,9 @@ void GlobalObject::installDate()
     // $20.3.4.16 Date.prototype.getUTCMilliseconds()
     m_datePrototype->defineDataProperty(strings->getUTCMilliseconds, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (!thisObject->isESDateObject()) {
+            instance->throwError(ESValue(TypeError::create(ESString::create("Date.prototype.getUTCMilliseconds : This object is not Date object"))));
+        }
         if (thisObject->asESDateObject()->isValid()) {
             return ESValue(thisObject->asESDateObject()->getUTCMilliseconds());
         } else {
@@ -3478,6 +3520,9 @@ void GlobalObject::installDate()
     // $20.3.4.17 Date.prototype.getUTCMinutes()
     m_datePrototype->defineDataProperty(strings->getUTCMinutes, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (!thisObject->isESDateObject()) {
+            instance->throwError(ESValue(TypeError::create(ESString::create("Date.prototype.getUTCMinutes : This object is not Date object"))));
+        }
         if (thisObject->asESDateObject()->isValid()) {
             return ESValue(thisObject->asESDateObject()->getUTCMinutes());
         } else {
@@ -3488,6 +3533,9 @@ void GlobalObject::installDate()
     // $20.3.4.18 Date.prototype.getUTCMonth()
     m_datePrototype->defineDataProperty(strings->getUTCMonth, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (!thisObject->isESDateObject()) {
+            instance->throwError(ESValue(TypeError::create(ESString::create("Date.prototype.getUTCMonth : This object is not Date object"))));
+        }
         if (thisObject->asESDateObject()->isValid()) {
             return ESValue(thisObject->asESDateObject()->getUTCMonth());
         } else {
@@ -3498,6 +3546,9 @@ void GlobalObject::installDate()
     // $20.3.4.19 Date.prototype.getUTCSeconds()
     m_datePrototype->defineDataProperty(strings->getUTCSeconds, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (!thisObject->isESDateObject()) {
+            instance->throwError(ESValue(TypeError::create(ESString::create("Date.prototype.getUTCSeconds : This object is not Date object"))));
+        }
         if (thisObject->asESDateObject()->isValid()) {
             return ESValue(thisObject->asESDateObject()->getUTCSeconds());
         } else {
@@ -3513,6 +3564,9 @@ void GlobalObject::installDate()
     // $20.3.4.21 Date.prototype.setFullYear()
     m_datePrototype->defineDataProperty(strings->setFullYear, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (!thisObject->isESDateObject()) {
+            instance->throwError(ESValue(TypeError::create(ESString::create("Date.prototype.setFullYear : This object is not Date object"))));
+        }
         escargot::ESDateObject* thisDateObject = thisObject->asESDateObject();
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
         double args[3] = {0, (double) thisDateObject->getMonth(), (double) thisDateObject->getDate()};
@@ -3570,7 +3624,9 @@ void GlobalObject::installDate()
     // $20.3.4.27 Date.prototype.setTime()
     m_datePrototype->defineDataProperty(strings->setTime, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
-
+        if (!thisObject->isESDateObject()) {
+            instance->throwError(ESValue(TypeError::create(ESString::create("Date.prototype.setTime : This object is not Date object"))));
+        }
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
         if (arg_size > 0 && instance->currentExecutionContext()->arguments()[0].isNumber()) {
             ESValue arg = instance->currentExecutionContext()->arguments()[0];
@@ -3581,7 +3637,6 @@ void GlobalObject::installDate()
             thisObject->asESDateObject()->setTimeValueAsNaN();
             return ESValue(value);
         }
-        return ESValue();
     }, strings->setTime, 1));
 
     // $20.3.4.28 Date.prototype.setUTCDate()
@@ -3640,7 +3695,7 @@ void GlobalObject::installDate()
                 instance->throwError(ESValue(RangeError::create()));
             }
         } else {
-            instance->throwError(ESValue(TypeError::create()));
+            instance->throwError(ESValue(TypeError::create(ESString::create("Date.prototype.toISOString : This object is not Date object"))));
         }      
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->toISOString, 0));
@@ -3678,6 +3733,9 @@ void GlobalObject::installDate()
     // $44 Date.prototype.valueOf()
     m_datePrototype->defineDataProperty(strings->valueOf, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (!thisObject->isESDateObject()) {
+            instance->throwError(ESValue(TypeError::create(ESString::create("Date.prototype.valueOf : This object is not Date object"))));
+        }
         double primitiveValue = thisObject->asESDateObject()->timeValueAsDouble();
         return ESValue(primitiveValue);
     }, strings->valueOf, 0));
@@ -3685,6 +3743,9 @@ void GlobalObject::installDate()
     // $B.2.4.1 Date.prototype.getYear()
     m_datePrototype->defineDataProperty(strings->getYear, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (!thisObject->isESDateObject()) {
+            instance->throwError(ESValue(TypeError::create(ESString::create("Date.prototype.getYear : This object is not Date object"))));
+        }
         int ret = thisObject->asESDateObject()->getFullYear() - 1900;
         return ESValue(ret);
     }, strings->getYear, 0));
