@@ -608,7 +608,7 @@ scoped-then-direct-arguments-get-by-val-in-baseline.js
 // set-constructor-adder.js // ES6 Set
 // set-constructor.js // ES6 for ... of
 // set-iterators-next.js // ES6 for ... of
-// set-same-prototype.js // ES6 '=>'
+set-same-prototype.js
 setter.js
 simple-polyvariant-call-inlining-example.js
 simple-polyvariant-get-by-id-inlining-example.js
