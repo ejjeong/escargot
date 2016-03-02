@@ -4610,10 +4610,10 @@ void GlobalObject::installRegExp()
         ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
         escargot::ESRegExpObject* thisVal;
         if (thisValue.isUndefined()) {
-            thisVal = ESRegExpObject::create(strings->emptyString.string());
+            thisVal = ESRegExpObject::create(strings->emptyString.string(), ESRegExpObject::Option::None);
             thisVal->set__proto__(instance->globalObject()->regexpPrototype());
         } else if (thisValue.isESPointer() && thisValue.asESPointer()->isESString()) {
-            thisVal = ESRegExpObject::create(thisValue.asESPointer()->asESString());
+            thisVal = ESRegExpObject::create(thisValue.asESPointer()->asESString(), ESRegExpObject::Option::None);
             thisVal->set__proto__(instance->globalObject()->regexpPrototype());
         } else {
             ASSERT(thisValue.isObject());
@@ -4621,21 +4621,17 @@ void GlobalObject::installRegExp()
         }
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
 
-        ESRegExpObject::Option option = ESRegExpObject::Option::None;
-
         if (arg_size == 0) {
             thisVal->setSource(ESString::create("(?:)"));
-            thisVal->setOption(option);
             return ESValue(thisVal);
         }
 
         if (arg_size > 0) {
             ESValue pattern = instance->currentExecutionContext()->arguments()[0];
             if (pattern.isESPointer() && pattern.asESPointer()->isESRegExpObject()) {
-                if (instance->currentExecutionContext()->readArgument(1).isUndefined()) {
-                    thisVal->setOption(option);
+                if (instance->currentExecutionContext()->readArgument(1).isUndefined())
                     return pattern;
-                } else
+                else
                     instance->throwError(ESValue(TypeError::create(ESString::create(u"Cannot supply flags when constructing one RegExp from another"))));
             }
             if (pattern.isUndefined()) {
@@ -4650,6 +4646,7 @@ void GlobalObject::installRegExp()
         if (arg_size > 1) {
             ESValue flag = instance->currentExecutionContext()->arguments()[1];
             escargot::ESString* is = flag.isUndefined() ? strings->emptyString.string() : flag.toString();
+            ESRegExpObject::Option option = ESRegExpObject::Option::None;
             for (size_t i = 0; i < is->length(); i++) {
                 switch (is->charAt(i)) {
                 case 'g':

@@ -915,27 +915,6 @@ bool ESArrayObject::defineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag
     return A->asESObject()->defineOwnProperty(P, desc, throwFlag);
 }
 
-ESRegExpObject::ESRegExpObject(escargot::ESString* source)
-    : ESObject((Type)(Type::ESObject | Type::ESRegExpObject), ESVMInstance::currentInstance()->globalObject()->regexpPrototype())
-{
-    m_source = source;
-    m_yarrPattern = NULL;
-    m_bytecodePattern = NULL;
-    m_lastIndex = ESValue(0);
-    m_lastExecutedString = NULL;
-
-    defineAccessorProperty(strings->source, [](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName) -> ESValue {
-        return self->asESRegExpObject()->source();
-    }, nullptr, false, false, false);
-
-    defineAccessorProperty(strings->lastIndex, [](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName) -> ESValue {
-        return self->asESRegExpObject()->lastIndex();
-    }, [](ESObject* self, ESObject* originalObj, ::escargot::ESString* propertyName, const ESValue& index)
-    {
-        self->asESRegExpObject()->setLastIndex(index);
-    }, true, false, false);
-}
-
 ESRegExpObject::ESRegExpObject(escargot::ESString* source, const Option& option)
     : ESObject((Type)(Type::ESObject | Type::ESRegExpObject), ESVMInstance::currentInstance()->globalObject()->regexpPrototype())
 {
@@ -980,10 +959,6 @@ void ESRegExpObject::setOption(const Option& option)
         m_bytecodePattern = NULL;
     }
     m_option = option;
-
-    defineDataProperty(strings->ignoreCase, false, false, false, ESValue((bool)(m_option & ESRegExpObject::Option::IgnoreCase)));
-    defineDataProperty(strings->global, false, false, false, ESValue((bool)(m_option & ESRegExpObject::Option::Global)));
-    defineDataProperty(strings->multiline, false, false, false, ESValue((bool)(m_option & ESRegExpObject::Option::MultiLine)));
 }
 
 ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlock* cb, escargot::ESString* name, unsigned length, bool hasPrototype, bool isBuiltIn)
