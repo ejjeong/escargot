@@ -55,7 +55,7 @@ function strictCountdown(n) {
 }
 
 shouldThrow(function () { sloppyCountdown(100000); }, "RangeError: Maximum call stack size exceeded.");
-strictCountdown(100000);
+shouldThrow(function () { strictCountdown(100000); }, "RangeError: Maximum call stack size exceeded.");
 
 // Parity alterning
 function odd(n) {
@@ -69,4 +69,4 @@ function even(n) {
     return odd(n - 1);
 }
 
-odd(100000);
+shouldThrow(function () { odd(100000); }, "RangeError: Maximum call stack size exceeded.");

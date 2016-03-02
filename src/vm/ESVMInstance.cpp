@@ -209,6 +209,8 @@ void ESVMInstance::enter()
     ASSERT(!escargot::currentInstance);
     escargot::currentInstance = this;
     escargot::strings = &m_strings;
+    char dummy;
+    m_stackStart = &dummy;
 }
 
 void ESVMInstance::exit()

@@ -466,7 +466,7 @@
 [466] multi-put-by-offset-multiple-transitions.js ..... Succ
 [467] multi-put-by-offset-reallocation-butterfly-cse.js ..... Succ
 [468] multi-put-by-offset-reallocation-cases.js ..... Succ
-[469] mutual-tail-call-no-stack-overflow.js ..... Fail (Uncaught Error: not thrown)
+[469] mutual-tail-call-no-stack-overflow.js ..... Succ
 [470] nan-equal-untyped.js ..... Succ
 [471] nan-equal.js ..... Succ
 [472] new-array-dead.js ..... Succ
@@ -567,7 +567,7 @@
 [567] put-local-conservative.js ..... Succ
 [568] // raise-error-in-iterator-close.js // ES6 for ... of ..... Excluded
 [569] real-forward-varargs-for-inlined-escaped-arguments.js ..... Succ
-[570] // recurse-infinitely-on-getter.js // TODO timeout ..... Excluded
+[570] recurse-infinitely-on-getter.js ..... Succ
 [571] recursive_property_redefine_during_inline_caching.js ..... Succ
 [572] redundant-add-overflow-checks.js ..... Succ
 [573] redundant-array-bounds-checks-addition-skip-first.js ..... Succ
@@ -671,7 +671,7 @@
 [671] // tagged-templates-this.js // ES6 Template string ..... Excluded
 [672] // tagged-templates.js // ES6 Template string ..... Excluded
 [673] tail-call-in-inline-cache.js ..... Succ
-[674] tail-call-no-stack-overflow.js ..... Fail (Uncaught Error: not thrown)
+[674] tail-call-no-stack-overflow.js ..... Succ
 [675] // tail-call-recognize.js // Deprecated function.caller ..... Excluded
 [676] // tail-call-varargs-no-stack-overflow.js // ES6 spread '...' ..... Excluded
 [677] tail-calls-dont-overwrite-live-stack.js ..... Succ
@@ -780,6 +780,6 @@
 [780] weird-setter-counter-syntactic.js ..... Succ
 [781] weird-setter-counter.js ..... Succ
 All      :  781
-Excluded :  275
-Succeed  :  493
-Failed   :  13
+Excluded :  274
+Succeed  :  496
+Failed   :  11

@@ -1402,6 +1402,9 @@ ALWAYS_INLINE void functionCallerInnerProcess(ExecutionContext* newEC, ESFunctio
 
 ESValue ESFunctionObject::call(ESVMInstance* instance, const ESValue& callee, const ESValue& receiver, ESValue arguments[], const size_t& argumentCount, bool isNewExpression)
 {
+    char dummy;
+    if (UNLIKELY(instance->m_stackStart - &dummy) > 4 * 1024 * 1024) // maximum call stack size : 4MB
+        instance->throwError(RangeError::create(ESString::create("Maximum call stack size exceeded.")));
     ESValue result(ESValue::ESForceUninitialized);
     if (LIKELY(callee.isESPointer() && callee.asESPointer()->isESFunctionObject())) {
         ExecutionContext* currentContext = instance->currentExecutionContext();

@@ -209,6 +209,7 @@ protected:
     OpcodeTable* m_opcodeTable;
     std::unordered_map<void *, unsigned char> m_opcodeReverseTable;
 
+    char* m_stackStart;
 
     friend class InternalAtomicString;
     friend class InternalAtomicStringData;

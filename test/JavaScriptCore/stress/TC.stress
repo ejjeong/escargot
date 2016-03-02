@@ -567,7 +567,7 @@ put-by-val-with-string-generic.js
 put-local-conservative.js
 // raise-error-in-iterator-close.js // ES6 for ... of
 real-forward-varargs-for-inlined-escaped-arguments.js
-// recurse-infinitely-on-getter.js // TODO timeout
+recurse-infinitely-on-getter.js
 recursive_property_redefine_during_inline_caching.js
 redundant-add-overflow-checks.js
 redundant-array-bounds-checks-addition-skip-first.js

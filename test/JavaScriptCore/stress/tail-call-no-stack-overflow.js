@@ -40,7 +40,7 @@ function strictLoopArityFixup2(n, dummy1, dummy2) {
 
 shouldThrow(function () { sloppyLoop(100000); }, 'RangeError: Maximum call stack size exceeded.');
 
-// These should not throw
-strictLoop(100000);
-strictLoopArityFixup1(1000000);
-strictLoopArityFixup2(1000000);
+// These should throw in escargot
+shouldThrow(function () { strictLoop(100000); }, 'RangeError: Maximum call stack size exceeded.');
+shouldThrow(function () { strictLoopArityFixup1(100000); }, 'RangeError: Maximum call stack size exceeded.');
+shouldThrow(function () { strictLoopArityFixup2(100000); }, 'RangeError: Maximum call stack size exceeded.');
