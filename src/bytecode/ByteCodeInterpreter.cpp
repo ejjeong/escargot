@@ -1090,7 +1090,6 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                     ESValue e = data->m_object->asESArrayObject()->data()[idx];
                     if (UNLIKELY(e.isEmpty())) {
                         data->m_idx++;
-                        idx = data->m_keys[data->m_idx].toIndex();
                     } else
                         break;
                 }
