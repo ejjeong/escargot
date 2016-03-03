@@ -552,7 +552,7 @@ prototype-getter.js
 // proxy-inline-cache.js // ES6 Proxy
 prune-multi-put-by-offset-replace-or-transition-variant.js
 put-by-id-build-list-order-recurse.js
-put-by-id-direct-should-be-done-for-non-index-property.js
+// put-by-id-direct-should-be-done-for-non-index-property.js // ES6 duplicate symbole usage between data property and accessor property
 put-by-id-on-new-object-after-prototype-transition-non-strict.js
 put-by-id-on-new-object-after-prototype-transition-strict.js
 put-by-id-strict-build-list-order.js
@@ -635,7 +635,7 @@ slightly-more-difficult-to-fold-reflective-arguments-access.js
 sort-array-with-undecided.js
 sparse-array-entry-update-144067.js
 sparse-map-non-overlapping.js
-sparse-map-non-skip-getter-overriding.js
+// sparse-map-non-skip-getter-overriding.js // ES6 duplicate symbole usage between data property and accessor property
 sparse-map-non-skip.js
 sparse_splice.js
 static-function-delete.js

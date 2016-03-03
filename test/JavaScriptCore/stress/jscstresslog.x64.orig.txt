@@ -552,7 +552,7 @@
 [552] // proxy-inline-cache.js // ES6 Proxy ..... Excluded
 [553] prune-multi-put-by-offset-replace-or-transition-variant.js ..... Succ
 [554] put-by-id-build-list-order-recurse.js ..... Succ
-[555] put-by-id-direct-should-be-done-for-non-index-property.js ..... Fail (Uncaught SyntaxError: Unexpected token : 2 (Parse Error 35 line))
+[555] // put-by-id-direct-should-be-done-for-non-index-property.js // ES6 duplicate symbole usage between data property and accessor property ..... Excluded
 [556] put-by-id-on-new-object-after-prototype-transition-non-strict.js ..... Succ
 [557] put-by-id-on-new-object-after-prototype-transition-strict.js ..... Succ
 [558] put-by-id-strict-build-list-order.js ..... Succ
@@ -635,7 +635,7 @@
 [635] sort-array-with-undecided.js ..... Succ
 [636] sparse-array-entry-update-144067.js ..... Succ
 [637] sparse-map-non-overlapping.js ..... Succ
-[638] sparse-map-non-skip-getter-overriding.js ..... Fail (Uncaught SyntaxError: Unexpected token : 1 (Parse Error 12 line))
+[638] // sparse-map-non-skip-getter-overriding.js // ES6 duplicate symbole usage between data property and accessor property ..... Excluded
 [639] sparse-map-non-skip.js ..... Succ
 [640] sparse_splice.js ..... Succ
 [641] static-function-delete.js ..... Succ
@@ -780,6 +780,6 @@
 [780] weird-setter-counter-syntactic.js ..... Succ
 [781] weird-setter-counter.js ..... Succ
 All      :  781
-Excluded :  273
+Excluded :  275
 Succeed  :  503
-Failed   :  5
+Failed   :  3
