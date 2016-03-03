@@ -598,7 +598,7 @@
 [598] repeated-put-by-id-reallocating-transition.js ..... Succ
 [599] replacement-watchpoint-dictionary.js ..... Succ
 [600] replacement-watchpoint.js ..... Succ
-[601] reserved-word-with-escape.js ..... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 27 line))
+[601] reserved-word-with-escape.js ..... Succ
 [602] // rest-elements.js // ES6 rest parameter syntax ..... Excluded
 [603] retry-cache-later.js ..... Succ
 [604] // runtime-array.js // JSC 'createRuntimeArray()' ..... Excluded
@@ -781,5 +781,5 @@
 [781] weird-setter-counter.js ..... Succ
 All      :  781
 Excluded :  275
-Succeed  :  503
-Failed   :  3
+Succeed  :  504
+Failed   :  2

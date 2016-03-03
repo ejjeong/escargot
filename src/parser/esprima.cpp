@@ -832,6 +832,7 @@ struct ParseContext {
     bool m_inFunctionBody;
     bool m_inIteration;
     bool m_inSwitch;
+    bool m_inCatch;
     int m_lastCommentStart;
     std::vector<Curly> m_curlyStack;
     bool m_strict;
@@ -839,6 +840,7 @@ struct ParseContext {
     bool m_hasLineTerminator;
     bool m_isBindingElement;
     bool m_isAssignmentTarget;
+    bool m_isFunctionIdentifier;
     RefPtr<ParseStatus> m_firstCoverInitializedNameError;
     RefPtr<ParseStatus> m_lookahead;
     int m_parenthesizedCount;
@@ -868,19 +870,19 @@ void addDeclToCurrentContext(ParseContext* ctx, escargot::VariableDeclaratorNode
     ctx->m_currentBody->insert(ctx->m_currentBody->begin(), new escargot::VariableDeclaratorNode(new escargot::IdentifierNode(((escargot::IdentifierNode *)node->id())->name()), NULL));
 }
 
-void throwUnexpectedToken(RefPtr<ParseStatus> token/*token, message*/)
+void throwEsprimaException(RefPtr<ParseStatus> token/*token, message*/)
 {
-    throw escargot::ESString::concatTwoStrings(escargot::ESString::create("Unexpected token : "), token->m_value.toESString());
+    throw token->m_value.toESString();
 }
 
-void throwUnexpectedToken(escargot::ESString* token)
+void throwEsprimaException(escargot::ESString* token)
 {
-    throw escargot::ESString::concatTwoStrings(escargot::ESString::create("Unexpected token : "), token);
+    throw token;
 }
 
-void throwUnexpectedToken(const char16_t* token = u"")
+void throwEsprimaException(const char16_t* token = u"")
 {
-    throw escargot::ESString::concatTwoStrings(escargot::ESString::create("Unexpected token : "), escargot::ESString::create(token));
+    throw escargot::ESString::create(token);
 }
 
 void tolerateUnexpectedToken(/*token, message*/)
@@ -950,7 +952,7 @@ char16_t scanHexEscape(ParseContext* ctx, char16_t prefix)
             }
             code = code * 16 + c;
         } else {
-            throwUnexpectedToken();
+            throwEsprimaException();
         }
     }
     return code;
@@ -966,7 +968,7 @@ char16_t scanUnicodeCodePointEscape(ParseContext* ctx)
 
     // At least, one hex digit is required.
     if (ch == '}') {
-        throwUnexpectedToken();
+        throwEsprimaException();
     }
 
     while (ctx->m_index < ctx->m_length) {
@@ -988,7 +990,7 @@ char16_t scanUnicodeCodePointEscape(ParseContext* ctx)
     }
 
     if (/*code > 0x10FFFF ||*/ ch != '}') {
-        throwUnexpectedToken();
+        throwEsprimaException();
     }
 
     return fromCodePoint(code);
@@ -1023,7 +1025,7 @@ ParserString getComplexIdentifier(ParseContext* ctx)
     // '\u' (U+005C, U+0075) denotes an escaped character.
     if (cp == 0x5C) {
         if (ctx->m_sourceString->charAt(ctx->m_index) != 0x75) {
-            throwUnexpectedToken();
+            throwEsprimaException();
         }
         ++ctx->m_index;
         if (ctx->m_sourceString->charAt(ctx->m_index) == '{') {
@@ -1033,7 +1035,7 @@ ParserString getComplexIdentifier(ParseContext* ctx)
             ch = scanHexEscape(ctx, 'u');
             cp = ch;
             if (!ch || ch == '\\' || !isIdentifierStart(cp)) {
-                throwUnexpectedToken();
+                throwEsprimaException();
             }
         }
         id = ch;
@@ -1055,7 +1057,7 @@ ParserString getComplexIdentifier(ParseContext* ctx)
             // CHECKTHIS id.length() - 1 is right?
             id = id.substr(0, id.length() - 1);
             if (ctx->m_sourceString->charAt(ctx->m_index) != 0x75) {
-                throwUnexpectedToken();
+                throwEsprimaException();
             }
             ++ctx->m_index;
             if (ctx->m_sourceString->charAt(ctx->m_index) == '{') {
@@ -1066,7 +1068,7 @@ ParserString getComplexIdentifier(ParseContext* ctx)
                 // cp = ch.charCodeAt(0);
                 cp = ch;
                 if (!ch || ch == '\\' || !isIdentifierPart(cp)) {
-                    throwUnexpectedToken();
+                    throwEsprimaException();
                 }
             }
             id += ch;
@@ -1584,7 +1586,7 @@ PassRefPtr<ParseStatus> scanPunctuator(ParseContext* ctx)
     }
 
     if (ctx->m_index == token->m_start) {
-        throwUnexpectedToken();
+        throwEsprimaException();
     }
 
     token->m_end = ctx->m_index;
@@ -1794,7 +1796,7 @@ commonASCII:
         str.assign(&smallBuffer[0], &smallBuffer[smallBufferUsage]);
     }
     if (quote != '\0') {
-        throwUnexpectedToken();
+        throwEsprimaException();
     }
 
     ParseStatus* ps =  new ParseStatus(
@@ -1915,7 +1917,7 @@ PassRefPtr<ParseStatus> scanTemplate(ParseContext* ctx)
     }
 
     if (!terminated) {
-        throwUnexpectedToken();
+        throwEsprimaException();
     }
 
     if (!head) {
@@ -1964,11 +1966,11 @@ PassRefPtr<ParseStatus> scanHexLiteral(ParseContext* ctx, size_t start)
     }
 
     if (number.length() == 0) {
-        throwUnexpectedToken();
+        throwEsprimaException();
     }
 
     if (isIdentifierStart(ctx->m_sourceString->charAt(ctx->m_index))) {
-        throwUnexpectedToken();
+        throwEsprimaException();
     }
 
     long long int ll = strtoll(number.data(), NULL, 16);
@@ -2008,14 +2010,14 @@ PassRefPtr<ParseStatus> scanBinaryLiteral(ParseContext* ctx, size_t start)
 
     if (number.length() == 0) {
         // only 0b or 0B
-        throwUnexpectedToken();
+        throwEsprimaException();
     }
 
     if (ctx->m_index < ctx->m_length) {
         ch = ctx->m_sourceString->charAt(ctx->m_index);
         /* istanbul ignore else */
         if (isIdentifierStart(ch) || isDecimalDigit(ch)) {
-            throwUnexpectedToken();
+            throwEsprimaException();
         }
     }
 
@@ -2045,7 +2047,7 @@ PassRefPtr<ParseStatus> scanBinaryLiteral(ParseContext* ctx, size_t start)
 PassRefPtr<ParseStatus> scanOctalLiteral(ParseContext* ctx, char16_t prefix, size_t start)
 {
     if (ctx->m_strict)
-        throwUnexpectedToken();
+        throwEsprimaException();
 
     std::string number;
     bool octal;
@@ -2069,11 +2071,11 @@ PassRefPtr<ParseStatus> scanOctalLiteral(ParseContext* ctx, char16_t prefix, siz
 
     if (!octal && number.length() == 0) {
         // only 0o or 0O
-        throwUnexpectedToken();
+        throwEsprimaException();
     }
 
     if (isIdentifierStart(ctx->m_sourceString->charAt(ctx->m_index)) || isDecimalDigit(ctx->m_sourceString->charAt(ctx->m_index))) {
-        throwUnexpectedToken();
+        throwEsprimaException();
     }
 
     long long int ll = strtoll(number.data(), NULL, 8);
@@ -2186,12 +2188,12 @@ PassRefPtr<ParseStatus> scanNumericLiteral(ParseContext* ctx)
                 number += ctx->m_sourceString->charAt(ctx->m_index++);
             }
         } else {
-            throwUnexpectedToken();
+            throwEsprimaException();
         }
     }
 
     if (isIdentifierStart(ctx->m_sourceString->charAt(ctx->m_index))) {
-        throwUnexpectedToken();
+        throwEsprimaException();
     }
 
     double ll = strtod(number.data(), NULL);
@@ -2343,7 +2345,7 @@ ALWAYS_INLINE void expect(ParseContext* ctx, PunctuatorsKind kind)
     RefPtr<ParseStatus> token = lex(ctx);
     // CHECKTHIS. compare value!
     if (token->m_type != Token::PunctuatorToken || token->m_punctuatorsKind != kind) {
-        throwUnexpectedToken();
+        throwEsprimaException();
     }
 }
 
@@ -2381,7 +2383,7 @@ void expectKeyword(ParseContext* ctx, KeywordKind keyword)
 {
     RefPtr<ParseStatus> token = lex(ctx);
     if (token->m_type != Token::KeywordToken || token->m_keywordKind != keyword) {
-        throwUnexpectedToken();
+        throwEsprimaException();
     }
 }
 
@@ -2444,7 +2446,7 @@ void consumeSemicolon(ParseContext* ctx)
     ctx->m_lastLineStart = ctx->m_startLineStart;
 
     if (ctx->m_lookahead->m_type != Token::EOFToken && !match(ctx, RightBrace)) {
-        throwUnexpectedToken();
+        throwEsprimaException();
     }
 }
 
@@ -2459,7 +2461,7 @@ ALWAYS_INLINE escargot::Node* isolateCoverGrammar(ParseContext* ctx, escargot::N
     ctx->m_firstCoverInitializedNameError = NULL;
     result = parser(ctx);
     if (ctx->m_firstCoverInitializedNameError) {
-        throwUnexpectedToken();
+        throwEsprimaException();
     }
     ctx->m_isBindingElement = oldIsBindingElement;
     ctx->m_isAssignmentTarget = oldIsAssignmentTarget;
@@ -2692,7 +2694,7 @@ escargot::Node* parseVariableIdentifier(ParseContext* ctx)
             tolerateUnexpectedToken();
         } if (!ctx->m_allowYield) {
             // throwUnexpectedToken(token);
-            throwUnexpectedToken();
+            throwEsprimaException();
         }
     } else if (token->m_type != Token::IdentifierToken) {
         if (ctx->m_strict && token->m_type == Token::KeywordToken && token->m_keywordKind > StrictModeReservedWord) {
@@ -2700,7 +2702,19 @@ escargot::Node* parseVariableIdentifier(ParseContext* ctx)
             // tolerateUnexpectedToken(token, Messages.StrictReservedWord);
         } else {
             // throwUnexpectedToken(token);
-            throwUnexpectedToken();
+            escargot::UTF16String err_msg;
+            err_msg.append(u"Cannot use the keyword '");
+            err_msg.append(token->m_value.toESString()->toUTF16String());
+            if (ctx->m_isFunctionIdentifier) {
+                err_msg.append(u"' as a function name.");
+            } else {
+                if (ctx->m_inCatch) {
+                    err_msg.append(u"' as a catch variable name.");
+                } else {
+                    err_msg.append(u"' as a variable name.");
+                }
+            }
+            throwEsprimaException(err_msg.c_str());
         }
     }
     /*
@@ -3467,17 +3481,17 @@ escargot::Node* parseThrowStatement(ParseContext* ctx/*node*/)
 escargot::Node* parseCatchClause(ParseContext* ctx/*node*/)
 {
     // var param, params = [], paramMap = {}, key, i, body, node = new Node();
-
-
+    ctx->m_inCatch = true;
     expectKeyword(ctx, Catch);
 
     expect(ctx, LeftParenthesis);
     if (match(ctx, RightParenthesis)) {
         // throwUnexpectedToken(lookahead);
-        throwUnexpectedToken();
+        throwEsprimaException();
     }
 
     std::vector<RefPtr<ParseStatus> > params;
+
     escargot::Node* param = parsePattern(ctx, params);
     for (unsigned i = 0; i < params.size(); i++) {
         // TODO
@@ -3500,6 +3514,7 @@ escargot::Node* parseCatchClause(ParseContext* ctx/*node*/)
     // return node.finishCatchClause(param, body);
     escargot::Node* nd = new escargot::CatchClauseNode(param, nullptr, body);
     nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
+    ctx->m_inCatch = false;
     return nd;
 }
 
@@ -3557,7 +3572,7 @@ escargot::Node* parseStatement(ParseContext* ctx)
 
     if (type == Token::EOFToken) {
         // throwUnexpectedToken(lookahead);
-        throwUnexpectedToken();
+        throwEsprimaException();
     }
 
     if (type == Token::PunctuatorToken && ctx->m_lookahead->m_punctuatorsKind == LeftBrace) {
@@ -3924,7 +3939,9 @@ escargot::Node* parseFunctionDeclaration(ParseContext* ctx/*node, identifierIsOp
     escargot::Node* id;
     if (!match(ctx, LeftParenthesis)) {
         RefPtr<ParseStatus> token = ctx->m_lookahead;
+        ctx->m_isFunctionIdentifier = true;
         id = parseVariableIdentifier(ctx);
+        ctx->m_isFunctionIdentifier = false;
         if (ctx->m_strict) {
             if (isRestrictedWord(token->m_value)) {
                 // tolerateUnexpectedToken(token, Messages.StrictFunctionName);
@@ -3959,7 +3976,7 @@ escargot::Node* parseFunctionDeclaration(ParseContext* ctx/*node, identifierIsOp
     escargot::Node* body = parseFunctionSourceElements(ctx);
     if (ctx->m_strict && firstRestricted) {
         // throwUnexpectedToken(firstRestricted, message);
-        throwUnexpectedToken();
+        throwEsprimaException();
     }
     /*
     if (strict && stricted) {
@@ -4027,7 +4044,13 @@ escargot::Node* parseFunctionExpression(ParseContext* ctx)
     RefPtr<ParseStatus> firstRestricted;
     if (!match(ctx, LeftParenthesis)) {
         RefPtr<ParseStatus> token = ctx->m_lookahead;
-        id = (!ctx->m_strict && !isGenerator && matchKeyword(ctx, Yield)) ? parseNonComputedProperty(ctx) : parseVariableIdentifier(ctx);
+        if (!ctx->m_strict && !isGenerator && matchKeyword(ctx, Yield)) {
+            id = parseNonComputedProperty(ctx);
+        } else {
+            ctx->m_isFunctionIdentifier = true;
+            id = parseVariableIdentifier(ctx);
+            ctx->m_isFunctionIdentifier = false;
+        }
         ASSERT(id->type() == escargot::NodeType::Identifier);
         if (ctx->m_strict) {
             if (isRestrictedWord(token->m_value)) {
@@ -4260,7 +4283,7 @@ escargot::Node* parseObjectPropertyKey(ParseContext* ctx)
     default:
         break;
     };
-    throwUnexpectedToken();
+    throwEsprimaException();
     RELEASE_ASSERT_NOT_REACHED();
 }
 
@@ -4365,12 +4388,12 @@ ScanRegExpBodyResult* scanRegExpBody(ParseContext* ctx)
             // ECMA-262 7.8.5
             if (isLineTerminator(ch)) {
                 // throwUnexpectedToken(null, Messages.UnterminatedRegExp);
-                throwUnexpectedToken();
+                throwEsprimaException();
             }
             str += ch;
         } else if (isLineTerminator(ch)) {
             // throwUnexpectedToken(null, Messages.UnterminatedRegExp);
-            throwUnexpectedToken();
+            throwEsprimaException();
         } else if (classMarker) {
             if (ch == ']') {
                 classMarker = false;
@@ -4387,7 +4410,7 @@ ScanRegExpBodyResult* scanRegExpBody(ParseContext* ctx)
 
     if (!terminated) {
         // throwUnexpectedToken(null, Messages.UnterminatedRegExp);
-        throwUnexpectedToken();
+        throwEsprimaException();
     }
 
     // Exclude leading and trailing slash.
@@ -4708,7 +4731,7 @@ escargot::Node* parseObjectProperty(ParseContext* ctx, bool& hasProto)
     }
 
     if (!key) {
-        throwUnexpectedToken();
+        throwEsprimaException();
         // throwUnexpectedToken(lookahead);
     }
 
@@ -4733,7 +4756,7 @@ escargot::Node* parseObjectProperty(ParseContext* ctx, bool& hasProto)
         nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
         return nd;
     } else {
-        throwUnexpectedToken();
+        throwEsprimaException();
     }
 
     if (token->m_type == Token::IdentifierToken) {
@@ -4754,7 +4777,7 @@ escargot::Node* parseObjectProperty(ParseContext* ctx, bool& hasProto)
     }
 
     // throwUnexpectedToken(lookahead);
-    throwUnexpectedToken();
+    throwEsprimaException();
     RELEASE_ASSERT_NOT_REACHED();
 }
 
@@ -4774,14 +4797,14 @@ escargot::Node* parseObjectInitializer(ParseContext* ctx)
         auto previous = keyStrings.find(keyString);
         if (previous != keyStrings.end()) {
             if (ctx->m_strict && (previous->second == escargot::PropertyNode::Kind::Init) && (p->kind() == escargot::PropertyNode::Kind::Init))
-                throwUnexpectedToken(keyString);
+                throwEsprimaException(keyString);
             if ((previous->second == escargot::PropertyNode::Kind::Init) && (p->kind() != escargot::PropertyNode::Kind::Init))
-                throwUnexpectedToken(keyString);
+                throwEsprimaException(keyString);
             if ((previous->second != escargot::PropertyNode::Kind::Init) && (p->kind() == escargot::PropertyNode::Kind::Init))
-                throwUnexpectedToken(keyString);
+                throwEsprimaException(keyString);
             if (((previous->second == escargot::PropertyNode::Kind::Get) && (p->kind() == escargot::PropertyNode::Kind::Get))
                 || ((previous->second == escargot::PropertyNode::Kind::Set) && (p->kind() == escargot::PropertyNode::Kind::Set)))
-                throwUnexpectedToken(keyString);
+                throwEsprimaException(keyString);
         }
         keyStrings.insert(std::make_pair(keyString, p->kind()));
 
@@ -5121,8 +5144,12 @@ escargot::Node* parsePrimaryExpression(ParseContext* ctx)
             throw u"ES2015 class feature is not supported";
             // return parseClassExpression();
         }
-        // throwUnexpectedToken(lex());
-        throwUnexpectedToken();
+        token = lex(ctx);
+        escargot::UTF16String err_msg;
+        err_msg.append(u"Unexpected keyword '");
+        err_msg.append(token->m_value.toESString()->toUTF16String());
+        err_msg.append(u"'");
+        throwEsprimaException(err_msg.c_str());
     } else if (type == Token::BooleanLiteralToken) {
         ctx->m_isAssignmentTarget = ctx->m_isBindingElement = false;
         token = lex(ctx);
@@ -5169,7 +5196,7 @@ escargot::Node* parsePrimaryExpression(ParseContext* ctx)
         expr = parseTemplateLiteral(ctx);
     } else {
         // throwUnexpectedToken(lex());
-        throwUnexpectedToken();
+        throwEsprimaException();
     }
 
     return expr;
@@ -5213,7 +5240,7 @@ escargot::Node* parseNonComputedProperty(ParseContext* ctx)
     RefPtr<ParseStatus> token = lex(ctx);
 
     if (!isIdentifierName(token.get())) {
-        throwUnexpectedToken();
+        throwEsprimaException();
     }
 
     // return node.finishIdentifier(token.value);
@@ -5260,7 +5287,7 @@ escargot::Node* parseNewExpression(ParseContext* ctx)
                 // return node.finishMetaProperty('new', 'target');
             }
         }
-        throwUnexpectedToken();
+        throwEsprimaException();
     }
 
     callee = isolateCoverGrammar(ctx, parseLeftHandSideExpression);
@@ -6107,11 +6134,13 @@ escargot::Node* parse(escargot::ESString* source, bool strict)
     ctx.m_inFunctionBody = false;
     ctx.m_inIteration = false;
     ctx.m_inSwitch = false;
+    ctx.m_inCatch = false;
     ctx.m_lastCommentStart = -1;
     ctx.m_strict = strict;
     ctx.m_scanning = false;
     ctx.m_isAssignmentTarget = false;
     ctx.m_isBindingElement = false;
+    ctx.m_isFunctionIdentifier = false;
     ctx.m_firstCoverInitializedNameError = NULL;
     ctx.m_parenthesizedCount = 0;
     ctx.m_lookahead = nullptr;
