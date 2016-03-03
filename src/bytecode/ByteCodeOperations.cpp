@@ -594,9 +594,10 @@ NEVER_INLINE EnumerateObjectData* executeEnumerateObject(ESObject* obj)
         data->m_hiddenClassChain.push_back(target->hiddenClass());
     }
 
-    std::sort(data->m_keys.begin(), data->m_keys.end(), [](ESValue i, ESValue j) {
+    // TODO: Temporarily block this below code for performance
+    /*std::sort(data->m_keys.begin(), data->m_keys.end(), [](ESValue i, ESValue j) {
         return i.toInt32() < j.toInt32();
-    });
+    });*/
     data->m_keys.insert(data->m_keys.end(), nonIntKeys.begin(), nonIntKeys.end());
 
     return data;
