@@ -38,10 +38,10 @@ for (var i = 0; i < 1000; ++i) {
 // more than that.
 var result = gcHeapSize();
 if (result > 10000000)
-    throw "Error: heap too big before forced GC";
+    throw "Error: heap too big";
 
 // Do a final check after GC, just for sanity.
 gc();
 result = gcHeapSize();
 if (result > 1000000)
-    throw "Error: heap too big after forced GC";
+    throw "Error: heap too big";

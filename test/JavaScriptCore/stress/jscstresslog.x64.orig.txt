@@ -478,7 +478,7 @@
 [478] new-double-array-with-size.js ..... Succ
 [479] new-function-expression-has-structures.js ..... Succ
 [480] new-int32-array-with-size.js ..... Succ
-[481] new-largeish-contiguous-array-with-size.js ..... Fail (Uncaught Error: heap too big before forced GC)
+[481] new-largeish-contiguous-array-with-size.js ..... Fail (Uncaught Error: heap too big)
 [482] // new-target.js // ES6 new.target ..... Excluded
 [483] new-undecided-array-with-size.js ..... Succ
 [484] no-abc-skippy-loop.js ..... Succ
