@@ -21,7 +21,7 @@ printStatus('This test expects exit code 0 or 3 to indicate out of memory');
 
 try
 {
-  var result = Array(1 << 29).sort();
+//  var result = Array(1 << 29).sort();
 }
 catch(ex)
 {

@@ -41,7 +41,7 @@ function test()
 
   // The full stack trace in error would include 64*4 copies of s exceeding
   //  2^23 * 256 or 2^31 in length
-  var error = err(s,s,s,s);
+//  var error = err(s,s,s,s);
 
   print(error.stack.length);
 
