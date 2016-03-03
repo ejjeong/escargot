@@ -4319,7 +4319,8 @@ void GlobalObject::installMath()
             double m = x;
             double p = 1;
             while (true) {
-                if ((n & 1) != 0) p *= m;
+                if ((n & 1) != 0)
+                    p *= m;
                 n >>= 1;
                 if (n == 0) {
                     if (y < 0) {
@@ -4330,8 +4331,8 @@ void GlobalObject::installMath()
 
                         double result = 1.0 / p;
                         return (result == 0 && std::isinf(p))
-                                ? ESValue(pow(x, static_cast<double>(y)))  // Avoid pow(double, int).
-                                        : ESValue(result);
+                            ? ESValue(pow(x, static_cast<double>(y))) // Avoid pow(double, int).
+                            : ESValue(result);
                     }
 
                     return ESValue(p);
