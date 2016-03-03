@@ -32,7 +32,7 @@ arguments-interference.js
 // arguments-iterator.js // ES6 'for ... of'
 arguments-length-always-dont-enum.js
 arith-add-with-constants.js
-arith-modulo-node-behaviors.js// -1*0=-0 problem
+arith-modulo-node-behaviors.js
 arith-mul-with-constants.js
 // array-copywithin.js // ES6 'for ... of'
 // array-fill-put-by-val.js // ES6 Object syntax

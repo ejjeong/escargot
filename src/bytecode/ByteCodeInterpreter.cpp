@@ -465,12 +465,16 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
             if (left->isInt32() && right->isInt32()) {
                 int32_t a = left->asInt32();
                 int32_t b = right->asInt32();
-                int32_t c = right->asInt32();
-                bool result = ArithmeticOperations<int32_t, int32_t, int32_t>::multiply(a, b, c);
-                if (LIKELY(result)) {
-                    PUSH(stack, topOfStack, ESValue(c));
-                } else {
+                if ((!a || !b) && (a >> 31 || b >> 31)) { // -1 * 0 should be treated as -0, not +0
                     PUSH(stack, topOfStack, ESValue(left->toNumber() * right->toNumber()));
+                } else {
+                    int32_t c = right->asInt32();
+                    bool result = ArithmeticOperations<int32_t, int32_t, int32_t>::multiply(a, b, c);
+                    if (LIKELY(result)) {
+                        PUSH(stack, topOfStack, ESValue(c));
+                    } else {
+                        PUSH(stack, topOfStack, ESValue(left->toNumber() * right->toNumber()));
+                    }
                 }
             } else {
                 PUSH(stack, topOfStack, ESValue(left->toNumber() * right->toNumber()));

@@ -32,7 +32,7 @@
 [32] // arguments-iterator.js // ES6 'for ... of' ..... Excluded
 [33] arguments-length-always-dont-enum.js ..... Succ
 [34] arith-add-with-constants.js ..... Succ
-[35] arith-modulo-node-behaviors.js// -1*0=-0 problem ..... Succ
+[35] arith-modulo-node-behaviors.js ..... Succ
 [36] arith-mul-with-constants.js ..... Succ
 [37] // array-copywithin.js // ES6 'for ... of' ..... Excluded
 [38] // array-fill-put-by-val.js // ES6 Object syntax ..... Excluded
