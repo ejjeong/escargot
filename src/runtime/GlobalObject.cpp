@@ -4312,6 +4312,38 @@ void GlobalObject::installMath()
             return ESValue(std::numeric_limits<double>::quiet_NaN());
         if (UNLIKELY(std::abs(x) == 1 && std::isinf(y)))
             return ESValue(std::numeric_limits<double>::quiet_NaN());
+
+        int y_int = static_cast<int>(y);
+        if (y == y_int) {
+            unsigned n = (y < 0) ? -y : y;
+            double m = x;
+            double p = 1;
+            while (true) {
+                if ((n & 1) != 0) p *= m;
+                n >>= 1;
+                if (n == 0) {
+                    if (y < 0) {
+                        // Unfortunately, we have to be careful when p has reached
+                        // infinity in the computation, because sometimes the higher
+                        // internal precision in the pow() implementation would have
+                        // given us a finite p. This happens very rarely.
+
+                        double result = 1.0 / p;
+                        return (result == 0 && std::isinf(p))
+                                ? ESValue(pow(x, static_cast<double>(y)))  // Avoid pow(double, int).
+                                        : ESValue(result);
+                    }
+
+                    return ESValue(p);
+                }
+                m *= m;
+            }
+        } else if (y == 0.5) {
+            return ESValue(sqrt(x));
+        } else if (y == -0.5) {
+            return ESValue(1.0 / sqrt(x));
+        }
+
         return ESValue(pow(x, y));
     }, strings->pow, 2));
 

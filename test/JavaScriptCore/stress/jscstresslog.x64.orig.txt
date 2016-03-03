@@ -445,7 +445,7 @@
 [445] math-pow-coherency.js ..... Succ
 [446] math-pow-integer-exponent-fastpath.js ..... Succ
 [447] math-pow-nan-behaviors.js ..... Succ
-[448] math-pow-with-constants.js ..... Fail (Uncaught Error: exponentIsIntegerConstant(2.1) should be 34135823067412.42, was = 34135823067412.465)
+[448] math-pow-with-constants.js ..... Succ
 [449] math-pow-with-never-NaN-exponent.js ..... Succ
 [450] math-round-arith-rounding-mode.js ..... Succ
 [451] math-round-basics.js ..... Succ
@@ -781,5 +781,5 @@
 [781] weird-setter-counter.js ..... Succ
 All      :  781
 Excluded :  269
-Succeed  :  502
-Failed   :  10
+Succeed  :  503
+Failed   :  9
