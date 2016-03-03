@@ -9,7 +9,7 @@ function makeExpectedMatch(arr, index, input) {
         expectedMatch[i] = arr[i];
 
     return expectedMatch;
-}
+};
 
 function checkRegExpMatch(actual, expected) {
     assertEq(actual.length, expected.length);
@@ -18,4 +18,4 @@ function checkRegExpMatch(actual, expected) {
 
     assertEq(actual.index, expected.index);
     assertEq(actual.input, expected.input);
-}
+};
