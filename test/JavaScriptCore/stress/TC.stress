@@ -640,13 +640,13 @@ sparse-map-non-skip.js
 sparse_splice.js
 static-function-delete.js
 static-function-put.js
-static-getter-delete.js
-static-getter-descriptors.js
+// static-getter-delete.js // ES6 RegExp.prototype.global is AccessorProperty
+// static-getter-descriptors.js // ES6 RegExp.prototype.global is AccessorProperty
 static-getter-enumeration.js
 static-getter-get.js
-static-getter-in-names.js
+// static-getter-in-names.js // ES6 RegExp.prototype.flags (21.2.5.3)
 // static-getter-names.js // ES6 for ... of
-static-getter-put.js
+// static-getter-put.js // ES6 RegExp.prototype.global is AccessorProperty
 strict-to-this-int.js
 // string-from-code-point.js // ES6 for ... of
 string-ident-to-not-string-var-equality.js
