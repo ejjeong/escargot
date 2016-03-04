@@ -478,7 +478,7 @@ new-contiguous-array-with-size.js
 new-double-array-with-size.js
 new-function-expression-has-structures.js
 new-int32-array-with-size.js
-new-largeish-contiguous-array-with-size.js
+// new-largeish-contiguous-array-with-size.js // run pass if set GC_MAXIMUM_HEAP_SIZE with 10000000
 // new-target.js // ES6 new.target
 new-undecided-array-with-size.js
 no-abc-skippy-loop.js

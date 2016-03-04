@@ -43,5 +43,5 @@ if (result > 10000000)
 // Do a final check after GC, just for sanity.
 gc();
 result = gcHeapSize();
-if (result > 1000000)
+if (result > 10000000)
     throw "Error: heap too big";

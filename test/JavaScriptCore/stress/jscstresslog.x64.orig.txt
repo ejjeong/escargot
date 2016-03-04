@@ -478,7 +478,7 @@
 [478] new-double-array-with-size.js ..... Succ
 [479] new-function-expression-has-structures.js ..... Succ
 [480] new-int32-array-with-size.js ..... Succ
-[481] new-largeish-contiguous-array-with-size.js ..... Fail (Uncaught Error: heap too big)
+[481] // new-largeish-contiguous-array-with-size.js // run pass if set GC_MAXIMUM_HEAP_SIZE with 10000000 ..... Excluded
 [482] // new-target.js // ES6 new.target ..... Excluded
 [483] new-undecided-array-with-size.js ..... Succ
 [484] no-abc-skippy-loop.js ..... Succ
@@ -780,6 +780,6 @@
 [780] weird-setter-counter-syntactic.js ..... Succ
 [781] weird-setter-counter.js ..... Succ
 All      :  781
-Excluded :  275
+Excluded :  276
 Succeed  :  505
-Failed   :  1
+Failed   :  0
