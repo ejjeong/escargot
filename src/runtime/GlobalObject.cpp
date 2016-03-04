@@ -1001,14 +1001,14 @@ void GlobalObject::installFunction()
 inline ESValue objectDefineProperties(ESValue object, ESValue& properties)
 {
     if (!object.isObject())
-        ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("objectDefineProperties: first argument is not object"))));
+        ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Objecct.objectDefineProperties: first argument is not object"))));
     ESObject* props = properties.toObject();
     props->enumeration([&](ESValue key) {
         bool hasKey = props->hasOwnProperty(key);
         if (hasKey) {
             ESValue propertyDesc = props->get(key);
             if (!propertyDesc.isObject())
-                ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("objectDefineProperties: descriptor is not object"))));
+                ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Objecct.objectDefineProperties: descriptor is not object"))));
             if (object.toObject()->isESArrayObject())
                 object.asESPointer()->asESArrayObject()->defineOwnProperty(key, propertyDesc.asESPointer()->asESObject(), true);
             else
@@ -1138,7 +1138,7 @@ void GlobalObject::installObject()
     m_object->defineDataProperty(ESString::createAtomicString("create"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue proto = instance->currentExecutionContext()->readArgument(0);
         if (!proto.isObject() && !proto.isNull()) {
-            instance->throwError(ESValue(TypeError::create(ESString::create("first parameter is should be object"))));
+            instance->throwError(ESValue(TypeError::create(ESString::create("Objecct.create: first parameter is should be object"))));
         }
         ESObject* obj = ESObject::create();
         if (proto.isNull())
@@ -1155,7 +1155,7 @@ void GlobalObject::installObject()
     m_object->defineDataProperty(ESString::createAtomicString("freeze"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue O = instance->currentExecutionContext()->readArgument(0);
         if (!O.isObject())
-            instance->throwError(ESValue(TypeError::create(ESString::create("first parameter is should be object"))));
+            instance->throwError(ESValue(TypeError::create(ESString::create("Objecct.freeze: first parameter is should be object"))));
         ESObject* obj = O.toObject();
         obj->forceNonVectorHiddenClass();
         if (obj->isESArrayObject())
@@ -1194,7 +1194,7 @@ void GlobalObject::installObject()
 
         ESValue arg0 = instance->currentExecutionContext()->readArgument(0);
         if (!arg0.isObject())
-            instance->throwError(ESValue(TypeError::create(ESString::create(u"getOwnPropertyDescriptor: first argument is not object"))));
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"Objecct.getOwnPropertyDescriptor: first argument is not object"))));
         ESObject* obj = arg0.asESPointer()->asESObject();
 
         ESValue arg1 = instance->currentExecutionContext()->readArgument(1);
@@ -1211,7 +1211,7 @@ void GlobalObject::installObject()
     m_object->defineDataProperty(ESString::createAtomicString("getOwnPropertyNames"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue O = instance->currentExecutionContext()->readArgument(0);
         if (!O.isObject())
-            instance->throwError(ESValue(TypeError::create(ESString::create(u"getOwnPropertyNames: first argument is not object"))));
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"Objecct.getOwnPropertyNames: first argument is not object"))));
         ESObject* obj = O.toObject();
         escargot::ESArrayObject* nameList = ESArrayObject::create();
         obj->enumerationWithNonEnumerable([&nameList](ESValue key, ESHiddenClassPropertyInfo*) {
@@ -1225,7 +1225,7 @@ void GlobalObject::installObject()
     m_object->defineDataProperty(strings->getPrototypeOf, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue O = instance->currentExecutionContext()->readArgument(0);
         if (!O.isObject())
-            instance->throwError(ESValue(TypeError::create(ESString::create(u"getPrototypeOf: first argument is not object"))));
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"Objecct.getPrototypeOf: first argument is not object"))));
         return O.toObject()->__proto__();
     }, strings->getPrototypeOf, 1));
 
@@ -1233,7 +1233,7 @@ void GlobalObject::installObject()
     m_object->defineDataProperty(ESString::createAtomicString("isExtensible"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue O = instance->currentExecutionContext()->readArgument(0);
         if (!O.isObject())
-            instance->throwError(ESValue(TypeError::create(ESString::create(u"isExtensible: first argument is not object"))));
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"Objecct.isExtensible: first argument is not object"))));
         return ESValue(O.asESPointer()->asESObject()->isExtensible());
     }, ESString::createAtomicString("isExtensible"), 1));
 
@@ -1241,7 +1241,7 @@ void GlobalObject::installObject()
     m_object->defineDataProperty(ESString::createAtomicString("isFrozen"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue O = instance->currentExecutionContext()->readArgument(0);
         if (!O.isObject())
-            instance->throwError(ESValue(TypeError::create(ESString::create(u"getOwnPropertyNames: first argument is not object"))));
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"Objecct.isFrozen: first argument is not object"))));
         ESObject* obj = O.toObject();
         bool hasWritableConfigurableProperty = false;
         obj->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
@@ -1263,7 +1263,7 @@ void GlobalObject::installObject()
     m_object->defineDataProperty(ESString::createAtomicString("isSealed"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue O = instance->currentExecutionContext()->readArgument(0);
         if (!O.isObject())
-            instance->throwError(ESValue(TypeError::create(ESString::create(u"getOwnPropertyNames: first argument is not object"))));
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"Objecct.isSealed: first argument is not object"))));
         ESObject* obj = O.toObject();
         bool hasConfigurableProperty = false;
         obj->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
@@ -1295,7 +1295,7 @@ void GlobalObject::installObject()
     m_object->defineDataProperty(ESString::createAtomicString("preventExtensions"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue O = instance->currentExecutionContext()->readArgument(0);
         if (!O.isObject())
-            instance->throwError(ESValue(TypeError::create(ESString::create(u"getOwnPropertyNames: first argument is not object"))));
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"Object.preventExtensions: first argument is not object"))));
         ESObject* obj = O.toObject();
         obj->setExtensible(false);
         return O;
@@ -1305,7 +1305,7 @@ void GlobalObject::installObject()
     m_object->defineDataProperty(ESString::createAtomicString("seal"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue O = instance->currentExecutionContext()->readArgument(0);
         if (!O.isObject())
-            instance->throwError(ESValue(TypeError::create(ESString::create(u"getOwnPropertyNames: first argument is not object"))));
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"Objecct.seal: first argument is not object"))));
         ESObject* obj = O.toObject();
         obj->forceNonVectorHiddenClass();
         if (obj->isESArrayObject())
