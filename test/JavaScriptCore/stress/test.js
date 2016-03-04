@@ -104,6 +104,9 @@ Object.assign = function(src, target) {
 
 Object.setPrototypeOf = function(obj, proto) {
     // from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf#Polyfill
+    if (obj.__proto__ == proto)
+      return obj;
+
     obj.__proto__ = proto;
     return obj;
 };
@@ -112,7 +115,14 @@ Number.isNaN = function(arg) { return isNaN(arg); };
 Math.fround = function(arg) { return Math.round(arg); };
 
 var Reflect = {
-    setPrototypeOf : Object.setPrototypeOf,
+    setPrototypeOf : function(obj, proto) {
+      try {
+        Object.setPrototypeOf(obj, proto);
+        return true;
+      } catch(e) {
+        return false;
+      }
+    },
     getPrototypeOf : Object.getPrototypeOf
 }
 

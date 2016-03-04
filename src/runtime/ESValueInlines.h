@@ -1712,7 +1712,7 @@ ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& va
 ALWAYS_INLINE void ESObject::set(const escargot::ESValue& key, const ESValue& val, bool throwExpetion, escargot::ESValue* receiver)
 {
     if (!set(key, val, receiver) && throwExpetion) {
-        ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Cannot assign to readonly property"))));
+        ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Attempted to assign to readonly property."))));
     }
 }
 

@@ -70,6 +70,10 @@ ESVMInstance::ESVMInstance()
 
     m_object__proto__AccessorData.setSetter([](::escargot::ESObject* self, ESObject* originalObj, ESString* propertyName, const ESValue& value) -> void {
         if (value.isESPointer() && value.asESPointer()->isESObject()) {
+            // https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Object/preventExtensions
+            // Calling Object.preventExtensions() on an object will also prevent extensions on its __proto__
+            if (!self->isExtensible())
+                ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create(u"Attempted to assign to readonly property."))));
             self->set__proto__(value.asESPointer()->asESObject());
         } else if (value.isUndefined()) {
             self->set__proto__(ESValue());

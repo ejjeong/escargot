@@ -608,7 +608,7 @@
 [608] // set-constructor-adder.js // ES6 Set ..... Excluded
 [609] // set-constructor.js // ES6 for ... of ..... Excluded
 [610] // set-iterators-next.js // ES6 for ... of ..... Excluded
-[611] set-same-prototype.js ..... Fail (Uncaught Error: not thrown)
+[611] set-same-prototype.js ..... Succ
 [612] setter.js ..... Succ
 [613] simple-polyvariant-call-inlining-example.js ..... Succ
 [614] simple-polyvariant-get-by-id-inlining-example.js ..... Succ
@@ -781,5 +781,5 @@
 [781] weird-setter-counter.js ..... Succ
 All      :  781
 Excluded :  275
-Succeed  :  504
-Failed   :  2
+Succeed  :  505
+Failed   :  1

@@ -31,7 +31,7 @@ shouldBe(Reflect.setPrototypeOf(object, proto), true);
 shouldBe(Reflect.setPrototypeOf(object, {}), false);
 shouldBe(Reflect.getPrototypeOf(object), proto);
 
-object.__proto__ = proto;
+// object.__proto__ = proto; // Only ES6 allows to set same prototype
 shouldThrow(function() {
     object.__proto__ = {};
 }, "TypeError: Attempted to assign to readonly property.");
