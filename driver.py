@@ -75,6 +75,12 @@ class ArgumentParser(object):
         options = CommandOptionValues(arch, variants, mode, timeout, suite)
         return (paths, options)
 
+class Test(object):
+    def __init__(self, path, ignore, ignore_reason, flags=None):
+        self.path = path
+        self.ignore = ignore
+        self.ignore_reason = ignore_reason
+        self.flags = flags
 
 class StressReader(object):
     def list_tests(self):
@@ -83,11 +89,16 @@ class StressReader(object):
         tc_list = []
         with open(tc_stress, "r") as f:
             for line in f:
-                if not line.startswith("//"):
-                    tc_list.append(os.path.join(test_base_dir, line[:len(line) - 1]))
+                ignore = line.startswith("//")
+                if ignore:
+                    idx = line.rfind("//")
+                    ignore_reason = line[idx + 2:].strip()
+                    tc_list.append(Test(os.path.join(test_base_dir, line[3:idx]), ignore, ignore_reason))
+                else:
+                    tc_list.append(Test(os.path.join(test_base_dir, line[:-1]), ignore, None))
         return tc_list
 
-    def mandatory_file(self, fname):
+    def mandatory_file(self, test):
         return ["test/JavaScriptCore/stress/test.js"]
 
     def output_file(self, a_v_m):
@@ -99,6 +110,7 @@ class MozillaReader(object):
         test_dirs = ["ecma_5", "js1_1", "js1_2", "js1_3", "js1_4", "js1_5",
                     "js1_6," ,"js1_7","js1_8", "js1_8_1", "js1_8_5"]
         tc_list = []
+        ESCARGOT_SKIP = "// escargot-skip:"
         for test_dir in test_dirs:
             for (path, dir, files) in os.walk(os.path.join(test_base_dir, test_dir)):
                 dir.sort()
@@ -109,11 +121,16 @@ class MozillaReader(object):
                         if filename.find("shell") == -1:
                             filepath = os.path.join(path, filename)
                             with open(filepath, "r") as f:
-                                if not f.readline().startswith("// escargot-skip"):
-                                    tc_list.append(filepath)
+                                first_line = f.readline()
+                                ignore = first_line.startswith(ESCARGOT_SKIP)
+                                ignore_reason = None
+                                if ignore:
+                                    ignore_reason = first_line[len(ESCARGOT_SKIP):].strip()
+                                tc_list.append(Test(filepath, ignore, ignore_reason))
         return tc_list
 
-    def mandatory_file(self, fname):
+    def mandatory_file(self, test):
+        fname = test.path
         if fname.find("ecma_5") != -1:
             if fname.find("JSON") != -1:
                 return ["test/SpiderMonkey/shell.js", "test/SpiderMonkey/ecma_5/shell.js", "test/SpiderMonkey/ecma_5/JSON/shell.js"]
@@ -184,6 +201,7 @@ class Driver(object):
             total = 0
             succ = 0
             fail = 0
+            ignore = 0
             timeout = 0
             idx += 1
             with open(instance.output_file(a_v_m), 'w') as f:
@@ -192,7 +210,11 @@ class Driver(object):
                         total += 1
                         command = [shell]
                         command = command + instance.mandatory_file(tc)
-                        command.append(tc)
+                        command.append(tc.path)
+                        if tc.ignore:
+                            ignore += 1
+                            log(f, ' '.join(command) + " .... Excluded")
+                            continue
                         output = subprocess.check_output(command, timeout=options.timeout)
                         succ += 1
                         log(f, ' '.join(command) + " .... Success")
@@ -204,7 +226,8 @@ class Driver(object):
                         log(f, ' '.join(command) + " .... Fail (" + e.output.decode('utf-8')[:-1] + ")")
                 log(f, 'total : ' + str(total))
                 log(f, 'succ : ' + str(succ))
-                log(f, 'fai : ' + str(fail))
+                log(f, 'fail : ' + str(fail))
+                log(f, 'ignore : ' + str(ignore))
                 log(f, 'timeout : ' + str(timeout))
 
         return True

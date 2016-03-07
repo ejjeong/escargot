@@ -468,7 +468,9 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/unicode-escaped-keyword.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/unicode-identifier-1d17.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/unicode-identifier-82f1.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/unnamed-function.js .... Success
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/unnamed-function.js .... Fail (BUGNUMBER: 376052
+STATUS: Unnamed function expressions are forbidden in statement context
+ PASSED! unnamed function expression not in statement context works)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/unwrapped-no-such-method.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/10.4.2.js .... Fail (Uncaught TypeError: Assertion failed: got "false", expected "true)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/10.4.3.js .... Success
@@ -729,7 +731,7 @@ STATUS: js reports "uncaught exception
 Uncaught EXC)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Exceptions/regress-350837.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Expressions/shell.js test/SpiderMonkey/js1_5/Expressions/regress-192288.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Expressions/shell.js test/SpiderMonkey/js1_5/Expressions/regress-394673.js .... Timeout
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Expressions/shell.js test/SpiderMonkey/js1_5/Expressions/regress-394673.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Expressions/shell.js test/SpiderMonkey/js1_5/Expressions/regress-96526-argsub.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Expressions/shell.js test/SpiderMonkey/js1_5/Expressions/regress-96526-delelem.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Expressions/shell.js test/SpiderMonkey/js1_5/Expressions/regress-96526-noargsub.js .... Success
@@ -1110,8 +1112,7 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-449666.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-450369.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-450833.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-451322.js .... Fail (BUGNUMBER: 451322
-STATUS: Do not crash with OOM in LirBufWrite)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-451322.js .... Timeout
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-451884.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-451946.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-452008.js .... Success
@@ -1807,7 +1808,8 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349023-03.js .... Fail (Uncaught SyntaxError:  (Parse Error 23 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349331.js .... Fail (Uncaught SyntaxError:  (Parse Error 29 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349362.js .... Fail (Uncaught SyntaxError:  (Parse Error 23 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349851.js .... Success
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349851.js .... Fail (BUGNUMBER: 349851
+STATUS: decompilation of yield \n, 3)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-350621.js .... Fail (BUGNUMBER: 350621
 STATUS: for-in loops over generator objects
 Uncaught ReferenceError: yield is not defined)
@@ -2046,7 +2048,8 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-479353.js .... Fail (BUGNUMBER: 479353
 STATUS: Do not assert: (uint32_t)(index_) < atoms_->length
 Uncaught SyntaxError:  (Parse Error 1 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-479740.js .... Success
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-479740.js .... Fail (BUGNUMBER: 479740
+STATUS: TM: Do not crash @ TraceRecorder::test_property_cach)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-481800.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-483749.js .... Fail (Uncaught SyntaxError:  (Parse Error 17 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-499524.js .... Fail (Uncaught TypeError: Assertion failed: got "false", expected "true)
@@ -2110,7 +2113,8 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-063.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 28 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-071.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-072.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-073.js .... Success
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-073.js .... Fail (BUGNUMBER: 452498
+STATUS: TM: upvar2 regression tests)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-074.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 27 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-075.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-076.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 25 line))
@@ -2156,7 +2160,11 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-496922.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 23 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-507053.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-507295.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-509354.js .... Success
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-509354.js .... Fail (expect:
+ function ( [ arguments ] ) { return arguments ; } 
+actual:
+ function ( ) { } 
+ FAILED! part 1 : Expected value ' function ( [ arguments ] ) { return arguments ; } ', Actual value ' function ( ) { } ' )
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-522123.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 29 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-524264.js .... Fail (Uncaught ReferenceError: uneval is not defined)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-524743.js .... Success
@@ -2379,6 +2387,7 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-810525.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1802
-succ : 971
-fai : 818
+succ : 967
+fail : 822
+ignore : 0
 timeout : 13
