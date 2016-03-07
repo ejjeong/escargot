@@ -34,8 +34,8 @@ class CommandOptionValues(object):
         for s in suite:
             if not (s in TEST_SUITES):
                 raise ValueError("TestSuite should be between [" + ', '.join(TEST_SUITES) +"] not " + s)
-        if ((timeout < 60) or (timeout > 300)):
-            raise ValueError("Maximum wait time should be between 60 and 300")
+        if (timeout > 300):
+            raise ValueError("Maximum wait time should be less than 300")
 
         self.suite = suite
         self.timeout = timeout
@@ -114,39 +114,39 @@ class MozillaReader(object):
     def mandatory_file(self, fname):
         if fname.find("ecma_5") != -1:
             if fname.find("JSON") != -1:
-                return ["test/shell.js", "test/ecma_5/shell.js", "test/ecma_5/JSON/shell.js"]
+                return ["test/SpiderMonkey/shell.js", "test/SpiderMonkey/ecma_5/shell.js", "test/SpiderMonkey/ecma_5/JSON/shell.js"]
             elif fname.find("RegExp") != -1:
-                return ["test/shell.js", "test/ecma_5/shell.js", "test/ecma_5/RegExp/shell.js"]
+                return ["test/SpiderMonkey/shell.js", "test/SpiderMonkey/ecma_5/shell.js", "test/SpiderMonkey/ecma_5/RegExp/shell.js"]
             else:
-                return ["test/shell.js", "test/ecma_5/shell.js"]
+                return ["test/SpiderMonkey/shell.js", "test/SpiderMonkey/ecma_5/shell.js"]
         elif fname.find("js1_2") != -1:
             if fname.find("version120") != -1:
-                return ["test/shell.js", "test/js1_2/version120/shell.js"]
-            return ["test/shell.js"]
+                return ["test/SpiderMonkey/shell.js", "test/SpiderMonkey/js1_2/version120/shell.js"]
+            return ["test/SpiderMonkey/shell.js"]
         elif fname.find("js1_5") != -1:
             if fname.find("Expressions") != -1:
-                return ["test/shell.js", "test/js1_5/Expressions/shell.js"]
-            return ["test/shell.js"]
+                return ["test/SpiderMonkey/shell.js", "test/SpiderMonkey/js1_5/Expressions/shell.js"]
+            return ["test/SpiderMonkey/shell.js"]
         elif fname.find("js1_6") != -1:
-            return ["test/shell.js", "test/js1_6/shell.js"]
+            return ["test/SpiderMonkey/shell.js", "test/SpiderMonkey/js1_6/shell.js"]
         elif fname.find("js1_7") != -1:
-            return ["test/shell.js", "test/js1_7/shell.js"]
+            return ["test/SpiderMonkey/shell.js", "test/SpiderMonkey/js1_7/shell.js"]
         elif fname.find("js1_8") != -1:
             if fname.find("js1_8_1") != -1:
                 if fname.find("jit") != -1:
-                    return ["test/shell.js", "test/js1_8_1/shell.js", "test/js1_8_1/jit/shell.js"]
+                    return ["test/SpiderMonkey/shell.js", "test/SpiderMonkey/js1_8_1/shell.js", "test/SpiderMonkey/js1_8_1/jit/shell.js"]
                 elif fname.find("strict") != -1:
-                    return ["test/shell.js", "test/js1_8_1/shell.js", "test/js1_8_1/strict/shell.js"]
-                return ["test/shell.js", "test/js1_8_1/shell.js"]
+                    return ["test/SpiderMonkey/shell.js", "test/SpiderMonkey/js1_8_1/shell.js", "test/SpiderMonkey/js1_8_1/strict/shell.js"]
+                return ["test/SpiderMonkey/shell.js", "test/SpiderMonkey/js1_8_1/shell.js"]
             elif fname.find("js1_8_5") != -1:
                 if fname.find("extensions") != -1:
-                    return ["test/shell.js", "test/js1_8_5/shell.js", "test/js1_8_5/extensions/shell.js"]
+                    return ["test/SpiderMonkey/shell.js", "test/SpiderMonkey/js1_8_5/shell.js", "test/SpiderMonkey/js1_8_5/extensions/shell.js"]
                 elif fname.find("reflect-parse") != -1:
-                    return ["test/shell.js", "test/js1_8_5/shell.js", "test/js1_8_5/reflect-parse/shell.js"]
-                return ["test/shell.js", "test/js1_8_5/shell.js"]
-            return ["test/shell.js", "test/js1_8/shell.js"]
+                    return ["test/SpiderMonkey/shell.js", "test/SpiderMonkey/js1_8_5/shell.js", "test/SpiderMonkey/js1_8_5/reflect-parse/shell.js"]
+                return ["test/SpiderMonkey/shell.js", "test/SpiderMonkey/js1_8_5/shell.js"]
+            return ["test/SpiderMonkey/shell.js", "test/SpiderMonkey/js1_8/shell.js"]
         else:
-            return ["test/shell.js"]
+            return ["test/SpiderMonkey/shell.js"]
 
     def output_file(self, a_v_m):
         return "test/SpiderMonkey/mozilla." + '.'.join(a_v_m) + ".gen.txt"
@@ -191,7 +191,7 @@ class Driver(object):
                         command = [shell]
                         command = command + instance.mandatory_file(tc)
                         command.append(tc)
-                        output = subprocess.check_output(command, timeout=TIMEOUT_DEFAULT)
+                        output = subprocess.check_output(command, timeout=options.timeout)
                         succ += 1
                         log(f, ' '.join(command) + ".... Success")
                     except subprocess.TimeoutExpired as e:

@@ -466,7 +466,7 @@ run-jsc-stress:
 	diff test/JavaScriptCore/stress/jsc.x64.interpreter.release.gen.txt test/JavaScriptCore/stress/jsc.x64.interpreter.release.orig.txt
 
 run-spidermonkey:
-	./driver.py -a x64 -m release --variants interpreter -s mozilla; \
+	./driver.py -a x64 -m release --variants interpreter -s mozilla -t 3; \
 	diff test/SpiderMonkey/mozilla.x64.interpreter.release.gen.txt test/SpiderMonkey/mozilla.x64.interpreter.release.orig.txt
 
 run-chakracore:
