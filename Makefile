@@ -462,15 +462,12 @@ run-jetstream:
 		python parsingResults.py jetstream-result-raw.res;
 
 run-jsc-stress:
-	cd test/JavaScriptCore/stress/; \
-		./stress_test.sh | tee jscstresslog.x64.gen.txt; \
-		diff jscstresslog.x64.orig.txt jscstresslog.x64.gen.txt
+	./driver.py -a x64 -m release --variants interpreter -s stress; \
+	diff test/JavaScriptCore/stress/jsc.x64.interpreter.release.gen.txt test/JavaScriptCore/stress/jsc.x64.interpreter.release.orig.txt
 
 run-spidermonkey:
-	cd test/SpiderMonkey/; \
-	perl jsDriver.pl -e escargot -s ../../escargot -l ecma_5; \
-	perl jsDriver.pl -e escargot -s ../../escargot -l js1*; \
-	perl jsDriver.pl -e escargot -s ../../escargot -l Intl 
+	./driver.py -a x64 -m release --variants interpreter -s mozilla; \
+	diff test/SpiderMonkey/mozilla.x64.interpreter.release.gen.txt test/SpiderMonkey/mozilla.x64.interpreter.release.orig.txt
 
 run-chakracore:
 	cd test/chakracore/; \
