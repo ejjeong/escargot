@@ -128,13 +128,13 @@ bool ESValue::abstractEqualsToSlowCase(const ESValue& val)
         } else if ((isESString() || isNumber()) && val.isObject()) {
             // If Type(x) is either String, Number, or Symbol and Type(y) is Object, then
             if (val.asESPointer()->isESDateObject())
-                return (abstractEqualsTo(val.toPrimitive(ESValue::PreferNumber)) || abstractEqualsTo(val.toPrimitive(ESValue::PreferString)));
+                return abstractEqualsTo(val.toPrimitive(ESValue::PreferString));
             else
                 return abstractEqualsTo(val.toPrimitive());
         } else if (isObject() && (val.isESString() || val.isNumber())) {
             // If Type(x) is Object and Type(y) is either String, Number, or Symbol, then
             if (asESPointer()->isESDateObject())
-                return (toPrimitive(ESValue::PreferNumber).abstractEqualsTo(val) || toPrimitive(ESValue::PreferString).abstractEqualsTo(val));
+                return toPrimitive(ESValue::PreferString).abstractEqualsTo(val);
             else
                 return toPrimitive().abstractEqualsTo(val);
         }
