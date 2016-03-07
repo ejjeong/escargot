@@ -54,10 +54,8 @@ escargot.elf
 out
 compiledFunctions.txt
 osrExitedFunctions.txt
-test262log.wearable.gen.txt
 test/test262/test/config/excludelist.xml
 android/obj
 android/libs
-test/chakracore/chakracorelog.gen.txt
 test/chakracore/chakracorelog.verbose.txt
-test/JavaScriptCore/stress/jscstresslog.x64.gen.txt
+*.gen.txt
