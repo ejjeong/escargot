@@ -324,7 +324,7 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 Uncaught TypeError: Assertion failed: got "false", expected "true: should have thrown a TypeError, instead got: didn't throw)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/String/match-updates-global-lastIndex.js .... Fail (501739: String.prototype.match should zero the .lastIndex when called with a global RegExp
 Uncaught TypeError: Assertion failed: got "3", expected "0)
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/String/replace-math.js .... Timeout
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/String/replace-math.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/String/replace-throws-nonwritable-lastIndex-global.js .... Fail (501739: String.prototype.replace should throw when called with a global RegExp whose .lastIndex is non-writable
 Uncaught TypeError: Assertion failed: got "false", expected "true: should have thrown a TypeError, instead got: didn't throw)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/String/replace-updates-global-lastIndex.js .... Fail (501739: String.prototype.relace should zero the .lastIndex when called with a global RegExp
@@ -2376,7 +2376,7 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-810525.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1802
-succ : 979
-fail : 809
+succ : 981
+fail : 808
 ignore : 2
-timeout : 12
+timeout : 11
