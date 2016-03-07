@@ -5513,6 +5513,8 @@ escargot::Node* parseUnaryExpression(ParseContext* ctx)
         expr = inheritCoverGrammar(ctx, parseUnaryExpression);
         // expr = new WrappingNode(startToken).finishUnaryExpression(token.value, expr);
         if (token->m_keywordKind == Delete) {
+            if (ctx->m_strict && expr->isIdentifier())
+                throwEsprimaException(u"Unable to delete variable in strict mode");
             expr = new escargot::UnaryExpressionDeleteNode(expr);
             expr->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
         } else if (token->m_keywordKind == Void) {

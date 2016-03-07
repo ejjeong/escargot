@@ -605,8 +605,6 @@ NEVER_INLINE EnumerateObjectData* executeEnumerateObject(ESObject* obj)
 
 NEVER_INLINE bool deleteBindingOperation(UnaryDelete* code, ExecutionContext* ec, GlobalObject* globalObject)
 {
-    if (ec->isStrictMode())
-        ESVMInstance::currentInstance()->throwError(ESValue(SyntaxError::create(ESString::create("Unable to delete variable in strict mode"))));
     LexicalEnvironment* env = nullptr;
     InternalAtomicString str(code->m_name->utf8Data(), code->m_name->length());
     ESValue* binding;
