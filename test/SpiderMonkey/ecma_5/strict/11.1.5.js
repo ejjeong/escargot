@@ -1,3 +1,4 @@
+// escargot-skip: ES6 object initializer, redefine property
 /* -*- indent-tabs-mode: nil; js-indent-level: 2 -*- */
 
 /*

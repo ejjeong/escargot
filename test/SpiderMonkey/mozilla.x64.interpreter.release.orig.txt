@@ -475,7 +475,7 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/10.4.2.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/10.4.3.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/10.6.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/11.1.5.js .... Fail (Uncaught TypeError: Assertion failed: got "false", expected "true)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/11.1.5.js .... Excluded
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/11.13.1.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/11.13.2.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/11.3.1.js .... Success
@@ -1112,8 +1112,7 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-449666.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-450369.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-450833.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-451322.js .... Fail (BUGNUMBER: 451322
-STATUS: Do not crash with OOM in LirBufWrite)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-451322.js .... Timeout
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-451884.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-451946.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-452008.js .... Success
@@ -2389,6 +2388,6 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1802
 succ : 970
-fail : 819
-ignore : 1
-timeout : 12
+fail : 817
+ignore : 2
+timeout : 13
