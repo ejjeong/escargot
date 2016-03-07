@@ -5834,7 +5834,7 @@ escargot::Node* parseBinaryExpression(ParseContext* ctx)
     escargot::Node* right = isolateCoverGrammar(ctx, parseUnaryExpression);
 
     std::vector<RefPtr<ParseStatus> > refRooter;
-    std::vector<void *> stack;
+    std::vector<void *, gc_allocator<void *> > stack;
     // stack = [left, token, right];
     stack.push_back(left);
     stack.push_back(token.get());
