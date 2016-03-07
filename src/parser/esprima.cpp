@@ -4355,8 +4355,14 @@ escargot::Node* parseObjectPattern(ParseContext* ctx, std::vector<RefPtr<ParseSt
 escargot::Node* parsePattern(ParseContext* ctx, std::vector<RefPtr<ParseStatus> >& params)
 {
     if (match(ctx, LeftSquareBracket)) {
+        if (ctx->m_strict && ctx->m_inCatch) {
+            throwEsprimaException(u"Unexpected Token '['. Expected identifier name as catch target.");
+        }
         return parseArrayPattern(ctx, params);
     } else if (match(ctx, LeftBrace)) {
+        if (ctx->m_strict && ctx->m_inCatch) {
+            throwEsprimaException(u"Unexpected Token '{'. Expected identifier name as catch target.");
+        }
         return parseObjectPattern(ctx, params);
     }
     params.push_back(ctx->m_lookahead);

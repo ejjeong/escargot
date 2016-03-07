@@ -480,7 +480,7 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/11.4.4.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/11.4.5.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/12.10.1.js .... Excluded
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/12.14.1.js .... Fail (Uncaught TypeError: Assertion failed: got "false", expected "true)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/12.14.1.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/12.2.1.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/13.1.js .... Fail (Uncaught TypeError: Assertion failed: got "false", expected "true)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/15.10.7.js .... Success
@@ -756,13 +756,17 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-316885-02.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-316885-03.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-319980-01.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-324278.js .... Timeout
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-324278.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-331719.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-338653.js .... Timeout
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-341877-01.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-341877-02.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-346794.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'catch' (Parse Error 33 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-348532.js .... Timeout
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-348532.js .... Fail (BUGNUMBER: 348532
+STATUS: Do not overflow int when constructing Error.stack
+--- NOTE: IN THIS TESTCASE, WE EXPECT EXIT CODE 0 ---
+--- NOTE: IN THIS TESTCASE, WE EXPECT EXIT CODE 3 ---
+Uncaught ReferenceError: error is not defined)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-352606.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-383269-01.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-383269-02.js .... Fail (Uncaught SyntaxError: with statement is not supported (Parse Error 39 line))
@@ -2372,7 +2376,7 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-810525.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1802
-succ : 975
-fail : 811
+succ : 979
+fail : 809
 ignore : 2
-timeout : 14
+timeout : 12
