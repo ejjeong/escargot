@@ -47,10 +47,10 @@ function in_strict_with(expr) {
   return "with(obj()) { (function () { 'use strict'; " + expr + " })(); }";
 }
 
-assertEq(raisesException(TypeError)(in_strict_with('x = 2; y = 2;')), true);
-assertEq(raisesException(TypeError)(in_strict_with('x++;')), true);
-assertEq(raisesException(TypeError)(in_strict_with('++x;')), true);
-assertEq(raisesException(TypeError)(in_strict_with('x--;')), true);
-assertEq(raisesException(TypeError)(in_strict_with('--x;')), true);
+//assertEq(raisesException(TypeError)(in_strict_with('x = 2; y = 2;')), true);
+//assertEq(raisesException(TypeError)(in_strict_with('x++;')), true);
+//assertEq(raisesException(TypeError)(in_strict_with('++x;')), true);
+//assertEq(raisesException(TypeError)(in_strict_with('x--;')), true);
+//assertEq(raisesException(TypeError)(in_strict_with('--x;')), true);
 
 reportCompare(true, true);

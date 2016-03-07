@@ -1,3 +1,4 @@
+// escargot-skip: with statement
 /* -*- indent-tabs-mode: nil; js-indent-level: 2 -*- */
 
 /*

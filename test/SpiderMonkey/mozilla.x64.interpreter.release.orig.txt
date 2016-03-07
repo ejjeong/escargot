@@ -472,7 +472,7 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 STATUS: Unnamed function expressions are forbidden in statement context
  PASSED! unnamed function expression not in statement context works)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/unwrapped-no-such-method.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/10.4.2.js .... Fail (Uncaught TypeError: Assertion failed: got "false", expected "true)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/10.4.2.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/10.4.3.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/10.6.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/11.1.5.js .... Fail (Uncaught TypeError: Assertion failed: got "false", expected "true)
@@ -483,7 +483,7 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/11.4.1.js .... Fail (Uncaught TypeError: Assertion failed: got "false", expected "true)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/11.4.4.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/11.4.5.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/12.10.1.js .... Fail (Uncaught TypeError: Assertion failed: got "false", expected "true)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/12.10.1.js .... Excluded
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/12.14.1.js .... Fail (Uncaught TypeError: Assertion failed: got "false", expected "true)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/12.2.1.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/13.1.js .... Fail (Uncaught TypeError: Assertion failed: got "false", expected "true)
@@ -502,8 +502,8 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/8.12.5.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/8.12.7-2.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/8.12.7.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/8.7.2.js .... Fail (Uncaught TypeError: Assertion failed: got "false", expected "true)
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/B.1.1.js .... Fail (Uncaught TypeError: Assertion failed: got "false", expected "true)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/8.7.2.js .... Success
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/B.1.1.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/B.1.2.js .... Fail (Uncaught TypeError: Assertion failed: got "false", expected "true)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/assign-to-callee-name.js .... Fail (610350: Assigning to a function expression's name within that function should throw a TypeError in strict mode code
 Uncaught TypeError: Assertion failed: got "false", expected "true: didn't throw a TypeError: Error: should have thrown a TypeError, returned undefined)
@@ -1112,7 +1112,8 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-449666.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-450369.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-450833.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-451322.js .... Timeout
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-451322.js .... Fail (BUGNUMBER: 451322
+STATUS: Do not crash with OOM in LirBufWrite)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-451884.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-451946.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-452008.js .... Success
@@ -2387,7 +2388,7 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-810525.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1802
-succ : 967
-fail : 822
-ignore : 0
-timeout : 13
+succ : 970
+fail : 819
+ignore : 1
+timeout : 12

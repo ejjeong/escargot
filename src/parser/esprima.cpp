@@ -2082,6 +2082,7 @@ PassRefPtr<ParseStatus> scanOctalLiteral(ParseContext* ctx, char16_t prefix, siz
 
     ParseStatus* ps = new ParseStatus;
     ps->m_type = Token::NumericLiteralToken;
+    ps->m_octal = true;
     // ps->m_value = number;
     ps->m_valueNumber = ll;
     ps->m_lineNumber = ctx->m_lineNumber;
@@ -4248,7 +4249,7 @@ escargot::Node* parseObjectPropertyKey(ParseContext* ctx)
     case Token::StringLiteralToken:
         if (ctx->m_strict && token->m_octal) {
             // tolerateUnexpectedToken(token, Messages.StrictOctalLiteral);
-            tolerateUnexpectedToken();
+            throwEsprimaException(u"Octal literals are not allowed in strict mode.");
         }
         {
             nd = new escargot::LiteralNode(token->m_value.toESString());
@@ -4258,7 +4259,7 @@ escargot::Node* parseObjectPropertyKey(ParseContext* ctx)
     case Token::NumericLiteralToken:
         if (ctx->m_strict && token->m_octal) {
             // tolerateUnexpectedToken(token, Messages.StrictOctalLiteral);
-            tolerateUnexpectedToken();
+            throwEsprimaException(u"Octal literals are not allowed in strict mode.");
         }
         nd = new escargot::LiteralNode(escargot::ESValue(token->m_valueNumber));
         nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
@@ -5123,7 +5124,7 @@ escargot::Node* parsePrimaryExpression(ParseContext* ctx)
         ctx->m_isAssignmentTarget = ctx->m_isBindingElement = false;
         if (ctx->m_strict && ctx->m_lookahead->m_octal) {
             // tolerateUnexpectedToken(lookahead, Messages.StrictOctalLiteral);
-            tolerateUnexpectedToken();
+            throwEsprimaException(u"Octal literals are not allowed in strict mode.");
         }
         expr = finishLiteralNode(ctx, lex(ctx));
     } else if (type == Token::KeywordToken) {
