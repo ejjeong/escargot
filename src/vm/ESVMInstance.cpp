@@ -23,6 +23,12 @@ ESVMInstance* currentInstance;
 ESVMInstance::ESVMInstance()
 {
     GC_add_roots(this, (void *)(((size_t)this + sizeof(ESVMInstance)) + 1));
+
+    GC_set_oom_fn([](size_t bytes) -> void* {
+        ESVMInstance::currentInstance()->throwError(ESErrorObject::create(ESString::create("Out Of Memory")));
+        RELEASE_ASSERT_NOT_REACHED();
+    });
+
 #ifndef NDEBUG
     m_dumpByteCode = false;
     m_dumpExecuteByteCode = false;
