@@ -100,7 +100,7 @@ class MozillaReader(object):
                     "js1_6," ,"js1_7","js1_8", "js1_8_1", "js1_8_5"]
         tc_list = []
         for test_dir in test_dirs:
-            for (path, dir, files) in os.walk(os.path.join(test_base_dir, test_dir)):
+            for (path, dir, files) in sorted(os.walk(os.path.join(test_base_dir, test_dir))):
                 for filename in files:
                     ext = os.path.splitext(filename)[-1]
                     if ext == '.js':
