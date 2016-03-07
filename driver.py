@@ -6,6 +6,7 @@ import sys
 import itertools
 import subprocess
 import importlib
+import json
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -76,14 +77,16 @@ class ArgumentParser(object):
         return (paths, options)
 
 class Test(object):
-    def __init__(self, path, ignore, ignore_reason, flags=None):
+    def __init__(self, path, ignore, ignore_reason, timeout, env=None, flags=None):
         self.path = path
         self.ignore = ignore
         self.ignore_reason = ignore_reason
+        self.timeout = timeout
+        self.env = env
         self.flags = flags
 
 class StressReader(object):
-    def list_tests(self):
+    def list_tests(self, options):
         test_base_dir = os.path.join("test", "JavaScriptCore", "stress")
         tc_stress = os.path.join(test_base_dir, "TC.stress")
         tc_list = []
@@ -93,9 +96,9 @@ class StressReader(object):
                 if ignore:
                     idx = line.rfind("//")
                     ignore_reason = line[idx + 2:].strip()
-                    tc_list.append(Test(os.path.join(test_base_dir, line[3:idx]), ignore, ignore_reason))
+                    tc_list.append(Test(os.path.join(test_base_dir, line[3:idx]), ignore, ignore_reason, options.timeout))
                 else:
-                    tc_list.append(Test(os.path.join(test_base_dir, line[:-1]), ignore, None))
+                    tc_list.append(Test(os.path.join(test_base_dir, line[:-1]), ignore, None, options.timeout))
         return tc_list
 
     def mandatory_file(self, test):
@@ -105,12 +108,14 @@ class StressReader(object):
         return "test/JavaScriptCore/stress/jsc." + '.'.join(a_v_m) + ".gen.txt"
 
 class MozillaReader(object):
-    def list_tests(self):
+    def list_tests(self, options):
         test_base_dir = os.path.join("test", "SpiderMonkey")
         test_dirs = ["ecma_5", "js1_1", "js1_2", "js1_3", "js1_4", "js1_5",
                     "js1_6," ,"js1_7","js1_8", "js1_8_1", "js1_8_5"]
         tc_list = []
         ESCARGOT_SKIP = "// escargot-skip:"
+        ESCARGOT_TIMEOUT = "// escargot-timeout:"
+        ESCARGOT_ENV = "// escargot-env:"
         for test_dir in test_dirs:
             for (path, dir, files) in os.walk(os.path.join(test_base_dir, test_dir)):
                 dir.sort()
@@ -126,7 +131,15 @@ class MozillaReader(object):
                                 ignore_reason = None
                                 if ignore:
                                     ignore_reason = first_line[len(ESCARGOT_SKIP):].strip()
-                                tc_list.append(Test(filepath, ignore, ignore_reason))
+                                filewise_timeout = first_line.startswith(ESCARGOT_TIMEOUT)
+                                timeout = options.timeout
+                                if filewise_timeout:
+                                    timeout = int(first_line[len(ESCARGOT_TIMEOUT):].strip())
+                                filewise_env = first_line.startswith(ESCARGOT_ENV)
+                                env = None
+                                if filewise_env:
+                                    env = json.loads(first_line[len(ESCARGOT_ENV):].strip())
+                                tc_list.append(Test(filepath, ignore, ignore_reason, timeout, env))
         return tc_list
 
     def mandatory_file(self, test):
@@ -205,7 +218,7 @@ class Driver(object):
             timeout = 0
             idx += 1
             with open(instance.output_file(a_v_m), 'w') as f:
-                for tc in instance.list_tests():
+                for tc in instance.list_tests(options):
                     try:
                         total += 1
                         command = [shell]
@@ -215,7 +228,7 @@ class Driver(object):
                             ignore += 1
                             log(f, ' '.join(command) + " .... Excluded")
                             continue
-                        output = subprocess.check_output(command, timeout=options.timeout)
+                        output = subprocess.check_output(command, timeout=tc.timeout, env=tc.env)
                         succ += 1
                         log(f, ' '.join(command) + " .... Success")
                     except subprocess.TimeoutExpired as e:
