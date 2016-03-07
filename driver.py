@@ -96,11 +96,13 @@ class StressReader(object):
 class MozillaReader(object):
     def list_tests(self):
         test_base_dir = os.path.join("test", "SpiderMonkey")
-        test_dirs = ["ecma_5", "Intl", "js1_1", "js1_2", "js1_3", "js1_4", "js1_5",
+        test_dirs = ["ecma_5", "js1_1", "js1_2", "js1_3", "js1_4", "js1_5",
                     "js1_6," ,"js1_7","js1_8", "js1_8_1", "js1_8_5"]
         tc_list = []
         for test_dir in test_dirs:
-            for (path, dir, files) in sorted(os.walk(os.path.join(test_base_dir, test_dir))):
+            for (path, dir, files) in os.walk(os.path.join(test_base_dir, test_dir)):
+                dir.sort()
+                files.sort()
                 for filename in files:
                     ext = os.path.splitext(filename)[-1]
                     if ext == '.js':
@@ -193,13 +195,13 @@ class Driver(object):
                         command.append(tc)
                         output = subprocess.check_output(command, timeout=options.timeout)
                         succ += 1
-                        log(f, ' '.join(command) + ".... Success")
+                        log(f, ' '.join(command) + " .... Success")
                     except subprocess.TimeoutExpired as e:
                         timeout += 1
-                        log(f, ' '.join(command) + ".... Timeout")
+                        log(f, ' '.join(command) + " .... Timeout")
                     except subprocess.CalledProcessError as e:
                         fail += 1
-                        log(f, ' '.join(command) + ".... Fail")
+                        log(f, ' '.join(command) + " .... Fail (" + e.output.decode('utf-8')[:-1] + ")")
                 log(f, 'total : ' + str(total))
                 log(f, 'succ : ' + str(succ))
                 log(f, 'fai : ' + str(fail))
