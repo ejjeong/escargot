@@ -534,11 +534,12 @@ TestRunner.prototype =
       var self = this;
       function functionLengthTests()
       {
-        self._fullFunctionLengthTests(() => Function("one", "/* body */"), 1);
-        self._fullFunctionLengthTests(() => function(one, two, three=null) { }, 2);
-        self._fullFunctionLengthTests(() => (one, two, ...etc) => 0, 2);
-        self._fullFunctionLengthTests(() => ({method(){}}.method), 0);
-        self._fullFunctionLengthTests(() => Object.getOwnPropertyDescriptor({set x(v){}}, "x").set, 1);
+          throw "function functionLengthTests(): not supported";
+        //self._fullFunctionLengthTests(function() { Function("one", "/* body */"), 1) };
+        //self._fullFunctionLengthTests(function() { function(one, two, three=null) { }, 2) };
+        //self._fullFunctionLengthTests(function() { (one, two, ...etc) => 0, 2) };
+        //self._fullFunctionLengthTests(function() { ({method(){}}.method), 0) };
+        //self._fullFunctionLengthTests(function() { Object.getOwnPropertyDescriptor({set x(v){}}, "x").set, 1) };
       }
 
       this._runTestSet(functionLengthTests, "Function length tests completed!");

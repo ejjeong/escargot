@@ -949,3 +949,8 @@ if (s == 'split' && !o) return new split-object o with lazy standard classes
 
 */
 }
+
+var origLoad = load;
+load = function(path) {
+    origLoad("test/SpiderMonkey/" + path);
+}
