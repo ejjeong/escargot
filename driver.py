@@ -16,12 +16,14 @@ TEST_SUITES = ["stress", "mozilla"]
 SUPPORTED_ARCHS = ["x64", "x86", "arm64", "arm"]
 VARIANTS = ["interpreter", "jit"]
 MODES = ["debug", "release"]
+ENGINES = ["escargot", "jsc", "v8"]
 
 class CommandOptionValues(object):
-    def __init__(self, arch, variants, mode, timeout, suite, subpath):
-        mode = mode.split(",")
+    def __init__(self, arch, variants, mode, engine, timeout, suite, subpath):
         arch = arch.split(",")
         variants = variants.split(",")
+        mode = mode.split(",")
+        engine = engine.split(",")
         suite = suite.split(",")
         for m in mode:
             if not (m in MODES):
@@ -32,6 +34,9 @@ class CommandOptionValues(object):
         for a in arch:
             if not (a in SUPPORTED_ARCHS):
                 raise ValueError("Architecture should be between [" + ', '.join(SUPPORTED_ARCHS) +"] not " + a)
+        for e in engine:
+            if not (e in ENGINES):
+                raise ValueError("Engine should be between [" + ', '.join(ENGINES) +"] not " + e)
         for s in suite:
             if not (s in TEST_SUITES):
                 raise ValueError("TestSuite should be between [" + ', '.join(TEST_SUITES) +"] not " + s)
@@ -40,7 +45,7 @@ class CommandOptionValues(object):
 
         self.suite = suite
         self.timeout = timeout
-        self.arch_and_variants_and_mode = itertools.product(arch, variants, mode)
+        self.arch_and_variants_and_mode_and_engine = itertools.product(arch, variants, mode, engine)
         self.subpath = subpath
 
 class ArgumentParser(object):
@@ -58,6 +63,9 @@ class ArgumentParser(object):
         parser.add_option("-m", "--mode",
                 help=("The modes to run tests for %s" % MODES),
                 default="release")
+        parser.add_option("-e", "--engine",
+                help=("The engine to run test with %s" % ENGINES),
+                default="escargot")
         parser.add_option("-t", "--timeout",
                 help=("The time out value for each test case, which should be between" % MODES),
                 type=int,
@@ -75,10 +83,11 @@ class ArgumentParser(object):
         suite = options.suite
         timeout = options.timeout
         mode = options.mode
+        engine = options.engine
         variants = options.variants
         arch = options.arch
         subpath = options.subpath
-        options = CommandOptionValues(arch, variants, mode, timeout, suite, subpath)
+        options = CommandOptionValues(arch, variants, mode, engine, timeout, suite, subpath)
         return (paths, options)
 
 class Test(object):
@@ -109,11 +118,11 @@ class StressReader(object):
     def mandatory_file(self, test):
         return ["test/JavaScriptCore/stress/test.js"]
 
-    def output_file(self, a_v_m):
-        return "test/JavaScriptCore/stress/jsc." + '.'.join(a_v_m) + ".gen.txt"
+    def output_file(self, a_v_m_e):
+        return "test/JavaScriptCore/stress/jsc." + '.'.join(a_v_m_e) + ".gen.txt"
 
-    def origin_file(self, a_v_m):
-        return "test/JavaScriptCore/stress/jsc." + '.'.join(a_v_m) + ".orig.txt"
+    def origin_file(self, a_v_m_e):
+        return "test/JavaScriptCore/stress/jsc." + '.'.join(a_v_m_e) + ".orig.txt"
 
 class MozillaReader(object):
     def list_tests(self, options):
@@ -188,11 +197,11 @@ class MozillaReader(object):
         else:
             return ["test/SpiderMonkey/shell.js"]
 
-    def output_file(self, a_v_m):
-        return "test/SpiderMonkey/mozilla." + '.'.join(a_v_m) + ".gen.txt"
+    def output_file(self, a_v_m_e):
+        return "test/SpiderMonkey/mozilla." + '.'.join(a_v_m_e) + ".gen.txt"
 
-    def origin_file(self, a_v_m):
-        return "test/SpiderMonkey/mozilla." + '.'.join(a_v_m) + ".orig.txt"
+    def origin_file(self, a_v_m_e):
+        return "test/SpiderMonkey/mozilla." + '.'.join(a_v_m_e) + ".orig.txt"
 
 class Driver(object):
     def main(self):
@@ -201,9 +210,9 @@ class Driver(object):
         parser = ArgumentParser()
         (path, options) = parser.parse(args)
 
-        a_v_ms = []
-        for a_v_m in options.arch_and_variants_and_mode:
-            a_v_ms.append(a_v_m)
+        a_v_m_es = []
+        for a_v_m_e in options.arch_and_variants_and_mode_and_engine:
+            a_v_m_es.append(a_v_m_e)
 
         module = importlib.import_module("driver")
         instance = 0
@@ -219,15 +228,22 @@ class Driver(object):
             print(str)
             f.write(str + '\n')
 
-        for a_v_m in a_v_ms:
-            shell = os.path.join("out", a_v_m[0], a_v_m[1], a_v_m[2], "escargot")
+        for a_v_m_e in a_v_m_es:
+            if "escargot" in a_v_m_e[3]:
+                shell = os.path.join("out", a_v_m_e[0], a_v_m_e[1], a_v_m_e[2], "escargot")
+            elif "jsc" in a_v_m_e[3]:
+                shell = os.path.join("test", "bin", a_v_m_e[0], "jsc", "baseline", "jsc")
+            elif "v8" in a_v_m_e[3]:
+                shell = os.path.join("test", "bin", a_v_m_e[0], "v8", "d8")
+            index = 0
             total = 0
             succ = 0
             fail = 0
             ignore = 0
             timeout = 0
-            with open(instance.output_file(a_v_m), 'w') as f:
+            with open(instance.output_file(a_v_m_e), 'w') as f:
                 for tc in instance.list_tests(options):
+                    index += 1
                     try:
                         if options.subpath not in tc.path:
                             continue
@@ -235,19 +251,22 @@ class Driver(object):
                         command = [shell]
                         command = command + instance.mandatory_file(tc)
                         command.append(tc.path)
+                        command_print = []
+                        command_print = command_print + instance.mandatory_file(tc)
+                        command_print.append(tc.path)
                         if tc.ignore:
                             ignore += 1
-                            log(f, ' '.join(command) + " .... Excluded (" + tc.ignore_reason + ")")
+                            log(f, '[' + str(index) + '] ' + ' '.join(command_print) + " .... Excluded (" + tc.ignore_reason + ")")
                             continue
                         output = subprocess.check_output(command, timeout=tc.timeout, env=tc.env)
                         succ += 1
-                        log(f, ' '.join(command) + " .... Success")
+                        log(f, '[' + str(index) + '] ' + ' '.join(command_print) + " .... Success")
                     except subprocess.TimeoutExpired as e:
                         timeout += 1
-                        log(f, ' '.join(command) + " .... Timeout")
+                        log(f, '[' + str(index) + '] ' + ' '.join(command_print) + " .... Timeout")
                     except subprocess.CalledProcessError as e:
                         fail += 1
-                        log(f, ' '.join(command) + " .... Fail (" + e.output.decode('utf-8')[:-1] + ")")
+                        log(f, '[' + str(index) + '] ' + ' '.join(command_print) + " .... Fail (" + e.output.decode('utf-8')[:-1] + ")")
                 log(f, 'total : ' + str(total))
                 log(f, 'succ : ' + str(succ))
                 log(f, 'fail : ' + str(fail))
@@ -255,7 +274,7 @@ class Driver(object):
                 log(f, 'timeout : ' + str(timeout))
             if len(options.subpath) == 0:
                 try:
-                    subprocess.check_output(["diff", instance.origin_file(a_v_m), instance.output_file(a_v_m)])
+                    subprocess.check_output(["diff", instance.origin_file(a_v_m_e), instance.output_file(a_v_m_e)])
                 except subprocess.CalledProcessError as e:
                     print(e.output.decode('utf-8')[:-1])
                     return 1
