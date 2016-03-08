@@ -18,7 +18,7 @@ VARIANTS = ["interpreter", "jit"]
 MODES = ["debug", "release"]
 
 class CommandOptionValues(object):
-    def __init__(self, arch, variants, mode, timeout, suite):
+    def __init__(self, arch, variants, mode, timeout, suite, subpath):
         mode = mode.split(",")
         arch = arch.split(",")
         variants = variants.split(",")
@@ -41,6 +41,7 @@ class CommandOptionValues(object):
         self.suite = suite
         self.timeout = timeout
         self.arch_and_variants_and_mode = itertools.product(arch, variants, mode)
+        self.subpath = subpath
 
 class ArgumentParser(object):
     def __init__(self):
@@ -64,6 +65,9 @@ class ArgumentParser(object):
         parser.add_option("-s", "--suite",
                 help=("The test suite to run test for %s" % TEST_SUITES),
                 default="stress")
+        parser.add_option("-p", "--subpath",
+                help=("Run only the tests of which path includes SUBPATH"),
+                default="")
         return parser
 
     def parse(self, args):
@@ -73,7 +77,8 @@ class ArgumentParser(object):
         mode = options.mode
         variants = options.variants
         arch = options.arch
-        options = CommandOptionValues(arch, variants, mode, timeout, suite)
+        subpath = options.subpath
+        options = CommandOptionValues(arch, variants, mode, timeout, suite, subpath)
         return (paths, options)
 
 class Test(object):
@@ -220,6 +225,8 @@ class Driver(object):
             with open(instance.output_file(a_v_m), 'w') as f:
                 for tc in instance.list_tests(options):
                     try:
+                        if options.subpath not in tc.path:
+                            continue
                         total += 1
                         command = [shell]
                         command = command + instance.mandatory_file(tc)
