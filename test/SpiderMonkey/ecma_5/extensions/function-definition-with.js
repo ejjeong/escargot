@@ -1,3 +1,4 @@
+// escargot-skip: with statement not supported
 // |reftest| skip-if(!xulRuntime.shell) -- needs evaluate()
 /*
  * Any copyright is dedicated to the Public Domain.

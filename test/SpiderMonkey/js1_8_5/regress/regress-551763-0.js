@@ -1,3 +1,4 @@
+// escargot-skip: with statement not supported
 (function() {
     var o = {'arguments': 42};
     with (o) { // Definitely forces heavyweight.

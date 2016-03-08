@@ -1,4 +1,4 @@
-// escargot-skip: with statement
+// escargot-skip: with statement not supported
 /* -*- indent-tabs-mode: nil; js-indent-level: 2 -*- */
 
 /*

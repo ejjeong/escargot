@@ -226,7 +226,7 @@ class Driver(object):
                         command.append(tc.path)
                         if tc.ignore:
                             ignore += 1
-                            log(f, ' '.join(command) + " .... Excluded")
+                            log(f, ' '.join(command) + " .... Excluded (" + tc.ignore_reason + ")")
                             continue
                         output = subprocess.check_output(command, timeout=tc.timeout, env=tc.env)
                         succ += 1
