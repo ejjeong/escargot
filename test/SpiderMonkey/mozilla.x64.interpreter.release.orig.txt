@@ -1687,6 +1687,63 @@ Uncaught TypeError: Callee is not a function object)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/toLocaleFormat-02.js .... Fail (BUGNUMBER: 291494
 STATUS: Date.prototype.toLocaleFormat extension
 Uncaught TypeError: Callee is not a function object)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/template.js .... Success
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Array/filter.js .... Success
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Array/regress-290592.js .... Success
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Array/regress-304828.js .... Fail (BUGNUMBER: 304828
+STATUS: Array Generic Methods
+ PASSED! Array Generic Methods: join
+ FAILED! Array Generic Methods: reverse : Expected value 'TypeError: 0 is read-only', Actual value 'TypeError: Attempted to assign to readonly property.' 
+ FAILED! Array Generic Methods: sort : Expected value 'TypeError: 0 is read-only', Actual value 'cba' 
+ FAILED! push on a string primitive should throw TypeError : Expected value 'true', Actual value 'false' 
+ PASSED! Array Generic Methods: push string primitive
+ FAILED! push on a String object should throw TypeError : Expected value 'true', Actual value 'false' 
+ PASSED! Array Generic Methods: push String object index 3
+ PASSED! Array Generic Methods: push String object index 4
+ PASSED! Array Generic Methods: push String object index 5)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Array/regress-305002.js .... Success
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Array/regress-310425-01.js .... Success
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Array/regress-310425-02.js .... Success
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Array/regress-320887.js .... Success
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Array/regress-352742-01.js .... Success
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Array/regress-352742-02.js .... Success
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Array/regress-386030.js .... Success
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Array/regress-415451.js .... Success
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Array/regress-415540.js .... Fail (Uncaught TypeError: Callee is not a function object)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Array/regress-566651.js .... Success
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Regress/regress-311157-01.js .... Success
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Regress/regress-311157-02.js .... Success
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Regress/regress-320172.js .... Success
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Regress/regress-351795.js .... Success
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Regress/regress-352271.js .... Success
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Regress/regress-353078.js .... Success
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Regress/regress-355002.js .... Success
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Regress/regress-372565.js .... Fail (Uncaught SyntaxError:  (Parse Error 23 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Regress/regress-475469.js .... Success
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Regress/regress-476655.js .... Success
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/String/regress-306591.js .... Fail (BUGNUMBER: 306591
+STATUS: String static methods
+STATUS: See https://bugzilla.mozilla.org/show_bug.cgi?id=304828
+Uncaught TypeError: Callee is not a function object)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/nested-for-each.js .... Fail (Uncaught SyntaxError:  (Parse Error 31 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/regress-312385-01.js .... Fail (BUGNUMBER: 312385
+STATUS: Generic methods with null or undefined |this|
+Uncaught TypeError: Assertion failed: got "undefined", expected "function)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/regress-385393-08.js .... Success
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/regress-414098.js .... Fail (Uncaught TypeError: Callee is not a function object)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/regress-455464-01.js .... Fail (Uncaught SyntaxError:  (Parse Error 18 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/regress-455464-02.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/regress-455464-03.js .... Fail (Uncaught SyntaxError:  (Parse Error 13 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/regress-455464-04.js .... Fail (Uncaught SyntaxError:  (Parse Error 29 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/regress-456826.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 34 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/regress-457521.js .... Success
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/regress-465443.js .... Success
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/regress-470310.js .... Fail (BUGNUMBER: 470310
+STATUS: Do not assert: (uint32_t)((atoms - script->atomMap.vector + ((uintN)(((regs.pc + 0)[1] << 8) | (regs.pc + 0)[2])))) < objects_->length
+Uncaught TypeError: Callee is not a function object)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/regress-472508.js .... Fail (Uncaught SyntaxError:  (Parse Error 21 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/regress-479567.js .... Success
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/regress-565521.js .... Fail (Uncaught SyntaxError:  (Parse Error 30 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/template.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/GC/regress-341675.js .... Fail (Uncaught SyntaxError:  (Parse Error 20 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/GC/regress-381374.js .... Fail (BUGNUMBER: 381374
@@ -2375,8 +2432,8 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-736792.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-810525.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
-total : 1802
-succ : 981
-fail : 808
+total : 1842
+succ : 1006
+fail : 823
 ignore : 2
 timeout : 11

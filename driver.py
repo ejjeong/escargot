@@ -111,7 +111,7 @@ class MozillaReader(object):
     def list_tests(self, options):
         test_base_dir = os.path.join("test", "SpiderMonkey")
         test_dirs = ["ecma_5", "js1_1", "js1_2", "js1_3", "js1_4", "js1_5",
-                    "js1_6," ,"js1_7","js1_8", "js1_8_1", "js1_8_5"]
+                    "js1_6", "js1_7","js1_8", "js1_8_1", "js1_8_5"]
         tc_list = []
         ESCARGOT_SKIP = "// escargot-skip:"
         ESCARGOT_TIMEOUT = "// escargot-timeout:"
