@@ -2361,7 +2361,7 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-584355.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-584578.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-584648.js .... Fail (Uncaught TypeError: Callee is not a function object)
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-585257.js .... Fail (Uncaught TypeError: Objecct.create: first parameter is should be object)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-585257.js .... Fail (Uncaught TypeError: Object.create: first parameter is should be object)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-586482-1.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-586482-2.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-586482-3.js .... Success
@@ -2382,12 +2382,12 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-596805-2.js .... Fail (Uncaught SyntaxError:  (Parse Error 7 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-597945-1.js .... Fail (Uncaught SyntaxError:  (Parse Error 18 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-597945-2.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-598176.js .... Fail (Uncaught TypeError: Objecct.getOwnPropertyDescriptor: first argument is not object)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-598176.js .... Fail (Uncaught TypeError: Object.getOwnPropertyDescriptor: first argument is not object)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-600067.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-601399.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-602621.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-607799.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-607863.js .... Fail (Uncaught TypeError: Objecct.create: first parameter is should be object)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-607863.js .... Fail (Uncaught TypeError: Object.create: first parameter is should be object)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-609617.js .... Fail ()
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-610026.js .... Timeout
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-614714.js .... Success
