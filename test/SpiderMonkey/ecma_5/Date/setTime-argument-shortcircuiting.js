@@ -1,3 +1,4 @@
+// escargot-skip: tests after #15 don't fit with spec (ES6 20.3.4.23)
 // Any copyright is dedicated to the Public Domain.
 // http://creativecommons.org/licenses/publicdomain/
 

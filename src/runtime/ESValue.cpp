@@ -1800,7 +1800,7 @@ void ESDateObject::setTimeValue(const ESValue str)
     */
 }
 
-void ESDateObject::setTimeValue(int year, int month, int date, int hour, int minute, int second, int millisecond)
+void ESDateObject::setTimeValue(int year, int month, int date, int hour, int minute, int second, int millisecond, bool convertToUTC)
 {
     long ym = year + floor(month / 12);
     int mn = month % 12;
@@ -1808,9 +1808,11 @@ void ESDateObject::setTimeValue(int year, int month, int date, int hour, int min
 //    m_cachedTM.tm_isdst = true;
 //    double primitiveValue = ymdhmsToSeconds(m_cachedTM.tm_year+1900, m_cachedTM.tm_mon, m_cachedTM.tm_mday, m_cachedTM.tm_hour, m_cachedTM.tm_min, m_cachedTM.tm_sec) * 1000. + (double) millisecond;
     double primitiveValue = ymdhmsToSeconds(ym, mn, date, hour, minute, second) * 1000. + (double) millisecond;
-    double primitiveValueAsUTC = toUTC(primitiveValue);
+    if (convertToUTC) {
+        primitiveValue = toUTC(primitiveValue);
+    }
 
-    m_primitiveValue = primitiveValueAsUTC;
+    m_primitiveValue = primitiveValue;
     if (m_primitiveValue <= 8640000000000000 && m_primitiveValue >= -8640000000000000) {
         m_isCacheDirty = false;
         m_hasValidDate = true;
