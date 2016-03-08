@@ -1108,9 +1108,10 @@ void GlobalObject::installObject()
     // $19.1.2.4 Object.defineProperty ( O, P, Attributes )
     // http://www.ecma-international.org/ecma-262/6.0/#sec-object.defineproperty
     m_object->defineDataProperty(ESString::createAtomicString("defineProperty"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        ESObject* obj;
         if (instance->currentExecutionContext()->argumentCount() >= 3) {
             if (instance->currentExecutionContext()->arguments()[0].isObject()) {
-                ESObject* obj = instance->currentExecutionContext()->arguments()[0].asESPointer()->asESObject();
+                obj = instance->currentExecutionContext()->arguments()[0].asESPointer()->asESObject();
                 // TODO toPropertyKey
                 ESValue key = instance->currentExecutionContext()->arguments()[1].toString();
 
@@ -1130,7 +1131,7 @@ void GlobalObject::installObject()
         } else {
             instance->throwError(ESValue(TypeError::create(ESString::create("Object.defineProperty: # of arguments < 3"))));
         }
-        return ESValue();
+        return ESValue(obj);
     }, ESString::createAtomicString("defineProperty"), 3));
 
     // $19.1.2.2 Object.create ( O [ , Properties ] )
