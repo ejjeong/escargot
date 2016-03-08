@@ -1,8 +1,8 @@
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/IIFE-es6-default-parameters.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/IIFE-es6-default-parameters.js  .... Excluded (ES6)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/IIFE-function-name-captured.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/activation-sink-default-value-tdz-error.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/activation-sink-default-value-tdz-error.js  .... Excluded (ES6 'let')
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/activation-sink-default-value.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/activation-sink-osrexit-default-value-tdz-error.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/activation-sink-osrexit-default-value-tdz-error.js  .... Excluded (ES6 'let')
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/activation-sink-osrexit-default-value.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/activation-sink-osrexit.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/activation-sink.js .... Success
@@ -15,7 +15,7 @@ out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/Jav
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/add-overflows-after-not-equal.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/add-small-constant-overflow-recovery.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arguments-bizarre-behavior.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arguments-bizarre-behaviour-disable-enumerability.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arguments-bizarre-behaviour-disable-enumerability.js  .... Excluded ((skip) enumerable property & for .. in problem)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arguments-callee-uninitialized.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arguments-captured.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arguments-copy-register-array-backing-store.js .... Success
@@ -29,27 +29,27 @@ out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/Jav
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arguments-inlined-exit.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arguments-interference-cfg.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arguments-interference.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arguments-iterator.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arguments-iterator.js  .... Excluded (ES6 'for ... of')
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arguments-length-always-dont-enum.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arith-add-with-constants.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arith-modulo-node-behaviors.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arith-mul-with-constants.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-copywithin.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-fill-put-by-val.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-filter-put-by-val-direct.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-find-does-not-lookup-twice.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-from-abs-and-floor.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-from-put-by-val-direct.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-from-set-length.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-from-with-accessors.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-from-with-iterable.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-from-with-iterator.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-iterators-next-with-call.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-iterators-next.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-copywithin.js  .... Excluded (ES6 'for ... of')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-fill-put-by-val.js  .... Excluded (ES6 Object syntax)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-filter-put-by-val-direct.js  .... Excluded (ES6 Object syntax)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-find-does-not-lookup-twice.js  .... Excluded (ES6 Object syntax)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-from-abs-and-floor.js  .... Excluded (ES6 Array.from)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-from-put-by-val-direct.js  .... Excluded (ES6 Array.from)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-from-set-length.js  .... Excluded (ES6 Array.from)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-from-with-accessors.js  .... Excluded (ES6 Array.from)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-from-with-iterable.js  .... Excluded (ES6 Array.from)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-from-with-iterator.js  .... Excluded (ES6 Array.from)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-iterators-next-with-call.js  .... Excluded (ES6 'for ... of')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-iterators-next.js  .... Excluded (ES6 destructuring)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-length-array-storage-plain-object.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-length-plain-object.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-map-put-by-val-direct.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-message-passing.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-map-put-by-val-direct.js  .... Excluded (ES6 Object syntax)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-message-passing.js  .... Excluded (ES6 DataView)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-pop-contiguous.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-pop-double-hole.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/array-pop-double.js .... Success
@@ -61,72 +61,72 @@ out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/Jav
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrayify-fires-watchpoint.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrayify-structure-bad-test.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrayify-to-structure-contradiction.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrow-function-token-is-not-keyword.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-activation-sink-osrexit-default-value-tdz-error.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-activation-sink-osrexit-default-value.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-activation-sink-osrexit.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-activation-sink.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-bound.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-call.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-constructor.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-bind-this-1.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-bind-this-2.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-bind-this-3.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-bind-this-4.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-bind-this-5.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-bind-this-6.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-this-activation-sink-osrexit.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-this-activation-sink.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-this-sinking-no-double-allocate.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-this-sinking-osrexit.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-this-sinking-put.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-others.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-prototype.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-run-10-1.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-run-10-2.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-run-10000-1.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-run-10000-2.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-sinking-no-double-allocate.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-sinking-osrexit.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-sinking-put.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-tdz.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-tostring.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-typeof.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/assign-argument-in-inlined-call.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrow-function-token-is-not-keyword.js  .... Excluded (ES6 '=>')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-activation-sink-osrexit-default-value-tdz-error.js  .... Excluded (ES6 '=>')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-activation-sink-osrexit-default-value.js  .... Excluded (ES6 '=>')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-activation-sink-osrexit.js  .... Excluded (ES6 '=>')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-activation-sink.js  .... Excluded (ES6 '=>')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-bound.js  .... Excluded (ES6 '=>')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-call.js  .... Excluded (ES6 '=>')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-constructor.js  .... Excluded (ES6 '=>')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-bind-this-1.js  .... Excluded (ES6 '=>')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-bind-this-2.js  .... Excluded (ES6 '=>')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-bind-this-3.js  .... Excluded (ES6 '=>')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-bind-this-4.js  .... Excluded (ES6 '=>')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-bind-this-5.js  .... Excluded (ES6 '=>')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-bind-this-6.js  .... Excluded (ES6 '=>')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-this-activation-sink-osrexit.js  .... Excluded (ES6 '=>')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-this-activation-sink.js  .... Excluded (ES6 '=>')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-this-sinking-no-double-allocate.js  .... Excluded (ES6 '=>')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-this-sinking-osrexit.js  .... Excluded (ES6 '=>')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-lexical-this-sinking-put.js  .... Excluded (ES6 '=>')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-others.js  .... Excluded (ES6 '=>')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-prototype.js  .... Excluded (ES6 '=>')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-run-10-1.js  .... Excluded (ES6 '=>')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-run-10-2.js  .... Excluded (ES6 '=>')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-run-10000-1.js  .... Excluded (ES6 '=>')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-run-10000-2.js  .... Excluded (ES6 '=>')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-sinking-no-double-allocate.js  .... Excluded (ES6 '=>')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-sinking-osrexit.js  .... Excluded (ES6 '=>')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-sinking-put.js  .... Excluded (ES6 '=>')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-tdz.js  .... Excluded (ES6 '=>')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-tostring.js  .... Excluded (ES6 '=>')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/arrowfunction-typeof.js  .... Excluded (ES6 '=>')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/assign-argument-in-inlined-call.js  .... Excluded (Deprecated function.arguments)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/assign-captured-argument-in-inlined-call.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/assignment-in-function-call-bracket-node.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/basic-eden-gc-test.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/bit-op-value-to-int32-input-liveness.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/branch-check-int32-on-boolean-to-number-untyped.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/branch-check-number-on-boolean-to-number-untyped.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/branch-may-exit-due-to-object-or-other-use-kind.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/bug-131764.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/branch-may-exit-due-to-object-or-other-use-kind.js  .... Excluded (JSC 'makeMasquerader()')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/bug-131764.js  .... Excluded (ES6 spread '...')
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/builtin-function-is-construct-type-none.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/cached-prototype-setter.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/call-forward-varargs-for-inlined-escaped-arguments.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/call-varargs-from-inlined-code-with-odd-number-of-arguments.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/call-varargs-from-inlined-code.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/call-varargs-length-effects.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/call-varargs-with-different-arguments-length-after-warmup.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/call-varargs-with-different-arguments-length-after-warmup.js  .... Excluded (ES6 spread '...')
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/capture-escape-and-throw.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/captured-arguments-variable.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-block-scoping.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-definition-semantics.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-derived-default-constructor.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-no-loop-tdz.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-no-tdz-in-catch.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-no-tdz-in-conditional.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-no-tdz-in-eval.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-no-tdz-in-loop-no-inline-super.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-no-tdz-in-loop.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-no-tdz.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-tdz-in-catch.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-tdz-in-conditional.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-tdz-in-eval.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-tdz-in-loop.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-tdz.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-block-scoping.js  .... Excluded (ES6 class)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-definition-semantics.js  .... Excluded (ES6 class)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-derived-default-constructor.js  .... Excluded (ES6 class)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-no-loop-tdz.js  .... Excluded (ES6 class)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-no-tdz-in-catch.js  .... Excluded (ES6 class)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-no-tdz-in-conditional.js  .... Excluded (ES6 class)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-no-tdz-in-eval.js  .... Excluded (ES6 class)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-no-tdz-in-loop-no-inline-super.js  .... Excluded (ES6 class)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-no-tdz-in-loop.js  .... Excluded (ES6 class)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-no-tdz.js  .... Excluded (ES6 class)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-tdz-in-catch.js  .... Excluded (ES6 class)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-tdz-in-conditional.js  .... Excluded (ES6 class)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-tdz-in-eval.js  .... Excluded (ES6 class)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-tdz-in-loop.js  .... Excluded (ES6 class)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/class-syntax-tdz.js  .... Excluded (ES6 class)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/cloned-arguments-get-by-val-double-array.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/cloned-arguments-should-visit-callee-during-gc.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/cloned-arguments-should-visit-callee-during-gc.js  .... Excluded (Deprecated function.arguments)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/closure-call-exit.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/compare-eq-object-or-other-to-object.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/compare-eq-object-to-object-or-other.js .... Success
@@ -134,23 +134,23 @@ out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/Jav
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/compare-eq-on-null-and-undefined-optimized-in-constant-folding.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/compare-eq-on-null-and-undefined.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/compare-strict-eq-integer-to-misc.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/computed-accessor-parsing.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/computed-accessor.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/const-and-with-statement.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/const-exception-handling.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/const-loop-semantics.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/const-not-strict-mode.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/const-semantics.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/const-tdz.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/constant-closure-var-with-dynamic-invalidation.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/computed-accessor-parsing.js  .... Excluded (ES6 class)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/computed-accessor.js  .... Excluded (ES6 class)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/const-and-with-statement.js  .... Excluded (ES6 const)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/const-exception-handling.js  .... Excluded (ES6 const)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/const-loop-semantics.js  .... Excluded (ES6 const)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/const-not-strict-mode.js  .... Excluded (ES6 const)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/const-semantics.js  .... Excluded (ES6 const)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/const-tdz.js  .... Excluded (ES6 const)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/constant-closure-var-with-dynamic-invalidation.js  .... Excluded (with statement)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/constant-folding-osr-exit.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/construct-forward-varargs-for-inlined-escaped-arguments.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/construct-varargs-inline-smaller-Foo.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/construct-varargs-inline.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/construct-varargs-no-inline.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/constructor-with-return.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/construct-forward-varargs-for-inlined-escaped-arguments.js  .... Excluded (ES6 spread '...')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/construct-varargs-inline-smaller-Foo.js  .... Excluded (ES6 spread '...')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/construct-varargs-inline.js  .... Excluded (ES6 spread '...')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/construct-varargs-no-inline.js  .... Excluded (ES6 spread '...')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/constructor-with-return.js  .... Excluded (ES6 Symbol)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/create-this-with-callee-variants.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/custom-iterators.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/custom-iterators.js  .... Excluded (ES6 Symbol)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dead-access-to-captured-variable-preceded-by-a-live-store-in-function-with-multiple-basic-blocks.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dead-access-to-captured-variable-preceded-by-a-live-store.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dead-fiat-double-to-int52-then-exit-not-int52.js .... Success
@@ -166,27 +166,27 @@ out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/Jav
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dead-speculating-argument-use.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dead-uint32-to-number.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dead-value-with-mov-hint-in-another-block.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/destructuring-assignment-accepts-iterables.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/destructuring-assignment-accepts-iterables.js  .... Excluded (ES6 destructuring)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dfg-create-arguments-inline-alloc.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dfg-exception-try-catch-in-constructor-with-inlined-throw.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dfg-put-by-val-direct-with-edge-numbers.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dfg-rare-data.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dfg-tail-calls.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dfg-to-primitive-pass-symbol.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/disable-function-dot-arguments.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dfg-tail-calls.js  .... Excluded (Deprecated function.caller)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/dfg-to-primitive-pass-symbol.js  .... Excluded (ES6 Symbol)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/disable-function-dot-arguments.js  .... Excluded (Deprecated function.arguments)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/double-as-int32.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/double-rep-with-non-cell.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/double-rep-with-null.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/double-rep-with-undefined.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/duplicate-computed-accessors.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/duplicate-computed-accessors.js  .... Excluded (ES6 class)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/elidable-new-object-roflcopter-then-exit.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/elide-new-object-dag-then-exit.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/empty-function.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/empty_eos_regex_split.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/equality-type-checking.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/equals-masquerader.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/es6-default-parameters.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/es6-for-of-loop-exception.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/equality-type-checking.js  .... Excluded (JSC 'addressOf()')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/equals-masquerader.js  .... Excluded (JSC 'makeMasquerader()')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/es6-default-parameters.js  .... Excluded (ES6 default parameter)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/es6-for-of-loop-exception.js  .... Excluded (ES6 for ... of)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/escape-object-in-diamond-then-exit.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/eval-script-contains-null-character.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/eval-that-is-not-eval.js .... Success
@@ -203,7 +203,7 @@ out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/Jav
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/exit-after-int52-to-double.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/exit-after-int52-to-value.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/exit-after-llvm-folds-large-int-constant.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/exit-from-ftl-when-caller-passed-extra-args-then-use-function-dot-arguments.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/exit-from-ftl-when-caller-passed-extra-args-then-use-function-dot-arguments.js  .... Excluded (Deprecated function.arguments)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/exit-from-ftl-with-arity-check-fail.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/exit-from-getter.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/exit-from-setter.js .... Success
@@ -219,13 +219,13 @@ out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/Jav
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fiat-value-to-int52-then-fold.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fiat-value-to-int52.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/flatten-oversize-dictionary-object.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/float32-array-nan-inlined.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/float32-array-nan.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/float32-array-out-of-bounds.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/float32-repeat-out-of-bounds.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/float32array-out-of-bounds.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/float64-array-nan-inlined.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/float32-array-nan-inlined.js  .... Excluded (ES6 TypedArray)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/float32-array-nan.js  .... Excluded (ES6 TypedArray)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/float32-array-out-of-bounds.js  .... Excluded (ES6 TypedArray)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/float32-repeat-out-of-bounds.js  .... Excluded (ES6 TypedArray)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/float32array-out-of-bounds.js  .... Excluded (ES6 TypedArray)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/float64-array-nan-inlined.js  .... Excluded (ES6 TypedArray)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ .... Excluded (float64-array-nan.js)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fold-based-on-int32-proof-mul-branch.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fold-based-on-int32-proof-mul.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fold-based-on-int32-proof-or-zero.js .... Success
@@ -243,7 +243,7 @@ out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/Jav
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fold-to-int52-constant-then-exit.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fold-to-primitive-in-cfa.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fold-to-primitive-to-identity-in-cfa.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fold-typed-array-properties.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fold-typed-array-properties.js  .... Excluded (ES6 TypedArray)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/for-in-array-mode.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/for-in-base-reassigned-later-and-change-structure.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/for-in-base-reassigned-later.js .... Success
@@ -253,8 +253,8 @@ out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/Jav
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/for-in-modify-int-loop-var.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/for-in-modify-string-loop-var.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/for-in-prototype.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/for-in-proxy-target-changed-structure.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/for-in-proxy.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/for-in-proxy-target-changed-structure.js  .... Excluded (ES6 Proxy)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/for-in-proxy.js  .... Excluded (ES6 Proxy)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/for-in-shadow-prototype-property.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/for-in-string.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/for-in-tests.js .... Success
@@ -271,14 +271,14 @@ out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/Jav
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-get-my-argument-by-val.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-getmyargumentslength-inline.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-getmyargumentslength.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-gettypedarrayoffset-simple.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-gettypedarrayoffset-wasteful.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-gettypedarrayoffset-simple.js  .... Excluded (ES6 TypedArray)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-gettypedarrayoffset-wasteful.js  .... Excluded (ES6 TypedArray)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-in-overflow.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-library-exception.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-library-inline-gettimezoneoffset.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-library-inlining-exceptions-dataview.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-library-inlining-exceptions-dataview.js  .... Excluded (ES6 DataView)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-library-inlining-exceptions.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-library-inlining-loops.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-library-inlining-loops.js  .... Excluded (ES6 DataView)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-library-inlining-random.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-library-substring.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ftl-putbyid.js .... Success
@@ -293,7 +293,7 @@ out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/Jav
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/function-sinking-osrexit.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/function-sinking-put.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/fuzz-bug-16399949.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/generational-opaque-roots.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/generational-opaque-roots.js  .... Excluded (JSC-only)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-argument-by-val-in-inlined-varargs-call-out-of-bounds.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-argument-by-val-safe-in-inlined-varargs-call-out-of-bounds.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-id-throw-from-getter-through-optimized-code.js .... Success
@@ -301,24 +301,24 @@ out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/Jav
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-id-throw-from-unexpected-getter-through-optimized-code.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-id-untyped.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-double-predicted-int.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-on-undecided-array-type.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-on-undecided-sane-chain-1.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-on-undecided-sane-chain-2.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-on-undecided-sane-chain-3.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-on-undecided-sane-chain-4.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-on-undecided-sane-chain-5.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-on-undecided-sane-chain-6.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-on-undecided-trivial.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-on-undecided-array-type.js  .... Excluded (ES6 const)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-on-undecided-sane-chain-1.js  .... Excluded (ES6 const)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-on-undecided-sane-chain-2.js  .... Excluded (ES6 const)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-on-undecided-sane-chain-3.js  .... Excluded (ES6 const)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-on-undecided-sane-chain-4.js  .... Excluded (ES6 const)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-on-undecided-sane-chain-5.js  .... Excluded (ES6 const)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-on-undecided-sane-chain-6.js  .... Excluded (ES6 const)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-on-undecided-trivial.js  .... Excluded (ES6 const)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-out-of-bounds-basics.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-with-string-constructor.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-with-string-exit.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-with-string-generated.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-with-string-getter.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-with-string.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-with-symbol-constructor.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-with-symbol-exit.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-with-symbol-getter.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-with-symbol.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-with-symbol-constructor.js  .... Excluded (ES6 Symbol)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-with-symbol-exit.js  .... Excluded (ES6 Symbol)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-with-symbol-getter.js  .... Excluded (ES6 Symbol)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-by-val-with-symbol.js  .... Excluded (ES6 Symbol)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-declared-unpassed-argument-in-direct-arguments.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-declared-unpassed-argument-in-scoped-arguments.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ get-local-elimination.js .... Success
@@ -332,23 +332,23 @@ out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/Jav
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ get-my-argument-by-val-wrap-around-no-warm-up.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ get-my-argument-by-val-wrap-around.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ get-stack-identity-due-to-sinking.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-stack-mapping-with-dead-get-stack.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-stack-mapping.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-stack-mapping-with-dead-get-stack.js  .... Excluded (Deprecated function.arguments)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/get-stack-mapping.js  .... Excluded (Deprecated function.arguments)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/getter-arity.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/getter.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/global-environment-does-not-trap-unscopables.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/global-lexical-let-no-rhs.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/global-lexical-redeclare-variable.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/global-lexical-redefine-const.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/global-lexical-var-injection.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/global-lexical-variable-tdz.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/global-lexical-variable-unresolved-property.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/global-lexical-variable-with-statement.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/global-environment-does-not-trap-unscopables.js  .... Excluded (ES6 Symbol, with)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/global-lexical-let-no-rhs.js  .... Excluded (ES6 let)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/global-lexical-redeclare-variable.js  .... Excluded (ES6 let)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/global-lexical-redefine-const.js  .... Excluded (ES6 const)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/global-lexical-var-injection.js  .... Excluded (ES6 let)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/global-lexical-variable-tdz.js  .... Excluded (ES6 let or const)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/global-lexical-variable-unresolved-property.js  .... Excluded (ES6 let or const)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/global-lexical-variable-with-statement.js  .... Excluded (ES6 let)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/goofy-function-reentry-incorrect-inference.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/has-custom-properties.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/has-custom-properties.js  .... Excluded (JSC 'hasCustomProperties()')
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/heap-allocator-allocates-incorrect-size-for-activation.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/ic-throw-through-optimized-code.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/impure-get-own-property-slot-inline-cache.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/impure-get-own-property-slot-inline-cache.js  .... Excluded (JSC ImpureGetter)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/infer-constant-global-property.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/infer-constant-property.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/infer-uninitialized-closure-var.js .... Success
@@ -358,13 +358,13 @@ out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/Jav
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/infinite-loop-that-uses-captured-variables-with-osr-entry.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/infinite-loop-that-uses-captured-variables.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/initialize_functions_after_arguments.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/injected-numeric-setter-on-prototype.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/injected-numeric-setter-on-prototype.js  .... Excluded (ES6 Class)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/inline-call-that-doesnt-use-all-args.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/inline-call-varargs-and-call.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/inline-call-varargs.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/inline-closure-call.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/inline-llint-with-switch.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/inline-varargs-get-arguments.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/inline-varargs-get-arguments.js  .... Excluded (Deprecated function.arguments)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/inlined-constructor-this-liveness.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/inlined-function-this-liveness.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/instanceof-not-cell.js .... Success
@@ -388,26 +388,26 @@ out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/Jav
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/int8-repeat-out-of-bounds.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/invalidation-point.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/inverted-additive-subsumption.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/is-undefined-exit-on-masquerader.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/is-undefined-jettison-on-masquerader.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/is-undefined-masquerader.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/iterator-functions.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/iterator-names.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/iterator-prototype.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/iterator-return-beyond-multiple-iteration-scopes.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/iterators-shape.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/is-undefined-exit-on-masquerader.js  .... Excluded (JSC 'makeMasquerader()')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/is-undefined-jettison-on-masquerader.js  .... Excluded (JSC 'makeMasquerader()')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/is-undefined-masquerader.js  .... Excluded (JSC 'makeMasquerader()')
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/iterator-functions.js  .... Excluded (ES6 Symbol)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/iterator-names.js  .... Excluded (ES6 Symbol)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/iterator-prototype.js  .... Excluded (ES6 Symbol)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/iterator-return-beyond-multiple-iteration-scopes.js  .... Excluded (ES6 for ... of)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/iterators-shape.js  .... Excluded (ES6 Symbol)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/jit-cache-poly-replace-then-cache-get-and-fold-then-invalidate.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/jit-cache-replace-then-cache-get-and-fold-then-invalidate.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/jit-put-to-scope-global-cache-watchpoint-invalidate.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/large-regexp.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/lexical-let-and-with-statement.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/lexical-let-exception-handling.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/lexical-let-global-not-captured-variables.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/lexical-let-loop-semantics.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/lexical-let-not-strict-mode.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/lexical-let-semantics.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/lexical-let-tdz.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/lexical-scoping-break-continue.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/lexical-let-and-with-statement.js  .... Excluded (ES6 let)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/lexical-let-exception-handling.js  .... Excluded (ES6 let)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/lexical-let-global-not-captured-variables.js  .... Excluded (ES6 let)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/lexical-let-loop-semantics.js  .... Excluded (ES6 let)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/lexical-let-not-strict-mode.js  .... Excluded (ES6 let)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/lexical-let-semantics.js  .... Excluded (ES6 let)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/lexical-let-tdz.js  .... Excluded (ES6 let)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/lexical-scoping-break-continue.js  .... Excluded (ES6 let)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/licm-no-pre-header.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/licm-pre-header-cannot-exit.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/list.js .... Success
@@ -422,7 +422,7 @@ out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/Jav
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/load-varargs-then-inlined-call-exit-in-foo.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/load-varargs-then-inlined-call-inlined.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/load-varargs-then-inlined-call.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/logical-not-masquerades.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/logical-not-masquerades.js  .... Excluded (JSC 'makeMasquerader()')
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/make-dictionary-repatch.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/make-large-string-jit-strcat.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/make-large-string-jit.js .... Success
@@ -431,13 +431,13 @@ out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/Jav
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/make-rope-2.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/make-rope-3.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/many-sunken-locals.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/map-constructor-adder.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/map-constructor.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/map-iterators-next.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/map-constructor-adder.js  .... Excluded (ES6 Map)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/map-constructor.js  .... Excluded (ES6 for ... of)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/map-iterators-next.js  .... Excluded (ES6 for ... of)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/materialize-past-butterfly-allocation.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/materialize-past-put-structure.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/math-abs-positive.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/math-clz32-basics.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/math-clz32-basics.js  .... Excluded (ES6 Math.clz32())
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/math-log-basics.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/math-log-with-constants.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/math-pow-basics.js .... Success
@@ -453,11 +453,11 @@ out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/Jav
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/math-sqrt-basics.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/max-boolean-exit.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/misc-is-object-or-null.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/modify-map-during-iteration.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/modify-set-during-iteration.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/modules-syntax-error-with-names.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/modules-syntax-error.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/modules-syntax.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/modify-map-during-iteration.js  .... Excluded (ES6 for ... of)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/modify-set-during-iteration.js  .... Excluded (ES6 for ... of)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/modules-syntax-error-with-names.js  .... Excluded (ES6 module)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/modules-syntax-error.js  .... Excluded (ES6 module)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/modules-syntax.js  .... Excluded (ES6 module)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/mul-boolean-exit.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/multi-get-by-offset-dce.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/multi-get-by-offset-hoist-around-structure-check.js .... Success
@@ -478,37 +478,37 @@ out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/Jav
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/new-double-array-with-size.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/new-function-expression-has-structures.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/new-int32-array-with-size.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/new-largeish-contiguous-array-with-size.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/new-target.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/new-largeish-contiguous-array-with-size.js  .... Excluded (run pass if set GC_MAXIMUM_HEAP_SIZE with 10000000)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/new-target.js  .... Excluded (ES6 new.target)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/new-undecided-array-with-size.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/no-abc-skippy-loop.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/no-abc-skippy-paired-loop.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/non-constructors.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/non-constructors.js  .... Excluded (ES6 class)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/not-cell-use.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/numeric-setter-on-prototype-non-blank-array.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/numeric-setter-on-prototype.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/numeric-setter-on-self.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/numeric-setter-on-prototype-non-blank-array.js  .... Excluded (ES6 Class)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/numeric-setter-on-prototype.js  .... Excluded (ES6 Class)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/numeric-setter-on-self.js  .... Excluded (ES6 Class)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-allocation-sinking-with-uninitialized-property-on-one-path.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-assign-enumerable.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-assign-order.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-assign-order.js  .... Excluded (ES6 Symbol)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-escapes-in-loop.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-freeze-accept-non-object.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-get-own-property-descriptor-perform-to-object.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-get-own-property-names-perform-to-object.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-get-own-property-symbols-perform-to-object.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-get-own-property-symbols.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-get-prototype-of-perform-to-object.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-is-extensible-accept-non-object.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-is-frozen-accept-non-object.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-is-sealed-accept-non-object.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-keys-perform-to-object.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-prevent-extensions-accept-non-object.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-seal-accept-non-object.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-freeze-accept-non-object.js  .... Excluded (ES6 Symbol)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-get-own-property-descriptor-perform-to-object.js  .... Excluded (ES6 for ... of)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-get-own-property-names-perform-to-object.js  .... Excluded (ES6 for ... of)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-get-own-property-symbols-perform-to-object.js  .... Excluded (ES6 for ... of)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-get-own-property-symbols.js  .... Excluded (ES6 Object.getOwnPropertySymbols)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-get-prototype-of-perform-to-object.js  .... Excluded (ES6 for ... of)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-is-extensible-accept-non-object.js  .... Excluded (ES6 for ... of)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-is-frozen-accept-non-object.js  .... Excluded (ES6 for ... of)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-is-sealed-accept-non-object.js  .... Excluded (ES6 for ... of)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-keys-perform-to-object.js  .... Excluded (ES6 for ... of)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-prevent-extensions-accept-non-object.js  .... Excluded (ES6 for ... of)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/object-seal-accept-non-object.js  .... Excluded (ES6 for ... of)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/obviously-elidable-new-object-then-exit.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/op-push-name-scope-crashes-profiler.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/operation-get-by-val-default-should-not-called-for-already-optimized-site.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/other-is-object-or-null.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/pathname-resolve.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/pathname-resolve.js  .... Excluded (ES6 Promise)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/phantom-arguments-set-local-then-exit-in-same-block.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/phantom-direct-arguments-clobber-argument-count.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/phantom-direct-arguments-clobber-callee.js .... Success
@@ -544,15 +544,15 @@ out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/Jav
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/prop-type-struct-then-object-opt-multi.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/prop-type-struct-then-object-opt.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/prop-type-struct-then-object.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/prop-type-symbol-then-object.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/prop-type-symbol-then-string.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/property-name-enumerator-should-not-look-into-indexed-values-when-it-is-a-dictionary.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/prop-type-symbol-then-object.js  .... Excluded (ES6 Symbol)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/prop-type-symbol-then-string.js  .... Excluded (ES6 Symbol)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/property-name-enumerator-should-not-look-into-indexed-values-when-it-is-a-dictionary.js  .... Excluded (ES6 for ... of, Reflect)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/proto-setter.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/prototype-getter.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/proxy-inline-cache.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/proxy-inline-cache.js  .... Excluded (ES6 Proxy)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/prune-multi-put-by-offset-replace-or-transition-variant.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/put-by-id-build-list-order-recurse.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/put-by-id-direct-should-be-done-for-non-index-property.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/put-by-id-direct-should-be-done-for-non-index-property.js  .... Excluded (ES6 duplicate symbole usage between data property and accessor property)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/put-by-id-on-new-object-after-prototype-transition-non-strict.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/put-by-id-on-new-object-after-prototype-transition-strict.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/put-by-id-strict-build-list-order.js .... Success
@@ -562,10 +562,10 @@ out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/Jav
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/put-by-val-with-string-break.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/put-by-val-with-string-generated.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/put-by-val-with-string-generic.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/put-by-val-with-symbol-break.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/put-by-val-with-symbol-generic.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/put-by-val-with-symbol-break.js  .... Excluded (ES6 Symbol)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/put-by-val-with-symbol-generic.js  .... Excluded (ES6 Symbol)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/put-local-conservative.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/raise-error-in-iterator-close.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/raise-error-in-iterator-close.js  .... Excluded (ES6 for ... of)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/real-forward-varargs-for-inlined-escaped-arguments.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/recurse-infinitely-on-getter.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/recursive_property_redefine_during_inline_caching.js .... Success
@@ -574,18 +574,18 @@ out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/Jav
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/redundant-array-bounds-checks-addition.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/redundant-array-bounds-checks-unchecked-addition.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/redundant-array-bounds-checks.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-apply.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-define-property.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-delete-property.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-enumerate.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-get-own-property.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-get-prototype-of.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-get.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-has.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-is-extensible.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-own-keys.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-prevent-extensions.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-set-prototype-of.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-apply.js  .... Excluded (ES6 Reflect)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-define-property.js  .... Excluded (ES6 Reflect)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-delete-property.js  .... Excluded (ES6 Reflect)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-enumerate.js  .... Excluded (ES6 Reflect)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-get-own-property.js  .... Excluded (ES6 Reflect)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-get-prototype-of.js  .... Excluded (ES6 Reflect)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-get.js  .... Excluded (ES6 Reflect)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-has.js  .... Excluded (ES6 Reflect)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-is-extensible.js  .... Excluded (ES6 Reflect)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-own-keys.js  .... Excluded (ES6 Reflect)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-prevent-extensions.js  .... Excluded (ES6 Reflect)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reflect-set-prototype-of.js  .... Excluded (ES6 Reflect)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/regexp-matches-array.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/regress-132147.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/regress-135155.js .... Success
@@ -599,15 +599,15 @@ out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/Jav
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/replacement-watchpoint-dictionary.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/replacement-watchpoint.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/reserved-word-with-escape.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/rest-elements.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/rest-elements.js  .... Excluded (ES6 rest parameter syntax)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/retry-cache-later.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/runtime-array.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/runtime-array.js  .... Excluded (JSC 'createRuntimeArray()')
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/runtime-throw-through-optimized-code.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/scoped-arguments-array-length.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/scoped-then-direct-arguments-get-by-val-in-baseline.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/set-constructor-adder.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/set-constructor.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/set-iterators-next.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/set-constructor-adder.js  .... Excluded (ES6 Set)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/set-constructor.js  .... Excluded (ES6 for ... of)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/set-iterators-next.js  .... Excluded (ES6 for ... of)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/set-same-prototype.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/setter.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/simple-polyvariant-call-inlining-example.js .... Success
@@ -635,53 +635,53 @@ out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/Jav
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/sort-array-with-undecided.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/sparse-array-entry-update-144067.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/sparse-map-non-overlapping.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/sparse-map-non-skip-getter-overriding.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/sparse-map-non-skip-getter-overriding.js  .... Excluded (ES6 duplicate symbole usage between data property and accessor property)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/sparse-map-non-skip.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/sparse_splice.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/static-function-delete.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/static-function-put.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/static-getter-delete.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/static-getter-descriptors.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/static-getter-delete.js  .... Excluded (ES6 RegExp.prototype.global is AccessorProperty)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/static-getter-descriptors.js  .... Excluded (ES6 RegExp.prototype.global is AccessorProperty)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/static-getter-enumeration.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/static-getter-get.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/static-getter-in-names.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/static-getter-names.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/static-getter-put.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/static-getter-in-names.js  .... Excluded (ES6 RegExp.prototype.flags (21.2.5.3))
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/static-getter-names.js  .... Excluded (ES6 for ... of)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/static-getter-put.js  .... Excluded (ES6 RegExp.prototype.global is AccessorProperty)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/strict-to-this-int.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/string-from-code-point.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/string-from-code-point.js  .... Excluded (ES6 for ... of)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/string-ident-to-not-string-var-equality.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/string-iterators.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/string-iterators.js  .... Excluded (ES6 destructuring)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/string-out-of-bounds-negative-proto-value.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/string-raw.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/string-raw.js  .... Excluded (ES6 String.raw)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/sub-overflows-after-not-equal.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/super-call-does-not-look-up-constructor.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/super-call-does-not-look-up-constructor.js  .... Excluded (ES6 Class)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/switch-typeof-indirect.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/switch-typeof-slightly-indirect.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/switch-typeof.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/symbol-and-string-constructor.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/symbol-define-property.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/symbol-equality.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/symbol-registry.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/symbol-seal-and-freeze.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/symbol-with-json.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tagged-templates-identity.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tagged-templates-raw-strings.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tagged-templates-syntax.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tagged-templates-template-object.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tagged-templates-this.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tagged-templates.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/symbol-and-string-constructor.js  .... Excluded (ES6 Symbol)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/symbol-define-property.js  .... Excluded (ES6 Symbol)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/symbol-equality.js  .... Excluded (ES6 Symbol)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/symbol-registry.js  .... Excluded (ES6 Symbol)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/symbol-seal-and-freeze.js  .... Excluded (ES6 Symbol)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/symbol-with-json.js  .... Excluded (ES6 Symbol)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tagged-templates-identity.js  .... Excluded (ES6 Template string)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tagged-templates-raw-strings.js  .... Excluded (ES6 Template string)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tagged-templates-syntax.js  .... Excluded (ES6 Template string)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tagged-templates-template-object.js  .... Excluded (ES6 Template string)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tagged-templates-this.js  .... Excluded (ES6 Template string)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tagged-templates.js  .... Excluded (ES6 Template string)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tail-call-in-inline-cache.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tail-call-no-stack-overflow.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tail-call-recognize.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tail-call-varargs-no-stack-overflow.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tail-call-recognize.js  .... Excluded (Deprecated function.caller)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tail-call-varargs-no-stack-overflow.js  .... Excluded (ES6 spread '...')
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tail-calls-dont-overwrite-live-stack.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/template-literal-line-terminators.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/template-literal-syntax.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/template-literal.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/template-literal-line-terminators.js  .... Excluded (ES6 Template string)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/template-literal-syntax.js  .... Excluded (ES6 Template string)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/template-literal.js  .... Excluded (ES6 Template string)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/test-spec-misc.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/throw-from-ftl-call-ic-slow-path-cells.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/throw-from-ftl-call-ic-slow-path-undefined.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/throw-from-ftl-call-ic-slow-path.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/throw-from-ftl-call-ic-slow-path-cells.js  .... Excluded (ES6 TypedArray)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/throw-from-ftl-call-ic-slow-path-undefined.js  .... Excluded (ES6 TypedArray)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/throw-from-ftl-call-ic-slow-path.js  .... Excluded (ES6 TypedArray)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/throw-from-ftl-in-loop.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/throw-from-ftl.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/throw-through-optimized-code.js .... Success
@@ -695,43 +695,43 @@ out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/Jav
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/to-string-on-value.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/to-this-polymorphic.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/toprimitive-speculated-types.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/trailing-comma-in-patterns.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/trailing-comma-in-patterns.js  .... Excluded (ES6 Symbol)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tricky-array-bounds-checks.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tricky-indirectly-inferred-infinite-loop-that-uses-captured-variables-and-creates-the-activation-outside-the-loop.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tricky-inferred-infinite-loop-that-uses-captured-variables-and-creates-the-activation-outside-the-loop.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tricky-infinite-loop-that-uses-captured-variables-and-creates-the-activation-outside-the-loop.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/tricky-infinite-loop-that-uses-captured-variables.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/trivially-foldable-reflective-arguments-access.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/try-catch-custom-getter-as-get-by-id.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/try-catch-custom-getter-as-get-by-id.js  .... Excluded (JSC 'createCustomGetterObject()')
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/try-catch-getter-as-get-by-id-register-restoration.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/try-catch-getter-as-get-by-id.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/try-catch-setter-as-put-by-id.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/try-catch-stub-routine-replaced.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/type-of-functions-and-objects.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typed-array-byte-offset.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typed-array-get-by-val-profiling.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typed-array-put-by-val-profiling.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-copyWithin.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-every.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-fill.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-filter.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-find.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-findIndex.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-forEach.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-indexOf.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-lastIndexOf.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-map.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-reduce.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-reduceRight.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-slice.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-some.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-sort.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typeof-symbol.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typed-array-byte-offset.js  .... Excluded (ES6 TypedArray)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typed-array-get-by-val-profiling.js  .... Excluded (ES6 TypedArray)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typed-array-put-by-val-profiling.js  .... Excluded (ES6 TypedArray)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-copyWithin.js  .... Excluded (ES6 TypedArray)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-every.js  .... Excluded (ES6 TypedArray)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-fill.js  .... Excluded (ES6 TypedArray)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-filter.js  .... Excluded (ES6 TypedArray)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-find.js  .... Excluded (ES6 TypedArray)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-findIndex.js  .... Excluded (ES6 TypedArray)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-forEach.js  .... Excluded (ES6 TypedArray)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-indexOf.js  .... Excluded (ES6 TypedArray)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-lastIndexOf.js  .... Excluded (ES6 TypedArray)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-map.js  .... Excluded (ES6 TypedArray)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-reduce.js  .... Excluded (ES6 TypedArray)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-reduceRight.js  .... Excluded (ES6 TypedArray)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-slice.js  .... Excluded (ES6 TypedArray)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-some.js  .... Excluded (ES6 TypedArray)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typedarray-sort.js  .... Excluded (ES6 TypedArray)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/typeof-symbol.js  .... Excluded (ES6 Symbol)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/uint32-to-number-fold-constant-with-do-overflow.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/uint32array-unsigned-load.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/undefined-access-dictionary-then-proto-change.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/undefined-access-then-proto-change.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/unscopables.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/unscopables.js  .... Excluded (with statement)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/untyped-equality.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/untyped-less-than.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/use-arguments-as-object-pointer.js .... Success
@@ -744,7 +744,7 @@ out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/Jav
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/v8-splay-strict.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/value-to-int32-undefined-constant.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/value-to-int32-undefined.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/values-unscopables.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/values-unscopables.js  .... Excluded (with statement)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/varargs-closure-inlined-exit-strict-mode.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/varargs-closure-inlined-exit.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/varargs-exit.js .... Success
@@ -759,24 +759,24 @@ out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/Jav
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/varargs-varargs-closure-inlined-exit.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/varargs-varargs-inlined-exit-strict-mode.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/varargs-varargs-inlined-exit.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-arithmetic-float32.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-arithmetic-float64.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-arithmetic-int32.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-calls.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-comma.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-control-flow.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-globals.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-linear-memory.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-locals.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-relational.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-type-conversion.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/weak-map-constructor-adder.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/weak-map-constructor.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/weak-set-constructor-adder.js  .... Excluded
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/weak-set-constructor.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-arithmetic-float32.js  .... Excluded (web assembly)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-arithmetic-float64.js  .... Excluded (web assembly)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-arithmetic-int32.js  .... Excluded (web assembly)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-calls.js  .... Excluded (web assembly)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-comma.js  .... Excluded (web assembly)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-control-flow.js  .... Excluded (web assembly)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-globals.js  .... Excluded (web assembly)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-linear-memory.js  .... Excluded (web assembly)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-locals.js  .... Excluded (web assembly)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-relational.js  .... Excluded (web assembly)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/wasm-type-conversion.js  .... Excluded (web assembly)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/weak-map-constructor-adder.js  .... Excluded (ES6 WeakMap)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/weak-map-constructor.js  .... Excluded (ES6 for ... of)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/weak-set-constructor-adder.js  .... Excluded (ES6 WeakSet)
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/weak-set-constructor.js  .... Excluded (ES6 for ... of)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/weird-equality-folding-cases.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/weird-getter-counter.js .... Success
-out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/weird-put-stack-varargs.js  .... Excluded
+out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/weird-put-stack-varargs.js  .... Excluded (Deprecated function.arguments)
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/weird-setter-counter-syntactic.js .... Success
 out/x64/interpreter/release/escargot test/JavaScriptCore/stress/test.js test/JavaScriptCore/stress/weird-setter-counter.js .... Success
 total : 781
