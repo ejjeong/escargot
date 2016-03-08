@@ -253,10 +253,10 @@ class Driver(object):
                 log(f, 'fail : ' + str(fail))
                 log(f, 'ignore : ' + str(ignore))
                 log(f, 'timeout : ' + str(timeout))
-            try:
-                subprocess.check_output(["diff", instance.origin_file(a_v_m), instance.output_file(a_v_m)])
-            except subprocess.CalledProcessError as e:
-                if len(options.subpath) == 0:
+            if len(options.subpath) == 0:
+                try:
+                    subprocess.check_output(["diff", instance.origin_file(a_v_m), instance.output_file(a_v_m)])
+                except subprocess.CalledProcessError as e:
                     print(e.output.decode('utf-8')[:-1])
                     return 1
         return 0
