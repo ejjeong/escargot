@@ -62,7 +62,7 @@ function AddTestCase( description, expect, actual ) {
  */
 function startTest() {
   // print out bugnumber
-  
+
   if ( BUGNUMBER ) {
     print ("BUGNUMBER: " + BUGNUMBER );
   }
@@ -921,36 +921,4 @@ function OptLevel( i ) {
 }
 /* end of Rhino functions */
 
-
-/* add version() to test js1_2 by youri */
-function version() {
-  return 120;
-}
-
-/* add finalizeCount() & makeFinalizeObserver by youri */
-/* it doesn't needed probably*/
-function finalizeCount() {
-  return 0;
-}
-
-function makeFinalizeObserver() {
-  return 0;
-}
-
-/* add evalcx() by youri */
-/* evalcx() is only useful for people doing deep internal work on the JavaScript engine, for testing evalInSandbox-like environments in the shell */
-function evalcx() {
-/*
-evalcx(s[, o])
-Evaluate s in optional sandbox object o.
-if (s == '' && !o) return new o with eager standard classes
-if (s == 'lazy' && !o) return new o with lazy standard classes
-if (s == 'split' && !o) return new split-object o with lazy standard classes
-
-*/
-}
-
-var origLoad = load;
-load = function(path) {
-    origLoad("test/SpiderMonkey/" + path);
-}
+load("test/SpiderMonkey/shell.escargot.js")
