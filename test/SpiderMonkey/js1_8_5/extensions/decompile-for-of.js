@@ -1,3 +1,4 @@
+// escargot-skip: for..of statement not supported
 // The decompiler can handle the implicit call to @@iterator in a for-of loop.
 
 var x;

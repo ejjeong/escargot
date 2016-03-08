@@ -1,3 +1,4 @@
+// escargot-skip: Arrow function expression not supported
 // |reftest| skip-if(!xulRuntime.shell)
 /* -*- Mode: js2; tab-width: 40; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /*

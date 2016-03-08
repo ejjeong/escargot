@@ -181,7 +181,7 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 Uncaught TypeError: Assertion failed: got "{"0":0,"0":0}", expected "{"0":0}: Failed to stringify number then string properties (0, '0') correctly)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/JSON/shell.js test/SpiderMonkey/ecma_5/JSON/stringify-replacer-array-hijinks.js .... Fail (648471: Better/more correct handling for replacer arrays with getter array index propertie)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/JSON/shell.js test/SpiderMonkey/ecma_5/JSON/stringify-replacer-array-skipped-element.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/JSON/shell.js test/SpiderMonkey/ecma_5/JSON/stringify-replacer-array-trailing-holes.js .... Fail (Uncaught SyntaxError: ES2015 arrow function expression is not supported (Parse Error 27 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/JSON/shell.js test/SpiderMonkey/ecma_5/JSON/stringify-replacer-array-trailing-holes.js .... Excluded (Arrow function expression not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/JSON/shell.js test/SpiderMonkey/ecma_5/JSON/stringify-replacer-with-array-indexes.js .... Fail (584909: Call the replacer function for array elements with stringified indexes
 Uncaught TypeError: Assertion failed: got "0", expected "0,1,2,3,4)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/JSON/shell.js test/SpiderMonkey/ecma_5/JSON/stringify-replacer.js .... Fail (Uncaught TypeError: Assertion failed: got "{"bar": {"bar": 42,"schmoo": []},"qux": 42,"quux": 42}", expected "{
@@ -276,7 +276,7 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/15.2.3.9.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/add-property-non-extensible.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/clear-dictionary-accessor-getset.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/defineProperty-setup.js .... Fail (Uncaught SyntaxError: ES2015 arrow function expression is not supported (Parse Error 536 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/defineProperty-setup.js .... Excluded (Arrow function expression not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/extensibility-01.js .... Fail (492849: ES5: Implement Object.preventExtensions, Object.isExtensible
 Uncaught TypeError: Assertion failed: got "swallowed", expected "throw: unexpected behavior for strict-mode property-addition to object 3)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/extensibility-02.js .... Success
@@ -389,8 +389,8 @@ Uncaught ReferenceError: newGlobal is not defined)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/cross-global-getPrototypeOf.js .... Fail (770344: Object.getPrototypeOf behavior across compartments
 Uncaught ReferenceError: newGlobal is not defined)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/destructuring-__proto__-shorthand-assignment-before-var.js .... Fail (Uncaught SyntaxError:  (Parse Error 28 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/destructuring-__proto__-shorthand-assignment.js .... Fail (Uncaught SyntaxError: ES2015 Destructuring assignment syntax is not supported (Parse Error 28 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/destructuring-__proto__-target-assignment.js .... Fail (Uncaught SyntaxError: ES2015 Destructuring assignment syntax is not supported (Parse Error 29 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/destructuring-__proto__-shorthand-assignment.js .... Excluded (Destructuring assignment syntax is not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/destructuring-__proto__-target-assignment.js .... Excluded (Destructuring assignment syntax is not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/destructuring-for-inof-__proto__.js .... Fail ()
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/error-tostring-function.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/es5ish-defineGetter-defineSetter.js .... Fail (715821: Implement __define[GS]etter__ using Object.defineProperty
@@ -419,7 +419,7 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 Uncaught ReferenceError: Proxy is not defined)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/proxy-enumeration.js .... Fail (Uncaught TypeError: Assertion failed: got "false", expected "true)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/proxy-strict.js .... Fail (Uncaught ReferenceError: Proxy is not defined)
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/regress-bug567606.js .... Fail (Uncaught SyntaxError: ES2015 for..of statement is not supported (Parse Error 16 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/regress-bug567606.js .... Excluded (for..of statement not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/regress-bug607284.js .... Fail (Uncaught TypeError: Callee is not a function object)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/regress-bug629723.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/reviver-mutates-holder-array-ccw.js .... Fail (901351: Behavior when the JSON.parse reviver mutates the holder array)
@@ -458,7 +458,7 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/getter-setter-outerize-this.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/global-numeric-properties.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/line-paragraph-separator-parse-as-lineterminator.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/new-with-non-constructor.js .... Fail (Uncaught SyntaxError: ES2015 arrow function expression is not supported (Parse Error 32 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/new-with-non-constructor.js .... Excluded (Arrow function expression not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/redeclare-var-non-writable-property.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/regexp-functions-with-undefined.js .... Fail (Uncaught TypeError: Assertion failed: got "-1", expected "0)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/regress-bug632003.js .... Success
@@ -1202,7 +1202,7 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-482783.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-483103.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-501124.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-503860.js .... Fail (Uncaught SyntaxError: ES2015 for..of statement is not supported (Parse Error 24 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-503860.js .... Excluded (for..of statement not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-504078.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-506567.js .... Fail (BUGNUMBER: 506567
 STATUS: Do not crash with watched variables
@@ -1750,7 +1750,7 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 STATUS: js_AddScopeProperty - overwrite property with watchpoint
 Uncaught TypeError: Callee is not a function object)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/expressions/destructuring-scope.js .... Excluded (let keyword not supported)
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/expressions/regress-346203.js .... Fail (Uncaught SyntaxError: ES2015 Destructuring assignment syntax is not supported (Parse Error 23 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/expressions/regress-346203.js .... Excluded (Destructuring assignment syntax is not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/expressions/regress-346645-01.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/expressions/regress-346645-02.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/expressions/regress-346645-03.js .... Success
@@ -2026,9 +2026,9 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-384412.js .... Fail (Uncaught SyntaxError:  (Parse Error 29 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-384758.js .... Fail (BUGNUMBER: 384758
 STATUS: Statement can not follow expression closure with out intervening ;)
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-404734.js .... Fail (Uncaught SyntaxError: ES2015 Destructuring assignment syntax is not supported (Parse Error 24 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-404734.js .... Excluded (Destructuring assignment syntax is not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-427798.js .... Excluded (let keyword not supported)
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-433279-01.js .... Fail (Uncaught SyntaxError: ES2015 Destructuring assignment syntax is not supported (Parse Error 23 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-433279-01.js .... Excluded (Destructuring assignment syntax is not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-433279-02.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-433279-03.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-442333-01.js .... Success
@@ -2040,7 +2040,7 @@ STATUS: Do not assert: !fp->callee || fp->thisp == fp->argv[-1].toObjectOrNull()
 Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 1 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-457065-02.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-458076.js .... Excluded (let keyword not supported)
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-459185.js .... Fail (Uncaught SyntaxError: ES2015 Destructuring assignment syntax is not supported (Parse Error 25 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-459185.js .... Excluded (Destructuring assignment syntax is not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-459186.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-459389.js .... Fail (Uncaught SyntaxError:  (Parse Error 58 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-461930.js .... Excluded (let keyword not supported)
@@ -2230,16 +2230,16 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/clone-object.js .... Fail (Uncaught ReferenceError: uneval is not defined)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/clone-regexp.js .... Fail (Uncaught ReferenceError: deserialize is not defined)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/clone-simple.js .... Fail (Uncaught ReferenceError: deserialize is not defined)
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/clone-transferables.js .... Fail (Uncaught SyntaxError: ES2015 for..of statement is not supported (Parse Error 51 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/clone-transferables.js .... Excluded (for..of statement not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/clone-typed-array.js .... Fail (Uncaught ReferenceError: deserialize is not defined)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/clone-v1-typed-array.js .... Fail (Uncaught SyntaxError:  (Parse Error 126 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/column-numbers.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/correct-this-for-nonnatives-on-array-proto-chain.js .... Fail (699705: When getting a property from a dense array that lives on the proto chain and in particular lives on a non-native object, we should still invoke property getter
 Uncaught ReferenceError: Proxy is not defined)
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/dataview.js .... Fail (Uncaught SyntaxError: ES2015 arrow function expression is not supported (Parse Error 59 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/decompile-for-of.js .... Fail (Uncaught TypeError: Assertion failed: got "ES2015 for..of statement is not supported (Parse Error 1 line)", expected "x is not iterable)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/dataview.js .... Excluded (Arrow function expression not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/decompile-for-of.js .... Excluded (for..of statement not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/destructure-accessor.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/file-mapped-arraybuffers.js .... Fail (Uncaught SyntaxError: ES2015 arrow function expression is not supported (Parse Error 35 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/file-mapped-arraybuffers.js .... Excluded (Arrow function expression not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/is-generator.js .... Excluded (with statement not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/mutable-proto-special-form.js .... Fail (948583: Make __proto__ in object literals a special form not influenced by |Object.prototype|
 Testing initial behavior
@@ -2281,7 +2281,7 @@ Uncaught ReferenceError: Proxy is not defined)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/selfhosted-detecting-strict.js .... Fail (843004: Don't emit a strict warning for the undefined-property detection pattern in self-hosted code
 Uncaught ReferenceError: options is not defined)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/set-property-non-extensible.js .... Excluded (let keyword not supported)
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/sharedtypedarray.js .... Fail (Uncaught SyntaxError: ES2015 arrow function expression is not supported (Parse Error 36 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/sharedtypedarray.js .... Excluded (Arrow function expression not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/sps-generators.js .... Fail (Uncaught SyntaxError:  (Parse Error 13 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/symbol-uneval.js .... Fail (Uncaught ReferenceError: uneval is not defined)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/toSource-0.js .... Fail (Uncaught ReferenceError: uneval is not defined)
@@ -2290,7 +2290,7 @@ Uncaught TypeError: Assertion failed: got "4096", expected "0: detaching should 
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/typedarray-set-neutering.js .... Fail (983344: Uint8Array.prototype.set issues when this array changes during setting
 Uncaught ReferenceError: detachArrayBuffer is not defined)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/typedarray-subarray-of-subarray.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/typedarray.js .... Fail (Uncaught SyntaxError: ES2015 arrow function expression is not supported (Parse Error 85 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/typedarray.js .... Excluded (Arrow function expression not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/watch-undefined-setter.js .... Fail (Uncaught TypeError: Callee is not a function object)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/weakmap.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/Match.js .... Fail (Uncaught ReferenceError: loadRelativeToScript is not defined)
@@ -2364,7 +2364,7 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-584355.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-584578.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-584648.js .... Fail (Uncaught TypeError: Callee is not a function object)
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-585257.js .... Fail (Uncaught TypeError: Objecct.create: first parameter is should be object)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-585257.js .... Fail (Uncaught TypeError: Object.create: first parameter is should be object)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-586482-1.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-586482-2.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-586482-3.js .... Success
@@ -2385,12 +2385,12 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-596805-2.js .... Fail (Uncaught SyntaxError:  (Parse Error 7 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-597945-1.js .... Fail (Uncaught SyntaxError:  (Parse Error 18 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-597945-2.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-598176.js .... Fail (Uncaught TypeError: Objecct.getOwnPropertyDescriptor: first argument is not object)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-598176.js .... Fail (Uncaught TypeError: Object.getOwnPropertyDescriptor: first argument is not object)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-600067.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-601399.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-602621.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-607799.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-607863.js .... Fail (Uncaught TypeError: Objecct.create: first parameter is should be object)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-607863.js .... Fail (Uncaught TypeError: Object.create: first parameter is should be object)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-609617.js .... Fail ()
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-610026.js .... Timeout
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-614714.js .... Success
@@ -2434,6 +2434,6 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
 succ : 1006
-fail : 691
-ignore : 134
+fail : 674
+ignore : 151
 timeout : 11

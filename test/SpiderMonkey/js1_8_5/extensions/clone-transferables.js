@@ -1,3 +1,4 @@
+// escargot-skip: for..of statement not supported
 // |reftest| skip-if(!xulRuntime.shell)
 // Any copyright is dedicated to the Public Domain.
 // http://creativecommons.org/licenses/publicdomain/
