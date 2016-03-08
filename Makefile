@@ -52,7 +52,9 @@ ifneq (,$(findstring tizen_wearable_arm,$(MAKECMDGOALS)))
   HOST=tizen_wearable_arm
 else ifneq (,$(findstring tizen_arm,$(MAKECMDGOALS)))
   HOST=tizen_arm
-else
+else ifneq (,$(findstring tizen_wearable_emulator,$(MAKECMDGOALS)))
+  HOST=tizen_wearable_emulator
+  ARCH=x86
 endif
 
 ifneq (,$(findstring shared,$(MAKECMDGOALS)))
@@ -139,6 +141,8 @@ CXXFLAGS_RELEASE = -O2 -g3 -DNDEBUG -fomit-frame-pointer -fno-stack-protector -f
 
 ifeq ($(HOST), tizen_wearable_arm)
   CXXFLAGS += -Os -g0 -finline-limit=64
+else ifeq ($(HOST), tizen_werable_emulator)
+  CXXFLAGS += -0s -g0 -finline-limit=64
 endif
 
 
@@ -184,6 +188,7 @@ ifeq ($(TYPE), jit)
     CXXFLAGS += #if defined(_M_AMD64) || defined(_M_X64)
     SRCS += $(SRC_THIRD_PARTY)/nanojit/NativeARM.cpp
     SRCS += $(SRC_THIRD_PARTY)/nanojit/NativeThumb2.cpp
+
   endif
   ####################################
   # target-dependent settings
@@ -311,6 +316,8 @@ tizen_arm.interpreter.release.shared: $(OUTDIR)/$(LIB)
 tizen_wearable_arm.interpreter.release: $(OUTDIR)/$(BIN)
 	cp -f $< .
 tizen_wearable_arm.interpreter.release.shared: $(OUTDIR)/$(LIB)
+	cp -f $< .
+tizen_wearable_emulator.interpreter.release.shared: $(OUTDIR)/$(LIB)
 	cp -f $< .
 
 $(OUTDIR)/$(BIN): $(OBJS) $(THIRD_PARTY_LIBS)
