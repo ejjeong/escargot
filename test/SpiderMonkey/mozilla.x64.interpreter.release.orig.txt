@@ -505,8 +505,8 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 Uncaught TypeError: Assertion failed: got "false", expected "true: didn't throw a TypeError: Error: should have thrown a TypeError, returned undefined)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/directive-prologue-01.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/eval-variable-environment.js .... Fail (Uncaught TypeError: Assertion failed: got "false", expected "true)
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/primitive-assignment.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 1 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/primitive-this-getter.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 1 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/primitive-assignment.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/primitive-this-getter.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/primitive-this-no-writeback.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/rebind-eval-should-fail-in-strict-mode.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/regress-532041.js .... Success
@@ -1016,7 +1016,7 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-350529.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-350692.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'import' (Parse Error 28 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-351116.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-351515.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 18 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-351515.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-352208.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-352604.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-354924.js .... Fail (Uncaught SyntaxError:  (Parse Error 24 line))
@@ -1749,7 +1749,7 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/GC/regress-381374.js .... Fail (BUGNUMBER: 381374
 STATUS: js_AddScopeProperty - overwrite property with watchpoint
 Uncaught TypeError: Callee is not a function object)
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/expressions/destructuring-scope.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 18 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/expressions/destructuring-scope.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/expressions/regress-346203.js .... Fail (Uncaught SyntaxError: ES2015 Destructuring assignment syntax is not supported (Parse Error 23 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/expressions/regress-346645-01.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/expressions/regress-346645-02.js .... Success
@@ -1772,11 +1772,11 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-351102-04.js .... Fail (Uncaught SyntaxError:  (Parse Error 26 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-351102-05.js .... Fail (Uncaught SyntaxError:  (Parse Error 26 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-351102-07.js .... Fail (Uncaught SyntaxError:  (Parse Error 34 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-352797-01.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 29 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-352797-01.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-352885-01.js .... Fail (Uncaught SyntaxError:  (Parse Error 23 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-352885-02.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-353214-01.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'export' (Parse Error 25 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-353249.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 24 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-353249.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-354499-01.js .... Fail (BUGNUMBER: 354499
 STATUS: Iterating over Array elements
 Uncaught TypeError: Callee is not a function object)
@@ -1790,9 +1790,9 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-355052-03.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-355410.js .... Fail (Uncaught SyntaxError:  (Parse Error 33 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-355512.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-363040-01.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 26 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-363040-02.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 27 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-366668-01.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 25 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-363040-01.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-363040-02.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-366668-01.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-367629.js .... Fail (BUGNUMBER: 367629
 STATUS: Decompilation of result with native function as getter
 Uncaught ReferenceError: uneval is not defined)
@@ -1811,21 +1811,21 @@ Uncaught ReferenceError: uneval is not defined)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-381303.js .... Fail (BUGNUMBER: 381303
 STATUS: object toSource when a property has both a getter and a setter
 Uncaught TypeError: Callee is not a function object)
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-387955-01.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 26 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-387955-02.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 26 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-387955-01.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-387955-02.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-392308.js .... Fail (Uncaught SyntaxError:  (Parse Error 36 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-396326.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 30 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-396326.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-453955.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-458679.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 43 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-458679.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-469234.js .... Fail (BUGNUMBER: 469234
 STATUS: TM: Do not assert: !JS_ON_TRACE(cx)
 Uncaught TypeError: Callee is not a function object)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-469405-01.js .... Fail (Uncaught SyntaxError:  (Parse Error 19 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-469405-02.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 18 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-470300-01.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 25 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-470300-02.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 25 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-469405-02.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-470300-01.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-470300-02.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-473282.js .... Fail (Uncaught SyntaxError:  (Parse Error 17 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-474771-01.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 27 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-474771-01.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-474771-02.js .... Fail (BUGNUMBER: 474771
 STATUS: TM: do not assert: jumpTable == interruptJumpTable
 Uncaught TypeError: Callee is not a function object)
@@ -1849,7 +1849,7 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-345855.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-345879-01.js .... Fail (Uncaught SyntaxError:  (Parse Error 24 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-345879-02.js .... Fail (Uncaught SyntaxError:  (Parse Error 24 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-347593.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 28 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-347593.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-347739.js .... Fail (Uncaught SyntaxError:  (Parse Error 27 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349012-01.js .... Fail (Uncaught SyntaxError:  (Parse Error 35 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349012-02.js .... Fail (Uncaught SyntaxError:  (Parse Error 33 line))
@@ -1919,22 +1919,22 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/lexical/regress-346642-04.js .... Fail (Uncaught SyntaxError:  (Parse Error 27 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/lexical/regress-351515.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regexp/yflag.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-350387.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 15 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-350387.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-352640-01.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-352640-02.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-352640-03.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-352640-04.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-353079.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 23 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-353079.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-355023.js .... Fail ()
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-355832-01.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 25 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-355832-02.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 25 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-355832-01.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-355832-02.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-363040-01.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-363040-02.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-369666-01.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 25 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-369666-02.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 25 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-369666-01.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-369666-02.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-372331.js .... Fail (Uncaught SyntaxError:  (Parse Error 32 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-373827-01.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 23 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-373827-02.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 25 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-373827-01.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-373827-02.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-375695.js .... Fail (Uncaught SyntaxError:  (Parse Error 22 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-379442.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-379483.js .... Success
@@ -1943,43 +1943,43 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-385393-05.js .... Fail (BUGNUMBER: 385393
 STATUS: Regression test for bug 385393
 Uncaught ReferenceError: Iterator is not defined)
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-407727-01.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 15 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-407727-02.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 16 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-407727-01.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-407727-02.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-407957.js .... Fail (BUGNUMBER: 407957
 STATUS: Iterator is mutable.
 Uncaught ReferenceError: Iterator is not defined)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-410649.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-414553.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 13 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-414553.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-416601.js .... Excluded (with statement not supported)
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-418641.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 60 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-418641.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-419803.js .... Fail (BUGNUMBER: 419803
 STATUS: Do not assert: sprop->parent == scope->lastProp
 Uncaught ReferenceError: yield is not defined)
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-452703.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 17 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-452960.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 26 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-453049.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 24 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-453051.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 24 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-452703.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-452960.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-453049.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-453051.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-453411.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-462071.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-462282.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-462388.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-462407.js .... Fail (Uncaught SyntaxError:  (Parse Error 17 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-464403.js .... Fail (Uncaught SyntaxError:  (Parse Error 27 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-465236.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 24 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-465424.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 26 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-465236.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-465424.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-465484.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-465686.js .... Fail (Uncaught SyntaxError:  (Parse Error 23 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-469239-01.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 25 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-469239-02.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 25 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-470223.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 29 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-469239-01.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-469239-02.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-470223.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-470388-01.js .... Fail (Uncaught SyntaxError:  (Parse Error 23 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-474771.js .... Fail (Uncaught SyntaxError:  (Parse Error 33 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/template.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/dekker.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 27 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/expclo.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 12 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/expclo2.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 12 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/lamport.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 19 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/peterson.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 23 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/dekker.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/expclo.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/expclo2.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/lamport.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/peterson.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-353116.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-385729.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-394709.js .... Fail (BUGNUMBER: 394709
@@ -1988,13 +1988,13 @@ Uncaught TypeError: Callee is not a function object)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-415721.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-417131.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-417817.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 16 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-419091.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 38 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-419091.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-445818.js .... Fail (Uncaught TypeError: cannot convert undefined into object)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-446169-01.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-446169-02.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-452913.js .... Fail (Uncaught SyntaxError:  (Parse Error 15 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-454744.js .... Fail (Uncaught SyntaxError:  (Parse Error 26 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-465337.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 25 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-465337.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-465453.js .... Fail (Uncaught SyntaxError:  (Parse Error 28 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-469625.js .... Fail (Uncaught SyntaxError:  (Parse Error 29 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-471197.js .... Success
@@ -2004,9 +2004,9 @@ STATUS: TM: Do not assert: StackBase(fp) + blockDepth == regs.sp
 Uncaught SyntaxError:  (Parse Error 1 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-473040.js .... Fail (Uncaught SyntaxError:  (Parse Error 22 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-475971.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-476414-01.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 52 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-476414-02.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 52 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-476427.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 30 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-476414-01.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-476414-02.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-476427.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-476653.js .... Fail (Uncaught SyntaxError:  (Parse Error 18 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-476869.js .... Fail (BUGNUMBER: 476869
 STATUS: Do not assert: v != JSVAL_ERROR_COOKIE
@@ -2015,10 +2015,10 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-479381.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-481989.js .... Fail (Uncaught SyntaxError:  (Parse Error 17 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-482263.js .... Fail (Uncaught SyntaxError:  (Parse Error 22 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/simple-tree.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 34 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/simple-tree.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/genexps/regress-347739.js .... Fail (Uncaught SyntaxError:  (Parse Error 26 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/genexps/regress-349012-01.js .... Fail (Uncaught SyntaxError:  (Parse Error 34 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/genexps/regress-349326.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 23 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/genexps/regress-349326.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/genexps/regress-384991.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 50 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/genexps/regress-665286.js .... Fail (Uncaught SyntaxError:  (Parse Error 17 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/genexps/regress-683738.js .... Success
@@ -2027,7 +2027,7 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-384758.js .... Fail (BUGNUMBER: 384758
 STATUS: Statement can not follow expression closure with out intervening ;)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-404734.js .... Fail (Uncaught SyntaxError: ES2015 Destructuring assignment syntax is not supported (Parse Error 24 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-427798.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 28 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-427798.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-433279-01.js .... Fail (Uncaught SyntaxError: ES2015 Destructuring assignment syntax is not supported (Parse Error 23 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-433279-02.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-433279-03.js .... Success
@@ -2038,29 +2038,29 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-457065-01.js .... Fail (BUGNUMBER: 457065
 STATUS: Do not assert: !fp->callee || fp->thisp == fp->argv[-1].toObjectOrNull()
 Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 1 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-457065-02.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 25 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-458076.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 25 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-457065-02.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-458076.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-459185.js .... Fail (Uncaught SyntaxError: ES2015 Destructuring assignment syntax is not supported (Parse Error 25 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-459186.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-459389.js .... Fail (Uncaught SyntaxError:  (Parse Error 58 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-461930.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 25 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-461930.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-461932.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-463334-01.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 26 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-463334-02.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 25 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-464096.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 25 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-464418.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 32 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-464978.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 25 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-463334-01.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-463334-02.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-464096.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-464418.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-464978.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465220.js .... Fail (Uncaught SyntaxError:  (Parse Error 29 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465234.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 28 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465239.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 28 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465241.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 28 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465234.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465239.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465241.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465249.js .... Fail (BUGNUMBER: 465249
 STATUS: Do not assert: (m != JSVAL_INT) || isInt32(*vp)
 Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 1 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465261.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 25 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465308.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 26 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465261.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465308.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465454.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465460-01.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 27 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465460-01.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465460-02.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465460-03.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465460-04.js .... Success
@@ -2068,16 +2068,16 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465460-06.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465460-07.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465460-08.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465460-09.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 25 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465460-10.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 25 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465460-11.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 25 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465460-09.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465460-10.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465460-11.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465460-12.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465483.js .... Fail (Uncaught SyntaxError:  (Parse Error 26 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465567-01.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 19 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465567-01.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465567-02.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465688.js .... Fail (Uncaught SyntaxError:  (Parse Error 24 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-466128.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 24 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-466787.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 27 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-466128.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-466787.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-467495-01.js .... Fail (Uncaught SyntaxError:  (Parse Error 23 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-467495-02.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-467495-03.js .... Fail ()
@@ -2089,7 +2089,7 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-469625-02.js .... Fail ()
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-469625-03.js .... Fail ()
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-471373.js .... Fail (Uncaught SyntaxError:  (Parse Error 33 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-471660.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 29 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-471660.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-474769.js .... Fail (Uncaught SyntaxError:  (Parse Error 27 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-474771.js .... Fail (Uncaught SyntaxError:  (Parse Error 31 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-474935.js .... Fail (Uncaught SyntaxError:  (Parse Error 28 line))
@@ -2110,7 +2110,7 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/JSON/regress-459293.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/String/regress-305064.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/new-parenthesization.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-353214-02.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 23 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-353214-02.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-437288-01.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-452498-162.js .... Fail (BUGNUMBER: 452498
 STATUS: TM: upvar2 regression tests
@@ -2127,7 +2127,7 @@ Uncaught TypeError: cannot convert undefined into object)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-466905-05.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-477158.js .... Fail (Uncaught SyntaxError:  (Parse Error 26 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-477187.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-520572.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 27 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-520572.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/strict/shell.js test/SpiderMonkey/js1_8_1/extensions/strict-warning.js .... Fail (Uncaught ReferenceError: options is not defined)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/math-jit-tests.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-451673.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
@@ -2155,21 +2155,21 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-027.js .... Fail (Uncaught SyntaxError:  (Parse Error 27 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-030.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-040.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-050.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 28 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-050.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-051.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-052-a.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-053.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 33 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-053.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-058.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-062.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-063.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 28 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-063.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-071.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-072.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-073.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-074.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 27 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-075.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-076.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 25 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-076.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-079.js .... Fail (Uncaught SyntaxError:  (Parse Error 31 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-082.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 27 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-082.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-092.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-101.js .... Excluded (with statement not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-102.js .... Fail (Uncaught SyntaxError:  (Parse Error 27 line))
@@ -2185,19 +2185,19 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-123.js .... Fail (Uncaught SyntaxError:  (Parse Error 50 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-129.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-131.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-135.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 28 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-135.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-155.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-160.js .... Fail (Uncaught SyntaxError:  (Parse Error 30 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-168-1.js .... Fail (BUGNUMBER: 452498
 STATUS: TM: upvar2 regression tests
 Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 1 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-168-2.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 27 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-168-2.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-176.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-181.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-185.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-187.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-191.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-192.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 24 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-192.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-466905-01.js .... Fail (Uncaught SyntaxError:  (Parse Error 23 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-466905-02.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-479430-01.js .... Success
@@ -2206,12 +2206,12 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-479430-04.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-479430-05.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-495773.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-495907.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 17 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-496922.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 23 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-495907.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-496922.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-507053.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-507295.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-509354.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-522123.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 29 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-522123.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-524264.js .... Fail (Uncaught ReferenceError: uneval is not defined)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-524743.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-530879.js .... Fail (Uncaught SyntaxError:  (Parse Error 7 line))
@@ -2280,7 +2280,7 @@ STATUS: basic scripted proxies tests
 Uncaught ReferenceError: Proxy is not defined)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/selfhosted-detecting-strict.js .... Fail (843004: Don't emit a strict warning for the undefined-property detection pattern in self-hosted code
 Uncaught ReferenceError: options is not defined)
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/set-property-non-extensible.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 21 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/set-property-non-extensible.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/sharedtypedarray.js .... Fail (Uncaught SyntaxError: ES2015 arrow function expression is not supported (Parse Error 36 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/sps-generators.js .... Fail (Uncaught SyntaxError:  (Parse Error 13 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/symbol-uneval.js .... Fail (Uncaught ReferenceError: uneval is not defined)
@@ -2292,7 +2292,7 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/typedarray-subarray-of-subarray.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/typedarray.js .... Fail (Uncaught SyntaxError: ES2015 arrow function expression is not supported (Parse Error 85 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/watch-undefined-setter.js .... Fail (Uncaught TypeError: Callee is not a function object)
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/weakmap.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 72 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/weakmap.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/Match.js .... Fail (Uncaught ReferenceError: loadRelativeToScript is not defined)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/PatternAsserts.js .... Fail (Uncaught ReferenceError: loadRelativeToScript is not defined)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/PatternBuilders.js .... Fail (Uncaught ReferenceError: loadRelativeToScript is not defined)
@@ -2324,11 +2324,11 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-355569.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-373843.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-383902.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 10 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-469758.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 6 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-469758.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-477053.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-500528.js .... Fail (Uncaught SyntaxError:  (Parse Error 18 line))
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-533876.js .... Fail (Uncaught TypeError: cannot redefine property)
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-541255-3.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 1 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-541255-3.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-541455.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-548276.js .... Fail (Uncaught TypeError: Callee is not a function object)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-551763-0.js .... Excluded (with statement not supported)
@@ -2336,18 +2336,18 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-551763-2.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-552432.js .... Fail (Uncaught TypeError: Assertion failed: got "3", expected "1)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-553778.js .... Fail ()
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-554955-1.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 12 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-554955-1.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-554955-2.js .... Excluded (with statement not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-554955-3.js .... Excluded (with statement not supported)
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-554955-4.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 15 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-554955-4.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-554955-5.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-554955-6.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 14 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-554955-6.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-555246-0.js .... Fail (Uncaught TypeError: cannot convert undefined into object)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-555246-1.js .... Fail (Uncaught TypeError: cannot convert undefined into object)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-559402-1.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-559402-2.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-559438.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-560998-1.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 5 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-560998-1.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-560998-2.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-561031.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-563210.js .... Success
@@ -2358,7 +2358,7 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-569306.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-571014.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-573875.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-577648-1.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 46 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-577648-1.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-577648-2.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-583429.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-584355.js .... Success
@@ -2425,8 +2425,8 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-672892.js .... Excluded (with statement not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-672893.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-694306.js .... Success
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-698028-1.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 5 line))
-out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-698028-2.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 10 line))
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-698028-1.js .... Excluded (let keyword not supported)
+out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-698028-2.js .... Excluded (let keyword not supported)
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-698028-3.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-699682.js .... Success
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-736792.js .... Success
@@ -2434,6 +2434,6 @@ out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonke
 out/x64/interpreter/release/escargot test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
 succ : 1006
-fail : 788
-ignore : 37
+fail : 691
+ignore : 134
 timeout : 11

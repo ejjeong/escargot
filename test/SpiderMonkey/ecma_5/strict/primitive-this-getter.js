@@ -1,3 +1,4 @@
+// escargot-skip: let keyword not supported
 let primitives = [
     10,
     false,

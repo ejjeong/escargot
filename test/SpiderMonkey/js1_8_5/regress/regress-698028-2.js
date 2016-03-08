@@ -1,3 +1,4 @@
+// escargot-skip: let keyword not supported
 // |reftest| skip-if(!xulRuntime.shell) -- uses evalInFrame
 //
 // Any copyright is dedicated to the Public Domain.
