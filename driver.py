@@ -3,10 +3,20 @@
 import os
 import optparse
 import sys
+import platform
 import itertools
 import subprocess
 import importlib
 import json
+
+from test.SpiderMonkey.lib.tests import RefTestCase, get_jitflags, get_cpu_count, get_environment_overlay, change_env
+from test.SpiderMonkey.lib.results import ResultsSink
+from test.SpiderMonkey.lib.progressbar import ProgressBar
+
+if sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
+    from test.SpiderMonkey.lib.tasks_unix import run_all_tests
+else:
+    from test.SpiderMonkey.lib.tasks_win import run_all_tests
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -47,6 +57,7 @@ class CommandOptionValues(object):
         self.timeout = timeout
         self.arch_and_variants_and_mode_and_engine = itertools.product(arch, variants, mode, engine)
         self.subpath = subpath
+        self.js_shell = None
 
 class ArgumentParser(object):
     def __init__(self):
@@ -99,10 +110,39 @@ class Test(object):
         self.env = env
         self.flags = flags
 
-class StressReader(object):
+class TestReader(object):
+    def __init__(self, name, base_dir):
+        self.name = name
+        self.base_dir = base_dir
+        self.mandatory_files = {}
+
     def list_tests(self, options):
-        test_base_dir = os.path.join("test", "JavaScriptCore", "stress")
-        tc_stress = os.path.join(test_base_dir, "TC.stress")
+        raise NotImplementedError
+
+    def mandatory_file(self, test):
+        raise NotImplementedError
+
+    def output_file(self, a_v_m_e):
+        return os.path.join(self.base_dir, ".".join([self.name, a_v_m_e[0], a_v_m_e[1], a_v_m_e[2], a_v_m_e[3], self._gen_output_suffix()]))
+
+    def origin_file(self, a_v_m_e):
+        return os.path.join(self.base_dir, ".".join([self.name, a_v_m_e[0], a_v_m_e[1], a_v_m_e[2], a_v_m_e[3], self._orig_output_suffix()]))
+
+    def _suffix(self):
+        return ".js"
+
+    def _gen_output_suffix(self):
+        return "gen.txt"
+
+    def _orig_output_suffix(self):
+        return "orig.txt"
+
+class StressReader(TestReader):
+    def __init__(self, name, base_dir):
+        TestReader.__init__(self, name, base_dir)
+
+    def list_tests(self, options):
+        tc_stress = os.path.join(self.base_dir, "TC.stress")
         tc_list = []
         with open(tc_stress, "r") as f:
             for line in f:
@@ -110,23 +150,32 @@ class StressReader(object):
                 if ignore:
                     idx = line.rfind("//")
                     ignore_reason = line[idx + 2:].strip()
-                    tc_list.append(Test(os.path.join(test_base_dir, line[3:idx]), ignore, ignore_reason, options.timeout))
+                    tc_list.append(Test(os.path.join(self.base_dir, line[3:idx]), ignore, ignore_reason, options.timeout))
                 else:
-                    tc_list.append(Test(os.path.join(test_base_dir, line[:-1]), ignore, None, options.timeout))
+                    tc_list.append(Test(os.path.join(self.base_dir, line[:-1]), ignore, None, options.timeout))
         return tc_list
 
     def mandatory_file(self, test):
-        return ["test/JavaScriptCore/stress/test.js"]
+        return [os.path.join(self.base_dir, "test.js")]
 
-    def output_file(self, a_v_m_e):
-        return "test/JavaScriptCore/stress/jsc." + '.'.join(a_v_m_e) + ".gen.txt"
+class MozillaReader(TestReader):
+    def __init__(self, name, base_dir):
+        TestReader.__init__(self, name, base_dir)
 
-    def origin_file(self, a_v_m_e):
-        return "test/JavaScriptCore/stress/jsc." + '.'.join(a_v_m_e) + ".orig.txt"
-
-class MozillaReader(object):
     def list_tests(self, options):
-        test_base_dir = os.path.join("test", "SpiderMonkey")
+        import test.SpiderMonkey.lib.manifest as manifest
+
+        if options.js_shell is None:
+            xul_tester = manifest.NullXULInfoTester()
+        else:
+            if options.xul_info_src is None:
+                xul_info = manifest.XULInfo.create(options.js_shell)
+            else:
+                xul_abi, xul_os, xul_debug = options.xul_info_src.split(r':')
+                xul_debug = xul_debug.lower() is 'true'
+                xul_info = manifest.XULInfo(xul_abi, xul_os, xul_debug)
+            xul_tester = manifest.XULInfoTester(xul_info, options.js_shell)
+
         test_dirs = ["ecma_5", "js1_1", "js1_2", "js1_3", "js1_4", "js1_5",
                     "js1_6", "js1_7","js1_8", "js1_8_1", "js1_8_5"]
         tc_list = []
@@ -134,12 +183,12 @@ class MozillaReader(object):
         ESCARGOT_TIMEOUT = "// escargot-timeout:"
         ESCARGOT_ENV = "// escargot-env:"
         for test_dir in test_dirs:
-            for (path, dir, files) in os.walk(os.path.join(test_base_dir, test_dir)):
+            for (path, dir, files) in os.walk(os.path.join(self.base_dir, test_dir)):
                 dir.sort()
                 files.sort()
                 for filename in files:
                     ext = os.path.splitext(filename)[-1]
-                    if ext == '.js':
+                    if ext == self._suffix():
                         if filename.find("shell") == -1:
                             filepath = os.path.join(path, filename)
                             with open(filepath, "r") as f:
@@ -156,52 +205,47 @@ class MozillaReader(object):
                                 env = None
                                 if filewise_env:
                                     env = json.loads(first_line[len(ESCARGOT_ENV):].strip())
-                                tc_list.append(Test(filepath, ignore, ignore_reason, timeout, env))
+                            test = Test(filepath, ignore, ignore_reason, timeout, env)
+                            manifest._parse_test_header(filepath, test, xul_tester)
+                            tc_list.append(test)
         return tc_list
 
     def mandatory_file(self, test):
-        fname = test.path
-        if fname.find("ecma_5") != -1:
-            if fname.find("JSON") != -1:
-                return ["test/SpiderMonkey/shell.js", "test/SpiderMonkey/ecma_5/shell.js", "test/SpiderMonkey/ecma_5/JSON/shell.js"]
-            elif fname.find("RegExp") != -1:
-                return ["test/SpiderMonkey/shell.js", "test/SpiderMonkey/ecma_5/shell.js", "test/SpiderMonkey/ecma_5/RegExp/shell.js"]
-            else:
-                return ["test/SpiderMonkey/shell.js", "test/SpiderMonkey/ecma_5/shell.js"]
-        elif fname.find("js1_2") != -1:
-            if fname.find("version120") != -1:
-                return ["test/SpiderMonkey/shell.js", "test/SpiderMonkey/js1_2/version120/shell.js"]
-            return ["test/SpiderMonkey/shell.js"]
-        elif fname.find("js1_5") != -1:
-            if fname.find("Expressions") != -1:
-                return ["test/SpiderMonkey/shell.js", "test/SpiderMonkey/js1_5/Expressions/shell.js"]
-            return ["test/SpiderMonkey/shell.js"]
-        elif fname.find("js1_6") != -1:
-            return ["test/SpiderMonkey/shell.js", "test/SpiderMonkey/js1_6/shell.js"]
-        elif fname.find("js1_7") != -1:
-            return ["test/SpiderMonkey/shell.js", "test/SpiderMonkey/js1_7/shell.js"]
-        elif fname.find("js1_8") != -1:
-            if fname.find("js1_8_1") != -1:
-                if fname.find("jit") != -1:
-                    return ["test/SpiderMonkey/shell.js", "test/SpiderMonkey/js1_8_1/shell.js", "test/SpiderMonkey/js1_8_1/jit/shell.js"]
-                elif fname.find("strict") != -1:
-                    return ["test/SpiderMonkey/shell.js", "test/SpiderMonkey/js1_8_1/shell.js", "test/SpiderMonkey/js1_8_1/strict/shell.js"]
-                return ["test/SpiderMonkey/shell.js", "test/SpiderMonkey/js1_8_1/shell.js"]
-            elif fname.find("js1_8_5") != -1:
-                if fname.find("extensions") != -1:
-                    return ["test/SpiderMonkey/shell.js", "test/SpiderMonkey/js1_8_5/shell.js", "test/SpiderMonkey/js1_8_5/extensions/shell.js"]
-                elif fname.find("reflect-parse") != -1:
-                    return ["test/SpiderMonkey/shell.js", "test/SpiderMonkey/js1_8_5/shell.js", "test/SpiderMonkey/js1_8_5/reflect-parse/shell.js"]
-                return ["test/SpiderMonkey/shell.js", "test/SpiderMonkey/js1_8_5/shell.js"]
-            return ["test/SpiderMonkey/shell.js", "test/SpiderMonkey/js1_8/shell.js"]
+        base_dir = os.path.dirname(test.path)
+        if base_dir in self.mandatory_files:
+            return self.mandatory_files[base_dir]
         else:
-            return ["test/SpiderMonkey/shell.js"]
-
-    def output_file(self, a_v_m_e):
-        return "test/SpiderMonkey/mozilla." + '.'.join(a_v_m_e) + ".gen.txt"
-
-    def origin_file(self, a_v_m_e):
-        return "test/SpiderMonkey/mozilla." + '.'.join(a_v_m_e) + ".orig.txt"
+            if base_dir == os.path.join(self.base_dir, "ecma_5", "JSON"):
+                self.mandatory_files[base_dir] = [os.path.join(self.base_dir, x) for x in ["shell.js", "ecma_5/shell.js", "ecma_5/JSON/shell.js"]]
+            elif base_dir == os.path.join(self.base_dir, "ecma_5", "RegExp"):
+                self.mandatory_files[base_dir] = [os.path.join(self.base_dir, x) for x in ["shell.js", "ecma_5/shell.js", "ecma_5/RegExp/shell.js"]]
+            elif base_dir == os.path.join(self.base_dir, "ecma_5"):
+                self.mandatory_files[base_dir] = [os.path.join(self.base_dir, x) for x in ["shell.js", "ecma_5/shell.js"]]
+            elif base_dir == os.path.join(self.base_dir, "js1_2", "version120"):
+                self.mandatory_files[base_dir] = [os.path.join(self.base_dir, x) for x in ["shell.js", "js1_2/version120/shell.js"]]
+            elif base_dir == os.path.join(self.base_dir, "js1_5", "Expressions"):
+                self.mandatory_files[base_dir] = [os.path.join(self.base_dir, x) for x in ["shell.js", "js1_5/Expressions/shell.js"]]
+            elif base_dir == os.path.join(self.base_dir, "js1_6"):
+                self.mandatory_files[base_dir] = [os.path.join(self.base_dir, x) for x in ["shell.js", "js1_6/shell.js"]]
+            elif base_dir == os.path.join(self.base_dir, "js1_7"):
+                self.mandatory_files[base_dir] = [os.path.join(self.base_dir, x) for x in ["shell.js", "js1_7/shell.js"]]
+            elif base_dir == os.path.join(self.base_dir, "js1_8", "js1_8_1", "jit"):
+                self.mandatory_files[base_dir] = [os.path.join(self.base_dir, x) for x in ["shell.js", "js1_8_1/shell.js", "js1_8_1/jit/shell.js"]]
+            elif base_dir == os.path.join(self.base_dir, "js1_8", "js1_8_1", "strict"):
+                self.mandatory_files[base_dir] = [os.path.join(self.base_dir, x) for x in ["shell.js", "js1_8_1/shell.js", "js1_8_1/strict/shell.js"]]
+            elif base_dir == os.path.join(self.base_dir, "js1_8", "js1_8_1"):
+                self.mandatory_files[base_dir] = [os.path.join(self.base_dir, x) for x in ["shell.js", "js1_8_1/shell.js"]]
+            elif base_dir == os.path.join(self.base_dir, "js1_8", "js1_8_5", "extensions"):
+                self.mandatory_files[base_dir] = [os.path.join(self.base_dir, x) for x in ["shell.js", "js1_8_5/shell.js", "js1_8_5/extensions/shell.js"]]
+            elif base_dir == os.path.join(self.base_dir, "js1_8", "js1_8_5", "reflect-parse"):
+                self.mandatory_files[base_dir] = [os.path.join(self.base_dir, x) for x in ["shell.js", "js1_8_5/shell.js", "js1_8_5/reflect-parse/shell.js"]]
+            elif base_dir == os.path.join(self.base_dir, "js1_8", "js1_8_5"):
+                self.mandatory_files[base_dir] = [os.path.join(self.base_dir, x) for x in ["shell.js", "js1_8_5/shell.js"]]
+            elif base_dir == os.path.join(self.base_dir, "js1_8"):
+                self.mandatory_files[base_dir] = [os.path.join(self.base_dir, x) for x in ["shell.js", "js1_8/shell.js"]]
+            else:
+                return ["test/SpiderMonkey/shell.js"]
+        return self.mandatory_files[base_dir]
 
 class Driver(object):
     def main(self):
@@ -215,14 +259,14 @@ class Driver(object):
             a_v_m_es.append(a_v_m_e)
 
         module = importlib.import_module("driver")
-        instance = 0
+        instances = []
         for suite in options.suite:
             if suite == "stress":
                 class_ = getattr(module, "StressReader")
-                instance = class_()
+                instances.append(class_("jsc", os.path.join("test", "JavaScriptCore", "stress")))
             elif suite == "mozilla":
                 class_ = getattr(module, "MozillaReader")
-                instance = class_()
+                instances.append(class_("mozilla", os.path.join("test", "SpiderMonkey")))
 
         def log(f, str):
             print(str)
@@ -241,43 +285,47 @@ class Driver(object):
             fail = 0
             ignore = 0
             timeout = 0
-            with open(instance.output_file(a_v_m_e), 'w') as f:
-                for tc in instance.list_tests(options):
-                    index += 1
+            for instance in instances:
+                with open(instance.output_file(a_v_m_e), 'w') as f:
+                    for tc in instance.list_tests(options):
+                        index += 1
+                        try:
+                            if options.subpath not in tc.path:
+                                continue
+                            total += 1
+
+                            command = [shell]
+                            command = command + instance.mandatory_file(tc)
+                            command.append(tc.path)
+
+                            command_print = []
+                            command_print = command_print + instance.mandatory_file(tc)
+                            command_print.append(tc.path)
+
+                            if tc.ignore:
+                                ignore += 1
+                                log(f, '[' + str(index) + '] ' + ' '.join(command_print) + " .... Excluded (" + tc.ignore_reason + ")")
+                                continue
+                            output = subprocess.check_output(command, timeout=tc.timeout, env=tc.env)
+                            succ += 1
+                            log(f, '[' + str(index) + '] ' + ' '.join(command_print) + " .... Success")
+                        except subprocess.TimeoutExpired as e:
+                            timeout += 1
+                            log(f, '[' + str(index) + '] ' + ' '.join(command_print) + " .... Timeout")
+                        except subprocess.CalledProcessError as e:
+                            fail += 1
+                            log(f, '[' + str(index) + '] ' + ' '.join(command_print) + " .... Fail (" + e.output.decode('utf-8')[:-1] + ")")
+                    log(f, 'total : ' + str(total))
+                    log(f, 'succ : ' + str(succ))
+                    log(f, 'fail : ' + str(fail))
+                    log(f, 'ignore : ' + str(ignore))
+                    log(f, 'timeout : ' + str(timeout))
+                if len(options.subpath) == 0:
                     try:
-                        if options.subpath not in tc.path:
-                            continue
-                        total += 1
-                        command = [shell]
-                        command = command + instance.mandatory_file(tc)
-                        command.append(tc.path)
-                        command_print = []
-                        command_print = command_print + instance.mandatory_file(tc)
-                        command_print.append(tc.path)
-                        if tc.ignore:
-                            ignore += 1
-                            log(f, '[' + str(index) + '] ' + ' '.join(command_print) + " .... Excluded (" + tc.ignore_reason + ")")
-                            continue
-                        output = subprocess.check_output(command, timeout=tc.timeout, env=tc.env)
-                        succ += 1
-                        log(f, '[' + str(index) + '] ' + ' '.join(command_print) + " .... Success")
-                    except subprocess.TimeoutExpired as e:
-                        timeout += 1
-                        log(f, '[' + str(index) + '] ' + ' '.join(command_print) + " .... Timeout")
+                        subprocess.check_output(["diff", instance.origin_file(a_v_m_e), instance.output_file(a_v_m_e)])
                     except subprocess.CalledProcessError as e:
-                        fail += 1
-                        log(f, '[' + str(index) + '] ' + ' '.join(command_print) + " .... Fail (" + e.output.decode('utf-8')[:-1] + ")")
-                log(f, 'total : ' + str(total))
-                log(f, 'succ : ' + str(succ))
-                log(f, 'fail : ' + str(fail))
-                log(f, 'ignore : ' + str(ignore))
-                log(f, 'timeout : ' + str(timeout))
-            if len(options.subpath) == 0:
-                try:
-                    subprocess.check_output(["diff", instance.origin_file(a_v_m_e), instance.output_file(a_v_m_e)])
-                except subprocess.CalledProcessError as e:
-                    print(e.output.decode('utf-8')[:-1])
-                    return 1
+                        print(e.output.decode('utf-8')[:-1])
+                        return 1
         return 0
 
 if __name__ == "__main__":
