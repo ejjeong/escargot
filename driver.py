@@ -112,6 +112,9 @@ class StressReader(object):
     def output_file(self, a_v_m):
         return "test/JavaScriptCore/stress/jsc." + '.'.join(a_v_m) + ".gen.txt"
 
+    def origin_file(self, a_v_m):
+        return "test/JavaScriptCore/stress/jsc." + '.'.join(a_v_m) + ".orig.txt"
+
 class MozillaReader(object):
     def list_tests(self, options):
         test_base_dir = os.path.join("test", "SpiderMonkey")
@@ -188,6 +191,9 @@ class MozillaReader(object):
     def output_file(self, a_v_m):
         return "test/SpiderMonkey/mozilla." + '.'.join(a_v_m) + ".gen.txt"
 
+    def origin_file(self, a_v_m):
+        return "test/SpiderMonkey/mozilla." + '.'.join(a_v_m) + ".orig.txt"
+
 class Driver(object):
     def main(self):
         args = sys.argv[1:]
@@ -213,7 +219,6 @@ class Driver(object):
             print(str)
             f.write(str + '\n')
 
-        idx = 0
         for a_v_m in a_v_ms:
             shell = os.path.join("out", a_v_m[0], a_v_m[1], a_v_m[2], "escargot")
             total = 0
@@ -221,7 +226,6 @@ class Driver(object):
             fail = 0
             ignore = 0
             timeout = 0
-            idx += 1
             with open(instance.output_file(a_v_m), 'w') as f:
                 for tc in instance.list_tests(options):
                     try:
@@ -249,8 +253,11 @@ class Driver(object):
                 log(f, 'fail : ' + str(fail))
                 log(f, 'ignore : ' + str(ignore))
                 log(f, 'timeout : ' + str(timeout))
-
-        return True
+            try:
+                subprocess.check_output(["diff", instance.output_file(a_v_m), instance.origin_file(a_v_m)])
+            except Exception:
+                return 1
+        return 0
 
 if __name__ == "__main__":
     sys.exit(Driver().main())

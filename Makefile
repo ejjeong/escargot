@@ -461,14 +461,6 @@ run-jetstream:
         ./run.sh ../../../escargot; \
 		python parsingResults.py jetstream-result-raw.res;
 
-run-jsc-stress:
-	./driver.py -a x64 -m release --variants interpreter -s stress; \
-	diff test/JavaScriptCore/stress/jsc.x64.interpreter.release.orig.txt test/JavaScriptCore/stress/jsc.x64.interpreter.release.gen.txt
-
-run-spidermonkey:
-	./driver.py -a x64 -m release --variants interpreter -s mozilla -t 3 -p "$(OPT)"; \
-	diff test/SpiderMonkey/mozilla.x64.interpreter.release.orig.txt test/SpiderMonkey/mozilla.x64.interpreter.release.gen.txt
-
 run-chakracore:
 	cd test/chakracore/; \
 	./run.sh ../../escargot $(OPT) | tee chakracorelog.gen.txt; \
