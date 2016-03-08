@@ -609,7 +609,7 @@ bool ESObject::defineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag)
     // 6
     const ESHiddenClassPropertyInfo& propertyInfo = O->hiddenClass()->propertyInfo(idx);
     if ((!descHasEnumerable || descE == propertyInfo.m_flags.m_isEnumerable)
-        && (!descHasWritable || descW == propertyInfo.m_flags.m_isWritable)
+        && (!descHasWritable || ((propertyInfo.m_flags.m_isDataProperty || O->accessorData(idx)->getNativeGetter() || O->accessorData(idx)->getNativeSetter()) && (descW == propertyInfo.m_flags.m_isWritable)))
         && (!descHasConfigurable || descC == propertyInfo.m_flags.m_isConfigurable)
         && (!descHasValue || ((propertyInfo.m_flags.m_isDataProperty || O->accessorData(idx)->getNativeGetter() || O->accessorData(idx)->getNativeSetter()) && descV.equalsToByTheSameValueAlgorithm(current)))
         && (!descHasGetter || (O->get(strings->get.string()).isESPointer() && O->get(strings->get.string()).asESPointer()->isESFunctionObject()
@@ -696,7 +696,7 @@ bool ESObject::defineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag)
     //
 
     // 12
-    if (descHasGetter || descHasSetter || (!propertyInfo.m_flags.m_isDataProperty && (O->accessorData(idx)->getJSGetter() || O->accessorData(idx)->getJSSetter()))) {
+    if (descHasGetter || descHasSetter || (!propertyInfo.m_flags.m_isDataProperty && !O->accessorData(idx)->getNativeGetter() && !O->accessorData(idx)->getNativeSetter())) {
         escargot::ESFunctionObject* getter = descGet;
         escargot::ESFunctionObject* setter = descSet;
         if (!propertyInfo.m_flags.m_isDataProperty) {
