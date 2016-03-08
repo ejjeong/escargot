@@ -255,7 +255,8 @@ class Driver(object):
                 log(f, 'timeout : ' + str(timeout))
             try:
                 subprocess.check_output(["diff", instance.output_file(a_v_m), instance.origin_file(a_v_m)])
-            except Exception:
+            except subprocess.CalledProcessError as e:
+                print(e.output.decode('utf-8')[:-1])
                 return 1
         return 0
 
