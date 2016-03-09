@@ -1,3 +1,4 @@
+// escargot-skip: Proxy not supported
 // escargot-skip: Reflect not supported
 // |reftest| skip-if(!xulRuntime.shell)
 // |reftest| skip-if(!xulRuntime.shell)

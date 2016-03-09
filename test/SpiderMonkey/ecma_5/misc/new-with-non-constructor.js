@@ -1,3 +1,4 @@
+// escargot-skip: Proxy not supported
 // escargot-skip: Arrow function expression not supported
 /*
  * Any copyright is dedicated to the Public Domain.

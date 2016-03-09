@@ -1,3 +1,4 @@
+// escargot-skip: Proxy not supported
 var order = 0;
 function assertOrdering(ordering) {
     assertEq(order, ordering);

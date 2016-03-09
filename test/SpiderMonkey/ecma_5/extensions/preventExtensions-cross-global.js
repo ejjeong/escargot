@@ -1,3 +1,4 @@
+// escargot-skip: Proxy not supported
 // |reftest| skip-if(!xulRuntime.shell) -- needs newGlobal()
 /*
  * Any copyright is dedicated to the Public Domain.

@@ -1,3 +1,4 @@
+// escargot-skip: Proxy not supported
 function f(code) {
 	    code.replace(/s/, "")
 	    eval(code)

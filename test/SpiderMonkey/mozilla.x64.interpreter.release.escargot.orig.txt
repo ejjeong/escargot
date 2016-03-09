@@ -99,7 +99,7 @@ Uncaught TypeError: Assertion failed: got "false", expected "true)
 [51] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Function/Function-with-eval.js .... Success
 [52] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Function/arguments-caller-callee.js .... Success
 [53] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Function/arguments-property-attributes.js .... Success
-[54] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Function/builtin-no-construct.js .... Fail (Uncaught ReferenceError: Proxy is not defined)
+[54] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Function/builtin-no-construct.js .... Excluded (Proxy not supported)
 [55] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Function/builtin-no-prototype.js .... Success
 [56] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Function/function-bind.js .... Fail (429507: ES5: Function.prototype.bind
 Uncaught TypeError: Assertion failed: got "false", expected "true)
@@ -370,8 +370,7 @@ Uncaught TypeError: Assertion failed: got "false", expected "true)
 [253] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/arguments-property-access-in-function.js .... Fail (721322: f.arguments must trigger an arguments object in non-strict mode functions
 Uncaught TypeError: cannot convert undefined into object)
 [254] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/array-inherited-__proto__.js .... Success
-[255] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/array-pop-proxy.js .... Fail (858381: Behavior of [].pop on proxies
-Uncaught ReferenceError: Proxy is not defined)
+[255] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/array-pop-proxy.js .... Excluded (Proxy not supported)
 [256] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/array-toString-recursion.js .... Fail (635389: Infinite recursion via [].{toString,toLocaleString,join}
 Uncaught ReferenceError: InternalError is not defined)
 [257] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/bug472534.js .... Success
@@ -405,24 +404,20 @@ Uncaught TypeError: Assertion failed: got "false", expected "true: should have g
 Uncaught ReferenceError: options is not defined)
 [278] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/nested-delete-name-in-evalcode.js .... Fail (616294: |delete x| inside a function in eval code, where that eval code includes |var x| at top level, actually does delete the binding for x
 Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 1 line))
-[279] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/preventExtensions-cross-global.js .... Fail (789897: Object.preventExtensions and Object.isExtensible should work correctly across globals
-Uncaught ReferenceError: newGlobal is not defined)
-[280] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/proxy-__proto__.js .... Fail (770344: Behavior of __proto__ on proxies
-Now testing behavior for Proxy.create(non-null handler, non-null prototype)
-Uncaught ReferenceError: Proxy is not defined)
-[281] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/proxy-array-target-length-definition.js .... Fail (905947: Redefining an array's |length| property when redefining the |length| property on a proxy with an array as target
-Uncaught ReferenceError: Proxy is not defined)
-[282] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/proxy-enumeration.js .... Fail (Uncaught TypeError: Assertion failed: got "false", expected "true)
-[283] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/proxy-strict.js .... Fail (Uncaught ReferenceError: Proxy is not defined)
+[279] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/preventExtensions-cross-global.js .... Excluded (Proxy not supported)
+[280] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/proxy-__proto__.js .... Excluded (Proxy not supported)
+[281] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/proxy-array-target-length-definition.js .... Excluded (Proxy not supported)
+[282] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/proxy-enumeration.js .... Excluded (Proxy not supported)
+[283] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/proxy-strict.js .... Excluded (Proxy not supported)
 [284] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/regress-bug567606.js .... Excluded (for..of statement not supported)
 [285] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/regress-bug607284.js .... Fail (Uncaught evalcx() not supported)
 [286] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/regress-bug629723.js .... Success
 [287] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/reviver-mutates-holder-array-ccw.js .... Fail (901351: Behavior when the JSON.parse reviver mutates the holder array)
 [288] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/reviver-mutates-holder-array-nonnative.js .... Fail (901380: Behavior when JSON.parse walks over a non-native object)
-[289] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/reviver-mutates-holder-array.js .... Fail (901351: Behavior when the JSON.parse reviver mutates the holder array)
+[289] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/reviver-mutates-holder-array.js .... Excluded (Proxy not supported)
 [290] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/reviver-mutates-holder-object-ccw.js .... Fail (901351: Behavior when the JSON.parse reviver mutates the holder object)
 [291] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/reviver-mutates-holder-object-nonnative.js .... Fail (901380: Behavior when JSON.parse walks over a non-native object)
-[292] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/reviver-mutates-holder-object.js .... Fail (901351: Behavior when the JSON.parse reviver mutates the holder object)
+[292] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/reviver-mutates-holder-object.js .... Excluded (Proxy not supported)
 [293] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/strict-function-statements.js .... Fail ()
 [294] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/strict-function-toSource.js .... Fail (Uncaught ReferenceError: options is not defined)
 [295] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/strict-option-redeclared-parameter.js .... Fail (630770: Correctly warn about duplicate parameters when the strict option is enabled
@@ -453,7 +448,7 @@ Uncaught ReferenceError: evaluate is not defined)
 [314] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/getter-setter-outerize-this.js .... Success
 [315] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/global-numeric-properties.js .... Success
 [316] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/line-paragraph-separator-parse-as-lineterminator.js .... Success
-[317] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/new-with-non-constructor.js .... Excluded (Arrow function expression not supported)
+[317] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/new-with-non-constructor.js .... Excluded (Proxy not supported)
 [318] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/redeclare-var-non-writable-property.js .... Success
 [319] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/regexp-functions-with-undefined.js .... Fail (Uncaught TypeError: Assertion failed: got "-1", expected "0)
 [320] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/regress-bug632003.js .... Success
@@ -501,7 +496,7 @@ Uncaught TypeError: Assertion failed: got "false", expected "true: didn't throw 
 [361] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/directive-prologue-01.js .... Success
 [362] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/eval-variable-environment.js .... Fail (Uncaught TypeError: Assertion failed: got "false", expected "true)
 [363] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/primitive-assignment.js .... Excluded (let keyword not supported)
-[364] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/primitive-this-getter.js .... Excluded (let keyword not supported)
+[364] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/primitive-this-getter.js .... Excluded (Proxy not supported)
 [365] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/primitive-this-no-writeback.js .... Success
 [366] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/rebind-eval-should-fail-in-strict-mode.js .... Success
 [367] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/strict/regress-532041.js .... Success
@@ -693,7 +688,7 @@ Uncaught TypeError: Callee is not a function object)
 [538] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Date/regress-309925-02.js .... Success
 [539] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Date/regress-346027.js .... Success
 [540] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Date/regress-346363.js .... Success
-[541] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Error/constructor-ordering.js .... Fail (Uncaught ReferenceError: Proxy is not defined)
+[541] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Error/constructor-ordering.js .... Excluded (Proxy not supported)
 [542] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Error/regress-354246.js .... Success
 [543] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Error/regress-412324.js .... Success
 [544] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Error/regress-465377.js .... Success
@@ -2154,7 +2149,7 @@ Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 1 line))
 [1646] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/censor-strict-caller.js .... Fail (588251: fun.caller should throw if that value corresponds to a strict mode function
 Uncaught TypeError: Assertion failed: got "false", expected "true: expected TypeError accessing strict mode caller, got: 17)
 [1647] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/clone-complex-object.js .... Excluded (yield not supported)
-[1648] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/clone-errors.js .... Fail (Uncaught ReferenceError: Proxy is not defined)
+[1648] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/clone-errors.js .... Excluded (Proxy not supported)
 [1649] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/clone-forge.js .... Fail (Uncaught SyntaxError:  (Parse Error 18 line))
 [1650] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/clone-leaf-object.js .... Fail (Uncaught TypeError: Callee is not a function object)
 [1651] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/clone-object.js .... Fail (Uncaught ReferenceError: deserialize is not defined)
@@ -2164,19 +2159,16 @@ Uncaught TypeError: Assertion failed: got "false", expected "true: expected Type
 [1655] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/clone-typed-array.js .... Fail (Uncaught ReferenceError: deserialize is not defined)
 [1656] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/clone-v1-typed-array.js .... Fail (Uncaught SyntaxError:  (Parse Error 126 line))
 [1657] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/column-numbers.js .... Success
-[1658] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/correct-this-for-nonnatives-on-array-proto-chain.js .... Fail (699705: When getting a property from a dense array that lives on the proto chain and in particular lives on a non-native object, we should still invoke property getter
-Uncaught ReferenceError: Proxy is not defined)
+[1658] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/correct-this-for-nonnatives-on-array-proto-chain.js .... Excluded (Proxy not supported)
 [1659] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/dataview.js .... Excluded (Arrow function expression not supported)
 [1660] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/decompile-for-of.js .... Excluded (for..of statement not supported)
 [1661] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/destructure-accessor.js .... Success
 [1662] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/file-mapped-arraybuffers.js .... Excluded (Arrow function expression not supported)
 [1663] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/is-generator.js .... Excluded (yield not supported)
-[1664] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/mutable-proto-special-form.js .... Fail (948583: Make __proto__ in object literals a special form not influenced by |Object.prototype|
-Testing initial behavior
-Uncaught TypeError: Assertion failed: got "[object Object]", expected "null)
+[1664] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/mutable-proto-special-form.js .... Excluded (Proxy not supported)
 [1665] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/object-toSource-undefined-getter.js .... Fail (Uncaught TypeError: Callee is not a function object)
 [1666] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/object-toSource-with-symbol-keys.js .... Fail (Uncaught ReferenceError: Symbol is not defined)
-[1667] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/proxy-fix.js .... Fail (Uncaught ReferenceError: Proxy is not defined)
+[1667] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/proxy-fix.js .... Excluded (Proxy not supported)
 [1668] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/proxy-proto-setter.js .... Fail ( PASSED! setting through a setter directly
  PASSED! setting properties works
  PASSED! window.y remains as it was
@@ -2205,9 +2197,7 @@ Uncaught ReferenceError: options is not defined)
 [1688] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-677924.js .... Success
 [1689] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-691746.js .... Success
 [1690] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-696109.js .... Fail (Uncaught ReferenceError: Reflect is not defined)
-[1691] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/scripted-proxies.js .... Fail (BUGNUMBER: 546590
-STATUS: basic scripted proxies tests
-Uncaught ReferenceError: Proxy is not defined)
+[1691] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/scripted-proxies.js .... Excluded (Proxy not supported)
 [1692] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/selfhosted-detecting-strict.js .... Fail (843004: Don't emit a strict warning for the undefined-property detection pattern in self-hosted code
 Uncaught ReferenceError: options is not defined)
 [1693] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/set-property-non-extensible.js .... Excluded (let keyword not supported)
@@ -2247,7 +2237,7 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1725] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/location.js .... Excluded (Reflect not supported)
 [1726] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/methodDefn.js .... Excluded (Reflect not supported)
 [1727] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/newTarget.js .... Excluded (Reflect not supported)
-[1728] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/proxyArgs.js .... Excluded (Reflect not supported)
+[1728] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/proxyArgs.js .... Excluded (Proxy not supported)
 [1729] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/stackOverflow.js .... Excluded (Reflect not supported)
 [1730] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/statements.js .... Excluded (Reflect not supported)
 [1731] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/templateStrings.js .... Excluded (Reflect not supported)
@@ -2283,7 +2273,7 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1761] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-563210.js .... Success
 [1762] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-563221.js .... Success
 [1763] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-566549.js .... Success
-[1764] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-566914.js .... Fail (Uncaught TypeError: Callee is not a function object)
+[1764] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-566914.js .... Excluded (Proxy not supported)
 [1765] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-567152.js .... Success
 [1766] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-569306.js .... Success
 [1767] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-571014.js .... Success
@@ -2292,7 +2282,7 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1770] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-577648-2.js .... Success
 [1771] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-583429.js .... Success
 [1772] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-584355.js .... Success
-[1773] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-584578.js .... Success
+[1773] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-584578.js .... Excluded (Proxy not supported)
 [1774] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-584648.js .... Fail (Uncaught TypeError: Callee is not a function object)
 [1775] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-585257.js .... Fail (Uncaught evalcx() not supported)
 [1776] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-586482-1.js .... Success
@@ -2307,7 +2297,7 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1785] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-592202-4.js .... Success
 [1786] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-592556-c35.js .... Success
 [1787] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-593256.js .... Fail (Uncaught TypeError: Callee is not a function object)
-[1788] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-595230-1.js .... Fail (Uncaught evalcx() not supported)
+[1788] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-595230-1.js .... Excluded (Proxy not supported)
 [1789] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-595230-2.js .... Fail (Uncaught evalcx() not supported)
 [1790] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-595365-1.js .... Success
 [1791] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-596103.js .... Success
@@ -2327,11 +2317,11 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1805] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-617405-1.js .... Success
 [1806] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-617405-2.js .... Success
 [1807] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-618572.js .... Success
-[1808] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-618574.js .... Fail (Uncaught SyntaxError:  (Parse Error 16 line))
+[1808] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-618574.js .... Excluded (Proxy not supported)
 [1809] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-619003-1.js .... Fail (Uncaught TypeError: Assertion failed: got "No error", expected "SyntaxError: duplicate argument names not allowed in this context)
 [1810] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-619003-2.js .... Success
-[1811] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-620376-1.js .... Success
-[1812] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-620376-2.js .... Fail (Uncaught ReferenceError: Proxy is not defined)
+[1811] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-620376-1.js .... Excluded (Proxy not supported)
+[1812] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-620376-2.js .... Excluded (Proxy not supported)
 [1813] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-621814.js .... Success
 [1814] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-624199.js .... Success
 [1815] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-624547.js .... Success
@@ -2363,7 +2353,7 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1841] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-810525.js .... Success
 [1842] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
-succ : 1035
-fail : 468
-ignore : 335
+succ : 1033
+fail : 449
+ignore : 356
 timeout : 4

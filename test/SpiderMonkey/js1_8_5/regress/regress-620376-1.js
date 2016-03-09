@@ -1,3 +1,4 @@
+// escargot-skip: Proxy not supported
 // |reftest| skip-if(Android)
 /*
  * Any copyright is dedicated to the Public Domain.
