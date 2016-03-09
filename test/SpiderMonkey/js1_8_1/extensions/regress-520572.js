@@ -1,3 +1,4 @@
+// escargot-skip: Object.prototype.watch() not supported
 // escargot-skip: let keyword not supported
 /* -*- indent-tabs-mode: nil; js-indent-level: 4 -*- */
 /*

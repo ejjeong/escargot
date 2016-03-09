@@ -428,12 +428,12 @@ Uncaught ReferenceError: InternalError is not defined)
 [298] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/toSource-infinite-recursion.js .... Fail (650574: Check for too-deep stack when converting a value to source
 Uncaught ReferenceError: InternalError is not defined)
 [299] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/uneval-strict-functions.js .... Fail (Uncaught SyntaxError:  (Parse Error 47 line))
-[300] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/watch-array-length.js .... Fail (Uncaught TypeError: Callee is not a function object)
-[301] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/watch-inherited-property.js .... Fail (Uncaught TypeError: Callee is not a function object)
-[302] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/watch-replaced-setter.js .... Fail (Uncaught TypeError: Callee is not a function object)
-[303] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/watch-setter-become-setter.js .... Fail (Uncaught TypeError: Callee is not a function object)
-[304] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/watch-value-prop-becoming-setter.js .... Fail (Uncaught TypeError: Callee is not a function object)
-[305] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/watchpoint-deletes-JSPropertyOp-setter.js .... Fail (Uncaught TypeError: Callee is not a function object)
+[300] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/watch-array-length.js .... Excluded (Object.prototype.watch() not supported)
+[301] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/watch-inherited-property.js .... Excluded (Object.prototype.watch() not supported)
+[302] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/watch-replaced-setter.js .... Excluded (Object.prototype.watch() not supported)
+[303] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/watch-setter-become-setter.js .... Excluded (Object.prototype.watch() not supported)
+[304] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/watch-value-prop-becoming-setter.js .... Excluded (Object.prototype.watch() not supported)
+[305] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/watchpoint-deletes-JSPropertyOp-setter.js .... Excluded (Object.prototype.watch() not supported)
 [306] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/bug1126318.js .... Success
 [307] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/builtin-methods-reject-null-undefined-this.js .... Fail (619283: ECMAScript built-in methods that immediately throw when |this| is |undefined| or |null| (due to CheckObjectCoercible, ToObject, or ToString)
 Uncaught TypeError: Assertion failed: got "false", expected "true: wrong error for Object.prototype.hasOwnProperty.call(null), instead threw Error: Object.prototype.hasOwnProperty.call(null) didn't throw a TypeError)
@@ -770,12 +770,8 @@ Uncaught TypeError: Callee is not a function object)
 [609] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Object/regress-192105.js .... Success
 [610] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Object/regress-308806-01.js .... Success
 [611] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Object/regress-338709.js .... Success
-[612] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Object/regress-362872-01.js .... Fail (BUGNUMBER: 362872
-STATUS: script should not drop watchpoint that is in use
-Uncaught TypeError: Callee is not a function object)
-[613] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Object/regress-362872-02.js .... Fail (BUGNUMBER: 362872
-STATUS: script should not drop watchpoint that is in use
-Uncaught TypeError: Callee is not a function object)
+[612] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Object/regress-362872-01.js .... Excluded (Object.prototype.watch() not supported)
+[613] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Object/regress-362872-02.js .... Excluded (Object.prototype.watch() not supported)
 [614] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Object/regress-382503.js .... Success
 [615] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Object/regress-382532.js .... Success
 [616] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Object/regress-465476.js .... Success
@@ -794,7 +790,7 @@ Uncaught ReferenceError: options is not defined)
 [627] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-116228.js .... Success
 [628] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-118849.js .... Success
 [629] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-119719.js .... Excluded (obsolete test)
-[630] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-127243.js .... Success
+[630] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-127243.js .... Excluded (Object.prototype.watch() not supported)
 [631] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-127557.js .... Success
 [632] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-131510-001.js .... Success
 [633] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-139316.js .... Fail (BUGNUMBER: 139316
@@ -830,9 +826,7 @@ Uncaught TypeError: cannot convert undefined into object)
 [661] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-204210.js .... Success
 [662] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-210682.js .... Success
 [663] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-211590.js .... Success
-[664] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-213482.js .... Fail (BUGNUMBER: 213482
-STATUS: Do not crash watching property when watcher sets property
-Uncaught TypeError: Callee is not a function object)
+[664] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-213482.js .... Excluded (Object.prototype.watch() not supported)
 [665] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-214761.js .... Fail (BUGNUMBER: 214761
 STATUS: Crash Regression from bug 208030
 Uncaught ReferenceError: options is not defined)
@@ -847,9 +841,7 @@ Uncaught ReferenceError: options is not defined)
 [674] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-234389.js .... Success
 [675] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-238881.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 15 line))
 [676] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-238945.js .... Success
-[677] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-240577.js .... Fail (BUGNUMBER: 240577
-STATUS: object.watch execution context
-Uncaught TypeError: Callee is not a function object)
+[677] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-240577.js .... Excluded (Object.prototype.watch() not supported)
 [678] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-243174.js .... Success
 [679] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-243389-n.js .... Fail (Uncaught SyntaxError:  (Parse Error 19 line))
 [680] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-243869.js .... Success
@@ -999,12 +991,8 @@ Uncaught SyntaxError:  (Parse Error 1 line))
 [792] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-352208.js .... Success
 [793] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-352604.js .... Success
 [794] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-354924.js .... Excluded (obsolete test)
-[795] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-355341.js .... Fail (BUGNUMBER: 355341
-STATUS: Do not crash with watch and setter
-Uncaught TypeError: Callee is not a function object)
-[796] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-355344.js .... Fail (BUGNUMBER: 355344
-STATUS: Exceptions thrown by watch point
-Uncaught TypeError: Callee is not a function object)
+[795] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-355341.js .... Excluded (Object.prototype.watch() not supported)
+[796] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-355344.js .... Excluded (Object.prototype.watch() not supported)
 [797] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-355556.js .... Success
 [798] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-355829-01.js .... Success
 [799] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-355829-02.js .... Success
@@ -1021,13 +1009,9 @@ STATUS: 2^17: global const
 Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 1 line))
 [807] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-360969-05.js .... Timeout
 [808] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-360969-06.js .... Timeout
-[809] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-361467.js .... Fail (BUGNUMBER: 361467
-STATUS: Do not crash with certain watchers
-Uncaught TypeError: Callee is not a function object)
-[810] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-361617.js .... Fail (BUGNUMBER: 361617
-STATUS: Do not crash with getter, watch and gc
-Uncaught TypeError: Callee is not a function object)
-[811] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-362583.js .... Excluded (obsolete test)
+[809] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-361467.js .... Excluded (Object.prototype.watch() not supported)
+[810] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-361617.js .... Excluded (Object.prototype.watch() not supported)
+[811] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-362583.js .... Excluded (Object.prototype.watch() not supported)
 [812] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-3649-n.js .... Excluded (skip test due to random oom related errors.)
 [813] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-366122.js .... Success
 [814] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-366468.js .... Success
@@ -1042,10 +1026,7 @@ Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 1 line))
 STATUS: Statement that implicitly calls toString should not be optimized away as a "useless expression"
 Uncaught ReferenceError: options is not defined)
 [821] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-383682.js .... Success
-[822] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-385393-06.js .... Fail (BUGNUMBER: 385393
-STATUS: Regression test for bug 385393
- PASSED! Regression test for bug 385393
-Uncaught TypeError: Callee is not a function object)
+[822] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-385393-06.js .... Excluded (Object.prototype.watch() not supported)
 [823] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-387951-01.js .... Success
 [824] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-387951-02.js .... Success
 [825] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-387951-03.js .... Success
@@ -1178,9 +1159,7 @@ Uncaught RangeError)
 [948] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-501124.js .... Success
 [949] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-503860.js .... Excluded (for..of statement not supported)
 [950] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-504078.js .... Success
-[951] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-506567.js .... Fail (BUGNUMBER: 506567
-STATUS: Do not crash with watched variables
-Uncaught TypeError: Callee is not a function object)
+[951] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-506567.js .... Excluded (Object.prototype.watch() not supported)
 [952] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-511859.js .... Success
 [953] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-57043.js .... Success
 [954] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-58116.js .... Success
@@ -1247,9 +1226,7 @@ Uncaught RangeError: Maximum call stack size exceeded.)
 [1013] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-255245.js .... Success
 [1014] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-291213.js .... Success
 [1015] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-300079.js .... Success
-[1016] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-303277.js .... Fail (BUGNUMBER: 303277
-STATUS: Do not crash with crash with a watchpoint for __proto__ property 
-Uncaught TypeError: Callee is not a function object)
+[1016] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-303277.js .... Excluded (Object.prototype.watch() not supported)
 [1017] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-304897.js .... Success
 [1018] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-306738.js .... Success
 [1019] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-311161.js .... Fail (BUGNUMBER: 311161
@@ -1417,9 +1394,7 @@ Uncaught TypeError: Callee is not a function object)
 [1066] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-354541-02.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 25 line))
 [1067] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-354541-03.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 20 line))
 [1068] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-354541-04.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 24 line))
-[1069] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-355339.js .... Fail (BUGNUMBER: 355339
-STATUS: Do not assert: sprop->setter != js_watch_set
-Uncaught TypeError: Callee is not a function object)
+[1069] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-355339.js .... Excluded (Object.prototype.watch() not supported)
 [1070] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-355497.js .... Success
 [1071] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-355622.js .... Excluded (obsolete test)
 [1072] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-355655.js .... Success
@@ -1433,21 +1408,13 @@ Uncaught TypeError: Callee is not a function object)
 [1080] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-358594-05.js .... Success
 [1081] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-358594-06.js .... Success
 [1082] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-359024.js .... Success
-[1083] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-361346.js .... Fail (BUGNUMBER: 361346
-STATUS: Crash with setter, watch, GC
-Uncaught TypeError: Callee is not a function object)
-[1084] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-361360.js .... Fail (BUGNUMBER: 361360
-STATUS: Do not assert: !caller || caller->pc involving setter and watch
-Uncaught TypeError: Callee is not a function object)
-[1085] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-361552.js .... Success
-[1086] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-361558.js .... Fail (BUGNUMBER: 361558
-STATUS: Do not assert: sprop->setter != js_watch_set
-Uncaught TypeError: Callee is not a function object)
-[1087] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-361571.js .... Success
-[1088] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-361856.js .... Fail (BUGNUMBER: 361856
-STATUS: Do not assert: overwriting @ js_AddScopeProperty
-Uncaught TypeError: Callee is not a function object)
-[1089] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-361964.js .... Excluded (slow, alert not dismissed, now busted by harness)
+[1083] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-361346.js .... Excluded (Object.prototype.watch() not supported)
+[1084] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-361360.js .... Excluded (Object.prototype.watch() not supported)
+[1085] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-361552.js .... Excluded (Object.prototype.watch() not supported)
+[1086] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-361558.js .... Excluded (Object.prototype.watch() not supported)
+[1087] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-361571.js .... Excluded (Object.prototype.watch() not supported)
+[1088] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-361856.js .... Excluded (Object.prototype.watch() not supported)
+[1089] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-361964.js .... Excluded (Object.prototype.watch() not supported)
 [1090] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-363258.js .... Success
 [1091] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-363988.js .... Success
 [1092] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-365527.js .... Success
@@ -1516,12 +1483,10 @@ Uncaught TypeError: Callee is not a function object)
 STATUS: getter/setter with keywords
 1
 Uncaught TypeError: Callee is not a function object)
-[1124] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-385134.js .... Success
+[1124] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-385134.js .... Excluded (Object.prototype.watch() not supported)
 [1125] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-385393-02.js .... Success
-[1126] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-385393-09.js .... Fail (BUGNUMBER: 385393
-STATUS: Regression test for bug 385393
-Uncaught TypeError: Callee is not a function object)
-[1127] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-390597.js .... Success
+[1126] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-385393-09.js .... Excluded (Object.prototype.watch() not supported)
+[1127] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-390597.js .... Excluded (Object.prototype.watch() not supported)
 [1128] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-390598.js .... Success
 [1129] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-394967.js .... Fail (BUGNUMBER: 394967
 STATUS: Do not assert: !vp[1].isPrimitive()
@@ -1556,7 +1521,7 @@ STATUS: |this| in accessors in prototype chain of array
  FAILED! [reported from test()] |this| in accessors in prototype chain of array: x.test1 : Type mismatch, expected type boolean, actual type string Expected value 'true', Actual value 'TypeError: Callee is not a function object' 
  FAILED! [reported from test()] |this| in accessors in prototype chain of array: x.test2 : Type mismatch, expected type boolean, actual type string Expected value 'false', Actual value 'TypeError: Callee is not a function object' 
 Uncaught TypeError: Callee is not a function object)
-[1152] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-435345-01.js .... Success
+[1152] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-435345-01.js .... Excluded (Object.prototype.watch() not supported)
 [1153] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-435497-01.js .... Success
 [1154] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-435497-02.js .... Success
 [1155] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-435497-03.js .... Success
@@ -1577,34 +1542,26 @@ Uncaught TypeError: Callee is not a function object)
 [1166] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-453249.js .... Fail (BUGNUMBER: 453249
 STATUS: Do not assert with JIT: s0->isQuad()
 Uncaught ReferenceError: a is not defined)
-[1167] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-454040.js .... Success
-[1168] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-454142.js .... Fail (BUGNUMBER: 454142
-STATUS: Do not crash with gczeal, setter, watch
-Uncaught TypeError: Callee is not a function object)
+[1167] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-454040.js .... Excluded (Object.prototype.watch() not supported)
+[1168] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-454142.js .... Excluded (Object.prototype.watch() not supported)
 [1169] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-454704.js .... Success
 [1170] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-455380.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 19 line))
 [1171] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-455408.js .... Success
-[1172] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-455413.js .... Fail (BUGNUMBER: 455413
-STATUS: Do not assert with JIT: (m != JSVAL_INT) || isInt32(*vp)
-Uncaught TypeError: Callee is not a function object)
+[1172] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-455413.js .... Excluded (Object.prototype.watch() not supported)
 [1173] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-459606.js .... Fail (BUGNUMBER: 459606
 STATUS: ((0.1).toFixed()).toSource()
 Uncaught TypeError: Callee is not a function object)
 [1174] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-462734-02.js .... Success
 [1175] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-462734-03.js .... Success
 [1176] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-462734-04.js .... Success
-[1177] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-465145.js .... Fail (BUGNUMBER: 465145
-STATUS: Do not crash with watched defined setter
-Uncaught TypeError: Callee is not a function object)
+[1177] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-465145.js .... Excluded (Object.prototype.watch() not supported)
 [1178] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-465276.js .... Success
 [1179] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-469625.js .... Fail (BUGNUMBER: 469625
 STATUS: TM: Do not crash @ js_String_getelem
 Uncaught ReferenceError: Left side of assignment is not a reference.)
 [1180] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-469761.js .... Success
 [1181] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-472599.js .... Success
-[1182] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-472787.js .... Fail (BUGNUMBER: 472787
-STATUS: Do not hang with gczeal, watch and concat
-Uncaught TypeError: Callee is not a function object)
+[1182] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-472787.js .... Excluded (Object.prototype.watch() not supported)
 [1183] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-476447.js .... Fail (BUGNUMBER: 476447
 STATUS: Array getter/setter
 Uncaught TypeError: Callee is not a function object)
@@ -1614,7 +1571,7 @@ Uncaught TypeError: Callee is not a function object)
 [1185] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-479551.js .... Success
 [1186] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-480579.js .... Success
 [1187] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-481516.js .... Success
-[1188] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-488995.js .... Success
+[1188] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-488995.js .... Excluded (Object.prototype.watch() not supported)
 [1189] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-50447-1.js .... Fail (BUGNUMBER: 50447
 STATUS: Test (non-ECMA) Error object properties fileName, lineNumber
 Uncaught TypeError: cannot convert undefined into object)
@@ -1666,7 +1623,7 @@ STATUS: Array Generic Methods
 [1219] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Regress/regress-355002.js .... Success
 [1220] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Regress/regress-372565.js .... Fail (Uncaught SyntaxError:  (Parse Error 23 line))
 [1221] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Regress/regress-475469.js .... Success
-[1222] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Regress/regress-476655.js .... Success
+[1222] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Regress/regress-476655.js .... Excluded (Object.prototype.watch() not supported)
 [1223] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/String/regress-306591.js .... Fail (BUGNUMBER: 306591
 STATUS: String static methods
 STATUS: See https://bugzilla.mozilla.org/show_bug.cgi?id=304828
@@ -1682,19 +1639,17 @@ Uncaught TypeError: Assertion failed: got "undefined", expected "function)
 [1230] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/regress-455464-03.js .... Fail (Uncaught SyntaxError:  (Parse Error 13 line))
 [1231] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/regress-455464-04.js .... Fail (Uncaught SyntaxError:  (Parse Error 29 line))
 [1232] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/regress-456826.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 34 line))
-[1233] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/regress-457521.js .... Success
+[1233] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/regress-457521.js .... Excluded (Object.prototype.watch() not supported)
 [1234] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/regress-465443.js .... Success
 [1235] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/regress-470310.js .... Fail (BUGNUMBER: 470310
 STATUS: Do not assert: (uint32_t)((atoms - script->atomMap.vector + ((uintN)(((regs.pc + 0)[1] << 8) | (regs.pc + 0)[2])))) < objects_->length
 Uncaught TypeError: Callee is not a function object)
 [1236] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/regress-472508.js .... Fail (Uncaught SyntaxError:  (Parse Error 21 line))
-[1237] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/regress-479567.js .... Success
+[1237] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/regress-479567.js .... Excluded (Object.prototype.watch() not supported)
 [1238] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/regress-565521.js .... Fail (Uncaught SyntaxError:  (Parse Error 30 line))
 [1239] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/template.js .... Success
 [1240] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/GC/regress-341675.js .... Excluded (yield not supported)
-[1241] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/GC/regress-381374.js .... Fail (BUGNUMBER: 381374
-STATUS: js_AddScopeProperty - overwrite property with watchpoint
-Uncaught TypeError: Callee is not a function object)
+[1241] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/GC/regress-381374.js .... Excluded (Object.prototype.watch() not supported)
 [1242] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/expressions/destructuring-scope.js .... Excluded (let keyword not supported)
 [1243] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/expressions/regress-346203.js .... Excluded (Destructuring assignment syntax is not supported)
 [1244] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/expressions/regress-346645-01.js .... Success
@@ -1742,7 +1697,7 @@ Uncaught ReferenceError: Iterator is not defined)
 [1282] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-368224.js .... Fail (BUGNUMBER: 368224
 STATUS: Do not assert: pnprop->pn_type == TOK_COLON
 Uncaught ReferenceError: Left side of assignment is not a reference.)
-[1283] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-372364.js .... Excluded (yield not supported)
+[1283] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-372364.js .... Excluded (Object.prototype.watch() not supported)
 [1284] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-379566.js .... Success
 [1285] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-380933.js .... Success
 [1286] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-381301.js .... Success
@@ -1753,7 +1708,7 @@ Uncaught TypeError: Callee is not a function object)
 [1289] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-387955-02.js .... Excluded (yield not supported)
 [1290] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-392308.js .... Excluded (yield not supported)
 [1291] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-396326.js .... Excluded (let keyword not supported)
-[1292] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-453955.js .... Excluded (yield not supported)
+[1292] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-453955.js .... Excluded (Object.prototype.watch() not supported)
 [1293] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-458679.js .... Excluded (let keyword not supported)
 [1294] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-469234.js .... Fail (BUGNUMBER: 469234
 STATUS: TM: Do not assert: !JS_ON_TRACE(cx)
@@ -1762,7 +1717,7 @@ Uncaught TypeError: Callee is not a function object)
 [1296] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-469405-02.js .... Excluded (let keyword not supported)
 [1297] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-470300-01.js .... Excluded (let keyword not supported)
 [1298] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-470300-02.js .... Excluded (let keyword not supported)
-[1299] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-473282.js .... Fail (Uncaught SyntaxError:  (Parse Error 17 line))
+[1299] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-473282.js .... Excluded (Object.prototype.watch() not supported)
 [1300] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-474771-01.js .... Excluded (let keyword not supported)
 [1301] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-474771-02.js .... Fail (BUGNUMBER: 474771
 STATUS: TM: do not assert: jumpTable == interruptJumpTable
@@ -1867,8 +1822,8 @@ Uncaught ReferenceError: options is not defined)
 [1389] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-375695.js .... Fail (Uncaught SyntaxError:  (Parse Error 22 line))
 [1390] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-379442.js .... Success
 [1391] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-379483.js .... Success
-[1392] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-385133-01.js .... Excluded (yield not supported)
-[1393] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-385133-02.js .... Excluded (yield not supported)
+[1392] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-385133-01.js .... Excluded (Object.prototype.watch() not supported)
+[1393] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-385133-02.js .... Excluded (Object.prototype.watch() not supported)
 [1394] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-385393-05.js .... Excluded (yield not supported)
 [1395] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-407727-01.js .... Excluded (let keyword not supported)
 [1396] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-407727-02.js .... Excluded (let keyword not supported)
@@ -1907,9 +1862,7 @@ Uncaught ReferenceError: Iterator is not defined)
 [1427] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/peterson.js .... Excluded (let keyword not supported)
 [1428] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-353116.js .... Success
 [1429] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-385729.js .... Success
-[1430] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-394709.js .... Fail (BUGNUMBER: 394709
-STATUS: Do not leak with object.watch and closure
-Uncaught TypeError: Callee is not a function object)
+[1430] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-394709.js .... Excluded (Object.prototype.watch() not supported)
 [1431] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-415721.js .... Success
 [1432] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-417131.js .... Success
 [1433] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-417817.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 16 line))
@@ -1938,7 +1891,7 @@ STATUS: Do not assert: v != JSVAL_ERROR_COOKIE
 Uncaught TypeError: Callee is not a function object)
 [1453] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-479252.js .... Success
 [1454] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-479381.js .... Success
-[1455] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-481989.js .... Fail (Uncaught SyntaxError:  (Parse Error 17 line))
+[1455] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-481989.js .... Excluded (Object.prototype.watch() not supported)
 [1456] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-482263.js .... Fail (Uncaught SyntaxError:  (Parse Error 22 line))
 [1457] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/simple-tree.js .... Excluded (let keyword not supported)
 [1458] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/genexps/regress-347739.js .... Excluded (yield not supported)
@@ -2040,19 +1993,15 @@ Uncaught SyntaxError:  (Parse Error 1 line))
 [1547] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-452498-162.js .... Fail (BUGNUMBER: 452498
 STATUS: TM: upvar2 regression tests
 Uncaught TypeError: Callee is not a function object)
-[1548] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-452498-193.js .... Fail (BUGNUMBER: 452498
-STATUS: TM: upvar2 regression tests
-Uncaught TypeError: Callee is not a function object)
-[1549] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-452498-196.js .... Fail (BUGNUMBER: 452498
-STATUS: TM: upvar2 regression tests
-Uncaught TypeError: Callee is not a function object)
+[1548] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-452498-193.js .... Excluded (Object.prototype.watch() not supported)
+[1549] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-452498-196.js .... Excluded (Object.prototype.watch() not supported)
 [1550] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-466905-04.js .... Fail (BUGNUMBER: 466905
 STATUS: Prototypes of sandboxed arrays
 Uncaught evalcx() not supported)
 [1551] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-466905-05.js .... Excluded (no-op in browser, fails in shell - see bug 554793)
 [1552] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-477158.js .... Fail (Uncaught SyntaxError:  (Parse Error 26 line))
 [1553] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-477187.js .... Success
-[1554] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-520572.js .... Excluded (let keyword not supported)
+[1554] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-520572.js .... Excluded (Object.prototype.watch() not supported)
 [1555] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/strict-warning.js .... Fail (Uncaught ReferenceError: options is not defined)
 [1556] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/math-jit-tests.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
 [1557] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-451673.js .... Excluded (bogus perf test (bug 540512))
@@ -2112,7 +2061,7 @@ Uncaught evalcx() not supported)
 [1611] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-131.js .... Success
 [1612] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-135.js .... Excluded (let keyword not supported)
 [1613] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-155.js .... Success
-[1614] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-160.js .... Fail (Uncaught SyntaxError:  (Parse Error 30 line))
+[1614] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-160.js .... Excluded (Object.prototype.watch() not supported)
 [1615] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-168-1.js .... Fail (BUGNUMBER: 452498
 STATUS: TM: upvar2 regression tests
 Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 1 line))
@@ -2178,24 +2127,24 @@ Uncaught evalcx() not supported)
 [1670] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/redeclaration-of-catch-warning.js .... Fail (622646: Shadowing an exception identifier in a catch block with a |const| or |let| declaration should throw an error
 Uncaught ReferenceError: options is not defined)
 [1671] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-558541.js .... Fail (Uncaught ReferenceError: options is not defined)
-[1672] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-604781-1.js .... Fail (Uncaught TypeError: Callee is not a function object)
-[1673] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-604781-2.js .... Fail (Uncaught TypeError: Callee is not a function object)
-[1674] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-627984-1.js .... Fail (Uncaught TypeError: Callee is not a function object)
-[1675] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-627984-2.js .... Fail (Uncaught TypeError: Callee is not a function object)
-[1676] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-627984-3.js .... Fail (Uncaught TypeError: Callee is not a function object)
-[1677] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-627984-4.js .... Fail (Uncaught TypeError: Callee is not a function object)
-[1678] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-627984-5.js .... Fail (Uncaught TypeError: Callee is not a function object)
-[1679] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-627984-6.js .... Fail (Uncaught TypeError: Callee is not a function object)
-[1680] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-627984-7.js .... Fail (Uncaught TypeError: Callee is not a function object)
-[1681] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-631723.js .... Fail (Uncaught TypeError: Callee is not a function object)
-[1682] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-636697.js .... Fail (Uncaught TypeError: Callee is not a function object)
+[1672] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-604781-1.js .... Excluded (Object.prototype.watch() not supported)
+[1673] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-604781-2.js .... Excluded (Object.prototype.watch() not supported)
+[1674] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-627984-1.js .... Excluded (Object.prototype.watch() not supported)
+[1675] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-627984-2.js .... Excluded (Object.prototype.watch() not supported)
+[1676] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-627984-3.js .... Excluded (Object.prototype.watch() not supported)
+[1677] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-627984-4.js .... Excluded (Object.prototype.watch() not supported)
+[1678] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-627984-5.js .... Excluded (Object.prototype.watch() not supported)
+[1679] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-627984-6.js .... Excluded (Object.prototype.watch() not supported)
+[1680] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-627984-7.js .... Excluded (Object.prototype.watch() not supported)
+[1681] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-631723.js .... Excluded (Object.prototype.watch() not supported)
+[1682] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-636697.js .... Excluded (Object.prototype.watch() not supported)
 [1683] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-636818.js .... Fail (Uncaught evalcx() not supported)
-[1684] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-637985.js .... Fail (Uncaught TypeError: Callee is not a function object)
+[1684] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-637985.js .... Excluded (Object.prototype.watch() not supported)
 [1685] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-645160.js .... Fail (Uncaught TypeError: Assertion failed: got "false", expected "true)
 [1686] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-650753.js .... Fail (Uncaught ReferenceError: WeakMap is not defined)
 [1687] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-677589.js .... Fail (Uncaught SyntaxError:  (Parse Error 7 line))
 [1688] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-677924.js .... Success
-[1689] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-691746.js .... Success
+[1689] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-691746.js .... Excluded (Object.prototype.watch() not supported)
 [1690] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-696109.js .... Fail (Uncaught ReferenceError: Reflect is not defined)
 [1691] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/scripted-proxies.js .... Excluded (Proxy not supported)
 [1692] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/selfhosted-detecting-strict.js .... Fail (843004: Don't emit a strict warning for the undefined-property detection pattern in self-hosted code
@@ -2211,7 +2160,7 @@ Uncaught TypeError: Assertion failed: got "4096", expected "0: detaching should 
 Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1700] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/typedarray-subarray-of-subarray.js .... Success
 [1701] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/typedarray.js .... Excluded (Arrow function expression not supported)
-[1702] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/watch-undefined-setter.js .... Fail (Uncaught TypeError: Callee is not a function object)
+[1702] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/watch-undefined-setter.js .... Excluded (Object.prototype.watch() not supported)
 [1703] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/weakmap.js .... Excluded (let keyword not supported)
 [1704] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/Match.js .... Excluded (Reflect not supported)
 [1705] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/PatternAsserts.js .... Excluded (Reflect not supported)
@@ -2247,10 +2196,10 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1735] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-469758.js .... Excluded (let keyword not supported)
 [1736] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-477053.js .... Success
 [1737] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-500528.js .... Fail (Uncaught SyntaxError:  (Parse Error 18 line))
-[1738] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-533876.js .... Fail (Uncaught TypeError: cannot redefine property)
+[1738] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-533876.js .... Excluded (Object.prototype.watch() not supported)
 [1739] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-541255-3.js .... Excluded (let keyword not supported)
 [1740] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-541455.js .... Success
-[1741] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-548276.js .... Fail (Uncaught TypeError: Callee is not a function object)
+[1741] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-548276.js .... Excluded (Object.prototype.watch() not supported)
 [1742] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-551763-0.js .... Excluded (with statement not supported)
 [1743] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-551763-1.js .... Success
 [1744] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-551763-2.js .... Success
@@ -2282,8 +2231,8 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1770] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-577648-2.js .... Success
 [1771] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-583429.js .... Success
 [1772] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-584355.js .... Success
-[1773] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-584578.js .... Excluded (Proxy not supported)
-[1774] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-584648.js .... Fail (Uncaught TypeError: Callee is not a function object)
+[1773] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-584578.js .... Excluded (Object.prototype.watch() not supported)
+[1774] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-584648.js .... Excluded (Object.prototype.watch() not supported)
 [1775] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-585257.js .... Fail (Uncaught evalcx() not supported)
 [1776] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-586482-1.js .... Success
 [1777] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-586482-2.js .... Success
@@ -2332,9 +2281,9 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1820] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-634210-2.js .... Success
 [1821] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-634210-3.js .... Success
 [1822] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-634210-4.js .... Success
-[1823] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-635195.js .... Fail (Uncaught TypeError: Callee is not a function object)
+[1823] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-635195.js .... Excluded (Object.prototype.watch() not supported)
 [1824] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-636364.js .... Success
-[1825] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-636394.js .... Fail (Uncaught TypeError: Callee is not a function object)
+[1825] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-636394.js .... Excluded (Object.prototype.watch() not supported)
 [1826] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-640075.js .... Success
 [1827] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-642247.js .... Success
 [1828] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-643222.js .... Success
@@ -2353,7 +2302,7 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1841] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-810525.js .... Success
 [1842] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
-succ : 1033
-fail : 449
-ignore : 356
+succ : 1021
+fail : 397
+ignore : 420
 timeout : 4

@@ -1,3 +1,4 @@
+// escargot-skip: Object.prototype.watch() not supported
 // escargot-skip: Proxy not supported
 // |reftest| skip
 // Any copyright is dedicated to the Public Domain.

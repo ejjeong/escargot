@@ -1,3 +1,4 @@
+// escargot-skip: Object.prototype.watch() not supported
 // Any copyright is dedicated to the Public Domain.
 // http://creativecommons.org/licenses/publicdomain/
 

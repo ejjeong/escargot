@@ -1,3 +1,4 @@
+// escargot-skip: Object.prototype.watch() not supported
 // escargot-skip: yield not supported
 /* -*- indent-tabs-mode: nil; js-indent-level: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
