@@ -1,3 +1,4 @@
+// escargot-skip: Reflect not supported
 // |reftest| skip-if(!xulRuntime.shell)
 // A simple proof-of-concept that the builder API can be used to generate other
 // formats, such as JsonMLAst:

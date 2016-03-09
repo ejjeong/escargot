@@ -1,3 +1,4 @@
+// escargot-skip: Reflect not supported
 loadRelativeToScript('PatternAsserts.js');
 
 // various combinations of identifiers and destructuring patterns:

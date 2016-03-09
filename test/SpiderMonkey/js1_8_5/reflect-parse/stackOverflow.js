@@ -1,3 +1,4 @@
+// escargot-skip: Reflect not supported
 // |reftest| skip-if(!xulRuntime.shell)
 // Bug 632024: no crashing on stack overflow
 try {

@@ -1,3 +1,4 @@
+// escargot-skip: Reflect not supported
 // |reftest| skip
 
 // A little pattern-matching library.

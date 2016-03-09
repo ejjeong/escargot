@@ -1,3 +1,4 @@
+// escargot-skip: Reflect not supported
 // escargot-skip: yield not supported
 // |reftest| skip-if(!xulRuntime.shell)
 function test() {

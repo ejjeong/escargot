@@ -1,3 +1,4 @@
+// escargot-skip: Reflect not supported
 // |reftest| skip-if(!xulRuntime.shell)
 // Ensure that exceptions thrown by builder methods propagate.
 var thrown = false;

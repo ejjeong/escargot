@@ -1,3 +1,4 @@
+// escargot-skip: Reflect not supported
 // |reftest| skip
 
 loadRelativeToScript('Match.js');
