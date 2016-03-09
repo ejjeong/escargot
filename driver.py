@@ -215,33 +215,33 @@ class MozillaReader(TestReader):
         if base_dir in self.mandatory_files:
             return self.mandatory_files[base_dir]
         else:
-            if base_dir == os.path.join(self.base_dir, "ecma_5", "JSON"):
+            if os.path.join(self.base_dir, "ecma_5", "JSON") in base_dir:
                 self.mandatory_files[base_dir] = [os.path.join(self.base_dir, x) for x in ["shell.js", "ecma_5/shell.js", "ecma_5/JSON/shell.js"]]
-            elif base_dir == os.path.join(self.base_dir, "ecma_5", "RegExp"):
+            elif os.path.join(self.base_dir, "ecma_5", "RegExp") in base_dir:
                 self.mandatory_files[base_dir] = [os.path.join(self.base_dir, x) for x in ["shell.js", "ecma_5/shell.js", "ecma_5/RegExp/shell.js"]]
-            elif base_dir == os.path.join(self.base_dir, "ecma_5"):
+            elif os.path.join(self.base_dir, "ecma_5") in base_dir:
                 self.mandatory_files[base_dir] = [os.path.join(self.base_dir, x) for x in ["shell.js", "ecma_5/shell.js"]]
-            elif base_dir == os.path.join(self.base_dir, "js1_2", "version120"):
+            elif os.path.join(self.base_dir, "js1_2", "version120") in base_dir:
                 self.mandatory_files[base_dir] = [os.path.join(self.base_dir, x) for x in ["shell.js", "js1_2/version120/shell.js"]]
-            elif base_dir == os.path.join(self.base_dir, "js1_5", "Expressions"):
+            elif os.path.join(self.base_dir, "js1_5", "Expressions") in base_dir:
                 self.mandatory_files[base_dir] = [os.path.join(self.base_dir, x) for x in ["shell.js", "js1_5/Expressions/shell.js"]]
-            elif base_dir == os.path.join(self.base_dir, "js1_6"):
+            elif os.path.join(self.base_dir, "js1_6") in base_dir:
                 self.mandatory_files[base_dir] = [os.path.join(self.base_dir, x) for x in ["shell.js", "js1_6/shell.js"]]
-            elif base_dir == os.path.join(self.base_dir, "js1_7"):
+            elif os.path.join(self.base_dir, "js1_7") in base_dir:
                 self.mandatory_files[base_dir] = [os.path.join(self.base_dir, x) for x in ["shell.js", "js1_7/shell.js"]]
-            elif base_dir == os.path.join(self.base_dir, "js1_8", "js1_8_1", "jit"):
+            elif os.path.join(self.base_dir, "js1_8_1", "jit") in base_dir:
                 self.mandatory_files[base_dir] = [os.path.join(self.base_dir, x) for x in ["shell.js", "js1_8_1/shell.js", "js1_8_1/jit/shell.js"]]
-            elif base_dir == os.path.join(self.base_dir, "js1_8", "js1_8_1", "strict"):
+            elif os.path.join(self.base_dir, "js1_8_1", "strict") in base_dir:
                 self.mandatory_files[base_dir] = [os.path.join(self.base_dir, x) for x in ["shell.js", "js1_8_1/shell.js", "js1_8_1/strict/shell.js"]]
-            elif base_dir == os.path.join(self.base_dir, "js1_8", "js1_8_1"):
+            elif os.path.join(self.base_dir, "js1_8_1") in base_dir:
                 self.mandatory_files[base_dir] = [os.path.join(self.base_dir, x) for x in ["shell.js", "js1_8_1/shell.js"]]
-            elif base_dir == os.path.join(self.base_dir, "js1_8", "js1_8_5", "extensions"):
+            elif os.path.join(self.base_dir, "js1_8_5", "extensions") in base_dir:
                 self.mandatory_files[base_dir] = [os.path.join(self.base_dir, x) for x in ["shell.js", "js1_8_5/shell.js", "js1_8_5/extensions/shell.js"]]
-            elif base_dir == os.path.join(self.base_dir, "js1_8", "js1_8_5", "reflect-parse"):
+            elif os.path.join(self.base_dir, "js1_8_5", "reflect-parse") in base_dir:
                 self.mandatory_files[base_dir] = [os.path.join(self.base_dir, x) for x in ["shell.js", "js1_8_5/shell.js", "js1_8_5/reflect-parse/shell.js"]]
-            elif base_dir == os.path.join(self.base_dir, "js1_8", "js1_8_5"):
+            elif os.path.join(self.base_dir, "js1_8_5") in base_dir:
                 self.mandatory_files[base_dir] = [os.path.join(self.base_dir, x) for x in ["shell.js", "js1_8_5/shell.js"]]
-            elif base_dir == os.path.join(self.base_dir, "js1_8"):
+            elif os.path.join(self.base_dir, "js1_8") in base_dir:
                 self.mandatory_files[base_dir] = [os.path.join(self.base_dir, x) for x in ["shell.js", "js1_8/shell.js"]]
             else:
                 return ["test/SpiderMonkey/shell.js"]
