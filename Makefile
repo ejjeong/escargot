@@ -141,8 +141,8 @@ CXXFLAGS_RELEASE = -O2 -g3 -DNDEBUG -fomit-frame-pointer -fno-stack-protector -f
 
 ifeq ($(HOST), tizen_wearable_arm)
   CXXFLAGS += -Os -g0 -finline-limit=64
-else ifeq ($(HOST), tizen_werable_emulator)
-  CXXFLAGS += -0s -g0 -finline-limit=64
+else ifeq ($(HOST), tizen_wearble_emulator)
+  CXXFLAGS += -Os -g0 -finline-limit=64
 endif
 
 
