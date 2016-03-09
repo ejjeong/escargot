@@ -102,8 +102,8 @@ then
 	cd -
 
         cd out/tizen_wearable_emulator/x86/release.shared
-        TWCF="-DTIZEN_WEARABLE -fPIC -m32 -Os -finline-limit=64 --sysroot="${TIZEN_WEARABLE_EMULATOR_SYS_ROOT}
-        ../../../../configure $GCCONFFLAGS --disable-gc-debug --with-sysroot=$TIZEN_WEARABLE_EMULATOR_SYS_ROOT --host=i386-linux-gnueabi CFLAGS="$TWCF" CC=$TIZEN_EMULATOR_TOOLCHAIN/bin/i386-linux-gnueabi-gcc CXX=$TIZEN_EMULATOR_TOOLCHAIN/bin/i386-gnueabi-g++ LD=$TIZEN_EMULATOR_TOOLCHAIN/bin/i386-linux-gnueabi-ld
+        TWECF="-DTIZEN_WEARABLE -fPIC -Os -g0 -finline-limit=64 --sysroot="${TIZEN_WEARABLE_EMULATOR_SYS_ROOT}
+        ../../../../configure $GCCONFFLAGS --disable-gc-debug --with-sysroot=$TIZEN_WEARABLE_EMULATOR_SYS_ROOT --host=i386-linux-gnueabi CFLAGS="$TWECF" CC=$TIZEN_EMULATOR_TOOLCHAIN/bin/i386-linux-gnueabi-gcc CXX=$TIZEN_EMULATOR_TOOLCHAIN/bin/i386-gnueabi-g++ LD=$TIZEN_EMULATOR_TOOLCHAIN/bin/i386-linux-gnueabi-ld
         make -j$NUMPROC
         cd -
 

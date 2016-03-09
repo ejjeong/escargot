@@ -86,7 +86,7 @@ ifeq ($(ARCH), x64)
   CXXFLAGS += -DESCARGOT_64=1
 else ifeq ($(ARCH), x86)
   #https://gcc.gnu.org/onlinedocs/gcc-4.8.0/gcc/i386-and-x86_002d64-Options.html
-  CXXFLAGS += -DESCARGOT_32=1 -m32  -march=native -mtune=native -mfpmath=sse -msse2 -msse3
+  CXXFLAGS += -DESCARGOT_32=1 -m32 -mfpmath=sse -msse -msse2
   LDFLAGS += -m32
 else ifeq ($(ARCH), arm)
   CXXFLAGS += -DESCARGOT_32=1 -march=armv7-a
