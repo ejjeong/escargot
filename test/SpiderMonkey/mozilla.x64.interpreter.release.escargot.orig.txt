@@ -271,7 +271,7 @@ Uncaught Error thrown during testing: function functionLengthTests(): not suppor
 [177] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/15.2.3.9.js .... Success
 [178] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/add-property-non-extensible.js .... Success
 [179] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/clear-dictionary-accessor-getset.js .... Success
-[180] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/defineProperty-setup.js .... Success
+[180] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/defineProperty-setup.js .... Excluded (not a test.)
 [181] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/extensibility-01.js .... Fail (492849: ES5: Implement Object.preventExtensions, Object.isExtensible
 Uncaught TypeError: Assertion failed: got "swallowed", expected "throw: unexpected behavior for strict-mode property-addition to object 3)
 [182] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/extensibility-02.js .... Success
@@ -514,37 +514,35 @@ Uncaught TypeError: Assertion failed: got "false", expected "true: didn't throw 
 [374] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_1/regress/function-001.js .... Success
 [375] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_1/regress/perfect.js .... Success
 [376] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/jsref.js .... Success
-[377] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/Array/array_split_1.js .... Success
+[377] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/Array/array_split_1.js .... Excluded (obsolete test)
 [378] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/Array/general1.js .... Success
 [379] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/Array/general2.js .... Success
 [380] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/Array/slice.js .... Success
 [381] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/Array/splice1.js .... Success
 [382] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/Array/splice2.js .... Success
-[383] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/Array/tostring_1.js .... Success
-[384] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/Array/tostring_2.js .... Success
-[385] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/Objects/toString-001.js .... Fail (JS1_2 Object.toString()
-Uncaught TypeError: Callee is not a function object)
+[383] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/Array/tostring_1.js .... Excluded (obsolete test)
+[384] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/Array/tostring_2.js .... Excluded (obsolete test)
+[385] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/Objects/toString-001.js .... Excluded (obsolete test)
 [386] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/String/charCodeAt.js .... Success
-[387] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/String/concat.js .... Success
+[387] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/String/concat.js .... Excluded (obsolete test)
 [388] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/String/match.js .... Success
 [389] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/String/slice.js .... Success
-[390] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/function/Function_object.js .... Success
-[391] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/function/Number.js .... Success
-[392] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/function/String.js .... Success
+[390] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/function/Function_object.js .... Excluded (obsolete test)
+[391] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/function/Number.js .... Excluded (obsolete test)
+[392] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/function/String.js .... Excluded (obsolete test)
 [393] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/function/definition-1.js .... Success
-[394] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/function/function-001-n.js .... Success
-[395] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/function/length.js .... Success
+[394] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/function/function-001-n.js .... Excluded (obsolete test)
+[395] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/function/length.js .... Excluded (obsolete test)
 [396] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/function/nesting-1.js .... Success
 [397] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/function/nesting.js .... Success
 [398] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/function/regexparg-1.js .... Success
-[399] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/function/regexparg-2-n.js .... Fail (JS_1.2 The variable statement
-Uncaught TypeError: Callee is not a function object)
-[400] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/function/tostring-1.js .... Success
-[401] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/function/tostring-2.js .... Success
-[402] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/operator/equality.js .... Success
+[399] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/function/regexparg-2-n.js .... Excluded (obsolete test)
+[400] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/function/tostring-1.js .... Excluded (obsolete test)
+[401] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/function/tostring-2.js .... Excluded (obsolete test)
+[402] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/operator/equality.js .... Excluded (obsolete test)
 [403] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/operator/strictEquality.js .... Success
 [404] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/regexp/RegExp_dollar_number.js .... Success
-[405] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/regexp/RegExp_lastIndex.js .... Success
+[405] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/regexp/RegExp_lastIndex.js .... Excluded (obsolete test)
 [406] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/regexp/RegExp_lastMatch.js .... Success
 [407] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/regexp/RegExp_lastMatch_as_array.js .... Success
 [408] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/regexp/RegExp_lastParen.js .... Success
@@ -586,7 +584,7 @@ As described in Netscape doc "Whats new in JavaScript 1.2" RegExp: compile)
 [443] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/regexp/special_characters.js .... Success
 [444] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/regexp/string_replace.js .... Success
 [445] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/regexp/string_search.js .... Success
-[446] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/regexp/string_split.js .... Success
+[446] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/regexp/string_split.js .... Excluded (obsolete test)
 [447] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/regexp/test.js .... Success
 [448] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/regexp/toString.js .... Success
 [449] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/regexp/vertical_bar.js .... Success
@@ -599,13 +597,13 @@ As described in Netscape doc "Whats new in JavaScript 1.2" RegExp: compile)
 [456] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/statements/do_while.js .... Success
 [457] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/statements/switch.js .... Success
 [458] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/statements/switch2.js .... Success
-[459] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/version120/shell.js test/SpiderMonkey/js1_2/version120/boolean-001.js .... Success
+[459] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/version120/shell.js test/SpiderMonkey/js1_2/version120/boolean-001.js .... Excluded (obsolete test)
 [460] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/version120/shell.js test/SpiderMonkey/js1_2/version120/regress-99663.js .... Excluded (with statement not supported)
 [461] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_3/jsref.js .... Success
 [462] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_3/Boolean/boolean-001.js .... Success
 [463] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_3/Script/delete-001.js .... Fail (JS1_2 The variable statement
 Uncaught TypeError: cannot redefine property)
-[464] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_3/Script/function-001-n.js .... Success
+[464] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_3/Script/function-001-n.js .... Excluded (obsolete test)
 [465] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_3/Script/function-002.js .... Success
 [466] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_3/Script/in-001.js .... Success
 [467] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_3/Script/new-001.js .... Success
@@ -626,7 +624,7 @@ Uncaught TypeError: cannot redefine property)
 [482] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_3/inherit/proto_9.js .... Success
 [483] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_3/regress/delete-001.js .... Fail (JS1_2 The variable statement
 Uncaught TypeError: cannot redefine property)
-[484] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_3/regress/function-001-n.js .... Success
+[484] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_3/regress/function-001-n.js .... Excluded (obsolete test)
 [485] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_3/regress/function-002.js .... Success
 [486] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_3/regress/in-001.js .... Success
 [487] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_3/regress/new-001.js .... Success
@@ -681,7 +679,7 @@ Uncaught TypeError: cannot convert undefined into object)
 [528] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Array/regress-451906.js .... Success
 [529] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Array/regress-456845.js .... Success
 [530] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Array/regress-465980-01.js .... Success
-[531] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Array/regress-465980-02.js .... Success
+[531] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Array/regress-465980-02.js .... Excluded (slow)
 [532] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Array/regress-474529.js .... Fail (BUGNUMBER: 474529
 STATUS: Do not assert: _buf->_nextPage
 Size	Rep.	Literal	new Arr	Array()
@@ -730,10 +728,10 @@ Uncaught EXC)
 [568] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Function/regress-222029-001.js .... Fail (Uncaught TypeError: cannot convert undefined into object)
 [569] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Function/regress-222029-002.js .... Fail (Uncaught TypeError: cannot convert undefined into object)
 [570] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Function/regress-292215.js .... Success
-[571] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Function/regress-338001.js .... Timeout
-[572] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Function/regress-338121-01.js .... Timeout
-[573] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Function/regress-338121-02.js .... Timeout
-[574] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Function/regress-338121-03.js .... Timeout
+[571] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Function/regress-338001.js .... Excluded (disabled pending bug 657444)
+[572] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Function/regress-338121-01.js .... Excluded (disabled pending bug 657444)
+[573] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Function/regress-338121-02.js .... Excluded (disabled pending bug 657444)
+[574] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Function/regress-338121-03.js .... Excluded (disabled pending bug 657444)
 [575] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Function/regress-344052.js .... Success
 [576] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Function/regress-364023.js .... Success
 [577] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-104584.js .... Success
@@ -750,17 +748,17 @@ Uncaught EXC)
 [588] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-319980-01.js .... Success
 [589] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-324278.js .... Success
 [590] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-331719.js .... Success
-[591] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-338653.js .... Timeout
+[591] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-338653.js .... Excluded (slow, killed on x86_64)
 [592] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-341877-01.js .... Success
 [593] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-341877-02.js .... Success
-[594] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-346794.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'catch' (Parse Error 33 line))
+[594] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-346794.js .... Excluded (slow, killed)
 [595] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-348532.js .... Fail (BUGNUMBER: 348532
 STATUS: Do not overflow int when constructing Error.stack
 --- NOTE: IN THIS TESTCASE, WE EXPECT EXIT CODE 0 ---
 --- NOTE: IN THIS TESTCASE, WE EXPECT EXIT CODE 3 ---
 Uncaught ReferenceError: error is not defined)
 [596] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-352606.js .... Success
-[597] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-383269-01.js .... Success
+[597] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-383269-01.js .... Excluded (unreliable - based on GC timing)
 [598] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-383269-02.js .... Excluded (with statement not supported)
 [599] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-390078.js .... Success
 [600] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-418128.js .... Fail (BUGNUMBER: 418128
@@ -769,7 +767,7 @@ STATUS: GC hazard with ++/--
 Uncaught ReferenceError: uneval is not defined)
 [601] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-440558.js .... Success
 [602] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GetSet/getset-002.js .... Success
-[603] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GetSet/regress-353264.js .... Fail (Uncaught SyntaxError:  (Parse Error 16 line))
+[603] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GetSet/regress-353264.js .... Excluded (obsolete test)
 [604] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GetSet/regress-375976.js .... Fail (BUGNUMBER: 375976
 STATUS: Do not crash with postincrement custom property
 Uncaught TypeError: Callee is not a function object)
@@ -793,9 +791,7 @@ Uncaught TypeError: Callee is not a function object)
 [618] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-102725.js .... Success
 [619] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-10278.js .... Success
 [620] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-104077.js .... Excluded (with statement not supported)
-[621] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-106244.js .... Fail (BUGNUMBER: 106244
-STATUS: No warning in strict mode if (a = b && c == d)...
-Uncaught ReferenceError: options is not defined)
+[621] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-106244.js .... Excluded (obsolete test)
 [622] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-110286.js .... Success
 [623] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-111557.js .... Success
 [624] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-114491.js .... Fail ()
@@ -805,7 +801,7 @@ STATUS: Do not crash javascript warning duplicate arguments
 Uncaught ReferenceError: options is not defined)
 [627] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-116228.js .... Success
 [628] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-118849.js .... Success
-[629] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-119719.js .... Success
+[629] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-119719.js .... Excluded (obsolete test)
 [630] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-127243.js .... Success
 [631] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-127557.js .... Success
 [632] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-131510-001.js .... Success
@@ -827,7 +823,7 @@ Uncaught TypeError: cannot convert undefined into object)
 [646] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-168347.js .... Success
 [647] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-170193.js .... Success
 [648] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-172699.js .... Success
-[649] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-173067.js .... Success
+[649] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-173067.js .... Excluded (obsolete test)
 [650] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-174709.js .... Success
 [651] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-176125.js .... Success
 [652] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-179524.js .... Success
@@ -873,7 +869,7 @@ Uncaught TypeError: Callee is not a function object)
 [686] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-246964.js .... Success
 [687] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-247179.js .... Success
 [688] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-248444.js .... Success
-[689] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-249211.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'export' (Parse Error 20 line))
+[689] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-249211.js .... Excluded (obsolete test)
 [690] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-252892.js .... Excluded (with statement not supported)
 [691] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-253150.js .... Fail (BUGNUMBER: 253150
 STATUS: Do not warn on detecting properties
@@ -884,13 +880,11 @@ Uncaught ReferenceError: options is not defined)
 STATUS: Check Recursio)
 [695] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-256617.js .... Success
 [696] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-256798.js .... Success
-[697] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-259935.js .... Fail (BUGNUMBER: 259935
-STATUS: document.all can be easily detected
-Uncaught TypeError: cannot convert undefined into object)
+[697] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-259935.js .... Excluded (browser only)
 [698] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-260541.js .... Success
 [699] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-261886.js .... Success
-[700] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-261887.js .... Success
-[701] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-271716-n.js .... Timeout
+[700] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-261887.js .... Excluded (we violate the spec here with our new iterators)
+[701] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-271716-n.js .... Excluded (never terminates)
 [702] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-274035.js .... Success
 [703] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-274888.js .... Success
 [704] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-275378.js .... Success
@@ -958,7 +952,7 @@ Uncaught ReferenceError: options is not defined)
 [747] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-319384.js .... Success
 [748] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-319391.js .... Success
 [749] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-320032.js .... Success
-[750] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-320119.js .... Success
+[750] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-320119.js .... Excluded (obsolete test)
 [751] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-321757.js .... Success
 [752] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-321874.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 176 line))
 [753] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-321971.js .... Success
@@ -1007,12 +1001,12 @@ Uncaught SyntaxError:  (Parse Error 1 line))
 [786] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-350312.js .... Success
 [787] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-350415.js .... Success
 [788] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-350529.js .... Success
-[789] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-350692.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'import' (Parse Error 28 line))
+[789] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-350692.js .... Excluded (obsolete test)
 [790] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-351116.js .... Success
 [791] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-351515.js .... Excluded (let keyword not supported)
 [792] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-352208.js .... Success
 [793] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-352604.js .... Success
-[794] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-354924.js .... Fail (Uncaught SyntaxError:  (Parse Error 24 line))
+[794] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-354924.js .... Excluded (obsolete test)
 [795] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-355341.js .... Fail (BUGNUMBER: 355341
 STATUS: Do not crash with watch and setter
 Uncaught TypeError: Callee is not a function object)
@@ -1041,13 +1035,8 @@ Uncaught TypeError: Callee is not a function object)
 [810] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-361617.js .... Fail (BUGNUMBER: 361617
 STATUS: Do not crash with getter, watch and gc
 Uncaught TypeError: Callee is not a function object)
-[811] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-362583.js .... Fail (Uncaught SyntaxError:  (Parse Error 32 line))
-[812] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-3649-n.js .... Fail (BUGNUMBER: 3649
-STATUS: gc-checking branch callback.
---- NOTE: IN THIS TESTCASE, WE EXPECT EXIT CODE 0 ---
---- NOTE: IN THIS TESTCASE, WE EXPECT EXIT CODE 3 ---
---- NOTE: IN THIS TESTCASE, WE EXPECT EXIT CODE 5 ---
-Uncaught RangeError: Out of memory)
+[811] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-362583.js .... Excluded (obsolete test)
+[812] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-3649-n.js .... Excluded (skip test due to random oom related errors.)
 [813] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-366122.js .... Success
 [814] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-366468.js .... Success
 [815] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-366601.js .... Success
@@ -1073,7 +1062,7 @@ Uncaught TypeError: Callee is not a function object)
 [828] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-398085-01.js .... Success
 [829] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-398085-02.js .... Success
 [830] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-398609.js .... Success
-[831] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-404755.js .... Success
+[831] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-404755.js .... Excluded (unreliable - based on GC timing)
 [832] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-406769.js .... Success
 [833] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-407024.js .... Success
 [834] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-407957.js .... Fail (BUGNUMBER: 407957
@@ -1101,7 +1090,7 @@ Uncaught ReferenceError: Iterator is not defined)
 [854] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-449666.js .... Success
 [855] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-450369.js .... Success
 [856] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-450833.js .... Success
-[857] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-451322.js .... Timeout
+[857] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-451322.js .... Excluded (slow)
 [858] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-451884.js .... Success
 [859] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-451946.js .... Success
 [860] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-452008.js .... Success
@@ -1310,7 +1299,7 @@ Uncaught TypeError: Callee is not a function object)
 [1032] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-328556.js .... Fail (BUGNUMBER: 328556
 STATUS: Do not Assert: growth == (size_t)-1 || (nchars + 1) * sizeof(char16_t) == growth, in jsarray.c
 Uncaught ReferenceError: uneval is not defined)
-[1033] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-330569.js .... Success
+[1033] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-330569.js .... Excluded (Yarr doesn't bail on complex regexps.)
 [1034] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-333541.js .... Success
 [1035] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-336409-1.js .... Success
 [1036] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-336409-2.js .... Success
@@ -1336,13 +1325,7 @@ STATUS: Do not crash on large string toSource
 don't interrupt the script. let it go.
 done obj
 Uncaught TypeError: Callee is not a function object)
-[1047] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-345967.js .... Fail (BUGNUMBER: 345967
-STATUS: Yet another unrooted atom in jsarray.c
---- NOTE: IN THIS TESTCASE, WE EXPECT EXIT CODE 0 ---
---- NOTE: IN THIS TESTCASE, WE EXPECT EXIT CODE 3 ---
-This test will probably run out of memory
-This test really should only fail on 64 bit machines
-Uncaught TypeError: Callee is not a function object)
+[1047] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-345967.js .... Excluded (slow)
 [1048] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-346494-01.js .... Fail (BUGNUMBER: 346494
 STATUS: various try...catch tests
 
@@ -1433,16 +1416,16 @@ fin
 
 === 3: (function (x) {try {if (x > 41) throw x} catch (e if e === 42) {var v = 'catch guard 1 ' + e; actual += v + ',';print(v);}})
 Uncaught SyntaxError:  (Parse Error 1 line))
-[1053] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-350531.js .... Fail (Uncaught SyntaxError:  (Parse Error 44 line))
+[1053] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-350531.js .... Excluded (slow)
 [1054] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-351102-01.js .... Fail (Uncaught SyntaxError:  (Parse Error 28 line))
 [1055] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-351102-02.js .... Fail (Uncaught SyntaxError:  (Parse Error 36 line))
 [1056] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-351102-06.js .... Fail (Uncaught SyntaxError:  (Parse Error 26 line))
-[1057] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-351448.js .... Success
+[1057] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-351448.js .... Excluded (Yarr doesn't have the same complexity errors at execution time.)
 [1058] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-351463-01.js .... Success
 [1059] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-351973.js .... Fail (BUGNUMBER: 351973
 STATUS: GC hazard with unrooted ids in Object.toSource
 Uncaught TypeError: Callee is not a function object)
-[1060] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-352281.js .... Fail ()
+[1060] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-352281.js .... Excluded (obsolete test)
 [1061] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-352291.js .... Success
 [1062] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-352372.js .... Success
 [1063] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-352604.js .... Success
@@ -1458,7 +1441,7 @@ Uncaught TypeError: Callee is not a function object)
 STATUS: Do not assert: sprop->setter != js_watch_set
 Uncaught TypeError: Callee is not a function object)
 [1070] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-355497.js .... Success
-[1071] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-355622.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'export' (Parse Error 26 line))
+[1071] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-355622.js .... Excluded (obsolete test)
 [1072] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-355655.js .... Success
 [1073] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-355820.js .... Success
 [1074] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-355982.js .... Success
@@ -1496,9 +1479,7 @@ Uncaught TypeError: Callee is not a function object)
 [1088] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-361856.js .... Fail (BUGNUMBER: 361856
 STATUS: Do not assert: overwriting @ js_AddScopeProperty
 Uncaught TypeError: Callee is not a function object)
-[1089] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-361964.js .... Fail (BUGNUMBER: 361964
-STATUS: Crash [@ MarkGCThingChildren] involving watch and setter
-Uncaught TypeError: Callee is not a function object)
+[1089] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-361964.js .... Excluded (slow, alert not dismissed, now busted by harness)
 [1090] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-363258.js .... Success
 [1091] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-363988.js .... Fail (BUGNUMBER: 363988
 STATUS: Do not crash at JS_GetPrivate with large script
@@ -1582,12 +1563,12 @@ Uncaught TypeError: Callee is not a function object)
 [1136] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-416354.js .... Success
 [1137] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-416460.js .... Success
 [1138] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-416834.js .... Success
-[1139] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-418730.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'export' (Parse Error 24 line))
+[1139] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-418730.js .... Excluded (obsolete test)
 [1140] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-420612.js .... Fail (BUGNUMBER: 420612
 STATUS: Do not assert: obj == pobj
 Uncaught TypeError: Callee is not a function object)
 [1141] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-420869-01.js .... Success
-[1142] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-421621.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'export' (Parse Error 18 line))
+[1142] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-421621.js .... Excluded (obsolete test)
 [1143] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-422592.js .... Success
 [1144] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-424683-01.js .... Success
 [1145] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-426711.js .... Success
@@ -1595,7 +1576,7 @@ Uncaught TypeError: Callee is not a function object)
 [1147] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-427196-02.js .... Success
 [1148] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-427196-03.js .... Success
 [1149] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-429739.js .... Success
-[1150] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-432075.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'export' (Parse Error 18 line))
+[1150] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-432075.js .... Excluded (obsolete test)
 [1151] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-434837-01.js .... Fail (BUGNUMBER: 434837
 STATUS: |this| in accessors in prototype chain of array
  FAILED! [reported from test()] |this| in accessors in prototype chain of array: x.test1 : Type mismatch, expected type boolean, actual type string Expected value 'true', Actual value 'TypeError: Callee is not a function object' 
@@ -1606,7 +1587,7 @@ Uncaught TypeError: Callee is not a function object)
 [1154] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-435497-02.js .... Success
 [1155] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-435497-03.js .... Success
 [1156] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-436741.js .... Success
-[1157] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-437288-01.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 24 line))
+[1157] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-437288-01.js .... Excluded (obsolete test)
 [1158] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-44009.js .... Fail (BUGNUMBER: 44009
 STATUS: Testing that we don't crash on obj.toSource()
 Uncaught TypeError: Callee is not a function object)
@@ -1665,9 +1646,7 @@ Uncaught TypeError: Callee is not a function object)
 [1189] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-50447-1.js .... Fail (BUGNUMBER: 50447
 STATUS: Test (non-ECMA) Error object properties fileName, lineNumber
 Uncaught TypeError: cannot convert undefined into object)
-[1190] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-50447.js .... Fail (BUGNUMBER: 50447
-STATUS: Test (non-ECMA) Error object properties fileName, lineNumber
-Uncaught TypeError: cannot convert undefined into object)
+[1190] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-50447.js .... Excluded (obsolete test)
 [1191] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-543839.js .... Success
 [1192] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-90596-001.js .... Fail (Uncaught TypeError: Callee is not a function object)
 [1193] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-90596-002.js .... Fail (Uncaught ReferenceError: uneval is not defined)
@@ -1697,7 +1676,7 @@ STATUS: Array Generic Methods
 [1203] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Array/regress-305002.js .... Success
 [1204] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Array/regress-310425-01.js .... Success
 [1205] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Array/regress-310425-02.js .... Success
-[1206] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Array/regress-320887.js .... Success
+[1206] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Array/regress-320887.js .... Excluded (obsolete test)
 [1207] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Array/regress-352742-01.js .... Success
 [1208] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Array/regress-352742-02.js .... Success
 [1209] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/Array/regress-386030.js .... Success
@@ -1768,7 +1747,7 @@ Uncaught ReferenceError: uneval is not defined)
 [1263] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-352797-01.js .... Excluded (let keyword not supported)
 [1264] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-352885-01.js .... Fail (Uncaught SyntaxError:  (Parse Error 23 line))
 [1265] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-352885-02.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
-[1266] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-353214-01.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'export' (Parse Error 25 line))
+[1266] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-353214-01.js .... Excluded (obsolete test)
 [1267] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-353249.js .... Excluded (let keyword not supported)
 [1268] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-354499-01.js .... Fail (BUGNUMBER: 354499
 STATUS: Iterating over Array elements
@@ -1843,8 +1822,8 @@ Uncaught ReferenceError: Iterator is not defined)
 [1318] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-345879-01.js .... Fail (Uncaught SyntaxError:  (Parse Error 24 line))
 [1319] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-345879-02.js .... Fail (Uncaught SyntaxError:  (Parse Error 24 line))
 [1320] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-347593.js .... Excluded (let keyword not supported)
-[1321] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-347739.js .... Fail (Uncaught SyntaxError:  (Parse Error 27 line))
-[1322] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349012-01.js .... Fail (Uncaught SyntaxError:  (Parse Error 35 line))
+[1321] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-347739.js .... Excluded (obsolete test)
+[1322] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349012-01.js .... Excluded (obsolete test)
 [1323] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349012-02.js .... Fail (Uncaught SyntaxError:  (Parse Error 33 line))
 [1324] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349012-03.js .... Fail (Uncaught SyntaxError:  (Parse Error 28 line))
 [1325] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349012-04.js .... Fail (Uncaught SyntaxError:  (Parse Error 28 line))
@@ -1852,7 +1831,7 @@ Uncaught ReferenceError: Iterator is not defined)
 [1327] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349023-01.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
 [1328] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349023-02.js .... Fail (Uncaught SyntaxError:  (Parse Error 23 line))
 [1329] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349023-03.js .... Fail (Uncaught SyntaxError:  (Parse Error 23 line))
-[1330] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349331.js .... Fail (Uncaught SyntaxError:  (Parse Error 29 line))
+[1330] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349331.js .... Excluded (obsolete test)
 [1331] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349362.js .... Fail (Uncaught SyntaxError:  (Parse Error 23 line))
 [1332] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349851.js .... Success
 [1333] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-350621.js .... Fail (BUGNUMBER: 350621
@@ -1887,7 +1866,7 @@ Uncaught ReferenceError: yield is not defined)
 [1353] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/yield-new.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 1 line))
 [1354] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/yield-undefined.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
 [1355] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/iterable/regress-340526-01.js .... Success
-[1356] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/iterable/regress-340526-02.js .... Fail (Uncaught SyntaxError:  (Parse Error 20 line))
+[1356] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/iterable/regress-340526-02.js .... Excluded (obsolete test)
 [1357] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/iterable/regress-341496.js .... Fail (BUGNUMBER: 341496
 STATUS: Iterators: check that adding properties does not crash
 Uncaught ReferenceError: Iterator is not defined)
@@ -1908,7 +1887,7 @@ Uncaught ReferenceError: options is not defined)
 [1366] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/iterable/regress-415922.js .... Success
 [1367] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/iterable/regress-568056.js .... Fail (Uncaught SyntaxError:  (Parse Error 18 line))
 [1368] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/lexical/regress-336376-01.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 30 line))
-[1369] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/lexical/regress-346642-03.js .... Fail (Uncaught SyntaxError:  (Parse Error 28 line))
+[1369] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/lexical/regress-346642-03.js .... Excluded (obsolete test)
 [1370] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/lexical/regress-346642-04.js .... Fail (Uncaught SyntaxError:  (Parse Error 27 line))
 [1371] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/lexical/regress-351515.js .... Success
 [1372] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regexp/yflag.js .... Success
@@ -2115,16 +2094,16 @@ Uncaught TypeError: Callee is not a function object)
 STATUS: TM: upvar2 regression tests
 Uncaught TypeError: Callee is not a function object)
 [1550] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-466905-04.js .... Success
-[1551] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-466905-05.js .... Success
+[1551] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-466905-05.js .... Excluded (no-op in browser, fails in shell - see bug 554793)
 [1552] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-477158.js .... Fail (Uncaught SyntaxError:  (Parse Error 26 line))
 [1553] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-477187.js .... Success
 [1554] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-520572.js .... Excluded (let keyword not supported)
 [1555] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/strict-warning.js .... Fail (Uncaught ReferenceError: options is not defined)
 [1556] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/math-jit-tests.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
-[1557] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-451673.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
-[1558] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-451974-01.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
-[1559] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-451974-02.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
-[1560] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-452498-01.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
+[1557] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-451673.js .... Excluded (bogus perf test (bug 540512))
+[1558] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-451974-01.js .... Excluded (bogus perf test (bug 540512))
+[1559] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-451974-02.js .... Excluded (bogus perf test (bug 540512))
+[1560] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-452498-01.js .... Excluded (bogus perf test (bug 540512))
 [1561] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-458838.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
 [1562] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-462459-01.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
 [1563] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-462459-02.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
@@ -2138,8 +2117,8 @@ Uncaught TypeError: Callee is not a function object)
 [1571] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-462459-10.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
 [1572] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-462459-11.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
 [1573] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-462459-12.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
-[1574] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-469927.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
-[1575] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-470739.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
+[1574] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-469927.js .... Excluded (bogus perf test (bug 540512))
+[1575] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-470739.js .... Excluded (bogus perf test (bug 540512))
 [1576] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-471635.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
 [1577] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-489682.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
 [1578] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-006.js .... Success
@@ -2424,7 +2403,7 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1841] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-810525.js .... Success
 [1842] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
-succ : 1060
-fail : 620
-ignore : 151
-timeout : 11
+succ : 1031
+fail : 587
+ignore : 220
+timeout : 4

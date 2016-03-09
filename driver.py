@@ -57,7 +57,8 @@ class CommandOptionValues(object):
         self.timeout = timeout
         self.arch_and_variants_and_mode_and_engine = itertools.product(arch, variants, mode, engine)
         self.subpath = subpath
-        self.js_shell = None
+        self.js_shell = os.path.join("out", "x64", "interpreter", "release", "escargot")
+        self.xul_info_src = ':'.join([str(arch), 'linux', 'false'])
 
 class ArgumentParser(object):
     def __init__(self):

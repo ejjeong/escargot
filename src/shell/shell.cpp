@@ -283,9 +283,20 @@ int main(int argc, char* argv[])
             if (strcmp(argv[i], "-d") == 0) {
                 ES->m_dumpByteCode = true;
             }
+#endif
             if (strcmp(argv[i], "-e") == 0) {
-                ES->m_dumpExecuteByteCode = true;
+                // ES->m_dumpExecuteByteCode = true;
+                escargot::ESString* str = escargot::ESString::create(argv[++i]);
+                std::jmp_buf tryPosition;
+                if (setjmp(ES->registerTryPos(&tryPosition)) == 0) {
+                    escargot::ESValue ret = ES->evaluate(str);
+                    ES->unregisterTryPos(&tryPosition);
+                } else {
+                    escargot::ESValue err = ES->getCatchedError();
+                    printf("Uncaught %s\n", err.toString()->utf8Data());
+                }
             }
+#ifndef NDEBUG
             if (strcmp(argv[i], "-usever") == 0) {
                 ES->m_useVerboseWriter = true;
             }

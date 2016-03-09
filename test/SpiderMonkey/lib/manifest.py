@@ -96,9 +96,9 @@ class XULInfoTester:
             ]
             p = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
             out, err = p.communicate()
-            if out in ('true\n', 'true\r\n'):
+            if out in ('true\n', 'true\r\n', b'true\n'):
                 ans = True
-            elif out in ('false\n', 'false\r\n'):
+            elif out in ('false\n', 'false\r\n', b'false\n'):
                 ans = False
             else:
                 raise Exception("Failed to test XUL condition {!r};"
@@ -121,6 +121,13 @@ def _parse_one(testcase, xul_tester):
             pos += 1
         elif parts[pos] == 'skip':
             testcase.expect = testcase.enable = False
+
+            # for escargot driver.py
+            if testcase.comment != None:
+                testcase.ignore = True
+                testcase.ignore_reason = testcase.comment
+            # escargot end
+
             pos += 1
         elif parts[pos] == 'random':
             testcase.random = True
@@ -138,6 +145,15 @@ def _parse_one(testcase, xul_tester):
             cond = parts[pos][len('skip-if('):-1]
             if xul_tester.test(cond):
                 testcase.expect = testcase.enable = False
+
+                # for escargot driver.py
+                if testcase.comment != None:
+                    testcase.ignore = True
+                    testcase.ignore_reason = testcase.comment
+                    if "uses shell load() function" in testcase.comment:
+                        testcase.ignore = False
+                # escargot end
+
             pos += 1
         elif parts[pos].startswith('random-if'):
             cond = parts[pos][len('random-if('):-1]
