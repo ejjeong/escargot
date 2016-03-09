@@ -275,7 +275,7 @@ Uncaught Error thrown during testing: function functionLengthTests(): not suppor
 [181] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/extensibility-01.js .... Fail (492849: ES5: Implement Object.preventExtensions, Object.isExtensible
 Uncaught TypeError: Assertion failed: got "swallowed", expected "throw: unexpected behavior for strict-mode property-addition to object 3)
 [182] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/extensibility-02.js .... Success
-[183] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/freeze-global-eval-const.js .... Fail (Uncaught TypeError: Assertion failed: got "evalcx is not defined", expected "({lazy:false}) is not extensible)
+[183] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/freeze-global-eval-const.js .... Fail (Uncaught TypeError: Assertion failed: got "cannot redefine property", expected "({lazy:false}) is not extensible)
 [184] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/gOPD-vs-prototype-accessor.js .... Success
 [185] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/getPrototypeOf-array.js .... Success
 [186] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/isPrototypeOf.js .... Fail (619283: Object.prototype.isPrototypeO)
@@ -375,8 +375,8 @@ Uncaught ReferenceError: Proxy is not defined)
 [256] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/array-toString-recursion.js .... Fail (635389: Infinite recursion via [].{toString,toLocaleString,join}
 Uncaught ReferenceError: InternalError is not defined)
 [257] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/bug472534.js .... Success
-[258] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/bug496985.js .... Fail (Uncaught ReferenceError: uneval is not defined)
-[259] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/bug566661.js .... Fail (Uncaught ReferenceError: uneval is not defined)
+[258] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/bug496985.js .... Fail ()
+[259] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/bug566661.js .... Fail ()
 [260] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/builtin-function-arguments-caller.js .... Fail (929642: Built-in functions defined in ECMAScript pick up arguments/caller properties from Function.prototype
 Uncaught TypeError: cannot convert undefined into object)
 [261] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/cross-global-eval-is-indirect.js .... Fail (608473: |var eval = otherWindow.eval; eval(...)| should behave like indirectly calling that eval from a script in that other window
@@ -415,7 +415,7 @@ Uncaught ReferenceError: Proxy is not defined)
 [282] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/proxy-enumeration.js .... Fail (Uncaught TypeError: Assertion failed: got "false", expected "true)
 [283] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/proxy-strict.js .... Fail (Uncaught ReferenceError: Proxy is not defined)
 [284] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/regress-bug567606.js .... Excluded (for..of statement not supported)
-[285] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/regress-bug607284.js .... Success
+[285] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/regress-bug607284.js .... Fail (Uncaught evalcx() not supported)
 [286] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/regress-bug629723.js .... Success
 [287] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/reviver-mutates-holder-array-ccw.js .... Fail (901351: Behavior when the JSON.parse reviver mutates the holder array)
 [288] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/reviver-mutates-holder-array-nonnative.js .... Fail (901380: Behavior when JSON.parse walks over a non-native object)
@@ -761,10 +761,7 @@ Uncaught ReferenceError: error is not defined)
 [597] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-383269-01.js .... Excluded (unreliable - based on GC timing)
 [598] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-383269-02.js .... Excluded (with statement not supported)
 [599] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-390078.js .... Success
-[600] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-418128.js .... Fail (BUGNUMBER: 418128
-STATUS: GC hazard with ++/--
-10
-Uncaught ReferenceError: uneval is not defined)
+[600] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-418128.js .... Success
 [601] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GC/regress-440558.js .... Success
 [602] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GetSet/getset-002.js .... Success
 [603] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/GetSet/regress-353264.js .... Excluded (obsolete test)
@@ -1250,9 +1247,7 @@ Uncaught RangeError: Maximum call stack size exceeded.)
 [1008] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-231518.js .... Success
 [1009] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-237461.js .... Success
 [1010] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-245148.js .... Success
-[1011] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-245795.js .... Fail (BUGNUMBER: 245795
-STATUS: eval(uneval(function)) should be round-trippable
-Uncaught ReferenceError: uneval is not defined)
+[1011] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-245795.js .... Success
 [1012] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-254375.js .... Success
 [1013] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-255245.js .... Success
 [1014] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-291213.js .... Success
@@ -1260,18 +1255,12 @@ Uncaught ReferenceError: uneval is not defined)
 [1016] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-303277.js .... Fail (BUGNUMBER: 303277
 STATUS: Do not crash with crash with a watchpoint for __proto__ property 
 Uncaught TypeError: Callee is not a function object)
-[1017] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-304897.js .... Fail (BUGNUMBER: 304897
-STATUS: uneval("\t"), uneval("\x09")
-Uncaught ReferenceError: uneval is not defined)
-[1018] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-306738.js .... Fail (BUGNUMBER: 306738
-STATUS: uneval() on objects with getter or setter
-Uncaught ReferenceError: uneval is not defined)
+[1017] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-304897.js .... Success
+[1018] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-306738.js .... Success
 [1019] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-311161.js .... Fail (BUGNUMBER: 311161
 STATUS: toSource exposes random memory or crashes
 Uncaught TypeError: Callee is not a function object)
-[1020] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-311583.js .... Fail (BUGNUMBER: 311583
-STATUS: uneval(array) should use elision for holes
-Uncaught ReferenceError: uneval is not defined)
+[1020] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-311583.js .... Success
 [1021] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-311792-01.js .... Fail (BUGNUMBER: 311792
 STATUS: Root Array.prototype methods
 Uncaught TypeError: Callee is not a function object)
@@ -1282,9 +1271,7 @@ Uncaught TypeError: Callee is not a function object)
 STATUS: Root jsarray.c creatures
 STATUS: This bug requires TOO_MUCH_GC
 Uncaught TypeError: Callee is not a function object)
-[1024] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-313803.js .... Fail (BUGNUMBER: 313803
-STATUS: uneval() on func with embedded objects with getter or setter
-Uncaught ReferenceError: uneval is not defined)
+[1024] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-313803.js .... Success
 [1025] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-313938.js .... Success
 [1026] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-314874.js .... Fail (BUGNUMBER: 314874
 STATUS: Function.call/apply with non-primitive argument
@@ -1296,9 +1283,7 @@ Uncaught TypeError: Callee is not a function object)
 [1029] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-322957.js .... Success
 [1030] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-327608.js .... Success
 [1031] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-328443.js .... Success
-[1032] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-328556.js .... Fail (BUGNUMBER: 328556
-STATUS: Do not Assert: growth == (size_t)-1 || (nchars + 1) * sizeof(char16_t) == growth, in jsarray.c
-Uncaught ReferenceError: uneval is not defined)
+[1032] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-328556.js .... Success
 [1033] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-330569.js .... Excluded (Yarr doesn't bail on complex regexps.)
 [1034] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-333541.js .... Success
 [1035] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-336409-1.js .... Success
@@ -1446,24 +1431,12 @@ Uncaught TypeError: Callee is not a function object)
 [1073] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-355820.js .... Success
 [1074] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-355982.js .... Success
 [1075] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-356402.js .... Success
-[1076] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-358594-01.js .... Fail (BUGNUMBER: 358594
-STATUS: Do not crash on uneval(this).
-Uncaught ReferenceError: uneval is not defined)
-[1077] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-358594-02.js .... Fail (BUGNUMBER: 358594
-STATUS: Do not crash on uneval(this).
-Uncaught ReferenceError: uneval is not defined)
-[1078] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-358594-03.js .... Fail (BUGNUMBER: 358594
-STATUS: Do not crash on uneval(this).
-Uncaught ReferenceError: uneval is not defined)
-[1079] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-358594-04.js .... Fail (BUGNUMBER: 358594
-STATUS: Do not crash on uneval(this).
-Uncaught ReferenceError: uneval is not defined)
-[1080] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-358594-05.js .... Fail (BUGNUMBER: 358594
-STATUS: Do not crash on uneval(this).
-Uncaught ReferenceError: uneval is not defined)
-[1081] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-358594-06.js .... Fail (BUGNUMBER: 358594
-STATUS: Do not crash on uneval(this).
-Uncaught ReferenceError: uneval is not defined)
+[1076] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-358594-01.js .... Success
+[1077] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-358594-02.js .... Success
+[1078] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-358594-03.js .... Success
+[1079] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-358594-04.js .... Success
+[1080] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-358594-05.js .... Success
+[1081] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-358594-06.js .... Success
 [1082] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-359024.js .... Success
 [1083] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-361346.js .... Fail (BUGNUMBER: 361346
 STATUS: Crash with setter, watch, GC
@@ -1481,9 +1454,7 @@ STATUS: Do not assert: overwriting @ js_AddScopeProperty
 Uncaught TypeError: Callee is not a function object)
 [1089] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-361964.js .... Excluded (slow, alert not dismissed, now busted by harness)
 [1090] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-363258.js .... Success
-[1091] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-363988.js .... Fail (BUGNUMBER: 363988
-STATUS: Do not crash at JS_GetPrivate with large script
-Uncaught ReferenceError: uneval is not defined)
+[1091] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-363988.js .... Success
 [1092] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-365527.js .... Success
 [1093] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-365692.js .... Success
 [1094] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-365869.js .... Fail (BUGNUMBER: 365869
@@ -1530,14 +1501,22 @@ Uncaught TypeError: cannot convert undefined into object)
 [1118] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-375344.js .... Success
 [1119] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-375801.js .... Fail (BUGNUMBER: 375801
 STATUS: uneval should use "(void 0)" instead of "undefined"
-Uncaught ReferenceError: uneval is not defined)
-[1120] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-380581.js .... Fail (BUGNUMBER: 380581
-STATUS: Incorrect uneval with setter in object literal
-Uncaught ReferenceError: uneval is not defined)
+expect:
+ ( { a : ( void 0 ) } ) 
+actual:
+ [ object Object ] 
+ FAILED! [reported from test()] uneval should use "(void 0)" instead of "undefined": uneval : Expected value ' ( { a : ( void 0 ) } ) ', Actual value ' [ object Object ] ' 
+ FAILED! [reported from test()] uneval should use "(void 0)" instead of "undefined": uneval: compile actual : Expected value 'No Error', Actual value 'SyntaxError:  (Parse Error 1 line)' 
+expect:
+ function ( ) { ( { a : undefined } ) ; } 
+actual:
+ function ( ) { } 
+ FAILED! [reported from test()] uneval should use "(void 0)" instead of "undefined": toString : Expected value ' function ( ) { ( { a : undefined } ) ; } ', Actual value ' function ( ) { } ' 
+ PASSED! uneval should use "(void 0)" instead of "undefined": toString: compile actual
+Uncaught TypeError: Callee is not a function object)
+[1120] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-380581.js .... Success
 [1121] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-380889.js .... Success
-[1122] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-381211.js .... Fail (BUGNUMBER: 381211
-STATUS: uneval with getter
-Uncaught ReferenceError: uneval is not defined)
+[1122] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-381211.js .... Success
 [1123] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-381304.js .... Fail (BUGNUMBER: 381304
 STATUS: getter/setter with keywords
 1
@@ -1549,12 +1528,12 @@ STATUS: Regression test for bug 385393
 Uncaught TypeError: Callee is not a function object)
 [1127] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-390597.js .... Success
 [1128] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-390598.js .... Success
-[1129] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-394967.js .... Success
+[1129] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-394967.js .... Fail (BUGNUMBER: 394967
+STATUS: Do not assert: !vp[1].isPrimitive()
+Uncaught evalcx() not supported)
 [1130] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-396326.js .... Success
 [1131] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-406572.js .... Fail ()
-[1132] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-407501.js .... Fail (BUGNUMBER: 407501
-STATUS: JSOP_NEWINIT lacks SAVE_SP_AND_PC 
-Uncaught ReferenceError: uneval is not defined)
+[1132] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-407501.js .... Success
 [1133] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-407720.js .... Success
 [1134] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-412926.js .... Fail (BUGNUMBER: 412926
 STATUS: JS_ValueToId(cx, JSVAL_NULL) should return atom for "null" string
@@ -1622,9 +1601,7 @@ Uncaught TypeError: Callee is not a function object)
 [1177] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-465145.js .... Fail (BUGNUMBER: 465145
 STATUS: Do not crash with watched defined setter
 Uncaught TypeError: Callee is not a function object)
-[1178] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-465276.js .... Fail (BUGNUMBER: 465276
-STATUS: ((1 * (1))|""
-Uncaught ReferenceError: uneval is not defined)
+[1178] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-465276.js .... Success
 [1179] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-469625.js .... Fail (BUGNUMBER: 469625
 STATUS: TM: Do not crash @ js_String_getelem
 Uncaught ReferenceError: Left side of assignment is not a reference.)
@@ -1647,11 +1624,13 @@ Uncaught TypeError: Callee is not a function object)
 STATUS: Test (non-ECMA) Error object properties fileName, lineNumber
 Uncaught TypeError: cannot convert undefined into object)
 [1190] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-50447.js .... Excluded (obsolete test)
-[1191] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-543839.js .... Success
+[1191] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-543839.js .... Fail (BUGNUMBER: 543839
+STATUS: js_GetMutableScope caller must lock the object
+Uncaught evalcx() not supported)
 [1192] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-90596-001.js .... Fail (Uncaught TypeError: Callee is not a function object)
-[1193] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-90596-002.js .... Fail (Uncaught ReferenceError: uneval is not defined)
+[1193] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-90596-002.js .... Fail (Uncaught TypeError)
 [1194] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-96284-001.js .... Fail (Uncaught TypeError: Callee is not a function object)
-[1195] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-96284-002.js .... Fail (Uncaught ReferenceError: uneval is not defined)
+[1195] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-96284-002.js .... Fail (Uncaught SyntaxError:  (Parse Error 1 line))
 [1196] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/scope-001.js .... Success
 [1197] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/toLocaleFormat-01.js .... Fail (BUGNUMBER: 291494
 STATUS: Date.prototype.toLocaleFormat extension
@@ -1734,7 +1713,8 @@ Uncaught TypeError: Callee is not a function object)
 [1252] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/destructuring-order.js .... Success
 [1253] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/iterator-ctor.js .... Fail (BUGNUMBER: 410725
 STATUS: Test of the global Iterator constructor
-Uncaught ReferenceError: uneval is not defined)
+ FAILED! uneval(iteratorToArray(obj)) : Expected value '["a", "b"]', Actual value 'a,b' 
+Uncaught ReferenceError: Iterator is not defined)
 [1254] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-346021.js .... Fail (Uncaught SyntaxError:  (Parse Error 23 line))
 [1255] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-346642-06.js .... Fail ()
 [1256] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-346773.js .... Success
@@ -1765,21 +1745,15 @@ Uncaught ReferenceError: Iterator is not defined)
 [1277] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-363040-01.js .... Excluded (let keyword not supported)
 [1278] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-363040-02.js .... Excluded (let keyword not supported)
 [1279] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-366668-01.js .... Excluded (let keyword not supported)
-[1280] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-367629.js .... Fail (BUGNUMBER: 367629
-STATUS: Decompilation of result with native function as getter
-Uncaught ReferenceError: uneval is not defined)
+[1280] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-367629.js .... Success
 [1281] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-368213.js .... Success
 [1282] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-368224.js .... Fail (BUGNUMBER: 368224
 STATUS: Do not assert: pnprop->pn_type == TOK_COLON
 Uncaught ReferenceError: Left side of assignment is not a reference.)
 [1283] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-372364.js .... Success
 [1284] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-379566.js .... Success
-[1285] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-380933.js .... Fail (BUGNUMBER: 380933
-STATUS: Do not assert with uneval object with setter with modified proto
-Uncaught ReferenceError: uneval is not defined)
-[1286] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-381301.js .... Fail (BUGNUMBER: 381301
-STATUS: uneval of object with native-function getter
-Uncaught ReferenceError: uneval is not defined)
+[1285] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-380933.js .... Success
+[1286] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-381301.js .... Success
 [1287] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-381303.js .... Fail (BUGNUMBER: 381303
 STATUS: object toSource when a property has both a getter and a setter
 Uncaught TypeError: Callee is not a function object)
@@ -2093,7 +2067,9 @@ Uncaught TypeError: Callee is not a function object)
 [1549] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-452498-196.js .... Fail (BUGNUMBER: 452498
 STATUS: TM: upvar2 regression tests
 Uncaught TypeError: Callee is not a function object)
-[1550] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-466905-04.js .... Success
+[1550] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-466905-04.js .... Fail (BUGNUMBER: 466905
+STATUS: Prototypes of sandboxed arrays
+Uncaught evalcx() not supported)
 [1551] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-466905-05.js .... Excluded (no-op in browser, fails in shell - see bug 554793)
 [1552] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-477158.js .... Fail (Uncaught SyntaxError:  (Parse Error 26 line))
 [1553] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-477187.js .... Success
@@ -2182,7 +2158,7 @@ Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 1 line))
 [1634] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-507295.js .... Success
 [1635] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-509354.js .... Success
 [1636] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-522123.js .... Excluded (let keyword not supported)
-[1637] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-524264.js .... Fail (Uncaught ReferenceError: uneval is not defined)
+[1637] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-524264.js .... Success
 [1638] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-524743.js .... Success
 [1639] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-530879.js .... Fail (Uncaught SyntaxError:  (Parse Error 7 line))
 [1640] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/strict/shell.js test/SpiderMonkey/js1_8_1/strict/12.2.1.js .... Fail (Uncaught TypeError: Assertion failed: got "false", expected "true)
@@ -2197,7 +2173,7 @@ Uncaught TypeError: Assertion failed: got "false", expected "true: expected Type
 [1648] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/clone-errors.js .... Fail (Uncaught ReferenceError: Proxy is not defined)
 [1649] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/clone-forge.js .... Fail (Uncaught SyntaxError:  (Parse Error 18 line))
 [1650] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/clone-leaf-object.js .... Fail (Uncaught TypeError: Callee is not a function object)
-[1651] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/clone-object.js .... Fail (Uncaught ReferenceError: uneval is not defined)
+[1651] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/clone-object.js .... Fail (Uncaught ReferenceError: deserialize is not defined)
 [1652] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/clone-regexp.js .... Fail (Uncaught ReferenceError: deserialize is not defined)
 [1653] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/clone-simple.js .... Fail (Uncaught ReferenceError: deserialize is not defined)
 [1654] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/clone-transferables.js .... Excluded (for..of statement not supported)
@@ -2221,7 +2197,7 @@ Uncaught TypeError: Assertion failed: got "[object Object]", expected "null)
  PASSED! setting properties works
  PASSED! window.y remains as it was
  PASSED! shadowing works properly
-Uncaught ReferenceError: evalcx is not defined)
+Uncaught evalcx() not supported)
 [1669] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/recursion.js .... Fail (Uncaught SyntaxError:  (Parse Error 35 line))
 [1670] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/redeclaration-of-catch-warning.js .... Fail (622646: Shadowing an exception identifier in a catch block with a |const| or |let| declaration should throw an error
 Uncaught ReferenceError: options is not defined)
@@ -2237,7 +2213,7 @@ Uncaught ReferenceError: options is not defined)
 [1680] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-627984-7.js .... Fail (Uncaught TypeError: Callee is not a function object)
 [1681] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-631723.js .... Fail (Uncaught TypeError: Callee is not a function object)
 [1682] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-636697.js .... Fail (Uncaught TypeError: Callee is not a function object)
-[1683] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-636818.js .... Fail (Uncaught ReferenceError: evalcx is not defined)
+[1683] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-636818.js .... Fail (Uncaught evalcx() not supported)
 [1684] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-637985.js .... Fail (Uncaught TypeError: Callee is not a function object)
 [1685] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-645160.js .... Fail (Uncaught TypeError: Assertion failed: got "false", expected "true)
 [1686] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-650753.js .... Fail (Uncaught ReferenceError: WeakMap is not defined)
@@ -2253,8 +2229,8 @@ Uncaught ReferenceError: options is not defined)
 [1693] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/set-property-non-extensible.js .... Excluded (let keyword not supported)
 [1694] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/sharedtypedarray.js .... Excluded (Arrow function expression not supported)
 [1695] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/sps-generators.js .... Fail (Uncaught SyntaxError:  (Parse Error 13 line))
-[1696] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/symbol-uneval.js .... Fail (Uncaught ReferenceError: uneval is not defined)
-[1697] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/toSource-0.js .... Fail (Uncaught ReferenceError: uneval is not defined)
+[1696] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/symbol-uneval.js .... Fail (Uncaught ReferenceError: Symbol is not defined)
+[1697] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/toSource-0.js .... Fail (Uncaught SyntaxError:  (Parse Error 1 line))
 [1698] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/typedarray-copyWithin-arguments-detaching.js .... Fail (991981: %TypedArray.prototype.copyWithin shouldn't misbehave horribly if index-argument conversion detaches the underlying ArrayBuffer
 Uncaught TypeError: Assertion failed: got "4096", expected "0: detaching should work for start weirdness)
 [1699] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/typedarray-set-neutering.js .... Fail (983344: Uint8Array.prototype.set issues when this array changes during setting
@@ -2312,8 +2288,8 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1750] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-554955-4.js .... Excluded (let keyword not supported)
 [1751] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-554955-5.js .... Success
 [1752] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-554955-6.js .... Excluded (let keyword not supported)
-[1753] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-555246-0.js .... Success
-[1754] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-555246-1.js .... Success
+[1753] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-555246-0.js .... Fail (Uncaught evalcx() not supported)
+[1754] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-555246-1.js .... Fail (Uncaught evalcx() not supported)
 [1755] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-559402-1.js .... Success
 [1756] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-559402-2.js .... Success
 [1757] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-559438.js .... Success
@@ -2334,7 +2310,7 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1772] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-584355.js .... Success
 [1773] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-584578.js .... Success
 [1774] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-584648.js .... Fail (Uncaught TypeError: Callee is not a function object)
-[1775] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-585257.js .... Fail (Uncaught ReferenceError: evalcx is not defined)
+[1775] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-585257.js .... Fail (Uncaught evalcx() not supported)
 [1776] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-586482-1.js .... Success
 [1777] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-586482-2.js .... Success
 [1778] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-586482-3.js .... Success
@@ -2347,8 +2323,8 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1785] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-592202-4.js .... Success
 [1786] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-592556-c35.js .... Success
 [1787] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-593256.js .... Fail (Uncaught TypeError: Callee is not a function object)
-[1788] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-595230-1.js .... Fail (Uncaught ReferenceError: evalcx is not defined)
-[1789] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-595230-2.js .... Fail (Uncaught ReferenceError: evalcx is not defined)
+[1788] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-595230-1.js .... Fail (Uncaught evalcx() not supported)
+[1789] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-595230-2.js .... Fail (Uncaught evalcx() not supported)
 [1790] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-595365-1.js .... Success
 [1791] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-596103.js .... Success
 [1792] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-596805-1.js .... Success
@@ -2359,8 +2335,8 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1797] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-600067.js .... Success
 [1798] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-601399.js .... Success
 [1799] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-602621.js .... Success
-[1800] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-607799.js .... Fail (Uncaught ReferenceError: evalcx is not defined)
-[1801] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-607863.js .... Fail (Uncaught ReferenceError: evalcx is not defined)
+[1800] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-607799.js .... Success
+[1801] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-607863.js .... Fail (Uncaught evalcx() not supported)
 [1802] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-609617.js .... Fail ()
 [1803] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-610026.js .... Timeout
 [1804] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-614714.js .... Success
@@ -2373,7 +2349,7 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1811] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-620376-1.js .... Success
 [1812] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-620376-2.js .... Fail (Uncaught ReferenceError: Proxy is not defined)
 [1813] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-621814.js .... Success
-[1814] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-624199.js .... Fail (Uncaught TypeError: Assertion failed: got "ReferenceError: uneval is not defined", expected "true)
+[1814] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-624199.js .... Success
 [1815] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-624547.js .... Success
 [1816] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-624968.js .... Success
 [1817] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-626436.js .... Success
@@ -2403,7 +2379,7 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1841] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-810525.js .... Success
 [1842] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
-succ : 1031
-fail : 587
+succ : 1049
+fail : 569
 ignore : 220
 timeout : 4

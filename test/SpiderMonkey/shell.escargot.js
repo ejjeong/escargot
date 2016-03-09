@@ -18,3 +18,18 @@ load = function(path) {
     origLoad("test/SpiderMonkey/" + path);
 }
 
+function evalcx(str, object) {
+    if (object != undefined)
+        throw "evalcx() not supported";
+    if (str == "lazy" && object == undefined)
+        throw "evalcx() not supported";
+    if (str == '')
+        throw "evalcx() not supported";
+
+    eval(str);
+}
+
+function uneval(value) {
+    return "" + value;
+}
+
