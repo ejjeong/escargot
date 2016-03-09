@@ -203,18 +203,15 @@ Uncaught TypeError: Assertion failed: got "42", expected "17)
 [119] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Number/tonumber-string-hex.js .... Fail (872853: Various tests of ToNumber(string), particularly +"0x" being NaN
 Uncaught TypeError: Assertion failed: got "-10", expected "NaN)
 [120] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/15.2.3.12.js .... Success
-[121] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/15.2.3.14-01.js .... Fail (BUGNUMBER: 307791
-STATUS: ES5 Object.keys(O)
-Uncaught TypeError: Assertion failed: got "false", expected "true: 0,input,index)
+[121] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/15.2.3.14-01.js .... Success
 [122] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/15.2.3.3-01.js .... Fail (BUGNUMBER: 505587
 STATUS: ES5 Object.getOwnPropertyDescriptor(O)
-Uncaught Assertion failed: got false, expected true: value)
+Uncaught Assertion failed: got false, expected true)
 [123] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/15.2.3.4-01.js .... Success
 [124] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/15.2.3.4-02.js .... Success
 [125] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/15.2.3.4-03.js .... Success
 [126] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/15.2.3.4-04.js .... Success
-[127] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/15.2.3.5-01.js .... Fail (492840: ES5 Object.create(O [, Properties])
-Uncaught TypeError: Assertion failed: got "undefined", expected "null: bad null-proto)
+[127] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/15.2.3.5-01.js .... Success
 [128] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/15.2.3.6-define-over-method.js .... Success
 [129] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/15.2.3.6-dictionary-redefinition-01-of-32.js .... Success
 [130] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/15.2.3.6-dictionary-redefinition-02-of-32.js .... Success
@@ -275,31 +272,28 @@ Uncaught Error thrown during testing: function functionLengthTests(): not suppor
 [181] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/extensibility-01.js .... Fail (492849: ES5: Implement Object.preventExtensions, Object.isExtensible
 Uncaught TypeError: Assertion failed: got "swallowed", expected "throw: unexpected behavior for strict-mode property-addition to object 3)
 [182] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/extensibility-02.js .... Success
-[183] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/freeze-global-eval-const.js .... Fail (Uncaught TypeError: Assertion failed: got "cannot redefine property", expected "({lazy:false}) is not extensible)
+[183] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/freeze-global-eval-const.js .... Success
 [184] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/gOPD-vs-prototype-accessor.js .... Success
 [185] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/getPrototypeOf-array.js .... Success
-[186] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/isPrototypeOf.js .... Fail (619283: Object.prototype.isPrototypeO)
-[187] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/mutation-prevention-methods.js .... Fail (492849: Object.is{Sealed,Frozen}, Object.{seal,freeze}
-Uncaught TypeError: Assertion failed: got "true", expected "false)
+[186] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/isPrototypeOf.js .... Success
+[187] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/mutation-prevention-methods.js .... Success
 [188] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/object-create-with-primitive-second-arg.js .... Fail (Uncaught SyntaxError:  (Parse Error 1 line))
 [189] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/object-toString-01.js .... Success
 [190] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/preventExtensions-idempotent.js .... Success
 [191] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/propertyIsEnumerable.js .... Fail (619283: Object.prototype.propertyIsEnumerabl)
 [192] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/proto-property-change-writability-set.js .... Fail (713944: Don't assert anything about a shape from the property cache until it's known the cache entry matches
 Uncaught TypeError: Assertion failed: got "[object Object]", expected "3)
-[193] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/toLocaleString.js .... Fail (653789: Object.prototype.toLocaleString
-Uncaught TypeError: Assertion failed: got "5", expected "5)
+[193] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/toLocaleString.js .... Success
 [194] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/vacuous-accessor-unqualified-name.js .... Success
 [195] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/RegExp/shell.js test/SpiderMonkey/ecma_5/RegExp/15.10.5-01.js .... Success
-[196] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/RegExp/shell.js test/SpiderMonkey/ecma_5/RegExp/15.10.7.5-01.js .... Fail (465199: RegExp lastIndex property set should not coerce type to number
-Uncaught TypeError: Assertion failed: got "undefined", expected "0)
+[196] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/RegExp/shell.js test/SpiderMonkey/ecma_5/RegExp/15.10.7.5-01.js .... Success
 [197] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/RegExp/shell.js test/SpiderMonkey/ecma_5/RegExp/7.8.5-01.js .... Success
 [198] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/RegExp/shell.js test/SpiderMonkey/ecma_5/RegExp/empty-lookahead.js .... Success
 [199] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/RegExp/shell.js test/SpiderMonkey/ecma_5/RegExp/exec-lastIndex-ToInteger.js .... Success
 [200] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/RegExp/shell.js test/SpiderMonkey/ecma_5/RegExp/exec.js .... Fail (646490: RegExp.prototype.exec doesn't get the lastIndex and ToInteger() it for non-global regular expressions when it should
 Uncaught TypeError: Assertion failed: got "10", expected "0: /abc/ take one: wrong index)
 [201] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/RegExp/shell.js test/SpiderMonkey/ecma_5/RegExp/instance-property-storage-introspection.js .... Fail (640072: Represent /a/.{lastIndex,global,source,multiline,sticky,ignoreCase} with plain old data properties
-Uncaught TypeError: Assertion failed: got "undefined", expected "0: RegExp.prototype: bad value for lastIndex)
+Uncaught TypeError: Assertion failed: got "2", expected "7: /a/g after first exec: bad value for lastIndex)
 [202] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/RegExp/shell.js test/SpiderMonkey/ecma_5/RegExp/regexp-space-character-class.js .... Success
 [203] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/RegExp/shell.js test/SpiderMonkey/ecma_5/RegExp/regress-429241.js .... Success
 [204] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/RegExp/shell.js test/SpiderMonkey/ecma_5/RegExp/regress-576828.js .... Success
@@ -2302,7 +2296,7 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1841] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-810525.js .... Success
 [1842] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
-succ : 1021
-fail : 397
+succ : 1028
+fail : 390
 ignore : 420
 timeout : 4
