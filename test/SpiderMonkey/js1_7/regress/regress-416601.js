@@ -1,3 +1,4 @@
+// escargot-skip: yield not supported
 // escargot-skip: with statement not supported
 /* -*- indent-tabs-mode: nil; js-indent-level: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public

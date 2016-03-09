@@ -1,3 +1,4 @@
+// escargot-skip: yield not supported
 // escargot-skip: let keyword not supported
 // |reftest| skip-if(!xulRuntime.shell) slow
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */

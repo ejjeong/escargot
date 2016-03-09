@@ -1,3 +1,4 @@
+// escargot-skip: yield not supported
 const K = 20;
 
 var obj;

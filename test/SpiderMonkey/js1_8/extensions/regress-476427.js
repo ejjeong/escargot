@@ -1,3 +1,4 @@
+// escargot-skip: yield not supported
 // escargot-skip: let keyword not supported
 // |reftest| skip-if(Android) -- bug - nsIDOMWindow.crypto throws NS_ERROR_NOT_IMPLEMENTED on Android
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */

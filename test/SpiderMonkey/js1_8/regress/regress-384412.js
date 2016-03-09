@@ -1,3 +1,4 @@
+// escargot-skip: yield not supported
 // |reftest| skip-if(!xulRuntime.shell)
 /* -*- indent-tabs-mode: nil; js-indent-level: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public

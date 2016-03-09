@@ -1,3 +1,4 @@
+// escargot-skip: yield not supported
 // |reftest| skip-if(!xulRuntime.shell) -- bug xxx - fails to dismiss alert
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public

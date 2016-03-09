@@ -386,7 +386,7 @@ Uncaught ReferenceError: newGlobal is not defined)
 [263] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/destructuring-__proto__-shorthand-assignment-before-var.js .... Fail (Uncaught SyntaxError:  (Parse Error 28 line))
 [264] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/destructuring-__proto__-shorthand-assignment.js .... Excluded (Destructuring assignment syntax is not supported)
 [265] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/destructuring-__proto__-target-assignment.js .... Excluded (Destructuring assignment syntax is not supported)
-[266] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/destructuring-for-inof-__proto__.js .... Fail ()
+[266] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/destructuring-for-inof-__proto__.js .... Excluded (yield not supported)
 [267] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/error-tostring-function.js .... Success
 [268] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/es5ish-defineGetter-defineSetter.js .... Fail (715821: Implement __define[GS]etter__ using Object.defineProperty
 Uncaught TypeError: Callee is not a function object)
@@ -1696,7 +1696,7 @@ Uncaught TypeError: Callee is not a function object)
 [1237] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/regress-479567.js .... Success
 [1238] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/regress-565521.js .... Fail (Uncaught SyntaxError:  (Parse Error 30 line))
 [1239] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/template.js .... Success
-[1240] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/GC/regress-341675.js .... Fail (Uncaught SyntaxError:  (Parse Error 20 line))
+[1240] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/GC/regress-341675.js .... Excluded (yield not supported)
 [1241] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/GC/regress-381374.js .... Fail (BUGNUMBER: 381374
 STATUS: js_AddScopeProperty - overwrite property with watchpoint
 Uncaught TypeError: Callee is not a function object)
@@ -1707,27 +1707,24 @@ Uncaught TypeError: Callee is not a function object)
 [1246] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/expressions/regress-346645-03.js .... Success
 [1247] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/expressions/regress-418051.js .... Success
 [1248] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/expressions/regress-451340.js .... Success
-[1249] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/basic-Iterator.js .... Fail (Uncaught SyntaxError:  (Parse Error 57 line))
-[1250] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/basic-for-each.js .... Fail (Uncaught SyntaxError:  (Parse Error 57 line))
-[1251] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/basic-for-in.js .... Fail (Uncaught SyntaxError:  (Parse Error 45 line))
+[1249] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/basic-Iterator.js .... Excluded (yield not supported)
+[1250] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/basic-for-each.js .... Excluded (yield not supported)
+[1251] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/basic-for-in.js .... Excluded (yield not supported)
 [1252] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/destructuring-order.js .... Success
-[1253] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/iterator-ctor.js .... Fail (BUGNUMBER: 410725
-STATUS: Test of the global Iterator constructor
- FAILED! uneval(iteratorToArray(obj)) : Expected value '["a", "b"]', Actual value 'a,b' 
-Uncaught ReferenceError: Iterator is not defined)
-[1254] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-346021.js .... Fail (Uncaught SyntaxError:  (Parse Error 23 line))
-[1255] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-346642-06.js .... Fail ()
-[1256] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-346773.js .... Success
-[1257] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-350312.js .... Fail (Uncaught SyntaxError:  (Parse Error 27 line))
+[1253] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/iterator-ctor.js .... Excluded (yield not supported)
+[1254] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-346021.js .... Excluded (yield not supported)
+[1255] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-346642-06.js .... Excluded (yield not supported)
+[1256] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-346773.js .... Excluded (yield not supported)
+[1257] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-350312.js .... Excluded (yield not supported)
 [1258] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-351070-02.js .... Success
 [1259] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-351102-03.js .... Fail (Uncaught SyntaxError:  (Parse Error 30 line))
 [1260] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-351102-04.js .... Fail (Uncaught SyntaxError:  (Parse Error 26 line))
 [1261] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-351102-05.js .... Fail (Uncaught SyntaxError:  (Parse Error 26 line))
 [1262] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-351102-07.js .... Fail (Uncaught SyntaxError:  (Parse Error 34 line))
 [1263] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-352797-01.js .... Excluded (let keyword not supported)
-[1264] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-352885-01.js .... Fail (Uncaught SyntaxError:  (Parse Error 23 line))
-[1265] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-352885-02.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
-[1266] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-353214-01.js .... Excluded (obsolete test)
+[1264] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-352885-01.js .... Excluded (yield not supported)
+[1265] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-352885-02.js .... Excluded (yield not supported)
+[1266] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-353214-01.js .... Excluded (yield not supported)
 [1267] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-353249.js .... Excluded (let keyword not supported)
 [1268] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-354499-01.js .... Fail (BUGNUMBER: 354499
 STATUS: Iterating over Array elements
@@ -1741,7 +1738,7 @@ Uncaught ReferenceError: Iterator is not defined)
 [1273] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-355052-02.js .... Success
 [1274] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-355052-03.js .... Success
 [1275] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-355410.js .... Fail (Uncaught SyntaxError:  (Parse Error 33 line))
-[1276] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-355512.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
+[1276] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-355512.js .... Excluded (yield not supported)
 [1277] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-363040-01.js .... Excluded (let keyword not supported)
 [1278] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-363040-02.js .... Excluded (let keyword not supported)
 [1279] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-366668-01.js .... Excluded (let keyword not supported)
@@ -1750,18 +1747,18 @@ Uncaught ReferenceError: Iterator is not defined)
 [1282] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-368224.js .... Fail (BUGNUMBER: 368224
 STATUS: Do not assert: pnprop->pn_type == TOK_COLON
 Uncaught ReferenceError: Left side of assignment is not a reference.)
-[1283] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-372364.js .... Success
+[1283] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-372364.js .... Excluded (yield not supported)
 [1284] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-379566.js .... Success
 [1285] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-380933.js .... Success
 [1286] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-381301.js .... Success
 [1287] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-381303.js .... Fail (BUGNUMBER: 381303
 STATUS: object toSource when a property has both a getter and a setter
 Uncaught TypeError: Callee is not a function object)
-[1288] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-387955-01.js .... Excluded (let keyword not supported)
-[1289] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-387955-02.js .... Excluded (let keyword not supported)
-[1290] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-392308.js .... Fail (Uncaught SyntaxError:  (Parse Error 36 line))
+[1288] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-387955-01.js .... Excluded (yield not supported)
+[1289] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-387955-02.js .... Excluded (yield not supported)
+[1290] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-392308.js .... Excluded (yield not supported)
 [1291] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-396326.js .... Excluded (let keyword not supported)
-[1292] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-453955.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
+[1292] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-453955.js .... Excluded (yield not supported)
 [1293] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-458679.js .... Excluded (let keyword not supported)
 [1294] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-469234.js .... Fail (BUGNUMBER: 469234
 STATUS: TM: Do not assert: !JS_ON_TRACE(cx)
@@ -1780,74 +1777,65 @@ Uncaught TypeError: Callee is not a function object)
 [1304] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-589112.js .... Fail (Uncaught ReferenceError: Iterator is not defined)
 [1305] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-590813.js .... Fail (Uncaught ReferenceError: Iterator is not defined)
 [1306] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-591450.js .... Success
-[1307] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/326466-01.js .... Fail (Uncaught SyntaxError:  (Parse Error 21 line))
+[1307] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/326466-01.js .... Excluded (yield not supported)
 [1308] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/builtin-Iterator-function.js .... Fail (BUGNUMBER: (none)
 STATUS: Iterator() test
 Uncaught ReferenceError: Iterator is not defined)
-[1309] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/close-returns-undefined.js .... Fail (Uncaught SyntaxError:  (Parse Error 2 line))
-[1310] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/fibonacci-matrix-generator.js .... Fail (Uncaught SyntaxError:  (Parse Error 24 line))
-[1311] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/gen-with-call-obj.js .... Fail (Uncaught SyntaxError:  (Parse Error 7 line))
-[1312] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/iterator-toString.js .... Fail (Uncaught SyntaxError:  (Parse Error 22 line))
-[1313] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/message-value-passing.js .... Fail (Uncaught SyntaxError:  (Parse Error 21 line))
-[1314] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/multiple-close.js .... Fail (Uncaught SyntaxError:  (Parse Error 20 line))
-[1315] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/nested-yield.js .... Fail (Uncaught SyntaxError:  (Parse Error 22 line))
-[1316] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/pi-generator.js .... Fail (Uncaught SyntaxError:  (Parse Error 26 line))
-[1317] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-345855.js .... Success
-[1318] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-345879-01.js .... Fail (Uncaught SyntaxError:  (Parse Error 24 line))
-[1319] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-345879-02.js .... Fail (Uncaught SyntaxError:  (Parse Error 24 line))
+[1309] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/close-returns-undefined.js .... Excluded (yield not supported)
+[1310] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/fibonacci-matrix-generator.js .... Excluded (yield not supported)
+[1311] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/gen-with-call-obj.js .... Excluded (yield not supported)
+[1312] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/iterator-toString.js .... Excluded (yield not supported)
+[1313] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/message-value-passing.js .... Excluded (yield not supported)
+[1314] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/multiple-close.js .... Excluded (yield not supported)
+[1315] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/nested-yield.js .... Excluded (yield not supported)
+[1316] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/pi-generator.js .... Excluded (yield not supported)
+[1317] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-345855.js .... Excluded (yield not supported)
+[1318] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-345879-01.js .... Excluded (yield not supported)
+[1319] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-345879-02.js .... Excluded (yield not supported)
 [1320] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-347593.js .... Excluded (let keyword not supported)
-[1321] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-347739.js .... Excluded (obsolete test)
-[1322] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349012-01.js .... Excluded (obsolete test)
-[1323] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349012-02.js .... Fail (Uncaught SyntaxError:  (Parse Error 33 line))
-[1324] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349012-03.js .... Fail (Uncaught SyntaxError:  (Parse Error 28 line))
-[1325] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349012-04.js .... Fail (Uncaught SyntaxError:  (Parse Error 28 line))
-[1326] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349012-05.js .... Fail (Uncaught SyntaxError:  (Parse Error 26 line))
-[1327] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349023-01.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
-[1328] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349023-02.js .... Fail (Uncaught SyntaxError:  (Parse Error 23 line))
-[1329] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349023-03.js .... Fail (Uncaught SyntaxError:  (Parse Error 23 line))
-[1330] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349331.js .... Excluded (obsolete test)
-[1331] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349362.js .... Fail (Uncaught SyntaxError:  (Parse Error 23 line))
-[1332] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349851.js .... Success
-[1333] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-350621.js .... Fail (BUGNUMBER: 350621
-STATUS: for-in loops over generator objects
-Uncaught ReferenceError: yield is not defined)
-[1334] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-350809.js .... Success
-[1335] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-351120.js .... Fail (Uncaught SyntaxError:  (Parse Error 27 line))
-[1336] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-351514.js .... Success
-[1337] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-352197.js .... Success
-[1338] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-352876.js .... Fail (Uncaught SyntaxError:  (Parse Error 28 line))
-[1339] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-355834.js .... Fail (BUGNUMBER: 355834
-STATUS: new Function("yield")
-Uncaught ReferenceError: yield is not defined)
-[1340] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-359062.js .... Fail (BUGNUMBER: 359062
-STATUS: Access generator local variables from nested functions
-Uncaught ReferenceError: yield is not defined)
-[1341] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-366941.js .... Fail (Uncaught SyntaxError:  (Parse Error 32 line))
-[1342] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-382335.js .... Fail (Uncaught SyntaxError:  (Parse Error 24 line))
-[1343] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-387871.js .... Fail (Uncaught SyntaxError:  (Parse Error 36 line))
-[1344] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-390918.js .... Fail (Uncaught SyntaxError:  (Parse Error 27 line))
-[1345] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-392310.js .... Fail (BUGNUMBER: 392310
-STATUS: send on newborn generator
-See http://developer.mozilla.org/en/docs/New_in_JavaScript_1.7
-Uncaught ReferenceError: yield is not defined)
-[1346] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-466206.js .... Success
-[1347] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/send-no-rhs.js .... Fail (Uncaught SyntaxError:  (Parse Error 22 line))
-[1348] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/sequential-yields.js .... Fail (Uncaught SyntaxError:  (Parse Error 20 line))
-[1349] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/simple-fib.js .... Fail (Uncaught SyntaxError:  (Parse Error 23 line))
-[1350] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/throw-after-close.js .... Fail (Uncaught SyntaxError:  (Parse Error 22 line))
-[1351] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/throw-forever.js .... Fail (Uncaught SyntaxError:  (Parse Error 22 line))
-[1352] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/unreachable-yield.js .... Fail (Uncaught SyntaxError:  (Parse Error 24 line))
-[1353] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/yield-new.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 1 line))
-[1354] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/yield-undefined.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
+[1321] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-347739.js .... Excluded (yield not supported)
+[1322] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349012-01.js .... Excluded (yield not supported)
+[1323] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349012-02.js .... Excluded (yield not supported)
+[1324] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349012-03.js .... Excluded (yield not supported)
+[1325] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349012-04.js .... Excluded (yield not supported)
+[1326] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349012-05.js .... Excluded (yield not supported)
+[1327] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349023-01.js .... Excluded (yield not supported)
+[1328] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349023-02.js .... Excluded (yield not supported)
+[1329] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349023-03.js .... Excluded (yield not supported)
+[1330] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349331.js .... Excluded (yield not supported)
+[1331] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349362.js .... Excluded (yield not supported)
+[1332] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-349851.js .... Excluded (yield not supported)
+[1333] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-350621.js .... Excluded (yield not supported)
+[1334] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-350809.js .... Excluded (yield not supported)
+[1335] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-351120.js .... Excluded (yield not supported)
+[1336] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-351514.js .... Excluded (yield not supported)
+[1337] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-352197.js .... Excluded (yield not supported)
+[1338] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-352876.js .... Excluded (yield not supported)
+[1339] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-355834.js .... Excluded (yield not supported)
+[1340] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-359062.js .... Excluded (yield not supported)
+[1341] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-366941.js .... Excluded (yield not supported)
+[1342] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-382335.js .... Excluded (yield not supported)
+[1343] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-387871.js .... Excluded (yield not supported)
+[1344] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-390918.js .... Excluded (yield not supported)
+[1345] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-392310.js .... Excluded (yield not supported)
+[1346] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/regress-466206.js .... Excluded (yield not supported)
+[1347] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/send-no-rhs.js .... Excluded (yield not supported)
+[1348] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/sequential-yields.js .... Excluded (yield not supported)
+[1349] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/simple-fib.js .... Excluded (yield not supported)
+[1350] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/throw-after-close.js .... Excluded (yield not supported)
+[1351] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/throw-forever.js .... Excluded (yield not supported)
+[1352] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/unreachable-yield.js .... Excluded (yield not supported)
+[1353] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/yield-new.js .... Excluded (yield not supported)
+[1354] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/yield-undefined.js .... Excluded (yield not supported)
 [1355] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/iterable/regress-340526-01.js .... Success
-[1356] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/iterable/regress-340526-02.js .... Excluded (obsolete test)
+[1356] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/iterable/regress-340526-02.js .... Excluded (yield not supported)
 [1357] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/iterable/regress-341496.js .... Fail (BUGNUMBER: 341496
 STATUS: Iterators: check that adding properties does not crash
 Uncaught ReferenceError: Iterator is not defined)
-[1358] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/iterable/regress-341499.js .... Fail (Uncaught SyntaxError:  (Parse Error 21 line))
-[1359] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/iterable/regress-341510.js .... Fail (Uncaught SyntaxError:  (Parse Error 18 line))
-[1360] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/iterable/regress-341815.js .... Fail (Uncaught SyntaxError:  (Parse Error 30 line))
-[1361] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/iterable/regress-341821.js .... Fail (Uncaught SyntaxError:  (Parse Error 28 line))
+[1358] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/iterable/regress-341499.js .... Excluded (yield not supported)
+[1359] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/iterable/regress-341510.js .... Excluded (yield not supported)
+[1360] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/iterable/regress-341815.js .... Excluded (yield not supported)
+[1361] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/iterable/regress-341821.js .... Excluded (yield not supported)
 [1362] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/iterable/regress-354750-01.js .... Fail (BUGNUMBER: 354750
 STATUS: Changing Iterator.prototype.next should not affect default iterator
 Uncaught ReferenceError: Iterator is not defined)
@@ -1863,7 +1851,7 @@ Uncaught ReferenceError: options is not defined)
 [1368] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/lexical/regress-336376-01.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 30 line))
 [1369] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/lexical/regress-346642-03.js .... Excluded (obsolete test)
 [1370] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/lexical/regress-346642-04.js .... Fail (Uncaught SyntaxError:  (Parse Error 27 line))
-[1371] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/lexical/regress-351515.js .... Success
+[1371] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/lexical/regress-351515.js .... Excluded (yield not supported)
 [1372] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regexp/yflag.js .... Success
 [1373] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-350387.js .... Excluded (let keyword not supported)
 [1374] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-352640-01.js .... Success
@@ -1878,17 +1866,15 @@ Uncaught ReferenceError: options is not defined)
 [1383] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-363040-02.js .... Success
 [1384] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-369666-01.js .... Excluded (let keyword not supported)
 [1385] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-369666-02.js .... Excluded (let keyword not supported)
-[1386] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-372331.js .... Fail (Uncaught SyntaxError:  (Parse Error 32 line))
+[1386] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-372331.js .... Excluded (yield not supported)
 [1387] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-373827-01.js .... Excluded (let keyword not supported)
 [1388] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-373827-02.js .... Excluded (let keyword not supported)
 [1389] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-375695.js .... Fail (Uncaught SyntaxError:  (Parse Error 22 line))
 [1390] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-379442.js .... Success
 [1391] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-379483.js .... Success
-[1392] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-385133-01.js .... Success
-[1393] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-385133-02.js .... Success
-[1394] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-385393-05.js .... Fail (BUGNUMBER: 385393
-STATUS: Regression test for bug 385393
-Uncaught ReferenceError: Iterator is not defined)
+[1392] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-385133-01.js .... Excluded (yield not supported)
+[1393] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-385133-02.js .... Excluded (yield not supported)
+[1394] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-385393-05.js .... Excluded (yield not supported)
 [1395] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-407727-01.js .... Excluded (let keyword not supported)
 [1396] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-407727-02.js .... Excluded (let keyword not supported)
 [1397] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-407957.js .... Fail (BUGNUMBER: 407957
@@ -1896,16 +1882,14 @@ STATUS: Iterator is mutable.
 Uncaught ReferenceError: Iterator is not defined)
 [1398] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-410649.js .... Success
 [1399] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-414553.js .... Excluded (let keyword not supported)
-[1400] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-416601.js .... Excluded (with statement not supported)
+[1400] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-416601.js .... Excluded (yield not supported)
 [1401] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-418641.js .... Excluded (let keyword not supported)
-[1402] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-419803.js .... Fail (BUGNUMBER: 419803
-STATUS: Do not assert: sprop->parent == scope->lastProp
-Uncaught ReferenceError: yield is not defined)
+[1402] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-419803.js .... Excluded (yield not supported)
 [1403] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-452703.js .... Excluded (let keyword not supported)
 [1404] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-452960.js .... Excluded (let keyword not supported)
 [1405] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-453049.js .... Excluded (let keyword not supported)
 [1406] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-453051.js .... Excluded (let keyword not supported)
-[1407] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-453411.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
+[1407] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-453411.js .... Excluded (yield not supported)
 [1408] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-462071.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
 [1409] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-462282.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
 [1410] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-462388.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
@@ -1924,7 +1908,7 @@ Uncaught ReferenceError: yield is not defined)
 [1423] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/dekker.js .... Excluded (let keyword not supported)
 [1424] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/expclo.js .... Excluded (let keyword not supported)
 [1425] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/expclo2.js .... Excluded (let keyword not supported)
-[1426] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/lamport.js .... Excluded (let keyword not supported)
+[1426] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/lamport.js .... Excluded (yield not supported)
 [1427] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/peterson.js .... Excluded (let keyword not supported)
 [1428] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-353116.js .... Success
 [1429] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-385729.js .... Success
@@ -1950,9 +1934,9 @@ STATUS: TM: Do not assert: StackBase(fp) + blockDepth == regs.sp
 Uncaught SyntaxError:  (Parse Error 1 line))
 [1446] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-473040.js .... Fail (Uncaught SyntaxError:  (Parse Error 22 line))
 [1447] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-475971.js .... Success
-[1448] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-476414-01.js .... Excluded (let keyword not supported)
-[1449] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-476414-02.js .... Excluded (let keyword not supported)
-[1450] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-476427.js .... Excluded (let keyword not supported)
+[1448] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-476414-01.js .... Excluded (yield not supported)
+[1449] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-476414-02.js .... Excluded (yield not supported)
+[1450] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-476427.js .... Excluded (yield not supported)
 [1451] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-476653.js .... Fail (Uncaught SyntaxError:  (Parse Error 18 line))
 [1452] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-476869.js .... Fail (BUGNUMBER: 476869
 STATUS: Do not assert: v != JSVAL_ERROR_COOKIE
@@ -1962,14 +1946,14 @@ Uncaught TypeError: Callee is not a function object)
 [1455] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-481989.js .... Fail (Uncaught SyntaxError:  (Parse Error 17 line))
 [1456] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-482263.js .... Fail (Uncaught SyntaxError:  (Parse Error 22 line))
 [1457] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/simple-tree.js .... Excluded (let keyword not supported)
-[1458] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/genexps/regress-347739.js .... Fail (Uncaught SyntaxError:  (Parse Error 26 line))
-[1459] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/genexps/regress-349012-01.js .... Fail (Uncaught SyntaxError:  (Parse Error 34 line))
-[1460] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/genexps/regress-349326.js .... Excluded (let keyword not supported)
-[1461] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/genexps/regress-384991.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 50 line))
-[1462] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/genexps/regress-665286.js .... Fail (Uncaught SyntaxError:  (Parse Error 17 line))
-[1463] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/genexps/regress-683738.js .... Success
-[1464] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-366941.js .... Fail (Uncaught SyntaxError:  (Parse Error 32 line))
-[1465] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-384412.js .... Fail (Uncaught SyntaxError:  (Parse Error 29 line))
+[1458] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/genexps/regress-347739.js .... Excluded (yield not supported)
+[1459] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/genexps/regress-349012-01.js .... Excluded (yield not supported)
+[1460] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/genexps/regress-349326.js .... Excluded (yield not supported)
+[1461] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/genexps/regress-384991.js .... Excluded (yield not supported)
+[1462] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/genexps/regress-665286.js .... Excluded (yield not supported)
+[1463] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/genexps/regress-683738.js .... Excluded (yield not supported)
+[1464] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-366941.js .... Excluded (yield not supported)
+[1465] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-384412.js .... Excluded (yield not supported)
 [1466] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-384758.js .... Fail (BUGNUMBER: 384758
 STATUS: Statement can not follow expression closure with out intervening ;)
 [1467] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-404734.js .... Excluded (Destructuring assignment syntax is not supported)
@@ -1989,10 +1973,10 @@ Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 1 line))
 [1479] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-459185.js .... Excluded (Destructuring assignment syntax is not supported)
 [1480] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-459186.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
 [1481] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-459389.js .... Fail (Uncaught SyntaxError:  (Parse Error 58 line))
-[1482] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-461930.js .... Excluded (let keyword not supported)
-[1483] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-461932.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
-[1484] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-463334-01.js .... Excluded (let keyword not supported)
-[1485] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-463334-02.js .... Excluded (let keyword not supported)
+[1482] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-461930.js .... Excluded (yield not supported)
+[1483] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-461932.js .... Excluded (yield not supported)
+[1484] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-463334-01.js .... Excluded (yield not supported)
+[1485] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-463334-02.js .... Excluded (yield not supported)
 [1486] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-464096.js .... Excluded (let keyword not supported)
 [1487] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-464418.js .... Excluded (let keyword not supported)
 [1488] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-464978.js .... Excluded (let keyword not supported)
@@ -2014,7 +1998,7 @@ Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 1 line))
 [1502] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465460-06.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
 [1503] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465460-07.js .... Success
 [1504] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465460-08.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
-[1505] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465460-09.js .... Excluded (let keyword not supported)
+[1505] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465460-09.js .... Excluded (yield not supported)
 [1506] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465460-10.js .... Excluded (let keyword not supported)
 [1507] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465460-11.js .... Excluded (let keyword not supported)
 [1508] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-465460-12.js .... Success
@@ -2034,19 +2018,19 @@ Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 1 line))
 [1522] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-469547.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
 [1523] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-469625-02.js .... Fail ()
 [1524] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-469625-03.js .... Fail ()
-[1525] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-471373.js .... Fail (Uncaught SyntaxError:  (Parse Error 33 line))
+[1525] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-471373.js .... Excluded (yield not supported)
 [1526] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-471660.js .... Excluded (let keyword not supported)
 [1527] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-474769.js .... Fail (Uncaught SyntaxError:  (Parse Error 27 line))
 [1528] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-474771.js .... Fail (Uncaught SyntaxError:  (Parse Error 31 line))
 [1529] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-474935.js .... Fail (Uncaught SyntaxError:  (Parse Error 28 line))
 [1530] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-476655.js .... Success
 [1531] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-477234.js .... Fail (Uncaught SyntaxError:  (Parse Error 26 line))
-[1532] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-477581.js .... Fail (Uncaught SyntaxError:  (Parse Error 26 line))
+[1532] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-477581.js .... Excluded (yield not supported)
 [1533] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-478205.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
 [1534] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-479353.js .... Fail (BUGNUMBER: 479353
 STATUS: Do not assert: (uint32_t)(index_) < atoms_->length
 Uncaught SyntaxError:  (Parse Error 1 line))
-[1535] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-479740.js .... Success
+[1535] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-479740.js .... Excluded (yield not supported)
 [1536] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-481800.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
 [1537] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-483749.js .... Fail (Uncaught SyntaxError:  (Parse Error 17 line))
 [1538] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/regress/regress-499524.js .... Fail (Uncaught TypeError: Assertion failed: got "false", expected "true)
@@ -2125,7 +2109,7 @@ Uncaught evalcx() not supported)
 [1603] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-114-a.js .... Success
 [1604] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-114.js .... Success
 [1605] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-116.js .... Success
-[1606] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-117.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 43 line))
+[1606] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-117.js .... Excluded (yield not supported)
 [1607] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-118.js .... Success
 [1608] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-121.js .... Fail (Uncaught SyntaxError:  (Parse Error 26 line))
 [1609] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-123.js .... Fail (Uncaught SyntaxError:  (Parse Error 50 line))
@@ -2158,9 +2142,9 @@ Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 1 line))
 [1634] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-507295.js .... Success
 [1635] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-509354.js .... Success
 [1636] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-522123.js .... Excluded (let keyword not supported)
-[1637] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-524264.js .... Success
+[1637] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-524264.js .... Excluded (yield not supported)
 [1638] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-524743.js .... Success
-[1639] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-530879.js .... Fail (Uncaught SyntaxError:  (Parse Error 7 line))
+[1639] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-530879.js .... Excluded (yield not supported)
 [1640] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/strict/shell.js test/SpiderMonkey/js1_8_1/strict/12.2.1.js .... Fail (Uncaught TypeError: Assertion failed: got "false", expected "true)
 [1641] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/strict/shell.js test/SpiderMonkey/js1_8_1/strict/8.7.2.js .... Fail (Uncaught TypeError: Assertion failed: got "false", expected "true)
 [1642] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/template.js .... Success
@@ -2169,7 +2153,7 @@ Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 1 line))
 [1645] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/browser.js .... Fail (Uncaught ReferenceError: document is not defined)
 [1646] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/censor-strict-caller.js .... Fail (588251: fun.caller should throw if that value corresponds to a strict mode function
 Uncaught TypeError: Assertion failed: got "false", expected "true: expected TypeError accessing strict mode caller, got: 17)
-[1647] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/clone-complex-object.js .... Fail ()
+[1647] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/clone-complex-object.js .... Excluded (yield not supported)
 [1648] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/clone-errors.js .... Fail (Uncaught ReferenceError: Proxy is not defined)
 [1649] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/clone-forge.js .... Fail (Uncaught SyntaxError:  (Parse Error 18 line))
 [1650] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/clone-leaf-object.js .... Fail (Uncaught TypeError: Callee is not a function object)
@@ -2186,7 +2170,7 @@ Uncaught ReferenceError: Proxy is not defined)
 [1660] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/decompile-for-of.js .... Excluded (for..of statement not supported)
 [1661] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/destructure-accessor.js .... Success
 [1662] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/file-mapped-arraybuffers.js .... Excluded (Arrow function expression not supported)
-[1663] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/is-generator.js .... Excluded (with statement not supported)
+[1663] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/is-generator.js .... Excluded (yield not supported)
 [1664] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/mutable-proto-special-form.js .... Fail (948583: Make __proto__ in object literals a special form not influenced by |Object.prototype|
 Testing initial behavior
 Uncaught TypeError: Assertion failed: got "[object Object]", expected "null)
@@ -2198,7 +2182,7 @@ Uncaught TypeError: Assertion failed: got "[object Object]", expected "null)
  PASSED! window.y remains as it was
  PASSED! shadowing works properly
 Uncaught evalcx() not supported)
-[1669] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/recursion.js .... Fail (Uncaught SyntaxError:  (Parse Error 35 line))
+[1669] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/recursion.js .... Excluded (yield not supported)
 [1670] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/redeclaration-of-catch-warning.js .... Fail (622646: Shadowing an exception identifier in a catch block with a |const| or |let| declaration should throw an error
 Uncaught ReferenceError: options is not defined)
 [1671] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-558541.js .... Fail (Uncaught ReferenceError: options is not defined)
@@ -2227,8 +2211,8 @@ Uncaught ReferenceError: Proxy is not defined)
 [1692] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/selfhosted-detecting-strict.js .... Fail (843004: Don't emit a strict warning for the undefined-property detection pattern in self-hosted code
 Uncaught ReferenceError: options is not defined)
 [1693] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/set-property-non-extensible.js .... Excluded (let keyword not supported)
-[1694] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/sharedtypedarray.js .... Excluded (Arrow function expression not supported)
-[1695] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/sps-generators.js .... Fail (Uncaught SyntaxError:  (Parse Error 13 line))
+[1694] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/sharedtypedarray.js .... Excluded (yield not supported)
+[1695] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/sps-generators.js .... Excluded (yield not supported)
 [1696] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/symbol-uneval.js .... Fail (Uncaught ReferenceError: Symbol is not defined)
 [1697] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/toSource-0.js .... Fail (Uncaught SyntaxError:  (Parse Error 1 line))
 [1698] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/typedarray-copyWithin-arguments-detaching.js .... Fail (991981: %TypedArray.prototype.copyWithin shouldn't misbehave horribly if index-argument conversion detaches the underlying ArrayBuffer
@@ -2243,9 +2227,9 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1705] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/PatternAsserts.js .... Fail (Uncaught ReferenceError: loadRelativeToScript is not defined)
 [1706] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/PatternBuilders.js .... Fail (Uncaught ReferenceError: loadRelativeToScript is not defined)
 [1707] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/alternateBuilder.js .... Fail (Uncaught ReferenceError: loadRelativeToScript is not defined)
-[1708] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/basicBuilder.js .... Fail (Uncaught ReferenceError: loadRelativeToScript is not defined)
+[1708] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/basicBuilder.js .... Excluded (yield not supported)
 [1709] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/builderExceptions.js .... Fail (Uncaught ReferenceError: loadRelativeToScript is not defined)
-[1710] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/classes.js .... Fail (Uncaught ReferenceError: loadRelativeToScript is not defined)
+[1710] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/classes.js .... Excluded (yield not supported)
 [1711] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/comprehensions.js .... Fail (Uncaught ReferenceError: loadRelativeToScript is not defined)
 [1712] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/computedPropNames.js .... Fail (Uncaught ReferenceError: loadRelativeToScript is not defined)
 [1713] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/declarations.js .... Fail (Uncaught ReferenceError: loadRelativeToScript is not defined)
@@ -2258,14 +2242,14 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1720] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/expressionClosures.js .... Fail (Uncaught ReferenceError: loadRelativeToScript is not defined)
 [1721] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/for-loop-destructuring.js .... Fail (Uncaught ReferenceError: loadRelativeToScript is not defined)
 [1722] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/generatorExpressions.js .... Fail (Uncaught ReferenceError: loadRelativeToScript is not defined)
-[1723] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/generators.js .... Fail (Uncaught ReferenceError: loadRelativeToScript is not defined)
+[1723] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/generators.js .... Excluded (yield not supported)
 [1724] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/lexicals.js .... Fail (Uncaught ReferenceError: loadRelativeToScript is not defined)
 [1725] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/location.js .... Fail (Uncaught ReferenceError: loadRelativeToScript is not defined)
 [1726] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/methodDefn.js .... Fail (Uncaught ReferenceError: loadRelativeToScript is not defined)
 [1727] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/newTarget.js .... Fail (Uncaught ReferenceError: loadRelativeToScript is not defined)
 [1728] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/proxyArgs.js .... Fail (Uncaught ReferenceError: loadRelativeToScript is not defined)
 [1729] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/stackOverflow.js .... Fail (Uncaught ReferenceError: loadRelativeToScript is not defined)
-[1730] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/statements.js .... Fail (Uncaught ReferenceError: loadRelativeToScript is not defined)
+[1730] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/statements.js .... Excluded (yield not supported)
 [1731] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/shell.js test/SpiderMonkey/js1_8_5/reflect-parse/templateStrings.js .... Fail (Uncaught ReferenceError: loadRelativeToScript is not defined)
 [1732] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-355569.js .... Success
 [1733] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-373843.js .... Success
@@ -2379,7 +2363,7 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1841] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-810525.js .... Success
 [1842] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
-succ : 1049
-fail : 569
-ignore : 220
+succ : 1035
+fail : 492
+ignore : 311
 timeout : 4

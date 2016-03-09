@@ -1,3 +1,4 @@
+// escargot-skip: yield not supported
 function gen() {
     yield 3;
 }

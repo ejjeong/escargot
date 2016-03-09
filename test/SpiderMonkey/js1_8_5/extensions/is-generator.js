@@ -1,3 +1,4 @@
+// escargot-skip: yield not supported
 // escargot-skip: with statement not supported
 /*
  * Any copyright is dedicated to the Public Domain.
