@@ -122,6 +122,7 @@ public:
             ESValue setStr = strings->set.string();
             obj->defineOwnProperty(setStr, setDesc, false);
         } else {
+            obj->set(strings->value.string(), descSrc->hiddenClass()->read(descSrc, descSrc, propertyName, idx));
             descSrc->accessorData(idx)->setGetterAndSetterTo(obj, &propertyInfo);
         }
         obj->set(strings->enumerable.string(), ESValue(propertyInfo.m_flags.m_isEnumerable));

@@ -5,9 +5,9 @@
  */
 
 try {
-    evalcx("Object.freeze(this); eval('const q = undefined;')");
+    evalcx("Object.freeze(this); eval('var q = undefined;')");
 } catch (e) {
-    assertEq(e.message, "({lazy:false}) is not extensible");
+    assertEq(e.message, "cannot redefine property");
 }
 
 reportCompare(0, 0, "don't crash");

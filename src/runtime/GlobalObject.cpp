@@ -1143,7 +1143,7 @@ void GlobalObject::installObject()
         }
         ESObject* obj = ESObject::create();
         if (proto.isNull())
-            obj->set__proto__(ESValue());
+            obj->set__proto__(ESValue(ESValue::ESNull));
         else
             obj->set__proto__(proto);
         if (!instance->currentExecutionContext()->readArgument(1).isUndefined()) {
@@ -1176,12 +1176,12 @@ void GlobalObject::installObject()
                 ESValue value = obj->getOwnProperty(it->first);
                 bool deleteResult = obj->deleteProperty(it->first, true);
                 ASSERT(deleteResult);
-                obj->defineDataProperty(it->first, writable, enumerable, configurable, value);
+                obj->defineDataProperty(it->first, writable, enumerable, configurable, value, true);
             } else {
                 ESPropertyAccessorData* accessorData = obj->accessorData(it->first.toString());
                 bool deleteResult = obj->deleteProperty(it->first, true);
                 ASSERT(deleteResult);
-                obj->defineAccessorProperty(it->first, accessorData, writable, enumerable, configurable);
+                obj->defineAccessorProperty(it->first, accessorData, writable, enumerable, configurable, true);
             }
         }
         obj->setExtensible(false);
@@ -1326,12 +1326,12 @@ void GlobalObject::installObject()
                 ESValue value = obj->getOwnProperty(it->first);
                 bool deleteResult = obj->deleteProperty(it->first, true);
                 ASSERT(deleteResult);
-                obj->defineDataProperty(it->first, writable, enumerable, configurable, value);
+                obj->defineDataProperty(it->first, writable, enumerable, configurable, value, true);
             } else {
                 ESPropertyAccessorData* accessorData = obj->accessorData(it->first.toString());
                 bool deleteResult = obj->deleteProperty(it->first, true);
                 ASSERT(deleteResult);
-                obj->defineAccessorProperty(it->first, accessorData, writable, enumerable, configurable);
+                obj->defineAccessorProperty(it->first, accessorData, writable, enumerable, configurable, true);
             }
         }
         obj->setExtensible(false);
@@ -1379,7 +1379,10 @@ void GlobalObject::installObject()
     // $19.1.3.5 Object.prototype.toLocaleString
     m_objectPrototype->defineDataProperty(strings->toLocaleString, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisVal = instance->currentExecutionContext()->resolveThisBindingToObject();
-        return ESValue(ESValue(thisVal).toString());
+        ESValue func = thisVal->get(strings->toString.string());
+        if (!func.isESPointer() || !func.asESPointer()->isESFunctionObject())
+            instance->throwError(TypeError::create(ESString::create("toLocaleString is not callable")));
+        return ESFunctionObject::call(instance, func, thisVal, NULL, 0, false);
     }, strings->toLocaleString, 0));
 
     defineDataProperty(strings->Object, true, false, true, m_object);
@@ -5255,8 +5258,8 @@ void GlobalObject::installRegExp()
             regexp->m_lastIndex = ESValue(result.m_matchResults[0][0].m_end);
         }
 
-        ((ESObject *)arr)->set(ESValue(strings->input), ESValue(sourceStr));
         ((ESObject *)arr)->set(ESValue(strings->index), ESValue(result.m_matchResults[0][0].m_start));
+        ((ESObject *)arr)->set(ESValue(strings->input), ESValue(sourceStr));
 
         int idx = 0;
         for (unsigned i = 0; i < result.m_matchResults.size() ; i ++) {
