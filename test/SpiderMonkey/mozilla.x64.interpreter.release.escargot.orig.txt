@@ -1154,9 +1154,9 @@ Uncaught RangeError: Maximum call stack size exceeded.)
 [991] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/String/regress-179068.js .... Success
 [992] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/String/replace-flags.js .... Excluded (Template string not supported)
 [993] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/catchguard-001-n.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'catch' (Parse Error 29 line))
-[994] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/catchguard-001.js .... Fail (Uncaught SyntaxError:  (Parse Error 23 line))
-[995] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/catchguard-002.js .... Fail (Uncaught SyntaxError:  (Parse Error 23 line))
-[996] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/catchguard-003.js .... Fail (Uncaught SyntaxError:  (Parse Error 23 line))
+[994] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/catchguard-001.js .... Excluded (conditional catch clauses not supported)
+[995] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/catchguard-002.js .... Excluded (conditional catch clauses not supported)
+[996] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/catchguard-003.js .... Excluded (conditional catch clauses not supported)
 [997] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/getset-001.js .... Success
 [998] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/getset-003.js .... Success
 [999] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/getset-004.js .... Fail (Uncaught TypeError: Callee is not a function object)
@@ -1233,47 +1233,10 @@ don't interrupt the script. let it go.
 done obj
 Uncaught TypeError: Callee is not a function object)
 [1047] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-345967.js .... Excluded (slow)
-[1048] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-346494-01.js .... Fail (BUGNUMBER: 346494
-STATUS: various try...catch tests
-
-=== (function (x) {try {throw x} finally{var v = 'fin'; actual += v + ','; print(v)}})
-(function (x) {try {throw x} finally{var v = 'fin'; actual += v + ','; print(v)}})
-decompiling: function () {}
-fin
- PASSED! various try...catch tests
-fin
- PASSED! various try...catch tests
-fin
- PASSED! various try...catch tests
-
-=== (function (x) {try {throw x} catch (e) {var v = 'catch all ' + e; actual += v + ','; print(v);}})
-(function (x) {try {throw x} catch (e) {var v = 'catch all ' + e; actual += v + ','; print(v);}})
-decompiling: function () {}
-catch all 42
- PASSED! various try...catch tests
-catch all 43
- PASSED! various try...catch tests
-catch all 44
- PASSED! various try...catch tests
-
-=== (function (x) {try {throw x} catch (e) {var v = 'catch all ' + e; actual += v + ','; print(v);} finally{var v = 'fin'; actual += v + ','; print(v)}})
-(function (x) {try {throw x} catch (e) {var v = 'catch all ' + e; actual += v + ','; print(v);} finally{var v = 'fin'; actual += v + ','; print(v)}})
-decompiling: function () {}
-catch all 42
-fin
- PASSED! various try...catch tests
-catch all 43
-fin
- PASSED! various try...catch tests
-catch all 44
-fin
- PASSED! various try...catch tests
-
-=== (function (x) {try {throw x} catch (e if e === 42) {var v = 'catch guard 1 ' + e; actual += v + ','; print(v);}})
-Uncaught SyntaxError:  (Parse Error 1 line))
-[1049] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-346494.js .... Fail (Uncaught SyntaxError:  (Parse Error 29 line))
+[1048] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-346494-01.js .... Excluded (conditional catch clauses not supported)
+[1049] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-346494.js .... Excluded (conditional catch clauses not supported)
 [1050] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-350312-01.js .... Success
-[1051] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-350312-02.js .... Fail (Uncaught SyntaxError:  (Parse Error 39 line))
+[1051] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-350312-02.js .... Excluded (conditional catch clauses not supported)
 [1052] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-350312-03.js .... Fail (BUGNUMBER: 350312
 STATUS: Accessing wrong stack slot with nested catch/finally
 
@@ -1324,9 +1287,9 @@ fin
 === 3: (function (x) {try {if (x > 41) throw x} catch (e if e === 42) {var v = 'catch guard 1 ' + e; actual += v + ',';print(v);}})
 Uncaught SyntaxError:  (Parse Error 1 line))
 [1053] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-350531.js .... Excluded (slow)
-[1054] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-351102-01.js .... Fail (Uncaught SyntaxError:  (Parse Error 28 line))
-[1055] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-351102-02.js .... Fail (Uncaught SyntaxError:  (Parse Error 36 line))
-[1056] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-351102-06.js .... Fail (Uncaught SyntaxError:  (Parse Error 26 line))
+[1054] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-351102-01.js .... Excluded (conditional catch clauses not supported)
+[1055] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-351102-02.js .... Excluded (conditional catch clauses not supported)
+[1056] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-351102-06.js .... Excluded (conditional catch clauses not supported)
 [1057] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-351448.js .... Excluded (Yarr doesn't have the same complexity errors at execution time.)
 [1058] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-351463-01.js .... Success
 [1059] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-351973.js .... Fail (BUGNUMBER: 351973
@@ -1403,7 +1366,7 @@ Uncaught TypeError: Callee is not a function object)
 STATUS: Do not assert: map->depth > 0" in js_LeaveSharpObject
 Uncaught TypeError: cannot convert undefined into object)
 [1115] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-372309.js .... Success
-[1116] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-374589.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
+[1116] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-374589.js .... Excluded (conditional catch clauses not supported)
 [1117] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-375183.js .... Success
 [1118] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-375344.js .... Success
 [1119] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-375801.js .... Excluded (uneval() not supported)
@@ -2230,6 +2193,6 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1842] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
 succ : 1043
-fail : 327
-ignore : 471
+fail : 317
+ignore : 481
 timeout : 1
