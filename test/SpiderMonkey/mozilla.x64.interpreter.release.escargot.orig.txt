@@ -382,9 +382,10 @@ Uncaught TypeError: Assertion failed: got "false", expected "true: wrong error f
 [274] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/function-properties.js .... Fail (Uncaught TypeError: Assertion failed: got "undefined", expected "null)
 [275] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/getOwnPropertyNames-__proto__.js .... Fail (837630: __proto__ should show up with O.getOwnPropertyNames(O.prototype)
 Uncaught TypeError: Assertion failed: got "false", expected "true: should have gotten __proto__ as a property of Object.prototype (got these properties: constructor,toString,hasOwnProperty,valueOf,isPrototypeOf,propertyIsEnumerable,toLocaleString))
-[276] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/iterator-in-catch.js .... Fail (Uncaught SyntaxError:  (Parse Error 11 line))
+[276] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/iterator-in-catch.js .... Excluded (iterator not supported)
 [277] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/misplaced-inconsistent-directive.js .... Excluded (options() not supported)
-[278] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/nested-delete-name-in-evalcode.js .... Excluded (let keyword not supported)
+[278] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/nested-delete-name-in-evalcode.js .... Fail (616294: |delete x| inside a function in eval code, where that eval code includes |var x| at top level, actually does delete the binding for x
+Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 1 line))
 [279] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/preventExtensions-cross-global.js .... Excluded (Proxy not supported)
 [280] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/proxy-__proto__.js .... Excluded (Proxy not supported)
 [281] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/proxy-array-target-length-definition.js .... Excluded (Proxy not supported)
@@ -960,8 +961,8 @@ Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 1 line))
 [806] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-360969-04.js .... Fail (BUGNUMBER: 360969
 STATUS: 2^17: global const
 Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 1 line))
-[807] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-360969-05.js .... Timeout
-[808] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-360969-06.js .... Timeout
+[807] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-360969-05.js .... Success
+[808] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-360969-06.js .... Success
 [809] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-361467.js .... Excluded (Object.prototype.watch() not supported)
 [810] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-361617.js .... Excluded (Object.prototype.watch() not supported)
 [811] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-362583.js .... Excluded (Object.prototype.watch() not supported)
@@ -1151,7 +1152,7 @@ Uncaught RangeError: Maximum call stack size exceeded.)
 [989] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/String/regress-107771.js .... Success
 [990] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/String/regress-112626.js .... Success
 [991] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/String/regress-179068.js .... Success
-[992] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/String/replace-flags.js .... Fail (Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 19 line))
+[992] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/String/replace-flags.js .... Excluded (Template string not supported)
 [993] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/catchguard-001-n.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'catch' (Parse Error 29 line))
 [994] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/catchguard-001.js .... Fail (Uncaught SyntaxError:  (Parse Error 23 line))
 [995] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/catchguard-002.js .... Fail (Uncaught SyntaxError:  (Parse Error 23 line))
@@ -1558,7 +1559,7 @@ STATUS: Array Generic Methods
 STATUS: String static methods
 STATUS: See https://bugzilla.mozilla.org/show_bug.cgi?id=304828
 Uncaught TypeError: Callee is not a function object)
-[1224] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/nested-for-each.js .... Fail (Uncaught SyntaxError:  (Parse Error 31 line))
+[1224] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/nested-for-each.js .... Excluded (for each ... in not supported (E4X support has been removed))
 [1225] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/regress-312385-01.js .... Fail (BUGNUMBER: 312385
 STATUS: Generic methods with null or undefined |this|
 Uncaught TypeError: Assertion failed: got "undefined", expected "function)
@@ -2187,7 +2188,7 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1800] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-607799.js .... Success
 [1801] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-607863.js .... Fail (Uncaught evalcx() not supported)
 [1802] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-609617.js .... Fail ()
-[1803] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-610026.js .... Timeout
+[1803] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-610026.js .... Fail (Uncaught TypeError: Assertion failed: got "fail: expected InternalError: program too large", expected "pass)
 [1804] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-614714.js .... Success
 [1805] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-617405-1.js .... Success
 [1806] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-617405-2.js .... Success
@@ -2228,7 +2229,7 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1841] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-810525.js .... Success
 [1842] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
-succ : 1041
-fail : 328
-ignore : 469
-timeout : 4
+succ : 1043
+fail : 327
+ignore : 471
+timeout : 1

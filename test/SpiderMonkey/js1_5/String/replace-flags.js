@@ -1,3 +1,4 @@
+// escargot-skip: Template string not supported
 // |reftest| skip-if(!xulRuntime.shell)
 
 var BUGNUMBER = 1142351;

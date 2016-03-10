@@ -1,3 +1,5 @@
+// escargot-skip: iterator not supported
+// |reftest| skip
 //Bug 350712
 
 function iterator () {
