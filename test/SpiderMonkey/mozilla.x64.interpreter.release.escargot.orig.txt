@@ -109,8 +109,7 @@ Uncaught TypeError: Assertion failed: got "false", expected "true)
 [61] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Global/adding-global-var-nonextensible-error.js .... Success
 [62] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Global/bug-320887.js .... Fail ()
 [63] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Global/bug660612.js .... Fail (Uncaught TypeError: Assertion failed: got "false", expected "true)
-[64] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Global/cross-global-implicit-this.js .... Fail (671947: Unqualified function invocation uses the global object of the called property as |this|
-Uncaught ReferenceError: newGlobal is not defined)
+[64] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Global/cross-global-implicit-this.js .... Excluded (needs newGlobal())
 [65] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Global/decodeURI-decodes-FFFE-FFFF.js .... Success
 [66] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Global/delete-global-NaN-property.js .... Success
 [67] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Global/direct-eval-but-not.js .... Success
@@ -366,10 +365,8 @@ Uncaught ReferenceError: InternalError is not defined)
 [259] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/bug566661.js .... Fail ()
 [260] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/builtin-function-arguments-caller.js .... Fail (929642: Built-in functions defined in ECMAScript pick up arguments/caller properties from Function.prototype
 Uncaught TypeError: cannot convert undefined into object)
-[261] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/cross-global-eval-is-indirect.js .... Fail (608473: |var eval = otherWindow.eval; eval(...)| should behave like indirectly calling that eval from a script in that other window
-Uncaught ReferenceError: newGlobal is not defined)
-[262] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/cross-global-getPrototypeOf.js .... Fail (770344: Object.getPrototypeOf behavior across compartments
-Uncaught ReferenceError: newGlobal is not defined)
+[261] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/cross-global-eval-is-indirect.js .... Excluded (needs newGlobal())
+[262] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/cross-global-getPrototypeOf.js .... Excluded (needs newGlobal())
 [263] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/destructuring-__proto__-shorthand-assignment-before-var.js .... Fail (Uncaught SyntaxError:  (Parse Error 28 line))
 [264] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/destructuring-__proto__-shorthand-assignment.js .... Excluded (Destructuring assignment syntax is not supported)
 [265] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/destructuring-__proto__-target-assignment.js .... Excluded (Destructuring assignment syntax is not supported)
@@ -382,7 +379,7 @@ Uncaught TypeError: Callee is not a function object)
 [270] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/extension-methods-reject-null-undefined-this.js .... Fail (619283: ECMAScript built-in methods that immediately throw when |this| is |undefined| or |null| (due to CheckObjectCoercible, ToObject, or ToString)
 Uncaught TypeError: Assertion failed: got "false", expected "true: wrong error for String.prototype.substr.call(null), instead threw Error: String.prototype.substr.call(null) didn't throw a TypeError)
 [271] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/function-caller-skips-eval-frames.js .... Fail (Uncaught TypeError: Assertion failed: got "undefined", expected "function nest() {})
-[272] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/function-caller-strict-cross-global.js .... Fail (Uncaught ReferenceError: newGlobal is not defined)
+[272] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/function-caller-strict-cross-global.js .... Excluded (needs newGlobal())
 [273] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/function-definition-with.js .... Excluded (with statement not supported)
 [274] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/function-properties.js .... Fail (Uncaught TypeError: Assertion failed: got "undefined", expected "null)
 [275] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/getOwnPropertyNames-__proto__.js .... Fail (837630: __proto__ should show up with O.getOwnPropertyNames(O.prototype)
@@ -2288,6 +2285,6 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1842] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
 succ : 1037
-fail : 379
-ignore : 422
+fail : 375
+ignore : 426
 timeout : 4
