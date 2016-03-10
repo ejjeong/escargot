@@ -27,7 +27,7 @@ function test()
     array[i] = i;
   src += array.join('/;x=/')+'/; x="';
   src += array.join('";x="')+'";';
-  src += 'const some_const = 10';
+  src += 'var some_const = 10';
   eval(src);
 
   reportCompare(expect, actual, summary);

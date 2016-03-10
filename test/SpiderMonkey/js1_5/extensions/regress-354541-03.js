@@ -17,8 +17,8 @@ String.prototype.trim = function() { print('hallo'); };
 
 String.prototype.trim = function() { return 'hallo'; };
 
-const S = String;
-const Sp = String.prototype;
+var S = String;
+var Sp = String.prototype;
 
 expect = 'hallo';
 var expectStringInvariant = true

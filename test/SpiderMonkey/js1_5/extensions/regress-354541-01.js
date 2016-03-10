@@ -15,8 +15,8 @@ printStatus (summary + ': top level');
 
 String.prototype.trim = function() { print('hallo'); };
 
-const S = String;
-const Sp = String.prototype;
+var S = String;
+var Sp = String.prototype;
 
 expect = 'No Error';
 actual = 'No Error';

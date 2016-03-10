@@ -16,7 +16,7 @@ printStatus (summary);
 
 jit(true);
 
-const IS_TOKEN_ARRAY =
+var IS_TOKEN_ARRAY =
   [0, 0, 0, 0, 0, 0, 0, 0, //   0
    0, 0, 0, 0, 0, 0, 0, 0, //   8
    0, 0, 0, 0, 0, 0, 0, 0, //  16
@@ -37,7 +37,7 @@ const IS_TOKEN_ARRAY =
    1, 1, 1, 1, 1, 1, 1, 1, // 112
    1, 1, 1, 0, 1, 0, 1];   // 120
 
-const headerUtils = {
+var headerUtils = {
 normalizeFieldName: function(fieldName)
 {
   if (fieldName == "")

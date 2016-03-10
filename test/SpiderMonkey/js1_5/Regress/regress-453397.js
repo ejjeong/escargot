@@ -29,8 +29,8 @@ function test()
     }
   }
 
-  const numRows = 4;
-  const numCols = 4;
+  var numRows = 4;
+  var numCols = 4;
   var realStep = 1.5;
   for (var i = 0, curReal = -2.1;
        i < numCols;
