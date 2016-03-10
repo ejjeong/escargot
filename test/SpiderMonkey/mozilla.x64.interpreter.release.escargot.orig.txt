@@ -277,10 +277,10 @@ Uncaught TypeError: Assertion failed: got "swallowed", expected "throw: unexpect
 [185] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/getPrototypeOf-array.js .... Success
 [186] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/isPrototypeOf.js .... Success
 [187] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/mutation-prevention-methods.js .... Success
-[188] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/object-create-with-primitive-second-arg.js .... Fail (Uncaught SyntaxError:  (Parse Error 1 line))
+[188] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/object-create-with-primitive-second-arg.js .... Success
 [189] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/object-toString-01.js .... Success
 [190] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/preventExtensions-idempotent.js .... Success
-[191] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/propertyIsEnumerable.js .... Fail (619283: Object.prototype.propertyIsEnumerabl)
+[191] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/propertyIsEnumerable.js .... Success
 [192] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/proto-property-change-writability-set.js .... Fail (713944: Don't assert anything about a shape from the property cache until it's known the cache entry matches
 Uncaught TypeError: Assertion failed: got "[object Object]", expected "3)
 [193] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Object/toLocaleString.js .... Success
@@ -2296,7 +2296,7 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1841] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-810525.js .... Success
 [1842] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
-succ : 1028
-fail : 390
+succ : 1030
+fail : 388
 ignore : 420
 timeout : 4

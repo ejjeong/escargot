@@ -2282,6 +2282,9 @@ ALWAYS_INLINE PassRefPtr<ParseStatus> advance(ParseContext* ctx)
      */
     // Template literals start with ` (U+0060) for template head
     // or } (U+007D) for template middle or template tail.
+    if (cp == 0x7D && ctx->m_curlyStack.size() < 1) {
+        throwEsprimaException();
+    }
     if (cp == 0x60 || (cp == 0x7D && strcmp(ctx->m_curlyStack[ctx->m_curlyStack.size() - 1].m_curly, "${") == 0)) {
         return scanTemplate(ctx);
     }

@@ -1366,11 +1366,14 @@ void GlobalObject::installObject()
         ESObject* O = instance->currentExecutionContext()->resolveThisBindingToObject();
         if (!O->hasOwnProperty(key))
             return ESValue(false);
-        if ((O->isESArrayObject() && O->asESArrayObject()->isFastmode()) || O->isESTypedArrayObject() || O->isESStringObject()) {
+        if ((O->isESArrayObject() && O->asESArrayObject()->isFastmode()) || O->isESTypedArrayObject()) {
             // In fast mode, it was already checked in O->hasOwnProperty.
             return ESValue(true);
         }
         size_t t = O->hiddenClass()->findProperty(key);
+        if (O->isESStringObject() && t == SIZE_MAX) { // index value
+            return ESValue(true);
+        }
         if (O->hiddenClass()->propertyInfo(t).m_flags.m_isEnumerable)
             return ESValue(true);
         return ESValue(false);
