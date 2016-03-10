@@ -34,13 +34,13 @@ ESValue* ExecutionContext::resolveBinding(const InternalAtomicString& atomicName
     return NULL;
 }
 
-ESValue* ExecutionContext::resolveBinding(const InternalAtomicString& atomicName, bool& isBindingMutable)
+ESValue* ExecutionContext::resolveBinding(const InternalAtomicString& atomicName, LexicalEnvironment*& env, bool& isBindingMutable, bool& isBindingConfigurable)
 {
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
-    LexicalEnvironment* env = environment();
+    env = environment();
 
     while (env) {
-        ESValue* slot = env->record()->hasBinding(atomicName, isBindingMutable);
+        ESValue* slot = env->record()->hasBinding(atomicName, isBindingMutable, isBindingConfigurable);
         if (slot)
             return slot;
         env = env->outerEnvironment();

@@ -215,7 +215,7 @@ public:
         RELEASE_ASSERT_NOT_REACHED();
     }
 
-    virtual ESValue* hasBinding(const InternalAtomicString& atomicName, bool& isBindingMutable)
+    virtual ESValue* hasBinding(const InternalAtomicString& atomicName, bool& isBindingMutable, bool& isBindingConfigurable)
     {
         RELEASE_ASSERT_NOT_REACHED();
     }
@@ -320,7 +320,7 @@ public:
         else
             return nullptr;
     }
-    virtual ESValue* hasBinding(const InternalAtomicString& atomicName, bool& isBindingMutable)
+    virtual ESValue* hasBinding(const InternalAtomicString& atomicName, bool& isBindingMutable, bool& isBindingConfigurable)
     {
         return hasBinding(atomicName);
     }
@@ -364,9 +364,13 @@ public:
     {
         if (UNLIKELY(needsActivation)) {
             m_innerIdentifiers = new (GC) InternalAtomicStringVector(innerIdentifiers);
+            if (innerIdentifiers.size() >= std::pow(2, 15))
+                ESVMInstance::currentInstance()->throwError(ESErrorObject::create(ESString::create("Number of variables in single function should be less than 2^15")));
+            m_numVariableDeclarations = innerIdentifiers.size();
         } else {
             m_stackAllocatedData = stackAllocatedData;
             std::fill(stackAllocatedData, &stackAllocatedData[stackAllocatedSize], ESValue());
+            m_numVariableDeclarations = stackAllocatedSize;
         }
         m_needsActivation = needsActivation;
         m_mutableIndex = mutableIndex;
@@ -382,19 +386,22 @@ public:
             return NULL;
         for (unsigned i = 0; i < m_innerIdentifiers->size(); i ++) {
             if ((*m_innerIdentifiers)[i] == atomicName) {
+                if (m_heapAllocatedData[i].isDeleted())
+                    return NULL;
                 return &m_heapAllocatedData[i];
             }
         }
         return NULL;
     }
 
-    virtual ESValue* hasBinding(const InternalAtomicString& atomicName, bool& isBindingMutable)
+    virtual ESValue* hasBinding(const InternalAtomicString& atomicName, bool& isBindingMutable, bool& isBindingConfigurable)
     {
         if (!m_needsActivation)
             return NULL;
         for (unsigned i = 0; i < m_innerIdentifiers->size(); i ++) {
             if ((*m_innerIdentifiers)[i] == atomicName) {
                 isBindingMutable = (i == m_mutableIndex);
+                isBindingConfigurable = (i >= m_numVariableDeclarations);
                 return &m_heapAllocatedData[i];
             }
         }
@@ -442,6 +449,16 @@ public:
         return false;
     }
 
+    bool needsActivation()
+    {
+        return m_needsActivation;
+    }
+
+    size_t numVariableDeclarations()
+    {
+        return m_numVariableDeclarations;
+    }
+
 #ifdef ENABLE_ESJIT
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Winvalid-offsetof"
@@ -457,9 +474,11 @@ protected:
     ESValueVector m_heapAllocatedData;
     bool m_needsActivation:1;
 #ifdef ESCARGOT_32
-    size_t m_mutableIndex:31;
+    size_t m_mutableIndex:15;
+    size_t m_numVariableDeclarations:15;
 #elif ESCARGOT_64
-    size_t m_mutableIndex:63;
+    size_t m_mutableIndex:31;
+    size_t m_numVariableDeclarations:31;
 #endif
 };
 
@@ -474,7 +493,7 @@ public:
     ~GlobalEnvironmentRecord() { }
 
     virtual ESValue* hasBinding(const InternalAtomicString& atomicName);
-    virtual ESValue* hasBinding(const InternalAtomicString& atomicName, bool& isBindingMutable) { return hasBinding(atomicName); }
+    virtual ESValue* hasBinding(const InternalAtomicString& atomicName, bool& isBindingMutable, bool& isBindingConfigurable) { return hasBinding(atomicName); }
     void createMutableBinding(const InternalAtomicString& name, bool canDelete = false);
     void initializeBinding(const InternalAtomicString& name,  const ESValue& V);
     void setMutableBinding(const InternalAtomicString& name, const ESValue& V, bool mustNotThrowTypeErrorExecption);

@@ -162,7 +162,7 @@ ESValue ESVMInstance::evaluate(ESString* source)
     m_currentExecutionContext = m_globalExecutionContext;
     bool oldContextIsStrictMode = oldContext->isStrictMode();
 
-    CodeBlock* block = m_scriptParser->parseScript(this, source, true);
+    CodeBlock* block = m_scriptParser->parseScript(this, source, true, CodeBlock::ExecutableType::GlobalCode);
     if (block->shouldUseStrictMode())
         m_currentExecutionContext->setStrictMode(true);
 
@@ -185,7 +185,7 @@ ESValue ESVMInstance::evaluateEval(ESString* source, bool isDirectCall)
     bool oldContextIsStrictMode = oldContext->isStrictMode();
 
     bool strictFromOutside = m_currentExecutionContext->isStrictMode() && isDirectCall;
-    CodeBlock* block = m_scriptParser->parseScript(this, source, false, strictFromOutside);
+    CodeBlock* block = m_scriptParser->parseScript(this, source, false, CodeBlock::ExecutableType::EvalCode, strictFromOutside);
     bool isStrictCode = block->shouldUseStrictMode();
 
     if (!m_currentExecutionContext || !isDirectCall) {

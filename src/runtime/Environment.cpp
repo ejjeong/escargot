@@ -31,6 +31,11 @@ void DeclarativeEnvironmentRecord::createMutableBinding(const InternalAtomicStri
             return;
         }
     }
+    if (!canDelete) {
+        if (m_innerIdentifiers->size() != m_numVariableDeclarations)
+            RELEASE_ASSERT_NOT_REACHED();
+        m_numVariableDeclarations++;
+    }
     (*m_innerIdentifiers).push_back(name);
     m_heapAllocatedData.push_back(ESValue());
     ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();

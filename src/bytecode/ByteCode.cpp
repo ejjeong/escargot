@@ -7,8 +7,9 @@
 
 namespace escargot {
 
-CodeBlock::CodeBlock(size_t roughCodeBlockSizeInWordSize, bool isBuiltInFunction)
+CodeBlock::CodeBlock(ExecutableType type, size_t roughCodeBlockSizeInWordSize, bool isBuiltInFunction)
 {
+    m_type = type;
     m_ast = NULL;
     if (roughCodeBlockSizeInWordSize)
         m_code.reserve(roughCodeBlockSizeInWordSize * sizeof(size_t));
@@ -315,12 +316,12 @@ void ByteCode::assignOpcodeInAddress()
 }
 
 
-CodeBlock* generateByteCode(ProgramNode* node, bool shouldGenereateBytecodeInstantly)
+CodeBlock* generateByteCode(ProgramNode* node, CodeBlock::ExecutableType type, bool shouldGenereateBytecodeInstantly)
 {
     // size_t dummy;
     // node->computeRoughCodeBlockSizeInWordSize(dummy);
     // CodeBlock* block = CodeBlock::create(node->roughCodeblockSizeInWordSize());
-    CodeBlock* block = CodeBlock::create(0);
+    CodeBlock* block = CodeBlock::create(type, 0);
 
     ByteCodeGenerateContext context(block, true);
     context.m_shouldGenereateByteCodeInstantly = shouldGenereateBytecodeInstantly;

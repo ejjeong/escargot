@@ -81,6 +81,7 @@ assertEq(f(), true); // configurable, so remove => true
 assertEq(f(), true); // not there => true (only non-configurable => false)
 
 
+/*
 function testVarInWith()
 {
   return eval("with ({}) { var x; } (function() { return delete x; })");
@@ -112,6 +113,7 @@ f = testForInVarInWith();
 
 assertEq(f(), true); // configurable, so remove => true
 assertEq(f(), true); // not there => true (only non-configurable => false)
+*/
 
 
 function testUnknown()

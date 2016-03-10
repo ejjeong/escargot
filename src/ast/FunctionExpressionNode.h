@@ -23,7 +23,7 @@ public:
         // m_body->computeRoughCodeBlockSizeInWordSize(myResult);
 
         // CodeBlock* cb = CodeBlock::create(myResult);
-        CodeBlock* cb = CodeBlock::create(0);
+        CodeBlock* cb = CodeBlock::create(CodeBlock::ExecutableType::FunctionCode, 0);
         if (context.m_shouldGenereateByteCodeInstantly) {
             cb->m_stackAllocatedIdentifiersCount = m_stackAllocatedIdentifiersCount;
             cb->m_heapAllocatedIdentifiers = std::move(m_heapAllocatedIdentifiers);

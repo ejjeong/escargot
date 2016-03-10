@@ -2310,12 +2310,16 @@ public:
 };
 
 class CodeBlock : public gc {
-    CodeBlock(size_t roughCodeBlockSizeInWordSize, bool isBuiltInFunction);
 public:
-    static CodeBlock* create(size_t roughCodeBlockSizeInWordSize = 0, bool isBuiltInFunction = false)
+    enum ExecutableType { GlobalCode, FunctionCode, EvalCode };
+    static CodeBlock* create(ExecutableType type, size_t roughCodeBlockSizeInWordSize = 0, bool isBuiltInFunction = false)
     {
-        return new CodeBlock(roughCodeBlockSizeInWordSize, isBuiltInFunction);
+        return new CodeBlock(type, roughCodeBlockSizeInWordSize, isBuiltInFunction);
     }
+
+private:
+    CodeBlock(ExecutableType type, size_t roughCodeBlockSizeInWordSize, bool isBuiltInFunction);
+public:
     void finalize();
 
     template <typename CodeType>
@@ -2366,6 +2370,7 @@ public:
     std::vector<ByteCodeExtraData> m_extraData;
 #endif
 
+    ExecutableType m_type;
     Node* m_ast;
 
     size_t m_stackAllocatedIdentifiersCount;
@@ -2562,7 +2567,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
 #else
 ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCounter = 0, ESValue* stackStorage = NULL, ESValueVector* heapStorage = NULL);
 #endif
-CodeBlock* generateByteCode(ProgramNode* node, bool shouldGenereateBytecodeInstantly = true);
+CodeBlock* generateByteCode(ProgramNode* node, CodeBlock::ExecutableType type, bool shouldGenereateBytecodeInstantly = true);
 inline void iterateByteCode(CodeBlock* codeBlock, std::function<void(CodeBlock* block, unsigned idx, ByteCode* code, Opcode opcode)> fn);
 
 }

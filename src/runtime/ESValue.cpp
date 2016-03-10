@@ -1014,7 +1014,7 @@ ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlo
 ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, NativeFunctionType fn, escargot::ESString* name, unsigned length, bool isConstructor, bool isBuiltIn)
     : ESFunctionObject(outerEnvironment, (CodeBlock *)NULL, name, length, isConstructor, isBuiltIn)
 {
-    m_codeBlock = CodeBlock::create(0, true);
+    m_codeBlock = CodeBlock::create(CodeBlock::ExecutableType::FunctionCode, 0, true);
     m_codeBlock->m_hasCode = true;
     m_codeBlock->pushCode(ExecuteNativeFunction(fn));
 #ifndef NDEBUG

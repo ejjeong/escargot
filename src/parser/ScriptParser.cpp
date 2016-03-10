@@ -709,7 +709,7 @@ Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* sour
     return programNode;
 }
 
-CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope, bool strictFromOutside)
+CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope, CodeBlock::ExecutableType type, bool strictFromOutside)
 {
 #ifdef ENABLE_CODECACHE
     if (source->length() < 1024) {
@@ -730,7 +730,7 @@ CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString*
     // unsigned long start = ESVMInstance::currentInstance()->tickCount();
     ProgramNode* node = (ProgramNode *)generateAST(instance, source, isForGlobalScope, strictFromOutside);
     ASSERT(node->type() == Program);
-    CodeBlock* cb = generateByteCode(node, source->length() > 1024 * 1024 ? false : true);
+    CodeBlock* cb = generateByteCode(node, type, source->length() > 1024 * 1024 ? false : true);
     // unsigned long end = ESVMInstance::currentInstance()->tickCount();
     // printf("parseScript takes %lfms\n", (end-start)/1000.0);
 #ifdef ENABLE_CODECACHE

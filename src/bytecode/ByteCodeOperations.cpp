@@ -25,12 +25,14 @@ NEVER_INLINE void setByIdSlowCase(ESVMInstance* instance, GlobalObject* globalOb
     // Object.defineProperty(this, "asdf", {value:1}) //this == global
     // asdf = 2
     ESValue* slot;
+    LexicalEnvironment* env = nullptr;
     bool isBindingMutable = false;
+    bool isBindingConfigurable = false;
 
     if (code->m_onlySearchGlobal)
         slot = instance->globalObject()->addressOfProperty(code->m_name.string());
     else
-        slot = ec->resolveBinding(code->m_name, isBindingMutable);
+        slot = ec->resolveBinding(code->m_name, env, isBindingMutable, isBindingConfigurable);
 
     if (LIKELY(slot != NULL)) {
         if (LIKELY(!isBindingMutable)) {
@@ -605,22 +607,34 @@ NEVER_INLINE EnumerateObjectData* executeEnumerateObject(ESObject* obj)
 
 NEVER_INLINE bool deleteBindingOperation(UnaryDelete* code, ExecutionContext* ec, GlobalObject* globalObject)
 {
-    LexicalEnvironment* env = nullptr;
     InternalAtomicString str(code->m_name->utf8Data(), code->m_name->length());
-    ESValue* binding;
-    if (UNLIKELY(str == strings->arguments && !ec->environment()->record()->isGlobalEnvironmentRecord()))
-        binding = ec->resolveArgumentsObjectBinding();
-    else
-        binding = ec->resolveBinding(str, env);
-    if (binding) {
-        if (env && env->record()->isGlobalEnvironmentRecord()) {
-            bool res = globalObject->deleteProperty(code->m_name);
-            return res;
-        } else {
-            return false;
-        }
+    if (UNLIKELY(str == strings->arguments && !ec->environment()->record()->isGlobalEnvironmentRecord())) {
+        return false;
     } else {
-        return true;
+        LexicalEnvironment* env = nullptr;
+        bool isBindingMutable = false;
+        bool isBindingConfigurable = false;
+        ESValue* binding = ec->resolveBinding(str, env, isBindingMutable, isBindingConfigurable);
+        if (binding) {
+            ASSERT(env);
+            if (env->record()->isGlobalEnvironmentRecord()) {
+                bool res = globalObject->deleteProperty(code->m_name);
+                return res;
+            } else if (env->record()->isDeclarativeEnvironmentRecord()) {
+                DeclarativeEnvironmentRecord* record = (DeclarativeEnvironmentRecord*)env->record();
+                ASSERT(record->needsActivation());
+                if (isBindingConfigurable) {
+                    *binding = ESValue::ESDeletedValueTag::ESDeletedValue;
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } else {
+            return true;
+        }
     }
 }
 

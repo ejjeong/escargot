@@ -87,8 +87,7 @@ Uncaught TypeError: Assertion failed: got "0", expected "4294967295)
 [40] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Exceptions/error-property-enumerability.js .... Fail (Uncaught TypeError: Assertion failed: got "true", expected "false: new Error(...).message should not be enumerable)
 [41] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Expressions/11.1.5-01.js .... Success
 [42] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Expressions/named-accessor-function.js .... Success
-[43] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Expressions/nested-delete-name-in-evalcode.js .... Fail (616294: |delete x| inside a function in eval code, where that eval code includes |var x| at top level, actually does delete the binding for x
-Uncaught TypeError: Assertion failed: got "false", expected "true)
+[43] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Expressions/nested-delete-name-in-evalcode.js .... Success
 [44] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Expressions/object-literal-accessor-arguments.js .... Success
 [45] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Expressions/object-literal-accessor-property-name.js .... Success
 [46] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Expressions/primitive-this-boxing-behavior.js .... Success
@@ -329,7 +328,7 @@ Uncaught ReferenceError: InternalError is not defined)
 [225] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/String/string-upper-lower-mapping.js .... Fail (Uncaught TypeError: Assertion failed: got "181", expected "924)
 [226] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Types/8.12.5-01.js .... Success
 [227] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/exhaustive-fun-normalcaller-direct-normalcode.js .... Fail (514568: eval in all its myriad flavors
-Uncaught TypeError: Assertion failed: got "false", expected "true)
+Uncaught TypeError: Assertion failed: got "42", expected "71)
 [228] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/exhaustive-fun-normalcaller-direct-strictcode.js .... Success
 [229] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/exhaustive-fun-normalcaller-indirect-normalcode.js .... Success
 [230] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/exhaustive-fun-normalcaller-indirect-strictcode.js .... Success
@@ -337,17 +336,14 @@ Uncaught TypeError: Assertion failed: got "false", expected "true)
 [232] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/exhaustive-fun-strictcaller-direct-strictcode.js .... Success
 [233] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/exhaustive-fun-strictcaller-indirect-normalcode.js .... Success
 [234] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/exhaustive-fun-strictcaller-indirect-strictcode.js .... Success
-[235] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/exhaustive-global-normalcaller-direct-normalcode.js .... Fail (514568: eval in all its myriad flavors
-Uncaught TypeError: Assertion failed: got "false", expected "true)
+[235] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/exhaustive-global-normalcaller-direct-normalcode.js .... Success
 [236] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/exhaustive-global-normalcaller-direct-strictcode.js .... Success
-[237] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/exhaustive-global-normalcaller-indirect-normalcode.js .... Fail (514568: eval in all its myriad flavors
-Uncaught TypeError: Assertion failed: got "false", expected "true)
+[237] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/exhaustive-global-normalcaller-indirect-normalcode.js .... Success
 [238] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/exhaustive-global-normalcaller-indirect-strictcode.js .... Fail (514568: eval in all its myriad flavors
 Uncaught ReferenceError: assignment to undeclared variable y)
 [239] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/exhaustive-global-strictcaller-direct-normalcode.js .... Success
 [240] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/exhaustive-global-strictcaller-direct-strictcode.js .... Success
-[241] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/exhaustive-global-strictcaller-indirect-normalcode.js .... Fail (514568: eval in all its myriad flavors
-Uncaught TypeError: Assertion failed: got "false", expected "true)
+[241] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/exhaustive-global-strictcaller-indirect-normalcode.js .... Success
 [242] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/exhaustive-global-strictcaller-indirect-strictcode.js .... Success
 [243] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/line-terminator-paragraph-terminator.js .... Success
 [244] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/undeclared-name-in-nested-strict-eval.js .... Success
@@ -590,8 +586,7 @@ As described in Netscape doc "Whats new in JavaScript 1.2" RegExp: compile)
 [460] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_2/version120/shell.js test/SpiderMonkey/js1_2/version120/regress-99663.js .... Excluded (with statement not supported)
 [461] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_3/jsref.js .... Success
 [462] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_3/Boolean/boolean-001.js .... Success
-[463] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_3/Script/delete-001.js .... Fail (JS1_2 The variable statement
-Uncaught TypeError: cannot redefine property)
+[463] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_3/Script/delete-001.js .... Success
 [464] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_3/Script/function-001-n.js .... Excluded (obsolete test)
 [465] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_3/Script/function-002.js .... Success
 [466] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_3/Script/in-001.js .... Success
@@ -611,8 +606,7 @@ Uncaught TypeError: cannot redefine property)
 [480] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_3/inherit/proto_7.js .... Success
 [481] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_3/inherit/proto_8.js .... Success
 [482] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_3/inherit/proto_9.js .... Success
-[483] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_3/regress/delete-001.js .... Fail (JS1_2 The variable statement
-Uncaught TypeError: cannot redefine property)
+[483] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_3/regress/delete-001.js .... Success
 [484] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_3/regress/function-001-n.js .... Excluded (obsolete test)
 [485] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_3/regress/function-002.js .... Success
 [486] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_3/regress/in-001.js .... Success
@@ -2296,7 +2290,7 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1841] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-810525.js .... Success
 [1842] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
-succ : 1030
-fail : 388
+succ : 1036
+fail : 382
 ignore : 420
 timeout : 4

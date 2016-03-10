@@ -298,7 +298,7 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         CreateBindingOpcodeLbl:
         {
             CreateBinding* code = (CreateBinding*)currentCode;
-            ec->environment()->record()->createMutableBindingForAST(code->m_name, false);
+            ec->environment()->record()->createMutableBindingForAST(code->m_name, codeBlock->m_type == CodeBlock::ExecutableType::EvalCode);
             ESVMInstance::currentInstance()->invalidateIdentifierCacheCheckCount();
             executeNextCode<CreateBinding>(programCounter);
             NEXT_INSTRUCTION();

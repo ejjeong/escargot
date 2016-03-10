@@ -828,7 +828,7 @@ void GlobalObject::installFunction()
     // $19.2.1 Function Constructor
     m_function = ESFunctionObject::create(NULL, [](ESVMInstance* instance) -> ESValue {
         int len = instance->currentExecutionContext()->argumentCount();
-        CodeBlock* codeBlock = CodeBlock::create();
+        CodeBlock* codeBlock = CodeBlock::create(CodeBlock::ExecutableType::FunctionCode);
         if (len == 0) {
             ByteCodeGenerateContext context(codeBlock, false);
             codeBlock->pushCode(ReturnFunction(), context, NULL);
@@ -952,7 +952,7 @@ void GlobalObject::installFunction()
         if (!thisVal.isESPointer() || !thisVal.asESPointer()->isESFunctionObject()) {
             instance->throwError(ESValue(TypeError::create(ESString::create("this value should be function"))));
         }
-        CodeBlock* cb = CodeBlock::create();
+        CodeBlock* cb = CodeBlock::create(CodeBlock::ExecutableType::FunctionCode);
         ByteCodeGenerateContext context(cb, false);
         CallBoundFunction code;
         code.m_boundTargetFunction = thisVal.asESPointer()->asESFunctionObject();

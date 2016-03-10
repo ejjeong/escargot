@@ -276,6 +276,8 @@ class Driver(object):
         for a_v_m_e in a_v_m_es:
             if "escargot" in a_v_m_e[3]:
                 shell = os.path.join("out", a_v_m_e[0], a_v_m_e[1], a_v_m_e[2], "escargot")
+                build_cmd = ['make', '.'.join([a_v_m_e[0], a_v_m_e[1], a_v_m_e[2]]), '-j']
+                subprocess.check_call(build_cmd)
             elif "jsc" in a_v_m_e[3]:
                 shell = os.path.join("test", "bin", a_v_m_e[0], "jsc", "baseline", "jsc")
             elif "v8" in a_v_m_e[3]:
