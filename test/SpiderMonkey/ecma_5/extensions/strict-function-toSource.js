@@ -1,3 +1,4 @@
+// escargot-skip: options() not supported
 /*
  * Bug 800407 - Functions defined with Function construcor
  * do have strict mode when JSOPTION_STRICT_MODE is on.

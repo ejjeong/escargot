@@ -1,3 +1,4 @@
+// escargot-skip: options() not supported
 // Turn on strict mode and warnings-as-errors mode.
 if (options().split().indexOf('strict') == -1)
     options('strict');
