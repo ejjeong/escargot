@@ -3960,6 +3960,8 @@ escargot::Node* parseFunctionDeclaration(ParseContext* ctx/*node, identifierIsOp
                 // message = Messages.StrictReservedWord;
             }
         }
+    } else {
+        throwEsprimaException(u"Unnamed function declaration is forbidden");
     }
 
     ctx->m_allowYield = !isGenerator;

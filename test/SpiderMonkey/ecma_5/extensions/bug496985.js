@@ -1,3 +1,4 @@
+// escargot-skip: uneval() not supported
 var a = function() {
     return function ({x: arguments}) {
         return arguments;

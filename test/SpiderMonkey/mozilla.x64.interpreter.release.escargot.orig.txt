@@ -336,8 +336,7 @@ Uncaught ReferenceError: InternalError is not defined)
 [235] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/exhaustive-global-normalcaller-direct-normalcode.js .... Success
 [236] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/exhaustive-global-normalcaller-direct-strictcode.js .... Success
 [237] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/exhaustive-global-normalcaller-indirect-normalcode.js .... Success
-[238] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/exhaustive-global-normalcaller-indirect-strictcode.js .... Fail (514568: eval in all its myriad flavors
-Uncaught ReferenceError: assignment to undeclared variable y)
+[238] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/exhaustive-global-normalcaller-indirect-strictcode.js .... Success
 [239] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/exhaustive-global-strictcaller-direct-normalcode.js .... Success
 [240] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/exhaustive-global-strictcaller-direct-strictcode.js .... Success
 [241] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/exhaustive-global-strictcaller-indirect-normalcode.js .... Success
@@ -361,8 +360,8 @@ Uncaught TypeError: cannot convert undefined into object)
 [256] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/array-toString-recursion.js .... Fail (635389: Infinite recursion via [].{toString,toLocaleString,join}
 Uncaught ReferenceError: InternalError is not defined)
 [257] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/bug472534.js .... Success
-[258] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/bug496985.js .... Fail ()
-[259] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/bug566661.js .... Fail ()
+[258] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/bug496985.js .... Excluded (uneval() not supported)
+[259] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/bug566661.js .... Excluded (uneval() not supported)
 [260] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/builtin-function-arguments-caller.js .... Fail (929642: Built-in functions defined in ECMAScript pick up arguments/caller properties from Function.prototype
 Uncaught TypeError: cannot convert undefined into object)
 [261] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/cross-global-eval-is-indirect.js .... Excluded (needs newGlobal())
@@ -879,8 +878,7 @@ Uncaught TypeError: Callee is not a function object)
 STATUS: Do not crash when apply method is called on String.prototype.match
 Uncaught TypeError: Assertion failed: got "false", expected "true: No TypeError for String.prototype.match)
 [725] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-295666.js .... Success
-[726] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-299209.js .... Fail (BUGNUMBER: 299209
-STATUS: anonymous function expression statement => JS stack overflo)
+[726] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-299209.js .... Success
 [727] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-299641.js .... Success
 [728] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-303213.js .... Fail (BUGNUMBER: 303213
 STATUS: integer overflow in js
@@ -1443,21 +1441,7 @@ Uncaught TypeError: cannot convert undefined into object)
 [1116] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-374589.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
 [1117] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-375183.js .... Success
 [1118] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-375344.js .... Success
-[1119] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-375801.js .... Fail (BUGNUMBER: 375801
-STATUS: uneval should use "(void 0)" instead of "undefined"
-expect:
- ( { a : ( void 0 ) } ) 
-actual:
- [ object Object ] 
- FAILED! [reported from test()] uneval should use "(void 0)" instead of "undefined": uneval : Expected value ' ( { a : ( void 0 ) } ) ', Actual value ' [ object Object ] ' 
- FAILED! [reported from test()] uneval should use "(void 0)" instead of "undefined": uneval: compile actual : Expected value 'No Error', Actual value 'SyntaxError:  (Parse Error 1 line)' 
-expect:
- function ( ) { ( { a : undefined } ) ; } 
-actual:
- function ( ) { } 
- FAILED! [reported from test()] uneval should use "(void 0)" instead of "undefined": toString : Expected value ' function ( ) { ( { a : undefined } ) ; } ', Actual value ' function ( ) { } ' 
- PASSED! uneval should use "(void 0)" instead of "undefined": toString: compile actual
-Uncaught TypeError: Callee is not a function object)
+[1119] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-375801.js .... Excluded (uneval() not supported)
 [1120] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-380581.js .... Success
 [1121] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-380889.js .... Success
 [1122] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-381211.js .... Success
@@ -2284,7 +2268,7 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1841] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-810525.js .... Success
 [1842] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
-succ : 1037
-fail : 375
-ignore : 426
+succ : 1039
+fail : 370
+ignore : 429
 timeout : 4
