@@ -393,10 +393,10 @@ Uncaught TypeError: Assertion failed: got "false", expected "true: should have g
 [284] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/regress-bug567606.js .... Excluded (for..of statement not supported)
 [285] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/regress-bug607284.js .... Fail (Uncaught evalcx() not supported)
 [286] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/regress-bug629723.js .... Success
-[287] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/reviver-mutates-holder-array-ccw.js .... Fail (901351: Behavior when the JSON.parse reviver mutates the holder array)
+[287] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/reviver-mutates-holder-array-ccw.js .... Excluded (evaluate() not supported)
 [288] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/reviver-mutates-holder-array-nonnative.js .... Fail (901380: Behavior when JSON.parse walks over a non-native object)
 [289] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/reviver-mutates-holder-array.js .... Excluded (Proxy not supported)
-[290] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/reviver-mutates-holder-object-ccw.js .... Fail (901351: Behavior when the JSON.parse reviver mutates the holder object)
+[290] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/reviver-mutates-holder-object-ccw.js .... Excluded (evaluate() not supported)
 [291] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/reviver-mutates-holder-object-nonnative.js .... Fail (901380: Behavior when JSON.parse walks over a non-native object)
 [292] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/reviver-mutates-holder-object.js .... Excluded (Proxy not supported)
 [293] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/strict-function-statements.js .... Fail ()
@@ -422,8 +422,7 @@ Uncaught TypeError: Assertion failed: got "false", expected "true: wrong error f
 [310] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/explicit-undefined-optional-argument.js .... Success
 [311] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/function-definition-eval.js .... Fail (577325: Implement the ES5 algorithm for processing function statements
 Uncaught FAIL set 1 function acc1() {})
-[312] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/function-definition-evaluate.js .... Fail (577325: Implement the ES5 algorithm for processing function statements
-Uncaught ReferenceError: evaluate is not defined)
+[312] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/function-definition-evaluate.js .... Excluded (evaluate() not supported)
 [313] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/future-reserved-words.js .... Success
 [314] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/getter-setter-outerize-this.js .... Success
 [315] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/global-numeric-properties.js .... Success
@@ -431,7 +430,7 @@ Uncaught ReferenceError: evaluate is not defined)
 [317] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/new-with-non-constructor.js .... Excluded (Proxy not supported)
 [318] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/redeclare-var-non-writable-property.js .... Success
 [319] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/regexp-functions-with-undefined.js .... Fail (Uncaught TypeError: Assertion failed: got "-1", expected "0)
-[320] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/regress-bug632003.js .... Success
+[320] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/regress-bug632003.js .... Excluded (evaluate() not supported)
 [321] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/syntax-error-end-of-for-head-part.js .... Success
 [322] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/unicode-escaped-keyword.js .... Success
 [323] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/misc/unicode-identifier-1d17.js .... Success
@@ -765,7 +764,7 @@ Uncaught TypeError: Callee is not a function object)
 [628] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-118849.js .... Success
 [629] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-119719.js .... Excluded (obsolete test)
 [630] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-127243.js .... Excluded (Object.prototype.watch() not supported)
-[631] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-127557.js .... Success
+[631] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-127557.js .... Excluded (evaluate() not supported)
 [632] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-131510-001.js .... Success
 [633] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-139316.js .... Excluded (non-standard Error.prototype.stack)
 [634] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-140852.js .... Success
@@ -1175,7 +1174,7 @@ Uncaught RangeError: Maximum call stack size exceeded.)
 [1012] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-254375.js .... Success
 [1013] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-255245.js .... Success
 [1014] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-291213.js .... Success
-[1015] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-300079.js .... Success
+[1015] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-300079.js .... Excluded (evaluate() not supported)
 [1016] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-303277.js .... Excluded (Object.prototype.watch() not supported)
 [1017] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-304897.js .... Success
 [1018] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-306738.js .... Success
@@ -2229,7 +2228,7 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1841] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-810525.js .... Success
 [1842] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
-succ : 1044
-fail : 331
-ignore : 463
+succ : 1041
+fail : 328
+ignore : 469
 timeout : 4

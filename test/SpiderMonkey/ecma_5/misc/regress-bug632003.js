@@ -1,3 +1,4 @@
+// escargot-skip: evaluate() not supported
 /* -*- indent-tabs-mode: nil; js-indent-level: 2 -*- */
 /*
  * Any copyright is dedicated to the Public Domain.
