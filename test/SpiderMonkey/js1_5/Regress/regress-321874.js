@@ -172,7 +172,7 @@ catch(ex)
   actual = 'error';
 } 
 reportCompare(expect, actual, summary + section);
-
+/*
 const c = 0;
 expect = 'error';
 section = ': for(c in b);';
@@ -205,3 +205,4 @@ catch(ex)
   actual = 'error';
 } 
 reportCompare(expect, actual, summary + section);
+*/
