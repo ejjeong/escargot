@@ -373,11 +373,10 @@ Uncaught TypeError: cannot convert undefined into object)
 [267] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/error-tostring-function.js .... Success
 [268] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/es5ish-defineGetter-defineSetter.js .... Fail (715821: Implement __define[GS]etter__ using Object.defineProperty
 Uncaught TypeError: Callee is not a function object)
-[269] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/eval-native-callback-is-indirect.js .... Fail (604504: eval called from a native function is indirect
-Uncaught TypeError: Callee is not a function object)
+[269] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/eval-native-callback-is-indirect.js .... Excluded (String.replace not supported)
 [270] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/extension-methods-reject-null-undefined-this.js .... Fail (619283: ECMAScript built-in methods that immediately throw when |this| is |undefined| or |null| (due to CheckObjectCoercible, ToObject, or ToString)
 Uncaught TypeError: Assertion failed: got "false", expected "true: wrong error for String.prototype.substr.call(null), instead threw Error: String.prototype.substr.call(null) didn't throw a TypeError)
-[271] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/function-caller-skips-eval-frames.js .... Fail (Uncaught TypeError: Assertion failed: got "undefined", expected "function nest() {})
+[271] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/function-caller-skips-eval-frames.js .... Excluded (deprecated function.caller)
 [272] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/function-caller-strict-cross-global.js .... Excluded (needs newGlobal())
 [273] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/function-definition-with.js .... Excluded (with statement not supported)
 [274] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/function-properties.js .... Fail (Uncaught TypeError: Assertion failed: got "undefined", expected "null)
@@ -410,7 +409,7 @@ Uncaught ReferenceError: options is not defined)
 Uncaught ReferenceError: InternalError is not defined)
 [298] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/toSource-infinite-recursion.js .... Fail (650574: Check for too-deep stack when converting a value to source
 Uncaught ReferenceError: InternalError is not defined)
-[299] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/uneval-strict-functions.js .... Fail (Uncaught SyntaxError:  (Parse Error 47 line))
+[299] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/uneval-strict-functions.js .... Excluded (uneval() not supported)
 [300] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/watch-array-length.js .... Excluded (Object.prototype.watch() not supported)
 [301] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/watch-inherited-property.js .... Excluded (Object.prototype.watch() not supported)
 [302] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/watch-replaced-setter.js .... Excluded (Object.prototype.watch() not supported)
@@ -2082,7 +2081,7 @@ Uncaught TypeError: Assertion failed: got "false", expected "true: expected Type
 [1663] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/is-generator.js .... Excluded (yield not supported)
 [1664] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/mutable-proto-special-form.js .... Excluded (Proxy not supported)
 [1665] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/object-toSource-undefined-getter.js .... Fail (Uncaught TypeError: Callee is not a function object)
-[1666] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/object-toSource-with-symbol-keys.js .... Fail (Uncaught ReferenceError: Symbol is not defined)
+[1666] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/object-toSource-with-symbol-keys.js .... Excluded (Symbol() not supported)
 [1667] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/proxy-fix.js .... Excluded (Proxy not supported)
 [1668] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/proxy-proto-setter.js .... Fail ( PASSED! setting through a setter directly
  PASSED! setting properties works
@@ -2118,7 +2117,7 @@ Uncaught ReferenceError: options is not defined)
 [1693] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/set-property-non-extensible.js .... Excluded (let keyword not supported)
 [1694] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/sharedtypedarray.js .... Excluded (yield not supported)
 [1695] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/sps-generators.js .... Excluded (yield not supported)
-[1696] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/symbol-uneval.js .... Fail (Uncaught ReferenceError: Symbol is not defined)
+[1696] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/symbol-uneval.js .... Excluded (Symbol() not supported)
 [1697] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/toSource-0.js .... Fail (Uncaught SyntaxError:  (Parse Error 1 line))
 [1698] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/typedarray-copyWithin-arguments-detaching.js .... Fail (991981: %TypedArray.prototype.copyWithin shouldn't misbehave horribly if index-argument conversion detaches the underlying ArrayBuffer
 Uncaught TypeError: Assertion failed: got "4096", expected "0: detaching should work for start weirdness)
@@ -2269,6 +2268,6 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1842] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
 succ : 1039
-fail : 370
-ignore : 429
+fail : 365
+ignore : 434
 timeout : 4
