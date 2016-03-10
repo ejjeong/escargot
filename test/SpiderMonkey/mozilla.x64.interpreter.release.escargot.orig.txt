@@ -116,8 +116,7 @@ Uncaught ReferenceError: newGlobal is not defined)
 [67] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Global/direct-eval-but-not.js .... Success
 [68] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Global/eval-01.js .... Success
 [69] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Global/eval-02.js .... Excluded (with statement not supported)
-[70] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Global/eval-in-strict-eval-in-normal-function.js .... Fail (620130: Calls to eval with same code + varying strict mode of script containing eval == fail
-Uncaught TypeError: Assertion failed: got "threw", expected "17)
+[70] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Global/eval-in-strict-eval-in-normal-function.js .... Excluded (with statement not supported)
 [71] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Global/eval-inside-with-is-direct.js .... Excluded (with statement not supported)
 [72] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Global/eval-native-callback-is-indirect.js .... Success
 [73] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Global/parenthesized-eval-is-direct.js .... Success
@@ -327,8 +326,7 @@ Uncaught ReferenceError: InternalError is not defined)
 [224] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/String/string-space-trim.js .... Success
 [225] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/String/string-upper-lower-mapping.js .... Fail (Uncaught TypeError: Assertion failed: got "181", expected "924)
 [226] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Types/8.12.5-01.js .... Success
-[227] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/exhaustive-fun-normalcaller-direct-normalcode.js .... Fail (514568: eval in all its myriad flavors
-Uncaught TypeError: Assertion failed: got "42", expected "71)
+[227] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/exhaustive-fun-normalcaller-direct-normalcode.js .... Success
 [228] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/exhaustive-fun-normalcaller-direct-strictcode.js .... Success
 [229] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/exhaustive-fun-normalcaller-indirect-normalcode.js .... Success
 [230] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/eval/exhaustive-fun-normalcaller-indirect-strictcode.js .... Success
@@ -392,8 +390,7 @@ Uncaught TypeError: Assertion failed: got "false", expected "true: should have g
 [276] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/iterator-in-catch.js .... Fail (Uncaught SyntaxError:  (Parse Error 11 line))
 [277] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/misplaced-inconsistent-directive.js .... Fail (1046964: Misplaced directives (e.g. 'use strict') should trigger warnings if they contradict the actually-used semantics
 Uncaught ReferenceError: options is not defined)
-[278] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/nested-delete-name-in-evalcode.js .... Fail (616294: |delete x| inside a function in eval code, where that eval code includes |var x| at top level, actually does delete the binding for x
-Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 1 line))
+[278] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/nested-delete-name-in-evalcode.js .... Excluded (let keyword not supported)
 [279] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/preventExtensions-cross-global.js .... Excluded (Proxy not supported)
 [280] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/proxy-__proto__.js .... Excluded (Proxy not supported)
 [281] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/proxy-array-target-length-definition.js .... Excluded (Proxy not supported)
@@ -2290,7 +2287,7 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1841] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-810525.js .... Success
 [1842] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
-succ : 1036
-fail : 382
-ignore : 420
+succ : 1037
+fail : 379
+ignore : 422
 timeout : 4

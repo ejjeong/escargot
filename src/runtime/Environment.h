@@ -402,6 +402,8 @@ public:
             if ((*m_innerIdentifiers)[i] == atomicName) {
                 isBindingMutable = (i == m_mutableIndex);
                 isBindingConfigurable = (i >= m_numVariableDeclarations);
+                if (m_heapAllocatedData[i].isDeleted())
+                    return NULL;
                 return &m_heapAllocatedData[i];
             }
         }
