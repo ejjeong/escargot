@@ -1713,29 +1713,27 @@ Uncaught ReferenceError: Iterator is not defined)
 [1435] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-445818.js .... Fail (Uncaught TypeError: cannot convert undefined into object)
 [1436] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-446169-01.js .... Success
 [1437] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-446169-02.js .... Success
-[1438] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-452913.js .... Fail (Uncaught SyntaxError:  (Parse Error 15 line))
+[1438] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-452913.js .... Excluded (let keyword & for each..in statement not supported)
 [1439] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-454744.js .... Fail (Uncaught SyntaxError:  (Parse Error 26 line))
-[1440] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-465337.js .... Excluded (let keyword not supported)
-[1441] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-465453.js .... Fail (Uncaught SyntaxError:  (Parse Error 28 line))
+[1440] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-465337.js .... Excluded (let keyword & for each.. in statement not supported)
+[1441] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-465453.js .... Excluded (for each..in statement not supported)
 [1442] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-469625.js .... Fail (Uncaught SyntaxError:  (Parse Error 29 line))
 [1443] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-471197.js .... Success
-[1444] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-472450-03.js .... Fail (Uncaught SyntaxError:  (Parse Error 28 line))
-[1445] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-472450-04.js .... Fail (BUGNUMBER: 472450
-STATUS: TM: Do not assert: StackBase(fp) + blockDepth == regs.sp
-Uncaught SyntaxError:  (Parse Error 1 line))
+[1444] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-472450-03.js .... Excluded (let keyword & for each..in statement not supported)
+[1445] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-472450-04.js .... Excluded (let keyword & for each..in statement not supported)
 [1446] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-473040.js .... Fail (Uncaught SyntaxError:  (Parse Error 22 line))
 [1447] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-475971.js .... Success
 [1448] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-476414-01.js .... Excluded (yield not supported)
 [1449] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-476414-02.js .... Excluded (yield not supported)
 [1450] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-476427.js .... Excluded (yield not supported)
-[1451] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-476653.js .... Fail (Uncaught SyntaxError:  (Parse Error 18 line))
+[1451] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-476653.js .... Excluded (let keyword & for each..in statement not supported)
 [1452] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-476869.js .... Fail (BUGNUMBER: 476869
 STATUS: Do not assert: v != JSVAL_ERROR_COOKIE
 Uncaught TypeError: Callee is not a function object)
 [1453] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-479252.js .... Success
 [1454] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-479381.js .... Success
 [1455] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-481989.js .... Excluded (Object.prototype.watch() not supported)
-[1456] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-482263.js .... Fail (Uncaught SyntaxError:  (Parse Error 22 line))
+[1456] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-482263.js .... Excluded (let keyword & for each..in statement not supported)
 [1457] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/simple-tree.js .... Excluded (let keyword not supported)
 [1458] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/genexps/regress-347739.js .... Excluded (yield not supported)
 [1459] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/genexps/regress-349012-01.js .... Excluded (yield not supported)
@@ -2144,6 +2142,6 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1842] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
 succ : 1041
-fail : 302
-ignore : 499
+fail : 296
+ignore : 505
 timeout : 0
