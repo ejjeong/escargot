@@ -3,8 +3,7 @@
 [3] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Array/join-01.js .... Success
 [4] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Array/length-01.js .... Success
 [5] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Array/length-nonwritable-redefine-nop.js .... Success
-[6] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Array/length-set-object.js .... Fail (657298: Various quirks of setting array length properties to objects
-Uncaught TypeError: Assertion failed: got "3", expected "2)
+[6] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Array/length-set-object.js .... Success
 [7] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Array/length-truncate-nonconfigurable-sparse.js .... Fail (858381: Array length redefinition behavior with non-configurable elements
 Uncaught TypeError: Assertion failed: got "1", expected "27182819)
 [8] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Array/length-truncate-nonconfigurable.js .... Success
@@ -2140,7 +2139,7 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1841] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-810525.js .... Success
 [1842] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
-succ : 1043
-fail : 294
+succ : 1044
+fail : 293
 ignore : 505
 timeout : 0
