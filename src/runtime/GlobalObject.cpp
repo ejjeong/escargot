@@ -4938,11 +4938,6 @@ void GlobalObject::installNumber()
         return ESValue();
     }, strings->toFixed, 1));
 
-    // $20.1.3.4 Number.prototype.toLocaleString
-    m_numberPrototype->defineDataProperty(ESString::createAtomicString("toLocaleString"), true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
-    }, ESString::createAtomicString("toLocaleString"), 0));
-
     // $20.1.3.5 Number.prototype.toPrecision
     m_numberPrototype->defineDataProperty(strings->toPrecision, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         double number = instance->currentExecutionContext()->resolveThisBinding().toNumber();
@@ -4987,8 +4982,7 @@ void GlobalObject::installNumber()
         return ESValue();
     }, strings->toPrecision, 1));
 
-    // initialize numberPrototype object: $20.1.3.6 Number.prototype.toString()
-    m_numberPrototype->defineDataProperty(strings->toString, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+    escargot::ESFunctionObject* toStringFunction = escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         if (!instance->currentExecutionContext()->resolveThisBinding().isNumber()
             && (instance->currentExecutionContext()->resolveThisBinding().isESPointer() && !instance->currentExecutionContext()->resolveThisBinding().asESPointer()->isESNumberObject()))
             instance->throwError(ESValue(TypeError::create(ESString::create("Type error, The toString function is not generic; it throws a TypeError exception if its this value is not a Number or a Number object"))));
@@ -5021,7 +5015,12 @@ void GlobalObject::installNumber()
         // TODO: in case that 'this' is floating point number
         // TODO: parameter 'null' should throw exception
         return ESValue();
-    }, strings->toString, 1));
+    }, strings->toString, 1);
+    // initialize numberPrototype object: $20.1.3.6 Number.prototype.toString()
+    m_numberPrototype->defineDataProperty(strings->toString, true, false, true, toStringFunction);
+
+    // $20.1.3.4 Number.prototype.toLocaleString
+    m_numberPrototype->defineDataProperty(ESString::createAtomicString("toLocaleString"), true, false, true, toStringFunction);
 
     // $20.1.3.26 Number.prototype.valueOf ( )
     m_numberPrototype->defineDataProperty(strings->valueOf, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {

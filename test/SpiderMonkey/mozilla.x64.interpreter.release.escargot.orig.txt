@@ -24,7 +24,7 @@ Uncaught TypeError: Assertion failed: got "false", expected "true)
 [21] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Array/splice-return-array-elements-defined-not-set.js .... Fail (668024: Array.prototype.splice should define, not set, the elements of the array it returns
 Uncaught Error: setter on Object.prototype called!)
 [22] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Array/splice-suppresses-unvisited-indexes.js .... Success
-[23] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Array/toLocaleString-01.js .... Fail (562446: ES5: Array.prototype.toLocaleString)
+[23] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Array/toLocaleString-01.js .... Success
 [24] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Array/toString-01.js .... Success
 [25] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Array/unshift-01.js .... Fail (614070: Array.prototype.unshift without args
 Uncaught TypeError: Assertion failed: got "0", expected "4294967295)
@@ -102,7 +102,7 @@ Uncaught TypeError: Assertion failed: got "0", expected "4294967295)
 [56] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Function/function-bind.js .... Success
 [57] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Function/function-call.js .... Success
 [58] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Function/function-caller.js .... Success
-[59] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Function/redefine-arguments-length.js .... Fail (539766: Object.defineProperty sets arguments.length without setting the length-overridden bit)
+[59] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Function/redefine-arguments-length.js .... Success
 [60] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Function/strict-arguments.js .... Success
 [61] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Global/adding-global-var-nonextensible-error.js .... Success
 [62] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Global/bug-320887.js .... Fail ()
@@ -1571,9 +1571,7 @@ Uncaught TypeError: Callee is not a function object)
 [1305] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-590813.js .... Fail (Uncaught ReferenceError: Iterator is not defined)
 [1306] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-591450.js .... Success
 [1307] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/326466-01.js .... Excluded (yield not supported)
-[1308] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/builtin-Iterator-function.js .... Fail (BUGNUMBER: (none)
-STATUS: Iterator() test
-Uncaught ReferenceError: Iterator is not defined)
+[1308] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/builtin-Iterator-function.js .... Excluded (iterator not supported)
 [1309] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/close-returns-undefined.js .... Excluded (yield not supported)
 [1310] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/fibonacci-matrix-generator.js .... Excluded (yield not supported)
 [1311] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/geniter/gen-with-call-obj.js .... Excluded (yield not supported)
@@ -2139,7 +2137,7 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1841] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-810525.js .... Success
 [1842] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
-succ : 1044
-fail : 293
-ignore : 505
+succ : 1046
+fail : 290
+ignore : 506
 timeout : 0
