@@ -627,7 +627,7 @@ Uncaught TypeError: Type error)
 [505] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Array/regress-107138.js .... Success
 [506] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Array/regress-108440.js .... Success
 [507] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Array/regress-154338.js .... Success
-[508] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Array/regress-157652.js .... Success
+[508] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Array/regress-157652.js .... Excluded (No test results)
 [509] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Array/regress-178722.js .... Success
 [510] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Array/regress-255555.js .... Success
 [511] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Array/regress-299644.js .... Success
@@ -638,7 +638,7 @@ Uncaught TypeError: Type error)
 STATUS: generic native method dispatcher extra actual arguments
 Uncaught TypeError: cannot convert undefined into object)
 [516] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Array/regress-315509-01.js .... Success
-[517] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Array/regress-330812.js .... Success
+[517] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Array/regress-330812.js .... Excluded (No test results)
 [518] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Array/regress-345961.js .... Success
 [519] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Array/regress-348810.js .... Success
 [520] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Array/regress-350256-01.js .... Success
@@ -1001,7 +1001,7 @@ Uncaught ReferenceError: Iterator is not defined)
 [842] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-419018.js .... Success
 [843] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-419803.js .... Success
 [844] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-420919.js .... Success
-[845] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-422348.js .... Timeout
+[845] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-422348.js .... Excluded (On 64-bit, takes forever rather than throwing)
 [846] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-424311.js .... Success
 [847] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-425360.js .... Success
 [848] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/Regress/regress-426827.js .... Success
@@ -2144,7 +2144,7 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1841] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-810525.js .... Success
 [1842] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
-succ : 1043
+succ : 1041
 fail : 316
-ignore : 482
-timeout : 1
+ignore : 485
+timeout : 0

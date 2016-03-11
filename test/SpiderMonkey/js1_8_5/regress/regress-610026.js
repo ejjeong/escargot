@@ -1,4 +1,4 @@
-// escargot-timeout: 5
+// escargot-timeout: 7
 /* -*- indent-tabs-mode: nil; js-indent-level: 4 -*- */
 /*
  * Any copyright is dedicated to the Public Domain.
