@@ -982,17 +982,18 @@ void GlobalObject::installFunction()
 
     // 19.2.3.3 Function.prototype.call (thisArg , ...args)
     m_functionPrototype->defineDataProperty(ESString::createAtomicString("call"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        auto thisVal = instance->currentExecutionContext()->resolveThisBindingToObject()->asESFunctionObject();
-        if (!instance->currentExecutionContext()->resolveThisBindingToObject()->isESFunctionObject())
-            instance->throwError(ESValue(TypeError::create(ESString::create("Type error"))));
+        auto thisVal = instance->currentExecutionContext()->resolveThisBinding();
+        if (!thisVal.isESPointer() || !thisVal.asESPointer()->isESFunctionObject())
+            instance->throwError(ESValue(TypeError::create(ESString::create("Function.prototype.call: callee is not a function object"))));
         size_t arglen = instance->currentExecutionContext()->argumentCount();
+        size_t callArgLen = (arglen > 0) ? arglen - 1 : 0;
         ESValue thisArg = instance->currentExecutionContext()->readArgument(0);
-        ESValue* arguments = (ESValue*)alloca(sizeof(ESValue) * (arglen - 1));
+        ESValue* arguments = (ESValue*)alloca(sizeof(ESValue) * (callArgLen));
         for (size_t i = 1; i < arglen; i++) {
             arguments[i - 1] = instance->currentExecutionContext()->arguments()[i];
         }
 
-        return ESFunctionObject::call(instance, thisVal, thisArg, arguments, arglen - 1, false);
+        return ESFunctionObject::call(instance, thisVal, thisArg, arguments, callArgLen, false);
     }, ESString::createAtomicString("call"), 1));
 
     defineDataProperty(strings->Function, true, false, true, m_function);

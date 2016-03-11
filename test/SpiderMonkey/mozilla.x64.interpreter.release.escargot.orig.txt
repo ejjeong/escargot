@@ -100,9 +100,8 @@ Uncaught TypeError: Assertion failed: got "0", expected "4294967295)
 [53] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Function/arguments-property-attributes.js .... Success
 [54] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Function/builtin-no-construct.js .... Excluded (Proxy not supported)
 [55] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Function/builtin-no-prototype.js .... Success
-[56] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Function/function-bind.js .... Fail (429507: ES5: Function.prototype.bind
-Uncaught TypeError: Assertion failed: got "false", expected "true)
-[57] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Function/function-call.js .... Fail (575535: Function.prototype.cal)
+[56] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Function/function-bind.js .... Success
+[57] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Function/function-call.js .... Success
 [58] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Function/function-caller.js .... Success
 [59] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Function/redefine-arguments-length.js .... Fail (539766: Object.defineProperty sets arguments.length without setting the length-overridden bit)
 [60] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Function/strict-arguments.js .... Success
@@ -614,7 +613,7 @@ Uncaught TypeError: cannot convert undefined into object)
 [497] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_4/Regress/function-003.js .... Success
 [498] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_4/Regress/function-004-n.js .... Fail (BUGNUMBER: 310502
 funtion-004-n.js Regression test case for 310502
-Uncaught TypeError: Type error)
+Uncaught TypeError: Function.prototype.call: callee is not a function object)
 [499] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_4/Regress/regress-7224.js .... Success
 [500] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_4/Regress/toString-001-n.js .... Fail (BUGNUMBER: 310514
 toString-001.js Regression test case for 310514
@@ -2141,7 +2140,7 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1841] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-810525.js .... Success
 [1842] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
-succ : 1041
-fail : 296
+succ : 1043
+fail : 294
 ignore : 505
 timeout : 0
