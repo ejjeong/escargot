@@ -384,8 +384,7 @@ Uncaught TypeError: Assertion failed: got "false", expected "true: wrong error f
 Uncaught TypeError: Assertion failed: got "false", expected "true: should have gotten __proto__ as a property of Object.prototype (got these properties: constructor,toString,hasOwnProperty,valueOf,isPrototypeOf,propertyIsEnumerable,toLocaleString))
 [276] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/iterator-in-catch.js .... Excluded (iterator not supported)
 [277] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/misplaced-inconsistent-directive.js .... Excluded (options() not supported)
-[278] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/nested-delete-name-in-evalcode.js .... Fail (616294: |delete x| inside a function in eval code, where that eval code includes |var x| at top level, actually does delete the binding for x
-Uncaught SyntaxError: Unexpected keyword 'let' (Parse Error 1 line))
+[278] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/nested-delete-name-in-evalcode.js .... Excluded (let keyword not supported)
 [279] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/preventExtensions-cross-global.js .... Excluded (Proxy not supported)
 [280] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/proxy-__proto__.js .... Excluded (Proxy not supported)
 [281] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/proxy-array-target-length-definition.js .... Excluded (Proxy not supported)
@@ -2145,6 +2144,6 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1842] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
 succ : 1041
-fail : 316
-ignore : 485
+fail : 315
+ignore : 486
 timeout : 0
