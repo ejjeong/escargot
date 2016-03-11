@@ -1473,7 +1473,7 @@ STATUS: Array Generic Methods
 STATUS: String static methods
 STATUS: See https://bugzilla.mozilla.org/show_bug.cgi?id=304828
 Uncaught TypeError: Callee is not a function object)
-[1224] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/nested-for-each.js .... Excluded (for each ... in not supported (E4X support has been removed))
+[1224] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/nested-for-each.js .... Excluded (for each..in statement not supported)
 [1225] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_6/shell.js test/SpiderMonkey/js1_6/extensions/regress-312385-01.js .... Fail (BUGNUMBER: 312385
 STATUS: Generic methods with null or undefined |this|
 Uncaught TypeError: Assertion failed: got "undefined", expected "function)
@@ -1683,20 +1683,20 @@ Uncaught ReferenceError: Iterator is not defined)
 [1405] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-453049.js .... Excluded (let keyword not supported)
 [1406] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-453051.js .... Excluded (let keyword not supported)
 [1407] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-453411.js .... Excluded (yield not supported)
-[1408] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-462071.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
-[1409] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-462282.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
-[1410] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-462388.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
-[1411] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-462407.js .... Fail (Uncaught SyntaxError:  (Parse Error 17 line))
-[1412] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-464403.js .... Fail (Uncaught SyntaxError:  (Parse Error 27 line))
+[1408] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-462071.js .... Excluded (let keyword & for each..in statement not supported)
+[1409] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-462282.js .... Excluded (let keyword & for each..in statement not supported)
+[1410] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-462388.js .... Excluded (let keyword & for each..in statement not supported)
+[1411] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-462407.js .... Excluded (let keyword & for each..in statement not supported)
+[1412] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-464403.js .... Excluded (for each..in statement not supported)
 [1413] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-465236.js .... Excluded (let keyword not supported)
 [1414] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-465424.js .... Excluded (let keyword not supported)
-[1415] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-465484.js .... Fail (Uncaught SyntaxError:  (Parse Error 25 line))
-[1416] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-465686.js .... Fail (Uncaught SyntaxError:  (Parse Error 23 line))
+[1415] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-465484.js .... Excluded (let keyword & for each..in statement not supported)
+[1416] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-465686.js .... Excluded (let keyword & for each..in statement not supported)
 [1417] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-469239-01.js .... Excluded (let keyword not supported)
 [1418] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-469239-02.js .... Excluded (let keyword not supported)
 [1419] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-470223.js .... Excluded (let keyword not supported)
-[1420] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-470388-01.js .... Fail (Uncaught SyntaxError:  (Parse Error 23 line))
-[1421] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-474771.js .... Fail (Uncaught SyntaxError:  (Parse Error 33 line))
+[1420] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-470388-01.js .... Excluded (let keyword & for each..in statement not supported)
+[1421] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-474771.js .... Excluded (let keyword & for each..in statement not supported)
 [1422] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/template.js .... Success
 [1423] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/dekker.js .... Excluded (let keyword not supported)
 [1424] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/expclo.js .... Excluded (let keyword not supported)
@@ -2144,6 +2144,6 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1842] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
 succ : 1041
-fail : 311
-ignore : 490
+fail : 302
+ignore : 499
 timeout : 0
