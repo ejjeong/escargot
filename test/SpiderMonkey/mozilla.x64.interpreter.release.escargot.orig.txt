@@ -1512,10 +1512,10 @@ Uncaught TypeError: Callee is not a function object)
 [1256] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-346773.js .... Excluded (yield not supported)
 [1257] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-350312.js .... Excluded (yield not supported)
 [1258] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-351070-02.js .... Success
-[1259] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-351102-03.js .... Fail (Uncaught SyntaxError:  (Parse Error 30 line))
-[1260] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-351102-04.js .... Fail (Uncaught SyntaxError:  (Parse Error 26 line))
-[1261] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-351102-05.js .... Fail (Uncaught SyntaxError:  (Parse Error 26 line))
-[1262] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-351102-07.js .... Fail (Uncaught SyntaxError:  (Parse Error 34 line))
+[1259] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-351102-03.js .... Excluded (conditional catch clauses not supported)
+[1260] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-351102-04.js .... Excluded (conditional catch clauses not supported)
+[1261] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-351102-05.js .... Excluded (conditional catch clauses not supported)
+[1262] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-351102-07.js .... Excluded (conditional catch clauses not supported)
 [1263] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-352797-01.js .... Excluded (let keyword not supported)
 [1264] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-352885-01.js .... Excluded (yield not supported)
 [1265] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/extensions/regress-352885-02.js .... Excluded (yield not supported)
@@ -2144,6 +2144,6 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1842] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
 succ : 1041
-fail : 315
-ignore : 486
+fail : 311
+ignore : 490
 timeout : 0
