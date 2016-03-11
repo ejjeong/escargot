@@ -1237,55 +1237,7 @@ Uncaught TypeError: Callee is not a function object)
 [1049] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-346494.js .... Excluded (conditional catch clauses not supported)
 [1050] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-350312-01.js .... Success
 [1051] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-350312-02.js .... Excluded (conditional catch clauses not supported)
-[1052] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-350312-03.js .... Fail (BUGNUMBER: 350312
-STATUS: Accessing wrong stack slot with nested catch/finally
-
-=== 0: (function (x) {try {if (x > 41) throw x} finally{var v = 'fin'; actual += v + ',';print(v)}})
-decompiling: function () {}
-fin
- PASSED! Accessing wrong stack slot with nested catch/finally
-fin
- PASSED! Accessing wrong stack slot with nested catch/finally
-fin
- PASSED! Accessing wrong stack slot with nested catch/finally
-fin
- PASSED! Accessing wrong stack slot with nested catch/finally
-fin
- PASSED! Accessing wrong stack slot with nested catch/finally
-
-=== 1: (function (x) {try {if (x > 41) throw x} catch (e) {var v = 'catch all ' + e; print(v); if (e == 44) throw e}})
-decompiling: function () {}
- PASSED! Accessing wrong stack slot with nested catch/finally
-catch all 42
- PASSED! Accessing wrong stack slot with nested catch/finally
-catch all 43
- PASSED! Accessing wrong stack slot with nested catch/finally
-catch all 44
-tried f(44), caught 44
- PASSED! Accessing wrong stack slot with nested catch/finally
-catch all 45
- PASSED! Accessing wrong stack slot with nested catch/finally
-
-=== 2: (function (x) {try {if (x > 41) throw x} catch (e) {var v = 'catch all ' + e; print(v); if (e == 44) throw e} finally{var v = 'fin'; actual += v + ',';print(v)}})
-decompiling: function () {}
-fin
- PASSED! Accessing wrong stack slot with nested catch/finally
-catch all 42
-fin
- PASSED! Accessing wrong stack slot with nested catch/finally
-catch all 43
-fin
- PASSED! Accessing wrong stack slot with nested catch/finally
-catch all 44
-fin
-tried f(44), caught 44
- PASSED! Accessing wrong stack slot with nested catch/finally
-catch all 45
-fin
- PASSED! Accessing wrong stack slot with nested catch/finally
-
-=== 3: (function (x) {try {if (x > 41) throw x} catch (e if e === 42) {var v = 'catch guard 1 ' + e; actual += v + ',';print(v);}})
-Uncaught SyntaxError:  (Parse Error 1 line))
+[1052] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-350312-03.js .... Excluded (conditional catch clauses not supported)
 [1053] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-350531.js .... Excluded (slow)
 [1054] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-351102-01.js .... Excluded (conditional catch clauses not supported)
 [1055] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_5/extensions/regress-351102-02.js .... Excluded (conditional catch clauses not supported)
@@ -2193,6 +2145,6 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1842] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
 succ : 1043
-fail : 317
-ignore : 481
+fail : 316
+ignore : 482
 timeout : 1

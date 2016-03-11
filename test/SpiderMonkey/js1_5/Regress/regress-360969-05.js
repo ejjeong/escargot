@@ -1,3 +1,4 @@
+// escargot-timeout: 20
 // |reftest| skip-if(Android&&isDebugBuild) slow -- bug 1216226
 /* -*- indent-tabs-mode: nil; js-indent-level: 2 -*- */
 /* This Source Code Form is subject to the terms of the Mozilla Public
