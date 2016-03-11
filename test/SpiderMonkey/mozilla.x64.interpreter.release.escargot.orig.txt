@@ -19,8 +19,7 @@ Uncaught TypeError: Assertion failed: got "false", expected "true: should have t
 [17] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Array/regress-599159.js .... Success
 [18] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Array/reverse-order-of-low-high-accesses.js .... Success
 [19] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Array/sort-01.js .... Success
-[20] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Array/sort-array-with-holes-and-undefined.js .... Fail (664528: Sorting an array containing only holes and |undefined| should move all |undefined| to the start of the array
-Uncaught TypeError: Assertion failed: got "false", expected "true)
+[20] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Array/sort-array-with-holes-and-undefined.js .... Success
 [21] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Array/splice-return-array-elements-defined-not-set.js .... Fail (668024: Array.prototype.splice should define, not set, the elements of the array it returns
 Uncaught Error: setter on Object.prototype called!)
 [22] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/Array/splice-suppresses-unvisited-indexes.js .... Success
@@ -2131,7 +2130,7 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1841] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-810525.js .... Success
 [1842] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
-succ : 1048
-fail : 269
+succ : 1049
+fail : 268
 ignore : 525
 timeout : 0

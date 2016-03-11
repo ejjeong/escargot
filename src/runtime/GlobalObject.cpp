@@ -2294,6 +2294,10 @@ void GlobalObject::installArray()
         thisO->sort([defaultSort, &cmpfn, &instance, &thisO] (
             const ::escargot::ESValue& a,
             const ::escargot::ESValue& b) -> bool {
+            if (a.isEmpty() && b.isUndefined())
+                return false;
+            if (a.isUndefined() && b.isEmpty())
+                return true;
             if (a.isEmpty() || a.isUndefined())
                 return false;
             if (b.isEmpty() || b.isUndefined())
