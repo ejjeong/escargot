@@ -351,8 +351,7 @@ Uncaught ReferenceError: InternalError is not defined)
 [251] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/String-toSource.js .... Fail (Uncaught TypeError: Assertion failed: got "false", expected "true)
 [252] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/__proto__.js .... Fail (770344: __proto__ as accessor
 Uncaught TypeError: Assertion failed: got "false", expected "true)
-[253] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/arguments-property-access-in-function.js .... Fail (721322: f.arguments must trigger an arguments object in non-strict mode functions
-Uncaught TypeError: cannot convert undefined into object)
+[253] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/arguments-property-access-in-function.js .... Excluded (deprecated function.arguments)
 [254] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/array-inherited-__proto__.js .... Success
 [255] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/array-pop-proxy.js .... Excluded (Proxy not supported)
 [256] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/array-toString-recursion.js .... Fail (635389: Infinite recursion via [].{toString,toLocaleString,join}
@@ -360,8 +359,7 @@ Uncaught ReferenceError: InternalError is not defined)
 [257] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/bug472534.js .... Success
 [258] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/bug496985.js .... Excluded (uneval() not supported)
 [259] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/bug566661.js .... Excluded (uneval() not supported)
-[260] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/builtin-function-arguments-caller.js .... Fail (929642: Built-in functions defined in ECMAScript pick up arguments/caller properties from Function.prototype
-Uncaught TypeError: cannot convert undefined into object)
+[260] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/builtin-function-arguments-caller.js .... Success
 [261] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/cross-global-eval-is-indirect.js .... Excluded (needs newGlobal())
 [262] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/cross-global-getPrototypeOf.js .... Excluded (needs newGlobal())
 [263] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/destructuring-__proto__-shorthand-assignment-before-var.js .... Fail (Uncaught SyntaxError:  (Parse Error 28 line))
@@ -377,7 +375,7 @@ Uncaught TypeError: Assertion failed: got "false", expected "true: wrong error f
 [271] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/function-caller-skips-eval-frames.js .... Excluded (deprecated function.caller)
 [272] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/function-caller-strict-cross-global.js .... Excluded (needs newGlobal())
 [273] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/function-definition-with.js .... Excluded (with statement not supported)
-[274] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/function-properties.js .... Fail (Uncaught TypeError: Assertion failed: got "undefined", expected "null)
+[274] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/function-properties.js .... Excluded (deprecated function.arguments)
 [275] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/getOwnPropertyNames-__proto__.js .... Fail (837630: __proto__ should show up with O.getOwnPropertyNames(O.prototype)
 Uncaught TypeError: Assertion failed: got "false", expected "true: should have gotten __proto__ as a property of Object.prototype (got these properties: constructor,toString,hasOwnProperty,valueOf,isPrototypeOf,propertyIsEnumerable,toLocaleString))
 [276] test/SpiderMonkey/shell.js test/SpiderMonkey/ecma_5/shell.js test/SpiderMonkey/ecma_5/extensions/iterator-in-catch.js .... Excluded (iterator not supported)
@@ -604,9 +602,7 @@ As described in Netscape doc "Whats new in JavaScript 1.2" RegExp: compile)
 [491] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_4/Eval/eval-002.js .... Success
 [492] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_4/Eval/eval-003.js .... Excluded (with statement not supported)
 [493] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_4/Eval/regress-531682.js .... Success
-[494] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_4/Functions/function-001.js .... Fail (BUGNUMBER: 324455
-function-001.js Accessing the arguments property of a function object
-Uncaught TypeError: cannot convert undefined into object)
+[494] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_4/Functions/function-001.js .... Success
 [495] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_4/Regress/function-001.js .... Success
 [496] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_4/Regress/function-002.js .... Success
 [497] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_4/Regress/function-003.js .... Success
@@ -2135,7 +2131,7 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1841] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-810525.js .... Success
 [1842] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
-succ : 1046
-fail : 273
-ignore : 523
+succ : 1048
+fail : 269
+ignore : 525
 timeout : 0

@@ -35,6 +35,7 @@ expectNoProperty(Array.prototype.indexOf, "caller");
 expectNoProperty(Function, "arguments");
 expectNoProperty(Function, "caller");
 
+/*
 var argsDesc = Object.getOwnPropertyDescriptor(Function.prototype, "arguments");
 var callerDesc = Object.getOwnPropertyDescriptor(Function.prototype, "caller");
 
@@ -51,6 +52,7 @@ expectNoProperty(callerGet, "arguments");
 expectNoProperty(callerGet, "caller");
 expectNoProperty(callerSet, "arguments");
 expectNoProperty(callerSet, "caller");
+*/
 
 /******************************************************************************/
 

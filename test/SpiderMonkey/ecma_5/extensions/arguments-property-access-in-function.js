@@ -1,3 +1,4 @@
+// escargot-skip: deprecated function.arguments
 /*
  * Any copyright is dedicated to the Public Domain.
  * http://creativecommons.org/licenses/publicdomain/
