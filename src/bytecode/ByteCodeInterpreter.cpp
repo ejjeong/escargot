@@ -988,7 +988,12 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
                 memcpy(mergedArguments, code->m_boundArguments, sizeof(ESValue) * code->m_boundArgumentsCount);
             if (instance->currentExecutionContext()->argumentCount())
                 memcpy(mergedArguments + code->m_boundArgumentsCount, instance->currentExecutionContext()->arguments(), sizeof(ESValue) * instance->currentExecutionContext()->argumentCount());
-            return ESFunctionObject::call(instance, code->m_boundTargetFunction, code->m_boundThis, mergedArguments, argc, false);
+            ESValue receiver;
+            if (instance->currentExecutionContext()->isNewExpression())
+                receiver = ec->resolveThisBinding();
+            else
+                receiver = code->m_boundThis;
+            return ESFunctionObject::call(instance, code->m_boundTargetFunction, receiver, mergedArguments, argc, instance->currentExecutionContext()->isNewExpression());
         }
 
         TryOpcodeLbl:

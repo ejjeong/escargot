@@ -338,6 +338,8 @@ NEVER_INLINE bool instanceOfOperation(ESValue* lval, ESValue* rval)
         ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(strings->emptyString)));
     if (rval->isESPointer() && rval->asESPointer()->isESFunctionObject() && lval->isESPointer() && lval->asESPointer()->isESObject()) {
         ESFunctionObject* C = rval->asESPointer()->asESFunctionObject();
+        while (C->isBoundFunc())
+            C = C->codeBlock()->peekCode<CallBoundFunction>(0)->m_boundTargetFunction;
         ESValue P = C->protoType();
         ESValue O = lval->asESPointer()->asESObject()->__proto__();
         if (P.isESPointer() && P.asESPointer()->isESObject()) {
@@ -382,6 +384,7 @@ NEVER_INLINE ESValue newOperation(ESVMInstance* instance, GlobalObject* globalOb
     if (!fn.isESPointer() || !fn.asESPointer()->isESFunctionObject())
         instance->throwError(ESValue(TypeError::create(ESString::create(u"constructor is not an function object"))));
     ESFunctionObject* function = fn.asESPointer()->asESFunctionObject();
+    ESFunctionObject* finalTargetFunction = function;
     if (function->nonConstructor()) {
         UTF16String str;
         str.append(function->name()->toUTF16String());
@@ -392,6 +395,9 @@ NEVER_INLINE ESValue newOperation(ESVMInstance* instance, GlobalObject* globalOb
     if (function->isBoundFunc()) {
         callBoundFunctionCode = function->codeBlock()->peekCode<CallBoundFunction>(0);
         function = callBoundFunctionCode->m_boundTargetFunction;
+        finalTargetFunction = function;
+        while (finalTargetFunction->isBoundFunc())
+            finalTargetFunction = finalTargetFunction->codeBlock()->peekCode<CallBoundFunction>(0)->m_boundTargetFunction;
     }
     ESObject* receiver;
     if (function == globalObject->date()) {
@@ -440,8 +446,8 @@ NEVER_INLINE ESValue newOperation(ESVMInstance* instance, GlobalObject* globalOb
         receiver = ESObject::create();
     }
 
-    if (function->protoType().isObject())
-        receiver->set__proto__(function->protoType());
+    if (finalTargetFunction->protoType().isObject())
+        receiver->set__proto__(finalTargetFunction->protoType());
     else
         receiver->set__proto__(ESObject::create());
 
@@ -451,7 +457,7 @@ NEVER_INLINE ESValue newOperation(ESVMInstance* instance, GlobalObject* globalOb
         ESValue* targetFuncArgs = (ESValue *)alloca(sizeof(ESValue) * targetFuncArgCount);
         memcpy(targetFuncArgs, callBoundFunctionCode->m_boundArguments, sizeof(ESValue) * callBoundFunctionCode->m_boundArgumentsCount);
         memcpy(targetFuncArgs + callBoundFunctionCode->m_boundArgumentsCount, arguments, sizeof(ESValue) * argc);
-        res = ESFunctionObject::call(instance, callBoundFunctionCode->m_boundTargetFunction, receiver, targetFuncArgs, targetFuncArgCount, true);
+        res = ESFunctionObject::call(instance, function, receiver, targetFuncArgs, targetFuncArgCount, true);
     } else
         res = ESFunctionObject::call(instance, fn, receiver, arguments, argc, true);
     if (res.isObject())

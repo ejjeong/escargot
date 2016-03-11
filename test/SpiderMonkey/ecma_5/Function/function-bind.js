@@ -212,14 +212,14 @@ var len1Desc =
 assertEq(len1Desc.value, 3);
 assertEq(len1Desc.writable, false);
 assertEq(len1Desc.enumerable, false);
-assertEq(len1Desc.configurable, true);
+assertEq(len1Desc.configurable, false); // es5 should define 'length' as non-configurable
 
 var len2Desc =
   Object.getOwnPropertyDescriptor(function(a, b, c){}.bind(null, 2), "length");
 assertEq(len2Desc.value, 2);
 assertEq(len2Desc.writable, false);
 assertEq(len2Desc.enumerable, false);
-assertEq(len2Desc.configurable, true);
+assertEq(len2Desc.configurable, false); // es5 should define 'length' as non-configurable
 
 
 /*
@@ -250,10 +250,12 @@ function testBound(fun)
 {
   var boundf = fun.bind();
 
+  /* boundf should own "arguments" and "caller" property
   assertEq(Object.getOwnPropertyDescriptor(boundf, "arguments"), undefined,
            "should be no arguments property");
   assertEq(Object.getOwnPropertyDescriptor(boundf, "caller"), undefined,
            "should be no caller property");
+           */
 
   expectThrowTypeError(function() { return boundf.arguments; });
   expectThrowTypeError(function() { return boundf.caller; });
