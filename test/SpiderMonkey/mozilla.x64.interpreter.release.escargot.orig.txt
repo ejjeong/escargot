@@ -149,6 +149,7 @@ js1_5/Exceptions/errstack-001.js
 js1_5/Exceptions/regress-257751.js
 js1_5/Exceptions/regress-350650-n.js
 js1_5/Expressions/regress-96526-delelem.js
+js1_5/GC/regress-348532.js
 js1_5/GetSet/regress-375976.js
 js1_5/LexicalConventions/regress-469940.js
 js1_5/Regress/regress-114491.js
@@ -367,6 +368,7 @@ js1_8_5/regress/regress-597945-1.js
 js1_8_5/regress/regress-607799.js
 js1_8_5/regress/regress-607863.js
 js1_8_5/regress/regress-609617.js
+js1_8_5/regress/regress-610026.js
 js1_8_5/regress/regress-618572.js
 js1_8_5/regress/regress-619003-1.js
 js1_8_5/regress/regress-646820-1.js
@@ -379,14 +381,4 @@ shell/gcstats.js
 shell/os.js
 shell/warning.js
 ----TIMEOUTS----
-ecma_5/JSON/parse-mega-huge-array.js
-ecma_5/String/replace-math.js
-js1_5/GC/regress-203278-2.js
-js1_5/GC/regress-324278.js
-js1_5/GC/regress-348532.js
-js1_5/Regress/regress-244470.js
-js1_5/Regress/regress-321971.js
-js1_5/Regress/regress-360969-05.js
-js1_5/Regress/regress-360969-06.js
 js1_5/Regress/regress-422348.js
-js1_8_5/regress/regress-610026.js
