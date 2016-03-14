@@ -1971,7 +1971,7 @@ Uncaught evalcx() not supported)
 [1684] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-637985.js .... Excluded (Object.prototype.watch() not supported)
 [1685] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-645160.js .... Fail (Uncaught TypeError: Assertion failed: got "false", expected "true)
 [1686] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-650753.js .... Fail (Uncaught ReferenceError: WeakMap is not defined)
-[1687] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-677589.js .... Fail (Uncaught SyntaxError:  (Parse Error 7 line))
+[1687] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-677589.js .... Excluded (conditional catch clauses not supported)
 [1688] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-677924.js .... Success
 [1689] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-691746.js .... Excluded (Object.prototype.watch() not supported)
 [1690] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/extensions/shell.js test/SpiderMonkey/js1_8_5/extensions/regress-696109.js .... Fail (Uncaught ReferenceError: Reflect is not defined)
@@ -2023,7 +2023,7 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1734] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-383902.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 10 line))
 [1735] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-469758.js .... Excluded (let keyword not supported)
 [1736] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-477053.js .... Success
-[1737] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-500528.js .... Fail (Uncaught SyntaxError:  (Parse Error 18 line))
+[1737] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-500528.js .... Excluded (for each..in statement not supported)
 [1738] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-533876.js .... Excluded (Object.prototype.watch() not supported)
 [1739] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-541255-3.js .... Excluded (let keyword not supported)
 [1740] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-541455.js .... Success
@@ -2079,7 +2079,7 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1790] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-595365-1.js .... Success
 [1791] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-596103.js .... Success
 [1792] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-596805-1.js .... Success
-[1793] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-596805-2.js .... Fail (Uncaught SyntaxError:  (Parse Error 7 line))
+[1793] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-596805-2.js .... Excluded (let keyword & for each..in statement not supported)
 [1794] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-597945-1.js .... Fail (Uncaught SyntaxError:  (Parse Error 18 line))
 [1795] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-597945-2.js .... Success
 [1796] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-598176.js .... Success
@@ -2131,6 +2131,6 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1842] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
 succ : 1066
-fail : 246
-ignore : 530
+fail : 243
+ignore : 533
 timeout : 0
