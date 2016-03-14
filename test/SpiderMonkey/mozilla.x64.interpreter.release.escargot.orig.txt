@@ -1653,7 +1653,7 @@ Uncaught ReferenceError: Iterator is not defined)
 [1386] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-372331.js .... Excluded (yield not supported)
 [1387] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-373827-01.js .... Excluded (let keyword not supported)
 [1388] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-373827-02.js .... Excluded (let keyword not supported)
-[1389] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-375695.js .... Fail (Uncaught SyntaxError:  (Parse Error 22 line))
+[1389] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-375695.js .... Excluded (conditional catch clauses not supported)
 [1390] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-379442.js .... Success
 [1391] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-379483.js .... Success
 [1392] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/regress/regress-385133-01.js .... Excluded (Object.prototype.watch() not supported)
@@ -2131,6 +2131,6 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1842] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
 succ : 1051
-fail : 266
-ignore : 525
+fail : 265
+ignore : 526
 timeout : 0
