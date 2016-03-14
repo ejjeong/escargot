@@ -76,6 +76,7 @@ class XULInfo:
                     kw['os'] = val
                 if key == 'MOZ_DEBUG':
                     kw['isdebug'] = (val == '1')
+
         return cls(**kw)
 
 class XULInfoTester:
@@ -250,6 +251,7 @@ def _find_all_js_files(base, location):
                 yield root, fn
 
 TEST_HEADER_PATTERN_INLINE = re.compile(r'//\s*\|(.*?)\|\s*(.*?)\s*(--\s*(.*))?$')
+TEST_HEADER_PATTERN_INLINE_ESCARGOT_VERSION=re.compile(r'// escargot-(.*): .*$')
 TEST_HEADER_PATTERN_MULTI  = re.compile(r'/\*\s*\|(.*?)\|\s*(.*?)\s*(--\s*(.*))?\*/')
 
 def _parse_test_header(fullpath, testcase, xul_tester):
@@ -268,7 +270,17 @@ def _parse_test_header(fullpath, testcase, xul_tester):
         return
 
     # Extract the token.
-    buf, _, _ = buf.partition('\n')
+    buf, _, next_buf = buf.partition('\n')
+    escargot_matches = TEST_HEADER_PATTERN_INLINE_ESCARGOT_VERSION.match(buf)
+    if escargot_matches:
+        if escargot_matches.group(1) == "skip":
+            testcase.enable = False
+        elif escargot_matches.group(1) == "timeout":
+            testcase.timeout = int(buf[len("// escargot-timeout:"):].strip())
+        elif escargot_matches.group(1) == "env":
+            testcase.env = json.loads(buf[len("// escargot-env:"):].strip())
+        buf = next_buf
+
     matches = TEST_HEADER_PATTERN_INLINE.match(buf)
 
     if not matches:

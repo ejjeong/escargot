@@ -454,7 +454,6 @@ def print_test_summary(num_tests, failures, complete, doing, options):
                 print('    ' + subprocess.list2cmdline(res.cmd))
             else:
                 print('    ' + ' '.join(res.test.jitflags + [res.test.path]))
-
         print('FAILURES:')
         for res in failures:
             if not res.timed_out:

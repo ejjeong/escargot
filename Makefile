@@ -459,6 +459,11 @@ run-test262-wearable:
 	python tools/packaging/test262.py --command ../../escargot $(OPT) --summary | sed 's/RELEASE_ASSERT_NOT_REACHED.*//g' | tee test262log.wearable.gen.txt; \
 	diff test262log.wearable.orig.txt test262log.wearable.gen.txt
 
+run-spidermonkey:
+	cd test/SpiderMonkey; \
+	./jstests.py -s --xul-info=x86_64-gcc3:Linux:false ../../escargot -t 3 --failure-file=mozilla.x64.interpreter.release.escargot.gen.txt; \
+	diff mozilla.x64.interpreter.release.escargot.orig.txt mozilla.x64.interpreter.release.escargot.gen.txt
+
 run-jsc-mozilla:     
 	cd test/JavaScriptCore/mozilla/; \
         perl jsDriver.pl -e escargot -s ../../../escargot

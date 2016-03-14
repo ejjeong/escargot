@@ -224,18 +224,20 @@ class ResultsSink:
                 continue
 
             print(label)
-            for result in results:
+            for result in sorted(results, key=lambda r: r.test.path):
                 print('    {}'.format(' '.join(result.test.jitflags +
                                                [result.test.path])))
 
         if self.options.failure_file:
             failure_file = open(self.options.failure_file, 'w')
             if not self.all_passed():
+                print('----REGRESSIONS----', file=failure_file)
                 if 'REGRESSIONS' in self.groups:
-                    for result in self.groups['REGRESSIONS']:
+                    for result in sorted(self.groups['REGRESSIONS'], key=lambda r: r.test.path):
                         print(result.test.path, file=failure_file)
+                print('----TIMEOUTS----', file=failure_file)
                 if 'TIMEOUTS' in self.groups:
-                    for result in self.groups['TIMEOUTS']:
+                    for result in sorted(self.groups['TIMEOUTS'], key=lambda r: r.test.path):
                         print(result.test.path, file=failure_file)
             failure_file.close()
 

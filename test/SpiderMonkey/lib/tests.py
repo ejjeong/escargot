@@ -166,6 +166,8 @@ class RefTestCase(RefTest):
         self.expect = True   # bool: expected result, True => pass
         self.random = False  # bool: True => ignore output as 'random'
         self.slow = False    # bool: True => test may run slowly
+        self.timeout = None
+        self.env = None
 
         # The terms parsed to produce the above properties.
         self.terms = None

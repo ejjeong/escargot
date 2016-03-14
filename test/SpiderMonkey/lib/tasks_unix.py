@@ -46,7 +46,7 @@ def spawn_test(test, prefix, passthrough, run_skipped, show_cmd):
         os.dup2(wout, 1)
         os.dup2(werr, 2)
 
-    os.execvp(cmd[0], cmd)
+    os.execvpe(cmd[0], cmd, test.env)
 
 def total_seconds(td):
     """
@@ -136,9 +136,10 @@ def timed_out(task, timeout):
     |timeout| may be falsy, indicating an infinite timeout (in which case
     timed_out always returns False).
     """
-    if timeout:
+    escargot_timeout = timeout if timeout else task.test.timeout
+    if escargot_timeout:
         now = datetime.now()
-        return (now - task.start) > timedelta(seconds=timeout)
+        return (now - task.start) > timedelta(seconds=escargot_timeout)
     return False
 
 def reap_zombies(tasks, timeout):

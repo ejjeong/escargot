@@ -12,7 +12,7 @@ output.js
 *.js
 *.swp
 !test/*.js
-*.pyc
+**/*.pyc
 tags
 third_party/bdwgc/.deps
 third_party/bdwgc/.libs

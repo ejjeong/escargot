@@ -921,4 +921,4 @@ function OptLevel( i ) {
 }
 /* end of Rhino functions */
 
-load("test/SpiderMonkey/shell.escargot.js")
+load("shell.escargot.js")
