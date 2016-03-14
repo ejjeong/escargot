@@ -2342,7 +2342,7 @@ void GlobalObject::installArray()
             }
             for (k = 0; k < deleteCnt; k++) {
                 size_t from = start + k;
-                ret->set(k, thisBinded->get(ESValue(from)));
+                ret->defineDataProperty(ESValue(k), true, true, true, thisBinded->get(ESValue(from)));
             }
             size_t argIdx = 2;
             size_t leftInsert = insertCnt;
