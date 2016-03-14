@@ -142,6 +142,9 @@ def parse_args():
                           type='choice', choices=['automation', 'none'],
                           help='Output format. Either automation or none'
                          ' (default %default).')
+    output_og.add_option("-p", "--subpath",
+                         help=("Run only the tests of which path includes SUBPATH"),
+                         default="")
     op.add_option_group(output_og)
 
     special_og = OptionGroup(op, "Special",
@@ -287,6 +290,9 @@ def load_tests(options, requested_paths, excluded_paths):
                     yield tmp_test
         test_count = test_count * len(flags_list)
         test_gen = flag_gen(test_gen)
+
+    if options.subpath:
+        test_gen = (_ for _ in test_gen if os.path.dirname(_.path).find(options.subpath) != -1)
 
     if options.test_file:
         paths = set()

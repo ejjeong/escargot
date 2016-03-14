@@ -461,7 +461,7 @@ run-test262-wearable:
 
 run-spidermonkey:
 	cd test/SpiderMonkey; \
-	./jstests.py -s --xul-info=x86_64-gcc3:Linux:false ../../escargot -t 3 --failure-file=mozilla.x64.interpreter.release.escargot.gen.txt; \
+	./jstests.py -s --xul-info=x86_64-gcc3:Linux:false ../../escargot -t 3 --failure-file=mozilla.x64.interpreter.release.escargot.gen.txt -p "$(OPT)"; \
 	diff mozilla.x64.interpreter.release.escargot.orig.txt mozilla.x64.interpreter.release.escargot.gen.txt
 
 run-jsc-mozilla:     
