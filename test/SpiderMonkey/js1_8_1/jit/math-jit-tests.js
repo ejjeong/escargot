@@ -19,8 +19,8 @@ jit(true);
  */
 // The HOTLOOP constant we depend on; only readable from our stats
 // object in debug builds.
-const haveTracemonkey = !!(this.tracemonkey)
-const HOTLOOP = haveTracemonkey ? tracemonkey.HOTLOOP : 2;
+var haveTracemonkey = !!(this.tracemonkey)
+var HOTLOOP = haveTracemonkey ? tracemonkey.HOTLOOP : 2;
 
 var testName = null;
 if ("arguments" in this && arguments.length > 0)

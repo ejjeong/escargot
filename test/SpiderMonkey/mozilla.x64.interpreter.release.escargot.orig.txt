@@ -1829,32 +1829,32 @@ Uncaught TypeError: Callee is not a function object)
 STATUS: Prototypes of sandboxed arrays
 Uncaught evalcx() not supported)
 [1551] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-466905-05.js .... Excluded (no-op in browser, fails in shell - see bug 554793)
-[1552] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-477158.js .... Fail (Uncaught SyntaxError:  (Parse Error 26 line))
+[1552] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-477158.js .... Excluded (let keyword & for each..in statement not supported)
 [1553] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-477187.js .... Success
 [1554] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/regress-520572.js .... Excluded (Object.prototype.watch() not supported)
 [1555] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/extensions/strict-warning.js .... Excluded (options() not supported)
-[1556] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/math-jit-tests.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
+[1556] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/math-jit-tests.js .... Success
 [1557] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-451673.js .... Excluded (bogus perf test (bug 540512))
 [1558] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-451974-01.js .... Excluded (bogus perf test (bug 540512))
 [1559] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-451974-02.js .... Excluded (bogus perf test (bug 540512))
 [1560] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-452498-01.js .... Excluded (bogus perf test (bug 540512))
-[1561] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-458838.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
-[1562] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-462459-01.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
-[1563] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-462459-02.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
-[1564] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-462459-03.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
-[1565] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-462459-04.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
-[1566] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-462459-05.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
-[1567] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-462459-06.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
-[1568] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-462459-07.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
-[1569] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-462459-08.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
-[1570] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-462459-09.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
-[1571] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-462459-10.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
-[1572] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-462459-11.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
-[1573] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-462459-12.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
+[1561] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-458838.js .... Success
+[1562] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-462459-01.js .... Success
+[1563] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-462459-02.js .... Success
+[1564] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-462459-03.js .... Success
+[1565] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-462459-04.js .... Success
+[1566] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-462459-05.js .... Success
+[1567] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-462459-06.js .... Success
+[1568] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-462459-07.js .... Success
+[1569] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-462459-08.js .... Success
+[1570] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-462459-09.js .... Success
+[1571] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-462459-10.js .... Success
+[1572] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-462459-11.js .... Success
+[1573] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-462459-12.js .... Success
 [1574] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-469927.js .... Excluded (bogus perf test (bug 540512))
 [1575] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-470739.js .... Excluded (bogus perf test (bug 540512))
-[1576] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-471635.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
-[1577] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-489682.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 2 line))
+[1576] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-471635.js .... Success
+[1577] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/jit/shell.js test/SpiderMonkey/js1_8_1/jit/regress-489682.js .... Fail (Uncaught SyntaxError:  (Parse Error 19 line))
 [1578] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-006.js .... Success
 [1579] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-027.js .... Fail (Uncaught SyntaxError:  (Parse Error 27 line))
 [1580] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_1/shell.js test/SpiderMonkey/js1_8_1/regress/regress-452498-030.js .... Success
@@ -2130,7 +2130,7 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1841] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-810525.js .... Success
 [1842] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
-succ : 1051
-fail : 264
-ignore : 527
+succ : 1066
+fail : 248
+ignore : 528
 timeout : 0
