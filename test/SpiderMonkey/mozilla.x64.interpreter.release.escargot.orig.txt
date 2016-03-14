@@ -1631,7 +1631,7 @@ Uncaught ReferenceError: Iterator is not defined)
 [1364] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/iterable/regress-355075-01.js .... Excluded (options() not supported)
 [1365] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/iterable/regress-355090.js .... Success
 [1366] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/iterable/regress-415922.js .... Success
-[1367] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/iterable/regress-568056.js .... Fail (Uncaught SyntaxError:  (Parse Error 18 line))
+[1367] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/iterable/regress-568056.js .... Excluded (iterator not supported)
 [1368] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/lexical/regress-336376-01.js .... Success
 [1369] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/lexical/regress-346642-03.js .... Excluded (obsolete test)
 [1370] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/lexical/regress-346642-04.js .... Fail (Uncaught SyntaxError:  (Parse Error 27 line))
@@ -2131,6 +2131,6 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1842] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
 succ : 1051
-fail : 265
-ignore : 526
+fail : 264
+ignore : 527
 timeout : 0
