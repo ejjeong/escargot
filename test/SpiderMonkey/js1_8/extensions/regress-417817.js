@@ -13,8 +13,8 @@ var expect = '';
 printBugNumber(BUGNUMBER);
 printStatus (summary);
 
-const numThreads = 2;
-const numPasses = 1000;
+var numThreads = 2;
+var numPasses = 1000;
 
 var tests = {
   0: function first(myAn)

@@ -1632,7 +1632,7 @@ Uncaught ReferenceError: Iterator is not defined)
 [1365] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/iterable/regress-355090.js .... Success
 [1366] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/iterable/regress-415922.js .... Success
 [1367] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/iterable/regress-568056.js .... Fail (Uncaught SyntaxError:  (Parse Error 18 line))
-[1368] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/lexical/regress-336376-01.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 30 line))
+[1368] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/lexical/regress-336376-01.js .... Success
 [1369] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/lexical/regress-346642-03.js .... Excluded (obsolete test)
 [1370] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/lexical/regress-346642-04.js .... Fail (Uncaught SyntaxError:  (Parse Error 27 line))
 [1371] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_7/shell.js test/SpiderMonkey/js1_7/lexical/regress-351515.js .... Excluded (yield not supported)
@@ -1699,7 +1699,7 @@ Uncaught ReferenceError: Iterator is not defined)
 [1430] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-394709.js .... Excluded (Object.prototype.watch() not supported)
 [1431] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-415721.js .... Success
 [1432] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-417131.js .... Success
-[1433] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-417817.js .... Fail (Uncaught SyntaxError: Unexpected keyword 'const' (Parse Error 16 line))
+[1433] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-417817.js .... Success
 [1434] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-419091.js .... Excluded (let keyword not supported)
 [1435] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-445818.js .... Fail (Uncaught TypeError: cannot convert undefined into object)
 [1436] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8/shell.js test/SpiderMonkey/js1_8/extensions/regress-446169-01.js .... Success
@@ -2130,7 +2130,7 @@ Uncaught ReferenceError: detachArrayBuffer is not defined)
 [1841] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-810525.js .... Success
 [1842] test/SpiderMonkey/shell.js test/SpiderMonkey/js1_8_5/shell.js test/SpiderMonkey/js1_8_5/regress/regress-yarr-regexp.js .... Fail (Uncaught TypeError: Callee is not a function object)
 total : 1842
-succ : 1049
-fail : 268
+succ : 1051
+fail : 266
 ignore : 525
 timeout : 0

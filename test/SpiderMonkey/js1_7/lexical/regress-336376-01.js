@@ -27,7 +27,7 @@ printStatus(summary);
 //
 
 // all tests
-const ALL_TESTS =
+var ALL_TESTS =
   [
     "CONTEXT_OBJECT_LITERAL_PROPERTY",
     "CONTEXT_OBJECT_PROPERTY_DOT_REFERENCE",
@@ -66,7 +66,7 @@ function r(keyword, tests)
 }
 
 // ECMA-262, 3rd. ed. keywords -- see 7.5.2
-const ECMA_262_3_KEYWORD =
+var ECMA_262_3_KEYWORD =
   [
     r("break"),
     r("case"),
@@ -96,7 +96,7 @@ const ECMA_262_3_KEYWORD =
     ];
 
 // ECMA-262, 3rd. ed. future reserved keywords -- see 7.5.3
-const ECMA_262_3_FUTURERESERVEDKEYWORD =
+var ECMA_262_3_FUTURERESERVEDKEYWORD =
   [
     r("abstract"),
     r("boolean"),
@@ -132,7 +132,7 @@ const ECMA_262_3_FUTURERESERVEDKEYWORD =
     ];
 
 // like reserved words, but not quite reserved words
-const PSEUDO_RESERVED =
+var PSEUDO_RESERVED =
   [
     r("true"),
     r("false"),
@@ -141,7 +141,7 @@ const PSEUDO_RESERVED =
     ];
 
 // new-in-ES4 reserved words -- fill this as each is implemented
-const ECMA_262_4_RESERVED_WORDS =
+var ECMA_262_4_RESERVED_WORDS =
   [
     r("let")
     ];
