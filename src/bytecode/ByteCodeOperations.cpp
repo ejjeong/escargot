@@ -422,6 +422,10 @@ NEVER_INLINE ESValue newOperation(ESVMInstance* instance, GlobalObject* globalOb
         receiver = SyntaxError::create();
     } else if (function == globalObject->rangeError()) {
         receiver = RangeError::create();
+    } else if (function == globalObject->uriError()) {
+        receiver = URIError::create();
+    } else if (function == globalObject->evalError()) {
+        receiver = EvalError::create();
     } else if (function == globalObject->int8Array()) {
         receiver = ESTypedArrayObject<Int8Adaptor>::create();
     } else if (function == globalObject->uint8Array()) {

@@ -26,7 +26,7 @@ function test()
   {
     var list = [
       "Error",
-      "InternalError",
+//      "InternalError",
       "EvalError",
       "RangeError",
       "ReferenceError",
