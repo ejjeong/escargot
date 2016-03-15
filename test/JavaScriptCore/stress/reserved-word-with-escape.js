@@ -44,9 +44,9 @@ testSyntaxError("var [var] = obj", "SyntaxError: Cannot use the keyword 'var' as
 testSyntaxError("var [v\u0061r] = obj", "SyntaxError: Cannot use the keyword 'v\u0061r' as a variable name. (Parse Error 1 line)");
 testSyntaxError("var [v\u{0061}r] = obj", "SyntaxError: Cannot use the keyword 'v\u{0061}r' as a variable name. (Parse Error 1 line)");
 
-testSyntaxError("[var] = obj", "SyntaxError: Unexpected Keyword 'var' (Parse Error 1 line)");
-testSyntaxError("[v\u0061r] = obj", "SyntaxError: Unexpected Keyword 'v\u0061r' (Parse Error 1 line)");
-testSyntaxError("[v\u{0061}r] = obj", "SyntaxError: Unexpected Keyword 'v\u{0061}r' (Parse Error 1 line)");
+testSyntaxError("[var] = obj", "SyntaxError: Unexpected keyword 'var' (Parse Error 1 line)");
+testSyntaxError("[v\u0061r] = obj", "SyntaxError: Unexpected keyword 'v\u0061r' (Parse Error 1 line)");
+testSyntaxError("[v\u{0061}r] = obj", "SyntaxError: Unexpected keyword 'v\u{0061}r' (Parse Error 1 line)");
 
 testSyntaxError("function var() { }", "SyntaxError: Cannot use the keyword 'var' as a function name. (Parse Error 1 line)");
 testSyntaxError("function v\u0061r() { }", "SyntaxError: Cannot use the keyword 'v\u0061r' as a function name. (Parse Error 1 line)");
