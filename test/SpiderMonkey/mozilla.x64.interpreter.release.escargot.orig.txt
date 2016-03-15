@@ -22,7 +22,6 @@ ecma_5/JSON/stringify.js
 ecma_5/Number/conversion-invalid-precision.js
 ecma_5/Number/defaultvalue.js
 ecma_5/Object/15.2.3.3-01.js
-ecma_5/Object/15.2.3.6-function-length.js
 ecma_5/Object/extensibility-01.js
 ecma_5/Object/proto-property-change-writability-set.js
 ecma_5/RegExp/exec.js
