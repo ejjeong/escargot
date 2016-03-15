@@ -208,11 +208,14 @@ def run_all_tests(tests, prefix, pb, options):
             else:
                 yield NullTestOutput(test)
 
-        timeout = get_max_wait(tasks, options.timeout)
+        timeout_override = test.timeout
+        if timeout_override == None:
+            timeout_override = options.timeout
+        timeout = get_max_wait(tasks, timeout_override)
         read_input(tasks, timeout)
 
-        kill_undead(tasks, options.timeout)
-        tasks, finished = reap_zombies(tasks, options.timeout)
+        kill_undead(tasks, timeout_override)
+        tasks, finished = reap_zombies(tasks, timeout_override)
 
         # With Python3.4+ we could use yield from to remove this loop.
         for out in finished:
