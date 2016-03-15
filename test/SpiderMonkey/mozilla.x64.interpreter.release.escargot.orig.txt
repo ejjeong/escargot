@@ -6,6 +6,7 @@ ecma_5/Array/unshift-01.js
 ecma_5/Date/15.9.4.2.js
 ecma_5/Exceptions/error-property-enumerability.js
 ecma_5/Global/bug-320887.js
+ecma_5/Global/bug660612.js
 ecma_5/JSON/parse-crockford-01.js
 ecma_5/JSON/parse-primitives.js
 ecma_5/JSON/parse-reviver-array-delete.js
@@ -94,12 +95,12 @@ js1_5/Array/regress-350256-01.js
 js1_5/Array/regress-474529.js
 js1_5/Date/regress-301738-01.js
 js1_5/Date/regress-301738-02.js
+js1_5/Error/regress-465377.js
 js1_5/Exceptions/catchguard-002-n.js
 js1_5/Exceptions/catchguard-003-n.js
 js1_5/Exceptions/errstack-001.js
 js1_5/Exceptions/regress-257751.js
 js1_5/Exceptions/regress-350650-n.js
-js1_5/Expressions/regress-96526-delelem.js
 js1_5/GC/regress-348532.js
 js1_5/GetSet/regress-375976.js
 js1_5/LexicalConventions/regress-469940.js
@@ -146,7 +147,6 @@ js1_5/extensions/regress-255245.js
 js1_5/extensions/regress-304897.js
 js1_5/extensions/regress-306738.js
 js1_5/extensions/regress-311161.js
-js1_5/extensions/regress-311583.js
 js1_5/extensions/regress-311792-01.js
 js1_5/extensions/regress-311792-02.js
 js1_5/extensions/regress-313763.js
@@ -182,7 +182,6 @@ js1_5/extensions/regress-44009.js
 js1_5/extensions/regress-452329.js
 js1_5/extensions/regress-453249.js
 js1_5/extensions/regress-459606.js
-js1_5/extensions/regress-465276.js
 js1_5/extensions/regress-469625.js
 js1_5/extensions/regress-476447.js
 js1_5/extensions/regress-479487.js

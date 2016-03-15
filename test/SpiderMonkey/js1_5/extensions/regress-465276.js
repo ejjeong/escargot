@@ -22,7 +22,7 @@ function test()
 
   jit(true);
 
-  expect = '[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]';
+  expect = '1,1,1,1,1,1,1,1,1,1';
   empty = [];
   out = [];
   for (var j=0;j<10;++j) { empty[42]; out.push((1 * (1)) | ""); }
