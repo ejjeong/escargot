@@ -47,14 +47,12 @@ ecma_5/extensions/getOwnPropertyNames-__proto__.js
 ecma_5/extensions/regress-bug607284.js
 ecma_5/extensions/reviver-mutates-holder-array-nonnative.js
 ecma_5/extensions/reviver-mutates-holder-object-nonnative.js
-ecma_5/extensions/strict-function-statements.js
 ecma_5/extensions/string-literal-getter-setter-decompilation.js
 ecma_5/extensions/toSource-infinite-recursion.js
 ecma_5/misc/builtin-methods-reject-null-undefined-this.js
 ecma_5/misc/function-definition-eval.js
 ecma_5/misc/future-reserved-words.js
 ecma_5/misc/regexp-functions-with-undefined.js
-ecma_5/strict/13.1.js
 ecma_5/strict/15.4.4.12.js
 ecma_5/strict/15.4.4.13.js
 ecma_5/strict/15.4.4.6.js
@@ -201,7 +199,6 @@ js1_8/regress/regress-467495-03.js
 js1_8/regress/regress-467495-04.js
 js1_8/regress/regress-469625-02.js
 js1_8/regress/regress-469625-03.js
-js1_8/regress/regress-499524.js
 js1_8_1/extensions/regress-437288-01.js
 js1_8_1/extensions/regress-452498-162.js
 js1_8_1/extensions/regress-466905-04.js

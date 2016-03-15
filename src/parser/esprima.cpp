@@ -898,14 +898,25 @@ void throwEsprimaException(const char16_t* token)
     throw escargot::ESString::create(token);
 }
 
-void throwUnexpectedToken(RefPtr<ParseStatus> token, const char16_t* message = u"")
+escargot::UTF16String tokenToString(RefPtr<ParseStatus> token)
+{
+    if (token->m_type == NumericLiteralToken) {
+        return escargot::ESUTF16String::create(escargot::dtoa(token->m_valueNumber))->toUTF16String();
+    } else if (token->m_type == PunctuatorToken) {
+        return PuncuatorsTokens[token->m_punctuatorsKind];
+    } else {
+        return token->m_value.toESString()->toUTF16String();
+    }
+}
+
+void throwUnexpectedToken(RefPtr<ParseStatus> token, escargot::UTF16String message = u"")
 {
     escargot::UTF16String err_msg;
     err_msg.append(u"Unexpected ");
     err_msg.append(TokenName[token->m_type]);
     err_msg.append(u" '");
-    err_msg.append(token->m_value.toESString()->toUTF16String());
-    err_msg.append(u"'");
+    err_msg.append(std::move(tokenToString(token)));
+    err_msg.append(u"'. ");
     err_msg.append(message);
     throwEsprimaException(err_msg.c_str());
 }
@@ -913,35 +924,31 @@ void throwUnexpectedToken(RefPtr<ParseStatus> token, const char16_t* message = u
 void throwUnexpectedToken(RefPtr<ParseStatus> token, PunctuatorsKind kind, const char16_t* message = u"")
 {
     escargot::UTF16String err_msg;
-    err_msg.append(u"Unexpected ");
-    err_msg.append(TokenName[token->m_type]);
-    err_msg.append(u" '");
-    if (token->m_type == NumericLiteralToken) {
-        err_msg.append(escargot::ESUTF16String::create(escargot::dtoa(token->m_valueNumber))->toUTF16String());
-    } else {
-        err_msg.append(token->m_value.toESString()->toUTF16String());
-    }
-    err_msg.append(u"'. Expected an ");
+    err_msg.append(u"Expect \'");
     err_msg.append(PuncuatorsTokens[kind]);
+    err_msg.append(u"\'. ");
     err_msg.append(message);
-    throwEsprimaException(err_msg.c_str());
+    throwUnexpectedToken(token, err_msg);
 }
 
 void throwUnexpectedToken(RefPtr<ParseStatus> token, KeywordKind kind, const char16_t* message = u"")
 {
     escargot::UTF16String err_msg;
-    err_msg.append(u"Unexpected ");
-    err_msg.append(TokenName[token->m_type]);
-    err_msg.append(u" '");
-    if (token->m_type == NumericLiteralToken) {
-        err_msg.append(escargot::ESUTF16String::create(escargot::dtoa(token->m_valueNumber))->toUTF16String());
-    } else {
-        err_msg.append(token->m_value.toESString()->toUTF16String());
-    }
-    err_msg.append(u"'. Expected an ");
+    err_msg.append(u"Expect \'");
     err_msg.append(KeywordTokens[kind]);
+    err_msg.append(u"\'. ");
     err_msg.append(message);
-    throwEsprimaException(err_msg.c_str());
+    throwUnexpectedToken(token, err_msg);
+}
+
+void throwUnexpectedToken(RefPtr<ParseStatus> token, Token tokenExpected, const char16_t* message = u"")
+{
+    escargot::UTF16String err_msg;
+    err_msg.append(u"Expect \'");
+    err_msg.append(TokenName[tokenExpected]);
+    err_msg.append(u"\'. ");
+    err_msg.append(message);
+    throwUnexpectedToken(token, err_msg);
 }
 
 void throwDuplicateIdentifierError(escargot::InternalAtomicString name)
@@ -4015,6 +4022,30 @@ escargot::InternalAtomicStringVector parseParams(ParseContext* ctx)
     return vec;
 }
 
+template <typename Type>
+void validateFunctionParamsLazily(ParseContext* ctx, Type* nd, RefPtr<ParseStatus>& firstRestricted, bool previousStrict)
+{
+    if (!previousStrict && ctx->m_strict) {
+        if (firstRestricted) {
+            throwRestrictedWordUsedError(firstRestricted);
+        } else {
+            Type* f = static_cast<Type *>(nd);
+            const escargot::InternalAtomicStringVector& params = f->params();
+            escargot::InternalAtomicStringVector::const_iterator it = params.begin();
+            for (escargot::InternalAtomicString param : params) {
+
+                if (isRestrictedWord(param)) {
+                    throwRestrictedWordUsedError(param);
+                }
+
+                it++;
+                if (std::find(it, params.end(), param) != params.end()) {
+                    throwDuplicateIdentifierError(param);
+                }
+            }
+        }
+    }
+}
 
 escargot::Node* parseFunctionDeclaration(ParseContext* ctx/*node, identifierIsOptional*/)
 {
@@ -4077,30 +4108,10 @@ escargot::Node* parseFunctionDeclaration(ParseContext* ctx/*node, identifierIsOp
     // return node.finishFunctionDeclaration(id, params, defaults, body, isGenerator);
     ASSERT(id->type() == escargot::NodeType::Identifier);
 
-    escargot::Node* nd = new escargot::FunctionDeclarationNode(((escargot::IdentifierNode *)id)->name(), std::move(params), body, isGenerator, false, ctx->m_strict);
+    escargot::FunctionDeclarationNode* nd = new escargot::FunctionDeclarationNode(((escargot::IdentifierNode *)id)->name(), std::move(params), body, isGenerator, false, ctx->m_strict);
     nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
     ctx->m_currentBody->insert(ctx->m_currentBody->begin(), nd);
-
-    if (!previousStrict && ctx->m_strict) {
-        if (firstRestricted) {
-            throwRestrictedWordUsedError(firstRestricted);
-        } else {
-            escargot::FunctionDeclarationNode* fd = static_cast<escargot::FunctionDeclarationNode *>(nd);
-            const escargot::InternalAtomicStringVector& params = fd->params();
-            escargot::InternalAtomicStringVector::const_iterator it = params.begin();
-            for (escargot::InternalAtomicString param : params) {
-
-                if (isRestrictedWord(param)) {
-                    throwRestrictedWordUsedError(param);
-                }
-
-                it++;
-                if (std::find(it, params.end(), param) != params.end()) {
-                    throwDuplicateIdentifierError(param);
-                }
-            }
-        }
-    }
+    validateFunctionParamsLazily(ctx, nd, firstRestricted, previousStrict);
 
     escargot::IdentifierNode* idNode = new escargot::IdentifierNode(((escargot::IdentifierNode *)id)->name());
     idNode->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
@@ -4177,7 +4188,7 @@ escargot::Node* parseFunctionExpression(ParseContext* ctx)
     escargot::Node* body = parseFunctionSourceElements(ctx);
 
     // return node.finishFunctionExpression(id, params, defaults, body, isGenerator);
-    escargot::Node* nd;
+    escargot::FunctionExpressionNode* nd;
     if (id)
         nd = new escargot::FunctionExpressionNode(((escargot::IdentifierNode *)id)->name(),
             std::move(params), body, isGenerator, true, ctx->m_strict);
@@ -4185,27 +4196,8 @@ escargot::Node* parseFunctionExpression(ParseContext* ctx)
         nd = new escargot::FunctionExpressionNode(escargot::strings->emptyString,
             std::move(params), body, isGenerator, true, ctx->m_strict);
     nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
+    validateFunctionParamsLazily(ctx, nd, firstRestricted, previousStrict);
 
-    if (!previousStrict && ctx->m_strict) {
-        if (firstRestricted) {
-            throwRestrictedWordUsedError(firstRestricted);
-        } else {
-            escargot::FunctionExpressionNode* fe = static_cast<escargot::FunctionExpressionNode *>(nd);
-            const escargot::InternalAtomicStringVector& params = fe->params();
-            escargot::InternalAtomicStringVector::const_iterator it = params.begin();
-            for (escargot::InternalAtomicString param : params) {
-
-                if (isRestrictedWord(param)) {
-                    throwRestrictedWordUsedError(param);
-                }
-
-                it++;
-                if (std::find(it, params.end(), param) != params.end()) {
-                    throwDuplicateIdentifierError(param);
-                }
-            }
-        }
-    }
 
     ctx->m_strict = previousStrict;
     ctx->m_allowYield = previousAllowYield;
@@ -4460,13 +4452,17 @@ escargot::Node* parseObjectPattern(ParseContext* ctx, std::vector<RefPtr<ParseSt
 escargot::Node* parsePattern(ParseContext* ctx, std::vector<RefPtr<ParseStatus> >& params)
 {
     if (match(ctx, LeftSquareBracket)) {
-        if (ctx->m_strict && ctx->m_inCatch) {
-            throwEsprimaException(u"Unexpected Token '['. Expected identifier name as catch target.");
+        if (ctx->m_inCatch) {
+            throwUnexpectedToken(lex(ctx), IdentifierToken, u"Expected identifier name as catch target.");
+        } else {
+            throwUnexpectedToken(lex(ctx), IdentifierToken);
         }
         return parseArrayPattern(ctx, params);
     } else if (match(ctx, LeftBrace)) {
-        if (ctx->m_strict && ctx->m_inCatch) {
-            throwEsprimaException(u"Unexpected Token '{'. Expected identifier name as catch target.");
+        if (ctx->m_inCatch) {
+            throwUnexpectedToken(lex(ctx), IdentifierToken, u"Expected identifier name as catch target.");
+        } else {
+            throwUnexpectedToken(lex(ctx), IdentifierToken);
         }
         return parseObjectPattern(ctx, params);
     }
@@ -4678,7 +4674,7 @@ escargot::Node* parsePropertyFunction(ParseContext* ctx, escargot::InternalAtomi
     // var previousStrict, body;
 
     ctx->m_isAssignmentTarget = ctx->m_isBindingElement = false;
-
+    RefPtr<ParseStatus> firstRestricted;
     bool previousStrict = ctx->m_strict;
     escargot::Node* body = isolateCoverGrammar(ctx, parseFunctionSourceElements);
 
@@ -4693,7 +4689,8 @@ escargot::Node* parsePropertyFunction(ParseContext* ctx, escargot::InternalAtomi
     */
 
     // return node.finishFunctionExpression(null, paramInfo.params, paramInfo.defaults, body, isGenerator);
-    escargot::Node* nd = new escargot::FunctionExpressionNode(escargot::strings->emptyString, std::move(vec), body, false, true, ctx->m_strict);
+    escargot::FunctionExpressionNode* nd = new escargot::FunctionExpressionNode(escargot::strings->emptyString, std::move(vec), body, false, true, ctx->m_strict);
+    validateFunctionParamsLazily(ctx, nd, firstRestricted, previousStrict);
     ctx->m_strict = previousStrict;
     nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
     return nd;
@@ -4773,8 +4770,8 @@ escargot::Node* tryParseMethodDefinition(ParseContext* ctx, ParseStatus* token, 
             */
             escargot::InternalAtomicStringVector vec;
             if (match(ctx, RightParenthesis)) {
-                // tolerateUnexpectedToken(lookahead);
-                tolerateUnexpectedToken();
+                // tolerateUnexpectedToken();
+                throwUnexpectedToken(lex(ctx), IdentifierToken);
             } else {
                 ctx->m_allowYield = false;
                 parseParam(ctx, vec);

@@ -1,3 +1,4 @@
+// escargot-skip: '[', '{' is not allowed in the function parameter list
 // Any copyright is dedicated to the Public Domain.
 // http://creativecommons.org/licenses/publicdomain/
 
