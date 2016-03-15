@@ -20,8 +20,10 @@ ecma_5/JSON/stringify-replacer-with-array-indexes.js
 ecma_5/JSON/stringify-replacer.js
 ecma_5/JSON/stringify-toJSON-arguments.js
 ecma_5/JSON/stringify.js
+ecma_5/Number/15.7.4.2.js
 ecma_5/Number/conversion-invalid-precision.js
 ecma_5/Number/defaultvalue.js
+ecma_5/Number/tonumber-string-hex.js
 ecma_5/Object/15.2.3.3-01.js
 ecma_5/Object/15.2.3.6-dictionary-redefinition-01-of-32.js
 ecma_5/Object/15.2.3.6-dictionary-redefinition-02-of-32.js

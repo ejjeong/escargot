@@ -3602,7 +3602,7 @@ escargot::Node* parseStatement(ParseContext* ctx)
         } else if (ctx->m_lookahead->m_keywordKind == For) {
             return parseForStatement(ctx);
         } else if (ctx->m_lookahead->m_keywordKind == Function) {
-            RELEASE_ASSERT_NOT_REACHED();
+            // RELEASE_ASSERT_NOT_REACHED();
             return parseFunctionDeclaration(ctx);
         } else if (ctx->m_lookahead->m_keywordKind == If) {
             return parseIfStatement(ctx);
