@@ -1,3 +1,4 @@
+// escargot-skip: Iterator not supported
 
 var actual = '';
 var expected = 'A0B1B2C0C1C2';

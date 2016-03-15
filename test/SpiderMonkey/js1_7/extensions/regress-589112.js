@@ -1,3 +1,4 @@
+// escargot-skip: Iterator not supported
 
 f = eval("(function(){return x=Iterator(/x/)})")
 for (a in f()) {}

@@ -115,7 +115,6 @@ js1_5/Regress/regress-350268.js
 js1_5/Regress/regress-352208.js
 js1_5/Regress/regress-355556.js
 js1_5/Regress/regress-372364.js
-js1_5/Regress/regress-407957.js
 js1_5/Regress/regress-418504.js
 js1_5/Regress/regress-420919.js
 js1_5/Regress/regress-452189.js
@@ -197,9 +196,6 @@ js1_6/extensions/regress-470310.js
 js1_6/extensions/regress-472508.js
 js1_6/extensions/regress-565521.js
 js1_7/extensions/destructuring-order.js
-js1_7/extensions/regress-354499-01.js
-js1_7/extensions/regress-354499-02.js
-js1_7/extensions/regress-354945-01.js
 js1_7/extensions/regress-354945-02.js
 js1_7/extensions/regress-355410.js
 js1_7/extensions/regress-367629.js
@@ -212,17 +208,10 @@ js1_7/extensions/regress-469405-01.js
 js1_7/extensions/regress-474771-02.js
 js1_7/extensions/regress-476257.js
 js1_7/extensions/regress-477048.js
-js1_7/extensions/regress-589112.js
-js1_7/extensions/regress-590813.js
-js1_7/iterable/regress-341496.js
-js1_7/iterable/regress-354750-01.js
-js1_7/iterable/regress-355025.js
-js1_7/iterable/regress-355090.js
 js1_7/lexical/regress-346642-04.js
 js1_7/regexp/yflag.js
 js1_7/regress/regress-355023.js
 js1_7/regress/regress-363040-01.js
-js1_7/regress/regress-407957.js
 js1_8/extensions/regress-353116.js
 js1_8/extensions/regress-385729.js
 js1_8/extensions/regress-454744.js
