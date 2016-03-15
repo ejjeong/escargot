@@ -27,10 +27,10 @@ function test()
 
   function boo() {
     s = '';
-/*    for (;;) {
+    for (;;) {
       try {
         new RegExp(s + '[\\');
-*/      } catch(e) {}
+      } catch(e) {}
       s += 'q';
     }
   }
