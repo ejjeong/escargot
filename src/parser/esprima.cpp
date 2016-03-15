@@ -3916,7 +3916,7 @@ function parseParam(options) {
 }
  */
 
-bool parseParam(ParseContext* ctx, escargot::InternalAtomicStringVector& vec, RefPtr<ParseStatus>* firstRestricted = nullptr)
+bool parseParam(ParseContext* ctx, escargot::InternalAtomicStringVector& vec)
 {
     // var token, param, params = [], i, def;
 
@@ -3941,15 +3941,6 @@ bool parseParam(ParseContext* ctx, escargot::InternalAtomicStringVector& vec, Re
         if (std::find(vec.begin(), vec.end(), ((escargot::IdentifierNode*)param)->name()) != vec.end()) {
             throwDuplicateIdentifierError(((escargot::IdentifierNode*)param)->name());
         }
-    } else {
-        if (firstRestricted && !*firstRestricted) {
-            if (isRestrictedWord(((escargot::IdentifierNode*)param)->name())) {
-                *firstRestricted = token;
-            }
-            if (std::find(vec.begin(), vec.end(), ((escargot::IdentifierNode*)param)->name()) != vec.end()) {
-                *firstRestricted = token;
-            }
-        }
     }
 
     /*
@@ -3971,7 +3962,7 @@ bool parseParam(ParseContext* ctx, escargot::InternalAtomicStringVector& vec, Re
     return !match(ctx, RightParenthesis);
 }
 
-escargot::InternalAtomicStringVector parseParams(ParseContext* ctx, RefPtr<ParseStatus>* firstRestricted = nullptr)
+escargot::InternalAtomicStringVector parseParams(ParseContext* ctx)
 {
     /*
     var options;
@@ -3989,7 +3980,7 @@ escargot::InternalAtomicStringVector parseParams(ParseContext* ctx, RefPtr<Parse
 
     if (!match(ctx, RightParenthesis)) {
         while (ctx->m_startIndex < ctx->m_length) {
-            if (!parseParam(ctx, vec, firstRestricted)) {
+            if (!parseParam(ctx, vec)) {
                 break;
             }
             expect(ctx, Comma);
@@ -4067,7 +4058,7 @@ escargot::Node* parseFunctionDeclaration(ParseContext* ctx/*node, identifierIsOp
     }
 
     ctx->m_allowYield = !isGenerator;
-    escargot::InternalAtomicStringVector params = parseParams(ctx, &firstRestricted);
+    escargot::InternalAtomicStringVector params = parseParams(ctx);
     /*
     tmp = parseParams(firstRestricted);
     params = tmp.params;
@@ -4090,8 +4081,25 @@ escargot::Node* parseFunctionDeclaration(ParseContext* ctx/*node, identifierIsOp
     nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
     ctx->m_currentBody->insert(ctx->m_currentBody->begin(), nd);
 
-    if (!previousStrict && ctx->m_strict && firstRestricted) {
-        throwRestrictedWordUsedError(firstRestricted);
+    if (!previousStrict && ctx->m_strict) {
+        if (firstRestricted) {
+            throwRestrictedWordUsedError(firstRestricted);
+        } else {
+            escargot::FunctionDeclarationNode* fd = static_cast<escargot::FunctionDeclarationNode *>(nd);
+            const escargot::InternalAtomicStringVector& params = fd->params();
+            escargot::InternalAtomicStringVector::const_iterator it = params.begin();
+            for (escargot::InternalAtomicString param : params) {
+
+                if (isRestrictedWord(param)) {
+                    throwRestrictedWordUsedError(param);
+                }
+
+                it++;
+                if (std::find(it, params.end(), param) != params.end()) {
+                    throwDuplicateIdentifierError(param);
+                }
+            }
+        }
     }
 
     escargot::IdentifierNode* idNode = new escargot::IdentifierNode(((escargot::IdentifierNode *)id)->name());
@@ -4153,7 +4161,7 @@ escargot::Node* parseFunctionExpression(ParseContext* ctx)
         }
     }
 
-    escargot::InternalAtomicStringVector params = parseParams(ctx, &firstRestricted);
+    escargot::InternalAtomicStringVector params = parseParams(ctx);
     /*
     tmp = parseParams(firstRestricted);
     params = tmp.params;
@@ -4178,8 +4186,25 @@ escargot::Node* parseFunctionExpression(ParseContext* ctx)
             std::move(params), body, isGenerator, true, ctx->m_strict);
     nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
 
-    if (!previousStrict && ctx->m_strict && firstRestricted) {
-        throwRestrictedWordUsedError(firstRestricted);
+    if (!previousStrict && ctx->m_strict) {
+        if (firstRestricted) {
+            throwRestrictedWordUsedError(firstRestricted);
+        } else {
+            escargot::FunctionExpressionNode* fe = static_cast<escargot::FunctionExpressionNode *>(nd);
+            const escargot::InternalAtomicStringVector& params = fe->params();
+            escargot::InternalAtomicStringVector::const_iterator it = params.begin();
+            for (escargot::InternalAtomicString param : params) {
+
+                if (isRestrictedWord(param)) {
+                    throwRestrictedWordUsedError(param);
+                }
+
+                it++;
+                if (std::find(it, params.end(), param) != params.end()) {
+                    throwDuplicateIdentifierError(param);
+                }
+            }
+        }
     }
 
     ctx->m_strict = previousStrict;
@@ -4678,8 +4703,7 @@ escargot::Node* parsePropertyMethodFunction(ParseContext* ctx, escargot::Node* k
 {
     bool previousAllowYield = ctx->m_allowYield;
     ctx->m_allowYield = false;
-    RefPtr<ParseStatus> firstRestricted;
-    escargot::InternalAtomicStringVector params = parseParams(ctx, &firstRestricted);
+    escargot::InternalAtomicStringVector params = parseParams(ctx);
     ctx->m_allowYield = previousAllowYield;
 
     ctx->m_allowYield = false;
@@ -4779,8 +4803,7 @@ escargot::Node* tryParseMethodDefinition(ParseContext* ctx, ParseStatus* token, 
         // methodNode = new Node();
 
         ctx->m_allowYield = false;
-        RefPtr<ParseStatus> firstRestricted;
-        escargot::InternalAtomicStringVector params = parseParams(ctx, &firstRestricted);
+        escargot::InternalAtomicStringVector params = parseParams(ctx);
         ctx->m_allowYield = previousAllowYield;
 
         ctx->m_allowYield = false;
