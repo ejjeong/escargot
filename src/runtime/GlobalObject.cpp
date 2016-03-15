@@ -2039,10 +2039,10 @@ void GlobalObject::installArray()
             initialValue = argv[1];
         }
         if (!callbackfn.isESPointer() || !callbackfn.asESPointer()->isESFunctionObject()) // 4
-            instance->throwError(ESValue(TypeError::create(ESString::create(u"Type Error"))));
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"Array.prototype.reduce: callback is not a function object"))));
 
-        if (len == 0 && initialValue.isUndefined()) // 5
-            instance->throwError(ESValue(TypeError::create(ESString::create(u"Type Error"))));
+        if (len == 0 && (initialValue.isUndefined() || initialValue.isEmpty()) // 5
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"reduce of empty array with no initial value"))));
         size_t k = 0; // 6
         ESValue accumulator;
         if (!initialValue.isEmpty()) { // 7
@@ -2092,10 +2092,10 @@ void GlobalObject::installArray()
             initialValue = argv[1];
         }
         if (!callbackfn.isESPointer() || !callbackfn.asESPointer()->isESFunctionObject()) // 4
-            instance->throwError(ESValue(TypeError::create(ESString::create(u"Type Error"))));
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"Array.prototype.reduce: callback is not a function object"))));
 
-        if (len == 0 && initialValue.isUndefined()) // 5
-            instance->throwError(ESValue(TypeError::create(ESString::create(u"Type Error"))));
+        if (len == 0 && (initialValue.isUndefined() || initialValue.isEmpty()) // 5
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"reduce of empty array with no initial value"))));
         int k = len - 1; // 6
         ESValue accumulator;
         if (!initialValue.isEmpty()) { // 7

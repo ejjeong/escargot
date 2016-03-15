@@ -206,7 +206,6 @@ js1_7/extensions/regress-476257.js
 js1_7/extensions/regress-477048.js
 js1_7/lexical/regress-346642-04.js
 js1_7/regress/regress-355023.js
-js1_7/regress/regress-363040-01.js
 js1_8/extensions/regress-353116.js
 js1_8/extensions/regress-385729.js
 js1_8/extensions/regress-454744.js
