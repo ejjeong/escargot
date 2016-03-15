@@ -186,7 +186,7 @@ void GlobalObject::initGlobalObject()
                 return instance->evaluate(escargot::ESString::create(std::move(str)));
             }
         }
-        instance->throwError(TypeError::create());
+        instance->throwError(TypeError::create(ESString::create("cannot load file")));
         RELEASE_ASSERT_NOT_REACHED();
     }, ESString::createAtomicString("load"));
     set(ESString::createAtomicString("load"), loadFunction);

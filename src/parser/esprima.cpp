@@ -2580,12 +2580,14 @@ void rearrangeNode(escargot::StatementNodeVector& body)
  */
 
 #ifndef NDEBUG
-    bool findFD = false;
-    for (size_t i = 0; i < body.size() ; i ++) {
-        if (body[i]->type() == escargot::NodeType::FunctionDeclaration) {
-            findFD = true;
-        } else if (findFD && (body[i]->type() == escargot::NodeType::VariableDeclarator)) {
-            ASSERT_NOT_REACHED();
+    if (firstNormalStatementPlace != SIZE_MAX) {
+        bool findFD = false;
+        for (size_t i = 0; i < body.size() ; i ++) {
+            if (body[i]->type() == escargot::NodeType::FunctionDeclaration) {
+                findFD = true;
+            } else if (findFD && (body[i]->type() == escargot::NodeType::VariableDeclarator)) {
+                ASSERT_NOT_REACHED();
+            }
         }
     }
 #endif
@@ -3611,8 +3613,7 @@ escargot::Node* parseStatement(ParseContext* ctx)
         } else if (ctx->m_lookahead->m_keywordKind == For) {
             return parseForStatement(ctx);
         } else if (ctx->m_lookahead->m_keywordKind == Function) {
-            // RELEASE_ASSERT_NOT_REACHED();
-            return parseFunctionDeclaration(ctx);
+            throwEsprimaException(u"Function declaration inside block is not supported");
         } else if (ctx->m_lookahead->m_keywordKind == If) {
             return parseIfStatement(ctx);
         } else if (ctx->m_lookahead->m_keywordKind == Return) {
