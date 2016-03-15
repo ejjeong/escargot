@@ -6236,10 +6236,10 @@ escargot::Node* parseProgram(ParseContext* ctx)
 
 escargot::Node* parse(escargot::ESString* source, bool strict)
 {
-    ASSERT_STATIC((sizeof(PuncuatorsTokens) / sizeof (char16_t*)) == PunctuatorsKind::PunctuatorsKindEnd,
-            "Sizeof punctuators names array should be equal to sizeof punctuators enum");
-    ASSERT_STATIC((sizeof(KeywordTokens) / sizeof (char16_t*)) == KeywordKind::KeywordKindEnd,
-            "Sizeof keyword names array should be equal to sizeof keyword enum");
+    ASSERT_STATIC((sizeof(PuncuatorsTokens) / sizeof(char16_t*)) == PunctuatorsKind::PunctuatorsKindEnd,
+        "Sizeof punctuators names array should be equal to sizeof punctuators enum");
+    ASSERT_STATIC((sizeof(KeywordTokens) / sizeof(char16_t*)) == KeywordKind::KeywordKindEnd,
+        "Sizeof keyword names array should be equal to sizeof keyword enum");
 
     ParseContext ctx(source);
     ctx.m_index = 0;
