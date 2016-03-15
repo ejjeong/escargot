@@ -921,8 +921,12 @@ void throwUnexpectedToken(RefPtr<ParseStatus> token, escargot::UTF16String messa
     err_msg.append(TokenName[token->m_type]);
     err_msg.append(u" '");
     err_msg.append(std::move(tokenToString(token)));
-    err_msg.append(u"'. ");
-    err_msg.append(message);
+    if (escargot::UTF16String(message).length() > 0) {
+        err_msg.append(u"\'. ");
+        err_msg.append(message);
+    } else {
+        err_msg.append(u"\'.");
+    }
     throwEsprimaException(err_msg.c_str());
 }
 
@@ -931,8 +935,12 @@ void throwUnexpectedToken(RefPtr<ParseStatus> token, PunctuatorsKind kind, const
     escargot::UTF16String err_msg;
     err_msg.append(u"Expect \'");
     err_msg.append(PuncuatorsTokens[kind]);
-    err_msg.append(u"\'. ");
-    err_msg.append(message);
+    if (escargot::UTF16String(message).length() > 0) {
+        err_msg.append(u"\'. ");
+        err_msg.append(message);
+    } else {
+        err_msg.append(u"\'.");
+    }
     throwUnexpectedToken(token, err_msg);
 }
 
@@ -941,8 +949,12 @@ void throwUnexpectedToken(RefPtr<ParseStatus> token, KeywordKind kind, const cha
     escargot::UTF16String err_msg;
     err_msg.append(u"Expect \'");
     err_msg.append(KeywordTokens[kind]);
-    err_msg.append(u"\'. ");
-    err_msg.append(message);
+    if (escargot::UTF16String(message).length() > 0) {
+        err_msg.append(u"\'. ");
+        err_msg.append(message);
+    } else {
+        err_msg.append(u"\'.");
+    }
     throwUnexpectedToken(token, err_msg);
 }
 
@@ -951,12 +963,16 @@ void throwUnexpectedToken(RefPtr<ParseStatus> token, Token tokenExpected, const 
     escargot::UTF16String err_msg;
     err_msg.append(u"Expect \'");
     err_msg.append(TokenName[tokenExpected]);
-    err_msg.append(u"\'. ");
-    err_msg.append(message);
+    if (escargot::UTF16String(message).length() > 0) {
+        err_msg.append(u"\'. ");
+        err_msg.append(message);
+    } else {
+        err_msg.append(u"\'.");
+    }
     throwUnexpectedToken(token, err_msg);
 }
 
-void throwDuplicateIdentifierError(escargot::InternalAtomicString name)
+void throwDuplicateIdentifierError(escargot::InternalAtomicString name, const char16_t* message = u"")
 {
     escargot::UTF16String err_msg;
     err_msg.append(u"Cannot declare a parameter named '");
@@ -4458,18 +4474,18 @@ escargot::Node* parsePattern(ParseContext* ctx, std::vector<RefPtr<ParseStatus> 
 {
     if (match(ctx, LeftSquareBracket)) {
         if (ctx->m_inCatch) {
-            throwUnexpectedToken(lex(ctx), IdentifierToken, u"Expected identifier name as catch target.");
+            throwUnexpectedToken(lex(ctx), IdentifierToken, u"as catch target.");
         } else {
             throwUnexpectedToken(lex(ctx), IdentifierToken);
         }
-        return parseArrayPattern(ctx, params);
+        // return parseArrayPattern(ctx, params);
     } else if (match(ctx, LeftBrace)) {
         if (ctx->m_inCatch) {
-            throwUnexpectedToken(lex(ctx), IdentifierToken, u"Expected identifier name as catch target.");
+            throwUnexpectedToken(lex(ctx), IdentifierToken, u"as catch target.");
         } else {
             throwUnexpectedToken(lex(ctx), IdentifierToken);
         }
-        return parseObjectPattern(ctx, params);
+        // return parseObjectPattern(ctx, params);
     }
     params.push_back(ctx->m_lookahead);
     return parseVariableIdentifier(ctx);
