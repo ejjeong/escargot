@@ -292,7 +292,7 @@ def load_tests(options, requested_paths, excluded_paths):
         test_gen = flag_gen(test_gen)
 
     if options.subpath:
-        test_gen = (_ for _ in test_gen if os.path.dirname(_.path).find(options.subpath) != -1)
+        test_gen = (_ for _ in test_gen if _.path.find(options.subpath) != -1)
 
     if options.test_file:
         paths = set()
