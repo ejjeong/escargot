@@ -6,7 +6,6 @@ ecma_5/Array/unshift-01.js
 ecma_5/Date/15.9.4.2.js
 ecma_5/Exceptions/error-property-enumerability.js
 ecma_5/Global/bug-320887.js
-ecma_5/Global/bug660612.js
 ecma_5/JSON/parse-crockford-01.js
 ecma_5/JSON/parse-primitives.js
 ecma_5/JSON/parse-reviver-array-delete.js
@@ -95,7 +94,6 @@ js1_5/Array/regress-350256-01.js
 js1_5/Array/regress-474529.js
 js1_5/Date/regress-301738-01.js
 js1_5/Date/regress-301738-02.js
-js1_5/Error/regress-465377.js
 js1_5/Exceptions/catchguard-002-n.js
 js1_5/Exceptions/catchguard-003-n.js
 js1_5/Exceptions/errstack-001.js
