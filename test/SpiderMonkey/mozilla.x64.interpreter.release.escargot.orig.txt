@@ -266,8 +266,4 @@ js1_8_5/regress/regress-646820-2.js
 js1_8_5/regress/regress-646820-3.js
 js1_8_5/regress/regress-665355.js
 js1_8_5/regress/regress-yarr-regexp.js
-shell/futex.js
-shell/gcstats.js
-shell/os.js
-shell/warning.js
 ----TIMEOUTS----

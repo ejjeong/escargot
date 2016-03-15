@@ -1,3 +1,4 @@
+// escargot-skip: Unsupported mozjs shell functions
 // |reftest| skip-if(!xulRuntime.shell||xulRuntime.OS=="WINNT")
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*

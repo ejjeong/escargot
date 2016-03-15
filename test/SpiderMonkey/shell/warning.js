@@ -1,3 +1,4 @@
+// escargot-skip: Unsupported mozjs shell functions
 // |reftest| skip-if(!xulRuntime.shell)
 
 var BUGNUMBER = 1170716;
