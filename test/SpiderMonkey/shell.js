@@ -921,4 +921,12 @@ function OptLevel( i ) {
 }
 /* end of Rhino functions */
 
-load("shell.escargot.js")
+try {
+    load("shell.escargot.js");
+} catch (e) {
+    try {
+        load("test/SpiderMonkey/shell.escargot.js");
+    } catch (e) {
+        throw "Cannot load shell.escargot.js";
+    }
+}
