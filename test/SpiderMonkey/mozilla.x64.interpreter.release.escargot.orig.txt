@@ -218,7 +218,6 @@ js1_8_1/regress/regress-452498-191.js
 js1_8_1/regress/regress-509354.js
 js1_8_1/strict/12.2.1.js
 js1_8_1/strict/8.7.2.js
-js1_8_5/extensions/censor-strict-caller.js
 js1_8_5/extensions/clone-forge.js
 js1_8_5/extensions/clone-leaf-object.js
 js1_8_5/extensions/clone-object.js

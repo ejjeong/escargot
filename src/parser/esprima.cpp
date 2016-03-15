@@ -47,6 +47,8 @@ const char16_t* PuncuatorsTokens[] = {
     // assignment operators
     u"=", u">>>=", u"<<=", u">>=", u"+=", u"-=", u"*=", u"/=", u"%=",
     u"&=", u"|=", u"^=", u"<=", u">=",
+    // SubstitutionEnd
+    u"",
     // arrow
     u"=>"
 };
@@ -181,15 +183,16 @@ enum PunctuatorsKind {
     SubstitutionEnd,
 
     Arrow,
+    PunctuatorsKindEnd,
 };
 
 const char16_t* KeywordTokens[] = {
     u"", u"if", u"in", u"do", u"var", u"for", u"new", u"try", u"this",
-    u"else", u"case", u"void", u"width", u"enum", u"while", u"break",
+    u"else", u"case", u"void", u"with", u"enum", u"while", u"break",
     u"catch", u"throw", u"const", u"class", u"super", u"return", u"typeof",
     u"delete", u"switch", u"export", u"import", u"default", u"finally",
     u"extends", u"function", u"continue", u"debugger", u"instanceof",
-    u"", u"implements", u"interface", u"package", u"protected", u"public",
+    u"", u"implements", u"interface", u"package", u"private", u"protected", u"public",
     u"static", u"yield", u"let"
 };
 
@@ -237,7 +240,8 @@ enum KeywordKind {
     Public,
     Static,
     Yield,
-    Let
+    Let,
+    KeywordKindEnd
 };
 
 // TODO handle error
@@ -900,13 +904,14 @@ void throwEsprimaException(const char16_t* token)
 
 escargot::UTF16String tokenToString(RefPtr<ParseStatus> token)
 {
-    if (token->m_type == NumericLiteralToken) {
+    if (token->m_type == NumericLiteralToken)
         return escargot::ESUTF16String::create(escargot::dtoa(token->m_valueNumber))->toUTF16String();
-    } else if (token->m_type == PunctuatorToken) {
+    else if (token->m_type == PunctuatorToken)
         return PuncuatorsTokens[token->m_punctuatorsKind];
-    } else {
+    else if (token->m_type == Token::KeywordToken)
+        return KeywordTokens[token->m_keywordKind];
+    else
         return token->m_value.toESString()->toUTF16String();
-    }
 }
 
 void throwUnexpectedToken(RefPtr<ParseStatus> token, escargot::UTF16String message = u"")
@@ -6231,6 +6236,11 @@ escargot::Node* parseProgram(ParseContext* ctx)
 
 escargot::Node* parse(escargot::ESString* source, bool strict)
 {
+    ASSERT_STATIC((sizeof(PuncuatorsTokens) / sizeof (char16_t*)) == PunctuatorsKind::PunctuatorsKindEnd,
+            "Sizeof punctuators names array should be equal to sizeof punctuators enum");
+    ASSERT_STATIC((sizeof(KeywordTokens) / sizeof (char16_t*)) == KeywordKind::KeywordKindEnd,
+            "Sizeof keyword names array should be equal to sizeof keyword enum");
+
     ParseContext ctx(source);
     ctx.m_index = 0;
     ctx.m_lineNumber = (source->length() > 0) ? 1 : 0;
