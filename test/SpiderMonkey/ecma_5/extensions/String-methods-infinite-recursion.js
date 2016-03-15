@@ -24,7 +24,7 @@ try
 }
 catch (e)
 {
-  assertEq(e instanceof InternalError, true,
+  assertEq(e instanceof RangeError, true,
            "should have thrown InternalError for over-recursion, got: " + e);
 }
 

@@ -19,7 +19,7 @@ function test()
   printBugNumber(BUGNUMBER);
   printStatus (summary);
 
-  expect = 'InternalError: too much recursion';
+  expect = 'RangeError: Maximum call stack size exceeded.';
 
   try
   {

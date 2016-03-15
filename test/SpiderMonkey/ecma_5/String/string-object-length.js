@@ -13,7 +13,7 @@ print(BUGNUMBER + ": " + summary);
  * BEGIN TEST *
  **************/
 
-assertEq(raisesException(InternalError)('for (args = "" ;;) args+=new String(args)+1'), true);
+assertEq(raisesException(RangeError)('for (args = "" ;;) args+=new String(args)+1'), true);
 
 reportCompare(true, true);
 

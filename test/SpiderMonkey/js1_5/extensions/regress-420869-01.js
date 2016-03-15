@@ -7,7 +7,7 @@
 var BUGNUMBER = 420869;
 var summary = 'Throw too much recursion instead of script stack space quota';
 var actual = 'No Error';
-var expect = 'InternalError: too much recursion';
+var expect = 'RangeError: Maximum call stack size exceeded.';
 
 
 //-----------------------------------------------------------------------------

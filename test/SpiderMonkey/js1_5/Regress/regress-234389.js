@@ -33,7 +33,7 @@ try
 }
 catch(ex)
 {
-  expect = 'InternalError: too much recursion';
+  expect = 'RangeError: Maximum call stack size exceeded.';
   actual = ex.name + ': ' + ex.message;
 }
 reportCompare(expect, actual, summary);

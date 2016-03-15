@@ -20,7 +20,7 @@ try
 }
 catch (e)
 {
-  assertEq(e instanceof InternalError, true);
+  assertEq(e instanceof RangeError, true);
 }
 
 /******************************************************************************/
