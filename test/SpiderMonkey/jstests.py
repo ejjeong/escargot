@@ -55,7 +55,7 @@ def parse_args():
     harness_og = OptionGroup(op, "Harness Controls",
                              "Control how tests are run.")
     harness_og.add_option('-j', '--worker-count', type=int,
-                          default=max(1, get_cpu_count()),
+                          default=max(1, get_cpu_count()/2),
                           help='Number of tests to run in parallel'
                           ' (default %default)')
     harness_og.add_option('-t', '--timeout', type=float, default=150.0,

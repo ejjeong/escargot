@@ -86,19 +86,13 @@ js1_2/regexp/compile.js
 js1_2/regexp/endLine.js
 js1_2/regexp/flags.js
 js1_2/regexp/ignoreCase.js
-js1_4/Regress/function-004-n.js
-js1_4/Regress/toString-001-n.js
 js1_5/Array/regress-313153.js
 js1_5/Array/regress-350256-01.js
 js1_5/Array/regress-474529.js
 js1_5/Date/regress-301738-01.js
 js1_5/Date/regress-301738-02.js
-js1_5/Exceptions/catchguard-002-n.js
-js1_5/Exceptions/catchguard-003-n.js
 js1_5/Exceptions/errstack-001.js
 js1_5/Exceptions/regress-257751.js
-js1_5/Exceptions/regress-350650-n.js
-js1_5/GC/regress-348532.js
 js1_5/GetSet/regress-375976.js
 js1_5/LexicalConventions/regress-469940.js
 js1_5/Regress/regress-167328.js
@@ -108,7 +102,6 @@ js1_5/Regress/regress-176125.js
 js1_5/Regress/regress-179524.js
 js1_5/Regress/regress-211590.js
 js1_5/Regress/regress-234389.js
-js1_5/Regress/regress-243389-n.js
 js1_5/Regress/regress-243869.js
 js1_5/Regress/regress-256501.js
 js1_5/Regress/regress-276103.js
@@ -118,7 +111,6 @@ js1_5/Regress/regress-303213.js
 js1_5/Regress/regress-328664.js
 js1_5/Regress/regress-329383.js
 js1_5/Regress/regress-330352.js
-js1_5/Regress/regress-344711-n.js
 js1_5/Regress/regress-350268.js
 js1_5/Regress/regress-352208.js
 js1_5/Regress/regress-355556.js
@@ -130,9 +122,7 @@ js1_5/Regress/regress-452189.js
 js1_5/Regress/regress-452346.js
 js1_5/Regress/regress-511859.js
 js1_5/Regress/regress-76054.js
-js1_5/Regress/regress-96128-n.js
 js1_5/Scope/regress-181834.js
-js1_5/extensions/catchguard-001-n.js
 js1_5/extensions/getset-004.js
 js1_5/extensions/getset-005.js
 js1_5/extensions/getset-006.js

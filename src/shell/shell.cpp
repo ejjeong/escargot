@@ -264,7 +264,7 @@ int main(int argc, char* argv[])
             if (!fgets(buf, sizeof buf, stdin)) {
                 printf("ERROR: Cannot read interactive shell input\n");
                 ES->exit();
-                return 1;
+                return 3;
             }
             escargot::ESString* str = escargot::ESString::create(buf);
             std::jmp_buf tryPosition;
@@ -353,7 +353,7 @@ int main(int argc, char* argv[])
                     escargot::ESValue err = ES->getCatchedError();
                     printf("Uncaught %s\n", err.toString()->utf8Data());
                     ES->exit();
-                    return 1;
+                    return 3;
                 }
             }
 
@@ -364,7 +364,7 @@ int main(int argc, char* argv[])
                     if (!fgets(buf, sizeof buf, stdin)) {
                         printf("ERROR: Cannot read interactive shell input\n");
                         ES->exit();
-                        return 1;
+                        return 3;
                     }
                     escargot::ESString* str = escargot::ESString::create(buf);
                     std::jmp_buf tryPosition;
