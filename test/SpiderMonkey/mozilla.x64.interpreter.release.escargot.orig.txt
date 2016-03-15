@@ -304,4 +304,3 @@ shell/gcstats.js
 shell/os.js
 shell/warning.js
 ----TIMEOUTS----
-js1_5/Regress/regress-422348.js
