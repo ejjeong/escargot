@@ -856,6 +856,7 @@ struct ParseContext {
     RefPtr<ParseStatus> m_firstCoverInitializedNameError;
     RefPtr<ParseStatus> m_lookahead;
     int m_parenthesizedCount;
+    int m_stackCounter;
     escargot::StatementNodeVector* m_currentBody;
 };
 
@@ -2541,6 +2542,9 @@ ALWAYS_INLINE escargot::Node* isolateCoverGrammar(ParseContext* ctx, escargot::N
         oldIsAssignmentTarget = ctx->m_isAssignmentTarget;
     RefPtr<ParseStatus> oldFirstCoverInitializedNameError = ctx->m_firstCoverInitializedNameError;
     escargot::Node* result;
+    ctx->m_stackCounter++;
+    if (UNLIKELY(ctx->m_stackCounter ==  1024)) // maximum call stack size : 1KB
+        throwEsprimaException();
     ctx->m_isBindingElement = true;
     ctx->m_isAssignmentTarget = true;
     ctx->m_firstCoverInitializedNameError = NULL;
@@ -2551,6 +2555,7 @@ ALWAYS_INLINE escargot::Node* isolateCoverGrammar(ParseContext* ctx, escargot::N
     ctx->m_isBindingElement = oldIsBindingElement;
     ctx->m_isAssignmentTarget = oldIsAssignmentTarget;
     ctx->m_firstCoverInitializedNameError = oldFirstCoverInitializedNameError;
+    ctx->m_stackCounter--;
     return result;
 }
 
@@ -2560,6 +2565,9 @@ ALWAYS_INLINE escargot::Node* inheritCoverGrammar(ParseContext* ctx, escargot::N
         oldIsAssignmentTarget = ctx->m_isAssignmentTarget;
     RefPtr<ParseStatus> oldFirstCoverInitializedNameError = ctx->m_firstCoverInitializedNameError;
     escargot::Node* result;
+    ctx->m_stackCounter++;
+    if (UNLIKELY(ctx->m_stackCounter == 1024)) // maximum call stack size : 1KB
+        throwEsprimaException();
     ctx->m_isBindingElement = true;
     ctx->m_isAssignmentTarget = true;
     ctx->m_firstCoverInitializedNameError = NULL;
@@ -2569,6 +2577,7 @@ ALWAYS_INLINE escargot::Node* inheritCoverGrammar(ParseContext* ctx, escargot::N
     // ctx->m_firstCoverInitializedNameError = oldFirstCoverInitializedNameError || ctx->m_firstCoverInitializedNameError;
     if (oldFirstCoverInitializedNameError)
         ctx->m_firstCoverInitializedNameError = oldFirstCoverInitializedNameError;
+    ctx->m_stackCounter--;
     return result;
 }
 
@@ -6231,6 +6240,7 @@ escargot::Node* parse(escargot::ESString* source, bool strict)
     ctx.m_parenthesizedCount = 0;
     ctx.m_lookahead = nullptr;
     ctx.m_currentBody = nullptr;
+    ctx.m_stackCounter = 0;
     try {
         escargot::Node* node = parseProgram(&ctx);
         return node;
