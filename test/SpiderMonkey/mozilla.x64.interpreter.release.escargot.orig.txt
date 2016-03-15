@@ -230,8 +230,6 @@ js1_8/regress/regress-465249.js
 js1_8/regress/regress-467495-01.js
 js1_8/regress/regress-467495-03.js
 js1_8/regress/regress-467495-04.js
-js1_8/regress/regress-467495-05.js
-js1_8/regress/regress-467495-06.js
 js1_8/regress/regress-469625-02.js
 js1_8/regress/regress-469625-03.js
 js1_8/regress/regress-499524.js

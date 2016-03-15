@@ -38,16 +38,17 @@ const char16_t* TokenName[] = {
     u"Template",
 };
 
-const char16_t* FnExprTokens[] = {
-    u"(", u"{", u"[", u"in", u"typeof", u"instanceof", u"new",
-    u"return", u"case", u"delete", u"throw", u"void",
-    // assignment operators
-    u"=", u"+=", u"-=", u"*=", u"/=", u"%=", u"<<=", u">>=", u">>>=",
-    u"&=", u"|=", u"^=", u",",
+const char16_t* PuncuatorsTokens[] = {
+    u"(", u")", u"{", u"}", u".", u"...", u",", u":", u";", u"[", u"]",
     // binary/unary operators
-    u"+", u"-", u"*", u"/", u"%", u"++", u"--", u"<<", u">>", u">>>", u"&",
-    u"|", u"^", u"!", u"~", u"&&", u"||", u"?", u":", u"===", u"==", u">=",
-    u"<=", u"<", u">", u"!=", u"!=="
+    u"?", u"~", u">>>", u">>", u"<<", u"+", u"-", u"*", u"/", u"%", u"!",
+    u"===", u"!==", u"==", u"!=", u"&&", u"||", u"++", u"--", u"&", u"|",
+    u"^", u"<", u">", u"in", u"instanceof" ,
+    // assignment operators
+    u"=", u">>>=", u"<<=", u">>=", u"+=", u"-=", u"*=", u"/=", u"%=",
+    u"&=", u"|=", u"^=", u"<=", u">=",
+    // arrow
+    u"=>"
 };
 
 /*
@@ -171,7 +172,7 @@ enum PunctuatorsKind {
     MultiplyEqual,
     DivideEqual,
     ModEqual,
-    ExclamationMarkEqual,
+    // ExclamationMarkEqual,
     BitwiseAndEqual,
     BitwiseOrEqual,
     BitwiseXorEqual,
@@ -180,6 +181,16 @@ enum PunctuatorsKind {
     SubstitutionEnd,
 
     Arrow,
+};
+
+const char16_t* KeywordTokens[] = {
+    u"", u"if", u"in", u"do", u"var", u"for", u"new", u"try", u"this",
+    u"else", u"case", u"void", u"width", u"enum", u"while", u"break",
+    u"catch", u"throw", u"const", u"class", u"super", u"return", u"typeof",
+    u"delete", u"switch", u"export", u"import", u"default", u"finally",
+    u"extends", u"function", u"continue", u"debugger", u"instanceof",
+    u"", u"implements", u"interface", u"package", u"protected", u"public",
+    u"static", u"yield", u"let"
 };
 
 enum KeywordKind {
@@ -778,6 +789,7 @@ bool isPSMallocInited = false;
 #define PS_POOL_SIZE 64
 ParseStatus* psPool[PS_POOL_SIZE];
 size_t psPoolUsage = 0;
+void throwEsprimaException(const char16_t* token = u"");
 
 ALWAYS_INLINE ParseStatus* psMalloc()
 {
@@ -881,9 +893,78 @@ void throwEsprimaException(escargot::ESString* token)
     throw token;
 }
 
-void throwEsprimaException(const char16_t* token = u"")
+void throwEsprimaException(const char16_t* token)
 {
     throw escargot::ESString::create(token);
+}
+
+void throwUnexpectedToken(RefPtr<ParseStatus> token, const char16_t* message = u"")
+{
+    escargot::UTF16String err_msg;
+    err_msg.append(u"Unexpected ");
+    err_msg.append(TokenName[token->m_type]);
+    err_msg.append(u" '");
+    err_msg.append(token->m_value.toESString()->toUTF16String());
+    err_msg.append(u"'");
+    err_msg.append(message);
+    throwEsprimaException(err_msg.c_str());
+}
+
+void throwUnexpectedToken(RefPtr<ParseStatus> token, PunctuatorsKind kind, const char16_t* message = u"")
+{
+    escargot::UTF16String err_msg;
+    err_msg.append(u"Unexpected ");
+    err_msg.append(TokenName[token->m_type]);
+    err_msg.append(u" '");
+    if (token->m_type == NumericLiteralToken) {
+        err_msg.append(escargot::ESUTF16String::create(escargot::dtoa(token->m_valueNumber))->toUTF16String());
+    } else {
+        err_msg.append(token->m_value.toESString()->toUTF16String());
+    }
+    err_msg.append(u"'. Expected an ");
+    err_msg.append(PuncuatorsTokens[kind]);
+    err_msg.append(message);
+    throwEsprimaException(err_msg.c_str());
+}
+
+void throwUnexpectedToken(RefPtr<ParseStatus> token, KeywordKind kind, const char16_t* message = u"")
+{
+    escargot::UTF16String err_msg;
+    err_msg.append(u"Unexpected ");
+    err_msg.append(TokenName[token->m_type]);
+    err_msg.append(u" '");
+    if (token->m_type == NumericLiteralToken) {
+        err_msg.append(escargot::ESUTF16String::create(escargot::dtoa(token->m_valueNumber))->toUTF16String());
+    } else {
+        err_msg.append(token->m_value.toESString()->toUTF16String());
+    }
+    err_msg.append(u"'. Expected an ");
+    err_msg.append(KeywordTokens[kind]);
+    err_msg.append(message);
+    throwEsprimaException(err_msg.c_str());
+}
+
+void throwDuplicateIdentifierError(escargot::InternalAtomicString name)
+{
+    escargot::UTF16String err_msg;
+    err_msg.append(u"Cannot declare a parameter named '");
+    err_msg.append(name.string()->toUTF16String());
+    err_msg.append(u"' in strict mode as it has already been declared.");
+    throwEsprimaException(err_msg.c_str());
+}
+
+void throwRestrictedWordUsedError(escargot::InternalAtomicString name)
+{
+    escargot::UTF16String err_msg;
+    err_msg.append(u"Cannot declare a variable named '");
+    err_msg.append(name.string()->toUTF16String());
+    err_msg.append(u"' in strict mode.");
+    throwEsprimaException(err_msg.c_str());
+}
+
+void throwRestrictedWordUsedError(RefPtr<ParseStatus> token)
+{
+    throwRestrictedWordUsedError(token->m_value.toInternalAtomicString());
 }
 
 void tolerateUnexpectedToken(/*token, message*/)
@@ -2350,7 +2431,7 @@ ALWAYS_INLINE void expect(ParseContext* ctx, PunctuatorsKind kind)
     RefPtr<ParseStatus> token = lex(ctx);
     // CHECKTHIS. compare value!
     if (token->m_type != Token::PunctuatorToken || token->m_punctuatorsKind != kind) {
-        throwEsprimaException();
+        throwUnexpectedToken(token, kind);
     }
 }
 
@@ -2388,7 +2469,7 @@ void expectKeyword(ParseContext* ctx, KeywordKind keyword)
 {
     RefPtr<ParseStatus> token = lex(ctx);
     if (token->m_type != Token::KeywordToken || token->m_keywordKind != keyword) {
-        throwEsprimaException();
+        throwUnexpectedToken(token, keyword);
     }
 }
 
@@ -2758,7 +2839,7 @@ escargot::VariableDeclaratorNode* parseVariableDeclaration(ParseContext* ctx)
     ASSERT(id->type() == escargot::NodeType::Identifier);
     if (ctx->m_strict && isRestrictedWord(((escargot::IdentifierNode *)id)->name())) {
         // tolerateError(Messages.StrictVarName);
-        tolerateError(u"Messages.StrictVarName");
+        throwRestrictedWordUsedError(((escargot::IdentifierNode *)id)->name());
     }
 
     if (match(ctx, Substitution)) {
@@ -2834,7 +2915,7 @@ escargot::Node* parseLexicalBinding(ParseContext* ctx, escargot::UTF16String& ki
     // ECMA-262 12.2.1
     if (ctx->m_strict && isRestrictedWord(((escargot::IdentifierNode *)id)->name())) {
         // tolerateError(Messages.StrictVarName);
-        tolerateError(u"Messages.StrictVarName");
+        throwRestrictedWordUsedError(((escargot::IdentifierNode *)id)->name());
     }
 
     if (kind == u"const") {
@@ -3521,7 +3602,7 @@ escargot::Node* parseCatchClause(ParseContext* ctx/*node*/)
 
     // ECMA-262 12.14.1
     if (ctx->m_strict && isRestrictedWord(((escargot::IdentifierNode*)param)->name())) {
-        tolerateError(u"Messages.StrictCatchVariable");
+        throwRestrictedWordUsedError(((escargot::IdentifierNode *)param)->name());
     }
 
     expect(ctx, RightParenthesis);
@@ -3835,7 +3916,7 @@ function parseParam(options) {
 }
  */
 
-bool parseParam(ParseContext* ctx, escargot::InternalAtomicStringVector& vec/*, options*/)
+bool parseParam(ParseContext* ctx, escargot::InternalAtomicStringVector& vec, RefPtr<ParseStatus>* firstRestricted = nullptr)
 {
     // var token, param, params = [], i, def;
 
@@ -3855,11 +3936,20 @@ bool parseParam(ParseContext* ctx, escargot::InternalAtomicStringVector& vec/*, 
 
     if (ctx->m_strict) {
         if (isRestrictedWord(((escargot::IdentifierNode*)param)->name())) {
-            // tolerateUnexpectedToken(token, Messages.StrictFunctionName);
-            tolerateUnexpectedToken();
+            throwRestrictedWordUsedError(((escargot::IdentifierNode *)param)->name());
         }
-        if (std::find(vec.begin(), vec.end(), ((escargot::IdentifierNode*)param)->name()) != vec.end())
-            tolerateUnexpectedToken();
+        if (std::find(vec.begin(), vec.end(), ((escargot::IdentifierNode*)param)->name()) != vec.end()) {
+            throwDuplicateIdentifierError(((escargot::IdentifierNode*)param)->name());
+        }
+    } else {
+        if (firstRestricted && !*firstRestricted) {
+            if (isRestrictedWord(((escargot::IdentifierNode*)param)->name())) {
+                *firstRestricted = token;
+            }
+            if (std::find(vec.begin(), vec.end(), ((escargot::IdentifierNode*)param)->name()) != vec.end()) {
+                *firstRestricted = token;
+            }
+        }
     }
 
     /*
@@ -3881,7 +3971,7 @@ bool parseParam(ParseContext* ctx, escargot::InternalAtomicStringVector& vec/*, 
     return !match(ctx, RightParenthesis);
 }
 
-escargot::InternalAtomicStringVector parseParams(ParseContext* ctx/*, ParseStatus* firstRestricted*/)
+escargot::InternalAtomicStringVector parseParams(ParseContext* ctx, RefPtr<ParseStatus>* firstRestricted = nullptr)
 {
     /*
     var options;
@@ -3899,7 +3989,7 @@ escargot::InternalAtomicStringVector parseParams(ParseContext* ctx/*, ParseStatu
 
     if (!match(ctx, RightParenthesis)) {
         while (ctx->m_startIndex < ctx->m_length) {
-            if (!parseParam(ctx, vec)) {
+            if (!parseParam(ctx, vec, firstRestricted)) {
                 break;
             }
             expect(ctx, Comma);
@@ -3959,15 +4049,17 @@ escargot::Node* parseFunctionDeclaration(ParseContext* ctx/*node, identifierIsOp
         if (ctx->m_strict) {
             if (isRestrictedWord(token->m_value)) {
                 // tolerateUnexpectedToken(token, Messages.StrictFunctionName);
-                tolerateUnexpectedToken();
+                throwRestrictedWordUsedError(token->m_value.toInternalAtomicString());
             }
         } else {
-            if (isRestrictedWord(token->m_value)) {
-                firstRestricted = token;
-                // message = Messages.StrictFunctionName;
-            } else if (isStrictModeReservedWord(token->m_value)) {
-                firstRestricted = token;
-                // message = Messages.StrictReservedWord;
+            if (!firstRestricted) {
+                if (isRestrictedWord(token->m_value)) {
+                    firstRestricted = token;
+                    // message = Messages.StrictFunctionName;
+                } else if (isStrictModeReservedWord(token->m_value)) {
+                    firstRestricted = token;
+                    // message = Messages.StrictReservedWord;
+                }
             }
         }
     } else {
@@ -3975,7 +4067,7 @@ escargot::Node* parseFunctionDeclaration(ParseContext* ctx/*node, identifierIsOp
     }
 
     ctx->m_allowYield = !isGenerator;
-    escargot::InternalAtomicStringVector params = parseParams(ctx/*, firstRestricted*/);
+    escargot::InternalAtomicStringVector params = parseParams(ctx, &firstRestricted);
     /*
     tmp = parseParams(firstRestricted);
     params = tmp.params;
@@ -3990,15 +4082,6 @@ escargot::Node* parseFunctionDeclaration(ParseContext* ctx/*node, identifierIsOp
 
     bool previousStrict = ctx->m_strict;
     escargot::Node* body = parseFunctionSourceElements(ctx);
-    if (ctx->m_strict && firstRestricted) {
-        // throwUnexpectedToken(firstRestricted, message);
-        throwEsprimaException();
-    }
-    /*
-    if (strict && stricted) {
-        tolerateUnexpectedToken(stricted, message);
-    }
-    */
 
     // return node.finishFunctionDeclaration(id, params, defaults, body, isGenerator);
     ASSERT(id->type() == escargot::NodeType::Identifier);
@@ -4007,22 +4090,8 @@ escargot::Node* parseFunctionDeclaration(ParseContext* ctx/*node, identifierIsOp
     nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
     ctx->m_currentBody->insert(ctx->m_currentBody->begin(), nd);
 
-    // TODO : has to check at Function Expression, too.
-    if (!previousStrict && ctx->m_strict) {
-        escargot::FunctionDeclarationNode* fd = static_cast<escargot::FunctionDeclarationNode *>(nd);
-        const escargot::InternalAtomicStringVector& params = fd->params();
-        escargot::InternalAtomicStringVector::const_iterator it = params.begin();
-        for (escargot::InternalAtomicString param : params) {
-
-            if (isRestrictedWord(param)) {
-                // tolerateUnexpectedToken(token, Messages.StrictFunctionName);
-                tolerateUnexpectedToken();
-            }
-
-            it++;
-            if (std::find(it, params.end(), param) != params.end())
-                tolerateUnexpectedToken();
-        }
+    if (!previousStrict && ctx->m_strict && firstRestricted) {
+        throwRestrictedWordUsedError(firstRestricted);
     }
 
     escargot::IdentifierNode* idNode = new escargot::IdentifierNode(((escargot::IdentifierNode *)id)->name());
@@ -4071,7 +4140,7 @@ escargot::Node* parseFunctionExpression(ParseContext* ctx)
         if (ctx->m_strict) {
             if (isRestrictedWord(token->m_value)) {
                 // tolerateUnexpectedToken(token, Messages.StrictFunctionName);
-                tolerateUnexpectedToken();
+                throwRestrictedWordUsedError(((escargot::IdentifierNode *)id)->name());
             }
         } else {
             if (isRestrictedWord(token->m_value)) {
@@ -4084,7 +4153,7 @@ escargot::Node* parseFunctionExpression(ParseContext* ctx)
         }
     }
 
-    escargot::InternalAtomicStringVector params = parseParams(ctx/*, firstRestricted*/);
+    escargot::InternalAtomicStringVector params = parseParams(ctx, &firstRestricted);
     /*
     tmp = parseParams(firstRestricted);
     params = tmp.params;
@@ -4098,14 +4167,6 @@ escargot::Node* parseFunctionExpression(ParseContext* ctx)
 
     bool previousStrict = ctx->m_strict;
     escargot::Node* body = parseFunctionSourceElements(ctx);
-    /*
-    if (strict && firstRestricted) {
-        throwUnexpectedToken(firstRestricted, message);
-    }
-    if (strict && stricted) {
-        tolerateUnexpectedToken(stricted, message);
-    }
-     */
 
     // return node.finishFunctionExpression(id, params, defaults, body, isGenerator);
     escargot::Node* nd;
@@ -4116,6 +4177,10 @@ escargot::Node* parseFunctionExpression(ParseContext* ctx)
         nd = new escargot::FunctionExpressionNode(escargot::strings->emptyString,
             std::move(params), body, isGenerator, true, ctx->m_strict);
     nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
+
+    if (!previousStrict && ctx->m_strict && firstRestricted) {
+        throwRestrictedWordUsedError(firstRestricted);
+    }
 
     ctx->m_strict = previousStrict;
     ctx->m_allowYield = previousAllowYield;
@@ -4613,7 +4678,8 @@ escargot::Node* parsePropertyMethodFunction(ParseContext* ctx, escargot::Node* k
 {
     bool previousAllowYield = ctx->m_allowYield;
     ctx->m_allowYield = false;
-    escargot::InternalAtomicStringVector params = parseParams(ctx);
+    RefPtr<ParseStatus> firstRestricted;
+    escargot::InternalAtomicStringVector params = parseParams(ctx, &firstRestricted);
     ctx->m_allowYield = previousAllowYield;
 
     ctx->m_allowYield = false;
@@ -4713,7 +4779,8 @@ escargot::Node* tryParseMethodDefinition(ParseContext* ctx, ParseStatus* token, 
         // methodNode = new Node();
 
         ctx->m_allowYield = false;
-        escargot::InternalAtomicStringVector params = parseParams(ctx);
+        RefPtr<ParseStatus> firstRestricted;
+        escargot::InternalAtomicStringVector params = parseParams(ctx, &firstRestricted);
         ctx->m_allowYield = previousAllowYield;
 
         ctx->m_allowYield = false;
@@ -5167,11 +5234,7 @@ escargot::Node* parsePrimaryExpression(ParseContext* ctx)
             // return parseClassExpression();
         }
         token = lex(ctx);
-        escargot::UTF16String err_msg;
-        err_msg.append(u"Unexpected keyword '");
-        err_msg.append(token->m_value.toESString()->toUTF16String());
-        err_msg.append(u"'");
-        throwEsprimaException(err_msg.c_str());
+        throwUnexpectedToken(token);
     } else if (type == Token::BooleanLiteralToken) {
         ctx->m_isAssignmentTarget = ctx->m_isBindingElement = false;
         token = lex(ctx);
@@ -5217,8 +5280,8 @@ escargot::Node* parsePrimaryExpression(ParseContext* ctx)
     } else if (type == Token::TemplateToken) {
         expr = parseTemplateLiteral(ctx);
     } else {
-        // throwUnexpectedToken(lex());
-        throwEsprimaException();
+        token = lex(ctx);
+        throwUnexpectedToken(token);
     }
 
     return expr;
@@ -5456,7 +5519,8 @@ escargot::Node* parsePostfixExpression(ParseContext* ctx)
         if (match(ctx, PlusPlus) || match(ctx, MinusMinus)) {
             // ECMA-262 11.3.1, 11.3.2
             if (ctx->m_strict && expr->type() == escargot::NodeType::Identifier && isRestrictedWord(((escargot::IdentifierNode *)expr)->name())) {
-                tolerateError(u"Messages.StrictLHSPostfix");
+                // tolerateError(u"Messages.StrictLHSPostfix");
+                throwRestrictedWordUsedError(((escargot::IdentifierNode *)expr)->name());
             }
 
             if (!ctx->m_isAssignmentTarget) {
@@ -5496,7 +5560,8 @@ escargot::Node* parseUnaryExpression(ParseContext* ctx)
         expr = inheritCoverGrammar(ctx, parseUnaryExpression);
         // ECMA-262 11.4.4, 11.4.5
         if (ctx->m_strict && expr->type() == escargot::NodeType::Identifier && isRestrictedWord(((escargot::IdentifierNode *)expr)->name())) {
-            tolerateError(u"Messages.StrictLHSPrefix");
+            // tolerateError(u"Messages.StrictLHSPrefix");
+            throwRestrictedWordUsedError(((escargot::IdentifierNode *)expr)->name());
         }
 
         if (!ctx->m_isAssignmentTarget) {
@@ -5998,7 +6063,8 @@ escargot::Node* parseAssignmentExpression(ParseContext* ctx)
 
         // ECMA-262 11.13.1
         if (ctx->m_strict && expr->type() == escargot::NodeType::Identifier && isRestrictedWord(((escargot::IdentifierNode *)expr)->name())) {
-            tolerateUnexpectedToken();
+            // tolerateUnexpectedToken();
+            throwRestrictedWordUsedError(((escargot::IdentifierNode *)expr)->name());
         }
 
         if (!match(ctx, Substitution)) {
