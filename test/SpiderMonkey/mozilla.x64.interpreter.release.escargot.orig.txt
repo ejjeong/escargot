@@ -74,8 +74,6 @@ js1_2/regexp/RegExp_lastMatch.js
 js1_2/regexp/RegExp_lastMatch_as_array.js
 js1_2/regexp/RegExp_lastParen.js
 js1_2/regexp/RegExp_lastParen_as_array.js
-js1_2/regexp/RegExp_leftContext.js
-js1_2/regexp/RegExp_leftContext_as_array.js
 js1_2/regexp/RegExp_multiline.js
 js1_2/regexp/RegExp_multiline_as_array.js
 js1_2/regexp/RegExp_rightContext.js
@@ -207,7 +205,6 @@ js1_7/extensions/regress-474771-02.js
 js1_7/extensions/regress-476257.js
 js1_7/extensions/regress-477048.js
 js1_7/lexical/regress-346642-04.js
-js1_7/regexp/yflag.js
 js1_7/regress/regress-355023.js
 js1_7/regress/regress-363040-01.js
 js1_8/extensions/regress-353116.js
@@ -282,7 +279,6 @@ js1_8_5/regress/regress-586482-2.js
 js1_8_5/regress/regress-586482-3.js
 js1_8_5/regress/regress-586482-4.js
 js1_8_5/regress/regress-586482-5.js
-js1_8_5/regress/regress-591846.js
 js1_8_5/regress/regress-593256.js
 js1_8_5/regress/regress-595230-2.js
 js1_8_5/regress/regress-597945-1.js
