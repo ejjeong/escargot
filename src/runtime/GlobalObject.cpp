@@ -538,6 +538,9 @@ void GlobalObject::initGlobalObject()
                         v = (octets[0] & 0x1F) << 6 | (octets[1] & 0x3F);
                     } else if (n == 3) {
                         v = (octets[0] & 0x0F) << 12 | (octets[1] & 0x3F) << 6 | (octets[2] & 0x3F);
+                        if (0xD800 <= v && v <= 0xDFFF) {
+                            instance->throwError(ESValue(URIError::create(ESString::create("malformed URI"))));
+                        }
                     } else if (n == 4) {
                         v = (octets[0] & 0x07) << 18 | (octets[1] & 0x3F) << 12 | (octets[2] & 0x3F) << 6 | (octets[3] & 0x3F);
                     }
@@ -642,6 +645,9 @@ void GlobalObject::initGlobalObject()
                         v = (octets[0] & 0x1F) << 6 | (octets[1] & 0x3F);
                     } else if (n == 3) {
                         v = (octets[0] & 0x0F) << 12 | (octets[1] & 0x3F) << 6 | (octets[2] & 0x3F);
+                        if (0xD800 <= v && v <= 0xDFFF) {
+                            instance->throwError(ESValue(URIError::create(ESString::create("malformed URI"))));
+                        }
                     } else if (n == 4) {
                         v = (octets[0] & 0x07) << 18 | (octets[1] & 0x3F) << 12 | (octets[2] & 0x3F) << 6 | (octets[3] & 0x3F);
                     }
