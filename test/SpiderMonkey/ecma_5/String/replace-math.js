@@ -1,4 +1,4 @@
-// escargot-env:{"GC_MAXIMUM_HEAP_SIZE":"3000000000"}
+// escargot-env: {"GC_MAXIMUM_HEAP_SIZE":"3000000000"}
 /*
  * Any copyright is dedicated to the Public Domain.
  * http://creativecommons.org/licenses/publicdomain/

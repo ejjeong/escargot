@@ -13,11 +13,6 @@ function makeFinalizeObserver() {
   return 0;
 }
 
-var origLoad = load;
-load = function(path) {
-    origLoad("test/SpiderMonkey/" + path);
-}
-
 function evalcx(str, object) {
     if (object != undefined)
         throw "evalcx() not supported";

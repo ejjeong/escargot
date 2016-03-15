@@ -9,6 +9,7 @@ from subprocess import Popen, PIPE
 
 from .tests import RefTestCase
 
+import json
 
 def split_path_into_dirs(path):
     dirs = [path]
