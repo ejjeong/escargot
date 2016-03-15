@@ -1,3 +1,4 @@
+// escargot-skip: Object.prototype.toSource not supported
 function toSource(o) { return o === null ? "null" : o.toSource(); }
 
 var gcgcz = /((?:.)+)((?:.)*)/; /* Greedy capture, greedy capture zero. */

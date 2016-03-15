@@ -1,3 +1,4 @@
+// escargot-skip: ES6 TypedArray
 
 var F, o;
 

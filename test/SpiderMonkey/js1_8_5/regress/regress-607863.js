@@ -1,3 +1,4 @@
+// escargot-skip: evalcx() not supported
 // |reftest| fails-if(!xulRuntime.shell)
 /* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
 /*

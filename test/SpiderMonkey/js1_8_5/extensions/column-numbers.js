@@ -1,3 +1,4 @@
+// escargot-skip: Error.prototype.stack not supported
 actual   = 'No Error';
 expected = /column-numbers\.js:4:11/;
 try {

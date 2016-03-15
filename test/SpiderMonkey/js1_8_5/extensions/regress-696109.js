@@ -1,3 +1,4 @@
+// escargot-skip: Reflect not supported
 // |reftest| skip-if(!xulRuntime.shell)
 /* -*- Mode: C++; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
 /*
