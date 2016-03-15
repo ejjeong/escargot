@@ -4988,7 +4988,7 @@ void GlobalObject::installNumber()
 
     escargot::ESFunctionObject* toStringFunction = escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         if (!instance->currentExecutionContext()->resolveThisBinding().isNumber()
-            && (instance->currentExecutionContext()->resolveThisBinding().isESPointer() && !instance->currentExecutionContext()->resolveThisBinding().asESPointer()->isESNumberObject()))
+            && !(instance->currentExecutionContext()->resolveThisBinding().isESPointer() && instance->currentExecutionContext()->resolveThisBinding().asESPointer()->isESNumberObject()))
             instance->throwError(ESValue(TypeError::create(ESString::create("Type error, The toString function is not generic; it throws a TypeError exception if its this value is not a Number or a Number object"))));
         double number = instance->currentExecutionContext()->resolveThisBinding().toNumber();
         
