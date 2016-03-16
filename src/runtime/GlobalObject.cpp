@@ -4707,7 +4707,7 @@ void GlobalObject::installMath()
                     return ESValue(qnan);
                 if (value > max_value)
                     max_value = value;
-                if (value == 0 && max_value == -0.0 )
+                if (!value && !max_value)
                     max_value = 0;
             }
             return ESValue(max_value);
@@ -4729,7 +4729,7 @@ void GlobalObject::installMath()
                     return ESValue(qnan);
                 if (value < min_value)
                     min_value = value;
-                if (value == -0.0 && min_value == 0)
+                if (!value && !min_value)
                     min_value = -0.0;
             }
             return ESValue(min_value);
