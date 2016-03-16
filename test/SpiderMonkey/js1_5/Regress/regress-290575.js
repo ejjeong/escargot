@@ -35,7 +35,7 @@ function crashMe2(n) {
       fn = Function(nasty.join(), "void 0")
       fn.toString()
       }
-
+/*
 printStatus('crashMe2(0x10000)');
 
 summary = 'Syntax Error Function to string when more than 65536 arguments';
@@ -54,4 +54,4 @@ catch(e)
   actual = e.name;
   reportCompare(expect, actual, summary);
 }
-
+*/

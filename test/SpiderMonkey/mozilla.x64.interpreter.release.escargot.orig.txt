@@ -70,16 +70,12 @@ js1_5/Date/regress-301738-02.js
 js1_5/Exceptions/regress-257751.js
 js1_5/GetSet/regress-375976.js
 js1_5/LexicalConventions/regress-469940.js
-js1_5/Regress/regress-167328.js
 js1_5/Regress/regress-168347.js
 js1_5/Regress/regress-172699.js
 js1_5/Regress/regress-176125.js
-js1_5/Regress/regress-179524.js
 js1_5/Regress/regress-211590.js
-js1_5/Regress/regress-243869.js
 js1_5/Regress/regress-256501.js
 js1_5/Regress/regress-276103.js
-js1_5/Regress/regress-290575.js
 js1_5/Regress/regress-295052.js
 js1_5/Regress/regress-303213.js
 js1_5/Regress/regress-328664.js

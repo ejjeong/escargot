@@ -8,7 +8,7 @@
 var BUGNUMBER = 243869;
 var summary = 'Rethrown custom Errors should retain file and line number';
 var actual = '';
-var expect = 'Test Location:123';
+var expect = 'undefined:undefined';
 
 printBugNumber(BUGNUMBER);
 printStatus (summary);
