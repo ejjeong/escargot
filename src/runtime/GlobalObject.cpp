@@ -4769,30 +4769,6 @@ void GlobalObject::installMath()
 
         int y_int = static_cast<int>(y);
 
-        if (isinf(x)) {
-            if (x > 0) {
-                if (y > 0) {
-                    return ESValue(std::numeric_limits<double>::infinity());
-                } else {
-                    return ESValue(0.0);
-                }
-            } else {
-                if (y > 0) {
-                    if (y == y_int && y_int % 2) { // odd
-                        return ESValue(-std::numeric_limits<double>::infinity());
-                    } else {
-                        return ESValue(std::numeric_limits<double>::infinity());
-                    }
-                } else {
-                    if (y == y_int && y_int % 2) {
-                        return ESValue(-0.0);
-                    } else {
-                        return ESValue(0.0);
-                    }
-                }
-            }
-        }
-
         if (y == y_int) {
             unsigned n = (y < 0) ? -y : y;
             double m = x;
@@ -4818,7 +4794,33 @@ void GlobalObject::installMath()
                 }
                 m *= m;
             }
-        } else if (y == 0.5) {
+        }
+
+        if (isinf(x)) {
+            if (x > 0) {
+                if (y > 0) {
+                    return ESValue(std::numeric_limits<double>::infinity());
+                } else {
+                    return ESValue(0.0);
+                }
+            } else {
+                if (y > 0) {
+                    if (y == y_int && y_int % 2) { // odd
+                        return ESValue(-std::numeric_limits<double>::infinity());
+                    } else {
+                        return ESValue(std::numeric_limits<double>::infinity());
+                    }
+                } else {
+                    if (y == y_int && y_int % 2) {
+                        return ESValue(-0.0);
+                    } else {
+                        return ESValue(0.0);
+                    }
+                }
+            }
+        }
+
+        if (y == 0.5) {
             return ESValue(sqrt(x));
         } else if (y == -0.5) {
             return ESValue(1.0 / sqrt(x));
