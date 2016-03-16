@@ -4934,7 +4934,68 @@ void GlobalObject::installNumber()
 
     // $20.1.3.2 Number.prototype.toExponential
     m_numberPrototype->defineDataProperty(ESString::createAtomicString("toExponential"), true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        double number = instance->currentExecutionContext()->resolveThisBinding().toNumber();
+        int arglen = instance->currentExecutionContext()->argumentCount();
+        int digit = 0; // only used when an argument is given
+        std::basic_ostringstream<char> stream;
+        if (arglen > 0) {
+            double fractionDigits = instance->currentExecutionContext()->arguments()[0].toNumber();
+            digit = (int) trunc(fractionDigits);
+
+            if (digit < 0 || digit > 20) {
+                instance->throwError(ESValue(RangeError::create()));
+            }
+        }
+        if (number < 0) {
+            stream << "-";
+            number = -1 * number;
+        }
+        if (isnan(number)) {
+            return strings->NaN.string();
+        }
+        if (isinf(number)) { // how about -inf ??
+            return strings->Infinity.string();
+        }
+
+        int exp = 0;
+        if (std::abs(number) >= 10) {
+            double tmp = number;
+            while (tmp >= 10) {
+                exp++;
+                tmp /= 10.0;
+            }
+        } else if (std::abs(number) < 1) {
+            double tmp = number;
+            while (tmp < 1) {
+                exp++;
+                tmp *= 10.0;
+            }
+        }
+
+        number /= pow(10, exp);
+
+        if (arglen == 0) {
+            stream << "%lf" << "e";
+        } else {
+            stream << "%." << digit << "lf" << "e";
+        }
+        if (exp >= 0) {
+            stream << "+";
+        }
+        stream << "%d";
+        std::string fstr = stream.str();
+        char buf[512];
+        sprintf(buf, fstr.c_str(), number, exp);
+
+        // remove trailing zeros
+        char* tail = buf + strlen(buf) - 1;
+        while (*tail == '0' && *tail-- != '.') { }
+        *(tail + 1) = '\0';
+        if (*tail == '.')
+            *tail = '\0';
+
+        return ESValue(ESString::create(buf));
+
     }, ESString::createAtomicString("toExponential"), 1));
 
     // initialize numberPrototype object: $20.1.3.3 Number.prototype.toFixed(fractionDigits)
