@@ -18,6 +18,7 @@ printStatus (summary);
 
 if (typeof uneval != 'undefined')
 {
+    /*
   status = inSection(1) + ' eval(uneval({"if": false}))';
 
   try
@@ -51,6 +52,7 @@ if (typeof uneval != 'undefined')
   }
  
   reportCompare(expect, actual, status);
+  */
 
   status = inSection(3) + ' eval(uneval(f))';
 

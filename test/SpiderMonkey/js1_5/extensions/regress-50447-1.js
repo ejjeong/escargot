@@ -1,3 +1,4 @@
+// escargot-skip: Error.prototype.lineNumber & Error.prototype.fileName not supported
 /* -*- tab-width: 8; indent-tabs-mode: nil; js-indent-level: 4 -*-
  * vim: set ts=8 sts=4 et sw=4 tw=99:
  * This Source Code Form is subject to the terms of the Mozilla Public
