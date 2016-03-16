@@ -45,7 +45,6 @@ ecma_5/misc/builtin-methods-reject-null-undefined-this.js
 ecma_5/misc/function-definition-eval.js
 ecma_5/misc/future-reserved-words.js
 ecma_5/misc/regexp-functions-with-undefined.js
-ecma_5/strict/15.4.4.12.js
 ecma_5/strict/15.4.4.13.js
 ecma_5/strict/15.4.4.6.js
 ecma_5/strict/15.4.4.8.js

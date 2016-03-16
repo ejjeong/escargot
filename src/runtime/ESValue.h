@@ -1833,8 +1833,12 @@ public:
     {
         return set(ESValue(key), val, receiver);
     }
+    ALWAYS_INLINE void set(escargot::ESString* key, const ESValue& val, bool throwException, escargot::ESValue* receiver = nullptr)
+    {
+        set(ESValue(key), val, throwException, receiver);
+    }
 
-    ALWAYS_INLINE void set(const escargot::ESValue& key, const ESValue& val, bool throwExpetion, escargot::ESValue* receiver = nullptr);
+    ALWAYS_INLINE void set(const escargot::ESValue& key, const ESValue& val, bool throwExeption, escargot::ESValue* receiver = nullptr);
 
     ALWAYS_INLINE uint32_t length();
     ALWAYS_INLINE ESValue pop();

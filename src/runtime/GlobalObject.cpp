@@ -2348,41 +2348,61 @@ void GlobalObject::installArray()
             }
             for (k = 0; k < deleteCnt; k++) {
                 size_t from = start + k;
-                ret->defineDataProperty(ESValue(k), true, true, true, thisBinded->get(ESValue(from)));
+                if (thisBinded->hasProperty(ESValue(from)))
+                    ret->defineDataProperty(ESValue(k), true, true, true, thisBinded->get(ESValue(from)));
             }
-            size_t argIdx = 2;
             size_t leftInsert = insertCnt;
-            for (k = start; k < start + deleteCnt; k++) {
-                if (leftInsert > 0) {
-                    thisBinded->set(ESValue(k), instance->currentExecutionContext()->arguments()[argIdx]);
-                    leftInsert--;
-                    argIdx++;
-                } else {
-                    thisBinded->eraseValues(k, start + deleteCnt - k);
-                    break;
+            if (insertCnt < deleteCnt) {
+                k = start;
+                while (k < arrlen - deleteCnt) {
+                    if (thisBinded->hasProperty(ESValue(k + deleteCnt))) {
+                        thisBinded->set(ESValue(k + insertCnt), thisBinded->get(ESValue(k + deleteCnt)), true);
+                    } else {
+                        if (!thisBinded->deleteProperty(ESValue(k + insertCnt))) {
+                            ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create(u"Unable to delete property.")));
+                        }
+                    }
+                    k++;
+                }
+                k = arrlen;
+                while (k > arrlen - deleteCnt + insertCnt) {
+                    if (!thisBinded->deleteProperty(ESValue(k - 1))) {
+                        ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create(u"Unable to delete property.")));
+                    }
+                    k--;
+                }
+            } else if (insertCnt > deleteCnt) {
+                k = arrlen - deleteCnt;
+                while (k > start) {
+                    if (thisBinded->hasProperty(ESValue(k + deleteCnt - 1))) {
+                        thisBinded->set(ESValue(k + insertCnt - 1), thisBinded->get(ESValue(k + deleteCnt - 1)), true);
+                    } else {
+                        if (!thisBinded->deleteProperty(ESValue(k + insertCnt - 1))) {
+                            ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create(u"Unable to delete property.")));
+                        }
+                    }
+                    k--;
                 }
             }
+            k = start;
+            size_t argIdx = 2;
             if (LIKELY(thisBinded->isESArrayObject() && thisBinded->asESArrayObject()->isFastmode())) {
                 auto thisArr = thisBinded->asESArrayObject();
                 while (leftInsert > 0) {
-                    thisArr->insertValue(k, instance->currentExecutionContext()->arguments()[argIdx]);
+                    thisArr->set(k, instance->currentExecutionContext()->arguments()[argIdx]);
                     leftInsert--;
                     argIdx++;
                     k++;
                 }
-            } else if (leftInsert > 0) {
-                // Move leftInsert steps to right
-                for (size_t i = arrlen - 1; i >= k; i--) {
-                    thisBinded->set(ESValue(i + leftInsert), thisBinded->get(ESValue(i)));
-                    if (i == 0)
-                        break;
-                }
-                for (size_t i = k; i < k + leftInsert; i++, argIdx++) {
-                    thisBinded->set(ESValue(i), instance->currentExecutionContext()->arguments()[argIdx]);
+            } else {
+                while (leftInsert > 0) {
+                    thisBinded->set(ESValue(k), instance->currentExecutionContext()->arguments()[argIdx], true);
+                    leftInsert--;
+                    argIdx++;
+                    k++;
                 }
             }
-            if (UNLIKELY(!thisBinded->isESArrayObject()))
-                thisBinded->set(strings->length, ESValue(arrlen - deleteCnt + insertCnt));
+            thisBinded->set(strings->length, ESValue(arrlen - deleteCnt + insertCnt), true);
         }
         return ret;
     }, strings->splice, 2));

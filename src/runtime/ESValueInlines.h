@@ -1584,24 +1584,6 @@ ALWAYS_INLINE ESValue ESObject::pop()
     set(strings->length.string(), ESValue(len - 1));
     return ret;
 }
-ALWAYS_INLINE void ESObject::eraseValues(uint32_t idx, int cnt)
-{
-    if (LIKELY(isESArrayObject())) {
-        asESArrayObject()->eraseValues(idx, cnt);
-        return;
-    }
-    if (isESStringObject()) {
-        if (idx < asESStringObject()->length())
-            return;
-    }
-    for (uint32_t i = idx; i < length(); i++) {
-        if (i+cnt < length())
-            set(ESValue(i), get(ESValue(i+cnt)));
-        else
-            deleteProperty(ESValue(i));
-    }
-    // NOTE: length is set in Array.splice
-}
 
 // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-set-o-p-v-throw
 ALWAYS_INLINE bool ESObject::set(const escargot::ESValue& key, const ESValue& val, escargot::ESValue* receiver)
