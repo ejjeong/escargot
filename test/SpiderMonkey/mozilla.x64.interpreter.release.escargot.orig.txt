@@ -130,17 +130,7 @@ js1_6/extensions/regress-465443.js
 js1_6/extensions/regress-470310.js
 js1_6/extensions/regress-472508.js
 js1_6/extensions/regress-565521.js
-js1_7/extensions/destructuring-order.js
-js1_7/extensions/regress-354945-02.js
-js1_7/extensions/regress-355410.js
-js1_7/extensions/regress-367629.js
 js1_7/extensions/regress-368224.js
-js1_7/extensions/regress-381301.js
-js1_7/extensions/regress-469405-01.js
-js1_7/extensions/regress-476257.js
-js1_7/extensions/regress-477048.js
-js1_7/lexical/regress-346642-04.js
-js1_7/regress/regress-355023.js
 js1_8_1/extensions/regress-452498-162.js
 js1_8_1/jit/math-jit-tests.js
 js1_8_5/regress/regress-552432.js
