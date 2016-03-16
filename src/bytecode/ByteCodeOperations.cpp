@@ -24,7 +24,7 @@ NEVER_INLINE void setByIdSlowCase(ESVMInstance* instance, GlobalObject* globalOb
     // TODO
     // Object.defineProperty(this, "asdf", {value:1}) //this == global
     // asdf = 2
-    ESValue* slot;
+    ESBindingSlot slot;
     LexicalEnvironment* env = nullptr;
     bool isBindingMutable = false;
     bool isBindingConfigurable = false;
@@ -34,11 +34,16 @@ NEVER_INLINE void setByIdSlowCase(ESVMInstance* instance, GlobalObject* globalOb
     else
         slot = ec->resolveBinding(code->m_name, env, isBindingMutable, isBindingConfigurable);
 
-    if (LIKELY(slot != NULL)) {
+    if (LIKELY(slot)) {
         if (LIKELY(!isBindingMutable)) {
-            code->m_cachedSlot = slot;
-            code->m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
-            *code->m_cachedSlot = *value;
+            if (LIKELY(slot.isDataBinding())) {
+                code->m_cachedSlot = slot.getSlot();
+                code->m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
+                *code->m_cachedSlot = *value;
+            } else {
+                ASSERT(!env || env->record()->isGlobalEnvironmentRecord());
+                slot.setValueWithSetter(globalObject, code->m_name.string(), *value);
+            }
         }
     } else {
         if (!ec->isStrictMode()) {
@@ -624,7 +629,7 @@ NEVER_INLINE bool deleteBindingOperation(UnaryDelete* code, ExecutionContext* ec
         LexicalEnvironment* env = nullptr;
         bool isBindingMutable = false;
         bool isBindingConfigurable = false;
-        ESValue* binding = ec->resolveBinding(str, env, isBindingMutable, isBindingConfigurable);
+        ESBindingSlot binding = ec->resolveBinding(str, env, isBindingMutable, isBindingConfigurable);
         if (binding) {
             ASSERT(env);
             if (env->record()->isGlobalEnvironmentRecord()) {
@@ -634,7 +639,7 @@ NEVER_INLINE bool deleteBindingOperation(UnaryDelete* code, ExecutionContext* ec
                 DeclarativeEnvironmentRecord* record = (DeclarativeEnvironmentRecord*)env->record();
                 ASSERT(record->needsActivation());
                 if (isBindingConfigurable) {
-                    *binding = ESValue::ESDeletedValueTag::ESDeletedValue;
+                    binding.setSlot(ESValue::ESDeletedValueTag::ESDeletedValue);
                     return true;
                 } else {
                     return false;

@@ -41,6 +41,7 @@ class ESControlFlowRecord;
 class CodeBlock;
 class FunctionEnvironmentRecordWithArgumentsObject;
 class ESHiddenClassPropertyInfo;
+class GlobalObject;
 
 union ValueDescriptor {
     int64_t asInt64;
@@ -233,7 +234,6 @@ public:
 };
 
 typedef ESValue (*NativeFunctionType)(ESVMInstance*);
-
 
 class ESPointer : public gc {
 public:
@@ -1914,6 +1914,40 @@ protected:
         size_t m_margin: 2;
     } m_flags;
 #endif
+};
+
+class ESBindingSlot {
+public:
+    ALWAYS_INLINE ESBindingSlot()
+        : m_slot(nullptr), m_isDataBinding(true) { }
+    ALWAYS_INLINE ESBindingSlot(ESValue* slot, bool isDataBinding = true)
+        : m_slot(slot), m_isDataBinding(isDataBinding) { }
+
+    void* operator new(std::size_t) = delete;
+    ALWAYS_INLINE ESValue* operator->() const { return m_slot; }
+    ALWAYS_INLINE operator bool() const { return m_slot; }
+    ALWAYS_INLINE bool operator==(const ESValue* other) const { return m_slot == other; }
+
+    ALWAYS_INLINE ESValue* getSlot()
+    {
+        ASSERT(m_isDataBinding);
+        return m_slot;
+    }
+
+    ALWAYS_INLINE void setSlot(const ESValue& value)
+    {
+        ASSERT(m_isDataBinding);
+        *m_slot = value;
+    }
+
+    NEVER_INLINE ESValue getValueWithGetter(escargot::ESObject* obj, escargot::ESString* propertyName);
+    NEVER_INLINE void setValueWithSetter(escargot::ESObject* obj, escargot::ESString* propertyName, const ESValue& value);
+
+    ALWAYS_INLINE bool isDataBinding() { return m_isDataBinding; }
+
+private:
+    ESValue* m_slot;
+    bool m_isDataBinding;
 };
 
 class ESErrorObject : public ESObject {

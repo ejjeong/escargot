@@ -112,11 +112,11 @@ ESValue GlobalEnvironmentRecord::getThisBinding()
 }
 
 // $8.1.1.4.1
-ESValue* GlobalEnvironmentRecord::hasBinding(const InternalAtomicString& atomicName)
+ESBindingSlot GlobalEnvironmentRecord::hasBinding(const InternalAtomicString& atomicName)
 {
     /*
 
-    ESValue* ret = m_declarativeRecord->hasBinding(atomicName);
+    ESBindingSlot ret = m_declarativeRecord->hasBinding(atomicName);
     if (ret)
         return ret;
         */

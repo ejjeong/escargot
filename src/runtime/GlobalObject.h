@@ -314,7 +314,7 @@ public:
 
     // DO NOT USE THIS FUNCTION. THIS IS FOR GLOBAL OBJECT
     // NOTE rooted ESValue* has short life time.
-    ALWAYS_INLINE ESValue* addressOfProperty(escargot::ESString* key)
+    ALWAYS_INLINE ESBindingSlot addressOfProperty(escargot::ESString* key)
     {
         ASSERT(m_flags.m_isGlobalObject);
         size_t ret = m_hiddenClass->findProperty(key);
@@ -322,8 +322,7 @@ public:
             return NULL;
         if (m_hiddenClassData[ret].isDeleted())
             return NULL;
-        ASSERT(m_hiddenClass->propertyInfo(ret).m_flags.m_isDataProperty);
-        return &m_hiddenClassData[ret];
+        return ESBindingSlot(&m_hiddenClassData[ret], m_hiddenClass->propertyInfo(ret).m_flags.m_isDataProperty);
     }
 
     bool didSomePrototypeObjectDefineIndexedProperty()

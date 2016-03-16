@@ -4,13 +4,13 @@
 
 namespace escargot {
 
-ESValue* ExecutionContext::resolveBinding(const InternalAtomicString& atomicName)
+ESBindingSlot ExecutionContext::resolveBinding(const InternalAtomicString& atomicName)
 {
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
     LexicalEnvironment* env = environment();
 
     while (env) {
-        ESValue* slot = env->record()->hasBinding(atomicName);
+        ESBindingSlot slot = env->record()->hasBinding(atomicName);
         if (slot)
             return slot;
         env = env->outerEnvironment();
@@ -19,13 +19,13 @@ ESValue* ExecutionContext::resolveBinding(const InternalAtomicString& atomicName
     return NULL;
 }
 
-ESValue* ExecutionContext::resolveBinding(const InternalAtomicString& atomicName, LexicalEnvironment*& env)
+ESBindingSlot ExecutionContext::resolveBinding(const InternalAtomicString& atomicName, LexicalEnvironment*& env)
 {
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
     env = environment();
 
     while (env) {
-        ESValue* slot = env->record()->hasBinding(atomicName);
+        ESBindingSlot slot = env->record()->hasBinding(atomicName);
         if (slot)
             return slot;
         env = env->outerEnvironment();
@@ -34,13 +34,13 @@ ESValue* ExecutionContext::resolveBinding(const InternalAtomicString& atomicName
     return NULL;
 }
 
-ESValue* ExecutionContext::resolveBinding(const InternalAtomicString& atomicName, LexicalEnvironment*& env, bool& isBindingMutable, bool& isBindingConfigurable)
+ESBindingSlot ExecutionContext::resolveBinding(const InternalAtomicString& atomicName, LexicalEnvironment*& env, bool& isBindingMutable, bool& isBindingConfigurable)
 {
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
     env = environment();
 
     while (env) {
-        ESValue* slot = env->record()->hasBinding(atomicName, isBindingMutable, isBindingConfigurable);
+        ESBindingSlot slot = env->record()->hasBinding(atomicName, isBindingMutable, isBindingConfigurable);
         if (slot)
             return slot;
         env = env->outerEnvironment();

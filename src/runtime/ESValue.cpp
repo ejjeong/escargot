@@ -2204,4 +2204,22 @@ void ESPropertyAccessorData::setGetterAndSetterTo(ESObject* obj, const ESHiddenC
     }
 }
 
+
+ESValue ESBindingSlot::getValueWithGetter(escargot::ESObject* obj, escargot::ESString* propertyName)
+{
+    ASSERT(m_slot);
+    ASSERT(!m_isDataBinding);
+    ESPropertyAccessorData* accessor = (ESPropertyAccessorData*)m_slot->asESPointer();
+    return accessor->value(obj, ESValue(obj), propertyName);
+}
+
+void ESBindingSlot::setValueWithSetter(escargot::ESObject* obj, escargot::ESString* propertyName, const ESValue& value)
+{
+    ASSERT(m_slot);
+    ASSERT(!m_isDataBinding);
+    ESPropertyAccessorData* accessor = (ESPropertyAccessorData*)m_slot->asESPointer();
+    accessor->setValue(obj, ESValue(obj), propertyName, value);
+}
+
+
 }

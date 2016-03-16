@@ -250,6 +250,13 @@ protected:
 #endif
 
     std::unordered_map<double, ESString*, std::hash<double>, std::equal_to<double>, gc_allocator<std::pair<const double, ESString* > > > m_dtoaCache;
+
+public:
+    // FIXME This is to make the return type of getByIdOperation() as ESValue* (not ESValue) for performance.
+    // The lifetime is very short, so we should be careful.
+    // This will also introduce small memory leak.
+    // When getByIdOperation() function can have ESValue as its return type, this should be removed.
+    ESValue m_temporaryAccessorBindingValueHolder;
 };
 
 struct ESSimpleAllocatorMemoryFragment {

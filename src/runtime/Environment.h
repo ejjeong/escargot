@@ -210,12 +210,12 @@ public:
     virtual ~EnvironmentRecord() { }
 
     // return NULL == not exist
-    virtual ESValue* hasBinding(const InternalAtomicString& atomicName)
+    virtual ESBindingSlot hasBinding(const InternalAtomicString& atomicName)
     {
         RELEASE_ASSERT_NOT_REACHED();
     }
 
-    virtual ESValue* hasBinding(const InternalAtomicString& atomicName, bool& isBindingMutable, bool& isBindingConfigurable)
+    virtual ESBindingSlot hasBinding(const InternalAtomicString& atomicName, bool& isBindingMutable, bool& isBindingConfigurable)
     {
         RELEASE_ASSERT_NOT_REACHED();
     }
@@ -312,15 +312,15 @@ public:
     ~ObjectEnvironmentRecord() { }
 
     // return NULL == not exist
-    virtual ESValue* hasBinding(const InternalAtomicString& atomicName)
+    virtual ESBindingSlot hasBinding(const InternalAtomicString& atomicName)
     {
-        ESValue* addressOfProperty = ((GlobalObject *)m_bindingObject)->addressOfProperty(atomicName.string());
+        ESBindingSlot addressOfProperty = ((GlobalObject *)m_bindingObject)->addressOfProperty(atomicName.string());
         if (addressOfProperty && !addressOfProperty->isDeleted())
             return addressOfProperty;
         else
             return nullptr;
     }
-    virtual ESValue* hasBinding(const InternalAtomicString& atomicName, bool& isBindingMutable, bool& isBindingConfigurable)
+    virtual ESBindingSlot hasBinding(const InternalAtomicString& atomicName, bool& isBindingMutable, bool& isBindingConfigurable)
     {
         return hasBinding(atomicName);
     }
@@ -380,7 +380,7 @@ public:
     {
     }
 
-    virtual ESValue* hasBinding(const InternalAtomicString& atomicName)
+    virtual ESBindingSlot hasBinding(const InternalAtomicString& atomicName)
     {
         if (!m_needsActivation)
             return NULL;
@@ -394,7 +394,7 @@ public:
         return NULL;
     }
 
-    virtual ESValue* hasBinding(const InternalAtomicString& atomicName, bool& isBindingMutable, bool& isBindingConfigurable)
+    virtual ESBindingSlot hasBinding(const InternalAtomicString& atomicName, bool& isBindingMutable, bool& isBindingConfigurable)
     {
         if (!m_needsActivation)
             return NULL;
@@ -494,8 +494,8 @@ public:
     }
     ~GlobalEnvironmentRecord() { }
 
-    virtual ESValue* hasBinding(const InternalAtomicString& atomicName);
-    virtual ESValue* hasBinding(const InternalAtomicString& atomicName, bool& isBindingMutable, bool& isBindingConfigurable) { return hasBinding(atomicName); }
+    virtual ESBindingSlot hasBinding(const InternalAtomicString& atomicName);
+    virtual ESBindingSlot hasBinding(const InternalAtomicString& atomicName, bool& isBindingMutable, bool& isBindingConfigurable) { return hasBinding(atomicName); }
     void createMutableBinding(const InternalAtomicString& name, bool canDelete = false);
     void initializeBinding(const InternalAtomicString& name,  const ESValue& V);
     void setMutableBinding(const InternalAtomicString& name, const ESValue& V, bool mustNotThrowTypeErrorExecption);

@@ -16,22 +16,28 @@ ALWAYS_INLINE ESValue* getByIdOperation(ESVMInstance* instance, ExecutionContext
 #endif
         return code->m_cachedSlot;
     } else {
-        ESValue* slot;
+        ESBindingSlot slot;
         LexicalEnvironment* env = nullptr;
         if (code->m_onlySearchGlobal)
             slot = instance->globalObject()->addressOfProperty(code->m_name.string());
         else {
             slot = ec->resolveBinding(code->m_name, env);
         }
-        if (LIKELY(slot != NULL)) {
-            if (code->m_onlySearchGlobal || env->record()->isGlobalEnvironmentRecord()) {
-                code->m_cachedSlot = slot;
+        if (LIKELY(slot)) {
+            if ((code->m_onlySearchGlobal || env->record()->isGlobalEnvironmentRecord()) && slot.isDataBinding()) {
+                code->m_cachedSlot = slot.getSlot();
                 code->m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
             }
 #ifdef ENABLE_ESJIT
             code->m_profile.addProfile(*slot);
 #endif
-            return slot;
+            if (LIKELY(slot.isDataBinding())) {
+                return slot.getSlot();
+            } else {
+                ASSERT(slot.isDataBinding() || !env || env->record()->isGlobalEnvironmentRecord());
+                instance->m_temporaryAccessorBindingValueHolder = slot.getValueWithGetter(instance->globalObject(), code->m_name.string());
+                return &instance->m_temporaryAccessorBindingValueHolder;
+            }
         } else {
             if (code->m_name == strings->arguments)
                 if (ESValue* ret = ec->resolveArgumentsObjectBinding())

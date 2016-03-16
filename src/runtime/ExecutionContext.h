@@ -40,9 +40,9 @@ public:
     }
 
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
-    ESValue* resolveBinding(const InternalAtomicString& atomicName);
-    ESValue* resolveBinding(const InternalAtomicString& atomicName, LexicalEnvironment*& env);
-    ESValue* resolveBinding(const InternalAtomicString& atomicName, LexicalEnvironment*& env, bool& isBindingMutable, bool& isBindingConfigurable);
+    ESBindingSlot resolveBinding(const InternalAtomicString& atomicName);
+    ESBindingSlot resolveBinding(const InternalAtomicString& atomicName, LexicalEnvironment*& env);
+    ESBindingSlot resolveBinding(const InternalAtomicString& atomicName, LexicalEnvironment*& env, bool& isBindingMutable, bool& isBindingConfigurable);
 
     ESValue* resolveArgumentsObjectBinding();
 
