@@ -25,28 +25,33 @@ try {
     assertEq(e, 2);
 }
 
-var lhs_prefix = ["",        "++", "--", "",   "",   "[",             "[y, "      ];
-var lhs_suffix = [" = 'no'", "",   "",   "++", "--", ", y] = [3, 4]", "] = [5, 6]"];
+var lhs_prefix = ["",        "++", "--", "",   "",   /*"[",             "[y, "      */];
+var lhs_suffix = [" = 'no'", "",   "",   "++", "--", /*", y] = [3, 4]", "] = [5, 6]"*/];
 
 for (var i = 0; i < lhs_prefix.length; i++) {
     try {
         eval(lhs_prefix[i] + "eval('x')" + lhs_suffix[i]);
         assertEq(i, -2);
     } catch (e) {
+        /*
         if (/\[/.test(lhs_prefix[i])) {
             assertEq(e.message, "invalid destructuring target");
         } else {
+        */
             /*
              * NB: JSOP_SETCALL throws only JSMSG_BAD_LEFTSIDE_OF_ASS, it does not
              * specialize for ++ and -- as the compiler's error reporting does. See
              * the next section's forked assertEq code.
              */
-            assertEq(e.message, "invalid assignment left-hand side");
+            assertEq(e.message, "Invalid assignment.");
+        /*
         }
+        */
     }
 }
 
 /* Now test for strict mode rejecting any SETCALL variant at compile time. */
+/*
 for (var i = 0; i < lhs_prefix.length; i++) {
     try {
         eval("(function () { 'use strict'; " + lhs_prefix[i] + "foo('x')" + lhs_suffix[i] + "; })");
@@ -60,6 +65,7 @@ for (var i = 0; i < lhs_prefix.length; i++) {
             assertEq(e.message, "invalid assignment left-hand side");
     }
 }
+*/
 
 /*
  * The useless delete is optimized away, but the SETCALL must not be. It's not
@@ -71,7 +77,7 @@ try {
     eval("delete (foo('x') = 42);");
     assertEq(0, -4);
 } catch (e) {
-    assertEq(e.message, "invalid assignment left-hand side");
+    assertEq(e.message, "Invalid assignment.");
 }
 assertEq(fooArg, 'x');
 

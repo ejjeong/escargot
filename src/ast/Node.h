@@ -138,12 +138,12 @@ public:
 
     virtual void generateResolveAddressByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        codeBlock->pushCode(ThrowStatic(ESErrorObject::Code::ReferenceError, ESString::create("Left side of assignment is not a reference.")), context, this);
+        generateExpressionByteCode(codeBlock, context);
     }
 
     virtual void generateReferenceResolvedAddressByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
     {
-        RELEASE_ASSERT_NOT_REACHED();
+        generateExpressionByteCode(codeBlock, context);
     }
 
     virtual void generatePutByteCode(CodeBlock* codeBlock, ByteCodeGenerateContext& context)
