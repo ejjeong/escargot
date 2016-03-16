@@ -102,7 +102,6 @@ js1_5/Regress/regress-76054.js
 js1_5/Scope/regress-181834.js
 js1_5/extensions/getset-006.js
 js1_5/extensions/regress-231518.js
-js1_5/extensions/regress-245148.js
 js1_5/extensions/regress-245795.js
 js1_5/extensions/regress-254375.js
 js1_5/extensions/regress-255245.js
