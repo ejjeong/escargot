@@ -1350,8 +1350,16 @@ inline bool ESObject::defineAccessorProperty(const escargot::ESValue& key, ESPro
     }
 }
 
+inline bool ESObject::deletePropertyWithException(const ESValue& key, bool force)
+{
+    if (!deleteProperty(key, force)) {
+        ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create(u"Unable to delete property.")));
+    }
+    return true;
+}
+
 // $9.1.10
-inline bool ESObject::deleteProperty(const ESValue& key, bool forced)
+inline bool ESObject::deleteProperty(const ESValue& key, bool force)
 {
     if (isESArrayObject() && asESArrayObject()->isFastmode()) {
         uint32_t i = key.toIndex();
@@ -1382,7 +1390,7 @@ inline bool ESObject::deleteProperty(const ESValue& key, bool forced)
     if (idx == SIZE_MAX) // if undefined, return true
         return true;
 
-    if (!m_hiddenClass->m_propertyInfo[idx].m_flags.m_isConfigurable && !forced) {
+    if (!m_hiddenClass->m_propertyInfo[idx].m_flags.m_isConfigurable && !force) {
         return false;
     }
     if (UNLIKELY(m_flags.m_isGlobalObject)) {
@@ -1580,8 +1588,8 @@ ALWAYS_INLINE ESValue ESObject::pop()
         RELEASE_ASSERT_NOT_REACHED();
     }
     ESValue ret = get(ESValue(len-1));
-    deleteProperty(ESValue(len-1));
-    set(strings->length.string(), ESValue(len - 1));
+    deletePropertyWithException(ESValue(len-1));
+    set(strings->length.string(), ESValue(len - 1), true);
     return ret;
 }
 

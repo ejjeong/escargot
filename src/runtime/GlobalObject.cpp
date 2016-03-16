@@ -2158,9 +2158,9 @@ void GlobalObject::installArray()
                 O->set(upperP, lowerValue, true);
             } else if (!lowerExists && upperExists) {
                 O->set(lowerP, upperValue, true);
-                O->deleteProperty(upperP);
+                O->deletePropertyWithException(upperP);
             } else if (lowerExists && !upperExists) {
-                O->deleteProperty(lowerP);
+                O->deletePropertyWithException(lowerP);
                 O->set(upperP, lowerValue, true);
             }
             lower++;
@@ -2186,11 +2186,11 @@ void GlobalObject::installArray()
                 ESValue fromVal = O->get(from);
                 O->set(to, fromVal, true);
             } else {
-                O->deleteProperty(to);
+                O->deletePropertyWithException(to);
             }
             k++;
         }
-        O->deleteProperty(ESValue(len - 1)); // 10
+        O->deletePropertyWithException(ESValue(len - 1)); // 10
         O->set(strings->length, ESValue(len - 1)); // 12
         return first;
     }, strings->shift, 0));
@@ -2358,17 +2358,13 @@ void GlobalObject::installArray()
                     if (thisBinded->hasProperty(ESValue(k + deleteCnt))) {
                         thisBinded->set(ESValue(k + insertCnt), thisBinded->get(ESValue(k + deleteCnt)), true);
                     } else {
-                        if (!thisBinded->deleteProperty(ESValue(k + insertCnt))) {
-                            ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create(u"Unable to delete property.")));
-                        }
+                        thisBinded->deletePropertyWithException(ESValue(k + insertCnt));
                     }
                     k++;
                 }
                 k = arrlen;
                 while (k > arrlen - deleteCnt + insertCnt) {
-                    if (!thisBinded->deleteProperty(ESValue(k - 1))) {
-                        ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create(u"Unable to delete property.")));
-                    }
+                    thisBinded->deletePropertyWithException(ESValue(k - 1));
                     k--;
                 }
             } else if (insertCnt > deleteCnt) {
@@ -2377,9 +2373,7 @@ void GlobalObject::installArray()
                     if (thisBinded->hasProperty(ESValue(k + deleteCnt - 1))) {
                         thisBinded->set(ESValue(k + insertCnt - 1), thisBinded->get(ESValue(k + deleteCnt - 1)), true);
                     } else {
-                        if (!thisBinded->deleteProperty(ESValue(k + insertCnt - 1))) {
-                            ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create(u"Unable to delete property.")));
-                        }
+                        thisBinded->deletePropertyWithException(ESValue(k + insertCnt - 1));
                     }
                     k--;
                 }
@@ -2474,7 +2468,7 @@ void GlobalObject::installArray()
                     ESValue fromValue = O->get(from);
                     O->set(to, fromValue, true);
                 } else {
-                    O->deleteProperty(to);
+                    O->deletePropertyWithException(to);
                 }
                 k--;
             }
