@@ -113,7 +113,6 @@ js1_5/extensions/regress-481516.js
 js1_5/extensions/regress-50447-1.js
 js1_5/extensions/regress-90596-002.js
 js1_6/Array/regress-304828.js
-js1_6/Array/regress-415540.js
 js1_6/Regress/regress-355002.js
 js1_6/String/regress-306591.js
 js1_6/extensions/regress-470310.js
