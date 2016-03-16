@@ -1,3 +1,4 @@
+// escargot-skip: deprecated function.caller
 var actual;
 var expect = "function f() { ff (); }";
 function fun() {

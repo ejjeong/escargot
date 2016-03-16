@@ -1,3 +1,4 @@
+// escargot-skip: Function.prototype.toString do not have to convert full source code
 /*
  * Any copyright is dedicated to the Public Domain.
  * http://creativecommons.org/licenses/publicdomain/

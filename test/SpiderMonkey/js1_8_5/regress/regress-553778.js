@@ -1,3 +1,4 @@
+// escargot-skip: Destructuring assignment syntax is not supported
 /*
  * This should compile without triggering the following assertion:
  * 
