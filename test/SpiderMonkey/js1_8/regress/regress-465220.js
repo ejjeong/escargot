@@ -26,7 +26,7 @@ function test()
  
   try
   {
-    var o = {toString: function()(i > 2) ? this : "foo"};
+    var o = {toString: function() {return (i > 2) ? this : "foo" }};
     var s = "";
     for (var i = 0; i < 5; i++)
       s += o + o;

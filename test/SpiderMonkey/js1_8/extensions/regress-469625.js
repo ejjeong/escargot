@@ -22,11 +22,11 @@ function test()
   printBugNumber(BUGNUMBER);
   printStatus (summary);
  
-  expect = 'TypeError: [].__proto__ is not a function';
+  expect = 'TypeError: Callee is not a function object';
 
   jit(true);
 
-  Array.prototype.__proto__ = function () 3; 
+  Array.prototype.__proto__ = function () { return 3 };
 
   try
   {

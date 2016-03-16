@@ -22,7 +22,7 @@ function test()
  
   jit(true);
 
-  eval("for (let j = 0; j < 5; ++j) { (0x50505050) + (0x50505050); }");
+  eval("for (var j = 0; j < 5; ++j) { (0x50505050) + (0x50505050); }");
 
   jit(false);
 

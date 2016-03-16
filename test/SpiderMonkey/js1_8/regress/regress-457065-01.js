@@ -24,7 +24,7 @@ function test()
 
   var e = eval;
   for (var a in this) { }
-  (function() { eval("this; for (let b in [0,1,2]) { }"); })();
+  (function() { eval("this; for (var b in [0,1,2]) { }"); })();
 
   jit(false);
 
