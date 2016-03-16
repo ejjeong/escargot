@@ -4705,10 +4705,8 @@ void GlobalObject::installMath()
                 double qnan = std::numeric_limits<double>::quiet_NaN();
                 if (std::isnan(value))
                     return ESValue(qnan);
-                if (value > max_value)
+                if (value > max_value || (!value && !max_value && !std::signbit(value)))
                     max_value = value;
-                if (!value && !max_value)
-                    max_value = 0;
             }
             return ESValue(max_value);
         }
@@ -4727,10 +4725,8 @@ void GlobalObject::installMath()
                 double qnan = std::numeric_limits<double>::quiet_NaN();
                 if (std::isnan(value))
                     return ESValue(qnan);
-                if (value < min_value)
+                if (value < min_value || (!value && !min_value && std::signbit(value)))
                     min_value = value;
-                if (!value && !min_value)
-                    min_value = -0.0;
             }
             return ESValue(min_value);
         }
