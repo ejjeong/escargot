@@ -4768,6 +4768,31 @@ void GlobalObject::installMath()
             return ESValue(std::numeric_limits<double>::quiet_NaN());
 
         int y_int = static_cast<int>(y);
+
+        if (isinf(x)) {
+            if (x > 0) {
+                if (y > 0) {
+                    return ESValue(std::numeric_limits<double>::infinity());
+                } else {
+                    return ESValue(0.0);
+                }
+            } else {
+                if (y > 0) {
+                    if (y == y_int && y_int % 2) { // odd
+                        return ESValue(-std::numeric_limits<double>::infinity());
+                    } else {
+                        return ESValue(std::numeric_limits<double>::infinity());
+                    }
+                } else {
+                    if (y == y_int && y_int % 2) {
+                        return ESValue(-0.0);
+                    } else {
+                        return ESValue(0.0);
+                    }
+                }
+            }
+        }
+
         if (y == y_int) {
             unsigned n = (y < 0) ? -y : y;
             double m = x;
@@ -4811,7 +4836,9 @@ void GlobalObject::installMath()
     // initialize math object: $20.2.2.28 Math.round()
     m_math->defineDataProperty(strings->round, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         double x = instance->currentExecutionContext()->readArgument(0).toNumber();
-        if (x > -0.5)
+        if (x == -0.5)
+            return ESValue(-0.0);
+        else if (x > -0.5)
             return ESValue(round(x));
         else
             return ESValue(floor(x+0.5));
@@ -4958,7 +4985,7 @@ void GlobalObject::installNumber()
         if (isnan(number)) {
             return strings->NaN.string();
         }
-        if (isinf(number)) { // how about -inf ??
+        if (isinf(number)) {
             return strings->Infinity.string();
         }
 

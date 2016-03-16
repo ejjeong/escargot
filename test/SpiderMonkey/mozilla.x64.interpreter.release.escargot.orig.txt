@@ -118,6 +118,5 @@ js1_6/String/regress-306591.js
 js1_6/extensions/regress-470310.js
 js1_7/extensions/regress-368224.js
 js1_8_1/extensions/regress-452498-162.js
-js1_8_1/jit/math-jit-tests.js
 js1_8_5/regress/regress-552432.js
 ----TIMEOUTS----
