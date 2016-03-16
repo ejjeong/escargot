@@ -12,7 +12,7 @@ var expect = '';
 printBugNumber(BUGNUMBER);
 printStatus (summary);
 
-expect = '"\\t"';
+expect = '\x09';
 actual = uneval('\t'); 
 reportCompare(expect, actual, summary);
 

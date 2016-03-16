@@ -33,6 +33,10 @@ function test()
   }
   reportCompare(expect, actual, summary + ': 1');
 
+  // v8 result -> 'TypeError: Array.slice is not a function'
+  // jsc result -> 'TypeError: undefined is not a function (evaluating 'Array.slice(b)')'
+  expect = 'TypeError: Callee is not a function object';
+ 
   try
   {
     var b = { length: 1 };
@@ -44,6 +48,8 @@ function test()
     actual = ex + '';
   }
   reportCompare(expect, actual, summary + ': 2');
+
+  expect = 'RangeError: Maximum call stack size exceeded.';
 
   try
   {

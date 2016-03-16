@@ -22,6 +22,6 @@ try {
   got_proper_exception = (e === "EXCEPTION");
 }
 
-expect = true;
+expect = -1;
 actual = got_proper_exception;
 reportCompare(expect, actual, summary);
