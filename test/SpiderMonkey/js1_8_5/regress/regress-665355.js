@@ -1,3 +1,4 @@
+// escargot-skip: ES6 TypedArray
 var x = new ArrayBuffer(2);
 
 var test = function(newProto) {

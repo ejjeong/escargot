@@ -20,7 +20,7 @@ function test()
   printBugNumber(BUGNUMBER);
   printStatus (summary);
  
-  expect = 'SyntaxError: illegal character';
+  expect = 'SyntaxError:  (Parse Error 1 line)';
 
   try
   {

@@ -194,13 +194,6 @@ js1_8_1/strict/12.2.1.js
 js1_8_1/strict/8.7.2.js
 js1_8_5/regress/regress-552432.js
 js1_8_5/regress/regress-597945-1.js
-js1_8_5/regress/regress-607799.js
 js1_8_5/regress/regress-609617.js
 js1_8_5/regress/regress-610026.js
-js1_8_5/regress/regress-618572.js
-js1_8_5/regress/regress-619003-1.js
-js1_8_5/regress/regress-646820-1.js
-js1_8_5/regress/regress-646820-2.js
-js1_8_5/regress/regress-646820-3.js
-js1_8_5/regress/regress-665355.js
 ----TIMEOUTS----

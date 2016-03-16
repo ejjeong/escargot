@@ -21,7 +21,7 @@ function evalcx(str, object) {
     if (str == '')
         throw "evalcx() not supported";
 
-    eval(str);
+    return eval(str);
 }
 
 function uneval(value) {
