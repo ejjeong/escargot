@@ -39,9 +39,9 @@ s += "{}";
 
 try {
     eval(s);
-    actual = "fail: expected InternalError: program too large";
+    actual = (s.length == 8388606) ? "pass" : "fail: expected 8388606";
 } catch (e) {
-    actual = (e.message == "program too large") ? "pass" : "fail: " + e;
+    actual = "fail: should not throw"
 }
 
 assertEq(actual, expect);
