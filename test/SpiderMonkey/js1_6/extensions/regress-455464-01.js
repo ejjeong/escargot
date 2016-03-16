@@ -15,7 +15,7 @@ printStatus (summary);
 
 jit(true);
 
-a=b=c=d=0; this.__defineGetter__('g', gc); for each (y in this);
+a=b=c=d=0; this.__defineGetter__('g', gc); for (var y in this);
 
 jit(false);
 

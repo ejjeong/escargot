@@ -10,7 +10,7 @@ var summary = 'Do not assert with JIT: !TRACE_RECORDER(cx) ^ (jumpTable == recor
 var actual = 'No Crash';
 var expect = 'No Crash';
 
-a=b=c=d=0; this.__defineGetter__('g', gc); for each (y in this);
+a=b=c=d=0; this.__defineGetter__('g', gc); for (var y in this);
 
 //-----------------------------------------------------------------------------
 test();
@@ -24,7 +24,7 @@ function test()
 
   jit(true);
 
-  a=b=c=d=0; this.__defineGetter__('g', gc); for each (y in this);
+  a=b=c=d=0; this.__defineGetter__('g', gc); for (var y in this);
 
   jit(false);
 

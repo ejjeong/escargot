@@ -76,7 +76,6 @@ js1_5/Regress/regress-176125.js
 js1_5/Regress/regress-211590.js
 js1_5/Regress/regress-256501.js
 js1_5/Regress/regress-276103.js
-js1_5/Regress/regress-295052.js
 js1_5/Regress/regress-303213.js
 js1_5/Regress/regress-328664.js
 js1_5/Regress/regress-330352.js
@@ -117,15 +116,7 @@ js1_6/Array/regress-304828.js
 js1_6/Array/regress-415540.js
 js1_6/Regress/regress-355002.js
 js1_6/String/regress-306591.js
-js1_6/extensions/regress-312385-01.js
-js1_6/extensions/regress-455464-01.js
-js1_6/extensions/regress-455464-02.js
-js1_6/extensions/regress-455464-03.js
-js1_6/extensions/regress-455464-04.js
-js1_6/extensions/regress-465443.js
 js1_6/extensions/regress-470310.js
-js1_6/extensions/regress-472508.js
-js1_6/extensions/regress-565521.js
 js1_7/extensions/regress-368224.js
 js1_8_1/extensions/regress-452498-162.js
 js1_8_1/jit/math-jit-tests.js

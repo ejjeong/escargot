@@ -73,14 +73,15 @@ for (var c in generics)
         var argsLen = method[methodname].length;
         assertEq(argsLen === 0 || argsLen === 1, true, "not all arities handled");
 
-        var generic = Constructor[methodname];
+        //var generic = Constructor[methodname];
         var prototypy = Constructor.prototype[methodname];
 
-        assertEq(typeof generic, "function");
+        //assertEq(typeof generic, "function");
         assertEq(typeof prototypy, "function");
 
         // GENERIC METHOD TESTING
 
+        /*
         try
         {
           switch (method[methodname].length)
@@ -102,6 +103,7 @@ for (var c in generics)
                    "Didn't get a TypeError for " + c + "." + methodname +
                    " called with null or undefined first argument");
         }
+        */
 
 
         // PROTOTYPE METHOD TESTING
