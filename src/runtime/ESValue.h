@@ -2215,42 +2215,7 @@ public:
         ESObject::set(ESValue(i), val);
     }
 
-
-    void setLength(unsigned newLength)
-    {
-        if (m_flags.m_isFastMode) {
-            if (shouldConvertToSlowMode(newLength)) {
-                convertToSlowMode();
-                ESObject::set(strings->length, ESValue(newLength));
-                m_length = newLength;
-                return;
-            }
-            if (newLength < m_length) {
-                m_vector.resize(newLength);
-            } else if (newLength > m_length) {
-                if (m_vector.capacity() < newLength) {
-                    size_t reservedSpace = std::min(MAX_FASTMODE_SIZE, (unsigned)(newLength*1.5f));
-                    m_vector.reserve(reservedSpace);
-                }
-                m_vector.resize(newLength, ESValue(ESValue::ESEmptyValue));
-            }
-        } else {
-            unsigned currentLength = m_length;
-            if (newLength < currentLength) {
-                std::vector<unsigned> indexes;
-                enumeration([&](ESValue key) {
-                    uint32_t index = key.toIndex();
-                    if (index != ESValue::ESInvalidIndexValue) {
-                        if (index >= newLength && index < currentLength)
-                            indexes.push_back(index);
-                    }
-                });
-                for (auto index : indexes)
-                    deleteProperty(ESValue(index));
-            }
-        }
-        m_length = newLength;
-    }
+    void setLength(unsigned newLength);
 
     bool isFastmode()
     {
