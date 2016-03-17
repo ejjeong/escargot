@@ -30,7 +30,7 @@ function test()
   }
 
   reportCompare("TypeError", actual.name, "bad error name");
-  reportCompare(true, /is not a constructor/.test(actual), summary);
+  reportCompare(true, /constructor is not an function object/.test(actual), summary);
 
   exitFunc ('test');
 }
