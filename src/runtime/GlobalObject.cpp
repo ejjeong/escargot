@@ -2562,7 +2562,10 @@ void GlobalObject::installString()
 
     // $21.1.3.1 String.prototype.charAt(pos)
     m_stringPrototype->defineDataProperty(ESString::createAtomicString("charAt"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        escargot::ESString* str = ESValue(instance->currentExecutionContext()->resolveThisBindingToObject()).toString();
+        ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
+        if (thisValue.isUndefinedOrNull())
+            ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create("String.prototype.charAt(): Invalid bound this value")));
+        escargot::ESString* str = thisValue.toString();
         int position;
         if (instance->currentExecutionContext()->argumentCount() == 0) {
             position = 0;
@@ -2587,7 +2590,10 @@ void GlobalObject::installString()
 
     // $21.1.3.2 String.prototype.charCodeAt(pos)
     m_stringPrototype->defineDataProperty(ESString::createAtomicString("charCodeAt"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        escargot::ESString* str = ESValue(instance->currentExecutionContext()->resolveThisBindingToObject()).toString();
+        ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
+        if (thisValue.isUndefinedOrNull())
+            ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create("String.prototype.charCodeAt(): Invalid bound this value")));
+        escargot::ESString* str = thisValue.toString();
         int position = instance->currentExecutionContext()->arguments()[0].toInteger();
         ESValue ret;
         if (position < 0 || position >= (int)str->length())
@@ -2599,7 +2605,10 @@ void GlobalObject::installString()
 
     // $21.1.3.4 String.prototype.concat(...args)
     m_stringPrototype->defineDataProperty(strings->concat, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        escargot::ESString* ret = ESValue(instance->currentExecutionContext()->resolveThisBindingToObject()).toString();
+        ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
+        if (thisValue.isUndefinedOrNull())
+            ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create("String.prototype.concat(): Invalid bound this value")));
+        escargot::ESString* ret = thisValue.toString();
         int argCount = instance->currentExecutionContext()->argumentCount();
         for (int i = 0; i < argCount; i++) {
             escargot::ESString* arg = instance->currentExecutionContext()->arguments()[i].toString();
@@ -2674,14 +2683,20 @@ void GlobalObject::installString()
 
     // $21.1.3.10 String.prototype.localeCompare
     m_stringPrototype->defineDataProperty(ESString::createAtomicString("localeCompare"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        ::escargot::ESString* S = ESValue(instance->currentExecutionContext()->resolveThisBindingToObject()).toString();
+        ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
+        if (thisValue.isUndefinedOrNull())
+            ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create("String.prototype.localeCompare(): Invalid bound this value")));
+        ::escargot::ESString* S = thisValue.toString();
         ::escargot::ESString* That = instance->currentExecutionContext()->readArgument(0).toString();
         return ESValue(stringCompare(*S, *That));
     }, ESString::createAtomicString("localeCompare"), 1));
 
     // $21.1.3.11 String.prototype.match(regexp)
     m_stringPrototype->defineDataProperty(ESString::createAtomicString("match"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        escargot::ESString* thisObject = ESValue(instance->currentExecutionContext()->resolveThisBindingToObject()).toString();
+        ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
+        if (thisValue.isUndefinedOrNull())
+            ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create("String.prototype.match(): Invalid bound this value")));
+        escargot::ESString* thisObject = thisValue.toString();
 
         ESValue argument = instance->currentExecutionContext()->readArgument(0);
         escargot::ESRegExpObject* regexp;
@@ -2736,7 +2751,10 @@ void GlobalObject::installString()
 
     // $21.1.3.14 String.prototype.replace(searchValue, replaceValue)
     m_stringPrototype->defineDataProperty(ESString::createAtomicString("replace"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        escargot::ESString* thisObject = ESValue(instance->currentExecutionContext()->resolveThisBindingToObject()).toString();
+        ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
+        if (thisValue.isUndefinedOrNull())
+            ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create("String.prototype.replace(): Invalid bound this value")));
+        escargot::ESString* thisObject = thisValue.toString();
         int argCount = instance->currentExecutionContext()->argumentCount();
         if (argCount > 1) {
             ESValue argument = instance->currentExecutionContext()->arguments()[0];
@@ -2855,7 +2873,10 @@ void GlobalObject::installString()
 
     // $21.1.3.15 String.prototype.search
     m_stringPrototype->defineDataProperty(ESString::createAtomicString("search"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        escargot::ESString* origStr = ESValue(instance->currentExecutionContext()->resolveThisBindingToObject()).toString();
+        ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
+        if (thisValue.isUndefinedOrNull())
+            ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create("String.prototype.search(): Invalid bound this value")));
+        escargot::ESString* origStr = thisValue.toString();
         int argCount = instance->currentExecutionContext()->argumentCount();
         ESValue argument;
         if (argCount == 0) {
@@ -2884,7 +2905,10 @@ void GlobalObject::installString()
 
     // $21.1.3.16 String.prototype.slice(start, end)
     m_stringPrototype->defineDataProperty(strings->slice, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        escargot::ESString* str = ESValue(instance->currentExecutionContext()->resolveThisBindingToObject()).toString();
+        ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
+        if (thisValue.isUndefinedOrNull())
+            ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create("String.prototype.slice(): Invalid bound this value")));
+        escargot::ESString* str = thisValue.toString();
         int argCount = instance->currentExecutionContext()->argumentCount();
         int len = str->length();
         double doubleStart = instance->currentExecutionContext()->arguments()[0].toInteger();
@@ -2904,7 +2928,10 @@ void GlobalObject::installString()
     // $15.5.4.14 String.prototype.split(separator, limit)
     m_stringPrototype->defineDataProperty(ESString::createAtomicString("split"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         // 1, 2, 3
-        escargot::ESString* S = ESValue(instance->currentExecutionContext()->resolveThisBindingToObject()).toString();
+        ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
+        if (thisValue.isUndefinedOrNull())
+            ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create("String.prototype.split(): Invalid bound this value")));
+        escargot::ESString* S = thisValue.toString();
         escargot::ESArrayObject* A = ESArrayObject::create(0);
 
         // 4, 5
@@ -3076,7 +3103,10 @@ void GlobalObject::installString()
 
     // $21.1.3.20 String.prototype.toLocaleLowerCase
     m_stringPrototype->defineDataProperty(ESString::createAtomicString("toLocaleLowerCase"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        escargot::ESString* str = ESValue(instance->currentExecutionContext()->resolveThisBindingToObject()).toString();
+        ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
+        if (thisValue.isUndefinedOrNull())
+            ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create("String.prototype.toLocaleLowerCase(): Invalid bound this value")));
+        escargot::ESString* str = thisValue.toString();
         if (str->isASCIIString()) {
             ASCIIString newstr(*str->asASCIIString());
             // TODO use ICU for this operation
@@ -3088,11 +3118,14 @@ void GlobalObject::installString()
             std::transform(newstr.begin(), newstr.end(), newstr.begin(), ::tolower);
             return ESString::create(std::move(newstr));
         }
-    }, ESString::createAtomicString("toLocaleLowerCase"), 1));
+    }, ESString::createAtomicString("toLocaleLowerCase"), 0));
 
     // $21.1.3.22 String.prototype.toLowerCase()
     m_stringPrototype->defineDataProperty(ESString::createAtomicString("toLowerCase"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        escargot::ESString* str = ESValue(instance->currentExecutionContext()->resolveThisBindingToObject()).toString();
+        ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
+        if (thisValue.isUndefinedOrNull())
+            ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create("String.prototype.toLowerCase(): Invalid bound this value")));
+        escargot::ESString* str = thisValue.toString();
         if (str->isASCIIString()) {
             ASCIIString newstr(*str->asASCIIString());
             // TODO use ICU for this operation
@@ -3107,40 +3140,11 @@ void GlobalObject::installString()
     }, ESString::createAtomicString("toLowerCase"), 0));
 
     // $21.1.3.21 String.prototype.toLocaleUpperCase
-    m_stringPrototype->defineDataProperty(ESString::createAtomicString("toLocaleLowerCase"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        escargot::ESString* str = ESValue(instance->currentExecutionContext()->resolveThisBindingToObject()).toString();
-        if (str->isASCIIString()) {
-            ASCIIString newstr(*str->asASCIIString());
-            // TODO use ICU for this operation
-            std::transform(newstr.begin(), newstr.end(), newstr.begin(), ::tolower);
-            return ESString::create(std::move(newstr));
-        } else {
-            UTF16String newstr(*str->asUTF16String());
-            // TODO use ICU for this operation
-            std::transform(newstr.begin(), newstr.end(), newstr.begin(), ::tolower);
-            return ESString::create(std::move(newstr));
-        }
-    }, ESString::createAtomicString("toLocaleLowerCase"), 0));
-
-    // $21.1.3.24 String.prototype.toUpperCase()
-    m_stringPrototype->defineDataProperty(ESString::createAtomicString("toUpperCase"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        escargot::ESString* str = ESValue(instance->currentExecutionContext()->resolveThisBindingToObject()).toString();
-        if (str->isASCIIString()) {
-            ASCIIString newstr(*str->asASCIIString());
-            // TODO use ICU for this operation
-            std::transform(newstr.begin(), newstr.end(), newstr.begin(), ::toupper);
-            return ESString::create(std::move(newstr));
-        } else {
-            UTF16String newstr(*str->asUTF16String());
-            // TODO use ICU for this operation
-            std::transform(newstr.begin(), newstr.end(), newstr.begin(), ::toupper);
-            return ESString::create(std::move(newstr));
-        }
-    }, ESString::createAtomicString("toUpperCase"), 0));
-
-    // $21.1.3.21 String.prototype.toLocaleUpperCase
     m_stringPrototype->defineDataProperty(ESString::createAtomicString("toLocaleUpperCase"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        escargot::ESString* str = ESValue(instance->currentExecutionContext()->resolveThisBindingToObject()).toString();
+        ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
+        if (thisValue.isUndefinedOrNull())
+            ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create("String.prototype.toLocaleUpperCase(): Invalid bound this value")));
+        escargot::ESString* str = thisValue.toString();
         if (str->isASCIIString()) {
             ASCIIString newstr(*str->asASCIIString());
             // TODO use ICU for this operation
@@ -3153,6 +3157,25 @@ void GlobalObject::installString()
             return ESString::create(std::move(newstr));
         }
     }, ESString::createAtomicString("toLocaleUpperCase"), 0));
+
+    // $21.1.3.24 String.prototype.toUpperCase()
+    m_stringPrototype->defineDataProperty(ESString::createAtomicString("toUpperCase"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
+        if (thisValue.isUndefinedOrNull())
+            ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create("String.prototype.toUpperCase(): Invalid bound this value")));
+        escargot::ESString* str = thisValue.toString();
+        if (str->isASCIIString()) {
+            ASCIIString newstr(*str->asASCIIString());
+            // TODO use ICU for this operation
+            std::transform(newstr.begin(), newstr.end(), newstr.begin(), ::toupper);
+            return ESString::create(std::move(newstr));
+        } else {
+            UTF16String newstr(*str->asUTF16String());
+            // TODO use ICU for this operation
+            std::transform(newstr.begin(), newstr.end(), newstr.begin(), ::toupper);
+            return ESString::create(std::move(newstr));
+        }
+    }, ESString::createAtomicString("toUpperCase"), 0));
 
     // $21.1.3.25 String.prototype.trim()
     m_stringPrototype->defineDataProperty(ESString::createAtomicString("trim"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
@@ -3229,7 +3252,10 @@ void GlobalObject::installString()
 
     // $B.2.3.1 String.prototype.substr (start, length)
     m_stringPrototype->defineDataProperty(ESString::createAtomicString("substr"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        escargot::ESString* str = ESValue(instance->currentExecutionContext()->resolveThisBindingToObject()).toString();
+        ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
+        if (thisValue.isUndefinedOrNull())
+            ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create("String.prototype.substr(): Invalid bound this value")));
+        escargot::ESString* str = thisValue.toString();
         if (instance->currentExecutionContext()->argumentCount() < 1) {
             return str;
         }
