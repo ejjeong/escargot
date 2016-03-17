@@ -58,7 +58,6 @@ js1_2/regexp/compile.js
 js1_2/regexp/endLine.js
 js1_2/regexp/flags.js
 js1_2/regexp/ignoreCase.js
-js1_5/Array/regress-313153.js
 js1_5/Array/regress-350256-01.js
 js1_5/Array/regress-474529.js
 js1_5/Date/regress-301738-01.js
