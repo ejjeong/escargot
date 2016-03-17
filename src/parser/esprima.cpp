@@ -995,6 +995,15 @@ void throwRestrictedWordUsedError(RefPtr<ParseStatus> token)
     throwRestrictedWordUsedError(token->m_value.toInternalAtomicString());
 }
 
+void throwOctalLiteralUsedError(RefPtr<ParseStatus> token)
+{
+    escargot::UTF16String err_msg;
+    err_msg.append(u"Octal literals '");
+    err_msg.append(tokenToString(token));
+    err_msg.append(u"' are not allowed in strict mode.");
+    throwEsprimaException(err_msg.c_str());
+}
+
 void tolerateUnexpectedToken(/*token, message*/)
 {
     /*
@@ -1731,7 +1740,6 @@ PassRefPtr<ParseStatus> scanStringLiteral(ParseContext* ctx)
         }
 
         ch = ctx->m_sourceString->charAt(ctx->m_index++);
-
         if (ch == quote) {
             quote = '\0';
             break;
@@ -1808,9 +1816,6 @@ PassRefPtr<ParseStatus> scanStringLiteral(ParseContext* ctx)
 
                 default:
                     if (isOctalDigit(ch)) {
-                        bool r;
-                        size_t c = 0;
-                        size_t l = 1;
                         octToDec = octalToDecimal(ctx, ch);
                         octal = octToDec.octal || octal;
                         if (smallBufferUsage < smallBufferMax) {
@@ -3818,7 +3823,7 @@ escargot::Node* parseFunctionSourceElements(ParseContext* ctx)
             ctx->m_strict = true;
             if (firstRestricted) {
                 // tolerateUnexpectedToken(firstRestricted, Messages.StrictOctalLiteral);
-                tolerateUnexpectedToken();
+                throwOctalLiteralUsedError(token);
             }
         } else {
             if (!firstRestricted && token->m_octal) {
@@ -4367,7 +4372,7 @@ escargot::Node* parseObjectPropertyKey(ParseContext* ctx)
     case Token::StringLiteralToken:
         if (ctx->m_strict && token->m_octal) {
             // tolerateUnexpectedToken(token, Messages.StrictOctalLiteral);
-            throwEsprimaException(u"Octal literals are not allowed in strict mode.");
+            throwOctalLiteralUsedError(token);
         }
         {
             nd = new escargot::LiteralNode(token->m_value.toESString());
@@ -4377,7 +4382,7 @@ escargot::Node* parseObjectPropertyKey(ParseContext* ctx)
     case Token::NumericLiteralToken:
         if (ctx->m_strict && token->m_octal) {
             // tolerateUnexpectedToken(token, Messages.StrictOctalLiteral);
-            throwEsprimaException(u"Octal literals are not allowed in strict mode.");
+            throwOctalLiteralUsedError(token);
         }
         nd = new escargot::LiteralNode(escargot::ESValue(token->m_valueNumber));
         nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
@@ -5253,7 +5258,7 @@ escargot::Node* parsePrimaryExpression(ParseContext* ctx)
         ctx->m_isAssignmentTarget = ctx->m_isBindingElement = false;
         if (ctx->m_strict && ctx->m_lookahead->m_octal) {
             // tolerateUnexpectedToken(lookahead, Messages.StrictOctalLiteral);
-            throwEsprimaException(u"Octal literals are not allowed in strict mode.");
+            throwOctalLiteralUsedError(lex(ctx));
         }
         expr = finishLiteralNode(ctx, lex(ctx));
     } else if (type == Token::KeywordToken) {
@@ -6190,7 +6195,7 @@ escargot::StatementNodeVector parseScriptBody(ParseContext* ctx)
             ctx->m_strict = true;
             if (firstRestricted) {
                 // tolerateUnexpectedToken(firstRestricted, Messages.StrictOctalLiteral);
-                tolerateUnexpectedToken();
+                throwOctalLiteralUsedError(firstRestricted);
             }
         } else {
             if (!firstRestricted && token->m_octal) {
