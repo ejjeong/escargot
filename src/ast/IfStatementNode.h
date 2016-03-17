@@ -25,8 +25,15 @@ public:
             codeBlock->pushCode(JumpIfTopOfStackValueIsFalse(SIZE_MAX), context, this);
             size_t jPos = codeBlock->lastCodePosition<JumpIfTopOfStackValueIsFalse>();
             m_consequente->generateStatementByteCode(codeBlock, context);
+            codeBlock->pushCode(Jump(SIZE_MAX), context, this);
             JumpIfTopOfStackValueIsFalse* j = codeBlock->peekCode<JumpIfTopOfStackValueIsFalse>(jPos);
+            size_t jPos2 = codeBlock->lastCodePosition<Jump>();
             j->m_jumpPosition = codeBlock->currentCodeSize();
+
+            codeBlock->pushCode(Push(ESValue()), context, this);
+            codeBlock->pushCode(PopExpressionStatement(), context, this);
+            Jump* j2 = codeBlock->peekCode<Jump>(jPos2);
+            j2->m_jumpPosition = codeBlock->currentCodeSize();
         } else {
             m_test->generateExpressionByteCode(codeBlock, context);
             codeBlock->pushCode(JumpIfTopOfStackValueIsFalse(SIZE_MAX), context, this);
@@ -53,6 +60,8 @@ public:
             m_consequente->computeRoughCodeBlockSizeInWordSize(result);
         if (m_alternate)
             m_alternate->computeRoughCodeBlockSizeInWordSize(result);
+        else
+            result += 3;
     }
 
 protected:
