@@ -81,7 +81,9 @@ public:
     {
         if (canUseFastAccess()) {
             if (fastAccessIndexIndicatesImmutableBinding()) {
-                // do nothing
+                if (codeBlock->m_isStrict) {
+                    codeBlock->pushCode(ThrowStatic(ESErrorObject::Code::TypeError, ESString::create(u"Attempted to assign to readonly property.")), context, this);
+                }
             } else if (m_fastAccessUpIndex) {
                 ASSERT(m_flags.m_isFastAccessIndexIndicatesHeapIndex);
                 codeBlock->pushCode(SetByIndexInUpperContextHeap(m_fastAccessIndex, m_fastAccessUpIndex), context, this);

@@ -1020,11 +1020,20 @@ ESValue interpret(ESVMInstance* instance, CodeBlock* codeBlock, size_t programCo
         {
             ThrowStatic* code = (ThrowStatic*) currentCode;
             switch (code->m_code) {
+            case ESErrorObject::Code::TypeError:
+                instance->throwError(TypeError::create(code->m_msg));
             case ESErrorObject::Code::ReferenceError:
                 instance->throwError(ReferenceError::create(code->m_msg));
-            default:
-                instance->throwError(ESErrorObject::create());
+            case ESErrorObject::Code::SyntaxError:
+                instance->throwError(SyntaxError::create(code->m_msg));
+            case ESErrorObject::Code::RangeError:
+                instance->throwError(RangeError::create(code->m_msg));
+            case ESErrorObject::Code::URIError:
+                instance->throwError(URIError::create(code->m_msg));
+            case ESErrorObject::Code::EvalError:
+                instance->throwError(URIError::create(code->m_msg));
             }
+            ASSERT_NOT_REACHED();
         }
 
         FinallyEndOpcodeLbl:
