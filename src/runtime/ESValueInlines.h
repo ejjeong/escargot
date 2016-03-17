@@ -1268,7 +1268,7 @@ inline bool ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
         return true;
     } else {
         if (!m_hiddenClass->m_propertyInfo[oldIdx].m_flags.m_isConfigurable && !force && !m_hiddenClassData[oldIdx].isDeleted()) {
-            if (oldIdx == 0) {// for __proto__
+            if (oldIdx == 0) { // for __proto__
                 ESHiddenClassPropertyInfo& info = m_hiddenClass->m_propertyInfo[oldIdx];
                 if (!info.m_flags.m_isWritable || info.m_flags.m_isEnumerable)
                     return false;
