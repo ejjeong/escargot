@@ -1013,13 +1013,9 @@ void throwRestrictedWordUsedError(RefPtr<ParseStatus> token)
     throwRestrictedWordUsedError(token->m_value.toInternalAtomicString());
 }
 
-void throwOctalLiteralUsedError(RefPtr<ParseStatus> token)
+void throwOctalLiteralUsedError()
 {
-    escargot::UTF16String err_msg;
-    err_msg.append(u"Octal literals '");
-    err_msg.append(tokenToString(token));
-    err_msg.append(u"' are not allowed in strict mode.");
-    throwEsprimaException(err_msg.c_str());
+    throwEsprimaException(u"Octal literals are not allowed in strict mode.");
 }
 
 void tolerateUnexpectedToken(/*token, message*/)
@@ -1045,30 +1041,65 @@ struct OctalToDecimalResult {
     bool octal;
 };
 
+// OctalEscapeLiterals: http://www.ecma-international.org/ecma-262/5.1/index.html#sec-B.1.2
 OctalToDecimalResult octalToDecimal(ParseContext* ctx, char16_t ch)
 {
     // \0 is not octal escape sequence
     bool octal = (ch != '0');
     int code = ch - '0';
 
-    if (ctx->m_index < ctx->m_length && isOctalDigit(ctx->m_sourceString->charAt(ctx->m_index))) {
-        octal = true;
-        code = code * 8 + ctx->m_sourceString->charAt(ctx->m_index++) - '0';
-
-        // 3 digits are only allowed when string starts
-        // with 0, 1, 2, 3
-        if (ch >= '0' && ch <= '3'
-            && ctx->m_index < ctx->m_length
-            && isOctalDigit(ctx->m_sourceString->charAt(ctx->m_index))) {
-            code = code * 8 + ctx->m_sourceString->charAt(ctx->m_index++) - '0';
-        }
+    if (ctx->m_index == ctx->m_length) {
+        // OctalDigit
+        // 1..7 => octal
+        // 0 => not octal
+        return OctalToDecimalResult { code, octal };
     }
+    char16_t ch2 = ctx->m_sourceString->charAt(ctx->m_index);
+    if ('0' <= ch && ch <= '3') {
+        if (isOctalDigit(ch2)) {
+            ctx->m_index++;
+            code = code * 8 + ch2 - '0';
 
-    OctalToDecimalResult r;
-    r.code = code;
-    r.octal = octal;
+            if (ctx->m_index + 1 == ctx->m_length) {
+                // ZeroToThree OctalDigit
+                return OctalToDecimalResult { code, true };
+            }
+            char16_t ch3 = ctx->m_sourceString->charAt(ctx->m_index);
 
-    return r;
+            if (isOctalDigit(ch3)) {
+                // ZeroToThree OctalDigit OctalDigit
+                ctx->m_index++;
+                code = code * 8 + ch3 - '0';
+                return OctalToDecimalResult { code, true };
+            } else if (!isDecimalDigit(ch3)) {
+                // ZeroToThree OctalDigit [lookahead is not in DecimalDigit]
+                return OctalToDecimalResult { code, true };
+            } else {
+                // ZeroToThree OctalDigit 8..9 (not specified in spec)
+                return OctalToDecimalResult { code, true };
+            }
+        } else if (!isDecimalDigit(ch2)) {
+            // ZeroToThree [lookahead is not in DecimalDigit]
+            return OctalToDecimalResult { code, octal };
+        } else {
+            // ZeroToThree 8..9 (not specified in spec)
+            return OctalToDecimalResult { code, true };
+        }
+    } else if ('4' <= ch && ch <= '7') {
+        if (isOctalDigit(ch2)) {
+            ctx->m_index++;
+            code = code * 8 + ch2 - '0';
+
+            // FourToSeven OctalDigit
+            return OctalToDecimalResult { code, true };
+        } else {
+            // FourToSeven notOctalDigit (not specfied in spec)
+            return OctalToDecimalResult { code, true };
+        }
+    } else {
+        // OctalLiteral not specified in spec
+        return OctalToDecimalResult { code, true };
+    }
 }
 
 char16_t scanHexEscape(ParseContext* ctx, char16_t prefix)
@@ -1763,7 +1794,7 @@ PassRefPtr<ParseStatus> scanStringLiteral(ParseContext* ctx)
             break;
         } else if (ch == '\\') {
             ch = ctx->m_sourceString->charAt(ctx->m_index++);
-            if (!ch || !isLineTerminator(ch)) {
+            if (!isLineTerminator(ch)) {
                 switch (ch) {
                 case 'u':
                 case 'x':
@@ -1826,12 +1857,6 @@ PassRefPtr<ParseStatus> scanStringLiteral(ParseContext* ctx)
                     } else
                         str += '\x0B';
                     break;
-                case '8':
-                case '9':
-                    // str += ch;
-                    tolerateUnexpectedToken();
-                    break;
-
                 default:
                     if (isOctalDigit(ch)) {
                         octToDec = octalToDecimal(ctx, ch);
@@ -1841,6 +1866,8 @@ PassRefPtr<ParseStatus> scanStringLiteral(ParseContext* ctx)
                             smallBuffer[smallBufferUsage++] = octToDec.code;
                         } else
                             str += octToDec.code;
+                    } else if (isDecimalDigit(ch)) {
+                        octal = true;
                     } else {
                         // this code below doesn't work correctly with 2(or more) bytes chars
                         // if (smallBufferUsage < smallBufferMax) {
@@ -3839,7 +3866,7 @@ escargot::Node* parseFunctionSourceElements(ParseContext* ctx)
             ctx->m_strict = true;
             if (firstRestricted) {
                 // tolerateUnexpectedToken(firstRestricted, Messages.StrictOctalLiteral);
-                throwOctalLiteralUsedError(token);
+                throwOctalLiteralUsedError();
             }
         } else {
             if (!firstRestricted && token->m_octal) {
@@ -4388,7 +4415,7 @@ escargot::Node* parseObjectPropertyKey(ParseContext* ctx)
     case Token::StringLiteralToken:
         if (ctx->m_strict && token->m_octal) {
             // tolerateUnexpectedToken(token, Messages.StrictOctalLiteral);
-            throwOctalLiteralUsedError(token);
+            throwOctalLiteralUsedError();
         }
         {
             nd = new escargot::LiteralNode(token->m_value.toESString());
@@ -4398,7 +4425,7 @@ escargot::Node* parseObjectPropertyKey(ParseContext* ctx)
     case Token::NumericLiteralToken:
         if (ctx->m_strict && token->m_octal) {
             // tolerateUnexpectedToken(token, Messages.StrictOctalLiteral);
-            throwOctalLiteralUsedError(token);
+            throwOctalLiteralUsedError();
         }
         nd = new escargot::LiteralNode(escargot::ESValue(token->m_valueNumber));
         nd->setSourceLocation(ctx->m_lineNumber, ctx->m_lineStart);
@@ -5274,7 +5301,7 @@ escargot::Node* parsePrimaryExpression(ParseContext* ctx)
         ctx->m_isAssignmentTarget = ctx->m_isBindingElement = false;
         if (ctx->m_strict && ctx->m_lookahead->m_octal) {
             // tolerateUnexpectedToken(lookahead, Messages.StrictOctalLiteral);
-            throwOctalLiteralUsedError(lex(ctx));
+            throwOctalLiteralUsedError();
         }
         expr = finishLiteralNode(ctx, lex(ctx));
     } else if (type == Token::KeywordToken) {
@@ -6211,7 +6238,7 @@ escargot::StatementNodeVector parseScriptBody(ParseContext* ctx)
             ctx->m_strict = true;
             if (firstRestricted) {
                 // tolerateUnexpectedToken(firstRestricted, Messages.StrictOctalLiteral);
-                throwOctalLiteralUsedError(firstRestricted);
+                throwOctalLiteralUsedError();
             }
         } else {
             if (!firstRestricted && token->m_octal) {
