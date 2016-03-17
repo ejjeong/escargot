@@ -864,6 +864,24 @@ struct ParseContext {
     escargot::StatementNodeVector* m_currentBody;
 };
 
+struct ParserStackChecker {
+    ParserStackChecker(ParseContext* ctx)
+        : m_ctx(ctx)
+    {
+        m_ctx->m_stackCounter++;
+        if (UNLIKELY(m_ctx->m_stackCounter == 1024)) // maximum call stack size : 1KB
+            throwEsprimaException();
+    }
+    ~ParserStackChecker()
+    {
+        m_ctx->m_stackCounter--;
+    }
+    void* operator new(std::size_t) = delete;
+    ParseContext* m_ctx;
+};
+
+#define PARSER_STACK_CHECK ParserStackChecker __checker(ctx)
+
 // VariableDeclaratorNode
 void addDeclToCurrentContext(ParseContext* ctx, escargot::VariableDeclarationNode* node)
 {
@@ -1911,7 +1929,7 @@ commonASCII:
         str.assign(&smallBuffer[0], &smallBuffer[smallBufferUsage]);
     }
     if (quote != '\0') {
-        throwEsprimaException();
+        throwEsprimaException(u"unterminated string literal");
     }
 
     ParseStatus* ps =  new ParseStatus(
@@ -2571,13 +2589,12 @@ void consumeSemicolon(ParseContext* ctx)
 
 ALWAYS_INLINE escargot::Node* isolateCoverGrammar(ParseContext* ctx, escargot::Node* (*parser) (ParseContext* ctx))
 {
+    PARSER_STACK_CHECK;
+
     bool oldIsBindingElement = ctx->m_isBindingElement,
         oldIsAssignmentTarget = ctx->m_isAssignmentTarget;
     RefPtr<ParseStatus> oldFirstCoverInitializedNameError = ctx->m_firstCoverInitializedNameError;
     escargot::Node* result;
-    ctx->m_stackCounter++;
-    if (UNLIKELY(ctx->m_stackCounter ==  1024)) // maximum call stack size : 1KB
-        throwEsprimaException();
     ctx->m_isBindingElement = true;
     ctx->m_isAssignmentTarget = true;
     ctx->m_firstCoverInitializedNameError = NULL;
@@ -2588,19 +2605,17 @@ ALWAYS_INLINE escargot::Node* isolateCoverGrammar(ParseContext* ctx, escargot::N
     ctx->m_isBindingElement = oldIsBindingElement;
     ctx->m_isAssignmentTarget = oldIsAssignmentTarget;
     ctx->m_firstCoverInitializedNameError = oldFirstCoverInitializedNameError;
-    ctx->m_stackCounter--;
     return result;
 }
 
 ALWAYS_INLINE escargot::Node* inheritCoverGrammar(ParseContext* ctx, escargot::Node* (*parser) (ParseContext* ctx))
 {
+    PARSER_STACK_CHECK;
+
     bool oldIsBindingElement = ctx->m_isBindingElement,
         oldIsAssignmentTarget = ctx->m_isAssignmentTarget;
     RefPtr<ParseStatus> oldFirstCoverInitializedNameError = ctx->m_firstCoverInitializedNameError;
     escargot::Node* result;
-    ctx->m_stackCounter++;
-    if (UNLIKELY(ctx->m_stackCounter == 1024)) // maximum call stack size : 1KB
-        throwEsprimaException();
     ctx->m_isBindingElement = true;
     ctx->m_isAssignmentTarget = true;
     ctx->m_firstCoverInitializedNameError = NULL;
@@ -2610,7 +2625,6 @@ ALWAYS_INLINE escargot::Node* inheritCoverGrammar(ParseContext* ctx, escargot::N
     // ctx->m_firstCoverInitializedNameError = oldFirstCoverInitializedNameError || ctx->m_firstCoverInitializedNameError;
     if (oldFirstCoverInitializedNameError)
         ctx->m_firstCoverInitializedNameError = oldFirstCoverInitializedNameError;
-    ctx->m_stackCounter--;
     return result;
 }
 
@@ -3690,6 +3704,8 @@ function parseDebuggerStatement(node) {
 
 escargot::Node* parseStatement(ParseContext* ctx)
 {
+    PARSER_STACK_CHECK;
+
     Token type = ctx->m_lookahead->m_type;
     /*
     var type = lookahead.type,

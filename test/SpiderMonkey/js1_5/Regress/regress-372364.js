@@ -21,7 +21,7 @@ function test()
   printStatus (summary);
 
   print('See Also bug 365891');
-  expect = /TypeError: a\(.+\) (has no properties|is null)/;
+  expect = /TypeError: .+null.+/;
   try
   {
     function a(){return null;} a(1)[0];
@@ -32,7 +32,7 @@ function test()
   }
   reportMatch(expect, actual, summary);
 
-  expect = /TypeError: \/a\/.exec\(.+\) (has no properties|is null)/;
+  expect = /TypeError: .+null.+/;
   try
   {
     /a/.exec("b")[0];

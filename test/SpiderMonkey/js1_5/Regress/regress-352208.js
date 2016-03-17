@@ -20,7 +20,7 @@ function test()
   printBugNumber(BUGNUMBER);
   printStatus (summary);
  
-  expect = 'SyntaxError: unterminated string literal';
+  expect = 'SyntaxError: unterminated string literal (Parse Error 1 line)';
   try
   {
     eval('new Function("setter/*\n");');
