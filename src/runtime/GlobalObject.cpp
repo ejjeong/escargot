@@ -5287,29 +5287,8 @@ void GlobalObject::installRegExp()
             ASSERT(thisValue.isObject());
             thisVal = thisValue.toObject()->asESRegExpObject();
         }
+
         size_t arg_size = instance->currentExecutionContext()->argumentCount();
-
-        if (arg_size == 0) {
-            thisVal->setSource(ESString::create("(?:)"));
-            return ESValue(thisVal);
-        }
-
-        if (arg_size > 0) {
-            ESValue pattern = instance->currentExecutionContext()->arguments()[0];
-            if (pattern.isESPointer() && pattern.asESPointer()->isESRegExpObject()) {
-                if (instance->currentExecutionContext()->readArgument(1).isUndefined())
-                    return pattern;
-                else
-                    instance->throwError(ESValue(TypeError::create(ESString::create(u"Cannot supply flags when constructing one RegExp from another"))));
-            }
-            if (pattern.isUndefined()) {
-                thisVal->setSource(ESString::create("(?:)"));
-            } else {
-                bool success = thisVal->setSource(pattern.toString());
-                if (!success)
-                    instance->throwError(ESValue(SyntaxError::create(ESString::create(u"RegExp has invalid source"))));
-            }
-        }
 
         if (arg_size > 1) {
             ESValue flag = instance->currentExecutionContext()->arguments()[1];
@@ -5343,6 +5322,29 @@ void GlobalObject::installRegExp()
             }
             thisVal->setOption(option);
         }
+
+        if (arg_size == 0) {
+            thisVal->setSource(ESString::create("(?:)"));
+            return ESValue(thisVal);
+        }
+
+        if (arg_size > 0) {
+            ESValue pattern = instance->currentExecutionContext()->arguments()[0];
+            if (pattern.isESPointer() && pattern.asESPointer()->isESRegExpObject()) {
+                if (instance->currentExecutionContext()->readArgument(1).isUndefined())
+                    return pattern;
+                else
+                    instance->throwError(ESValue(TypeError::create(ESString::create(u"Cannot supply flags when constructing one RegExp from another"))));
+            }
+            if (pattern.isUndefined()) {
+                thisVal->setSource(ESString::create("(?:)"));
+            } else {
+                bool success = thisVal->setSource(pattern.toString());
+                if (!success)
+                    instance->throwError(ESValue(SyntaxError::create(ESString::create(u"RegExp has invalid source"))));
+            }
+        }
+
         return ESValue(thisVal);
     }, strings->RegExp, 2, true);
     m_regexp->forceNonVectorHiddenClass(true);

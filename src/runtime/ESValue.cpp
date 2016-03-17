@@ -1014,6 +1014,7 @@ bool ESRegExpObject::setSource(escargot::ESString* src)
 }
 void ESRegExpObject::setOption(const Option& option)
 {
+    ASSERT(!yarrPattern());
     if (((m_option & ESRegExpObject::Option::MultiLine) != (option & ESRegExpObject::Option::MultiLine))
         || ((m_option & ESRegExpObject::Option::IgnoreCase) != (option & ESRegExpObject::Option::IgnoreCase))
         ) {
