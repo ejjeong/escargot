@@ -16,18 +16,27 @@ public:
 #endif
 
 private:
-    struct codecachehash {
+    struct CodeCacheHash {
     public:
         std::size_t operator()(const std::pair<ESString*, bool> &x) const
         {
-            return std::hash<ptrdiff_t>()((ptrdiff_t)x.first + x.second);
+            size_t ret = std::hash<ESString*>()(x.first);
+            return ret + x.second;
         }
     };
 
-    std::unordered_map<std::pair<ESString*, bool>, CodeBlock* , codecachehash, std::equal_to<std::pair<ESString*, bool>>,
+    struct CodeCacheEqual {
+    public:
+        bool operator()(const std::pair<ESString*, bool> &x, const std::pair<ESString*, bool> &y) const
+        {
+            return *x.first == *y.first && x.second == y.second;
+        }
+    };
+
+    std::unordered_map<std::pair<ESString*, bool>, CodeBlock* , CodeCacheHash, CodeCacheEqual,
     gc_allocator<std::pair<std::pair<ESString*, bool>, CodeBlock *> > > m_nonGlobalCodeCache;
 
-    std::unordered_map<std::pair<ESString*, bool>, CodeBlock* , codecachehash, std::equal_to<std::pair<ESString*, bool>>,
+    std::unordered_map<std::pair<ESString*, bool>, CodeBlock* , CodeCacheHash, CodeCacheEqual,
     gc_allocator<std::pair<std::pair<ESString*, bool>, CodeBlock *> > > m_globalCodeCache;
 };
 
