@@ -714,12 +714,12 @@ CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString*
 #ifdef ENABLE_CODECACHE
     if (source->length() < 1024) {
         if (isForGlobalScope) {
-            auto iter = m_globalCodeCache.find(source);
+            auto iter = m_globalCodeCache.find(std::make_pair(source, strictFromOutside));
             if (iter != m_globalCodeCache.end()) {
                 return iter->second;
             }
         } else {
-            auto iter = m_nonGlobalCodeCache.find(source);
+            auto iter = m_nonGlobalCodeCache.find(std::make_pair(source, strictFromOutside));
             if (iter != m_nonGlobalCodeCache.end()) {
                 return iter->second;
             }
@@ -737,10 +737,10 @@ CodeBlock* ScriptParser::parseScript(ESVMInstance* instance, escargot::ESString*
     if (source->length() < 1024) {
         if (isForGlobalScope) {
             cb->m_isCached = true;
-            m_globalCodeCache.insert(std::make_pair(source, cb));
+            m_globalCodeCache.insert(std::make_pair(std::make_pair(source, strictFromOutside), cb));
         } else {
             cb->m_isCached = true;
-            m_nonGlobalCodeCache.insert(std::make_pair(source, cb));
+            m_nonGlobalCodeCache.insert(std::make_pair(std::make_pair(source, strictFromOutside), cb));
         }
     }
 #endif

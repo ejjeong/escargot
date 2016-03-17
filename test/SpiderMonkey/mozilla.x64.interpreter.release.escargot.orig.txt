@@ -44,7 +44,6 @@ ecma_5/misc/future-reserved-words.js
 ecma_5/misc/regexp-functions-with-undefined.js
 ecma_5/strict/B.1.2.js
 ecma_5/strict/assign-to-callee-name.js
-ecma_5/strict/eval-variable-environment.js
 js1_2/regexp/RegExp_dollar_number.js
 js1_2/regexp/RegExp_lastMatch.js
 js1_2/regexp/RegExp_lastMatch_as_array.js

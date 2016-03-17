@@ -16,11 +16,19 @@ public:
 #endif
 
 private:
-    std::unordered_map<ESString*, CodeBlock* , std::hash<ESString*>, std::equal_to<ESString*>,
-    gc_allocator<std::pair<ESString*, CodeBlock *> > > m_nonGlobalCodeCache;
+    struct codecachehash {
+    public:
+        std::size_t operator()(const std::pair<ESString*, bool> &x) const
+        {
+            return std::hash<ptrdiff_t>()((ptrdiff_t)x.first + x.second);
+        }
+    };
 
-    std::unordered_map<ESString*, CodeBlock* , std::hash<ESString*>, std::equal_to<ESString*>,
-    gc_allocator<std::pair<ESString*, CodeBlock *> > > m_globalCodeCache;
+    std::unordered_map<std::pair<ESString*, bool>, CodeBlock* , codecachehash, std::equal_to<std::pair<ESString*, bool>>,
+    gc_allocator<std::pair<std::pair<ESString*, bool>, CodeBlock *> > > m_nonGlobalCodeCache;
+
+    std::unordered_map<std::pair<ESString*, bool>, CodeBlock* , codecachehash, std::equal_to<std::pair<ESString*, bool>>,
+    gc_allocator<std::pair<std::pair<ESString*, bool>, CodeBlock *> > > m_globalCodeCache;
 };
 
 }
