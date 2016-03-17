@@ -2583,7 +2583,7 @@ void consumeSemicolon(ParseContext* ctx)
     ctx->m_lastLineStart = ctx->m_startLineStart;
 
     if (ctx->m_lookahead->m_type != Token::EOFToken && !match(ctx, RightBrace)) {
-        throwEsprimaException();
+        throwUnexpectedToken(ctx->m_lookahead, u"Expected ';'");
     }
 }
 

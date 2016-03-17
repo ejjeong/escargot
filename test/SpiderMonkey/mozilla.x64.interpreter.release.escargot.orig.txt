@@ -57,17 +57,13 @@ js1_2/regexp/compile.js
 js1_2/regexp/endLine.js
 js1_2/regexp/flags.js
 js1_2/regexp/ignoreCase.js
-js1_5/Array/regress-350256-01.js
-js1_5/Array/regress-474529.js
 js1_5/Date/regress-301738-01.js
 js1_5/Date/regress-301738-02.js
-js1_5/LexicalConventions/regress-469940.js
 js1_5/Regress/regress-172699.js
 js1_5/Regress/regress-211590.js
 js1_5/Regress/regress-276103.js
 js1_5/Regress/regress-303213.js
 js1_5/Regress/regress-511859.js
-js1_5/Scope/regress-181834.js
 js1_5/extensions/regress-311792-02.js
 js1_6/Array/regress-304828.js
 js1_6/Regress/regress-355002.js
