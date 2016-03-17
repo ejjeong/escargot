@@ -2459,7 +2459,7 @@ void GlobalObject::installArray()
         if (argCount > 0) {
             if (len+argCount > std::pow(2, 32)-1)
                 instance->throwError(TypeError::create(ESString::create("Array.prototype.unshift: length is too large")));
-            int k = len;
+            int64_t k = len;
             while (k > 0) {
                 ESValue from(k - 1);
                 ESValue to(k + argCount - 1);

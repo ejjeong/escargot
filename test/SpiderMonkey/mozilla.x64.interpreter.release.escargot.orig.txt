@@ -86,8 +86,6 @@ js1_5/Regress/regress-511859.js
 js1_5/Regress/regress-76054.js
 js1_5/Scope/regress-181834.js
 js1_5/extensions/regress-311792-02.js
-js1_5/extensions/regress-313763.js
-js1_5/extensions/regress-341956-01.js
 js1_5/extensions/regress-429739.js
 js1_5/extensions/regress-453249.js
 js1_5/extensions/regress-469625.js
