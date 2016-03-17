@@ -5295,6 +5295,47 @@ void GlobalObject::installRegExp()
             return ESValue(thisVal);
         }
 
+        escargot::ESErrorObject* optionParsingError = nullptr;
+        ESRegExpObject::Option option = ESRegExpObject::Option::None;
+        if (arg_size > 1) {
+            ESValue flag = instance->currentExecutionContext()->arguments()[1];
+            escargot::ESString* is = flag.isUndefined() ? strings->emptyString.string() : flag.toString();
+            for (size_t i = 0; i < is->length(); i++) {
+                switch (is->charAt(i)) {
+                case 'g':
+                    if (option & ESRegExpObject::Option::Global)
+                        if (!optionParsingError)
+                            optionParsingError = SyntaxError::create(ESString::create(u"RegExp has multiple 'g' flags"));
+                    option = (ESRegExpObject::Option) (option | ESRegExpObject::Option::Global);
+                    break;
+                case 'i':
+                    if (option & ESRegExpObject::Option::IgnoreCase)
+                        if (!optionParsingError)
+                            optionParsingError = SyntaxError::create(ESString::create(u"RegExp has multiple 'i' flags"));
+                    option = (ESRegExpObject::Option) (option | ESRegExpObject::Option::IgnoreCase);
+                    break;
+                case 'm':
+                    if (option & ESRegExpObject::Option::MultiLine)
+                        if (!optionParsingError)
+                            optionParsingError = SyntaxError::create(ESString::create(u"RegExp has multiple 'm' flags"));
+                    option = (ESRegExpObject::Option) (option | ESRegExpObject::Option::MultiLine);
+                    break;
+                case 'y':
+                    if (option & ESRegExpObject::Option::Sticky)
+                        if (!optionParsingError)
+                            optionParsingError = SyntaxError::create(ESString::create(u"RegExp has multiple 'y' flags"));
+                    option = (ESRegExpObject::Option) (option | ESRegExpObject::Option::Sticky);
+                    break;
+                default:
+                    if (!optionParsingError)
+                        optionParsingError = SyntaxError::create(ESString::create(u"RegExp has invalid flag"));
+                }
+            }
+        }
+
+        if (option != ESRegExpObject::Option::None)
+            thisVal->setOption(option);
+
         if (arg_size > 0) {
             ESValue pattern = instance->currentExecutionContext()->arguments()[0];
             if (pattern.isESPointer() && pattern.asESPointer()->isESRegExpObject()) {
@@ -5313,38 +5354,8 @@ void GlobalObject::installRegExp()
             }
         }
 
-        if (arg_size > 1) {
-            ESValue flag = instance->currentExecutionContext()->arguments()[1];
-            escargot::ESString* is = flag.isUndefined() ? strings->emptyString.string() : flag.toString();
-            ESRegExpObject::Option option = ESRegExpObject::Option::None;
-            for (size_t i = 0; i < is->length(); i++) {
-                switch (is->charAt(i)) {
-                case 'g':
-                    if (option & ESRegExpObject::Option::Global)
-                        instance->throwError(ESValue(SyntaxError::create(ESString::create(u"RegExp has multiple 'g' flags"))));
-                    option = (ESRegExpObject::Option) (option | ESRegExpObject::Option::Global);
-                    break;
-                case 'i':
-                    if (option & ESRegExpObject::Option::IgnoreCase)
-                        instance->throwError(ESValue(SyntaxError::create(ESString::create(u"RegExp has multiple 'i' flags"))));
-                    option = (ESRegExpObject::Option) (option | ESRegExpObject::Option::IgnoreCase);
-                    break;
-                case 'm':
-                    if (option & ESRegExpObject::Option::MultiLine)
-                        instance->throwError(ESValue(SyntaxError::create(ESString::create(u"RegExp has multiple 'm' flags"))));
-                    option = (ESRegExpObject::Option) (option | ESRegExpObject::Option::MultiLine);
-                    break;
-                case 'y':
-                    if (option & ESRegExpObject::Option::Sticky)
-                        instance->throwError(ESValue(SyntaxError::create(ESString::create(u"RegExp has multiple 'y' flags"))));
-                    option = (ESRegExpObject::Option) (option | ESRegExpObject::Option::Sticky);
-                    break;
-                default:
-                    instance->throwError(ESValue(SyntaxError::create(ESString::create(u"RegExp has invalid flag"))));
-                }
-            }
-            thisVal->setOption(option);
-        }
+        if (optionParsingError)
+            instance->throwError(optionParsingError);
 
         return ESValue(thisVal);
     }, strings->RegExp, 2, true);

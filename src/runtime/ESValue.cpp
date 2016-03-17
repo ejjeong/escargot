@@ -1014,16 +1014,13 @@ bool ESRegExpObject::setSource(escargot::ESString* src)
 }
 void ESRegExpObject::setOption(const Option& option)
 {
+    ASSERT(!yarrPattern());
     if (((m_option & ESRegExpObject::Option::MultiLine) != (option & ESRegExpObject::Option::MultiLine))
         || ((m_option & ESRegExpObject::Option::IgnoreCase) != (option & ESRegExpObject::Option::IgnoreCase))
         ) {
         m_bytecodePattern = NULL;
     }
     m_option = option;
-    if (m_yarrPattern) {
-        m_yarrPattern->m_multiline = m_option & ESRegExpObject::Option::MultiLine;
-        m_yarrPattern->m_ignoreCase = m_option & ESRegExpObject::Option::IgnoreCase;
-    }
 }
 
 ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlock* cb, escargot::ESString* name, unsigned length, bool hasPrototype, bool isBuiltIn)
