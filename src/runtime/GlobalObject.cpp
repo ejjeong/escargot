@@ -1171,7 +1171,8 @@ void GlobalObject::installObject()
         std::vector<std::pair<ESValue, ESHiddenClassPropertyInfo*> > writableOrconfigurableProperties;
         obj->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
             ASSERT(propertyInfo != &dummyPropertyInfo);
-            if ((propertyInfo->m_flags.m_isDataProperty && propertyInfo->m_flags.m_isWritable)
+            if (((propertyInfo->m_flags.m_isDataProperty || !obj->accessorData(key.asESString())->isAccessorDescriptor())
+                && propertyInfo->m_flags.m_isWritable)
                 || propertyInfo->m_flags.m_isConfigurable)
                 writableOrconfigurableProperties.push_back(std::make_pair(key, propertyInfo));
         });

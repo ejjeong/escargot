@@ -1576,7 +1576,9 @@ ALWAYS_INLINE ESValue ESObject::pop()
 {
     uint32_t len = length();
     if (len == 0) {
-        set(strings->length.string(), ESValue(0));
+        if (!set(strings->length.string(), ESValue(0))) {
+            ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create("Cannot assign to read only property 'length'"))));
+        }
         return ESValue();
     }
     if (LIKELY(isESArrayObject() && asESArrayObject()->isFastmode())) {
