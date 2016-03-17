@@ -198,7 +198,7 @@ ESValue ESVMInstance::evaluateEval(ESString* source, bool isDirectCall)
     }
 
     m_lastExpressionStatementValue = ESValue();
-    if (isStrictCode || strictFromOutside) {
+    if (isStrictCode) {
         // $ES5 10.4.2.3. Use new environment
         block->m_hasCode = true;
         block->m_needsActivation = true; // FIXME modify parser to generate fastindex codes for evals
@@ -211,9 +211,7 @@ ESValue ESVMInstance::evaluateEval(ESString* source, bool isDirectCall)
     if (!block->m_isCached)
         block->finalize();
     m_globalExecutionContext->setStrictMode(oldGlobalContextIsStrictMode);
-    if (isStrictCode || strictFromOutside) {
-        m_currentExecutionContext = oldContext;
-    }
+    m_currentExecutionContext = oldContext;
     m_currentExecutionContext->setStrictMode(oldContextIsStrictMode);
     return m_lastExpressionStatementValue;
 }
