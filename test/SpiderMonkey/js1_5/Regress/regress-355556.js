@@ -20,7 +20,7 @@ function test()
   printBugNumber(BUGNUMBER);
   printStatus (summary);
 
-  expect = 'TypeError: "foo".b is not a function';
+  expect = 'TypeError: Callee is not a function object';
   try
   {
     (function () { eval("'foo'.b()", arguments) })();

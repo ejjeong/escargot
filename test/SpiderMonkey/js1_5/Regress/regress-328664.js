@@ -7,7 +7,7 @@
 var BUGNUMBER = 328664;
 var summary = 'Correct error message for funccall(undefined, undefined.prop)';
 var actual = '';
-var expect = 'TypeError: cannot convert undefined into object';
+var expect = /TypeError: cannot convert undefined into object/;
 
 printBugNumber(BUGNUMBER);
 printStatus (summary);

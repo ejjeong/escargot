@@ -5,11 +5,11 @@ namespace escargot {
 
 class ESVMInstance;
 class CodeBlock;
-class Node;
+class ProgramNode;
 
 class ScriptParser {
 public:
-    Node* generateAST(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope, bool strictFromOutside = false);
+    ProgramNode* generateAST(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope, bool strictFromOutside = false);
     CodeBlock* parseScript(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope, CodeBlock::ExecutableType type, bool strictFromOutside = false);
 #ifdef ESCARGOT_PROFILE
     static void dumpStats();

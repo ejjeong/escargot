@@ -46,7 +46,7 @@ void ScriptParser::dumpStats()
 }
 #endif
 
-Node* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope, bool strictFromOutside)
+ProgramNode* ScriptParser::generateAST(ESVMInstance* instance, escargot::ESString* source, bool isForGlobalScope, bool strictFromOutside)
 {
     ProgramNode* programNode;
     try {

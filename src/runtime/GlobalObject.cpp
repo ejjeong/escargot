@@ -855,8 +855,10 @@ void GlobalObject::installFunction()
             escargot::ESString* body = instance->currentExecutionContext()->arguments()[len-1].toString();
             builder.appendString(body);
             builder.appendString("}");
-            Node* programNode = instance->scriptParser()->generateAST(instance, builder.finalize(), true);
-            FunctionNode* functionDeclAST = static_cast<FunctionNode* >(static_cast<ProgramNode *>(programNode)->body()[1]);
+            ProgramNode* programNode = instance->scriptParser()->generateAST(instance, builder.finalize(), true);
+            if (programNode->body().size() != 2)
+                instance->throwError(SyntaxError::create(ESString::create("Invalid Function(...) body source code")));
+            FunctionNode* functionDeclAST = static_cast<FunctionNode* >(programNode->body()[1]);
             ByteCodeGenerateContext context(codeBlock, false);
 
             codeBlock->m_stackAllocatedIdentifiersCount = functionDeclAST->stackAllocatedIdentifiersCount();

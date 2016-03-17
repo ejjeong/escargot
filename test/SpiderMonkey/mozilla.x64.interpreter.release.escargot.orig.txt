@@ -68,11 +68,7 @@ js1_5/Regress/regress-211590.js
 js1_5/Regress/regress-256501.js
 js1_5/Regress/regress-276103.js
 js1_5/Regress/regress-303213.js
-js1_5/Regress/regress-328664.js
-js1_5/Regress/regress-330352.js
-js1_5/Regress/regress-350268.js
 js1_5/Regress/regress-352208.js
-js1_5/Regress/regress-355556.js
 js1_5/Regress/regress-372364.js
 js1_5/Regress/regress-418504.js
 js1_5/Regress/regress-420919.js
