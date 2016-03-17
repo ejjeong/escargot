@@ -1731,6 +1731,7 @@ class ESObject : public ESPointer {
     friend class ESFunctionObject;
     friend ALWAYS_INLINE void setObjectPreComputedCaseOperation(ESValue* willBeObject, ::escargot::ESString* keyString, const ESValue& value
         , ESHiddenClassChain* cachedHiddenClassChain, size_t* cachedHiddenClassIndex, ESHiddenClass** hiddenClassWillBe);
+    friend class GlobalObject;
 protected:
     ESObject(ESPointer::Type type, ESValue __proto__, size_t initialKeyCount = 6);
 public:

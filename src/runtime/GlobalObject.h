@@ -317,12 +317,21 @@ public:
     ALWAYS_INLINE ESBindingSlot addressOfProperty(escargot::ESString* key)
     {
         ASSERT(m_flags.m_isGlobalObject);
-        size_t ret = m_hiddenClass->findProperty(key);
-        if (ret == SIZE_MAX)
+        ESObject* target = this;
+        size_t ret;
+        while (true) {
+            ret = target->m_hiddenClass->findProperty(key);
+            if (ret != SIZE_MAX)
+                break;
+            else
+                if (target->__proto__().isESPointer() && target->__proto__().asESPointer()->isESObject())
+                    target = target->__proto__().asESPointer()->asESObject();
+                else
+                    return nullptr;
+        }
+        if (target->m_hiddenClassData[ret].isDeleted())
             return NULL;
-        if (m_hiddenClassData[ret].isDeleted())
-            return NULL;
-        return ESBindingSlot(&m_hiddenClassData[ret], m_hiddenClass->propertyInfo(ret).m_flags.m_isDataProperty);
+        return ESBindingSlot(&target->m_hiddenClassData[ret], target->m_hiddenClass->propertyInfo(ret).m_flags.m_isDataProperty);
     }
 
     bool didSomePrototypeObjectDefineIndexedProperty()
