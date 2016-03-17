@@ -21,7 +21,7 @@ function test()
   printBugNumber(BUGNUMBER);
   printStatus (summary);
  
-  expect = 'TypeError: 6 is not a function';
+  expect = 'TypeError: Array.prototype.map callback must be a function';
 
   this.__defineSetter__('m', [].map);
   function f() { for (var j = 0; j < 4; ++j) if (j == 3) m = 6; }

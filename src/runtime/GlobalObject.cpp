@@ -1677,7 +1677,7 @@ void GlobalObject::installArray()
         // If IsCallable(callbackfn) is false, throw a TypeError exception.
         ESValue callbackfn = instance->currentExecutionContext()->readArgument(0);
         if (!callbackfn.isESPointer() || !callbackfn.asESPointer()->isESFunctionObject()) {
-            instance->throwError(ESValue(TypeError::create(ESString::create("Array.prototype.filter callback must be a function"))));
+            instance->throwError(ESValue(TypeError::create(ESString::create("Array.prototype.every callback must be a function"))));
         }
 
         // If thisArg was supplied, let T be thisArg; else let T be undefined.
@@ -1951,7 +1951,7 @@ void GlobalObject::installArray()
         // If IsCallable(callbackfn) is false, throw a TypeError exception.
         ESValue callbackfn = instance->currentExecutionContext()->readArgument(0);
         if (!callbackfn.isESPointer() || !callbackfn.asESPointer()->isESFunctionObject()) {
-            instance->throwError(ESValue(TypeError::create(ESString::create("Array.prototype.filter callback must be a function"))));
+            instance->throwError(ESValue(TypeError::create(ESString::create("Array.prototype.map callback must be a function"))));
         }
 
         // If thisArg was supplied, let T be thisArg; else let T be undefined.
@@ -2256,7 +2256,7 @@ void GlobalObject::installArray()
         // If IsCallable(callbackfn) is false, throw a TypeError exception.
         ESValue callbackfn = instance->currentExecutionContext()->readArgument(0);
         if (!callbackfn.isESPointer() || !callbackfn.asESPointer()->isESFunctionObject()) {
-            instance->throwError(ESValue(TypeError::create(ESString::create("Array.prototype.filter callback must be a function"))));
+            instance->throwError(ESValue(TypeError::create(ESString::create("Array.prototype.some callback must be a function"))));
         }
 
         // If thisArg was supplied, let T be thisArg; else let T be undefined.
