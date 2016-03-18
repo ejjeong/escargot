@@ -607,6 +607,7 @@ bool ESObject::defineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag)
         return true;
 
     // 6
+    idx = O->hiddenClass()->findProperty(P.toString());
     const ESHiddenClassPropertyInfo& propertyInfo = O->hiddenClass()->propertyInfo(idx);
     if ((!descHasEnumerable || descE == propertyInfo.m_flags.m_isEnumerable)
         && (!descHasWritable || ((propertyInfo.m_flags.m_isDataProperty || O->accessorData(idx)->getNativeGetter() || O->accessorData(idx)->getNativeSetter()) && (descW == propertyInfo.m_flags.m_isWritable)))
