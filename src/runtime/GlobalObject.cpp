@@ -4361,30 +4361,36 @@ void GlobalObject::installJSON()
                 replacerFunc = replacer.asESPointer()->asESFunctionObject();
             } else if (replacer.isESPointer() && replacer.asESPointer()->isESArrayObject()) {
                 escargot::ESArrayObject* arrObject = replacer.asESPointer()->asESArrayObject();
-                ESValue* data = arrObject->data();
-                for (uint32_t i = 0; i < arrObject->length(); ++i) {
+
+                std::vector<unsigned> indexes;
+                arrObject->enumeration([&indexes](ESValue key) {
+                    indexes.push_back(key.toIndex());
+                });
+                std::sort(indexes.begin(), indexes.end(), std::less<unsigned>());
+                for (uint32_t i = 0; i < indexes.size(); ++i) {
                     ESValue item;
-                    if (data[i].isESString()) {
-                        item = data[i];
-                    } else if (data[i].isNumber()) {
-                        item = data[i].toString();
-                    } else if (data[i].isObject()) {
-                        if (data[i].isESPointer()
-                            && (data[i].asESPointer()->isESStringObject()
-                                || data[i].asESPointer()->isESNumberObject())) {
-                            item = data[i].toString();
+                    ESValue property = arrObject->get(indexes[i]);
+                    if (property.isESString()) {
+                        item = property;
+                    } else if (property.isNumber()) {
+                        item = property.toString();
+                    } else if (property.isObject()) {
+                        if (property.isESPointer()
+                            && (property.asESPointer()->isESStringObject()
+                                || property.asESPointer()->isESNumberObject())) {
+                            item = property.toString();
                         }
                     }
                     if (!item.isUndefined()) {
                         bool flag = false;
                         for (auto& v : propertyList) {
-                            if (v == item) {
+                            if (*v.toString() == *item.toString()) {
                                 flag = true;
                                 break;
                             }
                         }
-
-                        propertyList.push_back(std::move(item));
+                        if (!flag)
+                            propertyList.push_back(std::move(item));
                     }
                 }
             }
