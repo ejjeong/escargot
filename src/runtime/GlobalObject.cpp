@@ -4419,7 +4419,7 @@ void GlobalObject::installJSON()
                 ESValue* arguments = (ESValue *)alloca(2 * sizeof(ESValue));
                 arguments[0] = key;
                 arguments[1] = value;
-                value = ESFunctionObject::call(instance, replacerFunc, value, arguments, 2, false);
+                value = ESFunctionObject::call(instance, replacerFunc, holder, arguments, 2, false);
             }
 
             if (value.isObject()) {
