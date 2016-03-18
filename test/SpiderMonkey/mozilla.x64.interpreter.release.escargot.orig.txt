@@ -14,7 +14,6 @@ ecma_5/JSON/stringify-replacer-array-edgecase-jsid-elements.js
 ecma_5/JSON/stringify-replacer-array-hijinks.js
 ecma_5/JSON/stringify-replacer-with-array-indexes.js
 ecma_5/JSON/stringify-replacer.js
-ecma_5/JSON/stringify-toJSON-arguments.js
 ecma_5/Number/defaultvalue.js
 ecma_5/Object/extensibility-01.js
 ecma_5/Object/proto-property-change-writability-set.js

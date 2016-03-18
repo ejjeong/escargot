@@ -4408,8 +4408,10 @@ void GlobalObject::installJSON()
             if (value.isObject()) {
                 ESObject* valObj = value.asESPointer()->asESObject();
                 ESValue toJson = valObj->get(strings->toJSON.string());
+                ESValue* arguments = (ESValue *)alloca(sizeof(ESValue));
+                arguments[0] = key;
                 if (toJson.isESPointer() && toJson.asESPointer()->isESFunctionObject()) {
-                    value = ESFunctionObject::call(instance, toJson, value, NULL, 0, false);
+                    value = ESFunctionObject::call(instance, toJson, value, arguments, 1, false);
                 }
             }
 
