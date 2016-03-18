@@ -6,6 +6,7 @@
 namespace escargot {
 
 NEVER_INLINE void throwObjectWriteError(const char* msg = "Attempted to assign to readonly property.");
+NEVER_INLINE void throwUndefinedReferenceError(const ESString* name);
 
 ALWAYS_INLINE ESValue* getByIdOperation(ESVMInstance* instance, ExecutionContext* ec, GetById* code)
 {
@@ -42,16 +43,7 @@ ALWAYS_INLINE ESValue* getByIdOperation(ESVMInstance* instance, ExecutionContext
             if (code->m_name == strings->arguments)
                 if (ESValue* ret = ec->resolveArgumentsObjectBinding())
                     return ret;
-            ReferenceError* receiver = ReferenceError::create();
-            std::vector<ESValue, gc_allocator<ESValue> > arguments;
-            UTF16String err_msg;
-            err_msg.append(code->m_name.string()->toUTF16String());
-            err_msg.append(u" is not defined");
-
-            // TODO call constructor
-            // ESFunctionObject::call(fn, receiver, &arguments[0], arguments.size(), instance);
-            receiver->set(strings->message.string(), ESString::create(std::move(err_msg)));
-            instance->throwError(receiver);
+            throwUndefinedReferenceError(code->m_name.string());
             RELEASE_ASSERT_NOT_REACHED();
         }
     }

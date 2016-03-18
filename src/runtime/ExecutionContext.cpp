@@ -34,21 +34,6 @@ ESBindingSlot ExecutionContext::resolveBinding(const InternalAtomicString& atomi
     return NULL;
 }
 
-ESBindingSlot ExecutionContext::resolveBinding(const InternalAtomicString& atomicName, LexicalEnvironment*& env, bool& isBindingMutable, bool& isBindingConfigurable)
-{
-    // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding
-    env = environment();
-
-    while (env) {
-        ESBindingSlot slot = env->record()->hasBinding(atomicName, isBindingMutable, isBindingConfigurable);
-        if (slot)
-            return slot;
-        env = env->outerEnvironment();
-    }
-
-    return NULL;
-}
-
 ESValue* ExecutionContext::resolveArgumentsObjectBinding()
 {
     // http://www.ecma-international.org/ecma-262/6.0/index.html#sec-resolvebinding

@@ -215,11 +215,6 @@ public:
         RELEASE_ASSERT_NOT_REACHED();
     }
 
-    virtual ESBindingSlot hasBinding(const InternalAtomicString& atomicName, bool& isBindingMutable, bool& isBindingConfigurable)
-    {
-        RELEASE_ASSERT_NOT_REACHED();
-    }
-
     virtual ESValue* hasBindingForArgumentsObject()
     {
         return NULL;
@@ -320,10 +315,6 @@ public:
         else
             return nullptr;
     }
-    virtual ESBindingSlot hasBinding(const InternalAtomicString& atomicName, bool& isBindingMutable, bool& isBindingConfigurable)
-    {
-        return hasBinding(atomicName);
-    }
     void createMutableBinding(const InternalAtomicString& name, bool canDelete = false);
     void createImmutableBinding(const InternalAtomicString& name, bool throwExecptionWhenAccessBeforeInit = false) { }
     void initializeBinding(const InternalAtomicString& name,  const ESValue& V);
@@ -386,25 +377,11 @@ public:
             return NULL;
         for (unsigned i = 0; i < m_innerIdentifiers->size(); i ++) {
             if ((*m_innerIdentifiers)[i] == atomicName) {
+                bool isBindingMutable = (i != m_mutableIndex);
+                bool isBindingConfigurable = (i >= m_numVariableDeclarations);
                 if (m_heapAllocatedData[i].isDeleted())
                     return NULL;
-                return &m_heapAllocatedData[i];
-            }
-        }
-        return NULL;
-    }
-
-    virtual ESBindingSlot hasBinding(const InternalAtomicString& atomicName, bool& isBindingMutable, bool& isBindingConfigurable)
-    {
-        if (!m_needsActivation)
-            return NULL;
-        for (unsigned i = 0; i < m_innerIdentifiers->size(); i ++) {
-            if ((*m_innerIdentifiers)[i] == atomicName) {
-                isBindingMutable = (i == m_mutableIndex);
-                isBindingConfigurable = (i >= m_numVariableDeclarations);
-                if (m_heapAllocatedData[i].isDeleted())
-                    return NULL;
-                return &m_heapAllocatedData[i];
+                return ESBindingSlot(&m_heapAllocatedData[i], true, isBindingMutable, isBindingConfigurable);
             }
         }
         return NULL;

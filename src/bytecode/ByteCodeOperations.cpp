@@ -26,16 +26,14 @@ NEVER_INLINE void setByIdSlowCase(ESVMInstance* instance, GlobalObject* globalOb
     // asdf = 2
     ESBindingSlot slot;
     LexicalEnvironment* env = nullptr;
-    bool isBindingMutable = false;
-    bool isBindingConfigurable = false;
 
     if (code->m_onlySearchGlobal)
         slot = instance->globalObject()->addressOfProperty(code->m_name.string());
     else
-        slot = ec->resolveBinding(code->m_name, env, isBindingMutable, isBindingConfigurable);
+        slot = ec->resolveBinding(code->m_name, env);
 
     if (LIKELY(slot)) {
-        if (LIKELY(!isBindingMutable)) {
+        if (LIKELY(slot.isMutable())) {
             if (LIKELY(slot.isDataBinding())) {
                 code->m_cachedSlot = slot.getSlot();
                 code->m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
@@ -301,6 +299,20 @@ NEVER_INLINE void throwObjectWriteError(const char* msg)
 {
     if (ESVMInstance::currentInstance()->currentExecutionContext()->isStrictMode())
         ESVMInstance::currentInstance()->throwError(ESValue(TypeError::create(ESString::create(msg))));
+}
+
+NEVER_INLINE void throwUndefinedReferenceError(const ESString* name)
+{
+    ReferenceError* receiver = ReferenceError::create();
+    std::vector<ESValue, gc_allocator<ESValue> > arguments;
+    UTF16String err_msg;
+    err_msg.append(name->toUTF16String());
+    err_msg.append(u" is not defined");
+
+    // TODO call constructor
+    // ESFunctionObject::call(fn, receiver, &arguments[0], arguments.size(), instance);
+    receiver->set(strings->message.string(), ESString::create(std::move(err_msg)));
+    ESVMInstance::currentInstance()->throwError(receiver);
 }
 
 NEVER_INLINE void setObjectOperationSlowMode(ESValue* willBeObject, ESValue* property, const ESValue& value)
@@ -627,9 +639,7 @@ NEVER_INLINE bool deleteBindingOperation(UnaryDelete* code, ExecutionContext* ec
         return false;
     } else {
         LexicalEnvironment* env = nullptr;
-        bool isBindingMutable = false;
-        bool isBindingConfigurable = false;
-        ESBindingSlot binding = ec->resolveBinding(str, env, isBindingMutable, isBindingConfigurable);
+        ESBindingSlot binding = ec->resolveBinding(str, env);
         if (binding) {
             ASSERT(env);
             if (env->record()->isGlobalEnvironmentRecord()) {
@@ -638,7 +648,7 @@ NEVER_INLINE bool deleteBindingOperation(UnaryDelete* code, ExecutionContext* ec
             } else if (env->record()->isDeclarativeEnvironmentRecord()) {
                 DeclarativeEnvironmentRecord* record = (DeclarativeEnvironmentRecord*)env->record();
                 ASSERT(record->needsActivation());
-                if (isBindingConfigurable) {
+                if (binding.isConfigurable()) {
                     binding.setSlot(ESValue::ESDeletedValueTag::ESDeletedValue);
                     return true;
                 } else {

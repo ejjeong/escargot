@@ -1920,9 +1920,16 @@ protected:
 class ESBindingSlot {
 public:
     ALWAYS_INLINE ESBindingSlot()
-        : m_slot(nullptr), m_isDataBinding(true) { }
-    ALWAYS_INLINE ESBindingSlot(ESValue* slot, bool isDataBinding = true)
-        : m_slot(slot), m_isDataBinding(isDataBinding) { }
+        : m_slot(nullptr)
+        , m_isDataBinding(true)
+        , m_isBindingMutable(true)
+        , m_isBindingConfigurable(false) { }
+
+    ALWAYS_INLINE ESBindingSlot(ESValue* slot, bool isDataBinding = true, bool isBindingMutable = true, bool isBindingConfigurable = false)
+        : m_slot(slot)
+        , m_isDataBinding(isDataBinding)
+        , m_isBindingMutable(isBindingMutable)
+        , m_isBindingConfigurable(isBindingConfigurable) { }
 
     void* operator new(std::size_t) = delete;
     ALWAYS_INLINE ESValue* operator->() const { return m_slot; }
@@ -1945,10 +1952,14 @@ public:
     NEVER_INLINE void setValueWithSetter(escargot::ESObject* obj, escargot::ESString* propertyName, const ESValue& value);
 
     ALWAYS_INLINE bool isDataBinding() { return m_isDataBinding; }
+    ALWAYS_INLINE bool isMutable() { return m_isBindingMutable; }
+    ALWAYS_INLINE bool isConfigurable() { return m_isBindingConfigurable; }
 
 private:
     ESValue* m_slot;
-    bool m_isDataBinding;
+    bool m_isDataBinding:1;
+    bool m_isBindingMutable:1;
+    bool m_isBindingConfigurable:1;
 };
 
 class ESErrorObject : public ESObject {

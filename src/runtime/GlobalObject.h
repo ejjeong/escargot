@@ -331,7 +331,8 @@ public:
         }
         if (target->m_hiddenClassData[ret].isDeleted())
             return NULL;
-        return ESBindingSlot(&target->m_hiddenClassData[ret], target->m_hiddenClass->propertyInfo(ret).m_flags.m_isDataProperty);
+        ESHiddenClassPropertyInfo info = target->m_hiddenClass->propertyInfo(ret);
+        return ESBindingSlot(&target->m_hiddenClassData[ret], info.m_flags.m_isDataProperty, info.m_flags.m_isDataProperty ? info.m_flags.m_isWritable : true, info.m_flags.m_isConfigurable);
     }
 
     bool didSomePrototypeObjectDefineIndexedProperty()
