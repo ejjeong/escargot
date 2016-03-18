@@ -1592,9 +1592,6 @@ ALWAYS_INLINE ESValue ESObject::pop()
         if (!ret.isEmpty())
             return ret;
     }
-    if (isESStringObject()) {
-        RELEASE_ASSERT_NOT_REACHED();
-    }
     ESValue ret = get(ESValue(len-1));
     deletePropertyWithException(ESValue(len-1));
     set(strings->length.string(), ESValue(len - 1), true);
@@ -1826,7 +1823,9 @@ ALWAYS_INLINE void ESObject::sort(const Comp& c)
         std::sort(selected.begin(), selected.end(), c);
         uint32_t i;
         for (i = 0; i < n; i++) {
-            set(ESValue(i), selected[i]);
+            if (!set(ESValue(i), selected[i]))
+                ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create("Attempted to assign to readonly property.")));
+
         }
         while (i != len) {
             deleteProperty(ESValue(i));
