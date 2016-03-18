@@ -4280,7 +4280,16 @@ ESValue parseJSON(const CharType* data)
         } else if (value.IsNull()) {
             return ESValue(ESValue::ESNull);
         } else if (value.IsString()) {
-            return ESString::create(value.GetString());
+            if (std::is_same<CharType, char16_t>::value) {
+                return ESString::create(value.GetString());
+            } else {
+                const char* valueAsString = (const char*)value.GetString();
+                if (isAllASCII(valueAsString, strlen(valueAsString))) {
+                    return ESString::create(escargot::ASCIIString(valueAsString));
+                } else {
+                    return ESString::create(utf8StringToUTF16String(valueAsString, strlen(valueAsString)));
+                }
+            }
         } else if (value.IsArray()) {
             escargot::ESArrayObject* arr = ESArrayObject::create();
             auto iter = value.Begin();
@@ -4293,7 +4302,9 @@ ESValue parseJSON(const CharType* data)
             escargot::ESObject* obj = ESObject::create();
             auto iter = value.MemberBegin();
             while (iter != value.MemberEnd()) {
-                obj->defineDataProperty(ESString::create(iter->name.GetString()), true, true, true, fn(iter->value), true);
+                ESValue propertyName = fn(iter->name);
+                ASSERT(propertyName.isESString());
+                obj->defineDataProperty(propertyName.asESString(), true, true, true, fn(iter->value), true);
                 iter++;
             }
             return obj;
