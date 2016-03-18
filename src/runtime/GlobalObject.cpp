@@ -4388,7 +4388,7 @@ void GlobalObject::installJSON()
         if (space.isNumber()) {
             int space_cnt = std::min(space.toInteger(), 10.0);
             if (space_cnt >= 1) {
-                gap.assign(u" ", space_cnt);
+                gap.assign(space_cnt, u' ');
             }
         } else if (space.isESString()) {
             if (space.asESString()->length() <= 10) {
@@ -4509,9 +4509,11 @@ void GlobalObject::installJSON()
             // 3
             UTF16String stepback = indent;
             // 4
-            std::vector<UTF16String, gc_allocator<UTF16String> > partial;
+            indent = indent + gap;
             // 5
+            std::vector<UTF16String, gc_allocator<UTF16String> > partial;
             escargot::ESArrayObject* arrayObj = value.asESPointer()->asESArrayObject();
+            // 6, 7
             uint32_t len = arrayObj->length();
             uint32_t index = 0;
             // 8
@@ -4529,21 +4531,33 @@ void GlobalObject::installJSON()
             if (partial.size() == 0) {
                 final = u"[]";
             } else {
-                UTF16String seperator;
-                if (gap == u"") {
-                    seperator = u",";
-                } else {
-                    seperator = u",\n" + indent;
-                }
-                final = u"[";
+                UTF16String properties;
                 int len = partial.size();
-                for (int i = 0; i < len; ++i) {
-                    final.append(partial[i]);
-                    if (i < len - 1) {
-                        final.append(u",");
+                final = u"[";
+                if (gap == u"") {
+                    for (int i = 0; i < len; ++i) {
+                        properties.append(partial[i]);
+                        if (i < len - 1) {
+                            properties.append(u",");
+                        }
                     }
+                    final.append(properties);
+                    final.append(u"]");
+                } else {
+                    UTF16String seperator = u",\n" + indent;
+                    for (int i = 0; i < len; ++i) {
+                        properties.append(partial[i]);
+                        if (i < len - 1) {
+                            properties.append(seperator);
+                        }
+                    }
+                    final.append(u"\n");
+                    final.append(indent);
+                    final.append(properties);
+                    final.append(u"\n");
+                    final.append(stepback);
+                    final.append(u"]");
                 }
-                final.append(u"]");
             }
             // 11
             stack.pop_back();
@@ -4597,21 +4611,33 @@ void GlobalObject::installJSON()
             if (partial.size() == 0) {
                 final = u"{}";
             } else {
-                UTF16String seperator;
-                if (gap == u"") {
-                    seperator = u",";
-                } else {
-                    seperator = u",\n" + indent;
-                }
-                final = u"{";
+                UTF16String properties;
                 int len = partial.size();
-                for (int i = 0; i < len; ++i) {
-                    final.append(partial[i]);
-                    if (i < len - 1) {
-                        final.append(u",");
+                final = u"{";
+                if (gap == u"") {
+                    for (int i = 0; i < len; ++i) {
+                        properties.append(partial[i]);
+                        if (i < len - 1) {
+                            properties.append(u",");
+                        }
                     }
+                    final.append(properties);
+                    final.append(u"}");
+                } else {
+                    UTF16String seperator = u",\n" + indent;
+                    for (int i = 0; i < len; ++i) {
+                        properties.append(partial[i]);
+                        if (i < len - 1) {
+                            properties.append(seperator);
+                        }
+                    }
+                    final.append(u"\n");
+                    final.append(indent);
+                    final.append(properties);
+                    final.append(u"\n");
+                    final.append(stepback);
+                    final.append(u"}");
                 }
-                final.append(u"}");
             }
             // 11
             stack.pop_back();
