@@ -4430,9 +4430,9 @@ void GlobalObject::installJSON()
             if (value.isObject()) {
                 ESObject* valObj = value.asESPointer()->asESObject();
                 ESValue toJson = valObj->get(strings->toJSON.string());
-                ESValue* arguments = (ESValue *)alloca(sizeof(ESValue));
-                arguments[0] = key;
                 if (toJson.isESPointer() && toJson.asESPointer()->isESFunctionObject()) {
+                    ESValue* arguments = (ESValue *)alloca(sizeof(ESValue));
+                    arguments[0] = key;
                     value = ESFunctionObject::call(instance, toJson, value, arguments, 1, false);
                 }
             }
@@ -4464,10 +4464,10 @@ void GlobalObject::installJSON()
             }
             if (value.isNumber()) {
                 double d = value.toNumber();
-                if (std::isinf(d)) {
-                    return strings->null.string();
+                if (std::isfinite(d)) {
+                    return ESValue(value.toString());
                 }
-                return ESValue(value.toString());
+                return strings->null.string();
             }
             if (value.isObject()) {
                 if (!value.isESPointer() || !value.asESPointer()->isESFunctionObject()) {
