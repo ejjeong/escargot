@@ -146,7 +146,7 @@ NEVER_INLINE ESValue modOperation(ESValue* left, ESValue* right)
             bool isLNeg = lvalue < 0.0;
             lvalue = std::abs(lvalue);
             rvalue = std::abs(rvalue);
-            int d = lvalue / rvalue;
+            uint64_t d = lvalue / rvalue;
             double r = lvalue - (d * rvalue);
             if (isLNeg)
                 r = -r;

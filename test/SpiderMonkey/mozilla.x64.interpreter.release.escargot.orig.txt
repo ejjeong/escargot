@@ -6,7 +6,6 @@ ecma_5/Exceptions/error-property-enumerability.js
 ecma_5/JSON/parse-reviver-array-delete.js
 ecma_5/JSON/parse-reviver.js
 ecma_5/JSON/stringify-boxed-primitives.js
-ecma_5/JSON/stringify-replacer-array-duplicated-element.js
 ecma_5/Number/defaultvalue.js
 ecma_5/RegExp/exec.js
 ecma_5/RegExp/instance-property-storage-introspection.js
