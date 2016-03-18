@@ -3404,7 +3404,7 @@ void GlobalObject::installDate()
             return ESString::create(u"Invalid Date");
         }
         ESObject* tmp = ESDateObject::create();
-        double t = ESDateObject::timeClip(tmp->asESDateObject()->ymdhmsToSeconds((int) year, (int) month, (int) date, (int) hour, (int) minute, (int) second) + millisecond);
+        double t = ESDateObject::timeClip(tmp->asESDateObject()->ymdhmsToSeconds((int) year, (int) month, (int) date, (int) hour, (int) minute, (int) second) * 1000 + millisecond);
         return ESValue(t);
     }, ESString::createAtomicString("UTC"), 7));
 
