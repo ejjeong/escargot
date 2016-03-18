@@ -302,8 +302,10 @@ ALWAYS_INLINE void setObjectOperation(ESValue* willBeObject, ESValue* property, 
                     arr->data()[idx] = value;
                     return;
                 } else {
-                    if (UNLIKELY(!arr->isExtensible()))
+                    if (UNLIKELY(!arr->isExtensible())) {
+                        throwObjectWriteError();
                         return;
+                    }
                     if (idx != ESValue::ESInvalidIndexValue) {
                         setObjectOperationExpandLengthCase(arr, idx, value);
                         return;
