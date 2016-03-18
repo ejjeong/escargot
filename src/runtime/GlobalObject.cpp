@@ -5190,7 +5190,13 @@ void GlobalObject::installNumber()
         if (!instance->currentExecutionContext()->resolveThisBinding().isNumber()
             && !(instance->currentExecutionContext()->resolveThisBinding().isESPointer() && instance->currentExecutionContext()->resolveThisBinding().asESPointer()->isESNumberObject()))
             instance->throwError(ESValue(TypeError::create(ESString::create("Type error, The toString function is not generic; it throws a TypeError exception if its this value is not a Number or a Number object"))));
-        double number = instance->currentExecutionContext()->resolveThisBinding().toNumber();
+        ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
+        double number;
+        if (thisValue.isNumber()) {
+            number = thisValue.asNumber();
+        } else { // Number Object
+            number = thisValue.asESPointer()->asESNumberObject()->numberData();
+        }
         
         if (isnan(number) || std::isinf(number)) {
             return (ESValue(number).toString());
