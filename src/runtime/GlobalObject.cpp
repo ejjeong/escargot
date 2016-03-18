@@ -2889,6 +2889,8 @@ void GlobalObject::installString()
         ESPointer* esptr;
         if (argument.isESPointer()) {
             esptr = argument.asESPointer();
+        } else if (argument.isUndefined()) {
+            esptr = ESString::create("(?:)");
         } else {
             esptr = argument.toString();
         }

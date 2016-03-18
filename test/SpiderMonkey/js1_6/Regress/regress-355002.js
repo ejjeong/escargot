@@ -24,7 +24,7 @@ function test()
   actual = '';
   try
   { 
-    eval('for each (this in []) { }');
+    eval('for (this in []) { }');
   }
   catch(ex)
   {
