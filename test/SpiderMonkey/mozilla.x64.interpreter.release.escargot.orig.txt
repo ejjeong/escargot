@@ -2,7 +2,6 @@
 ecma_5/Array/length-truncate-nonconfigurable-sparse.js
 ecma_5/Array/unshift-01.js
 ecma_5/Date/15.9.4.2.js
-ecma_5/Exceptions/error-property-enumerability.js
 ecma_5/JSON/parse-reviver-array-delete.js
 ecma_5/JSON/parse-reviver.js
 ecma_5/RegExp/exec.js

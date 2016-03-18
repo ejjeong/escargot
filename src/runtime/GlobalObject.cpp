@@ -1407,7 +1407,8 @@ void GlobalObject::installError()
         if (instance->currentExecutionContext()->isNewExpression()) {
             ESValue message = instance->currentExecutionContext()->readArgument(0);
             if (!message.isUndefined()) {
-                instance->currentExecutionContext()->resolveThisBindingToObject()->asESErrorObject()->set(strings->message, message.toString());
+                instance->currentExecutionContext()->resolveThisBindingToObject()->asESErrorObject()->defineDataProperty(
+                    strings->message, true, false, true, message.toString());
             }
             return ESValue();
         } else {
@@ -1462,7 +1463,8 @@ void GlobalObject::installError()
         if (instance->currentExecutionContext()->isNewExpression()) { \
             ESValue message = instance->currentExecutionContext()->readArgument(0); \
             if (!message.isUndefined()) { \
-                instance->currentExecutionContext()->resolveThisBindingToObject()->asESErrorObject()->set(strings->message, message.toString()); \
+                instance->currentExecutionContext()->resolveThisBindingToObject()->asESErrorObject()->defineDataProperty( \
+                    strings->message, true, false, true, message.toString()); \
             } \
             return ESValue(); \
         } else { \
@@ -1488,6 +1490,9 @@ void GlobalObject::installError()
     m_referenceError->setProtoType(m_referenceErrorPrototype);
 
     m_referenceErrorPrototype->defineDataProperty(strings->constructor, true, false, true, m_referenceError);
+    m_referenceErrorPrototype->defineDataProperty(strings->message, true, false, true, ESString::createAtomicString(""));
+    m_referenceErrorPrototype->defineDataProperty(strings->name, true, false, true, ESString::createAtomicString("ReferenceError"));
+
 
     defineDataProperty(strings->ReferenceError, true, false, true, m_referenceError);
 
@@ -1504,6 +1509,9 @@ void GlobalObject::installError()
     m_typeError->setProtoType(m_typeErrorPrototype);
 
     m_typeErrorPrototype->defineDataProperty(strings->constructor, true, false, true, m_typeError);
+    m_typeErrorPrototype->defineDataProperty(strings->message, true, false, true, ESString::createAtomicString(""));
+    m_typeErrorPrototype->defineDataProperty(strings->name, true, false, true, ESString::createAtomicString("TypeError"));
+
 
     defineDataProperty(strings->TypeError, true, false, true, m_typeError);
 
@@ -1520,6 +1528,8 @@ void GlobalObject::installError()
     m_rangeError->setProtoType(m_rangeErrorPrototype);
 
     m_rangeErrorPrototype->defineDataProperty(strings->constructor, true, false, true, m_rangeError);
+    m_rangeErrorPrototype->defineDataProperty(strings->message, true, false, true, ESString::createAtomicString(""));
+    m_rangeErrorPrototype->defineDataProperty(strings->name, true, false, true, ESString::createAtomicString("RangeError"));
 
     defineDataProperty(strings->RangeError, true, false, true, m_rangeError);
 
@@ -1536,6 +1546,8 @@ void GlobalObject::installError()
     m_syntaxError->setProtoType(m_syntaxErrorPrototype);
 
     m_syntaxErrorPrototype->defineDataProperty(strings->constructor, true, false, true, m_syntaxError);
+    m_syntaxErrorPrototype->defineDataProperty(strings->message, true, false, true, ESString::createAtomicString(""));
+    m_syntaxErrorPrototype->defineDataProperty(strings->name, true, false, true, ESString::createAtomicString("SyntaxError"));
 
     defineDataProperty(strings->SyntaxError, true, false, true, m_syntaxError);
 
@@ -1552,6 +1564,8 @@ void GlobalObject::installError()
     m_uriError->setProtoType(m_uriErrorPrototype);
 
     m_uriErrorPrototype->defineDataProperty(strings->constructor, true, false, true, m_uriError);
+    m_uriErrorPrototype->defineDataProperty(strings->message, true, false, true, ESString::createAtomicString(""));
+    m_uriErrorPrototype->defineDataProperty(strings->name, true, false, true, ESString::createAtomicString("URIError"));
 
     defineDataProperty(strings->URIError, true, false, true, m_uriError);
 
@@ -1568,6 +1582,8 @@ void GlobalObject::installError()
     m_evalError->setProtoType(m_evalErrorPrototype);
 
     m_evalErrorPrototype->defineDataProperty(strings->constructor, true, false, true, m_evalError);
+    m_evalErrorPrototype->defineDataProperty(strings->message, true, false, true, ESString::createAtomicString(""));
+    m_evalErrorPrototype->defineDataProperty(strings->name, true, false, true, ESString::createAtomicString("EvalError"));
 
     defineDataProperty(strings->EvalError, true, false, true, m_evalError);
 }
