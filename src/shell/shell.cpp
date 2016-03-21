@@ -274,7 +274,8 @@ int main(int argc, char* argv[])
                 ES->unregisterTryPos(&tryPosition);
             } else {
                 escargot::ESValue err = ES->getCatchedError();
-                printf("Uncaught %s\n", err.toString()->utf8Data());
+                printf("Uncaught ");
+                escargot::ESVMInstance::printValue(err);
             }
         }
     } else {
@@ -293,7 +294,8 @@ int main(int argc, char* argv[])
                     ES->unregisterTryPos(&tryPosition);
                 } else {
                     escargot::ESValue err = ES->getCatchedError();
-                    printf("Uncaught %s\n", err.toString()->utf8Data());
+                    printf("Uncaught ");
+                    escargot::ESVMInstance::printValue(err);
                 }
             }
 #ifndef NDEBUG
@@ -351,7 +353,8 @@ int main(int argc, char* argv[])
                     ES->unregisterTryPos(&tryPosition);
                 } else {
                     escargot::ESValue err = ES->getCatchedError();
-                    printf("Uncaught %s\n", err.toString()->utf8Data());
+                    printf("Uncaught ");
+                    escargot::ESVMInstance::printValue(err);
                     ES->exit();
                     return 3;
                 }
@@ -374,7 +377,8 @@ int main(int argc, char* argv[])
                         ES->unregisterTryPos(&tryPosition);
                     } else {
                         escargot::ESValue err = ES->getCatchedError();
-                        printf("Uncaught %s\n", err.toString()->utf8Data());
+                        printf("Uncaught ");
+                        escargot::ESVMInstance::printValue(err);
                     }
                 }
             }

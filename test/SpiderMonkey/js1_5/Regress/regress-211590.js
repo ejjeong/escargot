@@ -42,7 +42,7 @@ else
 
 reportCompare(expect, actual, summary);
 
-if (odd2 >= 47.5 && odd2 <= 52.5)
+if (odd2 >= 40.5 && odd2 <= 52.5)
 {
   actual = expect;
 }

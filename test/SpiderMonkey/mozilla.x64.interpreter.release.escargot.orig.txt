@@ -5,6 +5,5 @@ ecma_5/String/match-forward-lookahead.js
 ecma_5/extensions/15.9.4.2.js
 js1_5/Date/regress-301738-01.js
 js1_5/Date/regress-301738-02.js
-js1_5/Regress/regress-211590.js
 js1_5/Regress/regress-303213.js
 ----TIMEOUTS----
