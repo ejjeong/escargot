@@ -475,22 +475,20 @@ void GlobalObject::initGlobalObject()
                     int value;
                     char16_t thirdChar = stringValue->charAt(4);
                     char16_t fourthChar = stringValue->charAt(5);
-                    // two-bye sequence
-                    if(strLen == 6) {
-                        value= ((parseDigit(next, 128) << 4) | parseDigit(nextnext, 128));
-                        if(value == 0xC0 || value == 0xC1)
+                    if (strLen == 6) {
+                        // two-byte sequence
+                        value = ((parseDigit(next, 128) << 4) | parseDigit(nextnext, 128));
+                        if (value == 0xC0 || value == 0xC1)
                             instance->throwError(ESValue(URIError::create(ESString::create("malformed URI"))));     
-                    }
-                    // three-byte sequence
-                    else if(strLen == 9) {
-                        value= ((parseDigit(thirdChar, 128) << 4) | parseDigit(fourthChar, 128));
-                        if(((next == 'E' || next == 'e') && (nextnext == '0')) && ((value < 0xA0) || (value > 0xBF))) 
+                    } else if (strLen == 9) {
+                        // third-byte sequence
+                        value = ((parseDigit(thirdChar, 128) << 4) | parseDigit(fourthChar, 128));
+                        if (((next == 'E' || next == 'e') && (nextnext == '0')) && ((value < 0xA0) || (value > 0xBF))) 
                             instance->throwError(ESValue(URIError::create(ESString::create("malformed URI"))));
-                    }
-                    // four-byte sequence
-                    else if(strLen == 12) {
-                        value= ((parseDigit(thirdChar, 128) << 4) | parseDigit(fourthChar, 128));
-                        if(((next == 'F' || next == 'f') && (nextnext == '0')) && ((value < 0x90) || (value > 0xBF)))
+                    } else if (strLen == 12) {
+                        // four-byte sequence
+                        value = ((parseDigit(thirdChar, 128) << 4) | parseDigit(fourthChar, 128));
+                        if (((next == 'F' || next == 'f') && (nextnext == '0')) && ((value < 0x90) || (value > 0xBF)))
                             instance->throwError(ESValue(URIError::create(ESString::create("malformed URI"))));
                     }
                     overlongCheckFlag = 1;
