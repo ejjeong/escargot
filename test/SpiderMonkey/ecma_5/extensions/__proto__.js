@@ -1,3 +1,4 @@
+// escargot-skip: ES6 Object.prototype.__proto__ detailed spec
 /*
  * Any copyright is dedicated to the Public Domain.
  * http://creativecommons.org/licenses/publicdomain/
