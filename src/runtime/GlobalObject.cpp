@@ -1095,14 +1095,11 @@ void GlobalObject::installObject()
     // $19.1.3.2 Object.prototype.hasOwnProperty(V)
     m_objectPrototype->defineDataProperty(ESString::createAtomicString("hasOwnProperty"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue ret;
-        int len = instance->currentExecutionContext()->argumentCount();
-        if (len < 1) {
-            ret = ESValue(ESValue::ESFalseTag::ESFalse);
-            return ret;
-        }
-        ::escargot::ESString* key = instance->currentExecutionContext()->arguments()[0].toPrimitive(ESValue::PrimitiveTypeHint::PreferString).toString();
         auto thisVal = instance->currentExecutionContext()->resolveThisBindingToObject();
-        escargot::ESString* keyString = key;
+        int len = instance->currentExecutionContext()->argumentCount();
+        if (len < 1)
+            return ESValue(ESValue::ESFalseTag::ESFalse);
+        escargot::ESString* keyString = instance->currentExecutionContext()->arguments()[0].toPrimitive(ESValue::PrimitiveTypeHint::PreferString).toString();
         ret = ESValue(thisVal->asESObject()->hasOwnProperty(keyString));
         return ret;
     }, ESString::createAtomicString("hasOwnProperty"), 1));
@@ -3374,7 +3371,8 @@ void GlobalObject::installDate()
                 return ESString::create(u"Invalid Date"); 
             }
         } else {
-            throw ESValue(TypeError::create(ESString::create(u"this is not a Date object")));
+            instance->throwError(TypeError::create(ESString::create(u"this is not a Date object")));
+            RELEASE_ASSERT_NOT_REACHED();
         }
     }, strings->toString, 0));
 
@@ -3568,7 +3566,14 @@ void GlobalObject::installDate()
 
     // $20.3.4.13 Date.prototype.getUTCDay()
     m_datePrototype->defineDataProperty(strings->getUTCDay, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        RELEASE_ASSERT_NOT_REACHED();
+        ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
+        if (!thisObject->isESDateObject())
+            instance->throwError(ESValue(TypeError::create(ESString::create("Date.prototype.getUTCDay : This object is not Date object"))));
+
+        if (thisObject->asESDateObject()->isValid())
+            return ESValue(thisObject->asESDateObject()->getDay());
+        else
+            return ESValue(std::numeric_limits<double>::quiet_NaN());
     }, strings->getUTCDay, 0));
 
     // $20.3.4.14 Date.prototype.getUTCFullYear()
@@ -4188,6 +4193,11 @@ void GlobalObject::installDate()
 
     // $20.3.4.38 Date.prototype.toLocaleDateString()
     m_datePrototype->defineDataProperty(strings->toLocaleDateString, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        ESValue e = instance->currentExecutionContext()->resolveThisBinding();
+        if (e.isESPointer() && e.asESPointer()->isESDateObject())
+            return e.asESPointer()->asESDateObject()->toDateString();
+        else
+            instance->throwError(TypeError::create(ESString::create(u"this is not a Date object")));
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->toLocaleDateString, 0));
 
@@ -4202,16 +4212,31 @@ void GlobalObject::installDate()
 
     // $20.3.4.40 Date.prototype.toLocaleTimeString()
     m_datePrototype->defineDataProperty(strings->toLocaleTimeString, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        ESValue e = instance->currentExecutionContext()->resolveThisBinding();
+        if (e.isESPointer() && e.asESPointer()->isESDateObject())
+            return e.asESPointer()->asESDateObject()->toTimeString();
+        else
+            instance->throwError(TypeError::create(ESString::create(u"this is not a Date object")));
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->toLocaleTimeString, 0));
 
     // $20.3.4.42 Date.prototype.toTimeString()
     m_datePrototype->defineDataProperty(strings->toTimeString, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        ESValue e = instance->currentExecutionContext()->resolveThisBinding();
+        if (e.isESPointer() && e.asESPointer()->isESDateObject())
+            return e.asESPointer()->asESDateObject()->toTimeString();
+        else
+            instance->throwError(TypeError::create(ESString::create(u"this is not a Date object")));
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->toTimeString, 0));
 
     // $20.3.4.43 Date.prototype.toUTCString()
     m_datePrototype->defineDataProperty(strings->toUTCString, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
+        ESValue e = instance->currentExecutionContext()->resolveThisBinding();
+        if (e.isESPointer() && e.asESPointer()->isESDateObject())
+            return e.asESPointer()->asESDateObject()->toFullString();
+        else
+            instance->throwError(TypeError::create(ESString::create(u"this is not a Date object")));
         RELEASE_ASSERT_NOT_REACHED();
     }, strings->toUTCString, 0));
 
@@ -5084,7 +5109,16 @@ void GlobalObject::installNumber()
 
     // $20.1.3.2 Number.prototype.toExponential
     m_numberPrototype->defineDataProperty(ESString::createAtomicString("toExponential"), true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        double number = instance->currentExecutionContext()->resolveThisBinding().toNumber();
+        ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
+        double number;
+
+        if (thisValue.isNumber())
+            number = thisValue.asNumber();
+        else if (thisValue.isESPointer() && thisValue.asESPointer()->isESNumberObject())
+            number = thisValue.asESPointer()->asESNumberObject()->numberData();
+        else
+            instance->throwError(ESValue(TypeError::create(ESString::create("Type error, The toString function is not generic; it throws a TypeError exception if its this value is not a Number or a Number object"))));
+
         int arglen = instance->currentExecutionContext()->argumentCount();
         int digit = 0; // only used when an argument is given
         std::basic_ostringstream<char> stream;
@@ -5150,7 +5184,17 @@ void GlobalObject::installNumber()
 
     // initialize numberPrototype object: $20.1.3.3 Number.prototype.toFixed(fractionDigits)
     m_numberPrototype->defineDataProperty(strings->toFixed, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        double number = instance->currentExecutionContext()->resolveThisBinding().toNumber();
+        ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
+        double number;
+
+        if (thisValue.isNumber()) {
+            number = thisValue.asNumber();
+        } else if (thisValue.isESPointer() && thisValue.asESPointer()->isESNumberObject()) {
+            number = thisValue.asESPointer()->asESNumberObject()->numberData();
+        } else {
+            instance->throwError(ESValue(TypeError::create(ESString::create("toFixed function is not generic; it throws a TypeError exception if its this value is not a Number or a Number object"))));
+        }
+
         int arglen = instance->currentExecutionContext()->argumentCount();
         if (arglen == 0) {
             return ESValue(round(number)).toString();
@@ -5181,7 +5225,17 @@ void GlobalObject::installNumber()
 
     // $20.1.3.5 Number.prototype.toPrecision
     m_numberPrototype->defineDataProperty(strings->toPrecision, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        double number = instance->currentExecutionContext()->resolveThisBinding().toNumber();
+        ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
+        double number;
+
+        if (thisValue.isNumber()) {
+            number = thisValue.asNumber();
+        } else if (thisValue.isESPointer() && thisValue.asESPointer()->isESNumberObject()) {
+            number = thisValue.asESPointer()->asESNumberObject()->numberData();
+        } else {
+            instance->throwError(ESValue(TypeError::create(ESString::create("toPrecision function is not generic; it throws a TypeError exception if its this value is not a Number or a Number object"))));
+        }
+
         int arglen = instance->currentExecutionContext()->argumentCount();
         if (arglen == 0 || instance->currentExecutionContext()->arguments()[0].isUndefined()) {
             return ESValue(number).toString();
