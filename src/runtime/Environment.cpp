@@ -246,6 +246,11 @@ ESArgumentsObject* FunctionEnvironmentRecordWithArgumentsObject::createArguments
                 uint32_t i = ESValue(propertyName).toIndex();
                 ASSERT(i != ESValue::ESInvalidIndexValue);
                 ESArgumentsObject* argumentsObject = self->asESArgumentsObject();
+                if (self != originalObj) {
+                    argumentsObject->deleteProperty(propertyName, true);
+                    argumentsObject->defineDataProperty(propertyName, true, true, true, val);
+                    return;
+                }
                 FunctionEnvironmentRecordWithArgumentsObject* environment = argumentsObject->environment();
                 FunctionParametersInfo& info = environment->m_callee->codeBlock()->m_paramsInformation[i];
                 if (info.m_isHeapAllocated)

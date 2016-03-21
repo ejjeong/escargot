@@ -638,6 +638,7 @@ bool ESObject::defineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag)
 
     // 8, 9, 10, 11
     bool isCurrentDataDescriptor = propertyInfo.m_flags.m_isDataProperty || O->accessorData(idx)->getNativeGetter() || O->accessorData(idx)->getNativeSetter();
+    bool shouldRemoveOriginalNativeGetterSetter = false;
     if (isDescGenericDescriptor) { // 8
     } else if (isCurrentDataDescriptor != isDescDataDescriptor) { // 9
         if (!propertyInfo.m_flags.m_isConfigurable) { // 9.a
@@ -672,9 +673,9 @@ bool ESObject::defineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag)
                 }
             }
         }
-        if (UNLIKELY(O->isESArgumentsObject())) { // ES6.0 $9.4.4.2
-            bool res = O->set(P, descV);
-            ASSERT(res);
+        if (UNLIKELY(O->isESArgumentsObject() && !propertyInfo.m_flags.m_isDataProperty)) { // ES6.0 $9.4.4.2
+            O->set(P, descV);
+            shouldRemoveOriginalNativeGetterSetter = true;
         }
     } else {
         ASSERT(!propertyInfo.m_flags.m_isDataProperty && escargot::PropertyDescriptor::IsAccessorDescriptor(desc));
@@ -714,7 +715,7 @@ bool ESObject::defineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag)
             descHasWritable ? descW : propertyInfo.m_flags.m_isWritable,
             descHasEnumerable ? descE: propertyInfo.m_flags.m_isEnumerable,
             descHasConfigurable ? descC : propertyInfo.m_flags.m_isConfigurable, true);
-    } else if (!propertyInfo.m_flags.m_isDataProperty && (O->accessorData(idx)->getNativeGetter() || O->accessorData(idx)->getNativeSetter()) && !UNLIKELY(O->isESArgumentsObject())) {
+    } else if (!propertyInfo.m_flags.m_isDataProperty && (O->accessorData(idx)->getNativeGetter() || O->accessorData(idx)->getNativeSetter()) && !shouldRemoveOriginalNativeGetterSetter) {
         escargot::ESNativeGetter getter = O->accessorData(idx)->getNativeGetter();
         escargot::ESNativeSetter setter = O->accessorData(idx)->getNativeSetter();
         O->set(P, descHasValue ? descV : current);
