@@ -59,6 +59,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Takes too long</escargot-skip>
       <files>parseWithGC.js</files>
       <compile-flags>-ForceGCAfterJSONParse</compile-flags>
       <tags>exclude_fre</tags>

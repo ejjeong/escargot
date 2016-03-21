@@ -1,12 +1,12 @@
 Running all tests
 [UnitTestFramework] UTFTests.js .......... Pass
 [Array] array_fastinit.js .......... Pass
-[Array] array_init.js .......... Fail
+[Array] array_init.js .......... Pass
 [Array] array_init2.js .......... Pass
 [Array] SpliceBtreeMemoryCorruption.js .......... Fail
 [Array] sliceArrayForceBtreeBug616623.js .......... Fail
 [Array] bug945376SegLeftPlusSizeGreaterThanMaxArrayLen.js .......... Skip (Takes too long)
-[Array] bug1062870.js .......... Fail
+[Array] bug1062870.js .......... Pass
 [Array] bug1065362.js .......... Skip (Takes too long)
 [Array] bug4916987.js .......... Fail
 [Array] ArrayBtreeBadCodeGen.js .......... Pass
@@ -37,7 +37,7 @@ Running all tests
 [Array] push3.js .......... Fail
 [Array] reverse1.js .......... Fail
 [Array] reverse2.js .......... Pass
-[Array] shift_unshift.js .......... Fail
+[Array] shift_unshift.js .......... Skip (Takes too long)
 [Array] toString.js .......... Fail
 [Array] toString.js .......... Fail
 [Array] toLocaleString.js .......... Fail
@@ -87,7 +87,7 @@ Running all tests
 [Array] array_opts.js .......... Fail
 [Array] nativeIntPop.js .......... Pass
 [Array] nativeFloatPop.js .......... Pass
-[Array] popImplicitCall.js .......... Fail
+[Array] popImplicitCall.js .......... Pass
 [Array] array_splice_515632.js .......... Fail
 [Array] InlineArrayPopWithIntConstSrc.js .......... Pass
 [Array] FailToSetLength.js .......... Fail
@@ -113,7 +113,7 @@ Running all tests
 [Basics] arrayinit.js .......... Pass
 [Basics] IdsWithEscapes.js .......... Fail
 [Basics] ArrayResize.js .......... Pass
-[Basics] DirectCall.js .......... Fail
+[Basics] DirectCall.js .......... Pass
 [Basics] equal.js .......... Pass
 [Basics] equal_object.js .......... Pass
 [Basics] label1.js .......... Fail
@@ -135,7 +135,7 @@ Running all tests
 [Basics] StringCharCodeAt.js .......... Pass
 [Basics] StringField.js .......... Pass
 [Basics] StringFromCharCode.js .......... Pass
-[Basics] StringSubstring.js .......... Fail
+[Basics] StringSubstring.js .......... Pass
 [Basics] switch.js .......... Pass
 [Basics] Switch2.js .......... Pass
 [Basics] typeof.js .......... Pass
@@ -158,7 +158,7 @@ Running all tests
 [Basics] scan.js .......... Fail
 [Basics] enum.js .......... Pass
 [Basics] with3.js .......... Fail
-[Basics] Enumerator-deprecated.js .......... Fail
+[Basics] Enumerator-deprecated.js .......... Pass
 [Basics] Enumerator-WebViewHost.js .......... Fail
 [Basics] cross_site_accessor_main.js .......... Fail
 [Basics] bug650104.js .......... Fail
@@ -186,8 +186,8 @@ Running all tests
 [es5] array_length.js .......... Fail
 [es5] ES5ArrayIndexList.js .......... Skip (Takes too long (and Slowdown))
 [es5] createdp.js .......... Fail
-[es5] defineProperty.js .......... Fail
-[es5] defineProperty.js .......... Fail
+[es5] defineProperty.js .......... Pass
+[es5] defineProperty.js .......... Pass
 [es5] defineIndexProperty.js .......... Pass
 [es5] defineIndexProperty.js .......... Pass
 [es5] enumerable.js .......... Fail
@@ -198,10 +198,10 @@ Running all tests
 [es5] recursivesetter.js .......... Pass
 [es5] valueof.js .......... Fail
 [es5] tostring_override.js .......... Pass
-[es5] valueof_override.js .......... Fail
+[es5] valueof_override.js .......... Pass
 [es5] tostring_override.js .......... Pass
-[es5] valueof_override.js .......... Fail
-[es5] TypeConversions.js .......... Fail
+[es5] valueof_override.js .......... Pass
+[es5] TypeConversions.js .......... Pass
 [es5] RegExpStrictDelete.js .......... Fail
 [es5] settersArguments.js .......... Fail
 [es5] settersArguments.js .......... Fail
@@ -235,7 +235,7 @@ Running all tests
 [EH] trylabel.js .......... Pass
 [EH] alignment.js .......... Fail
 [EH] 101832.js .......... Fail
-[InlineCaches] t0.js .......... Fail
+[InlineCaches] t0.js .......... Pass
 [InlineCaches] t1.js .......... Pass
 [InlineCaches] t2.js .......... Fail
 [InlineCaches] t3.js .......... Pass
@@ -250,7 +250,7 @@ Running all tests
 [InlineCaches] writable2.js .......... Pass
 [InlineCaches] writable3.js .......... Pass
 [InlineCaches] BigDictionaryTypeHandler.js .......... Pass
-[InlineCaches] addFldFastPath.js .......... Fail
+[InlineCaches] addFldFastPath.js .......... Pass
 [InlineCaches] MissingPropertyCache1.js .......... Pass
 [InlineCaches] MissingPropertyCache2.js .......... Pass
 [InlineCaches] MissingPropertyCache3.js .......... Pass
@@ -264,7 +264,7 @@ Running all tests
 [Basics] arrayinit.js .......... Pass
 [Basics] IdsWithEscapes.js .......... Fail
 [Basics] ArrayResize.js .......... Pass
-[Basics] DirectCall.js .......... Fail
+[Basics] DirectCall.js .......... Pass
 [Basics] equal.js .......... Pass
 [Basics] equal_object.js .......... Pass
 [Basics] label1.js .......... Fail
@@ -286,7 +286,7 @@ Running all tests
 [Basics] StringCharCodeAt.js .......... Pass
 [Basics] StringField.js .......... Pass
 [Basics] StringFromCharCode.js .......... Pass
-[Basics] StringSubstring.js .......... Fail
+[Basics] StringSubstring.js .......... Pass
 [Basics] switch.js .......... Pass
 [Basics] Switch2.js .......... Pass
 [Basics] typeof.js .......... Pass
@@ -309,7 +309,7 @@ Running all tests
 [Basics] scan.js .......... Fail
 [Basics] enum.js .......... Pass
 [Basics] with3.js .......... Fail
-[Basics] Enumerator-deprecated.js .......... Fail
+[Basics] Enumerator-deprecated.js .......... Pass
 [Basics] Enumerator-WebViewHost.js .......... Fail
 [Basics] cross_site_accessor_main.js .......... Fail
 [Basics] bug650104.js .......... Fail
@@ -420,7 +420,7 @@ Running all tests
 [Generated] lor3.js .......... Pass
 [Generated] imul.js .......... Pass
 [Generated] divbypow2.js .......... Pass
-[Generated] B9AA6BBF.0.js .......... Fail
+[Generated] B9AA6BBF.0.js .......... Pass
 [Generated] 6E55FA7A.0.js .......... Fail
 [Generated] attackoftheclones.js .......... Pass
 [Closures] cachedscope_1.js .......... Fail
@@ -435,9 +435,9 @@ Running all tests
 [Closures] closure-qmark.js .......... Fail
 [Closures] initcachedscope.js .......... Fail
 [Closures] initcachedscope.js .......... Fail
-[Closures] invalcachedscope.js .......... Fail
-[Closures] invalcachedscope.js .......... Fail
-[Closures] invalcachedscope.js .......... Fail
+[Closures] invalcachedscope.js .......... Pass
+[Closures] invalcachedscope.js .......... Pass
+[Closures] invalcachedscope.js .......... Pass
 [Closures] bug_OS_2299723.js .......... Fail
 [Closures] bug_OS_2671095.js .......... Fail
 [Closures] bug_OS_2903083.js .......... Fail
@@ -474,7 +474,7 @@ Running all tests
 [Strings] concatmulti_loop.js .......... Pass
 [Strings] long_concatstr.js .......... Pass
 [Strings] StringTagFunctions.js .......... Fail
-[Strings] string_object_indices_589140.js .......... Fail
+[Strings] string_object_indices_589140.js .......... Pass
 [Strings] property_and_index_of_string.js .......... Fail
 [Strings] bug_OS_3080673.js .......... Fail
 [Date] DateCtr.js .......... Fail
@@ -484,7 +484,7 @@ Running all tests
 [Date] toISO_3.js .......... Fail
 [Date] parseISO.js .......... Fail
 [Date] dateutc.js .......... Fail
-[Date] MillisecondTruncationCheckAfterCopyConstructor.js .......... Fail
+[Date] MillisecondTruncationCheckAfterCopyConstructor.js .......... Pass
 [Date] Conversions.js .......... Fail
 [Date] Conversions.js .......... Fail
 [Date] date_cache_bug.js .......... Skip (Takes too long)
@@ -513,11 +513,11 @@ Running all tests
 [Error] inlineSameFunc.js .......... Fail
 [Error] PartInitStackFrame.js .......... Fail
 [Boolean] simple1.js .......... Pass
-[Boolean] simple2.js .......... Fail
+[Boolean] simple2.js .......... Pass
 [Boolean] wrappedobj.js .......... Pass
 [Boolean] Equals.js .......... Pass
 [Boolean] property_and_index_of_boolean.js .......... Fail
-[Number] toString.js .......... Fail
+[Number] toString.js .......... Skip (Takes too long)
 [Number] floatcmp.js .......... Fail
 [Number] NaN.js .......... Fail
 [Number] integer.js .......... Fail
@@ -530,15 +530,15 @@ Running all tests
 [ControlFlow] DoLoop3.js .......... Pass
 [ControlFlow] jump.js .......... Pass
 [ControlFlow] ForLoop.js .......... Pass
-[ControlFlow] ForLoop2.js .......... Fail
+[ControlFlow] ForLoop2.js .......... Pass
 [ControlFlow] WhileLoop.js .......... Pass
 [ControlFlow] WhileLoop2.js .......... Pass
 [ControlFlow] forInMisc.js .......... Fail
 [ControlFlow] forInObjectDelete.js .......... Pass
-[ControlFlow] forInObjectAdd.js .......... Fail
+[ControlFlow] forInObjectAdd.js .......... Pass
 [ControlFlow] forInObjectAddDelete.js .......... Fail
 [ControlFlow] forInPrimitive.js .......... Fail
-[ControlFlow] enumeration_adddelete.js .......... Fail
+[ControlFlow] enumeration_adddelete.js .......... Pass
 [ControlFlow] forInArrayAdd.js .......... Pass
 [ControlFlow] forInObjectWithPrototype.js .......... Pass
 [ControlFlow] DoWhile.js .......... Fail
@@ -552,8 +552,8 @@ Running all tests
 [Math] log.js .......... Pass
 [Math] neg.js .......... Pass
 [Math] pow.js .......... Pass
-[Math] min.js .......... Fail
-[Math] max.js .......... Fail
+[Math] min.js .......... Pass
+[Math] max.js .......... Pass
 [Math] miscellaneous.js .......... Fail
 [Math] round.js .......... Fail
 [Math] ceilfloor.js .......... Pass
@@ -564,12 +564,12 @@ Running all tests
 [Math] constants.js .......... Fail
 [Math] clz32.js .......... Fail
 [Array] array_fastinit.js .......... Pass
-[Array] array_init.js .......... Fail
+[Array] array_init.js .......... Pass
 [Array] array_init2.js .......... Pass
 [Array] SpliceBtreeMemoryCorruption.js .......... Fail
 [Array] sliceArrayForceBtreeBug616623.js .......... Fail
 [Array] bug945376SegLeftPlusSizeGreaterThanMaxArrayLen.js .......... Skip (Takes too long)
-[Array] bug1062870.js .......... Fail
+[Array] bug1062870.js .......... Pass
 [Array] bug1065362.js .......... Skip (Takes too long)
 [Array] bug4916987.js .......... Fail
 [Array] ArrayBtreeBadCodeGen.js .......... Pass
@@ -600,7 +600,7 @@ Running all tests
 [Array] push3.js .......... Fail
 [Array] reverse1.js .......... Fail
 [Array] reverse2.js .......... Pass
-[Array] shift_unshift.js .......... Fail
+[Array] shift_unshift.js .......... Skip (Takes too long)
 [Array] toString.js .......... Fail
 [Array] toString.js .......... Fail
 [Array] toLocaleString.js .......... Fail
@@ -650,7 +650,7 @@ Running all tests
 [Array] array_opts.js .......... Fail
 [Array] nativeIntPop.js .......... Pass
 [Array] nativeFloatPop.js .......... Pass
-[Array] popImplicitCall.js .......... Fail
+[Array] popImplicitCall.js .......... Pass
 [Array] array_splice_515632.js .......... Fail
 [Array] InlineArrayPopWithIntConstSrc.js .......... Pass
 [Array] FailToSetLength.js .......... Fail
@@ -684,7 +684,7 @@ Running all tests
 [TaggedIntegers] signedshiftleft.js .......... Pass
 [TaggedIntegers] signedshiftright.js .......... Pass
 [TaggedIntegers] unsignedshiftright.js .......... Pass
-[TaggedIntegers] modulus.js .......... Fail
+[TaggedIntegers] modulus.js .......... Pass
 [TaggedIntegers] loopbounds.js .......... Pass
 [TaggedIntegers] not_1.js .......... Pass
 [TaggedIntegers] shift_constants.js .......... Pass
@@ -704,7 +704,7 @@ Running all tests
 [TaggedIntegers] signedshiftleft.js .......... Pass
 [TaggedIntegers] signedshiftright.js .......... Pass
 [TaggedIntegers] unsignedshiftright.js .......... Pass
-[TaggedIntegers] modulus.js .......... Fail
+[TaggedIntegers] modulus.js .......... Pass
 [TaggedIntegers] loopbounds.js .......... Pass
 [TaggedIntegers] arrays.js .......... Pass
 [TaggedIntegers] arrays.js .......... Pass
@@ -914,7 +914,7 @@ Running all tests
 [Optimizer] IntDivTypeSpec.js .......... Pass
 [Optimizer] bailonnoprofile_objtypespecstore.js .......... Fail
 [Optimizer] Non32bitOverflow.js .......... Pass
-[Optimizer] implicit_upwardexposed.js .......... Fail
+[Optimizer] implicit_upwardexposed.js .......... Pass
 [Optimizer] bug1288834.js .......... Fail
 [Optimizer] opttagchecks1.js .......... Pass
 [Optimizer] opttagchecks2.js .......... Fail
@@ -930,17 +930,17 @@ Running all tests
 [Function] argumentsMisc.js .......... Fail
 [Function] arguments.es5.js .......... Fail
 [Function] argumentsResolution.js .......... Fail
-[Function] argumentsLimits.js .......... Pass
+[Function] argumentsLimits.js .......... Fail
 [Function] someMoreArguments.js .......... Fail
 [Function] bind.js .......... Pass
 [Function] call1.js .......... Fail
-[Function] call2.js .......... Fail
+[Function] call2.js .......... Pass
 [Function] CallerArgs.js .......... Fail
 [Function] callsideeffects.js .......... Fail
 [Function] catchsymbolvar.js .......... Pass
 [Function] newsideeffect.js .......... Pass
 [Function] newsideeffect.js .......... Pass
-[Function] callmissingtgt.js .......... Fail
+[Function] callmissingtgt.js .......... Pass
 [Function] defernested.js .......... Fail
 [Function] defernested.js .......... Fail
 [Function] jitLoopBody.js .......... Pass
@@ -1021,7 +1021,7 @@ Running all tests
 [Object] NewScObject-InlineSlotCapacityLocking.js .......... Pass
 [Object] objlit_type.js .......... Pass
 [Object] stackobject.js .......... Pass
-[Object] stackobject_escape.js .......... Fail
+[Object] stackobject_escape.js .......... Pass
 [Object] LargeAuxArray.js .......... Fail
 [Object] stackobject_dependency.js .......... Fail
 [Object] objectCreateNull.js .......... Fail
@@ -1046,11 +1046,11 @@ Running all tests
 [Regex] match_global.js .......... Pass
 [Regex] configurableTest.js .......... Fail
 [Regex] rx1.js .......... Fail
-[Regex] regex_replacefn.js .......... Fail
+[Regex] regex_replacefn.js .......... Pass
 [Regex] regex_replacefn_this.js .......... Pass
 [Regex] class-case.js .......... Pass
 [Regex] prioritizedalternatives.js .......... Fail
-[Regex] multiline.js .......... Fail
+[Regex] multiline.js .......... Pass
 [Regex] regex_assertion.js .......... Fail
 [Regex] regex_deviations.js .......... Fail
 [Regex] undefined_option.js .......... Pass
@@ -1086,7 +1086,7 @@ Running all tests
 [GlobalFunctions] evalDeferred.js .......... Fail
 [GlobalFunctions] eval-strict-delete.js .......... Fail
 [GlobalFunctions] parseFloat.js .......... Fail
-[GlobalFunctions] parseInt.js .......... Fail
+[GlobalFunctions] parseInt.js .......... Skip (Takes too long)
 [GlobalFunctions] parseShortCut.js .......... Pass
 [GlobalFunctions] InternalToString.js .......... Fail
 [GlobalFunctions] ParseInt1.js .......... Pass
@@ -1097,7 +1097,7 @@ Running all tests
 [Operators] addcross.js .......... Fail
 [Operators] biops.js .......... Fail
 [Operators] binop-kills.js .......... Pass
-[Operators] delete1.js .......... Fail
+[Operators] delete1.js .......... Pass
 [Operators] delete2.js .......... Fail
 [Operators] delete3.js .......... Fail
 [Operators] div.js .......... Fail
@@ -1123,7 +1123,7 @@ Running all tests
 [Operators] newProto.js .......... Pass
 [Operators] prototypeInheritance.js .......... Fail
 [Operators] prototypeInheritance2.js .......... Pass
-[Operators] zero.js .......... Fail
+[Operators] zero.js .......... Pass
 [Conversions] toint32.js .......... Pass
 [Conversions] toint32_2.js .......... Fail
 [Conversions] touint32.js .......... Pass
@@ -1134,7 +1134,7 @@ Running all tests
 [Lib] construct.js .......... Fail
 [Lib] getclass.js .......... Pass
 [Lib] length2.js .......... Fail
-[Lib] LibLength.js .......... Pass
+[Lib] LibLength.js .......... Fail
 [Lib] noargs.js .......... Fail
 [Lib] tostring.js .......... Fail
 [Lib] forin_lib.js .......... Fail
@@ -1149,13 +1149,13 @@ Running all tests
 [Lib] profiledataobject.js .......... Fail
 [JSON] jx1.js .......... Pass
 [JSON] jx2.js .......... Fail
-[JSON] stringify-replacer.js .......... Fail
+[JSON] stringify-replacer.js .......... Pass
 [JSON] stringify-replacerfunc.js .......... Pass
-[JSON] space.js .......... Fail
+[JSON] space.js .......... Pass
 [JSON] simple.js .......... Pass
 [JSON] simple.withLog.js .......... Fail
 [JSON] simple.stringify.js .......... Pass
-[JSON] parseWithGc.js .......... Fail
+[JSON] parseWithGc.js .......... Skip (Takes too long)
 [JSON] jsonCache.js .......... Fail
 [JSON] jsonCache.js .......... Fail
 [JSON] json_parse_Blue_548957.js .......... Pass
@@ -1163,10 +1163,10 @@ Running all tests
 [Bugs] bug602.js .......... Pass
 [Bugs] bug764.js .......... Fail
 [Bugs] withnonativeApplyOptimizationBug3433559.js .......... Fail
-[Bugs] Win8_486977_BranchStrictEqual.js .......... Fail
+[Bugs] Win8_486977_BranchStrictEqual.js .......... Pass
 [Bugs] Win8_459638.js .......... Pass
 [Bugs] bug_OS_1197716.js .......... Fail
-[Bugs] addexception.js .......... Fail
+[Bugs] addexception.js .......... Pass
 [Bugs] regalloc.js .......... Pass
 [Bugs] randombug.js .......... Fail
 [Bugs] blue_532460.js .......... Fail
@@ -1184,7 +1184,7 @@ Running all tests
 [Bugs] bug594298.js .......... Fail
 [Bugs] bug661952.js .......... Pass
 [Bugs] bug724121.js .......... Pass
-[Bugs] deserializationbug339404.js .......... Fail
+[Bugs] deserializationbug339404.js .......... Pass
 [Bugs] bug843670.js .......... Fail
 [Bugs] bug934443.js .......... Fail
 [Bugs] vso_os_1091425.js .......... Fail
@@ -1196,7 +1196,7 @@ Running all tests
 [Bugs] SIMDExtendArgCSE.js .......... Fail
 [Bugs] bug_OS_4683246.js .......... Fail
 [Bugs] fabs1.js .......... Fail
-[strict] GlobalEval.js .......... Fail
+[strict] GlobalEval.js .......... Pass
 [strict] basics_function_in_SM.js .......... Fail
 [strict] basics_function_in_SM.js .......... Fail
 [strict] callerOrArgsNoAccess.js .......... Pass
@@ -1235,13 +1235,13 @@ Running all tests
 [strict] 05.arguments_sm.js .......... Fail
 [strict] 05.arguments_sm.js .......... Fail
 [strict] 05.arguments_sm.js .......... Fail
+[strict] 06.arguments.js .......... Pass
 [strict] 06.arguments.js .......... Fail
 [strict] 06.arguments.js .......... Fail
 [strict] 06.arguments.js .......... Fail
-[strict] 06.arguments.js .......... Fail
-[strict] 06.arguments_sm.js .......... Fail
-[strict] 06.arguments_sm.js .......... Fail
-[strict] 06.arguments_sm.js .......... Fail
+[strict] 06.arguments_sm.js .......... Pass
+[strict] 06.arguments_sm.js .......... Pass
+[strict] 06.arguments_sm.js .......... Pass
 [strict] 07.arguments.js .......... Pass
 [strict] 07.arguments_sm.js .......... Pass
 [strict] 08.ObjectLiteral.js .......... Fail
@@ -1264,8 +1264,8 @@ Running all tests
 [strict] 14.var.js .......... Fail
 [strict] 14.var_sm.js .......... Pass
 [strict] 15.with.js .......... Fail
-[strict] 15.with.js .......... Fail
-[strict] 15.with_sm.js .......... Fail
+[strict] 15.with.js .......... Pass
+[strict] 15.with_sm.js .......... Pass
 [strict] 16.catch.js .......... Pass
 [strict] 16.catch.js .......... Fail
 [strict] 16.catch_sm.js .......... Pass
@@ -1287,9 +1287,9 @@ Running all tests
 [strict] 22.callerCalleeArguments_sm.js .......... Fail
 [strict] 23.reservedWords.js .......... Fail
 [strict] 23.reservedWords_sm.js .......... Fail
+[strict] 24.properties.js .......... Pass
 [strict] 24.properties.js .......... Fail
-[strict] 24.properties.js .......... Fail
-[strict] 24.properties_sm.js .......... Fail
+[strict] 24.properties_sm.js .......... Pass
 [strict] strictkwd.js .......... Fail
 [strict] strictkwd.js .......... Fail
 [strict] strictkwd-deferred.js .......... Fail
@@ -1495,10 +1495,10 @@ Running all tests
 [fieldopts] objtypespec2.js .......... Pass
 [fieldopts] objtypespec3.js .......... Pass
 [fieldopts] objtypespec-fieldhoist.js .......... Fail
-[fieldopts] objtypespec-fieldhoist.2.js .......... Fail
+[fieldopts] objtypespec-fieldhoist.2.js .......... Pass
 [fieldopts] objtypespec_proto.js .......... Pass
 [fieldopts] objtypespec-add.js .......... Fail
-[fieldopts] objtypespec-add-2.js .......... Fail
+[fieldopts] objtypespec-add-2.js .......... Pass
 [fieldopts] objtypespec-add-4.js .......... Pass
 [fieldopts] objtypespec-newobj.1.js .......... Pass
 [fieldopts] objtypespec-newobj.1.js .......... Pass
@@ -1549,12 +1549,12 @@ Running all tests
 [fieldopts] finaltype-objheaderinlining3.js .......... Pass
 [fieldopts] fieldhoist_accessorinlining1.js .......... Fail
 [fieldopts] fieldhoist_accessorinlining2.js .......... Pass
-[FixedFields] FixedFieldsOnSingletons.js .......... Fail
-[FixedFields] FixedFieldsOnPrototypes.js .......... Fail
-[FixedFields] FixedFieldsTypeSystem.js .......... Fail
-[FixedFields] FixedFieldsInvalidation.js .......... Fail
+[FixedFields] FixedFieldsOnSingletons.js .......... Pass
+[FixedFields] FixedFieldsOnPrototypes.js .......... Pass
+[FixedFields] FixedFieldsTypeSystem.js .......... Pass
+[FixedFields] FixedFieldsInvalidation.js .......... Pass
 [FixedFields] FixedFieldsWithPropertyStringCache.js .......... Pass
-[FixedFields] fixedDataWithDifferentTypeHandlers.js .......... Fail
+[FixedFields] fixedDataWithDifferentTypeHandlers.js .......... Pass
 [FixedFields] fixedDataWithDifferentTypeHandlersPrototypes.js .......... Pass
 [FixedFields] FixedDataPolymorphism.js .......... Pass
 [FixedFields] FixedDataTypeTransition.js .......... Pass
@@ -1565,7 +1565,7 @@ Running all tests
 [FixedFields] bug712503_fixedAccessors.js .......... Pass
 [FixedFields] fixedmethods_polyInlining.js .......... Fail
 [FixedFields] bugVSO_OS_1015467.js .......... Fail
-[inlining] arg.js .......... Fail
+[inlining] arg.js .......... Pass
 [inlining] linenumber1.js .......... Fail
 [inlining] linenumber2.js .......... Fail
 [inlining] linenumber3.js .......... Fail
@@ -1598,7 +1598,7 @@ Running all tests
 [inlining] bug2269097.js .......... Fail
 [inlining] OS_2733280.js .......... Fail
 [inlining] OS_2733280.js .......... Fail
-[inlining] builtInApplyTarget.js .......... Fail
+[inlining] builtInApplyTarget.js .......... Pass
 [DynamicCode] eval-nativecodedata.js .......... Fail
 [DynamicCode] eval-nativenumber.js .......... Fail
 [DynamicCode] eval-nativenumber.js .......... Fail
@@ -1733,38 +1733,38 @@ Running all tests
 ==========================================================
 TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
    UnitTestFramework		1		1		0		0		(100%)
-               Array		106		39		59		8		(36%)
-              Basics		56		23		33		0		(41%)
-                 es5		56		21		34		1		(37%)
+               Array		106		42		55		9		(39%)
+              Basics		56		26		30		0		(46%)
+                 es5		56		26		29		1		(46%)
                   EH		17		4		10		3		(23%)
-        InlineCaches		21		14		6		1		(66%)
-              Basics		56		23		33		0		(41%)
-           Generated		110		102		8		0		(92%)
-            Closures		18		7		11		0		(38%)
-             Strings		36		19		16		1		(52%)
-                Date		12		0		11		1		(0%)
+        InlineCaches		21		16		4		1		(76%)
+              Basics		56		26		30		0		(46%)
+           Generated		110		103		7		0		(93%)
+            Closures		18		10		8		0		(55%)
+             Strings		36		20		15		1		(55%)
+                Date		12		1		10		1		(8%)
                Error		23		2		16		5		(8%)
-             Boolean		5		3		2		0		(60%)
-              Number		8		3		5		0		(37%)
-         ControlFlow		17		10		7		0		(58%)
-                Math		21		15		6		0		(71%)
-               Array		106		39		59		8		(36%)
-      TaggedIntegers		44		40		4		0		(90%)
+             Boolean		5		4		1		0		(80%)
+              Number		8		3		4		1		(37%)
+         ControlFlow		17		13		4		0		(76%)
+                Math		21		17		4		0		(80%)
+               Array		106		42		55		9		(39%)
+      TaggedIntegers		44		42		2		0		(95%)
         TaggedFloats		1		0		1		0		(0%)
-           Optimizer		206		163		42		1		(79%)
-            Function		61		20		38		3		(32%)
-              Object		58		22		32		4		(37%)
-               Regex		33		10		23		0		(30%)
+           Optimizer		206		164		41		1		(79%)
+            Function		61		21		37		3		(34%)
+              Object		58		23		31		4		(39%)
+               Regex		33		12		21		0		(36%)
           Prototypes		7		3		4		0		(42%)
-     GlobalFunctions		13		3		10		0		(23%)
-           Operators		32		15		17		0		(46%)
+     GlobalFunctions		13		3		9		1		(23%)
+           Operators		32		17		15		0		(53%)
          Conversions		5		3		2		0		(60%)
                  RWC		1		1		0		0		(100%)
              VT_DATE		1		0		1		0		(0%)
-                 Lib		16		3		13		0		(18%)
-                JSON		13		5		8		0		(38%)
-                Bugs		36		9		27		0		(25%)
-              strict		104		30		74		0		(28%)
+                 Lib		16		2		14		0		(12%)
+                JSON		13		7		5		1		(53%)
+                Bugs		36		12		24		0		(33%)
+              strict		104		39		65		0		(37%)
                 utf8		3		0		3		0		(0%)
         UnifiedRegex		26		1		25		0		(3%)
           typedarray		45		6		39		0		(13%)
@@ -1772,12 +1772,12 @@ TESTNAME					TOTAL	PASS	FAIL	SKIP	PASS_RATIO
                 loop		6		4		2		0		(66%)
           StackTrace		17		0		15		2		(0%)
        Miscellaneous		7		3		3		1		(42%)
-           fieldopts		111		67		44		0		(60%)
-         FixedFields		16		9		7		0		(56%)
-            inlining		34		8		26		0		(23%)
+           fieldopts		111		69		42		0		(62%)
+         FixedFields		16		14		2		0		(87%)
+            inlining		34		10		24		0		(29%)
          DynamicCode		3		0		3		0		(0%)
      switchStatement		28		19		9		0		(67%)
            stackfunc		86		6		80		0		(6%)
             PerfHint		4		0		4		0		(0%)
 ==========================================================
-               Total		1720		799		881		40		(46%)
+               Total		1720		861		814		45		(50%)

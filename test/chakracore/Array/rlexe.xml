@@ -241,6 +241,7 @@
   </test>
   <test>
     <default>
+      <escargot-skip>Takes too long</escargot-skip>
       <files>shift_unshift.js</files>
       <baseline>shift_unshift.baseline</baseline>
     </default>

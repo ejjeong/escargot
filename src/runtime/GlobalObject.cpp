@@ -171,7 +171,22 @@ void GlobalObject::initGlobalObject()
         if (instance->currentExecutionContext()->argumentCount()) {
             ESValue& val = instance->currentExecutionContext()->arguments()[0];
             escargot::ESString* str = val.toString();
-            FILE* fp = fopen(str->utf8Data(), "r");
+            const char* origPath = str->utf8Data();
+            char fileName[1000];
+            const char* origPtr = origPath;
+            char* ptr = fileName;
+            while (true) {
+                if (*origPtr == '\\')  {
+                    *ptr++ = '/';
+                    origPtr++;
+               } else
+                    *ptr++ = *origPtr++;
+                if (!*origPtr)
+                    break;
+            }
+            *ptr = *origPtr;
+            FILE* fp = fopen(fileName, "r");
+
             if (fp) {
                 fseek(fp, 0L, SEEK_END);
                 size_t sz = ftell(fp);

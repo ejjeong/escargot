@@ -2,6 +2,7 @@
 <regress-exe>
   <test>
     <default>
+      <escargot-skip>Takes too long</escargot-skip>
       <files>toString.js</files>
       <baseline>toString_3.baseline</baseline>
     </default>
