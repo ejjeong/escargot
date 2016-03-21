@@ -5549,13 +5549,17 @@ void GlobalObject::installRegExp()
         escargot::ESArrayObject* arr = ::escargot::ESArrayObject::create();
         escargot::ESString* sourceStr = instance->currentExecutionContext()->readArgument(0).toString();
         double lastIndex = regexp->m_lastIndex.toInteger();
+        bool isGlobal = regexp->option() & ESRegExpObject::Option::Global;
+
+        if (!isGlobal) {
+            lastIndex = 0;
+        }
         if (lastIndex < 0 || lastIndex > sourceStr->length()) {
             regexp->m_lastIndex = ESValue(0);
             return ESValue(ESValue::ESNull);
         }
         regexp->m_lastExecutedString = sourceStr;
         ESString::RegexMatchResult result;
-        bool isGlobal = regexp->option() & ESRegExpObject::Option::Global;
         regexp->setOption((ESRegExpObject::Option)(regexp->option() & ~ESRegExpObject::Option::Global));
         bool testResult = sourceStr->match(thisObject, result, false, lastIndex);
         if (isGlobal) {
