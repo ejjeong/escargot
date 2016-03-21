@@ -3007,36 +3007,33 @@ void GlobalObject::installString()
         }
 
         std::function<ESValue(escargot::ESString*, int, escargot::ESPointer*)> splitMatch;
-        if (P->isESRegExpObject()) {
-            splitMatch = [] (escargot::ESString* S, int q, escargot::ESPointer* P) -> ESValue {
+        splitMatch = [] (escargot::ESString* S, int q, escargot::ESPointer* P) -> ESValue {
+            escargot::ESString* R = P->asESString();
+            int s = S->length();
+            int r = R->length();
+            if (q + r > s)
+                return ESValue(false);
+            for (int i = 0; i < r; i++)
+                if (S->charAt(q+i) != R->charAt(i))
+                    return ESValue(false);
+            return ESValue(q+r);
+        };
+
+        // 11
+        if (s == 0) {
+            bool ret;
+            if (P->isESRegExpObject()) {
                 escargot::ESRegExpObject* R = P->asESRegExpObject();
                 escargot::ESString::RegexMatchResult result;
                 auto prev = R->option();
                 R->setOption((escargot::ESRegExpObject::Option)(prev & ~escargot::ESRegExpObject::Option::Global));
-                bool ret = S->match(R, result, false, (size_t)q);
+                ret = S->match(R, result, false, 0);
                 R->setOption(prev);
-                if (!ret)
-                    return ESValue(false);
-                return ESValue(result.m_matchResults[0][0].m_end);
-            };
-        } else {
-            splitMatch = [] (escargot::ESString* S, int q, escargot::ESPointer* P) -> ESValue {
-                escargot::ESString* R = P->asESString();
-                int s = S->length();
-                int r = R->length();
-                if (q + r > s)
-                    return ESValue(false);
-                for (int i = 0; i < r; i++)
-                    if (S->charAt(q+i) != R->charAt(i))
-                        return ESValue(false);
-                return ESValue(q+r);
-            };
-        }
-
-        // 11
-        if (s == 0) {
-            ESValue z = splitMatch(S, 0, P);
-            if (z != ESValue(false))
+            } else {
+                ESValue z = splitMatch(S, 0, P);
+                ret = !z.isBoolean();
+            }
+            if (ret)
                 return A;
             A->set(0, S);
             return A;
@@ -3048,21 +3045,15 @@ void GlobalObject::installString()
         // 13
         if (P->isESRegExpObject()) {
             escargot::ESRegExpObject* R = P->asESRegExpObject();
+            bool isGlobal = R->option() & ESRegExpObject::Option::Global;
             while (q != s) {
                 escargot::ESString::RegexMatchResult result;
-                ESValue e = splitMatch(S, q, R);
                 auto prev = R->option();
                 R->setOption((escargot::ESRegExpObject::Option)(prev & ~escargot::ESRegExpObject::Option::Global));
-                S->match(R, result, false, (size_t)q);
+                bool ret = S->match(R, result, false, (size_t)q);
                 R->setOption(prev);
-                if (e == ESValue(ESValue::ESFalseTag::ESFalse)) {
-                    if ((double)lengthA == lim)
-                        return A;
-                    escargot::ESString* T = S->substring(q, S->length());
-                    A->set(lengthA, ESValue(T));
-                    return A;
-                } else {
-                    if ((size_t)e.asInt32() == p) {
+                if (ret) {
+                    if ((size_t)result.m_matchResults[0][0].m_end == p) {
                         q++;
                     } else {
                         if (result.m_matchResults[0][0].m_start >= S->length())
@@ -3073,9 +3064,38 @@ void GlobalObject::installString()
                         lengthA++;
                         if ((double)lengthA == lim)
                             return A;
-                        p = e.asInt32();
+                        p = result.m_matchResults[0][0].m_end;
+                        if (isGlobal) {
+                            for (unsigned i = 0; i < result.m_matchResults.size(); i++) {
+                                if (i == 0)
+                                    continue;
+
+                                if (std::numeric_limits<unsigned>::max() == result.m_matchResults[i][0].m_start)
+                                    A->set(lengthA++, ESValue(ESValue::ESUndefined));
+                                else
+                                    A->set(lengthA++, S->substring(result.m_matchResults[i][0].m_start, result.m_matchResults[i][0].m_end));
+                                if (lengthA == lim)
+                                    return A;
+                            }
+                        } else {
+                            for (unsigned i = 0; i < result.m_matchResults.size() ; i ++) {
+                                for (unsigned j = 0; j < result.m_matchResults[i].size() ; j ++) {
+                                    if (i == 0 && j == 0)
+                                        continue;
+
+                                    if (std::numeric_limits<unsigned>::max() == result.m_matchResults[i][j].m_start)
+                                        A->set(lengthA++, ESValue(ESValue::ESUndefined));
+                                    else
+                                        A->set(lengthA++, S->substring(result.m_matchResults[i][j].m_start, result.m_matchResults[i][j].m_end));
+                                    if (lengthA == lim)
+                                        return A;
+                                }
+                            }
+                        }
                         q = p;
                     }
+                } else {
+                    q++;
                 }
             }
         } else {
