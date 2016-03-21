@@ -1094,13 +1094,9 @@ void GlobalObject::installObject()
 
     // $19.1.3.2 Object.prototype.hasOwnProperty(V)
     m_objectPrototype->defineDataProperty(ESString::createAtomicString("hasOwnProperty"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        ESValue ret;
+        escargot::ESString* keyString = instance->currentExecutionContext()->readArgument(0).toPrimitive(ESValue::PrimitiveTypeHint::PreferString).toString();
         auto thisVal = instance->currentExecutionContext()->resolveThisBindingToObject();
-        int len = instance->currentExecutionContext()->argumentCount();
-        if (len < 1)
-            return ESValue(ESValue::ESFalseTag::ESFalse);
-        escargot::ESString* keyString = instance->currentExecutionContext()->arguments()[0].toPrimitive(ESValue::PrimitiveTypeHint::PreferString).toString();
-        ret = ESValue(thisVal->asESObject()->hasOwnProperty(keyString));
+        ESValue ret = ESValue(thisVal->asESObject()->hasOwnProperty(keyString));
         return ret;
     }, ESString::createAtomicString("hasOwnProperty"), 1));
 
