@@ -11330,27 +11330,27 @@ ch15/15.9/15.9.3/S15.9.3.1_A4_T5 passed in non-strict mode
 ch15/15.9/15.9.3/S15.9.3.1_A4_T6 passed in non-strict mode
 === ch15/15.9/15.9.3/S15.9.3.1_A5_T1 failed in non-strict mode ===
 --- output ---
-Uncaught Test262 Error: #1: Incorrect value of Date
+Uncaught Test262Error {message: #1: Incorrect value of Date}
 ===
 === ch15/15.9/15.9.3/S15.9.3.1_A5_T2 failed in non-strict mode ===
 --- output ---
-Uncaught Test262 Error: #1: Incorrect value of Date
+Uncaught Test262Error {message: #1: Incorrect value of Date}
 ===
 === ch15/15.9/15.9.3/S15.9.3.1_A5_T3 failed in non-strict mode ===
 --- output ---
-Uncaught Test262 Error: #1: Incorrect value of Date
+Uncaught Test262Error {message: #1: Incorrect value of Date}
 ===
 === ch15/15.9/15.9.3/S15.9.3.1_A5_T4 failed in non-strict mode ===
 --- output ---
-Uncaught Test262 Error: #1: Incorrect value of Date
+Uncaught Test262Error {message: #1: Incorrect value of Date}
 ===
 === ch15/15.9/15.9.3/S15.9.3.1_A5_T5 failed in non-strict mode ===
 --- output ---
-Uncaught Test262 Error: #1: Incorrect value of Date
+Uncaught Test262Error {message: #1: Incorrect value of Date}
 ===
 === ch15/15.9/15.9.3/S15.9.3.1_A5_T6 failed in non-strict mode ===
 --- output ---
-Uncaught Test262 Error: #1: Incorrect value of Date
+Uncaught Test262Error {message: #1: Incorrect value of Date}
 ===
 ch15/15.9/15.9.3/S15.9.3.1_A6_T1 passed in non-strict mode
 ch15/15.9/15.9.3/S15.9.3.1_A6_T2 passed in non-strict mode
