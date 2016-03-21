@@ -4323,22 +4323,62 @@ void GlobalObject::installJSON()
 
     // $24.3.1 JSON.parse(text[, reviver])
     m_json->defineDataProperty(strings->parse, true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
-        if (!instance->currentExecutionContext()->readArgument(1).isUndefined())
-            RELEASE_ASSERT_NOT_REACHED(); // implement reviver
-        escargot::ESString* str = instance->currentExecutionContext()->readArgument(0).toString();
-        // FIXME spec says we should we ECMAScript parser instead of json parser
-        /*
-        // FIXME json parser can not parse this form
-        UTF16String src;
-        src.append(u"(");
-        src.append(str->string());
-        src.append(u") ;");
-        */
-        if (str->isASCIIString()) {
-            return parseJSON<char, rapidjson::UTF8<char>>(str->toNullableUTF8String().m_buffer);
+        // 1, 2, 3
+        escargot::ESString* JText = instance->currentExecutionContext()->readArgument(0).toString();
+        ESValue unfiltered;
+
+        if (JText->isASCIIString()) {
+            unfiltered = parseJSON<char, rapidjson::UTF8<char>>(JText->toNullableUTF8String().m_buffer);
         } else {
-            return parseJSON<char16_t, rapidjson::UTF16<char16_t>>(str->asUTF16String()->data());
+            unfiltered = parseJSON<char16_t, rapidjson::UTF16<char16_t>>(JText->asUTF16String()->data());
         }
+
+        // 4
+        ESValue reviver = instance->currentExecutionContext()->readArgument(1);
+        if (reviver.isObject()) {
+            if (reviver.isESPointer() && reviver.asESPointer()->isESFunctionObject()) {
+                ESValue root = newOperation(instance, instance->globalObject(), instance->globalObject()->object(), NULL, 0);
+                root.asESPointer()->asESObject()->defineDataProperty(strings->emptyString, true, true, true, unfiltered);
+                std::function<ESValue(ESValue, ESValue)> Walk;
+                Walk = [&](ESValue holder, ESValue name) -> ESValue {
+                    ESValue val = holder.asESPointer()->asESObject()->get(name);
+                    if (val.isESPointer() && val.asESPointer()->isESObject()) {
+                        if (val.asESPointer()->isESArrayObject()) {
+                            escargot::ESArrayObject* arrObject = val.asESPointer()->asESArrayObject();
+                            uint32_t i = 0;
+                            uint32_t len = arrObject->length();
+                            while (i < len) {
+                                ESValue newElement =Walk(val, ESValue(i).toString());
+                                if (newElement.isUndefined()) {
+                                    arrObject->deleteProperty(ESValue(i).toString());
+                                } else {
+                                    arrObject->defineDataProperty(ESValue(i).toString(), true, true, true, newElement);
+                                }
+                                i++;
+                            }
+                        } else {
+                            escargot::ESObject* object = val.asESPointer()->asESObject();
+                            object->enumeration([&](ESValue p) {
+                                ESValue newElement = Walk(val, p.toString());
+                                if (newElement.isUndefined()) {
+                                    object->deleteProperty(p.toString());
+                                } else {
+                                    object->defineDataProperty(p.toString(), true, true, true, newElement);
+                                }
+                            });
+                        }
+                    }
+                    ESValue* arguments = (ESValue *)alloca(sizeof(ESValue) * 2);
+                    arguments[0] = name;
+                    arguments[1] = val;
+                    return ESFunctionObject::call(instance, reviver, holder, arguments, 2, false);
+                };
+                return Walk(root, strings->emptyString.string());
+            }
+        }
+
+        // 5
+        return unfiltered;
     }, strings->parse, 2));
 
     // $24.3.2 JSON.stringify(value[, replacer[, space ]])
@@ -4669,7 +4709,7 @@ void GlobalObject::installJSON()
         // 9
         ESValue wrapper = newOperation(instance, instance->globalObject(), instance->globalObject()->object(), NULL, 0);
         // 10
-        wrapper.asESPointer()->asESObject()->defineDataProperty(ESString::create(u""), true, true, true, value);
+        wrapper.asESPointer()->asESObject()->defineDataProperty(strings->emptyString, true, true, true, value);
         return Str(ESString::create(u""), wrapper.asESPointer()->asESObject());
     }, strings->stringify, 3));
 }
