@@ -714,7 +714,7 @@ bool ESObject::defineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag)
             descHasWritable ? descW : propertyInfo.m_flags.m_isWritable,
             descHasEnumerable ? descE: propertyInfo.m_flags.m_isEnumerable,
             descHasConfigurable ? descC : propertyInfo.m_flags.m_isConfigurable, true);
-    } else if (!propertyInfo.m_flags.m_isDataProperty && (O->accessorData(idx)->getNativeGetter() || O->accessorData(idx)->getNativeSetter())) {
+    } else if (!propertyInfo.m_flags.m_isDataProperty && (O->accessorData(idx)->getNativeGetter() || O->accessorData(idx)->getNativeSetter()) && !UNLIKELY(O->isESArgumentsObject())) {
         escargot::ESNativeGetter getter = O->accessorData(idx)->getNativeGetter();
         escargot::ESNativeSetter setter = O->accessorData(idx)->getNativeSetter();
         O->set(P, descHasValue ? descV : current);
