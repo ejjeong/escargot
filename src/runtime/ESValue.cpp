@@ -460,7 +460,7 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
         }
     } while (result != JSC::Yarr::offsetNoMatch);
     if (isGlobal && esptr->isESRegExpObject()) {
-        esptr->asESRegExpObject()->setLastIndex(ESValue(matchResult.m_subPatternNum));
+        esptr->asESRegExpObject()->set(strings->lastIndex, ESValue(matchResult.m_subPatternNum), true);
     }
     return matchResult.m_matchResults.size();
 }
