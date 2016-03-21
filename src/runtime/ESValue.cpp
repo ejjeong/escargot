@@ -769,6 +769,7 @@ bool ESArrayObject::defineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag
 {
     ESArrayObject* A = this;
     ESObject* O = this;
+    uint32_t index;
 
     // ToPropertyDescriptor : (start) we need to seperate this part
     bool descHasEnumerable = desc->hasProperty(strings->enumerable.string());
@@ -900,9 +901,8 @@ bool ESArrayObject::defineOwnProperty(ESValue& P, ESObject* desc, bool throwFlag
             return true;
         }
         return true;
-    } else if (*ESValue(P.toUint32()).toString() == *P.toString() && P.toUint32() != 2*32-1) { // 4
+    } else if ((index = P.toIndex()) != ESValue::ESInvalidIndexValue) { // 4
         // 4.a
-        uint32_t index = P.toUint32();
 
         // 4.b
         if (index >= oldLen && !oldLePropertyInfo.m_flags.m_isWritable) {
@@ -960,7 +960,7 @@ void ESArrayObject::setLength(unsigned newLength)
         unsigned currentLength = m_length;
         if (newLength < currentLength) {
             std::vector<unsigned> indexes;
-            enumeration([&](ESValue key) {
+            enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
                 uint32_t index = key.toIndex();
                 if (index != ESValue::ESInvalidIndexValue) {
                     if (index >= newLength && index < currentLength)
@@ -969,15 +969,15 @@ void ESArrayObject::setLength(unsigned newLength)
             });
             std::sort(indexes.begin(), indexes.end(), std::greater<uint32_t>());
             for (auto index : indexes) {
-                bool ret = deleteProperty(ESValue(index));
-                if (ret) {
+                if (deleteProperty(ESValue(index))) {
                     m_length--;
-                } else {
-                    if (ESVMInstance::currentInstance()->currentExecutionContext()->isStrictMode()) {
-                        ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create(u"Unable to delete property.")));
-                    }
-                    return;
+                    continue;
                 }
+                m_length = index + 1;
+                if (ESVMInstance::currentInstance()->currentExecutionContext()->isStrictMode()) {
+                    ESVMInstance::currentInstance()->throwError(TypeError::create(ESString::create(u"Unable to delete array property while setting array length")));
+                }
+                return;
             }
         }
     }
