@@ -1,6 +1,5 @@
 ----REGRESSIONS----
 ecma_5/Array/length-truncate-nonconfigurable-sparse.js
-ecma_5/Array/unshift-01.js
 ecma_5/Date/15.9.4.2.js
 ecma_5/String/match-defines-match-elements.js
 ecma_5/String/match-forward-lookahead.js
