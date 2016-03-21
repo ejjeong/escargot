@@ -23,7 +23,5 @@ js1_5/Regress/regress-172699.js
 js1_5/Regress/regress-211590.js
 js1_5/Regress/regress-303213.js
 js1_5/Regress/regress-511859.js
-js1_6/Regress/regress-355002.js
-js1_7/extensions/regress-368224.js
 js1_8_5/regress/regress-552432.js
 ----TIMEOUTS----
