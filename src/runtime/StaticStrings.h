@@ -157,6 +157,11 @@ class ESString;
     F(ignoreCase) \
     F(global) \
     F(multiline) \
+    F(implements) \
+    F(interface) \
+    F(package) \
+    F(yield) \
+    F(let) \
 
 class Strings {
 public:
@@ -164,6 +169,10 @@ public:
     InternalAtomicString NegativeInfinity;
     InternalAtomicString stringTrue;
     InternalAtomicString stringFalse;
+    InternalAtomicString stringPublic;
+    InternalAtomicString stringProtected;
+    InternalAtomicString stringPrivate;
+    InternalAtomicString stringStatic;
 
 #define ESCARGOT_ASCII_TABLE_MAX 128
     InternalAtomicString asciiTable[ESCARGOT_ASCII_TABLE_MAX];

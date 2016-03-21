@@ -1,3 +1,4 @@
+// escargot-skip: ES5 Binding Instatiation process should call [[DefineOwnProperty]] of global object
 /*
  * Any copyright is dedicated to the Public Domain.
  * http://creativecommons.org/licenses/publicdomain/

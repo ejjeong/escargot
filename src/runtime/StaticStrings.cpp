@@ -9,6 +9,10 @@ void Strings::initStaticStrings(ESVMInstance* instance)
     NegativeInfinity = InternalAtomicString(instance, "-Infinity");
     stringTrue = InternalAtomicString(instance, "true");
     stringFalse = InternalAtomicString(instance, "false");
+    stringPublic = InternalAtomicString(instance, "public");
+    stringProtected = InternalAtomicString(instance, "protected");
+    stringPrivate = InternalAtomicString(instance, "private");
+    stringStatic = InternalAtomicString(instance, "static");
 
     for (unsigned i = 0; i < ESCARGOT_ASCII_TABLE_MAX ; i ++) {
         ESString* str = ESString::create((char)i);

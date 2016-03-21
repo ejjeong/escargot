@@ -14,8 +14,6 @@ ecma_5/String/split-01.js
 ecma_5/String/split-xregexp.js
 ecma_5/String/string-upper-lower-mapping.js
 ecma_5/extensions/15.9.4.2.js
-ecma_5/misc/function-definition-eval.js
-ecma_5/misc/future-reserved-words.js
 js1_5/Date/regress-301738-01.js
 js1_5/Date/regress-301738-02.js
 js1_5/Regress/regress-172699.js

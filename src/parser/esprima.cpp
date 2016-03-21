@@ -561,6 +561,30 @@ ALWAYS_INLINE KeywordKind isStrictModeReservedWord(const ParserString& id)
     return NotKeyword;
 }
 
+ALWAYS_INLINE KeywordKind isStrictModeReservedWord(const escargot::InternalAtomicString& id)
+{
+    if (id == escargot::strings->implements)
+        return Implements;
+    else if (id == escargot::strings->interface)
+        return Interface;
+    else if (id == escargot::strings->stringProtected)
+        return Protected;
+    else if (id == escargot::strings->package)
+        return Package;
+    else if (id == escargot::strings->stringPrivate)
+        return Private;
+    else if (id == escargot::strings->stringPublic)
+        return Public;
+    else if (id == escargot::strings->stringStatic)
+        return Static;
+    else if (id == escargot::strings->yield)
+        return Yield;
+    else if (id == escargot::strings->let)
+        return Let;
+    else
+        return NotKeyword;
+}
+
 ALWAYS_INLINE bool isRestrictedWord(const ParserString& id)
 {
     return id == u"eval" || id == u"arguments";
@@ -603,8 +627,10 @@ ALWAYS_INLINE KeywordKind isKeyword(const ParserString& id)
             return New;
         } else if (first == 't' && id == u"try") {
             return Try;
+            /*
         } else if (first == 'l' && id == u"let") {
             return Let;
+            */
         }
     case 4:
         if (first == 't' && id == u"this") {
@@ -635,8 +661,10 @@ ALWAYS_INLINE KeywordKind isKeyword(const ParserString& id)
             }
         } else if (first == 't' && id == u"throw") {
             return Throw;
+            /*
         } else if (first == 'y' && id == u"yield") {
             return Yield;
+            */
         } else if (first == 's' && id == u"super") {
             return Super;
         }
@@ -1002,7 +1030,7 @@ void throwDuplicateIdentifierError(escargot::InternalAtomicString name, const ch
 void throwRestrictedWordUsedError(escargot::InternalAtomicString name)
 {
     escargot::UTF16String err_msg;
-    err_msg.append(u"Cannot declare a variable named '");
+    err_msg.append(u"Cannot use a variable named '");
     err_msg.append(name.string()->toUTF16String());
     err_msg.append(u"' in strict mode.");
     throwEsprimaException(err_msg.c_str());
@@ -1469,6 +1497,8 @@ PassRefPtr<ParseStatus> scanIdentifier(ParseContext* ctx)
         type = Token::NullLiteralToken;
     } else if (id == u"true" || id == u"false") {
         type = Token::BooleanLiteralToken;
+    } else if (ctx->m_strict && isStrictModeReservedWord(id)) {
+        throw u"Future reserved word cannot used as Identifier in strict mode";
     } else {
         type = Token::IdentifierToken;
     }
@@ -3843,14 +3873,6 @@ escargot::Node* parseFunctionSourceElements(ParseContext* ctx)
         }
         RefPtr<ParseStatus> token = ctx->m_lookahead;
 
-        escargot::Node* statement = parseStatementListItem(ctx);
-        if (statement)
-            body.push_back(statement);
-        ASSERT(statement->type() == escargot::NodeType::ExpressionStatement);
-        if (((escargot::ExpressionStatementNode *) statement)->expression()->type() != escargot::NodeType::Literal) {
-            // this is not directive
-            break;
-        }
         bool strict = true;
         if (token->m_end - 1 - (token->m_start + 1) == 10) {
             static const char16_t* s = u"use strict";
@@ -3874,6 +3896,14 @@ escargot::Node* parseFunctionSourceElements(ParseContext* ctx)
             }
         }
 
+        escargot::Node* statement = parseStatementListItem(ctx);
+        if (statement)
+            body.push_back(statement);
+        ASSERT(statement->type() == escargot::NodeType::ExpressionStatement);
+        if (((escargot::ExpressionStatementNode *) statement)->expression()->type() != escargot::NodeType::Literal) {
+            // this is not directive
+            break;
+        }
         // directive = source.slice(token.start + 1, token.end - 1);
         /*
         escargot::UTF16String directive = ctx->m_source.substr(token->m_start + 1,
@@ -4104,6 +4134,10 @@ void validateFunctionParamsLazily(ParseContext* ctx, Type* nd, RefPtr<ParseStatu
             for (escargot::InternalAtomicString param : params) {
 
                 if (isRestrictedWord(param)) {
+                    throwRestrictedWordUsedError(param);
+                }
+
+                if (isStrictModeReservedWord(param)) {
                     throwRestrictedWordUsedError(param);
                 }
 
@@ -6214,15 +6248,6 @@ escargot::StatementNodeVector parseScriptBody(ParseContext* ctx)
             break;
         }
 
-        escargot::Node* statement = parseStatementListItem(ctx);
-        if (statement)
-            body.push_back(statement);
-
-        if (((escargot::ExpressionStatementNode *) statement)->expression()->type() != escargot::NodeType::Literal) {
-            // this is not directive
-            break;
-        }
-
         bool strict = true;
         if (token->m_end - 1 - (token->m_start + 1) == 10) {
             static const char16_t* s = u"use strict";
@@ -6244,6 +6269,15 @@ escargot::StatementNodeVector parseScriptBody(ParseContext* ctx)
             if (!firstRestricted && token->m_octal) {
                 firstRestricted = token;
             }
+        }
+
+        escargot::Node* statement = parseStatementListItem(ctx);
+        if (statement)
+            body.push_back(statement);
+
+        if (((escargot::ExpressionStatementNode *) statement)->expression()->type() != escargot::NodeType::Literal) {
+            // this is not directive
+            break;
         }
 
         /*
