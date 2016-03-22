@@ -57,7 +57,7 @@ class Server(daemon.Daemon):
     self.presence_daemon = None
     self.presence_daemon_thread = None
     self.peers = []
-    self.jobs = multiprocessing.cpu_count()
+    self.jobs = multiprocessing.cpu_count() / 2
     self.peer_list_lock = threading.Lock()
     self.perf_data_lock = None
     self.presence_daemon_lock = None
