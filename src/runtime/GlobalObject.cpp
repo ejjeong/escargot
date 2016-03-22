@@ -669,13 +669,22 @@ void GlobalObject::initGlobalObject()
                     unsigned int v;
                     if (n == 2) {
                         v = (octets[0] & 0x1F) << 6 | (octets[1] & 0x3F);
+                        if ((octets[0] == 0xC0) || (octets[0] == 0xC1)) {
+                            instance->throwError(ESValue(URIError::create(ESString::create("malformed URI")))); // overlong
+                        }
                     } else if (n == 3) {
                         v = (octets[0] & 0x0F) << 12 | (octets[1] & 0x3F) << 6 | (octets[2] & 0x3F);
                         if (0xD800 <= v && v <= 0xDFFF) {
                             instance->throwError(ESValue(URIError::create(ESString::create("malformed URI"))));
                         }
+                        if ((octets[0] == 0xE0) && ((octets[1] < 0xA0) || (octets[1] > 0xBF))) {
+                            instance->throwError(ESValue(URIError::create(ESString::create("malformed URI")))); // overlong
+                        }
                     } else if (n == 4) {
                         v = (octets[0] & 0x07) << 18 | (octets[1] & 0x3F) << 12 | (octets[2] & 0x3F) << 6 | (octets[3] & 0x3F);
+                        if ((octets[0] == 0xF0) && ((octets[1] < 0x90) || (octets[1] > 0xBF))) {
+                            instance->throwError(ESValue(URIError::create(ESString::create("malformed URI")))); // overlong
+                        }
                     }
                     if (v >= 0x10000) {
                         const char16_t l = (((v - 0x10000) & 0x3ff) + 0xdc00);
