@@ -161,7 +161,7 @@ class VerboseProgressIndicator(SimpleProgressIndicator):
     sys.stdout.flush()
 
   def Heartbeat(self):
-    print 'Still working...'
+    #print 'Still working...'
     sys.stdout.flush()
 
 
