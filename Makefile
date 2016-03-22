@@ -479,7 +479,7 @@ run-chakracore:
 	diff chakracorelog.orig.txt chakracorelog.gen.txt
 
 run-v8-test:
-	make x64.interpreter.release -j$(NPROCS); \
-	./test/v8/tool/run-tests.py --quickcheck --no-presubmit --no-variants --arch-and-mode=x64.release --escargot mjsunit | tee test/v8/mjsunit.gen.txt
+	./test/v8/tool/run-tests.py --quickcheck --no-presubmit --no-variants --arch-and-mode=x64.release --escargot --report -p verbose --no-sorting mjsunit | tee test/v8/mjsunit.gen.txt; \
+	diff test/v8/mjsunit.orig.txt test/v8/mjsunit.gen.txt
 
 .PHONY: clean

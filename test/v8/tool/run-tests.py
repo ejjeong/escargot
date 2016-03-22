@@ -407,7 +407,7 @@ def ProcessOptions(options):
     os.environ['TSAN_OPTIONS'] = tsan_options
 
   if options.j == 0:
-    options.j = multiprocessing.cpu_count()
+    options.j = 1
 
   if options.random_seed_stress_count <= 1 and options.random_seed == 0:
     options.random_seed = RandomSeed()

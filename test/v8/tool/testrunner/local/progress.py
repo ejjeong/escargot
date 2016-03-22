@@ -120,7 +120,7 @@ class SimpleProgressIndicator(ProgressIndicator):
       self.PrintFailureHeader(failed)
       if failed.output.stderr:
         print "--- stderr ---"
-        print failed.output.stderr.strip()
+        #print failed.output.stderr.strip()
       if failed.output.stdout:
         print "--- stdout ---"
         print failed.output.stdout.strip()
