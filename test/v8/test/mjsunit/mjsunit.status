@@ -715,4 +715,20 @@
   # take too long with the simulator.
   'regress/regress-1132': [SKIP],
 }],  # 'arch == ppc and simulator_run == True'
+
+##############################################################################
+['escargot == True', {
+
+  # with statement
+  'with*': [SKIP],
+
+  # ES6 spec
+  'const*': [SKIP],
+
+  # v8-only
+  'd8-worker*': [SKIP],
+  'eval-stack-trace': [SKIP],
+  'stack-trace*': [SKIP],
+
+}],  # 'escargot == True'
 ]

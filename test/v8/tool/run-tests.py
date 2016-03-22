@@ -211,6 +211,9 @@ def BuildOptions():
   result.add_option("--gc-stress",
                     help="Switch on GC stress mode",
                     default=False, action="store_true")
+  result.add_option("--escargot",
+                    help="Switch on Escargot mode",
+                    default=False, action="store_true")
   result.add_option("--command-prefix",
                     help="Prepended to each shell command used to run a test",
                     default="")
@@ -611,6 +614,7 @@ def Execute(arch, mode, args, options, suites, workspace):
     "asan": options.asan,
     "deopt_fuzzer": False,
     "gc_stress": options.gc_stress,
+    "escargot": options.escargot,
     "isolates": options.isolates,
     "mode": MODES[mode]["status_mode"],
     "no_i18n": options.no_i18n,

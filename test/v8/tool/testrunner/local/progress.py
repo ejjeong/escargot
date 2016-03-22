@@ -78,7 +78,7 @@ class ProgressIndicator(object):
       negative_marker = '[negative] '
     else:
       negative_marker = ''
-    print "=== %(label)s %(negative)s===" % {
+    print "=== %(label)s.js %(negative)s===" % {
       'label': test.GetLabel(),
       'negative': negative_marker
     }
