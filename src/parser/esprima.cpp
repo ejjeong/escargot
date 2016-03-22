@@ -3738,7 +3738,7 @@ escargot::Node* parseTryStatement(ParseContext* ctx/*node*/)
     }
 
     if (!handler && !finalizer) {
-        throw u"Messages.NoCatchOrFinally";
+        throw u"Try statement do not have catch or finally clause";
     }
 
     // return node.finishTryStatement(block, handler, finalizer);

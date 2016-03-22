@@ -2504,27 +2504,39 @@ void GlobalObject::installArray()
     m_arrayPrototype->ESObject::defineDataProperty(ESString::createAtomicString("unshift"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
 
         ESObject* O = instance->currentExecutionContext()->resolveThisBindingToObject();
-        uint32_t len = O->get(strings->length.string()).toUint32();
-        int argCount = instance->currentExecutionContext()->argumentCount();
+        const uint32_t len = O->get(strings->length.string()).toUint32();
+        size_t argCount = instance->currentExecutionContext()->argumentCount();
         if (argCount > 0) {
-            if (len+argCount > std::pow(2, 32)-1)
-                instance->throwError(TypeError::create(ESString::create("Array.prototype.unshift: length is too large")));
-            int64_t k = len;
-            while (k > 0) {
-                ESValue from(k - 1);
-                ESValue to(k + argCount - 1);
-                bool fromPresent = O->hasProperty(from);
-                if (fromPresent) {
-                    ESValue fromValue = O->get(from);
-                    O->set(to, fromValue, true);
-                } else {
-                    O->deletePropertyWithException(to);
-                }
-                k--;
+
+            std::vector<uint32_t> indexes;
+
+            ESValue ptr = O;
+            while (ptr.isESPointer() && ptr.asESPointer()->isESObject()) {
+                ptr.asESPointer()->asESObject()->enumerationWithNonEnumerable([&](ESValue key, ESHiddenClassPropertyInfo* propertyInfo) {
+                    uint32_t index = ESValue::ESInvalidIndexValue;
+                    if ((index = key.toIndex()) != ESValue::ESInvalidIndexValue)
+                        indexes.push_back(index);
+                });
+                ptr = ptr.asESPointer()->asESObject()->__proto__();
+            }
+            std::sort(indexes.begin(), indexes.end(), std::greater<unsigned>());
+            for (auto k : indexes) {
+                if (!len || k >= len)
+                    continue;
+                ESValue from(k);
+                ESValue to(k + argCount);
+                ESValue fromValue = O->get(from);
+
+                if (((int64_t)k-(int64_t)argCount >= 0) && (!O->hasProperty(ESValue(k-argCount)) && k >= argCount))
+                    O->deletePropertyWithException(ESValue(k));
+
+                O->set(to, fromValue, true);
+                if (((uint64_t)k+argCount) > std::pow(2, 32)-1)
+                    instance->throwError(RangeError::create(ESString::create("Array.prototype.unshift: length is too large")));
             }
 
             ESValue* items = instance->currentExecutionContext()->arguments();
-            for (int j = 0; j < argCount; j++) {
+            for (size_t j = 0; j < argCount; j++) {
                 O->set(ESValue(j), *(items+j), true);
             }
         }

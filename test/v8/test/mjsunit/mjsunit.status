@@ -724,6 +724,7 @@
 
   # ES6 spec
   'const*': [SKIP],
+  'accessors-no-prototype.js': [SKIP],
 
   # v8-only
   'd8-worker*': [SKIP],
