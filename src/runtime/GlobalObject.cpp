@@ -467,7 +467,6 @@ void GlobalObject::initGlobalObject()
         escargot::ESString* stringValue = instance->currentExecutionContext()->arguments()->toString();
         NullableUTF8String componentString = stringValue->toNullableUTF8String();
         int strLen = stringValue->length();
-        int overlongCheckFlag = 0;
 
         UTF16String unescaped;
         for (int i = 0; i < strLen; i++) {
@@ -485,35 +484,13 @@ void GlobalObject::initGlobalObject()
                 if (!((48 <= nextnext && nextnext <= 57) || (65 <= nextnext && nextnext <= 70) || (97 <= nextnext && nextnext <= 102)))
                     instance->throwError(ESValue(URIError::create(ESString::create("malformed URI"))));
 
-                // check overlong sequences
-                if (overlongCheckFlag == 0) {
-                    int value;
-                    char16_t thirdChar = stringValue->charAt(4);
-                    char16_t fourthChar = stringValue->charAt(5);
-                    if (strLen == 6) {
-                        // two-byte sequence
-                        value = ((parseDigit(next, 128) << 4) | parseDigit(nextnext, 128));
-                        if (value == 0xC0 || value == 0xC1)
-                            instance->throwError(ESValue(URIError::create(ESString::create("malformed URI"))));
-                    } else if (strLen == 9) {
-                        // third-byte sequence
-                        value = ((parseDigit(thirdChar, 128) << 4) | parseDigit(fourthChar, 128));
-                        if (((next == 'E' || next == 'e') && (nextnext == '0')) && ((value < 0xA0) || (value > 0xBF)))
-                            instance->throwError(ESValue(URIError::create(ESString::create("malformed URI"))));
-                    } else if (strLen == 12) {
-                        // four-byte sequence
-                        value = ((parseDigit(thirdChar, 128) << 4) | parseDigit(fourthChar, 128));
-                        if (((next == 'F' || next == 'f') && (nextnext == '0')) && ((value < 0x90) || (value > 0xBF)))
-                            instance->throwError(ESValue(URIError::create(ESString::create("malformed URI"))));
-                    }
-                    overlongCheckFlag = 1;
-                }
-
+                // char to hex
                 unsigned char b = (((next & 0x10) ? (next & 0xf) : ((next & 0xf) + 9)) << 4)
                     | ((nextnext & 0x10) ? (nextnext & 0xf) : ((nextnext & 0xf) + 9));
 
                 i += 2;
 
+                // most significant bit in b is 0
                 if (!(b & 0x80)) {
                     // let C be the character with code unit value B.
                     // if C is not in reservedSet, then let S be the String containing only the character C.
@@ -576,13 +553,22 @@ void GlobalObject::initGlobalObject()
                     unsigned int v;
                     if (n == 2) {
                         v = (octets[0] & 0x1F) << 6 | (octets[1] & 0x3F);
+                        if ((octets[0] == 0xC0) || (octets[0] == 0xC1)) {
+                            instance->throwError(ESValue(URIError::create(ESString::create("malformed URI")))); // overlong
+                        }
                     } else if (n == 3) {
                         v = (octets[0] & 0x0F) << 12 | (octets[1] & 0x3F) << 6 | (octets[2] & 0x3F);
                         if (0xD800 <= v && v <= 0xDFFF) {
                             instance->throwError(ESValue(URIError::create(ESString::create("malformed URI"))));
                         }
+                        if ((octets[0] == 0xE0) && ((octets[1] < 0xA0) || (octets[1] > 0xBF))) {
+                            instance->throwError(ESValue(URIError::create(ESString::create("malformed URI")))); // overlong
+                        }
                     } else if (n == 4) {
                         v = (octets[0] & 0x07) << 18 | (octets[1] & 0x3F) << 12 | (octets[2] & 0x3F) << 6 | (octets[3] & 0x3F);
+                        if ((octets[0] == 0xF0) && ((octets[1] < 0x90) || (octets[1] > 0xBF))) {
+                            instance->throwError(ESValue(URIError::create(ESString::create("malformed URI")))); // overlong
+                        }
                     }
                     if (v >= 0x10000) {
                         const char16_t l = (((v - 0x10000) & 0x3ff) + 0xdc00);
