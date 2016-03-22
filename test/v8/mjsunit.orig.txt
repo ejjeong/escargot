@@ -1343,8 +1343,7 @@ Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefin
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"abc123.456def"> found <undefined>, stack: undefined}
 === mjsunit/regexp.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <3> found <4>, stack: undefined}
+--- stderr ---
 === mjsunit/scope-calls-eval.js ===
 --- stdout ---
 Uncaught SyntaxError: with statement is not supported (Parse Error 53 line)
@@ -1995,7 +1994,7 @@ Uncaught SyntaxError: Future reserved word cannot used as Identifier in strict m
 Uncaught MjsUnitAssertionError {message: Failure: expected <"foo"> found <function Object() {}>, stack: undefined}
 === mjsunit/regress/regress-45469.js ===
 --- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure (testpreindex1): expected <1> found <0>, stack: undefined}
+Uncaught MjsUnitAssertionError {message: Failure (preindex4): expected <1> found <0>, stack: undefined}
 === mjsunit/regress/regress-52801.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <5> found <0>, stack: undefined}
