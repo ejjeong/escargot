@@ -1216,7 +1216,7 @@ inline bool ESObject::defineDataProperty(const escargot::ESValue& key, bool isWr
         if (i != ESValue::ESInvalidIndexValue) {
             if (isWritable && isEnumerable && isConfigurable) {
                 size_t len = asESArrayObject()->length();
-                if (asESArrayObject()->shouldConvertToSlowMode(i)) {
+                if (asESArrayObject()->shouldConvertToSlowMode(i+1)) {
                     asESArrayObject()->convertToSlowMode();
                 } else {
                     if (i >= len) {
