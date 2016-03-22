@@ -179,7 +179,7 @@ void GlobalObject::initGlobalObject()
                 if (*origPtr == '\\')  {
                     *ptr++ = '/';
                     origPtr++;
-               } else
+                } else
                     *ptr++ = *origPtr++;
                 if (!*origPtr)
                     break;
