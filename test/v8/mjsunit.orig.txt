@@ -602,7 +602,7 @@ Done running mjsunit/regress/regress-1387: pass
 Done running mjsunit/regress/regress-1389: pass
 Done running mjsunit/regress/regress-1401: pass
 Done running mjsunit/regress/regress-1403: pass
-Done running mjsunit/regress/regress-1415: FAIL
+Done running mjsunit/regress/regress-1415: pass
 Done running mjsunit/regress/regress-1419: FAIL
 Done running mjsunit/regress/regress-1436: pass
 Done running mjsunit/regress/regress-1439135: pass
@@ -1795,9 +1795,6 @@ Uncaught TypeError: Type error, DefineOwnProperty 7.a
 === mjsunit/regress/regress-136048.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"SyntaxError: Invalid regular expression flags"> found <"SyntaxError: unexpectedTokenError (Parse Error 1 line)">, stack: undefined}
-=== mjsunit/regress/regress-1415.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 === mjsunit/regress/regress-1419.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
@@ -2128,6 +2125,6 @@ Uncaught TypeError: Object.keys: first argument is not object
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 276 tests failed
+=== 275 tests failed
 === 8 tests CRASHED
 ===
