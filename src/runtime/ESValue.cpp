@@ -459,9 +459,6 @@ bool ESString::match(ESPointer* esptr, RegexMatchResult& matchResult, bool testO
             break;
         }
     } while (result != JSC::Yarr::offsetNoMatch);
-    if (isGlobal && esptr->isESRegExpObject()) {
-        esptr->asESRegExpObject()->set(strings->lastIndex, ESValue(matchResult.m_subPatternNum), true);
-    }
     return matchResult.m_matchResults.size();
 }
 

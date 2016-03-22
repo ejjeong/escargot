@@ -494,11 +494,11 @@ void GlobalObject::initGlobalObject()
                         // two-byte sequence
                         value = ((parseDigit(next, 128) << 4) | parseDigit(nextnext, 128));
                         if (value == 0xC0 || value == 0xC1)
-                            instance->throwError(ESValue(URIError::create(ESString::create("malformed URI"))));     
+                            instance->throwError(ESValue(URIError::create(ESString::create("malformed URI"))));
                     } else if (strLen == 9) {
                         // third-byte sequence
                         value = ((parseDigit(thirdChar, 128) << 4) | parseDigit(fourthChar, 128));
-                        if (((next == 'E' || next == 'e') && (nextnext == '0')) && ((value < 0xA0) || (value > 0xBF))) 
+                        if (((next == 'E' || next == 'e') && (nextnext == '0')) && ((value < 0xA0) || (value > 0xBF)))
                             instance->throwError(ESValue(URIError::create(ESString::create("malformed URI"))));
                     } else if (strLen == 12) {
                         // four-byte sequence
@@ -2745,6 +2745,8 @@ void GlobalObject::installString()
         return ESValue(stringCompare(*S, *That));
     }, ESString::createAtomicString("localeCompare"), 1));
 
+
+
     // $21.1.3.11 String.prototype.match(regexp)
     m_stringPrototype->defineDataProperty(ESString::createAtomicString("match"), true, false, true, ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESValue thisValue = instance->currentExecutionContext()->resolveThisBinding();
@@ -2765,25 +2767,52 @@ void GlobalObject::installString()
 
         bool isGlobal = regexp->option() & ESRegExpObject::Option::Global;
         ESString::RegexMatchResult result;
-        bool testResult = thisObject->match(regexp, result);
+        regexp->setOption((ESRegExpObject::Option)(regexp->option() & ~ESRegExpObject::Option::Global));
 
+        if (isGlobal) {
+            regexp->set(strings->lastIndex.string(), ESValue(0), true);
+        }
+
+        regexp->m_lastExecutedString = thisObject;
+        bool testResult = thisObject->match(regexp, result, false, 0);
         if (!testResult) {
             return ESValue(ESValue::ESNull);
         }
 
         escargot::ESArrayObject* ret = ESArrayObject::create(0);
-        ((ESObject *)ret)->set(ESValue(strings->input), ESValue(thisObject));
-        ((ESObject *)ret)->set(ESValue(strings->index), ESValue(result.m_matchResults[0][0].m_start));
 
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/match
         // if global flag is on, match method returns an Array containing all matched substrings
         if (isGlobal) {
-            int idx = 0;
-            for (unsigned i = 0; i < result.m_matchResults.size() ; i ++) {
-                if (std::numeric_limits<unsigned>::max() == result.m_matchResults[i][0].m_start)
-                    ret->set(idx++, ESValue(ESValue::ESUndefined));
-                else
-                    ret->set(idx++, thisObject->substring(result.m_matchResults[i][0].m_start, result.m_matchResults[i][0].m_end));
+            int idx = 0, previousLastIndex = 0;
+
+            while (testResult) {
+                const size_t maximumReasonableMatchSize = 1000000000;
+                if (ret->length() > maximumReasonableMatchSize) {
+                    instance->throwError(RangeError::create(ESString::create("Maximum Reasonable match size exceeded.")));
+                }
+
+                // checked already if lastIndex is writable above
+                if (regexp->lastIndex().asInt32() == previousLastIndex) {
+                    regexp->setLastIndex(ESValue(previousLastIndex++));
+                } else
+                    previousLastIndex = regexp->lastIndex().asInt32();
+
+
+                // FIXME: I am not sure when m_matchResults[i][0].m_start returned with max
+                size_t end = result.m_matchResults[0][0].m_end;
+                size_t length = end - result.m_matchResults[0][0].m_start;
+                ret->set(idx++, thisObject->substring(result.m_matchResults[0][0].m_start, result.m_matchResults[0][0].m_end));
+                if (!length) {
+                    ++end;
+                }
+                result.m_matchResults.clear();
+                regexp->m_lastExecutedString = thisObject;
+                testResult = thisObject->match(regexp, result, false, end);
+            }
+
+            if (isGlobal) {
+                regexp->setOption((ESRegExpObject::Option)(regexp->option() | ESRegExpObject::Option::Global));
             }
             return ret;
         } else {
@@ -2792,12 +2821,14 @@ void GlobalObject::installString()
                 for (unsigned j = 0; j < result.m_matchResults[i].size() ; j ++) {
                     if (std::numeric_limits<unsigned>::max() == result.m_matchResults[i][j].m_start)
                         ret->set(idx++, ESValue(ESValue::ESUndefined));
-                    else
+                    else {
                         ret->set(idx++, thisObject->substring(result.m_matchResults[i][j].m_start, result.m_matchResults[i][j].m_end));
+                    }
                 }
             }
-            if (ret->length() == 0)
-                return ESValue(ESValue::ESNull);
+
+            ((ESObject *)ret)->set(ESValue(strings->input), ESValue(thisObject));
+            ((ESObject *)ret)->set(ESValue(strings->index), ESValue(result.m_matchResults[0][0].m_start));
 
             return ret;
         }
@@ -2812,15 +2843,61 @@ void GlobalObject::installString()
         int argCount = instance->currentExecutionContext()->argumentCount();
         if (argCount > 1) {
             ESValue argument = instance->currentExecutionContext()->arguments()[0];
-            ESPointer* esptr;
-            if (argument.isESPointer()) {
-                esptr = argument.asESPointer();
-            } else {
-                esptr = argument.toString();
-            }
-            escargot::ESString* origStr = thisObject;
             ESString::RegexMatchResult result;
-            origStr->match(esptr, result);
+            escargot::ESString* origStr = thisObject;
+
+            if (argument.isESPointer() && argument.asESPointer()->isESRegExpObject()) {
+                escargot::ESRegExpObject* regexp = argument.asESPointer()->asESRegExpObject();
+                bool isGlobal = regexp->option() & ESRegExpObject::Option::Global;
+                ESString::RegexMatchResult temp;
+                regexp->setOption((ESRegExpObject::Option)(regexp->option() & ~ESRegExpObject::Option::Global));
+
+                if (isGlobal) {
+                    regexp->set(strings->lastIndex.string(), ESValue(0), true);
+                }
+                regexp->m_lastExecutedString = origStr;
+                bool testResult = origStr->match(regexp, temp, false, 0);
+
+                if (isGlobal) {
+                    int previousLastIndex = 0;
+
+                    while (testResult) {
+                        const size_t maximumReasonableMatchSize = 1000000000;
+                        if (result.m_matchResults.size()> maximumReasonableMatchSize) {
+                            instance->throwError(RangeError::create(ESString::create("Maximum Reasonable match size exceeded.")));
+                        }
+
+                        // checked already if lastIndex is writable above
+                        if (regexp->lastIndex().asInt32() == previousLastIndex) {
+                            regexp->setLastIndex(ESValue(previousLastIndex++));
+                        } else {
+                            previousLastIndex = regexp->lastIndex().asInt32();
+                        }
+
+                        // FIXME: I am not sure when m_matchResults[i][0].m_start returned with max
+                        size_t end = temp.m_matchResults[0][0].m_end;
+                        size_t length = end - temp.m_matchResults[0][0].m_start;
+                        if (!length) {
+                            ++end;
+                        }
+                        result.m_matchResults.insert(result.m_matchResults.end(), temp.m_matchResults.begin(), temp.m_matchResults.end());
+                        temp.m_matchResults.clear();
+                        regexp->m_lastExecutedString = origStr;
+                        testResult = origStr->match(regexp, temp, false, end);
+                    }
+
+                    if (isGlobal) {
+                        regexp->setOption((ESRegExpObject::Option)(regexp->option() | ESRegExpObject::Option::Global));
+                    }
+                } else {
+                    result.m_matchResults.insert(result.m_matchResults.end(), temp.m_matchResults.begin(), temp.m_matchResults.end());
+                    temp.m_matchResults.clear();
+                }
+
+            } else {
+                origStr->match(argument.toString(), result);
+            }
+
             if (result.m_matchResults.size() == 0) {
                 return origStr;
             }
@@ -2948,6 +3025,9 @@ void GlobalObject::installString()
         }
         
         ESString::RegexMatchResult result;
+        if (esptr->isESRegExpObject()) {
+            esptr->asESRegExpObject()->m_lastExecutedString = origStr;
+        }
         origStr->match(esptr, result);
         if (result.m_matchResults.size() != 0) {
             return ESValue(result.m_matchResults[0][0].m_start);
@@ -3042,6 +3122,7 @@ void GlobalObject::installString()
                 escargot::ESString::RegexMatchResult result;
                 auto prev = R->option();
                 R->setOption((escargot::ESRegExpObject::Option)(prev & ~escargot::ESRegExpObject::Option::Global));
+                R->m_lastExecutedString = S;
                 ret = S->match(R, result, false, 0);
                 R->setOption(prev);
             } else {
@@ -3065,6 +3146,7 @@ void GlobalObject::installString()
                 escargot::ESString::RegexMatchResult result;
                 auto prev = R->option();
                 R->setOption((escargot::ESRegExpObject::Option)(prev & ~escargot::ESRegExpObject::Option::Global));
+                R->m_lastExecutedString = S;
                 bool ret = S->match(R, result, false, (size_t)q);
                 R->setOption(prev);
                 if (ret) {
@@ -5582,7 +5664,7 @@ void GlobalObject::installRegExp()
     m_regexpPrototype->defineDataProperty(strings->test, true, false, true, ::escargot::ESFunctionObject::create(NULL, [](ESVMInstance* instance)->ESValue {
         ESObject* thisObject = instance->currentExecutionContext()->resolveThisBindingToObject();
         if (!thisObject->isESRegExpObject())
-            instance->throwError(ESValue(TypeError::create(ESString::create(u"Regexp.prototype.exec : This object is not Regexp object"))));
+            instance->throwError(ESValue(TypeError::create(ESString::create(u"Regexp.prototype.test : This object is not Regexp object"))));
         ::escargot::ESRegExpObject* regexp = thisObject->asESRegExpObject();
         int argCount = instance->currentExecutionContext()->argumentCount();
         if (argCount >= 0) {
@@ -5593,7 +5675,8 @@ void GlobalObject::installRegExp()
                 return ESValue(false);
             }
             ESString::RegexMatchResult result;
-            bool testResult = sourceStr->match(thisObject, result, true);
+            regexp->m_lastExecutedString = sourceStr;
+            bool testResult = sourceStr->match(regexp, result, true);
             return (ESValue(testResult));
         }
         return ESValue(false);
@@ -5614,26 +5697,26 @@ void GlobalObject::installRegExp()
         if (!isGlobal) {
             lastIndex = 0;
         }
-        if (lastIndex < 0 || lastIndex > sourceStr->length()) {
-            regexp->m_lastIndex = ESValue(0);
-            return ESValue(ESValue::ESNull);
-        }
-        regexp->m_lastExecutedString = sourceStr;
+        bool matchSucceded = false;
         ESString::RegexMatchResult result;
-        regexp->setOption((ESRegExpObject::Option)(regexp->option() & ~ESRegExpObject::Option::Global));
-        bool testResult = sourceStr->match(thisObject, result, false, lastIndex);
+        while (!matchSucceded) {
+            if (lastIndex < 0 || lastIndex > sourceStr->length()) {
+                regexp->set(strings->lastIndex, ESValue(0), true);
+                return ESValue(ESValue::ESNull);
+            }
+
+            regexp->m_lastExecutedString = sourceStr;
+            regexp->setOption((ESRegExpObject::Option)(regexp->option() & ~ESRegExpObject::Option::Global));
+            regexp->m_lastExecutedString = sourceStr;
+            matchSucceded = sourceStr->match(thisObject, result, false, lastIndex);
+            if (!matchSucceded) {
+                lastIndex++;
+            }
+        }
+
         if (isGlobal) {
             regexp->setOption((ESRegExpObject::Option)(regexp->option() | ESRegExpObject::Option::Global));
-        }
-
-        if (!testResult) {
-            regexp->m_lastIndex = ESValue(0);
-            return ESValue(ESValue::ESNull);
-        }
-
-        if (isGlobal) {
-            // update lastIndex
-            regexp->m_lastIndex = ESValue(result.m_matchResults[0][0].m_end);
+            regexp->set(strings->lastIndex, ESValue(result.m_matchResults[0][0].m_end), true);
         }
 
         ((ESObject *)arr)->set(ESValue(strings->index), ESValue(result.m_matchResults[0][0].m_start));
