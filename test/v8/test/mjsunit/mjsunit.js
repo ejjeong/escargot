@@ -410,3 +410,13 @@ Object.defineProperty(Object.prototype, "__defineSetter__", {
     enumerable : false
 });
 
+Object.defineProperty(Object.prototype, "__lookupGetter__", {
+    value : function(prop, func) { return Object.getOwnPropertyDescriptor(this, prop).get; },
+    enumerable : false
+});
+
+Object.defineProperty(Object.prototype, "__lookupSetter__", {
+    value : function(prop, func) { return Object.getOwnPropertyDescriptor(this, prop).set; },
+    enumerable : false
+});
+

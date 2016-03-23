@@ -719,7 +719,7 @@
 ##############################################################################
 ['escargot == True', {
 
-  # with statement
+  ## 1. with statement
   'with*': [SKIP],
   'delete-in-with': [SKIP],
   'global-load-from-eval-in-with': [SKIP],
@@ -741,7 +741,9 @@
   'regress/regress-crbug-455644': [SKIP],
   'regress/regress-parse-use-strict': [SKIP],
 
-  ## ES6 spec
+  ## 2. ES6 spec
+  # object
+  'accessors-no-prototype': [SKIP],
   # const
   'const*': [SKIP],
   'global-const-var-conflicts': [SKIP],
@@ -752,14 +754,22 @@
   'regress/regress-641': [SKIP],
   'regress/regress-799761': [SKIP],
   'regress/regress-88591': [SKIP],
+  # builtins
+  'html-string-funcs': [SKIP],
+  'number-is': [SKIP],
+  'string-normalize': [SKIP],
+  'asm/math-fround': [SKIP],
 
-  # etc
-  'accessors-no-prototype.js': [SKIP],
+  ## 3. Deprecated
+  # function.[arguments|caller|callee]
+  'arguments-indirect': [SKIP],
 
-  # v8-only
+  ## 4. v8-only
   'd8-worker*': [SKIP],
   'eval-stack-trace': [SKIP],
   'stack-trace*': [SKIP],
+  'regress/regress-crbug-393988': [SKIP],
+  'regress/regress-crbug-489597': [SKIP],
 
 }],  # 'escargot == True'
 ]

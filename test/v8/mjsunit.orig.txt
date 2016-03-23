@@ -1,14 +1,13 @@
 >>> Running tests for x64.release
 Total: 2347 tests
- *   63 tests will be skipped
+ *   71 tests will be skipped
  *    1 tests are expected to timeout sometimes
  *    4 tests are expected to be flaky but not crash
- * 2119 tests are expected to pass
+ * 2112 tests are expected to pass
  *    0 tests are expected to fail that we won't fix
  *   67 tests are expected to fail that we should fix
 No connection to distribution server; running tests locally.
-Running 2260 tests
-Done running mjsunit/accessors-no-prototype: FAIL
+Running 2252 tests
 Done running mjsunit/accessors-on-global-object: pass
 Done running mjsunit/api-call-after-bypassed-exception: pass
 Done running mjsunit/argument-assigned: pass
@@ -17,7 +16,6 @@ Done running mjsunit/arguments-apply: pass
 Done running mjsunit/arguments-call-apply: pass
 Done running mjsunit/arguments-enum: pass
 Done running mjsunit/arguments-escape: pass
-Done running mjsunit/arguments-indirect: FAIL
 Done running mjsunit/arguments-lazy: pass
 Done running mjsunit/arguments-load-across-eval: FAIL
 Done running mjsunit/arguments-read-and-assignment: pass
@@ -137,10 +135,9 @@ Done running mjsunit/has-own-property-evaluation-order: pass
 Done running mjsunit/has-own-property: pass
 Done running mjsunit/hex-parsing: FAIL
 Done running mjsunit/html-comments: pass
-Done running mjsunit/html-string-funcs: FAIL
 Done running mjsunit/if-in-undefined: pass
 Done running mjsunit/in: pass
-Done running mjsunit/indexed-accessors: FAIL
+Done running mjsunit/indexed-accessors: pass
 Done running mjsunit/indexed-value-properties: pass
 Done running mjsunit/instanceof-2: FAIL
 Done running mjsunit/instanceof: pass
@@ -194,7 +191,6 @@ Done running mjsunit/no-semicolon: pass
 Done running mjsunit/non-ascii-replace: pass
 Done running mjsunit/not: pass
 Done running mjsunit/nul-characters: pass
-Done running mjsunit/number-is: FAIL
 Done running mjsunit/number-limits: pass
 Done running mjsunit/number-literal: pass
 Done running mjsunit/number-string-index-call: pass
@@ -279,7 +275,6 @@ Done running mjsunit/string-indexof-2: pass
 Done running mjsunit/string-lastindexof: pass
 Done running mjsunit/string-localecompare: pass
 Done running mjsunit/string-match: FAIL
-Done running mjsunit/string-normalize: FAIL
 Done running mjsunit/string-oom-array-join: FAIL
 Done running mjsunit/string-oom-concat: pass
 Done running mjsunit/string-oom-replace-global-regexp-with-string: FAIL
@@ -357,7 +352,6 @@ Done running mjsunit/asm/int8array-negative-offset: pass
 Done running mjsunit/asm/math-abs: pass
 Done running mjsunit/asm/math-ceil: pass
 Done running mjsunit/asm/math-floor: pass
-Done running mjsunit/asm/math-fround: FAIL
 Done running mjsunit/asm/pointer-masking: pass
 Done running mjsunit/asm/sign-extend: pass
 Done running mjsunit/asm/switch: pass
@@ -932,7 +926,6 @@ Done running mjsunit/regress/regress-crbug-37853: pass
 Done running mjsunit/regress/regress-crbug-382143: pass
 Done running mjsunit/regress/regress-crbug-3867: pass
 Done running mjsunit/regress/regress-crbug-39160: pass
-Done running mjsunit/regress/regress-crbug-393988: FAIL
 Done running mjsunit/regress/regress-crbug-403409: pass
 Done running mjsunit/regress/regress-crbug-40931: pass
 Done running mjsunit/regress/regress-crbug-416558: FAIL
@@ -947,7 +940,6 @@ Done running mjsunit/regress/regress-crbug-477924: pass
 Done running mjsunit/regress/regress-crbug-478011: pass
 Done running mjsunit/regress/regress-crbug-482998: FAIL
 Done running mjsunit/regress/regress-crbug-487105: pass
-Done running mjsunit/regress/regress-crbug-489597: FAIL
 Done running mjsunit/regress/regress-crbug-490680: pass
 Done running mjsunit/regress/regress-crbug-493290: pass
 Done running mjsunit/regress/regress-crbug-498811: FAIL
@@ -1013,12 +1005,6 @@ Done running mjsunit/regress/string-split-monkey-patching: FAIL
 Done running mjsunit/third_party/object-keys/object-keys: FAIL
 Done running mjsunit/third_party/regexp-pcre/regexp-pcre: FAIL
 
-=== mjsunit/accessors-no-prototype.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: expected <false> found <true>, stack: undefined}
-=== mjsunit/arguments-indirect.js ===
---- stdout ---
-Uncaught TypeError: cannot convert undefined into object
 === mjsunit/arguments-load-across-eval.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <3> found <1>, stack: undefined}
@@ -1165,12 +1151,6 @@ Uncaught ReferenceError: Set is not defined
 === mjsunit/hex-parsing.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <18446744073709564000> found <9223372036854776000>, stack: undefined}
-=== mjsunit/html-string-funcs.js ===
---- stdout ---
-Uncaught TypeError: Callee is not a function object
-=== mjsunit/indexed-accessors.js ===
---- stdout ---
-Uncaught TypeError: Callee is not a function object
 === mjsunit/instanceof-2.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
@@ -1198,9 +1178,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <0> found <-0>, stack
 === mjsunit/newline-in-string.js ===
 --- stdout ---
 Uncaught SyntaxError: unterminated string literal (Parse Error 2 line)
-=== mjsunit/number-is.js ===
---- stdout ---
-Uncaught TypeError: Callee is not a function object
 === mjsunit/number-tostring-func.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"5a.1eb851eb852"> found <"5a">, stack: undefined}
@@ -1308,9 +1285,6 @@ Uncaught TypeError: Callee is not a function object
 === mjsunit/string-match.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure (Nonglobal-$&): expected <"A"> found <undefined>, stack: undefined}
-=== mjsunit/string-normalize.js ===
---- stdout ---
-Uncaught TypeError: Callee is not a function object
 === mjsunit/string-oom-array-join.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
@@ -1350,9 +1324,6 @@ Uncaught MjsUnitAssertionError {message: Failure (not overwritable: escape): exp
 === mjsunit/whitespaces.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <124> found <NaN>, stack: undefined}
-=== mjsunit/asm/math-fround.js ===
---- stdout ---
-Uncaught TypeError: Callee is not a function object
 === mjsunit/asm/word32and.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <-2143483875> found <-2147483648>, stack: undefined}
@@ -1918,9 +1889,6 @@ Uncaught ReferenceError: WeakMap is not defined
 === mjsunit/regress/regress-crbug-352586.js ===
 --- stdout ---
 Uncaught RangeError: Maximum call stack size exceeded.
-=== mjsunit/regress/regress-crbug-393988.js ===
---- stdout ---
-Uncaught TypeError: Callee is not a function object
 === mjsunit/regress/regress-crbug-416558.js ===
 --- stdout ---
 Uncaught ReferenceError: Map is not defined
@@ -1929,9 +1897,6 @@ Uncaught ReferenceError: Map is not defined
 Uncaught TypeError: cannot convert undefined into object
 === mjsunit/regress/regress-crbug-482998.js ===
 --- TIMEOUT ---
-=== mjsunit/regress/regress-crbug-489597.js ===
---- stdout ---
-Uncaught TypeError: Callee is not a function object
 === mjsunit/regress/regress-crbug-498811.js ===
 --- stdout ---
 Uncaught SyntaxError: Future reserved word cannot used as Identifier in strict mode (Parse Error 8 line)
@@ -1978,6 +1943,6 @@ Uncaught TypeError: Object.keys: first argument is not object
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 235 tests failed
+=== 226 tests failed
 === 8 tests CRASHED
 ===
