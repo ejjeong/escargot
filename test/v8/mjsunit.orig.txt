@@ -122,7 +122,7 @@ Done running mjsunit/get-prototype-of: FAIL
 Done running mjsunit/getter-in-prototype: FAIL
 Done running mjsunit/getter-in-value-prototype: pass
 Done running mjsunit/global-accessors: pass
-Done running mjsunit/global-deleted-property-ic: CRASH
+Done running mjsunit/global-deleted-property-ic: FAIL
 Done running mjsunit/global-ic: pass
 Done running mjsunit/global-load-from-eval: pass
 Done running mjsunit/global-load-from-nested-eval: pass
@@ -201,14 +201,14 @@ Done running mjsunit/numops-fuzz-part4: FAIL
 Done running mjsunit/obj-construct: pass
 Done running mjsunit/object-create: FAIL
 Done running mjsunit/object-define-properties: FAIL
-Done running mjsunit/object-freeze-global: FAIL
+Done running mjsunit/object-freeze-global: pass
 Done running mjsunit/object-get-own-property-names: FAIL
 Done running mjsunit/object-is: FAIL
 Done running mjsunit/object-literal-conversions: pass
 Done running mjsunit/object-literal-multiple-fields: FAIL
 Done running mjsunit/object-literal-multiple-proto-fields: pass
 Done running mjsunit/object-literal: FAIL
-Done running mjsunit/object-seal-global: FAIL
+Done running mjsunit/object-seal-global: pass
 Done running mjsunit/object-toprimitive: FAIL
 Done running mjsunit/override-read-only-property: pass
 Done running mjsunit/parse-int-float: FAIL
@@ -492,7 +492,7 @@ Done running mjsunit/regress/readonly1: pass
 Done running mjsunit/regress/readonly2: pass
 Done running mjsunit/regress/readonly3: FAIL
 Done running mjsunit/regress/readonly4: FAIL
-Done running mjsunit/regress/readonly5: FAIL
+Done running mjsunit/regress/readonly5: pass
 Done running mjsunit/regress/regress-100702: pass
 Done running mjsunit/regress/regress-1015: FAIL
 Done running mjsunit/regress/regress-1017: pass
@@ -504,7 +504,7 @@ Done running mjsunit/regress/regress-1050043: pass
 Done running mjsunit/regress/regress-1060: pass
 Done running mjsunit/regress/regress-1062422: pass
 Done running mjsunit/regress/regress-1066899: pass
-Done running mjsunit/regress/regress-1083: FAIL
+Done running mjsunit/regress/regress-1083: pass
 Done running mjsunit/regress/regress-1092: pass
 Done running mjsunit/regress/regress-1102760: pass
 Done running mjsunit/regress/regress-1103: pass
@@ -515,7 +515,7 @@ Done running mjsunit/regress/regress-1110164: pass
 Done running mjsunit/regress/regress-1112: pass
 Done running mjsunit/regress/regress-1112051: pass
 Done running mjsunit/regress/regress-1114040: CRASH
-Done running mjsunit/regress/regress-1120: FAIL
+Done running mjsunit/regress/regress-1120: pass
 Done running mjsunit/regress/regress-1121: pass
 Done running mjsunit/regress/regress-1122: FAIL
 Done running mjsunit/regress/regress-1126: pass
@@ -921,7 +921,7 @@ Done running mjsunit/regress/regress-crbug-429159: pass
 Done running mjsunit/regress/regress-crbug-433766: pass
 Done running mjsunit/regress/regress-crbug-435825: pass
 Done running mjsunit/regress/regress-crbug-451013: pass
-Done running mjsunit/regress/regress-crbug-454091: FAIL
+Done running mjsunit/regress/regress-crbug-454091: pass
 Done running mjsunit/regress/regress-crbug-469768: pass
 Done running mjsunit/regress/regress-crbug-477924: pass
 Done running mjsunit/regress/regress-crbug-478011: pass
@@ -1118,8 +1118,8 @@ Uncaught SyntaxError: ES2015 for..of statement is not supported (Parse Error 78 
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 === mjsunit/global-deleted-property-ic.js ===
-exit code: -11
---- CRASHED ---
+--- stdout ---
+Uncaught MjsUnitAssertionError {message: Failure: expected <99> found <42>, stack: undefined}
 === mjsunit/hex-parsing.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <18446744073709564000> found <9223372036854776000>, stack: undefined}
@@ -1177,9 +1177,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>,
 === mjsunit/object-define-properties.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
-=== mjsunit/object-freeze-global.js ===
---- stdout ---
-Uncaught TypeError: Callee is not a function object
 === mjsunit/object-get-own-property-names.js ===
 --- stdout ---
 Uncaught TypeError: Object.getOwnPropertyNames: first argument is not object
@@ -1192,9 +1189,6 @@ Uncaught SyntaxError: p (Parse Error 55 line)
 === mjsunit/object-literal.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <false> found <true>, stack: undefined}
-=== mjsunit/object-seal-global.js ===
---- stdout ---
-Uncaught TypeError: Callee is not a function object
 === mjsunit/object-toprimitive.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <Object <Error()> is not an instance of <TypeError> but of < ReferenceError>> found <undefined>, stack: undefined}
@@ -1292,7 +1286,9 @@ Math1
 Date
 Math2
 Global
-Uncaught MjsUnitAssertionError {message: Failure (not overwritable: escape): expected <"foo"> found <undefined>, stack: undefined}
+RegExp prototype
+Object prototype
+Uncaught MjsUnitAssertionError {message: Failure (delete operator returned false: __defineGetter__): expected <true> found <false>, stack: undefined}
 === mjsunit/whitespaces.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <124> found <NaN>, stack: undefined}
@@ -1320,27 +1316,18 @@ Uncaught TypeError: Attempted to assign to readonly property.
 === mjsunit/regress/readonly4.js ===
 --- stdout ---
 Uncaught TypeError: Attempted to assign to readonly property.
-=== mjsunit/regress/readonly5.js ===
---- stdout ---
-Uncaught TypeError: Attempted to assign to readonly property.
 === mjsunit/regress/regress-1015.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: unreachable - aset, stack: undefined}
 === mjsunit/regress/regress-105.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <null> found <undefined>, stack: undefined}
-=== mjsunit/regress/regress-1083.js ===
---- stdout ---
-Uncaught ReferenceError: Objectis not defined
 === mjsunit/regress/regress-1110.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
 === mjsunit/regress/regress-1114040.js ===
 exit code: -11
 --- CRASHED ---
-=== mjsunit/regress/regress-1120.js ===
---- stdout ---
-Uncaught TypeError: Callee is not a function object
 === mjsunit/regress/regress-1122.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
@@ -1831,9 +1818,6 @@ Uncaught SyntaxError: Unexpected <end> ''. Expect '}'. (Parse Error 1 line)
 === mjsunit/regress/regress-crbug-352586.js ===
 --- stdout ---
 Uncaught RangeError: Maximum call stack size exceeded.
-=== mjsunit/regress/regress-crbug-454091.js ===
---- stdout ---
-Uncaught TypeError: cannot convert undefined into object
 === mjsunit/regress/regress-crbug-482998.js ===
 --- TIMEOUT ---
 === mjsunit/regress/regress-crbug-498811.js ===
@@ -1870,6 +1854,6 @@ Uncaught TypeError: Object.keys: first argument is not object
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 207 tests failed
-=== 8 tests CRASHED
+=== 201 tests failed
+=== 7 tests CRASHED
 ===
