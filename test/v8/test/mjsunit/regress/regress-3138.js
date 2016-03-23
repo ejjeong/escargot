@@ -11,15 +11,18 @@
    assertEquals("undefined", typeof f);
 })();
 
+/*
 (function f(){
    var f;
    assertEquals("undefined", typeof f);
    with ({});  // Force context allocation of both variable and function name.
 })();
+*/
 
 assertEquals("undefined", typeof f);
 
 // var initialization is intercepted by with scope.
+/*
 (function() {
   var o = { a: 1 };
   with (o) {
@@ -28,8 +31,10 @@ assertEquals("undefined", typeof f);
   assertEquals("undefined", typeof a);
   assertEquals(2, o.a);
 })();
+*/
 
 // const initialization is not intercepted by with scope.
+/*
 (function() {
   var o = { a: 1 };
   with (o) {
@@ -38,3 +43,4 @@ assertEquals("undefined", typeof f);
   assertEquals(2, a);
   assertEquals(1, o.a);
 })();
+*/

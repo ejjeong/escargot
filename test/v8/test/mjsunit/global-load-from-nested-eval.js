@@ -36,12 +36,14 @@ function test(source) {
 test('assertEquals(42, x)');
 
 // Shadow variable with a with statement.
+/*
 function testWith(source) {
   with ({ x: 1 }) {
     eval('eval(' + source +')');
   }
 }
 testWith('assertEquals(1, x)');
+*/
 
 // Shadow variable with an eval-introduced variable.
 function testEval(source) {

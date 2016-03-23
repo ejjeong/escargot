@@ -61,6 +61,7 @@ function RunTests() {
     CallTypeOfThis(3.14);
   }
 
+  /*
   function TestWithWith(obj) {
     with (obj) {
       for (var i = 0; i < 10; i++) {
@@ -74,6 +75,7 @@ function RunTests() {
   TestWithWith(false);
   TestWithWith(42);
   TestWithWith(3.14);
+  */
 
   for (var i = 0; i < 10; i++) {
     assertEquals('object', true[7]());

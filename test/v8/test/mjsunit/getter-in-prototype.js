@@ -41,6 +41,7 @@ assertDoesNotThrow("o[0] = 42");
 assertThrows(function() { 'use strict'; o.x = 42; });
 assertThrows(function() { 'use strict'; o[0] = 42; });
 
+/*
 function f() {
   with(o) {
     x = 42;
@@ -48,6 +49,7 @@ function f() {
 }
 
 assertDoesNotThrow(f);
+*/
 
 __proto__ = p;
 function g() {

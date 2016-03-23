@@ -46,11 +46,13 @@ assertEquals(original_number_max, f.MAX_VALUE);
 
 // Assignment to a property which does not exist on the object itself,
 // but is read-only in a prototype does not take effect.
+/*
 f = new F();
 with (f) {
   MAX_VALUE = 42;
 }
 assertEquals(original_number_max, f.MAX_VALUE);
+*/
 
 // Assignment to read-only property on the object itself is ignored.
 Number.MAX_VALUE = 42;

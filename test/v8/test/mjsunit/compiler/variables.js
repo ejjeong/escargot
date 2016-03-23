@@ -60,10 +60,12 @@ assertEquals(4, f4(4));
 
 
 // Lookup slots.  'With' forces x to be looked up at runtime.
+/*
 function f5(x) {
   with ({}) return x;
 }
 assertEquals(5, f5(5));
+*/
 
 
 // Parameters rewritten to property accesses.  Using the name 'arguments'

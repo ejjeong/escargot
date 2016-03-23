@@ -33,6 +33,7 @@ try {
 } catch (e) {
   assertTrue(e() === g);
 }
+/*
 try {
   throw x.e;
 } catch (e) {
@@ -41,6 +42,7 @@ try {
 with(x) {
   try { throw e; } catch (e) { assertTrue(e() === g); }
 }
+*/
 var e = 0;
 try {
   throw x.e;

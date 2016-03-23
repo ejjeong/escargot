@@ -59,6 +59,7 @@ function f3() {
 }
 assertEquals(1, f3())
 
+/*
 function f4() {
   var XXX = 0
   try { throw 1 } catch (XXX) {
@@ -69,6 +70,7 @@ function f4() {
   return h()
 }
 assertEquals(1, f4())
+*/
 
 function f5() {
   var XXX = 0

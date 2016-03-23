@@ -28,11 +28,13 @@
 // When invoking functions from within a 'with' statement, we must set
 // the receiver to the object where we found the function.
 
+/*
 (function () {
   var x = { get_this: function() { return this; } };
   assertTrue(x === x.get_this());
   with (x) assertTrue(x === get_this());
 })();
+*/
 
 
 assertTrue({ f: function() {

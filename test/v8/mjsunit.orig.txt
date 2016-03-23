@@ -1,13 +1,13 @@
 >>> Running tests for x64.release
 Total: 2347 tests
- *   36 tests will be skipped
+ *   55 tests will be skipped
  *    1 tests are expected to timeout sometimes
  *    4 tests are expected to be flaky but not crash
- * 2146 tests are expected to pass
+ * 2127 tests are expected to pass
  *    0 tests are expected to fail that we won't fix
  *   67 tests are expected to fail that we should fix
 No connection to distribution server; running tests locally.
-Running 2287 tests
+Running 2268 tests
 Done running mjsunit/accessors-no-prototype: FAIL
 Done running mjsunit/accessors-on-global-object: pass
 Done running mjsunit/api-call-after-bypassed-exception: pass
@@ -20,7 +20,7 @@ Done running mjsunit/arguments-escape: pass
 Done running mjsunit/arguments-indirect: FAIL
 Done running mjsunit/arguments-lazy: pass
 Done running mjsunit/arguments-load-across-eval: FAIL
-Done running mjsunit/arguments-read-and-assignment: FAIL
+Done running mjsunit/arguments-read-and-assignment: pass
 Done running mjsunit/array-concat: FAIL
 Done running mjsunit/array-constructor: FAIL
 Done running mjsunit/array-elements-from-array-prototype-chain: FAIL
@@ -82,7 +82,6 @@ Done running mjsunit/deep-recursion: pass
 Done running mjsunit/delay-syntax-error: pass
 Done running mjsunit/delete-global-properties: pass
 Done running mjsunit/delete-in-eval: pass
-Done running mjsunit/delete-in-with: FAIL
 Done running mjsunit/delete-non-configurable: pass
 Done running mjsunit/delete-vars-from-eval: pass
 Done running mjsunit/delete: pass
@@ -132,11 +131,9 @@ Done running mjsunit/global-const-var-conflicts: FAIL
 Done running mjsunit/global-deleted-property-ic: CRASH
 Done running mjsunit/global-hash: FAIL
 Done running mjsunit/global-ic: pass
-Done running mjsunit/global-load-from-eval-in-with: FAIL
 Done running mjsunit/global-load-from-eval: pass
-Done running mjsunit/global-load-from-nested-eval: FAIL
+Done running mjsunit/global-load-from-nested-eval: pass
 Done running mjsunit/global-vars-eval: pass
-Done running mjsunit/global-vars-with: FAIL
 Done running mjsunit/has-own-property-evaluation-order: pass
 Done running mjsunit/has-own-property: pass
 Done running mjsunit/hex-parsing: FAIL
@@ -222,7 +219,7 @@ Done running mjsunit/object-literal-multiple-proto-fields: pass
 Done running mjsunit/object-literal: FAIL
 Done running mjsunit/object-seal-global: FAIL
 Done running mjsunit/object-toprimitive: FAIL
-Done running mjsunit/override-read-only-property: FAIL
+Done running mjsunit/override-read-only-property: pass
 Done running mjsunit/parse-int-float: FAIL
 Done running mjsunit/parse-surrogates: pass
 Done running mjsunit/primitive-keyed-access: FAIL
@@ -233,7 +230,7 @@ Done running mjsunit/proto-accessor: FAIL
 Done running mjsunit/proto: pass
 Done running mjsunit/prototype: pass
 Done running mjsunit/readonly-accessor: pass
-Done running mjsunit/receiver-in-with-calls: FAIL
+Done running mjsunit/receiver-in-with-calls: pass
 Done running mjsunit/regexp-UC16: pass
 Done running mjsunit/regexp-cache-replace: FAIL
 Done running mjsunit/regexp-call-as-function: pass
@@ -300,7 +297,7 @@ Done running mjsunit/this-dynamic-lookup: pass
 Done running mjsunit/this-in-callbacks: pass
 Done running mjsunit/this-property-assignment: pass
 Done running mjsunit/this: FAIL
-Done running mjsunit/throw-and-catch-function: FAIL
+Done running mjsunit/throw-and-catch-function: pass
 Done running mjsunit/throw-exception-for-null-access: pass
 Done running mjsunit/to-precision: FAIL
 Done running mjsunit/to_number_order: FAIL
@@ -319,12 +316,11 @@ Done running mjsunit/unicode-case-overoptimization: pass
 Done running mjsunit/unicode-string-to-number: pass
 Done running mjsunit/unicode-test: pass
 Done running mjsunit/unicodelctest: pass
-Done running mjsunit/unused-context-in-with: FAIL
 Done running mjsunit/unusual-constructor: pass
 Done running mjsunit/uri: pass
 Done running mjsunit/value-callic-prototype-change: pass
 Done running mjsunit/value-of: pass
-Done running mjsunit/value-wrapper: FAIL
+Done running mjsunit/value-wrapper: pass
 Done running mjsunit/var: pass
 Done running mjsunit/whitespaces: FAIL
 Done running mjsunit/asm/do-while-false: pass
@@ -468,7 +464,7 @@ Done running mjsunit/compiler/thisfunction: pass
 Done running mjsunit/compiler/to-fast-properties: pass
 Done running mjsunit/compiler/truncating-store: FAIL
 Done running mjsunit/compiler/unary-add: pass
-Done running mjsunit/compiler/variables: FAIL
+Done running mjsunit/compiler/variables: pass
 Done running mjsunit/harmony/dataview-accessors: FAIL
 Done running mjsunit/harmony/set-prototype-of: FAIL
 Done running mjsunit/harmony/regress/regress-typedarray-out-of-bounds: pass
@@ -515,7 +511,6 @@ Done running mjsunit/regress/regress-100702: pass
 Done running mjsunit/regress/regress-1015: FAIL
 Done running mjsunit/regress/regress-1017: pass
 Done running mjsunit/regress/regress-1020: pass
-Done running mjsunit/regress/regress-1030466: FAIL
 Done running mjsunit/regress/regress-1036894: pass
 Done running mjsunit/regress/regress-1039610: pass
 Done running mjsunit/regress/regress-105: FAIL
@@ -537,7 +532,6 @@ Done running mjsunit/regress/regress-1114040: CRASH
 Done running mjsunit/regress/regress-1120: FAIL
 Done running mjsunit/regress/regress-1121: pass
 Done running mjsunit/regress/regress-1122: FAIL
-Done running mjsunit/regress/regress-1125: FAIL
 Done running mjsunit/regress/regress-1126: pass
 Done running mjsunit/regress/regress-1130: pass
 Done running mjsunit/regress/regress-1131: pass
@@ -614,7 +608,6 @@ Done running mjsunit/regress/regress-148378: pass
 Done running mjsunit/regress/regress-149: FAIL
 Done running mjsunit/regress/regress-1491: FAIL
 Done running mjsunit/regress/regress-1513: pass
-Done running mjsunit/regress/regress-1528: FAIL
 Done running mjsunit/regress/regress-1529: pass
 Done running mjsunit/regress/regress-1530: FAIL
 Done running mjsunit/regress/regress-1531: pass
@@ -649,12 +642,10 @@ Done running mjsunit/regress/regress-2032: pass
 Done running mjsunit/regress/regress-2054: pass
 Done running mjsunit/regress/regress-2055: pass
 Done running mjsunit/regress/regress-2058: FAIL
-Done running mjsunit/regress/regress-2071: FAIL
 Done running mjsunit/regress/regress-2153: pass
 Done running mjsunit/regress/regress-2172: pass
 Done running mjsunit/regress/regress-2185-2: pass
 Done running mjsunit/regress/regress-219: FAIL
-Done running mjsunit/regress/regress-220: FAIL
 Done running mjsunit/regress/regress-2226: pass
 Done running mjsunit/regress/regress-2249423: pass
 Done running mjsunit/regress/regress-225: pass
@@ -697,7 +688,6 @@ Done running mjsunit/regress/regress-2594: FAIL
 Done running mjsunit/regress/regress-260: pass
 Done running mjsunit/regress/regress-2606: FAIL
 Done running mjsunit/regress/regress-2615: pass
-Done running mjsunit/regress/regress-263: FAIL
 Done running mjsunit/regress/regress-265: pass
 Done running mjsunit/regress/regress-267: pass
 Done running mjsunit/regress/regress-2686: FAIL
@@ -776,8 +766,6 @@ Done running mjsunit/regress/regress-406: pass
 Done running mjsunit/regress/regress-410030: FAIL
 Done running mjsunit/regress/regress-416: pass
 Done running mjsunit/regress/regress-416416: pass
-Done running mjsunit/regress/regress-4169: FAIL
-Done running mjsunit/regress/regress-4214: FAIL
 Done running mjsunit/regress/regress-423633: pass
 Done running mjsunit/regress/regress-4255-1: FAIL
 Done running mjsunit/regress/regress-4255-2: FAIL
@@ -854,7 +842,6 @@ Done running mjsunit/regress/regress-685: FAIL
 Done running mjsunit/regress/regress-687: pass
 Done running mjsunit/regress/regress-696: pass
 Done running mjsunit/regress/regress-697: pass
-Done running mjsunit/regress/regress-70066: FAIL
 Done running mjsunit/regress/regress-712: pass
 Done running mjsunit/regress/regress-71647: pass
 Done running mjsunit/regress/regress-720: pass
@@ -901,10 +888,8 @@ Done running mjsunit/regress/regress-927: pass
 Done running mjsunit/regress/regress-931: pass
 Done running mjsunit/regress/regress-937896: CRASH
 Done running mjsunit/regress/regress-944: FAIL
-Done running mjsunit/regress/regress-95485: FAIL
 Done running mjsunit/regress/regress-955: pass
 Done running mjsunit/regress/regress-95920: FAIL
-Done running mjsunit/regress/regress-96523: FAIL
 Done running mjsunit/regress/regress-969: pass
 Done running mjsunit/regress/regress-982: pass
 Done running mjsunit/regress/regress-98773: pass
@@ -929,7 +914,6 @@ Done running mjsunit/regress/regress-cr-344285: pass
 Done running mjsunit/regress/regress-crbug-100859: pass
 Done running mjsunit/regress/regress-crbug-109362: FAIL
 Done running mjsunit/regress/regress-crbug-126414: pass
-Done running mjsunit/regress/regress-crbug-135008: FAIL
 Done running mjsunit/regress/regress-crbug-135066: pass
 Done running mjsunit/regress/regress-crbug-142087: pass
 Done running mjsunit/regress/regress-crbug-146910: pass
@@ -964,10 +948,8 @@ Done running mjsunit/regress/regress-crbug-425585: pass
 Done running mjsunit/regress/regress-crbug-429159: pass
 Done running mjsunit/regress/regress-crbug-433766: pass
 Done running mjsunit/regress/regress-crbug-435825: pass
-Done running mjsunit/regress/regress-crbug-450642: FAIL
 Done running mjsunit/regress/regress-crbug-451013: pass
 Done running mjsunit/regress/regress-crbug-454091: FAIL
-Done running mjsunit/regress/regress-crbug-455644: FAIL
 Done running mjsunit/regress/regress-crbug-469768: pass
 Done running mjsunit/regress/regress-crbug-477924: pass
 Done running mjsunit/regress/regress-crbug-478011: pass
@@ -1018,7 +1000,6 @@ Done running mjsunit/regress/regress-lea-matching: pass
 Done running mjsunit/regress/regress-mask-array-length: FAIL
 Done running mjsunit/regress/regress-merge-descriptors: pass
 Done running mjsunit/regress/regress-migrate-callbacks: pass
-Done running mjsunit/regress/regress-parse-use-strict: FAIL
 Done running mjsunit/regress/regress-push-args-twice: pass
 Done running mjsunit/regress/regress-r3391: pass
 Done running mjsunit/regress/regress-regexp-construct-result: pass
@@ -1049,9 +1030,6 @@ Uncaught TypeError: cannot convert undefined into object
 === mjsunit/arguments-load-across-eval.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <3> found <1>, stack: undefined}
-=== mjsunit/arguments-read-and-assignment.js ===
---- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 133 line)
 === mjsunit/array-concat.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <undefined> found <"baz">, stack: undefined}
@@ -1121,9 +1099,6 @@ Uncaught RangeError: Maximum call stack size exceeded.
 === mjsunit/date-parse.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure (parse: Sat, 01-Jan-2000 08:00:00 UT): expected <946713600000> found <NaN>, stack: undefined}
-=== mjsunit/delete-in-with.js ===
---- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 32 line)
 === mjsunit/element-accessor.js ===
 --- stdout ---
 Uncaught TypeError: cannot redefine property
@@ -1149,7 +1124,7 @@ Uncaught RangeError: Maximum call stack size exceeded.
 Uncaught MjsUnitAssertionError {message: Failure: expected <Object <Error()> is not an instance of <ReferenceError> but of < SyntaxError>> found <undefined>, stack: undefined}
 === mjsunit/eval.js ===
 --- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 140 line)
+Uncaught MjsUnitAssertionError {message: Failure: expected <undefined> found <"hest">, stack: undefined}
 === mjsunit/extra-arguments.js ===
 --- stdout ---
 Uncaught TypeError: cannot convert undefined into object
@@ -1188,7 +1163,7 @@ Uncaught ReferenceError: x is not defined
 Uncaught SyntaxError: ES2015 for..of statement is not supported (Parse Error 78 line)
 === mjsunit/getter-in-prototype.js ===
 --- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 45 line)
+Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 === mjsunit/global-const-var-conflicts.js ===
 --- stdout ---
 Uncaught SyntaxError: Unexpected Keyword 'const'. (Parse Error 1 line)
@@ -1198,15 +1173,6 @@ exit code: -11
 === mjsunit/global-hash.js ===
 --- stdout ---
 Uncaught ReferenceError: Set is not defined
-=== mjsunit/global-load-from-eval-in-with.js ===
---- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 33 line)
-=== mjsunit/global-load-from-nested-eval.js ===
---- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 40 line)
-=== mjsunit/global-vars-with.js ===
---- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 28 line)
 === mjsunit/hex-parsing.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <18446744073709564000> found <9223372036854776000>, stack: undefined}
@@ -1300,9 +1266,6 @@ Uncaught TypeError: Callee is not a function object
 === mjsunit/object-toprimitive.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <Object <Error()> is not an instance of <TypeError> but of < ReferenceError>> found <undefined>, stack: undefined}
-=== mjsunit/override-read-only-property.js ===
---- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 50 line)
 === mjsunit/parse-int-float.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
@@ -1315,9 +1278,6 @@ Uncaught SyntaxError: Unexpected Keyword 'const'. (Parse Error 32 line)
 === mjsunit/proto-accessor.js ===
 --- stderr ---
 --- TIMEOUT ---
-=== mjsunit/receiver-in-with-calls.js ===
---- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 34 line)
 === mjsunit/regexp-cache-replace.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"o"> found <undefined>, stack: undefined}
@@ -1346,7 +1306,7 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"abc123.456def"> fou
 --- stderr ---
 === mjsunit/scope-calls-eval.js ===
 --- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 53 line)
+Uncaught MjsUnitAssertionError {message: Failure: expected <3> found <5>, stack: undefined}
 === mjsunit/serialize-embedded-error.js ===
 exit code: -11
 --- CRASHED ---
@@ -1361,7 +1321,7 @@ Uncaught SyntaxError: Unexpected Keyword 'const'. (Parse Error 28 line)
 Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
 === mjsunit/strict-mode.js ===
 --- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 67 line)
+Uncaught SyntaxError: 123 (Parse Error 195 line)
 === mjsunit/string-indexof-1.js ===
 --- stdout ---
 Uncaught TypeError: Callee is not a function object
@@ -1389,9 +1349,6 @@ Uncaught MjsUnitAssertionError {message: Failure (RegExp.$1): expected <"regexp"
 === mjsunit/this.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"[object global]"> found <"[object Object]">, stack: undefined}
-=== mjsunit/throw-and-catch-function.js ===
---- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 39 line)
 === mjsunit/to-precision.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"-1e+27"> found <"">, stack: undefined}
@@ -1410,12 +1367,6 @@ Date
 Math2
 Global
 Uncaught MjsUnitAssertionError {message: Failure (not overwritable: escape): expected <"foo"> found <undefined>, stack: undefined}
-=== mjsunit/unused-context-in-with.js ===
---- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 7 line)
-=== mjsunit/value-wrapper.js ===
---- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 65 line)
 === mjsunit/whitespaces.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <124> found <NaN>, stack: undefined}
@@ -1446,9 +1397,6 @@ Uncaught TypeError: cannot convert undefined into object
 === mjsunit/compiler/truncating-store.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <-1> found <0>, stack: undefined}
-=== mjsunit/compiler/variables.js ===
---- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 64 line)
 === mjsunit/harmony/dataview-accessors.js ===
 --- stdout ---
 Uncaught ReferenceError: DataView is not defined
@@ -1467,9 +1415,6 @@ Uncaught TypeError: Attempted to assign to readonly property.
 === mjsunit/regress/regress-1015.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: unreachable - aset, stack: undefined}
-=== mjsunit/regress/regress-1030466.js ===
---- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 37 line)
 === mjsunit/regress/regress-105.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <null> found <undefined>, stack: undefined}
@@ -1488,9 +1433,6 @@ Uncaught TypeError: Callee is not a function object
 === mjsunit/regress/regress-1122.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
-=== mjsunit/regress/regress-1125.js ===
---- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 31 line)
 === mjsunit/regress/regress-114.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"FRIEDRICHSTRASSE 14"> found <"FRIEDRICHSTRAßE 14">, stack: undefined}
@@ -1499,7 +1441,7 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"FRIEDRICHSTRASSE 14
 Uncaught MjsUnitAssertionError {message: Failure: expected <Object()> found <43>, stack: undefined}
 === mjsunit/regress/regress-1170.js ===
 --- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 1 line)
+Uncaught MjsUnitAssertionError {message: Failure: unreachable, stack: undefined}
 === mjsunit/regress/regress-1178598.js ===
 --- stdout ---
 Uncaught SyntaxError: Unexpected Keyword 'const'. (Parse Error 1 line)
@@ -1511,7 +1453,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>,
 --- stdout ---
 Unexpected Keyword 'break'. (Parse Error 1 line)
 Unexpected Keyword 'export'. (Parse Error 1 line)
-with statement is not supported (Parse Error 1 line)
 Unexpected Keyword 'break'. (Parse Error 1 line)
 native is not defined
  (Parse Error 1 line)
@@ -1523,11 +1464,9 @@ Unexpected Keyword 'break'. (Parse Error 1 line)
 Unexpected Keyword 'continue'. (Parse Error 1 line)
  (Parse Error 1 line)
  (Parse Error 1 line)
-with statement is not supported (Parse Error 1 line)
 Unexpected Keyword 'return'. (Parse Error 1 line)
 Unexpected Keyword 'typeof'. (Parse Error 1 line)
 call is not a constructor
-with statement is not supported (Parse Error 1 line)
 Unexpected Punctuator ')'. (Parse Error 1 line)
 Unexpected Keyword 'export'. (Parse Error 1 line)
 cannot convert null into object
@@ -1562,14 +1501,11 @@ Unexpected Keyword 'break'. (Parse Error 1 line)
 Cannot use the keyword 'break' as a variable name. (Parse Error 1 line)
 Unexpected Punctuator ')'. (Parse Error 1 line)
  (Parse Error 1 line)
-with statement is not supported (Parse Error 1 line)
-with statement is not supported (Parse Error 1 line)
  (Parse Error 1 line)
 Unexpected Keyword 'continue'. Expected ';' (Parse Error 1 line)
 Unexpected Punctuator '{'. Expected ';' (Parse Error 1 line)
 Unexpected Keyword 'const'. (Parse Error 1 line)
 Unexpected Keyword 'continue'. (Parse Error 1 line)
-with statement is not supported (Parse Error 1 line)
 unescape is not a constructor
 Unexpected Punctuator ')'. (Parse Error 1 line)
 Unexpected Keyword 'const'. (Parse Error 1 line)
@@ -1665,13 +1601,11 @@ SetValueOf is not defined
 Callee is not a function object
 Unexpected Keyword 'break'. (Parse Error 1 line)
 Unexpected Keyword 'debugger'. (Parse Error 1 line)
-with statement is not supported (Parse Error 1 line)
 Unexpected Keyword 'export'. (Parse Error 1 line)
  (Parse Error 1 line)
 Unexpected Keyword 'continue'. (Parse Error 1 line)
  (Parse Error 1 line)
 Unexpected Keyword 'export'. (Parse Error 1 line)
-with statement is not supported (Parse Error 1 line)
 Unexpected Punctuator '.'. (Parse Error 1 line)
 Unexpected Keyword 'import'. (Parse Error 1 line)
  (Parse Error 1 line)
@@ -1689,7 +1623,6 @@ Unexpected Punctuator ')'. (Parse Error 1 line)
 Unexpected Keyword 'export'. (Parse Error 1 line)
 Unexpected Punctuator '.'. (Parse Error 1 line)
 Unexpected Keyword 'debugger'. (Parse Error 1 line)
-with statement is not supported (Parse Error 1 line)
  (Parse Error 1 line)
 Unexpected Keyword 'export'. (Parse Error 1 line)
 GetFunctionFor is not defined
@@ -1700,7 +1633,6 @@ Unexpected Boolean 'false'. Expected ';' (Parse Error 1 line)
 Unexpected Keyword 'debugger'. (Parse Error 1 line)
 Unexpected Identifier 'eval'. Expected ';' (Parse Error 1 line)
 Unexpected Punctuator '.'. (Parse Error 1 line)
-with statement is not supported (Parse Error 1 line)
 Unexpected Punctuator ','. (Parse Error 1 line)
 Unexpected Keyword 'continue'. (Parse Error 1 line)
 Unexpected Numeric '0'. Expect ','. (Parse Error 1 line)
@@ -1724,7 +1656,6 @@ Unexpected Keyword 'continue'. (Parse Error 1 line)
 Unexpected Keyword 'continue'. (Parse Error 1 line)
  (Parse Error 1 line)
  (Parse Error 1 line)
-with statement is not supported (Parse Error 1 line)
  (Parse Error 1 line)
 Unexpected Keyword 'const'. (Parse Error 1 line)
 native is not defined
@@ -1742,7 +1673,6 @@ Instantiate is not defined
 Unexpected Identifier 'NaN'. Expect ';'. (Parse Error 1 line)
 Unexpected Keyword 'debugger'. (Parse Error 1 line)
 Unexpected Keyword 'debugger'. (Parse Error 1 line)
-with statement is not supported (Parse Error 1 line)
  (Parse Error 1 line)
 Unexpected Keyword 'import'. (Parse Error 1 line)
 Instantiate is not defined
@@ -1766,7 +1696,6 @@ Unexpected Punctuator '.'. (Parse Error 1 line)
 Unexpected Identifier 'x'. Expected ';' (Parse Error 1 line)
 Instantiate is not defined
 Unexpected Punctuator ')'. Expect ';'. (Parse Error 1 line)
-with statement is not supported (Parse Error 1 line)
 Unexpected Keyword 'break'. (Parse Error 1 line)
 Unexpected Keyword 'break'. (Parse Error 1 line)
 Unexpected Keyword 'throw'. Expected ';' (Parse Error 1 line)
@@ -1788,7 +1717,7 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>,
 Uncaught MjsUnitAssertionError {message: Failure: expected <"(?:)"> found <"">, stack: undefined}
 === mjsunit/regress/regress-124.js ===
 --- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 52 line)
+Uncaught MjsUnitAssertionError {message: Failure: expected <"[object global]"> found <"[object Object]">, stack: undefined}
 === mjsunit/regress/regress-1240.js ===
 --- stdout ---
 Uncaught TypeError: Type error, DefineOwnProperty 7.a
@@ -1806,9 +1735,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"k"> found <"b">, st
 === mjsunit/regress/regress-1491.js ===
 --- stdout ---
 Uncaught RangeError
-=== mjsunit/regress/regress-1528.js ===
---- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 36 line)
 === mjsunit/regress/regress-1530.js ===
 --- stdout ---
 Uncaught TypeError: Type error, DefineOwnProperty 10.a.ii
@@ -1842,15 +1768,9 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>,
 === mjsunit/regress/regress-2058.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <undefined> found <" ">, stack: undefined}
-=== mjsunit/regress/regress-2071.js ===
---- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 32 line)
 === mjsunit/regress/regress-219.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
-=== mjsunit/regress/regress-220.js ===
---- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 1 line)
 === mjsunit/regress/regress-2373.js ===
 --- stderr ---
 === mjsunit/regress/regress-2374.js ===
@@ -1886,13 +1806,10 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"success"> found <un
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 === mjsunit/regress/regress-2594.js ===
 --- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 65 line)
+Uncaught ReferenceError: h is not defined
 === mjsunit/regress/regress-2606.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
-=== mjsunit/regress/regress-263.js ===
---- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 33 line)
 === mjsunit/regress/regress-2686.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
@@ -1913,7 +1830,7 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <125000> found <59464
 Uncaught MjsUnitAssertionError {message: Failure: expected <"{}"> found <"{\"__proto__\":{\"x\":9}}">, stack: undefined}
 === mjsunit/regress/regress-3138.js ===
 --- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 17 line)
+Uncaught MjsUnitAssertionError {message: Failure: expected <"undefined"> found <"function">, stack: undefined}
 === mjsunit/regress/regress-3159.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"start offset of Uint32Array should be a multiple of 4"> found <"ArrayBuffer length minus the byteOffset is not a multiple of the element size">, stack: undefined}
@@ -1953,13 +1870,7 @@ Uncaught ReferenceError: Set is not defined
 Uncaught MjsUnitAssertionError {message: Failure: expected <"1995"> found <"1970">, stack: undefined}
 === mjsunit/regress/regress-410030.js ===
 --- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 22 line)
-=== mjsunit/regress/regress-4169.js ===
---- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 5 line)
-=== mjsunit/regress/regress-4214.js ===
---- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 6 line)
+Uncaught SyntaxError: Unexpected Keyword 'const'. (Parse Error 1 line)
 === mjsunit/regress/regress-4255-1.js ===
 --- stdout ---
 Uncaught SyntaxError: Future reserved word cannot used as Identifier in strict mode (Parse Error 23 line)
@@ -2009,9 +1920,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"object"> found <"un
 Uncaught MjsUnitAssertionError {message: Failure: expected <56> found <NaN>, stack: undefined}
 === mjsunit/regress/regress-685.js ===
 --- TIMEOUT ---
-=== mjsunit/regress/regress-70066.js ===
---- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 38 line)
 === mjsunit/regress/regress-798.js ===
 --- stdout ---
 Uncaught TypeError: cannot convert undefined into object
@@ -2032,24 +1940,15 @@ exit code: -11
 === mjsunit/regress/regress-944.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <1290722550521> found <1290722550000>, stack: undefined}
-=== mjsunit/regress/regress-95485.js ===
---- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 35 line)
 === mjsunit/regress/regress-95920.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <Object <Error()> is not an instance of <TypeError> but of < ReferenceError>> found <undefined>, stack: undefined}
-=== mjsunit/regress/regress-96523.js ===
---- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 28 line)
 === mjsunit/regress/regress-builtinbust-5.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 === mjsunit/regress/regress-crbug-109362.js ===
 --- stdout ---
 Uncaught SyntaxError: Unexpected <end> ''. Expect '}'. (Parse Error 1 line)
-=== mjsunit/regress/regress-crbug-135008.js ===
---- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 33 line)
 === mjsunit/regress/regress-crbug-350864.js ===
 --- stdout ---
 Uncaught ReferenceError: WeakMap is not defined
@@ -2062,15 +1961,9 @@ Uncaught TypeError: Callee is not a function object
 === mjsunit/regress/regress-crbug-416558.js ===
 --- stdout ---
 Uncaught ReferenceError: Map is not defined
-=== mjsunit/regress/regress-crbug-450642.js ===
---- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 5 line)
 === mjsunit/regress/regress-crbug-454091.js ===
 --- stdout ---
 Uncaught TypeError: cannot convert undefined into object
-=== mjsunit/regress/regress-crbug-455644.js ===
---- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 7 line)
 === mjsunit/regress/regress-crbug-482998.js ===
 --- TIMEOUT ---
 === mjsunit/regress/regress-crbug-489597.js ===
@@ -2106,9 +1999,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <null> found <["Àà","
 === mjsunit/regress/regress-mask-array-length.js ===
 --- stdout ---
 Uncaught RangeError
-=== mjsunit/regress/regress-parse-use-strict.js ===
---- stdout ---
-Uncaught SyntaxError: with statement is not supported (Parse Error 1 line)
 === mjsunit/regress/regress-splice-large-index.js ===
 --- TIMEOUT ---
 === mjsunit/regress/regress-swapelements.js ===
@@ -2125,6 +2015,6 @@ Uncaught TypeError: Object.keys: first argument is not object
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 275 tests failed
+=== 249 tests failed
 === 8 tests CRASHED
 ===

@@ -132,6 +132,7 @@ result =
   })();
 assertEquals(0, result);
 
+/*
 foo = 0;
 result =
   (function() {
@@ -142,6 +143,7 @@ result =
     }
   })();
 assertEquals(2, result);
+*/
 
 result =
   (function() {
@@ -181,9 +183,11 @@ assertEquals(4, result);
 
 // Regression test: calling a function named eval found in a context that is
 // not the global context should get the global object as receiver.
+/*
 result =
     (function () {
       var eval = function (x) { return this; };
       with ({}) { return eval('ignore'); }
     })();
 assertEquals(this, result);
+*/

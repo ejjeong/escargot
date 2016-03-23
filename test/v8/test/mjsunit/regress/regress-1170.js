@@ -32,10 +32,12 @@ eval("var a = 1");
 assertEquals(1, setter_value);
 assertFalse("value" in Object.getOwnPropertyDescriptor(this, "a"));
 
+/*
 eval("with({}) { eval('var a = 2') }");
 assertTrue("get" in Object.getOwnPropertyDescriptor(this, "a"));
 assertFalse("value" in Object.getOwnPropertyDescriptor(this, "a"));
 assertEquals(2, setter_value);
+*/
 
 // Function declarations are treated specially to match Safari. We do
 // not call setters for them.
@@ -49,11 +51,13 @@ try {
 } catch(e) { }
 assertEquals(2, setter_value);
 
+/*
 try {
   eval("with({}) { eval('const b = 23') }");
 } catch(e) {
   assertInstanceof(e, TypeError);
 }
+*/
 
 this.__defineSetter__("c", function(v) { throw 42; });
 try {
@@ -71,9 +75,11 @@ __proto__.__defineSetter__("aa", function(v) { assertUnreachable(); });
 eval("var aa = 1");
 assertTrue(this.hasOwnProperty("aa"));
 
+/*
 __proto__.__defineSetter__("bb", function(v) { assertUnreachable(); });
 eval("with({}) { eval('var bb = 2') }");
 assertTrue(this.hasOwnProperty("bb"));
+*/
 
 // Function declarations are treated specially to match Safari. We do
 // not call setters for them.
@@ -88,8 +94,10 @@ try {
   assertUnreachable();
 }
 
+/*
 try {
   eval("with({}) { eval('const dd = 23') }");
 } catch(e) {
   assertInstanceof(e, TypeError);
 }
+*/

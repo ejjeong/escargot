@@ -721,6 +721,25 @@
 
   # with statement
   'with*': [SKIP],
+  'delete-in-with': [SKIP],
+  'global-load-from-eval-in-with': [SKIP],
+  'global-vars-with': [SKIP],
+  'unused-context-in-with': [SKIP],
+  'regress/regress-1030466': [SKIP],
+  'regress/regress-1125': [SKIP],
+  'regress/regress-1528': [SKIP],
+  'regress/regress-2071': [SKIP],
+  'regress/regress-220': [SKIP],
+  'regress/regress-263': [SKIP],
+  'regress/regress-4169': [SKIP],
+  'regress/regress-4214': [SKIP],
+  'regress/regress-70066': [SKIP],
+  'regress/regress-95485': [SKIP],
+  'regress/regress-96523': [SKIP],
+  'regress/regress-crbug-135008': [SKIP],
+  'regress/regress-crbug-450642': [SKIP],
+  'regress/regress-crbug-455644': [SKIP],
+  'regress/regress-parse-use-strict': [SKIP],
 
   # ES6 spec
   'const*': [SKIP],

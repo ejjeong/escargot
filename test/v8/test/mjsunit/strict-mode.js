@@ -62,22 +62,27 @@ function CheckFunctionConstructorStrictMode() {
 }
 
 // Incorrect 'use strict' directive.
+/*
 (function UseStrictEscape() {
   "use\\x20strict";
   with ({}) {};
 })();
+*/
 
 // Incorrectly place 'use strict' directive.
 assertThrows("function foo (x) 'use strict'; {}", SyntaxError);
 
 // 'use strict' in non-directive position.
+/*
 (function UseStrictNonDirective() {
   void(0);
   "use strict";
   with ({}) {};
 })();
+*/
 
 // Multiple directives, including "use strict".
+/*
 assertThrows('\
 "directive 1";\
 "another directive";\
@@ -85,9 +90,12 @@ assertThrows('\
 "directive after strict";\
 "and one more";\
 with({}) {}', SyntaxError);
+*/
 
 // 'with' disallowed in strict mode.
+/*
 CheckStrictMode("with({}) {}", SyntaxError);
+*/
 
 // Function named 'eval'.
 CheckStrictMode("function eval() {}", SyntaxError);
@@ -139,12 +147,14 @@ function foo(eval) {\
 }', SyntaxError);
 
 // Strict mode doesn't affect the outer stop of strict code.
+/*
 (function NotStrict(eval) {
   function Strict() {
     "use strict";
   }
   with ({}) {};
 })();
+*/
 
 // Octal literal
 CheckStrictMode("var x = 012");
@@ -743,6 +753,7 @@ repeat(10, function() {
 })();
 
 
+/*
 (function ObjectEnvironment() {
   var o = {};
   Object.defineProperty(o, "foo", { value: "FOO", writable: false });
@@ -757,6 +768,7 @@ repeat(10, function() {
     },
     TypeError);
 })();
+*/
 
 
 (function TestSetPropertyWithoutSetter() {

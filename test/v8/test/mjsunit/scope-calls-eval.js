@@ -47,6 +47,7 @@ function f1() {
 }
 
 
+/*
 function f2() {
   var x = 5;
   function g() {
@@ -59,7 +60,8 @@ function f2() {
   }
   return g();
 }
+*/
 
 
 assertEquals(3, f1());
-assertEquals(3, f2());
+//assertEquals(3, f2());

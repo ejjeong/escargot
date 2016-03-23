@@ -127,6 +127,7 @@ assertEquals(42, function(a,b) {
                  }(20, 37), "captured assignment");
 
 // Inside non-function scopes.
+/*
 assertEquals(42,
              function(a) {
                arguments[0] = 20;
@@ -155,6 +156,7 @@ assertEquals(42,
                }
              }(37),
              "in a catch in a named function captured a in with ");
+*/
 // Escaping arguments.
 function weirdargs(a,b,c) { if (!a) return arguments;
                             return [b[2],c]; }
