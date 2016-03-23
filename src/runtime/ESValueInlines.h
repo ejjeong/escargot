@@ -812,6 +812,12 @@ ALWAYS_INLINE ESValue::ESValue(int i)
     u.asInt64 = TagTypeNumber | static_cast<uint32_t>(i);
 }
 
+ALWAYS_INLINE ESValue::operator bool() const
+{
+    ASSERT(u.asInt64 != ValueDeleted);
+    return u.asInt64 != ValueEmpty;
+}
+
 ALWAYS_INLINE bool ESValue::operator==(const ESValue& other) const
 {
     return u.asInt64 == other.u.asInt64;
@@ -916,7 +922,6 @@ ALWAYS_INLINE ESPointer* ESValue::asESPointer() const
 
 
 #endif
-
 inline ESString* ESString::create(double number)
 {
 #ifdef ENABLE_DTOACACHE

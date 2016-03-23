@@ -1241,9 +1241,9 @@ void GlobalObject::installObject()
 
         size_t idx = obj->hiddenClass()->findProperty(propertyKey);
         if (idx != SIZE_MAX)
-            return escargot::PropertyDescriptor::FromPropertyDescriptor(obj, propertyKey, idx);
+            return escargot::PropertyDescriptor::fromPropertyDescriptor(obj, propertyKey, idx);
         else
-            return escargot::PropertyDescriptor::FromPropertyDescriptorForIndexedProperties(obj, arg1.toIndex());
+            return escargot::PropertyDescriptor::fromPropertyDescriptorForIndexedProperties(obj, arg1.toIndex());
     }, ESString::createAtomicString("getOwnPropertyDescriptor"), 2));
 
     // $19.1.2.7 Object.getOwnPropertyNames

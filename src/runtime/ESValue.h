@@ -116,6 +116,7 @@ public:
     explicit ESValue(long long);
     explicit ESValue(unsigned long long);
 
+    ALWAYS_INLINE operator bool() const;
     ALWAYS_INLINE bool operator==(const ESValue& other) const;
     ALWAYS_INLINE bool operator!=(const ESValue& other) const;
 
@@ -1726,6 +1727,76 @@ public:
 #endif
 };
 
+enum Attribute {
+    None              = 0,
+    Writable          = 1 << 1, // property can be only read, not written
+    Enumerable        = 1 << 2, // property doesn't appear in (for .. in ..)
+    Configurable      = 1 << 3, // property can't be deleted
+    Accessor          = 1 << 4, // property is a getter/setter
+};
+
+class PropertyDescriptor {
+public:
+    PropertyDescriptor()
+        : m_value(ESValue::ESEmptyValue)
+        , m_getter(ESValue::ESEmptyValue)
+        , m_setter(ESValue::ESEmptyValue)
+        , m_attributes(defaultAttributes)
+        , m_seenAttributes(0)
+    {
+    }
+    PropertyDescriptor(ESValue value, unsigned attributes)
+        : m_value(value)
+        , m_getter(ESValue::ESEmptyValue)
+        , m_setter(ESValue::ESEmptyValue)
+        , m_attributes(attributes)
+        , m_seenAttributes(EnumerablePresent | ConfigurablePresent | WritablePresent)
+    {
+        ASSERT(m_value);
+    }
+    PropertyDescriptor(ESObject* obj);
+    bool writable() const;
+    bool enumerable() const;
+    bool configurable() const;
+    bool isDataDescriptor() const;
+    bool isGenericDescriptor() const;
+    bool isAccessorDescriptor() const;
+    unsigned attributes() const { return m_attributes; }
+    ESValue value() const { return m_value.isEmpty()? ESValue(ESValue::ESUndefined) : m_value; }
+    ESValue getter() const;
+    ESValue setter() const;
+    ESFunctionObject* getterObject() const;
+    ESFunctionObject* setterObject() const;
+    void setWritable(bool);
+    void setEnumerable(bool);
+    void setConfigurable(bool);
+    void setValue(ESValue value) { m_value = value; }
+    void setSetter(ESValue);
+    void setGetter(ESValue);
+    bool hasWritable() const { return m_seenAttributes & WritablePresent; }
+    bool hasEnumerable() const { return m_seenAttributes & EnumerablePresent; }
+    bool hasConfigurable() const { return m_seenAttributes & ConfigurablePresent; }
+    bool hasValue() const { return !!m_value;}
+    bool hasSetter() const { return !!m_setter; }
+    bool hasGetter() const { return !!m_getter; }
+    static ESValue fromPropertyDescriptor(ESObject* descSrc, ESString* propertyName, size_t idx);
+    static ESValue fromPropertyDescriptorForIndexedProperties(ESObject* obj, uint32_t index);
+
+private:
+    static unsigned defaultAttributes;
+    enum PresentAttribute {
+        WritablePresent         = 1 << 1, // property can be only read, not written
+        EnumerablePresent       = 1 << 2, // property doesn't appear in (for .. in ..)
+        ConfigurablePresent     = 1 << 3, // property can't be deleted
+    };
+    // May be a getter/setter
+    ESValue m_value;
+    ESValue m_getter;
+    ESValue m_setter;
+    unsigned m_attributes;
+    unsigned m_seenAttributes;
+};
+
 class ESObject : public ESPointer {
     friend class ESHiddenClass;
     friend class ESFunctionObject;
@@ -1764,7 +1835,8 @@ public:
     inline bool hasProperty(const escargot::ESValue& key);
     inline bool hasOwnProperty(const escargot::ESValue& key);
 
-    bool defineOwnProperty(ESValue& key, ESObject* desc, bool throwFlag);
+    bool defineOwnProperty(const ESValue& key, const PropertyDescriptor& desc, bool throwFlag);
+    bool defineOwnProperty(const ESValue& key, ESObject* obj, bool throwFlag);
 
     // $6.1.7.2 Object Internal Methods and Internal Slots
     bool isExtensible()
@@ -2273,7 +2345,8 @@ public:
         return (const uint32_t &)m_length;
     }
 
-    bool defineOwnProperty(ESValue& key, ESObject* desc, bool throwFlag);
+    bool defineOwnProperty(const ESValue& key, const PropertyDescriptor& desc, bool throwFlag);
+    bool defineOwnProperty(const ESValue& key, ESObject* desc, bool throwFlag);
 
 #ifdef ENABLE_ESJIT
     static size_t offsetOfVectorData() { return offsetof(ESArrayObject, m_vector); }
