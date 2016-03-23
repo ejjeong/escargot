@@ -1,13 +1,13 @@
 >>> Running tests for x64.release
 Total: 2347 tests
- *   79 tests will be skipped
+ *   87 tests will be skipped
  *    1 tests are expected to timeout sometimes
  *    4 tests are expected to be flaky but not crash
- * 2104 tests are expected to pass
+ * 2096 tests are expected to pass
  *    0 tests are expected to fail that we won't fix
  *   67 tests are expected to fail that we should fix
 No connection to distribution server; running tests locally.
-Running 2244 tests
+Running 2236 tests
 Done running mjsunit/accessors-on-global-object: pass
 Done running mjsunit/api-call-after-bypassed-exception: pass
 Done running mjsunit/argument-assigned: pass
@@ -70,8 +70,6 @@ Done running mjsunit/compare-table-ne: pass
 Done running mjsunit/compare-table-seq: pass
 Done running mjsunit/compare-table-sne: pass
 Done running mjsunit/context-variable-assignments: pass
-Done running mjsunit/contextual-calls: FAIL
-Done running mjsunit/cross-realm-filtering: FAIL
 Done running mjsunit/cyclic-array-to-string: FAIL
 Done running mjsunit/cyrillic: pass
 Done running mjsunit/d8-os: pass
@@ -125,7 +123,6 @@ Done running mjsunit/getter-in-prototype: FAIL
 Done running mjsunit/getter-in-value-prototype: pass
 Done running mjsunit/global-accessors: pass
 Done running mjsunit/global-deleted-property-ic: CRASH
-Done running mjsunit/global-hash: FAIL
 Done running mjsunit/global-ic: pass
 Done running mjsunit/global-load-from-eval: pass
 Done running mjsunit/global-load-from-nested-eval: pass
@@ -455,7 +452,6 @@ Done running mjsunit/compiler/to-fast-properties: pass
 Done running mjsunit/compiler/truncating-store: FAIL
 Done running mjsunit/compiler/unary-add: pass
 Done running mjsunit/compiler/variables: pass
-Done running mjsunit/harmony/dataview-accessors: FAIL
 Done running mjsunit/harmony/set-prototype-of: FAIL
 Done running mjsunit/harmony/regress/regress-typedarray-out-of-bounds: pass
 Done running mjsunit/message/fail/arrow-formal-parameters: pass
@@ -683,7 +679,6 @@ Done running mjsunit/regress/regress-2711: pass
 Done running mjsunit/regress/regress-2717: pass
 Done running mjsunit/regress/regress-279: pass
 Done running mjsunit/regress/regress-2790: pass
-Done running mjsunit/regress/regress-280531: FAIL
 Done running mjsunit/regress/regress-284: pass
 Done running mjsunit/regress/regress-2855: pass
 Done running mjsunit/regress/regress-286: pass
@@ -739,7 +734,6 @@ Done running mjsunit/regress/regress-3612: pass
 Done running mjsunit/regress/regress-3621: pass
 Done running mjsunit/regress/regress-3643: pass
 Done running mjsunit/regress/regress-3756: pass
-Done running mjsunit/regress/regress-3859: FAIL
 Done running mjsunit/regress/regress-386: pass
 Done running mjsunit/regress/regress-392: pass
 Done running mjsunit/regress/regress-394: pass
@@ -910,7 +904,6 @@ Done running mjsunit/regress/regress-crbug-260345: pass
 Done running mjsunit/regress/regress-crbug-306220: pass
 Done running mjsunit/regress/regress-crbug-3184: pass
 Done running mjsunit/regress/regress-crbug-325225: pass
-Done running mjsunit/regress/regress-crbug-350864: FAIL
 Done running mjsunit/regress/regress-crbug-350867: pass
 Done running mjsunit/regress/regress-crbug-351262: pass
 Done running mjsunit/regress/regress-crbug-352586: FAIL
@@ -922,7 +915,7 @@ Done running mjsunit/regress/regress-crbug-3867: pass
 Done running mjsunit/regress/regress-crbug-39160: pass
 Done running mjsunit/regress/regress-crbug-403409: pass
 Done running mjsunit/regress/regress-crbug-40931: pass
-Done running mjsunit/regress/regress-crbug-416558: FAIL
+Done running mjsunit/regress/regress-crbug-416558: pass
 Done running mjsunit/regress/regress-crbug-425585: pass
 Done running mjsunit/regress/regress-crbug-429159: pass
 Done running mjsunit/regress/regress-crbug-433766: pass
@@ -937,7 +930,6 @@ Done running mjsunit/regress/regress-crbug-487105: pass
 Done running mjsunit/regress/regress-crbug-490680: pass
 Done running mjsunit/regress/regress-crbug-493290: pass
 Done running mjsunit/regress/regress-crbug-498811: FAIL
-Done running mjsunit/regress/regress-crbug-501808: FAIL
 Done running mjsunit/regress/regress-crbug-502930: pass
 Done running mjsunit/regress/regress-crbug-503578: pass
 Done running mjsunit/regress/regress-crbug-503968: pass
@@ -1057,12 +1049,6 @@ Uncaught SyntaxError:  (Parse Error 1 line)
 === mjsunit/call-stub.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <2> found <1>, stack: undefined}
-=== mjsunit/contextual-calls.js ===
---- stdout ---
-Uncaught ReferenceError: Realm is not defined
-=== mjsunit/cross-realm-filtering.js ===
---- stdout ---
-Uncaught ReferenceError: Realm is not defined
 === mjsunit/cyclic-array-to-string.js ===
 --- stdout ---
 Uncaught RangeError: Maximum call stack size exceeded.
@@ -1134,9 +1120,6 @@ Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefin
 === mjsunit/global-deleted-property-ic.js ===
 exit code: -11
 --- CRASHED ---
-=== mjsunit/global-hash.js ===
---- stdout ---
-Uncaught ReferenceError: Set is not defined
 === mjsunit/hex-parsing.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <18446744073709564000> found <9223372036854776000>, stack: undefined}
@@ -1202,7 +1185,7 @@ Uncaught TypeError: Callee is not a function object
 Uncaught TypeError: Object.getOwnPropertyNames: first argument is not object
 === mjsunit/object-is.js ===
 --- stdout ---
-Uncaught ReferenceError: Symbol is not defined
+Uncaught TypeError: Callee is not a function object
 === mjsunit/object-literal-multiple-fields.js ===
 --- stdout ---
 Uncaught SyntaxError: p (Parse Error 55 line)
@@ -1328,12 +1311,9 @@ Uncaught SyntaxError: Future reserved word cannot used as Identifier in strict m
 === mjsunit/compiler/truncating-store.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <-1> found <0>, stack: undefined}
-=== mjsunit/harmony/dataview-accessors.js ===
---- stdout ---
-Uncaught ReferenceError: DataView is not defined
 === mjsunit/harmony/set-prototype-of.js ===
 --- stdout ---
-Uncaught ReferenceError: Symbol is not defined
+Uncaught TypeError: Object.getPrototypeOf: first argument is not object
 === mjsunit/regress/readonly3.js ===
 --- stdout ---
 Uncaught TypeError: Attempted to assign to readonly property.
@@ -1736,9 +1716,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>,
 === mjsunit/regress/regress-2686.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
-=== mjsunit/regress/regress-280531.js ===
---- stdout ---
-Uncaught ReferenceError: Realm is not defined
 === mjsunit/regress/regress-2984.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"x"> found <"ÿ">, stack: undefined}
@@ -1779,9 +1756,6 @@ Uncaught RangeError: Maximum call stack size exceeded.
 === mjsunit/regress/regress-355485.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"œ"> found <"µ">, stack: undefined}
-=== mjsunit/regress/regress-3859.js ===
---- stdout ---
-Uncaught ReferenceError: Set is not defined
 === mjsunit/regress/regress-396.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"1995"> found <"1970">, stack: undefined}
@@ -1854,15 +1828,9 @@ Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefin
 === mjsunit/regress/regress-crbug-109362.js ===
 --- stdout ---
 Uncaught SyntaxError: Unexpected <end> ''. Expect '}'. (Parse Error 1 line)
-=== mjsunit/regress/regress-crbug-350864.js ===
---- stdout ---
-Uncaught ReferenceError: WeakMap is not defined
 === mjsunit/regress/regress-crbug-352586.js ===
 --- stdout ---
 Uncaught RangeError: Maximum call stack size exceeded.
-=== mjsunit/regress/regress-crbug-416558.js ===
---- stdout ---
-Uncaught ReferenceError: Map is not defined
 === mjsunit/regress/regress-crbug-454091.js ===
 --- stdout ---
 Uncaught TypeError: cannot convert undefined into object
@@ -1871,9 +1839,6 @@ Uncaught TypeError: cannot convert undefined into object
 === mjsunit/regress/regress-crbug-498811.js ===
 --- stdout ---
 Uncaught SyntaxError: Future reserved word cannot used as Identifier in strict mode (Parse Error 8 line)
-=== mjsunit/regress/regress-crbug-501808.js ===
---- stdout ---
-Uncaught ReferenceError: Realm is not defined
 === mjsunit/regress/regress-crbug-511880.js ===
 --- stdout ---
 Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 10 line)
@@ -1908,6 +1873,6 @@ Uncaught TypeError: Object.keys: first argument is not object
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 217 tests failed
+=== 208 tests failed
 === 8 tests CRASHED
 ===

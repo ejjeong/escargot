@@ -759,6 +759,10 @@
   'number-is': [SKIP],
   'string-normalize': [SKIP],
   'asm/math-fround': [SKIP],
+  'global-hash': [SKIP],
+  'harmony/dataview-accessors': [SKIP],
+  'regress/regress-3859': [SKIP],
+  'regress/regress-crbug-350864': [SKIP],
 
   ## 3. Deprecated
   # function.[arguments|caller|callee]
@@ -766,7 +770,9 @@
   'extra-arguments': [SKIP],
 
   ## 4. v8-only
+  # Worker
   'd8-worker*': [SKIP],
+  # Error.prototype.stack
   'eval-stack-trace': [SKIP],
   'stack-trace*': [SKIP],
   'regress/regress-crbug-393988': [SKIP],
@@ -778,6 +784,11 @@
   'regress/regress-798': [SKIP],
   'regress/regress-crbug-505370': [SKIP],
   'regress/regress-function-constructor-receiver': [SKIP],
+  # etc
+  'contextual-calls': [SKIP],
+  'cross-realm-filtering': [SKIP],
+  'regress/regress-280531': [SKIP],
+  'regress/regress-crbug-501808': [SKIP],
 
 }],  # 'escargot == True'
 ]

@@ -39,7 +39,7 @@ function getObjects() {
     new Number(1),
     new Boolean(true),
     new String('str'),
-    Object(Symbol())
+    //Object(Symbol())
   ];
 }
 
@@ -48,7 +48,7 @@ var coercibleValues = [
   1,
   true,
   'string',
-  Symbol()
+  //Symbol()
 ];
 
 

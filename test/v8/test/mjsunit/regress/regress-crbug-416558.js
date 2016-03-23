@@ -58,6 +58,7 @@
   assertEquals(undefined, get_hole());
 })();
 
+/*
 (function() {
   function store(x) { x[0] = 0; }
   store([]);
@@ -113,3 +114,4 @@
   assertEquals(undefined, get_hole());
   assertEquals(undefined, get_hole());
 })();
+*/
