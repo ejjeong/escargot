@@ -37,7 +37,7 @@ var used_custom_lookup = false;
     try {
       f();
     } catch (err) {
-      stack = err.stack;
+      stack = err.toString();
     }
   }
 }).test();

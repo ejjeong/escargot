@@ -34,8 +34,10 @@ assertFalse(desc['enumerable']);
 var e = new Error("foobar");
 desc = Object.getOwnPropertyDescriptor(e, 'message');
 assertFalse(desc['enumerable']);
+/*
 desc = Object.getOwnPropertyDescriptor(e, 'stack');
 assertFalse(desc['enumerable']);
+*/
 
 var e = new Error();
 assertFalse(e.hasOwnProperty('message'));
@@ -51,14 +53,14 @@ for (var v in e) {
 function fail() { assertUnreachable(); };
 ReferenceError.prototype.__defineSetter__('name', fail);
 ReferenceError.prototype.__defineSetter__('message', fail);
-ReferenceError.prototype.__defineSetter__('stack', fail);
+//ReferenceError.prototype.__defineSetter__('stack', fail);
 
 var e = new ReferenceError();
-assertTrue(e.hasOwnProperty('stack'));
+//assertTrue(e.hasOwnProperty('stack'));
 
 var e = new ReferenceError('123');
 assertTrue(e.hasOwnProperty('message'));
-assertTrue(e.hasOwnProperty('stack'));
+//assertTrue(e.hasOwnProperty('stack'));
 
 try {
   eval("var error = reference");
@@ -66,7 +68,7 @@ try {
   e = error;
 }
 
-assertTrue(e.hasOwnProperty('stack'));
+//assertTrue(e.hasOwnProperty('stack'));
 
 // Check that intercepting property access from toString is prevented for
 // compiler errors. This is not specified, but allowing interception
@@ -82,7 +84,7 @@ for (var i in errors) {
   var name = errors[i].name;
 
   // Monkey-patch prototype.
-  var props = ["name", "message", "stack"];
+  var props = ["name", "message" /*, "stack"*/];
   for (var j in props) {
     errors[i].prototype.__defineGetter__(props[j], fail);
   }

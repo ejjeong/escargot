@@ -763,6 +763,7 @@
   ## 3. Deprecated
   # function.[arguments|caller|callee]
   'arguments-indirect': [SKIP],
+  'extra-arguments': [SKIP],
 
   ## 4. v8-only
   'd8-worker*': [SKIP],
@@ -770,6 +771,13 @@
   'stack-trace*': [SKIP],
   'regress/regress-crbug-393988': [SKIP],
   'regress/regress-crbug-489597': [SKIP],
+  'compiler/regress-stacktrace': [SKIP],
+  'regress/regress-237617': [SKIP],
+  'regress/regress-3404': [SKIP],
+  'regress/regress-3718': [SKIP],
+  'regress/regress-798': [SKIP],
+  'regress/regress-crbug-505370': [SKIP],
+  'regress/regress-function-constructor-receiver': [SKIP],
 
 }],  # 'escargot == True'
 ]

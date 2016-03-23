@@ -1,13 +1,13 @@
 >>> Running tests for x64.release
 Total: 2347 tests
- *   71 tests will be skipped
+ *   79 tests will be skipped
  *    1 tests are expected to timeout sometimes
  *    4 tests are expected to be flaky but not crash
- * 2112 tests are expected to pass
+ * 2104 tests are expected to pass
  *    0 tests are expected to fail that we won't fix
  *   67 tests are expected to fail that we should fix
 No connection to distribution server; running tests locally.
-Running 2252 tests
+Running 2244 tests
 Done running mjsunit/accessors-on-global-object: pass
 Done running mjsunit/api-call-after-bypassed-exception: pass
 Done running mjsunit/argument-assigned: pass
@@ -100,7 +100,6 @@ Done running mjsunit/escape: FAIL
 Done running mjsunit/eval-enclosing-function-name: pass
 Done running mjsunit/eval-typeof-non-existing: FAIL
 Done running mjsunit/eval: FAIL
-Done running mjsunit/extra-arguments: FAIL
 Done running mjsunit/extra-commas: pass
 Done running mjsunit/for-in-delete: pass
 Done running mjsunit/for-in-null-or-undefined: pass
@@ -446,7 +445,6 @@ Done running mjsunit/compiler/regress-register-allocator: pass
 Done running mjsunit/compiler/regress-register-allocator2: pass
 Done running mjsunit/compiler/regress-register-allocator3: pass
 Done running mjsunit/compiler/regress-serialized-slots: pass
-Done running mjsunit/compiler/regress-stacktrace: FAIL
 Done running mjsunit/compiler/short-circuit: pass
 Done running mjsunit/compiler/simple-bailouts: pass
 Done running mjsunit/compiler/simple-binary-op: pass
@@ -604,7 +602,7 @@ Done running mjsunit/regress/regress-1531: pass
 Done running mjsunit/regress/regress-1546: pass
 Done running mjsunit/regress/regress-1548: FAIL
 Done running mjsunit/regress/regress-155924: pass
-Done running mjsunit/regress/regress-1591: FAIL
+Done running mjsunit/regress/regress-1591: pass
 Done running mjsunit/regress/regress-1620: pass
 Done running mjsunit/regress/regress-1624-strict: CRASH
 Done running mjsunit/regress/regress-1624: CRASH
@@ -649,7 +647,6 @@ Done running mjsunit/regress/regress-233: pass
 Done running mjsunit/regress/regress-235311: pass
 Done running mjsunit/regress/regress-2373: FAIL
 Done running mjsunit/regress/regress-2374: FAIL
-Done running mjsunit/regress/regress-237617: FAIL
 Done running mjsunit/regress/regress-2398: pass
 Done running mjsunit/regress/regress-2410: pass
 Done running mjsunit/regress/regress-241344: pass
@@ -721,7 +718,6 @@ Done running mjsunit/regress/regress-326: pass
 Done running mjsunit/regress/regress-3294: pass
 Done running mjsunit/regress/regress-3334: pass
 Done running mjsunit/regress/regress-340125: pass
-Done running mjsunit/regress/regress-3404: FAIL
 Done running mjsunit/regress/regress-341: pass
 Done running mjsunit/regress/regress-345: pass
 Done running mjsunit/regress/regress-3462: FAIL
@@ -742,7 +738,6 @@ Done running mjsunit/regress/regress-359525: pass
 Done running mjsunit/regress/regress-3612: pass
 Done running mjsunit/regress/regress-3621: pass
 Done running mjsunit/regress/regress-3643: pass
-Done running mjsunit/regress/regress-3718: FAIL
 Done running mjsunit/regress/regress-3756: pass
 Done running mjsunit/regress/regress-3859: FAIL
 Done running mjsunit/regress/regress-386: pass
@@ -847,7 +842,6 @@ Done running mjsunit/regress/regress-780423: pass
 Done running mjsunit/regress/regress-78270: pass
 Done running mjsunit/regress/regress-784: pass
 Done running mjsunit/regress/regress-794: pass
-Done running mjsunit/regress/regress-798: FAIL
 Done running mjsunit/regress/regress-806: pass
 Done running mjsunit/regress/regress-815: pass
 Done running mjsunit/regress/regress-842: pass
@@ -950,7 +944,6 @@ Done running mjsunit/regress/regress-crbug-503968: pass
 Done running mjsunit/regress/regress-crbug-503991: pass
 Done running mjsunit/regress/regress-crbug-504136: pass
 Done running mjsunit/regress/regress-crbug-504729: pass
-Done running mjsunit/regress/regress-crbug-505370: FAIL
 Done running mjsunit/regress/regress-crbug-505778: pass
 Done running mjsunit/regress/regress-crbug-506549: pass
 Done running mjsunit/regress/regress-crbug-510426: pass
@@ -973,7 +966,6 @@ Done running mjsunit/regress/regress-eval-cache: pass
 Done running mjsunit/regress/regress-eval-context: FAIL
 Done running mjsunit/regress/regress-fast-empty-string: pass
 Done running mjsunit/regress/regress-freeze-setter: pass
-Done running mjsunit/regress/regress-function-constructor-receiver: FAIL
 Done running mjsunit/regress/regress-function-length-strict: FAIL
 Done running mjsunit/regress/regress-is-contextual: pass
 Done running mjsunit/regress/regress-iteration-order: pass
@@ -1088,7 +1080,7 @@ Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefin
 Uncaught MjsUnitAssertionError {message: Failure (array element at index 2): expected <"-23"> found <"5">, stack: undefined}
 === mjsunit/error-constructors.js ===
 --- stdout ---
-Uncaught TypeError: cannot convert undefined into object
+Uncaught MjsUnitAssertionError {message: Failure: unreachable, stack: undefined}
 === mjsunit/error-tostring-omit.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
@@ -1103,9 +1095,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <Object <Error()> is 
 === mjsunit/eval.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <undefined> found <"hest">, stack: undefined}
-=== mjsunit/extra-arguments.js ===
---- stdout ---
-Uncaught TypeError: cannot convert undefined into object
 === mjsunit/for-in.js ===
 --- stdout ---
 Uncaught SyntaxError: Unexpected Keyword 'in'. Expect ';'. (Parse Error 68 line)
@@ -1336,9 +1325,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"\\x1\\/"> found <"\
 === mjsunit/compiler/regress-451012.js ===
 --- stdout ---
 Uncaught SyntaxError: Future reserved word cannot used as Identifier in strict mode (Parse Error 7 line)
-=== mjsunit/compiler/regress-stacktrace.js ===
---- stdout ---
-Uncaught TypeError: cannot convert undefined into object
 === mjsunit/compiler/truncating-store.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <-1> found <0>, stack: undefined}
@@ -1690,9 +1676,6 @@ Uncaught TypeError: Type error, DefineOwnProperty 10.a.ii
 === mjsunit/regress/regress-1548.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
-=== mjsunit/regress/regress-1591.js ===
---- stdout ---
-Uncaught TypeError: cannot convert undefined into object
 === mjsunit/regress/regress-1624-strict.js ===
 exit code: -11
 --- CRASHED ---
@@ -1718,9 +1701,6 @@ Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefin
 --- stderr ---
 === mjsunit/regress/regress-2374.js ===
 --- stderr ---
-=== mjsunit/regress/regress-237617.js ===
---- stdout ---
-Uncaught TypeError: cannot convert undefined into object
 === mjsunit/regress/regress-2437.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <0> found <1>, stack: undefined}
@@ -1788,9 +1768,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"\\/"> found <"/">, 
 === mjsunit/regress/regress-324028.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
-=== mjsunit/regress/regress-3404.js ===
---- stdout ---
-Uncaught TypeError: cannot convert undefined into object
 === mjsunit/regress/regress-3462.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
@@ -1802,9 +1779,6 @@ Uncaught RangeError: Maximum call stack size exceeded.
 === mjsunit/regress/regress-355485.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"œ"> found <"µ">, stack: undefined}
-=== mjsunit/regress/regress-3718.js ===
---- stdout ---
-Uncaught TypeError: cannot convert undefined into object
 === mjsunit/regress/regress-3859.js ===
 --- stdout ---
 Uncaught ReferenceError: Set is not defined
@@ -1860,9 +1834,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"object"> found <"un
 Uncaught MjsUnitAssertionError {message: Failure: expected <56> found <NaN>, stack: undefined}
 === mjsunit/regress/regress-685.js ===
 --- TIMEOUT ---
-=== mjsunit/regress/regress-798.js ===
---- stdout ---
-Uncaught TypeError: cannot convert undefined into object
 === mjsunit/regress/regress-857.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <1283326536000> found <NaN>, stack: undefined}
@@ -1903,9 +1874,6 @@ Uncaught SyntaxError: Future reserved word cannot used as Identifier in strict m
 === mjsunit/regress/regress-crbug-501808.js ===
 --- stdout ---
 Uncaught ReferenceError: Realm is not defined
-=== mjsunit/regress/regress-crbug-505370.js ===
---- stdout ---
-Uncaught TypeError: cannot convert undefined into object
 === mjsunit/regress/regress-crbug-511880.js ===
 --- stdout ---
 Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 10 line)
@@ -1915,9 +1883,6 @@ Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 10 li
 === mjsunit/regress/regress-eval-context.js ===
 --- stdout ---
 Uncaught SyntaxError: Future reserved word cannot used as Identifier in strict mode (Parse Error 10 line)
-=== mjsunit/regress/regress-function-constructor-receiver.js ===
---- stdout ---
-Uncaught TypeError: cannot convert undefined into object
 === mjsunit/regress/regress-function-length-strict.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
@@ -1943,6 +1908,6 @@ Uncaught TypeError: Object.keys: first argument is not object
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 226 tests failed
+=== 217 tests failed
 === 8 tests CRASHED
 ===
