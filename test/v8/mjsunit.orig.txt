@@ -1,13 +1,13 @@
 >>> Running tests for x64.release
 Total: 2347 tests
- *   55 tests will be skipped
+ *   63 tests will be skipped
  *    1 tests are expected to timeout sometimes
  *    4 tests are expected to be flaky but not crash
- * 2127 tests are expected to pass
+ * 2119 tests are expected to pass
  *    0 tests are expected to fail that we won't fix
  *   67 tests are expected to fail that we should fix
 No connection to distribution server; running tests locally.
-Running 2268 tests
+Running 2260 tests
 Done running mjsunit/accessors-no-prototype: FAIL
 Done running mjsunit/accessors-on-global-object: pass
 Done running mjsunit/api-call-after-bypassed-exception: pass
@@ -127,7 +127,6 @@ Done running mjsunit/get-prototype-of: FAIL
 Done running mjsunit/getter-in-prototype: FAIL
 Done running mjsunit/getter-in-value-prototype: pass
 Done running mjsunit/global-accessors: pass
-Done running mjsunit/global-const-var-conflicts: FAIL
 Done running mjsunit/global-deleted-property-ic: CRASH
 Done running mjsunit/global-hash: FAIL
 Done running mjsunit/global-ic: pass
@@ -145,7 +144,7 @@ Done running mjsunit/indexed-accessors: FAIL
 Done running mjsunit/indexed-value-properties: pass
 Done running mjsunit/instanceof-2: FAIL
 Done running mjsunit/instanceof: pass
-Done running mjsunit/int32-ops: FAIL
+Done running mjsunit/int32-ops: pass
 Done running mjsunit/integer-to-string: pass
 Done running mjsunit/invalid-lhs: FAIL
 Done running mjsunit/invalid-source-element: pass
@@ -185,7 +184,7 @@ Done running mjsunit/mul-exhaustive-part9: pass
 Done running mjsunit/multiline: pass
 Done running mjsunit/multiple-return: pass
 Done running mjsunit/negate-zero: pass
-Done running mjsunit/negate: FAIL
+Done running mjsunit/negate: pass
 Done running mjsunit/new-function: pass
 Done running mjsunit/new: pass
 Done running mjsunit/newline-in-string: FAIL
@@ -261,7 +260,7 @@ Done running mjsunit/serialize-embedded-error: CRASH
 Done running mjsunit/short-circuit-boolean: pass
 Done running mjsunit/simple-constructor: pass
 Done running mjsunit/smi-negative-zero: pass
-Done running mjsunit/smi-ops: FAIL
+Done running mjsunit/smi-ops: pass
 Done running mjsunit/sparse-array-reverse: FAIL
 Done running mjsunit/sparse-array: pass
 Done running mjsunit/store-dictionary: pass
@@ -359,7 +358,7 @@ Done running mjsunit/asm/math-abs: pass
 Done running mjsunit/asm/math-ceil: pass
 Done running mjsunit/asm/math-floor: pass
 Done running mjsunit/asm/math-fround: FAIL
-Done running mjsunit/asm/pointer-masking: FAIL
+Done running mjsunit/asm/pointer-masking: pass
 Done running mjsunit/asm/sign-extend: pass
 Done running mjsunit/asm/switch: pass
 Done running mjsunit/asm/uint32-less-than-shift: pass
@@ -435,7 +434,6 @@ Done running mjsunit/compiler/regress-445859: pass
 Done running mjsunit/compiler/regress-445907: FAIL
 Done running mjsunit/compiler/regress-446156: pass
 Done running mjsunit/compiler/regress-446778: pass
-Done running mjsunit/compiler/regress-447567: FAIL
 Done running mjsunit/compiler/regress-451012: FAIL
 Done running mjsunit/compiler/regress-452427: pass
 Done running mjsunit/compiler/regress-463056: pass
@@ -552,7 +550,7 @@ Done running mjsunit/regress/regress-1176: pass
 Done running mjsunit/regress/regress-1177518: pass
 Done running mjsunit/regress/regress-1177809: pass
 Done running mjsunit/regress/regress-117794: pass
-Done running mjsunit/regress/regress-1178598: FAIL
+Done running mjsunit/regress/regress-1178598: pass
 Done running mjsunit/regress/regress-1182832: FAIL
 Done running mjsunit/regress/regress-1184: pass
 Done running mjsunit/regress/regress-1187524: pass
@@ -560,10 +558,8 @@ Done running mjsunit/regress/regress-119925: pass
 Done running mjsunit/regress/regress-1199401: pass
 Done running mjsunit/regress/regress-1200351: FAIL
 Done running mjsunit/regress/regress-120099: pass
-Done running mjsunit/regress/regress-1201933: FAIL
 Done running mjsunit/regress/regress-1203459: pass
 Done running mjsunit/regress/regress-1207: pass
-Done running mjsunit/regress/regress-1207276: FAIL
 Done running mjsunit/regress/regress-1209: pass
 Done running mjsunit/regress/regress-1213: pass
 Done running mjsunit/regress/regress-1213516: pass
@@ -625,9 +621,8 @@ Done running mjsunit/regress/regress-1711: pass
 Done running mjsunit/regress/regress-1748: pass
 Done running mjsunit/regress/regress-176: FAIL
 Done running mjsunit/regress/regress-1790: pass
-Done running mjsunit/regress/regress-186: FAIL
+Done running mjsunit/regress/regress-186: pass
 Done running mjsunit/regress/regress-187: FAIL
-Done running mjsunit/regress/regress-189: FAIL
 Done running mjsunit/regress/regress-191: pass
 Done running mjsunit/regress/regress-1919169: pass
 Done running mjsunit/regress/regress-192: pass
@@ -825,7 +820,6 @@ Done running mjsunit/regress/regress-612: pass
 Done running mjsunit/regress/regress-618: pass
 Done running mjsunit/regress/regress-619: pass
 Done running mjsunit/regress/regress-636: pass
-Done running mjsunit/regress/regress-641: FAIL
 Done running mjsunit/regress/regress-643: pass
 Done running mjsunit/regress/regress-646: pass
 Done running mjsunit/regress/regress-662254: pass
@@ -860,7 +854,6 @@ Done running mjsunit/regress/regress-78270: pass
 Done running mjsunit/regress/regress-784: pass
 Done running mjsunit/regress/regress-794: pass
 Done running mjsunit/regress/regress-798: FAIL
-Done running mjsunit/regress/regress-799761: FAIL
 Done running mjsunit/regress/regress-806: pass
 Done running mjsunit/regress/regress-815: pass
 Done running mjsunit/regress/regress-842: pass
@@ -872,7 +865,6 @@ Done running mjsunit/regress/regress-874: pass
 Done running mjsunit/regress/regress-874178: pass
 Done running mjsunit/regress/regress-875031: pass
 Done running mjsunit/regress/regress-877615: pass
-Done running mjsunit/regress/regress-88591: FAIL
 Done running mjsunit/regress/regress-892742: pass
 Done running mjsunit/regress/regress-900: pass
 Done running mjsunit/regress/regress-900055: pass
@@ -1164,9 +1156,6 @@ Uncaught SyntaxError: ES2015 for..of statement is not supported (Parse Error 78 
 === mjsunit/getter-in-prototype.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
-=== mjsunit/global-const-var-conflicts.js ===
---- stdout ---
-Uncaught SyntaxError: Unexpected Keyword 'const'. (Parse Error 1 line)
 === mjsunit/global-deleted-property-ic.js ===
 exit code: -11
 --- CRASHED ---
@@ -1185,9 +1174,6 @@ Uncaught TypeError: Callee is not a function object
 === mjsunit/instanceof-2.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
-=== mjsunit/int32-ops.js ===
---- stdout ---
-Uncaught SyntaxError: Unexpected Keyword 'const'. (Parse Error 32 line)
 === mjsunit/invalid-lhs.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
@@ -1209,9 +1195,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"[object global]"> f
 === mjsunit/math-sqrt.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <0> found <-0>, stack: undefined}
-=== mjsunit/negate.js ===
---- stdout ---
-Uncaught SyntaxError: Unexpected Keyword 'const'. (Parse Error 28 line)
 === mjsunit/newline-in-string.js ===
 --- stdout ---
 Uncaught SyntaxError: unterminated string literal (Parse Error 2 line)
@@ -1274,7 +1257,7 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>,
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 === mjsunit/property-load-across-eval.js ===
 --- stdout ---
-Uncaught SyntaxError: Unexpected Keyword 'const'. (Parse Error 32 line)
+Uncaught MjsUnitAssertionError {message: Failure: expected <3> found <1>, stack: undefined}
 === mjsunit/proto-accessor.js ===
 --- stderr ---
 --- TIMEOUT ---
@@ -1310,9 +1293,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <3> found <5>, stack:
 === mjsunit/serialize-embedded-error.js ===
 exit code: -11
 --- CRASHED ---
-=== mjsunit/smi-ops.js ===
---- stdout ---
-Uncaught SyntaxError: Unexpected Keyword 'const'. (Parse Error 28 line)
 === mjsunit/sparse-array-reverse.js ===
 --- stderr ---
 --- TIMEOUT ---
@@ -1373,9 +1353,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <124> found <NaN>, st
 === mjsunit/asm/math-fround.js ===
 --- stdout ---
 Uncaught TypeError: Callee is not a function object
-=== mjsunit/asm/pointer-masking.js ===
---- stdout ---
-Uncaught SyntaxError: Unexpected Keyword 'const'. (Parse Error 13 line)
 === mjsunit/asm/word32and.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <-2143483875> found <-2147483648>, stack: undefined}
@@ -1385,9 +1362,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"\\x1\\/"> found <"\
 === mjsunit/compiler/regress-445907.js ===
 --- stderr ---
 --- TIMEOUT ---
-=== mjsunit/compiler/regress-447567.js ===
---- stdout ---
-Uncaught SyntaxError: Unexpected Keyword 'const'. (Parse Error 11 line)
 === mjsunit/compiler/regress-451012.js ===
 --- stdout ---
 Uncaught SyntaxError: Future reserved word cannot used as Identifier in strict mode (Parse Error 7 line)
@@ -1442,9 +1416,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <Object()> found <43>
 === mjsunit/regress/regress-1170.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: unreachable, stack: undefined}
-=== mjsunit/regress/regress-1178598.js ===
---- stdout ---
-Uncaught SyntaxError: Unexpected Keyword 'const'. (Parse Error 1 line)
 === mjsunit/regress/regress-1182832.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
@@ -1453,6 +1424,7 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>,
 --- stdout ---
 Unexpected Keyword 'break'. (Parse Error 1 line)
 Unexpected Keyword 'export'. (Parse Error 1 line)
+with statement is not supported (Parse Error 1 line)
 Unexpected Keyword 'break'. (Parse Error 1 line)
 native is not defined
  (Parse Error 1 line)
@@ -1464,9 +1436,11 @@ Unexpected Keyword 'break'. (Parse Error 1 line)
 Unexpected Keyword 'continue'. (Parse Error 1 line)
  (Parse Error 1 line)
  (Parse Error 1 line)
+with statement is not supported (Parse Error 1 line)
 Unexpected Keyword 'return'. (Parse Error 1 line)
 Unexpected Keyword 'typeof'. (Parse Error 1 line)
 call is not a constructor
+with statement is not supported (Parse Error 1 line)
 Unexpected Punctuator ')'. (Parse Error 1 line)
 Unexpected Keyword 'export'. (Parse Error 1 line)
 cannot convert null into object
@@ -1501,11 +1475,14 @@ Unexpected Keyword 'break'. (Parse Error 1 line)
 Cannot use the keyword 'break' as a variable name. (Parse Error 1 line)
 Unexpected Punctuator ')'. (Parse Error 1 line)
  (Parse Error 1 line)
+with statement is not supported (Parse Error 1 line)
+with statement is not supported (Parse Error 1 line)
  (Parse Error 1 line)
 Unexpected Keyword 'continue'. Expected ';' (Parse Error 1 line)
 Unexpected Punctuator '{'. Expected ';' (Parse Error 1 line)
 Unexpected Keyword 'const'. (Parse Error 1 line)
 Unexpected Keyword 'continue'. (Parse Error 1 line)
+with statement is not supported (Parse Error 1 line)
 unescape is not a constructor
 Unexpected Punctuator ')'. (Parse Error 1 line)
 Unexpected Keyword 'const'. (Parse Error 1 line)
@@ -1601,11 +1578,13 @@ SetValueOf is not defined
 Callee is not a function object
 Unexpected Keyword 'break'. (Parse Error 1 line)
 Unexpected Keyword 'debugger'. (Parse Error 1 line)
+with statement is not supported (Parse Error 1 line)
 Unexpected Keyword 'export'. (Parse Error 1 line)
  (Parse Error 1 line)
 Unexpected Keyword 'continue'. (Parse Error 1 line)
  (Parse Error 1 line)
 Unexpected Keyword 'export'. (Parse Error 1 line)
+with statement is not supported (Parse Error 1 line)
 Unexpected Punctuator '.'. (Parse Error 1 line)
 Unexpected Keyword 'import'. (Parse Error 1 line)
  (Parse Error 1 line)
@@ -1623,6 +1602,7 @@ Unexpected Punctuator ')'. (Parse Error 1 line)
 Unexpected Keyword 'export'. (Parse Error 1 line)
 Unexpected Punctuator '.'. (Parse Error 1 line)
 Unexpected Keyword 'debugger'. (Parse Error 1 line)
+with statement is not supported (Parse Error 1 line)
  (Parse Error 1 line)
 Unexpected Keyword 'export'. (Parse Error 1 line)
 GetFunctionFor is not defined
@@ -1633,6 +1613,7 @@ Unexpected Boolean 'false'. Expected ';' (Parse Error 1 line)
 Unexpected Keyword 'debugger'. (Parse Error 1 line)
 Unexpected Identifier 'eval'. Expected ';' (Parse Error 1 line)
 Unexpected Punctuator '.'. (Parse Error 1 line)
+with statement is not supported (Parse Error 1 line)
 Unexpected Punctuator ','. (Parse Error 1 line)
 Unexpected Keyword 'continue'. (Parse Error 1 line)
 Unexpected Numeric '0'. Expect ','. (Parse Error 1 line)
@@ -1656,6 +1637,7 @@ Unexpected Keyword 'continue'. (Parse Error 1 line)
 Unexpected Keyword 'continue'. (Parse Error 1 line)
  (Parse Error 1 line)
  (Parse Error 1 line)
+with statement is not supported (Parse Error 1 line)
  (Parse Error 1 line)
 Unexpected Keyword 'const'. (Parse Error 1 line)
 native is not defined
@@ -1673,6 +1655,7 @@ Instantiate is not defined
 Unexpected Identifier 'NaN'. Expect ';'. (Parse Error 1 line)
 Unexpected Keyword 'debugger'. (Parse Error 1 line)
 Unexpected Keyword 'debugger'. (Parse Error 1 line)
+with statement is not supported (Parse Error 1 line)
  (Parse Error 1 line)
 Unexpected Keyword 'import'. (Parse Error 1 line)
 Instantiate is not defined
@@ -1696,16 +1679,11 @@ Unexpected Punctuator '.'. (Parse Error 1 line)
 Unexpected Identifier 'x'. Expected ';' (Parse Error 1 line)
 Instantiate is not defined
 Unexpected Punctuator ')'. Expect ';'. (Parse Error 1 line)
+with statement is not supported (Parse Error 1 line)
 Unexpected Keyword 'break'. (Parse Error 1 line)
 Unexpected Keyword 'break'. (Parse Error 1 line)
 Unexpected Keyword 'throw'. Expected ';' (Parse Error 1 line)
 Unexpected Keyword 'import'. (Parse Error 1 line)
-=== mjsunit/regress/regress-1201933.js ===
---- stdout ---
-Uncaught SyntaxError: Unexpected Keyword 'const'. (Parse Error 34 line)
-=== mjsunit/regress/regress-1207276.js ===
---- stdout ---
-Uncaught SyntaxError: Unexpected Keyword 'const'. (Parse Error 29 line)
 === mjsunit/regress/regress-1213575.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
@@ -1753,15 +1731,9 @@ exit code: -11
 === mjsunit/regress/regress-176.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure (zero length match in (?:) with capture in lookahead - array element at index 1): expected <undefined> found <"f">, stack: undefined}
-=== mjsunit/regress/regress-186.js ===
---- stdout ---
-Uncaught SyntaxError: Unexpected Keyword 'const'. (Parse Error 1 line)
 === mjsunit/regress/regress-187.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <["f",undefined]> found <["f","f"]>, stack: undefined}
-=== mjsunit/regress/regress-189.js ===
---- stdout ---
-Uncaught SyntaxError: Unexpected Keyword 'const'. (Parse Error 1 line)
 === mjsunit/regress/regress-1980.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
@@ -1909,9 +1881,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <5> found <0>, stack:
 === mjsunit/regress/regress-581.js ===
 --- stderr ---
 --- TIMEOUT ---
-=== mjsunit/regress/regress-641.js ===
---- stdout ---
-Uncaught SyntaxError: Unexpected Keyword 'const'. (Parse Error 32 line)
 === mjsunit/regress/regress-676025.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <"object"> found <"undefined">, stack: undefined}
@@ -1923,15 +1892,9 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <56> found <NaN>, sta
 === mjsunit/regress/regress-798.js ===
 --- stdout ---
 Uncaught TypeError: cannot convert undefined into object
-=== mjsunit/regress/regress-799761.js ===
---- stdout ---
-Uncaught SyntaxError: Unexpected Keyword 'const'. (Parse Error 29 line)
 === mjsunit/regress/regress-857.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <1283326536000> found <NaN>, stack: undefined}
-=== mjsunit/regress/regress-88591.js ===
---- stdout ---
-Uncaught SyntaxError: Unexpected Keyword 'const'. (Parse Error 1 line)
 === mjsunit/regress/regress-91.js ===
 --- stderr ---
 === mjsunit/regress/regress-937896.js ===
@@ -2015,6 +1978,6 @@ Uncaught TypeError: Object.keys: first argument is not object
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 249 tests failed
+=== 235 tests failed
 === 8 tests CRASHED
 ===

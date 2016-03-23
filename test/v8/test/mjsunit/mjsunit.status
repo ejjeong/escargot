@@ -741,8 +741,19 @@
   'regress/regress-crbug-455644': [SKIP],
   'regress/regress-parse-use-strict': [SKIP],
 
-  # ES6 spec
+  ## ES6 spec
+  # const
   'const*': [SKIP],
+  'global-const-var-conflicts': [SKIP],
+  'compiler/regress-447567': [SKIP],
+  'regress/regress-1201933': [SKIP],
+  'regress/regress-1207276': [SKIP],
+  'regress/regress-189': [SKIP],
+  'regress/regress-641': [SKIP],
+  'regress/regress-799761': [SKIP],
+  'regress/regress-88591': [SKIP],
+
+  # etc
   'accessors-no-prototype.js': [SKIP],
 
   # v8-only

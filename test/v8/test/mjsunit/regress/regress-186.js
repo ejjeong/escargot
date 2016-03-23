@@ -47,6 +47,7 @@ function testLocal() {
   assertEquals(o, eval("__proto__"));
 }
 
+/*
 function testConstLocal() {
   // Add const property called __proto__ to the extension object.
   eval("const __proto__ = o");
@@ -55,6 +56,7 @@ function testConstLocal() {
   assertFalse(setterCalled, "prototype of extension object changed");
   assertEquals(o, eval("__proto__"));
 }
+*/
 
 function testGlobal() {
   // Assign to the global __proto__ property.
@@ -67,5 +69,5 @@ function testGlobal() {
 }
 
 runTest(testLocal);
-runTest(testConstLocal);
+//runTest(testConstLocal);
 runTest(testGlobal);

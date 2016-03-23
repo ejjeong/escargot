@@ -29,6 +29,7 @@
 
 var x = 1;
 function global_function() { return 'global'; }
+/*
 const const_uninitialized;
 const const_initialized = function() { return "const_global"; }
 
@@ -90,6 +91,7 @@ function testNoShadowing() {
 }
 
 testNoShadowing();
+*/
 
 // Test loading across eval calls that do not shadow variables.
 function testNoShadowing2() {

@@ -10,7 +10,7 @@ var heap = new ArrayBuffer(64 * 1024);
 var pm1 = (function(stdlib, foreign, heap) {
   "use asm";
   var HEAP8 = new stdlib.Int8Array(heap);
-  const MASK1 = 1023;
+  var MASK1 = 1023;
   function load1(i) {
     i = i|0;
     var j = 0;

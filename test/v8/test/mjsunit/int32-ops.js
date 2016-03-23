@@ -29,12 +29,12 @@
 // with SMI_MIN and SMI_MAX from the 64-bit platform, which represents all
 // signed 32-bit integer values as smis.
 
-const SMI_MAX = (1 << 30) - 1 + (1 << 30);  // Create without overflowing.
-const SMI_MIN = -SMI_MAX - 1;  // Create without overflowing.
-const ONE = 1;
-const ONE_HUNDRED = 100;
+var SMI_MAX = (1 << 30) - 1 + (1 << 30);  // Create without overflowing.
+var SMI_MIN = -SMI_MAX - 1;  // Create without overflowing.
+var ONE = 1;
+var ONE_HUNDRED = 100;
 
-const OBJ_42 = new (function() {
+var OBJ_42 = new (function() {
   this.valueOf = function() { return 42; };
 })();
 

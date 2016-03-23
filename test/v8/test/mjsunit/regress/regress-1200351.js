@@ -44,11 +44,9 @@ try {
   eval("export Join((void), false.className(), null instanceof continue, return 'a', 0.__defineGetter__(x,function(){native}))")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
 
-/*
 try {
   eval("with ({ void&&null.push(goto NaN) : Math.max(undef).toText }) { {-1/null,1.isNull} }")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
-*/
 
 try {
   eval("new break>>>=native.charCodeAt(-1.valueOf())")
@@ -94,11 +92,9 @@ try {
   eval("Instantiate(0.add(break)&&x > null)")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
 
-/*
 try {
   eval("with ({ eval(Array(x)) : 1.call('a').superConstructor }) { debugger.lastIndex.toLocaleString() }")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
-*/
 
 try {
   eval("x = return true.__defineGetter__(this,function(){0.2})")
@@ -112,11 +108,9 @@ try {
   eval("String(new RegExp.call(1)).prototype.unescape(parseFloat(-1)) = false<<true.x.lastIndexOf(1)")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
 
-/*
 try {
   eval("with ({ 1+debugger.valueOf() : continue.join().name() }) { parseInt(true)==undef.sort() }")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
-*/
 
 try {
   eval("new RegExp>>0.2.superConstructor.prototype.eval(void).className() = false.join().prototype.name")
@@ -262,17 +256,13 @@ try {
   eval("x = new 0.lastIndexOf(NaN).shift()")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
 
-/*
 try {
   eval("with ({ 0>>>=this.lastIndex : new Object().lastIndexOf(true).toObject() }) { x.lastIndex > 1.__defineSetter__(false,function(){this}) }")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
-*/
 
-/*
 try {
   eval("with ({ throw new false(0.2).prototype.name : parseFloat(false)+(!debugger) }) { escape(undef.lastIndex) }")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
-*/
 
 try {
   eval("Math.pow(0.2).toJSONProtocol.prototype.break.superConstructor.slice(NaN.exec(undef), -1.lastIndexOf(NaN)) = true.splice().length")
@@ -294,11 +284,9 @@ try {
   eval("SetValueOf(continue.__lookupGetter__(null).constructor, debugger.filter(0.2)>>>=this.'a')")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
 
-/*
 try {
   eval("with ({ 0.2.unshift() > true.size : return Math.max(new RegExp) }) { void.splice().toString() }")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
-*/
 
 try {
   eval("new unescape(false).unshift()")
@@ -691,11 +679,9 @@ try {
   eval("label (!0.2/debugger)")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
 
-/*
 try {
   eval("with ({ NaN.concat(new RegExp)+Join(1, false, new Object(), new Object(), x) : unescape(x).concat(Iterator(-1)) }) { 'a'.isNull.__lookupGetter__(this+native) }")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
-*/
 
 try {
   eval("export break.name()/IsPrimitive(this)")
@@ -717,11 +703,9 @@ try {
   eval("export NaN.__lookupGetter__(undef).__lookupGetter__(void.isNull)")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
 
-/*
 try {
   eval("with ({ ~new RegExp.filter(undef&&this) : String(continue)<<NaN.toText }) { this.exec(this).length }")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
-*/
 
 try {
   eval("for (true&void.exec(void.exec(continue)) in Join('a', undef, new Object(), continue, x) instanceof {undef}) { unescape(-1.prototype.name) }")
@@ -794,11 +778,9 @@ try {
   eval("let (debugger>>>=continue > break.exec(1)) { Math.pow(new RegExp)==NaN>>>=0.2 }")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
 
-/*
 try {
   eval("with ({ 0.2==0.2/goto true : IsSmi(native).isNull }) { throw new {x,null}(false.className()) }")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
-*/
 
 try {
   eval("x = {false.concat(null),Math.pow(NaN)}")
@@ -840,11 +822,9 @@ try {
   eval("new Date(x > void.join())")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
 
-/*
 try {
   eval("with ({ {this.toObject()} : Number(NaN).toJSONProtocol }) { 0.2.className().prototype.name }")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
-*/
 
 try {
   eval("if (false.__defineGetter__(undef,function(){undef}).exec(NaN.splice())) { typeof(Join(void, new RegExp, break, -1, -1)) }")
@@ -942,11 +922,9 @@ try {
   eval("if (1.slice(new Object(), this).valueOf()) { parseInt(true).pop() }")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
 
-/*
 try {
   eval("with ({ 0.2.superConstructor.lastIndex : goto debugger<<Join(undef, 1, true, undef, debugger) }) { function () { NaN }.prototype.name }")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
-*/
 
 try {
   eval("-1.exec(debugger).length.prototype.debugger > null.slice(Iterator(void), continue.concat(0)) = parseInt(throw new 1(1))")
@@ -1020,11 +998,9 @@ try {
   eval("x = new debugger.sort() instanceof this>>1")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
 
-/*
 try {
   eval("with ({ parseFloat(false).prototype.(!new Object()) : {unescape(-1)} }) { Math.max(new RegExp.superConstructor) }")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
-*/
 
 try {
   eval("Instantiate({Math.pow(break)})")
@@ -1118,11 +1094,9 @@ try {
   eval("for (GetFunctionFor(this.slice(0.2, this)), this.prototype.void?null.unshift():native.className(), Number(new Object().call(-1))) { 0.splice() > debugger&&this }")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
 
-/*
 try {
   eval("with ({ {goto new RegExp,Join(new Object(), native, continue, -1, x)} : NaN&x/{0,break} }) { this.lastIndexOf(new RegExp).join() }")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
-*/
 
 try {
   eval("let (typeof(break.length())) { native&&false.sort() }")
@@ -1208,21 +1182,17 @@ try {
   eval("x = debugger.toObject().charAt(this<<undef)")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
 
-/*
 try {
   eval("with ({ 'a'.valueOf()+parseInt(undef) : IsPrimitive(null).lastIndex }) { NaN.toObject().isNull }")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
-*/
 
 try {
   eval("x = new new Object()&&void.lastIndexOf(0.2.splice())")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
 
-/*
 try {
   eval("with ({ 1+1.name() : Join(Math.pow(debugger), new RegExp-1, x > 1, x<<-1, new RegExp.size) }) { undef[undef].size }")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
-*/
 
 try {
   eval("delete native.call(-1).isNull")
@@ -1244,11 +1214,9 @@ try {
   eval("Instantiate(goto new Object().push(void))")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
 
-/*
 try {
   eval("with ({ Array(this.0) : parseFloat(void).pop() }) { escape(true).slice(continue.lastIndex, false.toObject()) }")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
-*/
 
 try {
   eval("new native==true.filter({NaN,-1})")
@@ -1314,11 +1282,9 @@ try {
   eval("function X(x) { return break.isNull > parseInt(continue) }; X((new RegExp instanceof 1))")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
 
-/*
 try {
   eval("with ({ Number(false).indexOf(x instanceof new Object()) : function () { x.toString() } }) { false.name().indexOf(GetFunctionFor(null)) }")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
-*/
 
 try {
   eval("new Date('a'.constructor.prototype.name)")
@@ -1332,11 +1298,9 @@ try {
   eval("delete false?break:undef.constructor")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
 
-/*
 try {
   eval("with ({ (native.filter(1)) : eval(this&&0.2) }) { undef.length instanceof new Object().toText }")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
-*/
 
 try {
   eval("export String(break.lastIndexOf(null))")
@@ -1546,11 +1510,9 @@ try {
   eval("Instantiate(null.__defineGetter__(native,function(){continue}).valueOf())")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
 
-/*
 try {
   eval("with ({ {new Object()[continue],native.length()} : undef.name().superConstructor }) { Math.pow(break).indexOf(0.toJSONProtocol) }")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
-*/
 
 try {
   eval("switch (Iterator(native.call(new RegExp))) { case (String(new RegExp).isNull): goto new RegExp.pop(); break; }")
@@ -1685,11 +1647,9 @@ try {
   eval("Instantiate(true.isNull.toObject())")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
 
-/*
 try {
   eval("with ({ typeof(debugger).toObject() : x.constructor>>>=null.__defineGetter__(native,function(){debugger}) }) { unescape(undef.lastIndexOf(false)) }")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
-*/
 
 try {
   eval("export unescape(continue)<<native[0]")
@@ -1703,11 +1663,9 @@ try {
   eval("String({true}).prototype.break.length.call(false > 0.2) = GetFunctionFor(0.prototype.new RegExp)")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
 
-/*
 try {
   eval("with ({ false.push(0.2).indexOf(Math.max(debugger)) : x&x.prototype.name }) { goto 1.lastIndex }")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
-*/
 
 try {
   eval("new Function(0.2.lastIndex&0.2?break:NaN)")
@@ -1817,11 +1775,9 @@ try {
   eval("x = new Join(0.2, x, continue, debugger, new Object()).size")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
 
-/*
 try {
   eval("with ({ Number(null).name() : Math.pow(true).__defineGetter__(debugger.toString(),function(){false+0.2}) }) { this.{x,break} }")
 } catch (e) { if (e.message.length > 0) { print (e.message); } };
-*/
 
 try {
   eval("new Math.pow(goto debugger)")

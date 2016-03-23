@@ -27,6 +27,7 @@
 
 // Regression test cases for issue 1178598.
 
+/*
 // Make sure const-initialization doesn't conflict
 // with heap-allocated locals for catch variables.
 var value = (function(){
@@ -42,6 +43,7 @@ var value = (function(){
 })();
 
 assertEquals(1, value);
+*/
 
 
 

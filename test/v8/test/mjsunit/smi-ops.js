@@ -25,12 +25,12 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-const SMI_MAX = (1 << 29) - 1 + (1 << 29);  // Create without overflowing.
-const SMI_MIN = -SMI_MAX - 1;  // Create without overflowing.
-const ONE = 1;
-const ONE_HUNDRED = 100;
+var SMI_MAX = (1 << 29) - 1 + (1 << 29);  // Create without overflowing.
+var SMI_MIN = -SMI_MAX - 1;  // Create without overflowing.
+var ONE = 1;
+var ONE_HUNDRED = 100;
 
-const OBJ_42 = new (function() {
+var OBJ_42 = new (function() {
   this.valueOf = function() { return 42; };
 })();
 
