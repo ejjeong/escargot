@@ -2809,7 +2809,7 @@ void GlobalObject::installString()
                 // FIXME: I am not sure when m_matchResults[i][0].m_start returned with max
                 size_t end = result.m_matchResults[0][0].m_end;
                 size_t length = end - result.m_matchResults[0][0].m_start;
-                ret->set(idx++, thisObject->substring(result.m_matchResults[0][0].m_start, result.m_matchResults[0][0].m_end));
+                ret->defineDataProperty(ESValue(idx++), true, true, true, thisObject->substring(result.m_matchResults[0][0].m_start, result.m_matchResults[0][0].m_end));
                 if (!length) {
                     ++end;
                 }
@@ -2827,15 +2827,16 @@ void GlobalObject::installString()
             for (unsigned i = 0; i < result.m_matchResults.size() ; i ++) {
                 for (unsigned j = 0; j < result.m_matchResults[i].size() ; j ++) {
                     if (std::numeric_limits<unsigned>::max() == result.m_matchResults[i][j].m_start)
-                        ret->set(idx++, ESValue(ESValue::ESUndefined));
+                        ret->defineDataProperty(ESValue(idx++), true, true, true, ESValue(ESValue::ESUndefined));
                     else {
-                        ret->set(idx++, thisObject->substring(result.m_matchResults[i][j].m_start, result.m_matchResults[i][j].m_end));
+                        ret->defineDataProperty(ESValue(idx++),
+                            true, true, true, thisObject->substring(result.m_matchResults[i][j].m_start, result.m_matchResults[i][j].m_end));
                     }
                 }
             }
 
-            ((ESObject *)ret)->set(ESValue(strings->input), ESValue(thisObject));
-            ((ESObject *)ret)->set(ESValue(strings->index), ESValue(result.m_matchResults[0][0].m_start));
+            ret->defineOwnProperty(strings->input.string(), PropertyDescriptor { ESValue(thisObject), Writable | Enumerable | Configurable }, true);
+            ret->defineOwnProperty(strings->index.string(), PropertyDescriptor { ESValue(result.m_matchResults[0][0].m_start), Writable | Enumerable | Configurable }, true);
 
             return ret;
         }
@@ -3104,7 +3105,7 @@ void GlobalObject::installString()
 
         // 10
         if (separator.isUndefined()) {
-            A->set(0, S);
+            A->defineDataProperty(ESValue(0), true, true, true, S);
             return A;
         }
 
@@ -3138,7 +3139,7 @@ void GlobalObject::installString()
             }
             if (ret)
                 return A;
-            A->set(0, S);
+            A->defineDataProperty(ESValue(0), true, true, true, S);
             return A;
         }
 
@@ -3164,7 +3165,7 @@ void GlobalObject::installString()
                             break;
 
                         escargot::ESString* T = S->substring(p, result.m_matchResults[0][0].m_start);
-                        A->set(lengthA, ESValue(T));
+                        A->defineDataProperty(ESValue(lengthA), true, true, true, ESValue(T));
                         lengthA++;
                         if ((double)lengthA == lim)
                             return A;
@@ -3175,9 +3176,11 @@ void GlobalObject::installString()
                                     continue;
 
                                 if (std::numeric_limits<unsigned>::max() == result.m_matchResults[i][0].m_start)
-                                    A->set(lengthA++, ESValue(ESValue::ESUndefined));
-                                else
-                                    A->set(lengthA++, S->substring(result.m_matchResults[i][0].m_start, result.m_matchResults[i][0].m_end));
+                                    A->defineDataProperty(ESValue(lengthA++), true, true, true, ESValue(ESValue::ESUndefined));
+                                else {
+                                    A->defineDataProperty(ESValue(lengthA++),
+                                        true, true, true, S->substring(result.m_matchResults[i][0].m_start, result.m_matchResults[i][0].m_end));
+                                }
                                 if (lengthA == lim)
                                     return A;
                             }
@@ -3188,9 +3191,11 @@ void GlobalObject::installString()
                                         continue;
 
                                     if (std::numeric_limits<unsigned>::max() == result.m_matchResults[i][j].m_start)
-                                        A->set(lengthA++, ESValue(ESValue::ESUndefined));
-                                    else
-                                        A->set(lengthA++, S->substring(result.m_matchResults[i][j].m_start, result.m_matchResults[i][j].m_end));
+                                        A->defineDataProperty(ESValue(lengthA++), true, true, true, ESValue(ESValue::ESUndefined));
+                                    else {
+                                        A->defineDataProperty(ESValue(lengthA++),
+                                            true, true, true, S->substring(result.m_matchResults[i][j].m_start, result.m_matchResults[i][j].m_end));
+                                    }
                                     if (lengthA == lim)
                                         return A;
                                 }
@@ -3216,7 +3221,7 @@ void GlobalObject::installString()
                             break;
 
                         escargot::ESString* T = S->substring(p, q);
-                        A->set(lengthA, ESValue(T));
+                        A->defineDataProperty(ESValue(lengthA), true, true, true, ESValue(T));
                         lengthA++;
                         if ((double)lengthA == lim)
                             return A;
@@ -3229,7 +3234,7 @@ void GlobalObject::installString()
 
         // 14, 15, 16
         escargot::ESString* T = S->substring(p, s);
-        A->set(lengthA, ESValue(T));
+        A->defineDataProperty(ESValue(lengthA), true, true, true, ESValue(T));
         return A;
     }, ESString::createAtomicString("split"), 2));
 
@@ -5726,16 +5731,22 @@ void GlobalObject::installRegExp()
             regexp->set(strings->lastIndex, ESValue(result.m_matchResults[0][0].m_end), true);
         }
 
-        ((ESObject *)arr)->set(ESValue(strings->index), ESValue(result.m_matchResults[0][0].m_start));
-        ((ESObject *)arr)->set(ESValue(strings->input), ESValue(sourceStr));
+        arr->defineOwnProperty(strings->index.string(),
+            PropertyDescriptor { ESValue(result.m_matchResults[0][0].m_start), Writable | Enumerable | Configurable }, true);
+        arr->defineOwnProperty(strings->input.string(),
+            PropertyDescriptor { ESValue(sourceStr), Writable | Enumerable | Configurable }, true);
 
         int idx = 0;
         for (unsigned i = 0; i < result.m_matchResults.size() ; i ++) {
             for (unsigned j = 0; j < result.m_matchResults[i].size() ; j ++) {
-                if (result.m_matchResults[i][j].m_start == std::numeric_limits<unsigned>::max())
-                    arr->set(idx++, ESValue(ESValue::ESUndefined));
-                else
-                    arr->set(idx++, sourceStr->substring(result.m_matchResults[i][j].m_start, result.m_matchResults[i][j].m_end));
+                if (result.m_matchResults[i][j].m_start == std::numeric_limits<unsigned>::max()) {
+                    arr->defineOwnProperty(ESValue(idx++),
+                        PropertyDescriptor { ESValue(ESValue::ESUndefined), Writable | Enumerable | Configurable }, true);
+                } else {
+                    arr->defineOwnProperty(ESValue(idx++),
+                        PropertyDescriptor { sourceStr->substring(result.m_matchResults[i][j].m_start, result.m_matchResults[i][j].m_end),
+                        Writable | Enumerable | Configurable },  true);
+                }
             }
         }
         return arr;
