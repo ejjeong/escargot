@@ -985,7 +985,7 @@ Done running mjsunit/regress/regress-update-field-type-attributes: pass
 Done running mjsunit/regress/regress-weakening-multiplication: pass
 Done running mjsunit/regress/setter: pass
 Done running mjsunit/regress/short-circuit: pass
-Done running mjsunit/regress/string-split-monkey-patching: FAIL
+Done running mjsunit/regress/string-split-monkey-patching: pass
 Done running mjsunit/third_party/object-keys/object-keys: FAIL
 Done running mjsunit/third_party/regexp-pcre/regexp-pcre: FAIL
 
@@ -1862,9 +1862,6 @@ Uncaught RangeError
 === mjsunit/regress/regress-swapelements.js ===
 exit code: -11
 --- CRASHED ---
-=== mjsunit/regress/string-split-monkey-patching.js ===
---- stdout ---
-Uncaught MjsUnitAssertionError {message: Failure: unreachable, stack: undefined}
 === mjsunit/third_party/object-keys/object-keys.js ===
 --- stdout ---
 Uncaught TypeError: Object.keys: first argument is not object
@@ -1873,6 +1870,6 @@ Uncaught TypeError: Object.keys: first argument is not object
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 208 tests failed
+=== 207 tests failed
 === 8 tests CRASHED
 ===
