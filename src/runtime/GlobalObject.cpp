@@ -2786,11 +2786,10 @@ void GlobalObject::installString()
             return ESValue(ESValue::ESNull);
         }
 
-        escargot::ESArrayObject* ret = ESArrayObject::create(0);
-
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/match
         // if global flag is on, match method returns an Array containing all matched substrings
         if (isGlobal) {
+            escargot::ESArrayObject* ret = ESArrayObject::create(0);
             int idx = 0, previousLastIndex = 0;
 
             while (testResult) {
@@ -2823,22 +2822,7 @@ void GlobalObject::installString()
             }
             return ret;
         } else {
-            int idx = 0;
-            for (unsigned i = 0; i < result.m_matchResults.size() ; i ++) {
-                for (unsigned j = 0; j < result.m_matchResults[i].size() ; j ++) {
-                    if (std::numeric_limits<unsigned>::max() == result.m_matchResults[i][j].m_start)
-                        ret->defineDataProperty(ESValue(idx++), true, true, true, ESValue(ESValue::ESUndefined));
-                    else {
-                        ret->defineDataProperty(ESValue(idx++),
-                            true, true, true, thisObject->substring(result.m_matchResults[i][j].m_start, result.m_matchResults[i][j].m_end));
-                    }
-                }
-            }
-
-            ret->defineOwnProperty(strings->input.string(), PropertyDescriptor { ESValue(thisObject), Writable | Enumerable | Configurable }, true);
-            ret->defineOwnProperty(strings->index.string(), PropertyDescriptor { ESValue(result.m_matchResults[0][0].m_start), Writable | Enumerable | Configurable }, true);
-
-            return ret;
+            return regexp->createRegExpMatchedArray(result, thisObject);
         }
     }, ESString::createAtomicString("match"), 1));
 
@@ -5701,55 +5685,32 @@ void GlobalObject::installRegExp()
         if (!thisObject->isESRegExpObject())
             instance->throwError(ESValue(TypeError::create(ESString::create(u"Regexp.prototype.exec : This object is not Regexp object"))));
         escargot::ESRegExpObject* regexp = thisObject->asESRegExpObject();
-        escargot::ESArrayObject* arr = ::escargot::ESArrayObject::create();
         escargot::ESString* sourceStr = instance->currentExecutionContext()->readArgument(0).toString();
-        double lastIndex = regexp->m_lastIndex.toInteger();
         bool isGlobal = regexp->option() & ESRegExpObject::Option::Global;
-
+        double lastIndex = regexp->m_lastIndex.toInteger();
         if (!isGlobal) {
             lastIndex = 0;
         }
-        bool matchSucceded = false;
         ESString::RegexMatchResult result;
-        while (!matchSucceded) {
-            if (lastIndex < 0 || lastIndex > sourceStr->length()) {
-                regexp->set(strings->lastIndex, ESValue(0), true);
-                return ESValue(ESValue::ESNull);
-            }
 
-            regexp->m_lastExecutedString = sourceStr;
-            regexp->setOption((ESRegExpObject::Option)(regexp->option() & ~ESRegExpObject::Option::Global));
-            regexp->m_lastExecutedString = sourceStr;
-            matchSucceded = sourceStr->match(thisObject, result, false, lastIndex);
-            if (!matchSucceded) {
-                lastIndex++;
-            }
+        if (lastIndex < 0 || lastIndex > sourceStr->length()) {
+            regexp->set(strings->lastIndex, ESValue(0), true);
+            return ESValue(ESValue::ESNull);
         }
 
-        if (isGlobal) {
-            regexp->setOption((ESRegExpObject::Option)(regexp->option() | ESRegExpObject::Option::Global));
-            regexp->set(strings->lastIndex, ESValue(result.m_matchResults[0][0].m_end), true);
-        }
-
-        arr->defineOwnProperty(strings->index.string(),
-            PropertyDescriptor { ESValue(result.m_matchResults[0][0].m_start), Writable | Enumerable | Configurable }, true);
-        arr->defineOwnProperty(strings->input.string(),
-            PropertyDescriptor { ESValue(sourceStr), Writable | Enumerable | Configurable }, true);
-
-        int idx = 0;
-        for (unsigned i = 0; i < result.m_matchResults.size() ; i ++) {
-            for (unsigned j = 0; j < result.m_matchResults[i].size() ; j ++) {
-                if (result.m_matchResults[i][j].m_start == std::numeric_limits<unsigned>::max()) {
-                    arr->defineOwnProperty(ESValue(idx++),
-                        PropertyDescriptor { ESValue(ESValue::ESUndefined), Writable | Enumerable | Configurable }, true);
-                } else {
-                    arr->defineOwnProperty(ESValue(idx++),
-                        PropertyDescriptor { sourceStr->substring(result.m_matchResults[i][j].m_start, result.m_matchResults[i][j].m_end),
-                        Writable | Enumerable | Configurable },  true);
-                }
+        regexp->m_lastExecutedString = sourceStr;
+        regexp->setOption((ESRegExpObject::Option)(regexp->option() & ~ESRegExpObject::Option::Global));
+        if (sourceStr->match(regexp, result, false, lastIndex)) {
+            if (isGlobal) {
+                regexp->setOption((ESRegExpObject::Option)(regexp->option() | ESRegExpObject::Option::Global));
+                regexp->set(strings->lastIndex, ESValue(result.m_matchResults[0][0].m_end), true);
             }
+            return regexp->createRegExpMatchedArray(result, sourceStr);
         }
-        return arr;
+
+        regexp->set(strings->lastIndex, ESValue(0), true);
+        return ESValue(ESValue::ESNull);
+
     }, strings->exec, 1));
 
     // $21.2.5.14 RegExp.prototype.toString

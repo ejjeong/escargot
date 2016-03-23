@@ -1236,6 +1236,31 @@ void ESRegExpObject::setOption(const Option& option)
     m_option = option;
 }
 
+ESArrayObject* ESRegExpObject::createRegExpMatchedArray(const ESString::RegexMatchResult& result, const escargot::ESString* input)
+{
+    escargot::ESArrayObject* arr = escargot::ESArrayObject::create();
+
+    arr->defineOwnProperty(strings->index.string(),
+        PropertyDescriptor { ESValue(result.m_matchResults[0][0].m_start), Writable | Enumerable | Configurable }, true);
+    arr->defineOwnProperty(strings->input.string(),
+        PropertyDescriptor { input, Writable | Enumerable | Configurable }, true);
+
+    int idx = 0;
+    for (unsigned i = 0; i < result.m_matchResults.size() ; i ++) {
+        for (unsigned j = 0; j < result.m_matchResults[i].size() ; j ++) {
+            if (result.m_matchResults[i][j].m_start == std::numeric_limits<unsigned>::max()) {
+                arr->defineOwnProperty(ESValue(idx++),
+                    PropertyDescriptor { ESValue(ESValue::ESUndefined), Writable | Enumerable | Configurable }, true);
+            } else {
+                arr->defineOwnProperty(ESValue(idx++),
+                    PropertyDescriptor { input->substring(result.m_matchResults[i][j].m_start, result.m_matchResults[i][j].m_end),
+                    Writable | Enumerable | Configurable },  true);
+            }
+        }
+    }
+    return arr;
+}
+
 ESFunctionObject::ESFunctionObject(LexicalEnvironment* outerEnvironment, CodeBlock* cb, escargot::ESString* name, unsigned length, bool hasPrototype, bool isBuiltIn)
     : ESObject((Type)(Type::ESObject | Type::ESFunctionObject), ESVMInstance::currentInstance()->globalFunctionPrototype(), 4)
 {

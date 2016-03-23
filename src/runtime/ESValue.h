@@ -2508,6 +2508,7 @@ private:
 class ESRegExpObject : public ESObject {
     friend class ESString;
     friend class GlobalObject;
+    class ESArrayObject;
 public:
     enum Option {
         None = 0,
@@ -2538,6 +2539,8 @@ public:
     {
         return m_bytecodePattern;
     }
+
+    escargot::ESArrayObject* createRegExpMatchedArray(const escargot::ESString::RegexMatchResult& result, const escargot::ESString* input);
 
 private:
     void setBytecodePattern(JSC::Yarr::BytecodePattern* pattern)
