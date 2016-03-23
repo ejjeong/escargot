@@ -632,6 +632,11 @@ inline ESValue::ESValue(int i)
     u.asBits.payload = i;
 }
 
+inline ESValue::operator bool() const
+{
+    return u.asInt64;
+}
+
 inline bool ESValue::operator==(const ESValue& other) const
 {
     return u.asInt64 == other.u.asInt64;
