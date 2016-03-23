@@ -1498,7 +1498,8 @@ PassRefPtr<ParseStatus> scanIdentifier(ParseContext* ctx)
     } else if (id == u"true" || id == u"false") {
         type = Token::BooleanLiteralToken;
     } else if (ctx->m_strict && isStrictModeReservedWord(id)) {
-        throw u"Future reserved word cannot used as Identifier in strict mode";
+        ParseStatus* ps = new ParseStatus(Token::IdentifierToken, std::move(id), ctx->m_lineNumber, ctx->m_lineStart, start, ctx->m_index);
+        throwUnexpectedToken(adoptRef(ps), u"Future reserved word cannot used as Identifier in strict mode");
     } else {
         type = Token::IdentifierToken;
     }

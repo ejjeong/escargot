@@ -1307,7 +1307,7 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"\\x1\\/"> found <"\
 --- TIMEOUT ---
 === mjsunit/compiler/regress-451012.js ===
 --- stdout ---
-Uncaught SyntaxError: Future reserved word cannot used as Identifier in strict mode (Parse Error 7 line)
+Uncaught SyntaxError: Unexpected Identifier 'let'. Future reserved word cannot used as Identifier in strict mode (Parse Error 7 line)
 === mjsunit/compiler/truncating-store.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <-1> found <0>, stack: undefined}
@@ -1764,13 +1764,13 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"1995"> found <"1970
 Uncaught SyntaxError: Unexpected Keyword 'const'. (Parse Error 1 line)
 === mjsunit/regress/regress-4255-1.js ===
 --- stdout ---
-Uncaught SyntaxError: Future reserved word cannot used as Identifier in strict mode (Parse Error 23 line)
+Uncaught SyntaxError: Unexpected Identifier 'let'. Future reserved word cannot used as Identifier in strict mode (Parse Error 23 line)
 === mjsunit/regress/regress-4255-2.js ===
 --- stdout ---
-Uncaught SyntaxError: Future reserved word cannot used as Identifier in strict mode (Parse Error 22 line)
+Uncaught SyntaxError: Unexpected Identifier 'let'. Future reserved word cannot used as Identifier in strict mode (Parse Error 22 line)
 === mjsunit/regress/regress-4255-3.js ===
 --- stdout ---
-Uncaught SyntaxError: Future reserved word cannot used as Identifier in strict mode (Parse Error 22 line)
+Uncaught SyntaxError: Unexpected Identifier 'let'. Future reserved word cannot used as Identifier in strict mode (Parse Error 22 line)
 === mjsunit/regress/regress-4255-4.js ===
 --- stdout ---
 Uncaught SyntaxError: ES2015 class feature is not supported (Parse Error 22 line)
@@ -1785,7 +1785,7 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <"a"> found <100>, st
 Uncaught MjsUnitAssertionError {message: Failure: expected <false> found <true>, stack: undefined}
 === mjsunit/regress/regress-4377.js ===
 --- stdout ---
-Uncaught SyntaxError: Future reserved word cannot used as Identifier in strict mode (Parse Error 11 line)
+Uncaught SyntaxError: Unexpected Identifier 'let'. Future reserved word cannot used as Identifier in strict mode (Parse Error 11 line)
 === mjsunit/regress/regress-441099.js ===
 --- stderr ---
 === mjsunit/regress/regress-447561.js ===
@@ -1838,7 +1838,7 @@ Uncaught TypeError: cannot convert undefined into object
 --- TIMEOUT ---
 === mjsunit/regress/regress-crbug-498811.js ===
 --- stdout ---
-Uncaught SyntaxError: Future reserved word cannot used as Identifier in strict mode (Parse Error 8 line)
+Uncaught SyntaxError: Unexpected Identifier 'let'. Future reserved word cannot used as Identifier in strict mode (Parse Error 8 line)
 === mjsunit/regress/regress-crbug-511880.js ===
 --- stdout ---
 Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 10 line)
@@ -1847,7 +1847,7 @@ Uncaught SyntaxError: ES2015 Template string is not supported (Parse Error 10 li
 --- TIMEOUT ---
 === mjsunit/regress/regress-eval-context.js ===
 --- stdout ---
-Uncaught SyntaxError: Future reserved word cannot used as Identifier in strict mode (Parse Error 10 line)
+Uncaught SyntaxError: Unexpected Identifier 'let'. Future reserved word cannot used as Identifier in strict mode (Parse Error 10 line)
 === mjsunit/regress/regress-function-length-strict.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <true> found <false>, stack: undefined}
