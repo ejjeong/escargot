@@ -20,7 +20,7 @@
 
 'use strict';
 {
-  let x = function() {};
+  var x = function() {};
   // Trigger OSR.
   for (var i = 0; i < 1000000; i++);
 }

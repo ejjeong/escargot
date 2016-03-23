@@ -754,6 +754,11 @@
   'regress/regress-641': [SKIP],
   'regress/regress-799761': [SKIP],
   'regress/regress-88591': [SKIP],
+  # let
+  'compiler/regress-451012': [SKIP],
+  'regress/regress-4377': [SKIP],
+  'regress/regress-crbug-498811': [SKIP],
+  'regress/regress-eval-context': [SKIP],
   # builtins
   'html-string-funcs': [SKIP],
   'number-is': [SKIP],
