@@ -35,9 +35,11 @@ NEVER_INLINE void setByIdSlowCase(ESVMInstance* instance, GlobalObject* globalOb
     if (LIKELY(slot)) {
         if (LIKELY(slot.isMutable())) {
             if (LIKELY(slot.isDataBinding())) {
-                code->m_cachedSlot = slot.getSlot();
-                code->m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
-                *code->m_cachedSlot = *value;
+                if (LIKELY(slot.isGlobalBinding())) {
+                    code->m_cachedSlot = slot.getSlot();
+                    code->m_identifierCacheInvalidationCheckCount = instance->identifierCacheInvalidationCheckCount();
+                }
+                *slot.getSlot() = *value;
             } else {
                 ASSERT(!env || env->record()->isGlobalEnvironmentRecord());
                 slot.setValueWithSetter(globalObject, code->m_name.string(), *value);

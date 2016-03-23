@@ -1976,15 +1976,22 @@ class ESBindingSlot {
 public:
     ALWAYS_INLINE ESBindingSlot()
         : m_slot(nullptr)
+        , m_isGlobalBinding(false)
         , m_isDataBinding(true)
         , m_isBindingMutable(true)
         , m_isBindingConfigurable(false) { }
 
-    ALWAYS_INLINE ESBindingSlot(ESValue* slot, bool isDataBinding = true, bool isBindingMutable = true, bool isBindingConfigurable = false)
+    ALWAYS_INLINE ESBindingSlot(ESValue* slot, bool isDataBinding = true, bool isBindingMutable = true, bool isBindingConfigurable = false, bool isGlobalBinding = false)
         : m_slot(slot)
+        , m_isGlobalBinding(isGlobalBinding)
         , m_isDataBinding(isDataBinding)
         , m_isBindingMutable(isBindingMutable)
-        , m_isBindingConfigurable(isBindingConfigurable) { }
+        , m_isBindingConfigurable(isBindingConfigurable)
+    {
+#ifndef NDEBUG
+        m_isInitialized = true;
+#endif
+    }
 
     void* operator new(std::size_t) = delete;
     ALWAYS_INLINE ESValue* operator->() const { return m_slot; }
@@ -1994,6 +2001,7 @@ public:
     ALWAYS_INLINE ESValue* getSlot()
     {
         ASSERT(m_isDataBinding);
+        ASSERT(m_isInitialized);
         return m_slot;
     }
 
@@ -2006,15 +2014,20 @@ public:
     NEVER_INLINE ESValue getValueWithGetter(escargot::ESObject* obj, escargot::ESString* propertyName);
     NEVER_INLINE void setValueWithSetter(escargot::ESObject* obj, escargot::ESString* propertyName, const ESValue& value);
 
+    ALWAYS_INLINE bool isGlobalBinding() { return m_isGlobalBinding; }
     ALWAYS_INLINE bool isDataBinding() { return m_isDataBinding; }
     ALWAYS_INLINE bool isMutable() { return m_isBindingMutable; }
     ALWAYS_INLINE bool isConfigurable() { return m_isBindingConfigurable; }
 
 private:
     ESValue* m_slot;
+    bool m_isGlobalBinding:1;
     bool m_isDataBinding:1;
     bool m_isBindingMutable:1;
     bool m_isBindingConfigurable:1;
+#ifndef NDEBUG
+    bool m_isInitialized:1;
+#endif
 };
 
 class ESErrorObject : public ESObject {

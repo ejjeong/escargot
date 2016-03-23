@@ -202,7 +202,7 @@ public:
     virtual ESBindingSlot hasBinding(const InternalAtomicString& atomicName)
     {
         ESBindingSlot addressOfProperty = ((GlobalObject *)m_bindingObject)->addressOfProperty(atomicName.string());
-        if (addressOfProperty && !addressOfProperty->isDeleted())
+        if (addressOfProperty)
             return addressOfProperty;
         else
             return nullptr;

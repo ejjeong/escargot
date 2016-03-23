@@ -20,7 +20,7 @@ Done running mjsunit/arguments-lazy: pass
 Done running mjsunit/arguments-load-across-eval: FAIL
 Done running mjsunit/arguments-read-and-assignment: pass
 Done running mjsunit/array-concat: FAIL
-Done running mjsunit/array-constructor: FAIL
+Done running mjsunit/array-constructor: pass
 Done running mjsunit/array-elements-from-array-prototype-chain: FAIL
 Done running mjsunit/array-elements-from-array-prototype: FAIL
 Done running mjsunit/array-elements-from-object-prototype: FAIL
@@ -988,9 +988,6 @@ Uncaught MjsUnitAssertionError {message: Failure: expected <3> found <1>, stack:
 === mjsunit/array-concat.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <undefined> found <"baz">, stack: undefined}
-=== mjsunit/array-constructor.js ===
---- stdout ---
-Uncaught TypeError: cannot convert undefined into object
 === mjsunit/array-elements-from-array-prototype-chain.js ===
 --- stdout ---
 Uncaught MjsUnitAssertionError {message: Failure: expected <false> found <true>, stack: undefined}
@@ -1811,6 +1808,6 @@ Uncaught TypeError: Object.keys: first argument is not object
 Uncaught MjsUnitAssertionError {message: Did not throw exception, stack: undefined}
 
 ===
-=== 189 tests failed
+=== 188 tests failed
 === 7 tests CRASHED
 ===
